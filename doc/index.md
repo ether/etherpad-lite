@@ -5,4 +5,5 @@
 @include skins
 @include api/api
 @include plugins
+@include cookies
 @include database

@@ -1,9 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
+			"Gromper",
 			"Robby",
-			"Soued031",
-			"Gromper"
+			"Soued031"
 		]
 	},
 	"index.newPad": "Neie Pad",
@@ -24,7 +24,7 @@
 	"pad.colorpicker.save": "Späicheren",
 	"pad.colorpicker.cancel": "Ofbriechen",
 	"pad.loading": "Lueden...",
-	"pad.noCookie": "Cookie gouf net fonnt. Erlaabt w.e.g. Cookien an Ärem Browser!",
+	"pad.noCookie": "Cookie gouf net fonnt. Erlaabt wgl. Cookien an Ärem Browser!",
 	"pad.passwordRequired": "Dir braucht ee Passwuert fir dëse Pad opzemaachen",
 	"pad.permissionDenied": "Dir hutt net déi néideg Rechter fir dëse Pad opzemaachen",
 	"pad.wrongPassword": "Äert Passwuert ass falsch",
@@ -33,7 +33,6 @@
 	"pad.settings.rtlcheck": "Inhalt vu riets no lénks liesen?",
 	"pad.settings.fontType": "Schrëftart:",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.globalView": "Global Vue",
 	"pad.settings.language": "Sprooch:",
 	"pad.importExport.import_export": "Import/Export",
 	"pad.importExport.import": "Text-Fichier oder Dokument eroplueden",
@@ -87,6 +86,6 @@
 	"pad.userlist.approve": "Zoustëmmen",
 	"pad.impexp.importbutton": "Elo importéieren",
 	"pad.impexp.importing": "Importéieren...",
-	"pad.impexp.uploadFailed": "D'Eroplueden huet net funktionéiert, probéiert w.e.g. nach eng Kéier",
+	"pad.impexp.uploadFailed": "D'Eroplueden huet net funktionéiert, probéiert wgl. nach eng Kéier",
 	"pad.impexp.importfailed": "Den Import huet net funktionéiert"
 }

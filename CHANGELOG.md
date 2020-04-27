@@ -1,3 +1,29 @@
+# 1.8.3
+* FEATURE: colibris is now the default skin for new installs
+* FEATURE: improved colibris visuals, and migrated to Flexbox layout
+* FEATURE: skin variants: colibris skin colors can be easily customized. Visit http://127.0.0.1:9001/p/test#skinvariantsbuilder
+* REQUIREMENTS: minimum required Node version is **10.13.0 LTS**.
+* MINOR: stability fixes for the async migration in 1.8.0 (fixed many UnhandledPromiseRejectionWarning and the few remaining crashes)
+* MINOR: improved stability of import/export functionality
+* MINOR: fixed many small UI quirks (timeslider, import/export, chat)
+* MINOR: Docker images are now built & run in production mode by default
+* MINOR: reduced the size of the Docker images
+* MINOR: better documented cookies and configuration parameters of the Docker image
+* MINOR: better database support (especially MySQL)
+* MINOR: additional test coverage
+* MINOR: restored compatibility with ep_hash_auth
+* MINOR: migrate from swagger-node-express to openapi-backend
+* MINOR: honor the Accept-Language HTTP headers sent by browsers, eventually serving language variants
+* PERFORMANCE: correctly send HTTP/304 for minified files
+* SECURITY: bumped many dependencies. At the time of the release, this version has 0 reported vulnerabilities by npm audit
+* SECURITY: never send referrer when opening a link
+* SECURITY: rate limit imports and exports
+* SECURITY: do not allow pad import if a user never contributed to that pad
+* SECURITY: expose configuration parameter for limiting max import size
+
+*BREAKING CHANGE*: undoing the "clear authorship colors" command is no longer supported (see https://github.com/ether/etherpad-lite/issues/2802)
+*BREAKING CHANGE*: the visuals and CSS structure of the page was updated. Plugins may need a CSS rehaul
+
 # 1.8
 * SECURITY: change referrer policy so that Etherpad addresses aren't leaked when links are clicked (discussion: https://github.com/ether/etherpad-lite/pull/3636)
 * SECURITY: set the "secure" flag for the session cookies when served over SSL. From now on it will not be possible to serve the same instance both in cleartext and over SSL

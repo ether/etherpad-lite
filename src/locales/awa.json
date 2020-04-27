@@ -25,8 +25,6 @@
 	"pad.settings.linenocheck": "हरफ संख्या",
 	"pad.settings.fontType": "फन्ट प्रकार:",
 	"pad.settings.fontType.normal": "साधारण",
-	"pad.settings.fontType.monospaced": "मोनोस्पेस",
-	"pad.settings.globalView": "विश्वव्यापी दृष्य",
 	"pad.settings.language": "भाषा",
 	"pad.importExport.import_export": "आयात/निर्यात",
 	"pad.importExport.importSuccessful": "सफल!",

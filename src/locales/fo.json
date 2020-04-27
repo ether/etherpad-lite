@@ -31,8 +31,6 @@
 	"pad.settings.rtlcheck": "Vil tú lesa innihaldið frá høgru til vinstu?",
 	"pad.settings.fontType": "Skriftslag:",
 	"pad.settings.fontType.normal": "Vanligt",
-	"pad.settings.fontType.monospaced": "Føst breidd",
-	"pad.settings.globalView": "Global sýning",
 	"pad.settings.language": "Mál:",
 	"pad.importExport.import_export": "Innflyt/Útflyt",
 	"pad.importExport.import": "Legg út onkra tekstfílu ella dokument",

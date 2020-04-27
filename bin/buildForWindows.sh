@@ -1,9 +1,9 @@
 #!/bin/sh
 
-NODE_VERSION="10.16.3"
+NODE_VERSION="10.20.1"
 
 #Move to the folder where ep-lite is installed
-cd `dirname $0`
+cd $(dirname $0)
 
 #Was this script started in the bin folder? if yes move out
 if [ -d "../bin" ]; then

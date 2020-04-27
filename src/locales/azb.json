@@ -1,11 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Amir a57",
-			"Mousa",
-			"Koroğlu",
 			"Alp Er Tunqa",
-			"Ilğım"
+			"Amir a57",
+			"Ilğım",
+			"Koroğlu",
+			"Mousa"
 		]
 	},
 	"index.newPad": "یئنی یادداشت دفترچه سی",
@@ -43,8 +43,6 @@
 	"pad.settings.rtlcheck": "ایچینده کیلری ساغدان یوخسا سولدان اوخوسون؟",
 	"pad.settings.fontType": "قلم نوعی",
 	"pad.settings.fontType.normal": "نورمال",
-	"pad.settings.fontType.monospaced": "مونو اسپئیس",
-	"pad.settings.globalView": "سراسر گورونتو",
 	"pad.settings.language": "دیل:",
 	"pad.importExport.import_export": "ایچری توکمه /ائشیگه توکمه",
 	"pad.importExport.import": "سند یا دا متنی پرونده یوکله",

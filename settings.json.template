@@ -56,6 +56,13 @@
  *    "password": "${PASSW}"  // if PASSW is not defined would result in password === null
  *    "password": "${PASSW:}" // if PASSW is not defined would result in password === ''
  *
+ *    If you want to use an empty value (null) as default value for a variable,
+ *    simply do not set it, without putting any colons: "${ABIWORD}".
+ *
+ * 3) if you want to use newlines in the default value of a string parameter,
+ *    use "\n" as usual.
+ *
+ *    "defaultPadText" : "${DEFAULT_PAD_TEXT}Line 1\nLine 2"
  */
 {
   /*
@@ -80,10 +87,43 @@
    * - "colibris": the new experimental skin (since Etherpad 1.8), candidate to
    *               become the default in Etherpad 2.0
    */
-  "skinName": "no-skin",
+  "skinName": "colibris",
 
   /*
-   * IP and port which etherpad should bind at
+   * Skin Variants
+   *
+   * Use the UI skin variants builder at /p/test#skinvariantsbuilder
+   *
+   * For the colibris skin only, you can choose how to render the three main
+   * containers:
+   * - toolbar (top menu with icons)
+   * - editor (containing the text of the pad)
+   * - background (area outside of editor, mostly visible when using page style)
+   *
+   * For each of the 3 containers you can choose 4 color combinations:
+   * super-light, light, dark, super-dark.
+   *
+   * For example, to make the toolbar dark, you will include "dark-toolbar" into
+   * skinVariants.
+   *
+   * You can provide multiple skin variants separated by spaces. Default
+   * skinVariant is "super-light-toolbar super-light-editor light-background".
+   *
+   * For the editor container, you can also make it full width by adding
+   * "full-width-editor" variant (by default editor is rendered as a page, with
+   * a max-width of 900px).
+   */
+  "skinVariants": "super-light-toolbar super-light-editor light-background",
+
+  /*
+   * IP and port which Etherpad should bind at.
+   *
+   * Binding to a Unix socket is also supported: just use an empty string for
+   * the ip, and put the full path to the socket in the port parameter.
+   *
+   * EXAMPLE USING UNIX SOCKET:
+   *    "ip": "",                             // <-- has to be an empty string
+   *    "port" : "/somepath/etherpad.socket", // <-- path to a Unix socket
    */
   "ip": "0.0.0.0",
   "port": 9001,
@@ -155,7 +195,7 @@
   /*
    * The default text of a pad
    */
-  "defaultPadText" : "Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at http:\/\/etherpad.org\n",
+  "defaultPadText" : "Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at https:\/\/etherpad.org\n",
 
   /*
    * Default Pad behavior.
@@ -401,6 +441,31 @@
   /*
   "indentationOnNewLine": false,
   */
+
+  /*
+   * From Etherpad 1.8.3 onwards, import and export of pads is always rate
+   * limited.
+   *
+   * The default is to allow at most 10 requests per IP in a 90 seconds window.
+   * After that the import/export request is rejected.
+   *
+   * See https://github.com/nfriedly/express-rate-limit for more options
+   */
+  "importExportRateLimiting": {
+    // duration of the rate limit window (milliseconds)
+    "windowMs": 90000,
+
+    // maximum number of requests per IP to allow during the rate limit window
+    "max": 10
+  },
+
+  /*
+   * From Etherpad 1.8.3 onwards, the maximum allowed size for a single imported
+   * file is always bounded.
+   *
+   * File size is specified in bytes. Default is 50 MB.
+   */
+  "importMaxFileSize": 52428800, // 50 * 1024 * 1024
 
   /*
    * Toolbar buttons configuration.

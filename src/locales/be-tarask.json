@@ -2,8 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Jim-by",
-			"Wizardist",
-			"Red Winged Duck"
+			"Red Winged Duck",
+			"Wizardist"
 		]
 	},
 	"index.newPad": "Стварыць",
@@ -41,8 +41,6 @@
 	"pad.settings.rtlcheck": "Тэкст справа-налева",
 	"pad.settings.fontType": "Тып шрыфту:",
 	"pad.settings.fontType.normal": "Звычайны",
-	"pad.settings.fontType.monospaced": "Монашырынны",
-	"pad.settings.globalView": "Агульны выгляд",
 	"pad.settings.language": "Мова:",
 	"pad.importExport.import_export": "Імпарт/Экспарт",
 	"pad.importExport.import": "Загрузіжайце любыя тэкставыя файлы або дакумэнты",

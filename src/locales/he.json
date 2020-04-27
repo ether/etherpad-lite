@@ -42,8 +42,6 @@
 	"pad.settings.rtlcheck": "לקרוא את התוכן מימין לשמאל?",
 	"pad.settings.fontType": "סוג גופן:",
 	"pad.settings.fontType.normal": "רגיל",
-	"pad.settings.fontType.monospaced": "ברוחב קבוע",
-	"pad.settings.globalView": "תצוגה לכל המשתמשים",
 	"pad.settings.language": "שפה:",
 	"pad.importExport.import_export": "ייבוא/ייצוא",
 	"pad.importExport.import": "העלאת כל קובץ טקסט או מסמך",

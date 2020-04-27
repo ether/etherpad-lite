@@ -3,14 +3,14 @@
 		"authors": [
 			"Andriykopanytsia",
 			"Base",
+			"Bunyk",
+			"Lxlalexlxl",
+			"Movses",
 			"Olvin",
+			"Piramidion",
 			"Steve.rusyn",
 			"SteveR",
-			"Lxlalexlxl",
-			"Григорій Пугач",
-			"Bunyk",
-			"Piramidion",
-			"Movses"
+			"Григорій Пугач"
 		]
 	},
 	"index.newPad": "Створити",
@@ -48,8 +48,6 @@
 	"pad.settings.rtlcheck": "Читати вміст з права на ліво?",
 	"pad.settings.fontType": "Тип шрифту:",
 	"pad.settings.fontType.normal": "Звичайний",
-	"pad.settings.fontType.monospaced": "Моноширинний",
-	"pad.settings.globalView": "Загальний вигляд",
 	"pad.settings.language": "Мова:",
 	"pad.importExport.import_export": "Імпорт/Експорт",
 	"pad.importExport.import": "Завантажити будь-який текстовий файл або документ",
@@ -129,7 +127,7 @@
 	"pad.userlist.guest": "Гість",
 	"pad.userlist.deny": "Заборонити",
 	"pad.userlist.approve": "Підтвердити",
-	"pad.editbar.clearcolors": "Очистити кольори у всьому документі?",
+	"pad.editbar.clearcolors": "Очистити кольори у всьому документі? Це не можна буде відкотити",
 	"pad.impexp.importbutton": "Імпортувати зараз",
 	"pad.impexp.importing": "Імпорт...",
 	"pad.impexp.confirmimport": "Імпортування файлу перезапише поточний текст документа. Ви дійсно хочете продовжити?",

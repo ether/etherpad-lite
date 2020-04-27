@@ -30,12 +30,14 @@ var chat = (function()
   var self = {
     show: function ()
     {
-      $("#chaticon").hide();
-      $("#chatbox").show();
-      $("#gritter-notice-wrapper").hide();
-      self.scrollDown();
+      $("#chaticon").removeClass('visible');
+      $("#chatbox").addClass('visible');
+      self.scrollDown(true);
       chatMentions = 0;
       Tinycon.setBubble(0);
+      $('.chat-gritter-msg').each(function() {
+        $.gritter.remove(this.id);
+      });
     },
     focus: function ()
     {
@@ -46,42 +48,33 @@ var chat = (function()
     stickToScreen: function(fromInitialCall) // Make chat stick to right hand side of screen
     {
       chat.show();
-      if(!isStuck || fromInitialCall) { // Stick it to
-        padcookie.setPref("chatAlwaysVisible", true);
-        $('#chatbox').addClass("stickyChat");
-        $('#titlesticky').hide();
-        $('#editorcontainer').css({"right":"192px"});
-        $('.stickyChat').css("top",$('#editorcontainer').offset().top+"px");
-        isStuck = true;
-      } else { // Unstick it
-        padcookie.setPref("chatAlwaysVisible", false);
-        $('.stickyChat').css("top", "auto");
-        $('#chatbox').removeClass("stickyChat");
-        $('#titlesticky').show();
-        $('#editorcontainer').css({"right":"0px"});
-        isStuck = false;
-      }
+      isStuck = (!isStuck || fromInitialCall);
+      $('#chatbox').hide();
+      // Add timeout to disable the chatbox animations
+      setTimeout(function() {
+        $('#chatbox, .sticky-container').toggleClass("stickyChat", isStuck);
+        $('#chatbox').css('display', 'flex');
+      }, 0);
+
+      padcookie.setPref("chatAlwaysVisible", isStuck);
+      $('#options-stickychat').prop('checked', isStuck);
     },
     chatAndUsers: function(fromInitialCall)
     {
       var toEnable = $('#options-chatandusers').is(":checked");
       if(toEnable || !userAndChat || fromInitialCall){
-        padcookie.setPref("chatAndUsers", true);
         chat.stickToScreen(true);
         $('#options-stickychat').prop('checked', true)
         $('#options-chatandusers').prop('checked', true)
         $('#options-stickychat').prop("disabled", "disabled");
-        $('#users').addClass("chatAndUsers");
-        $("#chatbox").addClass("chatAndUsersChat");
-        // redraw
         userAndChat = true;
-        padeditbar.redrawHeight()
       }else{
-        padcookie.setPref("chatAndUsers", false);
         $('#options-stickychat').prop("disabled", false);
-        $('#users').removeClass("chatAndUsers");
-        $("#chatbox").removeClass("chatAndUsersChat");
+        userAndChat = false;
       }
+      padcookie.setPref("chatAndUsers", userAndChat);
+      $('#users, .sticky-container').toggleClass("chatAndUsers popup-show stickyUsers", userAndChat);
+      $("#chatbox").toggleClass("chatAndUsersChat", userAndChat);
     },
     hide: function ()
     {
@@ -92,16 +85,14 @@ var chat = (function()
       }
       else {
         $("#chatcounter").text("0");
-        $("#chaticon").show();
-        $("#chatbox").hide();
-        $.gritter.removeAll();
-        $("#gritter-notice-wrapper").show();
+        $("#chaticon").addClass('visible');
+        $("#chatbox").removeClass('visible');
       }
     },
-    scrollDown: function()
+    scrollDown: function(force)
     {
-      if($('#chatbox').css("display") != "none"){
-        if(!self.lastMessage || !self.lastMessage.position() || self.lastMessage.position().top < $('#chattext').height()) {
+      if ($('#chatbox').hasClass('visible')) {
+        if (force || !self.lastMessage || !self.lastMessage.position() || self.lastMessage.position().top < ($('#chattext').outerHeight() + 20)) {
           // if we use a slow animate here we can have a race condition when a users focus can not be moved away
           // from the last message recieved.
           $('#chattext').animate({scrollTop: $('#chattext')[0].scrollHeight}, { duration: 400, queue: false });
@@ -132,6 +123,16 @@ var chat = (function()
       var timeStr = hours + ":" + minutes;
 
       //create the authorclass
+      if (!msg.userId) {
+        /*
+         * If, for a bug or a database corruption, the message coming from the
+         * server does not contain the userId field (see for example #3731),
+         * let's be defensive and replace it with "unknown".
+         */
+        msg.userId = "unknown";
+        console.warn('The "userId" field of a chat message coming from the server was not present. Replacing with "unknown". This may be a bug or a database corruption.');
+      }
+
       var authorClass = "author-" + msg.userId.replace(/[^a-y0-9]/g, function(c)
       {
         if (c == ".") return "-";
@@ -149,21 +150,22 @@ var chat = (function()
         "text" : text,
         "sticky" : false,
         "timestamp" : msg.time,
-        "timeStr" : timeStr
+        "timeStr" : timeStr,
+        "duration" : 4000
       }
 
       // is the users focus already in the chatbox?
       var alreadyFocused = $("#chatinput").is(":focus");
 
       // does the user already have the chatbox open?
-      var chatOpen = $("#chatbox").is(":visible");
+      var chatOpen = $("#chatbox").hasClass("visible");
 
       // does this message contain this user's name? (is the curretn user mentioned?)
       var myName = $('#myusernameedit').val();
       var wasMentioned = (text.toLowerCase().indexOf(myName.toLowerCase()) !== -1 && myName != "undefined");
 
       if(wasMentioned && !alreadyFocused && !isHistoryAdd && !chatOpen)
-      { // If the user was mentioned show for twice as long and flash the browser window
+      { // If the user was mentioned, make the message sticky
         chatMentions++;
         Tinycon.setBubble(chatMentions);
         ctx.sticky = true;
@@ -186,16 +188,13 @@ var chat = (function()
           count++;
           $("#chatcounter").text(count);
 
-          if(!chatOpen) {
+          if(!chatOpen && ctx.duration > 0) {
             $.gritter.add({
-              // (string | mandatory) the heading of the notification
-              title: ctx.authorName,
-              // (string | mandatory) the text inside the notification
-              text: ctx.text,
-              // (bool | optional) if you want it to fade out on its own or just sit there
+              text: '<span class="author-name">' + ctx.authorName + '</span>' + ctx.text,
               sticky: ctx.sticky,
-              // (int | optional) the time you want it to be alive for before fading out
-              time: '4000'
+              time: 5000,
+              position: 'bottom',
+              class_name: 'chat-gritter-msg'
             });
           }
         }

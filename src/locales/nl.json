@@ -1,14 +1,16 @@
 {
 	"@metadata": {
 		"authors": [
-			"Siebrand",
-			"Macofe",
-			"Robin0van0der0vliet",
-			"Robin van der Vliet",
-			"Mainframe98",
+			"Klaas van Buiten",
 			"KlaasZ4usV",
+			"Macofe",
+			"Mainframe98",
+			"Marcelhospers",
+			"PonkoSasuke",
 			"Rickvl",
-			"Marcelhospers"
+			"Robin van der Vliet",
+			"Robin0van0der0vliet",
+			"Siebrand"
 		]
 	},
 	"index.newPad": "Nieuw pad",
@@ -46,8 +48,6 @@
 	"pad.settings.rtlcheck": "Inhoud van rechts naar links lezen?",
 	"pad.settings.fontType": "Lettertype:",
 	"pad.settings.fontType.normal": "Normaal",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Globaal overzicht",
 	"pad.settings.language": "Taal:",
 	"pad.importExport.import_export": "Importeren/exporteren",
 	"pad.importExport.import": "Tekstbestand of document uploaden",
@@ -127,7 +127,7 @@
 	"pad.userlist.guest": "Gast",
 	"pad.userlist.deny": "Weigeren",
 	"pad.userlist.approve": "Goedkeuren",
-	"pad.editbar.clearcolors": "Auteurskleuren voor het hele document wissen?",
+	"pad.editbar.clearcolors": "Auteurskleuren voor het hele document wissen? Dit kan je niet ongedaan maken",
 	"pad.impexp.importbutton": "Nu importeren",
 	"pad.impexp.importing": "Bezig met importeren…",
 	"pad.impexp.confirmimport": "Door een bestand te importeren overschrijft u de huidige tekst van de pad. Wilt u echt doorgaan?",

@@ -1,12 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
+			"1917 Ekim Devrimi",
 			"Erdemaslancan",
 			"Gorizon",
-			"Mirzali",
-			"Kumkumuk",
-			"1917 Ekim Devrimi",
 			"Gırd",
+			"Kumkumuk",
+			"Mirzali",
 			"Orbot707"
 		]
 	},
@@ -45,8 +45,6 @@
 	"pad.settings.rtlcheck": "Zerrek heto raşt ra be heto çep bıwaniyo?",
 	"pad.settings.fontType": "Babeta nuşti:",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "Yewca",
-	"pad.settings.globalView": "Asayışo Global",
 	"pad.settings.language": "Zıwan:",
 	"pad.importExport.import_export": "Zerredayış/Teberdayış",
 	"pad.importExport.import": "Dosya ya zi dokumanê meqaleyê de tesadufi bar ke",
@@ -126,7 +124,7 @@
 	"pad.userlist.guest": "Meyman",
 	"pad.userlist.deny": "Red ke",
 	"pad.userlist.approve": "Tesdiq ke",
-	"pad.editbar.clearcolors": "Wesiqa de renge nuştoğey bıesterneye?",
+	"pad.editbar.clearcolors": "Wesiqa de renge nuştoğey bıesternê yê? No kar peyser nêgêrêno",
 	"pad.impexp.importbutton": "Nıka miyan ke",
 	"pad.impexp.importing": "Deyeno azere...",
 	"pad.impexp.confirmimport": "Yu dosya azere kerdış de mewcud bloknoti sero nuşiye no. Şıma qayılê dewam bıkerê?",

@@ -25,6 +25,7 @@ var log4js = require('log4js');
 var padManager = require("../db/PadManager");
 var randomString = require("../utils/randomstring");
 var argv = require('../utils/Cli').argv;
+var createHTTPError = require('http-errors');
 
 var apiHandlerLogger = log4js.getLogger('APIHandler');
 
@@ -136,8 +137,13 @@ version["1.2.13"] = Object.assign({}, version["1.2.12"],
   }
 );
 
+version["1.2.14"] = Object.assign({}, version["1.2.13"],
+  { "getStats"                : []
+  }
+);
+
 // set the latest available API version here
-exports.latestApiVersion = '1.2.13';
+exports.latestApiVersion = '1.2.14';
 
 // exports the versions so it can be used by the new Swagger endpoint
 exports.version = version;
@@ -153,25 +159,19 @@ exports.handle = async function(apiVersion, functionName, fields, req, res)
 {
   // say goodbye if this is an unknown API version
   if (!(apiVersion in version)) {
-    res.statusCode = 404;
-    res.send({code: 3, message: "no such api version", data: null});
-    return;
+    throw new createHTTPError.NotFound('no such api version');
   }
 
   // say goodbye if this is an unknown function
   if (!(functionName in version[apiVersion])) {
-    // no status code?!
-    res.send({code: 3, message: "no such function", data: null});
-    return;
+    throw new createHTTPError.NotFound('no such function');
   }
 
   // check the api key!
   fields["apikey"] = fields["apikey"] || fields["api_key"];
 
   if (fields["apikey"] !== apikey.trim()) {
-    res.statusCode = 401;
-    res.send({code: 4, message: "no or wrong API Key", data: null});
-    return;
+    throw new createHTTPError.Unauthorized('no or wrong API Key');
   }
 
   // sanitize any padIDs before continuing
@@ -185,37 +185,11 @@ exports.handle = async function(apiVersion, functionName, fields, req, res)
     fields["padName"] = await padManager.sanitizePadId(fields["padName"]);
   }
 
-  // no need to await - callAPI returns a promise
-  return callAPI(apiVersion, functionName, fields, req, res);
-}
-
-// calls the api function
-async function callAPI(apiVersion, functionName, fields, req, res)
-{
   // put the function parameters in an array
   var functionParams = version[apiVersion][functionName].map(function (field) {
     return fields[field]
   });
 
-  try {
-    // call the api function
-    let data = await api[functionName].apply(this, functionParams);
-
-    if (!data) {
-        data = null;
-    }
-
-    res.send({code: 0, message: "ok", data: data});
-  } catch (err) {
-    if (err.name == "apierror") {
-      // parameters were wrong and the api stopped execution, pass the error
-
-      res.send({code: 1, message: err.message, data: null});
-    } else {
-      // an unknown error happened
-
-      res.send({code: 2, message: "internal error", data: null});
-      throw err;
-    }
-  }
+  // call the api function
+  return api[functionName].apply(this, functionParams);
 }

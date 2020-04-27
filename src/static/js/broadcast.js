@@ -125,7 +125,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         }
         else
         {
-          $("#padcontent").prepend(newDivs[i]);
+          $("#innerdocbody").prepend(newDivs[i]);
         }
         startDiv = newDivs[i];
       }
@@ -336,6 +336,11 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     var self = this;
     var path = revisionInfo.getPath(padContents.currentRevision, newRevision);
     debugLog('newRev: ', padContents.currentRevision, path);
+
+    hooks.aCallAll('goToRevisionEvent', {
+        rev: newRevision
+    });
+
     if (path.status == 'complete')
     {
       var cs = path.changesets;
@@ -543,12 +548,12 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
   {
     // set up the currentDivs and DOM
     padContents.currentDivs = [];
-    $("#padcontent").html("");
+    $("#innerdocbody").html("");
     for (var i = 0; i < padContents.currentLines.length; i++)
     {
       var div = padContents.lineToElement(padContents.currentLines[i], padContents.alines[i]);
       padContents.currentDivs.push(div);
-      $("#padcontent").append(div);
+      $("#innerdocbody").append(div);
     }
     debugLog(padContents.currentDivs);
   });

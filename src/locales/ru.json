@@ -3,14 +3,14 @@
 		"authors": [
 			"Amire80",
 			"DCamer",
+			"Diralik",
 			"Eleferen",
-			"Okras",
-			"Volkov",
-			"Nzeemin",
 			"Facenapalm",
-			"Patrick Star",
 			"Movses",
-			"Diralik"
+			"Nzeemin",
+			"Okras",
+			"Patrick Star",
+			"Volkov"
 		]
 	},
 	"index.newPad": "Создать",
@@ -48,8 +48,6 @@
 	"pad.settings.rtlcheck": "Читать содержимое справа налево?",
 	"pad.settings.fontType": "Тип шрифта:",
 	"pad.settings.fontType.normal": "Обычный",
-	"pad.settings.fontType.monospaced": "Моноширинный",
-	"pad.settings.globalView": "Общий вид",
 	"pad.settings.language": "Язык:",
 	"pad.importExport.import_export": "Импорт/экспорт",
 	"pad.importExport.import": "Загрузить любой текстовый файл или документ",

@@ -134,6 +134,7 @@ var padeditor = (function()
 
       v = getOption('showAuthorColors', true);
       self.ace.setProperty("showsauthorcolors", v);
+      $('#chattext').toggleClass('authorColors', v);
       padutils.setCheckbox($("#options-colorscheck"), v);
 
       // Override from parameters if true
@@ -141,29 +142,7 @@ var padeditor = (function()
         self.ace.setProperty("showsauthorcolors", !settings.noColors);
       }
 
-      var fontFamily = newOptions['padFontFamily'];
-      switch (fontFamily) {
-        case "monospace": self.ace.setProperty("textface", "monospace"); break;
-        case "montserrat": self.ace.setProperty("textface", "Montserrat"); break;
-        case "opendyslexic": self.ace.setProperty("textface", "OpenDyslexic"); break;
-        case "comicsans": self.ace.setProperty("textface", "'Comic Sans MS','Comic Sans',cursive"); break;
-        case "georgia": self.ace.setProperty("textface", "Georgia,'Bitstream Charter',serif"); break;
-        case "impact": self.ace.setProperty("textface", "Impact,Haettenschweiler,'Arial Black',sans-serif"); break;
-        case "lucida": self.ace.setProperty("textface", "Lucida,'Lucida Serif','Lucida Bright',serif"); break;
-        case "lucidasans": self.ace.setProperty("textface", "'Lucida Sans','Lucida Grande','Lucida Sans Unicode','Luxi Sans',sans-serif"); break;
-        case "palatino": self.ace.setProperty("textface", "Palatino,'Palatino Linotype','URW Palladio L',Georgia,serif"); break;
-        case "robotomono": self.ace.setProperty("textface", "RobotoMono"); break;
-        case "tahoma": self.ace.setProperty("textface", "Tahoma,sans-serif"); break;
-        case "timesnewroman": self.ace.setProperty("textface", "'Times New Roman',Times,serif"); break;
-        case "trebuchet": self.ace.setProperty("textface", "'Trebuchet MS',sans-serif"); break;
-        case "verdana": self.ace.setProperty("textface", "Verdana,'DejaVu Sans',sans-serif"); break;
-        case "symbol": self.ace.setProperty("textface", "Symbol"); break;
-        case "webdings": self.ace.setProperty("textface", "Webdings"); break;
-        case "wingdings": self.ace.setProperty("textface", "Wingdings"); break;
-        case "sansserif": self.ace.setProperty("textface", "sans-serif"); break;
-        case "serif": self.ace.setProperty("textface", "serif"); break;
-        default: self.ace.setProperty("textface", "");   break;
-      }
+      self.ace.setProperty("textface", newOptions['padFontFamily'] || "");
     },
     dispose: function()
     {

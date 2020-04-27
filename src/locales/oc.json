@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Cedric31"
+			"Cedric31",
+			"Quentí"
 		]
 	},
 	"index.newPad": "Pad novèl",
@@ -39,8 +40,6 @@
 	"pad.settings.rtlcheck": "Lectura de dreita a esquèrra",
 	"pad.settings.fontType": "Tipe de poliça :",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Vista d’ensemble",
 	"pad.settings.language": "Lenga :",
 	"pad.importExport.import_export": "Importar/Exportar",
 	"pad.importExport.import": "Cargar un tèxte o un document",
@@ -86,6 +85,8 @@
 	"pad.chat": "Chat",
 	"pad.chat.title": "Dobrir lo chat associat a aqueste pad.",
 	"pad.chat.loadmessages": "Cargar mai de messatges.",
+	"pad.chat.stick.title": "Ancorar la discussion a l’ecran",
+	"pad.chat.writeMessage.placeholder": "Escrivètz lo vòstre messatge aicí",
 	"timeslider.pageTitle": "Istoric dinamic de {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Retorn a aqueste Pad.",
 	"timeslider.toolbar.authors": "Autors :",

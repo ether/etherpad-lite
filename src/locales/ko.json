@@ -1,13 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
+			"CYAN",
 			"Hym411",
-			"아라",
-			"Revi",
 			"Kurousagi",
+			"Revi",
 			"SeoJeongHo",
 			"Ykhwong",
-			"CYAN"
+			"아라"
 		]
 	},
 	"index.newPad": "새 패드",
@@ -45,8 +45,6 @@
 	"pad.settings.rtlcheck": "우횡서(오른쪽에서 왼쪽으로)입니까?",
 	"pad.settings.fontType": "글꼴 종류:",
 	"pad.settings.fontType.normal": "보통",
-	"pad.settings.fontType.monospaced": "고정 폭",
-	"pad.settings.globalView": "전역 보기",
 	"pad.settings.language": "언어:",
 	"pad.importExport.import_export": "가져오기/내보내기",
 	"pad.importExport.import": "텍스트 파일이나 문서 올리기",
@@ -126,7 +124,7 @@
 	"pad.userlist.guest": "손님",
 	"pad.userlist.deny": "거부",
 	"pad.userlist.approve": "승인",
-	"pad.editbar.clearcolors": "전체 문서의 저자 색을 지우시겠습니까?",
+	"pad.editbar.clearcolors": "전체 문서의 저자 색을 지우시겠습니까? 이 작업은 취소할 수 없습니다",
 	"pad.impexp.importbutton": "지금 가져오기",
 	"pad.impexp.importing": "가져오는 중...",
 	"pad.impexp.confirmimport": "파일을 가져오면 패드의 현재 텍스트를 덮어쓰게 됩니다. 진행하시겠습니까?",

@@ -1,11 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Shirayuki",
-			"Torinky",
-			"Omotecho",
 			"Aefgh39622",
-			"Afaz"
+			"Afaz",
+			"Omotecho",
+			"Shirayuki",
+			"Torinky"
 		]
 	},
 	"index.newPad": "新規作成",
@@ -43,8 +43,6 @@
 	"pad.settings.rtlcheck": "右横書きにする",
 	"pad.settings.fontType": "フォントの種類:",
 	"pad.settings.fontType.normal": "通常",
-	"pad.settings.fontType.monospaced": "固定幅",
-	"pad.settings.globalView": "グローバル設定",
 	"pad.settings.language": "言語:",
 	"pad.importExport.import_export": "インポート/エクスポート",
 	"pad.importExport.import": "あらゆるテキストファイルや文書をアップロードできます",

@@ -2,9 +2,9 @@
 	"@metadata": {
 		"authors": [
 			"Dbc334",
+			"HairyFotr",
 			"Mateju",
 			"Skalcaa",
-			"HairyFotr",
 			"Upwinxp"
 		]
 	},
@@ -43,8 +43,6 @@
 	"pad.settings.rtlcheck": "Ali naj se vsebina prebira od desne proti levi?",
 	"pad.settings.fontType": "Vrsta pisave:",
 	"pad.settings.fontType.normal": "Običajno",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Splošni pogled",
 	"pad.settings.language": "Jezik:",
 	"pad.importExport.import_export": "Uvoz/Izvoz",
 	"pad.importExport.import": "Naloži katerokoli besedilno datoteko ali dokument.",

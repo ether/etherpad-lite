@@ -1,13 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"Aktron",
-			"Milicevic01",
-			"Милан Јелисавчић",
-			"Srdjan m",
-			"Obsuser",
 			"Acamicamacaraca",
-			"BadDog"
+			"Aktron",
+			"BadDog",
+			"Milicevic01",
+			"Obsuser",
+			"Srdjan m",
+			"Милан Јелисавчић"
 		]
 	},
 	"index.newPad": "Нови Пад",
@@ -45,8 +45,6 @@
 	"pad.settings.rtlcheck": "Читај садржај с десна на лево?",
 	"pad.settings.fontType": "Врста фонта:",
 	"pad.settings.fontType.normal": "Нормално",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Глобални приказ",
 	"pad.settings.language": "Језик:",
 	"pad.importExport.import_export": "Увоз/извоз",
 	"pad.importExport.import": "Отпремите било коју текстуалну датотеку или документ",
