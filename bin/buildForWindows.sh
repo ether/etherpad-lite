@@ -1,7 +1,5 @@
 #!/bin/sh
 
-NODE_VERSION="10.20.1"
-
 #Move to the folder where ep-lite is installed
 cd $(dirname $0)
 
@@ -54,7 +52,7 @@ mv node_modules_resolved node_modules
 
 echo "download windows node..."
 cd bin
-wget "https://nodejs.org/dist/v$NODE_VERSION/win-x86/node.exe" -O ../node.exe
+wget "https://nodejs.org/dist/latest-erbium/win-x86/node.exe" -O ../node.exe
 
 echo "remove git history to reduce folder size"
 rm -rf .git/objects
