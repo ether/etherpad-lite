@@ -5,7 +5,7 @@
 <!doctype html>
 <html class="<%=settings.skinVariants%>">
 <title data-l10n-id="timeslider.pageTitle" data-l10n-args='{ "appTitle": "<%=settings.title%>" }'><%=settings.title%> Timeslider</title>
-<script>
+<script nonce="<%=settings.nonce && settings.nonce.timesliderLicense || ''%>">
   /*
   |@licstart  The following is the entire license notice for the
   JavaScript code in this page.|
@@ -258,7 +258,7 @@
 <script type="text/javascript" src="../../static/skins/<%=encodeURI(settings.skinName)%>/timeslider.js?v=<%=settings.randomVersionString%>"></script>
 
 <!-- Bootstrap -->
-<script type="text/javascript" >
+<script type="text/javascript" nonce="<%=settings.nonce && settings.nonce.timesliderBootstrap || ''%>">
   // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
   var clientVars = {};
   var BroadcastSlider;

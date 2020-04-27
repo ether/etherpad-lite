@@ -11,7 +11,7 @@
 <% e.end_block(); %>
 
   <title><%=settings.title%></title>
-  <script>
+  <script nonce="<%=settings.nonce && settings.nonce.padLicense || ''%>">
     /*
     |@licstart  The following is the entire license notice for the
     JavaScript code in this page.|
@@ -443,7 +443,7 @@
   <!-- Include pad_utils manually -->
   <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/pad_utils.js?callback=require.define&v=<%=settings.randomVersionString%>"></script>
 
-  <script type="text/javascript">
+  <script type="text/javascript" nonce="<%=settings.nonce && settings.nonce.padErrorHandler || ''%>">
       // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
       (function() {
         // Display errors on page load to the user
@@ -472,7 +472,7 @@
   <% e.end_block(); %>
 
   <!-- Bootstrap page -->
-  <script type="text/javascript">
+  <script type="text/javascript" nonce="<%=settings.nonce && settings.nonce.padBootstrap || ''%>">
       // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
       var clientVars = {};
       (function () {

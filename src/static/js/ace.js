@@ -35,7 +35,7 @@ var _ = require('./underscore');
 
 function scriptTag(source) {
   return (
-    '<script type="text/javascript">\n'
+    '<script type="text/javascript" nonce="aceTemporaryNonce">\n'
     + source.replace(/<\//g, '<\\/') +
     '</script>'
   )

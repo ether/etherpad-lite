@@ -5,7 +5,7 @@
 <html>
 
         <title><%=settings.title%></title>
-    <script>
+    <script nonce="<%=settings.nonce && settings.nonce.padLicense || ''%>">
       /*
       |@licstart  The following is the entire license notice for the
       JavaScript code in this page.|
@@ -167,10 +167,10 @@
                     <% if (settings.editOnly) { %>
                         <label id="label" for="padname" data-l10n-id="index.openPad"></label>
                     <% } else {%>
-                        <button id="button" onclick="go2Random()" data-l10n-id="index.newPad"></button>
+                        <button id="button" data-l10n-id="index.newPad"></button>
                         <label id="label" for="padname" data-l10n-id="index.createOpenPad"></label>
                     <% } %>
-                    <form action="#" onsubmit="go2Name();return false;">
+                        <form id="form" action="#">
                         <input type="text" id="padname" maxlength="50" autofocus x-webkit-speech>
                         <button type="submit">OK</button>
                     </form>
@@ -182,7 +182,18 @@
         <% e.begin_block("indexCustomScripts"); %>
         <script src="static/skins/<%=encodeURI(settings.skinName)%>/index.js?v=<%=settings.randomVersionString%>"></script>
         <% e.end_block(); %>
-        <script>
+        <script nonce="<%=settings.nonce && settings.nonce.index || ''%>">
+
+            var button = document.getElementById("button");
+            button.onclick = function(){
+              go2Random();
+            }
+
+            var form = document.getElementById("form");
+            form.onsubmit = function(){
+              go2Name();return false;
+            }
+
             // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
             <% e.begin_block("indexCustomInlineScripts"); %>
             function go2Name()
