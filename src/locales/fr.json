@@ -74,7 +74,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "Vous ne pouvez importer que des formats texte brut ou HTML. Pour des fonctionnalités d’importation plus évoluées, veuillez  <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">installer AbiWord</a>.",
+	"pad.importExport.abiword.innerHTML": "Vous ne pouvez importer que des formats texte brut ou HTML. Pour des fonctionnalités d’importation plus évoluées, veuillez <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">installer AbiWord ou LibreOffice</a>.",
 	"pad.modals.connected": "Connecté.",
 	"pad.modals.reconnecting": "Reconnexion à votre bloc-notes...",
 	"pad.modals.forcereconnect": "Forcer la reconnexion",
@@ -151,5 +151,7 @@
 	"pad.impexp.uploadFailed": "Le téléversement a échoué, veuillez réessayer",
 	"pad.impexp.importfailed": "Échec de l’importation",
 	"pad.impexp.copypaste": "Veuillez copier-coller",
-	"pad.impexp.exportdisabled": "L’exportation au format {{type}} est désactivée. Veuillez contacter votre administrateur système pour plus de détails."
+	"pad.impexp.exportdisabled": "L’exportation au format {{type}} est désactivée. Veuillez contacter votre administrateur système pour plus de détails.",
+	"pad.impexp.maxFileSize": "Fichier trop gros. Contactez votre administrateur de site pour augmenter la taille maximale des fichiers importés",
+	"pad.impexp.permission": "L’importation est désactivée parce que vous n’avez jamais contribué à ce bloc. Veuillez contribuer au moins une fois avant d’importer"
 }

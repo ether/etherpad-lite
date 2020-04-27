@@ -50,7 +50,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "Sólo se pue importar dende los formatos de testu planu o HTML. Pa carauterístiques d'importación más avanzaes <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">instala Abiword</a>.",
+	"pad.importExport.abiword.innerHTML": "Sólo se pue importar dende los formatos de testu planu o HTML. Pa carauterístiques d'importación más avanzaes <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">instala Abiword o LibreOffice</a>.",
 	"pad.modals.connected": "Coneutáu.",
 	"pad.modals.reconnecting": "Reconeutando col to bloc...",
 	"pad.modals.forcereconnect": "Forzar la reconexón",
@@ -127,5 +127,7 @@
 	"pad.impexp.uploadFailed": "Falló la carga del ficheru, intentalo otra vuelta",
 	"pad.impexp.importfailed": "Falló la importación",
 	"pad.impexp.copypaste": "Por favor, copia y apega",
-	"pad.impexp.exportdisabled": "La esportación en formatu {{type}} ta desactivada. Por favor, comunica col alministrador del sistema pa más detalles."
+	"pad.impexp.exportdisabled": "La esportación en formatu {{type}} ta desactivada. Por favor, comunica col alministrador del sistema pa más detalles.",
+	"pad.impexp.maxFileSize": "El ficheru ye demasiao grande. Comunícate col alministrador del sitiu p'aumentar el tamañu de ficheru permitíu na importación",
+	"pad.impexp.permission": "La importación ta desactivada porque nunca contribuisti nesti bloc. Contribuye polo menos una vez antes d'importar"
 }

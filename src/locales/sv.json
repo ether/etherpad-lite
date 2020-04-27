@@ -120,7 +120,7 @@
 	"pad.userlist.guest": "Gäst",
 	"pad.userlist.deny": "Neka",
 	"pad.userlist.approve": "Godkänn",
-	"pad.editbar.clearcolors": "Rensa författarfärger på hela dokumentet?",
+	"pad.editbar.clearcolors": "Rensa författarfärger för hela dokumentet? Detta kan inte ångras",
 	"pad.impexp.importbutton": "Importera nu",
 	"pad.impexp.importing": "Importerar...",
 	"pad.impexp.confirmimport": "Att importera en fil kommer att skriva över den aktuella texten i blocket. Är du säker på att du vill fortsätta?",

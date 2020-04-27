@@ -56,7 +56,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "Şıma şenê tenya metınanê zelalan ya zi formatanê HTML-i biyarê. Seba vêşi xısusiyetanê arezekerdışi ra gırey <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">AbiWord-i bar kerên</a>.",
+	"pad.importExport.abiword.innerHTML": "Şıma şenê tenya metınanê zelalan ya zi formatanê HTML-i biyarê. Seba vêşi xısusiyetanê arezekerdışi ra gırey <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">AbiWordi ya zi LibreOfficeyi bar kerên</a>.",
 	"pad.modals.connected": "Gıre diya.",
 	"pad.modals.reconnecting": "Bloknot da şıma rê fına irtibat kewê no",
 	"pad.modals.forcereconnect": "Mecbur anciya gırê de",
@@ -133,5 +133,7 @@
 	"pad.impexp.uploadFailed": "Barkerdış nêbi, kerem ke anciya bıcerebne",
 	"pad.impexp.importfailed": "Zer kerdış mıwafaq nebı",
 	"pad.impexp.copypaste": "Reca keme kopya pronayış bıkeri",
-	"pad.impexp.exportdisabled": "Formatta {{type}} ya ateber kerdış dewra vıciya yo. Qandé teferruati idarekarana irtibat kewê"
+	"pad.impexp.exportdisabled": "Formatta {{type}} ya ateber kerdış dewra vıciya yo. Qandé teferruati idarekarana irtibat kewê",
+	"pad.impexp.maxFileSize": "Dosya zêde gırsa, azere kerdışi rê mısade deyaye ebatê dosyay zeydınayışi rê idarekarê siteya irtibat kewê",
+	"pad.impexp.permission": "Şıma ena ped rê qet iştirak nêkerdo coki ra azere kerdış dewre ra veto. Vêre azere kerdışi minimum yû iştirak bıkerê"
 }
