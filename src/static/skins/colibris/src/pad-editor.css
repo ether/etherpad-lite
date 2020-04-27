@@ -19,15 +19,6 @@ option {
   text-transform: capitalize;
 }
 
-#innerdocbody h1 {
-  font-size: 2.5em !important;
-}
-
-#innerdocbody h3 {
-  font-size: 1.15em;
-  letter-spacing: 1px;
-}
-
 #innerdocbody a {
   color: #64d29b;
   color: var(--primary-color);
