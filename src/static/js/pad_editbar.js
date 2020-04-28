@@ -20,6 +20,7 @@
  * limitations under the License.
  */
 
+var browser = require('./browser');
 var hooks = require('./pluginfw/hooks');
 var padutils = require('./pad_utils').padutils;
 var padeditor = require('./pad_editor').padeditor;
@@ -170,7 +171,15 @@ var padeditbar = (function()
         ace: padeditor.ace
       });
 
-      $('select').niceSelect();
+      /*
+       * On safari, the dropdown in the toolbar gets hidden because of toolbar
+       * overflow:hidden property. This is a bug from Safari: any children with
+       * position:fixed (like the dropdown) should be displayed no matter
+       * overflow:hidden on parent
+       */
+      if (!browser.safari) {
+          $('select').niceSelect();
+      }
 
       // When editor is scrolled, we add a class to style the editbar differently
       $('iframe[name="ace_outer"]').contents().scroll(function() {
