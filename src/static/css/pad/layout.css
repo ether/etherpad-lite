@@ -29,6 +29,9 @@ body {
   height: auto;
   flex: 1 auto;
 }
+#editorcontainerbox #editorcontainer:not(.initialized) {
+  visibility: hidden;
+}
 #editorcontainerbox #editorcontainer iframe {
   width: 100%;
   height: auto;
