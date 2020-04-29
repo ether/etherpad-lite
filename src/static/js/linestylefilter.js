@@ -80,7 +80,7 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
     {
       var classes = '';
       var isLineAttribMarker = false;
-console.log(attribs);
+
       // For each attribute number
       Changeset.eachAttribNumber(attribs, function(n)
       {
