@@ -5131,6 +5131,7 @@ function Ace2Inner(){
       documentAttributeManager.removeAttributeOnLine(lineNum, listAttributeName);
       documentAttributeManager.removeAttributeOnLine(lineNum, 'start');
     }else{
+      top.console.warn(lineNum, listAttributeName, listType)
       documentAttributeManager.setAttributeOnLine(lineNum, listAttributeName, listType);
     }
 
@@ -5188,6 +5189,12 @@ function Ace2Inner(){
         }
         else if(curLevel == level)
         {
+
+          top.console.warn("position", position);
+          top.console.warn("loc", loc)
+          top.console.warn("line", line);
+          top.console.warn("position", position)
+
           ChangesetUtils.buildKeepRange(rep, builder, loc, (loc = [line, 0]));
           ChangesetUtils.buildKeepRange(rep, builder, loc, (loc = [line, 1]), [
             ['start', position]

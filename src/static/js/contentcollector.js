@@ -108,13 +108,10 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     return dom.nodeProp(node, "_magicdom_" + name);
   }
 
-  var orderedListArray = [];
-
   var lines = (function()
   {
     var textArray = [];
     var attribsArray = [];
-    var isOrderedList = false;
     var attribsBuilder = null;
     var op = Changeset.newOp('+');
     var self = {
@@ -151,10 +148,6 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
       attribLines: function()
       {
         return attribsArray;
-      },
-      orderedListLines: function()
-      {
-        return orderedListArray;
       },
       // call flush only when you're done
       flush: function(withNewline)
@@ -258,6 +251,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     if (listType != 'none')
     {
       state.listNesting = (state.listNesting || 0) + 1;
+      state.start = (state.start || 0) + 1;
     }
 
     if(listType === 'none' || !listType ){
@@ -276,6 +270,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     if (state.lineAttributes['list'])
     {
       state.listNesting--;
+      state.start = 0;
     }
     if (oldListType && oldListType != 'none') { state.lineAttributes['list'] = oldListType; }
     else { delete state.lineAttributes['list']; }
@@ -607,7 +602,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
                 type = "number"
               }
               if(type === "number"){
-                // orderedListArray.push((state.listNesting || 0) + 1)
+                // For now just be cool, no need to do anything..
               }
               type = type + String(Math.min(_MAX_LIST_LEVEL, (state.listNesting || 0) + 1));
             }
@@ -620,12 +615,13 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
             if(!abrowser.chrome) oldListTypeOrNull = (_enterList(state, type) || 'none');
           }
           else if ((tname === "li")){
-            orderedListArray.push(state.listNesting)
+            state.lineAttributes['start'] = String(Math.min(_MAX_LIST_LEVEL, (state.start || 0)));
+            _recalcAttribString(state);
+            state.start++;
           }else{
-            if(isBlock){
-              orderedListArray.push(false);
-            }
+            delete state.lineAttributes['start']
           }
+
           if (className2Author && cls)
           {
             var classes = cls.match(/\S+/g);
@@ -740,7 +736,6 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
   {
     lines.flush();
     var lineAttribs = lines.attribLines();
-    var orderedListLines = lines.orderedListLines();
     var lineStrings = cc.getLines();
 
     lineStrings.length--;
@@ -754,15 +749,16 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     var shouldRenumberLists = false;
     if(typeof window === 'undefined') shouldRenumberLists = true;
     if(shouldRenumberLists){
-      lineAttribs = renumberListItems();
+      // lineAttribs = renumberListItems();
       console.log("new line Attribs", lineAttribs)
     }
 
     function renumberListItems(){
+      var orderedListLines = [];
       var lineAttribs = [];
       // for each line
       prevLine = false;
-      for (var i = 0; i < orderedListLines.length; i++){
+      for (var i = 0; i < lineAttribs.length; i++){
         var line = orderedListLines[i];
         // console.log(line);
         // Is it a list item?
