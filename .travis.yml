@@ -6,6 +6,17 @@ node_js:
 services:
   - docker
 
+install:
+  - "bin/installDeps.sh"
+  - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
+  - "npm install ep_test_line_attrib"
+
+before_script:
+  - "tests/frontend/travis/sauce_tunnel.sh"
+
+script:
+  - "tests/frontend/travis/runner.sh"
+
 env:
   global:
     - secure: "WMGxFkOeTTlhWB+ChMucRtIqVmMbwzYdNHuHQjKCcj8HBEPdZLfCuK/kf4rG\nVLcLQiIsyllqzNhBGVHG1nyqWr0/LTm8JRqSCDDVIhpyzp9KpCJQQJG2Uwjk\n6/HIJJh/wbxsEdLNV2crYU/EiVO3A4Bq0YTHUlbhUqG3mSCr5Ec="
@@ -13,6 +24,11 @@ env:
 
 jobs:
   include:
+    - name: "Run the Backend tests"
+      install:
+        - "cd src && npm install && cd -"
+      script:
+        - "tests/frontend/travis/runnerBackend.sh"
     - name: "Test the Frontend"
       install:
         - "bin/installDeps.sh"

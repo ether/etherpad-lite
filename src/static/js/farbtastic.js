@@ -1,6 +1,7 @@
 // Farbtastic 2.0 alpha
+// edited by Sebastian Castro <sebastian.castro@protonmail.com> on 2020-04-06
 (function ($) {
-  
+
 var __debug = false;
 var __factor = 0.8;
 
@@ -16,7 +17,7 @@ $.farbtastic = function (container, options) {
 
 $._farbtastic = function (container, options) {
   var fb = this;
-  
+
   /////////////////////////////////////////////////////
 
   /**
@@ -134,7 +135,7 @@ $._farbtastic = function (container, options) {
     fb.ctxOverlay = fb.cnvOverlay[0].getContext('2d');
     fb.ctxMask.translate(fb.mid, fb.mid);
     fb.ctxOverlay.translate(fb.mid, fb.mid);
-    
+
     // Draw widget base layers.
     fb.drawCircle();
     fb.drawMask();
@@ -208,7 +209,7 @@ $._farbtastic = function (container, options) {
     m.restore();
     __debug && $('body').append('<div>drawCircle '+ (+(new Date()) - tm) +'ms');
   };
-  
+
   /**
    * Draw the saturation/luminance mask.
    */
@@ -232,9 +233,9 @@ $._farbtastic = function (container, options) {
 
           outputPixel(x, y, c, a);
         }
-      }      
+      }
     }
- 
+
     // Method #1: direct pixel access (new Canvas).
     if (fb.ctxMask.getImageData) {
       // Create half-resolution buffer.
@@ -295,7 +296,7 @@ $._farbtastic = function (container, options) {
         }
         cache.push([c, a]);
       });
-    }    
+    }
     __debug && $('body').append('<div>drawMask '+ (+(new Date()) - tm) +'ms');
   }
 
@@ -304,19 +305,17 @@ $._farbtastic = function (container, options) {
    */
   fb.drawMarkers = function () {
     // Determine marker dimensions
-    var sz = options.width, lw = Math.ceil(fb.markerSize / 4), r = fb.markerSize - lw + 1;
+    var sz = options.width;
     var angle = fb.hsl[0] * 6.28,
         x1 =  Math.sin(angle) * fb.radius,
         y1 = -Math.cos(angle) * fb.radius,
         x2 = 2 * fb.square * (.5 - fb.hsl[1]),
-        y2 = 2 * fb.square * (.5 - fb.hsl[2]),
-        c1 = fb.invert ? '#fff' : '#000',
-        c2 = fb.invert ? '#000' : '#fff';
+        y2 = 2 * fb.square * (.5 - fb.hsl[2]);
     var circles = [
-      { x: x1, y: y1, r: r,             c: '#000', lw: lw + 1 },
-      { x: x1, y: y1, r: fb.markerSize, c: '#fff', lw: lw },
-      { x: x2, y: y2, r: r,             c: c2,     lw: lw + 1 },
-      { x: x2, y: y2, r: fb.markerSize, c: c1,     lw: lw },
+      { x: x1, y: y1, r: fb.markerSize + 1, c: 'rgb(0,0,0,.4)', lw: 2 },
+      { x: x1, y: y1, r: fb.markerSize, c: '#fff', lw: 2 },
+      { x: x2, y: y2, r: fb.markerSize + 1, c: 'rgb(0,0,0,.4)', lw: 2 },
+      { x: x2, y: y2, r: fb.markerSize, c: '#fff',     lw: 2 },
     ];
 
     // Update the overlay canvas.
@@ -343,7 +342,7 @@ $._farbtastic = function (container, options) {
 
     // Draw markers
     fb.drawMarkers();
-    
+
     // Linked elements or callback
     if (typeof fb.callback == 'object') {
       // Set background/foreground color
@@ -363,15 +362,15 @@ $._farbtastic = function (container, options) {
       fb.callback.call(fb, fb.color);
     }
   }
-  
+
   /**
    * Helper for returning coordinates relative to the center.
    */
   fb.widgetCoords = function (event) {
     return {
-      x: event.pageX - fb.offset.left - fb.mid,    
+      x: event.pageX - fb.offset.left - fb.mid,
       y: event.pageY - fb.offset.top - fb.mid
-    };    
+    };
   }
 
   /**
@@ -434,7 +433,7 @@ $._farbtastic = function (container, options) {
   fb.packDX = function (c, a) {
     return '#' + fb.dec2hex(a) + fb.dec2hex(c) + fb.dec2hex(c) + fb.dec2hex(c);
   };
-  
+
   fb.pack = function (rgb) {
     var r = Math.round(rgb[0] * 255);
     var g = Math.round(rgb[1] * 255);

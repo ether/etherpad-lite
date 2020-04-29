@@ -1,22 +1,22 @@
 {
 	"@metadata": {
 		"authors": [
+			"Cainamarques",
+			"Dianakc",
+			"Eduardo Addad de Oliveira",
+			"Fasouzafreitas",
 			"Gusta",
+			"Lpagliari",
 			"Luckas",
+			"Macofe",
 			"Prilopes",
+			"Rafaelff",
+			"Rodrigo codignoli",
 			"TheGabrielZaum",
 			"Titoncio",
 			"Tuliouel",
-			"Rafaelff",
-			"Dianakc",
-			"Macofe",
-			"Rodrigo codignoli",
-			"Webysther",
-			"Fasouzafreitas",
-			"Lpagliari",
 			"Walesson",
-			"Cainamarques",
-			"Eduardo Addad de Oliveira"
+			"Webysther"
 		]
 	},
 	"index.newPad": "Nova Nota",
@@ -54,8 +54,6 @@
 	"pad.settings.rtlcheck": "Ler conteúdo da direita para esquerda?",
 	"pad.settings.fontType": "Tipo de fonte:",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "Monoespaçada",
-	"pad.settings.globalView": "Visão global",
 	"pad.settings.language": "Idioma:",
 	"pad.importExport.import_export": "Importar/Exportar",
 	"pad.importExport.import": "Enviar um arquivo texto ou documento",

@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # minimum required node version
-REQUIRED_NODE_MAJOR=8
-REQUIRED_NODE_MINOR=9
+REQUIRED_NODE_MAJOR=10
+REQUIRED_NODE_MINOR=13
 
 # minimum required npm version
 REQUIRED_NPM_MAJOR=5
@@ -49,7 +49,7 @@ require_minimal_version() {
 }
 
 #Move to the folder where ep-lite is installed
-cd `dirname $0`
+cd $(dirname $0)
 
 #Was this script started in the bin folder? if yes move out
 if [ -d "../bin" ]; then

@@ -1,11 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Chase me ladies, I'm the Cavalry",
-			"Shirayuki",
 			"Andibing",
+			"Cblair91",
+			"Chase me ladies, I'm the Cavalry",
 			"HairyFotr",
-			"Cblair91"
+			"Shirayuki"
 		]
 	},
 	"index.newPad": "New Pad",
@@ -43,8 +43,6 @@
 	"pad.settings.rtlcheck": "Read content from right to left?",
 	"pad.settings.fontType": "Font type:",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Global View",
 	"pad.settings.language": "Language:",
 	"pad.importExport.import_export": "Import/Export",
 	"pad.importExport.import": "Upload any text file or document",

@@ -1,16 +1,17 @@
 {
 	"@metadata": {
 		"authors": [
-			"Ali1",
-			"Tux-tn",
 			"Alami",
-			"Meno25",
-			"Test Create account",
-			"محمد أحمد عبد الفتاح",
+			"Ali1",
 			"Haytham morsy",
-			"ديفيد",
+			"Meno25",
 			"Mido",
-			"Shbib Al-Subaie"
+			"Shbib Al-Subaie",
+			"Tala Ali",
+			"Test Create account",
+			"Tux-tn",
+			"ديفيد",
+			"محمد أحمد عبد الفتاح"
 		]
 	},
 	"index.newPad": "باد جديد",
@@ -48,8 +49,6 @@
 	"pad.settings.rtlcheck": "قراءة المحتويات من اليمين إلى اليسار؟",
 	"pad.settings.fontType": "نوع الخط:",
 	"pad.settings.fontType.normal": "عادي",
-	"pad.settings.fontType.monospaced": "ثابت العرض",
-	"pad.settings.globalView": "الرؤية الشاملة",
 	"pad.settings.language": "اللغة:",
 	"pad.importExport.import_export": "استيراد/تصدير",
 	"pad.importExport.import": "تحميل أي ملف نصي أو وثيقة",
@@ -129,7 +128,7 @@
 	"pad.userlist.guest": "ضيف",
 	"pad.userlist.deny": "رفض",
 	"pad.userlist.approve": "موافقة",
-	"pad.editbar.clearcolors": "مسح ألوان التأليف أو المستند بأكمله؟",
+	"pad.editbar.clearcolors": "مسح ألوان التأليف أو المستند بأكمله؟ هذا لا يمكن التراجع عنه",
 	"pad.impexp.importbutton": "الاستيراد الآن",
 	"pad.impexp.importing": "الاستيراد...",
 	"pad.impexp.confirmimport": "استيراد ملف سيؤدي للكتابة فوق النص الحالي بالباد. هل أنت متأكد من أنك تريد المتابعة؟",

@@ -6,7 +6,7 @@ describe("assign unordered list", function(){
   });
 
   it("insert unordered list text then removes by outdent", function(done){
-    var inner$ = helper.padInner$; 
+    var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
     var originalText = inner$("div").first().text();
 

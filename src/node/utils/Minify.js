@@ -201,6 +201,7 @@ function minify(req, res)
   statFile(filename, function (error, date, exists) {
     if (date) {
       date = new Date(date);
+      date.setMilliseconds(0);
       res.setHeader('last-modified', date.toUTCString());
       res.setHeader('date', (new Date()).toUTCString());
       if (settings.maxAge !== undefined) {
@@ -381,6 +382,12 @@ function getFileCompressed(filename, contentType, callback) {
     } else if (contentType == 'text/javascript') {
       try {
         content = compressJS(content);
+        if (content.error) {
+          console.error(`Error compressing JS (${filename}) using UglifyJS`, content.error);
+          callback('compressionError', content.error);
+        } else {
+          content = content.code.toString(); // Convert content obj code to string
+        }
       } catch (error) {
         console.error(`getFile() returned an error in getFileCompressed(${filename}, ${contentType}): ${error}`);
       }
@@ -405,10 +412,10 @@ function getFile(filename, callback) {
 
 function compressJS(content)
 {
-  var decoder = new StringDecoder('utf8');
-  var code = decoder.write(content); // convert from buffer to string
-  var codeMinified = uglifyJS.minify(code, {fromString: true}).code;
-  return codeMinified;
+  const contentAsString = content.toString();
+  const codeObj = uglifyJS.minify(contentAsString);
+
+  return codeObj;
 }
 
 function compressCSS(filename, content, callback)

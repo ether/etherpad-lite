@@ -73,7 +73,7 @@ function randomString()
 //   callback: the function to call when all above succeeds, `val` is the value supplied by the user
 var getParameters = [
   { name: "noColors",         checkVal: "true",  callback: function(val) { settings.noColors = true; $('#clearAuthorship').hide(); } },
-  { name: "showControls",     checkVal: "false", callback: function(val) { $('#editbar').addClass('hideControlsEditbar'); $('#editorcontainer').addClass('hideControlsEditor'); } },
+  { name: "showControls",     checkVal: "true",  callback: function(val) { $('#editbar').css('display', 'flex') } },
   { name: "showChat",         checkVal: "true", callback: function(val) { $('#chaticon').show(); } },
   { name: "showLineNumbers",  checkVal: "false", callback: function(val) { settings.LineNumbersDisabled = true; } },
   { name: "useMonospaceFont", checkVal: "true",  callback: function(val) { settings.useMonospaceFontGlobal = true; } },
@@ -364,12 +364,6 @@ function handshake()
   });
 }
 
-$.extend($.gritter.options, {
-  position: 'bottom-right', // defaults to 'top-right' but can be 'bottom-left', 'bottom-right', 'top-left', 'top-right' (added in 1.7.1)
-  fade: false, // dont fade, too jerky on mobile
-  time: 6000 // hang on the screen for...
-});
-
 var pad = {
   // don't access these directly from outside this file, except
   // for debugging
@@ -428,6 +422,11 @@ var pad = {
   },
   switchToPad: function(padId)
   {
+    // destroy old pad from DOM
+    // See https://github.com/ether/etherpad-lite/pull/3915
+    // TODO: Check if Destroying is enough and doesn't leave negative stuff
+    // See ace.js "editor.destroy" for a reference of how it was done before
+    $('#editorcontainer').find("iframe")[0].remove();
     var options = document.location.href.split('?')[1];
     var newHref = padId;
     if (typeof options != "undefined" && options != null){
@@ -561,6 +560,18 @@ var pad = {
         pad.changeViewOption('rtlIsTrue', true);
       }
       pad.changeViewOption('padFontFamily', padcookie.getPref("padFontFamily"));
+      $('#viewfontmenu').val(padcookie.getPref("padFontFamily")).niceSelect('update');
+
+      // Prevent sticky chat or chat and users to be checked for mobiles
+      function checkChatAndUsersVisibility(x) {
+        if (x.matches) { // If media query matches
+          $('#options-chatandusers:checked').click();
+          $('#options-stickychat:checked').click();
+        }
+      }
+      var mobileMatch = window.matchMedia("(max-width: 800px)");
+      mobileMatch.addListener(checkChatAndUsersVisibility); // check if window resized
+      setTimeout(function() { checkChatAndUsersVisibility(mobileMatch); }, 0); // check now after load
 
       hooks.aCallAll("postAceInit", {ace: padeditor.ace, pad: pad});
     }

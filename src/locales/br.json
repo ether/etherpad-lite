@@ -8,7 +8,7 @@
 		]
 	},
 	"index.newPad": "Pad nevez",
-	"index.createOpenPad": "pe krouiñ/digeriñ ur pad gant an anv :",
+	"index.createOpenPad": "pe krouiñ/digeriñ ur Pad gant an anv :",
 	"pad.toolbar.bold.title": "Tev (Ctrl-B)",
 	"pad.toolbar.italic.title": "Italek (Ctrl-I)",
 	"pad.toolbar.underline.title": "Islinennañ (Ctrl-U)",
@@ -42,8 +42,6 @@
 	"pad.settings.rtlcheck": "Lenn an danvez a-zehou da gleiz ?",
 	"pad.settings.fontType": "Seurt font :",
 	"pad.settings.fontType.normal": "Reizh",
-	"pad.settings.fontType.monospaced": "Monospas",
-	"pad.settings.globalView": "Gwel dre vras",
 	"pad.settings.language": "Yezh :",
 	"pad.importExport.import_export": "Enporzhiañ/Ezporzhiañ",
 	"pad.importExport.import": "Enkargañ un destenn pe ur restr",
@@ -55,7 +53,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "Ne c'hallit ket enporzhiañ furmadoù testennoù kriz pe HTML hepken. Evit arc'hwelioù enporzhiañ emdroetoc'h, staliit <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">staliañ Abiword</a> mar plij.",
+	"pad.importExport.abiword.innerHTML": "Ne c'hallit enporzhiañ nemet furmadoù testennoù plaen pe HTML. Evit arc'hwelioù enporzhiañ emdroetoc'h, staliit <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">Abiword pe LibreOffice</a>.",
 	"pad.modals.connected": "Kevreet.",
 	"pad.modals.reconnecting": "Adkevreañ war-zu ho pad...",
 	"pad.modals.forcereconnect": "Adkevreañ dre heg",
@@ -123,7 +121,7 @@
 	"pad.userlist.guest": "Den pedet",
 	"pad.userlist.deny": "Nac'h",
 	"pad.userlist.approve": "Aprouiñ",
-	"pad.editbar.clearcolors": "Diverkañ al livioù stag ouzh an aozerien en teul a-bezh ?",
+	"pad.editbar.clearcolors": "Diverkañ al livioù stag ouzh an aozerien en teul a-bezh ? Ne c'hallo ket bezañ disc'hraet",
 	"pad.impexp.importbutton": "Enporzhiañ bremañ",
 	"pad.impexp.importing": "Oc'h enporzhiañ...",
 	"pad.impexp.confirmimport": "Ma vez enporzhiet ur restr e vo diverket ar pezh zo en teul a-vremañ. Ha sur oc'h e fell deoc'h mont betek penn ?",
@@ -132,5 +130,7 @@
 	"pad.impexp.uploadFailed": "C'hwitet eo bet an enporzhiañ. Klaskit en-dro.",
 	"pad.impexp.importfailed": "C'hwitet eo an enporzhiadenn",
 	"pad.impexp.copypaste": "Eilit/pegit, mar plij",
-	"pad.impexp.exportdisabled": "Diweredekaet eo ezporzhiañ d'ar furmad {{type}}. Kit e darempred gant merour ar reizhiad evit gouzout hiroc'h."
+	"pad.impexp.exportdisabled": "Diweredekaet eo ezporzhiañ d'ar furmad {{type}}. Kit e darempred gant merour ar reizhiad evit gouzout hiroc'h.",
+	"pad.impexp.maxFileSize": "Re vras eo ar restr. Kit e daremrepd gant merour ho lec'hienn evit kreskiñ ment aoteet ar restroù evit enporzhiañ",
+	"pad.impexp.permission": "Diweredekaet eo an enporzhiañ peogwir n'hoc'h eus ket kemeret perzh gwech ebet er bloc'had-se. Kemerit perzh ur wech da nebeutañ a-raok enporzhiañ."
 }

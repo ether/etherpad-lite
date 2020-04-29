@@ -20,7 +20,7 @@ describe("the test helper", function(){
     });
 
     it("gives me 3 jquery instances of chrome, outer and inner", function(done){
-      this.timeout(5000);
+      this.timeout(10000);
 
       helper.newPad(function(){
         //check if the jquery selectors have the desired elements
@@ -136,7 +136,15 @@ describe("the test helper", function(){
       helper.selectLines($startLine, $endLine, startOffset, endOffset);
 
       var selection = inner$.document.getSelection();
-      expect(cleanText(selection.toString())).to.be("ort lines to t");
+
+      /*
+       * replace() is required here because Firefox keeps the line breaks.
+       *
+       * I'm not sure this is ideal behavior of getSelection() where the text
+       * is not consistent between browsers but that's the situation so that's
+       * how I'm covering it in this test.
+       */
+      expect(cleanText(selection.toString().replace(/(\r\n|\n|\r)/gm,""))).to.be("ort lines to t");
 
       done();
     });
@@ -154,7 +162,15 @@ describe("the test helper", function(){
       helper.selectLines($startLine, $endLine, startOffset, endOffset);
 
       var selection = inner$.document.getSelection();
-      expect(cleanText(selection.toString())).to.be("ort lines to test");
+
+      /*
+       * replace() is required here because Firefox keeps the line breaks.
+       *
+       * I'm not sure this is ideal behavior of getSelection() where the text
+       * is not consistent between browsers but that's the situation so that's
+       * how I'm covering it in this test.
+       */
+      expect(cleanText(selection.toString().replace(/(\r\n|\n|\r)/gm,""))).to.be("ort lines to test");
 
       done();
     });
@@ -172,7 +188,15 @@ describe("the test helper", function(){
       helper.selectLines($startLine, $endLine, startOffset, endOffset);
 
       var selection = inner$.document.getSelection();
-      expect(cleanText(selection.toString())).to.be("ort lines ");
+
+      /*
+       * replace() is required here because Firefox keeps the line breaks.
+       *
+       * I'm not sure this is ideal behavior of getSelection() where the text
+       * is not consistent between browsers but that's the situation so that's
+       * how I'm covering it in this test.
+       */
+      expect(cleanText(selection.toString().replace(/(\r\n|\n|\r)/gm,""))).to.be("ort lines ");
 
       done();
     });
@@ -190,7 +214,15 @@ describe("the test helper", function(){
       helper.selectLines($startLine, $endLine, startOffset, endOffset);
 
       var selection = inner$.document.getSelection();
-      expect(cleanText(selection.toString())).to.be("ort lines to test");
+
+      /*
+       * replace() is required here because Firefox keeps the line breaks.
+       *
+       * I'm not sure this is ideal behavior of getSelection() where the text
+       * is not consistent between browsers but that's the situation so that's
+       * how I'm covering it in this test.
+       */
+      expect(cleanText(selection.toString().replace(/(\r\n|\n|\r)/gm,""))).to.be("ort lines to test");
 
       done();
     });
@@ -205,7 +237,15 @@ describe("the test helper", function(){
       helper.selectLines($startLine, $endLine);
 
       var selection = inner$.document.getSelection();
-      expect(cleanText(selection.toString())).to.be("short lines to test");
+
+      /*
+       * replace() is required here because Firefox keeps the line breaks.
+       *
+       * I'm not sure this is ideal behavior of getSelection() where the text
+       * is not consistent between browsers but that's the situation so that's
+       * how I'm covering it in this test.
+       */
+      expect(cleanText(selection.toString().replace(/(\r\n|\n|\r)/gm,""))).to.be("short lines to test");
 
       done();
     });

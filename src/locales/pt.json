@@ -1,15 +1,15 @@
 {
 	"@metadata": {
 		"authors": [
+			"Athena in Wonderland",
+			"Cainamarques",
 			"Hamilton Abreu",
-			"Luckas",
-			"Tuliouel",
-			"Waldir",
 			"Imperadeiro98",
+			"Luckas",
 			"Macofe",
 			"Ti4goc",
-			"Cainamarques",
-			"Athena in Wonderland",
+			"Tuliouel",
+			"Waldir",
 			"Waldyrious"
 		]
 	},
@@ -48,8 +48,6 @@
 	"pad.settings.rtlcheck": "Ler o conteúdo da direita para a esquerda?",
 	"pad.settings.fontType": "Tipo de letra:",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "Monoespaçada",
-	"pad.settings.globalView": "Vista global",
 	"pad.settings.language": "Língua:",
 	"pad.importExport.import_export": "Importar/Exportar",
 	"pad.importExport.import": "Carregar qualquer ficheiro de texto ou documento",

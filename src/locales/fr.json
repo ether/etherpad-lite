@@ -1,13 +1,20 @@
 {
 	"@metadata": {
 		"authors": [
+			"Boniface",
+			"C13m3n7",
 			"Cquoi",
 			"Crochet.david",
+			"Envlh",
+			"Framafan",
+			"Fylip22",
 			"Gomoko",
 			"Goofy",
 			"Goofy-bz",
 			"Jean-Frédéric",
 			"Leviathan",
+			"Macofe",
+			"Maxim21",
 			"McDutchie",
 			"Metroitendo",
 			"Od1n",
@@ -16,16 +23,9 @@
 			"Rastus Vernon",
 			"Stephane Cottin",
 			"Tux-tn",
-			"Maxim21",
-			"Boniface",
-			"Macofe",
-			"Framafan",
-			"Fylip22",
-			"C13m3n7",
-			"Wladek92",
 			"Urhixidur",
-			"Envlh",
-			"Verdy p"
+			"Verdy p",
+			"Wladek92"
 		]
 	},
 	"index.newPad": "Nouveau bloc-notes",
@@ -63,8 +63,6 @@
 	"pad.settings.rtlcheck": "Le contenu doit-il être lu de droite à gauche ?",
 	"pad.settings.fontType": "Police :",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Vue d’ensemble",
 	"pad.settings.language": "Langue :",
 	"pad.importExport.import_export": "Importer/Exporter",
 	"pad.importExport.import": "Charger un texte ou un document",
@@ -76,7 +74,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "Vous ne pouvez importer que des formats texte brut ou HTML. Pour des fonctionnalités d’importation plus évoluées, veuillez  <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">installer AbiWord</a>.",
+	"pad.importExport.abiword.innerHTML": "Vous ne pouvez importer que des formats texte brut ou HTML. Pour des fonctionnalités d’importation plus évoluées, veuillez <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">installer AbiWord ou LibreOffice</a>.",
 	"pad.modals.connected": "Connecté.",
 	"pad.modals.reconnecting": "Reconnexion à votre bloc-notes...",
 	"pad.modals.forcereconnect": "Forcer la reconnexion",
@@ -144,7 +142,7 @@
 	"pad.userlist.guest": "Invité",
 	"pad.userlist.deny": "Refuser",
 	"pad.userlist.approve": "Approuver",
-	"pad.editbar.clearcolors": "Effacer le surlignage par auteur dans tout le document ?",
+	"pad.editbar.clearcolors": "Effacer le surlignage par auteur dans tout le document ? Cette action ne peut être annulée.",
 	"pad.impexp.importbutton": "Importer maintenant",
 	"pad.impexp.importing": "Import en cours...",
 	"pad.impexp.confirmimport": "Importer un fichier écrasera le contenu actuel du bloc-notes. Êtes-vous sûr de vouloir le faire ?",
@@ -153,5 +151,7 @@
 	"pad.impexp.uploadFailed": "Le téléversement a échoué, veuillez réessayer",
 	"pad.impexp.importfailed": "Échec de l’importation",
 	"pad.impexp.copypaste": "Veuillez copier-coller",
-	"pad.impexp.exportdisabled": "L’exportation au format {{type}} est désactivée. Veuillez contacter votre administrateur système pour plus de détails."
+	"pad.impexp.exportdisabled": "L’exportation au format {{type}} est désactivée. Veuillez contacter votre administrateur système pour plus de détails.",
+	"pad.impexp.maxFileSize": "Fichier trop gros. Contactez votre administrateur de site pour augmenter la taille maximale des fichiers importés",
+	"pad.impexp.permission": "L’importation est désactivée parce que vous n’avez jamais contribué à ce bloc. Veuillez contribuer au moins une fois avant d’importer"
 }

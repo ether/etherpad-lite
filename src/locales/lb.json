@@ -1,9 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
+			"Gromper",
 			"Robby",
-			"Soued031",
-			"Gromper"
+			"Soued031"
 		]
 	},
 	"index.newPad": "Neie Pad",
@@ -33,7 +33,6 @@
 	"pad.settings.rtlcheck": "Inhalt vu riets no lénks liesen?",
 	"pad.settings.fontType": "Schrëftart:",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.globalView": "Global Vue",
 	"pad.settings.language": "Sprooch:",
 	"pad.importExport.import_export": "Import/Export",
 	"pad.importExport.import": "Text-Fichier oder Dokument eroplueden",

@@ -44,10 +44,11 @@ var padmodals = (function()
       });
     },
     showOverlay: function() {
-      $("#overlay").show();
+      // Prevent the user to interact with the toolbar. Useful when user is disconnected for example
+      $("#toolbar-overlay").show();
     },
     hideOverlay: function() {
-      $("#overlay").hide();
+      $("#toolbar-overlay").hide();
     }
   };
   return self;

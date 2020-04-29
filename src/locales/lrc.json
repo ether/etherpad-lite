@@ -1,8 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Mogoeilor",
-			"Lorestani"
+			"Lorestani",
+			"Mogoeilor"
 		]
 	},
 	"index.newPad": "دٱفتٱرچٱ تازٱ",
@@ -27,8 +27,6 @@
 	"pad.settings.linenocheck": "شمارٱ خٱتؽا",
 	"pad.settings.fontType": "نوع فونت:",
 	"pad.settings.fontType.normal": "عادی",
-	"pad.settings.fontType.monospaced": "تک جاگه",
-	"pad.settings.globalView": "دیئن جهونی",
 	"pad.settings.language": "زڤون:",
 	"pad.importExport.import_export": "ڤامین آوئردن/ڤ دٱر داٛئن",
 	"pad.importExport.importSuccessful": "موئٱفٱق بی!",

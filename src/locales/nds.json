@@ -38,8 +38,6 @@
 	"pad.settings.rtlcheck": "Lees Pad vun rechts nach links",
 	"pad.settings.fontType": "Schriftoort:",
 	"pad.settings.fontType.normal": "Normaal",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Ansicht för all",
 	"pad.settings.language": "Spraak:",
 	"pad.importExport.import_export": "Rinhalen/Rutgeven",
 	"pad.importExport.import": "Datei oder Dokument hoochladen",

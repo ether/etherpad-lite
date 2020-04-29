@@ -24,6 +24,8 @@ var hooks = require('./pluginfw/hooks');
 var padutils = require('./pad_utils').padutils;
 var padeditor = require('./pad_editor').padeditor;
 var padsavedrevs = require('./pad_savedrevs');
+var _ = require('ep_etherpad-lite/static/js/underscore');
+require('ep_etherpad-lite/static/js/vendors/nice-select');
 
 var ToolbarItem = function (element) {
   this.$el = element;
@@ -141,11 +143,6 @@ var padeditbar = (function()
     init: function() {
       var self = this;
       self.dropdowns = [];
-      // Listen for resize events (sucks but needed as iFrame ace_inner has to be position absolute
-      // A CSS fix for this would be nice but I'm not sure how we'd do it.
-      $(window).resize(function(){
-        self.redrawHeight();
-      });
 
       $("#editbar .editbarbutton").attr("unselectable", "on"); // for IE
       $("#editbar").removeClass("disabledtoolbar").addClass("enabledtoolbar");
@@ -160,9 +157,11 @@ var padeditbar = (function()
         bodyKeyEvent(evt);
       });
 
-      $('#editbar').show();
-
-      this.redrawHeight();
+      $('.show-more-icon-btn').click(function() {
+        $('.toolbar').toggleClass('full-icons');
+      });
+      self.checkAllIconsAreDisplayedInToolbar();
+      $(window).resize(_.debounce( self.checkAllIconsAreDisplayedInToolbar, 100 ) );
 
       registerDefaultCommands(self);
 
@@ -170,10 +169,16 @@ var padeditbar = (function()
         toolbar: self,
         ace: padeditor.ace
       });
+
+      $('select').niceSelect();
+
+      // When editor is scrolled, we add a class to style the editbar differently
+      $('iframe[name="ace_outer"]').contents().scroll(function() {
+        $('#editbar').toggleClass('editor-scrolled', $(this).scrollTop() > 2);
+      })
     },
     isEnabled: function()
     {
-//      return !$("#editbar").hasClass('disabledtoolbar');
       return true;
     },
     disable: function()
@@ -184,55 +189,6 @@ var padeditbar = (function()
     registerCommand: function (cmd, callback) {
       this.commands[cmd] = callback;
       return this;
-    },
-    calculateEditbarHeight: function() {
-      // if we're on timeslider, there is nothing on editbar, so we just use zero
-      var onTimeslider = $('.menu_left').length === 0;
-      if (onTimeslider) return 0;
-
-      // if editbar has both menu left and right, its height must be
-      // the max between the height of these two parts
-      var leftMenuPosition = $('.menu_left').offset().top;
-      var rightMenuPosition = $('.menu_right').offset().top;
-      var editbarHasMenuLeftAndRight = (leftMenuPosition === rightMenuPosition);
-
-      var height;
-      if (editbarHasMenuLeftAndRight) {
-        height = Math.max($('.menu_left').height(), $('.menu_right').height());
-      }
-      else {
-        height = $('.menu_left').height();
-      }
-
-      return height;
-    },
-    redrawHeight: function(){
-      var minimunEditbarHeight = self.calculateEditbarHeight();
-      var editbarHeight = minimunEditbarHeight + 1 + "px";
-      var containerTop = minimunEditbarHeight + 6 + "px";
-      $('#editbar').css("height", editbarHeight);
-
-      $('#editorcontainer').css("top", containerTop);
-
-      // make sure pop ups are in the right place
-      if($('#editorcontainer').offset()){
-        $('.popup').css("top", $('#editorcontainer').offset().top + "px");
-      }
-
-      // If sticky chat is enabled..
-      if($('#options-stickychat').is(":checked")){
-        if($('#editorcontainer').offset()){
-          $('#chatbox').css("top", $('#editorcontainer').offset().top + "px");
-        }
-      };
-
-      // If chat and Users is enabled..
-      if($('#options-chatandusers').is(":checked")){
-        if($('#editorcontainer').offset()){
-          $('#users').css("top", $('#editorcontainer').offset().top + "px");
-        }
-      }
-
     },
     registerDropdownCommand: function (cmd, dropdown) {
       dropdown = dropdown || cmd;
@@ -256,6 +212,14 @@ var padeditbar = (function()
     },
     toggleDropDown: function(moduleName, cb)
     {
+      // do nothing if users are sticked
+      if (moduleName === "users" && $('#users').hasClass('stickyUsers')) {
+        return;
+      }
+
+      $('.nice-select').removeClass('open');
+      $('.toolbar-popup').removeClass("popup-show");
+
       // hide all modules and remove highlighting of all buttons
       if(moduleName == "none")
       {
@@ -274,14 +238,12 @@ var padeditbar = (function()
           var isAForceReconnectMessage = module.find('button#forcereconnect:visible').length > 0;
           if(isAForceReconnectMessage)
             continue;
-
-          if(module.css('display') != "none")
-          {
+          if (module.hasClass('popup-show')) {
             $("li[data-key=" + thisModuleName + "] > a").removeClass("selected");
-            module.slideUp("fast", cb);
-            returned = true;
+            module.removeClass("popup-show");
           }
         }
+
         if(!returned && cb) return cb();
       }
       else
@@ -293,15 +255,18 @@ var padeditbar = (function()
           var thisModuleName = self.dropdowns[i];
           var module = $("#" + thisModuleName);
 
-          if(module.css('display') != "none")
+          if(module.hasClass('popup-show'))
           {
             $("li[data-key=" + thisModuleName + "] > a").removeClass("selected");
-            module.slideUp("fast");
+            module.removeClass("popup-show");
           }
           else if(thisModuleName==moduleName)
           {
             $("li[data-key=" + thisModuleName + "] > a").addClass("selected");
-            module.slideDown("fast", cb);
+            module.addClass("popup-show");
+            if (cb) {
+              cb();
+            }
           }
         }
       }
@@ -332,6 +297,15 @@ var padeditbar = (function()
         $('#embedinput').val('<iframe name="embed_readwrite" src="' + padurl + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width=600 height=400></iframe>');
         $('#linkinput').val(padurl);
       }
+    },
+    checkAllIconsAreDisplayedInToolbar: function()
+    {
+      // reset style
+      $('.toolbar').removeClass('cropped')
+      var menu_left = $('.toolbar .menu_left')[0];
+      if (menu_left && menu_left.scrollWidth > $('.toolbar').width()) {
+        $('.toolbar').addClass('cropped');
+      }
     }
   };
 
@@ -352,7 +326,7 @@ var padeditbar = (function()
           // Timeslider probably..
           // Shift focus away from any drop downs
           $(':focus').blur(); // required to do not try to remove!
-          $('#padmain').focus(); // Focus back onto the pad
+          $('#editorcontainerbox').focus(); // Focus back onto the pad
         }else{
           // Shift focus away from any drop downs
           $(':focus').blur(); // required to do not try to remove!
@@ -420,6 +394,17 @@ var padeditbar = (function()
 
     toolbar.registerCommand("import_export", function () {
       toolbar.toggleDropDown("import_export", function(){
+
+        if (clientVars.thisUserHasEditedThisPad) {
+          // the user has edited this pad historically or in this session
+          $('#importform').show();
+          $('#importmessagepermission').hide();
+        } else {
+          // this is the first time this user visits this pad
+          $('#importform').hide();
+          $('#importmessagepermission').show();
+        }
+
         // If Import file input exists then focus on it..
         if($('#importfileinput').length !== 0){
           setTimeout(function(){

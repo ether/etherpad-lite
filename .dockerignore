@@ -1,3 +1,22 @@
 .hg
+
+# Remove the git objects, logs, etc. to make final image smaller.
+# Some files still need to be in the .git directory, because Etherpad at
+# startup uses them to discover its version number.
+.git/branches
+.git/COMMIT_EDITMSG
+.git/config
+.git/description
+.git/FETCH_HEAD
+.git/hooks
+.git/index
+.git/info
+.git/logs
+.git/objects
+.git/ORIG_HEAD
+.git/packed-refs
+.git/refs/remotes/
+.gitignore
+
 settings.json
 src/node_modules
