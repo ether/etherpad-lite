@@ -343,7 +343,6 @@ function getHTMLFromAtext(pad, atext, authorColors)
       {
         var exists = _.find(openLists, function (item)
         {
-          console.log(line, item);
           return (item.level === line.listLevel && item.type === line.listTypeName);
         });
         if (!exists) {
@@ -367,7 +366,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
             if (line.listTypeName === "number")
             {
-              // TODO: line.listStart might be a useful value to use here.
+              // Might line.start might be a useful value to use here?
               pieces.push("<ol class=\"" + line.listTypeName + "\">");
             }
             else
@@ -377,6 +376,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
           }
         }
       }
+      
       pieces.push("<li>", context.lineContent);
 
       // To close list elements

@@ -50,8 +50,6 @@ exports._analyzeLine = function(text, aline, apool){
   // identify list
   var lineMarker = 0;
   line.listLevel = 0;
-  line.listItem = 1;
-
   if (aline){
     var opIter = Changeset.opIterator(aline);
     if (opIter.hasNext()){
@@ -63,13 +61,6 @@ exports._analyzeLine = function(text, aline, apool){
           line.listTypeName = listType[1];
           line.listLevel = Number(listType[2]);
         }
-      }
-    }
-    opIter = Changeset.opIterator(aline);
-    if (opIter.hasNext()){
-      var listStart = Changeset.opAttributeValue(opIter.next(), 'listItem', apool);
-      if (listStart){
-         line.listStart = Number(listStart);
       }
     }
   }

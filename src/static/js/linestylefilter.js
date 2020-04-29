@@ -88,9 +88,7 @@ console.log(attribs);
         var key = apool.getAttribKey(n);
         if (key)
         {
-          // top.console.warn("attribute key:", key)
           var value = apool.getAttribValue(n);
-          // top.console.warn("Attribute value", value);
           if (value)
           {
             if (!isLineAttribMarker && _.indexOf(AttributeManager.lineAttributes, key) >= 0){
@@ -102,16 +100,10 @@ console.log(attribs);
             }
             else if (key == 'list')
             {
-              top.console.warn("some value", value)
               classes += ' list:' + value;
-              var startValue = 2;
-              if(startValue){
-                // top.console.warn("starter up")
-            //    classes += ' start:1';
-              }
             }
             else if (key == 'start'){
-              top.console.warn("line style filter key is start", value)
+              // Needed to introduce the correct Ordered list item start number on import
               classes += ' start:' + value;
             }
             else if (linestylefilter.ATTRIB_CLASSES[key])
@@ -130,7 +122,6 @@ console.log(attribs);
         }
       });
 
-top.console.warn("classes", classes, lineAttributeMarker)
       if(isLineAttribMarker) classes += ' ' + lineAttributeMarker;
       return classes.substring(1);
     }

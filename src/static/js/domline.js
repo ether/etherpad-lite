@@ -126,7 +126,6 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
           else
           {
             if(start){ // is it a start of a list with more than one item in?
-              top.console.warn("start", start)
               if(start[1] == 1){ // if its the first one at this level?
                 lineClass = lineClass + " " + "list-start-" + listType; // Add start class to DIV node
               }
