@@ -62,7 +62,7 @@
 }
 
 /* Mobile devices */
-@media only screen and (max-width: 720px) {
+@media only screen and (max-width: 800px) {
   .popup {
     border-radius: 0;
     top: 1rem;

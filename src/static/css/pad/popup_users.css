@@ -98,7 +98,7 @@ input#myusernameedit:not(.editable) {
   right: calc(100% + 15px);
   z-index: 101;
 }
-@media (max-width: 720px) {
+@media (max-width: 800px) {
   #mycolorpicker.popup {
     top: auto;
     bottom: 0;

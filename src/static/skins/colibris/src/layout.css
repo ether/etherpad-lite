@@ -71,7 +71,7 @@
   #outerdocbody.plugin-ep_author_neat #sidediv { padding-right: 0 !important; }
 }
 
-@media only screen and (max-width: 720px) {
+@media only screen and (max-width: 800px) {
   #editorcontainerbox {
     margin-bottom: 39px; /* margin for bottom toolbar */
   }
