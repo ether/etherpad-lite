@@ -371,7 +371,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
               // 1. for
               //  1.1. bar
               // 2. latte
-              // It's done by adding list-start-number to the ol 
+              // It's done by adding list-start-number to the ol
               pieces.push("<ol class=\"" + line.listTypeName + "\">");
             }
             else
@@ -381,6 +381,9 @@ function getHTMLFromAtext(pad, atext, authorColors)
           }
         }
       }
+      console.warn("adding")
+      // if we're going up a level we shouldn't be adding..
+
       pieces.push("<li>", context.lineContent);
 
       // To close list elements

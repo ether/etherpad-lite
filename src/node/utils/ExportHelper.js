@@ -60,6 +60,7 @@ exports._analyzeLine = function(text, aline, apool){
         if (listType){
           line.listTypeName = listType[1];
           line.listLevel = Number(listType[2]);
+          console.warn("listLevel", line.listLevel)
         }
       }
     }
