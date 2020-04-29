@@ -604,7 +604,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
             if(!abrowser.chrome) oldListTypeOrNull = (_enterList(state, type) || 'none');
           }
           else if ((tname === "li")){
-            state.lineAttributes['start'] = String(Math.min(_MAX_LIST_LEVEL, (state.start || 0)));
+            state.lineAttributes['start'] = state.start || 0;
             _recalcAttribString(state);
             state.start++;
           }else{

@@ -366,7 +366,12 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
             if (line.listTypeName === "number")
             {
-              // Might line.start might be a useful value to use here?
+              // TODO line.start might be a useful value to use here?
+              // Without it you can't export this
+              // 1. for
+              //  1.1. bar
+              // 2. latte
+              // It's done by adding list-start-number to the ol 
               pieces.push("<ol class=\"" + line.listTypeName + "\">");
             }
             else
@@ -376,7 +381,6 @@ function getHTMLFromAtext(pad, atext, authorColors)
           }
         }
       }
-      
       pieces.push("<li>", context.lineContent);
 
       // To close list elements
