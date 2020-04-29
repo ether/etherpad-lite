@@ -387,9 +387,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
       pieces.push("<li>", context.lineContent);
 
       // To close list elements
-      console.warn("this line", line)
-      console.warn("next line", nextLine);
-      if (nextLine && (line.listTypeName === nextLine.listTypeName))
+      if (nextLine && nextLine.listLevel === line.listLevel && line.listTypeName === nextLine.listTypeName)
       {
         pieces.push("</li>");
       }
