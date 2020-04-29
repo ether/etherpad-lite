@@ -82,6 +82,12 @@ async function doImport(req, res, padId)
         if (err) {
           console.warn("Uploading Error: " + err.stack);
         }
+
+        // I hate doing indexOf here but I can't see anything to use...
+        if (err.stack.indexOf("maxFileSize") !== -1) {
+          reject("maxFileSize");
+        }
+
         reject("uploadFailed");
       }
       if(!files.file){ // might not be a graceful fix but it works
@@ -261,7 +267,7 @@ exports.doImport = function (req, res, padId)
   let status = "ok";
   doImport(req, res, padId).catch(err => {
     // check for known errors and replace the status
-    if (err == "uploadFailed" || err == "convertFailed" || err == "padHasData") {
+    if (err == "uploadFailed" || err == "convertFailed" || err == "padHasData" || err == "maxFileSize") {
       status = err;
     } else {
       throw err;

@@ -45,8 +45,6 @@
 	"pad.settings.rtlcheck": "Читај садржај с десна на лево?",
 	"pad.settings.fontType": "Врста фонта:",
 	"pad.settings.fontType.normal": "Нормално",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Глобални приказ",
 	"pad.settings.language": "Језик:",
 	"pad.importExport.import_export": "Увоз/извоз",
 	"pad.importExport.import": "Отпремите било коју текстуалну датотеку или документ",

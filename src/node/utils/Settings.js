@@ -62,6 +62,8 @@ exports.faviconTimeslider = "../../" + exports.favicon;
  */
 exports.skinName = null;
 
+exports.skinVariants = "super-light-toolbar super-light-editor light-background";
+
 /**
  * The IP ep-lite should listen to
  */
@@ -365,7 +367,7 @@ exports.exportAvailable = function() {
 exports.getGitCommit = function() {
   var version = "";
   try {
-    var rootPath = path.resolve(npm.dir, '..');
+    var rootPath = exports.root;
     if (fs.lstatSync(rootPath + '/.git').isFile()) {
       rootPath = fs.readFileSync(rootPath + '/.git', "utf8");
       rootPath = rootPath.split(' ').pop().trim();
@@ -419,6 +421,14 @@ function storeSettings(settingsObj) {
 /*
  * If stringValue is a numeric string, or its value is "true" or "false", coerce
  * them to appropriate JS types. Otherwise return stringValue as-is.
+ *
+ * Please note that this function is used for converting types for default
+ * values in the settings file (for example: "${PORT:9001}"), and that there is
+ * no coercition for "null" values.
+ *
+ * If the user wants a variable to be null by default, he'll have to use the
+ * short syntax "${ABIWORD}", and not "${ABIWORD:null}": the latter would result
+ * in the literal string "null", instead.
  */
 function coerceValue(stringValue) {
     // cooked from https://stackoverflow.com/questions/175739/built-in-way-in-javascript-to-check-if-a-string-is-a-valid-number
@@ -523,7 +533,7 @@ function lookupEnvironmentVariables(obj) {
     const defaultValue = match[3];
 
     if ((envVarValue === undefined) && (defaultValue === undefined)) {
-      console.warn(`Environment variable "${envVarName}" does not contain any value for configuration key "${key}", and no default was given. Returning null. Please check your configuration and environment settings.`);
+      console.warn(`Environment variable "${envVarName}" does not contain any value for configuration key "${key}", and no default was given. Returning null.`);
 
       /*
        * We have to return null, because if we just returned undefined, the
@@ -626,19 +636,19 @@ exports.reloadSettings = function reloadSettings() {
   log4js.replaceConsole();
 
   if (!exports.skinName) {
-    console.warn(`No "skinName" parameter found. Please check out settings.json.template and update your settings.json. Falling back to the default "no-skin".`);
-    exports.skinName = "no-skin";
+    console.warn(`No "skinName" parameter found. Please check out settings.json.template and update your settings.json. Falling back to the default "colibris".`);
+    exports.skinName = "colibris";
   }
 
-  // checks if skinName has an acceptable value, otherwise falls back to "no-skin"
+  // checks if skinName has an acceptable value, otherwise falls back to "colibris"
   if (exports.skinName) {
     const skinBasePath = path.join(exports.root, "src", "static", "skins");
     const countPieces = exports.skinName.split(path.sep).length;
 
     if (countPieces != 1) {
-      console.error(`skinName must be the name of a directory under "${skinBasePath}". This is not valid: "${exports.skinName}". Falling back to the default "no-skin".`);
+      console.error(`skinName must be the name of a directory under "${skinBasePath}". This is not valid: "${exports.skinName}". Falling back to the default "colibris".`);
 
-      exports.skinName = "no-skin";
+      exports.skinName = "colibris";
     }
 
     // informative variable, just for the log messages
@@ -646,15 +656,15 @@ exports.reloadSettings = function reloadSettings() {
 
     // what if someone sets skinName == ".." or "."? We catch him!
     if (absolutePaths.isSubdir(skinBasePath, skinPath) === false) {
-      console.error(`Skin path ${skinPath} must be a subdirectory of ${skinBasePath}. Falling back to the default "no-skin".`);
+      console.error(`Skin path ${skinPath} must be a subdirectory of ${skinBasePath}. Falling back to the default "colibris".`);
 
-      exports.skinName = "no-skin";
+      exports.skinName = "colibris";
       skinPath = path.join(skinBasePath, exports.skinName);
     }
 
     if (fs.existsSync(skinPath) === false) {
-      console.error(`Skin path ${skinPath} does not exist. Falling back to the default "no-skin".`);
-      exports.skinName = "no-skin";
+      console.error(`Skin path ${skinPath} does not exist. Falling back to the default "colibris".`);
+      exports.skinName = "colibris";
       skinPath = path.join(skinBasePath, exports.skinName);
     }
 

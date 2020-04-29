@@ -56,6 +56,9 @@
  *    "password": "${PASSW}"  // if PASSW is not defined would result in password === null
  *    "password": "${PASSW:}" // if PASSW is not defined would result in password === ''
  *
+ *    If you want to use an empty value (null) as default value for a variable,
+ *    simply do not set it, without putting any colons: "${ABIWORD}".
+ *
  * 3) if you want to use newlines in the default value of a string parameter,
  *    use "\n" as usual.
  *
@@ -85,6 +88,32 @@
    *               become the default in Etherpad 2.0
    */
   "skinName": "colibris",
+
+  /*
+   * Skin Variants
+   *
+   * Use the UI skin variants builder at /p/test#skinvariantsbuilder
+   *
+   * For the colibris skin only, you can choose how to render the three main
+   * containers:
+   * - toolbar (top menu with icons)
+   * - editor (containing the text of the pad)
+   * - background (area outside of editor, mostly visible when using page style)
+   *
+   * For each of the 3 containers you can choose 4 color combinations:
+   * super-light, light, dark, super-dark.
+   *
+   * For example, to make the toolbar dark, you will include "dark-toolbar" into
+   * skinVariants.
+   *
+   * You can provide multiple skin variants separated by spaces. Default
+   * skinVariant is "super-light-toolbar super-light-editor light-background".
+   *
+   * For the editor container, you can also make it full width by adding
+   * "full-width-editor" variant (by default editor is rendered as a page, with
+   * a max-width of 900px).
+   */
+  "skinVariants": "super-light-toolbar super-light-editor light-background",
 
   /*
    * IP and port which Etherpad should bind at.

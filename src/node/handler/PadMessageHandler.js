@@ -939,6 +939,16 @@ async function handleClientReady(client, message)
     });
   }));
 
+  let thisUserHasEditedThisPad = false;
+  if (historicalAuthorData[statusObject.authorID]) {
+    /*
+     * This flag is set to true when a user contributes to a specific pad for
+     * the first time. It is used for deciding if importing to that pad is
+     * allowed or not.
+     */
+    thisUserHasEditedThisPad = true;
+  }
+
   // glue the clientVars together, send them and tell the other clients that a new one is there
 
   // Check that the client is still here. It might have disconnected between callbacks.
@@ -1065,6 +1075,7 @@ async function handleClientReady(client, message)
     // mile wide...
     var clientVars = {
       "skinName": settings.skinName,
+      "skinVariants": settings.skinVariants,
       "accountPrivs": {
           "maxRevisions": 100
       },
@@ -1117,7 +1128,8 @@ async function handleClientReady(client, message)
         "scrollWhenCaretIsInTheLastLineOfViewport": settings.scrollWhenFocusLineIsOutOfViewport.scrollWhenCaretIsInTheLastLineOfViewport,
         "percentageToScrollWhenUserPressesArrowUp": settings.scrollWhenFocusLineIsOutOfViewport.percentageToScrollWhenUserPressesArrowUp,
       },
-      "initialChangesets": [] // FIXME: REMOVE THIS SHIT
+      "initialChangesets": [], // FIXME: REMOVE THIS SHIT
+      "thisUserHasEditedThisPad": thisUserHasEditedThisPad,
     }
 
     // Add a username to the clientVars if one avaiable
@@ -1429,11 +1441,12 @@ async function composePadChangesets (padId, startNum, endNum)
   }));
 
   // compose Changesets
+  let r;
   try {
     let changeset = changesets[startNum];
     let pool = pad.apool();
 
-    for (let r = startNum + 1; r < endNum; r++) {
+    for (r = startNum + 1; r < endNum; r++) {
       let cs = changesets[r];
       changeset = Changeset.compose(changeset, cs, pool);
     }

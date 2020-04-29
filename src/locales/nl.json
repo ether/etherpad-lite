@@ -48,8 +48,6 @@
 	"pad.settings.rtlcheck": "Inhoud van rechts naar links lezen?",
 	"pad.settings.fontType": "Lettertype:",
 	"pad.settings.fontType.normal": "Normaal",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Globaal overzicht",
 	"pad.settings.language": "Taal:",
 	"pad.importExport.import_export": "Importeren/exporteren",
 	"pad.importExport.import": "Tekstbestand of document uploaden",

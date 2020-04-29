@@ -43,8 +43,6 @@
 	"pad.settings.rtlcheck": "Les innhold fra høyre til venstre?",
 	"pad.settings.fontType": "Skrifttype:",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "Fast bredde",
-	"pad.settings.globalView": "Global visning",
 	"pad.settings.language": "Språk:",
 	"pad.importExport.import_export": "Importer/eksporter",
 	"pad.importExport.import": "Last opp tekstfil eller dokument",
