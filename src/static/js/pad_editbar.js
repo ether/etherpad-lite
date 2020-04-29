@@ -312,7 +312,11 @@ var padeditbar = (function()
       // reset style
       $('.toolbar').removeClass('cropped')
       var menu_left = $('.toolbar .menu_left')[0];
-      if (menu_left && menu_left.scrollWidth > $('.toolbar').width()) {
+
+      // on mobile the menu_right get displayed at the bottom of the screen
+      var isMobileLayout = $('.toolbar .menu_right').css('position') === 'fixed';
+
+      if (menu_left && menu_left.scrollWidth > $('.toolbar').width() && isMobileLayout) {
         $('.toolbar').addClass('cropped');
       }
     }
