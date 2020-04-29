@@ -80,7 +80,7 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
     {
       var classes = '';
       var isLineAttribMarker = false;
-
+console.log(attribs);
       // For each attribute number
       Changeset.eachAttribNumber(attribs, function(n)
       {
@@ -88,9 +88,9 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
         var key = apool.getAttribKey(n);
         if (key)
         {
-          top.console.warn("attribute key:", key)
+          // top.console.warn("attribute key:", key)
           var value = apool.getAttribValue(n);
-          top.console.warn("Attribute value", value);
+          // top.console.warn("Attribute value", value);
           if (value)
           {
             if (!isLineAttribMarker && _.indexOf(AttributeManager.lineAttributes, key) >= 0){
@@ -102,11 +102,12 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
             }
             else if (key == 'list')
             {
+              top.console.warn("some value", value)
               classes += ' list:' + value;
               var startValue = 2;
               if(startValue){
-                top.console.warn("starter up")
-                classes += ' start:4';
+                // top.console.warn("starter up")
+            //    classes += ' start:1';
               }
             }
             else if (key == 'start'){

@@ -270,6 +270,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     if (state.lineAttributes['list'])
     {
       state.listNesting--;
+      state.start = 0;
     }
     if (oldListType && oldListType != 'none') { state.lineAttributes['list'] = oldListType; }
     else { delete state.lineAttributes['list']; }
@@ -412,7 +413,14 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
         styl: null,
         cls: null
       });
-      var txt = (typeof(txtFromHook)=='object'&&txtFromHook.length==0)?dom.nodeValue(node):txtFromHook[0];
+
+      if(typeof(txtFromHook)=='object'){
+        txt = dom.nodeValue(node)
+      }else{
+        if(txtFromHook){
+          txt = txtFromHook
+        };
+      }
 
       var rest = '';
       var x = 0; // offset into original text
@@ -479,7 +487,6 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     else
     {
       var tname = (dom.nodeTagName(node) || "").toLowerCase();
-
       if (tname == "img"){
         var collectContentImage = hooks.callAll('collectContentImage', {
           cc: cc,
@@ -539,6 +546,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
 
         if (collectStyles)
         {
+
           hooks.callAll('collectContentPre', {
             cc: cc,
             state: state,
@@ -593,6 +601,9 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
               } else {
                 type = "number"
               }
+              if(type === "number"){
+                // For now just be cool, no need to do anything..
+              }
               type = type + String(Math.min(_MAX_LIST_LEVEL, (state.listNesting || 0) + 1));
             }
             oldListTypeOrNull = (_enterList(state, type) || 'none');
@@ -610,6 +621,8 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
           }else{
             delete state.lineAttributes['start']
           }
+          console.log(state);
+
           if (className2Author && cls)
           {
             var classes = cls.match(/\S+/g);
@@ -730,6 +743,52 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
 
     var ss = getSelectionStart();
     var se = getSelectionEnd();
+
+    // ace2_inner handles renumbering lists for browsers
+    // content collector handles it for Imports
+    var shouldRenumberLists = false;
+    if(typeof window === 'undefined') shouldRenumberLists = true;
+    if(shouldRenumberLists){
+      // lineAttribs = renumberListItems();
+      console.log("new line Attribs", lineAttribs)
+    }
+
+    function renumberListItems(){
+      var orderedListLines = [];
+      var lineAttribs = [];
+      // for each line
+      prevLine = false;
+      for (var i = 0; i < lineAttribs.length; i++){
+        var line = orderedListLines[i];
+        // console.log(line);
+        // Is it a list item?
+        if(line){
+          // If previous line has a start value, increase this lines by 1
+          if(prevLine) line = prevLine +  1;
+
+          // I'm not convinced this is working properly...
+          var lineAttributes = ['start', line];
+
+          // we're adding the below attributes to the above attributes
+          // but what if it has attributes already IE h1?
+          var attributes = [
+            ['lmkr', '1'],
+            ['insertorder', 'first']
+          ].concat(
+            _.map(lineAttributes,function(value,key){
+              return [key, value];
+            })
+          );
+
+          lineAttribs.push(Changeset.makeAttribsString('+', attributes , apool));
+        }else{
+          // not a list item, drop.
+          lineAttribs.push("") // Todo, use original value.
+        }
+        prevLine = line;
+      }
+      return lineAttribs;
+    }
 
     function fixLongLines()
     {
