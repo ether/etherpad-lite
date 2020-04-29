@@ -114,7 +114,7 @@ body.doesWrap:not(.noprewrap) > div {
   font-size: 12px; /* overridden by lineMetricsDiv.style */
   font-family: monospace; /* overridden by lineMetricsDiv.style */
 }
-@media (max-width: 720px) {
+@media (max-width: 800px) {
   #sidediv {
     /* Do not use display: none to hide the sidediv, otherwise the parent container does not
        get its height properly calculated by flexboxes */

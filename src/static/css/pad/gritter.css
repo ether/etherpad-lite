@@ -40,7 +40,7 @@
   background-color: #eed3d4;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 800px) {
   #gritter-container {
     left: 1rem;
     right: 1rem;

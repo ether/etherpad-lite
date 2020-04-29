@@ -75,7 +75,7 @@
   background-color: var(--bg-color);
 }
 
-@media (max-width: 720px) {
+@media (max-width: 800px) {
   #chaticon {
     right: 0;
   }

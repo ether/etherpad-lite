@@ -131,7 +131,7 @@
   height: 100%;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 800px) {
   #timeslider-slider #timer { display: none; }
 
   .editbarright [data-key="timeslider_returnToPad"] {
