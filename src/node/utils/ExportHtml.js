@@ -361,7 +361,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
             if (prevPiece.indexOf("<ul") === 0 || prevPiece.indexOf("<ol") === 0 || prevPiece.indexOf("</li>") === 0)
             {
-              pieces.push("<li>");
+              pieces.push("</li>"); // this is a weird problem..
             }
 
             if (line.listTypeName === "number")
@@ -387,7 +387,9 @@ function getHTMLFromAtext(pad, atext, authorColors)
       pieces.push("<li>", context.lineContent);
 
       // To close list elements
-      if (nextLine && nextLine.listLevel === line.listLevel && line.listTypeName === nextLine.listTypeName)
+      console.warn("this line", line)
+      console.warn("next line", nextLine);
+      if (nextLine && (line.listTypeName === nextLine.listTypeName))
       {
         pieces.push("</li>");
       }
