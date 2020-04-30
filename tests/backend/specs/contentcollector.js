@@ -75,6 +75,13 @@ const tests = {
     expectedText: ["", ""],
     noteToSelf: "<p></p>should create a line break but not break numbering"
   },
+  nestedOl: {
+    description : "Tests if ols properly get line numbers when in a normal OL",
+    html : "<html><body>a<ol><li>b<ol><li>c</li></ol></ol>notlist<p>foo</p></body></html>",
+    expectedLineAttribs : [ '+1', '*0*1*2*3+1+1', '*0*4*2*5+1+1', '+7', '+3' ],
+    expectedText: ["a","*b","*c", "notlist", "foo"],
+    noteToSelf: "Ensure empty P does not induce line attribute marker, wont this break the editor?"
+  }
 }
 
 // For each test..
@@ -154,4 +161,3 @@ function arraysEqual(a, b) {
   }
   return true;
 }
-
