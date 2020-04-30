@@ -675,6 +675,13 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
       {
         // commented out to solve #2412 - https://github.com/ether/etherpad-lite/issues/2412
         // cc.startNewLine(state);
+
+        // If we're doing an export event we need to start a new lines
+        // Export events don't have window available.
+        if(typeof window === "undefined"){
+          console.warn("starting new line")
+          cc.startNewLine(state);
+        }
       }
       else
       {
