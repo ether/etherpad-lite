@@ -299,6 +299,8 @@ function getHTMLFromAtext(pad, atext, authorColors)
     }
     processNextChars(text.length - idx);
 
+    // we shouldn't process spaces within a list but we currently do...
+    // More to the point is why are ol / ul creating lines?
     return _processSpaces(assem.toString());
   } // end getLineHTML
   var pieces = [css];
@@ -316,7 +318,6 @@ function getHTMLFromAtext(pad, atext, authorColors)
     var context;
     var line = _analyzeLine(textLines[i], attribLines[i], apool);
     var lineContent = getLineHTML(line.text, line.aline);
-
     if (line.listLevel)//If we are inside a list
     {
       context = {
@@ -382,13 +383,16 @@ function getHTMLFromAtext(pad, atext, authorColors)
         }
       }
       // if we're going up a level we shouldn't be adding..
-
-      pieces.push("<li>", context.lineContent);
+      if(context.lineContent){
+        pieces.push("<li>", context.lineContent);
+      }
 
       // To close list elements
       if (nextLine && nextLine.listLevel === line.listLevel && line.listTypeName === nextLine.listTypeName)
       {
-        pieces.push("</li>");
+        if(context.lineContent){
+          pieces.push("</li>");
+        }
       }
       if ((!nextLine || !nextLine.listLevel || nextLine.listLevel < line.listLevel) || (nextLine && line.listTypeName !== nextLine.listTypeName))
       {
