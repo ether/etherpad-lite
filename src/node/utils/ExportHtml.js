@@ -301,7 +301,12 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
     // we shouldn't process spaces within a list but we currently do...
     // More to the point is why are ol / ul creating lines?
-    return _processSpaces(assem.toString());
+
+    // _processSpaces hasn't been used for a while Afaik so I'm removing it now
+    // I think it takes each line and adds a space if it's wrapped (and the space has been removed)
+    // but I could be wrong.
+    // return _processSpaces(assem.toString());
+    return assem.toString();
   } // end getLineHTML
   var pieces = [css];
 
@@ -376,7 +381,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
               // 1. hello * foo 1. world because the bullet would kill the OL
 
               // TODO: This logic could also be used to continue OL with indented content
-              // but that's a job for another day....  
+              // but that's a job for another day....
               if(line.start){
                 pieces.push("<ol start=\""+Number(line.start)+"\" class=\"" + line.listTypeName + "\">");
               }else{
