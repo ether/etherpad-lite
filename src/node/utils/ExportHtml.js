@@ -381,7 +381,6 @@ function getHTMLFromAtext(pad, atext, authorColors)
           }
         }
       }
-      console.warn("adding")
       // if we're going up a level we shouldn't be adding..
 
       pieces.push("<li>", context.lineContent);

@@ -260,19 +260,22 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     else{
       state.lineAttributes['list'] = listType;
     }
-
     _recalcAttribString(state);
     return oldListType;
   }
 
   function _exitList(state, oldListType)
   {
-    if (state.lineAttributes['list'])
-    {
+    if (state.lineAttributes['list']) {
       state.listNesting--;
     }
-    if (oldListType && oldListType != 'none') { state.lineAttributes['list'] = oldListType; }
-    else { delete state.lineAttributes['list']; }
+    if (oldListType && oldListType != 'none') {
+      state.lineAttributes['list'] = oldListType;
+    }
+    else {
+      delete state.lineAttributes['list'];
+      delete state.lineAttributes['start'];
+    }
     _recalcAttribString(state);
   }
 
@@ -412,7 +415,14 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
         styl: null,
         cls: null
       });
-      var txt = (typeof(txtFromHook)=='object'&&txtFromHook.length==0)?dom.nodeValue(node):txtFromHook[0];
+
+      if(typeof(txtFromHook)=='object'){
+        txt = dom.nodeValue(node)
+      }else{
+        if(txtFromHook){
+          txt = txtFromHook
+        };
+      }
 
       var rest = '';
       var x = 0; // offset into original text
@@ -608,7 +618,10 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
             _recalcAttribString(state);
             state.start++;
           }else{
-            delete state.lineAttributes['start']
+            // Below needs more testin if it's neccesary as _exitList should take care of this.
+            // delete state.start;
+            // delete state.listNesting;
+            // _recalcAttribString(state);
           }
           if (className2Author && cls)
           {
@@ -679,7 +692,6 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
         // If we're doing an export event we need to start a new lines
         // Export events don't have window available.
         if(typeof window === "undefined"){
-          console.warn("starting new line")
           cc.startNewLine(state);
         }
       }

@@ -12,9 +12,9 @@ console.log("testToRun", testToRun);
 const tests = {
   ol: {
     description : "Tests if ols properly get line numbers when in a normal OL",
-    html : "<html><body>testaw<ol><li>a</li><li>b</li><li>c</li></ol><p></p><li>hey</li><p>sasdasd</P></body></html>",
-    expectedLineAttribs : [ '*0*1*2*3+1+1', '*0*4*2*5+1+1', '*0*6*2*7+1+1', '' ],
-    expectedText: ["*a","*b","*c", ""],
+    html : "<html><body>a<ol><li>b<ol><li>c</li></ol></ol>notlist<p>foo</p></body></html>",
+    expectedLineAttribs : [ '+1', '*0*1*2*3+1+1', '*0*4*2*5+1+1', '+7', '+3' ],
+    expectedText: ["a","*b","*c", "notlist", "foo"],
     noteToSelf: "Ensure empty P does not induce line attribute marker, wont this break the editor?"
   }
 }
