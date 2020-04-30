@@ -5,6 +5,26 @@ const cheerio          = require("../../../src/node_modules/cheerio");
 const util             = require('util');
 
 const tests = {
+  nestedLi:{
+    description: "Complex nested Li",
+    html: '<!doctype html><html><body><ol><li>one</li><li><ol><li>1.1</li></ol></li><li>two</li></ol></body></html>',
+    expectedLineAttribs : [
+      '*0*1*2+1+3',
+      '*0*1*2+1+3',
+      '*0*1*2+1+1',
+      '*0*1*2+1+1',
+      '*0*1*2+1+1',
+      '*0*3*2+1+1',
+      '*0*3*2+1+1',
+      '*0*4*2*5+1+4',
+      '',
+      ''
+    ],
+    expectedText: [
+      '*one',   '*two',
+      '*0',     '*1',
+    ]
+  },
   complexNest:{
     description: "Complex list of different types",
     html: '<!doctype html><html><body><ul class="bullet"><li>one</li><li>two</li><li>0</li><li>1</li><li>2<ul class="bullet"><li>3</li><li>4</li></ul></li></ul><ol class="number"><li>item<ol class="number"><li>item1</li><li>item2</li></ol></li></ol></body></html>',
@@ -17,8 +37,8 @@ const tests = {
       '*0*3*2+1+1',
       '*0*3*2+1+1',
       '*0*4*2*5+1+4',
-      '*0*6*2*7+1+5',
-      '*0*6*2*8+1+5'
+      '',
+      ''
     ],
     expectedText: [
       '*one',   '*two',
