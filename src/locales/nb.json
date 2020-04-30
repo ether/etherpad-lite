@@ -54,7 +54,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "Du kan bare importere fra ren tekst eller HTML-formater. For mer avanserte importfunksjoner, <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">installer AbiWord</a>.",
+	"pad.importExport.abiword.innerHTML": "Du kan bare importere fra ren tekst eller HTML-formater. For mer avanserte importfunksjoner, <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">installer AbiWord eller LibreOffice</a>.",
 	"pad.modals.connected": "Tilkoblet.",
 	"pad.modals.reconnecting": "Kobler til din blokk på nytt...",
 	"pad.modals.forcereconnect": "Tving gjenoppkobling",
@@ -122,7 +122,7 @@
 	"pad.userlist.guest": "Gjest",
 	"pad.userlist.deny": "Nekt",
 	"pad.userlist.approve": "Godkjenn",
-	"pad.editbar.clearcolors": "Fjern forfatterfarger på hele dokumentet?",
+	"pad.editbar.clearcolors": "Fjern forfatterfarger på hele dokumentet? Dette kan ikke angres",
 	"pad.impexp.importbutton": "Importer nå",
 	"pad.impexp.importing": "Importerer...",
 	"pad.impexp.confirmimport": "Importering av en fil vil overskrive den nåværende teksten på blokken. Er du sikker på at du vil fortsette?",
@@ -131,5 +131,7 @@
 	"pad.impexp.uploadFailed": "Opplastning feilet. Prøv igjen",
 	"pad.impexp.importfailed": "Import feilet",
 	"pad.impexp.copypaste": "Vennligst kopier og lim inn",
-	"pad.impexp.exportdisabled": "Eksporterer som {{type}} er deaktivert. Vennligst kontakt din systemadministrator for detaljer."
+	"pad.impexp.exportdisabled": "Eksporterer som {{type}} er deaktivert. Vennligst kontakt din systemadministrator for detaljer.",
+	"pad.impexp.maxFileSize": "Filen er for stor. Kontakt systemansvarlig for å øke filstørrelse for import",
+	"pad.impexp.permission": "Import er deaktivert fordi du aldri har bidratt til denne padden. Vennligst bidra minst en gang før du importerer"
 }
