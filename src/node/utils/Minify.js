@@ -25,6 +25,7 @@ var async = require('async');
 var fs = require('fs');
 var StringDecoder = require('string_decoder').StringDecoder;
 var CleanCSS = require('clean-css');
+var csso = require('csso');
 var uglifyJS = require("uglify-js");
 var path = require('path');
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
@@ -421,8 +422,8 @@ function compressJS(content)
 function compressCSS(filename, content, callback)
 {
   try {
-    const absPath = path.join(ROOT_DIR, filename);
-
+    var absPath = path.join(ROOT_DIR, filename);
+    console.warn(absPath);
     /*
      * Changes done to migrate CleanCSS 3.x -> 4.x:
      *
@@ -447,7 +448,12 @@ function compressCSS(filename, content, callback)
      *    "content" argument, but we have to wrap the absolute path to the CSS
      *    in an array and ask the library to read it by itself.
      */
-    new CleanCSS({rebase: false}).minify([absPath], function (errors, minified) {
+console.warn("absPath", absPath)
+console.warn("process.cwd", process.cwd())
+    new CleanCSS({
+     rebase: true,
+     rebaseTo: path.join(process.cwd(), 'src/static')
+    }).minify([absPath], function (errors, minified) {
       if (errors) {
         // on error, just yield the un-minified original, but write a log message
         console.error(`CleanCSS.minify() returned an error on ${filename} (${absPath}): ${errors}`);

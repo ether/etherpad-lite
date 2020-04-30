@@ -47,10 +47,10 @@ const tests = {
     expectedText: ["*should be 1","hello", "*should be 1","*should be 2", ""],
     noteToSelf: "Shouldn't include attribute marker in the <p> line"
   },
-  bulletListInOL_NEEDS_TESTING_BUT_EXPORT_IS_FUCKED:{
+  bulletListInOL:{
     description : "A bullet within an OL should not change numbering..",
     html : "<html><body><ol><li>should be 1</li><ul><li>should be a bullet</li></ul><li>should be 2</li></ol><p></p></body></html>",
-    expectedLineAttribs : [ '*0*1*2*3+1+b', '*0*4*2*3+1+i', '*0*5*2*6+1+b', '' ],
+    expectedLineAttribs : [ '*0*1*2*3+1+b', '*0*4*2*5+1+i', '*0*1*2*5+1+b', '' ],
     expectedText: ["*should be 1","*should be a bullet","*should be 2", ""]
   },
   testP:{

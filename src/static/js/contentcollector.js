@@ -277,7 +277,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     }
     else {
       delete state.lineAttributes['list'];
-      delete state.lineAttributes['start'];
+      delete state.lineAttributes['start']; // cake
     }
     _recalcAttribString(state);
   }
@@ -619,7 +619,9 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
           else if ((tname === "li")){
             state.lineAttributes['start'] = state.start || 0;
             _recalcAttribString(state);
-            state.start++;
+            if(state.lineAttributes.list.indexOf("number") !== -1){
+              state.start++; // not if it's parent is a bullet!
+            }
           }else{
             // Below needs more testin if it's neccesary as _exitList should take care of this.
             // delete state.start;

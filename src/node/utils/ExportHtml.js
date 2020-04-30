@@ -367,13 +367,21 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
             if (line.listTypeName === "number")
             {
-              // TODO line.start might be a useful value to use here?
-              // Without it you can't export this
-              // 1. for
-              //  1.1. bar
-              // 2. latte
-              // It's done by adding list-start-number to the ol
-              pieces.push("<ol class=\"" + line.listTypeName + "\">");
+              // We introduce line.start here, this is useful for continuing Ordered list line numbers
+              // in case you have a bullet in a list IE you Want
+              // 1. hello
+              //   * foo
+              // 2. world
+              // Without this line.start logic it would be
+              // 1. hello * foo 1. world because the bullet would kill the OL
+
+              // TODO: This logic could also be used to continue OL with indented content
+              // but that's a job for another day....  
+              if(line.start){
+                pieces.push("<ol start=\""+Number(line.start)+"\" class=\"" + line.listTypeName + "\">");
+              }else{
+                pieces.push("<ol class=\"" + line.listTypeName + "\">");
+              }
             }
             else
             {
