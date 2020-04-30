@@ -249,7 +249,6 @@ function Ace2Inner(){
 
         var authorStyle = dynamicCSS.selectorStyle(authorSelector);
         var parentAuthorStyle = parentDynamicCSS.selectorStyle(authorSelector);
-        var anchorStyle = dynamicCSS.selectorStyle(authorSelector + ' > a')
 
         // author color
         authorStyle.backgroundColor = bgcolor;
@@ -258,14 +257,6 @@ function Ace2Inner(){
         var textColor = colorutils.textColorFromBackgroundColor(bgcolor, parent.parent.clientVars.skinName);
         authorStyle.color = textColor;
         parentAuthorStyle.color = textColor;
-
-        // anchor text contrast
-        if(colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.55)
-        {
-          anchorStyle.color = colorutils.triple2css(colorutils.complementary(colorutils.css2triple(bgcolor)));
-        }else{
-          anchorStyle.color = null;
-        }
       }
     }
   }

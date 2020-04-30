@@ -18,8 +18,3 @@
 option {
   text-transform: capitalize;
 }
-
-#innerdocbody a {
-  color: #64d29b;
-  color: var(--primary-color);
-}
