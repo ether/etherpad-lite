@@ -251,7 +251,10 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     if (listType != 'none')
     {
       state.listNesting = (state.listNesting || 0) + 1;
-      state.start = (state.start || 0) + 1;
+      // reminder that listType can be "number2", "number3" etc.
+      if(listType.indexOf("number") !== -1){
+        state.start = (state.start || 0) + 1;
+      }
     }
 
     if(listType === 'none' || !listType ){
