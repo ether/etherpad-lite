@@ -423,7 +423,6 @@ function compressCSS(filename, content, callback)
 {
   try {
     var absPath = path.join(ROOT_DIR, filename);
-    console.warn(absPath);
     /*
      * Changes done to migrate CleanCSS 3.x -> 4.x:
      *
@@ -448,12 +447,7 @@ function compressCSS(filename, content, callback)
      *    "content" argument, but we have to wrap the absolute path to the CSS
      *    in an array and ask the library to read it by itself.
      */
-console.warn("absPath", absPath)
-console.warn("process.cwd", process.cwd())
-    new CleanCSS({
-     rebase: true,
-     rebaseTo: path.join(process.cwd(), 'src/static')
-    }).minify([absPath], function (errors, minified) {
+     new CleanCSS({rebase: false}).minify([absPath], function (errors, minified) {
       if (errors) {
         // on error, just yield the un-minified original, but write a log message
         console.error(`CleanCSS.minify() returned an error on ${filename} (${absPath}): ${errors}`);
