@@ -7,11 +7,11 @@
   color: var(--text-color);
 }
 
-#innerdocbody span, #innerdocbody span {
-  padding: 4px 0 !important;
+#innerdocbody span {
+  padding: 3px 0 !important;
 }
 
-#innerdocbody h1 span, #innerdocbody h1 span {
+#innerdocbody h1 span {
   padding: 0;
 }
 
