@@ -34,7 +34,7 @@ exports.setPadHTML = function(pad, html)
   rehype()
     .use(format, opts)
     .process(html, function(err, output){
-      html = String(output).replace(/\r?\n|\r/, "");
+      html = String(output).replace(/(\r\n|\n|\r)/gm,"");
   })
 
   var $ = cheerio.load(html);
