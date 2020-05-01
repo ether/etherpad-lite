@@ -92,12 +92,13 @@ body.doesWrap:not(.noprewrap) > div {
 /* ------------------------------------------ */
 
 #sidediv {
-  font-size: 11px;
-  font-family: monospace;
-  padding-right: 5px;
-  padding-left: 12px;
   background-color: transparent;
   border-right: 1px solid #ccc;
+}
+#sidediv .line-number {
+  font-size: 9px;
+  padding: 0 10px;
+  font-family: monospace;
 }
 #sidedivinner {
   text-align: right;
@@ -108,10 +109,6 @@ body.doesWrap:not(.noprewrap) > div {
 }
 .line-numbers-hidden #sidediv .line-number {
   display: none;
-}
-#sidediv:not(.authorColors) #sidedivinner>div:before {
-  content: none !important;
-}
 }
 #linemetricsdiv {
   position: absolute;
