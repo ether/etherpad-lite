@@ -9,20 +9,10 @@ const tests = {
     description: "Complex nested Li",
     html: '<!doctype html><html><body><ol><li>one</li><li><ol><li>1.1</li></ol></li><li>two</li></ol></body></html>',
     expectedLineAttribs : [
-      '*0*1*2+1+3',
-      '*0*1*2+1+3',
-      '*0*1*2+1+1',
-      '*0*1*2+1+1',
-      '*0*1*2+1+1',
-      '*0*3*2+1+1',
-      '*0*3*2+1+1',
-      '*0*4*2*5+1+4',
-      '',
-      ''
+      '*0*1*2*3+1+3', '*0*4*2*5+1+3', '*0*1*2*5+1+3'
     ],
     expectedText: [
-      '*one',   '*two',
-      '*0',     '*1',
+      '*one', '*1.1', '*two'
     ]
   },
   complexNest:{
@@ -37,8 +27,8 @@ const tests = {
       '*0*3*2+1+1',
       '*0*3*2+1+1',
       '*0*4*2*5+1+4',
-      '',
-      ''
+      '*0*6*2*7+1+5',
+      '*0*6*2*7+1+5'
     ],
     expectedText: [
       '*one',   '*two',
@@ -64,11 +54,38 @@ const tests = {
   ol: {
     description : "Tests if ols properly get line numbers when in a normal OL",
     html : "<html><body><ol><li>a</li><li>b</li><li>c</li></ol><p>test</p></body></html>",
-    expectedLineAttribs : [ '*0*1*2*3+1+1', '*0*1*2*4+1+1', '*0*1*2*5+1+1', '+4' ],
+    expectedLineAttribs : ['*0*1*2*3+1+1', '*0*1*2*3+1+1', '*0*1*2*3+1+1', '+4'],
     expectedText: ["*a","*b","*c", "test"],
     noteToSelf: "Ensure empty P does not induce line attribute marker, wont this break the editor?"
   }
   ,
+  lineDoBreakInOl:{
+    description : "A single completely empty line break within an ol should reset count if OL is closed off..",
+    html : "<html><body><ol><li>should be 1</li></ol><p>hello</p><ol><li>should be 1</li><li>should be 2</li></ol><p></p></body></html>",
+    expectedLineAttribs : [ '*0*1*2*3+1+b', '+5', '*0*1*2*4+1+b', '*0*1*2*4+1+b', '' ],
+    expectedText: ["*should be 1","hello", "*should be 1","*should be 2", ""],
+    noteToSelf: "Shouldn't include attribute marker in the <p> line"
+  },
+  bulletListInOL:{
+    description : "A bullet within an OL should not change numbering..",
+    html : "<html><body><ol><li>should be 1</li><ul><li>should be a bullet</li></ul><li>should be 2</li></ol><p></p></body></html>",
+    expectedLineAttribs : [ '*0*1*2*3+1+b', '*0*4*2*5+1+i', '*0*1*2*5+1+b', '' ],
+    expectedText: ["*should be 1","*should be a bullet","*should be 2", ""]
+  },
+  testP:{
+    description : "A single <p></p> should create a new line",
+    html : "<html><body><p></p><p></p></body></html>",
+    expectedLineAttribs : [ '', ''],
+    expectedText: ["", ""],
+    noteToSelf: "<p></p>should create a line break but not break numbering"
+  },
+  nestedOl: {
+    description : "Tests if ols properly get line numbers when in a normal OL",
+    html : "<html><body>a<ol><li>b<ol><li>c</li></ol></ol>notlist<p>foo</p></body></html>",
+    expectedLineAttribs : [ '+1', '*0*1*2*3+1+1', '*0*4*2*5+1+1', '+7', '+3' ],
+    expectedText: ["a","*b","*c", "notlist", "foo"],
+    noteToSelf: "Ensure empty P does not induce line attribute marker, wont this break the editor?"
+  }
   /*
   lineDontBreakOL:{
   description : "A single completely empty line break within an ol should NOT reset count",
@@ -76,35 +93,9 @@ const tests = {
   expectedLineAttribs : [ ],
   expectedText: ["*should be 1","*should be 2","*should be 3"],
   noteToSelf: "<p></p>should create a line break but not break numbering -- This is what I can't get working!"
-},
-*/
-lineDoBreakInOl:{
-  description : "A single completely empty line break within an ol should reset count if OL is closed off..",
-  html : "<html><body><ol><li>should be 1</li></ol><p>hello</p><ol><li>should be 1</li><li>should be 2</li></ol><p></p></body></html>",
-  expectedLineAttribs : [ '*0*1*2*3+1+b', '+5', '*0*1*2*4+1+b', '*0*1*2*5+1+b', '' ],
-  expectedText: ["*should be 1","hello", "*should be 1","*should be 2", ""],
-  noteToSelf: "Shouldn't include attribute marker in the <p> line"
-},
-bulletListInOL:{
-  description : "A bullet within an OL should not change numbering..",
-  html : "<html><body><ol><li>should be 1</li><ul><li>should be a bullet</li></ul><li>should be 2</li></ol><p></p></body></html>",
-  expectedLineAttribs : [ '*0*1*2*3+1+b', '*0*4*2*5+1+i', '*0*1*2*5+1+b', '' ],
-  expectedText: ["*should be 1","*should be a bullet","*should be 2", ""]
-},
-testP:{
-  description : "A single <p></p> should create a new line",
-  html : "<html><body><p></p><p></p></body></html>",
-  expectedLineAttribs : [ '', ''],
-  expectedText: ["", ""],
-  noteToSelf: "<p></p>should create a line break but not break numbering"
-},
-nestedOl: {
-  description : "Tests if ols properly get line numbers when in a normal OL",
-  html : "<html><body>a<ol><li>b<ol><li>c</li></ol></ol>notlist<p>foo</p></body></html>",
-  expectedLineAttribs : [ '+1', '*0*1*2*3+1+1', '*0*4*2*5+1+1', '+7', '+3' ],
-  expectedText: ["a","*b","*c", "notlist", "foo"],
-  noteToSelf: "Ensure empty P does not induce line attribute marker, wont this break the editor?"
-}
+}*/
+
+
 }
 
 // For each test..
@@ -129,7 +120,7 @@ for (let test in tests){
 
       // Check recieved text matches the expected text
       if(arraysEqual(recievedText[0], expectedText)){
-        console.log("PASS: Recieved Text did match Expected Text\nRecieved:", recievedText[0], "\nExpected:", testObj.expectedText)
+        // console.log("PASS: Recieved Text did match Expected Text\nRecieved:", recievedText[0], "\nExpected:", testObj.expectedText)
       }else{
         console.error("FAIL: Recieved Text did not match Expected Text\nRecieved:", recievedText[0], "\nExpected:", testObj.expectedText)
         throw new Error();
@@ -137,7 +128,7 @@ for (let test in tests){
 
       // Check recieved attributes matches the expected attributes
       if(arraysEqual(recievedAttributes, expectedAttributes)){
-        console.log("PASS: Recieved Attributes matched Expected Attributes");
+        // console.log("PASS: Recieved Attributes matched Expected Attributes");
         done();
       }else{
         console.error("FAIL", test, testObj.description);

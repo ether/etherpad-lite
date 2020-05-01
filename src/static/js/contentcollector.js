@@ -620,7 +620,28 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
             state.lineAttributes['start'] = state.start || 0;
             _recalcAttribString(state);
             if(state.lineAttributes.list.indexOf("number") !== -1){
-              state.start++; // not if it's parent is a bullet!
+              /*
+               Nested OLs are not --> <ol><li>1</li><ol>nested</ol></ol>
+               They are           --> <ol><li>1</li><li><ol><li>nested</li></ol></li></ol>
+               Note how the <ol> item has to be inside a <li>
+               Because of this we don't increment the start number
+              */
+              if(node.parent && node.parent.name !== "ol"){
+                var listLevel = state.listNesting //cake
+                /*
+                TODO: start number has to increment based on indentLevel(numberX)
+                This means we have to build an object IE
+                {
+                 1: 4
+                 2: 3
+                 3: 5
+                }
+                But the browser seems to handle it fine using CSS..  Why can't we do the same
+                with exports?  We can..  But let's leave this comment in because it might be useful
+                in the future..
+                */
+                state.start++; // not if it's parent is an OL or UL.
+              }
             }
           }else{
             // Below needs more testin if it's neccesary as _exitList should take care of this.
