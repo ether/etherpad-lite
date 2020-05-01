@@ -298,15 +298,8 @@ function getHTMLFromAtext(pad, atext, authorColors)
       });
     }
     processNextChars(text.length - idx);
-
-    // we shouldn't process spaces within a list but we currently do...
-    // More to the point is why are ol / ul creating lines?
-
-    // _processSpaces hasn't been used for a while Afaik so I'm removing it now
-    // I think it takes each line and adds a space if it's wrapped (and the space has been removed)
-    // but I could be wrong.
-    // return _processSpaces(assem.toString());
-    return assem.toString();
+    
+    return _processSpaces(assem.toString());
   } // end getLineHTML
   var pieces = [css];
 
