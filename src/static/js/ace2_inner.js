@@ -956,8 +956,7 @@ function Ace2Inner(){
       showsuserselections: setClassPresenceNamed(root, "userSelections"),
       showslinenumbers : function(value){
         hasLineNumbers = !! value;
-        setClassPresence(sideDiv, "sidedivhidden", !hasLineNumbers);
-        setClassPresence(sideDiv.parentNode, "sidediv-hidden", !hasLineNumbers);
+        setClassPresence(sideDiv.parentNode, "line-numbers-hidden", !hasLineNumbers);
         fixView();
       },
       grayedout: setClassPresenceNamed(outerWin.document.body, "grayedout"),
@@ -5275,7 +5274,7 @@ function Ace2Inner(){
   function initLineNumbers()
   {
     lineNumbersShown = 1;
-    sideDiv.innerHTML = '<div id="sidedivinner" class="sidedivinner"><div>1</div></div>';
+    sideDiv.innerHTML = '<div id="sidedivinner" class="sidedivinner"><div><span class="line-number">1</span></div></div>';
     sideDivInner = outerWin.document.getElementById("sidedivinner");
     $(sideDiv).addClass("sidediv");
   }
@@ -5352,7 +5351,7 @@ function Ace2Inner(){
           div.style.height = h +"px";
         }
 
-        div.appendChild(odoc.createTextNode(String(n)));
+        $(div).append($("<span class='line-number'>" + String(n) + "</span>"));
         fragment.appendChild(div);
         if(b){
           b = b.nextSibling;
