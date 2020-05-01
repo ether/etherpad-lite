@@ -586,7 +586,7 @@ describe('setHTML', function(){
       "html":  html,
     })
     .expect(function(res){
-      if(res.body.code !== 1) throw new Error("Allowing crappy HTML to be imported")
+      if(res.body.code !== 0) throw new Error("Crappy HTML Can't be Imported[we weren't able to sanitize it']")
     })
     .expect('Content-Type', /json/)
     .expect(200, done)

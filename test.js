@@ -5,29 +5,11 @@ const cheerio          = require("./src/node_modules/cheerio");
 const util             = require('util');
 
 const tests = {
-
-  complexNest:{
-    description: "Complex list of different types",
-    html: '<!doctype html><html><body><ul class="bullet"><li>one</li><li>two</li><li>0</li><li>1</li><li>2<ul class="bullet"><li>3</li><li>4</li></ul></li></ul><ol class="number"><li>item<ol class="number"><li>item1</li><li>item2</li></ol></li></ol></body></html>',
-    expectedLineAttribs : [
-      '*0*1*2+1+3',
-      '*0*1*2+1+3',
-      '*0*1*2+1+1',
-      '*0*1*2+1+1',
-      '*0*1*2+1+1',
-      '*0*3*2+1+1',
-      '*0*3*2+1+1',
-      '*0*4*2*5+1+4',
-      '',
-      ''
-    ],
-    expectedText: [
-      '*one',   '*two',
-      '*0',     '*1',
-      '*2',     '*3',
-      '*4',     '*item',
-      '*item1', '*item2'
-    ]
+  bulletListInOL:{
+    description : "A bullet within an OL should not change numbering..",
+    html : "<html><body><ol><li>should be 1</li><ul><li>should be a bullet</li></ul><li>should be 2</li></ol><p></p></body></html>",
+    expectedLineAttribs : [ '*0*1*2*3+1+b', '*0*4*2*5+1+i', '*0*1*2*5+1+b', '' ],
+    expectedText: ["*should be 1","*should be a bullet","*should be 2", ""]
   }
 }
 
@@ -53,20 +35,20 @@ for (let test in tests){
 
       // Check recieved text matches the expected text
       if(arraysEqual(recievedText[0], expectedText)){
-        // console.log("PASS: Recieved Text did match Expected Text\nRecieved:", recievedText[0], "\nExpected:", testObj.expectedText)
+        console.log("PASS: Recieved Text did match Expected Text\nRecieved:", recievedText[0], "\nExpected:", testObj.expectedText)
       }else{
-        // console.error("FAIL: Recieved Text did not match Expected Text\nRecieved:", recievedText[0], "\nExpected:", testObj.expectedText)
+         console.error("FAIL: Recieved Text did not match Expected Text\nRecieved:", recievedText[0], "\nExpected:", testObj.expectedText)
         // throw new Error();
       }
 
       // Check recieved attributes matches the expected attributes
       if(arraysEqual(recievedAttributes, expectedAttributes)){
-        //console.log("PASS: Recieved Attributes matched Expected Attributes");
+        console.log("PASS: Recieved Attributes matched Expected Attributes");
         done();
       }else{
-        //console.error("FAIL", test, testObj.description);
-        //console.error("FAIL: Recieved Attributes did not match Expected Attributes\nRecieved: ", recievedAttributes, "\nExpected: ", expectedAttributes)
-        // console.error("FAILING HTML", testObj.html);
+        console.error("FAIL", test, testObj.description);
+        console.error("FAIL: Recieved Attributes did not match Expected Attributes\nRecieved: ", recievedAttributes, "\nExpected: ", expectedAttributes)
+        console.error("FAILING HTML", testObj.html);
         //throw new Error();
       }
 //    });

@@ -247,6 +247,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
 
   function _enterList(state, listType)
   {
+    if(!listType) return;
     var oldListType = state.lineAttributes['list'];
     if (listType != 'none')
     {
@@ -277,7 +278,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     }
     else {
       delete state.lineAttributes['list'];
-      delete state.lineAttributes['start']; // cake
+      delete state.lineAttributes['start'];
     }
     _recalcAttribString(state);
   }
@@ -627,7 +628,6 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
                Because of this we don't increment the start number
               */
               if(node.parent && node.parent.name !== "ol"){
-                var listLevel = state.listNesting //cake
                 /*
                 TODO: start number has to increment based on indentLevel(numberX)
                 This means we have to build an object IE
@@ -643,6 +643,16 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
                 state.start++; // not if it's parent is an OL or UL.
               }
             }
+            // UL list items never modify the start value.
+            if(node.parent && node.parent.name === "ul"){
+              state.start++;
+              // TODO, this is hacky.
+              // Because if the first item is an UL it will increment a list no?
+              // A much more graceful way would be to say, ul increases if it's within an OL
+              // But I don't know a way to do that because we're only aware of the previous Line
+              // As the concept of parent's doesn't exist when processing each domline...
+            }
+
           }else{
             // Below needs more testin if it's neccesary as _exitList should take care of this.
             // delete state.start;

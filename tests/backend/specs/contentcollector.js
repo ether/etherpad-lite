@@ -69,7 +69,7 @@ const tests = {
   bulletListInOL:{
     description : "A bullet within an OL should not change numbering..",
     html : "<html><body><ol><li>should be 1</li><ul><li>should be a bullet</li></ul><li>should be 2</li></ol><p></p></body></html>",
-    expectedLineAttribs : [ '*0*1*2*3+1+b', '*0*4*2*5+1+i', '*0*1*2*5+1+b', '' ],
+    expectedLineAttribs : [ '*0*1*2*3+1+b', '*0*4*2*3+1+i', '*0*1*2*5+1+b', '' ],
     expectedText: ["*should be 1","*should be a bullet","*should be 2", ""]
   },
   testP:{
@@ -85,16 +85,23 @@ const tests = {
     expectedLineAttribs : [ '+1', '*0*1*2*3+1+1', '*0*4*2*5+1+1', '+7', '+3' ],
     expectedText: ["a","*b","*c", "notlist", "foo"],
     noteToSelf: "Ensure empty P does not induce line attribute marker, wont this break the editor?"
-  }
-  /*
+  },
+  nestedOl: {
+    description : "First item being an UL then subsequent being OL will fail",
+    html : "<html><body><ul><li>a<ol><li>b</li><li>c</li></ol></li></ul></body></html>",
+    expectedLineAttribs : [ '+1', '*0*1*2*3+1+1', '*0*4*2*5+1+1' ],
+    expectedText: ["a","*b","*c"],
+    noteToSelf: "Ensure empty P does not induce line attribute marker, wont this break the editor?",
+    disabled: true
+  },
   lineDontBreakOL:{
-  description : "A single completely empty line break within an ol should NOT reset count",
-  html : "<html><body><ol><li>should be 1</li><p></p><li>should be 2</li><li>should be 3</li></ol><p></p></body></html>",
-  expectedLineAttribs : [ ],
-  expectedText: ["*should be 1","*should be 2","*should be 3"],
-  noteToSelf: "<p></p>should create a line break but not break numbering -- This is what I can't get working!"
-}*/
-
+    description : "A single completely empty line break within an ol should NOT reset count",
+    html : "<html><body><ol><li>should be 1</li><p></p><li>should be 2</li><li>should be 3</li></ol><p></p></body></html>",
+    expectedLineAttribs : [ ],
+    expectedText: ["*should be 1","*should be 2","*should be 3"],
+    noteToSelf: "<p></p>should create a line break but not break numbering -- This is what I can't get working!",
+    disabled: true
+  }
 
 }
 
@@ -103,6 +110,12 @@ for (let test in tests){
   let testObj = tests[test];
 
   describe(test, function() {
+    if(testObj.disabled){
+      return xit("DISABLED:", test, function(done){
+        done();
+      })
+    }
+
     it(testObj.description, function(done) {
       var $ = cheerio.load(testObj.html);  // Load HTML into Cheerio
       var doc = $('html')[0]; // Creates a dom-like representation of HTML
