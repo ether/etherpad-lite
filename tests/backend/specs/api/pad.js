@@ -33,7 +33,7 @@ var ulHtml = '<!doctype html><html><body><ul class="bullet"><li>one</li><li>two<
  * textually, but at least it remains standard compliant and has an equal DOM
  * structure.
  */
-var expectedHtml = '<!doctype html><html><body><ul class="bullet"><li>one</li><li>two</li><li>0</li><li>1</li><li>2<ul class="bullet"><li>3</li><li>4</ul></li></ul><ol class="number"><li>item<ol class="number"><li>item1</li><li>item2</ol></li></ol></body></html>';
+var expectedHtml = '<!doctype html><html><body><ul class="bullet"><li>one</li><li>two</li><li>0</li><li>1</li><li>2<ul class="bullet"><li>3</li><li>4</ul></li></ul><ol start="1" class="number"><li>item<ol start="2" class="number"><li>item1</li><li>item2</ol></li></ol></body></html>';
 
 /*
  * Html document with space between list items, to test its import and
@@ -46,7 +46,7 @@ var ulSpaceHtml = '<!doctype html><html><body><ul class="bullet"> <li>one</li></
  * textually, but at least it remains standard compliant and has an equal DOM
  * structure.
  */
-var expectedSpaceHtml = '<!doctype html><html><body><ul class="bullet"><li>one</li></ul></body></html>';
+var expectedSpaceHtml = '<!doctype html><html><body><ul class="bullet"><li>one</ul></body></html>';
 
 describe('Connectivity', function(){
   it('can connect', function(done) {
