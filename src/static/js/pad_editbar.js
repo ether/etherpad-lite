@@ -297,13 +297,13 @@ var padeditbar = (function()
       {
         var basePath = document.location.href.substring(0, document.location.href.indexOf("/p/"));
         var readonlyLink = basePath + "/p/" + clientVars.readOnlyId;
-        $('#embedinput').val('<iframe name="embed_readonly" src="' + readonlyLink + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width="100%" height=600 frameborder="0"></iframe>');
+        $('#embedinput').val('<iframe name="embed_readonly" src="' + readonlyLink + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width="100%" height="600" frameborder="0"></iframe>');
         $('#linkinput').val(readonlyLink);
       }
       else
       {
         var padurl = window.location.href.split("?")[0];
-        $('#embedinput').val('<iframe name="embed_readwrite" src="' + padurl + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width="100%"" height=600 frameborder="0"></iframe>');
+        $('#embedinput').val('<iframe name="embed_readwrite" src="' + padurl + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width="100%" height="600" frameborder="0"></iframe>');
         $('#linkinput').val(padurl);
       }
     },
