@@ -32,6 +32,7 @@ api.get('/api/')
     return;
   })
   .end(function(err, res){
+
     // Now we know the latest API version, let's delete pad
     var uri = '/api/'+apiVersion+'/deletePad?apikey='+apikey+'&padID='+padId;
     api.post(uri)
