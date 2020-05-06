@@ -4,7 +4,7 @@
  */
 
 const request = require('../src/node_modules/request');
-const settings = require(__dirname+'/../tests/backend/loadSettings').loadSettings();
+const settings = require(__dirname+'/../tests/container/loadSettings').loadSettings();
 const supertest = require(__dirname+'/../src/node_modules/supertest');
 const api = supertest('http://'+settings.ip+":"+settings.port);
 const path = require('path');
@@ -28,15 +28,18 @@ var apiVersion = 1;
 api.get('/api/')
   .expect(function(res){
     apiVersion = res.body.currentVersion;
+console.log(res.body);
     if (!res.body.currentVersion) throw new Error("No version set in API");
     return;
   })
   .end(function(err, res){
-
+console.log("here");
     // Now we know the latest API version, let's delete pad
     var uri = '/api/'+apiVersion+'/deletePad?apikey='+apikey+'&padID='+padId;
+console.log(uri);
     api.post(uri)
       .expect(function(res){
+console.log(res.body);
         if (res.body.code === 1){
           console.error("Error deleting pad", res.body);
         }else{
