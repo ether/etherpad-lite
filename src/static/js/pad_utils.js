@@ -40,6 +40,7 @@ function randomString(len)
 }
 
 function createCookie(name, value, days, path){ /* Used by IE */
+  name = "ep_" + name; // we prefix to stop conflicts
   if (days)
   {
     var date = new Date();

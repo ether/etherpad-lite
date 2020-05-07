@@ -79,7 +79,7 @@ const connect = async (res) => {
     forceNew: true, // Different tests will have different query parameters.
     path: '/socket.io',
     // socketio.js-client on node.js doesn't support cookies (see https://git.io/JU8u9), so the
-    // express_sid cookie must be passed as a query parameter.
+    // ep_express_sid cookie must be passed as a query parameter.
     query: {cookie: reqCookieHdr},
   });
   try {
@@ -215,7 +215,7 @@ describe('socket.io access checks', function() {
     });
     it('authn !cookie -> error', async function() {
       settings.requireAuthentication = true;
-      await assert.rejects(connect(null), {message: /signed express_sid cookie is required/i});
+      await assert.rejects(connect(null), {message: /signed ep_express_sid cookie is required/i});
     });
     it('authorization bypass attempt -> error', async function() {
       // Only allowed to access /p/pad.

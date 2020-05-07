@@ -23,7 +23,7 @@
 
 var padcookie = (function()
 {
-  var cookieName = isHttpsScheme() ? "prefs" : "prefsHttp";
+  var cookieName = isHttpsScheme() ? "ep_prefs" : "ep_prefsHttp";
 
   function getRawCookie()
   {

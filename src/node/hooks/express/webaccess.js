@@ -228,7 +228,7 @@ exports.expressConfigure = (hook_name, args, cb) => {
     store: args.app.sessionStore,
     resave: false,
     saveUninitialized: true,
-    name: 'express_sid',
+    name: 'ep_express_sid',
     proxy: true,
     cookie: {
       /*
