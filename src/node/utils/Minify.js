@@ -30,6 +30,7 @@ var path = require('path');
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
 var RequireKernel = require('etherpad-require-kernel');
 var urlutil = require('url');
+var mime = require('mime-types')
 
 var ROOT_DIR = path.normalize(__dirname + "/../../static/");
 var TAR_PATH = path.join(__dirname, 'tar.json');
@@ -177,26 +178,7 @@ function minify(req, res)
     }
   }
 
-  // What content type should this be?
-  // TODO: This should use a MIME module.
-  var contentType;
-  if (filename.match(/\.js$/)) {
-    contentType = "text/javascript";
-  } else if (filename.match(/\.css$/)) {
-    contentType = "text/css";
-  } else if (filename.match(/\.html$/)) {
-    contentType = "text/html";
-  } else if (filename.match(/\.txt$/)) {
-    contentType = "text/plain";
-  } else if (filename.match(/\.png$/)) {
-    contentType = "image/png";
-  } else if (filename.match(/\.gif$/)) {
-    contentType = "image/gif";
-  } else if (filename.match(/\.ico$/)) {
-    contentType = "image/x-icon";
-  } else {
-    contentType = "application/octet-stream";
-  }
+  var contentType = mime.lookup(filename);  
 
   statFile(filename, function (error, date, exists) {
     if (date) {
