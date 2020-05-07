@@ -78,7 +78,7 @@
 	"pad.modals.corruptPad.explanation": "Sartzen saiatzen ari zaren Pad-a hondatuta dago.",
 	"pad.modals.corruptPad.cause": "Baliteke zerbitzari okerreko konfigurazioa edo beste ustekabeko portaera batzuk izatea. Jarri harremanetan zerbitzu-administratzailearekin.",
 	"pad.modals.deleted": "Ezabatua.",
-	"pad.modals.deleted.explanation": "Pad hau ezabatua izan da.",
+	"pad.modals.deleted.explanation": "Pad hau ezabatu da.",
 	"pad.modals.disconnected": "Deskonektatua izan zara.",
 	"pad.modals.disconnected.explanation": "Zerbitzariaren konexioa galdu da",
 	"pad.modals.disconnected.cause": "Baliteke zerbitzaria eskuragarri ez egotea. Mesedez, jakinarazi zerbitzuko administrariari honek gertatzen jarraitzen badu.",
