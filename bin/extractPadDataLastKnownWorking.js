@@ -7,7 +7,7 @@
  * If you also want a database backup of the file uncomment setDirty
  */
 
-if (process.argv.length != 4) {
+if (process.argv.length <= 3) {
   console.error("Use: node extractPadData.js $PADID $DESTINATIONPADID $TARGETREV");
   process.exit(1);
 }
@@ -48,6 +48,8 @@ npm.load({}, async function(er) {
 
     // get the actual pad object
     let pad = await padManager.getPad(padId);
+    console.log(pad);
+
     // and the last revision
     var lastRev = pad.head;
     // user can specify a target revision if the first attempt fails
@@ -67,7 +69,7 @@ npm.load({}, async function(er) {
     neededDBValues.push(...pad.getAllAuthors().map(author => 'globalAuthor:' + author));
 
     // add all revisions
-    for (let rev = 0; rev <= pad.head; ++rev) {
+    for (let rev = 0; rev <= lastRev; ++rev) {
       neededDBValues.push('pad:' + padId + ':revs:' + rev);
     }
 
@@ -75,6 +77,8 @@ npm.load({}, async function(er) {
     for (let chat = 0; chat <= pad.chatHead; ++chat) {
       neededDBValues.push('pad:' + padId + ':chat:' + chat);
     }
+
+    console.log("Grabbing and setting new values, please be patient.")
     for (let dbkey of neededDBValues) {
       let dbvalue = await get(dbkey);
       if (dbvalue && typeof dbvalue !== 'object') {
