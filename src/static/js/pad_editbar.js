@@ -509,7 +509,7 @@ var padeditbar = (function()
       }
     });
   }
-  
+
   return self;
 }());
 
