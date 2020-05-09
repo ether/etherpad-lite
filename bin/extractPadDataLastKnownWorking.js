@@ -5,6 +5,7 @@
  * there. It outputs a dirtydb file
  *
  * If you also want a database backup of the file uncomment setDirty
+ * Also note that this file will overwrite a target pad so make sure you use an unused padId
  */
 
 if (process.argv.length <= 3) {
@@ -64,6 +65,9 @@ npm.load({}, async function(er) {
 
     // array in which required key values will be accumulated
     let neededDBValues = ['pad:' + padId]
+    // the initial base of the pad
+    // not the first commit but the proper store
+
     // try get HTML of last saved state.  Being mindful that there is a 1% failure chance
     // this wont work so a future version of this script will need to iterate backwards
     // but right now that's overkill.
@@ -72,15 +76,12 @@ npm.load({}, async function(er) {
       throw new Error("unable to get the pad lines, target " + lastRev-100)
     }
 
-    // console.log(padLines)
-
     // add all authors
-    console.log("needed", neededDBValues)
     neededDBValues.push(...pad.getAllAuthors().map(author => 'globalAuthor:' + author));
 
     // add all revisions
     for (let rev = 0; rev <= lastRev; ++rev) {
-      console.log('pad:' + padId + ':revs:' + rev)
+      // console.log('pad:' + padId + ':revs:' + rev)
       neededDBValues.push('pad:' + padId + ':revs:' + rev);
     }
 
@@ -98,26 +99,28 @@ npm.load({}, async function(er) {
       if (dbvalue && typeof dbvalue !== 'object') {
         dbvalue = JSON.parse(dbvalue);
       }
-      // okay this doesn't work cause MySQL will overwrite the value so it's always latest
-      // so we will need to build the padObj from nothing..
-      // So we start with nothing, then add each changeset up to lastRev
-      // overwrite the base of the pad:whatever with last known good base content
-      if(dbkey === "pad:"+padId){
-        console.log(lastRev)
-        dbvalue = latestRev;
-        // dbvalue = await get('pad:'+padId+':'+'revs:'+lastRev);
-        console.log(dbvalue)
-      }
-      dbkey = dbkey.replace(padId, destinationPadId);
-      // now we need to write dbkey and dbvalue to the database.
 
+      // Here we override the base content with the last known good rev
+      if(dbkey === "pad:"+padId){
+        dbvalue.atext.attribs = latestRev.attribs;
+        dbvalue.atext.text = latestRev.text;
+        dbvalue.head = lastRev;
+      }
+
+      dbkey = dbkey.replace(padId, destinationPadId);
+
+      // now we need to write dbkey and dbvalue to the database.
       db.set(dbkey, dbvalue);
       bar1.increment();
     }
 
-    console.log('finished, restart Etherpad BEFORE attempting to visit the new Pad.');
-    bar1.stop();
-    process.exit(0);
+    // I know this is hacky but db.close doesn't work here..
+    setTimeout(function(){
+      bar1.stop();
+      console.log("Check the pad properly renders then terminate this script.  Open your pad and hit f5 till it's present!  "+ destinationPadId)
+      // db.close(); // throws an error..
+     }, 5000)
+
   } catch (er) {
     console.error(er);
     bar1.stop();
