@@ -15,7 +15,11 @@ if (process.argv.length <= 3) {
 let padId = process.argv[2];
 let destinationPadId = process.argv[3];
 
-let npm = require('../src/node_modules/npm');
+const npm = require('../src/node_modules/npm');
+const cliProgress = require('cli-progress');
+
+// create a new progress bar instance and use shades_classic theme
+const bar1 = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 
 npm.load({}, async function(er) {
   if (er) {
@@ -84,6 +88,10 @@ npm.load({}, async function(er) {
     }
 
     console.log("Grabbing and setting new values, please be patient.")
+
+    // start the progress bar with a total value of 200 and start value of 0
+    bar1.start(neededDBValues.length, 0);
+
     for (let dbkey of neededDBValues) {
       let dbvalue = await get(dbkey);
       if (dbvalue && typeof dbvalue !== 'object') {
@@ -92,12 +100,15 @@ npm.load({}, async function(er) {
       dbkey = dbkey.replace(padId, destinationPadId)
       // now we need to write dbkey and dbvalue to the database.
       db.set(dbkey, dbvalue);
+      bar1.increment();
     }
 
     console.log('finished, restart Etherpad BEFORE attempting to visit the new Pad.');
+    bar1.stop();
     process.exit(0);
   } catch (er) {
     console.error(er);
+    bar1.stop();
     process.exit(1);
   }
 });
