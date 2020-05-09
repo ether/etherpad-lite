@@ -47,9 +47,6 @@ npm.load({}, async function(er) {
     let setDirty = util.promisify(dirty.set.bind(dirty));
     let set = util.promisify(wrapped.set.bind(wrapped));
 
-    // array in which required key values will be accumulated
-    let neededDBValues = ['pad:' + padId];
-
     // get the actual pad object
     let pad = await padManager.getPad(padId);
 
@@ -65,20 +62,25 @@ npm.load({}, async function(er) {
       process.exit(1);
     }
 
-
+    // array in which required key values will be accumulated
+    let neededDBValues = ['pad:' + padId]
     // try get HTML of last saved state.  Being mindful that there is a 1% failure chance
     // this wont work so a future version of this script will need to iterate backwards
     // but right now that's overkill.
-    let padLines = await pad.getInternalRevisionAText(lastRev);
-    if(!padLines){
+    let latestRev = await pad.getInternalRevisionAText(lastRev);
+    if(!latestRev){
       throw new Error("unable to get the pad lines, target " + lastRev-100)
     }
 
+    // console.log(padLines)
+
     // add all authors
+    console.log("needed", neededDBValues)
     neededDBValues.push(...pad.getAllAuthors().map(author => 'globalAuthor:' + author));
 
     // add all revisions
     for (let rev = 0; rev <= lastRev; ++rev) {
+      console.log('pad:' + padId + ':revs:' + rev)
       neededDBValues.push('pad:' + padId + ':revs:' + rev);
     }
 
@@ -91,14 +93,24 @@ npm.load({}, async function(er) {
 
     // start the progress bar with a total value of 200 and start value of 0
     bar1.start(neededDBValues.length, 0);
-
     for (let dbkey of neededDBValues) {
       let dbvalue = await get(dbkey);
       if (dbvalue && typeof dbvalue !== 'object') {
         dbvalue = JSON.parse(dbvalue);
       }
-      dbkey = dbkey.replace(padId, destinationPadId)
+      // okay this doesn't work cause MySQL will overwrite the value so it's always latest
+      // so we will need to build the padObj from nothing..
+      // So we start with nothing, then add each changeset up to lastRev
+      // overwrite the base of the pad:whatever with last known good base content
+      if(dbkey === "pad:"+padId){
+        console.log(lastRev)
+        dbvalue = latestRev;
+        // dbvalue = await get('pad:'+padId+':'+'revs:'+lastRev);
+        console.log(dbvalue)
+      }
+      dbkey = dbkey.replace(padId, destinationPadId);
       // now we need to write dbkey and dbvalue to the database.
+
       db.set(dbkey, dbvalue);
       bar1.increment();
     }
