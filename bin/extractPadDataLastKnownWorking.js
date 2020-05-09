@@ -48,7 +48,6 @@ npm.load({}, async function(er) {
 
     // get the actual pad object
     let pad = await padManager.getPad(padId);
-    console.log(pad);
 
     // and the last revision
     var lastRev = pad.head;
@@ -57,12 +56,18 @@ npm.load({}, async function(er) {
     // We roll down to 100 IE 154 becomes 100
     lastRev = Math.floor(lastRev / 100) * 100;
 
+    if(lastRev === 0){
+      console.error("Unable to get this pad because it's last known revision is less than 100 as it only has a revision count of ", pad.head);
+      process.exit(1);
+    }
+
+
     // try get HTML of last saved state.  Being mindful that there is a 1% failure chance
     // this wont work so a future version of this script will need to iterate backwards
     // but right now that's overkill.
     let padLines = await pad.getInternalRevisionAText(lastRev);
     if(!padLines){
-      console.log("unable to get the pad lines, target " + lastRev-100)
+      throw new Error("unable to get the pad lines, target " + lastRev-100)
     }
 
     // add all authors
@@ -85,9 +90,10 @@ npm.load({}, async function(er) {
         dbvalue = JSON.parse(dbvalue);
       }
       dbkey = dbkey.replace(padId, destinationPadId)
-      await set(dbkey, dbvalue);
-      // await setDirty(dbkey, dbvalue);
+      // now we need to write dbkey and dbvalue to the database.
+      db.set(dbkey, dbvalue);
     }
+
     console.log('finished, restart Etherpad BEFORE attempting to visit the new Pad.');
     process.exit(0);
   } catch (er) {
