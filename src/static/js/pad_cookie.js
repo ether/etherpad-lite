@@ -46,7 +46,8 @@ var padcookie = (function()
     var expiresDate = new Date();
     expiresDate.setFullYear(3000);
     var secure = isHttpsScheme() ? ";secure" : "";
-    document.cookie = (cookieName + "=" + safeText + ";expires=" + expiresDate.toGMTString() + secure);
+    var sameSite = isHttpsScheme() ?  ";sameSite=Strict": ";sameSite=Lax";
+    document.cookie = (cookieName + "=" + safeText + ";expires=" + expiresDate.toGMTString() + secure + sameSite);
   }
 
   function parseCookie(text)
