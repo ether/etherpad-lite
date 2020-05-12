@@ -6,15 +6,3 @@
   color: #485365;
   color: var(--text-color);
 }
-
-#innerdocbody span {
-  padding: 3px 0 !important;
-}
-
-#innerdocbody h1 span {
-  padding: 0;
-}
-
-option {
-  text-transform: capitalize;
-}
