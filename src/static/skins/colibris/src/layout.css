@@ -7,6 +7,7 @@
 #editorcontainerbox {
   background-color: #f2f3f4;
   background-color: var(--bg-color);
+  color: var(--text-color);
 }
 
 #editorcontainerbox .sticky-container {
