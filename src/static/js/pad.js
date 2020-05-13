@@ -422,6 +422,11 @@ var pad = {
   },
   switchToPad: function(padId)
   {
+    // destroy old pad from DOM
+    // See https://github.com/ether/etherpad-lite/pull/3915
+    // TODO: Check if Destroying is enough and doesn't leave negative stuff
+    // See ace.js "editor.destroy" for a reference of how it was done before
+    $('#editorcontainer').find("iframe")[0].remove();
     var options = document.location.href.split('?')[1];
     var newHref = padId;
     if (typeof options != "undefined" && options != null){
@@ -567,6 +572,8 @@ var pad = {
       var mobileMatch = window.matchMedia("(max-width: 800px)");
       mobileMatch.addListener(checkChatAndUsersVisibility); // check if window resized
       setTimeout(function() { checkChatAndUsersVisibility(mobileMatch); }, 0); // check now after load
+
+      $('#editorcontainer').addClass('initialized');
 
       hooks.aCallAll("postAceInit", {ace: padeditor.ace, pad: pad});
     }

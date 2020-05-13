@@ -38,8 +38,6 @@
 	"pad.settings.rtlcheck": "Näita sisu paremalt vasakule?",
 	"pad.settings.fontType": "Šrifti tüüp:",
 	"pad.settings.fontType.normal": "Normaalne",
-	"pad.settings.fontType.monospaced": "Ühelaiuste märkidega",
-	"pad.settings.globalView": "Koguvaade",
 	"pad.settings.language": "Keel:",
 	"pad.importExport.import_export": "Import-eksport",
 	"pad.importExport.import": "Laadi üles mistahes tekstifail või dokument",

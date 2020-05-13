@@ -42,6 +42,20 @@ var _ = require("underscore");
 exports.root = absolutePaths.findEtherpadRoot();
 console.log(`All relative paths will be interpreted relative to the identified Etherpad base dir: ${exports.root}`);
 
+/*
+ * At each start, Etherpad generates a random string and appends it as query
+ * parameter to the URLs of the static assets, in order to force their reload.
+ * Subsequent requests will be cached, as long as the server is not reloaded.
+ *
+ * For the rationale behind this choice, see
+ * https://github.com/ether/etherpad-lite/pull/3958
+ *
+ * ACHTUNG: this may prevent caching HTTP proxies to work
+ * TODO: remove the "?v=randomstring" parameter, and replace with hashed filenames instead
+ */
+exports.randomVersionString = randomString(4);
+console.log(`Random string used for versioning assets: ${exports.randomVersionString}`);
+
 /**
  * The app title, visible e.g. in the browser window
  */
@@ -421,6 +435,14 @@ function storeSettings(settingsObj) {
 /*
  * If stringValue is a numeric string, or its value is "true" or "false", coerce
  * them to appropriate JS types. Otherwise return stringValue as-is.
+ *
+ * Please note that this function is used for converting types for default
+ * values in the settings file (for example: "${PORT:9001}"), and that there is
+ * no coercition for "null" values.
+ *
+ * If the user wants a variable to be null by default, he'll have to use the
+ * short syntax "${ABIWORD}", and not "${ABIWORD:null}": the latter would result
+ * in the literal string "null", instead.
  */
 function coerceValue(stringValue) {
     // cooked from https://stackoverflow.com/questions/175739/built-in-way-in-javascript-to-check-if-a-string-is-a-valid-number
@@ -525,7 +547,7 @@ function lookupEnvironmentVariables(obj) {
     const defaultValue = match[3];
 
     if ((envVarValue === undefined) && (defaultValue === undefined)) {
-      console.warn(`Environment variable "${envVarName}" does not contain any value for configuration key "${key}", and no default was given. Returning null. Please check your configuration and environment settings.`);
+      console.warn(`Environment variable "${envVarName}" does not contain any value for configuration key "${key}", and no default was given. Returning null.`);
 
       /*
        * We have to return null, because if we just returned undefined, the

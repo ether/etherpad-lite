@@ -2,7 +2,7 @@
   background-color: #64d29b;
   background-color: var(--primary-color);
   color: #ffffff;
-  color: var(--bg-color);
+  color: var(--super-light-color);
 }
 .gritter-item .popup-content {
   padding: 15px;
@@ -26,7 +26,7 @@
 }
 .gritter-item:not(.error) .gritter-close .buttonicon {
   color: #ffffff;
-  color: var(--bg-color);
+  color: var(--super-light-color);
 }
 
 /* CHAT GRIITER ITEM */

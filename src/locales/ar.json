@@ -49,8 +49,6 @@
 	"pad.settings.rtlcheck": "قراءة المحتويات من اليمين إلى اليسار؟",
 	"pad.settings.fontType": "نوع الخط:",
 	"pad.settings.fontType.normal": "عادي",
-	"pad.settings.fontType.monospaced": "ثابت العرض",
-	"pad.settings.globalView": "الرؤية الشاملة",
 	"pad.settings.language": "اللغة:",
 	"pad.importExport.import_export": "استيراد/تصدير",
 	"pad.importExport.import": "تحميل أي ملف نصي أو وثيقة",
@@ -139,5 +137,7 @@
 	"pad.impexp.uploadFailed": "فشل التحميل، الرجاء المحاولة مرة أخرى",
 	"pad.impexp.importfailed": "فشل الاستيراد",
 	"pad.impexp.copypaste": "الرجاء نسخ/لصق",
-	"pad.impexp.exportdisabled": "تصدير التنسيق {{type}} معطل. يرجى الاتصال بمسؤول النظام الخاص بك للحصول على التفاصيل."
+	"pad.impexp.exportdisabled": "تصدير التنسيق {{type}} معطل. يرجى الاتصال بمسؤول النظام الخاص بك للحصول على التفاصيل.",
+	"pad.impexp.maxFileSize": "الملف كبير جدا. اتصل بإداري الموقع الخاص بك لزيادة حجم الملف المسموح به للاستيراد",
+	"pad.impexp.permission": "الاستيراد معطل لأنك لم تساهم مسبقا لهذه الباد. من فضلك ساهم على الأقل مرة واحدة قبل الاستيراد"
 }

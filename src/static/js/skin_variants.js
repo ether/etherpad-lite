@@ -35,7 +35,7 @@ if (window.location.hash.toLowerCase() == "#skinvariantsbuilder") {
 
     domsToUpdate.forEach(function(el) { el.addClass(new_classes.join(" ")); });
 
-    $('#skin-variants-result').val('"skinVariants": "' + new_classes.join(" ") + '"');
+    $('#skin-variants-result').val('"skinVariants": "' + new_classes.join(" ") + '",');
   }
 
   // run on init

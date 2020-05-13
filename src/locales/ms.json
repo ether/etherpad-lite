@@ -40,8 +40,6 @@
 	"pad.settings.rtlcheck": "Membaca dari kanan ke kiri?",
 	"pad.settings.fontType": "Jenis fon:",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Paparan Sejagat",
 	"pad.settings.language": "Bahasa:",
 	"pad.importExport.import_export": "Import/Eksport",
 	"pad.importExport.import": "Muat naik sebarang fail teks atau dokumen",

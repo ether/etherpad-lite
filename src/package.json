@@ -52,7 +52,7 @@
     "log4js": "0.6.35",
     "measured-core": "1.11.2",
     "nodeify": "1.0.1",
-    "npm": "6.14.3",
+    "npm": "6.14.4",
     "openapi-backend": "2.4.1",
     "request": "2.88.0",
     "resolve": "1.1.7",
@@ -61,7 +61,7 @@
     "slide": "1.1.6",
     "socket.io": "2.1.1",
     "tinycon": "0.0.1",
-    "ueberdb2": "0.4.5",
+    "ueberdb2": "0.4.9",
     "uglify-js": "3.8.1",
     "underscore": "1.8.3",
     "unorm": "1.4.1"
@@ -87,6 +87,6 @@
     "test": "nyc mocha --timeout 5000 ../tests/backend/specs/api",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api"
   },
-  "version": "1.8.0",
+  "version": "1.8.3",
   "license": "Apache-2.0"
 }

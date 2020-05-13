@@ -17,6 +17,7 @@ html.inner-editor {
 #outerdocbody iframe {
   flex: 1 auto;
   display: flex;
+  width: 100%;
 }
 #outerdocbody #sidediv {
   order: -1; /* display it on the first row positionning, i.e. on the left */
@@ -32,6 +33,14 @@ html.inner-editor {
   padding-top: 10px; /* Both must have same top padding, so line number are aligned with the rows */
   padding-bottom: 10px; /* some space when we scroll to the bottom */
 }
+
+#innerdocbody a {
+  color: #2e96f3;
+}
+#innerdocbody.authorColors [class^='author-'] a {
+  color: inherit;
+}
+
 
 /* --------------------- */
 /* -- BROWSER SUPPORT -- */
@@ -83,12 +92,13 @@ body.doesWrap:not(.noprewrap) > div {
 /* ------------------------------------------ */
 
 #sidediv {
-  font-size: 11px;
-  font-family: monospace;
-  padding-right: 5px;
-  padding-left: 12px;
   background-color: transparent;
   border-right: 1px solid #ccc;
+}
+#sidediv .line-number {
+  font-size: 9px;
+  padding: 0 10px;
+  font-family: monospace;
 }
 #sidedivinner {
   text-align: right;
@@ -97,12 +107,8 @@ body.doesWrap:not(.noprewrap) > div {
 #sidediv:not(.sidedivdelayed) { /* before sidediv get initialized, hide text */
   color: transparent;
 }
-#sidediv.sidedivhidden {
-  /* Do not use display: none to hide the sidediv, otherwise the parent container does not
-       get its height properly calculated by flexboxes */
-  visibility: hidden;
-  width: 0;
-  padding: 0;
+.line-numbers-hidden #sidediv .line-number {
+  display: none;
 }
 #linemetricsdiv {
   position: absolute;
@@ -113,7 +119,7 @@ body.doesWrap:not(.noprewrap) > div {
   font-size: 12px; /* overridden by lineMetricsDiv.style */
   font-family: monospace; /* overridden by lineMetricsDiv.style */
 }
-@media (max-width: 720px) {
+@media (max-width: 800px) {
   #sidediv {
     /* Do not use display: none to hide the sidediv, otherwise the parent container does not
        get its height properly calculated by flexboxes */

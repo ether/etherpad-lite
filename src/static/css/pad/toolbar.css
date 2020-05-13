@@ -135,7 +135,7 @@
   overflow: visible;
 }
 
-@media only screen and (max-width: 720px) {
+@media only screen and (max-width: 800px) {
   .toolbar ul li.separator {
     width: 5px;
   }

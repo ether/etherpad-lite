@@ -4,6 +4,9 @@ html, body {
   margin: 0;
   padding: 0;
 }
+html:not(.inner-editor), html:not(.inner-editor) body {
+  overflow: hidden;
+}
 body {
   display: flex;
   flex-direction: column;
@@ -19,14 +22,19 @@ body {
   /* For sticky chat */
   display: flex;
   flex-direction: row;
+  height: 0; /* strange bug some browser need this to be working ok */
 }
 #editorcontainerbox #editorcontainer {
   display: flex; /* transfer flex properties to nested elements, here the iframe */
-  height: 100%;
+  height: auto;
   flex: 1 auto;
+}
+#editorcontainerbox #editorcontainer:not(.initialized) {
+  visibility: hidden;
 }
 #editorcontainerbox #editorcontainer iframe {
   width: 100%;
+  height: auto;
 }
 #editorcontainerbox .sticky-container { /* container for #users, #chat, #toc (table of content) and so on... */
   display: flex;
@@ -39,7 +47,7 @@ body {
   width: 0; /* hide when the container is empty */
 }
 
-@media only screen and (max-width: 720px) {
+@media only screen and (max-width: 800px) {
   #editorcontainerbox {
     margin-bottom: 39px; /* Leave space for the bottom toolbar on mobile */
   }
