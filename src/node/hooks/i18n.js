@@ -57,8 +57,9 @@ function getAllLocales() {
 
   // Add custom strings from settings.json
   // Since this is user-supplied, we'll do some extra sanity checks
-
-  const wrongFormatErr = Error("customLocaleStrings in wrong format. See README.md.")
+  const wrongFormatErr = Error(
+    "customLocaleStrings in wrong format. See documentation " +
+    "for Customization for Administrators, under Localization.")
   if (settings.customLocaleStrings) {
     if (typeof settings.customLocaleStrings !== "object") throw wrongFormatErr
     _.each(settings.customLocaleStrings, function(overrides, langcode) {
