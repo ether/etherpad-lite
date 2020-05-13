@@ -308,6 +308,11 @@ exports.scrollWhenFocusLineIsOutOfViewport = {
 exports.exposeVersion = false;
 
 /*
+ * Override any strings found in locale directories
+ */
+exports.customLocaleStrings = {};
+
+/*
  * From Etherpad 1.8.3 onwards, import and export of pads is always rate
  * limited.
  *
