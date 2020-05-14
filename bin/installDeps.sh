@@ -45,12 +45,7 @@ require_minimal_version() {
 }
 
 # Move to the folder where ep-lite is installed
-cd "$(dirname "$0")"
-
-# Was this script started in the bin folder? if yes move out
-if [ -d "../bin" ]; then
-  cd "../"
-fi
+cd "$(dirname "$0")"/..
 
 # Is node installed?
 # Not checking io.js, default installation creates a symbolic link to node

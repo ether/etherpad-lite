@@ -6,12 +6,7 @@ error() { log "ERROR: $@" >&2; }
 fatal() { error "$@"; exit 1; }
 
 # Move to the folder where ep-lite is installed
-cd "$(dirname "$0")"
-
-# Was this script started in the bin folder? if yes move out
-if [ -d "../bin" ]; then
-  cd "../"
-fi
+cd "$(dirname "$0")"/..
 
 ignoreRoot=0
 for ARG in "$@"
