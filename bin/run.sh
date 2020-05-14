@@ -9,8 +9,7 @@ fatal() { error "$@"; exit 1; }
 cd "$(dirname "$0")"/..
 
 ignoreRoot=0
-for ARG in "$@"
-do
+for ARG in "$@"; do
   if [ "$ARG" = "--root" ]; then
     ignoreRoot=1
   fi
