@@ -25,12 +25,7 @@ LAST_EMAIL_SEND=0
 LOG="$1"
 
 # Move to the folder where ep-lite is installed
-cd "$(dirname "$0")"
-
-# Was this script started in the bin folder? if yes move out
-if [ -d "../bin" ]; then
-  cd "../"
-fi
+cd "$(dirname "$0")"/..
 
 # Check if a logfile parameter is set
 [ -n "${LOG}" ] || fatal "Set a logfile as the first parameter"
