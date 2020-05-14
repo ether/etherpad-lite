@@ -36,8 +36,7 @@ fi
 [ -n "${LOG}" ] || fatal "Set a logfile as the first parameter"
 
 shift
-while [ 1 ]
-do
+while true; do
   # Try to touch the file if it doesn't exist
   [ -f "${LOG}" ] || touch "${LOG}" || fatal "Logfile '${LOG}' is not writeable"
 
