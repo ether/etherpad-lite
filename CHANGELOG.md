@@ -1,3 +1,11 @@
+# 1.8.4
+* FIX: fix a performance regression on MySQL introduced in 1.8.3
+* FIX: when running behind a reverse proxy and exposed in an inner directory, fonts and toolbar icons should now be visible. This is a regression introduced in 1.8.3
+* FIX: cleanups in the UI after the CSS rehaul of 1.8.3
+* MINOR: protect against bugged/stale UI elements after updates. An explicit cache busting via random query string is performed at each start. This needs to be replaced with hashed names in static assets.
+* MINOR: improved some tests
+* MINOR: fixed long-standing bugs in the maintenance tools in /bin (migrateDirtyDBtoRealDB, rebuildPad, convert, importSqlFile)
+
 # 1.8.3
 * FEATURE: colibris is now the default skin for new installs
 * FEATURE: improved colibris visuals, and migrated to Flexbox layout
