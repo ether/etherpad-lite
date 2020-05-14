@@ -41,6 +41,8 @@ while true; do
   # Start the application
   bin/run.sh "$@" >>${LOG} 2>>${LOG}
 
+  TIME_FMT=$(date)
+
   # Send email
   if [ "$ERROR_HANDLING" = 1 ]; then
     TIME_NOW=$(date +%s)
@@ -49,7 +51,7 @@ while true; do
     if [ "$TIME_SINCE_LAST_SEND" -gt "$TIME_BETWEEN_EMAILS" ]; then
       {
         cat <<EOF
-Server was restarted at: $(date)
+Server was restarted at: ${TIME_FMT}
 The last 50 lines of the log before the error happens:
 
 EOF
@@ -60,7 +62,7 @@ EOF
     fi
   fi
 
-  pecho "RESTART!" >>${LOG}
+  pecho "RESTART! ${TIME_FMT}" >>${LOG}
 
   # Sleep 10 seconds before restart
   sleep 10
