@@ -48,39 +48,39 @@ require_minimal_version() {
   fi
 }
 
-#Move to the folder where ep-lite is installed
+# Move to the folder where ep-lite is installed
 cd $(dirname $0)
 
-#Was this script started in the bin folder? if yes move out
+# Was this script started in the bin folder? if yes move out
 if [ -d "../bin" ]; then
   cd "../"
 fi
 
-#Is node installed?
-#Not checking io.js, default installation creates a symbolic link to node
+# Is node installed?
+# Not checking io.js, default installation creates a symbolic link to node
 hash node > /dev/null 2>&1 || {
   echo "Please install node.js ( https://nodejs.org )" >&2
   exit 1
 }
 
-#Is npm installed?
+# Is npm installed?
 hash npm > /dev/null 2>&1 || {
   echo "Please install npm ( https://npmjs.org )" >&2
   exit 1
 }
 
-#Check npm version
+# Check npm version
 NPM_VERSION_STRING=$(npm --version)
 
 require_minimal_version "npm" "$NPM_VERSION_STRING" "$REQUIRED_NPM_MAJOR" "$REQUIRED_NPM_MINOR"
 
-#Check node version
+# Check node version
 NODE_VERSION_STRING=$(node --version)
 NODE_VERSION_STRING=${NODE_VERSION_STRING#"v"}
 
 require_minimal_version "nodejs" "$NODE_VERSION_STRING" "$REQUIRED_NODE_MAJOR" "$REQUIRED_NODE_MINOR"
 
-#Get the name of the settings file
+# Get the name of the settings file
 settings="settings.json"
 a='';
 for arg in "$@"; do
@@ -88,7 +88,7 @@ for arg in "$@"; do
   a=$arg
 done
 
-#Does a $settings exist? if not copy the template
+# Does a $settings exist? if not copy the template
 if [ ! -f $settings ]; then
   echo "Copy the settings template to $settings..."
   cp settings.json.template $settings || exit 1
@@ -106,7 +106,7 @@ echo "Ensure that all dependencies are up to date...  If this is the first time 
   exit 1
 }
 
-#Remove all minified data to force node creating it new
+# Remove all minified data to force node creating it new
 echo "Clearing minified cache..."
 rm -f var/minified*
 
