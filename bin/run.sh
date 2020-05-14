@@ -26,10 +26,7 @@ if [ "$(id -u)" -eq 0 ] && [ $ignoreRoot -eq 0 ]; then
   echo "You shouldn't start Etherpad as root!"
   echo "Please type 'Etherpad rocks my socks' or supply the '--root' argument if you still want to start it as root"
   read rocks
-  if [ ! "$rocks" = "Etherpad rocks my socks" ]
-  then
-    fatal "Your input was incorrect"
-  fi
+  [ "$rocks" = "Etherpad rocks my socks" ] || fatal "Your input was incorrect"
 fi
 
 # Prepare the environment

@@ -25,13 +25,9 @@ require_minimal_version() {
   DETECTED_MAJOR=$(pecho $VERSION_STRING | cut -s -d "." -f 1)
   DETECTED_MINOR=$(pecho $VERSION_STRING | cut -s -d "." -f 2)
 
-  if [ -z "$DETECTED_MAJOR" ]; then
-    fatal "Cannot extract $PROGRAM_LABEL major version from version string \"$VERSION_STRING\""
-  fi
+  [ -n "$DETECTED_MAJOR" ] || fatal "Cannot extract $PROGRAM_LABEL major version from version string \"$VERSION_STRING\""
 
-  if [ -z "$DETECTED_MINOR" ]; then
-    fatal "Cannot extract $PROGRAM_LABEL minor version from version string \"$VERSION_STRING\""
-  fi
+  [ -n "$DETECTED_MINOR" ] || fatal "Cannot extract $PROGRAM_LABEL minor version from version string \"$VERSION_STRING\""
 
   case "$DETECTED_MAJOR" in
       ''|*[!0-9]*)
@@ -44,9 +40,8 @@ require_minimal_version() {
         fatal "$PROGRAM_LABEL minor version from \"$VERSION_STRING\" is not a number. Detected: \"$DETECTED_MINOR\""
   esac
 
-  if [ "$DETECTED_MAJOR" -lt "$REQUIRED_MAJOR" ] || ([ "$DETECTED_MAJOR" -eq "$REQUIRED_MAJOR" ] && [ "$DETECTED_MINOR" -lt "$REQUIRED_MINOR" ]); then
-    fatal "Your $PROGRAM_LABEL version \"$VERSION_STRING\" is too old. $PROGRAM_LABEL $REQUIRED_MAJOR.$REQUIRED_MINOR.x or higher is required."
-  fi
+  [ "$DETECTED_MAJOR" -gt "$REQUIRED_MAJOR" ] || ([ "$DETECTED_MAJOR" -eq "$REQUIRED_MAJOR" ] && [ "$DETECTED_MINOR" -ge "$REQUIRED_MINOR" ]) \
+    || fatal "Your $PROGRAM_LABEL version \"$VERSION_STRING\" is too old. $PROGRAM_LABEL $REQUIRED_MAJOR.$REQUIRED_MINOR.x or higher is required."
 }
 
 # Move to the folder where ep-lite is installed
