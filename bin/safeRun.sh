@@ -16,6 +16,11 @@ TIME_BETWEEN_EMAILS=600 # 10 minutes
 
 # DON'T EDIT AFTER THIS LINE
 
+pecho() { printf %s\\n "$*"; }
+log() { pecho "$@"; }
+error() { log "ERROR: $@" >&2; }
+fatal() { error "$@"; exit 1; }
+
 LAST_EMAIL_SEND=0
 LOG="$1"
 
@@ -29,8 +34,7 @@ fi
 
 # Check if a logfile parameter is set
 if [ -z "${LOG}" ]; then
-  echo "Set a logfile as the first parameter"
-  exit 1
+  fatal "Set a logfile as the first parameter"
 fi
 
 shift
@@ -38,13 +42,12 @@ while [ 1 ]
 do
   # Try to touch the file if it doesn't exist
   if [ ! -f ${LOG} ]; then
-    touch ${LOG} || ( echo "Logfile '${LOG}' is not writeable" && exit 1 )
+    touch ${LOG} || fatal "Logfile '${LOG}' is not writeable"
   fi
 
   # Check if the file is writeable
   if [ ! -w ${LOG} ]; then
-    echo "Logfile '${LOG}' is not writeable"
-    exit 1
+    fatal "Logfile '${LOG}' is not writeable"
   fi
 
   # Start the application
@@ -62,7 +65,7 @@ do
     fi
   fi
 
-  echo "RESTART!" >>${LOG}
+  pecho "RESTART!" >>${LOG}
 
   # Sleep 10 seconds before restart
   sleep 10

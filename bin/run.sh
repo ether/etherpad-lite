@@ -1,5 +1,10 @@
 #!/bin/sh
 
+pecho() { printf %s\\n "$*"; }
+log() { pecho "$@"; }
+error() { log "ERROR: $@" >&2; }
+fatal() { error "$@"; exit 1; }
+
 # Move to the folder where ep-lite is installed
 cd $(dirname $0)
 
@@ -23,8 +28,7 @@ if [ "$(id -u)" -eq 0 ] && [ $ignoreRoot -eq 0 ]; then
   read rocks
   if [ ! "$rocks" = "Etherpad rocks my socks" ]
   then
-    echo "Your input was incorrect"
-    exit 1
+    fatal "Your input was incorrect"
   fi
 fi
 
@@ -32,7 +36,7 @@ fi
 bin/installDeps.sh "$@" || exit 1
 
 # Move to the node folder and start
-echo "Started Etherpad..."
+log "Starting Etherpad..."
 
 SCRIPTPATH=$(pwd -P)
 exec node "$SCRIPTPATH/node_modules/ep_etherpad-lite/node/server.js" "$@"
