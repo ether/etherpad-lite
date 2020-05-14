@@ -22,15 +22,15 @@ error() { log "ERROR: $@" >&2; }
 fatal() { error "$@"; exit 1; }
 
 LAST_EMAIL_SEND=0
-LOG="$1"
 
 # Move to the folder where ep-lite is installed
 cd "$(dirname "$0")"/..
 
 # Check if a logfile parameter is set
+LOG="$1"
 [ -n "${LOG}" ] || fatal "Set a logfile as the first parameter"
-
 shift
+
 while true; do
   # Try to touch the file if it doesn't exist
   [ -f "${LOG}" ] || touch "${LOG}" || fatal "Logfile '${LOG}' is not writeable"
