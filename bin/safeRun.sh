@@ -25,7 +25,7 @@ LAST_EMAIL_SEND=0
 LOG="$1"
 
 # Move to the folder where ep-lite is installed
-cd $(dirname $0)
+cd "$(dirname "$0")"
 
 # Was this script started in the bin folder? if yes move out
 if [ -d "../bin" ]; then
@@ -39,21 +39,21 @@ shift
 while [ 1 ]
 do
   # Try to touch the file if it doesn't exist
-  [ -f ${LOG} ] || touch ${LOG} || fatal "Logfile '${LOG}' is not writeable"
+  [ -f "${LOG}" ] || touch "${LOG}" || fatal "Logfile '${LOG}' is not writeable"
 
   # Check if the file is writeable
-  [ -w ${LOG} ] || fatal "Logfile '${LOG}' is not writeable"
+  [ -w "${LOG}" ] || fatal "Logfile '${LOG}' is not writeable"
 
   # Start the application
-  bin/run.sh $@ >>${LOG} 2>>${LOG}
+  bin/run.sh "$@" >>${LOG} 2>>${LOG}
 
   # Send email
-  if [ $ERROR_HANDLING = 1 ]; then
+  if [ "$ERROR_HANDLING" = 1 ]; then
     TIME_NOW=$(date +%s)
     TIME_SINCE_LAST_SEND=$(($TIME_NOW - $LAST_EMAIL_SEND))
 
-    if [ $TIME_SINCE_LAST_SEND -gt $TIME_BETWEEN_EMAILS ]; then
-      printf "Server was restarted at: $(date)\nThe last 50 lines of the log before the error happens:\n $(tail -n 50 ${LOG})" | mail -s "Pad Server was restarted" $EMAIL_ADDRESS
+    if [ "$TIME_SINCE_LAST_SEND" -gt "$TIME_BETWEEN_EMAILS" ]; then
+      printf "Server was restarted at: $(date)\nThe last 50 lines of the log before the error happens:\n $(tail -n 50 "${LOG}")" | mail -s "Pad Server was restarted" "$EMAIL_ADDRESS"
 
       LAST_EMAIL_SEND=$TIME_NOW
     fi

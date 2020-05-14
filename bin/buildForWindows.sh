@@ -7,7 +7,7 @@ fatal() { error "$@"; exit 1; }
 is_cmd() { command -v "$@" >/dev/null 2>&1; }
 
 # Move to the folder where ep-lite is installed
-cd $(dirname $0)
+cd "$(dirname "$0")"
 
 # Was this script started in the bin folder? if yes move out
 if [ -d "../bin" ]; then
@@ -27,8 +27,8 @@ START_FOLDER=$(pwd);
 TMP_FOLDER=$(mktemp -d)
 
 log "create a clean environment in $TMP_FOLDER..."
-cp -ar . $TMP_FOLDER
-cd $TMP_FOLDER
+cp -ar . "$TMP_FOLDER"
+cd "$TMP_FOLDER"
 rm -rf node_modules
 rm -f etherpad-lite-win.zip
 
@@ -55,14 +55,14 @@ log "remove git history to reduce folder size"
 rm -rf .git/objects
 
 log "remove windows jsdom-nocontextify/test folder"
-rm -rf $TMP_FOLDER/src/node_modules/wd/node_modules/request/node_modules/form-data/node_modules/combined-stream/test
-rm -rf $TMP_FOLDER/src/node_modules/nodemailer/node_modules/mailcomposer/node_modules/mimelib/node_modules/encoding/node_modules/iconv-lite/encodings/tables
+rm -rf "$TMP_FOLDER"/src/node_modules/wd/node_modules/request/node_modules/form-data/node_modules/combined-stream/test
+rm -rf "$TMP_FOLDER"/src/node_modules/nodemailer/node_modules/mailcomposer/node_modules/mimelib/node_modules/encoding/node_modules/iconv-lite/encodings/tables
 
 log "create the zip..."
-cd $TMP_FOLDER
-zip -9 -r $START_FOLDER/etherpad-lite-win.zip ./*
+cd "$TMP_FOLDER"
+zip -9 -r "$START_FOLDER"/etherpad-lite-win.zip ./*
 
 log "clean up..."
-rm -rf $TMP_FOLDER
+rm -rf "$TMP_FOLDER"
 
 log "Finished. You can find the zip in the Etherpad root folder, it's called etherpad-lite-win.zip"
