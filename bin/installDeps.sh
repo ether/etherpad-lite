@@ -22,8 +22,8 @@ require_minimal_version() {
 
   # Flag -s (--only-delimited on GNU cut) ensures no string is returned
   # when there is no match
-  DETECTED_MAJOR=$(pecho $VERSION_STRING | cut -s -d "." -f 1)
-  DETECTED_MINOR=$(pecho $VERSION_STRING | cut -s -d "." -f 2)
+  DETECTED_MAJOR=$(pecho "$VERSION_STRING" | cut -s -d "." -f 1)
+  DETECTED_MINOR=$(pecho "$VERSION_STRING" | cut -s -d "." -f 2)
 
   [ -n "$DETECTED_MAJOR" ] || fatal "Cannot extract $PROGRAM_LABEL major version from version string \"$VERSION_STRING\""
 
@@ -45,7 +45,7 @@ require_minimal_version() {
 }
 
 # Move to the folder where ep-lite is installed
-cd $(dirname $0)
+cd "$(dirname "$0")"
 
 # Was this script started in the bin folder? if yes move out
 if [ -d "../bin" ]; then
@@ -79,9 +79,9 @@ for arg in "$@"; do
 done
 
 # Does a $settings exist? if not copy the template
-if [ ! -f $settings ]; then
+if [ ! -f "$settings" ]; then
   log "Copy the settings template to $settings..."
-  cp settings.json.template $settings || exit 1
+  cp settings.json.template "$settings" || exit 1
 fi
 
 log "Ensure that all dependencies are up to date...  If this is the first time you have run Etherpad please be patient."
