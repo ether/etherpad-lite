@@ -18,8 +18,12 @@ done
 
 # Stop the script if it's started as root
 if [ "$(id -u)" -eq 0 ] && [ "$ignoreRoot" -eq 0 ]; then
-  echo "You shouldn't start Etherpad as root!"
-  echo "Please type 'Etherpad rocks my socks' or supply the '--root' argument if you still want to start it as root"
+  cat <<EOF >&2
+You shouldn't start Etherpad as root!
+Please type 'Etherpad rocks my socks' (or restart with the '--root'
+argument) if you still want to start it as root:
+EOF
+  printf "> " >&2
   read rocks
   [ "$rocks" = "Etherpad rocks my socks" ] || fatal "Your input was incorrect"
 fi
