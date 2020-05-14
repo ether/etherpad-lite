@@ -41,7 +41,7 @@ while true; do
   # Start the application
   bin/run.sh "$@" >>${LOG} 2>>${LOG}
 
-  TIME_FMT=$(date)
+  TIME_FMT=$(date +%Y-%m-%dT%H:%M:%S%z)
 
   # Send email
   if [ "$ERROR_HANDLING" = 1 ]; then
