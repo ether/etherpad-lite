@@ -33,22 +33,16 @@ if [ -d "../bin" ]; then
 fi
 
 # Check if a logfile parameter is set
-if [ -z "${LOG}" ]; then
-  fatal "Set a logfile as the first parameter"
-fi
+[ -n "${LOG}" ] || fatal "Set a logfile as the first parameter"
 
 shift
 while [ 1 ]
 do
   # Try to touch the file if it doesn't exist
-  if [ ! -f ${LOG} ]; then
-    touch ${LOG} || fatal "Logfile '${LOG}' is not writeable"
-  fi
+  [ -f ${LOG} ] || touch ${LOG} || fatal "Logfile '${LOG}' is not writeable"
 
   # Check if the file is writeable
-  if [ ! -w ${LOG} ]; then
-    fatal "Logfile '${LOG}' is not writeable"
-  fi
+  [ -w ${LOG} ] || fatal "Logfile '${LOG}' is not writeable"
 
   # Start the application
   bin/run.sh $@ >>${LOG} 2>>${LOG}
