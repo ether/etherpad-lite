@@ -52,11 +52,11 @@ while true; do
       {
         cat <<EOF
 Server was restarted at: ${TIME_FMT}
-The last 50 lines of the log before the error happens:
+The last 50 lines of the log before the server exited:
 
 EOF
         tail -n 50 "${LOG}"
-      } | mail -s "Pad Server was restarted" "$EMAIL_ADDRESS"
+      } | mail -s "Etherpad restarted" "$EMAIL_ADDRESS"
 
       LAST_EMAIL_SEND=$TIME_NOW
     fi
