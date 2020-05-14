@@ -10,7 +10,7 @@ if(process.argv.length != 4 && process.argv.length != 5) {
 
 var npm = require("../src/node_modules/npm");
 var async = require("../src/node_modules/async");
-var ueberDB = require("../src/node_modules/ueberDB");
+var ueberDB = require("../src/node_modules/ueberdb2");
 
 var padId = process.argv[2];
 var newRevHead = process.argv[3];
