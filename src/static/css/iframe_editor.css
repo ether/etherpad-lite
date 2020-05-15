@@ -25,7 +25,7 @@ html.inner-editor {
 
 /* ACE-PAD Container (i.e. where the text is displayed) */
 #innerdocbody {
-  padding: 10px;
+  padding: 15px;
   overflow: hidden;
   background-color: white;
   line-height: 1.6;

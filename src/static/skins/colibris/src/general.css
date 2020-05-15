@@ -1,7 +1,3 @@
-html {
-  font-size: 15px;
-}
-
 body {
   color: #485365;
   color: var(--text-color);
