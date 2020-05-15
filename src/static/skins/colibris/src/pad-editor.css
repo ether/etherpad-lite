@@ -6,29 +6,3 @@
   color: #485365;
   color: var(--text-color);
 }
-
-#innerdocbody span, #innerdocbody span {
-  padding: 4px 0 !important;
-}
-
-#innerdocbody h1 span, #innerdocbody h1 span {
-  padding: 0;
-}
-
-option {
-  text-transform: capitalize;
-}
-
-#innerdocbody h1 {
-  font-size: 2.5em !important;
-}
-
-#innerdocbody h3 {
-  font-size: 1.15em;
-  letter-spacing: 1px;
-}
-
-#innerdocbody a {
-  color: #64d29b;
-  color: var(--primary-color);
-}

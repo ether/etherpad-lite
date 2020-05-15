@@ -61,7 +61,7 @@
     "slide": "1.1.6",
     "socket.io": "2.1.1",
     "tinycon": "0.0.1",
-    "ueberdb2": "0.4.5",
+    "ueberdb2": "0.4.9",
     "uglify-js": "3.8.1",
     "underscore": "1.8.3",
     "unorm": "1.4.1"
@@ -87,6 +87,6 @@
     "test": "nyc mocha --timeout 5000 ../tests/backend/specs/api",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api"
   },
-  "version": "1.8.3",
+  "version": "1.8.4",
   "license": "Apache-2.0"
 }

@@ -54,7 +54,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "プレーンテキストまたは HTML ファイルからのみインポートできます。より高度なインポート機能を使用するには、<a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">AbiWord をインストール</a>してください。",
+	"pad.importExport.abiword.innerHTML": "プレーンテキストまたは HTML ファイルからのみインポートできます。より高度なインポート機能を使用するには、<a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">AbiWord またはLibreOfficeをインストール</a>してください。",
 	"pad.modals.connected": "接続されました。",
 	"pad.modals.reconnecting": "パッドに再接続中...",
 	"pad.modals.forcereconnect": "強制的に再接続",
@@ -122,7 +122,7 @@
 	"pad.userlist.guest": "ゲスト",
 	"pad.userlist.deny": "拒否",
 	"pad.userlist.approve": "承認",
-	"pad.editbar.clearcolors": "文書全体の作者の色分けを消去しますか?",
+	"pad.editbar.clearcolors": "文書全体の作者の色分けを消去しますか? 取り消しはできません。",
 	"pad.impexp.importbutton": "インポートする",
 	"pad.impexp.importing": "インポート中...",
 	"pad.impexp.confirmimport": "ファイルをインポートすると、パッドの現在のテキストが上書きされます。本当に続行しますか?",
@@ -131,5 +131,7 @@
 	"pad.impexp.uploadFailed": "アップロードに失敗しました。もう一度お試しください",
 	"pad.impexp.importfailed": "インポートに失敗しました",
 	"pad.impexp.copypaste": "コピー & ペーストしてください",
-	"pad.impexp.exportdisabled": "{{type}}形式でのエクスポートは無効になっています。詳細はシステム管理者にお問い合わせください。"
+	"pad.impexp.exportdisabled": "{{type}}形式でのエクスポートは無効になっています。詳細はシステム管理者にお問い合わせください。",
+	"pad.impexp.maxFileSize": "ファイルが重すぎます。サイト管理者に連絡してインポート可能なファイルサイズの上限を引き上げてもらう必要があります",
+	"pad.impexp.permission": "このパッドに寄稿した実績がないため、インポートを無効にしました。まず寄稿をしてから再度、インポートしてください"
 }

@@ -573,6 +573,8 @@ var pad = {
       mobileMatch.addListener(checkChatAndUsersVisibility); // check if window resized
       setTimeout(function() { checkChatAndUsersVisibility(mobileMatch); }, 0); // check now after load
 
+      $('#editorcontainer').addClass('initialized');
+
       hooks.aCallAll("postAceInit", {ace: padeditor.ace, pad: pad});
     }
   },

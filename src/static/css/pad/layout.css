@@ -29,6 +29,9 @@ body {
   height: auto;
   flex: 1 auto;
 }
+#editorcontainerbox #editorcontainer:not(.initialized) {
+  visibility: hidden;
+}
 #editorcontainerbox #editorcontainer iframe {
   width: 100%;
   height: auto;
@@ -44,7 +47,7 @@ body {
   width: 0; /* hide when the container is empty */
 }
 
-@media only screen and (max-width: 720px) {
+@media only screen and (max-width: 800px) {
   #editorcontainerbox {
     margin-bottom: 39px; /* Leave space for the bottom toolbar on mobile */
   }

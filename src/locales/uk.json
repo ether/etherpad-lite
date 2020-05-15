@@ -59,7 +59,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (документ OpenOffice)",
-	"pad.importExport.abiword.innerHTML": "Ви можете імпортувати лище формати простого тексту або HTML. Для більш просунутих способів імпорту <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">встановіть AbiWord</a>.",
+	"pad.importExport.abiword.innerHTML": "Ви можете імпортувати лише у форматі простого тексту або HTML. Для більш просунутих способів імпорту <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">встановіть AbiWord або LibreOffice</a>.",
 	"pad.modals.connected": "З'єднано.",
 	"pad.modals.reconnecting": "Перепідлючення до Вашого документа..",
 	"pad.modals.forcereconnect": "Примусове перепідключення",
@@ -136,5 +136,7 @@
 	"pad.impexp.uploadFailed": "Завантаження не вдалось, будь ласка, спробуйте знову",
 	"pad.impexp.importfailed": "Помилка при імпортуванні",
 	"pad.impexp.copypaste": "Будь ласка, скопіюйте та вставте",
-	"pad.impexp.exportdisabled": "Експорт у формат {{type}} вимкнено. Будь ласка, зв'яжіться із Вашим системним адміністратором за деталями."
+	"pad.impexp.exportdisabled": "Експорт у формат {{type}} вимкнено. Будь ласка, зв'яжіться із Вашим системним адміністратором за деталями.",
+	"pad.impexp.maxFileSize": "Файл завеликий. Зверніться до адміністратора сайту для збільшення максимально дозволеного розміру файлів для імпорту",
+	"pad.impexp.permission": "Імпорт є вимкненим, оскільки ви ніколи не працювали із цим документом. Будь ласка, відредагуйте хоча б раз перед тим, як зробити імпорт"
 }

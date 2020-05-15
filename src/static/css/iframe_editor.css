@@ -28,10 +28,41 @@ html.inner-editor {
   padding: 10px;
   overflow: hidden;
   background-color: white;
+
+  /* Be careful editing following rules. Longs words should not overflow, ep_align justify should work,
+     Test on chrome, firefox and safari... Copy / Paste a word inside a sentence should not add line-breaks
+     and preserve the style */
+  display: block; /* for safari and firefox, otherwise the break-word does not work */
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 #innerdocbody, #sidediv {
   padding-top: 10px; /* Both must have same top padding, so line number are aligned with the rows */
   padding-bottom: 10px; /* some space when we scroll to the bottom */
+}
+
+#innerdocbody a {
+  color: #2e96f3;
+}
+#innerdocbody.authorColors [class^='author-'] a {
+  color: inherit;
+}
+
+#innerdocbody span {
+  line-height: 125%;
+  padding: 6px 0 !important;
+}
+
+option {
+  text-transform: capitalize;
+}
+
+#innerdocbody h1,
+#innerdocbody h2,
+#innerdocbody h3,
+#innerdocbody h4 {
+  margin-bottom: .5em;
 }
 
 /* --------------------- */
@@ -44,39 +75,6 @@ body.mozilla, body.safari {
 .safari div {
   padding-right: 1px; /* prevents the caret from disappearing on the longest line of the doc */
 }
-span { line-height: 125%; }
-
-
-/* -------------- */
-/* -- WRAPPING -- */
-/* -------------- */
-
-body {
-  white-space: nowrap;
-  word-wrap: normal;
-}
-body.doesWrap {
-  display: block !important;
-  /* white-space: pre-wrap; */
-  /*
-    Must be pre-wrap to keep trailing spaces. Otherwise you get a zombie caret,
-    walking around your screen (see #1766).
-    WARNING: Enabling this causes Paste as plain text in Chrome to remove line breaks
-    this is probably undesirable
-    WARNING: This causes copy & paste events to lose bold etc. attributes
-    NOTE: The walking-zombie caret issue seems to have been fixed in FF upstream
-    so let's try diabling pre-wrap and see how we get on now.
-    For more details see: https://github.com/ether/etherpad-lite/issues/2574
-  */
-  word-wrap: break-word; /* fix for issue #1648 - firefox not wrapping long lines (without spaces) correctly */
-}
-.noprewrap{
-  white-space: normal;
-}
-body.doesWrap:not(.noprewrap) > div {
-  /* Related to #1766 */
-  white-space: pre-wrap;
-}
 
 
 /* ------------------------------------------ */
@@ -84,12 +82,13 @@ body.doesWrap:not(.noprewrap) > div {
 /* ------------------------------------------ */
 
 #sidediv {
-  font-size: 11px;
-  font-family: monospace;
-  padding-right: 5px;
-  padding-left: 12px;
   background-color: transparent;
   border-right: 1px solid #ccc;
+}
+#sidediv .line-number {
+  font-size: 9px;
+  padding: 0 10px;
+  font-family: monospace;
 }
 #sidedivinner {
   text-align: right;
@@ -98,12 +97,8 @@ body.doesWrap:not(.noprewrap) > div {
 #sidediv:not(.sidedivdelayed) { /* before sidediv get initialized, hide text */
   color: transparent;
 }
-#sidediv.sidedivhidden {
-  /* Do not use display: none to hide the sidediv, otherwise the parent container does not
-       get its height properly calculated by flexboxes */
-  visibility: hidden;
-  width: 0;
-  padding: 0;
+.line-numbers-hidden #sidediv .line-number {
+  display: none;
 }
 #linemetricsdiv {
   position: absolute;
@@ -114,7 +109,7 @@ body.doesWrap:not(.noprewrap) > div {
   font-size: 12px; /* overridden by lineMetricsDiv.style */
   font-family: monospace; /* overridden by lineMetricsDiv.style */
 }
-@media (max-width: 720px) {
+@media (max-width: 800px) {
   #sidediv {
     /* Do not use display: none to hide the sidediv, otherwise the parent container does not
        get its height properly calculated by flexboxes */
@@ -139,7 +134,6 @@ body.doesWrap:not(.noprewrap) > div {
 }
 #innerdocbody a {
   cursor: pointer !important;
-  white-space:pre-wrap;
 }
 body.grayedout {
   background-color: #eee !important

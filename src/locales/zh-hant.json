@@ -58,7 +58,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF（開放文件格式）",
-	"pad.importExport.abiword.innerHTML": "您只可以從純文字或 HTML 格式檔匯入。<a href=\"ttps://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">安裝\n AbiWord </a>以取得更多進階的匯入功能。",
+	"pad.importExport.abiword.innerHTML": "您只可以從純文字或 HTML 格式檔匯入。<a href=\"ttps://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">安裝\n AbiWord 或是 LibreOffice</a> 以取得更多進階的匯入功能。",
 	"pad.modals.connected": "已連線。",
 	"pad.modals.reconnecting": "重新連線到您的記事本…",
 	"pad.modals.forcereconnect": "強制重新連線",
@@ -135,5 +135,7 @@
 	"pad.impexp.uploadFailed": "上載失敗，請重試",
 	"pad.impexp.importfailed": "匯入失敗",
 	"pad.impexp.copypaste": "請複製貼上",
-	"pad.impexp.exportdisabled": "{{type}}格式的匯出被禁用。有關詳情，請與您的系統管理員聯繫。"
+	"pad.impexp.exportdisabled": "{{type}}格式的匯出被禁用。有關詳情，請與您的系統管理員聯繫。",
+	"pad.impexp.maxFileSize": "檔案太大。請聯絡您的網站管理員來增加用於匯入的允許檔案大小。",
+	"pad.impexp.permission": "因為您已沒在此記事本上貢獻，匯入功能已停用。在進行匯入之前，至少要做出一次貢獻"
 }

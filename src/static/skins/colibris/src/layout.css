@@ -7,14 +7,11 @@
 #editorcontainerbox {
   background-color: #f2f3f4;
   background-color: var(--bg-color);
+  color: var(--text-color);
 }
 
 #editorcontainerbox .sticky-container {
   width: 250px;
-}
-
-#outerdocbody.sidediv-hidden {
-  padding-left: 0; /* sidediv hidden */
 }
 
 #outerdocbody iframe, #outerdocbody > #innerdocbody {
@@ -40,17 +37,6 @@
   padding-bottom: var(--editor-vertical-padding);
 }
 
-/* Fixs author_hover does not take in account the document padding */
-.authortooltip { margin-top: 65px !important; margin-left: 60px; }
-.caretindicator { margin-top: 61px!important; margin-left: 52px; }
-#outerdocbody.plugin-ep_author_neat .authortooltip{ margin-left: 145px; }
-#outerdocbody.plugin-ep_author_neat .caretindicator{ margin-left: 52px; margin-top: 65px!important;}
-@media (max-width:1000px) {
-  #outerdocbody.plugin-ep_author_neat .authortooltip{ margin-left: 115px; }
-  .caretindicator{ margin-left: 13px; }
-  #outerdocbody.plugin-ep_author_neat .caretindicator{ margin-left: 17px; }
-}
-
 @media (max-width:1000px) {
   #outerdocbody {
     padding-top: 0;
@@ -59,19 +45,9 @@
     max-width: none;
     border-radius: 0;
   }
-
-  .authortooltip { margin-top: 20px !important; }
-  .caretindicator { margin-top: 0px !important; }
-  #outerdocbody.plugin-ep_author_neat  .caretindicator { margin-top: 10px !important; }
-
-  #outerdocbody.plugin-ep_author_neat #sidedivinner>div:before { padding-right: 10px !important; }
-  #outerdocbody.plugin-ep_author_neat #sidedivinner.authorColors>div,
-  #outerdocbody.plugin-ep_author_neat #sidedivinner.authorColors>div.primary-none,
-  #outerdocbody.plugin-ep_author_neat #sidedivinner>div { padding-right: 6px!important; }
-  #outerdocbody.plugin-ep_author_neat #sidediv { padding-right: 0 !important; }
 }
 
-@media only screen and (max-width: 720px) {
+@media only screen and (max-width: 800px) {
   #editorcontainerbox {
     margin-bottom: 39px; /* margin for bottom toolbar */
   }

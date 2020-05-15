@@ -52,7 +52,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "Du kan endast importera från oformaterad text eller HTML-format. För mer avancerade importfunktioner, var god <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">installera AbiWord</a>.",
+	"pad.importExport.abiword.innerHTML": "Du kan endast importera från oformaterad text eller HTML-format. För mer avancerade importfunktioner, var god <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">installera AbiWord eller LibreOffice</a>.",
 	"pad.modals.connected": "Ansluten.",
 	"pad.modals.reconnecting": "Återansluter till ditt block...",
 	"pad.modals.forcereconnect": "Tvinga återanslutning",
@@ -120,7 +120,7 @@
 	"pad.userlist.guest": "Gäst",
 	"pad.userlist.deny": "Neka",
 	"pad.userlist.approve": "Godkänn",
-	"pad.editbar.clearcolors": "Rensa författarfärger på hela dokumentet?",
+	"pad.editbar.clearcolors": "Rensa författarfärger för hela dokumentet? Detta kan inte ångras",
 	"pad.impexp.importbutton": "Importera nu",
 	"pad.impexp.importing": "Importerar...",
 	"pad.impexp.confirmimport": "Att importera en fil kommer att skriva över den aktuella texten i blocket. Är du säker på att du vill fortsätta?",
@@ -129,5 +129,7 @@
 	"pad.impexp.uploadFailed": "Uppladdningen misslyckades, var god försök igen",
 	"pad.impexp.importfailed": "Importering misslyckades",
 	"pad.impexp.copypaste": "Var god kopiera och klistra in",
-	"pad.impexp.exportdisabled": "Exportering av formatet {{type}} är inaktiverad. Var god kontakta din systemadministratör för mer information."
+	"pad.impexp.exportdisabled": "Exportering av formatet {{type}} är inaktiverad. Var god kontakta din systemadministratör för mer information.",
+	"pad.impexp.maxFileSize": "Filen är för stor. Kontakta din systemadministratör för att öka den tillåtna filstorleken för importering",
+	"pad.impexp.permission": "Import är inaktiverat eftersom du aldrig har bidragit detta block. var god bidra minst en gång innan du importerar"
 }
