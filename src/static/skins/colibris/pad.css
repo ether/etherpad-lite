@@ -50,21 +50,15 @@
 
   --main-font-family: Quicksand, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 
-  --editor-horizontal-padding: 55px;
-  --editor-vertical-padding: 40px;
+  /* Those padding like an external padding. Basic padding of 15px is always applied */
+  --editor-horizontal-padding: 40px;
+  --editor-vertical-padding: 25px;
 }
 
 @media (max-width:1000px) {
   :root {
-    --editor-horizontal-padding: 15px;
-    --editor-vertical-padding: 15px;
-  }
-}
-
-@media (max-width:600px) {
-  :root {
-    --editor-horizontal-padding: 15px;
-    --editor-vertical-padding: 15px;
+    --editor-horizontal-padding: 0px;
+    --editor-vertical-padding: 0px;
   }
 }
 

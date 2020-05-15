@@ -189,8 +189,8 @@
   .light-editor.light-background,
   .super-dark-editor.super-dark-background,
   .dark-editor.dark-background {
-    --editor-horizontal-padding: 35px;
-    --editor-vertical-padding: 20px;
+    --editor-horizontal-padding: 20px;
+    --editor-vertical-padding: 5px;
   }
 }
 
@@ -218,8 +218,8 @@
 }
 @media (min-width: 1001px) {
   .full-width-editor {
-    --editor-horizontal-padding: 35px !important;
-    --editor-vertical-padding: 20px !important;
+    --editor-horizontal-padding: 20px !important;
+    --editor-vertical-padding: 5px !important;
   }
 }
 .full-width-editor ::-webkit-scrollbar-track,
