@@ -149,10 +149,7 @@
               <label for="viewfontmenu" data-l10n-id="pad.settings.fontType">Font type:</label>
               <select id="viewfontmenu">
                 <option value="" data-l10n-id="pad.settings.fontType.normal">Normal</option>
-                <%= fonts = [
-                          "Quicksand", "Roboto", "Montserrat", "OpenDyslexic", "monospace", "RobotoMono",
-                          "Arial", "Georgia", "Times New Roman", "Verdana", "Courrier New",
-                          "Open Sans", "Lato", "Helvetica" ] %>
+                <%= fonts = ["Quicksand", "Roboto", "Alegreya", "PlayfairDisplay", "Montserrat", "OpenDyslexic", "RobotoMono"] %>
                 <% for(var i=0; i < fonts.length; i++) { %>
                   <option value="<%=fonts[i]%>"><%=fonts[i]%></option>
                 <% } %>

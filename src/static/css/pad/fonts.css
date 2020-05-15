@@ -59,3 +59,21 @@
     font-weight: bold;
     font-style: normal;
 }
+
+
+@font-face {
+  font-family: 'Alegreya';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Alegreya Medium'), local('Alegreya-Medium'),
+       url('../../../static/font/Aleygreya-Medium.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+       url('../../../static/font/Aleygreya-Medium.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+@font-face {
+  font-family: 'Alegreya';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Alegreya ExtraBold'), local('Alegreya-ExtraBold'),
+       url('../../../static/font/Aleygreya-ExtraBold.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+       url('../../../static/font/Aleygreya-ExtraBold.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
