@@ -35,6 +35,16 @@ api.get('/api/')
           var groupID = res.body.data.groupID;
           console.log("groupID", groupID);
 
+          // creating a group pad
+          api.post('/api/'+apiVersion+'/createGroupPad?apikey='+apikey+'&groupID='+groupID)
+          .expect(function(res){
+            if (res.body.code === 1){
+              console.error("Error creating author", res.body);
+            }else{
+              console.log("Test Pad ID ====> ", res.body.data.padID)
+            }
+          }).end(function(){})
+
           // create an author
           api.post('/api/'+apiVersion+'/createAuthor?apikey='+apikey)
           .expect(function(res){
@@ -51,7 +61,7 @@ api.get('/api/')
                 if (res.body.code === 1){
                   console.error("Error creating author", res.body);
                 }else{
-                  console.log("Session made, set header session value to ", res.body.data.sessionID);
+                  console.log("Session made: ====> create a cookie named sessionID and set it's value to ", res.body.data.sessionID);
                 }
               })
               .end(function(){}) // I shouldn't have nested but here we are..  it's not too ugly :P
