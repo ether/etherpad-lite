@@ -91,7 +91,7 @@ Available blocks in `pad.html` are:
  * `timesliderEditbarRight`
  * `modals`
 
- `index.html` blocks:
+`index.html` blocks:
 
  * `indexWrapper` - contains the form for creating new pads
 

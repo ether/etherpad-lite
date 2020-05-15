@@ -32,6 +32,11 @@ select, .nice-select {
 .nice-select:hover {
   border-color: #dbdbdb;
 }
+.nice-select .current {
+  width: 90px;
+  display: inline-block;
+  overflow: hidden;
+}
 .nice-select:after {
   border-bottom: 2px solid #999;
   border-right: 2px solid #999;

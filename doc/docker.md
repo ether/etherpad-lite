@@ -38,7 +38,7 @@ docker build --tag <YOUR_USERNAME>/etherpad .
 
 Include two plugins in the container:
 ```bash
-docker build --build-arg ETHERPAD_PLUGINS="ep_codepad ep_author_neat" --tag <YOUR_USERNAME>/etherpad .
+docker build --build-arg ETHERPAD_PLUGINS="ep_comments_page ep_author_neat" --tag <YOUR_USERNAME>/etherpad .
 ```
 
 ## Running your instance:
