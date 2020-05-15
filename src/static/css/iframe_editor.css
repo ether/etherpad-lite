@@ -95,8 +95,11 @@ body.mozilla, body.safari {
 }
 #sidediv .line-number {
   font-size: 9px;
-  padding: 0 10px;
+  padding: 0 14px 0 10px;
   font-family: monospace;
+}
+.plugin-ep_author_neat #sidedivinner.authorColors .line-number {
+  padding-right: 10px;
 }
 #sidedivinner {
   text-align: right;
