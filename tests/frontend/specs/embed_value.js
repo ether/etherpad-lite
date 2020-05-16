@@ -19,8 +19,8 @@ describe("embed links", function(){
     var width = $embediFrame.attr("width");
     var height = $embediFrame.attr("height");
     var name = $embediFrame.attr("name");
-    expect(width).to.be('600');
-    expect(height).to.be('400');
+    expect(width).to.be('100%');
+    expect(height).to.be('600');
     expect(name).to.be(readonly ? "embed_readonly" : "embed_readwrite");
 
     //parse the url
