@@ -918,6 +918,15 @@ async function handleClientReady(client, message)
   let authorColorId = value.colorId;
   let authorName = value.name;
 
+  /*
+  * Here we know authorID, token and session.  We should ?always? store it..
+  * TODO: I fear that this might allow a user to pass a token for an authorID
+  * meaning that they could in theory "imitate" another author?
+  * Perhaps the fix to this is check to see if it exists first and if it
+  * does then abort..  Details: https://github.com/ether/etherpad-lite/issues/4006
+  */
+  await authorManager.setToken2Author(message.token, statusObject.authorID)
+
   // load the pad-object from the database
   let pad = await padManager.getPad(padIds.padId);
 
