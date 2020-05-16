@@ -20,7 +20,6 @@ SessionStore.prototype.get = function(sid, fn) {
   messageLogger.debug('GET ' + sid);
 
   var self = this;
-
   db.get("sessionstorage:" + sid, function(err, sess) {
     if (sess) {
       sess.cookie.expires = 'string' == typeof sess.cookie.expires ? new Date(sess.cookie.expires) : sess.cookie.expires;
@@ -38,14 +37,12 @@ SessionStore.prototype.get = function(sid, fn) {
 SessionStore.prototype.set = function(sid, sess, fn) {
   messageLogger.debug('SET ' + sid);
 
-  // don't store passwords in DB
-  if (sess.user && sess.user.password) {
-    sess.user.password = "PASSWORD_HIDDEN";
-  }
-
-  db.set("sessionstorage:" + sid, sess);
-  if (fn) {
-    process.nextTick(fn);
+  // don't store auth'd user sessions in the database
+  if (!sess.user) {
+    db.set("sessionstorage:" + sid, sess);
+    if (fn) {
+      process.nextTick(fn);
+    }
   }
 };
 
