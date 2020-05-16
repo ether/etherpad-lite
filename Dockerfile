@@ -40,9 +40,19 @@ ENV NODE_ENV=production
 #
 # Running as non-root enables running this image in platforms like OpenShift
 # that do not allow images running as root.
-RUN useradd --uid 5001 --create-home etherpad
+#
+# If any of the following args are set to the empty string, default
+# values will be chosen.
+ARG EP_HOME=
+ARG EP_UID=5001
+ARG EP_GID=0
+ARG EP_SHELL=
+RUN groupadd --system ${EP_GID:+--gid "${EP_GID}" --non-unique} etherpad && \
+    useradd --system ${EP_UID:+--uid "${EP_UID}" --non-unique} --gid etherpad \
+        ${EP_HOME:+--home-dir "${EP_HOME}"} --create-home \
+        ${EP_SHELL:+--shell "${EP_SHELL}"} etherpad
 
-RUN mkdir /opt/etherpad-lite && chown etherpad:0 /opt/etherpad-lite
+RUN mkdir /opt/etherpad-lite && chown etherpad:etherpad /opt/etherpad-lite
 
 # install abiword for DOC/PDF/ODT export
 RUN [ -z "${INSTALL_ABIWORD}" ] || (apt update && apt -y install abiword && apt clean && rm -rf /var/lib/apt/lists/*)
@@ -55,7 +65,7 @@ USER etherpad
 
 WORKDIR /opt/etherpad-lite
 
-COPY --chown=etherpad:0 ./ ./
+COPY --chown=etherpad:etherpad ./ ./
 
 # install node dependencies for Etherpad
 RUN src/bin/installDeps.sh && \
@@ -68,9 +78,9 @@ RUN src/bin/installDeps.sh && \
 RUN for PLUGIN_NAME in ${ETHERPAD_PLUGINS}; do npm install "${PLUGIN_NAME}" || exit 1; done
 
 # Copy the configuration file.
-COPY --chown=etherpad:0 ./settings.json.docker /opt/etherpad-lite/settings.json
+COPY --chown=etherpad:etherpad ./settings.json.docker /opt/etherpad-lite/settings.json
 
-# Fix permissions for root group
+# Fix group permissions
 RUN chmod -R g=u .
 
 EXPOSE 9001
