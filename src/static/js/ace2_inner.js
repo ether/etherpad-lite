@@ -157,15 +157,6 @@ function Ace2Inner(){
 
   var scheduler = parent; // hack for opera required
 
-  var textFace = 'monospace';
-  var textSize = 12;
-
-
-  function textLineHeight()
-  {
-    return Math.round(textSize * 4 / 3);
-  }
-
   var dynamicCSS = null;
   var outerDynamicCSS = null;
   var parentDynamicCSS = null;
@@ -311,25 +302,6 @@ function Ace2Inner(){
   function getAuthorColorClassSelector(oneClassName)
   {
     return ".authorColors ." + oneClassName;
-  }
-
-  function setUpTrackingCSS()
-  {
-    if (dynamicCSS)
-    {
-      var backgroundHeight = lineMetricsDiv.offsetHeight;
-      var lineHeight = textLineHeight();
-      var extraBodding = 0;
-      var extraTodding = 0;
-      if (backgroundHeight < lineHeight)
-      {
-        extraBodding = Math.ceil((lineHeight - backgroundHeight) / 2);
-        extraTodding = lineHeight - backgroundHeight - extraBodding;
-      }
-      var spanStyle = dynamicCSS.selectorStyle("#innerdocbody span");
-      spanStyle.paddingTop = extraTodding + "px";
-      spanStyle.paddingBottom = extraBodding + "px";
-    }
   }
 
   function fadeColor(colorCSS, fadeFrac)
@@ -627,26 +599,8 @@ function Ace2Inner(){
 
   function setTextFace(face)
   {
-    textFace = face;
-    root.style.fontFamily = textFace;
-    lineMetricsDiv.style.fontFamily = textFace;
-    scheduler.setTimeout(function()
-    {
-      setUpTrackingCSS();
-    }, 0);
-  }
-
-  function setTextSize(size)
-  {
-    textSize = size;
-    root.style.fontSize = textSize + "px";
-    root.style.lineHeight = textLineHeight() + "px";
-    sideDiv.style.lineHeight = textLineHeight() + "px";
-    lineMetricsDiv.style.fontSize = textSize + "px";
-    scheduler.setTimeout(function()
-    {
-      setUpTrackingCSS();
-    }, 0);
+    root.style.fontFamily = face;
+    lineMetricsDiv.style.fontFamily = face;
   }
 
   function recreateDOM()
@@ -967,7 +921,6 @@ function Ace2Inner(){
       },
       styled: setStyled,
       textface: setTextFace,
-      textsize: setTextSize,
       rtlistrue: function(value) {
         setClassPresence(root, "rtl", value)
         setClassPresence(root, "ltr", !value)
@@ -989,7 +942,6 @@ function Ace2Inner(){
   };
   editorInfo.ace_setBaseAttributedText = function(atxt, apoolJsonObj)
   {
-    setUpTrackingCSS();
     changesetTracker.setBaseAttributedText(atxt, apoolJsonObj);
   };
   editorInfo.ace_applyChangesToBase = function(c, optAuthor, apoolJsonObj)
