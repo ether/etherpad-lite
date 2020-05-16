@@ -84,7 +84,7 @@ async function doImport(req, res, padId)
         }
 
         // I hate doing indexOf here but I can't see anything to use...
-        if (err.stack.indexOf("maxFileSize") !== -1) {
+        if (err && err.stack && err.stack.indexOf("maxFileSize") !== -1) {
           reject("maxFileSize");
         }
 
