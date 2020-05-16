@@ -53,7 +53,7 @@
 	"pad.importExport.exportword": "מיקרוסופט וורד",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "באפשרותך לייבא מטקסט פשוט או מ־HTML. לאפשרויות ייבוא מתקדמות יותר יש <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">להתקין AbiWord</a>.",
+	"pad.importExport.abiword.innerHTML": "באפשרותך לייבא מטקסט פשוט או מ־HTML. לאפשרויות ייבוא מתקדמות יותר יש <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">להתקין AbiWord או LibreOffice</a>.",
 	"pad.modals.connected": "מחובר.",
 	"pad.modals.reconnecting": "מתבצע חיבור מחדש...",
 	"pad.modals.forcereconnect": "לכפות חיבור מחדש",
@@ -121,7 +121,7 @@
 	"pad.userlist.guest": "אורח",
 	"pad.userlist.deny": "לדחות",
 	"pad.userlist.approve": "לאשר",
-	"pad.editbar.clearcolors": "לנקות צבעים לסימון כותבים בכל המסמך?",
+	"pad.editbar.clearcolors": "לנקות צבעים לסימון כותבים בכל המסמך? זו פעולה בלתי הפיכה",
 	"pad.impexp.importbutton": "לייבא כעת",
 	"pad.impexp.importing": "ייבוא...",
 	"pad.impexp.confirmimport": "ייבוא של קובץ יבטל את הטקסט הנוכחי בפנקס. האם ברצונך להמשיך?",
@@ -130,5 +130,7 @@
 	"pad.impexp.uploadFailed": "ההעלאה נכשלה, נא לנסות שוב",
 	"pad.impexp.importfailed": "הייבוא נכשל",
 	"pad.impexp.copypaste": "נא להעתיק ולהדביק",
-	"pad.impexp.exportdisabled": "ייצוא בתסדיר {{type}} אינו פעיל. מנהל המערכת שלך יוכל לספר לך על זה עוד פרטים."
+	"pad.impexp.exportdisabled": "ייצוא בתסדיר {{type}} אינו פעיל. מנהל המערכת שלך יוכל לספר לך על זה עוד פרטים.",
+	"pad.impexp.maxFileSize": "הקובץ גדול מדי. נא ליצור קשר עם הנהלת האתר כדי להגדיל את הגודל המרבי שמותר לייבא.",
+	"pad.impexp.permission": "הייבוא מושבת כיוון שמעולם לא תרמת לפנקס הזה. נא לתרום לפחות פעם אחת בטרם ביצוע ניסיון ייבוא"
 }

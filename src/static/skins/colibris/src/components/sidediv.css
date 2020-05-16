@@ -8,27 +8,12 @@
   font-family: var(--main-font-family); /* the parent div have font-family monospace (line number) */
   color: #485365;
   color: var(--text-color);
-  padding-right: 18px !important;
-  text-transform: capitalize;
-  font-size: 12px !important;
   font-weight: bold;
 }
 
-#sidedivinner>div,
-#sidedivinner.authorColors>div,
-#sidedivinner.authorColors>div.primary-none {
-  padding-right: 5px !important;
-  border-right: 5px solid transparent;
-}
-
-#sidedivinner>div {
+#sidedivinner>div .line-number {
   line-height: 24px;
-  font-size: 9px !important;
   font-family: RobotoMono;
   color: #576273;
   color: var(--text-soft-color);
-}
-
-#sidedivinner.authorColors>div, #sidedivinner.authorColors>div.primary-none, #sidedivinner>div {
-  padding-right: 8px !important;
 }

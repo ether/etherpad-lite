@@ -7,6 +7,7 @@
 			"Imperadeiro98",
 			"Luckas",
 			"Macofe",
+			"Mansil alfalb",
 			"Ti4goc",
 			"Tuliouel",
 			"Waldir",
@@ -59,7 +60,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "Só é possível importar texto sem formatação ou HTML. Para obter funcionalidades de importação mais avançadas, por favor <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">instale o AbiWord</a>.",
+	"pad.importExport.abiword.innerHTML": "Só pode importar texto sem formatação ou formatos HTML. Para funcionalidades de importação mais avançadas, por favor, <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">instale o AbiWord ou LibreOffice</a>.",
 	"pad.modals.connected": "Ligado.",
 	"pad.modals.reconnecting": "A restabelecer ligação ao seu bloco…",
 	"pad.modals.forcereconnect": "Forçar restabelecimento de ligação",
@@ -127,7 +128,7 @@
 	"pad.userlist.guest": "Convidado",
 	"pad.userlist.deny": "Negar",
 	"pad.userlist.approve": "Aprovar",
-	"pad.editbar.clearcolors": "Deseja limpar as cores de autoria em todo o documento?",
+	"pad.editbar.clearcolors": "Limpar as cores de autoria em todo o documento? isto não pode ser anulado",
 	"pad.impexp.importbutton": "Importar agora",
 	"pad.impexp.importing": "Importando...",
 	"pad.impexp.confirmimport": "A importação de um ficheiro irá substituir o texto atual da nota. Tem certeza que deseja continuar?",
@@ -136,5 +137,7 @@
 	"pad.impexp.uploadFailed": "O carregamento falhou; tente novamente, por favor",
 	"pad.impexp.importfailed": "A importação falhou",
 	"pad.impexp.copypaste": "Copie e insira, por favor",
-	"pad.impexp.exportdisabled": "A exportação no formato {{type}} está desativada. Por favor, contacte o administrador do sistema para mais informações."
+	"pad.impexp.exportdisabled": "A exportação no formato {{type}} está desativada. Por favor, contacte o administrador do sistema para mais informações.",
+	"pad.impexp.maxFileSize": "Ficheiro muito grande. Contacte o administrador do ''site'' para aumentar o tamanho do ficheiro permitido para importar",
+	"pad.impexp.permission": "A importação está desativada porque nunca contribuiu para este bloco. Por favor, contribua pelo menos uma vez antes de importar"
 }

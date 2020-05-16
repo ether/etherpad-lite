@@ -20,6 +20,7 @@
  * limitations under the License.
  */
 
+var browser = require('./browser');
 var hooks = require('./pluginfw/hooks');
 var padutils = require('./pad_utils').padutils;
 var padeditor = require('./pad_editor').padeditor;
@@ -170,7 +171,15 @@ var padeditbar = (function()
         ace: padeditor.ace
       });
 
-      $('select').niceSelect();
+      /*
+       * On safari, the dropdown in the toolbar gets hidden because of toolbar
+       * overflow:hidden property. This is a bug from Safari: any children with
+       * position:fixed (like the dropdown) should be displayed no matter
+       * overflow:hidden on parent
+       */
+      if (!browser.safari) {
+          $('select').niceSelect();
+      }
 
       // When editor is scrolled, we add a class to style the editbar differently
       $('iframe[name="ace_outer"]').contents().scroll(function() {
@@ -288,13 +297,13 @@ var padeditbar = (function()
       {
         var basePath = document.location.href.substring(0, document.location.href.indexOf("/p/"));
         var readonlyLink = basePath + "/p/" + clientVars.readOnlyId;
-        $('#embedinput').val('<iframe name="embed_readonly" src="' + readonlyLink + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width=600 height=400></iframe>');
+        $('#embedinput').val('<iframe name="embed_readonly" src="' + readonlyLink + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width="100%" height="600" frameborder="0"></iframe>');
         $('#linkinput').val(readonlyLink);
       }
       else
       {
         var padurl = window.location.href.split("?")[0];
-        $('#embedinput').val('<iframe name="embed_readwrite" src="' + padurl + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width=600 height=400></iframe>');
+        $('#embedinput').val('<iframe name="embed_readwrite" src="' + padurl + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width="100%" height="600" frameborder="0"></iframe>');
         $('#linkinput').val(padurl);
       }
     },
@@ -303,7 +312,11 @@ var padeditbar = (function()
       // reset style
       $('.toolbar').removeClass('cropped')
       var menu_left = $('.toolbar .menu_left')[0];
-      if (menu_left && menu_left.scrollWidth > $('.toolbar').width()) {
+
+      // on mobile the menu_right get displayed at the bottom of the screen
+      var isMobileLayout = $('.toolbar .menu_right').css('position') === 'fixed';
+
+      if (menu_left && menu_left.scrollWidth > $('.toolbar').width() && isMobileLayout) {
         $('.toolbar').addClass('cropped');
       }
     }

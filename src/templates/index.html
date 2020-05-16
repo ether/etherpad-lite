@@ -35,8 +35,8 @@
         <link rel="shortcut icon" href="<%=settings.favicon%>">
 
         <link rel="localizations" type="application/l10n+json" href="locales.json">
-        <script type="text/javascript" src="static/js/html10n.js"></script>
-        <script type="text/javascript" src="static/js/l10n.js"></script>
+        <script type="text/javascript" src="static/js/html10n.js?v=<%=settings.randomVersionString%>"></script>
+        <script type="text/javascript" src="static/js/l10n.js?v=<%=settings.randomVersionString%>"></script>
 
         <style>
             html, body {
@@ -138,7 +138,7 @@
               width: 45px;
               height: 38px;
             }
-            @media only screen and (min-device-width: 320px) and (max-device-width: 720px) {
+            @media only screen and (min-device-width: 320px) and (max-device-width: 800px) {
               body {
                 background: #bbb;
                 background: -webkit-linear-gradient(#aaa,#eee 60%) center fixed;
@@ -156,7 +156,7 @@
               }
             }
         </style>
-        <link href="static/skins/<%=encodeURI(settings.skinName)%>/index.css" rel="stylesheet">
+        <link href="static/skins/<%=encodeURI(settings.skinName)%>/index.css?v=<%=settings.randomVersionString%>" rel="stylesheet">
 
         <div id="wrapper">
         <% e.begin_block("indexWrapper"); %>
@@ -171,7 +171,7 @@
         <% e.end_block(); %>
         </div>
 
-        <script src="static/skins/<%=encodeURI(settings.skinName)%>/index.js"></script>
+        <script src="static/skins/<%=encodeURI(settings.skinName)%>/index.js?v=<%=settings.randomVersionString%>"></script>
         <script>
             // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
             function go2Name()

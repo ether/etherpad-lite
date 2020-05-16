@@ -59,7 +59,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (документ OpenOffice)",
-	"pad.importExport.abiword.innerHTML": "Вы можете импортировать только из обычного текста или HTML. Для более продвинутых функций импорта, пожалуйста,\n <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">установите AbiWord</a>.",
+	"pad.importExport.abiword.innerHTML": "Вы можете импортировать только из обычного текста или HTML. Для более продвинутых функций импорта <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">установите AbiWord или LibreOffice</a>.",
 	"pad.modals.connected": "Подключен.",
 	"pad.modals.reconnecting": "Повторное подключение к вашему документу",
 	"pad.modals.forcereconnect": "Принудительное переподключение",
@@ -127,7 +127,7 @@
 	"pad.userlist.guest": "Гость",
 	"pad.userlist.deny": "Отклонить",
 	"pad.userlist.approve": "Утвердить",
-	"pad.editbar.clearcolors": "Очистить авторские цвета во всем документе?",
+	"pad.editbar.clearcolors": "Очистить авторские цвета во всем документе? Это действие не может быть отменено.",
 	"pad.impexp.importbutton": "Импортировать сейчас",
 	"pad.impexp.importing": "Импортирование…",
 	"pad.impexp.confirmimport": "Импорт файла перезапишет текущий текст. Вы уверены, что вы хотите продолжить?",
@@ -136,5 +136,7 @@
 	"pad.impexp.uploadFailed": "Загрузка не удалась, пожалуйста, попробуйте ещё раз",
 	"pad.impexp.importfailed": "Ошибка при импорте",
 	"pad.impexp.copypaste": "Пожалуйста, скопируйте",
-	"pad.impexp.exportdisabled": "Экспорт в формате {{type}} отключён. Для подробной информации обратитесь к системному администратору."
+	"pad.impexp.exportdisabled": "Экспорт в формате {{type}} отключён. Для подробной информации обратитесь к системному администратору.",
+	"pad.impexp.maxFileSize": "Файл слишком большой. Обратитесь к администратору сайта, чтобы увеличить разрешённый размер файла для импорта",
+	"pad.impexp.permission": "Импорт отключен, поскольку вы никогда не вносили вклад в этот документ. Пожалуйста, внесите свой вклад хотя бы один раз перед импортом"
 }

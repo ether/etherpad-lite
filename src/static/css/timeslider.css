@@ -2,9 +2,6 @@
   padding: 10px;
   display: block;
 }
-#innerdocbody {
-  margin: 0 auto;
-}
 
 .timeslider-bar {
   display: flex;
@@ -128,10 +125,11 @@
   white-space: normal;
   word-break: break-word;
   width: 100%;
-  height: 100%;
+  margin: 0 auto;
+  height: auto;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 800px) {
   #timeslider-slider #timer { display: none; }
 
   .editbarright [data-key="timeslider_returnToPad"] {

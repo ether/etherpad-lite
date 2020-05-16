@@ -56,7 +56,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "Једино можете увести са једноставног текстуалног формата или HTML формата. За компликованије функције о увозу, молимо да <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">инсталирате AbiWord</a>.",
+	"pad.importExport.abiword.innerHTML": "Једино можете увести са једноставног текстуалног формата или HTML формата. За компликованије функције о увозу, молимо да <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">инсталирате AbiWord или LibreOffice</a>.",
 	"pad.modals.connected": "Повезано.",
 	"pad.modals.reconnecting": "Поново се повезујем на ваш пад..",
 	"pad.modals.forcereconnect": "Присилно се поново повежи",
@@ -124,7 +124,7 @@
 	"pad.userlist.guest": "Гост",
 	"pad.userlist.deny": "Одбиј",
 	"pad.userlist.approve": "Одобри",
-	"pad.editbar.clearcolors": "Очисти ауторске боје за цели документ?",
+	"pad.editbar.clearcolors": "Очисти ауторске боје за цели документ? Ово се не може поништити.",
 	"pad.impexp.importbutton": "Увези одмах",
 	"pad.impexp.importing": "Увозим...",
 	"pad.impexp.confirmimport": "Увоз датотеке ће преписати тренутни текст пада. Да ли сте сигурни да желите наставити?",
@@ -133,5 +133,6 @@
 	"pad.impexp.uploadFailed": "Нисам успео да отпремим, молимо покушате поново",
 	"pad.impexp.importfailed": "Нисам успео да увезем",
 	"pad.impexp.copypaste": "Копирајте и залепите",
-	"pad.impexp.exportdisabled": "Извоз у формату {{type}} није дозвољен. Контактирајте системског администратора за детаље."
+	"pad.impexp.exportdisabled": "Извоз у формату {{type}} није дозвољен. Контактирајте системског администратора за детаље.",
+	"pad.impexp.maxFileSize": "Датотека је превелика. Контактирајте администратора сајта да повећа допуштену величину датотеке за увоз."
 }

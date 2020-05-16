@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Bjarncraft",
 			"Metalhead64",
 			"Mklehr",
 			"Nipsky",
@@ -56,7 +57,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "Sie können nur aus reinen Text- oder HTML-Formaten importieren. Für umfangreichere Importfunktionen <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">installieren Sie bitte AbiWord</a>.",
+	"pad.importExport.abiword.innerHTML": "Sie können nur aus reinen Text- oder HTML-Formaten importieren. Für umfangreichere Importfunktionen <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">installieren Sie bitte AbiWord oder LibreOffice</a>.",
 	"pad.modals.connected": "Verbunden.",
 	"pad.modals.reconnecting": "Wiederherstellen der Verbindung …",
 	"pad.modals.forcereconnect": "Erneutes Verbinden erzwingen",
@@ -133,5 +134,7 @@
 	"pad.impexp.uploadFailed": "Das Hochladen ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
 	"pad.impexp.importfailed": "Import fehlgeschlagen",
 	"pad.impexp.copypaste": "Bitte kopieren und einfügen",
-	"pad.impexp.exportdisabled": "Der Export im {{type}}-Format ist deaktiviert. Für Einzelheiten kontaktieren Sie bitte Ihren Systemadministrator."
+	"pad.impexp.exportdisabled": "Der Export im {{type}}-Format ist deaktiviert. Für Einzelheiten kontaktieren Sie bitte Ihren Systemadministrator.",
+	"pad.impexp.maxFileSize": "Datei zu groß.Kontaktiere deinen Administrator um das datei Limit für Imports zu erhöhen.",
+	"pad.impexp.permission": "Importieren ist deaktiviert weil du nichts zu diesem Pad beigeteagen hast.Bitte trage etwas bei bevor du importierst."
 }
