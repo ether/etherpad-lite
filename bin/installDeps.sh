@@ -8,6 +8,8 @@ REQUIRED_NODE_MINOR=13
 REQUIRED_NPM_MAJOR=5
 REQUIRED_NPM_MINOR=5
 
+is_cmd() { command -v "$@" >/dev/null 2>&1; }
+
 require_minimal_version() {
   PROGRAM_LABEL="$1"
   VERSION_STRING="$2"
@@ -58,13 +60,13 @@ fi
 
 # Is node installed?
 # Not checking io.js, default installation creates a symbolic link to node
-hash node > /dev/null 2>&1 || {
+is_cmd node || {
   echo "Please install node.js ( https://nodejs.org )" >&2
   exit 1
 }
 
 # Is npm installed?
-hash npm > /dev/null 2>&1 || {
+is_cmd npm || {
   echo "Please install npm ( https://npmjs.org )" >&2
   exit 1
 }

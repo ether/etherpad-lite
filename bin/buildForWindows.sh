@@ -2,6 +2,8 @@
 
 NODE_VERSION="10.20.1"
 
+is_cmd() { command -v "$@" >/dev/null 2>&1; }
+
 # Move to the folder where ep-lite is installed
 cd $(dirname $0)
 
@@ -11,19 +13,19 @@ if [ -d "../bin" ]; then
 fi
 
 # Is wget installed?
-hash wget > /dev/null 2>&1 || {
+is_cmd wget || {
   echo "Please install wget" >&2
   exit 1
 }
 
 # Is zip installed?
-hash zip > /dev/null 2>&1 || {
+is_cmd zip || {
   echo "Please install zip" >&2
   exit 1
 }
 
 # Is zip installed?
-hash unzip > /dev/null 2>&1 || {
+is_cmd unzip || {
   echo "Please install unzip" >&2
   exit 1
 }
