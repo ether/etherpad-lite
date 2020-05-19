@@ -551,5 +551,8 @@
       */
 
       ]
-    } // logconfig
+    }, // logconfig
+
+  /* Override any strings found in locale directories */
+  "customLocaleStrings": {}
 }
