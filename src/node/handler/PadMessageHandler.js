@@ -174,7 +174,7 @@ exports.handleMessage = async function(client, message)
     await rateLimiter.consume(client.handshake.address); // consume 1 point per event from IP
   }catch(e){
     console.warn("Rate limited: ", client.handshake.address, " to reduce the amount of rate limiting that happens edit the rateLimit values in settings.json");
-    client.emit('blocked', { 'retry-ms': e.msBeforeNext });
+    client.json.send({disconnect:"rateLimited"});
     return;
   }
 
