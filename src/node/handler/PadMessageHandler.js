@@ -37,6 +37,14 @@ var channels = require("channels");
 var stats = require('../stats');
 var remoteAddress = require("../utils/RemoteAddress").remoteAddress;
 const nodeify = require("nodeify");
+const { RateLimiterMemory } = require('rate-limiter-flexible');
+
+console.warn("settings", settings.commitRateLimiting.points, settings.commitRateLimiting.duration);
+
+const rateLimiter = new RateLimiterMemory({
+  points: settings.commitRateLimiting.points,
+  duration: settings.commitRateLimiting.duration
+});
 
 /**
  * A associative array that saves informations about a session
@@ -164,6 +172,15 @@ exports.handleDisconnect = async function(client)
  */
 exports.handleMessage = async function(client, message)
 {
+  try {
+    console.warn(socketio);
+    await rateLimiter.consume(socketio.handshake.address); // consume 1 point per event from IP
+  }catch(e){
+    console.warn("rate limited!");
+    socketio.emit('blocked', { 'retry-ms': e.msBeforeNext });
+    return;
+  }
+
   if (message == null) {
     return;
   }
