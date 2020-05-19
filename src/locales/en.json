@@ -84,8 +84,8 @@
   "pad.modals.deleted": "Deleted.",
   "pad.modals.deleted.explanation": "This pad has been removed.",
 
-  "pad.modals.deleted": "Rate Limited.",
-  "pad.modals.deleted.explanation": "You sent too many messages to this pad so it disconnected you.",
+  "pad.modals.ratelimited": "Rate Limited.",
+  "pad.modals.ratelimited.explanation": "You sent too many messages to this pad so it disconnected you.",
 
   "pad.modals.disconnected": "You have been disconnected.",
   "pad.modals.disconnected.explanation": "The connection to the server was lost",
