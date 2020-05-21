@@ -6,7 +6,7 @@ var languages = require('languages4translatewiki')
   , plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins.js').plugins
   , semver = require('semver')
   , existsSync = require('../utils/path_exists')
-  , settings = require('../utils/Settings');
+  , settings = require('../utils/Settings')
 ;
 
 
