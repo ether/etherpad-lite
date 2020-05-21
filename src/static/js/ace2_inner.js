@@ -265,7 +265,7 @@ function Ace2Inner(){
   {
     if ((typeof author) != "string")
     {
-      top.console.error("Going to throw new error, potentially caused by: https://github.com/ether/etherpad-lite/issues/2802");
+      // top.console.error("Going to throw new error, potentially caused by: https://github.com/ether/etherpad-lite/issues/2802");
       throw new Error("setAuthorInfo: author (" + author + ") is not a string");
     }
     if (!info)
@@ -370,7 +370,7 @@ function Ace2Inner(){
 
     if (currentCallStack)
     {
-      top.console.error("Can't enter callstack " + type + ", already in " + currentCallStack.type);
+      // top.console.error("Can't enter callstack " + type + ", already in " + currentCallStack.type);
     }
 
     var profiling = false;
@@ -378,7 +378,7 @@ function Ace2Inner(){
     function profileRest()
     {
       profiling = true;
-      top.console.profile();
+      // top.console.profile();
     }
 
     function newEditEvent(eventType)
@@ -518,7 +518,7 @@ function Ace2Inner(){
         }
       }
       currentCallStack = null;
-      if (profiling) top.console.profileEnd();
+      if (profiling) // top.console.profileEnd();
     }
     return result;
   }
@@ -740,7 +740,7 @@ function Ace2Inner(){
        * See for reference:
        * - https://github.com/ether/etherpad-lite/issues/3861
        */
-      top.console.warn('atext.text is an empty string(""). Replacing with "\\n". See issue #3861.');
+      // top.console.warn('atext.text is an empty string(""). Replacing with "\\n". See issue #3861.');
       atext.text = "\n";
     }
 
