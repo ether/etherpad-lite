@@ -18,6 +18,8 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
   testSettings["public"] = true;
   testSettings["build"] = process.env.GIT_HASH;
 
+  console.log('browser', browser)
+
   browser.init(testSettings).get("http://localhost:9001/tests/frontend/", function(){
     var url = "https://saucelabs.com/jobs/" + browser.sessionID;
     console.log("Remote sauce test '" + name + "' started! " + url);
@@ -52,7 +54,8 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
 
     var knownConsoleText = "";
     var getStatusInterval = setInterval(function(){
-      browser.eval("$('#console').text()", function(err, consoleText){
+      var testResultFormatedScript = "function customReportFromHTML(){var globalResult='';var report=$('#report').clone();report.find('pre').remove();report.find('> li').each(function(index,element){var titleText=$(element).find('> h1').text();var testResultTitle=$(element).find('> ul > li > h1').text();var result='';$(element).find('> ul > li > ul > li').each(function(index,element){if($(element).hasClass('pass'))result+='[green]PASSED[clear] : ';if($(element).hasClass('fail'))result+='[red]FAILED[clear] : ';if($(element).hasClass('pending'))result+='[yellow]PENDING[clear] : ';result+=$(element).text()});globalResult+=titleText+''+testResultTitle+'  -> '+result+'  '});return globalResult;};customReportFromHTML();";
+      browser.eval(testResultFormatedScript, function(err, consoleText){
         if(!consoleText || err){
           return;
         }
