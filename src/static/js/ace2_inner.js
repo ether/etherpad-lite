@@ -518,7 +518,7 @@ function Ace2Inner(){
         }
       }
       currentCallStack = null;
-      if (profiling) // top.console.profileEnd();
+//      if (profiling) top.console.profileEnd();
     }
     return result;
   }
