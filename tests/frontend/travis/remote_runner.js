@@ -52,7 +52,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
 
     var knownConsoleText = "";
     var getStatusInterval = setInterval(function(){
-      browser.eval("function customReportFromHTML(){var globalResult='';var report=$('#report').clone();report.find('pre').remove();report.find('> li').each(function(index,element){var titleText=$(element).find('> h1').text();var testResultTitle=$(element).find('> ul > li > h1').text();var result='';$(element).find('> ul > li > ul > li').each(function(index,element){if($(element).hasClass('pass'))result+='[green]PASSED[clear] : ';if($(element).hasClass('fail'))result+='[red]FAILED[clear] : ';if($(element).hasClass('pending'))result+='[yellow]PENDING[clear] : ';result+=$(element).text()});globalResult+=titleText+''+testResultTitle+'  -> '+result+'  '});return globalResult;};customReportFromHTML();", function(err, consoleText){
+      browser.eval("function customReportFromHTML(){var globalResult='';var report=$('#mocha-report').clone();report.find('pre').remove();report.find('> li').each(function(index,element){var titleText=$(element).find('> h1').text();var testResultTitle=$(element).find('> ul > li > h1').text();var result='';$(element).find('> ul > li > ul > li').each(function(index,element){if($(element).hasClass('pass'))result+='[green]PASSED[clear] : ';if($(element).hasClass('fail'))result+='[red]FAILED[clear] : ';if($(element).hasClass('pending'))result+='[yellow]PENDING[clear] : ';result+=$(element).text()});globalResult+=titleText+''+testResultTitle+'  -> '+result+'  '});return globalResult;};customReportFromHTML();", function(err, consoleText){
         console.log("console text", consoleText, err)
         if(!consoleText || err){
           return;
