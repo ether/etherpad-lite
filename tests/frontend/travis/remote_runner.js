@@ -18,55 +18,55 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
   testSettings["public"] = true;
   testSettings["build"] = process.env.GIT_HASH;
 
+  // we wait 10 seconds here with the hope it was enough time for the minified files to be built etc.
   setTimeout(function(){
+    browser.init(testSettings).get("http://localhost:9001/tests/frontend/", function(){
+      var url = "https://saucelabs.com/jobs/" + browser.sessionID;
+      console.log("Remote sauce test '" + name + "' started! " + url);
 
-  browser.init(testSettings).get("http://localhost:9001/tests/frontend/", function(){
-    var url = "https://saucelabs.com/jobs/" + browser.sessionID;
-    console.log("Remote sauce test '" + name + "' started! " + url);
+      //tear down the test excecution
+      var stopSauce = function(success){
+        getStatusInterval && clearInterval(getStatusInterval);
+        clearTimeout(timeout);
 
-    //tear down the test excecution
-    var stopSauce = function(success){
-      getStatusInterval && clearInterval(getStatusInterval);
-      clearTimeout(timeout);
+        browser.quit();
 
-      browser.quit();
+        if(!success){
+          allTestsPassed = false;
+        }
 
-      if(!success){
-        allTestsPassed = false;
+        var testResult = knownConsoleText.replace(/\[red\]/g,'\x1B[31m').replace(/\[yellow\]/g,'\x1B[33m')
+                         .replace(/\[green\]/g,'\x1B[32m').replace(/\[clear\]/g, '\x1B[39m');
+        testResult = testResult.split("\\n").map(function(line){
+          return "[" + testSettings.browserName + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] " + line;
+        }).join("\n");
+
+        console.log(testResult);
+        console.log("Remote sauce test '" + name + "' finished! " + url);
+
+        callback();
       }
 
-      var testResult = knownConsoleText.replace(/\[red\]/g,'\x1B[31m').replace(/\[yellow\]/g,'\x1B[33m')
-                       .replace(/\[green\]/g,'\x1B[32m').replace(/\[clear\]/g, '\x1B[39m');
-      testResult = testResult.split("\\n").map(function(line){
-        return "[" + testSettings.browserName + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] " + line;
-      }).join("\n");
+      //timeout for the case the test hangs
+      var timeout = setTimeout(function(){
+        stopSauce(false);
+      }, 60000 * 10);
 
-      console.log(testResult);
-      console.log("Remote sauce test '" + name + "' finished! " + url);
+      var knownConsoleText = "";
+      var getStatusInterval = setInterval(function(){
+        browser.eval("$('#console').text()", function(err, consoleText){
+          if(!consoleText || err){
+            return;
+          }
+          knownConsoleText = consoleText;
 
-      callback();
-    }
-
-    //timeout for the case the test hangs
-    var timeout = setTimeout(function(){
-      stopSauce(false);
-    }, 60000 * 10);
-
-    var knownConsoleText = "";
-    var getStatusInterval = setInterval(function(){
-      browser.eval("$('#console').text()", function(err, consoleText){
-        if(!consoleText || err){
-          return;
-        }
-        knownConsoleText = consoleText;
-
-        if(knownConsoleText.indexOf("FINISHED") > 0){
-          var success = knownConsoleText.indexOf("FAILED") === -1;
-          stopSauce(success);
-        }
-      });
-    }, 5000);
-  });
+          if(knownConsoleText.indexOf("FINISHED") > 0){
+            var success = knownConsoleText.indexOf("FAILED") === -1;
+            stopSauce(success);
+          }
+        });
+      }, 5000);
+    });
 
   }, 10000);
 
