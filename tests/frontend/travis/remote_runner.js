@@ -73,19 +73,20 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
 }, 5); //run 5 tests in parrallel
 
 // 1) Firefox on Linux
+/*
 sauceTestWorker.push({
     'platform'       : 'Linux'
   , 'browserName'    : 'firefox'
   , 'version'        : 'latest'
 });
-/*
+*/
 // 2) Chrome on Linux
 sauceTestWorker.push({
     'platform'       : 'Linux'
   , 'browserName'    : 'googlechrome'
   , 'version'        : 'latest'
 });
-
+/*
 // 3) Safari on OSX 10.15
 sauceTestWorker.push({
     'platform'       : 'OS X 10.15'
