@@ -67,7 +67,8 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
       });
     }, 5000);
   });
-  , 10000);
+
+  }, 10000);
 
 }, 5); //run 5 tests in parrallel
 
