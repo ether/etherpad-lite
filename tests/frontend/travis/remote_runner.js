@@ -18,6 +18,8 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
   testSettings["public"] = true;
   testSettings["build"] = process.env.GIT_HASH;
 
+  setTimeout(function(){
+
   browser.init(testSettings).get("http://localhost:9001/tests/frontend/", function(){
     var url = "https://saucelabs.com/jobs/" + browser.sessionID;
     console.log("Remote sauce test '" + name + "' started! " + url);
@@ -65,6 +67,8 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
       });
     }, 5000);
   });
+  , 10000);
+
 }, 5); //run 5 tests in parrallel
 
 // 1) Firefox on Linux
@@ -73,7 +77,7 @@ sauceTestWorker.push({
   , 'browserName'    : 'firefox'
   , 'version'        : 'latest'
 });
-
+/*
 // 2) Chrome on Linux
 sauceTestWorker.push({
     'platform'       : 'Linux'
@@ -101,6 +105,7 @@ sauceTestWorker.push({
   , 'browserName'    : 'microsoftedge'
   , 'version'        : 'latest'
 });
+*/
 
 sauceTestWorker.drain = function() {
   setTimeout(function(){
