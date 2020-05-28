@@ -50,4 +50,3 @@ notifications:
   irc:
     channels:
       - "irc.freenode.org#etherpad-lite-dev"
-
