@@ -339,6 +339,5 @@ describe("the test helper", function(){
 
       done();
     });
-
   });
 });
