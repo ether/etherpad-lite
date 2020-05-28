@@ -87,6 +87,6 @@
     "test": "nyc mocha --timeout 5000 ../tests/backend/specs/api",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api"
   },
-  "version": "1.8.4",
+  "version": "1.8.5",
   "license": "Apache-2.0"
 }
