@@ -54,11 +54,15 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
     var knownConsoleText = "";
     var getStatusInterval = setInterval(function(){
       browser.eval("$('#mocha-report').html()", function(err, consoleText){
+        console.log('consoleText'. consoleText)
         var wrapperReport = $('</div>').html(consoleText)
+        console.log('wrapperReport'. wrapperReport)
         var globalResult = ''
         var report = wrapperReport.clone()
-        var reportRaw = report.find('pre').remove()
-        reportRaw.find('> li').each(function(index, element) {
+        console.log('report'. report)
+        //  var reportRaw = report.find('pre').remove()
+        report.find('> li').each(function(index, element) {
+          console.log('report loop'. element)
           var titleText = $(element).find('> h1').text()
           var testResultTitle = $(element).find('> ul > li > h1').text()
           var result = '';
