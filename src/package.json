@@ -70,6 +70,7 @@
     "etherpad-lite": "./node/server.js"
   },
   "devDependencies": {
+    "cypress": "^4.7.0",
     "mocha": "7.1.2",
     "nyc": "15.0.1",
     "supertest": "4.0.2",
@@ -87,6 +88,6 @@
     "test": "nyc mocha --timeout 5000 ../tests/backend/specs/api",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api"
   },
-  "version": "1.8.5",
+  "version": "1.8.6",
   "license": "Apache-2.0"
 }
