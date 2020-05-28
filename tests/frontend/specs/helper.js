@@ -1,6 +1,5 @@
 describe("the test helper", function(){
   describe("the newPad method", function(){
-/*
     xit("doesn't leak memory if you creates iframes over and over again", function(done){
       this.timeout(100000);
 
@@ -37,7 +36,6 @@ describe("the test helper", function(){
         done();
       });
     });
-*/
     // Make sure the cookies are cleared, and make sure that the cookie
     // clearing has taken effect at this point in the code. It has been
     // observed that the former can happen without the latter if there
