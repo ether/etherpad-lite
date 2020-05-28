@@ -78,6 +78,7 @@ sauceTestWorker.push({
   , 'browserName'    : 'firefox'
   , 'version'        : 'latest'
 });
+/*
 // 2) Chrome on Linux
 sauceTestWorker.push({
     'platform'       : 'Linux'
@@ -102,6 +103,7 @@ sauceTestWorker.push({
   , 'browserName'    : 'microsoftedge'
   , 'version'        : 'latest'
 });
+*/
 
 sauceTestWorker.drain = function() {
   setTimeout(function(){
