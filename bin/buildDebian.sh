@@ -24,7 +24,7 @@ find ${SRC}/ -type d -exec chmod 0755 {} \;
 find ${SRC}/ -type f -exec chmod go-w {} \;
 chown -R root:root ${SRC}/
 
-let SIZE=`du -s ${SYSROOT} | sed s'/\s\+.*//'`+8
+let SIZE=$(du -s ${SYSROOT} | sed s'/\s\+.*//')+8
 pushd ${SYSROOT}/
 tar czf ${DIST}/data.tar.gz [a-z]*
 popd

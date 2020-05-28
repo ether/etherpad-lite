@@ -4,7 +4,7 @@ require("ep_etherpad-lite/node_modules/npm").load({}, function(er,npm) {
 
   var fs = require("fs");
 
-  var ueberDB = require("ep_etherpad-lite/node_modules/ueberDB");
+  var ueberDB = require("ep_etherpad-lite/node_modules/ueberdb2");
   var settings = require("ep_etherpad-lite/node/utils/Settings");
   var log4js = require('ep_etherpad-lite/node_modules/log4js');
 

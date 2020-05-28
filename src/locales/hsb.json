@@ -39,8 +39,6 @@
 	"pad.settings.rtlcheck": "Wobsah wotprawa nalěwo čitać?",
 	"pad.settings.fontType": "Pismowa družina:",
 	"pad.settings.fontType.normal": "Normalny",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Globalny napohlad",
 	"pad.settings.language": "Rěč:",
 	"pad.importExport.import_export": "Import/Eksport",
 	"pad.importExport.import": "Tekstowu dataju abo dokument nahrać",

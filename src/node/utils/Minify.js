@@ -382,6 +382,12 @@ function getFileCompressed(filename, contentType, callback) {
     } else if (contentType == 'text/javascript') {
       try {
         content = compressJS(content);
+        if (content.error) {
+          console.error(`Error compressing JS (${filename}) using UglifyJS`, content.error);
+          callback('compressionError', content.error);
+        } else {
+          content = content.code.toString(); // Convert content obj code to string
+        }
       } catch (error) {
         console.error(`getFile() returned an error in getFileCompressed(${filename}, ${contentType}): ${error}`);
       }
@@ -406,10 +412,10 @@ function getFile(filename, callback) {
 
 function compressJS(content)
 {
-  var decoder = new StringDecoder('utf8');
-  var code = decoder.write(content); // convert from buffer to string
-  var codeMinified = uglifyJS.minify(code, {fromString: true}).code;
-  return codeMinified;
+  const contentAsString = content.toString();
+  const codeObj = uglifyJS.minify(contentAsString);
+
+  return codeObj;
 }
 
 function compressCSS(filename, content, callback)
@@ -420,17 +426,17 @@ function compressCSS(filename, content, callback)
     /*
      * Changes done to migrate CleanCSS 3.x -> 4.x:
      *
-     * 1. Disabling rebase is necessary because otherwise the URLs for the web
-     *    fonts become wrong.
+     * 1. Rework the rebase logic, because the API was simplified (but we have
+     *    less control now). See:
+     *    https://github.com/jakubpawlowicz/clean-css/blob/08f3a74925524d30bbe7ac450979de0a8a9e54b2/README.md#important-40-breaking-changes
      *
-     *    EXAMPLE 1:
-     *        /static/css/src/static/font/fontawesome-etherpad.woff
-     *      instead of
-     *        /static/font/fontawesome-etherpad.woff
-     *    EXAMPLE 2 (this is more surprising):
-     *        /p/src/static/font/opendyslexic.otf
-     *      instead of
-     *        /static/font/opendyslexic.otf
+     *    EXAMPLE:
+     *        The URLs contained in a CSS file (including all the stylesheets
+     *        imported by it) residing on disk at:
+     *            /home/muxator/etherpad/src/static/css/pad.css
+     *
+     *        Will be rewritten rebasing them to:
+     *            /home/muxator/etherpad/src/static/css
      *
      * 2. CleanCSS.minify() can either receive a string containing the CSS, or
      *    an array of strings. In that case each array element is interpreted as
@@ -441,7 +447,13 @@ function compressCSS(filename, content, callback)
      *    "content" argument, but we have to wrap the absolute path to the CSS
      *    in an array and ask the library to read it by itself.
      */
-    new CleanCSS({rebase: false}).minify([absPath], function (errors, minified) {
+
+    const basePath = path.dirname(absPath);
+
+    new CleanCSS({
+      rebase: true,
+      rebaseTo: basePath,
+    }).minify([absPath], function (errors, minified) {
       if (errors) {
         // on error, just yield the un-minified original, but write a log message
         console.error(`CleanCSS.minify() returned an error on ${filename} (${absPath}): ${errors}`);

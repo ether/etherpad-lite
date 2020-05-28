@@ -1,8 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Chelin",
 			"C.R.",
+			"Chelin",
 			"Ruthven"
 		]
 	},
@@ -40,8 +40,6 @@
 	"pad.settings.rtlcheck": "Lieggere 'e cuntenute 'a destra a smerza?",
 	"pad.settings.fontType": "Tipo 'e funte:",
 	"pad.settings.fontType.normal": "Nurmale",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Visualizzazione globbale",
 	"pad.settings.language": "Llengua:",
 	"pad.importExport.import_export": "Mpurtaziune/sportaziune",
 	"pad.importExport.import": "Carreca coccherunto testo o documento",

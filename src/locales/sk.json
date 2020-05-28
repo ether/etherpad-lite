@@ -1,11 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Teslaton",
 			"Kusavica",
-			"Rudko",
+			"Lexected",
 			"Mark",
-			"Lexected"
+			"Rudko",
+			"Teslaton"
 		]
 	},
 	"index.newPad": "Nový Pad",
@@ -43,8 +43,6 @@
 	"pad.settings.rtlcheck": "Čítať obsah sprava doľava?",
 	"pad.settings.fontType": "Typ písma:",
 	"pad.settings.fontType.normal": "Normálne",
-	"pad.settings.fontType.monospaced": "Strojové",
-	"pad.settings.globalView": "Globálny pohľad",
 	"pad.settings.language": "Jazyk:",
 	"pad.importExport.import_export": "Import/Export",
 	"pad.importExport.import": "Nahrať ľubovoľný textový súbor alebo dokument",

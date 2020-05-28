@@ -1,8 +1,15 @@
 /*
- * ACHTUNG: this file was copied & modified from the analogous
- * <basedir>/tests/backend/loadSettings.js
+ * ACHTUNG: this file is a hack used to load "settings.json.docker" instead of
+ *          "settings.json", since in its present form the Settings module does
+ *          not allow it.
+ *          This is a remnant of an analogous file that was placed in
+ *          <basedir>/tests/backend/loadSettings.js
  *
- * TODO: unify those two files, and merge in a single one.
+ * TODO: modify the Settings module:
+ *       1) no side effects on module load
+ *       2) write a factory method that loads a configuration file (taking the
+ *          file name from the command line, a function argument, or falling
+ *          back to a default)
  */
 
 var jsonminify = require(__dirname+"/../../src/node_modules/jsonminify");

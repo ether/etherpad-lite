@@ -1,15 +1,15 @@
 {
 	"@metadata": {
 		"authors": [
+			"Adithyak1997",
 			"Akhilan",
+			"Ambadyanands",
 			"Clockery",
 			"Hrishikesh.kb",
-			"Praveenp",
-			"Santhosh.thottingal",
-			"Nesi",
 			"Jinoytommanjaly",
-			"Ambadyanands",
-			"Adithyak1997"
+			"Nesi",
+			"Praveenp",
+			"Santhosh.thottingal"
 		]
 	},
 	"index.newPad": "പുതിയ പാഡ്",
@@ -47,8 +47,6 @@
 	"pad.settings.rtlcheck": "ഉള്ളടക്കം വലത്തുനിന്ന് ഇടത്തോട്ടാണോ വായിക്കേണ്ടത്?",
 	"pad.settings.fontType": "ഫോണ്ട് തരം:",
 	"pad.settings.fontType.normal": "സാധാരണം",
-	"pad.settings.fontType.monospaced": "മോണോസ്പേസ്",
-	"pad.settings.globalView": "മൊത്തക്കാഴ്ച",
 	"pad.settings.language": "ഭാഷ:",
 	"pad.importExport.import_export": "ഇറക്കുമതി/കയറ്റുമതി ചെയ്യുക",
 	"pad.importExport.import": "എന്തെങ്കിലും എഴുത്തു പ്രമാണമോ രേഖയോ അപ്‌ലോഡ് ചെയ്യുക",

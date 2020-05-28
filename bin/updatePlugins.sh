@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #Move to the folder where ep-lite is installed
-cd `dirname $0`
+cd $(dirname $0)
 
 #Was this script started in the bin folder? if yes move out
 if [ -d "../bin" ]; then
@@ -9,7 +9,7 @@ if [ -d "../bin" ]; then
 fi
 
 # npm outdated --depth=0 | grep -v "^Package" | awk '{print $1}' | xargs npm install $1 --save-dev
-OUTDATED=`npm outdated --depth=0 | grep -v "^Package" | awk '{print $1}'`
+OUTDATED=$(npm outdated --depth=0 | grep -v "^Package" | awk '{print $1}')
 # echo $OUTDATED
 if test -n "$OUTDATED"; then
   echo "Plugins require update, doing this now..."

@@ -58,7 +58,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   });
 
   args.app.get('/tests/frontend', function (req, res) {
-    res.redirect('/tests/frontend/');
+    res.redirect('/tests/frontend/index.html');
   });
 }
 

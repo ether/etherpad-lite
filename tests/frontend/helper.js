@@ -53,7 +53,10 @@ var helper = {};
   }
 
   helper.clearCookies = function(){
-    window.document.cookie = "";
+    // Expire cookies, so author and language are changed after reloading the pad.
+    // See https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie#Example_4_Reset_the_previous_cookie
+    window.document.cookie = 'token=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    window.document.cookie = 'language=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
   }
 
   // Functionality for knowing what key event type is required for tests

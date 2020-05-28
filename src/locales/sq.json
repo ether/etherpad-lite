@@ -41,8 +41,6 @@
 	"pad.settings.rtlcheck": "Të lexohet lënda nga e djathta në të majtë?",
 	"pad.settings.fontType": "Lloj shkronjash:",
 	"pad.settings.fontType.normal": "Normale",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Pamje e Përgjithshme",
 	"pad.settings.language": "Gjuhë:",
 	"pad.importExport.import_export": "Import/Eksport",
 	"pad.importExport.import": "Ngarkoni cilëndo kartelë teksti ose dokument",

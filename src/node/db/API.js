@@ -837,6 +837,34 @@ exports.createDiffHTML = async function(padID, startRev, endRev) {
   return { html, authors };
 }
 
+/**********************/
+/** GLOBAL FUNCTIONS **/
+/**********************/
+
+/**
+ getStats() returns an json object with some instance stats
+
+ Example returns:
+
+ {"code":0,"message":"ok","data":{"totalPads":3,"totalSessions": 2,"totalActivePads": 1}}
+ {"code":4,"message":"no or wrong API Key","data":null}
+ */
+
+exports.getStats = async function() {
+  const sessionInfos = padMessageHandler.sessioninfos;
+
+  const sessionKeys = Object.keys(sessionInfos);
+  const activePads = new Set(Object.entries(sessionInfos).map(k => k[1].padId));
+
+  const { padIDs } = await padManager.listAllPads();
+
+  return {
+    totalPads: padIDs.length,
+    totalSessions: sessionKeys.length,
+    totalActivePads: activePads.size,
+  }
+}
+
 /******************************/
 /** INTERNAL HELPER FUNCTIONS */
 /******************************/

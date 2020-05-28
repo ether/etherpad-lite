@@ -15,9 +15,10 @@ LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 #   ETHERPAD_PLUGINS="ep_codepad ep_author_neat"
 ARG ETHERPAD_PLUGINS=
 
-# Set the following to production to avoid installing devDeps
-# this can be done with build args (and is mandatory to build ARM version)
-ENV NODE_ENV=development
+# By default, Etherpad container is built and run in "production" mode. This is
+# leaner (development dependencies are not installed) and runs faster (among
+# other things, assets are minified & compressed).
+ENV NODE_ENV=production
 
 # Follow the principle of least privilege: run as unprivileged user.
 #
@@ -25,13 +26,13 @@ ENV NODE_ENV=development
 # that do not allow images running as root.
 RUN useradd --uid 5001 --create-home etherpad
 
-RUN mkdir /opt/etherpad-lite && chown etherpad:etherpad /opt/etherpad-lite
+RUN mkdir /opt/etherpad-lite && chown etherpad:0 /opt/etherpad-lite
 
-USER etherpad:etherpad
+USER etherpad
 
 WORKDIR /opt/etherpad-lite
 
-COPY --chown=etherpad:etherpad ./ ./
+COPY --chown=etherpad:0 ./ ./
 
 # install node dependencies for Etherpad
 RUN bin/installDeps.sh && \
@@ -44,7 +45,10 @@ RUN bin/installDeps.sh && \
 RUN for PLUGIN_NAME in ${ETHERPAD_PLUGINS}; do npm install "${PLUGIN_NAME}"; done
 
 # Copy the configuration file.
-COPY --chown=etherpad:etherpad ./settings.json.docker /opt/etherpad-lite/settings.json
+COPY --chown=etherpad:0 ./settings.json.docker /opt/etherpad-lite/settings.json
+
+# Fix permissions for root group
+RUN chmod -R g=u .
 
 EXPOSE 9001
 CMD ["node", "node_modules/ep_etherpad-lite/node/server.js"]
