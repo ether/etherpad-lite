@@ -1,6 +1,7 @@
 var srcFolder = "../../../src/node_modules/";
 var wd = require(srcFolder + "wd");
 var async = require(srcFolder + "async");
+var $ = require(srcFolder + "jquery");
 
 var config = {
     host: "ondemand.saucelabs.com"
@@ -54,6 +55,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
     var getStatusInterval = setInterval(function(){
       browser.eval("$('#mocha-report').html()", function(err, consoleText){
         console.log("console text", consoleText, err)
+        console.log("jquery test", $)
         if(!consoleText || err){
           return;
         }
