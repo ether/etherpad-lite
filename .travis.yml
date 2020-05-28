@@ -48,5 +48,3 @@ notifications:
   irc:
     channels:
       - "irc.freenode.org#etherpad-lite-dev"
-
-# WARNING!  Travis has a cache, you have to clear it if you are having files exist which shouldn't. 
