@@ -6,6 +6,9 @@ node_js:
 services:
   - docker
 
+cache:
+  npm: false
+
 install:
   - "bin/installDeps.sh"
   - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
@@ -48,3 +51,4 @@ notifications:
   irc:
     channels:
       - "irc.freenode.org#etherpad-lite-dev"
+
