@@ -18,7 +18,8 @@ describe("font select", function(){
     var $monospaceoption = $viewfontmenu.find("[value=monospace]");
 
     //select monospace and fire change event
-    $monospaceoption.attr('selected','selected');
+//    $monospaceoption.attr('selected','selected');
+// commenting out above will break safari test
     $viewfontmenu.val("monospace");
     $viewfontmenu.change();
 
