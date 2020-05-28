@@ -1,5 +1,6 @@
 describe("the test helper", function(){
   describe("the newPad method", function(){
+/*
     xit("doesn't leak memory if you creates iframes over and over again", function(done){
       this.timeout(100000);
 
@@ -36,7 +37,7 @@ describe("the test helper", function(){
         done();
       });
     });
-
+*/
     // Make sure the cookies are cleared, and make sure that the cookie
     // clearing has taken effect at this point in the code. It has been
     // observed that the former can happen without the latter if there
@@ -58,6 +59,7 @@ describe("the test helper", function(){
         // helper function seems to have cleared cookies
         // NOTE: this doesn't yet mean it's proven to have taken effect by this point in execution
         var firstCookie = window.document.cookie
+
         expect(firstCookie).to.not.contain('token=foo');
         expect(firstCookie).to.not.contain('language=bar');
 
@@ -105,13 +107,14 @@ describe("the test helper", function(){
 
             // confirm that the session was actually cleared
             var $usernameInput = chrome$("#myusernameedit");
-            expect($usernameInput.val()).to.be('Enter your name');
+            expect($usernameInput.val()).to.be('');
 
             done();
           });
         }, 1000);
       });
     });
+
 
     it("sets pad prefs cookie", function(done) {
       this.timeout(60000);
@@ -127,7 +130,6 @@ describe("the test helper", function(){
       });
     });
   });
-
   describe("the waitFor method", function(){
     it("takes a timeout and waits long enough", function(done){
       this.timeout(2000);
@@ -186,7 +188,6 @@ describe("the test helper", function(){
       });
     });
   });
-
   describe("the selectLines method", function(){
     // function to support tests, use a single way to represent whitespaces
     var cleanText = function(text){
@@ -339,5 +340,6 @@ describe("the test helper", function(){
 
       done();
     });
+
   });
 });
