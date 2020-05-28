@@ -78,7 +78,6 @@ sauceTestWorker.push({
   , 'browserName'    : 'firefox'
   , 'version'        : 'latest'
 });
-/*
 // 2) Chrome on Linux
 sauceTestWorker.push({
     'platform'       : 'Linux'
@@ -91,21 +90,18 @@ sauceTestWorker.push({
   , 'browserName'    : 'safari'
   , 'version'        : 'latest'
 });
-
 // 4) IE 10 on Win 8
 sauceTestWorker.push({
     'platform'       : 'Windows 8'
   , 'browserName'    : 'iexplore'
   , 'version'        : '10.0'
 });
-
 // 5) Edge on Win 10
 sauceTestWorker.push({
     'platform'       : 'Windows 10'
   , 'browserName'    : 'microsoftedge'
   , 'version'        : 'latest'
 });
-*/
 
 sauceTestWorker.drain = function() {
   setTimeout(function(){
