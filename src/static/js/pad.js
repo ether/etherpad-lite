@@ -74,7 +74,7 @@ function randomString()
 var getParameters = [
   { name: "noColors",         checkVal: "true",  callback: function(val) { settings.noColors = true; $('#clearAuthorship').hide(); } },
   { name: "showControls",     checkVal: "true",  callback: function(val) { $('#editbar').css('display', 'flex') } },
-  { name: "showChat",         checkVal: null,    callback: function(val) { if(val==="false"){settings.hideChat = true;chat.hide();$('#chaticon').hide()} } },
+  { name: "showChat",         checkVal: null,    callback: function(val) { if(val==="false"){settings.hideChat = true;chat.hide();$('#chaticon').hide();} } },
   { name: "showLineNumbers",  checkVal: "false", callback: function(val) { settings.LineNumbersDisabled = true; } },
   { name: "useMonospaceFont", checkVal: "true",  callback: function(val) { settings.useMonospaceFontGlobal = true; } },
   // If the username is set as a parameter we should set a global value that we can call once we have initiated the pad.
@@ -286,6 +286,8 @@ function handshake()
         $('#chaticon').hide();
         $('#options-chatandusers').parent().hide();
         $('#options-stickychat').parent().hide();
+      }else{
+        if(!settings.hideChat) $('#chaticon').show();
       }
 
       $("body").addClass(clientVars.readonly ? "readonly" : "readwrite")
