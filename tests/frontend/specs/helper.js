@@ -112,7 +112,6 @@ describe("the test helper", function(){
       });
     });
 
-
     it("sets pad prefs cookie", function(done) {
       this.timeout(60000);
 
