@@ -74,7 +74,7 @@ function randomString()
 var getParameters = [
   { name: "noColors",         checkVal: "true",  callback: function(val) { settings.noColors = true; $('#clearAuthorship').hide(); } },
   { name: "showControls",     checkVal: "true",  callback: function(val) { $('#editbar').css('display', 'flex') } },
-  { name: "showChat",         checkVal: "true", callback: function(val) { $('#chaticon').show(); } },
+  { name: "showChat",         checkVal: null,    callback: function(val) { if(val==="false"){settings.hideChat = true;chat.hide();$('#chaticon').hide()} } },
   { name: "showLineNumbers",  checkVal: "false", callback: function(val) { settings.LineNumbersDisabled = true; } },
   { name: "useMonospaceFont", checkVal: "true",  callback: function(val) { settings.useMonospaceFontGlobal = true; } },
   // If the username is set as a parameter we should set a global value that we can call once we have initiated the pad.
@@ -82,7 +82,7 @@ var getParameters = [
   // If the userColor is set as a parameter, set a global value to use once we have initiated the pad.
   { name: "userColor",        checkVal: null,    callback: function(val) { settings.globalUserColor = decodeURIComponent(val); clientVars.userColor = decodeURIComponent(val); } },
   { name: "rtl",              checkVal: "true",  callback: function(val) { settings.rtlIsTrue = true } },
-  { name: "alwaysShowChat",   checkVal: "true",  callback: function(val) { chat.stickToScreen(); } },
+  { name: "alwaysShowChat",   checkVal: "true",  callback: function(val) { if(!settings.hideChat) chat.stickToScreen(); } },
   { name: "chatAndUsers",     checkVal: "true",  callback: function(val) { chat.chatAndUsers(); } },
   { name: "lang",             checkVal: null,    callback: function(val) { window.html10n.localize([val, 'en']); createCookie('language', val); } }
 ];
@@ -92,7 +92,7 @@ function getParams()
   // Tries server enforced options first..
   for(var i = 0; i < getParameters.length; i++)
   {
-   var setting = getParameters[i];
+    var setting = getParameters[i];
     var value = clientVars.padOptions[setting.name];
     if(value.toString() === setting.checkVal)
     {
