@@ -57,7 +57,6 @@ describe("the test helper", function(){
         // helper function seems to have cleared cookies
         // NOTE: this doesn't yet mean it's proven to have taken effect by this point in execution
         var firstCookie = window.document.cookie
-
         expect(firstCookie).to.not.contain('token=foo');
         expect(firstCookie).to.not.contain('language=bar');
 
