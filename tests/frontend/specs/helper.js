@@ -127,6 +127,7 @@ describe("the test helper", function(){
       });
     });
   });
+
   describe("the waitFor method", function(){
     it("takes a timeout and waits long enough", function(done){
       this.timeout(2000);
@@ -185,6 +186,7 @@ describe("the test helper", function(){
       });
     });
   });
+
   describe("the selectLines method", function(){
     // function to support tests, use a single way to represent whitespaces
     var cleanText = function(text){
