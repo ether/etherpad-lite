@@ -28,8 +28,11 @@ echo "Now I will try for 15 seconds to connect to Etherpad on http://localhost:9
 
 echo "Successfully connected to Etherpad on http://localhost:9001"
 
-# just in case, let's wait for another second before going on
-sleep 1
+# Build the minified files?
+curl http://localhost:9001/p/minifyme -f -s
+
+# just in case, let's wait for another 10 seconds before going on
+sleep 10
 
 # a copy of settings.json is necessary for the backend tests to work
 cp settings.json.template settings.json
