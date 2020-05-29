@@ -665,9 +665,10 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     {
       if (lines.length() - 1 == startLine)
       {
-        // added check to resolve https://github.com/JohnMcLear/ep_copy_paste_images/issues/20
-        if(state.lineAttributes && Object.keys(state.lineAttributes).length !== 0){
-          // commented out to solve #2412 - https://github.com/ether/etherpad-lite/issues/2412
+        // to solve #2412 - https://github.com/ether/etherpad-lite/issues/2412
+        // added additional check to resolve https://github.com/JohnMcLear/ep_copy_paste_images/issues/20
+        // this does mean that images etc can't be pasted on lists but imho that's fine
+        if(state.lineAttributes && !state.lineAttributes.list){
           cc.startNewLine(state);
         }
       }
