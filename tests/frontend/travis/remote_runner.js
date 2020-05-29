@@ -92,12 +92,15 @@ sauceTestWorker.push({
   , 'browserName'    : 'safari'
   , 'version'        : 'latest'
 });
+// IE 10 doesn't appear to be working anyway
+/*
 // 4) IE 10 on Win 8
 sauceTestWorker.push({
     'platform'       : 'Windows 8'
   , 'browserName'    : 'iexplore'
   , 'version'        : '10.0'
 });
+*/
 // 5) Edge on Win 10
 sauceTestWorker.push({
     'platform'       : 'Windows 10'
