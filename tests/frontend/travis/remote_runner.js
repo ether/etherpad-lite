@@ -90,6 +90,7 @@ sauceTestWorker.push({
     'platform'       : 'Windows 7'
   , 'browserName'    : 'chrome'
   , 'version'        : '55.0'
+  , 'args'           : ['--use-fake-device-for-media-stream']
 });
 
 // 3) Safari on OSX 10.15
