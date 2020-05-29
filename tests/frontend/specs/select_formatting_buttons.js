@@ -74,12 +74,12 @@ describe("select formatting buttons when selection has style applied", function(
     });
       // remove selection from previous line
     selectLine(line + 1);
-    setTimeout(function() {
+    //setTimeout(function() {
       // select the text or place the caret on a position that
       // has the formatting text applied previously
       selectTarget(line);
       cb();
-    }, 1000);
+    //}, 1000);
   }
 
   var pressFormattingShortcutOnSelection = function(key) {
