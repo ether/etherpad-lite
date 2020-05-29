@@ -6,8 +6,7 @@ node_js:
 services:
   - docker
 
-cache:
-  npm: false
+cache: false
 
 install:
   - "bin/installDeps.sh"
