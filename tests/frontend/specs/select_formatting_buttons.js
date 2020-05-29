@@ -63,11 +63,9 @@ describe("select formatting buttons when selection has style applied", function(
   }
 
   var applyStyleOnLineOnFullLineAndRemoveSelection = function(line, style, selectTarget, cb) {
-    console.warn(style, line);
     // see if line html has changed
     var inner$ = helper.padInner$;
     var oldLineHTML = inner$.find("div")[line];
-    console.warn(oldLineHTML);
     applyStyleOnLine(style, line);
 
     helper.waitFor(function(){
