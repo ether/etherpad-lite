@@ -28,6 +28,7 @@ jobs:
   include:
     - name: "Run the Backend tests"
       install:
+        - "bin/installDeps.sh"
         - "cd src && npm install && cd -"
       script:
         - "tests/frontend/travis/runnerBackend.sh"
