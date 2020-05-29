@@ -29,7 +29,7 @@ echo "Now I will try for 15 seconds to connect to Etherpad on http://localhost:9
 echo "Successfully connected to Etherpad on http://localhost:9001"
 
 # Build the minified files?
-curl http://localhost:9001/p/minifyme -f -s
+curl http://localhost:9001/p/minifyme -f -s > /dev/null
 
 # just in case, let's wait for another 10 seconds before going on
 sleep 10
