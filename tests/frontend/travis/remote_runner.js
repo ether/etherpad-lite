@@ -52,7 +52,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
 
     var knownConsoleText = "";
     var getStatusInterval = setInterval(function(){
-      browser.elementById('mocha-report'), function(err, el) {
+      browser.elementById('mocha-report', function(err, el) {
         console.log('element from elementById from wd', el, err)
       });
       /*browser.eval("$('#mocha-report').html()", function(err, consoleText){
