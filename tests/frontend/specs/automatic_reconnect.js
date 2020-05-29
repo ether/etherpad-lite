@@ -1,4 +1,3 @@
-/*
 describe('Automatic pad reload on Force Reconnect message', function() {
   var padId, $originalPadFrame;
 
@@ -70,4 +69,3 @@ describe('Automatic pad reload on Force Reconnect message', function() {
     });
   });
 });
-*/
