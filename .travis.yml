@@ -6,10 +6,12 @@ node_js:
 services:
   - docker
 
+cache:
+  npm: false
+
 install:
   - "bin/installDeps.sh"
   - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
-  - "npm install ep_test_line_attrib"
 
 before_script:
   - "tests/frontend/travis/sauce_tunnel.sh"
@@ -26,6 +28,7 @@ jobs:
   include:
     - name: "Run the Backend tests"
       install:
+        - "bin/installDeps.sh"
         - "cd src && npm install && cd -"
       script:
         - "tests/frontend/travis/runnerBackend.sh"
@@ -33,7 +36,6 @@ jobs:
       install:
         - "bin/installDeps.sh"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
-        - "npm install ep_test_line_attrib"
       script:
         - "tests/frontend/travis/runner.sh"
     - name: "Test the Dockerfile"
