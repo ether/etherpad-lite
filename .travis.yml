@@ -31,7 +31,6 @@ jobs:
         - "cd src && npm install && cd -"
       script:
         - "tests/frontend/travis/runnerBackend.sh"
-# Frontend is focus
     - name: "Test the Frontend"
       install:
         - "bin/installDeps.sh"
