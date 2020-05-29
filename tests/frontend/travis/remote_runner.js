@@ -55,8 +55,8 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
     var getStatusInterval = setInterval(function(){
       browser.eval("$('#mocha-report').html()", function(err, consoleText){
         console.log('consoleText'. consoleText, err)
-        var wrapperReport = $('</div>').html(consoleText)
-        console.log('wrapperReport'. wrapperReport)
+        //var wrapperReport = $('</div>').html(consoleText)
+        //console.log('wrapperReport'. wrapperReport)
         if(!consoleText || err){
           return;
         }
