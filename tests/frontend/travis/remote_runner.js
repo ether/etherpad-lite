@@ -52,7 +52,10 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
 
     var knownConsoleText = "";
     var getStatusInterval = setInterval(function(){
-      browser.eval("$('#mocha-report').html()", function(err, consoleText){
+      browser.elementById('mocha-report'), function(err, el) {
+        console.log('element from elementById from wd', el, err)
+      });
+      /*browser.eval("$('#mocha-report').html()", function(err, consoleText){
         if(!consoleText || err){
           return;
         }
@@ -62,7 +65,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
           var success = knownConsoleText.indexOf("FAILED") === -1;
           stopSauce(success);
         }
-      });
+      });*/
     }, 5000);
   });
 }, 5); //run 5 tests in parrallel
