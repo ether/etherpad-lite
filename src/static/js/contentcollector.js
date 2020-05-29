@@ -665,8 +665,11 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     {
       if (lines.length() - 1 == startLine)
       {
-        // commented out to solve #2412 - https://github.com/ether/etherpad-lite/issues/2412
-        // cc.startNewLine(state);
+        // added check to resolve https://github.com/JohnMcLear/ep_copy_paste_images/issues/20
+        if(state.lineAttributes && Object.keys(state.lineAttributes).length !== 0){
+          // commented out to solve #2412 - https://github.com/ether/etherpad-lite/issues/2412
+          cc.startNewLine(state);
+        }
       }
       else
       {
