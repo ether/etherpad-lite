@@ -1,7 +1,6 @@
 var srcFolder = "../../../src/node_modules/";
 var wd = require(srcFolder + "wd");
 var async = require(srcFolder + "async");
-var jsdom = require(srcFolder + "jsdom");
 
 var config = {
     host: "ondemand.saucelabs.com"
@@ -54,9 +53,6 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
     var knownConsoleText = "";
     var getStatusInterval = setInterval(function(){
       browser.eval("$('#mocha-report').html()", function(err, consoleText){
-        console.log('consoleText'. consoleText, err)
-        var wrapperReport = new jsdom.JSDOM('<div>' + consoleText + '</div>')
-        console.log('wrapperReport'. wrapperReport)
         if(!consoleText || err){
           return;
         }
