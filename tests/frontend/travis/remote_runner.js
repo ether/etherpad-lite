@@ -52,12 +52,8 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
 
     var knownConsoleText = "";
     var getStatusInterval = setInterval(function(){
-      browser.eval("$('#mocha-report')", function(err, consoleText){
-        //console.log('consoleText', consoleText)
-        var consoleTextNodes = consoleText.find('> li').map(function(i, element) {
-          return [i, element]
-        })
-        console.log('consoleTextNodes', consoleTextNodes)
+      browser.eval("$('#mocha-report').outerHTML", function(err, consoleText){
+        console.log('consoleText', consoleText)
         if(!consoleText || err){
           return;
         }
