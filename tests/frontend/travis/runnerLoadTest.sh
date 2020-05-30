@@ -41,7 +41,7 @@ sleep 10
 echo "Now run the backend tests"
 cd etherpad-load-test
 npm install
-node app.js
+node app.js -d 60
 # cd src
 # npm run test
 exit_code=$?
