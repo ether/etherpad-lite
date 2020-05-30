@@ -149,8 +149,8 @@ var helper = {};
   }
 
   helper.waitFor = function(conditionFunc, _timeoutTime, _intervalTime){
-    var timeoutTime = _timeoutTime || 10000;
-    var intervalTime = _intervalTime || 100;
+    var timeoutTime = _timeoutTime || 1900;
+    var intervalTime = _intervalTime || 10;
 
     var deferred = $.Deferred();
 
