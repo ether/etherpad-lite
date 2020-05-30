@@ -48,7 +48,7 @@ jobs:
       install:
         - "bin/installDeps.sh"
         - "cd src && npm install && cd -"
-        - "npm install --prefix ./etherpad-load-test etherpad-load-test"
+        - "npm install -g etherpad-load-test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
 

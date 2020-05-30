@@ -38,12 +38,8 @@ curl http://localhost:9001/p/minifyme -f -s > /dev/null
 sleep 10
 
 # run the backend tests
-echo "Now run the backend tests"
-cd etherpad-load-test
-npm install
-node app.js -d 60
-# cd src
-# npm run test
+echo "Now run the load tests for 60 seconds and if it stalls before 100 then error"
+etherpad-load-test -d 60
 exit_code=$?
 
 kill $!
