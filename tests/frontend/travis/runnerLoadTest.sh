@@ -39,8 +39,11 @@ sleep 10
 
 # run the backend tests
 echo "Now run the backend tests"
-cd src
-npm run test
+cd etherpad-load-test
+npm install
+node app.js
+# cd src
+# npm run test
 exit_code=$?
 
 kill $!
