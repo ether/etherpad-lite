@@ -49,6 +49,8 @@ jobs:
         - "bin/installDeps.sh"
         - "cd src && npm install && cd -"
         - "npm install -g etherpad-load-test"
+        # I set loadTest to true
+        - "sed 's/\"loadTest\": false,/\"loadTest\": true,/g' settings.json.template > settings.json"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
 
