@@ -39,7 +39,7 @@ sleep 10
 
 # run the backend tests
 echo "Now run the load tests for 60 seconds and if it stalls before 100 then error"
-etherpad-load-test -d 60
+etherpad-loadtest -d 60
 exit_code=$?
 
 kill $!
