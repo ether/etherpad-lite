@@ -14,6 +14,7 @@ cd "${MY_DIR}/../../../"
 # This is possible because the "install" section of .travis.yml already contains
 # a call to bin/installDeps.sh
 echo "Running Etherpad directly, assuming bin/installDeps.sh has already been run"
+
 node node_modules/ep_etherpad-lite/node/server.js "${@}" > /dev/null &
 
 echo "Now I will try for 15 seconds to connect to Etherpad on http://localhost:9001"
@@ -38,9 +39,8 @@ curl http://localhost:9001/p/minifyme -f -s > /dev/null
 sleep 10
 
 # run the backend tests
-echo "Now run the backend tests"
-cd src
-npm run test
+echo "Now run the load tests for 50 seconds and if it stalls before 100 then error"
+etherpad-loadtest -d 50
 exit_code=$?
 
 kill $!

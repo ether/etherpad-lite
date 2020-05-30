@@ -6,8 +6,7 @@ node_js:
 services:
   - docker
 
-cache:
-  npm: false
+cache: false
 
 install:
   - "bin/installDeps.sh"
@@ -45,6 +44,15 @@ jobs:
         - "docker build -t etherpad:test ."
         - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
         - "cd src && npm run test-container"
+    - name: "Load test Etherpad"
+      install:
+        - "bin/installDeps.sh"
+        - "cd src && npm install && cd -"
+        - "npm install -g etherpad-load-test"
+        # I set loadTest to true
+        - "sed 's/\"loadTest\": false,/\"loadTest\": true,/g' settings.json.template > settings.json"
+      script:
+        - "tests/frontend/travis/runnerLoadTest.sh"
 
 notifications:
   irc:
