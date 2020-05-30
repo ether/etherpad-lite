@@ -44,6 +44,13 @@ jobs:
         - "docker build -t etherpad:test ."
         - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
         - "cd src && npm run test-container"
+    - name: "Load test Etherpad"
+      install:
+        - "bin/installDeps.sh"
+        - "cd src && npm install && cd -"
+        - "npm install --prefix ./etherpad-load-test etherpad-load-test"
+      script:
+        - "tests/frontend/travis/runnerLoadTest.sh"
 
 notifications:
   irc:
