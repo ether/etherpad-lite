@@ -71,6 +71,7 @@
   },
   "devDependencies": {
     "mocha": "7.1.2",
+    "node-html-parser": "^1.2.18",
     "nyc": "15.0.1",
     "supertest": "4.0.2",
     "wd": "1.12.1"
