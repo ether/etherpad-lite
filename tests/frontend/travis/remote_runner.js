@@ -1,7 +1,7 @@
 var srcFolder = "../../../src/node_modules/";
 var wd = require(srcFolder + "wd");
 var async = require(srcFolder + "async");
-var nodeHTMLParser = require('node-html-parser')
+var nodeHTMLParser = require(srcFolder + "node-html-parser");
 
 var config = {
     host: "ondemand.saucelabs.com"
