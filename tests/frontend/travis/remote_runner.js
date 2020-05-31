@@ -56,7 +56,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
       browser.eval("$('#mocha-report')[0].outerHTML", function(err, consoleText){
         console.log('consoleText', consoleText);
         var report = nodeHTMLParser.parse(consoleText);
-        console.log('report.firstChild.structure', report.firstChild.structure);
+        console.log('report.firstChild.structure', report.querySelector('#mocha-report'));
         if(!consoleText || err){
           return;
         }
