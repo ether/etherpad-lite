@@ -104,6 +104,9 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
     var knownConsoleText = "";
     var getStatusInterval = setInterval(function(){
       browser.eval("$('#mocha-report')[0].outerHTML", function(err, consoleText){
+        if(!consoleText || err){
+          return;
+        }
         var report = nodeHTMLParser.parse(consoleText);
         var root = report.querySelector('#mocha-report');
         var childNodes = root.childNodes;
@@ -113,10 +116,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
           }
         })
         customReporter += "FINISHED - " + passes + " tests passed, " + failures + " tests failed, duration: " + toHHMMSS(time);
-        if(!consoleText || err){
-          return;
-        }
-        knownConsoleText = consoleText;
+        knownConsoleText = customReporter;
 
         if(knownConsoleText.indexOf("FINISHED") > 0){
           var success = knownConsoleText.indexOf("FAILED") === -1;
