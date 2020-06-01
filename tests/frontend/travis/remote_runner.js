@@ -105,9 +105,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
     var knownConsoleText = "";
     var getStatusInterval = setInterval(function(){
       browser.eval("$('#mocha-report')[0].outerHTML", function(err, consoleText){
-        console.log('consoleText', consoleText)
         var report = nodeHTMLParser.parse(consoleText);
-        console.log('report', report.structure)
         var root = report.querySelector('#mocha-report');
         var childNodes = root.childNodes;
         if(childNodes.length) {
