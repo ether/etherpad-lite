@@ -35,8 +35,8 @@ function generateResult(result) {
       var singleTestTime = parseInt(r.childNodes[0].childNodes[1].rawText) || 0;
       time+=singleTestTime;
     }
-  });
-  customReporter += '\n'
+  })
+  customReporter += '\\n'
 }
 
 function generateSuite(nodes) {
@@ -70,13 +70,13 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
   testSettings["public"] = true;
   testSettings["build"] = process.env.GIT_HASH;
 
-  browser.init(testSettings).setAsyncScriptTimeout(60000 * 10).get("http://localhost:9001/tests/frontend/", function(){
+  browser.init(testSettings).get("http://localhost:9001/tests/frontend/", function(){
     var url = "https://saucelabs.com/jobs/" + browser.sessionID;
     console.log("Remote sauce test '" + name + "' started! " + url);
 
     //tear down the test excecution
     var stopSauce = function(success){
-      //getStatusInterval && clearInterval(getStatusInterval);
+      getStatusInterval && clearInterval(getStatusInterval);
       clearTimeout(timeout);
 
       browser.quit();
@@ -103,29 +103,25 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
     }, 60000 * 10);
 
     var knownConsoleText = "";
-    browser.waitForConditionInBrowser("document.querySelectorAll('#mocha-report').length > 0", 100000);
-    browser.eval("$('#mocha-report')[0].outerHTML", function(err, consoleText){
-      console.log('consoleText', consoleText)
-      if(!consoleText || err){
-        return;
-      }
-      var report = nodeHTMLParser.parse(consoleText);
-      var root = report.querySelector('#mocha-report');
-      var childNodes = root.childNodes;
-      childNodes.map(function(nodes) {
-        if(nodes.classNames.includes("suite")) {
-          generateSuite(nodes)
+    var getStatusInterval = setInterval(function(){
+      browser.eval("$('#mocha-report')[0].outerHTML", function(err, consoleText){
+        var report = nodeHTMLParser.parse(consoleText);
+        var root = report.querySelector('#mocha-report');
+        var childNodes = root.childNodes;
+        childNodes.map(function(nodes) {
+          if(nodes.classNames.includes("suite")) {
+            generateSuite(nodes)
+          }
+        })
+        //customReporter += "FINISHED - " + passes + " tests passed, " + failures + " tests failed, duration: " + toHHMMSS(time);
+        knownConsoleText = customReporter;
+
+        if(knownConsoleText.indexOf("FINISHED") > 0){
+          var success = knownConsoleText.indexOf("FAILED") === -1;
+          stopSauce(success);
         }
-      })
-      customReporter += "FINISHED - " + passes + " tests passed, " + failures + " tests failed, duration: " + toHHMMSS(time);
-      knownConsoleText = customReporter;
-
-      if(knownConsoleText.indexOf("FINISHED") > 0){
-        var success = knownConsoleText.indexOf("FAILED") === -1;
-        stopSauce(success);
-      }
-
-    })
+      });
+    }, 5000);
   });
 }, 5); //run 5 tests in parrallel
 
