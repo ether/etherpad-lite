@@ -12,6 +12,56 @@ var config = {
 
 var allTestsPassed = true;
 
+var customReporter = '';
+var passes = 0;
+var failures = 0;
+var time = 0;
+var ident = '  ';
+
+function generateResult(result) {
+  result.map(function(r) {
+    var resultClass = r.classNames;
+    if(resultClass.includes('pass') && !resultClass.includes('pending')) {
+      customReporter += ident + '-> PASSED : ';
+      passes++
+    } else if(resultClass.includes('pending')) {
+      customReporter += ident + '-> PENDING : '
+    } else {
+      customReporter += ident + '-> FAILED : ';
+      failures++;
+    }
+    customReporter += r.childNodes[0].childNodes[0].rawText + '\n';
+    if(r.childNodes[0].childNodes[1]) {
+      var singleTestTime = parseInt(r.childNodes[0].childNodes[1].rawText) || 0;
+      time+=singleTestTime;
+    }
+  })
+}
+
+function generateSuite(nodes) {
+  customReporter += ident + nodes.childNodes[0].rawText + '\n';
+  ident += '  '
+  var list = nodes.childNodes;
+  if(list[1].childNodes[0].classNames.includes('suite')) {
+    generateSuite(list[1].childNodes[0])
+  } else {
+    generateResult(list[1].childNodes)
+  }
+  ident = '  '
+}
+
+function toHHMMSS(time) {
+  var sec_num = parseInt(time, 10); // don't forget the second param
+  var hours   = Math.floor(sec_num / 3600);
+  var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+  var seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+  if (hours   < 10) {hours   = "0"+hours;}
+  if (minutes < 10) {minutes = "0"+minutes;}
+  if (seconds < 10) {seconds = "0"+seconds;}
+  return hours+':'+minutes+':'+seconds;
+}
+
 var sauceTestWorker = async.queue(function (testSettings, callback) {
   var browser = wd.promiseChainRemote(config.host, config.port, config.username, config.accessKey);
   var name = process.env.GIT_HASH + " - " + testSettings.browserName + " " + testSettings.version + ", " + testSettings.platform;
@@ -54,9 +104,15 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
     var knownConsoleText = "";
     var getStatusInterval = setInterval(function(){
       browser.eval("$('#mocha-report')[0].outerHTML", function(err, consoleText){
-        console.log('consoleText', consoleText);
         var report = nodeHTMLParser.parse(consoleText);
-        console.log('report.firstChild.structure', report.querySelector('#mocha-report'));
+        var root = report.querySelector('#mocha-report');
+        var childNodes = root.childNodes;
+        childNodes.map(function(nodes) {
+          if(nodes.classNames.includes("suite")) {
+            generateSuite(nodes)
+          }
+        })
+        customReporter += "FINISHED - " + passes + " tests passed, " + failures + " tests failed, duration: " + toHHMMSS(time);
         if(!consoleText || err){
           return;
         }
