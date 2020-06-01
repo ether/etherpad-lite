@@ -4,7 +4,7 @@
  */
 
 const request = require('../src/node_modules/request');
-const settings = require(__dirname+'/../tests/backend/loadSettings').loadSettings();
+const settings = require(__dirname+'/../tests/container/loadSettings').loadSettings();
 const supertest = require(__dirname+'/../src/node_modules/supertest');
 const api = supertest('http://'+settings.ip+":"+settings.port);
 const path = require('path');
