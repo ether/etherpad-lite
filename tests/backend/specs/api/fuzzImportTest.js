@@ -2,7 +2,7 @@
  * Fuzz testing the import endpoint
  */
 const fs = require('fs');
-const settings = require(__dirname+'/../../loadSettings').loadSettings();
+const settings = require(__dirname+'/../../../../tests/container/loadSettings.js').loadSettings();
 const host = "http://" + settings.ip + ":" + settings.port;
 const path = require('path');
 const async = require(__dirname+'/../../../../src/node_modules/async');
