@@ -161,12 +161,18 @@
         <div id="wrapper">
         <% e.begin_block("indexWrapper"); %>
             <div id="inner">
-                <button id="button" onclick="go2Random()" data-l10n-id="index.newPad"></button>
-                <label id="label" for="padname" data-l10n-id="index.createOpenPad"></label>
-                <form action="#" onsubmit="go2Name();return false;">
-                    <input type="text" id="padname" maxlength="50" autofocus x-webkit-speech>
-                    <button type="submit">OK</button>
-                </form>
+                <% if (!settings.requireSession) { %>
+                    <% if (settings.editOnly) { %>
+                        <label id="label" for="padname" data-l10n-id="index.openPad"></label>
+                    <% } else {%>
+                        <button id="button" onclick="go2Random()" data-l10n-id="index.newPad"></button>
+                        <label id="label" for="padname" data-l10n-id="index.createOpenPad"></label>
+                    <% } %>
+                    <form action="#" onsubmit="go2Name();return false;">
+                        <input type="text" id="padname" maxlength="50" autofocus x-webkit-speech>
+                        <button type="submit">OK</button>
+                    </form>
+                <% } %>
             </div>
         <% e.end_block(); %>
         </div>

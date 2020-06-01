@@ -1,6 +1,7 @@
 {
   "index.newPad": "New Pad",
   "index.createOpenPad": "or create/open a Pad with the name:",
+  "index.openPad": "open an existing Pad with the name:",
 
   "pad.toolbar.bold.title": "Bold (Ctrl+B)",
   "pad.toolbar.italic.title": "Italic (Ctrl+I)",
