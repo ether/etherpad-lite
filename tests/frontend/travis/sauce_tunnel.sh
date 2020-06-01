@@ -6,6 +6,9 @@
 #          example https://saucelabs.com/downloads/sc-4.5.4-linux.tar.gz
 #          Supported versions are currently listed at:
 #          https://wiki.saucelabs.com/display/DOCS/Downloading+Sauce+Connect+Proxy
+if [ -z "${SAUCE_USERNAME}" ]; then echo "SAUCE_USERNAME is unset - exiting"; exit 1; fi
+if [ -z "${SAUCE_ACCESS_KEY}" ]; then echo "SAUCE_ACCESS_KEY is unset - exiting"; exit 1; fi
+
 curl https://saucelabs.com/downloads/sc-4.5.4-linux.tar.gz > /tmp/sauce.tar.gz
 tar zxf /tmp/sauce.tar.gz --directory /tmp
 mv /tmp/sc-*-linux /tmp/sauce_connect

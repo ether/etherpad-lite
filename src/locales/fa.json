@@ -4,11 +4,11 @@
 			"BMRG14",
 			"Dalba",
 			"Ebraminio",
+			"FarsiNevis",
+			"Omid.koli",
 			"Reza1615",
 			"ZxxZxxZ",
-			"الناز",
-			"Omid.koli",
-			"FarsiNevis"
+			"الناز"
 		]
 	},
 	"index.newPad": "دفترچه یادداشت تازه",
@@ -46,8 +46,6 @@
 	"pad.settings.rtlcheck": "خواندن محتوا از راست به چپ؟",
 	"pad.settings.fontType": "نوع قلم:",
 	"pad.settings.fontType.normal": "ساده",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "نمای سراسری",
 	"pad.settings.language": "زبان:",
 	"pad.importExport.import_export": "درون‌ریزی/برون‌ریزی",
 	"pad.importExport.import": "بارگذاری پرونده‌ی متنی یا سند",

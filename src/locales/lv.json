@@ -3,10 +3,13 @@
 		"authors": [
 			"Admresdeserv.",
 			"Jmg.cmdi",
+			"Oskars",
 			"Papuass",
 			"Silraks"
 		]
 	},
+	"index.newPad": "Tiek izmantots kā pogas teksts. Blociņš, Etherpad kontekstā, ir piezīmju blociņš, uz kura rakstīt.",
+	"index.createOpenPad": "vai izveidojiet/atveriet Blociņu ar nosaukumu:",
 	"pad.toolbar.bold.title": "Treknrakstā (CTRL + B)",
 	"pad.toolbar.italic.title": "Slīpraksta (Ctrl-es)",
 	"pad.toolbar.underline.title": "Pasvītrojuma (CTRL + U)",
@@ -19,6 +22,7 @@
 	"pad.toolbar.redo.title": "Atcelt atsaukšanu (CTRL + Y)",
 	"pad.toolbar.clearAuthorship.title": "Notīrit autoru krāsas (Ctrl+Shift+C)",
 	"pad.toolbar.import_export.title": "Importēšanas/eksportēšanas no un uz citu failu formātiem",
+	"pad.toolbar.timeslider.title": "Laika-slidinātājs",
 	"pad.toolbar.savedRevision.title": "Saglabāt pārskatīšanu",
 	"pad.toolbar.settings.title": "Iestatījumi",
 	"pad.toolbar.embed.title": "Koplietot un iegut šo pad",
@@ -37,7 +41,6 @@
 	"pad.settings.rtlcheck": "Lasīt saturu no labās puses uz kreiso?",
 	"pad.settings.fontType": "Fonta tips:",
 	"pad.settings.fontType.normal": "Normāls",
-	"pad.settings.globalView": "Globālu skatījumu",
 	"pad.settings.language": "Valoda:",
 	"pad.importExport.import_export": "Importet/Eksportet",
 	"pad.importExport.import": "Augšupielādēt jebkuru teksta failu vai dokumentu",

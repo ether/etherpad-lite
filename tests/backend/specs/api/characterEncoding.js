@@ -7,7 +7,7 @@
 const assert = require('assert');
 const supertest = require(__dirname+'/../../../../src/node_modules/supertest');
 const fs = require('fs');
-const settings = require(__dirname+'/../../loadSettings').loadSettings();
+const settings = require(__dirname + '/../../../../src/node/utils/Settings');
 const api = supertest('http://'+settings.ip+":"+settings.port);
 const path = require('path');
 const async = require(__dirname+'/../../../../src/node_modules/async');

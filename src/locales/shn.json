@@ -1,9 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
-			"Saosukham",
 			"Ninjastrikers",
-			"Saimawnkham"
+			"Saimawnkham",
+			"Saosukham"
 		]
 	},
 	"index.newPad": "ၽႅတ်ႉမႂ်ႇ",
@@ -40,7 +40,6 @@
 	"pad.settings.linenocheck": "တူဝ်လိၵ်ႈႁေႈႁၢႆး",
 	"pad.settings.rtlcheck": "လူၵႂၢမ်းၼၢမ်း တႄႇၶႂႃတေႃႇသၢႆႉ",
 	"pad.settings.fontType": "ၾွၼ်ႉတူဝ်လိၵ်ႈ",
-	"pad.settings.globalView": "ဝိဝ်းတင်းလူၵ်ႈ",
 	"pad.settings.language": "ၽႃႇသႃႇၵႂၢမ်း:",
 	"pad.importExport.import_export": "သူင်ႇၶဝ်/သူင်ႇဢွၵ်ႇ",
 	"pad.importExport.import": "လူတ်ႇၶိုၼ်ႈ ၾၢႆႇလိၵ်ႈၵမ်ႈၽွင်ႈ ဢမ်ႇၼၼ် ပွင်ႈလိၵ်ႈ",

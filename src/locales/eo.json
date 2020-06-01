@@ -2,10 +2,10 @@
 	"@metadata": {
 		"authors": [
 			"Eliovir",
+			"Mirin",
 			"Mschmitt",
 			"Objectivesea",
-			"Robin van der Vliet",
-			"Mirin"
+			"Robin van der Vliet"
 		]
 	},
 	"index.newPad": "Nova Teksto",
@@ -43,8 +43,6 @@
 	"pad.settings.rtlcheck": "Legi dekstre-maldekstren?",
 	"pad.settings.fontType": "Tiparo:",
 	"pad.settings.fontType.normal": "Normala",
-	"pad.settings.fontType.monospaced": "Egallarĝa",
-	"pad.settings.globalView": "Ĉiea Vido",
 	"pad.settings.language": "Lingvo:",
 	"pad.importExport.import_export": "Enporti/Elporti",
 	"pad.importExport.import": "Alŝuti ajnan dosieron aŭ dokumenton",

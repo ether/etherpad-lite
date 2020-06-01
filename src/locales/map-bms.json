@@ -1,8 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"StefanusRA",
-			"Empu"
+			"Empu",
+			"StefanusRA"
 		]
 	},
 	"index.newPad": "Pad Anyar",
@@ -38,8 +38,6 @@
 	"pad.settings.rtlcheck": "Waca isi sekang tengen maring kiwe?",
 	"pad.settings.fontType": "Tipe Font:",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Global View",
 	"pad.settings.language": "Basa:",
 	"pad.importExport.import_export": "Impor/Ekspor",
 	"pad.importExport.import": "Unggahna berkas teks utawa dokumen",

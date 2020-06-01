@@ -11,6 +11,10 @@ The API is designed in a way, so you can reuse your existing user system with th
 
 Take a look at [HTTP API client libraries](https://github.com/ether/etherpad-lite/wiki/HTTP-API-client-libraries) to check if a library in your favorite programming language is available.
 
+### OpenAPI
+
+OpenAPI (formerly swagger) definitions are exposed under `/api/openapi.json` (latest) and `/api/{version}/openapi.json`. You can use official tools like [Swagger Editor](https://editor.swagger.io/) to view and explore them.
+
 ## Examples
 
 ### Example 1
@@ -61,7 +65,7 @@ Portal submits content into new blog post
 ## Usage
 
 ### API version
-The latest version is `1.2.13`
+The latest version is `1.2.14`
 
 The current version can be queried via /api.
 
@@ -630,3 +634,14 @@ lists all pads on this epl instance
 
 *Example returns:*
  * `{code: 0, message:"ok", data: {padIDs: ["testPad", "thePadsOfTheOthers"]}}`
+
+### Global
+
+#### getStats()
+ *  API >= 1.2.14
+
+get stats of the etherpad instance
+
+*Example returns*
+ * `{"code":0,"message":"ok","data":{"totalPads":3,"totalSessions": 2,"totalActivePads": 1}}`
+

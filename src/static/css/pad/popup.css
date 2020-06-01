@@ -1,0 +1,86 @@
+.popup.popup-show, .popup#users.chatAndUsers {
+  visibility: visible;
+}
+
+.popup > .popup-content {
+  transform: scale(0.7);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.74, -0.05, 0.27, 1.75)
+}
+
+.popup.popup-show > .popup-content, .popup#users.chatAndUsers > .popup-content {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.popup {
+  position: absolute;
+  top: 10px;
+  right: 30px;
+  visibility: hidden;
+  z-index: 500;
+}
+#mycolorpicker {
+  top: 0;
+}
+.popup.toolbar-popup {
+  right: auto;
+  margin-left: -10px;
+}
+.popup-content {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px #ddd;
+  background: #f7f7f7;
+  min-width: 300px;
+  max-width: 600px;
+}
+.popup input[type=text] {
+  width: 100%;
+  padding: 5px;
+  display: block;
+  margin-top: 10px;
+}
+.popup input[type=text], #users input[type=text] {
+  outline: none;
+}
+.popup a {
+  text-decoration: none
+}
+.popup h1 {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+}
+.popup h2 {
+  opacity: .7;
+  margin: 10px 0;
+  font-size: 1.2rem;
+}
+.popup:not(.comment-modal) p {
+  margin: 5px 0;
+}
+
+/* Mobile devices */
+@media only screen and (max-width: 800px) {
+  .popup {
+    border-radius: 0;
+    top: 1rem;
+    margin: 0 !important;
+    right: 1rem !important;
+    left: 1rem !important;
+    max-width: none !important;
+  }
+  .popup-content {
+    max-height: 80vh;
+    overflow: auto;
+  }
+  .popup#users .popup-content {
+    overflow: visible;
+  }
+  /* Move popup to the bottom, except popup linked to left toolbar, like hyperklink popup */
+  .popup:not(.toolbar-popup) {
+    top: auto;
+    bottom: 1rem;
+  }
+}

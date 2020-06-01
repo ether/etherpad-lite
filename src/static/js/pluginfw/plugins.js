@@ -5,6 +5,7 @@ var fs = require("fs");
 var tsort = require("./tsort");
 var util = require("util");
 var _ = require("underscore");
+var settings = require('../../../node/utils/Settings');
 
 var pluginUtils = require('./shared');
 
@@ -95,7 +96,7 @@ exports.update = async function () {
 
 exports.getPackages = async function () {
   // Load list of installed NPM packages, flatten it to a list, and filter out only packages with names that
-  var dir = path.resolve(npm.dir, '..');
+  var dir = settings.root;
   let data = await util.promisify(readInstalled)(dir);
 
   var packages = {};

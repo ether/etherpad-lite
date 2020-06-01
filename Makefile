@@ -6,7 +6,14 @@ docassets = $(addprefix out/,$(wildcard doc/assets/*))
 VERSION = $(shell node -e "console.log( require('./src/package.json').version )")
 UNAME := $(shell uname -s)
 
-docs: $(outdoc_files) $(docassets)
+ensure_marked_is_installed:
+	set -eu; \
+	hash npm; \
+	if [ $(shell npm list --prefix bin/doc >/dev/null 2>/dev/null; echo $$?) -ne "0" ]; then \
+		npm ci --prefix=bin/doc; \
+	fi
+
+docs: ensure_marked_is_installed $(outdoc_files) $(docassets)
 
 out/doc/assets/%: doc/assets/%
 	mkdir -p $(@D)
