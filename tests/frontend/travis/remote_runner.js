@@ -70,7 +70,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
   testSettings["public"] = true;
   testSettings["build"] = process.env.GIT_HASH;
 
-  browser.init(testSettings)..setAsyncScriptTimeout(60000 * 10).get("http://localhost:9001/tests/frontend/", function(){
+  browser.init(testSettings).setAsyncScriptTimeout(60000 * 10).get("http://localhost:9001/tests/frontend/", function(){
     var url = "https://saucelabs.com/jobs/" + browser.sessionID;
     console.log("Remote sauce test '" + name + "' started! " + url);
 
