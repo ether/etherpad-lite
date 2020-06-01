@@ -105,6 +105,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
     var knownConsoleText = "";
     browser.waitForConditionInBrowser("document.querySelectorAll('#mocha-report').length > 0", 100000);
     browser.eval("$('#mocha-report')[0].outerHTML", function(err, consoleText){
+      console.log('consoleText', consoleText)
       if(!consoleText || err){
         return;
       }
@@ -123,6 +124,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
         var success = knownConsoleText.indexOf("FAILED") === -1;
         stopSauce(success);
       }
+
     })
   });
 }, 5); //run 5 tests in parrallel
