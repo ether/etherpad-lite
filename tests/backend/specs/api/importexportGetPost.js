@@ -158,8 +158,8 @@ describe('Imports and Exports', function(){
     });
   });
 
-  if(!settings.abiword && !settings.soffice){
-    console.warn("Did not test abiword or soffice");
+  if(settings.abiword.indexOf("/" === -1) && settings.soffice.indexOf("/" === -1)){
+    console.log("Did not test abiword or soffice");
   }else{
     it('Tries to import file type that uses soffice or abioffice', function(done) {
 
@@ -188,7 +188,7 @@ describe('Imports and Exports', function(){
       let form = req.form();
 
       form.append('file', wordDoc, {
-        filename: '/test.doc',
+        filename: '/tmp/test.doc',
         contentType: 'application/msword'
       });
 

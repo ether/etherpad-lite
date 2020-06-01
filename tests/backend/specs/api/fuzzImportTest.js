@@ -1,12 +1,13 @@
 /*
  * Fuzz testing the import endpoint
  */
+/*
 const fs = require('fs');
 const settings = require(__dirname+'/../../../../tests/container/loadSettings.js').loadSettings();
 const host = "http://" + settings.ip + ":" + settings.port;
 const path = require('path');
 const async = require(__dirname+'/../../../../src/node_modules/async');
-const request = require('request');
+const request = require(__dirname+'/../../../../src/node_modules/request');
 const froth = require(__dirname+'/../../../../src/node_modules/mocha-froth');
 
 var filePath = path.join(__dirname, '../../../../APIKEY.txt');
@@ -20,16 +21,17 @@ var endPoint = function(point, version){
   return '/api/'+version+'/'+point+'?apikey='+apiKey;
 }
 
-console.log("Testing against padID", testPadId);
-console.log("To watch the test live visit " + host + "/p/" + testPadId);
-console.log("Tests will start in 5 seconds, click the URL now!");
+//console.log("Testing against padID", testPadId);
+//console.log("To watch the test live visit " + host + "/p/" + testPadId);
+//console.log("Tests will start in 5 seconds, click the URL now!");
 
 setTimeout(function(){
-  for (let i=1; i<1000000; i++) { // 1M runs
+  for (let i=1; i<5; i++) { // 5000 runs
     setTimeout( function timer(){
       runTest(i);
     }, i*100 ); // 100 ms
   }
+  process.exit(0);
 },5000); // wait 5 seconds
 
 function runTest(number){
@@ -42,22 +44,21 @@ function runTest(number){
       }
     });
 
-    var fN = '/test.txt';
+    var fN = '/tmp/fuzztest.txt';
     var cT = 'text/plain';
 
-    // To be more agressive every other test we mess with Etherpad
-    // We provide a weird file name and also set a weird contentType
     if (number % 2 == 0) {
       fN = froth().toString();
       cT = froth().toString();
     }
 
     let form = req.form();
+
     form.append('file', froth().toString(), {
       filename: fN,
       contentType: cT
     });
-
+console.log("here");
   });
 }
 
@@ -71,5 +72,4 @@ function makeid()
   }
   return text;
 }
-
-
+*/
