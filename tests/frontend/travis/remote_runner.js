@@ -75,7 +75,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
 
     //tear down the test excecution
     var stopSauce = function(success){
-      getStatusInterval && clearInterval(getStatusInterval);
+      //getStatusInterval && clearInterval(getStatusInterval);
       clearTimeout(timeout);
 
       browser.quit();
@@ -102,28 +102,27 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
     }, 60000 * 10);
 
     var knownConsoleText = "";
-    var getStatusInterval = setInterval(function(){
-      browser.eval("$('#mocha-report')[0].outerHTML", function(err, consoleText){
-        if(!consoleText || err){
-          return;
+    browser.waitForConditionInBrowser("document.querySelectorAll('#mocha-report').length > 0", 100000);
+    browser.eval("$('#mocha-report')[0].outerHTML", function(err, consoleText){
+      if(!consoleText || err){
+        return;
+      }
+      var report = nodeHTMLParser.parse(consoleText);
+      var root = report.querySelector('#mocha-report');
+      var childNodes = root.childNodes;
+      childNodes.map(function(nodes) {
+        if(nodes.classNames.includes("suite")) {
+          generateSuite(nodes)
         }
-        var report = nodeHTMLParser.parse(consoleText);
-        var root = report.querySelector('#mocha-report');
-        var childNodes = root.childNodes;
-        childNodes.map(function(nodes) {
-          if(nodes.classNames.includes("suite")) {
-            generateSuite(nodes)
-          }
-        })
-        customReporter += "FINISHED - " + passes + " tests passed, " + failures + " tests failed, duration: " + toHHMMSS(time);
-        knownConsoleText = customReporter;
+      })
+      customReporter += "FINISHED - " + passes + " tests passed, " + failures + " tests failed, duration: " + toHHMMSS(time);
+      knownConsoleText = customReporter;
 
-        if(knownConsoleText.indexOf("FINISHED") > 0){
-          var success = knownConsoleText.indexOf("FAILED") === -1;
-          stopSauce(success);
-        }
-      });
-    }, 5000);
+      if(knownConsoleText.indexOf("FINISHED") > 0){
+        var success = knownConsoleText.indexOf("FAILED") === -1;
+        stopSauce(success);
+      }
+    })
   });
 }, 5); //run 5 tests in parrallel
 
