@@ -1,7 +1,5 @@
 #!/bin/sh
 
-NODE_VERSION="10.20.1"
-
 pecho() { printf %s\\n "$*"; }
 log() { pecho "$@"; }
 error() { log "ERROR: $@" >&2; }
@@ -19,6 +17,32 @@ is_cmd zip || fatal "Please install zip"
 
 # Is zip installed?
 is_cmd unzip || fatal "Please install unzip"
+=======
+#Move to the folder where ep-lite is installed
+cd $(dirname $0)
+
+#Was this script started in the bin folder? if yes move out
+if [ -d "../bin" ]; then
+  cd "../"
+fi
+
+#Is wget installed?
+hash wget > /dev/null 2>&1 || {
+  echo "Please install wget" >&2
+  exit 1
+}
+
+#Is zip installed?
+hash zip > /dev/null 2>&1 || {
+  echo "Please install zip" >&2
+  exit 1
+}
+
+#Is zip installed?
+hash unzip > /dev/null 2>&1 || {
+  echo "Please install unzip" >&2
+  exit 1
+}
 
 START_FOLDER=$(pwd);
 TMP_FOLDER=$(mktemp -d)
@@ -46,7 +70,7 @@ mv node_modules_resolved node_modules
 
 log "download windows node..."
 cd bin
-wget "https://nodejs.org/dist/v$NODE_VERSION/win-x86/node.exe" -O ../node.exe
+wget "https://nodejs.org/dist/latest-erbium/win-x86/node.exe" -O ../node.exe
 
 log "remove git history to reduce folder size"
 rm -rf .git/objects

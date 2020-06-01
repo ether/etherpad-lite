@@ -104,7 +104,7 @@ function Ace2Editor()
     editor[fnName] = pendingInit(function(){
       if(fnName === "setAuthorInfo"){
         if(!arguments[0]){
-          top.console.warn("setAuthorInfo AuthorId not set for some reason", arguments);
+          // setAuthorInfo AuthorId not set for some reason
         }else{
           info[prefix + fnName].apply(this, arguments);
         }

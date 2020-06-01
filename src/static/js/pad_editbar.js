@@ -408,7 +408,7 @@ var padeditbar = (function()
     toolbar.registerCommand("import_export", function () {
       toolbar.toggleDropDown("import_export", function(){
 
-        if (clientVars.thisUserHasEditedThisPad) {
+        if (clientVars.thisUserHasEditedThisPad || clientVars.allowAnyoneToImport) {
           // the user has edited this pad historically or in this session
           $('#importform').show();
           $('#importmessagepermission').hide();
