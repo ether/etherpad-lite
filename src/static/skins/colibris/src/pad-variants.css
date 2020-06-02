@@ -1,7 +1,7 @@
 /* =========================== */
 /* === Super Light Toolbar === */
 /* =========================== */
-.super-light-toolbar .toolbar, .super-light-toolbar .popup-content, #pad_title  {
+.super-light-toolbar .toolbar, .super-light-toolbar .popup-content, .super-light-toolbar #pad_title  {
   --text-color: var(--super-dark-color);
   --text-soft-color: var(--dark-color);
   --border-color: #e4e6e9;
@@ -11,7 +11,7 @@
 /* ===================== */
 /* === Light Toolbar === */
 /* ===================== */
-.light-toolbar .toolbar, .light-toolbar .popup-content, #pad_title {
+.light-toolbar .toolbar, .light-toolbar .popup-content, .light-toolbar #pad_title {
   --text-color: var(--super-dark-color);
   --text-soft-color: var(--dark-color);
   --border-color: var(--middle-color);
@@ -21,7 +21,7 @@
 /* ========================== */
 /* === Super Dark Toolbar === */
 /* ========================== */
-.super-dark-toolbar .toolbar, .super-dark-toolbar .popup-content, #pad_title {
+.super-dark-toolbar .toolbar, .super-dark-toolbar .popup-content, .super-dark-toolbar #pad_title {
   --text-color: var(--super-light-color);
   --text-soft-color: var(--light-color);
   --border-color: var(--dark-color);
@@ -35,7 +35,7 @@
 /* ==================== */
 /* === Dark Toolbar === */
 /* ==================== */
-.dark-toolbar .toolbar, .dark-toolbar .popup-content, #pad_title  {
+.dark-toolbar .toolbar, .dark-toolbar .popup-content, .dark-toolbar #pad_title  {
   --text-color: var(--super-light-color);
   --text-soft-color: var(--light-color);
   --border-color: var(--super-dark-color);
@@ -189,8 +189,8 @@
   .light-editor.light-background,
   .super-dark-editor.super-dark-background,
   .dark-editor.dark-background {
-    --editor-horizontal-padding: 35px;
-    --editor-vertical-padding: 20px;
+    --editor-horizontal-padding: 20px;
+    --editor-vertical-padding: 5px;
   }
 }
 
@@ -218,8 +218,8 @@
 }
 @media (min-width: 1001px) {
   .full-width-editor {
-    --editor-horizontal-padding: 35px !important;
-    --editor-vertical-padding: 20px !important;
+    --editor-horizontal-padding: 20px !important;
+    --editor-vertical-padding: 5px !important;
   }
 }
 .full-width-editor ::-webkit-scrollbar-track,

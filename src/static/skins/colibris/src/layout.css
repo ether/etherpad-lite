@@ -33,8 +33,8 @@
   /* Padding must be the same than editor, otherwise it creates problem */
   padding-top: 40px; /* = #innerdocbody iframe vertical padding */
   padding-bottom: 40px;
-  padding-top: var(--editor-vertical-padding);
-  padding-bottom: var(--editor-vertical-padding);
+  padding-top: calc(var(--editor-vertical-padding) + 15px);
+  padding-bottom: calc(var(--editor-vertical-padding) + 15px);
 }
 
 @media (max-width:1000px) {
