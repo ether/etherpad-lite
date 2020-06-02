@@ -25,7 +25,7 @@ var async = require('async');
 var fs = require('fs');
 var StringDecoder = require('string_decoder').StringDecoder;
 var CleanCSS = require('clean-css');
-var uglifyJS = require("uglify-js");
+var terser = require("terser");
 var path = require('path');
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
 var RequireKernel = require('etherpad-require-kernel');
@@ -383,7 +383,7 @@ function getFileCompressed(filename, contentType, callback) {
       try {
         content = compressJS(content);
         if (content.error) {
-          console.error(`Error compressing JS (${filename}) using UglifyJS`, content.error);
+          console.error(`Error compressing JS (${filename}) using terser`, content.error);
           callback('compressionError', content.error);
         } else {
           content = content.code.toString(); // Convert content obj code to string
@@ -413,7 +413,7 @@ function getFile(filename, callback) {
 function compressJS(content)
 {
   const contentAsString = content.toString();
-  const codeObj = uglifyJS.minify(contentAsString);
+  const codeObj = terser.minify(contentAsString);
 
   return codeObj;
 }
