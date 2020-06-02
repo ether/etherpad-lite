@@ -142,7 +142,7 @@ function handleClientVars(message)
   require('./pad_impexp').padimpexp.init();
 
   // Create a base URI used for timeslider exports
-  const baseURI = document.location.pathname;
+  var baseURI = document.location.pathname;
 
   //change export urls when the slider moves
   BroadcastSlider.onSlider(function(revno)
