@@ -154,8 +154,8 @@ function handleClientVars(message)
       // https://github.com/ether/etherpad-lite/issues/4071
       // Where a padId that was numeric would create the wrong export link
       if(this.href){
-        let type = this.href.split('export/')[1];
-        let href = baseURI.split('timeslider')[0];
+        var type = this.href.split('export/')[1];
+        var href = baseURI.split('timeslider')[0];
         href += revno + '/export/' + type;
         this.setAttribute('href', href);
       }
