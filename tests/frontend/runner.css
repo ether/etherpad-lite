@@ -16,7 +16,7 @@ body {
 }
 
 #iframe-container {
-  width: 50%;
+  width: 80%;
   min-width: 820px;
   height: 100%;
 }
@@ -32,6 +32,7 @@ body {
   flex: 1 auto;
   height: 100%;
   overflow: auto;
+  width:20%;
 }
 
 #mocha #report {
