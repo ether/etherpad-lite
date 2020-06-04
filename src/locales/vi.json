@@ -2,9 +2,9 @@
 	"@metadata": {
 		"authors": [
 			"Baonguyen21022003",
+			"Max20091",
 			"Minh Nguyen",
-			"Tuankiet65",
-			"Max20091"
+			"Tuankiet65"
 		]
 	},
 	"index.newPad": "Tạo một Pad mới",
@@ -40,8 +40,6 @@
 	"pad.settings.rtlcheck": "Đọc nội dung từ phải sang trái?",
 	"pad.settings.fontType": "Kiểu phông chữ:",
 	"pad.settings.fontType.normal": "Thường",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Toàn cầu",
 	"pad.settings.language": "Ngôn ngữ:",
 	"pad.importExport.import_export": "Xuất/Nhập",
 	"pad.importExport.import": "Tải lên bất kỳ tập tin văn bản hoặc tài liệu",

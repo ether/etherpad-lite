@@ -4,6 +4,7 @@ var installer = require('ep_etherpad-lite/static/js/pluginfw/installer');
 var plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');
 var _ = require('underscore');
 var semver = require('semver');
+const UpdateCheck = require('ep_etherpad-lite/node/utils/UpdateCheck');
 
 exports.expressCreateServer = function(hook_name, args, cb) {
   args.app.get('/admin/plugins', function(req, res) {
@@ -23,7 +24,8 @@ exports.expressCreateServer = function(hook_name, args, cb) {
 
     res.send(eejs.require("ep_etherpad-lite/templates/admin/plugins-info.html", {
       gitCommit: gitCommit,
-      epVersion: epVersion
+      epVersion: epVersion,
+      latestVersion: UpdateCheck.getLatestVersion()
     }));
   });
 }

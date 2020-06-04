@@ -2,14 +2,14 @@
 	"@metadata": {
 		"authors": [
 			"Alvaro Vidal-Abarca",
-			"Pginer",
-			"Pitort",
-			"Toniher",
-			"Macofe",
-			"Joan manel",
 			"Eduardo Martinez",
 			"Jaumeortola",
-			"Ssola"
+			"Joan manel",
+			"Macofe",
+			"Pginer",
+			"Pitort",
+			"Ssola",
+			"Toniher"
 		]
 	},
 	"index.newPad": "Nou pad",
@@ -47,8 +47,6 @@
 	"pad.settings.rtlcheck": "Llegir el contingut de dreta a esquerra?",
 	"pad.settings.fontType": "Tipus de lletra:",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "D'amplada fixa",
-	"pad.settings.globalView": "Vista global",
 	"pad.settings.language": "Llengua:",
 	"pad.importExport.import_export": "Importació/exportació",
 	"pad.importExport.import": "Puja qualsevol fitxer de text o document",

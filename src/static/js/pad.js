@@ -73,8 +73,8 @@ function randomString()
 //   callback: the function to call when all above succeeds, `val` is the value supplied by the user
 var getParameters = [
   { name: "noColors",         checkVal: "true",  callback: function(val) { settings.noColors = true; $('#clearAuthorship').hide(); } },
-  { name: "showControls",     checkVal: "false", callback: function(val) { $('#editbar').addClass('hideControlsEditbar'); $('#editorcontainer').addClass('hideControlsEditor'); } },
-  { name: "showChat",         checkVal: "true", callback: function(val) { $('#chaticon').show(); } },
+  { name: "showControls",     checkVal: "true",  callback: function(val) { $('#editbar').css('display', 'flex') } },
+  { name: "showChat",         checkVal: null,    callback: function(val) { if(val==="false"){settings.hideChat = true;chat.hide();$('#chaticon').hide();} } },
   { name: "showLineNumbers",  checkVal: "false", callback: function(val) { settings.LineNumbersDisabled = true; } },
   { name: "useMonospaceFont", checkVal: "true",  callback: function(val) { settings.useMonospaceFontGlobal = true; } },
   // If the username is set as a parameter we should set a global value that we can call once we have initiated the pad.
@@ -82,7 +82,7 @@ var getParameters = [
   // If the userColor is set as a parameter, set a global value to use once we have initiated the pad.
   { name: "userColor",        checkVal: null,    callback: function(val) { settings.globalUserColor = decodeURIComponent(val); clientVars.userColor = decodeURIComponent(val); } },
   { name: "rtl",              checkVal: "true",  callback: function(val) { settings.rtlIsTrue = true } },
-  { name: "alwaysShowChat",   checkVal: "true",  callback: function(val) { chat.stickToScreen(); } },
+  { name: "alwaysShowChat",   checkVal: "true",  callback: function(val) { if(!settings.hideChat) chat.stickToScreen(); } },
   { name: "chatAndUsers",     checkVal: "true",  callback: function(val) { chat.chatAndUsers(); } },
   { name: "lang",             checkVal: null,    callback: function(val) { window.html10n.localize([val, 'en']); createCookie('language', val); } }
 ];
@@ -92,7 +92,7 @@ function getParams()
   // Tries server enforced options first..
   for(var i = 0; i < getParameters.length; i++)
   {
-   var setting = getParameters[i];
+    var setting = getParameters[i];
     var value = clientVars.padOptions[setting.name];
     if(value.toString() === setting.checkVal)
     {
@@ -173,8 +173,20 @@ function sendClientReady(isReconnect, messageType)
   //this is a reconnect, lets tell the server our revisionnumber
   if(isReconnect == true)
   {
+    // Hammer approach for now.  This is obviously wrong and needs a proper fix
+    // TODO: See https://github.com/ether/etherpad-lite/issues/3830
+    document.location=document.location;
+
+    // Switching to pad should work but doesn't...
+    // return pad.switchToPad(padId); // hacky but whatever.
+    // It might be related to Auth because failure logs...
+    //   [ERROR] console - Auth was never applied to a session.
+    //   If you are using the stress-test tool then restart Etherpad
+    //   and the Stress test tool.
+
     msg.client_rev=pad.collabClient.getCurrentRevisionNumber();
     msg.reconnect=true;
+
   }
 
   socket.json.send(msg);
@@ -210,6 +222,7 @@ function handshake()
   });
 
   socket.on('reconnecting', function() {
+    padeditor.disable();
     pad.collabClient.setStateIdle();
     pad.collabClient.setIsPendingRevision(true);
     pad.collabClient.setChannelState("RECONNECTING");
@@ -286,6 +299,8 @@ function handshake()
         $('#chaticon').hide();
         $('#options-chatandusers').parent().hide();
         $('#options-stickychat').parent().hide();
+      }else{
+        if(!settings.hideChat) $('#chaticon').show();
       }
 
       $("body").addClass(clientVars.readonly ? "readonly" : "readwrite")
@@ -364,12 +379,6 @@ function handshake()
   });
 }
 
-$.extend($.gritter.options, {
-  position: 'bottom-right', // defaults to 'top-right' but can be 'bottom-left', 'bottom-right', 'top-left', 'top-right' (added in 1.7.1)
-  fade: false, // dont fade, too jerky on mobile
-  time: 6000 // hang on the screen for...
-});
-
 var pad = {
   // don't access these directly from outside this file, except
   // for debugging
@@ -428,6 +437,11 @@ var pad = {
   },
   switchToPad: function(padId)
   {
+    // destroy old pad from DOM
+    // See https://github.com/ether/etherpad-lite/pull/3915
+    // TODO: Check if Destroying is enough and doesn't leave negative stuff
+    // See ace.js "editor.destroy" for a reference of how it was done before
+    $('#editorcontainer').find("iframe")[0].remove();
     var options = document.location.href.split('?')[1];
     var newHref = padId;
     if (typeof options != "undefined" && options != null){
@@ -466,11 +480,6 @@ var pad = {
       // This will check if the prefs-cookie is set.
       // Otherwise it shows up a message to the user.
       padcookie.init();
-      if (!padcookie.isCookiesEnabled())
-      {
-        $('#loading').hide();
-        $('#noCookie').show();
-      }
     });
   },
   _afterHandshake: function()
@@ -561,6 +570,20 @@ var pad = {
         pad.changeViewOption('rtlIsTrue', true);
       }
       pad.changeViewOption('padFontFamily', padcookie.getPref("padFontFamily"));
+      $('#viewfontmenu').val(padcookie.getPref("padFontFamily")).niceSelect('update');
+
+      // Prevent sticky chat or chat and users to be checked for mobiles
+      function checkChatAndUsersVisibility(x) {
+        if (x.matches) { // If media query matches
+          $('#options-chatandusers:checked').click();
+          $('#options-stickychat:checked').click();
+        }
+      }
+      var mobileMatch = window.matchMedia("(max-width: 800px)");
+      mobileMatch.addListener(checkChatAndUsersVisibility); // check if window resized
+      setTimeout(function() { checkChatAndUsersVisibility(mobileMatch); }, 0); // check now after load
+
+      $('#editorcontainer').addClass('initialized');
 
       hooks.aCallAll("postAceInit", {ace: padeditor.ace, pad: pad});
     }

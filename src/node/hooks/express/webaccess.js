@@ -38,12 +38,18 @@ exports.basicAuth = function (req, res, next) {
       var password = userpass.join(':');
       var fallback = function(success) {
         if (success) return cb(true);
-        if (settings.users[username] != undefined && settings.users[username].password === password) {
-          settings.users[username].username = username;
-          req.session.user = settings.users[username];
-          return cb(true);
+        if (!(username in settings.users)) {
+          httpLogger.info(`Failed authentication from IP ${req.ip} - no such user`);
+          return cb(false);
         }
-        return cb(false);
+        if (settings.users[username].password !== password) {
+          httpLogger.info(`Failed authentication from IP ${req.ip} for user ${username} - incorrect password`);
+          return cb(false);
+        }
+        httpLogger.info(`Successful authentication from IP ${req.ip} for user ${username}`);
+        settings.users[username].username = username;
+        req.session.user = settings.users[username];
+        return cb(true);
       };
       return hooks.aCallFirst("authenticate", {req: req, res:res, next:next, username: username, password: password}, hookResultMangle(fallback));
     }

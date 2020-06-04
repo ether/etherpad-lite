@@ -21,3 +21,4 @@ credentials.json
 out/
 .nyc_output
 ./package-lock.json
+.idea

@@ -1,19 +1,19 @@
 {
 	"@metadata": {
 		"authors": [
+			"94rain",
 			"Dimension",
 			"Hydra",
 			"Hzy980512",
+			"JuneAugust",
 			"Liuxinyu970226",
 			"Qiyue2001",
 			"Shangkuanlc",
 			"Shizhao",
+			"VulpesVulpes825",
 			"Yfdyh000",
 			"乌拉跨氪",
-			"燃玉",
-			"JuneAugust",
-			"94rain",
-			"VulpesVulpes825"
+			"燃玉"
 		]
 	},
 	"index.newPad": "新记事本",
@@ -51,8 +51,6 @@
 	"pad.settings.rtlcheck": "从右到左阅读内容吗？",
 	"pad.settings.fontType": "字体类型：",
 	"pad.settings.fontType.normal": "正常",
-	"pad.settings.fontType.monospaced": "等宽字体",
-	"pad.settings.globalView": "所有人视窗",
 	"pad.settings.language": "语言：",
 	"pad.importExport.import_export": "导入/导出",
 	"pad.importExport.import": "上载任何文本文件或档案",

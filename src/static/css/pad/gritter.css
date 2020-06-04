@@ -1,0 +1,51 @@
+#gritter-container {
+  position: absolute;
+  right: 50%;
+  transform: translateX(50%);
+  text-align: center;
+  z-index: 9999;
+}
+#gritter-container.top {
+  top: 20px;
+}
+#gritter-container.bottom {
+  bottom: 20px;
+}
+
+.gritter-item.popup {
+  position: relative;
+  visibility: visible;
+  right: auto !important;
+  left: auto !important;
+  top: auto;
+  bottom: auto;
+}
+.gritter-item.popup:not(.error) {
+  max-width: 450px;
+}
+
+.gritter-item .popup-content {
+  display: flex;
+}
+
+.gritter-item .gritter-content {
+  flex: 1 auto;
+  text-align: center;
+}
+
+.gritter-item .gritter-close {
+  align-self: center;
+}
+
+.gritter-item.error .popup-content {
+  color: #a84341;
+  background-color: #eed3d4;
+}
+
+@media (max-width: 800px) {
+  #gritter-container {
+    left: 1rem;
+    right: 1rem;
+    transform: none;
+  }
+}

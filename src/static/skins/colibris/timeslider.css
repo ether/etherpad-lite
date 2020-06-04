@@ -1,142 +1,98 @@
-@media (max-width: 600px) { html { overflow: hidden } }
-
-@media (max-width: 1100px) {
-  .timeslider #padeditor {
-    padding: 0 !important;
-  }
-}
-
-.timeslider #import_export, .timeslider #settings{
-  top: 108px !important;
-  right: 55px;
-}
-
-.timeslider #export > p {
-  font-size: 15px;
-  margin-top: 0;
-  margin-bottom: 20px;
-}
-
-.timeslider #padpage {
-  display: flex;
-  flex-direction: column;
-}
-
-.timeslider #timeslider-top {
-  position: relative;
-  border-bottom: 1px solid #e4e4e4;
-}
-
-.timeslider-bar { background: none; }
-.timeslider-bar p { margin: 8px; font-size: 12px;}
-
-.timeslider-bar #editbar {
-  border: none;
-  background: none !important;
-  margin-right: 10px;
-}
-
-.timeslider #padmain {
-  position: relative;
-  top: 0 !important;
-  flex: 1 auto;
-  overflow: auto;
-}
-
-.timeslider #padeditor {
-  height: 100%;
-  padding-top: 30px;
-}
-
-.timeslider #editorcontainerbox {
-  height: 100%;
-  overflow: visible;
-  margin-top: 0 !important;
-}
-
-#timeslider {
-  margin-top: -20px;
-  margin-left: 0;
-  background-color: transparent;
-}
-
-#timeslider, #timeslider-left, #timeslider-right {
-  height: 57px;
-  background-color: transparent;
-}
-
-#timeslider #timer {
-  opacity: 0.8;
-  font-style: italic;
-  right: 158px;
-  top: -3px;
-  left: initial;
-  background: none;
-}
-
-#timeslider #timeslider-slider { margin-left: 4px; }
-
-#ui-slider-handle {
-  z-index: 5;
+#timeslider-slider #ui-slider-handle {
   border-radius: 3px;
+  width: 12px;
   height: 28px;
-  top: 19px;
+  background-color: #64d29b;
+  background-color: var(--primary-color);
 }
 
-#ui-slider-bar {
-  height: 10px;
-  margin-top: 28px;
-  margin-right: 180px;
+#timeslider-slider #ui-slider-bar {
   border-radius: 3px;
-  background-color: #e4e4e4;
+  background-color: #d2d2d2;
+  background-color: var(--border-color);
 }
-
-#timeslider .star {
-  top: 25px;
+#slider-btn-container {
+  margin: -18px 15px 0 20px;
 }
-#timeslider .star:before {
-  color: #da9700;
-  content: "\e836";
+#slider-btn-container #playpause_button_icon {
+  color: #ffffff;
+  color: var(--bg-color);
+  background-color: #64d29b;
+  background-color: var(--primary-color);
+  border: none;
+  margin-right: 5px;
+  padding-top: 3px;
+  width: 45px;
+  height: 45px;
+}
+#slider-btn-container #playpause_button_icon:not(.pause) {
+  padding-left: 4px;
+}
+#slider-btn-container .stepper {
+  border: 2px solid !important;
+  height: 30px;
+  width: 30px;
+  line-height: 28px;
+  margin-left: 5px;
+  font-size: 13px;
+  color: #64d29b;
+  color: var(--primary-color);
+  border-color: #64d29b;
+  border-color: var(--primary-color);
+}
+#slider-btn-container .stepper.disabled {
+  opacity: .5;
 }
 
 .timeslider #editbar .buttontext {
-  color: white;
+  background-color: #576273;
+  background-color: var(--text-soft-color);
+  color: #ffffff;
+  color: var(--bg-color);
   margin: 0;
 }
-.timeslider #editbar .grouped-right {
-  margin: 0; padding: 0;
-  margin-top: 5px;
-  margin-left: 5px;
+
+#editbar {
+  display: block;
+  padding-bottom: 5px;
 }
 
-.timeslider #playpause_button {
-  right: 95px;
-  top: 1px;
-}
-#playpause_button_icon {
-  border:none;
-}
-#playpause_button_icon:before { color: white; }
-
-.timeslider #leftstep {
-  right: 60px;
-  top: 12px;
+#editbar li > a {
+  border-radius: 3px;
 }
 
-.timeslider #rightstep {
-  top: 12px;
-  right: 30px;
-}
-
-.stepper {
-  border: 2px solid;
-  text-align: center;
-  border-radius: 50%;
-  height: 25px;
-  padding-top: 2px;
+#timeslider-slider #timer {
+  opacity: .7;
+  top: -12px;
+  font-size: .8em;
 }
 
 .timeslider #authorsList .author {
   padding: 2px 5px;
   border-radius: 3px;
+  margin-right: 4px;
+  margin-bottom: 4px;
+}
+
+.timeslider-title {
+  font-size: 1.8rem !important;
+}
+.timeslider-subtitle {
+  margin-top: 6px;
+  font-size: .9em;
+}
+
+@media (max-width: 800px) {
+
+  #slider-btn-container {
+    margin-top: 0;
+    margin-right: 5px;
+  }
+  #slider-btn-container #playpause_button_icon {
+    width: 30px;
+    height: 30px;
+  }
+  #slider-btn-container #playpause_button_icon:before {
+    font-size: 18px;
+  }
 }

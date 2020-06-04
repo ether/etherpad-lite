@@ -1,13 +1,7 @@
-#colorpicker {
-    left: -200px !important;
-    top: 0px !important;
-}
-
 #colorpicker a.brightColorPicker-cancelButton {
     background: none;
     padding: 0;
     padding-top: 10px;
-    font-family: Arial, sans-serif;
     font-weight: bold;
     border: none;
 }

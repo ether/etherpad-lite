@@ -1,0 +1,175 @@
+.toolbar {
+  display: none;
+  position: relative;
+  background-color: #f4f4f4;
+  color: #666;
+  border-bottom: 1px solid #ccc;
+  overflow: hidden;
+  justify-content: space-between;
+  padding: 0px 5px 5px 5px;
+  flex-shrink: 0;
+}
+.toolbar ul {
+  list-style: none;
+  z-index: 2;
+  overflow: hidden;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+.toolbar ul.menu_right {
+  flex-shrink: 0; /* prevent from shrinking */
+}
+.toolbar ul li, .toolbar ul > div {
+  display: flex; /* transfer flexbox positionning to children */
+}
+.toolbar ul li {
+  margin-top: 5px; /* when icons goes multi rows, have space betwwen each row */
+}
+.toolbar ul li.separator {
+  visibility: hidden;
+  width: 10px;
+}
+.toolbar ul li a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  background: #fff;
+  cursor: pointer;
+  overflow: hidden;
+  text-decoration: none;
+  transition: background-color .1s;
+}
+.toolbar ul li button:active, .toolbar ul li button:focus {
+  outline: 0;
+  border: none;
+}
+.toolbar ul li a:hover {
+  text-decoration: none;
+  background-color: #f2f2f2;
+}
+.toolbar ul li a:active, .toolbar ul li a:focus {
+  background: #ddd;
+}
+.toolbar ul li a.selected {
+  background: #dadada;
+}
+
+.toolbar ul li a.grouped-left {
+  border-radius: 3px 0 0 3px;
+}
+.toolbar ul li a.grouped-middle {
+  border-radius: 0;
+  border-left: 0;
+}
+.toolbar ul li a.grouped-right {
+  border-radius: 0 3px 3px 0;
+  border-left: 0;
+}
+
+.toolbar ul li[data-key=showusers] > a {
+  min-width: 35px;
+}
+.toolbar ul li[data-key=showusers] > a .buttonicon-showusers {
+  padding-left: 3px;
+}
+.toolbar ul li[data-key=showusers] > a #online_count {
+  font-weight: bold;
+  font-size: 11px;
+  position: relative;
+  padding-left: 7px;
+}
+
+.toolbar #toolbar-overlay {
+  z-index: 500;
+  display: none;
+  width: 100%;
+  position: absolute;
+  height: inherit;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.toolbar .show-more-icon-btn {
+  display:none;
+  cursor: pointer;
+  height: 39px;
+  width: 39px;
+  line-height: 39px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 2rem;
+  z-index: 20;
+}
+
+.toolbar.cropped .menu_left {
+  width: calc(100% - 39px);
+  height: 33px;
+  flex-wrap: wrap;
+}
+.toolbar.cropped .show-more-icon-btn {
+  display: block;
+  position: absolute;
+  /*border-bottom: 1px solid #d2d2d2;*/
+  right: 0;
+  top: 0;
+}
+.toolbar.cropped .show-more-icon-btn:after {
+  content: "+";
+}
+.toolbar.full-icons .show-more-icon-btn {
+  line-height: 35px;
+}
+.toolbar.full-icons .show-more-icon-btn:after {
+  content: "-";
+}
+.toolbar.full-icons .menu_left {
+  height: auto !important;
+  overflow: visible;
+}
+
+@media only screen and (max-width: 800px) {
+  .toolbar ul li.separator {
+    width: 5px;
+  }
+  /* menu_right act like a new toolbar on the bottom of the screen */
+  .toolbar .menu_right {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    border-top: 1px solid #ccc;
+    background-color: #f4f4f4;
+    padding: 0 5px 5px 5px;
+  }
+  .toolbar ul.menu_right > li {
+    margin-right: 8px;
+  }
+  .toolbar ul.menu_right > li.separator {
+    display: none;
+  }
+  .toolbar ul.menu_right > li a {
+    border: none;
+    background-color: transparent;
+    margin-left: 5px;
+  }
+  .toolbar ul.menu_right > li[data-key="showusers"] {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: 0;
+  }
+  .toolbar ul.menu_right > li[data-key="showusers"] a {
+    height: 100%;
+    width: 40px;
+    border-radius: 0;
+  }
+}

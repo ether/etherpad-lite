@@ -15,9 +15,10 @@ LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 #   ETHERPAD_PLUGINS="ep_codepad ep_author_neat"
 ARG ETHERPAD_PLUGINS=
 
-# Set the following to production to avoid installing devDeps
-# this can be done with build args (and is mandatory to build ARM version)
-ENV NODE_ENV=development
+# By default, Etherpad container is built and run in "production" mode. This is
+# leaner (development dependencies are not installed) and runs faster (among
+# other things, assets are minified & compressed).
+ENV NODE_ENV=production
 
 # Follow the principle of least privilege: run as unprivileged user.
 #
@@ -41,7 +42,7 @@ RUN bin/installDeps.sh && \
 #
 # Bash trick: in the for loop ${ETHERPAD_PLUGINS} is NOT quoted, in order to be
 # able to split at spaces.
-RUN for PLUGIN_NAME in ${ETHERPAD_PLUGINS}; do npm install "${PLUGIN_NAME}"; done
+RUN for PLUGIN_NAME in ${ETHERPAD_PLUGINS}; do npm install "${PLUGIN_NAME}" || exit 1; done
 
 # Copy the configuration file.
 COPY --chown=etherpad:0 ./settings.json.docker /opt/etherpad-lite/settings.json
