@@ -31,7 +31,7 @@
 	"pad.colorpicker.save": "Salva",
 	"pad.colorpicker.cancel": "Annulla",
 	"pad.loading": "Caricamento in corso…",
-	"pad.noCookie": "Il cookie non è stato trovato. Consenti i cookie nel tuo browser!",
+	"pad.noCookie": "Il cookie non è stato trovato. Consenti i cookie nel tuo browser! La sessione e le impostazioni non verranno salvate tra le diverse visite. Ciò può essere dovuto al fatto che Etherpad è stato incluso in un iFrame in alcuni browser. Assicurati che Etherpad si trovi sullo stesso sottodominio/dominio dell'iFrame principale",
 	"pad.passwordRequired": "Per accedere a questo Pad è necessaria una password",
 	"pad.permissionDenied": "Non si dispone dei permessi necessari per accedere a questo Pad",
 	"pad.wrongPassword": "La password è sbagliata",
