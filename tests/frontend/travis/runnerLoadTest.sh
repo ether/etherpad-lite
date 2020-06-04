@@ -39,8 +39,8 @@ curl http://localhost:9001/p/minifyme -f -s > /dev/null
 sleep 10
 
 # run the backend tests
-echo "Now run the load tests for 50 seconds and if it stalls before 100 then error"
-etherpad-loadtest -d 50
+echo "Now run the load tests for 30 seconds and if it stalls before 100 then error"
+etherpad-loadtest -d 30
 exit_code=$?
 
 kill $!

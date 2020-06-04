@@ -14,14 +14,14 @@
 @import url("pad/form.css");
 
 html {
-  font-size: 14px;
+  font-size: 15px;
   line-height: 20px;
   color: #3e3e3e;
 }
 
 html,
 #sidedivinner > div:before {
-  font-family: Cantarell, Roboto, "Open Sans", "Helvetica Neue", Arial, sans-serif;
+  font-family: Roboto;
 }
 
 .clear {
