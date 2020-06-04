@@ -61,6 +61,8 @@
     "slide": "1.1.6",
     "socket.io": "2.1.1",
     "terser": "^4.7.0",
+    "threads": "^1.4.0",
+    "tiny-worker": "^2.3.0",
     "tinycon": "0.0.1",
     "ueberdb2": "0.4.9",
     "underscore": "1.8.3",
