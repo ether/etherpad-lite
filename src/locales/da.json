@@ -120,7 +120,7 @@
 	"pad.userlist.guest": "Gæst",
 	"pad.userlist.deny": "Nægt",
 	"pad.userlist.approve": "Godkend",
-	"pad.editbar.clearcolors": "Fjern farver for ophavsmand i hele dokumentet?",
+	"pad.editbar.clearcolors": "Fjern farver for ophavsmand i hele dokumentet? Dette kan ikke fortrydes",
 	"pad.impexp.importbutton": "Importer nu",
 	"pad.impexp.importing": "Importerer...",
 	"pad.impexp.confirmimport": "At importere en fil, vil overskrives den aktuelle pad tekst. Er du sikker på du vil fortsætte?",

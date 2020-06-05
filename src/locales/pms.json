@@ -49,7 +49,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "A peul mach amporté dij formà ëd test sempi o HTML. Për dle fonsionalità d'amportassion pi avansà, ch'a <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">anstala AbiWord</a>.",
+	"pad.importExport.abiword.innerHTML": "A peul mach amporté dij formà ëd test sempi o HTML. Për dle fonsionalità d'amportassion pi avansà, ch'a <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">anstala AbiWord o LibreOffice</a>.",
 	"pad.modals.connected": "Colegà.",
 	"pad.modals.reconnecting": "Neuva conession a sò feuj...",
 	"pad.modals.forcereconnect": "Forsé la neuva conession",
@@ -126,5 +126,7 @@
 	"pad.impexp.uploadFailed": "Ël cariament a l'ha falì, për piasì ch'a preuva torna",
 	"pad.impexp.importfailed": "Amportassion falìa",
 	"pad.impexp.copypaste": "Për piasì, ch'a còpia e ancòla",
-	"pad.impexp.exportdisabled": "L'esportassion an formà {{type}} a l'é disativà. Për piasì, ch'a contata sò aministrator ëd sistema për ij detaj."
+	"pad.impexp.exportdisabled": "L'esportassion an formà {{type}} a l'é disativà. Për piasì, ch'a contata sò aministrator ëd sistema për ij detaj.",
+	"pad.impexp.maxFileSize": "Archivi tròp gròss. Ch'a contata sò aministrator ëd sit për sumenté la taja dj'archivi consentìa për j'amportassion",
+	"pad.impexp.permission": "L'amportassion a l'é disativà përchè chiel a l'ha pa mai contribuì a cost blòch-sì. Për piasì, ch'a contribuissa almanch na vira prima d'amporté"
 }

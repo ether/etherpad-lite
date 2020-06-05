@@ -722,14 +722,16 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     {
       if (lines.length() - 1 == startLine)
       {
-        // commented out to solve #2412 - https://github.com/ether/etherpad-lite/issues/2412
-        // cc.startNewLine(state);
+        // added additional check to resolve https://github.com/JohnMcLear/ep_copy_paste_images/issues/20
+        // this does mean that images etc can't be pasted on lists but imho that's fine
 
         // If we're doing an export event we need to start a new lines
         // Export events don't have window available.
-        if(typeof window === "undefined"){
+        // commented out to solve #2412 - https://github.com/ether/etherpad-lite/issues/2412
+        if((state.lineAttributes && !state.lineAttributes.list) || typeof window === "undefined"){
           cc.startNewLine(state);
         }
+
       }
       else
       {

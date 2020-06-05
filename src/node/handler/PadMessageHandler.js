@@ -1076,6 +1076,7 @@ async function handleClientReady(client, message)
     var clientVars = {
       "skinName": settings.skinName,
       "skinVariants": settings.skinVariants,
+      "randomVersionString": settings.randomVersionString,
       "accountPrivs": {
           "maxRevisions": 100
       },
@@ -1130,6 +1131,7 @@ async function handleClientReady(client, message)
       },
       "initialChangesets": [], // FIXME: REMOVE THIS SHIT
       "thisUserHasEditedThisPad": thisUserHasEditedThisPad,
+      "allowAnyoneToImport": settings.allowAnyoneToImport
     }
 
     // Add a username to the clientVars if one avaiable

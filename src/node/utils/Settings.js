@@ -42,6 +42,20 @@ var _ = require("underscore");
 exports.root = absolutePaths.findEtherpadRoot();
 console.log(`All relative paths will be interpreted relative to the identified Etherpad base dir: ${exports.root}`);
 
+/*
+ * At each start, Etherpad generates a random string and appends it as query
+ * parameter to the URLs of the static assets, in order to force their reload.
+ * Subsequent requests will be cached, as long as the server is not reloaded.
+ *
+ * For the rationale behind this choice, see
+ * https://github.com/ether/etherpad-lite/pull/3958
+ *
+ * ACHTUNG: this may prevent caching HTTP proxies to work
+ * TODO: remove the "?v=randomstring" parameter, and replace with hashed filenames instead
+ */
+exports.randomVersionString = randomString(4);
+console.log(`Random string used for versioning assets: ${exports.randomVersionString}`);
+
 /**
  * The app title, visible e.g. in the browser window
  */
@@ -308,6 +322,11 @@ exports.scrollWhenFocusLineIsOutOfViewport = {
 exports.exposeVersion = false;
 
 /*
+ * Override any strings found in locale directories
+ */
+exports.customLocaleStrings = {};
+
+/*
  * From Etherpad 1.8.3 onwards, import and export of pads is always rate
  * limited.
  *
@@ -331,6 +350,20 @@ exports.importExportRateLimiting = {
  * File size is specified in bytes. Default is 50 MB.
  */
 exports.importMaxFileSize = 50 * 1024 * 1024;
+
+
+/*
+ * From Etherpad 1.8.3 onwards import was restricted to authors who had
+ * content within the pad.
+ *
+ * This setting will override that restriction and allow any user to import
+ * without the requirement to add content to a pad.
+ *
+ * This setting is useful for when you use a plugin for authentication so you
+ * can already trust each user.
+ */
+exports.allowAnyoneToImport = false,
+
 
 // checks if abiword is avaiable
 exports.abiwordAvailable = function()

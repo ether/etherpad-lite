@@ -152,7 +152,7 @@
   display: none;
 }
 
-@media only screen and (max-width: 720px) {
+@media only screen and (max-width: 800px) {
   #chatbox {
     right: 0;
     bottom: 0;
