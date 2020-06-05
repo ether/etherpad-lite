@@ -41,6 +41,7 @@ sleep 10
 echo "Now run the backend tests"
 cd src
 npm run test
+npm run test-contentcollector
 exit_code=$?
 
 kill $!
