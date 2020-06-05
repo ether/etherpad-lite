@@ -25,7 +25,6 @@ var async = require('async');
 var fs = require('fs');
 var StringDecoder = require('string_decoder').StringDecoder;
 var CleanCSS = require('clean-css');
-var csso = require('csso');
 var uglifyJS = require("uglify-js");
 var path = require('path');
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
