@@ -247,10 +247,15 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
 
   function _enterList(state, listType)
   {
+    if(!listType) return;
     var oldListType = state.lineAttributes['list'];
     if (listType != 'none')
     {
       state.listNesting = (state.listNesting || 0) + 1;
+      // reminder that listType can be "number2", "number3" etc.
+      if(listType.indexOf("number") !== -1){
+        state.start = (state.start || 0) + 1;
+      }
     }
 
     if(listType === 'none' || !listType ){
@@ -259,19 +264,22 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     else{
       state.lineAttributes['list'] = listType;
     }
-
     _recalcAttribString(state);
     return oldListType;
   }
 
   function _exitList(state, oldListType)
   {
-    if (state.lineAttributes['list'])
-    {
+    if (state.lineAttributes['list']) {
       state.listNesting--;
     }
-    if (oldListType && oldListType != 'none') { state.lineAttributes['list'] = oldListType; }
-    else { delete state.lineAttributes['list']; }
+    if (oldListType && oldListType != 'none') {
+      state.lineAttributes['list'] = oldListType;
+    }
+    else {
+      delete state.lineAttributes['list'];
+      delete state.lineAttributes['start'];
+    }
     _recalcAttribString(state);
   }
 
@@ -411,7 +419,14 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
         styl: null,
         cls: null
       });
-      var txt = (typeof(txtFromHook)=='object'&&txtFromHook.length==0)?dom.nodeValue(node):txtFromHook[0];
+
+      if(typeof(txtFromHook)=='object'){
+        txt = dom.nodeValue(node)
+      }else{
+        if(txtFromHook){
+          txt = txtFromHook
+        };
+      }
 
       var rest = '';
       var x = 0; // offset into original text
@@ -602,6 +617,48 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
             // See https://github.com/ether/etherpad-lite/issues/2412 for reasoning
             if(!abrowser.chrome) oldListTypeOrNull = (_enterList(state, type) || 'none');
           }
+          else if ((tname === "li")){
+            state.lineAttributes['start'] = state.start || 0;
+            _recalcAttribString(state);
+            if(state.lineAttributes.list.indexOf("number") !== -1){
+              /*
+               Nested OLs are not --> <ol><li>1</li><ol>nested</ol></ol>
+               They are           --> <ol><li>1</li><li><ol><li>nested</li></ol></li></ol>
+               Note how the <ol> item has to be inside a <li>
+               Because of this we don't increment the start number
+              */
+              if(node.parent && node.parent.name !== "ol"){
+                /*
+                TODO: start number has to increment based on indentLevel(numberX)
+                This means we have to build an object IE
+                {
+                 1: 4
+                 2: 3
+                 3: 5
+                }
+                But the browser seems to handle it fine using CSS..  Why can't we do the same
+                with exports?  We can..  But let's leave this comment in because it might be useful
+                in the future..
+                */
+                state.start++; // not if it's parent is an OL or UL.
+              }
+            }
+            // UL list items never modify the start value.
+            if(node.parent && node.parent.name === "ul"){
+              state.start++;
+              // TODO, this is hacky.
+              // Because if the first item is an UL it will increment a list no?
+              // A much more graceful way would be to say, ul increases if it's within an OL
+              // But I don't know a way to do that because we're only aware of the previous Line
+              // As the concept of parent's doesn't exist when processing each domline...
+            }
+
+          }else{
+            // Below needs more testin if it's neccesary as _exitList should take care of this.
+            // delete state.start;
+            // delete state.listNesting;
+            // _recalcAttribString(state);
+          }
           if (className2Author && cls)
           {
             var classes = cls.match(/\S+/g);
@@ -665,12 +722,16 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     {
       if (lines.length() - 1 == startLine)
       {
-        // to solve #2412 - https://github.com/ether/etherpad-lite/issues/2412
         // added additional check to resolve https://github.com/JohnMcLear/ep_copy_paste_images/issues/20
         // this does mean that images etc can't be pasted on lists but imho that's fine
-        if(state.lineAttributes && !state.lineAttributes.list){
+
+        // If we're doing an export event we need to start a new lines
+        // Export events don't have window available.
+        // commented out to solve #2412 - https://github.com/ether/etherpad-lite/issues/2412
+        if((state.lineAttributes && !state.lineAttributes.list) || typeof window === "undefined"){
           cc.startNewLine(state);
         }
+
       }
       else
       {
