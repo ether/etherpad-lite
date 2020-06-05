@@ -64,7 +64,7 @@ describe("Chat messages and UI", function(){
     });
   });
 
-  it("makes chat stick to right side of the screen", function(done) {
+  xit("makes chat stick to right side of the screen", function(done) {
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
 
@@ -102,7 +102,7 @@ describe("Chat messages and UI", function(){
 
   });
 
-  it("makes chat stick to right side of the screen then makes it one step smaller", function(done) {
+  xit("makes chat stick to right side of the screen then makes it one step smaller", function(done) {
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
 
