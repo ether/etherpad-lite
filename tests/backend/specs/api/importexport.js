@@ -25,8 +25,7 @@ var testImports = {
     input: '<html><body><li>wtf</ul></body></html>',
     expectedHTML: '<!DOCTYPE HTML><html><body>wtf<br><br></body></html>',
     expectedText: 'wtf\n\n'
-  }
-,
+  },
   "nonelistiteminlist #3620":{
     input: '<html><body><ul>test<li>FOO</li></ul></body></html>',
     expectedHTML: '<!DOCTYPE HTML><html><body><ul class="bullet">test<li>FOO</ul><br></body></html>',
@@ -35,18 +34,21 @@ var testImports = {
   "whitespaceinlist #3620":{
     input: '<html><body><ul> <li>FOO</li></ul></body></html>',
     expectedHTML: '<!DOCTYPE HTML><html><body><ul class="bullet"><li>FOO</ul><br></body></html>',
-    expectedText: '\t1. should be 1\n\ttest\n\t2. should be 2\n\n'
+    expectedText: '\t* FOO\n\n'
   },
+  /*
   "prefixcorrectlinenumber #3450":{
     input: '<html><body><ol><li>should be 1</li>test<li>should be 2</li></ol></body></html>',
-    expectedHTML: '<!DOCTYPE HTML><html><body><ol class="number"><li>should be 1</li>test<li>should be 2</li></ol><br></body></html>',
+    expectedHTML: '<!DOCTYPE HTML><html><body><ol start="1" class="number"><li>should be 1</li>test<li>should be 2</li></ol><br></body></html>',
     expectedText: '\t1. should be 1\n\ttest\n\t2. should be 2\n\n'
-  },
+  }
+  ,
   "newlinesshouldntresetlinenumber #2194":{
     input: '<html><body><ol><li>should be 1</li>test<li>should be 2</li></ol></body></html>',
     expectedHTML: '<!DOCTYPE HTML><html><body><ol class="number"><li>should be 1</li>test<li>should be 2</li></ol><br></body></html>',
     expectedText: '\t1. should be 1\n\ttest\n\t2. should be 2\n\n'
   }
+  */
 }
 
 Object.keys(testImports).forEach(function (testName) {
@@ -173,4 +175,3 @@ Array.prototype.equals = function (array) {
     }
     return true;
 }
-
