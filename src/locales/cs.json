@@ -1,15 +1,16 @@
 {
 	"@metadata": {
 		"authors": [
+			"Aktron",
+			"Clon",
+			"Dvorapa",
 			"Jakubt",
 			"Jezevec",
 			"Juandev",
 			"Leanes",
-			"Quinn",
-			"Aktron",
 			"Mormegil",
-			"Dvorapa",
-			"Clon"
+			"Peldrjan",
+			"Quinn"
 		]
 	},
 	"index.newPad": "Založ nový Pad",
@@ -47,8 +48,6 @@
 	"pad.settings.rtlcheck": "Číst obsah zprava doleva?",
 	"pad.settings.fontType": "Typ písma:",
 	"pad.settings.fontType.normal": "Normální",
-	"pad.settings.fontType.monospaced": "Neproporční",
-	"pad.settings.globalView": "Globální pohled",
 	"pad.settings.language": "Jazyk:",
 	"pad.importExport.import_export": "Import/Export",
 	"pad.importExport.import": "Nahrát libovolný textový soubor nebo dokument",
@@ -64,7 +63,7 @@
 	"pad.modals.connected": "Připojeno.",
 	"pad.modals.reconnecting": "Znovupřipojování k Padu…",
 	"pad.modals.forcereconnect": "Vynutit znovupřipojení",
-	"pad.modals.reconnecttimer": "Zkouším to znovu připojit",
+	"pad.modals.reconnecttimer": "Zkouším se znovu připojit",
 	"pad.modals.cancel": "Zrušit",
 	"pad.modals.userdup": "Otevřeno v jiném okně",
 	"pad.modals.userdup.explanation": "Zdá se, že tento Pad je na tomto počítači otevřen ve více než jednom okně.",
@@ -94,6 +93,8 @@
 	"pad.chat": "Chat",
 	"pad.chat.title": "Otevřít chat tohoto Padu.",
 	"pad.chat.loadmessages": "Načíst více zpráv",
+	"pad.chat.stick.title": "Přichytit chat k obrazovce",
+	"pad.chat.writeMessage.placeholder": "Zde napište zprávu",
 	"timeslider.pageTitle": "Časová osa {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Návrat do Padu",
 	"timeslider.toolbar.authors": "Autoři:",
@@ -126,7 +127,7 @@
 	"pad.userlist.guest": "Host",
 	"pad.userlist.deny": "Zakázat",
 	"pad.userlist.approve": "Povolit",
-	"pad.editbar.clearcolors": "Odstranit barvy autorů z celého dokumentu?",
+	"pad.editbar.clearcolors": "Odstranit barvy autorů z celého dokumentu? Tuto změnu nelze vrátit!",
 	"pad.impexp.importbutton": "Importovat",
 	"pad.impexp.importing": "Importování…",
 	"pad.impexp.confirmimport": "Import souboru přepíše aktuální text v padu. Opravdu chcete tuto akci provést?",

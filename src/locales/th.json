@@ -38,7 +38,6 @@
 	"pad.settings.linenocheck": "เลขบรรทัด",
 	"pad.settings.rtlcheck": "อ่านเนื้อหาจากขวาไปซ้ายหรือไม่?",
 	"pad.settings.fontType": "ชนิดแบบอักษร:",
-	"pad.settings.globalView": "มุมมองสากล",
 	"pad.settings.language": "ภาษา:",
 	"pad.importExport.import_export": "นำเข้า/ส่งออก",
 	"pad.importExport.import": "อัปโหลดไฟล์ข้อความหรือเอกสารใดๆ",

@@ -1,16 +1,16 @@
 {
 	"@metadata": {
 		"authors": [
+			"BaRaN6161 TURK",
 			"Emperyan",
 			"Erdemaslancan",
+			"Grkn gll",
+			"Hedda",
 			"Joseph",
+			"McAang",
 			"Meelo",
 			"Trockya",
-			"McAang",
-			"Vito Genovese",
-			"Hedda",
-			"Grkn gll",
-			"BaRaN6161 TURK"
+			"Vito Genovese"
 		]
 	},
 	"index.newPad": "Yeni Bloknot",
@@ -48,8 +48,6 @@
 	"pad.settings.rtlcheck": "İçerik sağdan sola doğru okunsun mu?",
 	"pad.settings.fontType": "Yazı tipi:",
 	"pad.settings.fontType.normal": "Olağan",
-	"pad.settings.fontType.monospaced": "Tek aralıklı",
-	"pad.settings.globalView": "Genel Görünüm",
 	"pad.settings.language": "Dil:",
 	"pad.importExport.import_export": "İçe/Dışa aktar",
 	"pad.importExport.import": "Herhangi bir metin dosyası ya da belgesi yükle",
@@ -61,7 +59,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Açık Doküman Biçimi)",
-	"pad.importExport.abiword.innerHTML": "Yalnızca düz metin ya da HTML biçimlerini içe aktarabilirsiniz. Daha fazla gelişmiş içe aktarım özellikleri için lütfen <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">AbiWord'ü yükleyin</a>.",
+	"pad.importExport.abiword.innerHTML": "Yalnızca düz metin ya da HTML biçimlerini içe aktarabilirsiniz. Daha fazla gelişmiş içe aktarım özellikleri için lütfen <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">AbiWord veya LibreOffice yükleyin</a>.",
 	"pad.modals.connected": "Bağlandı.",
 	"pad.modals.reconnecting": "Bloknotunuza tekrar bağlanılıyor...",
 	"pad.modals.forcereconnect": "Yeniden bağlanmaya zorla",
@@ -129,7 +127,7 @@
 	"pad.userlist.guest": "Misafir",
 	"pad.userlist.deny": "Reddet",
 	"pad.userlist.approve": "Onayla",
-	"pad.editbar.clearcolors": "Bütün belgedeki yazarlık renkleri silinsin mi?",
+	"pad.editbar.clearcolors": "Bütün belgedeki yazarlık renkleri silinsin mi? Bu işlem geri alınamaz",
 	"pad.impexp.importbutton": "Şimdi İçe Aktar",
 	"pad.impexp.importing": "İçe aktarıyor...",
 	"pad.impexp.confirmimport": "Bir dosya içe aktarılırken bloknotun mevcut metninin üzerine yazdırılır. Devam etmek istediğinizden emin misiniz?",
@@ -138,5 +136,7 @@
 	"pad.impexp.uploadFailed": "Yükleme başarısız, lütfen tekrar deneyin",
 	"pad.impexp.importfailed": "İçe aktarım başarısız oldu",
 	"pad.impexp.copypaste": "Lütfen kopyala yapıştır yapın",
-	"pad.impexp.exportdisabled": "{{type}} biçimiyle dışa aktarma devre dışı bırakıldı. Ayrıntılar için sistem yöneticinizle iletişime geçiniz."
+	"pad.impexp.exportdisabled": "{{type}} biçimiyle dışa aktarma devre dışı bırakıldı. Ayrıntılar için sistem yöneticinizle iletişime geçiniz.",
+	"pad.impexp.maxFileSize": "Dosya çok büyük. İçe aktarma için izin verilen dosya boyutunu artırmak için site yöneticinize başvurun",
+	"pad.impexp.permission": "Bu ped'e hiç katkıda bulunmadığınız için içe aktarma devre dışı. Lütfen içe aktarmadan önce en az bir kez katkıda bulunun"
 }

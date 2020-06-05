@@ -52,8 +52,26 @@ var helper = {};
     return win.$;
   }
 
-  helper.clearCookies = function(){
-    window.document.cookie = "";
+  helper.clearSessionCookies = function(){
+    // Expire cookies, so author and language are changed after reloading the pad.
+    // See https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie#Example_4_Reset_the_previous_cookie
+    window.document.cookie = 'token=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    window.document.cookie = 'language=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+  }
+
+  // Can only happen when the iframe exists, so we're doing it separately from other cookies
+  helper.clearPadPrefCookie = function(){
+    helper.padChrome$.document.cookie = 'prefsHttp=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  }
+
+  // Overwrite all prefs in pad cookie. Assumes http, not https.
+  //
+  // `helper.padChrome$.document.cookie` (the iframe) and `window.document.cookie`
+  // seem to have independent cookies, UNLESS we put path=/ here (which we don't).
+  // I don't fully understand it, but this function seems to properly simulate
+  // padCookie.setPref in the client code
+  helper.setPadPrefCookie = function(prefs){
+    helper.padChrome$.document.cookie = ("prefsHttp=" + escape(JSON.stringify(prefs)) + ";expires=Thu, 01 Jan 3000 00:00:00 GMT");
   }
 
   // Functionality for knowing what key event type is required for tests
@@ -81,14 +99,19 @@ var helper = {};
       opts = _.defaults(cb, opts);
     }
 
+    // if opts.params is set we manipulate the URL to include URL parameters IE ?foo=Bah.
+    if(opts.params){
+      var encodedParams = "?" + $.param(opts.params);
+    }
+
     //clear cookies
     if(opts.clearCookies){
-      helper.clearCookies();
+      helper.clearSessionCookies();
     }
 
     if(!padName)
       padName = "FRONTEND_TEST_" + helper.randomString(20);
-    $iframe = $("<iframe src='/p/" + padName + "'></iframe>");
+    $iframe = $("<iframe src='/p/" + padName + (encodedParams || '') + "'></iframe>");
 
     //clean up inner iframe references
     helper.padChrome$ = helper.padOuter$ = helper.padInner$ = null;
@@ -97,10 +120,16 @@ var helper = {};
     $iframeContainer.find("iframe").purgeFrame().done(function(){
       $iframeContainer.append($iframe);
       $iframe.one('load', function(){
+        helper.padChrome$ = getFrameJQuery(                $('#iframe-container iframe'));
+        if (opts.clearCookies) {
+          helper.clearPadPrefCookie();
+        }
+        if (opts.padPrefs) {
+          helper.setPadPrefCookie(opts.padPrefs);
+        }
         helper.waitFor(function(){
           return !$iframe.contents().find("#editorloadingbox").is(":visible");
         }, 50000).done(function(){
-          helper.padChrome$ = getFrameJQuery(                $('#iframe-container iframe'));
           helper.padOuter$  = getFrameJQuery(helper.padChrome$('iframe[name="ace_outer"]'));
           helper.padInner$  = getFrameJQuery( helper.padOuter$('iframe[name="ace_inner"]'));
 
@@ -120,7 +149,7 @@ var helper = {};
   }
 
   helper.waitFor = function(conditionFunc, _timeoutTime, _intervalTime){
-    var timeoutTime = _timeoutTime || 1000;
+    var timeoutTime = _timeoutTime || 1900;
     var intervalTime = _intervalTime || 10;
 
     var deferred = $.Deferred();

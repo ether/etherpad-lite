@@ -3,9 +3,9 @@
 		"authors": [
 			"Aalam",
 			"Babanwalia",
-			"ਪ੍ਰਚਾਰਕ",
 			"Tow",
-			"ਗੁਰਪ੍ਰੀਤ ਹੁੰਦਲ"
+			"ਗੁਰਪ੍ਰੀਤ ਹੁੰਦਲ",
+			"ਪ੍ਰਚਾਰਕ"
 		]
 	},
 	"index.newPad": "ਨਵਾਂ ਪੈਡ",
@@ -43,8 +43,6 @@
 	"pad.settings.rtlcheck": "ਸਮੱਗਰੀ ਸੱਜੇ ਤੋਂ ਖੱਬੇ ਪੜ੍ਹਨੀ ਹੈ?",
 	"pad.settings.fontType": "ਫੋਂਟ ਕਿਸਮ:",
 	"pad.settings.fontType.normal": "ਸਧਾਰਨ",
-	"pad.settings.fontType.monospaced": "ਮੋਨੋਸਪੇਸ",
-	"pad.settings.globalView": "ਗਲੋਬਲ ਝਲਕ",
 	"pad.settings.language": "ਭਾਸ਼ਾ:",
 	"pad.importExport.import_export": "ਇੰਪੋਰਟ/ਐਕਸਪੋਰਟ",
 	"pad.importExport.import": "ਕੋਈ ਵੀ ਟੈਕਸਟ ਫਾਇਲ ਜਾਂ ਦਸਤਾਵੇਜ਼ ਅੱਪਲੋਡ ਕਰੋ",

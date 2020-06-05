@@ -18,7 +18,13 @@ exports.createServer = function () {
 
   exports.restartServer();
 
-  console.log(`You can access your Etherpad instance at http://${settings.ip}:${settings.port}/`);
+  if (settings.ip === "") {
+    // using Unix socket for connectivity
+    console.log(`You can access your Etherpad instance using the Unix socket at ${settings.port}`);
+  } else {
+    console.log(`You can access your Etherpad instance at http://${settings.ip}:${settings.port}/`);
+  }
+
   if (!_.isEmpty(settings.users)) {
     console.log(`The plugin admin page is at http://${settings.ip}:${settings.port}/admin/plugins`);
   } else {
@@ -94,6 +100,12 @@ exports.restartServer = function () {
   });
 
   if (settings.trustProxy) {
+    /*
+     * If 'trust proxy' === true, the client’s IP address in req.ip will be the
+     * left-most entry in the X-Forwarded-* header.
+     *
+     * Source: https://expressjs.com/en/guide/behind-proxies.html
+     */
     app.enable('trust proxy');
   }
 

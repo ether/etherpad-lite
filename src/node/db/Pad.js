@@ -16,6 +16,7 @@ var readOnlyManager = require("./ReadOnlyManager");
 var crypto = require("crypto");
 var randomString = require("../utils/randomstring");
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+var promises = require('../utils/promises')
 
 // serialization/deserialization attributes
 var attributeBlackList = ["id"];
@@ -482,14 +483,14 @@ Pad.prototype.remove = async function remove() {
   db.remove("readonly2pad:" + readonlyID);
 
   // delete all chat messages
-  for (let i = 0, n = this.chatHead; i <= n; ++i) {
-    db.remove("pad:" + padID + ":chat:" + i);
-  }
+  promises.timesLimit(this.chatHead + 1, 500, function (i) {
+    return db.remove("pad:" + padID + ":chat:" + i, null);
+  })
 
   // delete all revisions
-  for (let i = 0, n = this.head; i <= n; ++i) {
-    db.remove("pad:" + padID + ":revs:" + i);
-  }
+  promises.timesLimit(this.head + 1, 500, function (i) {
+    return db.remove("pad:" + padID + ":revs:" + i, null);
+  })
 
   // remove pad from all authors who contributed
   this.getAllAuthors().forEach(authorID => {

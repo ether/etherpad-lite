@@ -40,8 +40,6 @@
 	"pad.settings.rtlcheck": "Lectura de dreita a esquèrra",
 	"pad.settings.fontType": "Tipe de poliça :",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Vista d’ensemble",
 	"pad.settings.language": "Lenga :",
 	"pad.importExport.import_export": "Importar/Exportar",
 	"pad.importExport.import": "Cargar un tèxte o un document",

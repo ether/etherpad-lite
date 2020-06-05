@@ -36,8 +36,6 @@
 	"pad.settings.linenocheck": "Linjenummer",
 	"pad.settings.fontType": "Skrifttype:",
 	"pad.settings.fontType.normal": "Vanleg",
-	"pad.settings.fontType.monospaced": "Fast breidd",
-	"pad.settings.globalView": "Global visning",
 	"pad.settings.language": "Språk:",
 	"pad.importExport.import_export": "Importer/eksporter",
 	"pad.importExport.import": "Last opp tekstfiler eller dokument",

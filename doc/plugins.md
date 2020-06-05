@@ -115,7 +115,7 @@ Your plugin must also contain a [package definition file](https://docs.npmjs.com
   "author": "USERNAME (REAL NAME) <MAIL@EXAMPLE.COM>",
   "contributors": [],
   "dependencies": {"MODULE": "0.3.20"},
-  "engines": { "node": ">= 8.9.0"}
+  "engines": { "node": ">= 10.13.0"}
 }
 ```
 

@@ -2,8 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"MongolWiki",
-			"Wisdom",
-			"Munkhzaya.E"
+			"Munkhzaya.E",
+			"Wisdom"
 		]
 	},
 	"pad.toolbar.bold.title": "Болд тескт (Ctrl-B)",
@@ -29,7 +29,6 @@
 	"pad.settings.linenocheck": "Мөрийн дугаар",
 	"pad.settings.fontType": "Фонтын төрөл:",
 	"pad.settings.fontType.normal": "Ердийн",
-	"pad.settings.fontType.monospaced": "Зай ихтэй фонт",
 	"pad.settings.language": "Хэл:",
 	"pad.importExport.import_export": "Импорт/Экспорт",
 	"pad.importExport.import": "Бичвэр, текст файл оруулах",

@@ -37,8 +37,6 @@
 	"pad.settings.rtlcheck": "Мидис рахизӕй галиумӕ хъӕуы фӕрсын?",
 	"pad.settings.fontType": "Шрифты хуыз:",
 	"pad.settings.fontType.normal": "Хуымӕтӕг",
-	"pad.settings.fontType.monospaced": "Ӕмуӕрӕх",
-	"pad.settings.globalView": "Иууылы уынд",
 	"pad.settings.language": "Æвзаг:",
 	"pad.importExport.import_export": "Импорт/экспорт",
 	"pad.importExport.import": "Исты текст файл кӕнӕ документ бавгӕнын",

@@ -63,19 +63,23 @@ describe("select formatting buttons when selection has style applied", function(
   }
 
   var applyStyleOnLineOnFullLineAndRemoveSelection = function(line, style, selectTarget, cb) {
+    // see if line html has changed
+    var inner$ = helper.padInner$;
+    var oldLineHTML = inner$.find("div")[line];
     applyStyleOnLine(style, line);
 
-    // we have to give some time to Etherpad detects the selection changed
-    setTimeout(function() {
+    helper.waitFor(function(){
+      var lineHTML = inner$.find("div")[line];
+      return lineHTML !== oldLineHTML;
+    });
       // remove selection from previous line
-      selectLine(line + 1);
-      setTimeout(function() {
-        // select the text or place the caret on a position that
-        // has the formatting text applied previously
-        selectTarget(line);
-        cb();
-      }, 1000);
-    }, 1000);
+    selectLine(line + 1);
+    //setTimeout(function() {
+      // select the text or place the caret on a position that
+      // has the formatting text applied previously
+      selectTarget(line);
+      cb();
+    //}, 1000);
   }
 
   var pressFormattingShortcutOnSelection = function(key) {

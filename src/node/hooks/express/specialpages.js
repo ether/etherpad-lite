@@ -41,30 +41,6 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   //serve pad.html under /p
   args.app.get('/p/:pad', function(req, res, next)
   {
-    // Set language for pad editor for the first time
-    // Or if language cookie doesn't exist
-    if (req.cookies.language === undefined)
-    {
-      cookieOptions = {
-        /* req.protocol may be 'https' because either:
-         *
-         * 1. we are directly serving the nodejs application over SSL, using
-         *    the "ssl" options in settings.json
-         *
-         * 2. we are serving the nodejs application in plaintext, but we are
-         *    using a reverse proxy that terminates SSL for us. In this case,
-         *    the user has to set trustProxy = true in settings.json, and thus
-         *    req.protocol will reflect the value of the X-Forwarded-Proto HTTP
-         *    header
-         *
-         * Please note that this will not be compatible with applications being
-         * served over http and https at the same time.
-         */
-        secure: (req.protocol === 'https'),
-      }
-      res.cookie('language', settings.padOptions.lang, cookieOptions);
-    }
-
     // The below might break for pads being rewritten
     var isReadOnly = req.url.indexOf("/p/r.") === 0;
 

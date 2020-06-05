@@ -791,6 +791,9 @@ exports.textLinesMutator = function (lines) {
         }
       } else {
         var sline = putCurLineInSplice();
+        if (!curSplice[sline]) {
+          console.error("curSplice[sline] not populated, actual curSplice contents is ", curSplice, ". Possibly related to https://github.com/ether/etherpad-lite/issues/2802");
+        }
         curSplice[sline] = curSplice[sline].substring(0, curCol) + text + curSplice[sline].substring(curCol);
         curCol += text.length;
       }
@@ -1526,7 +1529,17 @@ exports.moveOpsToNewPool = function (cs, oldPool, newPool) {
   return upToDollar.replace(/\*([0-9a-z]+)/g, function (_, a) {
     var oldNum = exports.parseNum(a);
     var pair = oldPool.getAttrib(oldNum);
-    if(!pair) exports.error('Can\'t copy unknown attrib (reference attrib string to non-existant pool entry). Inconsistent attrib state!');
+
+    /*
+     * Setting an empty pair. Required for when delete pad contents / attributes
+     * while another user has the timeslider open.
+     *
+     * Fixes https://github.com/ether/etherpad-lite/issues/3932
+     */
+    if (!pair) {
+      pair = [];
+    }
+
     var newNum = newPool.putAttrib(pair);
     return '*' + exports.numToString(newNum);
   }) + fromDollar;

@@ -11,7 +11,7 @@ describe("timeslider", function(){
 
     // make some changes to produce 100 revisions
     var timePerRev = 900
-      , revs = 100;
+      , revs = 99;
     this.timeout(revs*timePerRev+10000);
     for(var i=0; i < revs; i++) {
       setTimeout(function() {
@@ -29,29 +29,31 @@ describe("timeslider", function(){
         var timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
         var $sliderBar = timeslider$('#ui-slider-bar');
 
-        var latestContents = timeslider$('#padcontent').text();
+        var latestContents = timeslider$('#innerdocbody').text();
 
         // Click somewhere on the timeslider
         var e = new jQuery.Event('mousedown');
+        // sets y co-ordinate of the pad slider modal.
+        var base = (timeslider$('#ui-slider-bar').offset().top - 24)
         e.clientX = e.pageX = 150;
-        e.clientY = e.pageY = 45;
+        e.clientY = e.pageY = base+5;
         $sliderBar.trigger(e);
 
         e = new jQuery.Event('mousedown');
         e.clientX = e.pageX = 150;
-        e.clientY = e.pageY = 40;
+        e.clientY = e.pageY = base;
         $sliderBar.trigger(e);
 
         e = new jQuery.Event('mousedown');
         e.clientX = e.pageX = 150;
-        e.clientY = e.pageY = 50;
+        e.clientY = e.pageY = base-5;
         $sliderBar.trigger(e);
 
         $sliderBar.trigger('mouseup')
 
         setTimeout(function() {
           //make sure the text has changed
-          expect( timeslider$('#padcontent').text() ).not.to.eql( latestContents );
+          expect( timeslider$('#innerdocbody').text() ).not.to.eql( latestContents );
           var starIsVisible = timeslider$('.star').is(":visible");
           expect( starIsVisible ).to.eql( true );
           done();
@@ -86,7 +88,7 @@ describe("timeslider", function(){
         var timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
         var $sliderBar = timeslider$('#ui-slider-bar');
 
-        var latestContents = timeslider$('#padcontent').text();
+        var latestContents = timeslider$('#innerdocbody').text();
         var oldUrl = $('#iframe-container iframe')[0].contentWindow.location.hash;
 
         // Click somewhere on the timeslider
@@ -138,10 +140,10 @@ describe("timeslider", function(){
             timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
           } catch(e){}
           if(timeslider$){
-            return timeslider$('#padcontent').text().length == oldLength;
+            return timeslider$('#innerdocbody').text().length == oldLength;
           }
         }, 6000).always(function(){
-          expect( timeslider$('#padcontent').text().length ).to.eql( oldLength );
+          expect( timeslider$('#innerdocbody').text().length ).to.eql( oldLength );
           done();
         });
       });
