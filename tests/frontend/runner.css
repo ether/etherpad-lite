@@ -33,6 +33,8 @@ body {
   height: 100%;
   overflow: auto;
   width:20%;
+  font-size:80%;
+  
 }
 
 #mocha #report {
@@ -77,11 +79,11 @@ body {
 }
 
 #mocha .suite {
-  margin-left: 15px;
+  margin-left: 0px;
 }
 
 #mocha .test {
-  margin-left: 15px;
+  margin-left: 5px;
 }
 
 #mocha .test:hover h2::after {
@@ -203,9 +205,14 @@ body {
   text-align: right;
 }
 
-#stats .progress {
+#mocha-stats {
+  height: 80px;
+}
+
+#mocha-stats .progress {
   float: right;
   padding-top: 0;
+  margin-right:5px;
 }
 
 #stats em {
@@ -233,3 +240,7 @@ code .init { color: #2F6FAD }
 code .string { color: #5890AD }
 code .keyword { color: #8A6343 }
 code .number { color: #2F6FAD }
+
+ul{
+  padding-left:5px;
+}

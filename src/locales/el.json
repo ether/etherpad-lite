@@ -5,11 +5,13 @@
 			"Geraki",
 			"Glavkos",
 			"Monopatis",
+			"Norhorn",
 			"Protnet"
 		]
 	},
 	"index.newPad": "Νέο Pad",
 	"index.createOpenPad": "ή δημιουργία/άνοιγμα ενός Pad με όνομα:",
+	"index.openPad": "άνοιγμα υπάρχων Pad με όνομα:",
 	"pad.toolbar.bold.title": "Έντονη (Ctrl-B)",
 	"pad.toolbar.italic.title": "Πλάγια (Ctrl-I)",
 	"pad.toolbar.underline.title": "Υπογράμμιση (Ctrl-U)",
@@ -131,5 +133,7 @@
 	"pad.impexp.uploadFailed": "Η αποστολή απέτυχε, παρακαλώ προσπαθήστε ξανά",
 	"pad.impexp.importfailed": "Η εισαγωγή απέτυχε",
 	"pad.impexp.copypaste": "Παρακαλώ αντιγράψτε και επικολλήστε",
-	"pad.impexp.exportdisabled": "Η εξαγωγή σε μορφή {{type}} έχει απενεργοποιηθεί. Επικοινωνήστε με τον διαχειριστή του συστήματός σας για λεπτομέρειες."
+	"pad.impexp.exportdisabled": "Η εξαγωγή σε μορφή {{type}} έχει απενεργοποιηθεί. Επικοινωνήστε με τον διαχειριστή του συστήματός σας για λεπτομέρειες.",
+	"pad.impexp.maxFileSize": "Πολύ μεγάλο αρχείο. Επικοινωνήστε με τον διαχειριστή για να αυξήσετε το επιτρεπόμενο μέγεθος αρχείου",
+	"pad.impexp.permission": "Η εισαγωγή είναι απενεργοποιημένη επειδή δεν συνεισφέρατε ποτέ σε αυτό το pad. Συνεισφέρετε τουλάχιστον μία φορά πριν από την εισαγωγή"
 }
