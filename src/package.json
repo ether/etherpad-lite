@@ -51,6 +51,8 @@
     "lodash.clonedeep": "4.5.0",
     "log4js": "0.6.35",
     "measured-core": "1.11.2",
+    "rehype": "^10.0.0",
+    "rehype-format": "^3.0.1",
     "nodeify": "1.0.1",
     "npm": "6.14.5",
     "openapi-backend": "2.4.1",
@@ -60,6 +62,8 @@
     "semver": "5.6.0",
     "slide": "1.1.6",
     "socket.io": "2.1.1",
+    "threads": "^1.4.0",
+    "tiny-worker": "^2.3.0",
     "tinycon": "0.0.1",
     "ueberdb2": "0.4.9",
     "uglify-js": "3.8.1",
@@ -86,6 +90,7 @@
   },
   "scripts": {
     "test": "nyc mocha --timeout 5000 ../tests/backend/specs/api",
+    "test-contentcollector": "nyc mocha --timeout 5000 ../tests/backend/specs",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api"
   },
   "version": "1.8.4",

@@ -63,6 +63,13 @@ exports._analyzeLine = function(text, aline, apool){
         }
       }
     }
+    var opIter2 = Changeset.opIterator(aline);
+    if (opIter2.hasNext()){
+      var start = Changeset.opAttributeValue(opIter2.next(), 'start', apool);
+      if (start){
+          line.start = start;
+      }
+    }
   }
   if (lineMarker){
     line.text = text.substring(1);

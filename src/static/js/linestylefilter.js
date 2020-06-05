@@ -81,8 +81,10 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
       var classes = '';
       var isLineAttribMarker = false;
 
+      // For each attribute number
       Changeset.eachAttribNumber(attribs, function(n)
       {
+        // Give us this attributes key
         var key = apool.getAttribKey(n);
         if (key)
         {
@@ -100,8 +102,8 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
             {
               classes += ' list:' + value;
             }
-            else if (key == 'start')
-            {
+            else if (key == 'start'){
+              // Needed to introduce the correct Ordered list item start number on import
               classes += ' start:' + value;
             }
             else if (linestylefilter.ATTRIB_CLASSES[key])

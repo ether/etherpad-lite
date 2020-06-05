@@ -437,16 +437,27 @@ var pad = {
   },
   switchToPad: function(padId)
   {
+    var newHref = new RegExp(/.*\/p\/[^\/]+/).exec(document.location.pathname) || clientVars.padId;
+    newHref = newHref[0];
+
+    var options = clientVars.padOptions;
+    if (typeof options != "undefined" && options != null)
+    {
+        var option_str = [];
+        $.each(options, function(k,v) {
+          var str = k + "=" + v;
+          option_str.push(str);
+        });
+        var option_str = option_str.join("&");
+
+      newHref = newHref + '?' + option_str;
+    }
+
     // destroy old pad from DOM
     // See https://github.com/ether/etherpad-lite/pull/3915
     // TODO: Check if Destroying is enough and doesn't leave negative stuff
     // See ace.js "editor.destroy" for a reference of how it was done before
     $('#editorcontainer').find("iframe")[0].remove();
-    var options = document.location.href.split('?')[1];
-    var newHref = padId;
-    if (typeof options != "undefined" && options != null){
-      newHref = newHref + '?' + options;
-    }
 
     if(window.history && window.history.pushState)
     {
