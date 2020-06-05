@@ -1,11 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
+			"Aftab1995",
+			"Aftabuzzaman",
 			"Bellayet",
 			"Nasir8891",
 			"Sankarshan",
-			"Aftab1995",
-			"Aftabuzzaman",
 			"আফতাবুজ্জামান"
 		]
 	},
@@ -44,8 +44,6 @@
 	"pad.settings.rtlcheck": "ডান থেকে বামে বিষয়বস্তু পড়বেন?",
 	"pad.settings.fontType": "ফন্টের প্রকার:",
 	"pad.settings.fontType.normal": "সাধারণ",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "সর্বব্যাপী দৃশ্য",
 	"pad.settings.language": "ভাষা:",
 	"pad.importExport.import_export": "আমদানি/রপ্তানি",
 	"pad.importExport.import": "কোন টেক্সট ফাইল বা নথি আপলোড করুন",

@@ -1,5 +1,18 @@
 table#otheruserstable {
-  margin-top: 10px !important;
+  margin-top: 20px;
+}
+
+.popup#users.chatAndUsers > .popup-content {
+  padding: 20px 10px;
+  height: 250px;
+  border-left: none;
+  transition: none;
+  border-bottom-color: #d2d2d2;
+  border-bottom-color: var(--border-color);
+}
+.popup#users.chatAndUsers #mycolorpicker.popup {
+  right: calc(100% + 30px);
+  top: 15px;
 }
 
 #otheruserstable .swatch {
@@ -16,80 +29,24 @@ table#otheruserstable {
   margin-left: 35px;
 }
 
-#myusernameedit {
-  width: 110px;
-}
-
-#myswatchbox {
-  background: none;
-  float: left;
-  position: relative;
-  left: 0;
-  top: 0;
+input#myusernameedit {
+  min-width: 110px;
   border: none !important;
+  background-color: transparent !important;
+  border-bottom: 1px solid #d2d2d2 !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  border-radius: 0;
+  padding-bottom: 5px;
 }
 
 #myswatch {
   border-radius: 50%;
 }
 
-#nootherusers {
-  padding: 0;
-}
-
-#mycolorpicker {
-  width: auto;
-  height: auto;
-  left: -280px;
-}
-
 #colorpicker {
   margin-bottom: 25px;
 }
 
-#mycolorpickercancel {
-  padding-left: 3px;
-}
-
-#mycolorpickersave {
-  color: #fff;
-}
-
 #mycolorpickerpreview {
-  float: right;
-  top: 0;
-  left: 0;
-  position: relative;
   border-radius: 50%;
-  height: 20px;
-  width: 20px;
-}
-
-@media (max-width: 720px) {
-  #users {
-    bottom: 42px;
-    top: initial !important;
-    height: auto !important;
-  }
-
-  #mycolorpicker {
-    width: auto;
-    height: auto;
-    right: 0;
-    bottom: 42px;
-    left: initial;
-    top: initial !important;
-  }
-}
-
-#users.chatAndUsers {
-  width: 172px!important;
-  box-shadow: none;
-  border: none !important;
-  padding: 10px;
-  padding-top: 15px;
-}
-
-#users.chatAndUsers #myusernameedit {
-  width: calc(100% - 10px);
 }

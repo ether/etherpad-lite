@@ -1,15 +1,16 @@
 {
 	"@metadata": {
 		"authors": [
+			"Athena in Wonderland",
+			"Cainamarques",
 			"Hamilton Abreu",
+			"Imperadeiro98",
 			"Luckas",
+			"Macofe",
+			"Mansil alfalb",
+			"Ti4goc",
 			"Tuliouel",
 			"Waldir",
-			"Imperadeiro98",
-			"Macofe",
-			"Ti4goc",
-			"Cainamarques",
-			"Athena in Wonderland",
 			"Waldyrious"
 		]
 	},
@@ -48,8 +49,6 @@
 	"pad.settings.rtlcheck": "Ler o conteúdo da direita para a esquerda?",
 	"pad.settings.fontType": "Tipo de letra:",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "Monoespaçada",
-	"pad.settings.globalView": "Vista global",
 	"pad.settings.language": "Língua:",
 	"pad.importExport.import_export": "Importar/Exportar",
 	"pad.importExport.import": "Carregar qualquer ficheiro de texto ou documento",
@@ -61,7 +60,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "Só é possível importar texto sem formatação ou HTML. Para obter funcionalidades de importação mais avançadas, por favor <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">instale o AbiWord</a>.",
+	"pad.importExport.abiword.innerHTML": "Só pode fazer importações de texto não formatado ou com formato HTML. Para funcionalidades de importação de texto  mais avançadas, <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">instale AbiWord ou LibreOffice</a>, por favor.",
 	"pad.modals.connected": "Ligado.",
 	"pad.modals.reconnecting": "A restabelecer ligação ao seu bloco…",
 	"pad.modals.forcereconnect": "Forçar restabelecimento de ligação",
@@ -129,7 +128,7 @@
 	"pad.userlist.guest": "Convidado",
 	"pad.userlist.deny": "Negar",
 	"pad.userlist.approve": "Aprovar",
-	"pad.editbar.clearcolors": "Deseja limpar as cores de autoria em todo o documento?",
+	"pad.editbar.clearcolors": "Limpar as cores de autoria do documento todo? Esta operação não pode ser desfeita",
 	"pad.impexp.importbutton": "Importar agora",
 	"pad.impexp.importing": "Importando...",
 	"pad.impexp.confirmimport": "A importação de um ficheiro irá substituir o texto atual da nota. Tem certeza que deseja continuar?",
@@ -138,5 +137,7 @@
 	"pad.impexp.uploadFailed": "O carregamento falhou; tente novamente, por favor",
 	"pad.impexp.importfailed": "A importação falhou",
 	"pad.impexp.copypaste": "Copie e insira, por favor",
-	"pad.impexp.exportdisabled": "A exportação no formato {{type}} está desativada. Por favor, contacte o administrador do sistema para mais informações."
+	"pad.impexp.exportdisabled": "A exportação no formato {{type}} está desativada. Por favor, contacte o administrador do sistema para mais informações.",
+	"pad.impexp.maxFileSize": "Ficheiro demasiado grande. Contacte o administrador do ''site'' para aumentar o tamanho máximo dos ficheiros importados",
+	"pad.impexp.permission": "A importação está desativada porque nunca contribuiu para esta nota. Contribua pelo menos uma vez antes de importar, por favor"
 }

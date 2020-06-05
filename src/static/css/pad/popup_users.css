@@ -1,0 +1,139 @@
+/* --------------- */
+/* --- LAYOUT ---- */
+/* --------------- */
+
+.popup#users {
+  flex-direction: column;
+  max-height: 500px;
+  height: auto;
+}
+.popup#users #myuser {
+  flex-shrink: 0;
+}
+.popup#users #otherusers {
+  flex: 1 auto;
+  overflow: auto;
+  max-height: 200px;
+}
+
+.popup#users.chatAndUsers {
+  display: flex !important; /* always visible */
+  position: relative;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  left: auto;
+}
+.popup#users.chatAndUsers > .popup-content {
+  border: none;
+  border-bottom: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  border-right: 0;
+  border-radius: 0;
+  box-shadow: none;
+  height: 200px;
+  min-width: 0;
+  padding: 5px;
+}
+
+
+/* --------------- */
+/* --- MY USER --- */
+/* --------------- */
+
+#myswatchbox {
+  float: left;
+  width: 24px;
+  height: 24px;
+  border: 1px solid #ccc
+  background: transparent;
+  cursor: pointer;
+}
+#myswatch {
+  width: 100%;
+  height: 100%;
+  background: transparent; /*...initially*/
+}
+
+#myusernameform {
+  margin-left: 30px;
+}
+input#myusernameedit {
+  height: 26px;
+  font-size: 1.3em;
+  padding: 3px;
+  border: 1px solid #ccc;
+  background-color: transparent;
+  margin: 0;
+}
+input#myusernameedit:not(.editable) {
+  color: grey;
+}
+#myuser .myusernameedithoverable:hover {
+  background: white;
+}
+#myusernameform .editactive,
+#myusernameform .editempty {
+  background: white;
+  border-left: 1px solid #c3c3c3;
+  border-top: 1px solid #c3c3c3;
+  border-right: 1px solid #e6e6e6;
+  border-bottom: 1px solid #e6e6e6;
+}
+
+#myusernameedit, #otheruserstable .swatch {
+  border: 1px solid #ccc;
+}
+#myusernameform .editempty {
+  opacity: .8;
+}
+
+
+/* --------------------------- */
+/* --- MY USER COLORPICKER --- */
+/* --------------------------- */
+
+#mycolorpicker.popup {
+  min-width: 0;
+  right: calc(100% + 15px);
+  z-index: 101;
+}
+@media (max-width: 800px) {
+  #mycolorpicker.popup {
+    top: auto;
+    bottom: 0;
+    left: auto !important;
+    right: 0 !important;
+  }
+}
+#mycolorpicker.popup .btn-container {
+  margin-top: 10px;
+}
+#mycolorpickerpreview {
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  float: right;
+}
+
+/* ------------------- */
+/* --- OTHER USERS --- */
+/* ------------------- */
+#otheruserstable {
+  display: none;
+}
+#otheruserstable td {
+  height: 26px;
+  padding: 0 2px;
+}
+#otheruserstable .swatch {
+  border: 1px solid #ccc;
+  width: 13px;
+  height: 13px;
+  overflow: hidden;
+  margin: 0 4px;
+  user-select: none;
+}
+.usertdname {
+  font-size: 1.2rem;
+}

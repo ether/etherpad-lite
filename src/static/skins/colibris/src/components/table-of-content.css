@@ -1,9 +1,9 @@
 #toc {
-  background: none !important;
-  background-color: rgb(249, 249, 249) !important;
-  padding: 20px !important;
+  padding: 20px 20px 10px 10px !important;
   min-width: 146px !important;
-  padding-left: 15px !important;
+  background-color: transparent !important;
+  border: none !important;
+  order: -2;
 }
 
 #tocItems {
@@ -12,4 +12,10 @@
 
 .plugin-ep_resizable_bars #toc {
   min-width: 186px !important;
+}
+
+@media (max-width: 1200px) {
+  #toc {
+    padding-top: 10px !important
+  }
 }

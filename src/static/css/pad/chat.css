@@ -1,0 +1,164 @@
+#chaticon, #chatbox {
+  visibility: hidden;
+  z-index: 400;
+  position: absolute;
+  bottom: 0px;
+  right: 25px;
+}
+#chaticon.visible, #chatbox.visible {
+  visibility: visible;
+}
+#chaticon {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border: 1px solid #ccc;
+  border-bottom: none;
+}
+.chat-content {
+  width: 400px;
+  height: 300px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  display: flex;
+  border: 1px solid #ccc;
+  border-bottom: none;
+  z-index: 401;
+  background-color: #f7f7f7;
+  flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.74, -0.05, 0.27, 1.75);
+  opacity: .3;
+  transform: scale(.5);
+  transform-origin: 100% 100%
+}
+#chatbox.visible .chat-content{
+  opacity: 1;
+  transform: scale(1);
+}
+
+#chatbox.stickyChat {
+  position: relative;
+  width: auto;
+  flex: 1 auto; /* take reminaning vertical space */
+  height: 100%;
+  right: 0;
+  display: flex;
+}
+#chatbox.stickyChat .chat-content {
+  background-color: #f1f1f1;
+  border-radius: 0;
+  border: none;
+  border-left: 1px solid #ccc;
+  height: 100%;
+  width: 100%;
+}
+#chatbox.stickyChat .chat-content .stick-to-screen-btn {
+  display: none;
+}
+#chatbox.stickyChat.chatAndUsersChat .chat-content .hide-reduce-btn {
+  display:none;
+}
+
+/* -- TITLE BAR -- */
+#titlebar {
+  font-weight: bold;
+  padding: 5px;
+}
+#titlebar #titlelabel {
+  margin: 4px 0 0 4px;
+  display: inline;
+  font-size: 1.4rem;
+}
+#titlebar .stick-to-screen-btn,
+#titlebar .hide-reduce-btn {
+  font-size: 25px;
+  color: inherit;
+  float: right;
+  text-align: right;
+  text-decoration: none;
+  cursor: pointer;
+}
+#titlebar .stick-to-screen-btn {
+  font-size: 10px;
+  padding-top: 2px;
+}
+
+/* -- MESSAGES -- */
+#chattext {
+  background-color: white;
+  overflow-y: auto;
+  flex: 1 auto;
+  height: 0; /* strange bug on firefox, if height is not set, the chattext grow bigger than the maximum height */
+}
+#chattext p {
+  padding: 3px;
+  overflow-x: hidden;
+  word-wrap: break-word;
+}
+#chattext .time {
+  float: right;
+  font-style: italic;
+  font-size: .85rem;
+  opacity: .8;
+  margin-left: 3px;
+  margin-right: 2px;
+}
+
+/* -- INPUT BOX -- */
+#chatinputbox {
+  padding: 5px;
+}
+#chatinputbox #chatinput {
+  width: 100%;
+}
+
+
+/* -- CHAT ICON -- */
+#chaticon {
+  background-color: #fff;
+  cursor: pointer;
+  display: none;
+  padding: 5px;
+}
+#chaticon a {
+  text-decoration: none
+}
+#chaticon #chatlabel {
+  font-weight: bold;
+  text-decoration: none;
+  margin-right: 3px;
+  vertical-align: middle;
+}
+#chaticon #chatcounter {
+  font-size: .8rem;
+  vertical-align: middle;
+  margin-left: 5px;
+}
+
+/* -- LOAD MESSAGES -- */
+.chatloadmessages
+{
+  margin-bottom: 5px;
+  margin-top: 5px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+#chatloadmessagesbutton
+{
+  line-height: 1.8em;
+}
+#chatloadmessagesball
+{
+  display: none;
+}
+
+@media only screen and (max-width: 800px) {
+  #chatbox {
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+  #chatbox .chat-content {
+    width: 100%;
+  }
+}

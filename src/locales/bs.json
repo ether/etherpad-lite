@@ -2,8 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Edinwiki",
-			"Srdjan m",
-			"Semina x"
+			"Semina x",
+			"Srdjan m"
 		]
 	},
 	"index.newPad": "Novi Pad",
@@ -40,7 +40,6 @@
 	"pad.settings.rtlcheck": "Da prikažem sadržaj zdesna ulijevo?",
 	"pad.settings.fontType": "Vrsta fonta:",
 	"pad.settings.fontType.normal": "Normalno",
-	"pad.settings.globalView": "Globalni prikaz",
 	"pad.settings.language": "Jezik:",
 	"pad.importExport.import_export": "Uvoz/Izvoz",
 	"pad.importExport.import": "Postavite bilo koju tekstualnu datoteku ili dokument",
