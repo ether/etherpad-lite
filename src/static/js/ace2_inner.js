@@ -5184,7 +5184,7 @@ function Ace2Inner(){
       if(t === listType) togglingOn = false;
 
       if(togglingOn){
-console.warn("this fucking line");
+// console.warn("this fucking line");
 //        mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + '1')]);
       }else{
         // scrap the entire indentation and list type
