@@ -932,12 +932,22 @@ async function handleClientReady(client, message)
   await Promise.all(authors.map(authorId => {
     return authorManager.getAuthor(authorId).then(author => {
       if (!author) {
-        messageLogger.error("There is no author for authorId:", authorId);
+        messageLogger.error("There is no author for authorId: ", authorId, ". This is possibly related to https://github.com/ether/etherpad-lite/issues/2802");
       } else {
         historicalAuthorData[authorId] = { name: author.name, colorId: author.colorId }; // Filter author attribs (e.g. don't send author's pads to all clients)
       }
     });
   }));
+
+  let thisUserHasEditedThisPad = false;
+  if (historicalAuthorData[statusObject.authorID]) {
+    /*
+     * This flag is set to true when a user contributes to a specific pad for
+     * the first time. It is used for deciding if importing to that pad is
+     * allowed or not.
+     */
+    thisUserHasEditedThisPad = true;
+  }
 
   // glue the clientVars together, send them and tell the other clients that a new one is there
 
@@ -1065,6 +1075,8 @@ async function handleClientReady(client, message)
     // mile wide...
     var clientVars = {
       "skinName": settings.skinName,
+      "skinVariants": settings.skinVariants,
+      "randomVersionString": settings.randomVersionString,
       "accountPrivs": {
           "maxRevisions": 100
       },
@@ -1117,7 +1129,9 @@ async function handleClientReady(client, message)
         "scrollWhenCaretIsInTheLastLineOfViewport": settings.scrollWhenFocusLineIsOutOfViewport.scrollWhenCaretIsInTheLastLineOfViewport,
         "percentageToScrollWhenUserPressesArrowUp": settings.scrollWhenFocusLineIsOutOfViewport.percentageToScrollWhenUserPressesArrowUp,
       },
-      "initialChangesets": [] // FIXME: REMOVE THIS SHIT
+      "initialChangesets": [], // FIXME: REMOVE THIS SHIT
+      "thisUserHasEditedThisPad": thisUserHasEditedThisPad,
+      "allowAnyoneToImport": settings.allowAnyoneToImport
     }
 
     // Add a username to the clientVars if one avaiable
@@ -1429,11 +1443,12 @@ async function composePadChangesets (padId, startNum, endNum)
   }));
 
   // compose Changesets
+  let r;
   try {
     let changeset = changesets[startNum];
     let pool = pad.apool();
 
-    for (let r = startNum + 1; r < endNum; r++) {
+    for (r = startNum + 1; r < endNum; r++) {
       let cs = changesets[r];
       changeset = Changeset.compose(changeset, cs, pool);
     }

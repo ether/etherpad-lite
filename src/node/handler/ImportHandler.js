@@ -72,6 +72,19 @@ async function doImport(req, res, padId)
   let form = new formidable.IncomingForm();
   form.keepExtensions = true;
   form.uploadDir = tmpDirectory;
+  form.maxFileSize = settings.importMaxFileSize;
+  
+  // Ref: https://github.com/node-formidable/formidable/issues/469
+  // Crash in Etherpad was Uploading Error: Error: Request aborted
+  // [ERR_STREAM_DESTROYED]: Cannot call write after a stream was destroyed
+  form.onPart = part => {
+    form.handlePart(part);
+    if (part.filename !== undefined) {
+      form.openedFiles[form.openedFiles.length - 1]._writeStream.on('error', err => {
+        form.emit('error', err);
+      });
+    }
+  };
 
   // locally wrapped Promise, since form.parse requires a callback
   let srcFile = await new Promise((resolve, reject) => {
@@ -81,6 +94,12 @@ async function doImport(req, res, padId)
         if (err) {
           console.warn("Uploading Error: " + err.stack);
         }
+
+        // I hate doing indexOf here but I can't see anything to use...
+        if (err &&  err.stack && err.stack.indexOf("maxFileSize") !== -1) {
+          reject("maxFileSize");
+        }
+
         reject("uploadFailed");
       }
       if(!files.file){ // might not be a graceful fix but it works
@@ -185,8 +204,15 @@ async function doImport(req, res, padId)
   if (!req.directDatabaseAccess) {
     text = await fsp_readFile(destFile, "utf8");
 
-    // Title needs to be stripped out else it appends it to the pad..
-    text = text.replace("<title>", "<!-- <title>");
+    /*
+     * The <title> tag needs to be stripped out, otherwise it is appended to the
+     * pad.
+     *
+     * Moreover, when using LibreOffice to convert the file, some classes are
+     * added to the <title> tag. This is a quick & dirty way of matching the
+     * title and comment it out independently on the classes that are set on it.
+     */
+    text = text.replace("<title", "<!-- <title");
     text = text.replace("</title>","</title>-->");
 
     // node on windows has a delay on releasing of the file lock.
@@ -253,7 +279,7 @@ exports.doImport = function (req, res, padId)
   let status = "ok";
   doImport(req, res, padId).catch(err => {
     // check for known errors and replace the status
-    if (err == "uploadFailed" || err == "convertFailed" || err == "padHasData") {
+    if (err == "uploadFailed" || err == "convertFailed" || err == "padHasData" || err == "maxFileSize") {
       status = err;
     } else {
       throw err;

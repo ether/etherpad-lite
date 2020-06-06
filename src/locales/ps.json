@@ -30,8 +30,6 @@
 	"pad.settings.linenocheck": "د کرښو شمېرې",
 	"pad.settings.fontType": "ليکبڼې ډول:",
 	"pad.settings.fontType.normal": "نورمال",
-	"pad.settings.fontType.monospaced": "مونوسپېس",
-	"pad.settings.globalView": "نړېواله ښکارېدنه",
 	"pad.settings.language": "ژبه:",
 	"pad.importExport.importSuccessful": "بريالی شو!",
 	"pad.importExport.exportetherpad": "اېترپډ",

@@ -1,32 +1,41 @@
-li.acl-write.font-color-icon.plugin-ep_font_color {
-  display: none;
+.font-color-icon {
+  display: none !important;
 }
 
 #font-color {
   display: list-item !important;
 }
+.readonly #font-color {
+  display: none !important;
+}
+
+.color\:black,
+[data-color=black] {
+  color: #485365;
+  color: var(--text-color);
+}
 
 .color\:red,
 [data-color=red] {
-    color: #F44336;
+  color: #F44336;
 }
 
 .color\:green,
 [data-color=green] {
-    color: #66d29c;
+  color: #66d29c;
 }
 
 .color\:blue,
 [data-color=blue] {
-    color: #2196f3;
+  color: #2196f3;
 }
 
 .color\:yellow,
 [data-color=yellow] {
-    color: #e0d776;
+  color: #ffeb3b;
 }
 
 .color\:orange,
 [data-color=orange] {
-    color: #d2a564;
+  color: #FF9800;
 }

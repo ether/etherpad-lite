@@ -1,6 +1,13 @@
 /**
- * The Settings Modul reads the settings out of settings.json and provides
+ * The Settings module reads the settings out of settings.json and provides
  * this information to the other modules
+ *
+ * TODO muxator 2020-04-14:
+ *
+ * 1) get rid of the reloadSettings() call at module loading;
+ * 2) provide a factory method that configures the settings module at runtime,
+ *    reading the file name either from command line parameters, from a function
+ *    argument, or falling back to a default.
  */
 
 /*
@@ -35,6 +42,20 @@ var _ = require("underscore");
 exports.root = absolutePaths.findEtherpadRoot();
 console.log(`All relative paths will be interpreted relative to the identified Etherpad base dir: ${exports.root}`);
 
+/*
+ * At each start, Etherpad generates a random string and appends it as query
+ * parameter to the URLs of the static assets, in order to force their reload.
+ * Subsequent requests will be cached, as long as the server is not reloaded.
+ *
+ * For the rationale behind this choice, see
+ * https://github.com/ether/etherpad-lite/pull/3958
+ *
+ * ACHTUNG: this may prevent caching HTTP proxies to work
+ * TODO: remove the "?v=randomstring" parameter, and replace with hashed filenames instead
+ */
+exports.randomVersionString = randomString(4);
+console.log(`Random string used for versioning assets: ${exports.randomVersionString}`);
+
 /**
  * The app title, visible e.g. in the browser window
  */
@@ -54,6 +75,8 @@ exports.faviconTimeslider = "../../" + exports.favicon;
  * user to update it before falling back to the default.
  */
 exports.skinName = null;
+
+exports.skinVariants = "super-light-toolbar super-light-editor light-background";
 
 /**
  * The IP ep-lite should listen to
@@ -298,6 +321,50 @@ exports.scrollWhenFocusLineIsOutOfViewport = {
  */
 exports.exposeVersion = false;
 
+/*
+ * Override any strings found in locale directories
+ */
+exports.customLocaleStrings = {};
+
+/*
+ * From Etherpad 1.8.3 onwards, import and export of pads is always rate
+ * limited.
+ *
+ * The default is to allow at most 10 requests per IP in a 90 seconds window.
+ * After that the import/export request is rejected.
+ *
+ * See https://github.com/nfriedly/express-rate-limit for more options
+ */
+exports.importExportRateLimiting = {
+  // duration of the rate limit window (milliseconds)
+  "windowMs": 90000,
+
+  // maximum number of requests per IP to allow during the rate limit window
+  "max": 10
+};
+
+/*
+ * From Etherpad 1.8.3 onwards, the maximum allowed size for a single imported
+ * file is always bounded.
+ *
+ * File size is specified in bytes. Default is 50 MB.
+ */
+exports.importMaxFileSize = 50 * 1024 * 1024;
+
+
+/*
+ * From Etherpad 1.8.3 onwards import was restricted to authors who had
+ * content within the pad.
+ *
+ * This setting will override that restriction and allow any user to import
+ * without the requirement to add content to a pad.
+ *
+ * This setting is useful for when you use a plugin for authentication so you
+ * can already trust each user.
+ */
+exports.allowAnyoneToImport = false,
+
+
 // checks if abiword is avaiable
 exports.abiwordAvailable = function()
 {
@@ -333,7 +400,7 @@ exports.exportAvailable = function() {
 exports.getGitCommit = function() {
   var version = "";
   try {
-    var rootPath = path.resolve(npm.dir, '..');
+    var rootPath = exports.root;
     if (fs.lstatSync(rootPath + '/.git').isFile()) {
       rootPath = fs.readFileSync(rootPath + '/.git', "utf8");
       rootPath = rootPath.split(' ').pop().trim();
@@ -387,6 +454,14 @@ function storeSettings(settingsObj) {
 /*
  * If stringValue is a numeric string, or its value is "true" or "false", coerce
  * them to appropriate JS types. Otherwise return stringValue as-is.
+ *
+ * Please note that this function is used for converting types for default
+ * values in the settings file (for example: "${PORT:9001}"), and that there is
+ * no coercition for "null" values.
+ *
+ * If the user wants a variable to be null by default, he'll have to use the
+ * short syntax "${ABIWORD}", and not "${ABIWORD:null}": the latter would result
+ * in the literal string "null", instead.
  */
 function coerceValue(stringValue) {
     // cooked from https://stackoverflow.com/questions/175739/built-in-way-in-javascript-to-check-if-a-string-is-a-valid-number
@@ -474,7 +549,7 @@ function lookupEnvironmentVariables(obj) {
      * "${ENV_VAR}" or "${ENV_VAR:default_value}")
      */
     // MUXATOR 2019-03-21: we could use named capture groups here once we migrate to nodejs v10
-    const match = value.match(/^\$\{([^:]*)(:(.*))?\}$/);
+    const match = value.match(/^\$\{([^:]*)(:((.|\n)*))?\}$/);
 
     if (match === null) {
       // no match: use the value literally, without any substitution
@@ -491,7 +566,7 @@ function lookupEnvironmentVariables(obj) {
     const defaultValue = match[3];
 
     if ((envVarValue === undefined) && (defaultValue === undefined)) {
-      console.warn(`Environment variable "${envVarName}" does not contain any value for configuration key "${key}", and no default was given. Returning null. Please check your configuration and environment settings.`);
+      console.warn(`Environment variable "${envVarName}" does not contain any value for configuration key "${key}", and no default was given. Returning null.`);
 
       /*
        * We have to return null, because if we just returned undefined, the
@@ -594,19 +669,19 @@ exports.reloadSettings = function reloadSettings() {
   log4js.replaceConsole();
 
   if (!exports.skinName) {
-    console.warn(`No "skinName" parameter found. Please check out settings.json.template and update your settings.json. Falling back to the default "no-skin".`);
-    exports.skinName = "no-skin";
+    console.warn(`No "skinName" parameter found. Please check out settings.json.template and update your settings.json. Falling back to the default "colibris".`);
+    exports.skinName = "colibris";
   }
 
-  // checks if skinName has an acceptable value, otherwise falls back to "no-skin"
+  // checks if skinName has an acceptable value, otherwise falls back to "colibris"
   if (exports.skinName) {
     const skinBasePath = path.join(exports.root, "src", "static", "skins");
     const countPieces = exports.skinName.split(path.sep).length;
 
     if (countPieces != 1) {
-      console.error(`skinName must be the name of a directory under "${skinBasePath}". This is not valid: "${exports.skinName}". Falling back to the default "no-skin".`);
+      console.error(`skinName must be the name of a directory under "${skinBasePath}". This is not valid: "${exports.skinName}". Falling back to the default "colibris".`);
 
-      exports.skinName = "no-skin";
+      exports.skinName = "colibris";
     }
 
     // informative variable, just for the log messages
@@ -614,15 +689,15 @@ exports.reloadSettings = function reloadSettings() {
 
     // what if someone sets skinName == ".." or "."? We catch him!
     if (absolutePaths.isSubdir(skinBasePath, skinPath) === false) {
-      console.error(`Skin path ${skinPath} must be a subdirectory of ${skinBasePath}. Falling back to the default "no-skin".`);
+      console.error(`Skin path ${skinPath} must be a subdirectory of ${skinBasePath}. Falling back to the default "colibris".`);
 
-      exports.skinName = "no-skin";
+      exports.skinName = "colibris";
       skinPath = path.join(skinBasePath, exports.skinName);
     }
 
     if (fs.existsSync(skinPath) === false) {
-      console.error(`Skin path ${skinPath} does not exist. Falling back to the default "no-skin".`);
-      exports.skinName = "no-skin";
+      console.error(`Skin path ${skinPath} does not exist. Falling back to the default "colibris".`);
+      exports.skinName = "colibris";
       skinPath = path.join(skinBasePath, exports.skinName);
     }
 

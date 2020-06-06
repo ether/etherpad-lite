@@ -1,8 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Sveinn í Felli",
-			"Sveinki"
+			"Sveinki",
+			"Sveinn í Felli"
 		]
 	},
 	"index.newPad": "Ný skrifblokk",
@@ -40,8 +40,6 @@
 	"pad.settings.rtlcheck": "Lesa innihaldið frá hægri til vinstri?",
 	"pad.settings.fontType": "Leturgerð:",
 	"pad.settings.fontType.normal": "Venjulegt",
-	"pad.settings.fontType.monospaced": "Jafnbreitt",
-	"pad.settings.globalView": "Yfirlitssýn",
 	"pad.settings.language": "Tungumál:",
 	"pad.importExport.import_export": "Flytja inn/út",
 	"pad.importExport.import": "Settu inn hverskyns texta eða skjal",

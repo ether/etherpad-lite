@@ -104,7 +104,7 @@ function Ace2Editor()
     editor[fnName] = pendingInit(function(){
       if(fnName === "setAuthorInfo"){
         if(!arguments[0]){
-          top.console.warn("setAuthorInfo AuthorId not set for some reason", arguments);
+          // setAuthorInfo AuthorId not set for some reason
         }else{
           info[prefix + fnName].apply(this, arguments);
         }
@@ -225,7 +225,7 @@ function Ace2Editor()
       var iframeHTML = [];
 
       iframeHTML.push(doctype);
-      iframeHTML.push("<html><head>");
+      iframeHTML.push("<html class='inner-editor " + clientVars.skinVariants + "'><head>");
 
       // calls to these functions ($$INCLUDE_...)  are replaced when this file is processed
       // and compressed, putting the compressed code from the named file directly into the
@@ -237,7 +237,7 @@ function Ace2Editor()
 
       // disableCustomScriptsAndStyles can be used to disable loading of custom scripts
       if(!clientVars.disableCustomScriptsAndStyles){
-        $$INCLUDE_CSS("../static/css/pad.css");
+        $$INCLUDE_CSS("../static/css/pad.css?v=" + clientVars.randomVersionString);
       }
 
       var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){
@@ -247,7 +247,7 @@ function Ace2Editor()
         return '../static/plugins/' + path;
       });
       includedCSS = includedCSS.concat(additionalCSS);
-      $$INCLUDE_CSS("../static/skins/" + clientVars.skinName + "/pad.css");
+      $$INCLUDE_CSS("../static/skins/" + clientVars.skinName + "/pad.css?v=" + clientVars.randomVersionString);
 
       pushStyleTagsFor(iframeHTML, includedCSS);
 
@@ -316,12 +316,12 @@ window.onload = function () {\n\
   }, 0);\n\
 }';
 
-      var outerHTML = [doctype, '<html><head>']
+      var outerHTML = [doctype, '<html class="inner-editor outerdoc ' + clientVars.skinVariants + '"><head>']
 
       var includedCSS = [];
       var $$INCLUDE_CSS = function(filename) {includedCSS.push(filename)};
       $$INCLUDE_CSS("../static/css/iframe_editor.css");
-      $$INCLUDE_CSS("../static/css/pad.css");
+      $$INCLUDE_CSS("../static/css/pad.css?v=" + clientVars.randomVersionString);
 
 
       var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){
@@ -331,7 +331,7 @@ window.onload = function () {\n\
         return '../static/plugins/' + path }
       );
       includedCSS = includedCSS.concat(additionalCSS);
-      $$INCLUDE_CSS("../static/skins/" + clientVars.skinName + "/pad.css");
+      $$INCLUDE_CSS("../static/skins/" + clientVars.skinName + "/pad.css?v=" + clientVars.randomVersionString);
 
       pushStyleTagsFor(outerHTML, includedCSS);
 
