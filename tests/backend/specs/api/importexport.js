@@ -38,9 +38,15 @@ var testImports = {
   },
   "prefixcorrectlinenumber":{
     input: '<html><body><ol><li>should be 1</li><li>should be 2</li></ol></body></html>',
-    expectedHTML: '<!DOCTYPE HTML><html><body><ol start="1" class="number"><li>should be 1</li><li>should be 2</li></ol><br></body></html>',
+    expectedHTML: '<!DOCTYPE HTML><html><body><ol start="1" class="number"><li>should be 1</li><li>should be 2</ol><br></body></html>',
     expectedText: '\t1. should be 1\n\t2. should be 2\n\n'
-  }
+  },
+  "prefixcorrectlinenumbernested":{
+    input: '<html><body><ol><li>should be 1</li><ol><li>foo</li></ol><li>should be 2</li></ol></body></html>',
+    expectedHTML: '<!DOCTYPE HTML><html><body><ol start="1" class="number"><li>should be 1<ol start="2" class="number"><li>foo</ol><li>should be 2</ol><br></body></html>',
+    expectedText: '\t1. should be 1\n\t\t1.1. foo\n\t2. should be 2\n\n'
+  },
+
   /*
   "prefixcorrectlinenumber when introduced none list item - currently not supported see #3450":{
     input: '<html><body><ol><li>should be 1</li>test<li>should be 2</li></ol></body></html>',
