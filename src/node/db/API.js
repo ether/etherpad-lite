@@ -32,6 +32,7 @@ var importHtml = require("../utils/ImportHtml");
 var cleanText = require("./Pad").cleanText;
 var PadDiff = require("../utils/padDiff");
 const htmlToText = require('@mxiii/html-to-text');
+const EtherpadHtmlToText = require('../utils/HtmlToText').EtherpadHtmlToText;
 
 /**********************/
 /**GROUP FUNCTIONS*****/
@@ -177,19 +178,7 @@ exports.getText = async function(padID, rev)
     let html = await exportHtml.getPadHTML(pad, revNum);
 
     // get the text of this revision
-    let text = htmlToText.fromString(html, {
-      format: {
-        unorderedList: function(elem, fn, options){
-          var h = fn(elem.children, options);
-          if(elem.attribs && (elem.attribs.class === 'indent')){
-            return '    ' + h + '\n';
-          }else{
-            return h;
-          }
-        }
-      },
-      wordwrap: 130
-    });
+    let text = htmlToText.fromString(html, EtherpadHtmlToText);
     return { text };
   }
 

@@ -23,6 +23,7 @@ var padManager = require("../db/PadManager");
 var _analyzeLine = require('./ExportHelper')._analyzeLine;
 const ExportHtml = require('./ExportHtml');
 const htmlToText = require('@mxiii/html-to-text');
+const EtherpadHtmlToText = require('./HtmlToText').EtherpadHtmlToText;
 
 // This is slightly different than the HTML method as it passes the output to getTXTFromAText
 var getPadTXT = async function(pad, revNum)
@@ -33,19 +34,7 @@ var getPadTXT = async function(pad, revNum)
     var html = await ExportHtml.getPadHTML(pad);
   }
 
-  let text = htmlToText.fromString(html, {
-    format: {
-      unorderedList: function(elem, fn, options){
-        var h = fn(elem.children, options);
-        if(elem.attribs && (elem.attribs.class === 'indent')){
-          return '    ' + h + '\n';
-        }else{
-          return h;
-        }
-      }
-    },
-    wordwrap: 130
-  });
+  let text = htmlToText.fromString(html, EtherpadHtmlToText);
 
   return text;
 }
