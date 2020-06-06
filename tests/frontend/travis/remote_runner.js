@@ -73,20 +73,19 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
 }, 4); //run 4 tests in parrallel
 
 // 1) Firefox on Linux
-/*
 sauceTestWorker.push({
     'platform'       : 'Linux'
   , 'browserName'    : 'firefox'
   , 'version'        : 'latest'
 });
-*/
+
 // 2) Chrome on Linux
 sauceTestWorker.push({
     'platform'       : 'Linux'
   , 'browserName'    : 'googlechrome'
   , 'version'        : 'latest'
 });
-/*
+
 // 3) Safari on OSX 10.15
 sauceTestWorker.push({
     'platform'       : 'OS X 10.15'
@@ -94,20 +93,20 @@ sauceTestWorker.push({
   , 'version'        : 'latest'
 });
 // IE 10 doesn't appear to be working anyway
-
+/*
 // 4) IE 10 on Win 8
 sauceTestWorker.push({
     'platform'       : 'Windows 8'
   , 'browserName'    : 'iexplore'
   , 'version'        : '10.0'
 });
+*/
 // 5) Edge on Win 10
 sauceTestWorker.push({
     'platform'       : 'Windows 10'
   , 'browserName'    : 'microsoftedge'
   , 'version'        : 'latest'
 });
-*/
 
 sauceTestWorker.drain = function() {
   setTimeout(function(){
