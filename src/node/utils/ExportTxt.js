@@ -56,5 +56,3 @@ exports.getPadTXTDocument = async function(padId, revNum)
   let pad = await padManager.getPad(padId);
   return getPadTXT(pad, revNum);
 }
-/*
-*/
