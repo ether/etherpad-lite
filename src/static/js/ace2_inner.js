@@ -5168,11 +5168,13 @@ function Ace2Inner(){
       var listType = /([a-z]+)([0-9]+)/.exec(getLineListType(n));
 
       // Used to outdent if ol is removed
+/*
       if(allLinesAreList){
         var togglingOn = false;
       }else{
         var togglingOn = true;
       }
+*/
 
       if (listType)
       {
@@ -5183,6 +5185,10 @@ function Ace2Inner(){
 
       if(t === listType) togglingOn = false;
 
+      if (allLinesAreList && level != 1) { level = level - 1;  }
+      else if (t && !allLinesAreList) { level = level + 1; }
+
+/*
       if(togglingOn){
         mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + '1')]);
       }else{
@@ -5197,7 +5203,7 @@ function Ace2Inner(){
           setLineListType(n, "indent"+level); // outdent
         }
       }
-
+*/
     }
 
     _.each(mods, function(mod){
