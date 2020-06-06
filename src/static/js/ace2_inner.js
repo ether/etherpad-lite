@@ -5167,13 +5167,11 @@ function Ace2Inner(){
       var level = 0;
       var listType = /([a-z]+)([0-9]+)/.exec(getLineListType(n));
 
-      var togglineOn = false;
-
       // Used to outdent if ol is removed
       if(allLinesAreList){
-        togglingOn = false;
+        var togglingOn = false;
       }else{
-        togglingOn = true;
+        var togglingOn = true;
       }
 
       if (listType)
@@ -5187,9 +5185,7 @@ function Ace2Inner(){
 
       if(togglingOn){
         mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + '1')]);
-      }
-
-      if(!togglingOn){
+      }else{
         // scrap the entire indentation and list type
         if(level === 1){ // if outdending but are the first item in the list then outdent
           setLineListType(n, ''); // outdent
