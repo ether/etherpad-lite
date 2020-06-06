@@ -5169,9 +5169,9 @@ function Ace2Inner(){
 
       // Used to outdent if ol is removed
       if(allLinesAreList){
-        togglingOn = false;
+        var togglingOn = false;
       }else{
-        togglingOn = true;
+        var togglingOn = true;
       }
 
       if (listType)
