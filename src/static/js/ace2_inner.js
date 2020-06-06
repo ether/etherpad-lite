@@ -5166,7 +5166,6 @@ function Ace2Inner(){
       var t = '';
       var level = 0;
       var listType = /([a-z]+)([0-9]+)/.exec(getLineListType(n));
-      var togglingOn = !allLinesAreList;
       if (listType)
       {
         t = listType[1];
@@ -5174,24 +5173,12 @@ function Ace2Inner(){
       }
       var t = getLineListType(n);
 
-      if(t === listType) togglingOn = false;
+      // if already a list, deindent
+      if (allLinesAreList && level != 1) { level = level - 1;  }
+      // if already indented, then add a level of indentation to the list
+      else if (t && !allLinesAreList) { level = level + 1; }
 
-      if(togglingOn){
-        mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + '1')]);
-      }
-
-      if(!togglingOn){ // remove removing because we have 
-        // scrap the entire indentation and list type
-        if(level === 1){ // if outdending but are the first item in the list then outdent
-          setLineListType(n, ''); // outdent
-        }
-        // else change to indented not bullet
-        if(level > 1){
-          setLineListType(n, ''); // reomve bullet
-          let newLevel = level+1;
-          setLineListType(n, "indent"+level); // outdent
-        }
-      }
+      mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + '1')]);
     }
 
     _.each(mods, function(mod){
