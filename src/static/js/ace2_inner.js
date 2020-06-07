@@ -5194,7 +5194,6 @@ function Ace2Inner(){
         // else change to indented not bullet
         if(level > 1){
           setLineListType(n, ''); // remove bullet
-          let newLevel = level+1;
           setLineListType(n, "indent"+level); // outdent
         }
       }
