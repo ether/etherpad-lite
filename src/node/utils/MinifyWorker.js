@@ -3,7 +3,7 @@
  */
 
 var CleanCSS = require('clean-css');
-var terser = require("terser");
+var terser = require("uglify-js");
 var path = require('path');
 var Threads = require('threads')
 
