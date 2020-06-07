@@ -5184,8 +5184,7 @@ function Ace2Inner(){
       if(t === listType) togglingOn = false;
 
       if(togglingOn){
-// console.warn("this fucking line");
-//        mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + '1')]);
+        mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + '1')]);
       }else{
         // scrap the entire indentation and list type
         if(level === 1){ // if outdending but are the first item in the list then outdent
@@ -5194,7 +5193,7 @@ function Ace2Inner(){
         // else change to indented not bullet
         if(level > 1){
           setLineListType(n, ''); // remove bullet
-          setLineListType(n, "indent"+level); // outdent
+          setLineListType(n, "indent"+level); // in/outdent
         }
       }
 
