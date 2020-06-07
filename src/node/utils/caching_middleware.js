@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-var async = require('async');
 var Buffer = require('buffer').Buffer;
 var fs = require('fs');
 var path = require('path');
@@ -145,30 +144,39 @@ CachingMiddleware.prototype = new function () {
           res.write = function(data, encoding) {
             buffer += data.toString(encoding);
           };
-          res.end = function(data, encoding) {
-            async.parallel([
-              function (callback) {
-                var path = CACHE_DIR + 'minified_' + cacheKey;
-                fs.writeFile(path, buffer, function (error, stats) {
-                  callback();
-                });
-              }
-            , function (callback) {
-                var path = CACHE_DIR + 'minified_' + cacheKey + '.gz';
-                zlib.gzip(buffer, function(error, content) {
-                  if (error) {
-                    callback();
-                  } else {
-                    fs.writeFile(path, content, function (error, stats) {
-                      callback();
-                    });
-                  }
-                });
-              }
-            ], function () {
-              responseCache[cacheKey] = {statusCode: status, headers: headers};
-              respond();
-            });
+          res.end = async function(data, encoding) {
+            // Parallel.
+            Promise.all([compressMinified(), compressMinifiedGz()])
+
+            async function compressMinified() {
+              var path = CACHE_DIR + 'minified_' + cacheKey;
+              fs.writeFile(path, buffer, function (error, stats) {
+                if(error){
+                  return Promise.reject(error)
+                }
+                else{
+                  return Promise.resolve(stats)
+                }
+              });
+            }
+
+            async function compressMinifiedGz() {
+              var path = CACHE_DIR + 'minified_' + cacheKey + '.gz';
+              zlib.gzip(buffer, function(error, content) {
+                if (error) {
+                  return Promise.reject(error)
+                } else {
+                  fs.writeFile(path, content, function (error, stats) {
+                    if(error){
+                      return Promise.reject(error)
+                    }
+                    return Promise.resolve('ok')
+                  });
+                }
+              });
+            }
+            responseCache[cacheKey] = {statusCode: status, headers: headers};
+            respond();
           };
         } else if (status == 304) {
           // Nothing new changed from the cached version.
