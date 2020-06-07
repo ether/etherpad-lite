@@ -2,9 +2,6 @@
   padding: 10px;
   display: block;
 }
-#innerdocbody {
-  margin: 0 auto;
-}
 
 .timeslider-bar {
   display: flex;
@@ -24,7 +21,10 @@
 }
 
 /* RIGHT TOOLBAR (export, settings, back to pad) */
-
+.editbarright {
+  flex-shrink: 0; /* prevent the back to pad button to shrink */
+  margin-top: -10px;
+}
 .editbarright ul li a {
   background-color: transparent;
   border: none;
@@ -128,10 +128,11 @@
   white-space: normal;
   word-break: break-word;
   width: 100%;
-  height: 100%;
+  margin: 0 auto;
+  height: auto;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 800px) {
   #timeslider-slider #timer { display: none; }
 
   .editbarright [data-key="timeslider_returnToPad"] {
@@ -141,5 +142,13 @@
   }
   .timeslider-title {
     font-size: 1.5rem !important;
+  }
+  .timeslider-title-container {
+    width: 100%;
+  }
+  .authors-label { display: none; }
+  #authorsList {
+    display: flex;
+    flex-wrap: wrap;
   }
 }

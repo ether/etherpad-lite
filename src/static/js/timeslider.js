@@ -141,13 +141,24 @@ function handleClientVars(message)
   //initialize export ui
   require('./pad_impexp').padimpexp.init();
 
+  // Create a base URI used for timeslider exports
+  var baseURI = document.location.pathname;
+
   //change export urls when the slider moves
   BroadcastSlider.onSlider(function(revno)
   {
     // export_links is a jQuery Array, so .each is allowed.
     export_links.each(function()
     {
-      this.setAttribute('href', this.href.replace( /(.+?)\/[^\/]+\/(\d+\/)?export/ , '$1/' + padId + '/' + revno + '/export'));
+      // Modified from regular expression to fix:
+      // https://github.com/ether/etherpad-lite/issues/4071
+      // Where a padId that was numeric would create the wrong export link
+      if(this.href){
+        var type = this.href.split('export/')[1];
+        var href = baseURI.split('timeslider')[0];
+        href += revno + '/export/' + type;
+        this.setAttribute('href', href);
+      }
     });
   });
 

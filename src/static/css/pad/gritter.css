@@ -14,12 +14,14 @@
 
 .gritter-item.popup {
   position: relative;
-  max-width: 450px;
   visibility: visible;
   right: auto !important;
   left: auto !important;
   top: auto;
   bottom: auto;
+}
+.gritter-item.popup:not(.error) {
+  max-width: 450px;
 }
 
 .gritter-item .popup-content {
@@ -40,7 +42,7 @@
   background-color: #eed3d4;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 800px) {
   #gritter-container {
     left: 1rem;
     right: 1rem;

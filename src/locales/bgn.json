@@ -33,8 +33,6 @@
 	"pad.settings.rtlcheck": "محتوایی وانتین شه راست بی چپا؟",
 	"pad.settings.fontType": "قلم رکم:",
 	"pad.settings.fontType.normal": "ساددگ",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "سراسرین دیست یا نما",
 	"pad.settings.language": "زبان:",
 	"pad.importExport.exporthtml": "HTML",
 	"pad.importExport.exportplain": "ساده گین متن",

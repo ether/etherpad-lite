@@ -135,6 +135,7 @@ var padeditor = (function()
       v = getOption('showAuthorColors', true);
       self.ace.setProperty("showsauthorcolors", v);
       $('#chattext').toggleClass('authorColors', v);
+      $('iframe[name="ace_outer"]').contents().find('#sidedivinner').toggleClass('authorColors', v);
       padutils.setCheckbox($("#options-colorscheck"), v);
 
       // Override from parameters if true

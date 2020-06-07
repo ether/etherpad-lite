@@ -20,6 +20,7 @@
  * limitations under the License.
  */
 
+var browser = require('./browser');
 var hooks = require('./pluginfw/hooks');
 var padutils = require('./pad_utils').padutils;
 var padeditor = require('./pad_editor').padeditor;
@@ -170,7 +171,15 @@ var padeditbar = (function()
         ace: padeditor.ace
       });
 
-      $('select').niceSelect();
+      /*
+       * On safari, the dropdown in the toolbar gets hidden because of toolbar
+       * overflow:hidden property. This is a bug from Safari: any children with
+       * position:fixed (like the dropdown) should be displayed no matter
+       * overflow:hidden on parent
+       */
+      if (!browser.safari) {
+          $('select').niceSelect();
+      }
 
       // When editor is scrolled, we add a class to style the editbar differently
       $('iframe[name="ace_outer"]').contents().scroll(function() {
@@ -217,57 +226,55 @@ var padeditbar = (function()
         return;
       }
 
+      $('.nice-select').removeClass('open');
+      $('.toolbar-popup').removeClass("popup-show");
+
       // hide all modules and remove highlighting of all buttons
       if(moduleName == "none")
       {
         var returned = false;
-        if(self.dropdowns){
-          for(var i=0;i<self.dropdowns.length;i++)
-          {
-            var thisModuleName = self.dropdowns[i];
+        for(var i=0;i<self.dropdowns.length;i++)
+        {
+          var thisModuleName = self.dropdowns[i];
 
-            //skip the userlist
-            if(thisModuleName == "users")
-              continue;
+          //skip the userlist
+          if(thisModuleName == "users")
+            continue;
 
-            var module = $("#" + thisModuleName);
+          var module = $("#" + thisModuleName);
 
-            //skip any "force reconnect" message
-            var isAForceReconnectMessage = module.find('button#forcereconnect:visible').length > 0;
-            if(isAForceReconnectMessage)
-              continue;
-
-            if(module.css('display') != "none")
-            {
-              $("li[data-key=" + thisModuleName + "] > a").removeClass("selected");
-              module.removeClass("popup-show");
-            }
+          //skip any "force reconnect" message
+          var isAForceReconnectMessage = module.find('button#forcereconnect:visible').length > 0;
+          if(isAForceReconnectMessage)
+            continue;
+          if (module.hasClass('popup-show')) {
+            $("li[data-key=" + thisModuleName + "] > a").removeClass("selected");
+            module.removeClass("popup-show");
           }
         }
+
         if(!returned && cb) return cb();
       }
       else
       {
         // hide all modules that are not selected and remove highlighting
         // respectively add highlighting to the corresponding button
-        if(self.dropdowns){
-          for(var i=0;i<self.dropdowns.length;i++)
-          {
-            var thisModuleName = self.dropdowns[i];
-            var module = $("#" + thisModuleName);
+        for(var i=0;i<self.dropdowns.length;i++)
+        {
+          var thisModuleName = self.dropdowns[i];
+          var module = $("#" + thisModuleName);
 
-            if(module.hasClass('popup-show'))
-            {
-              $("li[data-key=" + thisModuleName + "] > a").removeClass("selected");
-              module.removeClass("popup-show");
-            }
-            else if(thisModuleName==moduleName)
-            {
-              $("li[data-key=" + thisModuleName + "] > a").addClass("selected");
-              module.addClass("popup-show");
-              if (cb) {
-                cb();
-              }
+          if(module.hasClass('popup-show'))
+          {
+            $("li[data-key=" + thisModuleName + "] > a").removeClass("selected");
+            module.removeClass("popup-show");
+          }
+          else if(thisModuleName==moduleName)
+          {
+            $("li[data-key=" + thisModuleName + "] > a").addClass("selected");
+            module.addClass("popup-show");
+            if (cb) {
+              cb();
             }
           }
         }
@@ -286,18 +293,20 @@ var padeditbar = (function()
     },
     setEmbedLinks: function()
     {
+      var padUrl = window.location.href.split("?")[0];
+
       if ($('#readonlyinput').is(':checked'))
       {
-        var basePath = document.location.href.substring(0, document.location.href.indexOf("/p/"));
-        var readonlyLink = basePath + "/p/" + clientVars.readOnlyId;
-        $('#embedinput').val('<iframe name="embed_readonly" src="' + readonlyLink + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width=600 height=400></iframe>');
+        var urlParts = padUrl.split("/");
+        urlParts.pop();
+        var readonlyLink = urlParts.join("/") + "/" + clientVars.readOnlyId;
+        $('#embedinput').val('<iframe name="embed_readonly" src="' + readonlyLink + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width="100%" height="600" frameborder="0"></iframe>');
         $('#linkinput').val(readonlyLink);
       }
       else
       {
-        var padurl = window.location.href.split("?")[0];
-        $('#embedinput').val('<iframe name="embed_readwrite" src="' + padurl + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width=600 height=400></iframe>');
-        $('#linkinput').val(padurl);
+        $('#embedinput').val('<iframe name="embed_readwrite" src="' + padUrl + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width="100%" height="600" frameborder="0"></iframe>');
+        $('#linkinput').val(padUrl);
       }
     },
     checkAllIconsAreDisplayedInToolbar: function()
@@ -305,7 +314,11 @@ var padeditbar = (function()
       // reset style
       $('.toolbar').removeClass('cropped')
       var menu_left = $('.toolbar .menu_left')[0];
-      if (menu_left && menu_left.scrollWidth > $('.toolbar').width()) {
+
+      // on mobile the menu_right get displayed at the bottom of the screen
+      var isMobileLayout = $('.toolbar .menu_right').css('position') === 'fixed';
+
+      if (menu_left && menu_left.scrollWidth > $('.toolbar').width() && isMobileLayout) {
         $('.toolbar').addClass('cropped');
       }
     }
@@ -396,6 +409,17 @@ var padeditbar = (function()
 
     toolbar.registerCommand("import_export", function () {
       toolbar.toggleDropDown("import_export", function(){
+
+        if (clientVars.thisUserHasEditedThisPad || clientVars.allowAnyoneToImport) {
+          // the user has edited this pad historically or in this session
+          $('#importform').show();
+          $('#importmessagepermission').hide();
+        } else {
+          // this is the first time this user visits this pad
+          $('#importform').hide();
+          $('#importmessagepermission').show();
+        }
+
         // If Import file input exists then focus on it..
         if($('#importfileinput').length !== 0){
           setTimeout(function(){
@@ -460,7 +484,27 @@ var padeditbar = (function()
     });
 
     toolbar.registerAceCommand("clearauthorship", function (cmd, ace) {
-      if ((!(ace.ace_getRep().selStart && ace.ace_getRep().selEnd)) || ace.ace_isCaret()) {
+      // If we have the whole document selected IE control A has been hit
+      var rep = ace.ace_getRep();
+      var lastChar = rep.lines.atIndex(rep.lines.length()-1).width-1;
+      var lastLineIndex = rep.lines.length()-1;
+      if(rep.selStart[0] === 0 && rep.selStart[1] === 0){
+        // nesting intentionally here to make things readable
+        if(rep.selEnd[0] === lastLineIndex && rep.selEnd[1] === lastChar){
+          var doPrompt = true;
+        }
+      }
+      /*
+      * NOTICE: This command isn't fired on Control Shift C.
+      * I intentionally didn't create duplicate code because if you are hitting
+      * Control Shift C we make the assumption you are a "power user"
+      * and as such we assume you don't need the prompt to bug you each time!
+      * This does make wonder if it's worth having a checkbox to avoid being
+      * prompted again but that's probably overkill for this contribution.
+      */
+
+      // if we don't have any text selected, we have a caret or we have already said to prompt
+      if ((!(rep.selStart && rep.selEnd)) || ace.ace_isCaret() || doPrompt) {
         if (window.confirm(html10n.get("pad.editbar.clearcolors"))) {
           ace.ace_performDocumentApplyAttributesToCharRange(0, ace.ace_getRep().alltext.length, [
             ['author', '']

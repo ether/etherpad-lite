@@ -2,7 +2,7 @@
   background-color: #64d29b;
   background-color: var(--primary-color);
   color: #ffffff;
-  color: var(--bg-color);
+  color: var(--super-light-color);
 }
 .gritter-item .popup-content {
   padding: 15px;
@@ -26,7 +26,7 @@
 }
 .gritter-item:not(.error) .gritter-close .buttonicon {
   color: #ffffff;
-  color: var(--bg-color);
+  color: var(--super-light-color);
 }
 
 /* CHAT GRIITER ITEM */
@@ -62,4 +62,9 @@
 .gritter-item.popup.popup-show > .popup-content {
   transform: scale(1) translateY(0) !important;
   transition: all 0.4s cubic-bezier(0.74, -0.05, 0.27, 1.75) !important;
+}
+
+/* for ep_deleted_after_delay */
+.gritter-item #close_expiration_notif {
+  display: none;
 }

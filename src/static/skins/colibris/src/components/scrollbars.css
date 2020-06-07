@@ -12,6 +12,7 @@
   }
 
   ::-webkit-scrollbar-thumb {
+    min-height: 40px;
     border-radius: 10px;
     background-color: #576273;
     background-color: var(--scrollbar-thumb);
@@ -33,6 +34,7 @@
 
 .thin-scrollbar::-webkit-scrollbar-thumb {
   border-radius: 0px;
+  min-height: 40px;
   background-color: #d2d2d2;
   background-color: var(--middle-color);
   border: none;

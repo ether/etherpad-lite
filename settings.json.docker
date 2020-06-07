@@ -65,6 +65,9 @@
  *    "password": "${PASSW}"  // if PASSW is not defined would result in password === null
  *    "password": "${PASSW:}" // if PASSW is not defined would result in password === ''
  *
+ *    If you want to use an empty value (null) as default value for a variable,
+ *    simply do not set it, without putting any colons: "${ABIWORD}".
+ *
  * 3) if you want to use newlines in the default value of a string parameter,
  *    use "\n" as usual.
  *
@@ -119,7 +122,7 @@
    * "full-width-editor" variant (by default editor is rendered as a page, with
    * a max-width of 900px).
    */
-  "skinVariants": "super-light-toolbar super-light-editor light-background",
+  "skinVariants": "${SKIN_VARIANTS:super-light-toolbar super-light-editor light-background}",
 
   /*
    * IP and port which Etherpad should bind at.
@@ -197,57 +200,57 @@
    * Change them if you want to override.
    */
   "padOptions": {
-    "noColors":         false,
-    "showControls":     true,
-    "showChat":         true,
-    "showLineNumbers":  true,
-    "useMonospaceFont": false,
-    "userName":         false,
-    "userColor":        false,
-    "rtl":              false,
-    "alwaysShowChat":   false,
-    "chatAndUsers":     false,
-    "lang":             "en-gb"
+    "noColors":         "${PAD_OPTIONS_NO_COLORS:false}",
+    "showControls":     "${PAD_OPTIONS_SHOW_CONTROLS:true}",
+    "showChat":         "${PAD_OPTIONS_SHOW_CHAT:true}",
+    "showLineNumbers":  "${PAD_OPTIONS_SHOW_LINE_NUMBERS:true}",
+    "useMonospaceFont": "${PAD_OPTIONS_USE_MONOSPACE_FONT:false}",
+    "userName":         "${PAD_OPTIONS_USER_NAME:false}",
+    "userColor":        "${PAD_OPTIONS_USER_COLOR:false}",
+    "rtl":              "${PAD_OPTIONS_RTL:false}",
+    "alwaysShowChat":   "${PAD_OPTIONS_ALWAYS_SHOW_CHAT:false}",
+    "chatAndUsers":     "${PAD_OPTIONS_CHAT_AND_USERS:false}",
+    "lang":             "${PAD_OPTIONS_LANG:en-gb}"
   },
 
   /*
    * Pad Shortcut Keys
    */
   "padShortcutEnabled" : {
-    "altF9":     true, /* focus on the File Menu and/or editbar */
-    "altC":      true, /* focus on the Chat window */
-    "cmdShift2": true, /* shows a gritter popup showing a line author */
-    "delete":    true,
-    "return":    true,
-    "esc":       true, /* in mozilla versions 14-19 avoid reconnecting pad */
-    "cmdS":      true, /* save a revision */
-    "tab":       true, /* indent */
-    "cmdZ":      true, /* undo/redo */
-    "cmdY":      true, /* redo */
-    "cmdI":      true, /* italic */
-    "cmdB":      true, /* bold */
-    "cmdU":      true, /* underline */
-    "cmd5":      true, /* strike through */
-    "cmdShiftL": true, /* unordered list */
-    "cmdShiftN": true, /* ordered list */
-    "cmdShift1": true, /* ordered list */
-    "cmdShiftC": true, /* clear authorship */
-    "cmdH":      true, /* backspace */
-    "ctrlHome":  true, /* scroll to top of pad */
-    "pageUp":    true,
-    "pageDown":  true
+    "altF9":     "${PAD_SHORTCUTS_ENABLED_ALT_F9:true}",      /* focus on the File Menu and/or editbar */
+    "altC":      "${PAD_SHORTCUTS_ENABLED_ALT_C:true}",       /* focus on the Chat window */
+    "cmdShift2": "${PAD_SHORTCUTS_ENABLED_CMD_SHIFT_2:true}", /* shows a gritter popup showing a line author */
+    "delete":    "${PAD_SHORTCUTS_ENABLED_DELETE:true}",
+    "return":    "${PAD_SHORTCUTS_ENABLED_RETURN:true}",
+    "esc":       "${PAD_SHORTCUTS_ENABLED_ESC:true}",         /* in mozilla versions 14-19 avoid reconnecting pad */
+    "cmdS":      "${PAD_SHORTCUTS_ENABLED_CMD_S:true}",       /* save a revision */
+    "tab":       "${PAD_SHORTCUTS_ENABLED_TAB:true}",         /* indent */
+    "cmdZ":      "${PAD_SHORTCUTS_ENABLED_CMD_Z:true}",       /* undo/redo */
+    "cmdY":      "${PAD_SHORTCUTS_ENABLED_CMD_Y:true}",       /* redo */
+    "cmdI":      "${PAD_SHORTCUTS_ENABLED_CMD_I:true}",       /* italic */
+    "cmdB":      "${PAD_SHORTCUTS_ENABLED_CMD_B:true}",       /* bold */
+    "cmdU":      "${PAD_SHORTCUTS_ENABLED_CMD_U:true}",       /* underline */
+    "cmd5":      "${PAD_SHORTCUTS_ENABLED_CMD_5:true}",       /* strike through */
+    "cmdShiftL": "${PAD_SHORTCUTS_ENABLED_CMD_SHIFT_L:true}", /* unordered list */
+    "cmdShiftN": "${PAD_SHORTCUTS_ENABLED_CMD_SHIFT_N:true}", /* ordered list */
+    "cmdShift1": "${PAD_SHORTCUTS_ENABLED_CMD_SHIFT_1:true}", /* ordered list */
+    "cmdShiftC": "${PAD_SHORTCUTS_ENABLED_CMD_SHIFT_C:true}", /* clear authorship */
+    "cmdH":      "${PAD_SHORTCUTS_ENABLED_CMD_H:true}",       /* backspace */
+    "ctrlHome":  "${PAD_SHORTCUTS_ENABLED_CTRL_HOME:true}",   /* scroll to top of pad */
+    "pageUp":    "${PAD_SHORTCUTS_ENABLED_PAGE_UP:true}",
+    "pageDown":  "${PAD_SHORTCUTS_ENABLED_PAGE_DOWN:true}"
   },
 
   /*
    * Should we suppress errors from being visible in the default Pad Text?
    */
-  "suppressErrorsInPadText": false,
+  "suppressErrorsInPadText": "${SUPPRESS_ERRORS_IN_PAD_TEXT:false}",
 
   /*
    * If this option is enabled, a user must have a session to access pads.
    * This effectively allows only group pads to be accessed.
    */
-  "requireSession": false,
+  "requireSession": "${REQUIRE_SESSION:false}",
 
   /*
    * Users may edit pads but not create new ones.
@@ -255,13 +258,13 @@
    * Pad creation is only via the API.
    * This applies both to group pads and regular pads.
    */
-  "editOnly": false,
+  "editOnly": "${EDIT_ONLY:false}",
 
   /*
    * If set to true, those users who have a valid session will automatically be
    * granted access to password protected pads.
    */
-  "sessionNoPassword": false,
+  "sessionNoPassword": "${SESSION_NO_PASSWORD:false}",
 
   /*
    * If true, all css & js will be minified before sending to the client.
@@ -269,7 +272,7 @@
    * This will improve the loading performance massively, but makes it difficult
    * to debug the javascript/css
    */
-  "minify": true,
+  "minify": "${MINIFY:true}",
 
   /*
    * How long may clients use served javascript code (in seconds)?
@@ -277,7 +280,7 @@
    * Not setting this may cause problems during deployment.
    * Set to 0 to disable caching.
    */
-  "maxAge": 21600, // 60 * 60 * 6 = 6 hours
+  "maxAge": "${MAX_AGE:21600}", // 60 * 60 * 6 = 6 hours
 
   /*
    * Absolute path to the Abiword executable.
@@ -286,7 +289,7 @@
    * it to null disables Abiword and will only allow plain text and HTML
    * import/exports.
    */
-  "abiword": null,
+  "abiword": "${ABIWORD}",
 
   /*
    * This is the absolute path to the soffice executable.
@@ -294,7 +297,7 @@
    * LibreOffice can be used in lieu of Abiword to export pads.
    * Setting it to null disables LibreOffice exporting.
    */
-  "soffice": null,
+  "soffice": "${SOFFICE}",
 
   /*
    * Path to the Tidy executable.
@@ -302,25 +305,25 @@
    * Tidy is used to improve the quality of exported pads.
    * Setting it to null disables Tidy.
    */
-  "tidyHtml": null,
+  "tidyHtml": "${TIDY_HTML}",
 
   /*
    * Allow import of file types other than the supported ones:
    * txt, doc, docx, rtf, odt, html & htm
    */
-  "allowUnknownFileEnds": true,
+  "allowUnknownFileEnds": "${ALLOW_UNKNOWN_FILE_ENDS:true}",
 
   /*
    * This setting is used if you require authentication of all users.
    *
    * Note: "/admin" always requires authentication.
    */
-  "requireAuthentication": false,
+  "requireAuthentication": "${REQUIRE_AUTHENTICATION:false}",
 
   /*
    * Require authorization by a module, or a user with is_admin set, see below.
    */
-  "requireAuthorization": false,
+  "requireAuthorization": "${REQUIRE_AUTHORIZATION:false}",
 
   /*
    * When you use NGINX or another proxy/load-balancer set this to true.
@@ -336,7 +339,7 @@
   /*
    * Privacy: disable IP logging
    */
-  "disableIPlogging": false,
+  "disableIPlogging": "${DISABLE_IP_LOGGING:false}",
 
   /*
    * Time (in seconds) to automatically reconnect pad when a "Force reconnect"
@@ -344,7 +347,7 @@
    *
    * Set to 0 to disable automatic reconnection.
    */
-  "automaticReconnectionTimeout": 0,
+  "automaticReconnectionTimeout": "${AUTOMATIC_RECONNECTION_TIMEOUT:0}",
 
   /*
    * By default, when caret is moved out of viewport, it scrolls the minimum
@@ -362,21 +365,21 @@
      * Set to 0 to disable extra scrolling
      */
     "percentage": {
-      "editionAboveViewport": 0,
-      "editionBelowViewport": 0
+      "editionAboveViewport": "${FOCUS_LINE_PERCENTAGE_ABOVE:0}",
+      "editionBelowViewport": "${FOCUS_LINE_PERCENTAGE_BELOW:0}"
     },
 
     /*
      * Time (in milliseconds) used to animate the scroll transition.
      * Set to 0 to disable animation
      */
-    "duration": 0,
+    "duration": "${FOCUS_LINE_DURATION:0}",
 
     /*
      * Flag to control if it should scroll when user places the caret in the
      * last line of the viewport
      */
-    "scrollWhenCaretIsInTheLastLineOfViewport": false,
+    "scrollWhenCaretIsInTheLastLineOfViewport": "${FOCUS_LINE_CARET_SCROLL:false}",
 
     /*
      * Percentage of viewport height to be additionally scrolled when user
@@ -384,7 +387,7 @@
      *
      * Set to 0 to let the scroll to be handled as default by Etherpad
      */
-    "percentageToScrollWhenUserPressesArrowUp": 0
+    "percentageToScrollWhenUserPressesArrowUp": "${FOCUS_LINE_PERCENTAGE_ARROW_UP:0}"
   },
 
   /*
@@ -423,7 +426,7 @@
    *
    * WARNING: this will disable security on the instance.
    */
-  "loadTest": false,
+  "loadTest": "${LOAD_TEST:false}",
 
   /*
    * Disable indentation on new line when previous line ends with some special
@@ -489,7 +492,7 @@
    *
    * Do not enable on production machines.
    */
-  "exposeVersion": false,
+  "exposeVersion": "${EXPOSE_VERSION:false}",
 
   /*
    * The log level we are using.
@@ -548,5 +551,8 @@
       */
 
       ]
-    } // logconfig
+    }, // logconfig
+
+  /* Override any strings found in locale directories */
+  "customLocaleStrings": {}
 }
