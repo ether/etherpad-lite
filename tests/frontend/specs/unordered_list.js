@@ -41,7 +41,7 @@ describe("unassign unordered list", function(){
     this.timeout(60000);
   });
 
-  xit("insert unordered list text then remove by clicking list again", function(done){
+  it("insert unordered list text then remove by clicking list again", function(done){
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
     var originalText = inner$("div").first().text();
