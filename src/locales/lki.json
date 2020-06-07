@@ -1,8 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Hosseinblue",
 			"Arash71",
+			"Hosseinblue",
 			"Lakzon"
 		]
 	},
@@ -41,8 +41,6 @@
 	"pad.settings.rtlcheck": "خواندن نۆم جِک(محتوا)أژ لآ ڕاس بە چەپ؟",
 	"pad.settings.fontType": ":شئؤۀ فؤنت",
 	"pad.settings.fontType.normal": "عادی",
-	"pad.settings.fontType.monospaced": "پئنی-پهنا",
-	"pad.settings.globalView": "نمایش جەهانی",
 	"pad.settings.language": ":زوون",
 	"pad.importExport.import_export": "دەر بردن/إنۆم آووِردن",
 	"pad.importExport.import": "بارنیائن هر جور نوشته یا سندئ",

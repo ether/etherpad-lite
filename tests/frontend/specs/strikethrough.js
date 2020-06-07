@@ -6,22 +6,22 @@ describe("strikethrough button", function(){
   });
 
   it("makes text strikethrough", function(done) {
-    var inner$ = helper.padInner$; 
-    var chrome$ = helper.padChrome$; 
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
 
     //get the first text element out of the inner iframe
     var $firstTextElement = inner$("div").first();
-    
+
     //select this text element
     $firstTextElement.sendkeys('{selectall}');
 
     //get the strikethrough button and click it
     var $strikethroughButton = chrome$(".buttonicon-strikethrough");
     $strikethroughButton.click();
-    
+
     //ace creates a new dom element when you press a button, so just get the first text element again
     var $newFirstTextElement = inner$("div").first();
-    
+
     // is there a <i> element now?
     var isstrikethrough = $newFirstTextElement.find("s").length === 1;
 

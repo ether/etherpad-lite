@@ -190,7 +190,12 @@ function getTXTFromAtext(pad, atext, authorColors)
   // so we want to do something reasonable there.  We also
   // want to deal gracefully with blank lines.
   // => keeps track of the parents level of indentation
+
+  var listNumbers = {};
+  var prevListLevel;
+
   for (var i = 0; i < textLines.length; i++) {
+
     var line = _analyzeLine(textLines[i], attribLines[i], apool);
     var lineContent = getLineTXT(line.text, line.aline);
 
@@ -198,15 +203,49 @@ function getTXTFromAtext(pad, atext, authorColors)
       lineContent = "* " + lineContent; // add a bullet
     }
 
+    if (line.listTypeName !== "number") {
+      // We're no longer in an OL so we can reset counting
+      for (var key in listNumbers) {
+        delete listNumbers[key];
+      }
+    }
+
     if (line.listLevel > 0) {
       for (var j = line.listLevel - 1; j >= 0; j--) {
-        pieces.push('\t');
+        pieces.push('\t'); // tab indent list numbers..
+        if(!listNumbers[line.listLevel]){
+          listNumbers[line.listLevel] = 0;
+        }
       }
 
       if (line.listTypeName == "number") {
-        pieces.push(line.listLevel + ". ");
-        // This is bad because it doesn't truly reflect what the user
-        // sees because browsers do magic on nested <ol><li>s
+        /*
+        * listLevel == amount of indentation
+        * listNumber(s) == item number
+        *
+        * Example:
+        * 1. foo
+        *  1.1 bah
+        * 2. latte
+        *  2.1 latte
+        *
+        * To handle going back to 2.1 when prevListLevel is lower number
+        * than current line.listLevel then reset the object value
+        */
+        if(line.listLevel < prevListLevel){
+          delete listNumbers[prevListLevel];
+        }
+
+        listNumbers[line.listLevel]++;
+        if(line.listLevel > 1){
+          var x = 1;
+          while(x <= line.listLevel-1){
+            pieces.push(listNumbers[x]+".")
+            x++;
+          }
+        }
+        pieces.push(listNumbers[line.listLevel]+". ")
+        prevListLevel = line.listLevel;
       }
 
       pieces.push(lineContent, '\n');

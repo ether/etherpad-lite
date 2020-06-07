@@ -18,90 +18,94 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
   testSettings["public"] = true;
   testSettings["build"] = process.env.GIT_HASH;
 
-  browser.init(testSettings).get("http://localhost:9001/tests/frontend/", function(){
-    var url = "https://saucelabs.com/jobs/" + browser.sessionID;
-    console.log("Remote sauce test '" + name + "' started! " + url);
+  // we wait 10 seconds here with the hope it was enough time for the minified files to be built etc.
+  setTimeout(function(){
+    browser.init(testSettings).get("http://localhost:9001/tests/frontend/", function(){
+      var url = "https://saucelabs.com/jobs/" + browser.sessionID;
+      console.log("Remote sauce test '" + name + "' started! " + url);
 
-    //tear down the test excecution
-    var stopSauce = function(success){
-      getStatusInterval && clearInterval(getStatusInterval);
-      clearTimeout(timeout);
+      //tear down the test excecution
+      var stopSauce = function(success){
+        getStatusInterval && clearInterval(getStatusInterval);
+        clearTimeout(timeout);
 
-      browser.quit();
+        browser.quit();
 
-      if(!success){
-        allTestsPassed = false;
+        if(!success){
+          allTestsPassed = false;
+        }
+
+        var testResult = knownConsoleText.replace(/\[red\]/g,'\x1B[31m').replace(/\[yellow\]/g,'\x1B[33m')
+                         .replace(/\[green\]/g,'\x1B[32m').replace(/\[clear\]/g, '\x1B[39m');
+        testResult = testResult.split("\\n").map(function(line){
+          return "[" + testSettings.browserName + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] " + line;
+        }).join("\n");
+
+        console.log(testResult);
+        console.log("Remote sauce test '" + name + "' finished! " + url);
+
+        callback();
       }
 
-      var testResult = knownConsoleText.replace(/\[red\]/g,'\x1B[31m').replace(/\[yellow\]/g,'\x1B[33m')
-                       .replace(/\[green\]/g,'\x1B[32m').replace(/\[clear\]/g, '\x1B[39m');
-      testResult = testResult.split("\\n").map(function(line){
-        return "[" + testSettings.browserName + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] " + line;
-      }).join("\n");
+      //timeout for the case the test hangs
+      var timeout = setTimeout(function(){
+        stopSauce(false);
+      }, 1200000 * 10);
 
-      console.log(testResult);
-      console.log("Remote sauce test '" + name + "' finished! " + url);
+      var knownConsoleText = "";
+      var getStatusInterval = setInterval(function(){
+        browser.eval("$('#console').text()", function(err, consoleText){
+          if(!consoleText || err){
+            return;
+          }
+          knownConsoleText = consoleText;
 
-      callback();
-    }
+          if(knownConsoleText.indexOf("FINISHED") > 0){
+            var success = knownConsoleText.indexOf("FAILED") === -1;
+            stopSauce(success);
+          }
+        });
+      }, 5000);
+    });
 
-    //timeout for the case the test hangs
-    var timeout = setTimeout(function(){
-      stopSauce(false);
-    }, 60000 * 10);
+  }, 10000);
 
-    var knownConsoleText = "";
-    var getStatusInterval = setInterval(function(){
-      browser.eval("$('#console').text()", function(err, consoleText){
-        if(!consoleText || err){
-          return;
-        }
-        knownConsoleText = consoleText;
+}, 1); //run 1 test in parrallel
 
-        if(knownConsoleText.indexOf("FINISHED") > 0){
-          var success = knownConsoleText.indexOf("FAILED") === -1;
-          stopSauce(success);
-        }
-      });
-    }, 5000);
-  });
-}, 5); //run 5 tests in parrallel
-
-// Firefox
+// 1) Firefox on Linux
 sauceTestWorker.push({
     'platform'       : 'Linux'
   , 'browserName'    : 'firefox'
-  , 'version'        : ''
+  , 'version'        : 'latest'
 });
 
-// Chrome
+// 2) Chrome on Linux
 sauceTestWorker.push({
     'platform'       : 'Linux'
   , 'browserName'    : 'googlechrome'
-  , 'version'        : ''
+  , 'version'        : 'latest'
 });
 
-/*
-// IE 8
+// 3) Safari on OSX 10.15
 sauceTestWorker.push({
-    'platform'       : 'Windows 2003'
+    'platform'       : 'OS X 10.15'
+  , 'browserName'    : 'safari'
+  , 'version'        : 'latest'
+});
+// IE 10 doesn't appear to be working anyway
+/*
+// 4) IE 10 on Win 8
+sauceTestWorker.push({
+    'platform'       : 'Windows 8'
   , 'browserName'    : 'iexplore'
-  , 'version'        : '8'
+  , 'version'        : '10.0'
 });
 */
-
-// IE 9
+// 5) Edge on Win 10
 sauceTestWorker.push({
-    'platform'       : 'Windows XP'
-  , 'browserName'    : 'iexplore'
-  , 'version'        : '9'
-});
-
-// IE 10
-sauceTestWorker.push({
-    'platform'       : 'Windows 2012'
-  , 'browserName'    : 'iexplore'
-  , 'version'        : '10'
+    'platform'       : 'Windows 10'
+  , 'browserName'    : 'microsoftedge'
+  , 'version'        : 'latest'
 });
 
 sauceTestWorker.drain = function() {

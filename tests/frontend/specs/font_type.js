@@ -5,26 +5,27 @@ describe("font select", function(){
     this.timeout(60000);
   });
 
-  it("makes text monospace", function(done) {
-    var inner$ = helper.padInner$; 
-    var chrome$ = helper.padChrome$; 
+  it("makes text RobotoMono", function(done) {
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
 
     //click on the settings button to make settings visible
     var $settingsButton = chrome$(".buttonicon-settings");
     $settingsButton.click();
 
-    //get the font menu and monospace option
+    //get the font menu and RobotoMono option
     var $viewfontmenu = chrome$("#viewfontmenu");
-    var $monospaceoption = $viewfontmenu.find("[value=monospace]");
+    var $RobotoMonooption = $viewfontmenu.find("[value=RobotoMono]");
 
-    //select monospace and fire change event
-    $monospaceoption.attr('selected','selected');
-    $viewfontmenu.val("monospace");
+    //select RobotoMono and fire change event
+    // $RobotoMonooption.attr('selected','selected');
+    // commenting out above will break safari test
+    $viewfontmenu.val("RobotoMono");
     $viewfontmenu.change();
 
-    //check if font changed to monospace
+    //check if font changed to RobotoMono
     var fontFamily = inner$("body").css("font-family").toLowerCase();
-    var containsStr = fontFamily.indexOf("monospace");
+    var containsStr = fontFamily.indexOf("robotomono");
     expect(containsStr).to.not.be(-1);
 
     done();

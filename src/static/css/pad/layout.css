@@ -1,0 +1,54 @@
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+html:not(.inner-editor), html:not(.inner-editor) body {
+  overflow: hidden;
+}
+body {
+  display: flex;
+  flex-direction: column;
+}
+#editbar {
+  height: auto;
+}
+#editorcontainerbox {
+  flex: 1 auto;
+  position: relative; /* for nested popup to use absolute positionning */
+  background-color: #eee;
+
+  /* For sticky chat */
+  display: flex;
+  flex-direction: row;
+  height: 0; /* strange bug some browser need this to be working ok */
+}
+#editorcontainerbox #editorcontainer {
+  display: flex; /* transfer flex properties to nested elements, here the iframe */
+  height: auto;
+  flex: 1 auto;
+}
+#editorcontainerbox #editorcontainer:not(.initialized) {
+  visibility: hidden;
+}
+#editorcontainerbox #editorcontainer iframe {
+  width: 100%;
+  height: auto;
+}
+#editorcontainerbox .sticky-container { /* container for #users, #chat, #toc (table of content) and so on... */
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  max-width: 40%;
+  flex-shrink: 0;
+}
+#editorcontainerbox .sticky-container:not(.stikyUsers):not(.stickyChat) {
+  width: 0; /* hide when the container is empty */
+}
+
+@media only screen and (max-width: 800px) {
+  #editorcontainerbox {
+    margin-bottom: 39px; /* Leave space for the bottom toolbar on mobile */
+  }
+}

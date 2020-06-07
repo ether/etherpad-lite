@@ -23,10 +23,54 @@ var settings = require('./Settings');
 var semver = require('semver');
 var existsSync = require('./path_exists');
 
+/*
+ * The crypto module can be absent on reduced node installations.
+ *
+ * Here we copy the approach TypeScript guys used for https://github.com/microsoft/TypeScript/issues/19100
+ * If importing crypto fails at runtime, we replace sha256 with djb2, which is
+ * weaker, but works for our case.
+ *
+ * djb2 was written in 1991 by Daniel J. Bernstein.
+ *
+ */
+
+// MIMIC https://github.com/microsoft/TypeScript/commit/9677b0641cc5ba7d8b701b4f892ed7e54ceaee9a - START
+let _crypto;
+
+try {
+  _crypto = require('crypto');
+} catch {
+  _crypto = undefined;
+}
+
 var CACHE_DIR = path.normalize(path.join(settings.root, 'var/'));
 CACHE_DIR = existsSync(CACHE_DIR) ? CACHE_DIR : undefined;
 
 var responseCache = {};
+
+function djb2Hash(data) {
+  const chars = data.split("").map(str => str.charCodeAt(0));
+  return `${chars.reduce((prev, curr) => ((prev << 5) + prev) + curr, 5381)}`;
+}
+
+function generateCacheKeyWithSha256(path) {
+  return _crypto.createHash('sha256').update(path).digest('hex');
+}
+
+function generateCacheKeyWithDjb2(path) {
+  return Buffer.from(djb2Hash(path)).toString('hex');
+}
+
+let generateCacheKey;
+
+if (_crypto) {
+  generateCacheKey = generateCacheKeyWithSha256;
+} else {
+  generateCacheKey = generateCacheKeyWithDjb2;
+  console.warn('No crypto support in this nodejs runtime. A fallback to Djb2 (weaker) will be used.');
+}
+
+// MIMIC https://github.com/microsoft/TypeScript/commit/9677b0641cc5ba7d8b701b4f892ed7e54ceaee9a - END
 
 /*
   This caches and compresses 200 and 404 responses to GET and HEAD requests.
@@ -49,7 +93,7 @@ CachingMiddleware.prototype = new function () {
         (req.get('Accept-Encoding') || '').indexOf('gzip') != -1;
 
     var path = require('url').parse(req.url).path;
-    var cacheKey = Buffer.from(path).toString('base64').replace(/[/+=]/g, '');
+    var cacheKey = generateCacheKey(path);
 
     fs.stat(CACHE_DIR + 'minified_' + cacheKey, function (error, stats) {
       var modifiedSince = (req.headers['if-modified-since']

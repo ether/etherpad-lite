@@ -1,8 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Toliño",
-			"Elisardojm"
+			"Elisardojm",
+			"Toliño"
 		]
 	},
 	"index.newPad": "Novo documento",
@@ -40,8 +40,6 @@
 	"pad.settings.rtlcheck": "Quere ler o contido da dereita á esquerda?",
 	"pad.settings.fontType": "Tipo de letra:",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "Monoespazada",
-	"pad.settings.globalView": "Vista global",
 	"pad.settings.language": "Lingua:",
 	"pad.importExport.import_export": "Importar/Exportar",
 	"pad.importExport.import": "Cargar un ficheiro de texto ou documento",

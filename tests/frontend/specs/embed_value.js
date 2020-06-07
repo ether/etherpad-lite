@@ -16,11 +16,11 @@ describe("embed links", function(){
     var $embediFrame = $(embedCode);
 
     //read and check the frame attributes
-    var width = $embediFrame.attr("width"); 
-    var height = $embediFrame.attr("height"); 
-    var name = $embediFrame.attr("name"); 
-    expect(width).to.be('600');
-    expect(height).to.be('400');
+    var width = $embediFrame.attr("width");
+    var height = $embediFrame.attr("height");
+    var name = $embediFrame.attr("name");
+    expect(width).to.be('100%');
+    expect(height).to.be('600');
     expect(name).to.be(readonly ? "embed_readonly" : "embed_readwrite");
 
     //parse the url
@@ -43,7 +43,7 @@ describe("embed links", function(){
     } else {
       expect(url).to.be(helper.padChrome$.window.location.href);
     }
-    
+
     //check if all parts of the url are like expected
     expect(params).to.eql(expectedParams);
   }
@@ -57,7 +57,7 @@ describe("embed links", function(){
 
     describe("the share link", function(){
       it("is the actual pad url", function(done){
-        var chrome$ = helper.padChrome$; 
+        var chrome$ = helper.padChrome$;
 
         //open share dropdown
         chrome$(".buttonicon-embed").click();
@@ -73,14 +73,14 @@ describe("embed links", function(){
 
     describe("the embed as iframe code", function(){
       it("is an iframe with the the correct url parameters and correct size", function(done){
-        var chrome$ = helper.padChrome$; 
+        var chrome$ = helper.padChrome$;
 
         //open share dropdown
         chrome$(".buttonicon-embed").click();
 
         //get the link of the share field + the actual pad url and compare them
         var embedCode = chrome$("#embedinput").val();
-        
+
         checkiFrameCode(embedCode, false)
 
         done();
@@ -96,7 +96,7 @@ describe("embed links", function(){
 
     describe("the share link", function(){
       it("shows a read only url", function(done){
-        var chrome$ = helper.padChrome$; 
+        var chrome$ = helper.padChrome$;
 
         //open share dropdown
         chrome$(".buttonicon-embed").click();
@@ -114,7 +114,7 @@ describe("embed links", function(){
 
     describe("the embed as iframe code", function(){
       it("is an iframe with the the correct url parameters and correct size", function(done){
-        var chrome$ = helper.padChrome$; 
+        var chrome$ = helper.padChrome$;
 
         //open share dropdown
         chrome$(".buttonicon-embed").click();
@@ -125,9 +125,9 @@ describe("embed links", function(){
 
         //get the link of the share field + the actual pad url and compare them
         var embedCode = chrome$("#embedinput").val();
-        
+
         checkiFrameCode(embedCode, true);
-        
+
         done();
       });
     });

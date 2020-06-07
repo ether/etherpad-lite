@@ -5,7 +5,7 @@
   Browser Line = each vertical line. A <div> can be break into more than one
   browser line.
 */
-var caretPosition = require('/caretPosition');
+var caretPosition = require('./caretPosition');
 
 function Scroll(outerWin) {
   // scroll settings

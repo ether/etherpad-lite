@@ -1,21 +1,21 @@
 describe("chat-load-messages", function(){
   var padName;
- 
+
   it("creates a pad", function(done) {
     padName = helper.newPad(done);
     this.timeout(60000);
   });
 
   it("adds a lot of messages", function(done) {
-    var inner$ = helper.padInner$; 
-    var chrome$ = helper.padChrome$; 
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
     var chatButton = chrome$("#chaticon");
     chatButton.click();
     var chatInput = chrome$("#chatinput");
     var chatText = chrome$("#chattext");
-    
+
     this.timeout(60000);
-    
+
     var messages = 140;
     for(var i=1; i <= messages; i++) {
       var num = ''+i;
@@ -33,7 +33,7 @@ describe("chat-load-messages", function(){
       helper.newPad(done, padName);
      });
   });
-  
+
   it("checks initial message count", function(done) {
     var chatText;
     var expectedCount = 101;
@@ -48,7 +48,7 @@ describe("chat-load-messages", function(){
       done();
     });
   });
-  
+
   it("loads more messages", function(done) {
     var expectedCount = 122;
     var chrome$ = helper.padChrome$;
@@ -56,7 +56,7 @@ describe("chat-load-messages", function(){
     chatButton.click();
     var chatText = chrome$("#chattext");
     var loadMsgBtn = chrome$("#chatloadmessagesbutton");
-      
+
     loadMsgBtn.click();
     helper.waitFor(function(){
       return chatText.children("p").length == expectedCount;
@@ -65,7 +65,7 @@ describe("chat-load-messages", function(){
       done();
     });
   });
-  
+
   it("checks for button vanishing", function(done) {
     var expectedDisplay = 'none';
     var chrome$ = helper.padChrome$;

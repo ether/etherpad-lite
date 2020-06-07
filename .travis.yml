@@ -6,6 +6,18 @@ node_js:
 services:
   - docker
 
+cache: false
+
+install:
+  - "bin/installDeps.sh"
+  - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
+
+before_script:
+  - "tests/frontend/travis/sauce_tunnel.sh"
+
+script:
+  - "tests/frontend/travis/runner.sh"
+
 env:
   global:
     - secure: "WMGxFkOeTTlhWB+ChMucRtIqVmMbwzYdNHuHQjKCcj8HBEPdZLfCuK/kf4rG\nVLcLQiIsyllqzNhBGVHG1nyqWr0/LTm8JRqSCDDVIhpyzp9KpCJQQJG2Uwjk\n6/HIJJh/wbxsEdLNV2crYU/EiVO3A4Bq0YTHUlbhUqG3mSCr5Ec="
@@ -13,11 +25,16 @@ env:
 
 jobs:
   include:
+    - name: "Run the Backend tests"
+      install:
+        - "bin/installDeps.sh"
+        - "cd src && npm install && cd -"
+      script:
+        - "tests/frontend/travis/runnerBackend.sh"
     - name: "Test the Frontend"
       install:
         - "bin/installDeps.sh"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
-        - "npm install ep_test_line_attrib"
       script:
         - "tests/frontend/travis/runner.sh"
     - name: "Test the Dockerfile"
@@ -27,6 +44,15 @@ jobs:
         - "docker build -t etherpad:test ."
         - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
         - "cd src && npm run test-container"
+    - name: "Load test Etherpad"
+      install:
+        - "bin/installDeps.sh"
+        - "cd src && npm install && cd -"
+        - "npm install -g etherpad-load-test"
+        # I set loadTest to true
+        - "sed 's/\"loadTest\": false,/\"loadTest\": true,/g' settings.json.template > settings.json"
+      script:
+        - "tests/frontend/travis/runnerLoadTest.sh"
 
 notifications:
   irc:

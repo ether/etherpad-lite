@@ -63,19 +63,23 @@ describe("select formatting buttons when selection has style applied", function(
   }
 
   var applyStyleOnLineOnFullLineAndRemoveSelection = function(line, style, selectTarget, cb) {
+    // see if line html has changed
+    var inner$ = helper.padInner$;
+    var oldLineHTML = inner$.find("div")[line];
     applyStyleOnLine(style, line);
 
-    // we have to give some time to Etherpad detects the selection changed
-    setTimeout(function() {
+    helper.waitFor(function(){
+      var lineHTML = inner$.find("div")[line];
+      return lineHTML !== oldLineHTML;
+    });
       // remove selection from previous line
-      selectLine(line + 1);
-      setTimeout(function() {
-        // select the text or place the caret on a position that
-        // has the formatting text applied previously
-        selectTarget(line);
-        cb();
-      }, 1000);
-    }, 1000);
+    selectLine(line + 1);
+    //setTimeout(function() {
+      // select the text or place the caret on a position that
+      // has the formatting text applied previously
+      selectTarget(line);
+      cb();
+    //}, 1000);
   }
 
   var pressFormattingShortcutOnSelection = function(key) {
@@ -88,13 +92,7 @@ describe("select formatting buttons when selection has style applied", function(
     //select this text element
     $firstTextElement.sendkeys('{selectall}');
 
-    if(inner$(window)[0].bowser.modernIE){ // if it's IE
-      var evtType = "keypress";
-    }else{
-      var evtType = "keydown";
-    }
-
-    var e = inner$.Event(evtType);
+    var e = inner$.Event(helper.evtType);
     e.ctrlKey = true; // Control key
     e.which = key.charCodeAt(0); // I, U, B, 5
     inner$("#innerdocbody").trigger(e);

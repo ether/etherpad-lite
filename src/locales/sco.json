@@ -1,8 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"John Reid",
-			"AmaryllisGardener"
+			"AmaryllisGardener",
+			"John Reid"
 		]
 	},
 	"index.newPad": "New Pad",
@@ -40,8 +40,6 @@
 	"pad.settings.rtlcheck": "Read content fae richt til cair?",
 	"pad.settings.fontType": "Font type:",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "The Global Luik",
 	"pad.settings.language": "Leid:",
 	"pad.importExport.import_export": "Import/Export",
 	"pad.importExport.import": "Upload oni tex file or document",

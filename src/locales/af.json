@@ -1,8 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Naudefj",
-			"Fwolff"
+			"Fwolff",
+			"Naudefj"
 		]
 	},
 	"index.newPad": "Nuwe pad",
@@ -25,7 +25,6 @@
 	"pad.loading": "Laai...",
 	"pad.settings.myView": "My oorsig",
 	"pad.settings.fontType.normal": "Normaal",
-	"pad.settings.fontType.monospaced": "Monospasie",
 	"pad.settings.language": "Taal:",
 	"pad.importExport.import_export": "Voer in/uit",
 	"pad.importExport.import": "Laai enige tekslêer of dokument op",

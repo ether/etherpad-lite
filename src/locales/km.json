@@ -1,8 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"វ័ណថារិទ្ធ",
-			"Sovichet"
+			"Sovichet",
+			"វ័ណថារិទ្ធ"
 		]
 	},
 	"index.newPad": "ផេតថ្មី",
@@ -35,8 +35,6 @@
 	"pad.settings.rtlcheck": "អាន​ពី​ស្ដាំ​ទៅ​ឆ្វេង?",
 	"pad.settings.fontType": "ប្រភេទពុម្ពអក្សរ៖",
 	"pad.settings.fontType.normal": "ធម្មតា",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "គំហើញសកល",
 	"pad.settings.language": "ភាសា៖",
 	"pad.importExport.import_export": "នាំចូល/នាំចេញ",
 	"pad.importExport.import": "ផ្ទុក​ឡើង​ឯកសារ​អត្ថបទ​ណាមួយ",

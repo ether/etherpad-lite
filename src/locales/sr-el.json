@@ -1,5 +1,7 @@
 {
-	"@metadata": [],
+	"@metadata": {
+		"authors": []
+	},
 	"index.newPad": "Novi Pad",
 	"index.createOpenPad": "ili napravite/otvorite pad sledećeg naziva:",
 	"pad.toolbar.bold.title": "Podebljano (Ctrl+B)",
@@ -35,8 +37,6 @@
 	"pad.settings.rtlcheck": "Čitaj sadržaj s desna na levo?",
 	"pad.settings.fontType": "Vrsta fonta:",
 	"pad.settings.fontType.normal": "Normalno",
-	"pad.settings.fontType.monospaced": "Monospace",
-	"pad.settings.globalView": "Globalni prikaz",
 	"pad.settings.language": "Jezik:",
 	"pad.importExport.import_export": "Uvoz/izvoz",
 	"pad.importExport.import": "Otpremite bilo koju tekstualnu datoteku ili dokument",

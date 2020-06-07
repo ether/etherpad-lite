@@ -20,7 +20,7 @@ describe("the test helper", function(){
     });
 
     it("gives me 3 jquery instances of chrome, outer and inner", function(done){
-      this.timeout(5000);
+      this.timeout(10000);
 
       helper.newPad(function(){
         //check if the jquery selectors have the desired elements
@@ -34,6 +34,95 @@ describe("the test helper", function(){
         expect(helper.padInner$.window.document).to.be(helper.padInner$.document);
 
         done();
+      });
+    });
+    // Make sure the cookies are cleared, and make sure that the cookie
+    // clearing has taken effect at this point in the code. It has been
+    // observed that the former can happen without the latter if there
+    // isn't a timeout (within `newPad`) after clearing the cookies.
+    // However this doesn't seem to always be easily replicated, so this
+    // timeout may or may end up in the code. None the less, we test here
+    // to catch it if the bug comes up again.
+    it("clears cookies", function(done) {
+      this.timeout(60000);
+
+      // set cookies far into the future to make sure they're not expired yet
+      window.document.cookie = 'token=foo;expires=Thu, 01 Jan 3030 00:00:00 GMT; path=/';
+      window.document.cookie = 'language=bar;expires=Thu, 01 Jan 3030 00:00:00 GMT; path=/';
+
+      expect(window.document.cookie).to.contain('token=foo');
+      expect(window.document.cookie).to.contain('language=bar');
+
+      helper.newPad(function(){
+        // helper function seems to have cleared cookies
+        // NOTE: this doesn't yet mean it's proven to have taken effect by this point in execution
+        var firstCookie = window.document.cookie
+        expect(firstCookie).to.not.contain('token=foo');
+        expect(firstCookie).to.not.contain('language=bar');
+
+        var chrome$ = helper.padChrome$;
+
+        // click on the settings button to make settings visible
+        var $userButton = chrome$(".buttonicon-showusers");
+        $userButton.click();
+
+        var $usernameInput = chrome$("#myusernameedit");
+        $usernameInput.click();
+
+        $usernameInput.val('John McLear');
+        $usernameInput.blur();
+
+        // Before refreshing, make sure the name is there
+        expect($usernameInput.val()).to.be('John McLear');
+
+        // Now that we have a chrome, we can set a pad cookie, so we can confirm it gets wiped as well
+        chrome$.document.cookie = 'prefsHtml=baz;expires=Thu, 01 Jan 3030 00:00:00 GMT';
+        expect(chrome$.document.cookie).to.contain('prefsHtml=baz');
+
+        // Cookies are weird. Because it's attached to chrome$ (as helper.setPadCookies does), AND we
+        // didn't put path=/, we shouldn't expect it to be visible on window.document.cookie. Let's just
+        // be sure.
+        expect(window.document.cookie).to.not.contain('prefsHtml=baz');
+
+        setTimeout(function(){ //give it a second to save the username on the server side
+          helper.newPad(function(){ // get a new pad, let it clear the cookies
+            var chrome$ = helper.padChrome$;
+
+            // helper function seems to have cleared cookies
+            // NOTE: this doesn't yet mean cookies were cleared effectively.
+            // We still need to test below that we're in a new session
+            expect(window.document.cookie).to.not.contain('token=foo');
+            expect(window.document.cookie).to.not.contain('language=bar');
+            expect(chrome$.document.cookie).to.contain('prefsHtml=baz');
+            expect(window.document.cookie).to.not.contain('prefsHtml=baz');
+
+            expect(window.document.cookie).to.not.be(firstCookie);
+
+            // click on the settings button to make settings visible
+            var $userButton = chrome$(".buttonicon-showusers");
+            $userButton.click();
+
+            // confirm that the session was actually cleared
+            var $usernameInput = chrome$("#myusernameedit");
+            expect($usernameInput.val()).to.be('');
+
+            done();
+          });
+        }, 1000);
+      });
+    });
+
+    it("sets pad prefs cookie", function(done) {
+      this.timeout(60000);
+
+      helper.newPad({
+        padPrefs: {foo:"bar"},
+        cb: function(){
+          var chrome$ = helper.padChrome$;
+          expect(chrome$.document.cookie).to.contain('prefsHttp=%7B%22');
+          expect(chrome$.document.cookie).to.contain('foo%22%3A%22bar');
+          done();
+        }
       });
     });
   });
@@ -136,7 +225,15 @@ describe("the test helper", function(){
       helper.selectLines($startLine, $endLine, startOffset, endOffset);
 
       var selection = inner$.document.getSelection();
-      expect(cleanText(selection.toString())).to.be("ort lines to t");
+
+      /*
+       * replace() is required here because Firefox keeps the line breaks.
+       *
+       * I'm not sure this is ideal behavior of getSelection() where the text
+       * is not consistent between browsers but that's the situation so that's
+       * how I'm covering it in this test.
+       */
+      expect(cleanText(selection.toString().replace(/(\r\n|\n|\r)/gm,""))).to.be("ort lines to t");
 
       done();
     });
@@ -154,7 +251,15 @@ describe("the test helper", function(){
       helper.selectLines($startLine, $endLine, startOffset, endOffset);
 
       var selection = inner$.document.getSelection();
-      expect(cleanText(selection.toString())).to.be("ort lines to test");
+
+      /*
+       * replace() is required here because Firefox keeps the line breaks.
+       *
+       * I'm not sure this is ideal behavior of getSelection() where the text
+       * is not consistent between browsers but that's the situation so that's
+       * how I'm covering it in this test.
+       */
+      expect(cleanText(selection.toString().replace(/(\r\n|\n|\r)/gm,""))).to.be("ort lines to test");
 
       done();
     });
@@ -172,7 +277,15 @@ describe("the test helper", function(){
       helper.selectLines($startLine, $endLine, startOffset, endOffset);
 
       var selection = inner$.document.getSelection();
-      expect(cleanText(selection.toString())).to.be("ort lines ");
+
+      /*
+       * replace() is required here because Firefox keeps the line breaks.
+       *
+       * I'm not sure this is ideal behavior of getSelection() where the text
+       * is not consistent between browsers but that's the situation so that's
+       * how I'm covering it in this test.
+       */
+      expect(cleanText(selection.toString().replace(/(\r\n|\n|\r)/gm,""))).to.be("ort lines ");
 
       done();
     });
@@ -190,7 +303,15 @@ describe("the test helper", function(){
       helper.selectLines($startLine, $endLine, startOffset, endOffset);
 
       var selection = inner$.document.getSelection();
-      expect(cleanText(selection.toString())).to.be("ort lines to test");
+
+      /*
+       * replace() is required here because Firefox keeps the line breaks.
+       *
+       * I'm not sure this is ideal behavior of getSelection() where the text
+       * is not consistent between browsers but that's the situation so that's
+       * how I'm covering it in this test.
+       */
+      expect(cleanText(selection.toString().replace(/(\r\n|\n|\r)/gm,""))).to.be("ort lines to test");
 
       done();
     });
@@ -205,7 +326,15 @@ describe("the test helper", function(){
       helper.selectLines($startLine, $endLine);
 
       var selection = inner$.document.getSelection();
-      expect(cleanText(selection.toString())).to.be("short lines to test");
+
+      /*
+       * replace() is required here because Firefox keeps the line breaks.
+       *
+       * I'm not sure this is ideal behavior of getSelection() where the text
+       * is not consistent between browsers but that's the situation so that's
+       * how I'm covering it in this test.
+       */
+      expect(cleanText(selection.toString().replace(/(\r\n|\n|\r)/gm,""))).to.be("short lines to test");
 
       done();
     });

@@ -2,10 +2,10 @@
 	"@metadata": {
 		"authors": [
 			"Christian List",
-			"Peter Alberti",
-			"Steenth",
 			"Joedalton",
-			"Saederup92"
+			"Peter Alberti",
+			"Saederup92",
+			"Steenth"
 		]
 	},
 	"index.newPad": "Ny Pad",
@@ -43,9 +43,6 @@
 	"pad.settings.rtlcheck": "Læse indhold fra højre mod venstre?",
 	"pad.settings.fontType": "Skrifttype:",
 	"pad.settings.fontType.normal": "Normal",
-	"pad.settings.fontType.monospaced": "Fastbredde",
-	"pad.settings.fontType.trebuchet": "Blide",
-	"pad.settings.globalView": "Global visning",
 	"pad.settings.language": "Sprog:",
 	"pad.importExport.import_export": "Import/Eksport",
 	"pad.importExport.import": "Uploade en tekstfil eller dokument",
@@ -123,7 +120,7 @@
 	"pad.userlist.guest": "Gæst",
 	"pad.userlist.deny": "Nægt",
 	"pad.userlist.approve": "Godkend",
-	"pad.editbar.clearcolors": "Fjern farver for ophavsmand i hele dokumentet?",
+	"pad.editbar.clearcolors": "Fjern farver for ophavsmand i hele dokumentet? Dette kan ikke fortrydes",
 	"pad.impexp.importbutton": "Importer nu",
 	"pad.impexp.importing": "Importerer...",
 	"pad.impexp.confirmimport": "At importere en fil, vil overskrives den aktuelle pad tekst. Er du sikker på du vil fortsætte?",
