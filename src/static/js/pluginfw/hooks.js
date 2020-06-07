@@ -1,3 +1,4 @@
+var async = require("async");
 var _ = require("underscore");
 
 exports.bubbleExceptions = true
@@ -77,22 +78,19 @@ exports.callAll = function (hook_name, args) {
   }
 }
 
-async function aCallAll(hook_name, args, cb) {
+function aCallAll(hook_name, args, cb) {
   if (!args) args = {};
   if (!cb) cb = function () {};
   if (exports.plugins.hooks[hook_name] === undefined) return cb(null, []);
-
-  var newArray = [];
-  // This should be a map.
-  await exports.plugins.hooks[hook_name].forEach(async function(hook, index){
-    let test = await hookCallWrapper(hook, hook_name, args, function (res) {
-      return Promise.resolve(res);
-    });
-    newArray.push(test)
-  });
-
-  // after forEach
-  cb(null, _.flatten(newArray, true));
+  async.map(
+    exports.plugins.hooks[hook_name],
+    function (hook, cb) {
+      hookCallWrapper(hook, hook_name, args, function (res) { cb(null, res); });
+    },
+    function (err, res) {
+        cb(null, _.flatten(res, true));
+    }
+  );
 }
 
 /* return a Promise if cb is not supplied */
