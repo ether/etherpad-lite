@@ -26,6 +26,7 @@ env:
 jobs:
   allow_failures:
     - if: repo = ether/etherpad-lite
+    # below might not be needed..
       env: SAUCE_EXECUTE=true
     - name: "Test the Frontend"
       install:
