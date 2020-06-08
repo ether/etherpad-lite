@@ -44,6 +44,7 @@ jobs:
         - "docker build -t etherpad:test ."
         - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
         - "cd src && npm run test-container"
+    - if: repo = ether/etherpad-lite
     - name: "Load test Etherpad"
       install:
         - "bin/installDeps.sh"
