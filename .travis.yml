@@ -25,8 +25,8 @@ env:
 
 jobs:
   allow_failures:
-    #- if: repo = ether/etherpad-lite
-    #  env: SAUCE_EXECUTE = true
+    - if: repo = ether/etherpad-lite
+      env: SAUCE_EXECUTE=true
     - name: "Test the Frontend"
       install:
         - "bin/installDeps.sh"
