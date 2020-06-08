@@ -24,17 +24,14 @@ env:
     - secure: "gejXUAHYscbR6Bodw35XexpToqWkv2ifeECsbeEmjaLkYzXmUUNWJGknKSu7\nEUsSfQV8w+hxApr1Z+jNqk9aX3K1I4btL3cwk2trnNI8XRAvu1c1Iv60eerI\nkE82Rsd5lwUaMEh+/HoL8ztFCZamVndoNgX7HWp5J/NRZZMmh4g="
 
 jobs:
-  allow_failures:
+  include:
     - if: repo = ether/etherpad-lite
-    # below might not be needed..
-      env: SAUCE_EXECUTE=true
     - name: "Test the Frontend"
       install:
         - "bin/installDeps.sh"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
       script:
         - "tests/frontend/travis/runner.sh"
-  include:
     - name: "Run the Backend tests"
       install:
         - "bin/installDeps.sh"
