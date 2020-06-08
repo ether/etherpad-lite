@@ -12,9 +12,6 @@ install:
   - "bin/installDeps.sh"
   - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
 
-before_script:
-  - "tests/frontend/travis/sauce_tunnel.sh"
-
 script:
   - "tests/frontend/travis/runner.sh"
 
@@ -28,6 +25,7 @@ jobs:
     - if: repo = ether/etherpad-lite
     - name: "Test the Frontend"
       install:
+        - "tests/frontend/travis/sauce_tunnel.sh"
         - "bin/installDeps.sh"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
       script:
