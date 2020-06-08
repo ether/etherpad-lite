@@ -12,9 +12,6 @@ install:
   - "bin/installDeps.sh"
   - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
 
-before_script:
-  - "tests/frontend/travis/sauce_tunnel.sh"
-
 script:
   - "tests/frontend/travis/runner.sh"
 
@@ -25,18 +22,22 @@ env:
 
 jobs:
   include:
+    # we can only frontend tests from the ether/ organization and not from forks.
+    # To request tests to be run ask a maintainer to fork your repo to ether/
+    - if: fork = false
+      name: "Test the Frontend"
+      install:
+        - "tests/frontend/travis/sauce_tunnel.sh"
+        - "bin/installDeps.sh"
+        - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
+      script:
+        - "tests/frontend/travis/runner.sh"
     - name: "Run the Backend tests"
       install:
         - "bin/installDeps.sh"
         - "cd src && npm install && cd -"
       script:
         - "tests/frontend/travis/runnerBackend.sh"
-    - name: "Test the Frontend"
-      install:
-        - "bin/installDeps.sh"
-        - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
-      script:
-        - "tests/frontend/travis/runner.sh"
     - name: "Test the Dockerfile"
       install:
         - "cd src && npm install && cd -"
