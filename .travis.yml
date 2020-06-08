@@ -27,7 +27,7 @@ jobs:
   include:
     # we can only frontend tests from the ether/ organization and not from forks.
     # To request tests to be run ask a maintainer to fork your repo to ether/
-    - if: fork = true
+    - if: fork = false
       name: "Test the Frontend"
       install:
         - "bin/installDeps.sh"
