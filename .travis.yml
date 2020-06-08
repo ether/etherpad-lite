@@ -24,6 +24,15 @@ env:
     - secure: "gejXUAHYscbR6Bodw35XexpToqWkv2ifeECsbeEmjaLkYzXmUUNWJGknKSu7\nEUsSfQV8w+hxApr1Z+jNqk9aX3K1I4btL3cwk2trnNI8XRAvu1c1Iv60eerI\nkE82Rsd5lwUaMEh+/HoL8ztFCZamVndoNgX7HWp5J/NRZZMmh4g="
 
 jobs:
+  allow_failures:
+    - if: repo = ether/etherpad-lite
+      env: SAUCE_SKIP = false
+    - name: "Test the Frontend"
+      install:
+        - "bin/installDeps.sh"
+        - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
+      script:
+        - "tests/frontend/travis/runner.sh"
   include:
     - name: "Run the Backend tests"
       install:
@@ -31,12 +40,6 @@ jobs:
         - "cd src && npm install && cd -"
       script:
         - "tests/frontend/travis/runnerBackend.sh"
-    - name: "Test the Frontend"
-      install:
-        - "bin/installDeps.sh"
-        - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
-      script:
-        - "tests/frontend/travis/runner.sh"
     - name: "Test the Dockerfile"
       install:
         - "cd src && npm install && cd -"
@@ -44,7 +47,6 @@ jobs:
         - "docker build -t etherpad:test ."
         - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
         - "cd src && npm run test-container"
-    - if: repo = ether/etherpad-lite
     - name: "Load test Etherpad"
       install:
         - "bin/installDeps.sh"
