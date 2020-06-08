@@ -93,6 +93,7 @@ Pad.prototype.appendRevision = function appendRevision(aChangeset, author) {
   }
 
   if (newRev % 100 == 0) {
+    newRevData.meta.pool = this.pool;
     newRevData.meta.atext = this.atext;
   }
 

@@ -132,7 +132,7 @@ describe("Chat messages and UI", function(){
     }, 10)
   });
 
-  it("Checks showChat=false URL Parameter hides chat then when removed it shows chat", function(done) {
+  xit("Checks showChat=false URL Parameter hides chat then when removed it shows chat", function(done) {
     this.timeout(60000);
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
@@ -147,7 +147,6 @@ describe("Chat messages and UI", function(){
           var chaticon = chrome$("#chaticon");
           // chat should be hidden.
           expect(chaticon.is(":visible")).to.be(false);
-
 
           setTimeout(function(){ //give it a second to save the username on the server side
             helper.newPad({ // get a new pad, but don't clear the cookies

@@ -376,7 +376,7 @@ function getFileCompressed(filename, contentType, callback) {
           const compressResult = await compressJS(content);
 
           if (compressResult.error) {
-            console.error(`Error compressing JS (${filename}) using UglifyJS`, compressResult.error);
+            console.error(`Error compressing JS (${filename}) using terser`, compressResult.error);
           } else {
             content = compressResult.code.toString(); // Convert content obj code to string
           }

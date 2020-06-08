@@ -3,13 +3,13 @@
  */
 
 var CleanCSS = require('clean-css');
-var uglifyJS = require("uglify-js");
+var Terser = require("terser");
 var path = require('path');
 var Threads = require('threads')
 
 function compressJS(content)
 {
-  return uglifyJS.minify(content);
+  return Terser.minify(content);
 }
 
 function compressCSS(filename, ROOT_DIR)
