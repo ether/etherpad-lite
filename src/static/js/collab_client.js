@@ -309,7 +309,11 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
         return;
       }
       rev = newRev;
+
       editor.applyChangesToBase(changeset, author, apool);
+
+      // Hook that fires if new changes are from an author in an array
+      hooks.callAll('changeFromAnotherAuthor', msg);
     }
     else if (msg.type == "ACCEPT_COMMIT")
     {
