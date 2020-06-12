@@ -309,6 +309,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
         return;
       }
       rev = newRev;
+
       editor.applyChangesToBase(changeset, author, apool);
     }
     else if (msg.type == "ACCEPT_COMMIT")
@@ -508,6 +509,9 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     if(msg.type.indexOf("USER_") > -1) {
       msg.payload = msg.userInfo;
     }
+    // Similar for NEW_CHANGES
+    if(msg.type === "NEW_CHANGES") msg.payload = msg;
+
     hooks.callAll('handleClientMessage_' + msg.type, {payload: msg.payload});
   }
 
