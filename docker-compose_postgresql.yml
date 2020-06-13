@@ -30,6 +30,8 @@ services:
     container_name: etherpad
     #restart: always
     #command: /wait-for-service.sh node node_modules/ep_etherpad-lite/node/server.js
+    ports:
+      - "9001:9001"
     depends_on:
       - etherpad_postgres
     links:
