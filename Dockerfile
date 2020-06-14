@@ -25,7 +25,8 @@ ENV NODE_ENV=development
 # that do not allow images running as root.
 RUN useradd --uid 5001 --create-home etherpad
 
-RUN apt-get install -y --no-install-recommends netcat && \
+RUN apt-get update -q && \
+	apt-get install -y --no-install-recommends netcat && \
 	mkdir /opt/etherpad-lite && chown etherpad:0 /opt/etherpad-lite
 
 USER etherpad
