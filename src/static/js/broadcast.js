@@ -257,6 +257,10 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       debugLog(e);
     }
 
+    // shift focus to the new line
+    var lineNumber = Changeset.opIterator(Changeset.unpack(changeset).ops).next().lines;
+    goToLineNumber(lineNumber);
+
     Changeset.mutateTextLines(changeset, padContents);
     padContents.currentRevision = revision;
     padContents.currentTime += timeDelta * 1000;
@@ -596,6 +600,15 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
   receiveAuthorData(clientVars.collab_client_vars.historicalAuthorData);
 
   return changesetLoader;
+
+  function goToLineNumber(lineNumber){
+    // Sets the Y scrolling of the browser to go to this line
+    var line = $('#innerdocbody').find("div:nth-child("+(lineNumber+1)+")");
+    var newY = $(line)[0].offsetTop + "px";
+    $('#outerdocbody').css({top: newY +"px"}); // Chrome
+    $('#outerdocbody').parent().animate({scrollTop: newY}); // needed for FF
+  }
+
 }
 
 exports.loadBroadcastJS = loadBroadcastJS;
