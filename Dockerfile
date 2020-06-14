@@ -25,7 +25,8 @@ ENV NODE_ENV=development
 # that do not allow images running as root.
 RUN useradd --uid 5001 --create-home etherpad
 
-RUN mkdir /opt/etherpad-lite && chown etherpad:0 /opt/etherpad-lite
+RUN apt-get install -y --no-install-recommends netcat && \
+	mkdir /opt/etherpad-lite && chown etherpad:0 /opt/etherpad-lite
 
 USER etherpad
 
@@ -50,4 +51,5 @@ COPY --chown=etherpad:0 ./settings.json.docker /opt/etherpad-lite/settings.json
 RUN chmod -R g=u .
 
 EXPOSE 9001
+ENTRYPOINT ["/opt/etherpad-lite/entrypoint.sh"]
 CMD ["node", "node_modules/ep_etherpad-lite/node/server.js"]
