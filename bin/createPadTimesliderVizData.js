@@ -14,6 +14,7 @@ const padId = process.argv[2];
 let npm = require('../src/node_modules/npm');
 var async = require("ep_etherpad-lite/node_modules/async");
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
+var fs = require('fs');
 
 npm.load({}, async function() {
 
@@ -43,17 +44,18 @@ npm.load({}, async function() {
     revisions.push(i);
   }
 
+  var writeStream = fs.createWriteStream('./vizData.csv');
+
   //run trough all revisions
-  var str = "";
   async.forEachSeries(revisions, function(revNum, callback){
     //console.log('Fetching', revNum)
     db.db.get("pad:"+padId+":revs:" + revNum, function(err, revision){
       if(err) return callback(err);
 
-      str += revision.meta.timestamp + "," + revision.meta.author + "," + 1 + "\n";
+      let str = revision.meta.timestamp + "," + revision.meta.author + "," + 1 + "\n";
+      writeStream.write(str);
 
       setImmediate(callback)
     });
-    console.log(str)
   });
 });
