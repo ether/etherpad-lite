@@ -44,7 +44,37 @@ npm.load({}, async function() {
     revisions.push(i);
   }
 
-  var writeStream = fs.createWriteStream('./vizData.csv');
+  var beginningTime;
+  await db.db.get("pad:"+padId+":revs:" + 0, function(e, val){
+    beginningTime = val.meta.timestamp;
+  })
+
+  var endTime;
+  await db.db.get("pad:"+padId+":revs:" + (revisions.length-1), function(e, val){
+    endTime = val.meta.timestamp;
+  })
+
+  // Total duration of pad
+  var durationOfPad = endTime - beginningTime;
+  var divideAmount = 100; //experimental amount to divide by.
+
+  // We divide this to divideAmount and put the stats into that.
+  var intervals = Math.round(durationOfPad / divideAmount);
+
+  console.log("intervals", intervals)
+
+  var intervalsObj = {};
+
+  i = 0;
+  while (i < divideAmount){
+    intervalsObj[i] = {
+      count: 0,
+      authors: {}
+    };
+    i++;
+  }
+
+  // console.log("revisions,length", revisions.length)
 
   //run trough all revisions
   async.forEachSeries(revisions, function(revNum, callback){
@@ -52,10 +82,22 @@ npm.load({}, async function() {
     db.db.get("pad:"+padId+":revs:" + revNum, function(err, revision){
       if(err) return callback(err);
 
-      let str = revision.meta.timestamp + "," + revision.meta.author + "," + 1 + "\n";
-      writeStream.write(str);
-
+      if(revNum !== 0){
+        var revLocation = (revision.meta.timestamp - beginningTime) / intervals;
+        revLocation = Math.floor(revLocation);
+      }else{
+        var revLocation = 0;
+      }
+      var arr = intervalsObj[revLocation];
+      intervalsObj[revLocation].count = intervalsObj[revLocation].count+1;
+      if(!intervalsObj[revLocation].authors[revision.meta.author]){
+        intervalsObj[revLocation].authors[revision.meta.author] = {};
+        intervalsObj[revLocation].authors[revision.meta.author].count = 0;
+      }
+      intervalsObj[revLocation].authors[revision.meta.author].count = intervalsObj[revLocation].authors[revision.meta.author].count+1;
       setImmediate(callback)
     });
+  }, function(){
+    console.log(intervalsObj);
   });
 });
