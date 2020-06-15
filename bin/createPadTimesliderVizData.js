@@ -26,6 +26,7 @@ npm.load({}, async function() {
   // load modules
   let Changeset = require('ep_etherpad-lite/static/js/Changeset');
   let padManager = require('../src/node/db/PadManager');
+  let authorManager = require('../src/node/db/AuthorManager')
 
   let exists = await padManager.doesPadExists(padId);
   if (!exists) {
@@ -53,18 +54,36 @@ npm.load({}, async function() {
   await db.db.get("pad:"+padId+":revs:" + (revisions.length-1), function(e, val){
     endTime = val.meta.timestamp;
   })
+  var intervalsObj = {
+    authors: {}
+  };
+
+
+  let authors = await pad.getAllAuthors();
+  console.log("authors", authors );
+  for(var author in authors){
+    let color = await authorManager.getAuthorColorId(authors[author]);
+    if(typeof color === "string" && color.indexOf("#") !== -1){
+      intervalsObj.authors[authors[author]] = color;
+    }else{
+      // color needs to come from index
+      let palette = authorManager.getColorPalette();
+      color = palette[color];
+      intervalsObj.authors[authors[author]] = color;
+    }
+  }
 
   // Total duration of pad
   var durationOfPad = endTime - beginningTime;
   var divideAmount = 100; //experimental amount to divide by.
+  var heightAmount = 10; // experimental amount to say how many vertical blocks we can have.
 
   // We divide this to divideAmount and put the stats into that.
   var intervals = Math.round(durationOfPad / divideAmount);
 
-  console.log("intervals", intervals)
+  var maxCount = 0; // used for drawing data later.
 
-  var intervalsObj = {};
-
+  // go through each interval span and create an object placeholder.
   i = 0;
   while (i < divideAmount){
     intervalsObj[i] = {
@@ -73,8 +92,6 @@ npm.load({}, async function() {
     };
     i++;
   }
-
-  // console.log("revisions,length", revisions.length)
 
   //run trough all revisions
   async.forEachSeries(revisions, function(revNum, callback){
@@ -89,15 +106,58 @@ npm.load({}, async function() {
         var revLocation = 0;
       }
       var arr = intervalsObj[revLocation];
-      intervalsObj[revLocation].count = intervalsObj[revLocation].count+1;
-      if(!intervalsObj[revLocation].authors[revision.meta.author]){
-        intervalsObj[revLocation].authors[revision.meta.author] = {};
-        intervalsObj[revLocation].authors[revision.meta.author].count = 0;
+      console.log(intervalsObj[revLocation])
+      if(intervalsObj[revLocation]){
+        intervalsObj[revLocation].count = intervalsObj[revLocation].count+1;
+        if(!intervalsObj[revLocation].authors[revision.meta.author]){
+          // sometimes ghost authors can exist (API inserts etc. so ignore those)
+          if(revision.meta.author.length !== 0){
+            intervalsObj[revLocation].authors[revision.meta.author] = {};
+            intervalsObj[revLocation].authors[revision.meta.author].count = 0;
+            intervalsObj[revLocation].authors[revision.meta.author].count = intervalsObj[revLocation].authors[revision.meta.author].count+1;
+          }
+        }
       }
-      intervalsObj[revLocation].authors[revision.meta.author].count = intervalsObj[revLocation].authors[revision.meta.author].count+1;
-      setImmediate(callback)
+
+      callback()
     });
   }, function(){
-    console.log(intervalsObj);
+    // console.log(intervalsObj);
+    var i = 0;
+    while(i < divideAmount){
+      if(intervalsObj[i].count > maxCount){
+        maxCount = intervalsObj[i].count; // max edits in an interval
+      }
+      i++;
+    }
+
+    // how many vertical blocks are represented by each change.
+    var verticalBlocksPerChange = heightAmount / maxCount;
+
+    // relative to number of max edits, how many were in this interval
+    i = 0;
+    while(i < divideAmount){
+      // 100 here is used to get a percentage so a fixed value is fine.
+      relativeCount = (100/maxCount) * intervalsObj[i].count;
+      intervalsObj[i].relativeCount = Math.round(relativeCount);
+      console.log(i, intervalsObj[i])
+      if(intervalsObj[i].count !== 0){
+        console.log(intervalsObj[i].authors)
+        for(var author in intervalsObj[i].authors){
+          authorStats = intervalsObj[i].authors[author];
+          // this is the value that will be used.
+          intervalsObj[i].authors[author].verticalBlocks = Math.round(verticalBlocksPerChange * intervalsObj[i].authors[author].count);
+          // console.log("authorStats", author, authorStats)
+        }
+      }
+      i++;
+    }
+
+    console.log(intervalsObj)
+
+    // todo, w eshouldn't iterate this object multiple timmes...
+    // console.log("max count used for setting Y", maxCount)
+
+    // Still need color of authorship
   });
 });
