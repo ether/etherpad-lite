@@ -60,7 +60,6 @@ npm.load({}, async function() {
 
 
   let authors = await pad.getAllAuthors();
-  console.log("authors", authors );
   for(var author in authors){
     let color = await authorManager.getAuthorColorId(authors[author]);
     if(typeof color === "string" && color.indexOf("#") !== -1){
@@ -85,7 +84,10 @@ npm.load({}, async function() {
 
   // go through each interval span and create an object placeholder.
   i = 0;
+
+  // divideAmount represents X axis
   while (i < divideAmount){
+    // creates an empty object which we wil store data into
     intervalsObj[i] = {
       count: 0,
       authors: {}
@@ -105,59 +107,83 @@ npm.load({}, async function() {
       }else{
         var revLocation = 0;
       }
-      var arr = intervalsObj[revLocation];
-      console.log(intervalsObj[revLocation])
+
+      // if we already have a changeset landed in this X position we increase the value
       if(intervalsObj[revLocation]){
         intervalsObj[revLocation].count = intervalsObj[revLocation].count+1;
-        if(!intervalsObj[revLocation].authors[revision.meta.author]){
+
+        // Saving unique authors so we can look them up later
+        // cake why is below commented out?
+        // if(!intervalsObj[revLocation].authors[revision.meta.author]){
           // sometimes ghost authors can exist (API inserts etc. so ignore those)
           if(revision.meta.author.length !== 0){
             intervalsObj[revLocation].authors[revision.meta.author] = {};
             intervalsObj[revLocation].authors[revision.meta.author].count = 0;
             intervalsObj[revLocation].authors[revision.meta.author].count = intervalsObj[revLocation].authors[revision.meta.author].count+1;
           }
-        }
+
+        //} // cake why is this ommented out?
+
       }
 
       callback()
     });
   }, function(){
-    // console.log(intervalsObj);
+    console.log(intervalsObj);
     var i = 0;
     while(i < divideAmount){
+
       if(intervalsObj[i].count > maxCount){
         maxCount = intervalsObj[i].count; // max edits in an interval
       }
+
       i++;
     }
 
     // how many vertical blocks are represented by each change.
     var verticalBlocksPerChange = heightAmount / maxCount;
-
+    console.log("vertBlocks", verticalBlocksPerChange)
     // relative to number of max edits, how many were in this interval
     i = 0;
     while(i < divideAmount){
       // 100 here is used to get a percentage so a fixed value is fine.
       relativeCount = (100/maxCount) * intervalsObj[i].count;
       intervalsObj[i].relativeCount = Math.round(relativeCount);
-      console.log(i, intervalsObj[i])
+      // console.log(i, intervalsObj[i])
       if(intervalsObj[i].count !== 0){
-        console.log(intervalsObj[i].authors)
+        // console.log(intervalsObj[i].authors)
         for(var author in intervalsObj[i].authors){
           authorStats = intervalsObj[i].authors[author];
           // this is the value that will be used.
           intervalsObj[i].authors[author].verticalBlocks = Math.round(verticalBlocksPerChange * intervalsObj[i].authors[author].count);
-          // console.log("authorStats", author, authorStats)
+          console.log(intervalsObj[i].authors[author].count, verticalBlocksPerChange)
+          console.log("authorStats", author, authorStats)
         }
       }
       i++;
     }
-
-    console.log(intervalsObj)
-
-    // todo, w eshouldn't iterate this object multiple timmes...
-    // console.log("max count used for setting Y", maxCount)
-
-    // Still need color of authorship
+    draw(intervalsObj)
   });
 });
+
+function draw(intervalsObj){
+
+  // for each "rev"
+  for(var vertical in intervalsObj){
+    var vert = intervalsObj[vertical];
+    var authorColors = intervalsObj.authors;
+
+    // for every author
+    for (var author in authorColors){
+      if (!vert.count) continue;
+      var authorsArr = Object.keys(vert.authors);
+
+      // is author present in revision?
+      if (authorsArr.indexOf(author) !== -1){
+         // get relative blocks for this author.
+//         console.log("present")
+      }
+//      console.log(intervalsObj[vertical]);
+    }
+  }
+}
