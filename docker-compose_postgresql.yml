@@ -1,4 +1,4 @@
-version: "2"
+version: "2.3"
 
 services:
   # https://docs.docker.com/docker-hub/builds/automated-testing/
@@ -29,11 +29,11 @@ services:
     image: ${IMAGE_NAME}
     container_name: etherpad
     #restart: always
-    #command: /wait-for-service.sh node node_modules/ep_etherpad-lite/node/server.js
     ports:
       - "9001:9001"
     depends_on:
-      - etherpad_postgres
+      etherpad_postgres:
+        condition: service_healthy
     links:
       - etherpad_postgres
     volumes:
@@ -63,8 +63,12 @@ services:
     image: postgres:latest
     container_name: etherpad_postgres
     restart: always
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${ETHERPAD_DB_USER}"]
     #ports:
-    #  - 5432:5432
+    #  - "5432:5432"
+    expose:
+      - '5432'
     volumes:
       - /srv/etherpad/postgres:/var/lib/postgresql/data
       - /etc/localtime:/etc/localtime:ro

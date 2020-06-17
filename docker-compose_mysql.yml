@@ -1,4 +1,4 @@
-version: "2"
+version: "2.3"
 
 services:
   # https://docs.docker.com/docker-hub/builds/automated-testing/
@@ -29,11 +29,11 @@ services:
     image: ${IMAGE_NAME}
     container_name: etherpad
     #restart: always
-    #command: /wait-for-service.sh node node_modules/ep_etherpad-lite/node/server.js
     ports:
       - "9001:9001"
     depends_on:
-      - etherpad_mariadb
+      etherpad_mariadb:
+        condition: service_healthy
     links:
       - etherpad_mariadb
     volumes:
@@ -65,8 +65,14 @@ services:
     container_name: etherpad_mariadb
     restart: always
     command: --character_set_client=utf8 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --character-set-client-handshake=FALSE
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 5
     #ports:
-    #  - 3306:3306
+    #  - "3306:3306"
+    expose:
+      - '3306'
     volumes:
       - /srv/etherpad/mysql:/var/lib/mysql
       - /etc/localtime:/etc/localtime:ro
