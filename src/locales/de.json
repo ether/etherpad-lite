@@ -8,11 +8,13 @@
 			"Predatorix",
 			"Sebastian Wallroth",
 			"Thargon",
+			"Tim.krieger",
 			"Wikinaut"
 		]
 	},
 	"index.newPad": "Neues Pad",
 	"index.createOpenPad": "oder ein Pad mit folgendem Namen erstellen/öffnen:",
+	"index.openPad": "Öffne ein vorhandenes Pad mit folgendem Namen:",
 	"pad.toolbar.bold.title": "Fett (Strg-B)",
 	"pad.toolbar.italic.title": "Kursiv (Strg-I)",
 	"pad.toolbar.underline.title": "Unterstrichen (Strg-U)",
@@ -33,7 +35,7 @@
 	"pad.colorpicker.save": "Speichern",
 	"pad.colorpicker.cancel": "Abbrechen",
 	"pad.loading": "Lade …",
-	"pad.noCookie": "Das Cookie konnte nicht gefunden werden. Bitte erlaube Cookies in deinem Browser!",
+	"pad.noCookie": "Das Cookie konnte nicht gefunden werden. Bitte erlauben Sie Cookies in Ihrem Browser!",
 	"pad.passwordRequired": "Sie benötigen ein Kennwort, um auf dieses Pad zuzugreifen",
 	"pad.permissionDenied": "Sie haben keine Berechtigung, um auf dieses Pad zuzugreifen",
 	"pad.wrongPassword": "Ihr eingegebenes Kennwort war falsch",
@@ -48,7 +50,7 @@
 	"pad.settings.fontType.normal": "Normal",
 	"pad.settings.language": "Sprache:",
 	"pad.importExport.import_export": "Import/Export",
-	"pad.importExport.import": "Text-Datei oder Dokument hochladen",
+	"pad.importExport.import": "Textdatei oder Dokument hochladen",
 	"pad.importExport.importSuccessful": "Erfolgreich!",
 	"pad.importExport.export": "Aktuelles Pad exportieren als:",
 	"pad.importExport.exportetherpad": "Etherpad",
@@ -119,7 +121,7 @@
 	"timeslider.month.december": "Dezember",
 	"timeslider.unnamedauthors": "{{num}} {[plural(num) one: unbenannter Autor, other: unbenannte Autoren ]}",
 	"pad.savedrevs.marked": "Diese Version wurde jetzt als gespeicherte Version gekennzeichnet",
-	"pad.savedrevs.timeslider": "Du kannst gespeicherte Versionen durch den Aufruf des Bearbeitungsverlaufes ansehen",
+	"pad.savedrevs.timeslider": "Sie können gespeicherte Versionen durch den Aufruf des Bearbeitungsverlaufes ansehen.",
 	"pad.userlist.entername": "Geben Sie Ihren Namen ein",
 	"pad.userlist.unnamed": "unbenannt",
 	"pad.userlist.guest": "Gast",
@@ -135,6 +137,6 @@
 	"pad.impexp.importfailed": "Import fehlgeschlagen",
 	"pad.impexp.copypaste": "Bitte kopieren und einfügen",
 	"pad.impexp.exportdisabled": "Der Export im {{type}}-Format ist deaktiviert. Für Einzelheiten kontaktieren Sie bitte Ihren Systemadministrator.",
-	"pad.impexp.maxFileSize": "Datei zu groß.Kontaktiere deinen Administrator um das datei Limit für Imports zu erhöhen.",
-	"pad.impexp.permission": "Importieren ist deaktiviert weil du nichts zu diesem Pad beigeteagen hast.Bitte trage etwas bei bevor du importierst."
+	"pad.impexp.maxFileSize": "Die Datei ist zu groß. Kontaktieren Sie bitte Ihren Administrator, um das Limit für den Dateiimport zu erhöhen.",
+	"pad.impexp.permission": "Die Importfunktion ist deaktiviert, da Sie noch nichts zu diesem Pad beigetragen haben. Bitte tragen Sie etwas zu diesem Pad bei, bevor Sie importieren."
 }
