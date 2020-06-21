@@ -1,6 +1,6 @@
 ---
 name: Plugin request template
-about: Describe this issue template's purpose here.
+about: Suggest a plugin for Etherpad
 title: ''
 labels: Plugin Request
 assignees: JohnMcLear
