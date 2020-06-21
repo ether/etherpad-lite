@@ -1,23 +1,23 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
+name: Custom issue template
+about: Describe this issue template's purpose here.
 title: ''
-labels: Feature Request
+labels: Plugin Request
 assignees: ''
 
 ---
 
 * * *
 
-name: Feature request
-about: Suggest an idea for this project
+name: Plugin request
+about: Suggest a plugin for this project
 title: ''
-labels: enhancement
+labels: plugin request
 assignees: 
 
 * * *
 
-**Is your feature request related to a problem? Please describe.**
+**Is your plugin request related to a problem? Please describe.**
 A clear and concise description of what the problem is. Ex. I'm always frustrated when (...)
 
 **Describe the solution you'd like**
@@ -27,7 +27,4 @@ A clear and concise description of what you want to happen.
 A clear and concise description of any alternative solutions or features you've considered.
 
 **Additional context**
-Add any other context or screenshots about the feature request here.
-
-**Plugin?**
-Might this feature be better suited to being a plugin?  Usually features that can be plugins, should be.
+Add any other context or screenshots about the plugin request here.
