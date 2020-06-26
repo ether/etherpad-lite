@@ -663,11 +663,14 @@ exports.reloadSettings = function reloadSettings() {
   storeSettings(settings);
   storeSettings(credentials);
 
-  log4js.configure(exports.logconfig);//Configure the logging appenders
-  log4js.setGlobalLogLevel(exports.loglevel);//set loglevel
-  process.env['DEBUG'] = 'socket.io:' + exports.loglevel; // Used by SocketIO for Debug
-  log4js.replaceConsole();
-
+  if(process.env.DISABLELOG4JS !== "true"){
+    log4js.configure(exports.logconfig);//Configure the logging appenders
+    log4js.setGlobalLogLevel(exports.loglevel);//set loglevel
+    process.env['DEBUG'] = 'socket.io:' + exports.loglevel; // Used by SocketIO for Debug
+    log4js.replaceConsole();
+  }else{
+    log4js.setGlobalLogLevel("ERROR");//set loglevel
+  }
   if (!exports.skinName) {
     console.warn(`No "skinName" parameter found. Please check out settings.json.template and update your settings.json. Falling back to the default "colibris".`);
     exports.skinName = "colibris";
