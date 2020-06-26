@@ -104,15 +104,18 @@ npm.load({}, async function() {
         var authorName = authorsObj[revision.meta.author].name;
         if(!authorName) authorName = "Anonymous"
         var opType = typeOfOp(revision.changeset);
+        var unpacked = Changeset.unpack(revision.changeset);
+        var changeLength = Math.abs(unpacked.oldLen - unpacked.newLen);
         var actionString = ""
+        var per = Math.round((100/ unpacked.newLen) * changeLength);
         if(opType === "="){
           actionString = "changed some attributes"
         }
         if(opType === "-"){
-          actionString = "removed some content";
+          actionString = "removed some content("+changeLength+" chars[" + per +"%]";
         }
         if(opType === "+"){
-          actionString = "added some content";
+          actionString = "added some content("+changeLength+" chars[" + per +"%]";
         }
         var humanTime = new Date(revision.meta.timestamp).toLocaleTimeString();
         var humanDate = new Date(revision.meta.timestamp).toDateString();
@@ -127,6 +130,7 @@ npm.load({}, async function() {
 
   });
 });
+
 
 // returns "-", "+" or "=" depending on the type of edit
 function typeOfOp(changeset){
