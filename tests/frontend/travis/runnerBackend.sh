@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # do not continue if there is an error
-set -eu
+set -u
 
 # source: https://stackoverflow.com/questions/59895/get-the-source-directory-of-a-bash-script-from-within-the-script-itself#246128
 MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
@@ -34,11 +34,9 @@ cp settings.json.template settings.json
 # run the backend tests
 echo "Now run the backend tests"
 cd src
-npm run test
-npm run test-contentcollector
-exit_code=$?
 
-kill $!
-sleep 5
+failed=0
+npm run test || failed=1
+npm run test-contentcollector || failed=1
 
-exit $exit_code
+exit $failed
