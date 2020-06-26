@@ -31,12 +31,6 @@ echo "Successfully connected to Etherpad on http://localhost:9001"
 # a copy of settings.json is necessary for the backend tests to work
 cp settings.json.template settings.json
 
-# Build the minified files?
-curl http://localhost:9001/p/minifyme -f -s > /dev/null
-
-# just in case, let's wait for another 10 seconds before going on
-sleep 10
-
 # run the backend tests
 echo "Now run the backend tests"
 cd src
