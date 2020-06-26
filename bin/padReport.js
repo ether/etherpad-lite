@@ -106,16 +106,15 @@ npm.load({}, async function() {
         var opType = typeOfOp(revision.changeset);
         var unpacked = Changeset.unpack(revision.changeset);
         var changeLength = Math.abs(unpacked.oldLen - unpacked.newLen);
-        var actionString = ""
-        var per = Math.round((100/ unpacked.newLen) * changeLength);
+        var per = Math.round(( 100 / unpacked.oldLen) * changeLength);
         if(opType === "="){
-          actionString = "changed some attributes"
+          var actionString = "changed some attributes"
         }
         if(opType === "-"){
-          actionString = "removed some content("+changeLength+" chars[" + per +"%]";
+          var actionString = "removed some content("+changeLength+" chars[" + per +"%]";
         }
         if(opType === "+"){
-          actionString = "added some content("+changeLength+" chars[" + per +"%]";
+          var actionString = "added some content("+changeLength+" chars[" + per +"%]";
         }
         var humanTime = new Date(revision.meta.timestamp).toLocaleTimeString();
         var humanDate = new Date(revision.meta.timestamp).toDateString();
