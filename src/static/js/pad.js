@@ -278,9 +278,6 @@ function handshake()
     //if we haven't recieved the clientVars yet, then this message should it be
     else if (!receivedClientVars && obj.type == "CLIENT_VARS")
     {
-      //log the message
-      if (window.console) console.log(obj);
-
       receivedClientVars = true;
 
       //set some client vars
@@ -353,8 +350,6 @@ function handshake()
       //this message advices the client to disconnect
       if (obj.disconnect)
       {
-        console.warn("FORCED TO DISCONNECT");
-        console.warn(obj);
         padconnectionstatus.disconnected(obj.disconnect);
         socket.disconnect();
 

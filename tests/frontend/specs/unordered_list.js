@@ -97,7 +97,6 @@ describe("keep unordered list on enter key", function(){
     }).done(function(){
       var $newSecondLine = inner$("div").first().next();
       var hasULElement = $newSecondLine.find("ul li").length === 1;
-      console.log($newSecondLine.find("ul").length);
       expect(hasULElement).to.be(true);
       expect($newSecondLine.text()).to.be("line 2");
       done();
