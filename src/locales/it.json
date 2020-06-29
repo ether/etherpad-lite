@@ -47,6 +47,8 @@
 	"pad.settings.fontType": "Tipo di carattere:",
 	"pad.settings.fontType.normal": "Normale",
 	"pad.settings.language": "Lingua:",
+	"pad.settings.about": "Informazioni",
+	"pad.settings.poweredBy": "Realizzato con",
 	"pad.importExport.import_export": "Importazione/esportazione",
 	"pad.importExport.import": "Carica un file di testo o un documento",
 	"pad.importExport.importSuccessful": "Riuscito!",

@@ -40,6 +40,8 @@
 	"pad.settings.rtlcheck": "Ël contnù, dev-lo esse lesù da drita a snistra?",
 	"pad.settings.fontType": "Sòrt ëd caràter:",
 	"pad.settings.language": "Lenga:",
+	"pad.settings.about": "A propòsit",
+	"pad.settings.poweredBy": "Potensià da",
 	"pad.importExport.import_export": "Amporté/Esporté",
 	"pad.importExport.import": "Carié n'archivi o document ëd test",
 	"pad.importExport.importSuccessful": "Bele fàit!",

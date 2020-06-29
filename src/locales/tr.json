@@ -50,6 +50,8 @@
 	"pad.settings.fontType": "Yazı tipi:",
 	"pad.settings.fontType.normal": "Olağan",
 	"pad.settings.language": "Dil:",
+	"pad.settings.about": "Hakkında",
+	"pad.settings.poweredBy": "Destekleyen",
 	"pad.importExport.import_export": "İçe/Dışa aktar",
 	"pad.importExport.import": "Herhangi bir metin dosyası ya da belgesi yükle",
 	"pad.importExport.importSuccessful": "Başarılı!",

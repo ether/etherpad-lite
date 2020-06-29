@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Carcassonne93",
 			"Hedwig",
 			"ImGelu",
 			"MSClaudiu",
@@ -45,6 +46,7 @@
 	"pad.settings.rtlcheck": "Citiți conținut de la dreapta la stânga?",
 	"pad.settings.fontType": "Tipul fontului:",
 	"pad.settings.language": "Limbă:",
+	"pad.settings.about": "Despre",
 	"pad.importExport.import_export": "Import/Export",
 	"pad.importExport.import": "Încarcă orice fișier text sau document",
 	"pad.importExport.importSuccessful": "Succes!",

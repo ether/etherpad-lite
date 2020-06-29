@@ -66,6 +66,8 @@
 	"pad.settings.fontType": "Police :",
 	"pad.settings.fontType.normal": "Normal",
 	"pad.settings.language": "Langue :",
+	"pad.settings.about": "À propos",
+	"pad.settings.poweredBy": "Fourni par",
 	"pad.importExport.import_export": "Importer/Exporter",
 	"pad.importExport.import": "Charger un texte ou un document",
 	"pad.importExport.importSuccessful": "Réussi !",
