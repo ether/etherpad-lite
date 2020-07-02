@@ -90,7 +90,7 @@
 	"pad.modals.disconnected.explanation": "Sunucu bağlantısı kaybedildi",
 	"pad.modals.disconnected.cause": "Sunucu kullanılamıyor olabilir. Bunun devam etmesi durumunda servis yöneticisine bildirin.",
 	"pad.share": "Bu bloknotu paylaş",
-	"pad.share.readonly": "Sadece oku",
+	"pad.share.readonly": "Yalnızca oku",
 	"pad.share.link": "Bağlantı",
 	"pad.share.emebdcode": "URL'yi göm",
 	"pad.chat": "Sohbet",
