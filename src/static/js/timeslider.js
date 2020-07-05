@@ -78,8 +78,6 @@ function init() {
     //route the incoming messages
     socket.on('message', function(message)
     {
-      if(window.console) console.log(message);
-
       if(message.type == "CLIENT_VARS")
       {
         handleClientVars(message);

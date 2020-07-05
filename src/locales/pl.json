@@ -36,7 +36,7 @@
 	"pad.colorpicker.save": "Zapisz",
 	"pad.colorpicker.cancel": "Anuluj",
 	"pad.loading": "Ładowanie...",
-	"pad.noCookie": "Nie znaleziono pliku cookie. Proszę zezwolić na pliki cookie w przeglądarce!",
+	"pad.noCookie": "Nie można znaleźć pliku cookie. Proszę zezwolić na pliki cookie w przeglądarce! Twoja sesja i ustawienia nie zostaną zapisane między wizytami. Może to wynikać z włączenia Etherpad do ramki iFrame w niektórych przeglądarkach. Upewnij się, że Etherpad jest w tej samej subdomenie/domenie, co nadrzędna ramka iFrame",
 	"pad.passwordRequired": "Musisz podać hasło aby uzyskać dostęp do tego dokumentu",
 	"pad.permissionDenied": "Nie masz uprawnień dostępu do tego dokumentu",
 	"pad.wrongPassword": "Nieprawidłowe hasło",

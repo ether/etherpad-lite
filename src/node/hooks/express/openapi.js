@@ -688,7 +688,7 @@ exports.expressCreateServer = async (_, args) => {
         // support jsonp response format
         if (req.query.jsonp && isValidJSONPName.check(req.query.jsonp)) {
           res.header('Content-Type', 'application/javascript');
-          response = `${req.query.jsonp}(${JSON.stringify(response)}`;
+          response = `${req.query.jsonp}(${JSON.stringify(response)})`;
         }
 
         // send response

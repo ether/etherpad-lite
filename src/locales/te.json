@@ -39,6 +39,7 @@
 	"pad.settings.fontType": "అక్షరశైలి రకం:",
 	"pad.settings.fontType.normal": "సాధారణ",
 	"pad.settings.language": "భాష",
+	"pad.settings.about": "గురించి",
 	"pad.importExport.import_export": "దిగుమతి/ఎగుమతి",
 	"pad.importExport.import": "పాఠము దస్త్రము లేదా పత్రమును దిగుమతి చేయుము",
 	"pad.importExport.importSuccessful": "విజయవంతం!",

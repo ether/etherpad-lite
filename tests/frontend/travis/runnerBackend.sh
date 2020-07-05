@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # do not continue if there is an error
-set -eu
+set -u
 
 # source: https://stackoverflow.com/questions/59895/get-the-source-directory-of-a-bash-script-from-within-the-script-itself#246128
 MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
@@ -31,20 +31,12 @@ echo "Successfully connected to Etherpad on http://localhost:9001"
 # a copy of settings.json is necessary for the backend tests to work
 cp settings.json.template settings.json
 
-# Build the minified files?
-curl http://localhost:9001/p/minifyme -f -s > /dev/null
-
-# just in case, let's wait for another 10 seconds before going on
-sleep 10
-
 # run the backend tests
 echo "Now run the backend tests"
 cd src
-npm run test
-npm run test-contentcollector
-exit_code=$?
 
-kill $!
-sleep 5
+failed=0
+npm run test || failed=1
+npm run test-contentcollector || failed=1
 
-exit $exit_code
+exit $failed

@@ -100,7 +100,6 @@ describe("assign ordered list", function(){
     }).done(function(){
       var $newSecondLine = inner$("div").first().next();
       var hasOLElement = $newSecondLine.find("ol li").length === 1;
-      console.log($newSecondLine.find("ol"));
       expect(hasOLElement).to.be(true);
       expect($newSecondLine.text()).to.be("line 2");
       var hasLineNumber = $newSecondLine.find("ol").attr("start") === 2;

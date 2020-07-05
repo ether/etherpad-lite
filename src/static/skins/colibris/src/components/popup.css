@@ -41,6 +41,19 @@
   min-width: 180px;
 }
 
+@media (prefers-reduced-motion) {
+  .popup>.popup-content {
+    transform: scale(1);
+    transition: none;
+  }
+  .nice-select .list {
+    transform: scale(1) translateY(0px);
+    -webkit-transform: scale(1) translateY(0px);
+    -ms-transform: scale(1) translateY(0px);
+    transition: none;
+  }
+}
+
 @media (max-width: 800px) {
   .popup-content {
     padding: 1rem;

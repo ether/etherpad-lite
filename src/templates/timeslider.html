@@ -74,11 +74,11 @@
       </div>
 
       <div class="editbarright menu_right">
-        <% e.begin_block("timesliderEditbarRight"); %>
         <ul>
-          <%- toolbar.menu(settings.toolbar.timeslider, true, 'timeslider-right', 'timeslider') %>
+          <% e.begin_block("timesliderEditbarRight"); %>
+            <%- toolbar.menu(settings.toolbar.timeslider, true, 'timeslider-right', 'timeslider') %>
+          <% e.end_block(); %>
         </ul>
-        <% e.end_block(); %>
       </div>
     </div>
 

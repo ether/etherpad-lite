@@ -14,6 +14,7 @@
 			"Yfdyh000",
 			"乌拉跨氪",
 			"列维劳德",
+			"沈澄心",
 			"燃玉"
 		]
 	},
@@ -53,6 +54,7 @@
 	"pad.settings.fontType": "字体类型：",
 	"pad.settings.fontType.normal": "正常",
 	"pad.settings.language": "语言：",
+	"pad.settings.about": "关于",
 	"pad.importExport.import_export": "导入/导出",
 	"pad.importExport.import": "上载任何文本文件或档案",
 	"pad.importExport.importSuccessful": "成功！",

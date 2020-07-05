@@ -39,7 +39,6 @@ describe("clear authorship colors button", function(){
       $clearauthorshipcolorsButton.click();
 
       // does the first divs span include an author class?
-      console.log(inner$("div span").first().attr("class"));
       var hasAuthorClass = inner$("div span").first().attr("class").indexOf("author") !== -1;
       //expect(hasAuthorClass).to.be(false);
 
@@ -94,7 +93,6 @@ describe("clear authorship colors button", function(){
       $clearauthorshipcolorsButton.click();
 
       // does the first divs span include an author class?
-      console.log(inner$("div span").first().attr("class"));
       var hasAuthorClass = inner$("div span").first().attr("class").indexOf("author") !== -1;
       //expect(hasAuthorClass).to.be(false);
 
