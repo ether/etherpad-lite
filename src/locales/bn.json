@@ -45,6 +45,7 @@
 	"pad.settings.fontType": "ফন্টের প্রকার:",
 	"pad.settings.fontType.normal": "সাধারণ",
 	"pad.settings.language": "ভাষা:",
+	"pad.settings.about": "পরিচিতি",
 	"pad.importExport.import_export": "আমদানি/রপ্তানি",
 	"pad.importExport.import": "কোন টেক্সট ফাইল বা নথি আপলোড করুন",
 	"pad.importExport.importSuccessful": "সফল!",

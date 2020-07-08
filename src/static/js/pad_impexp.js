@@ -244,6 +244,7 @@ var padimpexp = (function()
     },
     handleFrameCall: function(directDatabaseAccess, status)
     {
+      if(directDatabaseAccess === "undefined") directDatabaseAccess = false;
       if (status !== "ok")
       {
         importFailed(status);
