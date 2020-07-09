@@ -10,6 +10,7 @@
 	},
 	"index.newPad": "פנקס חדש",
 	"index.createOpenPad": "ליצור או לפתוח פנקס בשם:",
+	"index.openPad": "פתיחת פנקס קיים עם השם:",
 	"pad.toolbar.bold.title": "בולט (Ctrl-B)",
 	"pad.toolbar.italic.title": "נטוי (Ctrl-I)",
 	"pad.toolbar.underline.title": "קו תחתי (Ctrl-U)",
