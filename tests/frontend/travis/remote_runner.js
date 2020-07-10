@@ -71,7 +71,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
 
   }, 10000);
 
-}, 25); //run 1 test in parrallel
+}, 10); //run 1 test in parrallel
 
 // Firefox on Linux
 sauceTestWorker.push({
