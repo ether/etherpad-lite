@@ -71,58 +71,106 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
 
   }, 10000);
 
-}, 7); //run 1 test in parrallel
+}, 25); //run 1 test in parrallel
 
-// 1) Firefox on Linux
+// Firefox on Linux
 sauceTestWorker.push({
     'platform'       : 'Linux'
   , 'browserName'    : 'firefox'
-  , 'version'        : 'latest'
-});
-sauceTestWorker.push({
-    'platform'       : 'Linux'
-  , 'browserName'    : 'firefox'
-  , 'version'        : 'latest-1'
+  , 'version'        : '45.0'
 });
 sauceTestWorker.push({
     'platform'       : 'Linux'
   , 'browserName'    : 'firefox'
-  , 'version'        : 'latest-2'
+  , 'version'        : '44.0'
+});
+sauceTestWorker.push({
+    'platform'       : 'Linux'
+  , 'browserName'    : 'firefox'
+  , 'version'        : '43.0'
 });
 
-// 2) Chrome on Linux
+// Chrome on Linux
 sauceTestWorker.push({
     'platform'       : 'Linux'
   , 'browserName'    : 'googlechrome'
-  , 'version'        : 'latest'
+  , 'version'        : '48.0'
 });
 sauceTestWorker.push({
     'platform'       : 'Linux'
   , 'browserName'    : 'googlechrome'
-  , 'version'        : 'latest-1'
+  , 'version'        : '47.0'
 });
 sauceTestWorker.push({
     'platform'       : 'Linux'
   , 'browserName'    : 'googlechrome'
-  , 'version'        : 'latest-2'
+  , 'version'        : '46.0'
 });
 
-// 3) Safari on OSX 10.15
+// Chrome on OSX 10.15
 sauceTestWorker.push({
-    'platform'       : 'OS X 10.15'
-  , 'browserName'    : 'safari'
-  , 'version'        : 'latest'
+    'platform'       : 'macOS 10.15'
+  , 'browserName'    : 'chromei'
+  , 'version'        : '83.0'
 });
 sauceTestWorker.push({
-    'platform'       : 'OS X 10.15'
+    'platform'       : 'macOS 10.15'
+  , 'browserName'    : 'chrome'
+  , 'version'        : '81.0'
+});
+
+// Safari on OSX 10.15
+sauceTestWorker.push({
+    'platform'       : 'macOS 10.15'
   , 'browserName'    : 'safari'
-  , 'version'        : 'latest-1'
+  , 'version'        : '13.1'
+});
+
+// Edge on OSX 10.15
+sauceTestWorker.push({
+    'platform'       : 'macOS 10.15'
+  , 'browserName'    : 'MicrosoftEdge'
+  , 'version'        : '83.0'
+});
+
+sauceTestWorker.push({
+    'platform'       : 'macOS 10.15'
+  , 'browserName'    : 'MicrosoftEdge'
+  , 'version'        : '81.0'
+});
+
+// Chrome on OSX 10.14
+sauceTestWorker.push({
+    'platform'       : 'macOS 10.14'
+  , 'browserName'    : 'chromei'
+  , 'version'        : '83.0'
 });
 sauceTestWorker.push({
-    'platform'       : 'OS X 10.15'
-  , 'browserName'    : 'safari'
-  , 'version'        : 'latest-2'
+    'platform'       : 'macOS 10.14'
+  , 'browserName'    : 'chrome'
+  , 'version'        : '81.0'
 });
+
+// Safari on OSX 10.14
+sauceTestWorker.push({
+    'platform'       : 'macOS 10.14'
+  , 'browserName'    : 'safari'
+  , 'version'        : '12.0'
+});
+
+// Edge on OSX 10.14
+sauceTestWorker.push({
+    'platform'       : 'macOS 10.14'
+  , 'browserName'    : 'MicrosoftEdge'
+  , 'version'        : '83.0'
+});
+
+sauceTestWorker.push({
+    'platform'       : 'macOS 10.14'
+  , 'browserName'    : 'MicrosoftEdge'
+  , 'version'        : '81.0'
+});
+
 // IE 10 doesn't appear to be working anyway
 /*
 // 4) IE 10 on Win 8
@@ -132,22 +180,49 @@ sauceTestWorker.push({
   , 'version'        : '10.0'
 });
 */
-// 5) Edge on Win 10
+// Edge on Win 10
 sauceTestWorker.push({
     'platform'       : 'Windows 10'
-  , 'browserName'    : 'microsoftedge'
-  , 'version'        : 'latest'
+  , 'browserName'    : 'MicrosoftEdge'
+  , 'version'        : '83.0'
 });
 sauceTestWorker.push({
     'platform'       : 'Windows 10'
-  , 'browserName'    : 'microsoftedge'
-  , 'version'        : 'latest-1'
+  , 'browserName'    : 'MicrosoftEdge'
+  , 'version'        : '81.0'
+});
+
+// Chrome on Win 10
+sauceTestWorker.push({
+    'platform'       : 'Windows 10'
+  , 'browserName'    : 'chrome'
+  , 'version'        : '83.0'
 });
 sauceTestWorker.push({
     'platform'       : 'Windows 10'
-  , 'browserName'    : 'microsoftedge'
-  , 'version'        : 'latest-2'
+  , 'browserName'    : 'chrome'
+  , 'version'        : '81.0'
 });
+
+// Firefox on Win 10
+sauceTestWorker.push({
+    'platform'       : 'Windows 10'
+  , 'browserName'    : 'firefox'
+  , 'version'        : '78.0'
+});
+sauceTestWorker.push({
+    'platform'       : 'Windows 10'
+  , 'browserName'    : 'firefox'
+  , 'version'        : '77.0'
+});
+
+// IE on Win 10
+sauceTestWorker.push({
+    'platform'       : 'Windows 10'
+  , 'browserName'    : 'internet explorer'
+  , 'version'        : '11.285'
+});
+
 
 sauceTestWorker.drain = function() {
   setTimeout(function(){
