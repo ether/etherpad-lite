@@ -66,8 +66,13 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
           knownConsoleText = consoleText;
 
           if(knownConsoleText.indexOf("FINISHED") > 0){
-            var success = knownConsoleText.indexOf("FAILED") === -1;
-            stopSauce(success);
+            let match = knownConsoleText.match(/FINISHED - ([0-9]+) tests passed, ([0-9]+) tests failed/);
+            if (match[2] && match[2] == 0){
+              stopSauce(true);
+            }
+            else {
+              stopSauce(false);
+            }
           }
         });
       }, 5000);
