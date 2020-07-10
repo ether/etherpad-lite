@@ -756,7 +756,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     setIsPendingRevision: setIsPendingRevision
   };
 
-  $(document).ready(setUpSocket);
+  setUpSocket();
   return self;
 }
 
