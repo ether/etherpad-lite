@@ -110,7 +110,7 @@ sauceTestWorker.push({
 // Chrome on OSX 10.15
 sauceTestWorker.push({
     'platform'       : 'macOS 10.15'
-  , 'browserName'    : 'chromei'
+  , 'browserName'    : 'chrome'
   , 'version'        : '83.0'
 });
 sauceTestWorker.push({
@@ -142,7 +142,7 @@ sauceTestWorker.push({
 // Chrome on OSX 10.14
 sauceTestWorker.push({
     'platform'       : 'macOS 10.14'
-  , 'browserName'    : 'chromei'
+  , 'browserName'    : 'chrome'
   , 'version'        : '83.0'
 });
 sauceTestWorker.push({
