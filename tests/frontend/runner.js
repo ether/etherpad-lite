@@ -60,7 +60,7 @@ $(function(){
       stats.tests = stats.tests || 0;
       stats.tests++;
       if ('passed' == test.state) {
-        append("->","[green]PASSED[clear] :", test.title," ",test.speed,"ms");
+        append("->","[green]PASSED[clear] :", test.title," ",test.duration,"ms");
       } else if (test.pending) {
         append("->","[yellow]PENDING[clear]:", test.title);
       } else {
