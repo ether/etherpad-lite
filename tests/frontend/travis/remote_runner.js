@@ -49,7 +49,10 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
         callback();
       }
 
-      //timeout for the case the test hangs
+      /**
+       * timeout for the case the test hangs
+       * @todo this should be configured in testSettings, see https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-Timeouts
+       */
       var timeout = setTimeout(function(){
         stopSauce(false);
       }, 1200000 * 10);
