@@ -20,8 +20,6 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
   testSettings["extendedDebugging"] = true; // console.json can be downloaded via saucelabs, don't know how to print them into output of the tests
   testSettings["tunnelIdentifier"] = process.env.TRAVIS_JOB_NUMBER;
 
-  // we wait 10 seconds here with the hope it was enough time for the minified files to be built etc.
-  setTimeout(function(){
     browser.init(testSettings).get("http://localhost:9001/tests/frontend/", function(){
       var url = "https://saucelabs.com/jobs/" + browser.sessionID;
       console.log("Remote sauce test '" + name + "' started! " + url);
@@ -77,8 +75,6 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
         });
       }, 5000);
     });
-
-  }, 10000);
 
 }, 1); //run 1 test in parrallel
 
