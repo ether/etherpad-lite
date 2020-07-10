@@ -17,6 +17,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
   testSettings.name = name;
   testSettings["public"] = true;
   testSettings["build"] = process.env.GIT_HASH;
+  testSettings["extendedDebugging"] = true; // console.json can be downloaded via saucelabs, don't know how to print them into output of the tests
   testSettings["tunnelIdentifier"] = process.env.TRAVIS_JOB_NUMBER;
 
   // we wait 10 seconds here with the hope it was enough time for the minified files to be built etc.
