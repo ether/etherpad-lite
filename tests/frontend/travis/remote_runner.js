@@ -12,7 +12,8 @@ var config = {
 var allTestsPassed = true;
 
 var sauceTestWorker = async.queue(function (testSettings, callback) {
-  var browser = wd.promiseChainRemote(config.host, config.port, config.username, config.accessKey);
+  var browser = wd.remote(config.host, config.port, config.username, config.accessKey);
+  var browserChain = browser.chain();
   var name = process.env.GIT_HASH + " - " + testSettings.browserName + " " + testSettings.version + ", " + testSettings.platform;
   testSettings.name = name;
   testSettings["public"] = true;
@@ -20,7 +21,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
 
   // we wait 10 seconds here with the hope it was enough time for the minified files to be built etc.
   setTimeout(function(){
-    browser.init(testSettings).get("http://localhost:9001/tests/frontend/", function(){
+    browserChain.init(testSettings).get("http://localhost:9001/tests/frontend/", function(){
       var url = "https://saucelabs.com/jobs/" + browser.sessionID;
       console.log("Remote sauce test '" + name + "' started! " + url);
 
@@ -29,7 +30,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
         getStatusInterval && clearInterval(getStatusInterval);
         clearTimeout(timeout);
 
-        browser.quit();
+        browserChain.quit();
 
         if(!success){
           allTestsPassed = false;
@@ -54,7 +55,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
 
       var knownConsoleText = "";
       var getStatusInterval = setInterval(function(){
-        browser.eval("$('#console').text()", function(err, consoleText){
+        browserChain.eval("$('#console').text()", function(err, consoleText){
           if(!consoleText || err){
             return;
           }
@@ -70,13 +71,23 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
 
   }, 10000);
 
-}, 1); //run 1 test in parrallel
+}, 7); //run 1 test in parrallel
 
 // 1) Firefox on Linux
 sauceTestWorker.push({
     'platform'       : 'Linux'
   , 'browserName'    : 'firefox'
   , 'version'        : 'latest'
+});
+sauceTestWorker.push({
+    'platform'       : 'Linux'
+  , 'browserName'    : 'firefox'
+  , 'version'        : 'latest-1'
+});
+sauceTestWorker.push({
+    'platform'       : 'Linux'
+  , 'browserName'    : 'firefox'
+  , 'version'        : 'latest-2'
 });
 
 // 2) Chrome on Linux
@@ -85,12 +96,32 @@ sauceTestWorker.push({
   , 'browserName'    : 'googlechrome'
   , 'version'        : 'latest'
 });
+sauceTestWorker.push({
+    'platform'       : 'Linux'
+  , 'browserName'    : 'googlechrome'
+  , 'version'        : 'latest-1'
+});
+sauceTestWorker.push({
+    'platform'       : 'Linux'
+  , 'browserName'    : 'googlechrome'
+  , 'version'        : 'latest-2'
+});
 
 // 3) Safari on OSX 10.15
 sauceTestWorker.push({
     'platform'       : 'OS X 10.15'
   , 'browserName'    : 'safari'
   , 'version'        : 'latest'
+});
+sauceTestWorker.push({
+    'platform'       : 'OS X 10.15'
+  , 'browserName'    : 'safari'
+  , 'version'        : 'latest-1'
+});
+sauceTestWorker.push({
+    'platform'       : 'OS X 10.15'
+  , 'browserName'    : 'safari'
+  , 'version'        : 'latest-2'
 });
 // IE 10 doesn't appear to be working anyway
 /*
@@ -106,6 +137,16 @@ sauceTestWorker.push({
     'platform'       : 'Windows 10'
   , 'browserName'    : 'microsoftedge'
   , 'version'        : 'latest'
+});
+sauceTestWorker.push({
+    'platform'       : 'Windows 10'
+  , 'browserName'    : 'microsoftedge'
+  , 'version'        : 'latest-1'
+});
+sauceTestWorker.push({
+    'platform'       : 'Windows 10'
+  , 'browserName'    : 'microsoftedge'
+  , 'version'        : 'latest-2'
 });
 
 sauceTestWorker.drain = function() {
