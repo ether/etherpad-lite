@@ -4,6 +4,7 @@
  */
 
 // import wont work due to sessions missing
+// Waiting on https://github.com/ether/etherpad-lite/pull/4012/files to be merged to be fully functional
 
 const assert = require('assert');
 const supertest = require(__dirname+'/../../../../src/node_modules/supertest');
