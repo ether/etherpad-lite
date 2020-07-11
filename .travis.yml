@@ -8,6 +8,9 @@ services:
 
 cache: false
 
+before_install:
+  - sudo apt-get -y install libreoffice
+
 install:
   - "bin/installDeps.sh"
   - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
