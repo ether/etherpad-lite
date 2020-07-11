@@ -5,7 +5,7 @@ describe("timeslider", function(){
     this.timeout(6000);
   });
 
-  it("loads adds a hundred revisions", function(done) { // passes
+  xit("loads adds a hundred revisions", function(done) { // passes
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
 
