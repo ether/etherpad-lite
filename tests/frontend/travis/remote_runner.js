@@ -120,7 +120,7 @@ sauceTestWorker.push({
   , 'browserName'    : 'microsoftedge'
   , 'version'        : '83.0'
 });
-// 6) Chrome on Win 7
+// 6) Firefox on Win 7
 sauceTestWorker.push({
     'platform'       : 'Windows 7'
   , 'browserName'    : 'firefox'
