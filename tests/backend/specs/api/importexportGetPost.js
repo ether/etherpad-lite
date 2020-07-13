@@ -5,6 +5,7 @@
 
 // import wont work due to sessions missing
 // Waiting on https://github.com/ether/etherpad-lite/pull/4012/files to be merged to be fully functional
+// Logic for creating sessions is the sessionandGroups.js test spec
 
 const assert = require('assert');
 const supertest = require(__dirname+'/../../../../src/node_modules/supertest');
@@ -142,11 +143,12 @@ describe('Imports and Exports', function(){
     console.log("Did not test abiword or soffice");
   }else{
     it('Tries to import file type that uses soffice or abiword', function(done) {
-
+      console.log("soffice path", settings.soffice);
       var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
         if (err) {
           throw new Error("Failed to import", err);
         } else {
+          console.warn("response", res.body, testPadId);
           if(res.body.indexOf("FrameCall('undefined', 'ok');") === -1){
             throw new Error("Failed Doc import", testPadId);
           }
