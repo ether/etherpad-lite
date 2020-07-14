@@ -28,8 +28,11 @@ echo "Now I will try for 15 seconds to connect to Etherpad on http://localhost:9
 
 echo "Successfully connected to Etherpad on http://localhost:9001"
 
-# a copy of settings.json is necessary for the backend tests to work
-cp settings.json.template settings.json
+# Set soffice to /usr/bin/soffice
+sed 's#\"soffice\": null,#\"soffice\":\"/usr/bin/soffice\",#g' settings.json.template > settings.json.soffice
+
+# Set allowAnyoneToImport to true
+sed 's/\"allowAnyoneToImport\": false,/\"allowAnyoneToImport\": true,/g' settings.json.soffice > settings.json
 
 # run the backend tests
 echo "Now run the backend tests"
