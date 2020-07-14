@@ -282,7 +282,6 @@ describe('Imports and Exports', function(){
     })
   });
 
-/*
   it('Tries to import unsupported file type', function(done) {
     if(settings.allowUnknownFileEnds === true){
       console.log("allowing unknown file ends so skipping this test");
@@ -307,8 +306,6 @@ describe('Imports and Exports', function(){
       contentType: 'weirdness/jobby'
     });
   });
-
-*/
 
 // end of tests
 })
