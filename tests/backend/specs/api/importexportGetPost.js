@@ -1,11 +1,6 @@
 /*
  * Import and Export tests for the /p/whateverPadId/import and /p/whateverPadId/export endpoints.
- * Executed using request.  Designed to find flaws and bugs
  */
-
-// import wont work due to sessions missing
-// Waiting on https://github.com/ether/etherpad-lite/pull/4012/files to be merged to be fully functional
-// Logic for creating sessions is the sessionandGroups.js test spec
 
 const assert = require('assert');
 const supertest = require(__dirname+'/../../../../src/node_modules/supertest');
@@ -77,7 +72,7 @@ Example Curl command for testing import URI:
 */
 
 describe('Imports and Exports', function(){
-
+  console.warn("DEBUG:", settings.allowAnyoneToImport);
   it('creates a new Pad, imports content to it, checks that content', function(done) {
     if(!settings.allowAnyoneToImport){
       console.log("not anyone can import so not testing -- to include this test set allowAnyoneToImport to true in settings.json");
