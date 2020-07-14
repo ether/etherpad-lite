@@ -8,6 +8,9 @@ services:
 
 cache: false
 
+before_install:
+  - sudo apt-get -y install libreoffice
+
 install:
   - "bin/installDeps.sh"
   - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
@@ -35,6 +38,10 @@ jobs:
     - name: "Run the Backend tests"
       install:
         - "bin/installDeps.sh"
+        # Set soffice to /usr/bin/soffice
+        - "sed 's/\"soffice\": null,/\"soffice\": "/usr/bin/soffice",/g' settings.json.template > settings.json"
+        # Set allowAnyoneToImport to true
+        - "sed 's/\"allowAnyoneToImport\": false,/\"allowAnyoneToInput\": true,/g' settings.json > settings.json"
         - "cd src && npm install && cd -"
       script:
         - "tests/frontend/travis/runnerBackend.sh"
