@@ -63,13 +63,6 @@ Test.
 Test.
   / Try to import an unsupported file to a pad that exists
 
-TODO: Test.
-  / Try to import a file that depends on Abiword / soffice if it exists
-  / Try to export a file that depends on Abiword / soffice if it exists
-
--- TODO: Test.
-  Try to import to a pad without a session (currently will pass but IMHO in future should fail)
-
 -- TODO: Test.
   Try to import to a file and abort it half way through
 
@@ -83,37 +76,72 @@ Example Curl command for testing import URI:
 describe('Imports and Exports', function(){
 
   it('creates a new Pad, imports content to it, checks that content', function(done) {
+    if(!settings.allowAnyoneToImport){
+      console.log("not anyone can import so not testing -- to include this test set allowAnyoneToImport to true in settings.json");
+    }else{
+      api.get(endPoint('createPad')+"&padID="+testPadId)
+      .expect(function(res){
+        if(res.body.code !== 0) throw new Error("Unable to create new Pad");
 
-    api.get(endPoint('createPad')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Unable to create new Pad");
+        var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
+         if (err) {
+            throw new Error("Failed to import", err);
+          } else {
+            api.get(endPoint('getText')+"&padID="+testPadId)
+            .expect(function(res){
+              if(res.body.data.text !== padText.toString()){
+                throw new Error("text is wrong on export");
+              }
+            })
+          }
+        });
 
-      var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
-        if (err) {
-          throw new Error("Failed to import", err);
-        } else {
+        let form = req.form();
 
-          api.get(endPoint('getText')+"&padID="+testPadId)
-          .expect(function(res){
-            if(res.body.data.text === padText.toString()){
-              console.log("yay it matches");
-            }
-          })
-          .expect(200)
-        }
-      });
+        form.append('file', padText, {
+          filename: '/test.txt',
+          contentType: 'text/plain'
+        });
 
-      let form = req.form();
-
-      form.append('file', padText, {
-        filename: '/test.txt',
-        contentType: 'text/plain'
-      });
-
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+      })
+      .expect('Content-Type', /json/)
+      .expect(200, done)
+    }
   });
+
+  it('exports DOC', function(done) {
+    request(host + '/p/'+testPadId+'/export/doc', function (err, res, body) {
+      // expect length to be > 9000
+      // TODO: At some point checking that the contents is correct would be suitable
+      if(body.length >= 9000){
+        done();
+      }else{
+        throw new Error("Word Document export length is not right");
+      }
+    })
+  })
+
+  it('exports PDF', function(done) {
+    request(host + '/p/'+testPadId+'/export/pdf', function (err, res, body) {
+      // TODO: At some point checking that the contents is correct would be suitable
+      if(body.length >= 1000){
+        done();
+      }else{
+        throw new Error("PDF Document export length is not right");
+      }
+    })
+  })
+
+  it('exports ODT', function(done) {
+    request(host + '/p/'+testPadId+'/export/odt', function (err, res, body) {
+      // TODO: At some point checking that the contents is correct would be suitable
+      if(body.length >= 7000){
+        done();
+      }else{
+        throw new Error("ODT Document export length is not right");
+      }
+    })
+  })
 
 /*
   it('tries to import to a pad that does not exist', function(done) {
@@ -138,12 +166,12 @@ describe('Imports and Exports', function(){
     })
   });
 */
-
+/*
   if((settings.abiword && settings.abiword.indexOf("/" === -1)) && (settings.office && settings.soffice.indexOf("/" === -1))){
     console.log("Did not test abiword or soffice");
   }else{
     it('Tries to import file type that uses soffice or abiword', function(done) {
-      console.log("soffice path", settings.soffice);
+      console.log("DEBUG TODO JOHN CAKE TO REMOVE soffice path", settings.soffice);
       var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
         if (err) {
           throw new Error("Failed to import", err);
@@ -178,6 +206,7 @@ console.warn(bodyE);
 
     })
   }
+*/
 /*
   it('Tries to import unsupported file type', function(done) {
     if(settings.allowUnknownFileEnds === true){
