@@ -75,7 +75,7 @@ describe('Imports and Exports', function(){
   console.warn("DEBUG:", settings.allowAnyoneToImport);
   it('creates a new Pad, imports content to it, checks that content', function(done) {
     if(!settings.allowAnyoneToImport){
-      console.log("not anyone can import so not testing -- to include this test set allowAnyoneToImport to true in settings.json");
+      console.warn("not anyone can import so not testing -- to include this test set allowAnyoneToImport to true in settings.json");
       done();
     }else{
       api.get(endPoint('createPad')+"&padID="+testPadId)
