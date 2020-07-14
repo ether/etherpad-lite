@@ -41,6 +41,8 @@
 	"pad.settings.fontType": "Tipografía:",
 	"pad.settings.fontType.normal": "Normal",
 	"pad.settings.language": "Llingua:",
+	"pad.settings.about": "Tocante a",
+	"pad.settings.poweredBy": "Col encontu de",
 	"pad.importExport.import_export": "Importar/Esportar",
 	"pad.importExport.import": "Xubir cualquier ficheru o documentu de testu",
 	"pad.importExport.importSuccessful": "¡Correuto!",
