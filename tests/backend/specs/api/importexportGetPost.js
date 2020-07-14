@@ -72,7 +72,6 @@ Example Curl command for testing import URI:
 */
 
 describe('Imports and Exports', function(){
-  console.warn("DEBUG:", settings);
   it('creates a new Pad, imports content to it, checks that content', function(done) {
     if(!settings.allowAnyoneToImport){
       console.warn("not anyone can import so not testing -- to include this test set allowAnyoneToImport to true in settings.json");
