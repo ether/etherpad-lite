@@ -78,65 +78,22 @@ exports.callAll = function (hook_name, args) {
   }
 }
 
-function aCallAll(hook_name, args, cb) {
-  if (!args) args = {};
-  if (!cb) cb = function () {};
-  if (exports.plugins.hooks[hook_name] === undefined) return cb(null, []);
-  async.map(
-    exports.plugins.hooks[hook_name],
-    function (hook, cb) {
-      hookCallWrapper(hook, hook_name, args, function (res) { cb(null, res); });
-    },
-    function (err, res) {
-        cb(null, _.flatten(res, true));
-    }
-  );
-}
-
 /* return a Promise if cb is not supplied */
 exports.aCallAll = function (hook_name, args, cb) {
   if (cb === undefined) {
-    return new Promise(function(resolve, reject) {
-      aCallAll(hook_name, args, function(err, res) {
-	return err ? reject(err) : resolve(res);
+    try{
+      return new Promise(function(resolve, reject) {
+        aCallAll(hook_name, args, function(err, res) {
+  	      return err ? reject(err) : resolve(res);
+        });
       });
-    });
+    }catch(e){
+      // Mostly targeted at IE11
+      $.gritter.removeAll();
+      $.gritter.add("Please update your web browser")
+    }
   } else {
     return aCallAll(hook_name, args, cb);
-  }
-}
-
-exports.callFirst = function (hook_name, args) {
-  if (!args) args = {};
-  if (exports.plugins.hooks[hook_name] === undefined) return [];
-  return exports.syncMapFirst(exports.plugins.hooks[hook_name], function (hook) {
-    return hookCallWrapper(hook, hook_name, args);
-  });
-}
-
-function aCallFirst(hook_name, args, cb) {
-  if (!args) args = {};
-  if (!cb) cb = function () {};
-  if (exports.plugins.hooks[hook_name] === undefined) return cb(null, []);
-  exports.mapFirst(
-    exports.plugins.hooks[hook_name],
-    function (hook, cb) {
-      hookCallWrapper(hook, hook_name, args, function (res) { cb(null, res); });
-    },
-    cb
-  );
-}
-
-/* return a Promise if cb is not supplied */
-exports.aCallFirst = function (hook_name, args, cb) {
-  if (cb === undefined) {
-    return new Promise(function(resolve, reject) {
-      aCallFirst(hook_name, args, function(err, res) {
-	return err ? reject(err) : resolve(res);
-      });
-    });
-  } else {
-    return aCallFirst(hook_name, args, cb);
   }
 }
 
