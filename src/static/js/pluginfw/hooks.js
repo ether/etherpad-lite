@@ -96,11 +96,16 @@ function aCallAll(hook_name, args, cb) {
 /* return a Promise if cb is not supplied */
 exports.aCallAll = function (hook_name, args, cb) {
   if (cb === undefined) {
-    return new Promise(function(resolve, reject) {
-      aCallAll(hook_name, args, function(err, res) {
-	return err ? reject(err) : resolve(res);
+    try{
+      return new Promise(function(resolve, reject) {
+        aCallAll(hook_name, args, function(err, res) {
+  	      return err ? reject(err) : resolve(res);
+        });
       });
-    });
+    }catch(e){
+      $.gritter.removeAll();
+      $.gritter.add("Please update your web browser")
+    }
   } else {
     return aCallAll(hook_name, args, cb);
   }
