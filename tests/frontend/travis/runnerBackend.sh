@@ -34,8 +34,6 @@ sed 's#\"soffice\": null,#\"soffice\":\"/usr/bin/soffice\",#g' settings.json.tem
 # Set allowAnyoneToImport to true
 sed 's/\"allowAnyoneToImport\": false,/\"allowAnyoneToImport\": true,/g' settings.json.soffice > settings.json
 
-which soffice
-
 # run the backend tests
 echo "Now run the backend tests"
 cd src
