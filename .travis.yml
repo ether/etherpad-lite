@@ -9,7 +9,9 @@ services:
 cache: false
 
 before_install:
+  - sudo add-apt-repository ppa:libreoffice/ppa
   - sudo apt-get -y install libreoffice
+  # - sudo apt-get -y install libreoffice
 
 install:
   - "bin/installDeps.sh"
