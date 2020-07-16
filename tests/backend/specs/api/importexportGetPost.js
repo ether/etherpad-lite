@@ -135,15 +135,18 @@ describe('Imports and Exports', function(){
   it('exports DOC', function(done) {
     if(!settings.allowAnyoneToImport) return done();
     if((settings.abiword && settings.abiword.indexOf("/" === -1)) && (settings.office && settings.soffice.indexOf("/" === -1))) return done();
-    request(host + '/p/'+testPadId+'/export/doc', function (err, res, body) {
-      // expect length to be > 9000
-      // TODO: At some point checking that the contents is correct would be suitable
-      if(body.length >= 9000){
-        done();
-      }else{
-        throw new Error("Word Document export length is not right");
-      }
-    })
+    try{
+      request(host + '/p/'+testPadId+'/export/doc', function (err, res, body) {
+        // TODO: At some point checking that the contents is correct would be suitable
+        if(body.length >= 9000){
+          done();
+        }else{
+          throw new Error("Word Document export length is not right", err);
+        }
+      })
+    }catch(e){
+      throw new Error(e);
+    }
   })
 
   it('Tries to import .docx that uses soffice or abiword', function(done) {
