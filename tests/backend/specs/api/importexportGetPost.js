@@ -132,7 +132,7 @@ describe('Imports and Exports', function(){
     });
   });
 
-  xit('exports DOC', function(done) {
+  it('exports DOC', function(done) {
     if(!settings.allowAnyoneToImport) return done();
     if((settings.abiword && settings.abiword.indexOf("/" === -1)) && (settings.office && settings.soffice.indexOf("/" === -1))) return done();
     request(host + '/p/'+testPadId+'/export/doc', function (err, res, body) {
