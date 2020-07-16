@@ -32,7 +32,10 @@ echo "Successfully connected to Etherpad on http://localhost:9001"
 sed 's#\"soffice\": null,#\"soffice\":\"/usr/bin/soffice\",#g' settings.json.template > settings.json.soffice
 
 # Set allowAnyoneToImport to true
-sed 's/\"allowAnyoneToImport\": false,/\"allowAnyoneToImport\": true,/g' settings.json.soffice > settings.json
+sed 's/\"allowAnyoneToImport\": false,/\"allowAnyoneToImport\": true,/g' settings.json.soffice > settings.json.allowImport
+
+# Set "max": 10 to 100 to not agressively rate limit
+sed 's/\"max\": 10/\"max\": 10/g' settings.json.allowImport > settings.json
 
 # run the backend tests
 echo "Now run the backend tests"

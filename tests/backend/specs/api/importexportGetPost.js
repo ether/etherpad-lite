@@ -138,6 +138,7 @@ describe('Imports and Exports', function(){
     request(host + '/p/'+testPadId+'/export/doc', function (err, res, body) {
       // expect length to be > 9000
       // TODO: At some point checking that the contents is correct would be suitable
+console.warn(body.length);
       if(body.length >= 9000){
         done();
       }else{
