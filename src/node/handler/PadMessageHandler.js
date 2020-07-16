@@ -1304,7 +1304,7 @@ async function handleChangesetRequest(client, message)
     data.requestID = message.data.requestID;
     client.json.send({ type: "CHANGESET_REQ", data });
   } catch (err) {
-    console.error('Error while handling a changeset request for ' + padIds.padId, err, message.data);
+    console.error('Error while handling a changeset request for ' + padIds.padId, err.toString(), message.data);
   }
 }
 
