@@ -141,8 +141,6 @@ describe('Imports and Exports', function(){
         if(body.length >= 9000){
           done();
         }else{
-console.error(settings);
-console.error(body);
           throw new Error("Word Document export length is not right");
         }
       })
@@ -196,8 +194,7 @@ console.error(body);
         throw new Error("Failed to import", err);
       } else {
         if(res.body.indexOf("FrameCall('undefined', 'ok');") === -1){
-console.error(body);
-          throw new Error("Failed PDF import", testPadId);
+          throw new Error("Failed PDF import");
         }else{
           done();
         };
