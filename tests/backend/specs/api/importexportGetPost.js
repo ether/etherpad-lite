@@ -141,7 +141,10 @@ describe('Imports and Exports', function(){
         if(body.length >= 9000){
           done();
         }else{
-          throw new Error("Word Document export length is not right", err);
+console.error(err);
+console.error(res);
+console.error(body);
+          throw new Error("Word Document export length is not right");
         }
       })
     }catch(e){
