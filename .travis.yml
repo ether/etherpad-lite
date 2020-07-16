@@ -9,7 +9,10 @@ services:
 cache: false
 
 before_install:
+  - sudo add-apt-repository -y ppa:libreoffice/ppa
+  - sudo apt-get update
   - sudo apt-get -y install libreoffice
+  - sudo apt-get -y install libreoffice-pdfimport
 
 install:
   - "bin/installDeps.sh"
@@ -38,20 +41,17 @@ jobs:
     - name: "Run the Backend tests"
       install:
         - "bin/installDeps.sh"
-        # Set soffice to /usr/bin/soffice
-        - "sed 's/\"soffice\": null,/\"soffice\": \"/usr/bin/soffice\",/g' settings.json.template > settings.json"
-        # Set allowAnyoneToImport to true
-        - "sed 's/\"allowAnyoneToImport\": false,/\"allowAnyoneToInput\": true,/g' settings.json > settings.json"
         - "cd src && npm install && cd -"
       script:
         - "tests/frontend/travis/runnerBackend.sh"
-    - name: "Test the Dockerfile"
-      install:
-        - "cd src && npm install && cd -"
-      script:
-        - "docker build -t etherpad:test ."
-        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
-        - "cd src && npm run test-container"
+## Temporarily commented out the Dockerfile tests
+#    - name: "Test the Dockerfile"
+#      install:
+#        - "cd src && npm install && cd -"
+#      script:
+#        - "docker build -t etherpad:test ."
+#        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
+#        - "cd src && npm run test-container"
     - name: "Load test Etherpad"
       install:
         - "bin/installDeps.sh"

@@ -9,6 +9,15 @@ MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 # reliably move to the etherpad base folder before running it
 cd "${MY_DIR}/../../../"
 
+# Set soffice to /usr/bin/soffice
+sed 's#\"soffice\": null,#\"soffice\":\"/usr/bin/soffice\",#g' settings.json.template > settings.json.soffice
+
+# Set allowAnyoneToImport to true
+sed 's/\"allowAnyoneToImport\": false,/\"allowAnyoneToImport\": true,/g' settings.json.soffice > settings.json.allowImport
+
+# Set "max": 10 to 100 to not agressively rate limit
+sed 's/\"max\": 10/\"max\": 10/g' settings.json.allowImport > settings.json
+
 # start Etherpad, assuming all dependencies are already installed.
 #
 # This is possible because the "install" section of .travis.yml already contains
@@ -27,9 +36,6 @@ echo "Now I will try for 15 seconds to connect to Etherpad on http://localhost:9
     (echo "Could not connect to Etherpad on http://localhost:9001" ; exit 1)
 
 echo "Successfully connected to Etherpad on http://localhost:9001"
-
-# a copy of settings.json is necessary for the backend tests to work
-cp settings.json.template settings.json
 
 # run the backend tests
 echo "Now run the backend tests"
