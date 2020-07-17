@@ -86,7 +86,7 @@ function init() {
       {
         $("body").html("<h2>You have no permission to access this pad</h2>")
       } else {
-        if(message.type === 'CHANGESET_REQ') changesetLoader.handleMessageFromServer(message);
+        changesetLoader.handleMessageFromServer(message);
       }
     });
 
