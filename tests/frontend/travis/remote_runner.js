@@ -80,14 +80,14 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
 
 // 1) Firefox on Linux
 sauceTestWorker.push({
-    'platform'       : 'Linux'
+    'platform'       : 'Windows 7'
   , 'browserName'    : 'firefox'
   , 'version'        : '52.0'
 });
 
 // 2) Chrome on Linux
 sauceTestWorker.push({
-    'platform'       : 'Linux'
+    'platform'       : 'Windows 10'
   , 'browserName'    : 'chrome'
   , 'version'        : '55.0'
 });
