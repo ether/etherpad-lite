@@ -37,7 +37,6 @@ let Pad = function Pad(id) {
   this.head = -1;
   this.chatHead = -1;
   this.publicStatus = false;
-  this.passwordHash = null;
   this.id = id;
   this.savedRevisions = [];
 };
@@ -595,19 +594,6 @@ Pad.prototype.setPublicStatus = async function setPublicStatus(publicStatus) {
   await this.saveToDatabase();
 };
 
-Pad.prototype.setPassword = async function setPassword(password) {
-  this.passwordHash = password == null ? null : hash(password, generateSalt());
-  await this.saveToDatabase();
-};
-
-Pad.prototype.isCorrectPassword = function isCorrectPassword(password) {
-  return compare(this.passwordHash, password);
-};
-
-Pad.prototype.isPasswordProtected = function isPasswordProtected() {
-  return this.passwordHash != null;
-};
-
 Pad.prototype.addSavedRevision = async function addSavedRevision(revNum, savedById, label) {
   // if this revision is already saved, return silently
   for (var i in this.savedRevisions) {
@@ -633,19 +619,3 @@ Pad.prototype.getSavedRevisions = function getSavedRevisions() {
   return this.savedRevisions;
 };
 
-/* Crypto helper methods */
-
-function hash(password, salt) {
-  var shasum = crypto.createHash('sha512');
-  shasum.update(password + salt);
-
-  return shasum.digest("hex") + "$" + salt;
-}
-
-function generateSalt() {
-  return randomString(86);
-}
-
-function compare(hashStr, password) {
-  return hash(password, hashStr.split("$")[1]) === hashStr;
-}

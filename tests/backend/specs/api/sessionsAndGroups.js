@@ -51,9 +51,6 @@ describe('API Versioning', function() {
    -> getPublicStatus(padId)
     -> setPublicStatus(padId, status)
      -> getPublicStatus(padId)
-      -> isPasswordProtected(padID) -- should be false
-       -> setPassword(padID, password)
-        -> isPasswordProtected(padID) -- should be true
 
 -> listPadsOfAuthor(authorID)
 */
@@ -267,35 +264,6 @@ describe('API: Pad security', function() {
         .expect((res) => {
           assert.equal(res.body.code, 0);
           assert.equal(res.body.data.publicStatus, true);
-        });
-  });
-
-  it('isPasswordProtected', async function() {
-    await api.get(endPoint('isPasswordProtected') + `&padID=${padID}`)
-        .expect(200)
-        .expect('Content-Type', /json/)
-        .expect((res) => {
-          assert.equal(res.body.code, 0);
-          assert.equal(res.body.data.isPasswordProtected, false);
-        });
-  });
-
-  it('setPassword', async function() {
-    await api.get(endPoint('setPassword') + `&padID=${padID}&password=test`)
-        .expect(200)
-        .expect('Content-Type', /json/)
-        .expect((res) => {
-          assert.equal(res.body.code, 0);
-        });
-  });
-
-  it('isPasswordProtected after setting password', async function() {
-    await api.get(endPoint('isPasswordProtected') + `&padID=${padID}`)
-        .expect(200)
-        .expect('Content-Type', /json/)
-        .expect((res) => {
-          assert.equal(res.body.code, 0);
-          assert.equal(res.body.data.isPasswordProtected, true);
         });
   });
 });
