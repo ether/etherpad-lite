@@ -317,7 +317,7 @@ domline.processSpaces = function(s, doesWrap)
     for (var i = 0; i < parts.length; i++)
     {
       var p = parts[i];
-      if (p == " ")
+      if (p == "&nbsp;")
       {
         parts[i] = '&nbsp;';
       }
