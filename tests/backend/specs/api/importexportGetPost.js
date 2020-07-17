@@ -1,11 +1,6 @@
 /*
  * Import and Export tests for the /p/whateverPadId/import and /p/whateverPadId/export endpoints.
- * Executed using request.  Designed to find flaws and bugs
  */
-
-// import wont work due to sessions missing
-// Waiting on https://github.com/ether/etherpad-lite/pull/4012/files to be merged to be fully functional
-// Logic for creating sessions is the sessionandGroups.js test spec
 
 const assert = require('assert');
 const supertest = require(__dirname+'/../../../../src/node_modules/supertest');
@@ -77,10 +72,9 @@ Example Curl command for testing import URI:
 */
 
 describe('Imports and Exports', function(){
-
   it('creates a new Pad, imports content to it, checks that content', function(done) {
     if(!settings.allowAnyoneToImport){
-      console.log("not anyone can import so not testing -- to include this test set allowAnyoneToImport to true in settings.json");
+      console.warn("not anyone can import so not testing -- to include this test set allowAnyoneToImport to true in settings.json");
       done();
     }else{
       api.get(endPoint('createPad')+"&padID="+testPadId)
@@ -138,18 +132,21 @@ describe('Imports and Exports', function(){
     });
   });
 
-  xit('exports DOC', function(done) {
+  it('exports DOC', function(done) {
     if(!settings.allowAnyoneToImport) return done();
     if((settings.abiword && settings.abiword.indexOf("/" === -1)) && (settings.office && settings.soffice.indexOf("/" === -1))) return done();
-    request(host + '/p/'+testPadId+'/export/doc', function (err, res, body) {
-      // expect length to be > 9000
-      // TODO: At some point checking that the contents is correct would be suitable
-      if(body.length >= 9000){
-        done();
-      }else{
-        throw new Error("Word Document export length is not right");
-      }
-    })
+    try{
+      request(host + '/p/'+testPadId+'/export/doc', function (err, res, body) {
+        // TODO: At some point checking that the contents is correct would be suitable
+        if(body.length >= 9000){
+          done();
+        }else{
+          throw new Error("Word Document export length is not right");
+        }
+      })
+    }catch(e){
+      throw new Error(e);
+    }
   })
 
   it('Tries to import .docx that uses soffice or abiword', function(done) {
@@ -161,7 +158,7 @@ describe('Imports and Exports', function(){
         throw new Error("Failed to import", err);
       } else {
         if(res.body.indexOf("FrameCall('undefined', 'ok');") === -1){
-          throw new Error("Failed DOCX import", testPadId);
+          throw new Error("Failed DOCX import");
         }else{
           done();
         };
@@ -197,7 +194,7 @@ describe('Imports and Exports', function(){
         throw new Error("Failed to import", err);
       } else {
         if(res.body.indexOf("FrameCall('undefined', 'ok');") === -1){
-          throw new Error("Failed PDF import", testPadId);
+          throw new Error("Failed PDF import");
         }else{
           done();
         };
