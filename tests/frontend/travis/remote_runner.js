@@ -87,7 +87,7 @@ sauceTestWorker.push({
 
 // 2) Chrome on Linux
 sauceTestWorker.push({
-    'platform'       : 'Windows 10'
+    'platform'       : 'Windows 7'
   , 'browserName'    : 'chrome'
   , 'version'        : '55.0'
 });
