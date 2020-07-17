@@ -82,14 +82,14 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
 sauceTestWorker.push({
     'platform'       : 'Linux'
   , 'browserName'    : 'firefox'
-  , 'version'        : '45.0'
+  , 'version'        : '52.0'
 });
 
 // 2) Chrome on Linux
 sauceTestWorker.push({
     'platform'       : 'Linux'
   , 'browserName'    : 'chrome'
-  , 'version'        : '48.0'
+  , 'version'        : '55.0'
 });
 
 // 3) Safari on OSX 10.15
