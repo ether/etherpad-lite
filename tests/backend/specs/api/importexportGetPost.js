@@ -289,7 +289,7 @@ console.log(err, body);
       if(body.indexOf("hello") !== -1){
         done();
       }else{
-        throw new Error("Etherpad Document export length is not right", body.length);
+        throw new Error("Etherpad Document does not include hello", body);
       }
     })
   })
