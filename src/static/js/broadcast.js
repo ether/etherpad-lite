@@ -256,7 +256,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     }
 
     var lineNumber = Changeset.opIterator(Changeset.unpack(changeset).ops).next().lines;
-    if($('#options-followContents').is(":checked")){
+    if($('#options-followContents').is(":checked") || $('#options-followContents').prop("checked")){
       goToLineNumber(lineNumber);
     }
 
