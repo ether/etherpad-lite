@@ -12,6 +12,7 @@ const path = require('path');
 const async = require(__dirname+'/../../../../src/node_modules/async');
 const request = require(__dirname+'/../../../../src/node_modules/request');
 const padText = fs.readFileSync("../tests/backend/specs/api/test.txt");
+const etherpadDoc = fs.readFileSync("../tests/backend/specs/api/test.etherpad");
 const wordDoc = fs.readFileSync("../tests/backend/specs/api/test.doc");
 const wordXDoc = fs.readFileSync("../tests/backend/specs/api/test.docx");
 const odtDoc = fs.readFileSync("../tests/backend/specs/api/test.odt");
@@ -121,7 +122,7 @@ describe('Imports and Exports', function(){
           throw new Error("Failed DOC import", testPadId);
         }else{
           done();
-        };
+        }
       }
     });
 
@@ -161,7 +162,7 @@ describe('Imports and Exports', function(){
           throw new Error("Failed DOCX import");
         }else{
           done();
-        };
+        }
       }
     });
 
@@ -197,7 +198,7 @@ describe('Imports and Exports', function(){
           throw new Error("Failed PDF import");
         }else{
           done();
-        };
+        }
       }
     });
 
@@ -233,7 +234,7 @@ describe('Imports and Exports', function(){
           throw new Error("Failed ODT import", testPadId);
         }else{
           done();
-        };
+        }
       }
     });
 
@@ -253,6 +254,55 @@ describe('Imports and Exports', function(){
         done();
       }else{
         throw new Error("ODT Document export length is not right");
+      }
+    })
+  })
+
+  it('Tries to import .etherpad', function(done) {
+    if(!settings.allowAnyoneToImport) return done();
+
+    var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
+      if (err) {
+        throw new Error("Failed to import", err);
+      } else {
+        if(res.body.indexOf("FrameCall(\'true\', \'ok\');") === -1){
+          throw new Error("Failed Etherpad import", err, testPadId);
+        }else{
+          done();
+        }
+      }
+    });
+
+    let form = req.form();
+    form.append('file', etherpadDoc, {
+      filename: '/test.etherpad',
+      contentType: 'application/etherpad'
+    });
+  });
+
+  it('exports Etherpad', function(done) {
+    request(host + '/p/'+testPadId+'/export/etherpad', function (err, res, body) {
+      // TODO: At some point checking that the contents is correct would be suitable
+      if(body.indexOf("hello") !== -1){
+        done();
+      }else{
+        console.error("body");
+        throw new Error("Etherpad Document does not include hello");
+      }
+    })
+  })
+
+  it('exports HTML for this Etherpad file', function(done) {
+    request(host + '/p/'+testPadId+'/export/html', function (err, res, body) {
+
+      // broken pre fix export -- <ul class="bullet"></li><ul class="bullet"></ul></li></ul>
+      var expectedHTML = '<ul class="bullet"><li><ul class="bullet"><li>hello</ul></li></ul>';
+      // expect body to include
+      if(body.indexOf(expectedHTML) !== -1){
+        done();
+      }else{
+        console.error(body);
+        throw new Error("Exported HTML nested list items is not right", body);
       }
     })
   })

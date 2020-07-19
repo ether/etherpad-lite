@@ -381,7 +381,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
                 // TODO Check against Uls
                 // don't do anything because the next item is a nested ol openener so we need to keep the li open
               }else{
-                pieces.push("</li>");
+                pieces.push("<li>");
               }
 
 
