@@ -11,12 +11,15 @@ describe("timeslider", function(){
 
     // make some changes to produce 100 revisions
     var timePerRev = 900
-      , revs = 5;
+      , revs = 10;
     this.timeout(revs*timePerRev+10000);
     for(var i=0; i < revs; i++) {
       setTimeout(function() {
         // enter 'a' in the first text element
         inner$("div").last().sendkeys('a\n');
+        inner$("div").last().sendkeys('{enter}');
+        inner$("div").last().sendkeys('{enter}');
+        inner$("div").last().sendkeys('{enter}');
         inner$("div").last().sendkeys('{enter}');
       }, timePerRev*i);
     }
