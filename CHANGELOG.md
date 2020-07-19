@@ -1,4 +1,6 @@
 # Develop -- TODO Change to 1.8.x.
+* IMPORTANT DROP OF SUPPORT: Drop support for IE.  Browsers now need async/await.
+* IMPORTANT SECURITY: Rate limit Commits when env=production
 * SECURITY: Non completed uploads no longer crash Etherpad
 * SECURITY: Log authentication requests
 * FEATURE: Support ES6 (migrate from Uglify-JS to Terser)
@@ -9,7 +11,10 @@
 * FEATURE: Checks Etherpad version on startup and notifies if update is available.  Also available in ``/admin`` interface.
 * MINOR: Outdent UL/LI items on removal of list item
 * MINOR: Various UL/LI import/export bugs
+* MINOR: PDF export fix
 * MINOR: Front end tests no longer run (and subsequently error) on pull requests
+* MINOR: Fix issue with </li> closing a list before it opens
+* MINOR: Fix bug where large pads would fire a console error in timeslider
 * MINOR: Fix ?showChat URL param issue
 * MINOR: Issue where timeslider URI fails to be correct if padID is numeric
 * MINOR: Include prompt for clear authorship when entire document is selected
@@ -21,6 +26,7 @@
 * MINOR: Change disconnect logic to reconnect instead of silently failing
 * MINOR: Update SocketIO, async, jQuery and Mocha which were stuck due to stale code.
 * MINOR: Rewrite the majority of the ``bin`` scripts to use more modern syntax
+* MINOR: Improved CSS anomation through prefers-reduced-motion
 * PERFORMANCE: Use workers (where possible) to minify CSS/JS on first page request.  This improves initial startup times.
 * PERFORMANCE: Cache EJS files improving page load speed when maxAge > 0.
 * TESTS: Additional test coverage for OL/LI/Import/Export
@@ -29,6 +35,7 @@
 * TESTS: Include fuzzing import test.
 * TESTS: Ensure CI is no longer using any cache
 * TESTS: Fix various tests...
+* TESTS: Various additional Travis testing including libreoffice import/export
 
 # 1.8.4
 * FIX: fix a performance regression on MySQL introduced in 1.8.3
