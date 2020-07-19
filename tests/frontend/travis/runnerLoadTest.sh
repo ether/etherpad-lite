@@ -30,7 +30,9 @@ echo "Now I will try for 15 seconds to connect to Etherpad on http://localhost:9
 echo "Successfully connected to Etherpad on http://localhost:9001"
 
 # Set "points": 10 to 1000 to not agressively rate limit commits
-sed 's/\"points\": 10/\"points\": 1000/g' settings.json.template > settings.json
+sed 's/\"points\": 10/\"points\": 1000/g' settings.json.template > settings.json.points
+# And enable loadTest
+sed 's/\"loadTest\": false,/\"loadTest\": true,/g' settings.json.points > settings.json
 
 # Build the minified files?
 curl http://localhost:9001/p/minifyme -f -s > /dev/null
