@@ -357,6 +357,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
           for (var diff = prevLevel; diff < line.listLevel; diff++) {
             openLists.push({level: diff, type: line.listTypeName});
             var prevPiece = pieces[pieces.length - 1];
+
             if (prevPiece.indexOf("<ul") === 0 || prevPiece.indexOf("<ol") === 0 || prevPiece.indexOf("</li>") === 0)
             {
                /*
