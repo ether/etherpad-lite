@@ -357,7 +357,6 @@ function getHTMLFromAtext(pad, atext, authorColors)
           for (var diff = prevLevel; diff < line.listLevel; diff++) {
             openLists.push({level: diff, type: line.listTypeName});
             var prevPiece = pieces[pieces.length - 1];
-console.log(prevPiece);
             if (prevPiece.indexOf("<ul") === 0 || prevPiece.indexOf("<ol") === 0 || prevPiece.indexOf("</li>") === 0)
             {
                /*
@@ -426,7 +425,6 @@ console.log(prevPiece);
             // TODO Check against Uls
             // don't do anything because the next item is a nested ol openener so we need to keep the li open
           }else{
-console.warn("AM HERE! pushing in another");
             pieces.push("</li>");
           }
 
