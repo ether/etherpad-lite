@@ -16,7 +16,10 @@ sed 's#\"soffice\": null,#\"soffice\":\"/usr/bin/soffice\",#g' settings.json.tem
 sed 's/\"allowAnyoneToImport\": false,/\"allowAnyoneToImport\": true,/g' settings.json.soffice > settings.json.allowImport
 
 # Set "max": 10 to 100 to not agressively rate limit
-sed 's/\"max\": 10/\"max\": 100/g' settings.json.allowImport > settings.json
+sed 's/\"max\": 10/\"max\": 100/g' settings.json.allowImport > settings.json.rateLimit
+
+# Set "points": 10 to 1000 to not agressively rate limit commits
+sed 's/\"points\": 10/\"points\": 1000/g' settings.json.rateLimit > settings.json
 
 # start Etherpad, assuming all dependencies are already installed.
 #
