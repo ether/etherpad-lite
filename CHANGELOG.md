@@ -9,6 +9,7 @@
 * FEATURE: New script to delete sessions.
 * FEATURE: New setting to allow import withing an author session on a pad
 * FEATURE: Checks Etherpad version on startup and notifies if update is available.  Also available in ``/admin`` interface.
+* FEATURE: Timeslider updates pad location to most recent edit
 * MINOR: Outdent UL/LI items on removal of list item
 * MINOR: Various UL/LI import/export bugs
 * MINOR: PDF export fix
