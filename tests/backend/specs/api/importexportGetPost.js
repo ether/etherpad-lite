@@ -108,7 +108,6 @@ describe('Imports and Exports', function(){
     }
   });
 
-/*
   // For some reason word import does not work in testing..
   // TODO: fix support for .doc files..
   xit('Tries to import .doc that uses soffice or abiword', function(done) {
@@ -258,13 +257,11 @@ describe('Imports and Exports', function(){
       }
     })
   })
-*/
 
   it('Tries to import .etherpad', function(done) {
     if(!settings.allowAnyoneToImport) return done();
 
     var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
-console.log(err, body);
       if (err) {
         throw new Error("Failed to import", err);
       } else {
@@ -299,11 +296,11 @@ console.log(err, body);
 
       // broken pre fix export -- <ul class="bullet"></li><ul class="bullet"></ul></li></ul>
       var expectedHTML = '<ul class="bullet"><li><ul class="bullet"><li>hello</ul></li></ul>';
-
       // expect body to include
       if(body.indexOf(expectedHTML) !== -1){
         done();
       }else{
+        console.log(body);
         throw new Error("Exported HTML nested list items is not right", body);
       }
     })
