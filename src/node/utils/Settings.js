@@ -344,6 +344,22 @@ exports.importExportRateLimiting = {
 };
 
 /*
+ * From Etherpad 1.9.0 onwards, commits from individual users are rate limited
+ *
+ * The default is to allow at most 10 changes per IP in a 1 second window.
+ * After that the change is rejected.
+ *
+ * See https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#websocket-single-connection-prevent-flooding for more options
+ */
+exports.commitRateLimiting = {
+  // duration of the rate limit window (seconds)
+  "duration": 1,
+
+  // maximum number of chanes per IP to allow during the rate limit window
+  "points": 10
+};
+
+/*
  * From Etherpad 1.8.3 onwards, the maximum allowed size for a single imported
  * file is always bounded.
  *

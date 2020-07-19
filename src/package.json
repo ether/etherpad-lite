@@ -54,6 +54,7 @@
     "nodeify": "1.0.1",
     "npm": "6.14.5",
     "openapi-backend": "2.4.1",
+    "rate-limiter-flexible": "^2.1.4",
     "rehype": "^10.0.0",
     "rehype-format": "^3.0.1",
     "request": "2.88.2",
