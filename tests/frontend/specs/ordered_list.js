@@ -100,7 +100,6 @@ describe("assign ordered list", function(){
     }).done(function(){
       var $newSecondLine = inner$("div").first().next();
       var hasOLElement = $newSecondLine.find("ol li").length === 1;
-      console.log($newSecondLine.find("ol"));
       expect(hasOLElement).to.be(true);
       expect($newSecondLine.text()).to.be("line 2");
       var hasLineNumber = $newSecondLine.find("ol").attr("start") === 2;
@@ -126,3 +125,80 @@ describe("assign ordered list", function(){
   }
 
 });
+
+describe("Pressing Tab in an OL increases and decreases indentation", function(){
+  //create a new pad before each test run
+  beforeEach(function(cb){
+    helper.newPad(cb);
+    this.timeout(60000);
+  });
+
+  it("indent and de-indent list item with keypress", function(done){
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
+
+    //get the first text element out of the inner iframe
+    var $firstTextElement = inner$("div").first();
+
+    //select this text element
+    $firstTextElement.sendkeys('{selectall}');
+
+    var $insertorderedlistButton = chrome$(".buttonicon-insertorderedlist");
+    $insertorderedlistButton.click();
+
+    var e = inner$.Event(helper.evtType);
+    e.keyCode = 9; // tab
+    inner$("#innerdocbody").trigger(e);
+
+    expect(inner$("div").first().find(".list-number2").length === 1).to.be(true);
+    e.shiftKey = true; // shift
+    e.keyCode = 9; // tab
+    inner$("#innerdocbody").trigger(e);
+
+    helper.waitFor(function(){
+      return inner$("div").first().find(".list-number1").length === 1;
+    }).done(done);
+
+  });
+
+
+});
+
+
+describe("Pressing indent/outdent button in an OL increases and decreases indentation and bullet / ol formatting", function(){
+  //create a new pad before each test run
+  beforeEach(function(cb){
+    helper.newPad(cb);
+    this.timeout(60000);
+  });
+
+  it("indent and de-indent list item with indent button", function(done){
+    var inner$ = helper.padInner$;
+    var chrome$ = helper.padChrome$;
+
+    //get the first text element out of the inner iframe
+    var $firstTextElement = inner$("div").first();
+
+    //select this text element
+    $firstTextElement.sendkeys('{selectall}');
+
+    var $insertorderedlistButton = chrome$(".buttonicon-insertorderedlist");
+    $insertorderedlistButton.click();
+
+    var $indentButton = chrome$(".buttonicon-indent");
+    $indentButton.click(); // make it indented twice
+
+    expect(inner$("div").first().find(".list-number2").length === 1).to.be(true);
+
+    var $outdentButton = chrome$(".buttonicon-outdent");
+    $outdentButton.click(); // make it deindented to 1
+
+    helper.waitFor(function(){
+      return inner$("div").first().find(".list-number1").length === 1;
+    }).done(done);
+
+  });
+
+
+});
+

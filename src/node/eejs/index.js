@@ -24,6 +24,9 @@ var fs = require("fs");
 var path = require("path");
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 var resolve = require("resolve");
+var settings = require('../utils/Settings');
+
+const templateCache = new Map()
 
 exports.info = {
   __output_stack: [],
@@ -114,12 +117,26 @@ exports.require = function (name, args, mod) {
 
   args.e = exports;
   args.require = require;
-  var template = '<% e._init(__output); %>' + fs.readFileSync(ejspath).toString() + '<% e._exit(); %>';
-  
+
+  let template
+  if (settings.maxAge !== 0){ // don't cache if maxAge is 0
+    if (!templateCache.has(ejspath)) {
+      template = '<% e._init(__output); %>' + fs.readFileSync(ejspath).toString() + '<% e._exit(); %>';
+      templateCache.set(ejspath, template)
+    } else {
+      template = templateCache.get(ejspath)
+    }
+  }else{
+    template = '<% e._init(__output); %>' + fs.readFileSync(ejspath).toString() + '<% e._exit(); %>';
+  }
+
   exports.info.args.push(args);
   exports.info.file_stack.push({path: ejspath, inherit: []});
-
-  var res = ejs.render(template, args);
+  if(settings.maxAge !== 0){
+    var res = ejs.render(template, args, { cache: true, filename: ejspath });
+  }else{
+    var res = ejs.render(template, args, { cache: false, filename: ejspath });
+  }
   exports.info.file_stack.pop();
   exports.info.args.pop();
 

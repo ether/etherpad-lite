@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Pichnat Thong",
 			"Sovichet",
 			"វ័ណថារិទ្ធ"
 		]
@@ -36,6 +37,8 @@
 	"pad.settings.fontType": "ប្រភេទពុម្ពអក្សរ៖",
 	"pad.settings.fontType.normal": "ធម្មតា",
 	"pad.settings.language": "ភាសា៖",
+	"pad.settings.about": "អំពី",
+	"pad.settings.poweredBy": "ពលុបត្ថម្ភដោយ",
 	"pad.importExport.import_export": "នាំចូល/នាំចេញ",
 	"pad.importExport.import": "ផ្ទុក​ឡើង​ឯកសារ​អត្ថបទ​ណាមួយ",
 	"pad.importExport.importSuccessful": "ដោយជោគជ័យ!",

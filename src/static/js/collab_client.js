@@ -272,8 +272,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
   function handleMessageFromServer(evt)
   {
-    if (window.console) console.log(evt);
-
     if (!getSocket()) return;
     if (!evt.data) return;
     var wrapper = evt;
@@ -309,6 +307,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
         return;
       }
       rev = newRev;
+
       editor.applyChangesToBase(changeset, author, apool);
     }
     else if (msg.type == "ACCEPT_COMMIT")
@@ -508,6 +507,9 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     if(msg.type.indexOf("USER_") > -1) {
       msg.payload = msg.userInfo;
     }
+    // Similar for NEW_CHANGES
+    if(msg.type === "NEW_CHANGES") msg.payload = msg;
+
     hooks.callAll('handleClientMessage_' + msg.type, {payload: msg.payload});
   }
 
@@ -754,7 +756,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     setIsPendingRevision: setIsPendingRevision
   };
 
-  $(document).ready(setUpSocket);
+  setUpSocket();
   return self;
 }
 

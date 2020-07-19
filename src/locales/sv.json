@@ -42,6 +42,7 @@
 	"pad.settings.fontType": "Typsnitt:",
 	"pad.settings.fontType.normal": "Normal",
 	"pad.settings.language": "Språk:",
+	"pad.settings.about": "Om",
 	"pad.importExport.import_export": "Importera/Exportera",
 	"pad.importExport.import": "Ladda upp textfiler eller dokument",
 	"pad.importExport.importSuccessful": "Åtgärden slutfördes!",

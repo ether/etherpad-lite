@@ -73,6 +73,18 @@ async function doImport(req, res, padId)
   form.keepExtensions = true;
   form.uploadDir = tmpDirectory;
   form.maxFileSize = settings.importMaxFileSize;
+  
+  // Ref: https://github.com/node-formidable/formidable/issues/469
+  // Crash in Etherpad was Uploading Error: Error: Request aborted
+  // [ERR_STREAM_DESTROYED]: Cannot call write after a stream was destroyed
+  form.onPart = part => {
+    form.handlePart(part);
+    if (part.filename !== undefined) {
+      form.openedFiles[form.openedFiles.length - 1]._writeStream.on('error', err => {
+        form.emit('error', err);
+      });
+    }
+  };
 
   // locally wrapped Promise, since form.parse requires a callback
   let srcFile = await new Promise((resolve, reject) => {
@@ -84,7 +96,7 @@ async function doImport(req, res, padId)
         }
 
         // I hate doing indexOf here but I can't see anything to use...
-        if (err.stack.indexOf("maxFileSize") !== -1) {
+        if (err &&  err.stack && err.stack.indexOf("maxFileSize") !== -1) {
           reject("maxFileSize");
         }
 
@@ -274,15 +286,6 @@ exports.doImport = function (req, res, padId)
     }
   }).then(() => {
     // close the connection
-    res.send(
-    "<head> \
-      <script type='text/javascript' src='../../static/js/jquery.js'></script> \
-    </head> \
-    <script> \
-      $(window).load(function(){ \
-        var impexp = window.parent.padimpexp.handleFrameCall('" + req.directDatabaseAccess +"', '" + status + "'); \
-      }) \
-    </script>"
-    );
+    res.send("<script>document.addEventListener('DOMContentLoaded', function(){ var impexp = window.parent.padimpexp.handleFrameCall('" + req.directDatabaseAccess +"', '" + status + "'); })</script>");
   });
 }

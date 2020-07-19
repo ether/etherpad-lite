@@ -30,7 +30,7 @@
     }
   ],
   "dependencies": {
-    "async": "0.9.0",
+    "async": "^3.2.0",
     "async-stacktrace": "0.0.2",
     "channels": "0.0.4",
     "cheerio": "0.22.0",
@@ -54,15 +54,19 @@
     "nodeify": "1.0.1",
     "npm": "6.14.5",
     "openapi-backend": "2.4.1",
+    "rehype": "^10.0.0",
+    "rehype-format": "^3.0.1",
     "request": "2.88.2",
     "resolve": "1.1.7",
     "security": "1.0.0",
     "semver": "5.6.0",
     "slide": "1.1.6",
-    "socket.io": "2.1.1",
+    "socket.io": "^2.3.0",
+    "terser": "^4.7.0",
+    "threads": "^1.4.0",
+    "tiny-worker": "^2.3.0",
     "tinycon": "0.0.1",
-    "ueberdb2": "0.4.9",
-    "uglify-js": "3.8.1",
+    "ueberdb2": "^0.5.0",
     "underscore": "1.8.3",
     "unorm": "1.4.1",
     "rate-limiter-flexible": "2.1.4"
@@ -72,6 +76,7 @@
   },
   "devDependencies": {
     "mocha": "7.1.2",
+    "mocha-froth": "^0.2.10",
     "nyc": "15.0.1",
     "supertest": "4.0.2",
     "wd": "1.12.1"
@@ -86,6 +91,7 @@
   },
   "scripts": {
     "test": "nyc mocha --timeout 5000 ../tests/backend/specs/api",
+    "test-contentcollector": "nyc mocha --timeout 5000 ../tests/backend/specs",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api"
   },
   "version": "1.8.4",

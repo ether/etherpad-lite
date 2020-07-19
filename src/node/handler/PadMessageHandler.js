@@ -933,6 +933,15 @@ async function handleClientReady(client, message)
   let authorColorId = value.colorId;
   let authorName = value.name;
 
+  /*
+  * Here we know authorID, token and session.  We should ?always? store it..
+  * TODO: I fear that this might allow a user to pass a token for an authorID
+  * meaning that they could in theory "imitate" another author?
+  * Perhaps the fix to this is check to see if it exists first and if it
+  * does then abort..  Details: https://github.com/ether/etherpad-lite/issues/4006
+  */
+  await authorManager.setToken2Author(message.token, statusObject.authorID)
+
   // load the pad-object from the database
   let pad = await padManager.getPad(padIds.padId);
 
@@ -1146,6 +1155,7 @@ async function handleClientReady(client, message)
       },
       "initialChangesets": [], // FIXME: REMOVE THIS SHIT
       "thisUserHasEditedThisPad": thisUserHasEditedThisPad,
+      "allowAnyoneToImport": settings.allowAnyoneToImport
     }
 
     // Add a username to the clientVars if one avaiable
@@ -1309,7 +1319,7 @@ async function handleChangesetRequest(client, message)
     data.requestID = message.data.requestID;
     client.json.send({ type: "CHANGESET_REQ", data });
   } catch (err) {
-    console.error('Error while handling a changeset request for ' + padIds.padId, err, message.data);
+    console.error('Error while handling a changeset request for ' + padIds.padId, err.toString(), message.data);
   }
 }
 
@@ -1510,8 +1520,12 @@ exports.padUsers = async function(padID) {
     let s = sessioninfos[roomClient.id];
     if (s) {
       return authorManager.getAuthor(s.author).then(author => {
-        author.id = s.author;
-        padUsers.push(author);
+        // Fixes: https://github.com/ether/etherpad-lite/issues/4120
+        // On restart author might not be populated?
+        if(author){
+          author.id = s.author;
+          padUsers.push(author);
+        }
       });
     }
   }));

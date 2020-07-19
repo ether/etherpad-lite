@@ -47,6 +47,9 @@ var chat = (function()
     },
     stickToScreen: function(fromInitialCall) // Make chat stick to right hand side of screen
     {
+      if(pad.settings.hideChat){
+        return;
+      }
       chat.show();
       isStuck = (!isStuck || fromInitialCall);
       $('#chatbox').hide();

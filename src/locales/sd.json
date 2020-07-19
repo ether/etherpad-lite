@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"BaRaN6161 TURK",
 			"Mehtab ahmed",
 			"Tweety"
 		]
@@ -66,7 +67,7 @@
 	"timeslider.toolbar.exportlink.title": "برآمد ڪريو",
 	"timeslider.version": "ورزن {{version}}",
 	"timeslider.saved": "سانڍيل {{month}} {{day}}، {{year}}",
-	"timeslider.dateformat": "{{مهينو}}/{{ڏينهن}}/{{سال}} {{ڪلاڪ}}:{{منٽ}}:{{سيڪنڊ}}",
+	"timeslider.dateformat": "{{month}}/{{day}}/{{year}} {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "جنوري",
 	"timeslider.month.february": "فيبروري",
 	"timeslider.month.march": "مارچ",

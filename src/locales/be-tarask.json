@@ -3,11 +3,13 @@
 		"authors": [
 			"Jim-by",
 			"Red Winged Duck",
+			"Renessaince",
 			"Wizardist"
 		]
 	},
 	"index.newPad": "Стварыць",
 	"index.createOpenPad": "ці тварыць/адкрыць дакумэнт з назвай:",
+	"index.openPad": "адкрыць існы Нататнік з назваю:",
 	"pad.toolbar.bold.title": "Тоўсты (Ctrl-B)",
 	"pad.toolbar.italic.title": "Курсіў (Ctrl-I)",
 	"pad.toolbar.underline.title": "Падкрэсьліваньне (Ctrl-U)",
@@ -28,7 +30,7 @@
 	"pad.colorpicker.save": "Захаваць",
 	"pad.colorpicker.cancel": "Скасаваць",
 	"pad.loading": "Загрузка...",
-	"pad.noCookie": "Кукі ня знойдзеныя. Калі ласка, дазвольце кукі ў вашым браўзэры!",
+	"pad.noCookie": "Кукі ня знойдзеныя. Калі ласка, дазвольце кукі ў вашым браўзэры! Паміж наведваньнямі вашая сэсія і налады ня будуць захаваныя. Гэта можа адбывацца таму, што ў некаторых броўзэрах Etherpad заключаны ўнутры iFrame. Праверце, калі ласка, што Etherpad знаходзіцца ў тым жа паддамэне/дамэне, што і бацькоўскі iFrame",
 	"pad.passwordRequired": "Для доступу да гэтага дакумэнта патрэбны пароль",
 	"pad.permissionDenied": "Вы ня маеце дазволу на доступ да гэтага дакумэнта",
 	"pad.wrongPassword": "Вы ўвялі няслушны пароль",
@@ -52,7 +54,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "Вы можаце імпартаваць толькі з звычайнага тэксту або HTML. Дзеля больш пашыраных магчымасьцяў імпарту, калі ласка, <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">усталюйце AbiWord</a>.",
+	"pad.importExport.abiword.innerHTML": "Вы можаце імпартаваць толькі з звычайнага тэксту або HTML. Дзеля больш пашыраных магчымасьцяў імпарту, калі ласка, <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">усталюйце AbiWord альбо LibreOffice</a>.",
 	"pad.modals.connected": "Падлучыліся.",
 	"pad.modals.reconnecting": "Перападлучэньне да вашага дакумэнта...",
 	"pad.modals.forcereconnect": "Прымусовае перападлучэньне",
@@ -120,7 +122,7 @@
 	"pad.userlist.guest": "Госьць",
 	"pad.userlist.deny": "Адхіліць",
 	"pad.userlist.approve": "Зацьвердзіць",
-	"pad.editbar.clearcolors": "Ачысьціць аўтарскія колеры ва ўсім дакумэнце?",
+	"pad.editbar.clearcolors": "Ачысьціць аўтарскія колеры ва ўсім дакумэнце? Гэта немагчыма будзе скасаваць",
 	"pad.impexp.importbutton": "Імпартаваць зараз",
 	"pad.impexp.importing": "Імпартаваньне…",
 	"pad.impexp.confirmimport": "Імпарт файла перазапіша цяперашні тэкст дакумэнту. Вы ўпэўненыя, што хочаце працягваць?",
@@ -129,5 +131,7 @@
 	"pad.impexp.uploadFailed": "Загрузка не атрымалася, калі ласка, паспрабуйце яшчэ раз",
 	"pad.impexp.importfailed": "Памылка імпарту",
 	"pad.impexp.copypaste": "Калі ласка, скапіюйце і ўстаўце",
-	"pad.impexp.exportdisabled": "Экспарт у фармаце {{type}} адключаны. Калі ласка, зьвярніцеся да вашага сыстэмнага адміністратара па падрабязнасьці."
+	"pad.impexp.exportdisabled": "Экспарт у фармаце {{type}} адключаны. Калі ласка, зьвярніцеся да вашага сыстэмнага адміністратара па падрабязнасьці.",
+	"pad.impexp.maxFileSize": "Файл завялікі. Зьвярніцеся да адміністратара сайту, каб павялічыць дазволены памер файлаў для імпарту",
+	"pad.impexp.permission": "Імпарт адключаны, бо вы ніколі не працавалі з гэтым нататнікам. Калі ласка, перад імпартам зрабеце хоць бы адзін унёсак"
 }

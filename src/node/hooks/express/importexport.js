@@ -71,32 +71,32 @@ exports.expressCreateServer = function (hook_name, args, cb) {
        *
        * See: https://github.com/ether/etherpad-lite/pull/3833#discussion_r407490205
        */
-      if (!req.cookies) {
+      if (!req.cookies && !settings.allowAnyoneToImport) {
         console.warn(`Unable to import file into "${req.params.pad}". No cookies included in request`);
         return next();
       }
 
-      if (!req.cookies.token) {
+      if (!req.cookies.token && !settings.allowAnyoneToImport) {
         console.warn(`Unable to import file into "${req.params.pad}". No token in the cookies`);
         return next();
       }
 
       let author = await authorManager.getAuthor4Token(req.cookies.token);
       // author is of the form: "a.g2droBYw1prY7HW9"
-      if (!author) {
+      if (!author && !settings.allowAnyoneToImport) {
         console.warn(`Unable to import file into "${req.params.pad}". No Author found for token ${req.cookies.token}`);
 
         return next();
       }
 
       let authorsPads = await authorManager.listPadsOfAuthor(author);
-      if (!authorsPads) {
+      if (!authorsPads && !settings.allowAnyoneToImport) {
         console.warn(`Unable to import file into "${req.params.pad}". Author "${author}" exists but he never contributed to any pad`);
         return next();
       }
 
       let authorsPadIDs = authorsPads.padIDs;
-      if (authorsPadIDs.indexOf(req.params.pad) === -1) {
+      if ( (authorsPadIDs.indexOf(req.params.pad) === -1) && !settings.allowAnyoneToImport) {
         console.warn(`Unable to import file into "${req.params.pad}". Author "${author}" exists but he never contributed to this pad`);
         return next();
       }

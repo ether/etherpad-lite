@@ -322,6 +322,11 @@ exports.scrollWhenFocusLineIsOutOfViewport = {
 exports.exposeVersion = false;
 
 /*
+ * Override any strings found in locale directories
+ */
+exports.customLocaleStrings = {};
+
+/*
  * From Etherpad 1.8.3 onwards, import and export of pads is always rate
  * limited.
  *
@@ -361,6 +366,20 @@ exports.commitRateLimiting = {
  * File size is specified in bytes. Default is 50 MB.
  */
 exports.importMaxFileSize = 50 * 1024 * 1024;
+
+
+/*
+ * From Etherpad 1.8.3 onwards import was restricted to authors who had
+ * content within the pad.
+ *
+ * This setting will override that restriction and allow any user to import
+ * without the requirement to add content to a pad.
+ *
+ * This setting is useful for when you use a plugin for authentication so you
+ * can already trust each user.
+ */
+exports.allowAnyoneToImport = false,
+
 
 // checks if abiword is avaiable
 exports.abiwordAvailable = function()

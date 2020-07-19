@@ -1,11 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"Aefgh39622"
+			"Aefgh39622",
+			"Patsagorn Y."
 		]
 	},
 	"index.newPad": "สร้างแผ่นจดบันทึกใหม่",
 	"index.createOpenPad": "หรือสร้าง/เปิดแผ่นจดบันทึกที่มีชื่อ:",
+	"index.openPad": "เปิดแพดที่มีอยู่แล้วด้วยชื่อ:",
 	"pad.toolbar.bold.title": "ตัวหนา (Ctrl+B)",
 	"pad.toolbar.italic.title": "ตัวเอียง (Ctrl+I)",
 	"pad.toolbar.underline.title": "ขีดเส้นใต้ (Ctrl+U)",
@@ -26,7 +28,7 @@
 	"pad.colorpicker.save": "บันทึก",
 	"pad.colorpicker.cancel": "ยกเลิก",
 	"pad.loading": "กำลังโหลด...",
-	"pad.noCookie": "ไม่พบคุกกี้ โปรดเปิดใช้งานคุกกี้ในเบราว์เซอร์ของคุณ!",
+	"pad.noCookie": "ไม่พบคุกกี้ กรุณาอนุญาติคุกกี้บนเบราว์เซอร์ของคุณ การเข้าสู่ระบบและการตั้งค่าจะไม่ถูกบันทึกขณะเยี่ยมชม อาจเกิดปัญหาจากอีเทอร์แพดถูกฝังไว้ในหน้าผ่าน iFrame ในบางเบราว์เซอร์ กรุณาตรวจสอบว่าอีเทอร์แพดอยู่ในโดเมนหรือโดเมนรองเดียวกันกับหน้าที่ฝัง iFrame",
 	"pad.passwordRequired": "คุณต้องใช้รหัสผ่านเพื่อเข้าถึงแผ่นจดบันทึกนี้",
 	"pad.permissionDenied": "คุณไม่มีสิทธิ์เข้าถึงแผ่นจดบันทึกนี้",
 	"pad.wrongPassword": "รหัสผ่านของคุณผิด",
@@ -49,7 +51,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "คุณสามารถนำเข้าได้จากรูปแบบ HTML หรือข้อความธรรมดาเท่านั้น สำหรับคุณสมบัติการนำเข้าขั้นสูงเพิ่มเติม โปรด<a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">ติดตั้ง AbiWord</a>",
+	"pad.importExport.abiword.innerHTML": "คุณสามารถนำเข้าได้จากรูปแบบ HTML หรือข้อความธรรมดาเท่านั้น สำหรับคุณสมบัติการนำเข้าขั้นสูงเพิ่มเติม โปรด<a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">ติดตั้ง AbiWord หรือ LibraOffice</a>",
 	"pad.modals.connected": "เชื่อมต่อแล้ว",
 	"pad.modals.reconnecting": "กำลังเชื่อมต่อกับแผ่นจดบันทึกของคุณใหม่..",
 	"pad.modals.forcereconnect": "บังคับเชื่อมต่อใหม่",
@@ -83,6 +85,8 @@
 	"pad.chat": "แชท",
 	"pad.chat.title": "เปิดการแชทสำหรับแผ่นจดบันทึกนี้",
 	"pad.chat.loadmessages": "โหลดข้อความเพิ่มเติม",
+	"pad.chat.stick.title": "ปักการสนทนาไว้บนหน้าจอ",
+	"pad.chat.writeMessage.placeholder": "เขียนข้อความ...",
 	"timeslider.pageTitle": "ตัวเลื่อนเวลา {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "กลับไปแผ่นจดบันทึก",
 	"timeslider.toolbar.authors": "ผู้เขียน:",
@@ -115,7 +119,7 @@
 	"pad.userlist.guest": "ผู้เยี่ยมชม",
 	"pad.userlist.deny": "ปฏิเสธ",
 	"pad.userlist.approve": "อนุมัติ",
-	"pad.editbar.clearcolors": "ล้างสีผู้เขียนบนทั้งเอกสารหรือไม่?",
+	"pad.editbar.clearcolors": "ลบการเน้นเจ้าของข้อความหรือไม่? นี่ไม่สามารถย้อนได้",
 	"pad.impexp.importbutton": "นำเข้าเดี๋ยวนี้",
 	"pad.impexp.importing": "กำลังนำเข้า...",
 	"pad.impexp.confirmimport": "การนำเข้าไฟล์จะเป็นการเขียนทับข้อความปัจจุบันบนแผ่นจดบันทึก คุณแน่ใจหรือว่าคุณต้องการดำเนินการต่อ?",
@@ -124,5 +128,7 @@
 	"pad.impexp.uploadFailed": "การอัปโหลดล้มเหลว โปรดลองอีกครั้ง",
 	"pad.impexp.importfailed": "การนำเข้าล้มเหลว",
 	"pad.impexp.copypaste": "โปรดคัดลอกแล้ววาง",
-	"pad.impexp.exportdisabled": "การส่งออกเป็นรูปแบบ {{type}} ถูกปิดใช้งาน โปรดติดต่อผู้ดูแลระบบของคุณสำหรับรายละเอียดเพิ่มเติม"
+	"pad.impexp.exportdisabled": "การส่งออกเป็นรูปแบบ {{type}} ถูกปิดใช้งาน โปรดติดต่อผู้ดูแลระบบของคุณสำหรับรายละเอียดเพิ่มเติม",
+	"pad.impexp.maxFileSize": "ไฟล์ใหญ่เกินไป ติดต่อผู้ดูแลไซต์เพื่อให้ขยายขนาดไฟล์ที่นำเข้าได้",
+	"pad.impexp.permission": "การนำเข้าถูกปิดเนื่องจากคุณไม่เคยมีส่วนร่วมในแพดนี้ กรุณามีส่วนร่วมซักครั้งหนึ่งก่อนนำเข้า"
 }

@@ -39,7 +39,6 @@ describe("clear authorship colors button", function(){
       $clearauthorshipcolorsButton.click();
 
       // does the first divs span include an author class?
-      console.log(inner$("div span").first().attr("class"));
       var hasAuthorClass = inner$("div span").first().attr("class").indexOf("author") !== -1;
       //expect(hasAuthorClass).to.be(false);
 
@@ -47,10 +46,13 @@ describe("clear authorship colors button", function(){
       var hasAuthorClass = inner$("div").first().attr("class").indexOf("author") !== -1;
       expect(hasAuthorClass).to.be(false);
 
-      setTimeout(function(){
+      helper.waitFor(function(){
         var disconnectVisible = chrome$("div.disconnected").attr("class").indexOf("visible") === -1
-        expect(disconnectVisible).to.be(true);
-      },1000);
+        return (disconnectVisible === true)
+      });
+
+      var disconnectVisible = chrome$("div.disconnected").attr("class").indexOf("visible") === -1
+      expect(disconnectVisible).to.be(true);
 
       done();
     });
@@ -91,7 +93,6 @@ describe("clear authorship colors button", function(){
       $clearauthorshipcolorsButton.click();
 
       // does the first divs span include an author class?
-      console.log(inner$("div span").first().attr("class"));
       var hasAuthorClass = inner$("div span").first().attr("class").indexOf("author") !== -1;
       //expect(hasAuthorClass).to.be(false);
 
@@ -116,11 +117,13 @@ describe("clear authorship colors button", function(){
       hasAuthorClass = inner$("div").first().attr("class").indexOf("author") !== -1;
       expect(hasAuthorClass).to.be(false);
 
-
-      setTimeout(function(){
+      helper.waitFor(function(){
         var disconnectVisible = chrome$("div.disconnected").attr("class").indexOf("visible") === -1
-        expect(disconnectVisible).to.be(true);
-      },1000);
+        return (disconnectVisible === true)
+      });
+
+      var disconnectVisible = chrome$("div.disconnected").attr("class").indexOf("visible") === -1
+      expect(disconnectVisible).to.be(true);
 
       done();
     });

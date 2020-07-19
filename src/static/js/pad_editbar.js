@@ -293,18 +293,20 @@ var padeditbar = (function()
     },
     setEmbedLinks: function()
     {
+      var padUrl = window.location.href.split("?")[0];
+
       if ($('#readonlyinput').is(':checked'))
       {
-        var basePath = document.location.href.substring(0, document.location.href.indexOf("/p/"));
-        var readonlyLink = basePath + "/p/" + clientVars.readOnlyId;
+        var urlParts = padUrl.split("/");
+        urlParts.pop();
+        var readonlyLink = urlParts.join("/") + "/" + clientVars.readOnlyId;
         $('#embedinput').val('<iframe name="embed_readonly" src="' + readonlyLink + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width="100%" height="600" frameborder="0"></iframe>');
         $('#linkinput').val(readonlyLink);
       }
       else
       {
-        var padurl = window.location.href.split("?")[0];
-        $('#embedinput').val('<iframe name="embed_readwrite" src="' + padurl + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width="100%" height="600" frameborder="0"></iframe>');
-        $('#linkinput').val(padurl);
+        $('#embedinput').val('<iframe name="embed_readwrite" src="' + padUrl + '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width="100%" height="600" frameborder="0"></iframe>');
+        $('#linkinput').val(padUrl);
       }
     },
     checkAllIconsAreDisplayedInToolbar: function()
@@ -408,7 +410,7 @@ var padeditbar = (function()
     toolbar.registerCommand("import_export", function () {
       toolbar.toggleDropDown("import_export", function(){
 
-        if (clientVars.thisUserHasEditedThisPad) {
+        if (clientVars.thisUserHasEditedThisPad || clientVars.allowAnyoneToImport) {
           // the user has edited this pad historically or in this session
           $('#importform').show();
           $('#importmessagepermission').hide();
@@ -482,7 +484,27 @@ var padeditbar = (function()
     });
 
     toolbar.registerAceCommand("clearauthorship", function (cmd, ace) {
-      if ((!(ace.ace_getRep().selStart && ace.ace_getRep().selEnd)) || ace.ace_isCaret()) {
+      // If we have the whole document selected IE control A has been hit
+      var rep = ace.ace_getRep();
+      var lastChar = rep.lines.atIndex(rep.lines.length()-1).width-1;
+      var lastLineIndex = rep.lines.length()-1;
+      if(rep.selStart[0] === 0 && rep.selStart[1] === 0){
+        // nesting intentionally here to make things readable
+        if(rep.selEnd[0] === lastLineIndex && rep.selEnd[1] === lastChar){
+          var doPrompt = true;
+        }
+      }
+      /*
+      * NOTICE: This command isn't fired on Control Shift C.
+      * I intentionally didn't create duplicate code because if you are hitting
+      * Control Shift C we make the assumption you are a "power user"
+      * and as such we assume you don't need the prompt to bug you each time!
+      * This does make wonder if it's worth having a checkbox to avoid being
+      * prompted again but that's probably overkill for this contribution.
+      */
+
+      // if we don't have any text selected, we have a caret or we have already said to prompt
+      if ((!(rep.selStart && rep.selEnd)) || ace.ace_isCaret() || doPrompt) {
         if (window.confirm(html10n.get("pad.editbar.clearcolors"))) {
           ace.ace_performDocumentApplyAttributesToCharRange(0, ace.ace_getRep().alltext.length, [
             ['author', '']

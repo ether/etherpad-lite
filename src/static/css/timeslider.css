@@ -21,7 +21,10 @@
 }
 
 /* RIGHT TOOLBAR (export, settings, back to pad) */
-
+.editbarright {
+  flex-shrink: 0; /* prevent the back to pad button to shrink */
+  margin-top: -10px;
+}
 .editbarright ul li a {
   background-color: transparent;
   border: none;
