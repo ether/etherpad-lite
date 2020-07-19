@@ -170,13 +170,17 @@ exports.handleDisconnect = async function(client)
  */
 exports.handleMessage = async function(client, message)
 {
-  try {
-    await rateLimiter.consume(client.handshake.address); // consume 1 point per event from IP
-  }catch(e){
-    console.warn("Rate limited: ", client.handshake.address, " to reduce the amount of rate limiting that happens edit the rateLimit values in settings.json");
-    stats.meter('rateLimited').mark();
-    client.json.send({disconnect:"rateLimited"});
-    return;
+  var env = process.env.NODE_ENV || 'development';
+
+  if (env === 'production') {
+    try {
+      await rateLimiter.consume(client.handshake.address); // consume 1 point per event from IP
+    }catch(e){
+      console.warn("Rate limited: ", client.handshake.address, " to reduce the amount of rate limiting that happens edit the rateLimit values in settings.json");
+      stats.meter('rateLimited').mark();
+      client.json.send({disconnect:"rateLimited"});
+      return;
+    }
   }
 
   if (message == null) {
