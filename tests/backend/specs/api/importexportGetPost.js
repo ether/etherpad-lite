@@ -122,7 +122,7 @@ describe('Imports and Exports', function(){
           throw new Error("Failed DOC import", testPadId);
         }else{
           done();
-        };
+        }
       }
     });
 
@@ -162,7 +162,7 @@ describe('Imports and Exports', function(){
           throw new Error("Failed DOCX import");
         }else{
           done();
-        };
+        }
       }
     });
 
@@ -198,7 +198,7 @@ describe('Imports and Exports', function(){
           throw new Error("Failed PDF import");
         }else{
           done();
-        };
+        }
       }
     });
 
@@ -234,7 +234,7 @@ describe('Imports and Exports', function(){
           throw new Error("Failed ODT import", testPadId);
         }else{
           done();
-        };
+        }
       }
     });
 
@@ -269,7 +269,7 @@ describe('Imports and Exports', function(){
           throw new Error("Failed Etherpad import", err, testPadId);
         }else{
           done();
-        };
+        }
       }
     });
 
