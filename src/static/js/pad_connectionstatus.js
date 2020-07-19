@@ -63,9 +63,8 @@ var padconnectionstatus = (function()
         what: 'disconnected',
         why: msg
       };
-
       var k = String(msg); // known reason why
-      if (!(k == 'userdup' || k == 'deleted' || k == 'looping' || k == 'slowcommit' || k == 'initsocketfail' || k == 'unauth' || k == 'badChangeset' || k == 'corruptPad'))
+      if (!(k == 'userdup' || k == 'deleted' || k == 'looping' || k == 'slowcommit' || k == 'initsocketfail' || k == 'unauth' || k == 'rateLimited' || k == 'badChangeset' || k == 'corruptPad'))
       {
         k = 'disconnected';
       }
