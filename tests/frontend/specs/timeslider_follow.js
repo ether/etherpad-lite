@@ -18,6 +18,9 @@ describe("timeslider", function(){
         // enter 'a' in the first text element
         inner$("div").last().sendkeys('a\n');
         inner$("div").last().sendkeys('{enter}');
+        inner$("div").last().sendkeys('{enter}');
+        inner$("div").last().sendkeys('{enter}');
+        inner$("div").last().sendkeys('{enter}');
       }, timePerRev*i);
     }
 
