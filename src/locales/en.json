@@ -99,6 +99,7 @@
   "pad.chat.stick.title": "Stick chat to screen",
   "pad.chat.writeMessage.placeholder": "Write your message here",
 
+  "timeslider.followContents": "Follow pad content updates",
   "timeslider.pageTitle": "{{appTitle}} Timeslider",
   "timeslider.toolbar.returnbutton": "Return to pad",
   "timeslider.toolbar.authors": "Authors:",
