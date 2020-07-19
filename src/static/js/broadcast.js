@@ -595,7 +595,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     // Sets the Y scrolling of the browser to go to this line
     var line = $('#innerdocbody').find("div:nth-child("+(lineNumber+1)+")");
     var newY = $(line)[0].offsetTop;
-    let ecb = document.getElementById('editorcontainerbox');
+    var ecb = document.getElementById('editorcontainerbox');
     ecb.scrollTo({top: newY, behavior: 'smooth'});
   }
 }
