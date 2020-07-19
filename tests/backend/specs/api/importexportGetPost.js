@@ -286,7 +286,8 @@ describe('Imports and Exports', function(){
       if(body.indexOf("hello") !== -1){
         done();
       }else{
-        throw new Error("Etherpad Document does not include hello", body);
+        console.error("body");
+        throw new Error("Etherpad Document does not include hello");
       }
     })
   })
@@ -300,7 +301,7 @@ describe('Imports and Exports', function(){
       if(body.indexOf(expectedHTML) !== -1){
         done();
       }else{
-        console.log(body);
+        console.error(body);
         throw new Error("Exported HTML nested list items is not right", body);
       }
     })
