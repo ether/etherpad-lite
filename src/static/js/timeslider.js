@@ -78,8 +78,6 @@ function init() {
     //route the incoming messages
     socket.on('message', function(message)
     {
-      if(window.console) console.log(message);
-
       if(message.type == "CLIENT_VARS")
       {
         handleClientVars(message);
@@ -88,7 +86,7 @@ function init() {
       {
         $("body").html("<h2>You have no permission to access this pad</h2>")
       } else {
-        changesetLoader.handleMessageFromServer(message);
+        if(message.type === 'CHANGESET_REQ') changesetLoader.handleMessageFromServer(message);
       }
     });
 

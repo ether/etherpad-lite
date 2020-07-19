@@ -3,6 +3,7 @@
 		"authors": [
 			"CYAN",
 			"Codenstory",
+			"Ellif",
 			"Hym411",
 			"Kurousagi",
 			"Revi",
@@ -47,6 +48,8 @@
 	"pad.settings.fontType": "글꼴 종류:",
 	"pad.settings.fontType.normal": "보통",
 	"pad.settings.language": "언어:",
+	"pad.settings.about": "소개",
+	"pad.settings.poweredBy": "제공:",
 	"pad.importExport.import_export": "가져오기/내보내기",
 	"pad.importExport.import": "텍스트 파일이나 문서 올리기",
 	"pad.importExport.importSuccessful": "성공!",

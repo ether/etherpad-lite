@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Nirajan pant",
 			"Nirjal stha",
 			"राम प्रसाद जोशी",
 			"सरोज कुमार ढकाल",
@@ -41,6 +42,8 @@
 	"pad.settings.fontType": "लिपि प्रकार:",
 	"pad.settings.fontType.normal": "सामान्य",
 	"pad.settings.language": "भाषा:",
+	"pad.settings.about": "बारेमा",
+	"pad.settings.poweredBy": "प्रवर्धक",
 	"pad.importExport.import_export": "आयात/निर्यात",
 	"pad.importExport.import": "कुनै पनि पाठ रहेको फाइल या कागजात अपलोड गर्नुहोस्",
 	"pad.importExport.importSuccessful": "सफल भयो!",

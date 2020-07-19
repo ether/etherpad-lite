@@ -25,7 +25,6 @@ describe("undo button then redo button", function(){
     $redoButton.click(); // resends foo
 
     helper.waitFor(function(){
-      console.log(inner$("div span").first().text());
       return inner$("div span").first().text() === newString;
     }).done(function(){
       var finalValue = inner$("div").first().text();
@@ -58,7 +57,6 @@ describe("undo button then redo button", function(){
     inner$("#innerdocbody").trigger(e);
 
     helper.waitFor(function(){
-      console.log(inner$("div span").first().text());
       return inner$("div span").first().text() === newString;
     }).done(function(){
       var finalValue = inner$("div").first().text();
