@@ -93,11 +93,6 @@ $(function(){
       failures.push(test);
     });
 
-    runner.on('end', function(){
-      stats.end = new Date;
-      stats.duration = new Date - stats.start;
-    });
-
     runner.on('pending', function(){
       stats.pending++;
     });
@@ -133,11 +128,16 @@ $(function(){
 
       var total = runner.total;
       runner.on('end', function(){
+        stats.end = new Date;
+        stats.duration = stats.end - stats.start;
+        var minutes = Math.floor(stats.duration / 1000 / 60);
+        var seconds = Math.round((stats.duration / 1000) % 60).toString().padStart("2","0");
         if(stats.tests >= total){
-          var minutes = Math.floor(stats.duration / 1000 / 60);
-          var seconds = Math.round((stats.duration / 1000) % 60);
-
-          append("FINISHED -", stats.passes, "tests passed,", stats.failures, "tests failed, duration: " + minutes + ":" + seconds);
+          append("FINISHED -", stats.passes, "tests passed,", stats.failures, "tests failed,", stats.pending," pending, duration: " + minutes + ":" + seconds);
+        }
+        else {
+          append("FINISHED - but not all tests returned!", stats.passes, "tests passed,", stats.failures, "tests failed,", stats.pending, "tests pending, duration: " + minutes + ":" + seconds);
+          append("run",total,"tests but only",stats.passes+stats.failures+stats.pending,"returned");
         }
       });
   }
