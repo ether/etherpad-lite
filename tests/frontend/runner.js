@@ -50,9 +50,9 @@ $(function(){
     });
 
     // Scroll down test display after each test
-    mocha = $('#mocha')[0];
+    let mochaEl = $('#mocha')[0];
     runner.on('test', function(){
-      mocha.scrollTop = mocha.scrollHeight;
+      mochaEl.scrollTop = mochaEl.scrollHeight;
     });
 
     var killTimeout;
