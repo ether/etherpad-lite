@@ -127,8 +127,6 @@ sauceTestWorker.push({
   , 'version'        : '78.0'
 });
 
-sauceTestWorker.drain = function() {
-  setTimeout(function(){
-    process.exit(allTestsPassed ? 0 : 1);
-  }, 3000);
-}
+sauceTestWorker.drain(function() {
+  process.exit(allTestsPassed ? 0 : 1);
+});
