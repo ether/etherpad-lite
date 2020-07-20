@@ -596,12 +596,11 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     var line = $('#innerdocbody').find("div:nth-child("+(lineNumber+1)+")");
     var newY = $(line)[0].offsetTop;
     var ecb = document.getElementById('editorcontainerbox');
-    // Cjrome 55 - 59 bugfix
+    // Chrome 55 - 59 bugfix
     if(ecb.scrollTo){
       ecb.scrollTo({top: newY, behavior: 'smooth'});
     }else{
-      // note the p..
-      ecb.scrollTop(newY);
+      $('#editorcontainerbox').scrollTop(newY);
     }
   }
 }
