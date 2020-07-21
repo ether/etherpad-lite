@@ -16,7 +16,7 @@ cd "${MY_DIR}/../../../"
 # This is possible because the "install" section of .travis.yml already contains
 # a call to bin/installDeps.sh
 echo "Running Etherpad directly, assuming bin/installDeps.sh has already been run"
-node node_modules/ep_etherpad-lite/node/server.js "${@}" > /dev/null &
+node node_modules/ep_etherpad-lite/node/server.js "${@}" &
 
 echo "Now I will try for 15 seconds to connect to Etherpad on http://localhost:9001"
 
