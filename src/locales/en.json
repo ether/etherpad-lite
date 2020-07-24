@@ -40,6 +40,8 @@
   "pad.settings.fontType": "Font type:",
   "pad.settings.fontType.normal": "Normal",
   "pad.settings.language": "Language:",
+  "pad.settings.about": "About",
+  "pad.settings.poweredBy": "Powered by",
 
   "pad.importExport.import_export": "Import/Export",
   "pad.importExport.import": "Upload any text file or document",
@@ -85,6 +87,9 @@
   "pad.modals.deleted": "Deleted.",
   "pad.modals.deleted.explanation": "This pad has been removed.",
 
+  "pad.modals.rateLimited": "Rate Limited.",
+  "pad.modals.rateLimited.explanation": "You sent too many messages to this pad so it disconnected you.",
+
   "pad.modals.disconnected": "You have been disconnected.",
   "pad.modals.disconnected.explanation": "The connection to the server was lost",
   "pad.modals.disconnected.cause": "The server may be unavailable. Please notify the service administrator if this continues to happen.",
@@ -99,6 +104,7 @@
   "pad.chat.stick.title": "Stick chat to screen",
   "pad.chat.writeMessage.placeholder": "Write your message here",
 
+  "timeslider.followContents": "Follow pad content updates",
   "timeslider.pageTitle": "{{appTitle}} Timeslider",
   "timeslider.toolbar.returnbutton": "Return to pad",
   "timeslider.toolbar.authors": "Authors:",

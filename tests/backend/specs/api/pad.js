@@ -647,7 +647,6 @@ describe('getHTML', function(){
     api.get(endPoint('getHTML')+"&padID="+testPadId)
     .expect(function(res){
       var receivedHtml = res.body.data.html.replace("<br></body>", "</body>").toLowerCase();
-console.log(receivedHtml);
       if (receivedHtml !== expectedSpaceHtml) {
         throw new Error(`HTML received from export is not the one we were expecting.
            Received:

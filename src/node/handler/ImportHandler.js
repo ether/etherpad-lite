@@ -286,15 +286,6 @@ exports.doImport = function (req, res, padId)
     }
   }).then(() => {
     // close the connection
-    res.send(
-    "<head> \
-      <script type='text/javascript' src='../../static/js/jquery.js'></script> \
-    </head> \
-    <script> \
-      $(window).load(function(){ \
-        var impexp = window.parent.padimpexp.handleFrameCall('" + req.directDatabaseAccess +"', '" + status + "'); \
-      }) \
-    </script>"
-    );
+    res.send("<script>document.addEventListener('DOMContentLoaded', function(){ var impexp = window.parent.padimpexp.handleFrameCall('" + req.directDatabaseAccess +"', '" + status + "'); })</script>");
   });
 }

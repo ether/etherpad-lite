@@ -37,6 +37,12 @@ var channels = require("channels");
 var stats = require('../stats');
 var remoteAddress = require("../utils/RemoteAddress").remoteAddress;
 const nodeify = require("nodeify");
+const { RateLimiterMemory } = require('rate-limiter-flexible');
+
+const rateLimiter = new RateLimiterMemory({
+  points: settings.commitRateLimiting.points,
+  duration: settings.commitRateLimiting.duration
+});
 
 /**
  * A associative array that saves informations about a session
@@ -164,6 +170,19 @@ exports.handleDisconnect = async function(client)
  */
 exports.handleMessage = async function(client, message)
 {
+  var env = process.env.NODE_ENV || 'development';
+
+  if (env === 'production') {
+    try {
+      await rateLimiter.consume(client.handshake.address); // consume 1 point per event from IP
+    }catch(e){
+      console.warn("Rate limited: ", client.handshake.address, " to reduce the amount of rate limiting that happens edit the rateLimit values in settings.json");
+      stats.meter('rateLimited').mark();
+      client.json.send({disconnect:"rateLimited"});
+      return;
+    }
+  }
+
   if (message == null) {
     return;
   }
@@ -918,6 +937,15 @@ async function handleClientReady(client, message)
   let authorColorId = value.colorId;
   let authorName = value.name;
 
+  /*
+  * Here we know authorID, token and session.  We should ?always? store it..
+  * TODO: I fear that this might allow a user to pass a token for an authorID
+  * meaning that they could in theory "imitate" another author?
+  * Perhaps the fix to this is check to see if it exists first and if it
+  * does then abort..  Details: https://github.com/ether/etherpad-lite/issues/4006
+  */
+  await authorManager.setToken2Author(message.token, statusObject.authorID)
+
   // load the pad-object from the database
   let pad = await padManager.getPad(padIds.padId);
 
@@ -1295,7 +1323,7 @@ async function handleChangesetRequest(client, message)
     data.requestID = message.data.requestID;
     client.json.send({ type: "CHANGESET_REQ", data });
   } catch (err) {
-    console.error('Error while handling a changeset request for ' + padIds.padId, err, message.data);
+    console.error('Error while handling a changeset request for ' + padIds.padId, err.toString(), message.data);
   }
 }
 
@@ -1496,8 +1524,12 @@ exports.padUsers = async function(padID) {
     let s = sessioninfos[roomClient.id];
     if (s) {
       return authorManager.getAuthor(s.author).then(author => {
-        author.id = s.author;
-        padUsers.push(author);
+        // Fixes: https://github.com/ether/etherpad-lite/issues/4120
+        // On restart author might not be populated?
+        if(author){
+          author.id = s.author;
+          padUsers.push(author);
+        }
       });
     }
   }));

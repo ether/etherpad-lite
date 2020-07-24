@@ -1,4 +1,3 @@
-var async = require("async");
 var _ = require("underscore");
 
 exports.bubbleExceptions = true
@@ -78,29 +77,36 @@ exports.callAll = function (hook_name, args) {
   }
 }
 
-function aCallAll(hook_name, args, cb) {
+async function aCallAll(hook_name, args, cb) {
   if (!args) args = {};
   if (!cb) cb = function () {};
   if (exports.plugins.hooks[hook_name] === undefined) return cb(null, []);
-  async.map(
-    exports.plugins.hooks[hook_name],
-    function (hook, cb) {
-      hookCallWrapper(hook, hook_name, args, function (res) { cb(null, res); });
-    },
-    function (err, res) {
-        cb(null, _.flatten(res, true));
-    }
-  );
+
+  var hooksPromises = exports.plugins.hooks[hook_name].map(async function(hook, index){
+    return await hookCallWrapper(hook, hook_name, args, function (res) {
+      return Promise.resolve(res);
+    });
+  });
+
+  var result = await Promise.all(hooksPromises);
+
+  // after forEach
+  cb(null, _.flatten(result, true));
 }
 
 /* return a Promise if cb is not supplied */
 exports.aCallAll = function (hook_name, args, cb) {
   if (cb === undefined) {
-    return new Promise(function(resolve, reject) {
-      aCallAll(hook_name, args, function(err, res) {
-	return err ? reject(err) : resolve(res);
+    try{
+      return new Promise(function(resolve, reject) {
+        aCallAll(hook_name, args, function(err, res) {
+  	      return err ? reject(err) : resolve(res);
+        });
       });
-    });
+    }catch(e){
+      $.gritter.removeAll();
+      $.gritter.add("Please update your web browser")
+    }
   } else {
     return aCallAll(hook_name, args, cb);
   }

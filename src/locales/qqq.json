@@ -5,7 +5,8 @@
 			"Mklehr",
 			"Nemo bis",
 			"Shirayuki",
-			"Siebrand"
+			"Siebrand",
+			"Tim.krieger"
 		]
 	},
 	"index.newPad": "Used as button text.\nA pad, in the context of Etherpad, is a notepad, something to write on.",
@@ -106,7 +107,7 @@
 	"timeslider.month.december": "Example usage: <samp>Saved on August 26, 2014</samp>.\n{{Identical|December}}",
 	"timeslider.unnamedauthors": "See also:\n* {{msg-etherpadlite|Timeslider.unnamedauthor}}",
 	"pad.savedrevs.marked": "more like bookmarked, or tagged/starred",
-	"pad.userlist.entername": "Used as placeholder for the \"Name\" input box in the upper right corner of the screen.",
+	"pad.userlist.entername": "Used as placeholder for the \"Name\" input box in the upper right corner of the screen. It's important to keep it short: Long sentences aren't displayed.",
 	"pad.userlist.unnamed": "Displayed, if a user has not set a nick yet",
 	"pad.userlist.guest": "Preceded by the link text which is labeled {{msg-etherpadlite|Pad.userlist.approve}}.\n{{Identical|Guest}}",
 	"pad.userlist.deny": "Used as link text.\n\nFollowed by the link which is labeled {{msg-etherpadlite|Pad.userlist.approve}}.",

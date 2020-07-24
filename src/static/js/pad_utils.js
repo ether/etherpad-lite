@@ -56,13 +56,15 @@ function createCookie(name, value, days, path){ /* Used by IE */
 
   //Check if we accessed the pad over https
   var secure = window.location.protocol == "https:" ? ";secure" : "";
+  var isHttpsScheme = window.location.protocol === "https:";
+  var sameSite = isHttpsScheme ?  ";sameSite=Strict": ";sameSite=Lax";
 
   //Check if the browser is IE and if so make sure the full path is set in the cookie
   if((navigator.appName == 'Microsoft Internet Explorer') || ((navigator.appName == 'Netscape') && (new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})").exec(navigator.userAgent) != null))){
-    document.cookie = name + "=" + value + expires + "; path=/" + secure; /* Note this bodge fix for IE is temporary until auth is rewritten */
+    document.cookie = name + "=" + value + expires + "; path=/" + secure + sameSite; /* Note this bodge fix for IE is temporary until auth is rewritten */
   }
   else{
-    document.cookie = name + "=" + value + expires + "; path=" + path + secure;
+    document.cookie = name + "=" + value + expires + "; path=" + path + secure + sameSite;
   }
 
 }

@@ -71,12 +71,12 @@ exports.expressCreateServer = function (hook_name, args, cb) {
        *
        * See: https://github.com/ether/etherpad-lite/pull/3833#discussion_r407490205
        */
-      if (!req.cookies) {
+      if (!req.cookies && !settings.allowAnyoneToImport) {
         console.warn(`Unable to import file into "${req.params.pad}". No cookies included in request`);
         return next();
       }
 
-      if (!req.cookies.token) {
+      if (!req.cookies.token && !settings.allowAnyoneToImport) {
         console.warn(`Unable to import file into "${req.params.pad}". No token in the cookies`);
         return next();
       }

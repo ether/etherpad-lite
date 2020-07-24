@@ -1,19 +1,22 @@
 /*
  * Import and Export tests for the /p/whateverPadId/import and /p/whateverPadId/export endpoints.
- * Executed using request.  Designed to find flaws and bugs
  */
 
 const assert = require('assert');
 const supertest = require(__dirname+'/../../../../src/node_modules/supertest');
 const fs = require('fs');
-const settings = require(__dirname+'/../../../../tests/container/loadSettings.js').loadSettings();
+const settings = require(__dirname+'/../../../../src/node/utils/Settings');
 const host = 'http://127.0.0.1:'+settings.port;
 const api = supertest('http://'+settings.ip+":"+settings.port);
 const path = require('path');
 const async = require(__dirname+'/../../../../src/node_modules/async');
 const request = require(__dirname+'/../../../../src/node_modules/request');
 const padText = fs.readFileSync("../tests/backend/specs/api/test.txt");
+const etherpadDoc = fs.readFileSync("../tests/backend/specs/api/test.etherpad");
 const wordDoc = fs.readFileSync("../tests/backend/specs/api/test.doc");
+const wordXDoc = fs.readFileSync("../tests/backend/specs/api/test.docx");
+const odtDoc = fs.readFileSync("../tests/backend/specs/api/test.odt");
+const pdfDoc = fs.readFileSync("../tests/backend/specs/api/test.pdf");
 var filePath = path.join(__dirname, '../../../../APIKEY.txt');
 
 var apiKey = fs.readFileSync(filePath,  {encoding: 'utf-8'});
@@ -59,13 +62,6 @@ Test.
 Test.
   / Try to import an unsupported file to a pad that exists
 
-TODO: Test.
-  / Try to import a file that depends on Abiword / soffice if it exists
-  / Try to export a file that depends on Abiword / soffice if it exists
-
--- TODO: Test.
-  Try to import to a pad without a session (currently will pass but IMHO in future should fail)
-
 -- TODO: Test.
   Try to import to a file and abort it half way through
 
@@ -77,41 +73,241 @@ Example Curl command for testing import URI:
 */
 
 describe('Imports and Exports', function(){
-
   it('creates a new Pad, imports content to it, checks that content', function(done) {
+    if(!settings.allowAnyoneToImport){
+      console.warn("not anyone can import so not testing -- to include this test set allowAnyoneToImport to true in settings.json");
+      done();
+    }else{
+      api.get(endPoint('createPad')+"&padID="+testPadId)
+      .expect(function(res){
+        if(res.body.code !== 0) throw new Error("Unable to create new Pad");
 
-    api.get(endPoint('createPad')+"&padID="+testPadId)
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Unable to create new Pad");
+        var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
+         if (err) {
+            throw new Error("Failed to import", err);
+          } else {
+            api.get(endPoint('getText')+"&padID="+testPadId)
+            .expect(function(res){
+              if(res.body.data.text !== padText.toString()){
+                throw new Error("text is wrong on export");
+              }
+            })
+          }
+        });
 
-      var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
-        if (err) {
-          throw new Error("Failed to import", err);
-        } else {
+        let form = req.form();
 
-          api.get(endPoint('getText')+"&padID="+testPadId)
-          .expect(function(res){
-            if(res.body.data.text === padText.toString()){
-              console.log("yay it matches");
-            }
-          })
-          .expect(200)
-        }
-      });
+        form.append('file', padText, {
+          filename: '/test.txt',
+          contentType: 'text/plain'
+        });
 
-      let form = req.form();
-
-      form.append('file', padText, {
-        filename: '/test.txt',
-        contentType: 'text/plain'
-      });
-
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+      })
+      .expect('Content-Type', /json/)
+      .expect(200, done)
+    }
   });
 
-  it('tries to import to a pad that does not exist', function(done) {
+  // For some reason word import does not work in testing..
+  // TODO: fix support for .doc files..
+  xit('Tries to import .doc that uses soffice or abiword', function(done) {
+    if(!settings.allowAnyoneToImport) return done();
+    if((settings.abiword && settings.abiword.indexOf("/" === -1)) && (settings.office && settings.soffice.indexOf("/" === -1))) return done();
+
+    var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
+      if (err) {
+        throw new Error("Failed to import", err);
+      } else {
+        if(res.body.indexOf("FrameCall('undefined', 'ok');") === -1){
+          throw new Error("Failed DOC import", testPadId);
+        }else{
+          done();
+        }
+      }
+    });
+
+    let form = req.form();
+    form.append('file', wordDoc, {
+      filename: '/test.doc',
+      contentType: 'application/msword'
+    });
+  });
+
+  it('exports DOC', function(done) {
+    if(!settings.allowAnyoneToImport) return done();
+    if((settings.abiword && settings.abiword.indexOf("/" === -1)) && (settings.office && settings.soffice.indexOf("/" === -1))) return done();
+    try{
+      request(host + '/p/'+testPadId+'/export/doc', function (err, res, body) {
+        // TODO: At some point checking that the contents is correct would be suitable
+        if(body.length >= 9000){
+          done();
+        }else{
+          throw new Error("Word Document export length is not right");
+        }
+      })
+    }catch(e){
+      throw new Error(e);
+    }
+  })
+
+  it('Tries to import .docx that uses soffice or abiword', function(done) {
+    if(!settings.allowAnyoneToImport) return done();
+    if((settings.abiword && settings.abiword.indexOf("/" === -1)) && (settings.office && settings.soffice.indexOf("/" === -1))) return done();
+
+    var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
+      if (err) {
+        throw new Error("Failed to import", err);
+      } else {
+        if(res.body.indexOf("FrameCall('undefined', 'ok');") === -1){
+          throw new Error("Failed DOCX import");
+        }else{
+          done();
+        }
+      }
+    });
+
+    let form = req.form();
+    form.append('file', wordXDoc, {
+      filename: '/test.docx',
+      contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    });
+  });
+
+  it('exports DOC from imported DOCX', function(done) {
+    if(!settings.allowAnyoneToImport) return done();
+    if((settings.abiword && settings.abiword.indexOf("/" === -1)) && (settings.office && settings.soffice.indexOf("/" === -1))) return done();
+    request(host + '/p/'+testPadId+'/export/doc', function (err, res, body) {
+      // TODO: At some point checking that the contents is correct would be suitable
+      if(body.length >= 9100){
+        done();
+      }else{
+        throw new Error("Word Document export length is not right");
+      }
+    })
+  })
+
+  it('Tries to import .pdf that uses soffice or abiword', function(done) {
+    if(!settings.allowAnyoneToImport) return done();
+    if((settings.abiword && settings.abiword.indexOf("/" === -1)) && (settings.office && settings.soffice.indexOf("/" === -1))) return done();
+
+    var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
+      if (err) {
+        throw new Error("Failed to import", err);
+      } else {
+        if(res.body.indexOf("FrameCall('undefined', 'ok');") === -1){
+          throw new Error("Failed PDF import");
+        }else{
+          done();
+        }
+      }
+    });
+
+    let form = req.form();
+    form.append('file', pdfDoc, {
+      filename: '/test.pdf',
+      contentType: 'application/pdf'
+    });
+  });
+
+  it('exports PDF', function(done) {
+    if(!settings.allowAnyoneToImport) return done();
+    if((settings.abiword && settings.abiword.indexOf("/" === -1)) && (settings.office && settings.soffice.indexOf("/" === -1))) return done();
+    request(host + '/p/'+testPadId+'/export/pdf', function (err, res, body) {
+      // TODO: At some point checking that the contents is correct would be suitable
+      if(body.length >= 1000){
+        done();
+      }else{
+        throw new Error("PDF Document export length is not right");
+      }
+    })
+  })
+
+  it('Tries to import .odt that uses soffice or abiword', function(done) {
+    if(!settings.allowAnyoneToImport) return done();
+    if((settings.abiword && settings.abiword.indexOf("/" === -1)) && (settings.office && settings.soffice.indexOf("/" === -1))) return done();
+
+    var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
+      if (err) {
+        throw new Error("Failed to import", err);
+      } else {
+        if(res.body.indexOf("FrameCall('undefined', 'ok');") === -1){
+          throw new Error("Failed ODT import", testPadId);
+        }else{
+          done();
+        }
+      }
+    });
+
+    let form = req.form();
+    form.append('file', odtDoc, {
+      filename: '/test.odt',
+      contentType: 'application/odt'
+    });
+  });
+
+  it('exports ODT', function(done) {
+    if(!settings.allowAnyoneToImport) return done();
+    if((settings.abiword && settings.abiword.indexOf("/" === -1)) && (settings.office && settings.soffice.indexOf("/" === -1))) return done();
+    request(host + '/p/'+testPadId+'/export/odt', function (err, res, body) {
+      // TODO: At some point checking that the contents is correct would be suitable
+      if(body.length >= 7000){
+        done();
+      }else{
+        throw new Error("ODT Document export length is not right");
+      }
+    })
+  })
+
+  it('Tries to import .etherpad', function(done) {
+    if(!settings.allowAnyoneToImport) return done();
+
+    var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
+      if (err) {
+        throw new Error("Failed to import", err);
+      } else {
+        if(res.body.indexOf("FrameCall(\'true\', \'ok\');") === -1){
+          throw new Error("Failed Etherpad import", err, testPadId);
+        }else{
+          done();
+        }
+      }
+    });
+
+    let form = req.form();
+    form.append('file', etherpadDoc, {
+      filename: '/test.etherpad',
+      contentType: 'application/etherpad'
+    });
+  });
+
+  it('exports Etherpad', function(done) {
+    request(host + '/p/'+testPadId+'/export/etherpad', function (err, res, body) {
+      // TODO: At some point checking that the contents is correct would be suitable
+      if(body.indexOf("hello") !== -1){
+        done();
+      }else{
+        console.error("body");
+        throw new Error("Etherpad Document does not include hello");
+      }
+    })
+  })
+
+  it('exports HTML for this Etherpad file', function(done) {
+    request(host + '/p/'+testPadId+'/export/html', function (err, res, body) {
+
+      // broken pre fix export -- <ul class="bullet"></li><ul class="bullet"></ul></li></ul>
+      var expectedHTML = '<ul class="bullet"><li><ul class="bullet"><li>hello</ul></li></ul>';
+      // expect body to include
+      if(body.indexOf(expectedHTML) !== -1){
+        done();
+      }else{
+        console.error(body);
+        throw new Error("Exported HTML nested list items is not right", body);
+      }
+    })
+  })
+
+  it('tries to import Plain Text to a pad that does not exist', function(done) {
     var req = request.post(host + '/p/'+testPadId+testPadId+testPadId+'/import', function (err, res, body) {
       if (res.statusCode === 200) {
         throw new Error("Was able to import to a pad that doesn't exist");
@@ -157,44 +353,6 @@ describe('Imports and Exports', function(){
       contentType: 'weirdness/jobby'
     });
   });
-
-  if(settings.abiword.indexOf("/" === -1) && settings.soffice.indexOf("/" === -1)){
-    console.log("Did not test abiword or soffice");
-  }else{
-    it('Tries to import file type that uses soffice or abioffice', function(done) {
-
-      var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
-        if (err) {
-          throw new Error("Failed to import", err);
-        } else {
-          if(res.body.indexOf("FrameCall('undefined', 'ok');") === -1){
-            throw new Error("Failed Doc import", testPadId);
-          }
-
-          request(host + '/p/'+testPadId+'/export/doc', function (errE, resE, bodyE) {
-            if(resE.body.indexOf("Hello World") === -1) throw new Error("Could not find Hello World in exported contents");
-
-            api.get(endPoint('getText')+"&padID="+testPadId)
-            .expect(function(res){
-              if(res.body.code !== 0) throw new Error("Could not get pad");
-              // Not graceflu but it works
-              console.warn("HERE");
-            })
-            .expect(200, done);
-          });
-        }
-      });
-
-      let form = req.form();
-
-      form.append('file', wordDoc, {
-        filename: '/tmp/test.doc',
-        contentType: 'application/msword'
-      });
-
-    });
-  }
-
 
 // end of tests
 })

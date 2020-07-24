@@ -6,6 +6,7 @@
 			"Bellayet",
 			"Nasir8891",
 			"Sankarshan",
+			"Sibabrata Banerjee",
 			"আফতাবুজ্জামান"
 		]
 	},
@@ -45,6 +46,8 @@
 	"pad.settings.fontType": "ফন্টের প্রকার:",
 	"pad.settings.fontType.normal": "সাধারণ",
 	"pad.settings.language": "ভাষা:",
+	"pad.settings.about": "পরিচিতি",
+	"pad.settings.poweredBy": "$1 দ্বারা চালিত",
 	"pad.importExport.import_export": "আমদানি/রপ্তানি",
 	"pad.importExport.import": "কোন টেক্সট ফাইল বা নথি আপলোড করুন",
 	"pad.importExport.importSuccessful": "সফল!",

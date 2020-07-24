@@ -13,6 +13,8 @@
 			"VulpesVulpes825",
 			"Yfdyh000",
 			"乌拉跨氪",
+			"列维劳德",
+			"沈澄心",
 			"燃玉"
 		]
 	},
@@ -38,7 +40,7 @@
 	"pad.colorpicker.save": "保存",
 	"pad.colorpicker.cancel": "取消",
 	"pad.loading": "载入中……",
-	"pad.noCookie": "无法找到Cookie。请在您的浏览器中允许Cookie！",
+	"pad.noCookie": "无法找到Cookie。请在您的浏览器中允许Cookie！您的会话和设置不会在访问时保存。这可能是由于Etherpad包含在某些浏览器中的iFrame中。请确保Etherpad与父iFrame位于同一子域/域上",
 	"pad.passwordRequired": "您需要密码才能访问这个记事本",
 	"pad.permissionDenied": "您没有访问这个记事本的权限",
 	"pad.wrongPassword": "您的密码错了",
@@ -52,6 +54,7 @@
 	"pad.settings.fontType": "字体类型：",
 	"pad.settings.fontType.normal": "正常",
 	"pad.settings.language": "语言：",
+	"pad.settings.about": "关于",
 	"pad.importExport.import_export": "导入/导出",
 	"pad.importExport.import": "上载任何文本文件或档案",
 	"pad.importExport.importSuccessful": "成功！",

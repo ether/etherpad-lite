@@ -100,7 +100,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       // remove spliced-out lines from DOM
       for (var i = start; i < start + numRemoved && i < this.currentDivs.length; i++)
       {
-        debugLog("removing", this.currentDivs[i].attr('id'));
         this.currentDivs[i].remove();
       }
 
@@ -226,7 +225,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
   function loadedNewChangeset(changesetForward, changesetBackward, revision, timeDelta)
   {
     var broadcasting = (BroadcastSlider.getSliderPosition() == revisionInfo.latest);
-    debugLog("broadcasting:", broadcasting, BroadcastSlider.getSliderPosition(), revisionInfo.latest, revision);
     revisionInfo.addChangeset(revision, revision + 1, changesetForward, changesetBackward, timeDelta);
     BroadcastSlider.setSliderLength(revisionInfo.latest);
     if (broadcasting) applyChangeset(changesetForward, revision + 1, false, timeDelta);
@@ -257,11 +255,15 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       debugLog(e);
     }
 
+    var lineNumber = Changeset.opIterator(Changeset.unpack(changeset).ops).next().lines;
+    if($('#options-followContents').is(":checked") || $('#options-followContents').prop("checked")){
+      goToLineNumber(lineNumber);
+    }
+
     Changeset.mutateTextLines(changeset, padContents);
     padContents.currentRevision = revision;
     padContents.currentTime += timeDelta * 1000;
 
-    debugLog('Time Delta: ', timeDelta)
     updateTimer();
 
     var authors = _.map(padContents.getActiveAuthors(), function(name)
@@ -335,7 +337,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     padContents.targetRevision = newRevision;
     var self = this;
     var path = revisionInfo.getPath(padContents.currentRevision, newRevision);
-    debugLog('newRev: ', padContents.currentRevision, path);
 
     hooks.aCallAll('goToRevisionEvent', {
         rev: newRevision
@@ -344,7 +345,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     if (path.status == 'complete')
     {
       var cs = path.changesets;
-      debugLog("status: complete, changesets: ", cs, "path:", path);
       var changeset = cs[0];
       var timeDelta = path.times[0];
       for (var i = 1; i < cs.length; i++)
@@ -356,7 +356,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     }
     else if (path.status == "partial")
     {
-      debugLog('partial');
       var sliderLocation = padContents.currentRevision;
       // callback is called after changeset information is pulled from server
       // this may never get called, if the changeset has already been loaded
@@ -475,7 +474,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     },
     handleResponse: function(data, start, granularity, callback)
     {
-      debugLog("response: ", data);
       var pool = (new AttribPool()).fromJsonable(data.apool);
       for (var i = 0; i < data.forwardsChangesets.length; i++)
       {
@@ -491,15 +489,12 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     },
     handleMessageFromServer: function (obj)
     {
-      debugLog("handleMessage:", arguments);
-
       if (obj.type == "COLLABROOM")
       {
         obj = obj.data;
 
         if (obj.type == "NEW_CHANGES")
         {
-          debugLog(obj);
           var changeset = Changeset.moveOpsToNewPool(
             obj.changeset, (new AttribPool()).fromJsonable(obj.apool), padContents.apool);
 
@@ -555,7 +550,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       padContents.currentDivs.push(div);
       $("#innerdocbody").append(div);
     }
-    debugLog(padContents.currentDivs);
   });
 
   // this is necessary to keep infinite loops of events firing,
@@ -596,6 +590,19 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
   receiveAuthorData(clientVars.collab_client_vars.historicalAuthorData);
 
   return changesetLoader;
+
+  function goToLineNumber(lineNumber){
+    // Sets the Y scrolling of the browser to go to this line
+    var line = $('#innerdocbody').find("div:nth-child("+(lineNumber+1)+")");
+    var newY = $(line)[0].offsetTop;
+    var ecb = document.getElementById('editorcontainerbox');
+    // Chrome 55 - 59 bugfix
+    if(ecb.scrollTo){
+      ecb.scrollTo({top: newY, behavior: 'smooth'});
+    }else{
+      $('#editorcontainerbox').scrollTop(newY);
+    }
+  }
 }
 
 exports.loadBroadcastJS = loadBroadcastJS;
