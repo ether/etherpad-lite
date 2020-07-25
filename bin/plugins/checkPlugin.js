@@ -53,15 +53,19 @@ fs.readdir(pluginPath, function (err, rootFiles) {
       console.log("Autofixing missing README.md file, please edit the README.md file further to include plugin specific details.");
       let readme = fs.readFileSync("bin/plugins/lib/README.md", {encoding:'utf8', flag:'r'})
       readme = readme.replace(/\[plugin_name\]/g, pluginName);
-      let org = repository.split("/")[3];
-      let name = repository.split("/")[4];
-      readme = readme.replace(/\[org_name\]/g, org);
-      readme = readme.replace(/\[repo_url\]/g, name);
-      fs.writeFileSync(pluginPath+"/README.md", readme);
+      if(repository){
+        let org = repository.split("/")[3];
+        let name = repository.split("/")[4];
+        readme = readme.replace(/\[org_name\]/g, org);
+        readme = readme.replace(/\[repo_url\]/g, name);
+        fs.writeFileSync(pluginPath+"/README.md", readme);
+      }else{
+        console.warn("Unable to find repository in package.json, aborting.")
+      }
     }
   }
 
-  if(files.indexOf("readme.md") !== -1){
+  if(files.indexOf("readme") !== -1){
     let readme = fs.readFileSync(pluginPath+"/"+readMeFileName, {encoding:'utf8', flag:'r'});
     if(readme.toLowerCase().indexOf("license") === -1){
       console.warn("No license section in README");
@@ -118,13 +122,11 @@ fs.readdir(pluginPath, function (err, rootFiles) {
 
   if(files.indexOf("locales") === -1){
     console.warn("Translations not found, please create.  Translation files help with Etherpad accessibility.");
-    // TODO: Describe use of this change
   }
 
 
   if(files.indexOf(".ep_initialized") !== -1){
     console.warn(".ep_initialized found, please remove.  .ep_initialized should never be commited to git and should only exist once the plugin has been executed one time.")
-    // TODO: remember to git rm the file!
     if(autoFix){
       hasAutofixed = true;
       console.log("Autofixing incorrectly existing .ep_initialized file");
@@ -133,7 +135,6 @@ fs.readdir(pluginPath, function (err, rootFiles) {
   }
 
   if(files.indexOf("npm-debug.log") !== -1){
-    // TODO: remember to git rm the file!  I'm not sure this is needed..
     console.warn("npm-debug.log found, please remove.  npm-debug.log should never be commited to your repository.")
     if(autoFix){
       hasAutofixed = true;
@@ -156,7 +157,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     console.log("Fixes applied, please check git diff then run the following command:\n\n")
     // bump npm Version
 
-    console.log("cd "+pluginName + " && npm version minor && git -a * && git commit -m 'autofixes from Etherpad checkPlugins.js' && git push && npm publish")
+    console.log("cd "+pluginName + " && git add -A * && git commit -m 'autofixes from Etherpad checkPlugins.js' && npm version patch && git add package.json && git commit -m "bump version" && git push && npm publish")
   }
 
   //listing all files using forEach
