@@ -1,3 +1,32 @@
+// pro usage for all your plugins, replace johnmclear with your github username
+/*
+cd node_modules
+GHUSER=johnmclear; curl "https://api.github.com/users/$GHUSER/repos?per_page=1000" | grep -o 'git@[^"]*' | grep /ep_ | xargs -L1 git clone
+cd ..
+
+for dir in `ls node_modules`;
+do
+  # echo $0
+  if [[ $dir == *"ep_"* ]]; then
+    if [[ $dir != "ep_etherpad-lite" ]]; then
+      node bin/plugins/checkPlugin.js $dir autofix autocommit
+    fi
+  fi
+  # echo $dir
+done
+*/
+
+/*
+ *
+ * Usage
+ *
+   * Normal usage:                node bin/checkPlugins.js ep_whatever
+   * Auto fix the things it can:  node bin/checkPlugins.js ep_whatever autofix
+   * Auto commit, push and publish(to npm) * highly dangerous:
+     node bin/checkPlugins.js ep_whatever autofix autocommit
+
+*/
+
 const fs = require("fs");
 const { exec } = require("child_process");
 
@@ -5,8 +34,17 @@ const { exec } = require("child_process");
 const pluginName = process.argv[2];
 const pluginPath = "node_modules/"+pluginName;
 
+console.log("Checking the plugin: "+ pluginName)
+
 // Should we autofix?
 if (process.argv[3] && process.argv[3] === "autofix") var autoFix = true;
+
+// Should we automcommit and npm publish?!
+if (process.argv[4] && process.argv[4] === "autocommit") var autoCommit = true;
+
+if(autoCommit){
+  console.warn("Auto commit is enabled, I hope you know what you are doing...")
+}
 
 fs.readdir(pluginPath, function (err, rootFiles) {
   //handling error
@@ -155,8 +193,24 @@ fs.readdir(pluginPath, function (err, rootFiles) {
   if(hasAutofixed){
     console.log("Fixes applied, please check git diff then run the following command:\n\n")
     // bump npm Version
-
-    console.log("cd node_modules/"+ pluginName + " && git add -A && git commit --allow-empty -m 'autofixes from Etherpad checkPlugins.js' && npm version patch && git add package.json && git commit --allow-empty -m 'bump version' && git push && npm publish && cd ../..")
+    if(autoCommit){
+      // holy shit you brave.
+      console.log("Attempting autocommit and auto publish to npm")
+      exec("cd node_modules/"+ pluginName + " && git add -A && git commit --allow-empty -m 'autofixes from Etherpad checkPlugins.js' && npm version patch && git add package.json && git commit --allow-empty -m 'bump version' && git push && npm publish && cd ../..", (error, name, stderr) => {
+        if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          return;
+        }
+        console.log("I think she's got it! By George she's got it!")
+        process.exit(0)
+      });
+    }else{
+      console.log("cd node_modules/"+ pluginName + " && git add -A && git commit --allow-empty -m 'autofixes from Etherpad checkPlugins.js' && npm version patch && git add package.json && git commit --allow-empty -m 'bump version' && git push && npm publish && cd ../..")
+    }
   }
 
   //listing all files using forEach
