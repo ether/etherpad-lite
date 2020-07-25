@@ -61,3 +61,5 @@ notifications:
   irc:
     channels:
       - "irc.freenode.org#etherpad-lite-dev"
+
+##ETHERPAD_TRAVIS_V=2

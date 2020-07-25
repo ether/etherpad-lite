@@ -6,24 +6,24 @@ cd ..
 
 for dir in `ls node_modules`;
 do
-  # echo $0
-  if [[ $dir == *"ep_"* ]]; then
-    if [[ $dir != "ep_etherpad-lite" ]]; then
-      node bin/plugins/checkPlugin.js $dir autofix autocommit
-    fi
-  fi
-  # echo $dir
+# echo $0
+if [[ $dir == *"ep_"* ]]; then
+if [[ $dir != "ep_etherpad-lite" ]]; then
+node bin/plugins/checkPlugin.js $dir autofix autocommit
+fi
+fi
+# echo $dir
 done
 */
 
 /*
- *
- * Usage
- *
-   * Normal usage:                node bin/checkPlugins.js ep_whatever
-   * Auto fix the things it can:  node bin/checkPlugins.js ep_whatever autofix
-   * Auto commit, push and publish(to npm) * highly dangerous:
-     node bin/checkPlugins.js ep_whatever autofix autocommit
+*
+* Usage
+*
+* Normal usage:                node bin/checkPlugins.js ep_whatever
+* Auto fix the things it can:  node bin/checkPlugins.js ep_whatever autofix
+* Auto commit, push and publish(to npm) * highly dangerous:
+node bin/checkPlugins.js ep_whatever autofix autocommit
 
 */
 
@@ -39,8 +39,12 @@ console.log("Checking the plugin: "+ pluginName)
 // Should we autofix?
 if (process.argv[3] && process.argv[3] === "autofix") var autoFix = true;
 
+// Should we update files where possible?
+if (process.argv[5] && process.argv[5] === "autoupdate") var autoUpdate = true;
+
 // Should we automcommit and npm publish?!
 if (process.argv[4] && process.argv[4] === "autocommit") var autoCommit = true;
+
 
 if(autoCommit){
   console.warn("Auto commit is enabled, I hope you know what you are doing...")
@@ -59,6 +63,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
   var readMeFileName;
   var repository;
   var hasAutofixed = false;
+  var hasAutoUpdated = false;
 
   for (var i = 0; i < rootFiles.length; i++) {
     if(rootFiles[i].toLowerCase().indexOf("readme") !== -1) readMeFileName = rootFiles[i];
@@ -75,7 +80,6 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     if(package.toLowerCase().indexOf("repository") === -1){
       console.warn("No repository in package.json");
       if(autoFix){
-        hasAutofixed = true;
         console.warn("Repository not detected in package.json.  Please add repository section manually.")
       }
     }else{
@@ -134,21 +138,45 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     }
   }
 
+  var travisConfig = fs.readFileSync("bin/plugins/lib/travis.yml", {encoding:'utf8', flag:'r'});
+  travisConfig = travisConfig.replace(/\[plugin_name\]/g, pluginName);
+
   if(files.indexOf(".travis.yml") === -1){
     console.warn(".travis.yml file not found, please create.  .travis.yml is used for automatically CI testing Etherpad.  It is useful to know if your plugin breaks another feature for example.")
+    // TODO: Make it check version of the .travis file to see if it needs an update.
     if(autoFix){
       hasAutofixed = true;
       console.log("Autofixing missing .travis.yml file");
-      let travisConfig = fs.readFileSync("bin/plugins/lib/travis.yml", {encoding:'utf8', flag:'r'});
-      travisConfig = travisConfig.replace(/\[plugin_name\]/g, pluginName);
+
       fs.writeFileSync(pluginPath+"/.travis.yml", travisConfig);
       console.log("Travis file created, please sign into travis and enable this repository")
+    }
+  }
+  if(autoFix && autoUpdate){
+    // checks the file versioning of .travis and updates it to the latest.
+    let existingConfig = fs.readFileSync(pluginPath + "/.travis.yml", {encoding:'utf8', flag:'r'});
+    let existingConfigLocation = existingConfig.indexOf("##ETHERPAD_TRAVIS_V=");
+    let existingValue = existingConfig.substr(existingConfigLocation+20, existingConfig.length);
+
+    let newConfigLocation = travisConfig.indexOf("##ETHERPAD_TRAVIS_V=");
+    let newValue = travisConfig.substr(newConfigLocation+20, travisConfig.length);
+
+    if(existingConfigLocation === -1){
+      console.warn("no previous .travis.yml version found so writing new.")
+      // we will write the newTravisConfig to the location.
+      fs.writeFileSync(pluginPath + "/.travis.yml", travisConfig);
+      hasAutoUpdated = true;
+    }else{
+      if(newValue > existingValue){
+        console.log("updating .travis.yml");
+        fs.writeFileSync(pluginPath + "/.travis.yml", travisConfig);
+        hasAutofixed = true;
+      }
     }
   }
 
   if(files.indexOf(".gitignore") === -1){
     console.warn(".gitignore file not found, please create.  .gitignore files are useful to ensure files aren't incorrectly commited to a repository.")
-    // TODO: Describe use of this change
     if(autoFix){
       hasAutofixed = true;
       console.log("Autofixing missing .gitignore file");
