@@ -46,8 +46,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     }
 
   }
-
-  if(files.indexOf("readme.md") === -1){
+  if(files.indexOf("readme") === -1 && files.indexOf("readme.md") === -1){
     console.warn("README.md file not found, please create");
     if(autoFix){
       console.log("Autofixing missing README.md file, please edit the README.md file further to include plugin specific details.");
@@ -65,7 +64,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     }
   }
 
-  if(files.indexOf("readme") !== -1){
+  if(files.indexOf("readme") !== -1 && files.indexOf("readme.md") !== -1){
     let readme = fs.readFileSync(pluginPath+"/"+readMeFileName, {encoding:'utf8', flag:'r'});
     if(readme.toLowerCase().indexOf("license") === -1){
       console.warn("No license section in README");
@@ -75,7 +74,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     }
   }
 
-  if(files.indexOf("license.md") === -1){
+  if(files.indexOf("license") === -1 && files.indexOf("license.md") === -1){
     console.warn("LICENSE.md file not found, please create");
     if(autoFix){
       hasAutofixed = true;
@@ -157,7 +156,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     console.log("Fixes applied, please check git diff then run the following command:\n\n")
     // bump npm Version
 
-    console.log("cd "+ pluginName + " && git add -A * && git commit -m 'autofixes from Etherpad checkPlugins.js' && npm version patch && git add package.json && git commit -m 'bump version' && git push && npm publish")
+    console.log("cd node_modules/"+ pluginName + " && git add -A && git commit --allow-empty -m 'autofixes from Etherpad checkPlugins.js' && npm version patch && git add package.json && git commit --allow-empty -m 'bump version' && git push && npm publish && cd ../..")
   }
 
   //listing all files using forEach
