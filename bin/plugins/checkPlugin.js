@@ -157,7 +157,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     console.log("Fixes applied, please check git diff then run the following command:\n\n")
     // bump npm Version
 
-    console.log("cd "+pluginName + " && git add -A * && git commit -m 'autofixes from Etherpad checkPlugins.js' && npm version patch && git add package.json && git commit -m "bump version" && git push && npm publish")
+    console.log("cd "+ pluginName + " && git add -A * && git commit -m 'autofixes from Etherpad checkPlugins.js' && npm version patch && git add package.json && git commit -m 'bump version' && git push && npm publish")
   }
 
   //listing all files using forEach
