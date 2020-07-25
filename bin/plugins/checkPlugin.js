@@ -33,6 +33,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
 
   if(files.indexOf("package.json") !== -1){
     let package = fs.readFileSync(pluginPath+"/package.json", {encoding:'utf8', flag:'r'});
+
     if(package.toLowerCase().indexOf("repository") === -1){
       console.warn("No repository in package.json");
       if(autoFix){
@@ -40,17 +41,17 @@ fs.readdir(pluginPath, function (err, rootFiles) {
         console.warn("Repository not detected in package.json.  Please add repository section manually.")
       }
     }else{
+      // useful for creating README later.
       repository = JSON.parse(package).repository.url;
     }
+
   }
 
   if(files.indexOf("readme.md") === -1){
     console.warn("README.md file not found, please create");
-    // TODO: Describe use of this change
-    // TODO: Provide template / example README.
     if(autoFix){
       autoFix = true;
-      console.log("Autofixing missing README.md file");
+      console.log("Autofixing missing README.md file, please edit the README.md file further to include plugin specific details.");
       let readme = fs.readFileSync("bin/plugins/lib/README.md", {encoding:'utf8', flag:'r'})
       readme = readme.replace(/\[plugin_name\]/g, pluginName);
       let org = repository.split("/")[3];
@@ -73,10 +74,9 @@ fs.readdir(pluginPath, function (err, rootFiles) {
 
   if(files.indexOf("license.md") === -1){
     console.warn("LICENSE.md file not found, please create");
-    // TODO: Describe use of this change
     if(autoFix){
       autoFix = true;
-      console.log("Autofixing missing LICENSE.md file");
+      console.log("Autofixing missing LICENSE.md file, including Apache 2 license.");
       exec("git config user.name", (error, name, stderr) => {
         if (error) {
           console.log(`error: ${error.message}`);
@@ -95,8 +95,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
   }
 
   if(files.indexOf(".travis.yml") === -1){
-    console.warn(".travis.yml file not found, please create")
-    // TODO: Describe use of this change
+    console.warn(".travis.yml file not found, please create.  .travis.yml is used for automatically CI testing Etherpad.  It is useful to know if your plugin breaks another feature for example.")
     if(autoFix){
       autoFix = true;
       console.log("Autofixing missing .travis.yml file");
@@ -109,7 +108,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
   }
 
   if(files.indexOf(".gitignore") === -1){
-    console.warn(".gitignore file not found, please create")
+    console.warn(".gitignore file not found, please create.  .gitignore files are useful to ensure files aren't incorrectly commited to a repository.")
     // TODO: Describe use of this change
     if(autoFix){
       autoFix = true;
@@ -120,13 +119,13 @@ fs.readdir(pluginPath, function (err, rootFiles) {
   }
 
   if(files.indexOf("locales") === -1){
-    console.warn("Translations not found, please create");
+    console.warn("Translations not found, please create.  Translation files help with Etherpad accessibility.");
     // TODO: Describe use of this change
   }
 
 
   if(files.indexOf(".ep_initialized") !== -1){
-    console.warn(".ep_initialized found, please remove")
+    console.warn(".ep_initialized found, please remove.  .ep_initialized should never be commited to git and should only exist once the plugin has been executed one time.")
     // TODO: remember to git rm the file!
     if(autoFix){
       autoFix = true;
@@ -137,7 +136,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
 
   if(files.indexOf("npm-debug.log") !== -1){
     // TODO: remember to git rm the file!
-    console.warn("npm-debug.log found, please remove")
+    console.warn("npm-debug.log found, please remove.  npm-debug.log should never be commited to your repository.")
     if(autoFix){
       autoFix = true;
       console.log("Autofixing incorrectly existing npm-debug.log file");
@@ -149,9 +148,11 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     fs.readdir(pluginPath+"/static", function (err, staticFiles) {
       if(staticFiles.indexOf("tests") === -1){
         // TODO: Describe use of this change
-        console.warn("test files not found, please create")
+        console.warn("Test files not found, please create tests.  https://github.com/ether/etherpad-lite/wiki/Creating-a-plugin#writing-and-running-front-end-tests-for-your-plugin")
       }
     })
+  }else{
+    console.warn("Test files not found, please create tests.  https://github.com/ether/etherpad-lite/wiki/Creating-a-plugin#writing-and-running-front-end-tests-for-your-plugin")
   }
 
 
