@@ -63,7 +63,6 @@ fs.readdir(pluginPath, function (err, rootFiles) {
   var readMeFileName;
   var repository;
   var hasAutofixed = false;
-  var hasAutoUpdated = false;
 
   for (var i = 0; i < rootFiles.length; i++) {
     if(rootFiles[i].toLowerCase().indexOf("readme") !== -1) readMeFileName = rootFiles[i];
@@ -75,16 +74,16 @@ fs.readdir(pluginPath, function (err, rootFiles) {
   }
 
   if(files.indexOf("package.json") !== -1){
-    let package = fs.readFileSync(pluginPath+"/package.json", {encoding:'utf8', flag:'r'});
+    let packageJSON = fs.readFileSync(pluginPath+"/package.json", {encoding:'utf8', flag:'r'});
 
-    if(package.toLowerCase().indexOf("repository") === -1){
+    if(packageJSON.toLowerCase().indexOf("repository") === -1){
       console.warn("No repository in package.json");
       if(autoFix){
         console.warn("Repository not detected in package.json.  Please add repository section manually.")
       }
     }else{
       // useful for creating README later.
-      repository = JSON.parse(package).repository.url;
+      repository = JSON.parse(packageJSON).repository.url;
     }
 
   }
@@ -147,7 +146,6 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     if(autoFix){
       hasAutofixed = true;
       console.log("Autofixing missing .travis.yml file");
-
       fs.writeFileSync(pluginPath+"/.travis.yml", travisConfig);
       console.log("Travis file created, please sign into travis and enable this repository")
     }
@@ -165,7 +163,6 @@ fs.readdir(pluginPath, function (err, rootFiles) {
       console.warn("no previous .travis.yml version found so writing new.")
       // we will write the newTravisConfig to the location.
       fs.writeFileSync(pluginPath + "/.travis.yml", travisConfig);
-      hasAutoUpdated = true;
     }else{
       if(newValue > existingValue){
         console.log("updating .travis.yml");
@@ -209,7 +206,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
   }
 
   if(files.indexOf("static") !== -1){
-    fs.readdir(pluginPath+"/static", function (err, staticFiles) {
+    fs.readdir(pluginPath+"/static", function (errRead, staticFiles) {
       if(staticFiles.indexOf("tests") === -1){
         console.warn("Test files not found, please create tests.  https://github.com/ether/etherpad-lite/wiki/Creating-a-plugin#writing-and-running-front-end-tests-for-your-plugin")
       }
