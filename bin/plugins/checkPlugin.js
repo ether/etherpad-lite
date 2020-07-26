@@ -20,10 +20,10 @@ done
 *
 * Usage
 *
-* Normal usage:                node bin/checkPlugins.js ep_whatever
-* Auto fix the things it can:  node bin/checkPlugins.js ep_whatever autofix
+* Normal usage:                node bin/plugins/checkPlugins.js ep_whatever
+* Auto fix the things it can:  node bin/plugins/checkPlugins.js ep_whatever autofix
 * Auto commit, push and publish(to npm) * highly dangerous:
-node bin/checkPlugins.js ep_whatever autofix autocommit
+node bin/plugins/checkPlugins.js ep_whatever autofix autocommit
 
 */
 
