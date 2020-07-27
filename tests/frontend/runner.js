@@ -127,6 +127,12 @@ $(function(){
 
       var total = runner.total;
       runner.on('end', function(){
+        // @todo
+        // when the last test finished this timeout is still active and
+        // could result in a misleading "no tests started..." message
+        // if the last test does not return properly
+        if(killTimeout) clearTimeout(killTimeout);
+
         stats.end = new Date;
         stats.duration = stats.end - stats.start;
         var minutes = Math.floor(stats.duration / 1000 / 60);
@@ -138,7 +144,7 @@ $(function(){
           append(total,"tests, but",stats.tests,"returned. There is probably a problem with your async code or error handling, see https://github.com/mochajs/mocha/issues/1327");
         }
         else {
-          append("FINISHED - but not all tests returned!", stats.passes, "tests passed,", stats.failures, "tests failed,", stats.pending, "tests pending, duration: " + minutes + ":" + seconds);
+          append("FINISHED - but not all tests returned", stats.passes, "tests passed,", stats.failures, "tests failed,", stats.pending, "tests pending, duration: " + minutes + ":" + seconds);
           append(total,"tests, but only",stats.tests,"returned. Check for failed before/beforeEach-hooks (no `test end` is called for them and subsequent tests of the same suite are skipped), see https://github.com/mochajs/mocha/pull/1043");
         }
       });

@@ -53,8 +53,8 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
        * @todo this should be configured in testSettings, see https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-Timeouts
        */
       var timeout = setTimeout(function(){
-        console.log("[" + testSettings.browserName + " " + testSettings.platform + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] allowed test duration exceeded");
         stopSauce(false);
+        console.log("[" + testSettings.browserName + " " + testSettings.platform + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] allowed test duration exceeded");
       }, 570000); // travis timeout is 10 minutes ,set this to a slightly lower value
 
       var knownConsoleText = "";
