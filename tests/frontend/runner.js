@@ -82,7 +82,7 @@ $(function(){
       append("->","[red]FAILED[clear] :", test.title, stringifyException(test.err));
     });
 
-    runner.on('pending', function(){
+    runner.on('pending', function(test){
       stats.pending++;
       append("->","[yellow]PENDING[clear]:", test.title);
     });
