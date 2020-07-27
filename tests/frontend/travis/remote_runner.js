@@ -70,9 +70,9 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
             // finished without failures
             if (match[2] && match[2] == 0){
               stopSauce(true);
-            }
+
             // finished but some tests did not return or some tests failed
-            else {
+            } else {
               stopSauce(false);
             }
           }

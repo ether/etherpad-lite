@@ -56,14 +56,14 @@ $(function(){
     var killTimeout;
     runner.on('test end', function(test){
       stats.tests++;
+    });
 
+    runner.on('pass', function(test){
       if(killTimeout) clearTimeout(killTimeout);
       killTimeout = setTimeout(function(){
         append("FINISHED - [red]no test started since 3 minutes, tests stopped[clear]");
       }, 60000 * 3);
-    });
 
-    runner.on('pass', function(test){
       var medium = test.slow() / 2;
       test.speed = test.duration > test.slow()
         ? 'slow'
@@ -76,12 +76,22 @@ $(function(){
     });
 
     runner.on('fail', function(test, err){
+      if(killTimeout) clearTimeout(killTimeout);
+      killTimeout = setTimeout(function(){
+        append("FINISHED - [red]no test started since 3 minutes, tests stopped[clear]");
+      }, 60000 * 3);
+
       stats.failures++;
       test.err = err;
       append("->","[red]FAILED[clear] :", test.title, stringifyException(test.err));
     });
 
     runner.on('pending', function(test){
+      if(killTimeout) clearTimeout(killTimeout);
+      killTimeout = setTimeout(function(){
+        append("FINISHED - [red]no test started since 3 minutes, tests stopped[clear]");
+      }, 60000 * 3);
+
       stats.pending++;
       append("->","[yellow]PENDING[clear]:", test.title);
     });
