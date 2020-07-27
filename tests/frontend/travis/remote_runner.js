@@ -66,9 +66,9 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
           knownConsoleText = consoleText;
 
           if(knownConsoleText.indexOf("FINISHED") > 0){
-            let match = knownConsoleText.match(/FINISHED - ([0-9]+) tests passed, ([0-9]+) tests failed/);
+            let match = knownConsoleText.match(/FINISHED.*([0-9]+) tests passed, ([0-9]+) tests failed/);
             // finished without failures
-            if (match[2] && match[2] == 0){
+            if (match[2] && match[2] == '0'){
               stopSauce(true);
 
             // finished but some tests did not return or some tests failed
