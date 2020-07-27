@@ -54,7 +54,7 @@ $(function(){
     // max time a test is allowed to run
     // TODO this should be lowered once timeslider_revision.js is faster
     var killTimeout;
-    runner.on('test end', function(test){
+    runner.on('test end', function(){
       stats.tests++;
     });
 
