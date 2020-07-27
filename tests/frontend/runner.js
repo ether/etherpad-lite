@@ -21,9 +21,7 @@ $(function(){
   }
 
   function CustomRunner(runner) {
-    var self = this
-      , stats = this.stats = { suites: 0, tests: 0, passes: 0, pending: 0, failures: 0 }
-      , failures = this.failures = [];
+    var stats = this.stats = { suites: 0, tests: 0, passes: 0, pending: 0, failures: 0 };
 
     if (!runner) return;
     this.runner = runner;
@@ -33,7 +31,6 @@ $(function(){
     });
 
     runner.on('suite', function(suite){
-      stats.suites = stats.suites || 0;
       suite.root || stats.suites++;
       if (suite.root) return;
       append(suite.title);
@@ -55,17 +52,11 @@ $(function(){
       mochaEl.scrollTop = mochaEl.scrollHeight;
     });
 
+    // max time a test is allowed to run
+    // TODO this should be lowered once timeslider_revision.js is faster
     var killTimeout;
     runner.on('test end', function(test){
-      stats.tests = stats.tests || 0;
       stats.tests++;
-      if ('passed' == test.state) {
-        append("->","[green]PASSED[clear] :", test.title," ",test.duration,"ms");
-      } else if (test.pending) {
-        append("->","[yellow]PENDING[clear]:", test.title);
-      } else {
-        append("->","[red]FAILED[clear] :", test.title, stringifyException(test.err));
-      }
 
       if(killTimeout) clearTimeout(killTimeout);
       killTimeout = setTimeout(function(){
@@ -74,8 +65,6 @@ $(function(){
     });
 
     runner.on('pass', function(test){
-      stats.passes = stats.passes || 0;
-
       var medium = test.slow() / 2;
       test.speed = test.duration > test.slow()
         ? 'slow'
@@ -84,17 +73,18 @@ $(function(){
           : 'fast';
 
       stats.passes++;
+      append("->","[green]PASSED[clear] :", test.title," ",test.duration,"ms");
     });
 
     runner.on('fail', function(test, err){
-      stats.failures = stats.failures || 0;
       stats.failures++;
       test.err = err;
-      failures.push(test);
+      append("->","[red]FAILED[clear] :", test.title, stringifyException(test.err));
     });
 
     runner.on('pending', function(){
       stats.pending++;
+      append("->","[yellow]PENDING[clear]:", test.title);
     });
 
     var $console = $("#console");
@@ -128,19 +118,16 @@ $(function(){
 
       var total = runner.total;
       runner.on('end', function(){
-        // when the last test finished this timeout is still active and could result in a misleading "no tests started..." message
-        if(killTimeout) clearTimeout(killTimeout);
-
         stats.end = new Date;
         stats.duration = stats.end - stats.start;
         var minutes = Math.floor(stats.duration / 1000 / 60);
-        var seconds = Math.round((stats.duration / 1000) % 60).toString().padStart("2","0");
+        var seconds = Math.round((stats.duration / 1000) % 60) // chrome < 57 does not like this .toString().padStart("2","0");
         if(stats.tests >= total){
           append("FINISHED -", stats.passes, "tests passed,", stats.failures, "tests failed,", stats.pending," pending, duration: " + minutes + ":" + seconds);
         }
         else {
           append("FINISHED - but not all tests returned!", stats.passes, "tests passed,", stats.failures, "tests failed,", stats.pending, "tests pending, duration: " + minutes + ":" + seconds);
-          append("run",total,"tests but only",stats.passes+stats.failures+stats.pending,"returned");
+          append(total,"tests, but only",stats.tests,"returned");
         }
       });
   }
