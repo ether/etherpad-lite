@@ -23,7 +23,6 @@
 // These jQuery things should create local references, but for now `require()`
 // assigns to the global `$` and augments it with plugins.
 require('./jquery');
-JSON = require('./json2');
 
 var createCookie = require('./pad_utils').createCookie;
 var readCookie = require('./pad_utils').readCookie;
