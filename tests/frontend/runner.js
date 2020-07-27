@@ -121,12 +121,15 @@ $(function(){
         stats.duration = stats.end - stats.start;
         var minutes = Math.floor(stats.duration / 1000 / 60);
         var seconds = Math.round((stats.duration / 1000) % 60) // chrome < 57 does not like this .toString().padStart("2","0");
-        if(stats.tests >= total){
+        if(stats.tests === total){
           append("FINISHED -", stats.passes, "tests passed,", stats.failures, "tests failed,", stats.pending," pending, duration: " + minutes + ":" + seconds);
+        } else if (stats.tests > total) {
+          append("FINISHED - but more tests than planned returned", stats.passes, "tests passed,", stats.failures, "tests failed,", stats.pending," pending, duration: " + minutes + ":" + seconds);
+          append(total,"tests, but",stats.tests,"returned. There is probably a problem with your async code or error handling, see https://github.com/mochajs/mocha/issues/1327");
         }
         else {
           append("FINISHED - but not all tests returned!", stats.passes, "tests passed,", stats.failures, "tests failed,", stats.pending, "tests pending, duration: " + minutes + ":" + seconds);
-          append(total,"tests, but only",stats.tests,"returned");
+          append(total,"tests, but only",stats.tests,"returned. Check for failed before/beforeEach-hooks (no `test end` is called for them and subsequent tests of the same suite are skipped), see https://github.com/mochajs/mocha/pull/1043");
         }
       });
   }
