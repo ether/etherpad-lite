@@ -29,7 +29,6 @@ var socket;
 require('./jquery');
 require('./farbtastic');
 require('./excanvas');
-JSON = require('./json2');
 
 var chat = require('./chat').chat;
 var getCollabClient = require('./collab_client').getCollabClient;
