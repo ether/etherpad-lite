@@ -21,10 +21,9 @@ $(function(){
   }
 
   function CustomRunner(runner) {
-    var stats = this.stats = { suites: 0, tests: 0, passes: 0, pending: 0, failures: 0 };
+    var stats = { suites: 0, tests: 0, passes: 0, pending: 0, failures: 0 };
 
     if (!runner) return;
-    this.runner = runner;
 
     runner.on('start', function(){
       stats.start = new Date;
