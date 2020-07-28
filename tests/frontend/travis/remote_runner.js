@@ -25,35 +25,41 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
       console.log("Remote sauce test '" + name + "' started! " + url);
 
       //tear down the test excecution
-      var stopSauce = function(success){
-        getStatusInterval && clearInterval(getStatusInterval);
+      var stopSauce = function(success,timesup){
+        clearInterval(getStatusInterval);
         clearTimeout(timeout);
 
-        browser.quit();
+        browser.quit(function(){
+          if(!success){
+            allTestsPassed = false;
+          }
 
-        if(!success){
-          allTestsPassed = false;
-        }
+          // if stopSauce is called via timeout (in contrast to via getStatusInterval) than the log of up to the last
+          // five seconds may not be available here. It's an error anyway, so don't care about it.
+          var testResult = knownConsoleText.replace(/\[red\]/g,'\x1B[31m').replace(/\[yellow\]/g,'\x1B[33m')
+                           .replace(/\[green\]/g,'\x1B[32m').replace(/\[clear\]/g, '\x1B[39m');
+          testResult = testResult.split("\\n").map(function(line){
+            return "[" + testSettings.browserName + " " + testSettings.platform + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] " + line;
+          }).join("\n");
 
-        var testResult = knownConsoleText.replace(/\[red\]/g,'\x1B[31m').replace(/\[yellow\]/g,'\x1B[33m')
-                         .replace(/\[green\]/g,'\x1B[32m').replace(/\[clear\]/g, '\x1B[39m');
-        testResult = testResult.split("\\n").map(function(line){
-          return "[" + testSettings.browserName + " " + testSettings.platform + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] " + line;
-        }).join("\n");
+          console.log(testResult);
+          if (timesup) {
+            console.log("[" + testSettings.browserName + " " + testSettings.platform + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] allowed test duration exceeded");
+          }
+          console.log("Remote sauce test '" + name + "' finished! " + url);
 
-        console.log(testResult);
-        console.log("Remote sauce test '" + name + "' finished! " + url);
-
-        callback();
+          callback();
+        });
       }
 
       /**
-       * timeout for the case the test hangs
+       * timeout if a test hangs or the job exceeds 9.5 minutes
+       * It's necessary because if travis kills the saucelabs session due to inactivity, we don't get any output
        * @todo this should be configured in testSettings, see https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-Timeouts
        */
       var timeout = setTimeout(function(){
-        stopSauce(false);
-      }, 1200000 * 10);
+        stopSauce(false,true);
+      }, 570000); // travis timeout is 10 minutes, set this to a slightly lower value
 
       var knownConsoleText = "";
       var getStatusInterval = setInterval(function(){
@@ -64,11 +70,13 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
           knownConsoleText = consoleText;
 
           if(knownConsoleText.indexOf("FINISHED") > 0){
-            let match = knownConsoleText.match(/FINISHED - ([0-9]+) tests passed, ([0-9]+) tests failed/);
-            if (match[2] && match[2] == 0){
+            let match = knownConsoleText.match(/FINISHED.*([0-9]+) tests passed, ([0-9]+) tests failed/);
+            // finished without failures
+            if (match[2] && match[2] == '0'){
               stopSauce(true);
-            }
-            else {
+
+            // finished but some tests did not return or some tests failed
+            } else {
               stopSauce(false);
             }
           }
@@ -128,8 +136,6 @@ sauceTestWorker.push({
   , 'version'        : '78.0'
 });
 
-sauceTestWorker.drain = function() {
-  setTimeout(function(){
-    process.exit(allTestsPassed ? 0 : 1);
-  }, 3000);
-}
+sauceTestWorker.drain(function() {
+  process.exit(allTestsPassed ? 0 : 1);
+});

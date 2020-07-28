@@ -33,6 +33,8 @@ jobs:
     - if: fork = false
       name: "Test the Frontend"
       install:
+        #FIXME
+        - "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/g' settings.json.template > settings.json"
         - "tests/frontend/travis/sauce_tunnel.sh"
         - "bin/installDeps.sh"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
