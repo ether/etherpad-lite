@@ -1,11 +1,9 @@
 var helper = {};
 
 (function(){
-  var $iframeContainer, $iframe, jsLibraries = {};
+  var $iframe, jsLibraries = {};
 
   helper.init = function(cb){
-    $iframeContainer = $("#iframe-container");
-
     $.get('/static/js/jquery.js').done(function(code){
       // make sure we don't override existing jquery
       jsLibraries["jquery"] = "if(typeof $ === 'undefined') {\n" + code + "\n}";
@@ -116,32 +114,32 @@ var helper = {};
     //clean up inner iframe references
     helper.padChrome$ = helper.padOuter$ = helper.padInner$ = null;
 
-    //clean up iframes properly to prevent IE from memoryleaking
-    $iframeContainer.find("iframe").purgeFrame().done(function(){
-      $iframeContainer.append($iframe);
-      $iframe.one('load', function(){
-        helper.padChrome$ = getFrameJQuery(                $('#iframe-container iframe'));
-        if (opts.clearCookies) {
-          helper.clearPadPrefCookie();
-        }
-        if (opts.padPrefs) {
-          helper.setPadPrefCookie(opts.padPrefs);
-        }
-        helper.waitFor(function(){
-          return !$iframe.contents().find("#editorloadingbox").is(":visible");
-        }, 50000).done(function(){
-          helper.padOuter$  = getFrameJQuery(helper.padChrome$('iframe[name="ace_outer"]'));
-          helper.padInner$  = getFrameJQuery( helper.padOuter$('iframe[name="ace_inner"]'));
+    //remove old iframe
+    $("#iframe-container iframe").remove();
+    //set new iframe
+    $("#iframe-container").append($iframe);
+    $iframe.one('load', function(){
+      helper.padChrome$ = getFrameJQuery($('#iframe-container iframe'));
+      if (opts.clearCookies) {
+        helper.clearPadPrefCookie();
+      }
+      if (opts.padPrefs) {
+        helper.setPadPrefCookie(opts.padPrefs);
+      }
+      helper.waitFor(function(){
+        return !$iframe.contents().find("#editorloadingbox").is(":visible");
+      }, 10000).done(function(){
+        helper.padOuter$  = getFrameJQuery(helper.padChrome$('iframe[name="ace_outer"]'));
+        helper.padInner$  = getFrameJQuery( helper.padOuter$('iframe[name="ace_inner"]'));
 
-          //disable all animations, this makes tests faster and easier
-          helper.padChrome$.fx.off = true;
-          helper.padOuter$.fx.off = true;
-          helper.padInner$.fx.off = true;
+        //disable all animations, this makes tests faster and easier
+        helper.padChrome$.fx.off = true;
+        helper.padOuter$.fx.off = true;
+        helper.padInner$.fx.off = true;
 
-          opts.cb();
-        }).fail(function(){
-          throw new Error("Pad never loaded");
-        });
+        opts.cb();
+      }).fail(function(){
+        throw new Error("Pad never loaded");
       });
     });
 
