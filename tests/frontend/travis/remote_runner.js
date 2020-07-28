@@ -25,8 +25,8 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
       console.log("Remote sauce test '" + name + "' started! " + url);
 
       //tear down the test excecution
-      var stopSauce = function(success){
-        getStatusInterval && clearInterval(getStatusInterval);
+      var stopSauce = function(success,timesup){
+        clearInterval(getStatusInterval);
         clearTimeout(timeout);
 
         browser.quit();
@@ -35,6 +35,8 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
           allTestsPassed = false;
         }
 
+        // if stopSauce is called via timeout (in contrast to via getStatusInterval) than the log of up to the last
+        // five seconds may not be available here. It's an error anyway, so don't care about it.
         var testResult = knownConsoleText.replace(/\[red\]/g,'\x1B[31m').replace(/\[yellow\]/g,'\x1B[33m')
                          .replace(/\[green\]/g,'\x1B[32m').replace(/\[clear\]/g, '\x1B[39m');
         testResult = testResult.split("\\n").map(function(line){
@@ -42,6 +44,9 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
         }).join("\n");
 
         console.log(testResult);
+        if (timesup) {
+          console.log("[" + testSettings.browserName + " " + testSettings.platform + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] allowed test duration exceeded");
+        }
         console.log("Remote sauce test '" + name + "' finished! " + url);
 
         callback();
@@ -49,13 +54,12 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
 
       /**
        * timeout if a test hangs or the job exceeds 9.5 minutes
-       * It's necessary because if travis kills the saucelabs session, we don't get any output
+       * It's necessary because if travis kills the saucelabs session due to inactivity, we don't get any output
        * @todo this should be configured in testSettings, see https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-Timeouts
        */
       var timeout = setTimeout(function(){
-        stopSauce(false);
-        console.log("[" + testSettings.browserName + " " + testSettings.platform + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] allowed test duration exceeded");
-      }, 570000); // travis timeout is 10 minutes ,set this to a slightly lower value
+        stopSauce(false,true);
+      }, 570000); // travis timeout is 10 minutes, set this to a slightly lower value
 
       var knownConsoleText = "";
       var getStatusInterval = setInterval(function(){
