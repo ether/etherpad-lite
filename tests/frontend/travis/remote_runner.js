@@ -29,27 +29,27 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
         clearInterval(getStatusInterval);
         clearTimeout(timeout);
 
-        browser.quit();
+        browser.quit(function(){
+          if(!success){
+            allTestsPassed = false;
+          }
 
-        if(!success){
-          allTestsPassed = false;
-        }
+          // if stopSauce is called via timeout (in contrast to via getStatusInterval) than the log of up to the last
+          // five seconds may not be available here. It's an error anyway, so don't care about it.
+          var testResult = knownConsoleText.replace(/\[red\]/g,'\x1B[31m').replace(/\[yellow\]/g,'\x1B[33m')
+                           .replace(/\[green\]/g,'\x1B[32m').replace(/\[clear\]/g, '\x1B[39m');
+          testResult = testResult.split("\\n").map(function(line){
+            return "[" + testSettings.browserName + " " + testSettings.platform + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] " + line;
+          }).join("\n");
 
-        // if stopSauce is called via timeout (in contrast to via getStatusInterval) than the log of up to the last
-        // five seconds may not be available here. It's an error anyway, so don't care about it.
-        var testResult = knownConsoleText.replace(/\[red\]/g,'\x1B[31m').replace(/\[yellow\]/g,'\x1B[33m')
-                         .replace(/\[green\]/g,'\x1B[32m').replace(/\[clear\]/g, '\x1B[39m');
-        testResult = testResult.split("\\n").map(function(line){
-          return "[" + testSettings.browserName + " " + testSettings.platform + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] " + line;
-        }).join("\n");
+          console.log(testResult);
+          if (timesup) {
+            console.log("[" + testSettings.browserName + " " + testSettings.platform + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] allowed test duration exceeded");
+          }
+          console.log("Remote sauce test '" + name + "' finished! " + url);
 
-        console.log(testResult);
-        if (timesup) {
-          console.log("[" + testSettings.browserName + " " + testSettings.platform + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] allowed test duration exceeded");
-        }
-        console.log("Remote sauce test '" + name + "' finished! " + url);
-
-        callback();
+          callback();
+        });
       }
 
       /**
