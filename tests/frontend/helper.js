@@ -88,6 +88,11 @@ var helper = {};
   }
   helper.evtType = evtType;
 
+  // @todo needs fixing asap
+  // newPad occasionally timeouts, might be a problem with ready/onload code during page setup
+  // This ensures that tests run regardless of this problem
+  helper.retry = 0
+
   helper.newPad = function(cb, padName){
     //build opts object
     var opts = {clearCookies: true}
@@ -106,6 +111,9 @@ var helper = {};
     if(opts.clearCookies){
       helper.clearSessionCookies();
     }
+
+    // needed for retry
+    let origPadName = padName;
 
     if(!padName)
       padName = "FRONTEND_TEST_" + helper.randomString(20);
@@ -139,7 +147,11 @@ var helper = {};
 
         opts.cb();
       }).fail(function(){
-        throw new Error("Pad never loaded");
+        if (helper.retry > 3) {
+          throw new Error("Pad never loaded");
+        }
+        helper.retry++;
+        helper.newPad(cb,origPadName);
       });
     });
 
