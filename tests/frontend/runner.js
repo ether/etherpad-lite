@@ -127,12 +127,6 @@ $(function(){
 
       var total = runner.total;
       runner.on('end', function(){
-        // @todo
-        // when the last test finished this timeout is still active and
-        // could result in a misleading "no tests started..." message
-        // if the last test does not return properly
-        if(killTimeout) clearTimeout(killTimeout);
-
         stats.end = new Date;
         stats.duration = stats.end - stats.start;
         var minutes = Math.floor(stats.duration / 1000 / 60);
