@@ -112,12 +112,12 @@ var helper = {};
       helper.clearSessionCookies();
     }
 
-    // needed for retry
-    let origPadName = padName;
-
     if(!padName)
       padName = "FRONTEND_TEST_" + helper.randomString(20);
     $iframe = $("<iframe src='/p/" + padName + (encodedParams || '') + "'></iframe>");
+
+    // needed for retry
+    let origPadName = padName;
 
     //clean up inner iframe references
     helper.padChrome$ = helper.padOuter$ = helper.padInner$ = null;
