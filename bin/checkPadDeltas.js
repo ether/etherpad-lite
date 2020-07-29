@@ -11,9 +11,8 @@ if (process.argv.length != 3) {
 const padId = process.argv[2];
 
 // load and initialize NPM;
-var expect = require('expect.js')
-var diff = require('diff')
-var async = require('async')
+// var expect = require('expect.js')
+// var diff = require('diff')
 
 let npm = require('../src/node_modules/npm');
 var async = require("ep_etherpad-lite/node_modules/async");
@@ -56,6 +55,7 @@ npm.load({}, async function() {
       revisions.push(i);
     }
 
+//    var atext = Changeset.makeAText("\n")
     var atext = Changeset.makeAText("\n")
 
     //run trough all revisions
@@ -84,13 +84,14 @@ npm.load({}, async function() {
           return;
         }
 
-        if(~keyRevisions.indexOf(revNum)) {
+        if(~keyRevisions.indexOf(revNum+1)) {
           try {
-            expect(revision.meta.atext.text).to.eql(atext.text)
-            expect(revision.meta.atext.attribs).to.eql(atext.attribs)
+//            expect(revision.meta.atext.text).to.eql(atext.text)
+//            expect(revision.meta.atext.attribs).to.eql(atext.attribs)
+console.log("derp, all looks fine?", revision);
           }catch(e) {
             console.error("Atext in key revision "+revNum+" doesn't match computed one.")
-            console.log(diff.diffChars(atext.text, revision.meta.atext.text).map(function(op) {if(!op.added && !op.removed) op.value = op.value.length; return op}))
+            // console.log(diff.diffChars(atext.text, revision.meta.atext.text).map(function(op) {if(!op.added && !op.removed) op.value = op.value.length; return op}))
             //console.error(e)
             //console.log('KeyRev. :', revision.meta.atext)
             //console.log('Computed:', atext)
@@ -105,7 +106,7 @@ npm.load({}, async function() {
       if(pad.atext.text == atext.text) console.log('ok')
       else {
         console.error('Pad AText doesn\'t match computed one! (Computed ',atext.text.length, ', db', pad.atext.text.length,')')
-        console.log(diff.diffChars(atext.text, pad.atext.text).map(function(op) {if(!op.added && !op.removed) op.value = op.value.length; return op}))
+        // console.log(diff.diffChars(atext.text, pad.atext.text).map(function(op) {if(!op.added && !op.removed) op.value = op.value.length; return op}))
       }
       callback(er)
     });
