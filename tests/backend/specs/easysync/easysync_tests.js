@@ -222,7 +222,7 @@ describe("text line mutations",function(){
     done()
   })
 // #2836 regressions
-  it("applies mutations to an array of lines #8",function(done){
+  xit("applies mutations to an array of lines #8",function(done){
     var expected = ["foo\n","c"];
     var result = runMutationTest(["\n","foo\n","\n"], [
     ['remove', 1, 1, "\n"],
@@ -235,7 +235,7 @@ describe("text line mutations",function(){
     if (!assertEqualStrings(result[2], expected.join(''))) throw new Error('applyToText result is wrong: expected '+expected.join('')+" got "+result[2]);
     done()
   })
-  it("applies mutations to an array of lines #9",function(done){
+  xit("applies mutations to an array of lines #9",function(done){
     var expected = ["fooc"];
     var result = runMutationTest(["\n","foo\n","\n"], [
     ['remove', 1, 1, "\n"],
@@ -248,7 +248,7 @@ describe("text line mutations",function(){
     if (!assertEqualStrings(result[2], expected.join(''))) throw new Error('applyToText result is wrong: expected '+expected.join('')+" got "+result[2]);
     done()
   })
-  it("applies mutations to an array of lines #10",function(done){
+  xit("applies mutations to an array of lines #10",function(done){
     var expected = ["c"]; //TODO find out if c must have a newline because of unknown constraints
     var result = runMutationTest(["\n"], [
     ['remove', 1, 1, "\n"],
@@ -259,7 +259,7 @@ describe("text line mutations",function(){
     if (!assertEqualStrings(result[2], expected.join(''))) throw new Error('applyToText result is wrong: expected '+expected.join('')+" got "+result[2]);
     done()
   })
-  it("applies mutations to an array of lines #11",function(done){
+  xit("applies mutations to an array of lines #11",function(done){
     var expected = ["ac\n"];
     var result = runMutationTest(["\n"], [
     ['remove', 1, 1, "\n"],
@@ -271,7 +271,7 @@ describe("text line mutations",function(){
     if (!assertEqualStrings(result[2], expected.join(''))) throw new Error('applyToText result is wrong: expected '+expected.join('')+" got "+result[2]);
     done()
   })
-  it("applies mutations to an array of lines #12",function(done){
+  xit("applies mutations to an array of lines #12",function(done){
     var expected = ["a\n","c"]; //TODO find out if c must have a newline because of unknown constraints
     var result = runMutationTest(["\n"], [
     ['remove', 1, 1, "\n"],
