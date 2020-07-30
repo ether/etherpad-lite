@@ -2,6 +2,7 @@ var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var helper = require("./helper.js")
 var assertEqualStrings = helper.assertEqualStrings;
 var assertEqualArrays = helper.assertEqualArrays;
+var assert = helper.assert;
 
 describe("text line mutations",function(){
   it("applies mutations to an array of lines #1",function(done){
@@ -178,6 +179,49 @@ describe("text line mutations",function(){
     done()
   })
 })
+
+describe("textLinesMutator",function(){
+  it("hasMore indicates remaining characters",function(done){
+    var lines = ["1\n", "2\n", "3\n", "4\n"];
+    var mu;
+
+    mu = Changeset.textLinesMutator(lines);
+    assert(mu.hasMore() + ' == true');
+    mu.skip(8, 4);
+    assert(mu.hasMore() + ' == false');
+    mu.close();
+    assert(mu.hasMore() + ' == false');
+
+    // still 1,2,3,4
+    mu = Changeset.textLinesMutator(lines);
+    assert(mu.hasMore() + ' == true');
+    mu.remove(2, 1);
+    assert(mu.hasMore() + ' == true');
+    mu.skip(2, 1);
+    assert(mu.hasMore() + ' == true');
+    mu.skip(2, 1);
+    assert(mu.hasMore() + ' == true');
+    mu.skip(2, 1);
+    assert(mu.hasMore() + ' == false');
+    mu.insert("5\n", 1);
+    assert(mu.hasMore() + ' == false');
+    mu.close();
+    assert(mu.hasMore() + ' == false');
+
+    // 2,3,4,5 now
+    mu = Changeset.textLinesMutator(lines);
+    assert(mu.hasMore() + ' == true');
+    mu.remove(6, 3);
+    assert(mu.hasMore() + ' == true');
+    mu.remove(2, 1);
+    assert(mu.hasMore() + ' == false');
+    mu.insert("hello\n", 1);
+    assert(mu.hasMore() + ' == false');
+    mu.close();
+    assert(mu.hasMore() + ' == false');
+    done();
+  });
+});
 
 function runMutationTest(origLines, muts) {
   var lines1 = origLines.slice();
