@@ -17,6 +17,7 @@ exports.assertEqualStrings = function (a, b) {
     return a === b
 }
 
+// not used
 exports.throughIterator = function (opsStr) {
     var iter = Changeset.opIterator(opsStr);
     var assem = Changeset.opAssembler();
@@ -26,6 +27,7 @@ exports.throughIterator = function (opsStr) {
     return assem.toString();
 }
 
+// not used
 exports.throughSmartAssembler =  function (opsStr) {
     var iter = Changeset.opIterator(opsStr);
     var assem = Changeset.smartOpAssembler();
