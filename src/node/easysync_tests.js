@@ -29,6 +29,7 @@ function random() {
     return Math.floor(Math.random() * maxValue);
   }
 
+  // maxValue is not used
   this.nextDouble = function (maxValue) {
     return Math.random();
   }
@@ -59,6 +60,7 @@ function runTests() {
     assert(literal(a) + " == " + literal(b));
   }
 
+  // throughIterator is not used
   function throughIterator(opsStr) {
     var iter = Changeset.opIterator(opsStr);
     var assem = Changeset.opAssembler();
@@ -68,6 +70,7 @@ function runTests() {
     return assem.toString();
   }
 
+  // throughSmartAssembler is not used
   function throughSmartAssembler(opsStr) {
     var iter = Changeset.opIterator(opsStr);
     var assem = Changeset.smartOpAssembler();
@@ -295,6 +298,7 @@ function runTests() {
     print("> runMutateAttributionTest#" + testId);
     var p = poolOrArray(attribs);
     var alines2 = Array.prototype.slice.call(alines);
+    // result is never used
     var result = Changeset.mutateAttributionLines(
     Changeset.checkRep(cs), alines2, p);
     assertEqualArrays(outCorrect, alines2);
@@ -485,6 +489,7 @@ function runTests() {
     // assumes attrib pool like ['apple,','apple,true','banana,','banana,true']
     if (opcode == '-' || rand.nextInt(3)) {
       return '';
+      // always true
     } else if (rand.nextInt(3)) {
       if (opcode == '+' || rand.nextInt(2)) {
         return '*' + Changeset.numToString(rand.nextInt(2) * 2 + 1);
