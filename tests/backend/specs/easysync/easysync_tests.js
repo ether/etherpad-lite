@@ -27,6 +27,9 @@ var helper = require("./helper.js")
 
 var assert = helper.assert;
 var literal = helper.literal;
+var assertEqualStrings = helper.assertEqualStrings;
+var assertEqualArrays = helper.assertEqualArrays;
+
 //var throughIterator = helper.throughIterator;
 
 function random() {
