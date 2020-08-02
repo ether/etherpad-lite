@@ -25,7 +25,7 @@ git clone --branch master https://github.com/ether/etherpad-lite.git && cd ether
 ```
 
 ### Manual install
-You'll need git and [node.js](https://nodejs.org) installed (minimum required Node version: **10.13.0**).
+You’ll need git and [node.js](https://nodejs.org) installed (minimum required Node version: **10.13.0**).
 
 **As any user (we recommend creating a separate user called etherpad):**
 
@@ -48,12 +48,12 @@ This package runs on any Windows machine, but for development purposes, please d
 Run `start.bat` and open <http://localhost:9001> in your browser. You like it? [Next steps](#next-steps).
 
 ### Manually install on Windows
-You'll need [node.js](https://nodejs.org) and (optionally, though recommended) git.
+You’ll need [node.js](https://nodejs.org) and (optionally, though recommended) git.
 
 1. Grab the source, either
   - download <https://github.com/ether/etherpad-lite/zipball/master>
   - or `git clone --branch master https://github.com/ether/etherpad-lite.git`
-2. With a "Run as administrator" command prompt execute `bin\installOnWindows.bat`
+2. With a “Run as administrator” command prompt execute `bin\installOnWindows.bat`
 
 Now, run `start.bat` and open <http://localhost:9001> in your browser.
 
@@ -90,7 +90,7 @@ If you prefer, `ep_hash_auth` also gives you the option of storing the users in 
 
 ![Basic install](doc/images/etherpad_basic.png "Basic Installation")
 
-![Full Features](doc/images/etherpad_full_features.png "You can add a lot of plugins !")
+![Full Features](doc/images/etherpad_full_features.png "You can add a lot of plugins!")
 
 Etherpad is very customizable through plugins. Instructions for installing themes and plugins can be found in [the plugin wiki article](https://github.com/ether/etherpad-lite/wiki/Available-Plugins).
 
@@ -103,12 +103,12 @@ npm install ep_headings2 ep_markdown ep_comments_page ep_align ep_page_view ep_f
 
 ## Customize the style with skin variants
 
-Open <http://127.0.0.1:9001/p/test#skinvariantsbuilder> in your browser and start playing !
+Open <http://127.0.0.1:9001/p/test#skinvariantsbuilder> in your browser and start playing!
 
 ![Skin Variant](doc/images/etherpad_skin_variants.gif "Skin variants")
 
 ## Helpful resources
-The [wiki](https://github.com/ether/etherpad-lite/wiki) is your one-stop resource for Tutorials and How-to's.
+The [wiki](https://github.com/ether/etherpad-lite/wiki) is your one-stop resource for Tutorials and How-to’s.
 
 Documentation can be found in `doc/`.
 
@@ -117,9 +117,9 @@ Documentation can be found in `doc/`.
 ## Things you should know
 You can debug Etherpad using `bin/debugRun.sh`.
 
-You can run Etherpad quickly launching `bin/fastRun.sh`. It's convenient for developers and advanced users. Be aware that it will skip the dependencies update, so remember to run `bin/installDeps.sh` after installing a new dependency or upgrading version.
+You can run Etherpad quickly launching `bin/fastRun.sh`. It’s convenient for developers and advanced users. Be aware that it will skip the dependencies update, so remember to run `bin/installDeps.sh` after installing a new dependency or upgrading version.
 
-If you want to find out how Etherpad's `Easysync` works (the library that makes it really realtime), start with this [PDF](https://github.com/ether/etherpad-lite/raw/master/doc/easysync/easysync-full-description.pdf) (complex, but worth reading).
+If you want to find out how Etherpad’s `Easysync` works (the library that makes it really realtime), start with this [PDF](https://github.com/ether/etherpad-lite/raw/master/doc/easysync/easysync-full-description.pdf) (complex, but worth reading).
 
 ## Contributing
 Read our [**Developer Guidelines**](https://github.com/ether/etherpad-lite/blob/master/CONTRIBUTING.md)
@@ -139,7 +139,7 @@ OpenAPI (previously swagger) definitions for the API are exposed under `/api/ope
 There is a [jQuery plugin](https://github.com/ether/etherpad-lite-jquery-plugin) that helps you to embed Pads into your website.
 
 # Plugin Framework
-Etherpad offers a plugin framework, allowing you to easily add your own features. By default your Etherpad is extremely light-weight and it's up to you to customize your experience. Once you have Etherpad installed you should visit the plugin page and take control.
+Etherpad offers a plugin framework, allowing you to easily add your own features. By default your Etherpad is extremely light-weight and it’s up to you to customize your experience. Once you have Etherpad installed you should visit the [plugin page](https://static.etherpad.org/) and take control.
 
 # Translations / Localizations  (i18n / l10n)
 Etherpad comes with translations into all languages thanks to the team at [TranslateWiki](https://translatewiki.net/).
