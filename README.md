@@ -142,7 +142,7 @@ There is a [jQuery plugin](https://github.com/ether/etherpad-lite-jquery-plugin)
 Etherpad offers a plugin framework, allowing you to easily add your own features. By default your Etherpad is extremely light-weight and it's up to you to customize your experience. Once you have Etherpad installed you should visit the plugin page and take control.
 
 # Translations / Localizations  (i18n / l10n)
-Etherpad comes with translations into all languages thanks to the team at TranslateWiki.
+Etherpad comes with translations into all languages thanks to the team at [TranslateWiki](https://translatewiki.net/).
 
 # FAQ
 Visit the **[FAQ](https://github.com/ether/etherpad-lite/wiki/FAQ)**.
