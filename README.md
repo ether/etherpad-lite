@@ -139,7 +139,7 @@ OpenAPI (previously swagger) definitions for the API are exposed under `/api/ope
 There is a [jQuery plugin](https://github.com/ether/etherpad-lite-jquery-plugin) that helps you to embed Pads into your website.
 
 # Plugin Framework
-Etherpad offers a plugin framework, allowing you to easily add your own features. By default your Etherpad is extremely light-weight and it's up to you to customize your experience. Once you have Etherpad installed you should visit the plugin page and take control.
+Etherpad offers a plugin framework, allowing you to easily add your own features. By default your Etherpad is extremely light-weight and it's up to you to customize your experience. Once you have Etherpad installed you should [visit the plugin page](https://static.etherpad.org/) and take control.
 
 # Translations / Localizations  (i18n / l10n)
 Etherpad comes with translations into all languages thanks to the team at [TranslateWiki](https://translatewiki.net/).
