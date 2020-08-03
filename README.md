@@ -144,6 +144,8 @@ Etherpad offers a plugin framework, allowing you to easily add your own features
 # Translations / Localizations  (i18n / l10n)
 Etherpad comes with translations into all languages thanks to the team at [TranslateWiki](https://translatewiki.net/).
 
+If you require translations in [plugins](https://static.etherpad.org/) please send pull request to each plugin individually.
+
 # FAQ
 Visit the **[FAQ](https://github.com/ether/etherpad-lite/wiki/FAQ)**.
 
