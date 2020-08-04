@@ -63,6 +63,7 @@ describe("attribution line mutations",function(){
     done();
   })
 })
+
 function runMutateAttributionTest(testId, attribs, cs, alines, outCorrect) {
   var p = poolOrArray(attribs);
   var alines2 = Array.prototype.slice.call(alines);
@@ -75,6 +76,7 @@ function runMutateAttributionTest(testId, attribs, cs, alines, outCorrect) {
   function removeQuestionMarks(a) {
     return a.replace(/\?/g, '');
   }
+  // applyToAttribution
   var inMerged = Changeset.joinAttributionLines(alines.map(removeQuestionMarks));
   var correctMerged = Changeset.joinAttributionLines(outCorrect.map(removeQuestionMarks));
   var mergedResult = Changeset.applyToAttribution(cs, inMerged, p);
