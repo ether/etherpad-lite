@@ -3,6 +3,7 @@ var AttributePool = require("ep_etherpad-lite/static/js/AttributePool");
 var helper = require("./helper.js")
 var assertEqualStrings = helper.assertEqualStrings;
 var assertEqualArrays = helper.assertEqualArrays;
+var poolOrArray = helper.poolOrArray;
 
 describe("attribution line mutations",function(){
   it("turns 123\\n 456\\n 789\\n into 123\\n 4<b>5</b>6\\n 789\\n",function(done){
@@ -92,18 +93,6 @@ var testPoolWithChars = (function () {
 })();
 
 
-function poolOrArray(attribs) {
-  if (attribs.getAttrib) {
-    return attribs; // it's already an attrib pool
-  } else {
-    // assume it's an array of attrib strings to be split and added
-    var p = new AttributePool();
-    attribs.forEach(function (kv) {
-      p.putAttrib(kv.split(','));
-    });
-    return p;
-  }
-}
 
 
 

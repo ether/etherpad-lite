@@ -1,8 +1,7 @@
-
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
-var AttributePool = require("ep_etherpad-lite/static/js/AttributePool");
 var helper = require("./helper.js")
 var assertEqualStrings = helper.assertEqualStrings;
+var poolOrArray = helper.poolOrArray;
 describe("make attribs string",function(){
   it("make attribs string",function(done){
   testMakeAttribsString(1, ['bold,'], '+', [
@@ -32,15 +31,3 @@ describe("make attribs string",function(){
     assertEqualStrings(correctString, str);
   }
 
-  function poolOrArray(attribs) {
-    if (attribs.getAttrib) {
-      return attribs; // it's already an attrib pool
-    } else {
-      // assume it's an array of attrib strings to be split and added
-      var p = new AttributePool();
-      attribs.forEach(function (kv) {
-        p.putAttrib(kv.split(','));
-      });
-      return p;
-    }
-  }
