@@ -95,6 +95,9 @@ describe("other",function(){
 
 
   // throughIterator is not used
+  /**
+   * @param opsStr
+   */
   function throughIterator(opsStr) {
     var iter = Changeset.opIterator(opsStr);
     var assem = Changeset.opAssembler();
@@ -105,6 +108,9 @@ describe("other",function(){
   }
 
   // throughSmartAssembler is not used
+  /**
+   * @param opsStr
+   */
   function throughSmartAssembler(opsStr) {
     var iter = Changeset.opIterator(opsStr);
     var assem = Changeset.smartOpAssembler();
@@ -119,6 +125,12 @@ describe("other",function(){
 
 
 
+  /**
+   * @param testId
+   * @param cs
+   * @param lines
+   * @param correctLines
+   */
   function testMutateTextLines(testId, cs, lines, correctLines) {
 
     var a = lines.slice();
@@ -126,6 +138,14 @@ describe("other",function(){
     assertEqualArrays(correctLines, a);
   }
 
+  /**
+   * @param testId
+   * @param cs
+   * @param lines
+   * @param alines
+   * @param pool
+   * @param correctOutput
+   */
   function testInverse(testId, cs, lines, alines, pool, correctOutput) {
 
     pool = poolOrArray(pool);
@@ -133,12 +153,25 @@ describe("other",function(){
     assertEqualStrings(correctOutput, str);
   }
 
+  /**
+   * @param testId
+   * @param cs
+   * @param filter
+   * @param correctOutput
+   */
   function testFilterAttribNumbers(testId, cs, filter, correctOutput) {
 
     var str = Changeset.filterAttribNumbers(cs, filter);
     assertEqualStrings(correctOutput, str);
   }
 
+  /**
+   * @param testId
+   * @param attribs
+   * @param cs
+   * @param inAttr
+   * @param outCorrect
+   */
   function runApplyToAttributionTest(testId, attribs, cs, inAttr, outCorrect) {
     var p = poolOrArray(attribs);
     var result = Changeset.applyToAttribution(

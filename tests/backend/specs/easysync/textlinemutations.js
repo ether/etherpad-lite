@@ -223,6 +223,10 @@ describe("textLinesMutator",function(){
   });
 });
 
+/**
+ * @param origLines
+ * @param muts
+ */
 function runMutationTest(origLines, muts) {
   var lines1 = origLines.slice();
   var mu = Changeset.textLinesMutator(lines1);
@@ -238,6 +242,10 @@ function runMutationTest(origLines, muts) {
   return [lines1,lines2,outText];
 }
 
+/**
+ * @param mu
+ * @param arrayOfArrays
+ */
 function applyMutations(mu, arrayOfArrays) {
   arrayOfArrays.forEach(function (a) {
     var result = mu[a[0]].apply(mu, a.slice(1));
@@ -247,6 +255,10 @@ function applyMutations(mu, arrayOfArrays) {
   });
 }
 
+/**
+ * @param oldLen
+ * @param arrayOfArrays
+ */
 function mutationsToChangeset(oldLen, arrayOfArrays) {
   var assem = Changeset.smartOpAssembler();
   var op = Changeset.newOp();
