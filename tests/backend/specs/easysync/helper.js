@@ -247,12 +247,12 @@ exports.randomTestChangeset = function (origText, rand, withAttribs) {
       outTextAssem.append(txt);
       appendMultilineOp('+', txt);
     } else if (o.skip) {
-      var txt = textLeft.substring(0, o.skip);
+      txt = textLeft.substring(0, o.skip);
       textLeft = textLeft.substring(o.skip);
       outTextAssem.append(txt);
       appendMultilineOp('=', txt);
     } else if (o.remove) {
-      var txt = textLeft.substring(0, o.remove);
+      txt = textLeft.substring(0, o.remove);
       textLeft = textLeft.substring(o.remove);
       appendMultilineOp('-', txt);
     }

@@ -1,11 +1,9 @@
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
-var AttributePool = require("ep_etherpad-lite/static/js/AttributePool");
 var helper = require("./helper.js")
 var assertEqualArrays = helper.assertEqualArrays;
 var random = helper.random;
 var poolOrArray = helper.poolOrArray;
 var randomMultiline = helper.randomMultiline;
-var randomInlineString = helper.randomInlineString;
 var randomTestChangeset = helper.randomTestChangeset;
 
 describe("inverseRandom",function(){

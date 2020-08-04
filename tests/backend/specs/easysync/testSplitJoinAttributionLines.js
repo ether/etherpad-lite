@@ -4,7 +4,6 @@ var assertEqualStrings = helper.assertEqualStrings;
 var assertEqualArrays = helper.assertEqualArrays;
 var random = helper.random;
 var randomMultiline = helper.randomMultiline;
-var randomInlineString = helper.randomInlineString;
 
 describe("testSplitJoinAttributionLines",function(){
   it("testSplitJoinAttributionLines",function(done){

@@ -4,7 +4,6 @@ var helper = require("./helper.js")
 var assertEqualStrings = helper.assertEqualStrings;
 var random = helper.random;
 var randomMultiline = helper.randomMultiline;
-var randomInlineString = helper.randomInlineString;
 var randomTestChangeset = helper.randomTestChangeset;
 
 describe("Changeset.compose",function(){
