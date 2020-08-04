@@ -47,5 +47,6 @@ cd src
 failed=0
 npm run test || failed=1
 npm run test-contentcollector || failed=1
+npm run test-easysync || failed=1
 
 exit $failed
