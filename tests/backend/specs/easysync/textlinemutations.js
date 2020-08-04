@@ -231,7 +231,7 @@ function runMutationTest(origLines, muts) {
 
   var inText = origLines.join('');
   var cs = mutationsToChangeset(inText.length, muts);
-  lines2 = origLines.slice();
+  var lines2 = origLines.slice();
   Changeset.mutateTextLines(cs, lines2);
 
   var outText = Changeset.applyToText(cs, inText);

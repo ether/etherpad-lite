@@ -1,8 +1,6 @@
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var AttributePool = require("ep_etherpad-lite/static/js/AttributePool");
 var helper = require("./helper.js")
-var assert = helper.assert;
-var literal = helper.literal;
 var assertEqualStrings = helper.assertEqualStrings;
 var assertEqualArrays = helper.assertEqualArrays;
 

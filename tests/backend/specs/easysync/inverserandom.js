@@ -1,9 +1,7 @@
 var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var AttributePool = require("ep_etherpad-lite/static/js/AttributePool");
 var helper = require("./helper.js")
-var assertEqualStrings = helper.assertEqualStrings;
 var assertEqualArrays = helper.assertEqualArrays;
-var assert = helper.assert;
 
 describe("inverseRandom",function(){
   it("inverseRandom",function(done){
@@ -135,12 +133,12 @@ function random() {
         outTextAssem.append(txt);
         appendMultilineOp('+', txt);
       } else if (o.skip) {
-        var txt = textLeft.substring(0, o.skip);
+        txt = textLeft.substring(0, o.skip);
         textLeft = textLeft.substring(o.skip);
         outTextAssem.append(txt);
         appendMultilineOp('=', txt);
       } else if (o.remove) {
-        var txt = textLeft.substring(0, o.remove);
+        txt = textLeft.substring(0, o.remove);
         textLeft = textLeft.substring(o.remove);
         appendMultilineOp('-', txt);
       }
@@ -272,8 +270,5 @@ function random() {
         return ['*0*2', '*0*3', '*1*2'][rand.nextInt(3)];
       }
     }
-  }
-  function assertEqualArrays(a, b) {
-    assert("JSON.stringify(" + literal(a) + ") == JSON.stringify(" + literal(b) + ")");
   }
 
