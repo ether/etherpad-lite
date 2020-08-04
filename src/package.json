@@ -92,7 +92,7 @@
   "scripts": {
     "test": "nyc mocha --timeout 5000 ../tests/backend/specs/api",
     "test-contentcollector": "nyc mocha --timeout 5000 ../tests/backend/specs",
-    "test-easysync": "nyc mocha --timeout 5000 ../tests/container/specs/easysync",
+    "test-easysync": "nyc mocha --timeout 5000 ../tests/backend/specs/easysync",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api"
   },
   "version": "1.8.4",
