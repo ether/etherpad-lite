@@ -36,7 +36,7 @@
 	"pad.colorpicker.save": "Speichern",
 	"pad.colorpicker.cancel": "Abbrechen",
 	"pad.loading": "Lade …",
-	"pad.noCookie": "Das Cookie konnte nicht gefunden werden. Bitte erlaube Cookies in deinem Browser! Deine Sitzung und Einstellungen werden zwischen den Besuchen nicht gespeichert.  Dies kann darauf zurückzuführen sein, dass Etherpad in einigen Browsern in einem iFrame enthalten ist.  Bitte stellen Sie sicher, dass sich Etherpad auf der gleichen Subdomain/Domain wie der übergeordnete iFrame befindet.",
+	"pad.noCookie": "Das Cookie konnte nicht gefunden werden. Bitte erlaube Cookies in deinem Browser! Deine Sitzung und Einstellungen werden zwischen den Besuchen nicht gespeichert.  Dies kann darauf zurückzuführen sein, dass Etherpad in einigen Browsern in einem iFrame enthalten ist.  Bitte stelle sicher, dass sich Etherpad auf der gleichen Subdomain/Domain wie der übergeordnete iFrame befindet.",
 	"pad.passwordRequired": "Du benötigst ein Kennwort, um auf dieses Pad zuzugreifen",
 	"pad.permissionDenied": "Du hast keine Berechtigung, um auf dieses Pad zuzugreifen",
 	"pad.wrongPassword": "Dein eingegebenes Kennwort war falsch",
