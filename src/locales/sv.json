@@ -3,22 +3,23 @@
 		"authors": [
 			"Jopparn",
 			"Lokal Profil",
+			"Sabelöga",
 			"WikiPhoenix"
 		]
 	},
 	"index.newPad": "Nytt block",
 	"index.createOpenPad": "eller skapa/öppna ett block med namnet:",
 	"index.openPad": "öppna ett befintligt block med namnet:",
-	"pad.toolbar.bold.title": "Fet (Ctrl-B)",
-	"pad.toolbar.italic.title": "Kursiv (Ctrl-I)",
-	"pad.toolbar.underline.title": "Understruken (Ctrl-U)",
+	"pad.toolbar.bold.title": "Fet (Ctrl+B)",
+	"pad.toolbar.italic.title": "Kursiv (Ctrl+I)",
+	"pad.toolbar.underline.title": "Understruken (Ctrl+U)",
 	"pad.toolbar.strikethrough.title": "Genomstruken (Ctrl+5)",
 	"pad.toolbar.ol.title": "Numrerad lista (Ctrl+Shift+N)",
 	"pad.toolbar.ul.title": "Onumrerad lista (Ctrl+Shift+L)",
 	"pad.toolbar.indent.title": "Öka indrag (TABB)",
 	"pad.toolbar.unindent.title": "Minska indrag (Shift+TABB)",
-	"pad.toolbar.undo.title": "Ångra (Ctrl-Z)",
-	"pad.toolbar.redo.title": "Gör om (Ctrl-Y)",
+	"pad.toolbar.undo.title": "Ångra (Ctrl+Z)",
+	"pad.toolbar.redo.title": "Gör om (Ctrl+Y)",
 	"pad.toolbar.clearAuthorship.title": "Rensa författarfärger (Ctrl+Shift+C)",
 	"pad.toolbar.import_export.title": "Importera/exportera från/till olika filformat",
 	"pad.toolbar.timeslider.title": "Tidsreglage",
@@ -48,7 +49,7 @@
 	"pad.importExport.import_export": "Importera/Exportera",
 	"pad.importExport.import": "Ladda upp textfiler eller dokument",
 	"pad.importExport.importSuccessful": "Åtgärden slutfördes!",
-	"pad.importExport.export": "Export aktuellt block som:",
+	"pad.importExport.export": "Exportera aktuellt block som:",
 	"pad.importExport.exportetherpad": "Etherpad",
 	"pad.importExport.exporthtml": "HTML",
 	"pad.importExport.exportplain": "Oformaterad text",
@@ -137,5 +138,5 @@
 	"pad.impexp.copypaste": "Var god kopiera och klistra in",
 	"pad.impexp.exportdisabled": "Exportering av formatet {{type}} är inaktiverad. Var god kontakta din systemadministratör för mer information.",
 	"pad.impexp.maxFileSize": "Filen är för stor. Kontakta din systemadministratör för att öka den tillåtna filstorleken för importering",
-	"pad.impexp.permission": "Import är inaktiverat eftersom du aldrig har bidragit detta block. var god bidra minst en gång innan du importerar"
+	"pad.impexp.permission": "Importering är inaktiverat eftersom du aldrig har bidragit till detta block. Var god bidra minst en gång innan du importerar"
 }

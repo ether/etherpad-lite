@@ -52,6 +52,7 @@
 	"pad.settings.fontType.normal": "عادي",
 	"pad.settings.language": "اللغة:",
 	"pad.settings.about": "حول",
+	"pad.settings.poweredBy": "مدعوم من",
 	"pad.importExport.import_export": "استيراد/تصدير",
 	"pad.importExport.import": "تحميل أي ملف نصي أو وثيقة",
 	"pad.importExport.importSuccessful": "ناجح!",
