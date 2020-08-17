@@ -133,7 +133,7 @@
 	"pad.userlist.guest": "Vieras",
 	"pad.userlist.deny": "Estä",
 	"pad.userlist.approve": "Hyväksy",
-	"pad.editbar.clearcolors": "Poistetaanko asiakirjasta tekijävärit?",
+	"pad.editbar.clearcolors": "Poistetaanko asiakirjasta tekijävärit? Tätä ei voi perua",
 	"pad.impexp.importbutton": "Tuo nyt",
 	"pad.impexp.importing": "Tuodaan...",
 	"pad.impexp.confirmimport": "Tiedoston tuonti korvaa kaiken muistiossa olevan tekstin. Haluatko varmasti jatkaa?",
