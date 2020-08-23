@@ -61,14 +61,15 @@ exports.syncMapFirst = function (lst, fn) {
   return [];
 }
 
-exports.mapFirst = function (lst, fn, cb) {
+exports.mapFirst = function (lst, fn, cb, predicate) {
+  if (predicate == null) predicate = (x) => (x != null && x.length > 0);
   var i = 0;
 
   var next = function () {
     if (i >= lst.length) return cb(null, []);
     fn(lst[i++], function (err, result) {
       if (err) return cb(err);
-      if (result.length) return cb(null, result);
+      if (predicate(result)) return cb(null, result);
       next();
     });
   }
@@ -142,7 +143,7 @@ exports.callFirst = function (hook_name, args) {
   });
 }
 
-function aCallFirst(hook_name, args, cb) {
+function aCallFirst(hook_name, args, cb, predicate) {
   if (!args) args = {};
   if (!cb) cb = function () {};
   if (pluginDefs.hooks[hook_name] === undefined) return cb(null, []);
@@ -151,20 +152,21 @@ function aCallFirst(hook_name, args, cb) {
     function (hook, cb) {
       hookCallWrapper(hook, hook_name, args, function (res) { cb(null, res); });
     },
-    cb
+    cb,
+    predicate
   );
 }
 
 /* return a Promise if cb is not supplied */
-exports.aCallFirst = function (hook_name, args, cb) {
+exports.aCallFirst = function (hook_name, args, cb, predicate) {
   if (cb === undefined) {
     return new Promise(function(resolve, reject) {
       aCallFirst(hook_name, args, function(err, res) {
 	return err ? reject(err) : resolve(res);
-      });
+      }, predicate);
     });
   } else {
-    return aCallFirst(hook_name, args, cb);
+    return aCallFirst(hook_name, args, cb, predicate);
   }
 }
 

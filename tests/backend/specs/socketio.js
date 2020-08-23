@@ -9,12 +9,16 @@ const server = require(m('node/server'));
 const setCookieParser = require(m('node_modules/set-cookie-parser'));
 const settings = require(m('node/utils/Settings'));
 const supertest = require(m('node_modules/supertest'));
+const webaccess = require(m('node/hooks/express/webaccess'));
 
 const logger = log4js.getLogger('test');
 let agent;
 let baseUrl;
+let authnFailureDelayMsBackup;
 
 before(async function() {
+  authnFailureDelayMsBackup = webaccess.authnFailureDelayMs;
+  webaccess.authnFailureDelayMs = 0; // Speed up tests.
   settings.port = 0;
   settings.ip = 'localhost';
   const httpServer = await server.start();
@@ -24,6 +28,7 @@ before(async function() {
 });
 
 after(async function() {
+  webaccess.authnFailureDelayMs = authnFailureDelayMsBackup;
   await server.stop();
 });
 
@@ -135,7 +140,6 @@ describe('socket.io access checks', function() {
     authorize = () => true;
     authorizeHooksBackup = plugins.hooks.authorize;
     plugins.hooks.authorize = [{hook_fn: (hookName, {req}, cb) => {
-      if (req.session.user == null) return cb([]); // Hasn't authenticated yet.
       return cb([authorize(req)]);
     }}];
     await cleanUpPads();
