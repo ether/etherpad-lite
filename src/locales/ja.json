@@ -81,6 +81,7 @@
 	"pad.modals.corruptPad.cause": "これはサーバーの構成不良か、予期せぬ挙動を見せたために発生した事象である可能性があります。当サービス管理者にお問い合わせください。",
 	"pad.modals.deleted": "削除されました。",
 	"pad.modals.deleted.explanation": "このパッドは削除されました。",
+	"pad.modals.rateLimited": "速度制限中です。",
 	"pad.modals.rateLimited.explanation": "パッドに送ったメッセージ件数が多すぎたため接続が解除されました。",
 	"pad.modals.disconnected": "切断されました。",
 	"pad.modals.disconnected.explanation": "サーバーとの接続が失われました",
