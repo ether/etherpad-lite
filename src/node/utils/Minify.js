@@ -53,6 +53,14 @@ const LIBRARY_WHITELIST = [
 // Rewrite tar to include modules with no extensions and proper rooted paths.
 const LIBRARY_PREFIX = 'ep_etherpad-lite/static/js';
 exports.tar = {};
+
+/**
+ * Prefix a path with `LIBRARY_PREFIX`
+ * If path starts with '$' it is not prefixed
+ *
+ * @param {string} path
+ * @returns {string} 
+ */
 const prefixLocalLibraryPath = (path) => {
   if (path.charAt(0) === '$') {
     return path.slice(1);
@@ -134,8 +142,7 @@ const requestURIs = (locations, method, headers, callback) => {
 
 /**
  * creates the minifed javascript for the given minified name
- * @param req the Express request
- * @param res the Express response
+ *
  */
 const minify = (req, res) => {
   let filename = req.params.filename;
@@ -349,6 +356,11 @@ const _requireLastModified = new Date();
 const requireLastModified = () => _requireLastModified.toUTCString();
 const requireDefinition = () => `var require = ${RequireKernel.kernelSource};\n`;
 
+/**
+ * @param {string} filename
+ * @param {string} contentType
+ * @param {Function} callback
+ */
 const getFileCompressed = (filename, contentType, callback) => {
   getFile(filename, (error, content) => {
     if (error || !content || !settings.minify) {
@@ -379,11 +391,11 @@ const getFileCompressed = (filename, contentType, callback) => {
           logger.info('Compress CSS file %s.', filename);
 
           content = await compressCSS(filename, ROOT_DIR);
+          callback(null, content.styles);
         } catch (error) {
           console.error(`CleanCSS.minify() returned an error on ${filename}: ${error}`);
+          callback(null, content)
         }
-
-        callback(null, content);
       });
     } else {
       callback(null, content);

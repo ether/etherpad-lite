@@ -77,6 +77,9 @@ if (_crypto) {
   should replace this.
 */
 
+/**
+ * @class
+ */
 function CachingMiddleware() {
 }
 CachingMiddleware.prototype = new function () {
