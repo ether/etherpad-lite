@@ -1,4 +1,13 @@
 /**
+ * @file
+ * This file loads the iframes of the Editor.
+ * It constructs the HTML for the inner iframe, that contains all the pad lines, and
+ * for the outer iframe, that contains the sidediv with line numbers. The outer iframe
+ * dynamically inserts the inner iframe in it's onload event handler.
+ * The file is dynamically modified before delivered to clients in `Minify.js`. If `settings.minify`
+ * is enabled, then CSS files included here with `INCLUDE_CSS` are inlined. If `settings.minify`
+ * is false, then only the require-kernel is included.
+ *
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
@@ -33,6 +42,12 @@ var hooks = require('./pluginfw/hooks');
 var pluginUtils = require('./pluginfw/shared');
 var _ = require('./underscore');
 
+/**
+ * Puts javascript code given in parameter `source` inside script tags
+ *
+ * @param {string} source javascript code
+ * @returns {string} A script element containing `source`
+ */
 function scriptTag(source) {
   return (
     '<script type="text/javascript">\n'
@@ -160,6 +175,13 @@ function Ace2Editor()
 
 
 
+  /**
+   * Takes an array of filenames and if they are keys in `Ace2Editor.EMBEDED` they
+   * are embeded and if not they should be included as remote links
+   *
+   * @param {string[]} files array of filenames
+   * @returns {{embeded: string[], remote: string[]}} An object containing filenames to embed and those to be included as remote files
+   */
   function sortFilesByEmbeded(files) {
     var embededFiles = [];
     var remoteFiles = [];
@@ -179,6 +201,14 @@ function Ace2Editor()
 
     return {embeded: embededFiles, remote: remoteFiles};
   }
+
+  /**
+   * Inserts style tags with css content from the files in `files`
+   * and link tags that reference remote stylesheets
+   *
+   * @param {string[]} buffer An array of html tags as strings
+   * @param {string[]} files An array of filenames
+   */
   function pushStyleTagsFor(buffer, files) {
     var sorted = sortFilesByEmbeded(files);
     var embededFiles = sorted.embeded;
@@ -192,8 +222,8 @@ function Ace2Editor()
       }
       buffer.push('<\/style>');
     }
-    for (var i = 0, ii = remoteFiles.length; i < ii; i++) {
-      var file = remoteFiles[i];
+    for (i = 0, ii = remoteFiles.length; i < ii; i++) {
+      file = remoteFiles[i];
       buffer.push('<link rel="stylesheet" type="text/css" href="' + encodeURI(file) + '"\/>');
     }
   }
@@ -227,10 +257,31 @@ function Ace2Editor()
       iframeHTML.push(doctype);
       iframeHTML.push("<html class='inner-editor " + clientVars.skinVariants + "'><head>");
 
-      // calls to these functions ($$INCLUDE_...)  are replaced when this file is processed
-      // and compressed, putting the compressed code from the named file directly into the
-      // source here.
-      // these lines must conform to a specific format because they are passed by the build script:
+      /**
+       * calls to these functions ($$INCLUDE_...) are replaced when this file is processed
+       * and compressed, putting the compressed code from the named file directly into the
+       * source here.
+       *
+       * When changing this lines ensure that the logic in `Minify.js` that inlines the files,
+       * knows which files to include. Files that should be inlined must appear on a newline with
+       * only whitespaces before them and can include pure filenames
+       *
+       * $$INCLUDE_CSS("../static/css/iframe_editor.css")
+       *
+       * filenames with an version string attached
+       * $$INCLUDE_CSS("../static/css/pad.css?v=" + clientVars.randomVersionString);
+       * in which case it assumes the string after `?v=` is based on `settings.randomVersionString`
+       *
+       * and filenames matching /skins/, either
+       * $$INCLUDE_CSS("../static/css/pad.css?v=" + clientVars.randomVersionString);
+       * or
+       * $$INCLUDE_CSS("../static/skins/" + clientVars.skinName + "/pad.css?v=" + clientVars.randomVersionString);
+       * in which case it assumes the first string to be the path, followed after
+       * `settings.skinName`, followed by the filename and `settings.randomVersionString` in case 
+       * the filename contains `?v=`
+       *
+       * Double quotes *must* be used
+       */
       var includedCSS = [];
       var $$INCLUDE_CSS = function(filename) {includedCSS.push(filename)};
       $$INCLUDE_CSS("../static/css/iframe_editor.css");
@@ -240,6 +291,10 @@ function Ace2Editor()
         $$INCLUDE_CSS("../static/css/pad.css?v=" + clientVars.randomVersionString);
       }
 
+      /**
+       * @todo
+       * css from plugins is not inlined
+       */
       var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){
         if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
           return path;
@@ -316,12 +371,19 @@ window.onload = function () {\n\
 
       var outerHTML = [doctype, '<html class="inner-editor outerdoc ' + clientVars.skinVariants + '"><head>']
 
-      var includedCSS = [];
-      var $$INCLUDE_CSS = function(filename) {includedCSS.push(filename)};
+      includedCSS = [];
+      /*
+       * When using $$INCLUDE_CSS read the comment above first
+       */
+      $$INCLUDE_CSS = function(filename) {includedCSS.push(filename)};
       $$INCLUDE_CSS("../static/css/iframe_editor.css");
       $$INCLUDE_CSS("../static/css/pad.css?v=" + clientVars.randomVersionString);
 
 
+      /**
+       * @todo
+       * css from plugins is not inlined
+       */
       var additionalCSS = _(hooks.callAll("aceEditorCSS")).map(function(path){
         if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
           return path;
@@ -346,6 +408,9 @@ window.onload = function () {\n\
           '<div id="linemetricsdiv">x</div>',
           '</body></html>');
 
+      /**
+       * @type {HTMLIFrameElement}
+       */
       var outerFrame = document.createElement("IFRAME");
       outerFrame.name = "ace_outer";
       outerFrame.frameBorder = 0; // for IE

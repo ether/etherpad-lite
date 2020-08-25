@@ -1,6 +1,7 @@
 /**
- * This Module manages all /minified/* requests. It controls the
- * minification && compression of Javascript and CSS.
+ * @file
+ * This Module manages all /static/* requests. It controls the
+ * minification and compression of Javascript and CSS.
  */
 
 /*
@@ -23,8 +24,6 @@ var ERR = require("async-stacktrace");
 var settings = require('./Settings');
 var async = require('async');
 var fs = require('fs');
-var StringDecoder = require('string_decoder').StringDecoder;
-var CleanCSS = require('clean-css');
 var path = require('path');
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugin_defs");
 var RequireKernel = require('etherpad-require-kernel');
@@ -32,6 +31,7 @@ var urlutil = require('url');
 var mime = require('mime-types')
 var Threads = require('threads')
 var log4js = require('log4js');
+let _ = require('underscore')
 
 var logger = log4js.getLogger("Minify");
 
@@ -55,6 +55,14 @@ var LIBRARY_WHITELIST = [
 // Rewrite tar to include modules with no extensions and proper rooted paths.
 var LIBRARY_PREFIX = 'ep_etherpad-lite/static/js';
 exports.tar = {};
+
+/**
+ * Prefix a path with `LIBRARY_PREFIX`
+ * If path starts with '$' it is not prefixed
+ *
+ * @param {string} path
+ * @returns {string} 
+ */
 function prefixLocalLibraryPath(path) {
   if (path.charAt(0) == '$') {
     return path.slice(1);
@@ -76,8 +84,13 @@ for (var key in tar) {
     );
 }
 
-// What follows is a terrible hack to avoid loop-back within the server.
-// TODO: Serve files from another service, or directly from the file system.
+/**
+ * @param {string} url The file to be retrieved
+ * @param {'GET'|'HEAD'} method The request method
+ *
+ * What follows is a terrible hack to avoid loop-back within the server.
+ * @todo Serve files from another service, or directly from the file system.
+ */
 function requestURI(url, method, headers, callback) {
   var parsedURL = urlutil.parse(url);
 
@@ -142,8 +155,7 @@ function requestURIs(locations, method, headers, callback) {
 
 /**
  * creates the minifed javascript for the given minified name
- * @param req the Express request
- * @param res the Express response
+ *
  */
 function minify(req, res)
 {
@@ -233,16 +245,53 @@ function minify(req, res)
   }, 3);
 }
 
-// find all includes in ace.js and embed them.
+/**
+ * Find all includes in ace.js and if `settings.minify`
+ * is enabled it compresses and embeds them.
+ * In case `settings.minify` is false, it only embeds the
+ * `require-kernel`.
+ * The format of the INCLUDE_-lines is explained in `ace.js`
+ *
+ * @param {Function} callback 
+ *
+ */
 function getAceFile(callback) {
   fs.readFile(ROOT_DIR + 'js/ace.js', "utf8", function(err, data) {
     if(ERR(err, callback)) return;
 
-    // Find all includes in ace.js and embed them
-    var founds = data.match(/\$\$INCLUDE_[a-zA-Z_]+\("[^"]*"\)/gi);
-    if (!settings.minify) {
-      founds = [];
+    let parts = [];
+    let founds = [];
+    let result;
+    // files are inlined only when minify is true
+    if(settings.minify){
+      /**
+       * @example
+       * $$INCLUDE_CSS("../static/css/iframe_editor.css")
+       * $$INCLUDE_CSS("../static/css/pad.css?v=" + clientVars.randomVersionString);
+       * $$INCLUDE_CSS("../static/css/pad.css?v=" + clientVars.randomVersionString);
+       * $$INCLUDE_CSS("../static/skins/" + clientVars.skinName + "/pad.css?v=" + clientVars.randomVersionString);
+       */
+      // matches a INCLUDE_CSS line and parses it's parts
+      let includesLine = data.match(/^\s+?\$\$INCLUDE_CSS\(.*$/mg);
+      includesLine.map(function(line){
+        parts = line.split(/ |\+|"|;|\)/);
+        parts.push('")');
+        result = parts.map(function(part){
+          if(~part.indexOf("clientVars.skinName")){
+            return settings.skinName;
+          } else if(~part.indexOf("clientVars.randomVersionString")){
+            return settings.randomVersionString;
+          } else if(part === "$$INCLUDE_CSS("){
+            return '$$INCLUDE_CSS("';
+          } else {
+            return part;
+          }
+        }).filter(Boolean).join("");
+        founds.push(result);
+      })
+      founds = _.uniq(founds);
     }
+
     // Always include the require kernel.
     founds.push('$$INCLUDE_JS("../static/js/require-kernel.js")');
 
@@ -253,10 +302,14 @@ function getAceFile(callback) {
     // them into the file.
     async.forEach(founds, function (item, callback) {
       var filename = item.match(/"([^"]*)"/)[1];
+      // the file that is included from client side contains the version string,
+      // so we need to keep it as key for Ace2Editor.EMBEDED. However, the file
+      // is located at a path that does not contain the version string.
+      var resource = filename.split("?v=")[0];
 
       // Hostname "invalid.invalid" is a dummy value to allow parsing as a URI.
       var baseURI = 'http://invalid.invalid';
-      var resourceURI = baseURI + path.normalize(path.join('/static/', filename));
+      var resourceURI = baseURI + path.normalize(path.join('/static/', resource));
       resourceURI = resourceURI.replace(/\\/g, '/'); // Windows (safe generally?)
 
       requestURI(resourceURI, 'GET', {}, function (status, headers, body) {
@@ -275,7 +328,14 @@ function getAceFile(callback) {
   });
 }
 
-// Check for the existance of the file and get the last modification date.
+/**
+ *
+ * Check for the existance of the file and get the last modification date.
+ *
+ * @param {string} filename The name of the file
+ * @param {Function} callback 
+ * @param {number} dirStatLimit
+ */
 function statFile(filename, callback, dirStatLimit) {
   /*
    * The only external call to this function provides an explicit value for
@@ -314,6 +374,16 @@ function statFile(filename, callback, dirStatLimit) {
     });
   }
 }
+
+/**
+ * Iterates over `static/js` and `static/css` to find the modifiedtime of the most recent modified
+ * file. Used for `ace.js` because it has inlined files
+ *
+ * @todo Iterating over `static/js` is not necessary anymore, because inlining JS functionality has been removed.
+ * only require-kernel needs to be checked.
+ *
+ * @param {Function} callback 
+ */
 function lastModifiedDateOfEverything(callback) {
   var folders2check = [ROOT_DIR + 'js/', ROOT_DIR + 'css/'];
   var latestModification = 0;
@@ -354,16 +424,40 @@ function lastModifiedDateOfEverything(callback) {
   });
 }
 
-// This should be provided by the module, but until then, just use startup
-// time.
+/**
+ * @todo This should be provided by the module, but until then, just use startup
+ time.
+ */
 var _requireLastModified = new Date();
+
+/**
+ * Returns the startup time as UTCString
+ *
+ * @returns {string} startup time as UTCString
+ */
 function requireLastModified() {
   return _requireLastModified.toUTCString();
 }
+
+/**
+ * Returns the source code of `etherpad-require-kernel`s kernel definition
+ * @todo compress if minify is enabled
+ *
+ * @returns {string} the `etherpad-require-kernel` definition
+ */
 function requireDefinition() {
   return 'var require = ' + RequireKernel.kernelSource + ';\n';
 }
 
+/**
+ * Calls `getFile` to retrieve file content and if it's javascript or css it compresses
+ * the file via `threadPool` and calls `callback` with the compressed content.
+ * In case `settings.minify` is false it just returns the uncompressed content
+ *
+ * @param {string} filename file to be handled
+ * @param {string} contentType content type of file
+ * @param {Function} callback Function to be called with the compressed content 
+ */
 function getFileCompressed(filename, contentType, callback) {
   getFile(filename, function (error, content) {
     if (error || !content || !settings.minify) {
@@ -405,6 +499,13 @@ function getFileCompressed(filename, contentType, callback) {
   });
 }
 
+/**
+ * Gets the file `filename` and calls callback with the file's content
+ * Special handling of `ace.js` and `require-kernel.js` included
+ *
+ * @param {string} filename The file to be processed
+ * @param {Function} callback function to be called with the file's content
+ */
 function getFile(filename, callback) {
   if (filename == 'js/ace.js') {
     getAceFile(callback);
