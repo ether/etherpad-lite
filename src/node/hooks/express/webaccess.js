@@ -1,22 +1,22 @@
-var express = require('express');
-var log4js = require('log4js');
-var httpLogger = log4js.getLogger('http');
-var settings = require('../../utils/Settings');
-var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
-var ueberStore = require('../../db/SessionStore');
-var stats = require('ep_etherpad-lite/node/stats');
-var sessionModule = require('express-session');
-var cookieParser = require('cookie-parser');
+const express = require('express');
+const log4js = require('log4js');
+const httpLogger = log4js.getLogger('http');
+const settings = require('../../utils/Settings');
+const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+const ueberStore = require('../../db/SessionStore');
+const stats = require('ep_etherpad-lite/node/stats');
+const sessionModule = require('express-session');
+const cookieParser = require('cookie-parser');
 
 // checks for basic http auth
 exports.basicAuth = (req, res, next) => {
-  var hookResultMangle = (cb) => {
+  const hookResultMangle = (cb) => {
     return (err, data) => {
       return cb(!err && data.length && data[0]);
     };
   };
 
-  var authorize = (cb) => {
+  const authorize = (cb) => {
     // Do not require auth for static paths and the API...this could be a bit brittle
     if (req.path.match(/^\/(static|javascripts|pluginfw|api)/)) return cb(true);
 
@@ -30,13 +30,13 @@ exports.basicAuth = (req, res, next) => {
     hooks.aCallFirst('authorize', {req: req, res: res, next: next, resource: req.path}, hookResultMangle(cb));
   };
 
-  var authenticate = (cb) => {
+  const authenticate = (cb) => {
     // If auth headers are present use them to authenticate...
     if (req.headers.authorization && req.headers.authorization.search('Basic ') === 0) {
-      var userpass = Buffer.from(req.headers.authorization.split(' ')[1], 'base64').toString().split(':');
-      var username = userpass.shift();
-      var password = userpass.join(':');
-      var fallback = (success) => {
+      const userpass = Buffer.from(req.headers.authorization.split(' ')[1], 'base64').toString().split(':');
+      const username = userpass.shift();
+      const password = userpass.join(':');
+      const fallback = (success) => {
         if (success) return cb(true);
         if (!(username in settings.users)) {
           httpLogger.info(`Failed authentication from IP ${req.ip} - no such user`);
@@ -58,7 +58,7 @@ exports.basicAuth = (req, res, next) => {
 
 
   /* Authentication OR authorization failed. */
-  var failure = () => {
+  const failure = () => {
     return hooks.aCallFirst('authFailure', {req: req, res: res, next: next}, hookResultMangle((ok) => {
       if (ok) return;
       /* No plugin handler for invalid auth. Return Auth required
@@ -104,8 +104,8 @@ exports.secret = null;
 exports.expressConfigure = (hook_name, args, cb) => {
   // Measure response time
   args.app.use((req, res, next) => {
-    var stopWatch = stats.timer('httpRequests').start();
-    var sendFn = res.send;
+    const stopWatch = stats.timer('httpRequests').start();
+    const sendFn = res.send;
     res.send = function() { // function, not arrow, due to use of 'arguments'
       stopWatch.end();
       sendFn.apply(res, arguments);
@@ -128,11 +128,7 @@ exports.expressConfigure = (hook_name, args, cb) => {
     exports.secret = settings.sessionKey;
   }
 
-  if (settings.ssl) {
-    var sameSite = 'Strict';
-  } else {
-    var sameSite = 'Lax';
-  }
+  const sameSite = settings.ssl ? 'Strict' : 'Lax';
 
   args.app.sessionStore = exports.sessionStore;
   args.app.use(sessionModule({
