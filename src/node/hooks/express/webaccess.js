@@ -9,14 +9,14 @@ var sessionModule = require('express-session');
 var cookieParser = require('cookie-parser');
 
 // checks for basic http auth
-exports.basicAuth = function(req, res, next) {
-  var hookResultMangle = function(cb) {
-    return function(err, data) {
+exports.basicAuth = (req, res, next) => {
+  var hookResultMangle = (cb) => {
+    return (err, data) => {
       return cb(!err && data.length && data[0]);
     };
   };
 
-  var authorize = function(cb) {
+  var authorize = (cb) => {
     // Do not require auth for static paths and the API...this could be a bit brittle
     if (req.path.match(/^\/(static|javascripts|pluginfw|api)/)) return cb(true);
 
@@ -30,13 +30,13 @@ exports.basicAuth = function(req, res, next) {
     hooks.aCallFirst('authorize', {req: req, res: res, next: next, resource: req.path}, hookResultMangle(cb));
   };
 
-  var authenticate = function(cb) {
+  var authenticate = (cb) => {
     // If auth headers are present use them to authenticate...
     if (req.headers.authorization && req.headers.authorization.search('Basic ') === 0) {
       var userpass = Buffer.from(req.headers.authorization.split(' ')[1], 'base64').toString().split(':');
       var username = userpass.shift();
       var password = userpass.join(':');
-      var fallback = function(success) {
+      var fallback = (success) => {
         if (success) return cb(true);
         if (!(username in settings.users)) {
           httpLogger.info(`Failed authentication from IP ${req.ip} - no such user`);
@@ -58,15 +58,15 @@ exports.basicAuth = function(req, res, next) {
 
 
   /* Authentication OR authorization failed. */
-  var failure = function() {
-    return hooks.aCallFirst('authFailure', {req: req, res: res, next: next}, hookResultMangle(function(ok) {
+  var failure = () => {
+    return hooks.aCallFirst('authFailure', {req: req, res: res, next: next}, hookResultMangle((ok) => {
       if (ok) return;
       /* No plugin handler for invalid auth. Return Auth required
        * Headers, delayed for 1 second, if authentication failed
        * before. */
       res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
       if (req.headers.authorization) {
-        setTimeout(function() {
+        setTimeout(() => {
           res.status(401).send('Authentication required');
         }, 1000);
       } else {
@@ -87,11 +87,11 @@ exports.basicAuth = function(req, res, next) {
 
   */
 
-  authorize(function(ok) {
+  authorize((ok) => {
     if (ok) return next();
-    authenticate(function(ok) {
+    authenticate((ok) => {
       if (!ok) return failure();
-      authorize(function(ok) {
+      authorize((ok) => {
         if (ok) return next();
         failure();
       });
@@ -101,12 +101,12 @@ exports.basicAuth = function(req, res, next) {
 
 exports.secret = null;
 
-exports.expressConfigure = function(hook_name, args, cb) {
+exports.expressConfigure = (hook_name, args, cb) => {
   // Measure response time
-  args.app.use(function(req, res, next) {
+  args.app.use((req, res, next) => {
     var stopWatch = stats.timer('httpRequests').start();
     var sendFn = res.send;
-    res.send = function() {
+    res.send = function() { // function, not arrow, due to use of 'arguments'
       stopWatch.end();
       sendFn.apply(res, arguments);
     };
