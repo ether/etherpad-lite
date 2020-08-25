@@ -13,8 +13,8 @@ exports.basicAuth = function(req, res, next) {
   var hookResultMangle = function(cb) {
     return function(err, data) {
       return cb(!err && data.length && data[0]);
-    }
-  }
+    };
+  };
 
   var authorize = function(cb) {
     // Do not require auth for static paths and the API...this could be a bit brittle
@@ -28,12 +28,12 @@ exports.basicAuth = function(req, res, next) {
     if (req.session && req.session.user && req.session.user.is_admin) return cb(true);
 
     hooks.aCallFirst("authorize", {req: req, res: res, next: next, resource: req.path}, hookResultMangle(cb));
-  }
+  };
 
   var authenticate = function(cb) {
     // If auth headers are present use them to authenticate...
     if (req.headers.authorization && req.headers.authorization.search('Basic ') === 0) {
-      var userpass = Buffer.from(req.headers.authorization.split(' ')[1], 'base64').toString().split(":")
+      var userpass = Buffer.from(req.headers.authorization.split(' ')[1], 'base64').toString().split(":");
       var username = userpass.shift();
       var password = userpass.join(':');
       var fallback = function(success) {
@@ -54,7 +54,7 @@ exports.basicAuth = function(req, res, next) {
       return hooks.aCallFirst("authenticate", {req: req, res: res, next: next, username: username, password: password}, hookResultMangle(fallback));
     }
     hooks.aCallFirst("authenticate", {req: req, res: res, next: next}, hookResultMangle(cb));
-  }
+  };
 
 
   /* Authentication OR authorization failed. */
@@ -73,7 +73,7 @@ exports.basicAuth = function(req, res, next) {
         res.status(401).send('Authentication required');
       }
     }));
-  }
+  };
 
 
   /* This is the actual authentication/authorization hoop. It is done in four steps:
@@ -97,7 +97,7 @@ exports.basicAuth = function(req, res, next) {
       });
     });
   });
-}
+};
 
 exports.secret = null;
 
@@ -105,13 +105,13 @@ exports.expressConfigure = function(hook_name, args, cb) {
   // Measure response time
   args.app.use(function(req, res, next) {
     var stopWatch = stats.timer('httpRequests').start();
-    var sendFn = res.send
+    var sendFn = res.send;
     res.send = function() {
-      stopWatch.end()
-      sendFn.apply(res, arguments)
-    }
-    next()
-  })
+      stopWatch.end();
+      sendFn.apply(res, arguments);
+    };
+    next();
+  });
 
   // If the log level specified in the config file is WARN or ERROR the application server never starts listening to requests as reported in issue #158.
   // Not installing the log4js connect logger when the log level has a higher severity than INFO since it would not log at that level anyway.
@@ -176,4 +176,4 @@ exports.expressConfigure = function(hook_name, args, cb) {
   args.app.use(cookieParser(settings.sessionKey, {}));
 
   args.app.use(exports.basicAuth);
-}
+};
