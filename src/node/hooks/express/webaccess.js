@@ -27,7 +27,7 @@ exports.basicAuth = (req, res, next) => {
 
     if (req.session && req.session.user && req.session.user.is_admin) return cb(true);
 
-    hooks.aCallFirst('authorize', {req: req, res: res, next: next, resource: req.path}, hookResultMangle(cb));
+    hooks.aCallFirst('authorize', {req, res, next, resource: req.path}, hookResultMangle(cb));
   };
 
   const authenticate = (cb) => {
@@ -51,15 +51,15 @@ exports.basicAuth = (req, res, next) => {
         req.session.user = settings.users[username];
         return cb(true);
       };
-      return hooks.aCallFirst('authenticate', {req: req, res: res, next: next, username: username, password: password}, hookResultMangle(fallback));
+      return hooks.aCallFirst('authenticate', {req, res, next, username, password}, hookResultMangle(fallback));
     }
-    hooks.aCallFirst('authenticate', {req: req, res: res, next: next}, hookResultMangle(cb));
+    hooks.aCallFirst('authenticate', {req, res, next}, hookResultMangle(cb));
   };
 
 
   /* Authentication OR authorization failed. */
   const failure = () => {
-    return hooks.aCallFirst('authFailure', {req: req, res: res, next: next}, hookResultMangle((ok) => {
+    return hooks.aCallFirst('authFailure', {req, res, next}, hookResultMangle((ok) => {
       if (ok) return;
       /* No plugin handler for invalid auth. Return Auth required
        * Headers, delayed for 1 second, if authentication failed
