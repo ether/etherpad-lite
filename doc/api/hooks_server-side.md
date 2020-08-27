@@ -200,7 +200,69 @@ Things in context:
 3. next - ?
 4. resource - the path being accessed
 
-This is useful for modifying the way authentication is done, especially for specific paths.
+This hook is called to handle authorization. It is especially useful for
+controlling access to specific paths.
+
+A plugin's authorize function is typically called twice for each access: once
+before authentication and again after. Specifically, it is called if all of the
+following are true:
+
+* The request is not for static content or an API endpoint. (Requests for static
+  content and API endpoints are always authorized, even if unauthenticated.)
+* Either authentication has not yet been performed (`context.req.session.user`
+  is undefined) or the user has successfully authenticated
+  (`context.req.session.user` is an object containing user-specific settings).
+* If the user has successfully authenticated, the user is not an admin. (Admin
+  users are always authorized.)
+* Either the request is for an `/admin` page or the `requireAuthentication`
+  setting is true.
+* Either the request is for an `/admin` page, or the user has not yet
+  authenticated, or the user has authenticated and the `requireAuthorization`
+  setting is true.
+* For pre-authentication invocations of a plugin's authorize function
+  (`context.req.session.user` is undefined), an authorize function from a
+  different plugin has not already caused the pre-authentication authorization
+  to pass or fail.
+* For post-authentication invocations of a plugin's authorize function
+  (`context.req.session.user` is an object), an authorize function from a
+  different plugin has not already caused the post-authentication authorization
+  to pass or fail.
+
+For pre-authentication invocations of your authorize function, calling the
+provided callback with `[true]` will immediately grant access without requiring
+the user to authenticate. Calling the provided callback with `[false]` will
+trigger authentication unless authentication is not required. Calling the
+provided callback with `[]` or `undefined` will defer the decision to the next
+authorization plugin (if any, otherwise it is the same as calling with
+`[false]`).
+
+**WARNING:** Your authorize function can be called for an `/admin` page even if
+the user has not yet authenticated. It is your responsibility to fail or defer
+authorization if you do not want to grant admin privileges to the general
+public.
+
+For post-authentication invocations of your authorize function, calling the
+provided callback with `[true]` or `[false]` will cause access to be granted or
+denied, respectively. Calling the callback with `[]` or `undefined` will defer
+the authorization decision to the next authorization plugin (if any, otherwise
+deny).
+
+Example:
+
+```
+exports.authorize = (hookName, context, cb) => {
+  const user = context.req.session.user;
+  if (!user) {
+    // The user has not yet authenticated so defer the pre-authentication
+    // authorization decision to the next plugin.
+    return cb([]);
+  }
+  const path = context.req.path;  // or context.resource
+  if (isExplicitlyProhibited(user, path)) return cb([false]);
+  if (isExplicitlyAllowed(user, path)) return cb([true]);
+  return cb([]);  // Let the next authorization plugin decide
+};
+```
 
 ## authenticate
 Called from: src/node/hooks/express/webaccess.js
