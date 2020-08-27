@@ -1,9 +1,32 @@
 var _ = require("underscore");
 
+// Maps the name of a server-side hook to a string explaining the deprecation
+// (e.g., 'use the foo hook instead').
+//
+// If you want to deprecate the fooBar hook, do the following:
+//
+//     const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+//     hooks.deprecationNotices.fooBar = 'use the newSpiffy hook instead';
+//
+exports.deprecationNotices = {};
+
+const deprecationWarned = {};
+
+function checkDeprecation(hook) {
+  const notice = exports.deprecationNotices[hook.hook_name];
+  if (notice == null) return;
+  if (deprecationWarned[hook.hook_fn_name]) return;
+  console.warn('%s hook used by the %s plugin (%s) is deprecated: %s',
+      hook.hook_name, hook.part.name, hook.hook_fn_name, notice);
+  deprecationWarned[hook.hook_fn_name] = true;
+}
+
 exports.bubbleExceptions = true
 
 var hookCallWrapper = function (hook, hook_name, args, cb) {
   if (cb === undefined) cb = function (x) { return x; };
+
+  checkDeprecation(hook);
 
   // Normalize output to list for both sync and async cases
   var normalize = function(x) {
