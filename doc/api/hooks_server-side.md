@@ -336,7 +336,34 @@ Things in context:
 2. res - the response object
 3. next - ?
 
-This is useful for modifying the way authentication is done.
+This hook is called to handle an authentication or authorization failure.
+
+Plugins that supply an authenticate function should probably also supply an
+authFailure function unless falling back to HTTP basic authentication is
+appropriate upon authentication failure.
+
+A plugin's authFailure function is only called if all of the following are true:
+
+* There was an authentication or authorization failure.
+* The failure was not already handled by an authFailure function from another
+  plugin.
+
+Calling the provided callback with `[true]` tells Etherpad that the failure was
+handled and no further error handling is required. Calling the callback with
+`[]` or `undefined` defers error handling to the next authFailure plugin (if
+any, otherwise fall back to HTTP basic authentication).
+
+Example:
+
+```
+exports.authFailure = (hookName, context, cb) => {
+  if (notApplicableToThisPlugin(context)) {
+    return cb([]);  // Let the next plugin handle the error
+  }
+  context.res.redirect(makeLoginURL(context.req));
+  return cb([true]);
+};
+```
 
 ## handleMessage
 Called from: src/node/handler/PadMessageHandler.js
