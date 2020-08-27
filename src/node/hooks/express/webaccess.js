@@ -65,7 +65,8 @@ exports.checkAccess = (req, res, next) => {
   step1PreAuthenticate = () => authorize(step2Authenticate);
 
   step2Authenticate = () => {
-    const ctx = {req, res, next};
+    if (settings.users == null) settings.users = {};
+    const ctx = {req, res, users: settings.users, next};
     // If the HTTP basic auth header is present, extract the username and password so it can be
     // given to authn plugins.
     const httpBasicAuth =
