@@ -1,6 +1,6 @@
 var express = require('express');
 var log4js = require('log4js');
-var httpLogger = log4js.getLogger("http");
+var httpLogger = log4js.getLogger('http');
 var settings = require('../../utils/Settings');
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 var ueberStore = require('../../db/SessionStore');
@@ -27,13 +27,13 @@ exports.basicAuth = function(req, res, next) {
 
     if (req.session && req.session.user && req.session.user.is_admin) return cb(true);
 
-    hooks.aCallFirst("authorize", {req: req, res: res, next: next, resource: req.path}, hookResultMangle(cb));
+    hooks.aCallFirst('authorize', {req: req, res: res, next: next, resource: req.path}, hookResultMangle(cb));
   };
 
   var authenticate = function(cb) {
     // If auth headers are present use them to authenticate...
     if (req.headers.authorization && req.headers.authorization.search('Basic ') === 0) {
-      var userpass = Buffer.from(req.headers.authorization.split(' ')[1], 'base64').toString().split(":");
+      var userpass = Buffer.from(req.headers.authorization.split(' ')[1], 'base64').toString().split(':');
       var username = userpass.shift();
       var password = userpass.join(':');
       var fallback = function(success) {
@@ -51,15 +51,15 @@ exports.basicAuth = function(req, res, next) {
         req.session.user = settings.users[username];
         return cb(true);
       };
-      return hooks.aCallFirst("authenticate", {req: req, res: res, next: next, username: username, password: password}, hookResultMangle(fallback));
+      return hooks.aCallFirst('authenticate', {req: req, res: res, next: next, username: username, password: password}, hookResultMangle(fallback));
     }
-    hooks.aCallFirst("authenticate", {req: req, res: res, next: next}, hookResultMangle(cb));
+    hooks.aCallFirst('authenticate', {req: req, res: res, next: next}, hookResultMangle(cb));
   };
 
 
   /* Authentication OR authorization failed. */
   var failure = function() {
-    return hooks.aCallFirst("authFailure", {req: req, res: res, next: next}, hookResultMangle(function(ok) {
+    return hooks.aCallFirst('authFailure', {req: req, res: res, next: next}, hookResultMangle(function(ok) {
       if (ok) return;
       /* No plugin handler for invalid auth. Return Auth required
        * Headers, delayed for 1 second, if authentication failed
@@ -115,7 +115,7 @@ exports.expressConfigure = function(hook_name, args, cb) {
 
   // If the log level specified in the config file is WARN or ERROR the application server never starts listening to requests as reported in issue #158.
   // Not installing the log4js connect logger when the log level has a higher severity than INFO since it would not log at that level anyway.
-  if (!(settings.loglevel === "WARN" || settings.loglevel == "ERROR"))
+  if (!(settings.loglevel === 'WARN' || settings.loglevel == 'ERROR'))
     args.app.use(log4js.connectLogger(httpLogger, {level: log4js.levels.DEBUG, format: ':status, :method :url'}));
 
   /* Do not let express create the session, so that we can retain a
@@ -129,9 +129,9 @@ exports.expressConfigure = function(hook_name, args, cb) {
   }
 
   if (settings.ssl) {
-    var sameSite = "Strict";
+    var sameSite = 'Strict';
   } else {
-    var sameSite = "Lax";
+    var sameSite = 'Lax';
   }
 
   args.app.sessionStore = exports.sessionStore;
