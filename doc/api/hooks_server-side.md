@@ -271,9 +271,10 @@ Things in context:
 
 1. req - the request object
 2. res - the response object
-3. next - ?
-4. username - the username used (optional)
-5. password - the password used (optional)
+3. users - the users object from settings.json (possibly modified by plugins)
+4. next - ?
+5. username - the username used (optional)
+6. password - the password used (optional)
 
 This hook is called to handle authentication.
 
@@ -297,18 +298,11 @@ onAccessCheck, handleMessageSecurity) to authorize specific privileged actions.
 If authentication is successful, the authenticate function MUST set
 `context.req.session.user` to the user's settings object. The `username`
 property of this object should be set to the user's username. The settings
-object should come from global settings (`settings.users[username]`).
+object should come from global settings (`context.users[username]`).
 
 Example:
 
 ```
-let global_settings;
-
-exports.loadSettings = (hook_name, {settings}, cb) => {
-  global_settings = settings;
-  return cb();
-};
-
 exports.authenticate = (hook_name, context, cb) => {
   if (notApplicableToThisPlugin(context)) {
     return cb([]);  // Let the next authentication plugin decide
@@ -319,7 +313,7 @@ exports.authenticate = (hook_name, context, cb) => {
     return cb([false]);
   }
   console.info(`ep_myplugin.authenticate: Successful authentication from IP ${context.req.ip} for user ${username}`);
-  const users = global_settings.users;
+  const users = context.users;
   if (!(username in users)) users[username] = {};
   users[username].username = username;
   context.req.session.user = users[username];
