@@ -213,7 +213,57 @@ Things in context:
 4. username - the username used (optional)
 5. password - the password used (optional)
 
-This is useful for modifying the way authentication is done.
+This hook is called to handle authentication.
+
+Plugins that supply an authenticate function should probably also supply an
+authFailure function unless falling back to HTTP basic authentication is
+appropriate upon authentication failure.
+
+This hook is only called if either the `requireAuthentication` setting is true
+or the request is for an `/admin` page.
+
+Calling the provided callback with `[true]` or `[false]` will cause
+authentication to succeed or fail, respectively. Calling the callback with `[]`
+or `undefined` will defer the authentication decision to the next authentication
+plugin (if any, otherwise fall back to HTTP basic authentication).
+
+If you wish to provide a mix of restricted and anonymous access (e.g., some pads
+are private, others are public), you can "authenticate" (as a guest account)
+users that have not yet logged in, and rely on other hooks (e.g., authorize,
+onAccessCheck, handleMessageSecurity) to authorize specific privileged actions.
+
+If authentication is successful, the authenticate function MUST set
+`context.req.session.user` to the user's settings object. The `username`
+property of this object should be set to the user's username. The settings
+object should come from global settings (`settings.users[username]`).
+
+Example:
+
+```
+let global_settings;
+
+exports.loadSettings = (hook_name, {settings}, cb) => {
+  global_settings = settings;
+  return cb();
+};
+
+exports.authenticate = (hook_name, context, cb) => {
+  if (notApplicableToThisPlugin(context)) {
+    return cb([]);  // Let the next authentication plugin decide
+  }
+  const username = authenticate(context);
+  if (!username) {
+    console.warn(`ep_myplugin.authenticate: Failed authentication from IP ${context.req.ip}`);
+    return cb([false]);
+  }
+  console.info(`ep_myplugin.authenticate: Successful authentication from IP ${context.req.ip} for user ${username}`);
+  const users = global_settings.users;
+  if (!(username in users)) users[username] = {};
+  users[username].username = username;
+  context.req.session.user = users[username];
+  return cb([true]);
+};
+```
 
 ## authFailure
 Called from: src/node/hooks/express/webaccess.js
