@@ -94,6 +94,11 @@ exports.checkAccess = (req, res, next) => {
         settings.users[ctx.username].username = ctx.username;
         req.session.user = settings.users[ctx.username];
       }
+      if (req.session.user == null) {
+        httpLogger.error('authenticate hook failed to add user settings to session');
+        res.status(500).send('Internal Server Error');
+        return;
+      }
       step3Authorize();
     }));
   };
