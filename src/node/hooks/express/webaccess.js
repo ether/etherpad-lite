@@ -35,17 +35,12 @@ exports.checkAccess = (req, res, next) => {
   const failure = () => {
     return hooks.aCallFirst('authFailure', {req, res, next}, hookResultMangle((ok) => {
       if (ok) return;
-      /* No plugin handler for invalid auth. Return Auth required
-       * Headers, delayed for 1 second, if authentication failed
-       * before. */
+      // No plugin handled the authn/authz failure. Fall back to basic authentication.
       res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
-      if (req.headers.authorization) {
-        setTimeout(() => {
-          res.status(401).send('Authentication required');
-        }, 1000);
-      } else {
-        res.status(401).send('Authentication required');
-      }
+      // Delay the error response for 1s to slow down brute force attacks.
+      setTimeout(() => {
+        res.status(401).send('Authentication Required');
+      }, 1000);
     }));
   };
 
