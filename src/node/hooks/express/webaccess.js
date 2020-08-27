@@ -58,19 +58,6 @@ exports.checkAccess = (req, res, next) => {
     hooks.aCallFirst('authorize', {req, res, next, resource: req.path}, hookResultMangle(grant));
   };
 
-  /* Authentication OR authorization failed. */
-  const failure = () => {
-    return hooks.aCallFirst('authFailure', {req, res, next}, hookResultMangle((ok) => {
-      if (ok) return;
-      // No plugin handled the authn/authz failure. Fall back to basic authentication.
-      res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
-      // Delay the error response for 1s to slow down brute force attacks.
-      setTimeout(() => {
-        res.status(401).send('Authentication Required');
-      }, 1000);
-    }));
-  };
-
   // Access checking is done in three steps:
   //
   // 1) Try to just access the thing. If access fails (perhaps authentication has not yet completed,
@@ -78,7 +65,7 @@ exports.checkAccess = (req, res, next) => {
   // 2) Try to authenticate. (Or, if already logged in, reauthenticate with different credentials if
   //    supported by the authn scheme.) If authentication fails, give the user a 401 error to
   //    request new credentials. Otherwise, go to the next step.
-  // 3) Try to access the thing again. If this fails, give the user a 401 error.
+  // 3) Try to access the thing again. If this fails, give the user a 403 error.
   //
   // Plugins can use the 'next' callback (from the hook's context) to break out at any point (e.g.,
   // to process an OAuth callback). Plugins can use the authFailure hook to override the default
@@ -103,6 +90,17 @@ exports.checkAccess = (req, res, next) => {
     }
     hooks.aCallFirst('authenticate', ctx, hookResultMangle((ok) => {
       if (!ok) {
+        const failure = () => {
+          return hooks.aCallFirst('authFailure', {req, res, next}, hookResultMangle((ok) => {
+            if (ok) return;
+            // No plugin handled the authentication failure. Fall back to basic authentication.
+            res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
+            // Delay the error response for 1s to slow down brute force attacks.
+            setTimeout(() => {
+              res.status(401).send('Authentication Required');
+            }, 1000);
+          }));
+        };
         // Fall back to HTTP basic auth.
         if (!httpBasicAuth) return failure();
         if (!(ctx.username in settings.users)) {
@@ -126,7 +124,13 @@ exports.checkAccess = (req, res, next) => {
     }));
   };
 
-  step3Authorize = () => authorize(failure);
+  step3Authorize = () => authorize(() => {
+    return hooks.aCallFirst('authFailure', {req, res, next}, hookResultMangle((ok) => {
+      if (ok) return;
+      // No plugin handled the authorization failure.
+      res.status(403).send('Forbidden');
+    }));
+  });
 
   step1PreAuthenticate();
 };

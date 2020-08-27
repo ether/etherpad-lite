@@ -45,7 +45,7 @@ let started = false;
 let stopped = false;
 
 exports.start = async () => {
-  if (started) return;
+  if (started) return express.server;
   started = true;
   if (stopped) throw new Error('restart not supported');
 
