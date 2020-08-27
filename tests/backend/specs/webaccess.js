@@ -95,30 +95,43 @@ describe('webaccess without any plugins', function() {
   });
 });
 
-describe('webaccess with authFailure plugin', function() {
-  let handle, returnUndef, status, called;
-  const authFailure = (hookName, context, cb) => {
-    assert.equal(hookName, 'authFailure');
-    assert(context != null);
-    assert(context.req != null);
-    assert(context.res != null);
-    assert(context.next != null);
-    assert(!called);
-    called = true;
-    if (handle) {
-      context.res.status(status).send('injected content');
-      return cb([true]);
+describe('webaccess with authnFailure, authzFailure, authFailure hooks', function() {
+  const Handler = class {
+    constructor(hookName) {
+      this.hookName = hookName;
+      this.shouldHandle = false;
+      this.called = false;
     }
-    if (returnUndef) return cb();
-    return cb([]);
+    handle(hookName, context, cb) {
+      assert.equal(hookName, this.hookName);
+      assert(context != null);
+      assert(context.req != null);
+      assert(context.res != null);
+      assert(!this.called);
+      this.called = true;
+      if (this.shouldHandle) {
+        context.res.status(200).send(this.hookName);
+        return cb([true]);
+      }
+      return cb([]);
+    }
   };
-
+  const handlers = {};
+  const hookNames = ['authnFailure', 'authzFailure', 'authFailure'];
   const settingsBackup = {};
-  let authFailureHooksBackup;
-  before(function() {
+  const hooksBackup = {};
+
+  beforeEach(function() {
     Object.assign(settingsBackup, settings);
-    authFailureHooksBackup = plugins.hooks.authFailure;
-    plugins.hooks.authFailure = [{hook_fn: authFailure}];
+    hookNames.forEach((hookName) => {
+      if (plugins.hooks[hookName] == null) plugins.hooks[hookName] = [];
+    });
+    Object.assign(hooksBackup, plugins.hooks);
+    hookNames.forEach((hookName) => {
+      const handler = new Handler(hookName);
+      handlers[hookName] = handler;
+      plugins.hooks[hookName] = [{hook_fn: handler.handle.bind(handler)}];
+    });
     settings.requireAuthentication = true;
     settings.requireAuthorization = true;
     settings.users = {
@@ -126,41 +139,66 @@ describe('webaccess with authFailure plugin', function() {
       user: {password: 'user-password'},
     };
   });
-  after(function() {
-    Object.assign(settings, settingsBackup);
-    plugins.hooks.authFailure = authFailureHooksBackup;
-  });
-
-  beforeEach(function() {
-    handle = false;
-    returnUndef = false;
-    status = 200;
-    called = false;
-  });
   afterEach(function() {
-    assert(called);
+    Object.assign(settings, settingsBackup);
+    Object.assign(plugins.hooks, hooksBackup);
   });
 
-  it('authn fail, hook handles -> 200', async function() {
-    handle = true;
-    await agent.get('/').expect(200, /injected content/);
-  });
-  it('authn fail, hook defers (undefined) -> 401', async function() {
-    returnUndef = true;
+  // authn failure tests
+  it('authn fail, no hooks handle -> 401', async function() {
     await agent.get('/').expect(401);
+    assert(handlers['authnFailure'].called);
+    assert(!handlers['authzFailure'].called);
+    assert(handlers['authFailure'].called);
   });
-  it('authn fail, hook defers (empty list) -> 401', async function() {
-    await agent.get('/').expect(401);
+  it('authn fail, authnFailure handles', async function() {
+    handlers['authnFailure'].shouldHandle = true;
+    await agent.get('/').expect(200, 'authnFailure');
+    assert(handlers['authnFailure'].called);
+    assert(!handlers['authzFailure'].called);
+    assert(!handlers['authFailure'].called);
   });
-  it('authz fail, hook handles -> 200', async function() {
-    handle = true;
-    await agent.get('/').auth('user', 'user-password').expect(200, /injected content/);
+  it('authn fail, authFailure handles', async function() {
+    handlers['authFailure'].shouldHandle = true;
+    await agent.get('/').expect(200, 'authFailure');
+    assert(handlers['authnFailure'].called);
+    assert(!handlers['authzFailure'].called);
+    assert(handlers['authFailure'].called);
   });
-  it('authz fail, hook defers (undefined) -> 403', async function() {
-    returnUndef = true;
+  it('authnFailure trumps authFailure', async function() {
+    handlers['authnFailure'].shouldHandle = true;
+    handlers['authFailure'].shouldHandle = true;
+    await agent.get('/').expect(200, 'authnFailure');
+    assert(handlers['authnFailure'].called);
+    assert(!handlers['authFailure'].called);
+  });
+
+  // authz failure tests
+  it('authz fail, no hooks handle -> 403', async function() {
     await agent.get('/').auth('user', 'user-password').expect(403);
+    assert(!handlers['authnFailure'].called);
+    assert(handlers['authzFailure'].called);
+    assert(handlers['authFailure'].called);
   });
-  it('authz fail, hook defers (empty list) -> 403', async function() {
-    await agent.get('/').auth('user', 'user-password').expect(403);
+  it('authz fail, authzFailure handles', async function() {
+    handlers['authzFailure'].shouldHandle = true;
+    await agent.get('/').auth('user', 'user-password').expect(200, 'authzFailure');
+    assert(!handlers['authnFailure'].called);
+    assert(handlers['authzFailure'].called);
+    assert(!handlers['authFailure'].called);
+  });
+  it('authz fail, authFailure handles', async function() {
+    handlers['authFailure'].shouldHandle = true;
+    await agent.get('/').auth('user', 'user-password').expect(200, 'authFailure');
+    assert(!handlers['authnFailure'].called);
+    assert(handlers['authzFailure'].called);
+    assert(handlers['authFailure'].called);
+  });
+  it('authzFailure trumps authFailure', async function() {
+    handlers['authzFailure'].shouldHandle = true;
+    handlers['authFailure'].shouldHandle = true;
+    await agent.get('/').auth('user', 'user-password').expect(200, 'authzFailure');
+    assert(handlers['authzFailure'].called);
+    assert(!handlers['authFailure'].called);
   });
 });

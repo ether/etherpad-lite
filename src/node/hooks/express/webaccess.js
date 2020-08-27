@@ -8,6 +8,8 @@ const stats = require('ep_etherpad-lite/node/stats');
 const sessionModule = require('express-session');
 const cookieParser = require('cookie-parser');
 
+hooks.deprecationNotices.authFailure = 'use the authnFailure and authzFailure hooks instead';
+
 exports.normalizeAuthzLevel = (level) => {
   if (!level) return false;
   switch (level) {
@@ -70,8 +72,8 @@ exports.checkAccess = (req, res, next) => {
   // 3) Try to access the thing again. If this fails, give the user a 403 error.
   //
   // Plugins can use the 'next' callback (from the hook's context) to break out at any point (e.g.,
-  // to process an OAuth callback). Plugins can use the authFailure hook to override the default
-  // error handling behavior (e.g., to redirect to a login page).
+  // to process an OAuth callback). Plugins can use the authnFailure and authzFailure hooks to
+  // override the default error handling behavior (e.g., to redirect to a login page).
 
   let step1PreAuthenticate, step2Authenticate, step3Authorize;
 
@@ -93,14 +95,17 @@ exports.checkAccess = (req, res, next) => {
     hooks.aCallFirst('authenticate', ctx, hookResultMangle((ok) => {
       if (!ok) {
         const failure = () => {
-          return hooks.aCallFirst('authFailure', {req, res, next}, hookResultMangle((ok) => {
+          return hooks.aCallFirst('authnFailure', {req, res}, hookResultMangle((ok) => {
             if (ok) return;
-            // No plugin handled the authentication failure. Fall back to basic authentication.
-            res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
-            // Delay the error response for 1s to slow down brute force attacks.
-            setTimeout(() => {
-              res.status(401).send('Authentication Required');
-            }, 1000);
+            return hooks.aCallFirst('authFailure', {req, res, next}, hookResultMangle((ok) => {
+              if (ok) return;
+              // No plugin handled the authentication failure. Fall back to basic authentication.
+              res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
+              // Delay the error response for 1s to slow down brute force attacks.
+              setTimeout(() => {
+                res.status(401).send('Authentication Required');
+              }, 1000);
+            }));
           }));
         };
         // Fall back to HTTP basic auth.
@@ -127,10 +132,13 @@ exports.checkAccess = (req, res, next) => {
   };
 
   step3Authorize = () => authorize(() => {
-    return hooks.aCallFirst('authFailure', {req, res, next}, hookResultMangle((ok) => {
+    return hooks.aCallFirst('authzFailure', {req, res}, hookResultMangle((ok) => {
       if (ok) return;
-      // No plugin handled the authorization failure.
-      res.status(403).send('Forbidden');
+      return hooks.aCallFirst('authFailure', {req, res, next}, hookResultMangle((ok) => {
+        if (ok) return;
+        // No plugin handled the authorization failure.
+        res.status(403).send('Forbidden');
+      }));
     }));
   });
 
