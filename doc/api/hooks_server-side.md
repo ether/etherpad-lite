@@ -308,7 +308,7 @@ Things in context:
 This hook is called to handle authentication.
 
 Plugins that supply an authenticate function should probably also supply an
-authFailure function unless falling back to HTTP basic authentication is
+authnFailure function unless falling back to HTTP basic authentication is
 appropriate upon authentication failure.
 
 This hook is only called if either the `requireAuthentication` setting is true
@@ -359,10 +359,12 @@ Things in context:
 2. res - the response object
 3. next - ?
 
+**DEPRECATED:** Use authnFailure or authzFailure instead.
+
 This hook is called to handle an authentication or authorization failure.
 
 Plugins that supply an authenticate function should probably also supply an
-authFailure function unless falling back to HTTP basic authentication is
+authnFailure function unless falling back to HTTP basic authentication is
 appropriate upon authentication failure.
 
 A plugin's authFailure function is only called if all of the following are true:
@@ -370,6 +372,10 @@ A plugin's authFailure function is only called if all of the following are true:
 * There was an authentication or authorization failure.
 * The failure was not already handled by an authFailure function from another
   plugin.
+* For authentication failures: The failure was not already handled by the
+  authnFailure hook.
+* For authorization failures: The failure was not already handled by the
+  authzFailure hook.
 
 Calling the provided callback with `[true]` tells Etherpad that the failure was
 handled and no further error handling is required. Calling the callback with
@@ -386,6 +392,70 @@ exports.authFailure = (hookName, context, cb) => {
   }
   context.res.redirect(makeLoginURL(context.req));
   return cb([true]);
+};
+```
+
+## authnFailure
+Called from: src/node/hooks/express/webaccess.js
+
+Things in context:
+
+1. req - the request object
+2. res - the response object
+
+This hook is called to handle an authentication failure.
+
+Plugins that supply an authenticate function should probably also supply an
+authnFailure function unless falling back to HTTP basic authentication is
+appropriate upon authentication failure.
+
+A plugin's authnFailure function is only called if the authentication failure
+was not already handled by an authnFailure function from another plugin.
+
+Calling the provided callback with `[true]` tells Etherpad that the failure was
+handled and no further error handling is required. Calling the callback with
+`[]` or `undefined` defers error handling to an authnFailure function from
+another plugin (if any, otherwise fall back to the deprecated authFailure hook).
+
+Example:
+
+```
+exports.authnFailure = (hookName, context, cb) => {
+  if (notApplicableToThisPlugin(context)) return cb([]);
+  context.res.redirect(makeLoginURL(context.req));
+  return cb([true]);
+};
+```
+
+## authzFailure
+Called from: src/node/hooks/express/webaccess.js
+
+Things in context:
+
+1. req - the request object
+2. res - the response object
+
+This hook is called to handle an authorization failure.
+
+A plugin's authzFailure function is only called if the authorization failure was
+not already handled by an authzFailure function from another plugin.
+
+Calling the provided callback with `[true]` tells Etherpad that the failure was
+handled and no further error handling is required. Calling the callback with
+`[]` or `undefined` defers error handling to an authzFailure function from
+another plugin (if any, otherwise fall back to the deprecated authFailure hook).
+
+Example:
+
+```
+exports.authzFailure = (hookName, context, cb) => {
+  if (notApplicableToThisPlugin(context)) return cb([]);
+  if (needsPremiumAccount(context.req) && !context.req.session.user.premium) {
+    context.res.status(200).send(makeUpgradeToPremiumAccountPage(context.req));
+    return cb([true]);
+  }
+  // Use the generic 403 forbidden response.
+  return cb([]);
 };
 ```
 
