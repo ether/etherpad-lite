@@ -8,8 +8,7 @@ const stats = require('ep_etherpad-lite/node/stats');
 const sessionModule = require('express-session');
 const cookieParser = require('cookie-parser');
 
-// checks for basic http auth
-exports.basicAuth = (req, res, next) => {
+exports.checkAccess = (req, res, next) => {
   const hookResultMangle = (cb) => {
     return (err, data) => {
       return cb(!err && data.length && data[0]);
@@ -171,5 +170,5 @@ exports.expressConfigure = (hook_name, args, cb) => {
 
   args.app.use(cookieParser(settings.sessionKey, {}));
 
-  args.app.use(exports.basicAuth);
+  args.app.use(exports.checkAccess);
 };
