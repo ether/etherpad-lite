@@ -20,7 +20,7 @@ exports.basicAuth = (req, res, next) => {
     // Do not require auth for static paths and the API...this could be a bit brittle
     if (req.path.match(/^\/(static|javascripts|pluginfw|api)/)) return cb(true);
 
-    if (req.path.toLowerCase().indexOf('/admin') != 0) {
+    if (req.path.toLowerCase().indexOf('/admin') !== 0) {
       if (!settings.requireAuthentication) return cb(true);
       if (!settings.requireAuthorization && req.session && req.session.user) return cb(true);
     }
@@ -115,7 +115,7 @@ exports.expressConfigure = (hook_name, args, cb) => {
 
   // If the log level specified in the config file is WARN or ERROR the application server never starts listening to requests as reported in issue #158.
   // Not installing the log4js connect logger when the log level has a higher severity than INFO since it would not log at that level anyway.
-  if (!(settings.loglevel === 'WARN' || settings.loglevel == 'ERROR'))
+  if (!(settings.loglevel === 'WARN' || settings.loglevel === 'ERROR'))
     args.app.use(log4js.connectLogger(httpLogger, {level: log4js.levels.DEBUG, format: ':status, :method :url'}));
 
   /* Do not let express create the session, so that we can retain a
