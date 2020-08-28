@@ -22,8 +22,8 @@ describe('Responsiveness of Editor', function() {
   // @todo also do this with 30k+ lines
   it('Fast response to keypress in pad with large amount of contents', function(done) {
     var inner$ = helper.padInner$;
-    var chars = '00000000000 00000000000000 000000000000 000000000000 00000000000\n'; // row of placeholder chars
-    var amount = 17000; //number of blocks of chars we will insert
+    var chars = '00000000000 00000000000 00000000000 00000000000 00000000000 00000000000 00000000000\n'; // row of placeholder chars
+    var amount = 30000; //number of blocks of chars we will insert
     var length = (amount * (chars.length) +1); // include a counter for each space
     var text = ''; // the text we're gonna insert
     this.timeout(amount * 100);
