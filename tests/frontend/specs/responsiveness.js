@@ -19,21 +19,14 @@ describe('Responsiveness of Editor', function() {
     helper.newPad(cb);
     this.timeout(6000);
   });
+  // @todo also do this with 30k+ lines
   it('Fast response to keypress in pad with large amount of contents', function(done) {
     var inner$ = helper.padInner$;
-    var chrome$ = helper.padChrome$;
     var chars = '0000000000'; // row of placeholder chars
     var amount = 200000; //number of blocks of chars we will insert
     var length = (amount * (chars.length) +1); // include a counter for each space
     var text = ''; // the text we're gonna insert
     this.timeout(amount * 100);
-
-    // get keys to send
-    var keyMultiplier = 10; // multiplier * 10 == total number of key events
-    var keysToSend = '';
-    for(var i=0; i <= keyMultiplier; i++) {
-      keysToSend += chars;
-    }
 
     var textElement = inner$('div');
     textElement.sendkeys('{selectall}'); // select all
@@ -48,22 +41,15 @@ describe('Responsiveness of Editor', function() {
       return inner$('div').text().length > length;
     }).done(function(){
 
-      expect( inner$('div').text().length ).to.be.greaterThan( length ); // has the text changed?
       var start = Date.now(); // get the start time
+      var newLength = inner$('div').text().length;
 
-      // send some new text to the screen (ensure all 3 key events are sent)
+      // send abc to the end of the first line
       var el = inner$('div').first();
-      for(var i = 0; i < keysToSend.length; ++i) {
-        var x = keysToSend.charCodeAt(i);
-        ['keyup', 'keypress', 'keydown'].forEach(function(type) {
-          var e = $.Event(type);
-          e.keyCode = x;
-          el.trigger(e);
-        });
-      }
+      el.sendkeys('abc');
 
       helper.waitFor(function(){ // Wait for the ability to process
-        return true; // Ghetto but works for now
+        return newLength == inner$('div').text().length - 3;
       }).done(function(){
         var end = Date.now(); // get the current time
         var delay = end - start; // get the delay as the current time minus the start time
