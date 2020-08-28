@@ -94,7 +94,10 @@ exports.checkAccess = (req, res, next) => {
     }
     hooks.aCallFirst('authenticate', ctx, hookResultMangle((ok) => {
       if (!ok) {
-        const failure = () => {
+        // Fall back to HTTP basic auth.
+        if (!httpBasicAuth || !(ctx.username in settings.users) ||
+            settings.users[ctx.username].password !== ctx.password) {
+          httpLogger.info(`Failed authentication from IP ${req.ip}`);
           return hooks.aCallFirst('authnFailure', {req, res}, hookResultMangle((ok) => {
             if (ok) return;
             return hooks.aCallFirst('authFailure', {req, res, next}, hookResultMangle((ok) => {
@@ -107,18 +110,7 @@ exports.checkAccess = (req, res, next) => {
               }, 1000);
             }));
           }));
-        };
-        // Fall back to HTTP basic auth.
-        if (!httpBasicAuth) return failure();
-        if (!(ctx.username in settings.users)) {
-          httpLogger.info(`Failed authentication from IP ${req.ip} - no such user`);
-          return failure();
         }
-        if (settings.users[ctx.username].password !== ctx.password) {
-          httpLogger.info(`Failed authentication from IP ${req.ip} for user ${ctx.username} - incorrect password`);
-          return failure();
-        }
-        httpLogger.info(`Successful authentication from IP ${req.ip} for user ${ctx.username}`);
         settings.users[ctx.username].username = ctx.username;
         req.session.user = settings.users[ctx.username];
       }
@@ -127,6 +119,9 @@ exports.checkAccess = (req, res, next) => {
         res.status(500).send('Internal Server Error');
         return;
       }
+      let username = req.session.user.username;
+      username = (username != null) ? username : '<no username>';
+      httpLogger.info(`Successful authentication from IP ${req.ip} for username ${username}`);
       step3Authorize();
     }));
   };
