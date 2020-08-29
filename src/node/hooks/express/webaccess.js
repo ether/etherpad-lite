@@ -42,6 +42,7 @@ exports.authnFailureDelayMs = 1000;
 exports.checkAccess = (req, res, next) => {
   const hookResultMangle = (cb) => {
     return (err, data) => {
+      if (err != null) httpLogger.error(`Error during access check: ${err}`);
       return cb(!err && data.length && data[0]);
     };
   };
