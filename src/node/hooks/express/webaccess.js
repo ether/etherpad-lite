@@ -15,6 +15,8 @@ exports.checkAccess = (req, res, next) => {
     };
   };
 
+  // This may be called twice per access: once before authentication is checked and once after (if
+  // settings.requireAuthorization is true).
   const authorize = (cb) => {
     // Do not require auth for static paths and the API...this could be a bit brittle
     if (req.path.match(/^\/(static|javascripts|pluginfw|api)/)) return cb(true);
@@ -28,33 +30,6 @@ exports.checkAccess = (req, res, next) => {
 
     hooks.aCallFirst('authorize', {req, res, next, resource: req.path}, hookResultMangle(cb));
   };
-
-  const authenticate = (cb) => {
-    // If auth headers are present use them to authenticate...
-    if (req.headers.authorization && req.headers.authorization.search('Basic ') === 0) {
-      const userpass = Buffer.from(req.headers.authorization.split(' ')[1], 'base64').toString().split(':');
-      const username = userpass.shift();
-      const password = userpass.join(':');
-      const fallback = (success) => {
-        if (success) return cb(true);
-        if (!(username in settings.users)) {
-          httpLogger.info(`Failed authentication from IP ${req.ip} - no such user`);
-          return cb(false);
-        }
-        if (settings.users[username].password !== password) {
-          httpLogger.info(`Failed authentication from IP ${req.ip} for user ${username} - incorrect password`);
-          return cb(false);
-        }
-        httpLogger.info(`Successful authentication from IP ${req.ip} for user ${username}`);
-        settings.users[username].username = username;
-        req.session.user = settings.users[username];
-        return cb(true);
-      };
-      return hooks.aCallFirst('authenticate', {req, res, next, username, password}, hookResultMangle(fallback));
-    }
-    hooks.aCallFirst('authenticate', {req, res, next}, hookResultMangle(cb));
-  };
-
 
   /* Authentication OR authorization failed. */
   const failure = () => {
@@ -74,28 +49,68 @@ exports.checkAccess = (req, res, next) => {
     }));
   };
 
+  // Access checking is done in three steps:
+  //
+  // 1) Try to just access the thing. If access fails (perhaps authentication has not yet completed,
+  //    or maybe different credentials are required), go to the next step.
+  // 2) Try to authenticate. (Or, if already logged in, reauthenticate with different credentials if
+  //    supported by the authn scheme.) If authentication fails, give the user a 401 error to
+  //    request new credentials. Otherwise, go to the next step.
+  // 3) Try to access the thing again. If this fails, give the user a 401 error.
+  //
+  // Plugins can use the 'next' callback (from the hook's context) to break out at any point (e.g.,
+  // to process an OAuth callback). Plugins can use the authFailure hook to override the default
+  // error handling behavior (e.g., to redirect to a login page).
 
-  /* This is the actual authentication/authorization hoop. It is done in four steps:
+  let step1PreAuthenticate, step2Authenticate, step3Authorize;
 
-     1) Try to just access the thing
-     2) If not allowed using whatever creds are in the current session already, try to authenticate
-     3) If authentication using already supplied credentials succeeds, try to access the thing again
-     4) If all els fails, give the user a 401 to request new credentials
-
-     Note that the process could stop already in step 3 with a redirect to login page.
-
-  */
-
-  authorize((ok) => {
-    if (ok) return next();
-    authenticate((ok) => {
-      if (!ok) return failure();
-      authorize((ok) => {
-        if (ok) return next();
-        failure();
-      });
+  step1PreAuthenticate = () => {
+    authorize((ok) => {
+      if (ok) return next();
+      step2Authenticate();
     });
-  });
+  };
+
+  step2Authenticate = () => {
+    const ctx = {req, res, next};
+    // If the HTTP basic auth header is present, extract the username and password so it can be
+    // given to authn plugins.
+    const httpBasicAuth =
+        req.headers.authorization && req.headers.authorization.search('Basic ') === 0;
+    if (httpBasicAuth) {
+      const userpass =
+          Buffer.from(req.headers.authorization.split(' ')[1], 'base64').toString().split(':');
+      ctx.username = userpass.shift();
+      ctx.password = userpass.join(':');
+    }
+    hooks.aCallFirst('authenticate', ctx, hookResultMangle((ok) => {
+      if (!ok) {
+        // Fall back to HTTP basic auth.
+        if (!httpBasicAuth) return failure();
+        if (!(ctx.username in settings.users)) {
+          httpLogger.info(`Failed authentication from IP ${req.ip} - no such user`);
+          return failure();
+        }
+        if (settings.users[ctx.username].password !== ctx.password) {
+          httpLogger.info(`Failed authentication from IP ${req.ip} for user ${ctx.username} - incorrect password`);
+          return failure();
+        }
+        httpLogger.info(`Successful authentication from IP ${req.ip} for user ${ctx.username}`);
+        settings.users[ctx.username].username = ctx.username;
+        req.session.user = settings.users[ctx.username];
+      }
+      step3Authorize();
+    }));
+  };
+
+  step3Authorize = () => {
+    authorize((ok) => {
+      if (ok) return next();
+      failure();
+    });
+  };
+
+  step1PreAuthenticate();
 };
 
 exports.secret = null;
