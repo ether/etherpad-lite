@@ -1,11 +1,9 @@
 var helper = {};
 
 (function(){
-  var $iframeContainer, $iframe, jsLibraries = {};
+  var $iframe, jsLibraries = {};
 
   helper.init = function(cb){
-    $iframeContainer = $("#iframe-container");
-
     $.get('/static/js/jquery.js').done(function(code){
       // make sure we don't override existing jquery
       jsLibraries["jquery"] = "if(typeof $ === 'undefined') {\n" + code + "\n}";
@@ -52,9 +50,48 @@ var helper = {};
     return win.$;
   }
 
-  helper.clearCookies = function(){
-    window.document.cookie = "";
+  helper.clearSessionCookies = function(){
+    // Expire cookies, so author and language are changed after reloading the pad.
+    // See https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie#Example_4_Reset_the_previous_cookie
+    window.document.cookie = 'token=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    window.document.cookie = 'language=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
   }
+
+  // Can only happen when the iframe exists, so we're doing it separately from other cookies
+  helper.clearPadPrefCookie = function(){
+    helper.padChrome$.document.cookie = 'prefsHttp=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  }
+
+  // Overwrite all prefs in pad cookie. Assumes http, not https.
+  //
+  // `helper.padChrome$.document.cookie` (the iframe) and `window.document.cookie`
+  // seem to have independent cookies, UNLESS we put path=/ here (which we don't).
+  // I don't fully understand it, but this function seems to properly simulate
+  // padCookie.setPref in the client code
+  helper.setPadPrefCookie = function(prefs){
+    helper.padChrome$.document.cookie = ("prefsHttp=" + escape(JSON.stringify(prefs)) + ";expires=Thu, 01 Jan 3000 00:00:00 GMT");
+  }
+
+  // Functionality for knowing what key event type is required for tests
+  var evtType = "keydown";
+  // if it's IE require keypress
+  if(window.navigator.userAgent.indexOf("MSIE") > -1){
+    evtType = "keypress";
+  }
+  // Edge also requires keypress.
+  if(window.navigator.userAgent.indexOf("Edge") > -1){
+    evtType = "keypress";
+  }
+  // Opera also requires keypress.
+  if(window.navigator.userAgent.indexOf("OPR") > -1){
+    evtType = "keypress";
+  }
+  helper.evtType = evtType;
+
+  // @todo needs fixing asap
+  // newPad occasionally timeouts, might be a problem with ready/onload code during page setup
+  // This ensures that tests run regardless of this problem
+  helper.retry = 0
 
   helper.newPad = function(cb, padName){
     //build opts object
@@ -65,38 +102,56 @@ var helper = {};
       opts = _.defaults(cb, opts);
     }
 
+    // if opts.params is set we manipulate the URL to include URL parameters IE ?foo=Bah.
+    if(opts.params){
+      var encodedParams = "?" + $.param(opts.params);
+    }
+
     //clear cookies
     if(opts.clearCookies){
-      helper.clearCookies();
+      helper.clearSessionCookies();
     }
 
     if(!padName)
       padName = "FRONTEND_TEST_" + helper.randomString(20);
-    $iframe = $("<iframe src='/p/" + padName + "'></iframe>");
+    $iframe = $("<iframe src='/p/" + padName + (encodedParams || '') + "'></iframe>");
+
+    // needed for retry
+    let origPadName = padName;
 
     //clean up inner iframe references
     helper.padChrome$ = helper.padOuter$ = helper.padInner$ = null;
 
-    //clean up iframes properly to prevent IE from memoryleaking
-    $iframeContainer.find("iframe").purgeFrame().done(function(){
-      $iframeContainer.append($iframe);
-      $iframe.one('load', function(){
-        helper.waitFor(function(){
-          return !$iframe.contents().find("#editorloadingbox").is(":visible");
-        }, 50000).done(function(){
-          helper.padChrome$ = getFrameJQuery(                $('#iframe-container iframe'));
-          helper.padOuter$  = getFrameJQuery(helper.padChrome$('iframe[name="ace_outer"]'));
-          helper.padInner$  = getFrameJQuery( helper.padOuter$('iframe[name="ace_inner"]'));
+    //remove old iframe
+    $("#iframe-container iframe").remove();
+    //set new iframe
+    $("#iframe-container").append($iframe);
+    $iframe.one('load', function(){
+      helper.padChrome$ = getFrameJQuery($('#iframe-container iframe'));
+      if (opts.clearCookies) {
+        helper.clearPadPrefCookie();
+      }
+      if (opts.padPrefs) {
+        helper.setPadPrefCookie(opts.padPrefs);
+      }
+      helper.waitFor(function(){
+        return !$iframe.contents().find("#editorloadingbox").is(":visible");
+      }, 10000).done(function(){
+        helper.padOuter$  = getFrameJQuery(helper.padChrome$('iframe[name="ace_outer"]'));
+        helper.padInner$  = getFrameJQuery( helper.padOuter$('iframe[name="ace_inner"]'));
 
-          //disable all animations, this makes tests faster and easier
-          helper.padChrome$.fx.off = true;
-          helper.padOuter$.fx.off = true;
-          helper.padInner$.fx.off = true;
+        //disable all animations, this makes tests faster and easier
+        helper.padChrome$.fx.off = true;
+        helper.padOuter$.fx.off = true;
+        helper.padInner$.fx.off = true;
 
-          opts.cb();
-        }).fail(function(){
+        opts.cb();
+      }).fail(function(){
+        if (helper.retry > 3) {
           throw new Error("Pad never loaded");
-        });
+        }
+        helper.retry++;
+        helper.newPad(cb,origPadName);
       });
     });
 
@@ -104,7 +159,7 @@ var helper = {};
   }
 
   helper.waitFor = function(conditionFunc, _timeoutTime, _intervalTime){
-    var timeoutTime = _timeoutTime || 1000;
+    var timeoutTime = _timeoutTime || 1900;
     var intervalTime = _intervalTime || 10;
 
     var deferred = $.Deferred();

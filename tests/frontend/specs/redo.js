@@ -7,7 +7,7 @@ describe("undo button then redo button", function(){
   it("redo some typing with button", function(done){
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
-    
+
     // get the first text element inside the editable space
     var $firstTextElement = inner$("div span").first();
     var originalValue = $firstTextElement.text(); // get the original value
@@ -25,7 +25,6 @@ describe("undo button then redo button", function(){
     $redoButton.click(); // resends foo
 
     helper.waitFor(function(){
-      console.log(inner$("div span").first().text());
       return inner$("div span").first().text() === newString;
     }).done(function(){
       var finalValue = inner$("div").first().text();
@@ -47,24 +46,17 @@ describe("undo button then redo button", function(){
     var modifiedValue = $firstTextElement.text(); // get the modified value
     expect(modifiedValue).not.to.be(originalValue); // expect the value to change
 
-    if(inner$(window)[0].bowser.firefox || inner$(window)[0].bowser.modernIE){ // if it's a mozilla or IE  
-      var evtType = "keypress";
-    }else{
-      var evtType = "keydown";
-    }
-
-    var e = inner$.Event(evtType);
+    var e = inner$.Event(helper.evtType);
     e.ctrlKey = true; // Control key
     e.which = 90; // z
     inner$("#innerdocbody").trigger(e);
 
-    var e = inner$.Event(evtType);
+    var e = inner$.Event(helper.evtType);
     e.ctrlKey = true; // Control key
     e.which = 121; // y
     inner$("#innerdocbody").trigger(e);
 
     helper.waitFor(function(){
-      console.log(inner$("div span").first().text());
       return inner$("div span").first().text() === newString;
     }).done(function(){
       var finalValue = inner$("div").first().text();

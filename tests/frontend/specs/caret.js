@@ -198,9 +198,9 @@ console.log(inner$);
 /*
   it("Creates N rows, changes height of rows, updates UI by caret key events", function(done){
     var inner$ = helper.padInner$;
-    var chrome$ = helper.padChrome$; 
+    var chrome$ = helper.padChrome$;
     var numberOfRows = 50;
-    
+
     //ace creates a new dom element when you press a keystroke, so just get the first text element again
     var $newFirstTextElement = inner$("div").first();
     var originalDivHeight = inner$("div").first().css("height");
@@ -211,7 +211,7 @@ console.log(inner$);
     }).done(function(){ // Once the DOM has registered the items
       inner$("div").each(function(index){ // Randomize the item heights (replicates images / headings etc)
         var random = Math.floor(Math.random() * (50)) + 20;
-        $(this).css("height", random+"px"); 
+        $(this).css("height", random+"px");
       });
 
       console.log(caretPosition(inner$));
@@ -253,7 +253,7 @@ console.log(inner$);
         keyEvent(inner$, 33, false, false); // doesn't work
         i++;
       }
-  
+
       // Does scrolling back up the pad with the up arrow show the correct contents?
       helper.waitFor(function(){ // Wait for the new position to be in place
         try{
@@ -280,7 +280,7 @@ console.log(inner$);
     helper.waitFor(function(){ // Wait for the new position to be in place
       return isScrolledIntoView(inner$("div:nth-child(1)"), inner$); // Wait for the DOM to scroll into place
     }).done(function(){ // Once the DOM has registered the items
-      expect(true).to.be(true); 
+      expect(true).to.be(true);
       done();
     });
 */
@@ -297,20 +297,15 @@ function prepareDocument(n, target){ // generates a random document with random 
 }
 
 function keyEvent(target, charCode, ctrl, shift){ // sends a charCode to the window
-  if(inner$(window)[0].bowser.firefox || inner$(window)[0].bowser.modernIE){ // if it's a mozilla or IE  
-    var evtType = "keypress";
-  }else{
-    var evtType = "keydown";
-  }
-  var e = target.Event(evtType);
-  console.log(e);
+
+  var e = target.Event(helper.evtType);
   if(ctrl){
     e.ctrlKey = true; // Control key
   }
   if(shift){
     e.shiftKey = true; // Shift Key
   }
-  e.which = charCode; 
+  e.which = charCode;
   e.keyCode = charCode;
   target("#innerdocbody").trigger(e);
 }
@@ -339,6 +334,5 @@ function caretPosition($){
   var pos = doc.getSelection();
   pos.y = pos.anchorNode.parentElement.offsetTop;
   pos.x = pos.anchorNode.parentElement.offsetLeft;
-  console.log(pos);
   return pos;
 }

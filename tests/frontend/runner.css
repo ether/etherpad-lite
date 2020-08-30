@@ -1,11 +1,14 @@
 html {
   height: 100%;
-} 
+}
 
 body {
   padding: 0px;
   margin: 0px;
   height: 100%;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
 }
 
 #console {
@@ -13,34 +16,34 @@ body {
 }
 
 #iframe-container {
-  width: 50%;
+  width: 80%;
+  min-width: 820px;
   height: 100%;
 }
 
 #iframe-container iframe {
   height: 100%;
-  position:absolute;
-  min-width:500px;
-  max-width:800px;
-  left:50%;
   width:100%;
 }
 
 #mocha {
   font: 20px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
   border-right: 2px solid #999;
-  width: 50%;
+  flex: 1 auto;
   height: 100%;
-  position: absolute;
   overflow: auto;
-  float:left;
+  width:20%;
+  font-size:80%;
+  
 }
 
 #mocha #report {
-  margin-top: 50px;
+  margin: 0;
+  padding: 0;
+  margin-top: 10px;
 }
 
-#mocha ul, #mocha li {
+#mocha li {
   margin: 0;
   padding: 0;
 }
@@ -60,7 +63,7 @@ body {
 }
 
 #mocha h1 a:visited
-{ 
+{
   color: #00E;
 }
 
@@ -76,11 +79,11 @@ body {
 }
 
 #mocha .suite {
-  margin-left: 15px;
+  margin-left: 0px;
 }
 
 #mocha .test {
-  margin-left: 15px;
+  margin-left: 5px;
 }
 
 #mocha .test:hover h2::after {
@@ -175,6 +178,10 @@ body {
   -webkit-box-shadow: 0 1px 3px #eee;
 }
 
+#report ul {
+  padding: 0;
+}
+
 #report.pass .test.fail {
   display: none;
 }
@@ -191,17 +198,21 @@ body {
 }
 
 #stats {
-  position: fixed;
-  top: 15px;
-  right: 52%;
+  padding: 10px;
   font-size: 12px;
   margin: 0;
   color: #888;
+  text-align: right;
 }
 
-#stats .progress {
+#mocha-stats {
+  height: 80px;
+}
+
+#mocha-stats .progress {
   float: right;
   padding-top: 0;
+  margin-right:5px;
 }
 
 #stats em {
@@ -229,3 +240,7 @@ code .init { color: #2F6FAD }
 code .string { color: #5890AD }
 code .keyword { color: #8A6343 }
 code .number { color: #2F6FAD }
+
+ul{
+  padding-left:5px;
+}
