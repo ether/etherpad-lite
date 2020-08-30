@@ -44,7 +44,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
 
           console.log(testResult);
           if (timesup) {
-            console.log("[" + testSettings.browserName + " " + testSettings.platform + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] allowed test duration exceeded");
+            console.log("[" + testSettings.browserName + " " + testSettings.platform + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] \x1B[31mFAILED\x1B[39m allowed test duration exceeded");
           }
           console.log("Remote sauce test '" + name + "' finished! " + url);
 
