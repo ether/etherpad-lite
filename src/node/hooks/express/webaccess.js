@@ -11,6 +11,15 @@ const cookieParser = require('cookie-parser');
 
 hooks.deprecationNotices.authFailure = 'use the authnFailure and authzFailure hooks instead';
 
+const staticPathsRE = new RegExp('^/(' + [
+  'api/.*',
+  'favicon\\.ico',
+  'javascripts/.*',
+  'locales\\.json',
+  'pluginfw/.*',
+  'static/.*',
+].join('|') + ')$');
+
 exports.normalizeAuthzLevel = (level) => {
   if (!level) return false;
   switch (level) {
@@ -108,8 +117,7 @@ exports.checkAccess = (req, res, next) => {
         httpLogger.error('Error in preAuthorize hook:', err);
         return res.status(500).send('Internal Server Error');
       }
-      // Do not require auth for static paths and the API...this could be a bit brittle
-      if (req.path.match(/^\/(static|javascripts|pluginfw|api)/)) results.push(true);
+      if (req.path.match(staticPathsRE)) results.push(true);
       if (requireAdmin) {
         // Filter out all 'true' entries to prevent plugin authors from accidentally granting admin
         // privileges to the general public.
