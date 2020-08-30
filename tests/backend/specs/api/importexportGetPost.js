@@ -110,7 +110,7 @@ describe('Imports and Exports', function(){
 
   // For some reason word import does not work in testing..
   // TODO: fix support for .doc files..
-  xit('Tries to import .doc that uses soffice or abiword', function(done) {
+  it('Tries to import .doc that uses soffice or abiword', function(done) {
     if(!settings.allowAnyoneToImport) return done();
     if((settings.abiword && settings.abiword.indexOf("/" === -1)) && (settings.office && settings.soffice.indexOf("/" === -1))) return done();
 
