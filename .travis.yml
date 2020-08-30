@@ -1,6 +1,7 @@
 language: node_js
 node_js:
   - "6.9.0"
+cache: false
 install:
   - "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/g' settings.json.template > settings.json"
   - "tests/frontend/travis/sauce_tunnel.sh"
