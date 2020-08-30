@@ -1,7 +1,5 @@
-console.log("require wd")
 var srcFolder = "../../../src/node_modules/";
 var wd = require(srcFolder + "wd");
-console.log("require async")
 var async = require(srcFolder + "async");
 
 var config = {
@@ -14,7 +12,6 @@ var config = {
 var allTestsPassed = true;
 
 var sauceTestWorker = async.queue(function (testSettings, callback) {
-  console.log("sauce testworker started")
   var browser = wd.promiseChainRemote(config.host, config.port, config.username, config.accessKey);
   var name = process.env.GIT_HASH + " - " + testSettings.browserName + " " + testSettings.version + ", " + testSettings.platform;
   testSettings.name = name;
