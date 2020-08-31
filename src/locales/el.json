@@ -47,6 +47,7 @@
 	"pad.settings.fontType.normal": "Κανονική",
 	"pad.settings.language": "Γλώσσα:",
 	"pad.settings.about": "Σχετικά",
+	"pad.settings.poweredBy": "Υποστηρίζεται από",
 	"pad.importExport.import_export": "Εισαγωγή/Εξαγωγή",
 	"pad.importExport.import": "Μεταφόρτωση οποιουδήποτε αρχείου κειμένου ή εγγράφου",
 	"pad.importExport.importSuccessful": "Επιτυχής!",

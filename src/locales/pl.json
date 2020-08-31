@@ -50,6 +50,7 @@
 	"pad.settings.fontType": "Rodzaj czcionki:",
 	"pad.settings.fontType.normal": "Normalna",
 	"pad.settings.language": "Język:",
+	"pad.settings.about": "O aplikacji",
 	"pad.importExport.import_export": "Import/eksport",
 	"pad.importExport.import": "Prześlij dowolny plik tekstowy lub dokument",
 	"pad.importExport.importSuccessful": "Sukces!",
