@@ -894,8 +894,8 @@ async function handleClientReady(client, message)
   let padIds = await readOnlyManager.getIds(message.padId);
 
   // FIXME: Allow to override readwrite access with readonly
-  let statusObject = await securityManager.checkAccess(padIds.padId, message.sessionID, message.token, message.password);
-  let accessStatus = statusObject.accessStatus;
+  const {accessStatus, authorID} = await securityManager.checkAccess(
+      padIds.padId, message.sessionID, message.token, message.password);
 
   // no access, send the client a message that tells him why
   if (accessStatus !== "grant") {
@@ -903,11 +903,9 @@ async function handleClientReady(client, message)
     return;
   }
 
-  let author = statusObject.authorID;
-
   // get all authordata of this new user
-  assert(author);
-  let value = await authorManager.getAuthor(author);
+  assert(authorID);
+  let value = await authorManager.getAuthor(authorID);
   let authorColorId = value.colorId;
   let authorName = value.name;
 
@@ -933,7 +931,7 @@ async function handleClientReady(client, message)
   }));
 
   let thisUserHasEditedThisPad = false;
-  if (historicalAuthorData[statusObject.authorID]) {
+  if (historicalAuthorData[authorID]) {
     /*
      * This flag is set to true when a user contributes to a specific pad for
      * the first time. It is used for deciding if importing to that pad is
@@ -954,7 +952,7 @@ async function handleClientReady(client, message)
 
   for (let client of roomClients) {
     let sinfo = sessioninfos[client.id];
-    if (sinfo && sinfo.author == author) {
+    if (sinfo && sinfo.author == authorID) {
       // fix user's counter, works on page refresh or if user closes browser window and then rejoins
       sessioninfos[client.id] = {};
       client.leave(padIds.padId);
@@ -1104,7 +1102,7 @@ async function handleClientReady(client, message)
       "readOnlyId": padIds.readOnlyPadId,
       "readonly": padIds.readonly,
       "serverTimestamp": Date.now(),
-      "userId": author,
+      "userId": authorID,
       "abiwordAvailable": settings.abiwordAvailable(),
       "sofficeAvailable": settings.sofficeAvailable(),
       "exportAvailable": settings.exportAvailable(),
@@ -1149,7 +1147,7 @@ async function handleClientReady(client, message)
     // Save the current revision in sessioninfos, should be the same as in clientVars
     sessioninfos[client.id].rev = pad.getHeadRevisionNumber();
 
-    sessioninfos[client.id].author = author;
+    sessioninfos[client.id].author = authorID;
 
     // prepare the notification for the other users on the pad, that this user joined
     let messageToTheOtherUsers = {
@@ -1160,7 +1158,7 @@ async function handleClientReady(client, message)
           "ip": "127.0.0.1",
           "colorId": authorColorId,
           "userAgent": "Anonymous",
-          "userId": author
+          "userId": authorID,
         }
       }
     };
