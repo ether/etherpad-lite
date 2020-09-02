@@ -70,25 +70,8 @@ exports.checkAccess = async function(padID, sessionCookie, token, password)
     // a session is not required, so we'll check if it's a public pad
     if (padID.indexOf("$") === -1) {
       // it's not a group pad, means we can grant access
-
-      // assume user has access
-      let authorID = await p_tokenAuthor;
-      let statusObject = { accessStatus: "grant", authorID };
-
-      if (settings.editOnly) {
-        // user can't create pads
-
-        let padExists = await p_padExists;
-
-        if (!padExists) {
-          // pad doesn't exist - user can't have access
-          statusObject.accessStatus = "deny";
-        }
-      }
-
-      // user may create new pads - no need to check anything
-      // grant access, with author of token
-      return statusObject;
+      if (settings.editOnly && !(await p_padExists)) return deny;
+      return {accessStatus: 'grant', authorID: await p_tokenAuthor};
     }
   }
 
