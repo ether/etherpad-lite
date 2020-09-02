@@ -30,6 +30,7 @@ exports.userCanModify = (padId, req) => {
   if (!settings.requireAuthentication) return true;
   const {session: {user} = {}} = req;
   assert(user); // If authn required and user == null, the request should have already been denied.
+  if (user.readOnly) return false;
   assert(user.padAuthorizations); // This is populated even if !settings.requireAuthorization.
   const level = exports.normalizeAuthzLevel(user.padAuthorizations[padId]);
   assert(level); // If !level, the request should have already been denied.
