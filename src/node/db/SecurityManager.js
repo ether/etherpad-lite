@@ -26,6 +26,10 @@ var settings = require("../utils/Settings");
 var log4js = require('log4js');
 var authLogger = log4js.getLogger("auth");
 
+const DENY = Object.freeze({accessStatus: 'deny'});
+const WRONG_PASSWORD = Object.freeze({accessStatus: 'wrongPassword'});
+const NEED_PASSWORD = Object.freeze({accessStatus: 'needPassword'});
+
 /**
  * This function controlls the access to a pad, it checks if the user can access a pad.
  * @param padID the pad the user wants to access
@@ -39,17 +43,14 @@ var authLogger = log4js.getLogger("auth");
  */
 exports.checkAccess = async function(padID, sessionCookie, token, password)
 {
-  // immutable object
-  let deny = Object.freeze({ accessStatus: "deny" });
-
   if (!padID) {
-    return deny;
+    return DENY;
   }
 
   // allow plugins to deny access
   var deniedByHook = hooks.callAll("onAccessCheck", {'padID': padID, 'password': password, 'token': token, 'sessionCookie': sessionCookie}).indexOf(false) > -1;
   if (deniedByHook) {
-    return deny;
+    return DENY;
   }
 
   // start to get author for this token
@@ -62,13 +63,13 @@ exports.checkAccess = async function(padID, sessionCookie, token, password)
     // a valid session is required (api-only mode)
     if (!sessionCookie) {
       // without sessionCookie, access is denied
-      return deny;
+      return DENY;
     }
   } else {
     // a session is not required, so we'll check if it's a public pad
     if (padID.indexOf("$") === -1) {
       // it's not a group pad, means we can grant access
-      if (settings.editOnly && !(await p_padExists)) return deny;
+      if (settings.editOnly && !(await p_padExists)) return DENY;
       return {accessStatus: 'grant', authorID: await p_tokenAuthor};
     }
   }
@@ -190,14 +191,14 @@ exports.checkAccess = async function(padID, sessionCookie, token, password)
       // - the pad is password protected but wrong password given
 
       // --> deny access, ask for new password and tell them that the password is wrong
-      return { accessStatus: "wrongPassword" };
+      return WRONG_PASSWORD;
     }
 
     if (isPasswordProtected && passwordStatus === "notGiven") {
       // - the pad is password protected but no password given
 
       // --> ask for password
-      return { accessStatus: "needPassword" };
+      return NEED_PASSWORD;
     }
 
     throw new Error("Oops, something wrong happend");
@@ -213,7 +214,7 @@ exports.checkAccess = async function(padID, sessionCookie, token, password)
     // --> deny access if user isn't allowed to create the pad
     if (settings.editOnly) {
       authLogger.debug("Auth failed: valid session & pad does not exist");
-      accessStatus = "deny";
+      return DENY;
     }
 
     return { accessStatus, authorID };
@@ -243,14 +244,14 @@ exports.checkAccess = async function(padID, sessionCookie, token, password)
       // - it's public and the pad is password protected but wrong password given
 
       // --> deny access, ask for new password and tell them that the password is wrong
-      return { accessStatus: "wrongPassword" };
+      return WRONG_PASSWORD;
     }
 
     if (isPublic && isPasswordProtected && passwordStatus === "notGiven") {
       // - it's public and the pad is password protected but no password given
 
       // --> ask for password
-      return { accessStatus: "needPassword" };
+      return NEED_PASSWORD;
     }
 
     if (!isPublic) {
@@ -258,7 +259,7 @@ exports.checkAccess = async function(padID, sessionCookie, token, password)
 
       authLogger.debug("Auth failed: invalid session & pad is not public");
       // --> deny access
-      return { accessStatus: "deny" };
+      return DENY;
     }
 
     throw new Error("Oops, something wrong happend");
@@ -266,5 +267,5 @@ exports.checkAccess = async function(padID, sessionCookie, token, password)
 
   // there is no valid session avaiable AND pad doesn't exist
   authLogger.debug("Auth failed: invalid session & pad does not exist");
-  return { accessStatus: "deny" };
+  return DENY;
 }
