@@ -36,6 +36,7 @@ var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 var channels = require("channels");
 var stats = require('../stats');
 var remoteAddress = require("../utils/RemoteAddress").remoteAddress;
+const assert = require('assert').strict;
 const nodeify = require("nodeify");
 const { RateLimiterMemory } = require('rate-limiter-flexible');
 
@@ -260,19 +261,10 @@ exports.handleMessage = async function(client, message)
 
   let dropMessage = await handleMessageHook();
   if (!dropMessage) {
-
-    // check permissions
-
     if (message.type == "CLIENT_READY") {
       // client tried to auth for the first time (first msg from the client)
       createSessionInfo(client, message);
     }
-
-    // Note: message.sessionID is an entirely different kind of
-    // session from the sessions we use here! Beware!
-    // FIXME: Call our "sessions" "connections".
-    // FIXME: Use a hook instead
-    // FIXME: Allow to override readwrite access with readonly
 
     // the session may have been dropped during earlier processing
     if (!sessioninfos[client.id]) {
@@ -901,12 +893,6 @@ async function handleClientReady(client, message)
   // Get ro/rw id:s
   let padIds = await readOnlyManager.getIds(message.padId);
 
-  // check permissions
-
-  // Note: message.sessionID is an entierly different kind of
-  // session from the sessions we use here! Beware!
-  // FIXME: Call our "sessions" "connections".
-  // FIXME: Use a hook instead
   // FIXME: Allow to override readwrite access with readonly
   let statusObject = await securityManager.checkAccess(padIds.padId, message.sessionID, message.token, message.password);
   let accessStatus = statusObject.accessStatus;
@@ -920,18 +906,10 @@ async function handleClientReady(client, message)
   let author = statusObject.authorID;
 
   // get all authordata of this new user
+  assert(author);
   let value = await authorManager.getAuthor(author);
   let authorColorId = value.colorId;
   let authorName = value.name;
-
-  /*
-  * Here we know authorID, token and session.  We should ?always? store it..
-  * TODO: I fear that this might allow a user to pass a token for an authorID
-  * meaning that they could in theory "imitate" another author?
-  * Perhaps the fix to this is check to see if it exists first and if it
-  * does then abort..  Details: https://github.com/ether/etherpad-lite/issues/4006
-  */
-  await authorManager.setToken2Author(message.token, statusObject.authorID)
 
   // load the pad-object from the database
   let pad = await padManager.getPad(padIds.padId);
