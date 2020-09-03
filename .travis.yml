@@ -14,17 +14,16 @@ before_install:
   - sudo apt-get update
   - sudo apt-get -y install libreoffice
   - sudo apt-get -y install libreoffice-pdfimport
-  - "npm install -g etherpad-load-test"
-  - "cd src && npm install && cd -"
+
 
 ## install dependecy required
 install:
   - "bin/installDeps.sh"
-  - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
 
   
 ## run the test script
 script:
+  - "tests/frontend/travis/runner.sh"
   - "tests/frontend/travis/runnerBackend.sh"
   - "tests/frontend/travis/sauce_tunnel.sh"
 
@@ -35,20 +34,29 @@ env:
     - secure: "WMGxFkOeTTlhWB+ChMucRtIqVmMbwzYdNHuHQjKCcj8HBEPdZLfCuK/kf4rG\nVLcLQiIsyllqzNhBGVHG1nyqWr0/LTm8JRqSCDDVIhpyzp9KpCJQQJG2Uwjk\n6/HIJJh/wbxsEdLNV2crYU/EiVO3A4Bq0YTHUlbhUqG3mSCr5Ec="
     - secure: "gejXUAHYscbR6Bodw35XexpToqWkv2ifeECsbeEmjaLkYzXmUUNWJGknKSu7\nEUsSfQV8w+hxApr1Z+jNqk9aX3K1I4btL3cwk2trnNI8XRAvu1c1Iv60eerI\nkE82Rsd5lwUaMEh+/HoL8ztFCZamVndoNgX7HWp5J/NRZZMmh4g="
 
-##jobs:
- ## include:
-    ## Run frontend tests from the ether/ organization and not from forks.
-    ## To request tests to be run ask a maintainer to fork your repo to ether/
- ##   - if: fork = false
-#      name: "Test the Frontend"
- #     install:
-        #FIXME
-  #      - "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/g' settings.json.template > settings.json"
-#        - 
-#        - "bin/installDeps.sh"
- #       - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
-
-
+jobs:
+  include:
+    - name: "Test the Frontend"
+      install:
+        - "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/g' settings.json.template > settings.json"
+        - "tests/frontend/travis/sauce_tunnel.sh"
+        - "bin/installDeps.sh"
+        - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
+      script:
+        - "tests/frontend/travis/runner.sh"
+    - name: "Run the Backend tests"
+      install:
+        - "bin/installDeps.sh"
+        - "cd src && npm install && cd -"
+      script:
+        - "tests/frontend/travis/runnerBackend.sh"
+    - name: "Load test Etherpad"
+      install:
+        - "bin/installDeps.sh"
+        - "cd src && npm install && cd -"
+        - "npm install -g etherpad-load-test"
+      script:
+        - "tests/frontend/travis/runnerLoadTest.sh"
 ## Dockerfile tests
 #    - name: "Test the Dockerfile"
 #      install:
