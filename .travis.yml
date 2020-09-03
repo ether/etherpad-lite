@@ -29,7 +29,7 @@ env:
 jobs:
   include:
     - if: fork = false
-      name: "Test the Frontend"
+      name: "Frontend Test"
       install:
         - "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/g' settings.json.template > settings.json"
         - "tests/frontend/travis/sauce_tunnel.sh"
@@ -37,13 +37,13 @@ jobs:
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
       script:
         - "tests/frontend/travis/runner.sh"
-    - name: "Run the Backend tests"
+    - name: "Backend test"
       install:
         - "bin/installDeps.sh"
         - "cd src && npm install && cd -"
       script:
         - "tests/frontend/travis/runnerBackend.sh"
-    - name: "Load test Etherpad"
+    - name: "Load test"
       install:
         - "bin/installDeps.sh"
         - "cd src && npm install && cd -"
