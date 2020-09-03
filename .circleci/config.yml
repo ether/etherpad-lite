@@ -1,39 +1,35 @@
-# Javascript Node 8 simple CircleCI 2.0 configuration file
-# Eduardo San Martin Morote
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-# Put this file in a .circleci/ folder
-version: 2
-
-
+version: 2.1
 jobs:
   build:
+    working_directory: ~/mern-starter
     docker:
-      # specify the version you desire here
-      - image: circleci/node:8
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
-
-    working_directory: ~/repo
-
+      - image: circleci/node:10.16.3
+      - image: mongo:4.2.0
     steps:
       - checkout
-
-      # Download and cache dependencies
+      - run:
+          name: update-npm
+          command: 'sudo npm install -g npm@5'
       - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "src/package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
-      - run: npm install
-
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+      - run:
+          name: install-npm-wee
+          command: npm install
       - save_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
           paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "src/package.json" }}
-
-      # run tests!
-      - run: npm test
+            - ./node_modules
+      - run:
+          name: test
+          command: npm test
+      - run:
+          name: code-coverage
+          command: './node_modules/.bin/nyc report --reporter=text-lcov'
+      - store_artifacts:
+          path: test-results.xml
+          prefix: tests
+      - store_artifacts:
+          path: coverage
+          prefix: coverage
+      - store_test_results:
+          path: test-results.xml
