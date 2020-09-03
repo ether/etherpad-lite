@@ -19,8 +19,7 @@ before_install:
 install:
   - "bin/installDeps.sh"
   - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
-  - "npm install -g etherpad-load-test"
-  - "cd src && npm install && cd -"
+
   
 ## run the test script
 script:
