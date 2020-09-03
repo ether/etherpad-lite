@@ -57,7 +57,7 @@ jobs:
 
 
 notifications:
-  irc:
-    channels:
-      - "irc.freenode.org#etherpad-lite-dev"
+  # notify build results through email
+  email:
+  - wonweicheng@gmail.com 
 
