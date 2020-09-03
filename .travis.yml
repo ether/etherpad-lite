@@ -1,7 +1,7 @@
 language: node_js
 
 node_js:
-  - "lts/*"
+  - "lts/*" # Most recent LTS version,
 
 services:
   - docker
