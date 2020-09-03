@@ -192,7 +192,7 @@ exports.handleMessage = async function(client, message)
     return;
   }
 
-  let thisSession = sessioninfos[client.id];
+  const thisSession = sessioninfos[client.id];
 
   if (!thisSession) {
     messageLogger.warn("Dropped message from an unknown connection.")
@@ -210,24 +210,22 @@ exports.handleMessage = async function(client, message)
     return;
   }
 
-  if (message.type === "CLIENT_READY") {
-    // client tried to auth for the first time (first msg from the client)
-    createSessionInfoAuth(client, message);
-  }
-
-  // the session may have been dropped during earlier processing
-  if (!sessioninfos[client.id]) {
+  // Drop the message if the client disconnected while the hooks were running.
+  if (sessioninfos[client.id] !== thisSession) {
     messageLogger.warn("Dropping message from a connection that has gone away.")
     return;
   }
 
-  // Simulate using the load testing tool
-  if (!sessioninfos[client.id].auth) {
+  if (message.type === "CLIENT_READY") {
+    // client tried to auth for the first time (first msg from the client)
+    createSessionInfoAuth(thisSession, message);
+  }
+
+  const auth = thisSession.auth;
+  if (!auth) {
     console.error("Auth was never applied to a session.  If you are using the stress-test tool then restart Etherpad and the Stress test tool.")
     return;
   }
-
-  let auth = sessioninfos[client.id].auth;
 
   // check if pad is requested via readOnly
   let padId = auth.padID;
@@ -549,10 +547,14 @@ async function handleUserChanges(data)
     return;
   }
 
+  // The client might disconnect between our callbacks. We should still
+  // finish processing the changeset, so keep a reference to the session.
+  const thisSession = sessioninfos[client.id];
+
   // TODO: this might happen with other messages too => find one place to copy the session
   // and always use the copy. atm a message will be ignored if the session is gone even
   // if the session was valid when the message arrived in the first place
-  if (!sessioninfos[client.id]) {
+  if (!thisSession) {
     messageLogger.warn("Dropped message, disconnect happened in the mean time");
     return;
   }
@@ -561,10 +563,6 @@ async function handleUserChanges(data)
   var baseRev = message.data.baseRev;
   var wireApool = (new AttributePool()).fromJsonable(message.data.apool);
   var changeset = message.data.changeset;
-
-  // The client might disconnect between our callbacks. We should still
-  // finish processing the changeset, so keep a reference to the session.
-  var thisSession = sessioninfos[client.id];
 
   // Measure time to process edit
   var stopWatch = stats.timer('edits').start();
@@ -808,13 +806,11 @@ function _correctMarkersInPad(atext, apool) {
 function handleSwitchToPad(client, message)
 {
   // clear the session and leave the room
-  let currentSession = sessioninfos[client.id];
-  let padId = currentSession.padId;
-  let roomClients = _getRoomClients(padId);
-
-  roomClients.forEach(client => {
+  const currentSessionInfo = sessioninfos[client.id];
+  const padId = currentSessionInfo.padId;
+  _getRoomClients(padId).forEach(client => {
     let sinfo = sessioninfos[client.id];
-    if (sinfo && sinfo.author === currentSession.author) {
+    if (sinfo && sinfo.author === currentSessionInfo.author) {
       // fix user's counter, works on page refresh or if user closes browser window and then rejoins
       sessioninfos[client.id] = {};
       client.leave(padId);
@@ -822,25 +818,24 @@ function handleSwitchToPad(client, message)
   });
 
   // start up the new pad
-  createSessionInfoAuth(client, message);
+  const newSessionInfo = sessioninfos[client.id];
+  createSessionInfoAuth(newSessionInfo, message);
   handleClientReady(client, message);
 }
 
-// Creates/replaces the auth object in the client's session info. Session info for the client must
-// already exist.
-function createSessionInfoAuth(client, message)
+// Creates/replaces the auth object in the given session info.
+function createSessionInfoAuth(sessionInfo, message)
 {
   // Remember this information since we won't
   // have the cookie in further socket.io messages.
   // This information will be used to check if
   // the sessionId of this connection is still valid
   // since it could have been deleted by the API.
-  sessioninfos[client.id].auth =
-  {
+  sessionInfo.auth = {
     sessionID: message.sessionID,
     padID: message.padId,
-    token : message.token,
-    password: message.password
+    token: message.token,
+    password: message.password,
   };
 }
 
@@ -929,9 +924,8 @@ async function handleClientReady(client, message)
   // glue the clientVars together, send them and tell the other clients that a new one is there
 
   // Check that the client is still here. It might have disconnected between callbacks.
-  if (sessioninfos[client.id] === undefined) {
-    return;
-  }
+  const sessionInfo = sessioninfos[client.id];
+  if (sessionInfo == null) return;
 
   // Check if this author is already on the pad, if yes, kick the other sessions!
   let roomClients = _getRoomClients(pad.id);
@@ -947,9 +941,9 @@ async function handleClientReady(client, message)
   }
 
   // Save in sessioninfos that this session belonges to this pad
-  sessioninfos[client.id].padId = padIds.padId;
-  sessioninfos[client.id].readOnlyPadId = padIds.readOnlyPadId;
-  sessioninfos[client.id].readonly = padIds.readonly;
+  sessionInfo.padId = padIds.padId;
+  sessionInfo.readOnlyPadId = padIds.readOnlyPadId;
+  sessionInfo.readonly = padIds.readonly;
 
   // Log creation/(re-)entering of a pad
   let ip = remoteAddress[client.id];
@@ -971,7 +965,7 @@ async function handleClientReady(client, message)
     client.join(padIds.padId);
 
     // Save the revision in sessioninfos, we take the revision from the info the client send to us
-    sessioninfos[client.id].rev = message.client_rev;
+    sessionInfo.rev = message.client_rev;
 
     // During the client reconnect, client might miss some revisions from other clients. By using client revision,
     // this below code sends all the revisions missed during the client reconnect
@@ -1131,9 +1125,9 @@ async function handleClientReady(client, message)
     client.json.send({type: "CLIENT_VARS", data: clientVars});
 
     // Save the current revision in sessioninfos, should be the same as in clientVars
-    sessioninfos[client.id].rev = pad.getHeadRevisionNumber();
+    sessionInfo.rev = pad.getHeadRevisionNumber();
 
-    sessioninfos[client.id].author = authorID;
+    sessionInfo.author = authorID;
 
     // prepare the notification for the other users on the pad, that this user joined
     let messageToTheOtherUsers = {
@@ -1168,12 +1162,11 @@ async function handleClientReady(client, message)
 
       // Since sessioninfos might change while being enumerated, check if the
       // sessionID is still assigned to a valid session
-      if (sessioninfos[roomClient.id] === undefined) {
-        return;
-      }
+      const sessionInfo = sessioninfos[roomClient.id];
+      if (sessionInfo == null) return;
 
       // get the authorname & colorId
-      let author = sessioninfos[roomClient.id].author;
+      let author = sessionInfo.author;
       let cached = historicalAuthorData[author];
 
       // reuse previously created cache of author's data
