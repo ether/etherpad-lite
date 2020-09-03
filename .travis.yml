@@ -24,8 +24,6 @@ install:
 ## run the test script
 script:
   - "tests/frontend/travis/runner.sh"
-  - "tests/frontend/travis/runnerBackend.sh"
-  - "tests/frontend/travis/sauce_tunnel.sh"
 
 ## environment variables that are global to matrix
 env:
@@ -36,7 +34,8 @@ env:
 
 jobs:
   include:
-    - name: "Test the Frontend"
+    - if: fork = false
+      name: "Test the Frontend"
       install:
         - "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/g' settings.json.template > settings.json"
         - "tests/frontend/travis/sauce_tunnel.sh"
