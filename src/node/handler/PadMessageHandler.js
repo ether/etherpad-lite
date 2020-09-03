@@ -264,7 +264,7 @@ exports.handleMessage = async function(client, message)
 
   if (message.type === "CLIENT_READY") {
     // client tried to auth for the first time (first msg from the client)
-    createSessionInfo(client, message);
+    createSessionInfoAuth(client, message);
   }
 
   // the session may have been dropped during earlier processing
@@ -839,11 +839,13 @@ function handleSwitchToPad(client, message)
   });
 
   // start up the new pad
-  createSessionInfo(client, message);
+  createSessionInfoAuth(client, message);
   handleClientReady(client, message);
 }
 
-function createSessionInfo(client, message)
+// Creates/replaces the auth object in the client's session info. Session info for the client must
+// already exist.
+function createSessionInfoAuth(client, message)
 {
   // Remember this information since we won't
   // have the cookie in further socket.io messages.
