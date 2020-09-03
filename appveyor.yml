@@ -27,7 +27,7 @@ test_script:
   # Output useful info for debugging
   - node --version && npm --version
   # run tests
-  - npm test
+  - cd src && npm test
 
 # Don't actually build.
 build: off
