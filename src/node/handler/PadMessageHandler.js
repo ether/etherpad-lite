@@ -218,13 +218,13 @@ exports.handleMessage = async function(client, message)
     padId = await readOnlyManager.getPadId(padId);
   }
 
+  // FIXME: Allow to override readwrite access with readonly
   const {session: {user} = {}} = client.client.request;
   const {accessStatus, authorID} =
       await securityManager.checkAccess(padId, auth.sessionID, auth.token, auth.password, user);
-
-  if (accessStatus !== "grant") {
-    // no access, send the client a message that tells him why
-    client.json.send({ accessStatus });
+  if (accessStatus !== 'grant') {
+    // Access denied. Send the reason to the user.
+    client.json.send({accessStatus});
     return;
   }
   if (thisSession.author != null && thisSession.author !== authorID) {
@@ -259,7 +259,7 @@ exports.handleMessage = async function(client, message)
 
   // Check what type of message we get and delegate to the other methods
   if (message.type === "CLIENT_READY") {
-    await handleClientReady(client, message);
+    await handleClientReady(client, message, authorID);
   } else if (message.type === "CHANGESET_REQ") {
     await handleChangesetRequest(client, message);
   } else if(message.type === "COLLABROOM") {
@@ -284,7 +284,7 @@ exports.handleMessage = async function(client, message)
       messageLogger.warn("Dropped message, unknown COLLABROOM Data  Type " + message.data.type);
     }
   } else if(message.type === "SWITCH_TO_PAD") {
-    await handleSwitchToPad(client, message);
+    await handleSwitchToPad(client, message, authorID);
   } else {
     messageLogger.warn("Dropped message, unknown Message Type " + message.type);
   }
@@ -818,11 +818,30 @@ function _correctMarkersInPad(atext, apool) {
   return builder.toString();
 }
 
-async function handleSwitchToPad(client, message)
+async function handleSwitchToPad(client, message, _authorID)
 {
-  // clear the session and leave the room
   const currentSessionInfo = sessioninfos[client.id];
   const padId = currentSessionInfo.padId;
+
+  // Check permissions for the new pad.
+  const newPadIds = await readOnlyManager.getIds(message.padId);
+  const {session: {user} = {}} = client.client.request;
+  const {accessStatus, authorID} = await securityManager.checkAccess(
+      newPadIds.padId, message.sessionID, message.token, message.password, user);
+  if (accessStatus !== 'grant') {
+    // Access denied. Send the reason to the user.
+    client.json.send({accessStatus});
+    return;
+  }
+  // The same token and session ID were passed to checkAccess in handleMessage, so this second call
+  // to checkAccess should return the same author ID.
+  assert(authorID === _authorID);
+  assert(authorID === currentSessionInfo.author);
+
+  // Check if the connection dropped during the access check.
+  if (sessioninfos[client.id] !== currentSessionInfo) return;
+
+  // clear the session and leave the room
   _getRoomClients(padId).forEach(client => {
     let sinfo = sessioninfos[client.id];
     if (sinfo && sinfo.author === currentSessionInfo.author) {
@@ -835,7 +854,7 @@ async function handleSwitchToPad(client, message)
   // start up the new pad
   const newSessionInfo = sessioninfos[client.id];
   createSessionInfoAuth(newSessionInfo, message);
-  await handleClientReady(client, message);
+  await handleClientReady(client, message, authorID);
 }
 
 // Creates/replaces the auth object in the given session info.
@@ -860,7 +879,7 @@ function createSessionInfoAuth(sessionInfo, message)
  * @param client the client that send this message
  * @param message the message from the client
  */
-async function handleClientReady(client, message)
+async function handleClientReady(client, message, authorID)
 {
   // check if all ok
   if (!message.token) {
@@ -887,17 +906,6 @@ async function handleClientReady(client, message)
 
   // Get ro/rw id:s
   let padIds = await readOnlyManager.getIds(message.padId);
-
-  // FIXME: Allow to override readwrite access with readonly
-  const {session: {user} = {}} = client.client.request;
-  const {accessStatus, authorID} = await securityManager.checkAccess(
-      padIds.padId, message.sessionID, message.token, message.password, user);
-
-  // no access, send the client a message that tells him why
-  if (accessStatus !== "grant") {
-    client.json.send({ accessStatus });
-    return;
-  }
 
   // get all authordata of this new user
   assert(authorID);
