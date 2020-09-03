@@ -1,102 +1,21 @@
-# configuration for develop/CI branch
--
-  branches:
-    only:
-      - develop
+# Test against the latest version of this Node.js version
+environment:
+  nodejs_version: "6"
 
-  #os:
-  image: Node 
-  configuration: Debug
-  assembly_info:
-    patch: true
-    file: '**\AssemblyInfo.*'
-    assembly_version: '2.5.0.{build}'
-    assembly_file_version: '2.5.0.{build}'
-    assembly_informational_version: '2.5.0.{build}'
-  environment:
-    RestorePackages: false
-  install:
-  - npm install "bin/installDeps.sh"
-  before_build:
-  - ps: .paket\paket.exe restore
-  build:
-    project: etherpad-lite
-    verbosity: minimal
-  test_script:
-<<<<<<< HEAD
-  - OpenCover.Console.exe -register:user -target:"%xunit20%\xunit.console.x86.exe" "-targetargs:"C:\projects\materialdesigninxamltoolkit\MaterialDesignColors.Wpf.Tests\bin\Debug\MaterialDesignColors.Wpf.Fixture.dll" "C:\projects\materialdesigninxamltoolkit\MaterialDesignThemes.Wpf.Tests\bin\Debug\MaterialDesignThemes.Wpf.Tests.dll" -noshadow" "-filter:+[MaterialDesignColors*]* +[MaterialDesignThemes*]*" -output:".\coverage.xml"
-=======
-  - OpenCover.Console.exe -register:user -target:"%xunit20%\xunit.console.x86.exe" "-targetargs:"C:\projects\materialdesigninxamltoolkit-2l02p\MaterialDesignColors.Wpf.Tests\bin\Debug\MaterialDesignColors.Wpf.Fixture.dll" "C:\projects\materialdesigninxamltoolkit-2l02p\MaterialDesignThemes.Wpf.Tests\bin\Debug\MaterialDesignThemes.Wpf.Tests.dll" -noshadow" "-filter:+[MaterialDesignColors*]* +[MaterialDesignThemes*]*" -output:".\coverage.xml"
->>>>>>> 5e644f4281132197e5e7a83280f67d5393d854cd
-  after_test:
-  - ps: |
-      $env:PATH = 'C:\msys64\usr\bin;' + $env:PATH
-      Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
-      bash codecov.sh -f "coverage.xml"
-  after_build:
-<<<<<<< HEAD
-  - MSBuild.SonarQube.Runner.exe begin /k:"scc_team_14" /d:sonar.organization="chinkx-github" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="705f88ba464efc4e93f916c7ce25cfdd183dc1e1"
-=======
-  - MSBuild.SonarQube.Runner.exe begin /k:"scc_proj" /d:sonar.organization="chinkx-github" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="705f88ba464efc4e93f916c7ce25cfdd183dc1e1"
->>>>>>> 5e644f4281132197e5e7a83280f67d5393d854cd
-  - msbuild "MaterialDesignToolkit.Wpf.sln" /t:Rebuild
-  - MSBuild.SonarQube.Runner.exe end /d:sonar.login="705f88ba464efc4e93f916c7ce25cfdd183dc1e1"
-  #- ps: nuget pack MaterialDesignThemes.nuspec -Version $env:APPVEYOR_BUILD_VERSION
-  #- ps: 7z a Demo.2.5.0.$env:APPVEYOR_BUILD_NUMBER.zip MainDemo.Wpf\bin\**\*.*
-  #artifacts:
-  #- path: '**\MaterialDesignThemes.*.nupkg'
-  #- path: Demo.*.zip
+# Install scripts. (runs after repo cloning)
+install:
+  # Get the latest stable version of Node.js or io.js
+  - ps: Install-Product node $env:nodejs_version
+  # install modules
+  - npm install
 
-  version: 2.5.0-ci{build}
+# Post-install test scripts.
+test_script:
+  # Output useful info for debugging.
+  - node --version
+  - npm --version
+  # run tests
+  - npm test
 
-# configuration for release branch
--
-  branches:
-    only:
-      - release
-
-  #os:
-  image: Visual Studio 2017
-  configuration: Debug
-  assembly_info:
-    patch: true
-    file: '**\AssemblyInfo.*'
-    assembly_version: '{version}'
-    assembly_file_version: '{version}'
-    assembly_informational_version: '{version}'
-  environment:
-    RestorePackages: false
-  install:
-  - choco install "msbuild-sonarqube-runner" -y
-  - choco install opencover.portable
-  before_build:
-  - ps: .paket\paket.exe restore
-  build:
-    project: MaterialDesignToolkit.Wpf.sln
-    verbosity: minimal
-  test_script:
-<<<<<<< HEAD
-  - OpenCover.Console.exe -register:user -target:"%xunit20%\xunit.console.x86.exe" "-targetargs:"C:\projects\materialdesigninxamltoolkit\MaterialDesignColors.Wpf.Tests\bin\Debug\MaterialDesignColors.Wpf.Fixture.dll" "C:\projects\materialdesigninxamltoolkit\MaterialDesignThemes.Wpf.Tests\bin\Debug\MaterialDesignThemes.Wpf.Tests.dll" -noshadow" "-filter:+[MaterialDesignColors*]* +[MaterialDesignThemes*]*" -output:".\coverage.xml"
-=======
-  - OpenCover.Console.exe -register:user -target:"%xunit20%\xunit.console.x86.exe" "-targetargs:"C:\projects\materialdesigninxamltoolkit-2l02p\MaterialDesignColors.Wpf.Tests\bin\Debug\MaterialDesignColors.Wpf.Fixture.dll" "C:\projects\materialdesigninxamltoolkit-2l02p\MaterialDesignThemes.Wpf.Tests\bin\Debug\MaterialDesignThemes.Wpf.Tests.dll" -noshadow" "-filter:+[MaterialDesignColors*]* +[MaterialDesignThemes*]*" -output:".\coverage.xml"
->>>>>>> 5e644f4281132197e5e7a83280f67d5393d854cd
-  after_test:
-  - ps: |
-      $env:PATH = 'C:\msys64\usr\bin;' + $env:PATH
-      Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
-      bash codecov.sh -f "coverage.xml"
-  after_build:
-<<<<<<< HEAD
-  - MSBuild.SonarQube.Runner.exe begin /k:"scc_team_14" /d:sonar.organization="chinkx-github" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="705f88ba464efc4e93f916c7ce25cfdd183dc1e1"
-=======
-  - MSBuild.SonarQube.Runner.exe begin /k:"scc_proj" /d:sonar.organization="chinkx-github" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="705f88ba464efc4e93f916c7ce25cfdd183dc1e1"
->>>>>>> 5e644f4281132197e5e7a83280f67d5393d854cd
-  - msbuild "MaterialDesignToolkit.Wpf.sln" /t:Rebuild
-  - MSBuild.SonarQube.Runner.exe end /d:sonar.login="705f88ba464efc4e93f916c7ce25cfdd183dc1e1"
-  #- ps: nuget pack MaterialDesignThemes.nuspec -Version $env:APPVEYOR_BUILD_VERSION
-  #- ps: 7z a Demo.2.5.0.$env:APPVEYOR_BUILD_NUMBER.zip MainDemo.Wpf\bin\**\*.*
-  #artifacts:
-  #- path: '**\MaterialDesignThemes.*.nupkg'
-  #- path: Demo.*.zip
-
-  version: 2.5.0.{build}
+# Don't actually build.
+build: off
