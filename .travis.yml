@@ -20,10 +20,6 @@ before_install:
 install:
   - "bin/installDeps.sh"
 
-  
-## run the test script
-script:
-  - "tests/frontend/travis/runner.sh"
 
 ## environment variables that are global to matrix
 env:
