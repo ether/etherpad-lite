@@ -93,7 +93,7 @@
     "test": "nyc mocha --timeout 5000 ../tests/backend/specs/api",
     "test-contentcollector": "nyc mocha --timeout 5000 ../tests/backend/specs",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api"
-    "report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
+    "report-coverage":"nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
   "version": "1.8.4",
   "license": "Apache-2.0"
