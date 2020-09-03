@@ -260,45 +260,45 @@ exports.handleMessage = async function(client, message)
   }
 
   let dropMessage = await handleMessageHook();
-  if (!dropMessage) {
-    if (message.type == "CLIENT_READY") {
-      // client tried to auth for the first time (first msg from the client)
-      createSessionInfo(client, message);
-    }
+  if (dropMessage) return;
 
-    // the session may have been dropped during earlier processing
-    if (!sessioninfos[client.id]) {
-      messageLogger.warn("Dropping message from a connection that has gone away.")
-      return;
-    }
-
-    // Simulate using the load testing tool
-    if (!sessioninfos[client.id].auth) {
-      console.error("Auth was never applied to a session.  If you are using the stress-test tool then restart Etherpad and the Stress test tool.")
-      return;
-    }
-
-    let auth = sessioninfos[client.id].auth;
-
-    // check if pad is requested via readOnly
-    let padId = auth.padID;
-
-    if (padId.indexOf("r.") === 0) {
-      // Pad is readOnly, first get the real Pad ID
-      padId = await readOnlyManager.getPadId(padId);
-    }
-
-    let { accessStatus } = await securityManager.checkAccess(padId, auth.sessionID, auth.token, auth.password);
-
-    if (accessStatus !== "grant") {
-      // no access, send the client a message that tells him why
-      client.json.send({ accessStatus });
-      return;
-    }
-
-    // access was granted
-    finalHandler();
+  if (message.type == "CLIENT_READY") {
+    // client tried to auth for the first time (first msg from the client)
+    createSessionInfo(client, message);
   }
+
+  // the session may have been dropped during earlier processing
+  if (!sessioninfos[client.id]) {
+    messageLogger.warn("Dropping message from a connection that has gone away.")
+    return;
+  }
+
+  // Simulate using the load testing tool
+  if (!sessioninfos[client.id].auth) {
+    console.error("Auth was never applied to a session.  If you are using the stress-test tool then restart Etherpad and the Stress test tool.")
+    return;
+  }
+
+  let auth = sessioninfos[client.id].auth;
+
+  // check if pad is requested via readOnly
+  let padId = auth.padID;
+
+  if (padId.indexOf("r.") === 0) {
+    // Pad is readOnly, first get the real Pad ID
+    padId = await readOnlyManager.getPadId(padId);
+  }
+
+  let { accessStatus } = await securityManager.checkAccess(padId, auth.sessionID, auth.token, auth.password);
+
+  if (accessStatus !== "grant") {
+    // no access, send the client a message that tells him why
+    client.json.send({ accessStatus });
+    return;
+  }
+
+  // access was granted
+  finalHandler();
 }
 
 
