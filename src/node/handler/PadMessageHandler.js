@@ -210,8 +210,11 @@ exports.handleMessage = async (socket, message) => {
 
   const auth = thisSession.auth;
   if (!auth) {
-    console.error('Auth was never applied to a session. If you are using the ' +
-        'stress-test tool then restart Etherpad and the Stress test tool.');
+    const ip = settings.disableIPlogging ? 'ANONYMOUS' : (socket.request.ip || '<unknown>');
+    const msg = JSON.stringify(message, null, 2);
+    messageLogger.error(`Dropping pre-CLIENT_READY message from IP ${ip}: ${msg}`);
+    messageLogger.debug(
+        'If you are using the stress-test tool then restart Etherpad and the Stress test tool.');
     return;
   }
 
