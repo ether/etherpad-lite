@@ -21,7 +21,7 @@ jobs:
             - ./node_modules
       - run:
           name: code-coverage
-          command: './node_modules report --reporter=text-lcov'
+          command: './src report --reporter=text-lcov'
       - store_artifacts:
           path: test-results.xml
           prefix: tests
