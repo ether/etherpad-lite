@@ -19,9 +19,6 @@ jobs:
           key: dependency-cache-{{ checksum "src/package-lock.json" }}
           paths:
             - ./node_modules
-      - run:
-          name: code-coverage
-          command: './src report --reporter=text-lcov'
       - store_artifacts:
           path: test-results.xml
           prefix: tests
