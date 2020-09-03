@@ -25,7 +25,6 @@ install:
   
 ## run the test script
 script:
-  - "tests/frontend/travis/runnerLoadTest.sh"
   - "tests/frontend/travis/runnerBackend.sh"
   - "tests/frontend/travis/sauce_tunnel.sh"
 
