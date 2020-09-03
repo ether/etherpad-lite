@@ -211,9 +211,15 @@ async function doImport(req, res, padId)
      * Moreover, when using LibreOffice to convert the file, some classes are
      * added to the <title> tag. This is a quick & dirty way of matching the
      * title and comment it out independently on the classes that are set on it.
+     *
+     * @todo what happens if <title is used somewhere in the pad? need proper XML parser
      */
-    text = text.replace("<title", "<!-- <title");
-    text = text.replace("</title>","</title>-->");
+    if (text.match(/<\/title>/)){
+      text = text.replace("<title", "<!-- <title");
+      text = text.replace("</title>","</title>-->");
+    } else {
+      text = text.replace(/<title[^>]*\/>/,'');
+    }
 
     // node on windows has a delay on releasing of the file lock.
     // We add a 100ms delay to work around this

@@ -108,7 +108,7 @@ describe('getText', function(){
     setTimeout(function(){
     api.get(endPoint('getText')+"&padID="+testPadId)
     .expect(function(res){
-      if(res.body.data.text.indexOf("RichardC. Hay" !== -1)){
+      if(res.body.data.text.indexOf("RichardC. Hay") !== -1) {
         console.warn(res.body.data.text);
         throw new Error("Error with doc keeping spaces", res.body.data.text);
       }

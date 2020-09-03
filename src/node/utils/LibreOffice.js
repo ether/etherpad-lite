@@ -85,7 +85,8 @@ function doConvertTask(task, callback) {
         '--nologo',
         '--nolockcheck',
         '--writer',
-        '--convert-to', task.type,
+        '--convert-to',
+        `${task.type}:XHTML Writer File:UTF8`,
         task.srcFile,
         '--outdir', tmpDir
       ]);
