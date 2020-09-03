@@ -27,9 +27,30 @@ env:
     - secure: "WMGxFkOeTTlhWB+ChMucRtIqVmMbwzYdNHuHQjKCcj8HBEPdZLfCuK/kf4rG\nVLcLQiIsyllqzNhBGVHG1nyqWr0/LTm8JRqSCDDVIhpyzp9KpCJQQJG2Uwjk\n6/HIJJh/wbxsEdLNV2crYU/EiVO3A4Bq0YTHUlbhUqG3mSCr5Ec="
     - secure: "gejXUAHYscbR6Bodw35XexpToqWkv2ifeECsbeEmjaLkYzXmUUNWJGknKSu7\nEUsSfQV8w+hxApr1Z+jNqk9aX3K1I4btL3cwk2trnNI8XRAvu1c1Iv60eerI\nkE82Rsd5lwUaMEh+/HoL8ztFCZamVndoNgX7HWp5J/NRZZMmh4g="
 
-script:
-  - npm run test
-  - npm run report-coverage
+jobs:
+  include:
+    - if: fork = false
+      name: "Test the Frontend"
+      install:
+        - "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/g' settings.json.template > settings.json"
+        - "tests/frontend/travis/sauce_tunnel.sh"
+        - "bin/installDeps.sh"
+        - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
+      script:
+        - "tests/frontend/travis/runner.sh"
+    - name: "Run the Backend tests"
+      install:
+        - "bin/installDeps.sh"
+        - "cd src && npm install && cd -"
+      script:
+        - "tests/frontend/travis/runnerBackend.sh"
+    - name: "Load test Etherpad"
+      install:
+        - "bin/installDeps.sh"
+        - "cd src && npm install && cd -"
+        - "npm install -g etherpad-load-test"
+      script:
+        - "tests/frontend/travis/runnerLoadTest.sh"
 ## Dockerfile tests
 #    - name: "Test the Dockerfile"
 #      install:
