@@ -30,7 +30,7 @@ env:
 
 jobs:
   include:
-    - if: fork = true
+    - if: fork = false
       name: "Test the Frontend"
       install:
         - "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/g' settings.json.template > settings.json"
