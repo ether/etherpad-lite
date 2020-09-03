@@ -11,12 +11,12 @@ jobs:
           name: update-npm
           command: 'sudo npm install -g npm@5'
       - restore_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
+          key: dependency-cache-{{ checksum "src/package-lock.json" }}
       - run:
           name: install-npm-wee
           command: npm install
       - save_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
+          key: dependency-cache-{{ checksum "src/package-lock.json" }}
           paths:
             - ./node_modules
       - run:
