@@ -15,10 +15,6 @@ before_install:
   - sudo apt-get -y install libreoffice
   - sudo apt-get -y install libreoffice-pdfimport
 
-## install dependecy required
-install:
-  - "bin/installDeps.sh"
-
 before_script:
   - npm install
 
