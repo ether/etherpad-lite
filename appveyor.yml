@@ -19,3 +19,5 @@ test_script:
 
 # Don't actually build
 build: off
+
+# ~/etherpad-lite$ ./bin/run.sh
