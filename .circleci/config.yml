@@ -20,9 +20,6 @@ jobs:
           paths:
             - ./node_modules
       - run:
-          name: test
-          command: npm test
-      - run:
           name: code-coverage
           command: './node_modules/.bin/nyc report --reporter=text-lcov'
       - store_artifacts:
