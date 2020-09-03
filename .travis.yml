@@ -15,9 +15,6 @@ before_install:
   - sudo apt-get -y install libreoffice
   - sudo apt-get -y install libreoffice-pdfimport
 
-before_script:
-  - npm install
-
 ## environment variables that are global to matrix
 env:
   global:
