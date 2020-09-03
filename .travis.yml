@@ -19,6 +19,8 @@ before_install:
 install:
   - "bin/installDeps.sh"
 
+before_script:
+  - npm install
 
 ## environment variables that are global to matrix
 env:
