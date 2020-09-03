@@ -106,7 +106,7 @@ exports.kickSessionsFromPad = function(padID)
    return;
 
   // skip if there is nobody on this pad
-  if(_getRoomClients(padID).length == 0)
+  if(_getRoomClients(padID).length === 0)
     return;
 
   // disconnect everyone from this pad
@@ -227,32 +227,32 @@ exports.handleMessage = async function(client, message)
 
   function finalHandler() {
     // Check what type of message we get and delegate to the other methods
-    if (message.type == "CLIENT_READY") {
+    if (message.type === "CLIENT_READY") {
       handleClientReady(client, message);
-    } else if (message.type == "CHANGESET_REQ") {
+    } else if (message.type === "CHANGESET_REQ") {
       handleChangesetRequest(client, message);
-    } else if(message.type == "COLLABROOM") {
+    } else if(message.type === "COLLABROOM") {
       if (thisSession.readonly) {
         messageLogger.warn("Dropped message, COLLABROOM for readonly pad");
-      } else if (message.data.type == "USER_CHANGES") {
+      } else if (message.data.type === "USER_CHANGES") {
         stats.counter('pendingEdits').inc()
         padChannels.emit(message.padId, {client: client, message: message}); // add to pad queue
-      } else if (message.data.type == "USERINFO_UPDATE") {
+      } else if (message.data.type === "USERINFO_UPDATE") {
         handleUserInfoUpdate(client, message);
-      } else if (message.data.type == "CHAT_MESSAGE") {
+      } else if (message.data.type === "CHAT_MESSAGE") {
         handleChatMessage(client, message);
-      } else if (message.data.type == "GET_CHAT_MESSAGES") {
+      } else if (message.data.type === "GET_CHAT_MESSAGES") {
         handleGetChatMessages(client, message);
-      } else if (message.data.type == "SAVE_REVISION") {
+      } else if (message.data.type === "SAVE_REVISION") {
         handleSaveRevisionMessage(client, message);
-      } else if (message.data.type == "CLIENT_MESSAGE" &&
+      } else if (message.data.type === "CLIENT_MESSAGE" &&
                  message.data.payload != null &&
-                 message.data.payload.type == "suggestUserName") {
+                 message.data.payload.type === "suggestUserName") {
         handleSuggestUserName(client, message);
       } else {
         messageLogger.warn("Dropped message, unknown COLLABROOM Data  Type " + message.data.type);
       }
-    } else if(message.type == "SWITCH_TO_PAD") {
+    } else if(message.type === "SWITCH_TO_PAD") {
       handleSwitchToPad(client, message);
     } else {
       messageLogger.warn("Dropped message, unknown Message Type " + message.type);
@@ -262,7 +262,7 @@ exports.handleMessage = async function(client, message)
   let dropMessage = await handleMessageHook();
   if (dropMessage) return;
 
-  if (message.type == "CLIENT_READY") {
+  if (message.type === "CLIENT_READY") {
     // client tried to auth for the first time (first msg from the client)
     createSessionInfo(client, message);
   }
@@ -461,7 +461,7 @@ function handleSuggestUserName(client, message)
   // search the author and send him this message
   roomClients.forEach(function(client) {
     var session = sessioninfos[client.id];
-    if (session && session.author == message.data.payload.unnamedId) {
+    if (session && session.author === message.data.payload.unnamedId) {
       client.json.send(message);
     }
   });
@@ -621,7 +621,7 @@ async function handleUserChanges(data)
           if (!attr) return;
 
           // the empty author is used in the clearAuthorship functionality so this should be the only exception
-          if ('author' == attr[0] && (attr[1] != thisSession.author && attr[1] != '')) {
+          if ('author' === attr[0] && (attr[1] !== thisSession.author && attr[1] !== '')) {
             throw new Error("Trying to submit changes as another author in changeset " + changeset);
           }
         });
@@ -660,7 +660,7 @@ async function handleUserChanges(data)
         // a changeset can be based on an old revision with the same changes in it
         // prevent eplite from accepting it TODO: better send the client a NEW_CHANGES
         // of that revision
-        if (baseRev + 1 == r && c == changeset) {
+        if (baseRev + 1 === r && c === changeset) {
           client.json.send({disconnect:"badChangeset"});
           stats.meter('failedChangesets').mark();
           throw new Error("Won't apply USER_CHANGES, because it contains an already accepted changeset");
@@ -676,7 +676,7 @@ async function handleUserChanges(data)
 
     let prevText = pad.text();
 
-    if (Changeset.oldLen(changeset) != prevText.length) {
+    if (Changeset.oldLen(changeset) !== prevText.length) {
       client.json.send({disconnect:"badChangeset"});
       stats.meter('failedChangesets').mark();
       throw new Error("Can't apply USER_CHANGES "+changeset+" with oldLen " + Changeset.oldLen(changeset) + " to document of length " + prevText.length);
@@ -696,7 +696,7 @@ async function handleUserChanges(data)
     }
 
     // Make sure the pad always ends with an empty line.
-    if (pad.text().lastIndexOf("\n") != pad.text().length-1) {
+    if (pad.text().lastIndexOf("\n") !== pad.text().length-1) {
       var nlChangeset = Changeset.makeSplice(pad.text(), pad.text().length - 1, 0, "\n");
       pad.appendRevision(nlChangeset);
     }
@@ -714,7 +714,7 @@ exports.updatePadClients = async function(pad)
   // skip this if no-one is on this pad
   let roomClients = _getRoomClients(pad.id);
 
-  if (roomClients.length == 0) {
+  if (roomClients.length === 0) {
     return;
   }
 
@@ -749,7 +749,7 @@ exports.updatePadClients = async function(pad)
         continue;
       }
 
-      if (author == sessioninfos[sid].author) {
+      if (author === sessioninfos[sid].author) {
         client.json.send({ "type": "COLLABROOM", "data":{ type: "ACCEPT_COMMIT", newRev: r }});
       } else {
         let forWire = Changeset.prepareForWire(revChangeset, pad.pool);
@@ -794,7 +794,7 @@ function _correctMarkersInPad(atext, apool) {
 
     if (hasMarker) {
       for (var i = 0; i < op.chars; i++) {
-        if (offset > 0 && text.charAt(offset-1) != '\n') {
+        if (offset > 0 && text.charAt(offset-1) !== '\n') {
           badMarkers.push(offset);
         }
         offset++;
@@ -804,7 +804,7 @@ function _correctMarkersInPad(atext, apool) {
     }
   }
 
-  if (badMarkers.length == 0) {
+  if (badMarkers.length === 0) {
     return null;
   }
 
@@ -831,7 +831,7 @@ function handleSwitchToPad(client, message)
 
   roomClients.forEach(client => {
     let sinfo = sessioninfos[client.id];
-    if (sinfo && sinfo.author == currentSession.author) {
+    if (sinfo && sinfo.author === currentSession.author) {
       // fix user's counter, works on page refresh or if user closes browser window and then rejoins
       sessioninfos[client.id] = {};
       client.leave(padId);
@@ -883,7 +883,7 @@ async function handleClientReady(client, message)
     return;
   }
 
-  if (message.protocolVersion != 2) {
+  if (message.protocolVersion !== 2) {
     messageLogger.warn("Dropped message, CLIENT_READY Message has a unknown protocolVersion '" + message.protocolVersion + "'!");
     return;
   }
@@ -952,7 +952,7 @@ async function handleClientReady(client, message)
 
   for (let client of roomClients) {
     let sinfo = sessioninfos[client.id];
-    if (sinfo && sinfo.author == authorID) {
+    if (sinfo && sinfo.author === authorID) {
       // fix user's counter, works on page refresh or if user closes browser window and then rejoins
       sessioninfos[client.id] = {};
       client.leave(padIds.padId);
@@ -975,7 +975,7 @@ async function handleClientReady(client, message)
 
   if (pad.head > 0) {
     accessLogger.info('[ENTER] Pad "' + padIds.padId + '": Client ' + client.id + ' with IP "' + ip + '" entered the pad');
-  } else if (pad.head == 0) {
+  } else if (pad.head === 0) {
     accessLogger.info('[CREATE] Pad "' + padIds.padId + '": Client ' + client.id + ' with IP "' + ip + '" created the pad');
   }
 
@@ -1036,7 +1036,7 @@ async function handleClientReady(client, message)
       client.json.send(wireMsg);
     }
 
-    if (startNum == endNum) {
+    if (startNum === endNum) {
       var Msg = {"type":"COLLABROOM",
                  "data":{type:"CLIENT_RECONNECT",
                          noChanges: true,
@@ -1176,7 +1176,7 @@ async function handleClientReady(client, message)
     await Promise.all(_getRoomClients(pad.id).map(async roomClient => {
 
       // Jump over, if this session is the connection session
-      if (roomClient.id == client.id) {
+      if (roomClient.id === client.id) {
         return;
       }
 
@@ -1316,7 +1316,7 @@ async function getChangesetInfo(padId, startNum, endNum, granularity)
     compositesChangesetNeeded.push({ start, end });
 
     // add the t1 time we need
-    revTimesNeeded.push(start == 0 ? 0 : start - 1);
+    revTimesNeeded.push(start === 0 ? 0 : start - 1);
 
     // add the t2 time we need
     revTimesNeeded.push(end - 1);
@@ -1371,7 +1371,7 @@ async function getChangesetInfo(padId, startNum, endNum, granularity)
     let forwards2 = Changeset.moveOpsToNewPool(forwards, pad.apool(), apool);
     let backwards2 = Changeset.moveOpsToNewPool(backwards, pad.apool(), apool);
 
-    let t1 = (compositeStart == 0) ? revisionDate[0] : revisionDate[compositeStart - 1];
+    let t1 = (compositeStart === 0) ? revisionDate[0] : revisionDate[compositeStart - 1];
     let t2 = revisionDate[compositeEnd - 1];
 
     timeDeltas.push(t2 - t1);
