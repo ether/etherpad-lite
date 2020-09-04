@@ -18,6 +18,9 @@ before_install:
 ## install dependecy required
 install:
   - cd src && npm install && cd -
+  
+script:
+  - cd src && npm test && cd -
 
 ## environment variables that are global to matrix
 env:
