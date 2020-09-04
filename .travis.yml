@@ -18,6 +18,7 @@ before_install:
 ## install dependecy required
 install:
   - "bin/installDeps.sh"
+  - "cd src && npm install && cd -"
 
 ## environment variables that are global to matrix
 env:
@@ -29,16 +30,9 @@ env:
 jobs:
   include:
     - name: "Backend test"
-      install:
-        - "bin/installDeps.sh"
-        - "cd src && npm install && cd -"
       script:
         - "tests/frontend/travis/runnerBackend.sh"
     - name: "Load test"
-      install:
-        - "bin/installDeps.sh"
-        - "cd src && npm install && cd -"
-        - "npm install -g etherpad-load-test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
 ## Dockerfile tests
