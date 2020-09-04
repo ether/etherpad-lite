@@ -28,12 +28,6 @@ env:
 
 jobs:
   include:
-    - name: "Frontend Test"
-      install:
-        - "bin/installDeps.sh"
-        - "cd src && npm install && cd -"
-      script:
-        - "tests/frontend/travis/runner.sh"
     - name: "Backend test"
       install:
         - "bin/installDeps.sh"
