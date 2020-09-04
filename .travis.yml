@@ -3,6 +3,8 @@ language: node_js
 node_js:
   - "lts/*" # Most recent LTS version,
 
+dist: xenial
+
 services:
   - docker
 
