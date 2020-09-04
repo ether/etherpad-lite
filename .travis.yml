@@ -1,7 +1,7 @@
 language: node_js
 
 node_js:
-  - "lts/*" # Most recent LTS version
+  - "lts/*" # Most recent LTS version,
 
 services:
   - docker
@@ -36,7 +36,6 @@ jobs:
     - name: "Load test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
-
 ## Dockerfile tests
 #    - name: "Test the Dockerfile"
 #      install:
@@ -49,6 +48,6 @@ jobs:
 
 
 notifications:
-  # Notify build results through email
+  # notify build results through email
   email:
   - wonweicheng@gmail.com 
