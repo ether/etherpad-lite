@@ -29,8 +29,6 @@ jobs:
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
 
-
-
 notifications:
   # notify build and test results through email
   email:
