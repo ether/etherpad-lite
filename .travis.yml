@@ -14,7 +14,6 @@ before_install:
   - sudo apt-get update # update package
   - sudo apt-get -y install libreoffice # install libreoffice
   - sudo apt-get -y install libreoffice-pdfimport # install pdf import component for LibreOffice
-  - docker image build -t etherpadtest .
   
 ## install dependecy required
 install:
@@ -47,12 +46,6 @@ jobs:
 #        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
 #        - "cd src && npm run test-container"
 
-after_success:
- - docker login -u ${DHUB_USERNAME} -p ${DHUB_PASS}
- - echo "${SSH_KEY}" |  base64 --decode > /tmp/ssh_rsa
- - chmod 600 /tmp/ssh_rsa
- - ssh -o "StrictHostKeyChecking no" pi@${IPADDR} -i /tmp/ssh_rsa "echo test > test.log"
- - ssh -o "StrictHostKeyChecking no" pi@${IPADDR} -i /tmp/ssh_rsa "cd ${INSTALL_LOCATION} && git pull ${TRAVIS_BUILD_WEB_URL} && docker image build -t ${IMGNAME} ${INSTALL_LOCATION}/. && docker push ${IMGNAME} && docker stop etherpad-lite; docker rm etherpad-lite; docker run --name etherpad TOKEN=${TOKEN} ${IMGNAME}"
 
 
 notifications:
