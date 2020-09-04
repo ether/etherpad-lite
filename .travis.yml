@@ -5,9 +5,6 @@ node_js:
 
 dist: xenial
 
-services:
-  - docker
-
 cache: false
 
 ## before install phase, install Libreoffice on Ubuntu
@@ -31,14 +28,6 @@ jobs:
     - name: "Load test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
-## Dockerfile tests
-#    - name: "Test the Dockerfile"
-#      install:
-#        - "cd src && npm install && cd -"
-#      script:
-#        - "docker build -t etherpad:test ."
-#        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
-#        - "cd src && npm run test-container"
 
 
 
