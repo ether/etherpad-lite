@@ -33,6 +33,8 @@ jobs:
       script:
         - "tests/frontend/travis/runnerBackend.sh"
     - name: "Load test"
+      install: 
+      - "npm install -g etherpad-load-test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
 ## Dockerfile tests
