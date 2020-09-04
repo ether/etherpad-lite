@@ -30,12 +30,11 @@ jobs:
   include:
     - name: "Frontend Test"
       install:
-        - "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/g' settings.json.template > settings.json"
-        - "tests/frontend/travis/sauce_tunnel.sh"
         - "bin/installDeps.sh"
-        - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
+        - "cd src && npm install && cd -"
       script:
         - "tests/frontend/travis/runner.sh"
+        - "tests/frontend/travis/sauce_tunnel.sh"
     - name: "Backend test"
       install:
         - "bin/installDeps.sh"
