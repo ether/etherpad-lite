@@ -5,9 +5,6 @@ node_js:
 
 dist: xenial
 
-services:
-  - docker
-
 cache: false
 
 ## before install phase, install Libreoffice on Ubuntu
@@ -17,11 +14,6 @@ before_install:
   - sudo apt-get -y install libreoffice # install libreoffice
   - sudo apt-get -y install libreoffice-pdfimport # install pdf import component for LibreOffice
   
-before_install:
-  - docker build -t node:latest .
-  - docker run -d -p 127.0.0.1:80:4567 node/latest /bin/sh -c "cd /root/latest; bundle exec foreman start;"
-  - docker ps -a
-  - docker run node/latest /bin/sh -c "cd /node/latest; bundle exec rake test"
   
 ## install dependecy required
 install:
@@ -39,15 +31,6 @@ jobs:
     - name: "Load test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
-## Dockerfile tests
-#    - name: "Test the Dockerfile"
-#      install:
-#        - "cd src && npm install && cd -"
-#      script:
-#        - "docker build -t etherpad:test ."
-#        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
-#        - "cd src && npm run test-container"
-
 
 
 notifications:
