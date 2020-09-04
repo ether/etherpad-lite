@@ -390,7 +390,6 @@ function handleMessageSecurity ( hook, context, callback ) {
 };
 ```
 
-
 ## clientVars
 Called from: src/node/handler/PadMessageHandler.js
 
@@ -398,16 +397,38 @@ Things in context:
 
 1. clientVars - the basic `clientVars` built by the core
 2. pad - the pad this session is about
+3. socket - the socket.io Socket object
 
-This hook will be called once a client connects and the `clientVars` are being sent. Plugins can use this hook to give the client an initial configuration, like the tracking-id of an external analytics-tool that is used on the client-side. You can also overwrite values from the original `clientVars`.
+This hook is called after a client connects but before the initial configuration
+is sent to the client. Plugins can use this hook to manipulate the
+configuration. (Example: Add a tracking ID for an external analytics tool that
+is used client-side.)
 
-Example:
+The clientVars function must return a Promise that resolves to an object (or
+null/undefined) whose properties will be merged into `context.clientVars`.
+Returning `callback(value)` will return a Promise that is resolved to `value`.
+
+You can modify `context.clientVars` to change the values sent to the client, but
+beware: async functions from other clientVars plugins might also be reading or
+manipulating the same `context.clientVars` object. For this reason it is
+recommended you return an object rather than modify `context.clientVars`.
+
+If needed, you can access the user's account information (if authenticated) via
+`context.socket.client.request.session.user`.
+
+Examples:
 
 ```
-exports.clientVars = function(hook, context, callback)
-{
-  // tell the client which year we are in
-  return callback({ "currentYear": new Date().getFullYear() });
+// Using an async function
+exports.clientVars = async (hookName, context) => {
+  const user = context.socket.client.request.session.user || {};
+  return {'accountUsername': user.username || '<unknown>'}
+};
+
+// Using a regular function
+exports.clientVars = (hookName, context, callback) => {
+  const user = context.socket.client.request.session.user || {};
+  return callback({'accountUsername': user.username || '<unknown>'});
 };
 ```
 
