@@ -43,6 +43,6 @@ jobs:
 
 
 notifications:
-  # notify build results through email
+  # notify build and test results through email
   email:
   - wonweicheng@gmail.com 
