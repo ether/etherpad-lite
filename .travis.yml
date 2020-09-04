@@ -19,6 +19,7 @@ before_install:
 install:
   - "bin/installDeps.sh"
   - "cd src && npm install && cd -"
+  - "npm install -g etherpad-load-test"
 
 ## environment variables that are global to matrix
 env:
