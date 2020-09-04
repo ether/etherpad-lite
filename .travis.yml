@@ -18,7 +18,7 @@ before_install:
   - sudo apt-get -y install libreoffice-pdfimport # install pdf import component for LibreOffice
   
 before_install:
-  - docker build -t node/latest .
+  - docker build -t node:latest .
   - docker run -d -p 127.0.0.1:80:4567 node/latest /bin/sh -c "cd /root/latest; bundle exec foreman start;"
   - docker ps -a
   - docker run node/latest /bin/sh -c "cd /node/latest; bundle exec rake test"
