@@ -1,3 +1,4 @@
+ WWCheng02/etherpad-lite:.travis.yml@783911e
 language: node_js
 
 node_js:
@@ -18,8 +19,6 @@ before_install:
 ## install dependecy required
 install:
   - "bin/installDeps.sh"
-  - "cd src && npm install && cd -"
-  - "npm install -g etherpad-load-test"
 
 ## environment variables that are global to matrix
 env:
@@ -31,10 +30,15 @@ env:
 jobs:
   include:
     - name: "Backend test"
+      install:
+        - "bin/installDeps.sh"
+        - "cd src && npm install && cd -"
       script:
         - "tests/frontend/travis/runnerBackend.sh"
     - name: "Load test"
-      install: 
+      install:
+        - "bin/installDeps.sh"
+        - "cd src && npm install && cd -"
         - "npm install -g etherpad-load-test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
@@ -45,7 +49,7 @@ jobs:
 #      script:
 #        - "docker build -t etherpad:test ."
 #        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
-#        - "cd src && npm run test-container"pppp
+#        - "cd src && npm run test-container"
 
 
 
