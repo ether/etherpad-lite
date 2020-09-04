@@ -59,6 +59,6 @@ after_success:
 
 
 notifications:
-  # notify build results through email
+  # Notify build results through email
   email:
   - wonweicheng@gmail.com 
