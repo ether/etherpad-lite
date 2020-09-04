@@ -1,6 +1,23 @@
 language: node_js
 
 node_js:
+  - "lts/*" # Most recent LTS version
+
+services:
+  - docker
+
+cache: false
+
+## before install phase, install Libreoffice on Ubuntu
+before_install:
+  - sudo add-apt-repository -y ppa:libreoffice/ppa # install libreoffice through PPA
+  - sudo apt-get update # update package
+  - sudo apt-get -y install libreoffice # install libreoffice
+  - sudo apt-get -y install libreoffice-pdfimport # install pdf import component for LibreOffice
+  
+language: node_js
+
+node_js:
   - "lts/*" # Most recent LTS version,
 
 services:
@@ -21,6 +38,14 @@ install:
   - "cd src && npm install && cd -"
   - "npm install -g etherpad-load-test"
 
+## SonarCloud add on
+addons:
+   sonarcloud:
+     organization: "asus-aics"
+     token:
+       secure: $SONAR_TOKEN
+
+
 ## environment variables that are global to matrix
 env:
   global:
@@ -36,6 +61,11 @@ jobs:
     - name: "Load test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
+    - stage: "Run Tests & SonarCloud Analysis"
+       cript:
+        - npm test
+        - sonar-scanner -Dsonar.projectKey=$SONAR_PROJECT_KEY
+
 ## Dockerfile tests
 #    - name: "Test the Dockerfile"
 #      install:
@@ -49,5 +79,48 @@ jobs:
 
 notifications:
   # notify build results through email.
+  email:
+  - wonweicheng@gmail.com 
+## install dependecy required
+install:
+  - "bin/installDeps.sh"
+  - "cd src && npm install && cd -"
+  - "npm install -g etherpad-load-test"
+  
+## SonarCloud add on
+addons:
+   sonarcloud:
+     organization: "asus-aics"
+     token:
+       secure: $SONAR_TOKEN
+       
+## environment variables that are global to matrix
+env:
+  global:
+    ## encrypt sensitive data 
+    - secure: "WMGxFkOeTTlhWB+ChMucRtIqVmMbwzYdNHuHQjKCcj8HBEPdZLfCuK/kf4rG\nVLcLQiIsyllqzNhBGVHG1nyqWr0/LTm8JRqSCDDVIhpyzp9KpCJQQJG2Uwjk\n6/HIJJh/wbxsEdLNV2crYU/EiVO3A4Bq0YTHUlbhUqG3mSCr5Ec="
+    - secure: "gejXUAHYscbR6Bodw35XexpToqWkv2ifeECsbeEmjaLkYzXmUUNWJGknKSu7\nEUsSfQV8w+hxApr1Z+jNqk9aX3K1I4btL3cwk2trnNI8XRAvu1c1Iv60eerI\nkE82Rsd5lwUaMEh+/HoL8ztFCZamVndoNgX7HWp5J/NRZZMmh4g="
+
+ # Node.js .travis.yml sample
+ jobs:
+   include:
+     - stage: "Run Tests & SonarCloud Analysis"
+       script:
+         - npm test
+         - sonar-scanner -Dsonar.projectKey=$SONAR_PROJECT_KEY
+    
+
+## Dockerfile tests
+#    - name: "Test the Dockerfile"
+#      install:
+#        - "cd src && npm install && cd -"
+#      script:
+#        - "docker build -t etherpad:test ."
+#        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
+#        - "cd src && npm run test-container"
+
+
+notifications:
+  # Notify build results through email
   email:
   - wonweicheng@gmail.com 
