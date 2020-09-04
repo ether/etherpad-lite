@@ -4,7 +4,7 @@ node_js:
   - "lts/*" # Most recent LTS version
   
 env:
-  - IMGNAME=WWCheng02/node:latest
+  - IMGNAME=WWCheng02/etherpad-test
 
 services:
   - docker
@@ -40,6 +40,7 @@ jobs:
     - name: "Load test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
+
 ## Dockerfile tests
 #    - name: "Test the Dockerfile"
 #      install:
