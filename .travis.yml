@@ -20,7 +20,7 @@ install:
   - cd src && npm install && cd -
   
 script:
-  - cd src && npm test && cd -
+  - cd src && npm run test && cd -
 
 ## environment variables that are global to matrix
 env:
