@@ -259,9 +259,9 @@ exports.handleMessage = async function(client, message)
 
   // Check what type of message we get and delegate to the other methods
   if (message.type === "CLIENT_READY") {
-    handleClientReady(client, message);
+    await handleClientReady(client, message);
   } else if (message.type === "CHANGESET_REQ") {
-    handleChangesetRequest(client, message);
+    await handleChangesetRequest(client, message);
   } else if(message.type === "COLLABROOM") {
     if (thisSession.readonly) {
       messageLogger.warn("Dropped message, COLLABROOM for readonly pad");
@@ -269,13 +269,13 @@ exports.handleMessage = async function(client, message)
       stats.counter('pendingEdits').inc()
       padChannels.emit(message.padId, {client: client, message: message}); // add to pad queue
     } else if (message.data.type === "USERINFO_UPDATE") {
-      handleUserInfoUpdate(client, message);
+      await handleUserInfoUpdate(client, message);
     } else if (message.data.type === "CHAT_MESSAGE") {
-      handleChatMessage(client, message);
+      await handleChatMessage(client, message);
     } else if (message.data.type === "GET_CHAT_MESSAGES") {
-      handleGetChatMessages(client, message);
+      await handleGetChatMessages(client, message);
     } else if (message.data.type === "SAVE_REVISION") {
-      handleSaveRevisionMessage(client, message);
+      await handleSaveRevisionMessage(client, message);
     } else if (message.data.type === "CLIENT_MESSAGE" &&
                message.data.payload != null &&
                message.data.payload.type === "suggestUserName") {
@@ -284,7 +284,7 @@ exports.handleMessage = async function(client, message)
       messageLogger.warn("Dropped message, unknown COLLABROOM Data  Type " + message.data.type);
     }
   } else if(message.type === "SWITCH_TO_PAD") {
-    handleSwitchToPad(client, message);
+    await handleSwitchToPad(client, message);
   } else {
     messageLogger.warn("Dropped message, unknown Message Type " + message.type);
   }
@@ -347,14 +347,14 @@ exports.handleCustomMessage = function(padID, msgString) {
  * @param client the client that send this message
  * @param message the message from the client
  */
-function handleChatMessage(client, message)
+async function handleChatMessage(client, message)
 {
   var time = Date.now();
   var userId = sessioninfos[client.id].author;
   var text = message.data.text;
   var padId = sessioninfos[client.id].padId;
 
-  exports.sendChatMessageToPadClients(time, userId, text, padId);
+  await exports.sendChatMessageToPadClients(time, userId, text, padId);
 }
 
 /**
@@ -463,7 +463,7 @@ function handleSuggestUserName(client, message)
  * @param client the client that send this message
  * @param message the message from the client
  */
-function handleUserInfoUpdate(client, message)
+async function handleUserInfoUpdate(client, message)
 {
   // check if all ok
   if (message.data.userInfo == null) {
@@ -494,8 +494,10 @@ function handleUserInfoUpdate(client, message)
   }
 
   // Tell the authorManager about the new attributes
-  authorManager.setAuthorColorId(author, message.data.userInfo.colorId);
-  authorManager.setAuthorName(author, message.data.userInfo.name);
+  const p = Promise.all([
+    authorManager.setAuthorColorId(author, message.data.userInfo.colorId),
+    authorManager.setAuthorName(author, message.data.userInfo.name),
+  ]);
 
   var padId = session.padId;
 
@@ -517,6 +519,9 @@ function handleUserInfoUpdate(client, message)
 
   // Send the other clients on the pad the update message
   client.broadcast.to(padId).json.send(infoMsg);
+
+  // Block until the authorManager has stored the new attributes.
+  await p;
 }
 
 /**
@@ -813,7 +818,7 @@ function _correctMarkersInPad(atext, apool) {
   return builder.toString();
 }
 
-function handleSwitchToPad(client, message)
+async function handleSwitchToPad(client, message)
 {
   // clear the session and leave the room
   const currentSessionInfo = sessioninfos[client.id];
@@ -830,7 +835,7 @@ function handleSwitchToPad(client, message)
   // start up the new pad
   const newSessionInfo = sessioninfos[client.id];
   createSessionInfoAuth(newSessionInfo, message);
-  handleClientReady(client, message);
+  await handleClientReady(client, message);
 }
 
 // Creates/replaces the auth object in the given session info.

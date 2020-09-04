@@ -87,7 +87,7 @@ exports.setSocketIO = function(_socket) {
 
       if (clientAuthorized) {
         // client is authorized, everything ok
-        handleMessage(client, message);
+        await handleMessage(client, message);
       } else {
         // try to authorize the client
         if (message.padId !== undefined && message.sessionID !== undefined && message.token !== undefined && message.password !== undefined) {
@@ -104,7 +104,7 @@ exports.setSocketIO = function(_socket) {
           if (accessStatus === "grant") {
             // access was granted, mark the client as authorized and handle the message
             clientAuthorized = true;
-            handleMessage(client, message);
+            await handleMessage(client, message);
           } else {
             // no access, send the client a message that tells him why
             messageLogger.warn("Authentication try failed:" + stringifyWithoutPassword(message));
@@ -127,13 +127,13 @@ exports.setSocketIO = function(_socket) {
 }
 
 // try to handle the message of this client
-function handleMessage(client, message)
+async function handleMessage(client, message)
 {
   if (message.component && components[message.component]) {
     // check if component is registered in the components array
     if (components[message.component]) {
       messageLogger.debug("from " + client.id + ": " + stringifyWithoutPassword(message));
-      components[message.component].handleMessage(client, message);
+      await components[message.component].handleMessage(client, message);
     }
   } else {
     messageLogger.error("Can't route the message:" + stringifyWithoutPassword(message));
