@@ -28,8 +28,7 @@ env:
 
 jobs:
   include:
-    - if: fork = false
-      name: "Frontend Test"
+    - name: "Frontend Test"
       install:
         - "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/g' settings.json.template > settings.json"
         - "tests/frontend/travis/sauce_tunnel.sh"
