@@ -1,4 +1,3 @@
- WWCheng02/etherpad-lite:.travis.yml@783911e
 language: node_js
 
 node_js:
