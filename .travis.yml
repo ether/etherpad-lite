@@ -48,6 +48,6 @@ jobs:
 
 
 notifications:
-  # notify build results through email
+  # notify build results through email.
   email:
   - wonweicheng@gmail.com 
