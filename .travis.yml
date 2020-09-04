@@ -4,7 +4,7 @@ node_js:
   - "lts/*" # Most recent LTS version
   
 env:
-  - IMGNAME=WWCheng02/etherpadtest
+  - IMGNAME=etherpadtest
 
 services:
   - docker
