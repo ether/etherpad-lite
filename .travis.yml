@@ -4,7 +4,7 @@ node_js:
   - "lts/*" # Most recent LTS version
   
 env:
-  - IMGNAME=bradmorg/node:10-buster-file
+  - IMGNAME=WWCheng02/node:latest
 
 services:
   - docker
