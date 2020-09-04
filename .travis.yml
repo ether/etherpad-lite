@@ -2,9 +2,6 @@ language: node_js
 
 node_js:
   - "lts/*" # Most recent LTS version
-  
-env:
-  - IMGNAME=WWCheng02/node:latest
 
 services:
   - docker
@@ -17,7 +14,7 @@ before_install:
   - sudo apt-get update # update package
   - sudo apt-get -y install libreoffice # install libreoffice
   - sudo apt-get -y install libreoffice-pdfimport # install pdf import component for LibreOffice
-  - docker image build -t ${IMGNAME} .
+  - docker image build -t etherpadtest .
   
 ## install dependecy required
 install:
