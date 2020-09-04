@@ -17,7 +17,7 @@ before_install:
   - sudo apt-get update # update package
   - sudo apt-get -y install libreoffice # install libreoffice
   - sudo apt-get -y install libreoffice-pdfimport # install pdf import component for LibreOffice
-  - docker image build -t $(IMGNAME) .
+  - docker image build -t ${IMGNAME} .
   
 ## install dependecy required
 install:
