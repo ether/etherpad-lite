@@ -6,9 +6,6 @@ node_js:
 services:
   - docker
 
-# set up Linux focal environment
-dist: focal
-
 cache: false
 
 ## before install phase, install Libreoffice on Ubuntu
