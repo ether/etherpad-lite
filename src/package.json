@@ -94,7 +94,7 @@
     "test-contentcollector": "nyc mocha --timeout 5000 ../tests/backend/specs",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api",
     "report-coverage":"nyc report --reporter=text-lcov > coverage.lcov && codecov",
-    "coverage": "npm run pretest && jest --coverage && cat ./coverage/lcov.info | coveralls"
+    "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls"
     
   },
   "version": "1.8.4",
