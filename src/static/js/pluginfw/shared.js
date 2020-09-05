@@ -39,7 +39,7 @@ function extractHooks(parts, hook_set_name, normalizer) {
        * a dependency of another plugin! Bah, pesky little details of
        * npm... */
       if (normalizer) {
-        hook_fn_name = normalizer(part, hook_fn_name);
+        hook_fn_name = normalizer(part, hook_fn_name, hook_name);
       }
 
       try {
