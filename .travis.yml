@@ -49,10 +49,6 @@ before_script:
 
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
-  
-parsers:
-  javascript:
-    enable_partials: yes
     
 notifications:
   # notify build and test results through email
