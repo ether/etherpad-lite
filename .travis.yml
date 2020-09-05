@@ -25,6 +25,7 @@ install:
   - "cd src && npm install && cd -"
   - "npm install -g etherpad-load-test"
   - "npm install nyc -g"
+  - "npm install -g codeclimate-test-reporter"
 
 jobs:
   include:
