@@ -9,24 +9,13 @@ node_js:
 
 dist: xenial
 
-cache: false
+cache:
+  directories:
+  - node_modules
 
 addons:
     code_climate:
         repo_token: "b67dd1cd08594692a4fb5f1b2f90d5e50fc1a2b2ba17ecd6c8b1814a1edc6665"
-
-before_script:
-  - npm install
-  - npm install nyc -g
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
-  - npm install -g jest
-  
- script: npm test
-  
-after_script:
-  - ./cc-test-reporter after-build -t lcov --exit-code $TRAVIS_TEST_RESULT
 
 ## before install phase, install Libreoffice on Ubuntu
 before_install:
@@ -40,6 +29,7 @@ install:
   - "bin/installDeps.sh"
   - "cd src && npm install && cd -"
   - "npm install -g etherpad-load-test"
+  - "npm install nyc -g"
 
 jobs:
   include:
@@ -49,6 +39,20 @@ jobs:
     - name: "Load test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
+        
+ before_script:
+  - npm install
+  - npm install nyc -g
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+  - npm install -g jest
+  
+script:
+- nyc --reporter=lcov npm run test
+  
+after_script:
+  - ./cc-test-reporter after-build -t lcov --exit-code $TRAVIS_TEST_RESULT
 
 notifications:
   # notify build and test results through email
