@@ -42,7 +42,6 @@
     "express": "4.17.1",
     "express-rate-limit": "5.1.1",
     "express-session": "1.17.1",
-    "jest": "^25.5.1",
     "find-root": "1.1.0",
     "formidable": "1.2.1",
     "graceful-fs": "4.2.4",
@@ -93,8 +92,7 @@
   "scripts": {
     "test": "nyc mocha --timeout 5000 ../tests/backend/specs/api",
     "test-contentcollector": "nyc mocha --timeout 5000 ../tests/backend/specs",
-    "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api",
-    "test": "jest --coverage"
+    "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api"
   },
   "version": "1.8.4",
   "license": "Apache-2.0"
