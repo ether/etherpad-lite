@@ -16,6 +16,7 @@ addons:
         repo_token: "b67dd1cd08594692a4fb5f1b2f90d5e50fc1a2b2ba17ecd6c8b1814a1edc6665"
         
 script: npm test
+
 before_script:
   - npm install
   - npm install nyc -g
@@ -24,7 +25,8 @@ before_script:
   - ./cc-test-reporter before-build
 after_script:
   - ./cc-test-reporter after-build -t lcov --exit-code $TRAVIS_TEST_RESULT
-  
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+
 after_success:
   - npm run coverage
   - npm run coveralls
