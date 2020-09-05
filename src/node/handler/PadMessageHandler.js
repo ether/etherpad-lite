@@ -199,30 +199,15 @@ exports.handleMessage = async function(client, message)
     return;
   }
 
-  async function handleMessageHook() {
-    // Allow plugins to bypass the readonly message blocker
-    let messages = await hooks.aCallAll("handleMessageSecurity", { client: client, message: message });
+  // Allow plugins to bypass the readonly message blocker
+  if ((await hooks.aCallAll('handleMessageSecurity', {client, message})).some((w) => w === true)) {
+    thisSession.readonly = false;
+  }
 
-    for (let message of messages) {
-      if (message === true) {
-        thisSession.readonly = false;
-        break;
-      }
-    }
-
-    let dropMessage = false;
-
-    // Call handleMessage hook. If a plugin returns null, the message will be dropped. Note that for all messages
-    // handleMessage will be called, even if the client is not authorized
-    messages = await hooks.aCallAll("handleMessage", { client: client, message: message });
-    for (let message of messages) {
-      if (message === null ) {
-        dropMessage = true;
-        break;
-      }
-    }
-
-    return dropMessage;
+  // Call handleMessage hook. If a plugin returns null, the message will be dropped. Note that for
+  // all messages handleMessage will be called, even if the client is not authorized
+  if ((await hooks.aCallAll('handleMessage', {client, message})).some((m) => m === null)) {
+    return;
   }
 
   function finalHandler() {
@@ -258,9 +243,6 @@ exports.handleMessage = async function(client, message)
       messageLogger.warn("Dropped message, unknown Message Type " + message.type);
     }
   }
-
-  let dropMessage = await handleMessageHook();
-  if (dropMessage) return;
 
   if (message.type === "CLIENT_READY") {
     // client tried to auth for the first time (first msg from the client)
