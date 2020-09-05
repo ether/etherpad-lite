@@ -259,19 +259,6 @@ exports.handleMessage = async function(client, message)
     }
   }
 
-  /*
-   * In a previous version of this code, an "if (message)" wrapped the
-   * following series of async calls  [now replaced with await calls]
-   * This ugly "!Boolean(message)" is a lame way to exactly negate the truthy
-   * condition and replace it with an early return, while being sure to leave
-   * the original behaviour unchanged.
-   *
-   * A shallower code could maybe make more evident latent logic errors.
-   */
-  if (!Boolean(message)) {
-    return;
-  }
-
   let dropMessage = await handleMessageHook();
   if (!dropMessage) {
 
