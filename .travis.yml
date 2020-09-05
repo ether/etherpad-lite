@@ -6,52 +6,14 @@ language: node_js
 
 node_js:
   - "lts/*" # Most recent LTS version,
-
-dist: xenial
-
-cache: false
-
-addons:
-    code_climate:
-        repo_token: "b67dd1cd08594692a4fb5f1b2f90d5e50fc1a2b2ba17ecd6c8b1814a1edc6665"
-
+  
 before_script:
-  - npm install
-  - npm install nyc -g
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
   - npm install -g jest
-  
 after_script:
-  - ./cc-test-reporter after-build -t lcov --exit-code $TRAVIS_TEST_RESULT
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
-
-after_success:
-  - npm run coverage
-  - npm run coveralls
-  
-## before install phase, install Libreoffice on Ubuntu
-before_install:
-  - sudo add-apt-repository -y ppa:libreoffice/ppa # install libreoffice through PPA
-  - sudo apt-get update # update package
-  - sudo apt-get -y install libreoffice # install libreoffice
-  - sudo apt-get -y install libreoffice-pdfimport # install pdf import component for LibreOffice
-  
-## install dependecy required
-install:
-  - "bin/installDeps.sh"
-  - "cd src && npm install && cd -"
-  - "npm install -g etherpad-load-test"
-
-jobs:
-  include:
-    - name: "Backend test"
-      script:
-        - "tests/frontend/travis/runnerBackend.sh"
-    - name: "Load test"
-      script:
-        - "tests/frontend/travis/runnerLoadTest.sh"
 
 notifications:
   # notify build and test results through email
