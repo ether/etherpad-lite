@@ -1168,7 +1168,7 @@ async function handleClientReady(client, message)
     }
 
     // call the clientVars-hook so plugins can modify them before they get sent to the client
-    let messages = await hooks.aCallAll("clientVars", { clientVars: clientVars, pad: pad });
+    let messages = await hooks.aCallAll('clientVars', {clientVars, pad, socket: client});
 
     // combine our old object with the new attributes from the hook
     for (let msg of messages) {
