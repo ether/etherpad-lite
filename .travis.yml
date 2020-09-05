@@ -1,7 +1,3 @@
-env:
-  global:
-    - COVERALLS_PARALLEL=true
-
 language: node_js
 
 node_js:
@@ -11,9 +7,6 @@ dist: xenial
 
 cache: none
 
-addons:
-    code_climate:
-        repo_token: "TzTLUIVycV01CI77QtAC9lvBBcQ9K5YqyURkRzBY9Y37jM+5mKPHCmeAD2I8evvipDLXMkL63Exb0LDQ7Pw0lpZi3xKl6rGTa4SQHq5Y0bbfQCBCjbv9Xe2qKjH2jz/fsK5e7ifr6j9FB4XBZguaCmX5ijhOOAhKE4PKHLI5+4Pm9TJgLsIGfgtdwRywwBO6i2uyD24CnTMaXwORIMqk8jas3ROBGB1o69L70Jrm/sDqhz/fYNRmOBJKS4rwAZRwZN65MkTNWaXvMQTRWIpQmL1QnqOh4nAPnxGshLaLsWonzsjBfADyI8pZARqgpRyM8Ox0ut5ZHHKoJwYT229IkDdSV4iPGd3ZoIVhKLA3dLYWVoQMUXd79Nr/mQPelN4aKwu1r77YdSVDm3Ku4Zecb3G2FC0izrB49+iX4dceebZo85XRgFL8oLdsA/veTkGZ2vWyBvyBzmDIddsMQOXv89FH/alcIOuVXbBMMJ3GTpvy+LvWiubEi2/aIFDW/EjE48RiRF4pEfLEcMsqsCdHpKGsJGSL/q7exgxVrAY6AmcvuYvrm/6n6PSpwWxiJJQbZzJOjWCvUaOH5JA9zX6DEVMvkHBV29Mr8DowAdsG8ChbkPSMb6XLoKuYF07NIznRArL0N/0kMPEHwy09+XTBdu39AS/jaXqXLG7yE+3AxR8="
 ## before install phase, install Libreoffice on Ubuntu
 before_install:
   - sudo add-apt-repository -y ppa:libreoffice/ppa # install libreoffice through PPA
@@ -26,10 +19,6 @@ install:
   - "bin/installDeps.sh"
   - "cd src && npm install && cd -"
   - "npm install -g etherpad-load-test"
-  - "npm install nyc -g"
-  - "npm install -g codeclimate-test-reporter"
-  - "npm install --save-dev codeclimate-test-reporter"
-  - "npm install coveralls --save-dev"
 
 jobs:
   include:
@@ -39,20 +28,7 @@ jobs:
     - name: "Load test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
-    - name: "coverall"
-      - script: npm run coverage
-        
-before_script:
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
-  
- script: cc-test-reporter format-coverage --prefix tests/frontend/travis
 
-after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
-  - odeclimate-test-reporter < coverage/lcov.info
-    
 notifications:
   # notify build and test results through email
   email:
