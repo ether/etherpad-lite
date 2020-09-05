@@ -210,40 +210,6 @@ exports.handleMessage = async function(client, message)
     return;
   }
 
-  function finalHandler() {
-    // Check what type of message we get and delegate to the other methods
-    if (message.type === "CLIENT_READY") {
-      handleClientReady(client, message);
-    } else if (message.type === "CHANGESET_REQ") {
-      handleChangesetRequest(client, message);
-    } else if(message.type === "COLLABROOM") {
-      if (thisSession.readonly) {
-        messageLogger.warn("Dropped message, COLLABROOM for readonly pad");
-      } else if (message.data.type === "USER_CHANGES") {
-        stats.counter('pendingEdits').inc()
-        padChannels.emit(message.padId, {client: client, message: message}); // add to pad queue
-      } else if (message.data.type === "USERINFO_UPDATE") {
-        handleUserInfoUpdate(client, message);
-      } else if (message.data.type === "CHAT_MESSAGE") {
-        handleChatMessage(client, message);
-      } else if (message.data.type === "GET_CHAT_MESSAGES") {
-        handleGetChatMessages(client, message);
-      } else if (message.data.type === "SAVE_REVISION") {
-        handleSaveRevisionMessage(client, message);
-      } else if (message.data.type === "CLIENT_MESSAGE" &&
-                 message.data.payload != null &&
-                 message.data.payload.type === "suggestUserName") {
-        handleSuggestUserName(client, message);
-      } else {
-        messageLogger.warn("Dropped message, unknown COLLABROOM Data  Type " + message.data.type);
-      }
-    } else if(message.type === "SWITCH_TO_PAD") {
-      handleSwitchToPad(client, message);
-    } else {
-      messageLogger.warn("Dropped message, unknown Message Type " + message.type);
-    }
-  }
-
   if (message.type === "CLIENT_READY") {
     // client tried to auth for the first time (first msg from the client)
     createSessionInfoAuth(client, message);
@@ -282,7 +248,38 @@ exports.handleMessage = async function(client, message)
   }
 
   // access was granted
-  finalHandler();
+
+  // Check what type of message we get and delegate to the other methods
+  if (message.type === "CLIENT_READY") {
+    handleClientReady(client, message);
+  } else if (message.type === "CHANGESET_REQ") {
+    handleChangesetRequest(client, message);
+  } else if(message.type === "COLLABROOM") {
+    if (thisSession.readonly) {
+      messageLogger.warn("Dropped message, COLLABROOM for readonly pad");
+    } else if (message.data.type === "USER_CHANGES") {
+      stats.counter('pendingEdits').inc()
+      padChannels.emit(message.padId, {client: client, message: message}); // add to pad queue
+    } else if (message.data.type === "USERINFO_UPDATE") {
+      handleUserInfoUpdate(client, message);
+    } else if (message.data.type === "CHAT_MESSAGE") {
+      handleChatMessage(client, message);
+    } else if (message.data.type === "GET_CHAT_MESSAGES") {
+      handleGetChatMessages(client, message);
+    } else if (message.data.type === "SAVE_REVISION") {
+      handleSaveRevisionMessage(client, message);
+    } else if (message.data.type === "CLIENT_MESSAGE" &&
+               message.data.payload != null &&
+               message.data.payload.type === "suggestUserName") {
+      handleSuggestUserName(client, message);
+    } else {
+      messageLogger.warn("Dropped message, unknown COLLABROOM Data  Type " + message.data.type);
+    }
+  } else if(message.type === "SWITCH_TO_PAD") {
+    handleSwitchToPad(client, message);
+  } else {
+    messageLogger.warn("Dropped message, unknown Message Type " + message.type);
+  }
 }
 
 
