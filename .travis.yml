@@ -36,11 +36,15 @@ jobs:
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
         
-script: istanbul cover tests/frontend/travis/runnerBackend.sh -- -R spec
 before_script:
-  - npm install codeclimate-test-reporter istanbul -g
+  - npm install
+  - npm install nyc -g
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+script: npm test
 after_script:
-  - codeclimate-test-reporter < ./coverage/lcov.info
+  - ./cc-test-reporter after-build -t lcov --exit-code $TRAVIS_TEST_RESULT
   
   
 notifications:
