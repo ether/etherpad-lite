@@ -19,7 +19,7 @@ install:
   - "bin/installDeps.sh"
   - "cd src && npm install && cd -"
   - "npm install -g etherpad-load-test"
-  - "npm install --save-dev coveralls"
+  -  "npm install --save-dev coveralls mocha-lcov-reporter"
   - "npm i nyc --save-dev"
 
 jobs:
