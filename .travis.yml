@@ -14,8 +14,6 @@ cache: false
 addons:
     code_climate:
         repo_token: "b67dd1cd08594692a4fb5f1b2f90d5e50fc1a2b2ba17ecd6c8b1814a1edc6665"
-        
-script: npm test
 
 before_script:
   - npm install
