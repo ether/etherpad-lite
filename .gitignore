@@ -22,3 +22,4 @@ out/
 .nyc_output
 ./package-lock.json
 .idea
+coverage/
