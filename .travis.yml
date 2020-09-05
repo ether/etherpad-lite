@@ -1,3 +1,7 @@
+env:
+  global:
+    - CC_TEST_REPORTER_ID=d655e4be5101b4de9b16f64d9d51c83835ef59d0297797f374b8598f57526642
+
 language: node_js
 
 node_js:
@@ -35,17 +39,17 @@ jobs:
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
 
-
-        
 before_script:
   - npm install
   - npm install nyc -g
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
+  
 script: 
 - npm run test
 - npm run report-coverage
+
 after_script:
   - ./cc-test-reporter after-build -t lcov --exit-code $TRAVIS_TEST_RESULT
   
