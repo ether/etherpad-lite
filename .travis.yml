@@ -30,9 +30,11 @@ jobs:
     - name: "Load test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
-    - name: "Test with coverage"
-      script:
-        - "npm run test-with-coverage"
+
+ script:
+  - npm run test -- --coverage
+  after_script:
+  - COVERALLS_REPO_TOKEN=$coveralls_repo_token npm run coveralls
   
 notifications:
   # notify build and test results through email
