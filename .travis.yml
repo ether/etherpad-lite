@@ -19,8 +19,8 @@ install:
   - "bin/installDeps.sh"
   - "cd src && npm install && cd -"
   - "npm install -g etherpad-load-test"
-  -  "npm install --save-dev coveralls mocha-lcov-reporter"
   - "npm i nyc --save-dev"
+  - "npm install --save-dev coveralls"
 
 jobs:
   include:
@@ -32,7 +32,7 @@ jobs:
         - "tests/frontend/travis/runnerLoadTest.sh"
 
 after_success:
-- npm run coveralls
+npm run coverage
   
 notifications:
   # notify build and test results through email
