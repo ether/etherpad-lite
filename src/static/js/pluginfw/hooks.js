@@ -34,14 +34,14 @@ exports.syncMapFirst = function (lst, fn) {
     result = fn(lst[i])
     if (result.length) return result;
   }
-  return undefined;
+  return [];
 }
 
 exports.mapFirst = function (lst, fn, cb) {
   var i = 0;
 
   var next = function () {
-    if (i >= lst.length) return cb(undefined);
+    if (i >= lst.length) return cb(null, []);
     fn(lst[i++], function (err, result) {
       if (err) return cb(err);
       if (result.length) return cb(null, result);
