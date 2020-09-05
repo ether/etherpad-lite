@@ -1,3 +1,7 @@
+env:
+  global:
+    - CC_TEST_REPORTER_ID=b67dd1cd08594692a4fb5f1b2f90d5e50fc1a2b2ba17ecd6c8b1814a1edc6665
+
 language: node_js
 
 node_js:
@@ -11,11 +15,15 @@ addons:
     code_climate:
         repo_token: "b67dd1cd08594692a4fb5f1b2f90d5e50fc1a2b2ba17ecd6c8b1814a1edc6665"
         
-script: ./node_modules/.bin/nyc --reporter=lcov ./node_modules/mocha/bin/mocha --require @babel/register
+script: npm test
 before_script:
-  - npm install codeclimate-test-reporter nyc -g
+  - npm install
+  - npm install nyc -g
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
 after_script:
-  - codeclimate-test-reporter < ./coverage/lcov.info
+  - ./cc-test-reporter after-build -t lcov --exit-code $TRAVIS_TEST_RESULT
 
 ## before install phase, install Libreoffice on Ubuntu
 before_install:
