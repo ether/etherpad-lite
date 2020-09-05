@@ -23,3 +23,6 @@ out/
 ./package-lock.json
 .idea
 coverage/
+.nyc_output
+coverage
+*.lcov
