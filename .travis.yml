@@ -1,7 +1,3 @@
-env:
-  global:
-    - CC_TEST_REPORTER_ID=d655e4be5101b4de9b16f64d9d51c83835ef59d0297797f374b8598f57526642
-
 language: node_js
 
 node_js:
@@ -13,7 +9,8 @@ cache: none
 
 addons:
     code_climate:
-        repo_token:"ZRJH/pSS42hmVAXU2ATizLRezASwie4io97LZzLdCshnLP3cP86NIjw1eM8689wxtqY0hOWtNF6jPGTTX3rb+NmHgICO9aJxxn1g0/31qBjOAf05GnpG/TGBn4HNGLfAlZSr0O0eFNjVClIWbES6S+Y9kSTGFtaMmODMEL39/YFC9ZhzmNtXiGzyjqFuSOotWSwTug+nx0yuzEeuWQMtB5acUIooBk31D55Yscic8gkaT7f5Pb2sTBw2AMkqlnSvWjFolyjDV5DPLeDPbNBsaF1Pora2e32FvZ4FfJUhkxtVxqnOL+4do9nKzAXxg4n6++LD6ZHlt/yInugFjwAlt8RZUHrbkXHoamfw0fF1KGykRrJcBXQTgDCo7FTaAFrA3skrcpOaJtERYum/IxsMOcdeqp7J71/hnRApK+1avm+e28WGDJ/a0vEloO9FOe7KyjkQSKH0dIIR71pq6oLMP11XDBanydRwiq8CcXuyBGd0uTHFylYMzJ7ssMJLENlPXsYT6FyZ13isZIV6bAaTB2YvMfIx/ctTjXveB722EX8QulMIQZF91oM6BsHF3ttWGhVy8aWd9z86T6Af1bFFUfDlhb7LvHL2QGizTjOydnK3DVZZsImQlX7yDvnZOWwYmEE6cH4yUsEvrnOqeqb7dKTzoH++5qo1fhYKsT9OGsE="
+        repo_token:  
+        secure: "ZRJH/pSS42hmVAXU2ATizLRezASwie4io97LZzLdCshnLP3cP86NIjw1eM8689wxtqY0hOWtNF6jPGTTX3rb+NmHgICO9aJxxn1g0/31qBjOAf05GnpG/TGBn4HNGLfAlZSr0O0eFNjVClIWbES6S+Y9kSTGFtaMmODMEL39/YFC9ZhzmNtXiGzyjqFuSOotWSwTug+nx0yuzEeuWQMtB5acUIooBk31D55Yscic8gkaT7f5Pb2sTBw2AMkqlnSvWjFolyjDV5DPLeDPbNBsaF1Pora2e32FvZ4FfJUhkxtVxqnOL+4do9nKzAXxg4n6++LD6ZHlt/yInugFjwAlt8RZUHrbkXHoamfw0fF1KGykRrJcBXQTgDCo7FTaAFrA3skrcpOaJtERYum/IxsMOcdeqp7J71/hnRApK+1avm+e28WGDJ/a0vEloO9FOe7KyjkQSKH0dIIR71pq6oLMP11XDBanydRwiq8CcXuyBGd0uTHFylYMzJ7ssMJLENlPXsYT6FyZ13isZIV6bAaTB2YvMfIx/ctTjXveB722EX8QulMIQZF91oM6BsHF3ttWGhVy8aWd9z86T6Af1bFFUfDlhb7LvHL2QGizTjOydnK3DVZZsImQlX7yDvnZOWwYmEE6cH4yUsEvrnOqeqb7dKTzoH++5qo1fhYKsT9OGsE="
 
 ## before install phase, install Libreoffice on Ubuntu
 before_install:
@@ -27,9 +24,9 @@ install:
   - "bin/installDeps.sh"
   - "cd src && npm install && cd -"
   - "npm install -g etherpad-load-test"
-  - "npm install -g codecov"
   - "npm install nyc -g"
   - "npm install -g codeclimate-test-reporter"
+  - "npm install --save-dev codeclimate-test-reporter"
 
 jobs:
   include:
@@ -39,21 +36,19 @@ jobs:
     - name: "Load test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
-
+        
 before_script:
-- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-- chmod +x ./cc-test-reporter
-- ./cc-test-reporter before-build
-
-script:
-- nyc --reporter=lcov npm run test
-- istanbul cover ./node_modules/mocha/bin/_mocha --reporter lcovonly -- -R spec
-- codecov
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
 
 after_script:
-- ./cc-test-reporter after-build
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
   
-  
+parsers:
+  javascript:
+    enable_partials: yes
+    
 notifications:
   # notify build and test results through email
   email:
