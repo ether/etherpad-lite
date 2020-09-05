@@ -1,7 +1,3 @@
-env:
-  global:
-    - CC_TEST_REPORTER_ID=b67dd1cd08594692a4fb5f1b2f90d5e50fc1a2b2ba17ecd6c8b1814a1edc6665
-
 language: node_js
 
 node_js:
@@ -9,9 +5,7 @@ node_js:
 
 dist: xenial
 
-cache:
-  directories:
-  - node_modules
+cache: none
 
 addons:
     code_climate:
@@ -41,20 +35,13 @@ jobs:
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
         
- before_script:
-  - npm install
-  - npm install nyc -g
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
-  - npm install -g jest
-  
-script:
-- nyc --reporter=lcov npm run tests/frontend/travis/runnerBackend.sh
-  
+script: istanbul cover tests/frontend/travis/runnerBackend.sh -- -R spec
+before_script:
+  - npm install codeclimate-test-reporter istanbul -g
 after_script:
-  - ./cc-test-reporter after-build -t lcov --exit-code $TRAVIS_TEST_RESULT
-
+  - codeclimate-test-reporter < ./coverage/lcov.info
+  
+  
 notifications:
   # notify build and test results through email
   email:
