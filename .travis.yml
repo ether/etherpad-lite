@@ -27,6 +27,7 @@ install:
   - "bin/installDeps.sh"
   - "cd src && npm install && cd -"
   - "npm install -g etherpad-load-test"
+  - "npm install -g codecov"
   - "npm install nyc -g"
   - "npm install -g codeclimate-test-reporter"
 
@@ -46,7 +47,8 @@ before_script:
 
 script:
 - nyc --reporter=lcov npm run test
-- istanbul cover tests/frontend/travis/runnerBackend.sh-- -R spec
+- istanbul cover ./node_modules/mocha/bin/_mocha --reporter lcovonly -- -R spec
+- codecov
 
 after_script:
 - ./cc-test-reporter after-build
