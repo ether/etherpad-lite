@@ -50,7 +50,7 @@ jobs:
   - npm install -g jest
   
 script:
-- nyc --reporter=lcov npm run test
+- nyc --reporter=lcov npm run tests/frontend/travis/runnerBackend.sh
   
 after_script:
   - ./cc-test-reporter after-build -t lcov --exit-code $TRAVIS_TEST_RESULT
