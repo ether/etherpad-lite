@@ -40,18 +40,16 @@ jobs:
         - "tests/frontend/travis/runnerLoadTest.sh"
 
 before_script:
-  - npm install
-  - npm install nyc -g
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
-  
-script: 
-- npm run test
-- npm run report-coverage
+- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+- chmod +x ./cc-test-reporter
+- ./cc-test-reporter before-build
+
+script:
+- nyc --reporter=lcov npm run test
+- istanbul cover tests/frontend/travis/runnerBackend.sh-- -R spec
 
 after_script:
-  - ./cc-test-reporter after-build -t lcov --exit-code $TRAVIS_TEST_RESULT
+- ./cc-test-reporter after-build
   
   
 notifications:
