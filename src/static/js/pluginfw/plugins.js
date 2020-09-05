@@ -72,8 +72,12 @@ exports.callInit = function () {
   return Promise.all(p);
 }
 
-exports.pathNormalization = function (part, hook_fn_name) {
-  return path.normalize(path.join(path.dirname(exports.plugins[part.plugin].package.path), hook_fn_name));
+exports.pathNormalization = function (part, hook_fn_name, hook_name) {
+  const parts = hook_fn_name.split(':');
+  const functionName = (parts.length > 1) ? parts.pop() : hook_name;
+  const packageDir = path.dirname(exports.plugins[part.plugin].package.path);
+  const fileName = path.normalize(path.join(packageDir, parts.join(':')));
+  return fileName + ((functionName == null) ? '' : (':' + functionName));
 }
 
 exports.update = async function () {
