@@ -92,7 +92,8 @@
   "scripts": {
     "test": "nyc mocha --timeout 5000 ../tests/backend/specs/api",
     "test-contentcollector": "nyc mocha --timeout 5000 ../tests/backend/specs",
-    "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api"
+    "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api",
+    "coverage": "nyc npm run test"
   },
   "version": "1.8.4",
   "license": "Apache-2.0"
