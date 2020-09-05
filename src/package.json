@@ -91,6 +91,7 @@
   },
   "scripts": {
     "test": "nyc mocha --timeout 5000 ../tests/backend/specs/api",
+    "test-with-coverage": "nyc --reporter=text mocha",
     "test-contentcollector": "nyc mocha --timeout 5000 ../tests/backend/specs",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api",
     "report-coverage":"nyc report --reporter=text-lcov > coverage.lcov && codecov",
