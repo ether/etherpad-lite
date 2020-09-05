@@ -9,9 +9,7 @@ cache: none
 
 addons:
     code_climate:
-        repo_token:  
-        secure: "ZRJH/pSS42hmVAXU2ATizLRezASwie4io97LZzLdCshnLP3cP86NIjw1eM8689wxtqY0hOWtNF6jPGTTX3rb+NmHgICO9aJxxn1g0/31qBjOAf05GnpG/TGBn4HNGLfAlZSr0O0eFNjVClIWbES6S+Y9kSTGFtaMmODMEL39/YFC9ZhzmNtXiGzyjqFuSOotWSwTug+nx0yuzEeuWQMtB5acUIooBk31D55Yscic8gkaT7f5Pb2sTBw2AMkqlnSvWjFolyjDV5DPLeDPbNBsaF1Pora2e32FvZ4FfJUhkxtVxqnOL+4do9nKzAXxg4n6++LD6ZHlt/yInugFjwAlt8RZUHrbkXHoamfw0fF1KGykRrJcBXQTgDCo7FTaAFrA3skrcpOaJtERYum/IxsMOcdeqp7J71/hnRApK+1avm+e28WGDJ/a0vEloO9FOe7KyjkQSKH0dIIR71pq6oLMP11XDBanydRwiq8CcXuyBGd0uTHFylYMzJ7ssMJLENlPXsYT6FyZ13isZIV6bAaTB2YvMfIx/ctTjXveB722EX8QulMIQZF91oM6BsHF3ttWGhVy8aWd9z86T6Af1bFFUfDlhb7LvHL2QGizTjOydnK3DVZZsImQlX7yDvnZOWwYmEE6cH4yUsEvrnOqeqb7dKTzoH++5qo1fhYKsT9OGsE="
-
+        repo_token: "d655e4be5101b4de9b16f64d9d51c83835ef59d0297797f374b8598f57526642"
 ## before install phase, install Libreoffice on Ubuntu
 before_install:
   - sudo add-apt-repository -y ppa:libreoffice/ppa # install libreoffice through PPA
