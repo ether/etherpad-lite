@@ -1,3 +1,7 @@
+env:
+  global:
+    - COVERALLS_PARALLEL=true
+
 language: node_js
 
 node_js:
@@ -25,6 +29,7 @@ install:
   - "npm install nyc -g"
   - "npm install -g codeclimate-test-reporter"
   - "npm install --save-dev codeclimate-test-reporter"
+  - "npm install coveralls --save-dev"
 
 jobs:
   include:
@@ -34,6 +39,8 @@ jobs:
     - name: "Load test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
+    - name: "coverall"
+      - script: COVERALLS_FLAG_NAME=test-1 make test-coveralls-1
         
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
