@@ -24,7 +24,11 @@ before_script:
   - ./cc-test-reporter before-build
 after_script:
   - ./cc-test-reporter after-build -t lcov --exit-code $TRAVIS_TEST_RESULT
-
+  
+after_success:
+  - npm run coverage
+  - npm run coveralls
+  
 ## before install phase, install Libreoffice on Ubuntu
 before_install:
   - sudo add-apt-repository -y ppa:libreoffice/ppa # install libreoffice through PPA
