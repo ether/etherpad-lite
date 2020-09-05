@@ -7,6 +7,16 @@ dist: xenial
 
 cache: false
 
+addons:
+    code_climate:
+        repo_token: "b67dd1cd08594692a4fb5f1b2f90d5e50fc1a2b2ba17ecd6c8b1814a1edc6665"
+        
+script: ./node_modules/.bin/nyc --reporter=lcov ./node_modules/mocha/bin/mocha --require @babel/register
+before_script:
+  - npm install codeclimate-test-reporter nyc -g
+after_script:
+  - codeclimate-test-reporter < ./coverage/lcov.info
+
 ## before install phase, install Libreoffice on Ubuntu
 before_install:
   - sudo add-apt-repository -y ppa:libreoffice/ppa # install libreoffice through PPA
@@ -32,4 +42,4 @@ jobs:
 notifications:
   # notify build and test results through email
   email:
-  - wonweicheng@gmail.com 
+  - geminientan@hotmail.com 
