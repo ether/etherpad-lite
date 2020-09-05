@@ -23,6 +23,8 @@ before_script:
   - ./cc-test-reporter before-build
   - npm install -g jest
   
+ script: npm test
+  
 after_script:
   - ./cc-test-reporter after-build -t lcov --exit-code $TRAVIS_TEST_RESULT
 
