@@ -32,7 +32,7 @@ jobs:
         - "tests/frontend/travis/runnerLoadTest.sh"
 
 after_success:
-  - "npm run coverage"
+  - npm run coverage
 
 notifications:
   # notify build and test results through email
