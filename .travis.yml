@@ -5,7 +5,7 @@ node_js:
 
 dist: xenial
 
-cache: none
+cache: false
 
 ## before install phase, install Libreoffice on Ubuntu
 before_install:
@@ -19,9 +19,6 @@ install:
   - "bin/installDeps.sh"
   - "cd src && npm install && cd -"
   - "npm install -g etherpad-load-test"
-  - "npm i nyc --save-dev"
-  - "npm install --save-dev coveralls"
-  - "npm install --save-dev jest"
 
 jobs:
   include:
