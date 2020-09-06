@@ -29,7 +29,7 @@ jobs:
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
 script: 
-- "npm run test:coveralls"
+- "npm run coveralls"
 
 notifications:
   # notify build and test results through email
