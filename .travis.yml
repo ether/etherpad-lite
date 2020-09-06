@@ -30,14 +30,7 @@ jobs:
     - name: "Load test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
- #   - name: "Test reports"
-#      script:
- #       - istanbul cover ./tests/frontend/travis/runnerLoadTest.sh --reporter lcovonly -- -R spec
-  #      - codecov
-        
-
 after_script: 
-#    - bash <(curl -s https://codecov.io/bash)
     - npm run coverage
     
 notifications:
