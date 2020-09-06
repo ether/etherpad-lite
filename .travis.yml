@@ -23,6 +23,7 @@ install:
   - "npm install -g etherpad-load-test"
   - "npm install -g istanbul"
 
+
 jobs:
   include:
     - name: "Backend test"
@@ -33,7 +34,7 @@ jobs:
         - "tests/frontend/travis/runnerLoadTest.sh"
         
 after_script: 
-    - coverage
+    - "npm run coverage"
     
 notifications:
   # notify build and test results through email
