@@ -28,12 +28,6 @@ jobs:
     - name: "Load test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
-    - name: "Produce Coverage"
-      script:
-        - "jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
-
-after_success:
-npm run coverage
   
 notifications:
   # notify build and test results through email
