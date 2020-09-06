@@ -17,7 +17,7 @@ describe('Responsiveness of Editor', function() {
   // create a new pad before each test run
   beforeEach(function(cb) {
     helper.newPad(cb);
-    this.timeout(6000);
+    // this.timeout(6000);
   });
   it('Fast response to keypress in pad with large amount of contents', function(done) {
     var inner$ = helper.padInner$;
@@ -26,7 +26,7 @@ describe('Responsiveness of Editor', function() {
     var amount = 200000; //number of blocks of chars we will insert
     var length = (amount * (chars.length) +1); // include a counter for each space
     var text = ''; // the text we're gonna insert
-    this.timeout(amount * 100);
+    // this.timeout(amount * 100);
 
     // get keys to send
     var keyMultiplier = 10; // multiplier * 10 == total number of key events
