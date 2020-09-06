@@ -5,7 +5,9 @@ node_js:
 
 dist: xenial
 
-cache: false
+cache: 
+ directories:
+    - "node_modules"
 
 ## before install phase, install Libreoffice on Ubuntu
 before_install:
