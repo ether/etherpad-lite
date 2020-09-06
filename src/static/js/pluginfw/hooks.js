@@ -1,4 +1,5 @@
 var _ = require("underscore");
+var pluginDefs = require('./plugin_defs');
 
 exports.bubbleExceptions = true
 
@@ -69,20 +70,18 @@ exports.flatten = function (lst) {
 
 exports.callAll = function (hook_name, args) {
   if (!args) args = {};
-  if (exports.plugins){
-    if (exports.plugins.hooks[hook_name] === undefined) return [];
-    return _.flatten(_.map(exports.plugins.hooks[hook_name], function (hook) {
-      return hookCallWrapper(hook, hook_name, args);
-    }), true);
-  }
+  if (pluginDefs.hooks[hook_name] === undefined) return [];
+  return _.flatten(_.map(pluginDefs.hooks[hook_name], function(hook) {
+    return hookCallWrapper(hook, hook_name, args);
+  }), true);
 }
 
 async function aCallAll(hook_name, args, cb) {
   if (!args) args = {};
   if (!cb) cb = function () {};
-  if (exports.plugins.hooks[hook_name] === undefined) return cb(null, []);
+  if (pluginDefs.hooks[hook_name] === undefined) return cb(null, []);
 
-  var hooksPromises = exports.plugins.hooks[hook_name].map(async function(hook, index){
+  var hooksPromises = pluginDefs.hooks[hook_name].map(async function(hook, index) {
     return await hookCallWrapper(hook, hook_name, args, function (res) {
       return Promise.resolve(res);
     });
@@ -114,8 +113,8 @@ exports.aCallAll = function (hook_name, args, cb) {
 
 exports.callFirst = function (hook_name, args) {
   if (!args) args = {};
-  if (exports.plugins.hooks[hook_name] === undefined) return [];
-  return exports.syncMapFirst(exports.plugins.hooks[hook_name], function (hook) {
+  if (pluginDefs.hooks[hook_name] === undefined) return [];
+  return exports.syncMapFirst(pluginDefs.hooks[hook_name], function(hook) {
     return hookCallWrapper(hook, hook_name, args);
   });
 }
@@ -123,9 +122,9 @@ exports.callFirst = function (hook_name, args) {
 function aCallFirst(hook_name, args, cb) {
   if (!args) args = {};
   if (!cb) cb = function () {};
-  if (exports.plugins.hooks[hook_name] === undefined) return cb(null, []);
+  if (pluginDefs.hooks[hook_name] === undefined) return cb(null, []);
   exports.mapFirst(
-    exports.plugins.hooks[hook_name],
+    pluginDefs.hooks[hook_name],
     function (hook, cb) {
       hookCallWrapper(hook, hook_name, args, function (res) { cb(null, res); });
     },
@@ -156,30 +155,4 @@ exports.callAllStr = function(hook_name, args, sep, pre, post) {
     newCallhooks[i] = pre + callhooks[i] + post;
   }
   return newCallhooks.join(sep || "");
-}
-
-/*
- * Returns an array containing the names of the installed client-side plugins
- *
- * If no client-side plugins are installed, returns an empty array.
- * Duplicate names are always discarded.
- *
- * A client-side plugin is a plugin that implements at least one client_hook
- *
- * EXAMPLE:
- *   No plugins:   []
- *   Some plugins: [ 'ep_adminpads', 'ep_add_buttons', 'ep_activepads' ]
- */
-exports.clientPluginNames = function() {
-  if (!(exports.plugins)) {
-    return [];
-  }
-
-  var client_plugin_names = _.uniq(
-    exports.plugins.parts
-      .filter(function(part) { return part.hasOwnProperty('client_hooks'); })
-      .map(function(part) { return 'plugin-' + part['plugin']; })
-  );
-
-  return client_plugin_names;
 }
