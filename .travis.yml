@@ -21,6 +21,7 @@ install:
   - "npm install -g etherpad-load-test"
   - "npm install -g istanbul"
   - "npm install -g codecov"
+  - "npm install mocha-lcov-reporter --save-dev"
 
 jobs:
   include:
@@ -30,15 +31,15 @@ jobs:
     - name: "Load test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
-    - name: "Test reports"
-      script:
-        - istanbul cover ./tests/frontend/travis/runnerLoadTest.sh --reporter lcovonly -- -R spec
-        - codecov
+ #   - name: "Test reports"
+#      script:
+ #       - istanbul cover ./tests/frontend/travis/runnerLoadTest.sh --reporter lcovonly -- -R spec
+  #      - codecov
         
 
 after_script: 
-    - bash <(curl -s https://codecov.io/bash)
-    - "npm run coverage"
+#    - bash <(curl -s https://codecov.io/bash)
+    - npm run coverage
     
 notifications:
   # notify build and test results through email
