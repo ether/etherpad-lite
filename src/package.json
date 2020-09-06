@@ -75,6 +75,8 @@
     "etherpad-lite": "./node/server.js"
   },
   "devDependencies": {
+    "coveralls": "^3.1.0",
+    "jest": "^26.4.2",
     "mocha": "7.1.2",
     "mocha-froth": "^0.2.10",
     "nyc": "15.0.1",
@@ -95,7 +97,6 @@
     "test-contentcollector": "nyc mocha --timeout 5000 ../tests/backend/specs",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api",
     "coverage": "npm run test && jest --coverage && cat ./coverage/lcov.info | coveralls"
-    
   },
   "version": "1.8.4",
   "license": "Apache-2.0"
