@@ -96,7 +96,7 @@
     "test-with-coverage": "nyc --reporter=lcov --reporter=text mocha",
     "test-contentcollector": "nyc mocha --timeout 5000 ../tests/backend/specs",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api",
-    "coverage": "npm run test && jest --coverage && cat ./coverage/lcov.info | coveralls"
+    "coverage": "nyc mocha --timeout 5000 ../tests/backend/specs/api && jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "version": "1.8.4",
   "license": "Apache-2.0"
