@@ -92,11 +92,10 @@
     "url": "https://github.com/ether/etherpad-lite.git"
   },
   "scripts": {
-    "test": "nyc mocha --timeout 5000 ../tests/backend/specs/api",
-    "test-with-coverage": "nyc --reporter=lcov --reporter=text mocha",
+    "test": "nyc --reporter=html --reporter=text mocha --timeout 5000 ../tests/backend/specs/api",
+    "coverage": "nyc --reporter=lcov --reporter=text mocha",
     "test-contentcollector": "nyc mocha --timeout 5000 ../tests/backend/specs",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api",
-    "coverage": "nyc mocha --timeout 5000 ../tests/backend/specs/api && jest --coverage && cat ./coverage/lcov.info | coveralls"
     "test-cov": "istanbul cover ./tests/frontend/travis/runnerLoadTest.sh"
   },
   "version": "1.8.4",
