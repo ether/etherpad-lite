@@ -94,10 +94,9 @@
   },
   "scripts": {
     "test": "nyc --reporter=html --reporter=text mocha --timeout 5000 ../tests/backend/specs/api",
-    "coverage": "nyc --reporter=lcov --reporter=text mocha",
+    "coverage": "nyc --reporter=lcov --reporter=text mocha --timeout 5000 ../tests/backend/specs",
     "test-contentcollector": "nyc mocha --timeout 5000 ../tests/backend/specs",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api",
-    "test-cov": "istanbul cover ./tests/frontend/travis/runnerLoadTest.sh"
   },
   "version": "1.8.4",
   "license": "Apache-2.0"
