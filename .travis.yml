@@ -29,8 +29,6 @@ jobs:
     - name: "Load test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
-
-after_script: "npm run coverage"
     
 notifications:
   # notify build and test results through email
