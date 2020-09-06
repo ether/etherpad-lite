@@ -20,7 +20,6 @@ install:
   - "cd src && npm install && cd -"
   - "npm install -g etherpad-load-test"
   - "npm install -g istanbul"
-  - "npm install mocha-lcov-reporter --save-dev"
 
 jobs:
   include:
@@ -30,9 +29,6 @@ jobs:
     - name: "Load test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
-
-after_success:
-  - "npm run coverage"
 
 notifications:
   # notify build and test results through email
