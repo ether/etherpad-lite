@@ -19,6 +19,10 @@ install:
   - "bin/installDeps.sh"
   - "cd src && npm install && cd -"
   - "npm install -g etherpad-load-test"
+<<<<<<< HEAD
+=======
+  - "npm install -g istanbul"
+>>>>>>> d089f55bc65fc9a50cb21a941be65179d1c6487d
 
 jobs:
   include:
@@ -28,9 +32,15 @@ jobs:
     - name: "Load test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
+<<<<<<< HEAD
 
 after_script: 
     - npm run coverage
+=======
+        
+after_script: 
+     "npm run coverage"
+>>>>>>> d089f55bc65fc9a50cb21a941be65179d1c6487d
     
 notifications:
   # notify build and test results through email
