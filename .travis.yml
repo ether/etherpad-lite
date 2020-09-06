@@ -19,6 +19,7 @@ install:
   - "bin/installDeps.sh"
   - "cd src && npm install && cd -"
   - "npm install -g etherpad-load-test"
+  - "npm install -g istanbul"
   - "npm install -g codecov"
 
 jobs:
