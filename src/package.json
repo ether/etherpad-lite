@@ -76,6 +76,7 @@
   },
   "devDependencies": {
     "coveralls": "^3.1.0",
+    "i": "^0.3.6",
     "jest": "^26.4.2",
     "mocha": "7.1.2",
     "mocha-froth": "^0.2.10",
