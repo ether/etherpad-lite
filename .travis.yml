@@ -35,9 +35,11 @@ jobs:
         - istanbul cover ./tests/frontend/travis/runnerLoadTest.sh --reporter lcovonly -- -R spec
         - codecov
         
-after_success: 
-    - bash <(curl -s https://codecov.io/bash)
 
+after_script: 
+    - bash <(curl -s https://codecov.io/bash)
+    - "npm run coverage"
+    
 notifications:
   # notify build and test results through email
   email:
