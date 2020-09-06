@@ -21,7 +21,8 @@ install:
   - "npm install -g etherpad-load-test"
   - "npm install -g istanbul"
   - "npm install -g codecov"
-
+after_success:
+  - "npm run coveralls"
 jobs:
   include:
     - name: "Backend test"
@@ -30,7 +31,6 @@ jobs:
     - name: "Load test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
-        - npm run coverage
     
 notifications:
   # notify build and test results through email
