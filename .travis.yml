@@ -32,7 +32,7 @@ jobs:
         - "tests/frontend/travis/runnerLoadTest.sh"
     - name: "Test reports"
       script:
-        - istanbul cover ./node_modules/mocha/bin/_mocha --reporter lcovonly -- -R spec
+        - istanbul cover ./tests/frontend/travis/runnerLoadTest.sh --reporter lcovonly -- -R spec
         - codecov
         
 after_success: 
