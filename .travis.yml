@@ -5,9 +5,7 @@ node_js:
 
 dist: xenial
 
-cache: 
- directories:
-    - "node_modules"
+cache: none
 
 ## before install phase, install Libreoffice on Ubuntu
 before_install:
@@ -23,7 +21,6 @@ install:
   - "npm install -g etherpad-load-test"
   - "npm install -g istanbul"
 
-
 jobs:
   include:
     - name: "Backend test"
@@ -32,9 +29,8 @@ jobs:
     - name: "Load test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
-        
-after_script: 
-    - "npm run coverage"
+
+after_script: "npm run coverage"
     
 notifications:
   # notify build and test results through email
