@@ -82,7 +82,7 @@ exports.pathNormalization = function (part, hook_fn_name, hook_name) {
 
 exports.update = async function () {
   let packages = await exports.getPackages();
-  var parts = [];
+  var parts = {}; // Key is full name. sortParts converts this into a topologically sorted array.
   var plugins = {};
 
   // Load plugin metadata ep.json
