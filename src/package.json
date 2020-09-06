@@ -79,6 +79,7 @@
     "jest": "^26.4.2",
     "mocha": "7.1.2",
     "mocha-froth": "^0.2.10",
+    "mocha-lcov-reporter": "^1.3.0",
     "nyc": "15.0.1",
     "supertest": "4.0.2",
     "wd": "1.12.1"
