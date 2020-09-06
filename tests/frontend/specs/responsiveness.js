@@ -17,7 +17,7 @@ describe('Responsiveness of Editor', function() {
   // create a new pad before each test run
   beforeEach(function(cb) {
     helper.newPad(cb);
-    // this.timeout(6000);
+    this.timeout(6000);
   });
   it('Fast response to keypress in pad with large amount of contents', function(done) {
     var inner$ = helper.padInner$;
