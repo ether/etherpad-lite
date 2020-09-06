@@ -72,6 +72,7 @@
   , "security.js"
   , "$security.js"
   , "pluginfw/client_plugins.js"
+  , "pluginfw/plugin_defs.js"
   , "pluginfw/shared.js"
   , "pluginfw/hooks.js"
   ]

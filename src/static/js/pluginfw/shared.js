@@ -1,4 +1,5 @@
 var _ = require("underscore");
+var defs = require('./plugin_defs');
 
 function loadFn(path, hookName) {
   var functionName
@@ -59,3 +60,25 @@ function extractHooks(parts, hook_set_name, normalizer) {
 };
 
 exports.extractHooks = extractHooks;
+
+/*
+ * Returns an array containing the names of the installed client-side plugins
+ *
+ * If no client-side plugins are installed, returns an empty array.
+ * Duplicate names are always discarded.
+ *
+ * A client-side plugin is a plugin that implements at least one client_hook
+ *
+ * EXAMPLE:
+ *   No plugins:   []
+ *   Some plugins: [ 'ep_adminpads', 'ep_add_buttons', 'ep_activepads' ]
+ */
+exports.clientPluginNames = function() {
+  var client_plugin_names = _.uniq(
+    defs.parts
+      .filter(function(part) { return part.hasOwnProperty('client_hooks'); })
+      .map(function(part) { return 'plugin-' + part['plugin']; })
+  );
+
+  return client_plugin_names;
+}

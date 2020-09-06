@@ -21,7 +21,6 @@
  */
 
 // requires: top
-// requires: plugins
 // requires: undefined
 
 var KERNEL_SOURCE = '../static/js/require-kernel.js';
@@ -31,6 +30,7 @@ Ace2Editor.registry = {
 };
 
 var hooks = require('./pluginfw/hooks');
+var pluginUtils = require('./pluginfw/shared');
 var _ = require('./underscore');
 
 function scriptTag(source) {
@@ -263,9 +263,7 @@ require.setRootURI("../javascripts/src");\n\
 require.setLibraryURI("../javascripts/lib");\n\
 require.setGlobalKeyPath("require");\n\
 \n\
-var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");\n\
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/client_plugins");\n\
-hooks.plugins = plugins;\n\
 plugins.adoptPluginsFromAncestorsOf(window);\n\
 \n\
 $ = jQuery = require("ep_etherpad-lite/static/js/rjquery").jQuery; // Expose jQuery #HACK\n\
@@ -337,7 +335,16 @@ window.onload = function () {\n\
 
       // bizarrely, in FF2, a file with no "external" dependencies won't finish loading properly
       // (throbs busy while typing)
-      outerHTML.push('<style type="text/css" title="dynamicsyntax"></style>', '<link rel="stylesheet" type="text/css" href="data:text/css,"/>', scriptTag(outerScript), '</head><body id="outerdocbody" class="outerdocbody ', hooks.clientPluginNames().join(' '),'"><div id="sidediv" class="sidediv"><!-- --></div><div id="linemetricsdiv">x</div></body></html>');
+      var pluginNames = pluginUtils.clientPluginNames();
+      outerHTML.push(
+          '<style type="text/css" title="dynamicsyntax"></style>',
+          '<link rel="stylesheet" type="text/css" href="data:text/css,"/>',
+          scriptTag(outerScript),
+          '</head>',
+          '<body id="outerdocbody" class="outerdocbody ', pluginNames.join(' '), '">',
+          '<div id="sidediv" class="sidediv"><!-- --></div>',
+          '<div id="linemetricsdiv">x</div>',
+          '</body></html>');
 
       var outerFrame = document.createElement("IFRAME");
       outerFrame.name = "ace_outer";

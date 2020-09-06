@@ -1,13 +1,13 @@
 <%
   var settings = require("ep_etherpad-lite/node/utils/Settings")
-    , hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks')
     , langs = require("ep_etherpad-lite/node/hooks/i18n").availableLangs
+    , pluginUtils = require('ep_etherpad-lite/static/js/pluginfw/shared')
     ;
 %>
 <!doctype html>
 
 <% e.begin_block("htmlHead"); %>
-<html class="<%=hooks.clientPluginNames().join(' '); %> <%=settings.skinVariants%>">
+<html class="<%=pluginUtils.clientPluginNames().join(' '); %> <%=settings.skinVariants%>">
 <% e.end_block(); %>
 
   <title><%=settings.title%></title>
@@ -488,8 +488,6 @@
 
         plugins.baseURL = baseURL;
         plugins.update(function () {
-          hooks.plugins = plugins;
-
           // Call documentReady hook
           $(function() {
             hooks.aCallAll('documentReady');
