@@ -21,6 +21,7 @@ install:
   - "npm install -g etherpad-load-test"
   - "npm i nyc --save-dev"
   - "npm install --save-dev coveralls"
+  - "npm install --save-dev jest"
 
 jobs:
   include:
@@ -30,6 +31,9 @@ jobs:
     - name: "Load test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
+    - name: "Coverage"
+     script: 
+        - "est --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
 
 after_success:
 npm run coverage
