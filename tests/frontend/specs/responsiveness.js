@@ -68,7 +68,7 @@ describe('Responsiveness of Editor', function() {
         var end = Date.now(); // get the current time
         var delay = end - start; // get the delay as the current time minus the start time
 
-        expect(delay).to.be.below(300);
+        expect(delay).to.be.below(1000);
         done();
       }, 1000);
 
