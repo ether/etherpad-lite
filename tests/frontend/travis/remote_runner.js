@@ -59,7 +59,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
        */
       var timeout = setTimeout(function(){
         stopSauce(false,true);
-      }, 30000); // travis timeout is 10 minutes, set this to a slightly lower value
+      }, 90000); // travis timeout is 10 minutes, set this to a slightly lower value
 
       var knownConsoleText = "";
       var getStatusInterval = setInterval(function(){
