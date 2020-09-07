@@ -36,7 +36,6 @@ var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 var channels = require("channels");
 var stats = require('../stats');
 var remoteAddress = require("../utils/RemoteAddress").remoteAddress;
-const assert = require('assert').strict;
 const nodeify = require("nodeify");
 const { RateLimiterMemory } = require('rate-limiter-flexible');
 
@@ -902,14 +901,10 @@ async function handleClientReady(client, message)
   // Get ro/rw id:s
   let padIds = await readOnlyManager.getIds(message.padId);
 
-  // Check permissions. Notes:
-  //   * If there is not already an author associated with the client-generated token, and access is
-  //     not denied, checkAccess will create an author object (including generating an author ID)
-  //     and save it in the DB.
-  //   * Tokens must be kept secret, otherwise users will able to impersonate each other (which
-  //     might allow them to gain privileges).
-  //   * message.sessionID is an entierly different kind of session from the sessions we use here!
-  //     Beware!
+  // check permissions
+
+  // Note: message.sessionID is an entierly different kind of
+  // session from the sessions we use here! Beware!
   // FIXME: Call our "sessions" "connections".
   // FIXME: Use a hook instead
   // FIXME: Allow to override readwrite access with readonly
@@ -925,10 +920,18 @@ async function handleClientReady(client, message)
   let author = statusObject.authorID;
 
   // get all authordata of this new user
-  assert(author);
   let value = await authorManager.getAuthor(author);
   let authorColorId = value.colorId;
   let authorName = value.name;
+
+  /*
+  * Here we know authorID, token and session.  We should ?always? store it..
+  * TODO: I fear that this might allow a user to pass a token for an authorID
+  * meaning that they could in theory "imitate" another author?
+  * Perhaps the fix to this is check to see if it exists first and if it
+  * does then abort..  Details: https://github.com/ether/etherpad-lite/issues/4006
+  */
+  await authorManager.setToken2Author(message.token, statusObject.authorID)
 
   // load the pad-object from the database
   let pad = await padManager.getPad(padIds.padId);
