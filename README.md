@@ -1,5 +1,5 @@
 # A real-time collaborative editor for the web
-#<a href="https://hub.docker.com/r/etherpad/etherpad"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/etherpad/etherpad"></a>
+<!--<a href="https://hub.docker.com/r/etherpad/etherpad"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/etherpad/etherpad"></a>-->
 <a href='https://coveralls.io/github/WWCheng02/etherpad-lite?branch=develop'><img src='https://coveralls.io/repos/github/WWCheng02/etherpad-lite/badge.svg?branch=develop' alt='Coverage Status' /></a>
 [![Travis (.org)](https://travis-ci.com/WWCheng02/etherpad-lite.svg?branch=develop)](https://travis-ci.com/WWCheng02/etherpad-lite.svg?branch=develop)
 
