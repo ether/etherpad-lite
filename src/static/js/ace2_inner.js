@@ -5224,53 +5224,53 @@ function Ace2Inner(){
     $(sideDiv).addClass("sidediv");
   }
 
+  // We apply the height of a line in the doc body, to the corresponding sidediv line number
   function updateLineNumbers()
   {
+    if (!currentCallStack || currentCallStack && !currentCallStack.domClean) return;
+
+    // Refs #4228, to avoid layout trashing, we need to first calculate all the heights,
+    // and then apply at once all new height to div elements
+    var lineHeights = [];
+    var docLine = doc.body.firstChild;
+    var currentLine = 0;
+    var h = null;
+
+    // First loop to calculate the heights from doc body
+    while (docLine)
+    {
+      if (docLine.nextSibling) {
+        if (currentLine === 0) {
+          // It's the first line. For line number alignment purposes, its
+          // height is taken to be the top offset of the next line. If we
+          // didn't do this special case, we would miss out on any top margin
+          // included on the first line. The default stylesheet doesn't add
+          // extra margins/padding, but plugins might.
+          h = docLine.nextSibling.offsetTop - parseInt(window.getComputedStyle(doc.body).getPropertyValue("padding-top").split('px')[0]);
+        } else {
+          h = docLine.nextSibling.offsetTop - docLine.offsetTop;
+        }
+      } else {
+        // last line
+        h = (docLine.clientHeight || docLine.offsetHeight);
+      }
+      lineHeights.push(h)
+      docLine = docLine.nextSibling;
+      currentLine++;
+    }
+
     var newNumLines = rep.lines.length();
     if (newNumLines < 1) newNumLines = 1;
-    //update height of all current line numbers
+    var sidebarLine = sideDivInner.firstChild;
 
-    var a = sideDivInner.firstChild;
-    var b = doc.body.firstChild;
-    var n = 0;
-
-    if (currentCallStack && currentCallStack.domClean)
-    {
-
-      while (a && b)
-      {
-        if(n > lineNumbersShown) //all updated, break
-        break;
-        var h = (b.clientHeight || b.offsetHeight);
-        if (b.nextSibling)
-        {
-          // when text is zoomed in mozilla, divs have fractional
-          // heights (though the properties are always integers)
-          // and the line-numbers don't line up unless we pay
-          // attention to where the divs are actually placed...
-          // (also: padding on TTs/SPANs in IE...)
-          if (b === doc.body.firstChild) {
-            // It's the first line. For line number alignment purposes, its
-            // height is taken to be the top offset of the next line. If we
-            // didn't do this special case, we would miss out on any top margin
-            // included on the first line. The default stylesheet doesn't add
-            // extra margins/padding, but plugins might.
-            h = b.nextSibling.offsetTop - parseInt(window.getComputedStyle(doc.body).getPropertyValue("padding-top").split('px')[0]);
-          } else {
-            h = b.nextSibling.offsetTop - b.offsetTop;
-          }
-        }
-        if (h)
-        {
-          var hpx = h + "px";
-          if (a.style.height != hpx) {
-            a.style.height = hpx;
-          }
-        }
-        a = a.nextSibling;
-        b = b.nextSibling;
-        n++;
+    // Apply height to existing sidediv lines
+    currentLine = 0
+    while (sidebarLine && currentLine <= lineNumbersShown) {
+      if (lineHeights[currentLine]) {
+        sidebarLine.style.height = lineHeights[currentLine] + "px";
       }
+      sidebarLine = sidebarLine.nextSibling;
+      currentLine++;
     }
 
     if (newNumLines != lineNumbersShown)
@@ -5278,32 +5278,22 @@ function Ace2Inner(){
       var container = sideDivInner;
       var odoc = outerWin.document;
       var fragment = odoc.createDocumentFragment();
+
+      // Create missing line and apply height
       while (lineNumbersShown < newNumLines)
       {
         lineNumbersShown++;
-        var n = lineNumbersShown;
         var div = odoc.createElement("DIV");
-        //calculate height for new line number
-        if(b){
-          var h = (b.clientHeight || b.offsetHeight);
-
-          if (b.nextSibling){
-            h = b.nextSibling.offsetTop - b.offsetTop;
-          }
+        if (lineHeights[currentLine]) {
+          div.style.height = lineHeights[currentLine] +"px";
         }
-
-        if(h){ // apply style to div
-          div.style.height = h +"px";
-        }
-
-        $(div).append($("<span class='line-number'>" + String(n) + "</span>"));
+        $(div).append($("<span class='line-number'>" + String(lineNumbersShown) + "</span>"));
         fragment.appendChild(div);
-        if(b){
-          b = b.nextSibling;
-        }
+        currentLine++;
       }
-
       container.appendChild(fragment);
+
+      // Remove extra lines
       while (lineNumbersShown > newNumLines)
       {
         container.removeChild(container.lastChild);
