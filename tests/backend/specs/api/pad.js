@@ -427,6 +427,7 @@ describe('deletePad', function(){
 
 var originalPadId = testPadId;
 var newPadId = makeid();
+var copiedPadId = makeid();
 
 describe('createPad', function(){
   it('creates a new Pad with text', function(done) {
@@ -681,6 +682,16 @@ describe('createPad', function(){
   });
 })
 
+describe('copyPad', function(){
+  it('copies the content of a existent pad id', function(done) {
+    api.get(endPoint('copyPad')+"&sourceID="+testPadId+"&destinationID="+copiedPadId+"&force=true")
+      .expect(function(res){
+        if(res.body.code !== 0) throw new Error("Copy Pad Failed")
+      })
+      .expect('Content-Type', /json/)
+      .expect(200, done)
+  });
+})
 
 /*
                           -> movePadForce Test
