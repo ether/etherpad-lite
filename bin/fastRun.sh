@@ -7,16 +7,17 @@
 # of what to do, please execute bin/installDeps.sh once before running this
 # script.
 
-set -eu
+pecho() { printf %s\\n "$*"; }
+log() { pecho "$@"; }
+error() { log "ERROR: $@" >&2; }
+fatal() { error "$@"; exit 1; }
 
-# source: https://stackoverflow.com/questions/59895/how-to-get-the-source-directory-of-a-bash-script-from-within-the-script-itself#246128
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+# Move to the folder where ep-lite is installed
+cd "$(dirname "$0")"/..
 
-echo "Running directly, without checking/installing dependencies"
 
-# move to the base Etherpad directory. This will be necessary until Etherpad
-# learns to run from arbitrary CWDs.
-cd "${DIR}/.."
+# Move to the node folder and start
+log "Starting Etherpad..."
 
-# run Etherpad main class
-node "${DIR}/../node_modules/ep_etherpad-lite/node/server.js" "${@}"
+SCRIPTPATH=$(pwd -P)
+exec node "$SCRIPTPATH/node_modules/ep_etherpad-lite/node/server.js" "$@"
