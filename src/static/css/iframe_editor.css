@@ -38,10 +38,6 @@ html.inner-editor {
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
-#innerdocbody, #sidediv {
-  padding-top: 10px; /* Both must have same top padding, so line number are aligned with the rows */
-  padding-bottom: 10px; /* some space when we scroll to the bottom */
-}
 
 #innerdocbody a {
   color: #2e96f3;
