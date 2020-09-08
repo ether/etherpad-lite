@@ -1,4 +1,7 @@
 # Develop -- TODO Change to 1.8.x.
+* ...
+
+# 1.8.5
 * IMPORTANT DROP OF SUPPORT: Drop support for IE.  Browsers now need async/await.
 * IMPORTANT SECURITY: Rate limit Commits when env=production
 * SECURITY: Non completed uploads no longer crash Etherpad
@@ -30,6 +33,7 @@
 * MINOR: Improved CSS anomation through prefers-reduced-motion
 * PERFORMANCE: Use workers (where possible) to minify CSS/JS on first page request.  This improves initial startup times.
 * PERFORMANCE: Cache EJS files improving page load speed when maxAge > 0.
+* PERFORMANCE: Fix performance for large pads
 * TESTS: Additional test coverage for OL/LI/Import/Export
 * TESTS: Include Simulated Load Testing in CI.
 * TESTS: Include content collector tests to test contentcollector.js logic external to pad dependents.
