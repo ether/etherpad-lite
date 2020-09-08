@@ -29,7 +29,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     var filePath = path.join(settings.root, "src", "static", "skins", settings.skinName, "robots.txt");
     res.sendFile(filePath, function(err)
     {
-      //there is no custom robots.txt, send the default robots.txt which dissallows all
+      //there is no custom favicon, send the default robots.txt which dissallows all
       if(err)
       {
         filePath = path.join(settings.root, "src", "static", "robots.txt");
@@ -72,6 +72,12 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   //serve favicon.ico from all path levels except as a pad name
   args.app.get( /\/favicon.ico$/, function(req, res)
   {
+    if(settings.favicon){
+      var filePath= path.join(settings.root,settings.favicon);
+      res.sendFile(filePath);
+      return;
+    }
+    
     var filePath = path.join(settings.root, "src", "static", "skins", settings.skinName, "favicon.ico");
 
     res.sendFile(filePath, function(err)
