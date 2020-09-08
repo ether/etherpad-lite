@@ -34,6 +34,8 @@
 	"pad.settings.fontType": "Schrëftart:",
 	"pad.settings.fontType.normal": "Normal",
 	"pad.settings.language": "Sprooch:",
+	"pad.settings.about": "Iwwer",
+	"pad.settings.poweredBy": "Zur Verfügung gestallt vu(n)",
 	"pad.importExport.import_export": "Import/Export",
 	"pad.importExport.import": "Text-Fichier oder Dokument eroplueden",
 	"pad.importExport.importSuccessful": "Erfollegräich",

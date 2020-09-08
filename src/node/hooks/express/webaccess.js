@@ -1,116 +1,131 @@
-var express = require('express');
-var log4js = require('log4js');
-var httpLogger = log4js.getLogger("http");
-var settings = require('../../utils/Settings');
-var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
-var ueberStore = require('../../db/SessionStore');
-var stats = require('ep_etherpad-lite/node/stats');
-var sessionModule = require('express-session');
-var cookieParser = require('cookie-parser');
+const express = require('express');
+const log4js = require('log4js');
+const httpLogger = log4js.getLogger('http');
+const settings = require('../../utils/Settings');
+const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+const ueberStore = require('../../db/SessionStore');
+const stats = require('ep_etherpad-lite/node/stats');
+const sessionModule = require('express-session');
+const cookieParser = require('cookie-parser');
 
-//checks for basic http auth
-exports.basicAuth = function (req, res, next) {
-  var hookResultMangle = function (cb) {
-    return function (err, data) {
+exports.checkAccess = (req, res, next) => {
+  const hookResultMangle = (cb) => {
+    return (err, data) => {
       return cb(!err && data.length && data[0]);
-    }
-  }
+    };
+  };
 
-  var authorize = function (cb) {
+  // This may be called twice per access: once before authentication is checked and once after (if
+  // settings.requireAuthorization is true).
+  const authorize = (cb) => {
     // Do not require auth for static paths and the API...this could be a bit brittle
     if (req.path.match(/^\/(static|javascripts|pluginfw|api)/)) return cb(true);
 
-    if (req.path.toLowerCase().indexOf('/admin') != 0) {
+    if (req.path.toLowerCase().indexOf('/admin') !== 0) {
       if (!settings.requireAuthentication) return cb(true);
       if (!settings.requireAuthorization && req.session && req.session.user) return cb(true);
     }
 
     if (req.session && req.session.user && req.session.user.is_admin) return cb(true);
 
-    hooks.aCallFirst("authorize", {req: req, res:res, next:next, resource: req.path}, hookResultMangle(cb));
-  }
-
-  var authenticate = function (cb) {
-    // If auth headers are present use them to authenticate...
-    if (req.headers.authorization && req.headers.authorization.search('Basic ') === 0) {
-      var userpass = Buffer.from(req.headers.authorization.split(' ')[1], 'base64').toString().split(":")
-      var username = userpass.shift();
-      var password = userpass.join(':');
-      var fallback = function(success) {
-        if (success) return cb(true);
-        if (settings.users[username] != undefined && settings.users[username].password === password) {
-          settings.users[username].username = username;
-          req.session.user = settings.users[username];
-          return cb(true);
-        }
-        return cb(false);
-      };
-      return hooks.aCallFirst("authenticate", {req: req, res:res, next:next, username: username, password: password}, hookResultMangle(fallback));
-    }
-    hooks.aCallFirst("authenticate", {req: req, res:res, next:next}, hookResultMangle(cb));
-  }
-
+    hooks.aCallFirst('authorize', {req, res, next, resource: req.path}, hookResultMangle(cb));
+  };
 
   /* Authentication OR authorization failed. */
-  var failure = function () {
-    return hooks.aCallFirst("authFailure", {req: req, res:res, next:next}, hookResultMangle(function (ok) {
-    if (ok) return;
-      /* No plugin handler for invalid auth. Return Auth required
-       * Headers, delayed for 1 second, if authentication failed
-       * before. */
+  const failure = () => {
+    return hooks.aCallFirst('authFailure', {req, res, next}, hookResultMangle((ok) => {
+      if (ok) return;
+      // No plugin handled the authn/authz failure. Fall back to basic authentication.
       res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
-      if (req.headers.authorization) {
-        setTimeout(function () {
-          res.status(401).send('Authentication required');
-        }, 1000);
-      } else {
-        res.status(401).send('Authentication required');
-      }
+      // Delay the error response for 1s to slow down brute force attacks.
+      setTimeout(() => {
+        res.status(401).send('Authentication Required');
+      }, 1000);
     }));
-  }
+  };
 
+  // Access checking is done in three steps:
+  //
+  // 1) Try to just access the thing. If access fails (perhaps authentication has not yet completed,
+  //    or maybe different credentials are required), go to the next step.
+  // 2) Try to authenticate. (Or, if already logged in, reauthenticate with different credentials if
+  //    supported by the authn scheme.) If authentication fails, give the user a 401 error to
+  //    request new credentials. Otherwise, go to the next step.
+  // 3) Try to access the thing again. If this fails, give the user a 401 error.
+  //
+  // Plugins can use the 'next' callback (from the hook's context) to break out at any point (e.g.,
+  // to process an OAuth callback). Plugins can use the authFailure hook to override the default
+  // error handling behavior (e.g., to redirect to a login page).
 
-  /* This is the actual authentication/authorization hoop. It is done in four steps:
+  let step1PreAuthenticate, step2Authenticate, step3Authorize;
 
-     1) Try to just access the thing
-     2) If not allowed using whatever creds are in the current session already, try to authenticate
-     3) If authentication using already supplied credentials succeeds, try to access the thing again
-     4) If all els fails, give the user a 401 to request new credentials
-
-     Note that the process could stop already in step 3 with a redirect to login page.
-
-  */
-
-  authorize(function (ok) {
-    if (ok) return next();
-    authenticate(function (ok) {
-      if (!ok) return failure();
-      authorize(function (ok) {
-        if (ok) return next();
-        failure();
-      });
+  step1PreAuthenticate = () => {
+    authorize((ok) => {
+      if (ok) return next();
+      step2Authenticate();
     });
-  });
-}
+  };
+
+  step2Authenticate = () => {
+    const ctx = {req, res, next};
+    // If the HTTP basic auth header is present, extract the username and password so it can be
+    // given to authn plugins.
+    const httpBasicAuth =
+        req.headers.authorization && req.headers.authorization.search('Basic ') === 0;
+    if (httpBasicAuth) {
+      const userpass =
+          Buffer.from(req.headers.authorization.split(' ')[1], 'base64').toString().split(':');
+      ctx.username = userpass.shift();
+      ctx.password = userpass.join(':');
+    }
+    hooks.aCallFirst('authenticate', ctx, hookResultMangle((ok) => {
+      if (!ok) {
+        // Fall back to HTTP basic auth.
+        if (!httpBasicAuth) return failure();
+        if (!(ctx.username in settings.users)) {
+          httpLogger.info(`Failed authentication from IP ${req.ip} - no such user`);
+          return failure();
+        }
+        if (settings.users[ctx.username].password !== ctx.password) {
+          httpLogger.info(`Failed authentication from IP ${req.ip} for user ${ctx.username} - incorrect password`);
+          return failure();
+        }
+        httpLogger.info(`Successful authentication from IP ${req.ip} for user ${ctx.username}`);
+        settings.users[ctx.username].username = ctx.username;
+        req.session.user = settings.users[ctx.username];
+      }
+      step3Authorize();
+    }));
+  };
+
+  step3Authorize = () => {
+    authorize((ok) => {
+      if (ok) return next();
+      failure();
+    });
+  };
+
+  step1PreAuthenticate();
+};
 
 exports.secret = null;
 
-exports.expressConfigure = function (hook_name, args, cb) {
+exports.expressConfigure = (hook_name, args, cb) => {
   // Measure response time
-  args.app.use(function(req, res, next) {
-    var stopWatch = stats.timer('httpRequests').start();
-    var sendFn = res.send
-    res.send = function() {
-      stopWatch.end()
-      sendFn.apply(res, arguments)
-    }
-    next()
-  })
+  args.app.use((req, res, next) => {
+    const stopWatch = stats.timer('httpRequests').start();
+    const sendFn = res.send;
+    res.send = function() { // function, not arrow, due to use of 'arguments'
+      stopWatch.end();
+      sendFn.apply(res, arguments);
+    };
+    next();
+  });
 
   // If the log level specified in the config file is WARN or ERROR the application server never starts listening to requests as reported in issue #158.
   // Not installing the log4js connect logger when the log level has a higher severity than INFO since it would not log at that level anyway.
-  if (!(settings.loglevel === "WARN" || settings.loglevel == "ERROR"))
-    args.app.use(log4js.connectLogger(httpLogger, { level: log4js.levels.DEBUG, format: ':status, :method :url'}));
+  if (!(settings.loglevel === 'WARN' || settings.loglevel === 'ERROR'))
+    args.app.use(log4js.connectLogger(httpLogger, {level: log4js.levels.DEBUG, format: ':status, :method :url'}));
 
   /* Do not let express create the session, so that we can retain a
    * reference to it for socket.io to use. Also, set the key (cookie
@@ -122,6 +137,8 @@ exports.expressConfigure = function (hook_name, args, cb) {
     exports.secret = settings.sessionKey;
   }
 
+  const sameSite = settings.ssl ? 'Strict' : 'Lax';
+
   args.app.sessionStore = exports.sessionStore;
   args.app.use(sessionModule({
     secret: exports.secret,
@@ -131,6 +148,12 @@ exports.expressConfigure = function (hook_name, args, cb) {
     name: 'express_sid',
     proxy: true,
     cookie: {
+      /*
+       * Firefox started enforcing sameSite, see https://github.com/ether/etherpad-lite/issues/3989
+       * for details.  In response we set it based on if SSL certs are set in Etherpad.  Note that if
+       * You use Nginx or so for reverse proxy this may cause problems.  Use Certificate pinning to remedy.
+       */
+      sameSite: sameSite,
       /*
        * The automatic express-session mechanism for determining if the
        * application is being served over ssl is similar to the one used for
@@ -157,5 +180,5 @@ exports.expressConfigure = function (hook_name, args, cb) {
 
   args.app.use(cookieParser(settings.sessionKey, {}));
 
-  args.app.use(exports.basicAuth);
-}
+  args.app.use(exports.checkAccess);
+};

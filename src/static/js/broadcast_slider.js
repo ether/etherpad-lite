@@ -24,6 +24,7 @@
  // Timeslider controller would probably be more appropriate.
 var _ = require('./underscore');
 var padmodals = require('./pad_modals').padmodals;
+var colorutils = require('./colorutils').colorutils;
 
 function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
 {
@@ -151,10 +152,11 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           if (author.name)
           {
             if (numNamed !== 0) authorsList.append(', ');
-
+            var textColor = colorutils.textColorFromBackgroundColor(authorColor, clientVars.skinName)
             $('<span />')
               .text(author.name || "unnamed")
               .css('background-color', authorColor)
+              .css('color', textColor)
               .addClass('author')
               .appendTo(authorsList);
 

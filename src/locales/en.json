@@ -1,6 +1,7 @@
 {
   "index.newPad": "New Pad",
   "index.createOpenPad": "or create/open a Pad with the name:",
+  "index.openPad": "open an existing Pad with the name:",
 
   "pad.toolbar.bold.title": "Bold (Ctrl+B)",
   "pad.toolbar.italic.title": "Italic (Ctrl+I)",
@@ -24,7 +25,7 @@
   "pad.colorpicker.cancel": "Cancel",
 
   "pad.loading": "Loading...",
-  "pad.noCookie": "Cookie could not be found. Please allow cookies in your browser!",
+  "pad.noCookie": "Cookie could not be found. Please allow cookies in your browser!  Your session and settings will not be saved between visits.  This may be due to Etherpad being included in an iFrame in some Browsers.  Please ensure Etherpad is on the same subdomain/domain as the parent iFrame",
   "pad.passwordRequired": "You need a password to access this pad",
   "pad.permissionDenied": "You do not have permission to access this pad",
   "pad.wrongPassword": "Your password was wrong",
@@ -39,6 +40,8 @@
   "pad.settings.fontType": "Font type:",
   "pad.settings.fontType.normal": "Normal",
   "pad.settings.language": "Language:",
+  "pad.settings.about": "About",
+  "pad.settings.poweredBy": "Powered by",
 
   "pad.importExport.import_export": "Import/Export",
   "pad.importExport.import": "Upload any text file or document",
@@ -84,6 +87,9 @@
   "pad.modals.deleted": "Deleted.",
   "pad.modals.deleted.explanation": "This pad has been removed.",
 
+  "pad.modals.rateLimited": "Rate Limited.",
+  "pad.modals.rateLimited.explanation": "You sent too many messages to this pad so it disconnected you.",
+
   "pad.modals.disconnected": "You have been disconnected.",
   "pad.modals.disconnected.explanation": "The connection to the server was lost",
   "pad.modals.disconnected.cause": "The server may be unavailable. Please notify the service administrator if this continues to happen.",
@@ -98,6 +104,7 @@
   "pad.chat.stick.title": "Stick chat to screen",
   "pad.chat.writeMessage.placeholder": "Write your message here",
 
+  "timeslider.followContents": "Follow pad content updates",
   "timeslider.pageTitle": "{{appTitle}} Timeslider",
   "timeslider.toolbar.returnbutton": "Return to pad",
   "timeslider.toolbar.authors": "Authors:",

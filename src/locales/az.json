@@ -7,6 +7,7 @@
 			"Mastizada",
 			"Mushviq Abdulla",
 			"Neriman2003",
+			"Vesely35",
 			"Wertuose"
 		]
 	},
@@ -46,6 +47,8 @@
 	"pad.settings.fontType": "Şriftin tipi:",
 	"pad.settings.fontType.normal": "Normal",
 	"pad.settings.language": "Dil:",
+	"pad.settings.about": "Haqqında",
+	"pad.settings.poweredBy": "$1 ilə işləyir",
 	"pad.importExport.import_export": "İdxal/İxrac",
 	"pad.importExport.import": "Hər hansı bir mətn faylı və ya sənəd yüklə",
 	"pad.importExport.importSuccessful": "Uğurlu!",

@@ -334,6 +334,5 @@ function caretPosition($){
   var pos = doc.getSelection();
   pos.y = pos.anchorNode.parentElement.offsetTop;
   pos.x = pos.anchorNode.parentElement.offsetLeft;
-  console.log(pos);
   return pos;
 }

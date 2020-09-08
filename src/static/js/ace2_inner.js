@@ -130,7 +130,6 @@ function Ace2Inner(){
     console = {};
     for (var i = 0; i < names.length; ++i)
     console[names[i]] = noop;
-    //top.console.error = function(str) { alert(str); };
   }
 
   var PROFILER = window.PROFILER;
@@ -156,15 +155,6 @@ function Ace2Inner(){
   window.dmesg = noop;
 
   var scheduler = parent; // hack for opera required
-
-  var textFace = 'monospace';
-  var textSize = 12;
-
-
-  function textLineHeight()
-  {
-    return Math.round(textSize * 4 / 3);
-  }
 
   var dynamicCSS = null;
   var outerDynamicCSS = null;
@@ -265,7 +255,7 @@ function Ace2Inner(){
   {
     if ((typeof author) != "string")
     {
-      top.console.error("Going to throw new error, potentially caused by: https://github.com/ether/etherpad-lite/issues/2802");
+      // Potentially caused by: https://github.com/ether/etherpad-lite/issues/2802");
       throw new Error("setAuthorInfo: author (" + author + ") is not a string");
     }
     if (!info)
@@ -313,25 +303,6 @@ function Ace2Inner(){
     return ".authorColors ." + oneClassName;
   }
 
-  function setUpTrackingCSS()
-  {
-    if (dynamicCSS)
-    {
-      var backgroundHeight = lineMetricsDiv.offsetHeight;
-      var lineHeight = textLineHeight();
-      var extraBodding = 0;
-      var extraTodding = 0;
-      if (backgroundHeight < lineHeight)
-      {
-        extraBodding = Math.ceil((lineHeight - backgroundHeight) / 2);
-        extraTodding = lineHeight - backgroundHeight - extraBodding;
-      }
-      var spanStyle = dynamicCSS.selectorStyle("#innerdocbody span");
-      spanStyle.paddingTop = extraTodding + "px";
-      spanStyle.paddingBottom = extraBodding + "px";
-    }
-  }
-
   function fadeColor(colorCSS, fadeFrac)
   {
     var color = colorutils.css2triple(colorCSS);
@@ -370,7 +341,8 @@ function Ace2Inner(){
 
     if (currentCallStack)
     {
-      top.console.error("Can't enter callstack " + type + ", already in " + currentCallStack.type);
+      // Do not uncomment this in production.  It will break Etherpad being provided in iFrames.  I'm leaving this in for testing usefulness.
+      // top.console.error("Can't enter callstack " + type + ", already in " + currentCallStack.type);
     }
 
     var profiling = false;
@@ -378,7 +350,6 @@ function Ace2Inner(){
     function profileRest()
     {
       profiling = true;
-      top.console.profile();
     }
 
     function newEditEvent(eventType)
@@ -468,7 +439,6 @@ function Ace2Inner(){
         documentAttributeManager: documentAttributeManager
       });
 
-      //top.console.log("Just did action for: "+type);
       cleanExit = true;
     }
     catch (e)
@@ -484,7 +454,6 @@ function Ace2Inner(){
     finally
     {
       var cs = currentCallStack;
-      //top.console.log("Finished action for: "+type);
       if (cleanExit)
       {
         submitOldEvent(cs.editEvent);
@@ -518,7 +487,6 @@ function Ace2Inner(){
         }
       }
       currentCallStack = null;
-      if (profiling) top.console.profileEnd();
     }
     return result;
   }
@@ -627,26 +595,8 @@ function Ace2Inner(){
 
   function setTextFace(face)
   {
-    textFace = face;
-    root.style.fontFamily = textFace;
-    lineMetricsDiv.style.fontFamily = textFace;
-    scheduler.setTimeout(function()
-    {
-      setUpTrackingCSS();
-    }, 0);
-  }
-
-  function setTextSize(size)
-  {
-    textSize = size;
-    root.style.fontSize = textSize + "px";
-    root.style.lineHeight = textLineHeight() + "px";
-    sideDiv.style.lineHeight = textLineHeight() + "px";
-    lineMetricsDiv.style.fontSize = textSize + "px";
-    scheduler.setTimeout(function()
-    {
-      setUpTrackingCSS();
-    }, 0);
+    root.style.fontFamily = face;
+    lineMetricsDiv.style.fontFamily = face;
   }
 
   function recreateDOM()
@@ -740,7 +690,6 @@ function Ace2Inner(){
        * See for reference:
        * - https://github.com/ether/etherpad-lite/issues/3861
        */
-      top.console.warn('atext.text is an empty string(""). Replacing with "\\n". See issue #3861.');
       atext.text = "\n";
     }
 
@@ -967,7 +916,6 @@ function Ace2Inner(){
       },
       styled: setStyled,
       textface: setTextFace,
-      textsize: setTextSize,
       rtlistrue: function(value) {
         setClassPresence(root, "rtl", value)
         setClassPresence(root, "ltr", !value)
@@ -989,7 +937,6 @@ function Ace2Inner(){
   };
   editorInfo.ace_setBaseAttributedText = function(atxt, apoolJsonObj)
   {
-    setUpTrackingCSS();
     changesetTracker.setBaseAttributedText(atxt, apoolJsonObj);
   };
   editorInfo.ace_applyChangesToBase = function(c, optAuthor, apoolJsonObj)
@@ -1056,7 +1003,6 @@ function Ace2Inner(){
 
   function newTimeLimit(ms)
   {
-    //top.console.debug("new time limit");
     var startTime = now();
     var lastElapsed = 0;
     var exceededAlready = false;
@@ -1067,7 +1013,6 @@ function Ace2Inner(){
         {
           if ((!printedTrace))
           { // && now() - startTime - ms > 300) {
-            //top.console.trace();
             printedTrace = true;
           }
           return true;
@@ -1076,8 +1021,6 @@ function Ace2Inner(){
         if (elapsed > ms)
         {
           exceededAlready = true;
-          //top.console.debug("time limit hit, before was %d/%d", lastElapsed, ms);
-          //top.console.trace();
           return true;
         }
         else
@@ -1176,7 +1119,6 @@ function Ace2Inner(){
 
       var isTimeUp = newTimeLimit(250);
 
-      //top.console.time("idlework");
       var finishedImportantWork = false;
       var finishedWork = false;
 
@@ -1195,13 +1137,11 @@ function Ace2Inner(){
 
         var visibleRange = scroll.getVisibleCharRange(rep);
         var docRange = [0, rep.lines.totalWidth()];
-        //top.console.log("%o %o", docRange, visibleRange);
         finishedImportantWork = true;
         finishedWork = true;
       }
       finally
       {
-        //top.console.timeEnd("idlework");
         if (finishedWork)
         {
           idleWorkTimer.atMost(1000);
@@ -1284,7 +1224,6 @@ function Ace2Inner(){
         selectionNeedsResetting = true;
       }
 
-      //if (timer()) top.console.dirxml(lineEntry.lineNode.dom);
       if (firstLine === null) firstLine = lineIndex;
       lastLine = lineIndex;
       lineStart = lineEnd;
@@ -1295,7 +1234,6 @@ function Ace2Inner(){
     {
       currentCallStack.selectionAffected = true;
     }
-    //top.console.debug("Recolored line range %d-%d", firstLine, lastLine);
   }
 
   // like getSpansForRange, but for a line, and the func takes (text,class)
@@ -1364,7 +1302,6 @@ function Ace2Inner(){
     // (from how it looks in our representation) and record them in a way
     // that can be used to "normalize" the document (apply the changes to our
     // representation, and put the DOM in a canonical form).
-    // top.console.log("observeChangesAroundNode(%o)", node);
     var cleanNode;
     var hasAdjacentDirtyness;
     if (!isNodeDirty(node))
@@ -1501,7 +1438,6 @@ function Ace2Inner(){
     observeSuspiciousNodes();
     p.mark("dirty");
     var dirtyRanges = getDirtyRanges();
-    //top.console.log("dirtyRanges: "+toSource(dirtyRanges));
     var dirtyRangesCheckOut = true;
     var j = 0;
     var a, b;
@@ -1535,8 +1471,6 @@ function Ace2Inner(){
     p.mark("getsel");
     var selection = getSelection();
 
-    //top.console.log(magicdom.root.dom.innerHTML);
-    //top.console.log("got selection: %o", selection);
     var selStart, selEnd; // each one, if truthy, has [line,char] needed to set selection
     var i = 0;
     var splicesToDo = [];
@@ -1584,7 +1518,6 @@ function Ace2Inner(){
           // It could be SPAN or a DIV; basically this is any case where the contentCollector
           // decides it isn't done.
           // Note that this clean node might need to be there for the next dirty range.
-          //top.console.log("inclusive of "+lastDirtyNode.next().dom.tagName);
           b++;
           var cleanLine = lastDirtyNode.nextSibling;
           cc.collectContent(cleanLine);
@@ -1609,7 +1542,6 @@ function Ace2Inner(){
             // Firefox isn't quite so bad, but it's still pretty quirky.
             var scrollToTheLeftNeeded = true;
           }
-          // top.console.log("Editor warning: " + linesWrapped + " long line" + (linesWrapped == 1 ? " was" : "s were") + " hard-wrapped into " + ccData.numLinesAfter + " lines.");
         }
 
         if (ss[0] >= 0) selStart = [ss[0] + a + netNumLinesChangeSoFar, ss[1]];
@@ -1673,7 +1605,6 @@ function Ace2Inner(){
       if(n.parentNode) n.parentNode.removeChild(n);
 
       //dmesg(htmlPrettyEscape(htmlForRemovedChild(n)));
-      //top.console.log("removed: "+id);
     });
 
     if(scrollToTheLeftNeeded){ // needed to stop chrome from breaking the ui when long strings without spaces are pasted
@@ -1893,6 +1824,7 @@ function Ace2Inner(){
   {
     var line = lineAndChar[0];
     var charsLeft = lineAndChar[1];
+    // Do not uncomment this in production it will break iFrames.
     //top.console.log("line: %d, key: %s, node: %o", line, rep.lines.atIndex(line).key,
     //getCleanNodeByKey(rep.lines.atIndex(line).key));
     var lineEntry = rep.lines.atIndex(line);
@@ -2018,7 +1950,6 @@ function Ace2Inner(){
           n = parNode;
         }
       }
-      if (n.id === "") top.console.debug("BAD");
       if (n.firstChild && isBlockElement(n.firstChild))
       {
         col += 1; // lineMarker
@@ -2905,11 +2836,13 @@ function Ace2Inner(){
       }
 
       return true;
+      // Do not uncomment this in production it will break iFrames.
       //top.console.log("selStart: %o, selEnd: %o, focusAtStart: %s", rep.selStart, rep.selEnd,
       //String(!!rep.selFocusAtStart));
     }
     return false;
-    //top.console.log("%o %o %s", rep.selStart, rep.selEnd, rep.selFocusAtStart);
+  // Do not uncomment this in production it will break iFrames.
+  //top.console.log("%o %o %s", rep.selStart, rep.selEnd, rep.selFocusAtStart);
   }
 
   function isPadLoading(eventType)
@@ -3142,14 +3075,13 @@ function Ace2Inner(){
       // returns whether line was already correctly assigned (i.e. correctly
       // clean or dirty, according to cleanRanges, and if clean, correctly
       // attached or not attached (i.e. in the same range as) the prev and next lines).
-      //top.console.log("correctly assigning: %d", line);
       var rng = rangeForLine(line);
       var lineClean = isClean(line);
       if (rng < 0)
       {
         if (lineClean)
         {
-          top.console.debug("somehow lost clean line");
+          // somehow lost clean line
         }
         return true;
       }
@@ -3229,7 +3161,6 @@ function Ace2Inner(){
       detectChangesAroundLine(N - 1, 1);
 
       p.mark("obs");
-      //top.console.log("observedChanges: "+toSource(observedChanges));
       for (var k in observedChanges.cleanNodesNearChanges)
       {
         var key = k.substring(1);
@@ -4708,10 +4639,6 @@ function Ace2Inner(){
             // can handle "backwards"-oriented selection, shift-arrow-keys move start
             // of selection
             browserSelection.collapse(end.container, end.offset);
-            //top.console.trace();
-            //top.console.log(htmlPrettyEscape(rep.alltext));
-            //top.console.log("%o %o", rep.selStart, rep.selEnd);
-            //top.console.log("%o %d", start.container, start.offset);
             browserSelection.extend(start.container, start.offset);
           }
           else
@@ -5239,6 +5166,14 @@ function Ace2Inner(){
       var t = '';
       var level = 0;
       var listType = /([a-z]+)([0-9]+)/.exec(getLineListType(n));
+
+      // Used to outdent if ol is removed
+      if(allLinesAreList){
+        var togglingOn = false;
+      }else{
+        var togglingOn = true;
+      }
+
       if (listType)
       {
         t = listType[1];
@@ -5246,12 +5181,22 @@ function Ace2Inner(){
       }
       var t = getLineListType(n);
 
-      // if already a list, deindent
-      if (allLinesAreList && level != 1) { level = level - 1;  }
-      // if already indented, then add a level of indentation to the list
-      else if (t && !allLinesAreList) { level = level + 1; }
+      if(t === listType) togglingOn = false;
 
-      mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + '1')]);
+      if(togglingOn){
+        mods.push([n, allLinesAreList ? 'indent' + level : (t ? type + level : type + '1')]);
+      }else{
+        // scrap the entire indentation and list type
+        if(level === 1){ // if outdending but are the first item in the list then outdent
+          setLineListType(n, ''); // outdent
+        }
+        // else change to indented not bullet
+        if(level > 1){
+          setLineListType(n, ''); // remove bullet
+          setLineListType(n, "indent"+level); // in/outdent
+        }
+      }
+
     }
 
     _.each(mods, function(mod){
@@ -5279,53 +5224,53 @@ function Ace2Inner(){
     $(sideDiv).addClass("sidediv");
   }
 
+  // We apply the height of a line in the doc body, to the corresponding sidediv line number
   function updateLineNumbers()
   {
+    if (!currentCallStack || currentCallStack && !currentCallStack.domClean) return;
+
+    // Refs #4228, to avoid layout trashing, we need to first calculate all the heights,
+    // and then apply at once all new height to div elements
+    var lineHeights = [];
+    var docLine = doc.body.firstChild;
+    var currentLine = 0;
+    var h = null;
+
+    // First loop to calculate the heights from doc body
+    while (docLine)
+    {
+      if (docLine.nextSibling) {
+        if (currentLine === 0) {
+          // It's the first line. For line number alignment purposes, its
+          // height is taken to be the top offset of the next line. If we
+          // didn't do this special case, we would miss out on any top margin
+          // included on the first line. The default stylesheet doesn't add
+          // extra margins/padding, but plugins might.
+          h = docLine.nextSibling.offsetTop - parseInt(window.getComputedStyle(doc.body).getPropertyValue("padding-top").split('px')[0]);
+        } else {
+          h = docLine.nextSibling.offsetTop - docLine.offsetTop;
+        }
+      } else {
+        // last line
+        h = (docLine.clientHeight || docLine.offsetHeight);
+      }
+      lineHeights.push(h)
+      docLine = docLine.nextSibling;
+      currentLine++;
+    }
+
     var newNumLines = rep.lines.length();
     if (newNumLines < 1) newNumLines = 1;
-    //update height of all current line numbers
+    var sidebarLine = sideDivInner.firstChild;
 
-    var a = sideDivInner.firstChild;
-    var b = doc.body.firstChild;
-    var n = 0;
-
-    if (currentCallStack && currentCallStack.domClean)
-    {
-
-      while (a && b)
-      {
-        if(n > lineNumbersShown) //all updated, break
-        break;
-        var h = (b.clientHeight || b.offsetHeight);
-        if (b.nextSibling)
-        {
-          // when text is zoomed in mozilla, divs have fractional
-          // heights (though the properties are always integers)
-          // and the line-numbers don't line up unless we pay
-          // attention to where the divs are actually placed...
-          // (also: padding on TTs/SPANs in IE...)
-          if (b === doc.body.firstChild) {
-            // It's the first line. For line number alignment purposes, its
-            // height is taken to be the top offset of the next line. If we
-            // didn't do this special case, we would miss out on any top margin
-            // included on the first line. The default stylesheet doesn't add
-            // extra margins/padding, but plugins might.
-            h = b.nextSibling.offsetTop - parseInt(window.getComputedStyle(doc.body).getPropertyValue("padding-top").split('px')[0]);
-          } else {
-            h = b.nextSibling.offsetTop - b.offsetTop;
-          }
-        }
-        if (h)
-        {
-          var hpx = h + "px";
-          if (a.style.height != hpx) {
-            a.style.height = hpx;
-          }
-        }
-        a = a.nextSibling;
-        b = b.nextSibling;
-        n++;
+    // Apply height to existing sidediv lines
+    currentLine = 0
+    while (sidebarLine && currentLine <= lineNumbersShown) {
+      if (lineHeights[currentLine]) {
+        sidebarLine.style.height = lineHeights[currentLine] + "px";
       }
+      sidebarLine = sidebarLine.nextSibling;
+      currentLine++;
     }
 
     if (newNumLines != lineNumbersShown)
@@ -5333,32 +5278,22 @@ function Ace2Inner(){
       var container = sideDivInner;
       var odoc = outerWin.document;
       var fragment = odoc.createDocumentFragment();
+
+      // Create missing line and apply height
       while (lineNumbersShown < newNumLines)
       {
         lineNumbersShown++;
-        var n = lineNumbersShown;
         var div = odoc.createElement("DIV");
-        //calculate height for new line number
-        if(b){
-          var h = (b.clientHeight || b.offsetHeight);
-
-          if (b.nextSibling){
-            h = b.nextSibling.offsetTop - b.offsetTop;
-          }
+        if (lineHeights[currentLine]) {
+          div.style.height = lineHeights[currentLine] +"px";
         }
-
-        if(h){ // apply style to div
-          div.style.height = h +"px";
-        }
-
-        $(div).append($("<span class='line-number'>" + String(n) + "</span>"));
+        $(div).append($("<span class='line-number'>" + String(lineNumbersShown) + "</span>"));
         fragment.appendChild(div);
-        if(b){
-          b = b.nextSibling;
-        }
+        currentLine++;
       }
-
       container.appendChild(fragment);
+
+      // Remove extra lines
       while (lineNumbersShown > newNumLines)
       {
         container.removeChild(container.lastChild);

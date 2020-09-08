@@ -25,9 +25,10 @@ html.inner-editor {
 
 /* ACE-PAD Container (i.e. where the text is displayed) */
 #innerdocbody {
-  padding: 10px;
+  padding: 15px;
   overflow: hidden;
   background-color: white;
+  line-height: 1.6;
 
   /* Be careful editing following rules. Longs words should not overflow, ep_align justify should work,
      Test on chrome, firefox and safari... Copy / Paste a word inside a sentence should not add line-breaks
@@ -37,10 +38,6 @@ html.inner-editor {
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
-#innerdocbody, #sidediv {
-  padding-top: 10px; /* Both must have same top padding, so line number are aligned with the rows */
-  padding-bottom: 10px; /* some space when we scroll to the bottom */
-}
 
 #innerdocbody a {
   color: #2e96f3;
@@ -49,9 +46,9 @@ html.inner-editor {
   color: inherit;
 }
 
-#innerdocbody span {
-  line-height: 125%;
-  padding: 6px 0 !important;
+#innerdocbody.authorColors span {
+  padding-top: 3px;
+  padding-bottom: 4px;
 }
 
 option {
@@ -62,7 +59,14 @@ option {
 #innerdocbody h2,
 #innerdocbody h3,
 #innerdocbody h4 {
+  line-height: 1.2;
   margin-bottom: .5em;
+}
+#innerdocbody h1 span,
+#innerdocbody h2 span,
+#innerdocbody h3 span,
+#innerdocbody h4 span {
+  padding-top: 0;
 }
 
 /* --------------------- */
@@ -87,8 +91,11 @@ body.mozilla, body.safari {
 }
 #sidediv .line-number {
   font-size: 9px;
-  padding: 0 10px;
+  padding: 0 14px 0 10px;
   font-family: monospace;
+}
+.plugin-ep_author_neat #sidedivinner.authorColors .line-number {
+  padding-right: 10px;
 }
 #sidedivinner {
   text-align: right;

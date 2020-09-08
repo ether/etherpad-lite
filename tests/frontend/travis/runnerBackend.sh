@@ -1,13 +1,25 @@
 #!/bin/bash
 
 # do not continue if there is an error
-set -eu
+set -u
 
 # source: https://stackoverflow.com/questions/59895/get-the-source-directory-of-a-bash-script-from-within-the-script-itself#246128
 MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 # reliably move to the etherpad base folder before running it
 cd "${MY_DIR}/../../../"
+
+# Set soffice to /usr/bin/soffice
+sed 's#\"soffice\": null,#\"soffice\":\"/usr/bin/soffice\",#g' settings.json.template > settings.json.soffice
+
+# Set allowAnyoneToImport to true
+sed 's/\"allowAnyoneToImport\": false,/\"allowAnyoneToImport\": true,/g' settings.json.soffice > settings.json.allowImport
+
+# Set "max": 10 to 100 to not agressively rate limit
+sed 's/\"max\": 10/\"max\": 100/g' settings.json.allowImport > settings.json.rateLimit
+
+# Set "points": 10 to 1000 to not agressively rate limit commits
+sed 's/\"points\": 10/\"points\": 1000/g' settings.json.rateLimit > settings.json
 
 # start Etherpad, assuming all dependencies are already installed.
 #
@@ -28,19 +40,12 @@ echo "Now I will try for 15 seconds to connect to Etherpad on http://localhost:9
 
 echo "Successfully connected to Etherpad on http://localhost:9001"
 
-# just in case, let's wait for another second before going on
-sleep 1
-
-# a copy of settings.json is necessary for the backend tests to work
-cp settings.json.template settings.json
-
 # run the backend tests
 echo "Now run the backend tests"
 cd src
-npm run test
-exit_code=$?
 
-kill $!
-sleep 5
+failed=0
+npm run test || failed=1
+npm run test-contentcollector || failed=1
 
-exit $exit_code
+exit $failed

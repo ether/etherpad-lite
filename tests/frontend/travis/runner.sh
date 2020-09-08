@@ -16,7 +16,7 @@ cd "${MY_DIR}/../../../"
 # This is possible because the "install" section of .travis.yml already contains
 # a call to bin/installDeps.sh
 echo "Running Etherpad directly, assuming bin/installDeps.sh has already been run"
-node node_modules/ep_etherpad-lite/node/server.js "${@}" > /dev/null &
+node node_modules/ep_etherpad-lite/node/server.js "${@}" &
 
 echo "Now I will try for 15 seconds to connect to Etherpad on http://localhost:9001"
 
@@ -29,9 +29,6 @@ echo "Now I will try for 15 seconds to connect to Etherpad on http://localhost:9
     (echo "Could not connect to Etherpad on http://localhost:9001" ; exit 1)
 
 echo "Successfully connected to Etherpad on http://localhost:9001"
-
-# just in case, let's wait for another second before going on
-sleep 1
 
 # On the Travis VM, remote_runner.js is found at
 # /home/travis/build/ether/[secure]/tests/frontend/travis/remote_runner.js
@@ -46,8 +43,6 @@ echo "Now starting the remote runner"
 node remote_runner.js
 exit_code=$?
 
-kill $!
 kill $(cat /tmp/sauce.pid)
-sleep 30
 
 exit $exit_code

@@ -44,6 +44,8 @@
 	"pad.settings.fontType": "Skrifttype:",
 	"pad.settings.fontType.normal": "Normal",
 	"pad.settings.language": "Sprog:",
+	"pad.settings.about": "Om",
+	"pad.settings.poweredBy": "Drevet af",
 	"pad.importExport.import_export": "Import/Eksport",
 	"pad.importExport.import": "Uploade en tekstfil eller dokument",
 	"pad.importExport.importSuccessful": "Vellykket!",

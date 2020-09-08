@@ -349,7 +349,7 @@ function convertPad(padId, callback)
 
           //generate new author values
           var authorID = "a." + randomString(16);
-          var authorColorID = authors[i].colorId || Math.floor(Math.random()*32);
+          var authorColorID = authors[i].colorId || Math.floor(Math.random()*(exports.getColorPalette().length));
           var authorName = authors[i].name || null;
 
           //overwrite the authorID of the attribute pool

@@ -42,7 +42,7 @@ RUN bin/installDeps.sh && \
 #
 # Bash trick: in the for loop ${ETHERPAD_PLUGINS} is NOT quoted, in order to be
 # able to split at spaces.
-RUN for PLUGIN_NAME in ${ETHERPAD_PLUGINS}; do npm install "${PLUGIN_NAME}"; done
+RUN for PLUGIN_NAME in ${ETHERPAD_PLUGINS}; do npm install "${PLUGIN_NAME}" || exit 1; done
 
 # Copy the configuration file.
 COPY --chown=etherpad:0 ./settings.json.docker /opt/etherpad-lite/settings.json

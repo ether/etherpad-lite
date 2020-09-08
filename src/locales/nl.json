@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Dutchy45",
 			"Klaas van Buiten",
 			"KlaasZ4usV",
 			"Macofe",
@@ -49,6 +50,7 @@
 	"pad.settings.fontType": "Lettertype:",
 	"pad.settings.fontType.normal": "Normaal",
 	"pad.settings.language": "Taal:",
+	"pad.settings.about": "Over",
 	"pad.importExport.import_export": "Importeren/exporteren",
 	"pad.importExport.import": "Tekstbestand of document uploaden",
 	"pad.importExport.importSuccessful": "Afgerond",

@@ -1,6 +1,8 @@
 # A real-time collaborative editor for the web
 <a href="https://hub.docker.com/r/etherpad/etherpad"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/etherpad/etherpad"></a>
-[![Travis (.org)](https://img.shields.io/travis/ether/etherpad-lite)](https://travis-ci.org/github/ether/etherpad-lite)
+
+[![Travis (.org)](https://api.travis-ci.org/ether/etherpad-lite.svg?branch=develop)](https://travis-ci.org/github/ether/etherpad-lite)
+
 ![Demo Etherpad Animated Jif](doc/images/etherpad_demo.gif "Etherpad in action")
 
 # About
@@ -92,6 +94,13 @@ If you prefer, `ep_hash_auth` also gives you the option of storing the users in 
 
 Etherpad is very customizable through plugins. Instructions for installing themes and plugins can be found in [the plugin wiki article](https://github.com/ether/etherpad-lite/wiki/Available-Plugins).
 
+## Getting the full features
+Run the following command in your Etherpad folder to get all of the features visible in the demo gif:
+
+```
+npm install ep_headings2 ep_markdown ep_comments_page ep_align ep_page_view ep_font_color ep_webrtc ep_embedded_hyperlinks2
+```
+
 ## Customize the style with skin variants
 
 Open <http://127.0.0.1:9001/p/test#skinvariantsbuilder> in your browser and start playing !
@@ -130,10 +139,12 @@ OpenAPI (previously swagger) definitions for the API are exposed under `/api/ope
 There is a [jQuery plugin](https://github.com/ether/etherpad-lite-jquery-plugin) that helps you to embed Pads into your website.
 
 # Plugin Framework
-Etherpad offers a plugin framework, allowing you to easily add your own features. By default your Etherpad is extremely light-weight and it's up to you to customize your experience. Once you have Etherpad installed you should visit the plugin page and take control.
+Etherpad offers a plugin framework, allowing you to easily add your own features. By default your Etherpad is extremely light-weight and it's up to you to customize your experience. Once you have Etherpad installed you should [visit the plugin page](https://static.etherpad.org/) and take control.
 
 # Translations / Localizations  (i18n / l10n)
-Etherpad comes with translations into all languages thanks to the team at TranslateWiki.
+Etherpad comes with translations into all languages thanks to the team at [TranslateWiki](https://translatewiki.net/).
+
+If you require translations in [plugins](https://static.etherpad.org/) please send pull request to each plugin individually.
 
 # FAQ
 Visit the **[FAQ](https://github.com/ether/etherpad-lite/wiki/FAQ)**.

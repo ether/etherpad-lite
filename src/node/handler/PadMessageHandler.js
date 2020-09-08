@@ -27,7 +27,7 @@ var authorManager = require("../db/AuthorManager");
 var readOnlyManager = require("../db/ReadOnlyManager");
 var settings = require('../utils/Settings');
 var securityManager = require("../db/SecurityManager");
-var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins.js");
+var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugin_defs.js");
 var log4js = require('log4js');
 var messageLogger = log4js.getLogger("message");
 var accessLogger = log4js.getLogger("access");
@@ -36,7 +36,14 @@ var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 var channels = require("channels");
 var stats = require('../stats');
 var remoteAddress = require("../utils/RemoteAddress").remoteAddress;
+const assert = require('assert').strict;
 const nodeify = require("nodeify");
+const { RateLimiterMemory } = require('rate-limiter-flexible');
+
+const rateLimiter = new RateLimiterMemory({
+  points: settings.commitRateLimiting.points,
+  duration: settings.commitRateLimiting.duration
+});
 
 /**
  * A associative array that saves informations about a session
@@ -164,6 +171,19 @@ exports.handleDisconnect = async function(client)
  */
 exports.handleMessage = async function(client, message)
 {
+  var env = process.env.NODE_ENV || 'development';
+
+  if (env === 'production') {
+    try {
+      await rateLimiter.consume(client.handshake.address); // consume 1 point per event from IP
+    }catch(e){
+      console.warn("Rate limited: ", client.handshake.address, " to reduce the amount of rate limiting that happens edit the rateLimit values in settings.json");
+      stats.meter('rateLimited').mark();
+      client.json.send({disconnect:"rateLimited"});
+      return;
+    }
+  }
+
   if (message == null) {
     return;
   }
@@ -239,34 +259,12 @@ exports.handleMessage = async function(client, message)
     }
   }
 
-  /*
-   * In a previous version of this code, an "if (message)" wrapped the
-   * following series of async calls  [now replaced with await calls]
-   * This ugly "!Boolean(message)" is a lame way to exactly negate the truthy
-   * condition and replace it with an early return, while being sure to leave
-   * the original behaviour unchanged.
-   *
-   * A shallower code could maybe make more evident latent logic errors.
-   */
-  if (!Boolean(message)) {
-    return;
-  }
-
   let dropMessage = await handleMessageHook();
   if (!dropMessage) {
-
-    // check permissions
-
     if (message.type == "CLIENT_READY") {
       // client tried to auth for the first time (first msg from the client)
       createSessionInfo(client, message);
     }
-
-    // Note: message.sessionID is an entirely different kind of
-    // session from the sessions we use here! Beware!
-    // FIXME: Call our "sessions" "connections".
-    // FIXME: Use a hook instead
-    // FIXME: Allow to override readwrite access with readonly
 
     // the session may have been dropped during earlier processing
     if (!sessioninfos[client.id]) {
@@ -895,12 +893,6 @@ async function handleClientReady(client, message)
   // Get ro/rw id:s
   let padIds = await readOnlyManager.getIds(message.padId);
 
-  // check permissions
-
-  // Note: message.sessionID is an entierly different kind of
-  // session from the sessions we use here! Beware!
-  // FIXME: Call our "sessions" "connections".
-  // FIXME: Use a hook instead
   // FIXME: Allow to override readwrite access with readonly
   let statusObject = await securityManager.checkAccess(padIds.padId, message.sessionID, message.token, message.password);
   let accessStatus = statusObject.accessStatus;
@@ -914,6 +906,7 @@ async function handleClientReady(client, message)
   let author = statusObject.authorID;
 
   // get all authordata of this new user
+  assert(author);
   let value = await authorManager.getAuthor(author);
   let authorColorId = value.colorId;
   let authorName = value.name;
@@ -1131,6 +1124,7 @@ async function handleClientReady(client, message)
       },
       "initialChangesets": [], // FIXME: REMOVE THIS SHIT
       "thisUserHasEditedThisPad": thisUserHasEditedThisPad,
+      "allowAnyoneToImport": settings.allowAnyoneToImport
     }
 
     // Add a username to the clientVars if one avaiable
@@ -1139,7 +1133,7 @@ async function handleClientReady(client, message)
     }
 
     // call the clientVars-hook so plugins can modify them before they get sent to the client
-    let messages = await hooks.aCallAll("clientVars", { clientVars: clientVars, pad: pad });
+    let messages = await hooks.aCallAll('clientVars', {clientVars, pad, socket: client});
 
     // combine our old object with the new attributes from the hook
     for (let msg of messages) {
@@ -1294,7 +1288,7 @@ async function handleChangesetRequest(client, message)
     data.requestID = message.data.requestID;
     client.json.send({ type: "CHANGESET_REQ", data });
   } catch (err) {
-    console.error('Error while handling a changeset request for ' + padIds.padId, err, message.data);
+    console.error('Error while handling a changeset request for ' + padIds.padId, err.toString(), message.data);
   }
 }
 
@@ -1495,8 +1489,12 @@ exports.padUsers = async function(padID) {
     let s = sessioninfos[roomClient.id];
     if (s) {
       return authorManager.getAuthor(s.author).then(author => {
-        author.id = s.author;
-        padUsers.push(author);
+        // Fixes: https://github.com/ether/etherpad-lite/issues/4120
+        // On restart author might not be populated?
+        if(author){
+          author.id = s.author;
+          padUsers.push(author);
+        }
       });
     }
   }));

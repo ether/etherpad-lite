@@ -732,7 +732,7 @@ var paduserlist = (function()
       }
       else
       {
-        $("#myusernameedit").addClass("editempty").val(_("pad.userlist.entername"));
+        $("#myusernameedit").attr("placeholder", html10n.get("pad.userlist.entername"));
       }
       if (colorPickerOpen)
       {

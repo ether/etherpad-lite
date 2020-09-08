@@ -5,6 +5,9 @@
 #font-color {
   display: list-item !important;
 }
+.readonly #font-color {
+  display: none !important;
+}
 
 .color\:black,
 [data-color=black] {

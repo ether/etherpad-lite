@@ -71,8 +71,8 @@
   , "$underscore/underscore.js"
   , "security.js"
   , "$security.js"
-  , "json2.js"
   , "pluginfw/client_plugins.js"
+  , "pluginfw/plugin_defs.js"
   , "pluginfw/shared.js"
   , "pluginfw/hooks.js"
   ]

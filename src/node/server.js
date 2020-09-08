@@ -21,8 +21,9 @@
  * limitations under the License.
  */
 
-var log4js = require('log4js')
+const log4js = require('log4js')
   , NodeVersion = require('./utils/NodeVersion')
+  , UpdateCheck = require('./utils/UpdateCheck')
   ;
 
 log4js.replaceConsole();
@@ -37,6 +38,9 @@ NodeVersion.enforceMinNodeVersion('10.13.0');
  * Etherpad 1.8.3 will require at least nodejs 10.13.0.
  */
 NodeVersion.checkDeprecationStatus('10.13.0', '1.8.3');
+
+// Check if Etherpad version is up-to-date
+UpdateCheck.check();
 
 /*
  * start up stats counting system
@@ -57,7 +61,6 @@ npm.load({}, function() {
   var db = require('./db/DB');
   var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
   var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
-  hooks.plugins = plugins;
 
   db.init()
     .then(plugins.update)

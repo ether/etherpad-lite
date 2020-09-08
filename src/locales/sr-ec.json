@@ -7,6 +7,7 @@
 			"Milicevic01",
 			"Obsuser",
 			"Srdjan m",
+			"Srđan",
 			"Милан Јелисавчић"
 		]
 	},
@@ -46,6 +47,8 @@
 	"pad.settings.fontType": "Врста фонта:",
 	"pad.settings.fontType.normal": "Нормално",
 	"pad.settings.language": "Језик:",
+	"pad.settings.about": "О пројекту",
+	"pad.settings.poweredBy": "Покреће",
 	"pad.importExport.import_export": "Увоз/извоз",
 	"pad.importExport.import": "Отпремите било коју текстуалну датотеку или документ",
 	"pad.importExport.importSuccessful": "Успешно!",

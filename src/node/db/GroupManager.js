@@ -50,7 +50,7 @@ exports.deleteGroup = async function(groupID)
 
   // iterate through group2sessions and delete all sessions
   let group2sessions = await db.get("group2sessions:" + groupID);
-  let sessions = group2sessions ? group2sessions.sessionsIDs : {};
+  let sessions = group2sessions ? group2sessions.sessionIDs : {};
 
   // loop through all sessions and delete them (in parallel)
   await Promise.all(Object.keys(sessions).map(session => {

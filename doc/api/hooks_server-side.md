@@ -93,7 +93,10 @@ Available blocks in `pad.html` are:
 
 `index.html` blocks:
 
+ * `indexCustomStyles` - contains the `index.css` `<link>` tag, allows you to add your own or to customize the one provided by the active skin
  * `indexWrapper` - contains the form for creating new pads
+ * `indexCustomScripts` - contains the `index.js` `<script>` tag, allows you to add your own or to customize the one provided by the active skin
+ * `indexCustomInlineScripts` - contains the inline `<script>` of home page, allows you to customize `go2Name()`, `go2Random()` or `randomPadName()` functions
 
 ## padInitToolbar
 Called from: src/node/hooks/express/specialpages.js
@@ -197,7 +200,69 @@ Things in context:
 3. next - ?
 4. resource - the path being accessed
 
-This is useful for modifying the way authentication is done, especially for specific paths.
+This hook is called to handle authorization. It is especially useful for
+controlling access to specific paths.
+
+A plugin's authorize function is typically called twice for each access: once
+before authentication and again after. Specifically, it is called if all of the
+following are true:
+
+* The request is not for static content or an API endpoint. (Requests for static
+  content and API endpoints are always authorized, even if unauthenticated.)
+* Either authentication has not yet been performed (`context.req.session.user`
+  is undefined) or the user has successfully authenticated
+  (`context.req.session.user` is an object containing user-specific settings).
+* If the user has successfully authenticated, the user is not an admin. (Admin
+  users are always authorized.)
+* Either the request is for an `/admin` page or the `requireAuthentication`
+  setting is true.
+* Either the request is for an `/admin` page, or the user has not yet
+  authenticated, or the user has authenticated and the `requireAuthorization`
+  setting is true.
+* For pre-authentication invocations of a plugin's authorize function
+  (`context.req.session.user` is undefined), an authorize function from a
+  different plugin has not already caused the pre-authentication authorization
+  to pass or fail.
+* For post-authentication invocations of a plugin's authorize function
+  (`context.req.session.user` is an object), an authorize function from a
+  different plugin has not already caused the post-authentication authorization
+  to pass or fail.
+
+For pre-authentication invocations of your authorize function, calling the
+provided callback with `[true]` will immediately grant access without requiring
+the user to authenticate. Calling the provided callback with `[false]` will
+trigger authentication unless authentication is not required. Calling the
+provided callback with `[]` or `undefined` will defer the decision to the next
+authorization plugin (if any, otherwise it is the same as calling with
+`[false]`).
+
+**WARNING:** Your authorize function can be called for an `/admin` page even if
+the user has not yet authenticated. It is your responsibility to fail or defer
+authorization if you do not want to grant admin privileges to the general
+public.
+
+For post-authentication invocations of your authorize function, calling the
+provided callback with `[true]` or `[false]` will cause access to be granted or
+denied, respectively. Calling the callback with `[]` or `undefined` will defer
+the authorization decision to the next authorization plugin (if any, otherwise
+deny).
+
+Example:
+
+```
+exports.authorize = (hookName, context, cb) => {
+  const user = context.req.session.user;
+  if (!user) {
+    // The user has not yet authenticated so defer the pre-authentication
+    // authorization decision to the next plugin.
+    return cb([]);
+  }
+  const path = context.req.path;  // or context.resource
+  if (isExplicitlyProhibited(user, path)) return cb([false]);
+  if (isExplicitlyAllowed(user, path)) return cb([true]);
+  return cb([]);  // Let the next authorization plugin decide
+};
+```
 
 ## authenticate
 Called from: src/node/hooks/express/webaccess.js
@@ -210,7 +275,57 @@ Things in context:
 4. username - the username used (optional)
 5. password - the password used (optional)
 
-This is useful for modifying the way authentication is done.
+This hook is called to handle authentication.
+
+Plugins that supply an authenticate function should probably also supply an
+authFailure function unless falling back to HTTP basic authentication is
+appropriate upon authentication failure.
+
+This hook is only called if either the `requireAuthentication` setting is true
+or the request is for an `/admin` page.
+
+Calling the provided callback with `[true]` or `[false]` will cause
+authentication to succeed or fail, respectively. Calling the callback with `[]`
+or `undefined` will defer the authentication decision to the next authentication
+plugin (if any, otherwise fall back to HTTP basic authentication).
+
+If you wish to provide a mix of restricted and anonymous access (e.g., some pads
+are private, others are public), you can "authenticate" (as a guest account)
+users that have not yet logged in, and rely on other hooks (e.g., authorize,
+onAccessCheck, handleMessageSecurity) to authorize specific privileged actions.
+
+If authentication is successful, the authenticate function MUST set
+`context.req.session.user` to the user's settings object. The `username`
+property of this object should be set to the user's username. The settings
+object should come from global settings (`settings.users[username]`).
+
+Example:
+
+```
+let global_settings;
+
+exports.loadSettings = (hook_name, {settings}, cb) => {
+  global_settings = settings;
+  return cb();
+};
+
+exports.authenticate = (hook_name, context, cb) => {
+  if (notApplicableToThisPlugin(context)) {
+    return cb([]);  // Let the next authentication plugin decide
+  }
+  const username = authenticate(context);
+  if (!username) {
+    console.warn(`ep_myplugin.authenticate: Failed authentication from IP ${context.req.ip}`);
+    return cb([false]);
+  }
+  console.info(`ep_myplugin.authenticate: Successful authentication from IP ${context.req.ip} for user ${username}`);
+  const users = global_settings.users;
+  if (!(username in users)) users[username] = {};
+  users[username].username = username;
+  context.req.session.user = users[username];
+  return cb([true]);
+};
+```
 
 ## authFailure
 Called from: src/node/hooks/express/webaccess.js
@@ -221,7 +336,34 @@ Things in context:
 2. res - the response object
 3. next - ?
 
-This is useful for modifying the way authentication is done.
+This hook is called to handle an authentication or authorization failure.
+
+Plugins that supply an authenticate function should probably also supply an
+authFailure function unless falling back to HTTP basic authentication is
+appropriate upon authentication failure.
+
+A plugin's authFailure function is only called if all of the following are true:
+
+* There was an authentication or authorization failure.
+* The failure was not already handled by an authFailure function from another
+  plugin.
+
+Calling the provided callback with `[true]` tells Etherpad that the failure was
+handled and no further error handling is required. Calling the callback with
+`[]` or `undefined` defers error handling to the next authFailure plugin (if
+any, otherwise fall back to HTTP basic authentication).
+
+Example:
+
+```
+exports.authFailure = (hookName, context, cb) => {
+  if (notApplicableToThisPlugin(context)) {
+    return cb([]);  // Let the next plugin handle the error
+  }
+  context.res.redirect(makeLoginURL(context.req));
+  return cb([true]);
+};
+```
 
 ## handleMessage
 Called from: src/node/handler/PadMessageHandler.js
@@ -275,7 +417,6 @@ function handleMessageSecurity ( hook, context, callback ) {
 };
 ```
 
-
 ## clientVars
 Called from: src/node/handler/PadMessageHandler.js
 
@@ -283,16 +424,38 @@ Things in context:
 
 1. clientVars - the basic `clientVars` built by the core
 2. pad - the pad this session is about
+3. socket - the socket.io Socket object
 
-This hook will be called once a client connects and the `clientVars` are being sent. Plugins can use this hook to give the client an initial configuration, like the tracking-id of an external analytics-tool that is used on the client-side. You can also overwrite values from the original `clientVars`.
+This hook is called after a client connects but before the initial configuration
+is sent to the client. Plugins can use this hook to manipulate the
+configuration. (Example: Add a tracking ID for an external analytics tool that
+is used client-side.)
 
-Example:
+The clientVars function must return a Promise that resolves to an object (or
+null/undefined) whose properties will be merged into `context.clientVars`.
+Returning `callback(value)` will return a Promise that is resolved to `value`.
+
+You can modify `context.clientVars` to change the values sent to the client, but
+beware: async functions from other clientVars plugins might also be reading or
+manipulating the same `context.clientVars` object. For this reason it is
+recommended you return an object rather than modify `context.clientVars`.
+
+If needed, you can access the user's account information (if authenticated) via
+`context.socket.client.request.session.user`.
+
+Examples:
 
 ```
-exports.clientVars = function(hook, context, callback)
-{
-  // tell the client which year we are in
-  return callback({ "currentYear": new Date().getFullYear() });
+// Using an async function
+exports.clientVars = async (hookName, context) => {
+  const user = context.socket.client.request.session.user || {};
+  return {'accountUsername': user.username || '<unknown>'}
+};
+
+// Using a regular function
+exports.clientVars = (hookName, context, callback) => {
+  const user = context.socket.client.request.session.user || {};
+  return callback({'accountUsername': user.username || '<unknown>'});
 };
 ```
 

@@ -1,13 +1,13 @@
 <%
   var settings = require("ep_etherpad-lite/node/utils/Settings")
-    , hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks')
     , langs = require("ep_etherpad-lite/node/hooks/i18n").availableLangs
+    , pluginUtils = require('ep_etherpad-lite/static/js/pluginfw/shared')
     ;
 %>
 <!doctype html>
 
 <% e.begin_block("htmlHead"); %>
-<html class="<%=hooks.clientPluginNames().join(' '); %> <%=settings.skinVariants%>">
+<html class="<%=pluginUtils.clientPluginNames().join(' '); %> <%=settings.skinVariants%>">
 <% e.end_block(); %>
 
   <title><%=settings.title%></title>
@@ -103,9 +103,6 @@
         <div id="wrongPassword">
           <p data-l10n-id="pad.wrongPassword">Your password was wrong</p>
         </div>
-        <div id="noCookie">
-          <p data-l10n-id="pad.noCookie">Cookie could not be found. Please allow cookies in your browser!</p>
-        </div>
         <% e.begin_block("loading"); %>
         <p data-l10n-id="pad.loading" id="loading">Loading...</p>
         <% e.end_block(); %>
@@ -149,10 +146,7 @@
               <label for="viewfontmenu" data-l10n-id="pad.settings.fontType">Font type:</label>
               <select id="viewfontmenu">
                 <option value="" data-l10n-id="pad.settings.fontType.normal">Normal</option>
-                <%= fonts = [
-                          "Quicksand", "Roboto", "Montserrat", "OpenDyslexic", "monospace", "RobotoMono",
-                          "Arial", "Georgia", "Times New Roman", "Verdana", "Courrier New",
-                          "Open Sans", "Lato", "Helvetica" ] %>
+                <%= fonts = ["Quicksand", "Roboto", "Alegreya", "PlayfairDisplay", "Montserrat", "OpenDyslexic", "RobotoMono"] %>
                 <% for(var i=0; i < fonts.length; i++) { %>
                   <option value="<%=fonts[i]%>"><%=fonts[i]%></option>
                 <% } %>
@@ -284,6 +278,10 @@
           <div class="deleted">
             <h1 data-l10n-id="pad.modals.deleted"></h1>
             <p data-l10n-id="pad.modals.deleted.explanation"></p>
+          </div>
+          <div class="rateLimited">
+            <h1 data-l10n-id="pad.modals.rateLimited"></h1>
+            <p data-l10n-id="pad.modals.rateLimited.explanation"></p>
           </div>
           <div class="disconnected with_reconnect_timer">
             <% e.begin_block("disconnected"); %>
@@ -490,8 +488,6 @@
 
         plugins.baseURL = baseURL;
         plugins.update(function () {
-          hooks.plugins = plugins;
-
           // Call documentReady hook
           $(function() {
             hooks.aCallAll('documentReady');

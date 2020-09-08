@@ -322,6 +322,11 @@ exports.scrollWhenFocusLineIsOutOfViewport = {
 exports.exposeVersion = false;
 
 /*
+ * Override any strings found in locale directories
+ */
+exports.customLocaleStrings = {};
+
+/*
  * From Etherpad 1.8.3 onwards, import and export of pads is always rate
  * limited.
  *
@@ -339,12 +344,42 @@ exports.importExportRateLimiting = {
 };
 
 /*
+ * From Etherpad 1.9.0 onwards, commits from individual users are rate limited
+ *
+ * The default is to allow at most 10 changes per IP in a 1 second window.
+ * After that the change is rejected.
+ *
+ * See https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#websocket-single-connection-prevent-flooding for more options
+ */
+exports.commitRateLimiting = {
+  // duration of the rate limit window (seconds)
+  "duration": 1,
+
+  // maximum number of chanes per IP to allow during the rate limit window
+  "points": 10
+};
+
+/*
  * From Etherpad 1.8.3 onwards, the maximum allowed size for a single imported
  * file is always bounded.
  *
  * File size is specified in bytes. Default is 50 MB.
  */
 exports.importMaxFileSize = 50 * 1024 * 1024;
+
+
+/*
+ * From Etherpad 1.8.3 onwards import was restricted to authors who had
+ * content within the pad.
+ *
+ * This setting will override that restriction and allow any user to import
+ * without the requirement to add content to a pad.
+ *
+ * This setting is useful for when you use a plugin for authentication so you
+ * can already trust each user.
+ */
+exports.allowAnyoneToImport = false,
+
 
 // checks if abiword is avaiable
 exports.abiwordAvailable = function()

@@ -1,4 +1,7 @@
+*~
+.dockerignore
 .hg
+Dockerfile
 
 # Remove the git objects, logs, etc. to make final image smaller.
 # Some files still need to be in the .git directory, because Etherpad at

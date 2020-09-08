@@ -6,13 +6,17 @@ node_js:
 services:
   - docker
 
+cache: false
+
+before_install:
+  - sudo add-apt-repository -y ppa:libreoffice/ppa
+  - sudo apt-get update
+  - sudo apt-get -y install libreoffice
+  - sudo apt-get -y install libreoffice-pdfimport
+
 install:
   - "bin/installDeps.sh"
   - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
-  - "npm install ep_test_line_attrib"
-
-before_script:
-  - "tests/frontend/travis/sauce_tunnel.sh"
 
 script:
   - "tests/frontend/travis/runner.sh"
@@ -24,25 +28,39 @@ env:
 
 jobs:
   include:
+    # we can only frontend tests from the ether/ organization and not from forks.
+    # To request tests to be run ask a maintainer to fork your repo to ether/
+    - if: fork = false
+      name: "Test the Frontend"
+      install:
+        #FIXME
+        - "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/g' settings.json.template > settings.json"
+        - "tests/frontend/travis/sauce_tunnel.sh"
+        - "bin/installDeps.sh"
+        - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
+      script:
+        - "tests/frontend/travis/runner.sh"
     - name: "Run the Backend tests"
       install:
+        - "bin/installDeps.sh"
         - "cd src && npm install && cd -"
       script:
         - "tests/frontend/travis/runnerBackend.sh"
-    - name: "Test the Frontend"
+## Temporarily commented out the Dockerfile tests
+#    - name: "Test the Dockerfile"
+#      install:
+#        - "cd src && npm install && cd -"
+#      script:
+#        - "docker build -t etherpad:test ."
+#        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
+#        - "cd src && npm run test-container"
+    - name: "Load test Etherpad"
       install:
         - "bin/installDeps.sh"
-        - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
-        - "npm install ep_test_line_attrib"
-      script:
-        - "tests/frontend/travis/runner.sh"
-    - name: "Test the Dockerfile"
-      install:
         - "cd src && npm install && cd -"
+        - "npm install -g etherpad-load-test"
       script:
-        - "docker build -t etherpad:test ."
-        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
-        - "cd src && npm run test-container"
+        - "tests/frontend/travis/runnerLoadTest.sh"
 
 notifications:
   irc:

@@ -298,7 +298,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
       });
     }
     processNextChars(text.length - idx);
-
+    
     return _processSpaces(assem.toString());
   } // end getLineHTML
   var pieces = [css];
@@ -316,7 +316,6 @@ function getHTMLFromAtext(pad, atext, authorColors)
     var context;
     var line = _analyzeLine(textLines[i], attribLines[i], apool);
     var lineContent = getLineHTML(line.text, line.aline);
-
     if (line.listLevel)//If we are inside a list
     {
       context = {
@@ -361,12 +360,50 @@ function getHTMLFromAtext(pad, atext, authorColors)
 
             if (prevPiece.indexOf("<ul") === 0 || prevPiece.indexOf("<ol") === 0 || prevPiece.indexOf("</li>") === 0)
             {
-              pieces.push("<li>");
+               /*
+                 uncommenting this breaks nested ols..
+                 if the previous item is NOT a ul, NOT an ol OR closing li then close the list
+                 so we consider this HTML, I inserted ** where it throws a problem in Example Wrong..
+                 <ol><li>one</li><li><ol><li>1.1</li><li><ol><li>1.1.1</li></ol></li></ol></li><li>two</li></ol>
+
+                 Note that closing the li then re-opening for another li item here is wrong.  The correct markup is
+                 <ol><li>one<ol><li>1.1<ol><li>1.1.1</li></ol></li></ol></li><li>two</li></ol>
+
+                 Exmaple Right: <ol class="number"><li>one</li><ol start="2" class="number"><li>1.1</li><ol start="3" class="number"><li>1.1.1</li></ol></li></ol><li>two</li></ol>
+                 Example Wrong: <ol class="number"><li>one</li>**</li>**<ol start="2" class="number"><li>1.1</li>**</li>**<ol start="3" class="number"><li>1.1.1</li></ol></li></ol><li>two</li></ol>
+                 So it's firing wrong where the current piece is an li and the previous piece is an ol and next piece is an ol
+                 So to remedy this we can say if next piece is NOT an OL or UL.
+                 // pieces.push("</li>");
+
+              */
+              if( (nextLine.listTypeName === 'number') && (nextLine.text === '') ){
+                // is the listTypeName check needed here?  null text might be completely fine!
+                // TODO Check against Uls
+                // don't do anything because the next item is a nested ol openener so we need to keep the li open
+              }else{
+                pieces.push("<li>");
+              }
+
+
             }
 
             if (line.listTypeName === "number")
             {
-              pieces.push("<ol class=\"" + line.listTypeName + "\">");
+              // We introduce line.start here, this is useful for continuing Ordered list line numbers
+              // in case you have a bullet in a list IE you Want
+              // 1. hello
+              //   * foo
+              // 2. world
+              // Without this line.start logic it would be
+              // 1. hello * foo 1. world because the bullet would kill the OL
+
+              // TODO: This logic could also be used to continue OL with indented content
+              // but that's a job for another day....
+              if(line.start){
+                pieces.push("<ol start=\""+Number(line.start)+"\" class=\"" + line.listTypeName + "\">");
+              }else{
+                pieces.push("<ol class=\"" + line.listTypeName + "\">");
+              }
             }
             else
             {
@@ -375,13 +412,24 @@ function getHTMLFromAtext(pad, atext, authorColors)
           }
         }
       }
-
-      pieces.push("<li>", context.lineContent);
+      // if we're going up a level we shouldn't be adding..
+      if(context.lineContent){
+        pieces.push("<li>", context.lineContent);
+      }
 
       // To close list elements
       if (nextLine && nextLine.listLevel === line.listLevel && line.listTypeName === nextLine.listTypeName)
       {
-        pieces.push("</li>");
+        if(context.lineContent){
+          if( (nextLine.listTypeName === 'number') && (nextLine.text === '') ){
+            // is the listTypeName check needed here?  null text might be completely fine!
+            // TODO Check against Uls
+            // don't do anything because the next item is a nested ol openener so we need to keep the li open
+          }else{
+            pieces.push("</li>");
+          }
+
+        }
       }
       if ((!nextLine || !nextLine.listLevel || nextLine.listLevel < line.listLevel) || (nextLine && line.listTypeName !== nextLine.listTypeName))
       {

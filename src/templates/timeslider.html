@@ -74,11 +74,11 @@
       </div>
 
       <div class="editbarright menu_right">
-        <% e.begin_block("timesliderEditbarRight"); %>
         <ul>
-          <%- toolbar.menu(settings.toolbar.timeslider, true, 'timeslider-right', 'timeslider') %>
+          <% e.begin_block("timesliderEditbarRight"); %>
+            <%- toolbar.menu(settings.toolbar.timeslider, true, 'timeslider-right', 'timeslider') %>
+          <% e.end_block(); %>
         </ul>
-        <% e.end_block(); %>
       </div>
     </div>
 
@@ -226,17 +226,20 @@
 
     <div id="settings" class="popup"><div class="popup-content">
       <h1 data-l10n-id="pad.settings.padSettings"></h1>
-      <label for="viewfontmenu" data-l10n-id="pad.settings.fontType">Font type:</label>
-      <select id="viewfontmenu">
-        <option value="" data-l10n-id="pad.settings.fontType.normal">Normal</option>
-        <%= fonts = [
-                  "Quicksand", "Roboto", "Montserrat", "OpenDyslexic", "monospace", "RobotoMono",
-                  "Arial", "Georgia", "Times New Roman", "Verdana", "Courrier New",
-                  "Open Sans", "Lato", "Helvetica" ] %>
-        <% for(var i=0; i < fonts.length; i++) { %>
-          <option value="<%=fonts[i]%>"><%=fonts[i]%></option>
-        <% } %>
-      </select>
+      <p>
+        <label for="viewfontmenu" data-l10n-id="pad.settings.fontType">Font type:</label>
+        <select id="viewfontmenu">
+          <option value="" data-l10n-id="pad.settings.fontType.normal">Normal</option>
+          <%= fonts = ["Quicksand", "Roboto", "Alegreya", "PlayfairDisplay", "Montserrat", "OpenDyslexic", "RobotoMono"] %>
+          <% for(var i=0; i < fonts.length; i++) { %>
+            <option value="<%=fonts[i]%>"><%=fonts[i]%></option>
+          <% } %>
+        </select>
+      </p>
+      <p>
+        <input type="checkbox" id="options-followContents" checked="checked">
+        <label for="options-followContents" data-l10n-id="timeslider.followContents"></label>
+      </p>
     </div></div>
   </div>
 </body>
@@ -280,8 +283,6 @@
 
     plugins.update(function () {
       var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
-      hooks.plugins = plugins;
-
       var timeslider = require('ep_etherpad-lite/static/js/timeslider')
       timeslider.baseURL = baseURL;
       timeslider.init();
