@@ -683,10 +683,21 @@ describe('createPad', function(){
 })
 
 describe('copyPad', function(){
-  it('copies the content of a existent pad id', function(done) {
+  it('copies the content of a existent pad', function(done) {
     api.get(endPoint('copyPad')+"&sourceID="+testPadId+"&destinationID="+copiedPadId+"&force=true")
       .expect(function(res){
         if(res.body.code !== 0) throw new Error("Copy Pad Failed")
+      })
+      .expect('Content-Type', /json/)
+      .expect(200, done)
+  });
+})
+
+describe('copyPadWithoutHistory', function(){
+  it('copies the content of a existent pad without the history', function(done) {
+    api.get(endPoint('copyPadWithoutHistory')+"&sourceID="+testPadId+"&destinationID="+copiedPadId+"&force=true")
+      .expect(function(res){
+        if(res.body.code !== 0) throw new Error("Copy Pad Without History Failed")
       })
       .expect('Content-Type', /json/)
       .expect(200, done)

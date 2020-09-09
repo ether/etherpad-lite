@@ -1265,6 +1265,8 @@ async function handleChangesetRequest(client, message)
   // build the requested rough changesets and send them back
   try {
     let data = await getChangesetInfo(padIds.padId, start, end, granularity);
+    console.log('data');
+    console.log(data);
     data.requestID = message.data.requestID;
     client.json.send({ type: "CHANGESET_REQ", data });
   } catch (err) {
@@ -1278,6 +1280,7 @@ async function handleChangesetRequest(client, message)
  */
 async function getChangesetInfo(padId, startNum, endNum, granularity)
 {
+  debugger
   let pad = await padManager.getPad(padId);
   let head_revision = pad.getHeadRevisionNumber();
 

@@ -452,6 +452,90 @@ Pad.prototype.copy = async function copy(destinationID, force) {
   return { padID: destinationID };
 }
 
+Pad.prototype.copyWithoutHistory = async function copyWithoutHistory(destinationID, force) {
+  let sourceID = this.id;
+
+  // allow force to be a string
+  if (typeof force === "string") {
+    force = (force.toLowerCase() === "true");
+  } else {
+    force = !!force;
+  }
+
+  // flush the source pad:
+  this.saveToDatabase();
+
+  // if it's a group pad, let's make sure the group exists.
+  let destGroupID;
+  if (destinationID.indexOf("$") >= 0) {
+
+    destGroupID = destinationID.split("$")[0]
+    let groupExists = await groupManager.doesGroupExist(destGroupID);
+
+    // group does not exist
+    if (!groupExists) {
+      throw new customError("groupID does not exist for destinationID", "apierror");
+    }
+  }
+
+  // if the pad exists, we should abort, unless forced.
+  let exists = await padManager.doesPadExist(destinationID);
+
+  if (exists) {
+    if (!force) {
+      console.error("erroring out without force");
+      throw new customError("destinationID already exists", "apierror");
+    }
+
+    // exists and forcing
+    let pad = await padManager.getPad(destinationID);
+    await pad.remove();
+  }
+
+  let sourcePad = await padManager.getPad(sourceID);
+
+  // add the new sourcePad to all authors who contributed to the old one
+  this.getAllAuthors().forEach(authorID => {
+    authorManager.addPad(authorID, destinationID);
+  });
+
+  // Group pad? Add it to the group's list
+  if (destGroupID) {
+    await db.setSub("group:" + destGroupID, ["pads", destinationID], 1);
+  }
+
+  // initialize the pad with a new line to avoid getting the defaultText
+  let newPad = await padManager.getPad(destinationID, '\n');
+
+  let oldAText = this.atext;
+  let newPool = newPad.pool;
+  newPool.fromJsonable(sourcePad.pool.toJsonable()); // copy that sourceId pool to the new pad
+
+  // based on Changeset.makeSplice
+  let assem = Changeset.smartOpAssembler();
+  let initialApool = new AttributePool();
+  assem.appendOpWithText('=', '', [], initialApool);
+  Changeset.appendATextToAssembler(oldAText, assem);
+  assem.endDocument();
+
+  // although we have instantiated the newPad with '\n', an additional '\n' is
+  // added internally, so the pad text on the revision 0 is "\n\n"
+  let oldLength = 2;
+
+  let newLength = assem.getLengthChange();
+  let newText = oldAText.text;
+
+  // create a changeset that removes the previous text and add the newText with
+  // all atributes present on the source pad
+  let changeset = Changeset.pack(oldLength, newLength, assem.toString(), newText);
+  newPad.appendRevision(changeset);
+
+  hooks.callAll('padCopy', { 'originalPad': this, 'destinationID': destinationID });
+
+  return { padID: destinationID };
+}
+
+
 Pad.prototype.remove = async function remove() {
   var padID = this.id;
 
