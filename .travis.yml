@@ -7,7 +7,12 @@ dist: xenial
 
 cache: none
 
-
+## before install phase, install Libreoffice on Ubuntu
+before_install:
+  - sudo add-apt-repository -y ppa:libreoffice/ppa # install libreoffice through PPA
+  - sudo apt-get update # update package
+  - sudo apt-get -y install libreoffice # install libreoffice
+  - sudo apt-get -y install libreoffice-pdfimport # install pdf import component for LibreOffice
   
 ## install dependecy required
 install:
