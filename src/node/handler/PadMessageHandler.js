@@ -1193,48 +1193,46 @@ async function handleClientReady(client, message)
       let cached = historicalAuthorData[author];
 
       // reuse previously created cache of author's data
-      let p = cached ? Promise.resolve(cached) : authorManager.getAuthor(author);
+      const authorInfo = await (cached ? Promise.resolve(cached) : authorManager.getAuthor(author));
 
-      return p.then(authorInfo => {
-        // default fallback color to use if authorInfo.colorId is null
-        const defaultColor = "#daf0b2";
+      // default fallback color to use if authorInfo.colorId is null
+      const defaultColor = "#daf0b2";
 
-        if (!authorInfo) {
-          console.warn(`handleClientReady(): no authorInfo parameter was received. Default values are going to be used. See issue #3612.  This can be caused by a user clicking undo after clearing all authorship colors see #2802`);
-          authorInfo = {};
-        }
+      if (!authorInfo) {
+        console.warn(`handleClientReady(): no authorInfo parameter was received. Default values are going to be used. See issue #3612.  This can be caused by a user clicking undo after clearing all authorship colors see #2802`);
+        authorInfo = {};
+      }
 
-        // For some reason sometimes name isn't set
-        // Catch this issue here and use a fixed name.
-        if (!authorInfo.name) {
-          console.warn(`handleClientReady(): client submitted no author name. Using "Anonymous". See: issue #3612`);
-          authorInfo.name = "Anonymous";
-        }
+      // For some reason sometimes name isn't set
+      // Catch this issue here and use a fixed name.
+      if (!authorInfo.name) {
+        console.warn(`handleClientReady(): client submitted no author name. Using "Anonymous". See: issue #3612`);
+        authorInfo.name = "Anonymous";
+      }
 
-        // For some reason sometimes colorId isn't set
-        // Catch this issue here and use a fixed color.
-        if (!authorInfo.colorId) {
-          console.warn(`handleClientReady(): author "${authorInfo.name}" has no property colorId. Using the default color ${defaultColor}. See issue #3612`);
-          authorInfo.colorId = defaultColor;
-        }
+      // For some reason sometimes colorId isn't set
+      // Catch this issue here and use a fixed color.
+      if (!authorInfo.colorId) {
+        console.warn(`handleClientReady(): author "${authorInfo.name}" has no property colorId. Using the default color ${defaultColor}. See issue #3612`);
+        authorInfo.colorId = defaultColor;
+      }
 
-        // Send the new User a Notification about this other user
-        let msg = {
-          "type": "COLLABROOM",
-          "data": {
-            type: "USER_NEWINFO",
-            userInfo: {
-              "ip": "127.0.0.1",
-              "colorId": authorInfo.colorId,
-              "name": authorInfo.name,
-              "userAgent": "Anonymous",
-              "userId": author
-            }
+      // Send the new User a Notification about this other user
+      let msg = {
+        "type": "COLLABROOM",
+        "data": {
+          type: "USER_NEWINFO",
+          userInfo: {
+            "ip": "127.0.0.1",
+            "colorId": authorInfo.colorId,
+            "name": authorInfo.name,
+            "userAgent": "Anonymous",
+            "userId": author
           }
-        };
+        }
+      };
 
-        client.json.send(msg);
-      });
+      client.json.send(msg);
     }));
   }
 }
