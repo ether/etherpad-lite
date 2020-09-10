@@ -199,23 +199,6 @@ exports.handleMessage = async function(client, message)
     return;
   }
 
-  // Allow plugins to bypass the readonly message blocker
-  if ((await hooks.aCallAll('handleMessageSecurity', {client, message})).some((w) => w === true)) {
-    thisSession.readonly = false;
-  }
-
-  // Call handleMessage hook. If a plugin returns null, the message will be dropped. Note that for
-  // all messages handleMessage will be called, even if the client is not authorized
-  if ((await hooks.aCallAll('handleMessage', {client, message})).some((m) => m === null)) {
-    return;
-  }
-
-  // Drop the message if the client disconnected while the hooks were running.
-  if (sessioninfos[client.id] !== thisSession) {
-    messageLogger.warn("Dropping message from a connection that has gone away.")
-    return;
-  }
-
   if (message.type === "CLIENT_READY") {
     // client tried to auth for the first time (first msg from the client)
     createSessionInfoAuth(thisSession, message);
@@ -245,7 +228,21 @@ exports.handleMessage = async function(client, message)
     return;
   }
 
-  // access was granted
+  // Allow plugins to bypass the readonly message blocker
+  if ((await hooks.aCallAll('handleMessageSecurity', {client, message})).some((w) => w === true)) {
+    thisSession.readonly = false;
+  }
+
+  // Call handleMessage hook. If a plugin returns null, the message will be dropped.
+  if ((await hooks.aCallAll('handleMessage', {client, message})).some((m) => m === null)) {
+    return;
+  }
+
+  // Drop the message if the client disconnected during the above processing.
+  if (sessioninfos[client.id] !== thisSession) {
+    messageLogger.warn('Dropping message from a connection that has gone away.')
+    return;
+  }
 
   // Check what type of message we get and delegate to the other methods
   if (message.type === "CLIENT_READY") {

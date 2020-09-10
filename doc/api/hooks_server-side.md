@@ -399,9 +399,6 @@ The handleMessage function must return a Promise. If the Promise resolves to
 `null`, the message is dropped. Returning `callback(value)` will return a
 Promise that is resolved to `value`.
 
-**WARNING:** handleMessage is called for every message, even if the client is
-not authorized to send the message. It is up to the plugin to check permissions.
-
 Examples:
 
 ```
@@ -443,10 +440,6 @@ granting write access has no effect for those message types.
 The handleMessageSecurity function must return a Promise. If the Promise
 resolves to `true`, write access is granted as described above. Returning
 `callback(value)` will return a Promise that is resolved to `value`.
-
-**WARNING:** handleMessageSecurity is called for every message, even if the
-client is not authorized to send the message. It is up to the plugin to check
-permissions.
 
 Examples:
 
