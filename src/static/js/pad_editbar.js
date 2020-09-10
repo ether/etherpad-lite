@@ -146,7 +146,7 @@ var padeditbar = (function()
       self.dropdowns = [];
 
       $("#editbar .editbarbutton").attr("unselectable", "on"); // for IE
-      $("#editbar").removeClass("disabledtoolbar").addClass("enabledtoolbar");
+      this.enable();
       $("#editbar [data-key]").each(function () {
         $(this).unbind("click");
         (new ToolbarItem($(this))).bind(function (command, item) {
@@ -193,6 +193,10 @@ var padeditbar = (function()
     disable: function()
     {
       $("#editbar").addClass('disabledtoolbar').removeClass("enabledtoolbar");
+    },
+    enable: function()
+    {
+      $('#editbar').addClass('enabledtoolbar').removeClass('disabledtoolbar');
     },
     commands: {},
     registerCommand: function (cmd, callback) {

@@ -222,7 +222,6 @@ function handshake()
   });
 
   socket.on('reconnecting', function() {
-    padeditor.disable();
     pad.collabClient.setStateIdle();
     pad.collabClient.setIsPendingRevision(true);
     pad.collabClient.setChannelState("RECONNECTING");
@@ -752,10 +751,15 @@ var pad = {
     if (newState == "CONNECTED")
     {
       padeditor.enable();
+      padeditbar.enable();
+      padimpexp.enable();
       padconnectionstatus.connected();
     }
     else if (newState == "RECONNECTING")
     {
+      padeditor.disable();
+      padeditbar.disable();
+      padimpexp.disable();
       padconnectionstatus.reconnecting();
     }
     else if (newState == "DISCONNECTED")
