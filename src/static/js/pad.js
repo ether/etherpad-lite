@@ -156,7 +156,8 @@ function sendClientReady(isReconnect, messageType)
     createCookie("token", token, 60);
   }
 
-  var sessionID = decodeURIComponent(readCookie("sessionID"));
+  var encodedSessionID = readCookie('sessionID');
+  var sessionID = encodedSessionID == null ? null : decodeURIComponent(encodedSessionID);
   var password = readCookie("password");
 
   var msg = {
