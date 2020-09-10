@@ -371,24 +371,38 @@ Called from: src/node/handler/PadMessageHandler.js
 Things in context:
 
 1. message - the message being handled
-2. client - the client object from socket.io
+2. client - the socket.io Socket object
 
-This hook will be called once a message arrive. If a plugin calls `callback(null)` the message will be dropped. However, it is not possible to modify the message.
+This hook allows plugins to drop or modify incoming socket.io messages from
+clients, before Etherpad processes them.
 
-Plugins may also decide to implement custom behavior once a message arrives.
+The handleMessage function must return a Promise. If the Promise resolves to
+`null`, the message is dropped. Returning `callback(value)` will return a
+Promise that is resolved to `value`.
 
-**WARNING**: handleMessage will be called, even if the client is not authorized to send this message. It's up to the plugin to check permissions.
+**WARNING:** handleMessage is called for every message, even if the client is
+not authorized to send the message. It is up to the plugin to check permissions.
 
-Example:
+Examples:
 
 ```
-function handleMessage ( hook, context, callback ) {
-  if ( context.message.type == 'USERINFO_UPDATE' ) {
-    // If the message type is USERINFO_UPDATE, drop the message
-    callback(null);
-  }else{
-    callback();
+// Using an async function:
+exports.handleMessage = async (hookName, {message, client}) => {
+  if (message.type === 'USERINFO_UPDATE') {
+    // Force the display name to the name associated with the account.
+    const user = client.client.request.session.user || {};
+    if (user.name) message.data.userInfo.name = user.name;
   }
+};
+
+// Using a regular function:
+exports.handleMessage = (hookName, {message, client}, callback) => {
+  if (message.type === 'USERINFO_UPDATE') {
+    // Force the display name to the name associated with the account.
+    const user = client.client.request.session.user || {};
+    if (user.name) message.data.userInfo.name = user.name;
+  }
+  return cb();
 };
 ```
 
@@ -398,22 +412,36 @@ Called from: src/node/handler/PadMessageHandler.js
 Things in context:
 
 1. message - the message being handled
-2. client - the client object from socket.io
+2. client - the socket.io Socket object
 
-This hook will be called once a message arrives. If a plugin calls `callback(true)` the message will be allowed to be processed. This is especially useful if you want read only pad visitors to update pad contents for whatever reason.
+This hook allows plugins to grant temporary write access to a pad. It is called
+for each incoming message from a client. If write access is granted, it applies
+to the current message and all future messages from the same socket.io
+connection until the next `CLIENT_READY` or `SWITCH_TO_PAD` message. Read-only
+access is reset **after** each `CLIENT_READY` or `SWITCH_TO_PAD` message, so
+granting write access has no effect for those message types.
 
-**WARNING**: handleMessageSecurity will be called, even if the client is not authorized to send this message. It's up to the plugin to check permissions.
+The handleMessageSecurity function must return a Promise. If the Promise
+resolves to `true`, write access is granted as described above. Returning
+`callback(value)` will return a Promise that is resolved to `value`.
 
-Example:
+**WARNING:** handleMessageSecurity is called for every message, even if the
+client is not authorized to send the message. It is up to the plugin to check
+permissions.
+
+Examples:
 
 ```
-function handleMessageSecurity ( hook, context, callback ) {
-  if ( context.message.boomerang == 'hipster' ) {
-    // If the message boomer is hipster, allow the request
-    callback(true);
-  }else{
-    callback();
-  }
+// Using an async function:
+exports.handleMessageSecurity = async (hookName, {message, client}) => {
+  if (shouldGrantWriteAccess(message, client)) return true;
+  return;
+};
+
+// Using a regular function:
+exports.handleMessageSecurity = (hookName, {message, client}, callback) => {
+  if (shouldGrantWriteAccess(message, client)) return callback(true);
+  return callback();
 };
 ```
 
