@@ -694,20 +694,65 @@ describe('copyPad', function(){
 })
 
 describe('copyPadWithoutHistory', function(){
-  it('copies the content of a existent pad without the history', function(done) {
-    api.get(endPoint('copyPadWithoutHistory')+"&sourceID="+testPadId+"&destinationID="+copiedPadId+"&force=true")
+  var sourcePadId = makeid();
+  var newPad = makeid();
+  before(function(done) {
+    createNewPadWithHtml(sourcePadId, ulHtml, done);
+  })
+
+  it('returns a successful response', function(done) {
+    api.get(endPoint('copyPadWithoutHistory')+"&sourceID="+sourcePadId+"&destinationID="+copiedPadId+"&force=true")
       .expect(function(res){
         if(res.body.code !== 0) throw new Error("Copy Pad Without History Failed")
       })
       .expect('Content-Type', /json/)
       .expect(200, done)
   });
+
+  // this test validates if the source pad's text and attributes are kept
+  it('creates a new pad with the same content as the source pad', function(done) {
+    api.get(endPoint('copyPadWithoutHistory')+"&sourceID="+sourcePadId+"&destinationID="+newPad+"&force=true")
+      .expect(function(res){
+        if(res.body.code !== 0) throw new Error("Copy Pad Without History Failed")
+      })
+      .end(function() {
+        api.get(endPoint('getHTML')+"&padID="+newPad)
+          .expect(function(res){
+            var receivedHtml = res.body.data.html.replace("<br><br></body>", "</body>").toLowerCase();
+
+            if (receivedHtml !== expectedHtml) {
+              throw new Error(`HTML received from export is not the one we were expecting.
+                 Received:
+                 ${receivedHtml}
+
+                 Expected:
+                 ${expectedHtml}
+
+                 Which is a slightly modified version of the originally imported one:
+                 ${ulHtml}`);
+            }
+          })
+        .expect(200, done);
+      });
+  })
 })
 
 /*
                           -> movePadForce Test
 
 */
+
+var createNewPadWithHtml = function(padId, html, cb) {
+  api.get(endPoint('createPad')+"&padID="+padId)
+    .end(function() {
+      api.post(endPoint('setHTML'))
+        .send({
+          "padID": padId,
+          "html":  html,
+        })
+        .end(cb);
+    })
+}
 
 var endPoint = function(point, version){
   version = version || apiVersion;
