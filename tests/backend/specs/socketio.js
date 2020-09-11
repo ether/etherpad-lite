@@ -125,6 +125,7 @@ describe('socket.io access checks', function() {
   beforeEach(async function() {
     Object.assign(settingsBackup, settings);
     assert(socket == null);
+    settings.editOnly = false;
     settings.requireAuthentication = false;
     settings.requireAuthorization = false;
     settings.users = {
@@ -222,6 +223,59 @@ describe('socket.io access checks', function() {
     socket = await connect(res);
     // Accessing /p/other-pad should fail, despite the successful fetch of /p/pad.
     const message = await handshake(socket, 'other-pad');
+    assert.equal(message.accessStatus, 'deny');
+  });
+
+  // Authorization levels via authorize hook
+  it("level='create' -> can create", async () => {
+    authorize = () => 'create';
+    settings.requireAuthentication = true;
+    settings.requireAuthorization = true;
+    const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+    socket = await connect(res);
+    const clientVars = await handshake(socket, 'pad');
+    assert.equal(clientVars.type, 'CLIENT_VARS');
+    assert.equal(clientVars.data.readonly, false);
+  });
+  it('level=true -> can create', async () => {
+    authorize = () => true;
+    settings.requireAuthentication = true;
+    settings.requireAuthorization = true;
+    const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+    socket = await connect(res);
+    const clientVars = await handshake(socket, 'pad');
+    assert.equal(clientVars.type, 'CLIENT_VARS');
+    assert.equal(clientVars.data.readonly, false);
+  });
+  it("level='modify' -> can modify", async () => {
+    const pad = await padManager.getPad('pad'); // Create the pad.
+    authorize = () => 'modify';
+    settings.requireAuthentication = true;
+    settings.requireAuthorization = true;
+    const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+    socket = await connect(res);
+    const clientVars = await handshake(socket, 'pad');
+    assert.equal(clientVars.type, 'CLIENT_VARS');
+    assert.equal(clientVars.data.readonly, false);
+  });
+  it("level='create' settings.editOnly=true -> unable to create", async () => {
+    authorize = () => 'create';
+    settings.requireAuthentication = true;
+    settings.requireAuthorization = true;
+    settings.editOnly = true;
+    const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+    socket = await connect(res);
+    const message = await handshake(socket, 'pad');
+    assert.equal(message.accessStatus, 'deny');
+  });
+  it("level='modify' settings.editOnly=false -> unable to create", async () => {
+    authorize = () => 'modify';
+    settings.requireAuthentication = true;
+    settings.requireAuthorization = true;
+    settings.editOnly = false;
+    const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+    socket = await connect(res);
+    const message = await handshake(socket, 'pad');
     assert.equal(message.accessStatus, 'deny');
   });
 });

@@ -13,6 +13,7 @@ exports.normalizeAuthzLevel = (level) => {
   switch (level) {
     case true:
       return 'create';
+    case 'modify':
     case 'create':
       return level;
     default:
