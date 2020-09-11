@@ -26,8 +26,8 @@ exports.update = function (cb) {
     defs.hooks = pluginUtils.extractHooks(defs.parts, "client_hooks");
     defs.loaded = true;
     callback();
-  }).fail(function(e){
-    console.error("Failed to load plugin-definitions: " + err);
+  }).fail(function(error){
+    console.error("Failed to load plugin-definitions: " + error);
     callback();
   });
 };
