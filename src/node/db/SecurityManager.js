@@ -58,6 +58,8 @@ exports.checkAccess = async function(padID, sessionCookie, token, password, user
     return DENY;
   }
 
+  let canCreate = !settings.editOnly;
+
   if (settings.requireAuthentication) {
     // Make sure the user has authenticated if authentication is required. The caller should have
     // already performed this check, but it is repeated here just in case.
@@ -73,6 +75,7 @@ exports.checkAccess = async function(padID, sessionCookie, token, password, user
       authLogger.debug('access denied: unauthorized');
       return DENY;
     }
+    if (level !== 'create') canCreate = false;
   }
 
   // allow plugins to deny access
@@ -88,7 +91,7 @@ exports.checkAccess = async function(padID, sessionCookie, token, password, user
   const p_padExists = padManager.doesPadExist(padID);
 
   const padExists = await p_padExists;
-  if (!padExists && settings.editOnly) {
+  if (!padExists && !canCreate) {
     authLogger.debug('access denied: user attempted to create a pad, which is prohibited');
     return DENY;
   }

@@ -253,8 +253,8 @@ following are true:
 For pre-authentication invocations of your authorize function, you can pass the
 following values to the provided callback:
 
-* `[true]` or `['create']` will immediately grant access without requiring the
-  user to authenticate.
+* `[true]`, `['create']`, or `['modify']` will immediately grant access without
+  requiring the user to authenticate.
 * `[false]` will trigger authentication unless authentication is not required.
 * `[]` or `undefined` will defer the decision to the next authorization plugin
   (if any, otherwise it is the same as calling with `[false]`).
@@ -267,7 +267,11 @@ public.
 For post-authentication invocations of your authorize function, you can pass the
 following values to the provided callback:
 
-* `[true]` or `['create']` will grant access.
+* `[true]` or `['create']` will grant access to modify or create the pad if the
+  request is for a pad, otherwise access is simply granted. (Access will be
+  downgraded to modify-only if `settings.editOnly` is true.)
+* `['modify']` will grant access to modify but not create the pad if the
+  request is for a pad, otherwise access is simply granted.
 * `[false]` will deny access.
 * `[]` or `undefined` will defer the authorization decision to the next
   authorization plugin (if any, otherwise deny).
