@@ -178,7 +178,7 @@ describe('socket.io access checks', () => {
     settings.requireAuthentication = true;
     await assert.rejects(connect(null), {message: /signed express_sid cookie is required/i});
   });
-  xit('authorization bypass attempt -> error', async () => {
+  it('authorization bypass attempt -> error', async () => {
     plugins.hooks.authorize = [{hook_fn: (hookName, {req}, cb) => {
       if (req.session.user == null) return cb([]); // Hasn't authenticated yet.
       // Only allowed to access /p/pad.

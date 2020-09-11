@@ -23,6 +23,7 @@ var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 var padManager = require("./PadManager");
 var sessionManager = require("./SessionManager");
 var settings = require("../utils/Settings");
+const webaccess = require('../hooks/express/webaccess');
 var log4js = require('log4js');
 var authLogger = log4js.getLogger("auth");
 
@@ -57,11 +58,21 @@ exports.checkAccess = async function(padID, sessionCookie, token, password, user
     return DENY;
   }
 
-  // Make sure the user has authenticated if authentication is required. The caller should have
-  // already performed this check, but it is repeated here just in case.
-  if (settings.requireAuthentication && userSettings == null) {
-    authLogger.debug('access denied: authentication is required');
-    return DENY;
+  if (settings.requireAuthentication) {
+    // Make sure the user has authenticated if authentication is required. The caller should have
+    // already performed this check, but it is repeated here just in case.
+    if (userSettings == null) {
+      authLogger.debug('access denied: authentication is required');
+      return DENY;
+    }
+    // Check whether the user is authorized. Note that userSettings.padAuthorizations will still be
+    // populated even if settings.requireAuthorization is false.
+    const padAuthzs = userSettings.padAuthorizations || {};
+    const level = webaccess.normalizeAuthzLevel(padAuthzs[padID]);
+    if (!level) {
+      authLogger.debug('access denied: unauthorized');
+      return DENY;
+    }
   }
 
   // allow plugins to deny access

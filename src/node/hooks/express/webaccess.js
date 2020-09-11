@@ -8,6 +8,19 @@ const stats = require('ep_etherpad-lite/node/stats');
 const sessionModule = require('express-session');
 const cookieParser = require('cookie-parser');
 
+exports.normalizeAuthzLevel = (level) => {
+  if (!level) return false;
+  switch (level) {
+    case true:
+      return 'create';
+    case 'create':
+      return level;
+    default:
+      httpLogger.warn(`Unknown authorization level '${level}', denying access`);
+  }
+  return false;
+};
+
 exports.checkAccess = (req, res, next) => {
   const hookResultMangle = (cb) => {
     return (err, data) => {
@@ -21,17 +34,28 @@ exports.checkAccess = (req, res, next) => {
     // Do not require auth for static paths and the API...this could be a bit brittle
     if (req.path.match(/^\/(static|javascripts|pluginfw|api)/)) return next();
 
+    const grant = (level) => {
+      level = exports.normalizeAuthzLevel(level);
+      if (!level) return fail();
+      const user = req.session.user;
+      if (user == null) return next(); // This will happen if authentication is not required.
+      const padID = (req.path.match(/^\/p\/(.*)$/) || [])[1];
+      if (padID == null) return next();
+      // The user was granted access to a pad. Remember the authorization level in the user's
+      // settings so that SecurityManager can approve or deny specific actions.
+      if (user.padAuthorizations == null) user.padAuthorizations = {};
+      user.padAuthorizations[padID] = level;
+      return next();
+    };
+
     if (req.path.toLowerCase().indexOf('/admin') !== 0) {
-      if (!settings.requireAuthentication) return next();
-      if (!settings.requireAuthorization && req.session && req.session.user) return next();
+      if (!settings.requireAuthentication) return grant('create');
+      if (!settings.requireAuthorization && req.session && req.session.user) return grant('create');
     }
 
-    if (req.session && req.session.user && req.session.user.is_admin) return next();
+    if (req.session && req.session.user && req.session.user.is_admin) return grant('create');
 
-    hooks.aCallFirst('authorize', {req, res, next, resource: req.path}, hookResultMangle((ok) => {
-      if (ok) return next();
-      return fail();
-    }));
+    hooks.aCallFirst('authorize', {req, res, next, resource: req.path}, hookResultMangle(grant));
   };
 
   /* Authentication OR authorization failed. */
