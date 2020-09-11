@@ -42,6 +42,7 @@ const NEED_PASSWORD = Object.freeze({accessStatus: 'needPassword'});
  *     with this token then a new author object is created (including generating an author ID) and
  *     associated with this token.
  * @param password is the password the user has given to access this pad. It can be null.
+ * @param userSettings is the settings.users[username] object (or equivalent from an authn plugin).
  * @return {accessStatus: grant|deny|wrongPassword|needPassword, authorID: a.xxxxxx}. The caller
  *     must use the author ID returned in this object when making any changes associated with the
  *     author.
@@ -49,10 +50,17 @@ const NEED_PASSWORD = Object.freeze({accessStatus: 'needPassword'});
  * WARNING: Tokens and session IDs MUST be kept secret, otherwise users will be able to impersonate
  * each other (which might allow them to gain privileges).
  */
-exports.checkAccess = async function(padID, sessionCookie, token, password)
+exports.checkAccess = async function(padID, sessionCookie, token, password, userSettings)
 {
   if (!padID) {
     authLogger.debug('access denied: missing padID');
+    return DENY;
+  }
+
+  // Make sure the user has authenticated if authentication is required. The caller should have
+  // already performed this check, but it is repeated here just in case.
+  if (settings.requireAuthentication && userSettings == null) {
+    authLogger.debug('access denied: authentication is required');
     return DENY;
   }
 
