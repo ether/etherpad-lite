@@ -228,24 +228,27 @@ following are true:
   different plugin has not already caused the post-authentication authorization
   to pass or fail.
 
-For pre-authentication invocations of your authorize function, calling the
-provided callback with `[true]` will immediately grant access without requiring
-the user to authenticate. Calling the provided callback with `[false]` will
-trigger authentication unless authentication is not required. Calling the
-provided callback with `[]` or `undefined` will defer the decision to the next
-authorization plugin (if any, otherwise it is the same as calling with
-`[false]`).
+For pre-authentication invocations of your authorize function, you can pass the
+following values to the provided callback:
+
+* `[true]` or `['create']` will immediately grant access without requiring the
+  user to authenticate.
+* `[false]` will trigger authentication unless authentication is not required.
+* `[]` or `undefined` will defer the decision to the next authorization plugin
+  (if any, otherwise it is the same as calling with `[false]`).
 
 **WARNING:** Your authorize function can be called for an `/admin` page even if
 the user has not yet authenticated. It is your responsibility to fail or defer
 authorization if you do not want to grant admin privileges to the general
 public.
 
-For post-authentication invocations of your authorize function, calling the
-provided callback with `[true]` or `[false]` will cause access to be granted or
-denied, respectively. Calling the callback with `[]` or `undefined` will defer
-the authorization decision to the next authorization plugin (if any, otherwise
-deny).
+For post-authentication invocations of your authorize function, you can pass the
+following values to the provided callback:
+
+* `[true]` or `['create']` will grant access.
+* `[false]` will deny access.
+* `[]` or `undefined` will defer the authorization decision to the next
+  authorization plugin (if any, otherwise deny).
 
 Example:
 
