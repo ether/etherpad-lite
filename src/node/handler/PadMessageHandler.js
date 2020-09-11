@@ -289,7 +289,9 @@ exports.handleMessage = async function(client, message)
     padId = await readOnlyManager.getPadId(padId);
   }
 
-  let { accessStatus } = await securityManager.checkAccess(padId, auth.sessionID, auth.token, auth.password);
+  const {session: {user} = {}} = client.client.request;
+  const {accessStatus} =
+      await securityManager.checkAccess(padId, auth.sessionID, auth.token, auth.password, user);
 
   if (accessStatus !== "grant") {
     // no access, send the client a message that tells him why
@@ -896,8 +898,9 @@ async function handleClientReady(client, message)
   let padIds = await readOnlyManager.getIds(message.padId);
 
   // FIXME: Allow to override readwrite access with readonly
+  const {session: {user} = {}} = client.client.request;
   const {accessStatus, authorID} = await securityManager.checkAccess(
-      padIds.padId, message.sessionID, message.token, message.password);
+      padIds.padId, message.sessionID, message.token, message.password, user);
 
   // no access, send the client a message that tells him why
   if (accessStatus !== "grant") {
