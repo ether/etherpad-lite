@@ -139,7 +139,7 @@ function savePassword()
 function sendClientReady(isReconnect, messageType)
 {
   messageType = typeof messageType !== 'undefined' ? messageType : 'CLIENT_READY';
-  var padId = document.location.pathname.substring(document.location.pathname.lastIndexOf("/") + 1);
+  var padId = window.PADID;
   padId = decodeURIComponent(padId); // unescape neccesary due to Safari and Opera interpretation of spaces
 
   if(!isReconnect)

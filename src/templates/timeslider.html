@@ -33,20 +33,20 @@
   <meta name="robots" content="noindex, nofollow">
   <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-  <link rel="shortcut icon" href="<%=settings.faviconTimeslider%>">
+  <link rel="shortcut icon" href=" <%= staticRootAddress %>static/<%=settings.faviconTimeslider%>">
   <% e.begin_block("timesliderStyles"); %>
-  <link rel="stylesheet" href="../../static/css/pad.css?v=<%=settings.randomVersionString%>">
-  <link rel="stylesheet" href="../../static/css/iframe_editor.css?v=<%=settings.randomVersionString%>">
-  <link rel="stylesheet" href="../../static/css/timeslider.css?v=<%=settings.randomVersionString%>">
-  <link rel="stylesheet" href="../../static/skins/<%=encodeURI(settings.skinName)%>/pad.css?v=<%=settings.randomVersionString%>">
-  <link rel="stylesheet" href="../../static/skins/<%=encodeURI(settings.skinName)%>/timeslider.css?v=<%=settings.randomVersionString%>">
+  <link rel="stylesheet" href="<%= staticRootAddress %>static/css/pad.css?v=<%=settings.randomVersionString%>">
+  <link rel="stylesheet" href="<%= staticRootAddress %>static/css/iframe_editor.css?v=<%=settings.randomVersionString%>">
+  <link rel="stylesheet" href="<%= staticRootAddress %>static/css/timeslider.css?v=<%=settings.randomVersionString%>">
+  <link rel="stylesheet" href="<%= staticRootAddress %>static/skins/<%=encodeURI(settings.skinName)%>/pad.css?v=<%=settings.randomVersionString%>">
+  <link rel="stylesheet" href="<%= staticRootAddress %>static/skins/<%=encodeURI(settings.skinName)%>/timeslider.css?v=<%=settings.randomVersionString%>">
   <style type="text/css" title="dynamicsyntax"></style>
   <% e.end_block(); %>
 
-  <link rel="localizations" type="application/l10n+json" href="../../locales.json" />
+  <link rel="localizations" type="application/l10n+json" href="<%= staticRootAddress %>static/locales.json" />
   <% e.begin_block("timesliderScripts"); %>
-  <script type="text/javascript" src="../../static/js/html10n.js?v=<%=settings.randomVersionString%>"></script>
-  <script type="text/javascript" src="../../static/js/l10n.js?v=<%=settings.randomVersionString%>"></script>
+  <script type="text/javascript" src="<%= staticRootAddress %>static/js/html10n.js?v=<%=settings.randomVersionString%>"></script>
+  <script type="text/javascript" src="<%= staticRootAddress %>static/js/l10n.js?v=<%=settings.randomVersionString%>"></script>
   <% e.end_block(); %>
 </head>
 
@@ -248,25 +248,27 @@
 <!-------- JAVASCRIPT --------->
 <!----------------------------->
 
-<script type="text/javascript" src="../../static/js/require-kernel.js?v=<%=settings.randomVersionString%>"></script>
-<script type="text/javascript" src="../../socket.io/socket.io.js?v=<%=settings.randomVersionString%>"></script>
+<script type="text/javascript" src="<%= staticRootAddress %>static/js/require-kernel.js?v=<%=settings.randomVersionString%>"></script>
+<script type="text/javascript" src="<%= staticRootAddress %>socket.io/socket.io.js?v=<%=settings.randomVersionString%>"></script>
 
 <!-- Include base packages manually (this help with debugging) -->
-<script type="text/javascript" src="../../javascripts/lib/ep_etherpad-lite/static/js/timeslider.js?callback=require.define&v=<%=settings.randomVersionString%>"></script>
-<script type="text/javascript" src="../../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define&v=<%=settings.randomVersionString%>"></script>
+<script type="text/javascript" src="<%= staticRootAddress %>javascripts/lib/ep_etherpad-lite/static/js/timeslider.js?callback=require.define&v=<%=settings.randomVersionString%>"></script>
+<script type="text/javascript" src="<%= staticRootAddress %>javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define&v=<%=settings.randomVersionString%>"></script>
 
-<script type="text/javascript" src="../../static/skins/<%=encodeURI(settings.skinName)%>/timeslider.js?v=<%=settings.randomVersionString%>"></script>
+<script type="text/javascript" src="<%= staticRootAddress %>static/skins/<%=encodeURI(settings.skinName)%>/timeslider.js?v=<%=settings.randomVersionString%>"></script>
 
 <!-- Bootstrap -->
 <script type="text/javascript" >
   // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
   var clientVars = {};
+  window.STATIC_ROOT_ADDRESS = "<%= staticRootAddress %>";
+  window.PADID = "<%= padId %>";
   var BroadcastSlider;
   (function () {
     var pathComponents = location.pathname.split('/');
 
     // Strip 'p', the padname and 'timeslider' from the pathname and set as baseURL
-    var baseURL = pathComponents.slice(0,pathComponents.length-3).join('/') + '/';
+    var baseURL = pathComponents.slice(0,1).join('/') + '/';
 
 
     require.setRootURI(baseURL + "javascripts/src");

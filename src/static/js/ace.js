@@ -44,6 +44,7 @@ function scriptTag(source) {
 function Ace2Editor()
 {
   var ace2 = Ace2Editor;
+  var staticRoot = window.STATIC_ROOT_ADDRESS;
 
   var editor = {};
   var info = {
@@ -194,7 +195,7 @@ function Ace2Editor()
     }
     for (var i = 0, ii = remoteFiles.length; i < ii; i++) {
       var file = remoteFiles[i];
-      buffer.push('<link rel="stylesheet" type="text/css" href="' + encodeURI(file) + '"\/>');
+      buffer.push('<link rel="stylesheet" type="text/css" href="' + staticRoot + encodeURI(file) + '"\/>');
     }
   }
 
@@ -259,8 +260,8 @@ function Ace2Editor()
 
       iframeHTML.push(scriptTag(
 Ace2Editor.EMBEDED[KERNEL_SOURCE] + '\n\
-require.setRootURI("../javascripts/src");\n\
-require.setLibraryURI("../javascripts/lib");\n\
+require.setRootURI("' + staticRoot + 'javascripts/src");\n\
+require.setLibraryURI("' + staticRoot + 'javascripts/lib");\n\
 require.setGlobalKeyPath("require");\n\
 \n\
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/client_plugins");\n\

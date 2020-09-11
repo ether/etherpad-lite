@@ -37,9 +37,7 @@ function init() {
     // start the custom js
     if (typeof customStart == "function") customStart();
 
-    //get the padId out of the url
-    var urlParts= document.location.pathname.split("/");
-    padId = decodeURIComponent(urlParts[urlParts.length-2]);
+    padId = window.PADID;
 
     //set the title
     document.title = padId.replace(/_+/g, ' ') + " | " + document.title;
