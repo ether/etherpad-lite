@@ -513,8 +513,7 @@ Pad.prototype.copyWithoutHistory = async function copyWithoutHistory(destination
 
   // based on Changeset.makeSplice
   let assem = Changeset.smartOpAssembler();
-  let initialApool = new AttributePool();
-  assem.appendOpWithText('=', '', [], initialApool);
+  assem.appendOpWithText('=', '');
   Changeset.appendATextToAssembler(oldAText, assem);
   assem.endDocument();
 
