@@ -65,8 +65,8 @@ exports.title = "Etherpad";
  * The app favicon fully specified url, visible e.g. in the browser window
  */
 exports.favicon = "favicon.ico";
-exports.faviconPad = "../" + exports.favicon;
-exports.faviconTimeslider = "../../" + exports.favicon;
+exports.faviconPad = exports.favicon;
+exports.faviconTimeslider = exports.favicon;
 
 /*
  * Skin name.

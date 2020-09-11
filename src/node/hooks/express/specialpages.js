@@ -38,11 +38,38 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     });
   });
 
+  //serve timeslider.html under /p/$padname/timeslider
+  args.app.get(/^\/p\/(.*)\/timeslider$/i, function(req, res, next)
+  {
+    const padId = req.params['0'].split('/').join(":");
+    const staticRootAddress = req.path.split("/")
+      .filter(x=> x.length)
+      .map(path => "../")
+      .join("");
+
+    hooks.callAll("padInitToolbar", {
+      toolbar: toolbar
+    });
+
+    res.send(eejs.require("ep_etherpad-lite/templates/timeslider.html", {
+      padId,
+      staticRootAddress,
+      req: req,
+      toolbar: toolbar
+    }));
+  });
+
   //serve pad.html under /p
-  args.app.get('/p/:pad', function(req, res, next)
+  
+  args.app.get(/^\/p\/(.*)/i, function(req, res, next)
   {
     // The below might break for pads being rewritten
-    var isReadOnly = req.url.indexOf("/p/r.") === 0;
+    const isReadOnly = req.url.indexOf("/p/r.") === 0;
+    const padId = req.params['0'].split('/').join(":");
+    const staticRootAddress = req.path.split("/")
+      .filter(x=> x.length)
+      .map(path => "../")
+      .join("");
 
     hooks.callAll("padInitToolbar", {
       toolbar: toolbar,
@@ -50,27 +77,16 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     });
 
     res.send(eejs.require("ep_etherpad-lite/templates/pad.html", {
+      padId,
+      staticRootAddress,
       req: req,
       toolbar: toolbar,
       isReadOnly: isReadOnly
     }));
   });
 
-  //serve timeslider.html under /p/$padname/timeslider
-  args.app.get('/p/:pad/timeslider', function(req, res, next)
-  {
-    hooks.callAll("padInitToolbar", {
-      toolbar: toolbar
-    });
-
-    res.send(eejs.require("ep_etherpad-lite/templates/timeslider.html", {
-      req: req,
-      toolbar: toolbar
-    }));
-  });
-
   //serve favicon.ico from all path levels except as a pad name
-  args.app.get( /\/favicon.ico$/, function(req, res)
+  args.app.get( /static\/favicon.ico$/, function(req, res)
   {
     var filePath = path.join(settings.root, "src", "static", "skins", settings.skinName, "favicon.ico");
 

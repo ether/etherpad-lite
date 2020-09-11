@@ -101,7 +101,7 @@ exports.expressCreateServer = function(n, args) {
   var localeIndex = generateLocaleIndex(locales);
   exports.availableLangs = getAvailableLangs(locales);
 
-  args.app.get ('/locales/:locale', function(req, res) {
+  args.app.get ('/static/locales/:locale', function(req, res) {
     //works with /locale/en and /locale/en.json requests
     var locale = req.params.locale.split('.')[0];
     if (exports.availableLangs.hasOwnProperty(locale)) {
@@ -112,7 +112,7 @@ exports.expressCreateServer = function(n, args) {
     }
   })
 
-  args.app.get('/locales.json', function(req, res) {
+  args.app.get('/static/locales.json', function(req, res) {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.send(localeIndex);
   })
