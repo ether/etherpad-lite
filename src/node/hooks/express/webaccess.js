@@ -17,18 +17,21 @@ exports.checkAccess = (req, res, next) => {
 
   // This may be called twice per access: once before authentication is checked and once after (if
   // settings.requireAuthorization is true).
-  const authorize = (cb) => {
+  const authorize = (fail) => {
     // Do not require auth for static paths and the API...this could be a bit brittle
-    if (req.path.match(/^\/(static|javascripts|pluginfw|api)/)) return cb(true);
+    if (req.path.match(/^\/(static|javascripts|pluginfw|api)/)) return next();
 
     if (req.path.toLowerCase().indexOf('/admin') !== 0) {
-      if (!settings.requireAuthentication) return cb(true);
-      if (!settings.requireAuthorization && req.session && req.session.user) return cb(true);
+      if (!settings.requireAuthentication) return next();
+      if (!settings.requireAuthorization && req.session && req.session.user) return next();
     }
 
-    if (req.session && req.session.user && req.session.user.is_admin) return cb(true);
+    if (req.session && req.session.user && req.session.user.is_admin) return next();
 
-    hooks.aCallFirst('authorize', {req, res, next, resource: req.path}, hookResultMangle(cb));
+    hooks.aCallFirst('authorize', {req, res, next, resource: req.path}, hookResultMangle((ok) => {
+      if (ok) return next();
+      return fail();
+    ));
   };
 
   /* Authentication OR authorization failed. */
@@ -59,12 +62,7 @@ exports.checkAccess = (req, res, next) => {
 
   let step1PreAuthenticate, step2Authenticate, step3Authorize;
 
-  step1PreAuthenticate = () => {
-    authorize((ok) => {
-      if (ok) return next();
-      step2Authenticate();
-    });
-  };
+  step1PreAuthenticate = () => authorize(step2Authenticate);
 
   step2Authenticate = () => {
     const ctx = {req, res, next};
@@ -98,12 +96,7 @@ exports.checkAccess = (req, res, next) => {
     }));
   };
 
-  step3Authorize = () => {
-    authorize((ok) => {
-      if (ok) return next();
-      failure();
-    });
-  };
+  step3Authorize = () => authorize(failure);
 
   step1PreAuthenticate();
 };
