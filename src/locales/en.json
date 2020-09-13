@@ -90,6 +90,9 @@
   "pad.modals.rateLimited": "Rate Limited.",
   "pad.modals.rateLimited.explanation": "You sent too many messages to this pad so it disconnected you.",
 
+  "pad.modals.rejected.explanation": "The server rejected a message that was sent by your browser.",
+  "pad.modals.rejected.cause": "The server may have been updated while you were viewing the pad, or maybe there is a bug in Etherpad. Try reloading the page.",
+
   "pad.modals.disconnected": "You have been disconnected.",
   "pad.modals.disconnected.explanation": "The connection to the server was lost",
   "pad.modals.disconnected.cause": "The server may be unavailable. Please notify the service administrator if this continues to happen.",
