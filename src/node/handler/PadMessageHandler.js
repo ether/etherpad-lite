@@ -134,7 +134,13 @@ exports.handleDisconnect = async function(client)
       ip = 'ANONYMOUS';
     }
 
-    accessLogger.info('[LEAVE] Pad "' + session.padId + '": Author "' + session.author + '" on client ' + client.id + ' with IP "' + ip + '" left the pad');
+    const {session: {user} = {}} = client.client.request;
+    accessLogger.info('[LEAVE]' +
+                      ` pad:${session.padId}` +
+                      ` socket:${client.id}` +
+                      ` IP:${ip}` +
+                      ` authorID:${session.author}` +
+                      ((user && user.username) ? ` username:${user.username}` : ''));
 
     // get the author color out of the db
     let color = await authorManager.getAuthorColorId(session.author);
@@ -235,6 +241,7 @@ exports.handleMessage = async function(client, message)
         ` IP:${settings.disableIPlogging ? ANONYMOUS : remoteAddress[client.id]}` +
         ` originalAuthorID:${thisSession.author}` +
         ` newAuthorID:${authorID}` +
+        ((user && user.username) ? ` username:${user.username}` : '') +
         ` message:${message}`);
     client.json.send({disconnect: 'rejected'});
     return;
@@ -618,7 +625,7 @@ async function handleUserChanges(data)
 
           // the empty author is used in the clearAuthorship functionality so this should be the only exception
           if ('author' === attr[0] && (attr[1] !== thisSession.author && attr[1] !== '')) {
-            throw new Error("Trying to submit changes as another author in changeset " + changeset);
+            throw new Error(`Author ${thisSession.author} tried to submit changes as author ${attr[1]} in changeset ${changeset}`);
           }
         });
       }
@@ -632,7 +639,7 @@ async function handleUserChanges(data)
       // There is an error in this changeset, so just refuse it
       client.json.send({ disconnect: "badChangeset" });
       stats.meter('failedChangesets').mark();
-      throw new Error("Can't apply USER_CHANGES, because " + e.message);
+      throw new Error(`Can't apply USER_CHANGES from Socket ${client.id} because: ${e.message}`);
     }
 
     // ex. applyUserChanges
@@ -976,11 +983,13 @@ async function handleClientReady(client, message, authorID)
     ip = 'ANONYMOUS';
   }
 
-  if (pad.head > 0) {
-    accessLogger.info('[ENTER] Pad "' + padIds.padId + '": Client ' + client.id + ' with IP "' + ip + '" entered the pad');
-  } else if (pad.head === 0) {
-    accessLogger.info('[CREATE] Pad "' + padIds.padId + '": Client ' + client.id + ' with IP "' + ip + '" created the pad');
-  }
+  const {session: {user} = {}} = client.client.request;
+  accessLogger.info(`[${pad.head > 0 ? 'ENTER' : 'CREATE'}]` +
+                    ` pad:${padIds.padId}` +
+                    ` socket:${client.id}` +
+                    ` IP:${ip}` +
+                    ` authorID:${authorID}` +
+                    ((user && user.username) ? ` username:${user.username}` : ''));
 
   if (message.reconnect) {
     // If this is a reconnect, we don't have to send the client the ClientVars again
