@@ -368,7 +368,7 @@ function getFileCompressed(filename, contentType, callback) {
   getFile(filename, function (error, content) {
     if (error || !content || !settings.minify) {
       callback(error, content);
-    } else if (contentType == 'text/javascript') {
+    } else if (contentType == 'application/javascript') {
       threadsPool.queue(async ({ compressJS }) => {
         try {
           logger.info('Compress JS file %s.', filename)
