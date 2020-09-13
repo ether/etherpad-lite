@@ -53,7 +53,7 @@ const rateLimiter = new RateLimiterMemory({
  *   readonlyPadId = The readonly pad id of the pad
  *   readonly = Wether the client has only read access (true) or read/write access (false)
  *   rev = That last revision that was send to this client
- *   author = the author name of this session
+ *   author = the author ID used for this session
  */
 var sessioninfos = {};
 exports.sessioninfos = sessioninfos;
@@ -219,7 +219,7 @@ exports.handleMessage = async function(client, message)
   }
 
   const {session: {user} = {}} = client.client.request;
-  const {accessStatus} =
+  const {accessStatus, authorID} =
       await securityManager.checkAccess(padId, auth.sessionID, auth.token, auth.password, user);
 
   if (accessStatus !== "grant") {
@@ -227,6 +227,19 @@ exports.handleMessage = async function(client, message)
     client.json.send({ accessStatus });
     return;
   }
+  if (thisSession.author != null && thisSession.author !== authorID) {
+    messageLogger.warn(
+        'Rejecting message from client because the author ID changed mid-session.' +
+        ' Bad or missing token or sessionID?' +
+        ` socket:${client.id}` +
+        ` IP:${settings.disableIPlogging ? ANONYMOUS : remoteAddress[client.id]}` +
+        ` originalAuthorID:${thisSession.author}` +
+        ` newAuthorID:${authorID}` +
+        ` message:${message}`);
+    client.json.send({disconnect: 'rejected'});
+    return;
+  }
+  thisSession.author = authorID;
 
   // Allow plugins to bypass the readonly message blocker
   if ((await hooks.aCallAll('handleMessageSecurity', {client, message})).some((w) => w === true)) {
@@ -1123,8 +1136,6 @@ async function handleClientReady(client, message)
 
     // Save the current revision in sessioninfos, should be the same as in clientVars
     sessionInfo.rev = pad.getHeadRevisionNumber();
-
-    sessionInfo.author = authorID;
 
     // prepare the notification for the other users on the pad, that this user joined
     let messageToTheOtherUsers = {
