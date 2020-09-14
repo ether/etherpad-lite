@@ -78,6 +78,7 @@
     "mocha": "7.1.2",
     "mocha-froth": "^0.2.10",
     "nyc": "15.0.1",
+    "set-cookie-parser": "^2.4.6",
     "supertest": "4.0.2",
     "wd": "1.12.1"
   },
@@ -90,7 +91,7 @@
     "url": "https://github.com/ether/etherpad-lite.git"
   },
   "scripts": {
-    "test": "nyc mocha --timeout 5000 ../tests/backend/specs/api",
+    "test": "nyc mocha --timeout 5000 --recursive ../tests/backend/specs",
     "test-contentcollector": "nyc mocha --timeout 5000 ../tests/backend/specs",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api"
   },

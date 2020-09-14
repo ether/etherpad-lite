@@ -51,6 +51,11 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   var cookieParserFn = cookieParser(webaccess.secret, {});
   io.use((socket, next) => {
     var data = socket.request;
+    if (!data.headers.cookie) {
+      // socketio.js-client on node.js doesn't support cookies (see https://git.io/JU8u9), so the
+      // token and express_sid cookies have to be passed via a query parameter for unit tests.
+      data.headers.cookie = socket.handshake.query.cookie;
+    }
     if (!data.headers.cookie && settings.loadTest) {
       console.warn('bypassing socket.io authentication check due to settings.loadTest');
       return next(null, true);
