@@ -19,7 +19,7 @@ const Changeset         = require("ep_etherpad-lite/static/js/Changeset");
 const contentcollector  = require("ep_etherpad-lite/static/js/contentcollector");
 const cheerio           = require("cheerio");
 const rehype            = require("rehype")
-const format            = require("rehype-format")
+//const format            = require("rehype-format")
 
 
 exports.setPadHTML = function(pad, html)
@@ -32,9 +32,9 @@ exports.setPadHTML = function(pad, html)
   }
 
   rehype()
-    .use(format, opts)
+//    .use(format, opts)
     .process(html, function(err, output){
-      //html = String(output).replace(/(\r\n|\n|\r)/gm,"");
+      html = String(output).replace(/(\n\r|\n|\r)/gm," ");
   })
 
   var $ = cheerio.load(html);

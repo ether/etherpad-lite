@@ -215,8 +215,8 @@ async function doImport(req, res, padId)
      * @todo what happens if <title is used somewhere in the pad? need proper XML parser
      * @todo does not work all the time
      */
-    text = text.replace("<title", "<!-- <title");
-    text = text.replace("</title>","</title>-->");
+    //text = text.replace("<title", "<!-- <title");
+    //text = text.replace("</title>","</title>-->");
 
     // node on windows has a delay on releasing of the file lock.
     // We add a 100ms delay to work around this
