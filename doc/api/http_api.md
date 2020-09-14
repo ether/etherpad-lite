@@ -530,7 +530,7 @@ copies a pad with full history and chat. If force is true and the destination pa
 * API >= 1.2.15
 
 copies a pad without copying the history and chat. If force is true and the destination pad exists, it will be overwritten.
-Note, all the revisions will be lost! In most of the cases one should user `copyPad` instead.
+Note that all the revisions will be lost! In most of the cases one should use `copyPad` API instead.
 
 *Example returns:*
 * `{code: 0, message:"ok", data: null}`
