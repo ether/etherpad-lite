@@ -7,14 +7,6 @@ var _ = require("underscore");
 
 exports.expressCreateServer = function (hook_name, args, cb) {
 
-  args.app.get( /\/static\/plugins\// , function (req, res, next) {
-    const path = req.path.split("/");
-    const startPath = path.findIndex(path => path === "plugins");
-    const newPath = path.slice(startPath, path.length).join("/");
-    req.params.filename = newPath;
-    return minify.minify(req, res);
-  });
-
   // Cache both minified and static.
   var assetCache = new CachingMiddleware;
   args.app.all(/\/javascripts\/(.*)/, assetCache.handle);

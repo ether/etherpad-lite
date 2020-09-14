@@ -3,6 +3,7 @@ var eejs = require('ep_etherpad-lite/node/eejs');
 var toolbar = require("ep_etherpad-lite/node/utils/toolbar");
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 var settings = require('../../utils/Settings');
+var minify = require('../../utils/Minify');
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   // expose current stats
@@ -36,6 +37,15 @@ exports.expressCreateServer = function (hook_name, args, cb) {
         res.sendFile(filePath);
       }
     });
+  });
+
+  // Backward compatibility for plugins
+  args.app.get(/(\/static\/plugins\/(.*))/ , function (req, res, next) {
+    const path = req.path.split("/");
+    const startPath = path.findIndex(path => path === "plugins");
+    const newPath = path.slice(startPath, path.length).join("/");
+    req.params.filename = newPath;
+    return minify.minify(req, res);
   });
 
   //serve timeslider.html under /p/$padname/timeslider
