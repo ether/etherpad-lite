@@ -49,24 +49,24 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   // modify, or create any pad (unless the pad is password protected or an HTTP API session is
   // required).
   var cookieParserFn = cookieParser(webaccess.secret, {});
-  io.use(function(socket, accept) {
+  io.use((socket, next) => {
     var data = socket.request;
-    if (!data.headers.cookie && settings.loadTest) return accept(null, true);
+    if (!data.headers.cookie && settings.loadTest) {
+      console.warn('bypassing socket.io authentication check due to settings.loadTest');
+      return next(null, true);
+    }
+    const fail = (msg) => { return next(new Error(msg), false); };
     cookieParserFn(data, {}, function(err) {
-      if (err) {
-        console.error(err);
-        accept("Couldn't parse request cookies.", false);
-        return;
-      }
-      data.sessionID = data.signedCookies.express_sid;
-      if (!data.sessionID) return accept('Signed express_sid cookie is required', false);
-      args.app.sessionStore.get(data.sessionID, function(err, session) {
-        if (err || !session) return accept('Bad session / session has expired', false);
+      if (err) return fail('access denied: unable to parse express_sid cookie');
+      const expressSid = data.signedCookies.express_sid;
+      if (!expressSid) return fail ('access denied: signed express_sid cookie is required');
+      args.app.sessionStore.get(expressSid, (err, session) => {
+        if (err || !session) return fail('access denied: bad session or session has expired');
         data.session = new sessionModule.Session(data, session);
         if (settings.requireAuthentication && data.session.user == null) {
-          return accept('Authentication required', false);
+          return fail('access denied: authentication required');
         }
-        accept(null, true);
+        next(null, true);
       });
     });
   });
