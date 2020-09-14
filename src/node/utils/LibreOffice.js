@@ -43,9 +43,8 @@ exports.convertFile = function(srcFile, destFile, type, callback) {
 
   if (type === "html") {
     // "html:XHTML Writer File:UTF8" does a better job than normal html exports
-    if (path.extname(srcFile).toLowerCase() === ".doc") {
-      type = "html";
-    }
+    type = "html:XHTML Writer File:UTF8"
+
     // PDF files need to be converted with LO Draw ref https://github.com/ether/etherpad-lite/issues/4151
     if (path.extname(srcFile).toLowerCase() === ".pdf") {
       type = "html:XHTML Draw File"
@@ -85,8 +84,7 @@ function doConvertTask(task, callback) {
         '--nologo',
         '--nolockcheck',
         '--writer',
-        '--convert-to',
-        `${task.type}:XHTML Writer File:UTF8`,
+        '--convert-to', task.type,
         task.srcFile,
         '--outdir', tmpDir
       ]);
