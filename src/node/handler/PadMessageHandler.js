@@ -1178,7 +1178,7 @@ async function handleClientReady(client, message)
       let cached = historicalAuthorData[author];
 
       // reuse previously created cache of author's data
-      const authorInfo = await (cached ? Promise.resolve(cached) : authorManager.getAuthor(author));
+      let authorInfo = cached ? cached : (await authorManager.getAuthor(author));
 
       // default fallback color to use if authorInfo.colorId is null
       const defaultColor = "#daf0b2";
