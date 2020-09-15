@@ -31,7 +31,7 @@ exports.checkAccess = (req, res, next) => {
     hooks.aCallFirst('authorize', {req, res, next, resource: req.path}, hookResultMangle((ok) => {
       if (ok) return next();
       return fail();
-    ));
+    }));
   };
 
   /* Authentication OR authorization failed. */
