@@ -97,7 +97,9 @@ exports.setSocketIO = function(_socket) {
             padId = await readOnlyManager.getPadId(message.padId);
           }
 
-          let { accessStatus } = await securityManager.checkAccess(padId, message.sessionID, message.token, message.password);
+          const {session: {user} = {}} = client.client.request;
+          const {accessStatus} = await securityManager.checkAccess(
+              padId, message.sessionID, message.token, message.password, user);
 
           if (accessStatus === "grant") {
             // access was granted, mark the client as authorized and handle the message
