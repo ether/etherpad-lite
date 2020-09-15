@@ -357,6 +357,7 @@ Pad.prototype.init = async function init(text) {
 }
 
 Pad.prototype.copy = async function copy(destinationID, force) {
+  let destGroupID;
   let sourceID = this.id;
 
   // Kick everyone from this pad.
@@ -367,11 +368,16 @@ Pad.prototype.copy = async function copy(destinationID, force) {
   // flush the source pad:
   this.saveToDatabase();
 
-  // if it's a group pad, let's make sure the group exists.
-  let destGroupID = await this.checkIfGroupExistAndReturnIt(destinationID);
 
-  // if force is true and already exists a Pad with the same id, remove that Pad
-  await this.removePadIfForceIsTrueAndAlreadyExist(destinationID, force);
+  try {
+    // if it's a group pad, let's make sure the group exists.
+    destGroupID = await this.checkIfGroupExistAndReturnIt(destinationID);
+
+    // if force is true and already exists a Pad with the same id, remove that Pad
+    await this.removePadIfForceIsTrueAndAlreadyExist(destinationID, force);
+  } catch(err) {
+    throw err;
+  }
 
   // copy the 'pad' entry
   let pad = await db.get("pad:" + sourceID);
@@ -467,16 +473,21 @@ Pad.prototype.copyAuthorInfoToDestinationPad = function copyAuthorInfoToDestinat
 }
 
 Pad.prototype.copyPadWithoutHistory = async function copyPadWithoutHistory(destinationID, force) {
+  let destGroupID;
   let sourceID = this.id;
 
   // flush the source pad
   this.saveToDatabase();
 
-  // if it's a group pad, let's make sure the group exists.
-  let destGroupID = await this.checkIfGroupExistAndReturnIt(destinationID);
+  try {
+    // if it's a group pad, let's make sure the group exists.
+    destGroupID = await this.checkIfGroupExistAndReturnIt(destinationID);
 
-  // if force is true and already exists a Pad with the same id, remove that Pad
-  await this.removePadIfForceIsTrueAndAlreadyExist(destinationID, force);
+    // if force is true and already exists a Pad with the same id, remove that Pad
+    await this.removePadIfForceIsTrueAndAlreadyExist(destinationID, force);
+  } catch(err) {
+    throw err;
+  }
 
   let sourcePad = await padManager.getPad(sourceID);
 

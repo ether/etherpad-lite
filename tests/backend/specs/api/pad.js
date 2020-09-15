@@ -695,13 +695,18 @@ describe('copyPad', function(){
 
 describe('copyPadWithoutHistory', function(){
   var sourcePadId = makeid();
-  var newPad = makeid();
+  var newPad;
+
   before(function(done) {
     createNewPadWithHtml(sourcePadId, ulHtml, done);
+  });
+
+  beforeEach(function() {
+    newPad = makeid();
   })
 
   it('returns a successful response', function(done) {
-    api.get(endPoint('copyPadWithoutHistory')+"&sourceID="+sourcePadId+"&destinationID="+copiedPadId+"&force=true")
+    api.get(endPoint('copyPadWithoutHistory')+"&sourceID="+sourcePadId+"&destinationID="+newPad+"&force=false")
       .expect(function(res){
         if(res.body.code !== 0) throw new Error("Copy Pad Without History Failed")
       })
@@ -711,7 +716,7 @@ describe('copyPadWithoutHistory', function(){
 
   // this test validates if the source pad's text and attributes are kept
   it('creates a new pad with the same content as the source pad', function(done) {
-    api.get(endPoint('copyPadWithoutHistory')+"&sourceID="+sourcePadId+"&destinationID="+newPad+"&force=true")
+    api.get(endPoint('copyPadWithoutHistory')+"&sourceID="+sourcePadId+"&destinationID="+newPad+"&force=false")
       .expect(function(res){
         if(res.body.code !== 0) throw new Error("Copy Pad Without History Failed")
       })
@@ -734,6 +739,49 @@ describe('copyPadWithoutHistory', function(){
           })
         .expect(200, done);
       });
+  });
+
+  context('when try copy a pad with a group that does not exist', function() {
+    var padId = makeid();
+    var padWithNonExistentGroup = `notExistentGroup$${padId}`
+    it('throws an error', function(done) {
+      api.get(endPoint('copyPadWithoutHistory')+"&sourceID="+sourcePadId+"&destinationID="+padWithNonExistentGroup+"&force=true")
+        .expect(function(res){
+          // code 1, it means an error has happened
+          if(res.body.code !== 1) throw new Error("It should report an error")
+        })
+        .expect(200, done);
+    })
+  });
+
+  context('when try copy a pad and destination pad already exist', function() {
+    var padIdExistent = makeid();
+
+    before(function(done) {
+      createNewPadWithHtml(padIdExistent, ulHtml, done);
+    });
+
+    context('and force is false', function() {
+      it('throws an error', function(done) {
+        api.get(endPoint('copyPadWithoutHistory')+"&sourceID="+sourcePadId+"&destinationID="+padIdExistent+"&force=false")
+          .expect(function(res){
+            // code 1, it means an error has happened
+            if(res.body.code !== 1) throw new Error("It should report an error")
+          })
+          .expect(200, done);
+      });
+    });
+
+    context('and force is true', function() {
+      it('returns a successful response', function(done) {
+        api.get(endPoint('copyPadWithoutHistory')+"&sourceID="+sourcePadId+"&destinationID="+padIdExistent+"&force=true")
+          .expect(function(res){
+            // code 1, it means an error has happened
+            if(res.body.code !== 0) throw new Error("Copy pad without history with force true failed")
+          })
+          .expect(200, done);
+      });
+    });
   })
 })
 
