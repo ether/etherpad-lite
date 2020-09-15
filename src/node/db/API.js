@@ -609,7 +609,7 @@ Example returns:
 exports.copyPadWithoutHistory = async function(sourceID, destinationID, force)
 {
   let pad = await getPadSafe(sourceID, true);
-  await pad.copyWithoutHistory(destinationID, force);
+  await pad.copyPadWithoutHistory(destinationID, force);
 }
 
 /**
