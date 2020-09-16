@@ -17,7 +17,8 @@ before_install:
 install:
   - "bin/installDeps.sh"
   - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
-  - "npm install ep_hash_auth"
+#  - "npm install ep_hash_auth"
+  - "git clone https://github.com/ether/ep_hash_auth.git node_modules/ep_hash_auth"
 
 script:
   - "tests/frontend/travis/runner.sh"
