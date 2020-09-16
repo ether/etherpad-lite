@@ -357,15 +357,8 @@ Pad.prototype.init = async function init(text) {
 }
 
 Pad.prototype.copy = async function copy(destinationID, force) {
-
+  let destGroupID;
   let sourceID = this.id;
-
-  // allow force to be a string
-  if (typeof force === "string") {
-    force = (force.toLowerCase() === "true");
-  } else {
-    force = !!force;
-  }
 
   // Kick everyone from this pad.
   // This was commented due to https://github.com/ether/etherpad-lite/issues/3183.
@@ -375,31 +368,15 @@ Pad.prototype.copy = async function copy(destinationID, force) {
   // flush the source pad:
   this.saveToDatabase();
 
-  // if it's a group pad, let's make sure the group exists.
-  let destGroupID;
-  if (destinationID.indexOf("$") >= 0) {
 
-    destGroupID = destinationID.split("$")[0]
-    let groupExists = await groupManager.doesGroupExist(destGroupID);
+  try {
+    // if it's a group pad, let's make sure the group exists.
+    destGroupID = await this.checkIfGroupExistAndReturnIt(destinationID);
 
-    // group does not exist
-    if (!groupExists) {
-      throw new customError("groupID does not exist for destinationID", "apierror");
-    }
-  }
-
-  // if the pad exists, we should abort, unless forced.
-  let exists = await padManager.doesPadExist(destinationID);
-
-  if (exists) {
-    if (!force) {
-      console.error("erroring out without force");
-      throw new customError("destinationID already exists", "apierror");
-    }
-
-    // exists and forcing
-    let pad = await padManager.getPad(destinationID);
-    await pad.remove();
+    // if force is true and already exists a Pad with the same id, remove that Pad
+    await this.removePadIfForceIsTrueAndAlreadyExist(destinationID, force);
+  } catch(err) {
+    throw err;
   }
 
   // copy the 'pad' entry
@@ -427,10 +404,7 @@ Pad.prototype.copy = async function copy(destinationID, force) {
     promises.push(p);
   }
 
-  // add the new pad to all authors who contributed to the old one
-  this.getAllAuthors().forEach(authorID => {
-    authorManager.addPad(authorID, destinationID);
-  });
+  this.copyAuthorInfoToDestinationPad(destinationID);
 
   // wait for the above to complete
   await Promise.all(promises);
@@ -451,6 +425,110 @@ Pad.prototype.copy = async function copy(destinationID, force) {
 
   return { padID: destinationID };
 }
+
+Pad.prototype.checkIfGroupExistAndReturnIt = async function checkIfGroupExistAndReturnIt(destinationID) {
+  let destGroupID = false;
+
+  if (destinationID.indexOf("$") >= 0) {
+
+    destGroupID = destinationID.split("$")[0]
+    let groupExists = await groupManager.doesGroupExist(destGroupID);
+
+    // group does not exist
+    if (!groupExists) {
+      throw new customError("groupID does not exist for destinationID", "apierror");
+    }
+  }
+  return destGroupID;
+}
+
+Pad.prototype.removePadIfForceIsTrueAndAlreadyExist = async function removePadIfForceIsTrueAndAlreadyExist(destinationID, force) {
+  // if the pad exists, we should abort, unless forced.
+  let exists = await padManager.doesPadExist(destinationID);
+
+  // allow force to be a string
+  if (typeof force === "string") {
+    force = (force.toLowerCase() === "true");
+  } else {
+    force = !!force;
+  }
+
+  if (exists) {
+    if (!force) {
+      console.error("erroring out without force");
+      throw new customError("destinationID already exists", "apierror");
+    }
+
+    // exists and forcing
+    let pad = await padManager.getPad(destinationID);
+    await pad.remove();
+  }
+}
+
+Pad.prototype.copyAuthorInfoToDestinationPad = function copyAuthorInfoToDestinationPad(destinationID) {
+  // add the new sourcePad to all authors who contributed to the old one
+  this.getAllAuthors().forEach(authorID => {
+    authorManager.addPad(authorID, destinationID);
+  });
+}
+
+Pad.prototype.copyPadWithoutHistory = async function copyPadWithoutHistory(destinationID, force) {
+  let destGroupID;
+  let sourceID = this.id;
+
+  // flush the source pad
+  this.saveToDatabase();
+
+  try {
+    // if it's a group pad, let's make sure the group exists.
+    destGroupID = await this.checkIfGroupExistAndReturnIt(destinationID);
+
+    // if force is true and already exists a Pad with the same id, remove that Pad
+    await this.removePadIfForceIsTrueAndAlreadyExist(destinationID, force);
+  } catch(err) {
+    throw err;
+  }
+
+  let sourcePad = await padManager.getPad(sourceID);
+
+  // add the new sourcePad to all authors who contributed to the old one
+  this.copyAuthorInfoToDestinationPad(destinationID);
+
+  // Group pad? Add it to the group's list
+  if (destGroupID) {
+    await db.setSub("group:" + destGroupID, ["pads", destinationID], 1);
+  }
+
+  // initialize the pad with a new line to avoid getting the defaultText
+  let newPad = await padManager.getPad(destinationID, '\n');
+
+  let oldAText = this.atext;
+  let newPool = newPad.pool;
+  newPool.fromJsonable(sourcePad.pool.toJsonable()); // copy that sourceId pool to the new pad
+
+  // based on Changeset.makeSplice
+  let assem = Changeset.smartOpAssembler();
+  assem.appendOpWithText('=', '');
+  Changeset.appendATextToAssembler(oldAText, assem);
+  assem.endDocument();
+
+  // although we have instantiated the newPad with '\n', an additional '\n' is
+  // added internally, so the pad text on the revision 0 is "\n\n"
+  let oldLength = 2;
+
+  let newLength = assem.getLengthChange();
+  let newText = oldAText.text;
+
+  // create a changeset that removes the previous text and add the newText with
+  // all atributes present on the source pad
+  let changeset = Changeset.pack(oldLength, newLength, assem.toString(), newText);
+  newPad.appendRevision(changeset);
+
+  hooks.callAll('padCopy', { 'originalPad': this, 'destinationID': destinationID });
+
+  return { padID: destinationID };
+}
+
 
 Pad.prototype.remove = async function remove() {
   var padID = this.id;
