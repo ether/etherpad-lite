@@ -45,6 +45,7 @@ jobs:
     - name: "Run the Backend tests"
       install:
         - "bin/installDeps.sh"
+        - "git clone https://github.com/ether/ep_hash_auth.git node_modules/ep_hash_auth"
         - "cd src && npm install && cd -"
       script:
         - "tests/frontend/travis/runnerBackend.sh"
