@@ -203,11 +203,10 @@ exports.setText = async function(padID, text)
   // get the pad
   let pad = await getPadSafe(padID, true);
 
-  // set the text
-  pad.setText(text);
-
-  // update the clients on the pad
-  padMessageHandler.updatePadClients(pad);
+  await Promise.all([
+    pad.setText(text),
+    padMessageHandler.updatePadClients(pad),
+  ]);
 }
 
 /**
@@ -226,12 +225,11 @@ exports.appendText = async function(padID, text)
     throw new customError("text is not a string", "apierror");
   }
 
-  // get and update the pad
   let pad = await getPadSafe(padID, true);
-  pad.appendText(text);
-
-  // update the clients on the pad
-  padMessageHandler.updatePadClients(pad);
+  await Promise.all([
+    pad.appendText(text),
+    padMessageHandler.updatePadClients(pad),
+  ]);
 }
 
 /**
@@ -287,7 +285,7 @@ exports.setHTML = async function(padID, html)
 
   // add a new changeset with the new html to the pad
   try {
-    importHtml.setPadHTML(pad, cleanText(html));
+    await importHtml.setPadHTML(pad, cleanText(html));
   } catch (e) {
     throw new customError("HTML is malformed", "apierror");
   }
@@ -373,7 +371,7 @@ exports.appendChatMessage = async function(padID, text, authorID, time)
   // @TODO - missing getPadSafe() call ?
 
   // save chat message to database and send message to all connected clients
-  padMessageHandler.sendChatMessageToPadClients(time, authorID, text, padID);
+  await padMessageHandler.sendChatMessageToPadClients(time, authorID, text, padID);
 }
 
 /*****************/
@@ -454,7 +452,7 @@ exports.saveRevision = async function(padID, rev)
   }
 
   let author = await authorManager.createAuthor('API');
-  pad.addSavedRevision(rev, author.authorID, 'Saved through API call');
+  await pad.addSavedRevision(rev, author.authorID, 'Saved through API call');
 }
 
 /**
@@ -575,11 +573,10 @@ exports.restoreRevision = async function(padID, rev)
 
   var changeset = builder.toString();
 
-  // append the changeset
-  pad.appendRevision(changeset);
-
-  // update the clients on the pad
-  padMessageHandler.updatePadClients(pad);
+  await Promise.all([
+    pad.appendRevision(changeset),
+    padMessageHandler.updatePadClients(pad),
+  ]);
 }
 
 /**
@@ -688,7 +685,7 @@ exports.setPublicStatus = async function(padID, publicStatus)
   }
 
   // set the password
-  pad.setPublicStatus(publicStatus);
+  await pad.setPublicStatus(publicStatus);
 }
 
 /**
@@ -726,7 +723,7 @@ exports.setPassword = async function(padID, password)
   let pad = await getPadSafe(padID, true);
 
   // set the password
-  pad.setPassword(password == "" ? null : password);
+  await pad.setPassword(password === '' ? null : password);
 }
 
 /**

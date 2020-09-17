@@ -200,10 +200,11 @@ exports.isValidPadId = function(padId)
 /**
  * Removes the pad from database and unloads it.
  */
-exports.removePad = function(padId) {
-  db.remove("pad:" + padId);
+exports.removePad = async (padId) => {
+  const p = db.remove('pad:' + padId);
   exports.unloadPad(padId);
   padList.removePad(padId);
+  await p;
 }
 
 // removes a pad from the cache
