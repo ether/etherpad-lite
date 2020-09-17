@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Bengtsson96",
 			"Jopparn",
 			"Lokal Profil",
 			"Sabelöga",
@@ -15,7 +16,7 @@
 	"pad.toolbar.underline.title": "Understruken (Ctrl+U)",
 	"pad.toolbar.strikethrough.title": "Genomstruken (Ctrl+5)",
 	"pad.toolbar.ol.title": "Numrerad lista (Ctrl+Shift+N)",
-	"pad.toolbar.ul.title": "Onumrerad lista (Ctrl+Shift+L)",
+	"pad.toolbar.ul.title": "Punktlista (Ctrl+Shift+L)",
 	"pad.toolbar.indent.title": "Öka indrag (TABB)",
 	"pad.toolbar.unindent.title": "Minska indrag (Shift+TABB)",
 	"pad.toolbar.undo.title": "Ångra (Ctrl+Z)",
@@ -29,7 +30,7 @@
 	"pad.toolbar.showusers.title": "Visa användarna på detta block",
 	"pad.colorpicker.save": "Spara",
 	"pad.colorpicker.cancel": "Avbryt",
-	"pad.loading": "Läser in...",
+	"pad.loading": "Läser in …",
 	"pad.noCookie": "Kunde inte hitta några kakor. Var god tillåt kakor i din webbläsare! Din session och inställningar kommer inte sparas mellan dina besök. Detta kan bero på att Etherpad inte ligger inuti en iFrame i vissa webbläsare. Se till att Etherpad är i samma underdomän/domän som det överordnade iFrame-elementet.",
 	"pad.passwordRequired": "Du behöver ett lösenord för att få tillgång till detta block",
 	"pad.permissionDenied": "Du har inte åtkomstbehörighet för detta block",
@@ -58,7 +59,7 @@
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
 	"pad.importExport.abiword.innerHTML": "Du kan endast importera från oformaterad text eller HTML-format. För mer avancerade importfunktioner, var god <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">installera AbiWord eller LibreOffice</a>.",
 	"pad.modals.connected": "Ansluten.",
-	"pad.modals.reconnecting": "Återansluter till ditt block...",
+	"pad.modals.reconnecting": "Återansluter till ditt block …",
 	"pad.modals.forcereconnect": "Tvinga återanslutning",
 	"pad.modals.reconnecttimer": "Försöker ansluta igen",
 	"pad.modals.cancel": "Avbryt",
@@ -129,7 +130,7 @@
 	"pad.userlist.approve": "Godkänn",
 	"pad.editbar.clearcolors": "Rensa författarfärger för hela dokumentet? Detta kan inte ångras",
 	"pad.impexp.importbutton": "Importera nu",
-	"pad.impexp.importing": "Importerar...",
+	"pad.impexp.importing": "Importerar …",
 	"pad.impexp.confirmimport": "Att importera en fil kommer att skriva över den aktuella texten i blocket. Är du säker på att du vill fortsätta?",
 	"pad.impexp.convertFailed": "Vi kunde inte importera denna fil. Var god använd ett annat dokumentformat eller kopiera och klistra in den manuellt",
 	"pad.impexp.padHasData": "Vi kunde inte importera denna fil eftersom detta block redan har redigerats. Importera den till ett nytt block.",
