@@ -22,8 +22,7 @@ const rehype            = require("rehype")
 const format            = require("rehype-format")
 
 
-exports.setPadHTML = function(pad, html)
-{
+exports.setPadHTML = async (pad, html) => {
   var apiLogger = log4js.getLogger("ImportHtml");
 
   var opts = {
@@ -103,6 +102,8 @@ exports.setPadHTML = function(pad, html)
   var theChangeset = builder.toString();
 
   apiLogger.debug('The changeset: ' + theChangeset);
-  pad.setText("\n");
-  pad.appendRevision(theChangeset);
+  await Promise.all([
+    pad.setText('\n'),
+    pad.appendRevision(theChangeset),
+  ]);
 }

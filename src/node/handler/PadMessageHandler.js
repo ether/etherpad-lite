@@ -294,7 +294,7 @@ async function handleSaveRevisionMessage(client, message)
   var userId = sessioninfos[client.id].author;
 
   let pad = await padManager.getPad(padId);
-  pad.addSavedRevision(pad.head, userId);
+  await pad.addSavedRevision(pad.head, userId);
 }
 
 /**
@@ -365,7 +365,7 @@ exports.sendChatMessageToPadClients = async function(time, userId, text, padId)
   let userName = await authorManager.getAuthorName(userId);
 
   // save the chat message
-  pad.appendChatMessage(text, userId, time);
+  const promise = pad.appendChatMessage(text, userId, time);
 
   let msg = {
     type: "COLLABROOM",
@@ -374,6 +374,8 @@ exports.sendChatMessageToPadClients = async function(time, userId, text, padId)
 
   // broadcast the chat message to everyone on the pad
   socketio.sockets.in(padId).json.send(msg);
+
+  await promise;
 }
 
 /**
@@ -664,7 +666,7 @@ async function handleUserChanges(data)
     }
 
     try {
-      pad.appendRevision(changeset, thisSession.author);
+      await pad.appendRevision(changeset, thisSession.author);
     } catch(e) {
       client.json.send({ disconnect: "badChangeset" });
       stats.meter('failedChangesets').mark();
@@ -673,13 +675,13 @@ async function handleUserChanges(data)
 
     let correctionChangeset = _correctMarkersInPad(pad.atext, pad.pool);
     if (correctionChangeset) {
-      pad.appendRevision(correctionChangeset);
+      await pad.appendRevision(correctionChangeset);
     }
 
     // Make sure the pad always ends with an empty line.
     if (pad.text().lastIndexOf("\n") !== pad.text().length-1) {
       var nlChangeset = Changeset.makeSplice(pad.text(), pad.text().length - 1, 0, "\n");
-      pad.appendRevision(nlChangeset);
+      await pad.appendRevision(nlChangeset);
     }
 
     await exports.updatePadClients(pad);
