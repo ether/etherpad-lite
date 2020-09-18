@@ -93,7 +93,6 @@
   },
   "scripts": {
     "test": "nyc wtfnode node_modules/.bin/_mocha --timeout 5000 --recursive ../tests/backend/specs",
-    "test-contentcollector": "nyc mocha --timeout 5000 ../tests/backend/specs",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api"
   },
   "version": "1.8.5",
