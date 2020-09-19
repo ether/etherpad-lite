@@ -317,12 +317,14 @@ var padeditbar = (function()
     {
       // reset style
       $('.toolbar').removeClass('cropped')
+      $('body').removeClass('mobile-layout');
       var menu_left = $('.toolbar .menu_left')[0];
 
-      // on mobile the menu_right get displayed at the bottom of the screen
-      var isMobileLayout = $('.toolbar .menu_right').css('position') === 'fixed';
-
-      if (menu_left && menu_left.scrollWidth > $('.toolbar').width() && isMobileLayout) {
+      var menuRightWidth = 280; // this is approximate, we cannot measure it because on mobileLayour it takes the full width on the bottom of the page
+      if (menu_left && menu_left.scrollWidth > $('.toolbar').width() - menuRightWidth || $('.toolbar').width() < 1000) {
+        $('body').addClass('mobile-layout');
+      }
+      if (menu_left && menu_left.scrollWidth > $('.toolbar').width()) {
         $('.toolbar').addClass('cropped');
       }
     }
