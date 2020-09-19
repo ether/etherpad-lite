@@ -1,3 +1,4 @@
+const assert = require('assert').strict;
 const express = require('express');
 const log4js = require('log4js');
 const httpLogger = log4js.getLogger('http');
@@ -15,6 +16,7 @@ exports.normalizeAuthzLevel = (level) => {
   switch (level) {
     case true:
       return 'create';
+    case 'readOnly':
     case 'modify':
     case 'create':
       return level;
@@ -22,6 +24,16 @@ exports.normalizeAuthzLevel = (level) => {
       httpLogger.warn(`Unknown authorization level '${level}', denying access`);
   }
   return false;
+};
+
+exports.userCanModify = (padId, req) => {
+  if (!settings.requireAuthentication) return true;
+  const {session: {user} = {}} = req;
+  assert(user); // If authn required and user == null, the request should have already been denied.
+  assert(user.padAuthorizations); // This is populated even if !settings.requireAuthorization.
+  const level = exports.normalizeAuthzLevel(user.padAuthorizations[padId]);
+  assert(level); // If !level, the request should have already been denied.
+  return level !== 'readOnly';
 };
 
 // Exported so that tests can set this to 0 to avoid unnecessary test slowness.
