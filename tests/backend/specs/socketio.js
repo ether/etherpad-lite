@@ -252,7 +252,7 @@ describe('socket.io access checks', function() {
     assert.equal(clientVars.data.readonly, false);
   });
   it("level='modify' -> can modify", async () => {
-    const pad = await padManager.getPad('pad'); // Create the pad.
+    await padManager.getPad('pad'); // Create the pad.
     authorize = () => 'modify';
     settings.requireAuthentication = true;
     settings.requireAuthorization = true;
@@ -281,5 +281,25 @@ describe('socket.io access checks', function() {
     socket = await connect(res);
     const message = await handshake(socket, 'pad');
     assert.equal(message.accessStatus, 'deny');
+  });
+  it("level='readOnly' -> unable to create", async () => {
+    authorize = () => 'readOnly';
+    settings.requireAuthentication = true;
+    settings.requireAuthorization = true;
+    const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+    socket = await connect(res);
+    const message = await handshake(socket, 'pad');
+    assert.equal(message.accessStatus, 'deny');
+  });
+  it("level='readOnly' -> unable to modify", async () => {
+    await padManager.getPad('pad'); // Create the pad.
+    authorize = () => 'readOnly';
+    settings.requireAuthentication = true;
+    settings.requireAuthorization = true;
+    const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+    socket = await connect(res);
+    const clientVars = await handshake(socket, 'pad');
+    assert.equal(clientVars.type, 'CLIENT_VARS');
+    assert.equal(clientVars.data.readonly, true);
   });
 });

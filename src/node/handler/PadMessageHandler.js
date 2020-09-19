@@ -39,6 +39,7 @@ var remoteAddress = require("../utils/RemoteAddress").remoteAddress;
 const assert = require('assert').strict;
 const nodeify = require("nodeify");
 const { RateLimiterMemory } = require('rate-limiter-flexible');
+const webaccess = require('../hooks/express/webaccess');
 
 const rateLimiter = new RateLimiterMemory({
   points: settings.commitRateLimiting.points,
@@ -224,7 +225,6 @@ exports.handleMessage = async function(client, message)
     padId = await readOnlyManager.getPadId(padId);
   }
 
-  // FIXME: Allow to override readwrite access with readonly
   const {session: {user} = {}} = client.client.request;
   const {accessStatus, authorID} =
       await securityManager.checkAccess(padId, auth.sessionID, auth.token, auth.password, user);
@@ -973,7 +973,8 @@ async function handleClientReady(client, message, authorID)
   // Save in sessioninfos that this session belonges to this pad
   sessionInfo.padId = padIds.padId;
   sessionInfo.readOnlyPadId = padIds.readOnlyPadId;
-  sessionInfo.readonly = padIds.readonly;
+  sessionInfo.readonly =
+      padIds.readonly || !webaccess.userCanModify(message.padId, client.client.request);
 
   // Log creation/(re-)entering of a pad
   let ip = remoteAddress[client.id];
@@ -1112,7 +1113,7 @@ async function handleClientReady(client, message, authorID)
       "chatHead": pad.chatHead,
       "numConnectedUsers": roomClients.length,
       "readOnlyId": padIds.readOnlyPadId,
-      "readonly": padIds.readonly,
+      "readonly": sessionInfo.readonly,
       "serverTimestamp": Date.now(),
       "userId": authorID,
       "abiwordAvailable": settings.abiwordAvailable(),

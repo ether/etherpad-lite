@@ -292,6 +292,7 @@ You can pass the following values to the provided callback:
   downgraded to modify-only if `settings.editOnly` is true.)
 * `['modify']` will grant access to modify but not create the pad if the
   request is for a pad, otherwise access is simply granted.
+* `['readOnly']` will grant read-only access.
 * `[false]` will deny access.
 * `[]` or `undefined` will defer the authorization decision to the next
   authorization plugin (if any, otherwise deny).
