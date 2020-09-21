@@ -11,14 +11,14 @@ const Store = require('ep_etherpad-lite/node_modules/express-session').Store;
 const db = require('ep_etherpad-lite/node/db/DB').db;
 const log4js = require('ep_etherpad-lite/node_modules/log4js');
 
-const messageLogger = log4js.getLogger('SessionStore');
+const logger = log4js.getLogger('SessionStore');
 
 const SessionStore = module.exports = function SessionStore() {};
 
 SessionStore.prototype.__proto__ = Store.prototype;
 
 SessionStore.prototype.get = function(sid, fn) {
-  messageLogger.debug('GET ' + sid);
+  logger.debug('GET ' + sid);
   db.get('sessionstorage:' + sid, (err, sess) => {
     if (sess) {
       sess.cookie.expires = 'string' == typeof sess.cookie.expires ? new Date(sess.cookie.expires) : sess.cookie.expires;
@@ -34,13 +34,13 @@ SessionStore.prototype.get = function(sid, fn) {
 };
 
 SessionStore.prototype.set = function(sid, sess, fn) {
-  messageLogger.debug('SET ' + sid);
+  logger.debug('SET ' + sid);
   db.set('sessionstorage:' + sid, sess);
   if (fn) process.nextTick(fn);
 };
 
 SessionStore.prototype.destroy = function(sid, fn) {
-  messageLogger.debug('DESTROY ' + sid);
+  logger.debug('DESTROY ' + sid);
   db.remove('sessionstorage:' + sid);
   if (fn) process.nextTick(fn);
 };
