@@ -37,7 +37,7 @@ SessionStore.prototype.get = function(sid, fn) {
 SessionStore.prototype.set = function(sid, sess, fn) {
   messageLogger.debug('SET ' + sid);
 
-  db.set("sessionstorage:" + sid, sess);
+  db.set('sessionstorage:' + sid, sess);
   if (fn) {
     process.nextTick(fn);
   }
@@ -46,7 +46,7 @@ SessionStore.prototype.set = function(sid, sess, fn) {
 SessionStore.prototype.destroy = function(sid, fn) {
   messageLogger.debug('DESTROY ' + sid);
 
-  db.remove("sessionstorage:" + sid);
+  db.remove('sessionstorage:' + sid);
   if (fn) {
     process.nextTick(fn);
   }
