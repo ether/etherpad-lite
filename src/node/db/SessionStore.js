@@ -19,15 +19,13 @@ SessionStore.prototype.__proto__ = Store.prototype;
 SessionStore.prototype.get = function(sid, fn) {
   messageLogger.debug('GET ' + sid);
 
-  var self = this;
-
-  db.get("sessionstorage:" + sid, function(err, sess) {
+  db.get('sessionstorage:' + sid, (err, sess) => {
     if (sess) {
       sess.cookie.expires = 'string' == typeof sess.cookie.expires ? new Date(sess.cookie.expires) : sess.cookie.expires;
       if (!sess.cookie.expires || new Date() < sess.cookie.expires) {
         fn(null, sess);
       } else {
-        self.destroy(sid, fn);
+        this.destroy(sid, fn);
       }
     } else {
       fn();
