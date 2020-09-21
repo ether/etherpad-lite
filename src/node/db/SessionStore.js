@@ -7,8 +7,8 @@
  *      express-session, which can't actually use promises anyway.
  */
 
+const DB = require('ep_etherpad-lite/node/db/DB');
 const Store = require('ep_etherpad-lite/node_modules/express-session').Store;
-const db = require('ep_etherpad-lite/node/db/DB').db;
 const log4js = require('ep_etherpad-lite/node_modules/log4js');
 
 const logger = log4js.getLogger('SessionStore');
@@ -16,7 +16,7 @@ const logger = log4js.getLogger('SessionStore');
 module.exports = class SessionStore extends Store {
   get(sid, fn) {
     logger.debug('GET ' + sid);
-    db.get('sessionstorage:' + sid, (err, sess) => {
+    DB.db.get('sessionstorage:' + sid, (err, sess) => {
       if (sess) {
         sess.cookie.expires = ('string' == typeof sess.cookie.expires
                                ? new Date(sess.cookie.expires) : sess.cookie.expires);
@@ -33,13 +33,13 @@ module.exports = class SessionStore extends Store {
 
   set(sid, sess, fn) {
     logger.debug('SET ' + sid);
-    db.set('sessionstorage:' + sid, sess);
+    DB.db.set('sessionstorage:' + sid, sess);
     if (fn) process.nextTick(fn);
   }
 
   destroy(sid, fn) {
     logger.debug('DESTROY ' + sid);
-    db.remove('sessionstorage:' + sid);
+    DB.db.remove('sessionstorage:' + sid);
     if (fn) process.nextTick(fn);
   }
 };
