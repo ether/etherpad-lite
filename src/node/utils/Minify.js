@@ -418,3 +418,7 @@ exports.minify = minify;
 
 exports.requestURI = requestURI;
 exports.requestURIs = requestURIs;
+
+exports.shutdown = async (hookName, context) => {
+  await threadsPool.terminate();
+};

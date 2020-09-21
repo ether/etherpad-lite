@@ -71,3 +71,8 @@ exports.init = function() {
     });
   });
 }
+
+exports.shutdown = async (hookName, context) => {
+  await exports.doShutdown();
+  console.log('Database closed');
+};

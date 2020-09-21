@@ -10,6 +10,28 @@ Things in context:
 
 Use this hook to receive the global settings in your plugin.
 
+## shutdown
+Called from: src/node/server.js
+
+Things in context: None
+
+This hook runs before shutdown. Use it to stop timers, close sockets and files,
+flush buffers, etc. The database is not available while this hook is running.
+The shutdown function must not block for long because there is a short timeout
+before the process is forcibly terminated.
+
+The shutdown function must return a Promise, which must resolve to `undefined`.
+Returning `callback(value)` will return a Promise that is resolved to `value`.
+
+Example:
+
+```
+// using an async function
+exports.shutdown = async (hookName, context) => {
+  await flushBuffers();
+};
+```
+
 ## pluginUninstall
 Called from: src/static/js/pluginfw/installer.js
 

@@ -1,51 +1,30 @@
 function m(mod) { return __dirname + '/../../../src/' + mod; }
 
 const assert = require('assert').strict;
-const db = require(m('node/db/DB'));
-const express = require(m('node_modules/express'));
-const http = require('http');
+const io = require(m('node_modules/socket.io-client'));
 const log4js = require(m('node_modules/log4js'));
-let padManager;
+const padManager = require(m('node/db/PadManager'));
 const plugins = require(m('static/js/pluginfw/plugin_defs'));
+const server = require(m('node/server'));
 const setCookieParser = require(m('node_modules/set-cookie-parser'));
 const settings = require(m('node/utils/Settings'));
-const io = require(m('node_modules/socket.io-client'));
-const stats = require(m('node/stats'));
 const supertest = require(m('node_modules/supertest'));
-const util = require('util');
 
 const logger = log4js.getLogger('test');
-const app = express();
-const server = http.createServer(app);
 let client;
 let baseUrl;
 
 before(async () => {
-  await util.promisify(server.listen).bind(server)(0, 'localhost');
-  baseUrl = `http://localhost:${server.address().port}`;
+  settings.port = 0;
+  settings.ip = 'localhost';
+  const httpServer = await server.start();
+  baseUrl = `http://localhost:${httpServer.address().port}`;
   logger.debug(`HTTP server at ${baseUrl}`);
   client = supertest(baseUrl);
-  const npm = require(m('node_modules/npm/lib/npm.js'));
-  await util.promisify(npm.load)();
-  settings.users = {
-    admin: {password: 'admin-password', is_admin: true},
-    user: {password: 'user-password'},
-  };
-  await db.init();
-  padManager = require(m('node/db/PadManager'));
-  const webaccess = require(m('node/hooks/express/webaccess'));
-  webaccess.expressConfigure('expressConfigure', {app});
-  const socketio = require(m('node/hooks/express/socketio'));
-  socketio.expressCreateServer('expressCreateServer', {app, server});
-  app.get(/./, (req, res) => { res.status(200).send('OK'); });
 });
 
 after(async () => {
-  stats.end();
-  await Promise.all([
-    db.doShutdown(),
-    util.promisify(server.close).bind(server)(),
-  ]);
+  await server.stop();
 });
 
 // Waits for and returns the next named socket.io event. Rejects if there is any error while waiting
@@ -129,16 +108,23 @@ const handshake = async (socket, padID) => {
 };
 
 describe('socket.io access checks', () => {
+  const settingsBackup = {};
   let socket;
   beforeEach(async () => {
+    Object.assign(settingsBackup, settings);
     assert(socket == null);
     settings.requireAuthentication = false;
     settings.requireAuthorization = false;
+    settings.users = {
+      admin: {password: 'admin-password', is_admin: true},
+      user: {password: 'user-password'},
+    };
     Promise.all(['pad', 'other-pad'].map(async (pad) => {
       if (await padManager.doesPadExist(pad)) (await padManager.getPad(pad)).remove();
     }));
   });
   afterEach(async () => {
+    Object.assign(settings, settingsBackup);
     if (socket) socket.close();
     socket = null;
   });
