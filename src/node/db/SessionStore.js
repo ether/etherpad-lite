@@ -13,35 +13,33 @@ const log4js = require('ep_etherpad-lite/node_modules/log4js');
 
 const logger = log4js.getLogger('SessionStore');
 
-const SessionStore = module.exports = function SessionStore() {};
-
-SessionStore.prototype.__proto__ = Store.prototype;
-
-SessionStore.prototype.get = function(sid, fn) {
-  logger.debug('GET ' + sid);
-  db.get('sessionstorage:' + sid, (err, sess) => {
-    if (sess) {
-      sess.cookie.expires = ('string' == typeof sess.cookie.expires
-                             ? new Date(sess.cookie.expires) : sess.cookie.expires);
-      if (!sess.cookie.expires || new Date() < sess.cookie.expires) {
-        fn(null, sess);
+module.exports = class SessionStore extends Store {
+  get(sid, fn) {
+    logger.debug('GET ' + sid);
+    db.get('sessionstorage:' + sid, (err, sess) => {
+      if (sess) {
+        sess.cookie.expires = ('string' == typeof sess.cookie.expires
+                               ? new Date(sess.cookie.expires) : sess.cookie.expires);
+        if (!sess.cookie.expires || new Date() < sess.cookie.expires) {
+          fn(null, sess);
+        } else {
+          this.destroy(sid, fn);
+        }
       } else {
-        this.destroy(sid, fn);
+        fn();
       }
-    } else {
-      fn();
-    }
-  });
-};
+    });
+  }
 
-SessionStore.prototype.set = function(sid, sess, fn) {
-  logger.debug('SET ' + sid);
-  db.set('sessionstorage:' + sid, sess);
-  if (fn) process.nextTick(fn);
-};
+  set(sid, sess, fn) {
+    logger.debug('SET ' + sid);
+    db.set('sessionstorage:' + sid, sess);
+    if (fn) process.nextTick(fn);
+  }
 
-SessionStore.prototype.destroy = function(sid, fn) {
-  logger.debug('DESTROY ' + sid);
-  db.remove('sessionstorage:' + sid);
-  if (fn) process.nextTick(fn);
+  destroy(sid, fn) {
+    logger.debug('DESTROY ' + sid);
+    db.remove('sessionstorage:' + sid);
+    if (fn) process.nextTick(fn);
+  }
 };
