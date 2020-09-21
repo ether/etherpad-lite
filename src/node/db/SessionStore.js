@@ -19,7 +19,6 @@ SessionStore.prototype.__proto__ = Store.prototype;
 
 SessionStore.prototype.get = function(sid, fn) {
   messageLogger.debug('GET ' + sid);
-
   db.get('sessionstorage:' + sid, (err, sess) => {
     if (sess) {
       sess.cookie.expires = 'string' == typeof sess.cookie.expires ? new Date(sess.cookie.expires) : sess.cookie.expires;
@@ -36,18 +35,12 @@ SessionStore.prototype.get = function(sid, fn) {
 
 SessionStore.prototype.set = function(sid, sess, fn) {
   messageLogger.debug('SET ' + sid);
-
   db.set('sessionstorage:' + sid, sess);
-  if (fn) {
-    process.nextTick(fn);
-  }
+  if (fn) process.nextTick(fn);
 };
 
 SessionStore.prototype.destroy = function(sid, fn) {
   messageLogger.debug('DESTROY ' + sid);
-
   db.remove('sessionstorage:' + sid);
-  if (fn) {
-    process.nextTick(fn);
-  }
+  if (fn) process.nextTick(fn);
 };
