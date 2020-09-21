@@ -33,13 +33,11 @@ module.exports = class SessionStore extends Store {
 
   set(sid, sess, fn) {
     logger.debug('SET ' + sid);
-    DB.db.set('sessionstorage:' + sid, sess);
-    if (fn) process.nextTick(fn);
+    DB.db.set('sessionstorage:' + sid, sess, fn);
   }
 
   destroy(sid, fn) {
     logger.debug('DESTROY ' + sid);
-    DB.db.remove('sessionstorage:' + sid);
-    if (fn) process.nextTick(fn);
+    DB.db.remove('sessionstorage:' + sid, fn);
   }
 };
