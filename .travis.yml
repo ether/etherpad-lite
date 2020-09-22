@@ -35,4 +35,5 @@ install:
   - "bin/installDeps.sh"
   - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
   - "npm install ep_hash_auth"
-  - "tests/frontend/travis/runnerBackend.sh"
+
+script: "tests/frontend/travis/runnerBackend.sh"
