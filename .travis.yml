@@ -23,10 +23,6 @@ node_js:
   - "10.22.0"
   - "10.22.1"
 
-
-services:
-  - docker
-
 cache: false
 
 before_install:
@@ -39,28 +35,4 @@ install:
   - "bin/installDeps.sh"
   - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
   - "npm install ep_hash_auth"
-
-script:
-  - "tests/frontend/travis/runner.sh"
-
-env:
-  global:
-    - secure: "WMGxFkOeTTlhWB+ChMucRtIqVmMbwzYdNHuHQjKCcj8HBEPdZLfCuK/kf4rG\nVLcLQiIsyllqzNhBGVHG1nyqWr0/LTm8JRqSCDDVIhpyzp9KpCJQQJG2Uwjk\n6/HIJJh/wbxsEdLNV2crYU/EiVO3A4Bq0YTHUlbhUqG3mSCr5Ec="
-    - secure: "gejXUAHYscbR6Bodw35XexpToqWkv2ifeECsbeEmjaLkYzXmUUNWJGknKSu7\nEUsSfQV8w+hxApr1Z+jNqk9aX3K1I4btL3cwk2trnNI8XRAvu1c1Iv60eerI\nkE82Rsd5lwUaMEh+/HoL8ztFCZamVndoNgX7HWp5J/NRZZMmh4g="
-
-jobs:
-  include:
-    # we can only frontend tests from the ether/ organization and not from forks.
-    # To request tests to be run ask a maintainer to fork your repo to ether/
-    - if: fork = false
-    - name: "Run the Backend tests"
-      install:
-        - "bin/installDeps.sh"
-        - "cd src && npm install && cd -"
-      script:
-        - "tests/frontend/travis/runnerBackend.sh"
-
-notifications:
-  irc:
-    channels:
-      - "irc.freenode.org#etherpad-lite-dev"
+  - "tests/frontend/travis/runnerBackend.sh"
