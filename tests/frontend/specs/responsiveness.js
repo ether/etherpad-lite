@@ -35,7 +35,7 @@ describe('Responsiveness of Editor', function() {
     var amount = 200000; //number of blocks of chars we will insert
     var length = (amount * (chars.length) +1); // include a counter for each space
     var text = ''; // the text we're gonna insert
-    this.timeout(amount * 100);
+    this.timeout(amount * 120); // Changed from 100 to 120 to allow Mac OSX Safari to be slow.
 
     // get keys to send
     var keyMultiplier = 10; // multiplier * 10 == total number of key events
