@@ -1,7 +1,43 @@
 language: node_js
 
 node_js:
-  - "lts/*"
+  - "10.0.0"
+  - "10.1.0"
+  - "10.10.0"
+  - "10.11.0"
+  - "10.12.0"
+  - "10.13.0"
+  - "10.14.0"
+  - "10.14.1"
+  - "10.14.2"
+  - "10.15.0"
+  - "10.15.1"
+  - "10.15.2"
+  - "10.15.3"
+  - "10.16.0"
+  - "10.16.1"
+  - "10.16.2"
+  - "10.16.3"
+  - "10.17.0"
+  - "10.18.0"
+  - "10.18.1"
+  - "10.19.0"
+  - "10.2.0"
+  - "10.2.1"
+  - "10.20.0"
+  - "10.20.1"
+  - "10.21.0"
+  - "10.22.0"
+  - "10.22.1"
+  - "10.3.0"
+  - "10.4.0"
+  - "10.4.1"
+  - "10.5.0"
+  - "10.6.0"
+  - "10.7.0"
+  - "10.8.0"
+  - "10.9.0"
+
 
 services:
   - docker
@@ -32,36 +68,12 @@ jobs:
     # we can only frontend tests from the ether/ organization and not from forks.
     # To request tests to be run ask a maintainer to fork your repo to ether/
     - if: fork = false
-      name: "Test the Frontend"
-      install:
-        #FIXME
-        - "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/g' settings.json.template > settings.json"
-        - "tests/frontend/travis/sauce_tunnel.sh"
-        - "bin/installDeps.sh"
-        - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
-      script:
-        - "tests/frontend/travis/runner.sh"
     - name: "Run the Backend tests"
       install:
         - "bin/installDeps.sh"
         - "cd src && npm install && cd -"
       script:
         - "tests/frontend/travis/runnerBackend.sh"
-## Temporarily commented out the Dockerfile tests
-#    - name: "Test the Dockerfile"
-#      install:
-#        - "cd src && npm install && cd -"
-#      script:
-#        - "docker build -t etherpad:test ."
-#        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
-#        - "cd src && npm run test-container"
-    - name: "Load test Etherpad"
-      install:
-        - "bin/installDeps.sh"
-        - "cd src && npm install && cd -"
-        - "npm install -g etherpad-load-test"
-      script:
-        - "tests/frontend/travis/runnerLoadTest.sh"
 
 notifications:
   irc:
