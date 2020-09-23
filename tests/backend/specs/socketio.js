@@ -130,10 +130,16 @@ describe('socket.io access checks', () => {
   });
 
   // Normal accesses.
-  it('!authn anonymous /p/pad -> 200, ok', async () => {
+  it('!authn anonymous cookie /p/pad -> 200, ok', async () => {
     const res = await client.get('/p/pad').expect(200);
     // Should not throw.
     socket = await connect(res);
+    const clientVars = await handshake(socket, 'pad');
+    assert.equal(clientVars.type, 'CLIENT_VARS');
+  });
+  it('!authn !cookie -> ok', async () => {
+    // Should not throw.
+    socket = await connect(null);
     const clientVars = await handshake(socket, 'pad');
     assert.equal(clientVars.type, 'CLIENT_VARS');
   });
@@ -160,7 +166,7 @@ describe('socket.io access checks', () => {
     // Despite the 401, try to create the pad via a socket.io connection anyway.
     await assert.rejects(connect(res), {message: /authentication required/i});
   });
-  it('socket.io connection without express-session cookie -> error', async () => {
+  it('authn !cookie -> error', async () => {
     settings.requireAuthentication = true;
     await assert.rejects(connect(null), {message: /signed express_sid cookie is required/i});
   });
