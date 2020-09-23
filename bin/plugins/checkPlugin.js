@@ -182,7 +182,8 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     }
   }
 
-  if(files.indexOf("locales") === -1){
+  // if we include templates but don't have translations...
+  if(files.indexOf("templates") !== -1 && files.indexOf("locales") === -1){
     console.warn("Translations not found, please create.  Translation files help with Etherpad accessibility.");
   }
 
