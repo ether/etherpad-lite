@@ -311,6 +311,7 @@ describe('Imports and Exports', function(){
   });
 
   it('exports Etherpad', function(done) {
+    if (!settings.allowAnyoneToImport) { this.skip(); return done(); }
     request(host + '/p/'+testPadId+'/export/etherpad', function (err, res, body) {
       // TODO: At some point checking that the contents is correct would be suitable
       if(body.indexOf("hello") !== -1){
@@ -323,6 +324,7 @@ describe('Imports and Exports', function(){
   })
 
   it('exports HTML for this Etherpad file', function(done) {
+    if (!settings.allowAnyoneToImport) { this.skip(); return done(); }
     request(host + '/p/'+testPadId+'/export/html', function (err, res, body) {
 
       // broken pre fix export -- <ul class="bullet"></li><ul class="bullet"></ul></li></ul>
@@ -338,6 +340,7 @@ describe('Imports and Exports', function(){
   })
 
   it('tries to import Plain Text to a pad that does not exist', function(done) {
+    if (!settings.allowAnyoneToImport) { this.skip(); return done(); }
     var req = request.post(host + '/p/'+testPadId+testPadId+testPadId+'/import', function (err, res, body) {
       if (res.statusCode === 200) {
         throw new Error("Was able to import to a pad that doesn't exist");
@@ -360,6 +363,7 @@ describe('Imports and Exports', function(){
   });
 
   it('Tries to import unsupported file type', function(done) {
+    if (!settings.allowAnyoneToImport) { this.skip(); return done(); }
     if(settings.allowUnknownFileEnds === true){
       console.log("allowing unknown file ends so skipping this test");
       this.skip();
