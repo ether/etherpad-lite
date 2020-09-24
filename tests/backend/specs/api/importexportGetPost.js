@@ -73,6 +73,7 @@ describe('Imports and Exports', function(){
   it('creates a new Pad, imports content to it, checks that content', function(done) {
     if(!settings.allowAnyoneToImport){
       console.warn("not anyone can import so not testing -- to include this test set allowAnyoneToImport to true in settings.json");
+      this.skip();
       done();
     }else{
       api.get(endPoint('createPad')+"&padID="+testPadId)
@@ -108,9 +109,10 @@ describe('Imports and Exports', function(){
   // For some reason word import does not work in testing..
   // TODO: fix support for .doc files..
   it('Tries to import .doc that uses soffice or abiword', function(done) {
-    if(!settings.allowAnyoneToImport) return done();
+    if (!settings.allowAnyoneToImport) { this.skip(); return done(); }
     if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
         (!settings.soffice || settings.soffice.indexOf('/') === -1)) {
+      this.skip();
       return done();
     }
 
@@ -134,9 +136,10 @@ describe('Imports and Exports', function(){
   });
 
   it('exports DOC', function(done) {
-    if(!settings.allowAnyoneToImport) return done();
+    if (!settings.allowAnyoneToImport) { this.skip(); return done(); }
     if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
         (!settings.soffice || settings.soffice.indexOf('/') === -1)) {
+      this.skip();
       return done();
     }
     try{
@@ -154,9 +157,10 @@ describe('Imports and Exports', function(){
   })
 
   it('Tries to import .docx that uses soffice or abiword', function(done) {
-    if(!settings.allowAnyoneToImport) return done();
+    if (!settings.allowAnyoneToImport) { this.skip(); return done(); }
     if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
         (!settings.soffice || settings.soffice.indexOf('/') === -1)) {
+      this.skip();
       return done();
     }
 
@@ -180,9 +184,10 @@ describe('Imports and Exports', function(){
   });
 
   it('exports DOC from imported DOCX', function(done) {
-    if(!settings.allowAnyoneToImport) return done();
+    if (!settings.allowAnyoneToImport) { this.skip(); return done(); }
     if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
         (!settings.soffice || settings.soffice.indexOf('/') === -1)) {
+      this.skip();
       return done();
     }
     request(host + '/p/'+testPadId+'/export/doc', function (err, res, body) {
@@ -196,9 +201,10 @@ describe('Imports and Exports', function(){
   })
 
   it('Tries to import .pdf that uses soffice or abiword', function(done) {
-    if(!settings.allowAnyoneToImport) return done();
+    if (!settings.allowAnyoneToImport) { this.skip(); return done(); }
     if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
         (!settings.soffice || settings.soffice.indexOf('/') === -1)) {
+      this.skip();
       return done();
     }
 
@@ -222,9 +228,10 @@ describe('Imports and Exports', function(){
   });
 
   it('exports PDF', function(done) {
-    if(!settings.allowAnyoneToImport) return done();
+    if (!settings.allowAnyoneToImport) { this.skip(); return done(); }
     if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
         (!settings.soffice || settings.soffice.indexOf('/') === -1)) {
+      this.skip();
       return done();
     }
     request(host + '/p/'+testPadId+'/export/pdf', function (err, res, body) {
@@ -238,9 +245,10 @@ describe('Imports and Exports', function(){
   })
 
   it('Tries to import .odt that uses soffice or abiword', function(done) {
-    if(!settings.allowAnyoneToImport) return done();
+    if (!settings.allowAnyoneToImport) { this.skip(); return done(); }
     if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
         (!settings.soffice || settings.soffice.indexOf('/') === -1)) {
+      this.skip();
       return done();
     }
 
@@ -264,9 +272,10 @@ describe('Imports and Exports', function(){
   });
 
   it('exports ODT', function(done) {
-    if(!settings.allowAnyoneToImport) return done();
+    if (!settings.allowAnyoneToImport) { this.skip(); return done(); }
     if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
         (!settings.soffice || settings.soffice.indexOf('/') === -1)) {
+      this.skip();
       return done();
     }
     request(host + '/p/'+testPadId+'/export/odt', function (err, res, body) {
@@ -280,7 +289,7 @@ describe('Imports and Exports', function(){
   })
 
   it('Tries to import .etherpad', function(done) {
-    if(!settings.allowAnyoneToImport) return done();
+    if (!settings.allowAnyoneToImport) { this.skip(); return done(); }
 
     var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
       if (err) {
@@ -353,6 +362,7 @@ describe('Imports and Exports', function(){
   it('Tries to import unsupported file type', function(done) {
     if(settings.allowUnknownFileEnds === true){
       console.log("allowing unknown file ends so skipping this test");
+      this.skip();
       return done();
     }
 
