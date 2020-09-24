@@ -9,7 +9,6 @@ const settings = require(__dirname+'/../../../../src/node/utils/Settings');
 const host = 'http://127.0.0.1:'+settings.port;
 const api = supertest('http://'+settings.ip+":"+settings.port);
 const path = require('path');
-const async = require(__dirname+'/../../../../src/node_modules/async');
 const request = require(__dirname+'/../../../../src/node_modules/request');
 const padText = fs.readFileSync("../tests/backend/specs/api/test.txt");
 const etherpadDoc = fs.readFileSync("../tests/backend/specs/api/test.etherpad");
@@ -23,8 +22,6 @@ var apiKey = fs.readFileSync(filePath,  {encoding: 'utf-8'});
 apiKey = apiKey.replace(/\n$/, "");
 var apiVersion = 1;
 var testPadId = makeid();
-var lastEdited = "";
-var text = generateLongText();
 
 describe('Connectivity', function(){
   it('can connect', function(done) {
@@ -375,36 +372,4 @@ function makeid()
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
   return text;
-}
-
-function generateLongText(){
-  var text = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-  for( var i=0; i < 80000; i++ ){
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
-}
-
-// Need this to compare arrays (listSavedRevisions test)
-Array.prototype.equals = function (array) {
-    // if the other array is a falsy value, return
-    if (!array)
-        return false;
-    // compare lengths - can save a lot of time
-    if (this.length != array.length)
-        return false;
-    for (var i = 0, l=this.length; i < l; i++) {
-        // Check if we have nested arrays
-        if (this[i] instanceof Array && array[i] instanceof Array) {
-            // recurse into the nested arrays
-            if (!this[i].equals(array[i]))
-                return false;
-        } else if (this[i] != array[i]) {
-            // Warning - two different object instances will never be equal: {x:20} != {x:20}
-            return false;
-        }
-    }
-    return true;
 }
