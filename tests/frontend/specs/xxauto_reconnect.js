@@ -9,9 +9,10 @@ describe('Automatic pad reload on Force Reconnect message', function() {
 
       // make sure there's a timeout set, otherwise automatic reconnect won't be enabled
       helper.padChrome$.window.clientVars.automaticReconnectionTimeout = 2;
+      var rootPath = helper.rootPath ? helper.rootPath : '/p/'
 
       // open same pad on another iframe, to force userdup error
-      var $otherIframeWithSamePad = $('<iframe src="/p/' + padId + '" style="height: 1px;"></iframe>');
+      var $otherIframeWithSamePad = $('<iframe src="' + rootPath + padId + '" style="height: 1px;"></iframe>');
       $originalPadFrame = $('#iframe-container iframe');
       $otherIframeWithSamePad.insertAfter($originalPadFrame);
 

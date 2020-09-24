@@ -93,6 +93,15 @@ var helper = {};
   // This ensures that tests run regardless of this problem
   helper.retry = 0
 
+  var depth = Math.floor((Math.random() * 5) + 1);
+  var rootPath = '/p/';
+  for(var i=1; i <= depth; i++) {
+    var padPrefix = helper.randomString(3).toLowerCase();
+    rootPath+= padPrefix + '/';
+  }
+
+  helper.rootPath = rootPath;
+
   helper.newPad = function(cb, padName){
     //build opts object
     var opts = {clearCookies: true}
@@ -113,8 +122,8 @@ var helper = {};
     }
 
     if(!padName)
-      padName = "FRONTEND_TEST_" + helper.randomString(20);
-      $iframe = $("<iframe src='/p/" + padName + (encodedParams || '') + "'></iframe>");
+      padName = "FRONTEND_TEST_" + helper.randomString(4);
+      $iframe = $("<iframe src='" + rootPath + padName + (encodedParams || '') + "'></iframe>");
 
     // needed for retry
     let origPadName = padName;
