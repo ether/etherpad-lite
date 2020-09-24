@@ -2,14 +2,14 @@
  * Import and Export tests for the /p/whateverPadId/import and /p/whateverPadId/export endpoints.
  */
 
-const assert = require('assert');
+const assert = require('assert').strict;
+const superagent = require(__dirname+'/../../../../src/node_modules/superagent');
 const supertest = require(__dirname+'/../../../../src/node_modules/supertest');
 const fs = require('fs');
 const settings = require(__dirname+'/../../../../src/node/utils/Settings');
 const host = 'http://127.0.0.1:'+settings.port;
-const api = supertest('http://'+settings.ip+":"+settings.port);
+const agent = supertest(`http://${settings.ip}:${settings.port}`);
 const path = require('path');
-const request = require(__dirname+'/../../../../src/node_modules/request');
 const padText = fs.readFileSync("../tests/backend/specs/api/test.txt");
 const etherpadDoc = fs.readFileSync("../tests/backend/specs/api/test.etherpad");
 const wordDoc = fs.readFileSync("../tests/backend/specs/api/test.doc");
@@ -24,22 +24,18 @@ var apiVersion = 1;
 var testPadId = makeid();
 
 describe('Connectivity', function(){
-  it('can connect', function(done) {
-    api.get('/api/')
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('can connect', async function() {
+    await agent.get('/api/')
+        .expect(200)
+        .expect('Content-Type', /json/);
   });
 })
 
 describe('API Versioning', function(){
-  it('finds the version tag', function(done) {
-    api.get('/api/')
-    .expect(function(res){
-      apiVersion = res.body.currentVersion;
-      if (!res.body.currentVersion) throw new Error("No version set in API");
-      return;
-    })
-    .expect(200, done)
+  it('finds the version tag', async function() {
+    await agent.get('/api/')
+        .expect(200)
+        .expect((res) => assert(res.body.currentVersion));
   });
 })
 
@@ -78,34 +74,17 @@ describe('Imports and Exports', function(){
     }
   });
 
-  it('creates a new Pad, imports content to it, checks that content', function(done) {
-    api.get(endPoint('createPad') + "&padID=" + testPadId)
-        .expect(function(res) {
-          if (res.body.code !== 0) throw new Error("Unable to create new Pad");
-
-          var req = request.post(host + '/p/' + testPadId + '/import', function(err, res, body) {
-            if (err) {
-              throw new Error("Failed to import", err);
-            } else {
-              api.get(endPoint('getText')+"&padID="+testPadId)
-                  .expect(function(res){
-                    if(res.body.data.text !== padText.toString()){
-                      throw new Error("text is wrong on export");
-                    }
-                  })
-            }
-          });
-
-          let form = req.form();
-
-          form.append('file', padText, {
-            filename: '/test.txt',
-            contentType: 'text/plain'
-          });
-
-        })
+  it('creates a new Pad, imports content to it, checks that content', async function() {
+    await agent.get(endPoint('createPad') + `&padID=${testPadId}`)
+        .expect(200)
         .expect('Content-Type', /json/)
-        .expect(200, done)
+        .expect((res) => assert.equal(res.body.code, 0));
+    await agent.post(`/p/${testPadId}/import`)
+        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+        .expect(200);
+    await agent.get(endPoint('getText') + `&padID=${testPadId}`)
+        .expect(200)
+        .expect((res) => assert.equal(res.body.data.text, padText.toString()));
   });
 
   describe('Import/Export tests requiring AbiWord/LibreOffice', function() {
@@ -118,233 +97,113 @@ describe('Imports and Exports', function(){
 
     // For some reason word import does not work in testing..
     // TODO: fix support for .doc files..
-    it('Tries to import .doc that uses soffice or abiword', function(done) {
-      var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
-        if (err) {
-          throw new Error("Failed to import", err);
-        } else {
-          if(res.body.indexOf("FrameCall('undefined', 'ok');") === -1){
-            throw new Error("Failed DOC import", testPadId);
-          }else{
-            done();
-          }
-        }
-      });
-
-      let form = req.form();
-      form.append('file', wordDoc, {
-        filename: '/test.doc',
-        contentType: 'application/msword'
-      });
+    it('Tries to import .doc that uses soffice or abiword', async function() {
+      await agent.post(`/p/${testPadId}/import`)
+          .attach('file', wordDoc, {filename: '/test.doc', contentType: 'application/msword'})
+          .expect(200)
+          .expect(/FrameCall\('undefined', 'ok'\);/);
     });
 
-    it('exports DOC', function(done) {
-      try{
-        request(host + '/p/'+testPadId+'/export/doc', function (err, res, body) {
-          // TODO: At some point checking that the contents is correct would be suitable
-          if(body.length >= 9000){
-            done();
-          }else{
-            throw new Error("Word Document export length is not right");
-          }
-        })
-      }catch(e){
-        throw new Error(e);
-      }
+    it('exports DOC', async function() {
+      await agent.get(`/p/${testPadId}/export/doc`)
+          .buffer(true).parse(superagent.parse['application/octet-stream'])
+          .expect(200)
+          .expect((res) => assert(res.body.length >= 9000));
     });
 
-    it('Tries to import .docx that uses soffice or abiword', function(done) {
-      var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
-        if (err) {
-          throw new Error("Failed to import", err);
-        } else {
-          if(res.body.indexOf("FrameCall('undefined', 'ok');") === -1){
-            throw new Error("Failed DOCX import");
-          }else{
-            done();
-          }
-        }
-      });
-
-      let form = req.form();
-      form.append('file', wordXDoc, {
-        filename: '/test.docx',
-        contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-      });
+    it('Tries to import .docx that uses soffice or abiword', async function() {
+      await agent.post(`/p/${testPadId}/import`)
+          .attach('file', wordXDoc, {
+            filename: '/test.docx',
+            contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          })
+          .expect(200)
+          .expect(/FrameCall\('undefined', 'ok'\);/);
     });
 
-    it('exports DOC from imported DOCX', function(done) {
-      request(host + '/p/'+testPadId+'/export/doc', function (err, res, body) {
-        // TODO: At some point checking that the contents is correct would be suitable
-        if(body.length >= 9100){
-          done();
-        }else{
-          throw new Error("Word Document export length is not right");
-        }
-      })
+    it('exports DOC from imported DOCX', async function() {
+      await agent.get(`/p/${testPadId}/export/doc`)
+          .buffer(true).parse(superagent.parse['application/octet-stream'])
+          .expect(200)
+          .expect((res) => assert(res.body.length >= 9100));
     });
 
-    it('Tries to import .pdf that uses soffice or abiword', function(done) {
-      var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
-        if (err) {
-          throw new Error("Failed to import", err);
-        } else {
-          if(res.body.indexOf("FrameCall('undefined', 'ok');") === -1){
-            throw new Error("Failed PDF import");
-          }else{
-            done();
-          }
-        }
-      });
-
-      let form = req.form();
-      form.append('file', pdfDoc, {
-        filename: '/test.pdf',
-        contentType: 'application/pdf'
-      });
+    it('Tries to import .pdf that uses soffice or abiword', async function() {
+      await agent.post(`/p/${testPadId}/import`)
+          .attach('file', pdfDoc, {filename: '/test.pdf', contentType: 'application/pdf'})
+          .expect(200)
+          .expect(/FrameCall\('undefined', 'ok'\);/);
     });
 
-    it('exports PDF', function(done) {
-      request(host + '/p/'+testPadId+'/export/pdf', function (err, res, body) {
-        // TODO: At some point checking that the contents is correct would be suitable
-        if(body.length >= 1000){
-          done();
-        }else{
-          throw new Error("PDF Document export length is not right");
-        }
-      })
+    it('exports PDF', async function() {
+      await agent.get(`/p/${testPadId}/export/pdf`)
+          .buffer(true).parse(superagent.parse['application/octet-stream'])
+          .expect(200)
+          .expect((res) => assert(res.body.length >= 1000));
     });
 
-    it('Tries to import .odt that uses soffice or abiword', function(done) {
-      var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
-        if (err) {
-          throw new Error("Failed to import", err);
-        } else {
-          if(res.body.indexOf("FrameCall('undefined', 'ok');") === -1){
-            throw new Error("Failed ODT import", testPadId);
-          }else{
-            done();
-          }
-        }
-      });
-
-      let form = req.form();
-      form.append('file', odtDoc, {
-        filename: '/test.odt',
-        contentType: 'application/odt'
-      });
+    it('Tries to import .odt that uses soffice or abiword', async function() {
+      await agent.post(`/p/${testPadId}/import`)
+          .attach('file', odtDoc, {filename: '/test.odt', contentType: 'application/odt'})
+          .expect(200)
+          .expect(/FrameCall\('undefined', 'ok'\);/);
     });
 
-    it('exports ODT', function(done) {
-      request(host + '/p/'+testPadId+'/export/odt', function (err, res, body) {
-        // TODO: At some point checking that the contents is correct would be suitable
-        if(body.length >= 7000){
-          done();
-        }else{
-          throw new Error("ODT Document export length is not right");
-        }
-      })
+    it('exports ODT', async function() {
+      await agent.get(`/p/${testPadId}/export/odt`)
+          .buffer(true).parse(superagent.parse['application/octet-stream'])
+          .expect(200)
+          .expect((res) => assert(res.body.length >= 7000));
     });
 
   }); // End of AbiWord/LibreOffice tests.
 
-  it('Tries to import .etherpad', function(done) {
-    var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
-      if (err) {
-        throw new Error("Failed to import", err);
-      } else {
-        if(res.body.indexOf("FrameCall(\'true\', \'ok\');") === -1){
-          throw new Error("Failed Etherpad import", err, testPadId);
-        }else{
-          done();
-        }
-      }
-    });
-
-    let form = req.form();
-    form.append('file', etherpadDoc, {
-      filename: '/test.etherpad',
-      contentType: 'application/etherpad'
-    });
+  it('Tries to import .etherpad', async function() {
+    await agent.post(`/p/${testPadId}/import`)
+        .attach('file', etherpadDoc, {
+          filename: '/test.etherpad',
+          contentType: 'application/etherpad',
+        })
+        .expect(200)
+        .expect(/FrameCall\('true', 'ok'\);/);
   });
 
-  it('exports Etherpad', function(done) {
-    request(host + '/p/'+testPadId+'/export/etherpad', function (err, res, body) {
-      // TODO: At some point checking that the contents is correct would be suitable
-      if(body.indexOf("hello") !== -1){
-        done();
-      }else{
-        console.error("body");
-        throw new Error("Etherpad Document does not include hello");
-      }
-    })
+  it('exports Etherpad', async function() {
+    await agent.get(`/p/${testPadId}/export/etherpad`)
+        .buffer(true).parse(superagent.parse.text)
+        .expect(200)
+        .expect(/hello/);
   });
 
-  it('exports HTML for this Etherpad file', function(done) {
-    request(host + '/p/'+testPadId+'/export/html', function (err, res, body) {
-
-      // broken pre fix export -- <ul class="bullet"></li><ul class="bullet"></ul></li></ul>
-      var expectedHTML = '<ul class="bullet"><li><ul class="bullet"><li>hello</ul></li></ul>';
-      // expect body to include
-      if(body.indexOf(expectedHTML) !== -1){
-        done();
-      }else{
-        console.error(body);
-        throw new Error("Exported HTML nested list items is not right", body);
-      }
-    })
+  it('exports HTML for this Etherpad file', async function() {
+    await agent.get(`/p/${testPadId}/export/html`)
+        .expect(200)
+        .expect('content-type', 'text/html; charset=utf-8')
+        .expect(/<ul class="bullet"><li><ul class="bullet"><li>hello<\/ul><\/li><\/ul>/);
   });
 
-  it('tries to import Plain Text to a pad that does not exist', function(done) {
-    var req = request.post(host + '/p/'+testPadId+testPadId+testPadId+'/import', function (err, res, body) {
-      if (res.statusCode === 200) {
-        throw new Error("Was able to import to a pad that doesn't exist");
-      }else{
-          // Wasn't able to write to a pad that doesn't exist, this is expected behavior
-          api.get(endPoint('getText')+"&padID="+testPadId+testPadId+testPadId)
-          .expect(function(res){
-            if(res.body.code !== 1) throw new Error("Pad Exists");
-          })
-          .expect(200, done)
-      }
-
-      let form = req.form();
-
-      form.append('file', padText, {
-        filename: '/test.txt',
-        contentType: 'text/plain'
-      });
-    })
+  it('tries to import Plain Text to a pad that does not exist', async function() {
+    const padId = testPadId + testPadId + testPadId;
+    await agent.post(`/p/${padId}/import`)
+        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+        .expect(405);
+    await agent.get(endPoint('getText') + `&padID=${padId}`)
+        .expect(200)
+        .expect((res) => assert.equal(res.body.code, 1));
   });
 
-  it('Tries to import unsupported file type', function(done) {
-    if(settings.allowUnknownFileEnds === true){
-      console.log("allowing unknown file ends so skipping this test");
-      this.skip();
-      return done();
+  it('Tries to import unsupported file type', async function() {
+    if (settings.allowUnknownFileEnds === true) {
+      console.log('skipping test because allowUnknownFileEnds is true');
+      return this.skip();
     }
-
-    var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
-      if (err) {
-        throw new Error("Failed to import", err);
-      } else {
-        if(res.body.indexOf("FrameCall('undefined', 'ok');") !== -1){
-          console.log("worked");
-          throw new Error("You shouldn't be able to import this file", testPadId);
-        }
-        return done();
-      }
-    });
-
-    let form = req.form();
-    form.append('file', padText, {
-      filename: '/test.xasdasdxx',
-      contentType: 'weirdness/jobby'
-    });
+    await agent.post(`/p/${testPadId}/import`)
+        .attach('file', padText, {filename: '/test.xasdasdxx', contentType: 'weirdness/jobby'})
+        .expect(200)
+        .expect((res) => assert.doesNotMatch(res.text, /FrameCall\('undefined', 'ok'\);/));
   });
 
-// end of tests
-})
+}); // End of tests.
 
 
 
@@ -352,7 +211,7 @@ describe('Imports and Exports', function(){
 
 var endPoint = function(point, version){
   version = version || apiVersion;
-  return '/api/'+version+'/'+point+'?apikey='+apiKey;
+  return `/api/${version}/${point}?apikey=${apiKey}`;
 }
 
 function makeid()
