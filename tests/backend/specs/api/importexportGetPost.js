@@ -109,7 +109,10 @@ describe('Imports and Exports', function(){
   // TODO: fix support for .doc files..
   it('Tries to import .doc that uses soffice or abiword', function(done) {
     if(!settings.allowAnyoneToImport) return done();
-    if((settings.abiword && settings.abiword.indexOf("/" === -1)) && (settings.office && settings.soffice.indexOf("/" === -1))) return done();
+    if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
+        (!settings.soffice || settings.soffice.indexOf('/') === -1)) {
+      return done();
+    }
 
     var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
       if (err) {
@@ -132,7 +135,10 @@ describe('Imports and Exports', function(){
 
   it('exports DOC', function(done) {
     if(!settings.allowAnyoneToImport) return done();
-    if((settings.abiword && settings.abiword.indexOf("/" === -1)) && (settings.office && settings.soffice.indexOf("/" === -1))) return done();
+    if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
+        (!settings.soffice || settings.soffice.indexOf('/') === -1)) {
+      return done();
+    }
     try{
       request(host + '/p/'+testPadId+'/export/doc', function (err, res, body) {
         // TODO: At some point checking that the contents is correct would be suitable
@@ -149,7 +155,10 @@ describe('Imports and Exports', function(){
 
   it('Tries to import .docx that uses soffice or abiword', function(done) {
     if(!settings.allowAnyoneToImport) return done();
-    if((settings.abiword && settings.abiword.indexOf("/" === -1)) && (settings.office && settings.soffice.indexOf("/" === -1))) return done();
+    if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
+        (!settings.soffice || settings.soffice.indexOf('/') === -1)) {
+      return done();
+    }
 
     var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
       if (err) {
@@ -172,7 +181,10 @@ describe('Imports and Exports', function(){
 
   it('exports DOC from imported DOCX', function(done) {
     if(!settings.allowAnyoneToImport) return done();
-    if((settings.abiword && settings.abiword.indexOf("/" === -1)) && (settings.office && settings.soffice.indexOf("/" === -1))) return done();
+    if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
+        (!settings.soffice || settings.soffice.indexOf('/') === -1)) {
+      return done();
+    }
     request(host + '/p/'+testPadId+'/export/doc', function (err, res, body) {
       // TODO: At some point checking that the contents is correct would be suitable
       if(body.length >= 9100){
@@ -185,7 +197,10 @@ describe('Imports and Exports', function(){
 
   it('Tries to import .pdf that uses soffice or abiword', function(done) {
     if(!settings.allowAnyoneToImport) return done();
-    if((settings.abiword && settings.abiword.indexOf("/" === -1)) && (settings.office && settings.soffice.indexOf("/" === -1))) return done();
+    if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
+        (!settings.soffice || settings.soffice.indexOf('/') === -1)) {
+      return done();
+    }
 
     var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
       if (err) {
@@ -208,7 +223,10 @@ describe('Imports and Exports', function(){
 
   it('exports PDF', function(done) {
     if(!settings.allowAnyoneToImport) return done();
-    if((settings.abiword && settings.abiword.indexOf("/" === -1)) && (settings.office && settings.soffice.indexOf("/" === -1))) return done();
+    if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
+        (!settings.soffice || settings.soffice.indexOf('/') === -1)) {
+      return done();
+    }
     request(host + '/p/'+testPadId+'/export/pdf', function (err, res, body) {
       // TODO: At some point checking that the contents is correct would be suitable
       if(body.length >= 1000){
@@ -221,7 +239,10 @@ describe('Imports and Exports', function(){
 
   it('Tries to import .odt that uses soffice or abiword', function(done) {
     if(!settings.allowAnyoneToImport) return done();
-    if((settings.abiword && settings.abiword.indexOf("/" === -1)) && (settings.office && settings.soffice.indexOf("/" === -1))) return done();
+    if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
+        (!settings.soffice || settings.soffice.indexOf('/') === -1)) {
+      return done();
+    }
 
     var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
       if (err) {
@@ -244,7 +265,10 @@ describe('Imports and Exports', function(){
 
   it('exports ODT', function(done) {
     if(!settings.allowAnyoneToImport) return done();
-    if((settings.abiword && settings.abiword.indexOf("/" === -1)) && (settings.office && settings.soffice.indexOf("/" === -1))) return done();
+    if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
+        (!settings.soffice || settings.soffice.indexOf('/') === -1)) {
+      return done();
+    }
     request(host + '/p/'+testPadId+'/export/odt', function (err, res, body) {
       // TODO: At some point checking that the contents is correct would be suitable
       if(body.length >= 7000){
