@@ -33,7 +33,12 @@
   <meta name="robots" content="noindex, nofollow">
   <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-  <link rel="shortcut icon" href=" <%= staticRootAddress %>static/<%=settings.faviconTimeslider%>">
+  <% if (settings.faviconTimeslider.match(/^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/g)) { %>
+    <link rel="shortcut icon" href="<%=settings.faviconTimeslider%>">
+  <% } else { %>
+    <link rel="shortcut icon" href="<%= staticRootAddress %>static/<%=settings.faviconTimeslider%>">
+  <% }  %>
+
   <% e.begin_block("timesliderStyles"); %>
   <link rel="stylesheet" href="<%= staticRootAddress %>static/css/pad.css?v=<%=settings.randomVersionString%>">
   <link rel="stylesheet" href="<%= staticRootAddress %>static/css/iframe_editor.css?v=<%=settings.randomVersionString%>">

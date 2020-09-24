@@ -32,7 +32,11 @@
         <meta charset="utf-8">
         <meta name="referrer" content="no-referrer">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-        <link rel="shortcut icon" href="static/<%=settings.favicon%>">
+        <% if (settings.favicon.match(/^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/g)) { %>
+          <link rel="shortcut icon" href="<%=settings.favicon%>">
+        <% } else { %>
+          <link rel="shortcut icon" href="static/<%=settings.favicon%>">
+        <% }  %>
 
         <link rel="localizations" type="application/l10n+json" href="static/locales.json">
         <script type="text/javascript" src="static/js/html10n.js?v=<%=settings.randomVersionString%>"></script>
