@@ -83,6 +83,8 @@
 	"pad.modals.deleted.explanation": "Detta block har tagits bort.",
 	"pad.modals.rateLimited": "Begränsad frekvens.",
 	"pad.modals.rateLimited.explanation": "Du skickade för många meddelanden till detta block så du blev frånkopplad.",
+	"pad.modals.rejected.explanation": "Servern avvisade ett meddelande som skickades av din webbläsare.",
+	"pad.modals.rejected.cause": "Servern kan ha uppdaterats medan du visade blocket, eller så finns det kanske en bugg i Etherpad. Försök att ladda om sidan.",
 	"pad.modals.disconnected": "Du har blivit frånkopplad.",
 	"pad.modals.disconnected.explanation": "Anslutningen till servern avbröts",
 	"pad.modals.disconnected.cause": "Servern kanske är otillgänglig. Var god meddela tjänstadministratören om detta fortsätter att hända.",
