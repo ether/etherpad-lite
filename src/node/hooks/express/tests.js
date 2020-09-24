@@ -59,11 +59,11 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   });
 
   args.app.get('/tests/frontend', function (req, res) {
-    res.redirect('/tests/frontend/index.html');
+    res.redirect('/tests/frontend/index.html?target=pad');
   });
 
   args.app.get('/tests/nested-pad/frontend', function (req, res) {
-    res.redirect('/tests/frontend/nested_pad.html');
+    res.redirect('/tests/frontend/index.html?target=nested-pad');
   });
 }
 
