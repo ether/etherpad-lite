@@ -247,7 +247,7 @@ describe('API: Pad security', function() {
         .expect('Content-Type', /json/)
         .expect((res) => {
           assert.equal(res.body.code, 0);
-          assert(!res.body.data.publicStatus);
+          assert.equal(res.body.data.publicStatus, false);
         });
   });
 
@@ -266,7 +266,7 @@ describe('API: Pad security', function() {
         .expect('Content-Type', /json/)
         .expect((res) => {
           assert.equal(res.body.code, 0);
-          assert(res.body.data.publicStatus);
+          assert.equal(res.body.data.publicStatus, true);
         });
   });
 
@@ -276,7 +276,7 @@ describe('API: Pad security', function() {
         .expect('Content-Type', /json/)
         .expect((res) => {
           assert.equal(res.body.code, 0);
-          assert(!res.body.data.isPasswordProtected);
+          assert.equal(res.body.data.isPasswordProtected, false);
         });
   });
 
@@ -295,7 +295,7 @@ describe('API: Pad security', function() {
         .expect('Content-Type', /json/)
         .expect((res) => {
           assert.equal(res.body.code, 0);
-          assert(res.body.data.isPasswordProtected);
+          assert.equal(res.body.data.isPasswordProtected, true);
         });
   });
 });
