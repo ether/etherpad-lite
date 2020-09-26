@@ -247,7 +247,7 @@ describe('API: Pad security', function() {
         .expect('Content-Type', /json/)
         .expect((res) => {
           assert.equal(res.body.code, 0);
-          assert(!res.body.data.publicstatus);
+          assert(!res.body.data.publicStatus);
         });
   });
 
