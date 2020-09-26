@@ -1,19 +1,18 @@
-var assert = require('assert')
- supertest = require(__dirname+'/../../../../src/node_modules/supertest'),
-        fs = require('fs'),
-  settings = require(__dirname + '/../../../../src/node/utils/Settings'),
-       api = supertest('http://'+settings.ip+":"+settings.port),
-      path = require('path');
+const assert = require('assert');
+const supertest = require(__dirname + '/../../../../src/node_modules/supertest');
+const fs = require('fs');
+const settings = require(__dirname + '/../../../../src/node/utils/Settings');
+const api = supertest(`http://${settings.ip}:${settings.port}`);
+const path = require('path');
 
-var filePath = path.join(__dirname, '../../../../APIKEY.txt');
+const filePath = path.join(__dirname, '../../../../APIKEY.txt');
 
-var apiKey = fs.readFileSync(filePath,  {encoding: 'utf-8'});
-apiKey = apiKey.replace(/\n$/, "");
-var apiVersion = 1;
-var groupID = "";
-var authorID = "";
-var sessionID = "";
-var padID = makeid();
+const apiKey = fs.readFileSync(filePath, {encoding: 'utf-8'}).replace(/\n$/, '');
+let apiVersion = 1;
+let groupID = '';
+let authorID = '';
+let sessionID = '';
+let padID = makeid();
 
 describe('API Versioning', function(){
   it('errors if can not connect', function(done) {
@@ -348,16 +347,16 @@ describe('listPadsOfAuthor', function(){
 
 
 
-var endPoint = function(point){
+const endPoint = function(point) {
   return '/api/'+apiVersion+'/'+point+'?apikey='+apiKey;
 }
 
 function makeid()
 {
-  var text = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let text = '';
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-  for( var i=0; i < 5; i++ ){
+  for (let i = 0; i < 5; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
   return text;
