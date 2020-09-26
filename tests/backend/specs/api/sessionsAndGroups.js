@@ -1,4 +1,4 @@
-const assert = require('assert');
+const assert = require('assert').strict;
 const supertest = require(__dirname + '/../../../../src/node_modules/supertest');
 const fs = require('fs');
 const settings = require(__dirname + '/../../../../src/node/utils/Settings');
@@ -14,17 +14,16 @@ let authorID = '';
 let sessionID = '';
 let padID = makeid();
 
-describe('API Versioning', function(){
-  it('errors if can not connect', function(done) {
-    api.get('/api/')
-    .expect(function(res){
-      apiVersion = res.body.currentVersion;
-      if (!res.body.currentVersion) throw new Error("No version set in API");
-      return;
-    })
-    .expect(200, done)
+describe('API Versioning', function() {
+  it('errors if can not connect', async function() {
+    await api.get('/api/')
+        .expect(200)
+        .expect((res) => {
+          assert(res.body.currentVersion);
+          apiVersion = res.body.currentVersion;
+        });
   });
-})
+});
 
 // BEGIN GROUP AND AUTHOR TESTS
 /////////////////////////////////////
@@ -60,224 +59,244 @@ describe('API Versioning', function(){
 */
 
 describe('API: Group creation and deletion', function() {
-  it('createGroup', function(done) {
-    api.get(endPoint('createGroup'))
-    .expect(function(res){
-      if(res.body.code !== 0 || !res.body.data.groupID) throw new Error("Unable to create new Pad");
-      groupID = res.body.data.groupID;
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('createGroup', async function() {
+    await api.get(endPoint('createGroup'))
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+          assert(res.body.data.groupID);
+          groupID = res.body.data.groupID;
+        });
   });
 
-  it('listSessionsOfGroup for empty group', function(done) {
-    api.get(endPoint('listSessionsOfGroup')+"&groupID="+groupID)
-    .expect(function(res){
-      if(res.body.code !== 0 || res.body.data !== null) throw new Error("Sessions show as existing for this group");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('listSessionsOfGroup for empty group', async function() {
+    await api.get(endPoint('listSessionsOfGroup') + `&groupID=${groupID}`)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+          assert.equal(res.body.data, null);
+        });
   });
 
-  it('deleteGroup', function(done) {
-    api.get(endPoint('deleteGroup')+"&groupID="+groupID)
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Group failed to be deleted");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('deleteGroup', async function() {
+    await api.get(endPoint('deleteGroup') + `&groupID=${groupID}`)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+        });
   });
 
-  it('createGroupIfNotExistsFor', function(done) {
-    api.get(endPoint('createGroupIfNotExistsFor')+"&groupMapper=management")
-    .expect(function(res){
-      if(res.body.code !== 0 || !res.body.data.groupID) throw new Error("Sessions show as existing for this group");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('createGroupIfNotExistsFor', async function() {
+    await api.get(endPoint('createGroupIfNotExistsFor') + '&groupMapper=management')
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+          assert(res.body.data.groupID);
+        });
   });
 });
 
 describe('API: Author creation', function() {
-  it('createGroup', function(done) {
-    api.get(endPoint('createGroup'))
-    .expect(function(res){
-      if(res.body.code !== 0 || !res.body.data.groupID) throw new Error("Unable to create new Pad");
-      groupID = res.body.data.groupID;
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('createGroup', async function() {
+    await api.get(endPoint('createGroup'))
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+          assert(res.body.data.groupID);
+          groupID = res.body.data.groupID;
+        });
   });
 
-  it('createAuthor', function(done) {
-    api.get(endPoint('createAuthor'))
-    .expect(function(res){
-      if(res.body.code !== 0 || !res.body.data.authorID) throw new Error("Unable to create author");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('createAuthor', async function() {
+    await api.get(endPoint('createAuthor'))
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+          assert(res.body.data.authorID);
+        });
   });
 
-  it('createAuthor with name', function(done) {
-    api.get(endPoint('createAuthor')+"&name=john")
-    .expect(function(res){
-      if(res.body.code !== 0 || !res.body.data.authorID) throw new Error("Unable to create user with name set");
-      authorID = res.body.data.authorID; // we will be this author for the rest of the tests
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('createAuthor with name', async function() {
+    await api.get(endPoint('createAuthor') + '&name=john')
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+          assert(res.body.data.authorID);
+          authorID = res.body.data.authorID; // we will be this author for the rest of the tests
+        });
   });
 
-  it('createAuthorIfNotExistsFor', function(done) {
-    api.get(endPoint('createAuthorIfNotExistsFor')+"&authorMapper=chris")
-    .expect(function(res){
-      if(res.body.code !== 0 || !res.body.data.authorID) throw new Error("Unable to create author with mapper");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('createAuthorIfNotExistsFor', async function() {
+    await api.get(endPoint('createAuthorIfNotExistsFor') + '&authorMapper=chris')
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+          assert(res.body.data.authorID);
+        });
   });
 
-  it('getAuthorName', function(done) {
-    api.get(endPoint('getAuthorName')+"&authorID="+authorID)
-    .expect(function(res){
-      if(res.body.code !== 0 || res.body.data !== "john") throw new Error("Unable to get Author Name from Author ID");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('getAuthorName', async function() {
+    await api.get(endPoint('getAuthorName') + `&authorID=${authorID}`)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+          assert.equal(res.body.data, 'john');
+        });
   });
 });
 
 describe('API: Sessions', function() {
-  it('createSession', function(done) {
-    api.get(endPoint('createSession')+"&authorID="+authorID+"&groupID="+groupID+"&validUntil=999999999999")
-    .expect(function(res){
-      if(res.body.code !== 0 || !res.body.data.sessionID) throw new Error("Unable to create Session");
-      sessionID = res.body.data.sessionID;
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('createSession', async function() {
+    await api.get(endPoint('createSession') +
+                  `&authorID=${authorID}&groupID=${groupID}&validUntil=999999999999`)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+          assert(res.body.data.sessionID);
+          sessionID = res.body.data.sessionID;
+        });
   });
 
-  it('getSessionInfo', function(done) {
-    api.get(endPoint('getSessionInfo')+"&sessionID="+sessionID)
-    .expect(function(res){
-      if(res.body.code !== 0 || !res.body.data.groupID || !res.body.data.authorID || !res.body.data.validUntil) throw new Error("Unable to get Session info");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('getSessionInfo', async function() {
+    await api.get(endPoint('getSessionInfo') + `&sessionID=${sessionID}`)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+          assert(res.body.data.groupID);
+          assert(res.body.data.authorID);
+          assert(res.body.data.validUntil);
+        });
   });
 
-  it('listSessionsOfGroup', function(done) {
-    api.get(endPoint('listSessionsOfGroup')+"&groupID="+groupID)
-    .expect(function(res){
-      if(res.body.code !== 0 || typeof res.body.data !== "object") throw new Error("Unable to get sessions of a group");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('listSessionsOfGroup', async function() {
+    await api.get(endPoint('listSessionsOfGroup') + `&groupID=${groupID}`)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+          assert.equal(typeof res.body.data, 'object');
+        });
   });
 
-  it('deleteSession', function(done) {
-    api.get(endPoint('deleteSession')+"&sessionID="+sessionID)
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Unable to delete a session");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('deleteSession', async function() {
+    await api.get(endPoint('deleteSession') + `&sessionID=${sessionID}`)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+        });
   });
 
-  it('getSessionInfo of deleted session', function(done) {
-    api.get(endPoint('getSessionInfo')+"&sessionID="+sessionID)
-    .expect(function(res){
-      if(res.body.code !== 1) throw new Error("Session was not properly deleted");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('getSessionInfo of deleted session', async function() {
+    await api.get(endPoint('getSessionInfo') + `&sessionID=${sessionID}`)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 1);
+        });
   });
 });
 
 describe('API: Group pad management', function() {
-  it('listPads', function(done) {
-    api.get(endPoint('listPads')+"&groupID="+groupID)
-    .expect(function(res){
-      if(res.body.code !== 0 || res.body.data.padIDs.length !== 0) throw new Error("Group already had pads for some reason"+res.body.data.padIDs);
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('listPads', async function() {
+    await api.get(endPoint('listPads') + `&groupID=${groupID}`)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+          assert.equal(res.body.data.padIDs.length, 0);
+        });
   });
 
-  it('createGroupPad', function(done) {
-    api.get(endPoint('createGroupPad')+"&groupID="+groupID+"&padName="+padID)
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Unable to create group pad");
-      padID = res.body.data.padID;
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('createGroupPad', async function() {
+    await api.get(endPoint('createGroupPad') + `&groupID=${groupID}&padName=${padID}`)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+          padID = res.body.data.padID;
+        });
   });
 
-  it('listPads after creating a group pad', function(done) {
-    api.get(endPoint('listPads')+"&groupID="+groupID)
-    .expect(function(res){
-      if(res.body.code !== 0 || res.body.data.padIDs.length !== 1) throw new Error("Group isnt listing this pad");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('listPads after creating a group pad', async function() {
+    await api.get(endPoint('listPads') + `&groupID=${groupID}`)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+          assert.equal(res.body.data.padIDs.length, 1);
+        });
   });
 });
 
 describe('API: Pad security', function() {
-  it('getPublicStatus', function(done) {
-    api.get(endPoint('getPublicStatus')+"&padID="+padID)
-    .expect(function(res){
-      if(res.body.code !== 0 || res.body.data.publicstatus) throw new Error("Unable to get public status of this pad");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('getPublicStatus', async function() {
+    await api.get(endPoint('getPublicStatus') + `&padID=${padID}`)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+          assert(!res.body.data.publicstatus);
+        });
   });
 
-  it('setPublicStatus', function(done) {
-    api.get(endPoint('setPublicStatus')+"&padID="+padID+"&publicStatus=true")
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Setting status did not work");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('setPublicStatus', async function() {
+    await api.get(endPoint('setPublicStatus') + `&padID=${padID}&publicStatus=true`)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+        });
   });
 
-  it('getPublicStatus after changing public status', function(done) {
-    api.get(endPoint('getPublicStatus')+"&padID="+padID)
-    .expect(function(res){
-      if(res.body.code !== 0 || !res.body.data.publicStatus) throw new Error("Setting public status of this pad did not work");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('getPublicStatus after changing public status', async function() {
+    await api.get(endPoint('getPublicStatus') + `&padID=${padID}`)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+          assert(res.body.data.publicStatus);
+        });
   });
 
-  it('isPasswordProtected', function(done) {
-    api.get(endPoint('isPasswordProtected')+"&padID="+padID)
-    .expect(function(res){
-      if(res.body.code !== 0 || res.body.data.isPasswordProtected) throw new Error("Pad is password protected by default");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('isPasswordProtected', async function() {
+    await api.get(endPoint('isPasswordProtected') + `&padID=${padID}`)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+          assert(!res.body.data.isPasswordProtected);
+        });
   });
 
-  it('setPassword', function(done) {
-    api.get(endPoint('setPassword')+"&padID="+padID+"&password=test")
-    .expect(function(res){
-      if(res.body.code !== 0) throw new Error("Unabe to set password");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('setPassword', async function() {
+    await api.get(endPoint('setPassword') + `&padID=${padID}&password=test`)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+        });
   });
 
-  it('isPasswordProtected after setting password', function(done) {
-    api.get(endPoint('isPasswordProtected')+"&padID="+padID)
-    .expect(function(res){
-      if(res.body.code !== 0 || !res.body.data.isPasswordProtected) throw new Error("Pad password protection has not applied");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('isPasswordProtected after setting password', async function() {
+    await api.get(endPoint('isPasswordProtected') + `&padID=${padID}`)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+          assert(res.body.data.isPasswordProtected);
+        });
   });
 });
 
@@ -286,21 +305,22 @@ describe('API: Pad security', function() {
 ///////////////////////////////////////
 
 describe('API: Misc', function() {
-  it('listPadsOfAuthor', function(done) {
-    api.get(endPoint('listPadsOfAuthor')+"&authorID="+authorID)
-    .expect(function(res){
-      if(res.body.code !== 0 || res.body.data.padIDs.length !== 0) throw new Error("Pad password protection has not applied");
-    })
-    .expect('Content-Type', /json/)
-    .expect(200, done)
+  it('listPadsOfAuthor', async function() {
+    await api.get(endPoint('listPadsOfAuthor') + `&authorID=${authorID}`)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+          assert.equal(res.body.data.padIDs.length, 0);
+        });
   });
 });
 
 
 
 const endPoint = function(point) {
-  return '/api/'+apiVersion+'/'+point+'?apikey='+apiKey;
-}
+  return `/api/${apiVersion}/${point}?apikey=${apiKey}`;
+};
 
 function makeid()
 {
