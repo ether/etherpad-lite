@@ -72,14 +72,15 @@ describe('Responsiveness of Editor', function() {
       }
 
       helper.waitFor(function(){ // Wait for the ability to process
-        return true; // Ghetto but works for now
+        var el = inner$('body');
+        if(el[0].textContent.length > amount) return true;
       }).done(function(){
         var end = Date.now(); // get the current time
         var delay = end - start; // get the delay as the current time minus the start time
 
         expect(delay).to.be.below(400);
         done();
-      }, 1000);
+      }, 5000);
 
     }, 10000);
   });
