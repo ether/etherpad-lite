@@ -85,6 +85,8 @@
 	"pad.modals.deleted.explanation": "Ena ped wedariye",
 	"pad.modals.rateLimited": "Nısbeto kemeyeyın",
 	"pad.modals.rateLimited.explanation": "Na pad re ßıma vêşi mesac rışto, coki ra irtibat bıriyayo.",
+	"pad.modals.rejected.explanation": "Server, terefê browseri ra rışiyaye yew mesac red kerdo.",
+	"pad.modals.rejected.cause": "Şıma wexto ke ped weyniyayış de server belka biyo rocane ya ziEtherpad de yew xeta bena. Pela reyna bar kerê.",
 	"pad.modals.disconnected": "İrtibata şıma reyê",
 	"pad.modals.disconnected.explanation": "Rovıteri ya irtibata şıma reyyê",
 	"pad.modals.disconnected.cause": "Qay rovıtero nêkarên o.  Ena xerpey deqam kena se idarekaranê sistemiya irtibat kewê",

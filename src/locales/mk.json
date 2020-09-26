@@ -81,6 +81,8 @@
 	"pad.modals.deleted.explanation": "Оваа тетратка е отстранета.",
 	"pad.modals.rateLimited": "Ограничено по стапка.",
 	"pad.modals.rateLimited.explanation": "Испративте премногу пораки на тетраткава, па затоа таа ве исклучи.",
+	"pad.modals.rejected.explanation": "Опслужувачот ја отфрли пораката што му беше испратена од вашиот прелистувач.",
+	"pad.modals.rejected.cause": "Опслужувачот може да бил подновен додека ја гледавте тетратката, или пак Etherpad има некоја грешка. Пробајте со превчитување на страницата.",
 	"pad.modals.disconnected": "Врската е прекината.",
 	"pad.modals.disconnected.explanation": "Врската со опслужувачот е прекината",
 	"pad.modals.disconnected.cause": "Опслужувачот може да е недостапен. Известете го администраторот ако ова продолжи да ви се случува.",

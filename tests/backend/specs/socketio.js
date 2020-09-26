@@ -11,19 +11,19 @@ const settings = require(m('node/utils/Settings'));
 const supertest = require(m('node_modules/supertest'));
 
 const logger = log4js.getLogger('test');
-let client;
+let agent;
 let baseUrl;
 
-before(async () => {
+before(async function() {
   settings.port = 0;
   settings.ip = 'localhost';
   const httpServer = await server.start();
   baseUrl = `http://localhost:${httpServer.address().port}`;
   logger.debug(`HTTP server at ${baseUrl}`);
-  client = supertest(baseUrl);
+  agent = supertest(baseUrl);
 });
 
-after(async () => {
+after(async function() {
   await server.stop();
 });
 
@@ -107,10 +107,22 @@ const handshake = async (socket, padID) => {
   return msg;
 };
 
-describe('socket.io access checks', () => {
+describe('socket.io access checks', function() {
+  let authorize;
+  let authorizeHooksBackup;
+  const cleanUpPads = async () => {
+    const padIds = ['pad', 'other-pad', 'päd'];
+    await Promise.all(padIds.map(async (padId) => {
+      if (await padManager.doesPadExist(padId)) {
+        const pad = await padManager.getPad(padId);
+        await pad.remove();
+      }
+    }));
+  };
   const settingsBackup = {};
   let socket;
-  beforeEach(async () => {
+
+  beforeEach(async function() {
     Object.assign(settingsBackup, settings);
     assert(socket == null);
     settings.requireAuthentication = false;
@@ -119,61 +131,93 @@ describe('socket.io access checks', () => {
       admin: {password: 'admin-password', is_admin: true},
       user: {password: 'user-password'},
     };
-    Promise.all(['pad', 'other-pad'].map(async (pad) => {
-      if (await padManager.doesPadExist(pad)) (await padManager.getPad(pad)).remove();
-    }));
+    authorize = () => true;
+    authorizeHooksBackup = plugins.hooks.authorize;
+    plugins.hooks.authorize = [{hook_fn: (hookName, {req}, cb) => {
+      if (req.session.user == null) return cb([]); // Hasn't authenticated yet.
+      return cb([authorize(req)]);
+    }}];
+    await cleanUpPads();
   });
-  afterEach(async () => {
+  afterEach(async function() {
     Object.assign(settings, settingsBackup);
     if (socket) socket.close();
     socket = null;
+    plugins.hooks.authorize = authorizeHooksBackup;
+    await cleanUpPads();
   });
 
   // Normal accesses.
-  it('!authn anonymous /p/pad -> 200, ok', async () => {
-    const res = await client.get('/p/pad').expect(200);
+  it('!authn anonymous cookie /p/pad -> 200, ok', async function() {
+    const res = await agent.get('/p/pad').expect(200);
     // Should not throw.
     socket = await connect(res);
     const clientVars = await handshake(socket, 'pad');
     assert.equal(clientVars.type, 'CLIENT_VARS');
   });
-  it('!authn user /p/pad -> 200, ok', async () => {
-    const res = await client.get('/p/pad').auth('user', 'user-password').expect(200);
+  it('!authn !cookie -> ok', async function() {
+    // Should not throw.
+    socket = await connect(null);
+    const clientVars = await handshake(socket, 'pad');
+    assert.equal(clientVars.type, 'CLIENT_VARS');
+  });
+  it('!authn user /p/pad -> 200, ok', async function() {
+    const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
     // Should not throw.
     socket = await connect(res);
     const clientVars = await handshake(socket, 'pad');
     assert.equal(clientVars.type, 'CLIENT_VARS');
   });
-  it('authn user /p/pad -> 200, ok', async () => {
+  it('authn user /p/pad -> 200, ok', async function() {
     settings.requireAuthentication = true;
-    const res = await client.get('/p/pad').auth('user', 'user-password').expect(200);
+    const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
     // Should not throw.
     socket = await connect(res);
     const clientVars = await handshake(socket, 'pad');
+    assert.equal(clientVars.type, 'CLIENT_VARS');
+  });
+  it('authz user /p/pad -> 200, ok', async function() {
+    settings.requireAuthentication = true;
+    settings.requireAuthorization = true;
+    const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+    // Should not throw.
+    socket = await connect(res);
+    const clientVars = await handshake(socket, 'pad');
+    assert.equal(clientVars.type, 'CLIENT_VARS');
+  });
+  it('supports pad names with characters that must be percent-encoded', async function() {
+    settings.requireAuthentication = true;
+    // requireAuthorization is set to true here to guarantee that the user's padAuthorizations
+    // object is populated. Technically this isn't necessary because the user's padAuthorizations is
+    // currently populated even if requireAuthorization is false, but setting this to true ensures
+    // the test remains useful if the implementation ever changes.
+    settings.requireAuthorization = true;
+    const encodedPadId = encodeURIComponent('päd');
+    const res = await agent.get(`/p/${encodedPadId}`).auth('user', 'user-password').expect(200);
+    // Should not throw.
+    socket = await connect(res);
+    const clientVars = await handshake(socket, 'päd');
     assert.equal(clientVars.type, 'CLIENT_VARS');
   });
 
   // Abnormal access attempts.
-  it('authn anonymous /p/pad -> 401, error', async () => {
+  it('authn anonymous /p/pad -> 401, error', async function() {
     settings.requireAuthentication = true;
-    const res = await client.get('/p/pad').expect(401);
+    const res = await agent.get('/p/pad').expect(401);
     // Despite the 401, try to create the pad via a socket.io connection anyway.
     await assert.rejects(connect(res), {message: /authentication required/i});
   });
-  it('socket.io connection without express-session cookie -> error', async () => {
+  it('authn !cookie -> error', async function() {
     settings.requireAuthentication = true;
     await assert.rejects(connect(null), {message: /signed express_sid cookie is required/i});
   });
-  it('authorization bypass attempt -> error', async () => {
-    plugins.hooks.authorize = [{hook_fn: (hookName, {req}, cb) => {
-      if (req.session.user == null) return cb([]); // Hasn't authenticated yet.
-      // Only allowed to access /p/pad.
-      return cb([req.path === '/p/pad']);
-    }}];
+  it('authorization bypass attempt -> error', async function() {
+    // Only allowed to access /p/pad.
+    authorize = (req) => req.path === '/p/pad';
     settings.requireAuthentication = true;
     settings.requireAuthorization = true;
     // First authenticate and establish a session.
-    const res = await client.get('/p/pad').auth('user', 'user-password').expect(200);
+    const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
     // Connecting should work because the user successfully authenticated.
     socket = await connect(res);
     // Accessing /p/other-pad should fail, despite the successful fetch of /p/pad.

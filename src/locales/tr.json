@@ -9,6 +9,7 @@
 			"Joseph",
 			"McAang",
 			"Meelo",
+			"MuratTheTurkish",
 			"Trockya",
 			"Vito Genovese"
 		]
@@ -88,6 +89,8 @@
 	"pad.modals.deleted.explanation": "Bu bloknot kaldırılmış.",
 	"pad.modals.rateLimited": "Oran Sınırlı.",
 	"pad.modals.rateLimited.explanation": "Bu pad'e çok fazla mesaj gönderdiniz, böylece bağlantı kesildi.",
+	"pad.modals.rejected.explanation": "Sunucu, tarayıcınız tarafından gönderilen bir mesajı reddetti.",
+	"pad.modals.rejected.cause": "Siz pedi görüntülerken sunucu güncellenmiş olabilir veya Etherpad'de bir hata olabilir. Sayfayı yeniden yüklemeyi deneyin.",
 	"pad.modals.disconnected": "Bağlantınız koptu.",
 	"pad.modals.disconnected.explanation": "Sunucu bağlantısı kaybedildi",
 	"pad.modals.disconnected.cause": "Sunucu kullanılamıyor olabilir. Bunun devam etmesi durumunda servis yöneticisine bildirin.",

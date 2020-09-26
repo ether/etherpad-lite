@@ -370,7 +370,8 @@ A plugin's authFailure function is only called if all of the following are true:
 Calling the provided callback with `[true]` tells Etherpad that the failure was
 handled and no further error handling is required. Calling the callback with
 `[]` or `undefined` defers error handling to the next authFailure plugin (if
-any, otherwise fall back to HTTP basic authentication).
+any, otherwise fall back to HTTP basic authentication for an authentication
+failure or a generic 403 page for an authorization failure).
 
 Example:
 
