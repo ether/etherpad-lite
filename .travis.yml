@@ -71,7 +71,7 @@ jobs:
         - "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/g' settings.json.template > settings.json"
         - "tests/frontend/travis/sauce_tunnel.sh"
         - "bin/installDeps.sh"
-        - "rm -Rf tests/frontend/specs"
+        - "rm tests/frontend/specs/*"
         - "npm install ep_hash_auth ep_cursortrace ep_subscript_and_superscript ep_headings2 ep_author_hover ep_align ep_webrtc ep_table_of_contents ep_font_size ep_markdown ep_spellcheck"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
       script:
