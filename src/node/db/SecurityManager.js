@@ -126,7 +126,7 @@ exports.checkAccess = async function(padID, sessionCookie, token, password, user
     return DENY;
   }
 
-  const passwordExempt = settings.sessionNoPassword && sesionAuthorID != null;
+  const passwordExempt = settings.sessionNoPassword && sessionAuthorID != null;
   const requirePassword = pad.isPasswordProtected() && !passwordExempt;
   if (requirePassword) {
     if (password == null) {
