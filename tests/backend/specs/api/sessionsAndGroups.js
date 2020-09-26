@@ -59,8 +59,8 @@ describe('API Versioning', function(){
 -> listPadsOfAuthor(authorID)
 */
 
-describe('createGroup', function(){
-  it('creates a new group', function(done) {
+describe('API: Group creation and deletion', function() {
+  it('createGroup', function(done) {
     api.get(endPoint('createGroup'))
     .expect(function(res){
       if(res.body.code !== 0 || !res.body.data.groupID) throw new Error("Unable to create new Pad");
@@ -69,10 +69,8 @@ describe('createGroup', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
 
-describe('listSessionsOfGroup', function(){
-  it('Lists the session of a group', function(done) {
+  it('listSessionsOfGroup for empty group', function(done) {
     api.get(endPoint('listSessionsOfGroup')+"&groupID="+groupID)
     .expect(function(res){
       if(res.body.code !== 0 || res.body.data !== null) throw new Error("Sessions show as existing for this group");
@@ -80,10 +78,8 @@ describe('listSessionsOfGroup', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
 
-describe('deleteGroup', function(){
-  it('Deletes a group', function(done) {
+  it('deleteGroup', function(done) {
     api.get(endPoint('deleteGroup')+"&groupID="+groupID)
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Group failed to be deleted");
@@ -91,10 +87,8 @@ describe('deleteGroup', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
 
-describe('createGroupIfNotExistsFor', function(){
-  it('Creates a group if one doesnt exist for mapper 0', function(done) {
+  it('createGroupIfNotExistsFor', function(done) {
     api.get(endPoint('createGroupIfNotExistsFor')+"&groupMapper=management")
     .expect(function(res){
       if(res.body.code !== 0 || !res.body.data.groupID) throw new Error("Sessions show as existing for this group");
@@ -102,10 +96,10 @@ describe('createGroupIfNotExistsFor', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
+});
 
-describe('createGroup', function(){
-  it('creates a new group', function(done) {
+describe('API: Author creation', function() {
+  it('createGroup', function(done) {
     api.get(endPoint('createGroup'))
     .expect(function(res){
       if(res.body.code !== 0 || !res.body.data.groupID) throw new Error("Unable to create new Pad");
@@ -114,10 +108,8 @@ describe('createGroup', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
 
-describe('createAuthor', function(){
-  it('Creates an author with a name set', function(done) {
+  it('createAuthor', function(done) {
     api.get(endPoint('createAuthor'))
     .expect(function(res){
       if(res.body.code !== 0 || !res.body.data.authorID) throw new Error("Unable to create author");
@@ -125,10 +117,8 @@ describe('createAuthor', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
 
-describe('createAuthor', function(){
-  it('Creates an author with a name set', function(done) {
+  it('createAuthor with name', function(done) {
     api.get(endPoint('createAuthor')+"&name=john")
     .expect(function(res){
       if(res.body.code !== 0 || !res.body.data.authorID) throw new Error("Unable to create user with name set");
@@ -137,10 +127,8 @@ describe('createAuthor', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
 
-describe('createAuthorIfNotExistsFor', function(){
-  it('Creates an author if it doesnt exist already and provides mapping', function(done) {
+  it('createAuthorIfNotExistsFor', function(done) {
     api.get(endPoint('createAuthorIfNotExistsFor')+"&authorMapper=chris")
     .expect(function(res){
       if(res.body.code !== 0 || !res.body.data.authorID) throw new Error("Unable to create author with mapper");
@@ -148,10 +136,8 @@ describe('createAuthorIfNotExistsFor', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
 
-describe('getAuthorName', function(){
-  it('Gets the author name', function(done) {
+  it('getAuthorName', function(done) {
     api.get(endPoint('getAuthorName')+"&authorID="+authorID)
     .expect(function(res){
       if(res.body.code !== 0 || res.body.data !== "john") throw new Error("Unable to get Author Name from Author ID");
@@ -159,14 +145,10 @@ describe('getAuthorName', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
+});
 
-// BEGIN SESSION TESTS
-///////////////////////////////////////
-///////////////////////////////////////
-
-describe('createSession', function(){
-  it('Creates a session for an Author', function(done) {
+describe('API: Sessions', function() {
+  it('createSession', function(done) {
     api.get(endPoint('createSession')+"&authorID="+authorID+"&groupID="+groupID+"&validUntil=999999999999")
     .expect(function(res){
       if(res.body.code !== 0 || !res.body.data.sessionID) throw new Error("Unable to create Session");
@@ -175,10 +157,8 @@ describe('createSession', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
 
-describe('getSessionInfo', function(){
-  it('Gets session inf', function(done) {
+  it('getSessionInfo', function(done) {
     api.get(endPoint('getSessionInfo')+"&sessionID="+sessionID)
     .expect(function(res){
       if(res.body.code !== 0 || !res.body.data.groupID || !res.body.data.authorID || !res.body.data.validUntil) throw new Error("Unable to get Session info");
@@ -186,10 +166,8 @@ describe('getSessionInfo', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
 
-describe('listSessionsOfGroup', function(){
-  it('Gets sessions of a group', function(done) {
+  it('listSessionsOfGroup', function(done) {
     api.get(endPoint('listSessionsOfGroup')+"&groupID="+groupID)
     .expect(function(res){
       if(res.body.code !== 0 || typeof res.body.data !== "object") throw new Error("Unable to get sessions of a group");
@@ -197,10 +175,8 @@ describe('listSessionsOfGroup', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
 
-describe('deleteSession', function(){
-  it('Deletes a session', function(done) {
+  it('deleteSession', function(done) {
     api.get(endPoint('deleteSession')+"&sessionID="+sessionID)
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Unable to delete a session");
@@ -208,10 +184,8 @@ describe('deleteSession', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
 
-describe('getSessionInfo', function(){
-  it('Gets session info', function(done) {
+  it('getSessionInfo of deleted session', function(done) {
     api.get(endPoint('getSessionInfo')+"&sessionID="+sessionID)
     .expect(function(res){
       if(res.body.code !== 1) throw new Error("Session was not properly deleted");
@@ -219,14 +193,10 @@ describe('getSessionInfo', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
+});
 
-// GROUP PAD MANAGEMENT
-///////////////////////////////////////
-///////////////////////////////////////
-
-describe('listPads', function(){
-  it('Lists Pads of a Group', function(done) {
+describe('API: Group pad management', function() {
+  it('listPads', function(done) {
     api.get(endPoint('listPads')+"&groupID="+groupID)
     .expect(function(res){
       if(res.body.code !== 0 || res.body.data.padIDs.length !== 0) throw new Error("Group already had pads for some reason"+res.body.data.padIDs);
@@ -234,10 +204,8 @@ describe('listPads', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
 
-describe('createGroupPad', function(){
-  it('Creates a Group Pad', function(done) {
+  it('createGroupPad', function(done) {
     api.get(endPoint('createGroupPad')+"&groupID="+groupID+"&padName="+padID)
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Unable to create group pad");
@@ -246,10 +214,8 @@ describe('createGroupPad', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
 
-describe('listPads', function(){
-  it('Lists Pads of a Group', function(done) {
+  it('listPads after creating a group pad', function(done) {
     api.get(endPoint('listPads')+"&groupID="+groupID)
     .expect(function(res){
       if(res.body.code !== 0 || res.body.data.padIDs.length !== 1) throw new Error("Group isnt listing this pad");
@@ -257,14 +223,10 @@ describe('listPads', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
+});
 
-// PAD SECURITY /-_-\
-///////////////////////////////////////
-///////////////////////////////////////
-
-describe('getPublicStatus', function(){
-  it('Gets the public status of a pad', function(done) {
+describe('API: Pad security', function() {
+  it('getPublicStatus', function(done) {
     api.get(endPoint('getPublicStatus')+"&padID="+padID)
     .expect(function(res){
       if(res.body.code !== 0 || res.body.data.publicstatus) throw new Error("Unable to get public status of this pad");
@@ -272,10 +234,8 @@ describe('getPublicStatus', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
 
-describe('setPublicStatus', function(){
-  it('Sets the public status of a pad', function(done) {
+  it('setPublicStatus', function(done) {
     api.get(endPoint('setPublicStatus')+"&padID="+padID+"&publicStatus=true")
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Setting status did not work");
@@ -283,10 +243,8 @@ describe('setPublicStatus', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
 
-describe('getPublicStatus', function(){
-  it('Gets the public status of a pad', function(done) {
+  it('getPublicStatus after changing public status', function(done) {
     api.get(endPoint('getPublicStatus')+"&padID="+padID)
     .expect(function(res){
       if(res.body.code !== 0 || !res.body.data.publicStatus) throw new Error("Setting public status of this pad did not work");
@@ -294,10 +252,8 @@ describe('getPublicStatus', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
 
-describe('isPasswordProtected', function(){
-  it('Gets the public status of a pad', function(done) {
+  it('isPasswordProtected', function(done) {
     api.get(endPoint('isPasswordProtected')+"&padID="+padID)
     .expect(function(res){
       if(res.body.code !== 0 || res.body.data.isPasswordProtected) throw new Error("Pad is password protected by default");
@@ -305,10 +261,8 @@ describe('isPasswordProtected', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
 
-describe('setPassword', function(){
-  it('Gets the public status of a pad', function(done) {
+  it('setPassword', function(done) {
     api.get(endPoint('setPassword')+"&padID="+padID+"&password=test")
     .expect(function(res){
       if(res.body.code !== 0) throw new Error("Unabe to set password");
@@ -316,10 +270,8 @@ describe('setPassword', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
 
-describe('isPasswordProtected', function(){
-  it('Gets the public status of a pad', function(done) {
+  it('isPasswordProtected after setting password', function(done) {
     api.get(endPoint('isPasswordProtected')+"&padID="+padID)
     .expect(function(res){
       if(res.body.code !== 0 || !res.body.data.isPasswordProtected) throw new Error("Pad password protection has not applied");
@@ -327,15 +279,14 @@ describe('isPasswordProtected', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
-
+});
 
 // NOT SURE HOW TO POPULAT THIS /-_-\
 ///////////////////////////////////////
 ///////////////////////////////////////
 
-describe('listPadsOfAuthor', function(){
-  it('Gets the Pads of an Author', function(done) {
+describe('API: Misc', function() {
+  it('listPadsOfAuthor', function(done) {
     api.get(endPoint('listPadsOfAuthor')+"&authorID="+authorID)
     .expect(function(res){
       if(res.body.code !== 0 || res.body.data.padIDs.length !== 0) throw new Error("Pad password protection has not applied");
@@ -343,7 +294,7 @@ describe('listPadsOfAuthor', function(){
     .expect('Content-Type', /json/)
     .expect(200, done)
   });
-})
+});
 
 
 
