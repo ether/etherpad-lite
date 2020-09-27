@@ -87,6 +87,22 @@ describe('Imports and Exports', function(){
         .expect((res) => assert.equal(res.body.data.text, padText.toString()));
   });
 
+  it('gets read only pad Id and exports the html and text for this pad', async function(){
+    let ro = await agent.get(endPoint('getReadOnlyID')+"&padID="+testPadId)
+        .expect(200)
+        .expect((res) => assert.ok(JSON.parse(res.text).data.readOnlyID));
+    let readOnlyId = JSON.parse(ro.text).data.readOnlyID;
+
+    await agent.get(`/p/${readOnlyId}/export/html`)
+        .expect(200)
+        .expect((res) => assert(res.text.indexOf("This is the") !== -1));
+
+    await agent.get(`/p/${readOnlyId}/export/txt`)
+        .expect(200)
+        .expect((res) => assert(res.text.indexOf("This is the") !== -1));
+  });
+
+
   describe('Import/Export tests requiring AbiWord/LibreOffice', function() {
     before(function() {
       if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
