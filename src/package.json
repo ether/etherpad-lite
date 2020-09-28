@@ -81,7 +81,8 @@
     "set-cookie-parser": "^2.4.6",
     "superagent": "^3.8.3",
     "supertest": "4.0.2",
-    "wd": "1.12.1"
+    "wd": "1.12.1",
+    "etherpad-cli-client": "0.0.9"
   },
   "engines": {
     "node": ">=10.13.0",
