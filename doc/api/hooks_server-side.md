@@ -288,10 +288,13 @@ set in the settings file or by the authenticate hook.
 You can pass the following values to the provided callback:
 
 * `[true]` or `['create']` will grant access to modify or create the pad if the
-  request is for a pad, otherwise access is simply granted. (Access will be
-  downgraded to modify-only if `settings.editOnly` is true.)
-* `['modify']` will grant access to modify but not create the pad if the
-  request is for a pad, otherwise access is simply granted.
+  request is for a pad, otherwise access is simply granted. Access to a pad will
+  be downgraded to modify-only if `settings.editOnly` is true or the user's
+  `canCreate` setting is set to `false`, and downgraded to read-only if the
+  user's `readOnly` setting is `true`.
+* `['modify']` will grant access to modify but not create the pad if the request
+  is for a pad, otherwise access is simply granted. Access to a pad will be
+  downgraded to read-only if the user's `readOnly` setting is `true`.
 * `['readOnly']` will grant read-only access.
 * `[false]` will deny access.
 * `[]` or `undefined` will defer the authorization decision to the next

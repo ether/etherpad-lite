@@ -67,8 +67,12 @@ exports.checkAccess = async function(padID, sessionCookie, token, password, user
       authLogger.debug('access denied: authentication is required');
       return DENY;
     }
-    // Check whether the user is authorized. Note that userSettings.padAuthorizations will still be
-    // populated even if settings.requireAuthorization is false.
+
+    // Check whether the user is authorized to create the pad if it doesn't exist.
+    if (userSettings.canCreate != null && !userSettings.canCreate) canCreate = false;
+    if (userSettings.readOnly) canCreate = false;
+    // Note: userSettings.padAuthorizations should still be populated even if
+    // settings.requireAuthorization is false.
     const padAuthzs = userSettings.padAuthorizations || {};
     const level = webaccess.normalizeAuthzLevel(padAuthzs[padID]);
     if (!level) {
