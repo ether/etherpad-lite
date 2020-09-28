@@ -90,6 +90,8 @@
 	"pad.modals.deleted.explanation": "Этот документ был удалён.",
 	"pad.modals.rateLimited": "Скорость ограничена.",
 	"pad.modals.rateLimited.explanation": "Вы отправили слишком много сообщений в этот документ, поэтому вы были отключены.",
+	"pad.modals.rejected.explanation": "Сервер отклонил сообщение, посланное вашим браузером.",
+	"pad.modals.rejected.cause": "Возможно, сервер обновился, пока вы просматривали документ, а, может, это ошибка в Etherpad. Попробуйте перезагрузить страницу.",
 	"pad.modals.disconnected": "Соединение разорвано.",
 	"pad.modals.disconnected.explanation": "Подключение к серверу потеряно",
 	"pad.modals.disconnected.cause": "Сервер, возможно, недоступен. Пожалуйста, сообщите администратору службы, если проблема будет повторятся.",

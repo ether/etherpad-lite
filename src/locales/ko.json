@@ -84,6 +84,7 @@
 	"pad.modals.corruptPad.cause": "잘못된 서버 구성 또는 다른 예기치 않은 오류 때문에 발생했을 수 있습니다. 서버 관리자와 연락하세요.",
 	"pad.modals.deleted": "삭제되었습니다.",
 	"pad.modals.deleted.explanation": "이 패드를 제거했습니다.",
+	"pad.modals.rejected.explanation": "브라우저가 보낸 메시지를 서버가 거부했습니다.",
 	"pad.modals.disconnected": "연결이 끊어졌습니다.",
 	"pad.modals.disconnected.explanation": "서버에서 연결을 잃었습니다",
 	"pad.modals.disconnected.cause": "서버를 사용할 수 없습니다. 이 문제가 계속 발생하면 서비스 관리자에게 알려주시기 바랍니다.",
