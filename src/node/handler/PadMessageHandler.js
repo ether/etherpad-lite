@@ -181,7 +181,7 @@ exports.handleMessage = async function(client, message)
   var env = process.env.NODE_ENV || 'development';
 
   if (env === 'production') {
-    const clientIPAddress = (settings.trustProxy && client.handshake.headers['x-forwarded-for']) ? client.handshake.headers['x-forwarded-for'] : client.handshake.address;
+    const clientIPAddress = remoteAddress[client.id];
     try {
       await rateLimiter.consume(clientIPAddress); // consume 1 point per event from IP
     }catch(e){
