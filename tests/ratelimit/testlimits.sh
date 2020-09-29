@@ -19,7 +19,7 @@ node send_changesets.js http://127.0.0.1:8081/p/BACKEND_TEST_ratelimit_101ms 101
 pid1=$!
 
 #sending changesets every 101ms via second IP and proxy
-docker exec -d anotherip node /tmp/send_changesets.js http://172.23.42.1:80/p/BACKEND_TEST_ratelimit_101ms_via_second_ip 101 &
+docker exec anotherip node /tmp/send_changesets.js http://172.23.42.1:80/p/BACKEND_TEST_ratelimit_101ms_via_second_ip 101 &
 pid2=$!
 
 wait $pid1
