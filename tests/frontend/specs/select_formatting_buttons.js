@@ -105,8 +105,9 @@ describe("select formatting buttons when selection has style applied", function(
         applyStyleOnLineAndSelectIt(FIRST_LINE, style, done);
       });
 
-      after(function () {
+      after(function (done) {
         undo();
+        done();
       });
 
       testIfFormattingButtonIsSelected(style);
@@ -118,8 +119,9 @@ describe("select formatting buttons when selection has style applied", function(
         applyStyleOnLineAndPlaceCaretOnit(FIRST_LINE, style, done);
       });
 
-      after(function () {
+      after(function (done) {
         undo();
+        done();
       });
 
       testIfFormattingButtonIsSelected(style)
@@ -128,13 +130,15 @@ describe("select formatting buttons when selection has style applied", function(
 
   context('when user applies a style and the selection does not change', function() {
     var style = STYLES[0]; // italic
-    before(function () {
+    before(function (done) {
       applyStyleOnLine(style, FIRST_LINE);
+      done();
     });
 
     // clean the style applied
-    after(function () {
+    after(function (done) {
       applyStyleOnLine(style, FIRST_LINE);
+      done();
     });
 
     it('selects the style button', function (done) {
@@ -146,15 +150,17 @@ describe("select formatting buttons when selection has style applied", function(
   SHORTCUT_KEYS.forEach(function(key, index){
     var styleOfTheShortcut = STYLES[index]; // italic, bold, ...
     context('when user presses CMD + ' + key, function() {
-      before(function () {
+      before(function (done) {
         pressFormattingShortcutOnSelection(key);
+        done();
       });
 
       testIfFormattingButtonIsSelected(styleOfTheShortcut);
 
       context('and user presses CMD + ' + key + ' again', function() {
-        before(function () {
+        before(function (done) {
           pressFormattingShortcutOnSelection(key);
+          done();
         });
 
         testIfFormattingButtonIsDeselected(styleOfTheShortcut);
