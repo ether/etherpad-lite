@@ -1,5 +1,4 @@
 FROM node:alpine3.12
-RUN apk add --no-cache bash
 WORKDIR /tmp
 RUN npm i etherpad-cli-client
 COPY ./tests/ratelimit/send_changesets.js /tmp/send_changesets.js
