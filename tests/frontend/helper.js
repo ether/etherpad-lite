@@ -93,20 +93,6 @@ var helper = {};
   // This ensures that tests run regardless of this problem
   helper.retry = 0
 
-  helper.rootPath = '/p/';
-  helper.padNameRadnomString = 20;
-  var urlParams = new URLSearchParams(window.location.search);
-  var target = urlParams.get('target');
-
-  if(target && target === 'nested-pad') {
-    var depth = Math.floor((Math.random() * 5) + 1);
-    helper.padNameRadnomString = 4
-    for(var i=1; i <= depth; i++) {
-      var padPrefix = helper.randomString(3);
-      helper.rootPath += padPrefix + '/';
-    }
-  }
-
   helper.newPad = function(cb, padName){
     //build opts object
     var opts = {clearCookies: true}
@@ -126,9 +112,21 @@ var helper = {};
       helper.clearSessionCookies();
     }
 
+    var rootPath = '/p/';
+    var padNameRadnomString = 20;
+    var depth = Math.floor((Math.random() * 5) + 1);
+    padNameRadnomString = 4
+    for(var i=1; i <= depth; i++) {
+      var padPrefix = helper.randomString(3);
+      rootPath += padPrefix + '/';
+    }
+
     if(!padName)
-      padName = "FRONTEND_TEST_" + helper.randomString(helper.padNameRadnomString);
-      $iframe = $("<iframe src='" + helper.rootPath + padName + (encodedParams || '') + "'></iframe>");
+      padName = rootPath + "FRONTEND_TEST_" + helper.randomString(padNameRadnomString);
+
+    padName = padName.toString().indexOf('/p/') !== 0 ? rootPath + padName : padName;
+
+    $iframe = $("<iframe src='" + padName + (encodedParams || '') + "'></iframe>");
 
     // needed for retry
     let origPadName = padName;
