@@ -52,7 +52,7 @@
     "log4js": "0.6.35",
     "measured-core": "1.11.2",
     "nodeify": "1.0.1",
-    "npm": "6.14.5",
+    "npm": "6.14.8",
     "openapi-backend": "2.4.1",
     "rate-limiter-flexible": "^2.1.4",
     "rehype": "^10.0.0",
@@ -67,7 +67,7 @@
     "threads": "^1.4.0",
     "tiny-worker": "^2.3.0",
     "tinycon": "0.0.1",
-    "ueberdb2": "^0.5.3",
+    "ueberdb2": "^0.5.4",
     "underscore": "1.8.3",
     "unorm": "1.4.1"
   },
