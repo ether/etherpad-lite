@@ -487,6 +487,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
 exports.getPadHTMLDocument = async function (padId, revNum)
 {
   let pad = await padManager.getPad(padId);
+  const padName = padId.split(":").pop()
 
   // Include some Styles into the Head for Export
   let stylesForExportCSS = "";
@@ -498,6 +499,7 @@ exports.getPadHTMLDocument = async function (padId, revNum)
   let html = await getPadHTML(pad, revNum);
 
   return eejs.require("ep_etherpad-lite/templates/export_html.html", {
+    padName: padName,
     body: html,
     padId: Security.escapeHTML(padId),
     extraCSS: stylesForExportCSS

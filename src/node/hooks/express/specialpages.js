@@ -40,7 +40,8 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   });
 
   // Backward compatibility for plugins
-  args.app.get(/(\/static\/plugins\/(.*))/ , function (req, res, next) {
+  args.app.get(/(\/static\/plugins\/(.*))/ , function (req, res, next) 
+  {
     const path = req.path.split("/");
     const startPath = path.findIndex(path => path === "plugins");
     const newPath = path.slice(startPath, path.length).join("/");
@@ -48,10 +49,18 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     return minify.minify(req, res);
   });
 
-  //serve timeslider.html under /p/$padname/timeslider
-  args.app.get(/^\/p\/(.*)\/timeslider$/i, function(req, res, next)
+  //serve timeslider.html under /p/$padname*/timeslider
+  args.app.get("/p/:pad*/timeslider", function(req, res, next)
   {
-    const padId = req.params['0'].split('/').join(":");
+    let padId = req.params.pad;
+    let padName = req.params.pad;
+    // If it was nested pad. e.g. /p/pad1/pad2/*
+    if(req.params['0']){
+      // In this case padId looks like "pad1:pad2" (Database pad key)
+      padId = (req.params.pad+req.params[0]).replace(/\//, ":");
+      // The pad's name is always the last param of the query
+      padName = req.params[0].split('/').pop();
+    }
     const staticRootAddress = req.path.split("/")
       .filter(x=> x.length)
       .map(path => "../")
@@ -63,6 +72,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
     res.send(eejs.require("ep_etherpad-lite/templates/timeslider.html", {
       padId,
+      padName,
       staticRootAddress,
       req: req,
       toolbar: toolbar
@@ -70,12 +80,21 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   });
 
   //serve pad.html under /p
-  
-  args.app.get(/^\/p\/(.*)/i, function(req, res, next)
+  args.app.get("/p/:pad*", function(req, res, next)
   {
     // The below might break for pads being rewritten
     const isReadOnly = req.url.indexOf("/p/r.") === 0;
-    const padId = req.params['0'].split('/').join(":");
+
+    let padId = req.params.pad;
+    let padName = req.params.pad;
+    // If it was nested pad. e.g. /p/pad1/pad2/*
+    if(req.params['0']){
+      // In this case padId looks like "pad1:pad2" (Database pad key)
+      padId = (req.params.pad+req.params[0]).replace(/\//, ":");
+      // The pad's name is always the last param of the query
+      padName = req.params[0].split('/').pop();
+    }
+
     const staticRootAddress = req.path.split("/")
       .filter(x=> x.length)
       .map(path => "../")
@@ -88,6 +107,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
     res.send(eejs.require("ep_etherpad-lite/templates/pad.html", {
       padId,
+      padName,
       staticRootAddress,
       req: req,
       toolbar: toolbar,
@@ -96,7 +116,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   });
 
   //serve favicon.ico from all path levels except as a pad name
-  args.app.get( /static\/favicon.ico$/, function(req, res)
+  args.app.get(/static\/favicon.ico$/, function(req, res)
   {
     var filePath = path.join(settings.root, "src", "static", "skins", settings.skinName, "favicon.ico");
 
