@@ -33,11 +33,7 @@
   <meta name="robots" content="noindex, nofollow">
   <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-  <% if (settings.faviconTimeslider.match(/^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/g)) { %>
-    <link rel="shortcut icon" href="<%=settings.faviconTimeslider%>">
-  <% } else { %>
-    <link rel="shortcut icon" href="<%= staticRootAddress %>static/<%=settings.faviconTimeslider%>">
-  <% }  %>
+  <link rel="shortcut icon" href="<%= settings.getFaviconAddress(settings.faviconTimeslider, staticRootAddress)%>">
 
   <% e.begin_block("timesliderStyles"); %>
   <link rel="stylesheet" href="<%= staticRootAddress %>static/css/pad.css?v=<%=settings.randomVersionString%>">
@@ -266,8 +262,9 @@
 <script type="text/javascript" >
   // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
   var clientVars = {};
-  window.STATIC_ROOT_ADDRESS = "<%= staticRootAddress %>";
-  window.PADID = "<%= padId %>";
+  clientVars.padId = "<%= padId %>";
+  clientVars.padName = "<%= padName %>";
+  clientVars.staticRootAddress = "<%= staticRootAddress  %>";
   var BroadcastSlider;
   (function () {
     var pathComponents = location.pathname.split('/');

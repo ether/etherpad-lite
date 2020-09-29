@@ -36,8 +36,7 @@ function init() {
   {
     // start the custom js
     if (typeof customStart == "function") customStart();
-
-    padId = window.PADID;
+    padId = clientVars.padId;
 
     //set the title
     document.title = padId.replace(/_+/g, ' ') + " | " + document.title;
@@ -126,7 +125,7 @@ var changesetLoader;
 function handleClientVars(message)
 {
   //save the client Vars
-  clientVars = message.data;
+  clientVars = Object.assign(message.data, clientVars);
 
   //load all script that doesn't work without the clientVars
   BroadcastSlider = require('./broadcast_slider').loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded);

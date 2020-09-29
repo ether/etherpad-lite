@@ -139,7 +139,7 @@ function savePassword()
 function sendClientReady(isReconnect, messageType)
 {
   messageType = typeof messageType !== 'undefined' ? messageType : 'CLIENT_READY';
-  var padId = window.PADID;
+  var padId = clientVars.padId;
   padId = decodeURIComponent(padId); // unescape neccesary due to Safari and Opera interpretation of spaces
 
   if(!isReconnect)
@@ -280,7 +280,7 @@ function handshake()
       receivedClientVars = true;
 
       //set some client vars
-      clientVars = obj.data;
+      clientVars = Object.assign(obj.data, clientVars);
       clientVars.userAgent = "Anonymous";
       clientVars.collab_client_vars.clientAgent = "Anonymous";
 

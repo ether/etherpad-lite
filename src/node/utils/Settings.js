@@ -438,6 +438,12 @@ exports.getEpVersion = function() {
   return require('ep_etherpad-lite/package.json').version;
 }
 
+// Provide favicon address by setting.faveicon and requestedRootAddress
+exports.getFaviconAddress = function (favicon, requestedRootAddress = "/") {
+  var urlRegex = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*).?$/g;
+  return urlRegex.test(favicon ) ? favicon  : `${requestedRootAddress}static/${favicon }`;
+}
+
 /**
  * Receives a settingsObj and, if the property name is a valid configuration
  * item, stores it in the module's exported properties via a side effect.

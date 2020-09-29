@@ -44,7 +44,7 @@ function scriptTag(source) {
 function Ace2Editor()
 {
   var ace2 = Ace2Editor;
-  var staticRoot = window.STATIC_ROOT_ADDRESS;
+  var staticRoot = clientVars.staticRootAddress;
 
   var editor = {};
   var info = {
