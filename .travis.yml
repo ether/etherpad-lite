@@ -16,6 +16,6 @@ jobs:
         - "openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 1 -nodes -subj '/CN=localhost'"
         - "./bin/installDeps.sh"
         - "echo '{\"ssl\":{\"key\":\"key.pem\",\"cert\":\"cert.pem\"}}' >settings.json"
-        - "node src/node/server.js"
+        - "node src/node/server.js&"
       script:
         - "wget --no-check-certificate https://localhost:9001/p/test"
