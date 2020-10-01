@@ -1,36 +1,17 @@
 function m(mod) { return __dirname + '/../../../src/' + mod; }
 
 const assert = require('assert').strict;
+const common = require('../common');
 const io = require(m('node_modules/socket.io-client'));
-const log4js = require(m('node_modules/log4js'));
 const padManager = require(m('node/db/PadManager'));
 const plugins = require(m('static/js/pluginfw/plugin_defs'));
-const server = require(m('node/server'));
 const setCookieParser = require(m('node_modules/set-cookie-parser'));
 const settings = require(m('node/utils/Settings'));
-const supertest = require(m('node_modules/supertest'));
-const webaccess = require(m('node/hooks/express/webaccess'));
 
-const logger = log4js.getLogger('test');
+const logger = common.logger;
 let agent;
-let baseUrl;
-let authnFailureDelayMsBackup;
 
-before(async function() {
-  authnFailureDelayMsBackup = webaccess.authnFailureDelayMs;
-  webaccess.authnFailureDelayMs = 0; // Speed up tests.
-  settings.port = 0;
-  settings.ip = 'localhost';
-  const httpServer = await server.start();
-  baseUrl = `http://localhost:${httpServer.address().port}`;
-  logger.debug(`HTTP server at ${baseUrl}`);
-  agent = supertest(baseUrl);
-});
-
-after(async function() {
-  webaccess.authnFailureDelayMs = authnFailureDelayMsBackup;
-  await server.stop();
-});
+before(async function() { agent = await common.init(); });
 
 // Waits for and returns the next named socket.io event. Rejects if there is any error while waiting
 // (unless waiting for that error event).
@@ -75,7 +56,7 @@ const connect = async (res) => {
   }).join('; ');
 
   logger.debug('socket.io connecting...');
-  const socket = io(`${baseUrl}/`, {
+  const socket = io(`${common.baseUrl}/`, {
     forceNew: true, // Different tests will have different query parameters.
     path: '/socket.io',
     // socketio.js-client on node.js doesn't support cookies (see https://git.io/JU8u9), so the

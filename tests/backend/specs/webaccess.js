@@ -1,32 +1,13 @@
 function m(mod) { return __dirname + '/../../../src/' + mod; }
 
 const assert = require('assert').strict;
-const log4js = require(m('node_modules/log4js'));
+const common = require('../common');
 const plugins = require(m('static/js/pluginfw/plugin_defs'));
-const server = require(m('node/server'));
 const settings = require(m('node/utils/Settings'));
-const supertest = require(m('node_modules/supertest'));
-const webaccess = require(m('node/hooks/express/webaccess'));
 
 let agent;
-const logger = log4js.getLogger('test');
-let authnFailureDelayMsBackup;
 
-before(async function() {
-  authnFailureDelayMsBackup = webaccess.authnFailureDelayMs;
-  webaccess.authnFailureDelayMs = 0; // Speed up tests.
-  settings.port = 0;
-  settings.ip = 'localhost';
-  const httpServer = await server.start();
-  const baseUrl = `http://localhost:${httpServer.address().port}`;
-  logger.debug(`HTTP server at ${baseUrl}`);
-  agent = supertest(baseUrl);
-});
-
-after(async function() {
-  webaccess.authnFailureDelayMs = authnFailureDelayMsBackup;
-  await server.stop();
-});
+before(async function() { agent = await common.init(); });
 
 describe('webaccess: without plugins', function() {
   const backup = {};
