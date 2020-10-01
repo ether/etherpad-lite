@@ -193,7 +193,7 @@ var padimpexp = (function()
 
       //get /p/padname
       // if /p/ isn't available due to a rewrite we use the clientVars padId
-      var pad_root_path = new RegExp(/.*\/p\/[^\/]+/).exec(document.location.pathname) || clientVars.padId;
+      var pad_root_path = document.location.pathname || clientVars.padId;
       //get http://example.com/p/padname without Params
       var pad_root_url = document.location.protocol + '//' + document.location.host + document.location.pathname;
 

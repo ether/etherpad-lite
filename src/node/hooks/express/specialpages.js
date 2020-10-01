@@ -3,6 +3,7 @@ var eejs = require('ep_etherpad-lite/node/eejs');
 var toolbar = require("ep_etherpad-lite/node/utils/toolbar");
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 var settings = require('../../utils/Settings');
+var padInfo = require('../../utils/nestedPad');
 var minify = require('../../utils/Minify');
 
 exports.expressCreateServer = function (hook_name, args, cb) {
@@ -52,15 +53,12 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   //serve timeslider.html under /p/$padname*/timeslider
   args.app.get("/p/:pad*/timeslider", function(req, res, next)
   {
-    let padId = req.params.pad;
-    let padName = req.params.pad;
-    // If it was nested pad. e.g. /p/pad1/pad2/*
-    if(req.params['0']){
-      // In this case padId looks like "pad1:pad2" (Database pad key)
-      padId = (req.params.pad+req.params[0]).replace(/\//, ":");
-      // The pad's name is always the last param of the query
-      padName = req.params[0].split('/').pop();
-    }
+    const isReadOnly = req.url.includes("/r.");
+
+    const {padId, padName} = padInfo(req, isReadOnly);
+
+    req.params.pad = padId;
+
     const staticRootAddress = req.path.split("/")
       .filter(x=> x.length)
       .map(path => "../")
@@ -82,18 +80,11 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   //serve pad.html under /p
   args.app.get("/p/:pad*", function(req, res, next)
   {
-    // The below might break for pads being rewritten
-    const isReadOnly = req.url.indexOf("/p/r.") === 0;
+    const isReadOnly = req.url.includes("/r.");
 
-    let padId = req.params.pad;
-    let padName = req.params.pad;
-    // If it was nested pad. e.g. /p/pad1/pad2/*
-    if(req.params['0']){
-      // In this case padId looks like "pad1:pad2" (Database pad key)
-      padId = (req.params.pad+req.params[0]).replace(/\//, ":");
-      // The pad's name is always the last param of the query
-      padName = req.params[0].split('/').pop();
-    }
+    const {padId, padName} = padInfo(req, isReadOnly);
+
+    req.params.pad = padId;
 
     const staticRootAddress = req.path.split("/")
       .filter(x=> x.length)
