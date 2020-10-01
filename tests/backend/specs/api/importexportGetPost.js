@@ -7,7 +7,10 @@ const common = require('../../common');
 const superagent = require(__dirname+'/../../../../src/node_modules/superagent');
 const fs = require('fs');
 const settings = require(__dirname+'/../../../../src/node/utils/Settings');
+const padManager = require(__dirname+'/../../../../src/node/db/PadManager');
 const path = require('path');
+const plugins = require(__dirname+'/../../../../src/static/js/pluginfw/plugin_defs');
+
 const padText = fs.readFileSync("../tests/backend/specs/api/test.txt");
 const etherpadDoc = fs.readFileSync("../tests/backend/specs/api/test.etherpad");
 const wordDoc = fs.readFileSync("../tests/backend/specs/api/test.doc");
@@ -20,7 +23,8 @@ let agent;
 var apiKey = fs.readFileSync(filePath,  {encoding: 'utf-8'});
 apiKey = apiKey.replace(/\n$/, "");
 var apiVersion = 1;
-var testPadId = makeid();
+const testPadId = makeid();
+const testPadIdEnc = encodeURIComponent(testPadId);
 
 before(async function() { agent = await common.init(); });
 
@@ -67,14 +71,6 @@ Example Curl command for testing import URI:
 */
 
 describe('Imports and Exports', function(){
-  before(function() {
-    if (!settings.allowAnyoneToImport) {
-      console.warn('not anyone can import so not testing -- ' +
-                   'to include this test set allowAnyoneToImport to true in settings.json');
-      this.skip();
-    }
-  });
-
   const backups = {};
 
   beforeEach(async function() {
@@ -217,6 +213,137 @@ describe('Imports and Exports', function(){
         .attach('file', padText, {filename: '/test.xasdasdxx', contentType: 'weirdness/jobby'})
         .expect(200)
         .expect((res) => assert.doesNotMatch(res.text, /FrameCall\('undefined', 'ok'\);/));
+  });
+
+  describe('Import authorization checks', function() {
+    let authorize;
+
+    const deleteTestPad = async () => {
+      if (await padManager.doesPadExist(testPadId)) {
+        const pad = await padManager.getPad(testPadId);
+        await pad.remove();
+      }
+    };
+
+    const createTestPad = async (text) => {
+      const pad = await padManager.getPad(testPadId);
+      if (text) await pad.setText(text);
+      return pad;
+    };
+
+    beforeEach(async function() {
+      await deleteTestPad();
+      settings.requireAuthentication = false;
+      settings.requireAuthorization = true;
+      settings.users = {user: {password: 'user-password'}};
+      authorize = () => true;
+      backups.hooks = {};
+      backups.hooks.authorize = plugins.hooks.authorize || [];
+      plugins.hooks.authorize = [{hook_fn: (hookName, {req}, cb) => cb([authorize(req)])}];
+    });
+
+    afterEach(async function() {
+      await deleteTestPad();
+      Object.assign(plugins.hooks, backups.hooks);
+    });
+
+    it('!authn !exist -> create', async function() {
+      await agent.post(`/p/${testPadIdEnc}/import`)
+        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+        .expect(200);
+      assert(await padManager.doesPadExist(testPadId));
+      const pad = await padManager.getPad(testPadId);
+      assert.equal(pad.text(), padText.toString());
+    });
+
+    it('!authn exist -> replace', async function() {
+      const pad = await createTestPad('before import');
+      await agent.post(`/p/${testPadIdEnc}/import`)
+        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+        .expect(200);
+      assert(await padManager.doesPadExist(testPadId));
+      assert.equal(pad.text(), padText.toString());
+    });
+
+    it('authn anonymous !exist -> fail', async function() {
+      settings.requireAuthentication = true;
+      await agent.post(`/p/${testPadIdEnc}/import`)
+        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+        .expect(401);
+      assert(!(await padManager.doesPadExist(testPadId)));
+    });
+
+    it('authn anonymous exist -> fail', async function() {
+      settings.requireAuthentication = true;
+      const pad = await createTestPad('before import\n');
+      await agent.post(`/p/${testPadIdEnc}/import`)
+        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+        .expect(401);
+      assert.equal(pad.text(), 'before import\n');
+    });
+
+    it('authn user create !exist -> create', async function() {
+      settings.requireAuthentication = true;
+      await agent.post(`/p/${testPadIdEnc}/import`)
+        .auth('user', 'user-password')
+        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+        .expect(200);
+      assert(await padManager.doesPadExist(testPadId));
+      const pad = await padManager.getPad(testPadId);
+      assert.equal(pad.text(), padText.toString());
+    });
+
+    it('authn user modify !exist -> fail', async function() {
+      settings.requireAuthentication = true;
+      authorize = () => 'modify';
+      await agent.post(`/p/${testPadIdEnc}/import`)
+        .auth('user', 'user-password')
+        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+        .expect(403);
+      assert(!(await padManager.doesPadExist(testPadId)));
+    });
+
+    it('authn user readonly !exist -> fail', async function() {
+      settings.requireAuthentication = true;
+      authorize = () => 'readOnly';
+      await agent.post(`/p/${testPadIdEnc}/import`)
+        .auth('user', 'user-password')
+        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+        .expect(403);
+      assert(!(await padManager.doesPadExist(testPadId)));
+    });
+
+    it('authn user create exist -> replace', async function() {
+      settings.requireAuthentication = true;
+      const pad = await createTestPad('before import\n');
+      await agent.post(`/p/${testPadIdEnc}/import`)
+        .auth('user', 'user-password')
+        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+        .expect(200);
+      assert.equal(pad.text(), padText.toString());
+    });
+
+    it('authn user modify exist -> replace', async function() {
+      settings.requireAuthentication = true;
+      authorize = () => 'modify';
+      const pad = await createTestPad('before import\n');
+      await agent.post(`/p/${testPadIdEnc}/import`)
+        .auth('user', 'user-password')
+        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+        .expect(200);
+      assert.equal(pad.text(), padText.toString());
+    });
+
+    it('authn user readonly exist -> fail', async function() {
+      const pad = await createTestPad('before import\n');
+      settings.requireAuthentication = true;
+      authorize = () => 'readOnly';
+      await agent.post(`/p/${testPadIdEnc}/import`)
+        .auth('user', 'user-password')
+        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+        .expect(403);
+      assert.equal(pad.text(), 'before import\n');
+    });
   });
 
 }); // End of tests.

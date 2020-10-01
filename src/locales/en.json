@@ -188,6 +188,5 @@
   "pad.impexp.importfailed": "Import failed",
   "pad.impexp.copypaste": "Please copy paste",
   "pad.impexp.exportdisabled": "Exporting as {{type}} format is disabled. Please contact your system administrator for details.",
-  "pad.impexp.maxFileSize": "File too big. Contact your site administrator to increase the allowed file size for import",
-  "pad.impexp.permission": "Import is disabled because you never contributed to this pad. Please contribute at least once before importing"
+  "pad.impexp.maxFileSize": "File too big. Contact your site administrator to increase the allowed file size for import"
 }
