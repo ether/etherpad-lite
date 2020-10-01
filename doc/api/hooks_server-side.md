@@ -228,24 +228,27 @@ following are true:
   different plugin has not already caused the post-authentication authorization
   to pass or fail.
 
-For pre-authentication invocations of your authorize function, calling the
-provided callback with `[true]` will immediately grant access without requiring
-the user to authenticate. Calling the provided callback with `[false]` will
-trigger authentication unless authentication is not required. Calling the
-provided callback with `[]` or `undefined` will defer the decision to the next
-authorization plugin (if any, otherwise it is the same as calling with
-`[false]`).
+For pre-authentication invocations of your authorize function, you can pass the
+following values to the provided callback:
+
+* `[true]` or `['create']` will immediately grant access without requiring the
+  user to authenticate.
+* `[false]` will trigger authentication unless authentication is not required.
+* `[]` or `undefined` will defer the decision to the next authorization plugin
+  (if any, otherwise it is the same as calling with `[false]`).
 
 **WARNING:** Your authorize function can be called for an `/admin` page even if
 the user has not yet authenticated. It is your responsibility to fail or defer
 authorization if you do not want to grant admin privileges to the general
 public.
 
-For post-authentication invocations of your authorize function, calling the
-provided callback with `[true]` or `[false]` will cause access to be granted or
-denied, respectively. Calling the callback with `[]` or `undefined` will defer
-the authorization decision to the next authorization plugin (if any, otherwise
-deny).
+For post-authentication invocations of your authorize function, you can pass the
+following values to the provided callback:
+
+* `[true]` or `['create']` will grant access.
+* `[false]` will deny access.
+* `[]` or `undefined` will defer the authorization decision to the next
+  authorization plugin (if any, otherwise deny).
 
 Example:
 
@@ -271,9 +274,10 @@ Things in context:
 
 1. req - the request object
 2. res - the response object
-3. next - ?
-4. username - the username used (optional)
-5. password - the password used (optional)
+3. users - the users object from settings.json (possibly modified by plugins)
+4. next - ?
+5. username - the username used (optional)
+6. password - the password used (optional)
 
 This hook is called to handle authentication.
 
@@ -297,18 +301,11 @@ onAccessCheck, handleMessageSecurity) to authorize specific privileged actions.
 If authentication is successful, the authenticate function MUST set
 `context.req.session.user` to the user's settings object. The `username`
 property of this object should be set to the user's username. The settings
-object should come from global settings (`settings.users[username]`).
+object should come from global settings (`context.users[username]`).
 
 Example:
 
 ```
-let global_settings;
-
-exports.loadSettings = (hook_name, {settings}, cb) => {
-  global_settings = settings;
-  return cb();
-};
-
 exports.authenticate = (hook_name, context, cb) => {
   if (notApplicableToThisPlugin(context)) {
     return cb([]);  // Let the next authentication plugin decide
@@ -319,7 +316,7 @@ exports.authenticate = (hook_name, context, cb) => {
     return cb([false]);
   }
   console.info(`ep_myplugin.authenticate: Successful authentication from IP ${context.req.ip} for user ${username}`);
-  const users = global_settings.users;
+  const users = context.users;
   if (!(username in users)) users[username] = {};
   users[username].username = username;
   context.req.session.user = users[username];
@@ -371,24 +368,38 @@ Called from: src/node/handler/PadMessageHandler.js
 Things in context:
 
 1. message - the message being handled
-2. client - the client object from socket.io
+2. client - the socket.io Socket object
 
-This hook will be called once a message arrive. If a plugin calls `callback(null)` the message will be dropped. However, it is not possible to modify the message.
+This hook allows plugins to drop or modify incoming socket.io messages from
+clients, before Etherpad processes them.
 
-Plugins may also decide to implement custom behavior once a message arrives.
+The handleMessage function must return a Promise. If the Promise resolves to
+`null`, the message is dropped. Returning `callback(value)` will return a
+Promise that is resolved to `value`.
 
-**WARNING**: handleMessage will be called, even if the client is not authorized to send this message. It's up to the plugin to check permissions.
+**WARNING:** handleMessage is called for every message, even if the client is
+not authorized to send the message. It is up to the plugin to check permissions.
 
-Example:
+Examples:
 
 ```
-function handleMessage ( hook, context, callback ) {
-  if ( context.message.type == 'USERINFO_UPDATE' ) {
-    // If the message type is USERINFO_UPDATE, drop the message
-    callback(null);
-  }else{
-    callback();
+// Using an async function:
+exports.handleMessage = async (hookName, {message, client}) => {
+  if (message.type === 'USERINFO_UPDATE') {
+    // Force the display name to the name associated with the account.
+    const user = client.client.request.session.user || {};
+    if (user.name) message.data.userInfo.name = user.name;
   }
+};
+
+// Using a regular function:
+exports.handleMessage = (hookName, {message, client}, callback) => {
+  if (message.type === 'USERINFO_UPDATE') {
+    // Force the display name to the name associated with the account.
+    const user = client.client.request.session.user || {};
+    if (user.name) message.data.userInfo.name = user.name;
+  }
+  return cb();
 };
 ```
 
@@ -398,22 +409,36 @@ Called from: src/node/handler/PadMessageHandler.js
 Things in context:
 
 1. message - the message being handled
-2. client - the client object from socket.io
+2. client - the socket.io Socket object
 
-This hook will be called once a message arrives. If a plugin calls `callback(true)` the message will be allowed to be processed. This is especially useful if you want read only pad visitors to update pad contents for whatever reason.
+This hook allows plugins to grant temporary write access to a pad. It is called
+for each incoming message from a client. If write access is granted, it applies
+to the current message and all future messages from the same socket.io
+connection until the next `CLIENT_READY` or `SWITCH_TO_PAD` message. Read-only
+access is reset **after** each `CLIENT_READY` or `SWITCH_TO_PAD` message, so
+granting write access has no effect for those message types.
 
-**WARNING**: handleMessageSecurity will be called, even if the client is not authorized to send this message. It's up to the plugin to check permissions.
+The handleMessageSecurity function must return a Promise. If the Promise
+resolves to `true`, write access is granted as described above. Returning
+`callback(value)` will return a Promise that is resolved to `value`.
 
-Example:
+**WARNING:** handleMessageSecurity is called for every message, even if the
+client is not authorized to send the message. It is up to the plugin to check
+permissions.
+
+Examples:
 
 ```
-function handleMessageSecurity ( hook, context, callback ) {
-  if ( context.message.boomerang == 'hipster' ) {
-    // If the message boomer is hipster, allow the request
-    callback(true);
-  }else{
-    callback();
-  }
+// Using an async function:
+exports.handleMessageSecurity = async (hookName, {message, client}) => {
+  if (shouldGrantWriteAccess(message, client)) return true;
+  return;
+};
+
+// Using a regular function:
+exports.handleMessageSecurity = (hookName, {message, client}, callback) => {
+  if (shouldGrantWriteAccess(message, client)) return callback(true);
+  return callback();
 };
 ```
 

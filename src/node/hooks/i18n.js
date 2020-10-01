@@ -50,7 +50,13 @@ function getAllLocales() {
     locales[langcode]={};
 
     files.forEach(function(file) {
-     var fileContents = JSON.parse(fs.readFileSync(file,'utf8'));
+      let fileContents;
+      try {
+        fileContents = JSON.parse(fs.readFileSync(file,'utf8'));
+      } catch (err) {
+        console.error(`failed to read JSON file ${file}: ${err}`);
+        throw err;
+      }
       _.extend(locales[langcode], fileContents);
     });
   });

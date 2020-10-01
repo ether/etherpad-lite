@@ -8,6 +8,19 @@ const stats = require('ep_etherpad-lite/node/stats');
 const sessionModule = require('express-session');
 const cookieParser = require('cookie-parser');
 
+exports.normalizeAuthzLevel = (level) => {
+  if (!level) return false;
+  switch (level) {
+    case true:
+      return 'create';
+    case 'create':
+      return level;
+    default:
+      httpLogger.warn(`Unknown authorization level '${level}', denying access`);
+  }
+  return false;
+};
+
 exports.checkAccess = (req, res, next) => {
   const hookResultMangle = (cb) => {
     return (err, data) => {
@@ -17,18 +30,32 @@ exports.checkAccess = (req, res, next) => {
 
   // This may be called twice per access: once before authentication is checked and once after (if
   // settings.requireAuthorization is true).
-  const authorize = (cb) => {
+  const authorize = (fail) => {
     // Do not require auth for static paths and the API...this could be a bit brittle
-    if (req.path.match(/^\/(static|javascripts|pluginfw|api)/)) return cb(true);
+    if (req.path.match(/^\/(static|javascripts|pluginfw|api)/)) return next();
+
+    const grant = (level) => {
+      level = exports.normalizeAuthzLevel(level);
+      if (!level) return fail();
+      const user = req.session.user;
+      if (user == null) return next(); // This will happen if authentication is not required.
+      const padID = (req.path.match(/^\/p\/(.*)$/) || [])[1];
+      if (padID == null) return next();
+      // The user was granted access to a pad. Remember the authorization level in the user's
+      // settings so that SecurityManager can approve or deny specific actions.
+      if (user.padAuthorizations == null) user.padAuthorizations = {};
+      user.padAuthorizations[padID] = level;
+      return next();
+    };
 
     if (req.path.toLowerCase().indexOf('/admin') !== 0) {
-      if (!settings.requireAuthentication) return cb(true);
-      if (!settings.requireAuthorization && req.session && req.session.user) return cb(true);
+      if (!settings.requireAuthentication) return grant('create');
+      if (!settings.requireAuthorization && req.session && req.session.user) return grant('create');
     }
 
-    if (req.session && req.session.user && req.session.user.is_admin) return cb(true);
+    if (req.session && req.session.user && req.session.user.is_admin) return grant('create');
 
-    hooks.aCallFirst('authorize', {req, res, next, resource: req.path}, hookResultMangle(cb));
+    hooks.aCallFirst('authorize', {req, res, next, resource: req.path}, hookResultMangle(grant));
   };
 
   /* Authentication OR authorization failed. */
@@ -59,15 +86,11 @@ exports.checkAccess = (req, res, next) => {
 
   let step1PreAuthenticate, step2Authenticate, step3Authorize;
 
-  step1PreAuthenticate = () => {
-    authorize((ok) => {
-      if (ok) return next();
-      step2Authenticate();
-    });
-  };
+  step1PreAuthenticate = () => authorize(step2Authenticate);
 
   step2Authenticate = () => {
-    const ctx = {req, res, next};
+    if (settings.users == null) settings.users = {};
+    const ctx = {req, res, users: settings.users, next};
     // If the HTTP basic auth header is present, extract the username and password so it can be
     // given to authn plugins.
     const httpBasicAuth =
@@ -94,16 +117,16 @@ exports.checkAccess = (req, res, next) => {
         settings.users[ctx.username].username = ctx.username;
         req.session.user = settings.users[ctx.username];
       }
+      if (req.session.user == null) {
+        httpLogger.error('authenticate hook failed to add user settings to session');
+        res.status(500).send('Internal Server Error');
+        return;
+      }
       step3Authorize();
     }));
   };
 
-  step3Authorize = () => {
-    authorize((ok) => {
-      if (ok) return next();
-      failure();
-    });
-  };
+  step3Authorize = () => authorize(failure);
 
   step1PreAuthenticate();
 };

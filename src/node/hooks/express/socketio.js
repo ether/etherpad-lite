@@ -39,43 +39,41 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     cookie: false,
   });
 
-  /* Require an express session cookie to be present, and load the
-   * session. See http://www.danielbaulig.de/socket-ioexpress for more
-   * info */
+  // REQUIRE a signed express-session cookie to be present, then load the session. See
+  // http://www.danielbaulig.de/socket-ioexpress for more info. After the session is loaded, ensure
+  // that the user has authenticated (if authentication is required).
+  //
+  // !!!WARNING!!! Requests to /socket.io are NOT subject to the checkAccess middleware in
+  // webaccess.js. If this handler fails to check for a signed express-session cookie or fails to
+  // check whether the user has authenticated, then any random person on the Internet can read,
+  // modify, or create any pad (unless the pad is password protected or an HTTP API session is
+  // required).
   var cookieParserFn = cookieParser(webaccess.secret, {});
-
-  io.use(function(socket, accept) {
+  io.use((socket, next) => {
     var data = socket.request;
-    // Use a setting if we want to allow load Testing
-
-    // Sometimes browsers might not have cookies at all, for example Safari in iFrames Cross domain
-    // https://github.com/ether/etherpad-lite/issues/4031
-    // if requireSession is false we can allow them to still get on the pad.
-    // Note that this does make security less tight because any socketIO connection can be established without
-    // any logic on the client to do any handshaking..  I am not concerned about this though, the real solution
-    // here is to implement rateLimiting on SocketIO ACCEPT_COMMIT messages.
-
-    if(!data.headers.cookie && (settings.loadTest || !settings.requireSession)){
-      accept(null, true);
-    }else{
-      if (!data.headers.cookie) return accept('No session cookie transmitted.', false);
+    if (!data.headers.cookie) {
+      // socketio.js-client on node.js doesn't support cookies (see https://git.io/JU8u9), so the
+      // token and express_sid cookies have to be passed via a query parameter for unit tests.
+      data.headers.cookie = socket.handshake.query.cookie;
     }
-    if(data.headers.cookie){
-      cookieParserFn(data, {}, function(err){
-        if(err) {
-          console.error(err);
-          accept("Couldn't parse request cookies. ", false);
-          return;
+    if (!data.headers.cookie && settings.loadTest) {
+      console.warn('bypassing socket.io authentication check due to settings.loadTest');
+      return next(null, true);
+    }
+    const fail = (msg) => { return next(new Error(msg), false); };
+    cookieParserFn(data, {}, function(err) {
+      if (err) return fail('access denied: unable to parse express_sid cookie');
+      const expressSid = data.signedCookies.express_sid;
+      if (!expressSid) return fail ('access denied: signed express_sid cookie is required');
+      args.app.sessionStore.get(expressSid, (err, session) => {
+        if (err || !session) return fail('access denied: bad session or session has expired');
+        data.session = new sessionModule.Session(data, session);
+        if (settings.requireAuthentication && data.session.user == null) {
+          return fail('access denied: authentication required');
         }
-
-        data.sessionID = data.signedCookies.express_sid;
-        args.app.sessionStore.get(data.sessionID, function (err, session) {
-          if (err || !session) return accept('Bad session / session has expired', false);
-          data.session = new sessionModule.Session(data, session);
-          accept(null, true);
-        });
+        next(null, true);
       });
-    }
+    });
   });
 
   // var socketIOLogger = log4js.getLogger("socket.io");
