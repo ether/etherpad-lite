@@ -415,17 +415,6 @@ var padeditbar = (function()
 
     toolbar.registerCommand("import_export", function () {
       toolbar.toggleDropDown("import_export", function(){
-
-        if (clientVars.thisUserHasEditedThisPad || clientVars.allowAnyoneToImport) {
-          // the user has edited this pad historically or in this session
-          $('#importform').show();
-          $('#importmessagepermission').hide();
-        } else {
-          // this is the first time this user visits this pad
-          $('#importform').hide();
-          $('#importmessagepermission').show();
-        }
-
         // If Import file input exists then focus on it..
         if($('#importfileinput').length !== 0){
           setTimeout(function(){
