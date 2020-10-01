@@ -5,7 +5,6 @@ Before running the tests, start an Etherpad instance on your machine.
 ## Frontend
 
 To run the frontend tests, point your browser to `<yourdomainhere>/tests/frontend`
-Also for nested pad tests, point your browser to `<yourdomainhere>/tests/nested-pad/frontend`
 
 ## Backend
 
