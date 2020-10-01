@@ -35,23 +35,6 @@ describe("import functionality", function(){
     expect(error).to.be(undefined)
     return result
   }
-  function exportfunc(link){
-    var exportresults = []
-    $.ajaxSetup({
-      async:false
-    })
-    $.get(link+"/export/html",function(data){
-      var start = data.indexOf("<body>")
-      var end = data.indexOf("</body>")
-      var html = data.substr(start+6,end-start-6)
-      exportresults.push(["html",html])
-    })
-    $.get(link+"/export/txt",function(data){
-      exportresults.push(["txt",data])
-    })
-    return exportresults
-  }
-
   xit("import a pad with newlines from txt", function(done){
     var importurl = helper.padChrome$.window.location.href+'/import'
     var textWithNewLines = 'imported text\nnewline'
@@ -59,7 +42,7 @@ describe("import functionality", function(){
     helper.waitFor(function(){
       return expect(getinnertext()).to.be('<span class="">imported text</span>\n<span class="">newline</span>\n<br>\n')
     })
-    var results = exportfunc(helper.padChrome$.window.location.href)
+    var results = helper.requestAjaxExportPad(helper.padChrome$.window.location.href)
     expect(results[0][1]).to.be("imported text<br>newline<br><br>")
     expect(results[1][1]).to.be("imported text\nnewline\n\n")
     done()
@@ -71,7 +54,7 @@ describe("import functionality", function(){
     helper.waitFor(function(){
       return expect(getinnertext()).to.be('<span class="">htmltext</span>\n<span class="">newline</span>\n<br>\n')
     })
-    var results = exportfunc(helper.padChrome$.window.location.href)
+    var results = helper.requestAjaxExportPad(helper.padChrome$.window.location.href)
     expect(results[0][1]).to.be("htmltext<br>newline<br><br>")
     expect(results[1][1]).to.be("htmltext\nnewline\n\n")
     done()
@@ -83,7 +66,7 @@ describe("import functionality", function(){
     helper.waitFor(function(){
       return expect(getinnertext()).to.be('<span class="">htmltext</span>\n<span class="b i s u"><b><i><s><u>newline</u></s></i></b></span>\n<br>\n')
     })
-    var results = exportfunc(helper.padChrome$.window.location.href)
+    var results = helper.requestAjaxExportPad(helper.padChrome$.window.location.href)
     expect(results[0][1]).to.be('htmltext<br><strong><em><s><u>newline</u></s></em></strong><br><br>')
     expect(results[1][1]).to.be('htmltext\nnewline\n\n')
     done()
@@ -100,7 +83,7 @@ describe("import functionality", function(){
 <ul class="list-bullet2"><li><span class="">bullet2 line 2</span></li></ul>\n\
 <br>\n')
     })
-    var results = exportfunc(helper.padChrome$.window.location.href)
+    var results = helper.requestAjaxExportPad(helper.padChrome$.window.location.href)
     expect(results[0][1]).to.be('<ul class="bullet"><li>bullet line 1</li><li>bullet line 2</li><ul class="bullet"><li>bullet2 line 1</li><li>bullet2 line 2</li></ul></ul><br>')
     expect(results[1][1]).to.be('\t* bullet line 1\n\t* bullet line 2\n\t\t* bullet2 line 1\n\t\t* bullet2 line 2\n\n')
     done()
@@ -119,7 +102,7 @@ describe("import functionality", function(){
 <ul class="list-bullet2"><li><span class="">bullet2 line 2</span></li></ul>\n\
 <br>\n')
     })
-    var results = exportfunc(helper.padChrome$.window.location.href)
+    var results = helper.requestAjaxExportPad(helper.padChrome$.window.location.href)
     expect(results[0][1]).to.be('<ul class="bullet"><li>bullet line 1</li></ul><br><ul class="bullet"><li>bullet line 2</li><ul class="bullet"><li>bullet2 line 1</li></ul></ul><br><ul><ul class="bullet"><li>bullet2 line 2</li></ul></ul><br>')
     expect(results[1][1]).to.be('\t* bullet line 1\n\n\t* bullet line 2\n\t\t* bullet2 line 1\n\n\t\t* bullet2 line 2\n\n')
     done()
@@ -138,7 +121,7 @@ describe("import functionality", function(){
 <ul class="list-bullet4"><li><span class="u"><u>bullet4 line 2 u</u></span><span class="i s u"><i><s><u>uis</u></s></i></span></li></ul>\n\
 <br>\n')
     })
-    var results = exportfunc(helper.padChrome$.window.location.href)
+    var results = helper.requestAjaxExportPad(helper.padChrome$.window.location.href)
     expect(results[0][1]).to.be('<ul class="bullet"><li>bullet line 1</li></ul><br><ul class="bullet"><li>bullet line 2</li><ul class="bullet"><li>bullet2 line 1</li></ul></ul><br><ul><ul><ul><ul class="bullet"><li><strong><em><s><u>bullet4 line 2 bisu</u></s></em></strong></li><li><strong><s>bullet4 line 2 bs</s></strong></li><li><u>bullet4 line 2 u<em><s>uis</s></em></u></li></ul></ul></ul></ul><br>')
     expect(results[1][1]).to.be('\t* bullet line 1\n\n\t* bullet line 2\n\t\t* bullet2 line 1\n\n\t\t\t\t* bullet4 line 2 bisu\n\t\t\t\t* bullet4 line 2 bs\n\t\t\t\t* bullet4 line 2 uuis\n\n')
     done()
@@ -160,7 +143,7 @@ describe("import functionality", function(){
 //<br>\n')
     })
 
-    var results = exportfunc(helper.padChrome$.window.location.href)
+    var results = helper.requestAjaxExportPad(helper.padChrome$.window.location.href)
     expect(results[0][1]).to.be('<ul class="bullet"><li>bullet line 1</li><li>bullet line 2</li><ul class="bullet"><li>bullet2 line 1</li><ul><ul class="bullet"><li>bullet4 line 2</li><li>bullet4 line 2</li><li>bullet4 line 2</li></ul><li>bullet3 line 1</li></ul></ul><li>bullet2 line 1</li></ul><br>')
     expect(results[1][1]).to.be('\t* bullet line 1\n\t* bullet line 2\n\t\t* bullet2 line 1\n\t\t\t\t* bullet4 line 2\n\t\t\t\t* bullet4 line 2\n\t\t\t\t* bullet4 line 2\n\t\t\t* bullet3 line 1\n\t* bullet2 line 1\n\n')
     done()
@@ -182,7 +165,7 @@ describe("import functionality", function(){
 <ul class="list-bullet5"><li><span class="">foobar</span></li></ul>\n\
 <br>\n')
     })
-    var results = exportfunc(helper.padChrome$.window.location.href)
+    var results = helper.requestAjaxExportPad(helper.padChrome$.window.location.href)
     expect(results[0][1]).to.be('<ul class="bullet"><li>bullet line 1</li></ul><br><ul class="bullet"><li>bullet line 2</li><ul class="bullet"><li>bullet2 line 1</li></ul></ul><br><ul><ul><ul><ul class="bullet"><li><strong><em><s><u>bullet4 line 2 bisu</u></s></em></strong></li><li><strong><s>bullet4 line 2 bs</s></strong></li><li><u>bullet4 line 2 u<em><s>uis</s></em></u></li><ul><ul><ul><ul class="bullet"><li>foo</li><li><strong><s>foobar bs</s></strong></li></ul></ul></ul><li>foobar</li></ul></ul></ul></ul></ul><br>')
     expect(results[1][1]).to.be('\t* bullet line 1\n\n\t* bullet line 2\n\t\t* bullet2 line 1\n\n\t\t\t\t* bullet4 line 2 bisu\n\t\t\t\t* bullet4 line 2 bs\n\t\t\t\t* bullet4 line 2 uuis\n\t\t\t\t\t\t\t\t* foo\n\t\t\t\t\t\t\t\t* foobar bs\n\t\t\t\t\t* foobar\n\n')
     done()
@@ -197,7 +180,7 @@ describe("import functionality", function(){
 <ol class="list-number1" start="1"><li><span class="">number 1 line 1</span></li></ol>\n\
 <ol class="list-number1" start="2"><li><span class="">number 2 line 2</span></li></ol>\n\
 <br>\n')
-    var results = exportfunc(helper.padChrome$.window.location.href)
+    var results = helper.requestAjaxExportPad(helper.padChrome$.window.location.href)
     expect(results[0][1]).to.be('<ol class="list-number1" start="1"><li>number 1 line 1</li></ol><ol class="list-number1" start="2"><li>number 2 line 2</li></ol>')
     expect(results[1][1]).to.be('')
     done()
@@ -214,7 +197,7 @@ describe("import functionality", function(){
 <br>\n\
 <ol class="list-number2"><li><span class="">number 2 times line 2</span></li></ol>\n\
 <br>\n')
-    var results = exportfunc(helper.padChrome$.window.location.href)
+    var results = helper.requestAjaxExportPad(helper.padChrome$.window.location.href)
     console.error(results)
     done()
   })
@@ -230,7 +213,7 @@ describe("import functionality", function(){
 <br>\n\
 <ol class="list-number2"><li><span class="">number 2 times line 2</span></li></ol>\n\
 <br>\n')
-    var results = exportfunc(helper.padChrome$.window.location.href)
+    var results = helper.requestAjaxExportPad(helper.padChrome$.window.location.href)
     console.error(results)
     done()
   })

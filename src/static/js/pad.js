@@ -132,7 +132,7 @@ function savePassword()
   //set the password cookie
   createCookie("password",$("#passwordinput").val(),null,document.location.pathname);
   //reload
-  document.location=document.location;
+  // document.location=document.location;
   return false;
 }
 

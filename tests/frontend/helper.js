@@ -113,9 +113,8 @@ var helper = {};
     }
 
     var rootPath = '/p/';
-    var padNameRadnomString = 20;
+    var padNameRadnomString = 4;
     var depth = Math.floor((Math.random() * 5) + 1);
-    padNameRadnomString = 4
     for(var i=1; i <= depth; i++) {
       var padPrefix = helper.randomString(3);
       rootPath += padPrefix + '/';
