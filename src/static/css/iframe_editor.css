@@ -25,7 +25,8 @@ html.inner-editor {
 
 /* ACE-PAD Container (i.e. where the text is displayed) */
 #innerdocbody {
-  padding: 15px;
+  padding-left: 15px;
+  padding-right: 15px;
   overflow: hidden;
   background-color: white;
   line-height: 1.6;
@@ -37,6 +38,13 @@ html.inner-editor {
   white-space: normal;
   word-wrap: break-word;
   overflow-wrap: break-word;
+}
+
+#innerdocbody, #sidediv {
+  /* Both must have the same top padding to line up line numbers */
+  padding-top: 15px;
+  /* Some space when we scroll to the bottom */
+  padding-bottom: 15px;
 }
 
 #innerdocbody a {

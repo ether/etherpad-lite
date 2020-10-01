@@ -23,7 +23,12 @@ describe('Responsiveness of Editor', function() {
   // And the test needs to be fixed to work in Firefox 52 on Windows 7.  I am not sure why it fails on this specific platform
   // The errors show this.timeout... then crash the browser but I am sure something is actually causing the stack trace and
   // I just need to narrow down what, offers to help accepted.
-  xit('Fast response to keypress in pad with large amount of contents', function(done) {
+  it('Fast response to keypress in pad with large amount of contents', function(done) {
+
+    //skip on Windows Firefox 52.0
+    if(window.bowser && window.bowser.windows && window.bowser.firefox && window.bowser.version == "52.0") {
+      this.skip();
+    }
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
     var chars = '0000000000'; // row of placeholder chars
@@ -72,7 +77,7 @@ describe('Responsiveness of Editor', function() {
         var end = Date.now(); // get the current time
         var delay = end - start; // get the delay as the current time minus the start time
 
-        expect(delay).to.be.below(300);
+        expect(delay).to.be.below(400);
         done();
       }, 1000);
 

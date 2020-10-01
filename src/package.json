@@ -67,7 +67,7 @@
     "threads": "^1.4.0",
     "tiny-worker": "^2.3.0",
     "tinycon": "0.0.1",
-    "ueberdb2": "^0.5.1",
+    "ueberdb2": "^0.5.3",
     "underscore": "1.8.3",
     "unorm": "1.4.1"
   },
@@ -78,8 +78,10 @@
     "mocha": "7.1.2",
     "mocha-froth": "^0.2.10",
     "nyc": "15.0.1",
+    "set-cookie-parser": "^2.4.6",
     "supertest": "4.0.2",
-    "wd": "1.12.1"
+    "wd": "1.12.1",
+    "wtfnode": "^0.8.3"
   },
   "engines": {
     "node": ">=10.13.0",
@@ -90,10 +92,9 @@
     "url": "https://github.com/ether/etherpad-lite.git"
   },
   "scripts": {
-    "test": "nyc mocha --timeout 5000 ../tests/backend/specs/api",
-    "test-contentcollector": "nyc mocha --timeout 5000 ../tests/backend/specs",
+    "test": "nyc wtfnode node_modules/.bin/_mocha --timeout 5000 --recursive ../tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api"
   },
-  "version": "1.8.5",
+  "version": "1.8.6",
   "license": "Apache-2.0"
 }
