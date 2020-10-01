@@ -5,6 +5,8 @@ var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 var settings = require('../../utils/Settings');
 var padInfo = require('../../utils/nestedPad');
 var minify = require('../../utils/Minify');
+const webaccess = require('./webaccess');
+
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   // expose current stats
@@ -53,7 +55,8 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   //serve timeslider.html under /p/$padname*/timeslider
   args.app.get("/p/:pad*/timeslider", function(req, res, next)
   {
-    const isReadOnly = req.url.includes("/r.");
+    // The below might break for pads being rewritten
+    const isReadOnly = req.url.indexOf("/p/r.") === 0 || !webaccess.userCanModify(req.params.pad, req);
 
     const {padId, padName} = padInfo(req, isReadOnly);
 
@@ -63,6 +66,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
       .filter(x=> x.length)
       .map(path => "../")
       .join("");
+
 
     hooks.callAll("padInitToolbar", {
       toolbar: toolbar

@@ -104,6 +104,8 @@
 	"pad.modals.deleted.explanation": "Ce bloc-notes a été supprimé.",
 	"pad.modals.rateLimited": "Taux limité.",
 	"pad.modals.rateLimited.explanation": "Vous avez envoyé trop de messages à ce bloc, il vous a donc déconnecté.",
+	"pad.modals.rejected.explanation": "Le serveur a rejeté un message qui a été envoyé par votre navigateur.",
+	"pad.modals.rejected.cause": "Le serveur peut avoir été mis à jour pendant que vous regardiez le bloc, ou il y a peut-être un bogue dans Etherpad. Essayez de recharger la page.",
 	"pad.modals.disconnected": "Vous avez été déconnecté.",
 	"pad.modals.disconnected.explanation": "La connexion au serveur a échoué.",
 	"pad.modals.disconnected.cause": "Il se peut que le serveur soit indisponible. Si le problème persiste, veuillez en informer l’administrateur du service.",

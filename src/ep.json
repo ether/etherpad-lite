@@ -1,10 +1,14 @@
 {
   "parts": [
+    { "name": "DB", "hooks": { "shutdown": "ep_etherpad-lite/node/db/DB" } },
+    { "name": "Minify", "hooks": { "shutdown": "ep_etherpad-lite/node/utils/Minify" } },
     { "name": "express", "hooks": {
-      "createServer": "ep_etherpad-lite/node/hooks/express:createServer",
-      "restartServer": "ep_etherpad-lite/node/hooks/express:restartServer"
+      "createServer": "ep_etherpad-lite/node/hooks/express",
+      "restartServer": "ep_etherpad-lite/node/hooks/express",
+      "shutdown": "ep_etherpad-lite/node/hooks/express"
       } },
     { "name": "static", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/static:expressCreateServer" } },
+    { "name": "stats", "hooks": { "shutdown": "ep_etherpad-lite/node/stats" } },
     { "name": "i18n", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/i18n:expressCreateServer" } },
     { "name": "specialpages", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/specialpages:expressCreateServer" } },
     { "name": "padurlsanitize", "hooks": { "expressCreateServer": "ep_etherpad-lite/node/hooks/express/padurlsanitize:expressCreateServer" } },

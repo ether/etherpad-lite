@@ -5,6 +5,7 @@ var padInfo = require('../../utils/nestedPad');
 var exportHandler = require('../../handler/ExportHandler');
 var importHandler = require('../../handler/ImportHandler');
 var padManager = require("../../db/PadManager");
+var readOnlyManager = require("../../db/ReadOnlyManager");
 var authorManager = require("../../db/AuthorManager");
 const rateLimit = require("express-rate-limit");
 const securityManager = require("../../db/SecurityManager");
@@ -44,14 +45,23 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     res.header("Access-Control-Allow-Origin", "*");
 
     if (await hasPadAccess(req, res)) {
+      let padId = req.params.pad;
+
+      let readOnlyId = null;
+      if (readOnlyManager.isReadOnlyId(padId)) {
+        readOnlyId = padId;
+        padId = await readOnlyManager.getPadId(readOnlyId);
+      }
+      
       let exists = await padManager.doesPadExists(padId);
       if (!exists) {
         console.warn(`Someone tried to export a pad that doesn't exist (${padId})`);
         return next();
       }
+      
+      console.log(`Exporting pad "${req.params.pad}" in ${req.params.type} format`);
+      exportHandler.doExport(req, res, padId, readOnlyId, req.params.type);
 
-      console.log(`Exporting pad "${padId}" in ${req.params.type} format`);
-      exportHandler.doExport(req, res, padId, req.params.type);
     }
   });
 

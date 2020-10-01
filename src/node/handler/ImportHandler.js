@@ -226,12 +226,12 @@ async function doImport(req, res, padId)
   if (!req.directDatabaseAccess) {
     if (importHandledByPlugin || useConvertor || fileIsHTML) {
       try {
-        importHtml.setPadHTML(pad, text);
+        await importHtml.setPadHTML(pad, text);
       } catch (e) {
         apiLogger.warn("Error importing, possibly caused by malformed HTML");
       }
     } else {
-      pad.setText(text);
+      await pad.setText(text);
     }
   }
 

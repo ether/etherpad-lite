@@ -245,6 +245,6 @@ exports.removePad = async function(authorID, padID)
   if (author.padIDs !== null) {
     // remove pad from author
     delete author.padIDs[padID];
-    db.set("globalAuthor:" + authorID, author);
+    await db.set('globalAuthor:' + authorID, author);
   }
 }

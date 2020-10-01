@@ -17,6 +17,7 @@ before_install:
 install:
   - "bin/installDeps.sh"
   - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
+  # Installing some plugins
 
 script:
   - "tests/frontend/travis/runner.sh"
@@ -31,7 +32,7 @@ jobs:
     # we can only frontend tests from the ether/ organization and not from forks.
     # To request tests to be run ask a maintainer to fork your repo to ether/
     - if: fork = false
-      name: "Test the Frontend"
+      name: "Test the Frontend without Plugins"
       install:
         #FIXME
         - "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/g' settings.json.template > settings.json"
@@ -40,7 +41,7 @@ jobs:
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
       script:
         - "tests/frontend/travis/runner.sh"
-    - name: "Run the Backend tests"
+    - name: "Run the Backend tests without Plugins"
       install:
         - "bin/installDeps.sh"
         - "cd src && npm install && cd -"
@@ -54,9 +55,46 @@ jobs:
 #        - "docker build -t etherpad:test ."
 #        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
 #        - "cd src && npm run test-container"
-    - name: "Load test Etherpad"
+    - name: "Load test Etherpad without Plugins"
       install:
         - "bin/installDeps.sh"
+        - "cd src && npm install && cd -"
+        - "npm install -g etherpad-load-test"
+      script:
+        - "tests/frontend/travis/runnerLoadTest.sh"
+    # we can only frontend tests from the ether/ organization and not from forks.
+    # To request tests to be run ask a maintainer to fork your repo to ether/
+    - if: fork = false
+      name: "Test the Frontend Plugins only"
+      install:
+        #FIXME
+        - "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/g' settings.json.template > settings.json"
+        - "tests/frontend/travis/sauce_tunnel.sh"
+        - "bin/installDeps.sh"
+        - "rm tests/frontend/specs/*"
+        - "npm install ep_hash_auth ep_cursortrace ep_subscript_and_superscript ep_headings2 ep_author_hover ep_align ep_webrtc ep_table_of_contents ep_font_size ep_markdown ep_spellcheck"
+        - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
+      script:
+        - "tests/frontend/travis/runner.sh"
+    - name: "Run the Backend tests with Plugins"
+      install:
+        - "bin/installDeps.sh"
+        - "npm install ep_hash_auth ep_cursortrace ep_subscript_and_superscript ep_headings2 ep_author_hover ep_align ep_webrtc ep_table_of_contents ep_font_size ep_markdown ep_spellcheck"
+        - "cd src && npm install && cd -"
+      script:
+        - "tests/frontend/travis/runnerBackend.sh"
+## Temporarily commented out the Dockerfile tests
+#    - name: "Test the Dockerfile"
+#      install:
+#        - "cd src && npm install && cd -"
+#      script:
+#        - "docker build -t etherpad:test ."
+#        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
+#        - "cd src && npm run test-container"
+    - name: "Load test Etherpad with Plugins"
+      install:
+        - "bin/installDeps.sh"
+        - "npm install ep_hash_auth ep_cursortrace ep_subscript_and_superscript ep_headings2 ep_comments_page ep_author_hover ep_align ep_webrtc ep_table_of_contents ep_font_size ep_markdown ep_spellcheck"
         - "cd src && npm install && cd -"
         - "npm install -g etherpad-load-test"
       script:
