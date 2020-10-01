@@ -3,12 +3,10 @@
  */
 
 const assert = require('assert').strict;
+const common = require('../../common');
 const superagent = require(__dirname+'/../../../../src/node_modules/superagent');
-const supertest = require(__dirname+'/../../../../src/node_modules/supertest');
 const fs = require('fs');
 const settings = require(__dirname+'/../../../../src/node/utils/Settings');
-const host = 'http://127.0.0.1:'+settings.port;
-const agent = supertest(`http://${settings.ip}:${settings.port}`);
 const path = require('path');
 const padText = fs.readFileSync("../tests/backend/specs/api/test.txt");
 const etherpadDoc = fs.readFileSync("../tests/backend/specs/api/test.etherpad");
@@ -18,10 +16,13 @@ const odtDoc = fs.readFileSync("../tests/backend/specs/api/test.odt");
 const pdfDoc = fs.readFileSync("../tests/backend/specs/api/test.pdf");
 var filePath = path.join(__dirname, '../../../../APIKEY.txt');
 
+let agent;
 var apiKey = fs.readFileSync(filePath,  {encoding: 'utf-8'});
 apiKey = apiKey.replace(/\n$/, "");
 var apiVersion = 1;
 var testPadId = makeid();
+
+before(async function() { agent = await common.init(); });
 
 describe('Connectivity', function(){
   it('can connect', async function() {
