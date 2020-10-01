@@ -3,6 +3,7 @@ const log4js = require('log4js');
 const httpLogger = log4js.getLogger('http');
 const settings = require('../../utils/Settings');
 const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+const readOnlyManager = require('../../db/ReadOnlyManager');
 
 hooks.deprecationNotices.authFailure = 'use the authnFailure and authzFailure hooks instead';
 
@@ -31,6 +32,7 @@ exports.normalizeAuthzLevel = (level) => {
 };
 
 exports.userCanModify = (padId, req) => {
+  if (readOnlyManager.isReadOnlyId(padId)) return false;
   if (!settings.requireAuthentication) return true;
   const {session: {user} = {}} = req;
   assert(user); // If authn required and user == null, the request should have already been denied.
