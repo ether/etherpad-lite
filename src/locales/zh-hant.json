@@ -87,6 +87,8 @@
 	"pad.modals.deleted.explanation": "此記事本已被移除。",
 	"pad.modals.rateLimited": "比例限制。",
 	"pad.modals.rateLimited.explanation": "您發送太多訊息到此記事本，因此中斷了您的連結。",
+	"pad.modals.rejected.explanation": "伺服器拒絕了由您的瀏覽器發送的訊息。",
+	"pad.modals.rejected.cause": "當您在檢視記事本時伺服器可能正在更新，或是在 Etherpad 裡有臭蟲。請嘗試重新載入頁面。",
 	"pad.modals.disconnected": "您已中斷連線。",
 	"pad.modals.disconnected.explanation": "伺服器連接曾中斷",
 	"pad.modals.disconnected.cause": "伺服器可能無法使用。若此情況持續發生，請通知伺服器管理員。",

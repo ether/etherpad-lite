@@ -2,7 +2,7 @@ describe("timeslider", function(){
   //create a new pad before each test run
   beforeEach(function(cb){
     helper.newPad(cb);
-    this.timeout(6000);
+    this.timeout(60000);
   });
 
   it("loads adds a hundred revisions", function(done) { // passes
@@ -109,12 +109,12 @@ describe("timeslider", function(){
   it("jumps to a revision given in the url", function(done) {
     var inner$ = helper.padInner$;
     var chrome$ = helper.padChrome$;
-    this.timeout(20000);
+    this.timeout(40000);
 
     // wait for the text to be loaded
     helper.waitFor(function(){
       return inner$('body').text().length != 0;
-    }, 6000).always(function() {
+    }, 10000).always(function() {
       var newLines = inner$('body div').length;
       var oldLength = inner$('body').text().length + newLines / 2;
       expect( oldLength ).to.not.eql( 0 );
@@ -130,7 +130,7 @@ describe("timeslider", function(){
         // was accepted by the server.
         var colorOkay = inner$('span').first().attr('class').indexOf("author-") == 0;
         return lenOkay && colorOkay;
-      }, 6000).always(function() {
+      }, 10000).always(function() {
         // go to timeslider with a specific revision set
         $('#iframe-container iframe').attr('src', $('#iframe-container iframe').attr('src')+'/timeslider#0');
 
@@ -142,7 +142,7 @@ describe("timeslider", function(){
           if(timeslider$){
             return timeslider$('#innerdocbody').text().length == oldLength;
           }
-        }, 6000).always(function(){
+        }, 10000).always(function(){
           expect( timeslider$('#innerdocbody').text().length ).to.eql( oldLength );
           done();
         });

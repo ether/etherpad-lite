@@ -47,8 +47,6 @@ body {
   width: 0; /* hide when the container is empty */
 }
 
-@media only screen and (max-width: 800px) {
-  #editorcontainerbox {
-    margin-bottom: 39px; /* Leave space for the bottom toolbar on mobile */
-  }
+.mobile-layout #editorcontainerbox {
+  margin-bottom: 39px; /* Leave space for the bottom toolbar on mobile */
 }

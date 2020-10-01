@@ -1,51 +1,35 @@
 function m(mod) { return __dirname + '/../../../src/' + mod; }
 
 const assert = require('assert').strict;
-const db = require(m('node/db/DB'));
-const express = require(m('node_modules/express'));
-const http = require('http');
+const io = require(m('node_modules/socket.io-client'));
 const log4js = require(m('node_modules/log4js'));
-let padManager;
+const padManager = require(m('node/db/PadManager'));
 const plugins = require(m('static/js/pluginfw/plugin_defs'));
+const server = require(m('node/server'));
 const setCookieParser = require(m('node_modules/set-cookie-parser'));
 const settings = require(m('node/utils/Settings'));
-const io = require(m('node_modules/socket.io-client'));
-const stats = require(m('node/stats'));
 const supertest = require(m('node_modules/supertest'));
-const util = require('util');
+const webaccess = require(m('node/hooks/express/webaccess'));
 
 const logger = log4js.getLogger('test');
-const app = express();
-const server = http.createServer(app);
-let client;
+let agent;
 let baseUrl;
+let authnFailureDelayMsBackup;
 
-before(async () => {
-  await util.promisify(server.listen).bind(server)(0, 'localhost');
-  baseUrl = `http://localhost:${server.address().port}`;
+before(async function() {
+  authnFailureDelayMsBackup = webaccess.authnFailureDelayMs;
+  webaccess.authnFailureDelayMs = 0; // Speed up tests.
+  settings.port = 0;
+  settings.ip = 'localhost';
+  const httpServer = await server.start();
+  baseUrl = `http://localhost:${httpServer.address().port}`;
   logger.debug(`HTTP server at ${baseUrl}`);
-  client = supertest(baseUrl);
-  const npm = require(m('node_modules/npm/lib/npm.js'));
-  await util.promisify(npm.load)();
-  settings.users = {
-    admin: {password: 'admin-password', is_admin: true},
-    user: {password: 'user-password'},
-  };
-  await db.init();
-  padManager = require(m('node/db/PadManager'));
-  const webaccess = require(m('node/hooks/express/webaccess'));
-  webaccess.expressConfigure('expressConfigure', {app});
-  const socketio = require(m('node/hooks/express/socketio'));
-  socketio.expressCreateServer('expressCreateServer', {app, server});
-  app.get(/./, (req, res) => { res.status(200).send('OK'); });
+  agent = supertest(baseUrl);
 });
 
-after(async () => {
-  stats.end();
-  await Promise.all([
-    db.doShutdown(),
-    util.promisify(server.close).bind(server)(),
-  ]);
+after(async function() {
+  webaccess.authnFailureDelayMs = authnFailureDelayMsBackup;
+  await server.stop();
 });
 
 // Waits for and returns the next named socket.io event. Rejects if there is any error while waiting
@@ -128,70 +112,267 @@ const handshake = async (socket, padID) => {
   return msg;
 };
 
-describe('socket.io access checks', () => {
+describe('socket.io access checks', function() {
+  let authorize;
+  let authorizeHooksBackup;
+  const cleanUpPads = async () => {
+    const padIds = ['pad', 'other-pad', 'päd'];
+    await Promise.all(padIds.map(async (padId) => {
+      if (await padManager.doesPadExist(padId)) {
+        const pad = await padManager.getPad(padId);
+        await pad.remove();
+      }
+    }));
+  };
+  const settingsBackup = {};
   let socket;
-  beforeEach(async () => {
+
+  beforeEach(async function() {
+    Object.assign(settingsBackup, settings);
     assert(socket == null);
+    settings.editOnly = false;
     settings.requireAuthentication = false;
     settings.requireAuthorization = false;
-    Promise.all(['pad', 'other-pad'].map(async (pad) => {
-      if (await padManager.doesPadExist(pad)) (await padManager.getPad(pad)).remove();
-    }));
+    settings.users = {
+      admin: {password: 'admin-password', is_admin: true},
+      user: {password: 'user-password'},
+    };
+    authorize = () => true;
+    authorizeHooksBackup = plugins.hooks.authorize;
+    plugins.hooks.authorize = [{hook_fn: (hookName, {req}, cb) => {
+      return cb([authorize(req)]);
+    }}];
+    await cleanUpPads();
   });
-  afterEach(async () => {
+  afterEach(async function() {
+    Object.assign(settings, settingsBackup);
     if (socket) socket.close();
     socket = null;
+    plugins.hooks.authorize = authorizeHooksBackup;
+    await cleanUpPads();
   });
 
-  // Normal accesses.
-  it('!authn anonymous /p/pad -> 200, ok', async () => {
-    const res = await client.get('/p/pad').expect(200);
-    // Should not throw.
-    socket = await connect(res);
-    const clientVars = await handshake(socket, 'pad');
-    assert.equal(clientVars.type, 'CLIENT_VARS');
-  });
-  it('!authn user /p/pad -> 200, ok', async () => {
-    const res = await client.get('/p/pad').auth('user', 'user-password').expect(200);
-    // Should not throw.
-    socket = await connect(res);
-    const clientVars = await handshake(socket, 'pad');
-    assert.equal(clientVars.type, 'CLIENT_VARS');
-  });
-  it('authn user /p/pad -> 200, ok', async () => {
-    settings.requireAuthentication = true;
-    const res = await client.get('/p/pad').auth('user', 'user-password').expect(200);
-    // Should not throw.
-    socket = await connect(res);
-    const clientVars = await handshake(socket, 'pad');
-    assert.equal(clientVars.type, 'CLIENT_VARS');
+  describe('Normal accesses', function() {
+    it('!authn anonymous cookie /p/pad -> 200, ok', async function() {
+      const res = await agent.get('/p/pad').expect(200);
+      // Should not throw.
+      socket = await connect(res);
+      const clientVars = await handshake(socket, 'pad');
+      assert.equal(clientVars.type, 'CLIENT_VARS');
+    });
+    it('!authn !cookie -> ok', async function() {
+      // Should not throw.
+      socket = await connect(null);
+      const clientVars = await handshake(socket, 'pad');
+      assert.equal(clientVars.type, 'CLIENT_VARS');
+    });
+    it('!authn user /p/pad -> 200, ok', async function() {
+      const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+      // Should not throw.
+      socket = await connect(res);
+      const clientVars = await handshake(socket, 'pad');
+      assert.equal(clientVars.type, 'CLIENT_VARS');
+    });
+    it('authn user /p/pad -> 200, ok', async function() {
+      settings.requireAuthentication = true;
+      const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+      // Should not throw.
+      socket = await connect(res);
+      const clientVars = await handshake(socket, 'pad');
+      assert.equal(clientVars.type, 'CLIENT_VARS');
+    });
+    it('authz user /p/pad -> 200, ok', async function() {
+      settings.requireAuthentication = true;
+      settings.requireAuthorization = true;
+      const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+      // Should not throw.
+      socket = await connect(res);
+      const clientVars = await handshake(socket, 'pad');
+      assert.equal(clientVars.type, 'CLIENT_VARS');
+    });
+    it('supports pad names with characters that must be percent-encoded', async function() {
+      settings.requireAuthentication = true;
+      // requireAuthorization is set to true here to guarantee that the user's padAuthorizations
+      // object is populated. Technically this isn't necessary because the user's padAuthorizations
+      // is currently populated even if requireAuthorization is false, but setting this to true
+      // ensures the test remains useful if the implementation ever changes.
+      settings.requireAuthorization = true;
+      const encodedPadId = encodeURIComponent('päd');
+      const res = await agent.get(`/p/${encodedPadId}`).auth('user', 'user-password').expect(200);
+      // Should not throw.
+      socket = await connect(res);
+      const clientVars = await handshake(socket, 'päd');
+      assert.equal(clientVars.type, 'CLIENT_VARS');
+    });
   });
 
-  // Abnormal access attempts.
-  it('authn anonymous /p/pad -> 401, error', async () => {
-    settings.requireAuthentication = true;
-    const res = await client.get('/p/pad').expect(401);
-    // Despite the 401, try to create the pad via a socket.io connection anyway.
-    await assert.rejects(connect(res), {message: /authentication required/i});
-  });
-  it('socket.io connection without express-session cookie -> error', async () => {
-    settings.requireAuthentication = true;
-    await assert.rejects(connect(null), {message: /signed express_sid cookie is required/i});
-  });
-  it('authorization bypass attempt -> error', async () => {
-    plugins.hooks.authorize = [{hook_fn: (hookName, {req}, cb) => {
-      if (req.session.user == null) return cb([]); // Hasn't authenticated yet.
+  describe('Abnormal access attempts', function() {
+    it('authn anonymous /p/pad -> 401, error', async function() {
+      settings.requireAuthentication = true;
+      const res = await agent.get('/p/pad').expect(401);
+      // Despite the 401, try to create the pad via a socket.io connection anyway.
+      await assert.rejects(connect(res), {message: /authentication required/i});
+    });
+    it('authn !cookie -> error', async function() {
+      settings.requireAuthentication = true;
+      await assert.rejects(connect(null), {message: /signed express_sid cookie is required/i});
+    });
+    it('authorization bypass attempt -> error', async function() {
       // Only allowed to access /p/pad.
-      return cb([req.path === '/p/pad']);
-    }}];
-    settings.requireAuthentication = true;
-    settings.requireAuthorization = true;
-    // First authenticate and establish a session.
-    const res = await client.get('/p/pad').auth('user', 'user-password').expect(200);
-    // Connecting should work because the user successfully authenticated.
-    socket = await connect(res);
-    // Accessing /p/other-pad should fail, despite the successful fetch of /p/pad.
-    const message = await handshake(socket, 'other-pad');
-    assert.equal(message.accessStatus, 'deny');
+      authorize = (req) => req.path === '/p/pad';
+      settings.requireAuthentication = true;
+      settings.requireAuthorization = true;
+      // First authenticate and establish a session.
+      const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+      // Connecting should work because the user successfully authenticated.
+      socket = await connect(res);
+      // Accessing /p/other-pad should fail, despite the successful fetch of /p/pad.
+      const message = await handshake(socket, 'other-pad');
+      assert.equal(message.accessStatus, 'deny');
+    });
+  });
+
+  describe('Authorization levels via authorize hook', function() {
+    beforeEach(async function() {
+      settings.requireAuthentication = true;
+      settings.requireAuthorization = true;
+    });
+
+    it("level='create' -> can create", async function() {
+      authorize = () => 'create';
+      const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+      socket = await connect(res);
+      const clientVars = await handshake(socket, 'pad');
+      assert.equal(clientVars.type, 'CLIENT_VARS');
+      assert.equal(clientVars.data.readonly, false);
+    });
+    it('level=true -> can create', async function() {
+      authorize = () => true;
+      const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+      socket = await connect(res);
+      const clientVars = await handshake(socket, 'pad');
+      assert.equal(clientVars.type, 'CLIENT_VARS');
+      assert.equal(clientVars.data.readonly, false);
+    });
+    it("level='modify' -> can modify", async function() {
+      await padManager.getPad('pad'); // Create the pad.
+      authorize = () => 'modify';
+      const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+      socket = await connect(res);
+      const clientVars = await handshake(socket, 'pad');
+      assert.equal(clientVars.type, 'CLIENT_VARS');
+      assert.equal(clientVars.data.readonly, false);
+    });
+    it("level='create' settings.editOnly=true -> unable to create", async function() {
+      authorize = () => 'create';
+      settings.editOnly = true;
+      const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+      socket = await connect(res);
+      const message = await handshake(socket, 'pad');
+      assert.equal(message.accessStatus, 'deny');
+    });
+    it("level='modify' settings.editOnly=false -> unable to create", async function() {
+      authorize = () => 'modify';
+      settings.editOnly = false;
+      const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+      socket = await connect(res);
+      const message = await handshake(socket, 'pad');
+      assert.equal(message.accessStatus, 'deny');
+    });
+    it("level='readOnly' -> unable to create", async function() {
+      authorize = () => 'readOnly';
+      const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+      socket = await connect(res);
+      const message = await handshake(socket, 'pad');
+      assert.equal(message.accessStatus, 'deny');
+    });
+    it("level='readOnly' -> unable to modify", async function() {
+      await padManager.getPad('pad'); // Create the pad.
+      authorize = () => 'readOnly';
+      const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+      socket = await connect(res);
+      const clientVars = await handshake(socket, 'pad');
+      assert.equal(clientVars.type, 'CLIENT_VARS');
+      assert.equal(clientVars.data.readonly, true);
+    });
+  });
+
+  describe('Authorization levels via user settings', function() {
+    beforeEach(async function() {
+      settings.requireAuthentication = true;
+    });
+
+    it('user.canCreate = true -> can create and modify', async function() {
+      settings.users.user.canCreate = true;
+      const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+      socket = await connect(res);
+      const clientVars = await handshake(socket, 'pad');
+      assert.equal(clientVars.type, 'CLIENT_VARS');
+      assert.equal(clientVars.data.readonly, false);
+    });
+    it('user.canCreate = false -> unable to create', async function() {
+      settings.users.user.canCreate = false;
+      const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+      socket = await connect(res);
+      const message = await handshake(socket, 'pad');
+      assert.equal(message.accessStatus, 'deny');
+    });
+    it('user.readOnly = true -> unable to create', async function() {
+      settings.users.user.readOnly = true;
+      const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+      socket = await connect(res);
+      const message = await handshake(socket, 'pad');
+      assert.equal(message.accessStatus, 'deny');
+    });
+    it('user.readOnly = true -> unable to modify', async function() {
+      await padManager.getPad('pad'); // Create the pad.
+      settings.users.user.readOnly = true;
+      const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+      socket = await connect(res);
+      const clientVars = await handshake(socket, 'pad');
+      assert.equal(clientVars.type, 'CLIENT_VARS');
+      assert.equal(clientVars.data.readonly, true);
+    });
+    it('user.readOnly = false -> can create and modify', async function() {
+      settings.users.user.readOnly = false;
+      const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+      socket = await connect(res);
+      const clientVars = await handshake(socket, 'pad');
+      assert.equal(clientVars.type, 'CLIENT_VARS');
+      assert.equal(clientVars.data.readonly, false);
+    });
+    it('user.readOnly = true, user.canCreate = true -> unable to create', async function() {
+      settings.users.user.canCreate = true;
+      settings.users.user.readOnly = true;
+      const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+      socket = await connect(res);
+      const message = await handshake(socket, 'pad');
+      assert.equal(message.accessStatus, 'deny');
+    });
+  });
+
+  describe('Authorization level interaction between authorize hook and user settings', function() {
+    beforeEach(async function() {
+      settings.requireAuthentication = true;
+      settings.requireAuthorization = true;
+    });
+
+    it('authorize hook does not elevate level from user settings', async function() {
+      settings.users.user.readOnly = true;
+      authorize = () => 'create';
+      const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+      socket = await connect(res);
+      const message = await handshake(socket, 'pad');
+      assert.equal(message.accessStatus, 'deny');
+    });
+    it('user settings does not elevate level from authorize hook', async function() {
+      settings.users.user.readOnly = false;
+      settings.users.user.canCreate = true;
+      authorize = () => 'readOnly';
+      const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+      socket = await connect(res);
+      const message = await handshake(socket, 'pad');
+      assert.equal(message.accessStatus, 'deny');
+    });
   });
 });

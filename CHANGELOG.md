@@ -3,9 +3,9 @@
 
 # 1.8.6
 * IMPORTANT: This fixes a severe problem with postgresql in 1.8.5
-* SECURITY: Fix authentication bypass vulnerability
+* SECURITY: Fix authentication and authorization bypass vulnerabilities
 * API: Update version to 1.2.15
-* FEATURE: Add copyPadWithoutHistory API (#4295) 
+* FEATURE: Add copyPadWithoutHistory API (#4295)
 * FEATURE: Package more asset files to save http requests (#4286)
 * MINOR: Improve UI when reconnecting
 * TESTS: Improve tests

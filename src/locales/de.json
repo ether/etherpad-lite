@@ -51,7 +51,7 @@
 	"pad.settings.fontType.normal": "Normal",
 	"pad.settings.language": "Sprache:",
 	"pad.settings.about": "Über",
-	"pad.settings.poweredBy": "Powered by $1",
+	"pad.settings.poweredBy": "Powered by",
 	"pad.importExport.import_export": "Import/Export",
 	"pad.importExport.import": "Textdatei oder Dokument hochladen",
 	"pad.importExport.importSuccessful": "Erfolgreich!",

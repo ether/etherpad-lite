@@ -170,23 +170,10 @@ function sendClientReady(isReconnect, messageType)
     "protocolVersion": 2
   };
 
-  //this is a reconnect, lets tell the server our revisionnumber
-  if(isReconnect == true)
-  {
-    // Hammer approach for now.  This is obviously wrong and needs a proper fix
-    // TODO: See https://github.com/ether/etherpad-lite/issues/3830
-    document.location=document.location;
-
-    // Switching to pad should work but doesn't...
-    // return pad.switchToPad(padId); // hacky but whatever.
-    // It might be related to Auth because failure logs...
-    //   [ERROR] console - Auth was never applied to a session.
-    //   If you are using the stress-test tool then restart Etherpad
-    //   and the Stress test tool.
-
-    msg.client_rev=pad.collabClient.getCurrentRevisionNumber();
-    msg.reconnect=true;
-
+  // this is a reconnect, lets tell the server our revisionnumber
+  if (isReconnect) {
+    msg.client_rev = pad.collabClient.getCurrentRevisionNumber();
+    msg.reconnect = true;
   }
 
   socket.json.send(msg);

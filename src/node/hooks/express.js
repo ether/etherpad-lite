@@ -5,18 +5,20 @@ var fs = require('fs');
 var path = require('path');
 var npm = require("npm/lib/npm.js");
 var  _ = require("underscore");
+const util = require('util');
 
-var server;
 var serverName;
 
-exports.createServer = function () {
+exports.server = null;
+
+exports.createServer = async () => {
   console.log("Report bugs at https://github.com/ether/etherpad-lite/issues")
 
   serverName = `Etherpad ${settings.getGitCommit()} (https://etherpad.org)`;
 
   console.log(`Your Etherpad version is ${settings.getEpVersion()} (${settings.getGitCommit()})`);
 
-  exports.restartServer();
+  await exports.restartServer();
 
   if (settings.ip === "") {
     // using Unix socket for connectivity
@@ -38,10 +40,10 @@ exports.createServer = function () {
   }
 }
 
-exports.restartServer = function () {
-  if (server) {
+exports.restartServer = async () => {
+  if (exports.server) {
     console.log("Restarting express server");
-    server.close();
+    await util.promisify(exports.server.close).bind(exports.server)();
   }
 
   var app = express(); // New syntax for express v3
@@ -65,10 +67,10 @@ exports.restartServer = function () {
     }
 
     var https = require('https');
-    server = https.createServer(options, app);
+    exports.server = https.createServer(options, app);
   } else {
     var http = require('http');
-    server = http.createServer(app);
+    exports.server = http.createServer(app);
   }
 
   app.use(function(req, res, next) {
@@ -110,7 +112,12 @@ exports.restartServer = function () {
   }
 
   hooks.callAll("expressConfigure", {"app": app});
-  hooks.callAll("expressCreateServer", {"app": app, "server": server});
+  hooks.callAll('expressCreateServer', {app, server: exports.server});
 
-  server.listen(settings.port, settings.ip);
-}
+  await util.promisify(exports.server.listen).bind(exports.server)(settings.port, settings.ip);
+};
+
+exports.shutdown = async (hookName, context) => {
+  if (!exports.server) return;
+  await util.promisify(exports.server.close).bind(exports.server)();
+};

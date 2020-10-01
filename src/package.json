@@ -52,7 +52,7 @@
     "log4js": "0.6.35",
     "measured-core": "1.11.2",
     "nodeify": "1.0.1",
-    "npm": "6.14.5",
+    "npm": "6.14.8",
     "openapi-backend": "2.4.1",
     "rate-limiter-flexible": "^2.1.4",
     "rehype": "^10.0.0",
@@ -67,7 +67,7 @@
     "threads": "^1.4.0",
     "tiny-worker": "^2.3.0",
     "tinycon": "0.0.1",
-    "ueberdb2": "^0.5.3",
+    "ueberdb2": "^0.5.4",
     "underscore": "1.8.3",
     "unorm": "1.4.1"
   },
@@ -79,9 +79,9 @@
     "mocha-froth": "^0.2.10",
     "nyc": "15.0.1",
     "set-cookie-parser": "^2.4.6",
+    "superagent": "^3.8.3",
     "supertest": "4.0.2",
-    "wd": "1.12.1",
-    "wtfnode": "^0.8.3"
+    "wd": "1.12.1"
   },
   "engines": {
     "node": ">=10.13.0",
@@ -92,7 +92,7 @@
     "url": "https://github.com/ether/etherpad-lite.git"
   },
   "scripts": {
-    "test": "nyc wtfnode node_modules/.bin/_mocha --timeout 5000 --recursive ../tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
+    "test": "nyc mocha --timeout 30000 --recursive ../tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api"
   },
   "version": "1.8.6",

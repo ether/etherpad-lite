@@ -88,6 +88,8 @@
 	"pad.modals.deleted.explanation": "S'ha suprimit el pad.",
 	"pad.modals.rateLimited": "Tarifa limitada.",
 	"pad.modals.rateLimited.explanation": "Heu enviat massa missatges a aquest pad per això us han desconnectat.",
+	"pad.modals.rejected.explanation": "El servidor ha rebutjat un missatge enviat pel seu navegador.",
+	"pad.modals.rejected.cause": "Pot ser que el servidor s'hagi actualitzat mentre estàveu veient la plataforma, o potser hi ha un error a Etherpad.  Intenta tornar a carregar la pàgina.",
 	"pad.modals.disconnected": "Heu estat desconnectat.",
 	"pad.modals.disconnected.explanation": "S'ha perdut la connexió amb el servidor",
 	"pad.modals.disconnected.cause": "El servidor sembla que no està disponible. Notifiqueu a l'administrador del servei si continua passant.",

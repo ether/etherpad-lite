@@ -101,12 +101,14 @@ sauceTestWorker.push({
   , 'args'           : ['--use-fake-device-for-media-stream']
 });
 
+/*
 // 3) Safari on OSX 10.15
 sauceTestWorker.push({
     'platform'       : 'OS X 10.15'
   , 'browserName'    : 'safari'
   , 'version'        : '13.1'
 });
+*/
 
 // 4) Safari on OSX 10.14
 sauceTestWorker.push({

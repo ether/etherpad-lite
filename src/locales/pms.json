@@ -78,6 +78,8 @@
 	"pad.modals.deleted.explanation": "Ës feuj a l'é stàit eliminà.",
 	"pad.modals.rateLimited": "Tass limità.",
 	"pad.modals.rateLimited.explanation": "A l'ha mandà tròpi mëssagi a 's blòch-sì, antlora a l'ha dëscolegalo.",
+	"pad.modals.rejected.explanation": "Ël servent a l'ha arpossà un mëssagi mandà da sò navigador.",
+	"pad.modals.rejected.cause": "Ël servent a podrìa esse stàit agiornà antramentre che chiel a beicava ël blòch, o peul desse ch'a-i é un givo an Etherpad. Ch'a preuva a carié torna la pàgina.",
 	"pad.modals.disconnected": "A l'é stàit dëscolegà",
 	"pad.modals.disconnected.explanation": "La conession al servent a l'é perdusse",
 	"pad.modals.disconnected.cause": "Ël servent a podrìa esse indisponìbil. Për piasì, ch'a anforma l'aministrator dël servissi si ël problema a persist.",

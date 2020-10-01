@@ -22,6 +22,16 @@
 var db = require("./DB");
 var randomString = require("../utils/randomstring");
 
+
+/**
+ * checks if the id pattern matches a read-only pad id
+ * @param {String} the pad's id
+ */
+exports.isReadOnlyId = function(id)
+{
+  return id.indexOf("r.") === 0;
+}
+
 /**
  * returns a read only id for a pad
  * @param {String} padId the id of the pad

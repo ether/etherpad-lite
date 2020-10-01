@@ -65,8 +65,6 @@ exports.setSocketIO = function(_socket) {
       remoteAddress[client.id] = client.handshake.address;
     }
 
-    var clientAuthorized = false;
-
     // wrap the original send function to log the messages
     client._send = client.send;
     client.send = function(message) {
@@ -84,37 +82,12 @@ exports.setSocketIO = function(_socket) {
         messageLogger.warn("Protocolversion header is not correct:" + stringifyWithoutPassword(message));
         return;
       }
-
-      if (clientAuthorized) {
-        // client is authorized, everything ok
-        handleMessage(client, message);
-      } else {
-        // try to authorize the client
-        if (message.padId !== undefined && message.sessionID !== undefined && message.token !== undefined && message.password !== undefined) {
-          // check for read-only pads
-          let padId = message.padId;
-          if (padId.indexOf("r.") === 0) {
-            padId = await readOnlyManager.getPadId(message.padId);
-          }
-
-          const {session: {user} = {}} = client.client.request;
-          const {accessStatus} = await securityManager.checkAccess(
-              padId, message.sessionID, message.token, message.password, user);
-
-          if (accessStatus === "grant") {
-            // access was granted, mark the client as authorized and handle the message
-            clientAuthorized = true;
-            handleMessage(client, message);
-          } else {
-            // no access, send the client a message that tells him why
-            messageLogger.warn("Authentication try failed:" + stringifyWithoutPassword(message));
-            client.json.send({ accessStatus });
-          }
-        } else {
-          // drop message
-          messageLogger.warn("Dropped message because of bad permissions:" + stringifyWithoutPassword(message));
-        }
+      if (!message.component || !components[message.component]) {
+        messageLogger.error("Can't route the message:" + stringifyWithoutPassword(message));
+        return;
       }
+      messageLogger.debug("from " + client.id + ": " + stringifyWithoutPassword(message));
+      await components[message.component].handleMessage(client, message);
     });
 
     client.on('disconnect', function() {
@@ -124,20 +97,6 @@ exports.setSocketIO = function(_socket) {
       }
     });
   });
-}
-
-// try to handle the message of this client
-function handleMessage(client, message)
-{
-  if (message.component && components[message.component]) {
-    // check if component is registered in the components array
-    if (components[message.component]) {
-      messageLogger.debug("from " + client.id + ": " + stringifyWithoutPassword(message));
-      components[message.component].handleMessage(client, message);
-    }
-  } else {
-    messageLogger.error("Can't route the message:" + stringifyWithoutPassword(message));
-  }
 }
 
 // returns a stringified representation of a message, removes the password

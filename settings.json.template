@@ -394,10 +394,22 @@
   },
 
   /*
-   * Users for basic authentication.
+   * User accounts. These accounts are used by:
+   *   - default HTTP basic authentication if no plugin handles authentication
+   *   - some but not all authentication plugins
+   *   - some but not all authorization plugins
    *
-   * is_admin = true gives access to /admin.
-   * If you do not uncomment this, /admin will not be available!
+   * User properties:
+   *   - password: The user's password. Some authentication plugins will ignore
+   *     this.
+   *   - is_admin: true gives access to /admin. Defaults to false. If you do not
+   *     uncomment this, /admin will not be available!
+   *   - readOnly: If true, this user will not be able to create new pads or
+   *     modify existing pads. Defaults to false.
+   *   - canCreate: If this is true and readOnly is false, this user can create
+   *     new pads. Defaults to true.
+   *
+   * Authentication and authorization plugins may define additional properties.
    *
    * WARNING: passwords should not be stored in plaintext in this file.
    *          If you want to mitigate this, please install ep_hash_auth and

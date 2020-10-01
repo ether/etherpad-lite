@@ -46,11 +46,10 @@ exports.socketio = function (hook_name, args, cb) {
       });
     });
 
-    socket.on("restartServer", function () {
+    socket.on('restartServer', async () => {
       console.log("Admin request to restart server through a socket on /admin/settings");
       settings.reloadSettings();
-      hooks.aCallAll("restartServer", {}, function () {});
-
+      await hooks.aCallAll('restartServer');
     });
 
   });

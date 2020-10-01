@@ -58,6 +58,8 @@ exports.checkAccess = async function(padID, sessionCookie, token, password, user
     return DENY;
   }
 
+  let canCreate = !settings.editOnly;
+
   if (settings.requireAuthentication) {
     // Make sure the user has authenticated if authentication is required. The caller should have
     // already performed this check, but it is repeated here just in case.
@@ -65,14 +67,19 @@ exports.checkAccess = async function(padID, sessionCookie, token, password, user
       authLogger.debug('access denied: authentication is required');
       return DENY;
     }
-    // Check whether the user is authorized. Note that userSettings.padAuthorizations will still be
-    // populated even if settings.requireAuthorization is false.
+
+    // Check whether the user is authorized to create the pad if it doesn't exist.
+    if (userSettings.canCreate != null && !userSettings.canCreate) canCreate = false;
+    if (userSettings.readOnly) canCreate = false;
+    // Note: userSettings.padAuthorizations should still be populated even if
+    // settings.requireAuthorization is false.
     const padAuthzs = userSettings.padAuthorizations || {};
     const level = webaccess.normalizeAuthzLevel(padAuthzs[padID]);
     if (!level) {
       authLogger.debug('access denied: unauthorized');
       return DENY;
     }
+    if (level !== 'create') canCreate = false;
   }
 
   // allow plugins to deny access
@@ -88,7 +95,7 @@ exports.checkAccess = async function(padID, sessionCookie, token, password, user
   const p_padExists = padManager.doesPadExist(padID);
 
   const padExists = await p_padExists;
-  if (!padExists && settings.editOnly) {
+  if (!padExists && !canCreate) {
     authLogger.debug('access denied: user attempted to create a pad, which is prohibited');
     return DENY;
   }
@@ -126,7 +133,7 @@ exports.checkAccess = async function(padID, sessionCookie, token, password, user
     return DENY;
   }
 
-  const passwordExempt = settings.sessionNoPassword && sesionAuthorID != null;
+  const passwordExempt = settings.sessionNoPassword && sessionAuthorID != null;
   const requirePassword = pad.isPasswordProtected() && !passwordExempt;
   if (requirePassword) {
     if (password == null) {
