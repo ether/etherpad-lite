@@ -228,6 +228,23 @@ var helper = {};
     selection.addRange(range);
   }
 
+  helper.requestAjaxExportPad = function (link){
+    var exportresults = []
+    $.ajaxSetup({
+      async:false
+    })
+    $.get(link+"/export/html",function(data){
+      var start = data.indexOf("<body>")
+      var end = data.indexOf("</body>")
+      var html = data.substr(start+6,end-start-6)
+      exportresults.push(["html",html])
+    })
+    $.get(link+"/export/txt",function(data){
+      exportresults.push(["txt",data])
+    })
+    return exportresults
+  }
+
   var getTextNodeAndOffsetOf = function($targetLine, targetOffsetAtLine){
     var $textNodes = $targetLine.find('*').contents().filter(function(){
       return this.nodeType === Node.TEXT_NODE;
