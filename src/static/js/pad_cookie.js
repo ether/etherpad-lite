@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-const createCookie = require('./pad_utils').createCookie;
-const readCookie = require('./pad_utils').readCookie;
+const Cookies = require('./pad_utils').Cookies;
 
 exports.padcookie = new class {
   constructor() {
@@ -40,17 +39,17 @@ exports.padcookie = new class {
   }
 
   readPrefs_() {
-    const jsonEsc = readCookie(this.cookieName_);
-    if (jsonEsc == null) return null;
     try {
-      return JSON.parse(unescape(jsonEsc));
+      const json = Cookies.get(this.cookieName_);
+      if (json == null) return null;
+      return JSON.parse(json);
     } catch (e) {
       return null;
     }
   }
 
   savePrefs_() {
-    createCookie(this.cookieName_, escape(JSON.stringify(this.prefs_)), 365 * 100);
+    Cookies.set(this.cookieName_, JSON.stringify(this.prefs_), {expires: 365 * 100});
   }
 
   getPref(prefName) {

@@ -44,12 +44,13 @@ var threadsPool = Threads.Pool(function () {
 }, 2)
 
 var LIBRARY_WHITELIST = [
-      'async'
-    , 'security'
-    , 'tinycon'
-    , 'underscore'
-    , 'unorm'
-    ];
+  'async',
+  'js-cookie',
+  'security',
+  'tinycon',
+  'underscore',
+  'unorm',
+];
 
 // Rewrite tar to include modules with no extensions and proper rooted paths.
 var LIBRARY_PREFIX = 'ep_etherpad-lite/static/js';

@@ -39,49 +39,6 @@ function randomString(len)
   return randomstring;
 }
 
-function createCookie(name, value, days, path){ /* Used by IE */
-  if (days)
-  {
-    var date = new Date();
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-    var expires = "; expires=" + date.toGMTString();
-  }
-  else{
-    var expires = "";
-  }
-
-  if(!path){ // IF the Path of the cookie isn't set then just create it on root
-    path = "/";
-  }
-
-  //Check if we accessed the pad over https
-  var secure = window.location.protocol == "https:" ? ";secure" : "";
-  var isHttpsScheme = window.location.protocol === "https:";
-  var sameSite = isHttpsScheme ?  ";sameSite=Strict": ";sameSite=Lax";
-
-  //Check if the browser is IE and if so make sure the full path is set in the cookie
-  if((navigator.appName == 'Microsoft Internet Explorer') || ((navigator.appName == 'Netscape') && (new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})").exec(navigator.userAgent) != null))){
-    document.cookie = name + "=" + value + expires + "; path=/" + secure + sameSite; /* Note this bodge fix for IE is temporary until auth is rewritten */
-  }
-  else{
-    document.cookie = name + "=" + value + expires + "; path=" + path + secure + sameSite;
-  }
-
-}
-
-function readCookie(name)
-{
-  var nameEQ = name + "=";
-  var ca = document.cookie.split(';');
-  for (var i = 0; i < ca.length; i++)
-  {
-    var c = ca[i];
-    while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-  }
-  return null;
-}
-
 var padutils = {
   escapeHtml: function(x)
   {
@@ -571,7 +528,12 @@ padutils.setupGlobalExceptionHandler = setupGlobalExceptionHandler;
 
 padutils.binarySearch = require('./ace2_common').binarySearch;
 
+// This file is included from Node so that it can reuse randomString, but Node doesn't have a global
+// window object.
+if (typeof window !== 'undefined') {
+  exports.Cookies = require('js-cookie/src/js.cookie');
+  exports.Cookies.defaults.sameSite = window.location.protocol === 'https:' ? 'Strict' : 'Lax';
+  exports.Cookies.defaults.secure = window.location.protocol === 'https:';
+}
 exports.randomString = randomString;
-exports.createCookie = createCookie;
-exports.readCookie = readCookie;
 exports.padutils = padutils;
