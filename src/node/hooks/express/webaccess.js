@@ -64,7 +64,7 @@ exports.checkAccess = (req, res, next) => {
       if (!level) return fail();
       const user = req.session.user;
       if (user == null) return next(); // This will happen if authentication is not required.
-      const encodedPadId = (req.path.match(/^\/p\/(.*)$/) || [])[1];
+      const encodedPadId = (req.path.match(/^\/p\/([^/]*)/) || [])[1];
       if (encodedPadId == null) return next();
       const padId = decodeURIComponent(encodedPadId);
       // The user was granted access to a pad. Remember the authorization level in the user's
