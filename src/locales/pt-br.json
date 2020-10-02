@@ -20,6 +20,9 @@
 			"Webysther"
 		]
 	},
+	"admin_plugins.available_install.value": "Instalar",
+	"admin_plugins.installed_uninstall.value": "Desinstalar",
+	"admin_plugins.version": "Versão",
 	"index.newPad": "Nova Nota",
 	"index.createOpenPad": "ou criar-abrir uma Nota com o nome:",
 	"index.openPad": "abra um bloco existente com o nome:",
