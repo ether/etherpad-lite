@@ -75,6 +75,18 @@ describe('Imports and Exports', function(){
     }
   });
 
+  const backups = {};
+
+  beforeEach(async function() {
+    // Note: This is a shallow copy.
+    backups.settings = Object.assign({}, settings);
+  });
+
+  afterEach(async function() {
+    // Note: This does not unset settings that were added.
+    Object.assign(settings, backups.settings);
+  });
+
   it('creates a new Pad, imports content to it, checks that content', async function() {
     await agent.get(endPoint('createPad') + `&padID=${testPadId}`)
         .expect(200)
@@ -210,10 +222,7 @@ describe('Imports and Exports', function(){
   });
 
   it('Tries to import unsupported file type', async function() {
-    if (settings.allowUnknownFileEnds === true) {
-      console.log('skipping test because allowUnknownFileEnds is true');
-      return this.skip();
-    }
+    settings.allowUnknownFileEnds = false;
     await agent.post(`/p/${testPadId}/import`)
         .attach('file', padText, {filename: '/test.xasdasdxx', contentType: 'weirdness/jobby'})
         .expect(200)
