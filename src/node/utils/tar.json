@@ -17,6 +17,7 @@
   , "pad_connectionstatus.js"
   , "chat.js"
   , "gritter.js"
+  , "$js-cookie/src/js.cookie.js"
   , "$tinycon/tinycon.js"
   , "excanvas.js"
   , "farbtastic.js"
