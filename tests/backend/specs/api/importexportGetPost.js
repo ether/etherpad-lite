@@ -211,16 +211,6 @@ describe('Imports and Exports', function(){
         .expect(/<ul class="bullet"><li><ul class="bullet"><li>hello<\/ul><\/li><\/ul>/);
   });
 
-  it('tries to import Plain Text to a pad that does not exist', async function() {
-    const padId = testPadId + testPadId + testPadId;
-    await agent.post(`/p/${padId}/import`)
-        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
-        .expect(405);
-    await agent.get(endPoint('getText') + `&padID=${padId}`)
-        .expect(200)
-        .expect((res) => assert.equal(res.body.code, 1));
-  });
-
   it('Tries to import unsupported file type', async function() {
     settings.allowUnknownFileEnds = false;
     await agent.post(`/p/${testPadId}/import`)

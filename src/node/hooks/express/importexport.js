@@ -62,11 +62,6 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   // handle import requests
   args.app.use('/p/:pad/import', limiter);
   args.app.post('/p/:pad/import', async function(req, res, next) {
-    if (!(await padManager.doesPadExists(req.params.pad))) {
-      console.warn(`Someone tried to import into a pad that doesn't exist (${req.params.pad})`);
-      return next();
-    }
-
     const {session: {user} = {}} = req;
     const {accessStatus, authorID} = await securityManager.checkAccess(
         req.params.pad, req.cookies.sessionID, req.cookies.token, req.cookies.password, user);
