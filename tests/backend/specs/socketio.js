@@ -155,20 +155,17 @@ describe('socket.io access checks', function() {
   describe('Normal accesses', function() {
     it('!authn anonymous cookie /p/pad -> 200, ok', async function() {
       const res = await agent.get('/p/pad').expect(200);
-      // Should not throw.
       socket = await connect(res);
       const clientVars = await handshake(socket, 'pad');
       assert.equal(clientVars.type, 'CLIENT_VARS');
     });
     it('!authn !cookie -> ok', async function() {
-      // Should not throw.
       socket = await connect(null);
       const clientVars = await handshake(socket, 'pad');
       assert.equal(clientVars.type, 'CLIENT_VARS');
     });
     it('!authn user /p/pad -> 200, ok', async function() {
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
-      // Should not throw.
       socket = await connect(res);
       const clientVars = await handshake(socket, 'pad');
       assert.equal(clientVars.type, 'CLIENT_VARS');
@@ -176,7 +173,6 @@ describe('socket.io access checks', function() {
     it('authn user /p/pad -> 200, ok', async function() {
       settings.requireAuthentication = true;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
-      // Should not throw.
       socket = await connect(res);
       const clientVars = await handshake(socket, 'pad');
       assert.equal(clientVars.type, 'CLIENT_VARS');
@@ -185,7 +181,6 @@ describe('socket.io access checks', function() {
       settings.requireAuthentication = true;
       settings.requireAuthorization = true;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
-      // Should not throw.
       socket = await connect(res);
       const clientVars = await handshake(socket, 'pad');
       assert.equal(clientVars.type, 'CLIENT_VARS');
@@ -199,7 +194,6 @@ describe('socket.io access checks', function() {
       settings.requireAuthorization = true;
       const encodedPadId = encodeURIComponent('päd');
       const res = await agent.get(`/p/${encodedPadId}`).auth('user', 'user-password').expect(200);
-      // Should not throw.
       socket = await connect(res);
       const clientVars = await handshake(socket, 'päd');
       assert.equal(clientVars.type, 'CLIENT_VARS');
@@ -211,11 +205,15 @@ describe('socket.io access checks', function() {
       settings.requireAuthentication = true;
       const res = await agent.get('/p/pad').expect(401);
       // Despite the 401, try to create the pad via a socket.io connection anyway.
-      await assert.rejects(connect(res), {message: /authentication required/i});
+      socket = await connect(res);
+      const message = await handshake(socket, 'pad');
+      assert.equal(message.accessStatus, 'deny');
     });
     it('authn !cookie -> error', async function() {
       settings.requireAuthentication = true;
-      await assert.rejects(connect(null), {message: /signed express_sid cookie is required/i});
+      socket = await connect(null);
+      const message = await handshake(socket, 'pad');
+      assert.equal(message.accessStatus, 'deny');
     });
     it('authorization bypass attempt -> error', async function() {
       // Only allowed to access /p/pad.
@@ -224,7 +222,6 @@ describe('socket.io access checks', function() {
       settings.requireAuthorization = true;
       // First authenticate and establish a session.
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
-      // Connecting should work because the user successfully authenticated.
       socket = await connect(res);
       // Accessing /p/other-pad should fail, despite the successful fetch of /p/pad.
       const message = await handshake(socket, 'other-pad');

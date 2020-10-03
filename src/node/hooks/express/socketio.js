@@ -40,15 +40,6 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     cookie: false,
   });
 
-  // REQUIRE a signed express-session cookie to be present, then load the session. See
-  // http://www.danielbaulig.de/socket-ioexpress for more info. After the session is loaded, ensure
-  // that the user has authenticated (if authentication is required).
-  //
-  // !!!WARNING!!! Requests to /socket.io are NOT subject to the checkAccess middleware in
-  // webaccess.js. If this handler fails to check for a signed express-session cookie or fails to
-  // check whether the user has authenticated, then any random person on the Internet can read,
-  // modify, or create any pad (unless the pad is password protected or an HTTP API session is
-  // required).
   const cookieParserFn = util.promisify(cookieParser(settings.sessionKey, {}));
   const getSession = util.promisify(webaccess.sessionStore.get).bind(webaccess.sessionStore);
   io.use(async (socket, next) => {
@@ -58,24 +49,14 @@ exports.expressCreateServer = function (hook_name, args, cb) {
       // token and express_sid cookies have to be passed via a query parameter for unit tests.
       req.headers.cookie = socket.handshake.query.cookie;
     }
-    if (!req.headers.cookie && settings.loadTest) {
-      console.warn('bypassing socket.io authentication check due to settings.loadTest');
-      return next(null, true);
+    await cookieParserFn(req, {});
+    const expressSid = req.signedCookies.express_sid;
+    if (expressSid) {
+      const session = await getSession(expressSid);
+      if (session) req.session = new sessionModule.Session(req, session);
     }
-    try {
-      await cookieParserFn(req, {});
-      const expressSid = req.signedCookies.express_sid;
-      const needAuthn = settings.requireAuthentication;
-      if (needAuthn && !expressSid) throw new Error('signed express_sid cookie is required');
-      if (expressSid) {
-        const session = await getSession(expressSid);
-        if (!session) throw new Error('bad session or session has expired');
-        req.session = new sessionModule.Session(req, session);
-        if (needAuthn && req.session.user == null) throw new Error('authentication required');
-      }
-    } catch (err) {
-      return next(new Error(`access denied: ${err}`), false);
-    }
+    // Note: PadMessageHandler.handleMessage calls SecurityMananger.checkAccess which will perform
+    // authentication and authorization checks.
     return next(null, true);
   });
 
