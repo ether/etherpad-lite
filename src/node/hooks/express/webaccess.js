@@ -219,13 +219,9 @@ exports.expressConfigure = (hook_name, args, cb) => {
     }));
   }
 
-  // Do not let express create the session, so that we can retain a reference to it for socket.io to
-  // use.
-  exports.sessionStore = new ueberStore();
-
-  args.app.use(sessionModule({
+  exports.sessionMiddleware = sessionModule({
     secret: settings.sessionKey,
-    store: exports.sessionStore,
+    store: new ueberStore(),
     resave: false,
     saveUninitialized: true,
     // Set the cookie name to a javascript identifier compatible string. Makes code handling it
@@ -256,7 +252,8 @@ exports.expressConfigure = (hook_name, args, cb) => {
        */
       secure: 'auto',
     }
-  }));
+  });
+  args.app.use(exports.sessionMiddleware);
 
   args.app.use(cookieParser(settings.sessionKey, {}));
 
