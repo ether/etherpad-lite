@@ -60,15 +60,15 @@ exports.checkAccess = async function(padID, sessionCookie, token, password, user
 
   let canCreate = !settings.editOnly;
 
-  if (settings.requireAuthentication) {
-    // Make sure the user has authenticated if authentication is required. The caller should have
-    // already performed this check, but it is repeated here just in case.
+  // Authentication and authorization checks.
+  if (settings.loadTest) {
+    console.warn(
+        'bypassing socket.io authentication and authorization checks due to settings.loadTest');
+  } else if (settings.requireAuthentication) {
     if (userSettings == null) {
       authLogger.debug('access denied: authentication is required');
       return DENY;
     }
-
-    // Check whether the user is authorized to create the pad if it doesn't exist.
     if (userSettings.canCreate != null && !userSettings.canCreate) canCreate = false;
     if (userSettings.readOnly) canCreate = false;
     // Note: userSettings.padAuthorizations should still be populated even if
