@@ -6,10 +6,6 @@ var webaccess = require("ep_etherpad-lite/node/hooks/express/webaccess");
 
 var padMessageHandler = require("../../handler/PadMessageHandler");
 
-var cookieParser = require('cookie-parser');
-var sessionModule = require('express-session');
-const util = require('util');
-
 exports.expressCreateServer = function (hook_name, args, cb) {
   //init socket.io and redirect all requests to the MessageHandler
   // there shouldn't be a browser that isn't compatible to all
@@ -40,24 +36,15 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     cookie: false,
   });
 
-  const cookieParserFn = util.promisify(cookieParser(settings.sessionKey, {}));
-  const getSession = util.promisify(webaccess.sessionStore.get).bind(webaccess.sessionStore);
-  io.use(async (socket, next) => {
+  io.use((socket, next) => {
     const req = socket.request;
     if (!req.headers.cookie) {
       // socketio.js-client on node.js doesn't support cookies (see https://git.io/JU8u9), so the
       // token and express_sid cookies have to be passed via a query parameter for unit tests.
       req.headers.cookie = socket.handshake.query.cookie;
     }
-    await cookieParserFn(req, {});
-    const expressSid = req.signedCookies.express_sid;
-    if (expressSid) {
-      const session = await getSession(expressSid);
-      if (session) req.session = new sessionModule.Session(req, session);
-    }
-    // Note: PadMessageHandler.handleMessage calls SecurityMananger.checkAccess which will perform
-    // authentication and authorization checks.
-    return next(null, true);
+    // See: https://socket.io/docs/faq/#Usage-with-express-session
+    webaccess.sessionMiddleware(req, {}, next);
   });
 
   // var socketIOLogger = log4js.getLogger("socket.io");
