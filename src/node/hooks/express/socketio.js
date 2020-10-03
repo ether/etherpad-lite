@@ -49,8 +49,8 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   // check whether the user has authenticated, then any random person on the Internet can read,
   // modify, or create any pad (unless the pad is password protected or an HTTP API session is
   // required).
-  const cookieParserFn = util.promisify(cookieParser(webaccess.secret, {}));
-  const getSession = util.promisify(args.app.sessionStore.get).bind(args.app.sessionStore);
+  const cookieParserFn = util.promisify(cookieParser(settings.sessionKey, {}));
+  const getSession = util.promisify(webaccess.sessionStore.get).bind(webaccess.sessionStore);
   io.use(async (socket, next) => {
     const req = socket.request;
     if (!req.headers.cookie) {
