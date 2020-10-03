@@ -237,9 +237,7 @@ exports.expressConfigure = (hook_name, args, cb) => {
     name: 'express_sid',
     proxy: true,
     cookie: {
-      // `Strict` is not used because it has few security benefits but significant usability
-      // drawbacks vs. `Lax`. See https://stackoverflow.com/q/41841880 for discussion.
-      sameSite: 'Lax',
+      sameSite: settings.cookie.sameSite,
       /*
        * The automatic express-session mechanism for determining if the
        * application is being served over ssl is similar to the one used for
