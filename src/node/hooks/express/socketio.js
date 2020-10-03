@@ -1,8 +1,8 @@
+const express = require("../express");
 var settings = require('../../utils/Settings');
 var socketio = require('socket.io');
 var socketIORouter = require("../../handler/SocketIORouter");
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
-var webaccess = require("ep_etherpad-lite/node/hooks/express/webaccess");
 
 var padMessageHandler = require("../../handler/PadMessageHandler");
 
@@ -44,7 +44,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
       req.headers.cookie = socket.handshake.query.cookie;
     }
     // See: https://socket.io/docs/faq/#Usage-with-express-session
-    webaccess.sessionMiddleware(req, {}, next);
+    express.sessionMiddleware(req, {}, next);
   });
 
   // var socketIOLogger = log4js.getLogger("socket.io");
