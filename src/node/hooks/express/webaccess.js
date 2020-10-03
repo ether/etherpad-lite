@@ -199,17 +199,12 @@ exports.checkAccess = (req, res, next) => {
   step1PreAuthorize();
 };
 
-exports.secret = null;
-
 exports.expressConfigure = (hook_name, args, cb) => {
   // Measure response time
   args.app.use((req, res, next) => {
     const stopWatch = stats.timer('httpRequests').start();
-    const sendFn = res.send;
-    res.send = function() { // function, not arrow, due to use of 'arguments'
-      stopWatch.end();
-      sendFn.apply(res, arguments);
-    };
+    const sendFn = res.send.bind(res);
+    res.send = (...args) => { stopWatch.end(); sendFn(...args); };
     next();
   });
 
@@ -224,22 +219,17 @@ exports.expressConfigure = (hook_name, args, cb) => {
     }));
   }
 
-  /* Do not let express create the session, so that we can retain a
-   * reference to it for socket.io to use. Also, set the key (cookie
-   * name) to a javascript identifier compatible string. Makes code
-   * handling it cleaner :) */
+  // Do not let express create the session, so that we can retain a reference to it for socket.io to
+  // use.
+  exports.sessionStore = new ueberStore();
 
-  if (!exports.sessionStore) {
-    exports.sessionStore = new ueberStore();
-    exports.secret = settings.sessionKey;
-  }
-
-  args.app.sessionStore = exports.sessionStore;
   args.app.use(sessionModule({
-    secret: exports.secret,
-    store: args.app.sessionStore,
+    secret: settings.sessionKey,
+    store: exports.sessionStore,
     resave: false,
     saveUninitialized: true,
+    // Set the cookie name to a javascript identifier compatible string. Makes code handling it
+    // cleaner :)
     name: 'express_sid',
     proxy: true,
     cookie: {
