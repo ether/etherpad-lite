@@ -532,7 +532,9 @@ padutils.binarySearch = require('./ace2_common').binarySearch;
 // window object.
 if (typeof window !== 'undefined') {
   exports.Cookies = require('js-cookie/src/js.cookie');
-  exports.Cookies.defaults.sameSite = window.location.protocol === 'https:' ? 'Strict' : 'Lax';
+  // `Strict` is not used because it has few security benefits but significant usability drawbacks
+  // vs. `Lax`. See https://stackoverflow.com/q/41841880 for discussion.
+  exports.Cookies.defaults.sameSite = 'Lax';
   exports.Cookies.defaults.secure = window.location.protocol === 'https:';
 }
 exports.randomString = randomString;

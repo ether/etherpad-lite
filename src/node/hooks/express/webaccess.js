@@ -228,8 +228,6 @@ exports.expressConfigure = (hook_name, args, cb) => {
     exports.secret = settings.sessionKey;
   }
 
-  const sameSite = settings.ssl ? 'Strict' : 'Lax';
-
   args.app.sessionStore = exports.sessionStore;
   args.app.use(sessionModule({
     secret: exports.secret,
@@ -239,12 +237,9 @@ exports.expressConfigure = (hook_name, args, cb) => {
     name: 'express_sid',
     proxy: true,
     cookie: {
-      /*
-       * Firefox started enforcing sameSite, see https://github.com/ether/etherpad-lite/issues/3989
-       * for details.  In response we set it based on if SSL certs are set in Etherpad.  Note that if
-       * You use Nginx or so for reverse proxy this may cause problems.  Use Certificate pinning to remedy.
-       */
-      sameSite: sameSite,
+      // `Strict` is not used because it has few security benefits but significant usability
+      // drawbacks vs. `Lax`. See https://stackoverflow.com/q/41841880 for discussion.
+      sameSite: 'Lax',
       /*
        * The automatic express-session mechanism for determining if the
        * application is being served over ssl is similar to the one used for
