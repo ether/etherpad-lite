@@ -118,7 +118,6 @@ Available blocks in `pad.html` are:
  * `indexCustomStyles` - contains the `index.css` `<link>` tag, allows you to add your own or to customize the one provided by the active skin
  * `indexWrapper` - contains the form for creating new pads
  * `indexCustomScripts` - contains the `index.js` `<script>` tag, allows you to add your own or to customize the one provided by the active skin
- * `indexCustomInlineScripts` - contains the inline `<script>` of home page, allows you to customize `go2Name()`, `go2Random()` or `randomPadName()` functions
 
 ## padInitToolbar
 Called from: src/node/hooks/express/specialpages.js

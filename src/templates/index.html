@@ -184,7 +184,6 @@
         <% e.end_block(); %>
         <script>
             // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
-            <% e.begin_block("indexCustomInlineScripts"); %>
             function go2Name()
             {
                 var padname = document.getElementById("padname").value;
@@ -219,7 +218,6 @@
                 }
                 return randomstring;
             }
-            <% e.end_block(); %>
 
             // start the custom js
             if (typeof customStart == "function") customStart();

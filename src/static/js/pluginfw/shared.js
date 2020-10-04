@@ -1,6 +1,13 @@
 var _ = require("underscore");
 var defs = require('./plugin_defs');
 
+const disabledHookReasons = {
+  hooks: {
+    indexCustomInlineScripts: 'The hook makes it impossible to use a Content Security Policy ' +
+        'that prohibits inline code. Permitting inline code makes XSS vulnerabilities more likely',
+  },
+};
+
 function loadFn(path, hookName) {
   var functionName
     , parts = path.split(":");
@@ -31,8 +38,6 @@ function extractHooks(parts, hook_set_name, normalizer) {
     _.chain(part[hook_set_name] || {})
     .keys()
     .each(function (hook_name) {
-      if (hooks[hook_name] === undefined) hooks[hook_name] = [];
-
       var hook_fn_name = part[hook_set_name][hook_name];
 
       /* On the server side, you can't just
@@ -41,6 +46,15 @@ function extractHooks(parts, hook_set_name, normalizer) {
        * npm... */
       if (normalizer) {
         hook_fn_name = normalizer(part, hook_fn_name, hook_name);
+      }
+
+      const disabledReason = (disabledHookReasons[hook_set_name] || {})[hook_name];
+      if (disabledReason) {
+        console.error(`Hook ${hook_set_name}/${hook_name} is disabled. Reason: ${disabledReason}`);
+        console.error(`The hook function ${hook_fn_name} from plugin ${part.name} ` +
+                      'will never be called, which may cause the plugin to fail');
+        console.error(`Please update the ${part.name} plugin to not use the ${hook_name} hook`);
+        return;
       }
 
       try {
@@ -52,6 +66,7 @@ function extractHooks(parts, hook_set_name, normalizer) {
         console.error("Failed to load '" + hook_fn_name + "' for '" + part.full_name + "/" + hook_set_name + "/" + hook_name + "': " + exc.toString())
       }
       if (hook_fn) {
+        if (hooks[hook_name] == null) hooks[hook_name] = [];
         hooks[hook_name].push({"hook_name": hook_name, "hook_fn": hook_fn, "hook_fn_name": hook_fn_name, "part": part});
       }
     });
