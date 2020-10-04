@@ -14,9 +14,18 @@ exports.baseUrl = null;
 exports.httpServer = null;
 exports.logger = log4js.getLogger('test');
 
+const logLevel = exports.logger.level;
+
 exports.init = async function() {
   if (inited) return exports.agent;
   inited = true;
+
+  if (!logLevel.isLessThanOrEqualTo(log4js.levels.DEBUG)) {
+    exports.logger.warn('Disabling non-test logging for the duration of the test. ' +
+                        'To enable non-test logging, change the loglevel setting to DEBUG.');
+    log4js.setGlobalLogLevel(log4js.levels.OFF);
+    exports.logger.setLevel(logLevel);
+  }
 
   // Note: This is only a shallow backup.
   backups.settings = Object.assign({}, settings);
@@ -37,6 +46,7 @@ exports.init = async function() {
     await server.stop();
     // Note: This does not unset settings that were added.
     Object.assign(settings, backups.settings);
+    log4js.setGlobalLogLevel(logLevel);
   });
 
   return exports.agent;
