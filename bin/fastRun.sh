@@ -12,6 +12,9 @@ set -eu
 # source: https://stackoverflow.com/questions/59895/how-to-get-the-source-directory-of-a-bash-script-from-within-the-script-itself#246128
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
+# Source constants and usefull functions
+. ${DIR}/../bin/functions.sh
+
 echo "Running directly, without checking/installing dependencies"
 
 # move to the base Etherpad directory. This will be necessary until Etherpad
@@ -19,4 +22,4 @@ echo "Running directly, without checking/installing dependencies"
 cd "${DIR}/.."
 
 # run Etherpad main class
-node "${DIR}/../node_modules/ep_etherpad-lite/node/server.js" "${@}"
+node $(compute_node_args) "${DIR}/../node_modules/ep_etherpad-lite/node/server.js" "$@"

@@ -3,6 +3,9 @@
 # Move to the folder where ep-lite is installed
 cd "$(dirname "$0")"/..
 
+# Source constants and usefull functions
+. bin/functions.sh
+
 # Prepare the environment
 bin/installDeps.sh || exit 1
 
@@ -12,4 +15,4 @@ echo "Open 'chrome://inspect' on Chrome to start debugging."
 
 # Use 0.0.0.0 to allow external connections to the debugger
 # (ex: running Etherpad on a docker container). Use default port # (9229)
-node --inspect=0.0.0.0:9229 node_modules/ep_etherpad-lite/node/server.js "$@"
+node $(compute_node_args) --inspect=0.0.0.0:9229 node_modules/ep_etherpad-lite/node/server.js "$@"
