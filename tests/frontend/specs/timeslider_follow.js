@@ -52,6 +52,7 @@ describe("timeslider", function(){
   });
 
   it("follows only to lines that exist in the current pad view", function(done){
+    this.timeout(5000);
     let inner$ = helper.padInner$;
     let chrome$ = helper.padChrome$;
     // use substring() here because empty lines are collapsed (they don't contain &nbsp;)
@@ -76,7 +77,7 @@ describe("timeslider", function(){
             return timeslider$('#innerdocbody').text().substring(0,10) == rev0text;
           }
           return false;
-        }, 5000).done(function(){
+        }).done(function(){
           timeslider$('#rightstep').click();
           helper.waitFor(function(){
             return timeslider$('#innerdocbody').text() == rev1text;
