@@ -155,6 +155,7 @@ const doImport = async (req, res, padId) => {
   const fileIsHTML = (fileEnding === '.html' || fileEnding === '.htm');
   const fileIsTXT = (fileEnding === '.txt');
 
+  let directDatabaseAccess = false;
   if (fileIsEtherpad) {
     // we do this here so we can see if the pad has quite a few edits
     const _pad = await padManager.getPad(padId);
@@ -166,12 +167,12 @@ const doImport = async (req, res, padId) => {
     }
 
     const _text = await fs.readFile(srcFile, 'utf8');
-    req.directDatabaseAccess = true;
+    directDatabaseAccess = true;
     await importEtherpad.setPadRaw(padId, _text);
   }
 
   // convert file to html if necessary
-  if (!importHandledByPlugin && !req.directDatabaseAccess) {
+  if (!importHandledByPlugin && !directDatabaseAccess) {
     if (fileIsTXT) {
       // Don't use convertor for text files
       useConvertor = false;
@@ -196,7 +197,7 @@ const doImport = async (req, res, padId) => {
     }
   }
 
-  if (!useConvertor && !req.directDatabaseAccess) {
+  if (!useConvertor && !directDatabaseAccess) {
     // Read the file with no encoding for raw buffer access.
     const buf = await fs.readFile(destFile);
 
@@ -214,7 +215,7 @@ const doImport = async (req, res, padId) => {
   // read the text
   let text;
 
-  if (!req.directDatabaseAccess) {
+  if (!directDatabaseAccess) {
     text = await fs.readFile(destFile, 'utf8');
 
     // node on windows has a delay on releasing of the file lock.
@@ -225,7 +226,7 @@ const doImport = async (req, res, padId) => {
   }
 
   // change text of the pad and broadcast the changeset
-  if (!req.directDatabaseAccess) {
+  if (!directDatabaseAccess) {
     if (importHandledByPlugin || useConvertor || fileIsHTML) {
       try {
         await importHtml.setPadHTML(pad, text);
@@ -244,9 +245,7 @@ const doImport = async (req, res, padId) => {
 
   // direct Database Access means a pad user should perform a switchToPad
   // and not attempt to receive updated pad data
-  if (req.directDatabaseAccess) {
-    return;
-  }
+  if (directDatabaseAccess) return true;
 
   // tell clients to update
   await padMessageHandler.updatePadClients(pad);
@@ -254,31 +253,26 @@ const doImport = async (req, res, padId) => {
   // clean up temporary files
   rm(srcFile);
   rm(destFile);
+
+  return false;
 };
 
-exports.doImport = (req, res, padId) => {
-  /**
-   * NB: abuse the 'req' object by storing an additional
-   * 'directDatabaseAccess' property on it so that it can
-   * be passed back in the HTML below.
-   *
-   * this is necessary because in the 'throw' paths of
-   * the function above there's no other way to return
-   * a value to the caller.
-   */
+exports.doImport = async (req, res, padId) => {
   let status = 'ok';
-  doImport(req, res, padId).catch((err) => {
+  let directDatabaseAccess;
+  try {
+    directDatabaseAccess = await doImport(req, res, padId);
+  } catch (err) {
     if (!(err instanceof ImportError) || !err.status) throw err;
     status = err.status;
-  }).then(() => {
-    // close the connection
-    res.send([
-      '<script>',
-      "document.addEventListener('DOMContentLoaded', () => {",
-      '  window.parent.padimpexp.handleFrameCall(',
-      `      ${JSON.stringify(!!req.directDatabaseAccess)}, ${JSON.stringify(status)});`,
-      '});',
-      '</script>',
-    ].join('\n'));
-  });
+  }
+  // close the connection
+  res.send([
+    '<script>',
+    "document.addEventListener('DOMContentLoaded', () => {",
+    '  window.parent.padimpexp.handleFrameCall(',
+    `      ${JSON.stringify(directDatabaseAccess)}, ${JSON.stringify(status)});`,
+    '});',
+    '</script>',
+  ].join('\n'));
 };
