@@ -64,38 +64,37 @@ describe("timeslider", function(){
       return inner$('div').length == 1;
     }).done(function(){
       inner$('div').append("<p>"+rev2text+"</p>");
-    })
-
-    helper.waitFor(function(){
-      return inner$('div').length == 2;
-    }).done(function(){
-      $('#iframe-container iframe').attr('src', $('#iframe-container iframe').attr('src')+'/timeslider#0');
-      let timeslider$;
-      let $sliderBar;
       helper.waitFor(function(){
-        timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
-        if (typeof timeslider$ === 'function'){
-          return timeslider$('#innerdocbody').text().substring(0,10) == rev0text;
-        }
-        return false;
-      }, 5000).done(function(){
-        timeslider$('#rightstep').click();
+        return inner$('div').length == 2;
+      }).done(function(){
+        $('#iframe-container iframe').attr('src', $('#iframe-container iframe').attr('src')+'/timeslider#0');
+        let timeslider$;
+        let $sliderBar;
         helper.waitFor(function(){
-          return timeslider$('#innerdocbody').text() == rev1text;
-        }).done(function(){
+          timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
+          if (typeof timeslider$ === 'function'){
+            return timeslider$('#innerdocbody').text().substring(0,10) == rev0text;
+          }
+          return false;
+        }, 5000).done(function(){
           timeslider$('#rightstep').click();
           helper.waitFor(function(){
-            return timeslider$('#innerdocbody').text() == "\xa0"+rev2text;
+            return timeslider$('#innerdocbody').text() == rev1text;
           }).done(function(){
-            timeslider$('#leftstep').click();
+            timeslider$('#rightstep').click();
             helper.waitFor(function(){
-              return timeslider$('#innerdocbody').text() == rev1text;
+              return timeslider$('#innerdocbody').text() == "\xa0"+rev2text;
             }).done(function(){
               timeslider$('#leftstep').click();
               helper.waitFor(function(){
-                return timeslider$('#innerdocbody').text().substring(0,10) == rev0text;
+                return timeslider$('#innerdocbody').text() == rev1text;
               }).done(function(){
-                done();
+                timeslider$('#leftstep').click();
+                helper.waitFor(function(){
+                  return timeslider$('#innerdocbody').text().substring(0,10) == rev0text;
+                }).done(function(){
+                  done();
+                })
               })
             })
           })
