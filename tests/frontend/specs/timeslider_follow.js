@@ -51,5 +51,57 @@ describe("timeslider", function(){
     }, revs*timePerRev);
   });
 
+  it("follows only to lines that exist in the current pad view", function(done){
+    let inner$ = helper.padInner$;
+    let chrome$ = helper.padChrome$;
+    // use substring() here because empty lines are collapsed (they don't contain &nbsp;)
+    // that's why the text differs from the timeslider text of rev 0 below
+    let rev0text = inner$('#innerdocbody').text().substring(0,10);
+    let rev1text = "\xa0"; // timeslider will add &nbsp;
+    let rev2text = 'Test line'
+    inner$('body').empty()
+    helper.waitFor(function(){
+      return inner$('div').length == 1;
+    }).done(function(){
+      inner$('div').append("<p>"+rev2text+"</p>");
+    })
+
+    helper.waitFor(function(){
+      return inner$('div').length == 2;
+    }).done(function(){
+      $('#iframe-container iframe').attr('src', $('#iframe-container iframe').attr('src')+'/timeslider#0');
+      let timeslider$;
+      let $sliderBar;
+      helper.waitFor(function(){
+        timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
+        if (typeof timeslider$ === 'function'){
+          return timeslider$('#innerdocbody').text().substring(0,10) == rev0text;
+        }
+        return false;
+      }).done(function(){
+        timeslider$('#rightstep').click();
+        helper.waitFor(function(){
+          return timeslider$('#innerdocbody').text() == rev1text;
+        }).done(function(){
+          timeslider$('#rightstep').click();
+          helper.waitFor(function(){
+            return timeslider$('#innerdocbody').text() == "\xa0"+rev2text;
+          }).done(function(){
+            timeslider$('#leftstep').click();
+            helper.waitFor(function(){
+              return timeslider$('#innerdocbody').text() == rev1text;
+            }).done(function(){
+              timeslider$('#leftstep').click();
+              helper.waitFor(function(){
+                return timeslider$('#innerdocbody').text().substring(0,10) == rev0text;
+              }).done(function(){
+                done();
+              })
+            })
+          })
+        })
+      })
+    })
+  })
 });
 
