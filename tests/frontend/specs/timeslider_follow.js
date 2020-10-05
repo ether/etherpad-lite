@@ -77,23 +77,23 @@ describe("timeslider", function(){
             return timeslider$('#innerdocbody').text().substring(0,10) == rev0text;
           }
           return false;
-        }).done(function(){
+        }, 5000).done(function(){
           timeslider$('#rightstep').click();
           helper.waitFor(function(){
             return timeslider$('#innerdocbody').text() == rev1text;
-          }).done(function(){
+          }, 3000).done(function(){
             timeslider$('#rightstep').click();
             helper.waitFor(function(){
               return timeslider$('#innerdocbody').text() == "\xa0"+rev2text;
-            }).done(function(){
+            }, 3000).done(function(){
               timeslider$('#leftstep').click();
               helper.waitFor(function(){
                 return timeslider$('#innerdocbody').text() == rev1text;
-              }).done(function(){
+              }, 3000).done(function(){
                 timeslider$('#leftstep').click();
                 helper.waitFor(function(){
                   return timeslider$('#innerdocbody').text().substring(0,10) == rev0text;
-                }).done(function(){
+                }, 3000).done(function(){
                   done();
                 })
               })
