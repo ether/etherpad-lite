@@ -8,8 +8,10 @@
 			"Steenth"
 		]
 	},
+	"admin_plugins.available_fetching": "Henter...",
 	"admin_plugins.description": "Beskrivelse",
 	"admin_plugins.name": "Navn",
+	"admin_settings": "Indstillinger",
 	"index.newPad": "Ny Pad",
 	"index.createOpenPad": "eller opret/åbn en Pad med navnet:",
 	"pad.toolbar.bold.title": "Fed (Ctrl-B)",

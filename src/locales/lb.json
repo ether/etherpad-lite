@@ -6,6 +6,9 @@
 			"Soued031"
 		]
 	},
+	"admin_plugins_info.version": "Etherpad Versioun",
+	"admin_plugins_info.version_latest": "Lescht disponibel Versioun",
+	"admin_settings": "Astellungen",
 	"index.newPad": "Neie Pad",
 	"index.createOpenPad": "oder maacht ee Pad mat dësem Numm op:",
 	"pad.toolbar.bold.title": "Fett (Strg-B)",
