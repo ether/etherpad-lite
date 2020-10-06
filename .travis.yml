@@ -47,14 +47,13 @@ jobs:
         - "cd src && npm install && cd -"
       script:
         - "tests/frontend/travis/runnerBackend.sh"
-## Temporarily commented out the Dockerfile tests
-#    - name: "Test the Dockerfile"
-#      install:
-#        - "cd src && npm install && cd -"
-#      script:
-#        - "docker build -t etherpad:test ."
-#        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
-#        - "cd src && npm run test-container"
+    - name: "Test the Dockerfile"
+      install:
+        - "cd src && npm install && cd -"
+      script:
+        - "docker build -t etherpad:test ."
+        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
+        - "cd src && npm run test-container"
     - name: "Load test Etherpad without Plugins"
       install:
         - "bin/installDeps.sh"
@@ -83,14 +82,13 @@ jobs:
         - "cd src && npm install && cd -"
       script:
         - "tests/frontend/travis/runnerBackend.sh"
-## Temporarily commented out the Dockerfile tests
-#    - name: "Test the Dockerfile"
-#      install:
-#        - "cd src && npm install && cd -"
-#      script:
-#        - "docker build -t etherpad:test ."
-#        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
-#        - "cd src && npm run test-container"
+    - name: "Test the Dockerfile"
+      install:
+        - "cd src && npm install && cd -"
+      script:
+        - "docker build -t etherpad:test ."
+        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
+        - "cd src && npm run test-container"
     - name: "Load test Etherpad with Plugins"
       install:
         - "bin/installDeps.sh"
