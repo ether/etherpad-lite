@@ -679,18 +679,21 @@ exports.stylesForExport = function(hook, padId, cb){
 ## aceAttribClasses
 Called from: src/static/js/linestylefilter.js
 
-Things in context:
-1. Attributes - Object of Attributes
+This hook is called when attributes are investigated on a line. It is useful if
+you want to add another attribute type or property type to a pad.
 
-This hook is called when attributes are investigated on a line.  It is useful if you want to add another attribute type or property type to a pad.
+An attributes object is passed to the aceAttribClasses hook functions instead of
+the usual context object. A hook function can either modify this object directly
+or provide an object whose properties will be assigned to the attributes object.
 
 Example:
 
 ```
-exports.aceAttribClasses = function(hook_name, attr, cb){
-  attr.sub = 'tag:sub';
-  cb(attr);
-}
+exports.aceAttribClasses = (hookName, attrs, cb) => {
+  return cb([{
+    sub: 'tag:sub',
+  }]);
+};
 ```
 
 ## exportFileName
