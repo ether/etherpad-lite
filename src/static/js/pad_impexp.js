@@ -51,7 +51,7 @@ const padimpexp = (() => {
           return;
         }
         currentImportTimer = null;
-        importFailed('Request timed out.');
+        importErrorMessage('Request timed out.');
         importDone();
       }, 25000); // time out after some number of seconds
       $('#importsubmitinput').attr(
@@ -69,10 +69,6 @@ const padimpexp = (() => {
       $('#importstatusball').show();
     }
     return ret;
-  };
-
-  const importFailed = (msg) => {
-    importErrorMessage(msg);
   };
 
   const importDone = () => {
@@ -196,7 +192,7 @@ const padimpexp = (() => {
     handleFrameCall: (directDatabaseAccess, status) => {
       if (directDatabaseAccess === 'undefined') directDatabaseAccess = false;
       if (status !== 'ok') {
-        importFailed(status);
+        importErrorMessage(status);
       } else {
         $('#import_export').removeClass('popup-show');
       }
