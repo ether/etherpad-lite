@@ -442,10 +442,10 @@ exports.getEpVersion = function() {
   return require('ep_etherpad-lite/package.json').version;
 }
 
-// Provide favicon address by setting.faveicon and requestedRootAddress
+// Provide favicon address by setting.favicon and requestedRootAddress
 exports.getFaviconAddress = function (favicon, requestedRootAddress = "/") {
   var urlRegex = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*).?$/g;
-  return urlRegex.test(favicon ) ? favicon  : `${requestedRootAddress}static/${favicon }`;
+  return urlRegex.test(favicon) ? favicon : `${requestedRootAddress}static/${favicon}`;
 }
 
 /**
