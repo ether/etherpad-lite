@@ -33,13 +33,13 @@ async function getPadHTML(pad, revNum)
   }
 
   // convert atext to html
-  return getHTMLFromAtext(pad, atext);
+  return await getHTMLFromAtext(pad, atext);
 }
 
 exports.getPadHTML = getPadHTML;
 exports.getHTMLFromAtext = getHTMLFromAtext;
 
-function getHTMLFromAtext(pad, atext, authorColors)
+async function getHTMLFromAtext(pad, atext, authorColors)
 {
   var apool = pad.apool();
   var textLines = atext.text.slice(0, -1).split('\n');
@@ -48,22 +48,23 @@ function getHTMLFromAtext(pad, atext, authorColors)
   var tags = ['h1', 'h2', 'strong', 'em', 'u', 's'];
   var props = ['heading1', 'heading2', 'bold', 'italic', 'underline', 'strikethrough'];
 
-  // prepare tags stored as ['tag', true] to be exported
-  hooks.aCallAll("exportHtmlAdditionalTags", pad, function(err, newProps){
-    newProps.forEach(function (propName, i) {
-      tags.push(propName);
-      props.push(propName);
-    });
-  });
-
-  // prepare tags stored as ['tag', 'value'] to be exported. This will generate HTML
-  // with tags like <span data-tag="value">
-  hooks.aCallAll("exportHtmlAdditionalTagsWithData", pad, function(err, newProps){
-    newProps.forEach(function (propName, i) {
-      tags.push('span data-' + propName[0] + '="' + propName[1] + '"');
-      props.push(propName);
-    });
-  });
+  await Promise.all([
+    // prepare tags stored as ['tag', true] to be exported
+    hooks.aCallAll('exportHtmlAdditionalTags', pad).then((newProps) => {
+      newProps.forEach((prop) => {
+        tags.push(prop);
+        props.push(prop);
+      });
+    }),
+    // prepare tags stored as ['tag', 'value'] to be exported. This will generate HTML with tags
+    // like <span data-tag="value">
+    hooks.aCallAll('exportHtmlAdditionalTagsWithData', pad).then((newProps) => {
+      newProps.forEach((prop) => {
+        tags.push(`span data-${prop[0]}="${prop[1]}"`);
+        props.push(prop);
+      });
+    }),
+  ]);
 
   // holds a map of used styling attributes (*1, *2, etc) in the apool
   // and maps them to an index in props
@@ -336,7 +337,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
       {
         nextLine = _analyzeLine(textLines[i + 1], attribLines[i + 1], apool);
       }
-      hooks.aCallAll('getLineHTMLForExport', context);
+      await hooks.aCallAll('getLineHTMLForExport', context);
       //To create list parent elements
       if ((!prevLine || prevLine.listLevel !== line.listLevel) || (prevLine && line.listTypeName !== prevLine.listTypeName))
       {
@@ -476,8 +477,8 @@ function getHTMLFromAtext(pad, atext, authorColors)
         padId: pad.id
       };
 
-      hooks.aCallAll("getLineHTMLForExport", context);
-        pieces.push(context.lineContent, "<br>");
+      await hooks.aCallAll('getLineHTMLForExport', context);
+      pieces.push(context.lineContent, '<br>');
     }
   }
 
