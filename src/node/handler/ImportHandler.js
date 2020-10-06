@@ -258,21 +258,18 @@ const doImport = async (req, res, padId) => {
 };
 
 exports.doImport = async (req, res, padId) => {
-  let status = 'ok';
+  let httpStatus = 200;
+  let code = 0;
+  let message = 'ok';
   let directDatabaseAccess;
   try {
     directDatabaseAccess = await doImport(req, res, padId);
   } catch (err) {
-    if (!(err instanceof ImportError) || !err.status) throw err;
-    status = err.status;
+    const known = err instanceof ImportError && err.status;
+    if (!known) logger.error(`Internal error during import: ${err.stack || err}`);
+    httpStatus = known ? 400 : 500;
+    code = known ? 1 : 2;
+    message = known ? err.status : 'internalError';
   }
-  // close the connection
-  res.send([
-    '<script>',
-    "document.addEventListener('DOMContentLoaded', () => {",
-    '  window.parent.padimpexp.handleFrameCall(',
-    `      ${JSON.stringify(directDatabaseAccess)}, ${JSON.stringify(status)});`,
-    '});',
-    '</script>',
-  ].join('\n'));
+  res.status(httpStatus).json({code, message, data: {directDatabaseAccess}});
 };
