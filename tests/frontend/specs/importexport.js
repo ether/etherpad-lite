@@ -156,7 +156,6 @@ describe("import functionality", function(){
     var importurl = helper.padChrome$.window.location.href+'/import'
     var htmlWithBullets = '<html><body><ol class="list-number1" start="1"><li>number 1 line 1</li></ol><ol class="list-number1" start="2"><li>number 2 line 2</li></ol></body></html>'
     helper.requestAjaxImportPad(htmlWithBullets,importurl,"html")
-    -console.error(getinnertext())
     expect(getinnertext()).to.be('\
 <ol class="list-number1" start="1"><li><span class="">number 1 line 1</span></li></ol>\n\
 <ol class="list-number1" start="2"><li><span class="">number 2 line 2</span></li></ol>\n\
