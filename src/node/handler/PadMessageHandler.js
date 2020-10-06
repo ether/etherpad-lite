@@ -35,7 +35,6 @@ var _ = require('underscore');
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
 var channels = require("channels");
 var stats = require('../stats');
-var remoteAddress = require("../utils/RemoteAddress").remoteAddress;
 const assert = require('assert').strict;
 const nodeify = require("nodeify");
 const { RateLimiterMemory } = require('rate-limiter-flexible');
@@ -127,19 +126,11 @@ exports.handleDisconnect = async function(client)
 
   // if this connection was already etablished with a handshake, send a disconnect message to the others
   if (session && session.author) {
-    // Get the IP address from our persistant object
-    let ip = remoteAddress[client.id];
-
-    // Anonymize the IP address if IP logging is disabled
-    if (settings.disableIPlogging) {
-      ip = 'ANONYMOUS';
-    }
-
     const {session: {user} = {}} = client.client.request;
     accessLogger.info('[LEAVE]' +
                       ` pad:${session.padId}` +
                       ` socket:${client.id}` +
-                      ` IP:${ip}` +
+                      ` IP:${settings.disableIPlogging ? 'ANONYMOUS' : client.request.ip}` +
                       ` authorID:${session.author}` +
                       ((user && user.username) ? ` username:${user.username}` : ''));
 
@@ -181,11 +172,11 @@ exports.handleMessage = async function(client, message)
   var env = process.env.NODE_ENV || 'development';
 
   if (env === 'production') {
-    const clientIPAddress = remoteAddress[client.id];
     try {
-      await rateLimiter.consume(clientIPAddress); // consume 1 point per event from IP
-    }catch(e){
-      console.warn("Rate limited: ", clientIPAddress, " to reduce the amount of rate limiting that happens edit the rateLimit values in settings.json");
+      await rateLimiter.consume(client.request.ip); // consume 1 point per event from IP
+    } catch (e) {
+      console.warn(`Rate limited: ${client.request.ip} to reduce the amount of rate limiting ` +
+                   'that happens edit the rateLimit values in settings.json');
       stats.meter('rateLimited').mark();
       client.json.send({disconnect:"rateLimited"});
       return;
@@ -239,7 +230,7 @@ exports.handleMessage = async function(client, message)
         'Rejecting message from client because the author ID changed mid-session.' +
         ' Bad or missing token or sessionID?' +
         ` socket:${client.id}` +
-        ` IP:${settings.disableIPlogging ? ANONYMOUS : remoteAddress[client.id]}` +
+        ` IP:${settings.disableIPlogging ? 'ANONYMOUS' : client.request.ip}` +
         ` originalAuthorID:${thisSession.author}` +
         ` newAuthorID:${authorID}` +
         ((user && user.username) ? ` username:${user.username}` : '') +
@@ -967,19 +958,11 @@ async function handleClientReady(client, message, authorID)
   sessionInfo.readonly =
       padIds.readonly || !webaccess.userCanModify(message.padId, client.client.request);
 
-  // Log creation/(re-)entering of a pad
-  let ip = remoteAddress[client.id];
-
-  // Anonymize the IP address if IP logging is disabled
-  if (settings.disableIPlogging) {
-    ip = 'ANONYMOUS';
-  }
-
   const {session: {user} = {}} = client.client.request;
   accessLogger.info(`[${pad.head > 0 ? 'ENTER' : 'CREATE'}]` +
                     ` pad:${padIds.padId}` +
                     ` socket:${client.id}` +
-                    ` IP:${ip}` +
+                    ` IP:${settings.disableIPlogging ? 'ANONYMOUS' : client.request.ip}` +
                     ` authorID:${authorID}` +
                     ((user && user.username) ? ` username:${user.username}` : ''));
 

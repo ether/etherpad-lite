@@ -1,4 +1,5 @@
 const express = require("../express");
+const proxyaddr = require('proxy-addr');
 var settings = require('../../utils/Settings');
 var socketio = require('socket.io');
 var socketIORouter = require("../../handler/SocketIORouter");
@@ -38,6 +39,14 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   io.use((socket, next) => {
     const req = socket.request;
+    // Express sets req.ip but socket.io does not. Replicate Express's behavior here.
+    if (req.ip == null) {
+      if (settings.trustProxy) {
+        req.ip = proxyaddr(req, args.app.get('trust proxy fn'));
+      } else {
+        req.ip = socket.handshake.address;
+      }
+    }
     if (!req.headers.cookie) {
       // socketio.js-client on node.js doesn't support cookies (see https://git.io/JU8u9), so the
       // token and express_sid cookies have to be passed via a query parameter for unit tests.
