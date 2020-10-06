@@ -23,7 +23,6 @@ var log4js = require('log4js');
 var messageLogger = log4js.getLogger("message");
 var securityManager = require("../db/SecurityManager");
 var readOnlyManager = require("../db/ReadOnlyManager");
-var remoteAddress = require("../utils/RemoteAddress").remoteAddress;
 var settings = require('../utils/Settings');
 
 /**
@@ -56,15 +55,6 @@ exports.setSocketIO = function(_socket) {
 
   socket.sockets.on('connection', function(client)
   {
-    // Broken: See http://stackoverflow.com/questions/4647348/send-message-to-specific-client-with-socket-io-and-node-js
-    // Fixed by having a persistant object, ideally this would actually be in the database layer
-    // TODO move to database layer
-    if (settings.trustProxy && client.handshake.headers['x-forwarded-for'] !== undefined) {
-      remoteAddress[client.id] = client.handshake.headers['x-forwarded-for'];
-    } else {
-      remoteAddress[client.id] = client.handshake.address;
-    }
-
     // wrap the original send function to log the messages
     client._send = client.send;
     client.send = function(message) {
