@@ -146,7 +146,7 @@ var padeditbar = (function()
       self.dropdowns = [];
 
       $("#editbar .editbarbutton").attr("unselectable", "on"); // for IE
-      $("#editbar").removeClass("disabledtoolbar").addClass("enabledtoolbar");
+      this.enable();
       $("#editbar [data-key]").each(function () {
         $(this).unbind("click");
         (new ToolbarItem($(this))).bind(function (command, item) {
@@ -193,6 +193,10 @@ var padeditbar = (function()
     disable: function()
     {
       $("#editbar").addClass('disabledtoolbar').removeClass("enabledtoolbar");
+    },
+    enable: function()
+    {
+      $('#editbar').addClass('enabledtoolbar').removeClass('disabledtoolbar');
     },
     commands: {},
     registerCommand: function (cmd, callback) {
@@ -313,12 +317,14 @@ var padeditbar = (function()
     {
       // reset style
       $('.toolbar').removeClass('cropped')
+      $('body').removeClass('mobile-layout');
       var menu_left = $('.toolbar .menu_left')[0];
 
-      // on mobile the menu_right get displayed at the bottom of the screen
-      var isMobileLayout = $('.toolbar .menu_right').css('position') === 'fixed';
-
-      if (menu_left && menu_left.scrollWidth > $('.toolbar').width() && isMobileLayout) {
+      var menuRightWidth = 280; // this is approximate, we cannot measure it because on mobileLayour it takes the full width on the bottom of the page
+      if (menu_left && menu_left.scrollWidth > $('.toolbar').width() - menuRightWidth || $('.toolbar').width() < 1000) {
+        $('body').addClass('mobile-layout');
+      }
+      if (menu_left && menu_left.scrollWidth > $('.toolbar').width()) {
         $('.toolbar').addClass('cropped');
       }
     }
@@ -409,17 +415,6 @@ var padeditbar = (function()
 
     toolbar.registerCommand("import_export", function () {
       toolbar.toggleDropDown("import_export", function(){
-
-        if (clientVars.thisUserHasEditedThisPad || clientVars.allowAnyoneToImport) {
-          // the user has edited this pad historically or in this session
-          $('#importform').show();
-          $('#importmessagepermission').hide();
-        } else {
-          // this is the first time this user visits this pad
-          $('#importform').hide();
-          $('#importmessagepermission').show();
-        }
-
         // If Import file input exists then focus on it..
         if($('#importfileinput').length !== 0){
           setTimeout(function(){

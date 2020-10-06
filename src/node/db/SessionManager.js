@@ -19,10 +19,64 @@
  */
 
 var customError = require("../utils/customError");
+const promises = require('../utils/promises');
 var randomString = require("../utils/randomstring");
 var db = require("./DB");
 var groupManager = require("./GroupManager");
 var authorManager = require("./AuthorManager");
+
+/**
+ * Finds the author ID for a session with matching ID and group.
+ *
+ * @param groupID identifies the group the session is bound to.
+ * @param sessionCookie contains a comma-separated list of IDs identifying the sessions to search.
+ * @return If there is a session that is not expired, has an ID matching one of the session IDs in
+ *     sessionCookie, and is bound to a group with the given ID, then this returns the author ID
+ *     bound to the session. Otherwise, returns undefined.
+ */
+exports.findAuthorID = async (groupID, sessionCookie) => {
+  if (!sessionCookie) return undefined;
+  /*
+   * Sometimes, RFC 6265-compliant web servers may send back a cookie whose
+   * value is enclosed in double quotes, such as:
+   *
+   *   Set-Cookie: sessionCookie="s.37cf5299fbf981e14121fba3a588c02b,s.2b21517bf50729d8130ab85736a11346"; Version=1; Path=/; Domain=localhost; Discard
+   *
+   * Where the double quotes at the start and the end of the header value are
+   * just delimiters. This is perfectly legal: Etherpad parsing logic should
+   * cope with that, and remove the quotes early in the request phase.
+   *
+   * Somehow, this does not happen, and in such cases the actual value that
+   * sessionCookie ends up having is:
+   *
+   *     sessionCookie = '"s.37cf5299fbf981e14121fba3a588c02b,s.2b21517bf50729d8130ab85736a11346"'
+   *
+   * As quick measure, let's strip the double quotes (when present).
+   * Note that here we are being minimal, limiting ourselves to just removing
+   * quotes at the start and the end of the string.
+   *
+   * Fixes #3819.
+   * Also, see #3820.
+   */
+  const sessionIDs = sessionCookie.replace(/^"|"$/g, '').split(',');
+  const sessionInfoPromises = sessionIDs.map(async (id) => {
+    try {
+      return await exports.getSessionInfo(id);
+    } catch (err) {
+      if (err.message === 'sessionID does not exist') {
+        console.debug(`SessionManager getAuthorID: no session exists with ID ${id}`);
+      } else {
+        throw err;
+      }
+    }
+    return undefined;
+  });
+  const now = Math.floor(Date.now() / 1000);
+  const isMatch = (si) => (si != null && si.groupID === groupID && now < si.validUntil);
+  const sessionInfo = await promises.firstSatisfies(sessionInfoPromises, isMatch);
+  if (sessionInfo == null) return undefined;
+  return sessionInfo.authorID;
+};
 
 exports.doesSessionExist = async function(sessionID)
 {

@@ -1,13 +1,10 @@
+const express = require("../express");
 var settings = require('../../utils/Settings');
 var socketio = require('socket.io');
 var socketIORouter = require("../../handler/SocketIORouter");
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
-var webaccess = require("ep_etherpad-lite/node/hooks/express/webaccess");
 
 var padMessageHandler = require("../../handler/PadMessageHandler");
-
-var cookieParser = require('cookie-parser');
-var sessionModule = require('express-session');
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   //init socket.io and redirect all requests to the MessageHandler
@@ -39,43 +36,15 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     cookie: false,
   });
 
-  /* Require an express session cookie to be present, and load the
-   * session. See http://www.danielbaulig.de/socket-ioexpress for more
-   * info */
-  var cookieParserFn = cookieParser(webaccess.secret, {});
-
-  io.use(function(socket, accept) {
-    var data = socket.request;
-    // Use a setting if we want to allow load Testing
-
-    // Sometimes browsers might not have cookies at all, for example Safari in iFrames Cross domain
-    // https://github.com/ether/etherpad-lite/issues/4031
-    // if requireSession is false we can allow them to still get on the pad.
-    // Note that this does make security less tight because any socketIO connection can be established without
-    // any logic on the client to do any handshaking..  I am not concerned about this though, the real solution
-    // here is to implement rateLimiting on SocketIO ACCEPT_COMMIT messages.
-
-    if(!data.headers.cookie && (settings.loadTest || !settings.requireSession)){
-      accept(null, true);
-    }else{
-      if (!data.headers.cookie) return accept('No session cookie transmitted.', false);
+  io.use((socket, next) => {
+    const req = socket.request;
+    if (!req.headers.cookie) {
+      // socketio.js-client on node.js doesn't support cookies (see https://git.io/JU8u9), so the
+      // token and express_sid cookies have to be passed via a query parameter for unit tests.
+      req.headers.cookie = socket.handshake.query.cookie;
     }
-    if(data.headers.cookie){
-      cookieParserFn(data, {}, function(err){
-        if(err) {
-          console.error(err);
-          accept("Couldn't parse request cookies. ", false);
-          return;
-        }
-
-        data.sessionID = data.signedCookies.express_sid;
-        args.app.sessionStore.get(data.sessionID, function (err, session) {
-          if (err || !session) return accept('Bad session / session has expired', false);
-          data.session = new sessionModule.Session(data, session);
-          accept(null, true);
-        });
-      });
-    }
+    // See: https://socket.io/docs/faq/#Usage-with-express-session
+    express.sessionMiddleware(req, {}, next);
   });
 
   // var socketIOLogger = log4js.getLogger("socket.io");

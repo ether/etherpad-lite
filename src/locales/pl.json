@@ -2,8 +2,10 @@
 	"@metadata": {
 		"authors": [
 			"DeRudySoulStorm",
+			"Kareyac",
 			"Macofe",
 			"Mateon1",
+			"Matlin",
 			"Pan Cube",
 			"Rezonansowy",
 			"Teeed",
@@ -13,6 +15,9 @@
 			"Woytecr"
 		]
 	},
+	"admin_plugins.description": "Opis",
+	"admin_plugins.version": "Wersja",
+	"admin_settings": "Ustawienia",
 	"index.newPad": "Nowy dokument",
 	"index.createOpenPad": "lub stwórz/otwórz dokument o nazwie:",
 	"index.openPad": "otwórz istniejący dokument o nazwie:",
@@ -51,6 +56,7 @@
 	"pad.settings.fontType.normal": "Normalna",
 	"pad.settings.language": "Język:",
 	"pad.settings.about": "O aplikacji",
+	"pad.settings.poweredBy": "Dostarczane przez $1",
 	"pad.importExport.import_export": "Import/eksport",
 	"pad.importExport.import": "Prześlij dowolny plik tekstowy lub dokument",
 	"pad.importExport.importSuccessful": "Sukces!",

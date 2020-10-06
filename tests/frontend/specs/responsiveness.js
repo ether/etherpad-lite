@@ -35,7 +35,7 @@ describe('Responsiveness of Editor', function() {
     var amount = 200000; //number of blocks of chars we will insert
     var length = (amount * (chars.length) +1); // include a counter for each space
     var text = ''; // the text we're gonna insert
-    this.timeout(amount * 100);
+    this.timeout(amount * 150); // Changed from 100 to 150 to allow Mac OSX Safari to be slow.
 
     // get keys to send
     var keyMultiplier = 10; // multiplier * 10 == total number of key events
@@ -72,14 +72,15 @@ describe('Responsiveness of Editor', function() {
       }
 
       helper.waitFor(function(){ // Wait for the ability to process
-        return true; // Ghetto but works for now
+        var el = inner$('body');
+        if(el[0].textContent.length > amount) return true;
       }).done(function(){
         var end = Date.now(); // get the current time
         var delay = end - start; // get the delay as the current time minus the start time
 
-        expect(delay).to.be.below(300);
+        expect(delay).to.be.below(600);
         done();
-      }, 1000);
+      }, 5000);
 
     }, 10000);
   });

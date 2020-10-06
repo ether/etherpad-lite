@@ -63,9 +63,26 @@ var padconnectionstatus = (function()
         what: 'disconnected',
         why: msg
       };
-      var k = String(msg); // known reason why
-      if (!(k == 'userdup' || k == 'deleted' || k == 'looping' || k == 'slowcommit' || k == 'initsocketfail' || k == 'unauth' || k == 'rateLimited' || k == 'badChangeset' || k == 'corruptPad'))
-      {
+
+      // These message IDs correspond to localized strings that are presented to the user. If a new
+      // message ID is added here then a new div must be added to src/templates/pad.html and the
+      // corresponding l10n IDs must be added to the language files in src/locales.
+      const knownReasons = [
+        'badChangeset',
+        'corruptPad',
+        'deleted',
+        'disconnected',
+        'initsocketfail',
+        'looping',
+        'rateLimited',
+        'rejected',
+        'slowcommit',
+        'unauth',
+        'userdup',
+      ];
+      let k = String(msg);
+      if (knownReasons.indexOf(k) === -1) {
+        // Fall back to a generic message.
         k = 'disconnected';
       }
 

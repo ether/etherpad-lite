@@ -4,6 +4,12 @@
 			"Kareyac"
 		]
 	},
+	"admin_plugins.available_install.value": "Տեղադրել",
+	"admin_plugins.description": "Նկարագրություն",
+	"admin_plugins.version": "Տարբերակ",
+	"admin_settings": "Կարգավորումներ",
+	"index.newPad": "Ստեղծել",
+	"pad.toolbar.bold.title": "Թավատառ (Ctrl+B)",
 	"pad.toolbar.underline.title": "ընդգծելով (Ctrl-U)",
 	"pad.toolbar.undo.title": "Չեղարկել (Ctrl-Z)",
 	"pad.toolbar.redo.title": "Վերադարձնել (Ctrl-Y)",

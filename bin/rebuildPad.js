@@ -110,8 +110,7 @@ async.series([
     // Save the source pad
     db.db.set("pad:"+newPadId, newPad, function(err) {
       console.log("Created: Source Pad: pad:" + newPadId);
-      newPad.saveToDatabase();
-      callback();
+      newPad.saveToDatabase().then(() => callback(), callback);
     });
   }
 ], function (err) {

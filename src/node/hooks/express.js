@@ -1,22 +1,30 @@
-var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
-var express = require('express');
-var settings = require('../utils/Settings');
-var fs = require('fs');
-var path = require('path');
-var npm = require("npm/lib/npm.js");
-var  _ = require("underscore");
+const _ = require('underscore');
+const cookieParser = require('cookie-parser');
+const express = require('express');
+const expressSession = require('express-session');
+const fs = require('fs');
+const hooks = require('../../static/js/pluginfw/hooks');
+const log4js = require('log4js');
+const npm = require('npm/lib/npm');
+const path = require('path');
+const sessionStore = require('../db/SessionStore');
+const settings = require('../utils/Settings');
+const stats = require('../stats');
+const util = require('util');
 
-var server;
-var serverName;
+const logger = log4js.getLogger('http');
+let serverName;
 
-exports.createServer = function () {
+exports.server = null;
+
+exports.createServer = async () => {
   console.log("Report bugs at https://github.com/ether/etherpad-lite/issues")
 
   serverName = `Etherpad ${settings.getGitCommit()} (https://etherpad.org)`;
 
   console.log(`Your Etherpad version is ${settings.getEpVersion()} (${settings.getGitCommit()})`);
 
-  exports.restartServer();
+  await exports.restartServer();
 
   if (settings.ip === "") {
     // using Unix socket for connectivity
@@ -31,44 +39,44 @@ exports.createServer = function () {
     console.warn("Admin username and password not set in settings.json.  To access admin please uncomment and edit 'users' in settings.json");
   }
 
-  var env = process.env.NODE_ENV || 'development';
+  const env = process.env.NODE_ENV || 'development';
 
   if (env !== 'production') {
     console.warn("Etherpad is running in Development mode.  This mode is slower for users and less secure than production mode.  You should set the NODE_ENV environment variable to production by using: export NODE_ENV=production");
   }
 }
 
-exports.restartServer = function () {
-  if (server) {
+exports.restartServer = async () => {
+  if (exports.server) {
     console.log("Restarting express server");
-    server.close();
+    await util.promisify(exports.server.close).bind(exports.server)();
   }
 
-  var app = express(); // New syntax for express v3
+  const app = express(); // New syntax for express v3
 
   if (settings.ssl) {
     console.log("SSL -- enabled");
     console.log(`SSL -- server key file: ${settings.ssl.key}`);
     console.log(`SSL -- Certificate Authority's certificate file: ${settings.ssl.cert}`);
 
-    var options = {
+    const options = {
       key: fs.readFileSync( settings.ssl.key ),
       cert: fs.readFileSync( settings.ssl.cert )
     };
 
     if (settings.ssl.ca) {
       options.ca = [];
-      for (var i = 0; i < settings.ssl.ca.length; i++) {
-        var caFileName = settings.ssl.ca[i];
+      for (let i = 0; i < settings.ssl.ca.length; i++) {
+        const caFileName = settings.ssl.ca[i];
         options.ca.push(fs.readFileSync(caFileName));
       }
     }
 
-    var https = require('https');
-    server = https.createServer(options, app);
+    const https = require('https');
+    exports.server = https.createServer(options, app);
   } else {
-    var http = require('http');
-    server = http.createServer(app);
+    const http = require('http');
+    exports.server = http.createServer(app);
   }
 
   app.use(function(req, res, next) {
@@ -109,8 +117,67 @@ exports.restartServer = function () {
     app.enable('trust proxy');
   }
 
-  hooks.callAll("expressConfigure", {"app": app});
-  hooks.callAll("expressCreateServer", {"app": app, "server": server});
+  // Measure response time
+  app.use((req, res, next) => {
+    const stopWatch = stats.timer('httpRequests').start();
+    const sendFn = res.send.bind(res);
+    res.send = (...args) => { stopWatch.end(); sendFn(...args); };
+    next();
+  });
 
-  server.listen(settings.port, settings.ip);
-}
+  // If the log level specified in the config file is WARN or ERROR the application server never
+  // starts listening to requests as reported in issue #158. Not installing the log4js connect
+  // logger when the log level has a higher severity than INFO since it would not log at that level
+  // anyway.
+  if (!(settings.loglevel === 'WARN' && settings.loglevel === 'ERROR')) {
+    app.use(log4js.connectLogger(logger, {
+      level: log4js.levels.DEBUG,
+      format: ':status, :method :url',
+    }));
+  }
+
+  exports.sessionMiddleware = expressSession({
+    secret: settings.sessionKey,
+    store: new sessionStore(),
+    resave: false,
+    saveUninitialized: true,
+    // Set the cookie name to a javascript identifier compatible string. Makes code handling it
+    // cleaner :)
+    name: 'express_sid',
+    proxy: true,
+    cookie: {
+      sameSite: settings.cookie.sameSite,
+
+      // The automatic express-session mechanism for determining if the application is being served
+      // over ssl is similar to the one used for setting the language cookie, which check if one of
+      // these conditions is true:
+      //
+      //   1. we are directly serving the nodejs application over SSL, using the "ssl" options in
+      //      settings.json
+      //
+      //   2. we are serving the nodejs application in plaintext, but we are using a reverse proxy
+      //      that terminates SSL for us. In this case, the user has to set trustProxy = true in
+      //      settings.json, and the information wheter the application is over SSL or not will be
+      //      extracted from the X-Forwarded-Proto HTTP header
+      //
+      // Please note that this will not be compatible with applications being served over http and
+      // https at the same time.
+      //
+      // reference: https://github.com/expressjs/session/blob/v1.17.0/README.md#cookiesecure
+      secure: 'auto',
+    }
+  });
+  app.use(exports.sessionMiddleware);
+
+  app.use(cookieParser(settings.sessionKey, {}));
+
+  hooks.callAll("expressConfigure", {"app": app});
+  hooks.callAll('expressCreateServer', {app, server: exports.server});
+
+  await util.promisify(exports.server.listen).bind(exports.server)(settings.port, settings.ip);
+};
+
+exports.shutdown = async (hookName, context) => {
+  if (!exports.server) return;
+  await util.promisify(exports.server.close).bind(exports.server)();
+};

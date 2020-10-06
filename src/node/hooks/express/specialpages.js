@@ -3,6 +3,7 @@ var eejs = require('ep_etherpad-lite/node/eejs');
 var toolbar = require("ep_etherpad-lite/node/utils/toolbar");
 var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 var settings = require('../../utils/Settings');
+const webaccess = require('./webaccess');
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   // expose current stats
@@ -42,7 +43,8 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   args.app.get('/p/:pad', function(req, res, next)
   {
     // The below might break for pads being rewritten
-    var isReadOnly = req.url.indexOf("/p/r.") === 0;
+    const isReadOnly =
+        req.url.indexOf("/p/r.") === 0 || !webaccess.userCanModify(req.params.pad, req);
 
     hooks.callAll("padInitToolbar", {
       toolbar: toolbar,

@@ -14,6 +14,11 @@
 			"محمد أحمد عبد الفتاح"
 		]
 	},
+	"admin_plugins.description": "الوصف",
+	"admin_plugins.name": "الاسم",
+	"admin_plugins.version": "الإصدار",
+	"admin_plugins_info.version_number": "رقم الإصدار",
+	"admin_settings": "إعدادات",
 	"index.newPad": "باد جديد",
 	"index.createOpenPad": "أو صنع/فتح باد بوضع اسمه:",
 	"index.openPad": "افتح باد موجودة بالاسم:",

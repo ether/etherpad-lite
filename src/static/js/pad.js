@@ -30,6 +30,7 @@ require('./jquery');
 require('./farbtastic');
 require('./excanvas');
 
+const Cookies = require('./pad_utils').Cookies;
 var chat = require('./chat').chat;
 var getCollabClient = require('./collab_client').getCollabClient;
 var padconnectionstatus = require('./pad_connectionstatus').padconnectionstatus;
@@ -42,8 +43,6 @@ var padsavedrevs = require('./pad_savedrevs');
 var paduserlist = require('./pad_userlist').paduserlist;
 var padutils = require('./pad_utils').padutils;
 var colorutils = require('./colorutils').colorutils;
-var createCookie = require('./pad_utils').createCookie;
-var readCookie = require('./pad_utils').readCookie;
 var randomString = require('./pad_utils').randomString;
 var gritter = require('./gritter').gritter;
 
@@ -83,7 +82,7 @@ var getParameters = [
   { name: "rtl",              checkVal: "true",  callback: function(val) { settings.rtlIsTrue = true } },
   { name: "alwaysShowChat",   checkVal: "true",  callback: function(val) { if(!settings.hideChat) chat.stickToScreen(); } },
   { name: "chatAndUsers",     checkVal: "true",  callback: function(val) { chat.chatAndUsers(); } },
-  { name: "lang",             checkVal: null,    callback: function(val) { window.html10n.localize([val, 'en']); createCookie('language', val); } }
+  { name: "lang",             checkVal: null,    callback: function(val) { window.html10n.localize([val, 'en']); Cookies.set('language', val); } },
 ];
 
 function getParams()
@@ -130,7 +129,7 @@ function getUrlVars()
 function savePassword()
 {
   //set the password cookie
-  createCookie("password",$("#passwordinput").val(),null,document.location.pathname);
+  Cookies.set('password', $('#passwordinput').val(), {path: document.location.pathname});
   //reload
   document.location=document.location;
   return false;
@@ -149,43 +148,27 @@ function sendClientReady(isReconnect, messageType)
     document.title = padId.replace(/_+/g, ' ') + " | " + title;
   }
 
-  var token = readCookie("token");
+  let token = Cookies.get('token');
   if (token == null)
   {
     token = "t." + randomString();
-    createCookie("token", token, 60);
+    Cookies.set('token', token, {expires: 60});
   }
 
-  var sessionID = decodeURIComponent(readCookie("sessionID"));
-  var password = readCookie("password");
-
-  var msg = {
-    "component": "pad",
-    "type": messageType,
-    "padId": padId,
-    "sessionID": sessionID,
-    "password": password,
-    "token": token,
-    "protocolVersion": 2
+  const msg = {
+    component: 'pad',
+    type: messageType,
+    padId: padId,
+    sessionID: Cookies.get('sessionID'),
+    password: Cookies.get('password'),
+    token: token,
+    protocolVersion: 2
   };
 
-  //this is a reconnect, lets tell the server our revisionnumber
-  if(isReconnect == true)
-  {
-    // Hammer approach for now.  This is obviously wrong and needs a proper fix
-    // TODO: See https://github.com/ether/etherpad-lite/issues/3830
-    document.location=document.location;
-
-    // Switching to pad should work but doesn't...
-    // return pad.switchToPad(padId); // hacky but whatever.
-    // It might be related to Auth because failure logs...
-    //   [ERROR] console - Auth was never applied to a session.
-    //   If you are using the stress-test tool then restart Etherpad
-    //   and the Stress test tool.
-
-    msg.client_rev=pad.collabClient.getCurrentRevisionNumber();
-    msg.reconnect=true;
-
+  // this is a reconnect, lets tell the server our revisionnumber
+  if (isReconnect) {
+    msg.client_rev = pad.collabClient.getCurrentRevisionNumber();
+    msg.reconnect = true;
   }
 
   socket.json.send(msg);
@@ -221,7 +204,6 @@ function handshake()
   });
 
   socket.on('reconnecting', function() {
-    padeditor.disable();
     pad.collabClient.setStateIdle();
     pad.collabClient.setIsPendingRevision(true);
     pad.collabClient.setChannelState("RECONNECTING");
@@ -469,7 +451,6 @@ var pad = {
   {
     pad.collabClient.sendClientMessage(msg);
   },
-  createCookie: createCookie,
 
   init: function()
   {
@@ -751,10 +732,15 @@ var pad = {
     if (newState == "CONNECTED")
     {
       padeditor.enable();
+      padeditbar.enable();
+      padimpexp.enable();
       padconnectionstatus.connected();
     }
     else if (newState == "RECONNECTING")
     {
+      padeditor.disable();
+      padeditbar.disable();
+      padimpexp.disable();
       padconnectionstatus.reconnecting();
     }
     else if (newState == "DISCONNECTED")
@@ -965,8 +951,6 @@ var settings = {
 pad.settings = settings;
 exports.baseURL = '';
 exports.settings = settings;
-exports.createCookie = createCookie;
-exports.readCookie = readCookie;
 exports.randomString = randomString;
 exports.getParams = getParams;
 exports.getUrlVars = getUrlVars;
