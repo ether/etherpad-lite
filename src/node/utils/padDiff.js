@@ -206,7 +206,7 @@ PadDiff.prototype.getHtml = async function() {
   let authorColors = await this._pad.getAllAuthorColors();
 
   // convert the atext to html
-  this._html = exportHtml.getHTMLFromAtext(this._pad, atext, authorColors);
+  this._html = await exportHtml.getHTMLFromAtext(this._pad, atext, authorColors);
 
   return this._html;
 }
