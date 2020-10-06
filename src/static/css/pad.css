@@ -71,7 +71,3 @@ input {
 @media (max-width: 800px) {
   .hide-for-mobile { display: none; }
 }
-
-#importmessagepermission {
-  display: none;
-}

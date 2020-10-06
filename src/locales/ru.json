@@ -6,6 +6,7 @@
 			"Diralik",
 			"Eleferen",
 			"Facenapalm",
+			"Kareyac",
 			"MSClaudiu",
 			"Movses",
 			"Nzeemin",
@@ -15,6 +16,13 @@
 			"Volkov"
 		]
 	},
+	"admin_plugins.available": "Доступные плагины",
+	"admin_plugins.available_install.value": "Установить",
+	"admin_plugins.description": "Описание",
+	"admin_plugins.installed_uninstall.value": "Удалить",
+	"admin_plugins.version": "Версия",
+	"admin_settings": "Настройки",
+	"admin_settings.current_save.value": "Сохранить настройки",
 	"index.newPad": "Создать",
 	"index.createOpenPad": "или создать/открыть документ с именем:",
 	"index.openPad": "откройте существующий документ с именем:",

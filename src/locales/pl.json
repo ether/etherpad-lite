@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"DeRudySoulStorm",
+			"Kareyac",
 			"Macofe",
 			"Mateon1",
 			"Matlin",
@@ -14,6 +15,9 @@
 			"Woytecr"
 		]
 	},
+	"admin_plugins.description": "Opis",
+	"admin_plugins.version": "Wersja",
+	"admin_settings": "Ustawienia",
 	"index.newPad": "Nowy dokument",
 	"index.createOpenPad": "lub stwórz/otwórz dokument o nazwie:",
 	"index.openPad": "otwórz istniejący dokument o nazwie:",

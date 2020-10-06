@@ -4,11 +4,13 @@
 			"Liuxinyu970226",
 			"Mklehr",
 			"Nemo bis",
+			"Robby",
 			"Shirayuki",
 			"Siebrand",
 			"Tim.krieger"
 		]
 	},
+	"admin_settings": "{{identical|Settings}}",
 	"index.newPad": "Used as button text.\nA pad, in the context of Etherpad, is a notepad, something to write on.",
 	"index.createOpenPad": "label for an input field that allows the user to choose a custom name for his new pad. In case the pad already exists the user will be redirected to its url.",
 	"pad.toolbar.bold.title": "Used as tooltip of button",

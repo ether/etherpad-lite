@@ -1,13 +1,9 @@
 const assert = require('assert').strict;
-const express = require('express');
 const log4js = require('log4js');
 const httpLogger = log4js.getLogger('http');
 const settings = require('../../utils/Settings');
 const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
-const ueberStore = require('../../db/SessionStore');
-const stats = require('ep_etherpad-lite/node/stats');
-const sessionModule = require('express-session');
-const cookieParser = require('cookie-parser');
+const readOnlyManager = require('../../db/ReadOnlyManager');
 
 hooks.deprecationNotices.authFailure = 'use the authnFailure and authzFailure hooks instead';
 
@@ -36,6 +32,7 @@ exports.normalizeAuthzLevel = (level) => {
 };
 
 exports.userCanModify = (padId, req) => {
+  if (readOnlyManager.isReadOnlyId(padId)) return false;
   if (!settings.requireAuthentication) return true;
   const {session: {user} = {}} = req;
   assert(user); // If authn required and user == null, the request should have already been denied.
@@ -67,7 +64,7 @@ exports.checkAccess = (req, res, next) => {
       if (!level) return fail();
       const user = req.session.user;
       if (user == null) return next(); // This will happen if authentication is not required.
-      const encodedPadId = (req.path.match(/^\/p\/(.*)$/) || [])[1];
+      const encodedPadId = (req.path.match(/^\/p\/([^/]*)/) || [])[1];
       if (encodedPadId == null) return next();
       const padId = decodeURIComponent(encodedPadId);
       // The user was granted access to a pad. Remember the authorization level in the user's
@@ -199,77 +196,6 @@ exports.checkAccess = (req, res, next) => {
   step1PreAuthorize();
 };
 
-exports.secret = null;
-
 exports.expressConfigure = (hook_name, args, cb) => {
-  // Measure response time
-  args.app.use((req, res, next) => {
-    const stopWatch = stats.timer('httpRequests').start();
-    const sendFn = res.send;
-    res.send = function() { // function, not arrow, due to use of 'arguments'
-      stopWatch.end();
-      sendFn.apply(res, arguments);
-    };
-    next();
-  });
-
-  // If the log level specified in the config file is WARN or ERROR the application server never starts listening to requests as reported in issue #158.
-  // Not installing the log4js connect logger when the log level has a higher severity than INFO since it would not log at that level anyway.
-  if (!(settings.loglevel === 'WARN' || settings.loglevel === 'ERROR'))
-    args.app.use(log4js.connectLogger(httpLogger, {level: log4js.levels.DEBUG, format: ':status, :method :url'}));
-
-  /* Do not let express create the session, so that we can retain a
-   * reference to it for socket.io to use. Also, set the key (cookie
-   * name) to a javascript identifier compatible string. Makes code
-   * handling it cleaner :) */
-
-  if (!exports.sessionStore) {
-    exports.sessionStore = new ueberStore();
-    exports.secret = settings.sessionKey;
-  }
-
-  const sameSite = settings.ssl ? 'Strict' : 'Lax';
-
-  args.app.sessionStore = exports.sessionStore;
-  args.app.use(sessionModule({
-    secret: exports.secret,
-    store: args.app.sessionStore,
-    resave: false,
-    saveUninitialized: true,
-    name: 'express_sid',
-    proxy: true,
-    cookie: {
-      /*
-       * Firefox started enforcing sameSite, see https://github.com/ether/etherpad-lite/issues/3989
-       * for details.  In response we set it based on if SSL certs are set in Etherpad.  Note that if
-       * You use Nginx or so for reverse proxy this may cause problems.  Use Certificate pinning to remedy.
-       */
-      sameSite: sameSite,
-      /*
-       * The automatic express-session mechanism for determining if the
-       * application is being served over ssl is similar to the one used for
-       * setting the language cookie, which check if one of these conditions is
-       * true:
-       *
-       * 1. we are directly serving the nodejs application over SSL, using the
-       *    "ssl" options in settings.json
-       *
-       * 2. we are serving the nodejs application in plaintext, but we are using
-       *    a reverse proxy that terminates SSL for us. In this case, the user
-       *    has to set trustProxy = true in settings.json, and the information
-       *    wheter the application is over SSL or not will be extracted from the
-       *    X-Forwarded-Proto HTTP header
-       *
-       * Please note that this will not be compatible with applications being
-       * served over http and https at the same time.
-       *
-       * reference: https://github.com/expressjs/session/blob/v1.17.0/README.md#cookiesecure
-       */
-      secure: 'auto',
-    }
-  }));
-
-  args.app.use(cookieParser(settings.sessionKey, {}));
-
   args.app.use(exports.checkAccess);
 };

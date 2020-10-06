@@ -24,8 +24,7 @@
 // assigns to the global `$` and augments it with plugins.
 require('./jquery');
 
-var createCookie = require('./pad_utils').createCookie;
-var readCookie = require('./pad_utils').readCookie;
+const Cookies = require('./pad_utils').Cookies;
 var randomString = require('./pad_utils').randomString;
 var hooks = require('./pluginfw/hooks');
 
@@ -42,11 +41,11 @@ function init() {
     document.title = padId.replace(/_+/g, ' ') + " | " + document.title;
 
     //ensure we have a token
-    token = readCookie("token");
+    token = Cookies.get('token');
     if(token == null)
     {
       token = "t." + randomString();
-      createCookie("token", token, 60);
+      Cookies.set('token', token, {expires: 60});
     }
 
     var loc = document.location;
@@ -104,19 +103,16 @@ function init() {
 //sends a message over the socket
 function sendSocketMsg(type, data)
 {
-  var sessionID = decodeURIComponent(readCookie("sessionID"));
-  var password = readCookie("password");
-
-  var msg = { "component" : "pad", // FIXME: Remove this stupidity!
-              "type": type,
-              "data": data,
-              "padId": padId,
-              "token": token,
-              "sessionID": sessionID,
-              "password": password,
-              "protocolVersion": 2};
-
-  socket.json.send(msg);
+  socket.json.send({
+    component: 'pad', // FIXME: Remove this stupidity!
+    type,
+    data,
+    padId,
+    token,
+    sessionID: Cookies.get('sessionID'),
+    password: Cookies.get('password'),
+    protocolVersion: 2,
+  });
 }
 
 var fireWhenAllScriptsAreLoaded = [];

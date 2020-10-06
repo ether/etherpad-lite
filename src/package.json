@@ -46,6 +46,7 @@
     "formidable": "1.2.1",
     "graceful-fs": "4.2.4",
     "http-errors": "1.7.3",
+    "js-cookie": "^2.2.1",
     "jsonminify": "0.4.1",
     "languages4translatewiki": "0.1.3",
     "lodash.clonedeep": "4.5.0",
@@ -81,7 +82,8 @@
     "set-cookie-parser": "^2.4.6",
     "superagent": "^3.8.3",
     "supertest": "4.0.2",
-    "wd": "1.12.1"
+    "wd": "1.12.1",
+    "etherpad-cli-client": "0.0.9"
   },
   "engines": {
     "node": ">=10.13.0",

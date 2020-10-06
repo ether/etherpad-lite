@@ -20,6 +20,7 @@
  * limitations under the License.
  */
 
+const Cookies = require('./pad_utils').Cookies;
 var padcookie = require('./pad_cookie').padcookie;
 var padutils = require('./pad_utils').padutils;
 
@@ -108,7 +109,7 @@ var padeditor = (function()
       })
       $("#languagemenu").val(html10n.getLanguage());
       $("#languagemenu").change(function() {
-        pad.createCookie("language",$("#languagemenu").val(),null,'/');
+        Cookies.set('language', $('#languagemenu').val());
         window.html10n.localize([$("#languagemenu").val(), 'en']);
       });
     },

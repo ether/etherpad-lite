@@ -181,10 +181,11 @@ exports.handleMessage = async function(client, message)
   var env = process.env.NODE_ENV || 'development';
 
   if (env === 'production') {
+    const clientIPAddress = remoteAddress[client.id];
     try {
-      await rateLimiter.consume(client.handshake.address); // consume 1 point per event from IP
+      await rateLimiter.consume(clientIPAddress); // consume 1 point per event from IP
     }catch(e){
-      console.warn("Rate limited: ", client.handshake.address, " to reduce the amount of rate limiting that happens edit the rateLimit values in settings.json");
+      console.warn("Rate limited: ", clientIPAddress, " to reduce the amount of rate limiting that happens edit the rateLimit values in settings.json");
       stats.meter('rateLimited').mark();
       client.json.send({disconnect:"rateLimited"});
       return;
@@ -941,16 +942,6 @@ async function handleClientReady(client, message, authorID)
     });
   }));
 
-  let thisUserHasEditedThisPad = false;
-  if (historicalAuthorData[authorID]) {
-    /*
-     * This flag is set to true when a user contributes to a specific pad for
-     * the first time. It is used for deciding if importing to that pad is
-     * allowed or not.
-     */
-    thisUserHasEditedThisPad = true;
-  }
-
   // glue the clientVars together, send them and tell the other clients that a new one is there
 
   // Check that the client is still here. It might have disconnected between callbacks.
@@ -1134,8 +1125,6 @@ async function handleClientReady(client, message, authorID)
         "percentageToScrollWhenUserPressesArrowUp": settings.scrollWhenFocusLineIsOutOfViewport.percentageToScrollWhenUserPressesArrowUp,
       },
       "initialChangesets": [], // FIXME: REMOVE THIS SHIT
-      "thisUserHasEditedThisPad": thisUserHasEditedThisPad,
-      "allowAnyoneToImport": settings.allowAnyoneToImport
     }
 
     // Add a username to the clientVars if one avaiable
