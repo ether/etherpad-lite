@@ -244,6 +244,27 @@ var helper = {};
     return exportresults
   }
 
+  helper.requestAjaxImportPad = function (data,importurl,type){
+    var success;
+    var error;
+    var result = $.ajax({
+      url: importurl,
+      type: "post",
+      processData: false,
+      async: false,
+      contentType: 'multipart/form-data; boundary=boundary',
+      accepts: {
+        text: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+      },
+      data: 'Content-Type: multipart/form-data; boundary=--boundary\r\n\r\n--boundary\r\nContent-Disposition: form-data; name="file"; filename="import.'+type+'"\r\nContent-Type: text/plain\r\n\r\n' + data + '\r\n\r\n--boundary',
+      error: function(res){
+        error = res
+      }
+    })
+    expect(error).to.be(undefined)
+    return result
+  }
+
   var getTextNodeAndOffsetOf = function($targetLine, targetOffsetAtLine){
     var $textNodes = $targetLine.find('*').contents().filter(function(){
       return this.nodeType === Node.TEXT_NODE;

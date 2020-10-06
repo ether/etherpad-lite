@@ -15,30 +15,11 @@ describe("import functionality", function(){
     })
     return newtext
   }
-  function importrequest(data,importurl,type){
-    var success;
-    var error;
-    var result = $.ajax({
-      url: importurl,
-      type: "post",
-      processData: false,
-      async: false,
-      contentType: 'multipart/form-data; boundary=boundary',
-      accepts: {
-        text: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
-      },
-      data: 'Content-Type: multipart/form-data; boundary=--boundary\r\n\r\n--boundary\r\nContent-Disposition: form-data; name="file"; filename="import.'+type+'"\r\nContent-Type: text/plain\r\n\r\n' + data + '\r\n\r\n--boundary',
-      error: function(res){
-        error = res
-      }
-    })
-    expect(error).to.be(undefined)
-    return result
-  }
+
   xit("import a pad with newlines from txt", function(done){
     var importurl = helper.padChrome$.window.location.href+'/import'
     var textWithNewLines = 'imported text\nnewline'
-    importrequest(textWithNewLines,importurl,"txt")
+    helper.requestAjaxImportPad(textWithNewLines,importurl,"txt")
     helper.waitFor(function(){
       return expect(getinnertext()).to.be('<span class="">imported text</span>\n<span class="">newline</span>\n<br>\n')
     })
@@ -50,7 +31,7 @@ describe("import functionality", function(){
   xit("import a pad with newlines from html", function(done){
     var importurl = helper.padChrome$.window.location.href+'/import'
     var htmlWithNewLines = '<html><body>htmltext<br/>newline</body></html>'
-    importrequest(htmlWithNewLines,importurl,"html")
+    helper.requestAjaxImportPad(htmlWithNewLines,importurl,"html")
     helper.waitFor(function(){
       return expect(getinnertext()).to.be('<span class="">htmltext</span>\n<span class="">newline</span>\n<br>\n')
     })
@@ -62,7 +43,7 @@ describe("import functionality", function(){
   xit("import a pad with attributes from html", function(done){
     var importurl = helper.padChrome$.window.location.href+'/import'
     var htmlWithNewLines = '<html><body>htmltext<br/><span class="b s i u"><b><i><s><u>newline</u></s></i></b></body></html>'
-    importrequest(htmlWithNewLines,importurl,"html")
+    helper.requestAjaxImportPad(htmlWithNewLines,importurl,"html")
     helper.waitFor(function(){
       return expect(getinnertext()).to.be('<span class="">htmltext</span>\n<span class="b i s u"><b><i><s><u>newline</u></s></i></b></span>\n<br>\n')
     })
@@ -74,7 +55,7 @@ describe("import functionality", function(){
   xit("import a pad with bullets from html", function(done){
     var importurl = helper.padChrome$.window.location.href+'/import'
     var htmlWithBullets = '<html><body><ul class="list-bullet1"><li>bullet line 1</li><li>bullet line 2</li><ul class="list-bullet2"><li>bullet2 line 1</li><li>bullet2 line 2</li></ul></ul></body></html>'
-    importrequest(htmlWithBullets,importurl,"html")
+    helper.requestAjaxImportPad(htmlWithBullets,importurl,"html")
     helper.waitFor(function(){
       return expect(getinnertext()).to.be('\
 <ul class="list-bullet1"><li><span class="">bullet line 1</span></li></ul>\n\
@@ -91,7 +72,7 @@ describe("import functionality", function(){
   xit("import a pad with bullets and newlines from html", function(done){
     var importurl = helper.padChrome$.window.location.href+'/import'
     var htmlWithBullets = '<html><body><ul class="list-bullet1"><li>bullet line 1</li></ul><br/><ul class="list-bullet1"><li>bullet line 2</li><ul class="list-bullet2"><li>bullet2 line 1</li></ul></ul><br/><ul class="list-bullet1"><ul class="list-bullet2"><li>bullet2 line 2</li></ul></ul></body></html>'
-    importrequest(htmlWithBullets,importurl,"html")
+    helper.requestAjaxImportPad(htmlWithBullets,importurl,"html")
     helper.waitFor(function(){
       return expect(getinnertext()).to.be('\
 <ul class="list-bullet1"><li><span class="">bullet line 1</span></li></ul>\n\
@@ -110,7 +91,7 @@ describe("import functionality", function(){
   xit("import a pad with bullets and newlines and attributes from html", function(done){
     var importurl = helper.padChrome$.window.location.href+'/import'
     var htmlWithBullets = '<html><body><ul class="list-bullet1"><li>bullet line 1</li></ul><br/><ul class="list-bullet1"><li>bullet line 2</li><ul class="list-bullet2"><li>bullet2 line 1</li></ul></ul><br/><ul class="list-bullet1"><ul class="list-bullet2"><ul class="list-bullet3"><ul class="list-bullet4"><li><span class="b s i u"><b><i><s><u>bullet4 line 2 bisu</u></s></i></b></span></li><li><span class="b s "><b><s>bullet4 line 2 bs</s></b></span></li><li><span class="u"><u>bullet4 line 2 u</u></span><span class="u i s"><i><s><u>uis</u></s></i></span></li></ul></ul></ul></ul></body></html>'
-    importrequest(htmlWithBullets,importurl,"html")
+    helper.requestAjaxImportPad(htmlWithBullets,importurl,"html")
     helper.waitFor(function(){
       return expect(getinnertext()).to.be('\
 <ul class="list-bullet1"><li><span class="">bullet line 1</span></li></ul>\n\<br>\n\
@@ -129,7 +110,7 @@ describe("import functionality", function(){
   xit("import a pad with nested bullets from html", function(done){
     var importurl = helper.padChrome$.window.location.href+'/import'
     var htmlWithBullets = '<html><body><ul class="list-bullet1"><li>bullet line 1</li></ul><ul class="list-bullet1"><li>bullet line 2</li><ul class="list-bullet2"><li>bullet2 line 1</li></ul></ul><ul class="list-bullet1"><ul class="list-bullet2"><ul class="list-bullet3"><ul class="list-bullet4"><li>bullet4 line 2</li><li>bullet4 line 2</li><li>bullet4 line 2</li></ul><li>bullet3 line 1</li></ul></ul><li>bullet2 line 1</li></ul></body></html>'
-    importrequest(htmlWithBullets,importurl,"html")
+    helper.requestAjaxImportPad(htmlWithBullets,importurl,"html")
     var oldtext=getinnertext()
     helper.waitFor(function(){
       return oldtext != getinnertext()
@@ -151,7 +132,7 @@ describe("import functionality", function(){
   xit("import a pad with 8 levels of bullets and newlines and attributes from html", function(done){
     var importurl = helper.padChrome$.window.location.href+'/import'
     var htmlWithBullets = '<html><body><ul class="list-bullet1"><li>bullet line 1</li></ul><br/><ul class="list-bullet1"><li>bullet line 2</li><ul class="list-bullet2"><li>bullet2 line 1</li></ul></ul><br/><ul class="list-bullet1"><ul class="list-bullet2"><ul class="list-bullet3"><ul class="list-bullet4"><li><span class="b s i u"><b><i><s><u>bullet4 line 2 bisu</u></s></i></b></span></li><li><span class="b s "><b><s>bullet4 line 2 bs</s></b></span></li><li><span class="u"><u>bullet4 line 2 u</u></span><span class="u i s"><i><s><u>uis</u></s></i></span></li><ul class="list-bullet5"><ul class="list-bullet6"><ul class="list-bullet7"><ul class="list-bullet8"><li><span class="">foo</span></li><li><span class="b s"><b><s>foobar bs</b></s></span></li></ul></ul></ul></ul><ul class="list-bullet5"><li>foobar</li></ul></ul></ul></ul></body></html>'
-    importrequest(htmlWithBullets,importurl,"html")
+    helper.requestAjaxImportPad(htmlWithBullets,importurl,"html")
     helper.waitFor(function(){
       return expect(getinnertext()).to.be('\
 <ul class="list-bullet1"><li><span class="">bullet line 1</span></li></ul>\n\<br>\n\
@@ -174,7 +155,7 @@ describe("import functionality", function(){
   xit("import a pad with ordered lists from html", function(done){
     var importurl = helper.padChrome$.window.location.href+'/import'
     var htmlWithBullets = '<html><body><ol class="list-number1" start="1"><li>number 1 line 1</li></ol><ol class="list-number1" start="2"><li>number 2 line 2</li></ol></body></html>'
-    importrequest(htmlWithBullets,importurl,"html")
+    helper.requestAjaxImportPad(htmlWithBullets,importurl,"html")
     -console.error(getinnertext())
     expect(getinnertext()).to.be('\
 <ol class="list-number1" start="1"><li><span class="">number 1 line 1</span></li></ol>\n\
@@ -188,7 +169,7 @@ describe("import functionality", function(){
   xit("import a pad with ordered lists and newlines from html", function(done){
     var importurl = helper.padChrome$.window.location.href+'/import'
     var htmlWithBullets = '<html><body><ol class="list-number1" start="1"><li>number 9 line 1</li></ol><br/><ol class="list-number1" start="2"><li>number 10 line 2</li><ol class="list-number2"><li>number 2 times line 1</li></ol></ol><br/><ol class="list-bullet1"><ol class="list-number2"><li>number 2 times line 2</li></ol></ol></body></html>'
-    importrequest(htmlWithBullets,importurl,"html")
+    helper.requestAjaxImportPad(htmlWithBullets,importurl,"html")
     expect(getinnertext()).to.be('\
 <ol class="list-number1" start="1"><li><span class="">number 9 line 1</span></li></ol>\n\
 <br>\n\
@@ -204,7 +185,7 @@ describe("import functionality", function(){
   xit("import a pad with nested ordered lists and attributes and newlines from html", function(done){
     var importurl = helper.padChrome$.window.location.href+'/import'
     var htmlWithBullets = '<html><body><ol class="list-number1" start="1"><li><span class="b s i u"><b><i><s><u>bold strikethrough italics underline</u></s><i/></b></span> line <span class="b"><b>1bold</b></span></li></ol><br/><span class="i"><i><ol class="list-number1" start="2"><li>number 10 line 2</li><ol class="list-number2"><li>number 2 times line 1</li></ol></ol></i></span><br/><ol class="list-bullet1"><ol class="list-number2"><li>number 2 times line 2</li></ol></ol></body></html>'
-    importrequest(htmlWithBullets,importurl,"html")
+    helper.requestAjaxImportPad(htmlWithBullets,importurl,"html")
     expect(getinnertext()).to.be('\
 <ol class="list-number1"><li><span class="b i s u"><b><i><s><u>bold strikethrough italics underline</u></s></i></b></span><span class=""> line </span><span class="b"><b>1bold</b></span></li></ol>\n\
 <br>\n\
