@@ -127,6 +127,8 @@ describe(__filename, function () {
 
 
     describe('Import/Export tests requiring AbiWord/LibreOffice', function () {
+      this.timeout(60000);
+
       before(async function () {
         if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
             (!settings.soffice || settings.soffice.indexOf('/') === -1)) {
@@ -141,7 +143,12 @@ describe(__filename, function () {
         await agent.post(`/p/${testPadId}/import`)
             .attach('file', wordDoc, {filename: '/test.doc', contentType: 'application/msword'})
             .expect(200)
-            .expect(/FrameCall\('undefined', 'ok'\);/);
+            .expect('Content-Type', /json/)
+            .expect((res) => assert.deepEqual(res.body, {
+              code: 0,
+              message: 'ok',
+              data: {directDatabaseAccess: false},
+            }));
       });
 
       it('exports DOC', async function () {
@@ -161,7 +168,12 @@ describe(__filename, function () {
                   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             })
             .expect(200)
-            .expect(/FrameCall\('undefined', 'ok'\);/);
+            .expect('Content-Type', /json/)
+            .expect((res) => assert.deepEqual(res.body, {
+              code: 0,
+              message: 'ok',
+              data: {directDatabaseAccess: false},
+            }));
       });
 
       it('exports DOC from imported DOCX', async function () {
@@ -177,7 +189,12 @@ describe(__filename, function () {
         await agent.post(`/p/${testPadId}/import`)
             .attach('file', pdfDoc, {filename: '/test.pdf', contentType: 'application/pdf'})
             .expect(200)
-            .expect(/FrameCall\('undefined', 'ok'\);/);
+            .expect('Content-Type', /json/)
+            .expect((res) => assert.deepEqual(res.body, {
+              code: 0,
+              message: 'ok',
+              data: {directDatabaseAccess: false},
+            }));
       });
 
       it('exports PDF', async function () {
@@ -193,7 +210,12 @@ describe(__filename, function () {
         await agent.post(`/p/${testPadId}/import`)
             .attach('file', odtDoc, {filename: '/test.odt', contentType: 'application/odt'})
             .expect(200)
-            .expect(/FrameCall\('undefined', 'ok'\);/);
+            .expect('Content-Type', /json/)
+            .expect((res) => assert.deepEqual(res.body, {
+              code: 0,
+              message: 'ok',
+              data: {directDatabaseAccess: false},
+            }));
       });
 
       it('exports ODT', async function () {
@@ -213,7 +235,12 @@ describe(__filename, function () {
             contentType: 'application/etherpad',
           })
           .expect(200)
-          .expect(/FrameCall\('true', 'ok'\);/);
+          .expect('Content-Type', /json/)
+          .expect((res) => assert.deepEqual(res.body, {
+            code: 0,
+            message: 'ok',
+            data: {directDatabaseAccess: true},
+          }));
     });
 
     it('exports Etherpad', async function () {
@@ -237,8 +264,12 @@ describe(__filename, function () {
       settings.allowUnknownFileEnds = false;
       await agent.post(`/p/${testPadId}/import`)
           .attach('file', padText, {filename: '/test.xasdasdxx', contentType: 'weirdness/jobby'})
-          .expect(200)
-          .expect((res) => assert.doesNotMatch(res.text, /FrameCall\('undefined', 'ok'\);/));
+          .expect(400)
+          .expect('Content-Type', /json/)
+          .expect((res) => {
+            assert.equal(res.body.code, 1);
+            assert.equal(res.body.message, 'uploadFailed');
+          });
     });
 
     describe('Import authorization checks', function () {

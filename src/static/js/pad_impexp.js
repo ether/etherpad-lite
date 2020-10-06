@@ -23,9 +23,9 @@
  */
 
 const padimpexp = (() => {
-  // /// import
-  let currentImportTimer = null;
+  let pad;
 
+  // /// import
   const addImportFrames = () => {
     $('#import .importframe').remove();
     const iframe = $('<iframe>')
@@ -42,35 +42,38 @@ const padimpexp = (() => {
     $('#importmessagefail').fadeOut('fast');
   };
 
-  const fileInputSubmit = () => {
+  const fileInputSubmit = (e) => {
+    e.preventDefault();
     $('#importmessagefail').fadeOut('fast');
-    if (!window.confirm(html10n.get('pad.impexp.confirmimport'))) return false;
-    currentImportTimer = window.setTimeout(() => {
-      if (!currentImportTimer) return;
-      currentImportTimer = null;
-      importErrorMessage('Request timed out.');
-      importDone();
-    }, 25000); // time out after some number of seconds
+    if (!window.confirm(html10n.get('pad.impexp.confirmimport'))) return;
     $('#importsubmitinput').attr({disabled: true}).val(html10n.get('pad.impexp.importing'));
     window.setTimeout(() => $('#importfileinput').attr({disabled: true}), 0);
     $('#importarrow').stop(true, true).hide();
     $('#importstatusball').show();
-    return true;
-  };
-
-  const importDone = () => {
-    $('#importsubmitinput').removeAttr('disabled').val(html10n.get('pad.impexp.importbutton'));
-    window.setTimeout(() => $('#importfileinput').removeAttr('disabled'), 0);
-    $('#importstatusball').hide();
-    importClearTimeout();
-    addImportFrames();
-  };
-
-  const importClearTimeout = () => {
-    if (currentImportTimer) {
-      window.clearTimeout(currentImportTimer);
-      currentImportTimer = null;
-    }
+    (async () => {
+      const {code, message, data: {directDatabaseAccess} = {}} = await $.ajax({
+        url: `${window.location.href.split('?')[0].split('#')[0]}/import`,
+        method: 'POST',
+        data: new FormData(this),
+        processData: false,
+        contentType: false,
+        dataType: 'json',
+        timeout: 25000,
+      }).catch((err) => {
+        if (err.responseJSON) return err.responseJSON;
+        return {code: 2, message: 'Unknown import error'};
+      });
+      if (code !== 0) {
+        importErrorMessage(message);
+      } else {
+        $('#import_export').removeClass('popup-show');
+        if (directDatabaseAccess) pad.switchToPad(clientVars.padId);
+      }
+      $('#importsubmitinput').removeAttr('disabled').val(html10n.get('pad.impexp.importbutton'));
+      window.setTimeout(() => $('#importfileinput').removeAttr('disabled'), 0);
+      $('#importstatusball').hide();
+      addImportFrames();
+    })();
   };
 
   const importErrorMessage = (status) => {
@@ -118,7 +121,6 @@ const padimpexp = (() => {
   }
 
   // ///
-  let pad = undefined;
   const self = {
     init: (_pad) => {
       pad = _pad;
@@ -126,9 +128,6 @@ const padimpexp = (() => {
       // get /p/padname
       // if /p/ isn't available due to a rewrite we use the clientVars padId
       const padRootPath = /.*\/p\/[^/]+/.exec(document.location.pathname) || clientVars.padId;
-      // get http://example.com/p/padname without Params
-      const dl = document.location;
-      const padRootUrl = `${dl.protocol}//${dl.host}${dl.pathname}`;
 
       // i10l buttom import
       $('#importsubmitinput').val(html10n.get('pad.impexp.importbutton'));
@@ -140,9 +139,6 @@ const padimpexp = (() => {
       $('#exporthtmla').attr('href', `${padRootPath}/export/html`);
       $('#exportetherpada').attr('href', `${padRootPath}/export/etherpad`);
       $('#exportplaina').attr('href', `${padRootPath}/export/txt`);
-
-      // activate action to import in the form
-      $('#importform').attr('action', `${padRootUrl}/import`);
 
       // hide stuff thats not avaible if abiword/soffice is disabled
       if (clientVars.exportAvailable === 'no') {
@@ -169,21 +165,6 @@ const padimpexp = (() => {
       $('#importfileinput').change(fileInputUpdated);
       $('#importform').unbind('submit').submit(fileInputSubmit);
       $('.disabledexport').click(cantExport);
-    },
-    handleFrameCall: (directDatabaseAccess, status) => {
-      if (status !== 'ok') {
-        importErrorMessage(status);
-      } else {
-        $('#import_export').removeClass('popup-show');
-      }
-
-      if (directDatabaseAccess) {
-        // Switch to the pad without redrawing the page
-        pad.switchToPad(clientVars.padId);
-        $('#import_export').removeClass('popup-show');
-      }
-
-      importDone();
     },
     disable: () => {
       $('#impexp-disabled-clickcatcher').show();
