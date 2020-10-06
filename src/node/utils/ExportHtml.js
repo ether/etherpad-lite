@@ -487,7 +487,7 @@ function getHTMLFromAtext(pad, atext, authorColors)
 exports.getPadHTMLDocument = async function (padId, revNum)
 {
   let pad = await padManager.getPad(padId);
-  const padName = padId.split(":").pop()
+  const padName = padId.split(":").pop();
 
   // Include some Styles into the Head for Export
   let stylesForExportCSS = "";

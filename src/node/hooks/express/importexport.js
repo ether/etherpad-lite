@@ -23,7 +23,6 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   args.app.use('/p/:pad*/:rev(\\d+)?/export/:type', limiter);
   args.app.get('/p/:pad*/:rev(\\d+)?/export/:type', async function(req, res, next) {
     const {padId} = padInfo(req);
-
     req.params.pad = padId;
 
     var types = ["pdf", "doc", "txt", "html", "odt", "etherpad"];
@@ -52,16 +51,15 @@ exports.expressCreateServer = function (hook_name, args, cb) {
         readOnlyId = padId;
         padId = await readOnlyManager.getPadId(readOnlyId);
       }
-      
+
       let exists = await padManager.doesPadExists(padId);
       if (!exists) {
         console.warn(`Someone tried to export a pad that doesn't exist (${padId})`);
         return next();
       }
-      
+
       console.log(`Exporting pad "${req.params.pad}" in ${req.params.type} format`);
       exportHandler.doExport(req, res, padId, readOnlyId, req.params.type);
-
     }
   });
 
@@ -69,7 +67,6 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   args.app.use('/p/:pad*/import', limiter);
   args.app.post('/p/:pad*/import', async function(req, res, next) {
     const {padId} = padInfo(req);
-
     req.params.pad = padId;
 
     if (!(await padManager.doesPadExists(padId))) {

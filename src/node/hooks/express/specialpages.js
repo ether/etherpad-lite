@@ -7,7 +7,6 @@ var padInfo = require('../../utils/nestedPad');
 var minify = require('../../utils/Minify');
 const webaccess = require('./webaccess');
 
-
 exports.expressCreateServer = function (hook_name, args, cb) {
   // expose current stats
   args.app.get('/stats', function(req, res) {
@@ -25,7 +24,6 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   {
     res.send(eejs.require("ep_etherpad-lite/templates/javascript.html"));
   });
-
 
   //serve robots.txt
   args.app.get('/robots.txt', function(req, res)
@@ -57,16 +55,13 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   {
     // The below might break for pads being rewritten
     const isReadOnly = req.url.indexOf("/p/r.") === 0 || !webaccess.userCanModify(req.params.pad, req);
-
     const {padId, padName} = padInfo(req, isReadOnly);
-
     req.params.pad = padId;
 
     const staticRootAddress = req.path.split("/")
       .filter(x=> x.length)
       .map(path => "../")
       .join("");
-
 
     hooks.callAll("padInitToolbar", {
       toolbar: toolbar
@@ -85,9 +80,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   args.app.get("/p/:pad*", function(req, res, next)
   {
     const isReadOnly = req.url.includes("/r.");
-
     const {padId, padName} = padInfo(req, isReadOnly);
-
     req.params.pad = padId;
 
     const staticRootAddress = req.path.split("/")
@@ -125,6 +118,4 @@ exports.expressCreateServer = function (hook_name, args, cb) {
       }
     });
   });
-
-
 }
