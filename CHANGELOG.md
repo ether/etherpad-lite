@@ -1,5 +1,10 @@
 # Develop -- TODO Change to 1.8.x.
 ### Compatibility-breaking changes
+* **IMPORTANT:** It is no longer possible to protect a group pad with a
+  password. All API calls to `setPassword` or `isPasswordProtected` will fail.
+  Existing group pads that were previously password protected will no longer be
+  password protected. If you need fine-grained access control, you can restrict
+  API session creation in your frontend service, or you can use plugins.
 * Authorization failures now return 403 by default instead of 401
 * The `authorize` hook is now only called after successful
   authentication. Use the new `preAuthorize` hook if you need to bypass
