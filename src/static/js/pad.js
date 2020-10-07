@@ -126,15 +126,6 @@ function getUrlVars()
   return vars;
 }
 
-function savePassword()
-{
-  //set the password cookie
-  Cookies.set('password', $('#passwordinput').val(), {path: document.location.pathname});
-  //reload
-  document.location=document.location;
-  return false;
-}
-
 function sendClientReady(isReconnect, messageType)
 {
   messageType = typeof messageType !== 'undefined' ? messageType : 'CLIENT_READY';
@@ -160,7 +151,6 @@ function sendClientReady(isReconnect, messageType)
     type: messageType,
     padId: padId,
     sessionID: Cookies.get('sessionID'),
-    password: Cookies.get('password'),
     token: token,
     protocolVersion: 2
   };
@@ -225,10 +215,6 @@ function handshake()
     //the access was not granted, give the user a message
     if(obj.accessStatus)
     {
-      if(!receivedClientVars){
-        $('.passForm').submit(require(module.id).savePassword);
-      }
-
       if(obj.accessStatus == "deny")
       {
         $('#loading').hide();
@@ -240,19 +226,6 @@ function handshake()
           $("#editorcontainer").hide();
           $("#editorloadingbox").show();
         }
-      }
-      else if(obj.accessStatus == "needPassword")
-      {
-        $('#loading').hide();
-        $('#passwordRequired').show();
-        $("#passwordinput").focus();
-      }
-      else if(obj.accessStatus == "wrongPassword")
-      {
-        $('#loading').hide();
-        $('#wrongPassword').show();
-        $('#passwordRequired').show();
-        $("#passwordinput").focus();
       }
     }
 
@@ -954,7 +927,6 @@ exports.settings = settings;
 exports.randomString = randomString;
 exports.getParams = getParams;
 exports.getUrlVars = getUrlVars;
-exports.savePassword = savePassword;
 exports.handshake = handshake;
 exports.pad = pad;
 exports.init = init;

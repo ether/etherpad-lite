@@ -83,7 +83,6 @@ const handshake = async (socket, padID) => {
     type: 'CLIENT_READY',
     padId: padID,
     sessionID: null,
-    password: null,
     token: 't.12345',
     protocolVersion: 2,
   });

@@ -219,7 +219,7 @@ exports.handleMessage = async function(client, message)
 
   const {session: {user} = {}} = client.client.request;
   const {accessStatus, authorID} =
-      await securityManager.checkAccess(padId, auth.sessionID, auth.token, auth.password, user);
+      await securityManager.checkAccess(padId, auth.sessionID, auth.token, user);
   if (accessStatus !== 'grant') {
     // Access denied. Send the reason to the user.
     client.json.send({accessStatus});
@@ -826,7 +826,7 @@ async function handleSwitchToPad(client, message, _authorID)
   const newPadIds = await readOnlyManager.getIds(message.padId);
   const {session: {user} = {}} = client.client.request;
   const {accessStatus, authorID} = await securityManager.checkAccess(
-      newPadIds.padId, message.sessionID, message.token, message.password, user);
+      newPadIds.padId, message.sessionID, message.token, user);
   if (accessStatus !== 'grant') {
     // Access denied. Send the reason to the user.
     client.json.send({accessStatus});
@@ -868,7 +868,6 @@ function createSessionInfoAuth(sessionInfo, message)
     sessionID: message.sessionID,
     padID: message.padId,
     token: message.token,
-    password: message.password,
   };
 }
 

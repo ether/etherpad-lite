@@ -70,8 +70,6 @@ version["1"] = Object.assign({},
   , "getReadOnlyID"             : ["padID"]
   , "setPublicStatus"           : ["padID", "publicStatus"]
   , "getPublicStatus"           : ["padID"]
-  , "setPassword"               : ["padID", "password"]
-  , "isPasswordProtected"       : ["padID"]
   , "listAuthorsOfPad"          : ["padID"]
   , "padUsersCount"             : ["padID"]
   }

@@ -201,15 +201,6 @@ const resources = {
       summary: 'return true of false',
       responseSchema: { publicStatus: { type: 'boolean' } },
     },
-    setPassword: {
-      operationId: 'setPassword',
-      summary: 'returns ok or a error message',
-    },
-    isPasswordProtected: {
-      operationId: 'isPasswordProtected',
-      summary: 'returns true or false',
-      responseSchema: { passwordProtection: { type: 'boolean' } },
-    },
     authors: {
       operationId: 'listAuthorsOfPad',
       summary: 'returns an array of authors who contributed to this pad',

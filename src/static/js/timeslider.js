@@ -113,7 +113,6 @@ function sendSocketMsg(type, data)
     padId,
     token,
     sessionID: Cookies.get('sessionID'),
-    password: Cookies.get('password'),
     protocolVersion: 2,
   });
 }

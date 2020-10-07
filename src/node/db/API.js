@@ -684,7 +684,6 @@ exports.setPublicStatus = async function(padID, publicStatus)
     publicStatus = (publicStatus.toLowerCase() === "true");
   }
 
-  // set the password
   await pad.setPublicStatus(publicStatus);
 }
 
@@ -704,44 +703,6 @@ exports.getPublicStatus = async function(padID)
   // get the pad
   let pad = await getPadSafe(padID, true);
   return { publicStatus: pad.getPublicStatus() };
-}
-
-/**
-setPassword(padID, password) returns ok or a error message
-
-Example returns:
-
-{code: 0, message:"ok", data: null}
-{code: 1, message:"padID does not exist", data: null}
-*/
-exports.setPassword = async function(padID, password)
-{
-  // ensure this is a group pad
-  checkGroupPad(padID, "password");
-
-  // get the pad
-  let pad = await getPadSafe(padID, true);
-
-  // set the password
-  await pad.setPassword(password === '' ? null : password);
-}
-
-/**
-isPasswordProtected(padID) returns true or false
-
-Example returns:
-
-{code: 0, message:"ok", data: {passwordProtection: true}}
-{code: 1, message:"padID does not exist", data: null}
-*/
-exports.isPasswordProtected = async function(padID)
-{
-  // ensure this is a group pad
-  checkGroupPad(padID, "password");
-
-  // get the pad
-  let pad = await getPadSafe(padID, true);
-  return { isPasswordProtected: pad.isPasswordProtected() };
 }
 
 /**
