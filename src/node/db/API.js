@@ -684,7 +684,6 @@ exports.setPublicStatus = async function(padID, publicStatus)
     publicStatus = (publicStatus.toLowerCase() === "true");
   }
 
-  // set the password
   await pad.setPublicStatus(publicStatus);
 }
 

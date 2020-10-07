@@ -261,12 +261,6 @@
   "editOnly": "${EDIT_ONLY:false}",
 
   /*
-   * If set to true, those users who have a valid session will automatically be
-   * granted access to password protected pads.
-   */
-  "sessionNoPassword": "${SESSION_NO_PASSWORD:false}",
-
-  /*
    * If true, all css & js will be minified before sending to the client.
    *
    * This will improve the loading performance massively, but makes it difficult

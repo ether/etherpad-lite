@@ -68,7 +68,7 @@ exports.setSocketIO = function(_socket) {
     // wrap the original send function to log the messages
     client._send = client.send;
     client.send = function(message) {
-      messageLogger.debug("to " + client.id + ": " + stringifyWithoutPassword(message));
+      messageLogger.debug(`to ${client.id}: ${JSON.stringify(message)}`);
       client._send(message);
     }
 
@@ -79,14 +79,14 @@ exports.setSocketIO = function(_socket) {
 
     client.on('message', async function(message) {
       if (message.protocolVersion && message.protocolVersion != 2) {
-        messageLogger.warn("Protocolversion header is not correct:" + stringifyWithoutPassword(message));
+        messageLogger.warn(`Protocolversion header is not correct: ${JSON.stringify(message)}`);
         return;
       }
       if (!message.component || !components[message.component]) {
-        messageLogger.error("Can't route the message:" + stringifyWithoutPassword(message));
+        messageLogger.error(`Can't route the message: ${JSON.stringify(message)}`);
         return;
       }
-      messageLogger.debug("from " + client.id + ": " + stringifyWithoutPassword(message));
+      messageLogger.debug(`from ${client.id}: ${JSON.stringify(message)}`);
       await components[message.component].handleMessage(client, message);
     });
 
@@ -97,17 +97,4 @@ exports.setSocketIO = function(_socket) {
       }
     });
   });
-}
-
-// returns a stringified representation of a message, removes the password
-// this ensures there are no passwords in the log
-function stringifyWithoutPassword(message)
-{
-  let newMessage = Object.assign({}, message);
-
-  if (newMessage.password != null) {
-    newMessage.password = "xxx";
-  }
-
-  return JSON.stringify(newMessage);
 }

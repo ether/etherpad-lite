@@ -65,7 +65,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   args.app.post('/p/:pad/import', async function(req, res, next) {
     const {session: {user} = {}} = req;
     const {accessStatus} = await securityManager.checkAccess(
-        req.params.pad, req.cookies.sessionID, req.cookies.token, req.cookies.password, user);
+        req.params.pad, req.cookies.sessionID, req.cookies.token, user);
     if (accessStatus !== 'grant' || !webaccess.userCanModify(req.params.pad, req)) {
       return res.status(403).send('Forbidden');
     }

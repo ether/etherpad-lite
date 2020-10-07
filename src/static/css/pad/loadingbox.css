@@ -10,10 +10,6 @@
   z-index: 100;
 }
 
-#editorloadingbox .passForm{
-  padding:10px;
-}
-
 #editorloadingbox input{
   padding:10px;
 }
@@ -22,6 +18,6 @@
   padding:10px;
 }
 
-#passwordRequired, #permissionDenied, #wrongPassword, #noCookie {
+#permissionDenied, #noCookie {
   display:none;
 }
