@@ -196,3 +196,7 @@ exports.handle = async function(apiVersion, functionName, fields, req, res)
   // call the api function
   return api[functionName].apply(this, functionParams);
 }
+
+exports.exportedForTestingOnly = {
+  apiKey: apikey,
+};

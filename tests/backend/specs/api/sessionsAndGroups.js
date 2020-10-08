@@ -1,13 +1,10 @@
 const assert = require('assert').strict;
+const common = require('../../common');
 const supertest = require(__dirname + '/../../../../src/node_modules/supertest');
-const fs = require('fs');
 const settings = require(__dirname + '/../../../../src/node/utils/Settings');
 const api = supertest(`http://${settings.ip}:${settings.port}`);
-const path = require('path');
 
-const filePath = path.join(__dirname, '../../../../APIKEY.txt');
-
-const apiKey = fs.readFileSync(filePath, {encoding: 'utf-8'}).replace(/\n$/, '');
+const apiKey = common.apiKey;
 let apiVersion = 1;
 let groupID = '';
 let authorID = '';
