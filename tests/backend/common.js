@@ -1,5 +1,6 @@
 function m(mod) { return __dirname + '/../../src/' + mod; }
 
+const apiHandler = require(m('node/handler/APIHandler'));
 const log4js = require(m('node_modules/log4js'));
 const server = require(m('node/server'));
 const settings = require(m('node/utils/Settings'));
@@ -9,6 +10,7 @@ const webaccess = require(m('node/hooks/express/webaccess'));
 const backups = {};
 let inited = false;
 
+exports.apiKey = apiHandler.exportedForTestingOnly.apiKey;
 exports.agent = null;
 exports.baseUrl = null;
 exports.httpServer = null;

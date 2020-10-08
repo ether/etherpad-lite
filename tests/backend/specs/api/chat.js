@@ -1,14 +1,11 @@
-var assert = require('assert')
- supertest = require(__dirname+'/../../../../src/node_modules/supertest'),
-        fs = require('fs'),
-  settings = require(__dirname + '/../../../../src/node/utils/Settings'),
-       api = supertest('http://'+settings.ip+":"+settings.port),
-      path = require('path');
+function m(mod) { return __dirname + '/../../../../src/' + mod; }
 
-var filePath = path.join(__dirname, '../../../../APIKEY.txt');
+const common = require('../../common');
+const settings = require(m('node/utils/Settings'));
+const supertest = require(m('node_modules/supertest'));
 
-var apiKey = fs.readFileSync(filePath,  {encoding: 'utf-8'});
-apiKey = apiKey.replace(/\n$/, "");
+const api = supertest(`http://${settings.ip}:${settings.port}`);
+const apiKey = common.apiKey;
 var apiVersion = 1;
 var authorID = "";
 var padID = makeid();

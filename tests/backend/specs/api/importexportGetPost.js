@@ -8,7 +8,6 @@ const superagent = require(__dirname+'/../../../../src/node_modules/superagent')
 const fs = require('fs');
 const settings = require(__dirname+'/../../../../src/node/utils/Settings');
 const padManager = require(__dirname+'/../../../../src/node/db/PadManager');
-const path = require('path');
 const plugins = require(__dirname+'/../../../../src/static/js/pluginfw/plugin_defs');
 
 const padText = fs.readFileSync("../tests/backend/specs/api/test.txt");
@@ -17,11 +16,9 @@ const wordDoc = fs.readFileSync("../tests/backend/specs/api/test.doc");
 const wordXDoc = fs.readFileSync("../tests/backend/specs/api/test.docx");
 const odtDoc = fs.readFileSync("../tests/backend/specs/api/test.odt");
 const pdfDoc = fs.readFileSync("../tests/backend/specs/api/test.pdf");
-var filePath = path.join(__dirname, '../../../../APIKEY.txt');
 
 let agent;
-var apiKey = fs.readFileSync(filePath,  {encoding: 'utf-8'});
-apiKey = apiKey.replace(/\n$/, "");
+const apiKey = common.apiKey;
 var apiVersion = 1;
 const testPadId = makeid();
 const testPadIdEnc = encodeURIComponent(testPadId);

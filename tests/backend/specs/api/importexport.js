@@ -5,18 +5,12 @@
  * TODO: unify those two files, and merge in a single one.
  */
 
-const assert = require('assert');
+const common = require('../../common');
 const supertest = require(__dirname+'/../../../../src/node_modules/supertest');
-const fs = require('fs');
 const settings = require(__dirname+'/../../../../tests/container/loadSettings.js').loadSettings();
 const api = supertest('http://'+settings.ip+":"+settings.port);
-const path = require('path');
-const async = require(__dirname+'/../../../../src/node_modules/async');
 
-var filePath = path.join(__dirname, '../../../../APIKEY.txt');
-
-var apiKey = fs.readFileSync(filePath,  {encoding: 'utf-8'});
-apiKey = apiKey.replace(/\n$/, "");
+const apiKey = common.apiKey;
 var apiVersion = 1;
 var lastEdited = "";
 

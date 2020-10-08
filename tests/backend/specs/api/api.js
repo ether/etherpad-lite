@@ -6,19 +6,14 @@
  * and openapi definitions.
  */
 
-const assert = require('assert');
+const common = require('../../common');
 const supertest = require(__dirname + '/../../../../src/node_modules/supertest');
-const fs = require('fs');
 const settings = require(__dirname + '/../../../../src/node/utils/Settings');
 const api = supertest('http://' + settings.ip + ':' + settings.port);
-const path = require('path');
 
 var validateOpenAPI = require(__dirname + '/../../../../src/node_modules/openapi-schema-validation').validate;
 
-var filePath = path.join(__dirname, '../../../../APIKEY.txt');
-
-var apiKey = fs.readFileSync(filePath, { encoding: 'utf-8' });
-apiKey = apiKey.replace(/\n$/, '');
+const apiKey = common.apiKey;
 var apiVersion = 1;
 
 var testPadId = makeid();
