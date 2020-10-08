@@ -1,7 +1,10 @@
+/* global __dirname, exports, require */
+
 function m(mod) { return __dirname + '/../../src/' + mod; }
 
 const apiHandler = require(m('node/handler/APIHandler'));
 const log4js = require(m('node_modules/log4js'));
+const process = require('process');
 const server = require(m('node/server'));
 const settings = require(m('node/utils/Settings'));
 const supertest = require(m('node_modules/supertest'));
@@ -17,6 +20,10 @@ exports.httpServer = null;
 exports.logger = log4js.getLogger('test');
 
 const logLevel = exports.logger.level;
+
+// Mocha doesn't monitor unhandled Promise rejections, so convert them to uncaught exceptions.
+// https://github.com/mochajs/mocha/issues/2640
+process.on('unhandledRejection', (reason, promise) => { throw reason; });
 
 exports.init = async function() {
   if (inited) return exports.agent;
