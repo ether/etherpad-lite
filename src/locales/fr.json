@@ -86,9 +86,7 @@
 	"pad.colorpicker.cancel": "Annuler",
 	"pad.loading": "Chargement...",
 	"pad.noCookie": "Un cookie n’a pas pu être trouvé. Veuillez autoriser les fichiers témoins (ou cookies) dans votre navigateur ! Votre session et vos paramètres ne seront pas enregistrés entre les visites. Cela peut être dû au fait qu’Etehrpad est inclus dans un iFrame dans certains navigateurs. Veuillez vous assurer que Etherpad est dans le même sous-domaine/domaine que son iFrame parent",
-	"pad.passwordRequired": "Vous avez besoin d'un mot de passe pour accéder à ce bloc-note",
 	"pad.permissionDenied": "Vous n’êtes pas autorisé à accéder à ce bloc-notes",
-	"pad.wrongPassword": "Votre mot de passe est incorrect",
 	"pad.settings.padSettings": "Paramètres du bloc-notes",
 	"pad.settings.myView": "Ma vue",
 	"pad.settings.stickychat": "Toujours afficher le clavardage",
@@ -194,6 +192,5 @@
 	"pad.impexp.importfailed": "Échec de l’importation",
 	"pad.impexp.copypaste": "Veuillez copier-coller",
 	"pad.impexp.exportdisabled": "L’exportation au format {{type}} est désactivée. Veuillez contacter votre administrateur système pour plus de détails.",
-	"pad.impexp.maxFileSize": "Fichier trop gros. Contactez votre administrateur de site pour augmenter la taille maximale des fichiers importés",
-	"pad.impexp.permission": "L’importation est désactivée parce que vous n’avez jamais contribué à ce bloc. Veuillez contribuer au moins une fois avant d’importer"
+	"pad.impexp.maxFileSize": "Fichier trop gros. Contactez votre administrateur de site pour augmenter la taille maximale des fichiers importés"
 }

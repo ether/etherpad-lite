@@ -71,9 +71,7 @@
 	"pad.colorpicker.cancel": "İptal",
 	"pad.loading": "Yükleniyor...",
 	"pad.noCookie": "Çerez bulunamadı. Lütfen tarayıcınızda çerezlere izin veriniz! Lütfen tarayıcınızda çerezlere izin verin! Oturumunuz ve ayarlarınız ziyaretler arasında kaydedilmez. Bunun nedeni, Etherpad'in bazı Tarayıcılarda bir iFrame'e dahil edilmiş olması olabilir. Lütfen Etherpad'in üst iFrame ile aynı alt alanda/alanda olduğundan emin olun",
-	"pad.passwordRequired": "Bu bloknota erişebilmeniz için parolaya ihtiyacınız var",
 	"pad.permissionDenied": "Bu bloknota erişmeye izniniz yok",
-	"pad.wrongPassword": "Parolanız yanlış",
 	"pad.settings.padSettings": "Bloknot Ayarları",
 	"pad.settings.myView": "Görünümüm",
 	"pad.settings.stickychat": "Sohbeti her zaman ekranda yap",
@@ -179,6 +177,5 @@
 	"pad.impexp.importfailed": "İçe aktarım başarısız oldu",
 	"pad.impexp.copypaste": "Lütfen kopyala yapıştır yapın",
 	"pad.impexp.exportdisabled": "{{type}} biçimiyle dışa aktarma devre dışı bırakıldı. Ayrıntılar için sistem yöneticinizle iletişime geçiniz.",
-	"pad.impexp.maxFileSize": "Dosya çok büyük. İçe aktarma için izin verilen dosya boyutunu artırmak için site yöneticinize başvurun",
-	"pad.impexp.permission": "Bu ped'e hiç katkıda bulunmadığınız için içe aktarma devre dışı. Lütfen içe aktarmadan önce en az bir kez katkıda bulunun"
+	"pad.impexp.maxFileSize": "Dosya çok büyük. İçe aktarma için izin verilen dosya boyutunu artırmak için site yöneticinize başvurun"
 }

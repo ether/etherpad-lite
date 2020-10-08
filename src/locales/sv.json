@@ -8,6 +8,7 @@
 			"WikiPhoenix"
 		]
 	},
+	"admin.page-title": "Administratörernas instrumentpanel - Etherpad",
 	"admin_plugins": "Insticksprogramhanterare",
 	"admin_plugins.available": "Tillgängliga insticksprogram",
 	"admin_plugins.available_not-found": "Inga insticksmoduler hittades.",
@@ -35,6 +36,8 @@
 	"admin_plugins_info.version_number": "Versionsnummer",
 	"admin_settings": "Inställningar",
 	"admin_settings.current": "Nuvarande konfiguration",
+	"admin_settings.current_example-devel": "Exempelmall för utvecklingsinställningar",
+	"admin_settings.current_example-prod": "Exempelmall för produktionsinställningar",
 	"admin_settings.current_restart.value": "Starta om Etherpad",
 	"admin_settings.current_save.value": "Spara inställningar",
 	"admin_settings.page-title": "Inställningar - Etherpad",
@@ -62,9 +65,7 @@
 	"pad.colorpicker.cancel": "Avbryt",
 	"pad.loading": "Läser in …",
 	"pad.noCookie": "Kunde inte hitta några kakor. Var god tillåt kakor i din webbläsare! Din session och inställningar kommer inte sparas mellan dina besök. Detta kan bero på att Etherpad inte ligger inuti en iFrame i vissa webbläsare. Se till att Etherpad är i samma underdomän/domän som det överordnade iFrame-elementet.",
-	"pad.passwordRequired": "Du behöver ett lösenord för att få tillgång till detta block",
 	"pad.permissionDenied": "Du har inte åtkomstbehörighet för detta block",
-	"pad.wrongPassword": "Ditt lösenord var fel",
 	"pad.settings.padSettings": "Blockinställningar",
 	"pad.settings.myView": "Min vy",
 	"pad.settings.stickychat": "Chatten alltid på skärmen",
@@ -170,6 +171,5 @@
 	"pad.impexp.importfailed": "Importering misslyckades",
 	"pad.impexp.copypaste": "Var god kopiera och klistra in",
 	"pad.impexp.exportdisabled": "Exportering av formatet {{type}} är inaktiverad. Var god kontakta din systemadministratör för mer information.",
-	"pad.impexp.maxFileSize": "Filen är för stor. Kontakta din systemadministratör för att öka den tillåtna filstorleken för importering",
-	"pad.impexp.permission": "Importering är inaktiverat eftersom du aldrig har bidragit till detta block. Var god bidra minst en gång innan du importerar"
+	"pad.impexp.maxFileSize": "Filen är för stor. Kontakta din systemadministratör för att öka den tillåtna filstorleken för importering"
 }

@@ -22,7 +22,6 @@
 	"pad.colorpicker.save": "Съхраняване",
 	"pad.colorpicker.cancel": "Отказ",
 	"pad.loading": "Зареждане...",
-	"pad.wrongPassword": "Неправилна парола",
 	"pad.settings.language": "Език:",
 	"pad.importExport.exportetherpad": "Etherpad",
 	"pad.importExport.exporthtml": "HTML",

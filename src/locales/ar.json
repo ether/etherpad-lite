@@ -43,9 +43,7 @@
 	"pad.colorpicker.cancel": "إلغاء",
 	"pad.loading": "جارٍ التحميل...",
 	"pad.noCookie": "الكوكيز غير متاحة. الرجاء السماح بتحميل الكوكيز على متصفحك!",
-	"pad.passwordRequired": "تحتاج إلى كلمة سر للوصول إلى هذا الباد",
 	"pad.permissionDenied": "ليس لديك إذن لدخول هذا الباد",
-	"pad.wrongPassword": "كانت كلمة السر خاطئة",
 	"pad.settings.padSettings": "إعدادات الباد",
 	"pad.settings.myView": "رؤيتي",
 	"pad.settings.stickychat": "الدردشة دائما على الشاشة",
@@ -146,6 +144,5 @@
 	"pad.impexp.importfailed": "فشل الاستيراد",
 	"pad.impexp.copypaste": "الرجاء نسخ/لصق",
 	"pad.impexp.exportdisabled": "تصدير التنسيق {{type}} معطل. يرجى الاتصال بمسؤول النظام الخاص بك للحصول على التفاصيل.",
-	"pad.impexp.maxFileSize": "الملف كبير جدا. اتصل بإداري الموقع الخاص بك لزيادة حجم الملف المسموح به للاستيراد",
-	"pad.impexp.permission": "الاستيراد معطل لأنك لم تساهم مسبقا لهذه الباد. من فضلك ساهم على الأقل مرة واحدة قبل الاستيراد"
+	"pad.impexp.maxFileSize": "الملف كبير جدا. اتصل بإداري الموقع الخاص بك لزيادة حجم الملف المسموح به للاستيراد"
 }

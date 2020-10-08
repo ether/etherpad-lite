@@ -67,9 +67,7 @@
 	"pad.colorpicker.cancel": "Bıtexelne",
 	"pad.loading": "Bar beno...",
 	"pad.noCookie": "Çerez nêvineya. Rovıter de çereza aktiv kerê.Ronıştısê u eyarê şıma mabênê ziyareti qeyd nêbenê.Çıkı, Etherpad tay rovıteran de tewrê yew iFrame belka biyo. Kerem ke Etherpad corên iFrame ya wa eyni bınca/ca de zey pê bo.",
-	"pad.passwordRequired": "Ena bloknot resayışi rê parola icab krna",
 	"pad.permissionDenied": "Ena bloknot resayışi rê icazeta şıma çıni ya",
-	"pad.wrongPassword": "Parola şıma ğeleta",
 	"pad.settings.padSettings": "Sazkerdışê Pedi",
 	"pad.settings.myView": "Asayışê mı",
 	"pad.settings.stickychat": "Ekran de tım mıhebet bıkerê",
@@ -175,6 +173,5 @@
 	"pad.impexp.importfailed": "Zer kerdış mıwafaq nebı",
 	"pad.impexp.copypaste": "Reca keme kopya pronayış bıkeri",
 	"pad.impexp.exportdisabled": "Formatta {{type}} ya ateber kerdış dewra vıciya yo. Qandé teferruati idarekarana irtibat kewê",
-	"pad.impexp.maxFileSize": "Dosya zêde gırsa, azere kerdışi rê mısade deyaye ebatê dosyay zeydınayışi rê idarekarê siteya irtibat kewê",
-	"pad.impexp.permission": "Şıma ena ped rê qet iştirak nêkerdo coki ra azere kerdış dewre ra veto. Vêre azere kerdışi minimum yû iştirak bıkerê"
+	"pad.impexp.maxFileSize": "Dosya zêde gırsa, azere kerdışi rê mısade deyaye ebatê dosyay zeydınayışi rê idarekarê siteya irtibat kewê"
 }

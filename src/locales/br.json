@@ -30,9 +30,7 @@
 	"pad.colorpicker.cancel": "Nullañ",
 	"pad.loading": "O kargañ...",
 	"pad.noCookie": "N'eus ket gallet kavout an toupin. Aotreit an toupinoù en ho merdeer, mar plij !",
-	"pad.passwordRequired": "Ezhomm ho peus ur ger-tremen evit mont d'ar Pad-se",
 	"pad.permissionDenied": "\nN'oc'h ket aotreet da vont d'ar pad-mañ",
-	"pad.wrongPassword": "Fazius e oa ho ker-tremen",
 	"pad.settings.padSettings": "Arventennoù Pad",
 	"pad.settings.myView": "Ma diskwel",
 	"pad.settings.stickychat": "Diskwel ar flap bepred",
@@ -131,6 +129,5 @@
 	"pad.impexp.importfailed": "C'hwitet eo an enporzhiadenn",
 	"pad.impexp.copypaste": "Eilit/pegit, mar plij",
 	"pad.impexp.exportdisabled": "Diweredekaet eo ezporzhiañ d'ar furmad {{type}}. Kit e darempred gant merour ar reizhiad evit gouzout hiroc'h.",
-	"pad.impexp.maxFileSize": "Re vras eo ar restr. Kit e daremrepd gant merour ho lec'hienn evit kreskiñ ment aoteet ar restroù evit enporzhiañ",
-	"pad.impexp.permission": "Diweredekaet eo an enporzhiañ peogwir n'hoc'h eus ket kemeret perzh gwech ebet er bloc'had-se. Kemerit perzh ur wech da nebeutañ a-raok enporzhiañ."
+	"pad.impexp.maxFileSize": "Re vras eo ar restr. Kit e daremrepd gant merour ho lec'hienn evit kreskiñ ment aoteet ar restroù evit enporzhiañ"
 }

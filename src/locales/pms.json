@@ -61,9 +61,7 @@
 	"pad.colorpicker.cancel": "Anulé",
 	"pad.loading": "Antramentr ch'as caria…",
 	"pad.noCookie": "Ël bëscotin a l'é nen ëstàit trovà. Për piasì, ch'a autorisa ij bëscotin su sò navigador! Soa session e sò paràmeter a saran pa argistrà antra na vìsita e l'àutra. Sòn a peul esse dovù al fàit che Etherpad a l'é contnù an n'iFrame an chèich navigador. Ch'a contròla che Etherpad resta ant l'istess sot-domini/domini ëd sò ce iFrame",
-	"pad.passwordRequired": "A l'ha da manca ëd na ciav për acede a cost feuj-sì",
 	"pad.permissionDenied": "A l'ha nen ël përmess d'acede a 's feuj-sì",
-	"pad.wrongPassword": "Soa ciav a l'era nen giusta",
 	"pad.settings.padSettings": "Paràmeter dël feuj",
 	"pad.settings.myView": "Mia vista",
 	"pad.settings.stickychat": "Ciaciarade sempe an slë scren",
@@ -168,6 +166,5 @@
 	"pad.impexp.importfailed": "Amportassion falìa",
 	"pad.impexp.copypaste": "Për piasì, ch'a còpia e ancòla",
 	"pad.impexp.exportdisabled": "L'esportassion an formà {{type}} a l'é disativà. Për piasì, ch'a contata sò aministrator ëd sistema për ij detaj.",
-	"pad.impexp.maxFileSize": "Archivi tròp gròss. Ch'a contata sò aministrator ëd sit për sumenté la taja dj'archivi consentìa për j'amportassion",
-	"pad.impexp.permission": "L'amportassion a l'é disativà përchè chiel a l'ha pa mai contribuì a cost blòch-sì. Për piasì, ch'a contribuissa almanch na vira prima d'amporté"
+	"pad.impexp.maxFileSize": "Archivi tròp gròss. Ch'a contata sò aministrator ëd sit për sumenté la taja dj'archivi consentìa për j'amportassion"
 }

@@ -58,9 +58,7 @@
 	"pad.colorpicker.cancel": "Cancelar",
 	"pad.loading": "Carregando...",
 	"pad.noCookie": "Não foi possível encontrar o cookie. Por favor, permita cookies no seu navegador! Sua sessão e configurações não serão salvas entre as visitas. Isso pode ser devido ao fato de o Etherpad ser incluído em um iFrame em alguns navegadores. Verifique se o Etherpad está no mesmo subdomínio/domínio que o iFrame pai",
-	"pad.passwordRequired": "Você precisa de uma senha para acessar esta Nota",
 	"pad.permissionDenied": "Você não tem permissão para acessar esta Nota",
-	"pad.wrongPassword": "Senha incorreta",
 	"pad.settings.padSettings": "Configurações da Nota",
 	"pad.settings.myView": "Minha Visão",
 	"pad.settings.stickychat": "Bate-papo sempre visível",
@@ -165,6 +163,5 @@
 	"pad.impexp.importfailed": "A importação falhou",
 	"pad.impexp.copypaste": "Copie e cole",
 	"pad.impexp.exportdisabled": "A exportação em formato {{type}} está desativada. Comunique-se com o administrador do sistema para detalhes.",
-	"pad.impexp.maxFileSize": "Arquivo muito grande. Entre em contato com o administrador do site para aumentar o tamanho do arquivo permitido para importação",
-	"pad.impexp.permission": "A importação está desativada porque você nunca contribuiu para este bloco. Contribua pelo menos uma vez antes de importar"
+	"pad.impexp.maxFileSize": "Arquivo muito grande. Entre em contato com o administrador do site para aumentar o tamanho do arquivo permitido para importação"
 }

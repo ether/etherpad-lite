@@ -13,14 +13,20 @@
 			"Okras",
 			"Patrick Star",
 			"Teretalexev",
-			"Volkov"
+			"Volkov",
+			"Арсен Асхат"
 		]
 	},
+	"admin_plugins": "Менеджер плагинов",
 	"admin_plugins.available": "Доступные плагины",
+	"admin_plugins.available_not-found": "Плагины не найдены.",
 	"admin_plugins.available_install.value": "Установить",
 	"admin_plugins.description": "Описание",
+	"admin_plugins.installed_nothing": "Вы еще не установили ни одного плагина.",
 	"admin_plugins.installed_uninstall.value": "Удалить",
 	"admin_plugins.version": "Версия",
+	"admin_plugins_info.hooks": "Установленные крючки",
+	"admin_plugins_info.version_number": "Номер версии",
 	"admin_settings": "Настройки",
 	"admin_settings.current_save.value": "Сохранить настройки",
 	"index.newPad": "Создать",
@@ -47,9 +53,7 @@
 	"pad.colorpicker.cancel": "Отмена",
 	"pad.loading": "Загрузка...",
 	"pad.noCookie": "Куки не найдены. Пожалуйста, включите куки в вашем браузере! Ваш сеанс и настройки не будут сохранены между посещениями. Это может быть связано с тем, что Etherpad включен в iFrame в некоторых браузерах. Убедитесь, что Etherpad находится в том же поддомене/домене, что и родительский iFrame.",
-	"pad.passwordRequired": "Вам нужен пароль для доступа",
 	"pad.permissionDenied": "У вас нет разрешения на доступ",
-	"pad.wrongPassword": "Неправильный пароль",
 	"pad.settings.padSettings": "Настройки документа",
 	"pad.settings.myView": "Мой вид",
 	"pad.settings.stickychat": "Всегда отображать чат",
@@ -155,6 +159,5 @@
 	"pad.impexp.importfailed": "Ошибка при импорте",
 	"pad.impexp.copypaste": "Пожалуйста, скопируйте",
 	"pad.impexp.exportdisabled": "Экспорт в формате {{type}} отключён. Для подробной информации обратитесь к системному администратору.",
-	"pad.impexp.maxFileSize": "Файл слишком большой. Обратитесь к администратору сайта, чтобы увеличить разрешённый размер файла для импорта",
-	"pad.impexp.permission": "Импорт отключен, поскольку вы никогда не вносили вклад в этот документ. Пожалуйста, внесите свой вклад хотя бы один раз перед импортом"
+	"pad.impexp.maxFileSize": "Файл слишком большой. Обратитесь к администратору сайта, чтобы увеличить разрешённый размер файла для импорта"
 }

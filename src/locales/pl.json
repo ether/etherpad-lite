@@ -42,9 +42,7 @@
 	"pad.colorpicker.cancel": "Anuluj",
 	"pad.loading": "Ładowanie...",
 	"pad.noCookie": "Nie można znaleźć pliku cookie. Proszę zezwolić na pliki cookie w przeglądarce! Twoja sesja i ustawienia nie zostaną zapisane między wizytami. Może to wynikać z włączenia Etherpad do ramki iFrame w niektórych przeglądarkach. Upewnij się, że Etherpad jest w tej samej subdomenie/domenie, co nadrzędna ramka iFrame",
-	"pad.passwordRequired": "Musisz podać hasło aby uzyskać dostęp do tego dokumentu",
 	"pad.permissionDenied": "Nie masz uprawnień dostępu do tego dokumentu",
-	"pad.wrongPassword": "Nieprawidłowe hasło",
 	"pad.settings.padSettings": "Ustawienia dokumentu",
 	"pad.settings.myView": "Mój widok",
 	"pad.settings.stickychat": "Czat zawsze na ekranie",
@@ -145,6 +143,5 @@
 	"pad.impexp.importfailed": "Importowanie nie powiodło się",
 	"pad.impexp.copypaste": "Proszę skopiować i wkleić",
 	"pad.impexp.exportdisabled": "Eksport do formatu {{type}} jest wyłączony. Proszę skontaktować się z administratorem aby uzyskać więcej szczegółów.",
-	"pad.impexp.maxFileSize": "Plik jest zbyt duży. Skontaktuj się z administratorem aby zwiększył maksymalny dopuszczalny rozmiar importowanych plików",
-	"pad.impexp.permission": "Importowanie jest zablokowane, ponieważ nie edytowałeś jeszcze tego dokumentu. Wykonaj przynajmniej jedną zmianę zanim zaczniesz importować"
+	"pad.impexp.maxFileSize": "Plik jest zbyt duży. Skontaktuj się z administratorem aby zwiększył maksymalny dopuszczalny rozmiar importowanych plików"
 }

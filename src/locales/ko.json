@@ -66,9 +66,7 @@
 	"pad.colorpicker.cancel": "취소",
 	"pad.loading": "불러오는 중...",
 	"pad.noCookie": "쿠키를 찾을 수 없습니다. 브라우저에서 쿠키를 허용해주세요!",
-	"pad.passwordRequired": "이 패드에 접근하려면 비밀번호가 필요합니다",
 	"pad.permissionDenied": "이 패드에 접근할 권한이 없습니다",
-	"pad.wrongPassword": "비밀번호가 잘못되었습니다",
 	"pad.settings.padSettings": "패드 설정",
 	"pad.settings.myView": "내 보기",
 	"pad.settings.stickychat": "화면에 항상 대화 보기",
@@ -170,6 +168,5 @@
 	"pad.impexp.importfailed": "가져오기를 실패했습니다",
 	"pad.impexp.copypaste": "복사하여 붙여넣으세요",
 	"pad.impexp.exportdisabled": "{{type}} 형식으로 내보내기가 비활성화되어 있습니다. 자세한 내용은 시스템 관리자에게 문의하시기 바랍니다.",
-	"pad.impexp.maxFileSize": "파일의 용량이 너무 큽니다. 가져올 파일의 허용 크기를 늘리려면 사이트 관리자에게 문의하십시오",
-	"pad.impexp.permission": "이 패드로 기여한 적이 없으므로 가져오기가 비활성화됩니다. 가져오기 전에 적어도 한 번은 기여해 주십시오"
+	"pad.impexp.maxFileSize": "파일의 용량이 너무 큽니다. 가져올 파일의 허용 크기를 늘리려면 사이트 관리자에게 문의하십시오"
 }
