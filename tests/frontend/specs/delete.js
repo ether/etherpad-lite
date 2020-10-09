@@ -17,7 +17,7 @@ describe("delete keystroke", function(){
 
     // get the original string value minus the last char
     var originalTextValue = $firstTextElement.text();
-    originalTextValueMinusFirstChar = originalTextValue.substring(1, originalTextValue.length );
+    var originalTextValueMinusFirstChar = originalTextValue.substring(1, originalTextValue.length );
 
     // simulate key presses to delete content
     $firstTextElement.sendkeys('{leftarrow}'); // simulate a keypress of the left arrow key

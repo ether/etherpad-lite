@@ -136,7 +136,7 @@ describe("the test helper", function(){
         return false;
       }, 1500).fail(function(){
         var duration = Date.now() - startTime;
-        expect(duration).to.be.greaterThan(1400);
+        expect(duration).to.be.greaterThan(1499);
         done();
       });
     });
@@ -149,8 +149,8 @@ describe("the test helper", function(){
         checks++;
         return false;
       }, 2000, 100).fail(function(){
-        expect(checks).to.be.greaterThan(10);
-        expect(checks).to.be.lessThan(30);
+        expect(checks).to.be.greaterThan(19);
+        expect(checks).to.be.lessThan(21);
         done();
       });
     });

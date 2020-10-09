@@ -14,10 +14,9 @@
     <script src="lib/underscore.js"></script>
 
     <script src="lib/mocha.js"></script>
-    <script> mocha.setup({ui: 'bdd', ignoreLeaks: true}) </script>
+    <script> mocha.setup({ui: 'bdd', checkLeaks: true, timeout: 60000}) </script>
     <script src="lib/expect.js"></script>
 
-    <script src="lib/sendkeys.js"></script>    
     <script src="helper.js"></script>
     
     <script src="specs_list.js"></script>
