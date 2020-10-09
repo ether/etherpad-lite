@@ -259,16 +259,4 @@ var helper = {};
   /* Ensure console.log doesn't blow up in IE, ugly but ok for a test framework imho*/
   window.console = window.console || {};
   window.console.log = window.console.log || function(){}
-
-  //force usage of callbacks in it
-  var _it = it;
-  it = function(name, func){
-    if(func && func.length !== 1){
-      func = function(){
-        throw new Error("Please use always a callback with it() - " + func.toString());
-      }
-    }
-
-    _it(name, func);
-  }
 })()
