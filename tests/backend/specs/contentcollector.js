@@ -105,55 +105,53 @@ const tests = {
 
 }
 
-// For each test..
-for (let test in tests){
-  let testObj = tests[test];
-
-  describe(test, function() {
-    if(testObj.disabled){
-      return xit("DISABLED:", test, function(done){
-        done();
-      })
-    }
-
-    it(testObj.description, function(done) {
-      var $ = cheerio.load(testObj.html);  // Load HTML into Cheerio
-      var doc = $('html')[0]; // Creates a dom-like representation of HTML
-      // Create an empty attribute pool
-      var apool = new AttributePool();
-      // Convert a dom tree into a list of lines and attribute liens
-      // using the content collector object
-      var cc = contentcollector.makeContentCollector(true, null, apool);
-      cc.collectContent(doc);
-      var result = cc.finish();
-      var recievedAttributes = result.lineAttribs;
-      var expectedAttributes = testObj.expectedLineAttribs;
-      var recievedText = new Array(result.lines)
-      var expectedText = testObj.expectedText;
-
-      // Check recieved text matches the expected text
-      if(arraysEqual(recievedText[0], expectedText)){
-        // console.log("PASS: Recieved Text did match Expected Text\nRecieved:", recievedText[0], "\nExpected:", testObj.expectedText)
-      }else{
-        console.error("FAIL: Recieved Text did not match Expected Text\nRecieved:", recievedText[0], "\nExpected:", testObj.expectedText)
-        throw new Error();
+describe(__filename, function() {
+  for (let test in tests) {
+    let testObj = tests[test];
+    describe(test, function() {
+      if (testObj.disabled) {
+        return xit("DISABLED:", test, function(done){
+          done();
+        })
       }
 
-      // Check recieved attributes matches the expected attributes
-      if(arraysEqual(recievedAttributes, expectedAttributes)){
-        // console.log("PASS: Recieved Attributes matched Expected Attributes");
-        done();
-      }else{
-        console.error("FAIL", test, testObj.description);
-        console.error("FAIL: Recieved Attributes did not match Expected Attributes\nRecieved: ", recievedAttributes, "\nExpected: ", expectedAttributes)
-        console.error("FAILING HTML", testObj.html);
-        throw new Error();
-      }
+      it(testObj.description, function(done) {
+        var $ = cheerio.load(testObj.html);  // Load HTML into Cheerio
+        var doc = $('html')[0]; // Creates a dom-like representation of HTML
+        // Create an empty attribute pool
+        var apool = new AttributePool();
+        // Convert a dom tree into a list of lines and attribute liens
+        // using the content collector object
+        var cc = contentcollector.makeContentCollector(true, null, apool);
+        cc.collectContent(doc);
+        var result = cc.finish();
+        var recievedAttributes = result.lineAttribs;
+        var expectedAttributes = testObj.expectedLineAttribs;
+        var recievedText = new Array(result.lines)
+        var expectedText = testObj.expectedText;
+
+        // Check recieved text matches the expected text
+        if (arraysEqual(recievedText[0], expectedText)) {
+          // console.log("PASS: Recieved Text did match Expected Text\nRecieved:", recievedText[0], "\nExpected:", testObj.expectedText)
+        } else {
+          console.error("FAIL: Recieved Text did not match Expected Text\nRecieved:", recievedText[0], "\nExpected:", testObj.expectedText)
+          throw new Error();
+        }
+
+        // Check recieved attributes matches the expected attributes
+        if (arraysEqual(recievedAttributes, expectedAttributes)) {
+          // console.log("PASS: Recieved Attributes matched Expected Attributes");
+          done();
+        } else {
+          console.error("FAIL", test, testObj.description);
+          console.error("FAIL: Recieved Attributes did not match Expected Attributes\nRecieved: ", recievedAttributes, "\nExpected: ", expectedAttributes)
+          console.error("FAILING HTML", testObj.html);
+          throw new Error();
+        }
+      });
     });
-
-  });
-
-};
+  }
+});
 
 
 
