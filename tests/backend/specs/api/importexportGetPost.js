@@ -23,326 +23,327 @@ var apiVersion = 1;
 const testPadId = makeid();
 const testPadIdEnc = encodeURIComponent(testPadId);
 
-before(async function() { agent = await common.init(); });
+describe(__filename, function() {
+  before(async function() { agent = await common.init(); });
 
-describe('Connectivity', function(){
-  it('can connect', async function() {
-    await agent.get('/api/')
-        .expect(200)
-        .expect('Content-Type', /json/);
-  });
-})
-
-describe('API Versioning', function(){
-  it('finds the version tag', async function() {
-    await agent.get('/api/')
-        .expect(200)
-        .expect((res) => assert(res.body.currentVersion));
-  });
-})
-
-/*
-Tests
------
-
-Test.
-  / Create a pad
-  / Set pad contents
-  / Try export pad in various formats
-  / Get pad contents and ensure it matches imported contents
-
-Test.
-  / Try to export a pad that doesn't exist // Expect failure
-
-Test.
-  / Try to import an unsupported file to a pad that exists
-
--- TODO: Test.
-  Try to import to a file and abort it half way through
-
-Test.
-  Try to import to files of varying size.
-
-Example Curl command for testing import URI:
-  curl -s -v --form file=@/home/jose/test.txt http://127.0.0.1:9001/p/foo/import
-*/
-
-describe('Imports and Exports', function(){
-  const backups = {};
-
-  beforeEach(async function() {
-    // Note: This is a shallow copy.
-    backups.settings = Object.assign({}, settings);
-  });
-
-  afterEach(async function() {
-    // Note: This does not unset settings that were added.
-    Object.assign(settings, backups.settings);
-  });
-
-  it('creates a new Pad, imports content to it, checks that content', async function() {
-    await agent.get(endPoint('createPad') + `&padID=${testPadId}`)
-        .expect(200)
-        .expect('Content-Type', /json/)
-        .expect((res) => assert.equal(res.body.code, 0));
-    await agent.post(`/p/${testPadId}/import`)
-        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
-        .expect(200);
-    await agent.get(endPoint('getText') + `&padID=${testPadId}`)
-        .expect(200)
-        .expect((res) => assert.equal(res.body.data.text, padText.toString()));
-  });
-
-  it('gets read only pad Id and exports the html and text for this pad', async function(){
-    let ro = await agent.get(endPoint('getReadOnlyID')+"&padID="+testPadId)
-        .expect(200)
-        .expect((res) => assert.ok(JSON.parse(res.text).data.readOnlyID));
-    let readOnlyId = JSON.parse(ro.text).data.readOnlyID;
-
-    await agent.get(`/p/${readOnlyId}/export/html`)
-        .expect(200)
-        .expect((res) => assert(res.text.indexOf("This is the") !== -1));
-
-    await agent.get(`/p/${readOnlyId}/export/txt`)
-        .expect(200)
-        .expect((res) => assert(res.text.indexOf("This is the") !== -1));
-  });
-
-
-  describe('Import/Export tests requiring AbiWord/LibreOffice', function() {
-    before(function() {
-      if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
-          (!settings.soffice || settings.soffice.indexOf('/') === -1)) {
-        this.skip();
-      }
-    });
-
-    // For some reason word import does not work in testing..
-    // TODO: fix support for .doc files..
-    it('Tries to import .doc that uses soffice or abiword', async function() {
-      await agent.post(`/p/${testPadId}/import`)
-          .attach('file', wordDoc, {filename: '/test.doc', contentType: 'application/msword'})
+  describe('Connectivity', function(){
+    it('can connect', async function() {
+      await agent.get('/api/')
           .expect(200)
-          .expect(/FrameCall\('undefined', 'ok'\);/);
+          .expect('Content-Type', /json/);
     });
+  })
 
-    it('exports DOC', async function() {
-      await agent.get(`/p/${testPadId}/export/doc`)
-          .buffer(true).parse(superagent.parse['application/octet-stream'])
+  describe('API Versioning', function(){
+    it('finds the version tag', async function() {
+      await agent.get('/api/')
           .expect(200)
-          .expect((res) => assert(res.body.length >= 9000));
+          .expect((res) => assert(res.body.currentVersion));
     });
+  })
 
-    it('Tries to import .docx that uses soffice or abiword', async function() {
-      await agent.post(`/p/${testPadId}/import`)
-          .attach('file', wordXDoc, {
-            filename: '/test.docx',
-            contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          })
-          .expect(200)
-          .expect(/FrameCall\('undefined', 'ok'\);/);
-    });
+  /*
+  Tests
+  -----
 
-    it('exports DOC from imported DOCX', async function() {
-      await agent.get(`/p/${testPadId}/export/doc`)
-          .buffer(true).parse(superagent.parse['application/octet-stream'])
-          .expect(200)
-          .expect((res) => assert(res.body.length >= 9100));
-    });
+  Test.
+    / Create a pad
+    / Set pad contents
+    / Try export pad in various formats
+    / Get pad contents and ensure it matches imported contents
 
-    it('Tries to import .pdf that uses soffice or abiword', async function() {
-      await agent.post(`/p/${testPadId}/import`)
-          .attach('file', pdfDoc, {filename: '/test.pdf', contentType: 'application/pdf'})
-          .expect(200)
-          .expect(/FrameCall\('undefined', 'ok'\);/);
-    });
+  Test.
+    / Try to export a pad that doesn't exist // Expect failure
 
-    it('exports PDF', async function() {
-      await agent.get(`/p/${testPadId}/export/pdf`)
-          .buffer(true).parse(superagent.parse['application/octet-stream'])
-          .expect(200)
-          .expect((res) => assert(res.body.length >= 1000));
-    });
+  Test.
+    / Try to import an unsupported file to a pad that exists
 
-    it('Tries to import .odt that uses soffice or abiword', async function() {
-      await agent.post(`/p/${testPadId}/import`)
-          .attach('file', odtDoc, {filename: '/test.odt', contentType: 'application/odt'})
-          .expect(200)
-          .expect(/FrameCall\('undefined', 'ok'\);/);
-    });
+  -- TODO: Test.
+    Try to import to a file and abort it half way through
 
-    it('exports ODT', async function() {
-      await agent.get(`/p/${testPadId}/export/odt`)
-          .buffer(true).parse(superagent.parse['application/octet-stream'])
-          .expect(200)
-          .expect((res) => assert(res.body.length >= 7000));
-    });
+  Test.
+    Try to import to files of varying size.
 
-  }); // End of AbiWord/LibreOffice tests.
+  Example Curl command for testing import URI:
+    curl -s -v --form file=@/home/jose/test.txt http://127.0.0.1:9001/p/foo/import
+  */
 
-  it('Tries to import .etherpad', async function() {
-    await agent.post(`/p/${testPadId}/import`)
-        .attach('file', etherpadDoc, {
-          filename: '/test.etherpad',
-          contentType: 'application/etherpad',
-        })
-        .expect(200)
-        .expect(/FrameCall\('true', 'ok'\);/);
-  });
-
-  it('exports Etherpad', async function() {
-    await agent.get(`/p/${testPadId}/export/etherpad`)
-        .buffer(true).parse(superagent.parse.text)
-        .expect(200)
-        .expect(/hello/);
-  });
-
-  it('exports HTML for this Etherpad file', async function() {
-    await agent.get(`/p/${testPadId}/export/html`)
-        .expect(200)
-        .expect('content-type', 'text/html; charset=utf-8')
-        .expect(/<ul class="bullet"><li><ul class="bullet"><li>hello<\/ul><\/li><\/ul>/);
-  });
-
-  it('Tries to import unsupported file type', async function() {
-    settings.allowUnknownFileEnds = false;
-    await agent.post(`/p/${testPadId}/import`)
-        .attach('file', padText, {filename: '/test.xasdasdxx', contentType: 'weirdness/jobby'})
-        .expect(200)
-        .expect((res) => assert.doesNotMatch(res.text, /FrameCall\('undefined', 'ok'\);/));
-  });
-
-  describe('Import authorization checks', function() {
-    let authorize;
-
-    const deleteTestPad = async () => {
-      if (await padManager.doesPadExist(testPadId)) {
-        const pad = await padManager.getPad(testPadId);
-        await pad.remove();
-      }
-    };
-
-    const createTestPad = async (text) => {
-      const pad = await padManager.getPad(testPadId);
-      if (text) await pad.setText(text);
-      return pad;
-    };
+  describe('Imports and Exports', function(){
+    const backups = {};
 
     beforeEach(async function() {
-      await deleteTestPad();
-      settings.requireAuthentication = false;
-      settings.requireAuthorization = true;
-      settings.users = {user: {password: 'user-password'}};
-      authorize = () => true;
-      backups.hooks = {};
-      backups.hooks.authorize = plugins.hooks.authorize || [];
-      plugins.hooks.authorize = [{hook_fn: (hookName, {req}, cb) => cb([authorize(req)])}];
+      // Note: This is a shallow copy.
+      backups.settings = Object.assign({}, settings);
     });
 
     afterEach(async function() {
-      await deleteTestPad();
-      Object.assign(plugins.hooks, backups.hooks);
+      // Note: This does not unset settings that were added.
+      Object.assign(settings, backups.settings);
     });
 
-    it('!authn !exist -> create', async function() {
-      await agent.post(`/p/${testPadIdEnc}/import`)
-        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
-        .expect(200);
-      assert(await padManager.doesPadExist(testPadId));
-      const pad = await padManager.getPad(testPadId);
-      assert.equal(pad.text(), padText.toString());
+    it('creates a new Pad, imports content to it, checks that content', async function() {
+      await agent.get(endPoint('createPad') + `&padID=${testPadId}`)
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect((res) => assert.equal(res.body.code, 0));
+      await agent.post(`/p/${testPadId}/import`)
+          .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+          .expect(200);
+      await agent.get(endPoint('getText') + `&padID=${testPadId}`)
+          .expect(200)
+          .expect((res) => assert.equal(res.body.data.text, padText.toString()));
     });
 
-    it('!authn exist -> replace', async function() {
-      const pad = await createTestPad('before import');
-      await agent.post(`/p/${testPadIdEnc}/import`)
-        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
-        .expect(200);
-      assert(await padManager.doesPadExist(testPadId));
-      assert.equal(pad.text(), padText.toString());
+    it('gets read only pad Id and exports the html and text for this pad', async function(){
+      let ro = await agent.get(endPoint('getReadOnlyID')+"&padID="+testPadId)
+          .expect(200)
+          .expect((res) => assert.ok(JSON.parse(res.text).data.readOnlyID));
+      let readOnlyId = JSON.parse(ro.text).data.readOnlyID;
+
+      await agent.get(`/p/${readOnlyId}/export/html`)
+          .expect(200)
+          .expect((res) => assert(res.text.indexOf("This is the") !== -1));
+
+      await agent.get(`/p/${readOnlyId}/export/txt`)
+          .expect(200)
+          .expect((res) => assert(res.text.indexOf("This is the") !== -1));
     });
 
-    it('authn anonymous !exist -> fail', async function() {
-      settings.requireAuthentication = true;
-      await agent.post(`/p/${testPadIdEnc}/import`)
-        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
-        .expect(401);
-      assert(!(await padManager.doesPadExist(testPadId)));
+
+    describe('Import/Export tests requiring AbiWord/LibreOffice', function() {
+      before(function() {
+        if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
+            (!settings.soffice || settings.soffice.indexOf('/') === -1)) {
+          this.skip();
+        }
+      });
+
+      // For some reason word import does not work in testing..
+      // TODO: fix support for .doc files..
+      it('Tries to import .doc that uses soffice or abiword', async function() {
+        await agent.post(`/p/${testPadId}/import`)
+            .attach('file', wordDoc, {filename: '/test.doc', contentType: 'application/msword'})
+            .expect(200)
+            .expect(/FrameCall\('undefined', 'ok'\);/);
+      });
+
+      it('exports DOC', async function() {
+        await agent.get(`/p/${testPadId}/export/doc`)
+            .buffer(true).parse(superagent.parse['application/octet-stream'])
+            .expect(200)
+            .expect((res) => assert(res.body.length >= 9000));
+      });
+
+      it('Tries to import .docx that uses soffice or abiword', async function() {
+        await agent.post(`/p/${testPadId}/import`)
+            .attach('file', wordXDoc, {
+              filename: '/test.docx',
+              contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            })
+            .expect(200)
+            .expect(/FrameCall\('undefined', 'ok'\);/);
+      });
+
+      it('exports DOC from imported DOCX', async function() {
+        await agent.get(`/p/${testPadId}/export/doc`)
+            .buffer(true).parse(superagent.parse['application/octet-stream'])
+            .expect(200)
+            .expect((res) => assert(res.body.length >= 9100));
+      });
+
+      it('Tries to import .pdf that uses soffice or abiword', async function() {
+        await agent.post(`/p/${testPadId}/import`)
+            .attach('file', pdfDoc, {filename: '/test.pdf', contentType: 'application/pdf'})
+            .expect(200)
+            .expect(/FrameCall\('undefined', 'ok'\);/);
+      });
+
+      it('exports PDF', async function() {
+        await agent.get(`/p/${testPadId}/export/pdf`)
+            .buffer(true).parse(superagent.parse['application/octet-stream'])
+            .expect(200)
+            .expect((res) => assert(res.body.length >= 1000));
+      });
+
+      it('Tries to import .odt that uses soffice or abiword', async function() {
+        await agent.post(`/p/${testPadId}/import`)
+            .attach('file', odtDoc, {filename: '/test.odt', contentType: 'application/odt'})
+            .expect(200)
+            .expect(/FrameCall\('undefined', 'ok'\);/);
+      });
+
+      it('exports ODT', async function() {
+        await agent.get(`/p/${testPadId}/export/odt`)
+            .buffer(true).parse(superagent.parse['application/octet-stream'])
+            .expect(200)
+            .expect((res) => assert(res.body.length >= 7000));
+      });
+
+    }); // End of AbiWord/LibreOffice tests.
+
+    it('Tries to import .etherpad', async function() {
+      await agent.post(`/p/${testPadId}/import`)
+          .attach('file', etherpadDoc, {
+            filename: '/test.etherpad',
+            contentType: 'application/etherpad',
+          })
+          .expect(200)
+          .expect(/FrameCall\('true', 'ok'\);/);
     });
 
-    it('authn anonymous exist -> fail', async function() {
-      settings.requireAuthentication = true;
-      const pad = await createTestPad('before import\n');
-      await agent.post(`/p/${testPadIdEnc}/import`)
-        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
-        .expect(401);
-      assert.equal(pad.text(), 'before import\n');
+    it('exports Etherpad', async function() {
+      await agent.get(`/p/${testPadId}/export/etherpad`)
+          .buffer(true).parse(superagent.parse.text)
+          .expect(200)
+          .expect(/hello/);
     });
 
-    it('authn user create !exist -> create', async function() {
-      settings.requireAuthentication = true;
-      await agent.post(`/p/${testPadIdEnc}/import`)
-        .auth('user', 'user-password')
-        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
-        .expect(200);
-      assert(await padManager.doesPadExist(testPadId));
-      const pad = await padManager.getPad(testPadId);
-      assert.equal(pad.text(), padText.toString());
+    it('exports HTML for this Etherpad file', async function() {
+      await agent.get(`/p/${testPadId}/export/html`)
+          .expect(200)
+          .expect('content-type', 'text/html; charset=utf-8')
+          .expect(/<ul class="bullet"><li><ul class="bullet"><li>hello<\/ul><\/li><\/ul>/);
     });
 
-    it('authn user modify !exist -> fail', async function() {
-      settings.requireAuthentication = true;
-      authorize = () => 'modify';
-      await agent.post(`/p/${testPadIdEnc}/import`)
-        .auth('user', 'user-password')
-        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
-        .expect(403);
-      assert(!(await padManager.doesPadExist(testPadId)));
+    it('Tries to import unsupported file type', async function() {
+      settings.allowUnknownFileEnds = false;
+      await agent.post(`/p/${testPadId}/import`)
+          .attach('file', padText, {filename: '/test.xasdasdxx', contentType: 'weirdness/jobby'})
+          .expect(200)
+          .expect((res) => assert.doesNotMatch(res.text, /FrameCall\('undefined', 'ok'\);/));
     });
 
-    it('authn user readonly !exist -> fail', async function() {
-      settings.requireAuthentication = true;
-      authorize = () => 'readOnly';
-      await agent.post(`/p/${testPadIdEnc}/import`)
-        .auth('user', 'user-password')
-        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
-        .expect(403);
-      assert(!(await padManager.doesPadExist(testPadId)));
-    });
+    describe('Import authorization checks', function() {
+      let authorize;
 
-    it('authn user create exist -> replace', async function() {
-      settings.requireAuthentication = true;
-      const pad = await createTestPad('before import\n');
-      await agent.post(`/p/${testPadIdEnc}/import`)
-        .auth('user', 'user-password')
-        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
-        .expect(200);
-      assert.equal(pad.text(), padText.toString());
-    });
+      const deleteTestPad = async () => {
+        if (await padManager.doesPadExist(testPadId)) {
+          const pad = await padManager.getPad(testPadId);
+          await pad.remove();
+        }
+      };
 
-    it('authn user modify exist -> replace', async function() {
-      settings.requireAuthentication = true;
-      authorize = () => 'modify';
-      const pad = await createTestPad('before import\n');
-      await agent.post(`/p/${testPadIdEnc}/import`)
-        .auth('user', 'user-password')
-        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
-        .expect(200);
-      assert.equal(pad.text(), padText.toString());
-    });
+      const createTestPad = async (text) => {
+        const pad = await padManager.getPad(testPadId);
+        if (text) await pad.setText(text);
+        return pad;
+      };
 
-    it('authn user readonly exist -> fail', async function() {
-      const pad = await createTestPad('before import\n');
-      settings.requireAuthentication = true;
-      authorize = () => 'readOnly';
-      await agent.post(`/p/${testPadIdEnc}/import`)
-        .auth('user', 'user-password')
-        .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
-        .expect(403);
-      assert.equal(pad.text(), 'before import\n');
+      beforeEach(async function() {
+        await deleteTestPad();
+        settings.requireAuthentication = false;
+        settings.requireAuthorization = true;
+        settings.users = {user: {password: 'user-password'}};
+        authorize = () => true;
+        backups.hooks = {};
+        backups.hooks.authorize = plugins.hooks.authorize || [];
+        plugins.hooks.authorize = [{hook_fn: (hookName, {req}, cb) => cb([authorize(req)])}];
+      });
+
+      afterEach(async function() {
+        await deleteTestPad();
+        Object.assign(plugins.hooks, backups.hooks);
+      });
+
+      it('!authn !exist -> create', async function() {
+        await agent.post(`/p/${testPadIdEnc}/import`)
+            .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+            .expect(200);
+        assert(await padManager.doesPadExist(testPadId));
+        const pad = await padManager.getPad(testPadId);
+        assert.equal(pad.text(), padText.toString());
+      });
+
+      it('!authn exist -> replace', async function() {
+        const pad = await createTestPad('before import');
+        await agent.post(`/p/${testPadIdEnc}/import`)
+            .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+            .expect(200);
+        assert(await padManager.doesPadExist(testPadId));
+        assert.equal(pad.text(), padText.toString());
+      });
+
+      it('authn anonymous !exist -> fail', async function() {
+        settings.requireAuthentication = true;
+        await agent.post(`/p/${testPadIdEnc}/import`)
+            .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+            .expect(401);
+        assert(!(await padManager.doesPadExist(testPadId)));
+      });
+
+      it('authn anonymous exist -> fail', async function() {
+        settings.requireAuthentication = true;
+        const pad = await createTestPad('before import\n');
+        await agent.post(`/p/${testPadIdEnc}/import`)
+            .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+            .expect(401);
+        assert.equal(pad.text(), 'before import\n');
+      });
+
+      it('authn user create !exist -> create', async function() {
+        settings.requireAuthentication = true;
+        await agent.post(`/p/${testPadIdEnc}/import`)
+            .auth('user', 'user-password')
+            .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+            .expect(200);
+        assert(await padManager.doesPadExist(testPadId));
+        const pad = await padManager.getPad(testPadId);
+        assert.equal(pad.text(), padText.toString());
+      });
+
+      it('authn user modify !exist -> fail', async function() {
+        settings.requireAuthentication = true;
+        authorize = () => 'modify';
+        await agent.post(`/p/${testPadIdEnc}/import`)
+            .auth('user', 'user-password')
+            .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+            .expect(403);
+        assert(!(await padManager.doesPadExist(testPadId)));
+      });
+
+      it('authn user readonly !exist -> fail', async function() {
+        settings.requireAuthentication = true;
+        authorize = () => 'readOnly';
+        await agent.post(`/p/${testPadIdEnc}/import`)
+            .auth('user', 'user-password')
+            .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+            .expect(403);
+        assert(!(await padManager.doesPadExist(testPadId)));
+      });
+
+      it('authn user create exist -> replace', async function() {
+        settings.requireAuthentication = true;
+        const pad = await createTestPad('before import\n');
+        await agent.post(`/p/${testPadIdEnc}/import`)
+            .auth('user', 'user-password')
+            .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+            .expect(200);
+        assert.equal(pad.text(), padText.toString());
+      });
+
+      it('authn user modify exist -> replace', async function() {
+        settings.requireAuthentication = true;
+        authorize = () => 'modify';
+        const pad = await createTestPad('before import\n');
+        await agent.post(`/p/${testPadIdEnc}/import`)
+            .auth('user', 'user-password')
+            .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+            .expect(200);
+        assert.equal(pad.text(), padText.toString());
+      });
+
+      it('authn user readonly exist -> fail', async function() {
+        const pad = await createTestPad('before import\n');
+        settings.requireAuthentication = true;
+        authorize = () => 'readOnly';
+        await agent.post(`/p/${testPadIdEnc}/import`)
+            .auth('user', 'user-password')
+            .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
+            .expect(403);
+        assert.equal(pad.text(), 'before import\n');
+      });
     });
   });
-
 }); // End of tests.
 
 
