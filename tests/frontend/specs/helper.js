@@ -215,6 +215,53 @@ describe("the test helper", function(){
     });
   });
 
+  describe('the waitForPromise method', function() {
+    it('takes a timeout and waits long enough', async function() {
+      this.timeout(2000);
+      var startTime = Date.now();
+      await helper.waitForPromise(function() {
+        return false;
+      }, 1500).catch(function() {
+        var duration = Date.now() - startTime;
+        expect(duration).to.be.greaterThan(1490);
+      });
+    });
+
+    it('takes an interval and checks on every interval', async function() {
+      this.timeout(4000);
+      var checks = 0;
+      await helper.waitForPromise(function() {
+        checks++;
+        return false;
+      }, 2000, 100).catch(function() {
+        expect(checks).to.be.greaterThan(15);
+        expect(checks).to.be.lessThan(21);
+      });
+    });
+
+    describe('returns a Promise', function() {
+      it('calls then after success', async function() {
+        let called = false;
+        await helper.waitForPromise(function() {
+          return true;
+        }).then(function() {
+          called = true;
+        });
+        expect(called).to.be(true);
+      });
+
+      it('calls catch on failure', async function() {
+        let called = false;
+        await helper.waitForPromise(function() {
+          return false;
+        },0).catch(function() {
+          called = true;
+        });
+        expect(called).to.be(true);
+      });
+    });
+  });
+
   describe("the selectLines method", function(){
     // function to support tests, use a single way to represent whitespaces
     var cleanText = function(text){
