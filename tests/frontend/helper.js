@@ -145,6 +145,8 @@ var helper = {};
         helper.padOuter$.fx.off = true;
         helper.padInner$.fx.off = true;
 
+        // listen for server messages
+        helper.spyOnSocketIO();
         opts.cb();
       }).fail(function(){
         if (helper.retry > 3) {
