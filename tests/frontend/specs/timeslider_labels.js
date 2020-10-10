@@ -2,63 +2,61 @@ describe("timeslider", function(){
   //create a new pad before each test run
   beforeEach(function(cb){
     helper.newPad(cb);
-    this.timeout(60000);
   });
 
-  it("Shows a date and time in the timeslider and make sure it doesn't include NaN", function(done) {
-    var inner$ = helper.padInner$;
-    var chrome$ = helper.padChrome$;
+  /**
+   * @todo test authorsList
+   */
+  it("Shows a date and time in the timeslider and make sure it doesn't include NaN", async function() {
+    // make some changes to produce 3 revisions
+    let revs = 3;
 
-    // make some changes to produce 100 revisions
-    var revs = 10;
-    this.timeout(60000);
-    for(var i=0; i < revs; i++) {
-      setTimeout(function() {
-        // enter 'a' in the first text element
-        inner$("div").first().sendkeys('a');
-      }, 200);
+    for(let i=0; i < revs; i++) {
+      await helper.edit('a\n');
     }
 
-    setTimeout(function() {
-      // go to timeslider
-      $('#iframe-container iframe').attr('src', $('#iframe-container iframe').attr('src')+'/timeslider');
+    await helper.gotoTimeslider(revs);
+    await helper.waitForPromise(function(){return helper.contentWindow().location.hash === '#'+revs})
 
-      setTimeout(function() {
-        var timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
-        var $sliderBar = timeslider$('#ui-slider-bar');
+    // the datetime of last edit
+    let timerTimeLast = new Date(helper.timesliderTimerTime()).getTime();
 
-        var latestContents = timeslider$('#padcontent').text();
+    // the day of this revision, e.g. August 12, 2020 (stripped the string "Saved")
+    let dateLast = new Date(helper.revisionDateElem().substr(6)).getTime();
 
-        // Expect the date and time to be shown
+    // the label/revision, ie Version 3
+    let labelLast = helper.revisionLabelElem().text();
 
-        // Click somewhere on the timeslider
-        var e = new jQuery.Event('mousedown');
-        e.clientX = e.pageX = 150;
-        e.clientY = e.pageY = 45;
-        $sliderBar.trigger(e);
+    // the datetime should be a date
+    expect( Number.isNaN(timerTimeLast)).to.eql(false);
 
-        e = new jQuery.Event('mousedown');
-        e.clientX = e.pageX = 150;
-        e.clientY = e.pageY = 40;
-        $sliderBar.trigger(e);
+    // the Date object of the day should not be NaN
+    expect( Number.isNaN(dateLast) ).to.eql(false)
 
-        e = new jQuery.Event('mousedown');
-        e.clientX = e.pageX = 150;
-        e.clientY = e.pageY = 50;
-        $sliderBar.trigger(e);
+    // the label should match Version `Number`
+    expect( labelLast.indexOf(`Version ${revs}`) ).to.not.be(-1);
 
-        $sliderBar.trigger('mouseup')
+    // Click somewhere left on the timeslider to go to revision 0
+    helper.sliderClick(30);
 
-        setTimeout(function() {
-          //make sure the text has changed
-          expect( timeslider$('#timer').text() ).not.to.eql( "" );
-          expect( timeslider$('#revision_date').text() ).not.to.eql( "" );
-          expect( timeslider$('#revision_label').text() ).not.to.eql( "" );
-          var includesNaN = timeslider$('#revision_label').text().indexOf("NaN"); // NaN is bad. Naan ist gut
-          expect( includesNaN ).to.eql( -1 ); // not quite so tasty, I like curry.
-          done();
-        }, 400);
-      }, 2000);
-    }, 2000);
+    // the datetime of last edit
+    let timerTime = new Date(helper.timesliderTimerTime()).getTime();
+
+    // the day of this revision, e.g. August 12, 2020
+    let date = new Date(helper.revisionDateElem().substr(6)).getTime();
+
+    // the label/revision, e.g. Version 0
+    let label = helper.revisionLabelElem().text();
+
+    // the datetime should be a date
+    expect( Number.isNaN(timerTime)).to.eql(false);
+    // the last revision should be newer or have the same time
+    expect(timerTimeLast - timerTime >= 0);
+
+    // the Date object of the day should not be NaN
+    expect( Number.isNaN(date) ).to.eql(false)
+
+    // the label should match Version 0
+    expect( label ).to.match( /Version 0/);
   });
 });

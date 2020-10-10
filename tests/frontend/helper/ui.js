@@ -124,3 +124,23 @@ helper.timesliderTimerTime = function(){
 helper.sliderBar = function(){
   return helper.contentWindow().$('#ui-slider-bar')
 }
+
+/**
+ * revision_date element
+ * like "Saved October 10, 2020"
+ *
+ * @returns {HTMLElement}
+ */
+helper.revisionDateElem = function(){
+  return helper.contentWindow().$('#revision_date').text();
+}
+
+/**
+ * revision_label element
+ * like "Version 1"
+ *
+ * @returns {HTMLElement}
+ */
+helper.revisionLabelElem = function(){
+  return helper.contentWindow().$('#revision_label')
+}

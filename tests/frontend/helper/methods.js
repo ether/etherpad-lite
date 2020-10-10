@@ -191,7 +191,8 @@ helper.disableStickyChatviaIcon = function() {
 /**
  * Sets the src-attribute of the main iframe to the timeslider
  * In case a revision is given, sets the timeslider to this specific revision
- * It waits until the timer is filled with date and time
+ * It waits until the timer is filled with date and time, because it's one of the
+ * last things that happen during timeslider load
  *
  * @param {number} [revision] the optional revision
  * @returns {Promise}
