@@ -145,6 +145,24 @@ var helper = {};
         helper.padOuter$.fx.off = true;
         helper.padInner$.fx.off = true;
 
+        /*
+         * chat messages received
+         * @type {Array}
+         */
+        helper.chatMessages = [];
+        
+        /*
+         * changeset commits from the server
+         * @type {Array}
+         */
+        helper.commits = [];
+        
+        /*
+         * userInfo messages from the server
+         * @type {Array}
+         */
+        helper.userInfos = [];
+
         // listen for server messages
         helper.spyOnSocketIO();
         opts.cb();

@@ -1,21 +1,3 @@
-/*
- * chat messages received
- * @type {Array}
- */
-helper.chatMessages = [];
-
-/*
- * changeset commits from the server
- * @type {Array}
- */
-helper.commits = [];
-
-/*
- * userInfo messages from the server
- * @type {Array}
- */
-helper.userInfos = [];
-
 /**
  * Spys on socket.io messages and saves them into several arrays
  * that are visible in tests
@@ -190,7 +172,8 @@ helper.disableStickyChatviaIcon = function() {
 
 /**
  * Sets the src-attribute of the main iframe to the timeslider
- * In case a revision is given, sets the timeslider to this specific revision
+ * In case a revision is given, sets the timeslider to this specific revision.
+ * Defaults to going to the last revision.
  * It waits until the timer is filled with date and time, because it's one of the
  * last things that happen during timeslider load
  *
@@ -225,4 +208,15 @@ helper.sliderClick = function(X){
 
   sliderBar.trigger(edown);
   sliderBar.trigger(eup);
+}
+
+/**
+ * The timeslider text as an array of lines
+ *
+ * @returns {Array.<string>} lines of text
+ */
+helper.timesliderTextLines = function(){
+  return helper.contentWindow().$('.ace-line').map(function(){
+    return $(this).text()
+  }).get()
 }
