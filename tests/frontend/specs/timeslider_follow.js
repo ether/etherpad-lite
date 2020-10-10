@@ -64,12 +64,10 @@ describe("timeslider", function(){
     helper.waitFor(function(){
       return inner$('div').length == 1;
     }).done(function(){
-      setTimeout(function(){
-        inner$('div').append("<p>"+rev2text+"</p>");
-      },1000);
+      inner$('div').append("<p>"+rev2text+"</p>");
       helper.waitFor(function(){
         return inner$('div').length == 2;
-      }, 2500).done(function(){
+      }).done(function(){
         $('#iframe-container iframe').attr('src', $('#iframe-container iframe').attr('src')+'/timeslider#0');
         let timeslider$;
         let $sliderBar;
