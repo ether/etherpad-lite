@@ -2,134 +2,86 @@ describe("Chat messages and UI", function(){
   //create a new pad before each test run
   beforeEach(function(cb){
     helper.newPad(cb);
-    this.timeout(60000);
   });
 
-  it("opens chat, sends a message and makes sure it exists on the page", function(done) {
-    var inner$ = helper.padInner$;
-    var chrome$ = helper.padChrome$;
+  it("opens chat, sends a message, makes sure it exists on the page and hides chat", async function() {
     var chatValue = "JohnMcLear";
 
-    //click on the chat button to make chat visible
-    var $chatButton = chrome$("#chaticon");
-    $chatButton.click();
-    var $chatInput = chrome$("#chatinput");
-    $chatInput.sendkeys('JohnMcLear'); // simulate a keypress of typing JohnMcLear
-    $chatInput.sendkeys('{enter}'); // simulate a keypress of enter actually does evt.which = 10 not 13
+    await helper.showChat();
+    await helper.sendChatMessage(`${chatValue}{enter}`);
 
-    //check if chat shows up
-    helper.waitFor(function(){
-      return chrome$("#chattext").children("p").length !== 0; // wait until the chat message shows up
-    }).done(function(){
-      var $firstChatMessage = chrome$("#chattext").children("p");
-      var containsMessage = $firstChatMessage.text().indexOf("JohnMcLear") !== -1; // does the string contain JohnMcLear?
-      expect(containsMessage).to.be(true); // expect the first chat message to contain JohnMcLear
+    expect(helper.chatTextParagraphs().length).to.be(1);
 
-      // do a slightly more thorough check
-      var username = $firstChatMessage.children("b");
-      var usernameValue = username.text();
-      var time = $firstChatMessage.children(".time");
-      var timeValue = time.text();
-      var discoveredValue = $firstChatMessage.text();
-      var chatMsgExists = (discoveredValue.indexOf("JohnMcLear") !== -1);
-      expect(chatMsgExists).to.be(true);
-      done();
-    });
+    // <p data-authorid="a.qjkwNs4z0pPROphS"
+    //   class="author-a-qjkwz78zs4z122z0pz80zz82zz79zphz83z">
+    //   <b>unnamed:</b>
+    //   <span class="time author-a-qjkwz78zs4z122z0pz80zz82zz79zphz83z">12:38
+    //   </span> JohnMcLear
+    // </p>
+    let username = helper.chatTextParagraphs().children("b").text();
+    let time = helper.chatTextParagraphs().children(".time").text();
+
+    expect(helper.chatTextParagraphs().text()).to.be(`${username}${time} ${chatValue}`);
+
+    await helper.hideChat();
+  });
+
+  it("makes sure that an empty message can't be sent", async function() {
+    var chatValue = "mluto";
+
+    await helper.showChat();
+
+    let failed = false;
+    // simulate a keypress of enter (to send an empty message)
+    await helper.sendChatMessage("{enter}")
+      .catch(function(){failed = true});
+
+    expect(failed).to.be(true);
+
+    await helper.sendChatMessage(`${chatValue}{enter}`); // simulate a keypress of typing mluto and enter (to send 'mluto')
+
+    let chat = helper.chatTextParagraphs();
+
+    expect(chat.length).to.be(1);
+
+    // check that the received message is not the empty one
+    let username = chat.children("b").text();
+    let time = chat.children(".time").text();
+
+    expect(chat.text()).to.be(`${username}${time} ${chatValue}`);
 
   });
 
-  it("makes sure that an empty message can't be sent", function(done) {
-    var inner$ = helper.padInner$;
-    var chrome$ = helper.padChrome$;
+  it("makes chat stick to right side of the screen via settings, remove sticky via settings, close it", async function() {
+    await helper.showSettings();
 
-    //click on the chat button to make chat visible
-    var $chatButton = chrome$("#chaticon");
-    $chatButton.click();
-    var $chatInput = chrome$("#chatinput");
-    $chatInput.sendkeys('{enter}'); // simulate a keypress of enter (to send an empty message)
-    $chatInput.sendkeys('mluto'); // simulate a keypress of typing mluto
-    $chatInput.sendkeys('{enter}'); // simulate a keypress of enter (to send 'mluto')
+    await helper.enableStickyChatviaSettings();
+    expect(helper.isChatboxShown()).to.be(true);
+    expect(helper.isChatboxSticky()).to.be(true);
 
-    //check if chat shows up
-    helper.waitFor(function(){
-      return chrome$("#chattext").children("p").length !== 0; // wait until the chat message shows up
-    }).done(function(){
-      // check that the empty message is not there
-      expect(chrome$("#chattext").children("p").length).to.be(1);
-      // check that the received message is not the empty one
-      var $firstChatMessage = chrome$("#chattext").children("p");
-      var containsMessage = $firstChatMessage.text().indexOf("mluto") !== -1;
-      expect(containsMessage).to.be(true);
-      done();
-    });
+    await helper.disableStickyChatviaSettings();
+    expect(helper.isChatboxSticky()).to.be(false);
+    expect(helper.isChatboxShown()).to.be(true);
+
+    await helper.hideChat();
+    expect(helper.isChatboxSticky()).to.be(false);
+    expect(helper.isChatboxShown()).to.be(false);
   });
 
-  it("makes chat stick to right side of the screen", function(done) {
-    var inner$ = helper.padInner$;
-    var chrome$ = helper.padChrome$;
+  it("makes chat stick to right side of the screen via icon on the top right, remove sticky via icon, close it", async function() {
+    await helper.showChat();
 
-    //click on the settings button to make settings visible
-    var $settingsButton = chrome$(".buttonicon-settings");
-    $settingsButton.click();
+    await helper.enableStickyChatviaIcon();
+    expect(helper.isChatboxShown()).to.be(true);
+    expect(helper.isChatboxSticky()).to.be(true);
 
-    //get the chat selector
-    var $stickychatCheckbox = chrome$("#options-stickychat");
+    await helper.disableStickyChatviaIcon();
+    expect(helper.isChatboxShown()).to.be(true);
+    expect(helper.isChatboxSticky()).to.be(false);
 
-    //select chat always on screen
-    if (!$stickychatCheckbox.is(':checked')) {
-      $stickychatCheckbox.click();
-    }
-
-    // due to animation, we need to make some timeout...
-    setTimeout(function() {
-      //check if chat changed to get the stickychat Class
-      var $chatbox = chrome$("#chatbox");
-      var hasStickyChatClass = $chatbox.hasClass("stickyChat");
-      expect(hasStickyChatClass).to.be(true);
-
-      // select chat always on screen and fire change event
-      $stickychatCheckbox.click();
-
-      setTimeout(function() {
-        //check if chat changed to remove the stickychat Class
-        var hasStickyChatClass = $chatbox.hasClass("stickyChat");
-        expect(hasStickyChatClass).to.be(false);
-
-        done();
-      }, 10)
-    }, 10)
-
-
-  });
-
-  it("makes chat stick to right side of the screen then makes it one step smaller", function(done) {
-    var inner$ = helper.padInner$;
-    var chrome$ = helper.padChrome$;
-
-    // open chat
-    chrome$('#chaticon').click();
-
-    // select chat always on screen from chatbox
-    chrome$('.stick-to-screen-btn').click();
-
-    // due to animation, we need to make some timeout...
-    setTimeout(function() {
-      //check if chat changed to get the stickychat Class
-      var $chatbox = chrome$("#chatbox");
-      var hasStickyChatClass = $chatbox.hasClass("stickyChat");
-      expect(hasStickyChatClass).to.be(true);
-
-      // select chat always on screen and fire change event
-      chrome$('#titlecross').click();
-
-      setTimeout(function() {
-        //check if chat changed to remove the stickychat Class
-        var hasStickyChatClass = $chatbox.hasClass("stickyChat");
-        expect(hasStickyChatClass).to.be(false);
-
-        done();
-      }, 10)
-    }, 10)
+    await helper.hideChat();
+    expect(helper.isChatboxSticky()).to.be(false);
+    expect(helper.isChatboxShown()).to.be(false);
   });
 
   xit("Checks showChat=false URL Parameter hides chat then when removed it shows chat", function(done) {
