@@ -42,6 +42,9 @@ describe("timeslider follow", function(){
 
     await helper.gotoTimeslider();
 
+    // set to follow contents as it arrives
+    helper.contentWindow().$('#options-followContents').prop("checked", true);
+
     helper.contentWindow().$('#leftstep').click();
     await helper.waitForPromise(function(){
       return helper.timesliderTextLines()[0] === rev1text;
