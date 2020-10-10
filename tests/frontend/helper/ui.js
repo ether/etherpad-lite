@@ -95,3 +95,32 @@ helper.isSettingsShown = function() {
   return helper.padChrome$('#settings').hasClass('popup-show');
 }
 
+/**
+ * Gets the timer div of a timeslider that has the datetime of the revision
+ *
+ * @returns {HTMLElement} timer
+ */
+helper.timesliderTimer = function(){
+  if(typeof helper.contentWindow().$ == 'function'){
+    return helper.contentWindow().$('#timer') }
+  }
+
+/**
+ * Gets the time of the revision on a timeslider
+ *
+ * @returns {HTMLElement} timer
+ */
+helper.timesliderTimerTime = function(){
+  if(helper.timesliderTimer()){
+    return helper.timesliderTimer().text()
+  }
+}
+
+/**
+ * The ui-slidar-bar element in the timeslider
+ *
+ * @returns {HTMLElement}
+ */
+helper.sliderBar = function(){
+  return helper.contentWindow().$('#ui-slider-bar')
+}

@@ -187,3 +187,41 @@ helper.disableStickyChatviaIcon = function() {
     return helper.waitForPromise(function(){return !helper.isChatboxSticky()},2000);
   }
 }
+
+/**
+ * Sets the src-attribute of the main iframe to the timeslider
+ * In case a revision is given, sets the timeslider to this specific revision
+ * It waits until the timer is filled with date and time
+ *
+ * @param {number} [revision] the optional revision
+ * @returns {Promise}
+ * @todo for some reason this does only work the first time, you cannot
+ * goto rev 0 and then via the same method to rev 5. Use buttons instead
+ */
+helper.gotoTimeslider = function(revision){
+  revision = Number.isInteger(revision) ? '#'+revision : '';
+  var iframe = $('#iframe-container iframe');
+  iframe.attr('src', iframe.attr('src')+'/timeslider' + revision);
+
+  return helper.waitForPromise(function(){
+    return helper.timesliderTimerTime()
+      && !Number.isNaN(new Date(helper.timesliderTimerTime()).getTime()) },5000);
+}
+
+/**
+ * Clicks in the timeslider at a specific offset
+ * It's used to navigate the timeslider
+ *
+ * @todo no mousemove test
+ * @param {number} X coordinate
+ */
+helper.sliderClick = function(X){
+  let sliderBar = helper.sliderBar()
+  let edown = new jQuery.Event('mousedown');
+  let eup = new jQuery.Event('mouseup');
+  edown.clientX = eup.clientX = X;
+  edown.clientY = eup.clientY = sliderBar.offset().top;
+
+  sliderBar.trigger(edown);
+  sliderBar.trigger(eup);
+}
