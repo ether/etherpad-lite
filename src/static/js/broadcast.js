@@ -255,9 +255,15 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       debugLog(e);
     }
 
-    var lineNumber = Changeset.opIterator(Changeset.unpack(changeset).ops).next().lines;
+    // we want to scroll to the area that is changed before the lines are mutated and we can't go
+    // to a line that is not there yet
+    let lineNumber = Changeset.opIterator(Changeset.unpack(changeset).ops).next().lines;
     if($('#options-followContents').is(":checked") || $('#options-followContents').prop("checked")){
-      goToLineNumber(lineNumber);
+      if(padContents.currentLines.length <= lineNumber){
+        goToLineNumber(padContents.currentLines.length-1)
+      } else {
+        goToLineNumber(lineNumber);
+      }
     }
 
     Changeset.mutateTextLines(changeset, padContents);
