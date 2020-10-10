@@ -6,7 +6,7 @@ describe("timeslider follow", function(){
 
   it("content as it's added to timeslider", async function() {
     // send 3 revisions
-    let revs = 3;
+    let revs = 6;
     let message = 'a\n\n\n\n\n\n\n\n\n\n';
     let newLines = message.split('\n').length
     for (let i=0;i<revs;i++){
