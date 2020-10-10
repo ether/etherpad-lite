@@ -17,6 +17,7 @@ describe('Responsiveness of Editor', function() {
   // create a new pad before each test run
   beforeEach(function(cb) {
     helper.newPad(cb);
+    this.timeout(60000)
   });
   // JM commented out on 8th Sep 2020 for a release, after release this needs uncommenting
   // And the test needs to be fixed to work in Firefox 52 on Windows 7.  I am not sure why it fails on this specific platform
