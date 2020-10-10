@@ -406,6 +406,7 @@ describe("the test helper", function(){
         cb();
       })
     })
+
     it(".textLines() returns the text of the pad as strings", async function(){
       let lines = helper.textLines();
       let defaultText = helper.defaultText();
@@ -416,6 +417,7 @@ describe("the test helper", function(){
       // only when the default text does not end with "\n" already
       expect(lines.join("\n")+"\n").to.equal(defaultText);
     })
+
     it(".linesDiv() returns the text of the pad as div elements", async function(){
       let lines = helper.linesDiv();
       let defaultText = helper.defaultText();
@@ -429,30 +431,34 @@ describe("the test helper", function(){
         }
       })
     })
-  })
 
-  describe("helper.edit",function(){
-    before(function(cb){
-      helper.newPad(function(){
-        cb();
-      });
-    })
-    it("defaults to send an edit to the first line", async function(){
+    it(".edit() defaults to send an edit to the first line", async function(){
       let firstLine = helper.textLines()[0];
       await helper.edit("line")
       expect(helper.textLines()[0]).to.be(`line${firstLine}`);
     })
-    it("supports sendkeys syntax", async function(){
+
+    it(".edit() to the line specified with parameter lineNo", async function(){
+      let firstLine = helper.textLines()[0];
+      await helper.edit("second line", 2);
+
+      let text = helper.textLines();
+      expect(text[0]).to.equal(firstLine);
+      expect(text[1]).to.equal("second line");
+    })
+
+    it(".edit() supports sendkeys syntax ({selectall},{del},{enter})", async function(){
       expect(helper.textLines()[0]).to.not.equal('');
+
+      // select first line
       helper.linesDiv()[0].sendkeys("{selectall}")
+      // delete first line
       await helper.edit("{del}")
+
       expect(helper.textLines()[0]).to.be('');
       let noOfLines = helper.textLines().length;
       await helper.edit("{enter}")
       expect(helper.textLines().length).to.be(noOfLines+1);
     })
-    xit("sends edit to the line specified with parameter lineNo", async function(){
-    })
-  
   })
 });
