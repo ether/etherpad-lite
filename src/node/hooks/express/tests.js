@@ -13,8 +13,8 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     // merge the two sets of results
     let files = [].concat(coreTests, pluginTests).sort();
 
-    // Remove swap files from tests
-    files = files.filter(el => !/\.swp$/.test(el))
+    // Keep only *.js files
+    files = files.filter((f) => f.endsWith('.js'));
 
     console.debug("Sent browser the following test specs:", files);
     res.setHeader('content-type', 'text/javascript');
