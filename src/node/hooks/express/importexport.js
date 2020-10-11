@@ -71,4 +71,6 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     }
     await importHandler.doImport(req, res, req.params.pad);
   });
+
+  return cb();
 }

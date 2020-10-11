@@ -198,4 +198,5 @@ exports.checkAccess = (req, res, next) => {
 
 exports.expressConfigure = (hook_name, args, cb) => {
   args.app.use(exports.checkAccess);
+  return cb();
 };

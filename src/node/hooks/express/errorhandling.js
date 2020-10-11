@@ -12,4 +12,6 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     console.error(err.stack? err.stack : err.toString());
     stats.meter('http500').mark()
   });
+
+  return cb();
 }

@@ -15,6 +15,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     res.send( eejs.require("ep_etherpad-lite/templates/admin/settings.html", render_args) );
 
   });
+  return cb();
 }
 
 exports.socketio = function (hook_name, args, cb) {
@@ -53,4 +54,5 @@ exports.socketio = function (hook_name, args, cb) {
     });
 
   });
+  return cb();
 }

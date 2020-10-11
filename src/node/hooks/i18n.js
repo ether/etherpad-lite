@@ -100,7 +100,7 @@ var generateLocaleIndex = function (locales) {
 }
 
 
-exports.expressCreateServer = function(n, args) {
+exports.expressCreateServer = function(n, args, cb) {
 
   //regenerate locales on server restart
   var locales = getAllLocales();
@@ -123,5 +123,5 @@ exports.expressCreateServer = function(n, args) {
     res.send(localeIndex);
   })
 
+  return cb();
 }
-
