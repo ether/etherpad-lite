@@ -77,14 +77,14 @@
     "etherpad-lite": "./node/server.js"
   },
   "devDependencies": {
+    "etherpad-cli-client": "0.0.9",
     "mocha": "7.1.2",
     "mocha-froth": "^0.2.10",
     "nyc": "15.0.1",
+    "selenium-webdriver": "^4.0.0-alpha.7",
     "set-cookie-parser": "^2.4.6",
     "superagent": "^3.8.3",
-    "supertest": "4.0.2",
-    "wd": "1.12.1",
-    "etherpad-cli-client": "0.0.9"
+    "supertest": "4.0.2"
   },
   "engines": {
     "node": ">=10.13.0",

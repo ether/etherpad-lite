@@ -3,29 +3,12 @@ language: node_js
 node_js:
   - "lts/*"
 
-services:
-  - docker
-
 cache: false
-
-before_install:
-  - sudo add-apt-repository -y ppa:libreoffice/ppa
-  - sudo apt-get update
-  - sudo apt-get -y install libreoffice
-  - sudo apt-get -y install libreoffice-pdfimport
-
-install:
-  - "bin/installDeps.sh"
-  - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
-  # Installing some plugins
-
-script:
-  - "tests/frontend/travis/runner.sh"
 
 env:
   global:
-    - secure: "WMGxFkOeTTlhWB+ChMucRtIqVmMbwzYdNHuHQjKCcj8HBEPdZLfCuK/kf4rG\nVLcLQiIsyllqzNhBGVHG1nyqWr0/LTm8JRqSCDDVIhpyzp9KpCJQQJG2Uwjk\n6/HIJJh/wbxsEdLNV2crYU/EiVO3A4Bq0YTHUlbhUqG3mSCr5Ec="
-    - secure: "gejXUAHYscbR6Bodw35XexpToqWkv2ifeECsbeEmjaLkYzXmUUNWJGknKSu7\nEUsSfQV8w+hxApr1Z+jNqk9aX3K1I4btL3cwk2trnNI8XRAvu1c1Iv60eerI\nkE82Rsd5lwUaMEh+/HoL8ztFCZamVndoNgX7HWp5J/NRZZMmh4g="
+  - secure: gQdsD91DHpaDXDyDzrxWUaYDZxzZC3ojkBWX6nbLbOgADSWhzHUqMShDQXGlT80G4SikOhtSGlS2aOtsRcPTOGRtwjrOkg266JY+Fa37yO6I7/xios8VZp56Tu6ADNuItLptP0nH/DY3rPEIfiztcd3h6jLZ0RJlGY7lkHpM3xs=
+  - secure: HxLMaehWXVYuhkJ54SqR+9czD6i8RtDhfx7WM8yTrRE2JtThqECfL+fjqrNMkG25zZpDISwCm082qb3Z5uE3tpARi9eizOLAuLbDwQeJNfV1vW7RBj3mZMhgfuwGMH5VkQsI1MiSPf3AIHPQdQSfkBTC5KiYzYsMay6VrKwEswA=
 
 jobs:
   include:
@@ -41,76 +24,3 @@ jobs:
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
       script:
         - "tests/frontend/travis/runner.sh"
-    - name: "Run the Backend tests without Plugins"
-      install:
-        - "bin/installDeps.sh"
-        - "cd src && npm install && cd -"
-      script:
-        - "tests/frontend/travis/runnerBackend.sh"
-    - name: "Test the Dockerfile"
-      install:
-        - "cd src && npm install && cd -"
-      script:
-        - "docker build -t etherpad:test ."
-        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
-        - "cd src && npm run test-container"
-    - name: "Load test Etherpad without Plugins"
-      install:
-        - "bin/installDeps.sh"
-        - "cd src && npm install && cd -"
-        - "npm install -g etherpad-load-test"
-      script:
-        - "tests/frontend/travis/runnerLoadTest.sh"
-    # we can only frontend tests from the ether/ organization and not from forks.
-    # To request tests to be run ask a maintainer to fork your repo to ether/
-    - if: fork = false
-      name: "Test the Frontend Plugins only"
-      install:
-        #FIXME
-        - "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/g' settings.json.template > settings.json"
-        - "tests/frontend/travis/sauce_tunnel.sh"
-        - "bin/installDeps.sh"
-        - "rm tests/frontend/specs/*"
-        - "npm install ep_hash_auth ep_cursortrace ep_subscript_and_superscript ep_headings2 ep_author_hover ep_align ep_webrtc ep_table_of_contents ep_font_size ep_markdown ep_spellcheck"
-        - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
-      script:
-        - "tests/frontend/travis/runner.sh"
-    - name: "Run the Backend tests with Plugins"
-      install:
-        - "bin/installDeps.sh"
-        - "npm install ep_hash_auth ep_cursortrace ep_subscript_and_superscript ep_headings2 ep_author_hover ep_align ep_webrtc ep_table_of_contents ep_font_size ep_markdown ep_spellcheck"
-        - "cd src && npm install && cd -"
-      script:
-        - "tests/frontend/travis/runnerBackend.sh"
-    - name: "Test the Dockerfile"
-      install:
-        - "cd src && npm install && cd -"
-      script:
-        - "docker build -t etherpad:test ."
-        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
-        - "cd src && npm run test-container"
-    - name: "Load test Etherpad with Plugins"
-      install:
-        - "bin/installDeps.sh"
-        - "npm install ep_hash_auth ep_cursortrace ep_subscript_and_superscript ep_headings2 ep_comments_page ep_author_hover ep_align ep_webrtc ep_table_of_contents ep_font_size ep_markdown ep_spellcheck"
-        - "cd src && npm install && cd -"
-        - "npm install -g etherpad-load-test"
-      script:
-        - "tests/frontend/travis/runnerLoadTest.sh"
-    - name: "Test rate limit"
-      install:
-        - "docker network create --subnet=172.23.42.0/16 ep_net"
-        - "docker build -f Dockerfile -t epl-debian-slim ."
-        - "docker build -f tests/ratelimit/Dockerfile.nginx -t nginx-latest ."
-        - "docker build -f tests/ratelimit/Dockerfile.anotherip -t anotherip ."
-        - "docker run -p 8081:80 --rm --network ep_net --ip 172.23.42.1 -d nginx-latest"
-        - "docker run --name etherpad-docker -p 9000:9001 --rm --network ep_net --ip 172.23.42.2 -e 'TRUST_PROXY=true' epl-debian-slim &"
-        - "docker run --rm --network ep_net --ip 172.23.42.3 --name anotherip -dt anotherip"
-        - "./bin/installDeps.sh"
-      script:
-        - "cd tests/ratelimit && bash testlimits.sh"
-
-notifications:
-  irc:
-    channels:
-      - "irc.freenode.org#etherpad-lite-dev"
