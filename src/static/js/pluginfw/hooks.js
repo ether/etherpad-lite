@@ -76,22 +76,6 @@ exports.mapFirst = function (lst, fn, cb, predicate) {
   next();
 }
 
-
-/* Don't use Array.concat as it flatterns arrays within the array */
-exports.flatten = function (lst) {
-  var res = [];
-  if (lst != undefined && lst != null) {
-    for (var i = 0; i < lst.length; i++) {
-      if (lst[i] != undefined && lst[i] != null) {
-        for (var j = 0; j < lst[i].length; j++) {
-          res.push(lst[i][j]);
-    }
-      }
-    }
-  }
-  return res;
-}
-
 exports.callAll = function (hook_name, args) {
   if (!args) args = {};
   if (pluginDefs.hooks[hook_name] === undefined) return [];
