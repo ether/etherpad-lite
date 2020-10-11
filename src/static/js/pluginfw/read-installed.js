@@ -287,7 +287,6 @@ function findUnmet (obj) {
       }
 
     })
-  log.debug([obj._id], "returning")
   return obj
 }
 
