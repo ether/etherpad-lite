@@ -87,5 +87,5 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     });
   });
 
-
+  return cb();
 }

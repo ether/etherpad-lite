@@ -27,6 +27,8 @@ exports.expressCreateServer = function(hook_name, args, cb) {
       latestVersion: UpdateCheck.getLatestVersion()
     }));
   });
+
+  return cb();
 }
 
 exports.socketio = function(hook_name, args, cb) {
@@ -111,6 +113,7 @@ exports.socketio = function(hook_name, args, cb) {
       });
     });
   });
+  return cb();
 }
 
 function sortPluginList(plugins, property, /*ASC?*/dir) {

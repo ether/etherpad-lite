@@ -532,7 +532,7 @@ const generateDefinitionForVersion = (version, style = APIPathStyle.FLAT) => {
   return definition;
 };
 
-exports.expressCreateServer = async (_, args) => {
+exports.expressCreateServer = (hookName, args, cb) => {
   const { app } = args;
 
   // create openapi-backend handlers for each api version under /api/{version}/*
@@ -687,6 +687,7 @@ exports.expressCreateServer = async (_, args) => {
       });
     }
   }
+  return cb();
 };
 
 // helper to get api root

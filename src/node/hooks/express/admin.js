@@ -5,5 +5,5 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     if('/' != req.path[req.path.length-1]) return res.redirect('./admin/');
     res.send( eejs.require("ep_etherpad-lite/templates/admin/index.html", {}) );
   });
+  return cb();
 }
-

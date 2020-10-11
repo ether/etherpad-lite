@@ -26,4 +26,5 @@ exports.expressCreateServer = function (hook_name, args, cb) {
       res.status(302).send('You should be redirected to <a href="' + real_url + '">' + real_url + '</a>');
     }
   });
+  return cb();
 }

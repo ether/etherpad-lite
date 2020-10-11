@@ -61,6 +61,8 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   args.app.get('/tests/frontend', function (req, res) {
     res.redirect('/tests/frontend/index.html');
   });
+
+  return cb();
 }
 
 const readdir = util.promisify(fs.readdir);

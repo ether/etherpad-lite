@@ -55,4 +55,6 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     res.write(JSON.stringify({"plugins": clientPlugins, "parts": clientParts}));
     res.end();
   });
+
+  return cb();
 }

@@ -72,4 +72,6 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   socketIORouter.addComponent("pad", padMessageHandler);
 
   hooks.callAll("socketio", {"app": args.app, "io": io, "server": args.server});
+
+  return cb();
 }
