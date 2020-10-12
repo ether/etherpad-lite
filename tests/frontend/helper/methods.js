@@ -51,7 +51,7 @@ helper.edit = async function(message, line){
 helper.linesDiv = function(){
   return helper.padInner$('.ace-line').map(function(){
     return $(this)
-  })
+  }).get()
 }
 
 /**
