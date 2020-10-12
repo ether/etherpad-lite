@@ -33,8 +33,8 @@ describe("timeslider", function(){
     // the Date object of the day should not be NaN
     expect( Number.isNaN(dateLast) ).to.eql(false)
 
-    // the label should match Version `Number`
-    expect( labelLast.indexOf(`Version ${revs}`) ).to.not.be(-1);
+    // the label should be Version `Number`
+    expect(labelLast).to.be(`Version ${revs}`);
 
     // Click somewhere left on the timeslider to go to revision 0
     helper.sliderClick(30);
@@ -51,12 +51,12 @@ describe("timeslider", function(){
     // the datetime should be a date
     expect( Number.isNaN(timerTime)).to.eql(false);
     // the last revision should be newer or have the same time
-    expect(timerTimeLast - timerTime >= 0);
+    expect(timerTimeLast).to.not.be.lessThan(timerTime);
 
     // the Date object of the day should not be NaN
     expect( Number.isNaN(date) ).to.eql(false)
 
-    // the label should match Version 0
-    expect( label ).to.match( /Version 0/);
+    // the label should be Version 0
+    expect( label ).to.be('Version 0');
   });
 });

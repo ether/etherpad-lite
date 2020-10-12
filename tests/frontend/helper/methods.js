@@ -74,6 +74,12 @@ helper.defaultText = function(){
 
 /**
  * Sends a chat `message` via `sendKeys`
+ * You *must* include `{enter}` at the end of the string or it will
+ * just fill the input field but not send the message.
+ *
+ * @example
+ *
+ * `helper.sendChatMessage('hi{enter}')`
  *
  * @param {string} message the chat message to be sent
  * @returns {Promise}
