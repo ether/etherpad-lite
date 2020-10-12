@@ -164,12 +164,12 @@ var helper = {};
 
     var deferred = $.Deferred();
 
-    var _fail = deferred.fail;
+    const _fail = deferred.fail.bind(deferred);
     var listenForFail = false;
-    deferred.fail = function(){
+    deferred.fail = (...args) => {
       listenForFail = true;
-      _fail.apply(this, arguments);
-    }
+      return _fail(...args);
+    };
 
     var intervalCheck = setInterval(function(){
       var passed = false;
