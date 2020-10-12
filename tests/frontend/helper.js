@@ -158,10 +158,7 @@ var helper = {};
     return padName;
   }
 
-  helper.waitFor = function(conditionFunc, _timeoutTime, _intervalTime){
-    var timeoutTime = _timeoutTime || 1900;
-    var intervalTime = _intervalTime || 10;
-
+  helper.waitFor = function(conditionFunc, timeoutTime = 1900, intervalTime = 10) {
     var deferred = $.Deferred();
 
     const _fail = deferred.fail.bind(deferred);
