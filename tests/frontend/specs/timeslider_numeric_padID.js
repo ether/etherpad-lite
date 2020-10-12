@@ -18,12 +18,12 @@ describe("timeslider", function(){
     // http://192.168.1.48:9001/p/2/1/export/html
     // http://192.168.1.48:9001/p/735773577399/1/export/html
     let rev1ExportLink = helper.contentWindow().$('#exporthtmla').attr('href');
-    expect(rev1ExportLink.indexOf('/1/export/html')).to.not.be(-1);
+    expect(rev1ExportLink).to.contain('/1/export/html');
 
     // Click somewhere left on the timeslider to go to revision 0
     helper.sliderClick(30);
 
     let rev0ExportLink = helper.contentWindow().$('#exporthtmla').attr('href');
-    expect(rev0ExportLink.indexOf('/0/export/html')).to.not.be(-1);
+    expect(rev0ExportLink).to.contain('/0/export/html');
   });
 });
