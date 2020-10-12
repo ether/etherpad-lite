@@ -60,9 +60,7 @@ helper.linesDiv = function(){
  * @returns {Array.<string>} lines of text
  */
 helper.textLines = function(){
-  return helper.padInner$('.ace-line').map(function(){
-    return $(this).text()
-  }).get()
+  return helper.linesDiv().map((div) => div.text());
 }
 
 /**
