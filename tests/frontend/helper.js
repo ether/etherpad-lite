@@ -169,16 +169,14 @@ var helper = {};
     };
 
     var intervalCheck = setInterval(function(){
-      var passed = false;
-
-      passed = conditionFunc();
-
-      if(passed){
-        clearInterval(intervalCheck);
-        clearTimeout(timeout);
-
+      try {
+        if (!conditionFunc()) return;
         deferred.resolve();
+      } catch (err) {
+        deferred.reject(err);
       }
+      clearInterval(intervalCheck);
+      clearTimeout(timeout);
     }, intervalTime);
 
     var timeout = setTimeout(function(){

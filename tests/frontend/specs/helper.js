@@ -155,6 +155,15 @@ describe("the test helper", function(){
       });
     });
 
+    it('rejects if the predicate throws', async function() {
+      let err;
+      await helper.waitFor(() => { throw new Error('test exception'); })
+          .fail(() => {}) // Suppress the redundant uncatchable exception.
+          .catch((e) => { err = e; });
+      expect(err).to.be.an(Error);
+      expect(err.message).to.be('test exception');
+    });
+
     describe("returns a deferred object", function(){
       it("it calls done after success", function(done){
         helper.waitFor(function(){
