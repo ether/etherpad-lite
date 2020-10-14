@@ -193,6 +193,26 @@ describe("the test helper", function(){
         },100);
       });
     });
+
+    describe('checks first then sleeps', function() {
+      it('resolves quickly if the predicate is immediately true', async function() {
+        const before = Date.now();
+        await helper.waitFor(() => true, 1000, 900);
+        expect(Date.now() - before).to.be.lessThan(800);
+      });
+
+      it('polls exactly once if timeout < interval', async function() {
+        let calls = 0;
+        await helper.waitFor(() => { calls++; }, 1, 1000)
+            .fail(() => {}) // Suppress the redundant uncatchable exception.
+            .catch(() => {}); // Don't throw an exception -- we know it rejects.
+        expect(calls).to.be(1);
+      });
+
+      it('resolves if condition is immediately true even if timeout is 0', async function() {
+        await helper.waitFor(() => true, 0);
+      });
+    });
   });
 
   describe("the selectLines method", function(){
