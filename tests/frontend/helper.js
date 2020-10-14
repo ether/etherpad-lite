@@ -168,7 +168,7 @@ var helper = {};
       return _fail(...args);
     };
 
-    var intervalCheck = setInterval(function(){
+    const check = () => {
       try {
         if (!conditionFunc()) return;
         deferred.resolve();
@@ -177,9 +177,11 @@ var helper = {};
       }
       clearInterval(intervalCheck);
       clearTimeout(timeout);
-    }, intervalTime);
+    };
 
-    var timeout = setTimeout(function(){
+    const intervalCheck = setInterval(check, intervalTime);
+
+    const timeout = setTimeout(() => {
       clearInterval(intervalCheck);
       var error = new Error("wait for condition never became true " + conditionFunc.toString());
       deferred.reject(error);
@@ -189,8 +191,11 @@ var helper = {};
       }
     }, timeoutTime);
 
+    // Check right away to avoid an unnecessary sleep if the condition is already true.
+    check();
+
     return deferred;
-  }
+  };
 
   helper.selectLines = function($startLine, $endLine, startOffset, endOffset){
     // if no offset is provided, use beginning of start line and end of end line
