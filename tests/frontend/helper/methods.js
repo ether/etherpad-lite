@@ -28,15 +28,15 @@ helper.spyOnSocketIO = function (){
  * @param {string} message The edit to make - can be anything supported by `sendkeys`
  * @param {number} [line] the optional line to make the edit on starting from 1
  * @returns {Promise}
- * @todo needs to support writing to a specified position
+ * @todo needs to support writing to a specified caret position
  *
  */
 helper.edit = async function(message, line){
-  let editsNr = helper.commits.length;
+  let editsNum = helper.commits.length;
   line = line ? line - 1 : 0;
   helper.linesDiv()[line].sendkeys(message);
   return helper.waitForPromise(function(){
-    return editsNr + 1 === helper.commits.length;
+    return editsNum + 1 === helper.commits.length;
   })
 }
 
@@ -56,6 +56,7 @@ helper.linesDiv = function(){
 
 /**
  * The pad text as an array of lines
+ * For lines in timeslider use `helper.timesliderTextLines()`
  *
  * @returns {Array.<string>} lines of text
  */
@@ -76,6 +77,8 @@ helper.defaultText = function(){
  * Sends a chat `message` via `sendKeys`
  * You *must* include `{enter}` at the end of the string or it will
  * just fill the input field but not send the message.
+ *
+ * @todo Cannot send multiple messages at once
  *
  * @example
  *

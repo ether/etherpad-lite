@@ -31,14 +31,7 @@ describe("Chat messages and UI", function(){
 
     await helper.showChat();
 
-    let failed = false;
-    // simulate a keypress of enter (to send an empty message)
-    await helper.sendChatMessage("{enter}")
-      .catch(function(){failed = true});
-
-    expect(failed).to.be(true);
-
-    await helper.sendChatMessage(`${chatValue}{enter}`); // simulate a keypress of typing mluto and enter (to send 'mluto')
+    await helper.sendChatMessage(`{enter}${chatValue}{enter}`); // simulate a keypress of typing enter, mluto and enter (to send 'mluto')
 
     let chat = helper.chatTextParagraphs();
 
@@ -49,7 +42,6 @@ describe("Chat messages and UI", function(){
     let time = chat.children(".time").text();
 
     expect(chat.text()).to.be(`${username}${time} ${chatValue}`);
-
   });
 
   it("makes chat stick to right side of the screen via settings, remove sticky via settings, close it", async function() {

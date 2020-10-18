@@ -220,6 +220,8 @@ var helper = {};
   /**
    * Same as `waitFor` but using Promises
    *
+   * @returns {Promise}
+   *
    */
   helper.waitForPromise = async function(...args) {
     // Note: waitFor() has a strange API: On timeout it rejects, but it also throws an uncatchable

@@ -37,7 +37,7 @@ describe("timeslider", function(){
     expect(labelLast).to.be(`Version ${revs}`);
 
     // Click somewhere left on the timeslider to go to revision 0
-    helper.sliderClick(30);
+    helper.sliderClick(1);
 
     // the datetime of last edit
     let timerTime = new Date(helper.timesliderTimerTime()).getTime();

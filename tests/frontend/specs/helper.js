@@ -410,7 +410,7 @@ describe("the test helper", function(){
     it(".textLines() returns the text of the pad as strings", async function(){
       let lines = helper.textLines();
       let defaultText = helper.defaultText();
-      expect(lines).to.be.an('object');
+      expect(Array.isArray(lines)).to.be(true);
       expect(lines[0]).to.be.an('string');
       // @todo
       // final "\n" is added automatically, but my understanding is this should happen
@@ -421,7 +421,7 @@ describe("the test helper", function(){
     it(".linesDiv() returns the text of the pad as div elements", async function(){
       let lines = helper.linesDiv();
       let defaultText = helper.defaultText();
-      expect(lines).to.be.an('object');
+      expect(Array.isArray(lines)).to.be(true);
       expect(lines[0]).to.be.an('object');
       expect(lines[0].text()).to.be.an('string');
       _.map(defaultText.split("\n"), function(line, index){
