@@ -149,8 +149,10 @@ describe("the test helper", function(){
         checks++;
         return false;
       }, 2000, 100).fail(function(){
-        expect(checks).to.be.greaterThan(15);
-        expect(checks).to.be.lessThan(21);
+        // One at the beginning, and 19-20 more depending on whether it's the timeout or the final
+        // poll that wins at 2000ms.
+        expect(checks).to.be.greaterThan(19);
+        expect(checks).to.be.lessThan(22);
         done();
       });
     });
