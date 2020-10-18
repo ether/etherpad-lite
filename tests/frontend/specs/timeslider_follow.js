@@ -35,7 +35,7 @@ describe("timeslider follow", function(){
    * the change is applied.
    *
    */
-  it("only to lines that exist in the current pad view, see #4389", async function(){
+  xit("only to lines that exist in the current pad view, see #4389", async function(){
     // Select everything and clear via delete key
     let e = helper.padInner$.Event(helper.evtType);
     e.keyCode = 8; //delete key
