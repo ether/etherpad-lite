@@ -88,7 +88,7 @@
   "pad.importExport.abiword.innerHTML": "You only can import from plain text or HTML formats. For more advanced import features please <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">install AbiWord or LibreOffice</a>.",
 
   "pad.modals.connected": "Connected.",
-  "pad.modals.reconnecting": "Reconnecting to your pad..",
+  "pad.modals.reconnecting": "Reconnecting to your pad…",
   "pad.modals.forcereconnect": "Force reconnect",
   "pad.modals.reconnecttimer": "Trying to reconnect in",
   "pad.modals.cancel": "Cancel",
