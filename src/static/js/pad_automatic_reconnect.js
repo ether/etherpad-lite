@@ -21,11 +21,21 @@ var createCountDownElementsIfNecessary = function($modal) {
     var $reconnectButton = $modal.find('#forcereconnect');
 
     // create extra DOM elements, if they don't exist
-    var $reconnectTimerMessage = $('<p class="reconnecttimer"> \
-                                      <span data-l10n-id="pad.modals.reconnecttimer">Trying to reconnect in </span> \
-                                      <span class="timetoexpire"></span> \
-                                    </p>');
-    var $cancelReconnect = $('<button id="cancelreconnect" data-l10n-id="pad.modals.cancel">Cancel</button>');
+    const $reconnectTimerMessage =
+        $('<p>')
+            .addClass('reconnecttimer')
+            .append(
+                $('<span>')
+                    .attr('data-l10n-id', 'pad.modals.reconnecttimer')
+                    .text('Trying to reconnect in '))
+            .append(
+                $('<span>')
+                    .addClass('timetoexpire'));
+    const $cancelReconnect =
+        $('<button>')
+            .attr('id', 'cancelreconnect')
+            .attr('data-l10n-id', 'pad.modals.cancel')
+            .text('Cancel');
 
     localize($reconnectTimerMessage);
     localize($cancelReconnect);
