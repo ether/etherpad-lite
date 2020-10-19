@@ -189,23 +189,37 @@ function handshake()
   });
 
   socket.on('reconnect', function () {
-    pad.collabClient.setChannelState("CONNECTED");
+    // pad.collabClient might be null if the hanshake failed (or it never got that far).
+    if (pad.collabClient != null) {
+      pad.collabClient.setChannelState('CONNECTED');
+    }
     sendClientReady(receivedClientVars);
   });
 
   socket.on('reconnecting', function() {
-    pad.collabClient.setStateIdle();
-    pad.collabClient.setIsPendingRevision(true);
-    pad.collabClient.setChannelState("RECONNECTING");
+    // pad.collabClient might be null if the hanshake failed (or it never got that far).
+    if (pad.collabClient != null) {
+      pad.collabClient.setStateIdle();
+      pad.collabClient.setIsPendingRevision(true);
+      pad.collabClient.setChannelState('RECONNECTING');
+    }
   });
 
   socket.on('reconnect_failed', function(error) {
-    pad.collabClient.setChannelState("DISCONNECTED", "reconnect_timeout");
+    // pad.collabClient might be null if the hanshake failed (or it never got that far).
+    if (pad.collabClient != null) {
+      pad.collabClient.setChannelState('DISCONNECTED', 'reconnect_timeout');
+    } else {
+      throw new Error('Reconnect timed out');
+    }
   });
 
   socket.on('error', function(error) {
-    pad.collabClient.setStateIdle();
-    pad.collabClient.setIsPendingRevision(true);
+    // pad.collabClient might be null if the error occurred before the hanshake completed.
+    if (pad.collabClient != null) {
+      pad.collabClient.setStateIdle();
+      pad.collabClient.setIsPendingRevision(true);
+    }
   });
 
   var initalized = false;
