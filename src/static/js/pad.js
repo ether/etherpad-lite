@@ -190,7 +190,7 @@ function handshake()
 
   socket.on('reconnect', function () {
     pad.collabClient.setChannelState("CONNECTED");
-    pad.sendClientReady(receivedClientVars);
+    sendClientReady(receivedClientVars);
   });
 
   socket.on('reconnecting', function() {
@@ -378,11 +378,6 @@ var pad = {
   userList: function()
   {
     return paduserlist.users();
-  },
-  sendClientReady: function(isReconnect, messageType)
-  {
-    messageType = typeof messageType !== 'undefined' ? messageType : 'CLIENT_READY';
-    sendClientReady(isReconnect, messageType);
   },
   switchToPad: function(padId)
   {
