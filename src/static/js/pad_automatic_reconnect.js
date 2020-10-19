@@ -27,7 +27,8 @@ var createCountDownElementsIfNecessary = function($modal) {
             .append(
                 $('<span>')
                     .attr('data-l10n-id', 'pad.modals.reconnecttimer')
-                    .text('Trying to reconnect in '))
+                    .text('Trying to reconnect in'))
+            .append(' ')
             .append(
                 $('<span>')
                     .addClass('timetoexpire'));
