@@ -220,6 +220,7 @@ function handshake()
       pad.collabClient.setStateIdle();
       pad.collabClient.setIsPendingRevision(true);
     }
+    throw new Error(`socket.io connection error: ${JSON.stringify(error)}`);
   });
 
   var initalized = false;
