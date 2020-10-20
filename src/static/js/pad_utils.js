@@ -484,7 +484,6 @@ function setupGlobalExceptionHandler() {
     globalExceptionHandler = function test (msg, url, linenumber)
     {
       var errorId = randomString(20);
-      var userAgent = padutils.escapeHtml(navigator.userAgent);
 
       var msgAlreadyVisible = false;
       $('.gritter-item .error-msg').each(function() {
@@ -494,13 +493,19 @@ function setupGlobalExceptionHandler() {
       });
 
       if (!msgAlreadyVisible) {
-        errorMsg = "<b>Please press and hold Ctrl and press F5 to reload this page</b></br> \
-                    If the problem persists please send this error message to your webmaster: </br></br>\
-                    <div style='text-align:left; font-size: .8em'>\
-                    ErrorId: " + errorId + "<br>\
-                    URL: " + padutils.escapeHtml(window.location.href) + "<br>\
-                    UserAgent: " + userAgent + "<br>\
-                    <span class='error-msg'>"+ msg + "</span> in " + url + " at line " + linenumber + '</div>';
+        const txt = document.createTextNode.bind(document); // Convenience shorthand.
+        const errorMsg = [
+          $('<p>')
+              .append($('<b>').text('Please press and hold Ctrl and press F5 to reload this page')),
+          $('<p>')
+              .text('If the problem persists, please send this error message to your webmaster:'),
+          $('<div>').css('text-align', 'left').css('font-size', '.8em').css('margin-top', '1em')
+              .append(txt(`ErrorId: ${errorId}`)).append($('<br>'))
+              .append(txt(`URL: ${window.location.href}`)).append($('<br>'))
+              .append(txt(`UserAgent: ${navigator.userAgent}`)).append($('<br>'))
+              .append($('<b>').addClass('error-msg').text(msg)).append($('<br>'))
+              .append(txt(`at ${url} at line ${linenumber}`)).append($('<br>')),
+        ];
 
         $.gritter.add({
           title: "An error occurred",
