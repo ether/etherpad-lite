@@ -11,7 +11,8 @@
  * Edited by Sebastian Castro <sebastian.castro@protonmail.com> on 2020-03-31
  *
  * Edited by Richard Hansen <rhansen@rhansen.org> on 2020-10-19 to accept jQuery or DOM objects for
- * notification title and text.
+ * notification title and text, and to treat plain strings as text instead of HTML (to avoid XSS
+ * vunlerabilities).
  */
 
 (function($){
@@ -142,7 +143,8 @@
 
 			// String replacements on the template
 			if(title){
-				title = this._tpl_title.clone().append(title);
+				title = this._tpl_title.clone().append(
+						typeof title === 'string' ? document.createTextNode(title) : title);
 			}else{
 				title = '';
 			}
@@ -152,7 +154,7 @@
 			tmp.addClass(item_class);
 			tmp.find('.gritter-content')
 					.append(title)
-					.append(typeof text === 'string' ? $('<p>').html(text) : text);
+					.append(typeof text === 'string' ? $('<p>').text(text) : text);
 
 			// If it's false, don't show another gritter message
 			if(this['_before_open_' + number]() === false){

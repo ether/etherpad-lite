@@ -193,7 +193,10 @@ var chat = (function()
 
           if(!chatOpen && ctx.duration > 0) {
             $.gritter.add({
-              text: '<span class="author-name">' + ctx.authorName + '</span>' + ctx.text,
+              // Note: ctx.authorName and ctx.text are already HTML-escaped.
+              text: $('<p>')
+                  .append($('<span>').addClass('author-name').html(ctx.authorName))
+                  .append(ctx.text),
               sticky: ctx.sticky,
               time: 5000,
               position: 'bottom',
