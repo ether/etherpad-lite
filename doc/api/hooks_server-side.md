@@ -513,7 +513,8 @@ Called from: src/node/handler/PadMessageHandler.js
 Things in context:
 
 1. message - the message being handled
-2. client - the socket.io Socket object
+2. socket - the socket.io Socket object
+3. client - **deprecated** synonym of socket
 
 This hook allows plugins to drop or modify incoming socket.io messages from
 clients, before Etherpad processes them.
@@ -526,19 +527,19 @@ Examples:
 
 ```
 // Using an async function:
-exports.handleMessage = async (hookName, {message, client}) => {
+exports.handleMessage = async (hookName, {message, socket}) => {
   if (message.type === 'USERINFO_UPDATE') {
     // Force the display name to the name associated with the account.
-    const user = client.client.request.session.user || {};
+    const user = socket.client.request.session.user || {};
     if (user.name) message.data.userInfo.name = user.name;
   }
 };
 
 // Using a regular function:
-exports.handleMessage = (hookName, {message, client}, callback) => {
+exports.handleMessage = (hookName, {message, socket}, callback) => {
   if (message.type === 'USERINFO_UPDATE') {
     // Force the display name to the name associated with the account.
-    const user = client.client.request.session.user || {};
+    const user = socket.client.request.session.user || {};
     if (user.name) message.data.userInfo.name = user.name;
   }
   return cb();
@@ -551,7 +552,8 @@ Called from: src/node/handler/PadMessageHandler.js
 Things in context:
 
 1. message - the message being handled
-2. client - the socket.io Socket object
+2. socket - the socket.io Socket object
+3. client - **deprecated** synonym of socket
 
 This hook allows plugins to grant temporary write access to a pad. It is called
 for each incoming message from a client. If write access is granted, it applies
@@ -568,14 +570,14 @@ Examples:
 
 ```
 // Using an async function:
-exports.handleMessageSecurity = async (hookName, {message, client}) => {
-  if (shouldGrantWriteAccess(message, client)) return true;
+exports.handleMessageSecurity = async (hookName, {message, socket}) => {
+  if (shouldGrantWriteAccess(message, socket)) return true;
   return;
 };
 
 // Using a regular function:
-exports.handleMessageSecurity = (hookName, {message, client}, callback) => {
-  if (shouldGrantWriteAccess(message, client)) return callback(true);
+exports.handleMessageSecurity = (hookName, {message, socket}, callback) => {
+  if (shouldGrantWriteAccess(message, socket)) return callback(true);
   return callback();
 };
 ```
