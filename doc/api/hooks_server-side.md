@@ -169,6 +169,8 @@ Things in context:
 
 1. pad - the pad instance
 2. author - the id of the author who updated the pad
+3. newRev - the index of the new revision
+4. changeset - the changeset of this revision (see [Changeset Library](#index_changeset_library))
 
 This hook gets called when an existing pad was updated.
 
