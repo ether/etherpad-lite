@@ -245,6 +245,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       BroadcastSlider.setSliderPosition(revision);
     }
 
+    let oldAlines = padContents.alines.slice();
     try
     {
       // must mutate attribution lines before text lines
@@ -255,15 +256,25 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       debugLog(e);
     }
 
-    // we want to scroll to the area that is changed before the lines are mutated and we can't go
-    // to a line that is not there yet
-    let lineNumber = Changeset.opIterator(Changeset.unpack(changeset).ops).next().lines;
+    // scroll to the area that is changed before the lines are mutated
     if($('#options-followContents').is(":checked") || $('#options-followContents').prop("checked")){
-      if(padContents.currentLines.length <= lineNumber){
-        goToLineNumber(padContents.currentLines.length-1)
-      } else {
-        goToLineNumber(lineNumber);
+      // get the index of the first line that has mutated attributes
+      // the last line in `oldAlines` should always equal to "|1+1", ie newline without attributes
+      // so it should be safe to assume this line has changed attributes when inserting content at
+      // the bottom of a pad
+      let lineChanged;
+      _.some(oldAlines, function(line, index){
+        if(line !== padContents.alines[index]){
+          lineChanged = index;
+          return true; // break
+        }
+      })
+      // deal with someone is the author of a line and changes one character, so the alines won't change
+      if(lineChanged === undefined) {
+        lineChanged = Changeset.opIterator(Changeset.unpack(changeset).ops).next().lines;
       }
+
+      goToLineNumber(lineChanged);
     }
 
     Changeset.mutateTextLines(changeset, padContents);
