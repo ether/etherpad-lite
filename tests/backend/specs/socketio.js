@@ -57,7 +57,7 @@ const connect = async (res) => {
     forceNew: true, // Different tests will have different query parameters.
     path: '/socket.io',
     // socketio.js-client on node.js doesn't support cookies (see https://git.io/JU8u9), so the
-    // express_sid cookie must be passed as a query parameter.
+    // ep_express_sid cookie must be passed as a query parameter.
     query: {cookie: reqCookieHdr},
   });
   try {
