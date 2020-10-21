@@ -109,7 +109,7 @@ Pad.prototype.appendRevision = async function appendRevision(aChangeset, author)
   if (this.head == 0) {
     hooks.callAll("padCreate", {'pad':this, 'author': author});
   } else {
-    hooks.callAll("padUpdate", {'pad':this, 'author': author});
+    hooks.callAll("padUpdate", {'pad':this, 'author': author, 'revs': newRev, 'changeset': aChangeset});
   }
 
   await Promise.all(p);
