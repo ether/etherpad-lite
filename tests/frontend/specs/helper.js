@@ -426,9 +426,11 @@ describe("the test helper", function(){
       expect(Array.isArray(lines)).to.be(true);
       expect(lines[0]).to.be.an('object');
       expect(lines[0].text()).to.be.an('string');
-      _.map(defaultText.split("\n"), function(line, index){
-        // @todo last newline
-        if(!index === lines.length){
+      _.each(defaultText.split("\n"), function(line, index){
+        //last line of default text
+        if(index === lines.length){
+          expect(line).to.equal('');
+        } else {
           expect(lines[index].text()).to.equal(line);
         }
       })
