@@ -23,7 +23,178 @@ describe('Responsiveness of Editor', function() {
   // And the test needs to be fixed to work in Firefox 52 on Windows 7.  I am not sure why it fails on this specific platform
   // The errors show this.timeout... then crash the browser but I am sure something is actually causing the stack trace and
   // I just need to narrow down what, offers to help accepted.
-  it('Fast response to keypress in pad with large amount of contents', function(done) {
+  it('keyup', function(done) {
+    var start = Date.now(); // get the start time
+
+    // send some new text to the screen (ensure all 3 key events are sent)
+    var el = helper.padInner$('div').first();
+    for(var i = 0; i < 300; ++i) {
+      var x = "0".charCodeAt(0);
+      ['keyup'].forEach(function(type) {
+        var e = $.Event(type);
+        e.keyCode = x;
+        el.trigger(e);
+      });
+    }
+    var end = Date.now(); // get the current time
+    var delay = end - start; // get the delay as the current time minus the start time
+
+    expect(delay).to.be.below(1);
+    done();
+  })
+  it('keypress', function(done) {
+    var start = Date.now(); // get the start time
+
+    // send some new text to the screen (ensure all 3 key events are sent)
+    var el = helper.padInner$('div').first();
+    for(var i = 0; i < 300; ++i) {
+      var x = "0".charCodeAt(0);
+      ['keypress'].forEach(function(type) {
+        var e = $.Event(type);
+        e.keyCode = x;
+        el.trigger(e);
+      });
+    }
+    var end = Date.now(); // get the current time
+    var delay = end - start; // get the delay as the current time minus the start time
+
+    expect(delay).to.be.below(1);
+    done();
+  })
+  it('keydown', function(done) {
+    var start = Date.now(); // get the start time
+
+    // send some new text to the screen (ensure all 3 key events are sent)
+    var el = helper.padInner$('div').first();
+    for(var i = 0; i < 300; ++i) {
+      var x = "0".charCodeAt(0);
+      ['keydown'].forEach(function(type) {
+        var e = $.Event(type);
+        e.keyCode = x;
+        el.trigger(e);
+      });
+    }
+    var end = Date.now(); // get the current time
+    var delay = end - start; // get the delay as the current time minus the start time
+
+    expect(delay).to.be.below(1);
+    done();
+  })
+  it('keydown then keyup', function(done) {
+    var start = Date.now(); // get the start time
+
+    // send some new text to the screen (ensure all 3 key events are sent)
+    var el = helper.padInner$('div').first();
+    for(var i = 0; i < 300; ++i) {
+      var x = "0".charCodeAt(0);
+      ['keydown', 'keyup'].forEach(function(type) {
+        var e = $.Event(type);
+        e.keyCode = x;
+        el.trigger(e);
+      });
+    }
+    var end = Date.now(); // get the current time
+    var delay = end - start; // get the delay as the current time minus the start time
+
+    expect(delay).to.be.below(1);
+    done();
+  })
+  it('keydown then keypress', function(done) {
+    var start = Date.now(); // get the start time
+
+    // send some new text to the screen (ensure all 3 key events are sent)
+    var el = helper.padInner$('div').first();
+    for(var i = 0; i < 300; ++i) {
+      var x = "0".charCodeAt(0);
+      ['keydown', 'keypress'].forEach(function(type) {
+        var e = $.Event(type);
+        e.keyCode = x;
+        el.trigger(e);
+      });
+    }
+    var end = Date.now(); // get the current time
+    var delay = end - start; // get the delay as the current time minus the start time
+
+    expect(delay).to.be.below(1);
+    done();
+  })
+  it('keyup then keypress', function(done) {
+    var start = Date.now(); // get the start time
+
+    // send some new text to the screen (ensure all 3 key events are sent)
+    var el = helper.padInner$('div').first();
+    for(var i = 0; i < 300; ++i) {
+      var x = "0".charCodeAt(0);
+      ['keyup', 'keypress'].forEach(function(type) {
+        var e = $.Event(type);
+        e.keyCode = x;
+        el.trigger(e);
+      });
+    }
+    var end = Date.now(); // get the current time
+    var delay = end - start; // get the delay as the current time minus the start time
+
+    expect(delay).to.be.below(1);
+    done();
+  })
+  it('keyup then keydown', function(done) {
+    var start = Date.now(); // get the start time
+
+    // send some new text to the screen (ensure all 3 key events are sent)
+    var el = helper.padInner$('div').first();
+    for(var i = 0; i < 300; ++i) {
+      var x = "0".charCodeAt(0);
+      ['keyup', 'keydown'].forEach(function(type) {
+        var e = $.Event(type);
+        e.keyCode = x;
+        el.trigger(e);
+      });
+    }
+    var end = Date.now(); // get the current time
+    var delay = end - start; // get the delay as the current time minus the start time
+
+    expect(delay).to.be.below(1);
+    done();
+  })
+  it('keypress then keydown', function(done) {
+    var start = Date.now(); // get the start time
+
+    // send some new text to the screen (ensure all 3 key events are sent)
+    var el = helper.padInner$('div').first();
+    for(var i = 0; i < 300; ++i) {
+      var x = "0".charCodeAt(0);
+      ['keypress', 'keydown'].forEach(function(type) {
+        var e = $.Event(type);
+        e.keyCode = x;
+        el.trigger(e);
+      });
+    }
+    var end = Date.now(); // get the current time
+    var delay = end - start; // get the delay as the current time minus the start time
+
+    expect(delay).to.be.below(1);
+    done();
+  })
+  it('keypress then keyup', function(done) {
+    var start = Date.now(); // get the start time
+
+    // send some new text to the screen (ensure all 3 key events are sent)
+    var el = helper.padInner$('div').first();
+    for(var i = 0; i < 300; ++i) {
+      var x = "0".charCodeAt(0);
+      ['keypress', 'keyup'].forEach(function(type) {
+        var e = $.Event(type);
+        e.keyCode = x;
+        el.trigger(e);
+      });
+    }
+    var end = Date.now(); // get the current time
+    var delay = end - start; // get the delay as the current time minus the start time
+
+    expect(delay).to.be.below(1);
+    done();
+  })
+  it('keyup&keypress&keydown', function(done) {
     var start = Date.now(); // get the start time
 
     // send some new text to the screen (ensure all 3 key events are sent)
