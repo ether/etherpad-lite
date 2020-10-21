@@ -136,7 +136,7 @@ describe("the test helper", function(){
         return false;
       }, 1500).fail(function(){
         var duration = Date.now() - startTime;
-        expect(duration).to.be.greaterThan(1400);
+        expect(duration).to.be.greaterThan(1490);
         done();
       });
     });
@@ -149,8 +149,10 @@ describe("the test helper", function(){
         checks++;
         return false;
       }, 2000, 100).fail(function(){
-        expect(checks).to.be.greaterThan(10);
-        expect(checks).to.be.lessThan(30);
+        // One at the beginning, and 19-20 more depending on whether it's the timeout or the final
+        // poll that wins at 2000ms.
+        expect(checks).to.be.greaterThan(18);
+        expect(checks).to.be.lessThan(22);
         done();
       });
     });
@@ -399,4 +401,68 @@ describe("the test helper", function(){
       done();
     });
   });
+
+  describe('helper',function(){
+    before(function(cb){
+      helper.newPad(function(){
+        cb();
+      })
+    })
+
+    it(".textLines() returns the text of the pad as strings", async function(){
+      let lines = helper.textLines();
+      let defaultText = helper.defaultText();
+      expect(Array.isArray(lines)).to.be(true);
+      expect(lines[0]).to.be.an('string');
+      // @todo
+      // final "\n" is added automatically, but my understanding is this should happen
+      // only when the default text does not end with "\n" already
+      expect(lines.join("\n")+"\n").to.equal(defaultText);
+    })
+
+    it(".linesDiv() returns the text of the pad as div elements", async function(){
+      let lines = helper.linesDiv();
+      let defaultText = helper.defaultText();
+      expect(Array.isArray(lines)).to.be(true);
+      expect(lines[0]).to.be.an('object');
+      expect(lines[0].text()).to.be.an('string');
+      _.each(defaultText.split("\n"), function(line, index){
+        //last line of default text
+        if(index === lines.length){
+          expect(line).to.equal('');
+        } else {
+          expect(lines[index].text()).to.equal(line);
+        }
+      })
+    })
+
+    it(".edit() defaults to send an edit to the first line", async function(){
+      let firstLine = helper.textLines()[0];
+      await helper.edit("line")
+      expect(helper.textLines()[0]).to.be(`line${firstLine}`);
+    })
+
+    it(".edit() to the line specified with parameter lineNo", async function(){
+      let firstLine = helper.textLines()[0];
+      await helper.edit("second line", 2);
+
+      let text = helper.textLines();
+      expect(text[0]).to.equal(firstLine);
+      expect(text[1]).to.equal("second line");
+    })
+
+    it(".edit() supports sendkeys syntax ({selectall},{del},{enter})", async function(){
+      expect(helper.textLines()[0]).to.not.equal('');
+
+      // select first line
+      helper.linesDiv()[0].sendkeys("{selectall}")
+      // delete first line
+      await helper.edit("{del}")
+
+      expect(helper.textLines()[0]).to.be('');
+      let noOfLines = helper.textLines().length;
+      await helper.edit("{enter}")
+      expect(helper.textLines().length).to.be(noOfLines+1);
+    })
+  })
 });
