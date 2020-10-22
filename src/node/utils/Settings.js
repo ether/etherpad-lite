@@ -423,8 +423,12 @@ exports.getGitCommit = function() {
       rootPath += '/.git';
     }
     var ref = fs.readFileSync(rootPath + "/HEAD", "utf-8");
-    var refPath = rootPath + "/" + ref.substring(5, ref.indexOf("\n"));
-    version = fs.readFileSync(refPath, "utf-8");
+    if (ref.startsWith("ref: ")) {
+      var refPath = rootPath + "/" + ref.substring(5, ref.indexOf("\n"));
+      version = fs.readFileSync(refPath, "utf-8");
+    } else {
+      version = ref;
+    }
     version = version.substring(0, 7);
   } catch(e) {
     console.warn("Can't get git version for server header\n" + e.message)
