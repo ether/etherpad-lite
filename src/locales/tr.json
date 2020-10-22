@@ -96,7 +96,7 @@
 	"pad.importExport.exportopen": "ODF (Açık Doküman Biçimi)",
 	"pad.importExport.abiword.innerHTML": "Yalnızca düz metin ya da HTML biçimlerini içe aktarabilirsiniz. Daha fazla gelişmiş içe aktarım özellikleri için lütfen <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">AbiWord veya LibreOffice yükleyin</a>.",
 	"pad.modals.connected": "Bağlandı.",
-	"pad.modals.reconnecting": "Bloknotunuza tekrar bağlanılıyor...",
+	"pad.modals.reconnecting": "Pedinize tekrar bağlanılıyor…",
 	"pad.modals.forcereconnect": "Yeniden bağlanmaya zorla",
 	"pad.modals.reconnecttimer": "Yeniden bağlanmaya çalışılıyor",
 	"pad.modals.cancel": "İptal",
