@@ -128,6 +128,7 @@ Read our [**Developer Guidelines**](https://github.com/ether/etherpad-lite/blob/
 The official channel for contacting the development team is via the [Github issues](https://github.com/ether/etherpad-lite/issues).
 
 For **responsible disclosure of vulnerabilities**, please write a mail to the maintainer (a.mux@inwind.it).
+Join the official [Discord Channel](https://discord.com/invite/daEjfhw)
 
 # HTTP API
 Etherpad is designed to be easily embeddable and provides a [HTTP API](https://github.com/ether/etherpad-lite/wiki/HTTP-API)
