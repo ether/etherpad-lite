@@ -196,7 +196,7 @@ helper.gotoTimeslider = function(revision){
 
   return helper.waitForPromise(function(){
     return helper.timesliderTimerTime()
-      && !Number.isNaN(new Date(helper.timesliderTimerTime()).getTime()) },5000);
+      && !Number.isNaN(new Date(helper.timesliderTimerTime()).getTime()) },10000);
 }
 
 /**
