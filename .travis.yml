@@ -71,14 +71,14 @@ jobs:
         - "tests/frontend/travis/sauce_tunnel.sh"
         - "bin/installDeps.sh"
         - "rm tests/frontend/specs/*"
-        - "npm install ep_hash_auth ep_cursortrace ep_subscript_and_superscript ep_headings2 ep_author_hover ep_align ep_webrtc ep_table_of_contents ep_font_size ep_markdown ep_spellcheck"
+        - "npm install ep_hash_auth ep_cursortrace ep_subscript_and_superscript ep_headings2 ep_author_hover ep_align ep_table_of_contents ep_font_size ep_markdown ep_spellcheck"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
       script:
         - "tests/frontend/travis/runner.sh"
     - name: "Run the Backend tests with Plugins"
       install:
         - "bin/installDeps.sh"
-        - "npm install ep_hash_auth ep_cursortrace ep_subscript_and_superscript ep_headings2 ep_author_hover ep_align ep_webrtc ep_table_of_contents ep_font_size ep_markdown ep_spellcheck"
+        - "npm install ep_hash_auth ep_cursortrace ep_subscript_and_superscript ep_headings2 ep_author_hover ep_align ep_table_of_contents ep_font_size ep_markdown ep_spellcheck"
         - "cd src && npm install && cd -"
       script:
         - "tests/frontend/travis/runnerBackend.sh"
@@ -92,7 +92,7 @@ jobs:
     - name: "Load test Etherpad with Plugins"
       install:
         - "bin/installDeps.sh"
-        - "npm install ep_hash_auth ep_cursortrace ep_subscript_and_superscript ep_headings2 ep_comments_page ep_author_hover ep_align ep_webrtc ep_table_of_contents ep_font_size ep_markdown ep_spellcheck"
+        - "npm install ep_hash_auth ep_cursortrace ep_subscript_and_superscript ep_headings2 ep_comments_page ep_author_hover ep_align ep_table_of_contents ep_font_size ep_markdown ep_spellcheck"
         - "cd src && npm install && cd -"
         - "npm install -g etherpad-load-test"
       script:
