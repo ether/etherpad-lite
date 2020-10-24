@@ -4794,7 +4794,7 @@ function Ace2Inner(){
       // Control C and Control V -- the Event is never available
       // here.. :(
       if(e.target.a || e.target.localName === "a"){
-        e.preventDefault();
+        // e.preventDefault(); // Disabled due to https://github.com/ether/etherpad-lite/issues/2775
       }
 
       // Call paste hook
