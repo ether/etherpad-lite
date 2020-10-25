@@ -604,7 +604,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
           // pass to api handler
           let data = await apiHandler.handle(version, funcName, fields, req, res).catch((err) => {
             // convert all errors to http errors
-            if (err instanceof createHTTPError.HttpError) {
+            if (createHTTPError.isHttpError(err)) {
               // pass http errors thrown by handler forward
               throw err;
             } else if (err.name == 'apierror') {
