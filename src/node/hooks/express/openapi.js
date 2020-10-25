@@ -575,10 +575,10 @@ exports.expressCreateServer = (hookName, args, cb) => {
       // register default handlers
       api.register({
         notFound: () => {
-          throw new createHTTPError.notFound('no such function');
+          throw new createHTTPError.NotFound('no such function');
         },
         notImplemented: () => {
-          throw new createHTTPError.notImplemented('function not implemented');
+          throw new createHTTPError.NotImplemented('function not implemented');
         },
       });
 
