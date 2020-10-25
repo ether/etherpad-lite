@@ -1,3 +1,5 @@
+/* global Buffer, exports, require, setTimeout */
+
 const assert = require('assert').strict;
 const log4js = require('log4js');
 const httpLogger = log4js.getLogger('http');
@@ -168,7 +170,10 @@ exports.checkAccess = (req, res, next) => {
           }));
         }
         settings.users[ctx.username].username = ctx.username;
-        req.session.user = settings.users[ctx.username];
+        // Make a shallow copy so that the password property can be deleted (to prevent it from
+        // appearing in logs or in the database) without breaking future authentication attempts.
+        req.session.user = {...settings.users[ctx.username]};
+        delete req.session.user.password;
       }
       if (req.session.user == null) {
         httpLogger.error('authenticate hook failed to add user settings to session');
