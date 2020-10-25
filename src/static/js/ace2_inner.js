@@ -4788,13 +4788,37 @@ function Ace2Inner(){
     }
     if (browser.msie) $(root).on("paste", handleIEPaste);
 
-    // Don't paste on middle click of links
+    // If non-nullish, pasting on a link should be suppressed.
+    let suppressPasteOnLink = null;
+
+    $(root).on('auxclick', function(e) {
+      if (e.originalEvent.button === 1 && (e.target.a || e.target.localName === 'a')) {
+        // The user middle-clicked on a link. Usually users do this to open a link in a new tab, but
+        // in X11 (Linux) this will instead paste the contents of the primary selection at the mouse
+        // cursor. Users almost certainly do not want to paste when middle-clicking on a link, so
+        // tell the 'paste' event handler to suppress the paste. This is done by starting a
+        // short-lived timer that suppresses paste (when the target is a link) until either the
+        // paste event arrives or the timer fires.
+        //
+        // Why it is implemented this way:
+        //   * Users want to be able to paste on a link via Ctrl-V, the Edit menu, or the context
+        //     menu (https://github.com/ether/etherpad-lite/issues/2775) so we cannot simply
+        //     suppress all paste actions when the target is a link.
+        //   * Non-X11 systems do not paste when the user middle-clicks, so the paste suppression
+        //     must be self-resetting.
+        //   * On non-X11 systems, middle click should continue to open the link in a new tab.
+        //     Suppressing the middle click here in the 'auxclick' handler (via e.preventDefault())
+        //     would break that behavior.
+        suppressPasteOnLink = scheduler.setTimeout(() => { suppressPasteOnLink = null; }, 0);
+      }
+    });
+
     $(root).on("paste", function(e){
-      // TODO: this breaks pasting strings into URLS when using
-      // Control C and Control V -- the Event is never available
-      // here.. :(
-      if(e.target.a || e.target.localName === "a"){
-        // e.preventDefault(); // Disabled due to https://github.com/ether/etherpad-lite/issues/2775
+      if (suppressPasteOnLink != null && (e.target.a || e.target.localName === "a")) {
+        scheduler.clearTimeout(suppressPasteOnLink);
+        suppressPasteOnLink = null;
+        e.preventDefault();
+        return;
       }
 
       // Call paste hook
