@@ -80,6 +80,19 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     process.exit(1);
   }
 
+  if(files.indexOf(".github") !== -1){
+    let path = ".github/workflows/npmpublish.yml";
+    try {
+      if (fs.existsSync(path)) {
+        //file exists
+      }
+    } catch(err) {
+      console.error(err)
+    }
+  }else{
+    console.log("no github action to auto publish");
+  }
+
   if(files.indexOf("package.json") === -1){
     console.warn("no package.json, please create");
   }
@@ -255,9 +268,6 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     }
   }
 
-  //listing all files using forEach
-  files.forEach(function (file) {
-    // Do whatever you want to do with the file
-    // console.log(file.toLowerCase());
-  });
+  console.log("Finished");
+
 });
