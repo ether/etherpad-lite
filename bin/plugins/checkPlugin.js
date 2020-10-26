@@ -123,6 +123,16 @@ fs.readdir(pluginPath, function (err, rootFiles) {
 
   if(files.indexOf("package-lock.json") === -1){
     console.warn("package-lock.json file not found.  Please run npm install in the plugin folder and commit the package-lock.json file.")
+    if(autoFix){
+      var child_process = require('child_process');
+      try{
+        child_process.execSync('npm install',{"cwd":pluginPath+"/"});
+        console.log("Making package-lock.json");
+        hasAutofixed = true;
+      }catch(e){
+        console.error("Failed to create package-lock.json");
+      }
+    }
   }
 
   if(files.indexOf("readme") === -1 && files.indexOf("readme.md") === -1){
