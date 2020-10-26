@@ -32,6 +32,12 @@ const { exec } = require("child_process");
 
 // get plugin name & path from user input
 const pluginName = process.argv[2];
+
+if(!pluginName){
+  console.error("no plugin name specified");
+  process.exit(0)
+}
+
 const pluginPath = "node_modules/"+pluginName;
 
 console.log("Checking the plugin: "+ pluginName)
@@ -69,6 +75,11 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     files.push(rootFiles[i].toLowerCase());
   }
 
+  if(files.indexOf(".git") === -1){
+    console.error("No .git folder, aborting");
+    process.exit(1);
+  }
+
   if(files.indexOf("package.json") === -1){
     console.warn("no package.json, please create");
   }
@@ -87,6 +98,11 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     }
 
   }
+
+  if(files.indexOf("package-lock.json") === -1){
+    console.warn("package-lock.json file not found.  Please run npm install in the plugin folder and commit the package-lock.json file.")
+  }
+
   if(files.indexOf("readme") === -1 && files.indexOf("readme.md") === -1){
     console.warn("README.md file not found, please create");
     if(autoFix){
