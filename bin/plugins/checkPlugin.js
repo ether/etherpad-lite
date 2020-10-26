@@ -81,10 +81,19 @@ fs.readdir(pluginPath, function (err, rootFiles) {
   }
 
   if(files.indexOf(".github") !== -1){
-    let path = ".github/workflows/npmpublish.yml";
+    let path = pluginPath + "/.github/workflows/npmpublish.yml";
     try {
       if (fs.existsSync(path)) {
         //file exists
+      }else{
+        console.log("no .github/workflows/npmpublish.yml, create one and set npm secret to auto publish to npm on commit");
+        if(autoFix){
+          let npmpublish = fs.readFileSync("bin/plugins/lib/npmpublish.yml", {encoding:'utf8', flag:'r'})
+          fs.mkdir(pluginPath+"/.github/workflows", { recursive: true }, (err) => {
+            if (err) throw err;
+          });
+          fs.writeFileSync(pluginPath+"/.github/workflows/npmpublish.yml", npmpublish);
+        }
       }
     } catch(err) {
       console.error(err)
