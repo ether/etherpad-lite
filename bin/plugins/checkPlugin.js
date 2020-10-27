@@ -1,24 +1,6 @@
-// pro usage for all your plugins, replace johnmclear with your github username
-/*
-cd node_modules
-GHUSER=johnmclear; curl "https://api.github.com/users/$GHUSER/repos?per_page=1000" | grep -o 'git@[^"]*' | grep /ep_ | xargs -L1 git clone
-cd ..
-
-for dir in `ls node_modules`;
-do
-# echo $0
-if [[ $dir == *"ep_"* ]]; then
-if [[ $dir != "ep_etherpad-lite" ]]; then
-node bin/plugins/checkPlugin.js $dir autofix autocommit
-fi
-fi
-# echo $dir
-done
-*/
-
 /*
 *
-* Usage
+* Usage -- see README.md
 *
 * Normal usage:                node bin/plugins/checkPlugins.js ep_whatever
 * Auto fix the things it can:  node bin/plugins/checkPlugins.js ep_whatever autofix
@@ -114,7 +96,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     let parsedPackageJSON = JSON.parse(packageJSON);
     if(autoFix){
       var updatedPackageJSON = false;
-      if(!parsedPackageJSON.fund){
+      if(!parsedPackageJSON.funding){
         updatedPackageJSON = true;
         parsedPackageJSON.funding = {
           "type": "individual",
