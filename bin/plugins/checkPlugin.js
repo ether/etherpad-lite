@@ -123,7 +123,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
       }
       if(updatedPackageJSON){
         hasAutofixed = true;
-        fs.writeFileSync(pluginPath+"/package.json", JSON.stringify(parsedPackageJSON));
+        fs.writeFileSync(pluginPath+"/package.json", JSON.stringify(parsedPackageJSON, null, 2));
       }
     }
 

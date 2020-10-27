@@ -44,3 +44,9 @@ fi
 # echo $dir
 done
 ```
+
+# Automating update of ether organization plugins
+```
+getCorePlugins.sh
+updateCorePlugins.sh
+```
