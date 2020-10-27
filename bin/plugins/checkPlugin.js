@@ -93,6 +93,9 @@ fs.readdir(pluginPath, function (err, rootFiles) {
             if (err) throw err;
           });
           fs.writeFileSync(pluginPath+"/.github/workflows/npmpublish.yml", npmpublish);
+          console.log("If you haven't already, setup autopublish for this plugin https://github.com/ether/etherpad-lite/wiki/Plugins:-Automatically-publishing-to-npm-on-commit-to-Github-Repo");
+        }else{
+         console.log("Setup autopublish for this plugin https://github.com/ether/etherpad-lite/wiki/Plugins:-Automatically-publishing-to-npm-on-commit-to-Github-Repo");
         }
       }
     } catch(err) {
