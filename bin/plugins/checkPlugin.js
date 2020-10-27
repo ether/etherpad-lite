@@ -111,6 +111,21 @@ fs.readdir(pluginPath, function (err, rootFiles) {
 
   if(files.indexOf("package.json") !== -1){
     let packageJSON = fs.readFileSync(pluginPath+"/package.json", {encoding:'utf8', flag:'r'});
+    let parsedPackageJSON = JSON.parse(packageJSON);
+    if(autoFix){
+      var updatedPackageJSON = false;
+      if(!parsedPackageJSON.fund){
+        updatedPackageJSON = true;
+        parsedPackageJSON.funding = {
+          "type": "individual",
+          "url": "http://etherpad.org/"
+        }
+      }
+      if(updatedPackageJSON){
+        hasAutofixed = true;
+        fs.writeFileSync(pluginPath+"/package.json", JSON.stringify(parsedPackageJSON));
+      }
+    }
 
     if(packageJSON.toLowerCase().indexOf("repository") === -1){
       console.warn("No repository in package.json");
@@ -119,7 +134,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
       }
     }else{
       // useful for creating README later.
-      repository = JSON.parse(packageJSON).repository.url;
+      repository = parsedPackageJSON.repository.url;
     }
 
   }
