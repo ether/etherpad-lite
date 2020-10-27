@@ -71,7 +71,6 @@
   , "jquery.js"
   , "rjquery.js"
   , "$async.js"
-  , "$async/lib/async.js"
   , "underscore.js"
   , "$underscore.js"
   , "$underscore/underscore.js"
