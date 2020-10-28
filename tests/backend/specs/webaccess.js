@@ -1,4 +1,4 @@
-/* global __dirname, __filename, afterEach, before, beforeEach, describe, it, require */
+/* global __dirname, __filename, Buffer, afterEach, before, beforeEach, describe, it, require */
 
 function m(mod) { return __dirname + '/../../../src/' + mod; }
 
@@ -90,6 +90,22 @@ describe(__filename, function() {
       settings.requireAuthentication = true;
       settings.requireAuthorization = true;
       await agent.get('/admin/').auth('admin', 'admin-password').expect(200);
+    });
+
+    describe('login fails if password is nullish', function() {
+      for (const adminPassword of [undefined, null]) {
+        // https://tools.ietf.org/html/rfc7617 says that the username and password are sent as
+        // base64(username + ':' + password), but there's nothing stopping a malicious user from
+        // sending just base64(username) (no colon). The lack of colon could throw off credential
+        // parsing, resulting in successful comparisons against a null or undefined password.
+        for (const creds of ['admin', 'admin:']) {
+          it(`admin password: ${adminPassword} credentials: ${creds}`, async function() {
+            settings.users.admin.password = adminPassword;
+            const encCreds = Buffer.from(creds).toString('base64');
+            await agent.get('/admin/').set('Authorization', `Basic ${encCreds}`).expect(401);
+          });
+        }
+      }
     });
   });
 

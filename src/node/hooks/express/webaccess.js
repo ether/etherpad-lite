@@ -153,8 +153,8 @@ exports.checkAccess = (req, res, next) => {
     hooks.aCallFirst('authenticate', ctx, hookResultMangle((ok) => {
       if (!ok) {
         // Fall back to HTTP basic auth.
-        if (!httpBasicAuth || !(ctx.username in settings.users) ||
-            settings.users[ctx.username].password !== ctx.password) {
+        const {[ctx.username]: {password} = {}} = settings.users;
+        if (!httpBasicAuth || password == null || password !== ctx.password) {
           httpLogger.info(`Failed authentication from IP ${req.ip}`);
           return hooks.aCallFirst('authnFailure', {req, res}, hookResultMangle((ok) => {
             if (ok) return;
