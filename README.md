@@ -1,7 +1,7 @@
 # A real-time collaborative editor for the web
 <a href="https://hub.docker.com/r/etherpad/etherpad"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/etherpad/etherpad"></a>
 
-[![Travis (.org)](https://api.travis-ci.org/ether/etherpad-lite.svg?branch=develop)](https://travis-ci.org/github/ether/etherpad-lite)
+[![Travis (.com)](https://api.travis-ci.com/ether/etherpad-lite.svg?branch=develop)](https://travis-ci.com/github/ether/etherpad-lite)
 
 ![Demo Etherpad Animated Jif](doc/images/etherpad_demo.gif "Etherpad in action")
 
