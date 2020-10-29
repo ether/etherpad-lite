@@ -1,3 +1,5 @@
+/* global __dirname, __filename, afterEach, before, beforeEach, clearTimeout, describe, it, require, setTimeout */
+
 function m(mod) { return __dirname + '/../../../src/' + mod; }
 
 const assert = require('assert').strict;
@@ -35,7 +37,7 @@ const getSocketEvent = async (socket, event) => {
       logger.debug(`socket.io ${event} event`);
       if (args.length > 1) return resolve(args);
       resolve(args[0]);
-    }
+    };
     Object.entries(handlers).forEach(([event, handler]) => socket.on(event, handler));
   }).finally(() => {
     clearTimeout(timeoutId);
@@ -91,10 +93,8 @@ const handshake = async (socket, padID) => {
 
 describe(__filename, function() {
   let agent;
-  before(async function() { agent = await common.init(); });
-
   let authorize;
-  let authorizeHooksBackup;
+  const backups = {};
   const cleanUpPads = async () => {
     const padIds = ['pad', 'other-pad', 'päd'];
     await Promise.all(padIds.map(async (padId) => {
@@ -104,12 +104,19 @@ describe(__filename, function() {
       }
     }));
   };
-  const settingsBackup = {};
   let socket;
 
+  before(async function() { agent = await common.init(); });
   beforeEach(async function() {
-    Object.assign(settingsBackup, settings);
-    assert(socket == null);
+    backups.hooks = {};
+    for (const hookName of ['preAuthorize', 'authenticate', 'authorize']) {
+      backups.hooks[hookName] = plugins.hooks[hookName];
+      plugins.hooks[hookName] = [];
+    }
+    backups.settings = {};
+    for (const setting of ['editOnly', 'requireAuthentication', 'requireAuthorization', 'users']) {
+      backups.settings[setting] = settings[setting];
+    }
     settings.editOnly = false;
     settings.requireAuthentication = false;
     settings.requireAuthorization = false;
@@ -117,19 +124,19 @@ describe(__filename, function() {
       admin: {password: 'admin-password', is_admin: true},
       user: {password: 'user-password'},
     };
+    assert(socket == null);
     authorize = () => true;
-    authorizeHooksBackup = plugins.hooks.authorize;
     plugins.hooks.authorize = [{hook_fn: (hookName, {req}, cb) => {
       return cb([authorize(req)]);
     }}];
     await cleanUpPads();
   });
   afterEach(async function() {
-    Object.assign(settings, settingsBackup);
     if (socket) socket.close();
     socket = null;
-    plugins.hooks.authorize = authorizeHooksBackup;
     await cleanUpPads();
+    Object.assign(plugins.hooks, backups.hooks);
+    Object.assign(settings, backups.settings);
   });
 
   describe('Normal accesses', function() {
