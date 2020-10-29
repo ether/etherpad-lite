@@ -20,7 +20,6 @@ install:
   - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
 
 before_script:
-  - npx lockfile-lint --path package-lock.json --validate-https --allowed-hosts npm
   - "tests/frontend/travis/sauce_tunnel.sh"
 
 script:
@@ -33,7 +32,10 @@ env:
 
 jobs:
   include:
-    - name: "Run the Backend tests"
+     - name: "Lint test package-lock"
+      script:
+       - npx lockfile-lint --path package-lock.json --validate-https --allowed-hosts npm
+     - name: "Run the Backend tests"
       install:
         - "npm install"
         - "mkdir [plugin_name]"
