@@ -20,7 +20,7 @@ install:
   - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
 
 before_script:
-  - npx lockfile-lint --path src/package-lock.json --validate-https --allowed-hosts npm
+  - npx lockfile-lint --path package-lock.json --validate-https --allowed-hosts npm
   - "tests/frontend/travis/sauce_tunnel.sh"
 
 script:
