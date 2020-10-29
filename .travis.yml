@@ -75,6 +75,11 @@ jobs:
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
       script:
         - "tests/frontend/travis/runner.sh"
+    - name: "Lint test package-lock.json"
+      install:
+        - "npm install lockfile-lint"
+      script:
+        - npx lockfile-lint --path src/package-lock.json --validate-https --allowed-hosts npm
     - name: "Run the Backend tests with Plugins"
       install:
         - "bin/installDeps.sh"
