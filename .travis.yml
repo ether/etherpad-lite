@@ -85,6 +85,10 @@ jobs:
         - npx lockfile-lint --path src/package-lock.json --validate-https --allowed-hosts npm
     - name: "Run the Backend tests with Plugins"
       install:
+        - "sudo add-apt-repository -y ppa:libreoffice/ppa"
+        - "sudo apt-get update"
+        - "sudo apt-get -y install libreoffice"
+        - "sudo apt-get -y install libreoffice-pdfimport"
         - "bin/installDeps.sh"
         - *install_plugins
         - "cd src && npm install && cd -"
