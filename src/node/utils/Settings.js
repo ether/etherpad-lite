@@ -723,58 +723,6 @@ exports.reloadSettings = function reloadSettings() {
     console.info(`Using skin "${exports.skinName}" in dir: ${skinPath}`);
   }
 
-  if (exports.users) {
-    /*
-     * Each user must have exactly one of ("password", "hash") attributes set,
-     * and its value must be not null.
-     *
-     * Prune from export.users any user that does not satisfy this condition,
-     * including the ones that (by chance) have both "password" and "hash" set.
-     *
-     * This mechanism is used by the settings.json in the default Dockerfile to
-     * eschew creating an admin user if no password (or hash) is set.
-     */
-    var filteredUsers = _.pick(exports.users, function(userProperties, username) {
-      if ((userProperties.hasOwnProperty("password") === false) && (userProperties.hasOwnProperty("hash") === false)) {
-        console.warn(`Removing user "${username}", because it has no "password" or "hash" field.`);
-
-        return false;
-      }
-
-      if (userProperties.hasOwnProperty("password") && userProperties.hasOwnProperty("hash")) {
-        console.warn(`Removing user "${username}", because it has both "password" and "hash" fields set. THIS SHOULD NEVER HAPPEN.`);
-
-        return false;
-      }
-
-      /*
-       * If we arrive here, the user has exactly a password or a hash set.
-       * They may still be null
-       */
-      if (userProperties.hasOwnProperty("password") && (userProperties.password === null)) {
-        console.warn(`Removing user "${username}", because its "password" is null.`);
-
-        return false;
-      }
-
-      if (userProperties.hasOwnProperty("hash") && (userProperties.hash === null)) {
-        console.warn(`Removing user "${username}", because its "hash" value is null.`);
-
-        return false;
-      }
-
-      /*
-       * This user has a password, and its password is not null, or it has an
-       * hash, and its hash is not null (not both).
-       *
-       * Keep it.
-       */
-      return true;
-    });
-
-    exports.users = filteredUsers;
-  }
-
   if (exports.abiword) {
     // Check abiword actually exists
     if (exports.abiword != null) {
