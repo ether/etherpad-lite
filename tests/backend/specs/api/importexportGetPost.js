@@ -1,3 +1,5 @@
+/* global __dirname, __filename, afterEach, before, beforeEach, describe, it, require */
+
 /*
  * Import and Export tests for the /p/whateverPadId/import and /p/whateverPadId/export endpoints.
  */
@@ -32,7 +34,7 @@ describe(__filename, function() {
           .expect(200)
           .expect('Content-Type', /json/);
     });
-  })
+  });
 
   describe('API Versioning', function(){
     it('finds the version tag', async function() {
@@ -40,7 +42,7 @@ describe(__filename, function() {
           .expect(200)
           .expect((res) => assert(res.body.currentVersion));
     });
-  })
+  });
 
   /*
   Tests
@@ -72,11 +74,20 @@ describe(__filename, function() {
     const backups = {};
 
     beforeEach(async function() {
+      backups.hooks = {};
+      for (const hookName of ['preAuthorize', 'authenticate', 'authorize']) {
+        backups.hooks[hookName] = plugins.hooks[hookName];
+        plugins.hooks[hookName] = [];
+      }
       // Note: This is a shallow copy.
       backups.settings = Object.assign({}, settings);
+      settings.requireAuthentication = false;
+      settings.requireAuthorization = false;
+      settings.users = {user: {password: 'user-password'}};
     });
 
     afterEach(async function() {
+      Object.assign(plugins.hooks, backups.hooks);
       // Note: This does not unset settings that were added.
       Object.assign(settings, backups.settings);
     });
@@ -231,18 +242,13 @@ describe(__filename, function() {
 
       beforeEach(async function() {
         await deleteTestPad();
-        settings.requireAuthentication = false;
         settings.requireAuthorization = true;
-        settings.users = {user: {password: 'user-password'}};
         authorize = () => true;
-        backups.hooks = {};
-        backups.hooks.authorize = plugins.hooks.authorize || [];
         plugins.hooks.authorize = [{hook_fn: (hookName, {req}, cb) => cb([authorize(req)])}];
       });
 
       afterEach(async function() {
         await deleteTestPad();
-        Object.assign(plugins.hooks, backups.hooks);
       });
 
       it('!authn !exist -> create', async function() {
@@ -353,7 +359,7 @@ describe(__filename, function() {
 var endPoint = function(point, version){
   version = version || apiVersion;
   return `/api/${version}/${point}?apikey=${apiKey}`;
-}
+};
 
 function makeid()
 {
