@@ -1,3 +1,5 @@
+/* global __dirname, __filename, afterEach, before, beforeEach, describe, it, require */
+
 function m(mod) { return __dirname + '/../../../src/' + mod; }
 
 const assert = require('assert').strict;
@@ -7,23 +9,33 @@ const settings = require(m('node/utils/Settings'));
 
 describe(__filename, function() {
   let agent;
+  const backups = {};
+  const authHookNames = ['preAuthorize', 'authenticate', 'authorize'];
+  const failHookNames = ['preAuthzFailure', 'authnFailure', 'authzFailure', 'authFailure'];
   before(async function() { agent = await common.init(); });
+  beforeEach(async function() {
+    backups.hooks = {};
+    for (const hookName of authHookNames.concat(failHookNames)) {
+      backups.hooks[hookName] = plugins.hooks[hookName];
+      plugins.hooks[hookName] = [];
+    }
+    backups.settings = {};
+    for (const setting of ['requireAuthentication', 'requireAuthorization', 'users']) {
+      backups.settings[setting] = settings[setting];
+    }
+    settings.requireAuthentication = false;
+    settings.requireAuthorization = false;
+    settings.users = {
+      admin: {password: 'admin-password', is_admin: true},
+      user: {password: 'user-password'},
+    };
+  });
+  afterEach(async function() {
+    Object.assign(plugins.hooks, backups.hooks);
+    Object.assign(settings, backups.settings);
+  });
 
   describe('webaccess: without plugins', function() {
-    const backup = {};
-
-    before(async function() {
-      Object.assign(backup, settings);
-      settings.users = {
-        admin: {password: 'admin-password', is_admin: true},
-        user: {password: 'user-password'},
-      };
-    });
-
-    after(async function() {
-      Object.assign(settings, backup);
-    });
-
     it('!authn !authz anonymous / -> 200', async function() {
       settings.requireAuthentication = false;
       settings.requireAuthorization = false;
@@ -105,30 +117,16 @@ describe(__filename, function() {
       }
     };
     const handlers = {};
-    const hookNames = ['preAuthorize', 'authenticate', 'authorize'];
-    const hooksBackup = {};
-    const settingsBackup = {};
 
     beforeEach(async function() {
       callOrder = [];
-      hookNames.forEach((hookName) => {
+      for (const hookName of authHookNames) {
         // Create two handlers for each hook to test deferral to the next function.
         const h0 = new Handler(hookName, '_0');
         const h1 = new Handler(hookName, '_1');
         handlers[hookName] = [h0, h1];
-        hooksBackup[hookName] = plugins.hooks[hookName] || [];
         plugins.hooks[hookName] = [{hook_fn: h0.handle.bind(h0)}, {hook_fn: h1.handle.bind(h1)}];
-      });
-      hooksBackup.preAuthzFailure = plugins.hooks.preAuthzFailure || [];
-      Object.assign(settingsBackup, settings);
-      settings.users = {
-        admin: {password: 'admin-password', is_admin: true},
-        user: {password: 'user-password'},
-      };
-    });
-    afterEach(async function() {
-      Object.assign(plugins.hooks, hooksBackup);
-      Object.assign(settings, settingsBackup);
+      }
     });
 
     describe('preAuthorize', function() {
@@ -357,31 +355,15 @@ describe(__filename, function() {
       }
     };
     const handlers = {};
-    const hookNames = ['authnFailure', 'authzFailure', 'authFailure'];
-    const settingsBackup = {};
-    const hooksBackup = {};
 
     beforeEach(function() {
-      Object.assign(settingsBackup, settings);
-      hookNames.forEach((hookName) => {
-        if (plugins.hooks[hookName] == null) plugins.hooks[hookName] = [];
-      });
-      Object.assign(hooksBackup, plugins.hooks);
-      hookNames.forEach((hookName) => {
+      failHookNames.forEach((hookName) => {
         const handler = new Handler(hookName);
         handlers[hookName] = handler;
         plugins.hooks[hookName] = [{hook_fn: handler.handle.bind(handler)}];
       });
       settings.requireAuthentication = true;
       settings.requireAuthorization = true;
-      settings.users = {
-        admin: {password: 'admin-password', is_admin: true},
-        user: {password: 'user-password'},
-      };
-    });
-    afterEach(function() {
-      Object.assign(settings, settingsBackup);
-      Object.assign(plugins.hooks, hooksBackup);
     });
 
     // authn failure tests
