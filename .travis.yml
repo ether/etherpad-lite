@@ -13,6 +13,10 @@ before_install:
   - sudo apt-get update
   - sudo apt-get -y install libreoffice
   - sudo apt-get -y install libreoffice-pdfimport
+  - sudo npm install -g lockfile-lint
+
+before_script:
+  - npx lockfile-lint --path src/package-lock.json --validate-https --allowed-hosts npm
 
 install:
   - "bin/installDeps.sh"
