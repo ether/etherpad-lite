@@ -77,7 +77,7 @@ jobs:
         - "tests/frontend/travis/runner.sh"
     - name: "Lint test package-lock.json"
       install:
-        - "sudo npm install -g lockfile-lint"
+        - "npm install lockfile-lint"
       script:
         - npx lockfile-lint --path src/package-lock.json --validate-https --allowed-hosts npm
     - name: "Run the Backend tests with Plugins"
