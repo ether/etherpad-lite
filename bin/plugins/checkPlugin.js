@@ -17,7 +17,7 @@ const pluginName = process.argv[2];
 
 if(!pluginName){
   console.error("no plugin name specified");
-  process.exit(0)
+  process.exit(1);
 }
 
 const pluginPath = "node_modules/"+pluginName;
