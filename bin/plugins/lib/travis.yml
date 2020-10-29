@@ -36,6 +36,7 @@ jobs:
         - "npm install lockfile-lint"
        script:
         - npx lockfile-lint --path package-lock.json --validate-https --allowed-hosts npm
+        - "rm -Rf node_modules/"
      - name: "Run the Backend tests"
        install:
         - "npm install"
@@ -48,10 +49,10 @@ jobs:
         - "bin/installDeps.sh"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
         - "cd src && npm install && cd -"
-      script:
+       script:
         - "tests/frontend/travis/runnerBackend.sh"
-    - name: "Test the Frontend"
-      install:
+     - name: "Test the Frontend"
+       install:
         - "npm install"
         - "mkdir [plugin_name]"
         - "mv !([plugin_name]) [plugin_name]"
@@ -61,7 +62,7 @@ jobs:
         - "mv ../[plugin_name] node_modules"
         - "bin/installDeps.sh"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
-      script:
+       script:
         - "tests/frontend/travis/runner.sh"
 
 notifications:
