@@ -14,10 +14,8 @@ before_install:
   - sudo apt-get -y install libreoffice
   - sudo apt-get -y install libreoffice-pdfimport
 
-
 install:
   - "bin/installDeps.sh"
-  - sudo npm install -g lockfile-lint
   - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
   # Installing some plugins
 
