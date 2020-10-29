@@ -16,7 +16,6 @@ services:
 
 install:
   - "bin/installDeps.sh"
-  - sudo npm install -g lockfile-lint 
   - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
 
 before_script:
@@ -34,6 +33,7 @@ jobs:
   include:
      - name: "Lint test package-lock"
       script:
+       - npm install lockfile-lint
        - npx lockfile-lint --path package-lock.json --validate-https --allowed-hosts npm
      - name: "Run the Backend tests"
       install:
