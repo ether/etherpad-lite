@@ -14,8 +14,6 @@ before_install:
   - sudo apt-get -y install libreoffice
   - sudo apt-get -y install libreoffice-pdfimport
 
-before_script:
-  - npx lockfile-lint --path src/package-lock.json --validate-https --allowed-hosts npm
 
 install:
   - "bin/installDeps.sh"
@@ -79,6 +77,11 @@ jobs:
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
       script:
         - "tests/frontend/travis/runner.sh"
+    - name: "Lint test package-lock.json"
+      install:
+        - "sudo npm install -g lockfile-lint"
+      script:
+        - npx lockfile-lint --path src/package-lock.json --validate-https --allowed-hosts npm
     - name: "Run the Backend tests with Plugins"
       install:
         - "bin/installDeps.sh"
