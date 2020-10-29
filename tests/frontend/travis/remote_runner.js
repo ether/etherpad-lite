@@ -10,6 +10,10 @@ var config = {
 }
 
 var allTestsPassed = true;
+// overwrite the default exit code
+// in case not all worker can be run (due to saucelabs limits), `queue.drain` below will not be called
+// and the script would silently exit with error code 0
+process.exitCode = 1;
 
 var sauceTestWorker = async.queue(function (testSettings, callback) {
   var browser = wd.promiseChainRemote(config.host, config.port, config.username, config.accessKey);
