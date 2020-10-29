@@ -27,6 +27,19 @@ env:
     - secure: "WMGxFkOeTTlhWB+ChMucRtIqVmMbwzYdNHuHQjKCcj8HBEPdZLfCuK/kf4rG\nVLcLQiIsyllqzNhBGVHG1nyqWr0/LTm8JRqSCDDVIhpyzp9KpCJQQJG2Uwjk\n6/HIJJh/wbxsEdLNV2crYU/EiVO3A4Bq0YTHUlbhUqG3mSCr5Ec="
     - secure: "gejXUAHYscbR6Bodw35XexpToqWkv2ifeECsbeEmjaLkYzXmUUNWJGknKSu7\nEUsSfQV8w+hxApr1Z+jNqk9aX3K1I4btL3cwk2trnNI8XRAvu1c1Iv60eerI\nkE82Rsd5lwUaMEh+/HoL8ztFCZamVndoNgX7HWp5J/NRZZMmh4g="
 
+_install_plugins: &install_plugins >-
+  npm install
+  ep_align
+  ep_author_hover
+  ep_cursortrace
+  ep_font_size
+  ep_hash_auth
+  ep_headings2
+  ep_markdown
+  ep_spellcheck
+  ep_subscript_and_superscript
+  ep_table_of_contents
+
 jobs:
   include:
     # we can only frontend tests from the ether/ organization and not from forks.
@@ -71,18 +84,7 @@ jobs:
         - "tests/frontend/travis/sauce_tunnel.sh"
         - "bin/installDeps.sh"
         - "rm tests/frontend/specs/*"
-        - >-
-          npm install
-          ep_align
-          ep_author_hover
-          ep_cursortrace
-          ep_font_size
-          ep_hash_auth
-          ep_headings2
-          ep_markdown
-          ep_spellcheck
-          ep_subscript_and_superscript
-          ep_table_of_contents
+        - *install_plugins
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
       script:
         - "tests/frontend/travis/runner.sh"
@@ -94,18 +96,7 @@ jobs:
     - name: "Run the Backend tests with Plugins"
       install:
         - "bin/installDeps.sh"
-        - >-
-          npm install
-          ep_align
-          ep_author_hover
-          ep_cursortrace
-          ep_font_size
-          ep_hash_auth
-          ep_headings2
-          ep_markdown
-          ep_spellcheck
-          ep_subscript_and_superscript
-          ep_table_of_contents
+        - *install_plugins
         - "cd src && npm install && cd -"
       script:
         - "tests/frontend/travis/runnerBackend.sh"
@@ -119,18 +110,7 @@ jobs:
     - name: "Load test Etherpad with Plugins"
       install:
         - "bin/installDeps.sh"
-        - >-
-          npm install
-          ep_align
-          ep_author_hover
-          ep_cursortrace
-          ep_font_size
-          ep_hash_auth
-          ep_headings2
-          ep_markdown
-          ep_spellcheck
-          ep_subscript_and_superscript
-          ep_table_of_contents
+        - *install_plugins
         - "cd src && npm install && cd -"
         - "npm install -g etherpad-load-test"
       script:
