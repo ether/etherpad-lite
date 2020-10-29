@@ -4,7 +4,6 @@
 name: Node.js Package
 
 on:
-#trigger on every commit to the main branch
   push:
     branches:
       - main
