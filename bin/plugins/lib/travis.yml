@@ -32,11 +32,12 @@ env:
 jobs:
   include:
      - name: "Lint test package-lock"
-      script:
-       - npm install lockfile-lint
-       - npx lockfile-lint --path package-lock.json --validate-https --allowed-hosts npm
+       install:
+        - "npm install lockfile-lint"
+       script:
+        - npx lockfile-lint --path package-lock.json --validate-https --allowed-hosts npm
      - name: "Run the Backend tests"
-      install:
+       install:
         - "npm install"
         - "mkdir [plugin_name]"
         - "mv !([plugin_name]) [plugin_name]"
