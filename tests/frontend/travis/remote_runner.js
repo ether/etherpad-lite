@@ -53,13 +53,13 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
       }
 
       /**
-       * timeout if a test hangs or the job exceeds 9.5 minutes
+       * timeout if a test hangs or the job exceeds 19.5 minutes
        * It's necessary because if travis kills the saucelabs session due to inactivity, we don't get any output
        * @todo this should be configured in testSettings, see https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-Timeouts
        */
       var timeout = setTimeout(function(){
         stopSauce(false,true);
-      }, 570000); // travis timeout is 10 minutes, set this to a slightly lower value
+      }, 1170000); // travis timeout is 20 minutes, set this to a slightly lower value
 
       var knownConsoleText = "";
       var getStatusInterval = setInterval(function(){
