@@ -16,9 +16,11 @@ services:
 
 install:
   - "bin/installDeps.sh"
+  - sudo npm install -g lockfile-lint 
   - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
 
 before_script:
+  - npx lockfile-lint --path src/package-lock.json --validate-https --allowed-hosts npm
   - "tests/frontend/travis/sauce_tunnel.sh"
 
 script:
@@ -64,5 +66,5 @@ notifications:
     channels:
       - "irc.freenode.org#etherpad-lite-dev"
 
-##ETHERPAD_TRAVIS_V=4
+##ETHERPAD_TRAVIS_V=5
 ## Travis configuration automatically created using bin/plugins/updateAllPluginsScript.sh
