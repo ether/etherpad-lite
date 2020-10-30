@@ -278,7 +278,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
       // holy shit you brave.
       console.log("Attempting autocommit and auto publish to npm")
       // github should push to npm for us :)
-      exec("cd node_modules/"+ pluginName + " && git add -A && git commit --allow-empty -m 'autofixes from Etherpad checkPlugins.js' && npm version patch && git add package.json && git commit --allow-empty -m 'bump version' && git push && cd ../..", (error, name, stderr) => {
+      exec("cd node_modules/"+ pluginName + " && git add -A && git commit --allow-empty -m 'autofixes from Etherpad checkPlugins.js' && git push && cd ../..", (error, name, stderr) => {
         if (error) {
           console.log(`error: ${error.message}`);
           return;
