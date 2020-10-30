@@ -68,5 +68,5 @@ notifications:
     channels:
       - "irc.freenode.org#etherpad-lite-dev"
 
-##ETHERPAD_TRAVIS_V=6
+##ETHERPAD_TRAVIS_V=7
 ## Travis configuration automatically created using bin/plugins/updateAllPluginsScript.sh
