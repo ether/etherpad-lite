@@ -22,6 +22,7 @@ _install_plugins: &install_plugins >-
   ep_hash_auth
   ep_headings2
   ep_markdown
+  ep_readonly_guest
   ep_spellcheck
   ep_subscript_and_superscript
   ep_table_of_contents
