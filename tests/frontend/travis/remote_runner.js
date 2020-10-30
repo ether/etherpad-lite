@@ -10,6 +10,10 @@ var config = {
 }
 
 var allTestsPassed = true;
+// overwrite the default exit code
+// in case not all worker can be run (due to saucelabs limits), `queue.drain` below will not be called
+// and the script would silently exit with error code 0
+process.exitCode = 1;
 
 var sauceTestWorker = async.queue(function (testSettings, callback) {
   var browser = wd.promiseChainRemote(config.host, config.port, config.username, config.accessKey);
@@ -53,13 +57,13 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
       }
 
       /**
-       * timeout if a test hangs or the job exceeds 9.5 minutes
+       * timeout if a test hangs or the job exceeds 14.5 minutes
        * It's necessary because if travis kills the saucelabs session due to inactivity, we don't get any output
        * @todo this should be configured in testSettings, see https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-Timeouts
        */
       var timeout = setTimeout(function(){
         stopSauce(false,true);
-      }, 570000); // travis timeout is 10 minutes, set this to a slightly lower value
+      }, 870000); // travis timeout is 15 minutes, set this to a slightly lower value
 
       var knownConsoleText = "";
       var getStatusInterval = setInterval(function(){

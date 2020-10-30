@@ -8,20 +8,6 @@ services:
 
 cache: false
 
-before_install:
-  - sudo add-apt-repository -y ppa:libreoffice/ppa
-  - sudo apt-get update
-  - sudo apt-get -y install libreoffice
-  - sudo apt-get -y install libreoffice-pdfimport
-
-install:
-  - "bin/installDeps.sh"
-  - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
-  # Installing some plugins
-
-script:
-  - "tests/frontend/travis/runner.sh"
-
 env:
   global:
     - secure: "WMGxFkOeTTlhWB+ChMucRtIqVmMbwzYdNHuHQjKCcj8HBEPdZLfCuK/kf4rG\nVLcLQiIsyllqzNhBGVHG1nyqWr0/LTm8JRqSCDDVIhpyzp9KpCJQQJG2Uwjk\n6/HIJJh/wbxsEdLNV2crYU/EiVO3A4Bq0YTHUlbhUqG3mSCr5Ec="
@@ -53,9 +39,13 @@ jobs:
         - "bin/installDeps.sh"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
       script:
-        - "tests/frontend/travis/runner.sh"
+        - "travis_wait 15 tests/frontend/travis/runner.sh"
     - name: "Run the Backend tests without Plugins"
       install:
+        - "sudo add-apt-repository -y ppa:libreoffice/ppa"
+        - "sudo apt-get update"
+        - "sudo apt-get -y install libreoffice"
+        - "sudo apt-get -y install libreoffice-pdfimport"
         - "bin/installDeps.sh"
         - "cd src && npm install && cd -"
       script:
@@ -87,7 +77,7 @@ jobs:
         - *install_plugins
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
       script:
-        - "tests/frontend/travis/runner.sh"
+        - "travis_wait 15 tests/frontend/travis/runner.sh"
     - name: "Lint test package-lock.json"
       install:
         - "npm install lockfile-lint"
@@ -95,6 +85,10 @@ jobs:
         - npx lockfile-lint --path src/package-lock.json --validate-https --allowed-hosts npm
     - name: "Run the Backend tests with Plugins"
       install:
+        - "sudo add-apt-repository -y ppa:libreoffice/ppa"
+        - "sudo apt-get update"
+        - "sudo apt-get -y install libreoffice"
+        - "sudo apt-get -y install libreoffice-pdfimport"
         - "bin/installDeps.sh"
         - *install_plugins
         - "cd src && npm install && cd -"
