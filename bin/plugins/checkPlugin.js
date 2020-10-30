@@ -62,6 +62,14 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     process.exit(1);
   }
 
+  // do a git pull...
+  var child_process = require('child_process');
+  try{
+    child_process.execSync('git pull ',{"cwd":pluginPath+"/"});
+  }catch(e){
+    console.error("Error git pull", e);
+  };
+
   if(files.indexOf(".github") !== -1){
     let path = pluginPath + "/.github/workflows/npmpublish.yml";
     try {
@@ -202,11 +210,10 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     // checks the file versioning of .travis and updates it to the latest.
     let existingConfig = fs.readFileSync(pluginPath + "/.travis.yml", {encoding:'utf8', flag:'r'});
     let existingConfigLocation = existingConfig.indexOf("##ETHERPAD_TRAVIS_V=");
-    let existingValue = existingConfig.substr(existingConfigLocation+20, existingConfig.length);
+    let existingValue = parseInt(existingConfig.substr(existingConfigLocation+20, existingConfig.length));
 
     let newConfigLocation = travisConfig.indexOf("##ETHERPAD_TRAVIS_V=");
-    let newValue = travisConfig.substr(newConfigLocation+20, travisConfig.length);
-
+    let newValue = parseInt(travisConfig.substr(newConfigLocation+20, travisConfig.length));
     if(existingConfigLocation === -1){
       console.warn("no previous .travis.yml version found so writing new.")
       // we will write the newTravisConfig to the location.
