@@ -40,7 +40,7 @@ jobs:
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
       script:
         - "travis_wait 15 tests/frontend/travis/runner.sh"
-      #output 300 lines at once to prevent travis from truncating the log
+      #output 100 lines at once to prevent travis from truncating the log
       after_script:
         - "cat /tmp/remote_runner.log | (lines=0; while read line; do echo -e \"${line}\"; if [ $((++lines % 100)) -eq 0 ]; then sleep 1; fi; done)"
     - name: "Run the Backend tests without Plugins"
