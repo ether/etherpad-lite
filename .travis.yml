@@ -42,7 +42,7 @@ jobs:
         - "travis_wait 15 tests/frontend/travis/runner.sh"
       #output 100 lines at once to prevent travis from truncating the log
       after_script:
-        - "cat /tmp/remote_runner.log | (lines=0; while read line; do echo -e \"${line}\"; if [ $((++lines % 100)) -eq 0 ]; then sleep 1; fi; done)"
+        - "travis_fold end after_script && cat /tmp/remote_runner.log | (lines=0; while read line; do echo -e \"${line}\"; if [ $((++lines % 100)) -eq 0 ]; then sleep 1; fi; done)"
     - name: "Run the Backend tests without Plugins"
       install:
         - "sudo add-apt-repository -y ppa:libreoffice/ppa"
@@ -83,7 +83,7 @@ jobs:
         - "travis_wait 15 tests/frontend/travis/runner.sh"
       #output 100 lines/sec to prevent travis from truncating the log
       after_script:
-        - "cat /tmp/remote_runner.log | (lines=0; while read line; do echo -e \"${line}\"; if [ $((++lines % 100)) -eq 0 ]; then sleep 1; fi; done)"
+        - "travis_fold end after_script && cat /tmp/remote_runner.log | (lines=0; while read line; do echo -e \"${line}\"; if [ $((++lines % 100)) -eq 0 ]; then sleep 1; fi; done)"
     - name: "Lint test package-lock.json"
       install:
         - "npm install lockfile-lint"
