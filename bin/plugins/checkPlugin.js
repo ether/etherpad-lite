@@ -70,29 +70,22 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     console.error("Error git pull", e);
   };
 
-  if(files.indexOf(".github") !== -1){
-    let path = pluginPath + "/.github/workflows/npmpublish.yml";
-    try {
-      if (fs.existsSync(path)) {
-        //file exists
-      }else{
-        console.log("no .github/workflows/npmpublish.yml, create one and set npm secret to auto publish to npm on commit");
-        if(autoFix){
-          let npmpublish = fs.readFileSync("bin/plugins/lib/npmpublish.yml", {encoding:'utf8', flag:'r'})
-          fs.mkdir(pluginPath+"/.github/workflows", { recursive: true }, (err) => {
-            if (err) throw err;
-          });
-          fs.writeFileSync(pluginPath+"/.github/workflows/npmpublish.yml", npmpublish);
-          console.log("If you haven't already, setup autopublish for this plugin https://github.com/ether/etherpad-lite/wiki/Plugins:-Automatically-publishing-to-npm-on-commit-to-Github-Repo");
-        }else{
-         console.log("Setup autopublish for this plugin https://github.com/ether/etherpad-lite/wiki/Plugins:-Automatically-publishing-to-npm-on-commit-to-Github-Repo");
-        }
+  try {
+    const path = pluginPath + '/.github/workflows/npmpublish.yml';
+    if (!fs.existsSync(path)) {
+      console.log('no .github/workflows/npmpublish.yml, create one and set npm secret to auto publish to npm on commit');
+      if (autoFix) {
+        const npmpublish =
+            fs.readFileSync('bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
+        fs.mkdirSync(pluginPath + '/.github/workflows', {recursive: true});
+        fs.writeFileSync(path, npmpublish);
+        console.log("If you haven't already, setup autopublish for this plugin https://github.com/ether/etherpad-lite/wiki/Plugins:-Automatically-publishing-to-npm-on-commit-to-Github-Repo");
+      } else {
+        console.log('Setup autopublish for this plugin https://github.com/ether/etherpad-lite/wiki/Plugins:-Automatically-publishing-to-npm-on-commit-to-Github-Repo');
       }
-    } catch(err) {
-      console.error(err)
     }
-  }else{
-    console.log("no github action to auto publish");
+  } catch (err) {
+    console.error(err);
   }
 
   if(files.indexOf("package.json") === -1){
