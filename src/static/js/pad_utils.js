@@ -308,11 +308,7 @@ var padutils = {
       {
         animationState = -1;
       }
-      else if (animationState <= 0)
-      {
-        animationState = animationState;
-      }
-      else
+      else if (animationState > 0)
       {
         animationState = Math.max(-1, Math.min(0, -animationState));
       }
