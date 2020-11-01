@@ -5,15 +5,12 @@ var fs = require('fs');
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   args.app.get('/admin/settings', function(req, res) {
-
-    var render_args = {
+    res.send(eejs.require('ep_etherpad-lite/templates/admin/settings.html', {
+      req,
       settings: "",
       search_results: {},
       errors: []
-    };
-
-    res.send( eejs.require("ep_etherpad-lite/templates/admin/settings.html", render_args) );
-
+    }));
   });
   return cb();
 }
