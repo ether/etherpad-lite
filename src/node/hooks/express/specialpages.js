@@ -14,13 +14,13 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   //serve index.html under /
   args.app.get('/', function(req, res)
   {
-    res.send(eejs.require("ep_etherpad-lite/templates/index.html"));
+    res.send(eejs.require('ep_etherpad-lite/templates/index.html', {req}));
   });
 
   //serve javascript.html
   args.app.get('/javascript', function(req, res)
   {
-    res.send(eejs.require("ep_etherpad-lite/templates/javascript.html"));
+    res.send(eejs.require('ep_etherpad-lite/templates/javascript.html'), {req});
   });
 
 

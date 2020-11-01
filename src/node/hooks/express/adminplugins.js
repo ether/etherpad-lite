@@ -8,13 +8,12 @@ const UpdateCheck = require('ep_etherpad-lite/node/utils/UpdateCheck');
 
 exports.expressCreateServer = function(hook_name, args, cb) {
   args.app.get('/admin/plugins', function(req, res) {
-    var render_args = {
+    res.send(eejs.require('ep_etherpad-lite/templates/admin/plugins.html', {
       plugins: plugins.plugins,
+      req,
       search_results: {},
       errors: [],
-    };
-
-    res.send(eejs.require("ep_etherpad-lite/templates/admin/plugins.html", render_args));
+    }));
   });
 
   args.app.get('/admin/plugins/info', function(req, res) {
@@ -24,7 +23,8 @@ exports.expressCreateServer = function(hook_name, args, cb) {
     res.send(eejs.require("ep_etherpad-lite/templates/admin/plugins-info.html", {
       gitCommit: gitCommit,
       epVersion: epVersion,
-      latestVersion: UpdateCheck.getLatestVersion()
+      latestVersion: UpdateCheck.getLatestVersion(),
+      req,
     }));
   });
 
