@@ -605,19 +605,9 @@ function Ace2Inner(){
     recolorLinesInRange(0, rep.alltext.length);
   }
 
-  function setEditable(newVal)
-  {
+  function setEditable(newVal) {
     isEditable = newVal;
-
-    // the following may fail, e.g. if iframe is hidden
-    if (!isEditable)
-    {
-      setDesignMode(false);
-    }
-    else
-    {
-      setDesignMode(true);
-    }
+    root.contentEditable = isEditable ? 'true' : 'false';
     root.classList.toggle('static', !isEditable);
   }
 
@@ -4672,40 +4662,6 @@ function Ace2Inner(){
     {
       a();
     });
-  }
-
-  function setDesignMode(newVal)
-  {
-    try
-    {
-      function setIfNecessary(target, prop, val)
-      {
-        if (String(target[prop]).toLowerCase() != val)
-        {
-          target[prop] = val;
-          return true;
-        }
-        return false;
-      }
-      if (browser.msie || browser.safari)
-      {
-        setIfNecessary(root, 'contentEditable', (newVal ? 'true' : 'false'));
-      }
-      else
-      {
-        var wasSet = setIfNecessary(doc, 'designMode', (newVal ? 'on' : 'off'));
-        if (wasSet && newVal && browser.opera)
-        {
-          // turning on designMode clears event handlers
-          bindTheEventHandlers();
-        }
-      }
-      return true;
-    }
-    catch (e)
-    {
-      return false;
-    }
   }
 
   var iePastedLines = null;
