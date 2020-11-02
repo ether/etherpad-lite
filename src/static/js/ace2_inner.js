@@ -556,7 +556,7 @@ function Ace2Inner(){
   {
     doesWrap = newVal;
     var dwClass = "doesWrap";
-    setClassPresence(root, "doesWrap", doesWrap);
+    root.classList.toggle('doesWrap', doesWrap);
     scheduler.setTimeout(function()
     {
       inCallStackIfNecessary("setWraps", function()
@@ -618,7 +618,7 @@ function Ace2Inner(){
     {
       setDesignMode(true);
     }
-    setClassPresence(root, "static", !isEditable);
+    root.classList.toggle('static', !isEditable);
   }
 
   function enforceEditability()
@@ -890,25 +890,17 @@ function Ace2Inner(){
   // @param value the value to set to
   editorInfo.ace_setProperty = function(key, value)
   {
-
-    // Convinience function returning a setter for a class on an element
-    var setClassPresenceNamed = function(element, cls){
-      return function(value){
-         setClassPresence(element, cls, !! value)
-      }
-    };
-
     // These properties are exposed
     var setters = {
       wraps: setWraps,
-      showsauthorcolors: setClassPresenceNamed(root, "authorColors"),
-      showsuserselections: setClassPresenceNamed(root, "userSelections"),
+      showsauthorcolors: (val) => root.classList.toggle('authorColors', !!val),
+      showsuserselections: (val) => root.classList.toggle('userSelections', !!val),
       showslinenumbers : function(value){
         hasLineNumbers = !! value;
-        setClassPresence(sideDiv.parentNode, "line-numbers-hidden", !hasLineNumbers);
+        sideDiv.parentNode.classList.toggle('line-numbers-hidden', !hasLineNumbers);
         fixView();
       },
-      grayedout: setClassPresenceNamed(outerWin.document.body, "grayedout"),
+      grayedout: (val) => outerWin.document.body.classList.toggle('grayedout', !!val),
       dmesg: function(){ dmesg = window.dmesg = value; },
       userauthor: function(value){
         thisAuthor = String(value);
@@ -917,8 +909,8 @@ function Ace2Inner(){
       styled: setStyled,
       textface: setTextFace,
       rtlistrue: function(value) {
-        setClassPresence(root, "rtl", value)
-        setClassPresence(root, "ltr", !value)
+        root.classList.toggle('rtl', value);
+        root.classList.toggle('ltr', !value);
         document.documentElement.dir = value? 'rtl' : 'ltr'
       }
     };
@@ -4916,12 +4908,6 @@ function Ace2Inner(){
     elem.className = array.join(' ');
   }
 
-  function setClassPresence(elem, className, present)
-  {
-    if (present) $(elem).addClass(className);
-    else $(elem).removeClass(className);
-  }
-
   function focus()
   {
     window.focus();
@@ -5335,8 +5321,8 @@ function Ace2Inner(){
         if (browser.firefox) $(root).addClass("mozilla");
         if (browser.safari) $(root).addClass("safari");
         if (browser.msie) $(root).addClass("msie");
-        setClassPresence(root, "authorColors", true);
-        setClassPresence(root, "doesWrap", doesWrap);
+        root.classList.toggle('authorColors', true);
+        root.classList.toggle('doesWrap', doesWrap);
 
         initDynamicCSS();
 
