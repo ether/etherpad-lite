@@ -1,4 +1,4 @@
-[![Travis (.org)](https://api.travis-ci.org/[org_name]/[repo_url].svg?branch=develop)](https://travis-ci.org/github/[org_name]/[repo_url])
+[![Travis (.com)](https://api.travis-ci.com/[org_name]/[repo_url].svg?branch=develop)](https://travis-ci.com/github/[org_name]/[repo_url])
 
 # My awesome plugin README example
 Explain what your plugin does and who it's useful for.

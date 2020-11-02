@@ -1,24 +1,6 @@
-// pro usage for all your plugins, replace johnmclear with your github username
-/*
-cd node_modules
-GHUSER=johnmclear; curl "https://api.github.com/users/$GHUSER/repos?per_page=1000" | grep -o 'git@[^"]*' | grep /ep_ | xargs -L1 git clone
-cd ..
-
-for dir in `ls node_modules`;
-do
-# echo $0
-if [[ $dir == *"ep_"* ]]; then
-if [[ $dir != "ep_etherpad-lite" ]]; then
-node bin/plugins/checkPlugin.js $dir autofix autocommit
-fi
-fi
-# echo $dir
-done
-*/
-
 /*
 *
-* Usage
+* Usage -- see README.md
 *
 * Normal usage:                node bin/plugins/checkPlugins.js ep_whatever
 * Auto fix the things it can:  node bin/plugins/checkPlugins.js ep_whatever autofix
@@ -32,6 +14,12 @@ const { exec } = require("child_process");
 
 // get plugin name & path from user input
 const pluginName = process.argv[2];
+
+if(!pluginName){
+  console.error("no plugin name specified");
+  process.exit(1);
+}
+
 const pluginPath = "node_modules/"+pluginName;
 
 console.log("Checking the plugin: "+ pluginName)
@@ -69,12 +57,58 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     files.push(rootFiles[i].toLowerCase());
   }
 
+  if(files.indexOf(".git") === -1){
+    console.error("No .git folder, aborting");
+    process.exit(1);
+  }
+
+  // do a git pull...
+  var child_process = require('child_process');
+  try{
+    child_process.execSync('git pull ',{"cwd":pluginPath+"/"});
+  }catch(e){
+    console.error("Error git pull", e);
+  };
+
+  try {
+    const path = pluginPath + '/.github/workflows/npmpublish.yml';
+    if (!fs.existsSync(path)) {
+      console.log('no .github/workflows/npmpublish.yml, create one and set npm secret to auto publish to npm on commit');
+      if (autoFix) {
+        const npmpublish =
+            fs.readFileSync('bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
+        fs.mkdirSync(pluginPath + '/.github/workflows', {recursive: true});
+        fs.writeFileSync(path, npmpublish);
+        console.log("If you haven't already, setup autopublish for this plugin https://github.com/ether/etherpad-lite/wiki/Plugins:-Automatically-publishing-to-npm-on-commit-to-Github-Repo");
+      } else {
+        console.log('Setup autopublish for this plugin https://github.com/ether/etherpad-lite/wiki/Plugins:-Automatically-publishing-to-npm-on-commit-to-Github-Repo');
+      }
+    }
+  } catch (err) {
+    console.error(err);
+  }
+
   if(files.indexOf("package.json") === -1){
     console.warn("no package.json, please create");
   }
 
   if(files.indexOf("package.json") !== -1){
     let packageJSON = fs.readFileSync(pluginPath+"/package.json", {encoding:'utf8', flag:'r'});
+    let parsedPackageJSON = JSON.parse(packageJSON);
+    if(autoFix){
+      var updatedPackageJSON = false;
+      if(!parsedPackageJSON.funding){
+        updatedPackageJSON = true;
+        parsedPackageJSON.funding = {
+          "type": "individual",
+          "url": "http://etherpad.org/"
+        }
+      }
+      if(updatedPackageJSON){
+        hasAutofixed = true;
+        fs.writeFileSync(pluginPath+"/package.json", JSON.stringify(parsedPackageJSON, null, 2));
+      }
+    }
 
     if(packageJSON.toLowerCase().indexOf("repository") === -1){
       console.warn("No repository in package.json");
@@ -83,10 +117,25 @@ fs.readdir(pluginPath, function (err, rootFiles) {
       }
     }else{
       // useful for creating README later.
-      repository = JSON.parse(packageJSON).repository.url;
+      repository = parsedPackageJSON.repository.url;
     }
 
   }
+
+  if(files.indexOf("package-lock.json") === -1){
+    console.warn("package-lock.json file not found.  Please run npm install in the plugin folder and commit the package-lock.json file.")
+    if(autoFix){
+      var child_process = require('child_process');
+      try{
+        child_process.execSync('npm install',{"cwd":pluginPath+"/"});
+        console.log("Making package-lock.json");
+        hasAutofixed = true;
+      }catch(e){
+        console.error("Failed to create package-lock.json");
+      }
+    }
+  }
+
   if(files.indexOf("readme") === -1 && files.indexOf("readme.md") === -1){
     console.warn("README.md file not found, please create");
     if(autoFix){
@@ -154,11 +203,10 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     // checks the file versioning of .travis and updates it to the latest.
     let existingConfig = fs.readFileSync(pluginPath + "/.travis.yml", {encoding:'utf8', flag:'r'});
     let existingConfigLocation = existingConfig.indexOf("##ETHERPAD_TRAVIS_V=");
-    let existingValue = existingConfig.substr(existingConfigLocation+20, existingConfig.length);
+    let existingValue = parseInt(existingConfig.substr(existingConfigLocation+20, existingConfig.length));
 
     let newConfigLocation = travisConfig.indexOf("##ETHERPAD_TRAVIS_V=");
-    let newValue = travisConfig.substr(newConfigLocation+20, travisConfig.length);
-
+    let newValue = parseInt(travisConfig.substr(newConfigLocation+20, travisConfig.length));
     if(existingConfigLocation === -1){
       console.warn("no previous .travis.yml version found so writing new.")
       // we will write the newTravisConfig to the location.
@@ -222,7 +270,8 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     if(autoCommit){
       // holy shit you brave.
       console.log("Attempting autocommit and auto publish to npm")
-      exec("cd node_modules/"+ pluginName + " && git add -A && git commit --allow-empty -m 'autofixes from Etherpad checkPlugins.js' && npm version patch && git add package.json && git commit --allow-empty -m 'bump version' && git push && npm publish && cd ../..", (error, name, stderr) => {
+      // github should push to npm for us :)
+      exec("cd node_modules/"+ pluginName + " && git add -A && git commit --allow-empty -m 'autofixes from Etherpad checkPlugins.js' && git push && cd ../..", (error, name, stderr) => {
         if (error) {
           console.log(`error: ${error.message}`);
           return;
@@ -239,9 +288,6 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     }
   }
 
-  //listing all files using forEach
-  files.forEach(function (file) {
-    // Do whatever you want to do with the file
-    // console.log(file.toLowerCase());
-  });
+  console.log("Finished");
+
 });
