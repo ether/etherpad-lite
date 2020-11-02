@@ -1103,10 +1103,6 @@ function Ace2Inner(){
 
   var idleWorkTimer = makeIdleAction(function()
   {
-
-    //if (! top.BEFORE) top.BEFORE = [];
-    //top.BEFORE.push(magicdom.root.dom.innerHTML);
-    //if (! isEditable) return; // and don't reschedule
     if (inInternationalComposition)
     {
       // don't do idle input incorporation during international input composition
@@ -1161,9 +1157,6 @@ function Ace2Inner(){
         }
       }
     });
-
-    //if (! top.AFTER) top.AFTER = [];
-    //top.AFTER.push(magicdom.root.dom.innerHTML);
   });
 
   var _nextId = 1;
@@ -3572,7 +3565,6 @@ function Ace2Inner(){
 
   function handleKeyEvent(evt)
   {
-    // if (DEBUG && window.DONT_INCORP) return;
     if (!isEditable) return;
     var type = evt.type;
     var charCode = evt.charCode;
