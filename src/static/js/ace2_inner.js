@@ -2246,7 +2246,7 @@ function Ace2Inner(){
     // Failing to add attribute to non present selection, see
     // https://github.com/ether/ep_comments/issues/133 for details.
     try{
-      var line = rep.lines.atIndex(rep.selEnd[0]);
+      rep.lines.atIndex(rep.selEnd[0]);
     }catch(e){
       throw new Error("Failed to add attribute to selection that does not exist");
     }
