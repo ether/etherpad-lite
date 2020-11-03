@@ -16,6 +16,7 @@
 
 var log4js = require('log4js');
 const db = require("../db/DB");
+const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
 exports.setPadRaw = function(padId, records)
 {
@@ -62,6 +63,19 @@ exports.setPadRaw = function(padId, records)
         // and create the value
         newKey = oldPadId.join(":"); // create the new key
       }
+
+      // is this a key that is supported through a plugin?
+      await Promise.all([
+        // get content that has a different prefix IE comments:padId:foo
+        // a plugin would return something likle ["comments", "cakes"]
+        hooks.aCallAll('exportEtherpadAdditionalContent').then((prefixes) => {
+          prefixes.forEach(async function(prefix) {
+            if(key.split(":")[0] === prefix){
+              newKey = "comments:" + padId;
+            }
+          });
+        })
+      ]);
     }
 
     // Write the value to the server
