@@ -66,7 +66,7 @@ exports.getPadRaw = async function(padId) {
     hooks.aCallAll('exportEtherpadAdditionalContent').then((prefixes) => {
       prefixes.forEach(async function(prefix) {
         let pluginContent = await db.get(prefix + ":" + padId);
-        data[prefix] = pluginContent;
+        data[prefix + ":" + padId] = pluginContent;
       });
     })
   ]);
