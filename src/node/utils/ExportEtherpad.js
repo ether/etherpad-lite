@@ -24,7 +24,6 @@ exports.getPadRaw = async function(padId) {
   let padcontent = await db.get(padKey);
 
   let records = [ padKey ];
-
   for (let i = 0; i <= padcontent.head; i++) {
     records.push(padKey + ":revs:" + i);
   }

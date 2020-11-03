@@ -71,7 +71,7 @@ exports.setPadRaw = function(padId, records)
         hooks.aCallAll('exportEtherpadAdditionalContent').then((prefixes) => {
           prefixes.forEach(async function(prefix) {
             if(key.split(":")[0] === prefix){
-              newKey = "comments:" + padId;
+              newKey = prefix + ":" + padId;
             }
           });
         })
