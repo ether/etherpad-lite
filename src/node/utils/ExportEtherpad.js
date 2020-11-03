@@ -16,6 +16,7 @@
 
 
 let db = require("../db/DB");
+let hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
 exports.getPadRaw = async function(padId) {
 
@@ -23,6 +24,7 @@ exports.getPadRaw = async function(padId) {
   let padcontent = await db.get(padKey);
 
   let records = [ padKey ];
+
   for (let i = 0; i <= padcontent.head; i++) {
     records.push(padKey + ":revs:" + i);
   }
@@ -57,6 +59,18 @@ exports.getPadRaw = async function(padId) {
       }
     }
   }
+
+  await Promise.all([
+    // get content that has a different prefix IE comments:padId:foo
+    // a plugin would return something likle ["comments", "cakes"]
+    hooks.aCallAll('exportEtherpadAdditionalContent').then((prefixes) => {
+      prefixes.forEach(async function(prefix) {
+        let pluginContent = await db.get(prefix + ":" + padId);
+        data[prefix] = pluginContent;
+      });
+    })
+  ]);
+
 
   return data;
 }
