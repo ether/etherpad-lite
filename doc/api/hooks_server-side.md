@@ -751,6 +751,21 @@ exports.exportHtmlAdditionalTagsWithData = function(hook, pad, cb){
 };
 ```
 
+## exportEtherpadAdditionalContent
+Called from src/node/utils/ExportEtherpad.js and src/node/utils/ImportEtherpad.js
+
+Things in context:
+
+Useful for exporting and importing non-pad centric data stored about a pad.  For example in ep_comments_page the comments are stored as comments:padId:uniqueIdOfComment and as such when you export .etherpad this data is not included.
+
+Example:
+```
+// Add support for exporting comments metadata
+exports.exportEtherpadAdditionalContent = function(hook_name, context, callback){
+  return callback(["comments"]);
+};
+```
+
 ## userLeave
 Called from src/node/handler/PadMessageHandler.js
 
