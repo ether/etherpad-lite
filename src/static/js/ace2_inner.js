@@ -2245,25 +2245,14 @@ function Ace2Inner(){
 
     // Failing to add attribute to non present selection, see
     // https://github.com/ether/ep_comments/issues/133 for details.
-    var notPresent = false;
     try{
       var line = rep.lines.atIndex(rep.selEnd[0]);
     }catch(e){
-      notPresent = true;
+      throw new Error("Failed to add attribute to selection that does not exist");
     }
-    if(notPresent){
-      parent.parent.$.gritter.add({
-        // (string | mandatory) the heading of the notification
-        title: 'Selection no longer present',
-        // (string | mandatory) the text inside the notification
-        text: 'Unable to modify this content because the selection is no longer present in the pad',
-        // (bool | optional) if you want it to fade out on its own or just $
-        sticky: false,
-        // (int | optional) the time you want it to be alive for before fad$
-        time: '4000'
-      });
-      throw new Error("Failed to add attribute to selection");
-      return;
+    // we know the line exists so let's see if the character exists
+    if(rep.selEnd[1] > rep.lines.atIndex(rep.selEnd[0]).width){
+      throw new Error("Failed to add attribute to selection that does not exist");
     }
 
     documentAttributeManager.setAttributesOnRange(rep.selStart, rep.selEnd, [
