@@ -66,6 +66,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
       var getStatusInterval = setInterval(function(){
         browser.eval("$('#console').text()", function(err, consoleText){
           if(!consoleText || err){
+            console.log("return due to error or empty console ",err)
             return;
           }
           knownConsoleText = consoleText;
@@ -84,6 +85,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
             // not finished yet 
             printLog(logIndex);
             logIndex = knownConsoleText.length;
+        console.log("should print with index ",logIndex," next time")
           }
         });
       }, 5000);
@@ -95,6 +97,7 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
        * @param {number} index offset from where to start
        */
       function printLog(index){
+        console.log("should print with index ",index)
         let testResult = knownConsoleText.substring(index).replace(/\[red\]/g,'\x1B[31m').replace(/\[yellow\]/g,'\x1B[33m')
                          .replace(/\[green\]/g,'\x1B[32m').replace(/\[clear\]/g, '\x1B[39m');
         testResult = testResult.split("\\n").map(function(line){
