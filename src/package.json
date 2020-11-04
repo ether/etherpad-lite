@@ -71,6 +71,7 @@
     "tinycon": "0.0.1",
     "ueberdb2": "^0.5.4",
     "underscore": "1.8.3",
+    "unist-util-visit": "^2.0.3",
     "unorm": "1.4.1"
   },
   "bin": {

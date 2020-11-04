@@ -43,6 +43,12 @@ var ulSpaceHtml = '<!doctype html><html><body><ul class="bullet"> <li>one</li></
  */
 var expectedSpaceHtml = '<!doctype html><html><body><ul class="bullet"><li>one</ul></body></html>';
 
+
+// Html document with two empty lines
+var emptyLinesHtml = '<!doctype html><html><body>something<br> <br> <br>anything<br></body></html>';
+
+var expectedEmptyLineHtml = '<!doctype html><html><body>something<br>&nbsp;<br>&nbsp;<br>anything<br></body></html>';
+
 describe(__filename, function() {
   describe('Connectivity', function() {
     it('can connect', function(done) {
@@ -658,6 +664,39 @@ describe(__filename, function() {
           })
           .expect('Content-Type', /json/)
           .expect(200, done)
+    });
+  })
+
+  describe('setHTML - html with empty spaces on non-textual node', function() {
+    it('sets the HTML of a Pad', function(done) {
+      api.get(endPoint('setHTML')+"&padID="+testPadId+"&html="+emptyLinesHtml)
+        .expect(function(res){
+          if(res.body.code !== 0) throw new Error("Error on import content")
+        })
+        .expect('Content-Type', /json/)
+        .expect(200, done)
+    });
+  })
+
+  describe('getHTML', function(){
+    it('Gets back the HTML of a Pad preserving the empty spaces only on textual nodes', function(done) {
+      api.get(endPoint('getHTML')+"&padID="+testPadId)
+        .expect(function(res){
+          var receivedHtml = res.body.data.html.replace("<br></body>", "</body>").toLowerCase();
+          if (receivedHtml !== expectedEmptyLineHtml) {
+            throw new Error(`HTML received from export is not the one we were expecting.
+           Received:
+           ${receivedHtml}
+
+           Expected:
+           ${expectedEmptyLineHtml}
+
+           Which is a slightly modified version of the originally imported one:
+           ${emptyLinesHtml}`);
+          }
+        })
+        .expect('Content-Type', /json/)
+        .expect(200, done)
     });
   })
 
