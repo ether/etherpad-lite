@@ -779,16 +779,16 @@ window.html10n = (function(window, document, undefined) {
   function substArguments(str, args) {
     var reArgs = /\{\{\s*([a-zA-Z\.]+)\s*\}\}/
       , match
-
+    var translations = html10n.translations;
     while (match = reArgs.exec(str)) {
       if (!match || match.length < 2)
         return str // argument key not found
 
       var arg = match[1]
         , sub = ''
-      if (arg in args) {
+      if (args && arg in args) {
         sub = args[arg]
-      } else if (arg in translations) {
+      } else if (translations && arg in translations) {
         sub = translations[arg]
       } else {
         console.warn('Could not find argument {{' + arg + '}}')
