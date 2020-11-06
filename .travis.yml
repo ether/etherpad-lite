@@ -74,6 +74,13 @@ jobs:
         - "npm install -g etherpad-load-test"
       script:
         - "tests/frontend/travis/runnerLoadTest.sh"
+    - name: "Load test Etherpad with 3 authors but without Plugins"
+      install:
+        - "bin/installDeps.sh"
+        - "cd src && npm install && cd -"
+        - "npm install etherpad-load-test"
+      script:
+        - "tests/frontend/travis/runnerLoadTestMultiPad.sh"
     # we can only frontend tests from the ether/ organization and not from forks.
     # To request tests to be run ask a maintainer to fork your repo to ether/
     - if: fork = false
