@@ -498,6 +498,11 @@ exports.getPadHTMLDocument = async function (padId, revNum)
 
   let html = await getPadHTML(pad, revNum);
 
+  let exportHTMLAdditionalContent = await hooks.aCallAll("exportHTMLAdditionalContent", padId);
+  exportHTMLAdditionalContent.forEach(function(hookHtml){
+    html += hookHtml;
+  });
+
   return eejs.require("ep_etherpad-lite/templates/export_html.html", {
     body: html,
     padId: Security.escapeHTML(padId),
