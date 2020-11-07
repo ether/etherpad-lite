@@ -174,7 +174,31 @@ function handshake()
   //find out in which subfolder we are
   var resource =  exports.baseURL.substring(1)  + "socket.io";
   //connect
-  socket = pad.socket = io.connect(url, {
+
+  var padId = document.location.pathname.substring(document.location.pathname.lastIndexOf("/") + 1);
+
+// demo, needs refactor
+  
+socket = pad.socket = io({
+  transportOptions: {
+    polling: {
+      extraHeaders: {
+        'x-padId': padId
+      }
+    }
+  }
+});
+
+  socket = pad.socket = socket.connect(url, {
+
+    handlePreflightRequest: function (req, res) {
+      var headers = {
+        'padId': "derp"
+      };
+      res.writeHead(200, headers);
+      res.end();
+    },
+
     // Allow deployers to host Etherpad on a non-root path
     'path': exports.baseURL + "socket.io",
     'resource': resource,
