@@ -219,7 +219,31 @@ const sendClientReady = (isReconnect, messageType) => {
 };
 
 const handshake = () => {
-  socket = pad.socket = socketio.connect(exports.baseURL, '/', {
+
+  var padId = document.location.pathname.substring(document.location.pathname.lastIndexOf("/") + 1);
+
+// demo, needs refactor
+  
+socket = pad.socket = io({
+  transportOptions: {
+    polling: {
+      extraHeaders: {
+        'x-padId': padId
+      }
+    }
+  }
+});
+
+  socket = pad.socket = socket.connect(url, {
+
+    handlePreflightRequest: function (req, res) {
+      var headers = {
+        'padId': "derp"
+      };
+      res.writeHead(200, headers);
+      res.end();
+    },
+
     reconnectionAttempts: 5,
     reconnection: true,
     reconnectionDelay: 1000,
