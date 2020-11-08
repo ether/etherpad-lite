@@ -1,4 +1,4 @@
-# Develop -- TODO Change to 1.8.x.
+# 1.8.7
 ### Compatibility-breaking changes
 * **IMPORTANT:** It is no longer possible to protect a group pad with a
   password. All API calls to `setPassword` or `isPasswordProtected` will fail.
@@ -24,12 +24,21 @@
 * All authentication successes and failures are now logged
 * Added a new `cookie.sameSite` setting that makes it possible to enable
   authentication when Etherpad is embedded in an iframe from another site
+* New hook to include additional HTML content
+* New hook to include additional database content in .etherpad exports
+* ``checkPlugins.js`` has various improvements to help plugin developers
+
 ### Notable fixes
 * Fixed rate limit accounting when Etherpad is behind a reverse proxy
 * Fixed typos that prevented access to pads via an HTTP API session
 * Fixed authorization failures for pad URLs containing a percent-encoded
   character
 * Fixed exporting of read-only pads
+* Fixed issue of including admin passwords in database
+* Fixed issue of incorrect IP address of user when reverse proxy is involved
+* Fixed issue of lack of focus when tabbing through toolbar buttons
+* Fixed support for node 10 by using ``experimental-worker`` flag
+
 ### Minor changes
 * Temporary disconnections no longer force a full page refresh
 * Toolbar layout for narrow screens is improved
@@ -37,6 +46,7 @@
   `token`, and `pref` cookies
 * Fixed superfluous database accesses when deleting a pad
 * Expanded test coverage.
+* package-lock.json is now lint checked on commit
 
 # 1.8.6
 * IMPORTANT: This fixes a severe problem with postgresql in 1.8.5
