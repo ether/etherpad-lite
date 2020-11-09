@@ -69,7 +69,7 @@ jobs:
       install:
         - "bin/installDeps.sh"
         - "cd src && npm install && cd -"
-        - "npm install etherpad-load-test"
+        - "npm install -g etherpad-load-test"
       script:
         - "tests/frontend/travis/runnerLoadTestMultiPad.sh"
     # we can only frontend tests from the ether/ organization and not from forks.
