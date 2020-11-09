@@ -42,7 +42,7 @@ sleep 10
 
 # run the backend tests
 echo "Now run the load tests for 30 seconds across 10 pads with 3 authors"
-node node_modules/etherpad-load-test/multi.js
+etherpad-loadtest-multi
 exit_code=$?
 
 kill $!
