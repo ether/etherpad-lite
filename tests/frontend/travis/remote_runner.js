@@ -40,13 +40,8 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
 
           // if stopSauce is called via timeout (in contrast to via getStatusInterval) than the log of up to the last
           // five seconds may not be available here. It's an error anyway, so don't care about it.
-          var testResult = knownConsoleText.replace(/\[red\]/g,'\x1B[31m').replace(/\[yellow\]/g,'\x1B[33m')
-                           .replace(/\[green\]/g,'\x1B[32m').replace(/\[clear\]/g, '\x1B[39m');
-          testResult = testResult.split("\\n").map(function(line){
-            return "[" + testSettings.browserName + " " + testSettings.platform + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] " + line;
-          }).join("\n");
+          printLog(logIndex);
 
-          console.log(testResult);
           if (timesup) {
             console.log("[" + testSettings.browserName + " " + testSettings.platform + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] \x1B[31mFAILED\x1B[39m allowed test duration exceeded");
           }
@@ -66,6 +61,8 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
       }, 870000); // travis timeout is 15 minutes, set this to a slightly lower value
 
       var knownConsoleText = "";
+      // how many characters of the log have been sent to travis
+      let logIndex = 0;
       var getStatusInterval = setInterval(function(){
         browser.eval("$('#console').text()", function(err, consoleText){
           if(!consoleText || err){
@@ -83,9 +80,29 @@ var sauceTestWorker = async.queue(function (testSettings, callback) {
             } else {
               stopSauce(false);
             }
+          } else {
+            // not finished yet 
+            printLog(logIndex);
+            logIndex = knownConsoleText.length;
           }
         });
       }, 5000);
+
+      /**
+       * Replaces color codes in the test runners log, appends
+       * browser name, platform etc. to every line and prints them.
+       *
+       * @param {number} index offset from where to start
+       */
+      function printLog(index){
+        let testResult = knownConsoleText.substring(index).replace(/\[red\]/g,'\x1B[31m').replace(/\[yellow\]/g,'\x1B[33m')
+                         .replace(/\[green\]/g,'\x1B[32m').replace(/\[clear\]/g, '\x1B[39m');
+        testResult = testResult.split("\\n").map(function(line){
+          return "[" + testSettings.browserName + " " + testSettings.platform + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] " + line;
+        }).join("\n");
+
+        console.log(testResult);
+      }
     });
 
 }, 6); //run 6 tests in parrallel

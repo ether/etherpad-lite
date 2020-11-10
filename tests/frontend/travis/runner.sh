@@ -17,6 +17,7 @@ cd "${MY_DIR}/../../../"
 # a call to bin/installDeps.sh
 echo "Running Etherpad directly, assuming bin/installDeps.sh has already been run"
 node node_modules/ep_etherpad-lite/node/server.js --experimental-worker "${@}" &
+ep_pid=$!
 
 echo "Now I will try for 15 seconds to connect to Etherpad on http://localhost:9001"
 
@@ -44,5 +45,6 @@ node remote_runner.js
 exit_code=$?
 
 kill $(cat /tmp/sauce.pid)
+kill $ep_pid
 
 exit $exit_code
