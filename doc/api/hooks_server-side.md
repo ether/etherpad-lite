@@ -661,22 +661,22 @@ function _analyzeLine(alineAttrs, apool) {
 }
 ```
 
-## exportHTMLAdditionalContent 
+## exportHTMLAdditionalContent
 Called from: src/node/utils/ExportHtml.js
 
 Things in context:
 
 1. padId
 
-This hook will allow a plug-in developer to include additional HTML content in the Body of the exported HTML
+This hook will allow a plug-in developer to include additional HTML content in
+the body of the exported HTML.
 
 Example:
-```
-exports.exportHTMLAdditionalContent = async (hookName, context) => {
-  let padId = context;
-  return "I am groot in " + padId;
-}
 
+```
+exports.exportHTMLAdditionalContent = async (hookName, {padId}) => {
+  return 'I am groot in ' + padId;
+};
 ```
 
 ## stylesForExport
