@@ -1,8 +1,6 @@
-const Changeset        = require("../../../src/static/js/Changeset");
 const contentcollector = require("../../../src/static/js/contentcollector");
 const AttributePool    = require("../../../src/static/js/AttributePool");
 const cheerio          = require("../../../src/node_modules/cheerio");
-const util             = require('util');
 
 const tests = {
   nestedLi:{
@@ -101,8 +99,30 @@ const tests = {
     expectedText: ["*should be 1","*should be 2","*should be 3"],
     noteToSelf: "<p></p>should create a line break but not break numbering -- This is what I can't get working!",
     disabled: true
+  },
+  multiLineParagraph:{
+    description: "A paragraph with multiple lines should not loose spaces when lines are combined",
+    html:`<html><body><p>
+а б в г ґ д е є ж з и і ї й к л м н о
+п р с т у ф х ц ч ш щ ю я ь</p>
+</body></html>`,
+    expectedLineAttribs: [ '+1t' ],
+    expectedText: ["а б в г ґ д е є ж з и і ї й к л м н о п р с т у ф х ц ч ш щ ю я ь"]
+  },
+  multiLineParagraphWithPre:{
+    description: "lines in preformatted text should be kept intact",
+    html:`<html><body><p>
+а б в г ґ д е є ж з и і ї й к л м н о
+<pre>multiple
+lines
+in
+pre
+</pre></p><p>п р с т у ф х ц ч ш щ ю я
+ь</p>
+</body></html>`,
+    expectedLineAttribs: [ '+12', '+8', '+5', '+2', '+3', '+r' ],
+    expectedText: ["а б в г ґ д е є ж з и і ї й к л м н о ", "multiple", "lines", "in", "pre", "п р с т у ф х ц ч ш щ ю я ь"]
   }
-
 }
 
 describe(__filename, function() {
