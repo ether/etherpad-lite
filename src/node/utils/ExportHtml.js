@@ -498,7 +498,7 @@ exports.getPadHTMLDocument = async function (padId, revNum)
 
   let html = await getPadHTML(pad, revNum);
 
-  for (const hookHtml of await hooks.aCallAll("exportHTMLAdditionalContent", {padId}) {
+  for (const hookHtml of await hooks.aCallAll("exportHTMLAdditionalContent", {padId})) {
     html += hookHtml;
   }
 
