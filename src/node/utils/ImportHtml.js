@@ -33,7 +33,7 @@ exports.setPadHTML = async (pad, html) => {
   rehype()
     .use(format, opts)
     .process(html, function(err, output){
-      html = String(output).replace(/(\r\n|\n|\r)/gm,"");
+      html = String(output);
   })
 
   var $ = cheerio.load(html);
