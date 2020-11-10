@@ -59,17 +59,13 @@ exports.getPadRaw = async function(padId) {
     }
   }
 
-  await Promise.all([
-    // get content that has a different prefix IE comments:padId:foo
-    // a plugin would return something likle ["comments", "cakes"]
-    hooks.aCallAll('exportEtherpadAdditionalContent').then((prefixes) => {
-      prefixes.forEach(async function(prefix) {
-        let pluginContent = await db.get(prefix + ":" + padId);
-        data[prefix + ":" + padId] = pluginContent;
-      });
-    })
-  ]);
-
+  // get content that has a different prefix IE comments:padId:foo
+  // a plugin would return something likle ['comments', 'cakes']
+  const prefixes = await hooks.aCallAll('exportEtherpadAdditionalContent');
+  await Promise.all(prefixes.map(async (prefix) => {
+    const key = `${prefix}:${padId}`;
+    data[key] = await db.get(key);
+  }));
 
   return data;
 }

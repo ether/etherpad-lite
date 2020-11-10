@@ -65,17 +65,11 @@ exports.setPadRaw = function(padId, records)
       }
 
       // is this a key that is supported through a plugin?
-      await Promise.all([
-        // get content that has a different prefix IE comments:padId:foo
-        // a plugin would return something likle ["comments", "cakes"]
-        hooks.aCallAll('exportEtherpadAdditionalContent').then((prefixes) => {
-          prefixes.forEach(async function(prefix) {
-            if(key.split(":")[0] === prefix){
-              newKey = prefix + ":" + padId;
-            }
-          });
-        })
-      ]);
+      // get content that has a different prefix IE comments:padId:foo
+      // a plugin would return something likle ['comments', 'cakes']
+      for (const prefix of await hooks.aCallAll('exportEtherpadAdditionalContent')) {
+        if (prefix === oldPadId[0]) newKey = `${prefix}:${padId}`;
+      }
     }
 
     // Write the value to the server
