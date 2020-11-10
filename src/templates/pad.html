@@ -450,9 +450,23 @@
       })();
       // @license-end
   </script>
+<script>
+var padId = document.location.pathname.substring(document.location.pathname.lastIndexOf("/") + 1);
+padId = decodeURIComponent(padId); // unescape neccesary due to Safari and Opera interpretation of spaces
 
-  <script type="text/javascript" src="../socket.io/socket.io.js?v=<%=settings.randomVersionString%>"></script>
+var url = "../socket.io/socket.io.js?padId="+padId; // needs temp version ading back in later
+var script = document.createElement('script');
+script.onload = function () {
+    //do stuff with the script
+};
+script.src = url;
 
+document.head.appendChild(script); //or something of the likes
+
+</script>
+<!--
+  <script type="text/javascript" src="../socket.io/socket.io.js?v=<%=settings.randomVersionString%>&padId=two"></script>
+-->
   <!-- Include base packages manually (this help with debugging) -->
   <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define&v=<%=settings.randomVersionString%>"></script>
   <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define&v=<%=settings.randomVersionString%>"></script>
