@@ -52,7 +52,7 @@ exports.formatHooks = function (hook_set_name) {
   return "<dl>" + res.join("\n") + "</dl>";
 };
 
-exports.callInit = function () {
+const callInit = () => {
   let p = Object.keys(defs.plugins).map(function(plugin_name) {
     let plugin = defs.plugins[plugin_name];
     let ep_init = path.normalize(path.join(plugin.package.path, ".ep_initialized"));
@@ -88,7 +88,7 @@ exports.update = async function () {
     defs.parts = sortParts(parts);
     defs.hooks = pluginUtils.extractHooks(defs.parts, 'hooks', exports.pathNormalization);
     defs.loaded = true;
-  }).then(exports.callInit);
+  }).then(callInit);
 }
 
 exports.getPackages = async function () {
