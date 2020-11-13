@@ -44,17 +44,17 @@ exports.formatHooks = function (hook_set_name) {
   return "<dl>" + res.join("\n") + "</dl>";
 };
 
-const callInit = () => {
-  let p = Object.keys(defs.plugins).map(function(plugin_name) {
+const callInit = async () => {
+  await Promise.all(Object.keys(defs.plugins).map(async (plugin_name) => {
     let plugin = defs.plugins[plugin_name];
     let ep_init = path.normalize(path.join(plugin.package.path, ".ep_initialized"));
-    return fs.stat(ep_init).catch(async function() {
+    try {
+      await fs.stat(ep_init);
+    } catch (err) {
       await fs.writeFile(ep_init, 'done');
       await hooks.aCallAll("init_" + plugin_name, {});
-    });
-  });
-
-  return Promise.all(p);
+    }
+  }));
 }
 
 exports.pathNormalization = function (part, hook_fn_name, hook_name) {
@@ -71,16 +71,14 @@ exports.update = async function () {
   var plugins = {};
 
   // Load plugin metadata ep.json
-  let p = Object.keys(packages).map(function (plugin_name) {
-    return loadPlugin(packages, plugin_name, plugins, parts);
-  });
+  await Promise.all(Object.keys(packages).map(
+    async (pluginName) => await loadPlugin(packages, pluginName, plugins, parts)));
 
-  return Promise.all(p).then(function() {
-    defs.plugins = plugins;
-    defs.parts = sortParts(parts);
-    defs.hooks = pluginUtils.extractHooks(defs.parts, 'hooks', exports.pathNormalization);
-    defs.loaded = true;
-  }).then(callInit);
+  defs.plugins = plugins;
+  defs.parts = sortParts(parts);
+  defs.hooks = pluginUtils.extractHooks(defs.parts, 'hooks', exports.pathNormalization);
+  defs.loaded = true;
+  await callInit();
 }
 
 exports.getPackages = async function () {

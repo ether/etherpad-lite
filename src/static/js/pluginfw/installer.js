@@ -2,21 +2,15 @@ var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 var npm = require("npm");
 var request = require("request");
+const util = require('util');
 
-var npmIsLoaded = false;
-var withNpm = function(npmfn) {
-  if (npmIsLoaded) return npmfn();
-
-  npm.load({}, function(er) {
-    if (er) return npmfn(er);
-
-    npmIsLoaded = true;
-    npm.on("log", function(message) {
-      console.log('npm: ',message)
-    });
-    npmfn();
-  });
-}
+let npmIsLoaded = false;
+const loadNpm = async () => {
+  if (npmIsLoaded) return;
+  await util.promisify(npm.load)({});
+  npmIsLoaded = true;
+  npm.on('log', (message) => console.log('npm: ', message));
+};
 
 var tasks = 0
 
@@ -34,44 +28,32 @@ function onAllTasksFinished() {
   hooks.aCallAll("restartServer", {}, function() {});
 }
 
-/*
- * We cannot use arrow functions in this file, because code in /src/static
- * can end up being loaded in browsers, and we still support IE11.
- */
-exports.uninstall = function(plugin_name, cb) {
+exports.uninstall = async (pluginName, cb = null) => {
   cb = wrapTaskCb(cb);
-
-  withNpm(function(er) {
-    if (er) return cb && cb(er);
-
-    npm.commands.uninstall([plugin_name], function(er) {
-      if (er) return cb && cb(er);
-      hooks.aCallAll("pluginUninstall", {plugin_name: plugin_name})
-        .then(plugins.update)
-        .then(function() { cb(null) })
-        .catch(function(er) { cb(er) });
-    });
-  });
+  try {
+    await loadNpm();
+    await util.promisify(npm.commands.uninstall)([pluginName]);
+    await hooks.aCallAll('pluginUninstall', {pluginName});
+    await plugins.update();
+  } catch (err) {
+    cb(err || new Error(err));
+    throw err;
+  }
+  cb(null);
 };
 
-/*
- * We cannot use arrow functions in this file, because code in /src/static
- * can end up being loaded in browsers, and we still support IE11.
- */
-exports.install = function(plugin_name, cb) {
+exports.install = async (pluginName, cb = null) => {
   cb = wrapTaskCb(cb);
-
-  withNpm(function(er) {
-    if (er) return cb && cb(er);
-
-    npm.commands.install([plugin_name], function(er) {
-      if (er) return cb && cb(er);
-      hooks.aCallAll("pluginInstall", {plugin_name: plugin_name})
-        .then(plugins.update)
-        .then(function() { cb(null) })
-        .catch(function(er) { cb(er) });
-    });
-  });
+  try {
+    await loadNpm();
+    await util.promisify(npm.commands.install)([pluginName]);
+    await hooks.aCallAll('pluginInstall', {pluginName});
+    await plugins.update();
+  } catch (err) {
+    cb(err || new Error(err));
+    throw err;
+  }
+  cb(null);
 };
 
 exports.availablePlugins = null;
