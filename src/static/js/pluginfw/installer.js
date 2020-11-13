@@ -1,3 +1,4 @@
+const log4js = require('log4js');
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
 var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
 var npm = require("npm");
@@ -9,7 +10,7 @@ const loadNpm = async () => {
   if (npmIsLoaded) return;
   await util.promisify(npm.load)({});
   npmIsLoaded = true;
-  npm.on('log', (message) => console.log('npm: ', message));
+  npm.on('log', log4js.getLogger('npm').log);
 };
 
 var tasks = 0
