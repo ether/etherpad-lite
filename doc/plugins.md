@@ -1,13 +1,13 @@
 # Plugins
 
 Etherpad allows you to extend its functionality with plugins. A plugin registers
-hooks (functions) for certain events (thus certain features) in Etherpad-lite to
+hooks (functions) for certain events (thus certain features) in Etherpad to
 execute its own functionality based on these events.
 
 Publicly available plugins can be found in the npm registry (see
-<https://npmjs.org>). Etherpad-lite's naming convention for plugins is to prefix
-your plugins with `ep_`. So, e.g. it's `ep_flubberworms`. Thus you can install
-plugins from npm, using `npm install ep_flubberworm` in etherpad-lite's root
+<https://npmjs.org>). Etherpad's naming convention for plugins is to prefix your
+plugins with `ep_`. So, e.g. it's `ep_flubberworms`. Thus you can install
+plugins from npm, using `npm install ep_flubberworm` in Etherpad's root
 directory.
 
 You can also browse to `http://yourEtherpadInstan.ce/admin/plugins`, which will
@@ -16,37 +16,54 @@ functionality to search through all available plugins.
 
 ## Folder structure
 
-A basic plugin usually has the following folder structure:
+Ideally a plugin has the following folder structure:
 
 ```
 ep_<plugin>/
- | static/
- | templates/
- | locales/
- + ep.json
- + package.json
+ ├ .github/
+ │  └ workflows/
+ │     └ npmpublish.yml  ◄─ GitHub workflow to auto-publish on push
+ ├ static/
+ │  ├ css/               ◄─ static .css files
+ │  ├ images/            ◄─ static image files
+ │  ├ js/
+ │  │  └ index.js        ◄─ static client-side code
+ │  └ tests/
+ │     ├ backend/
+ │     │  └ specs/       ◄─ backend (server) tests
+ │     └ frontend/
+ │        └ specs/       ◄─ frontend (client) tests
+ ├ templates/            ◄─ EJS templates (.html, .js, .css, etc.)
+ ├ locales/
+ │  ├ en.json            ◄─ English (US) strings
+ │  └ qqq.json           ◄─ optional hints for translators
+ ├ .travis.yml           ◄─ Travis CI config
+ ├ LICENSE
+ ├ README.md
+ ├ ep.json               ◄─ Etherpad plugin definition
+ ├ index.js              ◄─ server-side code
+ ├ package.json
+ └ package-lock.json
 ```
 
 If your plugin includes client-side hooks, put them in `static/js/`. If you're
 adding in CSS or image files, you should put those files in `static/css/ `and
 `static/image/`, respectively, and templates go into `templates/`. Translations
-go into `locales/`
+go into `locales/`. Tests go in `static/tests/backend/specs/` and
+`static/tests/frontend/specs/`.
 
 A Standard directory structure like this makes it easier to navigate through
 your code. That said, do note, that this is not actually *required* to make your
 plugin run. If you want to make use of our i18n system, you need to put your
 translations into `locales/`, though, in order to have them integrated. (See
-"Localization" for more info on how to localize your plugin)
+"Localization" for more info on how to localize your plugin.)
 
 ## Plugin definition
 
-Your plugin definition goes into `ep.json`. In this file you register your
-hooks, indicate the parts of your plugin and the order of execution. (A
+Your plugin definition goes into `ep.json`. In this file you register your hook
+functions, indicate the parts of your plugin and the order of execution. (A
 documentation of all available events to hook into can be found in chapter
 [hooks](#all_hooks).)
-
-A hook registration is a pairs of a hook name and a function reference (filename
-to require() + exported function name)
 
 ```json
 {
@@ -54,26 +71,41 @@ to require() + exported function name)
     {
       "name": "nameThisPartHoweverYouWant",
       "hooks": {
-        "authenticate" : "ep_<plugin>/<file>:FUNCTIONNAME1",
-        "expressCreateServer": "ep_<plugin>/<file>:FUNCTIONNAME2"
+        "authenticate": "ep_<plugin>/<file>:functionName1",
+        "expressCreateServer": "ep_<plugin>/<file>:functionName2"
       },
       "client_hooks": {
-        "acePopulateDOMLine": "ep_plugin/<file>:FUNCTIONNAME3"
+        "acePopulateDOMLine": "ep_<plugin>/<file>:functionName3"
       }
     }
   ]
 }
 ```
 
-Etherpad-lite will expect the part of the hook definition before the colon to be
-a javascript file and will try to require it. The part after the colon is
-expected to be a valid function identifier of that module. So, you have to
-export your hooks, using
-[`module.exports`](https://nodejs.org/docs/latest/api/modules.html#modules_modules)
-and register it in `ep.json` as `ep_<plugin>/path/to/<file>:FUNCTIONNAME`. You
-can omit the `FUNCTIONNAME` part, if the exported function has got the same name
-as the hook. So `"authorize" : "ep_flubberworm/foo"` will call the function
-`exports.authorize` in `ep_flubberworm/foo.js`
+A hook function registration maps a hook name to a hook function specification.
+The hook function specification looks like `ep_example/file.js:functionName`. It
+consists of two parts separated by a colon: a module name to `require()` and the
+name of a function exported by the named module. See
+[`module.exports`](https://nodejs.org/docs/latest/api/modules.html#modules_module_exports)
+for how to export a function.
+
+For the module name you can omit the `.js` suffix, and if the file is `index.js`
+you can use just the directory name.
+
+You can also omit the function name and separating colon. If you do, Etherpad
+will look for an exported function whose name matches the name of the hook
+(e.g., `authenticate`). You cannot omit the function name if the module name
+contains a colon.
+
+For example, all of the following will cause the `authorize` hook to call the
+`exports.authorize` function in `index.js` from the `ep_example` plugin:
+
+* `"authorize": "ep_example/index.js:authorize"`
+* `"authorize": "ep_example/index.js"`
+* `"authorize": "ep_example/index:authorize"`
+* `"authorize": "ep_example/index"`
+* `"authorize": "ep_example:authorize"`
+* `"authorize": "ep_example"`
 
 ### Client hooks and server hooks
 
@@ -170,8 +202,8 @@ file](https://docs.npmjs.com/files/package.json), called package.json, in the
 project root - this file contains various metadata relevant to your plugin, such
 as the name and version number, author, project hompage, contributors, a short
 description, etc. If you publish your plugin on npm, these metadata are used for
-package search etc., but it's necessary for Etherpad-lite plugins, even if you
-don't publish your plugin.
+package search etc., but it's necessary for Etherpad plugins, even if you don't
+publish your plugin.
 
 ```json
 {
@@ -197,11 +229,7 @@ HTML templating. See the following link for more information about EJS:
 
 Etherpad allows you to easily create front-end tests for plugins.
 
-1. Create a new folder
-```
-%your_plugin%/static/tests/frontend/specs
-```
-2. Put your spec file in here (Example spec files are visible in
-   %etherpad_root_folder%/frontend/tests/specs)
-
-3. Visit http://yourserver.com/frontend/tests your front-end tests will run.
+1. Create a new folder: `%your_plugin%/static/tests/frontend/specs`
+2. Put your spec file in there. (Example spec files are visible in
+   `%etherpad_root_folder%/frontend/tests/specs`.)
+3. Visit http://yourserver.com/frontend/tests and your front-end tests will run.
