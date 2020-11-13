@@ -1,4 +1,5 @@
 const fs = require('fs').promises;
+const hooks = require('./hooks');
 var npm = require("npm/lib/npm.js");
 var readInstalled = require("./read-installed.js");
 var path = require("path");
@@ -52,8 +53,6 @@ exports.formatHooks = function (hook_set_name) {
 };
 
 exports.callInit = function () {
-  var hooks = require("./hooks");
-
   let p = Object.keys(defs.plugins).map(function(plugin_name) {
     let plugin = defs.plugins[plugin_name];
     let ep_init = path.normalize(path.join(plugin.package.path, ".ep_initialized"));
