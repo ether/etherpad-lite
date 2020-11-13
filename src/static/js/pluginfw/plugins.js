@@ -58,11 +58,13 @@ const callInit = async () => {
 }
 
 exports.pathNormalization = function (part, hook_fn_name, hook_name) {
-  const parts = hook_fn_name.split(':');
-  const functionName = (parts.length > 1) ? parts.pop() : hook_name;
+  const tmp = hook_fn_name.split(':'); // hook_fn_name might be something like 'C:\\foo.js:myFunc'.
+  // If there is a single colon assume it's 'filename:funcname' not 'C:\\filename'.
+  const functionName = (tmp.length > 1 ? tmp.pop() : null) || hook_name;
+  const moduleName = tmp.join(':') || part.plugin;
   const packageDir = path.dirname(defs.plugins[part.plugin].package.path);
-  const fileName = path.normalize(path.join(packageDir, parts.join(':')));
-  return fileName + ((functionName == null) ? '' : (':' + functionName));
+  const fileName = path.normalize(path.join(packageDir, moduleName));
+  return `${fileName}:${functionName}`;
 }
 
 exports.update = async function () {
