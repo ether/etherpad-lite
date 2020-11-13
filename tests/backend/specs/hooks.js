@@ -45,7 +45,7 @@ describe(__filename, function() {
       // change behavior depending on the number of parameters.
       hook_fn: (hn, ctx, cb) => cb(ret),
       hook_fn_name: hookFnName,
-      part: {name: 'testPluginName'},
+      part: {plugin: 'testPluginName'},
     };
   };
 

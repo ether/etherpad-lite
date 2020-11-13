@@ -19,7 +19,7 @@ function checkDeprecation(hook) {
   const notice = exports.deprecationNotices[hook.hook_name];
   if (notice == null) return;
   if (deprecationWarned[hook.hook_fn_name]) return;
-  console.warn(`${hook.hook_name} hook used by the ${hook.part.name} plugin ` +
+  console.warn(`${hook.hook_name} hook used by the ${hook.part.plugin} plugin ` +
                `(${hook.hook_fn_name}) is deprecated: ${notice}`);
   deprecationWarned[hook.hook_fn_name] = true;
 }
@@ -121,7 +121,7 @@ function callHookFnSync(hook, context) {
     if (outcome != null) {
       // It was already settled, which indicates a bug.
       const action = err == null ? 'resolve' : 'reject';
-      const msg = (`DOUBLE SETTLE BUG IN HOOK FUNCTION (plugin: ${hook.part.name}, ` +
+      const msg = (`DOUBLE SETTLE BUG IN HOOK FUNCTION (plugin: ${hook.part.plugin}, ` +
                    `function name: ${hook.hook_fn_name}, hook: ${hook.hook_name}): ` +
                    `Attempt to ${action} via ${how} but it already ${outcome.state} ` +
                    `via ${outcome.how}. Ignoring this attempt to ${action}.`);
@@ -135,7 +135,7 @@ function callHookFnSync(hook, context) {
     }
     outcome = {state, err, val, how};
     if (val && typeof val.then === 'function') {
-      console.error(`PROHIBITED PROMISE BUG IN HOOK FUNCTION (plugin: ${hook.part.name}, ` +
+      console.error(`PROHIBITED PROMISE BUG IN HOOK FUNCTION (plugin: ${hook.part.plugin}, ` +
                     `function name: ${hook.hook_fn_name}, hook: ${hook.hook_name}): ` +
                     'The hook function provided a "thenable" (e.g., a Promise) which is ' +
                     'prohibited because the hook expects to get the value synchronously.');
@@ -170,7 +170,7 @@ function callHookFnSync(hook, context) {
   if (val === undefined) {
     if (outcome != null) return outcome.val; // Already settled via callback.
     if (hook.hook_fn.length >= 3) {
-      console.error(`UNSETTLED FUNCTION BUG IN HOOK FUNCTION (plugin: ${hook.part.name}, ` +
+      console.error(`UNSETTLED FUNCTION BUG IN HOOK FUNCTION (plugin: ${hook.part.plugin}, ` +
                     `function name: ${hook.hook_fn_name}, hook: ${hook.hook_name}): ` +
                     'The hook function neither called the callback nor returned a non-undefined ' +
                     'value. This is prohibited because it will result in freezes when a future ' +
@@ -261,7 +261,7 @@ async function callHookFnAsync(hook, context) {
       if (outcome != null) {
         // It was already settled, which indicates a bug.
         const action = err == null ? 'resolve' : 'reject';
-        const msg = (`DOUBLE SETTLE BUG IN HOOK FUNCTION (plugin: ${hook.part.name}, ` +
+        const msg = (`DOUBLE SETTLE BUG IN HOOK FUNCTION (plugin: ${hook.part.plugin}, ` +
                      `function name: ${hook.hook_fn_name}, hook: ${hook.hook_name}): ` +
                      `Attempt to ${action} via ${how} but it already ${outcome.state} ` +
                      `via ${outcome.how}. Ignoring this attempt to ${action}.`);

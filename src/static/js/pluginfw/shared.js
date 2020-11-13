@@ -51,9 +51,9 @@ function extractHooks(parts, hook_set_name, normalizer) {
       const disabledReason = (disabledHookReasons[hook_set_name] || {})[hook_name];
       if (disabledReason) {
         console.error(`Hook ${hook_set_name}/${hook_name} is disabled. Reason: ${disabledReason}`);
-        console.error(`The hook function ${hook_fn_name} from plugin ${part.name} ` +
+        console.error(`The hook function ${hook_fn_name} from plugin ${part.plugin} ` +
                       'will never be called, which may cause the plugin to fail');
-        console.error(`Please update the ${part.name} plugin to not use the ${hook_name} hook`);
+        console.error(`Please update the ${part.plugin} plugin to not use the ${hook_name} hook`);
         return;
       }
 
