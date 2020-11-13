@@ -1,7 +1,7 @@
+const fs = require('fs').promises;
 var npm = require("npm/lib/npm.js");
 var readInstalled = require("./read-installed.js");
 var path = require("path");
-var fs = require("fs");
 var tsort = require("./tsort");
 var util = require("util");
 var _ = require("underscore");
@@ -52,16 +52,13 @@ exports.formatHooks = function (hook_set_name) {
 };
 
 exports.callInit = function () {
-  const fsp_stat = util.promisify(fs.stat);
-  const fsp_writeFile = util.promisify(fs.writeFile);
-
   var hooks = require("./hooks");
 
   let p = Object.keys(defs.plugins).map(function(plugin_name) {
     let plugin = defs.plugins[plugin_name];
     let ep_init = path.normalize(path.join(plugin.package.path, ".ep_initialized"));
-    return fsp_stat(ep_init).catch(async function() {
-      await fsp_writeFile(ep_init, "done");
+    return fs.stat(ep_init).catch(async function() {
+      await fs.writeFile(ep_init, 'done');
       await hooks.aCallAll("init_" + plugin_name, {});
     });
   });
@@ -123,11 +120,9 @@ exports.getPackages = async function () {
 };
 
 async function loadPlugin(packages, plugin_name, plugins, parts) {
-  let fsp_readFile = util.promisify(fs.readFile);
-
   var plugin_path = path.resolve(packages[plugin_name].path, "ep.json");
   try {
-    let data = await fsp_readFile(plugin_path);
+    let data = await fs.readFile(plugin_path);
     try {
       var plugin = JSON.parse(data);
       plugin['package'] = packages[plugin_name];
