@@ -13,14 +13,6 @@ var defs = require('./plugin_defs');
 
 exports.prefix = 'ep_';
 
-// @TODO RPB this appears to be unused
-exports.ensure = function (cb) {
-  if (!defs.loaded)
-    exports.update(cb);
-  else
-    cb();
-};
-
 exports.formatPlugins = function () {
   return _.keys(defs.plugins).join(", ");
 };
