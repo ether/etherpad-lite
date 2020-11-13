@@ -90,22 +90,34 @@ name of a function exported by the named module. See
 for how to export a function.
 
 For the module name you can omit the `.js` suffix, and if the file is `index.js`
-you can use just the directory name.
+you can use just the directory name. You can also omit the module name entirely,
+in which case it defaults to the plugin name (e.g., `ep_example`).
 
-You can also omit the function name and separating colon. If you do, Etherpad
-will look for an exported function whose name matches the name of the hook
-(e.g., `authenticate`). You cannot omit the function name if the module name
-contains a colon.
+You can also omit the function name. If you do, Etherpad will look for an
+exported function whose name matches the name of the hook (e.g.,
+`authenticate`).
 
-For example, all of the following will cause the `authorize` hook to call the
-`exports.authorize` function in `index.js` from the `ep_example` plugin:
+If either the module name or the function name is omitted (or both), the colon
+may also be omitted unless the provided module name contains a colon. (So if the
+module name is `C:\foo.js` then the hook function specification with the
+function name omitted would be `"C:\\foo.js:"`.)
+
+Examples: Suppose the plugin name is `ep_example`. All of the following are
+equivalent, and will cause the `authorize` hook to call the `exports.authorize`
+function in `index.js` from the `ep_example` plugin:
 
 * `"authorize": "ep_example/index.js:authorize"`
+* `"authorize": "ep_example/index.js:"`
 * `"authorize": "ep_example/index.js"`
 * `"authorize": "ep_example/index:authorize"`
+* `"authorize": "ep_example/index:"`
 * `"authorize": "ep_example/index"`
 * `"authorize": "ep_example:authorize"`
+* `"authorize": "ep_example:"`
 * `"authorize": "ep_example"`
+* `"authorize": ":authorize"`
+* `"authorize": ":"`
+* `"authorize": ""`
 
 ### Client hooks and server hooks
 
