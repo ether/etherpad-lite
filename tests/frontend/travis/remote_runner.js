@@ -6,7 +6,7 @@ let getStatusInterval;
 let timeout;
 let allTestsPassed = true;
 
-let testSettings = {"browserName":"chrome", "platformName":"Windows 10", "browserVersion":"latest"}
+let testSettings = {"browserName":"firefox", "platformName":"Windows 10", "browserVersion":"82.0"}
 let name = `${process.env.GIT_HASH} - ${testSettings.browserName} ${testSettings.browserVersion} ${testSettings.platformName}`;
 
 runTest(testSettings)
@@ -23,7 +23,6 @@ async function runTest(testSettings){
         'extendedDebugging': true, // when possible, enables network.har file and network tab
         'capturePerformance': true, // when possible, enables various performance related metrics
         'tunnelIdentifier': process.env.TRAVIS_JOB_NUMBER,
-        'seleniumVersion': 
         'name': name,
         /* As a best practice, set important test metadata and execution options
         such as build info, tags for reporting, and timeout durations.
