@@ -21,9 +21,15 @@ describe("All the alphabet works n stuff", function(){
     let code;
     for (let index = 0; index < expectedString.length; index++){
       code = expectedString.charCodeAt(index);
-      $(firstTextElement).trigger({type: 'keydown', which: code});
-      $(firstTextElement).trigger({type: 'keypress', which: code});
-      $(firstTextElement).trigger({type: 'keyup', which: code});
+      var press = jQuery.Event("keypress");
+      var down = jQuery.Event("keydown");
+      var up = jQuery.Event("keyup");
+      press.which = code;
+      down.which = code;
+      up.which = code;
+      $(firstTextElement).trigger(down);
+      $(firstTextElement).trigger(press);
+      $(firstTextElement).trigger(up);
     }
 
     helper.waitFor(function(){
