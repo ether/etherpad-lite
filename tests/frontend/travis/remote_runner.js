@@ -16,8 +16,6 @@ async function runTest(testSettings){
     'browserName': testSettings.browserName,
     'platformName': testSettings.platformName,
     'browserVersion': testSettings.browserVersion,
-    'extendedDebugging': true, // when possible, enables network.har file and network tab
-    'capturePerformance': true, // when possible, enables various performance related metrics
     'sauce:options': {
         'username': process.env.SAUCE_USERNAME,
         'accessKey': process.env.SAUCE_ACCESS_KEY,
