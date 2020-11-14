@@ -21,6 +21,7 @@ async function runTest(testSettings){
         'accessKey': process.env.SAUCE_ACCESS_KEY,
         'build': process.env.GIT_HASH,
         'tunnelIdentifier': process.env.TRAVIS_JOB_NUMBER,
+        'capturePerformance': true,
         'name': name,
         /* As a best practice, set important test metadata and execution options
         such as build info, tags for reporting, and timeout durations.
