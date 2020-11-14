@@ -6,7 +6,7 @@ let getStatusInterval;
 let timeout;
 let allTestsPassed = true;
 
-let testSettings = {"browserName":"firefox", "platformName":"Windows 10", "browserVersion":"82.0"}
+let testSettings = {"browserName":"chrome", "platformName":"Windows 10", "browserVersion":"83.0"}
 let name = `${process.env.GIT_HASH} - ${testSettings.browserName} ${testSettings.browserVersion} ${testSettings.platformName}`;
 
 runTest(testSettings)
@@ -16,14 +16,8 @@ async function runTest(testSettings){
     'browserName': testSettings.browserName,
     'platformName': testSettings.platformName,
     'browserVersion': testSettings.browserVersion,
-    'moz:firefoxOptions': {
-        prefs: {
-            'devtools.debugger.remote-enabled': true,
-            'devtools.debugger.prompt-connection': false,
-            'devtools.chrome.enabled': true
-        }
-    },
     'nativeEvents': true,
+    'chrome.nativeEvents': true,
     'sauce:options': {
         'username': process.env.SAUCE_USERNAME,
         'accessKey': process.env.SAUCE_ACCESS_KEY,
@@ -32,6 +26,7 @@ async function runTest(testSettings){
         'capturePerformance': true, // when possible, enables various performance related metrics
         'tunnelIdentifier': process.env.TRAVIS_JOB_NUMBER,
         'nativeEvents': true,
+        'chrome.nativeEvents': true,
         'name': name,
         /* As a best practice, set important test metadata and execution options
         such as build info, tags for reporting, and timeout durations.
