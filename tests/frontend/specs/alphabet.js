@@ -17,7 +17,12 @@ describe("All the alphabet works n stuff", function(){
     // simulate key presses to delete content
     firstTextElement.sendkeys('{selectall}'); // select all
     firstTextElement.sendkeys('{del}'); // clear the first line
-    firstTextElement.sendkeys(expectedString); // insert the string
+
+    let code;
+    for (let index = 0; index < expectedString.length; index++){
+      code = expectedString.charCodeAt(index);
+      $(firstTextElement).trigger({type: 'keypress', which: code, keyCode: code, ctrlKey: false});
+    }
 
     helper.waitFor(function(){
       return inner$("div").first().text() === expectedString;
