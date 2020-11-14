@@ -17,6 +17,7 @@ async function runTest(testSettings){
     'platformName': testSettings.platformName,
     'browserVersion': testSettings.browserVersion,
     'sauce:options': {
+        'nativeEvents': true,
         'username': process.env.SAUCE_USERNAME,
         'accessKey': process.env.SAUCE_ACCESS_KEY,
         'build': process.env.GIT_HASH,
