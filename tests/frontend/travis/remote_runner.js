@@ -17,6 +17,8 @@ async function runTest(testSettings){
     'platformName': testSettings.platformName,
     'browserVersion': testSettings.browserVersion,
     'nativeEvents': true,
+    'extendedDebugging': true,
+    'capturePerformance': true,
     'sauce:options': {
         'nativeEvents': true,
         'username': process.env.SAUCE_USERNAME,
