@@ -21,7 +21,9 @@ describe("All the alphabet works n stuff", function(){
     let code;
     for (let index = 0; index < expectedString.length; index++){
       code = expectedString.charCodeAt(index);
-      $(firstTextElement).trigger({type: 'keypress', which: code, keyCode: code, ctrlKey: false});
+      $(firstTextElement).trigger({type: 'keydown', which: code});
+      $(firstTextElement).trigger({type: 'keypress', which: code});
+      $(firstTextElement).trigger({type: 'keyup', which: code});
     }
 
     helper.waitFor(function(){
