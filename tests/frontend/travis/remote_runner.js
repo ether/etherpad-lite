@@ -16,16 +16,10 @@ async function runTest(testSettings){
     'browserName': testSettings.browserName,
     'platformName': testSettings.platformName,
     'browserVersion': testSettings.browserVersion,
-    'nativeEvents': true,
-    'extendedDebugging': true,
-    'capturePerformance': true,
     'sauce:options': {
-        'nativeEvents': true,
         'username': process.env.SAUCE_USERNAME,
         'accessKey': process.env.SAUCE_ACCESS_KEY,
         'build': process.env.GIT_HASH,
-        'extendedDebugging': true,
-        'capturePerformance': true,
         'tunnelIdentifier': process.env.TRAVIS_JOB_NUMBER,
         'name': name,
         /* As a best practice, set important test metadata and execution options
