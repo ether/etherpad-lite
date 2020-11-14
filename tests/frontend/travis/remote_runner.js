@@ -16,6 +16,13 @@ async function runTest(testSettings){
     'browserName': testSettings.browserName,
     'platformName': testSettings.platformName,
     'browserVersion': testSettings.browserVersion,
+    'mozz:firefoxOptions': {
+        prefs: {
+            'devtools.debugger.remote-enabled': true,
+            'devtools.debugger.prompt-connection': false,
+            'devtools.chrome.enabled': true
+        }
+    },
     'sauce:options': {
         'username': process.env.SAUCE_USERNAME,
         'accessKey': process.env.SAUCE_ACCESS_KEY,
