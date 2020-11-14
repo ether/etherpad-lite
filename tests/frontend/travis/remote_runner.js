@@ -16,7 +16,7 @@ async function runTest(testSettings){
     'browserName': testSettings.browserName,
     'platformName': testSettings.platformName,
     'browserVersion': testSettings.browserVersion,
-    'mozz:firefoxOptions': {
+    'moz:firefoxOptions': {
         prefs: {
             'devtools.debugger.remote-enabled': true,
             'devtools.debugger.prompt-connection': false,
