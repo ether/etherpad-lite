@@ -16,13 +16,15 @@ async function runTest(testSettings){
     'browserName': testSettings.browserName,
     'platformName': testSettings.platformName,
     'browserVersion': testSettings.browserVersion,
+    'extendedDebugging': true, // when possible, enables network.har file and network tab
+    'capturePerformance': true, // when possible, enables various performance related metrics
     'sauce:options': {
         'username': process.env.SAUCE_USERNAME,
         'accessKey': process.env.SAUCE_ACCESS_KEY,
         'build': process.env.GIT_HASH,
         'tunnelIdentifier': process.env.TRAVIS_JOB_NUMBER,
         'extendedDebugging': true, // when possible, enables network.har file and network tab
-        'capturePerformance': true,
+        'capturePerformance': true, // when possible, enables various performance related metrics
         'name': name,
         /* As a best practice, set important test metadata and execution options
         such as build info, tags for reporting, and timeout durations.
