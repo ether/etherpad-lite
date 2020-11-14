@@ -23,6 +23,7 @@ async function runTest(testSettings){
             'devtools.chrome.enabled': true
         }
     },
+    'nativeEvents': true,
     'sauce:options': {
         'username': process.env.SAUCE_USERNAME,
         'accessKey': process.env.SAUCE_ACCESS_KEY,
@@ -30,6 +31,7 @@ async function runTest(testSettings){
         'extendedDebugging': true, // when possible, enables network.har file and network tab
         'capturePerformance': true, // when possible, enables various performance related metrics
         'tunnelIdentifier': process.env.TRAVIS_JOB_NUMBER,
+        'nativeEvents': true,
         'name': name,
         /* As a best practice, set important test metadata and execution options
         such as build info, tags for reporting, and timeout durations.
