@@ -16,7 +16,6 @@ async function runTest(testSettings){
     'browserName': testSettings.browserName,
     'platformName': testSettings.platformName,
     'browserVersion': testSettings.browserVersion,
-    'tunnelIdentifier': process.env.TRAVIS_JOB_NUMBER,
     'sauce:options': {
         'username': process.env.SAUCE_USERNAME,
         'accessKey': process.env.SAUCE_ACCESS_KEY,
