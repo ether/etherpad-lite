@@ -7,8 +7,7 @@ cache: false
 
 addons:
   browserstack:
-    username:
-      secure: "UaX/yaRClPkIEVrBeB42ij47adqqqjt/2XW0sTw54Tdw8CrOxbnXH9M4dM+c8pJlm+TNw2elsxb+Y2O+mC2quzQnEO922pmQlCxlY8bJE6WXlA9G+OKB83qldtHg08egGXHjzTbhOF1rifRLvPvpmSqyV9Y9N/4Vn8JMoiDoIMU="
+    username: "travis208KozML"
     access_key:
       secure: "RetrEdaZM1/BUSknutnUCCPpAXk4U0EZL6/m98Ku9jvGD1cgN3Q/Tycol4ZpoymiIkwLGgO4rdFVjCeuKDobQL/mLXLrH1mOva9ptAe5d5l6cxs66B7v0vunCICAHCjxew4wuqYnvEJL3I8Go2gO5MPMF9dV8Q4IRFXLDBNYCGw="
 
