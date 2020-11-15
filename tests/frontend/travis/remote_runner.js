@@ -18,6 +18,7 @@ async function runTest(testSettings){
       "osVersion" : "10",
       "buildName" : process.env.GIT_HASH,
       "sessionName" : name,
+      "local" : "true",
       "consoleLogs" : "verbose",
       "networkLogs" : "true",
       "seleniumVersion" : "4.0.0-alpha-6",
