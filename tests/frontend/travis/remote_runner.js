@@ -6,8 +6,11 @@ let getStatusInterval;
 let timeout;
 let allTestsPassed = true;
 
-let testSettings = {"browserName":"chrome", "platformName":"Windows 10", "browserVersion":"latest"}
+let testSettings = {"browserName":"chrome", "platformName":"Windows 10", "browserVersion":"83.0"}
 let name = `${process.env.GIT_HASH} - ${testSettings.browserName} ${testSettings.browserVersion} ${testSettings.platformName}`;
+let knownConsoleText = "";
+// how many characters of the log have been sent to travis
+let logIndex = 0;
 
 runTest(testSettings)
 
@@ -36,9 +39,6 @@ async function runTest(testSettings){
   console.log(`https://saucelabs.com/jobs/${session}`);
 
   driver.get(baseUrl).then(function(){
-    let knownConsoleText = "";
-    // how many characters of the log have been sent to travis
-    let logIndex = 0;
     getStatusInterval = setInterval(function(){
       driver.executeScript("return $('#console').text()")
         .then(function(knownConsoleText){
