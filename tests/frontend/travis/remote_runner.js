@@ -27,7 +27,7 @@ async function runTest(testSettings){
         /* As a best practice, set important test metadata and execution options
         such as build info, tags for reporting, and timeout durations.
         */
-        'maxDuration': 600000,
+        'maxDuration': 900,
         'idleTimeout': 1000
     }
   }).usingServer("https://ondemand.saucelabs.com/wd/hub").build();
