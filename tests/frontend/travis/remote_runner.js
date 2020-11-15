@@ -71,7 +71,7 @@ async function runTest(testSettings){
       let testResult = knownConsoleText.substring(index).replace(/\[red\]/g,'\x1B[31m').replace(/\[yellow\]/g,'\x1B[33m')
                        .replace(/\[green\]/g,'\x1B[32m').replace(/\[clear\]/g, '\x1B[39m');
       testResult = testResult.split("\\n").map(function(line){
-        return "[" + testSettings.browserName + " " + testSettings.platform + (testSettings.version === "" ? '' : (" " + testSettings.version)) + "] " + line;
+        return "[" + testSettings.browserName + " " + testSettings.platformName + (testSettings.browserVersion === "" ? '' : (" " + testSettings.browserVersion)) + "] " + line;
       }).join("\n");
 
       console.log(testResult);
