@@ -91,7 +91,7 @@ CachingMiddleware.prototype = new function () {
     const supportsGzip =
         (req.get('Accept-Encoding') || '').indexOf('gzip') != -1;
 
-    const path = require('url').parse(req.url).path;
+    const path = require('url').parse(req.url).pathname;
     const cacheKey = generateCacheKey(path);
 
     fs.stat(`${CACHE_DIR}minified_${cacheKey}`, (error, stats) => {

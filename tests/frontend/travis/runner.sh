@@ -34,12 +34,22 @@ done
 log "Successfully connected to Etherpad on http://localhost:9001"
 
 # start the remote runner
-try cd "${MY_DIR}"
-log "Starting the remote runner..."
-node remote_runner.js
-exit_code=$?
+echo "Now starting the remote runner"
+failed=0
+node remote_runner.js || failed=1
 
-kill "$(cat /tmp/sauce.pid)"
-kill "$ep_pid" && wait "$ep_pid"
-log "Done."
-exit "$exit_code"
+kill $(cat /tmp/sauce.pid)
+kill $ep_pid
+
+cd "${MY_DIR}/../../../"
+# print the start of every minified file for debugging
+find var/ -type f -name "minified_*" -not -name "*.gz" |xargs head -n2
+
+# is any package minified more than once?
+find var/ -type f -name "minified_*" |xargs md5sum|cut -d" " -f1|sort|uniq -c|egrep "^\W+1\W" -v
+if [ $? -eq 0 ]; then
+  echo "FAILED: a resource is packaged multiple times"
+  failed=2
+fi
+
+exit $failed
