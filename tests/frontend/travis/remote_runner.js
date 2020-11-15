@@ -36,7 +36,8 @@ async function runTest(testSettings){
   console.log(`https://saucelabs.com/jobs/${session}`);
 
   driver.get(baseUrl).then(async function(){
-    await driver.find_elements_by_class_name('ace-line').first().sendkeys("test");
+    let frame = await driver.findElement(By.id('magicdomid2'));
+    await frame.sendkeys("test");
     getStatusInterval = setInterval(function(){
       driver.executeScript("return $('#console').text()")
         .then(function(knownConsoleText){
