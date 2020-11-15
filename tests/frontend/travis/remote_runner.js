@@ -24,6 +24,7 @@ async function runTest(testSettings){
       "seleniumVersion" : "4.0.0-alpha-6",
       "userName" : process.env.BROWSERSTACK_USERNAME,
       "accessKey" : process.env.BROWSERSTACK_ACCESS_KEY,
+      "localIdentifier": process.env.BROWSERSTACK_LOCAL_IDENTIFIER,
     },
     "browserName" : "Chrome",
     "browserVersion" : "latest"
