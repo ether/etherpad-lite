@@ -1,5 +1,5 @@
 const srcFolder = "../../../src/node_modules/";
-const { Builder }= require(srcFolder + "selenium-webdriver");
+const { Builder, By }= require(srcFolder + "selenium-webdriver");
 const baseUrl = "http://localhost:9001/tests/frontend";
 let driver;
 let getStatusInterval;
@@ -36,6 +36,7 @@ async function runTest(testSettings){
   console.log(`https://saucelabs.com/jobs/${session}`);
 
   driver.get(baseUrl).then(function(){
+    await driver.find_elements_by_class_name('ace-line').first().sendkeys("test");
     getStatusInterval = setInterval(function(){
       driver.executeScript("return $('#console').text()")
         .then(function(knownConsoleText){
