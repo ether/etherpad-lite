@@ -5,10 +5,12 @@ node_js:
 
 cache: false
 
-env:
-  global:
-  - secure: gQdsD91DHpaDXDyDzrxWUaYDZxzZC3ojkBWX6nbLbOgADSWhzHUqMShDQXGlT80G4SikOhtSGlS2aOtsRcPTOGRtwjrOkg266JY+Fa37yO6I7/xios8VZp56Tu6ADNuItLptP0nH/DY3rPEIfiztcd3h6jLZ0RJlGY7lkHpM3xs=
-  - secure: HxLMaehWXVYuhkJ54SqR+9czD6i8RtDhfx7WM8yTrRE2JtThqECfL+fjqrNMkG25zZpDISwCm082qb3Z5uE3tpARi9eizOLAuLbDwQeJNfV1vW7RBj3mZMhgfuwGMH5VkQsI1MiSPf3AIHPQdQSfkBTC5KiYzYsMay6VrKwEswA=
+addons:
+  browserstack:
+    username:
+      secure: "UaX/yaRClPkIEVrBeB42ij47adqqqjt/2XW0sTw54Tdw8CrOxbnXH9M4dM+c8pJlm+TNw2elsxb+Y2O+mC2quzQnEO922pmQlCxlY8bJE6WXlA9G+OKB83qldtHg08egGXHjzTbhOF1rifRLvPvpmSqyV9Y9N/4Vn8JMoiDoIMU="
+    access_key:
+      secure: "RetrEdaZM1/BUSknutnUCCPpAXk4U0EZL6/m98Ku9jvGD1cgN3Q/Tycol4ZpoymiIkwLGgO4rdFVjCeuKDobQL/mLXLrH1mOva9ptAe5d5l6cxs66B7v0vunCICAHCjxew4wuqYnvEJL3I8Go2gO5MPMF9dV8Q4IRFXLDBNYCGw="
 
 jobs:
   include:
@@ -19,7 +21,6 @@ jobs:
       install:
         #FIXME
         - "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/g' settings.json.template > settings.json"
-        - "tests/frontend/travis/sauce_tunnel.sh"
         - "bin/installDeps.sh"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
       script:

@@ -16,21 +16,13 @@ async function runTest(testSettings){
     'browserName': testSettings.browserName,
     'platformName': testSettings.platformName,
     'browserVersion': testSettings.browserVersion,
-    'sauce:options': {
-        'username': process.env.SAUCE_USERNAME,
-        'accessKey': process.env.SAUCE_ACCESS_KEY,
-        'build': process.env.GIT_HASH,
-        'extendedDebugging': true, // when possible, enables network.har file and network tab
-        'capturePerformance': true, // when possible, enables various performance related metrics
-        'tunnelIdentifier': process.env.TRAVIS_JOB_NUMBER,
-        'name': name,
-        /* As a best practice, set important test metadata and execution options
-        such as build info, tags for reporting, and timeout durations.
-        */
-        'maxDuration': 180,
-        'idleTimeout': 1000
-    }
-  }).usingServer("https://ondemand.saucelabs.com/wd/hub").build();
+    'browserstack.local': true,
+    'browserstack.localIdentifier': process.env.BROWSERSTACK_LOCAL_IDENTIFIER,
+    'build': process.env.GIT_HASH,
+    //'extendedDebugging': true, // when possible, enables network.har file and network tab
+    //'capturePerformance': true, // when possible, enables various performance related metrics
+    'name': name,
+  }).usingServer("https://hub-cloud.browserstack.com/wd/hub").build();
   let session = await driver.getSession();
   session = session.id_;
   console.log(`https://saucelabs.com/jobs/${session}`);
