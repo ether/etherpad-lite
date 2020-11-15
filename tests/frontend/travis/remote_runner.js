@@ -6,24 +6,29 @@ let getStatusInterval;
 let timeout;
 let allTestsPassed = true;
 
-let testSettings = {"browserName":"chrome", "platformName":"Windows 10", "browserVersion":"83.0"}
+let testSettings = {"browserName":"Chrome", "platformName":"Windows 10", "browserVersion":"latest"}
 let name = `${process.env.GIT_HASH} - ${testSettings.browserName} ${testSettings.browserVersion} ${testSettings.platformName}`;
 
 runTest(testSettings)
 
 async function runTest(testSettings){
   driver = await new Builder().withCapabilities({
-    'browserstack.user': process.env.BROWSERSTACK_USERNAME,
-    'browserstack.key': process.env.BROWSERSTACK_ACCESS_KEY,
-    'browserName': testSettings.browserName,
-    'platformName': testSettings.platformName,
-    'browserVersion': testSettings.browserVersion,
-    'browserstack.local': true,
-    'browserstack.localIdentifier': process.env.BROWSERSTACK_LOCAL_IDENTIFIER,
-    'build': process.env.GIT_HASH,
+    'bstack:options' : {
+      "os" : "Windows",
+      "osVersion" : "10",
+      "buildName" : process.env.GIT_HASH,
+      "sessionName" : name,
+      "local" : "true",
+      "consoleLogs" : "verbose",
+      "networkLogs" : "true",
+      "seleniumVersion" : "4.0.0-alpha-6",
+      "userName" : process.env.BROWSERSTACK_USERNAME,
+      "accessKey" : process.env.BROWSERSTACK_ACCESS_KEY,
+    },
+    "browserName" : "Chrome",
+    "browserVersion" : "latest"
     //'extendedDebugging': true, // when possible, enables network.har file and network tab
     //'capturePerformance': true, // when possible, enables various performance related metrics
-    'name': name,
   }).usingServer("https://hub-cloud.browserstack.com/wd/hub").build();
   let session = await driver.getSession();
   session = session.id_;
