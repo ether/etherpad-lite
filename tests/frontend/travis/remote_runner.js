@@ -13,6 +13,8 @@ runTest(testSettings)
 
 async function runTest(testSettings){
   driver = await new Builder().withCapabilities({
+    'browserstack.user': process.env.BROWSERSTACK_USERNAME,
+    'browserstack.key': process.env.BROWSERSTACK_ACCESS_KEY,
     'browserName': testSettings.browserName,
     'platformName': testSettings.platformName,
     'browserVersion': testSettings.browserVersion,
