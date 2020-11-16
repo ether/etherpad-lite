@@ -199,6 +199,9 @@ CachingMiddleware.prototype = new function () {
         if (supportsGzip && (headers['content-type'] || '').match(/^application\/javascript/)) {
           pathStr = pathStr + '.gz';
           headers['content-encoding'] = 'gzip';
+        } else {
+          // ensure responseCache is updated
+          delete headers['content-encoding'];
         }
 
         var lastModified = (headers['last-modified']
