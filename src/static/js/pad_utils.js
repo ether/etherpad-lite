@@ -479,13 +479,15 @@ padutils.setupGlobalExceptionHandler = () => {
   if (globalExceptionHandler == null) {
     globalExceptionHandler = (e) => {
       let type;
+      let err;
       let msg, url, lineno;
       if (e instanceof ErrorEvent) {
         type = 'Uncaught exception';
+        err = e.error || {};
         ({message: msg, filename: url, lineno: linenumber} = e);
       } else if (e instanceof PromiseRejectionEvent) {
         type = 'Unhandled Promise rejection';
-        const err = e.reason || {};
+        err = e.reason || {};
         ({message: msg = 'unknown', fileName: url = 'unknown', lineNumber: linenumber = -1} = err);
       } else {
         throw new Error(`unknown event: ${e.toString()}`);
@@ -534,6 +536,7 @@ padutils.setupGlobalExceptionHandler = () => {
           source: url,
           linenumber,
           userAgent: navigator.userAgent,
+          stack: err.stack,
         }),
       });
     };
