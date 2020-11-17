@@ -77,6 +77,12 @@
     "etherpad-lite": "./node/server.js"
   },
   "devDependencies": {
+    "eslint": "^7.13.0",
+    "eslint-config-etherpad": "^1.0.8",
+    "eslint-plugin-mocha": "^8.0.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prefer-arrow": "^1.2.2",
+    "eslint-plugin-promise": "^4.2.1",
     "etherpad-cli-client": "0.0.9",
     "mocha": "7.1.2",
     "mocha-froth": "^0.2.10",
@@ -87,6 +93,49 @@
     "supertest": "4.0.2",
     "wd": "1.12.1"
   },
+  "eslintConfig": {
+    "ignorePatterns": [
+      "/static/js/admin/jquery.autosize.js",
+      "/static/js/admin/minify.json.js",
+      "/static/js/browser.js",
+      "/static/js/excanvas.js",
+      "/static/js/farbtastic.js",
+      "/static/js/gritter.js",
+      "/static/js/html10n.js",
+      "/static/js/jquery.js",
+      "/static/js/vendors/nice-select.js"
+    ],
+    "overrides": [
+      {
+        "files": [
+          "**/.eslintrc.js"
+        ],
+        "extends": "etherpad/node"
+      },
+      {
+        "files": [
+          "**/*"
+        ],
+        "excludedFiles": [
+          "**/.eslintrc.js"
+        ],
+        "extends": "etherpad/node"
+      },
+      {
+        "files": [
+          "static/**/*"
+        ],
+        "excludedFiles": [
+          "**/.eslintrc.js"
+        ],
+        "extends": "etherpad/browser",
+        "env": {
+          "shared-node-browser": true
+        }
+      }
+    ],
+    "root": true
+  },
   "engines": {
     "node": ">=10.13.0",
     "npm": ">=5.5.1"
@@ -96,6 +145,7 @@
     "url": "https://github.com/ether/etherpad-lite.git"
   },
   "scripts": {
+    "lint": "eslint .",
     "test": "nyc mocha --timeout 30000 --recursive ../tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api"
   },
