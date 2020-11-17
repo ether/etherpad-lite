@@ -512,8 +512,8 @@ function setupGlobalExceptionHandler() {
         });
       }
 
-      //send javascript errors to the server
-      var errObj = {
+      // send javascript errors to the server
+      $.post('../jserror', {
         errorInfo: JSON.stringify({
           errorId,
           msg,
@@ -522,11 +522,7 @@ function setupGlobalExceptionHandler() {
           linenumber,
           userAgent: navigator.userAgent,
         }),
-      };
-      var loc = document.location;
-      var url = loc.protocol + "//" + loc.hostname + ":" + loc.port + "/" + loc.pathname.substr(1, loc.pathname.indexOf("/p/")) + "jserror";
-
-      $.post(url, errObj);
+      });
 
       return false;
     };
