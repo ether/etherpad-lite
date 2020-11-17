@@ -133,9 +133,9 @@ sauceTestWorker.push({
 
 // 4) Safari on OSX 10.14
 sauceTestWorker.push({
-    'platform'       : 'OS X 10.14'
+    'platform'       : 'OS X 10.15'
   , 'browserName'    : 'safari'
-  , 'version'        : '13.0'
+  , 'version'        : '13.1'
 });
 // IE 10 doesn't appear to be working anyway
 /*
