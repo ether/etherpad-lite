@@ -474,11 +474,22 @@ var padutils = {
   }
 };
 
-var globalExceptionHandler = undefined;
-function setupGlobalExceptionHandler() {
-  if (!globalExceptionHandler) {
-    globalExceptionHandler = function test (msg, url, linenumber)
-    {
+let globalExceptionHandler = null;
+padutils.setupGlobalExceptionHandler = () => {
+  if (globalExceptionHandler == null) {
+    globalExceptionHandler = (e) => {
+      let type;
+      let msg, url, lineno;
+      if (e instanceof ErrorEvent) {
+        type = 'Uncaught exception';
+        ({message: msg, filename: url, lineno: linenumber} = e);
+      } else if (e instanceof PromiseRejectionEvent) {
+        type = 'Unhandled Promise rejection';
+        const err = e.reason || {};
+        ({message: msg = 'unknown', fileName: url = 'unknown', lineNumber: linenumber = -1} = err);
+      } else {
+        throw new Error(`unknown event: ${e.toString()}`);
+      }
       var errorId = randomString(20);
 
       var msgAlreadyVisible = false;
@@ -497,6 +508,7 @@ function setupGlobalExceptionHandler() {
               .text('If the problem persists, please send this error message to your webmaster:'),
           $('<div>').css('text-align', 'left').css('font-size', '.8em').css('margin-top', '1em')
               .append(txt(`ErrorId: ${errorId}`)).append($('<br>'))
+              .append(txt(type)).append($('<br>'))
               .append(txt(`URL: ${window.location.href}`)).append($('<br>'))
               .append(txt(`UserAgent: ${navigator.userAgent}`)).append($('<br>'))
               .append($('<b>').addClass('error-msg').text(msg)).append($('<br>'))
@@ -516,6 +528,7 @@ function setupGlobalExceptionHandler() {
       $.post('../jserror', {
         errorInfo: JSON.stringify({
           errorId,
+          type,
           msg,
           url: window.location.href,
           source: url,
@@ -523,14 +536,12 @@ function setupGlobalExceptionHandler() {
           userAgent: navigator.userAgent,
         }),
       });
-
-      return false;
     };
-    window.onerror = globalExceptionHandler;
+    window.onerror = null; // Clear any pre-existing global error handler.
+    window.addEventListener('error', globalExceptionHandler);
+    window.addEventListener('unhandledrejection', globalExceptionHandler);
   }
 }
-
-padutils.setupGlobalExceptionHandler = setupGlobalExceptionHandler;
 
 padutils.binarySearch = require('./ace2_common').binarySearch;
 
