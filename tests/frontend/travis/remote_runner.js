@@ -135,7 +135,7 @@ sauceTestWorker.push({
 sauceTestWorker.push({
     'platform'       : 'OS X 10.14'
   , 'browserName'    : 'safari'
-  , 'version'        : '12.0'
+  , 'version'        : '13.0'
 });
 // IE 10 doesn't appear to be working anyway
 /*
