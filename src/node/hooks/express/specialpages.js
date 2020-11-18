@@ -20,7 +20,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   //serve javascript.html
   args.app.get('/javascript', function(req, res)
   {
-    res.send(eejs.require('ep_etherpad-lite/templates/javascript.html'), {req});
+    res.send(eejs.require('ep_etherpad-lite/templates/javascript.html', {req}));
   });
 
 
