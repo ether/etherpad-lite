@@ -48,7 +48,7 @@ exports.userCanModify = (padId, req) => {
 // Exported so that tests can set this to 0 to avoid unnecessary test slowness.
 exports.authnFailureDelayMs = 1000;
 
-exports.checkAccess = (req, res, next) => {
+const checkAccess = (req, res, next) => {
   const hookResultMangle = (cb) => {
     return (err, data) => {
       if (err != null) httpLogger.error(`Error during access check: ${err}`);
@@ -202,6 +202,6 @@ exports.checkAccess = (req, res, next) => {
 };
 
 exports.expressConfigure = (hookName, args, cb) => {
-  args.app.use(exports.checkAccess);
+  args.app.use(checkAccess);
   return cb();
 };
