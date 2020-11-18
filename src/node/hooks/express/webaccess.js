@@ -1,22 +1,22 @@
-/* global Buffer, exports, require, setTimeout */
+'use strict';
 
 const assert = require('assert').strict;
 const log4js = require('log4js');
 const httpLogger = log4js.getLogger('http');
 const settings = require('../../utils/Settings');
-const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+const hooks = require('../../../static/js/pluginfw/hooks');
 const readOnlyManager = require('../../db/ReadOnlyManager');
 
 hooks.deprecationNotices.authFailure = 'use the authnFailure and authzFailure hooks instead';
 
-const staticPathsRE = new RegExp('^/(?:' + [
+const staticPathsRE = new RegExp(`^/(?:${[
   'api/.*',
   'favicon\\.ico',
   'javascripts/.*',
   'locales\\.json',
   'pluginfw/.*',
   'static/.*',
-].join('|') + ')$');
+].join('|')})$`);
 
 exports.normalizeAuthzLevel = (level) => {
   if (!level) return false;
@@ -201,7 +201,7 @@ exports.checkAccess = (req, res, next) => {
   step1PreAuthorize();
 };
 
-exports.expressConfigure = (hook_name, args, cb) => {
+exports.expressConfigure = (hookName, args, cb) => {
   args.app.use(exports.checkAccess);
   return cb();
 };
