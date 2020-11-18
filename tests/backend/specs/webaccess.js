@@ -36,6 +36,11 @@ describe(__filename, function() {
   });
 
   describe('webaccess: without plugins', function() {
+    it('regression test for issue #4495, getting /javascript should not result in 500', async function() {
+      settings.requireAuthentication = false;
+      settings.requireAuthorization = false;
+      await agent.get('/javascript').expect(200);
+    });
     it('!authn !authz anonymous / -> 200', async function() {
       settings.requireAuthentication = false;
       settings.requireAuthorization = false;
