@@ -94,7 +94,7 @@ function doConvertTask(task, callback) {
       setTimeout(function(){ 
         soffice.stdin.pause(); // required to kill hanging threads
         soffice.kill();
-      }, 20000); 
+      }, 120000); 
       
       var stdoutBuffer = '';
 
