@@ -92,6 +92,7 @@ function doConvertTask(task, callback) {
       // Soffice/libreoffice is buggy and often hangs.
       // To remedy this we make it kill the spawned process after 20 seconds.
       setTimeout(function(){ 
+        soffice.stdin.pause(); // required to kill hanging threads
         soffice.kill();
       }, 20000); 
       
