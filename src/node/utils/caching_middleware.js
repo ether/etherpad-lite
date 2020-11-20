@@ -20,7 +20,6 @@ var fs = require('fs');
 var path = require('path');
 var zlib = require('zlib');
 var settings = require('./Settings');
-var semver = require('semver');
 var existsSync = require('./path_exists');
 
 /*
@@ -192,16 +191,14 @@ CachingMiddleware.prototype = new function () {
         res.write = old_res.write || res.write;
         res.end = old_res.end || res.end;
 
-        var headers = responseCache[cacheKey].headers;
+        let headers = {};
+        Object.assign(headers, (responseCache[cacheKey].headers || {}));
         var statusCode = responseCache[cacheKey].statusCode;
 
         var pathStr = CACHE_DIR + 'minified_' + cacheKey;
         if (supportsGzip && /^application\/javascript/.test(headers['content-type'])) {
           pathStr = pathStr + '.gz';
           headers['content-encoding'] = 'gzip';
-        } else {
-          // ensure responseCache is updated
-          delete headers['content-encoding'];
         }
 
         var lastModified = (headers['last-modified']
