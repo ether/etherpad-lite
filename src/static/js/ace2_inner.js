@@ -868,7 +868,7 @@ function Ace2Inner() {
 
   function fastIncorp(n) {
     // normalize but don't do any lexing or anything
-    incorporateUserChanges(newTimeLimit(0));
+    incorporateUserChanges();
   }
   editorInfo.ace_fastIncorp = fastIncorp;
 
@@ -886,10 +886,7 @@ function Ace2Inner() {
       let finishedWork = false;
 
       try {
-        // isTimeUp() is a soft constraint for incorporateUserChanges,
-        // which always renormalizes the DOM, no matter how long it takes,
-        // but doesn't necessarily lex and highlight it
-        incorporateUserChanges(isTimeUp);
+        incorporateUserChanges();
 
         if (isTimeUp()) return;
 
@@ -928,7 +925,7 @@ function Ace2Inner() {
   }
 
 
-  function recolorLinesInRange(startChar, endChar, isTimeUp) {
+  function recolorLinesInRange(startChar, endChar) {
     if (endChar <= startChar) return;
     if (startChar < 0 || startChar >= rep.lines.totalWidth()) return;
     let lineEntry = rep.lines.atOffset(startChar); // rounds down to line boundary
@@ -937,7 +934,6 @@ function Ace2Inner() {
     let selectionNeedsResetting = false;
     let firstLine = null;
     let lastLine = null;
-    isTimeUp = (isTimeUp || noop);
 
     // tokenFunc function; accesses current value of lineEntry and curDocChar,
     // also mutates curDocChar
@@ -946,7 +942,7 @@ function Ace2Inner() {
       lineEntry.domInfo.appendSpan(tokenText, tokenClass);
     };
 
-    while (lineEntry && lineStart < endChar && !isTimeUp()) {
+    while (lineEntry && lineStart < endChar) {
       const lineEnd = lineStart + lineEntry.width;
 
       curDocChar = lineStart;
@@ -1112,15 +1108,10 @@ function Ace2Inner() {
     }
   }
 
-  function incorporateUserChanges(isTimeUp) {
+  function incorporateUserChanges() {
     if (currentCallStack.domClean) return false;
 
     currentCallStack.isUserChange = true;
-
-    isTimeUp = (isTimeUp ||
-    function () {
-      return false;
-    });
 
     if (DEBUG && window.DONT_INCORP || window.DEBUG_DONT_INCORP) return false;
 
@@ -1270,7 +1261,7 @@ function Ace2Inner() {
     // do DOM inserts
     p.mark('insert');
     _.each(domInsertsNeeded, (ins) => {
-      insertDomLines(ins[0], ins[1], isTimeUp);
+      insertDomLines(ins[0], ins[1]);
     });
 
     p.mark('del');
@@ -1368,12 +1359,7 @@ function Ace2Inner() {
     return AttributeManager.DEFAULT_LINE_ATTRIBUTES.indexOf(aname) !== -1;
   }
 
-  function insertDomLines(nodeToAddAfter, infoStructs, isTimeUp) {
-    isTimeUp = (isTimeUp ||
-    function () {
-      return false;
-    });
-
+  function insertDomLines(nodeToAddAfter, infoStructs) {
     let lastEntry;
     let lineStartOffset;
     if (infoStructs.length < 1) return;
@@ -1405,7 +1391,7 @@ function Ace2Inner() {
       p2.mark('spans');
       getSpansForLine(entry, (tokenText, tokenClass) => {
         info.appendSpan(tokenText, tokenClass);
-      }, lineStartOffset, isTimeUp());
+      }, lineStartOffset);
       p2.mark('addLine');
       info.prepareForAdd();
       entry.lineMarker = info.lineMarker;
@@ -1603,7 +1589,7 @@ function Ace2Inner() {
     const linesMutatee = {
       splice(start, numRemoved, newLinesVA) {
         const args = Array.prototype.slice.call(arguments, 2);
-        domAndRepSplice(start, numRemoved, _.map(args, (s) => s.slice(0, -1)), null);
+        domAndRepSplice(start, numRemoved, _.map(args, (s) => s.slice(0, -1)));
       },
       get(i) {
         return `${rep.lines.atIndex(i).text}\n`;
@@ -1622,11 +1608,7 @@ function Ace2Inner() {
       performSelectionChange(lineAndColumnFromChar(requiredSelectionSetting[0]), lineAndColumnFromChar(requiredSelectionSetting[1]), requiredSelectionSetting[2]);
     }
 
-    function domAndRepSplice(startLine, deleteCount, newLineStrings, isTimeUp) {
-      // dgreensp 3/2009: the spliced lines may be in the middle of a dirty region,
-      // so if no explicit time limit, don't spend a lot of time highlighting
-      isTimeUp = (isTimeUp || newTimeLimit(50));
-
+    function domAndRepSplice(startLine, deleteCount, newLineStrings) {
       const keysToDelete = [];
       if (deleteCount > 0) {
         let entryToDelete = rep.lines.atIndex(startLine);
@@ -1645,7 +1627,7 @@ function Ace2Inner() {
         nodeToAddAfter = getCleanNodeByKey(rep.lines.atIndex(startLine - 1).key);
       } else { nodeToAddAfter = null; }
 
-      insertDomLines(nodeToAddAfter, _.map(lineEntries, (entry) => entry.domInfo), isTimeUp);
+      insertDomLines(nodeToAddAfter, _.map(lineEntries, (entry) => entry.domInfo));
 
       _.each(keysToDelete, (k) => {
         const n = doc.getElementById(k);
@@ -4366,7 +4348,7 @@ function Ace2Inner() {
         while (root.firstChild) root.removeChild(root.firstChild);
         const oneEntry = createDomLineEntry('');
         doRepLineSplice(0, rep.lines.length(), [oneEntry]);
-        insertDomLines(null, [oneEntry.domInfo], null);
+        insertDomLines(null, [oneEntry.domInfo]);
         rep.alines = Changeset.splitAttributionLines(
             Changeset.makeAttribution('\n'), '\n');
 
