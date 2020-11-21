@@ -196,7 +196,7 @@ CachingMiddleware.prototype = new function () {
         var statusCode = responseCache[cacheKey].statusCode;
 
         var pathStr = CACHE_DIR + 'minified_' + cacheKey;
-        if (supportsGzip && /^application\/javascript/.test(headers['content-type'])) {
+        if (supportsGzip && /application\/javascript/.test(headers['content-type'])) {
           pathStr = pathStr + '.gz';
           headers['content-encoding'] = 'gzip';
         }
