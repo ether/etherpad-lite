@@ -32,9 +32,9 @@ var importHtml = require("../utils/ImportHtml");
 var cleanText = require("./Pad").cleanText;
 var PadDiff = require("../utils/padDiff");
 
-/**********************/
-/**GROUP FUNCTIONS*****/
-/**********************/
+/* ********************
+ * GROUP FUNCTIONS ****
+ ******************** */
 
 exports.listAllGroups = groupManager.listAllGroups;
 exports.createGroup = groupManager.createGroup;
@@ -43,15 +43,15 @@ exports.deleteGroup = groupManager.deleteGroup;
 exports.listPads = groupManager.listPads;
 exports.createGroupPad = groupManager.createGroupPad;
 
-/**********************/
-/**PADLIST FUNCTION****/
-/**********************/
+/* ********************
+ * PADLIST FUNCTION ***
+ ******************** */
 
 exports.listAllPads = padManager.listAllPads;
 
-/**********************/
-/**AUTHOR FUNCTIONS****/
-/**********************/
+/* ********************
+ * AUTHOR FUNCTIONS ***
+ ******************** */
 
 exports.createAuthor = authorManager.createAuthor;
 exports.createAuthorIfNotExistsFor = authorManager.createAuthorIfNotExistsFor;
@@ -60,9 +60,9 @@ exports.listPadsOfAuthor = authorManager.listPadsOfAuthor;
 exports.padUsers = padMessageHandler.padUsers;
 exports.padUsersCount = padMessageHandler.padUsersCount;
 
-/**********************/
-/**SESSION FUNCTIONS***/
-/**********************/
+/* ********************
+ * SESSION FUNCTIONS **
+ ******************** */
 
 exports.createSession = sessionManager.createSession;
 exports.deleteSession = sessionManager.deleteSession;
@@ -70,9 +70,9 @@ exports.getSessionInfo = sessionManager.getSessionInfo;
 exports.listSessionsOfGroup = sessionManager.listSessionsOfGroup;
 exports.listSessionsOfAuthor = sessionManager.listSessionsOfAuthor;
 
-/************************/
-/**PAD CONTENT FUNCTIONS*/
-/************************/
+/* ***********************
+ * PAD CONTENT FUNCTIONS *
+ *********************** */
 
 /**
 getAttributePool(padID) returns the attribute pool of a pad
@@ -287,9 +287,9 @@ exports.setHTML = async function(padID, html) {
   padMessageHandler.updatePadClients(pad);
 };
 
-/******************/
-/**CHAT FUNCTIONS */
-/******************/
+/* ****************
+ * CHAT FUNCTIONS *
+ **************** */
 
 /**
 getChatHistory(padId, start, end), returns a part of or the whole chat-history of this pad
@@ -365,9 +365,9 @@ exports.appendChatMessage = async function(padID, text, authorID, time) {
   await padMessageHandler.sendChatMessageToPadClients(time, authorID, text, padID);
 }
 
-/*****************/
-/**PAD FUNCTIONS */
-/*****************/
+/* ***************
+ * PAD FUNCTIONS *
+ *************** */
 
 /**
 getRevisionsCount(padID) returns the number of revisions of this pad
@@ -783,9 +783,9 @@ exports.createDiffHTML = async function(padID, startRev, endRev) {
   return { html, authors };
 }
 
-/**********************/
-/** GLOBAL FUNCTIONS **/
-/**********************/
+/* ********************
+ ** GLOBAL FUNCTIONS **
+ ******************** */
 
 /**
  getStats() returns an json object with some instance stats
@@ -811,9 +811,9 @@ exports.getStats = async function() {
   }
 }
 
-/******************************/
-/** INTERNAL HELPER FUNCTIONS */
-/******************************/
+/* ****************************
+ ** INTERNAL HELPER FUNCTIONS *
+ **************************** */
 
 // checks if a number is an int
 function is_int(value) {
