@@ -45,6 +45,6 @@ node remote_runner.js
 exit_code=$?
 
 kill $(cat /tmp/sauce.pid)
-kill $ep_pid
+kill "$ep_pid" && wait "$ep_pid"
 
 exit $exit_code
