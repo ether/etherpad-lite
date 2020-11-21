@@ -13,6 +13,11 @@ env:
     - secure: "WMGxFkOeTTlhWB+ChMucRtIqVmMbwzYdNHuHQjKCcj8HBEPdZLfCuK/kf4rG\nVLcLQiIsyllqzNhBGVHG1nyqWr0/LTm8JRqSCDDVIhpyzp9KpCJQQJG2Uwjk\n6/HIJJh/wbxsEdLNV2crYU/EiVO3A4Bq0YTHUlbhUqG3mSCr5Ec="
     - secure: "gejXUAHYscbR6Bodw35XexpToqWkv2ifeECsbeEmjaLkYzXmUUNWJGknKSu7\nEUsSfQV8w+hxApr1Z+jNqk9aX3K1I4btL3cwk2trnNI8XRAvu1c1Iv60eerI\nkE82Rsd5lwUaMEh+/HoL8ztFCZamVndoNgX7HWp5J/NRZZMmh4g="
 
+_install_libreoffice: &install_libreoffice >-
+  sudo add-apt-repository -y ppa:libreoffice/ppa &&
+  sudo apt-get update &&
+  sudo apt-get -y install libreoffice libreoffice-pdfimport
+
 _install_plugins: &install_plugins >-
   npm install
   ep_align
@@ -43,10 +48,7 @@ jobs:
         - "./tests/frontend/travis/runner.sh"
     - name: "Run the Backend tests without Plugins"
       install:
-        - "sudo add-apt-repository -y ppa:libreoffice/ppa"
-        - "sudo apt-get update"
-        - "sudo apt-get -y install libreoffice"
-        - "sudo apt-get -y install libreoffice-pdfimport"
+        - *install_libreoffice
         - "bin/installDeps.sh"
         - "cd src && npm install && cd -"
       script:
@@ -86,10 +88,7 @@ jobs:
         - npx lockfile-lint --path src/package-lock.json --validate-https --allowed-hosts npm
     - name: "Run the Backend tests with Plugins"
       install:
-        - "sudo add-apt-repository -y ppa:libreoffice/ppa"
-        - "sudo apt-get update"
-        - "sudo apt-get -y install libreoffice"
-        - "sudo apt-get -y install libreoffice-pdfimport"
+        - *install_libreoffice
         - "bin/installDeps.sh"
         - *install_plugins
         - "cd src && npm install && cd -"
