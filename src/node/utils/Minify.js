@@ -145,8 +145,7 @@ function requestURIs(locations, method, headers, callback) {
  * @param req the Express request
  * @param res the Express response
  */
-function minify(req, res)
-{
+function minify(req, res) {
   var filename = req.params['filename'];
 
   // No relative paths, especially if they may go up the file hierarchy.
@@ -318,22 +317,18 @@ function lastModifiedDateOfEverything(callback) {
   var folders2check = [ROOT_DIR + 'js/', ROOT_DIR + 'css/'];
   var latestModification = 0;
   //go trough this two folders
-  async.forEach(folders2check, function(path, callback)
-  {
+  async.forEach(folders2check, function(path, callback) {
     //read the files in the folder
-    fs.readdir(path, function(err, files)
-    {
+    fs.readdir(path, function(err, files) {
       if(ERR(err, callback)) return;
 
       //we wanna check the directory itself for changes too
       files.push(".");
 
       //go trough all files in this folder
-      async.forEach(files, function(filename, callback)
-      {
+      async.forEach(files, function(filename, callback) {
         //get the stat data of this file
-        fs.stat(path + "/" + filename, function(err, stats)
-        {
+        fs.stat(path + "/" + filename, function(err, stats) {
           if(ERR(err, callback)) return;
 
           //get the modification time

@@ -23,16 +23,13 @@
 var padeditbar = require('./pad_editbar').padeditbar;
 var automaticReconnect = require('./pad_automatic_reconnect');
 
-var padmodals = (function()
-{
+var padmodals = (function() {
   var pad = undefined;
   var self = {
-    init: function(_pad)
-    {
+    init: function(_pad) {
       pad = _pad;
     },
-    showModal: function(messageId)
-    {
+    showModal: function(messageId) {
       padeditbar.toggleDropDown("none", function() {
         $("#connectivity .visible").removeClass('visible');
         $("#connectivity ."+messageId).addClass('visible');

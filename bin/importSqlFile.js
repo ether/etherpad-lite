@@ -25,8 +25,7 @@ require("ep_etherpad-lite/node_modules/npm").load({}, function(er,npm) {
   }
 
   log("initializing db");
-  db.init(function(err)
-  {
+  db.init(function(err) {
     //there was an error while initializing the database, output it and stop
     if(err)
     {
@@ -71,8 +70,7 @@ require("ep_etherpad-lite/node_modules/npm").load({}, function(er,npm) {
   });
 });
 
-function log(str)
-{
+function log(str) {
   console.log((Date.now() - startTime)/1000 + "\t" + str);
 }
 

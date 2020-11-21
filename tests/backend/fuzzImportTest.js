@@ -58,8 +58,7 @@ function runTest(number){
   });
 }
 
-function makeid()
-{
+function makeid() {
   var text = "";
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 

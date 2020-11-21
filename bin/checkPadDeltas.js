@@ -59,11 +59,9 @@ npm.load({}, async function() {
     var atext = Changeset.makeAText("\n")
 
     //run trough all revisions
-    async.forEachSeries(revisions, function(revNum, callback)
-    {
+    async.forEachSeries(revisions, function(revNum, callback) {
       //console.log('Fetching', revNum)
-      db.db.get("pad:"+padId+":revs:" + revNum, function(err, revision)
-      {
+      db.db.get("pad:"+padId+":revs:" + revNum, function(err, revision) {
         if(err) return callback(err);
 
         //check if there is a atext in the keyRevisions

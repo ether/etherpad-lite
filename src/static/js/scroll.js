@@ -17,8 +17,7 @@ function Scroll(outerWin) {
   this.rootDocument = parent.parent.document;
 }
 
-Scroll.prototype.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary = function (rep, isScrollableEvent, innerHeight)
-{
+Scroll.prototype.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary = function (rep, isScrollableEvent, innerHeight) {
   // are we placing the caret on the line at the bottom of viewport?
   // And if so, do we need to scroll the editor, as defined on the settings.json?
   var shouldScrollWhenCaretIsAtBottomOfViewport =  this.scrollSettings.scrollWhenCaretIsInTheLastLineOfViewport;
@@ -36,8 +35,7 @@ Scroll.prototype.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary = functio
   }
 }
 
-Scroll.prototype.scrollWhenPressArrowKeys = function(arrowUp, rep, innerHeight)
-{
+Scroll.prototype.scrollWhenPressArrowKeys = function(arrowUp, rep, innerHeight) {
   // if percentageScrollArrowUp is 0, let the scroll to be handled as default, put the previous
   // rep line on the top of the viewport
   if(this._arrowUpWasPressedInTheFirstLineOfTheViewport(arrowUp, rep)){
@@ -54,8 +52,7 @@ Scroll.prototype.scrollWhenPressArrowKeys = function(arrowUp, rep, innerHeight)
 // Some plugins might set a minimum height to the editor (ex: ep_page_view), so checking
 // if (caretLine() === rep.lines.length() - 1) is not enough. We need to check if there are
 // other lines after caretLine(), and all of them are out of viewport.
-Scroll.prototype._isCaretAtTheBottomOfViewport = function(rep)
-{
+Scroll.prototype._isCaretAtTheBottomOfViewport = function(rep) {
   // computing a line position using getBoundingClientRect() is expensive.
   // (obs: getBoundingClientRect() is called on caretPosition.getPosition())
   // To avoid that, we only call this function when it is possible that the
@@ -76,8 +73,7 @@ Scroll.prototype._isCaretAtTheBottomOfViewport = function(rep)
   return false;
 }
 
-Scroll.prototype._isLinePartiallyVisibleOnViewport = function(lineNumber, rep)
-{
+Scroll.prototype._isLinePartiallyVisibleOnViewport = function(lineNumber, rep) {
   var lineNode = rep.lines.atIndex(lineNumber);
   var linePosition = this._getLineEntryTopBottom(lineNode);
   var lineTop = linePosition.top;
@@ -98,8 +94,7 @@ Scroll.prototype._isLinePartiallyVisibleOnViewport = function(lineNumber, rep)
     (bottomOfLineIsAboveViewportBottom && bottomOfLineIsBelowViewportTop);
 }
 
-Scroll.prototype._getViewPortTopBottom = function()
-{
+Scroll.prototype._getViewPortTopBottom = function() {
   var theTop = this.getScrollY();
   var doc = this.doc;
   var height = doc.documentElement.clientHeight; // includes padding
@@ -113,23 +108,20 @@ Scroll.prototype._getViewPortTopBottom = function()
   };
 }
 
-Scroll.prototype._getEditorPositionTop = function()
-{
+Scroll.prototype._getEditorPositionTop = function() {
   var editor = parent.document.getElementsByTagName('iframe');
   var editorPositionTop = editor[0].offsetTop;
   return editorPositionTop;
 }
 
 // ep_page_view adds padding-top, which makes the viewport smaller
-Scroll.prototype._getPaddingTopAddedWhenPageViewIsEnable = function()
-{
+Scroll.prototype._getPaddingTopAddedWhenPageViewIsEnable = function() {
   var aceOuter = this.rootDocument.getElementsByName("ace_outer");
   var aceOuterPaddingTop = parseInt($(aceOuter).css("padding-top"));
   return aceOuterPaddingTop;
 }
 
-Scroll.prototype._getScrollXY = function()
-{
+Scroll.prototype._getScrollXY = function() {
   var win = this.outerWin;
   var odoc = this.doc;
   if (typeof(win.pageYOffset) == "number")
@@ -149,33 +141,27 @@ Scroll.prototype._getScrollXY = function()
   }
 }
 
-Scroll.prototype.getScrollX = function()
-{
+Scroll.prototype.getScrollX = function() {
   return this._getScrollXY().x;
 }
 
-Scroll.prototype.getScrollY = function()
-{
+Scroll.prototype.getScrollY = function() {
   return this._getScrollXY().y;
 }
 
-Scroll.prototype.setScrollX = function(x)
-{
+Scroll.prototype.setScrollX = function(x) {
   this.outerWin.scrollTo(x, this.getScrollY());
 }
 
-Scroll.prototype.setScrollY = function(y)
-{
+Scroll.prototype.setScrollY = function(y) {
   this.outerWin.scrollTo(this.getScrollX(), y);
 }
 
-Scroll.prototype.setScrollXY = function(x, y)
-{
+Scroll.prototype.setScrollXY = function(x, y) {
   this.outerWin.scrollTo(x, y);
 }
 
-Scroll.prototype._isCaretAtTheTopOfViewport = function(rep)
-{
+Scroll.prototype._isCaretAtTheTopOfViewport = function(rep) {
   var caretLine = rep.selStart[0];
   var linePrevCaretLine = caretLine - 1;
   var firstLineVisibleBeforeCaretLine = caretPosition.getPreviousVisibleLine(linePrevCaretLine, rep);
@@ -201,8 +187,7 @@ Scroll.prototype._isCaretAtTheTopOfViewport = function(rep)
 // By default, when user makes an edition in a line out of viewport, this line goes
 // to the edge of viewport. This function gets the extra pixels necessary to get the
 // caret line in a position X relative to Y% viewport.
-Scroll.prototype._getPixelsRelativeToPercentageOfViewport = function(innerHeight, aboveOfViewport)
-{
+Scroll.prototype._getPixelsRelativeToPercentageOfViewport = function(innerHeight, aboveOfViewport) {
   var pixels = 0;
   var scrollPercentageRelativeToViewport = this._getPercentageToScroll(aboveOfViewport);
   if(scrollPercentageRelativeToViewport > 0 && scrollPercentageRelativeToViewport <= 1){
@@ -213,8 +198,7 @@ Scroll.prototype._getPixelsRelativeToPercentageOfViewport = function(innerHeight
 
 // we use different percentages when change selection. It depends on if it is
 // either above the top or below the bottom of the page
-Scroll.prototype._getPercentageToScroll = function(aboveOfViewport)
-{
+Scroll.prototype._getPercentageToScroll = function(aboveOfViewport) {
   var percentageToScroll = this.scrollSettings.percentage.editionBelowViewport;
   if(aboveOfViewport){
     percentageToScroll = this.scrollSettings.percentage.editionAboveViewport;
@@ -222,8 +206,7 @@ Scroll.prototype._getPercentageToScroll = function(aboveOfViewport)
   return percentageToScroll;
 }
 
-Scroll.prototype._getPixelsToScrollWhenUserPressesArrowUp = function(innerHeight)
-{
+Scroll.prototype._getPixelsToScrollWhenUserPressesArrowUp = function(innerHeight) {
   var pixels = 0;
   var percentageToScrollUp = this.scrollSettings.percentageToScrollWhenUserPressesArrowUp;
   if(percentageToScrollUp > 0 && percentageToScrollUp <= 1){
@@ -232,8 +215,7 @@ Scroll.prototype._getPixelsToScrollWhenUserPressesArrowUp = function(innerHeight
   return pixels;
 }
 
-Scroll.prototype._scrollYPage = function(pixelsToScroll)
-{
+Scroll.prototype._scrollYPage = function(pixelsToScroll) {
   var durationOfAnimationToShowFocusline = this.scrollSettings.duration;
   if(durationOfAnimationToShowFocusline){
     this._scrollYPageWithAnimation(pixelsToScroll, durationOfAnimationToShowFocusline);
@@ -242,13 +224,11 @@ Scroll.prototype._scrollYPage = function(pixelsToScroll)
   }
 }
 
-Scroll.prototype._scrollYPageWithoutAnimation = function(pixelsToScroll)
-{
+Scroll.prototype._scrollYPageWithoutAnimation = function(pixelsToScroll) {
   this.outerWin.scrollBy(0, pixelsToScroll);
 }
 
-Scroll.prototype._scrollYPageWithAnimation = function(pixelsToScroll, durationOfAnimationToShowFocusline)
-{
+Scroll.prototype._scrollYPageWithAnimation = function(pixelsToScroll, durationOfAnimationToShowFocusline) {
   var outerDocBody = this.doc.getElementById("outerdocbody");
 
   // it works on later versions of Chrome
@@ -262,8 +242,7 @@ Scroll.prototype._scrollYPageWithAnimation = function(pixelsToScroll, durationOf
 
 // using a custom queue and clearing it, we avoid creating a queue of scroll animations. So if this function
 // is called twice quickly, only the last one runs.
-Scroll.prototype._triggerScrollWithAnimation = function($elem, pixelsToScroll, durationOfAnimationToShowFocusline)
-{
+Scroll.prototype._triggerScrollWithAnimation = function($elem, pixelsToScroll, durationOfAnimationToShowFocusline) {
   // clear the queue of animation
   $elem.stop("scrollanimation");
   $elem.animate({
@@ -278,8 +257,7 @@ Scroll.prototype._triggerScrollWithAnimation = function($elem, pixelsToScroll, d
 // needed to be completely in view. If the value is greater than 0 and less than or equal to 1,
 // besides of scrolling the minimum needed to be visible, it scrolls additionally
 // (viewport height * scrollAmountWhenFocusLineIsOutOfViewport) pixels
-Scroll.prototype.scrollNodeVerticallyIntoView = function(rep, innerHeight)
-{
+Scroll.prototype.scrollNodeVerticallyIntoView = function(rep, innerHeight) {
   var viewport = this._getViewPortTopBottom();
   var isPartOfRepLineOutOfViewport = this._partOfRepLineIsOutOfViewport(viewport, rep);
 
@@ -304,8 +282,7 @@ Scroll.prototype.scrollNodeVerticallyIntoView = function(rep, innerHeight)
   }
 }
 
-Scroll.prototype._partOfRepLineIsOutOfViewport = function(viewportPosition, rep)
-{
+Scroll.prototype._partOfRepLineIsOutOfViewport = function(viewportPosition, rep) {
   var focusLine = (rep.selFocusAtStart ? rep.selStart[0] : rep.selEnd[0]);
   var line = rep.lines.atIndex(focusLine);
   var linePosition = this._getLineEntryTopBottom(line);
@@ -315,8 +292,7 @@ Scroll.prototype._partOfRepLineIsOutOfViewport = function(viewportPosition, rep)
   return lineIsBelowOfViewport || lineIsAboveOfViewport;
 }
 
-Scroll.prototype._getLineEntryTopBottom = function(entry, destObj)
-{
+Scroll.prototype._getLineEntryTopBottom = function(entry, destObj) {
   var dom = entry.lineNode;
   var top = dom.offsetTop;
   var height = dom.offsetHeight;
@@ -326,24 +302,20 @@ Scroll.prototype._getLineEntryTopBottom = function(entry, destObj)
   return obj;
 }
 
-Scroll.prototype._arrowUpWasPressedInTheFirstLineOfTheViewport = function(arrowUp, rep)
-{
+Scroll.prototype._arrowUpWasPressedInTheFirstLineOfTheViewport = function(arrowUp, rep) {
   var percentageScrollArrowUp = this.scrollSettings.percentageToScrollWhenUserPressesArrowUp;
   return percentageScrollArrowUp && arrowUp && this._isCaretAtTheTopOfViewport(rep);
 }
 
-Scroll.prototype.getVisibleLineRange = function(rep)
-{
+Scroll.prototype.getVisibleLineRange = function(rep) {
   var viewport = this._getViewPortTopBottom();
   //console.log("viewport top/bottom: %o", viewport);
   var obj = {};
   var self = this;
-  var start = rep.lines.search(function(e)
-  {
+  var start = rep.lines.search(function(e) {
     return self._getLineEntryTopBottom(e, obj).bottom > viewport.top;
   });
-  var end = rep.lines.search(function(e)
-  {
+  var end = rep.lines.search(function(e) {
     // return the first line that the top position is greater or equal than
     // the viewport. That is the first line that is below the viewport bottom.
     // So the line that is in the bottom of the viewport is the very previous one.
@@ -354,13 +326,11 @@ Scroll.prototype.getVisibleLineRange = function(rep)
   return [start, end - 1];
 }
 
-Scroll.prototype.getVisibleCharRange = function(rep)
-{
+Scroll.prototype.getVisibleCharRange = function(rep) {
   var lineRange = this.getVisibleLineRange(rep);
   return [rep.lines.offsetOfIndex(lineRange[0]), rep.lines.offsetOfIndex(lineRange[1])];
 }
 
-exports.init = function(outerWin)
-{
+exports.init = function(outerWin) {
   return new Scroll(outerWin);
 }

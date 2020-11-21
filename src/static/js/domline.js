@@ -35,13 +35,11 @@ var noop = function(){};
 
 var domline = {};
 
-domline.addToLineClass = function(lineClass, cls)
-{
+domline.addToLineClass = function(lineClass, cls) {
   // an "empty span" at any point can be used to add classes to
   // the line, using line:className.  otherwise, we ignore
   // the span.
-  cls.replace(/\S+/g, function(c)
-  {
+  cls.replace(/\S+/g, function(c) {
     if (c.indexOf("line:") == 0)
     {
       // add class to line
@@ -53,8 +51,7 @@ domline.addToLineClass = function(lineClass, cls)
 
 // if "document" is falsy we don't create a DOM node, just
 // an object with innerHTML and className
-domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
-{
+domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument) {
   var result = {
     node: null,
     appendSpan: noop,
@@ -84,8 +81,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
   postHtml = '';
   var curHTML = null;
 
-  function processSpaces(s)
-  {
+  function processSpaces(s) {
     return domline.processSpaces(s, doesWrap);
   }
 
@@ -93,8 +89,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
   var perHtmlLineProcess = (doesWrap ? processSpaces : _.identity);
   var lineClass = 'ace-line';
 
-  result.appendSpan = function(txt, cls)
-  {
+  result.appendSpan = function(txt, cls) {
 
     var processedMarker = false;
     // Handle lineAttributeMarker, if present
@@ -106,8 +101,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
       _.map(hooks.callAll("aceDomLinePreProcessLineAttributes", {
         domline: domline,
         cls: cls
-      }), function(modifier)
-      {
+      }), function(modifier) {
         preHtml += modifier.preHtml;
         postHtml += modifier.postHtml;
         processedMarker |= modifier.processedMarker;
@@ -141,8 +135,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
       _.map(hooks.callAll("aceDomLineProcessLineAttributes", {
         domline: domline,
         cls: cls
-      }), function(modifier)
-      {
+      }), function(modifier) {
         preHtml += modifier.preHtml;
         postHtml += modifier.postHtml;
         processedMarker |= modifier.processedMarker;
@@ -156,16 +149,14 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     var simpleTags = null;
     if (cls.indexOf('url') >= 0)
     {
-      cls = cls.replace(/(^| )url:(\S+)/g, function(x0, space, url)
-      {
+      cls = cls.replace(/(^| )url:(\S+)/g, function(x0, space, url) {
         href = url;
         return space + "url";
       });
     }
     if (cls.indexOf('tag') >= 0)
     {
-      cls = cls.replace(/(^| )tag:(\S+)/g, function(x0, space, tag)
-      {
+      cls = cls.replace(/(^| )tag:(\S+)/g, function(x0, space, tag) {
         if (!simpleTags) simpleTags = [];
         simpleTags.push(tag.toLowerCase());
         return space + tag;
@@ -178,8 +169,7 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
     _.map(hooks.callAll("aceCreateDomLine", {
       domline: domline,
       cls: cls
-    }), function(modifier)
-    {
+    }), function(modifier) {
       cls = modifier.cls;
       extraOpenTags = extraOpenTags + modifier.extraOpenTags;
       extraCloseTags = modifier.extraCloseTags + extraCloseTags;
@@ -218,15 +208,13 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
       html.push('<span class="', Security.escapeHTMLAttribute(cls || ''), '">', extraOpenTags, perTextNodeProcess(Security.escapeHTML(txt)), extraCloseTags, '</span>');
     }
   };
-  result.clearSpans = function()
-  {
+  result.clearSpans = function() {
     html = [];
     lineClass = 'ace-line';
     result.lineMarker = 0;
   };
 
-  function writeHTML()
-  {
+  function writeHTML() {
     var newHTML = perHtmlLineProcess(html.join(''));
     if (!newHTML)
     {
@@ -257,23 +245,20 @@ domline.createDomLine = function(nonEmpty, doesWrap, optBrowser, optDocument)
   }
   result.prepareForAdd = writeHTML;
   result.finishUpdate = writeHTML;
-  result.getInnerHTML = function()
-  {
+  result.getInnerHTML = function() {
     return curHTML || '';
   };
   return result;
 };
 
-domline.processSpaces = function(s, doesWrap)
-{
+domline.processSpaces = function(s, doesWrap) {
   if (s.indexOf("<") < 0 && !doesWrap)
   {
     // short-cut
     return s.replace(/ /g, '&nbsp;');
   }
   var parts = [];
-  s.replace(/<[^>]*>?| |[^ <]+/g, function(m)
-  {
+  s.replace(/<[^>]*>?| |[^ <]+/g, function(m) {
     parts.push(m);
   });
   if (doesWrap)

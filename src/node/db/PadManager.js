@@ -109,8 +109,7 @@ let padList = {
  * @param id A String with the id of the pad
  * @param {Function} callback
  */
-exports.getPad = async function(id, text)
-{
+exports.getPad = async function(id, text) {
   // check if this is a valid padId
   if (!exports.isValidPadId(id)) {
     throw new customError(id + " is not a valid padId", "apierror");
@@ -147,16 +146,14 @@ exports.getPad = async function(id, text)
   return pad;
 }
 
-exports.listAllPads = async function()
-{
+exports.listAllPads = async function() {
   let padIDs = await padList.getPads();
 
   return { padIDs };
 }
 
 // checks if a pad exists
-exports.doesPadExist = async function(padId)
-{
+exports.doesPadExist = async function(padId) {
   let value = await db.get("pad:" + padId);
 
   return (value != null && value.atext);
@@ -192,8 +189,7 @@ exports.sanitizePadId = async function sanitizePadId(padId) {
   return padId;
 }
 
-exports.isValidPadId = function(padId)
-{
+exports.isValidPadId = function(padId) {
   return /^(g.[a-zA-Z0-9]{16}\$)?[^$]{1,50}$/.test(padId);
 }
 
@@ -208,7 +204,6 @@ exports.removePad = async (padId) => {
 }
 
 // removes a pad from the cache
-exports.unloadPad = function(padId)
-{
+exports.unloadPad = function(padId) {
   globalPads.remove(padId);
 }

@@ -22,31 +22,26 @@
 
 var padmodals = require('./pad_modals').padmodals;
 
-var padconnectionstatus = (function()
-{
+var padconnectionstatus = (function() {
 
   var status = {
     what: 'connecting'
   };
 
   var self = {
-    init: function()
-    {
-      $('button#forcereconnect').click(function()
-      {
+    init: function() {
+      $('button#forcereconnect').click(function() {
         window.location.reload();
       });
     },
-    connected: function()
-    {
+    connected: function() {
       status = {
         what: 'connected'
       };
       padmodals.showModal('connected');
       padmodals.hideOverlay();
     },
-    reconnecting: function()
-    {
+    reconnecting: function() {
       status = {
         what: 'reconnecting'
       };
@@ -54,8 +49,7 @@ var padconnectionstatus = (function()
       padmodals.showModal('reconnecting');
       padmodals.showOverlay();
     },
-    disconnected: function(msg)
-    {
+    disconnected: function(msg) {
       if(status.what == "disconnected")
         return;
 
@@ -89,12 +83,10 @@ var padconnectionstatus = (function()
       padmodals.showModal(k);
       padmodals.showOverlay();
     },
-    isFullyConnected: function()
-    {
+    isFullyConnected: function() {
       return status.what == 'connected';
     },
-    getStatus: function()
-    {
+    getStatus: function() {
       return status;
     }
   };

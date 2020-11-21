@@ -31,8 +31,7 @@ var hooks = require('./pluginfw/hooks');
 var token, padId, export_links;
 
 function init() {
-  $(document).ready(function ()
-  {
+  $(document).ready(function () {
     // start the custom js
     if (typeof customStart == "function") customStart();
 
@@ -63,19 +62,16 @@ function init() {
     socket = io.connect(url, {path: exports.baseURL + 'socket.io', resource: resource});
 
     //send the ready message once we're connected
-    socket.on('connect', function()
-    {
+    socket.on('connect', function() {
       sendSocketMsg("CLIENT_READY", {});
     });
 
-    socket.on('disconnect', function()
-    {
+    socket.on('disconnect', function() {
       BroadcastSlider.showReconnectUI();
     });
 
     //route the incoming messages
-    socket.on('message', function(message)
-    {
+    socket.on('message', function(message) {
       if(message.type == "CLIENT_VARS")
       {
         handleClientVars(message);
@@ -91,8 +87,7 @@ function init() {
     //get all the export links
     export_links = $('#export > .exportlink')
 
-    $('button#forcereconnect').click(function()
-    {
+    $('button#forcereconnect').click(function() {
       window.location.reload();
     });
 
@@ -104,8 +99,7 @@ function init() {
 }
 
 //sends a message over the socket
-function sendSocketMsg(type, data)
-{
+function sendSocketMsg(type, data) {
   socket.json.send({
     component: 'pad', // FIXME: Remove this stupidity!
     type,
@@ -120,8 +114,7 @@ function sendSocketMsg(type, data)
 var fireWhenAllScriptsAreLoaded = [];
 
 var changesetLoader;
-function handleClientVars(message)
-{
+function handleClientVars(message) {
   //save the client Vars
   clientVars = message.data;
 
@@ -137,11 +130,9 @@ function handleClientVars(message)
   var baseURI = document.location.pathname;
 
   //change export urls when the slider moves
-  BroadcastSlider.onSlider(function(revno)
-  {
+  BroadcastSlider.onSlider(function(revno) {
     // export_links is a jQuery Array, so .each is allowed.
-    export_links.each(function()
-    {
+    export_links.each(function() {
       // Modified from regular expression to fix:
       // https://github.com/ether/etherpad-lite/issues/4071
       // Where a padId that was numeric would create the wrong export link

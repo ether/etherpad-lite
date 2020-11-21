@@ -20,35 +20,30 @@
  * limitations under the License.
  */
 
-var padimpexp = (function()
-{
+var padimpexp = (function() {
 
   ///// import
   var currentImportTimer = null;
 
-  function addImportFrames()
-  {
+  function addImportFrames() {
     $("#import .importframe").remove();
     var iframe = $('<iframe style="display: none;" name="importiframe" class="importframe"></iframe>');
     $('#import').append(iframe);
   }
 
-  function fileInputUpdated()
-  {
+  function fileInputUpdated() {
     $('#importsubmitinput').addClass('throbbold');
     $('#importformfilediv').addClass('importformenabled');
     $('#importsubmitinput').removeAttr('disabled');
     $('#importmessagefail').fadeOut('fast');
   }
 
-  function fileInputSubmit()
-  {
+  function fileInputSubmit() {
     $('#importmessagefail').fadeOut("fast");
     var ret = window.confirm(html10n.get("pad.impexp.confirmimport"));
     if (ret)
     {
-      currentImportTimer = window.setTimeout(function()
-      {
+      currentImportTimer = window.setTimeout(function() {
         if (!currentImportTimer)
         {
           return;
@@ -62,8 +57,7 @@ var padimpexp = (function()
         disabled: true
       }).val(html10n.get("pad.impexp.importing"));
 
-      window.setTimeout(function()
-      {
+      window.setTimeout(function() {
         $('#importfileinput').attr(
         {
           disabled: true
@@ -75,16 +69,13 @@ var padimpexp = (function()
     return ret;
   }
 
-  function importFailed(msg)
-  {
+  function importFailed(msg) {
     importErrorMessage(msg);
   }
 
-  function importDone()
-  {
+  function importDone() {
     $('#importsubmitinput').removeAttr('disabled').val(html10n.get("pad.impexp.importbutton"));
-    window.setTimeout(function()
-    {
+    window.setTimeout(function() {
       $('#importfileinput').removeAttr('disabled');
     }, 0);
     $('#importstatusball').hide();
@@ -92,8 +83,7 @@ var padimpexp = (function()
     addImportFrames();
   }
 
-  function importClearTimeout()
-  {
+  function importClearTimeout() {
     if (currentImportTimer)
     {
       window.clearTimeout(currentImportTimer);
@@ -101,8 +91,7 @@ var padimpexp = (function()
     }
   }
 
-  function importErrorMessage(status)
-  {
+  function importErrorMessage(status) {
     var msg="";
 
     if(status === "convertFailed"){
@@ -117,16 +106,14 @@ var padimpexp = (function()
       msg = html10n.get("pad.impexp.permission");
     }
 
-    function showError(fade)
-    {
+    function showError(fade) {
       $('#importmessagefail').html('<strong style="color: red">'+html10n.get('pad.impexp.importfailed')+':</strong> ' + (msg || html10n.get('pad.impexp.copypaste','')))[(fade ? "fadeIn" : "show")]();
     }
 
     if ($('#importexport .importmessage').is(':visible'))
     {
       $('#importmessagesuccess').fadeOut("fast");
-      $('#importmessagefail').fadeOut("fast", function()
-      {
+      $('#importmessagefail').fadeOut("fast", function() {
         showError(true);
       });
     }
@@ -136,8 +123,7 @@ var padimpexp = (function()
     }
   }
 
-  function importSuccessful(token)
-  {
+  function importSuccessful(token) {
     $.ajax(
     {
       type: 'post',
@@ -153,16 +139,14 @@ var padimpexp = (function()
     addImportFrames();
   }
 
-  function importApplicationFailed(xhr, textStatus, errorThrown)
-  {
+  function importApplicationFailed(xhr, textStatus, errorThrown) {
     importErrorMessage("Error during conversion.");
     importDone();
   }
 
   ///// export
 
-  function cantExport()
-  {
+  function cantExport() {
     var type = $(this);
     if (type.hasClass("exporthrefpdf"))
     {
@@ -187,8 +171,7 @@ var padimpexp = (function()
   /////
   var pad = undefined;
   var self = {
-    init: function(_pad)
-    {
+    init: function(_pad) {
       pad = _pad;
 
       //get /p/padname
@@ -242,8 +225,7 @@ var padimpexp = (function()
       $('#importform').unbind("submit").submit(fileInputSubmit);
       $('.disabledexport').click(cantExport);
     },
-    handleFrameCall: function(directDatabaseAccess, status)
-    {
+    handleFrameCall: function(directDatabaseAccess, status) {
       if(directDatabaseAccess === "undefined") directDatabaseAccess = false;
       if (status !== "ok")
       {
@@ -262,14 +244,12 @@ var padimpexp = (function()
 
       importDone();
     },
-    disable: function()
-    {
+    disable: function() {
       $("#impexp-disabled-clickcatcher").show();
       $("#import").css('opacity', 0.5);
       $("#impexp-export").css('opacity', 0.5);
     },
-    enable: function()
-    {
+    enable: function() {
       $("#impexp-disabled-clickcatcher").hide();
       $("#import").css('opacity', 1);
       $("#impexp-export").css('opacity', 1);

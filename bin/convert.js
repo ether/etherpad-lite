@@ -49,25 +49,20 @@ var padIDs;
 
 async.series([
   //get all padids out of the database...
-  function(callback)
-  {
+  function(callback) {
     log("get all padIds out of the database...");
 
-    etherpadDB.query("SELECT ID FROM PAD_META", [], function(err, _padIDs)
-    {
+    etherpadDB.query("SELECT ID FROM PAD_META", [], function(err, _padIDs) {
       padIDs = _padIDs;
       callback(err);
     });
   },
-  function(callback)
-  {
+  function(callback) {
     log("done");
 
     //create a queue with a concurrency 100
-    var queue = async.queue(function (padId, callback)
-    {
-      convertPad(padId, function(err)
-      {
+    var queue = async.queue(function (padId, callback) {
+      convertPad(padId, function(err) {
         incrementPadStats();
         callback(err);
       });
@@ -82,8 +77,7 @@ async.series([
       queue.push(padIDs[i].ID);
     }
   }
-], function(err)
-{
+], function(err) {
   if(err) throw err;
 
   //write the groups
@@ -108,15 +102,13 @@ async.series([
   process.exit(0);
 });
 
-function log(str)
-{
+function log(str) {
   console.log((Date.now() - startTime)/1000 + "\t" + str);
 }
 
 var padsDone = 0;
 
-function incrementPadStats()
-{
+function incrementPadStats() {
   padsDone++;
 
   if(padsDone%100 == 0)
@@ -130,8 +122,7 @@ var proID2groupID = {};
 var proID2subdomain = {};
 var groups = {};
 
-function convertPad(padId, callback)
-{
+function convertPad(padId, callback) {
   var changesets = [];
   var changesetsMeta = [];
   var chatMessages = [];
@@ -142,16 +133,13 @@ function convertPad(padId, callback)
 
   async.series([
     //get all needed db values
-    function(callback)
-    {
+    function(callback) {
       async.parallel([
         //get the pad revisions
-        function(callback)
-        {
+        function(callback) {
           var sql = "SELECT * FROM `PAD_CHAT_TEXT` WHERE NUMID = (SELECT `NUMID` FROM `PAD_CHAT_META` WHERE ID=?)";
 
-          etherpadDB.query(sql, [padId], function(err, results)
-          {
+          etherpadDB.query(sql, [padId], function(err, results) {
             if(!err)
             {
               try
@@ -168,12 +156,10 @@ function convertPad(padId, callback)
           });
         },
         //get the chat entries
-        function(callback)
-        {
+        function(callback) {
           var sql = "SELECT * FROM `PAD_REVS_TEXT` WHERE NUMID = (SELECT `NUMID` FROM `PAD_REVS_META` WHERE ID=?)";
 
-          etherpadDB.query(sql, [padId], function(err, results)
-          {
+          etherpadDB.query(sql, [padId], function(err, results) {
             if(!err)
             {
               try
@@ -190,12 +176,10 @@ function convertPad(padId, callback)
           });
         },
         //get the pad revisions meta data
-        function(callback)
-        {
+        function(callback) {
           var sql = "SELECT * FROM `PAD_REVMETA_TEXT` WHERE NUMID = (SELECT `NUMID` FROM `PAD_REVMETA_META` WHERE ID=?)";
 
-          etherpadDB.query(sql, [padId], function(err, results)
-          {
+          etherpadDB.query(sql, [padId], function(err, results) {
             if(!err)
             {
               try
@@ -212,12 +196,10 @@ function convertPad(padId, callback)
           });
         },
         //get the attribute pool of this pad
-        function(callback)
-        {
+        function(callback) {
           var sql = "SELECT `JSON` FROM `PAD_APOOL` WHERE `ID` = ?";
 
-          etherpadDB.query(sql, [padId], function(err, results)
-          {
+          etherpadDB.query(sql, [padId], function(err, results) {
             if(!err)
             {
               try
@@ -230,12 +212,10 @@ function convertPad(padId, callback)
           });
         },
         //get the authors informations
-        function(callback)
-        {
+        function(callback) {
           var sql = "SELECT * FROM `PAD_AUTHORS_TEXT` WHERE NUMID = (SELECT `NUMID` FROM `PAD_AUTHORS_META` WHERE ID=?)";
 
-          etherpadDB.query(sql, [padId], function(err, results)
-          {
+          etherpadDB.query(sql, [padId], function(err, results) {
             if(!err)
             {
               try
@@ -252,12 +232,10 @@ function convertPad(padId, callback)
           });
         },
         //get the pad information
-        function(callback)
-        {
+        function(callback) {
           var sql = "SELECT JSON FROM `PAD_META` WHERE ID=?";
 
-          etherpadDB.query(sql, [padId], function(err, results)
-          {
+          etherpadDB.query(sql, [padId], function(err, results) {
             if(!err)
             {
               try
@@ -270,8 +248,7 @@ function convertPad(padId, callback)
           });
         },
         //get the subdomain
-        function(callback)
-        {
+        function(callback) {
           //skip if this is no proPad
           if(padId.indexOf("$") == -1)
           {
@@ -284,8 +261,7 @@ function convertPad(padId, callback)
 
           var sql = "SELECT subDomain FROM pro_domains WHERE ID = ?";
 
-          etherpadDB.query(sql, [proID], function(err, results)
-          {
+          etherpadDB.query(sql, [proID], function(err, results) {
             if(!err)
             {
               subdomain = results[0].subDomain;
@@ -296,8 +272,7 @@ function convertPad(padId, callback)
         }
       ], callback);
     },
-    function(callback)
-    {
+    function(callback) {
       //saves all values that should be written to the database
       var values = {};
 
@@ -425,8 +400,7 @@ function convertPad(padId, callback)
  * The offsets describes the length of a unit in the page, the data are
  * all values behind each other
  */
-function parsePage(array, pageStart, offsets, data, json)
-{
+function parsePage(array, pageStart, offsets, data, json) {
   var start = 0;
   var lengths = offsets.split(",");
 

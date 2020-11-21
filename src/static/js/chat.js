@@ -20,16 +20,14 @@ var Tinycon = require('tinycon/tinycon');
 var hooks = require('./pluginfw/hooks');
 var padeditor = require('./pad_editor').padeditor;
 
-var chat = (function()
-{
+var chat = (function() {
   var isStuck = false;
   var userAndChat = false;
   var gotInitialMessages = false;
   var historyPointer = 0;
   var chatMentions = 0;
   var self = {
-    show: function ()
-    {
+    show: function () {
       $("#chaticon").removeClass('visible');
       $("#chatbox").addClass('visible');
       self.scrollDown(true);
@@ -39,14 +37,12 @@ var chat = (function()
         $.gritter.remove(this.id);
       });
     },
-    focus: function ()
-    {
+    focus: function () {
       setTimeout(function(){
         $("#chatinput").focus();
       },100);
     },
-    stickToScreen: function(fromInitialCall) // Make chat stick to right hand side of screen
-    {
+    stickToScreen: function(fromInitialCall) { // Make chat stick to right hand side of screen
       if(pad.settings.hideChat){
         return;
       }
@@ -62,8 +58,7 @@ var chat = (function()
       padcookie.setPref("chatAlwaysVisible", isStuck);
       $('#options-stickychat').prop('checked', isStuck);
     },
-    chatAndUsers: function(fromInitialCall)
-    {
+    chatAndUsers: function(fromInitialCall) {
       var toEnable = $('#options-chatandusers').is(":checked");
       if(toEnable || !userAndChat || fromInitialCall){
         chat.stickToScreen(true);
@@ -79,8 +74,7 @@ var chat = (function()
       $('#users, .sticky-container').toggleClass("chatAndUsers popup-show stickyUsers", userAndChat);
       $("#chatbox").toggleClass("chatAndUsersChat", userAndChat);
     },
-    hide: function ()
-    {
+    hide: function () {
       // decide on hide logic based on chat window being maximized or not
       if ($('#options-stickychat').prop('checked')) {
         chat.stickToScreen();
@@ -92,8 +86,7 @@ var chat = (function()
         $("#chatbox").removeClass('visible');
       }
     },
-    scrollDown: function(force)
-    {
+    scrollDown: function(force) {
       if ($('#chatbox').hasClass('visible')) {
         if (force || !self.lastMessage || !self.lastMessage.position() || self.lastMessage.position().top < ($('#chattext').outerHeight() + 20)) {
           // if we use a slow animate here we can have a race condition when a users focus can not be moved away
@@ -103,16 +96,14 @@ var chat = (function()
         }
       }
     },
-    send: function()
-    {
+    send: function() {
       var text = $("#chatinput").val();
       if(text.replace(/\s+/,'').length == 0)
         return;
       this._pad.collabClient.sendMessage({"type": "CHAT_MESSAGE", "text": text});
       $("#chatinput").val("");
     },
-    addMessage: function(msg, increment, isHistoryAdd)
-    {
+    addMessage: function(msg, increment, isHistoryAdd) {
       //correct the time
       msg.time += this._pad.clientTimeOffset;
 
@@ -136,8 +127,7 @@ var chat = (function()
         console.warn('The "userId" field of a chat message coming from the server was not present. Replacing with "unknown". This may be a bug or a database corruption.');
       }
 
-      var authorClass = "author-" + msg.userId.replace(/[^a-y0-9]/g, function(c)
-      {
+      var authorClass = "author-" + msg.userId.replace(/[^a-y0-9]/g, function(c) {
         if (c == ".") return "-";
         return 'z' + c.charCodeAt(0) + 'z';
       });
@@ -214,8 +204,7 @@ var chat = (function()
       if(!isHistoryAdd)
         self.scrollDown();
     },
-    init: function(pad)
-    {
+    init: function(pad) {
       this._pad = pad;
       $("#chatinput").on("keydown", function(evt){
         // If the event is Alt C or Escape & we're already in the chat menu
@@ -251,8 +240,7 @@ var chat = (function()
       // initial messages are loaded in pad.js' _afterHandshake
 
       $("#chatcounter").text(0);
-      $("#chatloadmessagesbutton").click(function()
-      {
+      $("#chatloadmessagesbutton").click(function() {
         var start = Math.max(self.historyPointer - 20, 0);
         var end = self.historyPointer;
 

@@ -23,10 +23,8 @@
 var Changeset = require('./Changeset');
 var _ = require('./underscore');
 
-var undoModule = (function()
-{
-  var stack = (function()
-  {
+var undoModule = (function() {
+  var stack = (function() {
     var stackElements = [];
     // two types of stackElements:
     // 1) { elementType: UNDOABLE_EVENT, eventType: "anything", [backset: <changeset>,]
@@ -38,8 +36,7 @@ var undoModule = (function()
     var UNDOABLE_EVENT = "undoableEvent";
     var EXTERNAL_CHANGE = "externalChange";
 
-    function clearStack()
-    {
+    function clearStack() {
       stackElements.length = 0;
       stackElements.push(
       {
@@ -50,8 +47,7 @@ var undoModule = (function()
     }
     clearStack();
 
-    function pushEvent(event)
-    {
+    function pushEvent(event) {
       var e = _.extend(
       {}, event);
       e.elementType = UNDOABLE_EVENT;
@@ -60,8 +56,7 @@ var undoModule = (function()
       //dmesg("pushEvent backset: "+event.backset);
     }
 
-    function pushExternalChange(cs)
-    {
+    function pushExternalChange(cs) {
       var idx = stackElements.length - 1;
       if (stackElements[idx].elementType == EXTERNAL_CHANGE)
       {
@@ -77,8 +72,7 @@ var undoModule = (function()
       }
     }
 
-    function _exposeEvent(nthFromTop)
-    {
+    function _exposeEvent(nthFromTop) {
       // precond: 0 <= nthFromTop < numUndoableEvents
       var targetIndex = stackElements.length - 1 - nthFromTop;
       var idx = stackElements.length - 1;
@@ -121,20 +115,17 @@ var undoModule = (function()
       }
     }
 
-    function getNthFromTop(n)
-    {
+    function getNthFromTop(n) {
       // precond: 0 <= n < numEvents()
       _exposeEvent(n);
       return stackElements[stackElements.length - 1 - n];
     }
 
-    function numEvents()
-    {
+    function numEvents() {
       return numUndoableEvents;
     }
 
-    function popEvent()
-    {
+    function popEvent() {
       // precond: numEvents() > 0
       _exposeEvent(0);
       numUndoableEvents--;
@@ -154,14 +145,12 @@ var undoModule = (function()
   // invariant: stack always has at least one undoable event
   var undoPtr = 0; // zero-index from top of stack, 0 == top
 
-  function clearHistory()
-  {
+  function clearHistory() {
     stack.clearStack();
     undoPtr = 0;
   }
 
-  function _charOccurrences(str, c)
-  {
+  function _charOccurrences(str, c) {
     var i = 0;
     var count = 0;
     while (i >= 0 && i < str.length)
@@ -176,13 +165,11 @@ var undoModule = (function()
     return count;
   }
 
-  function _opcodeOccurrences(cs, opcode)
-  {
+  function _opcodeOccurrences(cs, opcode) {
     return _charOccurrences(Changeset.unpack(cs).ops, opcode);
   }
 
-  function _mergeChangesets(cs1, cs2)
-  {
+  function _mergeChangesets(cs1, cs2) {
     if (!cs1) return cs2;
     if (!cs2) return cs1;
 
@@ -219,12 +206,10 @@ var undoModule = (function()
     return null;
   }
 
-  function reportEvent(event)
-  {
+  function reportEvent(event) {
     var topEvent = stack.getNthFromTop(0);
 
-    function applySelectionToTop()
-    {
+    function applySelectionToTop() {
       if ((typeof event.selStart) == "number")
       {
         topEvent.selStart = event.selStart;
@@ -268,16 +253,14 @@ var undoModule = (function()
 
   }
 
-  function reportExternalChange(changeset)
-  {
+  function reportExternalChange(changeset) {
     if (changeset && !Changeset.isIdentity(changeset))
     {
       stack.pushExternalChange(changeset);
     }
   }
 
-  function _getSelectionInfo(event)
-  {
+  function _getSelectionInfo(event) {
     if ((typeof event.selStart) != "number")
     {
       return null;
@@ -298,8 +281,7 @@ var undoModule = (function()
   // or can be called with no arguments to mean that no undo is possible.
   // "eventFunc" will be called exactly once.
 
-  function performUndo(eventFunc)
-  {
+  function performUndo(eventFunc) {
     if (undoPtr < stack.numEvents() - 1)
     {
       var backsetEvent = stack.getNthFromTop(undoPtr);
@@ -311,8 +293,7 @@ var undoModule = (function()
     else eventFunc();
   }
 
-  function performRedo(eventFunc)
-  {
+  function performRedo(eventFunc) {
     if (undoPtr >= 2)
     {
       var backsetEvent = stack.getNthFromTop(0);
@@ -324,8 +305,7 @@ var undoModule = (function()
     else eventFunc();
   }
 
-  function getAPool()
-  {
+  function getAPool() {
     return undoModule.apool;
   }
 

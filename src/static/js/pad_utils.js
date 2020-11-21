@@ -26,8 +26,7 @@ var Security = require('./security');
  * Generates a random String with the given length. Is needed to generate the Author, Group, readonly, session Ids
  */
 
-function randomString(len)
-{
+function randomString(len) {
   var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
   var randomstring = '';
   len = len || 20
@@ -40,27 +39,22 @@ function randomString(len)
 }
 
 var padutils = {
-  escapeHtml: function(x)
-  {
+  escapeHtml: function(x) {
     return Security.escapeHTML(String(x));
   },
-  uniqueId: function()
-  {
+  uniqueId: function() {
     var pad = require('./pad').pad; // Sidestep circular dependency
-    function encodeNum(n, width)
-    {
+    function encodeNum(n, width) {
       // returns string that is exactly 'width' chars, padding with zeros
       // and taking rightmost digits
       return (Array(width + 1).join('0') + Number(n).toString(35)).slice(-width);
     }
     return [pad.getClientIp(), encodeNum(+new Date, 7), encodeNum(Math.floor(Math.random() * 1e9), 4)].join('.');
   },
-  uaDisplay: function(ua)
-  {
+  uaDisplay: function(ua) {
     var m;
 
-    function clean(a)
-    {
+    function clean(a) {
       var maxlen = 16;
       a = a.replace(/[^a-zA-Z0-9\.]/g, '');
       if (a.length > maxlen)
@@ -70,8 +64,7 @@ var padutils = {
       return a;
     }
 
-    function checkver(name)
-    {
+    function checkver(name) {
       var m = ua.match(RegExp(name + '\\/([\\d\\.]+)'));
       if (m && m.length > 1)
       {
@@ -123,8 +116,7 @@ var padutils = {
     return clean(x);
   },
   // e.g. "Thu Jun 18 2009 13:09"
-  simpleDateTime: function(date)
-  {
+  simpleDateTime: function(date) {
     var d = new Date(+date); // accept either number or date
     var dayOfWeek = (['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])[d.getDay()];
     var month = (['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])[d.getMonth()];
@@ -133,8 +125,7 @@ var padutils = {
     var hourmin = d.getHours() + ":" + ("0" + d.getMinutes()).slice(-2);
     return dayOfWeek + ' ' + month + ' ' + dayOfMonth + ' ' + year + ' ' + hourmin;
   },
-  findURLs: function(text)
-  {
+  findURLs: function(text) {
     // copied from ACE
     var _REGEX_WORDCHAR = /[\u0030-\u0039\u0041-\u005A\u0061-\u007A\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\u0100-\u1FFF\u3040-\u9FFF\uF900-\uFDFF\uFE70-\uFEFE\uFF10-\uFF19\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFDC]/;
     var _REGEX_URLCHAR = new RegExp('(' + /[-:@a-zA-Z0-9_.,~%+\/?=&#;()$]/.source + '|' + _REGEX_WORDCHAR.source + ')');
@@ -143,8 +134,7 @@ var padutils = {
     // returns null if no URLs, or [[startIndex1, url1], [startIndex2, url2], ...]
 
 
-    function _findURLs(text)
-    {
+    function _findURLs(text) {
       _REGEX_URL.lastIndex = 0;
       var urls = null;
       var execResult;
@@ -161,14 +151,12 @@ var padutils = {
 
     return _findURLs(text);
   },
-  escapeHtmlWithClickableLinks: function(text, target)
-  {
+  escapeHtmlWithClickableLinks: function(text, target) {
     var idx = 0;
     var pieces = [];
     var urls = padutils.findURLs(text);
 
-    function advanceTo(i)
-    {
+    function advanceTo(i) {
       if (i > idx)
       {
         pieces.push(Security.escapeHTML(text.substring(idx, i)));
@@ -197,8 +185,7 @@ var padutils = {
     advanceTo(text.length);
     return pieces.join('');
   },
-  bindEnterAndEscape: function(node, onEnter, onEscape)
-  {
+  bindEnterAndEscape: function(node, onEnter, onEscape) {
 
     // Use keypress instead of keyup in bindEnterAndEscape
     // Keyup event is fired on enter in IME (Input Method Editor), But
@@ -206,8 +193,7 @@ var padutils = {
     // It is work on Windows (IE8, Chrome 6.0.472), CentOs (Firefox 3.0) and Mac OSX (Firefox 3.6.10, Chrome 6.0.472, Safari 5.0).
     if (onEnter)
     {
-      node.keypress(function(evt)
-      {
+      node.keypress(function(evt) {
         if (evt.which == 13)
         {
           onEnter(evt);
@@ -217,8 +203,7 @@ var padutils = {
 
     if (onEscape)
     {
-      node.keydown(function(evt)
-      {
+      node.keydown(function(evt) {
         if (evt.which == 27)
         {
           onEscape(evt);
@@ -226,11 +211,9 @@ var padutils = {
       });
     }
   },
-  timediff: function(d)
-  {
+  timediff: function(d) {
     var pad = require('./pad').pad; // Sidestep circular dependency
-    function format(n, word)
-    {
+    function format(n, word) {
       n = Math.round(n);
       return ('' + n + ' ' + word + (n != 1 ? 's' : '') + ' ago');
     }
@@ -252,8 +235,7 @@ var padutils = {
     d /= 24;
     return format(d, 'day');
   },
-  makeAnimationScheduler: function(funcToAnimateOneStep, stepTime, stepsAtOnce)
-  {
+  makeAnimationScheduler: function(funcToAnimateOneStep, stepTime, stepsAtOnce) {
     if (stepsAtOnce === undefined)
     {
       stepsAtOnce = 1;
@@ -261,12 +243,10 @@ var padutils = {
 
     var animationTimer = null;
 
-    function scheduleAnimation()
-    {
+    function scheduleAnimation() {
       if (!animationTimer)
       {
-        animationTimer = window.setTimeout(function()
-        {
+        animationTimer = window.setTimeout(function() {
           animationTimer = null;
           var n = stepsAtOnce;
           var moreToDo = true;
@@ -287,23 +267,20 @@ var padutils = {
       scheduleAnimation: scheduleAnimation
     };
   },
-  makeShowHideAnimator: function(funcToArriveAtState, initiallyShown, fps, totalMs)
-  {
+  makeShowHideAnimator: function(funcToArriveAtState, initiallyShown, fps, totalMs) {
     var animationState = (initiallyShown ? 0 : -2); // -2 hidden, -1 to 0 fade in, 0 to 1 fade out
     var animationFrameDelay = 1000 / fps;
     var animationStep = animationFrameDelay / totalMs;
 
     var scheduleAnimation = padutils.makeAnimationScheduler(animateOneStep, animationFrameDelay).scheduleAnimation;
 
-    function doShow()
-    {
+    function doShow() {
       animationState = -1;
       funcToArriveAtState(animationState);
       scheduleAnimation();
     }
 
-    function doQuickShow()
-    { // start showing without losing any fade-in progress
+    function doQuickShow() { // start showing without losing any fade-in progress
       if (animationState < -1)
       {
         animationState = -1;
@@ -316,8 +293,7 @@ var padutils = {
       scheduleAnimation();
     }
 
-    function doHide()
-    {
+    function doHide() {
       if (animationState >= -1 && animationState <= 0)
       {
         animationState = 1e-6;
@@ -325,8 +301,7 @@ var padutils = {
       }
     }
 
-    function animateOneStep()
-    {
+    function animateOneStep() {
       if (animationState < -1 || animationState == 0)
       {
         return false;
@@ -374,8 +349,7 @@ var padutils = {
   },
   _nextActionId: 1,
   uncanceledActions: {},
-  getCancellableAction: function(actionType, actionFunc)
-  {
+  getCancellableAction: function(actionType, actionFunc) {
     var o = padutils.uncanceledActions[actionType];
     if (!o)
     {
@@ -384,8 +358,7 @@ var padutils = {
     }
     var actionId = (padutils._nextActionId++);
     o[actionId] = true;
-    return function()
-    {
+    return function() {
       var p = padutils.uncanceledActions[actionType];
       if (p && p[actionId])
       {
@@ -393,8 +366,7 @@ var padutils = {
       }
     };
   },
-  cancelActions: function(actionType)
-  {
+  cancelActions: function(actionType) {
     var o = padutils.uncanceledActions[actionType];
     if (o)
     {
@@ -402,25 +374,21 @@ var padutils = {
       delete padutils.uncanceledActions[actionType];
     }
   },
-  makeFieldLabeledWhenEmpty: function(field, labelText)
-  {
+  makeFieldLabeledWhenEmpty: function(field, labelText) {
     field = $(field);
 
-    function clear()
-    {
+    function clear() {
       field.addClass('editempty');
       field.val(labelText);
     }
-    field.focus(function()
-    {
+    field.focus(function() {
       if (field.hasClass('editempty'))
       {
         field.val('');
       }
       field.removeClass('editempty');
     });
-    field.blur(function()
-    {
+    field.blur(function() {
       if (!field.val())
       {
         clear();
@@ -430,12 +398,10 @@ var padutils = {
       clear: clear
     };
   },
-  getCheckbox: function(node)
-  {
+  getCheckbox: function(node) {
     return $(node).is(':checked');
   },
-  setCheckbox: function(node, value)
-  {
+  setCheckbox: function(node, value) {
     if (value)
     {
       $(node).attr('checked', 'checked');
@@ -445,22 +411,17 @@ var padutils = {
       $(node).removeAttr('checked');
     }
   },
-  bindCheckboxChange: function(node, func)
-  {
+  bindCheckboxChange: function(node, func) {
     $(node).change(func);
   },
-  encodeUserId: function(userId)
-  {
-    return userId.replace(/[^a-y0-9]/g, function(c)
-    {
+  encodeUserId: function(userId) {
+    return userId.replace(/[^a-y0-9]/g, function(c) {
       if (c == ".") return "-";
       return 'z' + c.charCodeAt(0) + 'z';
     });
   },
-  decodeUserId: function(encodedUserId)
-  {
-    return encodedUserId.replace(/[a-y0-9]+|-|z.+?z/g, function(cc)
-    {
+  decodeUserId: function(encodedUserId) {
+    return encodedUserId.replace(/[a-y0-9]+|-|z.+?z/g, function(cc) {
       if (cc == '-') return '.';
       else if (cc.charAt(0) == 'z')
       {

@@ -50,8 +50,7 @@ var hooks = require('./pluginfw/hooks');
 
 var receivedClientVars = false;
 
-function randomString()
-{
+function randomString() {
   var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
   var string_length = 20;
   var randomstring = '';
@@ -85,8 +84,7 @@ var getParameters = [
   { name: "lang",             checkVal: null,    callback: function(val) { window.html10n.localize([val, 'en']); Cookies.set('language', val); } },
 ];
 
-function getParams()
-{
+function getParams() {
   // Tries server enforced options first..
   for(var i = 0; i < getParameters.length; i++)
   {
@@ -113,8 +111,7 @@ function getParams()
   }
 }
 
-function getUrlVars()
-{
+function getUrlVars() {
   var vars = [], hash;
   var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
   for(var i = 0; i < hashes.length; i++)
@@ -126,8 +123,7 @@ function getUrlVars()
   return vars;
 }
 
-function sendClientReady(isReconnect, messageType)
-{
+function sendClientReady(isReconnect, messageType) {
   messageType = typeof messageType !== 'undefined' ? messageType : 'CLIENT_READY';
   var padId = document.location.pathname.substring(document.location.pathname.lastIndexOf("/") + 1);
   padId = decodeURIComponent(padId); // unescape neccesary due to Safari and Opera interpretation of spaces
@@ -164,8 +160,7 @@ function sendClientReady(isReconnect, messageType)
   socket.json.send(msg);
 }
 
-function handshake()
-{
+function handshake() {
   var loc = document.location;
   //get the correct port
   var port = loc.port == "" ? (loc.protocol == "https:" ? 443 : 80) : loc.port;
@@ -225,8 +220,7 @@ function handshake()
 
   var initalized = false;
 
-  socket.on('message', function(obj)
-  {
+  socket.on('message', function(obj) {
     //the access was not granted, give the user a message
     if(obj.accessStatus)
     {
@@ -354,48 +348,37 @@ var pad = {
   padOptions: {},
 
   // these don't require init; clientVars should all go through here
-  getPadId: function()
-  {
+  getPadId: function() {
     return clientVars.padId;
   },
-  getClientIp: function()
-  {
+  getClientIp: function() {
     return clientVars.clientIp;
   },
-  getColorPalette: function()
-  {
+  getColorPalette: function() {
     return clientVars.colorPalette;
   },
-  getDisplayUserAgent: function()
-  {
+  getDisplayUserAgent: function() {
     return padutils.uaDisplay(clientVars.userAgent);
   },
-  getIsDebugEnabled: function()
-  {
+  getIsDebugEnabled: function() {
     return clientVars.debugEnabled;
   },
-  getPrivilege: function(name)
-  {
+  getPrivilege: function(name) {
     return clientVars.accountPrivs[name];
   },
-  getUserIsGuest: function()
-  {
+  getUserIsGuest: function() {
     return clientVars.userIsGuest;
   },
-  getUserId: function()
-  {
+  getUserId: function() {
     return pad.myUserInfo.userId;
   },
-  getUserName: function()
-  {
+  getUserName: function() {
     return pad.myUserInfo.name;
   },
-  userList: function()
-  {
+  userList: function() {
     return paduserlist.users();
   },
-  switchToPad: function(padId)
-  {
+  switchToPad: function(padId) {
     var newHref = new RegExp(/.*\/p\/[^\/]+/).exec(document.location.pathname) || clientVars.padId;
     newHref = newHref[0];
 
@@ -430,17 +413,14 @@ var pad = {
       window.location.href = newHref;
     }
   },
-  sendClientMessage: function(msg)
-  {
+  sendClientMessage: function(msg) {
     pad.collabClient.sendClientMessage(msg);
   },
 
-  init: function()
-  {
+  init: function() {
     padutils.setupGlobalExceptionHandler();
 
-    $(document).ready(function()
-    {
+    $(document).ready(function() {
       // start the custom js
       if (typeof customStart == "function") customStart();
       handshake();
@@ -451,8 +431,7 @@ var pad = {
       padcookie.init();
     });
   },
-  _afterHandshake: function()
-  {
+  _afterHandshake: function() {
     pad.clientTimeOffset = Date.now() - clientVars.serverTimestamp;
     //initialize the chat
     chat.init(this);
@@ -514,11 +493,9 @@ var pad = {
       $("#chatloadmessagesbutton").css("display", "none");
     }
 
-    function postAceInit()
-    {
+    function postAceInit() {
       padeditbar.init();
-      setTimeout(function()
-      {
+      setTimeout(function() {
         padeditor.ace.focus();
       }, 0);
       if(padcookie.getPref("chatAlwaysVisible")){ // if we have a cookie for always showing chat then show it
@@ -557,22 +534,18 @@ var pad = {
       hooks.aCallAll("postAceInit", {ace: padeditor.ace, pad: pad});
     }
   },
-  dispose: function()
-  {
+  dispose: function() {
     padeditor.dispose();
   },
-  notifyChangeName: function(newName)
-  {
+  notifyChangeName: function(newName) {
     pad.myUserInfo.name = newName;
     pad.collabClient.updateUserInfo(pad.myUserInfo);
   },
-  notifyChangeColor: function(newColorId)
-  {
+  notifyChangeColor: function(newColorId) {
     pad.myUserInfo.colorId = newColorId;
     pad.collabClient.updateUserInfo(pad.myUserInfo);
   },
-  changePadOption: function(key, value)
-  {
+  changePadOption: function(key, value) {
     var options = {};
     options[key] = value;
     pad.handleOptionsChange(options);
@@ -583,16 +556,14 @@ var pad = {
       changedBy: pad.myUserInfo.name || "unnamed"
     });
   },
-  changeViewOption: function(key, value)
-  {
+  changeViewOption: function(key, value) {
     var options = {
       view: {}
     };
     options.view[key] = value;
     pad.handleOptionsChange(options);
   },
-  handleOptionsChange: function(opts)
-  {
+  handleOptionsChange: function(opts) {
     // opts object is a full set of options or just
     // some options to change
     if (opts.view)
@@ -614,17 +585,14 @@ var pad = {
       pad.padOptions.guestPolicy = opts.guestPolicy;
     }
   },
-  getPadOptions: function()
-  {
+  getPadOptions: function() {
     // caller shouldn't mutate the object
     return pad.padOptions;
   },
-  isPadPublic: function()
-  {
+  isPadPublic: function() {
     return pad.getPadOptions().guestPolicy == 'allow';
   },
-  suggestUserName: function(userId, name)
-  {
+  suggestUserName: function(userId, name) {
     pad.collabClient.sendClientMessage(
     {
       type: 'suggestUserName',
@@ -632,20 +600,16 @@ var pad = {
       newName: name
     });
   },
-  handleUserJoin: function(userInfo)
-  {
+  handleUserJoin: function(userInfo) {
     paduserlist.userJoinOrUpdate(userInfo);
   },
-  handleUserUpdate: function(userInfo)
-  {
+  handleUserUpdate: function(userInfo) {
     paduserlist.userJoinOrUpdate(userInfo);
   },
-  handleUserLeave: function(userInfo)
-  {
+  handleUserLeave: function(userInfo) {
     paduserlist.userLeave(userInfo);
   },
-  handleClientMessage: function(msg)
-  {
+  handleClientMessage: function(msg) {
     if (msg.type == 'suggestUserName')
     {
       if (msg.unnamedId == pad.myUserInfo.userId && msg.newName && !pad.myUserInfo.name)
@@ -673,8 +637,7 @@ var pad = {
       paduserlist.removeGuestPrompt(msg.guestId);
     }
   },
-  dmesg: function(m)
-  {
+  dmesg: function(m) {
     if (pad.getIsDebugEnabled())
     {
       var djs = $('#djs').get(0);
@@ -686,14 +649,12 @@ var pad = {
       }
     }
   },
-  handleServerMessage: function(m)
-  {
+  handleServerMessage: function(m) {
     if (m.type == 'NOTICE')
     {
       if (m.text)
       {
-        alertBar.displayMessage(function(abar)
-        {
+        alertBar.displayMessage(function(abar) {
           abar.find("#servermsgdate").text(" (" + padutils.simpleDateTime(new Date) + ")");
           abar.find("#servermsgtext").text(m.text);
         });
@@ -708,8 +669,7 @@ var pad = {
       paduserlist.showGuestPrompt(m.userId, m.displayName);
     }
   },
-  handleChannelStateChange: function(newState, message)
-  {
+  handleChannelStateChange: function(newState, message) {
     var oldFullyConnected = !! padconnectionstatus.isFullyConnected();
     var wasConnecting = (padconnectionstatus.getStatus().what == 'connecting');
     if (newState == "CONNECTED")
@@ -762,8 +722,7 @@ var pad = {
       pad.handleIsFullyConnected(newFullyConnected, wasConnecting);
     }
   },
-  handleIsFullyConnected: function(isConnected, isInitialConnect)
-  {
+  handleIsFullyConnected: function(isConnected, isInitialConnect) {
     pad.determineChatVisibility(isConnected && !isInitialConnect);
     pad.determineChatAndUsersVisibility(isConnected && !isInitialConnect);
     pad.determineAuthorshipColorsVisibility();
@@ -801,8 +760,7 @@ var pad = {
       $('#options-colorscheck').prop("checked", false);
     }
   },
-  handleCollabAction: function(action)
-  {
+  handleCollabAction: function(action) {
     if (action == "commitPerformed")
     {
       padeditbar.setSyncStatus("syncing");
@@ -812,14 +770,11 @@ var pad = {
       padeditbar.setSyncStatus("done");
     }
   },
-  hideServerMessage: function()
-  {
+  hideServerMessage: function() {
     alertBar.hideMessage();
   },
-  asyncSendDiagnosticInfo: function()
-  {
-    window.setTimeout(function()
-    {
+  asyncSendDiagnosticInfo: function() {
+    window.setTimeout(function() {
       $.ajax(
       {
         type: 'post',
@@ -827,15 +782,12 @@ var pad = {
         data: {
           diagnosticInfo: JSON.stringify(pad.diagnosticInfo)
         },
-        success: function()
-        {},
-        error: function()
-        {}
+        success: function() {},
+        error: function() {}
       });
     }, 0);
   },
-  forceReconnect: function()
-  {
+  forceReconnect: function() {
     $('form#reconnectform input.padId').val(pad.getPadId());
     pad.diagnosticInfo.collabDiagnosticInfo = pad.collabClient.getDiagnosticInfo();
     $('form#reconnectform input.diagnosticInfo').val(JSON.stringify(pad.diagnosticInfo));
@@ -843,28 +795,22 @@ var pad = {
     $('form#reconnectform').submit();
   },
   // this is called from code put into a frame from the server:
-  handleImportExportFrameCall: function(callName, varargs)
-  {
+  handleImportExportFrameCall: function(callName, varargs) {
     padimpexp.handleFrameCall.call(padimpexp, callName, Array.prototype.slice.call(arguments, 1));
   },
-  callWhenNotCommitting: function(f)
-  {
+  callWhenNotCommitting: function(f) {
     pad.collabClient.callWhenNotCommitting(f);
   },
-  getCollabRevisionNumber: function()
-  {
+  getCollabRevisionNumber: function() {
     return pad.collabClient.getCurrentRevisionNumber();
   },
-  isFullyConnected: function()
-  {
+  isFullyConnected: function() {
     return padconnectionstatus.isFullyConnected();
   },
-  addHistoricalAuthors: function(data)
-  {
+  addHistoricalAuthors: function(data) {
     if (!pad.collabClient)
     {
-      window.setTimeout(function()
-      {
+      window.setTimeout(function() {
         pad.addHistoricalAuthors(data);
       }, 1000);
     }
@@ -875,13 +821,11 @@ var pad = {
   }
 };
 
-var alertBar = (function()
-{
+var alertBar = (function() {
 
   var animator = padutils.makeShowHideAnimator(arriveAtAnimationState, false, 25, 400);
 
-  function arriveAtAnimationState(state)
-  {
+  function arriveAtAnimationState(state) {
     if (state == -1)
     {
       $("#alertbar").css('opacity', 0).css('display', 'block');
@@ -905,13 +849,11 @@ var alertBar = (function()
   }
 
   var self = {
-    displayMessage: function(setupFunc)
-    {
+    displayMessage: function(setupFunc) {
       animator.show();
       setupFunc($("#alertbar"));
     },
-    hideMessage: function()
-    {
+    hideMessage: function() {
       animator.hide();
     }
   };

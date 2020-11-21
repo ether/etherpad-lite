@@ -24,8 +24,7 @@ var db = require("./DB");
 var padManager = require("./PadManager");
 var sessionManager = require("./SessionManager");
 
-exports.listAllGroups = async function()
-{
+exports.listAllGroups = async function() {
   let groups = await db.get("groups");
   groups = groups || {};
 
@@ -33,8 +32,7 @@ exports.listAllGroups = async function()
   return { groupIDs };
 }
 
-exports.deleteGroup = async function(groupID)
-{
+exports.deleteGroup = async function(groupID) {
   let group = await db.get("group:" + groupID);
 
   // ensure group exists
@@ -82,16 +80,14 @@ exports.deleteGroup = async function(groupID)
   await db.set("groups", newGroups);
 }
 
-exports.doesGroupExist = async function(groupID)
-{
+exports.doesGroupExist = async function(groupID) {
   // try to get the group entry
   let group = await db.get("group:" + groupID);
 
   return (group != null);
 }
 
-exports.createGroup = async function()
-{
+exports.createGroup = async function() {
   // search for non existing groupID
   var groupID = "g." + randomString(16);
 
@@ -111,8 +107,7 @@ exports.createGroup = async function()
   return { groupID };
 }
 
-exports.createGroupIfNotExistsFor = async function(groupMapper)
-{
+exports.createGroupIfNotExistsFor = async function(groupMapper) {
   // ensure mapper is optional
   if (typeof groupMapper !== "string") {
     throw new customError("groupMapper is not a string", "apierror");
@@ -137,8 +132,7 @@ exports.createGroupIfNotExistsFor = async function(groupMapper)
   return result;
 }
 
-exports.createGroupPad = async function(groupID, padName, text)
-{
+exports.createGroupPad = async function(groupID, padName, text) {
   // create the padID
   let padID = groupID + "$" + padName;
 
@@ -166,8 +160,7 @@ exports.createGroupPad = async function(groupID, padName, text)
   return { padID };
 }
 
-exports.listPads = async function(groupID)
-{
+exports.listPads = async function(groupID) {
   let exists = await exports.doesGroupExist(groupID);
 
   // ensure the group exists

@@ -37,8 +37,7 @@ var socket;
 /**
  * adds a component
  */
-exports.addComponent = function(moduleName, module)
-{
+exports.addComponent = function(moduleName, module) {
   // save the component
   components[moduleName] = module;
 
@@ -53,8 +52,7 @@ exports.setSocketIO = function(_socket) {
   // save this socket internaly
   socket = _socket;
 
-  socket.sockets.on('connection', function(client)
-  {
+  socket.sockets.on('connection', function(client) {
     // wrap the original send function to log the messages
     client._send = client.send;
     client.send = function(message) {

@@ -7,13 +7,11 @@ var Terser = require("terser");
 var path = require('path');
 var Threads = require('threads')
 
-function compressJS(content)
-{
+function compressJS(content) {
   return Terser.minify(content);
 }
 
-function compressCSS(filename, ROOT_DIR)
-{
+function compressCSS(filename, ROOT_DIR) {
   return new Promise((res, rej) => {
     try {
       const absPath = path.join(ROOT_DIR, filename);

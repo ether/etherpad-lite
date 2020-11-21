@@ -33,8 +33,7 @@ function getSocket() {
 /** Call this when the document is ready, and a new Ace2Editor() has been created and inited.
     ACE's ready callback does not need to have fired yet.
     "serverVars" are from calling doc.getCollabClientVars() on the server. */
-function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
-{
+function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad) {
   var editor = ace2editor;
   pad = _pad; // Inject pad to avoid a circular dependency.
 
@@ -66,29 +65,20 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
   tellAceActiveAuthorInfo(initialUserInfo);
 
   var callbacks = {
-    onUserJoin: function()
-    {},
-    onUserLeave: function()
-    {},
-    onUpdateUserInfo: function()
-    {},
-    onChannelStateChange: function()
-    {},
-    onClientMessage: function()
-    {},
-    onInternalAction: function()
-    {},
-    onConnectionTrouble: function()
-    {},
-    onServerMessage: function()
-    {}
+    onUserJoin: function() {},
+    onUserLeave: function() {},
+    onUpdateUserInfo: function() {},
+    onChannelStateChange: function() {},
+    onClientMessage: function() {},
+    onInternalAction: function() {},
+    onConnectionTrouble: function() {},
+    onServerMessage: function() {}
   };
   if (browser.firefox)
   {
     // Prevent "escape" from taking effect and canceling a comet connection;
     // doesn't work if focus is on an iframe.
-    $(window).bind("keydown", function(evt)
-    {
+    $(window).bind("keydown", function(evt) {
       if (evt.which == 27)
       {
         evt.preventDefault()
@@ -100,14 +90,12 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
   editor.setBaseAttributedText(serverVars.initialAttributedText, serverVars.apool);
   editor.setUserChangeNotificationCallback(wrapRecordingErrors("handleUserChanges", handleUserChanges));
 
-  function dmesg(str)
-  {
+  function dmesg(str) {
     if (typeof window.ajlog == "string") window.ajlog += str + '\n';
     debugMessages.push(str);
   }
 
-  function handleUserChanges()
-  {
+  function handleUserChanges() {
     if (editor.getInInternationalComposition()) return;
     if ((!getSocket()) || channelState == "CONNECTING")
     {
@@ -161,12 +149,10 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
         {
           editor.applyPreparedChangesetToBase();
           setStateIdle();
-          callCatchingErrors("onInternalAction", function()
-          {
+          callCatchingErrors("onInternalAction", function() {
             callbacks.onInternalAction("commitAcceptedByServer");
           });
-          callCatchingErrors("onConnectionTrouble", function()
-          {
+          callCatchingErrors("onConnectionTrouble", function() {
             callbacks.onConnectionTrouble("OK");
           });
           handleUserChanges();
@@ -219,8 +205,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     }
   }
 
-  function setUpSocket()
-  {
+  function setUpSocket() {
     hiccupCount = 0;
     setChannelState("CONNECTED");
     doDeferredActions();
@@ -230,8 +215,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
   var hiccupCount = 0;
 
-  function sendMessage(msg)
-  {
+  function sendMessage(msg) {
     getSocket().json.send(
     {
       type: "COLLABROOM",
@@ -240,10 +224,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     });
   }
 
-  function wrapRecordingErrors(catcher, func)
-  {
-    return function()
-    {
+  function wrapRecordingErrors(catcher, func) {
+    return function() {
       try
       {
         return func.apply(this, Array.prototype.slice.call(arguments));
@@ -259,8 +241,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     };
   }
 
-  function callCatchingErrors(catcher, func)
-  {
+  function callCatchingErrors(catcher, func) {
     try
     {
       wrapRecordingErrors(catcher, func)();
@@ -270,8 +251,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     }
   }
 
-  function handleMessageFromServer(evt)
-  {
+  function handleMessageFromServer(evt) {
     if (!getSocket()) return;
     if (!evt.data) return;
     var wrapper = evt;
@@ -334,12 +314,10 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       rev = newRev;
       editor.applyPreparedChangesetToBase();
       setStateIdle();
-      callCatchingErrors("onInternalAction", function()
-      {
+      callCatchingErrors("onInternalAction", function() {
         callbacks.onInternalAction("commitAcceptedByServer");
       });
-      callCatchingErrors("onConnectionTrouble", function()
-      {
+      callCatchingErrors("onConnectionTrouble", function() {
         callbacks.onConnectionTrouble("OK");
       });
       handleUserChanges();
@@ -386,12 +364,10 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       {
         editor.applyPreparedChangesetToBase();
         setStateIdle();
-        callCatchingErrors("onInternalAction", function()
-        {
+        callCatchingErrors("onInternalAction", function() {
           callbacks.onInternalAction("commitAcceptedByServer");
         });
-        callCatchingErrors("onConnectionTrouble", function()
-        {
+        callCatchingErrors("onConnectionTrouble", function() {
           callbacks.onConnectionTrouble("OK");
         });
         handleUserChanges();
@@ -503,8 +479,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     hooks.callAll('handleClientMessage_' + msg.type, {payload: msg.payload});
   }
 
-  function updateUserInfo(userInfo)
-  {
+  function updateUserInfo(userInfo) {
     userInfo.userId = userId;
     userSet[userId] = userInfo;
     tellAceActiveAuthorInfo(userInfo);
@@ -516,13 +491,11 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     });
   }
 
-  function tellAceActiveAuthorInfo(userInfo)
-  {
+  function tellAceActiveAuthorInfo(userInfo) {
     tellAceAuthorInfo(userInfo.userId, userInfo.colorId);
   }
 
-  function tellAceAuthorInfo(userId, colorId, inactive)
-  {
+  function tellAceAuthorInfo(userId, colorId, inactive) {
     if(typeof colorId == "number")
     {
       colorId = clientVars.colorPalette[colorId];
@@ -544,18 +517,15 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     }
   }
 
-  function fadeAceAuthorInfo(userInfo)
-  {
+  function fadeAceAuthorInfo(userInfo) {
     tellAceAuthorInfo(userInfo.userId, userInfo.colorId, true);
   }
 
-  function getConnectedUsers()
-  {
+  function getConnectedUsers() {
     return valuesArray(userSet);
   }
 
-  function tellAceAboutHistoricalAuthors(hadata)
-  {
+  function tellAceAboutHistoricalAuthors(hadata) {
     for (var author in hadata)
     {
       var data = hadata[author];
@@ -566,8 +536,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     }
   }
 
-  function setChannelState(newChannelState, moreInfo)
-  {
+  function setChannelState(newChannelState, moreInfo) {
     if (newChannelState != channelState)
     {
       channelState = newChannelState;
@@ -575,11 +544,9 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     }
   }
 
-  function valuesArray(obj)
-  {
+  function valuesArray(obj) {
     var array = [];
-    $.each(obj, function(k, v)
-    {
+    $.each(obj, function(k, v) {
       array.push(v);
     });
     return array;
@@ -589,15 +556,12 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
   // is connected for the first time.
   var deferredActions = [];
 
-  function defer(func, tag)
-  {
-    return function()
-    {
+  function defer(func, tag) {
+    return function() {
       var that = this;
       var args = arguments;
 
-      function action()
-      {
+      function action() {
         func.apply(that, args);
       }
       action.tag = tag;
@@ -612,8 +576,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     }
   }
 
-  function doDeferredActions(tag)
-  {
+  function doDeferredActions(tag) {
     var newArray = [];
     for (var i = 0; i < deferredActions.length; i++)
     {
@@ -630,8 +593,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     deferredActions = newArray;
   }
 
-  function sendClientMessage(msg)
-  {
+  function sendClientMessage(msg) {
     sendMessage(
     {
       type: "CLIENT_MESSAGE",
@@ -639,13 +601,11 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     });
   }
 
-  function getCurrentRevisionNumber()
-  {
+  function getCurrentRevisionNumber() {
     return rev;
   }
 
-  function getMissedChanges()
-  {
+  function getMissedChanges() {
     var obj = {};
     obj.userInfo = userSet[userId];
     obj.baseRev = rev;
@@ -664,30 +624,25 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     return obj;
   }
 
-  function setStateIdle()
-  {
+  function setStateIdle() {
     state = "IDLE";
     callbacks.onInternalAction("newlyIdle");
     schedulePerhapsCallIdleFuncs();
   }
 
-  function setIsPendingRevision(value)
-  {
+  function setIsPendingRevision(value) {
     isPendingRevision = value;
   }
 
-  function callWhenNotCommitting(func)
-  {
+  function callWhenNotCommitting(func) {
     idleFuncs.push(func);
     schedulePerhapsCallIdleFuncs();
   }
 
   var idleFuncs = [];
 
-  function schedulePerhapsCallIdleFuncs()
-  {
-    setTimeout(function()
-    {
+  function schedulePerhapsCallIdleFuncs() {
+    setTimeout(function() {
       if (state == "IDLE")
       {
         while (idleFuncs.length > 0)
@@ -700,36 +655,28 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
   }
 
   var self = {
-    setOnUserJoin: function(cb)
-    {
+    setOnUserJoin: function(cb) {
       callbacks.onUserJoin = cb;
     },
-    setOnUserLeave: function(cb)
-    {
+    setOnUserLeave: function(cb) {
       callbacks.onUserLeave = cb;
     },
-    setOnUpdateUserInfo: function(cb)
-    {
+    setOnUpdateUserInfo: function(cb) {
       callbacks.onUpdateUserInfo = cb;
     },
-    setOnChannelStateChange: function(cb)
-    {
+    setOnChannelStateChange: function(cb) {
       callbacks.onChannelStateChange = cb;
     },
-    setOnClientMessage: function(cb)
-    {
+    setOnClientMessage: function(cb) {
       callbacks.onClientMessage = cb;
     },
-    setOnInternalAction: function(cb)
-    {
+    setOnInternalAction: function(cb) {
       callbacks.onInternalAction = cb;
     },
-    setOnConnectionTrouble: function(cb)
-    {
+    setOnConnectionTrouble: function(cb) {
       callbacks.onConnectionTrouble = cb;
     },
-    setOnServerMessage: function(cb)
-    {
+    setOnServerMessage: function(cb) {
       callbacks.onServerMessage = cb;
     },
     updateUserInfo: defer(updateUserInfo),

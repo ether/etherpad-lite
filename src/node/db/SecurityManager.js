@@ -47,8 +47,7 @@ const DENY = Object.freeze({accessStatus: 'deny'});
  * WARNING: Tokens and session IDs MUST be kept secret, otherwise users will be able to impersonate
  * each other (which might allow them to gain privileges).
  */
-exports.checkAccess = async function(padID, sessionCookie, token, userSettings)
-{
+exports.checkAccess = async function(padID, sessionCookie, token, userSettings) {
   if (!padID) {
     authLogger.debug('access denied: missing padID');
     return DENY;

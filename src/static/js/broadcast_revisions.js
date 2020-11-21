@@ -23,34 +23,28 @@
 // of the document.  These revisions are connected together by various
 // changesets,  or deltas, between any two revisions.
 
-function loadBroadcastRevisionsJS()
-{
-  function Revision(revNum)
-  {
+function loadBroadcastRevisionsJS() {
+  function Revision(revNum) {
     this.rev = revNum;
     this.changesets = [];
   }
 
-  Revision.prototype.addChangeset = function(destIndex, changeset, timeDelta)
-  {
+  Revision.prototype.addChangeset = function(destIndex, changeset, timeDelta) {
     var changesetWrapper = {
       deltaRev: destIndex - this.rev,
       deltaTime: timeDelta,
-      getValue: function()
-      {
+      getValue: function() {
         return changeset;
       }
     };
     this.changesets.push(changesetWrapper);
-    this.changesets.sort(function(a, b)
-    {
+    this.changesets.sort(function(a, b) {
       return (b.deltaRev - a.deltaRev)
     });
   }
 
   revisionInfo = {};
-  revisionInfo.addChangeset = function(fromIndex, toIndex, changeset, backChangeset, timeDelta)
-  {
+  revisionInfo.addChangeset = function(fromIndex, toIndex, changeset, backChangeset, timeDelta) {
     var startRevision = revisionInfo[fromIndex] || revisionInfo.createNew(fromIndex);
     var endRevision = revisionInfo[toIndex] || revisionInfo.createNew(toIndex);
     startRevision.addChangeset(toIndex, changeset, timeDelta);
@@ -59,8 +53,7 @@ function loadBroadcastRevisionsJS()
 
   revisionInfo.latest = clientVars.collab_client_vars.rev || -1;
 
-  revisionInfo.createNew = function(index)
-  {
+  revisionInfo.createNew = function(index) {
     revisionInfo[index] = new Revision(index);
     if (index > revisionInfo.latest)
     {
@@ -72,8 +65,7 @@ function loadBroadcastRevisionsJS()
 
   // assuming that there is a path from fromIndex to toIndex, and that the links
   // are laid out in a skip-list format
-  revisionInfo.getPath = function(fromIndex, toIndex)
-  {
+  revisionInfo.getPath = function(fromIndex, toIndex) {
     var changesets = [];
     var spans = [];
     var times = [];

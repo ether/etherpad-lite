@@ -158,8 +158,7 @@ exports.version = version;
  * @req express request object
  * @res express response object
  */
-exports.handle = async function(apiVersion, functionName, fields, req, res)
-{
+exports.handle = async function(apiVersion, functionName, fields, req, res) {
   // say goodbye if this is an unknown API version
   if (!(apiVersion in version)) {
     throw new createHTTPError.NotFound('no such api version');

@@ -79,11 +79,9 @@ ToolbarItem.prototype.bind = function (callback) {
 };
 
 
-var padeditbar = (function()
-{
+var padeditbar = (function() {
 
-  var syncAnimation = (function()
-  {
+  var syncAnimation = (function() {
     var SYNCING = -100;
     var DONE = 100;
     var state = DONE;
@@ -92,8 +90,7 @@ var padeditbar = (function()
     var T_START = -0.5;
     var T_FADE = 1.0;
     var T_GONE = 1.5;
-    var animator = padutils.makeAnimationScheduler(function()
-    {
+    var animator = padutils.makeAnimationScheduler(function() {
       if (state == SYNCING || state == DONE)
       {
         return false;
@@ -126,14 +123,12 @@ var padeditbar = (function()
       }
     }, step * 1000);
     return {
-      syncing: function()
-      {
+      syncing: function() {
         state = SYNCING;
         $("#syncstatussyncing").css('display', 'block');
         $("#syncstatusdone").css('display', 'none');
       },
-      done: function()
-      {
+      done: function() {
         state = T_START;
         animator.scheduleAnimation();
       }
@@ -186,16 +181,13 @@ var padeditbar = (function()
         $('#editbar').toggleClass('editor-scrolled', $(this).scrollTop() > 2);
       })
     },
-    isEnabled: function()
-    {
+    isEnabled: function() {
       return true;
     },
-    disable: function()
-    {
+    disable: function() {
       $("#editbar").addClass('disabledtoolbar').removeClass("enabledtoolbar");
     },
-    enable: function()
-    {
+    enable: function() {
       $('#editbar').addClass('enabledtoolbar').removeClass('disabledtoolbar');
     },
     commands: {},
@@ -223,8 +215,7 @@ var padeditbar = (function()
       }
       if(padeditor.ace) padeditor.ace.focus();
     },
-    toggleDropDown: function(moduleName, cb)
-    {
+    toggleDropDown: function(moduleName, cb) {
       // do nothing if users are sticked
       if (moduleName === "users" && $('#users').hasClass('stickyUsers')) {
         return;
@@ -284,8 +275,7 @@ var padeditbar = (function()
         }
       }
     },
-    setSyncStatus: function(status)
-    {
+    setSyncStatus: function(status) {
       if (status == "syncing")
       {
         syncAnimation.syncing();
@@ -295,8 +285,7 @@ var padeditbar = (function()
         syncAnimation.done();
       }
     },
-    setEmbedLinks: function()
-    {
+    setEmbedLinks: function() {
       var padUrl = window.location.href.split("?")[0];
 
       if ($('#readonlyinput').is(':checked'))
@@ -313,8 +302,7 @@ var padeditbar = (function()
         $('#linkinput').val(padUrl);
       }
     },
-    checkAllIconsAreDisplayedInToolbar: function()
-    {
+    checkAllIconsAreDisplayedInToolbar: function() {
       // reset style
       $('.toolbar').removeClass('cropped')
       $('body').removeClass('mobile-layout');

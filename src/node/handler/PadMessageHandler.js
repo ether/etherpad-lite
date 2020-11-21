@@ -80,8 +80,7 @@ let socketio;
  * This Method is called by server.js to tell the message handler on which socket it should send
  * @param socket_io The Socket
  */
-exports.setSocketIO = function(socket_io)
-{
+exports.setSocketIO = function(socket_io) {
   socketio=socket_io;
 }
 
@@ -99,8 +98,7 @@ exports.handleConnect = (socket) => {
 /**
  * Kicks all sessions from a pad
  */
-exports.kickSessionsFromPad = function(padID)
-{
+exports.kickSessionsFromPad = function(padID) {
   if(typeof socketio.sockets['clients'] !== 'function')
    return;
 
@@ -355,8 +353,7 @@ async function handleChatMessage(socket, message) {
  * @param text the text of the chat message
  * @param padId the padId to send the chat message to
  */
-exports.sendChatMessageToPadClients = async function(time, userId, text, padId)
-{
+exports.sendChatMessageToPadClients = async function(time, userId, text, padId) {
   // get the pad
   let pad = await padManager.getPad(padId);
 
@@ -688,8 +685,7 @@ async function handleUserChanges(socket, message) {
   stopWatch.end();
 }
 
-exports.updatePadClients = async function(pad)
-{
+exports.updatePadClients = async function(pad) {
   // skip this if no-one is on this pad
   const roomSockets = _getRoomSockets(pad.id);
   if (roomSockets.length === 0) return;
@@ -837,8 +833,7 @@ async function handleSwitchToPad(socket, message, _authorID) {
 }
 
 // Creates/replaces the auth object in the given session info.
-function createSessionInfoAuth(sessionInfo, message)
-{
+function createSessionInfoAuth(sessionInfo, message) {
   // Remember this information since we won't
   // have the cookie in further socket.io messages.
   // This information will be used to check if
@@ -1250,8 +1245,7 @@ async function handleChangesetRequest(socket, message) {
  * Tries to rebuild the getChangestInfo function of the original Etherpad
  * https://github.com/ether/pad/blob/master/etherpad/src/etherpad/control/pad/pad_changeset_control.js#L144
  */
-async function getChangesetInfo(padId, startNum, endNum, granularity)
-{
+async function getChangesetInfo(padId, startNum, endNum, granularity) {
   let pad = await padManager.getPad(padId);
   let head_revision = pad.getHeadRevisionNumber();
 
@@ -1344,8 +1338,7 @@ async function getChangesetInfo(padId, startNum, endNum, granularity)
  * Tries to rebuild the getPadLines function of the original Etherpad
  * https://github.com/ether/pad/blob/master/etherpad/src/etherpad/control/pad/pad_changeset_control.js#L263
  */
-async function getPadLines(padId, revNum)
-{
+async function getPadLines(padId, revNum) {
   let pad = await padManager.getPad(padId);
 
   // get the atext
@@ -1367,8 +1360,7 @@ async function getPadLines(padId, revNum)
  * Tries to rebuild the composePadChangeset function of the original Etherpad
  * https://github.com/ether/pad/blob/master/etherpad/src/etherpad/control/pad/pad_changeset_control.js#L241
  */
-async function composePadChangesets (padId, startNum, endNum)
-{
+async function composePadChangesets (padId, startNum, endNum) {
   let pad = await padManager.getPad(padId);
 
   // fetch all changesets we need

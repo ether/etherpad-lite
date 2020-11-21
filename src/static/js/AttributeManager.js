@@ -29,8 +29,7 @@ var lineAttributes = [lineMarkerAttribute,'list'];
   - a SkipList `lines` containing the text lines of the document.
 */
 
-var AttributeManager = function(rep, applyChangesetCallback)
-{
+var AttributeManager = function(rep, applyChangesetCallback) {
   this.rep = rep;
   this.applyChangesetCallback = applyChangesetCallback;
   this.author = '';
@@ -62,8 +61,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     @param end [row, col] tuple pointing to the end of the range
     @param attribs: an array of attributes
   */
-  setAttributesOnRange: function(start, end, attribs)
-  {
+  setAttributesOnRange: function(start, end, attribs) {
     // instead of applying the attributes to the whole range at once, we need to apply them
     // line by line, to be able to disregard the "*" used as line marker. For more details,
     // see https://github.com/ether/etherpad-lite/issues/2772
@@ -87,8 +85,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     return this.applyChangeset(allChangesets);
   },
 
-  _findRowRange: function(row, start, end)
-  {
+  _findRowRange: function(row, start, end) {
     var startCol, endCol;
 
     var startLineOffset = this.rep.lines.offsetOfIndex(row);
@@ -119,8 +116,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     @param endCol column where range ends
     @param attribs: an array of attributes
   */
-  _setAttributesOnRangeByLine: function(row, startCol, endCol, attribs)
-  {
+  _setAttributesOnRangeByLine: function(row, startCol, endCol, attribs) {
     var builder = Changeset.builder(this.rep.lines.totalWidth());
     ChangesetUtils.buildKeepToStartOfRange(this.rep, builder, [row, startCol]);
     ChangesetUtils.buildKeepRange(this.rep, builder, [row, startCol], [row, endCol], attribs, this.rep.apool);
@@ -209,8 +205,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
       [attributeName, 'true']
     ], rep.apool);
     var withItRegex = new RegExp(withIt.replace(/\*/g, '\\*') + "(\\*|$)");
-    function hasIt(attribs)
-    {
+    function hasIt(attribs) {
       return withItRegex.test(attribs);
     }
 

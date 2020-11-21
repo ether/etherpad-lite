@@ -31,15 +31,13 @@ var hooks = require('./pluginfw/hooks');
 
 // These parameters were global, now they are injected. A reference to the
 // Timeslider controller would probably be more appropriate.
-function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider)
-{
+function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider) {
   var changesetLoader = undefined;
 
   // Below Array#indexOf code was direct pasted by AppJet/Etherpad, licence unknown. Possible source: http://www.tutorialspoint.com/javascript/array_indexof.htm
   if (!Array.prototype.indexOf)
   {
-    Array.prototype.indexOf = function(elt /*, from*/ )
-    {
+    Array.prototype.indexOf = function(elt /*, from*/ ) {
       var len = this.length >>> 0;
 
       var from = Number(arguments[1]) || 0;
@@ -54,8 +52,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     };
   }
 
-  function debugLog()
-  {
+  function debugLog() {
     try
     {
       if (window.console) console.log.apply(console, arguments);
@@ -82,8 +79,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     clientVars.collab_client_vars.initialAttributedText.attribs, clientVars.collab_client_vars.initialAttributedText.text),
 
     // generates a jquery element containing HTML for a line
-    lineToElement: function(line, aline)
-    {
+    lineToElement: function(line, aline) {
       var element = document.createElement("div");
       var emptyLine = (line == '\n');
       var domInfo = domline.createDomLine(!emptyLine, true);
@@ -95,8 +91,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       return $(element);
     },
 
-    applySpliceToDivs: function(start, numRemoved, newLines)
-    {
+    applySpliceToDivs: function(start, numRemoved, newLines) {
       // remove spliced-out lines from DOM
       for (var i = start; i < start + numRemoved && i < this.currentDivs.length; i++)
       {
@@ -137,8 +132,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     },
 
     // splice the lines
-    splice: function(start, numRemoved, newLinesVA)
-    {
+    splice: function(start, numRemoved, newLinesVA) {
       var newLines = _.map(Array.prototype.slice.call(arguments, 2), function(s) {
         return s;
       });
@@ -152,26 +146,22 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       this.currentLines.splice.apply(this.currentLines, arguments);
     },
     // returns the contents of the specified line I
-    get: function(i)
-    {
+    get: function(i) {
       return this.currentLines[i];
     },
     // returns the number of lines in the document
-    length: function()
-    {
+    length: function() {
       return this.currentLines.length;
     },
 
-    getActiveAuthors: function()
-    {
+    getActiveAuthors: function() {
       var self = this;
       var authors = [];
       var seenNums = {};
       var alines = self.alines;
       for (var i = 0; i < alines.length; i++)
       {
-        Changeset.eachAttribNumber(alines[i], function(n)
-        {
+        Changeset.eachAttribNumber(alines[i], function(n) {
           if (!seenNums[n])
           {
             seenNums[n] = true;
@@ -191,8 +181,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     }
   };
 
-  function callCatchingErrors(catcher, func)
-  {
+  function callCatchingErrors(catcher, func) {
     try
     {
       wrapRecordingErrors(catcher, func)();
@@ -202,10 +191,8 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     }
   }
 
-  function wrapRecordingErrors(catcher, func)
-  {
-    return function()
-    {
+  function wrapRecordingErrors(catcher, func) {
+    return function() {
       try
       {
         return func.apply(this, Array.prototype.slice.call(arguments));
@@ -222,8 +209,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     };
   }
 
-  function loadedNewChangeset(changesetForward, changesetBackward, revision, timeDelta)
-  {
+  function loadedNewChangeset(changesetForward, changesetBackward, revision, timeDelta) {
     var broadcasting = (BroadcastSlider.getSliderPosition() == revisionInfo.latest);
     revisionInfo.addChangeset(revision, revision + 1, changesetForward, changesetBackward, timeDelta);
     BroadcastSlider.setSliderLength(revisionInfo.latest);
@@ -236,8 +222,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
    cause the whole slider to get out of sync.
    */
 
-  function applyChangeset(changeset, revision, preventSliderMovement, timeDelta)
-  {
+  function applyChangeset(changeset, revision, preventSliderMovement, timeDelta) {
     // disable the next 'gotorevision' call handled by a timeslider update
     if (!preventSliderMovement)
     {
@@ -283,18 +268,15 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
     updateTimer();
 
-    var authors = _.map(padContents.getActiveAuthors(), function(name)
-    {
+    var authors = _.map(padContents.getActiveAuthors(), function(name) {
       return authorData[name];
     });
 
     BroadcastSlider.setAuthors(authors);
   }
 
-  function updateTimer()
-  {
-    var zpad = function(str, length)
-      {
+  function updateTimer() {
+    var zpad = function(str, length) {
         str = str + "";
         while (str.length < length)
         str = '0' + str;
@@ -302,8 +284,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         }
 
     var date = new Date(padContents.currentTime);
-    var dateFormat = function()
-      {
+    var dateFormat = function() {
         var month = zpad(date.getMonth() + 1, 2);
         var day = zpad(date.getDate(), 2);
         var year = (date.getFullYear());
@@ -349,8 +330,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
   updateTimer();
 
-  function goToRevision(newRevision)
-  {
+  function goToRevision(newRevision) {
     padContents.targetRevision = newRevision;
     var self = this;
     var path = revisionInfo.getPath(padContents.currentRevision, newRevision);
@@ -376,8 +356,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       var sliderLocation = padContents.currentRevision;
       // callback is called after changeset information is pulled from server
       // this may never get called, if the changeset has already been loaded
-      var update = function(start, end)
-        {
+      var update = function(start, end) {
           // if we've called goToRevision in the time since, don't goToRevision
           goToRevision(padContents.targetRevision);
           };
@@ -431,8 +410,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     requestQueue2: [],
     requestQueue3: [],
     reqCallbacks: [],
-    queueUp: function(revision, width, callback)
-    {
+    queueUp: function(revision, width, callback) {
       if (revision < 0) revision = 0;
       // if(changesetLoader.requestQueue.indexOf(revision) != -1)
       //   return; // already in the queue.
@@ -452,8 +430,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         setTimeout(changesetLoader.loadFromQueue, 10);
       }
     },
-    loadFromQueue: function()
-    {
+    loadFromQueue: function() {
       var self = changesetLoader;
       var requestQueue = self.requestQueue1.length > 0 ? self.requestQueue1 : self.requestQueue2.length > 0 ? self.requestQueue2 : self.requestQueue3.length > 0 ? self.requestQueue3 : null;
 
@@ -477,8 +454,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
       self.reqCallbacks[requestID] = callback;
     },
-    handleSocketResponse: function(message)
-    {
+    handleSocketResponse: function(message) {
       var self = changesetLoader;
 
       var start = message.data.start;
@@ -489,8 +465,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       self.handleResponse(message.data, start, granularity, callback);
       setTimeout(self.loadFromQueue, 10);
     },
-    handleResponse: function(data, start, granularity, callback)
-    {
+    handleResponse: function(data, start, granularity, callback) {
       var pool = (new AttribPool()).fromJsonable(data.apool);
       for (var i = 0; i < data.forwardsChangesets.length; i++)
       {
@@ -504,8 +479,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       }
       if (callback) callback(start - 1, start + data.forwardsChangesets.length * granularity - 1);
     },
-    handleMessageFromServer: function (obj)
-    {
+    handleMessageFromServer: function (obj) {
       if (obj.type == "COLLABROOM")
       {
         obj = obj.data;
@@ -556,8 +530,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
   // to start upon window load, just push a function onto this array
   //window['onloadFuncts'].push(setUpSocket);
   //window['onloadFuncts'].push(function ()
-  fireWhenAllScriptsAreLoaded.push(function()
-  {
+  fireWhenAllScriptsAreLoaded.push(function() {
     // set up the currentDivs and DOM
     padContents.currentDivs = [];
     $("#innerdocbody").html("");
@@ -588,8 +561,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
   var dynamicCSS = makeCSSManager('dynamicsyntax');
   var authorData = {};
 
-  function receiveAuthorData(newAuthorData)
-  {
+  function receiveAuthorData(newAuthorData) {
     for (var author in newAuthorData)
     {
       var data = newAuthorData[author];

@@ -23,8 +23,7 @@ var eejs = require('ep_etherpad-lite/node/eejs');
 var _analyzeLine = require('./ExportHelper')._analyzeLine;
 var _encodeWhitespace = require('./ExportHelper')._encodeWhitespace;
 
-async function getPadHTML(pad, revNum)
-{
+async function getPadHTML(pad, revNum) {
   let atext = pad.atext;
 
   // fetch revision atext
@@ -39,8 +38,7 @@ async function getPadHTML(pad, revNum)
 exports.getPadHTML = getPadHTML;
 exports.getHTMLFromAtext = getHTMLFromAtext;
 
-async function getHTMLFromAtext(pad, atext, authorColors)
-{
+async function getHTMLFromAtext(pad, atext, authorColors) {
   var apool = pad.apool();
   var textLines = atext.text.slice(0, -1).split('\n');
   var attribLines = Changeset.splitAttributionLines(atext.attribs, atext.text);
@@ -110,8 +108,7 @@ async function getHTMLFromAtext(pad, atext, authorColors)
 
   // iterates over all props(h1,h2,strong,...), checks if it is used in
   // this pad, and if yes puts its attrib id->props value into anumMap
-  props.forEach(function (propName, i)
-  {
+  props.forEach(function (propName, i) {
     var attrib = [propName, true];
     if (_.isArray(propName)) {
       // propName can be in the form of ['color', 'red'],
@@ -125,8 +122,7 @@ async function getHTMLFromAtext(pad, atext, authorColors)
     }
   });
 
-  function getLineHTML(text, attribs)
-  {
+  function getLineHTML(text, attribs) {
     // Use order of tags (b/i/u) as order of nesting, for simplicity
     // and decent nesting.  For example,
     // <b>Just bold<b> <b><i>Bold and italics</i></b> <i>Just italics</i>
@@ -166,8 +162,7 @@ async function getHTMLFromAtext(pad, atext, authorColors)
       return _.isArray(property);
     }
 
-    function emitOpenTag(i)
-    {
+    function emitOpenTag(i) {
       openTags.unshift(i);
       var spanClass = getSpanClassFor(i);
 
@@ -183,8 +178,7 @@ async function getHTMLFromAtext(pad, atext, authorColors)
     }
 
     // this closes an open tag and removes its reference from openTags
-    function emitCloseTag(i)
-    {
+    function emitCloseTag(i) {
       openTags.shift();
       var spanClass = getSpanClassFor(i);
       var spanWithData = isSpanWithData(i);
@@ -202,8 +196,7 @@ async function getHTMLFromAtext(pad, atext, authorColors)
 
     var idx = 0;
 
-    function processNextChars(numChars)
-    {
+    function processNextChars(numChars) {
       if (numChars <= 0)
       {
         return;
@@ -220,8 +213,7 @@ async function getHTMLFromAtext(pad, atext, authorColors)
         var usedAttribs = [];
 
         // mark all attribs as used
-        Changeset.eachAttribNumber(o.attribs, function (a)
-        {
+        Changeset.eachAttribNumber(o.attribs, function (a) {
           if (a in anumMap)
           {
             usedAttribs.push(anumMap[a]); // i = 0 => bold, etc.
@@ -280,8 +272,7 @@ async function getHTMLFromAtext(pad, atext, authorColors)
     } // end processNextChars
     if (urls)
     {
-      urls.forEach(function (urlData)
-      {
+      urls.forEach(function (urlData) {
         var startIndex = urlData[0];
         var url = urlData[1];
         var urlLength = url.length;
@@ -341,8 +332,7 @@ async function getHTMLFromAtext(pad, atext, authorColors)
       //To create list parent elements
       if ((!prevLine || prevLine.listLevel !== line.listLevel) || (prevLine && line.listTypeName !== prevLine.listTypeName))
       {
-        var exists = _.find(openLists, function (item)
-        {
+        var exists = _.find(openLists, function (item) {
           return (item.level === line.listLevel && item.type === line.listTypeName);
         });
         if (!exists) {
@@ -445,8 +435,7 @@ async function getHTMLFromAtext(pad, atext, authorColors)
 
         for (var diff = nextLevel; diff < line.listLevel; diff++)
         {
-          openLists = openLists.filter(function(el)
-          {
+          openLists = openLists.filter(function(el) {
             return el.level !== diff && el.type !== line.listTypeName;
           });
 
@@ -485,8 +474,7 @@ async function getHTMLFromAtext(pad, atext, authorColors)
   return pieces.join('');
 }
 
-exports.getPadHTMLDocument = async function (padId, revNum)
-{
+exports.getPadHTMLDocument = async function (padId, revNum) {
   let pad = await padManager.getPad(padId);
 
   // Include some Styles into the Head for Export
@@ -518,8 +506,7 @@ var _REGEX_URL = new RegExp(/(?:(?:https?|s?ftp|ftps|file|smb|afp|nfs|(x-)?man|g
 // returns null if no URLs, or [[startIndex1, url1], [startIndex2, url2], ...]
 
 
-function _findURLs(text)
-{
+function _findURLs(text) {
   _REGEX_URL.lastIndex = 0;
   var urls = null;
   var execResult;

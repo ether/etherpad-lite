@@ -38,8 +38,7 @@ exports.getColorPalette = function() {
 /**
  * Checks if the author exists
  */
-exports.doesAuthorExist = async function(authorID)
-{
+exports.doesAuthorExist = async function(authorID) {
   let author = await db.get("globalAuthor:" + authorID);
 
   return author !== null;
@@ -52,8 +51,7 @@ exports.doesAuthorExists = exports.doesAuthorExist;
  * Returns the AuthorID for a token.
  * @param {String} token The token
  */
-exports.getAuthor4Token = async function(token)
-{
+exports.getAuthor4Token = async function(token) {
   let author = await mapAuthorWithDBKey("token2author", token);
 
   // return only the sub value authorID
@@ -65,8 +63,7 @@ exports.getAuthor4Token = async function(token)
  * @param {String} token The mapper
  * @param {String} name The name of the author (optional)
  */
-exports.createAuthorIfNotExistsFor = async function(authorMapper, name)
-{
+exports.createAuthorIfNotExistsFor = async function(authorMapper, name) {
   let author = await mapAuthorWithDBKey("mapper2author", authorMapper);
 
   if (name) {
@@ -83,8 +80,7 @@ exports.createAuthorIfNotExistsFor = async function(authorMapper, name)
  * @param {String} mapperkey The database key name for this mapper
  * @param {String} mapper The mapper
  */
-async function mapAuthorWithDBKey (mapperkey, mapper)
-{
+async function mapAuthorWithDBKey (mapperkey, mapper) {
   // try to map to an author
   let author = await db.get(mapperkey + ":" + mapper);
 
@@ -111,8 +107,7 @@ async function mapAuthorWithDBKey (mapperkey, mapper)
  * Internal function that creates the database entry for an author
  * @param {String} name The name of the author
  */
-exports.createAuthor = function(name)
-{
+exports.createAuthor = function(name) {
   // create the new author name
   let author = "a." + randomString(16);
 
@@ -134,8 +129,7 @@ exports.createAuthor = function(name)
  * Returns the Author Obj of the author
  * @param {String} author The id of the author
  */
-exports.getAuthor = function(author)
-{
+exports.getAuthor = function(author) {
   // NB: result is already a Promise
   return db.get("globalAuthor:" + author);
 }
@@ -144,8 +138,7 @@ exports.getAuthor = function(author)
  * Returns the color Id of the author
  * @param {String} author The id of the author
  */
-exports.getAuthorColorId = function(author)
-{
+exports.getAuthorColorId = function(author) {
   return db.getSub("globalAuthor:" + author, ["colorId"]);
 }
 
@@ -154,8 +147,7 @@ exports.getAuthorColorId = function(author)
  * @param {String} author The id of the author
  * @param {String} colorId The color id of the author
  */
-exports.setAuthorColorId = function(author, colorId)
-{
+exports.setAuthorColorId = function(author, colorId) {
   return db.setSub("globalAuthor:" + author, ["colorId"], colorId);
 }
 
@@ -163,8 +155,7 @@ exports.setAuthorColorId = function(author, colorId)
  * Returns the name of the author
  * @param {String} author The id of the author
  */
-exports.getAuthorName = function(author)
-{
+exports.getAuthorName = function(author) {
   return db.getSub("globalAuthor:" + author, ["name"]);
 }
 
@@ -173,8 +164,7 @@ exports.getAuthorName = function(author)
  * @param {String} author The id of the author
  * @param {String} name The name of the author
  */
-exports.setAuthorName = function(author, name)
-{
+exports.setAuthorName = function(author, name) {
   return db.setSub("globalAuthor:" + author, ["name"], name);
 }
 
@@ -182,8 +172,7 @@ exports.setAuthorName = function(author, name)
  * Returns an array of all pads this author contributed to
  * @param {String} author The id of the author
  */
-exports.listPadsOfAuthor = async function(authorID)
-{
+exports.listPadsOfAuthor = async function(authorID) {
   /* There are two other places where this array is manipulated:
    * (1) When the author is added to a pad, the author object is also updated
    * (2) When a pad is deleted, each author of that pad is also updated
@@ -208,8 +197,7 @@ exports.listPadsOfAuthor = async function(authorID)
  * @param {String} author The id of the author
  * @param {String} padID The id of the pad the author contributes to
  */
-exports.addPad = async function(authorID, padID)
-{
+exports.addPad = async function(authorID, padID) {
   // get the entry
   let author = await db.get("globalAuthor:" + authorID);
 
@@ -236,8 +224,7 @@ exports.addPad = async function(authorID, padID)
  * @param {String} author The id of the author
  * @param {String} padID The id of the pad the author contributes to
  */
-exports.removePad = async function(authorID, padID)
-{
+exports.removePad = async function(authorID, padID) {
   let author = await db.get("globalAuthor:" + authorID);
 
   if (author === null) return;
