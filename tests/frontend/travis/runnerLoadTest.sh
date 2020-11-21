@@ -21,6 +21,7 @@ sed 's/\"loadTest\": false,/\"loadTest\": true,/g' settings.json.points > settin
 echo "Running Etherpad directly, assuming bin/installDeps.sh has already been run"
 
 node node_modules/ep_etherpad-lite/node/server.js "${@}" &
+ep_pid=$!
 
 echo "Now I will try for 15 seconds to connect to Etherpad on http://localhost:9001"
 
@@ -45,7 +46,7 @@ echo "Now run the load tests for 25 seconds and if it stalls before 100 then err
 etherpad-loadtest -d 25
 exit_code=$?
 
-kill $!
+kill "$ep_pid" && wait "$ep_pid"
 sleep 5
 
 exit $exit_code

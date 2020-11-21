@@ -24,6 +24,7 @@ sed 's/\"points\": 10/\"points\": 1000/g' settings.json.rateLimit > settings.jso
 # a call to bin/installDeps.sh
 echo "Running Etherpad directly, assuming bin/installDeps.sh has already been run"
 node node_modules/ep_etherpad-lite/node/server.js "${@}" &
+ep_pid=$!
 
 echo "Now I will try for 15 seconds to connect to Etherpad on http://localhost:9001"
 
@@ -43,5 +44,5 @@ cd src
 
 failed=0
 npm run test || failed=1
-
+kill "$ep_pid" && wait "$ep_pid"
 exit $failed
