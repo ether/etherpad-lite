@@ -954,7 +954,6 @@ function Ace2Inner() {
     }
 
     while (lineEntry && lineStart < endChar && !isTimeUp()) {
-      // var timer = newTimeLimit(200);
       const lineEnd = lineStart + lineEntry.width;
 
       curDocChar = lineStart;
@@ -1134,9 +1133,6 @@ function Ace2Inner() {
 
     const p = PROFILER('incorp', false);
 
-    // if (doc.body.innerHTML.indexOf("AppJet") >= 0)
-    // dmesg(htmlPrettyEscape(doc.body.innerHTML));
-    // if (top.RECORD) top.RECORD.push(doc.body.innerHTML);
     // returns true if dom changes were made
     if (!root.firstChild) {
       root.innerHTML = '<div><!-- --></div>';
@@ -1278,9 +1274,6 @@ function Ace2Inner() {
       doIncorpLineSplice(splice[0], splice[1], splice[2], splice[3], splice[4]);
     });
 
-    // p.mark("relex");
-    // rep.lexer.lexCharRange(scroll.getVisibleCharRange(rep), function() { return false; });
-    // var isTimeUp = newTimeLimit(100);
     // do DOM inserts
     p.mark('insert');
     _.each(domInsertsNeeded, (ins) => {
@@ -1396,7 +1389,6 @@ function Ace2Inner() {
     const charStart = rep.lines.offsetOfEntry(startEntry);
     const charEnd = rep.lines.offsetOfEntry(endEntry) + endEntry.width;
 
-    // rep.lexer.lexCharRange([charStart, charEnd], isTimeUp);
     _.each(infoStructs, (info) => {
       const p2 = PROFILER('insertLine', false);
       const node = info.node;
@@ -1421,9 +1413,6 @@ function Ace2Inner() {
       getSpansForLine(entry, (tokenText, tokenClass) => {
         info.appendSpan(tokenText, tokenClass);
       }, lineStartOffset, isTimeUp());
-      // else if (entry.text.length > 0) {
-      // info.appendSpan(entry.text, 'dirty');
-      // }
       p2.mark('addLine');
       info.prepareForAdd();
       entry.lineMarker = info.lineMarker;
