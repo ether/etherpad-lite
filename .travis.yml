@@ -53,6 +53,7 @@ jobs:
     - name: "Run the Backend tests without Plugins"
       install:
         - *install_libreoffice
+        - *set_loglevel_warn
         - "bin/installDeps.sh"
         - "cd src && npm install && cd -"
       script:
@@ -66,6 +67,7 @@ jobs:
         - "cd src && npm run test-container"
     - name: "Load test Etherpad without Plugins"
       install:
+        - *set_loglevel_warn
         - "bin/installDeps.sh"
         - "cd src && npm install && cd -"
         - "npm install -g etherpad-load-test"
@@ -92,6 +94,7 @@ jobs:
     - name: "Run the Backend tests with Plugins"
       install:
         - *install_libreoffice
+        - *set_loglevel_warn
         - "bin/installDeps.sh"
         - *install_plugins
         - "cd src && npm install && cd -"
@@ -106,6 +109,7 @@ jobs:
         - "cd src && npm run test-container"
     - name: "Load test Etherpad with Plugins"
       install:
+        - *set_loglevel_warn
         - "bin/installDeps.sh"
         - *install_plugins
         - "cd src && npm install && cd -"
