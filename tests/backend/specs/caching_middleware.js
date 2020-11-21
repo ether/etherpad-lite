@@ -9,6 +9,8 @@ const settings = require('../../../src/node/utils/Settings');
 const assert = require('assert').strict;
 const url = require('url');
 const queryString = require('querystring');
+const fs = require('fs');
+const path = require('path');
 
 let agent;
 
@@ -165,4 +167,20 @@ describe(__filename, function() {
     })
   });
 
+  context("different callback or version parameter", function(){
+    it('should never create new files', async function(){
+      const pathToVar = path.join(__filename, '../../../../var');
+
+      // the number of files in ./var should not change during this test
+      const minifiedFilesBefore = (await fs.promises.readdir(pathToVar)).length;
+      const resource1 = "/javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define";
+      const resource2 = "/javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require";
+      const resource3 = "/javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define&v=1234";
+      await agent.get(resource1);
+      await agent.get(resource2);
+      await agent.get(resource3);
+      const minifiedFilesAfter = (await fs.promises.readdir(pathToVar)).length;
+      assert.equal(minifiedFilesBefore, minifiedFilesAfter);
+    })
+  })
 });

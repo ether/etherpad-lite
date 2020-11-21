@@ -21,6 +21,7 @@ var path = require('path');
 var zlib = require('zlib');
 var settings = require('./Settings');
 var existsSync = require('./path_exists');
+const url = require('url');
 
 /*
  * The crypto module can be absent on reduced node installations.
@@ -91,8 +92,14 @@ CachingMiddleware.prototype = new function () {
     var supportsGzip =
         (req.get('Accept-Encoding') || '').indexOf('gzip') != -1;
 
-    var path = require('url').parse(req.url).path;
-    var cacheKey = generateCacheKey(path);
+    /**
+     * `req.url` is either /file?callback=require.define&v=versionString
+     * or /file.
+     *
+     * invalid.invalid is just a placeholder
+     */
+    let path = new url.URL(req.url, 'http://invalid.invalid').pathname;
+    let cacheKey = generateCacheKey(path);
 
     fs.stat(CACHE_DIR + 'minified_' + cacheKey, function (error, stats) {
       var modifiedSince = (req.headers['if-modified-since']
