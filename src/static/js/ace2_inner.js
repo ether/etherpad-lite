@@ -438,35 +438,6 @@ function Ace2Inner() {
     teardown();
   }
 
-  function checkALines() {
-    return; // disable for speed
-
-
-    function error() {
-      throw new Error('checkALines');
-    }
-    if (rep.alines.length != rep.lines.length()) {
-      error();
-    }
-    for (let i = 0; i < rep.alines.length; i++) {
-      const aline = rep.alines[i];
-      const lineText = `${rep.lines.atIndex(i).text}\n`;
-      const lineTextLength = lineText.length;
-      const opIter = Changeset.opIterator(aline);
-      let alineLength = 0;
-      while (opIter.hasNext()) {
-        const o = opIter.next();
-        alineLength += o.chars;
-        if (opIter.hasNext()) {
-          if (o.lines !== 0) error();
-        } else if (o.lines != 1) { error(); }
-      }
-      if (alineLength != lineTextLength) {
-        error();
-      }
-    }
-  }
-
   function setWraps(newVal) {
     doesWrap = newVal;
     const dwClass = 'doesWrap';
@@ -1665,8 +1636,6 @@ function Ace2Inner() {
 
     Changeset.mutateTextLines(changes, linesMutatee);
 
-    checkALines();
-
     if (requiredSelectionSetting) {
       performSelectionChange(lineAndColumnFromChar(requiredSelectionSetting[0]), lineAndColumnFromChar(requiredSelectionSetting[1]), requiredSelectionSetting[2]);
     }
@@ -1707,41 +1676,10 @@ function Ace2Inner() {
     }
   }
 
-  function checkChangesetLineInformationAgainstRep(changes) {
-    return true; // disable for speed
-    const opIter = Changeset.opIterator(Changeset.unpack(changes).ops);
-    let curOffset = 0;
-    let curLine = 0;
-    let curCol = 0;
-    while (opIter.hasNext()) {
-      const o = opIter.next();
-      if (o.opcode == '-' || o.opcode == '=') {
-        curOffset += o.chars;
-        if (o.lines) {
-          curLine += o.lines;
-          curCol = 0;
-        } else {
-          curCol += o.chars;
-        }
-      }
-      const calcLine = rep.lines.indexOfOffset(curOffset);
-      const calcLineStart = rep.lines.offsetOfIndex(calcLine);
-      const calcCol = curOffset - calcLineStart;
-      if (calcCol != curCol || calcLine != curLine) {
-        return false;
-      }
-    }
-    return true;
-  }
-
   function doRepApplyChangeset(changes, insertsAfterSelection) {
     Changeset.checkRep(changes);
 
     if (Changeset.oldLen(changes) != rep.alltext.length) throw new Error(`doRepApplyChangeset length mismatch: ${Changeset.oldLen(changes)}/${rep.alltext.length}`);
-
-    if (!checkChangesetLineInformationAgainstRep(changes)) {
-      throw new Error('doRepApplyChangeset line break mismatch');
-    }
 
     (function doRecordUndoInformation(changes) {
       const editEvent = currentCallStack.editEvent;
@@ -2188,8 +2126,6 @@ function Ace2Inner() {
     // do this no matter what, because we need to get the right
     // line keys into the rep.
     doRepLineSplice(startLine, deleteCount, newLineEntries);
-
-    checkALines();
   }
 
   function cachedStrFunc(func) {
