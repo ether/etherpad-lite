@@ -20,8 +20,7 @@
  * limitations under the License.
  */
 
-function makeCSSManager(emptyStylesheetTitle, doc)
-{
+function makeCSSManager(emptyStylesheetTitle, doc) {
   if (doc === true)
   {
     doc = 'parent';
@@ -29,8 +28,7 @@ function makeCSSManager(emptyStylesheetTitle, doc)
     doc = 'inner';
   }
 
-  function getSheetByTitle(title)
-  {
+  function getSheetByTitle(title) {
     if (doc === 'parent')
     {
       win = window.parent.parent;
@@ -59,26 +57,22 @@ function makeCSSManager(emptyStylesheetTitle, doc)
 
   var browserSheet = getSheetByTitle(emptyStylesheetTitle);
 
-  function browserRules()
-  {
+  function browserRules() {
     return (browserSheet.cssRules || browserSheet.rules);
   }
 
-  function browserDeleteRule(i)
-  {
+  function browserDeleteRule(i) {
     if (browserSheet.deleteRule) browserSheet.deleteRule(i);
     else browserSheet.removeRule(i);
   }
 
-  function browserInsertRule(i, selector)
-  {
+  function browserInsertRule(i, selector) {
     if (browserSheet.insertRule) browserSheet.insertRule(selector + ' {}', i);
     else browserSheet.addRule(selector, null, i);
   }
   var selectorList = [];
 
-  function indexOfSelector(selector)
-  {
+  function indexOfSelector(selector) {
     for (var i = 0; i < selectorList.length; i++)
     {
       if (selectorList[i] == selector)
@@ -89,8 +83,7 @@ function makeCSSManager(emptyStylesheetTitle, doc)
     return -1;
   }
 
-  function selectorStyle(selector)
-  {
+  function selectorStyle(selector) {
     var i = indexOfSelector(selector);
     if (i < 0)
     {
@@ -102,8 +95,7 @@ function makeCSSManager(emptyStylesheetTitle, doc)
     return browserRules().item(i).style;
   }
 
-  function removeSelectorStyle(selector)
-  {
+  function removeSelectorStyle(selector) {
     var i = indexOfSelector(selector);
     if (i >= 0)
     {
@@ -115,8 +107,7 @@ function makeCSSManager(emptyStylesheetTitle, doc)
   return {
     selectorStyle: selectorStyle,
     removeSelectorStyle: removeSelectorStyle,
-    info: function()
-    {
+    info: function() {
       return selectorList.length + ":" + browserRules().length;
     }
   };

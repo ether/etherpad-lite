@@ -101,8 +101,7 @@ var endPoint = function(point){
   return '/api/'+apiVersion+'/'+point+'?apikey='+apiKey;
 }
 
-function makeid()
-{
+function makeid() {
   var text = "";
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 

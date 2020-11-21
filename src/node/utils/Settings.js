@@ -381,8 +381,7 @@ exports.commitRateLimiting = {
 exports.importMaxFileSize = 50 * 1024 * 1024;
 
 // checks if abiword is avaiable
-exports.abiwordAvailable = function()
-{
+exports.abiwordAvailable = function() {
   if (exports.abiword != null) {
     return os.type().indexOf("Windows") != -1 ? "withoutPDF" : "yes";
   } else {

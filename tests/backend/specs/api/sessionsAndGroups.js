@@ -289,8 +289,7 @@ const endPoint = function(point) {
   return `/api/${apiVersion}/${point}?apikey=${apiKey}`;
 };
 
-function makeid()
-{
+function makeid() {
   let text = '';
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 

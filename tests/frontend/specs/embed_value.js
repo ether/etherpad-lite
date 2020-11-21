@@ -1,6 +1,5 @@
 describe("embed links", function(){
-  var objectify = function (str)
-  {
+  var objectify = function (str) {
     var hash = {};
     var parts = str.split('&');
     for(var i = 0; i < parts.length; i++)

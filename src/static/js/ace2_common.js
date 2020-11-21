@@ -22,25 +22,21 @@
 
 var Security = require('./security');
 
-function isNodeText(node)
-{
+function isNodeText(node) {
   return (node.nodeType == 3);
 }
 
-function object(o)
-{
+function object(o) {
   var f = function(){};
   f.prototype = o;
   return new f();
 }
 
-function getAssoc(obj, name)
-{
+function getAssoc(obj, name) {
   return obj["_magicdom_" + name];
 }
 
-function setAssoc(obj, name, value)
-{
+function setAssoc(obj, name, value) {
   // note that in IE designMode, properties of a node can get
   // copied to new nodes that are spawned during editing; also,
   // properties representable in HTML text can survive copy-and-paste
@@ -52,8 +48,7 @@ function setAssoc(obj, name, value)
 // between false and true, a number between 0 and numItems inclusive.
 
 
-function binarySearch(numItems, func)
-{
+function binarySearch(numItems, func) {
   if (numItems < 1) return 0;
   if (func(0)) return 0;
   if (!func(numItems - 1)) return numItems;
@@ -68,15 +63,13 @@ function binarySearch(numItems, func)
   return high;
 }
 
-function binarySearchInfinite(expectedLength, func)
-{
+function binarySearchInfinite(expectedLength, func) {
   var i = 0;
   while (!func(i)) i += expectedLength;
   return binarySearch(i, func);
 }
 
-function htmlPrettyEscape(str)
-{
+function htmlPrettyEscape(str) {
   return Security.escapeHTML(str).replace(/\r?\n/g, '\\n');
 }
 

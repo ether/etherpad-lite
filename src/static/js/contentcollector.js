@@ -30,53 +30,43 @@ var Changeset = require('./Changeset');
 var hooks = require('./pluginfw/hooks');
 var _ = require('./underscore');
 
-function sanitizeUnicode(s)
-{
+function sanitizeUnicode(s) {
   return UNorm.nfc(s);
 }
 
-function makeContentCollector(collectStyles, abrowser, apool, domInterface, className2Author)
-{
+function makeContentCollector(collectStyles, abrowser, apool, domInterface, className2Author) {
   abrowser = abrowser || {};
   // I don't like the above.
 
   var dom = domInterface || {
-    isNodeText: function(n)
-    {
+    isNodeText: function(n) {
       return (n.nodeType == 3);
     },
-    nodeTagName: function(n)
-    {
+    nodeTagName: function(n) {
       return n.tagName;
     },
-    nodeValue: function(n)
-    {
+    nodeValue: function(n) {
       return n.nodeValue;
     },
-    nodeNumChildren: function(n)
-    {
+    nodeNumChildren: function(n) {
       if(n.childNodes == null) return 0;
       return n.childNodes.length;
     },
-    nodeChild: function(n, i)
-    {
+    nodeChild: function(n, i) {
       if(n.childNodes.item == null){
         return n.childNodes[i];
       }
       return n.childNodes.item(i);
     },
-    nodeProp: function(n, p)
-    {
+    nodeProp: function(n, p) {
       return n[p];
     },
-    nodeAttr: function(n, a)
-    {
+    nodeAttr: function(n, a) {
       if(n.getAttribute != null) return n.getAttribute(a);
       if(n.attribs != null) return n.attribs[a];
       return null;
     },
-    optNodeInnerHTML: function(n)
-    {
+    optNodeInnerHTML: function(n) {
       return n.innerHTML;
     }
   };
@@ -92,66 +82,54 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     _blockElems[element] = 1;
   });
 
-  function isBlockElement(n)
-  {
+  function isBlockElement(n) {
     return !!_blockElems[(dom.nodeTagName(n) || "").toLowerCase()];
   }
 
-  function textify(str)
-  {
+  function textify(str) {
     return sanitizeUnicode(
     str.replace(/(\n | \n)/g, ' ').replace(/[\n\r ]/g, ' ').replace(/\xa0/g, ' ').replace(/\t/g, '        '));
   }
 
-  function getAssoc(node, name)
-  {
+  function getAssoc(node, name) {
     return dom.nodeProp(node, "_magicdom_" + name);
   }
 
-  var lines = (function()
-  {
+  var lines = (function() {
     var textArray = [];
     var attribsArray = [];
     var attribsBuilder = null;
     var op = Changeset.newOp('+');
     var self = {
-      length: function()
-      {
+      length: function() {
         return textArray.length;
       },
-      atColumnZero: function()
-      {
+      atColumnZero: function() {
         return textArray[textArray.length - 1] === "";
       },
-      startNew: function()
-      {
+      startNew: function() {
         textArray.push("");
         self.flush(true);
         attribsBuilder = Changeset.smartOpAssembler();
       },
-      textOfLine: function(i)
-      {
+      textOfLine: function(i) {
         return textArray[i];
       },
-      appendText: function(txt, attrString)
-      {
+      appendText: function(txt, attrString) {
         textArray[textArray.length - 1] += txt;
         //dmesg(txt+" / "+attrString);
         op.attribs = attrString;
         op.chars = txt.length;
         attribsBuilder.append(op);
       },
-      textLines: function()
-      {
+      textLines: function() {
         return textArray.slice();
       },
-      attribLines: function()
-      {
+      attribLines: function() {
         return attribsArray;
       },
       // call flush only when you're done
-      flush: function(withNewline)
-      {
+      flush: function(withNewline) {
         if (attribsBuilder)
         {
           attribsArray.push(attribsBuilder.toString());
@@ -164,8 +142,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
   }());
   var cc = {};
 
-  function _ensureColumnZero(state)
-  {
+  function _ensureColumnZero(state) {
     if (!lines.atColumnZero())
     {
       cc.startNewLine(state);
@@ -174,8 +151,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
   var selection, startPoint, endPoint;
   var selStart = [-1, -1],
       selEnd = [-1, -1];
-  function _isEmpty(node, state)
-  {
+  function _isEmpty(node, state) {
     // consider clean blank lines pasted in IE to be empty
     if (dom.nodeNumChildren(node) == 0) return true;
     if (dom.nodeNumChildren(node) == 1 && getAssoc(node, "shouldBeEmpty") && dom.optNodeInnerHTML(node) == "&nbsp;" && !getAssoc(node, "unpasted"))
@@ -191,8 +167,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     return false;
   }
 
-  function _pointHere(charsAfter, state)
-  {
+  function _pointHere(charsAfter, state) {
     var ln = lines.length() - 1;
     var chr = lines.textOfLine(ln).length;
     if (chr == 0 && !_.isEmpty(state.lineAttributes))
@@ -203,13 +178,11 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     return [ln, chr];
   }
 
-  function _reachBlockPoint(nd, idx, state)
-  {
+  function _reachBlockPoint(nd, idx, state) {
     if (!dom.isNodeText(nd)) _reachPoint(nd, idx, state);
   }
 
-  function _reachPoint(nd, idx, state)
-  {
+  function _reachPoint(nd, idx, state) {
     if (startPoint && nd == startPoint.node && startPoint.index == idx)
     {
       selStart = _pointHere(0, state);
@@ -219,16 +192,13 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
       selEnd = _pointHere(0, state);
     }
   }
-  cc.incrementFlag = function(state, flagName)
-  {
+  cc.incrementFlag = function(state, flagName) {
     state.flags[flagName] = (state.flags[flagName] || 0) + 1;
   }
-  cc.decrementFlag = function(state, flagName)
-  {
+  cc.decrementFlag = function(state, flagName) {
     state.flags[flagName]--;
   }
-  cc.incrementAttrib = function(state, attribName)
-  {
+  cc.incrementAttrib = function(state, attribName) {
     if (!state.attribs[attribName])
     {
       state.attribs[attribName] = 1;
@@ -239,14 +209,12 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     }
     _recalcAttribString(state);
   }
-  cc.decrementAttrib = function(state, attribName)
-  {
+  cc.decrementAttrib = function(state, attribName) {
     state.attribs[attribName]--;
     _recalcAttribString(state);
   }
 
-  function _enterList(state, listType)
-  {
+  function _enterList(state, listType) {
     if(!listType) return;
     var oldListType = state.lineAttributes['list'];
     if (listType != 'none')
@@ -268,8 +236,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     return oldListType;
   }
 
-  function _exitList(state, oldListType)
-  {
+  function _exitList(state, oldListType) {
     if (state.lineAttributes['list']) {
       state.listNesting--;
     }
@@ -283,8 +250,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     _recalcAttribString(state);
   }
 
-  function _enterAuthor(state, author)
-  {
+  function _enterAuthor(state, author) {
     var oldAuthor = state.author;
     state.authorLevel = (state.authorLevel || 0) + 1;
     state.author = author;
@@ -292,15 +258,13 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     return oldAuthor;
   }
 
-  function _exitAuthor(state, oldAuthor)
-  {
+  function _exitAuthor(state, oldAuthor) {
     state.authorLevel--;
     state.author = oldAuthor;
     _recalcAttribString(state);
   }
 
-  function _recalcAttribString(state)
-  {
+  function _recalcAttribString(state) {
     var lst = [];
     for (var a in state.attribs)
     {
@@ -338,8 +302,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     state.attribString = Changeset.makeAttribsString('+', lst, apool);
   }
 
-  function _produceLineAttributesMarker(state)
-  {
+  function _produceLineAttributesMarker(state) {
     // TODO: This has to go to AttributeManager.
     var attributes = [
       ['lmkr', '1'],
@@ -351,8 +314,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     );
     lines.appendText('*', Changeset.makeAttribsString('+', attributes , apool));
   }
-  cc.startNewLine = function(state)
-  {
+  cc.startNewLine = function(state) {
     if (state)
     {
       var atBeginningOfLine = lines.textOfLine(lines.length() - 1).length == 0;
@@ -363,8 +325,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     }
     lines.startNew();
   }
-  cc.notifySelection = function(sel)
-  {
+  cc.notifySelection = function(sel) {
     if (sel)
     {
       selection = sel;
@@ -372,14 +333,12 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
       endPoint = selection.endPoint;
     }
   };
-  cc.doAttrib = function(state, na)
-  {
+  cc.doAttrib = function(state, na) {
     state.localAttribs = (state.localAttribs || []);
     state.localAttribs.push(na);
     cc.incrementAttrib(state, na);
   };
-  cc.collectContent = function(node, state)
-  {
+  cc.collectContent = function(node, state) {
     if (!state)
     {
       state = {
@@ -746,8 +705,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     state.localAttribs = localAttribs;
   };
   // can pass a falsy value for end of doc
-  cc.notifyNextNode = function(node)
-  {
+  cc.notifyNextNode = function(node) {
     // an "empty block" won't end a line; this addresses an issue in IE with
     // typing into a blank line at the end of the document.  typed text
     // goes into the body, and the empty line div still looks clean.
@@ -759,25 +717,21 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     }
   };
   // each returns [line, char] or [-1,-1]
-  var getSelectionStart = function()
-    {
+  var getSelectionStart = function() {
       return selStart;
       };
-  var getSelectionEnd = function()
-    {
+  var getSelectionEnd = function() {
       return selEnd;
       };
 
   // returns array of strings for lines found, last entry will be "" if
   // last line is complete (i.e. if a following span should be on a new line).
   // can be called at any point
-  cc.getLines = function()
-  {
+  cc.getLines = function() {
     return lines.textLines();
   };
 
-  cc.finish = function()
-  {
+  cc.finish = function() {
     lines.flush();
     var lineAttribs = lines.attribLines();
     var lineStrings = cc.getLines();
@@ -788,8 +742,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     var ss = getSelectionStart();
     var se = getSelectionEnd();
 
-    function fixLongLines()
-    {
+    function fixLongLines() {
       // design mode does not deal with with really long lines!
       var lineLimit = 2000; // chars
       var buffer = 10; // chars allowed over before wrapping
@@ -819,8 +772,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
             newAttribStrings.push(oldAttribString);
           }
 
-          function fixLineNumber(lineChar)
-          {
+          function fixLineNumber(lineChar) {
             if (lineChar[0] < 0) return;
             var n = lineChar[0];
             var c = lineChar[1];

@@ -26,15 +26,13 @@ var _ = require('./underscore');
 var padmodals = require('./pad_modals').padmodals;
 var colorutils = require('./colorutils').colorutils;
 
-function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
-{
+function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded) {
   var BroadcastSlider;
 
   // Hack to ensure timeslider i18n values are in
   $("[data-key='timeslider_returnToPad'] > a > span").html(html10n.get("timeslider.toolbar.returnbutton"));
 
-  (function()
-  { // wrap this code in its own namespace
+  (function() { // wrap this code in its own namespace
     var sliderLength = 1000;
     var sliderPos = 0;
     var sliderActive = false;
@@ -42,8 +40,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
     var savedRevisions = [];
     var sliderPlaying = false;
 
-    var _callSliderCallbacks = function(newval)
-      {
+    var _callSliderCallbacks = function(newval) {
         sliderPos = newval;
         for (var i = 0; i < slidercallbacks.length; i++)
         {
@@ -51,8 +48,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
         }
       }
 
-    var updateSliderElements = function()
-      {
+    var updateSliderElements = function() {
         for (var i = 0; i < savedRevisions.length; i++)
         {
           var position = parseInt(savedRevisions[i].attr('pos'));
@@ -61,23 +57,20 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
         $("#ui-slider-handle").css('left', sliderPos * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0));
       }
 
-    var addSavedRevision = function(position, info)
-      {
+    var addSavedRevision = function(position, info) {
         var newSavedRevision = $('<div></div>');
         newSavedRevision.addClass("star");
 
         newSavedRevision.attr('pos', position);
         newSavedRevision.css('left', (position * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0)) - 1);
         $("#ui-slider-bar").append(newSavedRevision);
-        newSavedRevision.mouseup(function(evt)
-        {
+        newSavedRevision.mouseup(function(evt) {
           BroadcastSlider.setSliderPosition(position);
         });
         savedRevisions.push(newSavedRevision);
       };
 
-    var removeSavedRevision = function(position)
-      {
+    var removeSavedRevision = function(position) {
         var element = $("div.star [pos=" + position + "]");
         savedRevisions.remove(element);
         element.remove();
@@ -86,18 +79,15 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
 
     /* Begin small 'API' */
 
-    function onSlider(callback)
-    {
+    function onSlider(callback) {
       slidercallbacks.push(callback);
     }
 
-    function getSliderPosition()
-    {
+    function getSliderPosition() {
       return sliderPos;
     }
 
-    function setSliderPosition(newpos)
-    {
+    function setSliderPosition(newpos) {
       newpos = Number(newpos);
       if (newpos < 0 || newpos > sliderLength) return;
       if(!newpos){
@@ -105,8 +95,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       }
       window.location.hash = "#" + newpos;
       $("#ui-slider-handle").css('left', newpos * ($("#ui-slider-bar").width() - 2) / (sliderLength * 1.0));
-      $("a.tlink").map(function()
-      {
+      $("a.tlink").map(function() {
         $(this).attr('href', $(this).attr('thref').replace("%revision%", newpos));
       });
 
@@ -119,33 +108,28 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       _callSliderCallbacks(newpos);
     }
 
-    function getSliderLength()
-    {
+    function getSliderLength() {
       return sliderLength;
     }
 
-    function setSliderLength(newlength)
-    {
+    function setSliderLength(newlength) {
       sliderLength = newlength;
       updateSliderElements();
     }
 
     // just take over the whole slider screen with a reconnect message
 
-    function showReconnectUI()
-    {
+    function showReconnectUI() {
       padmodals.showModal("disconnected");
     }
 
-    function setAuthors(authors)
-    {
+    function setAuthors(authors) {
       var authorsList = $("#authorsList");
       authorsList.empty();
       var numAnonymous = 0;
       var numNamed = 0;
       var colorsAnonymous = [];
-      _.each(authors, function(author)
-      {
+      _.each(authors, function(author) {
         if(author)
         {
           var authorColor = clientVars.colorPalette[author.colorId] || author.colorId;
@@ -204,8 +188,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       setSliderPosition: setSliderPosition,
       getSliderLength: getSliderLength,
       setSliderLength: setSliderLength,
-      isSliderActive: function()
-      {
+      isSliderActive: function() {
         return sliderActive;
       },
       playpause: playpause,
@@ -214,8 +197,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       setAuthors: setAuthors
     }
 
-    function playButtonUpdater()
-    {
+    function playButtonUpdater() {
       if (sliderPlaying)
       {
         if (getSliderPosition() + 1 > sliderLength)
@@ -230,8 +212,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       }
     }
 
-    function playpause()
-    {
+    function playpause() {
       $("#playpause_button_icon").toggleClass('pause');
 
       if (!sliderPlaying)
@@ -247,10 +228,8 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
     }
 
     // assign event handlers to html UI elements after page load
-    fireWhenAllScriptsAreLoaded.push(function()
-    {
-      $(document).keyup(function(e)
-      {
+    fireWhenAllScriptsAreLoaded.push(function() {
+      $(document).keyup(function(e) {
         if (!e) var e = window.event;
         var code = e.keyCode || e.which;
 
@@ -277,27 +256,23 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       });
 
       // Resize
-      $(window).resize(function()
-      {
+      $(window).resize(function() {
         updateSliderElements();
       });
 
       // Slider click
-      $("#ui-slider-bar").mousedown(function(evt)
-      {
+      $("#ui-slider-bar").mousedown(function(evt) {
         $("#ui-slider-handle").css('left', (evt.clientX - $("#ui-slider-bar").offset().left));
         $("#ui-slider-handle").trigger(evt);
       });
 
       // Slider dragging
-      $("#ui-slider-handle").mousedown(function(evt)
-      {
+      $("#ui-slider-handle").mousedown(function(evt) {
         this.startLoc = evt.clientX;
         this.currentLoc = parseInt($(this).css('left'));
         var self = this;
         sliderActive = true;
-        $(document).mousemove(function(evt2)
-        {
+        $(document).mousemove(function(evt2) {
           $(self).css('pointer', 'move')
           var newloc = self.currentLoc + (evt2.clientX - self.startLoc);
           if (newloc < 0) newloc = 0;
@@ -306,8 +281,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
           $(self).css('left', newloc);
           if (getSliderPosition() != Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2))) _callSliderCallbacks(Math.floor(newloc * sliderLength / ($("#ui-slider-bar").width() - 2)))
         });
-        $(document).mouseup(function(evt2)
-        {
+        $(document).mouseup(function(evt2) {
           $(document).unbind('mousemove');
           $(document).unbind('mouseup');
           sliderActive = false;
@@ -326,14 +300,12 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
       })
 
       // play/pause toggling
-      $("#playpause_button_icon").click(function(evt)
-      {
+      $("#playpause_button_icon").click(function(evt) {
         BroadcastSlider.playpause();
       });
 
       // next/prev saved revision and changeset
-      $('.stepper').click(function(evt)
-      {
+      $('.stepper').click(function(evt) {
         switch ($(this).attr("id")) {
           case "leftstep":
             setSliderPosition(getSliderPosition() - 1);
@@ -380,8 +352,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
         setSliderLength(clientVars.collab_client_vars.rev);
         setSliderPosition(clientVars.collab_client_vars.rev);
 
-        _.each(clientVars.savedRevisions, function(revision)
-        {
+        _.each(clientVars.savedRevisions, function(revision) {
           addSavedRevision(revision.revNum, revision);
         })
 
@@ -389,8 +360,7 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded)
     });
   })();
 
-  BroadcastSlider.onSlider(function(loc)
-  {
+  BroadcastSlider.onSlider(function(loc) {
     $("#viewlatest").html(loc == BroadcastSlider.getSliderLength() ? "Viewing latest content" : "View latest content");
   })
 

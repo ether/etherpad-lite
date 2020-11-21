@@ -18,8 +18,7 @@ var log4js = require('log4js');
 const db = require("../db/DB");
 const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
-exports.setPadRaw = function(padId, records)
-{
+exports.setPadRaw = function(padId, records) {
   records = JSON.parse(records);
 
   Object.keys(records).forEach(async function(key) {

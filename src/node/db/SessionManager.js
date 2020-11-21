@@ -78,8 +78,7 @@ exports.findAuthorID = async (groupID, sessionCookie) => {
   return sessionInfo.authorID;
 };
 
-exports.doesSessionExist = async function(sessionID)
-{
+exports.doesSessionExist = async function(sessionID) {
   //check if the database entry of this session exists
   let session = await db.get("session:" + sessionID);
   return (session !== null);
@@ -88,8 +87,7 @@ exports.doesSessionExist = async function(sessionID)
 /**
  * Creates a new session between an author and a group
  */
-exports.createSession = async function(groupID, authorID, validUntil)
-{
+exports.createSession = async function(groupID, authorID, validUntil) {
   // check if the group exists
   let groupExists = await groupManager.doesGroupExist(groupID);
   if (!groupExists) {
@@ -172,8 +170,7 @@ exports.createSession = async function(groupID, authorID, validUntil)
   return { sessionID };
 }
 
-exports.getSessionInfo = async function(sessionID)
-{
+exports.getSessionInfo = async function(sessionID) {
   // check if the database entry of this session exists
   let session = await db.get("session:" + sessionID);
 
@@ -189,8 +186,7 @@ exports.getSessionInfo = async function(sessionID)
 /**
  * Deletes a session
  */
-exports.deleteSession = async function(sessionID)
-{
+exports.deleteSession = async function(sessionID) {
   // ensure that the session exists
   let session = await db.get("session:" + sessionID);
   if (session == null) {
@@ -221,8 +217,7 @@ exports.deleteSession = async function(sessionID)
   }
 }
 
-exports.listSessionsOfGroup = async function(groupID)
-{
+exports.listSessionsOfGroup = async function(groupID) {
   // check that the group exists
   let exists = await groupManager.doesGroupExist(groupID);
   if (!exists) {
@@ -233,8 +228,7 @@ exports.listSessionsOfGroup = async function(groupID)
   return sessions;
 }
 
-exports.listSessionsOfAuthor = async function(authorID)
-{
+exports.listSessionsOfAuthor = async function(authorID) {
   // check that the author exists
   let exists = await authorManager.doesAuthorExist(authorID)
   if (!exists) {
@@ -247,8 +241,7 @@ exports.listSessionsOfAuthor = async function(authorID)
 
 // this function is basically the code listSessionsOfAuthor and listSessionsOfGroup has in common
 // required to return null rather than an empty object if there are none
-async function listSessionsWithDBKey(dbkey)
-{
+async function listSessionsWithDBKey(dbkey) {
   // get the group2sessions entry
   let sessionObject = await db.get(dbkey);
   let sessions = sessionObject ? sessionObject.sessionIDs : null;
@@ -272,7 +265,6 @@ async function listSessionsWithDBKey(dbkey)
 }
 
 // checks if a number is an int
-function is_int(value)
-{
+function is_int(value) {
   return (parseFloat(value) == parseInt(value)) && !isNaN(value);
 }

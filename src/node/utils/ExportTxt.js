@@ -23,8 +23,7 @@ var padManager = require("../db/PadManager");
 var _analyzeLine = require('./ExportHelper')._analyzeLine;
 
 // This is slightly different than the HTML method as it passes the output to getTXTFromAText
-var getPadTXT = async function(pad, revNum)
-{
+var getPadTXT = async function(pad, revNum) {
   let atext = pad.atext;
 
   if (revNum != undefined) {
@@ -38,8 +37,7 @@ var getPadTXT = async function(pad, revNum)
 
 // This is different than the functionality provided in ExportHtml as it provides formatting
 // functionality that is designed specifically for TXT exports
-function getTXTFromAtext(pad, atext, authorColors)
-{
+function getTXTFromAtext(pad, atext, authorColors) {
   var apool = pad.apool();
   var textLines = atext.text.slice(0, -1).split('\n');
   var attribLines = Changeset.splitAttributionLines(atext.attribs, atext.text);
@@ -259,8 +257,7 @@ function getTXTFromAtext(pad, atext, authorColors)
 
 exports.getTXTFromAtext = getTXTFromAtext;
 
-exports.getPadTXTDocument = async function(padId, revNum)
-{
+exports.getPadTXTDocument = async function(padId, revNum) {
   let pad = await padManager.getPad(padId);
   return getPadTXT(pad, revNum);
 }

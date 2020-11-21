@@ -30,17 +30,14 @@ var colorPickerSetup = false;
 var previousColorId = 0;
 
 
-var paduserlist = (function()
-{
+var paduserlist = (function() {
 
-  var rowManager = (function()
-  {
+  var rowManager = (function() {
     // The row manager handles rendering rows of the user list and animating
     // their insertion, removal, and reordering.  It manipulates TD height
     // and TD opacity.
 
-    function nextRowId()
-    {
+    function nextRowId() {
       return "usertr" + (nextRowId.counter++);
     }
     nextRowId.counter = 1;
@@ -52,8 +49,7 @@ var paduserlist = (function()
     var ANIMATION_END = 12; // just finishing fading out
 
 
-    function getAnimationHeight(step, power)
-    {
+    function getAnimationHeight(step, power) {
       var a = Math.abs(step / 12);
       if (power == 2) a = a * a;
       else if (power == 3) a = a * a * a;
@@ -72,18 +68,15 @@ var paduserlist = (function()
     // we do lots of manipulation of table rows and stuff that JQuery makes ok, despite
     // IE's poor handling when manipulating the DOM directly.
 
-    function getEmptyRowHtml(height)
-    {
+    function getEmptyRowHtml(height) {
       return '<td colspan="' + NUMCOLS + '" style="border:0;height:' + height + 'px"><!-- --></td>';
     }
 
-    function isNameEditable(data)
-    {
+    function isNameEditable(data) {
       return (!data.name) && (data.status != 'Disconnected');
     }
 
-    function replaceUserRowContents(tr, height, data)
-    {
+    function replaceUserRowContents(tr, height, data) {
       var tds = getUserRowHtml(height, data).match(/<td.*?<\/td>/gi);
       if (isNameEditable(data) && tr.find("td.usertdname input:enabled").length > 0)
       {
@@ -104,8 +97,7 @@ var paduserlist = (function()
       return tr;
     }
 
-    function getUserRowHtml(height, data)
-    {
+    function getUserRowHtml(height, data) {
       var nameHtml;
       if (data.name)
       {
@@ -119,18 +111,15 @@ var paduserlist = (function()
       return ['<td style="height:', height, 'px" class="usertdswatch"><div class="swatch" style="background:' + padutils.escapeHtml(data.color) + '">&nbsp;</div></td>', '<td style="height:', height, 'px" class="usertdname">', nameHtml, '</td>', '<td style="height:', height, 'px" class="activity">', padutils.escapeHtml(data.activity), '</td>'].join('');
     }
 
-    function getRowHtml(id, innerHtml, authorId)
-    {
+    function getRowHtml(id, innerHtml, authorId) {
       return '<tr data-authorId="'+authorId+'" id="' + id + '">' + innerHtml + '</tr>';
     }
 
-    function rowNode(row)
-    {
+    function rowNode(row) {
       return $("#" + row.domId);
     }
 
-    function handleRowData(row)
-    {
+    function handleRowData(row) {
       if (row.data && row.data.status == 'Disconnected')
       {
         row.opacity = 0.5;
@@ -141,13 +130,11 @@ var paduserlist = (function()
       }
     }
 
-    function handleRowNode(tr, data)
-    {
+    function handleRowNode(tr, data) {
       if (data.titleText)
       {
         var titleText = data.titleText;
-        window.setTimeout(function()
-        {
+        window.setTimeout(function() {
           /* tr.attr('title', titleText)*/
         }, 0);
       }
@@ -157,11 +144,9 @@ var paduserlist = (function()
       }
     }
 
-    function handleOtherUserInputs()
-    {
+    function handleOtherUserInputs() {
       // handle 'INPUT' elements for naming other unnamed users
-      $("#otheruserstable input.newinput").each(function()
-      {
+      $("#otheruserstable input.newinput").each(function() {
         var input = $(this);
         var tr = input.closest("tr");
         if (tr.length > 0)
@@ -179,8 +164,7 @@ var paduserlist = (function()
     // animationPower is 0 to skip animation, 1 for linear, 2 for quadratic, etc.
 
 
-    function insertRow(position, data, animationPower)
-    {
+    function insertRow(position, data, animationPower) {
       position = Math.max(0, Math.min(rowsPresent.length, position));
       animationPower = (animationPower === undefined ? 4 : animationPower);
 
@@ -227,8 +211,7 @@ var paduserlist = (function()
       return row;
     }
 
-    function updateRow(position, data)
-    {
+    function updateRow(position, data) {
       var row = rowsPresent[position];
       if (row)
       {
@@ -245,8 +228,7 @@ var paduserlist = (function()
       }
     }
 
-    function removeRow(position, animationPower)
-    {
+    function removeRow(position, animationPower) {
       animationPower = (animationPower === undefined ? 4 : animationPower);
       var row = rowsPresent[position];
       if (row)
@@ -272,8 +254,7 @@ var paduserlist = (function()
     // newPosition is position after the row has been removed
 
 
-    function moveRow(oldPosition, newPosition, animationPower)
-    {
+    function moveRow(oldPosition, newPosition, animationPower) {
       animationPower = (animationPower === undefined ? 1 : animationPower); // linear is best
       var row = rowsPresent[oldPosition];
       if (row && oldPosition != newPosition)
@@ -284,8 +265,7 @@ var paduserlist = (function()
       }
     }
 
-    function animateStep()
-    {
+    function animateStep() {
       // animation must be symmetrical
       for (var i = rowsFadingIn.length - 1; i >= 0; i--)
       { // backwards to allow removal
@@ -357,10 +337,8 @@ var paduserlist = (function()
   var otherUsersInfo = [];
   var otherUsersData = [];
 
-  function rowManagerMakeNameEditor(jnode, userId)
-  {
-    setUpEditable(jnode, function()
-    {
+  function rowManagerMakeNameEditor(jnode, userId) {
+    setUpEditable(jnode, function() {
       var existingIndex = findExistingIndex(userId);
       if (existingIndex >= 0)
       {
@@ -370,8 +348,7 @@ var paduserlist = (function()
       {
         return '';
       }
-    }, function(newName)
-    {
+    }, function(newName) {
       if (!newName)
       {
         jnode.addClass("editempty");
@@ -385,8 +362,7 @@ var paduserlist = (function()
     });
   }
 
-  function findExistingIndex(userId)
-  {
+  function findExistingIndex(userId) {
     var existingIndex = -1;
     for (var i = 0; i < otherUsersInfo.length; i++)
     {
@@ -399,10 +375,8 @@ var paduserlist = (function()
     return existingIndex;
   }
 
-  function setUpEditable(jqueryNode, valueGetter, valueSetter)
-  {
-    jqueryNode.bind('focus', function(evt)
-    {
+  function setUpEditable(jqueryNode, valueGetter, valueSetter) {
+    jqueryNode.bind('focus', function(evt) {
       var oldValue = valueGetter();
       if (jqueryNode.val() !== oldValue)
       {
@@ -410,16 +384,13 @@ var paduserlist = (function()
       }
       jqueryNode.addClass("editactive").removeClass("editempty");
     });
-    jqueryNode.bind('blur', function(evt)
-    {
+    jqueryNode.bind('blur', function(evt) {
       var newValue = jqueryNode.removeClass("editactive").val();
       valueSetter(newValue);
     });
-    padutils.bindEnterAndEscape(jqueryNode, function onEnter()
-    {
+    padutils.bindEnterAndEscape(jqueryNode, function onEnter() {
       jqueryNode.blur();
-    }, function onEscape()
-    {
+    }, function onEscape() {
       jqueryNode.val(valueGetter()).blur();
     });
     jqueryNode.removeAttr('disabled').addClass('editable');
@@ -429,8 +400,7 @@ var paduserlist = (function()
   var guestPromptFlashState = 0;
   var guestPromptFlash = padutils.makeAnimationScheduler(
 
-  function()
-  {
+  function() {
     var prompts = $("#guestprompts .guestprompt");
     if (prompts.length == 0)
     {
@@ -452,8 +422,7 @@ var paduserlist = (function()
 
   var pad = undefined;
   var self = {
-    init: function(myInitialUserInfo, _pad)
-    {
+    init: function(myInitialUserInfo, _pad) {
       pad = _pad;
 
       self.setMyUserInfo(myInitialUserInfo);
@@ -465,17 +434,14 @@ var paduserlist = (function()
       if (pad.getUserIsGuest())
       {
         $("#myusernameedit").addClass('myusernameedithoverable');
-        setUpEditable($("#myusernameedit"), function()
-        {
+        setUpEditable($("#myusernameedit"), function() {
           return myUserInfo.name || '';
-        }, function(newValue)
-        {
+        }, function(newValue) {
           myUserInfo.name = newValue;
           pad.notifyChangeName(newValue);
           // wrap with setTimeout to do later because we get
           // a double "blur" fire in IE...
-          window.setTimeout(function()
-          {
+          window.setTimeout(function() {
             self.renderMyUserInfo();
           }, 0);
         });
@@ -483,23 +449,19 @@ var paduserlist = (function()
 
       // color picker
       $("#myswatchbox").click(showColorPicker);
-      $("#mycolorpicker .pickerswatchouter").click(function()
-      {
+      $("#mycolorpicker .pickerswatchouter").click(function() {
         $("#mycolorpicker .pickerswatchouter").removeClass('picked');
         $(this).addClass('picked');
       });
-      $("#mycolorpickersave").click(function()
-      {
+      $("#mycolorpickersave").click(function() {
         closeColorPicker(true);
       });
-      $("#mycolorpickercancel").click(function()
-      {
+      $("#mycolorpickercancel").click(function() {
         closeColorPicker(false);
       });
       //
     },
-    usersOnline: function()
-    {
+    usersOnline: function() {
       // Returns an object of users who are currently online on this pad
       var userList = [].concat(otherUsersInfo); // Make a copy of the otherUsersInfo, otherwise every call to users modifies the referenced array
       // Now we need to add ourselves..
@@ -527,8 +489,7 @@ var paduserlist = (function()
       }
       return userList;
     },
-    setMyUserInfo: function(info)
-    {
+    setMyUserInfo: function(info) {
       //translate the colorId
       if(typeof info.colorId == "number")
       {
@@ -540,8 +501,7 @@ var paduserlist = (function()
 
       self.renderMyUserInfo();
     },
-    userJoinOrUpdate: function(info)
-    {
+    userJoinOrUpdate: function(info) {
       if ((!info.userId) || (info.userId == myUserInfo.userId))
       {
         // not sure how this would happen
@@ -568,8 +528,7 @@ var paduserlist = (function()
       {
         numUsersBesides--;
       }
-      var newIndex = padutils.binarySearch(numUsersBesides, function(n)
-      {
+      var newIndex = padutils.binarySearch(numUsersBesides, function(n) {
         if (existingIndex >= 0 && n >= existingIndex)
         {
           // pretend existingIndex isn't there
@@ -611,8 +570,7 @@ var paduserlist = (function()
 
       self.updateNumberOfOnlineUsers();
     },
-    updateNumberOfOnlineUsers: function()
-    {
+    updateNumberOfOnlineUsers: function() {
       var online = 1; // you are always online!
       for (var i = 0; i < otherUsersData.length; i++)
       {
@@ -626,8 +584,7 @@ var paduserlist = (function()
 
       return online;
     },
-    userLeave: function(info)
-    {
+    userLeave: function(info) {
       var existingIndex = findExistingIndex(info.userId);
       if (existingIndex >= 0)
       {
@@ -642,8 +599,7 @@ var paduserlist = (function()
         // joins, or updates happen for this user in the
         // next N seconds, to remove the user from the list.
         var thisUserId = info.userId;
-        var thisLeaveTimer = window.setTimeout(function()
-        {
+        var thisLeaveTimer = window.setTimeout(function() {
           var newExistingIndex = findExistingIndex(thisUserId);
           if (newExistingIndex >= 0)
           {
@@ -664,8 +620,7 @@ var paduserlist = (function()
 
       self.updateNumberOfOnlineUsers();
     },
-    showGuestPrompt: function(userId, displayName)
-    {
+    showGuestPrompt: function(userId, displayName) {
       if (knocksToIgnore[userId])
       {
         return;
@@ -688,30 +643,25 @@ var paduserlist = (function()
         // update display name
         box.find(".guestname").html('<strong>'+_('pad.userlist.guest')+':</strong> ' + padutils.escapeHtml(displayName));
       }
-      var hideLater = padutils.getCancellableAction(actionName, function()
-      {
+      var hideLater = padutils.getCancellableAction(actionName, function() {
         self.removeGuestPrompt(userId);
       });
       window.setTimeout(hideLater, 15000); // time-out with no knock
       guestPromptFlash.scheduleAnimation();
     },
-    removeGuestPrompt: function(userId)
-    {
+    removeGuestPrompt: function(userId) {
       var box = $("#guestprompt-" + padutils.encodeUserId(userId));
       // remove ID now so a new knock by same user gets new, unfaded box
-      box.removeAttr('id').fadeOut("fast", function()
-      {
+      box.removeAttr('id').fadeOut("fast", function() {
         box.remove();
       });
 
       knocksToIgnore[userId] = true;
-      window.setTimeout(function()
-      {
+      window.setTimeout(function() {
         delete knocksToIgnore[userId];
       }, 5000);
     },
-    answerGuestPrompt: function(encodedUserId, approve)
-    {
+    answerGuestPrompt: function(encodedUserId, approve) {
       var guestId = padutils.decodeUserId(encodedUserId);
 
       var msg = {
@@ -724,8 +674,7 @@ var paduserlist = (function()
 
       self.removeGuestPrompt(guestId);
     },
-    renderMyUserInfo: function()
-    {
+    renderMyUserInfo: function() {
       if (myUserInfo.name)
       {
         $("#myusernameedit").removeClass("editempty").val(myUserInfo.name);
@@ -757,14 +706,12 @@ var paduserlist = (function()
   return self;
 }());
 
-function getColorPickerSwatchIndex(jnode)
-{
+function getColorPickerSwatchIndex(jnode) {
   //  return Number(jnode.get(0).className.match(/\bn([0-9]+)\b/)[1])-1;
   return $("#colorpickerswatches li").index(jnode);
 }
 
-function closeColorPicker(accept)
-{
+function closeColorPicker(accept) {
   if (accept)
   {
     var newColor = $("#mycolorpickerpreview").css("background-color");
@@ -792,8 +739,7 @@ function closeColorPicker(accept)
   $("#mycolorpicker").removeClass('popup-show');
 }
 
-function showColorPicker()
-{
+function showColorPicker() {
   previousColorId = myUserInfo.colorId;
   $.farbtastic('#colorpicker').setColor(myUserInfo.colorId)
 
@@ -813,8 +759,7 @@ function showColorPicker()
 
         li.appendTo(colorsList);
 
-        li.bind('click', function(event)
-        {
+        li.bind('click', function(event) {
           $("#colorpickerswatches li").removeClass('picked');
           $(event.target).addClass("picked");
 

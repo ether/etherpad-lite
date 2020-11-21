@@ -30,27 +30,23 @@ if(os.type().indexOf("Windows") > -1)
 {
   var stdoutBuffer = "";
 
-  doConvertTask = function(task, callback)
-  {
+  doConvertTask = function(task, callback) {
     //span an abiword process to perform the conversion
     var abiword = spawn(settings.abiword, ["--to=" + task.destFile, task.srcFile]);
 
     //delegate the processing of stdout to another function
-    abiword.stdout.on('data', function (data)
-    {
+    abiword.stdout.on('data', function (data) {
       //add data to buffer
       stdoutBuffer+=data.toString();
     });
 
     //append error messages to the buffer
-    abiword.stderr.on('data', function (data)
-    {
+    abiword.stderr.on('data', function (data) {
       stdoutBuffer += data.toString();
     });
 
     //throw exceptions if abiword is dieing
-    abiword.on('exit', function (code)
-    {
+    abiword.on('exit', function (code) {
       if(code != 0) {
         return callback(`Abiword died with exit code ${code}`);
       }
@@ -64,8 +60,7 @@ if(os.type().indexOf("Windows") > -1)
     });
   };
 
-  exports.convertFile = function(srcFile, destFile, type, callback)
-  {
+  exports.convertFile = function(srcFile, destFile, type, callback) {
     doConvertTask({"srcFile": srcFile, "destFile": destFile, "type": type}, callback);
   };
 }
@@ -82,21 +77,18 @@ else
     var firstPrompt = true;
 
     //append error messages to the buffer
-    abiword.stderr.on('data', function (data)
-    {
+    abiword.stderr.on('data', function (data) {
       stdoutBuffer += data.toString();
     });
 
     //abiword died, let's restart abiword and return an error with the callback
-    abiword.on('exit', function (code)
-    {
+    abiword.on('exit', function (code) {
       spawnAbiword();
       stdoutCallback(`Abiword died with exit code ${code}`);
     });
 
     //delegate the processing of stdout to a other function
-    abiword.stdout.on('data',function (data)
-    {
+    abiword.stdout.on('data',function (data) {
       //add data to buffer
       stdoutBuffer+=data.toString();
 
@@ -123,12 +115,10 @@ else
   };
   spawnAbiword();
 
-  doConvertTask = function(task, callback)
-  {
+  doConvertTask = function(task, callback) {
     abiword.stdin.write("convert " + task.srcFile + " " + task.destFile + " " + task.type + "\n");
     //create a callback that calls the task callback and the caller callback
-    stdoutCallback = function (err)
-    {
+    stdoutCallback = function (err) {
       callback();
       console.log("queue continue");
       try{
@@ -141,8 +131,7 @@ else
 
   //Queue with the converts we have to do
   var queue = async.queue(doConvertTask, 1);
-  exports.convertFile = function(srcFile, destFile, type, callback)
-  {
+  exports.convertFile = function(srcFile, destFile, type, callback) {
     queue.push({"srcFile": srcFile, "destFile": destFile, "type": type, "callback": callback});
   };
 }

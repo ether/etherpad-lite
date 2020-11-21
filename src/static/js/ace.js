@@ -41,8 +41,7 @@ function scriptTag(source) {
   )
 }
 
-function Ace2Editor()
-{
+function Ace2Editor() {
   var ace2 = Ace2Editor;
 
   var editor = {};
@@ -54,14 +53,11 @@ function Ace2Editor()
 
   var actionsPendingInit = [];
 
-  function pendingInit(func, optDoNow)
-  {
-    return function()
-    {
+  function pendingInit(func, optDoNow) {
+    return function() {
       var that = this;
       var args = arguments;
-      var action = function()
-      {
+      var action = function() {
         func.apply(that, args);
       }
       if (optDoNow)
@@ -79,8 +75,7 @@ function Ace2Editor()
     };
   }
 
-  function doActionsPendingInit()
-  {
+  function doActionsPendingInit() {
     _.each(actionsPendingInit, function(fn,i){
       fn()
     });
@@ -114,24 +109,20 @@ function Ace2Editor()
     });
   });
 
-  editor.exportText = function()
-  {
+  editor.exportText = function() {
     if (!loaded) return "(awaiting init)\n";
     return info.ace_exportText();
   };
 
-  editor.getFrame = function()
-  {
+  editor.getFrame = function() {
     return info.frame || null;
   };
 
-  editor.getDebugProperty = function(prop)
-  {
+  editor.getDebugProperty = function(prop) {
     return info.ace_getDebugProperty(prop);
   };
 
-  editor.getInInternationalComposition = function()
-  {
+  editor.getInInternationalComposition = function() {
     if (!loaded) return false;
     return info.ace_getInInternationalComposition();
   };
@@ -145,14 +136,12 @@ function Ace2Editor()
   // to prepareUserChangeset will return an updated changeset that takes into account the
   // latest user changes, and modify the changeset to be applied by applyPreparedChangesetToBase
   // accordingly.
-  editor.prepareUserChangeset = function()
-  {
+  editor.prepareUserChangeset = function() {
     if (!loaded) return null;
     return info.ace_prepareUserChangeset();
   };
 
-  editor.getUnhandledErrors = function()
-  {
+  editor.getUnhandledErrors = function() {
     if (!loaded) return [];
     // returns array of {error: <browser Error object>, time: +new Date()}
     return info.ace_getUnhandledErrors();
@@ -198,28 +187,24 @@ function Ace2Editor()
     }
   }
 
-  editor.destroy = pendingInit(function()
-  {
+  editor.destroy = pendingInit(function() {
     info.ace_dispose();
     info.frame.parentNode.removeChild(info.frame);
     delete ace2.registry[info.id];
     info = null; // prevent IE 6 closure memory leaks
   });
 
-  editor.init = function(containerId, initialCode, doneFunc)
-  {
+  editor.init = function(containerId, initialCode, doneFunc) {
 
     editor.importText(initialCode);
 
-    info.onEditorReady = function()
-    {
+    info.onEditorReady = function() {
       loaded = true;
       doActionsPendingInit();
       doneFunc();
     };
 
-    (function()
-    {
+    (function() {
       var doctype = "<!doctype html>";
 
       var iframeHTML = [];

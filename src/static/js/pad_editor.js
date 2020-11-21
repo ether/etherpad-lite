@@ -24,8 +24,7 @@ const Cookies = require('./pad_utils').Cookies;
 var padcookie = require('./pad_cookie').padcookie;
 var padutils = require('./pad_utils').padutils;
 
-var padeditor = (function()
-{
+var padeditor = (function() {
   var Ace2Editor = undefined;
   var pad = undefined;
   var settings = undefined;
@@ -34,14 +33,12 @@ var padeditor = (function()
     ace: null,
     // this is accessed directly from other files
     viewZoom: 100,
-    init: function(readyFunc, initialViewOptions, _pad)
-    {
+    init: function(readyFunc, initialViewOptions, _pad) {
       Ace2Editor = require('./ace').Ace2Editor;
       pad = _pad;
       settings = pad.settings;
 
-      function aceReady()
-      {
+      function aceReady() {
         $("#editorloadingbox").hide();
         if (readyFunc)
         {
@@ -62,24 +59,20 @@ var padeditor = (function()
       // view bar
       $("#viewbarcontents").show();
     },
-    initViewOptions: function()
-    {
+    initViewOptions: function() {
       // Line numbers
-      padutils.bindCheckboxChange($("#options-linenoscheck"), function()
-      {
+      padutils.bindCheckboxChange($("#options-linenoscheck"), function() {
         pad.changeViewOption('showLineNumbers', padutils.getCheckbox($("#options-linenoscheck")));
       });
 
       // Author colors
-      padutils.bindCheckboxChange($("#options-colorscheck"), function()
-      {
+      padutils.bindCheckboxChange($("#options-colorscheck"), function() {
         padcookie.setPref('showAuthorshipColors', padutils.getCheckbox("#options-colorscheck"));
         pad.changeViewOption('showAuthorColors', padutils.getCheckbox("#options-colorscheck"));
       });
 
       // Right to left
-      padutils.bindCheckboxChange($("#options-rtlcheck"), function()
-      {
+      padutils.bindCheckboxChange($("#options-rtlcheck"), function() {
         pad.changeViewOption('rtlIsTrue', padutils.getCheckbox($("#options-rtlcheck")))
       });
       html10n.bind('localized', function() {
@@ -88,8 +81,7 @@ var padeditor = (function()
       })
 
       // font family change
-      $("#viewfontmenu").change(function()
-      {
+      $("#viewfontmenu").change(function() {
         pad.changeViewOption('padFontFamily', $("#viewfontmenu").val());
       });
 
@@ -113,10 +105,8 @@ var padeditor = (function()
         window.html10n.localize([$("#languagemenu").val(), 'en']);
       });
     },
-    setViewOptions: function(newOptions)
-    {
-      function getOption(key, defaultValue)
-      {
+    setViewOptions: function(newOptions) {
+      function getOption(key, defaultValue) {
         var value = String(newOptions[key]);
         if (value == "true") return true;
         if (value == "false") return false;
@@ -146,31 +136,27 @@ var padeditor = (function()
 
       self.ace.setProperty("textface", newOptions['padFontFamily'] || "");
     },
-    dispose: function()
-    {
+    dispose: function() {
       if (self.ace)
       {
         self.ace.destroy();
         self.ace = null;
       }
     },
-    enable: function()
-    {
+    enable: function() {
       if (self.ace)
       {
         self.ace.setEditable(true);
       }
     },
-    disable: function()
-    {
+    disable: function() {
       if (self.ace)
       {
         self.ace.setProperty("grayedOut", true);
         self.ace.setEditable(false);
       }
     },
-    restoreRevisionText: function(dataFromServer)
-    {
+    restoreRevisionText: function(dataFromServer) {
       pad.addHistoricalAuthors(dataFromServer.historicalAuthorData);
       self.ace.importAText(dataFromServer.atext, dataFromServer.apool, true);
     }

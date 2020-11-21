@@ -16,8 +16,7 @@ var helper = {};
     });
   }
 
-  helper.randomString = function randomString(len)
-  {
+  helper.randomString = function randomString(len) {
     var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     var randomstring = '';
     for (var i = 0; i < len; i++)

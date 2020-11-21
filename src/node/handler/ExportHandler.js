@@ -49,8 +49,7 @@ const tempDirectory = os.tmpdir();
 /**
  * do a requested export
  */
-async function doExport(req, res, padId, readOnlyId, type)
-{
+async function doExport(req, res, padId, readOnlyId, type) {
   // avoid naming the read-only file as the original pad's id
   var fileName = readOnlyId ? readOnlyId : padId;
 
@@ -131,8 +130,7 @@ async function doExport(req, res, padId, readOnlyId, type)
   }
 }
 
-exports.doExport = function(req, res, padId, readOnlyId, type)
-{
+exports.doExport = function(req, res, padId, readOnlyId, type) {
   doExport(req, res, padId, readOnlyId, type).catch(err => {
     if (err !== "stop") {
       throw err;

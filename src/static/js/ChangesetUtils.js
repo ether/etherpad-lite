@@ -18,8 +18,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-exports.buildRemoveRange = function(rep, builder, start, end)
-{
+exports.buildRemoveRange = function(rep, builder, start, end) {
   var startLineOffset = rep.lines.offsetOfIndex(start[0]);
   var endLineOffset = rep.lines.offsetOfIndex(end[0]);
 
@@ -34,8 +33,7 @@ exports.buildRemoveRange = function(rep, builder, start, end)
   }
 }
 
-exports.buildKeepRange = function(rep, builder, start, end, attribs, pool)
-{
+exports.buildKeepRange = function(rep, builder, start, end, attribs, pool) {
   var startLineOffset = rep.lines.offsetOfIndex(start[0]);
   var endLineOffset = rep.lines.offsetOfIndex(end[0]);
 
@@ -50,8 +48,7 @@ exports.buildKeepRange = function(rep, builder, start, end, attribs, pool)
   }
 }
 
-exports.buildKeepToStartOfRange = function(rep, builder, start)
-{
+exports.buildKeepToStartOfRange = function(rep, builder, start) {
   var startLineOffset = rep.lines.offsetOfIndex(start[0]);
 
   builder.keep(startLineOffset, start[0]);

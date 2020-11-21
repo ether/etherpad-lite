@@ -44,10 +44,8 @@ linestylefilter.ATTRIB_CLASSES = {
 var lineAttributeMarker = 'lineAttribMarker';
 exports.lineAttributeMarker = lineAttributeMarker;
 
-linestylefilter.getAuthorClassName = function(author)
-{
-  return "author-" + author.replace(/[^a-y0-9]/g, function(c)
-  {
+linestylefilter.getAuthorClassName = function(author) {
+  return "author-" + author.replace(/[^a-y0-9]/g, function(c) {
     if (c == ".") return "-";
     return 'z' + c.charCodeAt(0) + 'z';
   });
@@ -55,8 +53,7 @@ linestylefilter.getAuthorClassName = function(author)
 
 // lineLength is without newline; aline includes newline,
 // but may be falsy if lineLength == 0
-linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFunc, apool)
-{
+linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFunc, apool) {
 
   // Plugin Hook to add more Attrib Classes
   for (const attribClasses of hooks.callAll('aceAttribClasses', linestylefilter.ATTRIB_CLASSES)) {
@@ -67,21 +64,18 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
 
   var nextAfterAuthorColors = textAndClassFunc;
 
-  var authorColorFunc = (function()
-  {
+  var authorColorFunc = (function() {
     var lineEnd = lineLength;
     var curIndex = 0;
     var extraClasses;
     var leftInAuthor;
 
-    function attribsToClasses(attribs)
-    {
+    function attribsToClasses(attribs) {
       var classes = '';
       var isLineAttribMarker = false;
 
       // For each attribute number
-      Changeset.eachAttribNumber(attribs, function(n)
-      {
+      Changeset.eachAttribNumber(attribs, function(n) {
         // Give us this attributes key
         var key = apool.getAttribKey(n);
         if (key)
@@ -127,15 +121,13 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
     var attributionIter = Changeset.opIterator(aline);
     var nextOp, nextOpClasses;
 
-    function goNextOp()
-    {
+    function goNextOp() {
       nextOp = attributionIter.next();
       nextOpClasses = (nextOp.opcode && attribsToClasses(nextOp.attribs));
     }
     goNextOp();
 
-    function nextClasses()
-    {
+    function nextClasses() {
       if (curIndex < lineEnd)
       {
         extraClasses = nextOpClasses;
@@ -150,8 +142,7 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
     }
     nextClasses();
 
-    return function(txt, cls)
-    {
+    return function(txt, cls) {
 
       var disableAuthColorForThisLine = hooks.callAll("disableAuthorColorsForThisLine", {
         linestylefilter: linestylefilter,
@@ -186,8 +177,7 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
   return authorColorFunc;
 };
 
-linestylefilter.getAtSignSplitterFilter = function(lineText, textAndClassFunc)
-{
+linestylefilter.getAtSignSplitterFilter = function(lineText, textAndClassFunc) {
   var at = /@/g;
   at.lastIndex = 0;
   var splitPoints = null;
@@ -206,10 +196,8 @@ linestylefilter.getAtSignSplitterFilter = function(lineText, textAndClassFunc)
   return linestylefilter.textAndClassFuncSplitter(textAndClassFunc, splitPoints);
 };
 
-linestylefilter.getRegexpFilter = function(regExp, tag)
-{
-  return function(lineText, textAndClassFunc)
-  {
+linestylefilter.getRegexpFilter = function(regExp, tag) {
+  return function(lineText, textAndClassFunc) {
     regExp.lastIndex = 0;
     var regExpMatchs = null;
     var splitPoints = null;
@@ -229,8 +217,7 @@ linestylefilter.getRegexpFilter = function(regExp, tag)
 
     if (!regExpMatchs) return textAndClassFunc;
 
-    function regExpMatchForIndex(idx)
-    {
+    function regExpMatchForIndex(idx) {
       for (var k = 0; k < regExpMatchs.length; k++)
       {
         var u = regExpMatchs[k];
@@ -242,11 +229,9 @@ linestylefilter.getRegexpFilter = function(regExp, tag)
       return false;
     }
 
-    var handleRegExpMatchsAfterSplit = (function()
-    {
+    var handleRegExpMatchsAfterSplit = (function() {
       var curIndex = 0;
-      return function(txt, cls)
-      {
+      return function(txt, cls) {
         var txtlen = txt.length;
         var newCls = cls;
         var regExpMatch = regExpMatchForIndex(curIndex);
@@ -270,8 +255,7 @@ linestylefilter.REGEX_URL = new RegExp(/(?:(?:https?|s?ftp|ftps|file|nfs):\/\/|(
 linestylefilter.getURLFilter = linestylefilter.getRegexpFilter(
 linestylefilter.REGEX_URL, 'url');
 
-linestylefilter.textAndClassFuncSplitter = function(func, splitPointsOpt)
-{
+linestylefilter.textAndClassFuncSplitter = function(func, splitPointsOpt) {
   var nextPointIndex = 0;
   var idx = 0;
 
@@ -281,8 +265,7 @@ linestylefilter.textAndClassFuncSplitter = function(func, splitPointsOpt)
     nextPointIndex++;
   }
 
-  function spanHandler(txt, cls)
-  {
+  function spanHandler(txt, cls) {
     if ((!splitPointsOpt) || nextPointIndex >= splitPointsOpt.length)
     {
       func(txt, cls);
@@ -318,16 +301,14 @@ linestylefilter.textAndClassFuncSplitter = function(func, splitPointsOpt)
   return spanHandler;
 };
 
-linestylefilter.getFilterStack = function(lineText, textAndClassFunc, abrowser)
-{
+linestylefilter.getFilterStack = function(lineText, textAndClassFunc, abrowser) {
   var func = linestylefilter.getURLFilter(lineText, textAndClassFunc);
 
   var hookFilters = hooks.callAll("aceGetFilterStack", {
     linestylefilter: linestylefilter,
     browser: abrowser
   });
-  _.map(hookFilters ,function(hookFilter)
-  {
+  _.map(hookFilters ,function(hookFilter) {
     func = hookFilter(lineText, func);
   });
 
@@ -343,8 +324,7 @@ linestylefilter.getFilterStack = function(lineText, textAndClassFunc, abrowser)
 };
 
 // domLineObj is like that returned by domline.createDomLine
-linestylefilter.populateDomLine = function(textLine, aline, apool, domLineObj)
-{
+linestylefilter.populateDomLine = function(textLine, aline, apool, domLineObj) {
   // remove final newline from text if any
   var text = textLine;
   if (text.slice(-1) == '\n')
@@ -352,8 +332,7 @@ linestylefilter.populateDomLine = function(textLine, aline, apool, domLineObj)
     text = text.substring(0, text.length - 1);
   }
 
-  function textAndClassFunc(tokenText, tokenClass)
-  {
+  function textAndClassFunc(tokenText, tokenClass) {
     domLineObj.appendSpan(tokenText, tokenClass);
   }
 

@@ -1,8 +1,7 @@
 // One rep.line(div) can be broken in more than one line in the browser.
 // This function is useful to get the caret position of the line as
 // is represented by the browser
-exports.getPosition = function ()
-{
+exports.getPosition = function () {
   var rect, line;
   var editor = $('#innerdocbody')[0];
   var range = getSelectionRange();
@@ -98,8 +97,7 @@ exports.getPositionTopOfPreviousBrowserLine = function(caretLinePosition, rep) {
   return previousLineTop;
 }
 
-function caretLineIsFirstBrowserLine(caretLineTop, rep)
-{
+function caretLineIsFirstBrowserLine(caretLineTop, rep) {
   var caretRepLine = rep.selStart[0];
   var lineNode = rep.lines.atIndex(caretRepLine).lineNode;
   var firstRootNode = getFirstRootChildNode(lineNode);
@@ -110,8 +108,7 @@ function caretLineIsFirstBrowserLine(caretLineTop, rep)
 }
 
 // find the first root node, usually it is a text node
-function getFirstRootChildNode(node)
-{
+function getFirstRootChildNode(node) {
   if(!node.firstChild){
     return node;
   }else{
@@ -120,8 +117,7 @@ function getFirstRootChildNode(node)
 
 }
 
-function getPreviousVisibleLine(line, rep)
-{
+function getPreviousVisibleLine(line, rep) {
   if (line < 0) {
     return 0;
   }else if (isLineVisible(line, rep)) {
@@ -131,8 +127,7 @@ function getPreviousVisibleLine(line, rep)
   }
 }
 
-function getDimensionOfLastBrowserLineOfRepLine(line, rep)
-{
+function getDimensionOfLastBrowserLineOfRepLine(line, rep) {
   var lineNode = rep.lines.atIndex(line).lineNode;
   var lastRootChildNode = getLastRootChildNode(lineNode);
 
@@ -141,8 +136,7 @@ function getDimensionOfLastBrowserLineOfRepLine(line, rep)
   return lastRootChildNodePosition;
 }
 
-function getLastRootChildNode(node)
-{
+function getLastRootChildNode(node) {
   if(!node.lastChild){
     return {
       node: node,
@@ -158,8 +152,7 @@ function getLastRootChildNode(node)
 // So, we can use the caret line to calculate the bottom of the line.
 // [2] the next line is part of another rep line. It's possible this line has different dimensions, so we
 // have to get the exactly dimension of it
-exports.getBottomOfNextBrowserLine = function(caretLinePosition, rep)
-{
+exports.getBottomOfNextBrowserLine = function(caretLinePosition, rep) {
   var nextLineBottom = caretLinePosition.bottom + caretLinePosition.height; //[1]
   var isCaretLineLastBrowserLine = caretLineIsLastBrowserLineOfRepLine(caretLinePosition.top, rep);
 
@@ -174,8 +167,7 @@ exports.getBottomOfNextBrowserLine = function(caretLinePosition, rep)
   return nextLineBottom;
 }
 
-function caretLineIsLastBrowserLineOfRepLine(caretLineTop, rep)
-{
+function caretLineIsLastBrowserLineOfRepLine(caretLineTop, rep) {
   var caretRepLine = rep.selStart[0];
   var lineNode = rep.lines.atIndex(caretRepLine).lineNode;
   var lastRootChildNode = getLastRootChildNode(lineNode);
@@ -185,8 +177,7 @@ function caretLineIsLastBrowserLineOfRepLine(caretLineTop, rep)
   return lastRootChildNodePosition.top === caretLineTop;
 }
 
-function getPreviousVisibleLine(line, rep)
-{
+function getPreviousVisibleLine(line, rep) {
   var firstLineOfPad = 0;
   if (line <= firstLineOfPad) {
     return firstLineOfPad;
@@ -198,8 +189,7 @@ function getPreviousVisibleLine(line, rep)
 }
 exports.getPreviousVisibleLine = getPreviousVisibleLine;
 
-function getNextVisibleLine(line, rep)
-{
+function getNextVisibleLine(line, rep) {
   var lastLineOfThePad = rep.lines.length() - 1;
   if (line >= lastLineOfThePad) {
     return lastLineOfThePad;
@@ -211,13 +201,11 @@ function getNextVisibleLine(line, rep)
 }
 exports.getNextVisibleLine = getNextVisibleLine;
 
-function isLineVisible(line, rep)
-{
+function isLineVisible(line, rep) {
   return rep.lines.atIndex(line).lineNode.offsetHeight > 0;
 }
 
-function getDimensionOfFirstBrowserLineOfRepLine(line, rep)
-{
+function getDimensionOfFirstBrowserLineOfRepLine(line, rep) {
   var lineNode = rep.lines.atIndex(line).lineNode;
   var firstRootChildNode = getFirstRootChildNode(lineNode);
 
@@ -226,8 +214,7 @@ function getDimensionOfFirstBrowserLineOfRepLine(line, rep)
   return firstRootChildNodePosition;
 }
 
-function getSelectionRange()
-{
+function getSelectionRange() {
   var selection;
   if (!window.getSelection) {
    return;

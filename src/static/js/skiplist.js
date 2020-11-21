@@ -25,13 +25,11 @@ var Ace2Common = require('./ace2_common'),
 
 var noop = Ace2Common.noop;
 
-function SkipList()
-{
+function SkipList() {
   var PROFILER = window.PROFILER;
   if (!PROFILER)
   {
-    PROFILER = function()
-    {
+    PROFILER = function() {
       return {
         start: noop,
         mark: noop,
@@ -71,8 +69,7 @@ function SkipList()
   // this point.
 
 
-  function _getPoint(targetLoc)
-  {
+  function _getPoint(targetLoc) {
     var numLevels = start.levels;
     var lvl = numLevels - 1;
     var i = -1,
@@ -106,15 +103,13 @@ function SkipList()
       idxs: idxs,
       loc: targetLoc,
       widthSkips: widthSkips,
-      toString: function()
-      {
+      toString: function() {
         return "getPoint(" + targetLoc + ")";
       }
     };
   }
 
-  function _getNodeAtOffset(targetOffset)
-  {
+  function _getNodeAtOffset(targetOffset) {
     var i = 0;
     var n = start;
     var lvl = start.levels - 1;
@@ -132,13 +127,11 @@ function SkipList()
     return n;
   }
 
-  function _entryWidth(e)
-  {
+  function _entryWidth(e) {
     return (e && e.width) || 0;
   }
 
-  function _insertKeyAtPoint(point, newKey, entry)
-  {
+  function _insertKeyAtPoint(point, newKey, entry) {
     var p = PROFILER("insertKey", false);
     var newNode = {
       key: newKey,
@@ -207,13 +200,11 @@ function SkipList()
     p.end();
   }
 
-  function _getNodeAtPoint(point)
-  {
+  function _getNodeAtPoint(point) {
     return point.nodes[0].downPtrs[0];
   }
 
-  function _incrementPoint(point)
-  {
+  function _incrementPoint(point) {
     point.loc++;
     for (var i = 0; i < point.nodes.length; i++)
     {
@@ -226,8 +217,7 @@ function SkipList()
     }
   }
 
-  function _deleteKeyAtPoint(point)
-  {
+  function _deleteKeyAtPoint(point) {
     var elem = point.nodes[0].downPtrs[0];
     var elemWidth = _entryWidth(elem.entry);
     for (var i = 0; i < point.nodes.length; i++)
@@ -256,8 +246,7 @@ function SkipList()
     totalWidth -= elemWidth;
   }
 
-  function _propagateWidthChange(node)
-  {
+  function _propagateWidthChange(node) {
     var oldWidth = node.downSkipWidths[0];
     var newWidth = _entryWidth(node.entry);
     var widthChange = newWidth - oldWidth;
@@ -275,8 +264,7 @@ function SkipList()
     totalWidth += widthChange;
   }
 
-  function _getNodeIndex(node, byWidth)
-  {
+  function _getNodeIndex(node, byWidth) {
     var dist = (byWidth ? 0 : -1);
     var n = node;
     while (n !== start)
@@ -289,8 +277,7 @@ function SkipList()
     return dist;
   }
 
-  function _getNodeByKey(key)
-  {
+  function _getNodeByKey(key) {
     return keyToNodeMap['$KEY$' + key];
   }
 
@@ -299,14 +286,12 @@ function SkipList()
   // all truthy entries.
 
 
-  function _search(entryFunc)
-  {
+  function _search(entryFunc) {
     var low = start;
     var lvl = start.levels - 1;
     var lowIndex = -1;
 
-    function f(node)
-    {
+    function f(node) {
       if (node === start) return false;
       else if (node === end) return true;
       else return entryFunc(node.entry);
@@ -331,19 +316,16 @@ that is a string.
   */
   var self = this;
   _.extend(this, {
-    length: function()
-    {
+    length: function() {
       return numNodes;
     },
-    atIndex: function(i)
-    {
+    atIndex: function(i) {
       if (i < 0) console.warn("atIndex(" + i + ")");
       if (i >= numNodes) console.warn("atIndex(" + i + ">=" + numNodes + ")");
       return _getNodeAtPoint(_getPoint(i)).entry;
     },
     // differs from Array.splice() in that new elements are in an array, not varargs
-    splice: function(start, deleteCount, newEntryArray)
-    {
+    splice: function(start, deleteCount, newEntryArray) {
       if (start < 0) console.warn("splice(" + start + ", ...)");
       if (start + deleteCount > numNodes)
       {
@@ -366,20 +348,16 @@ that is a string.
         node.entry = entry;
       }
     },
-    next: function(entry)
-    {
+    next: function(entry) {
       return _getNodeByKey(entry.key).downPtrs[0].entry || null;
     },
-    prev: function(entry)
-    {
+    prev: function(entry) {
       return _getNodeByKey(entry.key).upPtrs[0].entry || null;
     },
-    push: function(entry)
-    {
+    push: function(entry) {
       self.splice(numNodes, 0, [entry]);
     },
-    slice: function(start, end)
-    {
+    slice: function(start, end) {
       // act like Array.slice()
       if (start === undefined) start = 0;
       else if (start < 0) start += numNodes;
@@ -402,68 +380,54 @@ that is a string.
       }
       return array;
     },
-    atKey: function(key)
-    {
+    atKey: function(key) {
       return _getNodeByKey(key).entry;
     },
-    indexOfKey: function(key)
-    {
+    indexOfKey: function(key) {
       return _getNodeIndex(_getNodeByKey(key));
     },
-    indexOfEntry: function(entry)
-    {
+    indexOfEntry: function(entry) {
       return self.indexOfKey(entry.key);
     },
-    containsKey: function(key)
-    {
+    containsKey: function(key) {
       return !!(_getNodeByKey(key));
     },
     // gets the last entry starting at or before the offset
-    atOffset: function(offset)
-    {
+    atOffset: function(offset) {
       return _getNodeAtOffset(offset).entry;
     },
-    keyAtOffset: function(offset)
-    {
+    keyAtOffset: function(offset) {
       return self.atOffset(offset).key;
     },
-    offsetOfKey: function(key)
-    {
+    offsetOfKey: function(key) {
       return _getNodeIndex(_getNodeByKey(key), true);
     },
-    offsetOfEntry: function(entry)
-    {
+    offsetOfEntry: function(entry) {
       return self.offsetOfKey(entry.key);
     },
-    setEntryWidth: function(entry, width)
-    {
+    setEntryWidth: function(entry, width) {
       entry.width = width;
       _propagateWidthChange(_getNodeByKey(entry.key));
     },
-    totalWidth: function()
-    {
+    totalWidth: function() {
       return totalWidth;
     },
-    offsetOfIndex: function(i)
-    {
+    offsetOfIndex: function(i) {
       if (i < 0) return 0;
       if (i >= numNodes) return totalWidth;
       return self.offsetOfEntry(self.atIndex(i));
     },
-    indexOfOffset: function(offset)
-    {
+    indexOfOffset: function(offset) {
       if (offset <= 0) return 0;
       if (offset >= totalWidth) return numNodes;
       return self.indexOfEntry(self.atOffset(offset));
     },
-    search: function(entryFunc)
-    {
+    search: function(entryFunc) {
       return _search(entryFunc);
     },
     //debugToString: _debugToString,
     debugGetPoint: _getPoint,
-    debugDepth: function()
-    {
+    debugDepth: function() {
       return start.levels;
     }
   });

@@ -57,8 +57,7 @@ const tmpDirectory = os.tmpdir();
 /**
  * do a requested import
  */
-async function doImport(req, res, padId)
-{
+async function doImport(req, res, padId) {
   var apiLogger = log4js.getLogger("ImportHandler");
 
   // pipe to a file
@@ -265,8 +264,7 @@ async function doImport(req, res, padId)
   }
 }
 
-exports.doImport = function (req, res, padId)
-{
+exports.doImport = function (req, res, padId) {
   /**
    * NB: abuse the 'req' object by storing an additional
    * 'directDatabaseAccess' property on it so that it can

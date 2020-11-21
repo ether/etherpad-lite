@@ -3,8 +3,7 @@
  */
 var crypto = require('crypto');
 
-var randomString = function(len)
-{
+var randomString = function(len) {
   return crypto.randomBytes(len).toString('hex')
 };
 
