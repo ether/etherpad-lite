@@ -35,7 +35,7 @@ jobs:
       env:
         SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
         SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-        TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}
+        TRAVIS_JOB_NUMBER: ${{ github.job }}
         GIT_HASH: ${{ steps.environment.outputs.sha_short }}
       run: |
         tests/frontend/travis/runner.sh
@@ -53,7 +53,7 @@ jobs:
       env:
         SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
         SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-        TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}
+        TRAVIS_JOB_NUMBER: ${{ github.job }}
       run: tests/frontend/travis/sauce_tunnel.sh
 
     - name: Install all dependencies and symlink for ep_etherpad-lite
@@ -68,6 +68,10 @@ jobs:
 
     - name: Write custom settings.json with loglevel WARN
       run: "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/' < settings.json.template > settings.json"
+
+      # XXX we should probably run all tests, because plugins could effect their results
+    - name: Remove standard frontend test files, so only plugin tests are run
+      run: rm tests/frontend/specs/*
 
     - name: Run the frontend tests
       shell: bash
