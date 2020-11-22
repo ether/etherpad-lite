@@ -50,7 +50,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
   // some files we need to know the actual file name.  Not compulsory but might help in the future.
   var readMeFileName;
   var repository;
-  var hasAutofixed = false;
+  var hasAutoFixed = false;
 
   for (var i = 0; i < rootFiles.length; i++) {
     if(rootFiles[i].toLowerCase().indexOf("readme") !== -1) readMeFileName = rootFiles[i];
@@ -105,7 +105,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
         }
       }
       if(updatedPackageJSON){
-        hasAutofixed = true;
+        hasAutoFixed = true;
         fs.writeFileSync(pluginPath+"/package.json", JSON.stringify(parsedPackageJSON, null, 2));
       }
     }
@@ -120,6 +120,70 @@ fs.readdir(pluginPath, function (err, rootFiles) {
       repository = parsedPackageJSON.repository.url;
     }
 
+    // include lint config
+    if(packageJSON.toLowerCase().indexOf("devdependencies") === -1 || !parsedPackageJSON.devDependencies.eslint){
+      console.warn("Missing eslint reference in devDependencies");
+      if(autoFix){
+        let devDependencies = {
+          "eslint": "^7.14.0",
+          "eslint-config-etherpad": "^1.0.8",
+          "eslint-plugin-mocha": "^8.0.0",
+          "eslint-plugin-node": "^11.1.0",
+          "eslint-plugin-prefer-arrow": "^1.2.2",
+          "eslint-plugin-promise": "^4.2.1"
+        }
+        hasAutoFixed = true;
+        parsedPackageJSON.devDependencies = devDependencies;
+        fs.writeFileSync(pluginPath+"/package.json", JSON.stringify(parsedPackageJSON, null, 2));
+
+        let child_process = require('child_process');
+        try{
+          child_process.execSync('npm install',{"cwd":pluginPath+"/"});
+          hasAutoFixed = true;
+        }catch(e){
+          console.error("Failed to create package-lock.json");
+        }
+      }
+    }
+
+    if(packageJSON.toLowerCase().indexOf("eslintconfig") === -1){
+      console.warn("No esLintConfig in package.json");
+      if(autoFix){
+        let eslintConfig = {
+          "root": true,
+          "extends": "etherpad/plugin"
+        }
+        hasAutoFixed = true;
+        parsedPackageJSON.eslintConfig = eslintConfig;
+        fs.writeFileSync(pluginPath+"/package.json", JSON.stringify(parsedPackageJSON, null, 2));
+      }
+    }
+
+    if(packageJSON.toLowerCase().indexOf("scripts") === -1){
+      console.warn("No scripts in package.json");
+      if(autoFix){
+        let scripts = {
+          "lint": "eslint .",
+          "lint:fix": "eslint --fix ."
+        }
+        hasAutoFixed = true;
+        parsedPackageJSON.scripts = scripts;
+        fs.writeFileSync(pluginPath+"/package.json", JSON.stringify(parsedPackageJSON, null, 2));
+      }
+    }
+
+    if(packageJSON.toLowerCase().indexOf("engines") === -1){
+      console.warn("No engines in package.json");
+      if(autoFix){
+        let engines = {
+          "lint": "eslint ."
+        }
+        hasAutoFixed = true;
+        parsedPackageJSON.engines = engines;
+        fs.writeFileSync(pluginPath+"/package.json", JSON.stringify(parsedPackageJSON, null, 2));
+      }
+    }
+
   }
 
   if(files.indexOf("package-lock.json") === -1){
@@ -129,7 +193,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
       try{
         child_process.execSync('npm install',{"cwd":pluginPath+"/"});
         console.log("Making package-lock.json");
-        hasAutofixed = true;
+        hasAutoFixed = true;
       }catch(e){
         console.error("Failed to create package-lock.json");
       }
@@ -167,7 +231,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
   if(files.indexOf("license") === -1 && files.indexOf("license.md") === -1){
     console.warn("LICENSE.md file not found, please create");
     if(autoFix){
-      hasAutofixed = true;
+      hasAutoFixed = true;
       console.log("Autofixing missing LICENSE.md file, including Apache 2 license.");
       exec("git config user.name", (error, name, stderr) => {
         if (error) {
@@ -193,7 +257,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     console.warn(".travis.yml file not found, please create.  .travis.yml is used for automatically CI testing Etherpad.  It is useful to know if your plugin breaks another feature for example.")
     // TODO: Make it check version of the .travis file to see if it needs an update.
     if(autoFix){
-      hasAutofixed = true;
+      hasAutoFixed = true;
       console.log("Autofixing missing .travis.yml file");
       fs.writeFileSync(pluginPath+"/.travis.yml", travisConfig);
       console.log("Travis file created, please sign into travis and enable this repository")
@@ -215,7 +279,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
       if(newValue > existingValue){
         console.log("updating .travis.yml");
         fs.writeFileSync(pluginPath + "/.travis.yml", travisConfig);
-        hasAutofixed = true;
+        hasAutoFixed = true;
       }
     }
   }
@@ -223,7 +287,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
   if(files.indexOf(".gitignore") === -1){
     console.warn(".gitignore file not found, please create.  .gitignore files are useful to ensure files aren't incorrectly commited to a repository.")
     if(autoFix){
-      hasAutofixed = true;
+      hasAutoFixed = true;
       console.log("Autofixing missing .gitignore file");
       let gitignore = fs.readFileSync("bin/plugins/lib/gitignore", {encoding:'utf8', flag:'r'});
       fs.writeFileSync(pluginPath+"/.gitignore", gitignore);
@@ -239,7 +303,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
   if(files.indexOf(".ep_initialized") !== -1){
     console.warn(".ep_initialized found, please remove.  .ep_initialized should never be commited to git and should only exist once the plugin has been executed one time.")
     if(autoFix){
-      hasAutofixed = true;
+      hasAutoFixed = true;
       console.log("Autofixing incorrectly existing .ep_initialized file");
       fs.unlinkSync(pluginPath+"/.ep_initialized");
     }
@@ -248,7 +312,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
   if(files.indexOf("npm-debug.log") !== -1){
     console.warn("npm-debug.log found, please remove.  npm-debug.log should never be commited to your repository.")
     if(autoFix){
-      hasAutofixed = true;
+      hasAutoFixed = true;
       console.log("Autofixing incorrectly existing npm-debug.log file");
       fs.unlinkSync(pluginPath+"/npm-debug.log");
     }
@@ -264,7 +328,27 @@ fs.readdir(pluginPath, function (err, rootFiles) {
     console.warn("Test files not found, please create tests.  https://github.com/ether/etherpad-lite/wiki/Creating-a-plugin#writing-and-running-front-end-tests-for-your-plugin")
   }
 
-  if(hasAutofixed){
+  // linting begins
+  if(autoFix){
+    var lintCmd = 'npm run lint:fix';
+  }else{
+    var lintCmd = 'npm run lint';
+  }
+
+  try{
+    child_process.execSync(lintCmd,{"cwd":pluginPath+"/"});
+    console.log("Linting...");
+    if(autoFix){
+      // todo: if npm run lint doesn't do anything no need for...
+      hasAutoFixed = true;
+    }
+  }catch(e){
+    // it is gonna throw an error anyway
+    console.log("Manual linting probably required, check with: npm run lint");
+  }
+  // linting ends.
+
+  if(hasAutoFixed){
     console.log("Fixes applied, please check git diff then run the following command:\n\n")
     // bump npm Version
     if(autoCommit){
