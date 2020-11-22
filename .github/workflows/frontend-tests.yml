@@ -17,7 +17,7 @@ jobs:
       env:
         SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
         SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-        TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}
+        TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}
       run: tests/frontend/travis/sauce_tunnel.sh
 
     - name: Install all dependencies and symlink for ep_etherpad-lite
@@ -35,7 +35,7 @@ jobs:
       env:
         SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
         SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-        TRAVIS_JOB_NUMBER: ${{ github.job }}
+        TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}
         GIT_HASH: ${{ steps.environment.outputs.sha_short }}
       run: |
         tests/frontend/travis/runner.sh
@@ -53,7 +53,7 @@ jobs:
       env:
         SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
         SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-        TRAVIS_JOB_NUMBER: ${{ github.job }}
+        TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}
       run: tests/frontend/travis/sauce_tunnel.sh
 
     - name: Install all dependencies and symlink for ep_etherpad-lite
@@ -78,7 +78,7 @@ jobs:
       env:
         SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
         SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-        TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}
+        TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}
         GIT_HASH: ${{ steps.environment.outputs.sha_short }}
       run: |
         tests/frontend/travis/runner.sh
