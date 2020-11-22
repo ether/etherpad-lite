@@ -1,0 +1,21 @@
+name: "Dockerfile"
+
+# any branch is useful for testing before a PR is submitted
+on: [push, pull_request]
+
+jobs:
+  dockerfile:
+    name: Builds an image using Dockerfile and runs a connectivity test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: docker build
+      run: |
+        docker build -t etherpad:test .
+        docker run -d -p 9001:9001 etherpad:test
+        ./bin/installDeps.sh
+        sleep 3 # delay for startup?
+        cd src && npm run test-container

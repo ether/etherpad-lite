@@ -1,0 +1,80 @@
+name: "Frontend tests"
+
+# any branch is useful for testing before a PR is submitted
+on: [push, pull_request]
+
+jobs:
+  withoutplugins:
+    name: Frontend tests without plugins
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Run sauce-connect-action
+      shell: bash
+      env:
+        SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+        SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+        TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}
+      run: tests/frontend/travis/sauce_tunnel.sh
+
+    - name: Install all dependencies and symlink for ep_etherpad-lite
+      run: bin/installDeps.sh
+
+    - name: export GIT_HASH to env
+      id: environment
+      run: echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.sha }})"
+
+    - name: Write custom settings.json with loglevel WARN
+      run: "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/' < settings.json.template > settings.json"
+
+    - name: Run the frontend tests
+      shell: bash
+      env:
+        SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+        SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+        TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}
+        GIT_HASH: ${{ steps.environment.outputs.sha_short }}
+      run: |
+        tests/frontend/travis/runner.sh
+
+  withplugins:
+    name: Frontend tests with plugins
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Run sauce-connect-action
+      shell: bash
+      env:
+        SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+        SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+        TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}
+      run: tests/frontend/travis/sauce_tunnel.sh
+
+    - name: Install all dependencies and symlink for ep_etherpad-lite
+      run: bin/installDeps.sh
+
+    - name: Install etherpad plugins
+      run: npm install ep_align ep_author_hover ep_cursortrace ep_font_size ep_hash_auth ep_headings2 ep_markdown ep_readonly_guest ep_spellcheck ep_subscript_and_superscript ep_table_of_contents
+
+    - name: export GIT_HASH to env
+      id: environment
+      run: echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.sha }})"
+
+    - name: Write custom settings.json with loglevel WARN
+      run: "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/' < settings.json.template > settings.json"
+
+    - name: Run the frontend tests
+      shell: bash
+      env:
+        SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+        SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+        TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}
+        GIT_HASH: ${{ steps.environment.outputs.sha_short }}
+      run: |
+        tests/frontend/travis/runner.sh
