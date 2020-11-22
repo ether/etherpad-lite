@@ -1,11 +1,11 @@
-name: "Lint package-lock.json"
+name: "Lint"
 
 # any branch is useful for testing before a PR is submitted
 on: [push, pull_request]
 
 jobs:
   lint-package-lock:
-    name: Lint the package-lock.json file
+    name: package-lock.json
     runs-on: ubuntu-latest
 
     steps:

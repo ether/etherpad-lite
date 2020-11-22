@@ -5,7 +5,7 @@ on: [push, pull_request]
 
 jobs:
   withoutplugins:
-    name: Backend tests without plugins
+    name: without plugins
     runs-on: ubuntu-latest
 
     steps:
@@ -26,7 +26,7 @@ jobs:
       run: tests/frontend/travis/runnerBackend.sh
 
   withplugins:
-    name: Backend tests with Plugins
+    name: with Plugins
     runs-on: ubuntu-latest
 
     steps:

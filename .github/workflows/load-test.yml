@@ -5,7 +5,7 @@ on: [push, pull_request]
 
 jobs:
   withoutplugins:
-    name: Load test without plugins
+    name: without plugins
     runs-on: ubuntu-latest
 
     steps:
@@ -22,7 +22,7 @@ jobs:
       run: tests/frontend/travis/runnerLoadTest.sh
 
   withplugins:
-    name: Load test with Plugins
+    name: with Plugins
     runs-on: ubuntu-latest
 
     steps:

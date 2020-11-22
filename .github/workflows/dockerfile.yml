@@ -5,7 +5,7 @@ on: [push, pull_request]
 
 jobs:
   dockerfile:
-    name: Builds an image using Dockerfile and runs a connectivity test
+    name: build image and run connectivity test
     runs-on: ubuntu-latest
 
     steps:

@@ -1,10 +1,11 @@
-name: "Test rate limit"
+name: "rate limit"
 
 # any branch is useful for testing before a PR is submitted
 on: [push, pull_request]
 
 jobs:
   ratelimit:
+    name: test
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository

@@ -7,7 +7,7 @@ jobs:
   withoutplugins:
     # don't run on PRs from forks
     if: github.event.pull_request.head.repo.full_name == 'ether/etherpad-lite' || github.event_name == 'push'
-    name: Frontend tests without plugins
+    name: without plugins
     runs-on: ubuntu-latest
 
     steps:
@@ -45,7 +45,7 @@ jobs:
   withplugins:
     # don't run on PRs from forks
     if: github.event.pull_request.head.repo.full_name == 'ether/etherpad-lite' || github.event_name == 'push'
-    name: Frontend tests with plugins
+    name: with plugins
     runs-on: ubuntu-latest
 
     steps:
