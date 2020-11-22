@@ -120,6 +120,68 @@ fs.readdir(pluginPath, function (err, rootFiles) {
       repository = parsedPackageJSON.repository.url;
     }
 
+    // include lint config
+    if(packageJSON.toLowerCase().indexOf("devdependencies") === -1){
+      console.warn("No devDependencies in package.json");
+      if(autoFix){
+        let devDependencies = {
+          "eslint": "^7.14.0",
+          "eslint-config-etherpad": "^1.0.8",
+          "eslint-plugin-mocha": "^8.0.0",
+          "eslint-plugin-node": "^11.1.0",
+          "eslint-plugin-prefer-arrow": "^1.2.2",
+          "eslint-plugin-promise": "^4.2.1"
+        }
+        hasAutofixed = true;
+        parsedPackageJSON.devDependencies = devDependencies;
+        fs.writeFileSync(pluginPath+"/package.json", JSON.stringify(parsedPackageJSON, null, 2));
+
+        let child_process = require('child_process');
+        try{
+          child_process.execSync('npm install',{"cwd":pluginPath+"/"});
+        }catch(e){
+          console.error("Failed to create package-lock.json");
+        }
+      }
+    }
+
+    if(packageJSON.toLowerCase().indexOf("eslintconfig") === -1){
+      console.warn("No esLintConfig in package.json");
+      if(autoFix){
+        let esLintConfig = {
+          "root": true,
+          "extends": "etherpad/plugin"
+        }
+        hasAutofixed = true;
+        parsedPackageJSON.esLintConfig = esLintConfig;
+        fs.writeFileSync(pluginPath+"/package.json", JSON.stringify(parsedPackageJSON, null, 2));
+      }
+    }
+
+    if(packageJSON.toLowerCase().indexOf("scripts") === -1){
+      console.warn("No scripts in package.json");
+      if(autoFix){
+        let scripts = {
+          "lint": "eslint ."
+        }
+        hasAutofixed = true;
+        parsedPackageJSON.scripts = scripts;
+        fs.writeFileSync(pluginPath+"/package.json", JSON.stringify(parsedPackageJSON, null, 2));
+      }
+    }
+
+    if(packageJSON.toLowerCase().indexOf("engines") === -1){
+      console.warn("No engines in package.json");
+      if(autoFix){
+        let engines = {
+          "lint": "eslint ."
+        }
+        hasAutofixed = true;
+        parsedPackageJSON.engines = engines;
+        fs.writeFileSync(pluginPath+"/package.json", JSON.stringify(parsedPackageJSON, null, 2));
+      }
+    }
+
   }
 
   if(files.indexOf("package-lock.json") === -1){
