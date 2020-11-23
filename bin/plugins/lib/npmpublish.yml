@@ -4,24 +4,38 @@
 name: Node.js Package
 
 on:
+  pull_request:
   push:
     branches:
       - main
       - master
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: ether/etherpad-lite
+          path: etherpad-lite
+      # Work around https://github.com/actions/checkout/issues/197:
+      - run: mv etherpad-lite ..
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
           node-version: 12
+      - run: cd ../etherpad-lite/src && npm ci
       - run: npm ci
+      - run: npm install ep_etherpad-lite@file:../etherpad-lite/src
+      - run: git diff
+      - run: ls -la node_modules
+      - run: ls -la node_modules/ep_etherpad-lite/node_modules
       - run: npm test
+      - run: npm run lint
 
   publish-npm:
-    needs: build
+    if: github.event_name == 'push'
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -37,3 +51,6 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: git push --follow-tags
+
+##ETHERPAD_NPM_V=1
+## NPM configuration automatically created using bin/plugins/updateAllPluginsScript.sh
