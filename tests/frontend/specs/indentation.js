@@ -1,178 +1,164 @@
-describe("indentation button", function(){
-  //create a new pad before each test run
-  beforeEach(function(cb){
+describe('indentation button', function () {
+  // create a new pad before each test run
+  beforeEach(function (cb) {
     helper.newPad(cb);
     this.timeout(60000);
   });
 
- it("indent text with keypress", function(done){
-    var inner$ = helper.padInner$;
-    var chrome$ = helper.padChrome$;
+  it('indent text with keypress', function (done) {
+    const inner$ = helper.padInner$;
+    const chrome$ = helper.padChrome$;
 
-    //get the first text element out of the inner iframe
-    var $firstTextElement = inner$("div").first();
+    // get the first text element out of the inner iframe
+    const $firstTextElement = inner$('div').first();
 
-    //select this text element
+    // select this text element
     $firstTextElement.sendkeys('{selectall}');
 
-    var e = inner$.Event(helper.evtType);
+    const e = inner$.Event(helper.evtType);
     e.keyCode = 9; // tab :|
-    inner$("#innerdocbody").trigger(e);
+    inner$('#innerdocbody').trigger(e);
 
-    helper.waitFor(function(){
-      return inner$("div").first().find("ul li").length === 1;
-    }).done(done);
+    helper.waitFor(() => inner$('div').first().find('ul li').length === 1).done(done);
   });
 
-  it("indent text with button", function(done){
-    var inner$ = helper.padInner$;
-    var chrome$ = helper.padChrome$;
+  it('indent text with button', function (done) {
+    const inner$ = helper.padInner$;
+    const chrome$ = helper.padChrome$;
 
-    var $indentButton = chrome$(".buttonicon-indent");
+    const $indentButton = chrome$('.buttonicon-indent');
     $indentButton.click();
 
-    helper.waitFor(function(){
-      return inner$("div").first().find("ul li").length === 1;
-    }).done(done);
+    helper.waitFor(() => inner$('div').first().find('ul li').length === 1).done(done);
   });
 
-  it("keeps the indent on enter for the new line", function(done){
-    var inner$ = helper.padInner$;
-    var chrome$ = helper.padChrome$;
+  it('keeps the indent on enter for the new line', function (done) {
+    const inner$ = helper.padInner$;
+    const chrome$ = helper.padChrome$;
 
-    var $indentButton = chrome$(".buttonicon-indent");
+    const $indentButton = chrome$('.buttonicon-indent');
     $indentButton.click();
 
-    //type a bit, make a line break and type again
-    var $firstTextElement = inner$("div span").first();
+    // type a bit, make a line break and type again
+    const $firstTextElement = inner$('div span').first();
     $firstTextElement.sendkeys('line 1');
     $firstTextElement.sendkeys('{enter}');
     $firstTextElement.sendkeys('line 2');
     $firstTextElement.sendkeys('{enter}');
 
-    helper.waitFor(function(){
-      return inner$("div span").first().text().indexOf("line 2") === -1;
-    }).done(function(){
-      var $newSecondLine = inner$("div").first().next();
-      var hasULElement = $newSecondLine.find("ul li").length === 1;
+    helper.waitFor(() => inner$('div span').first().text().indexOf('line 2') === -1).done(() => {
+      const $newSecondLine = inner$('div').first().next();
+      const hasULElement = $newSecondLine.find('ul li').length === 1;
 
       expect(hasULElement).to.be(true);
-      expect($newSecondLine.text()).to.be("line 2");
+      expect($newSecondLine.text()).to.be('line 2');
       done();
     });
   });
 
-  it("indents text with spaces on enter if previous line ends with ':', '[', '(', or '{'", function(done){
-    var inner$ = helper.padInner$;
-    var chrome$ = helper.padChrome$;
+  it("indents text with spaces on enter if previous line ends with ':', '[', '(', or '{'", function (done) {
+    const inner$ = helper.padInner$;
+    const chrome$ = helper.padChrome$;
 
-    //type a bit, make a line break and type again
-    var $firstTextElement = inner$("div").first();
+    // type a bit, make a line break and type again
+    const $firstTextElement = inner$('div').first();
     $firstTextElement.sendkeys("line with ':'{enter}");
     $firstTextElement.sendkeys("line with '['{enter}");
     $firstTextElement.sendkeys("line with '('{enter}");
     $firstTextElement.sendkeys("line with '{{}'{enter}");
 
-    helper.waitFor(function(){
+    helper.waitFor(() => {
       // wait for Etherpad to split four lines into separated divs
-      var $fourthLine = inner$("div").first().next().next().next();
+      const $fourthLine = inner$('div').first().next().next().next();
       return $fourthLine.text().indexOf("line with '{'") === 0;
-    }).done(function(){
+    }).done(() => {
       // we validate bottom to top for easier implementation
 
       // curly braces
-      var $lineWithCurlyBraces = inner$("div").first().next().next().next();
+      const $lineWithCurlyBraces = inner$('div').first().next().next().next();
       $lineWithCurlyBraces.sendkeys('{{}');
       pressEnter(); // cannot use sendkeys('{enter}') here, browser does not read the command properly
-      var $lineAfterCurlyBraces = inner$("div").first().next().next().next().next();
+      const $lineAfterCurlyBraces = inner$('div').first().next().next().next().next();
       expect($lineAfterCurlyBraces.text()).to.match(/\s{4}/); // tab === 4 spaces
 
       // parenthesis
-      var $lineWithParenthesis = inner$("div").first().next().next();
+      const $lineWithParenthesis = inner$('div').first().next().next();
       $lineWithParenthesis.sendkeys('(');
       pressEnter();
-      var $lineAfterParenthesis = inner$("div").first().next().next().next();
+      const $lineAfterParenthesis = inner$('div').first().next().next().next();
       expect($lineAfterParenthesis.text()).to.match(/\s{4}/);
 
       // bracket
-      var $lineWithBracket = inner$("div").first().next();
+      const $lineWithBracket = inner$('div').first().next();
       $lineWithBracket.sendkeys('[');
       pressEnter();
-      var $lineAfterBracket = inner$("div").first().next().next();
+      const $lineAfterBracket = inner$('div').first().next().next();
       expect($lineAfterBracket.text()).to.match(/\s{4}/);
 
       // colon
-      var $lineWithColon = inner$("div").first();
+      const $lineWithColon = inner$('div').first();
       $lineWithColon.sendkeys(':');
       pressEnter();
-      var $lineAfterColon = inner$("div").first().next();
+      const $lineAfterColon = inner$('div').first().next();
       expect($lineAfterColon.text()).to.match(/\s{4}/);
 
       done();
     });
   });
 
-  it("appends indentation to the indent of previous line if previous line ends with ':', '[', '(', or '{'", function(done){
-    var inner$ = helper.padInner$;
-    var chrome$ = helper.padChrome$;
+  it("appends indentation to the indent of previous line if previous line ends with ':', '[', '(', or '{'", function (done) {
+    const inner$ = helper.padInner$;
+    const chrome$ = helper.padChrome$;
 
-    //type a bit, make a line break and type again
-    var $firstTextElement = inner$("div").first();
+    // type a bit, make a line break and type again
+    const $firstTextElement = inner$('div').first();
     $firstTextElement.sendkeys("  line with some indentation and ':'{enter}");
-    $firstTextElement.sendkeys("line 2{enter}");
+    $firstTextElement.sendkeys('line 2{enter}');
 
-    helper.waitFor(function(){
+    helper.waitFor(() => {
       // wait for Etherpad to split two lines into separated divs
-      var $secondLine = inner$("div").first().next();
-      return $secondLine.text().indexOf("line 2") === 0;
-    }).done(function(){
-      var $lineWithColon = inner$("div").first();
+      const $secondLine = inner$('div').first().next();
+      return $secondLine.text().indexOf('line 2') === 0;
+    }).done(() => {
+      const $lineWithColon = inner$('div').first();
       $lineWithColon.sendkeys(':');
       pressEnter();
-      var $lineAfterColon = inner$("div").first().next();
+      const $lineAfterColon = inner$('div').first().next();
       expect($lineAfterColon.text()).to.match(/\s{6}/); // previous line indentation + regular tab (4 spaces)
 
       done();
     });
   });
 
-  it("issue #2772 shows '*' when multiple indented lines receive a style and are outdented", function(done){
-    var inner$ = helper.padInner$;
-    var chrome$ = helper.padChrome$;
+  it("issue #2772 shows '*' when multiple indented lines receive a style and are outdented", function (done) {
+    const inner$ = helper.padInner$;
+    const chrome$ = helper.padChrome$;
 
     // make sure pad has more than one line
-    inner$("div").first().sendkeys("First{enter}Second{enter}");
-    helper.waitFor(function(){
-      return inner$("div").first().text().trim() === "First";
-    }).done(function(){
+    inner$('div').first().sendkeys('First{enter}Second{enter}');
+    helper.waitFor(() => inner$('div').first().text().trim() === 'First').done(() => {
       // indent first 2 lines
-      var $lines = inner$("div");
-      var $firstLine = $lines.first();
-      var $secondLine = $lines.slice(1,2);
+      const $lines = inner$('div');
+      const $firstLine = $lines.first();
+      const $secondLine = $lines.slice(1, 2);
       helper.selectLines($firstLine, $secondLine);
 
-      var $indentButton = chrome$(".buttonicon-indent");
+      const $indentButton = chrome$('.buttonicon-indent');
       $indentButton.click();
 
-      helper.waitFor(function(){
-        return inner$("div").first().find("ul li").length === 1;
-      }).done(function(){
+      helper.waitFor(() => inner$('div').first().find('ul li').length === 1).done(() => {
         // apply bold
-        var $boldButton = chrome$(".buttonicon-bold");
+        const $boldButton = chrome$('.buttonicon-bold');
         $boldButton.click();
 
-        helper.waitFor(function(){
-          return inner$("div").first().find("b").length === 1;
-        }).done(function(){
+        helper.waitFor(() => inner$('div').first().find('b').length === 1).done(() => {
           // outdent first 2 lines
-          var $outdentButton = chrome$(".buttonicon-outdent");
+          const $outdentButton = chrome$('.buttonicon-outdent');
           $outdentButton.click();
-          helper.waitFor(function(){
-            return inner$("div").first().find("ul li").length === 0;
-          }).done(function(){
+          helper.waitFor(() => inner$('div').first().find('ul li').length === 0).done(() => {
             // check if '*' is displayed
-            var $secondLine = inner$("div").slice(1,2);
-            expect($secondLine.text().trim()).to.be("Second");
+            const $secondLine = inner$('div').slice(1, 2);
+            expect($secondLine.text().trim()).to.be('Second');
 
             done();
           });
@@ -314,12 +300,11 @@ describe("indentation button", function(){
       expect(isLI).to.be(true);
     },1000);
   });*/
-
 });
 
-function pressEnter(){
-  var inner$ = helper.padInner$;
-  var e = inner$.Event(helper.evtType);
+function pressEnter() {
+  const inner$ = helper.padInner$;
+  const e = inner$.Event(helper.evtType);
   e.keyCode = 13; // enter :|
-  inner$("#innerdocbody").trigger(e);
+  inner$('#innerdocbody').trigger(e);
 }
