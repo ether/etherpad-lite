@@ -928,7 +928,7 @@ function Ace2Inner() {
   }
 
 
-  function recolorLinesInRange(startChar, endChar, isTimeUp, optModFunc) {
+  function recolorLinesInRange(startChar, endChar, isTimeUp) {
     if (endChar <= startChar) return;
     if (startChar < 0 || startChar >= rep.lines.totalWidth()) return;
     let lineEntry = rep.lines.atOffset(startChar); // rounds down to line boundary
@@ -942,16 +942,9 @@ function Ace2Inner() {
     // tokenFunc function; accesses current value of lineEntry and curDocChar,
     // also mutates curDocChar
     let curDocChar;
-    let tokenFunc = function (tokenText, tokenClass) {
+    const tokenFunc = function (tokenText, tokenClass) {
       lineEntry.domInfo.appendSpan(tokenText, tokenClass);
     };
-    if (optModFunc) {
-      const f = tokenFunc;
-      tokenFunc = function (tokenText, tokenClass) {
-        optModFunc(tokenText, tokenClass, f, curDocChar);
-        curDocChar += tokenText.length;
-      };
-    }
 
     while (lineEntry && lineStart < endChar && !isTimeUp()) {
       const lineEnd = lineStart + lineEntry.width;
