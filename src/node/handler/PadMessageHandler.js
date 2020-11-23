@@ -20,30 +20,30 @@
 
 /* global exports, process, require */
 
-var padManager = require("../db/PadManager");
-var Changeset = require("ep_etherpad-lite/static/js/Changeset");
-var AttributePool = require("ep_etherpad-lite/static/js/AttributePool");
-var AttributeManager = require("ep_etherpad-lite/static/js/AttributeManager");
-var authorManager = require("../db/AuthorManager");
-var readOnlyManager = require("../db/ReadOnlyManager");
-var settings = require('../utils/Settings');
-var securityManager = require("../db/SecurityManager");
-var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugin_defs.js");
-var log4js = require('log4js');
-var messageLogger = log4js.getLogger("message");
-var accessLogger = log4js.getLogger("access");
-var _ = require('underscore');
-var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
-var channels = require("channels");
-var stats = require('../stats');
+const padManager = require('../db/PadManager');
+const Changeset = require('ep_etherpad-lite/static/js/Changeset');
+const AttributePool = require('ep_etherpad-lite/static/js/AttributePool');
+const AttributeManager = require('ep_etherpad-lite/static/js/AttributeManager');
+const authorManager = require('../db/AuthorManager');
+const readOnlyManager = require('../db/ReadOnlyManager');
+const settings = require('../utils/Settings');
+const securityManager = require('../db/SecurityManager');
+const plugins = require('ep_etherpad-lite/static/js/pluginfw/plugin_defs.js');
+const log4js = require('log4js');
+const messageLogger = log4js.getLogger('message');
+const accessLogger = log4js.getLogger('access');
+const _ = require('underscore');
+const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks.js');
+const channels = require('channels');
+const stats = require('../stats');
 const assert = require('assert').strict;
-const nodeify = require("nodeify");
-const { RateLimiterMemory } = require('rate-limiter-flexible');
+const nodeify = require('nodeify');
+const {RateLimiterMemory} = require('rate-limiter-flexible');
 const webaccess = require('../hooks/express/webaccess');
 
 const rateLimiter = new RateLimiterMemory({
   points: settings.commitRateLimiting.points,
-  duration: settings.commitRateLimiting.duration
+  duration: settings.commitRateLimiting.duration,
 });
 
 /**
@@ -56,20 +56,16 @@ const rateLimiter = new RateLimiterMemory({
  *   rev = That last revision that was send to this client
  *   author = the author ID used for this session
  */
-var sessioninfos = {};
+const sessioninfos = {};
 exports.sessioninfos = sessioninfos;
 
 // Measure total amount of users
-stats.gauge('totalUsers', function() {
-  return Object.keys(socketio.sockets.sockets).length;
-});
+stats.gauge('totalUsers', () => Object.keys(socketio.sockets.sockets).length);
 
 /**
  * A changeset queue per pad that is processed by handleUserChanges()
  */
-const padChannels = new channels.channels(({socket, message}, callback) => {
-  return nodeify(handleUserChanges(socket, message), callback);
-});
+const padChannels = new channels.channels(({socket, message}, callback) => nodeify(handleUserChanges(socket, message), callback));
 
 /**
  * Saves the Socket class we need to send and receive data from the client
@@ -80,9 +76,9 @@ let socketio;
  * This Method is called by server.js to tell the message handler on which socket it should send
  * @param socket_io The Socket
  */
-exports.setSocketIO = function(socket_io) {
-  socketio=socket_io;
-}
+exports.setSocketIO = function (socket_io) {
+  socketio = socket_io;
+};
 
 /**
  * Handles the connection of a new user
@@ -98,17 +94,15 @@ exports.handleConnect = (socket) => {
 /**
  * Kicks all sessions from a pad
  */
-exports.kickSessionsFromPad = function(padID) {
-  if(typeof socketio.sockets['clients'] !== 'function')
-   return;
+exports.kickSessionsFromPad = function (padID) {
+  if (typeof socketio.sockets.clients !== 'function') return;
 
   // skip if there is nobody on this pad
-  if(_getRoomSockets(padID).length === 0)
-    return;
+  if (_getRoomSockets(padID).length === 0) return;
 
   // disconnect everyone from this pad
-  socketio.sockets.in(padID).json.send({disconnect:"deleted"});
-}
+  socketio.sockets.in(padID).json.send({disconnect: 'deleted'});
+};
 
 /**
  * Handles the disconnection of a user
@@ -123,35 +117,35 @@ exports.handleDisconnect = async (socket) => {
   // if this connection was already etablished with a handshake, send a disconnect message to the others
   if (session && session.author) {
     const {session: {user} = {}} = socket.client.request;
-    accessLogger.info('[LEAVE]' +
+    accessLogger.info(`${'[LEAVE]' +
                       ` pad:${session.padId}` +
                       ` socket:${socket.id}` +
                       ` IP:${settings.disableIPlogging ? 'ANONYMOUS' : socket.request.ip}` +
-                      ` authorID:${session.author}` +
-                      ((user && user.username) ? ` username:${user.username}` : ''));
+                      ` authorID:${session.author}`}${
+      (user && user.username) ? ` username:${user.username}` : ''}`);
 
     // get the author color out of the db
-    let color = await authorManager.getAuthorColorId(session.author);
+    const color = await authorManager.getAuthorColorId(session.author);
 
     // prepare the notification for the other users on the pad, that this user left
-    let messageToTheOtherUsers = {
-      "type": "COLLABROOM",
-      "data": {
-        type: "USER_LEAVE",
+    const messageToTheOtherUsers = {
+      type: 'COLLABROOM',
+      data: {
+        type: 'USER_LEAVE',
         userInfo: {
-          "ip": "127.0.0.1",
-          "colorId": color,
-          "userAgent": "Anonymous",
-          "userId": session.author
-        }
-      }
+          ip: '127.0.0.1',
+          colorId: color,
+          userAgent: 'Anonymous',
+          userId: session.author,
+        },
+      },
     };
 
     // Go through all user that are still on the pad, and send them the USER_LEAVE message
     socket.broadcast.to(session.padId).json.send(messageToTheOtherUsers);
 
     // Allow plugins to hook into users leaving the pad
-    hooks.callAll("userLeave", session);
+    hooks.callAll('userLeave', session);
   }
 
   // Delete the sessioninfos entrys of this session
@@ -164,7 +158,7 @@ exports.handleDisconnect = async (socket) => {
  * @param message the message from the client
  */
 exports.handleMessage = async (socket, message) => {
-  var env = process.env.NODE_ENV || 'development';
+  const env = process.env.NODE_ENV || 'development';
 
   if (env === 'production') {
     try {
@@ -189,25 +183,25 @@ exports.handleMessage = async (socket, message) => {
   const thisSession = sessioninfos[socket.id];
 
   if (!thisSession) {
-    messageLogger.warn("Dropped message from an unknown connection.")
+    messageLogger.warn('Dropped message from an unknown connection.');
     return;
   }
 
-  if (message.type === "CLIENT_READY") {
+  if (message.type === 'CLIENT_READY') {
     // client tried to auth for the first time (first msg from the client)
     createSessionInfoAuth(thisSession, message);
   }
 
   const auth = thisSession.auth;
   if (!auth) {
-    console.error("Auth was never applied to a session.  If you are using the stress-test tool then restart Etherpad and the Stress test tool.")
+    console.error('Auth was never applied to a session.  If you are using the stress-test tool then restart Etherpad and the Stress test tool.');
     return;
   }
 
   // check if pad is requested via readOnly
   let padId = auth.padID;
 
-  if (padId.indexOf("r.") === 0) {
+  if (padId.indexOf('r.') === 0) {
     // Pad is readOnly, first get the real Pad ID
     padId = await readOnlyManager.getPadId(padId);
   }
@@ -222,14 +216,14 @@ exports.handleMessage = async (socket, message) => {
   }
   if (thisSession.author != null && thisSession.author !== authorID) {
     messageLogger.warn(
-        'Rejecting message from client because the author ID changed mid-session.' +
+        `${'Rejecting message from client because the author ID changed mid-session.' +
         ' Bad or missing token or sessionID?' +
         ` socket:${socket.id}` +
         ` IP:${settings.disableIPlogging ? 'ANONYMOUS' : socket.request.ip}` +
         ` originalAuthorID:${thisSession.author}` +
-        ` newAuthorID:${authorID}` +
-        ((user && user.username) ? ` username:${user.username}` : '') +
-        ` message:${message}`);
+        ` newAuthorID:${authorID}`}${
+          (user && user.username) ? ` username:${user.username}` : ''
+        } message:${message}`);
     socket.json.send({disconnect: 'rejected'});
     return;
   }
@@ -248,42 +242,42 @@ exports.handleMessage = async (socket, message) => {
 
   // Drop the message if the client disconnected during the above processing.
   if (sessioninfos[socket.id] !== thisSession) {
-    messageLogger.warn('Dropping message from a connection that has gone away.')
+    messageLogger.warn('Dropping message from a connection that has gone away.');
     return;
   }
 
   // Check what type of message we get and delegate to the other methods
-  if (message.type === "CLIENT_READY") {
+  if (message.type === 'CLIENT_READY') {
     await handleClientReady(socket, message, authorID);
-  } else if (message.type === "CHANGESET_REQ") {
+  } else if (message.type === 'CHANGESET_REQ') {
     await handleChangesetRequest(socket, message);
-  } else if(message.type === "COLLABROOM") {
+  } else if (message.type === 'COLLABROOM') {
     if (thisSession.readonly) {
-      messageLogger.warn("Dropped message, COLLABROOM for readonly pad");
-    } else if (message.data.type === "USER_CHANGES") {
-      stats.counter('pendingEdits').inc()
+      messageLogger.warn('Dropped message, COLLABROOM for readonly pad');
+    } else if (message.data.type === 'USER_CHANGES') {
+      stats.counter('pendingEdits').inc();
       padChannels.emit(message.padId, {socket, message}); // add to pad queue
-    } else if (message.data.type === "USERINFO_UPDATE") {
+    } else if (message.data.type === 'USERINFO_UPDATE') {
       await handleUserInfoUpdate(socket, message);
-    } else if (message.data.type === "CHAT_MESSAGE") {
+    } else if (message.data.type === 'CHAT_MESSAGE') {
       await handleChatMessage(socket, message);
-    } else if (message.data.type === "GET_CHAT_MESSAGES") {
+    } else if (message.data.type === 'GET_CHAT_MESSAGES') {
       await handleGetChatMessages(socket, message);
-    } else if (message.data.type === "SAVE_REVISION") {
+    } else if (message.data.type === 'SAVE_REVISION') {
       await handleSaveRevisionMessage(socket, message);
-    } else if (message.data.type === "CLIENT_MESSAGE" &&
+    } else if (message.data.type === 'CLIENT_MESSAGE' &&
                message.data.payload != null &&
-               message.data.payload.type === "suggestUserName") {
+               message.data.payload.type === 'suggestUserName') {
       handleSuggestUserName(socket, message);
     } else {
-      messageLogger.warn("Dropped message, unknown COLLABROOM Data  Type " + message.data.type);
+      messageLogger.warn(`Dropped message, unknown COLLABROOM Data  Type ${message.data.type}`);
     }
-  } else if(message.type === "SWITCH_TO_PAD") {
+  } else if (message.type === 'SWITCH_TO_PAD') {
     await handleSwitchToPad(socket, message, authorID);
   } else {
-    messageLogger.warn("Dropped message, unknown Message Type " + message.type);
+    messageLogger.warn(`Dropped message, unknown Message Type ${message.type}`);
   }
-}
+};
 
 
 /**
@@ -304,9 +298,9 @@ async function handleSaveRevisionMessage(socket, message) {
  * @param msg {Object} the message we're sending
  * @param sessionID {string} the socketIO session to which we're sending this message
  */
-exports.handleCustomObjectMessage = function(msg, sessionID) {
-  if (msg.data.type === "CUSTOM") {
-    if (sessionID){
+exports.handleCustomObjectMessage = function (msg, sessionID) {
+  if (msg.data.type === 'CUSTOM') {
+    if (sessionID) {
       // a sessionID is targeted: directly to this sessionID
       socketio.sockets.socket(sessionID).json.send(msg);
     } else {
@@ -314,7 +308,7 @@ exports.handleCustomObjectMessage = function(msg, sessionID) {
       socketio.sockets.in(msg.data.payload.padId).json.send(msg);
     }
   }
-}
+};
 
 /**
  * Handles a custom message (sent via HTTP API request)
@@ -322,17 +316,17 @@ exports.handleCustomObjectMessage = function(msg, sessionID) {
  * @param padID {Pad} the pad to which we're sending this message
  * @param msgString {String} the message we're sending
  */
-exports.handleCustomMessage = function(padID, msgString) {
-  let time = Date.now();
-  let msg = {
+exports.handleCustomMessage = function (padID, msgString) {
+  const time = Date.now();
+  const msg = {
     type: 'COLLABROOM',
     data: {
       type: msgString,
-      time: time
-    }
+      time,
+    },
   };
   socketio.sockets.in(padID).json.send(msg);
-}
+};
 
 /**
  * Handles a Chat Message
@@ -340,8 +334,8 @@ exports.handleCustomMessage = function(padID, msgString) {
  * @param message the message from the client
  */
 async function handleChatMessage(socket, message) {
-  var time = Date.now();
-  var text = message.data.text;
+  const time = Date.now();
+  const text = message.data.text;
   const {padId, author: authorId} = sessioninfos[socket.id];
   await exports.sendChatMessageToPadClients(time, authorId, text, padId);
 }
@@ -353,26 +347,26 @@ async function handleChatMessage(socket, message) {
  * @param text the text of the chat message
  * @param padId the padId to send the chat message to
  */
-exports.sendChatMessageToPadClients = async function(time, userId, text, padId) {
+exports.sendChatMessageToPadClients = async function (time, userId, text, padId) {
   // get the pad
-  let pad = await padManager.getPad(padId);
+  const pad = await padManager.getPad(padId);
 
   // get the author
-  let userName = await authorManager.getAuthorName(userId);
+  const userName = await authorManager.getAuthorName(userId);
 
   // save the chat message
   const promise = pad.appendChatMessage(text, userId, time);
 
-  let msg = {
-    type: "COLLABROOM",
-    data: { type: "CHAT_MESSAGE", userId, userName, time, text }
+  const msg = {
+    type: 'COLLABROOM',
+    data: {type: 'CHAT_MESSAGE', userId, userName, time, text},
   };
 
   // broadcast the chat message to everyone on the pad
   socketio.sockets.in(padId).json.send(msg);
 
   await promise;
-}
+};
 
 /**
  * Handles the clients request for more chat-messages
@@ -381,34 +375,34 @@ exports.sendChatMessageToPadClients = async function(time, userId, text, padId) 
  */
 async function handleGetChatMessages(socket, message) {
   if (message.data.start == null) {
-    messageLogger.warn("Dropped message, GetChatMessages Message has no start!");
+    messageLogger.warn('Dropped message, GetChatMessages Message has no start!');
     return;
   }
 
   if (message.data.end == null) {
-    messageLogger.warn("Dropped message, GetChatMessages Message has no start!");
+    messageLogger.warn('Dropped message, GetChatMessages Message has no start!');
     return;
   }
 
-  let start = message.data.start;
-  let end = message.data.end;
-  let count = end - start;
+  const start = message.data.start;
+  const end = message.data.end;
+  const count = end - start;
 
   if (count < 0 || count > 100) {
-    messageLogger.warn("Dropped message, GetChatMessages Message, client requested invalid amount of messages!");
+    messageLogger.warn('Dropped message, GetChatMessages Message, client requested invalid amount of messages!');
     return;
   }
 
   const padId = sessioninfos[socket.id].padId;
-  let pad = await padManager.getPad(padId);
+  const pad = await padManager.getPad(padId);
 
-  let chatMessages = await pad.getChatMessages(start, end);
-  let infoMsg = {
-    type: "COLLABROOM",
+  const chatMessages = await pad.getChatMessages(start, end);
+  const infoMsg = {
+    type: 'COLLABROOM',
     data: {
-      type: "CHAT_MESSAGES",
-      messages: chatMessages
-    }
+      type: 'CHAT_MESSAGES',
+      messages: chatMessages,
+    },
   };
 
   // send the messages back to the client
@@ -423,12 +417,12 @@ async function handleGetChatMessages(socket, message) {
 function handleSuggestUserName(socket, message) {
   // check if all ok
   if (message.data.payload.newName == null) {
-    messageLogger.warn("Dropped message, suggestUserName Message has no newName!");
+    messageLogger.warn('Dropped message, suggestUserName Message has no newName!');
     return;
   }
 
   if (message.data.payload.unnamedId == null) {
-    messageLogger.warn("Dropped message, suggestUserName Message has no unnamedId!");
+    messageLogger.warn('Dropped message, suggestUserName Message has no unnamedId!');
     return;
   }
 
@@ -451,29 +445,29 @@ function handleSuggestUserName(socket, message) {
 async function handleUserInfoUpdate(socket, message) {
   // check if all ok
   if (message.data.userInfo == null) {
-    messageLogger.warn("Dropped message, USERINFO_UPDATE Message has no userInfo!");
+    messageLogger.warn('Dropped message, USERINFO_UPDATE Message has no userInfo!');
     return;
   }
 
   if (message.data.userInfo.colorId == null) {
-    messageLogger.warn("Dropped message, USERINFO_UPDATE Message has no colorId!");
+    messageLogger.warn('Dropped message, USERINFO_UPDATE Message has no colorId!');
     return;
   }
 
   // Check that we have a valid session and author to update.
   const session = sessioninfos[socket.id];
   if (!session || !session.author || !session.padId) {
-    messageLogger.warn("Dropped message, USERINFO_UPDATE Session not ready." + message.data);
+    messageLogger.warn(`Dropped message, USERINFO_UPDATE Session not ready.${message.data}`);
     return;
   }
 
   // Find out the author name of this session
-  var author = session.author;
+  const author = session.author;
 
   // Check colorId is a Hex color
-  var isColor  = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(message.data.userInfo.colorId) // for #f00 (Thanks Smamatti)
+  const isColor = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(message.data.userInfo.colorId); // for #f00 (Thanks Smamatti)
   if (!isColor) {
-    messageLogger.warn("Dropped message, USERINFO_UPDATE Color is malformed." + message.data);
+    messageLogger.warn(`Dropped message, USERINFO_UPDATE Color is malformed.${message.data}`);
     return;
   }
 
@@ -483,22 +477,22 @@ async function handleUserInfoUpdate(socket, message) {
     authorManager.setAuthorName(author, message.data.userInfo.name),
   ]);
 
-  var padId = session.padId;
+  const padId = session.padId;
 
-  var infoMsg = {
-    type: "COLLABROOM",
+  const infoMsg = {
+    type: 'COLLABROOM',
     data: {
       // The Client doesn't know about USERINFO_UPDATE, use USER_NEWINFO
-      type: "USER_NEWINFO",
+      type: 'USER_NEWINFO',
       userInfo: {
         userId: author,
         // set a null name, when there is no name set. cause the client wants it null
         name: message.data.userInfo.name || null,
         colorId: message.data.userInfo.colorId,
-        userAgent: "Anonymous",
-        ip: "127.0.0.1",
-      }
-    }
+        userAgent: 'Anonymous',
+        ip: '127.0.0.1',
+      },
+    },
   };
 
   // Send the other clients on the pad the update message
@@ -524,21 +518,21 @@ async function handleUserInfoUpdate(socket, message) {
  */
 async function handleUserChanges(socket, message) {
   // This one's no longer pending, as we're gonna process it now
-  stats.counter('pendingEdits').dec()
+  stats.counter('pendingEdits').dec();
 
   // Make sure all required fields are present
   if (message.data.baseRev == null) {
-    messageLogger.warn("Dropped message, USER_CHANGES Message has no baseRev!");
+    messageLogger.warn('Dropped message, USER_CHANGES Message has no baseRev!');
     return;
   }
 
   if (message.data.apool == null) {
-    messageLogger.warn("Dropped message, USER_CHANGES Message has no apool!");
+    messageLogger.warn('Dropped message, USER_CHANGES Message has no apool!');
     return;
   }
 
   if (message.data.changeset == null) {
-    messageLogger.warn("Dropped message, USER_CHANGES Message has no changeset!");
+    messageLogger.warn('Dropped message, USER_CHANGES Message has no changeset!');
     return;
   }
 
@@ -550,20 +544,20 @@ async function handleUserChanges(socket, message) {
   // and always use the copy. atm a message will be ignored if the session is gone even
   // if the session was valid when the message arrived in the first place
   if (!thisSession) {
-    messageLogger.warn("Dropped message, disconnect happened in the mean time");
+    messageLogger.warn('Dropped message, disconnect happened in the mean time');
     return;
   }
 
   // get all Vars we need
-  var baseRev = message.data.baseRev;
-  var wireApool = (new AttributePool()).fromJsonable(message.data.apool);
-  var changeset = message.data.changeset;
+  const baseRev = message.data.baseRev;
+  const wireApool = (new AttributePool()).fromJsonable(message.data.apool);
+  let changeset = message.data.changeset;
 
   // Measure time to process edit
-  var stopWatch = stats.timer('edits').start();
+  const stopWatch = stats.timer('edits').start();
 
   // get the pad
-  let pad = await padManager.getPad(thisSession.padId);
+  const pad = await padManager.getPad(thisSession.padId);
 
   // create the changeset
   try {
@@ -573,24 +567,24 @@ async function handleUserChanges(socket, message) {
 
       // Verify that the attribute indexes used in the changeset are all
       // defined in the accompanying attribute pool.
-      Changeset.eachAttribNumber(changeset, function(n) {
+      Changeset.eachAttribNumber(changeset, (n) => {
         if (!wireApool.getAttrib(n)) {
-          throw new Error("Attribute pool is missing attribute " + n + " for changeset " + changeset);
+          throw new Error(`Attribute pool is missing attribute ${n} for changeset ${changeset}`);
         }
       });
 
       // Validate all added 'author' attribs to be the same value as the current user
-      var iterator = Changeset.opIterator(Changeset.unpack(changeset).ops)
-        , op;
+      const iterator = Changeset.opIterator(Changeset.unpack(changeset).ops);
+      let op;
 
       while (iterator.hasNext()) {
-        op = iterator.next()
+        op = iterator.next();
 
         // + can add text with attribs
         // = can change or add attribs
         // - can have attribs, but they are discarded and don't show up in the attribs - but do show up in the  pool
 
-        op.attribs.split('*').forEach(function(attr) {
+        op.attribs.split('*').forEach((attr) => {
           if (!attr) return;
 
           attr = wireApool.getAttrib(attr);
@@ -607,8 +601,7 @@ async function handleUserChanges(socket, message) {
 
       // Afaik, it copies the new attributes from the changeset, to the global Attribute Pool
       changeset = Changeset.moveOpsToNewPool(changeset, wireApool, pad.pool);
-
-    } catch(e) {
+    } catch (e) {
       // There is an error in this changeset, so just refuse it
       socket.json.send({disconnect: 'badChangeset'});
       stats.meter('failedChangesets').mark();
@@ -616,7 +609,7 @@ async function handleUserChanges(socket, message) {
     }
 
     // ex. applyUserChanges
-    let apool = pad.pool;
+    const apool = pad.pool;
     let r = baseRev;
 
     // The client's changeset might not be based on the latest revision,
@@ -625,7 +618,7 @@ async function handleUserChanges(socket, message) {
     while (r < pad.getHeadRevisionNumber()) {
       r++;
 
-      let c = await pad.getRevisionChangeset(r);
+      const c = await pad.getRevisionChangeset(r);
 
       // At this point, both "c" (from the pad) and "changeset" (from the
       // client) are relative to revision r - 1. The follow function
@@ -643,37 +636,37 @@ async function handleUserChanges(socket, message) {
         }
 
         changeset = Changeset.follow(c, changeset, false, apool);
-      } catch(e) {
+      } catch (e) {
         socket.json.send({disconnect: 'badChangeset'});
         stats.meter('failedChangesets').mark();
-        throw new Error("Can't apply USER_CHANGES, because " + e.message);
+        throw new Error(`Can't apply USER_CHANGES, because ${e.message}`);
       }
     }
 
-    let prevText = pad.text();
+    const prevText = pad.text();
 
     if (Changeset.oldLen(changeset) !== prevText.length) {
       socket.json.send({disconnect: 'badChangeset'});
       stats.meter('failedChangesets').mark();
-      throw new Error("Can't apply USER_CHANGES "+changeset+" with oldLen " + Changeset.oldLen(changeset) + " to document of length " + prevText.length);
+      throw new Error(`Can't apply USER_CHANGES ${changeset} with oldLen ${Changeset.oldLen(changeset)} to document of length ${prevText.length}`);
     }
 
     try {
       await pad.appendRevision(changeset, thisSession.author);
-    } catch(e) {
+    } catch (e) {
       socket.json.send({disconnect: 'badChangeset'});
       stats.meter('failedChangesets').mark();
       throw e;
     }
 
-    let correctionChangeset = _correctMarkersInPad(pad.atext, pad.pool);
+    const correctionChangeset = _correctMarkersInPad(pad.atext, pad.pool);
     if (correctionChangeset) {
       await pad.appendRevision(correctionChangeset);
     }
 
     // Make sure the pad always ends with an empty line.
-    if (pad.text().lastIndexOf("\n") !== pad.text().length-1) {
-      var nlChangeset = Changeset.makeSplice(pad.text(), pad.text().length - 1, 0, "\n");
+    if (pad.text().lastIndexOf('\n') !== pad.text().length - 1) {
+      const nlChangeset = Changeset.makeSplice(pad.text(), pad.text().length - 1, 0, '\n');
       await pad.appendRevision(nlChangeset);
     }
 
@@ -685,7 +678,7 @@ async function handleUserChanges(socket, message) {
   stopWatch.end();
 }
 
-exports.updatePadClients = async function(pad) {
+exports.updatePadClients = async function (pad) {
   // skip this if no-one is on this pad
   const roomSockets = _getRoomSockets(pad.id);
   if (roomSockets.length === 0) return;
@@ -697,7 +690,7 @@ exports.updatePadClients = async function(pad) {
   // BEFORE first result will be landed to our cache object. The solution is to replace parallel processing
   // via async.forEach with sequential for() loop. There is no real benefits of running this in parallel,
   // but benefit of reusing cached revision object is HUGE
-  let revCache = {};
+  const revCache = {};
 
   // go through all sessions on this pad
   for (const socket of roomSockets) {
@@ -705,16 +698,16 @@ exports.updatePadClients = async function(pad) {
 
     // send them all new changesets
     while (sessioninfos[sid] && sessioninfos[sid].rev < pad.getHeadRevisionNumber()) {
-      let r = sessioninfos[sid].rev + 1;
+      const r = sessioninfos[sid].rev + 1;
       let revision = revCache[r];
       if (!revision) {
         revision = await pad.getRevision(r);
         revCache[r] = revision;
       }
 
-      let author = revision.meta.author,
-          revChangeset = revision.changeset,
-          currentTime = revision.meta.timestamp;
+      const author = revision.meta.author;
+      const revChangeset = revision.changeset;
+      const currentTime = revision.meta.timestamp;
 
       // next if session has not been deleted
       if (sessioninfos[sid] == null) {
@@ -724,16 +717,15 @@ exports.updatePadClients = async function(pad) {
       if (author === sessioninfos[sid].author) {
         socket.json.send({type: 'COLLABROOM', data: {type: 'ACCEPT_COMMIT', newRev: r}});
       } else {
-        let forWire = Changeset.prepareForWire(revChangeset, pad.pool);
-        let wireMsg = {"type": "COLLABROOM",
-                       "data": { type:"NEW_CHANGES",
-                                 newRev:r,
-                                 changeset: forWire.translated,
-                                 apool: forWire.pool,
-                                 author: author,
-                                 currentTime: currentTime,
-                                 timeDelta: currentTime - sessioninfos[sid].time
-                               }};
+        const forWire = Changeset.prepareForWire(revChangeset, pad.pool);
+        const wireMsg = {type: 'COLLABROOM',
+          data: {type: 'NEW_CHANGES',
+            newRev: r,
+            changeset: forWire.translated,
+            apool: forWire.pool,
+            author,
+            currentTime,
+            timeDelta: currentTime - sessioninfos[sid].time}};
 
         socket.json.send(wireMsg);
       }
@@ -744,29 +736,27 @@ exports.updatePadClients = async function(pad) {
       }
     }
   }
-}
+};
 
 /**
  * Copied from the Etherpad Source Code. Don't know what this method does excatly...
  */
 function _correctMarkersInPad(atext, apool) {
-  var text = atext.text;
+  const text = atext.text;
 
   // collect char positions of line markers (e.g. bullets) in new atext
   // that aren't at the start of a line
-  var badMarkers = [];
-  var iter = Changeset.opIterator(atext.attribs);
-  var offset = 0;
+  const badMarkers = [];
+  const iter = Changeset.opIterator(atext.attribs);
+  let offset = 0;
   while (iter.hasNext()) {
     var op = iter.next();
 
-    var hasMarker = _.find(AttributeManager.lineAttributes, function(attribute) {
-      return Changeset.opAttributeValue(op, attribute, apool);
-    }) !== undefined;
+    const hasMarker = _.find(AttributeManager.lineAttributes, (attribute) => Changeset.opAttributeValue(op, attribute, apool)) !== undefined;
 
     if (hasMarker) {
-      for (var i = 0; i < op.chars; i++) {
-        if (offset > 0 && text.charAt(offset-1) !== '\n') {
+      for (let i = 0; i < op.chars; i++) {
+        if (offset > 0 && text.charAt(offset - 1) !== '\n') {
           badMarkers.push(offset);
         }
         offset++;
@@ -783,12 +773,12 @@ function _correctMarkersInPad(atext, apool) {
   // create changeset that removes these bad markers
   offset = 0;
 
-  var builder = Changeset.builder(text.length);
+  const builder = Changeset.builder(text.length);
 
-  badMarkers.forEach(function(pos) {
+  badMarkers.forEach((pos) => {
     builder.keepText(text.substring(offset, pos));
     builder.remove(1);
-    offset = pos+1;
+    offset = pos + 1;
   });
 
   return builder.toString();
@@ -855,56 +845,54 @@ function createSessionInfoAuth(sessionInfo, message) {
 async function handleClientReady(socket, message, authorID) {
   // check if all ok
   if (!message.token) {
-    messageLogger.warn("Dropped message, CLIENT_READY Message has no token!");
+    messageLogger.warn('Dropped message, CLIENT_READY Message has no token!');
     return;
   }
 
   if (!message.padId) {
-    messageLogger.warn("Dropped message, CLIENT_READY Message has no padId!");
+    messageLogger.warn('Dropped message, CLIENT_READY Message has no padId!');
     return;
   }
 
   if (!message.protocolVersion) {
-    messageLogger.warn("Dropped message, CLIENT_READY Message has no protocolVersion!");
+    messageLogger.warn('Dropped message, CLIENT_READY Message has no protocolVersion!');
     return;
   }
 
   if (message.protocolVersion !== 2) {
-    messageLogger.warn("Dropped message, CLIENT_READY Message has a unknown protocolVersion '" + message.protocolVersion + "'!");
+    messageLogger.warn(`Dropped message, CLIENT_READY Message has a unknown protocolVersion '${message.protocolVersion}'!`);
     return;
   }
 
-  hooks.callAll("clientReady", message);
+  hooks.callAll('clientReady', message);
 
   // Get ro/rw id:s
-  let padIds = await readOnlyManager.getIds(message.padId);
+  const padIds = await readOnlyManager.getIds(message.padId);
 
   // get all authordata of this new user
   assert(authorID);
-  let value = await authorManager.getAuthor(authorID);
-  let authorColorId = value.colorId;
-  let authorName = value.name;
+  const value = await authorManager.getAuthor(authorID);
+  const authorColorId = value.colorId;
+  const authorName = value.name;
 
   // load the pad-object from the database
-  let pad = await padManager.getPad(padIds.padId);
+  const pad = await padManager.getPad(padIds.padId);
 
   // these db requests all need the pad object (timestamp of latest revision, author data)
-  let authors = pad.getAllAuthors();
+  const authors = pad.getAllAuthors();
 
   // get timestamp of latest revision needed for timeslider
-  let currentTime = await pad.getRevisionDate(pad.getHeadRevisionNumber());
+  const currentTime = await pad.getRevisionDate(pad.getHeadRevisionNumber());
 
   // get all author data out of the database (in parallel)
-  let historicalAuthorData = {};
-  await Promise.all(authors.map(authorId => {
-    return authorManager.getAuthor(authorId).then(author => {
-      if (!author) {
-        messageLogger.error("There is no author for authorId: ", authorId, ". This is possibly related to https://github.com/ether/etherpad-lite/issues/2802");
-      } else {
-        historicalAuthorData[authorId] = { name: author.name, colorId: author.colorId }; // Filter author attribs (e.g. don't send author's pads to all clients)
-      }
-    });
-  }));
+  const historicalAuthorData = {};
+  await Promise.all(authors.map((authorId) => authorManager.getAuthor(authorId).then((author) => {
+    if (!author) {
+      messageLogger.error('There is no author for authorId: ', authorId, '. This is possibly related to https://github.com/ether/etherpad-lite/issues/2802');
+    } else {
+      historicalAuthorData[authorId] = {name: author.name, colorId: author.colorId}; // Filter author attribs (e.g. don't send author's pads to all clients)
+    }
+  })));
 
   // glue the clientVars together, send them and tell the other clients that a new one is there
 
@@ -932,12 +920,12 @@ async function handleClientReady(socket, message, authorID) {
       padIds.readonly || !webaccess.userCanModify(message.padId, socket.client.request);
 
   const {session: {user} = {}} = socket.client.request;
-  accessLogger.info(`[${pad.head > 0 ? 'ENTER' : 'CREATE'}]` +
+  accessLogger.info(`${`[${pad.head > 0 ? 'ENTER' : 'CREATE'}]` +
                     ` pad:${padIds.padId}` +
                     ` socket:${socket.id}` +
                     ` IP:${settings.disableIPlogging ? 'ANONYMOUS' : socket.request.ip}` +
-                    ` authorID:${authorID}` +
-                    ((user && user.username) ? ` username:${user.username}` : ''));
+                    ` authorID:${authorID}`}${
+    (user && user.username) ? ` username:${user.username}` : ''}`);
 
   if (message.reconnect) {
     // If this is a reconnect, we don't have to send the client the ClientVars again
@@ -949,13 +937,13 @@ async function handleClientReady(socket, message, authorID) {
 
     // During the client reconnect, client might miss some revisions from other clients. By using client revision,
     // this below code sends all the revisions missed during the client reconnect
-    var revisionsNeeded = [];
-    var changesets = {};
+    const revisionsNeeded = [];
+    const changesets = {};
 
-    var startNum = message.client_rev + 1;
-    var endNum = pad.getHeadRevisionNumber() + 1;
+    let startNum = message.client_rev + 1;
+    let endNum = pad.getHeadRevisionNumber() + 1;
 
-    var headNum = pad.getHeadRevisionNumber();
+    const headNum = pad.getHeadRevisionNumber();
 
     if (endNum > headNum + 1) {
       endNum = headNum + 1;
@@ -971,51 +959,47 @@ async function handleClientReady(socket, message, authorID) {
     }
 
     // get changesets, author and timestamp needed for pending revisions (in parallel)
-    let promises = [];
-    for (let revNum of revisionsNeeded) {
-       let cs = changesets[revNum];
-       promises.push( pad.getRevisionChangeset(revNum).then(result => cs.changeset = result ));
-       promises.push(    pad.getRevisionAuthor(revNum).then(result => cs.author = result    ));
-       promises.push(      pad.getRevisionDate(revNum).then(result => cs.timestamp = result ));
+    const promises = [];
+    for (const revNum of revisionsNeeded) {
+      const cs = changesets[revNum];
+      promises.push(pad.getRevisionChangeset(revNum).then((result) => cs.changeset = result));
+      promises.push(pad.getRevisionAuthor(revNum).then((result) => cs.author = result));
+      promises.push(pad.getRevisionDate(revNum).then((result) => cs.timestamp = result));
     }
     await Promise.all(promises);
 
     // return pending changesets
-    for (let r of revisionsNeeded) {
-
-      let forWire = Changeset.prepareForWire(changesets[r]['changeset'], pad.pool);
-      let wireMsg = {"type":"COLLABROOM",
-                     "data":{type:"CLIENT_RECONNECT",
-                             headRev:pad.getHeadRevisionNumber(),
-                             newRev:r,
-                             changeset:forWire.translated,
-                             apool: forWire.pool,
-                             author: changesets[r]['author'],
-                             currentTime: changesets[r]['timestamp']
-                           }};
+    for (const r of revisionsNeeded) {
+      const forWire = Changeset.prepareForWire(changesets[r].changeset, pad.pool);
+      const wireMsg = {type: 'COLLABROOM',
+        data: {type: 'CLIENT_RECONNECT',
+          headRev: pad.getHeadRevisionNumber(),
+          newRev: r,
+          changeset: forWire.translated,
+          apool: forWire.pool,
+          author: changesets[r].author,
+          currentTime: changesets[r].timestamp}};
       socket.json.send(wireMsg);
     }
 
     if (startNum === endNum) {
-      var Msg = {"type":"COLLABROOM",
-                 "data":{type:"CLIENT_RECONNECT",
-                         noChanges: true,
-                         newRev: pad.getHeadRevisionNumber()
-                 }};
+      const Msg = {type: 'COLLABROOM',
+        data: {type: 'CLIENT_RECONNECT',
+          noChanges: true,
+          newRev: pad.getHeadRevisionNumber()}};
       socket.json.send(Msg);
     }
-
   } else {
     // This is a normal first connect
 
     // prepare all values for the wire, there's a chance that this throws, if the pad is corrupted
     try {
       var atext = Changeset.cloneAText(pad.atext);
-      var attribsForWire = Changeset.prepareForWire(atext.attribs, pad.pool);
+      const attribsForWire = Changeset.prepareForWire(atext.attribs, pad.pool);
       var apool = attribsForWire.pool.toJsonable();
       atext.attribs = attribsForWire.translated;
-    } catch(e) {
-      console.error(e.stack || e)
+    } catch (e) {
+      console.error(e.stack || e);
       socket.json.send({disconnect: 'corruptPad'}); // pull the brakes
 
       return;
@@ -1024,64 +1008,64 @@ async function handleClientReady(socket, message, authorID) {
     // Warning: never ever send padIds.padId to the client. If the
     // client is read only you would open a security hole 1 swedish
     // mile wide...
-    var clientVars = {
-      "skinName": settings.skinName,
-      "skinVariants": settings.skinVariants,
-      "randomVersionString": settings.randomVersionString,
-      "accountPrivs": {
-          "maxRevisions": 100
+    const clientVars = {
+      skinName: settings.skinName,
+      skinVariants: settings.skinVariants,
+      randomVersionString: settings.randomVersionString,
+      accountPrivs: {
+        maxRevisions: 100,
       },
-      "automaticReconnectionTimeout": settings.automaticReconnectionTimeout,
-      "initialRevisionList": [],
-      "initialOptions": {
-          "guestPolicy": "deny"
+      automaticReconnectionTimeout: settings.automaticReconnectionTimeout,
+      initialRevisionList: [],
+      initialOptions: {
+        guestPolicy: 'deny',
       },
-      "savedRevisions": pad.getSavedRevisions(),
-      "collab_client_vars": {
-          "initialAttributedText": atext,
-          "clientIp": "127.0.0.1",
-          "padId": message.padId,
-          "historicalAuthorData": historicalAuthorData,
-          "apool": apool,
-          "rev": pad.getHeadRevisionNumber(),
-          "time": currentTime,
+      savedRevisions: pad.getSavedRevisions(),
+      collab_client_vars: {
+        initialAttributedText: atext,
+        clientIp: '127.0.0.1',
+        padId: message.padId,
+        historicalAuthorData,
+        apool,
+        rev: pad.getHeadRevisionNumber(),
+        time: currentTime,
       },
-      "colorPalette": authorManager.getColorPalette(),
-      "clientIp": "127.0.0.1",
-      "userIsGuest": true,
-      "userColor": authorColorId,
-      "padId": message.padId,
-      "padOptions": settings.padOptions,
-      "padShortcutEnabled": settings.padShortcutEnabled,
-      "initialTitle": "Pad: " + message.padId,
-      "opts": {},
+      colorPalette: authorManager.getColorPalette(),
+      clientIp: '127.0.0.1',
+      userIsGuest: true,
+      userColor: authorColorId,
+      padId: message.padId,
+      padOptions: settings.padOptions,
+      padShortcutEnabled: settings.padShortcutEnabled,
+      initialTitle: `Pad: ${message.padId}`,
+      opts: {},
       // tell the client the number of the latest chat-message, which will be
       // used to request the latest 100 chat-messages later (GET_CHAT_MESSAGES)
-      "chatHead": pad.chatHead,
-      "numConnectedUsers": roomSockets.length,
-      "readOnlyId": padIds.readOnlyPadId,
-      "readonly": sessionInfo.readonly,
-      "serverTimestamp": Date.now(),
-      "userId": authorID,
-      "abiwordAvailable": settings.abiwordAvailable(),
-      "sofficeAvailable": settings.sofficeAvailable(),
-      "exportAvailable": settings.exportAvailable(),
-      "plugins": {
-        "plugins": plugins.plugins,
-        "parts": plugins.parts,
+      chatHead: pad.chatHead,
+      numConnectedUsers: roomSockets.length,
+      readOnlyId: padIds.readOnlyPadId,
+      readonly: sessionInfo.readonly,
+      serverTimestamp: Date.now(),
+      userId: authorID,
+      abiwordAvailable: settings.abiwordAvailable(),
+      sofficeAvailable: settings.sofficeAvailable(),
+      exportAvailable: settings.exportAvailable(),
+      plugins: {
+        plugins: plugins.plugins,
+        parts: plugins.parts,
       },
-      "indentationOnNewLine": settings.indentationOnNewLine,
-      "scrollWhenFocusLineIsOutOfViewport": {
-        "percentage" : {
-          "editionAboveViewport": settings.scrollWhenFocusLineIsOutOfViewport.percentage.editionAboveViewport,
-          "editionBelowViewport": settings.scrollWhenFocusLineIsOutOfViewport.percentage.editionBelowViewport,
+      indentationOnNewLine: settings.indentationOnNewLine,
+      scrollWhenFocusLineIsOutOfViewport: {
+        percentage: {
+          editionAboveViewport: settings.scrollWhenFocusLineIsOutOfViewport.percentage.editionAboveViewport,
+          editionBelowViewport: settings.scrollWhenFocusLineIsOutOfViewport.percentage.editionBelowViewport,
         },
-        "duration": settings.scrollWhenFocusLineIsOutOfViewport.duration,
-        "scrollWhenCaretIsInTheLastLineOfViewport": settings.scrollWhenFocusLineIsOutOfViewport.scrollWhenCaretIsInTheLastLineOfViewport,
-        "percentageToScrollWhenUserPressesArrowUp": settings.scrollWhenFocusLineIsOutOfViewport.percentageToScrollWhenUserPressesArrowUp,
+        duration: settings.scrollWhenFocusLineIsOutOfViewport.duration,
+        scrollWhenCaretIsInTheLastLineOfViewport: settings.scrollWhenFocusLineIsOutOfViewport.scrollWhenCaretIsInTheLastLineOfViewport,
+        percentageToScrollWhenUserPressesArrowUp: settings.scrollWhenFocusLineIsOutOfViewport.percentageToScrollWhenUserPressesArrowUp,
       },
-      "initialChangesets": [], // FIXME: REMOVE THIS SHIT
-    }
+      initialChangesets: [], // FIXME: REMOVE THIS SHIT
+    };
 
     // Add a username to the clientVars if one avaiable
     if (authorName != null) {
@@ -1092,7 +1076,7 @@ async function handleClientReady(socket, message, authorID) {
     const messages = await hooks.aCallAll('clientVars', {clientVars, pad, socket});
 
     // combine our old object with the new attributes from the hook
-    for (let msg of messages) {
+    for (const msg of messages) {
       Object.assign(clientVars, msg);
     }
 
@@ -1106,17 +1090,17 @@ async function handleClientReady(socket, message, authorID) {
     sessionInfo.rev = pad.getHeadRevisionNumber();
 
     // prepare the notification for the other users on the pad, that this user joined
-    let messageToTheOtherUsers = {
-       "type": "COLLABROOM",
-       "data": {
-        type: "USER_NEWINFO",
+    const messageToTheOtherUsers = {
+      type: 'COLLABROOM',
+      data: {
+        type: 'USER_NEWINFO',
         userInfo: {
-          "ip": "127.0.0.1",
-          "colorId": authorColorId,
-          "userAgent": "Anonymous",
-          "userId": authorID,
-        }
-      }
+          ip: '127.0.0.1',
+          colorId: authorColorId,
+          userAgent: 'Anonymous',
+          userId: authorID,
+        },
+      },
     };
 
     // Add the authorname of this new User, if avaiable
@@ -1129,7 +1113,6 @@ async function handleClientReady(socket, message, authorID) {
 
     // Get sessions for this pad and update them (in parallel)
     await Promise.all(_getRoomSockets(pad.id).map(async (roomSocket) => {
-
       // Jump over, if this session is the connection session
       if (roomSocket.id === socket.id) {
         return;
@@ -1141,25 +1124,25 @@ async function handleClientReady(socket, message, authorID) {
       if (sessionInfo == null) return;
 
       // get the authorname & colorId
-      let author = sessionInfo.author;
-      let cached = historicalAuthorData[author];
+      const author = sessionInfo.author;
+      const cached = historicalAuthorData[author];
 
       // reuse previously created cache of author's data
       let authorInfo = cached ? cached : (await authorManager.getAuthor(author));
 
       // default fallback color to use if authorInfo.colorId is null
-      const defaultColor = "#daf0b2";
+      const defaultColor = '#daf0b2';
 
       if (!authorInfo) {
-        console.warn(`handleClientReady(): no authorInfo parameter was received. Default values are going to be used. See issue #3612.  This can be caused by a user clicking undo after clearing all authorship colors see #2802`);
+        console.warn('handleClientReady(): no authorInfo parameter was received. Default values are going to be used. See issue #3612.  This can be caused by a user clicking undo after clearing all authorship colors see #2802');
         authorInfo = {};
       }
 
       // For some reason sometimes name isn't set
       // Catch this issue here and use a fixed name.
       if (!authorInfo.name) {
-        console.warn(`handleClientReady(): client submitted no author name. Using "Anonymous". See: issue #3612`);
-        authorInfo.name = "Anonymous";
+        console.warn('handleClientReady(): client submitted no author name. Using "Anonymous". See: issue #3612');
+        authorInfo.name = 'Anonymous';
       }
 
       // For some reason sometimes colorId isn't set
@@ -1170,18 +1153,18 @@ async function handleClientReady(socket, message, authorID) {
       }
 
       // Send the new User a Notification about this other user
-      let msg = {
-        "type": "COLLABROOM",
-        "data": {
-          type: "USER_NEWINFO",
+      const msg = {
+        type: 'COLLABROOM',
+        data: {
+          type: 'USER_NEWINFO',
           userInfo: {
-            "ip": "127.0.0.1",
-            "colorId": authorInfo.colorId,
-            "name": authorInfo.name,
-            "userAgent": "Anonymous",
-            "userId": author
-          }
-        }
+            ip: '127.0.0.1',
+            colorId: authorInfo.colorId,
+            name: authorInfo.name,
+            userAgent: 'Anonymous',
+            userId: author,
+          },
+        },
       };
 
       socket.json.send(msg);
@@ -1195,49 +1178,49 @@ async function handleClientReady(socket, message, authorID) {
 async function handleChangesetRequest(socket, message) {
   // check if all ok
   if (message.data == null) {
-    messageLogger.warn("Dropped message, changeset request has no data!");
+    messageLogger.warn('Dropped message, changeset request has no data!');
     return;
   }
 
   if (message.padId == null) {
-    messageLogger.warn("Dropped message, changeset request has no padId!");
+    messageLogger.warn('Dropped message, changeset request has no padId!');
     return;
   }
 
   if (message.data.granularity == null) {
-    messageLogger.warn("Dropped message, changeset request has no granularity!");
+    messageLogger.warn('Dropped message, changeset request has no granularity!');
     return;
   }
 
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger#Polyfill
   if (Math.floor(message.data.granularity) !== message.data.granularity) {
-    messageLogger.warn("Dropped message, changeset request granularity is not an integer!");
+    messageLogger.warn('Dropped message, changeset request granularity is not an integer!');
     return;
   }
 
   if (message.data.start == null) {
-    messageLogger.warn("Dropped message, changeset request has no start!");
+    messageLogger.warn('Dropped message, changeset request has no start!');
     return;
   }
 
   if (message.data.requestID == null) {
-    messageLogger.warn("Dropped message, changeset request has no requestID!");
+    messageLogger.warn('Dropped message, changeset request has no requestID!');
     return;
   }
 
-  let granularity = message.data.granularity;
-  let start = message.data.start;
-  let end = start + (100 * granularity);
+  const granularity = message.data.granularity;
+  const start = message.data.start;
+  const end = start + (100 * granularity);
 
-  let padIds = await readOnlyManager.getIds(message.padId);
+  const padIds = await readOnlyManager.getIds(message.padId);
 
   // build the requested rough changesets and send them back
   try {
-    let data = await getChangesetInfo(padIds.padId, start, end, granularity);
+    const data = await getChangesetInfo(padIds.padId, start, end, granularity);
     data.requestID = message.data.requestID;
     socket.json.send({type: 'CHANGESET_REQ', data});
   } catch (err) {
-    console.error('Error while handling a changeset request for ' + padIds.padId, err.toString(), message.data);
+    console.error(`Error while handling a changeset request for ${padIds.padId}`, err.toString(), message.data);
   }
 }
 
@@ -1246,8 +1229,8 @@ async function handleChangesetRequest(socket, message) {
  * https://github.com/ether/pad/blob/master/etherpad/src/etherpad/control/pad/pad_changeset_control.js#L144
  */
 async function getChangesetInfo(padId, startNum, endNum, granularity) {
-  let pad = await padManager.getPad(padId);
-  let head_revision = pad.getHeadRevisionNumber();
+  const pad = await padManager.getPad(padId);
+  const head_revision = pad.getHeadRevisionNumber();
 
   // calculate the last full endnum
   if (endNum > head_revision + 1) {
@@ -1255,15 +1238,15 @@ async function getChangesetInfo(padId, startNum, endNum, granularity) {
   }
   endNum = Math.floor(endNum / granularity) * granularity;
 
-  let compositesChangesetNeeded = [];
-  let revTimesNeeded = [];
+  const compositesChangesetNeeded = [];
+  const revTimesNeeded = [];
 
   // figure out which composite Changeset and revTimes we need, to load them in bulk
   for (let start = startNum; start < endNum; start += granularity) {
-    let end = start + granularity;
+    const end = start + granularity;
 
     // add the composite Changeset we needed
-    compositesChangesetNeeded.push({ start, end });
+    compositesChangesetNeeded.push({start, end});
 
     // add the t1 time we need
     revTimesNeeded.push(start === 0 ? 0 : start - 1);
@@ -1276,24 +1259,20 @@ async function getChangesetInfo(padId, startNum, endNum, granularity) {
   // it would make all the lookups run in series
 
   // get all needed composite Changesets
-  let composedChangesets = {};
-  let p1 = Promise.all(compositesChangesetNeeded.map(item => {
-    return composePadChangesets(padId, item.start, item.end).then(changeset => {
-      composedChangesets[item.start + "/" + item.end] = changeset;
-    });
-  }));
+  const composedChangesets = {};
+  const p1 = Promise.all(compositesChangesetNeeded.map((item) => composePadChangesets(padId, item.start, item.end).then((changeset) => {
+    composedChangesets[`${item.start}/${item.end}`] = changeset;
+  })));
 
   // get all needed revision Dates
-  let revisionDate = [];
-  let p2 = Promise.all(revTimesNeeded.map(revNum => {
-    return pad.getRevisionDate(revNum).then(revDate => {
-      revisionDate[revNum] = Math.floor(revDate / 1000);
-    });
-  }));
+  const revisionDate = [];
+  const p2 = Promise.all(revTimesNeeded.map((revNum) => pad.getRevisionDate(revNum).then((revDate) => {
+    revisionDate[revNum] = Math.floor(revDate / 1000);
+  })));
 
   // get the lines
   let lines;
-  let p3 = getPadLines(padId, startNum - 1).then(_lines => {
+  const p3 = getPadLines(padId, startNum - 1).then((_lines) => {
     lines = _lines;
   });
 
@@ -1301,37 +1280,37 @@ async function getChangesetInfo(padId, startNum, endNum, granularity) {
   await Promise.all([p1, p2, p3]);
 
   // doesn't know what happens here exactly :/
-  let timeDeltas = [];
-  let forwardsChangesets = [];
-  let backwardsChangesets = [];
-  let apool = new AttributePool();
+  const timeDeltas = [];
+  const forwardsChangesets = [];
+  const backwardsChangesets = [];
+  const apool = new AttributePool();
 
   for (let compositeStart = startNum; compositeStart < endNum; compositeStart += granularity) {
-    let compositeEnd = compositeStart + granularity;
+    const compositeEnd = compositeStart + granularity;
     if (compositeEnd > endNum || compositeEnd > head_revision + 1) {
       break;
     }
 
-    let forwards = composedChangesets[compositeStart + "/" + compositeEnd];
-    let backwards = Changeset.inverse(forwards, lines.textlines, lines.alines, pad.apool());
+    const forwards = composedChangesets[`${compositeStart}/${compositeEnd}`];
+    const backwards = Changeset.inverse(forwards, lines.textlines, lines.alines, pad.apool());
 
     Changeset.mutateAttributionLines(forwards, lines.alines, pad.apool());
     Changeset.mutateTextLines(forwards, lines.textlines);
 
-    let forwards2 = Changeset.moveOpsToNewPool(forwards, pad.apool(), apool);
-    let backwards2 = Changeset.moveOpsToNewPool(backwards, pad.apool(), apool);
+    const forwards2 = Changeset.moveOpsToNewPool(forwards, pad.apool(), apool);
+    const backwards2 = Changeset.moveOpsToNewPool(backwards, pad.apool(), apool);
 
-    let t1 = (compositeStart === 0) ? revisionDate[0] : revisionDate[compositeStart - 1];
-    let t2 = revisionDate[compositeEnd - 1];
+    const t1 = (compositeStart === 0) ? revisionDate[0] : revisionDate[compositeStart - 1];
+    const t2 = revisionDate[compositeEnd - 1];
 
     timeDeltas.push(t2 - t1);
     forwardsChangesets.push(forwards2);
     backwardsChangesets.push(backwards2);
   }
 
-  return { forwardsChangesets, backwardsChangesets,
-           apool: apool.toJsonable(), actualEndNum: endNum,
-           timeDeltas, start: startNum, granularity };
+  return {forwardsChangesets, backwardsChangesets,
+    apool: apool.toJsonable(), actualEndNum: endNum,
+    timeDeltas, start: startNum, granularity};
 }
 
 /**
@@ -1339,7 +1318,7 @@ async function getChangesetInfo(padId, startNum, endNum, granularity) {
  * https://github.com/ether/pad/blob/master/etherpad/src/etherpad/control/pad/pad_changeset_control.js#L263
  */
 async function getPadLines(padId, revNum) {
-  let pad = await padManager.getPad(padId);
+  const pad = await padManager.getPad(padId);
 
   // get the atext
   let atext;
@@ -1347,12 +1326,12 @@ async function getPadLines(padId, revNum) {
   if (revNum >= 0) {
     atext = await pad.getInternalRevisionAText(revNum);
   } else {
-    atext = Changeset.makeAText("\n");
+    atext = Changeset.makeAText('\n');
   }
 
   return {
     textlines: Changeset.splitTextLines(atext.text),
-    alines: Changeset.splitAttributionLines(atext.attribs, atext.text)
+    alines: Changeset.splitAttributionLines(atext.attribs, atext.text),
   };
 }
 
@@ -1360,52 +1339,49 @@ async function getPadLines(padId, revNum) {
  * Tries to rebuild the composePadChangeset function of the original Etherpad
  * https://github.com/ether/pad/blob/master/etherpad/src/etherpad/control/pad/pad_changeset_control.js#L241
  */
-async function composePadChangesets (padId, startNum, endNum) {
-  let pad = await padManager.getPad(padId);
+async function composePadChangesets(padId, startNum, endNum) {
+  const pad = await padManager.getPad(padId);
 
   // fetch all changesets we need
-  let headNum = pad.getHeadRevisionNumber();
+  const headNum = pad.getHeadRevisionNumber();
   endNum = Math.min(endNum, headNum + 1);
   startNum = Math.max(startNum, 0);
 
   // create an array for all changesets, we will
   // replace the values with the changeset later
-  let changesetsNeeded = [];
-  for (let r = startNum ; r < endNum; r++) {
+  const changesetsNeeded = [];
+  for (let r = startNum; r < endNum; r++) {
     changesetsNeeded.push(r);
   }
 
   // get all changesets
-  let changesets = {};
-  await Promise.all(changesetsNeeded.map(revNum => {
-    return pad.getRevisionChangeset(revNum).then(changeset => changesets[revNum] = changeset);
-  }));
+  const changesets = {};
+  await Promise.all(changesetsNeeded.map((revNum) => pad.getRevisionChangeset(revNum).then((changeset) => changesets[revNum] = changeset)));
 
   // compose Changesets
   let r;
   try {
     let changeset = changesets[startNum];
-    let pool = pad.apool();
+    const pool = pad.apool();
 
     for (r = startNum + 1; r < endNum; r++) {
-      let cs = changesets[r];
+      const cs = changesets[r];
       changeset = Changeset.compose(changeset, cs, pool);
     }
     return changeset;
-
   } catch (e) {
     // r-1 indicates the rev that was build starting with startNum, applying startNum+1, +2, +3
-    console.warn("failed to compose cs in pad:", padId, " startrev:", startNum," current rev:", r);
+    console.warn('failed to compose cs in pad:', padId, ' startrev:', startNum, ' current rev:', r);
     throw e;
   }
 }
 
 function _getRoomSockets(padID) {
   const roomSockets = [];
-  var room = socketio.sockets.adapter.rooms[padID];
+  const room = socketio.sockets.adapter.rooms[padID];
 
   if (room) {
-    for (var id in room.sockets) {
+    for (const id in room.sockets) {
       roomSockets.push(socketio.sockets.sockets[id]);
     }
   }
@@ -1416,27 +1392,26 @@ function _getRoomSockets(padID) {
 /**
  * Get the number of users in a pad
  */
-exports.padUsersCount = function(padID) {
+exports.padUsersCount = function (padID) {
   return {
-    padUsersCount: _getRoomSockets(padID).length
-  }
-}
+    padUsersCount: _getRoomSockets(padID).length,
+  };
+};
 
 /**
  * Get the list of users in a pad
  */
-exports.padUsers = async function(padID) {
-
-  let padUsers = [];
+exports.padUsers = async function (padID) {
+  const padUsers = [];
 
   // iterate over all clients (in parallel)
   await Promise.all(_getRoomSockets(padID).map(async (roomSocket) => {
     const s = sessioninfos[roomSocket.id];
     if (s) {
-      return authorManager.getAuthor(s.author).then(author => {
+      return authorManager.getAuthor(s.author).then((author) => {
         // Fixes: https://github.com/ether/etherpad-lite/issues/4120
         // On restart author might not be populated?
-        if(author){
+        if (author) {
           author.id = s.author;
           padUsers.push(author);
         }
@@ -1444,7 +1419,7 @@ exports.padUsers = async function(padID) {
     }
   }));
 
-  return { padUsers };
-}
+  return {padUsers};
+};
 
 exports.sessioninfos = sessioninfos;

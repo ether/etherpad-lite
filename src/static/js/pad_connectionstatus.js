@@ -20,42 +20,40 @@
  * limitations under the License.
  */
 
-var padmodals = require('./pad_modals').padmodals;
+const padmodals = require('./pad_modals').padmodals;
 
-var padconnectionstatus = (function() {
-
-  var status = {
-    what: 'connecting'
+const padconnectionstatus = (function () {
+  let status = {
+    what: 'connecting',
   };
 
-  var self = {
-    init: function() {
-      $('button#forcereconnect').click(function() {
+  const self = {
+    init() {
+      $('button#forcereconnect').click(() => {
         window.location.reload();
       });
     },
-    connected: function() {
+    connected() {
       status = {
-        what: 'connected'
+        what: 'connected',
       };
       padmodals.showModal('connected');
       padmodals.hideOverlay();
     },
-    reconnecting: function() {
+    reconnecting() {
       status = {
-        what: 'reconnecting'
+        what: 'reconnecting',
       };
 
       padmodals.showModal('reconnecting');
       padmodals.showOverlay();
     },
-    disconnected: function(msg) {
-      if(status.what == "disconnected")
-        return;
+    disconnected(msg) {
+      if (status.what == 'disconnected') return;
 
       status = {
         what: 'disconnected',
-        why: msg
+        why: msg,
       };
 
       // These message IDs correspond to localized strings that are presented to the user. If a new
@@ -83,12 +81,12 @@ var padconnectionstatus = (function() {
       padmodals.showModal(k);
       padmodals.showOverlay();
     },
-    isFullyConnected: function() {
+    isFullyConnected() {
       return status.what == 'connected';
     },
-    getStatus: function() {
+    getStatus() {
       return status;
-    }
+    },
   };
   return self;
 }());

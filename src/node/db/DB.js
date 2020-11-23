@@ -19,13 +19,13 @@
  * limitations under the License.
  */
 
-var ueberDB = require("ueberdb2");
-var settings = require("../utils/Settings");
-var log4js = require('log4js');
-const util = require("util");
+const ueberDB = require('ueberdb2');
+const settings = require('../utils/Settings');
+const log4js = require('log4js');
+const util = require('util');
 
 // set database settings
-let db = new ueberDB.database(settings.dbType, settings.dbSettings, null, log4js.getLogger("ueberDB"));
+const db = new ueberDB.database(settings.dbType, settings.dbSettings, null, log4js.getLogger('ueberDB'));
 
 /**
  * The UeberDB Object that provides the database functions
@@ -36,32 +36,32 @@ exports.db = null;
  * Initalizes the database with the settings provided by the settings module
  * @param {Function} callback
  */
-exports.init = function() {
+exports.init = function () {
   // initalize the database async
   return new Promise((resolve, reject) => {
-    db.init(function(err) {
+    db.init((err) => {
       if (err) {
         // there was an error while initializing the database, output it and stop
-        console.error("ERROR: Problem while initalizing the database");
+        console.error('ERROR: Problem while initalizing the database');
         console.error(err.stack ? err.stack : err);
         process.exit(1);
       }
 
       // everything ok, set up Promise-based methods
-      ['get', 'set', 'findKeys', 'getSub', 'setSub', 'remove', 'doShutdown'].forEach(fn => {
+      ['get', 'set', 'findKeys', 'getSub', 'setSub', 'remove', 'doShutdown'].forEach((fn) => {
         exports[fn] = util.promisify(db[fn].bind(db));
       });
 
       // set up wrappers for get and getSub that can't return "undefined"
-      let get = exports.get;
-      exports.get = async function(key) {
-        let result = await get(key);
+      const get = exports.get;
+      exports.get = async function (key) {
+        const result = await get(key);
         return (result === undefined) ? null : result;
       };
 
-      let getSub = exports.getSub;
-      exports.getSub = async function(key, sub) {
-        let result = await getSub(key, sub);
+      const getSub = exports.getSub;
+      exports.getSub = async function (key, sub) {
+        const result = await getSub(key, sub);
         return (result === undefined) ? null : result;
       };
 
@@ -70,7 +70,7 @@ exports.init = function() {
       resolve();
     });
   });
-}
+};
 
 exports.shutdown = async (hookName, context) => {
   await exports.doShutdown();

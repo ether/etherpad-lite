@@ -62,14 +62,14 @@ const RESERVED_WORDS = [
   'volatile',
   'while',
   'with',
-  'yield'
+  'yield',
 ];
 
 const regex = /^[a-zA-Z_$][0-9a-zA-Z_$]*(?:\[(?:".+"|\'.+\'|\d+)\])*?$/;
 
-module.exports.check = function(inputStr) {
-  var isValid = true;
-  inputStr.split(".").forEach(function(part) {
+module.exports.check = function (inputStr) {
+  let isValid = true;
+  inputStr.split('.').forEach((part) => {
     if (!regex.test(part)) {
       isValid = false;
     }
@@ -80,4 +80,4 @@ module.exports.check = function(inputStr) {
   });
 
   return isValid;
-}
+};
