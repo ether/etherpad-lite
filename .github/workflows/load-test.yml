@@ -5,6 +5,11 @@ on: [push, pull_request]
 
 jobs:
   withoutplugins:
+    # run on pushes to any branch
+    # run on PRs from external forks
+    if: |
+         (github.event_name != 'pull_request')
+         || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
     name: without plugins
     runs-on: ubuntu-latest
 
@@ -22,6 +27,11 @@ jobs:
       run: tests/frontend/travis/runnerLoadTest.sh
 
   withplugins:
+    # run on pushes to any branch
+    # run on PRs from external forks
+    if: |
+         (github.event_name != 'pull_request')
+         || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
     name: with Plugins
     runs-on: ubuntu-latest
 

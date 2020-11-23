@@ -1,12 +1,9 @@
 name: "Frontend tests"
 
-# any branch is useful for testing before a PR is submitted
-on: [push, pull_request]
+on: [push]
 
 jobs:
   withoutplugins:
-    # don't run on PRs from forks
-    if: github.event.pull_request.head.repo.full_name == 'ether/etherpad-lite' || github.event_name == 'push'
     name: without plugins
     runs-on: ubuntu-latest
 
@@ -43,8 +40,6 @@ jobs:
         tests/frontend/travis/runner.sh
 
   withplugins:
-    # don't run on PRs from forks
-    if: github.event.pull_request.head.repo.full_name == 'ether/etherpad-lite' || github.event_name == 'push'
     name: with plugins
     runs-on: ubuntu-latest
 
