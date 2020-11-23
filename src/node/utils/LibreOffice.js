@@ -89,7 +89,13 @@ function doConvertTask(task, callback) {
         task.srcFile,
         '--outdir', tmpDir
       ]);
-
+      // Soffice/libreoffice is buggy and often hangs.
+      // To remedy this we kill the spawned process after a while.
+      setTimeout(function(){ 
+        soffice.stdin.pause(); // required to kill hanging threads
+        soffice.kill();
+      }, 120000); 
+      
       var stdoutBuffer = '';
 
       // Delegate the processing of stdout to another function
