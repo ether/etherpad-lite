@@ -79,9 +79,28 @@ fs.readdir(pluginPath, function (err, rootFiles) {
             fs.readFileSync('bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
         fs.mkdirSync(pluginPath + '/.github/workflows', {recursive: true});
         fs.writeFileSync(path, npmpublish);
+        hasAutoFixed = true;
         console.log("If you haven't already, setup autopublish for this plugin https://github.com/ether/etherpad-lite/wiki/Plugins:-Automatically-publishing-to-npm-on-commit-to-Github-Repo");
       } else {
         console.log('Setup autopublish for this plugin https://github.com/ether/etherpad-lite/wiki/Plugins:-Automatically-publishing-to-npm-on-commit-to-Github-Repo');
+      }
+    }else{
+      // autopublish exists, we should check the version..
+      // checkVersion takes two file paths and checks for a version string in them.
+      const currVersionFile = fs.readFileSync(path, {encoding: 'utf8', flag: 'r'});
+      const existingConfigLocation = currVersionFile.indexOf("##ETHERPAD_NPM_V=");
+      const existingValue = parseInt(currVersionFile.substr(existingConfigLocation+17, existingConfigLocation.length));
+
+      const reqVersionFile = fs.readFileSync('bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
+      const reqConfigLocation = reqVersionFile.indexOf("##ETHERPAD_NPM_V=");
+      const reqValue = parseInt(reqVersionFile.substr(reqConfigLocation+17, reqConfigLocation.length));
+
+      if(!existingValue || (reqValue > existingValue)){
+        const npmpublish =
+            fs.readFileSync('bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
+        fs.mkdirSync(pluginPath + '/.github/workflows', {recursive: true});
+        fs.writeFileSync(path, npmpublish);
+        hasAutoFixed = true;
       }
     }
   } catch (err) {
@@ -126,7 +145,7 @@ fs.readdir(pluginPath, function (err, rootFiles) {
       if(autoFix){
         let devDependencies = {
           "eslint": "^7.14.0",
-          "eslint-config-etherpad": "^1.0.8",
+          "eslint-config-etherpad": "^1.0.10",
           "eslint-plugin-mocha": "^8.0.0",
           "eslint-plugin-node": "^11.1.0",
           "eslint-plugin-prefer-arrow": "^1.2.2",

@@ -4,6 +4,7 @@
 Explain what your plugin does and who it's useful for.
 
 ## Example animated gif of usage if appropriate
+![screenshot](https://user-images.githubusercontent.com/220864/99979953-97841d80-2d9f-11eb-9782-5f65817c58f4.PNG)
 
 ## Installing
 npm install [plugin_name]
