@@ -176,7 +176,7 @@ describe('import functionality', function () {
   xit('import a pad with ordered lists from html', function (done) {
     const importurl = `${helper.padChrome$.window.location.href}/import`;
     const htmlWithBullets = '<html><body><ol class="list-number1" start="1"><li>number 1 line 1</li></ol><ol class="list-number1" start="2"><li>number 2 line 2</li></ol></body></html>';
-    importrequest(htmlWithBullets, importurl, 'html') -
+    importrequest(htmlWithBullets, importurl, 'html');
     console.error(getinnertext());
     expect(getinnertext()).to.be('\
 <ol class="list-number1" start="1"><li><span class="">number 1 line 1</span></li></ol>\n\
