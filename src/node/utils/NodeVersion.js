@@ -25,17 +25,17 @@ const semver = require('semver');
  *
  * @param  {String}     minNodeVersion   Minimum required Node version
  */
-exports.enforceMinNodeVersion = function(minNodeVersion) {
+exports.enforceMinNodeVersion = function (minNodeVersion) {
   const currentNodeVersion = process.version;
 
   // we cannot use template literals, since we still do not know if we are
   // running under Node >= 4.0
   if (semver.lt(currentNodeVersion, minNodeVersion)) {
-    console.error('Running Etherpad on Node ' + currentNodeVersion + ' is not supported. Please upgrade at least to Node ' + minNodeVersion);
+    console.error(`Running Etherpad on Node ${currentNodeVersion} is not supported. Please upgrade at least to Node ${minNodeVersion}`);
     process.exit(1);
   }
 
-  console.debug('Running on Node ' + currentNodeVersion + ' (minimum required Node version: ' + minNodeVersion + ')');
+  console.debug(`Running on Node ${currentNodeVersion} (minimum required Node version: ${minNodeVersion})`);
 };
 
 /**
@@ -44,7 +44,7 @@ exports.enforceMinNodeVersion = function(minNodeVersion) {
  * @param  {String}    lowestNonDeprecatedNodeVersion   all Node version less than this one are deprecated
  * @param  {Function}  epRemovalVersion                 Etherpad version that will remove support for deprecated Node releases
  */
-exports.checkDeprecationStatus = function(lowestNonDeprecatedNodeVersion, epRemovalVersion) {
+exports.checkDeprecationStatus = function (lowestNonDeprecatedNodeVersion, epRemovalVersion) {
   const currentNodeVersion = process.version;
 
   if (semver.lt(currentNodeVersion, lowestNonDeprecatedNodeVersion)) {

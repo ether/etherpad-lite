@@ -1,15 +1,15 @@
-var fs = require('fs');
+const fs = require('fs');
 
-var check = function(path) {
-  var existsSync = fs.statSync || fs.existsSync || path.existsSync;
+const check = function (path) {
+  const existsSync = fs.statSync || fs.existsSync || path.existsSync;
 
-  var result;
+  let result;
   try {
     result = existsSync(path);
   } catch (e) {
     result = false;
   }
   return result;
-}
+};
 
 module.exports = check;

@@ -1,19 +1,19 @@
-const express = require("../express");
+const express = require('../express');
 const proxyaddr = require('proxy-addr');
-var settings = require('../../utils/Settings');
-var socketio = require('socket.io');
-var socketIORouter = require("../../handler/SocketIORouter");
-var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
+const settings = require('../../utils/Settings');
+const socketio = require('socket.io');
+const socketIORouter = require('../../handler/SocketIORouter');
+const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
-var padMessageHandler = require("../../handler/PadMessageHandler");
+const padMessageHandler = require('../../handler/PadMessageHandler');
 
 exports.expressCreateServer = function (hook_name, args, cb) {
-  //init socket.io and redirect all requests to the MessageHandler
+  // init socket.io and redirect all requests to the MessageHandler
   // there shouldn't be a browser that isn't compatible to all
   // transports in this list at once
   // e.g. XHR is disabled in IE by default, so in IE it should use jsonp-polling
-  var io = socketio({
-    transports: settings.socketTransportProtocols
+  const io = socketio({
+    transports: settings.socketTransportProtocols,
   }).listen(args.server, {
     /*
      * Do not set the "io" cookie.
@@ -61,17 +61,17 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   // https://github.com/Automattic/socket.io/wiki/Migrating-to-1.0
   // This debug logging environment is set in Settings.js
 
-  //minify socket.io javascript
+  // minify socket.io javascript
   // Due to a shitty decision by the SocketIO team minification is
   // no longer available, details available at:
   // http://stackoverflow.com/questions/23981741/minify-socket-io-socket-io-js-with-1-0
   // if(settings.minify) io.enable('browser client minification');
 
-  //Initalize the Socket.IO Router
+  // Initalize the Socket.IO Router
   socketIORouter.setSocketIO(io);
-  socketIORouter.addComponent("pad", padMessageHandler);
+  socketIORouter.addComponent('pad', padMessageHandler);
 
-  hooks.callAll("socketio", {"app": args.app, "io": io, "server": args.server});
+  hooks.callAll('socketio', {app: args.app, io, server: args.server});
 
   return cb();
-}
+};

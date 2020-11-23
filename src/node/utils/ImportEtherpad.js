@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-var log4js = require('log4js');
-const db = require("../db/DB");
+const log4js = require('log4js');
+const db = require('../db/DB');
 const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
-exports.setPadRaw = function(padId, records) {
+exports.setPadRaw = function (padId, records) {
   records = JSON.parse(records);
 
-  Object.keys(records).forEach(async function(key) {
+  Object.keys(records).forEach(async (key) => {
     let value = records[key];
 
     if (!value) {
@@ -36,7 +36,7 @@ exports.setPadRaw = function(padId, records) {
       newKey = key;
 
       // Does this author already exist?
-      let author = await db.get(key);
+      const author = await db.get(key);
 
       if (author) {
         // Yes, add the padID to the author
@@ -47,20 +47,20 @@ exports.setPadRaw = function(padId, records) {
         value = author;
       } else {
         // No, create a new array with the author info in
-        value.padIDs = [ padId ];
+        value.padIDs = [padId];
       }
     } else {
       // Not author data, probably pad data
       // we can split it to look to see if it's pad data
-      let oldPadId = key.split(":");
+      const oldPadId = key.split(':');
 
       // we know it's pad data
-      if (oldPadId[0] === "pad") {
+      if (oldPadId[0] === 'pad') {
         // so set the new pad id for the author
         oldPadId[1] = padId;
 
         // and create the value
-        newKey = oldPadId.join(":"); // create the new key
+        newKey = oldPadId.join(':'); // create the new key
       }
 
       // is this a key that is supported through a plugin?
@@ -74,4 +74,4 @@ exports.setPadRaw = function(padId, records) {
     // Write the value to the server
     await db.set(newKey, value);
   });
-}
+};

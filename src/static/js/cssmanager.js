@@ -21,41 +21,34 @@
  */
 
 function makeCSSManager(emptyStylesheetTitle, doc) {
-  if (doc === true)
-  {
+  if (doc === true) {
     doc = 'parent';
   } else if (!doc) {
     doc = 'inner';
   }
 
   function getSheetByTitle(title) {
-    if (doc === 'parent')
-    {
+    if (doc === 'parent') {
       win = window.parent.parent;
-    }
-    else if (doc === 'inner') {
+    } else if (doc === 'inner') {
       win = window;
-    }
-    else if (doc === 'outer') {
+    } else if (doc === 'outer') {
       win = window.parent;
+    } else {
+      throw 'Unknown dynamic style container';
     }
-    else {
-        throw "Unknown dynamic style container";
-    }
-    var allSheets = win.document.styleSheets;
+    const allSheets = win.document.styleSheets;
 
-    for (var i = 0; i < allSheets.length; i++)
-    {
-      var s = allSheets[i];
-      if (s.title == title)
-      {
+    for (let i = 0; i < allSheets.length; i++) {
+      const s = allSheets[i];
+      if (s.title == title) {
         return s;
       }
     }
     return null;
   }
 
-  var browserSheet = getSheetByTitle(emptyStylesheetTitle);
+  const browserSheet = getSheetByTitle(emptyStylesheetTitle);
 
   function browserRules() {
     return (browserSheet.cssRules || browserSheet.rules);
@@ -67,16 +60,14 @@ function makeCSSManager(emptyStylesheetTitle, doc) {
   }
 
   function browserInsertRule(i, selector) {
-    if (browserSheet.insertRule) browserSheet.insertRule(selector + ' {}', i);
+    if (browserSheet.insertRule) browserSheet.insertRule(`${selector} {}`, i);
     else browserSheet.addRule(selector, null, i);
   }
-  var selectorList = [];
+  const selectorList = [];
 
   function indexOfSelector(selector) {
-    for (var i = 0; i < selectorList.length; i++)
-    {
-      if (selectorList[i] == selector)
-      {
+    for (let i = 0; i < selectorList.length; i++) {
+      if (selectorList[i] == selector) {
         return i;
       }
     }
@@ -84,9 +75,8 @@ function makeCSSManager(emptyStylesheetTitle, doc) {
   }
 
   function selectorStyle(selector) {
-    var i = indexOfSelector(selector);
-    if (i < 0)
-    {
+    let i = indexOfSelector(selector);
+    if (i < 0) {
       // add selector
       browserInsertRule(0, selector);
       selectorList.splice(0, 0, selector);
@@ -96,20 +86,19 @@ function makeCSSManager(emptyStylesheetTitle, doc) {
   }
 
   function removeSelectorStyle(selector) {
-    var i = indexOfSelector(selector);
-    if (i >= 0)
-    {
+    const i = indexOfSelector(selector);
+    if (i >= 0) {
       browserDeleteRule(i);
       selectorList.splice(i, 1);
     }
   }
 
   return {
-    selectorStyle: selectorStyle,
-    removeSelectorStyle: removeSelectorStyle,
-    info: function() {
-      return selectorList.length + ":" + browserRules().length;
-    }
+    selectorStyle,
+    removeSelectorStyle,
+    info() {
+      return `${selectorList.length}:${browserRules().length}`;
+    },
   };
 }
 

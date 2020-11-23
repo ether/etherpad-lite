@@ -18,24 +18,23 @@
  * limitations under the License.
  */
 
-var Changeset = require("ep_etherpad-lite/static/js/Changeset");
+const Changeset = require('ep_etherpad-lite/static/js/Changeset');
 
-exports.getPadPlainText = function(pad, revNum){
-  var _analyzeLine = exports._analyzeLine;
-  var atext = ((revNum !== undefined) ? pad.getInternalRevisionAText(revNum) : pad.atext);
-  var textLines = atext.text.slice(0, -1).split('\n');
-  var attribLines = Changeset.splitAttributionLines(atext.attribs, atext.text);
-  var apool = pad.pool;
+exports.getPadPlainText = function (pad, revNum) {
+  const _analyzeLine = exports._analyzeLine;
+  const atext = ((revNum !== undefined) ? pad.getInternalRevisionAText(revNum) : pad.atext);
+  const textLines = atext.text.slice(0, -1).split('\n');
+  const attribLines = Changeset.splitAttributionLines(atext.attribs, atext.text);
+  const apool = pad.pool;
 
-  var pieces = [];
-  for (var i = 0; i < textLines.length; i++){
-    var line = _analyzeLine(textLines[i], attribLines[i], apool);
-    if (line.listLevel){
-      var numSpaces = line.listLevel * 2 - 1;
-      var bullet = '*';
+  const pieces = [];
+  for (let i = 0; i < textLines.length; i++) {
+    const line = _analyzeLine(textLines[i], attribLines[i], apool);
+    if (line.listLevel) {
+      const numSpaces = line.listLevel * 2 - 1;
+      const bullet = '*';
       pieces.push(new Array(numSpaces + 1).join(' '), bullet, ' ', line.text, '\n');
-    }
-    else{
+    } else {
       pieces.push(line.text, '\n');
     }
   }
@@ -44,38 +43,37 @@ exports.getPadPlainText = function(pad, revNum){
 };
 
 
-exports._analyzeLine = function(text, aline, apool){
-  var line = {};
+exports._analyzeLine = function (text, aline, apool) {
+  const line = {};
 
   // identify list
-  var lineMarker = 0;
+  let lineMarker = 0;
   line.listLevel = 0;
-  if (aline){
-    var opIter = Changeset.opIterator(aline);
-    if (opIter.hasNext()){
-      var listType = Changeset.opAttributeValue(opIter.next(), 'list', apool);
-      if (listType){
+  if (aline) {
+    const opIter = Changeset.opIterator(aline);
+    if (opIter.hasNext()) {
+      let listType = Changeset.opAttributeValue(opIter.next(), 'list', apool);
+      if (listType) {
         lineMarker = 1;
         listType = /([a-z]+)([0-9]+)/.exec(listType);
-        if (listType){
+        if (listType) {
           line.listTypeName = listType[1];
           line.listLevel = Number(listType[2]);
         }
       }
     }
-    var opIter2 = Changeset.opIterator(aline);
-    if (opIter2.hasNext()){
-      var start = Changeset.opAttributeValue(opIter2.next(), 'start', apool);
-      if (start){
-          line.start = start;
+    const opIter2 = Changeset.opIterator(aline);
+    if (opIter2.hasNext()) {
+      const start = Changeset.opAttributeValue(opIter2.next(), 'start', apool);
+      if (start) {
+        line.start = start;
       }
     }
   }
-  if (lineMarker){
+  if (lineMarker) {
     line.text = text.substring(1);
     line.aline = Changeset.subattribution(aline, 1);
-  }
-  else{
+  } else {
     line.text = text;
     line.aline = aline;
   }
@@ -83,8 +81,6 @@ exports._analyzeLine = function(text, aline, apool){
 };
 
 
-exports._encodeWhitespace = function(s){
-  return s.replace(/[^\x21-\x7E\s\t\n\r]/gu, function(c){
-    return "&#" +c.codePointAt(0) + ";";
-  });
+exports._encodeWhitespace = function (s) {
+  return s.replace(/[^\x21-\x7E\s\t\n\r]/gu, (c) => `&#${c.codePointAt(0)};`);
 };

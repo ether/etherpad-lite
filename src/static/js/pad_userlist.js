@@ -20,56 +20,55 @@
  * limitations under the License.
  */
 
-var padutils = require('./pad_utils').padutils;
-var hooks = require('./pluginfw/hooks');
+const padutils = require('./pad_utils').padutils;
+const hooks = require('./pluginfw/hooks');
 
-var myUserInfo = {};
+let myUserInfo = {};
 
-var colorPickerOpen = false;
-var colorPickerSetup = false;
-var previousColorId = 0;
+let colorPickerOpen = false;
+let colorPickerSetup = false;
+let previousColorId = 0;
 
 
-var paduserlist = (function() {
-
-  var rowManager = (function() {
+const paduserlist = (function () {
+  const rowManager = (function () {
     // The row manager handles rendering rows of the user list and animating
     // their insertion, removal, and reordering.  It manipulates TD height
     // and TD opacity.
 
     function nextRowId() {
-      return "usertr" + (nextRowId.counter++);
+      return `usertr${nextRowId.counter++}`;
     }
     nextRowId.counter = 1;
     // objects are shared; fields are "domId","data","animationStep"
-    var rowsFadingOut = []; // unordered set
-    var rowsFadingIn = []; // unordered set
-    var rowsPresent = []; // in order
-    var ANIMATION_START = -12; // just starting to fade in
-    var ANIMATION_END = 12; // just finishing fading out
+    const rowsFadingOut = []; // unordered set
+    const rowsFadingIn = []; // unordered set
+    const rowsPresent = []; // in order
+    const ANIMATION_START = -12; // just starting to fade in
+    const ANIMATION_END = 12; // just finishing fading out
 
 
     function getAnimationHeight(step, power) {
-      var a = Math.abs(step / 12);
-      if (power == 2) a = a * a;
+      let a = Math.abs(step / 12);
+      if (power == 2) a *= a;
       else if (power == 3) a = a * a * a;
       else if (power == 4) a = a * a * a * a;
       else if (power >= 5) a = a * a * a * a * a;
       return Math.round(26 * (1 - a));
     }
-    var OPACITY_STEPS = 6;
+    const OPACITY_STEPS = 6;
 
-    var ANIMATION_STEP_TIME = 20;
-    var LOWER_FRAMERATE_FACTOR = 2;
-    var scheduleAnimation = padutils.makeAnimationScheduler(animateStep, ANIMATION_STEP_TIME, LOWER_FRAMERATE_FACTOR).scheduleAnimation;
+    const ANIMATION_STEP_TIME = 20;
+    const LOWER_FRAMERATE_FACTOR = 2;
+    const scheduleAnimation = padutils.makeAnimationScheduler(animateStep, ANIMATION_STEP_TIME, LOWER_FRAMERATE_FACTOR).scheduleAnimation;
 
-    var NUMCOLS = 4;
+    const NUMCOLS = 4;
 
     // we do lots of manipulation of table rows and stuff that JQuery makes ok, despite
     // IE's poor handling when manipulating the DOM directly.
 
     function getEmptyRowHtml(height) {
-      return '<td colspan="' + NUMCOLS + '" style="border:0;height:' + height + 'px"><!-- --></td>';
+      return `<td colspan="${NUMCOLS}" style="border:0;height:${height}px"><!-- --></td>`;
     }
 
     function isNameEditable(data) {
@@ -77,84 +76,68 @@ var paduserlist = (function() {
     }
 
     function replaceUserRowContents(tr, height, data) {
-      var tds = getUserRowHtml(height, data).match(/<td.*?<\/td>/gi);
-      if (isNameEditable(data) && tr.find("td.usertdname input:enabled").length > 0)
-      {
+      const tds = getUserRowHtml(height, data).match(/<td.*?<\/td>/gi);
+      if (isNameEditable(data) && tr.find('td.usertdname input:enabled').length > 0) {
         // preserve input field node
-        for (var i = 0; i < tds.length; i++)
-        {
-          var oldTd = $(tr.find("td").get(i));
-          if (!oldTd.hasClass('usertdname'))
-          {
+        for (let i = 0; i < tds.length; i++) {
+          const oldTd = $(tr.find('td').get(i));
+          if (!oldTd.hasClass('usertdname')) {
             oldTd.replaceWith(tds[i]);
           }
         }
-      }
-      else
-      {
+      } else {
         tr.html(tds.join(''));
       }
       return tr;
     }
 
     function getUserRowHtml(height, data) {
-      var nameHtml;
-      if (data.name)
-      {
+      let nameHtml;
+      if (data.name) {
         nameHtml = padutils.escapeHtml(data.name);
-      }
-      else
-      {
-        nameHtml = '<input data-l10n-id="pad.userlist.unnamed" type="text" class="editempty newinput" value="'+_('pad.userlist.unnamed')+'" ' + (isNameEditable(data) ? '' : 'disabled="disabled" ') + '/>';
+      } else {
+        nameHtml = `<input data-l10n-id="pad.userlist.unnamed" type="text" class="editempty newinput" value="${_('pad.userlist.unnamed')}" ${isNameEditable(data) ? '' : 'disabled="disabled" '}/>`;
       }
 
-      return ['<td style="height:', height, 'px" class="usertdswatch"><div class="swatch" style="background:' + padutils.escapeHtml(data.color) + '">&nbsp;</div></td>', '<td style="height:', height, 'px" class="usertdname">', nameHtml, '</td>', '<td style="height:', height, 'px" class="activity">', padutils.escapeHtml(data.activity), '</td>'].join('');
+      return ['<td style="height:', height, `px" class="usertdswatch"><div class="swatch" style="background:${padutils.escapeHtml(data.color)}">&nbsp;</div></td>`, '<td style="height:', height, 'px" class="usertdname">', nameHtml, '</td>', '<td style="height:', height, 'px" class="activity">', padutils.escapeHtml(data.activity), '</td>'].join('');
     }
 
     function getRowHtml(id, innerHtml, authorId) {
-      return '<tr data-authorId="'+authorId+'" id="' + id + '">' + innerHtml + '</tr>';
+      return `<tr data-authorId="${authorId}" id="${id}">${innerHtml}</tr>`;
     }
 
     function rowNode(row) {
-      return $("#" + row.domId);
+      return $(`#${row.domId}`);
     }
 
     function handleRowData(row) {
-      if (row.data && row.data.status == 'Disconnected')
-      {
+      if (row.data && row.data.status == 'Disconnected') {
         row.opacity = 0.5;
-      }
-      else
-      {
+      } else {
         delete row.opacity;
       }
     }
 
     function handleRowNode(tr, data) {
-      if (data.titleText)
-      {
-        var titleText = data.titleText;
-        window.setTimeout(function() {
+      if (data.titleText) {
+        const titleText = data.titleText;
+        window.setTimeout(() => {
           /* tr.attr('title', titleText)*/
         }, 0);
-      }
-      else
-      {
+      } else {
         tr.removeAttr('title');
       }
     }
 
     function handleOtherUserInputs() {
       // handle 'INPUT' elements for naming other unnamed users
-      $("#otheruserstable input.newinput").each(function() {
-        var input = $(this);
-        var tr = input.closest("tr");
-        if (tr.length > 0)
-        {
-          var index = tr.parent().children().index(tr);
-          if (index >= 0)
-          {
-            var userId = rowsPresent[index].data.id;
+      $('#otheruserstable input.newinput').each(function () {
+        const input = $(this);
+        const tr = input.closest('tr');
+        if (tr.length > 0) {
+          const index = tr.parent().children().index(tr);
+          if (index >= 0) {
+            const userId = rowsPresent[index].data.id;
             rowManagerMakeNameEditor($(this), userId);
           }
         }
@@ -168,41 +151,34 @@ var paduserlist = (function() {
       position = Math.max(0, Math.min(rowsPresent.length, position));
       animationPower = (animationPower === undefined ? 4 : animationPower);
 
-      var domId = nextRowId();
-      var row = {
-        data: data,
+      const domId = nextRowId();
+      const row = {
+        data,
         animationStep: ANIMATION_START,
-        domId: domId,
-        animationPower: animationPower
+        domId,
+        animationPower,
       };
-      var authorId = data.id;
+      const authorId = data.id;
 
       handleRowData(row);
       rowsPresent.splice(position, 0, row);
-      var tr;
-      if (animationPower == 0)
-      {
+      let tr;
+      if (animationPower == 0) {
         tr = $(getRowHtml(domId, getUserRowHtml(getAnimationHeight(0), data), authorId));
         row.animationStep = 0;
-      }
-      else
-      {
+      } else {
         rowsFadingIn.push(row);
         tr = $(getRowHtml(domId, getEmptyRowHtml(getAnimationHeight(ANIMATION_START)), authorId));
       }
       handleRowNode(tr, data);
-      $("table#otheruserstable").show();
-      if (position == 0)
-      {
-        $("table#otheruserstable").prepend(tr);
-      }
-      else
-      {
+      $('table#otheruserstable').show();
+      if (position == 0) {
+        $('table#otheruserstable').prepend(tr);
+      } else {
         rowNode(rowsPresent[position - 1]).after(tr);
       }
 
-      if (animationPower != 0)
-      {
+      if (animationPower != 0) {
         scheduleAnimation();
       }
 
@@ -212,16 +188,14 @@ var paduserlist = (function() {
     }
 
     function updateRow(position, data) {
-      var row = rowsPresent[position];
-      if (row)
-      {
+      const row = rowsPresent[position];
+      if (row) {
         row.data = data;
         handleRowData(row);
-        if (row.animationStep == 0)
-        {
+        if (row.animationStep == 0) {
           // not currently animating
-          var tr = rowNode(row);
-          replaceUserRowContents(tr, getAnimationHeight(0), row.data).find("td").css('opacity', (row.opacity === undefined ? 1 : row.opacity));
+          const tr = rowNode(row);
+          replaceUserRowContents(tr, getAnimationHeight(0), row.data).find('td').css('opacity', (row.opacity === undefined ? 1 : row.opacity));
           handleRowNode(tr, data);
           handleOtherUserInputs();
         }
@@ -230,16 +204,12 @@ var paduserlist = (function() {
 
     function removeRow(position, animationPower) {
       animationPower = (animationPower === undefined ? 4 : animationPower);
-      var row = rowsPresent[position];
-      if (row)
-      {
+      const row = rowsPresent[position];
+      if (row) {
         rowsPresent.splice(position, 1); // remove
-        if (animationPower == 0)
-        {
+        if (animationPower == 0) {
           rowNode(row).remove();
-        }
-        else
-        {
+        } else {
           row.animationStep = -row.animationStep; // use symmetry
           row.animationPower = animationPower;
           rowsFadingOut.push(row);
@@ -247,7 +217,7 @@ var paduserlist = (function() {
         }
       }
       if (rowsPresent.length === 0) {
-        $("table#otheruserstable").hide();
+        $('table#otheruserstable').hide();
       }
     }
 
@@ -256,10 +226,9 @@ var paduserlist = (function() {
 
     function moveRow(oldPosition, newPosition, animationPower) {
       animationPower = (animationPower === undefined ? 1 : animationPower); // linear is best
-      var row = rowsPresent[oldPosition];
-      if (row && oldPosition != newPosition)
-      {
-        var rowData = row.data;
+      const row = rowsPresent[oldPosition];
+      if (row && oldPosition != newPosition) {
+        const rowData = row.data;
         removeRow(oldPosition, animationPower);
         insertRow(newPosition, rowData, animationPower);
       }
@@ -267,55 +236,39 @@ var paduserlist = (function() {
 
     function animateStep() {
       // animation must be symmetrical
-      for (var i = rowsFadingIn.length - 1; i >= 0; i--)
-      { // backwards to allow removal
+      for (var i = rowsFadingIn.length - 1; i >= 0; i--) { // backwards to allow removal
         var row = rowsFadingIn[i];
         var step = ++row.animationStep;
         var animHeight = getAnimationHeight(step, row.animationPower);
         var node = rowNode(row);
         var baseOpacity = (row.opacity === undefined ? 1 : row.opacity);
-        if (step <= -OPACITY_STEPS)
-        {
-          node.find("td").height(animHeight);
-        }
-        else if (step == -OPACITY_STEPS + 1)
-        {
-          node.html(getUserRowHtml(animHeight, row.data)).find("td").css('opacity', baseOpacity * 1 / OPACITY_STEPS);
+        if (step <= -OPACITY_STEPS) {
+          node.find('td').height(animHeight);
+        } else if (step == -OPACITY_STEPS + 1) {
+          node.html(getUserRowHtml(animHeight, row.data)).find('td').css('opacity', baseOpacity * 1 / OPACITY_STEPS);
           handleRowNode(node, row.data);
-        }
-        else if (step < 0)
-        {
-          node.find("td").css('opacity', baseOpacity * (OPACITY_STEPS - (-step)) / OPACITY_STEPS).height(animHeight);
-        }
-        else if (step == 0)
-        {
+        } else if (step < 0) {
+          node.find('td').css('opacity', baseOpacity * (OPACITY_STEPS - (-step)) / OPACITY_STEPS).height(animHeight);
+        } else if (step == 0) {
           // set HTML in case modified during animation
-          node.html(getUserRowHtml(animHeight, row.data)).find("td").css('opacity', baseOpacity * 1).height(animHeight);
+          node.html(getUserRowHtml(animHeight, row.data)).find('td').css('opacity', baseOpacity * 1).height(animHeight);
           handleRowNode(node, row.data);
           rowsFadingIn.splice(i, 1); // remove from set
         }
       }
-      for (var i = rowsFadingOut.length - 1; i >= 0; i--)
-      { // backwards to allow removal
+      for (var i = rowsFadingOut.length - 1; i >= 0; i--) { // backwards to allow removal
         var row = rowsFadingOut[i];
         var step = ++row.animationStep;
         var node = rowNode(row);
         var animHeight = getAnimationHeight(step, row.animationPower);
         var baseOpacity = (row.opacity === undefined ? 1 : row.opacity);
-        if (step < OPACITY_STEPS)
-        {
-          node.find("td").css('opacity', baseOpacity * (OPACITY_STEPS - step) / OPACITY_STEPS).height(animHeight);
-        }
-        else if (step == OPACITY_STEPS)
-        {
+        if (step < OPACITY_STEPS) {
+          node.find('td').css('opacity', baseOpacity * (OPACITY_STEPS - step) / OPACITY_STEPS).height(animHeight);
+        } else if (step == OPACITY_STEPS) {
           node.html(getEmptyRowHtml(animHeight));
-        }
-        else if (step <= ANIMATION_END)
-        {
-          node.find("td").height(animHeight);
-        }
-        else
-        {
+        } else if (step <= ANIMATION_END) {
+          node.find('td').height(animHeight);
+        } else {
           rowsFadingOut.splice(i, 1); // remove from set
           node.remove();
         }
@@ -326,36 +279,30 @@ var paduserlist = (function() {
       return (rowsFadingIn.length > 0) || (rowsFadingOut.length > 0); // is more to do
     }
 
-    var self = {
-      insertRow: insertRow,
-      removeRow: removeRow,
-      moveRow: moveRow,
-      updateRow: updateRow
+    const self = {
+      insertRow,
+      removeRow,
+      moveRow,
+      updateRow,
     };
     return self;
-  }()); ////////// rowManager
-  var otherUsersInfo = [];
-  var otherUsersData = [];
+  }()); // //////// rowManager
+  const otherUsersInfo = [];
+  const otherUsersData = [];
 
   function rowManagerMakeNameEditor(jnode, userId) {
-    setUpEditable(jnode, function() {
-      var existingIndex = findExistingIndex(userId);
-      if (existingIndex >= 0)
-      {
+    setUpEditable(jnode, () => {
+      const existingIndex = findExistingIndex(userId);
+      if (existingIndex >= 0) {
         return otherUsersInfo[existingIndex].name || '';
-      }
-      else
-      {
+      } else {
         return '';
       }
-    }, function(newName) {
-      if (!newName)
-      {
-        jnode.addClass("editempty");
+    }, (newName) => {
+      if (!newName) {
+        jnode.addClass('editempty');
         jnode.val(_('pad.userlist.unnamed'));
-      }
-      else
-      {
+      } else {
         jnode.attr('disabled', 'disabled');
         pad.suggestUserName(userId, newName);
       }
@@ -363,11 +310,9 @@ var paduserlist = (function() {
   }
 
   function findExistingIndex(userId) {
-    var existingIndex = -1;
-    for (var i = 0; i < otherUsersInfo.length; i++)
-    {
-      if (otherUsersInfo[i].userId == userId)
-      {
+    let existingIndex = -1;
+    for (let i = 0; i < otherUsersInfo.length; i++) {
+      if (otherUsersInfo[i].userId == userId) {
         existingIndex = i;
         break;
       }
@@ -376,144 +321,134 @@ var paduserlist = (function() {
   }
 
   function setUpEditable(jqueryNode, valueGetter, valueSetter) {
-    jqueryNode.bind('focus', function(evt) {
-      var oldValue = valueGetter();
-      if (jqueryNode.val() !== oldValue)
-      {
+    jqueryNode.bind('focus', (evt) => {
+      const oldValue = valueGetter();
+      if (jqueryNode.val() !== oldValue) {
         jqueryNode.val(oldValue);
       }
-      jqueryNode.addClass("editactive").removeClass("editempty");
+      jqueryNode.addClass('editactive').removeClass('editempty');
     });
-    jqueryNode.bind('blur', function(evt) {
-      var newValue = jqueryNode.removeClass("editactive").val();
+    jqueryNode.bind('blur', (evt) => {
+      const newValue = jqueryNode.removeClass('editactive').val();
       valueSetter(newValue);
     });
-    padutils.bindEnterAndEscape(jqueryNode, function onEnter() {
+    padutils.bindEnterAndEscape(jqueryNode, () => {
       jqueryNode.blur();
-    }, function onEscape() {
+    }, () => {
       jqueryNode.val(valueGetter()).blur();
     });
     jqueryNode.removeAttr('disabled').addClass('editable');
   }
 
-  var knocksToIgnore = {};
-  var guestPromptFlashState = 0;
-  var guestPromptFlash = padutils.makeAnimationScheduler(
+  const knocksToIgnore = {};
+  let guestPromptFlashState = 0;
+  const guestPromptFlash = padutils.makeAnimationScheduler(
 
-  function() {
-    var prompts = $("#guestprompts .guestprompt");
-    if (prompts.length == 0)
-    {
-      return false; // no more to do
-    }
+      () => {
+        const prompts = $('#guestprompts .guestprompt');
+        if (prompts.length == 0) {
+          return false; // no more to do
+        }
 
-    guestPromptFlashState = 1 - guestPromptFlashState;
-    if (guestPromptFlashState)
-    {
-      prompts.css('background', '#ffa');
-    }
-    else
-    {
-      prompts.css('background', '#ffe');
-    }
+        guestPromptFlashState = 1 - guestPromptFlashState;
+        if (guestPromptFlashState) {
+          prompts.css('background', '#ffa');
+        } else {
+          prompts.css('background', '#ffe');
+        }
 
-    return true;
-  }, 1000);
+        return true;
+      }, 1000);
 
   var pad = undefined;
   var self = {
-    init: function(myInitialUserInfo, _pad) {
+    init(myInitialUserInfo, _pad) {
       pad = _pad;
 
       self.setMyUserInfo(myInitialUserInfo);
 
-      if($('#online_count').length === 0) $('#editbar [data-key=showusers] > a').append('<span id="online_count">1</span>');
+      if ($('#online_count').length === 0) $('#editbar [data-key=showusers] > a').append('<span id="online_count">1</span>');
 
-      $("#otheruserstable tr").remove();
+      $('#otheruserstable tr').remove();
 
-      if (pad.getUserIsGuest())
-      {
-        $("#myusernameedit").addClass('myusernameedithoverable');
-        setUpEditable($("#myusernameedit"), function() {
-          return myUserInfo.name || '';
-        }, function(newValue) {
+      if (pad.getUserIsGuest()) {
+        $('#myusernameedit').addClass('myusernameedithoverable');
+        setUpEditable($('#myusernameedit'), () => myUserInfo.name || '', (newValue) => {
           myUserInfo.name = newValue;
           pad.notifyChangeName(newValue);
           // wrap with setTimeout to do later because we get
           // a double "blur" fire in IE...
-          window.setTimeout(function() {
+          window.setTimeout(() => {
             self.renderMyUserInfo();
           }, 0);
         });
       }
 
       // color picker
-      $("#myswatchbox").click(showColorPicker);
-      $("#mycolorpicker .pickerswatchouter").click(function() {
-        $("#mycolorpicker .pickerswatchouter").removeClass('picked');
+      $('#myswatchbox').click(showColorPicker);
+      $('#mycolorpicker .pickerswatchouter').click(function () {
+        $('#mycolorpicker .pickerswatchouter').removeClass('picked');
         $(this).addClass('picked');
       });
-      $("#mycolorpickersave").click(function() {
+      $('#mycolorpickersave').click(() => {
         closeColorPicker(true);
       });
-      $("#mycolorpickercancel").click(function() {
+      $('#mycolorpickercancel').click(() => {
         closeColorPicker(false);
       });
       //
     },
-    usersOnline: function() {
+    usersOnline() {
       // Returns an object of users who are currently online on this pad
-      var userList = [].concat(otherUsersInfo); // Make a copy of the otherUsersInfo, otherwise every call to users modifies the referenced array
+      const userList = [].concat(otherUsersInfo); // Make a copy of the otherUsersInfo, otherwise every call to users modifies the referenced array
       // Now we need to add ourselves..
       userList.push(myUserInfo);
       return userList;
     },
-    users: function(){
+    users() {
       // Returns an object of users who have been on this pad
-      var userList = self.usersOnline();
+      const userList = self.usersOnline();
 
       // Now we add historical authors
-      var historical = clientVars.collab_client_vars.historicalAuthorData;
-      for (var key in historical){
+      const historical = clientVars.collab_client_vars.historicalAuthorData;
+      for (const key in historical) {
         var userId = historical[key].userId;
         // Check we don't already have this author in our array
         var exists = false;
 
-        userList.forEach(function(user){
-          if(user.userId === userId) exists = true;
+        userList.forEach((user) => {
+          if (user.userId === userId) exists = true;
         });
 
-        if(exists === false){
+        if (exists === false) {
           userList.push(historical[key]);
         }
       }
       return userList;
     },
-    setMyUserInfo: function(info) {
-      //translate the colorId
-      if(typeof info.colorId == "number")
-      {
+    setMyUserInfo(info) {
+      // translate the colorId
+      if (typeof info.colorId === 'number') {
         info.colorId = clientVars.colorPalette[info.colorId];
       }
 
       myUserInfo = $.extend(
-      {}, info);
+          {}, info);
 
       self.renderMyUserInfo();
     },
-    userJoinOrUpdate: function(info) {
-      if ((!info.userId) || (info.userId == myUserInfo.userId))
-      {
+    userJoinOrUpdate(info) {
+      if ((!info.userId) || (info.userId == myUserInfo.userId)) {
         // not sure how this would happen
         return;
       }
 
       hooks.callAll('userJoinOrUpdate', {
-        userInfo: info
+        userInfo: info,
       });
 
-      var userData = {};
-      userData.color = typeof info.colorId == "number" ? clientVars.colorPalette[info.colorId] : info.colorId;
+      const userData = {};
+      userData.color = typeof info.colorId === 'number' ? clientVars.colorPalette[info.colorId] : info.colorId;
       userData.name = info.name;
       userData.status = '';
       userData.activity = '';
@@ -521,38 +456,32 @@ var paduserlist = (function() {
       // Firefox ignores \n in title text; Safari does a linebreak
       userData.titleText = [info.userAgent || '', info.ip || ''].join(' \n');
 
-      var existingIndex = findExistingIndex(info.userId);
+      const existingIndex = findExistingIndex(info.userId);
 
-      var numUsersBesides = otherUsersInfo.length;
-      if (existingIndex >= 0)
-      {
+      let numUsersBesides = otherUsersInfo.length;
+      if (existingIndex >= 0) {
         numUsersBesides--;
       }
-      var newIndex = padutils.binarySearch(numUsersBesides, function(n) {
-        if (existingIndex >= 0 && n >= existingIndex)
-        {
+      const newIndex = padutils.binarySearch(numUsersBesides, (n) => {
+        if (existingIndex >= 0 && n >= existingIndex) {
           // pretend existingIndex isn't there
           n++;
         }
-        var infoN = otherUsersInfo[n];
-        var nameN = (infoN.name || '').toLowerCase();
-        var nameThis = (info.name || '').toLowerCase();
-        var idN = infoN.userId;
-        var idThis = info.userId;
+        const infoN = otherUsersInfo[n];
+        const nameN = (infoN.name || '').toLowerCase();
+        const nameThis = (info.name || '').toLowerCase();
+        const idN = infoN.userId;
+        const idThis = info.userId;
         return (nameN > nameThis) || (nameN == nameThis && idN > idThis);
       });
 
-      if (existingIndex >= 0)
-      {
+      if (existingIndex >= 0) {
         // update
-        if (existingIndex == newIndex)
-        {
+        if (existingIndex == newIndex) {
           otherUsersInfo[existingIndex] = info;
           otherUsersData[existingIndex] = userData;
           rowManager.updateRow(existingIndex, userData);
-        }
-        else
-        {
+        } else {
           otherUsersInfo.splice(existingIndex, 1);
           otherUsersData.splice(existingIndex, 1);
           otherUsersInfo.splice(newIndex, 0, info);
@@ -560,9 +489,7 @@ var paduserlist = (function() {
           rowManager.updateRow(existingIndex, userData);
           rowManager.moveRow(existingIndex, newIndex);
         }
-      }
-      else
-      {
+      } else {
         otherUsersInfo.splice(newIndex, 0, info);
         otherUsersData.splice(newIndex, 0, userData);
         rowManager.insertRow(newIndex, userData);
@@ -570,12 +497,10 @@ var paduserlist = (function() {
 
       self.updateNumberOfOnlineUsers();
     },
-    updateNumberOfOnlineUsers: function() {
-      var online = 1; // you are always online!
-      for (var i = 0; i < otherUsersData.length; i++)
-      {
-        if (otherUsersData[i].status == "")
-        {
+    updateNumberOfOnlineUsers() {
+      let online = 1; // you are always online!
+      for (let i = 0; i < otherUsersData.length; i++) {
+        if (otherUsersData[i].status == '') {
           online++;
         }
       }
@@ -584,33 +509,29 @@ var paduserlist = (function() {
 
       return online;
     },
-    userLeave: function(info) {
-      var existingIndex = findExistingIndex(info.userId);
-      if (existingIndex >= 0)
-      {
-        var userData = otherUsersData[existingIndex];
+    userLeave(info) {
+      const existingIndex = findExistingIndex(info.userId);
+      if (existingIndex >= 0) {
+        const userData = otherUsersData[existingIndex];
         userData.status = 'Disconnected';
         rowManager.updateRow(existingIndex, userData);
-        if (userData.leaveTimer)
-        {
+        if (userData.leaveTimer) {
           window.clearTimeout(userData.leaveTimer);
         }
         // set up a timer that will only fire if no leaves,
         // joins, or updates happen for this user in the
         // next N seconds, to remove the user from the list.
-        var thisUserId = info.userId;
-        var thisLeaveTimer = window.setTimeout(function() {
-          var newExistingIndex = findExistingIndex(thisUserId);
-          if (newExistingIndex >= 0)
-          {
-            var newUserData = otherUsersData[newExistingIndex];
-            if (newUserData.status == 'Disconnected' && newUserData.leaveTimer == thisLeaveTimer)
-            {
+        const thisUserId = info.userId;
+        var thisLeaveTimer = window.setTimeout(() => {
+          const newExistingIndex = findExistingIndex(thisUserId);
+          if (newExistingIndex >= 0) {
+            const newUserData = otherUsersData[newExistingIndex];
+            if (newUserData.status == 'Disconnected' && newUserData.leaveTimer == thisLeaveTimer) {
               otherUsersInfo.splice(newExistingIndex, 1);
               otherUsersData.splice(newExistingIndex, 1);
               rowManager.removeRow(newExistingIndex);
               hooks.callAll('userLeave', {
-                userInfo: info
+                userInfo: info,
               });
             }
           }
@@ -620,163 +541,143 @@ var paduserlist = (function() {
 
       self.updateNumberOfOnlineUsers();
     },
-    showGuestPrompt: function(userId, displayName) {
-      if (knocksToIgnore[userId])
-      {
+    showGuestPrompt(userId, displayName) {
+      if (knocksToIgnore[userId]) {
         return;
       }
 
-      var encodedUserId = padutils.encodeUserId(userId);
+      const encodedUserId = padutils.encodeUserId(userId);
 
-      var actionName = 'hide-guest-prompt-' + encodedUserId;
+      const actionName = `hide-guest-prompt-${encodedUserId}`;
       padutils.cancelActions(actionName);
 
-      var box = $("#guestprompt-" + encodedUserId);
-      if (box.length == 0)
-      {
+      let box = $(`#guestprompt-${encodedUserId}`);
+      if (box.length == 0) {
         // make guest prompt box
-        box = $('<div id="'+padutils.escapeHtml('guestprompt-' + encodedUserId) + '" class="guestprompt"><div class="choices"><a href="' + padutils.escapeHtml('javascript:void(require('+JSON.stringify(module.id)+').paduserlist.answerGuestPrompt(' + JSON.stringify(encodedUserId) + ',false))')+'">'+_('pad.userlist.deny')+'</a> <a href="' + padutils.escapeHtml('javascript:void(require('+JSON.stringify(module.id)+').paduserlist.answerGuestPrompt(' + JSON.stringify(encodedUserId) + ',true))') + '">'+_('pad.userlist.approve')+'</a></div><div class="guestname"><strong>'+_('pad.userlist.guest')+':</strong> ' + padutils.escapeHtml(displayName) + '</div></div>');
-        $("#guestprompts").append(box);
-      }
-      else
-      {
+        box = $(`<div id="${padutils.escapeHtml(`guestprompt-${encodedUserId}`)}" class="guestprompt"><div class="choices"><a href="${padutils.escapeHtml(`javascript:void(require(${JSON.stringify(module.id)}).paduserlist.answerGuestPrompt(${JSON.stringify(encodedUserId)},false))`)}">${_('pad.userlist.deny')}</a> <a href="${padutils.escapeHtml(`javascript:void(require(${JSON.stringify(module.id)}).paduserlist.answerGuestPrompt(${JSON.stringify(encodedUserId)},true))`)}">${_('pad.userlist.approve')}</a></div><div class="guestname"><strong>${_('pad.userlist.guest')}:</strong> ${padutils.escapeHtml(displayName)}</div></div>`);
+        $('#guestprompts').append(box);
+      } else {
         // update display name
-        box.find(".guestname").html('<strong>'+_('pad.userlist.guest')+':</strong> ' + padutils.escapeHtml(displayName));
+        box.find('.guestname').html(`<strong>${_('pad.userlist.guest')}:</strong> ${padutils.escapeHtml(displayName)}`);
       }
-      var hideLater = padutils.getCancellableAction(actionName, function() {
+      const hideLater = padutils.getCancellableAction(actionName, () => {
         self.removeGuestPrompt(userId);
       });
       window.setTimeout(hideLater, 15000); // time-out with no knock
       guestPromptFlash.scheduleAnimation();
     },
-    removeGuestPrompt: function(userId) {
-      var box = $("#guestprompt-" + padutils.encodeUserId(userId));
+    removeGuestPrompt(userId) {
+      const box = $(`#guestprompt-${padutils.encodeUserId(userId)}`);
       // remove ID now so a new knock by same user gets new, unfaded box
-      box.removeAttr('id').fadeOut("fast", function() {
+      box.removeAttr('id').fadeOut('fast', () => {
         box.remove();
       });
 
       knocksToIgnore[userId] = true;
-      window.setTimeout(function() {
+      window.setTimeout(() => {
         delete knocksToIgnore[userId];
       }, 5000);
     },
-    answerGuestPrompt: function(encodedUserId, approve) {
-      var guestId = padutils.decodeUserId(encodedUserId);
+    answerGuestPrompt(encodedUserId, approve) {
+      const guestId = padutils.decodeUserId(encodedUserId);
 
-      var msg = {
+      const msg = {
         type: 'guestanswer',
         authId: pad.getUserId(),
-        guestId: guestId,
-        answer: (approve ? "approved" : "denied")
+        guestId,
+        answer: (approve ? 'approved' : 'denied'),
       };
       pad.sendClientMessage(msg);
 
       self.removeGuestPrompt(guestId);
     },
-    renderMyUserInfo: function() {
-      if (myUserInfo.name)
-      {
-        $("#myusernameedit").removeClass("editempty").val(myUserInfo.name);
+    renderMyUserInfo() {
+      if (myUserInfo.name) {
+        $('#myusernameedit').removeClass('editempty').val(myUserInfo.name);
+      } else {
+        $('#myusernameedit').attr('placeholder', html10n.get('pad.userlist.entername'));
       }
-      else
-      {
-        $("#myusernameedit").attr("placeholder", html10n.get("pad.userlist.entername"));
-      }
-      if (colorPickerOpen)
-      {
-        $("#myswatchbox").addClass('myswatchboxunhoverable').removeClass('myswatchboxhoverable');
-      }
-      else
-      {
-        $("#myswatchbox").addClass('myswatchboxhoverable').removeClass('myswatchboxunhoverable');
+      if (colorPickerOpen) {
+        $('#myswatchbox').addClass('myswatchboxunhoverable').removeClass('myswatchboxhoverable');
+      } else {
+        $('#myswatchbox').addClass('myswatchboxhoverable').removeClass('myswatchboxunhoverable');
       }
 
-      $("#myswatch").css({'background-color': myUserInfo.colorId});
+      $('#myswatch').css({'background-color': myUserInfo.colorId});
 
       if (browser.msie && parseInt(browser.version) <= 8) {
-        $("li[data-key=showusers] > a").css({'box-shadow': 'inset 0 0 30px ' + myUserInfo.colorId,'background-color': myUserInfo.colorId});
+        $('li[data-key=showusers] > a').css({'box-shadow': `inset 0 0 30px ${myUserInfo.colorId}`, 'background-color': myUserInfo.colorId});
+      } else {
+        $('li[data-key=showusers] > a').css({'box-shadow': `inset 0 0 30px ${myUserInfo.colorId}`});
       }
-      else
-      {
-        $("li[data-key=showusers] > a").css({'box-shadow': 'inset 0 0 30px ' + myUserInfo.colorId});
-      }
-    }
+    },
   };
   return self;
 }());
 
 function getColorPickerSwatchIndex(jnode) {
   //  return Number(jnode.get(0).className.match(/\bn([0-9]+)\b/)[1])-1;
-  return $("#colorpickerswatches li").index(jnode);
+  return $('#colorpickerswatches li').index(jnode);
 }
 
 function closeColorPicker(accept) {
-  if (accept)
-  {
-    var newColor = $("#mycolorpickerpreview").css("background-color");
-    var parts = newColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+  if (accept) {
+    var newColor = $('#mycolorpickerpreview').css('background-color');
+    const parts = newColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
     // parts now should be ["rgb(0, 70, 255", "0", "70", "255"]
     if (parts) {
       delete (parts[0]);
-      for (var i = 1; i <= 3; ++i) {
-          parts[i] = parseInt(parts[i]).toString(16);
-          if (parts[i].length == 1) parts[i] = '0' + parts[i];
+      for (let i = 1; i <= 3; ++i) {
+        parts[i] = parseInt(parts[i]).toString(16);
+        if (parts[i].length == 1) parts[i] = `0${parts[i]}`;
       }
-      var newColor = "#" +parts.join(''); // "0070ff"
+      var newColor = `#${parts.join('')}`; // "0070ff"
     }
     myUserInfo.colorId = newColor;
     pad.notifyChangeColor(newColor);
     paduserlist.renderMyUserInfo();
-  }
-  else
-  {
-    //pad.notifyChangeColor(previousColorId);
-    //paduserlist.renderMyUserInfo();
+  } else {
+    // pad.notifyChangeColor(previousColorId);
+    // paduserlist.renderMyUserInfo();
   }
 
   colorPickerOpen = false;
-  $("#mycolorpicker").removeClass('popup-show');
+  $('#mycolorpicker').removeClass('popup-show');
 }
 
 function showColorPicker() {
   previousColorId = myUserInfo.colorId;
-  $.farbtastic('#colorpicker').setColor(myUserInfo.colorId)
+  $.farbtastic('#colorpicker').setColor(myUserInfo.colorId);
 
-  if (!colorPickerOpen)
-  {
-    var palette = pad.getColorPalette();
+  if (!colorPickerOpen) {
+    const palette = pad.getColorPalette();
 
-    if (!colorPickerSetup)
-    {
-      var colorsList = $("#colorpickerswatches")
-      for (var i = 0; i < palette.length; i++)
-      {
-
-        var li = $('<li>', {
-          style: 'background: ' + palette[i] + ';'
+    if (!colorPickerSetup) {
+      const colorsList = $('#colorpickerswatches');
+      for (let i = 0; i < palette.length; i++) {
+        const li = $('<li>', {
+          style: `background: ${palette[i]};`,
         });
 
         li.appendTo(colorsList);
 
-        li.bind('click', function(event) {
-          $("#colorpickerswatches li").removeClass('picked');
-          $(event.target).addClass("picked");
+        li.bind('click', (event) => {
+          $('#colorpickerswatches li').removeClass('picked');
+          $(event.target).addClass('picked');
 
-          var newColorId = getColorPickerSwatchIndex($("#colorpickerswatches .picked"));
+          const newColorId = getColorPickerSwatchIndex($('#colorpickerswatches .picked'));
           pad.notifyChangeColor(newColorId);
         });
-
       }
 
       colorPickerSetup = true;
     }
 
-    $("#mycolorpicker").addClass('popup-show')
+    $('#mycolorpicker').addClass('popup-show');
     colorPickerOpen = true;
 
-    $("#colorpickerswatches li").removeClass('picked');
-    $($("#colorpickerswatches li")[myUserInfo.colorId]).addClass("picked"); //seems weird
+    $('#colorpickerswatches li').removeClass('picked');
+    $($('#colorpickerswatches li')[myUserInfo.colorId]).addClass('picked'); // seems weird
   }
 }
 

@@ -25,80 +25,74 @@
 require('./jquery');
 
 const Cookies = require('./pad_utils').Cookies;
-var randomString = require('./pad_utils').randomString;
-var hooks = require('./pluginfw/hooks');
+const randomString = require('./pad_utils').randomString;
+const hooks = require('./pluginfw/hooks');
 
-var token, padId, export_links;
+let token, padId, export_links;
 
 function init() {
-  $(document).ready(function () {
+  $(document).ready(() => {
     // start the custom js
-    if (typeof customStart == "function") customStart();
+    if (typeof customStart === 'function') customStart();
 
-    //get the padId out of the url
-    var urlParts= document.location.pathname.split("/");
-    padId = decodeURIComponent(urlParts[urlParts.length-2]);
+    // get the padId out of the url
+    const urlParts = document.location.pathname.split('/');
+    padId = decodeURIComponent(urlParts[urlParts.length - 2]);
 
-    //set the title
-    document.title = padId.replace(/_+/g, ' ') + " | " + document.title;
+    // set the title
+    document.title = `${padId.replace(/_+/g, ' ')} | ${document.title}`;
 
-    //ensure we have a token
+    // ensure we have a token
     token = Cookies.get('token');
-    if(token == null)
-    {
-      token = "t." + randomString();
+    if (token == null) {
+      token = `t.${randomString()}`;
       Cookies.set('token', token, {expires: 60});
     }
 
-    var loc = document.location;
-    //get the correct port
-    var port = loc.port == "" ? (loc.protocol == "https:" ? 443 : 80) : loc.port;
-    //create the url
-    var url = loc.protocol + "//" + loc.hostname + ":" + port + "/";
-    //find out in which subfolder we are
-    var resource = exports.baseURL.substring(1) + 'socket.io';
+    const loc = document.location;
+    // get the correct port
+    const port = loc.port == '' ? (loc.protocol == 'https:' ? 443 : 80) : loc.port;
+    // create the url
+    const url = `${loc.protocol}//${loc.hostname}:${port}/`;
+    // find out in which subfolder we are
+    const resource = `${exports.baseURL.substring(1)}socket.io`;
 
-    //build up the socket io connection
-    socket = io.connect(url, {path: exports.baseURL + 'socket.io', resource: resource});
+    // build up the socket io connection
+    socket = io.connect(url, {path: `${exports.baseURL}socket.io`, resource});
 
-    //send the ready message once we're connected
-    socket.on('connect', function() {
-      sendSocketMsg("CLIENT_READY", {});
+    // send the ready message once we're connected
+    socket.on('connect', () => {
+      sendSocketMsg('CLIENT_READY', {});
     });
 
-    socket.on('disconnect', function() {
+    socket.on('disconnect', () => {
       BroadcastSlider.showReconnectUI();
     });
 
-    //route the incoming messages
-    socket.on('message', function(message) {
-      if(message.type == "CLIENT_VARS")
-      {
+    // route the incoming messages
+    socket.on('message', (message) => {
+      if (message.type == 'CLIENT_VARS') {
         handleClientVars(message);
-      }
-      else if(message.accessStatus)
-      {
-        $("body").html("<h2>You have no permission to access this pad</h2>")
-      } else {
-        if(message.type === 'CHANGESET_REQ') changesetLoader.handleMessageFromServer(message);
-      }
+      } else if (message.accessStatus) {
+        $('body').html('<h2>You have no permission to access this pad</h2>');
+      } else if (message.type === 'CHANGESET_REQ') { changesetLoader.handleMessageFromServer(message); }
     });
 
-    //get all the export links
-    export_links = $('#export > .exportlink')
+    // get all the export links
+    export_links = $('#export > .exportlink');
 
-    $('button#forcereconnect').click(function() {
+    $('button#forcereconnect').click(() => {
       window.location.reload();
     });
 
     exports.socket = socket; // make the socket available
     exports.BroadcastSlider = BroadcastSlider; // Make the slider available
 
-    hooks.aCallAll("postTimesliderInit");
+    hooks.aCallAll('postTimesliderInit');
   });
 }
 
-//sends a message over the socket
+// sends a message over the socket
 function sendSocketMsg(type, data) {
   socket.json.send({
     component: 'pad', // FIXME: Remove this stupidity!
@@ -111,55 +105,54 @@ function sendSocketMsg(type, data) {
   });
 }
 
-var fireWhenAllScriptsAreLoaded = [];
+const fireWhenAllScriptsAreLoaded = [];
 
-var changesetLoader;
+let changesetLoader;
 function handleClientVars(message) {
-  //save the client Vars
+  // save the client Vars
   clientVars = message.data;
 
-  //load all script that doesn't work without the clientVars
+  // load all script that doesn't work without the clientVars
   BroadcastSlider = require('./broadcast_slider').loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded);
   require('./broadcast_revisions').loadBroadcastRevisionsJS();
   changesetLoader = require('./broadcast').loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider);
 
-  //initialize export ui
+  // initialize export ui
   require('./pad_impexp').padimpexp.init();
 
   // Create a base URI used for timeslider exports
-  var baseURI = document.location.pathname;
+  const baseURI = document.location.pathname;
 
-  //change export urls when the slider moves
-  BroadcastSlider.onSlider(function(revno) {
+  // change export urls when the slider moves
+  BroadcastSlider.onSlider((revno) => {
     // export_links is a jQuery Array, so .each is allowed.
-    export_links.each(function() {
+    export_links.each(function () {
       // Modified from regular expression to fix:
       // https://github.com/ether/etherpad-lite/issues/4071
       // Where a padId that was numeric would create the wrong export link
-      if(this.href){
-        var type = this.href.split('export/')[1];
-        var href = baseURI.split('timeslider')[0];
-        href += revno + '/export/' + type;
+      if (this.href) {
+        const type = this.href.split('export/')[1];
+        let href = baseURI.split('timeslider')[0];
+        href += `${revno}/export/${type}`;
         this.setAttribute('href', href);
       }
     });
   });
 
-  //fire all start functions of these scripts, formerly fired with window.load
-  for(var i=0;i < fireWhenAllScriptsAreLoaded.length;i++)
-  {
+  // fire all start functions of these scripts, formerly fired with window.load
+  for (let i = 0; i < fireWhenAllScriptsAreLoaded.length; i++) {
     fireWhenAllScriptsAreLoaded[i]();
   }
-  $("#ui-slider-handle").css('left', $("#ui-slider-bar").width() - 2);
+  $('#ui-slider-handle').css('left', $('#ui-slider-bar').width() - 2);
 
   // Translate some strings where we only want to set the title not the actual values
-  $('#playpause_button_icon').attr("title", html10n.get("timeslider.playPause"));
-  $('#leftstep').attr("title", html10n.get("timeslider.backRevision"));
-  $('#rightstep').attr("title", html10n.get("timeslider.forwardRevision"));
+  $('#playpause_button_icon').attr('title', html10n.get('timeslider.playPause'));
+  $('#leftstep').attr('title', html10n.get('timeslider.backRevision'));
+  $('#rightstep').attr('title', html10n.get('timeslider.forwardRevision'));
 
   // font family change
-  $("#viewfontmenu").change(function(){
-    $('#innerdocbody').css("font-family", $(this).val() || "");
+  $('#viewfontmenu').change(function () {
+    $('#innerdocbody').css('font-family', $(this).val() || '');
   });
 }
 
