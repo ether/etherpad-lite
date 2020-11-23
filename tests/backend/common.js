@@ -1,6 +1,6 @@
 /* global __dirname, exports, require */
 
-function m(mod) { return __dirname + '/../../src/' + mod; }
+function m(mod) { return `${__dirname}/../../src/${mod}`; }
 
 const apiHandler = require(m('node/handler/APIHandler'));
 const log4js = require(m('node_modules/log4js'));
@@ -25,7 +25,7 @@ const logLevel = exports.logger.level;
 // https://github.com/mochajs/mocha/issues/2640
 process.on('unhandledRejection', (reason, promise) => { throw reason; });
 
-exports.init = async function() {
+exports.init = async function () {
   if (inited) return exports.agent;
   inited = true;
 
@@ -50,7 +50,7 @@ exports.init = async function() {
   backups.authnFailureDelayMs = webaccess.authnFailureDelayMs;
   webaccess.authnFailureDelayMs = 0;
 
-  after(async function() {
+  after(async function () {
     webaccess.authnFailureDelayMs = backups.authnFailureDelayMs;
     await server.stop();
     // Note: This does not unset settings that were added.

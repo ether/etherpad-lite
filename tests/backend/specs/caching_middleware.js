@@ -19,13 +19,13 @@ let agent;
  *
  * @param {string} fileContent the response body
  * @param {URI} resource resource URI
- * @returns {boolean} if it is plaintext 
+ * @returns {boolean} if it is plaintext
  */
-function isPlaintextResponse(fileContent, resource){
+function isPlaintextResponse(fileContent, resource) {
   // callback=require.define&v=1234
-  const query = url.parse(resource)['query'];
+  const query = url.parse(resource).query;
   // require.define
-  const jsonp = queryString.parse(query)['callback'];
+  const jsonp = queryString.parse(query).callback;
 
   // returns true if the first letters in fileContent equal the content of `jsonp`
   return fileContent.substring(0, jsonp.length) === jsonp;
@@ -36,40 +36,39 @@ function isPlaintextResponse(fileContent, resource){
  *
  * @param {Request} request
  */
-function disableAutoDeflate(request){
-  request._shouldUnzip = function(){
-    return false
-  }
+function disableAutoDeflate(request) {
+  request._shouldUnzip = function () {
+    return false;
+  };
 }
 
-describe(__filename, function() {
+describe(__filename, function () {
   const backups = {};
   const fantasyEncoding = 'brainwaves'; // non-working encoding until https://github.com/visionmedia/superagent/pull/1560 is resolved
   const packages = [
-    "/javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define"
-  , "/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define"
-  , "/javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define"
-  , "/javascripts/lib/ep_etherpad-lite/static/js/timeslider.js?callback=require.define"
+    '/javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define',
+    '/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define',
+    '/javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define',
+    '/javascripts/lib/ep_etherpad-lite/static/js/timeslider.js?callback=require.define',
   ];
 
-  before(async function() {
+  before(async function () {
     agent = await common.init();
   });
-  beforeEach(async function() {
+  beforeEach(async function () {
     backups.settings = {};
-    backups.settings['minify'] = settings.minify;
+    backups.settings.minify = settings.minify;
   });
-  afterEach(async function() {
+  afterEach(async function () {
     Object.assign(settings, backups.settings);
   });
 
-  context('when minify is false', function(){
-    before(async function() {
+  context('when minify is false', function () {
+    before(async function () {
       settings.minify = false;
     });
-    it('gets packages uncompressed without Accept-Encoding gzip', async function() {
-      await Promise.all(packages.map(async (resource) => {
-        return agent.get(resource)
+    it('gets packages uncompressed without Accept-Encoding gzip', async function () {
+      await Promise.all(packages.map(async (resource) => agent.get(resource)
           .set('Accept-Encoding', fantasyEncoding)
           .use(disableAutoDeflate)
           .then((res) => {
@@ -77,13 +76,11 @@ describe(__filename, function() {
             assert.equal(res.header['content-encoding'], undefined);
             assert.equal(isPlaintextResponse(res.text, resource), true);
             return;
-          })
-      }))
-    })
+          })));
+    });
 
-    it('gets packages compressed with Accept-Encoding gzip', async function() {
-      await Promise.all(packages.map(async (resource) => {
-        return agent.get(resource)
+    it('gets packages compressed with Accept-Encoding gzip', async function () {
+      await Promise.all(packages.map(async (resource) => agent.get(resource)
           .set('Accept-Encoding', 'gzip')
           .use(disableAutoDeflate)
           .then((res) => {
@@ -91,36 +88,28 @@ describe(__filename, function() {
             assert.equal(res.header['content-encoding'], 'gzip');
             assert.equal(isPlaintextResponse(res.text, resource), false);
             return;
-          })
-      }))
-    })
+          })));
+    });
 
-    it('does not cache content-encoding headers', async function(){
+    it('does not cache content-encoding headers', async function () {
       await agent.get(packages[0])
-        .set('Accept-Encoding', fantasyEncoding)
-        .then((res) => {
-          return assert.equal(res.header['content-encoding'], undefined);
-        });
+          .set('Accept-Encoding', fantasyEncoding)
+          .then((res) => assert.equal(res.header['content-encoding'], undefined));
       await agent.get(packages[0])
-        .set('Accept-Encoding', 'gzip')
-        .then((res) => {
-          return assert.equal(res.header['content-encoding'], 'gzip');
-        });
+          .set('Accept-Encoding', 'gzip')
+          .then((res) => assert.equal(res.header['content-encoding'], 'gzip'));
       await agent.get(packages[0])
-        .set('Accept-Encoding', fantasyEncoding)
-        .then((res) => {
-          return assert.equal(res.header['content-encoding'], undefined);
-        });
-    })
+          .set('Accept-Encoding', fantasyEncoding)
+          .then((res) => assert.equal(res.header['content-encoding'], undefined));
+    });
   });
 
-  context('when minify is true', function(){
-    before(async function() {
+  context('when minify is true', function () {
+    before(async function () {
       settings.minify = true;
     });
-    it('gets packages uncompressed without Accept-Encoding gzip', async function() {
-      await Promise.all(packages.map(async (resource) => {
-        return agent.get(resource)
+    it('gets packages uncompressed without Accept-Encoding gzip', async function () {
+      await Promise.all(packages.map(async (resource) => agent.get(resource)
           .set('Accept-Encoding', fantasyEncoding)
           .use(disableAutoDeflate)
           .then((res) => {
@@ -128,13 +117,11 @@ describe(__filename, function() {
             assert.equal(res.header['content-encoding'], undefined);
             assert.equal(isPlaintextResponse(res.text, resource), true);
             return;
-          })
-      }))
-    })
+          })));
+    });
 
-    it('gets packages compressed with Accept-Encoding gzip', async function() {
-      await Promise.all(packages.map(async (resource) => {
-        return agent.get(resource)
+    it('gets packages compressed with Accept-Encoding gzip', async function () {
+      await Promise.all(packages.map(async (resource) => agent.get(resource)
           .set('Accept-Encoding', 'gzip')
           .use(disableAutoDeflate)
           .then((res) => {
@@ -142,27 +129,19 @@ describe(__filename, function() {
             assert.equal(res.header['content-encoding'], 'gzip');
             assert.equal(isPlaintextResponse(res.text, resource), false);
             return;
-          })
-      }))
-    })
+          })));
+    });
 
-    it('does not cache content-encoding headers', async function(){
+    it('does not cache content-encoding headers', async function () {
       await agent.get(packages[0])
-        .set('Accept-Encoding', fantasyEncoding)
-        .then((res) => {
-          return assert.equal(res.header['content-encoding'], undefined);
-        });
+          .set('Accept-Encoding', fantasyEncoding)
+          .then((res) => assert.equal(res.header['content-encoding'], undefined));
       await agent.get(packages[0])
-        .set('Accept-Encoding', 'gzip')
-        .then((res) => {
-          return assert.equal(res.header['content-encoding'], 'gzip');
-        });
+          .set('Accept-Encoding', 'gzip')
+          .then((res) => assert.equal(res.header['content-encoding'], 'gzip'));
       await agent.get(packages[0])
-        .set('Accept-Encoding', fantasyEncoding)
-        .then((res) => {
-          return assert.equal(res.header['content-encoding'], undefined);
-        });
-    })
+          .set('Accept-Encoding', fantasyEncoding)
+          .then((res) => assert.equal(res.header['content-encoding'], undefined));
+    });
   });
-
 });

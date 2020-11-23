@@ -20,19 +20,19 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-var marked = require('marked');
-var fs = require('fs');
-var path = require('path');
+const marked = require('marked');
+const fs = require('fs');
+const path = require('path');
 
 // parse the args.
 // Don't use nopt or whatever for this.  It's simple enough.
 
-var args = process.argv.slice(2);
-var format = 'json';
-var template = null;
-var inputFile = null;
+const args = process.argv.slice(2);
+let format = 'json';
+let template = null;
+let inputFile = null;
 
-args.forEach(function (arg) {
+args.forEach((arg) => {
   if (!arg.match(/^\-\-/)) {
     inputFile = arg;
   } else if (arg.match(/^\-\-format=/)) {
@@ -40,7 +40,7 @@ args.forEach(function (arg) {
   } else if (arg.match(/^\-\-template=/)) {
     template = arg.replace(/^\-\-template=/, '');
   }
-})
+});
 
 
 if (!inputFile) {
@@ -49,25 +49,25 @@ if (!inputFile) {
 
 
 console.error('Input file = %s', inputFile);
-fs.readFile(inputFile, 'utf8', function(er, input) {
+fs.readFile(inputFile, 'utf8', (er, input) => {
   if (er) throw er;
   // process the input for @include lines
   processIncludes(inputFile, input, next);
 });
 
 
-var includeExpr = /^@include\s+([A-Za-z0-9-_\/]+)(?:\.)?([a-zA-Z]*)$/gmi;
-var includeData = {};
+const includeExpr = /^@include\s+([A-Za-z0-9-_\/]+)(?:\.)?([a-zA-Z]*)$/gmi;
+const includeData = {};
 function processIncludes(inputFile, input, cb) {
-  var includes = input.match(includeExpr);
+  const includes = input.match(includeExpr);
   if (includes === null) return cb(null, input);
-  var errState = null;
+  let errState = null;
   console.error(includes);
-  var incCount = includes.length;
+  let incCount = includes.length;
   if (incCount === 0) cb(null, input);
 
-  includes.forEach(function(include) {
-    var fname = include.replace(/^@include\s+/, '');
+  includes.forEach((include) => {
+    let fname = include.replace(/^@include\s+/, '');
     if (!fname.match(/\.md$/)) fname += '.md';
 
     if (includeData.hasOwnProperty(fname)) {
@@ -78,11 +78,11 @@ function processIncludes(inputFile, input, cb) {
       }
     }
 
-    var fullFname = path.resolve(path.dirname(inputFile), fname);
-    fs.readFile(fullFname, 'utf8', function(er, inc) {
+    const fullFname = path.resolve(path.dirname(inputFile), fname);
+    fs.readFile(fullFname, 'utf8', (er, inc) => {
       if (errState) return;
       if (er) return cb(errState = er);
-      processIncludes(fullFname, inc, function(er, inc) {
+      processIncludes(fullFname, inc, (er, inc) => {
         if (errState) return;
         if (er) return cb(errState = er);
         incCount--;
@@ -101,20 +101,20 @@ function next(er, input) {
   if (er) throw er;
   switch (format) {
     case 'json':
-      require('./json.js')(input, inputFile, function(er, obj) {
+      require('./json.js')(input, inputFile, (er, obj) => {
         console.log(JSON.stringify(obj, null, 2));
         if (er) throw er;
       });
       break;
 
     case 'html':
-      require('./html.js')(input, inputFile, template, function(er, html) {
+      require('./html.js')(input, inputFile, template, (er, html) => {
         if (er) throw er;
         console.log(html);
       });
       break;
 
     default:
-      throw new Error('Invalid format: ' + format);
+      throw new Error(`Invalid format: ${format}`);
   }
 }
