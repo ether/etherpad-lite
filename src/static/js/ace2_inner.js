@@ -85,6 +85,8 @@ function Ace2Inner(){
   iframe.ace_outerWin = null; // prevent IE 6 memory leak
   var sideDiv = iframe.nextSibling;
   var lineMetricsDiv = sideDiv.nextSibling;
+  var lineNumbersShown;
+  var sideDivInner;
   initLineNumbers();
 
   var scroll = Scroll.init(outerWin);
@@ -4915,9 +4917,6 @@ function Ace2Inner(){
   }
   editorInfo.ace_doInsertUnorderedList = doInsertUnorderedList;
   editorInfo.ace_doInsertOrderedList = doInsertOrderedList;
-
-  var lineNumbersShown;
-  var sideDivInner;
 
   function initLineNumbers() {
     lineNumbersShown = 1;
