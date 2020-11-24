@@ -91,7 +91,7 @@ function doConvertTask(task, callback) {
       ]);
       // Soffice/libreoffice is buggy and often hangs.
       // To remedy this we kill the spawned process after a while.
-      setTimeout(function(){ 
+      const hangTimeout = setTimeout(() => {
         soffice.stdin.pause(); // required to kill hanging threads
         soffice.kill();
       }, 120000); 
@@ -109,6 +109,7 @@ function doConvertTask(task, callback) {
       });
 
       soffice.on('exit', function(code) {
+        clearTimeout(hangTimeout);
         if (code != 0) {
           // Throw an exception if libreoffice failed
           return callback(`LibreOffice died with exit code ${code} and message: ${stdoutBuffer}`);
