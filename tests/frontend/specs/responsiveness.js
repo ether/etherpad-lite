@@ -53,7 +53,7 @@ xdescribe('Responsiveness of Editor', function () {
     inner$('div').first().text(text); // Put the text contents into the pad
 
     helper.waitFor(() => // Wait for the new contents to be on the pad
-      inner$('div').text().length > length,
+      inner$('div').text().length > length
     ).done(() => {
       expect(inner$('div').text().length).to.be.greaterThan(length); // has the text changed?
       const start = Date.now(); // get the start time

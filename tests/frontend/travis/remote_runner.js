@@ -15,10 +15,10 @@ var allTestsPassed = true;
 // and the script would silently exit with error code 0
 process.exitCode = 2;
 process.on('exit', (code) => {
-  if (code === 2){
-    console.log("\x1B[31mFAILED\x1B[39m Not all saucelabs runner have been started.");
+  if (code === 2) {
+    console.log('\x1B[31mFAILED\x1B[39m Not all saucelabs runner have been started.');
   }
-})
+});
 
 var sauceTestWorker = async.queue((testSettings, callback) => {
   const browser = wd.promiseChainRemote(config.host, config.port, config.username, config.accessKey);

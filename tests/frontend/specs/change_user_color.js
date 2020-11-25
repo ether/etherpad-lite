@@ -93,7 +93,7 @@ describe('change user color', function () {
     $chatInput.sendkeys('{enter}'); // simulate a keypress of enter actually does evt.which = 10 not 13
 
     // check if chat shows up
-    helper.waitFor(() => chrome$('#chattext').children('p').length !== 0, // wait until the chat message shows up
+    helper.waitFor(() => chrome$('#chattext').children('p').length !== 0 // wait until the chat message shows up
     ).done(() => {
       const $firstChatMessage = chrome$('#chattext').children('p');
       expect($firstChatMessage.css('background-color')).to.be(testColorRGB); // expect the first chat message to be of the user's color

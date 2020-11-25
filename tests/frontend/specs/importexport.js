@@ -136,7 +136,7 @@ describe('import functionality', function () {
     const htmlWithBullets = '<html><body><ul class="list-bullet1"><li>bullet line 1</li></ul><ul class="list-bullet1"><li>bullet line 2</li><ul class="list-bullet2"><li>bullet2 line 1</li></ul></ul><ul class="list-bullet1"><ul class="list-bullet2"><ul class="list-bullet3"><ul class="list-bullet4"><li>bullet4 line 2</li><li>bullet4 line 2</li><li>bullet4 line 2</li></ul><li>bullet3 line 1</li></ul></ul><li>bullet2 line 1</li></ul></body></html>';
     importrequest(htmlWithBullets, importurl, 'html');
     const oldtext = getinnertext();
-    helper.waitFor(() => oldtext != getinnertext(),
+    helper.waitFor(() => oldtext != getinnertext()
         //      return expect(getinnertext()).to.be('\
         // <ul class="list-bullet1"><li><span class="">bullet line 1</span></li></ul>\n\
         // <ul class="list-bullet1"><li><span class="">bullet line 2</span></li></ul>\n\
