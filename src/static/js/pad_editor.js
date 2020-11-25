@@ -111,6 +111,9 @@ var padeditor = (function()
       $("#languagemenu").change(function() {
         Cookies.set('language', $('#languagemenu').val());
         window.html10n.localize([$("#languagemenu").val(), 'en']);
+        if ($('select').niceSelect) {
+          $('select').niceSelect('update');
+        }
       });
     },
     setViewOptions: function(newOptions)
