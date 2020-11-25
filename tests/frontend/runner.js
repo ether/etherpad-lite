@@ -143,7 +143,7 @@ $(() => {
   // http://stackoverflow.com/questions/1403888/get-url-parameter-with-jquery
   const getURLParameter = function (name) {
     return decodeURI(
-        (RegExp(`${name}=` + '(.+?)(&|$)').exec(location.search) || [, null])[1],
+        (RegExp(`${name}=` + '(.+?)(&|$)').exec(location.search) || [, null])[1]
     );
   };
 
