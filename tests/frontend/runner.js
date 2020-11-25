@@ -1,5 +1,9 @@
+'use strict';
+
+/* global specs_list */
+
 $(() => {
-  function stringifyException(exception) {
+  const stringifyException = (exception) => {
     let err = exception.stack || exception.toString();
 
     // FF / Opera do not add the message
@@ -9,7 +13,7 @@ $(() => {
 
     // <=IE7 stringifies to [Object Error]. Since it can be overloaded, we
     // check for the result of the stringifying.
-    if ('[object Error]' == err) err = exception.message;
+    if (err === '[object Error]') err = exception.message;
 
     // Safari doesn't give you a stack. Let's at least provide a source line.
     if (!exception.stack && exception.sourceURL && exception.line !== undefined) {
@@ -17,10 +21,11 @@ $(() => {
     }
 
     return err;
-  }
+  };
 
-  function CustomRunner(runner) {
+  const customRunner = (runner) => {
     const stats = {suites: 0, tests: 0, passes: 0, pending: 0, failures: 0};
+    let level = 0;
 
     if (!runner) return;
 
@@ -39,7 +44,7 @@ $(() => {
       if (suite.root) return;
       level--;
 
-      if (level == 0) {
+      if (level === 0) {
         append('');
       }
     });
@@ -96,7 +101,6 @@ $(() => {
     });
 
     const $console = $('#console');
-    var level = 0;
     const append = (text) => {
       const oldText = $console.text();
 
@@ -126,7 +130,8 @@ $(() => {
       stats.end = new Date();
       stats.duration = stats.end - stats.start;
       const minutes = Math.floor(stats.duration / 1000 / 60);
-      const seconds = Math.round((stats.duration / 1000) % 60); // chrome < 57 does not like this .toString().padStart("2","0");
+      // chrome < 57 does not like this .toString().padStart('2', '0');
+      const seconds = Math.round((stats.duration / 1000) % 60);
       if (stats.tests === total) {
         append(`FINISHED - ${stats.passes} tests passed, ${stats.failures} tests failed, ` +
                `${stats.pending} pending, duration: ${minutes}:${seconds}`);
@@ -147,12 +152,12 @@ $(() => {
                'see https://github.com/mochajs/mocha/pull/1043');
       }
     });
-  }
+  };
 
   // http://stackoverflow.com/questions/1403888/get-url-parameter-with-jquery
   const getURLParameter = function (name) {
     return decodeURI(
-        (RegExp(`${name}=` + '(.+?)(&|$)').exec(location.search) || [, null])[1]
+        (RegExp(`${name}=(.+?)(&|$)`).exec(location.search) || [null, null])[1]
     );
   };
 
@@ -162,7 +167,8 @@ $(() => {
   // inject spec scripts into the dom
   const $body = $('body');
   $.each(specs, (i, spec) => {
-    if (spec[0] != '/') { // if the spec isn't a plugin spec which means the spec file might be in a different subfolder
+    // if the spec isn't a plugin spec which means the spec file might be in a different subfolder
+    if (!spec.startsWith('/')) {
       $body.append(`<script src="specs/${spec}"></script>`);
     } else {
       $body.append(`<script src="${spec}"></script>`);
@@ -173,11 +179,11 @@ $(() => {
   helper.init(() => {
     // configure and start the test framework
     const grep = getURLParameter('grep');
-    if (grep != 'null') {
+    if (grep !== 'null') {
       mocha.grep(grep);
     }
 
     const runner = mocha.run();
-    CustomRunner(runner);
+    customRunner(runner);
   });
 });
