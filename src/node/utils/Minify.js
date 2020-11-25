@@ -231,21 +231,25 @@ function getAceFile(callback) {
     if (ERR(err, callback)) return;
 
     // Find all includes in ace.js and embed them
-    let founds = data.match(/\$\$INCLUDE_[a-zA-Z_]+\("[^"]*"\)/gi);
-    if (!settings.minify) {
-      founds = [];
+    const filenames = [];
+    if (settings.minify) {
+      const regex = /\$\$INCLUDE_[a-zA-Z_]+\((['"])([^'"]*)\1\)/gi;
+      // This logic can be simplified via String.prototype.matchAll() once support for Node.js
+      // v11.x and older is dropped.
+      let matches;
+      while ((matches = regex.exec(data)) != null) {
+        filenames.push(matches[2]);
+      }
     }
     // Always include the require kernel.
-    founds.push('$$INCLUDE_JS("../static/js/require-kernel.js")');
+    filenames.push('../static/js/require-kernel.js');
 
     data += ';\n';
     data += 'Ace2Editor.EMBEDED = Ace2Editor.EMBEDED || {};\n';
 
     // Request the contents of the included file on the server-side and write
     // them into the file.
-    async.forEach(founds, (item, callback) => {
-      const filename = item.match(/"([^"]*)"/)[1];
-
+    async.forEach(filenames, (filename, callback) => {
       // Hostname "invalid.invalid" is a dummy value to allow parsing as a URI.
       const baseURI = 'http://invalid.invalid';
       let resourceURI = baseURI + path.normalize(path.join('/static/', filename));
