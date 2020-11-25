@@ -19,15 +19,15 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-var fs = require('fs');
-var marked = require('marked');
-var path = require('path');
+const fs = require('fs');
+const marked = require('marked');
+const path = require('path');
 
 module.exports = toHTML;
 
 function toHTML(input, filename, template, cb) {
-  var lexed = marked.lexer(input);
-  fs.readFile(template, 'utf8', function(er, template) {
+  const lexed = marked.lexer(input);
+  fs.readFile(template, 'utf8', (er, template) => {
     if (er) return cb(er);
     render(lexed, filename, template, cb);
   });
@@ -35,7 +35,7 @@ function toHTML(input, filename, template, cb) {
 
 function render(lexed, filename, template, cb) {
   // get the section
-  var section = getSection(lexed);
+  const section = getSection(lexed);
 
   filename = path.basename(filename, '.md');
 
@@ -43,7 +43,7 @@ function render(lexed, filename, template, cb) {
 
   // generate the table of contents.
   // this mutates the lexed contents in-place.
-  buildToc(lexed, filename, function(er, toc) {
+  buildToc(lexed, filename, (er, toc) => {
     if (er) return cb(er);
 
     template = template.replace(/__FILENAME__/g, filename);
@@ -63,11 +63,11 @@ function render(lexed, filename, template, cb) {
 // just update the list item text in-place.
 // lists that come right after a heading are what we're after.
 function parseLists(input) {
-  var state = null;
-  var depth = 0;
-  var output = [];
+  let state = null;
+  let depth = 0;
+  const output = [];
   output.links = input.links;
-  input.forEach(function(tok) {
+  input.forEach((tok) => {
     if (state === null) {
       if (tok.type === 'heading') {
         state = 'AFTERHEADING';
@@ -79,7 +79,7 @@ function parseLists(input) {
       if (tok.type === 'list_start') {
         state = 'LIST';
         if (depth === 0) {
-          output.push({ type:'html', text: '<div class="signature">' });
+          output.push({type: 'html', text: '<div class="signature">'});
         }
         depth++;
         output.push(tok);
@@ -99,7 +99,7 @@ function parseLists(input) {
         depth--;
         if (depth === 0) {
           state = null;
-          output.push({ type:'html', text: '</div>' });
+          output.push({type: 'html', text: '</div>'});
         }
         output.push(tok);
         return;
@@ -117,16 +117,16 @@ function parseLists(input) {
 
 function parseListItem(text) {
   text = text.replace(/\{([^\}]+)\}/, '<span class="type">$1</span>');
-  //XXX maybe put more stuff here?
+  // XXX maybe put more stuff here?
   return text;
 }
 
 
 // section is just the first heading
 function getSection(lexed) {
-  var section = '';
-  for (var i = 0, l = lexed.length; i < l; i++) {
-    var tok = lexed[i];
+  const section = '';
+  for (let i = 0, l = lexed.length; i < l; i++) {
+    const tok = lexed[i];
     if (tok.type === 'heading') return tok.text;
   }
   return '';
@@ -134,40 +134,39 @@ function getSection(lexed) {
 
 
 function buildToc(lexed, filename, cb) {
-  var indent = 0;
-  var toc = [];
-  var depth = 0;
-  lexed.forEach(function(tok) {
+  const indent = 0;
+  let toc = [];
+  let depth = 0;
+  lexed.forEach((tok) => {
     if (tok.type !== 'heading') return;
     if (tok.depth - depth > 1) {
-      return cb(new Error('Inappropriate heading level\n' +
-                          JSON.stringify(tok)));
+      return cb(new Error(`Inappropriate heading level\n${
+        JSON.stringify(tok)}`));
     }
 
     depth = tok.depth;
-    var id = getId(filename + '_' + tok.text.trim());
-    toc.push(new Array((depth - 1) * 2 + 1).join(' ') +
-             '* <a href="#' + id + '">' +
-             tok.text + '</a>');
-    tok.text += '<span><a class="mark" href="#' + id + '" ' +
-                'id="' + id + '">#</a></span>';
+    const id = getId(`${filename}_${tok.text.trim()}`);
+    toc.push(`${new Array((depth - 1) * 2 + 1).join(' ')
+    }* <a href="#${id}">${
+      tok.text}</a>`);
+    tok.text += `<span><a class="mark" href="#${id}" ` +
+                `id="${id}">#</a></span>`;
   });
 
   toc = marked.parse(toc.join('\n'));
   cb(null, toc);
 }
 
-var idCounters = {};
+const idCounters = {};
 function getId(text) {
   text = text.toLowerCase();
   text = text.replace(/[^a-z0-9]+/g, '_');
   text = text.replace(/^_+|_+$/, '');
   text = text.replace(/^([^a-z])/, '_$1');
   if (idCounters.hasOwnProperty(text)) {
-    text += '_' + (++idCounters[text]);
+    text += `_${++idCounters[text]}`;
   } else {
     idCounters[text] = 0;
   }
   return text;
 }
-

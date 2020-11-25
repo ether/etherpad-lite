@@ -13,9 +13,9 @@
 
 // Adapted from John McLear's original test case.
 
-xdescribe('Responsiveness of Editor', function() {
+xdescribe('Responsiveness of Editor', function () {
   // create a new pad before each test run
-  beforeEach(function(cb) {
+  beforeEach(function (cb) {
     helper.newPad(cb);
     this.timeout(6000);
   });
@@ -23,67 +23,62 @@ xdescribe('Responsiveness of Editor', function() {
   // And the test needs to be fixed to work in Firefox 52 on Windows 7.  I am not sure why it fails on this specific platform
   // The errors show this.timeout... then crash the browser but I am sure something is actually causing the stack trace and
   // I just need to narrow down what, offers to help accepted.
-  it('Fast response to keypress in pad with large amount of contents', function(done) {
-
-    //skip on Windows Firefox 52.0
-    if(window.bowser && window.bowser.windows && window.bowser.firefox && window.bowser.version == "52.0") {
+  it('Fast response to keypress in pad with large amount of contents', function (done) {
+    // skip on Windows Firefox 52.0
+    if (window.bowser && window.bowser.windows && window.bowser.firefox && window.bowser.version == '52.0') {
       this.skip();
     }
-    var inner$ = helper.padInner$;
-    var chrome$ = helper.padChrome$;
-    var chars = '0000000000'; // row of placeholder chars
-    var amount = 200000; //number of blocks of chars we will insert
-    var length = (amount * (chars.length) +1); // include a counter for each space
-    var text = ''; // the text we're gonna insert
+    const inner$ = helper.padInner$;
+    const chrome$ = helper.padChrome$;
+    const chars = '0000000000'; // row of placeholder chars
+    const amount = 200000; // number of blocks of chars we will insert
+    const length = (amount * (chars.length) + 1); // include a counter for each space
+    let text = ''; // the text we're gonna insert
     this.timeout(amount * 150); // Changed from 100 to 150 to allow Mac OSX Safari to be slow.
 
     // get keys to send
-    var keyMultiplier = 10; // multiplier * 10 == total number of key events
-    var keysToSend = '';
-    for(var i=0; i <= keyMultiplier; i++) {
+    const keyMultiplier = 10; // multiplier * 10 == total number of key events
+    let keysToSend = '';
+    for (var i = 0; i <= keyMultiplier; i++) {
       keysToSend += chars;
     }
 
-    var textElement = inner$('div');
+    const textElement = inner$('div');
     textElement.sendkeys('{selectall}'); // select all
     textElement.sendkeys('{del}'); // clear the pad text
 
-    for(var i=0; i <= amount; i++) {
-      text = text + chars + ' '; // add the chars and space to the text contents
+    for (var i = 0; i <= amount; i++) {
+      text = `${text + chars} `; // add the chars and space to the text contents
     }
     inner$('div').first().text(text); // Put the text contents into the pad
 
-    helper.waitFor(function(){ // Wait for the new contents to be on the pad
-      return inner$('div').text().length > length;
-    }).done(function(){
-
-      expect( inner$('div').text().length ).to.be.greaterThan( length ); // has the text changed?
-      var start = Date.now(); // get the start time
+    helper.waitFor(() => // Wait for the new contents to be on the pad
+      inner$('div').text().length > length
+    ).done(() => {
+      expect(inner$('div').text().length).to.be.greaterThan(length); // has the text changed?
+      const start = Date.now(); // get the start time
 
       // send some new text to the screen (ensure all 3 key events are sent)
-      var el = inner$('div').first();
-      for(var i = 0; i < keysToSend.length; ++i) {
+      const el = inner$('div').first();
+      for (let i = 0; i < keysToSend.length; ++i) {
         var x = keysToSend.charCodeAt(i);
-        ['keyup', 'keypress', 'keydown'].forEach(function(type) {
-          var e = $.Event(type);
+        ['keyup', 'keypress', 'keydown'].forEach((type) => {
+          const e = $.Event(type);
           e.keyCode = x;
           el.trigger(e);
         });
       }
 
-      helper.waitFor(function(){ // Wait for the ability to process
-        var el = inner$('body');
-        if(el[0].textContent.length > amount) return true;
-      }).done(function(){
-        var end = Date.now(); // get the current time
-        var delay = end - start; // get the delay as the current time minus the start time
+      helper.waitFor(() => { // Wait for the ability to process
+        const el = inner$('body');
+        if (el[0].textContent.length > amount) return true;
+      }).done(() => {
+        const end = Date.now(); // get the current time
+        const delay = end - start; // get the delay as the current time minus the start time
 
         expect(delay).to.be.below(600);
         done();
       }, 5000);
-
     }, 10000);
   });
-
 });
-

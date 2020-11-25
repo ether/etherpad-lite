@@ -33,25 +33,25 @@ function randomPadName() {
   for (let i = 0; i < string_length; i++) {
     // instead of writing "Math.floor(randomarray[i]/256*64)"
     // we can save some cycles.
-    const rnum = Math.floor(randomarray[i]/4);
+    const rnum = Math.floor(randomarray[i] / 4);
     randomstring += chars.substring(rnum, rnum + 1);
   }
   return randomstring;
 }
 
 $(() => {
-  $('#go2Name').submit(function() {
+  $('#go2Name').submit(() => {
     const padname = $('#padname').val();
     if (padname.length > 0) {
-      window.location = 'p/' + encodeURIComponent(padname.trim());
+      window.location = `p/${encodeURIComponent(padname.trim())}`;
     } else {
       alert('Please enter a name');
     }
     return false;
   });
 
-  $('#button').click(function() {
-    window.location = 'p/' + randomPadName();
+  $('#button').click(() => {
+    window.location = `p/${randomPadName()}`;
   });
 
   // start the custom js

@@ -1,8 +1,8 @@
 const log4js = require('log4js');
-var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
-var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks");
-var npm = require("npm");
-var request = require("request");
+const plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');
+const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+const npm = require('npm');
+const request = require('request');
 const util = require('util');
 
 let npmIsLoaded = false;
@@ -13,20 +13,20 @@ const loadNpm = async () => {
   npm.on('log', log4js.getLogger('npm').log);
 };
 
-var tasks = 0
+let tasks = 0;
 
 function wrapTaskCb(cb) {
   tasks++;
 
-  return function() {
+  return function () {
     cb && cb.apply(this, arguments);
     tasks--;
     if (tasks == 0) onAllTasksFinished();
-  }
+  };
 }
 
 function onAllTasksFinished() {
-  hooks.aCallAll("restartServer", {}, function() {});
+  hooks.aCallAll('restartServer', {}, () => {});
 }
 
 exports.uninstall = async (pluginName, cb = null) => {
@@ -58,18 +58,18 @@ exports.install = async (pluginName, cb = null) => {
 };
 
 exports.availablePlugins = null;
-var cacheTimestamp = 0;
+let cacheTimestamp = 0;
 
-exports.getAvailablePlugins = function(maxCacheAge) {
-  var nowTimestamp = Math.round(Date.now() / 1000);
+exports.getAvailablePlugins = function (maxCacheAge) {
+  const nowTimestamp = Math.round(Date.now() / 1000);
 
-  return new Promise(function(resolve, reject) {
+  return new Promise((resolve, reject) => {
     // check cache age before making any request
     if (exports.availablePlugins && maxCacheAge && (nowTimestamp - cacheTimestamp) <= maxCacheAge) {
       return resolve(exports.availablePlugins);
     }
 
-    request("https://static.etherpad.org/plugins.json", function(er, response, plugins) {
+    request('https://static.etherpad.org/plugins.json', (er, response, plugins) => {
       if (er) return reject(er);
 
       try {
@@ -87,26 +87,26 @@ exports.getAvailablePlugins = function(maxCacheAge) {
 };
 
 
-exports.search = function(searchTerm, maxCacheAge) {
-  return exports.getAvailablePlugins(maxCacheAge).then(function(results) {
-    var res = {};
+exports.search = function (searchTerm, maxCacheAge) {
+  return exports.getAvailablePlugins(maxCacheAge).then((results) => {
+    const res = {};
 
     if (searchTerm) {
       searchTerm = searchTerm.toLowerCase();
     }
 
-    for (var pluginName in results) {
+    for (const pluginName in results) {
       // for every available plugin
       if (pluginName.indexOf(plugins.prefix) != 0) continue; // TODO: Also search in keywords here!
 
-      if (searchTerm && !~results[pluginName].name.toLowerCase().indexOf(searchTerm)
-         && (typeof results[pluginName].description != "undefined" && !~results[pluginName].description.toLowerCase().indexOf(searchTerm) )
-           ) {
-           if (typeof results[pluginName].description === "undefined") {
-             console.debug('plugin without Description: %s', results[pluginName].name);
-           }
+      if (searchTerm && !~results[pluginName].name.toLowerCase().indexOf(searchTerm) &&
+         (typeof results[pluginName].description !== 'undefined' && !~results[pluginName].description.toLowerCase().indexOf(searchTerm))
+      ) {
+        if (typeof results[pluginName].description === 'undefined') {
+          console.debug('plugin without Description: %s', results[pluginName].name);
+        }
 
-           continue;
+        continue;
       }
 
       res[pluginName] = results[pluginName];

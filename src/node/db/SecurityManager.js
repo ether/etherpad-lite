@@ -18,14 +18,14 @@
  * limitations under the License.
  */
 
-var authorManager = require("./AuthorManager");
-var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
-var padManager = require("./PadManager");
-var sessionManager = require("./SessionManager");
-var settings = require("../utils/Settings");
+const authorManager = require('./AuthorManager');
+const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks.js');
+const padManager = require('./PadManager');
+const sessionManager = require('./SessionManager');
+const settings = require('../utils/Settings');
 const webaccess = require('../hooks/express/webaccess');
-var log4js = require('log4js');
-var authLogger = log4js.getLogger("auth");
+const log4js = require('log4js');
+const authLogger = log4js.getLogger('auth');
 
 const DENY = Object.freeze({accessStatus: 'deny'});
 
@@ -47,8 +47,7 @@ const DENY = Object.freeze({accessStatus: 'deny'});
  * WARNING: Tokens and session IDs MUST be kept secret, otherwise users will be able to impersonate
  * each other (which might allow them to gain privileges).
  */
-exports.checkAccess = async function(padID, sessionCookie, token, userSettings)
-{
+exports.checkAccess = async function (padID, sessionCookie, token, userSettings) {
   if (!padID) {
     authLogger.debug('access denied: missing padID');
     return DENY;

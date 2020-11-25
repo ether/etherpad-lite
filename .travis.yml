@@ -13,6 +13,16 @@ env:
     - secure: "WMGxFkOeTTlhWB+ChMucRtIqVmMbwzYdNHuHQjKCcj8HBEPdZLfCuK/kf4rG\nVLcLQiIsyllqzNhBGVHG1nyqWr0/LTm8JRqSCDDVIhpyzp9KpCJQQJG2Uwjk\n6/HIJJh/wbxsEdLNV2crYU/EiVO3A4Bq0YTHUlbhUqG3mSCr5Ec="
     - secure: "gejXUAHYscbR6Bodw35XexpToqWkv2ifeECsbeEmjaLkYzXmUUNWJGknKSu7\nEUsSfQV8w+hxApr1Z+jNqk9aX3K1I4btL3cwk2trnNI8XRAvu1c1Iv60eerI\nkE82Rsd5lwUaMEh+/HoL8ztFCZamVndoNgX7HWp5J/NRZZMmh4g="
 
+_set_loglevel_warn: &set_loglevel_warn |
+  sed -e 's/"loglevel":[^,]*/"loglevel": "WARN"/' \
+      settings.json.template >settings.json.template.new &&
+  mv settings.json.template.new settings.json.template
+
+_install_libreoffice: &install_libreoffice >-
+  sudo add-apt-repository -y ppa:libreoffice/ppa &&
+  sudo apt-get update &&
+  sudo apt-get -y install libreoffice libreoffice-pdfimport
+
 _install_plugins: &install_plugins >-
   npm install
   ep_align
@@ -34,8 +44,7 @@ jobs:
     - if: fork = false
       name: "Test the Frontend without Plugins"
       install:
-        #FIXME
-        - "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/g' settings.json.template > settings.json"
+        - *set_loglevel_warn
         - "tests/frontend/travis/sauce_tunnel.sh"
         - "bin/installDeps.sh"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
@@ -43,10 +52,8 @@ jobs:
         - "./tests/frontend/travis/runner.sh"
     - name: "Run the Backend tests without Plugins"
       install:
-        - "sudo add-apt-repository -y ppa:libreoffice/ppa"
-        - "sudo apt-get update"
-        - "sudo apt-get -y install libreoffice"
-        - "sudo apt-get -y install libreoffice-pdfimport"
+        - *install_libreoffice
+        - *set_loglevel_warn
         - "bin/installDeps.sh"
         - "cd src && npm install && cd -"
       script:
@@ -60,6 +67,7 @@ jobs:
         - "cd src && npm run test-container"
     - name: "Load test Etherpad without Plugins"
       install:
+        - *set_loglevel_warn
         - "bin/installDeps.sh"
         - "cd src && npm install && cd -"
         - "npm install -g etherpad-load-test"
@@ -70,8 +78,7 @@ jobs:
     - if: fork = false
       name: "Test the Frontend Plugins only"
       install:
-        #FIXME
-        - "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/g' settings.json.template > settings.json"
+        - *set_loglevel_warn
         - "tests/frontend/travis/sauce_tunnel.sh"
         - "bin/installDeps.sh"
         - "rm tests/frontend/specs/*"
@@ -86,10 +93,8 @@ jobs:
         - npx lockfile-lint --path src/package-lock.json --validate-https --allowed-hosts npm
     - name: "Run the Backend tests with Plugins"
       install:
-        - "sudo add-apt-repository -y ppa:libreoffice/ppa"
-        - "sudo apt-get update"
-        - "sudo apt-get -y install libreoffice"
-        - "sudo apt-get -y install libreoffice-pdfimport"
+        - *install_libreoffice
+        - *set_loglevel_warn
         - "bin/installDeps.sh"
         - *install_plugins
         - "cd src && npm install && cd -"
@@ -104,6 +109,7 @@ jobs:
         - "cd src && npm run test-container"
     - name: "Load test Etherpad with Plugins"
       install:
+        - *set_loglevel_warn
         - "bin/installDeps.sh"
         - *install_plugins
         - "cd src && npm install && cd -"

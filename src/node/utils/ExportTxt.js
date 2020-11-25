@@ -18,13 +18,12 @@
  * limitations under the License.
  */
 
-var Changeset = require("ep_etherpad-lite/static/js/Changeset");
-var padManager = require("../db/PadManager");
-var _analyzeLine = require('./ExportHelper')._analyzeLine;
+const Changeset = require('ep_etherpad-lite/static/js/Changeset');
+const padManager = require('../db/PadManager');
+const _analyzeLine = require('./ExportHelper')._analyzeLine;
 
 // This is slightly different than the HTML method as it passes the output to getTXTFromAText
-var getPadTXT = async function(pad, revNum)
-{
+const getPadTXT = async function (pad, revNum) {
   let atext = pad.atext;
 
   if (revNum != undefined) {
@@ -34,58 +33,57 @@ var getPadTXT = async function(pad, revNum)
 
   // convert atext to html
   return getTXTFromAtext(pad, atext);
-}
+};
 
 // This is different than the functionality provided in ExportHtml as it provides formatting
 // functionality that is designed specifically for TXT exports
-function getTXTFromAtext(pad, atext, authorColors)
-{
-  var apool = pad.apool();
-  var textLines = atext.text.slice(0, -1).split('\n');
-  var attribLines = Changeset.splitAttributionLines(atext.attribs, atext.text);
+function getTXTFromAtext(pad, atext, authorColors) {
+  const apool = pad.apool();
+  const textLines = atext.text.slice(0, -1).split('\n');
+  const attribLines = Changeset.splitAttributionLines(atext.attribs, atext.text);
 
-  var props = ['heading1', 'heading2', 'bold', 'italic', 'underline', 'strikethrough'];
-  var anumMap = {};
-  var css = "";
+  const props = ['heading1', 'heading2', 'bold', 'italic', 'underline', 'strikethrough'];
+  const anumMap = {};
+  const css = '';
 
-  props.forEach(function(propName, i) {
-    var propTrueNum = apool.putAttrib([propName, true], true);
+  props.forEach((propName, i) => {
+    const propTrueNum = apool.putAttrib([propName, true], true);
     if (propTrueNum >= 0) {
       anumMap[propTrueNum] = i;
     }
   });
 
   function getLineTXT(text, attribs) {
-    var propVals = [false, false, false];
-    var ENTER = 1;
-    var STAY = 2;
-    var LEAVE = 0;
+    const propVals = [false, false, false];
+    const ENTER = 1;
+    const STAY = 2;
+    const LEAVE = 0;
 
     // Use order of tags (b/i/u) as order of nesting, for simplicity
     // and decent nesting.  For example,
     // <b>Just bold<b> <b><i>Bold and italics</i></b> <i>Just italics</i>
     // becomes
     // <b>Just bold <i>Bold and italics</i></b> <i>Just italics</i>
-    var taker = Changeset.stringIterator(text);
-    var assem = Changeset.stringAssembler();
+    const taker = Changeset.stringIterator(text);
+    const assem = Changeset.stringAssembler();
 
-    var idx = 0;
+    let idx = 0;
 
     function processNextChars(numChars) {
       if (numChars <= 0) {
         return;
       }
 
-      var iter = Changeset.opIterator(Changeset.subattribution(attribs, idx, idx + numChars));
+      const iter = Changeset.opIterator(Changeset.subattribution(attribs, idx, idx + numChars));
       idx += numChars;
 
       while (iter.hasNext()) {
-        var o = iter.next();
+        const o = iter.next();
         var propChanged = false;
 
-        Changeset.eachAttribNumber(o.attribs, function(a) {
+        Changeset.eachAttribNumber(o.attribs, (a) => {
           if (a in anumMap) {
-            var i = anumMap[a]; // i = 0 => bold, etc.
+            const i = anumMap[a]; // i = 0 => bold, etc.
 
             if (!propVals[i]) {
               propVals[i] = ENTER;
@@ -110,20 +108,18 @@ function getTXTFromAtext(pad, atext, authorColors)
         // according to what happens at start of span
         if (propChanged) {
           // leaving bold (e.g.) also leaves italics, etc.
-          var left = false;
+          let left = false;
 
           for (var i = 0; i < propVals.length; i++) {
-            var v = propVals[i];
+            const v = propVals[i];
 
             if (!left) {
               if (v === LEAVE) {
                 left = true;
               }
-            } else {
-              if (v === true) {
-                // tag will be closed and re-opened
-                propVals[i] = STAY;
-              }
+            } else if (v === true) {
+              // tag will be closed and re-opened
+              propVals[i] = STAY;
             }
           }
 
@@ -131,11 +127,11 @@ function getTXTFromAtext(pad, atext, authorColors)
 
           for (var i = propVals.length - 1; i >= 0; i--) {
             if (propVals[i] === LEAVE) {
-              //emitCloseTag(i);
+              // emitCloseTag(i);
               tags2close.push(i);
               propVals[i] = false;
             } else if (propVals[i] === STAY) {
-              //emitCloseTag(i);
+              // emitCloseTag(i);
               tags2close.push(i);
             }
           }
@@ -148,13 +144,13 @@ function getTXTFromAtext(pad, atext, authorColors)
           // propVals is now all {true,false} again
         } // end if (propChanged)
 
-        var chars = o.chars;
+        let chars = o.chars;
         if (o.lines) {
           // exclude newline at end of line, if present
           chars--;
         }
 
-        var s = taker.take(chars);
+        const s = taker.take(chars);
 
         // removes the characters with the code 12. Don't know where they come
         // from but they break the abiword parser and are completly useless
@@ -174,14 +170,13 @@ function getTXTFromAtext(pad, atext, authorColors)
           propVals[i] = false;
         }
       }
-
     } // end processNextChars
 
     processNextChars(text.length - idx);
-    return(assem.toString());
+    return (assem.toString());
   } // end getLineHTML
 
-  var pieces = [css];
+  const pieces = [css];
 
   // Need to deal with constraints imposed on HTML lists; can
   // only gain one level of nesting at once, can't change type
@@ -191,34 +186,33 @@ function getTXTFromAtext(pad, atext, authorColors)
   // want to deal gracefully with blank lines.
   // => keeps track of the parents level of indentation
 
-  var listNumbers = {};
-  var prevListLevel;
+  const listNumbers = {};
+  let prevListLevel;
 
-  for (var i = 0; i < textLines.length; i++) {
+  for (let i = 0; i < textLines.length; i++) {
+    const line = _analyzeLine(textLines[i], attribLines[i], apool);
+    let lineContent = getLineTXT(line.text, line.aline);
 
-    var line = _analyzeLine(textLines[i], attribLines[i], apool);
-    var lineContent = getLineTXT(line.text, line.aline);
-
-    if (line.listTypeName == "bullet") {
-      lineContent = "* " + lineContent; // add a bullet
+    if (line.listTypeName == 'bullet') {
+      lineContent = `* ${lineContent}`; // add a bullet
     }
 
-    if (line.listTypeName !== "number") {
+    if (line.listTypeName !== 'number') {
       // We're no longer in an OL so we can reset counting
-      for (var key in listNumbers) {
+      for (const key in listNumbers) {
         delete listNumbers[key];
       }
     }
 
     if (line.listLevel > 0) {
-      for (var j = line.listLevel - 1; j >= 0; j--) {
+      for (let j = line.listLevel - 1; j >= 0; j--) {
         pieces.push('\t'); // tab indent list numbers..
-        if(!listNumbers[line.listLevel]){
+        if (!listNumbers[line.listLevel]) {
           listNumbers[line.listLevel] = 0;
         }
       }
 
-      if (line.listTypeName == "number") {
+      if (line.listTypeName == 'number') {
         /*
         * listLevel == amount of indentation
         * listNumber(s) == item number
@@ -232,19 +226,19 @@ function getTXTFromAtext(pad, atext, authorColors)
         * To handle going back to 2.1 when prevListLevel is lower number
         * than current line.listLevel then reset the object value
         */
-        if(line.listLevel < prevListLevel){
+        if (line.listLevel < prevListLevel) {
           delete listNumbers[prevListLevel];
         }
 
         listNumbers[line.listLevel]++;
-        if(line.listLevel > 1){
-          var x = 1;
-          while(x <= line.listLevel-1){
-            pieces.push(listNumbers[x]+".")
+        if (line.listLevel > 1) {
+          let x = 1;
+          while (x <= line.listLevel - 1) {
+            pieces.push(`${listNumbers[x]}.`);
             x++;
           }
         }
-        pieces.push(listNumbers[line.listLevel]+". ")
+        pieces.push(`${listNumbers[line.listLevel]}. `);
         prevListLevel = line.listLevel;
       }
 
@@ -259,8 +253,7 @@ function getTXTFromAtext(pad, atext, authorColors)
 
 exports.getTXTFromAtext = getTXTFromAtext;
 
-exports.getPadTXTDocument = async function(padId, revNum)
-{
-  let pad = await padManager.getPad(padId);
+exports.getPadTXTDocument = async function (padId, revNum) {
+  const pad = await padManager.getPad(padId);
   return getPadTXT(pad, revNum);
-}
+};

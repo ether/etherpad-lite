@@ -1,7 +1,7 @@
 const assert = require('assert').strict;
 const common = require('../../common');
-const supertest = require(__dirname + '/../../../../src/node_modules/supertest');
-const settings = require(__dirname + '/../../../../src/node/utils/Settings');
+const supertest = require(`${__dirname}/../../../../src/node_modules/supertest`);
+const settings = require(`${__dirname}/../../../../src/node/utils/Settings`);
 const api = supertest(`http://${settings.ip}:${settings.port}`);
 
 const apiKey = common.apiKey;
@@ -11,9 +11,9 @@ let authorID = '';
 let sessionID = '';
 let padID = makeid();
 
-describe(__filename, function() {
-  describe('API Versioning', function() {
-    it('errors if can not connect', async function() {
+describe(__filename, function () {
+  describe('API Versioning', function () {
+    it('errors if can not connect', async function () {
       await api.get('/api/')
           .expect(200)
           .expect((res) => {
@@ -24,8 +24,8 @@ describe(__filename, function() {
   });
 
   // BEGIN GROUP AND AUTHOR TESTS
-  /////////////////////////////////////
-  /////////////////////////////////////
+  // ///////////////////////////////////
+  // ///////////////////////////////////
 
   /* Tests performed
   -> createGroup() -- should return a groupID
@@ -53,8 +53,8 @@ describe(__filename, function() {
   -> listPadsOfAuthor(authorID)
   */
 
-  describe('API: Group creation and deletion', function() {
-    it('createGroup', async function() {
+  describe('API: Group creation and deletion', function () {
+    it('createGroup', async function () {
       await api.get(endPoint('createGroup'))
           .expect(200)
           .expect('Content-Type', /json/)
@@ -65,8 +65,8 @@ describe(__filename, function() {
           });
     });
 
-    it('listSessionsOfGroup for empty group', async function() {
-      await api.get(endPoint('listSessionsOfGroup') + `&groupID=${groupID}`)
+    it('listSessionsOfGroup for empty group', async function () {
+      await api.get(`${endPoint('listSessionsOfGroup')}&groupID=${groupID}`)
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res) => {
@@ -75,8 +75,8 @@ describe(__filename, function() {
           });
     });
 
-    it('deleteGroup', async function() {
-      await api.get(endPoint('deleteGroup') + `&groupID=${groupID}`)
+    it('deleteGroup', async function () {
+      await api.get(`${endPoint('deleteGroup')}&groupID=${groupID}`)
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res) => {
@@ -84,8 +84,8 @@ describe(__filename, function() {
           });
     });
 
-    it('createGroupIfNotExistsFor', async function() {
-      await api.get(endPoint('createGroupIfNotExistsFor') + '&groupMapper=management')
+    it('createGroupIfNotExistsFor', async function () {
+      await api.get(`${endPoint('createGroupIfNotExistsFor')}&groupMapper=management`)
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res) => {
@@ -95,8 +95,8 @@ describe(__filename, function() {
     });
   });
 
-  describe('API: Author creation', function() {
-    it('createGroup', async function() {
+  describe('API: Author creation', function () {
+    it('createGroup', async function () {
       await api.get(endPoint('createGroup'))
           .expect(200)
           .expect('Content-Type', /json/)
@@ -107,7 +107,7 @@ describe(__filename, function() {
           });
     });
 
-    it('createAuthor', async function() {
+    it('createAuthor', async function () {
       await api.get(endPoint('createAuthor'))
           .expect(200)
           .expect('Content-Type', /json/)
@@ -117,8 +117,8 @@ describe(__filename, function() {
           });
     });
 
-    it('createAuthor with name', async function() {
-      await api.get(endPoint('createAuthor') + '&name=john')
+    it('createAuthor with name', async function () {
+      await api.get(`${endPoint('createAuthor')}&name=john`)
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res) => {
@@ -128,8 +128,8 @@ describe(__filename, function() {
           });
     });
 
-    it('createAuthorIfNotExistsFor', async function() {
-      await api.get(endPoint('createAuthorIfNotExistsFor') + '&authorMapper=chris')
+    it('createAuthorIfNotExistsFor', async function () {
+      await api.get(`${endPoint('createAuthorIfNotExistsFor')}&authorMapper=chris`)
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res) => {
@@ -138,8 +138,8 @@ describe(__filename, function() {
           });
     });
 
-    it('getAuthorName', async function() {
-      await api.get(endPoint('getAuthorName') + `&authorID=${authorID}`)
+    it('getAuthorName', async function () {
+      await api.get(`${endPoint('getAuthorName')}&authorID=${authorID}`)
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res) => {
@@ -149,10 +149,10 @@ describe(__filename, function() {
     });
   });
 
-  describe('API: Sessions', function() {
-    it('createSession', async function() {
-      await api.get(endPoint('createSession') +
-                    `&authorID=${authorID}&groupID=${groupID}&validUntil=999999999999`)
+  describe('API: Sessions', function () {
+    it('createSession', async function () {
+      await api.get(`${endPoint('createSession')
+      }&authorID=${authorID}&groupID=${groupID}&validUntil=999999999999`)
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res) => {
@@ -162,8 +162,8 @@ describe(__filename, function() {
           });
     });
 
-    it('getSessionInfo', async function() {
-      await api.get(endPoint('getSessionInfo') + `&sessionID=${sessionID}`)
+    it('getSessionInfo', async function () {
+      await api.get(`${endPoint('getSessionInfo')}&sessionID=${sessionID}`)
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res) => {
@@ -174,8 +174,8 @@ describe(__filename, function() {
           });
     });
 
-    it('listSessionsOfGroup', async function() {
-      await api.get(endPoint('listSessionsOfGroup') + `&groupID=${groupID}`)
+    it('listSessionsOfGroup', async function () {
+      await api.get(`${endPoint('listSessionsOfGroup')}&groupID=${groupID}`)
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res) => {
@@ -184,8 +184,8 @@ describe(__filename, function() {
           });
     });
 
-    it('deleteSession', async function() {
-      await api.get(endPoint('deleteSession') + `&sessionID=${sessionID}`)
+    it('deleteSession', async function () {
+      await api.get(`${endPoint('deleteSession')}&sessionID=${sessionID}`)
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res) => {
@@ -193,8 +193,8 @@ describe(__filename, function() {
           });
     });
 
-    it('getSessionInfo of deleted session', async function() {
-      await api.get(endPoint('getSessionInfo') + `&sessionID=${sessionID}`)
+    it('getSessionInfo of deleted session', async function () {
+      await api.get(`${endPoint('getSessionInfo')}&sessionID=${sessionID}`)
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res) => {
@@ -203,9 +203,9 @@ describe(__filename, function() {
     });
   });
 
-  describe('API: Group pad management', function() {
-    it('listPads', async function() {
-      await api.get(endPoint('listPads') + `&groupID=${groupID}`)
+  describe('API: Group pad management', function () {
+    it('listPads', async function () {
+      await api.get(`${endPoint('listPads')}&groupID=${groupID}`)
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res) => {
@@ -214,8 +214,8 @@ describe(__filename, function() {
           });
     });
 
-    it('createGroupPad', async function() {
-      await api.get(endPoint('createGroupPad') + `&groupID=${groupID}&padName=${padID}`)
+    it('createGroupPad', async function () {
+      await api.get(`${endPoint('createGroupPad')}&groupID=${groupID}&padName=${padID}`)
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res) => {
@@ -224,8 +224,8 @@ describe(__filename, function() {
           });
     });
 
-    it('listPads after creating a group pad', async function() {
-      await api.get(endPoint('listPads') + `&groupID=${groupID}`)
+    it('listPads after creating a group pad', async function () {
+      await api.get(`${endPoint('listPads')}&groupID=${groupID}`)
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res) => {
@@ -235,9 +235,9 @@ describe(__filename, function() {
     });
   });
 
-  describe('API: Pad security', function() {
-    it('getPublicStatus', async function() {
-      await api.get(endPoint('getPublicStatus') + `&padID=${padID}`)
+  describe('API: Pad security', function () {
+    it('getPublicStatus', async function () {
+      await api.get(`${endPoint('getPublicStatus')}&padID=${padID}`)
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res) => {
@@ -246,8 +246,8 @@ describe(__filename, function() {
           });
     });
 
-    it('setPublicStatus', async function() {
-      await api.get(endPoint('setPublicStatus') + `&padID=${padID}&publicStatus=true`)
+    it('setPublicStatus', async function () {
+      await api.get(`${endPoint('setPublicStatus')}&padID=${padID}&publicStatus=true`)
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res) => {
@@ -255,8 +255,8 @@ describe(__filename, function() {
           });
     });
 
-    it('getPublicStatus after changing public status', async function() {
-      await api.get(endPoint('getPublicStatus') + `&padID=${padID}`)
+    it('getPublicStatus after changing public status', async function () {
+      await api.get(`${endPoint('getPublicStatus')}&padID=${padID}`)
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res) => {
@@ -267,12 +267,12 @@ describe(__filename, function() {
   });
 
   // NOT SURE HOW TO POPULAT THIS /-_-\
-  ///////////////////////////////////////
-  ///////////////////////////////////////
+  // /////////////////////////////////////
+  // /////////////////////////////////////
 
-  describe('API: Misc', function() {
-    it('listPadsOfAuthor', async function() {
-      await api.get(endPoint('listPadsOfAuthor') + `&authorID=${authorID}`)
+  describe('API: Misc', function () {
+    it('listPadsOfAuthor', async function () {
+      await api.get(`${endPoint('listPadsOfAuthor')}&authorID=${authorID}`)
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res) => {
@@ -284,13 +284,11 @@ describe(__filename, function() {
 });
 
 
-
-const endPoint = function(point) {
+const endPoint = function (point) {
   return `/api/${apiVersion}/${point}?apikey=${apiKey}`;
 };
 
-function makeid()
-{
+function makeid() {
   let text = '';
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 

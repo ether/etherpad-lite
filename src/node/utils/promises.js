@@ -13,7 +13,7 @@ exports.firstSatisfies = (promises, predicate) => {
   // value does not satisfy `predicate`. These transformed Promises will be passed to Promise.race,
   // yielding the first resolved value that satisfies `predicate`.
   const newPromises = promises.map(
-    (p) => new Promise((resolve, reject) => p.then((v) => predicate(v) && resolve(v), reject)));
+      (p) => new Promise((resolve, reject) => p.then((v) => predicate(v) && resolve(v), reject)));
 
   // If `promises` is an empty array or if none of them resolve to a value that satisfies
   // `predicate`, then `Promise.race(newPromises)` will never resolve. To handle that, add another
@@ -48,8 +48,8 @@ exports.timesLimit = async (total, concurrency, promiseCreator) => {
     if (next < total) return addAnother();
   });
   const promises = [];
-  for (var i = 0; i < concurrency && i < total; i++) {
+  for (let i = 0; i < concurrency && i < total; i++) {
     promises.push(addAnother());
   }
   await Promise.all(promises);
-}
+};

@@ -7,23 +7,23 @@
  */
 
 const common = require('../../common');
-const supertest = require(__dirname + '/../../../../src/node_modules/supertest');
-const settings = require(__dirname + '/../../../../src/node/utils/Settings');
-const api = supertest('http://' + settings.ip + ':' + settings.port);
+const supertest = require(`${__dirname}/../../../../src/node_modules/supertest`);
+const settings = require(`${__dirname}/../../../../src/node/utils/Settings`);
+const api = supertest(`http://${settings.ip}:${settings.port}`);
 
-var validateOpenAPI = require(__dirname + '/../../../../src/node_modules/openapi-schema-validation').validate;
+const validateOpenAPI = require(`${__dirname}/../../../../src/node_modules/openapi-schema-validation`).validate;
 
 const apiKey = common.apiKey;
-var apiVersion = 1;
+let apiVersion = 1;
 
-var testPadId = makeid();
+const testPadId = makeid();
 
-describe(__filename, function() {
-  describe('API Versioning', function() {
-    it('errors if can not connect', function(done) {
+describe(__filename, function () {
+  describe('API Versioning', function () {
+    it('errors if can not connect', function (done) {
       api
           .get('/api/')
-          .expect(function(res) {
+          .expect((res) => {
             apiVersion = res.body.currentVersion;
             if (!res.body.currentVersion) throw new Error('No version set in API');
             return;
@@ -32,12 +32,12 @@ describe(__filename, function() {
     });
   });
 
-  describe('OpenAPI definition', function() {
-    it('generates valid openapi definition document', function(done) {
+  describe('OpenAPI definition', function () {
+    it('generates valid openapi definition document', function (done) {
       api
           .get('/api/openapi.json')
-          .expect(function(res) {
-            const { valid, errors } = validateOpenAPI(res.body, 3);
+          .expect((res) => {
+            const {valid, errors} = validateOpenAPI(res.body, 3);
             if (!valid) {
               const prettyErrors = JSON.stringify(errors, null, 2);
               throw new Error(`Document is not valid OpenAPI. ${errors.length} validation errors:\n${prettyErrors}`);
@@ -48,11 +48,11 @@ describe(__filename, function() {
     });
   });
 
-  describe('jsonp support', function() {
-    it('supports jsonp calls', function(done) {
+  describe('jsonp support', function () {
+    it('supports jsonp calls', function (done) {
       api
-          .get(endPoint('createPad') + '&jsonp=jsonp_1&padID=' + testPadId)
-          .expect(function(res) {
+          .get(`${endPoint('createPad')}&jsonp=jsonp_1&padID=${testPadId}`)
+          .expect((res) => {
             if (!res.text.match('jsonp_1')) throw new Error('no jsonp call seen');
           })
           .expect('Content-Type', /javascript/)
@@ -61,15 +61,15 @@ describe(__filename, function() {
   });
 });
 
-var endPoint = function(point) {
-  return '/api/' + apiVersion + '/' + point + '?apikey=' + apiKey;
+var endPoint = function (point) {
+  return `/api/${apiVersion}/${point}?apikey=${apiKey}`;
 };
 
 function makeid() {
-  var text = '';
-  var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let text = '';
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-  for (var i = 0; i < 5; i++) {
+  for (let i = 0; i < 5; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
   return text;

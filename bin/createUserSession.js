@@ -2,7 +2,7 @@
  * A tool for generating a test user session which can be used for debugging configs
  * that require sessions.
  */
-const m = (f) => __dirname + '/../' + f;
+const m = (f) => `${__dirname}/../${f}`;
 
 const fs = require('fs');
 const path = require('path');
@@ -12,10 +12,10 @@ const settings = require(m('src/node/utils/Settings'));
 const supertest = require(m('src/node_modules/supertest'));
 
 (async () => {
-  const api = supertest('http://'+settings.ip+':'+settings.port);
+  const api = supertest(`http://${settings.ip}:${settings.port}`);
 
   const filePath = path.join(__dirname, '../APIKEY.txt');
-  const apikey = fs.readFileSync(filePath,  {encoding: 'utf-8'});
+  const apikey = fs.readFileSync(filePath, {encoding: 'utf-8'});
 
   let res;
 
@@ -43,5 +43,5 @@ const supertest = require(m('src/node_modules/supertest'));
   res = await api.post(uri('createSession', {apikey, groupID, authorID, validUntil}));
   if (res.body.code === 1) throw new Error(`Error creating session: ${res.body}`);
   console.log('Session made: ====> create a cookie named sessionID and set the value to',
-              res.body.data.sessionID);
+      res.body.data.sessionID);
 })();

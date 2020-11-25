@@ -1,58 +1,58 @@
-var languages = require('languages4translatewiki')
-  , fs = require('fs')
-  , path = require('path')
-  , _ = require('underscore')
-  , npm = require('npm')
-  , plugins = require('ep_etherpad-lite/static/js/pluginfw/plugin_defs.js').plugins
-  , semver = require('semver')
-  , existsSync = require('../utils/path_exists')
-  , settings = require('../utils/Settings')
+const languages = require('languages4translatewiki');
+const fs = require('fs');
+const path = require('path');
+const _ = require('underscore');
+const npm = require('npm');
+const plugins = require('ep_etherpad-lite/static/js/pluginfw/plugin_defs.js').plugins;
+const semver = require('semver');
+const existsSync = require('../utils/path_exists');
+const settings = require('../utils/Settings')
 ;
 
 
 // returns all existing messages merged together and grouped by langcode
 // {es: {"foo": "string"}, en:...}
 function getAllLocales() {
-  var locales2paths = {};
+  const locales2paths = {};
 
   // Puts the paths of all locale files contained in a given directory
   // into `locales2paths` (files from various dirs are grouped by lang code)
   // (only json files with valid language code as name)
   function extractLangs(dir) {
-    if(!existsSync(dir)) return;
-    var stat = fs.lstatSync(dir);
+    if (!existsSync(dir)) return;
+    let stat = fs.lstatSync(dir);
     if (!stat.isDirectory() || stat.isSymbolicLink()) return;
 
-    fs.readdirSync(dir).forEach(function(file) {
+    fs.readdirSync(dir).forEach((file) => {
       file = path.resolve(dir, file);
       stat = fs.lstatSync(file);
       if (stat.isDirectory() || stat.isSymbolicLink()) return;
 
-      var ext = path.extname(file)
-      , locale = path.basename(file, ext).toLowerCase();
+      const ext = path.extname(file);
+      const locale = path.basename(file, ext).toLowerCase();
 
       if ((ext == '.json') && languages.isValid(locale)) {
-        if(!locales2paths[locale]) locales2paths[locale] = [];
+        if (!locales2paths[locale]) locales2paths[locale] = [];
         locales2paths[locale].push(file);
       }
     });
   }
 
-  //add core supported languages first
-  extractLangs(npm.root+"/ep_etherpad-lite/locales");
+  // add core supported languages first
+  extractLangs(`${npm.root}/ep_etherpad-lite/locales`);
 
-  //add plugins languages (if any)
-  for(var pluginName in plugins) extractLangs(path.join(npm.root, pluginName, 'locales'));
+  // add plugins languages (if any)
+  for (const pluginName in plugins) extractLangs(path.join(npm.root, pluginName, 'locales'));
 
   // Build a locale index (merge all locale data other than user-supplied overrides)
-  var locales = {}
-  _.each (locales2paths, function(files, langcode) {
-    locales[langcode]={};
+  const locales = {};
+  _.each(locales2paths, (files, langcode) => {
+    locales[langcode] = {};
 
-    files.forEach(function(file) {
+    files.forEach((file) => {
       let fileContents;
       try {
-        fileContents = JSON.parse(fs.readFileSync(file,'utf8'));
+        fileContents = JSON.parse(fs.readFileSync(file, 'utf8'));
       } catch (err) {
         console.error(`failed to read JSON file ${file}: ${err}`);
         throw err;
@@ -64,17 +64,17 @@ function getAllLocales() {
   // Add custom strings from settings.json
   // Since this is user-supplied, we'll do some extra sanity checks
   const wrongFormatErr = Error(
-    "customLocaleStrings in wrong format. See documentation " +
-    "for Customization for Administrators, under Localization.")
+      'customLocaleStrings in wrong format. See documentation ' +
+    'for Customization for Administrators, under Localization.');
   if (settings.customLocaleStrings) {
-    if (typeof settings.customLocaleStrings !== "object") throw wrongFormatErr
-    _.each(settings.customLocaleStrings, function(overrides, langcode) {
-      if (typeof overrides !== "object") throw wrongFormatErr
-      _.each(overrides, function(localeString, key) {
-        if (typeof localeString !== "string") throw wrongFormatErr
-        locales[langcode][key] = localeString
-      })
-    })
+    if (typeof settings.customLocaleStrings !== 'object') throw wrongFormatErr;
+    _.each(settings.customLocaleStrings, (overrides, langcode) => {
+      if (typeof overrides !== 'object') throw wrongFormatErr;
+      _.each(overrides, (localeString, key) => {
+        if (typeof localeString !== 'string') throw wrongFormatErr;
+        locales[langcode][key] = localeString;
+      });
+    });
   }
 
   return locales;
@@ -83,45 +83,44 @@ function getAllLocales() {
 // returns a hash of all available languages availables with nativeName and direction
 // e.g. { es: {nativeName: "español", direction: "ltr"}, ... }
 function getAvailableLangs(locales) {
-  var result = {};
-  _.each(_.keys(locales), function(langcode) {
+  const result = {};
+  _.each(_.keys(locales), (langcode) => {
     result[langcode] = languages.getLanguageInfo(langcode);
   });
   return result;
 }
 
 // returns locale index that will be served in /locales.json
-var generateLocaleIndex = function (locales) {
-  var result = _.clone(locales) // keep English strings
-  _.each(_.keys(locales), function(langcode) {
-    if (langcode != 'en') result[langcode]='locales/'+langcode+'.json';
+const generateLocaleIndex = function (locales) {
+  const result = _.clone(locales); // keep English strings
+  _.each(_.keys(locales), (langcode) => {
+    if (langcode != 'en') result[langcode] = `locales/${langcode}.json`;
   });
   return JSON.stringify(result);
-}
+};
 
 
-exports.expressCreateServer = function(n, args, cb) {
-
-  //regenerate locales on server restart
-  var locales = getAllLocales();
-  var localeIndex = generateLocaleIndex(locales);
+exports.expressCreateServer = function (n, args, cb) {
+  // regenerate locales on server restart
+  const locales = getAllLocales();
+  const localeIndex = generateLocaleIndex(locales);
   exports.availableLangs = getAvailableLangs(locales);
 
-  args.app.get ('/locales/:locale', function(req, res) {
-    //works with /locale/en and /locale/en.json requests
-    var locale = req.params.locale.split('.')[0];
+  args.app.get('/locales/:locale', (req, res) => {
+    // works with /locale/en and /locale/en.json requests
+    const locale = req.params.locale.split('.')[0];
     if (exports.availableLangs.hasOwnProperty(locale)) {
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      res.send('{"'+locale+'":'+JSON.stringify(locales[locale])+'}');
+      res.send(`{"${locale}":${JSON.stringify(locales[locale])}}`);
     } else {
       res.status(404).send('Language not available');
     }
-  })
+  });
 
-  args.app.get('/locales.json', function(req, res) {
+  args.app.get('/locales.json', (req, res) => {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.send(localeIndex);
-  })
+  });
 
   return cb();
-}
+};

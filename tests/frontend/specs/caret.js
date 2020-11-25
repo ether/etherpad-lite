@@ -1,7 +1,7 @@
-describe("As the caret is moved is the UI properly updated?", function(){
-  var padName;
-  var numberOfRows = 50;
-/*
+describe('As the caret is moved is the UI properly updated?', function () {
+  let padName;
+  const numberOfRows = 50;
+  /*
 
   //create a new pad before each test run
   beforeEach(function(cb){
@@ -28,7 +28,7 @@ describe("As the caret is moved is the UI properly updated?", function(){
   * How do we keep the authors focus on a line if the lines above the author are modified?  We should only redraw the user to a location if they are typing and make sure shift and arrow keys aren't redrawing the UI else highlight - copy/paste would get broken
   * How can we simulate an edit event in the test framework?
   */
-/*
+  /*
   // THIS DOESNT WORK IN CHROME AS IT DOESNT MOVE THE CURSOR!
   it("down arrow", function(done){
     var inner$ = helper.padInner$;
@@ -194,7 +194,6 @@ console.log(inner$);
   });
 
 
-
 /*
   it("Creates N rows, changes height of rows, updates UI by caret key events", function(done){
     var inner$ = helper.padInner$;
@@ -264,7 +263,6 @@ console.log(inner$);
       }).done(function(){ // Once the DOM has registered the items
 
 
-
       });
    });
 
@@ -284,54 +282,51 @@ console.log(inner$);
       done();
     });
 */
-
 });
 
-function prepareDocument(n, target){ // generates a random document with random content on n lines
-  var i = 0;
-  while(i < n){ // for each line
+function prepareDocument(n, target) { // generates a random document with random content on n lines
+  let i = 0;
+  while (i < n) { // for each line
     target.sendkeys(makeStr()); // generate a random string and send that to the editor
     target.sendkeys('{enter}'); // generator an enter keypress
     i++; // rinse n times
   }
 }
 
-function keyEvent(target, charCode, ctrl, shift){ // sends a charCode to the window
-
-  var e = target.Event(helper.evtType);
-  if(ctrl){
+function keyEvent(target, charCode, ctrl, shift) { // sends a charCode to the window
+  const e = target.Event(helper.evtType);
+  if (ctrl) {
     e.ctrlKey = true; // Control key
   }
-  if(shift){
+  if (shift) {
     e.shiftKey = true; // Shift Key
   }
   e.which = charCode;
   e.keyCode = charCode;
-  target("#innerdocbody").trigger(e);
+  target('#innerdocbody').trigger(e);
 }
 
 
-function makeStr(){ // from http://stackoverflow.com/questions/1349404/generate-a-string-of-5-random-characters-in-javascript
-  var text = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+function makeStr() { // from http://stackoverflow.com/questions/1349404/generate-a-string-of-5-random-characters-in-javascript
+  let text = '';
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-  for( var i=0; i < 5; i++ )
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  for (let i = 0; i < 5; i++) text += possible.charAt(Math.floor(Math.random() * possible.length));
   return text;
 }
 
-function isScrolledIntoView(elem, $){ // from http://stackoverflow.com/questions/487073/check-if-element-is-visible-after-scrolling
-    var docViewTop = $(window).scrollTop();
-    var docViewBottom = docViewTop + $(window).height();
-    var elemTop = $(elem).offset().top; // how far the element is from the top of it's container
-    var elemBottom = elemTop + $(elem).height(); // how far plus the height of the elem..  IE is it all in?
-    elemBottom = elemBottom - 16; // don't ask, sorry but this is needed..
-    return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
+function isScrolledIntoView(elem, $) { // from http://stackoverflow.com/questions/487073/check-if-element-is-visible-after-scrolling
+  const docViewTop = $(window).scrollTop();
+  const docViewBottom = docViewTop + $(window).height();
+  const elemTop = $(elem).offset().top; // how far the element is from the top of it's container
+  let elemBottom = elemTop + $(elem).height(); // how far plus the height of the elem..  IE is it all in?
+  elemBottom -= 16; // don't ask, sorry but this is needed..
+  return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
 }
 
-function caretPosition($){
-  var doc = $.window.document;
-  var pos = doc.getSelection();
+function caretPosition($) {
+  const doc = $.window.document;
+  const pos = doc.getSelection();
   pos.y = pos.anchorNode.parentElement.offsetTop;
   pos.x = pos.anchorNode.parentElement.offsetLeft;
   return pos;

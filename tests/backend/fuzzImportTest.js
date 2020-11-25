@@ -3,44 +3,44 @@
  * Usage: node fuzzImportTest.js
  */
 const common = require('./common');
-const settings = require(__dirname+'/loadSettings').loadSettings();
-const host = "http://" + settings.ip + ":" + settings.port;
+const settings = require(`${__dirname}/loadSettings`).loadSettings();
+const host = `http://${settings.ip}:${settings.port}`;
 const request = require('request');
 const froth = require('mocha-froth');
 
 const apiKey = common.apiKey;
-var apiVersion = 1;
-var testPadId = "TEST_fuzz" + makeid();
+const apiVersion = 1;
+const testPadId = `TEST_fuzz${makeid()}`;
 
-var endPoint = function(point, version){
+const endPoint = function (point, version) {
   version = version || apiVersion;
-  return '/api/'+version+'/'+point+'?apikey='+apiKey;
-}
+  return `/api/${version}/${point}?apikey=${apiKey}`;
+};
 
-console.log("Testing against padID", testPadId);
-console.log("To watch the test live visit " + host + "/p/" + testPadId);
-console.log("Tests will start in 5 seconds, click the URL now!");
+console.log('Testing against padID', testPadId);
+console.log(`To watch the test live visit ${host}/p/${testPadId}`);
+console.log('Tests will start in 5 seconds, click the URL now!');
 
-setTimeout(function(){
-  for (let i=1; i<1000000; i++) { // 1M runs
-    setTimeout( function timer(){
+setTimeout(() => {
+  for (let i = 1; i < 1000000; i++) { // 1M runs
+    setTimeout(() => {
       runTest(i);
-    }, i*100 ); // 100 ms
+    }, i * 100); // 100 ms
   }
-},5000); // wait 5 seconds
+}, 5000); // wait 5 seconds
 
-function runTest(number){
-  request(host + endPoint('createPad') + '&padID=' + testPadId, function(err, res, body){
-    var req = request.post(host + '/p/'+testPadId+'/import', function (err, res, body) {
+function runTest(number) {
+  request(`${host + endPoint('createPad')}&padID=${testPadId}`, (err, res, body) => {
+    const req = request.post(`${host}/p/${testPadId}/import`, (err, res, body) => {
       if (err) {
-        throw new Error("FAILURE", err);
-      }else{
-        console.log("Success");
+        throw new Error('FAILURE', err);
+      } else {
+        console.log('Success');
       }
     });
 
-    var fN = '/test.txt';
-    var cT = 'text/plain';
+    let fN = '/test.txt';
+    let cT = 'text/plain';
 
     // To be more agressive every other test we mess with Etherpad
     // We provide a weird file name and also set a weird contentType
@@ -49,24 +49,20 @@ function runTest(number){
       cT = froth().toString();
     }
 
-    let form = req.form();
+    const form = req.form();
     form.append('file', froth().toString(), {
       filename: fN,
-      contentType: cT
+      contentType: cT,
     });
-
   });
 }
 
-function makeid()
-{
-  var text = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+function makeid() {
+  let text = '';
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-  for( var i=0; i < 5; i++ ){
+  for (let i = 0; i < 5; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
   return text;
 }
-
-

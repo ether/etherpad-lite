@@ -1,19 +1,19 @@
 /* global __dirname, __filename, Buffer, afterEach, before, beforeEach, describe, it, require */
 
-function m(mod) { return __dirname + '/../../../src/' + mod; }
+function m(mod) { return `${__dirname}/../../../src/${mod}`; }
 
 const assert = require('assert').strict;
 const common = require('../common');
 const plugins = require(m('static/js/pluginfw/plugin_defs'));
 const settings = require(m('node/utils/Settings'));
 
-describe(__filename, function() {
+describe(__filename, function () {
   let agent;
   const backups = {};
   const authHookNames = ['preAuthorize', 'authenticate', 'authorize'];
   const failHookNames = ['preAuthzFailure', 'authnFailure', 'authzFailure', 'authFailure'];
-  before(async function() { agent = await common.init(); });
-  beforeEach(async function() {
+  before(async function () { agent = await common.init(); });
+  beforeEach(async function () {
     backups.hooks = {};
     for (const hookName of authHookNames.concat(failHookNames)) {
       backups.hooks[hookName] = plugins.hooks[hookName];
@@ -30,76 +30,76 @@ describe(__filename, function() {
       user: {password: 'user-password'},
     };
   });
-  afterEach(async function() {
+  afterEach(async function () {
     Object.assign(plugins.hooks, backups.hooks);
     Object.assign(settings, backups.settings);
   });
 
-  describe('webaccess: without plugins', function() {
-    it('!authn !authz anonymous / -> 200', async function() {
+  describe('webaccess: without plugins', function () {
+    it('!authn !authz anonymous / -> 200', async function () {
       settings.requireAuthentication = false;
       settings.requireAuthorization = false;
       await agent.get('/').expect(200);
     });
-    it('!authn !authz anonymous /admin/ -> 401', async function() {
+    it('!authn !authz anonymous /admin/ -> 401', async function () {
       settings.requireAuthentication = false;
       settings.requireAuthorization = false;
       await agent.get('/admin/').expect(401);
     });
-    it('authn !authz anonymous / -> 401', async function() {
+    it('authn !authz anonymous / -> 401', async function () {
       settings.requireAuthentication = true;
       settings.requireAuthorization = false;
       await agent.get('/').expect(401);
     });
-    it('authn !authz user / -> 200', async function() {
+    it('authn !authz user / -> 200', async function () {
       settings.requireAuthentication = true;
       settings.requireAuthorization = false;
       await agent.get('/').auth('user', 'user-password').expect(200);
     });
-    it('authn !authz user /admin/ -> 403', async function() {
+    it('authn !authz user /admin/ -> 403', async function () {
       settings.requireAuthentication = true;
       settings.requireAuthorization = false;
       await agent.get('/admin/').auth('user', 'user-password').expect(403);
     });
-    it('authn !authz admin / -> 200', async function() {
+    it('authn !authz admin / -> 200', async function () {
       settings.requireAuthentication = true;
       settings.requireAuthorization = false;
       await agent.get('/').auth('admin', 'admin-password').expect(200);
     });
-    it('authn !authz admin /admin/ -> 200', async function() {
+    it('authn !authz admin /admin/ -> 200', async function () {
       settings.requireAuthentication = true;
       settings.requireAuthorization = false;
       await agent.get('/admin/').auth('admin', 'admin-password').expect(200);
     });
-    it('authn authz user / -> 403', async function() {
+    it('authn authz user / -> 403', async function () {
       settings.requireAuthentication = true;
       settings.requireAuthorization = true;
       await agent.get('/').auth('user', 'user-password').expect(403);
     });
-    it('authn authz user /admin/ -> 403', async function() {
+    it('authn authz user /admin/ -> 403', async function () {
       settings.requireAuthentication = true;
       settings.requireAuthorization = true;
       await agent.get('/admin/').auth('user', 'user-password').expect(403);
     });
-    it('authn authz admin / -> 200', async function() {
+    it('authn authz admin / -> 200', async function () {
       settings.requireAuthentication = true;
       settings.requireAuthorization = true;
       await agent.get('/').auth('admin', 'admin-password').expect(200);
     });
-    it('authn authz admin /admin/ -> 200', async function() {
+    it('authn authz admin /admin/ -> 200', async function () {
       settings.requireAuthentication = true;
       settings.requireAuthorization = true;
       await agent.get('/admin/').auth('admin', 'admin-password').expect(200);
     });
 
-    describe('login fails if password is nullish', function() {
+    describe('login fails if password is nullish', function () {
       for (const adminPassword of [undefined, null]) {
         // https://tools.ietf.org/html/rfc7617 says that the username and password are sent as
         // base64(username + ':' + password), but there's nothing stopping a malicious user from
         // sending just base64(username) (no colon). The lack of colon could throw off credential
         // parsing, resulting in successful comparisons against a null or undefined password.
         for (const creds of ['admin', 'admin:']) {
-          it(`admin password: ${adminPassword} credentials: ${creds}`, async function() {
+          it(`admin password: ${adminPassword} credentials: ${creds}`, async function () {
             settings.users.admin.password = adminPassword;
             const encCreds = Buffer.from(creds).toString('base64');
             await agent.get('/admin/').set('Authorization', `Basic ${encCreds}`).expect(401);
@@ -109,7 +109,7 @@ describe(__filename, function() {
     });
   });
 
-  describe('webaccess: preAuthorize, authenticate, and authorize hooks', function() {
+  describe('webaccess: preAuthorize, authenticate, and authorize hooks', function () {
     let callOrder;
     const Handler = class {
       constructor(hookName, suffix) {
@@ -134,7 +134,7 @@ describe(__filename, function() {
     };
     const handlers = {};
 
-    beforeEach(async function() {
+    beforeEach(async function () {
       callOrder = [];
       for (const hookName of authHookNames) {
         // Create two handlers for each hook to test deferral to the next function.
@@ -145,38 +145,38 @@ describe(__filename, function() {
       }
     });
 
-    describe('preAuthorize', function() {
-      beforeEach(async function() {
+    describe('preAuthorize', function () {
+      beforeEach(async function () {
         settings.requireAuthentication = false;
         settings.requireAuthorization = false;
       });
 
-      it('defers if it returns []', async function() {
+      it('defers if it returns []', async function () {
         await agent.get('/').expect(200);
         // Note: The preAuthorize hook always runs even if requireAuthorization is false.
         assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1']);
       });
-      it('bypasses authenticate and authorize hooks when true is returned', async function() {
+      it('bypasses authenticate and authorize hooks when true is returned', async function () {
         settings.requireAuthentication = true;
         settings.requireAuthorization = true;
         handlers.preAuthorize[0].innerHandle = () => [true];
         await agent.get('/').expect(200);
         assert.deepEqual(callOrder, ['preAuthorize_0']);
       });
-      it('bypasses authenticate and authorize hooks when false is returned', async function() {
+      it('bypasses authenticate and authorize hooks when false is returned', async function () {
         settings.requireAuthentication = true;
         settings.requireAuthorization = true;
         handlers.preAuthorize[0].innerHandle = () => [false];
         await agent.get('/').expect(403);
         assert.deepEqual(callOrder, ['preAuthorize_0']);
       });
-      it('bypasses authenticate and authorize hooks for static content, defers', async function() {
+      it('bypasses authenticate and authorize hooks for static content, defers', async function () {
         settings.requireAuthentication = true;
         settings.requireAuthorization = true;
         await agent.get('/static/robots.txt').expect(200);
         assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1']);
       });
-      it('cannot grant access to /admin', async function() {
+      it('cannot grant access to /admin', async function () {
         handlers.preAuthorize[0].innerHandle = () => [true];
         await agent.get('/admin/').expect(401);
         // Notes:
@@ -184,15 +184,17 @@ describe(__filename, function() {
         //     'true' entries are ignored for /admin/* requests.
         //   * The authenticate hook always runs for /admin/* requests even if
         //     settings.requireAuthentication is false.
-        assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1',
-                                     'authenticate_0', 'authenticate_1']);
+        assert.deepEqual(callOrder, ['preAuthorize_0',
+          'preAuthorize_1',
+          'authenticate_0',
+          'authenticate_1']);
       });
-      it('can deny access to /admin', async function() {
+      it('can deny access to /admin', async function () {
         handlers.preAuthorize[0].innerHandle = () => [false];
         await agent.get('/admin/').auth('admin', 'admin-password').expect(403);
         assert.deepEqual(callOrder, ['preAuthorize_0']);
       });
-      it('runs preAuthzFailure hook when access is denied', async function() {
+      it('runs preAuthzFailure hook when access is denied', async function () {
         handlers.preAuthorize[0].innerHandle = () => [false];
         let called = false;
         plugins.hooks.preAuthzFailure = [{hook_fn: (hookName, {req, res}, cb) => {
@@ -207,149 +209,177 @@ describe(__filename, function() {
         await agent.get('/admin/').auth('admin', 'admin-password').expect(200, 'injected');
         assert(called);
       });
-      it('returns 500 if an exception is thrown', async function() {
+      it('returns 500 if an exception is thrown', async function () {
         handlers.preAuthorize[0].innerHandle = () => { throw new Error('exception test'); };
         await agent.get('/').expect(500);
       });
     });
 
-    describe('authenticate', function() {
-      beforeEach(async function() {
+    describe('authenticate', function () {
+      beforeEach(async function () {
         settings.requireAuthentication = true;
         settings.requireAuthorization = false;
       });
 
-      it('is not called if !requireAuthentication and not /admin/*', async function() {
+      it('is not called if !requireAuthentication and not /admin/*', async function () {
         settings.requireAuthentication = false;
         await agent.get('/').expect(200);
         assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1']);
       });
-      it('is called if !requireAuthentication and /admin/*', async function() {
+      it('is called if !requireAuthentication and /admin/*', async function () {
         settings.requireAuthentication = false;
         await agent.get('/admin/').expect(401);
-        assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1',
-                                     'authenticate_0', 'authenticate_1']);
+        assert.deepEqual(callOrder, ['preAuthorize_0',
+          'preAuthorize_1',
+          'authenticate_0',
+          'authenticate_1']);
       });
-      it('defers if empty list returned', async function() {
+      it('defers if empty list returned', async function () {
         await agent.get('/').expect(401);
-        assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1',
-                                     'authenticate_0', 'authenticate_1']);
+        assert.deepEqual(callOrder, ['preAuthorize_0',
+          'preAuthorize_1',
+          'authenticate_0',
+          'authenticate_1']);
       });
-      it('does not defer if return [true], 200', async function() {
+      it('does not defer if return [true], 200', async function () {
         handlers.authenticate[0].innerHandle = (req) => { req.session.user = {}; return [true]; };
         await agent.get('/').expect(200);
         // Note: authenticate_1 was not called because authenticate_0 handled it.
         assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1', 'authenticate_0']);
       });
-      it('does not defer if return [false], 401', async function() {
+      it('does not defer if return [false], 401', async function () {
         handlers.authenticate[0].innerHandle = (req) => [false];
         await agent.get('/').expect(401);
         // Note: authenticate_1 was not called because authenticate_0 handled it.
         assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1', 'authenticate_0']);
       });
-      it('falls back to HTTP basic auth', async function() {
+      it('falls back to HTTP basic auth', async function () {
         await agent.get('/').auth('user', 'user-password').expect(200);
-        assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1',
-                                     'authenticate_0', 'authenticate_1']);
+        assert.deepEqual(callOrder, ['preAuthorize_0',
+          'preAuthorize_1',
+          'authenticate_0',
+          'authenticate_1']);
       });
-      it('passes settings.users in context', async function() {
+      it('passes settings.users in context', async function () {
         handlers.authenticate[0].checkContext = ({users}) => {
           assert.equal(users, settings.users);
         };
         await agent.get('/').expect(401);
-        assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1',
-                                     'authenticate_0', 'authenticate_1']);
+        assert.deepEqual(callOrder, ['preAuthorize_0',
+          'preAuthorize_1',
+          'authenticate_0',
+          'authenticate_1']);
       });
-      it('passes user, password in context if provided', async function() {
+      it('passes user, password in context if provided', async function () {
         handlers.authenticate[0].checkContext = ({username, password}) => {
           assert.equal(username, 'user');
           assert.equal(password, 'user-password');
         };
         await agent.get('/').auth('user', 'user-password').expect(200);
-        assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1',
-                                     'authenticate_0', 'authenticate_1']);
+        assert.deepEqual(callOrder, ['preAuthorize_0',
+          'preAuthorize_1',
+          'authenticate_0',
+          'authenticate_1']);
       });
-      it('does not pass user, password in context if not provided', async function() {
+      it('does not pass user, password in context if not provided', async function () {
         handlers.authenticate[0].checkContext = ({username, password}) => {
           assert(username == null);
           assert(password == null);
         };
         await agent.get('/').expect(401);
-        assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1',
-                                     'authenticate_0', 'authenticate_1']);
+        assert.deepEqual(callOrder, ['preAuthorize_0',
+          'preAuthorize_1',
+          'authenticate_0',
+          'authenticate_1']);
       });
-      it('errors if req.session.user is not created', async function() {
+      it('errors if req.session.user is not created', async function () {
         handlers.authenticate[0].innerHandle = () => [true];
         await agent.get('/').expect(500);
         assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1', 'authenticate_0']);
       });
-      it('returns 500 if an exception is thrown', async function() {
+      it('returns 500 if an exception is thrown', async function () {
         handlers.authenticate[0].innerHandle = () => { throw new Error('exception test'); };
         await agent.get('/').expect(500);
         assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1', 'authenticate_0']);
       });
     });
 
-    describe('authorize', function() {
-      beforeEach(async function() {
+    describe('authorize', function () {
+      beforeEach(async function () {
         settings.requireAuthentication = true;
         settings.requireAuthorization = true;
       });
 
-      it('is not called if !requireAuthorization (non-/admin)', async function() {
+      it('is not called if !requireAuthorization (non-/admin)', async function () {
         settings.requireAuthorization = false;
         await agent.get('/').auth('user', 'user-password').expect(200);
-        assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1',
-                                     'authenticate_0', 'authenticate_1']);
+        assert.deepEqual(callOrder, ['preAuthorize_0',
+          'preAuthorize_1',
+          'authenticate_0',
+          'authenticate_1']);
       });
-      it('is not called if !requireAuthorization (/admin)', async function() {
+      it('is not called if !requireAuthorization (/admin)', async function () {
         settings.requireAuthorization = false;
         await agent.get('/admin/').auth('admin', 'admin-password').expect(200);
-        assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1',
-                                     'authenticate_0', 'authenticate_1']);
+        assert.deepEqual(callOrder, ['preAuthorize_0',
+          'preAuthorize_1',
+          'authenticate_0',
+          'authenticate_1']);
       });
-      it('defers if empty list returned', async function() {
+      it('defers if empty list returned', async function () {
         await agent.get('/').auth('user', 'user-password').expect(403);
-        assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1',
-                                     'authenticate_0', 'authenticate_1',
-                                     'authorize_0', 'authorize_1']);
+        assert.deepEqual(callOrder, ['preAuthorize_0',
+          'preAuthorize_1',
+          'authenticate_0',
+          'authenticate_1',
+          'authorize_0',
+          'authorize_1']);
       });
-      it('does not defer if return [true], 200', async function() {
+      it('does not defer if return [true], 200', async function () {
         handlers.authorize[0].innerHandle = () => [true];
         await agent.get('/').auth('user', 'user-password').expect(200);
         // Note: authorize_1 was not called because authorize_0 handled it.
-        assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1',
-                                     'authenticate_0', 'authenticate_1',
-                                     'authorize_0']);
+        assert.deepEqual(callOrder, ['preAuthorize_0',
+          'preAuthorize_1',
+          'authenticate_0',
+          'authenticate_1',
+          'authorize_0']);
       });
-      it('does not defer if return [false], 403', async function() {
+      it('does not defer if return [false], 403', async function () {
         handlers.authorize[0].innerHandle = (req) => [false];
         await agent.get('/').auth('user', 'user-password').expect(403);
         // Note: authorize_1 was not called because authorize_0 handled it.
-        assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1',
-                                     'authenticate_0', 'authenticate_1',
-                                     'authorize_0']);
+        assert.deepEqual(callOrder, ['preAuthorize_0',
+          'preAuthorize_1',
+          'authenticate_0',
+          'authenticate_1',
+          'authorize_0']);
       });
-      it('passes req.path in context', async function() {
+      it('passes req.path in context', async function () {
         handlers.authorize[0].checkContext = ({resource}) => {
           assert.equal(resource, '/');
         };
         await agent.get('/').auth('user', 'user-password').expect(403);
-        assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1',
-                                     'authenticate_0', 'authenticate_1',
-                                     'authorize_0', 'authorize_1']);
+        assert.deepEqual(callOrder, ['preAuthorize_0',
+          'preAuthorize_1',
+          'authenticate_0',
+          'authenticate_1',
+          'authorize_0',
+          'authorize_1']);
       });
-      it('returns 500 if an exception is thrown', async function() {
+      it('returns 500 if an exception is thrown', async function () {
         handlers.authorize[0].innerHandle = () => { throw new Error('exception test'); };
         await agent.get('/').auth('user', 'user-password').expect(500);
-        assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1',
-                                     'authenticate_0', 'authenticate_1',
-                                     'authorize_0']);
+        assert.deepEqual(callOrder, ['preAuthorize_0',
+          'preAuthorize_1',
+          'authenticate_0',
+          'authenticate_1',
+          'authorize_0']);
       });
     });
   });
 
-  describe('webaccess: authnFailure, authzFailure, authFailure hooks', function() {
+  describe('webaccess: authnFailure, authzFailure, authFailure hooks', function () {
     const Handler = class {
       constructor(hookName) {
         this.hookName = hookName;
@@ -372,7 +402,7 @@ describe(__filename, function() {
     };
     const handlers = {};
 
-    beforeEach(function() {
+    beforeEach(function () {
       failHookNames.forEach((hookName) => {
         const handler = new Handler(hookName);
         handlers[hookName] = handler;
@@ -383,61 +413,61 @@ describe(__filename, function() {
     });
 
     // authn failure tests
-    it('authn fail, no hooks handle -> 401', async function() {
+    it('authn fail, no hooks handle -> 401', async function () {
       await agent.get('/').expect(401);
-      assert(handlers['authnFailure'].called);
-      assert(!handlers['authzFailure'].called);
-      assert(handlers['authFailure'].called);
+      assert(handlers.authnFailure.called);
+      assert(!handlers.authzFailure.called);
+      assert(handlers.authFailure.called);
     });
-    it('authn fail, authnFailure handles', async function() {
-      handlers['authnFailure'].shouldHandle = true;
+    it('authn fail, authnFailure handles', async function () {
+      handlers.authnFailure.shouldHandle = true;
       await agent.get('/').expect(200, 'authnFailure');
-      assert(handlers['authnFailure'].called);
-      assert(!handlers['authzFailure'].called);
-      assert(!handlers['authFailure'].called);
+      assert(handlers.authnFailure.called);
+      assert(!handlers.authzFailure.called);
+      assert(!handlers.authFailure.called);
     });
-    it('authn fail, authFailure handles', async function() {
-      handlers['authFailure'].shouldHandle = true;
+    it('authn fail, authFailure handles', async function () {
+      handlers.authFailure.shouldHandle = true;
       await agent.get('/').expect(200, 'authFailure');
-      assert(handlers['authnFailure'].called);
-      assert(!handlers['authzFailure'].called);
-      assert(handlers['authFailure'].called);
+      assert(handlers.authnFailure.called);
+      assert(!handlers.authzFailure.called);
+      assert(handlers.authFailure.called);
     });
-    it('authnFailure trumps authFailure', async function() {
-      handlers['authnFailure'].shouldHandle = true;
-      handlers['authFailure'].shouldHandle = true;
+    it('authnFailure trumps authFailure', async function () {
+      handlers.authnFailure.shouldHandle = true;
+      handlers.authFailure.shouldHandle = true;
       await agent.get('/').expect(200, 'authnFailure');
-      assert(handlers['authnFailure'].called);
-      assert(!handlers['authFailure'].called);
+      assert(handlers.authnFailure.called);
+      assert(!handlers.authFailure.called);
     });
 
     // authz failure tests
-    it('authz fail, no hooks handle -> 403', async function() {
+    it('authz fail, no hooks handle -> 403', async function () {
       await agent.get('/').auth('user', 'user-password').expect(403);
-      assert(!handlers['authnFailure'].called);
-      assert(handlers['authzFailure'].called);
-      assert(handlers['authFailure'].called);
+      assert(!handlers.authnFailure.called);
+      assert(handlers.authzFailure.called);
+      assert(handlers.authFailure.called);
     });
-    it('authz fail, authzFailure handles', async function() {
-      handlers['authzFailure'].shouldHandle = true;
+    it('authz fail, authzFailure handles', async function () {
+      handlers.authzFailure.shouldHandle = true;
       await agent.get('/').auth('user', 'user-password').expect(200, 'authzFailure');
-      assert(!handlers['authnFailure'].called);
-      assert(handlers['authzFailure'].called);
-      assert(!handlers['authFailure'].called);
+      assert(!handlers.authnFailure.called);
+      assert(handlers.authzFailure.called);
+      assert(!handlers.authFailure.called);
     });
-    it('authz fail, authFailure handles', async function() {
-      handlers['authFailure'].shouldHandle = true;
+    it('authz fail, authFailure handles', async function () {
+      handlers.authFailure.shouldHandle = true;
       await agent.get('/').auth('user', 'user-password').expect(200, 'authFailure');
-      assert(!handlers['authnFailure'].called);
-      assert(handlers['authzFailure'].called);
-      assert(handlers['authFailure'].called);
+      assert(!handlers.authnFailure.called);
+      assert(handlers.authzFailure.called);
+      assert(handlers.authFailure.called);
     });
-    it('authzFailure trumps authFailure', async function() {
-      handlers['authzFailure'].shouldHandle = true;
-      handlers['authFailure'].shouldHandle = true;
+    it('authzFailure trumps authFailure', async function () {
+      handlers.authzFailure.shouldHandle = true;
+      handlers.authFailure.shouldHandle = true;
       await agent.get('/').auth('user', 'user-password').expect(200, 'authzFailure');
-      assert(handlers['authzFailure'].called);
-      assert(!handlers['authFailure'].called);
+      assert(handlers.authzFailure.called);
+      assert(!handlers.authFailure.called);
     });
   });
 });

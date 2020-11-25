@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-var pad;
+let pad;
 
-exports.saveNow = function(){
-  pad.collabClient.sendMessage({"type": "SAVE_REVISION"});
+exports.saveNow = function () {
+  pad.collabClient.sendMessage({type: 'SAVE_REVISION'});
   $.gritter.add({
     // (string | mandatory) the heading of the notification
-    title: _("pad.savedrevs.marked"),
+    title: _('pad.savedrevs.marked'),
     // (string | mandatory) the text inside the notification
-    text: _("pad.savedrevs.timeslider") || "You can view saved revisions in the timeslider",
+    text: _('pad.savedrevs.timeslider') || 'You can view saved revisions in the timeslider',
     // (bool | optional) if you want it to fade out on its own or just sit there
     sticky: false,
     time: 3000,
-    class_name: "saved-revision",
+    class_name: 'saved-revision',
   });
-}
+};
 
-exports.init = function(_pad){
+exports.init = function (_pad) {
   pad = _pad;
-}
+};

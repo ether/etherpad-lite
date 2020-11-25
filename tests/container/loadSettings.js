@@ -12,16 +12,16 @@
  *          back to a default)
  */
 
-var jsonminify = require(__dirname+"/../../src/node_modules/jsonminify");
+const jsonminify = require(`${__dirname}/../../src/node_modules/jsonminify`);
 const fs = require('fs');
 
-function loadSettings(){
-  var settingsStr = fs.readFileSync(__dirname+"/../../settings.json.docker").toString();
+function loadSettings() {
+  let settingsStr = fs.readFileSync(`${__dirname}/../../settings.json.docker`).toString();
   // try to parse the settings
   try {
-    if(settingsStr) {
-      settingsStr = jsonminify(settingsStr).replace(",]","]").replace(",}","}");
-      var settings = JSON.parse(settingsStr);
+    if (settingsStr) {
+      settingsStr = jsonminify(settingsStr).replace(',]', ']').replace(',}', '}');
+      const settings = JSON.parse(settingsStr);
 
       // custom settings for running in a container
       settings.ip = 'localhost';
@@ -29,8 +29,8 @@ function loadSettings(){
 
       return settings;
     }
-  }catch(e){
-    console.error("whoops something is bad with settings");
+  } catch (e) {
+    console.error('whoops something is bad with settings');
   }
 }
 
