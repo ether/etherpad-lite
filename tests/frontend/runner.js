@@ -71,7 +71,7 @@ $(() => {
           : 'fast';
 
       stats.passes++;
-      append('->', '[green]PASSED[clear] :', test.title, ' ', test.duration, 'ms');
+      append(`-> [green]PASSED[clear] : ${test.title}   ${test.duration} ms`);
     });
 
     runner.on('fail', (test, err) => {
@@ -82,7 +82,7 @@ $(() => {
 
       stats.failures++;
       test.err = err;
-      append('->', '[red]FAILED[clear] :', test.title, stringifyException(test.err));
+      append(`-> [red]FAILED[clear] : ${test.title} ${stringifyException(test.err)}`);
     });
 
     runner.on('pending', (test) => {
@@ -92,13 +92,12 @@ $(() => {
       }, 60000 * 3);
 
       stats.pending++;
-      append('->', '[yellow]PENDING[clear]:', test.title);
+      append(`-> [yellow]PENDING[clear]: ${test.title}`);
     });
 
     const $console = $('#console');
     var level = 0;
-    var append = function () {
-      const text = Array.prototype.join.apply(arguments, [' ']);
+    const append = (text) => {
       const oldText = $console.text();
 
       let space = '';
@@ -129,13 +128,23 @@ $(() => {
       const minutes = Math.floor(stats.duration / 1000 / 60);
       const seconds = Math.round((stats.duration / 1000) % 60); // chrome < 57 does not like this .toString().padStart("2","0");
       if (stats.tests === total) {
-        append('FINISHED -', stats.passes, 'tests passed,', stats.failures, 'tests failed,', stats.pending, ` pending, duration: ${minutes}:${seconds}`);
+        append(`FINISHED - ${stats.passes} tests passed, ${stats.failures} tests failed, ` +
+               `${stats.pending} pending, duration: ${minutes}:${seconds}`);
       } else if (stats.tests > total) {
-        append('FINISHED - but more tests than planned returned', stats.passes, 'tests passed,', stats.failures, 'tests failed,', stats.pending, ` pending, duration: ${minutes}:${seconds}`);
-        append(total, 'tests, but', stats.tests, 'returned. There is probably a problem with your async code or error handling, see https://github.com/mochajs/mocha/issues/1327');
+        append(`FINISHED - but more tests than planned returned ${stats.passes} tests passed, ` +
+               `${stats.failures} tests failed, ${stats.pending} pending, ` +
+               `duration: ${minutes}:${seconds}`);
+        append(`${total} tests, but ${stats.tests} returned. ` +
+               'There is probably a problem with your async code or error handling, ' +
+               'see https://github.com/mochajs/mocha/issues/1327');
       } else {
-        append('FINISHED - but not all tests returned', stats.passes, 'tests passed,', stats.failures, 'tests failed,', stats.pending, `tests pending, duration: ${minutes}:${seconds}`);
-        append(total, 'tests, but only', stats.tests, 'returned. Check for failed before/beforeEach-hooks (no `test end` is called for them and subsequent tests of the same suite are skipped), see https://github.com/mochajs/mocha/pull/1043');
+        append(`FINISHED - but not all tests returned ${stats.passes} tests passed, ` +
+               `${stats.failures} tests failed, ${stats.pending} tests pending, ` +
+               `duration: ${minutes}:${seconds}`);
+        append(`${total} tests, but only ${stats.tests} returned. ` +
+               'Check for failed before/beforeEach-hooks (no `test end` is called for them ' +
+               'and subsequent tests of the same suite are skipped), ' +
+               'see https://github.com/mochajs/mocha/pull/1043');
       }
     });
   }
