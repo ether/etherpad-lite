@@ -28,7 +28,7 @@ describe('clear authorship colors button', function () {
     $firstTextElement.sendkeys(sentText);
     $firstTextElement.sendkeys('{rightarrow}');
 
-    helper.waitFor(() => inner$('div span').first().attr('class').indexOf('author') !== -1, // wait until we have the full value available
+    helper.waitFor(() => inner$('div span').first().attr('class').indexOf('author') !== -1 // wait until we have the full value available
     ).done(() => {
       // IE hates you if you don't give focus to the inner frame bevore you do a clearAuthorship
       inner$('div').first().focus();
@@ -80,7 +80,7 @@ describe('clear authorship colors button', function () {
     $firstTextElement.sendkeys(sentText);
     $firstTextElement.sendkeys('{rightarrow}');
 
-    helper.waitFor(() => inner$('div span').first().attr('class').indexOf('author') !== -1, // wait until we have the full value available
+    helper.waitFor(() => inner$('div span').first().attr('class').indexOf('author') !== -1 // wait until we have the full value available
     ).done(() => {
       // IE hates you if you don't give focus to the inner frame bevore you do a clearAuthorship
       inner$('div').first().focus();

@@ -42,7 +42,7 @@ describe('timeslider follow', function () {
     const lines = helper.linesDiv();
     helper.selectLines(lines[0], lines[lines.length - 1]); // select all lines
     // probably unnecessary, but wait for the selection to be Range not Caret
-    await helper.waitForPromise(() => !helper.padInner$.document.getSelection().isCollapsed,
+    await helper.waitForPromise(() => !helper.padInner$.document.getSelection().isCollapsed
         // only supported in FF57+
         // return helper.padInner$.document.getSelection().type === 'Range';
     );

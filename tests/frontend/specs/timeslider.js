@@ -18,7 +18,7 @@ xdescribe('timeslider button takes you to the timeslider of a pad', function () 
     const modifiedValue = $firstTextElement.text(); // get the modified value
     expect(modifiedValue).not.to.be(originalValue); // expect the value to change
 
-    helper.waitFor(() => modifiedValue !== originalValue, // The value has changed so  we can..
+    helper.waitFor(() => modifiedValue !== originalValue // The value has changed so  we can..
     ).done(() => {
       const $timesliderButton = chrome$('#timesliderlink');
       $timesliderButton.click(); // So click the timeslider link
