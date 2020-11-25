@@ -16,6 +16,8 @@ s!"soffice":[^,]*!"soffice": "/usr/bin/soffice"!
 # Reduce rate limit aggressiveness
 s!"max":[^,]*!"max": 100!
 s!"points":[^,]*!"points": 1000!
+# GitHub does not like our output
+s!"loglevel":[^,]*!"loglevel": "WARN"!
 ' settings.json.template >settings.json
 
 log "Assuming bin/installDeps.sh has already been run"
