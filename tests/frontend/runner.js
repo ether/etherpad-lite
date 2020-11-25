@@ -154,12 +154,7 @@ $(() => {
     });
   };
 
-  // http://stackoverflow.com/questions/1403888/get-url-parameter-with-jquery
-  const getURLParameter = function (name) {
-    return decodeURI(
-        (RegExp(`${name}=(.+?)(&|$)`).exec(location.search) || [null, null])[1]
-    );
-  };
+  const getURLParameter = (name) => (new URLSearchParams(location.search)).get(name);
 
   // get the list of specs and filter it if requested
   const specs = specs_list.slice();
@@ -179,7 +174,7 @@ $(() => {
   helper.init(() => {
     // configure and start the test framework
     const grep = getURLParameter('grep');
-    if (grep !== 'null') {
+    if (grep != null) {
       mocha.grep(grep);
     }
 
