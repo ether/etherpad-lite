@@ -100,7 +100,10 @@ const padeditor = (function () {
       $('#languagemenu').val(html10n.getLanguage());
       $('#languagemenu').change(() => {
         Cookies.set('language', $('#languagemenu').val());
-        window.html10n.localize([$('#languagemenu').val(), 'en']);
+        window.html10n.localize([$("#languagemenu").val(), 'en']);
+        if ($('select').niceSelect) {
+          $('select').niceSelect('update');
+        }
       });
     },
     setViewOptions(newOptions) {
