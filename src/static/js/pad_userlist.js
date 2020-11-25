@@ -67,44 +67,69 @@ const paduserlist = (function () {
     // we do lots of manipulation of table rows and stuff that JQuery makes ok, despite
     // IE's poor handling when manipulating the DOM directly.
 
-    function getEmptyRowHtml(height) {
-      return `<td colspan="${NUMCOLS}" style="border:0;height:${height}px"><!-- --></td>`;
-    }
+    const createEmptyRowTds = (height) => $('<td>')
+        .attr('colspan', NUMCOLS)
+        .css('border', 0)
+        .css('height', `${height}px`);
 
     function isNameEditable(data) {
       return (!data.name) && (data.status != 'Disconnected');
     }
 
     function replaceUserRowContents(tr, height, data) {
-      const tds = getUserRowHtml(height, data).match(/<td.*?<\/td>/gi);
+      const tds = createUserRowTds(height, data);
       if (isNameEditable(data) && tr.find('td.usertdname input:enabled').length > 0) {
         // preserve input field node
-        for (let i = 0; i < tds.length; i++) {
+        tds.each((i, td) => {
           const oldTd = $(tr.find('td').get(i));
           if (!oldTd.hasClass('usertdname')) {
-            oldTd.replaceWith(tds[i]);
+            oldTd.replaceWith(td);
+          } else {
+            // Prevent leak. I'm not 100% confident that this is necessary, but it shouldn't hurt.
+            $(td).remove();
           }
-        }
+        });
       } else {
-        tr.html(tds.join(''));
+        tr.empty().append(tds);
       }
       return tr;
     }
 
-    function getUserRowHtml(height, data) {
-      let nameHtml;
+    const createUserRowTds = (height, data) => {
+      let name;
       if (data.name) {
-        nameHtml = padutils.escapeHtml(data.name);
+        name = document.createTextNode(data.name);
       } else {
-        nameHtml = `<input data-l10n-id="pad.userlist.unnamed" type="text" class="editempty newinput" value="${_('pad.userlist.unnamed')}" ${isNameEditable(data) ? '' : 'disabled="disabled" '}/>`;
+        name = $('<input>')
+            .attr('data-l10n-id', 'pad.userlist.unnamed')
+            .attr('type', 'text')
+            .addClass('editempty')
+            .addClass('newinput')
+            .attr('value', _('pad.userlist.unnamed'));
+        if (isNameEditable(data)) name.attr('disabled', 'disabled');
       }
+      return $()
+          .add($('<td>')
+              .css('height', `${height}px`)
+              .addClass('usertdswatch')
+              .append($('<div>')
+                  .addClass('swatch')
+                  .css('background', padutils.escapeHtml(data.color))
+                  .html('&nbsp;')))
+          .add($('<td>')
+              .css('height', `${height}px`)
+              .addClass('usertdname')
+              .append(name))
+          .add($('<td>')
+              .css('height', `${height}px`)
+              .addClass('activity')
+              .text(data.activity));
+    };
 
-      return ['<td style="height:', height, `px" class="usertdswatch"><div class="swatch" style="background:${padutils.escapeHtml(data.color)}">&nbsp;</div></td>`, '<td style="height:', height, 'px" class="usertdname">', nameHtml, '</td>', '<td style="height:', height, 'px" class="activity">', padutils.escapeHtml(data.activity), '</td>'].join('');
-    }
-
-    function getRowHtml(id, innerHtml, authorId) {
-      return `<tr data-authorId="${authorId}" id="${id}">${innerHtml}</tr>`;
-    }
+    const createRow = (id, contents, authorId) => $('<tr>')
+        .attr('data-authorId', authorId)
+        .attr('id', id)
+        .append(contents);
 
     function rowNode(row) {
       return $(`#${row.domId}`);
@@ -164,11 +189,11 @@ const paduserlist = (function () {
       rowsPresent.splice(position, 0, row);
       let tr;
       if (animationPower == 0) {
-        tr = $(getRowHtml(domId, getUserRowHtml(getAnimationHeight(0), data), authorId));
+        tr = createRow(domId, createUserRowTds(getAnimationHeight(0), data), authorId);
         row.animationStep = 0;
       } else {
         rowsFadingIn.push(row);
-        tr = $(getRowHtml(domId, getEmptyRowHtml(getAnimationHeight(ANIMATION_START)), authorId));
+        tr = createRow(domId, createEmptyRowTds(getAnimationHeight(ANIMATION_START)), authorId);
       }
       handleRowNode(tr, data);
       $('table#otheruserstable').show();
@@ -245,13 +270,15 @@ const paduserlist = (function () {
         if (step <= -OPACITY_STEPS) {
           node.find('td').height(animHeight);
         } else if (step == -OPACITY_STEPS + 1) {
-          node.html(getUserRowHtml(animHeight, row.data)).find('td').css('opacity', baseOpacity * 1 / OPACITY_STEPS);
+          node.empty().append(createUserRowTds(animHeight, row.data))
+              .find('td').css('opacity', baseOpacity * 1 / OPACITY_STEPS);
           handleRowNode(node, row.data);
         } else if (step < 0) {
           node.find('td').css('opacity', baseOpacity * (OPACITY_STEPS - (-step)) / OPACITY_STEPS).height(animHeight);
         } else if (step == 0) {
           // set HTML in case modified during animation
-          node.html(getUserRowHtml(animHeight, row.data)).find('td').css('opacity', baseOpacity * 1).height(animHeight);
+          node.empty().append(createUserRowTds(animHeight, row.data))
+              .find('td').css('opacity', baseOpacity * 1).height(animHeight);
           handleRowNode(node, row.data);
           rowsFadingIn.splice(i, 1); // remove from set
         }
@@ -265,7 +292,7 @@ const paduserlist = (function () {
         if (step < OPACITY_STEPS) {
           node.find('td').css('opacity', baseOpacity * (OPACITY_STEPS - step) / OPACITY_STEPS).height(animHeight);
         } else if (step == OPACITY_STEPS) {
-          node.html(getEmptyRowHtml(animHeight));
+          node.empty().append(createEmptyRowTds(animHeight));
         } else if (step <= ANIMATION_END) {
           node.find('td').height(animHeight);
         } else {
