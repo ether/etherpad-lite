@@ -542,7 +542,7 @@ exports.handleMessage = (hookName, {message, socket}, callback) => {
     const user = socket.client.request.session.user || {};
     if (user.name) message.data.userInfo.name = user.name;
   }
-  return cb();
+  return callback();
 };
 ```
 
