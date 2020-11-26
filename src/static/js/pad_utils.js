@@ -50,62 +50,6 @@ var padutils = {
     }
     return [pad.getClientIp(), encodeNum(+new Date(), 7), encodeNum(Math.floor(Math.random() * 1e9), 4)].join('.');
   },
-  uaDisplay(ua) {
-    let m;
-
-    function clean(a) {
-      const maxlen = 16;
-      a = a.replace(/[^a-zA-Z0-9\.]/g, '');
-      if (a.length > maxlen) {
-        a = a.substr(0, maxlen);
-      }
-      return a;
-    }
-
-    function checkver(name) {
-      const m = ua.match(RegExp(`${name}\\/([\\d\\.]+)`));
-      if (m && m.length > 1) {
-        return clean(name + m[1]);
-      }
-      return null;
-    }
-
-    // firefox
-    if (checkver('Firefox')) {
-      return checkver('Firefox');
-    }
-
-    // misc browsers, including IE
-    m = ua.match(/compatible; ([^;]+);/);
-    if (m && m.length > 1) {
-      return clean(m[1]);
-    }
-
-    // iphone
-    if (ua.match(/\(iPhone;/)) {
-      return 'iPhone';
-    }
-
-    // chrome
-    if (checkver('Chrome')) {
-      return checkver('Chrome');
-    }
-
-    // safari
-    m = ua.match(/Safari\/[\d\.]+/);
-    if (m) {
-      let v = '?';
-      m = ua.match(/Version\/([\d\.]+)/);
-      if (m && m.length > 1) {
-        v = m[1];
-      }
-      return clean(`Safari${v}`);
-    }
-
-    // everything else
-    const x = ua.split(' ')[0];
-    return clean(x);
-  },
   // e.g. "Thu Jun 18 2009 13:09"
   simpleDateTime(date) {
     const d = new Date(+date); // accept either number or date

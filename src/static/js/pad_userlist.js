@@ -143,17 +143,6 @@ const paduserlist = (function () {
       }
     }
 
-    function handleRowNode(tr, data) {
-      if (data.titleText) {
-        const titleText = data.titleText;
-        window.setTimeout(() => {
-          /* tr.attr('title', titleText)*/
-        }, 0);
-      } else {
-        tr.removeAttr('title');
-      }
-    }
-
     function handleOtherUserInputs() {
       // handle 'INPUT' elements for naming other unnamed users
       $('#otheruserstable input.newinput').each(function () {
@@ -195,7 +184,6 @@ const paduserlist = (function () {
         rowsFadingIn.push(row);
         tr = createRow(domId, createEmptyRowTds(getAnimationHeight(ANIMATION_START)), authorId);
       }
-      handleRowNode(tr, data);
       $('table#otheruserstable').show();
       if (position == 0) {
         $('table#otheruserstable').prepend(tr);
@@ -221,7 +209,6 @@ const paduserlist = (function () {
           // not currently animating
           const tr = rowNode(row);
           replaceUserRowContents(tr, getAnimationHeight(0), row.data).find('td').css('opacity', (row.opacity === undefined ? 1 : row.opacity));
-          handleRowNode(tr, data);
           handleOtherUserInputs();
         }
       }
@@ -272,14 +259,12 @@ const paduserlist = (function () {
         } else if (step == -OPACITY_STEPS + 1) {
           node.empty().append(createUserRowTds(animHeight, row.data))
               .find('td').css('opacity', baseOpacity * 1 / OPACITY_STEPS);
-          handleRowNode(node, row.data);
         } else if (step < 0) {
           node.find('td').css('opacity', baseOpacity * (OPACITY_STEPS - (-step)) / OPACITY_STEPS).height(animHeight);
         } else if (step == 0) {
           // set HTML in case modified during animation
           node.empty().append(createUserRowTds(animHeight, row.data))
               .find('td').css('opacity', baseOpacity * 1).height(animHeight);
-          handleRowNode(node, row.data);
           rowsFadingIn.splice(i, 1); // remove from set
         }
       }
@@ -480,8 +465,6 @@ const paduserlist = (function () {
       userData.status = '';
       userData.activity = '';
       userData.id = info.userId;
-      // Firefox ignores \n in title text; Safari does a linebreak
-      userData.titleText = [info.userAgent || '', info.ip || ''].join(' \n');
 
       const existingIndex = findExistingIndex(info.userId);
 
