@@ -36,6 +36,7 @@ _install_plugins: &install_plugins >-
   ep_spellcheck
   ep_subscript_and_superscript
   ep_table_of_contents
+  ep_set_title_on_pad
 
 jobs:
   include:
