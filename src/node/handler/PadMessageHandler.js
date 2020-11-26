@@ -1140,23 +1140,6 @@ async function handleClientReady(socket, message, authorID) {
         return;
       }
 
-      // default fallback color to use if authorInfo.colorId is null
-      const defaultColor = '#daf0b2';
-
-      // For some reason sometimes name isn't set
-      // Catch this issue here and use a fixed name.
-      if (!authorInfo.name) {
-        console.warn('handleClientReady(): client submitted no author name. Using "Anonymous". See: issue #3612');
-        authorInfo.name = 'Anonymous';
-      }
-
-      // For some reason sometimes colorId isn't set
-      // Catch this issue here and use a fixed color.
-      if (!authorInfo.colorId) {
-        console.warn(`handleClientReady(): author "${authorInfo.name}" has no property colorId. Using the default color ${defaultColor}. See issue #3612`);
-        authorInfo.colorId = defaultColor;
-      }
-
       // Send the new User a Notification about this other user
       const msg = {
         type: 'COLLABROOM',
