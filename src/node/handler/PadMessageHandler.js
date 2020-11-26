@@ -133,9 +133,7 @@ exports.handleDisconnect = async (socket) => {
       data: {
         type: 'USER_LEAVE',
         userInfo: {
-          ip: '127.0.0.1',
           colorId: color,
-          userAgent: 'Anonymous',
           userId: session.author,
         },
       },
@@ -489,8 +487,6 @@ async function handleUserInfoUpdate(socket, message) {
         // set a null name, when there is no name set. cause the client wants it null
         name: message.data.userInfo.name || null,
         colorId: message.data.userInfo.colorId,
-        userAgent: 'Anonymous',
-        ip: '127.0.0.1',
       },
     },
   };
@@ -1095,9 +1091,7 @@ async function handleClientReady(socket, message, authorID) {
       data: {
         type: 'USER_NEWINFO',
         userInfo: {
-          ip: '127.0.0.1',
           colorId: authorColorId,
-          userAgent: 'Anonymous',
           userId: authorID,
         },
       },
@@ -1146,10 +1140,8 @@ async function handleClientReady(socket, message, authorID) {
         data: {
           type: 'USER_NEWINFO',
           userInfo: {
-            ip: '127.0.0.1',
             colorId: authorInfo.colorId,
             name: authorInfo.name,
-            userAgent: 'Anonymous',
             userId: authorId,
           },
         },

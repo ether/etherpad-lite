@@ -234,8 +234,6 @@ function handshake() {
 
       // set some client vars
       clientVars = obj.data;
-      clientVars.userAgent = 'Anonymous';
-      clientVars.collab_client_vars.clientAgent = 'Anonymous';
 
       // initalize the pad
       pad._afterHandshake();
@@ -333,9 +331,6 @@ var pad = {
   getColorPalette() {
     return clientVars.colorPalette;
   },
-  getDisplayUserAgent() {
-    return padutils.uaDisplay(clientVars.userAgent);
-  },
   getIsDebugEnabled() {
     return clientVars.debugEnabled;
   },
@@ -427,7 +422,6 @@ var pad = {
       name: clientVars.userName,
       ip: pad.getClientIp(),
       colorId: clientVars.userColor,
-      userAgent: pad.getDisplayUserAgent(),
     };
 
     padimpexp.init(this);
