@@ -1,7 +1,8 @@
+'use strict';
+
 $(document).ready(() => {
-  let socket;
   const loc = document.location;
-  const port = loc.port == '' ? (loc.protocol == 'https:' ? 443 : 80) : loc.port;
+  const port = loc.port === '' ? (loc.protocol === 'https:' ? 443 : 80) : loc.port;
   const url = `${loc.protocol}//${loc.hostname}:${port}/`;
   const pathComponents = location.pathname.split('/');
   // Strip admin/plugins
@@ -10,23 +11,29 @@ $(document).ready(() => {
 
   // connect
   const room = `${url}pluginfw/installer`;
-  socket = io.connect(room, {path: `${baseURL}socket.io`, resource});
+  const socket = io.connect(room, {path: `${baseURL}socket.io`, resource});
 
-  function search(searchTerm, limit) {
-    if (search.searchTerm != searchTerm) {
+  const search = (searchTerm, limit) => {
+    if (search.searchTerm !== searchTerm) {
       search.offset = 0;
       search.results = [];
       search.end = false;
     }
     limit = limit ? limit : search.limit;
     search.searchTerm = searchTerm;
-    socket.emit('search', {searchTerm, offset: search.offset, limit, sortBy: search.sortBy, sortDir: search.sortDir});
+    socket.emit('search', {
+      searchTerm,
+      offset: search.offset,
+      limit,
+      sortBy: search.sortBy,
+      sortDir: search.sortDir,
+    });
     search.offset += limit;
 
     $('#search-progress').show();
     search.messages.show('fetching');
     search.searching = true;
-  }
+  };
   search.searching = false;
   search.offset = 0;
   search.limit = 999;
@@ -35,12 +42,12 @@ $(document).ready(() => {
   search.sortDir = /* DESC?*/true;
   search.end = true;// have we received all results already?
   search.messages = {
-    show(msg) {
+    show: (msg) => {
       // $('.search-results .messages').show()
       $(`.search-results .messages .${msg}`).show();
       $(`.search-results .messages .${msg} *`).show();
     },
-    hide(msg) {
+    hide: (msg) => {
       $('.search-results .messages').hide();
       $(`.search-results .messages .${msg}`).hide();
       $(`.search-results .messages .${msg} *`).hide();
@@ -49,22 +56,24 @@ $(document).ready(() => {
 
   const installed = {
     progress: {
-      show(plugin, msg) {
+      show: (plugin, msg) => {
         $(`.installed-results .${plugin} .progress`).show();
         $(`.installed-results .${plugin} .progress .message`).text(msg);
-        if ($(window).scrollTop() > $(`.${plugin}`).offset().top)$(window).scrollTop($(`.${plugin}`).offset().top - 100);
+        if ($(window).scrollTop() > $(`.${plugin}`).offset().top) {
+          $(window).scrollTop($(`.${plugin}`).offset().top - 100);
+        }
       },
-      hide(plugin) {
+      hide: (plugin) => {
         $(`.installed-results .${plugin} .progress`).hide();
         $(`.installed-results .${plugin} .progress .message`).text('');
       },
     },
     messages: {
-      show(msg) {
+      show: (msg) => {
         $('.installed-results .messages').show();
         $(`.installed-results .messages .${msg}`).show();
       },
-      hide(msg) {
+      hide: (msg) => {
         $('.installed-results .messages').hide();
         $(`.installed-results .messages .${msg}`).hide();
       },
@@ -72,12 +81,12 @@ $(document).ready(() => {
     list: [],
   };
 
-  function displayPluginList(plugins, container, template) {
+  const displayPluginList = (plugins, container, template) => {
     plugins.forEach((plugin) => {
       const row = template.clone();
 
-      for (attr in plugin) {
-        if (attr == 'name') { // Hack to rewrite URLS into name
+      for (const attr in plugin) {
+        if (attr === 'name') { // Hack to rewrite URLS into name
           const link = $('<a>');
           link.attr('href', `https://npmjs.org/package/${plugin.name}`);
           link.attr('plugin', 'Plugin details');
@@ -94,18 +103,16 @@ $(document).ready(() => {
       container.append(row);
     });
     updateHandlers();
-  }
+  };
 
-  function sortPluginList(plugins, property, /* ASC?*/dir) {
-    return plugins.sort((a, b) => {
-      if (a[property] < b[property]) return dir ? -1 : 1;
-      if (a[property] > b[property]) return dir ? 1 : -1;
-      // a must be equal to b
-      return 0;
-    });
-  }
+  const sortPluginList = (plugins, property, /* ASC?*/dir) => plugins.sort((a, b) => {
+    if (a[property] < b[property]) return dir ? -1 : 1;
+    if (a[property] > b[property]) return dir ? 1 : -1;
+    // a must be equal to b
+    return 0;
+  });
 
-  function updateHandlers() {
+  const updateHandlers = () => {
     // Search
     $('#search-query').unbind('keyup').keyup(() => {
       search($('#search-query').val());
@@ -134,7 +141,7 @@ $(document).ready(() => {
       const pluginName = $row.data('plugin');
       socket.emit('uninstall', pluginName);
       installed.progress.show(pluginName, 'Uninstalling');
-      installed.list = installed.list.filter((plugin) => plugin.name != pluginName);
+      installed.list = installed.list.filter((plugin) => plugin.name !== pluginName);
     });
 
     // Sort
@@ -152,11 +159,11 @@ $(document).ready(() => {
       search(search.searchTerm, search.results.length);
       search.results = [];
     });
-  }
+  };
 
   socket.on('results:search', (data) => {
     if (!data.results.length) search.end = true;
-    if (data.query.offset == 0) search.results = [];
+    if (data.query.offset === 0) search.results = [];
     search.messages.hide('nothing-found');
     search.messages.hide('fetching');
     $('#search-query').removeAttr('disabled');
@@ -178,7 +185,8 @@ $(document).ready(() => {
     const searchWidget = $('.search-results');
     searchWidget.find('.results *').remove();
     if (search.results.length > 0) {
-      displayPluginList(search.results, searchWidget.find('.results'), searchWidget.find('.template tr'));
+      displayPluginList(
+          search.results, searchWidget.find('.results'), searchWidget.find('.template tr'));
     } else {
       search.messages.show('nothing-found');
     }
@@ -195,7 +203,7 @@ $(document).ready(() => {
     sortPluginList(installed.list, 'name', /* ASC?*/true);
 
     // filter out epl
-    installed.list = installed.list.filter((plugin) => plugin.name != 'ep_etherpad-lite');
+    installed.list = installed.list.filter((plugin) => plugin.name !== 'ep_etherpad-lite');
 
     // remove all installed plugins (leave plugins that are still being installed)
     installed.list.forEach((plugin) => {
@@ -237,7 +245,9 @@ $(document).ready(() => {
   });
 
   socket.on('finished:uninstall', (data) => {
-    if (data.error) alert(`An error occurred while uninstalling the ${data.plugin} \n${data.error}`);
+    if (data.error) {
+      alert(`An error occurred while uninstalling the ${data.plugin} \n${data.error}`);
+    }
 
     // remove plugin from installed list
     $(`#installed-plugins .${data.plugin}`).remove();
