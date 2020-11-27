@@ -1,12 +1,14 @@
-const eejs = require('ep_etherpad-lite/node/eejs');
-const settings = require('ep_etherpad-lite/node/utils/Settings');
-const installer = require('ep_etherpad-lite/static/js/pluginfw/installer');
-const plugins = require('ep_etherpad-lite/static/js/pluginfw/plugin_defs');
+'use strict';
+
+const eejs = require('../../eejs');
+const settings = require('../../utils/Settings');
+const installer = require('../../../static/js/pluginfw/installer');
+const plugins = require('../../../static/js/pluginfw/plugin_defs');
 const _ = require('underscore');
 const semver = require('semver');
-const UpdateCheck = require('ep_etherpad-lite/node/utils/UpdateCheck');
+const UpdateCheck = require('../../utils/UpdateCheck');
 
-exports.expressCreateServer = function (hook_name, args, cb) {
+exports.expressCreateServer = (hookName, args, cb) => {
   args.app.get('/admin/plugins', (req, res) => {
     res.send(eejs.require('ep_etherpad-lite/templates/admin/plugins.html', {
       plugins: plugins.plugins,
@@ -30,14 +32,16 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   return cb();
 };
 
-exports.socketio = function (hook_name, args, cb) {
+exports.socketio = (hookName, args, cb) => {
   const io = args.io.of('/pluginfw/installer');
   io.on('connection', (socket) => {
-    if (!socket.conn.request.session || !socket.conn.request.session.user || !socket.conn.request.session.user.is_admin) return;
+    const {session: {user: {is_admin: isAdmin} = {}} = {}} = socket.conn.request;
+    if (!isAdmin) return;
 
     socket.on('getInstalled', (query) => {
       // send currently installed plugins
-      const installed = Object.keys(plugins.plugins).map((plugin) => plugins.plugins[plugin].package);
+      const installed =
+          Object.keys(plugins.plugins).map((plugin) => plugins.plugins[plugin].package);
 
       socket.emit('results:installed', {installed});
     });
@@ -90,36 +94,38 @@ exports.socketio = function (hook_name, args, cb) {
       }
     });
 
-    socket.on('install', (plugin_name) => {
-      installer.install(plugin_name, (er) => {
+    socket.on('install', (pluginName) => {
+      installer.install(pluginName, (er) => {
         if (er) console.warn(er);
 
-        socket.emit('finished:install', {plugin: plugin_name, code: er ? er.code : null, error: er ? er.message : null});
+        socket.emit('finished:install', {
+          plugin: pluginName,
+          code: er ? er.code : null,
+          error: er ? er.message : null,
+        });
       });
     });
 
-    socket.on('uninstall', (plugin_name) => {
-      installer.uninstall(plugin_name, (er) => {
+    socket.on('uninstall', (pluginName) => {
+      installer.uninstall(pluginName, (er) => {
         if (er) console.warn(er);
 
-        socket.emit('finished:uninstall', {plugin: plugin_name, error: er ? er.message : null});
+        socket.emit('finished:uninstall', {plugin: pluginName, error: er ? er.message : null});
       });
     });
   });
   return cb();
 };
 
-function sortPluginList(plugins, property, /* ASC?*/dir) {
-  return plugins.sort((a, b) => {
-    if (a[property] < b[property]) {
-      return dir ? -1 : 1;
-    }
+const sortPluginList = (plugins, property, /* ASC?*/dir) => plugins.sort((a, b) => {
+  if (a[property] < b[property]) {
+    return dir ? -1 : 1;
+  }
 
-    if (a[property] > b[property]) {
-      return dir ? 1 : -1;
-    }
+  if (a[property] > b[property]) {
+    return dir ? 1 : -1;
+  }
 
-    // a must be equal to b
-    return 0;
-  });
-}
+  // a must be equal to b
+  return 0;
+});
