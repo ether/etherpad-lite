@@ -211,11 +211,11 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       }
     }
 
-    if (packageJSON.toLowerCase().indexOf('engines') === -1) {
-      console.warn('No engines in package.json');
+    if ( (packageJSON.toLowerCase().indexOf('engines') === -1) || !parsedPackageJSON.engines.node) {
+      console.warn('No engines or node engine in package.json');
       if (autoFix) {
         const engines = {
-          lint: 'eslint .',
+          node: '>=10.13.0',
         };
         hasAutoFixed = true;
         parsedPackageJSON.engines = engines;
