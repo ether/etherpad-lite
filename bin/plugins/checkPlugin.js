@@ -165,6 +165,26 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       }
     }
 
+    // include peer deps config
+    if (packageJSON.toLowerCase().indexOf('peerdependencies') === -1 || !parsedPackageJSON.peerDependencies.eslint) {
+      console.warn('Missing peer deps reference in package.json');
+      if (autoFix) {
+        const peerDependencies = {
+          "ep_etherpad-lite": ">=1.8.6",
+        }
+        hasAutoFixed = true;
+        parsedPackageJSON.peerDependencies = peerDependencies;
+        fs.writeFileSync(`${pluginPath}/package.json`, JSON.stringify(parsedPackageJSON, null, 2));
+        const child_process = require('child_process');
+        try {
+          child_process.execSync('npm install', {cwd: `${pluginPath}/`});
+          hasAutoFixed = true;
+        } catch (e) {
+          console.error('Failed to create package-lock.json');
+        }
+      }
+    }
+
     if (packageJSON.toLowerCase().indexOf('eslintconfig') === -1) {
       console.warn('No esLintConfig in package.json');
       if (autoFix) {
