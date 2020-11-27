@@ -220,8 +220,7 @@ $(document).ready(() => {
 
   socket.on('results:updatable', (data) => {
     data.updatable.forEach((pluginName) => {
-      const $row = $(`#installed-plugins > tr.${pluginName}`);
-      const actions = $row.find('.actions');
+      const actions = $(`#installed-plugins > tr.${pluginName} .actions`);
       actions.append('<input class="do-update" type="button" value="Update" />');
     });
     updateHandlers();
