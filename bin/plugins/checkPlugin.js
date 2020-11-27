@@ -177,7 +177,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         fs.writeFileSync(`${pluginPath}/package.json`, JSON.stringify(parsedPackageJSON, null, 2));
         const child_process = require('child_process');
         try {
-          child_process.execSync('npm install', {cwd: `${pluginPath}/`});
+          child_process.execSync('npm install --no-save ep_etherpad-lite@file:../../src', {cwd: `${pluginPath}/`});
           hasAutoFixed = true;
         } catch (e) {
           console.error('Failed to create package-lock.json');
