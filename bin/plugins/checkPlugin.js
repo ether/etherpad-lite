@@ -165,6 +165,26 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       }
     }
 
+    // include peer deps config
+    if (packageJSON.toLowerCase().indexOf('peerdependencies') === -1 || !parsedPackageJSON.peerDependencies) {
+      console.warn('Missing peer deps reference in package.json');
+      if (autoFix) {
+        const peerDependencies = {
+          "ep_etherpad-lite": ">=1.8.6",
+        }
+        hasAutoFixed = true;
+        parsedPackageJSON.peerDependencies = peerDependencies;
+        fs.writeFileSync(`${pluginPath}/package.json`, JSON.stringify(parsedPackageJSON, null, 2));
+        const child_process = require('child_process');
+        try {
+          child_process.execSync('npm install --no-save ep_etherpad-lite@file:../../src', {cwd: `${pluginPath}/`});
+          hasAutoFixed = true;
+        } catch (e) {
+          console.error('Failed to create package-lock.json');
+        }
+      }
+    }
+
     if (packageJSON.toLowerCase().indexOf('eslintconfig') === -1) {
       console.warn('No esLintConfig in package.json');
       if (autoFix) {
@@ -191,11 +211,11 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       }
     }
 
-    if (packageJSON.toLowerCase().indexOf('engines') === -1) {
-      console.warn('No engines in package.json');
+    if ( (packageJSON.toLowerCase().indexOf('engines') === -1) || !parsedPackageJSON.engines.node) {
+      console.warn('No engines or node engine in package.json');
       if (autoFix) {
         const engines = {
-          lint: 'eslint .',
+          node: '>=10.13.0',
         };
         hasAutoFixed = true;
         parsedPackageJSON.engines = engines;
