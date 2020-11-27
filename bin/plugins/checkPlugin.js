@@ -120,7 +120,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         updatedPackageJSON = true;
         parsedPackageJSON.funding = {
           type: 'individual',
-          url: 'http://etherpad.org/',
+          url: 'https://etherpad.org/',
         };
       }
       if (updatedPackageJSON) {
