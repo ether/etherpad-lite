@@ -166,7 +166,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     }
 
     // include peer deps config
-    if (packageJSON.toLowerCase().indexOf('peerdependencies') === -1 || !parsedPackageJSON.peerDependencies.eslint) {
+    if (packageJSON.toLowerCase().indexOf('peerdependencies') === -1 || !parsedPackageJSON.peerDependencies) {
       console.warn('Missing peer deps reference in package.json');
       if (autoFix) {
         const peerDependencies = {
