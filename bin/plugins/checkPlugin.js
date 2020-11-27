@@ -145,7 +145,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       if (autoFix) {
         const devDependencies = {
           'eslint': '^7.14.0',
-          'eslint-config-etherpad': '^1.0.10',
+          'eslint-config-etherpad': '^1.0.13',
           'eslint-plugin-mocha': '^8.0.0',
           'eslint-plugin-node': '^11.1.0',
           'eslint-plugin-prefer-arrow': '^1.2.2',
