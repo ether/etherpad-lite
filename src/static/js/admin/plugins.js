@@ -221,6 +221,7 @@ $(document).ready(() => {
   socket.on('results:updatable', (data) => {
     data.updatable.forEach((pluginName) => {
       const actions = $(`#installed-plugins > tr.${pluginName} .actions`);
+      actions.find('.do-update').remove();
       actions.append(
           $('<input>').addClass('do-update').attr('type', 'button').attr('value', 'Update'));
     });
