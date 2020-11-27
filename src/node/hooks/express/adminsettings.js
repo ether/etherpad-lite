@@ -8,7 +8,6 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     res.send(eejs.require('ep_etherpad-lite/templates/admin/settings.html', {
       req,
       settings: '',
-      search_results: {},
       errors: [],
     }));
   });

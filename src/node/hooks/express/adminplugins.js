@@ -11,7 +11,6 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     res.send(eejs.require('ep_etherpad-lite/templates/admin/plugins.html', {
       plugins: plugins.plugins,
       req,
-      search_results: {},
       errors: [],
     }));
   });
