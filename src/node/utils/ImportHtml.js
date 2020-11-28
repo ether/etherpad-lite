@@ -19,22 +19,16 @@ const Changeset = require('ep_etherpad-lite/static/js/Changeset');
 const contentcollector = require('ep_etherpad-lite/static/js/contentcollector');
 const cheerio = require('cheerio');
 const rehype = require('rehype');
-const format = require('rehype-format');
-
+const minifyWhitespace = require('rehype-minify-whitespace');
 
 exports.setPadHTML = async (pad, html) => {
   const apiLogger = log4js.getLogger('ImportHtml');
 
-  const opts = {
-    indentInitial: false,
-    indent: -1,
-  };
-
   rehype()
-      .use(format, opts)
-      .process(html, (err, output) => {
-        html = String(output).replace(/(\r\n|\n|\r)/gm, '');
-      });
+    .use(minifyWhitespace, {newlines: false})
+    .process(html, (err, output) => {
+      html = String(output);
+    });
 
   const $ = cheerio.load(html);
 
