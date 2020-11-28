@@ -317,7 +317,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       console.log('updating .travis.yml');
       fs.writeFileSync(`${pluginPath}/.travis.yml`, travisConfig);
       hasAutoFixed = true;
-    }
+    }//
   }
 
   if (files.indexOf('.gitignore') === -1) {
@@ -328,6 +328,17 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       const gitignore = fs.readFileSync('bin/plugins/lib/gitignore', {encoding: 'utf8', flag: 'r'});
       fs.writeFileSync(`${pluginPath}/.gitignore`, gitignore);
     }
+  }else{
+    let gitignore =
+        fs.readFileSync(`${pluginPath}/.gitignore`, {encoding: 'utf8', flag: 'r'});
+        if(gitignore.indexOf("node_modules/") === -1){
+          console.warn("node_modules/ missing from .gitignore")
+          if(autoFix){
+            gitignore += "node_modules/";
+            fs.writeFileSync(`${pluginPath}/.gitignore`, gitignore);
+            hasAutoFixed = true;
+          }
+        }
   }
 
   // if we include templates but don't have translations...
@@ -391,7 +402,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       // holy shit you brave.
       console.log('Attempting autocommit and auto publish to npm');
       // github should push to npm for us :)
-      exec(`cd node_modules/${pluginName} && git add -A && git commit --allow-empty -m 'autofixes from Etherpad checkPlugins.js' && git push && cd ../..`, (error, name, stderr) => {
+      exec(`cd node_modules/${pluginName} && git rm -rf node_modules --ignore-unmatch && git add -A && git commit --allow-empty -m 'autofixes from Etherpad checkPlugins.js' && git push && cd ../..`, (error, name, stderr) => {
         if (error) {
           console.log(`error: ${error.message}`);
           return;
