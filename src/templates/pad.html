@@ -91,11 +91,13 @@
       <div id="editorcontainer" class="editorcontainer"></div>
 
       <div id="editorloadingbox">
+        <% e.begin_block("permissionDenied"); %>
         <div id="permissionDenied">
           <p data-l10n-id="pad.permissionDenied" class="editorloadingbox-message">
             You do not have permission to access this pad
           </p>
         </div>
+        <% e.end_block(); %>
         <% e.begin_block("loading"); %>
         <p data-l10n-id="pad.loading" id="loading" class="editorloadingbox-message">
           Loading...
