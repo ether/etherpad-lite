@@ -92,12 +92,22 @@
 
       <div id="editorloadingbox">
         <div id="permissionDenied">
-          <p data-l10n-id="pad.permissionDenied">You do not have permission to access this pad</p>
+          <p data-l10n-id="pad.permissionDenied" class="editorloadingbox-message">
+            You do not have permission to access this pad
+          </p>
         </div>
         <% e.begin_block("loading"); %>
-        <p data-l10n-id="pad.loading" id="loading">Loading...</p>
+        <p data-l10n-id="pad.loading" id="loading" class="editorloadingbox-message">
+          Loading...
+        </p>
         <% e.end_block(); %>
-        <noscript><strong>Sorry, you have to enable Javascript in order to use this.</strong></noscript>
+        <noscript>
+          <p class="editorloadingbox-message">
+            <strong>
+              Sorry, you have to enable Javascript in order to use this.
+            </strong>
+          </p>
+        </noscript>
       </div>
 
 
