@@ -69,12 +69,12 @@
     "threads": "^1.4.0",
     "tiny-worker": "^2.3.0",
     "tinycon": "0.0.1",
-    "ueberdb2": "^0.5.4",
+    "ueberdb2": "^0.5.6",
     "underscore": "1.8.3",
     "unorm": "1.4.1"
   },
   "bin": {
-    "etherpad-lite": "./node/server.js"
+    "etherpad-lite": "node/server.js"
   },
   "devDependencies": {
     "eslint": "^7.14.0",
