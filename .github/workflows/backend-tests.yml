@@ -53,7 +53,7 @@ jobs:
       run: bin/installDeps.sh
 
     - name: Install etherpad plugins
-      run: npm install ep_align ep_author_hover ep_cursortrace ep_font_size ep_hash_auth ep_headings2 ep_markdown ep_readonly_guest ep_spellcheck ep_subscript_and_superscript ep_table_of_contents
+      run: npm install ep_align ep_author_hover ep_cursortrace ep_font_size ep_hash_auth ep_headings2 ep_readonly_guest ep_spellcheck ep_subscript_and_superscript ep_table_of_contents
 
     # configures some settings and runs npm run test
     - name: Run the backend tests
