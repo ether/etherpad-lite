@@ -74,7 +74,7 @@
     "unorm": "1.4.1"
   },
   "bin": {
-    "etherpad-lite": "node/server.js"
+    "etherpad-lite": "./node/server.js"
   },
   "devDependencies": {
     "eslint": "^7.14.0",
