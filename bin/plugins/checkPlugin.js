@@ -107,6 +107,41 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     console.error(err);
   }
 
+
+  try {
+    const path = `${pluginPath}/.github/workflows/backend-tests.yml`;
+    if (!fs.existsSync(path)) {
+      console.log('no .github/workflows/backend-tests.yml, create one and set npm secret to auto publish to npm on commit');
+      if (autoFix) {
+        const backendTests =
+            fs.readFileSync('bin/plugins/lib/backend-tests.yml', {encoding: 'utf8', flag: 'r'});
+        fs.mkdirSync(`${pluginPath}/.github/workflows`, {recursive: true});
+        fs.writeFileSync(path, backendTests);
+        hasAutoFixed = true;
+      }
+    } else {
+      // autopublish exists, we should check the version..
+      // checkVersion takes two file paths and checks for a version string in them.
+      const currVersionFile = fs.readFileSync(path, {encoding: 'utf8', flag: 'r'});
+      const existingConfigLocation = currVersionFile.indexOf('##ETHERPAD_NPM_V=');
+      const existingValue = parseInt(currVersionFile.substr(existingConfigLocation + 17, existingConfigLocation.length));
+
+      const reqVersionFile = fs.readFileSync('bin/plugins/lib/backend-tests.yml', {encoding: 'utf8', flag: 'r'});
+      const reqConfigLocation = reqVersionFile.indexOf('##ETHERPAD_NPM_V=');
+      const reqValue = parseInt(reqVersionFile.substr(reqConfigLocation + 17, reqConfigLocation.length));
+
+      if (!existingValue || (reqValue > existingValue)) {
+        const backendTests =
+            fs.readFileSync('bin/plugins/lib/backend-tests.yml', {encoding: 'utf8', flag: 'r'});
+        fs.mkdirSync(`${pluginPath}/.github/workflows`, {recursive: true});
+        fs.writeFileSync(path, backendTests);
+        hasAutoFixed = true;
+      }
+    }
+  } catch (err) {
+    console.error(err);
+  }
+
   if (files.indexOf('package.json') === -1) {
     console.warn('no package.json, please create');
   }
