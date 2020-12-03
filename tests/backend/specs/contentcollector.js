@@ -375,7 +375,111 @@ pre
     html: '<html><body>Text with  more   than    one space.<br></body></html>',
     expectedLineAttribs: [ '+10' ],
     expectedText: ['Text with  more   than    one space.']
-  }
+  },
+  'nonelistiteminlist #3620': {
+    //fails as a new list item is introduced
+    disabled:true,
+    description: 'Text content between <ul> and <li>',
+    html: '<html><body><ul>test<li>FOO</li></ul></body></html>',
+    expectedLineAttribs: ['*0*2+1+4', '*0*1*2+1+3'],
+    expectedText: ['test', '*FOO']
+  },
+  'whitespaceinUL #3620': {
+    //fails as a new list item is introduced
+    disabled:true,
+    description: 'Only spaces and no text between <ul> and <li>',
+    html: '<html><body><ul> <li>FOO</li></ul></body></html>',
+    expectedLineAttribs: ['*0*1*2+1+3'],
+    expectedText: ['*FOO']
+  },
+  whitespaceinBulletList: {
+    //fails as a new list item is introduced
+    disabled:true,
+    description: 'Only spaces and no text between <ul> and <li> in an bullet list',
+    html: '<!doctype html><html><body><ul class="bullet"> <li>FOO</li></ul></body></html>',
+    expectedLineAttribs: ['*0*1*2+1+3'],
+    expectedText: ['*FOO']
+  },
+  whitespaceinIntendedList: {
+    //fails as a new list item is introduced
+    disabled:true,
+    description: 'Only spaces and no text between <ul> and <li> in an indented list',
+    html: '<html><body><ul class="indent"> <li>FOO</li></ul></body></html>',
+    expectedLineAttribs: ['*0*1*2+1+3'],
+    expectedText: ['*FOO']
+  },
+  whitespaceinOrderedList: {
+    //fails as a new list item is introduced
+    disabled:true,
+    description: 'Only spaces and no text between <ol> and <li>',
+    html: '<html><body><ol> <li>FOO</li></ol></body></html>',
+    expectedLineAttribs: ['*0*1*2*3+1+3'],
+    expectedText: ['*FOO']
+  },
+  prefixcorrectlinenumber: {
+    description: 'A normal ordered list with two items',
+    html: '<html><body><ol><li>should be 1</li><li>should be 2</li></ol></body></html>',
+    expectedLineAttribs: ['*0*1*2*3+1+b', '*0*1*2*3+1+b'],
+    expectedText: ['*should be 1', '*should be 2']
+  },
+  prefixcorrectlinenumbernested: {
+    description: 'A normal nested ordered list but <ol><ol> without the second <ol> being inside <li>',
+    html: '<html><body><ol><li>should be 1</li><ol><li>foo</li></ol><li>should be 2</li></ol></body></html>',
+    expectedLineAttribs: ['*0*1*2*3+1+b', '*0*4*2*3+1+3', '*0*1*2*5+1+b'],
+    expectedText: ['*should be 1', '*foo', '*should be 2']
+  },
+  prefixcorrectlinenumbernested2: {
+    description: 'A normal nested ordered list with the second starting <ol> in it\'s own <li>',
+    html: '<html><body><ol><li>should be 1</li><li><ol><li>foo</li></ol></li><li>should be 2</li></ol></body></html>',
+    expectedLineAttribs: ['*0*1*2*3+1+b', '*0*4*2*3+1+3', '*0*1*2*5+1+b'],
+    expectedText: ['*should be 1', '*foo', '*should be 2']
+  },
+  prefixcorrectlinenumbernested3: {
+    description: 'A normal nested ordered list with <ol><li><ol>',
+    html: '<html><body><ol><li>should be 1<ol><li>foo</li></ol></li><li>should be 2</li></ol></body></html>',
+    expectedLineAttribs: ['*0*1*2*3+1+b', '*0*4*2*3+1+3', '*0*1*2*5+1+b'],
+    expectedText: ['*should be 1', '*foo', '*should be 2']
+  },
+//
+//  /*
+//  "prefixcorrectlinenumber when introduced none list item - currently not supported see #3450":{
+//    html: '<html><body><ol><li>should be 1</li>test<li>should be 2</li></ol></body></html>',
+//    expectedLineAttribs: '<!DOCTYPE HTML><html><body><ol start="1" class="number"><li>should be 1</li>test<li>should be 2</li></ol><br></body></html>',
+//    expectedText: '\t1. should be 1\n\ttest\n\t2. should be 2\n\n'
+//  }
+//  ,
+//  "newlinesshouldntresetlinenumber #2194":{
+//    html: '<html><body><ol><li>should be 1</li>test<li>should be 2</li></ol></body></html>',
+//    expectedLineAttribs: '<!DOCTYPE HTML><html><body><ol class="number"><li>should be 1</li>test<li>should be 2</li></ol><br></body></html>',
+//    expectedText: '\t1. should be 1\n\ttest\n\t2. should be 2\n\n'
+//  }
+//  */
+//  'nestedULsfollowedByNestedOLs': {
+//    html: `<!doctype html>
+//    <html><body>
+//    <ul class="bullet">
+//      <li>one</li>
+//      <li>two</li>
+//      <li>0</li>
+//      <li>1</li>
+//      <li>2
+//        <ul class="bullet">
+//          <li>3</li>
+//          <li>4</li>
+//        </ul>
+//      </li>
+//    </ul>
+//    <ol class="number">
+//      <li>item
+//        <ol class="number">
+//          <li>item1</li>
+//          <li>item2</li>
+//        </ol>
+//      </li>
+//    </ol></body></html>`,
+//    expectedLineAttribs: '<!DOCTYPE HTML><html><body><ul class="bullet"><li>one</li><li>two</li><li>0</li><li>1</li><li>2<ul class="bullet"><li>3</li><li>4</ul></li></ul><ol start="1" class="number"><li>item<ol start="2" class="number"><li>item1</li><li>item2</ol></li></ol><br></body></html>',
+//    expectedText: '\t* one\n\t* two\n\t* 0\n\t* 1\n\t* 2\n\t\t* 3\n\t\t* 4\n\t1. item\n\t\t1.1. item1\n\t\t1.2. item2\n\n'
+//  }
 }
 
 
