@@ -40,7 +40,7 @@ jobs:
         - "mv !([plugin_name]) [plugin_name]"
         - "git clone https://github.com/ether/etherpad-lite.git etherpad"
         - "cd etherpad"
-        - "mkdir node_modules"
+        - "mkdir -p node_modules"
         - "mv ../[plugin_name] node_modules"
         - "bin/installDeps.sh"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
@@ -56,7 +56,7 @@ jobs:
         - "mv !([plugin_name]) [plugin_name]"
         - "git clone https://github.com/ether/etherpad-lite.git etherpad"
         - "cd etherpad"
-        - "mkdir node_modules"
+        - "mkdir -p node_modules"
         - "mv ../[plugin_name] node_modules"
         - "bin/installDeps.sh"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
@@ -68,5 +68,5 @@ notifications:
     channels:
       - "irc.freenode.org#etherpad-lite-dev"
 
-##ETHERPAD_TRAVIS_V=7
+##ETHERPAD_TRAVIS_V=8
 ## Travis configuration automatically created using bin/plugins/updateAllPluginsScript.sh
