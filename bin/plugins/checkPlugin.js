@@ -291,6 +291,17 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     }
   }
 
+  if (files.indexOf('contributing') === -1 && files.indexOf('contributing.md') === -1) {
+    console.warn('CONTRIBUTING.md file not found, please create');
+    if (autoFix) {
+      console.log('Autofixing missing CONTRIBUTING.md file, please edit the CONTRIBUTING.md file further to include plugin specific details.');
+      let contributing = fs.readFileSync('bin/plugins/lib/CONTRIBUTING.md', {encoding: 'utf8', flag: 'r'});
+      contributing = contributing.replace(/\[plugin_name\]/g, pluginName);
+      fs.writeFileSync(`${pluginPath}/CONTRIBUTING.md`, contributing);
+    }
+  }
+
+
   if (files.indexOf('readme') !== -1 && files.indexOf('readme.md') !== -1) {
     const readme = fs.readFileSync(`${pluginPath}/${readMeFileName}`, {encoding: 'utf8', flag: 'r'});
     if (readme.toLowerCase().indexOf('license') === -1) {
