@@ -11,11 +11,7 @@ MY_DIR=$(try cd "${0%/*}" && try pwd) || exit 1
 # reliably move to the etherpad base folder before running it
 try cd "${MY_DIR}/../../../"
 
-try sed -e '
-s!"loadTest":[^,]*!"loadTest": true!
-# Reduce rate limit aggressiveness
-s!"points":[^,]*!"points": 1000!
-' settings.json.template >settings.json
+cp settings.json.testing settings.json
 
 log "Assuming bin/installDeps.sh has already been run"
 node node_modules/ep_etherpad-lite/node/server.js "${@}" >/dev/null &
