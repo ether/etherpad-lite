@@ -1,5 +1,6 @@
-describe('Admin page', function () {
+'use strict';
 
+describe('Admin page', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
     helper.newAdmin('', cb);
@@ -7,9 +8,8 @@ describe('Admin page', function () {
   });
 
   it('Show Menu Items', function (done) {
-    let $menu = helper.admin$('.menu');
-    let menuChildren = $menu.find("li");
+    const $menu = helper.admin$('.menu');
+    const menuChildren = $menu.find('li');
     helper.waitFor(() => menuChildren.length >= 2, 2000).done(done);
   });
-
 });
