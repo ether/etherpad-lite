@@ -1,4 +1,4 @@
-describe('All the alphabet works n stuff', function () {
+describe('Admin > Settings', function () {
 
   // create a new pad before each test run
   beforeEach(function (cb) {
