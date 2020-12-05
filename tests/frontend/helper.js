@@ -174,6 +174,44 @@ var helper = {};
     return padName;
   };
 
+  // TODO: tidy up and clean up cruft
+  helper.newAdmin = function (page, cb) {
+    // build opts object
+    let opts = {clearCookies: true};
+    if (typeof cb === 'function') {
+      opts.cb = cb;
+    } else {
+      opts = _.defaults(cb, opts);
+    }
+
+    // if opts.params is set we manipulate the URL to include URL parameters IE ?foo=Bah.
+    if (opts.params) {
+      var encodedParams = `?${$.param(opts.params)}`;
+    }
+
+    // clear cookies
+    if (opts.clearCookies) {
+      helper.clearSessionCookies();
+    }
+
+    // TODO: Pull hostname and port from settings?
+    $iframe = $(`<iframe src='http://admin:changeme1@192.168.1.33:9001/admin/${page}'></iframe>`);
+
+    // clean up inner iframe references
+    helper.admin$ = null;
+
+    // remove old iframe
+    $('#iframe-container iframe').remove();
+    // set new iframe
+    $('#iframe-container').append($iframe);
+    $iframe.one('load', () => {
+        helper.admin$ = getFrameJQuery($('#iframe-container iframe'));
+        opts.cb();
+    });
+
+    return;
+  };
+
   helper.waitFor = function (conditionFunc, timeoutTime = 1900, intervalTime = 10) {
     const deferred = $.Deferred();
 
