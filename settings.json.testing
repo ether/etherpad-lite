@@ -478,7 +478,7 @@
     "windowMs": 90000,
 
     // maximum number of requests per IP to allow during the rate limit window
-    "max": 1000
+    "max": 100
   },
 
   /*
@@ -502,7 +502,7 @@
     "duration": 1,
 
     // maximum number of chanes per IP to allow during the rate limit window
-    "points": 10
+    "points": 1000
   },
 
 
