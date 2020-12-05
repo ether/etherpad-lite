@@ -58,7 +58,7 @@
     "proxy-addr": "^2.0.6",
     "rate-limiter-flexible": "^2.1.4",
     "rehype": "^10.0.0",
-    "rehype-format": "^3.0.1",
+    "rehype-minify-whitespace": "^4.0.5",
     "request": "2.88.2",
     "resolve": "1.1.7",
     "security": "1.0.0",
