@@ -179,21 +179,25 @@ let helper = {};
     return padName;
   };
 
-  // TODO: tidy up and clean up cruft
-  helper.newAdmin = async function (page) {
+  helper.newAdmin = async function (cb, page) {
     // if the below request fails we should skip this test.
-    await $.ajax({
-      type: 'GET',
-      url: '/admin',
-      dataType: 'json',
-      headers: {
-        Authorization: `Basic ${btoa('admin:changeme1')}`,
-      },
-      always: function(e,r,g){
-        console.log(e,r,g)
-      },
-    });
-
+    try {
+      await $.ajax({
+        type: 'GET',
+        url: '/admin',
+        dataType: 'json',
+        headers: {
+          Authorization: `Basic ${btoa('admin:changeme1')}`,
+        },
+      });
+    } catch (e) {
+      if (e.status === 200) {
+        helper.hasAuthed = true;
+      } else {
+        helper.hasAuthed = false;
+      }
+    }
+    if (!helper.hasAuthed) cb();
     $iframe = $(`<iframe src='/admin/${page}'></iframe>`);
 
     // clean up inner iframe references
@@ -205,7 +209,7 @@ let helper = {};
     $('#iframe-container').append($iframe);
     $iframe.one('load', () => {
       helper.admin$ = getFrameJQuery($('#iframe-container iframe'));
-      return;
+      cb();
     });
   };
 

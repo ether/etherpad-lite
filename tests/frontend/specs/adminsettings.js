@@ -1,18 +1,17 @@
 'use strict';
 
 describe('Admin > Settings', function () {
-  // create a new pad before each test run
-  beforeEach(async function (cb) {
-    await helper.newAdmin('settings');
-    this.timeout(30000);
+  beforeEach(function (cb) {
+    helper.newAdmin(cb, 'settings');
+    this.timeout(60000);
   });
 
   it('Are Settings visible, populated, does save work and restart?', async function () {
+    if (!helper.hasAuthed) this.skip();
     await helper.waitForPromise(() => helper.admin$('.settings').val().length);
     helper.admin$('#saveSettings').click(); // saves
     await helper.waitForPromise(() => helper.admin$('#response').is(':visible'));
     helper.admin$('#restartEtherpad').click(); // restarts
-    // console.log('Attempting restart');
     await timeout(5000); // Hacky...  Other suggestions welcome..
     try {
       await $.get('/');
