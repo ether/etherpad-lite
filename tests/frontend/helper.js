@@ -1,4 +1,6 @@
-var helper = {};
+'use strict';
+
+let helper = {};
 
 (function () {
   let $iframe; const
@@ -68,7 +70,8 @@ var helper = {};
   // I don't fully understand it, but this function seems to properly simulate
   // padCookie.setPref in the client code
   helper.setPadPrefCookie = function (prefs) {
-    helper.padChrome$.document.cookie = (`prefsHttp=${escape(JSON.stringify(prefs))};expires=Thu, 01 Jan 3000 00:00:00 GMT`);
+    helper.padChrome$.document.cookie =
+    (`prefsHttp=${escape(JSON.stringify(prefs))};expires=Thu, 01 Jan 3000 00:00:00 GMT`);
   };
 
   // Functionality for knowing what key event type is required for tests
@@ -102,8 +105,9 @@ var helper = {};
     }
 
     // if opts.params is set we manipulate the URL to include URL parameters IE ?foo=Bah.
+    let encodedParams = '';
     if (opts.params) {
-      var encodedParams = `?${$.param(opts.params)}`;
+      encodedParams = `?${$.param(opts.params)}`;
     }
 
     // clear cookies
@@ -132,7 +136,8 @@ var helper = {};
       if (opts.padPrefs) {
         helper.setPadPrefCookie(opts.padPrefs);
       }
-      helper.waitFor(() => !$iframe.contents().find('#editorloadingbox').is(':visible'), 10000).done(() => {
+      helper.waitFor(() => !$iframe.contents().find('#editorloadingbox').
+          is(':visible'), 10000).done(() => {
         helper.padOuter$ = getFrameJQuery(helper.padChrome$('iframe[name="ace_outer"]'));
         helper.padInner$ = getFrameJQuery(helper.padOuter$('iframe[name="ace_inner"]'));
 
@@ -184,18 +189,17 @@ var helper = {};
       opts = _.defaults(cb, opts);
     }
 
-    // if opts.params is set we manipulate the URL to include URL parameters IE ?foo=Bah.
-    if (opts.params) {
-      var encodedParams = `?${$.param(opts.params)}`;
-    }
-
-    // clear cookies
-    if (opts.clearCookies) {
-      helper.clearSessionCookies();
-    }
+    $.ajax({
+      type: 'GET',
+      url: '/admin',
+      dataType: 'json',
+      headers: {
+        Authorization: `Basic ${btoa('admin:changeme1')}`
+      },
+    });
 
     // TODO: Pull hostname and port from settings?
-    $iframe = $(`<iframe src='http://admin:changeme1@192.168.1.33:9001/admin/${page}'></iframe>`);
+    $iframe = $(`<iframe src='/admin/${page}'></iframe>`);
 
     // clean up inner iframe references
     helper.admin$ = null;
@@ -205,11 +209,9 @@ var helper = {};
     // set new iframe
     $('#iframe-container').append($iframe);
     $iframe.one('load', () => {
-        helper.admin$ = getFrameJQuery($('#iframe-container iframe'));
-        opts.cb();
+      helper.admin$ = getFrameJQuery($('#iframe-container iframe'));
+      return cb();
     });
-
-    return;
   };
 
   helper.waitFor = function (conditionFunc, timeoutTime = 1900, intervalTime = 10) {
@@ -283,7 +285,7 @@ var helper = {};
     selection.addRange(range);
   };
 
-  var getTextNodeAndOffsetOf = function ($targetLine, targetOffsetAtLine) {
+  const getTextNodeAndOffsetOf = function ($targetLine, targetOffsetAtLine) {
     const $textNodes = $targetLine.find('*').contents().filter(function () {
       return this.nodeType === Node.TEXT_NODE;
     });
@@ -306,7 +308,7 @@ var helper = {};
     });
 
     // edge cases
-    if (textNodeWhereOffsetIs === null) {
+    if (textNodeWhereOffsetIs == null) {
       // there was no text node inside $targetLine, so it is an empty line (<br>).
       // Use beginning of line
       textNodeWhereOffsetIs = $targetLine.get(0);
