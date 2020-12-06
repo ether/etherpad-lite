@@ -82,7 +82,6 @@ const checkAccess = async (req, res, next) => {
     const requireAuthn = requireAdmin || settings.requireAuthentication;
     if (!requireAuthn) return grant('create');
     if (!isAuthenticated) return grant(false);
-
     if (requireAdmin && !req.session.user.is_admin) return grant(false);
     if (!settings.requireAuthorization) return grant('create');
     return grant(await aCallFirst0('authorize', {req, res, next, resource: req.path}));
