@@ -76,14 +76,13 @@ const checkAccess = async (req, res, next) => {
       user.padAuthorizations[padId] = level;
       return true;
     };
+    if (requireAdmin && settings.disablePasswordRequirementForAdminUI) return grant(true);
     const isAuthenticated = req.session && req.session.user;
     if (isAuthenticated && req.session.user.is_admin) return grant('create');
     const requireAuthn = requireAdmin || settings.requireAuthentication;
     if (!requireAuthn) return grant('create');
     if (!isAuthenticated) return grant(false);
-    console.warn("disablePassword", settings.disablePasswordRequirementForAdminUI);
 
-    if (requireAdmin && settings.disablePasswordRequirementForAdminUI) return grant(true);
     if (requireAdmin && !req.session.user.is_admin) return grant(false);
     if (!settings.requireAuthorization) return grant('create');
     return grant(await aCallFirst0('authorize', {req, res, next, resource: req.path}));
