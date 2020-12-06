@@ -180,14 +180,6 @@ let helper = {};
   };
 
   helper.newAdmin = async function (cb, page) {
-    // should we run this test at all?
-    if (window.disablePasswordRequirementForAdminUI === false) {
-      helper.disablePasswordRequirementForAdminUI === false;
-      cb();
-    } else {
-      helper.disablePasswordRequirementForAdminUI === true;
-    }
-
     // define the iframe
     $iframe = $(`<iframe src='/admin/${page}'></iframe>`);
 

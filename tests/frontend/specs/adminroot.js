@@ -3,7 +3,7 @@
 describe('Admin page', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
-    helper.newAdmin('', cb);
+    helper.newAdmin(cb, '');
     this.timeout(60000);
   });
 

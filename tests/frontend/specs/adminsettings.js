@@ -7,8 +7,6 @@ describe('Admin > Settings', function () {
   });
 
   it('Are Settings visible, populated, does save work and restart?', async function () {
-    // Skip this test if we haven't set the disablePasswordRequirementForAdminUI to true
-    if (!helper.disablePasswordRequirementForAdminUI) this.skip();
     await helper.waitForPromise(() => helper.admin$('.settings').val().length);
     helper.admin$('#saveSettings').click(); // saves
     await helper.waitForPromise(() => helper.admin$('#response').is(':visible'));

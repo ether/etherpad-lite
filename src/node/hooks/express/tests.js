@@ -1,9 +1,12 @@
+'use strict';
+
 const path = require('path');
 const npm = require('npm');
 const fs = require('fs');
 const util = require('util');
+const settings = require('../../utils/Settings');
 
-exports.expressCreateServer = function (hook_name, args, cb) {
+exports.expressCreateServer = (hook_name, args, cb) => {
   args.app.get('/tests/frontend/specs_list.js', async (req, res) => {
     const [coreTests, pluginTests] = await Promise.all([
       exports.getCoreTests(),
@@ -16,6 +19,10 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     // Keep only *.js files
     files = files.filter((f) => f.endsWith('.js'));
 
+    // remove admin tests if the setting to enable them isn't in settings.json
+    if (!settings.disablePasswordRequirementForAdminUI) {
+      files = files.filter((file) => file.indexOf('admin') !== 0);
+    }
     console.debug('Sent browser the following test specs:', files);
     res.setHeader('content-type', 'text/javascript');
     res.end(`var specs_list = ${JSON.stringify(files)};\n`);
@@ -24,7 +31,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   // path.join seems to normalize by default, but we'll just be explicit
   const rootTestFolder = path.normalize(path.join(npm.root, '../tests/frontend/'));
 
-  const url2FilePath = function (url) {
+  const url2FilePath = (url) => {
     let subPath = url.substr('/tests/frontend'.length);
     if (subPath == '') {
       subPath = 'index.html';
@@ -47,7 +54,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
     fs.readFile(specFilePath, (err, content) => {
       if (err) { return res.send(500); }
 
-      content = `describe(${JSON.stringify(specFileName)}, function(){   ${content}   });`;
+      content = `describe(${JSON.stringify(specFileName)}, function(){${content}});`;
 
       res.send(content);
     });
@@ -67,7 +74,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
 const readdir = util.promisify(fs.readdir);
 
-exports.getPluginTests = async function (callback) {
+exports.getPluginTests = async (callback) => {
   const moduleDir = 'node_modules/';
   const specPath = '/static/tests/frontend/specs/';
   const staticDir = '/static/plugins/';
@@ -86,7 +93,4 @@ exports.getPluginTests = async function (callback) {
   return Promise.all(promises).then(() => pluginSpecs);
 };
 
-exports.getCoreTests = function () {
-  // get the core test specs
-  return readdir('tests/frontend/specs');
-};
+exports.getCoreTests = () => readdir('tests/frontend/specs');
