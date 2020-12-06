@@ -16,6 +16,7 @@ s!"soffice":[^,]*!"soffice": "/usr/bin/soffice"!
 # Reduce rate limit aggressiveness
 s!"max":[^,]*!"max": 100!
 s!"points":[^,]*!"points": 1000!
+s!"disablePasswordRequirementForAdminUI":[^,]*!"disablePasswordRequirementForAdminUI": true!
 # GitHub does not like our output
 s!"loglevel":[^,]*!"loglevel": "WARN"!
 ' settings.json.template >settings.json
