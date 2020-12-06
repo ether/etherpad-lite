@@ -180,25 +180,20 @@ let helper = {};
   };
 
   // TODO: tidy up and clean up cruft
-  helper.newAdmin = function (page, cb) {
-    // build opts object
-    let opts = {clearCookies: true};
-    if (typeof cb === 'function') {
-      opts.cb = cb;
-    } else {
-      opts = _.defaults(cb, opts);
-    }
-
-    $.ajax({
+  helper.newAdmin = async function (page) {
+    // if the below request fails we should skip this test.
+    await $.ajax({
       type: 'GET',
       url: '/admin',
       dataType: 'json',
       headers: {
-        Authorization: `Basic ${btoa('admin:changeme1')}`
+        Authorization: `Basic ${btoa('admin:changeme1')}`,
+      },
+      always: function(e,r,g){
+        console.log(e,r,g)
       },
     });
 
-    // TODO: Pull hostname and port from settings?
     $iframe = $(`<iframe src='/admin/${page}'></iframe>`);
 
     // clean up inner iframe references
@@ -210,7 +205,7 @@ let helper = {};
     $('#iframe-container').append($iframe);
     $iframe.one('load', () => {
       helper.admin$ = getFrameJQuery($('#iframe-container iframe'));
-      return cb();
+      return;
     });
   };
 

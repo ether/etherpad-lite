@@ -2,32 +2,33 @@
 
 describe('Admin > Settings', function () {
   // create a new pad before each test run
-  beforeEach(function (cb) {
-    helper.newAdmin('settings', cb);
+  beforeEach(async function (cb) {
+    await helper.newAdmin('settings');
     this.timeout(30000);
   });
 
   it('Are Settings visible, populated, does save work and restart?', async function () {
     await helper.waitForPromise(() => helper.admin$('.settings').val().length);
-    // expect(helper.admin$('.settings').val().length).to.be.above(1000);
     helper.admin$('#saveSettings').click(); // saves
     await helper.waitForPromise(() => helper.admin$('#response').is(':visible'));
     helper.admin$('#restartEtherpad').click(); // restarts
-    console.log('Attempting restart');
-    await timeout(5000);
-    let getResponse = await $.get('/');
-    console.log('gR', getResponse)
-/*
-    await helper.admin$.get(`/?time=${new Date().getTime()}`).
-      console.log(a,b,c);
-      // expect(true).to.be(true);
-    }).fail(() => {
-      throw new Error('Unable to reconnect to Etherpad after restart')
-    }).always((a,b,c) => {
-      console.log(a,b,c);
-    });
-    */
+    // console.log('Attempting restart');
+    await timeout(5000); // Hacky...  Other suggestions welcome..
+    try {
+      await $.get('/');
+      expect(true).to.be(true);
+    } catch (e) {
+      expect(true).to.be(false);
+      throw new Error('Unable to load Admin page after restart.');
+    }
   });
+
+  /*
+  TODO: Other tests
+    Is JSON parseable (note that we need an additional library for this).
+    If we modify JSON and save it is it available after clicking "save?"
+    If we modify JSON and save/restart is the setting applied?
+  */
 
   function timeout(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
