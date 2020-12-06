@@ -48,6 +48,7 @@
   border: 1px solid #ccc;
   background: transparent;
   cursor: pointer;
+  flex-shrink: 0;
 }
 #myswatch {
   width: 100%;

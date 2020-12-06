@@ -47,7 +47,7 @@ exports.install = async (pluginName, cb = null) => {
   cb = wrapTaskCb(cb);
   try {
     await loadNpm();
-    await util.promisify(npm.commands.install)([pluginName]);
+    await util.promisify(npm.commands.install)([`${pluginName}@latest`]);
     await hooks.aCallAll('pluginInstall', {pluginName});
     await plugins.update();
   } catch (err) {
