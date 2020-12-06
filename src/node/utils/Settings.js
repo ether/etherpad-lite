@@ -380,6 +380,11 @@ exports.commitRateLimiting = {
  */
 exports.importMaxFileSize = 50 * 1024 * 1024;
 
+/*
+ * Disable Password Requirements for Admin pages
+ */
+exports.disablePasswordRequirementForAdminUI = false;
+
 // checks if abiword is avaiable
 exports.abiwordAvailable = function () {
   if (exports.abiword != null) {

@@ -180,24 +180,15 @@ let helper = {};
   };
 
   helper.newAdmin = async function (cb, page) {
-    // if the below request fails we should skip this test.
-    try {
-      await $.ajax({
-        type: 'GET',
-        url: '/admin',
-        dataType: 'json',
-        headers: {
-          Authorization: `Basic ${btoa('admin:changeme1')}`,
-        },
-      });
-    } catch (e) {
-      if (e.status === 200) {
-        helper.hasAuthed = true;
-      } else {
-        helper.hasAuthed = false;
-      }
+    // should we run this test at all?
+    if (window.disablePasswordRequirementForAdminUI === false) {
+      helper.disablePasswordRequirementForAdminUI === false;
+      cb();
+    } else {
+      helper.disablePasswordRequirementForAdminUI === true;
     }
-    if (!helper.hasAuthed) cb();
+
+    // define the iframe
     $iframe = $(`<iframe src='/admin/${page}'></iframe>`);
 
     // clean up inner iframe references

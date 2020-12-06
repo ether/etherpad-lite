@@ -1,9 +1,11 @@
+'use strict';
+
 const eejs = require('ep_etherpad-lite/node/eejs');
 const settings = require('ep_etherpad-lite/node/utils/Settings');
 const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 const fs = require('fs');
 
-exports.expressCreateServer = function (hook_name, args, cb) {
+exports.expressCreateServer = (hook_name, args, cb) => {
   args.app.get('/admin/settings', (req, res) => {
     res.send(eejs.require('ep_etherpad-lite/templates/admin/settings.html', {
       req,
@@ -14,11 +16,13 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   return cb();
 };
 
-exports.socketio = function (hook_name, args, cb) {
+exports.socketio = (hook_name, args, cb) => {
   const io = args.io.of('/settings');
   io.on('connection', (socket) => {
-    if (!socket.conn.request.session || !socket.conn.request.session.user || !socket.conn.request.session.user.is_admin) return;
-
+    if (!settings.disablePasswordRequirementForAdminUI) {
+      if (!socket.conn.request.session || !socket.conn.request.session.user ||
+        !socket.conn.request.session.user.is_admin) return;
+    }
     socket.on('load', (query) => {
       fs.readFile('settings.json', 'utf8', (err, data) => {
         if (err) {
