@@ -19,10 +19,8 @@ exports.expressCreateServer = (hook_name, args, cb) => {
 exports.socketio = (hook_name, args, cb) => {
   const io = args.io.of('/settings');
   io.on('connection', (socket) => {
-    if (!settings.disablePasswordRequirementForAdminUI) {
-      if (!socket.conn.request.session || !socket.conn.request.session.user ||
-        !socket.conn.request.session.user.is_admin) return;
-    }
+    if (!socket.conn.request.session || !socket.conn.request.session.user || !socket.conn.request.session.user.is_admin) return;
+
     socket.on('load', (query) => {
       fs.readFile('settings.json', 'utf8', (err, data) => {
         if (err) {

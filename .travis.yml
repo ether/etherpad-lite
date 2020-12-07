@@ -18,6 +18,11 @@ _set_loglevel_warn: &set_loglevel_warn |
       settings.json.template >settings.json.template.new &&
   mv settings.json.template.new settings.json.template
 
+_enable_admin_tests: &enable_admin_tests |
+sed -e 's/"enableAdminUITests": false/"enableAdminUITests": true,\n"users":{"admin":{"password":"changeme","is_admin":true}}/' \
+      settings.json.template >settings.json.template.new &&
+  mv settings.json.template.new settings.json.template
+
 _install_libreoffice: &install_libreoffice >-
   sudo add-apt-repository -y ppa:libreoffice/ppa &&
   sudo apt-get update &&
@@ -46,6 +51,7 @@ jobs:
       name: "Test the Frontend without Plugins"
       install:
         - *set_loglevel_warn
+        - *enable_admin_tests
         - "tests/frontend/travis/sauce_tunnel.sh"
         - "bin/installDeps.sh"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
@@ -80,6 +86,7 @@ jobs:
       name: "Test the Frontend Plugins only"
       install:
         - *set_loglevel_warn
+        - *enable_admin_tests
         - "tests/frontend/travis/sauce_tunnel.sh"
         - "bin/installDeps.sh"
         - "rm tests/frontend/specs/*"

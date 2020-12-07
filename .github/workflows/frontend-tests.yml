@@ -29,6 +29,9 @@ jobs:
     - name: Write custom settings.json with loglevel WARN
       run: "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/' < settings.json.template > settings.json"
 
+    - name: Write custom settings.json that enables the Admin UI tests
+      run: "sed -i 's/\"enableAdminUITests\": false/\"enableAdminUITests\": true,\\n\"users\":{\"admin\":{\"password\":\"changeme\",\"is_admin\":true}}/' settings.json"
+
     - name: Run the frontend tests
       shell: bash
       env:
@@ -67,6 +70,9 @@ jobs:
 
     - name: Write custom settings.json with loglevel WARN
       run: "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/' < settings.json.template > settings.json"
+
+    - name: Write custom settings.json that enables the Admin UI tests
+      run: "sed -i 's/\"enableAdminUITests\": false/\"enableAdminUITests\": true,\\n\"users\":{\"admin\":{\"password\":\"changeme\",\"is_admin\":true}}/' settings.json"
 
       # XXX we should probably run all tests, because plugins could effect their results
     - name: Remove standard frontend test files, so only plugin tests are run

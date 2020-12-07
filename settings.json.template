@@ -598,12 +598,10 @@
 
       ]
     }, // logconfig
-  /*
-   * Disable any auth requirements for /admin pages.
-   * WARNING: Only use this if you want to run automated testing for admin pages
-   */
-  "disablePasswordRequirementForAdminUI": false,
 
   /* Override any strings found in locale directories */
-  "customLocaleStrings": {}
+  "customLocaleStrings": {},
+
+  /* Disable Admin UI tests */
+  "enableAdminUITests": false
 }

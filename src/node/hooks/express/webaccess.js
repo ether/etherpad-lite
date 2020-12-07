@@ -76,7 +76,6 @@ const checkAccess = async (req, res, next) => {
       user.padAuthorizations[padId] = level;
       return true;
     };
-    if (requireAdmin && settings.disablePasswordRequirementForAdminUI) return grant(true);
     const isAuthenticated = req.session && req.session.user;
     if (isAuthenticated && req.session.user.is_admin) return grant('create');
     const requireAuthn = requireAdmin || settings.requireAuthentication;

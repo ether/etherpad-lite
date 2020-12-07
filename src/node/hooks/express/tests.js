@@ -20,9 +20,10 @@ exports.expressCreateServer = (hook_name, args, cb) => {
     files = files.filter((f) => f.endsWith('.js'));
 
     // remove admin tests if the setting to enable them isn't in settings.json
-    if (!settings.disablePasswordRequirementForAdminUI) {
+    if (!settings.enableAdminUITests) {
       files = files.filter((file) => file.indexOf('admin') !== 0);
     }
+
     console.debug('Sent browser the following test specs:', files);
     res.setHeader('content-type', 'text/javascript');
     res.end(`var specs_list = ${JSON.stringify(files)};\n`);

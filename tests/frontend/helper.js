@@ -179,7 +179,7 @@ let helper = {};
     return padName;
   };
 
-  helper.newAdmin = async function (cb, page) {
+  helper.newAdmin = async function (page) {
     // define the iframe
     $iframe = $(`<iframe src='/admin/${page}'></iframe>`);
 
@@ -192,7 +192,6 @@ let helper = {};
     $('#iframe-container').append($iframe);
     $iframe.one('load', () => {
       helper.admin$ = getFrameJQuery($('#iframe-container iframe'));
-      cb();
     });
   };
 

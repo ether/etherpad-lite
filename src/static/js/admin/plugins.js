@@ -168,8 +168,6 @@ $(document).ready(() => {
     search.messages.hide('fetching');
     $('#search-query').removeAttr('disabled');
 
-    console.log('got search results', data);
-
     // add to results
     search.results = search.results.concat(data.results);
 

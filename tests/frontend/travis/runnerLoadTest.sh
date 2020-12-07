@@ -12,7 +12,6 @@ MY_DIR=$(try cd "${0%/*}" && try pwd) || exit 1
 try cd "${MY_DIR}/../../../"
 
 try sed -e '
-cp settings.json.testing settings.json
 s!"loadTest":[^,]*!"loadTest": true!
 # Reduce rate limit aggressiveness
 s!"points":[^,]*!"points": 1000!
