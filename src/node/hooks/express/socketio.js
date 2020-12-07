@@ -6,15 +6,34 @@ const settings = require('../../utils/Settings');
 const socketio = require('socket.io');
 const socketIORouter = require('../../handler/SocketIORouter');
 const hooks = require('../../../static/js/pluginfw/hooks');
-
 const padMessageHandler = require('../../handler/PadMessageHandler');
+const util = require('util');
+
+let io;
+
+exports.expressCloseServer = async () => {
+  // According to the socket.io documentation every client is always in the default namespace (and
+  // may also be in other namespaces).
+  const ns = io.sockets; // The Namespace object for the default namespace.
+  // Disconnect all socket.io clients. This probably isn't necessary; closing the socket.io Engine
+  // (see below) probably gracefully disconnects all clients. But that is not documented, and this
+  // doesn't seem to hurt, so hedge against surprising and undocumented socket.io behavior.
+  for (const id of await util.promisify(ns.clients.bind(ns))()) {
+    ns.connected[id].disconnect(true);
+  }
+  // Don't call io.close() because that closes the underlying HTTP server, which is already done
+  // elsewhere. (Closing an HTTP server twice throws an exception.) The `engine` property of
+  // socket.io Server objects is undocumented, but I don't see any other way to shut down socket.io
+  // without also closing the HTTP server.
+  io.engine.close();
+};
 
 exports.expressCreateServer = (hookName, args, cb) => {
   // init socket.io and redirect all requests to the MessageHandler
   // there shouldn't be a browser that isn't compatible to all
   // transports in this list at once
   // e.g. XHR is disabled in IE by default, so in IE it should use jsonp-polling
-  const io = socketio({
+  io = socketio({
     transports: settings.socketTransportProtocols,
   }).listen(args.server, {
     /*
