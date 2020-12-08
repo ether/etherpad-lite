@@ -65,10 +65,10 @@ const padeditor = (function () {
             }
           }
           // Listen for clicks on sidediv items
-          $outerdoc.find('#sidedivinner').on('click', 'div', function() {
-            const lineNumber = $(this).index() + 1;
-            window.location.hash = 'L' + lineNumber;
-          })
+          $outerdoc.find('#sidedivinner').on('click', 'div', function () {
+            const targetLineNumber = $(this).index() + 1;
+            window.location.hash = `L${targetLineNumber}`;
+          });
 
           readyFunc();
         }
