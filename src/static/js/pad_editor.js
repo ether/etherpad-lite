@@ -41,28 +41,29 @@ const padeditor = (function () {
 
       function aceReady() {
         $('#editorloadingbox').hide();
+        const $outerdoc = $('iframe[name="ace_outer"]').contents().find('#outerdocbody');
         if (readyFunc) {
           // If a number is in the URI IE #L124 go to that line number
           const lineNumber = window.location.hash.substr(1);
           if (lineNumber) {
             if (lineNumber[0] === 'L') {
               const lineNumberInt = parseInt(lineNumber.replace('L', ''));
-              const $inner = $('iframe[name="ace_outer"]').contents().find('iframe')
-                  .contents().find('#innerdocbody');
-              const line = $inner.find(`div:nth-child(${lineNumberInt})`);
-              if (line.length !== 0) {
-                let offsetTop = line.offset().top;
-                const $outerdoc = $('iframe[name="ace_outer"]').contents().find('#outerdocbody');
-                offsetTop += parseInt($outerdoc.css('padding-top').replace('px', ''));
-                offsetTop += parseInt($inner.css('padding-top').replace('px', ''));
-                const $outerdocHTML = $('iframe[name="ace_outer"]').contents()
-                    .find('#outerdocbody').parent();
-                $outerdoc.css({top: `${offsetTop}px`}); // Chrome
-                $outerdocHTML.animate({scrollTop: offsetTop}); // needed for FF
+              if (lineNumberInt) {
+                const $inner = $('iframe[name="ace_outer"]').contents().find('iframe')
+                    .contents().find('#innerdocbody');
+                const line = $inner.find(`div:nth-child(${lineNumberInt})`);
+                if (line.length !== 0) {
+                  let offsetTop = line.offset().top;
+                  offsetTop += parseInt($outerdoc.css('padding-top').replace('px', ''));
+                  offsetTop += parseInt($inner.css('padding-top').replace('px', ''));
+                  const $outerdocHTML = $('iframe[name="ace_outer"]').contents()
+                      .find('#outerdocbody').parent();
+                  $outerdoc.css({top: `${offsetTop}px`}); // Chrome
+                  $outerdocHTML.animate({scrollTop: offsetTop}); // needed for FF
+                }
               }
             }
           }
-          const $outerdoc = $('iframe[name="ace_outer"]').contents().find('#outerdocbody');
           // Listen for clicks on sidediv items
           $outerdoc.find('#sidedivinner').on('click', 'div', function() {
             const lineNumber = $(this).index() + 1;
