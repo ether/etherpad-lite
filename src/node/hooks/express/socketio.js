@@ -1,13 +1,15 @@
+'use strict';
+
 const express = require('../express');
 const proxyaddr = require('proxy-addr');
 const settings = require('../../utils/Settings');
 const socketio = require('socket.io');
 const socketIORouter = require('../../handler/SocketIORouter');
-const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+const hooks = require('../../../static/js/pluginfw/hooks');
 
 const padMessageHandler = require('../../handler/PadMessageHandler');
 
-exports.expressCreateServer = function (hook_name, args, cb) {
+exports.expressCreateServer = (hookName, args, cb) => {
   // init socket.io and redirect all requests to the MessageHandler
   // there shouldn't be a browser that isn't compatible to all
   // transports in this list at once

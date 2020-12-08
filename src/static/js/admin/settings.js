@@ -1,7 +1,8 @@
+'use strict';
+
 $(document).ready(() => {
-  let socket;
   const loc = document.location;
-  const port = loc.port == '' ? (loc.protocol == 'https:' ? 443 : 80) : loc.port;
+  const port = loc.port === '' ? (loc.protocol === 'https:' ? 443 : 80) : loc.port;
   const url = `${loc.protocol}//${loc.hostname}:${port}/`;
   const pathComponents = location.pathname.split('/');
   // Strip admin/plugins
@@ -10,7 +11,7 @@ $(document).ready(() => {
 
   // connect
   const room = `${url}settings`;
-  socket = io.connect(room, {path: `${baseURL}socket.io`, resource});
+  const socket = io.connect(room, {path: `${baseURL}socket.io`, resource});
 
   socket.on('settings', (settings) => {
     /* Check whether the settings.json is authorized to be viewed */
@@ -58,18 +59,13 @@ $(document).ready(() => {
 });
 
 
-function isJSONClean(data) {
+const isJSONClean = (data) => {
   let cleanSettings = JSON.minify(data);
   // this is a bit naive. In theory some key/value might contain the sequences ',]' or ',}'
   cleanSettings = cleanSettings.replace(',]', ']').replace(',}', '}');
   try {
-    var response = jQuery.parseJSON(cleanSettings);
+    return typeof jQuery.parseJSON(cleanSettings) === 'object';
   } catch (e) {
     return false; // the JSON failed to be parsed
   }
-  if (typeof response !== 'object') {
-    return false;
-  } else {
-    return true;
-  }
-}
+};

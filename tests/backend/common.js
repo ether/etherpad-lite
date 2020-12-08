@@ -1,14 +1,12 @@
-/* global __dirname, exports, require */
+'use strict';
 
-function m(mod) { return `${__dirname}/../../src/${mod}`; }
-
-const apiHandler = require(m('node/handler/APIHandler'));
-const log4js = require(m('node_modules/log4js'));
+const apiHandler = require('ep_etherpad-lite/node/handler/APIHandler');
+const log4js = require('ep_etherpad-lite/node_modules/log4js');
 const process = require('process');
-const server = require(m('node/server'));
-const settings = require(m('node/utils/Settings'));
-const supertest = require(m('node_modules/supertest'));
-const webaccess = require(m('node/hooks/express/webaccess'));
+const server = require('ep_etherpad-lite/node/server');
+const settings = require('ep_etherpad-lite/node/utils/Settings');
+const supertest = require('ep_etherpad-lite/node_modules/supertest');
+const webaccess = require('ep_etherpad-lite/node/hooks/express/webaccess');
 
 const backups = {};
 let inited = false;
