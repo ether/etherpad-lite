@@ -1,16 +1,9 @@
 'use strict';
 
-$(document).ready(() => {
-  const loc = document.location;
-  const port = loc.port === '' ? (loc.protocol === 'https:' ? 443 : 80) : loc.port;
-  const url = `${loc.protocol}//${loc.hostname}:${port}/`;
-  const pathComponents = location.pathname.split('/');
-  // Strip admin/plugins
-  const baseURL = `${pathComponents.slice(0, pathComponents.length - 2).join('/')}/`;
+/* global socketio */
 
-  // connect
-  const room = `${url}settings`;
-  const socket = io.connect(room, {path: `${baseURL}socket.io`});
+$(document).ready(() => {
+  const socket = socketio.connect('..', '/settings');
 
   socket.on('settings', (settings) => {
     /* Check whether the settings.json is authorized to be viewed */
