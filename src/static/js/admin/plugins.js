@@ -7,11 +7,10 @@ $(document).ready(() => {
   const pathComponents = location.pathname.split('/');
   // Strip admin/plugins
   const baseURL = `${pathComponents.slice(0, pathComponents.length - 2).join('/')}/`;
-  const resource = `${baseURL.substring(1)}socket.io`;
 
   // connect
   const room = `${url}pluginfw/installer`;
-  const socket = io.connect(room, {path: `${baseURL}socket.io`, resource});
+  const socket = io.connect(room, {path: `${baseURL}socket.io`});
 
   const search = (searchTerm, limit) => {
     if (search.searchTerm !== searchTerm) {
