@@ -333,7 +333,7 @@ padutils.setupGlobalExceptionHandler = () => {
     globalExceptionHandler = (e) => {
       let type;
       let err;
-      let msg, url, lineno;
+      let msg, url, linenumber;
       if (e instanceof ErrorEvent) {
         type = 'Uncaught exception';
         err = e.error || {};
