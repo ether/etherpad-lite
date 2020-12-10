@@ -29,6 +29,7 @@ require('./jquery');
 const Cookies = require('./pad_utils').Cookies;
 const randomString = require('./pad_utils').randomString;
 const hooks = require('./pluginfw/hooks');
+const socketio = require('./socketio');
 
 let token, padId, exportLinks, socket, changesetLoader, BroadcastSlider;
 
@@ -51,14 +52,7 @@ const init = () => {
       Cookies.set('token', token, {expires: 60});
     }
 
-    const loc = document.location;
-    // get the correct port
-    const port = loc.port === '' ? (loc.protocol === 'https:' ? 443 : 80) : loc.port;
-    // create the url
-    const url = `${loc.protocol}//${loc.hostname}:${port}/`;
-
-    // build up the socket io connection
-    socket = io.connect(url, {path: `${exports.baseURL}socket.io`});
+    socket = socketio.connect(exports.baseURL);
 
     // send the ready message once we're connected
     socket.on('connect', () => {

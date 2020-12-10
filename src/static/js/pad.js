@@ -29,6 +29,7 @@ let socket;
 require('./jquery');
 require('./farbtastic');
 require('./excanvas');
+require('./gritter');
 
 const Cookies = require('./pad_utils').Cookies;
 const chat = require('./chat').chat;
@@ -44,7 +45,7 @@ const paduserlist = require('./pad_userlist').paduserlist;
 const padutils = require('./pad_utils').padutils;
 const colorutils = require('./colorutils').colorutils;
 const randomString = require('./pad_utils').randomString;
-require('./gritter'); // Mutates the jQuery object to make $.gritter available.
+const socketio = require('./socketio');
 
 const hooks = require('./pluginfw/hooks');
 
@@ -218,15 +219,7 @@ const sendClientReady = (isReconnect, messageType) => {
 };
 
 const handshake = () => {
-  const loc = document.location;
-  // get the correct port
-  const port = loc.port === '' ? (loc.protocol === 'https:' ? 443 : 80) : loc.port;
-  // create the url
-  const url = `${loc.protocol}//${loc.hostname}:${port}/`;
-  // connect
-  socket = pad.socket = io.connect(url, {
-    // Allow deployers to host Etherpad on a non-root path
-    path: `${exports.baseURL}socket.io`,
+  socket = pad.socket = socketio.connect(exports.baseURL, '/', {
     reconnectionAttempts: 5,
     reconnection: true,
     reconnectionDelay: 1000,
