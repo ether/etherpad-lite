@@ -223,13 +223,10 @@ const handshake = () => {
   const port = loc.port === '' ? (loc.protocol === 'https:' ? 443 : 80) : loc.port;
   // create the url
   const url = `${loc.protocol}//${loc.hostname}:${port}/`;
-  // find out in which subfolder we are
-  const resource = `${exports.baseURL.substring(1)}socket.io`;
   // connect
   socket = pad.socket = io.connect(url, {
     // Allow deployers to host Etherpad on a non-root path
     path: `${exports.baseURL}socket.io`,
-    resource,
     reconnectionAttempts: 5,
     reconnection: true,
     reconnectionDelay: 1000,
