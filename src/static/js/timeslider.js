@@ -56,11 +56,9 @@ const init = () => {
     const port = loc.port === '' ? (loc.protocol === 'https:' ? 443 : 80) : loc.port;
     // create the url
     const url = `${loc.protocol}//${loc.hostname}:${port}/`;
-    // find out in which subfolder we are
-    const resource = `${exports.baseURL.substring(1)}socket.io`;
 
     // build up the socket io connection
-    socket = io.connect(url, {path: `${exports.baseURL}socket.io`, resource});
+    socket = io.connect(url, {path: `${exports.baseURL}socket.io`});
 
     // send the ready message once we're connected
     socket.on('connect', () => {
