@@ -60,6 +60,24 @@ const padeditor = (function () {
                       .find('#outerdocbody').parent();
                   $outerdoc.css({top: `${offsetTop}px`}); // Chrome
                   $outerdocHTML.animate({scrollTop: offsetTop}); // needed for FF
+                  const node = line[0];
+                  self.ace.callWithAce((ace) => {
+                    const selection = {
+                      startPoint: {
+                        index: 0,
+                        focusAtStart: true,
+                        maxIndex: 1,
+                        node,
+                      },
+                      endPoint: {
+                        index: 0,
+                        focusAtStart: true,
+                        maxIndex: 1,
+                        node,
+                      },
+                    };
+                    ace.ace_setSelection(selection);
+                  });
                 }
               }
             }
