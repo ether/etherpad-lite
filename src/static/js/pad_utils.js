@@ -39,6 +39,55 @@ const randomString = (len) => {
   return randomstring;
 };
 
+// Set of "letter or digit" chars is based on section 20.5.16 of the original Java Language Spec.
+const wordCharRegex = new RegExp(`[${[
+  '\u0030-\u0039',
+  '\u0041-\u005A',
+  '\u0061-\u007A',
+  '\u00C0-\u00D6',
+  '\u00D8-\u00F6',
+  '\u00F8-\u00FF',
+  '\u0100-\u1FFF',
+  '\u3040-\u9FFF',
+  '\uF900-\uFDFF',
+  '\uFE70-\uFEFE',
+  '\uFF10-\uFF19',
+  '\uFF21-\uFF3A',
+  '\uFF41-\uFF5A',
+  '\uFF66-\uFFDC',
+].join('')}]`);
+
+const urlRegex = (() => {
+  // TODO: wordCharRegex matches many characters that are not permitted in URIs. Are they included
+  // here as an attempt to support IRIs? (See https://tools.ietf.org/html/rfc3987.)
+  const urlChar = `[-:@_.,~%+/?=&#!;()$${wordCharRegex.source.slice(1, -1)}]`;
+  // Matches a single character that should not be considered part of the URL if it is the last
+  // character that matches urlChar.
+  const postUrlPunct = '[:.,;]';
+  // Schemes that must be followed by ://
+  const withAuth = `(?:${[
+    '(?:x-)?man',
+    'afp',
+    'file',
+    'ftps?',
+    'gopher',
+    'https?',
+    'nfs',
+    'sftp',
+    'smb',
+    'txmt',
+  ].join('|')})://`;
+  // Schemes that do not need to be followed by ://
+  const withoutAuth = `(?:${[
+    'about',
+    'geo',
+    'mailto',
+    'tel',
+  ].join('|')}):`;
+  return new RegExp(
+      `(?:${withAuth}|${withoutAuth}|www\\.)${urlChar}*(?!${postUrlPunct})${urlChar}`, 'g');
+})();
+
 const padutils = {
   escapeHtml: (x) => Security.escapeHTML(String(x)),
   uniqueId: () => {
@@ -75,45 +124,24 @@ const padutils = {
     const hourmin = `${d.getHours()}:${(`0${d.getMinutes()}`).slice(-2)}`;
     return `${dayOfWeek} ${month} ${dayOfMonth} ${year} ${hourmin}`;
   },
+  wordCharRegex,
+  urlRegex,
+  // returns null if no URLs, or [[startIndex1, url1], [startIndex2, url2], ...]
   findURLs: (text) => {
-    // copied from ACE
-    const _REGEX_WORDCHAR = new RegExp(`[${[
-      '\u0030-\u0039',
-      '\u0041-\u005A',
-      '\u0061-\u007A',
-      '\u00C0-\u00D6',
-      '\u00D8-\u00F6',
-      '\u00F8-\u00FF',
-      '\u0100-\u1FFF',
-      '\u3040-\u9FFF',
-      '\uF900-\uFDFF',
-      '\uFE70-\uFEFE',
-      '\uFF10-\uFF19',
-      '\uFF21-\uFF3A',
-      '\uFF41-\uFF5A',
-      '\uFF66-\uFFDC',
-    ].join('')}]`);
-    const _REGEX_URLCHAR = new RegExp(`([-:@a-zA-Z0-9_.,~%+/?=&#;()$]|${_REGEX_WORDCHAR.source})`);
-    const _REGEX_URL = new RegExp(
-        '(?:(?:https?|s?ftp|ftps|file|nfs)://|(about|geo|mailto|tel):)' +
-        `${_REGEX_URLCHAR.source}*(?![:.,;])${_REGEX_URLCHAR.source}`, 'g');
-
-    // returns null if no URLs, or [[startIndex1, url1], [startIndex2, url2], ...]
-    const _findURLs = (text) => {
-      _REGEX_URL.lastIndex = 0;
-      let urls = null;
-      let execResult;
-      while ((execResult = _REGEX_URL.exec(text))) {
-        urls = (urls || []);
-        const startIndex = execResult.index;
-        const url = execResult[0];
-        urls.push([startIndex, url]);
-      }
-
-      return urls;
-    };
-
-    return _findURLs(text);
+    // Copy padutils.urlRegex so that the use of .exec() below (which mutates the RegExp object)
+    // does not break other concurrent uses of padutils.urlRegex.
+    const urlRegex = new RegExp(padutils.urlRegex, 'g');
+    urlRegex.lastIndex = 0;
+    let urls = null;
+    let execResult;
+    // TODO: Switch to String.prototype.matchAll() after support for Node.js < 12.0.0 is dropped.
+    while ((execResult = urlRegex.exec(text))) {
+      urls = (urls || []);
+      const startIndex = execResult.index;
+      const url = execResult[0];
+      urls.push([startIndex, url]);
+    }
+    return urls;
   },
   escapeHtmlWithClickableLinks: (text, target) => {
     let idx = 0;
