@@ -109,23 +109,23 @@ const padeditor = (function () {
       $('#languagemenu').val(html10n.getLanguage());
       $('#languagemenu').change(() => {
         Cookies.set('language', $('#languagemenu').val());
-        window.html10n.localize([$("#languagemenu").val(), 'en']);
+        window.html10n.localize([$('#languagemenu').val(), 'en']);
         if ($('select').niceSelect) {
           $('select').niceSelect('update');
         }
       });
     },
-    setViewOptions(newOptions) {
-      function getOption(key, defaultValue) {
+    setViewOptions: (newOptions) => {
+      const getOption = (key, defaultValue) => {
         const value = String(newOptions[key]);
-        if (value == 'true') return true;
-        if (value == 'false') return false;
+        if (value === 'true') return true;
+        if (value === 'false') return false;
         return defaultValue;
-      }
+      };
 
       let v;
 
-      v = getOption('rtlIsTrue', ('rtl' == html10n.getDirection()));
+      v = getOption('rtlIsTrue', ('rtl' === html10n.getDirection()));
       self.ace.setProperty('rtlIsTrue', v);
       padutils.setCheckbox($('#options-rtlcheck'), v);
 
@@ -146,24 +146,24 @@ const padeditor = (function () {
 
       self.ace.setProperty('textface', newOptions.padFontFamily || '');
     },
-    dispose() {
+    dispose: () => {
       if (self.ace) {
         self.ace.destroy();
         self.ace = null;
       }
     },
-    enable() {
+    enable: () => {
       if (self.ace) {
         self.ace.setEditable(true);
       }
     },
-    disable() {
+    disable: () => {
       if (self.ace) {
         self.ace.setProperty('grayedOut', true);
         self.ace.setEditable(false);
       }
     },
-    restoreRevisionText(dataFromServer) {
+    restoreRevisionText: (dataFromServer) => {
       pad.addHistoricalAuthors(dataFromServer.historicalAuthorData);
       self.ace.importAText(dataFromServer.atext, dataFromServer.apool, true);
     },
