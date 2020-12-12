@@ -44,7 +44,7 @@ describe('urls', function () {
   });
 
   describe('punctuation after URL is ignored', function () {
-    for (const char of ':.,;]') {
+    for (const char of ':.,;?!)]') {
       const want = 'https://etherpad.org';
       const input = want + char;
       it(input, async function () {
