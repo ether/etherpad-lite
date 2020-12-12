@@ -63,7 +63,7 @@ const urlRegex = (() => {
   const urlChar = `[-:@_.,~%+/?=&#!;()$${wordCharRegex.source.slice(1, -1)}]`;
   // Matches a single character that should not be considered part of the URL if it is the last
   // character that matches urlChar.
-  const postUrlPunct = '[:.,;]';
+  const postUrlPunct = '[:.,;?!)]';
   // Schemes that must be followed by ://
   const withAuth = `(?:${[
     '(?:x-)?man',
