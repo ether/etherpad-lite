@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Spys on socket.io messages and saves them into several arrays
  * that are visible in tests

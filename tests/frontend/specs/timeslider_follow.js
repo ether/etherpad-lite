@@ -1,3 +1,5 @@
+'use strict';
+
 describe('timeslider follow', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
@@ -23,7 +25,7 @@ describe('timeslider follow', function () {
     helper.contentWindow().$('#playpause_button_icon').click();
 
     let newTop;
-    return helper.waitForPromise(() => {
+    await helper.waitForPromise(() => {
       newTop = helper.contentWindow().$('#innerdocbody').offset();
       return newTop.top < originalTop.top;
     });
@@ -96,9 +98,9 @@ describe('timeslider follow', function () {
  * @param {number} lineNum
  * @returns {boolean} scrolled to the lineOffset?
  */
-function hasFollowedToLine(lineNum) {
+const hasFollowedToLine = (lineNum) => {
   const scrollPosition = helper.contentWindow().$('#editorcontainerbox')[0].scrollTop;
-  const lineOffset = helper.contentWindow().$('#innerdocbody').find(`div:nth-child(${lineNum})`)[0].offsetTop;
-
+  const lineOffset =
+      helper.contentWindow().$('#innerdocbody').find(`div:nth-child(${lineNum})`)[0].offsetTop;
   return Math.abs(scrollPosition - lineOffset) < 1;
-}
+};
