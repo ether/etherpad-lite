@@ -51,10 +51,9 @@ const padeditor = (function () {
             window.location.hash = `L${targetLineNumber}`;
           });
 
-          exports.focusOnLine(self.ace);
+          setTimeout(() => exports.focusOnLine(self.ace), 2000);
         }
       }
-
       self.ace = new Ace2Editor();
       self.ace.init('editorcontainer', '', aceReady);
       self.ace.setProperty('wraps', true);
@@ -175,47 +174,25 @@ exports.padeditor = padeditor;
 
 exports.focusOnLine = (ace) => {
   // If a number is in the URI IE #L124 go to that line number
-  const lineNumber = window.location.hash.substr(1);
-  if (lineNumber) {
-    if (lineNumber[0] === 'L') {
-      const $outerdoc = $('iframe[name="ace_outer"]').contents().find('#outerdocbody');
-      const lineNumberInt = parseInt(lineNumber.replace('L', ''));
-      if (lineNumberInt) {
-        const $inner = $('iframe[name="ace_outer"]').contents().find('iframe')
-            .contents().find('#innerdocbody');
-        const line = $inner.find(`div:nth-child(${lineNumberInt})`);
-        if (line.length !== 0) {
-          let offsetTop = line.offset().top;
-          offsetTop += parseInt($outerdoc.css('padding-top').replace('px', ''));
-          const hasMobileLayout = $('body').hasClass('mobile-layout');
-          if (!hasMobileLayout) {
-            offsetTop += parseInt($inner.css('padding-top').replace('px', ''));
-          }
-          const $outerdocHTML = $('iframe[name="ace_outer"]').contents()
-              .find('#outerdocbody').parent();
-          $outerdoc.css({top: `${offsetTop}px`}); // Chrome
-          $outerdocHTML.animate({scrollTop: offsetTop}); // needed for FF
-          const node = line[0];
-          ace.callWithAce((ace) => {
-            const selection = {
-              startPoint: {
-                index: 0,
-                focusAtStart: true,
-                maxIndex: 1,
-                node,
-              },
-              endPoint: {
-                index: 0,
-                focusAtStart: true,
-                maxIndex: 1,
-                node,
-              },
-            };
-            ace.ace_setSelection(selection);
-          });
-        }
-      }
-    }
+  let lineNumber = window.location.hash.substr(1);
+  if (lineNumber && lineNumber[0] === 'L' && (lineNumber = parseInt(lineNumber.substr(1)))) {
+    ace.callWithAce((ace) => {
+      const rep = ace.ace_getRep();
+      if (lineNumber <= 0 || lineNumber - 1 > rep.lines.length()) return;
+      // we assume that rep.lines.atIndex is successful now
+
+      const lineNode = rep.lines.atIndex(lineNumber - 1).lineNode;
+      // offset of the first line and editor space
+      // const editorTop = ace.ace_scroll._getEditorPositionTop();
+      // const firstLineOffset = rep.lines.atIndex(0).lineNode.offsetTop;
+      // ace.ace_scroll.setScrollY(lineNode.offsetTop + editorTop + firstLineOffset);
+      ace.ace_scroll.setScrollY(lineNode.offsetTop);
+
+      // place the caret on the beginning of the new line
+      // rep.lines.atIndex(lineNumber-1).lineMarker)
+      rep.selEnd = [lineNumber - 1, 0];
+      rep.selStart = [lineNumber - 1, 0];
+      ace.ace_updateBrowserSelectionFromRep();
+    });
   }
-  // End of setSelection / set Y position of editor
 };
