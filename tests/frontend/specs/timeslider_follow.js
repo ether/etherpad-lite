@@ -38,18 +38,7 @@ describe('timeslider follow', function () {
    *
    */
   it('only to lines that exist in the current pad view, see #4389', async function () {
-    // Select everything and clear via delete key
-    const e = helper.padInner$.Event(helper.evtType);
-    e.keyCode = 8; // delete key
-    const lines = helper.linesDiv();
-    helper.selectLines(lines[0], lines[lines.length - 1]); // select all lines
-    // probably unnecessary, but wait for the selection to be Range not Caret
-    await helper.waitForPromise(() => !helper.padInner$.document.getSelection().isCollapsed
-        // only supported in FF57+
-        // return helper.padInner$.document.getSelection().type === 'Range';
-    );
-    helper.padInner$('#innerdocbody').trigger(e);
-    await helper.waitForPromise(() => helper.commits.length === 1);
+    await helper.clearPad();
     await helper.edit('Test line\n\n');
     await helper.edit('Another test line', 3);
 
