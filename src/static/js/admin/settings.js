@@ -5,6 +5,16 @@
 $(document).ready(() => {
   const socket = socketio.connect('..', '/settings');
 
+  socket.on('connect', () => {
+    socket.emit('load');
+  });
+
+  socket.on('disconnect', (reason) => {
+    // The socket.io client will automatically try to reconnect for all reasons other than "io
+    // server disconnect".
+    if (reason === 'io server disconnect') socket.connect();
+  });
+
   socket.on('settings', (settings) => {
     /* Check whether the settings.json is authorized to be viewed */
     if (settings.results === 'NOT_ALLOWED') {
@@ -46,8 +56,6 @@ $(document).ready(() => {
     $('#response').text(progress);
     $('#response').fadeOut('slow');
   });
-
-  socket.emit('load'); // Load the JSON from the server
 });
 
 
