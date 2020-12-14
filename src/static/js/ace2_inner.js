@@ -46,7 +46,6 @@ function Ace2Inner() {
   const AttributeManager = require('./AttributeManager');
   const Scroll = require('./scroll');
   const DEBUG = false;
-  let isSetUp = false;
 
   const THE_TAB = '    '; // 4
   const MAX_LIST_LEVEL = 16;
@@ -1560,7 +1559,7 @@ function Ace2Inner() {
       );
     }
 
-    // JM notes to self, needs fixing but doesn't fix easily CAKE
+    // JM notes to self, need rhansen help.
     function domAndRepSplice(startLine, deleteCount, newLineStrings) {
       const keysToDelete = [];
       if (deleteCount > 0) {
@@ -2709,7 +2708,6 @@ function Ace2Inner() {
     const which = evt.which;
     const altKey = evt.altKey;
     const shiftKey = evt.shiftKey;
-    let lineheight;
 
     // Is caret potentially hidden by the chat button?
     const myselection = document.getSelection(); // get the current caret selection
@@ -2717,10 +2715,13 @@ function Ace2Inner() {
     // Is there any content?  If not lineHeight will report wrong..
     if (myselection.focusNode.wholeText) {
       // line height of populated links
-      lineHeight = myselection.focusNode.parentNode.offsetHeight;
+      // JM TODO: Need rhansen help.
+      // if you delete lineHeight here or define elsewhere and overwrite it
+      // will error if you add content then delete it...
+      const lineHeight = myselection.focusNode.parentNode.offsetHeight;
     } else {
       // line height of blank lines
-      lineHeight = myselection.focusNode.offsetHeight;
+      const lineHeight = myselection.focusNode.offsetHeight;
     }
 
     // dmesg("keyevent type: "+type+", which: "+which);
@@ -3176,8 +3177,9 @@ function Ace2Inner() {
         }
 
         // scroll to viewport when user presses arrow keys and caret is out of the viewport
-        if ((evt.which === 37 || evt.which == 38 || evt.which == 39 || evt.which == 40)) {
-          // we use arrowKeyWasReleased to avoid triggering the animation when a key is continuously pressed
+        if ((evt.which === 37 || evt.which === 38 || evt.which === 39 || evt.which === 40)) {
+          // we use arrowKeyWasReleased to avoid triggering the animation when a key
+          // is continuously pressed
           // this makes the scroll smooth
           if (!continuouslyPressingArrowKey(type)) {
             // the caret position is not synchronized with the rep.
@@ -3200,7 +3202,7 @@ function Ace2Inner() {
       if (type === 'keydown') {
         idleWorkTimer.atLeast(500);
       } else if (type === 'keypress') {
-        // JM TODO CAKE
+        // JM TODO CAKE - Need rhansen help, wtf is going on hre? :P
         if ((!specialHandled) && false /* parenModule.shouldNormalizeOnChar(charCode)*/) {
           idleWorkTimer.atMost(0);
         } else {
@@ -3236,7 +3238,7 @@ function Ace2Inner() {
         thisKeyDoesntTriggerNormalize = false;
       }
     });
-  }
+  };
 
   let thisKeyDoesntTriggerNormalize = false;
   let arrowKeyWasReleased = true;
@@ -3268,11 +3270,11 @@ function Ace2Inner() {
           }
           if (selectionInfo) {
             performSelectionChange(
-              lineAndColumnFromChar(
-                selectionInfo.selStart
-              ),
-              lineAndColumnFromChar(selectionInfo.selEnd),
-              selectionInfo.selFocusAtStart
+                lineAndColumnFromChar(
+                    selectionInfo.selStart
+                ),
+                lineAndColumnFromChar(selectionInfo.selEnd),
+                selectionInfo.selFocusAtStart
             );
           }
           const oldEvent = currentCallStack.startNewEvent(oldEventType, true);
@@ -3303,13 +3305,13 @@ function Ace2Inner() {
 
     selection.focusAtStart = !!rep.selFocusAtStart;
     setSelection(selection);
-  }
+  };
   editorInfo.ace_updateBrowserSelectionFromRep = updateBrowserSelectionFromRep;
 
   const nodeMaxIndex = (nd) => {
     if (isNodeText(nd)) return nd.nodeValue.length;
     else return 1;
-  }
+  };
 
   const getSelection = () => {
     // returns null, or a structure containing startPoint and endPoint,
@@ -3324,11 +3326,11 @@ function Ace2Inner() {
     const range = browserSelection.getRangeAt(0);
 
     const isInBody = (n) => {
-      while (n && !(n.tagName && n.tagName.toLowerCase() == 'body')) {
+      while (n && !(n.tagName && n.tagName.toLowerCase() === 'body')) {
         n = n.parentNode;
       }
       return !!n;
-    }
+    };
 
     const pointFromRangeBound = (container, offset) => {
       if (!isInBody(container)) {
@@ -3353,11 +3355,10 @@ function Ace2Inner() {
           index: 0,
           maxIndex: 1,
         };
-      }
       // treat point between two nodes as BEFORE the second (rather than after the first)
       // if possible; this way point at end of a line block-element is treated as
       // at beginning of next line
-      else if (offset === childCount) {
+      } else if (offset === childCount) {
         const nd = n.childNodes.item(childCount - 1);
         const max = nodeMaxIndex(nd);
         return {
@@ -3631,7 +3632,7 @@ function Ace2Inner() {
     return n;
   };
 
-  // JM to do cake
+  // JM to do cake -- need rhansen help :)
   function focus() {
     window.focus();
   };
@@ -3676,17 +3677,16 @@ function Ace2Inner() {
     // deal with case where iframe is hidden, hope that
     // style.height of iframe container is set in px
     return Number(editorInfo.frame.parentNode.style.height.replace(/[^0-9]/g, '') || 0);
-  }
+  };
 
   const getInnerWidth = () => {
     const win = outerWin;
     const odoc = win.document;
     return odoc.documentElement.clientWidth;
-  }
+  };
 
   const scrollXHorizontallyIntoView = (pixelX) => {
     const win = outerWin;
-    const odoc = outerWin.document;
     const distInsideLeft = pixelX - win.scrollX;
     const distInsideRight = win.scrollX + getInnerWidth() - pixelX;
     if (distInsideLeft < 0) {
@@ -3694,7 +3694,7 @@ function Ace2Inner() {
     } else if (distInsideRight < 0) {
       win.scrollBy(-distInsideRight + 1, 0);
     }
-  }
+  };
 
   const scrollSelectionIntoView = () => {
     if (!rep.selStart) return;
@@ -3704,23 +3704,25 @@ function Ace2Inner() {
     if (!doesWrap) {
       const browserSelection = getSelection();
       if (browserSelection) {
-        const focusPoint = (browserSelection.focusAtStart ? browserSelection.startPoint : browserSelection.endPoint);
+        const focusPoint = (
+          browserSelection.focusAtStart ? browserSelection.startPoint : browserSelection.endPoint
+        );
         const selectionPointX = getSelectionPointX(focusPoint);
         scrollXHorizontallyIntoView(selectionPointX);
         fixView();
       }
     }
-  }
+  };
 
   const listAttributeName = 'list';
 
-  // JM Todo cake
+  // JM Todo cake -- need rhansen help
   function getLineListType(lineNum) {
     return documentAttributeManager.getAttributeOnLine(lineNum, listAttributeName);
   }
 
   function setLineListType(lineNum, listType) {
-    if (listType == '') {
+    if (listType === '') {
       documentAttributeManager.removeAttributeOnLine(lineNum, listAttributeName);
       documentAttributeManager.removeAttributeOnLine(lineNum, 'start');
     } else {
@@ -3743,14 +3745,14 @@ function Ace2Inner() {
       return null;
     }
     type = /([a-z]+)[0-9]+/.exec(type);
-    if (type[1] == 'indent') {
+    if (type[1] === 'indent') {
       return null;
     }
 
     // 2-find the first line of the list
     while (lineNum - 1 >= 0 && (type = getLineListType(lineNum - 1))) {
       type = /([a-z]+)[0-9]+/.exec(type);
-      if (type[1] == 'indent') break;
+      if (type[1] === 'indent') break;
       lineNum--;
     }
 
@@ -3768,7 +3770,7 @@ function Ace2Inner() {
         // apply new num
         listType = /([a-z]+)([0-9]+)/.exec(listType);
         curLevel = Number(listType[2]);
-        if (isNaN(curLevel) || listType[0] == 'indent') {
+        if (isNaN(curLevel) || listType[0] === 'indent') {
           return line;
         } else if (curLevel == level) {
           ChangesetUtils.buildKeepRange(rep, builder, loc, (loc = [line, 0]));
@@ -3945,7 +3947,10 @@ function Ace2Inner() {
 
   // Init documentAttributeManager
   documentAttributeManager = new AttributeManager(rep, performDocumentApplyChangeset);
-  editorInfo.ace_performDocumentApplyAttributesToRange = () => documentAttributeManager.setAttributesOnRange.apply(documentAttributeManager, arguments);
+
+  // JM TODo need rhansen help.
+  editorInfo.ace_performDocumentApplyAttributesToRange = () =>
+      documentAttributeManager.setAttributesOnRange.apply(documentAttributeManager, arguments);
 
   this.init = () => {
     $(document).ready(() => {
@@ -3982,8 +3987,6 @@ function Ace2Inner() {
       scheduler.setTimeout(() => {
         parent.readyFunc(); // defined in code that sets up the inner iframe
       }, 0);
-
-      isSetUp = true;
     });
   };
 }
