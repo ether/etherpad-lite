@@ -1,7 +1,8 @@
 'use strict';
 
 /**
- * Copyright 2020 Google Inc.
+ * Copyright 2009 Google Inc.
+ * Copyright 2020 John McLear - The Etherpad Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,23 +16,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+let documentAttributeManager;
 
-const padutils = require('./pad_utils').padutils;
-
-let _, $, jQuery, plugins, Ace2Common;
 const browser = require('./browser');
-
-Ace2Common = require('./ace2_common');
-
-plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
-$ = jQuery = require('./rjquery').$;
-_ = require('./underscore');
+const padutils = require('./pad_utils').padutils;
+const Ace2Common = require('./ace2_common');
+const $ = require('./rjquery').$;
+const _ = require('./underscore');
 
 const isNodeText = Ace2Common.isNodeText;
 const getAssoc = Ace2Common.getAssoc;
 const setAssoc = Ace2Common.setAssoc;
-const isTextNode = Ace2Common.isTextNode;
-const binarySearchInfinite = Ace2Common.binarySearchInfinite;
 const htmlPrettyEscape = Ace2Common.htmlPrettyEscape;
 const noop = Ace2Common.noop;
 const hooks = require('./pluginfw/hooks');
@@ -50,9 +45,7 @@ function Ace2Inner() {
   const undoModule = require('./undomodule').undoModule;
   const AttributeManager = require('./AttributeManager');
   const Scroll = require('./scroll');
-
-  const DEBUG = false; // $$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"
-  // changed to false
+  const DEBUG = false;
   let isSetUp = false;
 
   const THE_TAB = '    '; // 4
@@ -76,14 +69,22 @@ function Ace2Inner() {
   const lineMetricsDiv = sideDiv.nextSibling;
   let lineNumbersShown;
   let sideDivInner;
+
+  const initLineNumbers = () => {
+    const htmlOpen = '<div id="sidedivinner" class="sidedivinner"><div><span class="line-number">1';
+    const htmlClose = '</span></div></div>';
+    lineNumbersShown = 1;
+    sideDiv.innerHTML = `${htmlOpen}${htmlClose}`;
+    sideDivInner = outerWin.document.getElementById('sidedivinner');
+    $(sideDiv).addClass('sidediv');
+  };
+
   initLineNumbers();
 
   const scroll = Scroll.init(outerWin);
 
   let outsideKeyDown = noop;
-
-  let outsideKeyPress = function (e) { return true; };
-
+  let outsideKeyPress = (e) => true;
   let outsideNotifyDirty = noop;
 
   // selFocusAtStart -- determines whether the selection extends "backwards", so that the focus
@@ -112,25 +113,39 @@ function Ace2Inner() {
   let isStyled = true;
 
   let console = (DEBUG && window.console);
-  let documentAttributeManager;
 
   if (!window.console) {
-    const names = ['log', 'debug', 'info', 'warn', 'error', 'assert', 'dir', 'dirxml', 'group', 'groupEnd', 'time', 'timeEnd', 'count', 'trace', 'profile', 'profileEnd'];
+    const names = [
+      'log',
+      'debug',
+      'info',
+      'warn',
+      'error',
+      'assert',
+      'dir',
+      'dirxml',
+      'group',
+      'groupEnd',
+      'time',
+      'timeEnd',
+      'count',
+      'trace',
+      'profile',
+      'profileEnd',
+    ];
     console = {};
     for (let i = 0; i < names.length; ++i) console[names[i]] = noop;
   }
 
   let PROFILER = window.PROFILER;
   if (!PROFILER) {
-    PROFILER = function () {
-      return {
-        start: noop,
-        mark: noop,
-        literal: noop,
-        end: noop,
-        cancel: noop,
-      };
-    };
+    PROFILER = () => ({
+      start: noop,
+      mark: noop,
+      literal: noop,
+      end: noop,
+      cancel: noop,
+    });
   }
 
   // "dmesg" is for displaying messages in the in-page output pane
@@ -146,22 +161,22 @@ function Ace2Inner() {
   let outerDynamicCSS = null;
   let parentDynamicCSS = null;
 
-  function initDynamicCSS() {
+  const initDynamicCSS = () => {
     dynamicCSS = makeCSSManager('dynamicsyntax');
     outerDynamicCSS = makeCSSManager('dynamicsyntax', 'outer');
     parentDynamicCSS = makeCSSManager('dynamicsyntax', 'parent');
-  }
+  };
 
   const changesetTracker = makeChangesetTracker(scheduler, rep.apool, {
-    withCallbacks(operationName, f) {
+    withCallbacks: (operationName, f) => {
       inCallStackIfNecessary(operationName, () => {
         fastIncorp(1);
         f(
             {
-              setDocumentAttributedText(atext) {
+              setDocumentAttributedText: (atext) => {
                 setDocAText(atext);
               },
-              applyChangesetToDocument(changeset, preferInsertionAfterCaret) {
+              applyChangesetToDocument: (changeset, preferInsertionAfterCaret) => {
                 const oldEventType = currentCallStack.editEvent.eventType;
                 currentCallStack.startNewEvent('nonundoable');
 
@@ -175,13 +190,10 @@ function Ace2Inner() {
   });
 
   const authorInfos = {}; // presence of key determines if author is present in doc
-
-  function getAuthorInfos() {
-    return authorInfos;
-  }
+  const getAuthorInfos = () => authorInfos;
   editorInfo.ace_getAuthorInfos = getAuthorInfos;
 
-  function setAuthorStyle(author, info) {
+  const setAuthorStyle = (author, info) => {
     if (!dynamicCSS) {
       return;
     }
@@ -217,13 +229,14 @@ function Ace2Inner() {
       authorStyle.backgroundColor = bgcolor;
       parentAuthorStyle.backgroundColor = bgcolor;
 
-      const textColor = colorutils.textColorFromBackgroundColor(bgcolor, parent.parent.clientVars.skinName);
+      const textColor = colorutils.
+          textColorFromBackgroundColor(bgcolor, parent.parent.clientVars.skinName);
       authorStyle.color = textColor;
       parentAuthorStyle.color = textColor;
     }
-  }
+  };
 
-  function setAuthorInfo(author, info) {
+  const setAuthorInfo = (author, info) => {
     if ((typeof author) !== 'string') {
       // Potentially caused by: https://github.com/ether/etherpad-lite/issues/2802");
       throw new Error(`setAuthorInfo: author (${author}) is not a string`);
@@ -234,19 +247,17 @@ function Ace2Inner() {
       authorInfos[author] = info;
     }
     setAuthorStyle(author, info);
-  }
+  };
 
-  function getAuthorClassName(author) {
-    return `author-${author.replace(/[^a-y0-9]/g, (c) => {
-      if (c == '.') return '-';
-      return `z${c.charCodeAt(0)}z`;
-    })}`;
-  }
+  const getAuthorClassName = (author) => `author-${author.replace(/[^a-y0-9]/g, (c) => {
+    if (c === '.') return '-';
+    return `z${c.charCodeAt(0)}z`;
+  })}`;
 
-  function className2Author(className) {
-    if (className.substring(0, 7) == 'author-') {
+  const className2Author = (className) => {
+    if (className.substring(0, 7) === 'author-') {
       return className.substring(7).replace(/[a-y0-9]+|-|z.+?z/g, (cc) => {
-        if (cc == '-') { return '.'; } else if (cc.charAt(0) == 'z') {
+        if (cc === '-') { return '.'; } else if (cc.charAt(0) === 'z') {
           return String.fromCharCode(Number(cc.slice(1, -1)));
         } else {
           return cc;
@@ -254,25 +265,19 @@ function Ace2Inner() {
       });
     }
     return null;
-  }
+  };
 
-  function getAuthorColorClassSelector(oneClassName) {
-    return `.authorColors .${oneClassName}`;
-  }
+  const getAuthorColorClassSelector = (oneClassName) => `.authorColors .${oneClassName}`;
 
-  function fadeColor(colorCSS, fadeFrac) {
+  const fadeColor = (colorCSS, fadeFrac) => {
     let color = colorutils.css2triple(colorCSS);
     color = colorutils.blend(color, [1, 1, 1], fadeFrac);
     return colorutils.triple2css(color);
-  }
-
-  editorInfo.ace_getRep = function () {
-    return rep;
   };
 
-  editorInfo.ace_getAuthor = function () {
-    return thisAuthor;
-  };
+  editorInfo.ace_getRep = () => rep;
+
+  editorInfo.ace_getAuthor = () => thisAuthor;
 
   const _nonScrollableEditEvents = {
     applyChangesToBase: 1,
@@ -282,34 +287,32 @@ function Ace2Inner() {
     _nonScrollableEditEvents[eventType] = 1;
   });
 
-  function isScrollableEditEvent(eventType) {
-    return !_nonScrollableEditEvents[eventType];
-  }
+  const isScrollableEditEvent = (eventType) => !_nonScrollableEditEvents[eventType];
 
-  var currentCallStack = null;
+  let currentCallStack = null;
 
-  function inCallStack(type, action) {
+  const inCallStack = (type, action) => {
     if (disposed) return;
 
     if (currentCallStack) {
-      // Do not uncomment this in production.  It will break Etherpad being provided in iFrames.  I'm leaving this in for testing usefulness.
-      // top.console.error("Can't enter callstack " + type + ", already in " + currentCallStack.type);
+      // Do not uncomment this in production.  It will break Etherpad being provided in iFrames.
+      // I am leaving this in for testing usefulness.
+      const err = `Can't enter callstack ${type}, already in ${currentCallStack.type}`; // eslint-disable-line
+      // top.console.error(err);
     }
 
     let profiling = false;
 
-    function profileRest() {
-      profiling = true;
-    }
+    const profileRest = () => {
+      profiling = true; // eslint-disable-line
+    };
 
-    function newEditEvent(eventType) {
-      return {
-        eventType,
-        backset: null,
-      };
-    }
+    const newEditEvent = (eventType) => ({
+      eventType,
+      backset: null,
+    });
 
-    function submitOldEvent(evt) {
+    const submitOldEvent = (evt) => {
       if (rep.selStart && rep.selEnd) {
         const selStartChar = rep.lines.offsetOfIndex(rep.selStart[0]) + rep.selStart[1];
         const selEndChar = rep.lines.offsetOfIndex(rep.selEnd[0]) + rep.selEnd[1];
@@ -322,7 +325,7 @@ function Ace2Inner() {
         try {
           if (isPadLoading(evt.eventType)) {
             undoModule.clearHistory();
-          } else if (evt.eventType == 'nonundoable') {
+          } else if (evt.eventType === 'nonundoable') {
             if (evt.changeset) {
               undoModule.reportExternalChange(evt.changeset);
             }
@@ -336,16 +339,16 @@ function Ace2Inner() {
           }
         }
       }
-    }
+    };
 
-    function startNewEvent(eventType, dontSubmitOld) {
+    const startNewEvent = (eventType, dontSubmitOld) => {
       const oldEvent = currentCallStack.editEvent;
       if (!dontSubmitOld) {
         submitOldEvent(oldEvent);
       }
       currentCallStack.editEvent = newEditEvent(eventType);
       return oldEvent;
-    }
+    };
 
     currentCallStack = {
       type,
@@ -385,7 +388,7 @@ function Ace2Inner() {
       const cs = currentCallStack;
       if (cleanExit) {
         submitOldEvent(cs.editEvent);
-        if (cs.domClean && cs.type != 'setup') {
+        if (cs.domClean && cs.type !== 'setup') {
           // if (cs.isUserChange)
           // {
           //  if (cs.repChanged) parenModule.notifyChange();
@@ -401,36 +404,32 @@ function Ace2Inner() {
             outsideNotifyDirty();
           }
         }
-      } else {
-        // non-clean exit
-        if (currentCallStack.type == 'idleWorkTimer') {
-          idleWorkTimer.atLeast(1000);
-        }
+      } else if (currentCallStack.type === 'idleWorkTimer') {
+        idleWorkTimer.atLeast(1000);
       }
       currentCallStack = null;
     }
     return result;
-  }
+  };
   editorInfo.ace_inCallStack = inCallStack;
 
-  function inCallStackIfNecessary(type, action) {
+  const inCallStackIfNecessary = (type, action) => {
     if (!currentCallStack) {
       inCallStack(type, action);
     } else {
       action();
     }
-  }
+  };
   editorInfo.ace_inCallStackIfNecessary = inCallStackIfNecessary;
 
-  function dispose() {
+  const dispose = () => {
     disposed = true;
     if (idleWorkTimer) idleWorkTimer.never();
     teardown();
-  }
+  };
 
-  function setWraps(newVal) {
+  const setWraps = (newVal) => {
     doesWrap = newVal;
-    const dwClass = 'doesWrap';
     root.classList.toggle('doesWrap', doesWrap);
     scheduler.setTimeout(() => {
       inCallStackIfNecessary('setWraps', () => {
@@ -439,51 +438,51 @@ function Ace2Inner() {
         fixView();
       });
     }, 0);
-  }
+  };
 
-  function setStyled(newVal) {
+  const setStyled = (newVal) => {
     const oldVal = isStyled;
     isStyled = !!newVal;
 
-    if (newVal != oldVal) {
+    if (newVal !== oldVal) {
       if (!newVal) {
         // clear styles
         inCallStackIfNecessary('setStyled', () => {
           fastIncorp(12);
           const clearStyles = [];
-          for (const k in STYLE_ATTRIBS) {
-            clearStyles.push([k, '']);
+          if (STYLE_ATTRIBS) {
+            for (const k in STYLE_ATTRIBS) {
+              clearStyles.push([k, '']);
+            }
           }
           performDocumentApplyAttributesToCharRange(0, rep.alltext.length, clearStyles);
         });
       }
     }
-  }
+  };
 
-  function setTextFace(face) {
+  const setTextFace = (face) => {
     root.style.fontFamily = face;
     lineMetricsDiv.style.fontFamily = face;
-  }
+  };
 
-  function recreateDOM() {
+  const recreateDOM = () => {
     // precond: normalized
     recolorLinesInRange(0, rep.alltext.length);
-  }
+  };
 
-  function setEditable(newVal) {
+  const setEditable = (newVal) => {
     isEditable = newVal;
     root.contentEditable = isEditable ? 'true' : 'false';
     root.classList.toggle('static', !isEditable);
-  }
+  };
 
-  function enforceEditability() {
-    setEditable(isEditable);
-  }
+  const enforceEditability = () => setEditable(isEditable);
 
-  function importText(text, undoable, dontProcess) {
+  const importText = (text, undoable, dontProcess) => {
     let lines;
     if (dontProcess) {
-      if (text.charAt(text.length - 1) != '\n') {
+      if (text.charAt(text.length - 1) !== '\n') {
         throw new Error('new raw text must end with newline');
       }
       if (/[\r\t\xa0]/.exec(text)) {
@@ -502,12 +501,12 @@ function Ace2Inner() {
       setDocText(newText);
     });
 
-    if (dontProcess && rep.alltext != text) {
+    if (dontProcess && rep.alltext !== text) {
       throw new Error('mismatch error setting raw text in importText');
     }
-  }
+  };
 
-  function importAText(atext, apoolJsonObj, undoable) {
+  const importAText = (atext, apoolJsonObj, undoable) => {
     atext = Changeset.cloneAText(atext);
     if (apoolJsonObj) {
       const wireApool = (new AttribPool()).fromJsonable(apoolJsonObj);
@@ -516,9 +515,9 @@ function Ace2Inner() {
     inCallStackIfNecessary(`importText${undoable ? 'Undoable' : ''}`, () => {
       setDocAText(atext);
     });
-  }
+  };
 
-  function setDocAText(atext) {
+  const setDocAText = (atext) => {
     if (atext.text === '') {
       /*
        * The server is fine with atext.text being an empty string, but the front
@@ -554,54 +553,55 @@ function Ace2Inner() {
         Changeset.pack(oldLen, newLen, assem.toString(), atext.text.slice(0, -1)));
     performDocumentApplyChangeset(changeset);
 
-    performSelectionChange([0, rep.lines.atIndex(0).lineMarker], [0, rep.lines.atIndex(0).lineMarker]);
+    performSelectionChange(
+        [0, rep.lines.atIndex(0).lineMarker],
+        [0, rep.lines.atIndex(0).lineMarker]
+    );
 
     idleWorkTimer.atMost(100);
 
-    if (rep.alltext != atext.text) {
+    if (rep.alltext !== atext.text) {
       dmesg(htmlPrettyEscape(rep.alltext));
       dmesg(htmlPrettyEscape(atext.text));
       throw new Error('mismatch error setting raw text in setDocAText');
     }
-  }
+  };
 
-  function setDocText(text) {
+  const setDocText = (text) => {
     setDocAText(Changeset.makeAText(text));
-  }
+  };
 
-  function getDocText() {
+  const getDocText = () => {
     const alltext = rep.alltext;
     let len = alltext.length;
     if (len > 0) len--; // final extra newline
     return alltext.substring(0, len);
-  }
+  };
 
-  function exportText() {
+  const exportText = () => {
     if (currentCallStack && !currentCallStack.domClean) {
       inCallStackIfNecessary('exportText', () => {
         fastIncorp(2);
       });
     }
     return getDocText();
-  }
+  };
 
-  function editorChangedSize() {
-    fixView();
-  }
+  const editorChangedSize = () => fixView();
 
-  function setOnKeyPress(handler) {
+  const setOnKeyPress = (handler) => {
     outsideKeyPress = handler;
-  }
+  };
 
-  function setOnKeyDown(handler) {
+  const setOnKeyDown = (handler) => {
     outsideKeyDown = handler;
-  }
+  };
 
-  function setNotifyDirty(handler) {
+  const setNotifyDirty = (handler) => {
     outsideNotifyDirty = handler;
-  }
+  };
 
-  function getFormattedCode() {
+  const getFormattedCode = () => {
     if (currentCallStack && !currentCallStack.domClean) {
       inCallStackIfNecessary('getFormattedCode', incorporateUserChanges);
     }
@@ -611,15 +611,17 @@ function Ace2Inner() {
       let entry = rep.lines.atIndex(0);
       while (entry) {
         const domInfo = entry.domInfo;
-        buf.push((domInfo && domInfo.getInnerHTML()) || domline.processSpaces(domline.escapeHTML(entry.text), doesWrap) || '&nbsp;' /* empty line*/);
+        buf.push((domInfo && domInfo.getInnerHTML()) ||
+            domline.processSpaces(domline.escapeHTML(entry.text), doesWrap) ||
+            '&nbsp;' /* empty line*/);
         entry = rep.lines.next(entry);
       }
     }
     return `<div class="syntax"><div>${buf.join('</div>\n<div>')}</div></div>`;
-  }
+  };
 
   const CMDS = {
-    clearauthorship(prompt) {
+    clearauthorship: (prompt) => {
       if ((!(rep.selStart && rep.selEnd)) || isCaret()) {
         if (prompt) {
           prompt();
@@ -634,7 +636,7 @@ function Ace2Inner() {
     },
   };
 
-  function execCommand(cmd) {
+  const execCommand = (cmd) => {
     cmd = cmd.toLowerCase();
     const cmdArgs = Array.prototype.slice.call(arguments, 1);
     if (CMDS[cmd]) {
@@ -643,14 +645,14 @@ function Ace2Inner() {
         CMDS[cmd].apply(CMDS, cmdArgs);
       });
     }
-  }
+  };
 
-  function replaceRange(start, end, text) {
+  const replaceRange = (start, end, text) => {
     inCallStackIfNecessary('replaceRange', () => {
       fastIncorp(9);
       performDocumentReplaceRange(start, end, text);
     });
-  }
+  };
 
   editorInfo.ace_focus = focus;
   editorInfo.ace_importText = importText;
@@ -673,14 +675,12 @@ function Ace2Inner() {
   editorInfo.ace_isBlockElement = isBlockElement;
   editorInfo.ace_getLineListType = getLineListType;
 
-  editorInfo.ace_callWithAce = function (fn, callStack, normalize) {
-    let wrapper = function () {
-      return fn(editorInfo);
-    };
+  editorInfo.ace_callWithAce = (fn, callStack, normalize) => {
+    let wrapper = () => fn(editorInfo);
 
     if (normalize !== undefined) {
       const wrapper1 = wrapper;
-      wrapper = function () {
+      wrapper = () => {
         editorInfo.ace_fastIncorp(9);
         wrapper1();
       };
@@ -696,26 +696,26 @@ function Ace2Inner() {
   // This methed exposes a setter for some ace properties
   // @param key the name of the parameter
   // @param value the value to set to
-  editorInfo.ace_setProperty = function (key, value) {
+  editorInfo.ace_setProperty = (key, value) => {
     // These properties are exposed
     const setters = {
       wraps: setWraps,
       showsauthorcolors: (val) => root.classList.toggle('authorColors', !!val),
       showsuserselections: (val) => root.classList.toggle('userSelections', !!val),
-      showslinenumbers(value) {
+      showslinenumbers: (value) => {
         hasLineNumbers = !!value;
         sideDiv.parentNode.classList.toggle('line-numbers-hidden', !hasLineNumbers);
         fixView();
       },
       grayedout: (val) => outerWin.document.body.classList.toggle('grayedout', !!val),
-      dmesg() { dmesg = window.dmesg = value; },
-      userauthor(value) {
+      dmesg: () => { dmesg = window.dmesg = value; },
+      userauthor: (value) => {
         thisAuthor = String(value);
         documentAttributeManager.author = thisAuthor;
       },
       styled: setStyled,
       textface: setTextFace,
-      rtlistrue(value) {
+      rtlistrue: (value) => {
         root.classList.toggle('rtl', value);
         root.classList.toggle('ltr', !value);
         document.documentElement.dir = value ? 'rtl' : 'ltr';
@@ -730,63 +730,54 @@ function Ace2Inner() {
     }
   };
 
-  editorInfo.ace_setBaseText = function (txt) {
+  editorInfo.ace_setBaseText = (txt) => {
     changesetTracker.setBaseText(txt);
   };
-  editorInfo.ace_setBaseAttributedText = function (atxt, apoolJsonObj) {
+  editorInfo.ace_setBaseAttributedText = (atxt, apoolJsonObj) => {
     changesetTracker.setBaseAttributedText(atxt, apoolJsonObj);
   };
-  editorInfo.ace_applyChangesToBase = function (c, optAuthor, apoolJsonObj) {
+  editorInfo.ace_applyChangesToBase = (c, optAuthor, apoolJsonObj) => {
     changesetTracker.applyChangesToBase(c, optAuthor, apoolJsonObj);
   };
-  editorInfo.ace_prepareUserChangeset = function () {
-    return changesetTracker.prepareUserChangeset();
-  };
-  editorInfo.ace_applyPreparedChangesetToBase = function () {
+  editorInfo.ace_prepareUserChangeset = () => changesetTracker.prepareUserChangeset();
+  editorInfo.ace_applyPreparedChangesetToBase = () => {
     changesetTracker.applyPreparedChangesetToBase();
   };
-  editorInfo.ace_setUserChangeNotificationCallback = function (f) {
+  editorInfo.ace_setUserChangeNotificationCallback = (f) => {
     changesetTracker.setUserChangeNotificationCallback(f);
   };
-  editorInfo.ace_setAuthorInfo = function (author, info) {
+  editorInfo.ace_setAuthorInfo = (author, info) => {
     setAuthorInfo(author, info);
   };
-  editorInfo.ace_setAuthorSelectionRange = function (author, start, end) {
+  editorInfo.ace_setAuthorSelectionRange = (author, start, end) => {
     changesetTracker.setAuthorSelectionRange(author, start, end);
   };
 
-  editorInfo.ace_getUnhandledErrors = function () {
-    return caughtErrors.slice();
-  };
+  editorInfo.ace_getUnhandledErrors = () => caughtErrors.slice();
 
-  editorInfo.ace_getDocument = function () {
-    return doc;
-  };
+  editorInfo.ace_getDocument = () => doc;
 
-  editorInfo.ace_getDebugProperty = function (prop) {
-    if (prop == 'debugger') {
+  editorInfo.ace_getDebugProperty = (prop) => {
+    if (prop === 'debugger') {
       // obfuscate "eval" so as not to scare yuicompressor
       window['ev' + 'al']('debugger');
-    } else if (prop == 'rep') {
+    } else if (prop === 'rep') {
       return rep;
-    } else if (prop == 'window') {
+    } else if (prop === 'window') {
       return window;
-    } else if (prop == 'document') {
+    } else if (prop === 'document') {
       return document;
     }
     return undefined;
   };
 
-  function now() {
-    return Date.now();
-  }
+  const now = () => Date.now();
 
-  function newTimeLimit(ms) {
+  const newTimeLimit = (ms) => {
     const startTime = now();
-    let lastElapsed = 0;
     let exceededAlready = false;
     let printedTrace = false;
-    const isTimeUp = function () {
+    const isTimeUp = () => {
       if (exceededAlready) {
         if ((!printedTrace)) { // && now() - startTime - ms > 300) {
           printedTrace = true;
@@ -798,44 +789,42 @@ function Ace2Inner() {
         exceededAlready = true;
         return true;
       } else {
-        lastElapsed = elapsed;
         return false;
       }
     };
 
-    isTimeUp.elapsed = function () {
-      return now() - startTime;
-    };
+    isTimeUp.elapsed = () => now() - startTime;
     return isTimeUp;
-  }
+  };
 
 
-  function makeIdleAction(func) {
+  const makeIdleAction = (func) => {
     let scheduledTimeout = null;
     let scheduledTime = 0;
 
-    function unschedule() {
+    const unschedule = () => {
       if (scheduledTimeout) {
         scheduler.clearTimeout(scheduledTimeout);
         scheduledTimeout = null;
       }
-    }
+    };
 
-    function reschedule(time) {
+    const reschedule = (time) => {
       unschedule();
       scheduledTime = time;
       let delay = time - now();
       if (delay < 0) delay = 0;
       scheduledTimeout = scheduler.setTimeout(callback, delay);
-    }
+    };
 
-    function callback() {
+    const callback = () => {
       scheduledTimeout = null;
       // func may reschedule the action
       func();
-    }
+    };
+
     return {
-      atMost(ms) {
+      atMost: (ms) => {
         const latestTime = now() + ms;
         if ((!scheduledTimeout) || scheduledTime > latestTime) {
           reschedule(latestTime);
@@ -844,25 +833,25 @@ function Ace2Inner() {
       // atLeast(ms) will schedule the action if not scheduled yet.
       // In other words, "infinity" is replaced by ms, even though
       // it is technically larger.
-      atLeast(ms) {
+      atLeast: (ms) => {
         const earliestTime = now() + ms;
         if ((!scheduledTimeout) || scheduledTime < earliestTime) {
           reschedule(earliestTime);
         }
       },
-      never() {
+      never: () => {
         unschedule();
       },
     };
-  }
+  };
 
-  function fastIncorp(n) {
+  const fastIncorp = (n) => {
     // normalize but don't do any lexing or anything
     incorporateUserChanges();
-  }
+  };
   editorInfo.ace_fastIncorp = fastIncorp;
 
-  var idleWorkTimer = makeIdleAction(() => {
+  const idleWorkTimer = makeIdleAction(() => {
     if (inInternationalComposition) {
       // don't do idle input incorporation during international input composition
       idleWorkTimer.atLeast(500);
@@ -882,9 +871,6 @@ function Ace2Inner() {
 
         updateLineNumbers(); // update line numbers if any time left
         if (isTimeUp()) return;
-
-        const visibleRange = scroll.getVisibleCharRange(rep);
-        const docRange = [0, rep.lines.totalWidth()];
         finishedImportantWork = true;
         finishedWork = true;
       } finally {
@@ -906,16 +892,16 @@ function Ace2Inner() {
 
   let _nextId = 1;
 
-  function uniqueId(n) {
+  const uniqueId = (n) => {
     // not actually guaranteed to be unique, e.g. if user copy-pastes
     // nodes with ids
     const nid = n.id;
     if (nid) return nid;
     return (n.id = `magicdomid${_nextId++}`);
-  }
+  };
 
 
-  function recolorLinesInRange(startChar, endChar) {
+  const recolorLinesInRange = (startChar, endChar) => {
     if (endChar <= startChar) return;
     if (startChar < 0 || startChar >= rep.lines.totalWidth()) return;
     let lineEntry = rep.lines.atOffset(startChar); // rounds down to line boundary
@@ -923,31 +909,27 @@ function Ace2Inner() {
     let lineIndex = rep.lines.indexOfEntry(lineEntry);
     let selectionNeedsResetting = false;
     let firstLine = null;
-    let lastLine = null;
 
     // tokenFunc function; accesses current value of lineEntry and curDocChar,
     // also mutates curDocChar
-    let curDocChar;
-    const tokenFunc = function (tokenText, tokenClass) {
+    const tokenFunc = (tokenText, tokenClass) => {
       lineEntry.domInfo.appendSpan(tokenText, tokenClass);
     };
 
     while (lineEntry && lineStart < endChar) {
       const lineEnd = lineStart + lineEntry.width;
-
-      curDocChar = lineStart;
       lineEntry.domInfo.clearSpans();
       getSpansForLine(lineEntry, tokenFunc, lineStart);
       lineEntry.domInfo.finishUpdate();
 
       markNodeClean(lineEntry.lineNode);
 
-      if (rep.selStart && rep.selStart[0] == lineIndex || rep.selEnd && rep.selEnd[0] == lineIndex) {
+      if (rep.selStart && rep.selStart[0] === lineIndex ||
+          rep.selEnd && rep.selEnd[0] === lineIndex) {
         selectionNeedsResetting = true;
       }
 
-      if (firstLine === null) firstLine = lineIndex;
-      lastLine = lineIndex;
+      if (firstLine == null) firstLine = lineIndex;
       lineStart = lineEnd;
       lineEntry = rep.lines.next(lineEntry);
       lineIndex++;
@@ -955,27 +937,25 @@ function Ace2Inner() {
     if (selectionNeedsResetting) {
       currentCallStack.selectionAffected = true;
     }
-  }
+  };
 
   // like getSpansForRange, but for a line, and the func takes (text,class)
   // instead of (width,class); excludes the trailing '\n' from
   // consideration by func
 
 
-  function getSpansForLine(lineEntry, textAndClassFunc, lineEntryOffsetHint) {
+  const getSpansForLine = (lineEntry, textAndClassFunc, lineEntryOffsetHint) => {
     let lineEntryOffset = lineEntryOffsetHint;
     if ((typeof lineEntryOffset) !== 'number') {
       lineEntryOffset = rep.lines.offsetOfEntry(lineEntry);
     }
     const text = lineEntry.text;
-    const width = lineEntry.width; // text.length+1
     if (text.length === 0) {
       // allow getLineStyleFilter to set line-div styles
       const func = linestylefilter.getLineStyleFilter(
           0, '', textAndClassFunc, rep.apool);
       func('', '');
     } else {
-      const offsetIntoLine = 0;
       let filteredFunc = linestylefilter.getFilterStack(text, textAndClassFunc, browser);
       const lineNum = rep.lines.indexOfEntry(lineEntry);
       const aline = rep.alines[lineNum];
@@ -983,19 +963,19 @@ function Ace2Inner() {
           text.length, aline, filteredFunc, rep.apool);
       filteredFunc(text, '');
     }
-  }
+  };
 
   let observedChanges;
 
-  function clearObservedChanges() {
+  const clearObservedChanges = () => {
     observedChanges = {
       cleanNodesNearChanges: {},
     };
-  }
+  };
   clearObservedChanges();
 
-  function getCleanNodeByKey(key) {
-    const p = PROFILER('getCleanNodeByKey', false);
+  const getCleanNodeByKey = (key) => {
+    const p = PROFILER('getCleanNodeByKey', false); // eslint-disable-line
     p.extra = 0;
     let n = doc.getElementById(key);
     // copying and pasting can lead to duplicate ids
@@ -1007,9 +987,9 @@ function Ace2Inner() {
     p.literal(p.extra, 'extra');
     p.end();
     return n;
-  }
+  };
 
-  function observeChangesAroundNode(node) {
+  const observeChangesAroundNode = (node) => {
     // Around this top-level DOM node, look for changes to the document
     // (from how it looks in our representation) and record them in a way
     // that can be used to "normalize" the document (apply the changes to our
@@ -1018,9 +998,10 @@ function Ace2Inner() {
     let hasAdjacentDirtyness;
     if (!isNodeDirty(node)) {
       cleanNode = node;
-      var prevSib = cleanNode.previousSibling;
-      var nextSib = cleanNode.nextSibling;
-      hasAdjacentDirtyness = ((prevSib && isNodeDirty(prevSib)) || (nextSib && isNodeDirty(nextSib)));
+      const prevSib = cleanNode.previousSibling;
+      const nextSib = cleanNode.nextSibling;
+      hasAdjacentDirtyness = ((prevSib && isNodeDirty(prevSib)) ||
+         (nextSib && isNodeDirty(nextSib)));
     } else {
       // node is dirty, look for clean node above
       let upNode = node.previousSibling;
@@ -1052,25 +1033,25 @@ function Ace2Inner() {
     } else {
       // next and prev lines are clean (if they exist)
       const lineKey = uniqueId(cleanNode);
-      var prevSib = cleanNode.previousSibling;
-      var nextSib = cleanNode.nextSibling;
+      const prevSib = cleanNode.previousSibling;
+      const nextSib = cleanNode.nextSibling;
       const actualPrevKey = ((prevSib && uniqueId(prevSib)) || null);
       const actualNextKey = ((nextSib && uniqueId(nextSib)) || null);
       const repPrevEntry = rep.lines.prev(rep.lines.atKey(lineKey));
       const repNextEntry = rep.lines.next(rep.lines.atKey(lineKey));
       const repPrevKey = ((repPrevEntry && repPrevEntry.key) || null);
       const repNextKey = ((repNextEntry && repNextEntry.key) || null);
-      if (actualPrevKey != repPrevKey || actualNextKey != repNextKey) {
+      if (actualPrevKey !== repPrevKey || actualNextKey !== repNextKey) {
         observedChanges.cleanNodesNearChanges[`$${uniqueId(cleanNode)}`] = true;
       }
     }
-  }
+  };
 
-  function observeChangesAroundSelection() {
+  const observeChangesAroundSelection = () => {
     if (currentCallStack.observedSelection) return;
     currentCallStack.observedSelection = true;
 
-    const p = PROFILER('getSelection', false);
+    const p = PROFILER('getSelection', false); // eslint-disable-line
     const selection = getSelection();
     p.end();
 
@@ -1078,34 +1059,34 @@ function Ace2Inner() {
       const node1 = topLevel(selection.startPoint.node);
       const node2 = topLevel(selection.endPoint.node);
       if (node1) observeChangesAroundNode(node1);
-      if (node2 && node1 != node2) {
+      if (node2 && node1 !== node2) {
         observeChangesAroundNode(node2);
       }
     }
-  }
+  };
 
-  function observeSuspiciousNodes() {
+  const observeSuspiciousNodes = () => {
     // inspired by Firefox bug #473255, where pasting formatted text
     // causes the cursor to jump away, making the new HTML never found.
     if (root.getElementsByTagName) {
       const nds = root.getElementsByTagName('style');
       for (let i = 0; i < nds.length; i++) {
         const n = topLevel(nds[i]);
-        if (n && n.parentNode == root) {
+        if (n && n.parentNode === root) {
           observeChangesAroundNode(n);
         }
       }
     }
-  }
+  };
 
-  function incorporateUserChanges() {
+  const incorporateUserChanges = () => {
     if (currentCallStack.domClean) return false;
 
     currentCallStack.isUserChange = true;
 
     if (DEBUG && window.DONT_INCORP || window.DEBUG_DONT_INCORP) return false;
 
-    const p = PROFILER('incorp', false);
+    const p = PROFILER('incorp', false); // eslint-disable-line
 
     // returns true if dom changes were made
     if (!root.firstChild) {
@@ -1120,10 +1101,13 @@ function Ace2Inner() {
     let dirtyRangesCheckOut = true;
     let j = 0;
     let a, b;
+    let scrollToTheLeftNeeded = false;
+
     while (j < dirtyRanges.length) {
       a = dirtyRanges[j][0];
       b = dirtyRanges[j][1];
-      if (!((a === 0 || getCleanNodeByKey(rep.lines.atIndex(a - 1).key)) && (b == rep.lines.length() || getCleanNodeByKey(rep.lines.atIndex(b).key)))) {
+      if (!((a === 0 || getCleanNodeByKey(rep.lines.atIndex(a - 1).key)) &&
+          (b === rep.lines.length() || getCleanNodeByKey(rep.lines.atIndex(b).key)))) {
         dirtyRangesCheckOut = false;
         break;
       }
@@ -1131,7 +1115,7 @@ function Ace2Inner() {
     }
     if (!dirtyRangesCheckOut) {
       const numBodyNodes = root.childNodes.length;
-      for (var k = 0; k < numBodyNodes; k++) {
+      for (let k = 0; k < numBodyNodes; k++) {
         const bodyNode = root.childNodes.item(k);
         if ((bodyNode.tagName) && ((!bodyNode.id) || (!rep.lines.containsKey(bodyNode.id)))) {
           observeChangesAroundNode(bodyNode);
@@ -1157,15 +1141,20 @@ function Ace2Inner() {
       const range = dirtyRanges[i];
       a = range[0];
       b = range[1];
-      let firstDirtyNode = (((a === 0) && root.firstChild) || getCleanNodeByKey(rep.lines.atIndex(a - 1).key).nextSibling);
+      let firstDirtyNode = (((a === 0) && root.firstChild) ||
+          getCleanNodeByKey(rep.lines.atIndex(a - 1).key).nextSibling);
       firstDirtyNode = (firstDirtyNode && isNodeDirty(firstDirtyNode) && firstDirtyNode);
-      let lastDirtyNode = (((b == rep.lines.length()) && root.lastChild) || getCleanNodeByKey(rep.lines.atIndex(b).key).previousSibling);
+
+      let lastDirtyNode = (((b === rep.lines.length()) && root.lastChild) ||
+          getCleanNodeByKey(rep.lines.atIndex(b).key).previousSibling);
+
       lastDirtyNode = (lastDirtyNode && isNodeDirty(lastDirtyNode) && lastDirtyNode);
       if (firstDirtyNode && lastDirtyNode) {
         const cc = makeContentCollector(isStyled, browser, rep.apool, null, className2Author);
         cc.notifySelection(selection);
         const dirtyNodes = [];
-        for (let n = firstDirtyNode; n && !(n.previousSibling && n.previousSibling == lastDirtyNode);
+        for (let n = firstDirtyNode; n &&
+            !(n.previousSibling && n.previousSibling === lastDirtyNode);
           n = n.nextSibling) {
           cc.collectContent(n);
           dirtyNodes.push(n);
@@ -1191,14 +1180,15 @@ function Ace2Inner() {
         lines = ccData.lines;
         const lineAttribs = ccData.lineAttribs;
         const linesWrapped = ccData.linesWrapped;
-        var scrollToTheLeftNeeded = false;
 
         if (linesWrapped > 0) {
-          // chrome decides in it's infinite wisdom that its okay to put the browsers visisble window in the middle of the span
-          // an outcome of this is that the first chars of the string are no longer visible to the user..  Yay chrome..
+          // chrome decides in it's infinite wisdom that its okay to put the
+          // browsers visisble window in the middle of the span
+          // an outcome of this is that the first chars of the string
+          // are no longer visible to the user..  Yay chrome..
           // Move the browsers visible area to the left hand side of the span
           // Firefox isn't quite so bad, but it's still pretty quirky.
-          var scrollToTheLeftNeeded = true;
+          scrollToTheLeftNeeded = true;
         }
 
         if (ss[0] >= 0) selStart = [ss[0] + a + netNumLinesChangeSoFar, ss[1]];
@@ -1207,7 +1197,7 @@ function Ace2Inner() {
         const entries = [];
         const nodeToAddAfter = lastDirtyNode;
         const lineNodeInfos = new Array(lines.length);
-        for (var k = 0; k < lines.length; k++) {
+        for (let k = 0; k < lines.length; k++) {
           const lineString = lines[k];
           const newEntry = createDomLineEntry(lineString);
           entries.push(newEntry);
@@ -1256,7 +1246,8 @@ function Ace2Inner() {
       // dmesg(htmlPrettyEscape(htmlForRemovedChild(n)));
     });
 
-    if (scrollToTheLeftNeeded) { // needed to stop chrome from breaking the ui when long strings without spaces are pasted
+    // needed to stop chrome from breaking the ui when long strings without spaces are pasted
+    if (scrollToTheLeftNeeded) {
       $('#innerdocbody').scrollLeft(0);
     }
 
@@ -1273,7 +1264,8 @@ function Ace2Inner() {
         point: selection.startPoint,
         documentAttributeManager,
       });
-      selStart = (selStartFromHook == null || selStartFromHook.length == 0) ? getLineAndCharForPoint(selection.startPoint) : selStartFromHook;
+      selStart = (selStartFromHook == null || selStartFromHook.length === 0)
+        ? getLineAndCharForPoint(selection.startPoint) : selStartFromHook;
     }
     if (selection && !selEnd) {
       const selEndFromHook = hooks.callAll('aceEndLineAndCharForPoint', {
@@ -1284,7 +1276,9 @@ function Ace2Inner() {
         point: selection.endPoint,
         documentAttributeManager,
       });
-      selEnd = (selEndFromHook == null || selEndFromHook.length == 0) ? getLineAndCharForPoint(selection.endPoint) : selEndFromHook;
+      selEnd = (selEndFromHook == null ||
+         selEndFromHook.length === 0)
+        ? getLineAndCharForPoint(selection.endPoint) : selEndFromHook;
     }
 
     // selection from content collection can, in various ways, extend past final
@@ -1323,9 +1317,9 @@ function Ace2Inner() {
     p.end('END');
 
     return domChanges;
-  }
+  };
 
-  var STYLE_ATTRIBS = {
+  const STYLE_ATTRIBS = {
     bold: true,
     italic: true,
     underline: true,
@@ -1333,25 +1327,17 @@ function Ace2Inner() {
     list: true,
   };
 
-  function isStyleAttribute(aname) {
-    return !!STYLE_ATTRIBS[aname];
-  }
+  const isStyleAttribute = (aname) => !!STYLE_ATTRIBS[aname];
 
-  function isDefaultLineAttribute(aname) {
-    return AttributeManager.DEFAULT_LINE_ATTRIBUTES.indexOf(aname) !== -1;
-  }
+  const isDefaultLineAttribute = (aname) => AttributeManager.DEFAULT_LINE_ATTRIBUTES.indexOf(aname) !== -1; // eslint-disable-line
 
-  function insertDomLines(nodeToAddAfter, infoStructs) {
+  const insertDomLines = (nodeToAddAfter, infoStructs) => {
     let lastEntry;
     let lineStartOffset;
     if (infoStructs.length < 1) return;
-    const startEntry = rep.lines.atKey(uniqueId(infoStructs[0].node));
-    const endEntry = rep.lines.atKey(uniqueId(infoStructs[infoStructs.length - 1].node));
-    const charStart = rep.lines.offsetOfEntry(startEntry);
-    const charEnd = rep.lines.offsetOfEntry(endEntry) + endEntry.width;
 
     _.each(infoStructs, (info) => {
-      const p2 = PROFILER('insertLine', false);
+      const p2 = PROFILER('insertLine', false); // eslint-disable-line
       const node = info.node;
       const key = uniqueId(node);
       let entry;
@@ -1359,7 +1345,7 @@ function Ace2Inner() {
       if (lastEntry) {
         // optimization to avoid recalculation
         const next = rep.lines.next(lastEntry);
-        if (next && next.key == key) {
+        if (next && next.key === key) {
           entry = next;
           lineStartOffset += lastEntry.width;
         }
@@ -1388,32 +1374,32 @@ function Ace2Inner() {
       markNodeClean(node);
       p2.end();
     });
-  }
+  };
 
-  function isCaret() {
-    return (rep.selStart && rep.selEnd && rep.selStart[0] == rep.selEnd[0] && rep.selStart[1] == rep.selEnd[1]);
-  }
+  const isCaret = () => (
+    rep.selStart &&
+    rep.selEnd &&
+    rep.selStart[0] === rep.selEnd[0] &&
+    rep.selStart[1] === rep.selEnd[1]
+  );
   editorInfo.ace_isCaret = isCaret;
 
   // prereq: isCaret()
 
 
-  function caretLine() {
-    return rep.selStart[0];
-  }
+  const caretLine = () => rep.selStart[0];
+
   editorInfo.ace_caretLine = caretLine;
 
-  function caretColumn() {
-    return rep.selStart[1];
-  }
+  const caretColumn = () => rep.selStart[1];
+
   editorInfo.ace_caretColumn = caretColumn;
 
-  function caretDocChar() {
-    return rep.lines.offsetOfIndex(caretLine()) + caretColumn();
-  }
+  const caretDocChar = () => rep.lines.offsetOfIndex(caretLine()) + caretColumn();
+
   editorInfo.ace_caretDocChar = caretDocChar;
 
-  function handleReturnIndentation() {
+  const handleReturnIndentation = () => {
     // on return, indent to level of previous line
     if (isCaret() && caretColumn() === 0 && caretLine() > 0) {
       const lineNum = caretLine();
@@ -1422,7 +1408,7 @@ function Ace2Inner() {
       const prevLineText = prevLine.text;
       let theIndent = /^ *(?:)/.exec(prevLineText)[0];
       const shouldIndent = parent.parent.clientVars.indentationOnNewLine;
-      if (shouldIndent && /[\[\(\:\{]\s*$/.exec(prevLineText)) {
+      if (shouldIndent && /[[(:{]\s*$/.exec(prevLineText)) {
         theIndent += THE_TAB;
       }
       const cs = Changeset.builder(rep.lines.totalWidth()).keep(
@@ -1433,9 +1419,9 @@ function Ace2Inner() {
       performDocumentApplyChangeset(cs);
       performSelectionChange([lineNum, theIndent.length], [lineNum, theIndent.length]);
     }
-  }
+  };
 
-  function getPointForLineAndChar(lineAndChar) {
+  const getPointForLineAndChar = (lineAndChar) => {
     const line = lineAndChar[0];
     let charsLeft = lineAndChar[1];
     // Do not uncomment this in production it will break iFrames.
@@ -1457,7 +1443,7 @@ function Ace2Inner() {
         maxIndex: 1,
       };
     }
-    while (!(n == lineNode && after)) {
+    while (!(n === lineNode && after)) {
       if (after) {
         if (n.nextSibling) {
           n = n.nextSibling;
@@ -1481,17 +1467,15 @@ function Ace2Inner() {
       index: 1,
       maxIndex: 1,
     };
-  }
+  };
 
-  function nodeText(n) {
-	  return n.textContent || n.nodeValue || '';
-  }
+  const nodeText = (n) => n.textContent || n.nodeValue || ''
 
-  function getLineAndCharForPoint(point) {
+  const getLineAndCharForPoint = (point) => {
     // Turn DOM node selection into [line,char] selection.
     // This method has to work when the DOM is not pristine,
     // assuming the point is not in a dirty node.
-    if (point.node == root) {
+    if (point.node === root) {
       if (point.index === 0) {
         return [0, 0];
       } else {
@@ -1510,7 +1494,7 @@ function Ace2Inner() {
         col = nodeText(n).length;
       }
       let parNode, prevSib;
-      while ((parNode = n.parentNode) != root) {
+      while ((parNode = n.parentNode) !== root) {
         if ((prevSib = n.previousSibling)) {
           n = prevSib;
           col += nodeText(n).length;
@@ -1525,10 +1509,10 @@ function Ace2Inner() {
       const lineNum = rep.lines.indexOfEntry(lineEntry);
       return [lineNum, col];
     }
-  }
+  };
   editorInfo.ace_getLineAndCharForPoint = getLineAndCharForPoint;
 
-  function createDomLineEntry(lineString) {
+  const createDomLineEntry = (lineString) => {
     const info = doCreateDomLine(lineString.length > 0);
     const newNode = info.node;
     return {
@@ -1538,20 +1522,19 @@ function Ace2Inner() {
       domInfo: info,
       lineMarker: 0,
     };
-  }
+  };
 
-  function canApplyChangesetToDocument(changes) {
-    return Changeset.oldLen(changes) == rep.alltext.length;
-  }
+  const canApplyChangesetToDocument = (changes) => Changeset.oldLen(changes) === rep.alltext.length;
 
-  function performDocumentApplyChangeset(changes, insertsAfterSelection) {
+  const performDocumentApplyChangeset = (changes, insertsAfterSelection) => {
     doRepApplyChangeset(changes, insertsAfterSelection);
 
     let requiredSelectionSetting = null;
     if (rep.selStart && rep.selEnd) {
       const selStartChar = rep.lines.offsetOfIndex(rep.selStart[0]) + rep.selStart[1];
       const selEndChar = rep.lines.offsetOfIndex(rep.selEnd[0]) + rep.selEnd[1];
-      const result = Changeset.characterRangeFollow(changes, selStartChar, selEndChar, insertsAfterSelection);
+      const result = Changeset.
+          characterRangeFollow(changes, selStartChar, selEndChar, insertsAfterSelection);
       requiredSelectionSetting = [result[0], result[1], rep.selFocusAtStart];
     }
 
@@ -1574,9 +1557,16 @@ function Ace2Inner() {
     Changeset.mutateTextLines(changes, linesMutatee);
 
     if (requiredSelectionSetting) {
-      performSelectionChange(lineAndColumnFromChar(requiredSelectionSetting[0]), lineAndColumnFromChar(requiredSelectionSetting[1]), requiredSelectionSetting[2]);
+      performSelectionChange(
+        lineAndColumnFromChar(
+          requiredSelectionSetting[0]
+        ),
+        lineAndColumnFromChar(requiredSelectionSetting[1]),
+        requiredSelectionSetting[2]
+      );
     }
 
+    // JM notes to self, needs fixing but doesn't fix easily CAKE
     function domAndRepSplice(startLine, deleteCount, newLineStrings) {
       const keysToDelete = [];
       if (deleteCount > 0) {
@@ -1659,7 +1649,7 @@ function Ace2Inner() {
   }
 
   function performDocumentReplaceCharRange(startChar, endChar, newText) {
-    if (startChar == endChar && newText.length === 0) {
+    if (startChar === endChar && newText.length === 0) {
       return;
     }
     // Requires that the replacement preserve the property that the
@@ -2278,7 +2268,7 @@ function Ace2Inner() {
     // indicating inserted content.  for example, [0,0] means content was inserted
     // at the top of the document, while [3,4] means line 3 was deleted, modified,
     // or replaced with one or more new lines of content. ranges do not touch.
-    const p = PROFILER('getDirtyRanges', false);
+    const p = PROFILER('getDirtyRanges', false); // eslint-disable-line
     p.forIndices = 0;
     p.consecutives = 0;
     p.corrections = 0;
@@ -2476,7 +2466,7 @@ function Ace2Inner() {
   }
 
   function isNodeDirty(n) {
-    const p = PROFILER('cleanCheck', false);
+    const p = PROFILER('cleanCheck', false); // eslint-disable-line
     if (n.parentNode != root) return true;
     const data = getAssoc(n, 'dirtiness');
     if (!data) return true;
@@ -3833,24 +3823,18 @@ function Ace2Inner() {
     });
   }
 
-  function doInsertUnorderedList() {
+  const doInsertUnorderedList = () => {
     doInsertList('bullet');
-  }
-  function doInsertOrderedList() {
+  };
+  const doInsertOrderedList = () => {
     doInsertList('number');
-  }
+  };
   editorInfo.ace_doInsertUnorderedList = doInsertUnorderedList;
   editorInfo.ace_doInsertOrderedList = doInsertOrderedList;
 
-  function initLineNumbers() {
-    lineNumbersShown = 1;
-    sideDiv.innerHTML = '<div id="sidedivinner" class="sidedivinner"><div><span class="line-number">1</span></div></div>';
-    sideDivInner = outerWin.document.getElementById('sidedivinner');
-    $(sideDiv).addClass('sidediv');
-  }
 
   // We apply the height of a line in the doc body, to the corresponding sidediv line number
-  function updateLineNumbers() {
+  const updateLineNumbers = () => {
     if (!currentCallStack || currentCallStack && !currentCallStack.domClean) return;
 
     // Refs #4228, to avoid layout trashing, we need to first calculate all the heights,
@@ -3920,16 +3904,14 @@ function Ace2Inner() {
         lineNumbersShown--;
       }
     }
-  }
+  };
 
 
   // Init documentAttributeManager
   documentAttributeManager = new AttributeManager(rep, performDocumentApplyChangeset);
-  editorInfo.ace_performDocumentApplyAttributesToRange = function () {
-    return documentAttributeManager.setAttributesOnRange.apply(documentAttributeManager, arguments);
-  };
+  editorInfo.ace_performDocumentApplyAttributesToRange = () => documentAttributeManager.setAttributesOnRange.apply(documentAttributeManager, arguments);
 
-  this.init = function () {
+  this.init = () => {
     $(document).ready(() => {
       doc = document; // defined as a var in scope outside
       inCallStack('setup', () => {
@@ -3970,7 +3952,7 @@ function Ace2Inner() {
   };
 }
 
-exports.init = function () {
+exports.init = () => {
   const editor = new Ace2Inner();
   editor.init();
 };
