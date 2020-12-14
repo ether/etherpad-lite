@@ -1733,7 +1733,7 @@ function Ace2Inner() {
 
     return rangeHasAttrib(rep.selStart, rep.selEnd);
 
-    function rangeHasAttrib(selStart, selEnd) {
+    const rangeHasAttrib = (selStart, selEnd) => {
       // if range is collapsed -> no attribs in range
       if (selStart[1] == selEnd[1] && selStart[0] == selEnd[0]) return false;
 
@@ -1834,14 +1834,14 @@ function Ace2Inner() {
 
     const attributeValue = selectionAllHasIt ? '' : 'true';
     documentAttributeManager.setAttributesOnRange(
-      rep.selStart,
-      rep.selEnd,
-      [[attributeName, attributeValue]]
+        rep.selStart,
+        rep.selEnd,
+        [[attributeName, attributeValue]]
     );
     if (attribIsFormattingStyle(attributeName)) {
       updateStyleButtonState(attributeName, !selectionAllHasIt); // italic, bold, ...
     }
-  }
+  };
   editorInfo.ace_toggleAttributeOnSelection = toggleAttributeOnSelection;
 
   function performDocumentReplaceSelection(newText) {
@@ -1870,14 +1870,15 @@ function Ace2Inner() {
 
     const newText = _.map(newLineEntries, (e) => `${e.text}\n`).join('');
 
-    rep.alltext = rep.alltext.substring(0, startOldChar) + newText + rep.alltext.substring(endOldChar, rep.alltext.length);
+    rep.alltext = rep.alltext.substring(0, startOldChar) +
+       newText + rep.alltext.substring(endOldChar, rep.alltext.length);
 
     // var newTotalLength = rep.alltext.length;
     // rep.lexer.updateBuffer(rep.alltext, oldRegionStart, oldRegionEnd - oldRegionStart,
     // newRegionEnd - oldRegionStart);
   }
 
-  function doIncorpLineSplice(startLine, deleteCount, newLineEntries, lineAttribs, hints) {
+  const doIncorpLineSplice = (startLine, deleteCount, newLineEntries, lineAttribs, hints) => {
     const startOldChar = rep.lines.offsetOfIndex(startLine);
     const endOldChar = rep.lines.offsetOfIndex(startLine + deleteCount);
 
@@ -2585,15 +2586,16 @@ function Ace2Inner() {
 
   const doIndentOutdent = (isOut) => {
     if (!((rep.selStart && rep.selEnd) ||
-        ((rep.selStart[0] == rep.selEnd[0]) && (rep.selStart[1] == rep.selEnd[1]) && rep.selEnd[1] > 1)) &&
-        (isOut != true)
+        ((rep.selStart[0] === rep.selEnd[0]) &&
+        (rep.selStart[1] === rep.selEnd[1]) &&
+        rep.selEnd[1] > 1)) &&
+        (isOut !== true)
     ) {
       return false;
     }
 
-    let firstLine, lastLine;
-    firstLine = rep.selStart[0];
-    lastLine = Math.max(firstLine, rep.selEnd[0] - ((rep.selEnd[1] === 0) ? 1 : 0));
+    const firstLine = rep.selStart[0];
+    const lastLine = Math.max(firstLine, rep.selEnd[0] - ((rep.selEnd[1] === 0) ? 1 : 0));
     const mods = [];
     for (let n = firstLine; n <= lastLine; n++) {
       let listType = getLineListType(n);
@@ -2607,7 +2609,7 @@ function Ace2Inner() {
         }
       }
       const newLevel = Math.max(0, Math.min(MAX_LIST_LEVEL, level + (isOut ? -1 : 1)));
-      if (level != newLevel) {
+      if (level !== newLevel) {
         mods.push([n, (newLevel > 0) ? t + newLevel : '']);
       }
     }
@@ -2616,16 +2618,16 @@ function Ace2Inner() {
       setLineListType(mod[0], mod[1]);
     });
     return true;
-  }
+  };
   editorInfo.ace_doIndentOutdent = doIndentOutdent;
 
-  function doTabKey(shiftDown) {
+  const doTabKey = (shiftDown) => {
     if (!doIndentOutdent(shiftDown)) {
       performDocumentReplaceSelection(THE_TAB);
     }
   }
 
-  function doDeleteKey(optEvt) {
+  const doDeleteKey = (optEvt) => {
     const evt = optEvt || {};
     let handled = false;
     if (rep.selStart) {
@@ -2669,10 +2671,16 @@ function Ace2Inner() {
               }
             } else if (thisLineHasMarker && prevLineEntry) {
               // If the line has any attributes assigned, remove them by removing the marker '*'
-              performDocumentReplaceRange([theLine - 1, prevLineEntry.text.length], [theLine, lineEntry.lineMarker], '');
+              performDocumentReplaceRange(
+                [theLine - 1, prevLineEntry.text.length],
+                [theLine, lineEntry.lineMarker], ''
+              );
             } else if (theLine > 0) {
               // remove newline
-              performDocumentReplaceRange([theLine - 1, prevLineEntry.text.length], [theLine, 0], '');
+              performDocumentReplaceRange(
+                [theLine - 1, prevLineEntry.text.length],
+                [theLine, 0], ''
+              );
             }
           } else {
             const docChar = caretDocChar();
@@ -2682,7 +2690,8 @@ function Ace2Inner() {
                 // always delete one char, delete further even if that first char
                 // isn't actually a word char.
                 let deleteBackTo = docChar - 1;
-                while (deleteBackTo > lineEntry.lineMarker && isWordChar(rep.alltext.charAt(deleteBackTo - 1))) {
+                while (deleteBackTo > lineEntry.lineMarker &&
+                  isWordChar(rep.alltext.charAt(deleteBackTo - 1))) {
                   deleteBackTo--;
                 }
                 performDocumentReplaceCharRange(deleteBackTo, docChar, '');
@@ -2702,7 +2711,7 @@ function Ace2Inner() {
     // separated. If it returns null, it means that the list was not cut, try
     // from the current one.
     const line = caretLine();
-    if (line != -1 && renumberList(line + 1) === null) {
+    if (line !== -1 && renumberList(line + 1) == null) {
       renumberList(line);
     }
   }
@@ -2712,24 +2721,24 @@ function Ace2Inner() {
   const isWordChar = (c) => padutils.wordCharRegex.test(c);
   editorInfo.ace_isWordChar = isWordChar;
 
-  function isSpaceChar(c) {
+  const isSpaceChar = (c) => {
     return !!REGEX_SPACE.exec(c);
   }
 
-  function moveByWordInLine(lineText, initialIndex, forwardNotBack) {
+  const moveByWordInLine = (lineText, initialIndex, forwardNotBack) => {
     let i = initialIndex;
 
-    function nextChar() {
+    const nextChar = () => {
       if (forwardNotBack) return lineText.charAt(i);
       else return lineText.charAt(i - 1);
     }
 
-    function advance() {
+    const advance = () => {
       if (forwardNotBack) i++;
       else i--;
     }
 
-    function isDone() {
+    const isDone = () => {
       if (forwardNotBack) return i >= lineText.length;
       else return i <= 0;
     }
@@ -2745,9 +2754,9 @@ function Ace2Inner() {
     }
 
     return i;
-  }
+  };
 
-  function handleKeyEvent(evt) {
+  const handleKeyEvent = (evt) => {
     if (!isEditable) return;
     const type = evt.type;
     const charCode = evt.charCode;
@@ -2758,12 +2767,17 @@ function Ace2Inner() {
 
     // Is caret potentially hidden by the chat button?
     const myselection = document.getSelection(); // get the current caret selection
-    const caretOffsetTop = myselection.focusNode.parentNode.offsetTop | myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
+    // jm check the below line, something seems weird.. cake
+    const caretOffsetTop = myselection.focusNode.parentNode.offsetTop |
+       myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
 
-    if (myselection.focusNode.wholeText) { // Is there any content?  If not lineHeight will report wrong..
-      var lineHeight = myselection.focusNode.parentNode.offsetHeight; // line height of populated links
+    // Is there any content?  If not lineHeight will report wrong..
+    if (myselection.focusNode.wholeText) {
+      // line height of populated links
+      var lineHeight = myselection.focusNode.parentNode.offsetHeight;
     } else {
-      var lineHeight = myselection.focusNode.offsetHeight; // line height of blank lines
+      // line height of blank lines
+      var lineHeight = myselection.focusNode.offsetHeight;
     }
 
     // dmesg("keyevent type: "+type+", which: "+which);
@@ -2772,20 +2786,33 @@ function Ace2Inner() {
     // 224 is the command-key under Mac Firefox.
     // 91 is the Windows key in IE; it is ASCII for open-bracket but isn't the keycode for that key
     // 20 is capslock in IE.
-    const isModKey = ((!charCode) && ((type == 'keyup') || (type == 'keydown')) && (keyCode == 16 || keyCode == 17 || keyCode == 18 || keyCode == 20 || keyCode == 224 || keyCode == 91));
+    const isModKey = ((!charCode) &&
+    ((type === 'keyup') || (type === 'keydown')) &&
+    (
+      keyCode == 16 || keyCode == 17 || keyCode == 18 || keyCode == 20 ||
+      keyCode == 224 || keyCode == 91
+    ));
     if (isModKey) return;
 
-    // If the key is a keypress and the browser is opera and the key is enter, do nothign at all as this fires twice.
-    if (keyCode == 13 && browser.opera && (type == 'keypress')) {
-      return; // This stops double enters in Opera but double Tabs still show on single tab keypress, adding keyCode == 9 to this doesn't help as the event is fired twice
+    // If the key is a keypress and the browser is opera and the key is enter,
+    // do nothign at all as this fires twice.
+    if (keyCode === 13 && browser.opera && (type === 'keypress')) {
+      // This stops double enters in Opera but double Tabs still show on single
+      // tab keypress, adding keyCode == 9 to this doesn't help as the event is fired twice
+      return;
     }
     let specialHandled = false;
-    const isTypeForSpecialKey = ((browser.safari || browser.chrome || browser.firefox) ? (type == 'keydown') : (type == 'keypress'));
-    const isTypeForCmdKey = ((browser.safari || browser.chrome || browser.firefox) ? (type == 'keydown') : (type == 'keypress'));
+    const isTypeForSpecialKey = ((browser.safari ||
+      browser.chrome ||
+      browser.firefox) ? (type === 'keydown') : (type === 'keypress'));
+    const isTypeForCmdKey = ((browser.safari ||
+      browser.chrome ||
+      browser.firefox) ? (type === 'keydown') : (type === 'keypress'));
+
     let stopped = false;
 
     inCallStackIfNecessary('handleKeyEvent', function () {
-      if (type == 'keypress' || (isTypeForSpecialKey && keyCode == 13 /* return*/)) {
+      if (type === 'keypress' || (isTypeForSpecialKey && keyCode === 13 /* return*/)) {
         // in IE, special keys don't send keypress, the keydown does the action
         if (!outsideKeyPress(evt)) {
           evt.preventDefault();
@@ -2795,7 +2822,7 @@ function Ace2Inner() {
         // If it's a dead key we don't want to do any Etherpad behavior.
         stopped = true;
         return true;
-      } else if (type == 'keydown') {
+      } else if (type === 'keydown') {
         outsideKeyDown(evt);
       }
       if (!stopped) {
@@ -2813,24 +2840,45 @@ function Ace2Inner() {
         }
 
         const padShortcutEnabled = parent.parent.clientVars.padShortcutEnabled;
-        if ((!specialHandled) && altKey && isTypeForSpecialKey && keyCode == 120 && padShortcutEnabled.altF9) {
+        if (
+          (!specialHandled) &&
+          altKey &&
+          isTypeForSpecialKey &&
+          keyCode === 120 &&
+          padShortcutEnabled.altF9
+        ) {
           // Alt F9 focuses on the File Menu and/or editbar.
           // Note that while most editors use Alt F10 this is not desirable
           // As ubuntu cannot use Alt F10....
-          // Focus on the editbar. -- TODO: Move Focus back to previous state (we know it so we can use it)
-          const firstEditbarElement = parent.parent.$('#editbar').children('ul').first().children().first().children().first().children().first();
+          // Focus on the editbar.
+          // -- TODO: Move Focus back to previous state (we know it so we can use it)
+          const firstEditbarElement = parent.parent.$('#editbar')
+              .children('ul').first().children().first()
+              .children().first().children().first();
           $(this).blur();
           firstEditbarElement.focus();
           evt.preventDefault();
         }
-        if ((!specialHandled) && altKey && keyCode == 67 && type === 'keydown' && padShortcutEnabled.altC) {
+        if (
+          (!specialHandled) &&
+          altKey && keyCode === 67 &&
+          type === 'keydown' &&
+          padShortcutEnabled.altC
+        ) {
           // Alt c focuses on the Chat window
           $(this).blur();
           parent.parent.chat.show();
           parent.parent.$('#chatinput').focus();
           evt.preventDefault();
         }
-        if ((!specialHandled) && evt.ctrlKey && shiftKey && keyCode == 50 && type === 'keydown' && padShortcutEnabled.cmdShift2) {
+        if (
+          (!specialHandled) &&
+          evt.ctrlKey &&
+          shiftKey &&
+          keyCode === 50 &&
+          type === 'keydown' &&
+          padShortcutEnabled.cmdShift2
+        ) {
           // Control-Shift-2 shows a gritter popup showing a line author
           const lineNumber = rep.selEnd[0];
           const alineAttrs = rep.alines[lineNumber];
@@ -2843,13 +2891,12 @@ function Ace2Inner() {
 
           let author = null;
           if (alineAttrs) {
-            var authors = [];
-            var authorNames = [];
+            const authors = [];
             const opIter = Changeset.opIterator(alineAttrs);
 
             while (opIter.hasNext()) {
               const op = opIter.next();
-              authorId = Changeset.opAttributeValue(op, 'author', apool);
+              const authorId = Changeset.opAttributeValue(op, 'author', apool);
 
               // Only push unique authors and ones with values
               if (authors.indexOf(authorId) === -1 && authorId !== '') {
@@ -2859,8 +2906,10 @@ function Ace2Inner() {
           }
 
           // No author information is available IE on a new pad.
+          // JM todo - oh look, no authors :D cake
+          let authorString;
           if (authors.length === 0) {
-            var authorString = 'No author information is available';
+            authorString = 'No author information is available';
           } else {
             // Known authors info, both current and historical
             const padAuthors = parent.parent.pad.userList();
@@ -2888,11 +2937,11 @@ function Ace2Inner() {
             });
           }
           if (authors.length === 1) {
-            var authorString = `The author of this line is ${authorNames}`;
+            authorString = `The author of this line is ${authorNames}`;
           }
           if (authors.length > 1) {
-            var authorString = `The authors of this line are ${authorNames.join(' & ')}`;
-	  }
+            authorString = `The authors of this line are ${authorNames.join(' & ')}`;
+	        }
 
           parent.parent.$.gritter.add({
             // (string | mandatory) the heading of the notification
@@ -2905,7 +2954,11 @@ function Ace2Inner() {
             time: '4000',
           });
         }
-        if ((!specialHandled) && isTypeForSpecialKey && keyCode == 8 && padShortcutEnabled.delete) {
+        if ((!specialHandled) &&
+          isTypeForSpecialKey &&
+          keyCode === 8 &&
+          padShortcutEnabled.delete
+        ) {
           // "delete" key; in mozilla, if we're at the beginning of a line, normalize now,
           // or else deleting a blank line can take two delete presses.
           // --
@@ -2918,7 +2971,11 @@ function Ace2Inner() {
           doDeleteKey(evt);
           specialHandled = true;
         }
-        if ((!specialHandled) && isTypeForSpecialKey && keyCode == 13 && padShortcutEnabled.return) {
+        if ((!specialHandled) &&
+          isTypeForSpecialKey &&
+          keyCode == 13 &&
+          padShortcutEnabled.return
+        ) {
           // return key, handle specially;
           // note that in mozilla we need to do an incorporation for proper return behavior anyway.
           fastIncorp(4);
@@ -2930,7 +2987,11 @@ function Ace2Inner() {
           }, 0);
           specialHandled = true;
         }
-        if ((!specialHandled) && isTypeForSpecialKey && keyCode == 27 && padShortcutEnabled.esc) {
+        if ((!specialHandled) &&
+          isTypeForSpecialKey &&
+          keyCode === 27 &&
+          padShortcutEnabled.esc
+        ) {
           // prevent esc key;
           // in mozilla versions 14-19 avoid reconnecting pad.
 
@@ -2941,27 +3002,45 @@ function Ace2Inner() {
           // close all gritters when the user hits escape key
           parent.parent.$.gritter.removeAll();
         }
-        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == 's' && (evt.metaKey || evt.ctrlKey) && !evt.altKey && padShortcutEnabled.cmdS) /* Do a saved revision on ctrl S */
-        {
+        if (
+          (!specialHandled) &&
+          /* Do a saved revision on ctrl S */
+          isTypeForCmdKey &&
+          String.fromCharCode(which).toLowerCase() === 's' &&
+          (evt.metaKey || evt.ctrlKey) &&
+          !evt.altKey &&
+          padShortcutEnabled.cmdS
+        ) {
           evt.preventDefault();
           const originalBackground = parent.parent.$('#revisionlink').css('background');
           parent.parent.$('#revisionlink').css({background: 'lightyellow'});
           scheduler.setTimeout(() => {
             parent.parent.$('#revisionlink').css({background: originalBackground});
           }, 1000);
-          parent.parent.pad.collabClient.sendMessage({type: 'SAVE_REVISION'}); /* The parent.parent part of this is BAD and I feel bad..  It may break something */
+          /* The parent.parent part of this is BAD and I feel bad..  It may break something */
+          parent.parent.pad.collabClient.sendMessage({type: 'SAVE_REVISION'});
           specialHandled = true;
         }
-        if ((!specialHandled) && isTypeForSpecialKey && keyCode == 9 && !(evt.metaKey || evt.ctrlKey) && padShortcutEnabled.tab) {
+        if ((!specialHandled) &&
           // tab
+          isTypeForSpecialKey &&
+          keyCode === 9 &&
+          !(evt.metaKey || evt.ctrlKey) &&
+          padShortcutEnabled.tab) {
           fastIncorp(5);
           evt.preventDefault();
           doTabKey(evt.shiftKey);
           // scrollSelectionIntoView();
           specialHandled = true;
         }
-        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == 'z' && (evt.metaKey || evt.ctrlKey) && !evt.altKey && padShortcutEnabled.cmdZ) {
+        if ((!specialHandled) &&
           // cmd-Z (undo)
+          isTypeForCmdKey &&
+          String.fromCharCode(which).toLowerCase() === 'z' &&
+          (evt.metaKey || evt.ctrlKey) &&
+          !evt.altKey &&
+          padShortcutEnabled.cmdZ
+        ) {
           fastIncorp(6);
           evt.preventDefault();
           if (evt.shiftKey) {
@@ -2971,72 +3050,126 @@ function Ace2Inner() {
           }
           specialHandled = true;
         }
-        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == 'y' && (evt.metaKey || evt.ctrlKey) && padShortcutEnabled.cmdY) {
-          // cmd-Y (redo)
+        if ((!specialHandled) &&
+        // cmd-Y (redo)
+          isTypeForCmdKey &&
+          String.fromCharCode(which).toLowerCase() === 'y' &&
+          (evt.metaKey || evt.ctrlKey) &&
+          padShortcutEnabled.cmdY
+        ) {
           fastIncorp(10);
           evt.preventDefault();
           doUndoRedo('redo');
           specialHandled = true;
         }
-        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == 'b' && (evt.metaKey || evt.ctrlKey) && padShortcutEnabled.cmdB) {
+        if ((!specialHandled) &&
           // cmd-B (bold)
+          isTypeForCmdKey &&
+          String.fromCharCode(which).toLowerCase() === 'b' &&
+          (evt.metaKey || evt.ctrlKey) &&
+          padShortcutEnabled.cmdB) {
           fastIncorp(13);
           evt.preventDefault();
           toggleAttributeOnSelection('bold');
           specialHandled = true;
         }
-        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == 'i' && (evt.metaKey || evt.ctrlKey) && padShortcutEnabled.cmdI) {
+        if ((!specialHandled) &&
           // cmd-I (italic)
+          isTypeForCmdKey &&
+          String.fromCharCode(which).toLowerCase() === 'i' &&
+          (evt.metaKey || evt.ctrlKey) &&
+          padShortcutEnabled.cmdI
+        ) {
           fastIncorp(14);
           evt.preventDefault();
           toggleAttributeOnSelection('italic');
           specialHandled = true;
         }
-        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == 'u' && (evt.metaKey || evt.ctrlKey) && padShortcutEnabled.cmdU) {
+        if ((!specialHandled) &&
+          isTypeForCmdKey &&
+          String.fromCharCode(which).toLowerCase() === 'u' &&
+          (evt.metaKey || evt.ctrlKey) &&
+          padShortcutEnabled.cmdU
+        ) {
           // cmd-U (underline)
           fastIncorp(15);
           evt.preventDefault();
           toggleAttributeOnSelection('underline');
           specialHandled = true;
         }
-        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == '5' && (evt.metaKey || evt.ctrlKey) && evt.altKey !== true && padShortcutEnabled.cmd5) {
+        if ((!specialHandled) &&
           // cmd-5 (strikethrough)
+          isTypeForCmdKey &&
+          String.fromCharCode(which).toLowerCase() === '5' &&
+          (evt.metaKey || evt.ctrlKey) &&
+          evt.altKey !== true &&
+          padShortcutEnabled.cmd5
+        ) {
           fastIncorp(13);
           evt.preventDefault();
           toggleAttributeOnSelection('strikethrough');
           specialHandled = true;
         }
-        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == 'l' && (evt.metaKey || evt.ctrlKey) && evt.shiftKey && padShortcutEnabled.cmdShiftL) {
+        if ((!specialHandled) &&
           // cmd-shift-L (unorderedlist)
+          isTypeForCmdKey &&
+          String.fromCharCode(which).toLowerCase() === 'l' &&
+          (evt.metaKey || evt.ctrlKey) &&
+          evt.shiftKey &&
+          padShortcutEnabled.cmdShiftL
+        ) {
           fastIncorp(9);
           evt.preventDefault();
           doInsertUnorderedList();
           specialHandled = true;
         }
-        if ((!specialHandled) && isTypeForCmdKey && ((String.fromCharCode(which).toLowerCase() == 'n' && padShortcutEnabled.cmdShiftN) || (String.fromCharCode(which) == 1 && padShortcutEnabled.cmdShift1)) && (evt.metaKey || evt.ctrlKey) && evt.shiftKey) {
+        if ((!specialHandled) &&
           // cmd-shift-N and cmd-shift-1 (orderedlist)
+          isTypeForCmdKey &&
+          (
+            (String.fromCharCode(which).toLowerCase() === 'n' &&
+              padShortcutEnabled.cmdShiftN) || (String.fromCharCode(which) == 1 &&
+              padShortcutEnabled.cmdShift1)
+            ) && (evt.metaKey || evt.ctrlKey) &&
+            evt.shiftKey
+         ) {
           fastIncorp(9);
           evt.preventDefault();
           doInsertOrderedList();
           specialHandled = true;
         }
-        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == 'c' && (evt.metaKey || evt.ctrlKey) && evt.shiftKey && padShortcutEnabled.cmdShiftC) {
+        if ((!specialHandled) &&
           // cmd-shift-C (clearauthorship)
+          isTypeForCmdKey &&
+          String.fromCharCode(which).toLowerCase() === 'c' &&
+          (evt.metaKey || evt.ctrlKey) &&
+          evt.shiftKey && padShortcutEnabled.cmdShiftC
+        ) {
           fastIncorp(9);
           evt.preventDefault();
           CMDS.clearauthorship();
         }
-        if ((!specialHandled) && isTypeForCmdKey && String.fromCharCode(which).toLowerCase() == 'h' && (evt.ctrlKey) && padShortcutEnabled.cmdH) {
+        if ((!specialHandled) &&
           // cmd-H (backspace)
+          isTypeForCmdKey &&
+          String.fromCharCode(which).toLowerCase() === 'h' &&
+          (evt.ctrlKey) &&
+          padShortcutEnabled.cmdH
+        ) {
           fastIncorp(20);
           evt.preventDefault();
           doDeleteKey();
           specialHandled = true;
         }
-        if ((evt.which == 36 && evt.ctrlKey == true) && padShortcutEnabled.ctrlHome) { scroll.setScrollY(0); } // Control Home send to Y = 0
-        if ((evt.which == 33 || evt.which == 34) && type == 'keydown' && !evt.ctrlKey) {
-          evt.preventDefault(); // This is required, browsers will try to do normal default behavior on page up / down and the default behavior SUCKS
-
+        if ((evt.which === 36 && evt.ctrlKey === true) &&
+        // Control Home send to Y = 0
+         padShortcutEnabled.ctrlHome) {
+           scroll.setScrollY(0);
+         }
+        if ((evt.which === 33 || evt.which === 34) && type === 'keydown' && !evt.ctrlKey) {
+          // This is required, browsers will try to do normal default behavior on
+          // page up / down and the default behavior SUCKS
+          evt.preventDefault();
           const oldVisibleLineRange = scroll.getVisibleLineRange(rep);
           let topOffset = rep.selStart[0] - oldVisibleLineRange[0];
           if (topOffset < 0) {
@@ -3047,19 +3180,30 @@ function Ace2Inner() {
           const isPageUp = evt.which === 33;
 
           scheduler.setTimeout(() => {
-            const newVisibleLineRange = scroll.getVisibleLineRange(rep); // the visible lines IE 1,10
-            const linesCount = rep.lines.length(); // total count of lines in pad IE 10
-            const numberOfLinesInViewport = newVisibleLineRange[1] - newVisibleLineRange[0]; // How many lines are in the viewport right now?
+            // the visible lines IE 1,10
+            const newVisibleLineRange = scroll.getVisibleLineRange(rep);
+            // total count of lines in pad IE 10
+            const linesCount = rep.lines.length();
+            // How many lines are in the viewport right now?
+            const numberOfLinesInViewport = newVisibleLineRange[1] - newVisibleLineRange[0];
 
             if (isPageUp && padShortcutEnabled.pageUp) {
-              rep.selEnd[0] = rep.selEnd[0] - numberOfLinesInViewport; // move to the bottom line +1 in the viewport (essentially skipping over a page)
-              rep.selStart[0] = rep.selStart[0] - numberOfLinesInViewport; // move to the bottom line +1 in the viewport (essentially skipping over a page)
+              // move to the bottom line +1 in the viewport (essentially skipping over a page)
+              rep.selEnd[0] = rep.selEnd[0] - numberOfLinesInViewport;
+              // move to the bottom line +1 in the viewport (essentially skipping over a page)
+              rep.selStart[0] = rep.selStart[0] - numberOfLinesInViewport;
             }
 
-            if (isPageDown && padShortcutEnabled.pageDown) { // if we hit page down
-              if (rep.selEnd[0] >= oldVisibleLineRange[0]) { // If the new viewpoint position is actually further than where we are right now
-                rep.selStart[0] = oldVisibleLineRange[1] - 1; // dont go further in the page down than what's visible IE go from 0 to 50 if 50 is visible on screen but dont go below that else we miss content
-                rep.selEnd[0] = oldVisibleLineRange[1] - 1; // dont go further in the page down than what's visible IE go from 0 to 50 if 50 is visible on screen but dont go below that else we miss content
+            // if we hit page down
+            if (isPageDown && padShortcutEnabled.pageDown) {
+              // If the new viewpoint position is actually further than where we are right now
+              if (rep.selEnd[0] >= oldVisibleLineRange[0]) {
+                // dont go further in the page down than what's visible IE go from 0 to 50
+                //  if 50 is visible on screen but dont go below that else we miss content
+                rep.selStart[0] = oldVisibleLineRange[1] - 1;
+                // dont go further in the page down than what's visible IE go from 0 to 50
+                // if 50 is visible on screen but dont go below that else we miss content
+                rep.selEnd[0] = oldVisibleLineRange[1] - 1;
               }
             }
 
@@ -3074,24 +3218,32 @@ function Ace2Inner() {
               rep.selEnd[0] = linesCount - 1;
             }
             updateBrowserSelectionFromRep();
-            const myselection = document.getSelection(); // get the current caret selection, can't use rep. here because that only gives us the start position not the current
-            let caretOffsetTop = myselection.focusNode.parentNode.offsetTop || myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
+            // get the current caret selection, can't use rep. here because that only gives
+            // us the start position not the current
+            const myselection = document.getSelection();
+            // get the carets selection offset in px IE 214
+            let caretOffsetTop = myselection.focusNode.parentNode.offsetTop ||
+                myselection.focusNode.offsetTop;
 
-            // sometimes the first selection is -1 which causes problems (Especially with ep_page_view)
+            // sometimes the first selection is -1 which causes problems
+            // (Especially with ep_page_view)
             // so use focusNode.offsetTop value.
             if (caretOffsetTop === -1) caretOffsetTop = myselection.focusNode.offsetTop;
-            scroll.setScrollY(caretOffsetTop); // set the scrollY offset of the viewport on the document
+            // set the scrollY offset of the viewport on the document
+            scroll.setScrollY(caretOffsetTop);
           }, 200);
         }
 
         // scroll to viewport when user presses arrow keys and caret is out of the viewport
-        if ((evt.which == 37 || evt.which == 38 || evt.which == 39 || evt.which == 40)) {
+        if ((evt.which === 37 || evt.which == 38 || evt.which == 39 || evt.which == 40)) {
           // we use arrowKeyWasReleased to avoid triggering the animation when a key is continuously pressed
           // this makes the scroll smooth
           if (!continuouslyPressingArrowKey(type)) {
-            // We use getSelection() instead of rep to get the caret position. This avoids errors like when
-            // the caret position is not synchronized with the rep. For example, when an user presses arrow
-            // down to scroll the pad without releasing the key. When the key is released the rep is not
+            // the caret position is not synchronized with the rep.
+            // For example, when an user presses arrow
+            // We use getSelection() instead of rep to get the caret position.
+            // This avoids errors like when down to scroll the pad without releasing the key.
+            // When the key is released the rep is not
             // synchronized, so we don't get the right node where caret is.
             const selection = getSelection();
 
@@ -3104,25 +3256,28 @@ function Ace2Inner() {
         }
       }
 
-      if (type == 'keydown') {
+      if (type === 'keydown') {
         idleWorkTimer.atLeast(500);
-      } else if (type == 'keypress') {
+      } else if (type === 'keypress') {
+        // JM TODO CAKE
         if ((!specialHandled) && false /* parenModule.shouldNormalizeOnChar(charCode)*/) {
           idleWorkTimer.atMost(0);
         } else {
           idleWorkTimer.atLeast(500);
         }
-      } else if (type == 'keyup') {
+      } else if (type === 'keyup') {
         const wait = 0;
         idleWorkTimer.atLeast(wait);
         idleWorkTimer.atMost(wait);
       }
 
       // Is part of multi-keystroke international character on Firefox Mac
-      const isFirefoxHalfCharacter = (browser.firefox && evt.altKey && charCode === 0 && keyCode === 0);
+      const isFirefoxHalfCharacter =
+          (browser.firefox && evt.altKey && charCode === 0 && keyCode === 0);
 
       // Is part of multi-keystroke international character on Safari Mac
-      const isSafariHalfCharacter = (browser.safari && evt.altKey && keyCode == 229);
+      const isSafariHalfCharacter =
+          (browser.safari && evt.altKey && keyCode === 229);
 
       if (thisKeyDoesntTriggerNormalize || isFirefoxHalfCharacter || isSafariHalfCharacter) {
         idleWorkTimer.atLeast(3000); // give user time to type
@@ -3131,37 +3286,38 @@ function Ace2Inner() {
       }
 
       if ((!specialHandled) && (!thisKeyDoesntTriggerNormalize) && (!inInternationalComposition)) {
-        if (type != 'keyup') {
+        if (type !== 'keyup') {
           observeChangesAroundSelection();
         }
       }
 
-      if (type == 'keyup') {
+      if (type === 'keyup') {
         thisKeyDoesntTriggerNormalize = false;
       }
     });
   }
 
-  var thisKeyDoesntTriggerNormalize = false;
-
+  let thisKeyDoesntTriggerNormalize = false;
   let arrowKeyWasReleased = true;
-  function continuouslyPressingArrowKey(type) {
+  const continuouslyPressingArrowKey = (type) => {
     let firstTimeKeyIsContinuouslyPressed = false;
 
-    if (type == 'keyup') { arrowKeyWasReleased = true; } else if (type == 'keydown' && arrowKeyWasReleased) {
+    if (type === 'keyup') {
+      arrowKeyWasReleased = true;
+    } else if (type === 'keydown' && arrowKeyWasReleased) {
       firstTimeKeyIsContinuouslyPressed = true;
       arrowKeyWasReleased = false;
     }
 
     return !firstTimeKeyIsContinuouslyPressed;
-  }
+  };
 
-  function doUndoRedo(which) {
+  const doUndoRedo = (which) => {
     // precond: normalized DOM
     if (undoModule.enabled) {
       let whichMethod;
-      if (which == 'undo') whichMethod = 'performUndo';
-      if (which == 'redo') whichMethod = 'performRedo';
+      if (which === 'undo') whichMethod = 'performUndo';
+      if (which === 'redo') whichMethod = 'performRedo';
       if (whichMethod) {
         const oldEventType = currentCallStack.editEvent.eventType;
         currentCallStack.startNewEvent(which);
@@ -3170,17 +3326,23 @@ function Ace2Inner() {
             performDocumentApplyChangeset(backset);
           }
           if (selectionInfo) {
-            performSelectionChange(lineAndColumnFromChar(selectionInfo.selStart), lineAndColumnFromChar(selectionInfo.selEnd), selectionInfo.selFocusAtStart);
+            performSelectionChange(
+              lineAndColumnFromChar(
+                selectionInfo.selStart
+              ),
+              lineAndColumnFromChar(selectionInfo.selEnd),
+              selectionInfo.selFocusAtStart
+            );
           }
           const oldEvent = currentCallStack.startNewEvent(oldEventType, true);
           return oldEvent;
         });
       }
     }
-  }
+  };
   editorInfo.ace_doUndoRedo = doUndoRedo;
 
-  function updateBrowserSelectionFromRep() {
+  const updateBrowserSelectionFromRep = () => {
     // requires normalized DOM!
     const selStart = rep.selStart;
     const selEnd = rep.selEnd;
@@ -3203,26 +3365,12 @@ function Ace2Inner() {
   }
   editorInfo.ace_updateBrowserSelectionFromRep = updateBrowserSelectionFromRep;
 
-  function nodeMaxIndex(nd) {
+  const nodeMaxIndex = (nd) => {
     if (isNodeText(nd)) return nd.nodeValue.length;
     else return 1;
   }
 
-  function hasIESelection() {
-    let browserSelection;
-    try {
-      browserSelection = doc.selection;
-    } catch (e) {}
-    if (!browserSelection) return false;
-    let origSelectionRange;
-    try {
-      origSelectionRange = browserSelection.createRange();
-    } catch (e) {}
-    if (!origSelectionRange) return false;
-    return true;
-  }
-
-  function getSelection() {
+  const getSelection = () => {
     // returns null, or a structure containing startPoint and endPoint,
     // each of which has node (a magicdom node), index, and maxIndex.  If the node
     // is a text node, maxIndex is the length of the text; else maxIndex is 1.
@@ -3231,14 +3379,14 @@ function Ace2Inner() {
     if (browserSelection && browserSelection.type != 'None' && browserSelection.rangeCount !== 0) {
       const range = browserSelection.getRangeAt(0);
 
-      function isInBody(n) {
+      const isInBody = (n) => {
         while (n && !(n.tagName && n.tagName.toLowerCase() == 'body')) {
           n = n.parentNode;
         }
         return !!n;
       }
 
-      function pointFromRangeBound(container, offset) {
+      const pointFromRangeBound = (container, offset) => {
         if (!isInBody(container)) {
           // command-click in Firefox selects whole document, HEAD and BODY!
           return {
@@ -3265,28 +3413,36 @@ function Ace2Inner() {
         // treat point between two nodes as BEFORE the second (rather than after the first)
         // if possible; this way point at end of a line block-element is treated as
         // at beginning of next line
-        else if (offset == childCount) {
-          var nd = n.childNodes.item(childCount - 1);
-          var max = nodeMaxIndex(nd);
+        else if (offset === childCount) {
+          const nd = n.childNodes.item(childCount - 1);
+          const max = nodeMaxIndex(nd);
           return {
             node: nd,
             index: max,
             maxIndex: max,
           };
         } else {
-          var nd = n.childNodes.item(offset);
-          var max = nodeMaxIndex(nd);
+          const nd = n.childNodes.item(offset);
+          const max = nodeMaxIndex(nd);
           return {
             node: nd,
             index: 0,
             maxIndex: max,
           };
         }
-      }
+      };
       const selection = {};
       selection.startPoint = pointFromRangeBound(range.startContainer, range.startOffset);
       selection.endPoint = pointFromRangeBound(range.endContainer, range.endOffset);
-      selection.focusAtStart = (((range.startContainer != range.endContainer) || (range.startOffset != range.endOffset)) && browserSelection.anchorNode && (browserSelection.anchorNode == range.endContainer) && (browserSelection.anchorOffset == range.endOffset));
+      selection.focusAtStart = (
+        (
+          (range.startContainer != range.endContainer) ||
+          (range.startOffset != range.endOffset)
+        ) &&
+          browserSelection.anchorNode &&
+          (browserSelection.anchorNode == range.endContainer) &&
+          (browserSelection.anchorOffset == range.endOffset)
+        );
 
       if (selection.startPoint.node.ownerDocument !== window.document) {
         return null;
@@ -3294,9 +3450,9 @@ function Ace2Inner() {
 
       return selection;
     } else { return null; }
-  }
+  };
 
-  function setSelection(selection) {
+  const setSelection = (selection) => {
     function copyPoint(pt) {
       return {
         node: pt.node,
@@ -3307,33 +3463,38 @@ function Ace2Inner() {
 
     let isCollapsed;
 
-    function pointToRangeBound(pt) {
+    const pointToRangeBound = (pt) => {
       const p = copyPoint(pt);
       // Make sure Firefox cursor is deep enough; fixes cursor jumping when at top level,
       // and also problem where cut/copy of a whole line selected with fake arrow-keys
       // copies the next line too.
       if (isCollapsed) {
-        function diveDeep() {
+        const diveDeep = () => {
           while (p.node.childNodes.length > 0) {
             // && (p.node == root || p.node.parentNode == root)) {
             if (p.index === 0) {
               p.node = p.node.firstChild;
               p.maxIndex = nodeMaxIndex(p.node);
-            } else if (p.index == p.maxIndex) {
+            } else if (p.index === p.maxIndex) {
               p.node = p.node.lastChild;
               p.maxIndex = nodeMaxIndex(p.node);
               p.index = p.maxIndex;
             } else { break; }
           }
-        }
+        };
         // now fix problem where cursor at end of text node at end of span-like element
         // with background doesn't seem to show up...
-        if (isNodeText(p.node) && p.index == p.maxIndex) {
+        if (isNodeText(p.node) && p.index === p.maxIndex) {
           let n = p.node;
-          while ((!n.nextSibling) && (n != root) && (n.parentNode != root)) {
+          while ((!n.nextSibling) && (n !== root) && (n.parentNode !== root)) {
             n = n.parentNode;
           }
-          if (n.nextSibling && (!((typeof n.nextSibling.tagName) === 'string' && n.nextSibling.tagName.toLowerCase() == 'br')) && (n != p.node) && (n != root) && (n.parentNode != root)) {
+          if (
+            n.nextSibling &&
+            (!((typeof n.nextSibling.tagName) === 'string' &&
+              n.nextSibling.tagName.toLowerCase() == 'br')) &&
+              (n !== p.node) && (n !== root) && (n.parentNode !== root)
+            ) {
             // found a parent, go to next node and dive in
             p.node = n.nextSibling;
             p.maxIndex = nodeMaxIndex(p.node);
@@ -3359,16 +3520,24 @@ function Ace2Inner() {
           offset: childIndex(p.node) + p.index,
         };
       }
-    }
+    };
     const browserSelection = window.getSelection();
     if (browserSelection) {
       browserSelection.removeAllRanges();
       if (selection) {
-        isCollapsed = (selection.startPoint.node === selection.endPoint.node && selection.startPoint.index === selection.endPoint.index);
+        isCollapsed = (
+          selection.startPoint.node === selection.endPoint.node &&
+          selection.startPoint.index === selection.endPoint.index
+        );
         const start = pointToRangeBound(selection.startPoint);
         const end = pointToRangeBound(selection.endPoint);
 
-        if ((!isCollapsed) && selection.focusAtStart && browserSelection.collapse && browserSelection.extend) {
+        if (
+          (!isCollapsed) &&
+          selection.focusAtStart &&
+          browserSelection.collapse &&
+          browserSelection.extend
+        ) {
           // can handle "backwards"-oriented selection, shift-arrow-keys move start
           // of selection
           browserSelection.collapse(end.container, end.offset);
@@ -3382,9 +3551,9 @@ function Ace2Inner() {
         }
       }
     }
-  }
+  };
 
-  function childIndex(n) {
+  const childIndex = (n) => {
     let idx = 0;
     while (n.previousSibling) {
       idx++;
@@ -3393,7 +3562,7 @@ function Ace2Inner() {
     return idx;
   }
 
-  function fixView() {
+  const fixView = () => {
     // calling this method repeatedly should be fast
     if (getInnerWidth() === 0 || getInnerHeight() === 0) {
       return;
@@ -3408,7 +3577,7 @@ function Ace2Inner() {
 
   const _teardownActions = [];
 
-  function teardown() {
+  const teardown = () => {
     _.each(_teardownActions, (a) => {
       a();
     });
@@ -3416,43 +3585,19 @@ function Ace2Inner() {
 
   const iePastedLines = null;
 
-  function handleIEPaste(evt) {
-    // Pasting in IE loses blank lines in a way that loses information;
-    // "one\n\ntwo\nthree" becomes "<p>one</p><p>two</p><p>three</p>",
-    // which becomes "one\ntwo\nthree".  We can get the correct text
-    // from the clipboard directly, but we still have to let the paste
-    // happen to get the style information.
-    const clipText = window.clipboardData && window.clipboardData.getData('Text');
-    if (clipText && doc.selection) {
-      // this "paste" event seems to mess with the selection whether we try to
-      // stop it or not, so can't really do document-level manipulation now
-      // or in an idle call-stack.  instead, use IE native manipulation
-      // function escapeLine(txt) {
-      // return processSpaces(escapeHTML(textify(txt)));
-      // }
-      // var newHTML = map(clipText.replace(/\r/g,'').split('\n'), escapeLine).join('<br>');
-      // doc.selection.createRange().pasteHTML(newHTML);
-      // evt.preventDefault();
-      // iePastedLines = map(clipText.replace(/\r/g,'').split('\n'), textify);
-    }
-  }
-
-
-  var inInternationalComposition = false;
-  function handleCompositionEvent(evt) {
+  let inInternationalComposition = false;
+  const handleCompositionEvent = (evt) => {
     // international input events, fired in FF3, at least;  allow e.g. Japanese input
-    if (evt.type == 'compositionstart') {
+    if (evt.type === 'compositionstart') {
       inInternationalComposition = true;
-    } else if (evt.type == 'compositionend') {
+    } else if (evt.type === 'compositionend') {
       inInternationalComposition = false;
     }
-  }
-
-  editorInfo.ace_getInInternationalComposition = function () {
-    return inInternationalComposition;
   };
 
-  function bindTheEventHandlers() {
+  editorInfo.ace_getInInternationalComposition = () => inInternationalComposition;
+
+  const bindTheEventHandlers = () => {
     $(document).on('keydown', handleKeyEvent);
     $(document).on('keypress', handleKeyEvent);
     $(document).on('keyup', handleKeyEvent);
@@ -3541,9 +3686,9 @@ function Ace2Inner() {
     // CompositionEvent is not implemented below IE version 8
     $(document.documentElement).on('compositionstart', handleCompositionEvent);
     $(document.documentElement).on('compositionend', handleCompositionEvent);
-  }
+  };
 
-  function topLevel(n) {
+  const topLevel = (n) => {
     if ((!n) || n == root) return null;
     while (n.parentNode != root) {
       n = n.parentNode;
@@ -3551,27 +3696,7 @@ function Ace2Inner() {
     return n;
   }
 
-  function handleIEOuterClick(evt) {
-    if ((evt.target.tagName || '').toLowerCase() != 'html') {
-      return;
-    }
-    if (!(evt.pageY > root.clientHeight)) {
-      return;
-    }
-
-    // click below the body
-    inCallStackIfNecessary('handleOuterClick', () => {
-      // put caret at bottom of doc
-      fastIncorp(11);
-      if (isCaret()) { // don't interfere with drag
-        const lastLine = rep.lines.length() - 1;
-        const lastCol = rep.lines.atIndex(lastLine).text.length;
-        performSelectionChange([lastLine, lastCol], [lastLine, lastCol]);
-      }
-    });
-  }
-
-  function getClassArray(elem, optFilter) {
+  const getClassArray = (elem, optFilter) => {
     const bodyClasses = [];
     (elem.className || '').replace(/\S+/g, (c) => {
       if ((!optFilter) || (optFilter(c))) {
@@ -3579,17 +3704,18 @@ function Ace2Inner() {
       }
     });
     return bodyClasses;
-  }
+  };
 
-  function setClassArray(elem, array) {
+  const setClassArray = (elem, array) => {
     elem.className = array.join(' ');
   }
 
+  // JM to do cake
   function focus() {
     window.focus();
-  }
+  };
 
-  function getSelectionPointX(point) {
+  const getSelectionPointX = (point) => {
     // doesn't work in wrap-mode
     const node = point.node;
     const index = point.index;
@@ -3620,7 +3746,7 @@ function Ace2Inner() {
     }
   }
 
-  function getPageHeight() {
+  const getPageHeight = () => {
     const win = outerWin;
     const odoc = win.document;
     if (win.innerHeight && win.scrollMaxY) return win.innerHeight + win.scrollMaxY;
@@ -3628,7 +3754,7 @@ function Ace2Inner() {
     else return odoc.body.offsetHeight;
   }
 
-  function getPageWidth() {
+  const getPageWidth = () => {
     const win = outerWin;
     const odoc = win.document;
     if (win.innerWidth && win.scrollMaxX) return win.innerWidth + win.scrollMaxX;
@@ -3636,7 +3762,7 @@ function Ace2Inner() {
     else return odoc.body.offsetWidth;
   }
 
-  function getInnerHeight() {
+  const getInnerHeight = () => {
     const win = outerWin;
     const odoc = win.document;
     let h;
@@ -3649,13 +3775,13 @@ function Ace2Inner() {
     return Number(editorInfo.frame.parentNode.style.height.replace(/[^0-9]/g, '') || 0);
   }
 
-  function getInnerWidth() {
+  const getInnerWidth = () => {
     const win = outerWin;
     const odoc = win.document;
     return odoc.documentElement.clientWidth;
   }
 
-  function scrollXHorizontallyIntoView(pixelX) {
+  const scrollXHorizontallyIntoView = (pixelX) => {
     const win = outerWin;
     const odoc = outerWin.document;
     const distInsideLeft = pixelX - win.scrollX;
@@ -3667,7 +3793,7 @@ function Ace2Inner() {
     }
   }
 
-  function scrollSelectionIntoView() {
+  const scrollSelectionIntoView = () => {
     if (!rep.selStart) return;
     fixView();
     const innerHeight = getInnerHeight();
@@ -3685,6 +3811,7 @@ function Ace2Inner() {
 
   const listAttributeName = 'list';
 
+  // JM Todo cake
   function getLineListType(lineNum) {
     return documentAttributeManager.getAttributeOnLine(lineNum, listAttributeName);
   }
@@ -3856,7 +3983,10 @@ function Ace2Inner() {
           // didn't do this special case, we would miss out on any top margin
           // included on the first line. The default stylesheet doesn't add
           // extra margins/padding, but plugins might.
-          h = docLine.nextSibling.offsetTop - parseInt(window.getComputedStyle(doc.body).getPropertyValue('padding-top').split('px')[0]);
+          h = docLine.nextSibling.offsetTop - parseInt(
+              window.getComputedStyle(doc.body)
+                  .getPropertyValue('padding-top').split('px')[0]
+          );
         } else {
           h = docLine.nextSibling.offsetTop - docLine.offsetTop;
         }
@@ -3883,7 +4013,7 @@ function Ace2Inner() {
       currentLine++;
     }
 
-    if (newNumLines != lineNumbersShown) {
+    if (newNumLines !== lineNumbersShown) {
       const container = sideDivInner;
       const odoc = outerWin.document;
       const fragment = odoc.createDocumentFragment();
