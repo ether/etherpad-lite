@@ -301,7 +301,7 @@ $._farbtastic = function (container, options) {
 
     // Update the overlay canvas.
     fb.ctxOverlay.clearRect(-fb.mid, -fb.mid, sz, sz);
-    for (i in circles) {
+    for (let i in circles) {
       var c = circles[i];
       fb.ctxOverlay.lineWidth = c.lw;
       fb.ctxOverlay.strokeStyle = c.c;
