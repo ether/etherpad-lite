@@ -238,14 +238,24 @@ const handshake = () => {
     sendClientReady(receivedClientVars);
   });
 
-  socket.on('reconnecting', () => {
+  const socketReconnecting = () => {
     // pad.collabClient might be null if the hanshake failed (or it never got that far).
     if (pad.collabClient != null) {
       pad.collabClient.setStateIdle();
       pad.collabClient.setIsPendingRevision(true);
       pad.collabClient.setChannelState('RECONNECTING');
     }
+  };
+
+  socket.on('disconnect', (reason) => {
+    // The socket.io client will automatically try to reconnect for all reasons other than "io
+    // server disconnect".
+    if (reason !== 'io server disconnect') return;
+    socketReconnecting();
+    socket.connect();
   });
+
+  socket.on('reconnecting', socketReconnecting);
 
   socket.on('reconnect_failed', (error) => {
     // pad.collabClient might be null if the hanshake failed (or it never got that far).

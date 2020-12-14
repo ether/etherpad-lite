@@ -4,6 +4,11 @@
 
 $(document).ready(() => {
   const socket = socketio.connect('..', '/pluginfw/installer');
+  socket.on('disconnect', (reason) => {
+    // The socket.io client will automatically try to reconnect for all reasons other than "io
+    // server disconnect".
+    if (reason === 'io server disconnect') socket.connect();
+  });
 
   const search = (searchTerm, limit) => {
     if (search.searchTerm !== searchTerm) {
@@ -253,10 +258,12 @@ $(document).ready(() => {
     search.results = [];
   });
 
-  // init
-  updateHandlers();
-  socket.emit('getInstalled');
-  search('');
+  socket.on('connect', () => {
+    updateHandlers();
+    socket.emit('getInstalled');
+    search.searchTerm = null;
+    search($('#search-query').val());
+  });
 
   // check for updates every 5mins
   setInterval(() => {

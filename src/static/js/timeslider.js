@@ -59,8 +59,11 @@ const init = () => {
       sendSocketMsg('CLIENT_READY', {});
     });
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', (reason) => {
       BroadcastSlider.showReconnectUI();
+      // The socket.io client will automatically try to reconnect for all reasons other than "io
+      // server disconnect".
+      if (reason === 'io server disconnect') socket.connect();
     });
 
     // route the incoming messages
