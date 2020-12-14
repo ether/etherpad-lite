@@ -1,3 +1,4 @@
+'use strict';
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -408,13 +409,6 @@ var pad = {
     padcookie.init(); // initialize the cookies
     pad.initTime = +(new Date());
     pad.padOptions = clientVars.initialOptions;
-
-    // for IE
-    if (browser.msie) {
-      try {
-        document.execCommand('BackgroundImageCache', false, true);
-      } catch (e) {}
-    }
 
     // order of inits is important here:
     pad.myUserInfo = {
