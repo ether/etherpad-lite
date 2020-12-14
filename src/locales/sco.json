@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"AmaryllisGardener",
-			"John Reid"
+			"John Reid",
+			"Nintendofan885"
 		]
 	},
 	"index.newPad": "New Pad",
@@ -104,7 +105,7 @@
 	"timeslider.month.september": "September",
 	"timeslider.month.october": "October",
 	"timeslider.month.november": "November",
-	"timeslider.month.december": "Dizember",
+	"timeslider.month.december": "December",
 	"timeslider.unnamedauthors": "{{num}} onnamed {[plural(num) one: writer, other: writers ]}",
 	"pad.savedrevs.marked": "This reveesion is nou tagged aes ae hained reveesion",
 	"pad.savedrevs.timeslider": "Ye can see saved reveesions bi veesitin the timeslider",
