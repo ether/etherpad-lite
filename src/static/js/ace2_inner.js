@@ -1469,7 +1469,7 @@ function Ace2Inner() {
     };
   };
 
-  const nodeText = (n) => n.textContent || n.nodeValue || ''
+  const nodeText = (n) => n.textContent || n.nodeValue || '';
 
   const getLineAndCharForPoint = (point) => {
     // Turn DOM node selection into [line,char] selection.
@@ -1543,13 +1543,13 @@ function Ace2Inner() {
         const args = Array.prototype.slice.call(arguments, 2);
         domAndRepSplice(start, numRemoved, _.map(args, (s) => s.slice(0, -1)));
       },
-      get(i) {
+      get: (i) => {
         return `${rep.lines.atIndex(i).text}\n`;
       },
-      length() {
+      length: () => {
         return rep.lines.length();
       },
-      slice_notused(start, end) {
+      slice_notused: (start, end) => {
         return _.map(rep.lines.slice(start, end), (e) => `${e.text}\n`);
       },
     };
@@ -1641,13 +1641,14 @@ function Ace2Inner() {
   /*
     Converts the position of a char (index in String) into a [row, col] tuple
   */
-  function lineAndColumnFromChar(x) {
+  const lineAndColumnFromChar = (x) => {
     const lineEntry = rep.lines.atOffset(x);
     const lineStart = rep.lines.offsetOfEntry(lineEntry);
     const lineNum = rep.lines.indexOfEntry(lineEntry);
     return [lineNum, x - lineStart];
   }
 
+  // jm note to self this one is tricky too
   function performDocumentReplaceCharRange(startChar, endChar, newText) {
     if (startChar === endChar && newText.length === 0) {
       return;
@@ -1656,8 +1657,8 @@ function Ace2Inner() {
     // internal document text ends in a newline.  Given this, we
     // rewrite the splice so that it doesn't touch the very last
     // char of the document.
-    if (endChar == rep.alltext.length) {
-      if (startChar == endChar) {
+    if (endChar === rep.alltext.length) {
+      if (startChar === endChar) {
         // an insert at end
         startChar--;
         endChar--;
@@ -1673,7 +1674,7 @@ function Ace2Inner() {
       }
     }
     performDocumentReplaceRange(lineAndColumnFromChar(startChar), lineAndColumnFromChar(endChar), newText);
-  }
+  };
 
   function performDocumentReplaceRange(start, end, newText) {
     if (start === undefined) start = rep.selStart;
@@ -1698,9 +1699,9 @@ function Ace2Inner() {
   function performDocumentApplyAttributesToCharRange(start, end, attribs) {
     end = Math.min(end, rep.alltext.length - 1);
     documentAttributeManager.setAttributesOnRange(lineAndColumnFromChar(start), lineAndColumnFromChar(end), attribs);
-  }
-  editorInfo.ace_performDocumentApplyAttributesToCharRange = performDocumentApplyAttributesToCharRange;
+  };
 
+  editorInfo.ace_performDocumentApplyAttributesToCharRange = performDocumentApplyAttributesToCharRange;
 
   function setAttributeOnSelection(attributeName, attributeValue) {
     if (!(rep.selStart && rep.selEnd)) return;
@@ -1728,9 +1729,7 @@ function Ace2Inner() {
       [attributeName, 'true'],
     ], rep.apool);
     const withItRegex = new RegExp(`${withIt.replace(/\*/g, '\\*')}(\\*|$)`);
-    function hasIt(attribs) {
-      return withItRegex.test(attribs);
-    }
+    const hasIt = (attribs) => withItRegex.test(attribs);
 
     return rangeHasAttrib(rep.selStart, rep.selEnd);
 
@@ -1787,7 +1786,7 @@ function Ace2Inner() {
 
   editorInfo.ace_getAttributeOnSelection = getAttributeOnSelection;
 
-  function toggleAttributeOnSelection(attributeName) {
+  const toggleAttributeOnSelection = (attributeName) => {
     if (!(rep.selStart && rep.selEnd)) return;
 
     let selectionAllHasIt = true;
@@ -1796,9 +1795,7 @@ function Ace2Inner() {
     ], rep.apool);
     const withItRegex = new RegExp(`${withIt.replace(/\*/g, '\\*')}(\\*|$)`);
 
-    function hasIt(attribs) {
-      return withItRegex.test(attribs);
-    }
+    const hasIt = (attribs) => withItRegex.test(attribs);
 
     const selStartLine = rep.selStart[0];
     const selEndLine = rep.selEnd[0];
@@ -1810,10 +1807,10 @@ function Ace2Inner() {
         selectionStartInLine = 1; // ignore "*" used as line marker
       }
       let selectionEndInLine = rep.lines.atIndex(n).text.length; // exclude newline
-      if (n == selStartLine) {
+      if (n === selStartLine) {
         selectionStartInLine = rep.selStart[1];
       }
-      if (n == selEndLine) {
+      if (n === selEndLine) {
         selectionEndInLine = rep.selEnd[1];
       }
       while (opIter.hasNext()) {
@@ -1836,7 +1833,11 @@ function Ace2Inner() {
 
 
     const attributeValue = selectionAllHasIt ? '' : 'true';
-    documentAttributeManager.setAttributesOnRange(rep.selStart, rep.selEnd, [[attributeName, attributeValue]]);
+    documentAttributeManager.setAttributesOnRange(
+      rep.selStart,
+      rep.selEnd,
+      [[attributeName, attributeValue]]
+    );
     if (attribIsFormattingStyle(attributeName)) {
       updateStyleButtonState(attributeName, !selectionAllHasIt); // italic, bold, ...
     }
@@ -2160,17 +2161,17 @@ function Ace2Inner() {
     return [commonStart, commonEnd];
   }
 
-  function equalLineAndChars(a, b) {
+  const equalLineAndChars = (a, b) => {
     if (!a) return !b;
     if (!b) return !a;
-    return (a[0] == b[0] && a[1] == b[1]);
-  }
+    return (a[0] === b[0] && a[1] === b[1]);
+  };
 
-  function performSelectionChange(selectStart, selectEnd, focusAtStart) {
+  const performSelectionChange = (selectStart, selectEnd, focusAtStart) => {
     if (repSelectionChange(selectStart, selectEnd, focusAtStart)) {
       currentCallStack.selectionAffected = true;
     }
-  }
+  };
   editorInfo.ace_performSelectionChange = performSelectionChange;
 
   // Change the abstract representation of the document to have a different selection.
@@ -2216,31 +2217,31 @@ function Ace2Inner() {
   // top.console.log("%o %o %s", rep.selStart, rep.selEnd, rep.selFocusAtStart);
   }
 
-  function isPadLoading(eventType) {
+  const isPadLoading = (eventType) => {
     return (eventType === 'setup') || (eventType === 'setBaseText') || (eventType === 'importText');
   }
 
-  function updateStyleButtonState(attribName, hasStyleOnRepSelection) {
+  const updateStyleButtonState = (attribName, hasStyleOnRepSelection) => {
     const $formattingButton = parent.parent.$(`[data-key="${attribName}"]`).find('a');
     $formattingButton.toggleClass(SELECT_BUTTON_CLASS, hasStyleOnRepSelection);
   }
 
-  function attribIsFormattingStyle(attributeName) {
+  const attribIsFormattingStyle = (attributeName) => {
     return _.contains(FORMATTING_STYLES, attributeName);
   }
 
-  function selectFormattingButtonIfLineHasStyleApplied(rep) {
+  const selectFormattingButtonIfLineHasStyleApplied = (rep) => {
     _.each(FORMATTING_STYLES, (style) => {
       const hasStyleOnRepSelection = documentAttributeManager.hasAttributeOnSelectionOrCaretPosition(style);
       updateStyleButtonState(style, hasStyleOnRepSelection);
     });
   }
 
-  function doCreateDomLine(nonEmpty) {
+  const doCreateDomLine = (nonEmpty) => {
     return domline.createDomLine(nonEmpty, doesWrap, browser, doc);
   }
 
-  function textify(str) {
+  const textify = (str) => {
     return str.replace(/[\n\r ]/g, ' ').replace(/\xa0/g, ' ').replace(/\t/g, '        ');
   }
 
@@ -2257,11 +2258,12 @@ function Ace2Inner() {
     _blockElems[element] = 1;
   });
 
+  // JM note to self: harder to fix..
   function isBlockElement(n) {
     return !!_blockElems[(n.tagName || '').toLowerCase()];
   }
 
-  function getDirtyRanges() {
+  const getDirtyRanges = () => {
     // based on observedChanges, return a list of ranges of original lines
     // that need to be removed or replaced with new user content to incorporate
     // the user's changes into the line representation.  ranges may be zero-length,
@@ -2277,7 +2279,7 @@ function Ace2Inner() {
     const N = rep.lines.length(); // old number of lines
 
 
-    function cleanNodeForIndex(i) {
+    const cleanNodeForIndex = (i) => {
       // if line (i) in the un-updated line representation maps to a clean node
       // in the document, return that node.
       // if (i) is out of bounds, return true. else return false.
@@ -2296,10 +2298,10 @@ function Ace2Inner() {
     }
     const isConsecutiveCache = {};
 
-    function isConsecutive(i) {
+    const isConsecutive = (i) => {
       if (isConsecutiveCache[i] === undefined) {
         p.consecutives++;
-        isConsecutiveCache[i] = (function () {
+        isConsecutiveCache[i] = (() => {
           // returns whether line (i) and line (i-1), assumed to be map to clean DOM nodes,
           // or document boundaries, are consecutive in the changed DOM
           const a = cleanNodeForIndex(i - 1);
@@ -2315,7 +2317,7 @@ function Ace2Inner() {
       return isConsecutiveCache[i];
     }
 
-    function isClean(i) {
+    const isClean = (i) => {
       // returns whether line (i) in the un-updated representation maps to a clean node,
       // or is outside the bounds of the document
       return !!cleanNodeForIndex(i);
@@ -2327,7 +2329,7 @@ function Ace2Inner() {
       [-1, N + 1],
     ];
 
-    function rangeForLine(i) {
+    const rangeForLine = (i) => {
       // returns index of cleanRange containing i, or -1 if none
       let answer = -1;
       _.each(cleanRanges, (r, idx) => {
@@ -2339,7 +2341,7 @@ function Ace2Inner() {
       return answer;
     }
 
-    function removeLineFromRange(rng, line) {
+    const removeLineFromRange = (rng, line) => {
       // rng is index into cleanRanges, line is line number
       // precond: line is in rng
       const a = cleanRanges[rng][0];
@@ -2350,7 +2352,7 @@ function Ace2Inner() {
       else cleanRanges.splice(rng, 1, [a, line], [line + 1, b]);
     }
 
-    function splitRange(rng, pt) {
+    const splitRange = (rng, pt) => {
       // precond: pt splits cleanRanges[rng] into two non-empty ranges
       const a = cleanRanges[rng][0];
       const b = cleanRanges[rng][1];
@@ -2358,7 +2360,7 @@ function Ace2Inner() {
     }
     const correctedLines = {};
 
-    function correctlyAssignLine(line) {
+    const correctlyAssignLine = (line) => {
       if (correctedLines[line]) return true;
       p.corrections++;
       correctedLines[line] = true;
@@ -2399,7 +2401,7 @@ function Ace2Inner() {
       }
     }
 
-    function detectChangesAroundLine(line, reqInARow) {
+    const detectChangesAroundLine = (line, reqInARow) => {
       // make sure cleanRanges is correct about line number "line" and the surrounding
       // lines; only stops checking at end of document or after no changes need
       // making for several consecutive lines. note that iteration is over old lines,
@@ -2455,17 +2457,17 @@ function Ace2Inner() {
     p.end();
 
     return dirtyRanges;
-  }
+  };
 
-  function markNodeClean(n) {
+  const markNodeClean = (n) => {
     // clean nodes have knownHTML that matches their innerHTML
     const dirtiness = {};
     dirtiness.nodeId = uniqueId(n);
     dirtiness.knownHTML = n.innerHTML;
     setAssoc(n, 'dirtiness', dirtiness);
-  }
+  };
 
-  function isNodeDirty(n) {
+  const isNodeDirty = (n) => {
     const p = PROFILER('cleanCheck', false); // eslint-disable-line
     if (n.parentNode != root) return true;
     const data = getAssoc(n, 'dirtiness');
@@ -2476,7 +2478,7 @@ function Ace2Inner() {
     return false;
   }
 
-  function getViewPortTopBottom() {
+  const getViewPortTopBottom = () => {
     const theTop = scroll.getScrollY();
     const doc = outerWin.document;
     const height = doc.documentElement.clientHeight; // includes padding
@@ -2488,24 +2490,24 @@ function Ace2Inner() {
       top: theTop,
       bottom: (theTop + height - viewportExtraSpacesAndPosition),
     };
-  }
+  };
 
 
-  function getEditorPositionTop() {
+  const getEditorPositionTop = () => {
     const editor = parent.document.getElementsByTagName('iframe');
     const editorPositionTop = editor[0].offsetTop;
     return editorPositionTop;
-  }
+  };
 
   // ep_page_view adds padding-top, which makes the viewport smaller
-  function getPaddingTopAddedWhenPageViewIsEnable() {
+  const getPaddingTopAddedWhenPageViewIsEnable = () => {
     const rootDocument = parent.parent.document;
     const aceOuter = rootDocument.getElementsByName('ace_outer');
     const aceOuterPaddingTop = parseInt($(aceOuter).css('padding-top'));
     return aceOuterPaddingTop;
-  }
+  };
 
-  function handleCut(evt) {
+  const handleCut = (evt) => {
     inCallStackIfNecessary('handleCut', () => {
       doDeleteKey(evt);
     });
@@ -2541,12 +2543,13 @@ function Ace2Inner() {
     hideEditBarDropdowns();
   }
 
-  function hideEditBarDropdowns() {
+  const hideEditBarDropdowns = () => {
     if (window.parent.parent.padeditbar) { // required in case its in an iframe should probably use parent..  See Issue 327 https://github.com/ether/etherpad-lite/issues/327
       window.parent.parent.padeditbar.toggleDropDown('none');
     }
-  }
+  };
 
+ // jm note to self cake
   function doReturnKey() {
     if (!(rep.selStart && rep.selEnd)) {
       return;
@@ -2580,7 +2583,7 @@ function Ace2Inner() {
     }
   }
 
-  function doIndentOutdent(isOut) {
+  const doIndentOutdent = (isOut) => {
     if (!((rep.selStart && rep.selEnd) ||
         ((rep.selStart[0] == rep.selEnd[0]) && (rep.selStart[1] == rep.selEnd[1]) && rep.selEnd[1] > 1)) &&
         (isOut != true)
