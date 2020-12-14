@@ -1,11 +1,7 @@
-/**
- * This code is mostly from the old Etherpad. Please help us to comment this code.
- * This helps other people to understand this code better and helps them to improve it.
- * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
- */
+'use strict';
 
 /**
- * Copyright 2009 Google Inc.
+ * Copyright 2020 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1456,7 +1452,7 @@ function Ace2Inner() {
     let n = lineNode;
     let after = false;
     if (charsLeft === 0) {
-      let index = 0;
+      const index = 0;
       return {
         node: lineNode,
         index,
@@ -3226,7 +3222,7 @@ function Ace2Inner() {
     // each of which has node (a magicdom node), index, and maxIndex.  If the node
     // is a text node, maxIndex is the length of the text; else maxIndex is 1.
     // index is between 0 and maxIndex, inclusive.
-    var browserSelection = window.getSelection();
+    const browserSelection = window.getSelection();
     if (!browserSelection || browserSelection.type === 'None' ||
         browserSelection.rangeCount === 0) {
       return null;
@@ -3374,7 +3370,7 @@ function Ace2Inner() {
           browserSelection.collapse(end.container, end.offset);
           browserSelection.extend(start.container, start.offset);
         } else {
-          var range = doc.createRange();
+          const range = doc.createRange();
           range.setStart(start.container, start.offset);
           range.setEnd(end.container, end.offset);
           browserSelection.removeAllRanges();
@@ -3438,8 +3434,6 @@ function Ace2Inner() {
     // Disabled: https://github.com/ether/etherpad-lite/issues/2546
     // Will break OL re-numbering: https://github.com/ether/etherpad-lite/pull/2533
     // $(document).on("cut", handleCut);
-
-    $(root).on('blur', handleBlur);
 
     // If non-nullish, pasting on a link should be suppressed.
     let suppressPasteOnLink = null;
@@ -3545,8 +3539,6 @@ function Ace2Inner() {
   function focus() {
     window.focus();
   }
-
-  function handleBlur(evt) {}
 
   function getSelectionPointX(point) {
     // doesn't work in wrap-mode
