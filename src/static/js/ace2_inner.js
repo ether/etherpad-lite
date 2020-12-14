@@ -1599,7 +1599,10 @@ function Ace2Inner() {
   function doRepApplyChangeset(changes, insertsAfterSelection) {
     Changeset.checkRep(changes);
 
-    if (Changeset.oldLen(changes) !== rep.alltext.length) throw new Error(`doRepApplyChangeset length mismatch: ${Changeset.oldLen(changes)}/${rep.alltext.length}`);
+    if (Changeset.oldLen(changes) !== rep.alltext.length) {
+      const errMsg = `${Changeset.oldLen(changes)}/${rep.alltext.length}`;
+      throw new Error(`doRepApplyChangeset length mismatch: ${errMsg}`);
+    }
 
     (function doRecordUndoInformation(changes) {
       const editEvent = currentCallStack.editEvent;
@@ -1692,8 +1695,11 @@ function Ace2Inner() {
 
   function performDocumentApplyAttributesToCharRange(start, end, attribs) {
     end = Math.min(end, rep.alltext.length - 1);
-    documentAttributeManager.setAttributesOnRange(lineAndColumnFromChar(start), lineAndColumnFromChar(end), attribs);
-  };
+    documentAttributeManager.
+        setAttributesOnRange(lineAndColumnFromChar(start),
+            lineAndColumnFromChar(end), attribs
+        );
+  }
 
   editorInfo.ace_performDocumentApplyAttributesToCharRange =
       performDocumentApplyAttributesToCharRange;
@@ -1727,13 +1733,14 @@ function Ace2Inner() {
 
     const rangeHasAttrib = (selStart, selEnd) => {
       // if range is collapsed -> no attribs in range
-      if (selStart[1] == selEnd[1] && selStart[0] == selEnd[0]) return false;
+      if (selStart[1] === selEnd[1] && selStart[0] === selEnd[0]) return false;
 
-      if (selStart[0] != selEnd[0]) { // -> More than one line selected
-        var hasAttrib = true;
+      if (selStart[0] !== selEnd[0]) { // -> More than one line selected
+        let hasAttrib = true;
 
         // from selStart to the end of the first line
-        hasAttrib = hasAttrib && rangeHasAttrib(selStart, [selStart[0], rep.lines.atIndex(selStart[0]).text.length]);
+        hasAttrib = hasAttrib &&
+            rangeHasAttrib(selStart, [selStart[0], rep.lines.atIndex(selStart[0]).text.length]);
 
         // for all lines in between
         for (let n = selStart[0] + 1; n < selEnd[0]; n++) {
@@ -1751,7 +1758,7 @@ function Ace2Inner() {
       const lineNum = selStart[0];
       const start = selStart[1];
       const end = selEnd[1];
-      var hasAttrib = true;
+      let hasAttrib = true;
 
       // Iterate over attribs on this line
 
@@ -1765,7 +1772,8 @@ function Ace2Inner() {
         if (!hasIt(op.attribs)) {
           // does op overlap selection?
           if (!(opEndInLine <= start || opStartInLine >= end)) {
-            hasAttrib = false; // since it's overlapping but hasn't got the attrib -> range hasn't got it
+            // since it's overlapping but hasn't got the attrib -> range hasn't got it
+            hasAttrib = false;
             break;
           }
         }
@@ -1968,7 +1976,7 @@ function Ace2Inner() {
               }
               return false;
             }
-          )
+            )
         );
 
         const builder1 = startBuilder();
@@ -2047,7 +2055,7 @@ function Ace2Inner() {
     doRepLineSplice(startLine, deleteCount, newLineEntries);
   };
 
-// CAKE JM TO DO
+  // CAKE JM TO DO -- need @rhansen help.
   function cachedStrFunc(func) {
     const cache = {};
     return function (s) {
@@ -2121,7 +2129,8 @@ function Ace2Inner() {
         oldEndIter();
         newEndIter();
         commonEnd++;
-      } else if (oldText.charAt(oldLen - 1 - commonEnd) === newText.charAt(newLen - 1 - commonEnd) &&
+      } else if (
+        oldText.charAt(oldLen - 1 - commonEnd) === newText.charAt(newLen - 1 - commonEnd) &&
           oldEndIter() === newEndIter()) {
         commonEnd++;
       } else { break; }
@@ -2179,9 +2188,14 @@ function Ace2Inner() {
   function repSelectionChange(selectStart, selectEnd, focusAtStart) {
     focusAtStart = !!focusAtStart;
 
-    const newSelFocusAtStart = (focusAtStart && ((!selectStart) || (!selectEnd) || (selectStart[0] != selectEnd[0]) || (selectStart[1] != selectEnd[1])));
+    const newSelFocusAtStart = (focusAtStart && ((!selectStart) ||
+        (!selectEnd) ||
+        (selectStart[0] !== selectEnd[0]) ||
+        (selectStart[1] !== selectEnd[1])));
 
-    if ((!equalLineAndChars(rep.selStart, selectStart)) || (!equalLineAndChars(rep.selEnd, selectEnd)) || (rep.selFocusAtStart != newSelFocusAtStart)) {
+    if ((!equalLineAndChars(rep.selStart, selectStart)) ||
+        (!equalLineAndChars(rep.selEnd, selectEnd)) ||
+        (rep.selFocusAtStart !== newSelFocusAtStart)) {
       rep.selStart = selectStart;
       rep.selEnd = selectEnd;
       rep.selFocusAtStart = newSelFocusAtStart;
@@ -2200,9 +2214,12 @@ function Ace2Inner() {
       // when this settings is enabled
       const docTextChanged = currentCallStack.docTextChanged;
       if (!docTextChanged) {
-        const isScrollableEvent = !isPadLoading(currentCallStack.type) && isScrollableEditEvent(currentCallStack.type);
+        const isScrollableEvent = !isPadLoading(currentCallStack.type) &&
+            isScrollableEditEvent(currentCallStack.type);
         const innerHeight = getInnerHeight();
-        scroll.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary(rep, isScrollableEvent, innerHeight);
+        scroll.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary(
+            rep, isScrollableEvent, innerHeight
+        );
       }
 
       return true;
@@ -2219,7 +2236,7 @@ function Ace2Inner() {
     eventType === 'setup') ||
     (eventType === 'setBaseText') ||
     (eventType === 'importText'
-  );
+    );
 
   const updateStyleButtonState = (attribName, hasStyleOnRepSelection) => {
     const $formattingButton = parent.parent.$(`[data-key="${attribName}"]`).find('a');
@@ -2336,7 +2353,7 @@ function Ace2Inner() {
         return true; // found, stop looking
       });
       return answer;
-    }
+    };
 
     const removeLineFromRange = (rng, line) => {
       // rng is index into cleanRanges, line is line number
@@ -2478,21 +2495,6 @@ function Ace2Inner() {
     return false;
   };
 
-  const getEditorPositionTop = () => {
-    const editor = parent.document.getElementsByTagName('iframe');
-    const editorPositionTop = editor[0].offsetTop;
-    return editorPositionTop;
-  };
-
-  // ep_page_view adds padding-top, which makes the viewport smaller
-  const getPaddingTopAddedWhenPageViewIsEnable = () => {
-    const rootDocument = parent.parent.document;
-    const aceOuter = rootDocument.getElementsByName('ace_outer');
-    const aceOuterPaddingTop = parseInt($(aceOuter).css('padding-top'));
-    return aceOuterPaddingTop;
-  };
-
-
   const handleClick = (evt) => {
     inCallStackIfNecessary('handleClick', () => {
       idleWorkTimer.atMost(200);
@@ -2526,7 +2528,7 @@ function Ace2Inner() {
     }
   };
 
-  // jm note to self cake
+  // jm note to self cake - need rhansen help..
   function doReturnKey() {
     if (!(rep.selStart && rep.selEnd)) {
       return;
@@ -2694,8 +2696,6 @@ function Ace2Inner() {
       renumberList(line);
     }
   };
-
-  const REGEX_SPACE = /\s/;
 
   const isWordChar = (c) => padutils.wordCharRegex.test(c);
   editorInfo.ace_isWordChar = isWordChar;
@@ -3070,7 +3070,7 @@ function Ace2Inner() {
           isTypeForCmdKey &&
           (
             (String.fromCharCode(which).toLowerCase() === 'n' &&
-              padShortcutEnabled.cmdShiftN) || (String.fromCharCode(which) == 1 &&
+              padShortcutEnabled.cmdShiftN) || (String.fromCharCode(which) === 1 &&
               padShortcutEnabled.cmdShift1)
           ) && (evt.metaKey || evt.ctrlKey) &&
             evt.shiftKey
@@ -3635,7 +3635,7 @@ function Ace2Inner() {
   // JM to do cake -- need rhansen help :)
   function focus() {
     window.focus();
-  };
+  }
 
   const getSelectionPointX = (point) => {
     // doesn't work in wrap-mode
@@ -3766,13 +3766,14 @@ function Ace2Inner() {
       let curLevel = level;
       let listType;
       // loop over the lines
+      // JM TODO : Rhansen, what's gong on here? :D
       while (listType = getLineListType(line)) {
         // apply new num
         listType = /([a-z]+)([0-9]+)/.exec(listType);
         curLevel = Number(listType[2]);
         if (isNaN(curLevel) || listType[0] === 'indent') {
           return line;
-        } else if (curLevel == level) {
+        } else if (curLevel === level) {
           ChangesetUtils.buildKeepRange(rep, builder, loc, (loc = [line, 0]));
           ChangesetUtils.buildKeepRange(rep, builder, loc, (loc = [line, 1]), [
             ['start', position],
@@ -3804,37 +3805,35 @@ function Ace2Inner() {
       return;
     }
 
-    let firstLine, lastLine;
-    firstLine = rep.selStart[0];
-    lastLine = Math.max(firstLine, rep.selEnd[0] - ((rep.selEnd[1] === 0) ? 1 : 0));
+    const firstLine = rep.selStart[0];
+    const lastLine = Math.max(firstLine, rep.selEnd[0] - ((rep.selEnd[1] === 0) ? 1 : 0));
 
     let allLinesAreList = true;
-    for (var n = firstLine; n <= lastLine; n++) {
-      var listType = getLineListType(n);
-      if (!listType || listType.slice(0, type.length) != type) {
+    for (let n = firstLine; n <= lastLine; n++) {
+      const listType = getLineListType(n);
+      if (!listType || listType.slice(0, type.length) !== type) {
         allLinesAreList = false;
         break;
       }
     }
 
     const mods = [];
-    for (var n = firstLine; n <= lastLine; n++) {
-      var t = '';
+    for (let n = firstLine; n <= lastLine; n++) {
+      // var t = '';
       let level = 0;
-      var listType = /([a-z]+)([0-9]+)/.exec(getLineListType(n));
+      let togglingOn = true;
+      const listType = /([a-z]+)([0-9]+)/.exec(getLineListType(n));
 
       // Used to outdent if ol is removed
       if (allLinesAreList) {
-        var togglingOn = false;
-      } else {
-        var togglingOn = true;
+        togglingOn = false;
       }
 
       if (listType) {
-        t = listType[1];
+        // t = listType[1];
         level = Number(listType[2]);
       }
-      var t = getLineListType(n);
+      const t = getLineListType(n);
 
       if (t === listType) togglingOn = false;
 
@@ -3949,8 +3948,8 @@ function Ace2Inner() {
   documentAttributeManager = new AttributeManager(rep, performDocumentApplyChangeset);
 
   // JM TODo need rhansen help.
-  editorInfo.ace_performDocumentApplyAttributesToRange = () =>
-      documentAttributeManager.setAttributesOnRange.apply(documentAttributeManager, arguments);
+  editorInfo.ace_performDocumentApplyAttributesToRange = () => documentAttributeManager.
+      setAttributesOnRange.apply(documentAttributeManager, arguments);
 
   this.init = () => {
     $(document).ready(() => {
