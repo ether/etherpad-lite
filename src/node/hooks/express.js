@@ -20,7 +20,10 @@ exports.server = null;
 const closeServer = async () => {
   if (exports.server == null) return;
   logger.info('Closing HTTP server...');
-  await util.promisify(exports.server.close.bind(exports.server))();
+  await Promise.all([
+    util.promisify(exports.server.close.bind(exports.server))(),
+    hooks.aCallAll('expressCloseServer'),
+  ]);
   exports.server = null;
   logger.info('HTTP server closed');
 };
