@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -23,7 +25,7 @@
 // of the document.  These revisions are connected together by various
 // changesets,  or deltas, between any two revisions.
 
-function loadBroadcastRevisionsJS() {
+const loadBroadcastRevisionsJS = () => {
   function Revision(revNum) {
     this.rev = revNum;
     this.changesets = [];
@@ -33,18 +35,16 @@ function loadBroadcastRevisionsJS() {
     const changesetWrapper = {
       deltaRev: destIndex - this.rev,
       deltaTime: timeDelta,
-      getValue() {
-        return changeset;
-      },
+      getValue: () => changeset,
     };
     this.changesets.push(changesetWrapper);
     this.changesets.sort((a, b) => (b.deltaRev - a.deltaRev));
   };
 
-  revisionInfo = {};
+  const revisionInfo = {};
   revisionInfo.addChangeset = function (fromIndex, toIndex, changeset, backChangeset, timeDelta) {
-    const startRevision = revisionInfo[fromIndex] || revisionInfo.createNew(fromIndex);
-    const endRevision = revisionInfo[toIndex] || revisionInfo.createNew(toIndex);
+    const startRevision = this[fromIndex] || this.createNew(fromIndex);
+    const endRevision = this[toIndex] || this.createNew(toIndex);
     startRevision.addChangeset(toIndex, changeset, timeDelta);
     endRevision.addChangeset(fromIndex, backChangeset, -1 * timeDelta);
   };
@@ -52,12 +52,12 @@ function loadBroadcastRevisionsJS() {
   revisionInfo.latest = clientVars.collab_client_vars.rev || -1;
 
   revisionInfo.createNew = function (index) {
-    revisionInfo[index] = new Revision(index);
-    if (index > revisionInfo.latest) {
-      revisionInfo.latest = index;
+    this[index] = new Revision(index);
+    if (index > this.latest) {
+      this.latest = index;
     }
 
-    return revisionInfo[index];
+    return this[index];
   };
 
   // assuming that there is a path from fromIndex to toIndex, and that the links
@@ -66,8 +66,8 @@ function loadBroadcastRevisionsJS() {
     const changesets = [];
     const spans = [];
     const times = [];
-    let elem = revisionInfo[fromIndex] || revisionInfo.createNew(fromIndex);
-    if (elem.changesets.length != 0 && fromIndex != toIndex) {
+    let elem = this[fromIndex] || this.createNew(fromIndex);
+    if (elem.changesets.length !== 0 && fromIndex !== toIndex) {
       const reverse = !(fromIndex < toIndex);
       while (((elem.rev < toIndex) && !reverse) || ((elem.rev > toIndex) && reverse)) {
         let couldNotContinue = false;
@@ -76,27 +76,29 @@ function loadBroadcastRevisionsJS() {
         for (let i = reverse ? elem.changesets.length - 1 : 0;
           reverse ? i >= 0 : i < elem.changesets.length;
           i += reverse ? -1 : 1) {
-          if (((elem.changesets[i].deltaRev < 0) && !reverse) || ((elem.changesets[i].deltaRev > 0) && reverse)) {
+          if (((elem.changesets[i].deltaRev < 0) && !reverse) ||
+              ((elem.changesets[i].deltaRev > 0) && reverse)) {
             couldNotContinue = true;
             break;
           }
 
-          if (((elem.rev + elem.changesets[i].deltaRev <= toIndex) && !reverse) || ((elem.rev + elem.changesets[i].deltaRev >= toIndex) && reverse)) {
+          if (((elem.rev + elem.changesets[i].deltaRev <= toIndex) && !reverse) ||
+              ((elem.rev + elem.changesets[i].deltaRev >= toIndex) && reverse)) {
             const topush = elem.changesets[i];
             changesets.push(topush.getValue());
             spans.push(elem.changesets[i].deltaRev);
             times.push(topush.deltaTime);
-            elem = revisionInfo[elem.rev + elem.changesets[i].deltaRev];
+            elem = this[elem.rev + elem.changesets[i].deltaRev];
             break;
           }
         }
 
-        if (couldNotContinue || oldRev == elem.rev) break;
+        if (couldNotContinue || oldRev === elem.rev) break;
       }
     }
 
     let status = 'partial';
-    if (elem.rev == toIndex) status = 'complete';
+    if (elem.rev === toIndex) status = 'complete';
 
     return {
       fromRev: fromIndex,
@@ -107,6 +109,7 @@ function loadBroadcastRevisionsJS() {
       times,
     };
   };
-}
+  window.revisionInfo = revisionInfo;
+};
 
 exports.loadBroadcastRevisionsJS = loadBroadcastRevisionsJS;
