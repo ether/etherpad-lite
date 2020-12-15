@@ -2871,7 +2871,7 @@ function Ace2Inner() {
           // TODO: Still work when authorship colors have been cleared
           // TODO: i18n
           // TODO: There appears to be a race condition or so.
-          let authors = [];
+          const authors = [];
           let author = null;
           if (alineAttrs) {
             const opIter = Changeset.opIterator(alineAttrs);
@@ -2888,7 +2888,7 @@ function Ace2Inner() {
           }
 
           let authorString;
-          let authorNames = [];
+          const authorNames = [];
           if (authors.length === 0) {
             authorString = 'No author information is available';
           } else {
