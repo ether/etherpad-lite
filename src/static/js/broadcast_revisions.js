@@ -1,4 +1,5 @@
-'use strict';
+// TODO: revisionInfo is global so if you put use strict here things will blow up..
+// 'use strict;'
 
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
@@ -25,7 +26,7 @@
 // of the document.  These revisions are connected together by various
 // changesets,  or deltas, between any two revisions.
 
-const loadBroadcastRevisionsJS = () => {
+function loadBroadcastRevisionsJS() {
   function Revision(revNum) {
     this.rev = revNum;
     this.changesets = [];
@@ -41,7 +42,7 @@ const loadBroadcastRevisionsJS = () => {
     this.changesets.sort((a, b) => (b.deltaRev - a.deltaRev));
   };
 
-  const revisionInfo = {};
+  revisionInfo = {};
   revisionInfo.addChangeset = (fromIndex, toIndex, changeset, backChangeset, timeDelta) => {
     const startRevision = revisionInfo[fromIndex] || revisionInfo.createNew(fromIndex);
     const endRevision = revisionInfo[toIndex] || revisionInfo.createNew(toIndex);
@@ -82,7 +83,8 @@ const loadBroadcastRevisionsJS = () => {
             break;
           }
 
-          if (((elem.rev + elem.changesets[i].deltaRev <= toIndex) && !reverse) ||
+          if (((elem.rev + elem.changesets[i].deltaRev <= toIndex) &&
+              !reverse) ||
               ((elem.rev + elem.changesets[i].deltaRev >= toIndex) && reverse)) {
             const topush = elem.changesets[i];
             changesets.push(topush.getValue());
@@ -109,6 +111,6 @@ const loadBroadcastRevisionsJS = () => {
       times,
     };
   };
-};
+}
 
 exports.loadBroadcastRevisionsJS = loadBroadcastRevisionsJS;
