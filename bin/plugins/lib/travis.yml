@@ -5,24 +5,14 @@ node_js:
 
 cache: false
 
-before_install:
-  - sudo add-apt-repository -y ppa:libreoffice/ppa
-  - sudo apt-get update
-  - sudo apt-get -y install libreoffice
-  - sudo apt-get -y install libreoffice-pdfimport
-
 services:
   - docker
 
 install:
-  - "bin/installDeps.sh"
   - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
 
-before_script:
-  - "tests/frontend/travis/sauce_tunnel.sh"
-
-script:
-  - "tests/frontend/travis/runner.sh"
+#script:
+#  - "tests/frontend/travis/runner.sh"
 
 env:
   global:
@@ -31,14 +21,24 @@ env:
 
 jobs:
   include:
+    - name: "Lint test package-lock"
+      install:
+        - "npm install lockfile-lint"
+      script:
+        - npx lockfile-lint --path package-lock.json --validate-https --allowed-hosts npm
     - name: "Run the Backend tests"
+      before_install:
+        - sudo add-apt-repository -y ppa:libreoffice/ppa
+        - sudo apt-get update
+        - sudo apt-get -y install libreoffice
+        - sudo apt-get -y install libreoffice-pdfimport
       install:
         - "npm install"
         - "mkdir [plugin_name]"
         - "mv !([plugin_name]) [plugin_name]"
         - "git clone https://github.com/ether/etherpad-lite.git etherpad"
         - "cd etherpad"
-        - "mkdir node_modules"
+        - "mkdir -p node_modules"
         - "mv ../[plugin_name] node_modules"
         - "bin/installDeps.sh"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
@@ -46,13 +46,15 @@ jobs:
       script:
         - "tests/frontend/travis/runnerBackend.sh"
     - name: "Test the Frontend"
+      before_script:
+        - "tests/frontend/travis/sauce_tunnel.sh"
       install:
         - "npm install"
         - "mkdir [plugin_name]"
         - "mv !([plugin_name]) [plugin_name]"
         - "git clone https://github.com/ether/etherpad-lite.git etherpad"
         - "cd etherpad"
-        - "mkdir node_modules"
+        - "mkdir -p node_modules"
         - "mv ../[plugin_name] node_modules"
         - "bin/installDeps.sh"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
@@ -64,5 +66,5 @@ notifications:
     channels:
       - "irc.freenode.org#etherpad-lite-dev"
 
-##ETHERPAD_TRAVIS_V=3
+##ETHERPAD_TRAVIS_V=9
 ## Travis configuration automatically created using bin/plugins/updateAllPluginsScript.sh

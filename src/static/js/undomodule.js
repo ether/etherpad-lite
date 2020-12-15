@@ -20,121 +20,101 @@
  * limitations under the License.
  */
 
-var Changeset = require('./Changeset');
-var _ = require('./underscore');
+const Changeset = require('./Changeset');
+const _ = require('./underscore');
 
-var undoModule = (function()
-{
-  var stack = (function()
-  {
-    var stackElements = [];
+var undoModule = (function () {
+  const stack = (function () {
+    const stackElements = [];
     // two types of stackElements:
     // 1) { elementType: UNDOABLE_EVENT, eventType: "anything", [backset: <changeset>,]
     //      [selStart: <char number>, selEnd: <char number>, selFocusAtStart: <boolean>] }
     // 2) { elementType: EXTERNAL_CHANGE, changeset: <changeset> }
     // invariant: no two consecutive EXTERNAL_CHANGEs
-    var numUndoableEvents = 0;
+    let numUndoableEvents = 0;
 
-    var UNDOABLE_EVENT = "undoableEvent";
-    var EXTERNAL_CHANGE = "externalChange";
+    const UNDOABLE_EVENT = 'undoableEvent';
+    const EXTERNAL_CHANGE = 'externalChange';
 
-    function clearStack()
-    {
+    function clearStack() {
       stackElements.length = 0;
       stackElements.push(
-      {
-        elementType: UNDOABLE_EVENT,
-        eventType: "bottom"
-      });
+          {
+            elementType: UNDOABLE_EVENT,
+            eventType: 'bottom',
+          });
       numUndoableEvents = 1;
     }
     clearStack();
 
-    function pushEvent(event)
-    {
-      var e = _.extend(
-      {}, event);
+    function pushEvent(event) {
+      const e = _.extend(
+          {}, event);
       e.elementType = UNDOABLE_EVENT;
       stackElements.push(e);
       numUndoableEvents++;
-      //dmesg("pushEvent backset: "+event.backset);
+      // dmesg("pushEvent backset: "+event.backset);
     }
 
-    function pushExternalChange(cs)
-    {
-      var idx = stackElements.length - 1;
-      if (stackElements[idx].elementType == EXTERNAL_CHANGE)
-      {
+    function pushExternalChange(cs) {
+      const idx = stackElements.length - 1;
+      if (stackElements[idx].elementType == EXTERNAL_CHANGE) {
         stackElements[idx].changeset = Changeset.compose(stackElements[idx].changeset, cs, getAPool());
-      }
-      else
-      {
+      } else {
         stackElements.push(
-        {
-          elementType: EXTERNAL_CHANGE,
-          changeset: cs
-        });
+            {
+              elementType: EXTERNAL_CHANGE,
+              changeset: cs,
+            });
       }
     }
 
-    function _exposeEvent(nthFromTop)
-    {
+    function _exposeEvent(nthFromTop) {
       // precond: 0 <= nthFromTop < numUndoableEvents
-      var targetIndex = stackElements.length - 1 - nthFromTop;
-      var idx = stackElements.length - 1;
-      while (idx > targetIndex || stackElements[idx].elementType == EXTERNAL_CHANGE)
-      {
-        if (stackElements[idx].elementType == EXTERNAL_CHANGE)
-        {
-          var ex = stackElements[idx];
-          var un = stackElements[idx - 1];
-          if (un.backset)
-          {
-            var excs = ex.changeset;
-            var unbs = un.backset;
+      const targetIndex = stackElements.length - 1 - nthFromTop;
+      let idx = stackElements.length - 1;
+      while (idx > targetIndex || stackElements[idx].elementType == EXTERNAL_CHANGE) {
+        if (stackElements[idx].elementType == EXTERNAL_CHANGE) {
+          const ex = stackElements[idx];
+          const un = stackElements[idx - 1];
+          if (un.backset) {
+            const excs = ex.changeset;
+            const unbs = un.backset;
             un.backset = Changeset.follow(excs, un.backset, false, getAPool());
             ex.changeset = Changeset.follow(unbs, ex.changeset, true, getAPool());
-            if ((typeof un.selStart) == "number")
-            {
-              var newSel = Changeset.characterRangeFollow(excs, un.selStart, un.selEnd);
+            if ((typeof un.selStart) === 'number') {
+              const newSel = Changeset.characterRangeFollow(excs, un.selStart, un.selEnd);
               un.selStart = newSel[0];
               un.selEnd = newSel[1];
-              if (un.selStart == un.selEnd)
-              {
+              if (un.selStart == un.selEnd) {
                 un.selFocusAtStart = false;
               }
             }
           }
           stackElements[idx - 1] = ex;
           stackElements[idx] = un;
-          if (idx >= 2 && stackElements[idx - 2].elementType == EXTERNAL_CHANGE)
-          {
+          if (idx >= 2 && stackElements[idx - 2].elementType == EXTERNAL_CHANGE) {
             ex.changeset = Changeset.compose(stackElements[idx - 2].changeset, ex.changeset, getAPool());
             stackElements.splice(idx - 2, 1);
             idx--;
           }
-        }
-        else
-        {
+        } else {
           idx--;
         }
       }
     }
 
-    function getNthFromTop(n)
-    {
+    function getNthFromTop(n) {
       // precond: 0 <= n < numEvents()
       _exposeEvent(n);
       return stackElements[stackElements.length - 1 - n];
     }
 
-    function numEvents()
-    {
+    function numEvents() {
       return numUndoableEvents;
     }
 
-    function popEvent()
-    {
+    function popEvent() {
       // precond: numEvents() > 0
       _exposeEvent(0);
       numUndoableEvents--;
@@ -142,33 +122,29 @@ var undoModule = (function()
     }
 
     return {
-      numEvents: numEvents,
-      popEvent: popEvent,
-      pushEvent: pushEvent,
-      pushExternalChange: pushExternalChange,
-      clearStack: clearStack,
-      getNthFromTop: getNthFromTop
+      numEvents,
+      popEvent,
+      pushEvent,
+      pushExternalChange,
+      clearStack,
+      getNthFromTop,
     };
   })();
 
   // invariant: stack always has at least one undoable event
-  var undoPtr = 0; // zero-index from top of stack, 0 == top
+  let undoPtr = 0; // zero-index from top of stack, 0 == top
 
-  function clearHistory()
-  {
+  function clearHistory() {
     stack.clearStack();
     undoPtr = 0;
   }
 
-  function _charOccurrences(str, c)
-  {
-    var i = 0;
-    var count = 0;
-    while (i >= 0 && i < str.length)
-    {
+  function _charOccurrences(str, c) {
+    let i = 0;
+    let count = 0;
+    while (i >= 0 && i < str.length) {
       i = str.indexOf(c, i);
-      if (i >= 0)
-      {
+      if (i >= 0) {
         count++;
         i++;
       }
@@ -176,13 +152,11 @@ var undoModule = (function()
     return count;
   }
 
-  function _opcodeOccurrences(cs, opcode)
-  {
+  function _opcodeOccurrences(cs, opcode) {
     return _charOccurrences(Changeset.unpack(cs).ops, opcode);
   }
 
-  function _mergeChangesets(cs1, cs2)
-  {
+  function _mergeChangesets(cs1, cs2) {
     if (!cs1) return cs2;
     if (!cs2) return cs1;
 
@@ -192,102 +166,81 @@ var undoModule = (function()
     // A little weird in that it won't merge "make bold" with "insert char"
     // but will merge "make bold and insert char" with "insert char",
     // though that isn't expected to come up.
-    var plusCount1 = _opcodeOccurrences(cs1, '+');
-    var plusCount2 = _opcodeOccurrences(cs2, '+');
-    var minusCount1 = _opcodeOccurrences(cs1, '-');
-    var minusCount2 = _opcodeOccurrences(cs2, '-');
-    if (plusCount1 == 1 && plusCount2 == 1 && minusCount1 == 0 && minusCount2 == 0)
-    {
+    const plusCount1 = _opcodeOccurrences(cs1, '+');
+    const plusCount2 = _opcodeOccurrences(cs2, '+');
+    const minusCount1 = _opcodeOccurrences(cs1, '-');
+    const minusCount2 = _opcodeOccurrences(cs2, '-');
+    if (plusCount1 == 1 && plusCount2 == 1 && minusCount1 == 0 && minusCount2 == 0) {
       var merge = Changeset.compose(cs1, cs2, getAPool());
       var plusCount3 = _opcodeOccurrences(merge, '+');
       var minusCount3 = _opcodeOccurrences(merge, '-');
-      if (plusCount3 == 1 && minusCount3 == 0)
-      {
+      if (plusCount3 == 1 && minusCount3 == 0) {
         return merge;
       }
-    }
-    else if (plusCount1 == 0 && plusCount2 == 0 && minusCount1 == 1 && minusCount2 == 1)
-    {
+    } else if (plusCount1 == 0 && plusCount2 == 0 && minusCount1 == 1 && minusCount2 == 1) {
       var merge = Changeset.compose(cs1, cs2, getAPool());
       var plusCount3 = _opcodeOccurrences(merge, '+');
       var minusCount3 = _opcodeOccurrences(merge, '-');
-      if (plusCount3 == 0 && minusCount3 == 1)
-      {
+      if (plusCount3 == 0 && minusCount3 == 1) {
         return merge;
       }
     }
     return null;
   }
 
-  function reportEvent(event)
-  {
-    var topEvent = stack.getNthFromTop(0);
+  function reportEvent(event) {
+    const topEvent = stack.getNthFromTop(0);
 
-    function applySelectionToTop()
-    {
-      if ((typeof event.selStart) == "number")
-      {
+    function applySelectionToTop() {
+      if ((typeof event.selStart) === 'number') {
         topEvent.selStart = event.selStart;
         topEvent.selEnd = event.selEnd;
         topEvent.selFocusAtStart = event.selFocusAtStart;
       }
     }
 
-    if ((!event.backset) || Changeset.isIdentity(event.backset))
-    {
+    if ((!event.backset) || Changeset.isIdentity(event.backset)) {
       applySelectionToTop();
-    }
-    else
-    {
-      var merged = false;
-      if (topEvent.eventType == event.eventType)
-      {
-        var merge = _mergeChangesets(event.backset, topEvent.backset);
-        if (merge)
-        {
+    } else {
+      let merged = false;
+      if (topEvent.eventType == event.eventType) {
+        const merge = _mergeChangesets(event.backset, topEvent.backset);
+        if (merge) {
           topEvent.backset = merge;
-          //dmesg("reportEvent merge: "+merge);
+          // dmesg("reportEvent merge: "+merge);
           applySelectionToTop();
           merged = true;
         }
       }
-      if (!merged)
-      {
+      if (!merged) {
         /*
          * Push the event on the undo stack only if it exists, and if it's
          * not a "clearauthorship". This disallows undoing the removal of the
          * authorship colors, but is a necessary stopgap measure against
          * https://github.com/ether/etherpad-lite/issues/2802
          */
-        if (event && (event.eventType !== "clearauthorship")) {
+        if (event && (event.eventType !== 'clearauthorship')) {
           stack.pushEvent(event);
         }
       }
       undoPtr = 0;
     }
-
   }
 
-  function reportExternalChange(changeset)
-  {
-    if (changeset && !Changeset.isIdentity(changeset))
-    {
+  function reportExternalChange(changeset) {
+    if (changeset && !Changeset.isIdentity(changeset)) {
       stack.pushExternalChange(changeset);
     }
   }
 
-  function _getSelectionInfo(event)
-  {
-    if ((typeof event.selStart) != "number")
-    {
+  function _getSelectionInfo(event) {
+    if ((typeof event.selStart) !== 'number') {
       return null;
-    }
-    else
-    {
+    } else {
       return {
         selStart: event.selStart,
         selEnd: event.selEnd,
-        selFocusAtStart: event.selFocusAtStart
+        selFocusAtStart: event.selFocusAtStart,
       };
     }
   }
@@ -298,45 +251,38 @@ var undoModule = (function()
   // or can be called with no arguments to mean that no undo is possible.
   // "eventFunc" will be called exactly once.
 
-  function performUndo(eventFunc)
-  {
-    if (undoPtr < stack.numEvents() - 1)
-    {
-      var backsetEvent = stack.getNthFromTop(undoPtr);
-      var selectionEvent = stack.getNthFromTop(undoPtr + 1);
-      var undoEvent = eventFunc(backsetEvent.backset, _getSelectionInfo(selectionEvent));
+  function performUndo(eventFunc) {
+    if (undoPtr < stack.numEvents() - 1) {
+      const backsetEvent = stack.getNthFromTop(undoPtr);
+      const selectionEvent = stack.getNthFromTop(undoPtr + 1);
+      const undoEvent = eventFunc(backsetEvent.backset, _getSelectionInfo(selectionEvent));
       stack.pushEvent(undoEvent);
       undoPtr += 2;
-    }
-    else eventFunc();
+    } else { eventFunc(); }
   }
 
-  function performRedo(eventFunc)
-  {
-    if (undoPtr >= 2)
-    {
-      var backsetEvent = stack.getNthFromTop(0);
-      var selectionEvent = stack.getNthFromTop(1);
+  function performRedo(eventFunc) {
+    if (undoPtr >= 2) {
+      const backsetEvent = stack.getNthFromTop(0);
+      const selectionEvent = stack.getNthFromTop(1);
       eventFunc(backsetEvent.backset, _getSelectionInfo(selectionEvent));
       stack.popEvent();
       undoPtr -= 2;
-    }
-    else eventFunc();
+    } else { eventFunc(); }
   }
 
-  function getAPool()
-  {
+  function getAPool() {
     return undoModule.apool;
   }
 
   return {
-    clearHistory: clearHistory,
-    reportEvent: reportEvent,
-    reportExternalChange: reportExternalChange,
-    performUndo: performUndo,
-    performRedo: performRedo,
+    clearHistory,
+    reportEvent,
+    reportExternalChange,
+    performUndo,
+    performRedo,
     enabled: true,
-    apool: null
+    apool: null,
   }; // apool is filled in by caller
 })();
 

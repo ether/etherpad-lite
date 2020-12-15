@@ -33,9 +33,7 @@
 	"pad.colorpicker.cancel": "Avbryt",
 	"pad.loading": "Laster …",
 	"pad.noCookie": "Kunne ikke finne informasjonskapselen. Vennligst tillat informasjonskapsler (cookies) i din nettleser! Informasjonskapsler brukes til å lagre innstillinger o.l. Om feilen gjentar seg, kan det skyldes feil i nettsidens bruk av iFrame.",
-	"pad.passwordRequired": "Pad-en er låst med et passord",
 	"pad.permissionDenied": "Du har ikke tilgang til denne pad-en",
-	"pad.wrongPassword": "Feil passord",
 	"pad.settings.padSettings": "Padinnstillinger",
 	"pad.settings.myView": "Min visning",
 	"pad.settings.stickychat": "Chat alltid synlig",
@@ -136,6 +134,5 @@
 	"pad.impexp.importfailed": "Import feilet",
 	"pad.impexp.copypaste": "Vennligst kopier og lim inn",
 	"pad.impexp.exportdisabled": "Eksportering som {{type}} er deaktivert. Vennligst kontakt systemadministratoren din for detaljer.",
-	"pad.impexp.maxFileSize": "Filen er for stor. Kontakt systemansvarlig for å øke filstørrelse for import",
-	"pad.impexp.permission": "Import er deaktivert fordi du aldri har bidratt til denne padden. Vennligst bidra minst en gang før du importerer"
+	"pad.impexp.maxFileSize": "Filen er for stor. Kontakt systemansvarlig for å øke filstørrelse for import"
 }

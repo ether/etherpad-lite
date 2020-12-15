@@ -20,31 +20,27 @@
  * limitations under the License.
  */
 
-var Security = require('./security');
+const Security = require('./security');
 
-function isNodeText(node)
-{
+function isNodeText(node) {
   return (node.nodeType == 3);
 }
 
-function object(o)
-{
-  var f = function(){};
+function object(o) {
+  const f = function () {};
   f.prototype = o;
   return new f();
 }
 
-function getAssoc(obj, name)
-{
-  return obj["_magicdom_" + name];
+function getAssoc(obj, name) {
+  return obj[`_magicdom_${name}`];
 }
 
-function setAssoc(obj, name, value)
-{
+function setAssoc(obj, name, value) {
   // note that in IE designMode, properties of a node can get
   // copied to new nodes that are spawned during editing; also,
   // properties representable in HTML text can survive copy-and-paste
-  obj["_magicdom_" + name] = value;
+  obj[`_magicdom_${name}`] = value;
 }
 
 // "func" is a function over 0..(numItems-1) that is monotonically
@@ -52,35 +48,31 @@ function setAssoc(obj, name, value)
 // between false and true, a number between 0 and numItems inclusive.
 
 
-function binarySearch(numItems, func)
-{
+function binarySearch(numItems, func) {
   if (numItems < 1) return 0;
   if (func(0)) return 0;
   if (!func(numItems - 1)) return numItems;
-  var low = 0; // func(low) is always false
-  var high = numItems - 1; // func(high) is always true
-  while ((high - low) > 1)
-  {
-    var x = Math.floor((low + high) / 2); // x != low, x != high
+  let low = 0; // func(low) is always false
+  let high = numItems - 1; // func(high) is always true
+  while ((high - low) > 1) {
+    const x = Math.floor((low + high) / 2); // x != low, x != high
     if (func(x)) high = x;
     else low = x;
   }
   return high;
 }
 
-function binarySearchInfinite(expectedLength, func)
-{
-  var i = 0;
+function binarySearchInfinite(expectedLength, func) {
+  let i = 0;
   while (!func(i)) i += expectedLength;
   return binarySearch(i, func);
 }
 
-function htmlPrettyEscape(str)
-{
+function htmlPrettyEscape(str) {
   return Security.escapeHTML(str).replace(/\r?\n/g, '\\n');
 }
 
-var noop = function(){};
+const noop = function () {};
 
 exports.isNodeText = isNodeText;
 exports.object = object;

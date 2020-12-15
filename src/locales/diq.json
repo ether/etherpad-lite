@@ -67,9 +67,7 @@
 	"pad.colorpicker.cancel": "Bıtexelne",
 	"pad.loading": "Bar beno...",
 	"pad.noCookie": "Çerez nêvineya. Rovıter de çereza aktiv kerê.Ronıştısê u eyarê şıma mabênê ziyareti qeyd nêbenê.Çıkı, Etherpad tay rovıteran de tewrê yew iFrame belka biyo. Kerem ke Etherpad corên iFrame ya wa eyni bınca/ca de zey pê bo.",
-	"pad.passwordRequired": "Ena bloknot resayışi rê parola icab krna",
 	"pad.permissionDenied": "Ena bloknot resayışi rê icazeta şıma çıni ya",
-	"pad.wrongPassword": "Parola şıma ğeleta",
 	"pad.settings.padSettings": "Sazkerdışê Pedi",
 	"pad.settings.myView": "Asayışê mı",
 	"pad.settings.stickychat": "Ekran de tım mıhebet bıkerê",
@@ -94,7 +92,7 @@
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
 	"pad.importExport.abiword.innerHTML": "Şıma şenê tenya metınanê zelalan ya zi formatanê HTML-i biyarê. Seba vêşi xısusiyetanê arezekerdışi ra gırey <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">AbiWordi ya zi LibreOfficeyi bar kerên</a>.",
 	"pad.modals.connected": "Gıre diya.",
-	"pad.modals.reconnecting": "Bloknot da şıma rê fına irtibat kewê no",
+	"pad.modals.reconnecting": "Pada şıma rê fına irtibat kewê no",
 	"pad.modals.forcereconnect": "Mecbur anciya gırê de",
 	"pad.modals.reconnecttimer": "Anciya gırê beno",
 	"pad.modals.cancel": "Bıtexelne",
@@ -175,6 +173,5 @@
 	"pad.impexp.importfailed": "Zer kerdış mıwafaq nebı",
 	"pad.impexp.copypaste": "Reca keme kopya pronayış bıkeri",
 	"pad.impexp.exportdisabled": "Formatta {{type}} ya ateber kerdış dewra vıciya yo. Qandé teferruati idarekarana irtibat kewê",
-	"pad.impexp.maxFileSize": "Dosya zêde gırsa, azere kerdışi rê mısade deyaye ebatê dosyay zeydınayışi rê idarekarê siteya irtibat kewê",
-	"pad.impexp.permission": "Şıma ena ped rê qet iştirak nêkerdo coki ra azere kerdış dewre ra veto. Vêre azere kerdışi minimum yû iştirak bıkerê"
+	"pad.impexp.maxFileSize": "Dosya zêde gırsa, azere kerdışi rê mısade deyaye ebatê dosyay zeydınayışi rê idarekarê siteya irtibat kewê"
 }

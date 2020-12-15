@@ -1,4 +1,6 @@
-function m(mod) { return __dirname + '/../../../src/' + mod; }
+/* global __dirname, __filename, afterEach, before, beforeEach, clearTimeout, describe, it, require, setTimeout */
+
+function m(mod) { return `${__dirname}/../../../src/${mod}`; }
 
 const assert = require('assert').strict;
 const common = require('../common');
@@ -9,9 +11,6 @@ const setCookieParser = require(m('node_modules/set-cookie-parser'));
 const settings = require(m('node/utils/Settings'));
 
 const logger = common.logger;
-let agent;
-
-before(async function() { agent = await common.init(); });
 
 // Waits for and returns the next named socket.io event. Rejects if there is any error while waiting
 // (unless waiting for that error event).
@@ -38,7 +37,7 @@ const getSocketEvent = async (socket, event) => {
       logger.debug(`socket.io ${event} event`);
       if (args.length > 1) return resolve(args);
       resolve(args[0]);
-    }
+    };
     Object.entries(handlers).forEach(([event, handler]) => socket.on(event, handler));
   }).finally(() => {
     clearTimeout(timeoutId);
@@ -51,9 +50,7 @@ const getSocketEvent = async (socket, event) => {
 const connect = async (res) => {
   // Convert the `set-cookie` header(s) into a `cookie` header.
   const resCookies = (res == null) ? {} : setCookieParser.parse(res, {map: true});
-  const reqCookieHdr = Object.entries(resCookies).map(([name, cookie]) => {
-    return `${name}=${encodeURIComponent(cookie.value)}`;
-  }).join('; ');
+  const reqCookieHdr = Object.entries(resCookies).map(([name, cookie]) => `${name}=${encodeURIComponent(cookie.value)}`).join('; ');
 
   logger.debug('socket.io connecting...');
   const socket = io(`${common.baseUrl}/`, {
@@ -83,7 +80,6 @@ const handshake = async (socket, padID) => {
     type: 'CLIENT_READY',
     padId: padID,
     sessionID: null,
-    password: null,
     token: 't.12345',
     protocolVersion: 2,
   });
@@ -93,9 +89,10 @@ const handshake = async (socket, padID) => {
   return msg;
 };
 
-describe('socket.io access checks', function() {
+describe(__filename, function () {
+  let agent;
   let authorize;
-  let authorizeHooksBackup;
+  const backups = {};
   const cleanUpPads = async () => {
     const padIds = ['pad', 'other-pad', 'päd'];
     await Promise.all(padIds.map(async (padId) => {
@@ -105,12 +102,19 @@ describe('socket.io access checks', function() {
       }
     }));
   };
-  const settingsBackup = {};
   let socket;
 
-  beforeEach(async function() {
-    Object.assign(settingsBackup, settings);
-    assert(socket == null);
+  before(async function () { agent = await common.init(); });
+  beforeEach(async function () {
+    backups.hooks = {};
+    for (const hookName of ['preAuthorize', 'authenticate', 'authorize']) {
+      backups.hooks[hookName] = plugins.hooks[hookName];
+      plugins.hooks[hookName] = [];
+    }
+    backups.settings = {};
+    for (const setting of ['editOnly', 'requireAuthentication', 'requireAuthorization', 'users']) {
+      backups.settings[setting] = settings[setting];
+    }
     settings.editOnly = false;
     settings.requireAuthentication = false;
     settings.requireAuthorization = false;
@@ -118,47 +122,45 @@ describe('socket.io access checks', function() {
       admin: {password: 'admin-password', is_admin: true},
       user: {password: 'user-password'},
     };
+    assert(socket == null);
     authorize = () => true;
-    authorizeHooksBackup = plugins.hooks.authorize;
-    plugins.hooks.authorize = [{hook_fn: (hookName, {req}, cb) => {
-      return cb([authorize(req)]);
-    }}];
+    plugins.hooks.authorize = [{hook_fn: (hookName, {req}, cb) => cb([authorize(req)])}];
     await cleanUpPads();
   });
-  afterEach(async function() {
-    Object.assign(settings, settingsBackup);
+  afterEach(async function () {
     if (socket) socket.close();
     socket = null;
-    plugins.hooks.authorize = authorizeHooksBackup;
     await cleanUpPads();
+    Object.assign(plugins.hooks, backups.hooks);
+    Object.assign(settings, backups.settings);
   });
 
-  describe('Normal accesses', function() {
-    it('!authn anonymous cookie /p/pad -> 200, ok', async function() {
+  describe('Normal accesses', function () {
+    it('!authn anonymous cookie /p/pad -> 200, ok', async function () {
       const res = await agent.get('/p/pad').expect(200);
       socket = await connect(res);
       const clientVars = await handshake(socket, 'pad');
       assert.equal(clientVars.type, 'CLIENT_VARS');
     });
-    it('!authn !cookie -> ok', async function() {
+    it('!authn !cookie -> ok', async function () {
       socket = await connect(null);
       const clientVars = await handshake(socket, 'pad');
       assert.equal(clientVars.type, 'CLIENT_VARS');
     });
-    it('!authn user /p/pad -> 200, ok', async function() {
+    it('!authn user /p/pad -> 200, ok', async function () {
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
       socket = await connect(res);
       const clientVars = await handshake(socket, 'pad');
       assert.equal(clientVars.type, 'CLIENT_VARS');
     });
-    it('authn user /p/pad -> 200, ok', async function() {
+    it('authn user /p/pad -> 200, ok', async function () {
       settings.requireAuthentication = true;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
       socket = await connect(res);
       const clientVars = await handshake(socket, 'pad');
       assert.equal(clientVars.type, 'CLIENT_VARS');
     });
-    it('authz user /p/pad -> 200, ok', async function() {
+    it('authz user /p/pad -> 200, ok', async function () {
       settings.requireAuthentication = true;
       settings.requireAuthorization = true;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
@@ -166,7 +168,7 @@ describe('socket.io access checks', function() {
       const clientVars = await handshake(socket, 'pad');
       assert.equal(clientVars.type, 'CLIENT_VARS');
     });
-    it('supports pad names with characters that must be percent-encoded', async function() {
+    it('supports pad names with characters that must be percent-encoded', async function () {
       settings.requireAuthentication = true;
       // requireAuthorization is set to true here to guarantee that the user's padAuthorizations
       // object is populated. Technically this isn't necessary because the user's padAuthorizations
@@ -181,8 +183,8 @@ describe('socket.io access checks', function() {
     });
   });
 
-  describe('Abnormal access attempts', function() {
-    it('authn anonymous /p/pad -> 401, error', async function() {
+  describe('Abnormal access attempts', function () {
+    it('authn anonymous /p/pad -> 401, error', async function () {
       settings.requireAuthentication = true;
       const res = await agent.get('/p/pad').expect(401);
       // Despite the 401, try to create the pad via a socket.io connection anyway.
@@ -190,13 +192,13 @@ describe('socket.io access checks', function() {
       const message = await handshake(socket, 'pad');
       assert.equal(message.accessStatus, 'deny');
     });
-    it('authn !cookie -> error', async function() {
+    it('authn !cookie -> error', async function () {
       settings.requireAuthentication = true;
       socket = await connect(null);
       const message = await handshake(socket, 'pad');
       assert.equal(message.accessStatus, 'deny');
     });
-    it('authorization bypass attempt -> error', async function() {
+    it('authorization bypass attempt -> error', async function () {
       // Only allowed to access /p/pad.
       authorize = (req) => req.path === '/p/pad';
       settings.requireAuthentication = true;
@@ -210,13 +212,13 @@ describe('socket.io access checks', function() {
     });
   });
 
-  describe('Authorization levels via authorize hook', function() {
-    beforeEach(async function() {
+  describe('Authorization levels via authorize hook', function () {
+    beforeEach(async function () {
       settings.requireAuthentication = true;
       settings.requireAuthorization = true;
     });
 
-    it("level='create' -> can create", async function() {
+    it("level='create' -> can create", async function () {
       authorize = () => 'create';
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
       socket = await connect(res);
@@ -224,7 +226,7 @@ describe('socket.io access checks', function() {
       assert.equal(clientVars.type, 'CLIENT_VARS');
       assert.equal(clientVars.data.readonly, false);
     });
-    it('level=true -> can create', async function() {
+    it('level=true -> can create', async function () {
       authorize = () => true;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
       socket = await connect(res);
@@ -232,7 +234,7 @@ describe('socket.io access checks', function() {
       assert.equal(clientVars.type, 'CLIENT_VARS');
       assert.equal(clientVars.data.readonly, false);
     });
-    it("level='modify' -> can modify", async function() {
+    it("level='modify' -> can modify", async function () {
       await padManager.getPad('pad'); // Create the pad.
       authorize = () => 'modify';
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
@@ -241,7 +243,7 @@ describe('socket.io access checks', function() {
       assert.equal(clientVars.type, 'CLIENT_VARS');
       assert.equal(clientVars.data.readonly, false);
     });
-    it("level='create' settings.editOnly=true -> unable to create", async function() {
+    it("level='create' settings.editOnly=true -> unable to create", async function () {
       authorize = () => 'create';
       settings.editOnly = true;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
@@ -249,7 +251,7 @@ describe('socket.io access checks', function() {
       const message = await handshake(socket, 'pad');
       assert.equal(message.accessStatus, 'deny');
     });
-    it("level='modify' settings.editOnly=false -> unable to create", async function() {
+    it("level='modify' settings.editOnly=false -> unable to create", async function () {
       authorize = () => 'modify';
       settings.editOnly = false;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
@@ -257,14 +259,14 @@ describe('socket.io access checks', function() {
       const message = await handshake(socket, 'pad');
       assert.equal(message.accessStatus, 'deny');
     });
-    it("level='readOnly' -> unable to create", async function() {
+    it("level='readOnly' -> unable to create", async function () {
       authorize = () => 'readOnly';
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
       socket = await connect(res);
       const message = await handshake(socket, 'pad');
       assert.equal(message.accessStatus, 'deny');
     });
-    it("level='readOnly' -> unable to modify", async function() {
+    it("level='readOnly' -> unable to modify", async function () {
       await padManager.getPad('pad'); // Create the pad.
       authorize = () => 'readOnly';
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
@@ -275,12 +277,12 @@ describe('socket.io access checks', function() {
     });
   });
 
-  describe('Authorization levels via user settings', function() {
-    beforeEach(async function() {
+  describe('Authorization levels via user settings', function () {
+    beforeEach(async function () {
       settings.requireAuthentication = true;
     });
 
-    it('user.canCreate = true -> can create and modify', async function() {
+    it('user.canCreate = true -> can create and modify', async function () {
       settings.users.user.canCreate = true;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
       socket = await connect(res);
@@ -288,21 +290,21 @@ describe('socket.io access checks', function() {
       assert.equal(clientVars.type, 'CLIENT_VARS');
       assert.equal(clientVars.data.readonly, false);
     });
-    it('user.canCreate = false -> unable to create', async function() {
+    it('user.canCreate = false -> unable to create', async function () {
       settings.users.user.canCreate = false;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
       socket = await connect(res);
       const message = await handshake(socket, 'pad');
       assert.equal(message.accessStatus, 'deny');
     });
-    it('user.readOnly = true -> unable to create', async function() {
+    it('user.readOnly = true -> unable to create', async function () {
       settings.users.user.readOnly = true;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
       socket = await connect(res);
       const message = await handshake(socket, 'pad');
       assert.equal(message.accessStatus, 'deny');
     });
-    it('user.readOnly = true -> unable to modify', async function() {
+    it('user.readOnly = true -> unable to modify', async function () {
       await padManager.getPad('pad'); // Create the pad.
       settings.users.user.readOnly = true;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
@@ -311,7 +313,7 @@ describe('socket.io access checks', function() {
       assert.equal(clientVars.type, 'CLIENT_VARS');
       assert.equal(clientVars.data.readonly, true);
     });
-    it('user.readOnly = false -> can create and modify', async function() {
+    it('user.readOnly = false -> can create and modify', async function () {
       settings.users.user.readOnly = false;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
       socket = await connect(res);
@@ -319,7 +321,7 @@ describe('socket.io access checks', function() {
       assert.equal(clientVars.type, 'CLIENT_VARS');
       assert.equal(clientVars.data.readonly, false);
     });
-    it('user.readOnly = true, user.canCreate = true -> unable to create', async function() {
+    it('user.readOnly = true, user.canCreate = true -> unable to create', async function () {
       settings.users.user.canCreate = true;
       settings.users.user.readOnly = true;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
@@ -329,13 +331,13 @@ describe('socket.io access checks', function() {
     });
   });
 
-  describe('Authorization level interaction between authorize hook and user settings', function() {
-    beforeEach(async function() {
+  describe('Authorization level interaction between authorize hook and user settings', function () {
+    beforeEach(async function () {
       settings.requireAuthentication = true;
       settings.requireAuthorization = true;
     });
 
-    it('authorize hook does not elevate level from user settings', async function() {
+    it('authorize hook does not elevate level from user settings', async function () {
       settings.users.user.readOnly = true;
       authorize = () => 'create';
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
@@ -343,7 +345,7 @@ describe('socket.io access checks', function() {
       const message = await handshake(socket, 'pad');
       assert.equal(message.accessStatus, 'deny');
     });
-    it('user settings does not elevate level from authorize hook', async function() {
+    it('user settings does not elevate level from authorize hook', async function () {
       settings.users.user.readOnly = false;
       settings.users.user.canCreate = true;
       authorize = () => 'readOnly';

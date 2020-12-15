@@ -2,17 +2,13 @@
  * Fuzz testing the import endpoint
  */
 /*
-const fs = require('fs');
+const common = require('../../common');
 const settings = require(__dirname+'/../../../../tests/container/loadSettings.js').loadSettings();
 const host = "http://" + settings.ip + ":" + settings.port;
-const path = require('path');
-const async = require(__dirname+'/../../../../src/node_modules/async');
 const request = require(__dirname+'/../../../../src/node_modules/request');
 const froth = require(__dirname+'/../../../../src/node_modules/mocha-froth');
 
-var filePath = path.join(__dirname, '../../../../APIKEY.txt');
-var apiKey = fs.readFileSync(filePath,  {encoding: 'utf-8'});
-apiKey = apiKey.replace(/\n$/, "");
+const apiKey = common.apiKey;
 var apiVersion = 1;
 var testPadId = "TEST_fuzz" + makeid();
 
@@ -62,8 +58,7 @@ console.log("here");
   });
 }
 
-function makeid()
-{
+function makeid() {
   var text = "";
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 

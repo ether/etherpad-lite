@@ -118,7 +118,6 @@ Available blocks in `pad.html` are:
  * `indexCustomStyles` - contains the `index.css` `<link>` tag, allows you to add your own or to customize the one provided by the active skin
  * `indexWrapper` - contains the form for creating new pads
  * `indexCustomScripts` - contains the `index.js` `<script>` tag, allows you to add your own or to customize the one provided by the active skin
- * `indexCustomInlineScripts` - contains the inline `<script>` of home page, allows you to customize `go2Name()`, `go2Random()` or `randomPadName()` functions
 
 ## padInitToolbar
 Called from: src/node/hooks/express/specialpages.js
@@ -139,9 +138,8 @@ Called from: src/node/db/SecurityManager.js
 Things in context:
 
 1. padID - the pad the user wants to access
-2. password - the password the user has given to access the pad
-3. token - the token of the author
-4. sessionCookie - the session the use has
+2. token - the token of the author
+3. sessionCookie - the session the use has
 
 This hook gets called when the access to the concrete pad is being checked. Return `false` to deny access.
 
@@ -171,6 +169,8 @@ Things in context:
 
 1. pad - the pad instance
 2. author - the id of the author who updated the pad
+3. revs - the index of the new revision
+4. changeset - the changeset of this revision (see [Changeset Library](#index_changeset_library))
 
 This hook gets called when an existing pad was updated.
 
@@ -513,7 +513,8 @@ Called from: src/node/handler/PadMessageHandler.js
 Things in context:
 
 1. message - the message being handled
-2. client - the socket.io Socket object
+2. socket - the socket.io Socket object
+3. client - **deprecated** synonym of socket
 
 This hook allows plugins to drop or modify incoming socket.io messages from
 clients, before Etherpad processes them.
@@ -526,22 +527,22 @@ Examples:
 
 ```
 // Using an async function:
-exports.handleMessage = async (hookName, {message, client}) => {
+exports.handleMessage = async (hookName, {message, socket}) => {
   if (message.type === 'USERINFO_UPDATE') {
     // Force the display name to the name associated with the account.
-    const user = client.client.request.session.user || {};
+    const user = socket.client.request.session.user || {};
     if (user.name) message.data.userInfo.name = user.name;
   }
 };
 
 // Using a regular function:
-exports.handleMessage = (hookName, {message, client}, callback) => {
+exports.handleMessage = (hookName, {message, socket}, callback) => {
   if (message.type === 'USERINFO_UPDATE') {
     // Force the display name to the name associated with the account.
-    const user = client.client.request.session.user || {};
+    const user = socket.client.request.session.user || {};
     if (user.name) message.data.userInfo.name = user.name;
   }
-  return cb();
+  return callback();
 };
 ```
 
@@ -551,7 +552,8 @@ Called from: src/node/handler/PadMessageHandler.js
 Things in context:
 
 1. message - the message being handled
-2. client - the socket.io Socket object
+2. socket - the socket.io Socket object
+3. client - **deprecated** synonym of socket
 
 This hook allows plugins to grant temporary write access to a pad. It is called
 for each incoming message from a client. If write access is granted, it applies
@@ -568,14 +570,14 @@ Examples:
 
 ```
 // Using an async function:
-exports.handleMessageSecurity = async (hookName, {message, client}) => {
-  if (shouldGrantWriteAccess(message, client)) return true;
+exports.handleMessageSecurity = async (hookName, {message, socket}) => {
+  if (shouldGrantWriteAccess(message, socket)) return true;
   return;
 };
 
 // Using a regular function:
-exports.handleMessageSecurity = (hookName, {message, client}, callback) => {
-  if (shouldGrantWriteAccess(message, client)) return callback(true);
+exports.handleMessageSecurity = (hookName, {message, socket}, callback) => {
+  if (shouldGrantWriteAccess(message, socket)) return callback(true);
   return callback();
 };
 ```
@@ -659,6 +661,24 @@ function _analyzeLine(alineAttrs, apool) {
 }
 ```
 
+## exportHTMLAdditionalContent
+Called from: src/node/utils/ExportHtml.js
+
+Things in context:
+
+1. padId
+
+This hook will allow a plug-in developer to include additional HTML content in
+the body of the exported HTML.
+
+Example:
+
+```
+exports.exportHTMLAdditionalContent = async (hookName, {padId}) => {
+  return 'I am groot in ' + padId;
+};
+```
+
 ## stylesForExport
 Called from: src/node/utils/ExportHtml.js
 
@@ -679,18 +699,21 @@ exports.stylesForExport = function(hook, padId, cb){
 ## aceAttribClasses
 Called from: src/static/js/linestylefilter.js
 
-Things in context:
-1. Attributes - Object of Attributes
+This hook is called when attributes are investigated on a line. It is useful if
+you want to add another attribute type or property type to a pad.
 
-This hook is called when attributes are investigated on a line.  It is useful if you want to add another attribute type or property type to a pad.
+An attributes object is passed to the aceAttribClasses hook functions instead of
+the usual context object. A hook function can either modify this object directly
+or provide an object whose properties will be assigned to the attributes object.
 
 Example:
 
 ```
-exports.aceAttribClasses = function(hook_name, attr, cb){
-  attr.sub = 'tag:sub';
-  cb(attr);
-}
+exports.aceAttribClasses = (hookName, attrs, cb) => {
+  return cb([{
+    sub: 'tag:sub',
+  }]);
+};
 ```
 
 ## exportFileName
@@ -744,6 +767,25 @@ exports.exportHtmlAdditionalTagsWithData = function(hook, pad, cb){
   var padId = pad.id;
   cb([["color", "red"], ["color", "blue"]]);
 };
+```
+
+## exportEtherpadAdditionalContent
+Called from src/node/utils/ExportEtherpad.js and
+src/node/utils/ImportEtherpad.js
+
+Things in context: Nothing
+
+Useful for exporting and importing pad metadata that is stored in the database
+but not in the pad's content or attributes. For example, in ep_comments_page the
+comments are stored as `comments:padId:uniqueIdOfComment` so a complete export
+of all pad data to an `.etherpad` file must include the `comments:padId:*`
+records.
+
+Example:
+
+```
+// Add support for exporting comments metadata
+exports.exportEtherpadAdditionalContent = () => ['comments'];
 ```
 
 ## userLeave

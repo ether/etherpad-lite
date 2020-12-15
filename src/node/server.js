@@ -61,13 +61,13 @@ exports.start = async () => {
   try {
     await db.init();
     await plugins.update();
-    console.info('Installed plugins: ' + plugins.formatPluginsWithVersion());
-    console.debug('Installed parts:\n' + plugins.formatParts());
-    console.debug('Installed hooks:\n' + plugins.formatHooks());
+    console.info(`Installed plugins: ${plugins.formatPluginsWithVersion()}`);
+    console.debug(`Installed parts:\n${plugins.formatParts()}`);
+    console.debug(`Installed hooks:\n${plugins.formatHooks()}`);
     await hooks.aCallAll('loadSettings', {settings});
     await hooks.aCallAll('createServer');
   } catch (e) {
-    console.error('exception thrown: ' + e.message);
+    console.error(`exception thrown: ${e.message}`);
     if (e.stack) console.log(e.stack);
     process.exit(1);
   }

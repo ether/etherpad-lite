@@ -37,9 +37,7 @@
 	"pad.colorpicker.cancel": "Cancel·la",
 	"pad.loading": "S'està carregant...",
 	"pad.noCookie": "No s'ha trobat la galeta. Permeteu les galetes en el navegador!",
-	"pad.passwordRequired": "Us cal una contrasenya per a accedir a aquest pad",
 	"pad.permissionDenied": "No teniu permisos per a accedir a aquest pad",
-	"pad.wrongPassword": "La contrasenya és incorrecta",
 	"pad.settings.padSettings": "Paràmetres del pad",
 	"pad.settings.myView": "La meva vista",
 	"pad.settings.stickychat": "Xateja sempre a la pantalla",
@@ -145,6 +143,5 @@
 	"pad.impexp.importfailed": "Ha fallat la importació",
 	"pad.impexp.copypaste": "Si us plau, copieu i enganxeu",
 	"pad.impexp.exportdisabled": "Està inhabilitada l'exportació com a {{type}}. Contacteu amb el vostre administrador de sistemes per a més informació.",
-	"pad.impexp.maxFileSize": "Arxiu massa gran. Poseu-vos en contacte amb l'administrador del vostre lloc per augmentar la mida màxima dels fitxers importats",
-	"pad.impexp.permission": "La importació està desactivada perquè mai heu contribuït a aquest bloc. Si us plau, contribuïu almenys un cop abans d'importar"
+	"pad.impexp.maxFileSize": "Arxiu massa gran. Poseu-vos en contacte amb l'administrador del vostre lloc per augmentar la mida màxima dels fitxers importats"
 }

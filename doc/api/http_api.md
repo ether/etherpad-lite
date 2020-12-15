@@ -581,24 +581,6 @@ return true of false
   * `{code: 0, message:"ok", data: {publicStatus: true}}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
-#### setPassword(padID, password)
- * API >= 1
-
-returns ok or an error message
-
-*Example returns:*
-  * `{code: 0, message:"ok", data: null}`
-  * `{code: 1, message:"padID does not exist", data: null}`
-
-#### isPasswordProtected(padID)
- * API >= 1
-
-returns true or false
-
-*Example returns:*
-  * `{code: 0, message:"ok", data: {passwordProtection: true}}`
-  * `{code: 1, message:"padID does not exist", data: null}`
-
 #### listAuthorsOfPad(padID)
  * API >= 1
 

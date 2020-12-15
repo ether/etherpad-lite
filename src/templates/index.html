@@ -5,30 +5,6 @@
 <html>
 
         <title><%=settings.title%></title>
-    <script>
-      /*
-      |@licstart  The following is the entire license notice for the
-      JavaScript code in this page.|
-
-      Copyright 2011 Peter Martischka, Primary Technology.
-
-      Licensed under the Apache License, Version 2.0 (the "License");
-      you may not use this file except in compliance with the License.
-      You may obtain a copy of the License at
-
-         http://www.apache.org/licenses/LICENSE-2.0
-
-      Unless required by applicable law or agreed to in writing, software
-      distributed under the License is distributed on an "AS IS" BASIS,
-      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-      See the License for the specific language governing permissions and
-      limitations under the License.
-
-      |@licend  The above is the entire license notice
-      for the JavaScript code in this page.|
-      */
-    </script>
-
         <meta charset="utf-8">
         <meta name="referrer" content="no-referrer">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
@@ -37,6 +13,8 @@
         <link rel="localizations" type="application/l10n+json" href="locales.json">
         <script type="text/javascript" src="static/js/html10n.js?v=<%=settings.randomVersionString%>"></script>
         <script type="text/javascript" src="static/js/l10n.js?v=<%=settings.randomVersionString%>"></script>
+        <script src="static/js/jquery.js"></script>
+        <script src="static/js/index.js"></script>
 
         <style>
             html, body {
@@ -167,10 +145,10 @@
                     <% if (settings.editOnly) { %>
                         <label id="label" for="padname" data-l10n-id="index.openPad"></label>
                     <% } else {%>
-                        <button id="button" onclick="go2Random()" data-l10n-id="index.newPad"></button>
+                        <button id="button" data-l10n-id="index.newPad"></button>
                         <label id="label" for="padname" data-l10n-id="index.createOpenPad"></label>
                     <% } %>
-                    <form action="#" onsubmit="go2Name();return false;">
+                    <form action="#" id="go2Name">
                         <input type="text" id="padname" maxlength="50" autofocus x-webkit-speech>
                         <button type="submit">OK</button>
                     </form>
@@ -182,48 +160,5 @@
         <% e.begin_block("indexCustomScripts"); %>
         <script src="static/skins/<%=encodeURI(settings.skinName)%>/index.js?v=<%=settings.randomVersionString%>"></script>
         <% e.end_block(); %>
-        <script>
-            // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
-            <% e.begin_block("indexCustomInlineScripts"); %>
-            function go2Name()
-            {
-                var padname = document.getElementById("padname").value;
-                padname.length > 0 ? window.location = "p/" + encodeURIComponent(padname.trim()) : alert("Please enter a name")
-            }
-
-            function go2Random()
-            {
-                window.location = "p/" + randomPadName();
-            }
-
-            function randomPadName()
-            {
-                // the number of distinct chars (64) is chosen to ensure that
-                // the selection will be uniform when using the PRNG below
-                var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
-                // the length of the pad name is chosen to get 120-bit security:
-                // log2(64^20) = 120
-                var string_length = 20;
-                // make room for 8-bit integer values that span from 0 to 255.
-                var randomarray = new Uint8Array(string_length);
-                // use browser's PRNG to generate a "unique" sequence
-                var cryptoObj = window.crypto || window.msCrypto; // for IE 11
-                cryptoObj.getRandomValues(randomarray);
-                var randomstring = '';
-                for (var i = 0; i < string_length; i++)
-                {
-                    // instead of writing "Math.floor(randomarray[i]/256*64)"
-                    // we can save some cycles.
-                    var rnum = Math.floor(randomarray[i]/4);
-                    randomstring += chars.substring(rnum, rnum + 1);
-                }
-                return randomstring;
-            }
-            <% e.end_block(); %>
-
-            // start the custom js
-            if (typeof customStart == "function") customStart();
-            // @license-end
-        </script>
         <div style="display:none"><a href="/javascript" data-jslicense="1">JavaScript license information</a></div>
 </html>

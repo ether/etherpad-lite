@@ -53,9 +53,7 @@
 	"pad.colorpicker.cancel": "Abbrechen",
 	"pad.loading": "Lade …",
 	"pad.noCookie": "Das Cookie konnte nicht gefunden werden. Bitte erlaube Cookies in deinem Browser! Deine Sitzung und Einstellungen werden zwischen den Besuchen nicht gespeichert.  Dies kann darauf zurückzuführen sein, dass Etherpad in einigen Browsern in einem iFrame enthalten ist.  Bitte stelle sicher, dass sich Etherpad auf der gleichen Subdomain/Domain wie der übergeordnete iFrame befindet.",
-	"pad.passwordRequired": "Du benötigst ein Kennwort, um auf dieses Pad zuzugreifen",
 	"pad.permissionDenied": "Du hast keine Berechtigung, um auf dieses Pad zuzugreifen",
-	"pad.wrongPassword": "Dein eingegebenes Kennwort war falsch",
 	"pad.settings.padSettings": "Pad-Einstellungen",
 	"pad.settings.myView": "Eigene Ansicht",
 	"pad.settings.stickychat": "Unterhaltung immer anzeigen",
@@ -159,6 +157,5 @@
 	"pad.impexp.importfailed": "Import fehlgeschlagen",
 	"pad.impexp.copypaste": "Bitte kopieren und einfügen",
 	"pad.impexp.exportdisabled": "Der Export im {{type}}-Format ist deaktiviert. Für Einzelheiten kontaktiere bitte deinen Systemadministrator.",
-	"pad.impexp.maxFileSize": "Die Datei ist zu groß. Kontaktiere bitte deinen Administrator, um das Limit für den Dateiimport zu erhöhen.",
-	"pad.impexp.permission": "Die Importfunktion ist deaktiviert, da du noch nichts zu diesem Pad beigetragen hast. Bitte trage etwas zu diesem Pad bei, bevor du importierst."
+	"pad.impexp.maxFileSize": "Die Datei ist zu groß. Kontaktiere bitte deinen Administrator, um das Limit für den Dateiimport zu erhöhen."
 }

@@ -45,7 +45,7 @@
   text-decoration: none;
   transition: background-color .1s;
 }
-.toolbar ul li button:active, .toolbar ul li button:focus {
+.toolbar ul li a.pressed button:active, .toolbar ul li a.pressed button:focus {
   outline: 0;
   border: none;
 }

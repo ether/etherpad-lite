@@ -15,40 +15,39 @@
  */
 
 
-let db = require("../db/DB");
+const db = require('../db/DB');
+const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
-exports.getPadRaw = async function(padId) {
+exports.getPadRaw = async function (padId) {
+  const padKey = `pad:${padId}`;
+  const padcontent = await db.get(padKey);
 
-  let padKey = "pad:" + padId;
-  let padcontent = await db.get(padKey);
-
-  let records = [ padKey ];
+  const records = [padKey];
   for (let i = 0; i <= padcontent.head; i++) {
-    records.push(padKey + ":revs:" + i);
+    records.push(`${padKey}:revs:${i}`);
   }
 
   for (let i = 0; i <= padcontent.chatHead; i++) {
-    records.push(padKey + ":chat:" + i);
+    records.push(`${padKey}:chat:${i}`);
   }
 
-  let data = {};
-  for (let key of records)  {
-
+  const data = {};
+  for (const key of records) {
     // For each piece of info about a pad.
-    let entry = data[key] = await db.get(key);
+    const entry = data[key] = await db.get(key);
 
     // Get the Pad Authors
     if (entry.pool && entry.pool.numToAttrib) {
-      let authors = entry.pool.numToAttrib;
+      const authors = entry.pool.numToAttrib;
 
-      for (let k of Object.keys(authors)) {
-        if (authors[k][0] === "author") {
-          let authorId = authors[k][1];
+      for (const k of Object.keys(authors)) {
+        if (authors[k][0] === 'author') {
+          const authorId = authors[k][1];
 
           // Get the author info
-          let authorEntry = await db.get("globalAuthor:" + authorId);
+          const authorEntry = await db.get(`globalAuthor:${authorId}`);
           if (authorEntry) {
-            data["globalAuthor:" + authorId] = authorEntry;
+            data[`globalAuthor:${authorId}`] = authorEntry;
             if (authorEntry.padIDs) {
               authorEntry.padIDs = padId;
             }
@@ -58,5 +57,13 @@ exports.getPadRaw = async function(padId) {
     }
   }
 
+  // get content that has a different prefix IE comments:padId:foo
+  // a plugin would return something likle ['comments', 'cakes']
+  const prefixes = await hooks.aCallAll('exportEtherpadAdditionalContent');
+  await Promise.all(prefixes.map(async (prefix) => {
+    const key = `${prefix}:${padId}`;
+    data[key] = await db.get(key);
+  }));
+
   return data;
-}
+};

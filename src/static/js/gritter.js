@@ -9,6 +9,10 @@
  * Version: 1.7.4
  *
  * Edited by Sebastian Castro <sebastian.castro@protonmail.com> on 2020-03-31
+ *
+ * Edited by Richard Hansen <rhansen@rhansen.org> on 2020-10-19 to accept jQuery or DOM objects for
+ * notification title and text, and to treat plain strings as text instead of HTML (to avoid XSS
+ * vunlerabilities).
  */
 
 (function($){
@@ -77,17 +81,12 @@
 		_tpl_wrap_top: '<div id="gritter-container" class="top"></div>',
 		_tpl_wrap_bottom: '<div id="gritter-container" class="bottom"></div>',
 		_tpl_close: '',
-		_tpl_title: '<h3 class="gritter-title">[[title]]</h3>',
-		_tpl_item: [
-			'<div id="gritter-item-[[number]]" class="popup gritter-item [[item_class]]">',
-				'<div class="popup-content">',
-					'<div class="gritter-content">',
-						'[[title]]',
-						'<p>[[text]]</p>',
-					'</div>',
-					'<div class="gritter-close"><i class="buttonicon buttonicon-times"></i></div>',
-				'</div>',
-			'</div>'].join(''),
+		_tpl_title: $('<h3>').addClass('gritter-title'),
+		_tpl_item: ($('<div>').addClass('popup gritter-item')
+								.append($('<div>').addClass('popup-content')
+												.append($('<div>').addClass('gritter-content'))
+												.append($('<div>').addClass('gritter-close')
+																.append($('<i>').addClass('buttonicon buttonicon-times'))))),
 
 
 		/**
@@ -127,8 +126,7 @@
 			}
 
 			this._item_count++;
-			var number = this._item_count,
-				tmp = this._tpl_item;
+			var number = this._item_count;
 
 			// Assign callbacks
 			$(['before_open', 'after_open', 'before_close', 'after_close']).each(function(i, val){
@@ -145,15 +143,18 @@
 
 			// String replacements on the template
 			if(title){
-				title = this._str_replace('[[title]]',title,this._tpl_title);
+				title = this._tpl_title.clone().append(
+						typeof title === 'string' ? document.createTextNode(title) : title);
 			}else{
 				title = '';
 			}
 
-			tmp = this._str_replace(
-				['[[title]]', '[[text]]', '[[number]]', '[[item_class]]'],
-				[title, text, this._item_count, item_class], tmp
-			);
+			const tmp = this._tpl_item.clone();
+			tmp.attr('id', `gritter-item-${number}`);
+			tmp.addClass(item_class);
+			tmp.find('.gritter-content')
+					.append(title)
+					.append(typeof text === 'string' ? $('<p>').text(text) : text);
 
 			// If it's false, don't show another gritter message
 			if(this['_before_open_' + number]() === false){
@@ -328,49 +329,6 @@
 		},
 
 		/**
-		* An extremely handy PHP function ported to JS, works well for templating
-		* @private
-		* @param {String/Array} search A list of things to search for
-		* @param {String/Array} replace A list of things to replace the searches with
-		* @return {String} sa The output
-		*/
-		_str_replace: function(search, replace, subject, count){
-
-			var i = 0, j = 0, temp = '', repl = '', sl = 0, fl = 0,
-				f = [].concat(search),
-				r = [].concat(replace),
-				s = subject,
-				ra = r instanceof Array, sa = s instanceof Array;
-			s = [].concat(s);
-
-			if(count){
-				this.window[count] = 0;
-			}
-
-			for(i = 0, sl = s.length; i < sl; i++){
-
-				if(s[i] === ''){
-					continue;
-				}
-
-				for (j = 0, fl = f.length; j < fl; j++){
-
-					temp = s[i] + '';
-					repl = ra ? (r[j] !== undefined ? r[j] : '') : r[0];
-					s[i] = (temp).split(f[j]).join(repl);
-
-					if(count && s[i] !== temp){
-						this.window[count] += (temp.length-s[i].length) / f[j].length;
-					}
-
-				}
-			}
-
-			return sa ? s : s[0];
-
-		},
-
-		/**
 		* A check to make sure we have something to wrap our notices with
 		* @private
 		*/
@@ -387,3 +345,11 @@
 	}
 
 })(jQuery);
+
+// For Emacs:
+// Local Variables:
+// tab-width: 2
+// indent-tabs-mode: t
+// End:
+
+// vi: ts=2:noet:sw=2

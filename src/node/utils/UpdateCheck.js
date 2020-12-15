@@ -5,8 +5,8 @@ const request = require('request');
 let infos;
 
 function loadEtherpadInformations() {
-  return new Promise(function(resolve, reject) {
-    request('https://static.etherpad.org/info.json', function (er, response, body) {
+  return new Promise((resolve, reject) => {
+    request('https://static.etherpad.org/info.json', (er, response, body) => {
       if (er) return reject(er);
 
       try {
@@ -16,29 +16,29 @@ function loadEtherpadInformations() {
         return reject(err);
       }
     });
-  })
+  });
 }
 
-exports.getLatestVersion = function() {
+exports.getLatestVersion = function () {
   exports.needsUpdate();
   return infos.latestVersion;
-}
+};
 
-exports.needsUpdate = function(cb) {
-  loadEtherpadInformations().then(function(info) {
+exports.needsUpdate = function (cb) {
+  loadEtherpadInformations().then((info) => {
     if (semver.gt(info.latestVersion, settings.getEpVersion())) {
       if (cb) return cb(true);
     }
-  }).catch(function (err) {
-    console.error('Can not perform Etherpad update check: ' + err)
+  }).catch((err) => {
+    console.error(`Can not perform Etherpad update check: ${err}`);
     if (cb) return cb(false);
-  })
-}
+  });
+};
 
-exports.check = function() {
-  exports.needsUpdate(function (needsUpdate) {
+exports.check = function () {
+  exports.needsUpdate((needsUpdate) => {
     if (needsUpdate) {
-      console.warn('Update available: Download the actual version ' + infos.latestVersion)
+      console.warn(`Update available: Download the actual version ${infos.latestVersion}`);
     }
-  })
-}
+  });
+};

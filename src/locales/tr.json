@@ -57,7 +57,7 @@
 	"pad.toolbar.ol.title": "Sıralı liste (Ctrl+Shift+N)",
 	"pad.toolbar.ul.title": "Sırasız Liste (Ctrl+Shift+L)",
 	"pad.toolbar.indent.title": "Girintiyi arttır (TAB)",
-	"pad.toolbar.unindent.title": "Girintiyi azalt (Shift+TAB)",
+	"pad.toolbar.unindent.title": "Çıkıntı (Shift+TAB)",
 	"pad.toolbar.undo.title": "Geri Al (Ctrl+Z)",
 	"pad.toolbar.redo.title": "Yinele (Ctrl+Y)",
 	"pad.toolbar.clearAuthorship.title": "Yazarlık Renklerini Temizle (Ctrl+Shift+C)",
@@ -71,9 +71,7 @@
 	"pad.colorpicker.cancel": "İptal",
 	"pad.loading": "Yükleniyor...",
 	"pad.noCookie": "Çerez bulunamadı. Lütfen tarayıcınızda çerezlere izin veriniz! Lütfen tarayıcınızda çerezlere izin verin! Oturumunuz ve ayarlarınız ziyaretler arasında kaydedilmez. Bunun nedeni, Etherpad'in bazı Tarayıcılarda bir iFrame'e dahil edilmiş olması olabilir. Lütfen Etherpad'in üst iFrame ile aynı alt alanda/alanda olduğundan emin olun",
-	"pad.passwordRequired": "Bu bloknota erişebilmeniz için parolaya ihtiyacınız var",
 	"pad.permissionDenied": "Bu bloknota erişmeye izniniz yok",
-	"pad.wrongPassword": "Parolanız yanlış",
 	"pad.settings.padSettings": "Bloknot Ayarları",
 	"pad.settings.myView": "Görünümüm",
 	"pad.settings.stickychat": "Sohbeti her zaman ekranda yap",
@@ -98,7 +96,7 @@
 	"pad.importExport.exportopen": "ODF (Açık Doküman Biçimi)",
 	"pad.importExport.abiword.innerHTML": "Yalnızca düz metin ya da HTML biçimlerini içe aktarabilirsiniz. Daha fazla gelişmiş içe aktarım özellikleri için lütfen <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">AbiWord veya LibreOffice yükleyin</a>.",
 	"pad.modals.connected": "Bağlandı.",
-	"pad.modals.reconnecting": "Bloknotunuza tekrar bağlanılıyor...",
+	"pad.modals.reconnecting": "Pedinize tekrar bağlanılıyor…",
 	"pad.modals.forcereconnect": "Yeniden bağlanmaya zorla",
 	"pad.modals.reconnecttimer": "Yeniden bağlanmaya çalışılıyor",
 	"pad.modals.cancel": "İptal",
@@ -179,6 +177,5 @@
 	"pad.impexp.importfailed": "İçe aktarım başarısız oldu",
 	"pad.impexp.copypaste": "Lütfen kopyala yapıştır yapın",
 	"pad.impexp.exportdisabled": "{{type}} biçimiyle dışa aktarma devre dışı bırakıldı. Ayrıntılar için sistem yöneticinizle iletişime geçiniz.",
-	"pad.impexp.maxFileSize": "Dosya çok büyük. İçe aktarma için izin verilen dosya boyutunu artırmak için site yöneticinize başvurun",
-	"pad.impexp.permission": "Bu ped'e hiç katkıda bulunmadığınız için içe aktarma devre dışı. Lütfen içe aktarmadan önce en az bir kez katkıda bulunun"
+	"pad.impexp.maxFileSize": "Dosya çok büyük. İçe aktarma için izin verilen dosya boyutunu artırmak için site yöneticinize başvurun"
 }

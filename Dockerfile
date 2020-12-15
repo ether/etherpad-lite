@@ -51,4 +51,4 @@ COPY --chown=etherpad:0 ./settings.json.docker /opt/etherpad-lite/settings.json
 RUN chmod -R g=u .
 
 EXPOSE 9001
-CMD ["node", "node_modules/ep_etherpad-lite/node/server.js"]
+CMD ["node", "--experimental-worker", "node_modules/ep_etherpad-lite/node/server.js"]

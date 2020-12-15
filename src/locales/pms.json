@@ -61,9 +61,7 @@
 	"pad.colorpicker.cancel": "Anulé",
 	"pad.loading": "Antramentr ch'as caria…",
 	"pad.noCookie": "Ël bëscotin a l'é nen ëstàit trovà. Për piasì, ch'a autorisa ij bëscotin su sò navigador! Soa session e sò paràmeter a saran pa argistrà antra na vìsita e l'àutra. Sòn a peul esse dovù al fàit che Etherpad a l'é contnù an n'iFrame an chèich navigador. Ch'a contròla che Etherpad resta ant l'istess sot-domini/domini ëd sò ce iFrame",
-	"pad.passwordRequired": "A l'ha da manca ëd na ciav për acede a cost feuj-sì",
 	"pad.permissionDenied": "A l'ha nen ël përmess d'acede a 's feuj-sì",
-	"pad.wrongPassword": "Soa ciav a l'era nen giusta",
 	"pad.settings.padSettings": "Paràmeter dël feuj",
 	"pad.settings.myView": "Mia vista",
 	"pad.settings.stickychat": "Ciaciarade sempe an slë scren",
@@ -87,7 +85,7 @@
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
 	"pad.importExport.abiword.innerHTML": "A peul mach amporté dij formà ëd test sempi o HTML. Për dle fonsionalità d'amportassion pi avansà, ch'a <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">anstala AbiWord o LibreOffice</a>.",
 	"pad.modals.connected": "Colegà.",
-	"pad.modals.reconnecting": "Neuva conession a sò feuj...",
+	"pad.modals.reconnecting": "Neuva conession a sò feuj…",
 	"pad.modals.forcereconnect": "Forsé la neuva conession",
 	"pad.modals.reconnecttimer": "Tentativ ëd neuva conession",
 	"pad.modals.cancel": "Anulé",
@@ -168,6 +166,5 @@
 	"pad.impexp.importfailed": "Amportassion falìa",
 	"pad.impexp.copypaste": "Për piasì, ch'a còpia e ancòla",
 	"pad.impexp.exportdisabled": "L'esportassion an formà {{type}} a l'é disativà. Për piasì, ch'a contata sò aministrator ëd sistema për ij detaj.",
-	"pad.impexp.maxFileSize": "Archivi tròp gròss. Ch'a contata sò aministrator ëd sit për sumenté la taja dj'archivi consentìa për j'amportassion",
-	"pad.impexp.permission": "L'amportassion a l'é disativà përchè chiel a l'ha pa mai contribuì a cost blòch-sì. Për piasì, ch'a contribuissa almanch na vira prima d'amporté"
+	"pad.impexp.maxFileSize": "Archivi tròp gròss. Ch'a contata sò aministrator ëd sit për sumenté la taja dj'archivi consentìa për j'amportassion"
 }

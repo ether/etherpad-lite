@@ -69,9 +69,7 @@
 	"pad.colorpicker.cancel": "取消",
 	"pad.loading": "載入中...",
 	"pad.noCookie": "找不到 Cookie。請允許瀏覽器使用 Cookie！您的 session 與設定沒有在訪問期間被儲存下來，這可能是因為在某些瀏覽器裡 Etherpad 被包在 iFrame 中，請確認 Etherpad 是在父層級的 iFrame 相同的網域/子網域。",
-	"pad.passwordRequired": "您需要密碼才能存取這個記事本",
 	"pad.permissionDenied": "你沒有存取這個記事本的權限",
-	"pad.wrongPassword": "密碼錯誤",
 	"pad.settings.padSettings": "記事本設定",
 	"pad.settings.myView": "我的視窗",
 	"pad.settings.stickychat": "永遠在螢幕上顯示聊天",
@@ -177,6 +175,5 @@
 	"pad.impexp.importfailed": "匯入失敗",
 	"pad.impexp.copypaste": "請複製貼上",
 	"pad.impexp.exportdisabled": "{{type}}格式的匯出被禁用。有關詳情，請與您的系統管理員聯繫。",
-	"pad.impexp.maxFileSize": "檔案太大。請聯絡您的網站管理員來增加用於匯入的允許檔案大小。",
-	"pad.impexp.permission": "因為您已沒在此記事本上貢獻，匯入功能已停用。在進行匯入之前，至少要做出一次貢獻"
+	"pad.impexp.maxFileSize": "檔案太大。請聯絡您的網站管理員來增加用於匯入的允許檔案大小。"
 }

@@ -8,24 +8,35 @@ services:
 
 cache: false
 
-before_install:
-  - sudo add-apt-repository -y ppa:libreoffice/ppa
-  - sudo apt-get update
-  - sudo apt-get -y install libreoffice
-  - sudo apt-get -y install libreoffice-pdfimport
-
-install:
-  - "bin/installDeps.sh"
-  - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
-  # Installing some plugins
-
-script:
-  - "tests/frontend/travis/runner.sh"
-
 env:
   global:
     - secure: "WMGxFkOeTTlhWB+ChMucRtIqVmMbwzYdNHuHQjKCcj8HBEPdZLfCuK/kf4rG\nVLcLQiIsyllqzNhBGVHG1nyqWr0/LTm8JRqSCDDVIhpyzp9KpCJQQJG2Uwjk\n6/HIJJh/wbxsEdLNV2crYU/EiVO3A4Bq0YTHUlbhUqG3mSCr5Ec="
     - secure: "gejXUAHYscbR6Bodw35XexpToqWkv2ifeECsbeEmjaLkYzXmUUNWJGknKSu7\nEUsSfQV8w+hxApr1Z+jNqk9aX3K1I4btL3cwk2trnNI8XRAvu1c1Iv60eerI\nkE82Rsd5lwUaMEh+/HoL8ztFCZamVndoNgX7HWp5J/NRZZMmh4g="
+
+_set_loglevel_warn: &set_loglevel_warn |
+  sed -e 's/"loglevel":[^,]*/"loglevel": "WARN"/' \
+      settings.json.template >settings.json.template.new &&
+  mv settings.json.template.new settings.json.template
+
+_install_libreoffice: &install_libreoffice >-
+  sudo add-apt-repository -y ppa:libreoffice/ppa &&
+  sudo apt-get update &&
+  sudo apt-get -y install libreoffice libreoffice-pdfimport
+
+_install_plugins: &install_plugins >-
+  npm install
+  ep_align
+  ep_author_hover
+  ep_cursortrace
+  ep_font_size
+  ep_hash_auth
+  ep_headings2
+  ep_markdown
+  ep_readonly_guest
+  ep_spellcheck
+  ep_subscript_and_superscript
+  ep_table_of_contents
+  ep_set_title_on_pad
 
 jobs:
   include:
@@ -34,29 +45,30 @@ jobs:
     - if: fork = false
       name: "Test the Frontend without Plugins"
       install:
-        #FIXME
-        - "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/g' settings.json.template > settings.json"
+        - *set_loglevel_warn
         - "tests/frontend/travis/sauce_tunnel.sh"
         - "bin/installDeps.sh"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
       script:
-        - "tests/frontend/travis/runner.sh"
+        - "./tests/frontend/travis/runner.sh"
     - name: "Run the Backend tests without Plugins"
       install:
+        - *install_libreoffice
+        - *set_loglevel_warn
         - "bin/installDeps.sh"
         - "cd src && npm install && cd -"
       script:
         - "tests/frontend/travis/runnerBackend.sh"
-## Temporarily commented out the Dockerfile tests
-#    - name: "Test the Dockerfile"
-#      install:
-#        - "cd src && npm install && cd -"
-#      script:
-#        - "docker build -t etherpad:test ."
-#        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
-#        - "cd src && npm run test-container"
+    - name: "Test the Dockerfile"
+      install:
+        - "cd src && npm install && cd -"
+      script:
+        - "docker build -t etherpad:test ."
+        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
+        - "cd src && npm run test-container"
     - name: "Load test Etherpad without Plugins"
       install:
+        - *set_loglevel_warn
         - "bin/installDeps.sh"
         - "cd src && npm install && cd -"
         - "npm install -g etherpad-load-test"
@@ -67,34 +79,40 @@ jobs:
     - if: fork = false
       name: "Test the Frontend Plugins only"
       install:
-        #FIXME
-        - "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/g' settings.json.template > settings.json"
+        - *set_loglevel_warn
         - "tests/frontend/travis/sauce_tunnel.sh"
         - "bin/installDeps.sh"
         - "rm tests/frontend/specs/*"
-        - "npm install ep_hash_auth ep_cursortrace ep_subscript_and_superscript ep_headings2 ep_author_hover ep_align ep_webrtc ep_table_of_contents ep_font_size ep_markdown ep_spellcheck"
+        - *install_plugins
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
       script:
-        - "tests/frontend/travis/runner.sh"
+        - "./tests/frontend/travis/runner.sh"
+    - name: "Lint test package-lock.json"
+      install:
+        - "npm install lockfile-lint"
+      script:
+        - npx lockfile-lint --path src/package-lock.json --validate-https --allowed-hosts npm
     - name: "Run the Backend tests with Plugins"
       install:
+        - *install_libreoffice
+        - *set_loglevel_warn
         - "bin/installDeps.sh"
-        - "npm install ep_hash_auth ep_cursortrace ep_subscript_and_superscript ep_headings2 ep_author_hover ep_align ep_webrtc ep_table_of_contents ep_font_size ep_markdown ep_spellcheck"
+        - *install_plugins
         - "cd src && npm install && cd -"
       script:
         - "tests/frontend/travis/runnerBackend.sh"
-## Temporarily commented out the Dockerfile tests
-#    - name: "Test the Dockerfile"
-#      install:
-#        - "cd src && npm install && cd -"
-#      script:
-#        - "docker build -t etherpad:test ."
-#        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
-#        - "cd src && npm run test-container"
+    - name: "Test the Dockerfile"
+      install:
+        - "cd src && npm install && cd -"
+      script:
+        - "docker build -t etherpad:test ."
+        - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
+        - "cd src && npm run test-container"
     - name: "Load test Etherpad with Plugins"
       install:
+        - *set_loglevel_warn
         - "bin/installDeps.sh"
-        - "npm install ep_hash_auth ep_cursortrace ep_subscript_and_superscript ep_headings2 ep_comments_page ep_author_hover ep_align ep_webrtc ep_table_of_contents ep_font_size ep_markdown ep_spellcheck"
+        - *install_plugins
         - "cd src && npm install && cd -"
         - "npm install -g etherpad-load-test"
       script:
