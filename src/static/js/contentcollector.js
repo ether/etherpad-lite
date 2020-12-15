@@ -607,6 +607,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
         }
       }
     }
+    _reachBlockPoint(node, 1, state);
     if (isBlock) {
       if (lines.length() - 1 == startLine) {
         // added additional check to resolve https://github.com/JohnMcLear/ep_copy_paste_images/issues/20
