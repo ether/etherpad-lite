@@ -57,6 +57,26 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
   let isPendingRevision = false;
 
+  const callbacks = {
+    onUserJoin: () => {},
+    onUserLeave: () => {},
+    onUpdateUserInfo: () => {},
+    onChannelStateChange: () => {},
+    onClientMessage: () => {},
+    onInternalAction: () => {},
+    onConnectionTrouble: () => {},
+    onServerMessage: () => {},
+  };
+  if (browser.firefox) {
+    // Prevent "escape" from taking effect and canceling a comet connection;
+    // doesn't work if focus is on an iframe.
+    $(window).bind('keydown', (evt) => {
+      if (evt.which === 27) {
+        evt.preventDefault();
+      }
+    });
+  }
+
   const handleUserChanges = () => {
     if (editor.getInInternationalComposition()) return;
     if ((!getSocket()) || channelState === 'CONNECTING') {
@@ -150,27 +170,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       setTimeout(wrapRecordingErrors('setTimeout(handleUserChanges)', handleUserChanges), 3000);
     }
   };
-
-
-  const callbacks = {
-    onUserJoin: () => {},
-    onUserLeave: () => {},
-    onUpdateUserInfo: () => {},
-    onChannelStateChange: () => {},
-    onClientMessage: () => {},
-    onInternalAction: () => {},
-    onConnectionTrouble: () => {},
-    onServerMessage: () => {},
-  };
-  if (browser.firefox) {
-    // Prevent "escape" from taking effect and canceling a comet connection;
-    // doesn't work if focus is on an iframe.
-    $(window).bind('keydown', (evt) => {
-      if (evt.which === 27) {
-        evt.preventDefault();
-      }
-    });
-  }
 
   editor.setProperty('userAuthor', userId);
   editor.setBaseAttributedText(serverVars.initialAttributedText, serverVars.apool);
