@@ -1,3 +1,5 @@
+'use strict';
+
 exports.showCountDownTimerToReconnectOnModal = function ($modal, pad) {
   if (clientVars.automaticReconnectionTimeout && $modal.is('.with_reconnect_timer')) {
     createCountDownElementsIfNecessary($modal);

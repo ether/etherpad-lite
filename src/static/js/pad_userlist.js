@@ -24,7 +24,7 @@
 
 const padutils = require('./pad_utils').padutils;
 const hooks = require('./pluginfw/hooks');
-const _ = require('./underscore');
+const _ = window._;
 const browser = require('./browser');
 
 let myUserInfo = {};

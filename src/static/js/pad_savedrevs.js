@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Copyright 2012 Peter 'Pita' Martischka
  *
@@ -15,8 +17,9 @@
  */
 
 let pad;
+const _ = window._;
 
-exports.saveNow = function () {
+exports.saveNow = () => {
   pad.collabClient.sendMessage({type: 'SAVE_REVISION'});
   $.gritter.add({
     // (string | mandatory) the heading of the notification
@@ -30,6 +33,6 @@ exports.saveNow = function () {
   });
 };
 
-exports.init = function (_pad) {
+exports.init = (_pad) => {
   pad = _pad;
 };
