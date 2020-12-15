@@ -194,12 +194,10 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
         });
   };
 
-  function wrapRecordingErrors(...args) {
-    const catcher = args[0];
-    const func = args[1];
+  function wrapRecordingErrors(catcher, func) {
     return function () {
       try {
-        return func.apply(this, Array.prototype.slice.call(args));
+        return func.apply(this, Array.prototype.slice.call(arguments));
       } catch (e) {
         caughtErrors.push(e);
         caughtErrorCatchers.push(catcher);
@@ -454,11 +452,9 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
   const tellAceAboutHistoricalAuthors = (hadata) => {
     for (const author in hadata) {
-      if (hadata[author]) {
-        const data = hadata[author];
-        if (!userSet[author]) {
-          tellAceAuthorInfo(author, data.colorId, true);
-        }
+      const data = hadata[author];
+      if (!userSet[author]) {
+        tellAceAuthorInfo(author, data.colorId, true);
       }
     }
   };
@@ -482,16 +478,14 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
   // is connected for the first time.
   let deferredActions = [];
 
-  function defer(...args) {
-    const func = args[0];
-    const tag = args[1];
+  function defer(func, tag) {
     return function () {
       const that = this;
-      const args = args;
+      const args = arguments;
 
-      const action = () => {
+      function action() {
         func.apply(that, args);
-      };
+      }
 
       action.tag = tag;
       if (channelState === 'CONNECTING') {
