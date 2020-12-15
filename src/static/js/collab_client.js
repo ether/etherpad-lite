@@ -451,8 +451,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
   const getConnectedUsers = () => valuesArray(userSet);
 
   const tellAceAboutHistoricalAuthors = (hadata) => {
-    for (const author in hadata) {
-      const data = hadata[author];
+    for (const [author, data] of Object.entries(hadata)) {
       if (!userSet[author]) {
         tellAceAuthorInfo(author, data.colorId, true);
       }
