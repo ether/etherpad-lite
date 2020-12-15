@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Copyright 2009 Google Inc., 2011 Peter 'Pita' Martischka (Primary Technology Ltd)
  *
@@ -19,14 +20,13 @@ const padcookie = require('./pad_cookie').padcookie;
 const Tinycon = require('tinycon/tinycon');
 const hooks = require('./pluginfw/hooks');
 const padeditor = require('./pad_editor').padeditor;
+const _ = require('./underscore');
 
-var chat = (function () {
+const chat = (function () {
   let isStuck = false;
   let userAndChat = false;
-  const gotInitialMessages = false;
-  const historyPointer = 0;
   let chatMentions = 0;
-  var self = {
+  const self = {
     show() {
       $('#chaticon').removeClass('visible');
       $('#chatbox').addClass('visible');
@@ -37,12 +37,13 @@ var chat = (function () {
         $.gritter.remove(this.id);
       });
     },
-    focus() {
+    focus: () => {
       setTimeout(() => {
         $('#chatinput').focus();
       }, 100);
     },
-    stickToScreen(fromInitialCall) { // Make chat stick to right hand side of screen
+    // Make chat stick to right hand side of screen
+    stickToScreen: (fromInitialCall) => {
       if (pad.settings.hideChat) {
         return;
       }
@@ -58,7 +59,7 @@ var chat = (function () {
       padcookie.setPref('chatAlwaysVisible', isStuck);
       $('#options-stickychat').prop('checked', isStuck);
     },
-    chatAndUsers(fromInitialCall) {
+    chatAndUsers: (fromInitialCall) => {
       const toEnable = $('#options-chatandusers').is(':checked');
       if (toEnable || !userAndChat || fromInitialCall) {
         chat.stickToScreen(true);
@@ -71,10 +72,11 @@ var chat = (function () {
         userAndChat = false;
       }
       padcookie.setPref('chatAndUsers', userAndChat);
-      $('#users, .sticky-container').toggleClass('chatAndUsers popup-show stickyUsers', userAndChat);
+      $('#users, .sticky-container')
+          .toggleClass('chatAndUsers popup-show stickyUsers', userAndChat);
       $('#chatbox').toggleClass('chatAndUsersChat', userAndChat);
     },
-    hide() {
+    hide: () => {
       // decide on hide logic based on chat window being maximized or not
       if ($('#options-stickychat').prop('checked')) {
         chat.stickToScreen();
@@ -85,19 +87,23 @@ var chat = (function () {
         $('#chatbox').removeClass('visible');
       }
     },
-    scrollDown(force) {
+    scrollDown: (force) => {
       if ($('#chatbox').hasClass('visible')) {
-        if (force || !self.lastMessage || !self.lastMessage.position() || self.lastMessage.position().top < ($('#chattext').outerHeight() + 20)) {
-          // if we use a slow animate here we can have a race condition when a users focus can not be moved away
-          // from the last message recieved.
-          $('#chattext').animate({scrollTop: $('#chattext')[0].scrollHeight}, {duration: 400, queue: false});
+        if (force || !self.lastMessage || !self.lastMessage.position() ||
+        self.lastMessage.position().top < ($('#chattext').outerHeight() + 20)) {
+          // if we use a slow animate here we can have a race condition
+          // when a users focus can not be moved away from the last message recieved.
+          $('#chattext').animate(
+              {scrollTop: $('#chattext')[0].scrollHeight},
+              {duration: 400, queue: false}
+          );
           self.lastMessage = $('#chattext > p').eq(-1);
         }
       }
     },
     send() {
       const text = $('#chatinput').val();
-      if (text.replace(/\s+/, '').length == 0) return;
+      if (text.replace(/\s+/, '').length === 0) return;
       this._pad.collabClient.sendMessage({type: 'CHAT_MESSAGE', text});
       $('#chatinput').val('');
     },
@@ -108,8 +114,8 @@ var chat = (function () {
       // create the time string
       let minutes = `${new Date(msg.time).getMinutes()}`;
       let hours = `${new Date(msg.time).getHours()}`;
-      if (minutes.length == 1) minutes = `0${minutes}`;
-      if (hours.length == 1) hours = `0${hours}`;
+      if (minutes.length === 1) minutes = `0${minutes}`;
+      if (hours.length === 1) hours = `0${hours}`;
       const timeStr = `${hours}:${minutes}`;
 
       // create the authorclass
@@ -120,17 +126,19 @@ var chat = (function () {
          * let's be defensive and replace it with "unknown".
          */
         msg.userId = 'unknown';
-        console.warn('The "userId" field of a chat message coming from the server was not present. Replacing with "unknown". This may be a bug or a database corruption.');
+        console.warn('The "userId" field of a chat message coming from the server was not present');
+        console.warn('Replacing with "unknown". This may be a bug or a database corruption.');
       }
 
       const authorClass = `author-${msg.userId.replace(/[^a-y0-9]/g, (c) => {
-        if (c == '.') return '-';
+        if (c === '.') return '-';
         return `z${c.charCodeAt(0)}z`;
       })}`;
 
       const text = padutils.escapeHtmlWithClickableLinks(msg.text, '_blank');
 
-      const authorName = msg.userName == null ? _('pad.userlist.unnamed') : padutils.escapeHtml(msg.userName);
+      const authorName = msg.userName == null ? _('pad.userlist.unnamed')
+        : padutils.escapeHtml(msg.userName);
 
       // the hook args
       const ctx = {
@@ -151,9 +159,11 @@ var chat = (function () {
 
       // does this message contain this user's name? (is the curretn user mentioned?)
       const myName = $('#myusernameedit').val();
-      const wasMentioned = (text.toLowerCase().indexOf(myName.toLowerCase()) !== -1 && myName != 'undefined');
+      const wasMentioned = (text.toLowerCase()
+          .indexOf(myName.toLowerCase()) !== -1 && myName !== 'undefined');
 
-      if (wasMentioned && !alreadyFocused && !isHistoryAdd && !chatOpen) { // If the user was mentioned, make the message sticky
+      // If the user was mentioned, make the message sticky
+      if (wasMentioned && !alreadyFocused && !isHistoryAdd && !chatOpen) {
         chatMentions++;
         Tinycon.setBubble(chatMentions);
         ctx.sticky = true;
@@ -161,7 +171,11 @@ var chat = (function () {
 
       // Call chat message hook
       hooks.aCallAll('chatNewMessage', ctx, () => {
-        const html = `<p data-authorId='${msg.userId}' class='${authorClass}'><b>${authorName}:</b><span class='time ${authorClass}'>${ctx.timeStr}</span> ${ctx.text}</p>`;
+        const beginning = `<p data-authorId='${msg.userId}' class='${authorClass}'>`;
+        const middle = `<b>${authorName}:</b>;`;
+        const author = `<span class='time ${authorClass}'>${ctx.timeStr}</span>`;
+        const pclose = `${ctx.text}</p>`;
+        const html = `${beginning}${middle}${author}${pclose}`;
         if (isHistoryAdd) $(html).insertAfter('#chatloadmessagesbutton');
         else $('#chattext').append(html);
 
@@ -199,7 +213,7 @@ var chat = (function () {
       $('#chatinput').on('keydown', (evt) => {
         // If the event is Alt C or Escape & we're already in the chat menu
         // Send the users focus back to the pad
-        if ((evt.altKey == true && evt.which === 67) || evt.which === 27) {
+        if ((evt.altKey === true && evt.which === 67) || evt.which === 27) {
           // If we're in chat already..
           $(':focus').blur(); // required to do not try to remove!
           padeditor.ace.focus(); // Sends focus back to pad
@@ -209,7 +223,7 @@ var chat = (function () {
       });
 
       $('body:not(#chatinput)').on('keypress', function (evt) {
-        if (evt.altKey && evt.which == 67) {
+        if (evt.altKey && evt.which === 67) {
           // Alt c focuses on the Chat window
           $(this).blur();
           chat.show();
@@ -220,7 +234,7 @@ var chat = (function () {
 
       $('#chatinput').keypress((evt) => {
         // if the user typed enter, fire the send
-        if (evt.which == 13 || evt.which == 10) {
+        if (evt.which === 13 || evt.which === 10) {
           evt.preventDefault();
           self.send();
         }
@@ -233,8 +247,7 @@ var chat = (function () {
         const start = Math.max(self.historyPointer - 20, 0);
         const end = self.historyPointer;
 
-        if (start == end) // nothing to load
-        { return; }
+        if (start === end) return; // nothing to load
 
         $('#chatloadmessagesbutton').css('display', 'none');
         $('#chatloadmessagesball').css('display', 'block');
