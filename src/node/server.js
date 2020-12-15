@@ -27,6 +27,10 @@
 const log4js = require('log4js');
 log4js.replaceConsole();
 
+// wtfnode should be loaded after log4js.replaceConsole() so that it uses log4js for logging, and it
+// should be above everything else so that it can hook in before resources are used.
+const wtfnode = require('wtfnode');
+
 /*
  * early check for version compatibility before calling
  * any modules that require newer versions of NodeJS
@@ -211,6 +215,7 @@ exports.exit = async (err = null) => {
   setTimeout(() => {
     console.error('Something that should have been cleaned up during the shutdown hook (such as ' +
                   'a timer, worker thread, or open connection) is preventing Node.js from exiting');
+    wtfnode.dump();
     console.error('Forcing an unclean exit...');
     process.exit(1);
   }, 5000).unref();
