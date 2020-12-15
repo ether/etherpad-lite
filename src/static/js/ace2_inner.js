@@ -2871,7 +2871,7 @@ function Ace2Inner() {
           // TODO: Still work when authorship colors have been cleared
           // TODO: i18n
           // TODO: There appears to be a race condition or so.
-          let authors;
+          let authors = [];
           let author = null;
           if (alineAttrs) {
             const opIter = Changeset.opIterator(alineAttrs);
@@ -2888,7 +2888,7 @@ function Ace2Inner() {
           }
 
           let authorString;
-          let authorNames;
+          let authorNames = [];
           if (authors.length === 0) {
             authorString = 'No author information is available';
           } else {
@@ -2918,7 +2918,7 @@ function Ace2Inner() {
             });
           }
           if (authors.length === 1) {
-            authorString = `The author of this line is ${authorNames}`;
+            authorString = `The author of this line is ${authorNames[0]}`;
           }
           if (authors.length > 1) {
             authorString = `The authors of this line are ${authorNames.join(' & ')}`;
