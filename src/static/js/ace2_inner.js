@@ -473,7 +473,9 @@ function Ace2Inner() {
           fastIncorp(12);
           const clearStyles = [];
           for (const k in Object.keys(STYLE_ATTRIBS)) {
-            clearStyles.push([k, '']);
+            if (STYLE_ATTRIBS[k]) {
+              clearStyles.push([k, '']);
+            }
           }
           performDocumentApplyAttributesToCharRange(0, rep.alltext.length, clearStyles);
         });
@@ -1642,7 +1644,6 @@ function Ace2Inner() {
     return [lineNum, x - lineStart];
   };
 
-  // jm note to self this one is tricky too
   const performDocumentReplaceCharRange = (startChar, endChar, newText) => {
     if (startChar === endChar && newText.length === 0) {
       return;
@@ -2761,21 +2762,6 @@ function Ace2Inner() {
     const which = evt.which;
     const altKey = evt.altKey;
     const shiftKey = evt.shiftKey;
-
-    // Is caret potentially hidden by the chat button?
-    const myselection = document.getSelection(); // get the current caret selection
-
-    // Is there any content?  If not lineHeight will report wrong..
-    if (myselection.focusNode.wholeText) {
-      // line height of populated links
-      // JM TODO: Need rhansen help.
-      // if you delete lineHeight here or define elsewhere and overwrite it
-      // will error if you add content then delete it...
-      // const lineHeight = myselection.focusNode.parentNode.offsetHeight;
-    } else {
-      // line height of blank lines
-      // const lineHeight = myselection.focusNode.offsetHeight;
-    }
 
     // dmesg("keyevent type: "+type+", which: "+which);
     // Don't take action based on modifier keys going up and down.
