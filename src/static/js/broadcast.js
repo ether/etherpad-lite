@@ -34,6 +34,7 @@ const hooks = require('./pluginfw/hooks');
 // These parameters were global, now they are injected. A reference to the
 // Timeslider controller would probably be more appropriate.
 function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider) {
+  let goToRevisionIfEnabledCount = 0;
   let changesetLoader = undefined;
 
   const debugLog = (...args) => {
@@ -152,19 +153,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     },
   };
 
-  const loadedNewChangeset = (changesetForward, changesetBackward, revision, timeDelta) => {
-    const broadcasting = (BroadcastSlider.getSliderPosition() === revisionInfo.latest);
-    revisionInfo.addChangeset(revision, revision + 1,
-        changesetForward, changesetBackward, timeDelta);
-    BroadcastSlider.setSliderLength(revisionInfo.latest);
-    if (broadcasting) applyChangeset(changesetForward, revision + 1, false, timeDelta);
-  };
-
-  /*
-   At this point, we must be certain that the changeset really does map from
-   the current revision to the specified revision.  Any mistakes here will
-   cause the whole slider to get out of sync.
-   */
 
   const applyChangeset = (changeset, revision, preventSliderMovement, timeDelta) => {
     // disable the next 'gotorevision' call handled by a timeslider update
@@ -200,6 +188,18 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       if (lineChanged === undefined) {
         lineChanged = Changeset.opIterator(Changeset.unpack(changeset).ops).next().lines;
       }
+      const goToLineNumber = (lineNumber) => {
+        // Sets the Y scrolling of the browser to go to this line
+        const line = $('#innerdocbody').find(`div:nth-child(${lineNumber + 1})`);
+        const newY = $(line)[0].offsetTop;
+        const ecb = document.getElementById('editorcontainerbox');
+        // Chrome 55 - 59 bugfix
+        if (ecb.scrollTo) {
+          ecb.scrollTo({top: newY, behavior: 'smooth'});
+        } else {
+          $('#editorcontainerbox').scrollTop(newY);
+        }
+      };
 
       goToLineNumber(lineChanged);
     }
@@ -214,6 +214,20 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
     BroadcastSlider.setAuthors(authors);
   };
+
+  const loadedNewChangeset = (changesetForward, changesetBackward, revision, timeDelta) => {
+    const broadcasting = (BroadcastSlider.getSliderPosition() === revisionInfo.latest);
+    revisionInfo.addChangeset(revision, revision + 1,
+        changesetForward, changesetBackward, timeDelta);
+    BroadcastSlider.setSliderLength(revisionInfo.latest);
+    if (broadcasting) applyChangeset(changesetForward, revision + 1, false, timeDelta);
+  };
+
+  /*
+   At this point, we must be certain that the changeset really does map from
+   the current revision to the specified revision.  Any mistakes here will
+   cause the whole slider to get out of sync.
+   */
 
   const updateTimer = () => {
     const zpad = (str, length) => {
@@ -460,7 +474,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
   // this is necessary to keep infinite loops of events firing,
   // since goToRevision changes the slider position
-  let goToRevisionIfEnabledCount = 0;
   const goToRevisionIfEnabled = (...args) => {
     if (goToRevisionIfEnabledCount > 0) {
       goToRevisionIfEnabledCount--;
@@ -494,18 +507,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
   receiveAuthorData(clientVars.collab_client_vars.historicalAuthorData);
 
-  const goToLineNumber = (lineNumber) => {
-    // Sets the Y scrolling of the browser to go to this line
-    const line = $('#innerdocbody').find(`div:nth-child(${lineNumber + 1})`);
-    const newY = $(line)[0].offsetTop;
-    const ecb = document.getElementById('editorcontainerbox');
-    // Chrome 55 - 59 bugfix
-    if (ecb.scrollTo) {
-      ecb.scrollTo({top: newY, behavior: 'smooth'});
-    } else {
-      $('#editorcontainerbox').scrollTop(newY);
-    }
-  };
   return changesetLoader;
 }
 
