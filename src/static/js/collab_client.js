@@ -364,8 +364,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
         fadeAceAuthorInfo(userInfo);
         callbacks.onUserLeave(userInfo);
       }
-    } else if (msg.type === 'DISCONNECT_REASON') {
-      // used to handle appLevelDisconnectReason
     } else if (msg.type === 'CLIENT_MESSAGE') {
       callbacks.onClientMessage(msg.payload);
     } else if (msg.type === 'CHAT_MESSAGE') {
