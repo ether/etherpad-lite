@@ -60,6 +60,9 @@ function Ace2Inner() {
   let disposed = false;
   const editorInfo = parent.editorInfo;
 
+  const focus = () => {
+    window.focus();
+  };
 
   const iframe = window.frameElement;
   const outerWin = iframe.ace_outerWin;
@@ -159,6 +162,26 @@ function Ace2Inner() {
   let dynamicCSS = null;
   let outerDynamicCSS = null;
   let parentDynamicCSS = null;
+
+  const performDocumentReplaceRange = (start, end, newText) => {
+    if (start === undefined) start = rep.selStart;
+    if (end === undefined) end = rep.selEnd;
+
+    // dmesg(String([start.toSource(),end.toSource(),newText.toSource()]));
+    // start[0]: <--- start[1] --->CCCCCCCCCCC\n
+    //           CCCCCCCCCCCCCCCCCCCC\n
+    //           CCCC\n
+    // end[0]:   <CCC end[1] CCC>-------\n
+    const builder = Changeset.builder(rep.lines.totalWidth());
+    ChangesetUtils.buildKeepToStartOfRange(rep, builder, start);
+    ChangesetUtils.buildRemoveRange(rep, builder, start, end);
+    builder.insert(newText, [
+      ['author', thisAuthor],
+    ], rep.apool);
+    const cs = builder.toString();
+
+    performDocumentApplyChangeset(cs);
+  };
 
   const initDynamicCSS = () => {
     dynamicCSS = makeCSSManager('dynamicsyntax');
@@ -651,24 +674,6 @@ function Ace2Inner() {
       performDocumentReplaceRange(start, end, text);
     });
   };
-
-  editorInfo.ace_focus = focus;
-  editorInfo.ace_importText = importText;
-  editorInfo.ace_importAText = importAText;
-  editorInfo.ace_exportText = exportText;
-  editorInfo.ace_editorChangedSize = editorChangedSize;
-  editorInfo.ace_setOnKeyPress = setOnKeyPress;
-  editorInfo.ace_setOnKeyDown = setOnKeyDown;
-  editorInfo.ace_setNotifyDirty = setNotifyDirty;
-  editorInfo.ace_dispose = dispose;
-  editorInfo.ace_getFormattedCode = getFormattedCode;
-  editorInfo.ace_setEditable = setEditable;
-  editorInfo.ace_execCommand = execCommand;
-  editorInfo.ace_replaceRange = replaceRange;
-  editorInfo.ace_getAuthorInfos = getAuthorInfos;
-  editorInfo.ace_performDocumentReplaceRange = performDocumentReplaceRange;
-  editorInfo.ace_performDocumentReplaceCharRange = performDocumentReplaceCharRange;
-  editorInfo.ace_setSelection = setSelection;
 
   editorInfo.ace_callWithAce = (fn, callStack, normalize) => {
     let wrapper = () => fn(editorInfo);
@@ -1519,40 +1524,7 @@ function Ace2Inner() {
   };
 
   const performDocumentApplyChangeset = (changes, insertsAfterSelection) => {
-    doRepApplyChangeset(changes, insertsAfterSelection);
-
-    let requiredSelectionSetting = null;
-    if (rep.selStart && rep.selEnd) {
-      const selStartChar = rep.lines.offsetOfIndex(rep.selStart[0]) + rep.selStart[1];
-      const selEndChar = rep.lines.offsetOfIndex(rep.selEnd[0]) + rep.selEnd[1];
-      const result = Changeset.
-          characterRangeFollow(changes, selStartChar, selEndChar, insertsAfterSelection);
-      requiredSelectionSetting = [result[0], result[1], rep.selFocusAtStart];
-    }
-
-    const linesMutatee = {
-      // TODO: Rhansen to check usage of args here.
-      splice: (start, numRemoved, ...args) => {
-        domAndRepSplice(start, numRemoved, _.map(args, (s) => s.slice(0, -1)));
-      },
-      get: (i) => `${rep.lines.atIndex(i).text}\n`,
-      length: () => rep.lines.length(),
-      slice_notused: (start, end) => _.map(rep.lines.slice(start, end), (e) => `${e.text}\n`),
-    };
-
-    Changeset.mutateTextLines(changes, linesMutatee);
-
-    if (requiredSelectionSetting) {
-      performSelectionChange(
-          lineAndColumnFromChar(
-              requiredSelectionSetting[0]
-          ),
-          lineAndColumnFromChar(requiredSelectionSetting[1]),
-          requiredSelectionSetting[2]
-      );
-    }
-
-    function domAndRepSplice(startLine, deleteCount, newLineStrings) {
+    const domAndRepSplice = (startLine, deleteCount, newLineStrings) => {
       const keysToDelete = [];
       if (deleteCount > 0) {
         let entryToDelete = rep.lines.atIndex(startLine);
@@ -1585,10 +1557,43 @@ function Ace2Inner() {
          (rep.selEnd && rep.selEnd[0] >= startLine && rep.selEnd[0] <= startLine + deleteCount)) {
         currentCallStack.selectionAffected = true;
       }
+    };
+
+    doRepApplyChangeset(changes, insertsAfterSelection);
+
+    let requiredSelectionSetting = null;
+    if (rep.selStart && rep.selEnd) {
+      const selStartChar = rep.lines.offsetOfIndex(rep.selStart[0]) + rep.selStart[1];
+      const selEndChar = rep.lines.offsetOfIndex(rep.selEnd[0]) + rep.selEnd[1];
+      const result = Changeset.
+          characterRangeFollow(changes, selStartChar, selEndChar, insertsAfterSelection);
+      requiredSelectionSetting = [result[0], result[1], rep.selFocusAtStart];
+    }
+
+    const linesMutatee = {
+      // TODO: Rhansen to check usage of args here.
+      splice: (start, numRemoved, ...args) => {
+        domAndRepSplice(start, numRemoved, _.map(args, (s) => s.slice(0, -1)));
+      },
+      get: (i) => `${rep.lines.atIndex(i).text}\n`,
+      length: () => rep.lines.length(),
+      slice_notused: (start, end) => _.map(rep.lines.slice(start, end), (e) => `${e.text}\n`),
+    };
+
+    Changeset.mutateTextLines(changes, linesMutatee);
+
+    if (requiredSelectionSetting) {
+      performSelectionChange(
+          lineAndColumnFromChar(
+              requiredSelectionSetting[0]
+          ),
+          lineAndColumnFromChar(requiredSelectionSetting[1]),
+          requiredSelectionSetting[2]
+      );
     }
   };
 
-  function doRepApplyChangeset(changes, insertsAfterSelection) {
+  const doRepApplyChangeset = (changes, insertsAfterSelection) => {
     Changeset.checkRep(changes);
 
     if (Changeset.oldLen(changes) !== rep.alltext.length) {
@@ -1596,7 +1601,8 @@ function Ace2Inner() {
       throw new Error(`doRepApplyChangeset length mismatch: ${errMsg}`);
     }
 
-    (function doRecordUndoInformation(changes) {
+    // (function doRecordUndoInformation(changes) {
+    ((changes) => {
       const editEvent = currentCallStack.editEvent;
       if (editEvent.eventType === 'nonundoable') {
         if (!editEvent.changeset) {
@@ -1624,7 +1630,7 @@ function Ace2Inner() {
     if (changesetTracker.isTracking()) {
       changesetTracker.composeUserChangeset(changes);
     }
-  }
+  };
 
   /*
     Converts the position of a char (index in String) into a [row, col] tuple
@@ -1637,7 +1643,7 @@ function Ace2Inner() {
   };
 
   // jm note to self this one is tricky too
-  function performDocumentReplaceCharRange(startChar, endChar, newText) {
+  const performDocumentReplaceCharRange = (startChar, endChar, newText) => {
     if (startChar === endChar && newText.length === 0) {
       return;
     }
@@ -1663,35 +1669,15 @@ function Ace2Inner() {
     }
     performDocumentReplaceRange(lineAndColumnFromChar(startChar),
         lineAndColumnFromChar(endChar), newText);
-  }
+  };
 
-  function performDocumentReplaceRange(start, end, newText) {
-    if (start === undefined) start = rep.selStart;
-    if (end === undefined) end = rep.selEnd;
-
-    // dmesg(String([start.toSource(),end.toSource(),newText.toSource()]));
-    // start[0]: <--- start[1] --->CCCCCCCCCCC\n
-    //           CCCCCCCCCCCCCCCCCCCC\n
-    //           CCCC\n
-    // end[0]:   <CCC end[1] CCC>-------\n
-    const builder = Changeset.builder(rep.lines.totalWidth());
-    ChangesetUtils.buildKeepToStartOfRange(rep, builder, start);
-    ChangesetUtils.buildRemoveRange(rep, builder, start, end);
-    builder.insert(newText, [
-      ['author', thisAuthor],
-    ], rep.apool);
-    const cs = builder.toString();
-
-    performDocumentApplyChangeset(cs);
-  }
-
-  function performDocumentApplyAttributesToCharRange(start, end, attribs) {
+  const performDocumentApplyAttributesToCharRange = (start, end, attribs) => {
     end = Math.min(end, rep.alltext.length - 1);
     documentAttributeManager.
         setAttributesOnRange(lineAndColumnFromChar(start),
             lineAndColumnFromChar(end), attribs
         );
-  }
+  };
 
   editorInfo.ace_performDocumentApplyAttributesToCharRange =
       performDocumentApplyAttributesToCharRange;
@@ -2176,7 +2162,7 @@ function Ace2Inner() {
   // Should not rely on the line representation.  Should not affect the DOM.
 
 
-  function repSelectionChange(selectStart, selectEnd, focusAtStart) {
+  const repSelectionChange = (selectStart, selectEnd, focusAtStart) => {
     focusAtStart = !!focusAtStart;
 
     const newSelFocusAtStart = (focusAtStart && ((!selectStart) ||
@@ -2221,7 +2207,7 @@ function Ace2Inner() {
     return false;
   // Do not uncomment this in production it will break iFrames.
   // top.console.log("%o %o %s", rep.selStart, rep.selEnd, rep.selFocusAtStart);
-  }
+  };
 
   const isPadLoading = (eventType) => (
     eventType === 'setup') ||
@@ -2785,10 +2771,10 @@ function Ace2Inner() {
       // JM TODO: Need rhansen help.
       // if you delete lineHeight here or define elsewhere and overwrite it
       // will error if you add content then delete it...
-      const lineHeight = myselection.focusNode.parentNode.offsetHeight;
+      // const lineHeight = myselection.focusNode.parentNode.offsetHeight;
     } else {
       // line height of blank lines
-      const lineHeight = myselection.focusNode.offsetHeight;
+      // const lineHeight = myselection.focusNode.offsetHeight;
     }
 
     // dmesg("keyevent type: "+type+", which: "+which);
@@ -3269,8 +3255,8 @@ function Ace2Inner() {
       if (type === 'keydown') {
         idleWorkTimer.atLeast(500);
       } else if (type === 'keypress') {
-        // JM TODO CAKE - Need rhansen help, wtf is going on hre? :P
-        if ((!specialHandled) && false /* parenModule.shouldNormalizeOnChar(charCode)*/) {
+        // OPINION ASKED.  What's going on here? :D
+        if (!specialHandled) {
           idleWorkTimer.atMost(0);
         } else {
           idleWorkTimer.atLeast(500);
@@ -3374,6 +3360,23 @@ function Ace2Inner() {
     setSelection(selection);
   };
   editorInfo.ace_updateBrowserSelectionFromRep = updateBrowserSelectionFromRep;
+  editorInfo.ace_focus = focus;
+  editorInfo.ace_importText = importText;
+  editorInfo.ace_importAText = importAText;
+  editorInfo.ace_exportText = exportText;
+  editorInfo.ace_editorChangedSize = editorChangedSize;
+  editorInfo.ace_setOnKeyPress = setOnKeyPress;
+  editorInfo.ace_setOnKeyDown = setOnKeyDown;
+  editorInfo.ace_setNotifyDirty = setNotifyDirty;
+  editorInfo.ace_dispose = dispose;
+  editorInfo.ace_getFormattedCode = getFormattedCode;
+  editorInfo.ace_setEditable = setEditable;
+  editorInfo.ace_execCommand = execCommand;
+  editorInfo.ace_replaceRange = replaceRange;
+  editorInfo.ace_getAuthorInfos = getAuthorInfos;
+  editorInfo.ace_performDocumentReplaceRange = performDocumentReplaceRange;
+  editorInfo.ace_performDocumentReplaceCharRange = performDocumentReplaceCharRange;
+  editorInfo.ace_setSelection = setSelection;
 
   const nodeMaxIndex = (nd) => {
     if (isNodeText(nd)) return nd.nodeValue.length;
@@ -3699,11 +3702,6 @@ function Ace2Inner() {
     return n;
   };
 
-  // JM to do cake -- need rhansen help :)
-  function focus() {
-    window.focus();
-  }
-
   const getSelectionPointX = (point) => {
     // doesn't work in wrap-mode
     const node = point.node;
@@ -3788,7 +3786,7 @@ function Ace2Inner() {
   editorInfo.ace_getLineListType = getLineListType;
 
 
-  function doInsertList(type) {
+  const doInsertList = (type) => {
     if (!(rep.selStart && rep.selEnd)) {
       return;
     }
@@ -3843,7 +3841,7 @@ function Ace2Inner() {
     _.each(mods, (mod) => {
       setLineListType(mod[0], mod[1]);
     });
-  }
+  };
 
   const doInsertUnorderedList = () => {
     doInsertList('bullet');
