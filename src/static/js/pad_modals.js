@@ -25,13 +25,14 @@
 const padeditbar = require('./pad_editbar').padeditbar;
 const automaticReconnect = require('./pad_automatic_reconnect');
 
-const padmodals = (function () {
+
+const padModalsFn = () => {
   let pad = undefined;
   const self = {
-    init(_pad) {
+    init: (_pad) => {
       pad = _pad;
     },
-    showModal(messageId) {
+    showModal: (messageId) => {
       padeditbar.toggleDropDown('none', () => {
         $('#connectivity .visible').removeClass('visible');
         $(`#connectivity .${messageId}`).addClass('visible');
@@ -42,15 +43,13 @@ const padmodals = (function () {
         padeditbar.toggleDropDown('connectivity');
       });
     },
-    showOverlay() {
+    showOverlay: () => {
       // Prevent the user to interact with the toolbar. Useful when user is disconnected for example
       $('#toolbar-overlay').show();
     },
-    hideOverlay() {
-      $('#toolbar-overlay').hide();
-    },
+    hideOverlay: () => $('#toolbar-overlay').hide(),
   };
   return self;
-}());
+};
 
-exports.padmodals = padmodals;
+exports.padmodals = padModalsFn();
