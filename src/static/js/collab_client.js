@@ -194,19 +194,17 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
         });
   };
 
-  function wrapRecordingErrors(catcher, func) {
-    return function () {
-      try {
-        return func.apply(this, Array.prototype.slice.call(arguments));
-      } catch (e) {
-        caughtErrors.push(e);
-        caughtErrorCatchers.push(catcher);
-        caughtErrorTimes.push(+new Date());
-        // console.dir({catcher: catcher, e: e});
-        throw e;
-      }
-    };
-  }
+  const wrapRecordingErrors = (catcher, func) => function (...args) {
+    try {
+      return func.call(this, ...args);
+    } catch (e) {
+      caughtErrors.push(e);
+      caughtErrorCatchers.push(catcher);
+      caughtErrorTimes.push(+new Date());
+      // console.dir({catcher: catcher, e: e});
+      throw e;
+    }
+  };
 
   const callCatchingErrors = (catcher, func) => {
     try {
@@ -477,23 +475,17 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
   // is connected for the first time.
   let deferredActions = [];
 
-  function defer(func, tag) {
-    return function () {
-      const that = this;
-      const args = arguments;
-
-      function action() {
-        func.apply(that, args);
-      }
-
-      action.tag = tag;
-      if (channelState === 'CONNECTING') {
-        deferredActions.push(action);
-      } else {
-        action();
-      }
+  const defer = (func, tag) => function (...args) {
+    const action = () => {
+      func.call(this, ...args);
     };
-  }
+    action.tag = tag;
+    if (channelState === 'CONNECTING') {
+      deferredActions.push(action);
+    } else {
+      action();
+    }
+  };
 
   const doDeferredActions = (tag) => {
     const newArray = [];
