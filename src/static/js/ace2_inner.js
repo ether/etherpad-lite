@@ -673,7 +673,6 @@ function Ace2Inner() {
   editorInfo.ace_renumberList = renumberList;
   editorInfo.ace_doReturnKey = doReturnKey;
   editorInfo.ace_isBlockElement = isBlockElement;
-  editorInfo.ace_getLineListType = getLineListType;
 
   editorInfo.ace_callWithAce = (fn, callStack, normalize) => {
     let wrapper = () => fn(editorInfo);
@@ -1538,8 +1537,7 @@ function Ace2Inner() {
 
     const linesMutatee = {
       // TODO: Rhansen to check usage of args here.
-      // TODO: Why if args is used is it still recommending using arrow functions?
-      splice(start, numRemoved, ...args) {
+      splice: (start, numRemoved, ...args) => {
         domAndRepSplice(start, numRemoved, _.map(args, (s) => s.slice(0, -1)));
       },
       get: (i) => `${rep.lines.atIndex(i).text}\n`,
@@ -2055,16 +2053,15 @@ function Ace2Inner() {
     doRepLineSplice(startLine, deleteCount, newLineEntries);
   };
 
-  // CAKE JM TO DO -- need @rhansen help.
-  function cachedStrFunc(func) {
+  const cachedStrFunc = (func) => {
     const cache = {};
-    return function (s) {
+    return (s) => {
       if (!cache[s]) {
         cache[s] = func(s);
       }
       return cache[s];
     };
-  }
+  };
 
   const analyzeChange = (
       oldText, newText, oldAttribs, newAttribs, optSelStartHint, optSelEndHint) => {
@@ -2090,8 +2087,7 @@ function Ace2Inner() {
       const atts = runs[1];
       let i = (backward ? lengs.length - 1 : 0);
       let j = 0;
-      // CAKE JM TODO
-      return function next() {
+      const next = () => {
         while (j >= lengs[i]) {
           if (backward) i--;
           else i++;
@@ -2101,6 +2097,7 @@ function Ace2Inner() {
         j++;
         return a;
       };
+      return next;
     };
 
     const oldLen = oldText.length;
@@ -3070,7 +3067,7 @@ function Ace2Inner() {
           isTypeForCmdKey &&
           (
             (String.fromCharCode(which).toLowerCase() === 'n' &&
-              padShortcutEnabled.cmdShiftN) || (String.fromCharCode(which) === 1 &&
+              padShortcutEnabled.cmdShiftN) || (String.fromCharCode(which) === '1' &&
               padShortcutEnabled.cmdShift1)
           ) && (evt.metaKey || evt.ctrlKey) &&
             evt.shiftKey
@@ -3716,10 +3713,9 @@ function Ace2Inner() {
 
   const listAttributeName = 'list';
 
-  // JM Todo cake -- need rhansen help
-  function getLineListType(lineNum) {
-    return documentAttributeManager.getAttributeOnLine(lineNum, listAttributeName);
-  }
+  const getLineListType = (lineNum) => documentAttributeManager
+      .getAttributeOnLine(lineNum, listAttributeName);
+  editorInfo.ace_getLineListType = getLineListType;
 
   function setLineListType(lineNum, listType) {
     if (listType === '') {
@@ -3766,8 +3762,7 @@ function Ace2Inner() {
       let curLevel = level;
       let listType;
       // loop over the lines
-      // JM TODO : Rhansen, what's gong on here? :D
-      while (listType = getLineListType(line)) {
+      while ((listType = getLineListType(line))) {
         // apply new num
         listType = /([a-z]+)([0-9]+)/.exec(listType);
         curLevel = Number(listType[2]);
@@ -3947,9 +3942,8 @@ function Ace2Inner() {
   // Init documentAttributeManager
   documentAttributeManager = new AttributeManager(rep, performDocumentApplyChangeset);
 
-  // JM TODo need rhansen help.
-  editorInfo.ace_performDocumentApplyAttributesToRange = () => documentAttributeManager.
-      setAttributesOnRange.apply(documentAttributeManager, arguments);
+  editorInfo.ace_performDocumentApplyAttributesToRange = (...args) => documentAttributeManager.
+      setAttributesOnRange(args);
 
   this.init = () => {
     $(document).ready(() => {
