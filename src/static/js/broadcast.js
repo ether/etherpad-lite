@@ -472,7 +472,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
   BroadcastSlider.onSlider(goToRevisionIfEnabled);
 
   const dynamicCSS = makeCSSManager('dynamicsyntax');
-  let authorData = {};
+  const authorData = {};
 
   const receiveAuthorData = (newAuthorData) => {
     for (const author in newAuthorData) {
