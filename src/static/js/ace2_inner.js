@@ -449,10 +449,8 @@ function Ace2Inner() {
         inCallStackIfNecessary('setStyled', () => {
           fastIncorp(12);
           const clearStyles = [];
-          for (const k in STYLE_ATTRIBS) {
-            if (STYLE_ATTRIBS[k]) {
-              clearStyles.push([k, '']);
-            }
+          for (const k in Object.keys(STYLE_ATTRIBS)) {
+            clearStyles.push([k, '']);
           }
           performDocumentApplyAttributesToCharRange(0, rep.alltext.length, clearStyles);
         });
@@ -670,9 +668,6 @@ function Ace2Inner() {
   editorInfo.ace_getAuthorInfos = getAuthorInfos;
   editorInfo.ace_performDocumentReplaceRange = performDocumentReplaceRange;
   editorInfo.ace_performDocumentReplaceCharRange = performDocumentReplaceCharRange;
-  editorInfo.ace_renumberList = renumberList;
-  editorInfo.ace_doReturnKey = doReturnKey;
-  editorInfo.ace_isBlockElement = isBlockElement;
 
   editorInfo.ace_callWithAce = (fn, callStack, normalize) => {
     let wrapper = () => fn(editorInfo);
@@ -1557,7 +1552,6 @@ function Ace2Inner() {
       );
     }
 
-    // JM notes to self, need rhansen help.
     function domAndRepSplice(startLine, deleteCount, newLineStrings) {
       const keysToDelete = [];
       if (deleteCount > 0) {
@@ -2270,10 +2264,8 @@ function Ace2Inner() {
     _blockElems[element] = 1;
   });
 
-  // JM note to self: harder to fix..
-  function isBlockElement(n) {
-    return !!_blockElems[(n.tagName || '').toLowerCase()];
-  }
+  const isBlockElement = (n) => !!_blockElems[(n.tagName || '').toLowerCase()];
+  editorInfo.ace_isBlockElement = isBlockElement;
 
   const getDirtyRanges = () => {
     // based on observedChanges, return a list of ranges of original lines
@@ -2525,8 +2517,85 @@ function Ace2Inner() {
     }
   };
 
-  // jm note to self cake - need rhansen help..
-  function doReturnKey() {
+  const renumberList = (lineNum) => {
+    // 1-check we are in a list
+    let type = getLineListType(lineNum);
+    if (!type) {
+      return null;
+    }
+    type = /([a-z]+)[0-9]+/.exec(type);
+    if (type[1] === 'indent') {
+      return null;
+    }
+
+    // 2-find the first line of the list
+    while (lineNum - 1 >= 0 && (type = getLineListType(lineNum - 1))) {
+      type = /([a-z]+)[0-9]+/.exec(type);
+      if (type[1] === 'indent') break;
+      lineNum--;
+    }
+
+    // 3-renumber every list item of the same level from the beginning, level 1
+    // IMPORTANT: never skip a level because there imbrication may be arbitrary
+    const builder = Changeset.builder(rep.lines.totalWidth());
+    let loc = [0, 0];
+    const applyNumberList = (line, level) => {
+      // init
+      let position = 1;
+      let curLevel = level;
+      let listType;
+      // loop over the lines
+      while ((listType = getLineListType(line))) {
+        // apply new num
+        listType = /([a-z]+)([0-9]+)/.exec(listType);
+        curLevel = Number(listType[2]);
+        if (isNaN(curLevel) || listType[0] === 'indent') {
+          return line;
+        } else if (curLevel === level) {
+          ChangesetUtils.buildKeepRange(rep, builder, loc, (loc = [line, 0]));
+          ChangesetUtils.buildKeepRange(rep, builder, loc, (loc = [line, 1]), [
+            ['start', position],
+          ], rep.apool);
+
+          position++;
+          line++;
+        } else if (curLevel < level) {
+          return line;// back to parent
+        } else {
+          line = applyNumberList(line, level + 1);// recursive call
+        }
+      }
+      return line;
+    };
+
+    applyNumberList(lineNum, 1);
+    const cs = builder.toString();
+    if (!Changeset.isIdentity(cs)) {
+      performDocumentApplyChangeset(cs);
+    }
+
+    // 4-apply the modifications
+  };
+  editorInfo.ace_renumberList = renumberList;
+
+  const setLineListType = (lineNum, listType) => {
+    if (listType === '') {
+      documentAttributeManager.removeAttributeOnLine(lineNum, listAttributeName);
+      documentAttributeManager.removeAttributeOnLine(lineNum, 'start');
+    } else {
+      documentAttributeManager.setAttributeOnLine(lineNum, listAttributeName, listType);
+    }
+
+    // if the list has been removed, it is necessary to renumber
+    // starting from the *next* line because the list may have been
+    // separated. If it returns null, it means that the list was not cut, try
+    // from the current one.
+    if (renumberList(lineNum + 1) == null) {
+      renumberList(lineNum);
+    }
+  };
+
+  const doReturnKey = () => {
     if (!(rep.selStart && rep.selEnd)) {
       return;
     }
@@ -2557,7 +2626,8 @@ function Ace2Inner() {
       performDocumentReplaceSelection('\n');
       handleReturnIndentation();
     }
-  }
+  };
+  editorInfo.ace_doReturnKey = doReturnKey;
 
   const doIndentOutdent = (isOut) => {
     if (!((rep.selStart && rep.selEnd) ||
@@ -3716,83 +3786,6 @@ function Ace2Inner() {
   const getLineListType = (lineNum) => documentAttributeManager
       .getAttributeOnLine(lineNum, listAttributeName);
   editorInfo.ace_getLineListType = getLineListType;
-
-  function setLineListType(lineNum, listType) {
-    if (listType === '') {
-      documentAttributeManager.removeAttributeOnLine(lineNum, listAttributeName);
-      documentAttributeManager.removeAttributeOnLine(lineNum, 'start');
-    } else {
-      documentAttributeManager.setAttributeOnLine(lineNum, listAttributeName, listType);
-    }
-
-    // if the list has been removed, it is necessary to renumber
-    // starting from the *next* line because the list may have been
-    // separated. If it returns null, it means that the list was not cut, try
-    // from the current one.
-    if (renumberList(lineNum + 1) == null) {
-      renumberList(lineNum);
-    }
-  }
-
-  function renumberList(lineNum) {
-    // 1-check we are in a list
-    let type = getLineListType(lineNum);
-    if (!type) {
-      return null;
-    }
-    type = /([a-z]+)[0-9]+/.exec(type);
-    if (type[1] === 'indent') {
-      return null;
-    }
-
-    // 2-find the first line of the list
-    while (lineNum - 1 >= 0 && (type = getLineListType(lineNum - 1))) {
-      type = /([a-z]+)[0-9]+/.exec(type);
-      if (type[1] === 'indent') break;
-      lineNum--;
-    }
-
-    // 3-renumber every list item of the same level from the beginning, level 1
-    // IMPORTANT: never skip a level because there imbrication may be arbitrary
-    const builder = Changeset.builder(rep.lines.totalWidth());
-    let loc = [0, 0];
-    function applyNumberList(line, level) {
-      // init
-      let position = 1;
-      let curLevel = level;
-      let listType;
-      // loop over the lines
-      while ((listType = getLineListType(line))) {
-        // apply new num
-        listType = /([a-z]+)([0-9]+)/.exec(listType);
-        curLevel = Number(listType[2]);
-        if (isNaN(curLevel) || listType[0] === 'indent') {
-          return line;
-        } else if (curLevel === level) {
-          ChangesetUtils.buildKeepRange(rep, builder, loc, (loc = [line, 0]));
-          ChangesetUtils.buildKeepRange(rep, builder, loc, (loc = [line, 1]), [
-            ['start', position],
-          ], rep.apool);
-
-          position++;
-          line++;
-        } else if (curLevel < level) {
-          return line;// back to parent
-        } else {
-          line = applyNumberList(line, level + 1);// recursive call
-        }
-      }
-      return line;
-    }
-
-    applyNumberList(lineNum, 1);
-    const cs = builder.toString();
-    if (!Changeset.isIdentity(cs)) {
-      performDocumentApplyChangeset(cs);
-    }
-
-    // 4-apply the modifications
-  }
 
 
   function doInsertList(type) {
