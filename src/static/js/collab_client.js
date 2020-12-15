@@ -107,9 +107,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     const earliestCommit = lastCommitTime + 500;
     if (t < earliestCommit) {
       setTimeout(
-          wrapRecordingErrors('setTimeout(handleUserChanges)', handleUserChanges)
-          , earliestCommit - t
-      );
+          wrapRecordingErrors('setTimeout(handleUserChanges)', handleUserChanges),
+          earliestCommit - t);
       return;
     }
 
@@ -171,12 +170,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     }
   };
 
-  editor.setProperty('userAuthor', userId);
-  editor.setBaseAttributedText(serverVars.initialAttributedText, serverVars.apool);
-  editor.setUserChangeNotificationCallback(
-      wrapRecordingErrors('handleUserChanges', handleUserChanges)
-  );
-
   const setUpSocket = () => {
     setChannelState('CONNECTED');
     doDeferredActions();
@@ -224,16 +217,10 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       const changeset = msg.changeset;
       const author = (msg.author || '');
       const apool = msg.apool;
-      let oldRev;
 
       // When inInternationalComposition, msg pushed msgQueue.
       if (msgQueue.length > 0 || editor.getInInternationalComposition()) {
-        if (msgQueue.length > 0) {
-          oldRev = msgQueue[msgQueue.length - 1].newRev;
-        } else {
-          oldRev = rev;
-        }
-
+        const oldRev = msgQueue.length > 0 ? msgQueue[msgQueue.length - 1].newRev : rev;
         if (newRev !== (oldRev + 1)) {
           window.console.warn(`bad message revision on NEW_CHANGES: ${newRev} not ${oldRev + 1}`);
           // setChannelState("DISCONNECTED", "badmessage_newchanges");
@@ -255,8 +242,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       const newRev = msg.newRev;
       if (msgQueue.length > 0) {
         if (newRev !== (msgQueue[msgQueue.length - 1].newRev + 1)) {
-          const prefix = 'bad message revision on ACCEPT_COMMIT: ';
-          window.console.warn(`${prefix}${newRev} not ${msgQueue[msgQueue.length - 1][0] + 1}`);
+          window.console.warn('bad message revision on ACCEPT_COMMIT: ' +
+                              `${newRev} not ${msgQueue[msgQueue.length - 1][0] + 1}`);
           // setChannelState("DISCONNECTED", "badmessage_acceptcommit");
           return;
         }
@@ -296,8 +283,8 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
       if (msgQueue.length > 0) {
         if (newRev !== (msgQueue[msgQueue.length - 1].newRev + 1)) {
-          const prefix = 'bad message revision on CLIENT_RECONNECT: ';
-          window.console.warn(`${prefix}${newRev} not ${msgQueue[msgQueue.length - 1][0] + 1}`);
+          window.console.warn('bad message revision on CLIENT_RECONNECT: ' +
+                              `${newRev} not ${msgQueue[msgQueue.length - 1][0] + 1}`);
           // setChannelState("DISCONNECTED", "badmessage_acceptcommit");
           return;
         }
@@ -385,7 +372,7 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       if (chat.historyPointer <= 0) {
         $('#chatloadmessagesbutton').css('display', 'none');
       } else {
-      // there are still more messages, re-show the load-button
+        // there are still more messages, re-show the load-button
         $('#chatloadmessagesbutton').css('display', 'block');
       }
     } else if (msg.type === 'SERVER_MESSAGE') {
@@ -593,6 +580,11 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
   tellAceAboutHistoricalAuthors(serverVars.historicalAuthorData);
   tellAceActiveAuthorInfo(initialUserInfo);
+
+  editor.setProperty('userAuthor', userId);
+  editor.setBaseAttributedText(serverVars.initialAttributedText, serverVars.apool);
+  editor.setUserChangeNotificationCallback(
+      wrapRecordingErrors('handleUserChanges', handleUserChanges));
 
   setUpSocket();
   return self;
