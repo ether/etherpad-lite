@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -25,7 +23,7 @@
 // of the document.  These revisions are connected together by various
 // changesets,  or deltas, between any two revisions.
 
-const loadBroadcastRevisionsJS = () => {
+function loadBroadcastRevisionsJS() {
   function Revision(revNum) {
     this.rev = revNum;
     this.changesets = [];
@@ -35,14 +33,16 @@ const loadBroadcastRevisionsJS = () => {
     const changesetWrapper = {
       deltaRev: destIndex - this.rev,
       deltaTime: timeDelta,
-      getValue: () => changeset,
+      getValue() {
+        return changeset;
+      },
     };
     this.changesets.push(changesetWrapper);
     this.changesets.sort((a, b) => (b.deltaRev - a.deltaRev));
   };
 
-  const revisionInfo = {};
-  revisionInfo.addChangeset = (fromIndex, toIndex, changeset, backChangeset, timeDelta) => {
+  revisionInfo = {};
+  revisionInfo.addChangeset = function (fromIndex, toIndex, changeset, backChangeset, timeDelta) {
     const startRevision = revisionInfo[fromIndex] || revisionInfo.createNew(fromIndex);
     const endRevision = revisionInfo[toIndex] || revisionInfo.createNew(toIndex);
     startRevision.addChangeset(toIndex, changeset, timeDelta);
@@ -51,7 +51,7 @@ const loadBroadcastRevisionsJS = () => {
 
   revisionInfo.latest = clientVars.collab_client_vars.rev || -1;
 
-  revisionInfo.createNew = (index) => {
+  revisionInfo.createNew = function (index) {
     revisionInfo[index] = new Revision(index);
     if (index > revisionInfo.latest) {
       revisionInfo.latest = index;
@@ -62,12 +62,12 @@ const loadBroadcastRevisionsJS = () => {
 
   // assuming that there is a path from fromIndex to toIndex, and that the links
   // are laid out in a skip-list format
-  revisionInfo.getPath = (fromIndex, toIndex) => {
+  revisionInfo.getPath = function (fromIndex, toIndex) {
     const changesets = [];
     const spans = [];
     const times = [];
     let elem = revisionInfo[fromIndex] || revisionInfo.createNew(fromIndex);
-    if (elem.changesets.length !== 0 && fromIndex !== toIndex) {
+    if (elem.changesets.length != 0 && fromIndex != toIndex) {
       const reverse = !(fromIndex < toIndex);
       while (((elem.rev < toIndex) && !reverse) || ((elem.rev > toIndex) && reverse)) {
         let couldNotContinue = false;
@@ -76,14 +76,12 @@ const loadBroadcastRevisionsJS = () => {
         for (let i = reverse ? elem.changesets.length - 1 : 0;
           reverse ? i >= 0 : i < elem.changesets.length;
           i += reverse ? -1 : 1) {
-          if (((elem.changesets[i].deltaRev < 0) && !reverse) ||
-              ((elem.changesets[i].deltaRev > 0) && reverse)) {
+          if (((elem.changesets[i].deltaRev < 0) && !reverse) || ((elem.changesets[i].deltaRev > 0) && reverse)) {
             couldNotContinue = true;
             break;
           }
 
-          if (((elem.rev + elem.changesets[i].deltaRev <= toIndex) && !reverse) ||
-              ((elem.rev + elem.changesets[i].deltaRev >= toIndex) && reverse)) {
+          if (((elem.rev + elem.changesets[i].deltaRev <= toIndex) && !reverse) || ((elem.rev + elem.changesets[i].deltaRev >= toIndex) && reverse)) {
             const topush = elem.changesets[i];
             changesets.push(topush.getValue());
             spans.push(elem.changesets[i].deltaRev);
@@ -93,12 +91,12 @@ const loadBroadcastRevisionsJS = () => {
           }
         }
 
-        if (couldNotContinue || oldRev === elem.rev) break;
+        if (couldNotContinue || oldRev == elem.rev) break;
       }
     }
 
     let status = 'partial';
-    if (elem.rev === toIndex) status = 'complete';
+    if (elem.rev == toIndex) status = 'complete';
 
     return {
       fromRev: fromIndex,
@@ -109,6 +107,6 @@ const loadBroadcastRevisionsJS = () => {
       times,
     };
   };
-};
+}
 
 exports.loadBroadcastRevisionsJS = loadBroadcastRevisionsJS;
