@@ -112,7 +112,7 @@ exports.require = function (name, args, mod) {
         paths,
         basedir,
         extensions: ['.html', '.ejs'],
-      },
+      }
   );
 
   args.e = exports;
