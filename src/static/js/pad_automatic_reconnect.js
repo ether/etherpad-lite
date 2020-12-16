@@ -141,8 +141,7 @@ CountDownTimer.prototype.start = function () {
   const start = Date.now();
   const that = this;
   let diff;
-
-  (function timer() {
+  const timer = () => {
     diff = that.duration - Math.floor((Date.now() - start) / 1000);
 
     if (diff > 0) {
@@ -153,7 +152,8 @@ CountDownTimer.prototype.start = function () {
       that.tick(0);
       that.expire();
     }
-  }());
+  };
+  timer();
 };
 
 CountDownTimer.prototype.tick = function (diff) {
