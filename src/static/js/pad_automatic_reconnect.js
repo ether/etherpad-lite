@@ -124,7 +124,7 @@ const reconnectionTries = {
 // duration: how many **seconds** until the timer ends
 // granularity (optional): how many **milliseconds**
 // between each 'tick' of timer. Default: 1000ms (1s)
-const CountDownTimer = (duration, granularity) => {
+const CountDownTimer = function (duration, granularity) {
   this.duration = duration;
   this.granularity = granularity || 1000;
   this.running = false;
@@ -188,7 +188,9 @@ CountDownTimer.prototype.cancel = function () {
   return this;
 };
 
-CountDownTimer.parse = (seconds) => ({
-  minutes: (seconds / 60) | 0,
-  seconds: (seconds % 60) | 0,
-});
+CountDownTimer.parse = (seconds) => {
+  return {
+    minutes: (seconds / 60) | 0,
+    seconds: (seconds % 60) | 0,
+  };
+};
