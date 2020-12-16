@@ -315,7 +315,7 @@ Scroll.prototype.getVisibleLineRange = function (rep) {
     // return the first line that the top position is greater or equal than
     // the viewport. That is the first line that is below the viewport bottom.
     // So the line that is in the bottom of the viewport is the very previous one.
-    self._getLineEntryTopBottom(e, obj).top >= viewport.bottom,
+    self._getLineEntryTopBottom(e, obj).top >= viewport.bottom
   );
   if (end < start) end = start; // unlikely
   // top.console.log(start+","+(end -1));

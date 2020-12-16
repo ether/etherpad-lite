@@ -291,7 +291,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
       ['lmkr', '1'],
       ['insertorder', 'first'],
     ].concat(
-        _.map(state.lineAttributes, (value, key) => [key, value]),
+        _.map(state.lineAttributes, (value, key) => [key, value])
     );
     lines.appendText('*', Changeset.makeAttribsString('+', attributes, apool));
   }

@@ -150,10 +150,10 @@ function partsToParentChildList(parts) {
 // Used only in Node, so no need for _
 function sortParts(parts) {
   return tsort(
-      partsToParentChildList(parts),
+      partsToParentChildList(parts)
   ).filter(
-      (name) => parts[name] !== undefined,
+      (name) => parts[name] !== undefined
   ).map(
-      (name) => parts[name],
+      (name) => parts[name]
   );
 }
