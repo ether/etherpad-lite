@@ -199,6 +199,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
   };
 
   const loadedNewChangeset = (changesetForward, changesetBackward, revision, timeDelta) => {
+    const revisionInfo = window.revisionInfo;
     const broadcasting = (BroadcastSlider.getSliderPosition() === revisionInfo.latest);
     revisionInfo.addChangeset(
         revision, revision + 1, changesetForward, changesetBackward, timeDelta);
@@ -264,7 +265,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
   const goToRevision = (newRevision) => {
     padContents.targetRevision = newRevision;
-    const path = revisionInfo.getPath(padContents.currentRevision, newRevision);
+    const path = window.revisionInfo.getPath(padContents.currentRevision, newRevision);
 
     hooks.aCallAll('goToRevisionEvent', {
       rev: newRevision,
@@ -405,7 +406,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
             Changeset.moveOpsToNewPool(data.forwardsChangesets[i], pool, padContents.apool);
         const backwardcs =
             Changeset.moveOpsToNewPool(data.backwardsChangesets[i], pool, padContents.apool);
-        revisionInfo.addChangeset(astart, aend, forwardcs, backwardcs, data.timeDeltas[i]);
+        window.revisionInfo.addChangeset(astart, aend, forwardcs, backwardcs, data.timeDeltas[i]);
       }
       if (callback) callback(start - 1, start + data.forwardsChangesets.length * granularity - 1);
     },
