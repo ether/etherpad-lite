@@ -471,8 +471,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
   const authorData = {};
 
   const receiveAuthorData = (newAuthorData) => {
-    for (const author in newAuthorData) {
-      const data = newAuthorData[author];
+    for (const [author, data] of Object.entries(newAuthorData)) {
       const bgcolor = typeof data.colorId === 'number'
         ? clientVars.colorPalette[data.colorId] : data.colorId;
       if (bgcolor && dynamicCSS) {
