@@ -27,14 +27,14 @@ const _ = require('./underscore');
 const padmodals = require('./pad_modals').padmodals;
 const colorutils = require('./colorutils').colorutils;
 
-function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded) {
+const loadBroadcastSliderJS = (fireWhenAllScriptsAreLoaded) => {
   let BroadcastSlider;
 
   // Hack to ensure timeslider i18n values are in
   $("[data-key='timeslider_returnToPad'] > a > span").html(
       html10n.get('timeslider.toolbar.returnbutton'));
 
-  (function () { // wrap this code in its own namespace
+  (() => { // wrap this code in its own namespace
     let sliderLength = 1000;
     let sliderPos = 0;
     let sliderActive = false;
@@ -52,11 +52,11 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded) {
     const updateSliderElements = () => {
       for (let i = 0; i < savedRevisions.length; i++) {
         const position = parseInt(savedRevisions[i].attr('pos'));
-        savedRevisions[i].css('left',
-            (position * ($('#ui-slider-bar').width() - 2) / (sliderLength * 1.0)) - 1);
+        savedRevisions[i].css(
+            'left', (position * ($('#ui-slider-bar').width() - 2) / (sliderLength * 1.0)) - 1);
       }
-      $('#ui-slider-handle').css('left',
-          sliderPos * ($('#ui-slider-bar').width() - 2) / (sliderLength * 1.0));
+      $('#ui-slider-handle').css(
+          'left', sliderPos * ($('#ui-slider-bar').width() - 2) / (sliderLength * 1.0));
     };
 
     const addSavedRevision = (position, info) => {
@@ -64,8 +64,8 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded) {
       newSavedRevision.addClass('star');
 
       newSavedRevision.attr('pos', position);
-      newSavedRevision.css('left',
-          (position * ($('#ui-slider-bar').width() - 2) / (sliderLength * 1.0)) - 1);
+      newSavedRevision.css(
+          'left', (position * ($('#ui-slider-bar').width() - 2) / (sliderLength * 1.0)) - 1);
       $('#ui-slider-bar').append(newSavedRevision);
       newSavedRevision.mouseup((evt) => {
         BroadcastSlider.setSliderPosition(position);
@@ -127,8 +127,8 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded) {
           const authorColor = clientVars.colorPalette[author.colorId] || author.colorId;
           if (author.name) {
             if (numNamed !== 0) authorsList.append(', ');
-            const textColor = colorutils.textColorFromBackgroundColor(
-                authorColor, clientVars.skinName);
+            const textColor =
+                colorutils.textColorFromBackgroundColor(authorColor, clientVars.skinName);
             $('<span />')
                 .text(author.name || 'unnamed')
                 .css('background-color', authorColor)
@@ -251,21 +251,12 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded) {
           $(self).css('pointer', 'move');
           let newloc = self.currentLoc + (evt2.clientX - self.startLoc);
           if (newloc < 0) newloc = 0;
-          if (newloc > ($('#ui-slider-bar').width() - 2)) {
-            newloc = ($('#ui-slider-bar').width() - 2);
-          }
-          $('#revision_label').html(
-              html10n.get('timeslider.version',
-                  {version: Math.floor(newloc * sliderLength / ($('#ui-slider-bar').width() - 2))}
-              )
-          );
+          const maxPos = $('#ui-slider-bar').width() - 2;
+          if (newloc > maxPos) newloc = maxPos;
+          const version = Math.floor(newloc * sliderLength / maxPos);
+          $('#revision_label').html(html10n.get('timeslider.version', {version}));
           $(self).css('left', newloc);
-          if (getSliderPosition() !== Math.floor(
-              newloc * sliderLength / ($('#ui-slider-bar').width() - 2))) {
-            _callSliderCallbacks(
-                Math.floor(newloc * sliderLength / ($('#ui-slider-bar').width() - 2))
-            );
-          }
+          if (getSliderPosition() !== version) _callSliderCallbacks(version);
         });
         $(document).mouseup((evt2) => {
           $(document).unbind('mousemove');
@@ -273,11 +264,10 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded) {
           sliderActive = false;
           let newloc = self.currentLoc + (evt2.clientX - self.startLoc);
           if (newloc < 0) newloc = 0;
-          if (newloc > ($('#ui-slider-bar').width() - 2)) {
-            newloc = ($('#ui-slider-bar').width() - 2);
-          }
+          const maxPos = $('#ui-slider-bar').width() - 2;
+          if (newloc > maxPos) newloc = maxPos;
           $(self).css('left', newloc);
-          setSliderPosition(Math.floor(newloc * sliderLength / ($('#ui-slider-bar').width() - 2)));
+          setSliderPosition(Math.floor(newloc * sliderLength / maxPos));
           if (parseInt($(self).css('left')) < 2) {
             $(self).css('left', '2px');
           } else {
@@ -293,7 +283,6 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded) {
 
       // next/prev saved revision and changeset
       $('.stepper').click(function (evt) {
-        let nextStar = 0; // default to first revision in document
         switch ($(this).attr('id')) {
           case 'leftstep':
             setSliderPosition(getSliderPosition() - 1);
@@ -301,21 +290,24 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded) {
           case 'rightstep':
             setSliderPosition(getSliderPosition() + 1);
             break;
-          case 'leftstar':
+          case 'leftstar': {
+            let nextStar = 0; // default to first revision in document
             for (let i = 0; i < savedRevisions.length; i++) {
               const pos = parseInt(savedRevisions[i].attr('pos'));
               if (pos < getSliderPosition() && nextStar < pos) nextStar = pos;
             }
             setSliderPosition(nextStar);
             break;
-          case 'rightstar':
-            nextStar = sliderLength; // default to last revision in document
+          }
+          case 'rightstar': {
+            let nextStar = sliderLength; // default to last revision in document
             for (let i = 0; i < savedRevisions.length; i++) {
               const pos = parseInt(savedRevisions[i].attr('pos'));
               if (pos > getSliderPosition() && nextStar > pos) nextStar = pos;
             }
             setSliderPosition(nextStar);
             break;
+          }
         }
       });
 
@@ -342,11 +334,10 @@ function loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded) {
 
   BroadcastSlider.onSlider((loc) => {
     $('#viewlatest').html(
-        loc === BroadcastSlider.getSliderLength() ? 'Viewing latest content' : 'View latest content'
-    );
+        `${loc === BroadcastSlider.getSliderLength() ? 'Viewing' : 'View'} latest content`);
   });
 
   return BroadcastSlider;
-}
+};
 
 exports.loadBroadcastSliderJS = loadBroadcastSliderJS;

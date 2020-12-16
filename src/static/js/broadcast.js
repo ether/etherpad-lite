@@ -136,7 +136,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     },
   };
 
-
   const applyChangeset = (changeset, revision, preventSliderMovement, timeDelta) => {
     // disable the next 'gotorevision' call handled by a timeslider update
     if (!preventSliderMovement) {
@@ -171,6 +170,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       if (lineChanged === undefined) {
         lineChanged = Changeset.opIterator(Changeset.unpack(changeset).ops).next().lines;
       }
+
       const goToLineNumber = (lineNumber) => {
         // Sets the Y scrolling of the browser to go to this line
         const line = $('#innerdocbody').find(`div:nth-child(${lineNumber + 1})`);
@@ -200,8 +200,8 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
   const loadedNewChangeset = (changesetForward, changesetBackward, revision, timeDelta) => {
     const broadcasting = (BroadcastSlider.getSliderPosition() === revisionInfo.latest);
-    revisionInfo.addChangeset(revision, revision + 1,
-        changesetForward, changesetBackward, timeDelta);
+    revisionInfo.addChangeset(
+        revision, revision + 1, changesetForward, changesetBackward, timeDelta);
     BroadcastSlider.setSliderLength(revisionInfo.latest);
     if (broadcasting) applyChangeset(changesetForward, revision + 1, false, timeDelta);
   };
@@ -309,18 +309,17 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
   };
 
   const loadChangesetsForRevision = (revision, callback) => {
-    let start;
     if (BroadcastSlider.getSliderLength() > 10000) {
-      start = (Math.floor((revision) / 10000) * 10000); // revision 0 to 10
+      const start = (Math.floor((revision) / 10000) * 10000); // revision 0 to 10
       changesetLoader.queueUp(start, 100);
     }
 
     if (BroadcastSlider.getSliderLength() > 1000) {
-      start = (Math.floor((revision) / 1000) * 1000); // (start from -1, go to 19) + 1
+      const start = (Math.floor((revision) / 1000) * 1000); // (start from -1, go to 19) + 1
       changesetLoader.queueUp(start, 10);
     }
 
-    start = (Math.floor((revision) / 100) * 100);
+    const start = (Math.floor((revision) / 100) * 100);
 
     changesetLoader.queueUp(start, 1, callback);
   };
@@ -336,12 +335,16 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       if (revision < 0) revision = 0;
       // if(changesetLoader.requestQueue.indexOf(revision) != -1)
       //   return; // already in the queue.
-      // already loaded from the server
-      if (changesetLoader.resolved.indexOf(`${revision}_${width}`) !== -1) return;
+      if (changesetLoader.resolved.indexOf(`${revision}_${width}`) !== -1) {
+        // already loaded from the server
+        return;
+      }
       changesetLoader.resolved.push(`${revision}_${width}`);
 
-      const requestQueue = width === 1 ? changesetLoader.requestQueue3 : width === 10
-        ? changesetLoader.requestQueue2 : changesetLoader.requestQueue1;
+      const requestQueue =
+          width === 1 ? changesetLoader.requestQueue3
+          : width === 10 ? changesetLoader.requestQueue2
+          : changesetLoader.requestQueue1;
       requestQueue.push(
           {
             rev: revision,
@@ -355,10 +358,11 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     },
     loadFromQueue: () => {
       const self = changesetLoader;
-      const requestQueue = self.requestQueue1.length > 0
-        ? self.requestQueue1 : self.requestQueue2.length > 0
-          ? self.requestQueue2 : self.requestQueue3.length > 0
-            ? self.requestQueue3 : null;
+      const requestQueue =
+          self.requestQueue1.length > 0 ? self.requestQueue1
+          : self.requestQueue2.length > 0 ? self.requestQueue2
+          : self.requestQueue3.length > 0 ? self.requestQueue3
+          : null;
 
       if (!requestQueue) {
         self.running = false;
@@ -397,10 +401,10 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         let aend = start + (i + 1) * granularity - 1; // totalRevs is the most recent revision
         if (aend > data.actualEndNum - 1) aend = data.actualEndNum - 1;
         // debugLog("adding changeset:", astart, aend);
-        const forwardcs = Changeset
-            .moveOpsToNewPool(data.forwardsChangesets[i], pool, padContents.apool);
-        const backwardcs = Changeset
-            .moveOpsToNewPool(data.backwardsChangesets[i], pool, padContents.apool);
+        const forwardcs =
+            Changeset.moveOpsToNewPool(data.forwardsChangesets[i], pool, padContents.apool);
+        const backwardcs =
+            Changeset.moveOpsToNewPool(data.backwardsChangesets[i], pool, padContents.apool);
         revisionInfo.addChangeset(astart, aend, forwardcs, backwardcs, data.timeDeltas[i]);
       }
       if (callback) callback(start - 1, start + data.forwardsChangesets.length * granularity - 1);
@@ -461,7 +465,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     if (goToRevisionIfEnabledCount > 0) {
       goToRevisionIfEnabledCount--;
     } else {
-      goToRevision.apply(goToRevision, args);
+      goToRevision(...args);
     }
   };
 
