@@ -21,7 +21,7 @@ const Tinycon = require('tinycon/tinycon');
 const hooks = require('./pluginfw/hooks');
 const padeditor = require('./pad_editor').padeditor;
 
-const chat = (function () {
+const chat = (() => {
   let isStuck = false;
   let userAndChat = false;
   let chatMentions = 0;
@@ -258,6 +258,6 @@ const chat = (function () {
   };
 
   return self;
-}());
+})();
 
 exports.chat = chat;
