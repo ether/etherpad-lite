@@ -25,10 +25,10 @@ exports.setPadHTML = async (pad, html) => {
   const apiLogger = log4js.getLogger('ImportHtml');
 
   rehype()
-    .use(minifyWhitespace, {newlines: false})
-    .process(html, (err, output) => {
-      html = String(output);
-    });
+      .use(minifyWhitespace, {newlines: false})
+      .process(html, (err, output) => {
+        html = String(output);
+      });
 
   const $ = cheerio.load(html);
 
