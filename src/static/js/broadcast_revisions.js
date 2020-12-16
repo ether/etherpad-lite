@@ -26,7 +26,7 @@
 // of the document.  These revisions are connected together by various
 // changesets,  or deltas, between any two revisions.
 
-function loadBroadcastRevisionsJS() {
+const loadBroadcastRevisionsJS = () => {
   function Revision(revNum) {
     this.rev = revNum;
     this.changesets = [];
@@ -83,8 +83,7 @@ function loadBroadcastRevisionsJS() {
             break;
           }
 
-          if (((elem.rev + elem.changesets[i].deltaRev <= toIndex) &&
-              !reverse) ||
+          if (((elem.rev + elem.changesets[i].deltaRev <= toIndex) && !reverse) ||
               ((elem.rev + elem.changesets[i].deltaRev >= toIndex) && reverse)) {
             const topush = elem.changesets[i];
             changesets.push(topush.getValue());
@@ -111,6 +110,6 @@ function loadBroadcastRevisionsJS() {
       times,
     };
   };
-}
+};
 
 exports.loadBroadcastRevisionsJS = loadBroadcastRevisionsJS;
