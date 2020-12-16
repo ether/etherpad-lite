@@ -324,18 +324,7 @@ const padeditbar = (function () {
         }
       } else {
         // Focus on the editbar :)
-        const firstEditbarElement =
-            parent.parent.$('#editbar')
-                .children('ul')
-                .first()
-                .children()
-                .first()
-                .children()
-                .first()
-                .children()
-                .first();
-
-        // (╯°□°)╯︵ ┻━┻
+        const firstEditbarElement = parent.parent.$('#editbar button').first();
 
         $(this).blur();
         firstEditbarElement.focus();
