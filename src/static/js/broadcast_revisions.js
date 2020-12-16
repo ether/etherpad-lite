@@ -1,5 +1,4 @@
-// TODO: revisionInfo is global so if you put use strict here things will blow up..
-// 'use strict;'
+'use strict';
 
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
@@ -42,7 +41,7 @@ const loadBroadcastRevisionsJS = () => {
     this.changesets.sort((a, b) => (b.deltaRev - a.deltaRev));
   };
 
-  revisionInfo = {};
+  const revisionInfo = {};
   revisionInfo.addChangeset = (fromIndex, toIndex, changeset, backChangeset, timeDelta) => {
     const startRevision = revisionInfo[fromIndex] || revisionInfo.createNew(fromIndex);
     const endRevision = revisionInfo[toIndex] || revisionInfo.createNew(toIndex);
@@ -110,6 +109,7 @@ const loadBroadcastRevisionsJS = () => {
       times,
     };
   };
+  window.revisionInfo = revisionInfo;
 };
 
 exports.loadBroadcastRevisionsJS = loadBroadcastRevisionsJS;
