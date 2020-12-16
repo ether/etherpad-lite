@@ -21,15 +21,15 @@ const Tinycon = require('tinycon/tinycon');
 const hooks = require('./pluginfw/hooks');
 const padeditor = require('./pad_editor').padeditor;
 
-const chat = (() => {
+exports.chat = (() => {
   let isStuck = false;
   let userAndChat = false;
   let chatMentions = 0;
-  const self = {
+  return {
     show() {
       $('#chaticon').removeClass('visible');
       $('#chatbox').addClass('visible');
-      self.scrollDown(true);
+      this.scrollDown(true);
       chatMentions = 0;
       Tinycon.setBubble(0);
       $('.chat-gritter-msg').each(function () {
@@ -42,11 +42,11 @@ const chat = (() => {
       }, 100);
     },
     // Make chat stick to right hand side of screen
-    stickToScreen: (fromInitialCall) => {
+    stickToScreen(fromInitialCall) {
       if (pad.settings.hideChat) {
         return;
       }
-      chat.show();
+      this.show();
       isStuck = (!isStuck || fromInitialCall);
       $('#chatbox').hide();
       // Add timeout to disable the chatbox animations
@@ -58,10 +58,10 @@ const chat = (() => {
       padcookie.setPref('chatAlwaysVisible', isStuck);
       $('#options-stickychat').prop('checked', isStuck);
     },
-    chatAndUsers: (fromInitialCall) => {
+    chatAndUsers(fromInitialCall) {
       const toEnable = $('#options-chatandusers').is(':checked');
       if (toEnable || !userAndChat || fromInitialCall) {
-        chat.stickToScreen(true);
+        this.stickToScreen(true);
         $('#options-stickychat').prop('checked', true);
         $('#options-chatandusers').prop('checked', true);
         $('#options-stickychat').prop('disabled', 'disabled');
@@ -75,10 +75,10 @@ const chat = (() => {
           .toggleClass('chatAndUsers popup-show stickyUsers', userAndChat);
       $('#chatbox').toggleClass('chatAndUsersChat', userAndChat);
     },
-    hide: () => {
+    hide() {
       // decide on hide logic based on chat window being maximized or not
       if ($('#options-stickychat').prop('checked')) {
-        chat.stickToScreen();
+        this.stickToScreen();
         $('#options-stickychat').prop('checked', false);
       } else {
         $('#chatcounter').text('0');
@@ -86,16 +86,16 @@ const chat = (() => {
         $('#chatbox').removeClass('visible');
       }
     },
-    scrollDown: (force) => {
+    scrollDown(force) {
       if ($('#chatbox').hasClass('visible')) {
-        if (force || !self.lastMessage || !self.lastMessage.position() ||
-            self.lastMessage.position().top < ($('#chattext').outerHeight() + 20)) {
+        if (force || !this.lastMessage || !this.lastMessage.position() ||
+            this.lastMessage.position().top < ($('#chattext').outerHeight() + 20)) {
           // if we use a slow animate here we can have a race condition
           // when a users focus can not be moved away from the last message recieved.
           $('#chattext').animate(
               {scrollTop: $('#chattext')[0].scrollHeight},
               {duration: 400, queue: false});
-          self.lastMessage = $('#chattext > p').eq(-1);
+          this.lastMessage = $('#chattext > p').eq(-1);
         }
       }
     },
@@ -203,7 +203,7 @@ const chat = (() => {
         chatMentions = 0;
         Tinycon.setBubble(0);
       });
-      if (!isHistoryAdd) self.scrollDown();
+      if (!isHistoryAdd) this.scrollDown();
     },
     init(pad) {
       this._pad = pad;
@@ -219,11 +219,12 @@ const chat = (() => {
         }
       });
 
+      const self = this;
       $('body:not(#chatinput)').on('keypress', function (evt) {
         if (evt.altKey && evt.which === 67) {
           // Alt c focuses on the Chat window
           $(this).blur();
-          chat.show();
+          self.show();
           $('#chatinput').focus();
           evt.preventDefault();
         }
@@ -233,7 +234,7 @@ const chat = (() => {
         // if the user typed enter, fire the send
         if (evt.which === 13 || evt.which === 10) {
           evt.preventDefault();
-          self.send();
+          this.send();
         }
       });
 
@@ -241,8 +242,8 @@ const chat = (() => {
 
       $('#chatcounter').text(0);
       $('#chatloadmessagesbutton').click(() => {
-        const start = Math.max(self.historyPointer - 20, 0);
-        const end = self.historyPointer;
+        const start = Math.max(this.historyPointer - 20, 0);
+        const end = this.historyPointer;
 
         if (start === end) return; // nothing to load
 
@@ -250,12 +251,8 @@ const chat = (() => {
         $('#chatloadmessagesball').css('display', 'block');
 
         pad.collabClient.sendMessage({type: 'GET_CHAT_MESSAGES', start, end});
-        self.historyPointer = start;
+        this.historyPointer = start;
       });
     },
   };
-
-  return self;
 })();
-
-exports.chat = chat;
