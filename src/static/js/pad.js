@@ -289,6 +289,7 @@ const handshake = () => {
       receivedClientVars = true;
 
       // set some client vars
+      // JM TODO: clientVars is global and that's usually fine so what's the problem?
       clientVars = obj.data;
 
       // initalize the pad
@@ -423,8 +424,8 @@ const pad = {
     padutils.setupGlobalExceptionHandler();
 
     $(document).ready(() => {
-      // start the custom js
-      if (typeof customStart === 'function') customStart();
+      // start the custom js - customStart is defined in pad.html
+      if (typeof customStart === 'function') customStart(); // eslint-disable-line
       handshake();
 
       // To use etherpad you have to allow cookies.
