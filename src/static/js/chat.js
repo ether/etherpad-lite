@@ -89,13 +89,12 @@ const chat = (() => {
     scrollDown: (force) => {
       if ($('#chatbox').hasClass('visible')) {
         if (force || !self.lastMessage || !self.lastMessage.position() ||
-        self.lastMessage.position().top < ($('#chattext').outerHeight() + 20)) {
+            self.lastMessage.position().top < ($('#chattext').outerHeight() + 20)) {
           // if we use a slow animate here we can have a race condition
           // when a users focus can not be moved away from the last message recieved.
           $('#chattext').animate(
               {scrollTop: $('#chattext')[0].scrollHeight},
-              {duration: 400, queue: false}
-          );
+              {duration: 400, queue: false});
           self.lastMessage = $('#chattext > p').eq(-1);
         }
       }
@@ -125,8 +124,9 @@ const chat = (() => {
          * let's be defensive and replace it with "unknown".
          */
         msg.userId = 'unknown';
-        console.warn('The "userId" field of a chat message coming from the server was not present');
-        console.warn('Replacing with "unknown". This may be a bug or a database corruption.');
+        console.warn(
+            'The "userId" field of a chat message coming from the server was not present. ' +
+            'Replacing with "unknown". This may be a bug or a database corruption.');
       }
 
       const authorClass = `author-${msg.userId.replace(/[^a-y0-9]/g, (c) => {
@@ -158,8 +158,8 @@ const chat = (() => {
 
       // does this message contain this user's name? (is the curretn user mentioned?)
       const myName = $('#myusernameedit').val();
-      const wasMentioned = (text.toLowerCase()
-          .indexOf(myName.toLowerCase()) !== -1 && myName !== 'undefined');
+      const wasMentioned =
+          text.toLowerCase().indexOf(myName.toLowerCase()) !== -1 && myName !== 'undefined';
 
       // If the user was mentioned, make the message sticky
       if (wasMentioned && !alreadyFocused && !isHistoryAdd && !chatOpen) {
@@ -170,11 +170,9 @@ const chat = (() => {
 
       // Call chat message hook
       hooks.aCallAll('chatNewMessage', ctx, () => {
-        const beginning = `<p data-authorId='${msg.userId}' class='${authorClass}'>`;
-        const middle = `<b>${authorName}:</b>;`;
-        const author = `<span class='time ${authorClass}'>${ctx.timeStr}</span>`;
-        const pclose = `${ctx.text}</p>`;
-        const html = `${beginning}${middle}${author}${pclose}`;
+        const html =
+            `<p data-authorId='${msg.userId}' class='${authorClass}'><b>${authorName}:</b>` +
+            `<span class='time ${authorClass}'>${ctx.timeStr}</span> ${ctx.text}</p>`;
         if (isHistoryAdd) $(html).insertAfter('#chatloadmessagesbutton');
         else $('#chattext').append(html);
 
