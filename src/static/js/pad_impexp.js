@@ -27,8 +27,8 @@ const padimpexp = (function () {
 
   const addImportFrames = () => {
     $('#import .importframe').remove();
-    const iframe = $('<iframe style="display: none;" name="importiframe" class="importframe"></iframe>');
-    $('#import').append(iframe);
+    const f = $('<iframe style="display: none;" name="importiframe" class="importframe"></iframe>');
+    $('#import').append(f);
   };
 
   const fileInputUpdated = () => {
@@ -140,14 +140,17 @@ const padimpexp = (function () {
   // ///
   let pad = undefined;
   const self = {
-    init(_pad) {
+    init: (_pad) => {
       pad = _pad;
 
       // get /p/padname
       // if /p/ isn't available due to a rewrite we use the clientVars padId
-      const pad_root_path = new RegExp(/.*\/p\/[^\/]+/).exec(document.location.pathname) || clientVars.padId;
+      const pad_root_path = new RegExp(/.*\/p\/[^/]+/)
+          .exec(document.location.pathname) || clientVars.padId;
       // get http://example.com/p/padname without Params
-      const pad_root_url = `${document.location.protocol}//${document.location.host}${document.location.pathname}`;
+
+      const dl = document.location;
+      const pad_root_url = `${dl.protocol}//${dl.host}${dl.pathname}`;
 
       // i10l buttom import
       $('#importsubmitinput').val(html10n.get('pad.impexp.importbutton'));
@@ -164,13 +167,13 @@ const padimpexp = (function () {
       $('#importform').attr('action', `${pad_root_url}/import`);
 
       // hide stuff thats not avaible if abiword/soffice is disabled
-      if (clientVars.exportAvailable == 'no') {
+      if (clientVars.exportAvailable === 'no') {
         $('#exportworda').remove();
         $('#exportpdfa').remove();
         $('#exportopena').remove();
 
         $('#importmessageabiword').show();
-      } else if (clientVars.exportAvailable == 'withoutPDF') {
+      } else if (clientVars.exportAvailable === 'withoutPDF') {
         $('#exportpdfa').remove();
 
         $('#exportworda').attr('href', `${pad_root_path}/export/doc`);
@@ -189,7 +192,7 @@ const padimpexp = (function () {
       $('#importform').unbind('submit').submit(fileInputSubmit);
       $('.disabledexport').click(cantExport);
     },
-    handleFrameCall(directDatabaseAccess, status) {
+    handleFrameCall: (directDatabaseAccess, status) => {
       if (directDatabaseAccess === 'undefined') directDatabaseAccess = false;
       if (status !== 'ok') {
         importFailed(status);
@@ -205,12 +208,12 @@ const padimpexp = (function () {
 
       importDone();
     },
-    disable() {
+    disable: () => {
       $('#impexp-disabled-clickcatcher').show();
       $('#import').css('opacity', 0.5);
       $('#impexp-export').css('opacity', 0.5);
     },
-    enable() {
+    enable: () => {
       $('#impexp-disabled-clickcatcher').hide();
       $('#import').css('opacity', 1);
       $('#impexp-export').css('opacity', 1);
