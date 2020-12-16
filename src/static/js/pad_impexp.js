@@ -1,5 +1,4 @@
 'use strict';
-
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -28,8 +27,7 @@ const padimpexp = (function () {
 
   const addImportFrames = () => {
     $('#import .importframe').remove();
-    const msg = '<iframe style="display: none;" name="importiframe" class="importframe"></iframe>';
-    const iframe = $(msg);
+    const iframe = $('<iframe style="display: none;" name="importiframe" class="importframe"></iframe>');
     $('#import').append(iframe);
   };
 
@@ -108,9 +106,8 @@ const padimpexp = (function () {
     const showError = (fade) => {
       $('#importmessagefail')
           .html(`<strong style="color: red">
-              ${html10n.get('pad.impexp.importfailed')}:</strong> ${msg ||
-                html10n.get('pad.impexp.copypaste', '')}`
-          )[(fade ? 'fadeIn' : 'show')]();
+        ${html10n.get('pad.impexp.importfailed')}:</strong>
+        ${msg || html10n.get('pad.impexp.copypaste', '')}`)[(fade ? 'fadeIn' : 'show')]();
     };
 
     if ($('#importexport .importmessage').is(':visible')) {
@@ -140,20 +137,17 @@ const padimpexp = (function () {
     return false;
   }
 
+  // ///
   let pad = undefined;
   const self = {
-    init: (_pad) => {
+    init(_pad) {
       pad = _pad;
 
       // get /p/padname
       // if /p/ isn't available due to a rewrite we use the clientVars padId
-      const pad_root_path = new RegExp(/.*\/p\/[^/]+/)
-          .exec(document.location.pathname) || clientVars.padId;
+      const pad_root_path = new RegExp(/.*\/p\/[^\/]+/).exec(document.location.pathname) || clientVars.padId;
       // get http://example.com/p/padname without Params
-      const pad_root_url =
-          `${document.location.protocol}//
-          ${document.location.host}
-          ${document.location.pathname}`;
+      const pad_root_url = `${document.location.protocol}//${document.location.host}${document.location.pathname}`;
 
       // i10l buttom import
       $('#importsubmitinput').val(html10n.get('pad.impexp.importbutton'));
@@ -170,13 +164,13 @@ const padimpexp = (function () {
       $('#importform').attr('action', `${pad_root_url}/import`);
 
       // hide stuff thats not avaible if abiword/soffice is disabled
-      if (clientVars.exportAvailable === 'no') {
+      if (clientVars.exportAvailable == 'no') {
         $('#exportworda').remove();
         $('#exportpdfa').remove();
         $('#exportopena').remove();
 
         $('#importmessageabiword').show();
-      } else if (clientVars.exportAvailable === 'withoutPDF') {
+      } else if (clientVars.exportAvailable == 'withoutPDF') {
         $('#exportpdfa').remove();
 
         $('#exportworda').attr('href', `${pad_root_path}/export/doc`);
@@ -195,7 +189,7 @@ const padimpexp = (function () {
       $('#importform').unbind('submit').submit(fileInputSubmit);
       $('.disabledexport').click(cantExport);
     },
-    handleFrameCall: (directDatabaseAccess, status) => {
+    handleFrameCall(directDatabaseAccess, status) {
       if (directDatabaseAccess === 'undefined') directDatabaseAccess = false;
       if (status !== 'ok') {
         importFailed(status);
@@ -211,12 +205,12 @@ const padimpexp = (function () {
 
       importDone();
     },
-    disable: () => {
+    disable() {
       $('#impexp-disabled-clickcatcher').show();
       $('#import').css('opacity', 0.5);
       $('#impexp-export').css('opacity', 0.5);
     },
-    enable: () => {
+    enable() {
       $('#impexp-disabled-clickcatcher').hide();
       $('#import').css('opacity', 1);
       $('#impexp-export').css('opacity', 1);
