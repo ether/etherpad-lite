@@ -114,16 +114,15 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     },
 
     getActiveAuthors() {
-      const self = this;
       const authors = [];
       const seenNums = {};
-      const alines = self.alines;
+      const alines = this.alines;
       for (let i = 0; i < alines.length; i++) {
         Changeset.eachAttribNumber(alines[i], (n) => {
           if (!seenNums[n]) {
             seenNums[n] = true;
-            if (self.apool.getAttribKey(n) === 'author') {
-              const a = self.apool.getAttribValue(n);
+            if (this.apool.getAttribKey(n) === 'author') {
+              const a = this.apool.getAttribValue(n);
               if (a) {
                 authors.push(a);
               }
@@ -332,41 +331,40 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     requestQueue2: [],
     requestQueue3: [],
     reqCallbacks: [],
-    queueUp: (revision, width, callback) => {
+    queueUp(revision, width, callback) {
       if (revision < 0) revision = 0;
-      // if(changesetLoader.requestQueue.indexOf(revision) != -1)
+      // if(this.requestQueue.indexOf(revision) != -1)
       //   return; // already in the queue.
-      if (changesetLoader.resolved.indexOf(`${revision}_${width}`) !== -1) {
+      if (this.resolved.indexOf(`${revision}_${width}`) !== -1) {
         // already loaded from the server
         return;
       }
-      changesetLoader.resolved.push(`${revision}_${width}`);
+      this.resolved.push(`${revision}_${width}`);
 
       const requestQueue =
-          width === 1 ? changesetLoader.requestQueue3
-          : width === 10 ? changesetLoader.requestQueue2
-          : changesetLoader.requestQueue1;
+          width === 1 ? this.requestQueue3
+          : width === 10 ? this.requestQueue2
+          : this.requestQueue1;
       requestQueue.push(
           {
             rev: revision,
             res: width,
             callback,
           });
-      if (!changesetLoader.running) {
-        changesetLoader.running = true;
-        setTimeout(changesetLoader.loadFromQueue, 10);
+      if (!this.running) {
+        this.running = true;
+        setTimeout(() => this.loadFromQueue(), 10);
       }
     },
-    loadFromQueue: () => {
-      const self = changesetLoader;
+    loadFromQueue() {
       const requestQueue =
-          self.requestQueue1.length > 0 ? self.requestQueue1
-          : self.requestQueue2.length > 0 ? self.requestQueue2
-          : self.requestQueue3.length > 0 ? self.requestQueue3
+          this.requestQueue1.length > 0 ? this.requestQueue1
+          : this.requestQueue2.length > 0 ? this.requestQueue2
+          : this.requestQueue3.length > 0 ? this.requestQueue3
           : null;
 
       if (!requestQueue) {
-        self.running = false;
+        this.running = false;
         return;
       }
 
@@ -382,18 +380,16 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         requestID,
       });
 
-      self.reqCallbacks[requestID] = callback;
+      this.reqCallbacks[requestID] = callback;
     },
-    handleSocketResponse: (message) => {
-      const self = changesetLoader;
-
+    handleSocketResponse(message) {
       const start = message.data.start;
       const granularity = message.data.granularity;
-      const callback = self.reqCallbacks[message.data.requestID];
-      delete self.reqCallbacks[message.data.requestID];
+      const callback = this.reqCallbacks[message.data.requestID];
+      delete this.reqCallbacks[message.data.requestID];
 
-      self.handleResponse(message.data, start, granularity, callback);
-      setTimeout(self.loadFromQueue, 10);
+      this.handleResponse(message.data, start, granularity, callback);
+      setTimeout(() => this.loadFromQueue(), 10);
     },
     handleResponse: (data, start, granularity, callback) => {
       const pool = (new AttribPool()).fromJsonable(data.apool);
@@ -410,7 +406,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       }
       if (callback) callback(start - 1, start + data.forwardsChangesets.length * granularity - 1);
     },
-    handleMessageFromServer: (obj) => {
+    handleMessageFromServer(obj) {
       if (obj.type === 'COLLABROOM') {
         obj = obj.data;
 
@@ -439,7 +435,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         }
         hooks.callAll(`handleClientTimesliderMessage_${obj.type}`, {payload: obj});
       } else if (obj.type === 'CHANGESET_REQ') {
-        changesetLoader.handleSocketResponse(obj);
+        this.handleSocketResponse(obj);
       } else {
         debugLog(`Unknown message type: ${obj.type}`);
       }

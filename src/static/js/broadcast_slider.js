@@ -245,33 +245,32 @@ const loadBroadcastSliderJS = (fireWhenAllScriptsAreLoaded) => {
       $('#ui-slider-handle').mousedown(function (evt) {
         this.startLoc = evt.clientX;
         this.currentLoc = parseInt($(this).css('left'));
-        const self = this;
         sliderActive = true;
         $(document).mousemove((evt2) => {
-          $(self).css('pointer', 'move');
-          let newloc = self.currentLoc + (evt2.clientX - self.startLoc);
+          $(this).css('pointer', 'move');
+          let newloc = this.currentLoc + (evt2.clientX - this.startLoc);
           if (newloc < 0) newloc = 0;
           const maxPos = $('#ui-slider-bar').width() - 2;
           if (newloc > maxPos) newloc = maxPos;
           const version = Math.floor(newloc * sliderLength / maxPos);
           $('#revision_label').html(html10n.get('timeslider.version', {version}));
-          $(self).css('left', newloc);
+          $(this).css('left', newloc);
           if (getSliderPosition() !== version) _callSliderCallbacks(version);
         });
         $(document).mouseup((evt2) => {
           $(document).unbind('mousemove');
           $(document).unbind('mouseup');
           sliderActive = false;
-          let newloc = self.currentLoc + (evt2.clientX - self.startLoc);
+          let newloc = this.currentLoc + (evt2.clientX - this.startLoc);
           if (newloc < 0) newloc = 0;
           const maxPos = $('#ui-slider-bar').width() - 2;
           if (newloc > maxPos) newloc = maxPos;
-          $(self).css('left', newloc);
+          $(this).css('left', newloc);
           setSliderPosition(Math.floor(newloc * sliderLength / maxPos));
-          if (parseInt($(self).css('left')) < 2) {
-            $(self).css('left', '2px');
+          if (parseInt($(this).css('left')) < 2) {
+            $(this).css('left', '2px');
           } else {
-            self.currentLoc = parseInt($(self).css('left'));
+            this.currentLoc = parseInt($(this).css('left'));
           }
         });
       });
