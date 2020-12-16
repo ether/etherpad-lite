@@ -26,7 +26,7 @@ const Cookies = require('./pad_utils').Cookies;
 const padcookie = require('./pad_cookie').padcookie;
 const padutils = require('./pad_utils').padutils;
 
-const padeditor = (function () {
+const padeditor = (() => {
   let Ace2Editor = undefined;
   let pad = undefined;
   let settings = undefined;
@@ -35,7 +35,7 @@ const padeditor = (function () {
     ace: null,
     // this is accessed directly from other files
     viewZoom: 100,
-    init(readyFunc, initialViewOptions, _pad) {
+    init: (readyFunc, initialViewOptions, _pad) => {
       Ace2Editor = require('./ace').Ace2Editor;
       pad = _pad;
       settings = pad.settings;
@@ -163,6 +163,6 @@ const padeditor = (function () {
     },
   };
   return self;
-}());
+})();
 
 exports.padeditor = padeditor;

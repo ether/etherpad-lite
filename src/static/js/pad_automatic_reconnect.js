@@ -188,9 +188,7 @@ CountDownTimer.prototype.cancel = function () {
   return this;
 };
 
-CountDownTimer.parse = (seconds) => {
-  return {
-    minutes: (seconds / 60) | 0,
-    seconds: (seconds % 60) | 0,
-  };
-};
+CountDownTimer.parse = (seconds) => ({
+  minutes: (seconds / 60) | 0,
+  seconds: (seconds % 60) | 0,
+});
