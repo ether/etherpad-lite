@@ -42,31 +42,31 @@ const loadBroadcastRevisionsJS = () => {
   };
 
   const revisionInfo = {};
-  revisionInfo.addChangeset = (fromIndex, toIndex, changeset, backChangeset, timeDelta) => {
-    const startRevision = revisionInfo[fromIndex] || revisionInfo.createNew(fromIndex);
-    const endRevision = revisionInfo[toIndex] || revisionInfo.createNew(toIndex);
+  revisionInfo.addChangeset = function (fromIndex, toIndex, changeset, backChangeset, timeDelta) {
+    const startRevision = this[fromIndex] || this.createNew(fromIndex);
+    const endRevision = this[toIndex] || this.createNew(toIndex);
     startRevision.addChangeset(toIndex, changeset, timeDelta);
     endRevision.addChangeset(fromIndex, backChangeset, -1 * timeDelta);
   };
 
   revisionInfo.latest = clientVars.collab_client_vars.rev || -1;
 
-  revisionInfo.createNew = (index) => {
-    revisionInfo[index] = new Revision(index);
-    if (index > revisionInfo.latest) {
-      revisionInfo.latest = index;
+  revisionInfo.createNew = function (index) {
+    this[index] = new Revision(index);
+    if (index > this.latest) {
+      this.latest = index;
     }
 
-    return revisionInfo[index];
+    return this[index];
   };
 
   // assuming that there is a path from fromIndex to toIndex, and that the links
   // are laid out in a skip-list format
-  revisionInfo.getPath = (fromIndex, toIndex) => {
+  revisionInfo.getPath = function (fromIndex, toIndex) {
     const changesets = [];
     const spans = [];
     const times = [];
-    let elem = revisionInfo[fromIndex] || revisionInfo.createNew(fromIndex);
+    let elem = this[fromIndex] || this.createNew(fromIndex);
     if (elem.changesets.length !== 0 && fromIndex !== toIndex) {
       const reverse = !(fromIndex < toIndex);
       while (((elem.rev < toIndex) && !reverse) || ((elem.rev > toIndex) && reverse)) {
@@ -88,7 +88,7 @@ const loadBroadcastRevisionsJS = () => {
             changesets.push(topush.getValue());
             spans.push(elem.changesets[i].deltaRev);
             times.push(topush.deltaTime);
-            elem = revisionInfo[elem.rev + elem.changesets[i].deltaRev];
+            elem = this[elem.rev + elem.changesets[i].deltaRev];
             break;
           }
         }
