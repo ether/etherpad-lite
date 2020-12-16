@@ -70,7 +70,8 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       return $(element);
     },
 
-    applySpliceToDivs(start, numRemoved, newLines) {
+    // splice the lines
+    splice(start, numRemoved, ...newLines) {
       // remove spliced-out lines from DOM
       for (let i = start; i < start + numRemoved && i < this.currentDivs.length; i++) {
         this.currentDivs[i].remove();
@@ -98,23 +99,10 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       }
 
       // insert new divs into currentDivs array
-      newDivs.unshift(0); // remove 0 elements
-      newDivs.unshift(start);
-      this.currentDivs.splice.apply(this.currentDivs, newDivs);
-      return this;
-    },
-
-    // splice the lines
-    splice(start, numRemoved, newLinesVA) {
-      const newLines = _.map(Array.prototype.slice.call(arguments, 2), (s) => s);
-
-      // apply this splice to the divs
-      this.applySpliceToDivs(start, numRemoved, newLines);
+      this.currentDivs.splice(start, 0, ...newDivs);
 
       // call currentLines.splice, to keep the currentLines array up to date
-      newLines.unshift(numRemoved);
-      newLines.unshift(start);
-      this.currentLines.splice.apply(this.currentLines, arguments);
+      this.currentLines.splice(start, numRemoved, ...newLines);
     },
     // returns the contents of the specified line I
     get(i) {
