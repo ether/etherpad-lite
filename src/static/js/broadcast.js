@@ -37,13 +37,13 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
   let goToRevisionIfEnabledCount = 0;
   let changesetLoader = undefined;
 
-  const debugLog = (...args) => {
+  function debugLog() {
     try {
-      if (window.console) console.log(args);
+      if (window.console) console.log.apply(console, arguments);
     } catch (e) {
       if (window.console) console.log('error printing: ', e);
     }
-  };
+  }
 
   const padContents = {
     currentRevision: clientVars.collab_client_vars.rev,
@@ -100,18 +100,13 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       // insert new divs into currentDivs array
       newDivs.unshift(0); // remove 0 elements
       newDivs.unshift(start);
-      const oldDivs = this.currentDivs.splice;
-      const updatedDivs = oldDivs.apply(newDivs);
-      this.currentDivs = updatedDivs;
+      this.currentDivs.splice.apply(this.currentDivs, newDivs);
       return this;
     },
 
     // splice the lines
-    splice(...args) {
-      // start, numRemoved, newLinesVA
-      const start = args[0];
-      const numRemoved = args[1];
-      const newLines = _.map(Array.prototype.slice.call(args, 2), (s) => s);
+    splice(start, numRemoved, newLinesVA) {
+      const newLines = _.map(Array.prototype.slice.call(arguments, 2), (s) => s);
 
       // apply this splice to the divs
       this.applySpliceToDivs(start, numRemoved, newLines);
@@ -119,7 +114,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       // call currentLines.splice, to keep the currentLines array up to date
       newLines.unshift(numRemoved);
       newLines.unshift(start);
-      this.currentLines.splice.apply(this.currentLines, args);
+      this.currentLines.splice.apply(this.currentLines, arguments);
     },
     // returns the contents of the specified line I
     get(i) {
@@ -489,19 +484,16 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
   const receiveAuthorData = (newAuthorData) => {
     for (const author in newAuthorData) {
-      if (newAuthorData[author]) {
-        const data = newAuthorData[author];
-        const bgcolor = typeof data.colorId === 'number'
-          ? clientVars.colorPalette[data.colorId] : data.colorId;
-        if (bgcolor && dynamicCSS) {
-          const selector = dynamicCSS
-              .selectorStyle(`.${linestylefilter.getAuthorClassName(author)}`);
-          selector.backgroundColor = bgcolor;
-          selector.color = (colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.5)
-            ? '#ffffff' : '#000000'; // see ace2_inner.js for the other part
-        }
-        authorData[author] = data;
+      const data = newAuthorData[author];
+      const bgcolor = typeof data.colorId === 'number'
+        ? clientVars.colorPalette[data.colorId] : data.colorId;
+      if (bgcolor && dynamicCSS) {
+        const selector = dynamicCSS.selectorStyle(`.${linestylefilter.getAuthorClassName(author)}`);
+        selector.backgroundColor = bgcolor;
+        selector.color = (colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.5)
+          ? '#ffffff' : '#000000'; // see ace2_inner.js for the other part
       }
+      authorData[author] = data;
     }
   };
 
