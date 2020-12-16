@@ -136,7 +136,7 @@ const chat = (function () {
 
       const text = padutils.escapeHtmlWithClickableLinks(msg.text, '_blank');
 
-      const authorName = msg.userName == null ? _('pad.userlist.unnamed')
+      const authorName = msg.userName == null ? html10n.get('pad.userlist.unnamed')
         : padutils.escapeHtml(msg.userName);
 
       // the hook args
