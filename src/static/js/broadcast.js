@@ -37,13 +37,13 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
   let goToRevisionIfEnabledCount = 0;
   let changesetLoader = undefined;
 
-  function debugLog() {
+  const debugLog = (...args) => {
     try {
-      if (window.console) console.log.apply(console, arguments);
+      if (window.console) console.log(...args);
     } catch (e) {
       if (window.console) console.log('error printing: ', e);
     }
-  }
+  };
 
   const padContents = {
     currentRevision: clientVars.collab_client_vars.rev,
