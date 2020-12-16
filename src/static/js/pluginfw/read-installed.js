@@ -87,7 +87,7 @@ as far as the left-most node_modules folder.
 2. Ignore anything in node_modules that isn't a package folder.
 
 */
-
+'use strict';
 
 const npm = require('npm/lib/npm.js');
 const fs = require('graceful-fs');
@@ -96,84 +96,48 @@ const asyncMap = require('slide').asyncMap;
 const semver = require('semver');
 const log = require('log4js').getLogger('pluginfw');
 
-function readJson(file, callback) {
-  fs.readFile(file, (er, buf) => {
-    if (er) {
-      callback(er);
+let rpSeen = {};
+let riSeen = [];
+let errState = null;
+let called = false;
+
+const readJson = (file, callback) => {
+  fs.readFile(file, (error, buf) => {
+    if (error) {
+      callback(error);
       return;
     }
     try {
       callback(null, JSON.parse(buf.toString()));
-    } catch (er) {
-      callback(er);
+    } catch (error) {
+      callback(error);
     }
   });
-}
+};
 
-module.exports = readInstalled;
+const copy = (obj) => {
+  const result = {};
+  if (!obj || typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) return obj.map(copy);
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      result[key] = copy(obj[key]);
+    }
+  }
+  return result;
+};
 
-function readInstalled(folder, cb) {
-  /* This is where we clear the cache, these three lines are all the
-   * new code there is */
-  rpSeen = {};
-  riSeen = [];
-  const fuSeen = [];
-
-  const d = npm.config.get('depth');
-  readInstalled_(folder, null, null, null, 0, d, (er, obj) => {
-    if (er) return cb(er);
-    // now obj has all the installed things, where they're installed
-    // figure out the inheritance links, now that the object is built.
-    resolveInheritance(obj);
-    cb(null, obj);
-  });
-}
-
-var rpSeen = {};
-function readInstalled_(folder, parent, name, reqver, depth, maxDepth, cb) {
+const readInstalled = (folder, parent, name, reqver, depth, maxDepth, cb) => {
   // console.error(folder, name)
-
   let installed,
     obj,
     real,
     link;
 
-  fs.readdir(path.resolve(folder, 'node_modules'), (er, i) => {
-    // error indicates that nothing is installed here
-    if (er) i = [];
-    installed = i.filter((f) => f.charAt(0) !== '.');
-    next();
-  });
-
-  readJson(path.resolve(folder, 'package.json'), (er, data) => {
-    obj = copy(data);
-
-    if (!parent) {
-      obj = obj || true;
-      er = null;
-    }
-    return next(er);
-  });
-
-  fs.lstat(folder, (er, st) => {
-    if (er) {
-      if (!parent) real = true;
-      return next(er);
-    }
-    fs.realpath(folder, (er, rp) => {
-      // console.error("realpath(%j) = %j", folder, rp)
-      real = rp;
-      if (st.isSymbolicLink()) link = rp;
-      next(er);
-    });
-  });
-
-  let errState = null;
-  let called = false;
-  function next(er) {
+  const next = (error) => {
     if (errState) return;
-    if (er) {
-      errState = er;
+    if (error) {
+      errState = error;
       return cb(null, []);
     }
     // console.error('next', installed, obj && typeof obj, name, real)
@@ -182,7 +146,7 @@ function readInstalled_(folder, parent, name, reqver, depth, maxDepth, cb) {
     if (rpSeen[real]) return cb(null, rpSeen[real]);
     if (obj === true) {
       obj = {dependencies: {}, path: folder};
-      installed.forEach((i) => { obj.dependencies[i] = '*'; });
+      installed.forEach((i) => obj.dependencies[i] = '*');
     }
     if (name && obj.name !== name) obj.invalid = true;
     obj.realName = name || obj.name;
@@ -190,16 +154,15 @@ function readInstalled_(folder, parent, name, reqver, depth, maxDepth, cb) {
 
     // "foo":"http://blah" is always presumed valid
     if (reqver &&
-        semver.validRange(reqver) &&
-        !semver.satisfies(obj.version, reqver)) {
-      obj.invalid = true;
-    }
+          semver.validRange(reqver) &&
+          !semver.satisfies(obj.version, reqver)
+    ) obj.invalid = true;
 
     if (parent &&
-        !(name in parent.dependencies) &&
-        !(name in (parent.devDependencies || {}))) {
-      obj.extraneous = true;
-    }
+          !(name in parent.dependencies) &&
+          !(name in (parent.devDependencies || {}))
+    ) obj.extraneous = true;
+
     obj.path = obj.path || folder;
     obj.realPath = real;
     obj.link = link;
@@ -207,53 +170,71 @@ function readInstalled_(folder, parent, name, reqver, depth, maxDepth, cb) {
     rpSeen[real] = obj;
     obj.depth = depth;
     if (depth >= maxDepth) return cb(null, obj);
-    asyncMap(installed, (pkg, cb) => {
-      let rv = obj.dependencies[pkg];
-      if (!rv && obj.devDependencies) rv = obj.devDependencies[pkg];
-      readInstalled_(path.resolve(folder, `node_modules/${pkg}`)
-          , obj, pkg, obj.dependencies[pkg], depth + 1, maxDepth
-          , cb);
-    }, (er, installedData) => {
-      if (er) return cb(er);
-      installedData.forEach((dep) => {
-        obj.dependencies[dep.realName] = dep;
-      });
 
-      // any strings here are unmet things.  however, if it's
-      // optional, then that's fine, so just delete it.
-      if (obj.optionalDependencies) {
-        Object.keys(obj.optionalDependencies).forEach((dep) => {
-          if (typeof obj.dependencies[dep] === 'string') {
-            delete obj.dependencies[dep];
+    asyncMap(installed,
+        (pkg, cb) => {
+          let rv = obj.dependencies[pkg];
+          if (!rv && obj.devDependencies) rv = obj.devDependencies[pkg];
+          readInstalled(
+              path.resolve(folder, `node_modules/${pkg}`),
+              obj,
+              pkg,
+              obj.dependencies[pkg],
+              depth + 1,
+              maxDepth,
+              cb
+          );
+        }, (error, installedData) => {
+          if (error) return cb(error);
+          installedData.forEach((dep) => obj.dependencies[dep.realName] = dep);
+          // any strings here are unmet things.  however, if it's
+          // optional, then that's fine, so just delete it.
+          if (obj.optionalDependencies) {
+            Object.keys(obj.optionalDependencies).forEach((dep) => {
+              if (typeof obj.dependencies[dep] === 'string') {
+                delete obj.dependencies[dep];
+              }
+            });
           }
+          return cb(null, obj);
         });
-      }
-      return cb(null, obj);
-    });
-  }
-}
+  };
 
-// starting from a root object, call findUnmet on each layer of children
-var riSeen = [];
-function resolveInheritance(obj) {
-  if (typeof obj !== 'object') return;
-  if (riSeen.indexOf(obj) !== -1) return;
-  riSeen.push(obj);
-  if (typeof obj.dependencies !== 'object') {
-    obj.dependencies = {};
-  }
-  Object.keys(obj.dependencies).forEach((dep) => {
-    findUnmet(obj.dependencies[dep]);
+  fs.readdir(path.resolve(folder, 'node_modules'), (error, i) => {
+    // error indicates that nothing is installed here
+    if (error) i = [];
+    installed = i.filter((f) => f.charAt(0) !== '.');
+    next();
   });
-  Object.keys(obj.dependencies).forEach((dep) => {
-    resolveInheritance(obj.dependencies[dep]);
+
+  readJson(path.resolve(folder, 'package.json'), (error, data) => {
+    obj = copy(data);
+
+    if (!parent) {
+      obj = obj || true;
+      error = null;
+    }
+    return next(error);
   });
-}
+
+  fs.lstat(folder, (error, st) => {
+    if (error) {
+      if (!parent) real = true;
+      return next(error);
+    }
+    fs.realpath(folder, (error, rp) => {
+      // console.error("realpath(%j) = %j", folder, rp)
+      real = rp;
+      if (st.isSymbolicLink()) link = rp;
+      next(error);
+    });
+  });
+};
 
 // find unmet deps by walking up the tree object.
 // No I/O
 const fuSeen = [];
-function findUnmet(obj) {
+const findUnmet = (obj) => {
   if (fuSeen.indexOf(obj) !== -1) return;
   fuSeen.push(obj);
   // console.error("find unmet", obj.name, obj.parent && obj.parent.name)
@@ -277,63 +258,92 @@ function findUnmet(obj) {
           if (typeof deps[d] === 'string' &&
             !semver.satisfies(found.version, deps[d])) {
           // the bad thing will happen
-            log.warn(`${obj.path} requires ${d}@'${deps[d]
-            }' but will load\n${
-              found.path},\nwhich is version ${found.version}`
-            , 'unmet dependency');
+            log.warn(`
+              ${obj.path} requires ${d}@'${deps[d]}' but will load\n
+              ${found.path},\n
+              which is version ${found.version}
+              `,
+            'unmet dependency'
+            );
             found.invalid = true;
           }
           deps[d] = found;
         }
       });
   return obj;
-}
+};
 
-function copy(obj) {
-  if (!obj || typeof obj !== 'object') return obj;
-  if (Array.isArray(obj)) return obj.map(copy);
+// starting from a root object, call findUnmet on each layer of children
+const resolveInheritance = (obj) => {
+  if (typeof obj !== 'object') return;
+  if (riSeen.indexOf(obj) !== -1) return;
+  riSeen.push(obj);
+  if (typeof obj.dependencies !== 'object') {
+    obj.dependencies = {};
+  }
+  Object.keys(obj.dependencies).forEach((dep) => {
+    findUnmet(obj.dependencies[dep]);
+  });
+  Object.keys(obj.dependencies).forEach((dep) => {
+    resolveInheritance(obj.dependencies[dep]);
+  });
+};
 
-  const o = {};
-  for (const i in obj) o[i] = copy(obj[i]);
-  return o;
-}
+const readInstalle = (folder, cb) => {
+  /* This is where we clear the cache, these three lines are all the
+   * new code there is */
+  rpSeen = {};
+  riSeen = [];
+
+  const d = npm.config.get('depth');
+  readInstalled(folder, null, null, null, 0, d, (error, obj) => {
+    if (error) return cb(error);
+    // now obj has all the installed things, where they're installed
+    // figure out the inheritance links, now that the object is built.
+    resolveInheritance(obj);
+    cb(null, obj);
+  });
+};
+
+module.exports = readInstalle;
 
 if (module === require.main) {
   const util = require('util');
   console.error('testing');
-
+  
   let called = 0;
-  readInstalled(process.cwd(), (er, map) => {
+  const seen = [];
+
+  const cleanup = (map) => {
+    if (seen.indexOf(map) !== -1) return;
+    seen.push(map);
+    for (const key in map) {
+      if (Object.prototype.hasOwnProperty.call(map, key)) {
+        switch (key) {
+          case '_id':
+          case 'path':
+          case 'extraneous': case 'invalid':
+          case 'dependencies': case 'name':
+            continue;
+          default: delete map[key];
+        }
+      }
+    }
+    const dep = map.dependencies;
+    //  delete map.dependencies
+    if (dep) {
+      //  map.dependencies = dep
+      for (const i in dep) {
+        if (typeof dep[i] === 'object') cleanup(dep[i]);
+      }
+    }
+    return map;
+  };
+
+  readInstalle(process.cwd(), (er, map) => {
     console.error(called++);
     if (er) return console.error(er.stack || er.message);
     cleanup(map);
     console.error(util.inspect(map, true, 10, true));
   });
-
-  const seen = [];
-  function cleanup(map) {
-    if (seen.indexOf(map) !== -1) return;
-    seen.push(map);
-    for (var i in map) {
-      switch (i) {
-        case '_id':
-        case 'path':
-        case 'extraneous': case 'invalid':
-        case 'dependencies': case 'name':
-          continue;
-        default: delete map[i];
-      }
-    }
-    const dep = map.dependencies;
-    //    delete map.dependencies
-    if (dep) {
-      //      map.dependencies = dep
-      for (var i in dep) {
-        if (typeof dep[i] === 'object') {
-          cleanup(dep[i]);
-        }
-      }
-    }
-    return map;
-  }
 }
