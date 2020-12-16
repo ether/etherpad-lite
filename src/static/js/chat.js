@@ -20,7 +20,6 @@ const padcookie = require('./pad_cookie').padcookie;
 const Tinycon = require('tinycon/tinycon');
 const hooks = require('./pluginfw/hooks');
 const padeditor = require('./pad_editor').padeditor;
-const _ = require('./underscore');
 
 const chat = (function () {
   let isStuck = false;
