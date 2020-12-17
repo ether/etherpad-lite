@@ -569,9 +569,9 @@ const pad = {
       if (!pad.padOptions.view) {
         pad.padOptions.view = {};
       }
-      for (const k in opts.view) {
-        pad.padOptions.view[k] = opts.view[k];
-        padcookie.setPref(k, opts.view[k]);
+      for (const [k, v] of Object.entries(opts.view)) {
+        pad.padOptions.view[k] = v;
+        padcookie.setPref(k, v);
       }
       padeditor.setViewOptions(pad.padOptions.view);
     }
@@ -640,8 +640,7 @@ const pad = {
 
       // we filter non objects from the socket object and put them in the diagnosticInfo
       // this ensures we have no cyclic data - this allows us to stringify the data
-      for (const i in socket.socket) {
-        const value = socket.socket[i];
+      for (const [i, value] of Object.entries(socket.socket || {})) {
         const type = typeof value;
 
         if (type === 'string' || type === 'number') {

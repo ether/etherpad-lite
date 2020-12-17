@@ -412,8 +412,7 @@ const paduserlist = (function () {
 
       // Now we add historical authors
       const historical = clientVars.collab_client_vars.historicalAuthorData;
-      for (const key in historical) {
-        const userId = historical[key].userId;
+      for (const [key, {userId}] of Object.entries(historical)) {
         // Check we don't already have this author in our array
         let exists = false;
 
