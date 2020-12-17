@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -28,74 +30,11 @@ const Cookies = require('./pad_utils').Cookies;
 const randomString = require('./pad_utils').randomString;
 const hooks = require('./pluginfw/hooks');
 
-let token, padId, export_links;
-
-function init() {
-  $(document).ready(() => {
-    // start the custom js
-    if (typeof customStart === 'function') customStart();
-
-    // get the padId out of the url
-    const urlParts = document.location.pathname.split('/');
-    padId = decodeURIComponent(urlParts[urlParts.length - 2]);
-
-    // set the title
-    document.title = `${padId.replace(/_+/g, ' ')} | ${document.title}`;
-
-    // ensure we have a token
-    token = Cookies.get('token');
-    if (token == null) {
-      token = `t.${randomString()}`;
-      Cookies.set('token', token, {expires: 60});
-    }
-
-    const loc = document.location;
-    // get the correct port
-    const port = loc.port == '' ? (loc.protocol == 'https:' ? 443 : 80) : loc.port;
-    // create the url
-    const url = `${loc.protocol}//${loc.hostname}:${port}/`;
-    // find out in which subfolder we are
-    const resource = `${exports.baseURL.substring(1)}socket.io`;
-
-    // build up the socket io connection
-    socket = io.connect(url, {path: `${exports.baseURL}socket.io`, resource});
-
-    // send the ready message once we're connected
-    socket.on('connect', () => {
-      sendSocketMsg('CLIENT_READY', {});
-    });
-
-    socket.on('disconnect', () => {
-      BroadcastSlider.showReconnectUI();
-    });
-
-    // route the incoming messages
-    socket.on('message', (message) => {
-      if (message.type == 'CLIENT_VARS') {
-        handleClientVars(message);
-      } else if (message.accessStatus) {
-        $('body').html('<h2>You have no permission to access this pad</h2>');
-      } else if (message.type === 'CHANGESET_REQ' || message.type === 'COLLABROOM') {
-        changesetLoader.handleMessageFromServer(message);
-      }
-    });
-
-    // get all the export links
-    export_links = $('#export > .exportlink');
-
-    $('button#forcereconnect').click(() => {
-      window.location.reload();
-    });
-
-    exports.socket = socket; // make the socket available
-    exports.BroadcastSlider = BroadcastSlider; // Make the slider available
-
-    hooks.aCallAll('postTimesliderInit');
-  });
-}
+let token, padId, exportLinks, socket, changesetLoader, BroadcastSlider;
+const fireWhenAllScriptsAreLoaded = [];
 
 // sends a message over the socket
-function sendSocketMsg(type, data) {
+const sendSocketMsg = (type, data) => {
   socket.json.send({
     component: 'pad', // FIXME: Remove this stupidity!
     type,
@@ -105,19 +44,21 @@ function sendSocketMsg(type, data) {
     sessionID: Cookies.get('sessionID'),
     protocolVersion: 2,
   });
-}
+};
 
-const fireWhenAllScriptsAreLoaded = [];
-
-let changesetLoader;
-function handleClientVars(message) {
+const handleClientVars = (message) => {
   // save the client Vars
+  // eslint-disable-next-line no-global-assign
   clientVars = message.data;
 
   // load all script that doesn't work without the clientVars
-  BroadcastSlider = require('./broadcast_slider').loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded);
+  BroadcastSlider = require('./broadcast_slider')
+      .loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded);
+
   require('./broadcast_revisions').loadBroadcastRevisionsJS();
-  changesetLoader = require('./broadcast').loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider);
+
+  changesetLoader = require('./broadcast')
+      .loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider);
 
   // initialize export ui
   require('./pad_impexp').padimpexp.init();
@@ -127,8 +68,8 @@ function handleClientVars(message) {
 
   // change export urls when the slider moves
   BroadcastSlider.onSlider((revno) => {
-    // export_links is a jQuery Array, so .each is allowed.
-    export_links.each(function () {
+    // exportLinks is a jQuery Array, so .each is allowed.
+    exportLinks.each(function () {
       // Modified from regular expression to fix:
       // https://github.com/ether/etherpad-lite/issues/4071
       // Where a padId that was numeric would create the wrong export link
@@ -156,7 +97,81 @@ function handleClientVars(message) {
   $('#viewfontmenu').change(function () {
     $('#innerdocbody').css('font-family', $(this).val() || '');
   });
-}
+};
 
-exports.baseURL = '';
-exports.init = init;
+const init = () => {
+  $(document).ready(() => {
+    // start the custom js
+    // customStart is a global function
+    // TODO: This function must be put in the module file, and then import it here.
+    // eslint-disable-next-line no-undef
+    if (typeof customStart === 'function') customStart();
+
+    // get the padId out of the url
+    const urlParts = document.location.pathname.split('/');
+    padId = decodeURIComponent(urlParts[urlParts.length - 2]);
+
+    // set the title
+    document.title = `${padId.replace(/_+/g, ' ')} | ${document.title}`;
+
+    // ensure we have a token
+    token = Cookies.get('token');
+    if (!token) {
+      token = `t.${randomString()}`;
+      Cookies.set('token', token, {expires: 60});
+    }
+
+    const loc = document.location;
+    // get the correct port
+    const port = loc.port === '' ? (loc.protocol === 'https:' ? 443 : 80) : loc.port;
+    // create the url
+    const url = `${loc.protocol}//${loc.hostname}:${port}/`;
+    // find out in which subfolder we are
+    const resource = `${exports.baseURL.substring(1)}socket.io`;
+
+    // build up the socket io connection
+    socket = io.connect(url, {path: `${exports.baseURL}socket.io`, resource});
+
+    // send the ready message once we're connected
+    socket.on('connect', () => {
+      sendSocketMsg('CLIENT_READY', {});
+    });
+
+    socket.on('disconnect', () => {
+      BroadcastSlider.showReconnectUI();
+    });
+
+    // route the incoming messages
+    socket.on('message', (message) => {
+      if (message.type === 'CLIENT_VARS') {
+        handleClientVars(message);
+      } else if (message.accessStatus) {
+        $('body').html('<h2>You have no permission to access this pad</h2>');
+      } else if (message.type === 'CHANGESET_REQ' || message.type === 'COLLABROOM') {
+        changesetLoader.handleMessageFromServer(message);
+      }
+    });
+
+    // get all the export links
+    exportLinks = $('#export > .exportlink');
+
+    $('button#forcereconnect').click(() => {
+      window.location.reload();
+    });
+
+    // exports.socket = socket;
+    // exports.BroadcastSlider = BroadcastSlider;
+
+    hooks.aCallAll('postTimesliderInit');
+  });
+};
+
+module.exports = {
+  baseURL: '',
+  init,
+  socket, // make the socket available
+  BroadcastSlider, // Make the slider available
+
+};
+// exports.baseURL = '';
+// exports.init = init;
