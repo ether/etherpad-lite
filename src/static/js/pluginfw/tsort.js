@@ -91,8 +91,8 @@ const tsortTest = () => {
   const randomInt = (max) => Math.floor(Math.random() * max) + 1;
 
   edges = (() => {
-    const ret = []; let
-      i = 0;
+    const ret = [];
+    let i = 0;
     while (i++ < iteration) ret.push([randomInt(max), randomInt(max)]);
     return ret;
   })();
