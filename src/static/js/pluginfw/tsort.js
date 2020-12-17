@@ -9,7 +9,7 @@
  * @returns Array : topological sorted list of IDs
  **/
 
-function tsort(edges) {
+const tsort = (edges) => {
   const nodes = {}; // hash: stringified id of the node => { id: id, afters: lisf of ids }
   const sorted = []; // sorted list of IDs ( returned value )
   const visited = {}; // hash: id of already visited node => true
