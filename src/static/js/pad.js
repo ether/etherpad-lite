@@ -56,99 +56,101 @@ let receivedClientVars = false;
 //                * the parameter was supplied and matches checkVal
 //                * the parameter was supplied and checkVal is null
 //   callback: the function to call when all above succeeds, `val` is the value supplied by the user
-const getParameters = [{
-  name: 'noColors',
-  checkVal: 'true',
-  callback: (val) => {
-    settings.noColors = true;
-    $('#clearAuthorship').hide();
+const getParameters = [
+  {
+    name: 'noColors',
+    checkVal: 'true',
+    callback: (val) => {
+      settings.noColors = true;
+      $('#clearAuthorship').hide();
+    },
   },
-},
-{
-  name: 'showControls',
-  checkVal: 'true',
-  callback: (val) => {
-    $('#editbar').css('display', 'flex');
+  {
+    name: 'showControls',
+    checkVal: 'true',
+    callback: (val) => {
+      $('#editbar').css('display', 'flex');
+    },
   },
-},
-{
-  name: 'showChat',
-  checkVal: null,
-  callback: (val) => {
-    if (val === 'false') {
-      settings.hideChat = true;
-      chat.hide();
-      $('#chaticon').hide();
-    }
+  {
+    name: 'showChat',
+    checkVal: null,
+    callback: (val) => {
+      if (val === 'false') {
+        settings.hideChat = true;
+        chat.hide();
+        $('#chaticon').hide();
+      }
+    },
   },
-},
-{
-  name: 'showLineNumbers',
-  checkVal: 'false',
-  callback: (val) => {
-    settings.LineNumbersDisabled = true;
+  {
+    name: 'showLineNumbers',
+    checkVal: 'false',
+    callback: (val) => {
+      settings.LineNumbersDisabled = true;
+    },
   },
-},
-{
-  name: 'useMonospaceFont',
-  checkVal: 'true',
-  callback: (val) => {
-    settings.useMonospaceFontGlobal = true;
+  {
+    name: 'useMonospaceFont',
+    checkVal: 'true',
+    callback: (val) => {
+      settings.useMonospaceFontGlobal = true;
+    },
   },
-},
-// If the username is set as a parameter we should set a global value that we can
-// call once we have initiated the pad.
-{
-  name: 'userName',
-  checkVal: null,
-  callback: (val) => {
-    settings.globalUserName = decodeURIComponent(val);
-    clientVars.userName = decodeURIComponent(val);
+  // If the username is set as a parameter we should set a global value that we can call once we
+  // have initiated the pad.
+  {
+    name: 'userName',
+    checkVal: null,
+    callback: (val) => {
+      settings.globalUserName = decodeURIComponent(val);
+      clientVars.userName = decodeURIComponent(val);
+    },
   },
-},
-// If the userColor is set as a parameter, set a global value to use once we have initiated the pad.
-{
-  name: 'userColor',
-  checkVal: null,
-  callback: (val) => {
-    settings.globalUserColor = decodeURIComponent(val);
-    clientVars.userColor = decodeURIComponent(val);
+  // If the userColor is set as a parameter, set a global value to use once we have initiated the
+  // pad.
+  {
+    name: 'userColor',
+    checkVal: null,
+    callback: (val) => {
+      settings.globalUserColor = decodeURIComponent(val);
+      clientVars.userColor = decodeURIComponent(val);
+    },
   },
-},
-{
-  name: 'rtl',
-  checkVal: 'true',
-  callback: (val) => {
-    settings.rtlIsTrue = true;
+  {
+    name: 'rtl',
+    checkVal: 'true',
+    callback: (val) => {
+      settings.rtlIsTrue = true;
+    },
   },
-},
-{
-  name: 'alwaysShowChat',
-  checkVal: 'true',
-  callback: (val) => {
-    if (!settings.hideChat) chat.stickToScreen();
+  {
+    name: 'alwaysShowChat',
+    checkVal: 'true',
+    callback: (val) => {
+      if (!settings.hideChat) chat.stickToScreen();
+    },
   },
-},
-{
-  name: 'chatAndUsers',
-  checkVal: 'true',
-  callback: (val) => {
-    chat.chatAndUsers();
+  {
+    name: 'chatAndUsers',
+    checkVal: 'true',
+    callback: (val) => {
+      chat.chatAndUsers();
+    },
   },
-},
-{
-  name: 'lang',
-  checkVal: null,
-  callback: (val) => {
-    window.html10n.localize([val, 'en']);
-    Cookies.set('language', val);
+  {
+    name: 'lang',
+    checkVal: null,
+    callback: (val) => {
+      window.html10n.localize([val, 'en']);
+      Cookies.set('language', val);
+    },
   },
-}];
+];
 
 const getParams = () => {
   // Tries server enforced options first..
-  for (let i = 0; i < getParameters.length; i++) {
-    const setting = getParameters[i];
+  for (const setting of getParameters) {
     const value = clientVars.padOptions[setting.name];
     if (value.toString() === setting.checkVal) {
       setting.callback(value);
@@ -158,8 +160,7 @@ const getParams = () => {
   // Then URL applied stuff
   const params = getUrlVars();
 
-  for (let i = 0; i < getParameters.length; i++) {
-    const setting = getParameters[i];
+  for (const setting of getParameters) {
     const value = params[setting.name];
 
     if (value && (value === setting.checkVal || setting.checkVal == null)) {
@@ -169,8 +170,8 @@ const getParams = () => {
 };
 
 const getUrlVars = () => {
-  const vars = []; let
-    hash;
+  const vars = [];
+  let hash;
   const hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
   for (let i = 0; i < hashes.length; i++) {
     hash = hashes[i].split('=');
@@ -292,7 +293,6 @@ const handshake = () => {
       receivedClientVars = true;
 
       // set some client vars
-      // JM TODO: clientVars is global.  Leave this in as code vomit and TODO?
       window.clientVars = obj.data;
 
       // initalize the pad
@@ -427,8 +427,8 @@ const pad = {
     padutils.setupGlobalExceptionHandler();
 
     $(document).ready(() => {
-      // start the custom js - customStart is defined in pad.html
-      if (typeof customStart === 'function') customStart(); // eslint-disable-line
+      // start the custom js
+      if (typeof customStart === 'function') customStart(); // eslint-disable-line no-undef
       handshake();
 
       // To use etherpad you have to allow cookies.
@@ -447,17 +447,12 @@ const pad = {
     pad.initTime = +(new Date());
     pad.padOptions = clientVars.initialOptions;
 
-    // order of inits is important here:
     pad.myUserInfo = {
       userId: clientVars.userId,
       name: clientVars.userName,
       ip: pad.getClientIp(),
       colorId: clientVars.userColor,
     };
-
-    padimpexp.init(this);
-    padsavedrevs.init(this);
-
 
     const postAceInit = () => {
       padeditbar.init();
@@ -502,20 +497,17 @@ const pad = {
       hooks.aCallAll('postAceInit', {ace: padeditor.ace, pad});
     };
 
+    // order of inits is important here:
+    padimpexp.init(this);
+    padsavedrevs.init(this);
     padeditor.init(postAceInit, pad.padOptions.view || {}, this);
-
     paduserlist.init(pad.myUserInfo, this);
     padconnectionstatus.init();
     padmodals.init(this);
 
-    pad.collabClient = getCollabClient(padeditor.ace,
-        clientVars.collab_client_vars,
-        pad.myUserInfo,
-        {
-          colorPalette: pad.getColorPalette(),
-        },
-        pad
-    );
+    pad.collabClient = getCollabClient(
+        padeditor.ace, clientVars.collab_client_vars, pad.myUserInfo,
+        {colorPalette: pad.getColorPalette()}, pad);
     pad.collabClient.setOnUserJoin(pad.handleUserJoin);
     pad.collabClient.setOnUpdateUserInfo(pad.handleUserUpdate);
     pad.collabClient.setOnUserLeave(pad.handleUserLeave);

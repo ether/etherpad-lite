@@ -24,7 +24,6 @@
 
 const padutils = require('./pad_utils').padutils;
 const hooks = require('./pluginfw/hooks');
-const _ = window._;
 const browser = require('./browser');
 
 let myUserInfo = {};
@@ -94,23 +93,20 @@ const paduserlist = (function () {
       return (rowsFadingIn.length > 0) || (rowsFadingOut.length > 0); // is more to do
     };
 
-
     const getAnimationHeight = (step, power) => {
       let a = Math.abs(step / 12);
-      if (power === 2) a *= a;
-      else if (power === 3) a = Math.pow(a, 3);
-      else if (power === 4) a = Math.pow(a, 4);
-      else if (power >= 5) a = Math.pow(a, 5);
+      if (power === 2) a **= 2;
+      else if (power === 3) a **= 3;
+      else if (power === 4) a **= 4;
+      else if (power >= 5) a **= 5;
       return Math.round(26 * (1 - a));
     };
     const OPACITY_STEPS = 6;
 
     const ANIMATION_STEP_TIME = 20;
     const LOWER_FRAMERATE_FACTOR = 2;
-    const scheduleAnimation = padutils
-        .makeAnimationScheduler(
-            animateStep, ANIMATION_STEP_TIME, LOWER_FRAMERATE_FACTOR
-        ).scheduleAnimation;
+    const {scheduleAnimation} =
+        padutils.makeAnimationScheduler(animateStep, ANIMATION_STEP_TIME, LOWER_FRAMERATE_FACTOR);
 
     const NUMCOLS = 4;
 
@@ -153,7 +149,7 @@ const paduserlist = (function () {
             .attr('type', 'text')
             .addClass('editempty')
             .addClass('newinput')
-            .attr('value', _('pad.userlist.unnamed'));
+            .attr('value', html10n.get('pad.userlist.unnamed'));
         if (isNameEditable(data)) name.attr('disabled', 'disabled');
       }
       return $()
@@ -254,11 +250,7 @@ const paduserlist = (function () {
         if (row.animationStep === 0) {
           // not currently animating
           const tr = rowNode(row);
-          replaceUserRowContents(
-              tr,
-              getAnimationHeight(0),
-              row.data
-          )
+          replaceUserRowContents(tr, getAnimationHeight(0), row.data)
               .find('td')
               .css('opacity', (row.opacity === undefined ? 1 : row.opacity));
           handleOtherUserInputs();
@@ -298,7 +290,6 @@ const paduserlist = (function () {
       }
     };
 
-
     const self = {
       insertRow,
       removeRow,
@@ -321,7 +312,7 @@ const paduserlist = (function () {
     }, (newName) => {
       if (!newName) {
         jnode.addClass('editempty');
-        jnode.val(_('pad.userlist.unnamed'));
+        jnode.val(html10n.get('pad.userlist.unnamed'));
       } else {
         jnode.attr('disabled', 'disabled');
         pad.suggestUserName(userId, newName);
@@ -370,6 +361,7 @@ const paduserlist = (function () {
       if ($('#online_count').length === 0) {
         $('#editbar [data-key=showusers] > a').append('<span id="online_count">1</span>');
       }
+
       $('#otheruserstable tr').remove();
 
       $('#myusernameedit').addClass('myusernameedithoverable');

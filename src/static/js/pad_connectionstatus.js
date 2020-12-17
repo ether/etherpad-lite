@@ -24,7 +24,7 @@
 
 const padmodals = require('./pad_modals').padmodals;
 
-const padconnectionstatusFn = () => {
+const padconnectionstatus = (() => {
   let status = {
     what: 'connecting',
   };
@@ -87,7 +87,6 @@ const padconnectionstatusFn = () => {
     getStatus: () => status,
   };
   return self;
-};
-const padconnectionstatus = padconnectionstatusFn();
+})();
 
 exports.padconnectionstatus = padconnectionstatus;

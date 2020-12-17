@@ -25,8 +25,7 @@
 const padeditbar = require('./pad_editbar').padeditbar;
 const automaticReconnect = require('./pad_automatic_reconnect');
 
-
-const padModalsFn = () => {
+const padmodals = (() => {
   let pad = undefined;
   const self = {
     init: (_pad) => {
@@ -47,9 +46,11 @@ const padModalsFn = () => {
       // Prevent the user to interact with the toolbar. Useful when user is disconnected for example
       $('#toolbar-overlay').show();
     },
-    hideOverlay: () => $('#toolbar-overlay').hide(),
+    hideOverlay: () => {
+      $('#toolbar-overlay').hide();
+    },
   };
   return self;
-};
+})();
 
-exports.padmodals = padModalsFn();
+exports.padmodals = padmodals;

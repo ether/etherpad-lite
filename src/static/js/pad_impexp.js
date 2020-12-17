@@ -1,4 +1,5 @@
 'use strict';
+
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -21,14 +22,17 @@
  * limitations under the License.
  */
 
-const padimpexp = (function () {
+const padimpexp = (() => {
   // /// import
   let currentImportTimer = null;
 
   const addImportFrames = () => {
     $('#import .importframe').remove();
-    const f = $('<iframe style="display: none;" name="importiframe" class="importframe"></iframe>');
-    $('#import').append(f);
+    const iframe = $('<iframe>')
+        .css('display', 'none')
+        .attr('name', 'importiframe')
+        .addClass('importframe');
+    $('#import').append(iframe);
   };
 
   const fileInputUpdated = () => {
@@ -104,10 +108,9 @@ const padimpexp = (function () {
     }
 
     const showError = (fade) => {
-      $('#importmessagefail')
-          .html(`<strong style="color: red">
-        ${html10n.get('pad.impexp.importfailed')}:</strong>
-        ${msg || html10n.get('pad.impexp.copypaste', '')}`)[(fade ? 'fadeIn' : 'show')]();
+      $('#importmessagefail').html(
+          `<strong style="color: red">${html10n.get('pad.impexp.importfailed')}:</strong> ` +
+          `${msg || html10n.get('pad.impexp.copypaste', '')}`)[(fade ? 'fadeIn' : 'show')]();
     };
 
     if ($('#importexport .importmessage').is(':visible')) {
@@ -145,12 +148,10 @@ const padimpexp = (function () {
 
       // get /p/padname
       // if /p/ isn't available due to a rewrite we use the clientVars padId
-      const pad_root_path = new RegExp(/.*\/p\/[^/]+/)
-          .exec(document.location.pathname) || clientVars.padId;
+      const padRootPath = /.*\/p\/[^/]+/.exec(document.location.pathname) || clientVars.padId;
       // get http://example.com/p/padname without Params
-
       const dl = document.location;
-      const pad_root_url = `${dl.protocol}//${dl.host}${dl.pathname}`;
+      const padRootUrl = `${dl.protocol}//${dl.host}${dl.pathname}`;
 
       // i10l buttom import
       $('#importsubmitinput').val(html10n.get('pad.impexp.importbutton'));
@@ -159,12 +160,12 @@ const padimpexp = (function () {
       });
 
       // build the export links
-      $('#exporthtmla').attr('href', `${pad_root_path}/export/html`);
-      $('#exportetherpada').attr('href', `${pad_root_path}/export/etherpad`);
-      $('#exportplaina').attr('href', `${pad_root_path}/export/txt`);
+      $('#exporthtmla').attr('href', `${padRootPath}/export/html`);
+      $('#exportetherpada').attr('href', `${padRootPath}/export/etherpad`);
+      $('#exportplaina').attr('href', `${padRootPath}/export/txt`);
 
       // activate action to import in the form
-      $('#importform').attr('action', `${pad_root_url}/import`);
+      $('#importform').attr('action', `${padRootUrl}/import`);
 
       // hide stuff thats not avaible if abiword/soffice is disabled
       if (clientVars.exportAvailable === 'no') {
@@ -176,15 +177,15 @@ const padimpexp = (function () {
       } else if (clientVars.exportAvailable === 'withoutPDF') {
         $('#exportpdfa').remove();
 
-        $('#exportworda').attr('href', `${pad_root_path}/export/doc`);
-        $('#exportopena').attr('href', `${pad_root_path}/export/odt`);
+        $('#exportworda').attr('href', `${padRootPath}/export/doc`);
+        $('#exportopena').attr('href', `${padRootPath}/export/odt`);
 
         $('#importexport').css({height: '142px'});
         $('#importexportline').css({height: '142px'});
       } else {
-        $('#exportworda').attr('href', `${pad_root_path}/export/doc`);
-        $('#exportpdfa').attr('href', `${pad_root_path}/export/pdf`);
-        $('#exportopena').attr('href', `${pad_root_path}/export/odt`);
+        $('#exportworda').attr('href', `${padRootPath}/export/doc`);
+        $('#exportpdfa').attr('href', `${padRootPath}/export/pdf`);
+        $('#exportopena').attr('href', `${padRootPath}/export/odt`);
       }
 
       addImportFrames();
@@ -220,6 +221,6 @@ const padimpexp = (function () {
     },
   };
   return self;
-}());
+})();
 
 exports.padimpexp = padimpexp;
