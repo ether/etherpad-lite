@@ -44,6 +44,7 @@ const paduserlist = require('./pad_userlist').paduserlist;
 const padutils = require('./pad_utils').padutils;
 const colorutils = require('./colorutils').colorutils;
 const randomString = require('./pad_utils').randomString;
+const gritter = require('./gritter').gritter;
 
 const hooks = require('./pluginfw/hooks');
 
@@ -275,14 +276,16 @@ const handshake = () => {
 
   socket.on('message', (obj) => {
     // the access was not granted, give the user a message
-    if (obj.accessStatus && obj.accessStatus === 'deny') {
-      $('#loading').hide();
-      $('#permissionDenied').show();
+    if (obj.accessStatus) {
+      if (obj.accessStatus === 'deny') {
+        $('#loading').hide();
+        $('#permissionDenied').show();
 
-      if (receivedClientVars) {
-        // got kicked
-        $('#editorcontainer').hide();
-        $('#editorloadingbox').show();
+        if (receivedClientVars) {
+          // got kicked
+          $('#editorcontainer').hide();
+          $('#editorloadingbox').show();
+        }
       }
     } else if (!receivedClientVars && obj.type === 'CLIENT_VARS') {
       // if we haven't recieved the clientVars yet, then this message should it be
@@ -567,10 +570,8 @@ const pad = {
         pad.padOptions.view = {};
       }
       for (const k in opts.view) {
-        if (opts.view[k]) {
-          pad.padOptions.view[k] = opts.view[k];
-          padcookie.setPref(k, opts.view[k]);
-        }
+        pad.padOptions.view[k] = opts.view[k];
+        padcookie.setPref(k, opts.view[k]);
       }
       padeditor.setViewOptions(pad.padOptions.view);
     }
@@ -640,13 +641,11 @@ const pad = {
       // we filter non objects from the socket object and put them in the diagnosticInfo
       // this ensures we have no cyclic data - this allows us to stringify the data
       for (const i in socket.socket) {
-        if (socket.socket[i]) {
-          const value = socket.socket[i];
-          const type = typeof value;
+        const value = socket.socket[i];
+        const type = typeof value;
 
-          if (type === 'string' || type === 'number') {
-            pad.diagnosticInfo.socket[i] = value;
-          }
+        if (type === 'string' || type === 'number') {
+          pad.diagnosticInfo.socket[i] = value;
         }
       }
 

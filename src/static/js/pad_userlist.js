@@ -413,18 +413,16 @@ const paduserlist = (function () {
       // Now we add historical authors
       const historical = clientVars.collab_client_vars.historicalAuthorData;
       for (const key in historical) {
-        if (historical[key]) {
-          const userId = historical[key].userId;
-          // Check we don't already have this author in our array
-          let exists = false;
+        const userId = historical[key].userId;
+        // Check we don't already have this author in our array
+        let exists = false;
 
-          userList.forEach((user) => {
-            if (user.userId === userId) exists = true;
-          });
+        userList.forEach((user) => {
+          if (user.userId === userId) exists = true;
+        });
 
-          if (exists === false) {
-            userList.push(historical[key]);
-          }
+        if (exists === false) {
+          userList.push(historical[key]);
         }
       }
       return userList;
