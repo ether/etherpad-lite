@@ -289,8 +289,8 @@ const handshake = () => {
       receivedClientVars = true;
 
       // set some client vars
-      // JM TODO: clientVars is global and that's usually fine so what's the problem?
-      clientVars = obj.data;
+      // JM TODO: clientVars is global.  Leave this in as code vomit and TODO?
+      window.clientVars = obj.data;
 
       // initalize the pad
       pad._afterHandshake();
@@ -761,6 +761,7 @@ const settings = {
 };
 
 pad.settings = settings;
+
 exports.baseURL = '';
 exports.settings = settings;
 exports.randomString = randomString;
