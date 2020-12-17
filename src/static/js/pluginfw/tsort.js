@@ -70,7 +70,7 @@ const tsortTest = () => {
   ];
 
   let sorted = tsort(edges);
-  // console.log(sorted);
+  console.log(sorted);
 
   // example 2: failure ( A > B > C > A )
   edges = [
