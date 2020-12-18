@@ -1,9 +1,12 @@
+'use strict';
 /*
  * ACHTUNG: there is a copied & modified version of this file in
  * <basedir>/tests/container/spacs/api/pad.js
  *
  * TODO: unify those two files, and merge in a single one.
  */
+
+/* eslint-disable max-len */
 
 const common = require('../../common');
 const supertest = require(`${__dirname}/../../../../src/node_modules/supertest`);
@@ -12,7 +15,6 @@ const api = supertest(`http://${settings.ip}:${settings.port}`);
 
 const apiKey = common.apiKey;
 const apiVersion = 1;
-const lastEdited = '';
 
 const testImports = {
   'malformed': {
@@ -59,8 +61,13 @@ const testImports = {
 describe(__filename, function () {
   Object.keys(testImports).forEach((testName) => {
     const testPadId = makeid();
-    test = testImports[testName];
-    describe('createPad', function () {
+    const test = testImports[testName];
+    if (test.disabled) {
+      return xit(`DISABLED: ${testName}`, function (done) {
+        done();
+      });
+    }
+    describe(`createPad ${testName}`, function () {
       it('creates a new Pad', function (done) {
         api.get(`${endPoint('createPad')}&padID=${testPadId}`)
             .expect((res) => {
@@ -71,9 +78,9 @@ describe(__filename, function () {
       });
     });
 
-    describe('setHTML', function () {
+    describe(`setHTML ${testName}`, function () {
       it('Sets the HTML', function (done) {
-        api.get(`${endPoint('setHTML')}&padID=${testPadId}&html=${test.input}`)
+        api.get(`${endPoint('setHTML')}&padID=${testPadId}&html=${encodeURIComponent(test.input)}`)
             .expect((res) => {
               if (res.body.code !== 0) throw new Error(`Error:${testName}`);
             })
@@ -82,7 +89,7 @@ describe(__filename, function () {
       });
     });
 
-    describe('getHTML', function () {
+    describe(`getHTML ${testName}`, function () {
       it('Gets back the HTML of a Pad', function (done) {
         api.get(`${endPoint('getHTML')}&padID=${testPadId}`)
             .expect((res) => {
@@ -93,10 +100,10 @@ describe(__filename, function () {
              ${testName}
 
              Received:
-             ${receivedHtml}
+             ${JSON.stringify(receivedHtml)}
 
              Expected:
-             ${test.expectedHTML}
+             ${JSON.stringify(test.expectedHTML)}
 
              Which is a different version of the originally imported one:
              ${test.input}`);
@@ -107,7 +114,7 @@ describe(__filename, function () {
       });
     });
 
-    describe('getText', function () {
+    describe(`getText ${testName}`, function () {
       it('Gets back the Text of a Pad', function (done) {
         api.get(`${endPoint('getText')}&padID=${testPadId}`)
             .expect((res) => {
@@ -118,10 +125,10 @@ describe(__filename, function () {
              ${testName}
 
              Received:
-             ${receivedText}
+             ${JSON.stringify(receivedText)}
 
              Expected:
-             ${test.expectedText}
+             ${JSON.stringify(test.expectedText)}
 
              Which is a different version of the originally imported one:
              ${test.input}`);
@@ -135,7 +142,7 @@ describe(__filename, function () {
 });
 
 
-var endPoint = function (point, version) {
+function endPoint(point, version) {
   version = version || apiVersion;
   return `/api/${version}/${point}?apikey=${apiKey}`;
 };
@@ -149,32 +156,3 @@ function makeid() {
   }
   return text;
 }
-
-function generateLongText() {
-  let text = '';
-  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-  for (let i = 0; i < 80000; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
-}
-
-// Need this to compare arrays (listSavedRevisions test)
-Array.prototype.equals = function (array) {
-  // if the other array is a falsy value, return
-  if (!array) return false;
-  // compare lengths - can save a lot of time
-  if (this.length != array.length) return false;
-  for (let i = 0, l = this.length; i < l; i++) {
-    // Check if we have nested arrays
-    if (this[i] instanceof Array && array[i] instanceof Array) {
-      // recurse into the nested arrays
-      if (!this[i].equals(array[i])) return false;
-    } else if (this[i] != array[i]) {
-      // Warning - two different object instances will never be equal: {x:20} != {x:20}
-      return false;
-    }
-  }
-  return true;
-};
