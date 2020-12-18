@@ -201,7 +201,7 @@ domline.createDomLine = function (nonEmpty, doesWrap, optBrowser, optDocument) {
     if (!newHTML) {
       if ((!document) || (!optBrowser)) {
         newHTML += '&nbsp;';
-      } else if (!optBrowser.msie) {
+      } else {
         newHTML += '<br/>';
       }
     }

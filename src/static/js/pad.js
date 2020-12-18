@@ -406,13 +406,6 @@ var pad = {
     pad.initTime = +(new Date());
     pad.padOptions = clientVars.initialOptions;
 
-    // for IE
-    if (browser.msie) {
-      try {
-        document.execCommand('BackgroundImageCache', false, true);
-      } catch (e) {}
-    }
-
     // order of inits is important here:
     pad.myUserInfo = {
       userId: clientVars.userId,

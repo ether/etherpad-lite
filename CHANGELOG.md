@@ -5,6 +5,8 @@
   Existing group pads that were previously password protected will no longer be
   password protected. If you need fine-grained access control, you can restrict
   API session creation in your frontend service, or you can use plugins.
+* All workarounds for Microsoft Internet Explorer have been removed. IE might
+  still work, but it is untested.
 * Plugin hook functions are now subject to new sanity checks. Buggy hook
   functions will cause an error message to be logged
 * Authorization failures now return 403 by default instead of 401
