@@ -72,7 +72,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     onClientMessage() {},
     onInternalAction() {},
     onConnectionTrouble() {},
-    onServerMessage() {},
   };
   if (browser.firefox) {
     // Prevent "escape" from taking effect and canceling a comet connection;
@@ -392,8 +391,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       // there are less than 100 messages or we reached the top
       if (chat.historyPointer <= 0) { $('#chatloadmessagesbutton').css('display', 'none'); } else // there are still more messages, re-show the load-button
       { $('#chatloadmessagesbutton').css('display', 'block'); }
-    } else if (msg.type == 'SERVER_MESSAGE') {
-      callbacks.onServerMessage(msg.payload);
     }
 
     // HACKISH: User messages do not have "payload" but "userInfo", so that all "handleClientMessage_USER_" hooks would work, populate payload
@@ -585,9 +582,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     },
     setOnConnectionTrouble(cb) {
       callbacks.onConnectionTrouble = cb;
-    },
-    setOnServerMessage(cb) {
-      callbacks.onServerMessage = cb;
     },
     updateUserInfo: defer(updateUserInfo),
     handleMessageFromServer,

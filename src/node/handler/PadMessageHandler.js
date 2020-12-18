@@ -1013,9 +1013,7 @@ async function handleClientReady(socket, message, authorID) {
       },
       automaticReconnectionTimeout: settings.automaticReconnectionTimeout,
       initialRevisionList: [],
-      initialOptions: {
-        guestPolicy: 'deny',
-      },
+      initialOptions: {},
       savedRevisions: pad.getSavedRevisions(),
       collab_client_vars: {
         initialAttributedText: atext,
@@ -1028,7 +1026,6 @@ async function handleClientReady(socket, message, authorID) {
       },
       colorPalette: authorManager.getColorPalette(),
       clientIp: '127.0.0.1',
-      userIsGuest: true,
       userColor: authorColorId,
       padId: message.padId,
       padOptions: settings.padOptions,
