@@ -275,13 +275,6 @@ linestylefilter.getFilterStack = function (lineText, textAndClassFunc, abrowser)
     func = hookFilter(lineText, func);
   });
 
-  if (abrowser !== undefined && abrowser.msie) {
-    // IE7+ will take an e-mail address like <foo@bar.com> and linkify it to foo@bar.com.
-    // We then normalize it back to text with no angle brackets.  It's weird.  So always
-    // break spans at an "at" sign.
-    func = linestylefilter.getAtSignSplitterFilter(
-        lineText, func);
-  }
   return func;
 };
 
