@@ -1,8 +1,10 @@
-const Changeset = require('../../../src/static/js/Changeset');
+'use strict';
+
+/* eslint-disable max-len */
+
 const contentcollector = require('../../../src/static/js/contentcollector');
 const AttributePool = require('../../../src/static/js/AttributePool');
 const cheerio = require('../../../src/node_modules/cheerio');
-const util = require('util');
 
 const tests = {
   nestedLi: {
@@ -89,7 +91,7 @@ const tests = {
     expectedText: ['a', '*b', '*c', 'notlist', 'foo'],
     noteToSelf: 'Ensure empty P does not induce line attribute marker, wont this break the editor?',
   },
-  nestedOl: {
+  nestedOl2: {
     description: 'First item being an UL then subsequent being OL will fail',
     html: '<html><body><ul><li>a<ol><li>b</li><li>c</li></ol></li></ul></body></html>',
     expectedLineAttribs: ['+1', '*0*1*2*3+1+1', '*0*4*2*5+1+1'],
@@ -109,7 +111,7 @@ const tests = {
 };
 
 describe(__filename, function () {
-  for (const test in tests) {
+  for (const test of Object.keys(tests)) {
     const testObj = tests[test];
     describe(test, function () {
       if (testObj.disabled) {
