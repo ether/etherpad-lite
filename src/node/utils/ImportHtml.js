@@ -36,7 +36,7 @@ exports.setPadHTML = async (pad, html) => {
   // below the last line of an import
   $('body').append('<p></p>');
 
-  const doc = $('html')[0];
+  const doc = $('body')[0];
   apiLogger.debug('html:');
   apiLogger.debug(html);
 
