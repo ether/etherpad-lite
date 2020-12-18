@@ -107,7 +107,12 @@ const tests = {
     noteToSelf: "<p></p>should create a line break but not break numbering -- This is what I can't get working!",
     disabled: true,
   },
-
+  ignoreAnyTagsOutsideBody: {
+    description: 'Content outside body should be ignored',
+    html: '<html><head><title>title</title><style></style></head><body>empty<br></body></html>',
+    expectedLineAttribs: ['+5'],
+    expectedText: ['empty'],
+  },
 };
 
 describe(__filename, function () {
@@ -122,7 +127,7 @@ describe(__filename, function () {
 
       it(testObj.description, function (done) {
         const $ = cheerio.load(testObj.html); // Load HTML into Cheerio
-        const doc = $('html')[0]; // Creates a dom-like representation of HTML
+        const doc = $('body')[0]; // Creates a dom-like representation of HTML
         // Create an empty attribute pool
         const apool = new AttributePool();
         // Convert a dom tree into a list of lines and attribute liens

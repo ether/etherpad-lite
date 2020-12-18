@@ -56,6 +56,12 @@ const testImports = {
     expectedText: '\t1. should be 1\n\ttest\n\t2. should be 2\n\n'
   }
   */
+  'ignoreAnyTagsOutsideBody': {
+    description: 'Content outside body should be ignored',
+    input: '<html><head><title>title</title><style></style></head><body>empty<br></body></html>',
+    expectedHTML: '<!DOCTYPE HTML><html><body>empty<br><br></body></html>',
+    expectedText: 'empty\n\n',
+  },
 };
 
 describe(__filename, function () {
