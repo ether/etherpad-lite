@@ -172,9 +172,6 @@
   "pad.savedrevs.timeslider": "You can see saved revisions by visiting the timeslider",
   "pad.userlist.entername": "Enter your name",
   "pad.userlist.unnamed": "unnamed",
-  "pad.userlist.guest": "Guest",
-  "pad.userlist.deny": "Deny",
-  "pad.userlist.approve": "Approve",
   "pad.editbar.clearcolors": "Clear authorship colors on entire document? This cannot be undone",
 
   "pad.impexp.importbutton": "Import Now",

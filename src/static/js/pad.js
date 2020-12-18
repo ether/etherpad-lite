@@ -337,9 +337,6 @@ var pad = {
   getPrivilege(name) {
     return clientVars.accountPrivs[name];
   },
-  getUserIsGuest() {
-    return clientVars.userIsGuest;
-  },
   getUserId() {
     return pad.myUserInfo.userId;
   },
@@ -440,7 +437,6 @@ var pad = {
     pad.collabClient.setOnUpdateUserInfo(pad.handleUserUpdate);
     pad.collabClient.setOnUserLeave(pad.handleUserLeave);
     pad.collabClient.setOnClientMessage(pad.handleClientMessage);
-    pad.collabClient.setOnServerMessage(pad.handleServerMessage);
     pad.collabClient.setOnChannelStateChange(pad.handleChannelStateChange);
     pad.collabClient.setOnInternalAction(pad.handleCollabAction);
 
@@ -537,17 +533,10 @@ var pad = {
       }
       padeditor.setViewOptions(pad.padOptions.view);
     }
-    if (opts.guestPolicy) {
-      // order important here
-      pad.padOptions.guestPolicy = opts.guestPolicy;
-    }
   },
   getPadOptions() {
     // caller shouldn't mutate the object
     return pad.padOptions;
-  },
-  isPadPublic() {
-    return pad.getPadOptions().guestPolicy == 'allow';
   },
   suggestUserName(userId, name) {
     pad.collabClient.sendClientMessage(
@@ -579,9 +568,6 @@ var pad = {
     } else if (msg.type == 'padoptions') {
       const opts = msg.options;
       pad.handleOptionsChange(opts);
-    } else if (msg.type == 'guestanswer') {
-      // someone answered a prompt, remove it
-      paduserlist.removeGuestPrompt(msg.guestId);
     }
   },
   dmesg(m) {
@@ -592,21 +578,6 @@ var pad = {
       if (wasAtBottom) {
         djs.scrollTop = djs.scrollHeight;
       }
-    }
-  },
-  handleServerMessage(m) {
-    if (m.type == 'NOTICE') {
-      if (m.text) {
-        alertBar.displayMessage((abar) => {
-          abar.find('#servermsgdate').text(` (${padutils.simpleDateTime(new Date())})`);
-          abar.find('#servermsgtext').text(m.text);
-        });
-      }
-      if (m.js) {
-        window['ev' + 'al'](m.js);
-      }
-    } else if (m.type == 'GUEST_PROMPT') {
-      paduserlist.showGuestPrompt(m.userId, m.displayName);
     }
   },
   handleChannelStateChange(newState, message) {
@@ -695,9 +666,6 @@ var pad = {
       padeditbar.setSyncStatus('done');
     }
   },
-  hideServerMessage() {
-    alertBar.hideMessage();
-  },
   asyncSendDiagnosticInfo() {
     window.setTimeout(() => {
       $.ajax(
@@ -743,35 +711,6 @@ var pad = {
   },
 };
 
-var alertBar = (function () {
-  const animator = padutils.makeShowHideAnimator(arriveAtAnimationState, false, 25, 400);
-
-  function arriveAtAnimationState(state) {
-    if (state == -1) {
-      $('#alertbar').css('opacity', 0).css('display', 'block');
-    } else if (state == 0) {
-      $('#alertbar').css('opacity', 1);
-    } else if (state == 1) {
-      $('#alertbar').css('opacity', 0).css('display', 'none');
-    } else if (state < 0) {
-      $('#alertbar').css('opacity', state + 1);
-    } else if (state > 0) {
-      $('#alertbar').css('opacity', 1 - state);
-    }
-  }
-
-  const self = {
-    displayMessage(setupFunc) {
-      animator.show();
-      setupFunc($('#alertbar'));
-    },
-    hideMessage() {
-      animator.hide();
-    },
-  };
-  return self;
-}());
-
 function init() {
   return pad.init();
 }
@@ -794,4 +733,3 @@ exports.getUrlVars = getUrlVars;
 exports.handshake = handshake;
 exports.pad = pad;
 exports.init = init;
-exports.alertBar = alertBar;

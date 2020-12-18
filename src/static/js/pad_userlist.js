@@ -352,26 +352,6 @@ const paduserlist = (function () {
     jqueryNode.removeAttr('disabled').addClass('editable');
   }
 
-  const knocksToIgnore = {};
-  let guestPromptFlashState = 0;
-  const guestPromptFlash = padutils.makeAnimationScheduler(
-
-      () => {
-        const prompts = $('#guestprompts .guestprompt');
-        if (prompts.length == 0) {
-          return false; // no more to do
-        }
-
-        guestPromptFlashState = 1 - guestPromptFlashState;
-        if (guestPromptFlashState) {
-          prompts.css('background', '#ffa');
-        } else {
-          prompts.css('background', '#ffe');
-        }
-
-        return true;
-      }, 1000);
-
   var pad = undefined;
   var self = {
     init(myInitialUserInfo, _pad) {
@@ -383,18 +363,16 @@ const paduserlist = (function () {
 
       $('#otheruserstable tr').remove();
 
-      if (pad.getUserIsGuest()) {
-        $('#myusernameedit').addClass('myusernameedithoverable');
-        setUpEditable($('#myusernameedit'), () => myUserInfo.name || '', (newValue) => {
-          myUserInfo.name = newValue;
-          pad.notifyChangeName(newValue);
-          // wrap with setTimeout to do later because we get
-          // a double "blur" fire in IE...
-          window.setTimeout(() => {
-            self.renderMyUserInfo();
-          }, 0);
-        });
-      }
+      $('#myusernameedit').addClass('myusernameedithoverable');
+      setUpEditable($('#myusernameedit'), () => myUserInfo.name || '', (newValue) => {
+        myUserInfo.name = newValue;
+        pad.notifyChangeName(newValue);
+        // wrap with setTimeout to do later because we get
+        // a double "blur" fire in IE...
+        window.setTimeout(() => {
+          self.renderMyUserInfo();
+        }, 0);
+      });
 
       // color picker
       $('#myswatchbox').click(showColorPicker);
@@ -550,56 +528,6 @@ const paduserlist = (function () {
       }
 
       self.updateNumberOfOnlineUsers();
-    },
-    showGuestPrompt(userId, displayName) {
-      if (knocksToIgnore[userId]) {
-        return;
-      }
-
-      const encodedUserId = padutils.encodeUserId(userId);
-
-      const actionName = `hide-guest-prompt-${encodedUserId}`;
-      padutils.cancelActions(actionName);
-
-      let box = $(`#guestprompt-${encodedUserId}`);
-      if (box.length == 0) {
-        // make guest prompt box
-        box = $(`<div id="${padutils.escapeHtml(`guestprompt-${encodedUserId}`)}" class="guestprompt"><div class="choices"><a href="${padutils.escapeHtml(`javascript:void(require(${JSON.stringify(module.id)}).paduserlist.answerGuestPrompt(${JSON.stringify(encodedUserId)},false))`)}">${_('pad.userlist.deny')}</a> <a href="${padutils.escapeHtml(`javascript:void(require(${JSON.stringify(module.id)}).paduserlist.answerGuestPrompt(${JSON.stringify(encodedUserId)},true))`)}">${_('pad.userlist.approve')}</a></div><div class="guestname"><strong>${_('pad.userlist.guest')}:</strong> ${padutils.escapeHtml(displayName)}</div></div>`);
-        $('#guestprompts').append(box);
-      } else {
-        // update display name
-        box.find('.guestname').html(`<strong>${_('pad.userlist.guest')}:</strong> ${padutils.escapeHtml(displayName)}`);
-      }
-      const hideLater = padutils.getCancellableAction(actionName, () => {
-        self.removeGuestPrompt(userId);
-      });
-      window.setTimeout(hideLater, 15000); // time-out with no knock
-      guestPromptFlash.scheduleAnimation();
-    },
-    removeGuestPrompt(userId) {
-      const box = $(`#guestprompt-${padutils.encodeUserId(userId)}`);
-      // remove ID now so a new knock by same user gets new, unfaded box
-      box.removeAttr('id').fadeOut('fast', () => {
-        box.remove();
-      });
-
-      knocksToIgnore[userId] = true;
-      window.setTimeout(() => {
-        delete knocksToIgnore[userId];
-      }, 5000);
-    },
-    answerGuestPrompt(encodedUserId, approve) {
-      const guestId = padutils.decodeUserId(encodedUserId);
-
-      const msg = {
-        type: 'guestanswer',
-        authId: pad.getUserId(),
-        guestId,
-        answer: (approve ? 'approved' : 'denied'),
-      };
-      pad.sendClientMessage(msg);
-
-      self.removeGuestPrompt(guestId);
     },
     renderMyUserInfo() {
       if (myUserInfo.name) {
