@@ -44,7 +44,7 @@ const paduserlist = require('./pad_userlist').paduserlist;
 const padutils = require('./pad_utils').padutils;
 const colorutils = require('./colorutils').colorutils;
 const randomString = require('./pad_utils').randomString;
-const gritter = require('./gritter').gritter;
+require('./gritter'); // Mutates the jQuery object to make $.gritter available.
 
 const hooks = require('./pluginfw/hooks');
 
