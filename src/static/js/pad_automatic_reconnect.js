@@ -1,4 +1,6 @@
-exports.showCountDownTimerToReconnectOnModal = function ($modal, pad) {
+'use strict';
+
+exports.showCountDownTimerToReconnectOnModal = ($modal, pad) => {
   if (clientVars.automaticReconnectionTimeout && $modal.is('.with_reconnect_timer')) {
     createCountDownElementsIfNecessary($modal);
 
@@ -13,7 +15,7 @@ exports.showCountDownTimerToReconnectOnModal = function ($modal, pad) {
   }
 };
 
-var createCountDownElementsIfNecessary = function ($modal) {
+const createCountDownElementsIfNecessary = ($modal) => {
   const elementsDoNotExist = $modal.find('#cancelreconnect').length === 0;
   if (elementsDoNotExist) {
     const $defaultMessage = $modal.find('#defaulttext');
@@ -45,12 +47,13 @@ var createCountDownElementsIfNecessary = function ($modal) {
   }
 };
 
-var localize = function ($element) {
+const localize = ($element) => {
   html10n.translateElement(html10n.translations, $element.get(0));
 };
 
-var createTimerForModal = function ($modal, pad) {
-  const timeUntilReconnection = clientVars.automaticReconnectionTimeout * reconnectionTries.nextTry();
+const createTimerForModal = ($modal, pad) => {
+  const timeUntilReconnection =
+      clientVars.automaticReconnectionTimeout * reconnectionTries.nextTry();
   const timer = new CountDownTimer(timeUntilReconnection);
 
   timer.onTick((minutes, seconds) => {
@@ -68,23 +71,23 @@ var createTimerForModal = function ($modal, pad) {
   return timer;
 };
 
-var disableAutomaticReconnection = function ($modal) {
+const disableAutomaticReconnection = ($modal) => {
   toggleAutomaticReconnectionOption($modal, true);
 };
-var enableAutomaticReconnection = function ($modal) {
+const enableAutomaticReconnection = ($modal) => {
   toggleAutomaticReconnectionOption($modal, false);
 };
-var toggleAutomaticReconnectionOption = function ($modal, disableAutomaticReconnect) {
+const toggleAutomaticReconnectionOption = ($modal, disableAutomaticReconnect) => {
   $modal.find('#cancelreconnect, .reconnecttimer').toggleClass('hidden', disableAutomaticReconnect);
   $modal.find('#defaulttext').toggleClass('hidden', !disableAutomaticReconnect);
 };
 
-var waitUntilClientCanConnectToServerAndThen = function (callback, pad) {
+const waitUntilClientCanConnectToServerAndThen = (callback, pad) => {
   whenConnectionIsRestablishedWithServer(callback, pad);
   pad.socket.connect();
 };
 
-var whenConnectionIsRestablishedWithServer = function (callback, pad) {
+const whenConnectionIsRestablishedWithServer = (callback, pad) => {
   // only add listener for the first try, don't need to add another listener
   // on every unsuccessful try
   if (reconnectionTries.counter === 1) {
@@ -92,11 +95,11 @@ var whenConnectionIsRestablishedWithServer = function (callback, pad) {
   }
 };
 
-var forceReconnection = function ($modal) {
+const forceReconnection = ($modal) => {
   $modal.find('#forcereconnect').click();
 };
 
-var updateCountDownTimerMessage = function ($modal, minutes, seconds) {
+const updateCountDownTimerMessage = ($modal, minutes, seconds) => {
   minutes = minutes < 10 ? `0${minutes}` : minutes;
   seconds = seconds < 10 ? `0${seconds}` : seconds;
 
@@ -105,7 +108,7 @@ var updateCountDownTimerMessage = function ($modal, minutes, seconds) {
 
 // store number of tries to reconnect to server, in order to increase time to wait
 // until next try
-var reconnectionTries = {
+const reconnectionTries = {
   counter: 0,
 
   nextTry() {
@@ -119,8 +122,9 @@ var reconnectionTries = {
 
 // Timer based on http://stackoverflow.com/a/20618517.
 // duration: how many **seconds** until the timer ends
-// granularity (optional): how many **milliseconds** between each 'tick' of timer. Default: 1000ms (1s)
-var CountDownTimer = function (duration, granularity) {
+// granularity (optional): how many **milliseconds**
+// between each 'tick' of timer. Default: 1000ms (1s)
+const CountDownTimer = function (duration, granularity) {
   this.duration = duration;
   this.granularity = granularity || 1000;
   this.running = false;
@@ -137,8 +141,7 @@ CountDownTimer.prototype.start = function () {
   const start = Date.now();
   const that = this;
   let diff;
-
-  (function timer() {
+  const timer = () => {
     diff = that.duration - Math.floor((Date.now() - start) / 1000);
 
     if (diff > 0) {
@@ -149,7 +152,8 @@ CountDownTimer.prototype.start = function () {
       that.tick(0);
       that.expire();
     }
-  }());
+  };
+  timer();
 };
 
 CountDownTimer.prototype.tick = function (diff) {
@@ -184,9 +188,7 @@ CountDownTimer.prototype.cancel = function () {
   return this;
 };
 
-CountDownTimer.parse = function (seconds) {
-  return {
-    minutes: (seconds / 60) | 0,
-    seconds: (seconds % 60) | 0,
-  };
-};
+CountDownTimer.parse = (seconds) => ({
+  minutes: (seconds / 60) | 0,
+  seconds: (seconds % 60) | 0,
+});

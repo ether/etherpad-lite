@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -23,13 +25,13 @@
 const padeditbar = require('./pad_editbar').padeditbar;
 const automaticReconnect = require('./pad_automatic_reconnect');
 
-const padmodals = (function () {
+const padmodals = (() => {
   let pad = undefined;
   const self = {
-    init(_pad) {
+    init: (_pad) => {
       pad = _pad;
     },
-    showModal(messageId) {
+    showModal: (messageId) => {
       padeditbar.toggleDropDown('none', () => {
         $('#connectivity .visible').removeClass('visible');
         $(`#connectivity .${messageId}`).addClass('visible');
@@ -40,15 +42,15 @@ const padmodals = (function () {
         padeditbar.toggleDropDown('connectivity');
       });
     },
-    showOverlay() {
+    showOverlay: () => {
       // Prevent the user to interact with the toolbar. Useful when user is disconnected for example
       $('#toolbar-overlay').show();
     },
-    hideOverlay() {
+    hideOverlay: () => {
       $('#toolbar-overlay').hide();
     },
   };
   return self;
-}());
+})();
 
 exports.padmodals = padmodals;
