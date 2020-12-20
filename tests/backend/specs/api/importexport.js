@@ -62,6 +62,12 @@ const testImports = {
     expectedHTML: '<!DOCTYPE HTML><html><body>empty<br><br></body></html>',
     expectedText: 'empty\n\n',
   },
+  'indentedListsAreNotBullets': {
+    description: 'Indented lists are represented with tabs and without bullets',
+    input: '<html><body><ul class="indent"><li>indent</li><li>indent</ul></body></html>',
+    expectedHTML: '<!DOCTYPE HTML><html><body><ul class="indent"><li>indent</li><li>indent</ul><br></body></html>',
+    expectedText: '\tindent\n\tindent\n\n'
+  }
 };
 
 describe(__filename, function () {
