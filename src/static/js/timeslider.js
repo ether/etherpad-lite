@@ -37,8 +37,7 @@ const init = () => {
     // start the custom js
     // customStart is a global function
     // TODO: This function must be put in the module file, and then import it here.
-    // eslint-disable-next-line no-undef
-    if (typeof customStart === 'function') customStart();
+    if (typeof customStart === 'function') customStart(); // eslint-disable-line no-undef
 
     // get the padId out of the url
     const urlParts = document.location.pathname.split('/');
