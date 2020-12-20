@@ -35,8 +35,6 @@ let token, padId, exportLinks, socket, changesetLoader, BroadcastSlider;
 const init = () => {
   $(document).ready(() => {
     // start the custom js
-    // customStart is a global function
-    // TODO: This function must be put in the module file, and then import it here.
     if (typeof customStart === 'function') customStart(); // eslint-disable-line no-undef
 
     // get the padId out of the url
@@ -48,7 +46,7 @@ const init = () => {
 
     // ensure we have a token
     token = Cookies.get('token');
-    if (!token) {
+    if (token == null) {
       token = `t.${randomString()}`;
       Cookies.set('token', token, {expires: 60});
     }
@@ -91,8 +89,8 @@ const init = () => {
       window.location.reload();
     });
 
-    // exports.socket = socket;
-    // exports.BroadcastSlider = BroadcastSlider;
+    exports.socket = socket; // make the socket available
+    exports.BroadcastSlider = BroadcastSlider; // Make the slider available
 
     hooks.aCallAll('postTimesliderInit');
   });
@@ -122,7 +120,6 @@ const handleClientVars = (message) => {
       .loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded);
 
   require('./broadcast_revisions').loadBroadcastRevisionsJS();
-
   changesetLoader = require('./broadcast')
       .loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider);
 
@@ -165,12 +162,5 @@ const handleClientVars = (message) => {
   });
 };
 
-module.exports = {
-  baseURL: '',
-  init,
-  socket, // make the socket available
-  BroadcastSlider, // Make the slider available
-
-};
-// exports.baseURL = '';
-// exports.init = init;
+exports.baseURL = '';
+exports.init = init;
