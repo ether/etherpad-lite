@@ -71,11 +71,14 @@ function init() {
 
     // route the incoming messages
     socket.on('message', (message) => {
+      console.log(message.type);
       if (message.type == 'CLIENT_VARS') {
         handleClientVars(message);
       } else if (message.accessStatus) {
         $('body').html('<h2>You have no permission to access this pad</h2>');
-      } else if (message.type === 'CHANGESET_REQ') { changesetLoader.handleMessageFromServer(message); }
+      } else if (message.type === 'CHANGESET_REQ' || message.type === 'COLLABROOM') {
+        changesetLoader.handleMessageFromServer(message);
+      }
     });
 
     // get all the export links
