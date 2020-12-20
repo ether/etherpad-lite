@@ -223,7 +223,6 @@ const testImports = {
     expectedHTML: '<!DOCTYPE HTML><html><body>Need more space<em> s</em> !<br><br></body></html>',
     expectedText: 'Need more space s !\n\n'
   },
->>>>>>> 5a47aff2... tests for spaces
 };
 
 describe(__filename, function () {
