@@ -115,8 +115,7 @@ const fireWhenAllScriptsAreLoaded = [];
 
 const handleClientVars = (message) => {
   // save the client Vars
-  // eslint-disable-next-line no-global-assign
-  clientVars = message.data;
+  window.clientVars = message.data;
 
   // load all script that doesn't work without the clientVars
   BroadcastSlider = require('./broadcast_slider')
