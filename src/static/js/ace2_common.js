@@ -26,12 +26,6 @@ function isNodeText(node) {
   return (node.nodeType == 3);
 }
 
-function object(o) {
-  const f = function () {};
-  f.prototype = o;
-  return new f();
-}
-
 function getAssoc(obj, name) {
   return obj[`_magicdom_${name}`];
 }
@@ -75,7 +69,6 @@ function htmlPrettyEscape(str) {
 const noop = function () {};
 
 exports.isNodeText = isNodeText;
-exports.object = object;
 exports.getAssoc = getAssoc;
 exports.setAssoc = setAssoc;
 exports.binarySearch = binarySearch;
