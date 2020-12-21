@@ -375,8 +375,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
         // there are still more messages, re-show the load-button
         $('#chatloadmessagesbutton').css('display', 'block');
       }
-    } else if (msg.type === 'SERVER_MESSAGE') {
-      callbacks.onServerMessage(msg.payload);
     }
 
     // HACKISH: User messages do not have "payload" but "userInfo", so that all
@@ -560,9 +558,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
     },
     setOnConnectionTrouble: (cb) => {
       callbacks.onConnectionTrouble = cb;
-    },
-    setOnServerMessage: (cb) => {
-      callbacks.onServerMessage = cb;
     },
     updateUserInfo: defer(updateUserInfo),
     handleMessageFromServer,

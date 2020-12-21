@@ -205,8 +205,8 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       console.warn('Missing peer deps reference in package.json');
       if (autoFix) {
         const peerDependencies = {
-          "ep_etherpad-lite": ">=1.8.6",
-        }
+          'ep_etherpad-lite': '>=1.8.6',
+        };
         hasAutoFixed = true;
         parsedPackageJSON.peerDependencies = peerDependencies;
         fs.writeFileSync(`${pluginPath}/package.json`, JSON.stringify(parsedPackageJSON, null, 2));
@@ -246,7 +246,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       }
     }
 
-    if ( (packageJSON.toLowerCase().indexOf('engines') === -1) || !parsedPackageJSON.engines.node) {
+    if ((packageJSON.toLowerCase().indexOf('engines') === -1) || !parsedPackageJSON.engines.node) {
       console.warn('No engines or node engine in package.json');
       if (autoFix) {
         const engines = {
@@ -374,17 +374,17 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       const gitignore = fs.readFileSync('bin/plugins/lib/gitignore', {encoding: 'utf8', flag: 'r'});
       fs.writeFileSync(`${pluginPath}/.gitignore`, gitignore);
     }
-  }else{
+  } else {
     let gitignore =
         fs.readFileSync(`${pluginPath}/.gitignore`, {encoding: 'utf8', flag: 'r'});
-        if(gitignore.indexOf("node_modules/") === -1){
-          console.warn("node_modules/ missing from .gitignore")
-          if(autoFix){
-            gitignore += "node_modules/";
-            fs.writeFileSync(`${pluginPath}/.gitignore`, gitignore);
-            hasAutoFixed = true;
-          }
-        }
+    if (gitignore.indexOf('node_modules/') === -1) {
+      console.warn('node_modules/ missing from .gitignore');
+      if (autoFix) {
+        gitignore += 'node_modules/';
+        fs.writeFileSync(`${pluginPath}/.gitignore`, gitignore);
+        hasAutoFixed = true;
+      }
+    }
   }
 
   // if we include templates but don't have translations...

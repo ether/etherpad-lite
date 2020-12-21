@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -24,26 +26,26 @@ const Cookies = require('./pad_utils').Cookies;
 const padcookie = require('./pad_cookie').padcookie;
 const padutils = require('./pad_utils').padutils;
 
-const padeditor = (function () {
+const padeditor = (() => {
   let Ace2Editor = undefined;
   let pad = undefined;
   let settings = undefined;
 
-  var self = {
+  const self = {
     ace: null,
     // this is accessed directly from other files
     viewZoom: 100,
-    init(readyFunc, initialViewOptions, _pad) {
+    init: (readyFunc, initialViewOptions, _pad) => {
       Ace2Editor = require('./ace').Ace2Editor;
       pad = _pad;
       settings = pad.settings;
 
-      function aceReady() {
+      const aceReady = () => {
         $('#editorloadingbox').hide();
         if (readyFunc) {
           readyFunc();
         }
-      }
+      };
 
       self.ace = new Ace2Editor();
       self.ace.init('editorcontainer', '', aceReady);
@@ -57,7 +59,7 @@ const padeditor = (function () {
       // view bar
       $('#viewbarcontents').show();
     },
-    initViewOptions() {
+    initViewOptions: () => {
       // Line numbers
       padutils.bindCheckboxChange($('#options-linenoscheck'), () => {
         pad.changeViewOption('showLineNumbers', padutils.getCheckbox($('#options-linenoscheck')));
@@ -74,8 +76,8 @@ const padeditor = (function () {
         pad.changeViewOption('rtlIsTrue', padutils.getCheckbox($('#options-rtlcheck')));
       });
       html10n.bind('localized', () => {
-        pad.changeViewOption('rtlIsTrue', ('rtl' == html10n.getDirection()));
-        padutils.setCheckbox($('#options-rtlcheck'), ('rtl' == html10n.getDirection()));
+        pad.changeViewOption('rtlIsTrue', ('rtl' === html10n.getDirection()));
+        padutils.setCheckbox($('#options-rtlcheck'), ('rtl' === html10n.getDirection()));
       });
 
       // font family change
@@ -87,9 +89,10 @@ const padeditor = (function () {
       html10n.bind('localized', () => {
         $('#languagemenu').val(html10n.getLanguage());
         // translate the value of 'unnamed' and 'Enter your name' textboxes in the userlist
-        // this does not interfere with html10n's normal value-setting because html10n just ingores <input>s
-        // also, a value which has been set by the user will be not overwritten since a user-edited <input>
-        // does *not* have the editempty-class
+        // this does not interfere with html10n's normal value-setting because
+        // html10n just ingores <input>s
+        // also, a value which has been set by the user will be not overwritten
+        // since a user-edited <input> does *not* have the editempty-class
         $('input[data-l10n-id]').each((key, input) => {
           input = $(input);
           if (input.hasClass('editempty')) {
@@ -100,23 +103,23 @@ const padeditor = (function () {
       $('#languagemenu').val(html10n.getLanguage());
       $('#languagemenu').change(() => {
         Cookies.set('language', $('#languagemenu').val());
-        window.html10n.localize([$("#languagemenu").val(), 'en']);
+        window.html10n.localize([$('#languagemenu').val(), 'en']);
         if ($('select').niceSelect) {
           $('select').niceSelect('update');
         }
       });
     },
-    setViewOptions(newOptions) {
-      function getOption(key, defaultValue) {
+    setViewOptions: (newOptions) => {
+      const getOption = (key, defaultValue) => {
         const value = String(newOptions[key]);
-        if (value == 'true') return true;
-        if (value == 'false') return false;
+        if (value === 'true') return true;
+        if (value === 'false') return false;
         return defaultValue;
-      }
+      };
 
       let v;
 
-      v = getOption('rtlIsTrue', ('rtl' == html10n.getDirection()));
+      v = getOption('rtlIsTrue', ('rtl' === html10n.getDirection()));
       self.ace.setProperty('rtlIsTrue', v);
       padutils.setCheckbox($('#options-rtlcheck'), v);
 
@@ -137,29 +140,29 @@ const padeditor = (function () {
 
       self.ace.setProperty('textface', newOptions.padFontFamily || '');
     },
-    dispose() {
+    dispose: () => {
       if (self.ace) {
         self.ace.destroy();
         self.ace = null;
       }
     },
-    enable() {
+    enable: () => {
       if (self.ace) {
         self.ace.setEditable(true);
       }
     },
-    disable() {
+    disable: () => {
       if (self.ace) {
         self.ace.setProperty('grayedOut', true);
         self.ace.setEditable(false);
       }
     },
-    restoreRevisionText(dataFromServer) {
+    restoreRevisionText: (dataFromServer) => {
       pad.addHistoricalAuthors(dataFromServer.historicalAuthorData);
       self.ace.importAText(dataFromServer.atext, dataFromServer.apool, true);
     },
   };
   return self;
-}());
+})();
 
 exports.padeditor = padeditor;

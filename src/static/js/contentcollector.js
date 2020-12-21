@@ -291,7 +291,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
       ['lmkr', '1'],
       ['insertorder', 'first'],
     ].concat(
-        _.map(state.lineAttributes, (value, key) => [key, value]),
+        _.map(state.lineAttributes, (value, key) => [key, value])
     );
     lines.appendText('*', Changeset.makeAttribsString('+', attributes, apool));
   }
@@ -606,9 +606,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
         }
       }
     }
-    if (!abrowser.msie) {
-      _reachBlockPoint(node, 1, state);
-    }
+    _reachBlockPoint(node, 1, state);
     if (isBlock) {
       if (lines.length() - 1 == startLine) {
         // added additional check to resolve https://github.com/JohnMcLear/ep_copy_paste_images/issues/20
@@ -623,10 +621,6 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
       } else {
         _ensureColumnZero(state);
       }
-    }
-    if (abrowser.msie) {
-      // in IE, a point immediately after a DIV appears on the next line
-      _reachBlockPoint(node, 1, state);
     }
     state.localAttribs = localAttribs;
   };

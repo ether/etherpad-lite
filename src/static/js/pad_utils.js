@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -19,8 +21,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use strict';
 
 const Security = require('./security');
 
@@ -246,90 +246,6 @@ const padutils = {
       }
     };
     return {scheduleAnimation};
-  },
-  makeShowHideAnimator: (funcToArriveAtState, initiallyShown, fps, totalMs) => {
-    let animationState = (initiallyShown ? 0 : -2); // -2 hidden, -1 to 0 fade in, 0 to 1 fade out
-    const animationFrameDelay = 1000 / fps;
-    const animationStep = animationFrameDelay / totalMs;
-
-    const animateOneStep = () => {
-      if (animationState < -1 || animationState === 0) {
-        return false;
-      } else if (animationState < 0) {
-        // animate show
-        animationState += animationStep;
-        if (animationState >= 0) {
-          animationState = 0;
-          funcToArriveAtState(animationState);
-          return false;
-        } else {
-          funcToArriveAtState(animationState);
-          return true;
-        }
-      } else if (animationState > 0) {
-        // animate hide
-        animationState += animationStep;
-        if (animationState >= 1) {
-          animationState = 1;
-          funcToArriveAtState(animationState);
-          animationState = -2;
-          return false;
-        } else {
-          funcToArriveAtState(animationState);
-          return true;
-        }
-      }
-    };
-
-    const scheduleAnimation =
-        padutils.makeAnimationScheduler(animateOneStep, animationFrameDelay).scheduleAnimation;
-
-    return {
-      show: () => {
-        animationState = -1;
-        funcToArriveAtState(animationState);
-        scheduleAnimation();
-      },
-      quickShow: () => { // start showing without losing any fade-in progress
-        if (animationState < -1) {
-          animationState = -1;
-        } else if (animationState > 0) {
-          animationState = Math.max(-1, Math.min(0, -animationState));
-        }
-        funcToArriveAtState(animationState);
-        scheduleAnimation();
-      },
-      hide: () => {
-        if (animationState >= -1 && animationState <= 0) {
-          animationState = 1e-6;
-          scheduleAnimation();
-        }
-      },
-    };
-  },
-  _nextActionId: 1,
-  uncanceledActions: {},
-  getCancellableAction: (actionType, actionFunc) => {
-    let o = padutils.uncanceledActions[actionType];
-    if (!o) {
-      o = {};
-      padutils.uncanceledActions[actionType] = o;
-    }
-    const actionId = (padutils._nextActionId++);
-    o[actionId] = true;
-    return () => {
-      const p = padutils.uncanceledActions[actionType];
-      if (p && p[actionId]) {
-        actionFunc();
-      }
-    };
-  },
-  cancelActions: (actionType) => {
-    const o = padutils.uncanceledActions[actionType];
-    if (o) {
-      // clear it
-      delete padutils.uncanceledActions[actionType];
-    }
   },
   makeFieldLabeledWhenEmpty: (field, labelText) => {
     field = $(field);

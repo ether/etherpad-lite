@@ -71,65 +71,65 @@ version['1'] = Object.assign({},
       setPublicStatus: ['padID', 'publicStatus'],
       getPublicStatus: ['padID'],
       listAuthorsOfPad: ['padID'],
-      padUsersCount: ['padID']},
+      padUsersCount: ['padID']}
 );
 
 version['1.1'] = Object.assign({}, version['1'],
     {getAuthorName: ['authorID'],
       padUsers: ['padID'],
       sendClientsMessage: ['padID', 'msg'],
-      listAllGroups: []},
+      listAllGroups: []}
 );
 
 version['1.2'] = Object.assign({}, version['1.1'],
-    {checkToken: []},
+    {checkToken: []}
 );
 
 version['1.2.1'] = Object.assign({}, version['1.2'],
-    {listAllPads: []},
+    {listAllPads: []}
 );
 
 version['1.2.7'] = Object.assign({}, version['1.2.1'],
     {createDiffHTML: ['padID', 'startRev', 'endRev'],
       getChatHistory: ['padID', 'start', 'end'],
-      getChatHead: ['padID']},
+      getChatHead: ['padID']}
 );
 
 version['1.2.8'] = Object.assign({}, version['1.2.7'],
     {getAttributePool: ['padID'],
-      getRevisionChangeset: ['padID', 'rev']},
+      getRevisionChangeset: ['padID', 'rev']}
 );
 
 version['1.2.9'] = Object.assign({}, version['1.2.8'],
     {copyPad: ['sourceID', 'destinationID', 'force'],
-      movePad: ['sourceID', 'destinationID', 'force']},
+      movePad: ['sourceID', 'destinationID', 'force']}
 );
 
 version['1.2.10'] = Object.assign({}, version['1.2.9'],
-    {getPadID: ['roID']},
+    {getPadID: ['roID']}
 );
 
 version['1.2.11'] = Object.assign({}, version['1.2.10'],
     {getSavedRevisionsCount: ['padID'],
       listSavedRevisions: ['padID'],
       saveRevision: ['padID', 'rev'],
-      restoreRevision: ['padID', 'rev']},
+      restoreRevision: ['padID', 'rev']}
 );
 
 version['1.2.12'] = Object.assign({}, version['1.2.11'],
-    {appendChatMessage: ['padID', 'text', 'authorID', 'time']},
+    {appendChatMessage: ['padID', 'text', 'authorID', 'time']}
 );
 
 version['1.2.13'] = Object.assign({}, version['1.2.12'],
-    {appendText: ['padID', 'text']},
+    {appendText: ['padID', 'text']}
 );
 
 version['1.2.14'] = Object.assign({}, version['1.2.13'],
-    {getStats: []},
+    {getStats: []}
 );
 
 version['1.2.15'] = Object.assign({}, version['1.2.14'],
-    {copyPadWithoutHistory: ['sourceID', 'destinationID', 'force']},
+    {copyPadWithoutHistory: ['sourceID', 'destinationID', 'force']}
 );
 
 // set the latest available API version here

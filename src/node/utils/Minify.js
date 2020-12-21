@@ -64,9 +64,9 @@ function prefixLocalLibraryPath(path) {
 for (const key in tar) {
   exports.tar[prefixLocalLibraryPath(key)] =
     tar[key].map(prefixLocalLibraryPath).concat(
-        tar[key].map(prefixLocalLibraryPath).map((p) => p.replace(/\.js$/, '')),
+        tar[key].map(prefixLocalLibraryPath).map((p) => p.replace(/\.js$/, ''))
     ).concat(
-        tar[key].map(prefixLocalLibraryPath).map((p) => `${p.replace(/\.js$/, '')}/index.js`),
+        tar[key].map(prefixLocalLibraryPath).map((p) => `${p.replace(/\.js$/, '')}/index.js`)
     );
 }
 
