@@ -6,6 +6,8 @@ describe('timeslider follow', function () {
     helper.newPad(cb);
   });
 
+  // TODO needs test if content is also followed, when user a makes edits
+  // while user b is in the timeslider
   it("content as it's added to timeslider", async function () {
     // send 6 revisions
     const revs = 6;
@@ -35,12 +37,15 @@ describe('timeslider follow', function () {
    * Tests for bug described in #4389
    * The goal is to scroll to the first line that contains a change right before
    * the change is applied.
-   *
    */
-  it('only to lines that exist in the current pad view, see #4389', async function () {
+  it('only to lines that exist in the pad view, regression test for #4389', async function () {
     await helper.clearPad();
-    await helper.edit('Test line\n\n');
-    await helper.edit('Another test line', 3);
+    await helper.edit('Test line\n' +
+      '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n' +
+      '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n' +
+      '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n');
+    await helper.edit('Another test line', 40);
+
 
     await helper.gotoTimeslider();
 
@@ -53,13 +58,13 @@ describe('timeslider follow', function () {
     /**
      * pad content rev 0 [default Pad text]
      * pad content rev 1 ['']
-     * pad content rev 2 ['Test line','','']
-     * pad content rev 3 ['Test line','','Another test line']
+     * pad content rev 2 ['Test line','','', ..., '']
+     * pad content rev 3 ['Test line','',..., 'Another test line', ..., '']
      */
 
-    // line 3 changed
+    // line 40 changed
     helper.contentWindow().$('#leftstep').click();
-    await helper.waitForPromise(() => hasFollowedToLine(3));
+    await helper.waitForPromise(() => hasFollowedToLine(40));
 
     // line 1 is the first line that changed
     helper.contentWindow().$('#leftstep').click();
@@ -77,9 +82,9 @@ describe('timeslider follow', function () {
     helper.contentWindow().$('#rightstep').click();
     await helper.waitForPromise(() => hasFollowedToLine(1));
 
-    // line 3 changed
+    // line 40 changed
     helper.contentWindow().$('#rightstep').click();
-    return helper.waitForPromise(() => hasFollowedToLine(3));
+    helper.waitForPromise(() => hasFollowedToLine(40));
   });
 });
 
