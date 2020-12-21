@@ -1437,10 +1437,9 @@ function Ace2Inner() {
     let n = lineNode;
     let after = false;
     if (charsLeft === 0) {
-      const index = 0;
       return {
         node: lineNode,
-        index,
+        index: 0,
         maxIndex: 1,
       };
     }
@@ -2785,6 +2784,7 @@ function Ace2Inner() {
       return;
     }
     let specialHandled = false;
+
     const isTypeForSpecialKey = ((browser.safari ||
       browser.chrome ||
       browser.firefox) ? (type === 'keydown') : (type === 'keypress'));
