@@ -106,12 +106,15 @@ exports.stop = async () => {
   if (stopped) return;
   stopped = true;
   console.log('Stopping Etherpad...');
-  await new Promise(async (resolve, reject) => {
-    const id = setTimeout(() => reject(new Error('Timed out waiting for shutdown tasks')), 3000);
-    await hooks.aCallAll('shutdown');
-    clearTimeout(id);
-    resolve();
-  });
+  let timeout = null;
+  await Promise.race([
+    hooks.aCallAll('shutdown'),
+    new Promise((resolve, reject) => {
+      timeout = setTimeout(() => reject(new Error('Timed out waiting for shutdown tasks')), 3000);
+    }),
+  ]);
+  clearTimeout(timeout);
+  console.log('Etherpad stopped');
 };
 
 exports.exit = async (err) => {
