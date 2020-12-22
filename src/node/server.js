@@ -56,6 +56,13 @@ const State = {
 
 let state = State.INITIAL;
 
+const removeSignalListener = (signal, listener) => {
+  console.debug(`Removing ${signal} listener because it might interfere with shutdown tasks. ` +
+                `Function code:\n${listener.toString()}\n` +
+                `Current stack:\n${(new Error()).stack.split('\n').slice(1).join('\n')}`);
+  process.off(signal, listener);
+};
+
 const runningCallbacks = [];
 exports.start = async () => {
   switch (state) {
@@ -90,28 +97,21 @@ exports.start = async () => {
   // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
   process.on('unhandledRejection', (err) => { throw err; });
 
-  /*
-   * Connect graceful shutdown with sigint and uncaught exception
-   *
-   * Until Etherpad 1.7.5, process.on('SIGTERM') and process.on('SIGINT') were
-   * not hooked up under Windows, because old nodejs versions did not support
-   * them.
-   *
-   * According to nodejs 6.x documentation, it is now safe to do so. This
-   * allows to gracefully close the DB connection when hitting CTRL+C under
-   * Windows, for example.
-   *
-   * Source: https://nodejs.org/docs/latest-v6.x/api/process.html#process_signal_events
-   *
-   *   - SIGTERM is not supported on Windows, it can be listened on.
-   *   - SIGINT from the terminal is supported on all platforms, and can usually
-   *     be generated with <Ctrl>+C (though this may be configurable). It is not
-   *     generated when terminal raw mode is enabled.
-   */
-  process.on('SIGINT', exports.exit);
-
-  // When running as PID1 (e.g. in docker container) allow graceful shutdown on SIGTERM c.f. #3265.
-  process.on('SIGTERM', exports.exit);
+  for (const signal of ['SIGINT', 'SIGTERM']) {
+    // Forcibly remove other signal listeners to prevent them from terminating node before we are
+    // done cleaning up. See https://github.com/andywer/threads.js/pull/329 for an example of a
+    // problematic listener. This means that exports.exit is solely responsible for performing all
+    // necessary cleanup tasks.
+    for (const listener of process.listeners(signal)) {
+      removeSignalListener(signal, listener);
+    }
+    process.on(signal, exports.exit);
+    // Prevent signal listeners from being added in the future.
+    process.on('newListener', (event, listener) => {
+      if (event !== signal) return;
+      removeSignalListener(signal, listener);
+    });
+  }
 
   await util.promisify(npm.load)();
   await db.init();
