@@ -44,13 +44,38 @@ const plugins = require('../static/js/pluginfw/plugins');
 const settings = require('./utils/Settings');
 const util = require('util');
 
-let started = false;
-let stopped = false;
+const State = {
+  INITIAL: 1,
+  STARTING: 2,
+  RUNNING: 3,
+  STOPPING: 4,
+  STOPPED: 5,
+  EXITING: 6,
+  WAITING_FOR_EXIT: 7,
+};
 
+let state = State.INITIAL;
+
+const runningCallbacks = [];
 exports.start = async () => {
-  if (started) return express.server;
-  started = true;
-  if (stopped) throw new Error('restart not supported');
+  switch (state) {
+    case State.INITIAL:
+      break;
+    case State.STARTING:
+      await new Promise((resolve) => runningCallbacks.push(resolve));
+      // fall through
+    case State.RUNNING:
+      return express.server;
+    case State.STOPPING:
+    case State.STOPPED:
+    case State.EXITING:
+    case State.WAITING_FOR_EXIT:
+      throw new Error('restart not supported');
+    default:
+      throw new Error(`unknown State: ${state.toString()}`);
+  }
+  console.log('Starting Etherpad...');
+  state = State.STARTING;
 
   // Check if Etherpad version is up-to-date
   UpdateCheck.check();
@@ -86,8 +111,7 @@ exports.start = async () => {
   process.on('SIGINT', exports.exit);
 
   // When running as PID1 (e.g. in docker container) allow graceful shutdown on SIGTERM c.f. #3265.
-  // Pass undefined to exports.exit because this is not an abnormal termination.
-  process.on('SIGTERM', () => exports.exit());
+  process.on('SIGTERM', exports.exit);
 
   await util.promisify(npm.load)();
   await db.init();
@@ -98,14 +122,36 @@ exports.start = async () => {
   await hooks.aCallAll('loadSettings', {settings});
   await hooks.aCallAll('createServer');
 
+  console.log('Etherpad is running');
+  state = State.RUNNING;
+  while (runningCallbacks.length > 0) setImmediate(runningCallbacks.pop());
+
   // Return the HTTP server to make it easier to write tests.
   return express.server;
 };
 
+const stoppedCallbacks = [];
 exports.stop = async () => {
-  if (stopped) return;
-  stopped = true;
+  switch (state) {
+    case State.STARTING:
+      await exports.start();
+      // Don't fall through to State.RUNNING in case another caller is also waiting for startup.
+      return await exports.stop();
+    case State.RUNNING:
+      break;
+    case State.STOPPING:
+      await new Promise((resolve) => stoppedCallbacks.push(resolve));
+      // fall through
+    case State.INITIAL:
+    case State.STOPPED:
+    case State.EXITING:
+    case State.WAITING_FOR_EXIT:
+      return;
+    default:
+      throw new Error(`unknown State: ${state.toString()}`);
+  }
   console.log('Stopping Etherpad...');
+  state = State.STOPPING;
   let timeout = null;
   await Promise.race([
     hooks.aCallAll('shutdown'),
@@ -115,21 +161,62 @@ exports.stop = async () => {
   ]);
   clearTimeout(timeout);
   console.log('Etherpad stopped');
+  state = State.STOPPED;
+  while (stoppedCallbacks.length > 0) setImmediate(stoppedCallbacks.pop());
 };
 
-exports.exit = async (err) => {
-  let exitCode = 0;
-  if (err) {
-    exitCode = 1;
-    console.error(err.stack ? err.stack : err);
+const exitCallbacks = [];
+let exitCalled = false;
+exports.exit = async (err = null) => {
+  /* eslint-disable no-process-exit */
+  if (err === 'SIGTERM') {
+    // Termination from SIGTERM is not treated as an abnormal termination.
+    console.log('Received SIGTERM signal');
+    err = null;
+  } else if (err != null) {
+    console.error(err.stack || err.toString());
+    process.exitCode = 1;
+    if (exitCalled) {
+      console.error('Error occurred while waiting to exit. Forcing an immediate unclean exit...');
+      process.exit(1);
+    }
   }
-  try {
-    await exports.stop();
-  } catch (err) {
-    exitCode = 1;
-    console.error(err.stack ? err.stack : err);
+  exitCalled = true;
+  switch (state) {
+    case State.STARTING:
+    case State.RUNNING:
+    case State.STOPPING:
+      await exports.stop();
+      // Don't fall through to State.STOPPED in case another caller is also waiting for stop().
+      // Don't pass err to exports.exit() because this err has already been processed. (If err is
+      // passed again to exit() then exit() will think that a second error occurred while exiting.)
+      return await exports.exit();
+    case State.INITIAL:
+    case State.STOPPED:
+      break;
+    case State.EXITING:
+      await new Promise((resolve) => exitCallbacks.push(resolve));
+      // fall through
+    case State.WAITING_FOR_EXIT:
+      return;
+    default:
+      throw new Error(`unknown State: ${state.toString()}`);
   }
-  process.exit(exitCode);
+  console.log('Exiting...');
+  state = State.EXITING;
+  while (exitCallbacks.length > 0) setImmediate(exitCallbacks.pop());
+  // Node.js should exit on its own without further action. Add a timeout to force Node.js to exit
+  // just in case something failed to get cleaned up during the shutdown hook. unref() is called on
+  // the timeout so that the timeout itself does not prevent Node.js from exiting.
+  setTimeout(() => {
+    console.error('Something that should have been cleaned up during the shutdown hook (such as ' +
+                  'a timer, worker thread, or open connection) is preventing Node.js from exiting');
+    console.error('Forcing an unclean exit...');
+    process.exit(1);
+  }, 5000).unref();
+  console.log('Waiting for Node.js to exit...');
+  state = State.WAITING_FOR_EXIT;
+  /* eslint-enable no-process-exit */
 };
 
 if (require.main === module) exports.start();
