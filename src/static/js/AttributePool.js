@@ -70,7 +70,7 @@ AttributePool.prototype.getAttribValue = function (num) {
 };
 
 AttributePool.prototype.eachAttrib = function (func) {
-  for (const n of this.numToAttrib) {
+  for (const n of Object.keys(this.numToAttrib)) {
     const pair = this.numToAttrib[n];
     func(pair[0], pair[1]);
   }
@@ -87,7 +87,7 @@ AttributePool.prototype.fromJsonable = function (obj) {
   this.numToAttrib = obj.numToAttrib;
   this.nextNum = obj.nextNum;
   this.attribToNum = {};
-  for (const n of this.numToAttrib) {
+  for (const n of Object.keys(this.numToAttrib)) {
     this.attribToNum[String(this.numToAttrib[n])] = Number(n);
   }
   return this;
