@@ -615,7 +615,7 @@ exports.textLinesMutator = (lines) => {
 
   const isCurLineInSplice = () => (curLine - curSplice[0] < (curSplice.length - 2));
 
-  const debugPrint = (typ) => {
+  const debugPrint = (typ) => { // eslint-disable-line no-unused-vars
     print(`${typ}: ${curSplice.toSource()} / ${curLine},${curCol} / ${lines_toSource()}`);
   };
 
@@ -1175,6 +1175,7 @@ exports.mutateAttributionLines = (cs, lines, pool) => {
       csIter.next(csOp);
     }
     // print(csOp.toSource()+" "+attOp.toSource()+" "+opOut.toSource());
+    // eslint-disable-next-line max-len
     // print(csOp.opcode+"/"+csOp.lines+"/"+csOp.attribs+"/"+lineAssem+"/"+lineIter+"/"+(lineIter?lineIter.hasNext():null));
     // print("csOp: "+csOp.toSource());
     if ((!csOp.opcode) && (!attOp.opcode) && (!lineAssem) && (!(lineIter && lineIter.hasNext()))) {
@@ -1339,6 +1340,7 @@ exports.compose = (cs1, cs2, pool) => {
  * @param pool {AttribPool} Attribute pool
  */
 exports.attributeTester = (attribPair, pool) => {
+  const never = (attribs) => false;
   if (!pool) {
     return never;
   }
@@ -1349,8 +1351,6 @@ exports.attributeTester = (attribPair, pool) => {
     const re = new RegExp(`\\*${exports.numToString(attribNum)}(?!\\w)`);
     return (attribs) => re.test(attribs);
   }
-
-  const never = (attribs) => false;
 };
 
 /**
@@ -1716,7 +1716,7 @@ exports.builder = (oldLen) => {
   const o = exports.newOp();
   const charBank = exports.stringAssembler();
 
-  var self = {
+  const self = {
     // attribs are [[key1,value1],[key2,value2],...] or '*0*1...' (no pool needed in latter case)
     keep: (N, L, attribs, pool) => {
       o.opcode = '=';
