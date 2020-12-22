@@ -60,22 +60,6 @@ exports.start = async () => {
   stats.gauge('memoryUsage', () => process.memoryUsage().rss);
   stats.gauge('memoryUsageHeap', () => process.memoryUsage().heapUsed);
 
-  await util.promisify(npm.load)();
-
-  try {
-    await db.init();
-    await plugins.update();
-    console.info(`Installed plugins: ${plugins.formatPluginsWithVersion()}`);
-    console.debug(`Installed parts:\n${plugins.formatParts()}`);
-    console.debug(`Installed hooks:\n${plugins.formatHooks()}`);
-    await hooks.aCallAll('loadSettings', {settings});
-    await hooks.aCallAll('createServer');
-  } catch (e) {
-    console.error(`exception thrown: ${e.message}`);
-    if (e.stack) console.log(e.stack);
-    process.exit(1);
-  }
-
   process.on('uncaughtException', exports.exit);
   // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
   // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
@@ -104,6 +88,15 @@ exports.start = async () => {
   // When running as PID1 (e.g. in docker container) allow graceful shutdown on SIGTERM c.f. #3265.
   // Pass undefined to exports.exit because this is not an abnormal termination.
   process.on('SIGTERM', () => exports.exit());
+
+  await util.promisify(npm.load)();
+  await db.init();
+  await plugins.update();
+  console.info(`Installed plugins: ${plugins.formatPluginsWithVersion()}`);
+  console.debug(`Installed parts:\n${plugins.formatParts()}`);
+  console.debug(`Installed hooks:\n${plugins.formatHooks()}`);
+  await hooks.aCallAll('loadSettings', {settings});
+  await hooks.aCallAll('createServer');
 
   // Return the HTTP server to make it easier to write tests.
   return express.server;
