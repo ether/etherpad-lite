@@ -1,3 +1,4 @@
+'use strict';
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -23,7 +24,7 @@
 const AttributePool = require('./AttributePool');
 const Changeset = require('./Changeset');
 
-function makeChangesetTracker(scheduler, apool, aceCallbacksProvider) {
+const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
   // latest official text from server
   let baseAText = Changeset.makeAText('\n');
   // changes applied to baseText that have been submitted
@@ -42,30 +43,30 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider) {
 
   let changeCallbackTimeout = null;
 
-  function setChangeCallbackTimeout() {
+  const setChangeCallbackTimeout = () => {
     // can call this multiple times per call-stack, because
     // we only schedule a call to changeCallback if it exists
     // and if there isn't a timeout already scheduled.
-    if (changeCallback && changeCallbackTimeout === null) {
+    if (changeCallback && changeCallbackTimeout == null) {
       changeCallbackTimeout = scheduler.setTimeout(() => {
         try {
           changeCallback();
-        } catch (pseudoError) {} finally {
+        } catch (pseudoError) {
+          // allow empty block :)
+        } finally {
           changeCallbackTimeout = null;
         }
       }, 0);
     }
-  }
+  };
 
   let self;
   return self = {
-    isTracking() {
-      return tracking;
-    },
-    setBaseText(text) {
+    isTracking: () => tracking,
+    setBaseText: (text) => {
       self.setBaseAttributedText(Changeset.makeAText(text), null);
     },
-    setBaseAttributedText(atext, apoolJsonObj) {
+    setBaseAttributedText: (atext, apoolJsonObj) => {
       aceCallbacksProvider.withCallbacks('setBaseText', (callbacks) => {
         tracking = true;
         baseAText = Changeset.cloneAText(atext);
@@ -83,7 +84,7 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider) {
         }
       });
     },
-    composeUserChangeset(c) {
+    composeUserChangeset: (c) => {
       if (!tracking) return;
       if (applyingNonUserChanges) return;
       if (Changeset.isIdentity(c)) return;
@@ -91,7 +92,7 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider) {
 
       setChangeCallbackTimeout();
     },
-    applyChangesToBase(c, optAuthor, apoolJsonObj) {
+    applyChangesToBase: (c, optAuthor, apoolJsonObj) => {
       if (!tracking) return;
 
       aceCallbacksProvider.withCallbacks('applyChangesToBase', (callbacks) => {
@@ -111,8 +112,10 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider) {
 
         const preferInsertingAfterUserChanges = true;
         const oldUserChangeset = userChangeset;
-        userChangeset = Changeset.follow(c2, oldUserChangeset, preferInsertingAfterUserChanges, apool);
-        const postChange = Changeset.follow(oldUserChangeset, c2, !preferInsertingAfterUserChanges, apool);
+        userChangeset =
+          Changeset.follow(c2, oldUserChangeset, preferInsertingAfterUserChanges, apool);
+        const postChange =
+          Changeset.follow(oldUserChangeset, c2, !preferInsertingAfterUserChanges, apool);
 
         const preferInsertionAfterCaret = true; // (optAuthor && optAuthor > thisAuthor);
         applyingNonUserChanges = true;
@@ -123,7 +126,7 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider) {
         }
       });
     },
-    prepareUserChangeset() {
+    prepareUserChangeset: () => {
       // If there are user changes to submit, 'changeset' will be the
       // changeset, else it will be null.
       let toSubmit;
@@ -132,39 +135,38 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider) {
         // that includes old submittedChangeset
         toSubmit = Changeset.compose(submittedChangeset, userChangeset, apool);
       } else {
-        // add forEach function to Array.prototype for IE8
-        if (!('forEach' in Array.prototype)) {
-          Array.prototype.forEach = function (action, that /* opt*/) {
-            for (let i = 0, n = this.length; i < n; i++) if (i in this) action.call(that, this[i], i, this);
-          };
-        }
-
         // Get my authorID
         const authorId = parent.parent.pad.myUserInfo.userId;
 
         // Sanitize authorship
-        // We need to replace all author attribs with thisSession.author, in case they copy/pasted or otherwise inserted other peoples changes
+        // We need to replace all author attribs with thisSession.author,
+        // in case they copy/pasted or otherwise inserted other peoples changes
+        let authorAttr;
         if (apool.numToAttrib) {
           for (const attr in apool.numToAttrib) {
-            if (apool.numToAttrib[attr][0] == 'author' && apool.numToAttrib[attr][1] == authorId) var authorAttr = Number(attr).toString(36);
+            if (apool.numToAttrib[attr][0] === 'author' &&
+              apool.numToAttrib[attr][1] === authorId) {
+              authorAttr = Number(attr).toString(36);
+            }
           }
 
           // Replace all added 'author' attribs with the value of the current user
-          var cs = Changeset.unpack(userChangeset);
+          const cs = Changeset.unpack(userChangeset);
           const iterator = Changeset.opIterator(cs.ops);
           let op;
+          let newAttrs;
           const assem = Changeset.mergingOpAssembler();
 
           while (iterator.hasNext()) {
             op = iterator.next();
-            if (op.opcode == '+') {
-              var newAttrs = '';
+            if (op.opcode === '+') {
+              newAttrs = '';
 
               op.attribs.split('*').forEach((attrNum) => {
                 if (!attrNum) return;
                 const attr = apool.getAttrib(parseInt(attrNum, 36));
                 if (!attr) return;
-                if ('author' == attr[0]) {
+                if ('author' === attr[0]) {
                   // replace that author with the current one
                   newAttrs += `*${authorAttr}`;
                 } else { newAttrs += `*${attrNum}`; } // overtake all other attribs as is
@@ -181,7 +183,7 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider) {
         else toSubmit = userChangeset;
       }
 
-      var cs = null;
+      let cs = null;
       if (toSubmit) {
         submittedChangeset = toSubmit;
         userChangeset = Changeset.identity(Changeset.newLen(toSubmit));
@@ -201,7 +203,7 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider) {
       };
       return data;
     },
-    applyPreparedChangesetToBase() {
+    applyPreparedChangesetToBase: () => {
       if (!submittedChangeset) {
         // violation of protocol; use prepareUserChangeset first
         throw new Error('applySubmittedChangesToBase: no submitted changes to apply');
@@ -210,13 +212,11 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider) {
       baseAText = Changeset.applyToAText(submittedChangeset, baseAText, apool);
       submittedChangeset = null;
     },
-    setUserChangeNotificationCallback(callback) {
+    setUserChangeNotificationCallback: (callback) => {
       changeCallback = callback;
     },
-    hasUncommittedChanges() {
-      return !!(submittedChangeset || (!Changeset.isIdentity(userChangeset)));
-    },
+    hasUncommittedChanges: () => !!(submittedChangeset || (!Changeset.isIdentity(userChangeset))),
   };
-}
+};
 
 exports.makeChangesetTracker = makeChangesetTracker;
