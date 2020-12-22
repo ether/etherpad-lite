@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * This code represents the Attribute Pool Object of the original Etherpad.
  * 90% of the code is still like in the original Etherpad
@@ -71,7 +69,7 @@ AttributePool.prototype.getAttribValue = function (num) {
 };
 
 AttributePool.prototype.eachAttrib = function (func) {
-  for (const n of this.numToAttrib) {
+  for (const n in this.numToAttrib) {
     const pair = this.numToAttrib[n];
     func(pair[0], pair[1]);
   }
@@ -88,7 +86,7 @@ AttributePool.prototype.fromJsonable = function (obj) {
   this.numToAttrib = obj.numToAttrib;
   this.nextNum = obj.nextNum;
   this.attribToNum = {};
-  for (const n of this.numToAttrib) {
+  for (const n in this.numToAttrib) {
     this.attribToNum[String(this.numToAttrib[n])] = Number(n);
   }
   return this;
