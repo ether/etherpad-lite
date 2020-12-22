@@ -83,14 +83,8 @@ $._farbtastic = function (container, options) {
     return this;
   }
 
-  /////////////////////////////////////////////////////
-  //excanvas-compatible building of canvases
   fb._makeCanvas = function(className){
     var c = document.createElement('canvas');
-    if (!c.getContext) { // excanvas hack
-        c = window.G_vmlCanvasManager.initElement(c);
-        c.getContext(); //this creates the excanvas children
-    }
     $(c).addClass(className);
     return c;
   }
