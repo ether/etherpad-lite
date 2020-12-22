@@ -95,9 +95,6 @@
 	"timeslider.unnamedauthors": "{{num}} {[plural(num) one: autore, other: auture ]} senza nomme",
 	"pad.userlist.entername": "'Nserisce 'o tujo nomme",
 	"pad.userlist.unnamed": "senza nomme",
-	"pad.userlist.guest": "Ospite",
-	"pad.userlist.deny": "Nega",
-	"pad.userlist.approve": "Appruva",
 	"pad.impexp.importbutton": "'Mpurta mmo",
 	"pad.impexp.importing": "'Mpurtazzione 'n curso..."
 }
