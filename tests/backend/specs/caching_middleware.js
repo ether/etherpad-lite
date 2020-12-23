@@ -51,6 +51,7 @@ describe(__filename, function () {
     '/javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define',
     '/javascripts/lib/ep_etherpad-lite/static/js/timeslider.js?callback=require.define',
   ];
+  const unsupportedMethods = ['post', 'put', 'delete', 'options', 'trace', 'patch'];
 
   before(async function () {
     agent = await common.init();
@@ -68,7 +69,7 @@ describe(__filename, function () {
       settings.minify = false;
     });
     it('gets packages uncompressed without Accept-Encoding gzip', async function () {
-      await Promise.all(packages.map(async (resource) => agent.get(resource)
+      await Promise.all(packages.map(async (resource) => await agent.get(resource)
           .set('Accept-Encoding', fantasyEncoding)
           .use(disableAutoDeflate)
           .then((res) => {
@@ -80,7 +81,7 @@ describe(__filename, function () {
     });
 
     it('gets packages compressed with Accept-Encoding gzip', async function () {
-      await Promise.all(packages.map(async (resource) => agent.get(resource)
+      await Promise.all(packages.map(async (resource) => await agent.get(resource)
           .set('Accept-Encoding', 'gzip')
           .use(disableAutoDeflate)
           .then((res) => {
@@ -101,6 +102,15 @@ describe(__filename, function () {
       await agent.get(packages[0])
           .set('Accept-Encoding', fantasyEncoding)
           .then((res) => assert.equal(res.header['content-encoding'], undefined));
+    });
+
+    it('only HEAD and GET are supported', async function() {
+      await Promise.all(unsupportedMethods.map(async (method) => {
+        await agent[method](packages[0])
+          .then((res) => {
+            assert.equal(res.statusCode, 405)
+          })
+      }));
     });
   });
 
@@ -109,7 +119,7 @@ describe(__filename, function () {
       settings.minify = true;
     });
     it('gets packages uncompressed without Accept-Encoding gzip', async function () {
-      await Promise.all(packages.map(async (resource) => agent.get(resource)
+      await Promise.all(packages.map(async (resource) => await agent.get(resource)
           .set('Accept-Encoding', fantasyEncoding)
           .use(disableAutoDeflate)
           .then((res) => {
@@ -121,7 +131,7 @@ describe(__filename, function () {
     });
 
     it('gets packages compressed with Accept-Encoding gzip', async function () {
-      await Promise.all(packages.map(async (resource) => agent.get(resource)
+      await Promise.all(packages.map(async (resource) => await agent.get(resource)
           .set('Accept-Encoding', 'gzip')
           .use(disableAutoDeflate)
           .then((res) => {
@@ -142,6 +152,15 @@ describe(__filename, function () {
       await agent.get(packages[0])
           .set('Accept-Encoding', fantasyEncoding)
           .then((res) => assert.equal(res.header['content-encoding'], undefined));
+    });
+
+    it('only HEAD and GET are supported', async function() {
+      await Promise.all(unsupportedMethods.map(async (method) => {
+        await agent[method](packages[0])
+          .then((res) => {
+            assert.equal(res.statusCode, 405)
+          })
+      }));
     });
   });
 });
