@@ -42,6 +42,14 @@ function disableAutoDeflate(request) {
   };
 }
 
+/**
+ * Adds some seconds to a date object
+ */
+function addSecondsToDate(date, seconds) {
+  date.setSeconds(date.getSeconds() + seconds);
+  return date;
+}
+
 describe(__filename, function () {
   const backups = {};
   const fantasyEncoding = 'brainwaves'; // non-working encoding until https://github.com/visionmedia/superagent/pull/1560 is resolved
@@ -120,6 +128,57 @@ describe(__filename, function () {
           })
       }));
     });
+
+    context('expiration', function(){
+      it('has date, last-modified and expires header', async function() {
+        await Promise.all(packages.map(async (resource) => await agent.get(resource)
+            .then((res) => {
+              const date = res.header['date'] && new Date(res.header['date']);
+              const lastModified = res.header['last-modified'] && new Date(res.header['last-modified']);
+              const expires = res.header['expires'] && new Date(res.header['expires']);
+              assert.notEqual(date, 'Invalid Date');
+              assert.notEqual(lastModified, 'Invalid Date');
+              assert.notEqual(expires, 'Invalid Date');
+            })));
+        });
+
+      it('maxAge is set and limits the expires value', async function() {
+        await Promise.all(packages.map(async (resource) => await agent.get(resource)
+            .then((res) => {
+              const date = res.header['date'] && new Date(res.header['date']);
+              const expires = res.header['expires'] && new Date(res.header['expires']);
+              const maxAge = res.header['cache-control'];
+              assert.equal(maxAge, `max-age=${settings.maxAge}`);
+              const expirationDate = addSecondsToDate(date, settings.maxAge);
+              assert.ok(Math.abs(expirationDate - expires) <= 1);
+            })));
+        });
+
+      it('returns 304 with correct if-modified-since header', async function(){
+        await Promise.all(packages.map(async (resource) => {
+          await agent.get(resource)
+            .then(async (res) => {
+              const origResult = res.text;
+              const lastModified = res.header['last-modified'] && new Date(res.header['last-modified']);
+              const futureDate = addSecondsToDate(lastModified, +1000);
+
+              await agent.get(resource)
+                  .set('If-Modified-Since', futureDate)
+                  .then((res) => {
+                    assert.equal(res.statusCode, 304);
+                  })
+
+              const pastDate = addSecondsToDate(lastModified, -1100);
+              await agent.get(resource)
+                  .set('If-Modified-Since', pastDate)
+                  .then((res) => {
+                    assert.equal(res.statusCode, 200);
+                    assert.equal(origResult, res.text);
+                  })
+            });
+        }));
+      });
+    });
   });
 
   context('when minify is true', function () {
@@ -177,6 +236,57 @@ describe(__filename, function () {
             assert.equal(res.statusCode, 405)
           })
       }));
+    });
+
+    context('expiration', function(){
+      it('has date, last-modified and expires header', async function() {
+        await Promise.all(packages.map(async (resource) => await agent.get(resource)
+            .then((res) => {
+              const date = res.header['date'] && new Date(res.header['date']);
+              const lastModified = res.header['last-modified'] && new Date(res.header['last-modified']);
+              const expires = res.header['expires'] && new Date(res.header['expires']);
+              assert.notEqual(date, 'Invalid Date');
+              assert.notEqual(lastModified, 'Invalid Date');
+              assert.notEqual(expires, 'Invalid Date');
+            })));
+        });
+
+      it('maxAge is set and limits the expires value', async function() {
+        await Promise.all(packages.map(async (resource) => await agent.get(resource)
+            .then((res) => {
+              const date = res.header['date'] && new Date(res.header['date']);
+              const expires = res.header['expires'] && new Date(res.header['expires']);
+              const maxAge = res.header['cache-control'];
+              assert.equal(maxAge, `max-age=${settings.maxAge}`);
+              const expirationDate = addSecondsToDate(date, settings.maxAge);
+              assert.ok(Math.abs(expirationDate - expires) <= 1);
+            })));
+        });
+
+      it('returns 304 with correct if-modified-since header', async function(){
+        await Promise.all(packages.map(async (resource) => {
+          await agent.get(resource)
+            .then(async (res) => {
+              const origResult = res.text;
+              const lastModified = res.header['last-modified'] && new Date(res.header['last-modified']);
+              const futureDate = addSecondsToDate(lastModified, +1000);
+
+              await agent.get(resource)
+                  .set('If-Modified-Since', futureDate)
+                  .then((res) => {
+                    assert.equal(res.statusCode, 304);
+                  })
+
+              const pastDate = addSecondsToDate(lastModified, -1100);
+              await agent.get(resource)
+                  .set('If-Modified-Since', pastDate)
+                  .then((res) => {
+                    assert.equal(res.statusCode, 200);
+                    assert.equal(origResult, res.text);
+                  })
+            });
+        }));
+      });
     });
   });
 });
