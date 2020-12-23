@@ -75,7 +75,7 @@
     "unorm": "1.4.1"
   },
   "bin": {
-    "etherpad-lite": "./node/server.js"
+    "etherpad-lite": "node/server.js"
   },
   "devDependencies": {
     "eslint": "^7.15.0",
@@ -152,6 +152,6 @@
     "test": "nyc mocha --timeout 30000 --recursive ../tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api"
   },
-  "version": "1.8.6",
+  "version": "1.8.7",
   "license": "Apache-2.0"
 }
