@@ -47,7 +47,11 @@ child_process.execSync('npm install --package-lock-only', {cwd: `src/`});
 // run npm install --package-lock-only <-- required???
 
 child_process.execSync(`git checkout -b release/${newVersion}`);
+child_process.execSync(`git add src/package.json`);
+child_process.execSync(`git add src/package-lock.json`);
+child_process.execSync(`git commit -m 'bump version'`);
 child_process.execSync(`git push origin release/${newVersion}`);
+
 
 child_process.execSync(`make docs`);
 child_process.execSync(`git clone git@github.com:ether/ether.github.com.git`);
