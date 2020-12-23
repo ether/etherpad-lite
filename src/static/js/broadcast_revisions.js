@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -23,106 +25,91 @@
 // of the document.  These revisions are connected together by various
 // changesets,  or deltas, between any two revisions.
 
-function loadBroadcastRevisionsJS()
-{
-  function Revision(revNum)
-  {
+const loadBroadcastRevisionsJS = () => {
+  function Revision(revNum) {
     this.rev = revNum;
     this.changesets = [];
   }
 
-  Revision.prototype.addChangeset = function(destIndex, changeset, timeDelta)
-  {
-    var changesetWrapper = {
+  Revision.prototype.addChangeset = function (destIndex, changeset, timeDelta) {
+    const changesetWrapper = {
       deltaRev: destIndex - this.rev,
       deltaTime: timeDelta,
-      getValue: function()
-      {
-        return changeset;
-      }
+      getValue: () => changeset,
     };
     this.changesets.push(changesetWrapper);
-    this.changesets.sort(function(a, b)
-    {
-      return (b.deltaRev - a.deltaRev)
-    });
-  }
+    this.changesets.sort((a, b) => (b.deltaRev - a.deltaRev));
+  };
 
-  revisionInfo = {};
-  revisionInfo.addChangeset = function(fromIndex, toIndex, changeset, backChangeset, timeDelta)
-  {
-    var startRevision = revisionInfo[fromIndex] || revisionInfo.createNew(fromIndex);
-    var endRevision = revisionInfo[toIndex] || revisionInfo.createNew(toIndex);
+  const revisionInfo = {};
+  revisionInfo.addChangeset = function (fromIndex, toIndex, changeset, backChangeset, timeDelta) {
+    const startRevision = this[fromIndex] || this.createNew(fromIndex);
+    const endRevision = this[toIndex] || this.createNew(toIndex);
     startRevision.addChangeset(toIndex, changeset, timeDelta);
     endRevision.addChangeset(fromIndex, backChangeset, -1 * timeDelta);
-  }
+  };
 
   revisionInfo.latest = clientVars.collab_client_vars.rev || -1;
 
-  revisionInfo.createNew = function(index)
-  {
-    revisionInfo[index] = new Revision(index);
-    if (index > revisionInfo.latest)
-    {
-      revisionInfo.latest = index;
+  revisionInfo.createNew = function (index) {
+    this[index] = new Revision(index);
+    if (index > this.latest) {
+      this.latest = index;
     }
 
-    return revisionInfo[index];
-  }
+    return this[index];
+  };
 
   // assuming that there is a path from fromIndex to toIndex, and that the links
   // are laid out in a skip-list format
-  revisionInfo.getPath = function(fromIndex, toIndex)
-  {
-    var changesets = [];
-    var spans = [];
-    var times = [];
-    var elem = revisionInfo[fromIndex] || revisionInfo.createNew(fromIndex);
-    if (elem.changesets.length != 0 && fromIndex != toIndex)
-    {
-      var reverse = !(fromIndex < toIndex)
-      while (((elem.rev < toIndex) && !reverse) || ((elem.rev > toIndex) && reverse))
-      {
-        var couldNotContinue = false;
-        var oldRev = elem.rev;
+  revisionInfo.getPath = function (fromIndex, toIndex) {
+    const changesets = [];
+    const spans = [];
+    const times = [];
+    let elem = this[fromIndex] || this.createNew(fromIndex);
+    if (elem.changesets.length !== 0 && fromIndex !== toIndex) {
+      const reverse = !(fromIndex < toIndex);
+      while (((elem.rev < toIndex) && !reverse) || ((elem.rev > toIndex) && reverse)) {
+        let couldNotContinue = false;
+        const oldRev = elem.rev;
 
-        for (var i = reverse ? elem.changesets.length - 1 : 0;
-        reverse ? i >= 0 : i < elem.changesets.length;
-        i += reverse ? -1 : 1)
-        {
-          if (((elem.changesets[i].deltaRev < 0) && !reverse) || ((elem.changesets[i].deltaRev > 0) && reverse))
-          {
+        for (let i = reverse ? elem.changesets.length - 1 : 0;
+          reverse ? i >= 0 : i < elem.changesets.length;
+          i += reverse ? -1 : 1) {
+          if (((elem.changesets[i].deltaRev < 0) && !reverse) ||
+              ((elem.changesets[i].deltaRev > 0) && reverse)) {
             couldNotContinue = true;
             break;
           }
 
-          if (((elem.rev + elem.changesets[i].deltaRev <= toIndex) && !reverse) || ((elem.rev + elem.changesets[i].deltaRev >= toIndex) && reverse))
-          {
-            var topush = elem.changesets[i];
+          if (((elem.rev + elem.changesets[i].deltaRev <= toIndex) && !reverse) ||
+              ((elem.rev + elem.changesets[i].deltaRev >= toIndex) && reverse)) {
+            const topush = elem.changesets[i];
             changesets.push(topush.getValue());
             spans.push(elem.changesets[i].deltaRev);
             times.push(topush.deltaTime);
-            elem = revisionInfo[elem.rev + elem.changesets[i].deltaRev];
+            elem = this[elem.rev + elem.changesets[i].deltaRev];
             break;
           }
         }
 
-        if (couldNotContinue || oldRev == elem.rev) break;
+        if (couldNotContinue || oldRev === elem.rev) break;
       }
     }
 
-    var status = 'partial';
-    if (elem.rev == toIndex) status = 'complete';
+    let status = 'partial';
+    if (elem.rev === toIndex) status = 'complete';
 
     return {
-      'fromRev': fromIndex,
-      'rev': elem.rev,
-      'status': status,
-      'changesets': changesets,
-      'spans': spans,
-      'times': times
+      fromRev: fromIndex,
+      rev: elem.rev,
+      status,
+      changesets,
+      spans,
+      times,
     };
-  }
-}
+  };
+  window.revisionInfo = revisionInfo;
+};
 
 exports.loadBroadcastRevisionsJS = loadBroadcastRevisionsJS;

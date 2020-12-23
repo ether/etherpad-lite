@@ -25,7 +25,7 @@
  * limitations under the License.
  */
 
-var AttributePool = require("./AttributePool");
+const AttributePool = require('./AttributePool');
 
 /**
  * ==================== General Util Functions =======================
@@ -36,7 +36,7 @@ var AttributePool = require("./AttributePool");
  * @param msg {string} Just some message
  */
 exports.error = function error(msg) {
-  var e = new Error(msg);
+  const e = new Error(msg);
   e.easysync = true;
   throw e;
 };
@@ -49,8 +49,8 @@ exports.error = function error(msg) {
  */
 exports.assert = function assert(b, msgParts) {
   if (!b) {
-    var msg = Array.prototype.slice.call(arguments, 1).join('');
-    exports.error("Failed assertion: " + msg);
+    const msg = Array.prototype.slice.call(arguments, 1).join('');
+    exports.error(`Failed assertion: ${msg}`);
   }
 };
 
@@ -79,12 +79,10 @@ exports.numToString = function (num) {
  * @return integer
  */
 exports.toBaseTen = function (cs) {
-  var dollarIndex = cs.indexOf('$');
-  var beforeDollar = cs.substring(0, dollarIndex);
-  var fromDollar = cs.substring(dollarIndex);
-  return beforeDollar.replace(/[0-9a-z]+/g, function (s) {
-    return String(exports.parseNum(s));
-  }) + fromDollar;
+  const dollarIndex = cs.indexOf('$');
+  const beforeDollar = cs.substring(0, dollarIndex);
+  const fromDollar = cs.substring(dollarIndex);
+  return beforeDollar.replace(/[0-9a-z]+/g, (s) => String(exports.parseNum(s))) + fromDollar;
 };
 
 
@@ -116,29 +114,29 @@ exports.newLen = function (cs) {
  * @return {Op} type object iterator
  */
 exports.opIterator = function (opsStr, optStartIndex) {
-  //print(opsStr);
-  var regex = /((?:\*[0-9a-z]+)*)(?:\|([0-9a-z]+))?([-+=])([0-9a-z]+)|\?|/g;
-  var startIndex = (optStartIndex || 0);
-  var curIndex = startIndex;
-  var prevIndex = curIndex;
+  // print(opsStr);
+  const regex = /((?:\*[0-9a-z]+)*)(?:\|([0-9a-z]+))?([-+=])([0-9a-z]+)|\?|/g;
+  const startIndex = (optStartIndex || 0);
+  let curIndex = startIndex;
+  let prevIndex = curIndex;
 
   function nextRegexMatch() {
     prevIndex = curIndex;
-    var result;
+    let result;
     regex.lastIndex = curIndex;
     result = regex.exec(opsStr);
     curIndex = regex.lastIndex;
     if (result[0] == '?') {
-      exports.error("Hit error opcode in op stream");
+      exports.error('Hit error opcode in op stream');
     }
 
     return result;
   }
-  var regexResult = nextRegexMatch();
-  var obj = exports.newOp();
+  let regexResult = nextRegexMatch();
+  const obj = exports.newOp();
 
   function next(optObj) {
-    var op = (optObj || obj);
+    const op = (optObj || obj);
     if (regexResult[0]) {
       op.attribs = regexResult[1];
       op.lines = exports.parseNum(regexResult[2] || 0);
@@ -159,9 +157,9 @@ exports.opIterator = function (opsStr, optStartIndex) {
     return prevIndex;
   }
   return {
-    next: next,
-    hasNext: hasNext,
-    lastIndex: lastIndex
+    next,
+    hasNext,
+    lastIndex,
   };
 };
 
@@ -185,7 +183,7 @@ exports.newOp = function (optOpcode) {
     opcode: (optOpcode || ''),
     chars: 0,
     lines: 0,
-    attribs: ''
+    attribs: '',
   };
 };
 
@@ -198,7 +196,7 @@ exports.cloneOp = function (op) {
     opcode: op.opcode,
     chars: op.chars,
     lines: op.lines,
-    attribs: op.attribs
+    attribs: op.attribs,
   };
 };
 
@@ -220,7 +218,7 @@ exports.copyOp = function (op1, op2) {
 exports.opString = function (op) {
   // just for debugging
   if (!op.opcode) return 'null';
-  var assem = exports.opAssembler();
+  const assem = exports.opAssembler();
   assem.append(op);
   return assem.toString();
 };
@@ -240,33 +238,33 @@ exports.stringOp = function (str) {
 exports.checkRep = function (cs) {
   // doesn't check things that require access to attrib pool (e.g. attribute order)
   // or original string (e.g. newline positions)
-  var unpacked = exports.unpack(cs);
-  var oldLen = unpacked.oldLen;
-  var newLen = unpacked.newLen;
-  var ops = unpacked.ops;
-  var charBank = unpacked.charBank;
+  const unpacked = exports.unpack(cs);
+  const oldLen = unpacked.oldLen;
+  const newLen = unpacked.newLen;
+  const ops = unpacked.ops;
+  let charBank = unpacked.charBank;
 
-  var assem = exports.smartOpAssembler();
-  var oldPos = 0;
-  var calcNewLen = 0;
-  var numInserted = 0;
-  var iter = exports.opIterator(ops);
+  const assem = exports.smartOpAssembler();
+  let oldPos = 0;
+  let calcNewLen = 0;
+  let numInserted = 0;
+  const iter = exports.opIterator(ops);
   while (iter.hasNext()) {
-    var o = iter.next();
+    const o = iter.next();
     switch (o.opcode) {
-    case '=':
-      oldPos += o.chars;
-      calcNewLen += o.chars;
-      break;
-    case '-':
-      oldPos += o.chars;
-      exports.assert(oldPos <= oldLen, oldPos, " > ", oldLen, " in ", cs);
-      break;
-    case '+':
+      case '=':
+        oldPos += o.chars;
+        calcNewLen += o.chars;
+        break;
+      case '-':
+        oldPos += o.chars;
+        exports.assert(oldPos <= oldLen, oldPos, ' > ', oldLen, ' in ', cs);
+        break;
+      case '+':
       {
         calcNewLen += o.chars;
         numInserted += o.chars;
-        exports.assert(calcNewLen <= newLen, calcNewLen, " > ", newLen, " in ", cs);
+        exports.assert(calcNewLen <= newLen, calcNewLen, ' > ', newLen, ' in ', cs);
         break;
       }
     }
@@ -276,15 +274,15 @@ exports.checkRep = function (cs) {
   calcNewLen += oldLen - oldPos;
   charBank = charBank.substring(0, numInserted);
   while (charBank.length < numInserted) {
-    charBank += "?";
+    charBank += '?';
   }
 
   assem.endDocument();
-  var normalized = exports.pack(oldLen, calcNewLen, assem.toString(), charBank);
+  const normalized = exports.pack(oldLen, calcNewLen, assem.toString(), charBank);
   exports.assert(normalized == cs, 'Invalid changeset (checkRep failed)');
 
   return cs;
-}
+};
 
 
 /**
@@ -303,12 +301,12 @@ exports.smartOpAssembler = function () {
   // - strips final "="
   // - ignores 0-length changes
   // - reorders consecutive + and - (which margingOpAssembler doesn't do)
-  var minusAssem = exports.mergingOpAssembler();
-  var plusAssem = exports.mergingOpAssembler();
-  var keepAssem = exports.mergingOpAssembler();
-  var assem = exports.stringAssembler();
-  var lastOpcode = '';
-  var lengthChange = 0;
+  const minusAssem = exports.mergingOpAssembler();
+  const plusAssem = exports.mergingOpAssembler();
+  const keepAssem = exports.mergingOpAssembler();
+  const assem = exports.stringAssembler();
+  let lastOpcode = '';
+  let lengthChange = 0;
 
   function flushKeeps() {
     assem.append(keepAssem.toString());
@@ -348,9 +346,9 @@ exports.smartOpAssembler = function () {
   }
 
   function appendOpWithText(opcode, text, attribs, pool) {
-    var op = exports.newOp(opcode);
+    const op = exports.newOp(opcode);
     op.attribs = exports.makeAttribsString(opcode, attribs, pool);
-    var lastNewlinePos = text.lastIndexOf('\n');
+    const lastNewlinePos = text.lastIndexOf('\n');
     if (lastNewlinePos < 0) {
       op.chars = text.length;
       op.lines = 0;
@@ -388,12 +386,12 @@ exports.smartOpAssembler = function () {
   }
 
   return {
-    append: append,
-    toString: toString,
-    clear: clear,
-    endDocument: endDocument,
-    appendOpWithText: appendOpWithText,
-    getLengthChange: getLengthChange
+    append,
+    toString,
+    clear,
+    endDocument,
+    appendOpWithText,
+    getLengthChange,
   };
 };
 
@@ -403,14 +401,14 @@ exports.mergingOpAssembler = function () {
   // merges consecutive operations that are mergeable, ignores
   // no-ops, and drops final pure "keeps".  It does not re-order
   // operations.
-  var assem = exports.opAssembler();
-  var bufOp = exports.newOp();
+  const assem = exports.opAssembler();
+  const bufOp = exports.newOp();
 
   // If we get, for example, insertions [xxx\n,yyy], those don't merge,
   // but if we get [xxx\n,yyy,zzz\n], that merges to [xxx\nyyyzzz\n].
   // This variable stores the length of yyy and any other newline-less
   // ops immediately after it.
-  var bufOpAdditionalCharsAfterNewline = 0;
+  let bufOpAdditionalCharsAfterNewline = 0;
 
   function flush(isEndDocument) {
     if (bufOp.opcode) {
@@ -465,17 +463,16 @@ exports.mergingOpAssembler = function () {
     exports.clearOp(bufOp);
   }
   return {
-    append: append,
-    toString: toString,
-    clear: clear,
-    endDocument: endDocument
+    append,
+    toString,
+    clear,
+    endDocument,
   };
 };
 
 
-
 exports.opAssembler = function () {
-  var pieces = [];
+  const pieces = [];
   // this function allows op to be mutated later (doesn't keep a ref)
 
   function append(op) {
@@ -495,9 +492,9 @@ exports.opAssembler = function () {
     pieces.length = 0;
   }
   return {
-    append: append,
-    toString: toString,
-    clear: clear
+    append,
+    toString,
+    clear,
   };
 };
 
@@ -506,28 +503,28 @@ exports.opAssembler = function () {
  * @param str {string} String to be iterated over
  */
 exports.stringIterator = function (str) {
-  var curIndex = 0;
+  let curIndex = 0;
   // newLines is the number of \n between curIndex and str.length
-  var newLines = str.split("\n").length - 1
-  function getnewLines(){
-    return newLines
+  let newLines = str.split('\n').length - 1;
+  function getnewLines() {
+    return newLines;
   }
 
   function assertRemaining(n) {
-    exports.assert(n <= remaining(), "!(", n, " <= ", remaining(), ")");
+    exports.assert(n <= remaining(), '!(', n, ' <= ', remaining(), ')');
   }
 
   function take(n) {
     assertRemaining(n);
-    var s = str.substr(curIndex, n);
-    newLines -= s.split("\n").length - 1
+    const s = str.substr(curIndex, n);
+    newLines -= s.split('\n').length - 1;
     curIndex += n;
     return s;
   }
 
   function peek(n) {
     assertRemaining(n);
-    var s = str.substr(curIndex, n);
+    const s = str.substr(curIndex, n);
     return s;
   }
 
@@ -540,11 +537,11 @@ exports.stringIterator = function (str) {
     return str.length - curIndex;
   }
   return {
-    take: take,
-    skip: skip,
-    remaining: remaining,
-    peek: peek,
-    newlines: getnewLines
+    take,
+    skip,
+    remaining,
+    peek,
+    newlines: getnewLines,
   };
 };
 
@@ -552,7 +549,7 @@ exports.stringIterator = function (str) {
  * A custom made StringBuffer
  */
 exports.stringAssembler = function () {
-  var pieces = [];
+  const pieces = [];
 
   function append(x) {
     pieces.push(String(x));
@@ -562,8 +559,8 @@ exports.stringAssembler = function () {
     return pieces.join('');
   }
   return {
-    append: append,
-    toString: toString
+    append,
+    toString,
   };
 };
 
@@ -581,11 +578,11 @@ exports.textLinesMutator = function (lines) {
   // is not actually a newline, but for the purposes of N and L values,
   // the caller should pretend it is, and for things to work right in that case, the input
   // to insert() should be a single line with no newlines.
-  var curSplice = [0, 0];
-  var inSplice = false;
+  const curSplice = [0, 0];
+  let inSplice = false;
   // position in document after curSplice is applied:
-  var curLine = 0,
-      curCol = 0;
+  let curLine = 0;
+  let curCol = 0;
   // invariant: if (inSplice) then (curLine is in curSplice[0] + curSplice.length - {2,3}) &&
   //            curLine >= curSplice[0]
   // invariant: if (inSplice && (curLine >= curSplice[0] + curSplice.length - 2)) then
@@ -617,7 +614,7 @@ exports.textLinesMutator = function (lines) {
   }
 
   function lines_length() {
-    if ((typeof lines.length) == "number") {
+    if ((typeof lines.length) === 'number') {
       return lines.length;
     } else {
       return lines.length();
@@ -645,7 +642,7 @@ exports.textLinesMutator = function (lines) {
   }
 
   function debugPrint(typ) {
-    print(typ + ": " + curSplice.toSource() + " / " + curLine + "," + curCol + " / " + lines_toSource());
+    print(`${typ}: ${curSplice.toSource()} / ${curLine},${curCol} / ${lines_toSource()}`);
   }
 
   function putCurLineInSplice() {
@@ -662,7 +659,7 @@ exports.textLinesMutator = function (lines) {
         if (!inSplice) {
           enterSplice();
         }
-        for (var i = 0; i < L; i++) {
+        for (let i = 0; i < L; i++) {
           curCol = 0;
           putCurLineInSplice();
           curLine++;
@@ -678,14 +675,14 @@ exports.textLinesMutator = function (lines) {
         curLine += L;
         curCol = 0;
       }
-      //print(inSplice+" / "+isCurLineInSplice()+" / "+curSplice[0]+" / "+curSplice[1]+" / "+lines.length);
-/*if (inSplice && (! isCurLineInSplice()) && (curSplice[0] + curSplice[1] < lines.length)) {
+      // print(inSplice+" / "+isCurLineInSplice()+" / "+curSplice[0]+" / "+curSplice[1]+" / "+lines.length);
+      /* if (inSplice && (! isCurLineInSplice()) && (curSplice[0] + curSplice[1] < lines.length)) {
   print("BLAH");
   putCurLineInSplice();
 }*/
       // tests case foo in remove(), which isn't otherwise covered in current impl
     }
-    //debugPrint("skip");
+    // debugPrint("skip");
   }
 
   function skip(N, L, includeInSplice) {
@@ -700,24 +697,24 @@ exports.textLinesMutator = function (lines) {
           putCurLineInSplice();
         }
         curCol += N;
-        //debugPrint("skip");
+        // debugPrint("skip");
       }
     }
   }
 
   function removeLines(L) {
-    var removed = '';
+    let removed = '';
     if (L) {
       if (!inSplice) {
         enterSplice();
       }
 
       function nextKLinesText(k) {
-        var m = curSplice[0] + curSplice[1];
+        const m = curSplice[0] + curSplice[1];
         return lines_slice(m, m + k).join('');
       }
       if (isCurLineInSplice()) {
-        //print(curCol);
+        // print(curCol);
         if (curCol == 0) {
           removed = curSplice[curSplice.length - 1];
           // print("FOO"); // case foo
@@ -727,7 +724,7 @@ exports.textLinesMutator = function (lines) {
         } else {
           removed = nextKLinesText(L - 1);
           curSplice[1] += L - 1;
-          var sline = curSplice.length - 1;
+          const sline = curSplice.length - 1;
           removed = curSplice[sline].substring(curCol) + removed;
           curSplice[sline] = curSplice[sline].substring(0, curCol) + lines_get(curSplice[0] + curSplice[1]);
           curSplice[1] += 1;
@@ -736,13 +733,13 @@ exports.textLinesMutator = function (lines) {
         removed = nextKLinesText(L);
         curSplice[1] += L;
       }
-      //debugPrint("remove");
+      // debugPrint("remove");
     }
     return removed;
   }
 
   function remove(N, L) {
-    var removed = '';
+    let removed = '';
     if (N) {
       if (L) {
         return removeLines(L);
@@ -750,10 +747,10 @@ exports.textLinesMutator = function (lines) {
         if (!inSplice) {
           enterSplice();
         }
-        var sline = putCurLineInSplice();
+        const sline = putCurLineInSplice();
         removed = curSplice[sline].substring(curCol, curCol + N);
         curSplice[sline] = curSplice[sline].substring(0, curCol) + curSplice[sline].substring(curCol + N);
-        //debugPrint("remove");
+        // debugPrint("remove");
       }
     }
     return removed;
@@ -765,18 +762,18 @@ exports.textLinesMutator = function (lines) {
         enterSplice();
       }
       if (L) {
-        var newLines = exports.splitTextLines(text);
+        const newLines = exports.splitTextLines(text);
         if (isCurLineInSplice()) {
-          //if (curCol == 0) {
-          //curSplice.length--;
-          //curSplice[1]--;
-          //Array.prototype.push.apply(curSplice, newLines);
-          //curLine += newLines.length;
-          //}
-          //else {
+          // if (curCol == 0) {
+          // curSplice.length--;
+          // curSplice[1]--;
+          // Array.prototype.push.apply(curSplice, newLines);
+          // curLine += newLines.length;
+          // }
+          // else {
           var sline = curSplice.length - 1;
-          var theLine = curSplice[sline];
-          var lineCol = curCol;
+          const theLine = curSplice[sline];
+          const lineCol = curCol;
           curSplice[sline] = theLine.substring(0, lineCol) + newLines[0];
           curLine++;
           newLines.splice(0, 1);
@@ -784,7 +781,7 @@ exports.textLinesMutator = function (lines) {
           curLine += newLines.length;
           curSplice.push(theLine.substring(lineCol));
           curCol = 0;
-          //}
+          // }
         } else {
           Array.prototype.push.apply(curSplice, newLines);
           curLine += newLines.length;
@@ -792,18 +789,18 @@ exports.textLinesMutator = function (lines) {
       } else {
         var sline = putCurLineInSplice();
         if (!curSplice[sline]) {
-          console.error("curSplice[sline] not populated, actual curSplice contents is ", curSplice, ". Possibly related to https://github.com/ether/etherpad-lite/issues/2802");
+          console.error('curSplice[sline] not populated, actual curSplice contents is ', curSplice, '. Possibly related to https://github.com/ether/etherpad-lite/issues/2802');
         }
         curSplice[sline] = curSplice[sline].substring(0, curCol) + text + curSplice[sline].substring(curCol);
         curCol += text.length;
       }
-      //debugPrint("insert");
+      // debugPrint("insert");
     }
   }
 
   function hasMore() {
-    //print(lines.length+" / "+inSplice+" / "+(curSplice.length - 2)+" / "+curSplice[1]);
-    var docLines = lines_length();
+    // print(lines.length+" / "+inSplice+" / "+(curSplice.length - 2)+" / "+curSplice[1]);
+    let docLines = lines_length();
     if (inSplice) {
       docLines += curSplice.length - 2 - curSplice[1];
     }
@@ -814,17 +811,17 @@ exports.textLinesMutator = function (lines) {
     if (inSplice) {
       leaveSplice();
     }
-    //debugPrint("close");
+    // debugPrint("close");
   }
 
-  var self = {
-    skip: skip,
-    remove: remove,
-    insert: insert,
-    close: close,
-    hasMore: hasMore,
-    removeLines: removeLines,
-    skipLines: skipLines
+  const self = {
+    skip,
+    remove,
+    insert,
+    close,
+    hasMore,
+    removeLines,
+    skipLines,
   };
   return self;
 };
@@ -845,18 +842,18 @@ exports.textLinesMutator = function (lines) {
  * @return {string} the integrated changeset
  */
 exports.applyZip = function (in1, idx1, in2, idx2, func) {
-  var iter1 = exports.opIterator(in1, idx1);
-  var iter2 = exports.opIterator(in2, idx2);
-  var assem = exports.smartOpAssembler();
-  var op1 = exports.newOp();
-  var op2 = exports.newOp();
-  var opOut = exports.newOp();
+  const iter1 = exports.opIterator(in1, idx1);
+  const iter2 = exports.opIterator(in2, idx2);
+  const assem = exports.smartOpAssembler();
+  const op1 = exports.newOp();
+  const op2 = exports.newOp();
+  const opOut = exports.newOp();
   while (op1.opcode || iter1.hasNext() || op2.opcode || iter2.hasNext()) {
     if ((!op1.opcode) && iter1.hasNext()) iter1.next(op1);
     if ((!op2.opcode) && iter2.hasNext()) iter2.next(op2);
     func(op1, op2, opOut);
     if (opOut.opcode) {
-      //print(opOut.toSource());
+      // print(opOut.toSource());
       assem.append(opOut);
       opOut.opcode = '';
     }
@@ -871,23 +868,23 @@ exports.applyZip = function (in1, idx1, in2, idx2, func) {
  * @returns {Changeset} a Changeset class
  */
 exports.unpack = function (cs) {
-  var headerRegex = /Z:([0-9a-z]+)([><])([0-9a-z]+)|/;
-  var headerMatch = headerRegex.exec(cs);
+  const headerRegex = /Z:([0-9a-z]+)([><])([0-9a-z]+)|/;
+  const headerMatch = headerRegex.exec(cs);
   if ((!headerMatch) || (!headerMatch[0])) {
-    exports.error("Not a exports: " + cs);
+    exports.error(`Not a exports: ${cs}`);
   }
-  var oldLen = exports.parseNum(headerMatch[1]);
-  var changeSign = (headerMatch[2] == '>') ? 1 : -1;
-  var changeMag = exports.parseNum(headerMatch[3]);
-  var newLen = oldLen + changeSign * changeMag;
-  var opsStart = headerMatch[0].length;
-  var opsEnd = cs.indexOf("$");
+  const oldLen = exports.parseNum(headerMatch[1]);
+  const changeSign = (headerMatch[2] == '>') ? 1 : -1;
+  const changeMag = exports.parseNum(headerMatch[3]);
+  const newLen = oldLen + changeSign * changeMag;
+  const opsStart = headerMatch[0].length;
+  let opsEnd = cs.indexOf('$');
   if (opsEnd < 0) opsEnd = cs.length;
   return {
-    oldLen: oldLen,
-    newLen: newLen,
+    oldLen,
+    newLen,
     ops: cs.substring(opsStart, opsEnd),
-    charBank: cs.substring(opsEnd + 1)
+    charBank: cs.substring(opsEnd + 1),
   };
 };
 
@@ -900,9 +897,9 @@ exports.unpack = function (cs) {
  * @returns {Changeset} a Changeset class
  */
 exports.pack = function (oldLen, newLen, opsStr, bank) {
-  var lenDiff = newLen - oldLen;
-  var lenDiffStr = (lenDiff >= 0 ? '>' + exports.numToString(lenDiff) : '<' + exports.numToString(-lenDiff));
-  var a = [];
+  const lenDiff = newLen - oldLen;
+  const lenDiffStr = (lenDiff >= 0 ? `>${exports.numToString(lenDiff)}` : `<${exports.numToString(-lenDiff)}`);
+  const a = [];
   a.push('Z:', exports.numToString(oldLen), lenDiffStr, opsStr, '$', bank);
   return a.join('');
 };
@@ -913,39 +910,39 @@ exports.pack = function (oldLen, newLen, opsStr, bank) {
  * @params str {string} String to which a Changeset should be applied
  */
 exports.applyToText = function (cs, str) {
-  var unpacked = exports.unpack(cs);
-  exports.assert(str.length == unpacked.oldLen, "mismatched apply: ", str.length, " / ", unpacked.oldLen);
-  var csIter = exports.opIterator(unpacked.ops);
-  var bankIter = exports.stringIterator(unpacked.charBank);
-  var strIter = exports.stringIterator(str);
-  var assem = exports.stringAssembler();
+  const unpacked = exports.unpack(cs);
+  exports.assert(str.length == unpacked.oldLen, 'mismatched apply: ', str.length, ' / ', unpacked.oldLen);
+  const csIter = exports.opIterator(unpacked.ops);
+  const bankIter = exports.stringIterator(unpacked.charBank);
+  const strIter = exports.stringIterator(str);
+  const assem = exports.stringAssembler();
   while (csIter.hasNext()) {
-    var op = csIter.next();
+    const op = csIter.next();
     switch (op.opcode) {
-    case '+':
-      //op is + and op.lines 0: no newlines must be in op.chars
-      //op is + and op.lines >0: op.chars must include op.lines newlines
-      if(op.lines != bankIter.peek(op.chars).split("\n").length - 1){
-        throw new Error("newline count is wrong in op +; cs:"+cs+" and text:"+str);
-      }
-      assem.append(bankIter.take(op.chars));
-      break;
-    case '-':
-      //op is - and op.lines 0: no newlines must be in the deleted string
-      //op is - and op.lines >0: op.lines newlines must be in the deleted string
-      if(op.lines != strIter.peek(op.chars).split("\n").length - 1){
-        throw new Error("newline count is wrong in op -; cs:"+cs+" and text:"+str);
-      }
-      strIter.skip(op.chars);
-      break;
-    case '=':
-      //op is = and op.lines 0: no newlines must be in the copied string
-      //op is = and op.lines >0: op.lines newlines must be in the copied string
-      if(op.lines != strIter.peek(op.chars).split("\n").length - 1){
-        throw new Error("newline count is wrong in op =; cs:"+cs+" and text:"+str);
-      }
-      assem.append(strIter.take(op.chars));
-      break;
+      case '+':
+      // op is + and op.lines 0: no newlines must be in op.chars
+      // op is + and op.lines >0: op.chars must include op.lines newlines
+        if (op.lines != bankIter.peek(op.chars).split('\n').length - 1) {
+          throw new Error(`newline count is wrong in op +; cs:${cs} and text:${str}`);
+        }
+        assem.append(bankIter.take(op.chars));
+        break;
+      case '-':
+      // op is - and op.lines 0: no newlines must be in the deleted string
+      // op is - and op.lines >0: op.lines newlines must be in the deleted string
+        if (op.lines != strIter.peek(op.chars).split('\n').length - 1) {
+          throw new Error(`newline count is wrong in op -; cs:${cs} and text:${str}`);
+        }
+        strIter.skip(op.chars);
+        break;
+      case '=':
+      // op is = and op.lines 0: no newlines must be in the copied string
+      // op is = and op.lines >0: op.lines newlines must be in the copied string
+        if (op.lines != strIter.peek(op.chars).split('\n').length - 1) {
+          throw new Error(`newline count is wrong in op =; cs:${cs} and text:${str}`);
+        }
+        assem.append(strIter.take(op.chars));
+        break;
     }
   }
   assem.append(strIter.take(strIter.remaining()));
@@ -958,22 +955,22 @@ exports.applyToText = function (cs, str) {
  * @param lines The lines to which the changeset needs to be applied
  */
 exports.mutateTextLines = function (cs, lines) {
-  var unpacked = exports.unpack(cs);
-  var csIter = exports.opIterator(unpacked.ops);
-  var bankIter = exports.stringIterator(unpacked.charBank);
-  var mut = exports.textLinesMutator(lines);
+  const unpacked = exports.unpack(cs);
+  const csIter = exports.opIterator(unpacked.ops);
+  const bankIter = exports.stringIterator(unpacked.charBank);
+  const mut = exports.textLinesMutator(lines);
   while (csIter.hasNext()) {
-    var op = csIter.next();
+    const op = csIter.next();
     switch (op.opcode) {
-    case '+':
-      mut.insert(bankIter.take(op.chars), op.lines);
-      break;
-    case '-':
-      mut.remove(op.chars, op.lines);
-      break;
-    case '=':
-      mut.skip(op.chars, op.lines, ( !! op.attribs));
-      break;
+      case '+':
+        mut.insert(bankIter.take(op.chars), op.lines);
+        break;
+      case '-':
+        mut.remove(op.chars, op.lines);
+        break;
+      case '=':
+        mut.skip(op.chars, op.lines, (!!op.attribs));
+        break;
     }
   }
   mut.close();
@@ -1008,16 +1005,16 @@ exports.composeAttributes = function (att1, att2, resultIsMutation, pool) {
     return att2;
   }
   if (!att2) return att1;
-  var atts = [];
-  att1.replace(/\*([0-9a-z]+)/g, function (_, a) {
+  const atts = [];
+  att1.replace(/\*([0-9a-z]+)/g, (_, a) => {
     atts.push(pool.getAttrib(exports.parseNum(a)));
     return '';
   });
-  att2.replace(/\*([0-9a-z]+)/g, function (_, a) {
-    var pair = pool.getAttrib(exports.parseNum(a));
-    var found = false;
-    for (var i = 0; i < atts.length; i++) {
-      var oldPair = atts[i];
+  att2.replace(/\*([0-9a-z]+)/g, (_, a) => {
+    const pair = pool.getAttrib(exports.parseNum(a));
+    let found = false;
+    for (let i = 0; i < atts.length; i++) {
+      const oldPair = atts[i];
       if (oldPair[0] == pair[0]) {
         if (pair[1] || resultIsMutation) {
           oldPair[1] = pair[1];
@@ -1034,12 +1031,12 @@ exports.composeAttributes = function (att1, att2, resultIsMutation, pool) {
     return '';
   });
   atts.sort();
-  var buf = exports.stringAssembler();
-  for (var i = 0; i < atts.length; i++) {
+  const buf = exports.stringAssembler();
+  for (let i = 0; i < atts.length; i++) {
     buf.append('*');
     buf.append(exports.numToString(pool.putAttrib(atts[i])));
   }
-  //print(att1+" / "+att2+" / "+buf.toString());
+  // print(att1+" / "+att2+" / "+buf.toString());
   return buf.toString();
 };
 
@@ -1051,7 +1048,7 @@ exports._slicerZipperFunc = function (attOp, csOp, opOut, pool) {
   // attOp is the op from the sequence that is being operated on, either an
   // attribution string or the earlier of two exportss being composed.
   // pool can be null if definitely not needed.
-  //print(csOp.toSource()+" "+attOp.toSource()+" "+opOut.toSource());
+  // print(csOp.toSource()+" "+attOp.toSource()+" "+opOut.toSource());
   if (attOp.opcode == '-') {
     exports.copyOp(attOp, opOut);
     attOp.opcode = '';
@@ -1060,7 +1057,7 @@ exports._slicerZipperFunc = function (attOp, csOp, opOut, pool) {
     csOp.opcode = '';
   } else {
     switch (csOp.opcode) {
-    case '-':
+      case '-':
       {
         if (csOp.chars <= attOp.chars) {
           // delete or delete part
@@ -1090,14 +1087,14 @@ exports._slicerZipperFunc = function (attOp, csOp, opOut, pool) {
         }
         break;
       }
-    case '+':
+      case '+':
       {
         // insert
         exports.copyOp(csOp, opOut);
         csOp.opcode = '';
         break;
       }
-    case '=':
+      case '=':
       {
         if (csOp.chars <= attOp.chars) {
           // keep or keep part
@@ -1123,7 +1120,7 @@ exports._slicerZipperFunc = function (attOp, csOp, opOut, pool) {
         }
         break;
       }
-    case '':
+      case '':
       {
         exports.copyOp(attOp, opOut);
         attOp.opcode = '';
@@ -1140,30 +1137,28 @@ exports._slicerZipperFunc = function (attOp, csOp, opOut, pool) {
  * @param pool {AttribsPool} the attibutes pool
  */
 exports.applyToAttribution = function (cs, astr, pool) {
-  var unpacked = exports.unpack(cs);
+  const unpacked = exports.unpack(cs);
 
-  return exports.applyZip(astr, 0, unpacked.ops, 0, function (op1, op2, opOut) {
-    return exports._slicerZipperFunc(op1, op2, opOut, pool);
-  });
+  return exports.applyZip(astr, 0, unpacked.ops, 0, (op1, op2, opOut) => exports._slicerZipperFunc(op1, op2, opOut, pool));
 };
 
-/*exports.oneInsertedLineAtATimeOpIterator = function(opsStr, optStartIndex, charBank) {
+/* exports.oneInsertedLineAtATimeOpIterator = function(opsStr, optStartIndex, charBank) {
   var iter = exports.opIterator(opsStr, optStartIndex);
   var bankIndex = 0;
 
 };*/
 
 exports.mutateAttributionLines = function (cs, lines, pool) {
-  //dmesg(cs);
-  //dmesg(lines.toSource()+" ->");
-  var unpacked = exports.unpack(cs);
-  var csIter = exports.opIterator(unpacked.ops);
-  var csBank = unpacked.charBank;
-  var csBankIndex = 0;
+  // dmesg(cs);
+  // dmesg(lines.toSource()+" ->");
+  const unpacked = exports.unpack(cs);
+  const csIter = exports.opIterator(unpacked.ops);
+  const csBank = unpacked.charBank;
+  let csBankIndex = 0;
   // treat the attribution lines as text lines, mutating a line at a time
-  var mut = exports.textLinesMutator(lines);
+  const mut = exports.textLinesMutator(lines);
 
-  var lineIter = null;
+  let lineIter = null;
 
   function isNextMutOp() {
     return (lineIter && lineIter.hasNext()) || mut.hasMore();
@@ -1171,7 +1166,7 @@ exports.mutateAttributionLines = function (cs, lines, pool) {
 
   function nextMutOp(destOp) {
     if ((!(lineIter && lineIter.hasNext())) && mut.hasMore()) {
-      var line = mut.removeLines(1);
+      const line = mut.removeLines(1);
       lineIter = exports.opIterator(line);
     }
     if (lineIter && lineIter.hasNext()) {
@@ -1180,42 +1175,42 @@ exports.mutateAttributionLines = function (cs, lines, pool) {
       destOp.opcode = '';
     }
   }
-  var lineAssem = null;
+  let lineAssem = null;
 
   function outputMutOp(op) {
-    //print("outputMutOp: "+op.toSource());
+    // print("outputMutOp: "+op.toSource());
     if (!lineAssem) {
       lineAssem = exports.mergingOpAssembler();
     }
     lineAssem.append(op);
     if (op.lines > 0) {
-      exports.assert(op.lines == 1, "Can't have op.lines of ", op.lines, " in attribution lines");
+      exports.assert(op.lines == 1, "Can't have op.lines of ", op.lines, ' in attribution lines');
       // ship it to the mut
       mut.insert(lineAssem.toString(), 1);
       lineAssem = null;
     }
   }
 
-  var csOp = exports.newOp();
-  var attOp = exports.newOp();
-  var opOut = exports.newOp();
+  const csOp = exports.newOp();
+  const attOp = exports.newOp();
+  const opOut = exports.newOp();
   while (csOp.opcode || csIter.hasNext() || attOp.opcode || isNextMutOp()) {
     if ((!csOp.opcode) && csIter.hasNext()) {
       csIter.next(csOp);
     }
-    //print(csOp.toSource()+" "+attOp.toSource()+" "+opOut.toSource());
-    //print(csOp.opcode+"/"+csOp.lines+"/"+csOp.attribs+"/"+lineAssem+"/"+lineIter+"/"+(lineIter?lineIter.hasNext():null));
-    //print("csOp: "+csOp.toSource());
+    // print(csOp.toSource()+" "+attOp.toSource()+" "+opOut.toSource());
+    // print(csOp.opcode+"/"+csOp.lines+"/"+csOp.attribs+"/"+lineAssem+"/"+lineIter+"/"+(lineIter?lineIter.hasNext():null));
+    // print("csOp: "+csOp.toSource());
     if ((!csOp.opcode) && (!attOp.opcode) && (!lineAssem) && (!(lineIter && lineIter.hasNext()))) {
       break; // done
     } else if (csOp.opcode == '=' && csOp.lines > 0 && (!csOp.attribs) && (!attOp.opcode) && (!lineAssem) && (!(lineIter && lineIter.hasNext()))) {
       // skip multiple lines; this is what makes small changes not order of the document size
       mut.skipLines(csOp.lines);
-      //print("skipped: "+csOp.lines);
+      // print("skipped: "+csOp.lines);
       csOp.opcode = '';
     } else if (csOp.opcode == '+') {
       if (csOp.lines > 1) {
-        var firstLineLen = csBank.indexOf('\n', csBankIndex) + 1 - csBankIndex;
+        const firstLineLen = csBank.indexOf('\n', csBankIndex) + 1 - csBankIndex;
         exports.copyOp(csOp, opOut);
         csOp.chars -= firstLineLen;
         csOp.lines--;
@@ -1232,7 +1227,7 @@ exports.mutateAttributionLines = function (cs, lines, pool) {
       if ((!attOp.opcode) && isNextMutOp()) {
         nextMutOp(attOp);
       }
-      //print("attOp: "+attOp.toSource());
+      // print("attOp: "+attOp.toSource());
       exports._slicerZipperFunc(attOp, csOp, opOut, pool);
       if (opOut.opcode) {
         outputMutOp(opOut);
@@ -1241,10 +1236,10 @@ exports.mutateAttributionLines = function (cs, lines, pool) {
     }
   }
 
-  exports.assert(!lineAssem, "line assembler not finished:"+cs);
+  exports.assert(!lineAssem, `line assembler not finished:${cs}`);
   mut.close();
 
-  //dmesg("-> "+lines.toSource());
+  // dmesg("-> "+lines.toSource());
 };
 
 /**
@@ -1253,10 +1248,10 @@ exports.mutateAttributionLines = function (cs, lines, pool) {
  * @returns {string} joined Attribution lines
  */
 exports.joinAttributionLines = function (theAlines) {
-  var assem = exports.mergingOpAssembler();
-  for (var i = 0; i < theAlines.length; i++) {
-    var aline = theAlines[i];
-    var iter = exports.opIterator(aline);
+  const assem = exports.mergingOpAssembler();
+  for (let i = 0; i < theAlines.length; i++) {
+    const aline = theAlines[i];
+    const iter = exports.opIterator(aline);
     while (iter.hasNext()) {
       assem.append(iter.next());
     }
@@ -1265,10 +1260,10 @@ exports.joinAttributionLines = function (theAlines) {
 };
 
 exports.splitAttributionLines = function (attrOps, text) {
-  var iter = exports.opIterator(attrOps);
-  var assem = exports.mergingOpAssembler();
-  var lines = [];
-  var pos = 0;
+  const iter = exports.opIterator(attrOps);
+  const assem = exports.mergingOpAssembler();
+  const lines = [];
+  let pos = 0;
 
   function appendOp(op) {
     assem.append(op);
@@ -1280,12 +1275,12 @@ exports.splitAttributionLines = function (attrOps, text) {
   }
 
   while (iter.hasNext()) {
-    var op = iter.next();
-    var numChars = op.chars;
-    var numLines = op.lines;
+    const op = iter.next();
+    let numChars = op.chars;
+    let numLines = op.lines;
     while (numLines > 1) {
-      var newlineEnd = text.indexOf('\n', pos) + 1;
-      exports.assert(newlineEnd > 0, "newlineEnd <= 0 in splitAttributionLines");
+      const newlineEnd = text.indexOf('\n', pos) + 1;
+      exports.assert(newlineEnd > 0, 'newlineEnd <= 0 in splitAttributionLines');
       op.chars = newlineEnd - pos;
       op.lines = 1;
       appendOp(op);
@@ -1317,24 +1312,24 @@ exports.splitTextLines = function (text) {
  * @param pool {AtribsPool} Attribs pool
  */
 exports.compose = function (cs1, cs2, pool) {
-  var unpacked1 = exports.unpack(cs1);
-  var unpacked2 = exports.unpack(cs2);
-  var len1 = unpacked1.oldLen;
-  var len2 = unpacked1.newLen;
-  exports.assert(len2 == unpacked2.oldLen, "mismatched composition of two changesets");
-  var len3 = unpacked2.newLen;
-  var bankIter1 = exports.stringIterator(unpacked1.charBank);
-  var bankIter2 = exports.stringIterator(unpacked2.charBank);
-  var bankAssem = exports.stringAssembler();
+  const unpacked1 = exports.unpack(cs1);
+  const unpacked2 = exports.unpack(cs2);
+  const len1 = unpacked1.oldLen;
+  const len2 = unpacked1.newLen;
+  exports.assert(len2 == unpacked2.oldLen, 'mismatched composition of two changesets');
+  const len3 = unpacked2.newLen;
+  const bankIter1 = exports.stringIterator(unpacked1.charBank);
+  const bankIter2 = exports.stringIterator(unpacked2.charBank);
+  const bankAssem = exports.stringAssembler();
 
-  var newOps = exports.applyZip(unpacked1.ops, 0, unpacked2.ops, 0, function (op1, op2, opOut) {
-    //var debugBuilder = exports.stringAssembler();
-    //debugBuilder.append(exports.opString(op1));
-    //debugBuilder.append(',');
-    //debugBuilder.append(exports.opString(op2));
-    //debugBuilder.append(' / ');
-    var op1code = op1.opcode;
-    var op2code = op2.opcode;
+  const newOps = exports.applyZip(unpacked1.ops, 0, unpacked2.ops, 0, (op1, op2, opOut) => {
+    // var debugBuilder = exports.stringAssembler();
+    // debugBuilder.append(exports.opString(op1));
+    // debugBuilder.append(',');
+    // debugBuilder.append(exports.opString(op2));
+    // debugBuilder.append(' / ');
+    const op1code = op1.opcode;
+    const op2code = op2.opcode;
     if (op1code == '+' && op2code == '-') {
       bankIter1.skip(Math.min(op1.chars, op2.chars));
     }
@@ -1347,12 +1342,12 @@ exports.compose = function (cs1, cs2, pool) {
       }
     }
 
-    //debugBuilder.append(exports.opString(op1));
-    //debugBuilder.append(',');
-    //debugBuilder.append(exports.opString(op2));
-    //debugBuilder.append(' -> ');
-    //debugBuilder.append(exports.opString(opOut));
-    //print(debugBuilder.toString());
+    // debugBuilder.append(exports.opString(op1));
+    // debugBuilder.append(',');
+    // debugBuilder.append(exports.opString(op2));
+    // debugBuilder.append(' -> ');
+    // debugBuilder.append(exports.opString(opOut));
+    // print(debugBuilder.toString());
   });
 
   return exports.pack(len1, len3, newOps, bankAssem.toString());
@@ -1369,11 +1364,11 @@ exports.attributeTester = function (attribPair, pool) {
   if (!pool) {
     return never;
   }
-  var attribNum = pool.putAttrib(attribPair, true);
+  const attribNum = pool.putAttrib(attribPair, true);
   if (attribNum < 0) {
     return never;
   } else {
-    var re = new RegExp('\\*' + exports.numToString(attribNum) + '(?!\\w)');
+    const re = new RegExp(`\\*${exports.numToString(attribNum)}(?!\\w)`);
     return function (attribs) {
       return re.test(attribs);
     };
@@ -1389,7 +1384,7 @@ exports.attributeTester = function (attribPair, pool) {
  * @param N {int} length of the identity changeset
  */
 exports.identity = function (N) {
-  return exports.pack(N, N, "", "");
+  return exports.pack(N, N, '', '');
 };
 
 
@@ -1406,7 +1401,7 @@ exports.identity = function (N) {
  * @param pool {AttribPool} Attribution Pool
  */
 exports.makeSplice = function (oldFullText, spliceStart, numRemoved, newText, optNewTextAPairs, pool) {
-  var oldLen = oldFullText.length;
+  const oldLen = oldFullText.length;
 
   if (spliceStart >= oldLen) {
     spliceStart = oldLen - 1;
@@ -1414,10 +1409,10 @@ exports.makeSplice = function (oldFullText, spliceStart, numRemoved, newText, op
   if (numRemoved > oldFullText.length - spliceStart) {
     numRemoved = oldFullText.length - spliceStart;
   }
-  var oldText = oldFullText.substring(spliceStart, spliceStart + numRemoved);
-  var newLen = oldLen + newText.length - oldText.length;
+  const oldText = oldFullText.substring(spliceStart, spliceStart + numRemoved);
+  const newLen = oldLen + newText.length - oldText.length;
 
-  var assem = exports.smartOpAssembler();
+  const assem = exports.smartOpAssembler();
   assem.appendOpWithText('=', oldFullText.substring(0, spliceStart));
   assem.appendOpWithText('-', oldText);
   assem.appendOpWithText('+', newText, optNewTextAPairs, pool);
@@ -1433,21 +1428,21 @@ exports.makeSplice = function (oldFullText, spliceStart, numRemoved, newText, op
  */
 exports.toSplices = function (cs) {
   //
-  var unpacked = exports.unpack(cs);
-  var splices = [];
+  const unpacked = exports.unpack(cs);
+  const splices = [];
 
-  var oldPos = 0;
-  var iter = exports.opIterator(unpacked.ops);
-  var charIter = exports.stringIterator(unpacked.charBank);
-  var inSplice = false;
+  let oldPos = 0;
+  const iter = exports.opIterator(unpacked.ops);
+  const charIter = exports.stringIterator(unpacked.charBank);
+  let inSplice = false;
   while (iter.hasNext()) {
-    var op = iter.next();
+    const op = iter.next();
     if (op.opcode == '=') {
       oldPos += op.chars;
       inSplice = false;
     } else {
       if (!inSplice) {
-        splices.push([oldPos, oldPos, ""]);
+        splices.push([oldPos, oldPos, '']);
         inSplice = true;
       }
       if (op.opcode == '-') {
@@ -1466,16 +1461,16 @@ exports.toSplices = function (cs) {
  *
  */
 exports.characterRangeFollow = function (cs, startChar, endChar, insertionsAfter) {
-  var newStartChar = startChar;
-  var newEndChar = endChar;
-  var splices = exports.toSplices(cs);
-  var lengthChangeSoFar = 0;
-  for (var i = 0; i < splices.length; i++) {
-    var splice = splices[i];
-    var spliceStart = splice[0] + lengthChangeSoFar;
-    var spliceEnd = splice[1] + lengthChangeSoFar;
-    var newTextLength = splice[2].length;
-    var thisLengthChange = newTextLength - (spliceEnd - spliceStart);
+  let newStartChar = startChar;
+  let newEndChar = endChar;
+  const splices = exports.toSplices(cs);
+  let lengthChangeSoFar = 0;
+  for (let i = 0; i < splices.length; i++) {
+    const splice = splices[i];
+    const spliceStart = splice[0] + lengthChangeSoFar;
+    const spliceEnd = splice[1] + lengthChangeSoFar;
+    const newTextLength = splice[2].length;
+    const thisLengthChange = newTextLength - (spliceEnd - spliceStart);
 
     if (spliceStart <= newStartChar && spliceEnd >= newEndChar) {
       // splice fully replaces/deletes range
@@ -1519,16 +1514,16 @@ exports.characterRangeFollow = function (cs, startChar, endChar, insertionsAfter
  */
 exports.moveOpsToNewPool = function (cs, oldPool, newPool) {
   // works on exports or attribution string
-  var dollarPos = cs.indexOf('$');
+  let dollarPos = cs.indexOf('$');
   if (dollarPos < 0) {
     dollarPos = cs.length;
   }
-  var upToDollar = cs.substring(0, dollarPos);
-  var fromDollar = cs.substring(dollarPos);
+  const upToDollar = cs.substring(0, dollarPos);
+  const fromDollar = cs.substring(dollarPos);
   // order of attribs stays the same
-  return upToDollar.replace(/\*([0-9a-z]+)/g, function (_, a) {
-    var oldNum = exports.parseNum(a);
-    var pair = oldPool.getAttrib(oldNum);
+  return upToDollar.replace(/\*([0-9a-z]+)/g, (_, a) => {
+    const oldNum = exports.parseNum(a);
+    let pair = oldPool.getAttrib(oldNum);
 
     /*
      * Setting an empty pair. Required for when delete pad contents / attributes
@@ -1540,8 +1535,8 @@ exports.moveOpsToNewPool = function (cs, oldPool, newPool) {
       pair = [];
     }
 
-    var newNum = newPool.putAttrib(pair);
-    return '*' + exports.numToString(newNum);
+    const newNum = newPool.putAttrib(pair);
+    return `*${exports.numToString(newNum)}`;
   }) + fromDollar;
 };
 
@@ -1550,7 +1545,7 @@ exports.moveOpsToNewPool = function (cs, oldPool, newPool) {
  * @param text {string} text to be inserted
  */
 exports.makeAttribution = function (text) {
-  var assem = exports.smartOpAssembler();
+  const assem = exports.smartOpAssembler();
   assem.appendOpWithText('+', text);
   return assem.toString();
 };
@@ -1562,13 +1557,13 @@ exports.makeAttribution = function (text) {
  * @param func {function} function to be called
  */
 exports.eachAttribNumber = function (cs, func) {
-  var dollarPos = cs.indexOf('$');
+  let dollarPos = cs.indexOf('$');
   if (dollarPos < 0) {
     dollarPos = cs.length;
   }
-  var upToDollar = cs.substring(0, dollarPos);
+  const upToDollar = cs.substring(0, dollarPos);
 
-  upToDollar.replace(/\*([0-9a-z]+)/g, function (_, a) {
+  upToDollar.replace(/\*([0-9a-z]+)/g, (_, a) => {
     func(exports.parseNum(a));
     return '';
   });
@@ -1590,18 +1585,18 @@ exports.filterAttribNumbers = function (cs, filter) {
  * does exactly the same as exports.filterAttribNumbers
  */
 exports.mapAttribNumbers = function (cs, func) {
-  var dollarPos = cs.indexOf('$');
+  let dollarPos = cs.indexOf('$');
   if (dollarPos < 0) {
     dollarPos = cs.length;
   }
-  var upToDollar = cs.substring(0, dollarPos);
+  const upToDollar = cs.substring(0, dollarPos);
 
-  var newUpToDollar = upToDollar.replace(/\*([0-9a-z]+)/g, function (s, a) {
-    var n = func(exports.parseNum(a));
+  const newUpToDollar = upToDollar.replace(/\*([0-9a-z]+)/g, (s, a) => {
+    const n = func(exports.parseNum(a));
     if (n === true) {
       return s;
-    } else if ((typeof n) === "number") {
-      return '*' + exports.numToString(n);
+    } else if ((typeof n) === 'number') {
+      return `*${exports.numToString(n)}`;
     } else {
       return '';
     }
@@ -1618,8 +1613,8 @@ exports.mapAttribNumbers = function (cs, func) {
  */
 exports.makeAText = function (text, attribs) {
   return {
-    text: text,
-    attribs: (attribs || exports.makeAttribution(text))
+    text,
+    attribs: (attribs || exports.makeAttribution(text)),
   };
 };
 
@@ -1632,7 +1627,7 @@ exports.makeAText = function (text, attribs) {
 exports.applyToAText = function (cs, atext, pool) {
   return {
     text: exports.applyToText(cs, atext.text),
-    attribs: exports.applyToAttribution(cs, atext.attribs, pool)
+    attribs: exports.applyToAttribution(cs, atext.attribs, pool),
   };
 };
 
@@ -1644,9 +1639,9 @@ exports.cloneAText = function (atext) {
   if (atext) {
     return {
       text: atext.text,
-      attribs: atext.attribs
-    }
-  } else exports.error("atext is null");
+      attribs: atext.attribs,
+    };
+  } else { exports.error('atext is null'); }
 };
 
 /**
@@ -1665,8 +1660,8 @@ exports.copyAText = function (atext1, atext2) {
  */
 exports.appendATextToAssembler = function (atext, assem) {
   // intentionally skips last newline char of atext
-  var iter = exports.opIterator(atext.attribs);
-  var op = exports.newOp();
+  const iter = exports.opIterator(atext.attribs);
+  const op = exports.newOp();
   while (iter.hasNext()) {
     iter.next(op);
     if (!iter.hasNext()) {
@@ -1678,9 +1673,9 @@ exports.appendATextToAssembler = function (atext, assem) {
           assem.append(op);
         }
       } else {
-        var nextToLastNewlineEnd =
+        const nextToLastNewlineEnd =
         atext.text.lastIndexOf('\n', atext.text.length - 2) + 1;
-        var lastLineLength = atext.text.length - nextToLastNewlineEnd - 1;
+        const lastLineLength = atext.text.length - nextToLastNewlineEnd - 1;
         op.lines--;
         op.chars -= (lastLineLength + 1);
         assem.append(op);
@@ -1702,11 +1697,11 @@ exports.appendATextToAssembler = function (atext, assem) {
  * @param pool {AtributePool}
  */
 exports.prepareForWire = function (cs, pool) {
-  var newPool = new AttributePool();
-  var newCs = exports.moveOpsToNewPool(cs, pool, newPool);
+  const newPool = new AttributePool();
+  const newCs = exports.moveOpsToNewPool(cs, pool, newPool);
   return {
     translated: newCs,
-    pool: newPool
+    pool: newPool,
   };
 };
 
@@ -1714,8 +1709,8 @@ exports.prepareForWire = function (cs, pool) {
  * Checks if a changeset s the identity changeset
  */
 exports.isIdentity = function (cs) {
-  var unpacked = exports.unpack(cs);
-  return unpacked.ops == "" && unpacked.oldLen == unpacked.newLen;
+  const unpacked = exports.unpack(cs);
+  return unpacked.ops == '' && unpacked.oldLen == unpacked.newLen;
 };
 
 /**
@@ -1737,9 +1732,9 @@ exports.opAttributeValue = function (op, key, pool) {
  * @param pool {AttribPool} attribute pool
  */
 exports.attribsAttributeValue = function (attribs, key, pool) {
-  var value = '';
+  let value = '';
   if (attribs) {
-    exports.eachAttribNumber(attribs, function (n) {
+    exports.eachAttribNumber(attribs, (n) => {
       if (pool.getAttribKey(n) == key) {
         value = pool.getAttribValue(n);
       }
@@ -1754,13 +1749,13 @@ exports.attribsAttributeValue = function (attribs, key, pool) {
  * @param oldLen {int} Old length
  */
 exports.builder = function (oldLen) {
-  var assem = exports.smartOpAssembler();
-  var o = exports.newOp();
-  var charBank = exports.stringAssembler();
+  const assem = exports.smartOpAssembler();
+  const o = exports.newOp();
+  const charBank = exports.stringAssembler();
 
   var self = {
     // attribs are [[key1,value1],[key2,value2],...] or '*0*1...' (no pool needed in latter case)
-    keep: function (N, L, attribs, pool) {
+    keep(N, L, attribs, pool) {
       o.opcode = '=';
       o.attribs = (attribs && exports.makeAttribsString('=', attribs, pool)) || '';
       o.chars = N;
@@ -1768,16 +1763,16 @@ exports.builder = function (oldLen) {
       assem.append(o);
       return self;
     },
-    keepText: function (text, attribs, pool) {
+    keepText(text, attribs, pool) {
       assem.appendOpWithText('=', text, attribs, pool);
       return self;
     },
-    insert: function (text, attribs, pool) {
+    insert(text, attribs, pool) {
       assem.appendOpWithText('+', text, attribs, pool);
       charBank.append(text);
       return self;
     },
-    remove: function (N, L) {
+    remove(N, L) {
       o.opcode = '-';
       o.attribs = '';
       o.chars = N;
@@ -1785,11 +1780,11 @@ exports.builder = function (oldLen) {
       assem.append(o);
       return self;
     },
-    toString: function () {
+    toString() {
       assem.endDocument();
-      var newLen = oldLen + assem.getLengthChange();
+      const newLen = oldLen + assem.getLengthChange();
       return exports.pack(oldLen, newLen, assem.toString(), charBank.toString());
-    }
+    },
   };
 
   return self;
@@ -1799,18 +1794,18 @@ exports.makeAttribsString = function (opcode, attribs, pool) {
   // makeAttribsString(opcode, '*3') or makeAttribsString(opcode, [['foo','bar']], myPool) work
   if (!attribs) {
     return '';
-  } else if ((typeof attribs) == "string") {
+  } else if ((typeof attribs) === 'string') {
     return attribs;
   } else if (pool && attribs && attribs.length) {
     if (attribs.length > 1) {
       attribs = attribs.slice();
       attribs.sort();
     }
-    var result = [];
-    for (var i = 0; i < attribs.length; i++) {
-      var pair = attribs[i];
+    const result = [];
+    for (let i = 0; i < attribs.length; i++) {
+      const pair = attribs[i];
       if (opcode == '=' || (opcode == '+' && pair[1])) {
-        result.push('*' + exports.numToString(pool.putAttrib(pair)));
+        result.push(`*${exports.numToString(pool.putAttrib(pair))}`);
       }
     }
     return result.join('');
@@ -1819,11 +1814,11 @@ exports.makeAttribsString = function (opcode, attribs, pool) {
 
 // like "substring" but on a single-line attribution string
 exports.subattribution = function (astr, start, optEnd) {
-  var iter = exports.opIterator(astr, 0);
-  var assem = exports.smartOpAssembler();
-  var attOp = exports.newOp();
-  var csOp = exports.newOp();
-  var opOut = exports.newOp();
+  const iter = exports.opIterator(astr, 0);
+  const assem = exports.smartOpAssembler();
+  const attOp = exports.newOp();
+  const csOp = exports.newOp();
+  const opOut = exports.newOp();
 
   function doCsOp() {
     if (csOp.chars) {
@@ -1886,24 +1881,23 @@ exports.inverse = function (cs, lines, alines, pool) {
     }
   }
 
-  var curLine = 0;
-  var curChar = 0;
-  var curLineOpIter = null;
-  var curLineOpIterLine;
-  var curLineNextOp = exports.newOp('+');
+  let curLine = 0;
+  let curChar = 0;
+  let curLineOpIter = null;
+  let curLineOpIterLine;
+  const curLineNextOp = exports.newOp('+');
 
-  var unpacked = exports.unpack(cs);
-  var csIter = exports.opIterator(unpacked.ops);
-  var builder = exports.builder(unpacked.newLen);
+  const unpacked = exports.unpack(cs);
+  const csIter = exports.opIterator(unpacked.ops);
+  const builder = exports.builder(unpacked.newLen);
 
-  function consumeAttribRuns(numChars, func /*(len, attribs, endsLine)*/ ) {
-
+  function consumeAttribRuns(numChars, func /* (len, attribs, endsLine)*/) {
     if ((!curLineOpIter) || (curLineOpIterLine != curLine)) {
       // create curLineOpIter and advance it to curChar
       curLineOpIter = exports.opIterator(alines_get(curLine));
       curLineOpIterLine = curLine;
-      var indexIntoLine = 0;
-      var done = false;
+      let indexIntoLine = 0;
+      let done = false;
       while (!done && curLineOpIter.hasNext()) {
         curLineOpIter.next(curLineNextOp);
         if (indexIntoLine + curLineNextOp.chars >= curChar) {
@@ -1926,7 +1920,7 @@ exports.inverse = function (cs, lines, alines, pool) {
       if (!curLineNextOp.chars) {
         curLineOpIter.next(curLineNextOp);
       }
-      var charsToUse = Math.min(numChars, curLineNextOp.chars);
+      const charsToUse = Math.min(numChars, curLineNextOp.chars);
       func(charsToUse, curLineNextOp.attribs, charsToUse == curLineNextOp.chars && curLineNextOp.lines > 0);
       numChars -= charsToUse;
       curLineNextOp.chars -= charsToUse;
@@ -1943,25 +1937,23 @@ exports.inverse = function (cs, lines, alines, pool) {
     if (L) {
       curLine += L;
       curChar = 0;
+    } else if (curLineOpIter && curLineOpIterLine == curLine) {
+      consumeAttribRuns(N, () => {});
     } else {
-      if (curLineOpIter && curLineOpIterLine == curLine) {
-        consumeAttribRuns(N, function () {});
-      } else {
-        curChar += N;
-      }
+      curChar += N;
     }
   }
 
   function nextText(numChars) {
-    var len = 0;
-    var assem = exports.stringAssembler();
-    var firstString = lines_get(curLine).substring(curChar);
+    let len = 0;
+    const assem = exports.stringAssembler();
+    const firstString = lines_get(curLine).substring(curChar);
     len += firstString.length;
     assem.append(firstString);
 
-    var lineNum = curLine + 1;
+    let lineNum = curLine + 1;
     while (len < numChars) {
-      var nextString = lines_get(lineNum);
+      const nextString = lines_get(lineNum);
       len += nextString.length;
       assem.append(nextString);
       lineNum++;
@@ -1971,7 +1963,7 @@ exports.inverse = function (cs, lines, alines, pool) {
   }
 
   function cachedStrFunc(func) {
-    var cache = {};
+    const cache = {};
     return function (s) {
       if (!cache[s]) {
         cache[s] = func(s);
@@ -1980,31 +1972,31 @@ exports.inverse = function (cs, lines, alines, pool) {
     };
   }
 
-  var attribKeys = [];
-  var attribValues = [];
+  const attribKeys = [];
+  const attribValues = [];
   while (csIter.hasNext()) {
-    var csOp = csIter.next();
+    const csOp = csIter.next();
     if (csOp.opcode == '=') {
       if (csOp.attribs) {
         attribKeys.length = 0;
         attribValues.length = 0;
-        exports.eachAttribNumber(csOp.attribs, function (n) {
+        exports.eachAttribNumber(csOp.attribs, (n) => {
           attribKeys.push(pool.getAttribKey(n));
           attribValues.push(pool.getAttribValue(n));
         });
-        var undoBackToAttribs = cachedStrFunc(function (attribs) {
-          var backAttribs = [];
-          for (var i = 0; i < attribKeys.length; i++) {
-            var appliedKey = attribKeys[i];
-            var appliedValue = attribValues[i];
-            var oldValue = exports.attribsAttributeValue(attribs, appliedKey, pool);
+        var undoBackToAttribs = cachedStrFunc((attribs) => {
+          const backAttribs = [];
+          for (let i = 0; i < attribKeys.length; i++) {
+            const appliedKey = attribKeys[i];
+            const appliedValue = attribValues[i];
+            const oldValue = exports.attribsAttributeValue(attribs, appliedKey, pool);
             if (appliedValue != oldValue) {
               backAttribs.push([appliedKey, oldValue]);
             }
           }
           return exports.makeAttribsString('=', backAttribs, pool);
         });
-        consumeAttribRuns(csOp.chars, function (len, attribs, endsLine) {
+        consumeAttribRuns(csOp.chars, (len, attribs, endsLine) => {
           builder.keep(len, endsLine ? 1 : 0, undoBackToAttribs(attribs));
         });
       } else {
@@ -2016,7 +2008,7 @@ exports.inverse = function (cs, lines, alines, pool) {
     } else if (csOp.opcode == '-') {
       var textBank = nextText(csOp.chars);
       var textBankIndex = 0;
-      consumeAttribRuns(csOp.chars, function (len, attribs, endsLine) {
+      consumeAttribRuns(csOp.chars, (len, attribs, endsLine) => {
         builder.insert(textBank.substr(textBankIndex, len), attribs);
         textBankIndex += len;
       });
@@ -2028,33 +2020,33 @@ exports.inverse = function (cs, lines, alines, pool) {
 
 // %CLIENT FILE ENDS HERE%
 exports.follow = function (cs1, cs2, reverseInsertOrder, pool) {
-  var unpacked1 = exports.unpack(cs1);
-  var unpacked2 = exports.unpack(cs2);
-  var len1 = unpacked1.oldLen;
-  var len2 = unpacked2.oldLen;
-  exports.assert(len1 == len2, "mismatched follow - cannot transform cs1 on top of cs2");
-  var chars1 = exports.stringIterator(unpacked1.charBank);
-  var chars2 = exports.stringIterator(unpacked2.charBank);
+  const unpacked1 = exports.unpack(cs1);
+  const unpacked2 = exports.unpack(cs2);
+  const len1 = unpacked1.oldLen;
+  const len2 = unpacked2.oldLen;
+  exports.assert(len1 == len2, 'mismatched follow - cannot transform cs1 on top of cs2');
+  const chars1 = exports.stringIterator(unpacked1.charBank);
+  const chars2 = exports.stringIterator(unpacked2.charBank);
 
-  var oldLen = unpacked1.newLen;
-  var oldPos = 0;
-  var newLen = 0;
+  const oldLen = unpacked1.newLen;
+  let oldPos = 0;
+  let newLen = 0;
 
-  var hasInsertFirst = exports.attributeTester(['insertorder', 'first'], pool);
+  const hasInsertFirst = exports.attributeTester(['insertorder', 'first'], pool);
 
-  var newOps = exports.applyZip(unpacked1.ops, 0, unpacked2.ops, 0, function (op1, op2, opOut) {
+  const newOps = exports.applyZip(unpacked1.ops, 0, unpacked2.ops, 0, (op1, op2, opOut) => {
     if (op1.opcode == '+' || op2.opcode == '+') {
-      var whichToDo;
+      let whichToDo;
       if (op2.opcode != '+') {
         whichToDo = 1;
       } else if (op1.opcode != '+') {
         whichToDo = 2;
       } else {
         // both +
-        var firstChar1 = chars1.peek(1);
-        var firstChar2 = chars2.peek(1);
-        var insertFirst1 = hasInsertFirst(op1.attribs);
-        var insertFirst2 = hasInsertFirst(op2.attribs);
+        const firstChar1 = chars1.peek(1);
+        const firstChar2 = chars2.peek(1);
+        const insertFirst1 = hasInsertFirst(op1.attribs);
+        const insertFirst2 = hasInsertFirst(op2.attribs);
         if (insertFirst1 && !insertFirst2) {
           whichToDo = 1;
         } else if (insertFirst2 && !insertFirst1) {
@@ -2089,19 +2081,17 @@ exports.follow = function (cs1, cs2, reverseInsertOrder, pool) {
     } else if (op1.opcode == '-') {
       if (!op2.opcode) {
         op1.opcode = '';
-      } else {
-        if (op1.chars <= op2.chars) {
-          op2.chars -= op1.chars;
-          op2.lines -= op1.lines;
-          op1.opcode = '';
-          if (!op2.chars) {
-            op2.opcode = '';
-          }
-        } else {
-          op1.chars -= op2.chars;
-          op1.lines -= op2.lines;
+      } else if (op1.chars <= op2.chars) {
+        op2.chars -= op1.chars;
+        op2.lines -= op1.lines;
+        op1.opcode = '';
+        if (!op2.chars) {
           op2.opcode = '';
         }
+      } else {
+        op1.chars -= op2.chars;
+        op1.lines -= op2.lines;
+        op2.opcode = '';
       }
     } else if (op2.opcode == '-') {
       exports.copyOp(op2, opOut);
@@ -2153,16 +2143,16 @@ exports.follow = function (cs1, cs2, reverseInsertOrder, pool) {
       }
     }
     switch (opOut.opcode) {
-    case '=':
-      oldPos += opOut.chars;
-      newLen += opOut.chars;
-      break;
-    case '-':
-      oldPos += opOut.chars;
-      break;
-    case '+':
-      newLen += opOut.chars;
-      break;
+      case '=':
+        oldPos += opOut.chars;
+        newLen += opOut.chars;
+        break;
+      case '-':
+        oldPos += opOut.chars;
+        break;
+      case '+':
+        newLen += opOut.chars;
+        break;
     }
   });
   newLen += oldLen - oldPos;
@@ -2179,15 +2169,15 @@ exports.followAttributes = function (att1, att2, pool) {
   // to produce the merged set.
   if ((!att2) || (!pool)) return '';
   if (!att1) return att2;
-  var atts = [];
-  att2.replace(/\*([0-9a-z]+)/g, function (_, a) {
+  const atts = [];
+  att2.replace(/\*([0-9a-z]+)/g, (_, a) => {
     atts.push(pool.getAttrib(exports.parseNum(a)));
     return '';
   });
-  att1.replace(/\*([0-9a-z]+)/g, function (_, a) {
-    var pair1 = pool.getAttrib(exports.parseNum(a));
-    for (var i = 0; i < atts.length; i++) {
-      var pair2 = atts[i];
+  att1.replace(/\*([0-9a-z]+)/g, (_, a) => {
+    const pair1 = pool.getAttrib(exports.parseNum(a));
+    for (let i = 0; i < atts.length; i++) {
+      const pair2 = atts[i];
       if (pair1[0] == pair2[0]) {
         if (pair1[1] <= pair2[1]) {
           // winner of merge is pair1, delete this attribute
@@ -2199,8 +2189,8 @@ exports.followAttributes = function (att1, att2, pool) {
     return '';
   });
   // we've only removed attributes, so they're already sorted
-  var buf = exports.stringAssembler();
-  for (var i = 0; i < atts.length; i++) {
+  const buf = exports.stringAssembler();
+  for (let i = 0; i < atts.length; i++) {
     buf.append('*');
     buf.append(exports.numToString(pool.putAttrib(atts[i])));
   }
@@ -2208,19 +2198,19 @@ exports.followAttributes = function (att1, att2, pool) {
 };
 
 exports.composeWithDeletions = function (cs1, cs2, pool) {
-  var unpacked1 = exports.unpack(cs1);
-  var unpacked2 = exports.unpack(cs2);
-  var len1 = unpacked1.oldLen;
-  var len2 = unpacked1.newLen;
-  exports.assert(len2 == unpacked2.oldLen, "mismatched composition of two changesets");
-  var len3 = unpacked2.newLen;
-  var bankIter1 = exports.stringIterator(unpacked1.charBank);
-  var bankIter2 = exports.stringIterator(unpacked2.charBank);
-  var bankAssem = exports.stringAssembler();
+  const unpacked1 = exports.unpack(cs1);
+  const unpacked2 = exports.unpack(cs2);
+  const len1 = unpacked1.oldLen;
+  const len2 = unpacked1.newLen;
+  exports.assert(len2 == unpacked2.oldLen, 'mismatched composition of two changesets');
+  const len3 = unpacked2.newLen;
+  const bankIter1 = exports.stringIterator(unpacked1.charBank);
+  const bankIter2 = exports.stringIterator(unpacked2.charBank);
+  const bankAssem = exports.stringAssembler();
 
-  var newOps = exports.applyZip(unpacked1.ops, 0, unpacked2.ops, 0, function (op1, op2, opOut) {
-    var op1code = op1.opcode;
-    var op2code = op2.opcode;
+  const newOps = exports.applyZip(unpacked1.ops, 0, unpacked2.ops, 0, (op1, op2, opOut) => {
+    const op1code = op1.opcode;
+    const op2code = op2.opcode;
     if (op1code == '+' && op2code == '-') {
       bankIter1.skip(Math.min(op1.chars, op2.chars));
     }
@@ -2239,11 +2229,11 @@ exports.composeWithDeletions = function (cs1, cs2, pool) {
 
 // This function is 95% like _slicerZipperFunc, we just changed two lines to ensure it merges the attribs of deletions properly.
 // This is necassary for correct paddiff. But to ensure these changes doesn't affect anything else, we've created a seperate function only used for paddiffs
-exports._slicerZipperFuncWithDeletions= function (attOp, csOp, opOut, pool) {
+exports._slicerZipperFuncWithDeletions = function (attOp, csOp, opOut, pool) {
   // attOp is the op from the sequence that is being operated on, either an
   // attribution string or the earlier of two exportss being composed.
   // pool can be null if definitely not needed.
-  //print(csOp.toSource()+" "+attOp.toSource()+" "+opOut.toSource());
+  // print(csOp.toSource()+" "+attOp.toSource()+" "+opOut.toSource());
   if (attOp.opcode == '-') {
     exports.copyOp(attOp, opOut);
     attOp.opcode = '';
@@ -2252,7 +2242,7 @@ exports._slicerZipperFuncWithDeletions= function (attOp, csOp, opOut, pool) {
     csOp.opcode = '';
   } else {
     switch (csOp.opcode) {
-    case '-':
+      case '-':
       {
         if (csOp.chars <= attOp.chars) {
           // delete or delete part
@@ -2260,7 +2250,7 @@ exports._slicerZipperFuncWithDeletions= function (attOp, csOp, opOut, pool) {
             opOut.opcode = '-';
             opOut.chars = csOp.chars;
             opOut.lines = csOp.lines;
-            opOut.attribs = csOp.attribs; //changed by yammer
+            opOut.attribs = csOp.attribs; // changed by yammer
           }
           attOp.chars -= csOp.chars;
           attOp.lines -= csOp.lines;
@@ -2274,7 +2264,7 @@ exports._slicerZipperFuncWithDeletions= function (attOp, csOp, opOut, pool) {
             opOut.opcode = '-';
             opOut.chars = attOp.chars;
             opOut.lines = attOp.lines;
-            opOut.attribs = csOp.attribs; //changed by yammer
+            opOut.attribs = csOp.attribs; // changed by yammer
           }
           csOp.chars -= attOp.chars;
           csOp.lines -= attOp.lines;
@@ -2282,14 +2272,14 @@ exports._slicerZipperFuncWithDeletions= function (attOp, csOp, opOut, pool) {
         }
         break;
       }
-    case '+':
+      case '+':
       {
         // insert
         exports.copyOp(csOp, opOut);
         csOp.opcode = '';
         break;
       }
-    case '=':
+      case '=':
       {
         if (csOp.chars <= attOp.chars) {
           // keep or keep part
@@ -2315,7 +2305,7 @@ exports._slicerZipperFuncWithDeletions= function (attOp, csOp, opOut, pool) {
         }
         break;
       }
-    case '':
+      case '':
       {
         exports.copyOp(attOp, opOut);
         attOp.opcode = '';

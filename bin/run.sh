@@ -1,12 +1,10 @@
 #!/bin/sh
 
-pecho() { printf %s\\n "$*"; }
-log() { pecho "$@"; }
-error() { log "ERROR: $@" >&2; }
-fatal() { error "$@"; exit 1; }
-
 # Move to the folder where ep-lite is installed
 cd "$(dirname "$0")"/..
+
+# Source constants and usefull functions
+. bin/functions.sh
 
 ignoreRoot=0
 for ARG in "$@"; do
@@ -34,4 +32,4 @@ bin/installDeps.sh "$@" || exit 1
 log "Starting Etherpad..."
 
 SCRIPTPATH=$(pwd -P)
-exec node "$SCRIPTPATH/node_modules/ep_etherpad-lite/node/server.js" "$@"
+exec node $(compute_node_args) "$SCRIPTPATH/node_modules/ep_etherpad-lite/node/server.js" "$@"

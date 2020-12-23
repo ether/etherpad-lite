@@ -32,9 +32,7 @@
 	"pad.colorpicker.cancel": "キャンセル",
 	"pad.loading": "読み込み中...",
 	"pad.noCookie": "Cookie could not be found. Please allow cookies in your browser!  Your session and settings will not be saved between visits.  \n\nクッキーが見つかりません。ブラウザの設定でクッキーの使用を許可するまで、アクセスの記録や設定は引き継がれません。原因はブラウザによって Etherpad が iFrame に組み込まれたからと考えられます。親ドメインの iFrame と同じドメイン/サブドメインに置かれているかどうか、Etherpad の設定を確認してください。",
-	"pad.passwordRequired": "このパッドにアクセスするにはパスワードが必要です",
 	"pad.permissionDenied": "あなたにはこのパッドへのアクセス許可がありません",
-	"pad.wrongPassword": "パスワードが間違っています",
 	"pad.settings.padSettings": "パッドの設定",
 	"pad.settings.myView": "個人設定",
 	"pad.settings.stickychat": "画面にチャットを常に表示",
@@ -125,9 +123,6 @@
 	"pad.savedrevs.timeslider": "タイムスライダーで保存された版を確認できます",
 	"pad.userlist.entername": "名前を入力",
 	"pad.userlist.unnamed": "名前なし",
-	"pad.userlist.guest": "ゲスト",
-	"pad.userlist.deny": "拒否",
-	"pad.userlist.approve": "承認",
 	"pad.editbar.clearcolors": "文書全体の作者の色分けを消去しますか? 取り消しはできません。",
 	"pad.impexp.importbutton": "インポートする",
 	"pad.impexp.importing": "インポート中...",
@@ -138,6 +133,5 @@
 	"pad.impexp.importfailed": "インポートに失敗しました",
 	"pad.impexp.copypaste": "コピー & ペーストしてください",
 	"pad.impexp.exportdisabled": "{{type}}形式でのエクスポートは無効になっています。詳細はシステム管理者にお問い合わせください。",
-	"pad.impexp.maxFileSize": "ファイルが重すぎます。サイト管理者に連絡してインポート可能なファイルサイズの上限を引き上げてもらう必要があります",
-	"pad.impexp.permission": "このパッドに寄稿した実績がないため、インポートを無効にしました。まず寄稿をしてから再度、インポートしてください"
+	"pad.impexp.maxFileSize": "ファイルが重すぎます。サイト管理者に連絡してインポート可能なファイルサイズの上限を引き上げてもらう必要があります"
 }

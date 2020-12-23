@@ -1,18 +1,18 @@
-var Changeset = require('./Changeset');
-var ChangesetUtils = require('./ChangesetUtils');
-var _ = require('./underscore');
+const Changeset = require('./Changeset');
+const ChangesetUtils = require('./ChangesetUtils');
+const _ = require('./underscore');
 
-var lineMarkerAttribute = 'lmkr';
+const lineMarkerAttribute = 'lmkr';
 
 // Some of these attributes are kept for compatibility purposes.
 // Not sure if we need all of them
-var DEFAULT_LINE_ATTRIBUTES = ['author', 'lmkr', 'insertorder', 'start'];
+const DEFAULT_LINE_ATTRIBUTES = ['author', 'lmkr', 'insertorder', 'start'];
 
 // If one of these attributes are set to the first character of a
 // line it is considered as a line attribute marker i.e. attributes
 // set on this marker are applied to the whole line.
 // The list attribute is only maintained for compatibility reasons
-var lineAttributes = [lineMarkerAttribute,'list'];
+const lineAttributes = [lineMarkerAttribute, 'list'];
 
 /*
   The Attribute manager builds changesets based on a document
@@ -29,8 +29,7 @@ var lineAttributes = [lineMarkerAttribute,'list'];
   - a SkipList `lines` containing the text lines of the document.
 */
 
-var AttributeManager = function(rep, applyChangesetCallback)
-{
+const AttributeManager = function (rep, applyChangesetCallback) {
   this.rep = rep;
   this.applyChangesetCallback = applyChangesetCallback;
   this.author = '';
@@ -44,12 +43,11 @@ AttributeManager.lineAttributes = lineAttributes;
 
 AttributeManager.prototype = _(AttributeManager.prototype).extend({
 
-  applyChangeset: function(changeset){
-    if(!this.applyChangesetCallback) return changeset;
+  applyChangeset(changeset) {
+    if (!this.applyChangesetCallback) return changeset;
 
-    var cs = changeset.toString();
-    if (!Changeset.isIdentity(cs))
-    {
+    const cs = changeset.toString();
+    if (!Changeset.isIdentity(cs)) {
       this.applyChangesetCallback(cs);
     }
 
@@ -62,18 +60,17 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     @param end [row, col] tuple pointing to the end of the range
     @param attribs: an array of attributes
   */
-  setAttributesOnRange: function(start, end, attribs)
-  {
+  setAttributesOnRange(start, end, attribs) {
     // instead of applying the attributes to the whole range at once, we need to apply them
     // line by line, to be able to disregard the "*" used as line marker. For more details,
     // see https://github.com/ether/etherpad-lite/issues/2772
-    var allChangesets;
-    for(var row = start[0]; row <= end[0]; row++) {
-      var rowRange = this._findRowRange(row, start, end);
-      var startCol = rowRange[0];
-      var endCol   = rowRange[1];
+    let allChangesets;
+    for (let row = start[0]; row <= end[0]; row++) {
+      const rowRange = this._findRowRange(row, start, end);
+      const startCol = rowRange[0];
+      const endCol = rowRange[1];
 
-      var rowChangeset = this._setAttributesOnRangeByLine(row, startCol, endCol, attribs);
+      const rowChangeset = this._setAttributesOnRangeByLine(row, startCol, endCol, attribs);
 
       // compose changesets of all rows into a single changeset, as the range might not be continuous
       // due to the presence of line markers on the rows
@@ -87,13 +84,12 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     return this.applyChangeset(allChangesets);
   },
 
-  _findRowRange: function(row, start, end)
-  {
-    var startCol, endCol;
+  _findRowRange(row, start, end) {
+    let startCol, endCol;
 
-    var startLineOffset = this.rep.lines.offsetOfIndex(row);
-    var endLineOffset   = this.rep.lines.offsetOfIndex(row+1);
-    var lineLength      = endLineOffset - startLineOffset;
+    const startLineOffset = this.rep.lines.offsetOfIndex(row);
+    const endLineOffset = this.rep.lines.offsetOfIndex(row + 1);
+    const lineLength = endLineOffset - startLineOffset;
 
     // find column where range on this row starts
     if (row === start[0]) { // are we on the first row of range?
@@ -119,9 +115,8 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     @param endCol column where range ends
     @param attribs: an array of attributes
   */
-  _setAttributesOnRangeByLine: function(row, startCol, endCol, attribs)
-  {
-    var builder = Changeset.builder(this.rep.lines.totalWidth());
+  _setAttributesOnRangeByLine(row, startCol, endCol, attribs) {
+    const builder = Changeset.builder(this.rep.lines.totalWidth());
     ChangesetUtils.buildKeepToStartOfRange(this.rep, builder, [row, startCol]);
     ChangesetUtils.buildKeepRange(this.rep, builder, [row, startCol], [row, endCol], attribs, this.rep.apool);
     return builder;
@@ -131,12 +126,10 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     Returns if the line already has a line marker
     @param lineNum: the number of the line
   */
-  lineHasMarker: function(lineNum){
-    var that = this;
+  lineHasMarker(lineNum) {
+    const that = this;
 
-    return _.find(lineAttributes, function(attribute){
-      return that.getAttributeOnLine(lineNum, attribute) != '';
-    }) !== undefined;
+    return _.find(lineAttributes, (attribute) => that.getAttributeOnLine(lineNum, attribute) != '') !== undefined;
   },
 
   /*
@@ -144,14 +137,12 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     @param lineNum: the number of the line to set the attribute for
     @param attributeKey: the name of the attribute to get, e.g. list
   */
-  getAttributeOnLine: function(lineNum, attributeName){
+  getAttributeOnLine(lineNum, attributeName) {
     // get  `attributeName` attribute of first char of line
-    var aline = this.rep.alines[lineNum];
-    if (aline)
-    {
-      var opIter = Changeset.opIterator(aline);
-      if (opIter.hasNext())
-      {
+    const aline = this.rep.alines[lineNum];
+    if (aline) {
+      const opIter = Changeset.opIterator(aline);
+      if (opIter.hasNext()) {
         return Changeset.opAttributeValue(opIter.next(), attributeName, this.rep.apool) || '';
       }
     }
@@ -162,97 +153,94 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     Gets all attributes on a line
     @param lineNum: the number of the line to get the attribute for
   */
-  getAttributesOnLine: function(lineNum){
+  getAttributesOnLine(lineNum) {
     // get attributes of first char of line
-    var aline = this.rep.alines[lineNum];
-    var attributes = []
-    if (aline)
-    {
-      var opIter = Changeset.opIterator(aline)
-        , op
-      if (opIter.hasNext())
-      {
-        op = opIter.next()
-        if(!op.attribs) return []
+    const aline = this.rep.alines[lineNum];
+    const attributes = [];
+    if (aline) {
+      const opIter = Changeset.opIterator(aline);
+      let op;
+      if (opIter.hasNext()) {
+        op = opIter.next();
+        if (!op.attribs) return [];
 
-        Changeset.eachAttribNumber(op.attribs, function(n) {
-          attributes.push([this.rep.apool.getAttribKey(n), this.rep.apool.getAttribValue(n)])
-        }.bind(this))
+        Changeset.eachAttribNumber(op.attribs, (n) => {
+          attributes.push([this.rep.apool.getAttribKey(n), this.rep.apool.getAttribValue(n)]);
+        });
         return attributes;
       }
     }
     return [];
   },
 
- /*
+  /*
     Gets a given attribute on a selection
     @param attributeName
     @param prevChar
     returns true or false if an attribute is visible in range
   */
-  getAttributeOnSelection: function(attributeName, prevChar){
-    var rep = this.rep;
-    if (!(rep.selStart && rep.selEnd)) return
+  getAttributeOnSelection(attributeName, prevChar) {
+    const rep = this.rep;
+    if (!(rep.selStart && rep.selEnd)) return;
     // If we're looking for the caret attribute not the selection
     // has the user already got a selection or is this purely a caret location?
-    var isNotSelection = (rep.selStart[0] == rep.selEnd[0] && rep.selEnd[1] === rep.selStart[1]);
-    if(isNotSelection){
-      if(prevChar){
+    const isNotSelection = (rep.selStart[0] == rep.selEnd[0] && rep.selEnd[1] === rep.selStart[1]);
+    if (isNotSelection) {
+      if (prevChar) {
         // If it's not the start of the line
-        if(rep.selStart[1] !== 0){
+        if (rep.selStart[1] !== 0) {
           rep.selStart[1]--;
         }
       }
     }
 
-    var withIt = Changeset.makeAttribsString('+', [
-      [attributeName, 'true']
+    const withIt = Changeset.makeAttribsString('+', [
+      [attributeName, 'true'],
     ], rep.apool);
-    var withItRegex = new RegExp(withIt.replace(/\*/g, '\\*') + "(\\*|$)");
-    function hasIt(attribs)
-    {
+    const withItRegex = new RegExp(`${withIt.replace(/\*/g, '\\*')}(\\*|$)`);
+    function hasIt(attribs) {
       return withItRegex.test(attribs);
     }
 
-    return rangeHasAttrib(rep.selStart, rep.selEnd)
+    return rangeHasAttrib(rep.selStart, rep.selEnd);
 
     function rangeHasAttrib(selStart, selEnd) {
       // if range is collapsed -> no attribs in range
-      if(selStart[1] == selEnd[1] && selStart[0] == selEnd[0]) return false
+      if (selStart[1] == selEnd[1] && selStart[0] == selEnd[0]) return false;
 
-      if(selStart[0] != selEnd[0]) { // -> More than one line selected
-        var hasAttrib = true
+      if (selStart[0] != selEnd[0]) { // -> More than one line selected
+        var hasAttrib = true;
 
         // from selStart to the end of the first line
-        hasAttrib = hasAttrib && rangeHasAttrib(selStart, [selStart[0], rep.lines.atIndex(selStart[0]).text.length])
+        hasAttrib = hasAttrib && rangeHasAttrib(selStart, [selStart[0], rep.lines.atIndex(selStart[0]).text.length]);
 
         // for all lines in between
-        for(var n=selStart[0]+1; n < selEnd[0]; n++) {
-          hasAttrib = hasAttrib && rangeHasAttrib([n, 0], [n, rep.lines.atIndex(n).text.length])
+        for (let n = selStart[0] + 1; n < selEnd[0]; n++) {
+          hasAttrib = hasAttrib && rangeHasAttrib([n, 0], [n, rep.lines.atIndex(n).text.length]);
         }
 
         // for the last, potentially partial, line
-        hasAttrib = hasAttrib && rangeHasAttrib([selEnd[0], 0], [selEnd[0], selEnd[1]])
+        hasAttrib = hasAttrib && rangeHasAttrib([selEnd[0], 0], [selEnd[0], selEnd[1]]);
 
-        return hasAttrib
+        return hasAttrib;
       }
 
       // Logic tells us we now have a range on a single line
 
-      var lineNum = selStart[0]
-        , start = selStart[1]
-        , end = selEnd[1]
-        , hasAttrib = true
+      const lineNum = selStart[0];
+      const start = selStart[1];
+      const end = selEnd[1];
+      var hasAttrib = true;
 
       // Iterate over attribs on this line
 
-      var opIter = Changeset.opIterator(rep.alines[lineNum])
-        , indexIntoLine = 0
+      const opIter = Changeset.opIterator(rep.alines[lineNum]);
+      let indexIntoLine = 0;
 
       while (opIter.hasNext()) {
-        var op = opIter.next();
-        var opStartInLine = indexIntoLine;
-        var opEndInLine = opStartInLine + op.chars;
+        const op = opIter.next();
+        const opStartInLine = indexIntoLine;
+        const opEndInLine = opStartInLine + op.chars;
         if (!hasIt(op.attribs)) {
           // does op overlap selection?
           if (!(opEndInLine <= start || opStartInLine >= end)) {
@@ -263,7 +251,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
         indexIntoLine = opEndInLine;
       }
 
-      return hasAttrib
+      return hasAttrib;
     }
   },
 
@@ -274,40 +262,39 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     returns a list of attributes in the format
     [ ["key","value"], ["key","value"], ...  ]
   */
-  getAttributesOnPosition: function(lineNumber, column){
+  getAttributesOnPosition(lineNumber, column) {
     // get all attributes of the line
-    var aline = this.rep.alines[lineNumber];
+    const aline = this.rep.alines[lineNumber];
 
     if (!aline) {
-        return [];
+      return [];
     }
     // iterate through all operations of a line
-    var opIter = Changeset.opIterator(aline);
+    const opIter = Changeset.opIterator(aline);
 
     // we need to sum up how much characters each operations take until the wanted position
-    var currentPointer = 0;
-    var attributes = [];
-    var currentOperation;
+    let currentPointer = 0;
+    const attributes = [];
+    let currentOperation;
 
     while (opIter.hasNext()) {
       currentOperation = opIter.next();
-      currentPointer = currentPointer + currentOperation.chars;
+      currentPointer += currentOperation.chars;
 
       if (currentPointer > column) {
         // we got the operation of the wanted position, now collect all its attributes
-        Changeset.eachAttribNumber(currentOperation.attribs, function (n) {
+        Changeset.eachAttribNumber(currentOperation.attribs, (n) => {
           attributes.push([
             this.rep.apool.getAttribKey(n),
-            this.rep.apool.getAttribValue(n)
+            this.rep.apool.getAttribValue(n),
           ]);
-        }.bind(this));
+        });
 
         // skip the loop
         return attributes;
       }
     }
     return attributes;
-
   },
 
   /*
@@ -316,7 +303,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     returns a list of attributes in the format
     [ ["key","value"], ["key","value"], ...  ]
   */
-  getAttributesOnCaret: function(){
+  getAttributesOnCaret() {
     return this.getAttributesOnPosition(this.rep.selStart[0], this.rep.selStart[1]);
   },
 
@@ -327,72 +314,72 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     @param attributeValue: an optional parameter to pass to the attribute (e.g. indention level)
 
   */
-  setAttributeOnLine: function(lineNum, attributeName, attributeValue){
-    var loc = [0,0];
-    var builder = Changeset.builder(this.rep.lines.totalWidth());
-    var hasMarker = this.lineHasMarker(lineNum);
+  setAttributeOnLine(lineNum, attributeName, attributeValue) {
+    let loc = [0, 0];
+    const builder = Changeset.builder(this.rep.lines.totalWidth());
+    const hasMarker = this.lineHasMarker(lineNum);
 
     ChangesetUtils.buildKeepRange(this.rep, builder, loc, (loc = [lineNum, 0]));
 
-    if(hasMarker){
+    if (hasMarker) {
       ChangesetUtils.buildKeepRange(this.rep, builder, loc, (loc = [lineNum, 1]), [
-        [attributeName, attributeValue]
+        [attributeName, attributeValue],
       ], this.rep.apool);
-    }else{
-        // add a line marker
-        builder.insert('*', [
-          ['author', this.author],
-          ['insertorder', 'first'],
-          [lineMarkerAttribute, '1'],
-          [attributeName, attributeValue]
-        ], this.rep.apool);
+    } else {
+      // add a line marker
+      builder.insert('*', [
+        ['author', this.author],
+        ['insertorder', 'first'],
+        [lineMarkerAttribute, '1'],
+        [attributeName, attributeValue],
+      ], this.rep.apool);
     }
 
     return this.applyChangeset(builder);
   },
 
- /**
+  /**
    * Removes a specified attribute on a line
    *  @param lineNum the number of the affected line
    *  @param attributeName the name of the attribute to remove, e.g. list
    *  @param attributeValue if given only attributes with equal value will be removed
    */
- removeAttributeOnLine: function(lineNum, attributeName, attributeValue){
-   var builder = Changeset.builder(this.rep.lines.totalWidth());
-   var hasMarker = this.lineHasMarker(lineNum);
-   var found = false;
+  removeAttributeOnLine(lineNum, attributeName, attributeValue) {
+    const builder = Changeset.builder(this.rep.lines.totalWidth());
+    const hasMarker = this.lineHasMarker(lineNum);
+    let found = false;
 
-   var attribs = _(this.getAttributesOnLine(lineNum)).map(function (attrib) {
-     if (attrib[0] === attributeName && (!attributeValue || attrib[0] === attributeValue)){
-       found = true;
-       return [attributeName, ''];
-     }else if (attrib[0] === 'author'){
-       // update last author to make changes to line attributes on this line
-       return [attributeName, this.author];
-     }
-     return attrib;
-   });
+    const attribs = _(this.getAttributesOnLine(lineNum)).map(function (attrib) {
+      if (attrib[0] === attributeName && (!attributeValue || attrib[0] === attributeValue)) {
+        found = true;
+        return [attributeName, ''];
+      } else if (attrib[0] === 'author') {
+        // update last author to make changes to line attributes on this line
+        return [attributeName, this.author];
+      }
+      return attrib;
+    });
 
-   if (!found) {
-     return;
-   }
+    if (!found) {
+      return;
+    }
 
-   ChangesetUtils.buildKeepToStartOfRange(this.rep, builder, [lineNum, 0]);
+    ChangesetUtils.buildKeepToStartOfRange(this.rep, builder, [lineNum, 0]);
 
-   var countAttribsWithMarker = _.chain(attribs).filter(function(a){return !!a[1];})
-     .map(function(a){return a[0];}).difference(DEFAULT_LINE_ATTRIBUTES).size().value();
+    const countAttribsWithMarker = _.chain(attribs).filter((a) => !!a[1])
+        .map((a) => a[0]).difference(DEFAULT_LINE_ATTRIBUTES).size().value();
 
-   //if we have marker and any of attributes don't need to have marker. we need delete it
-   if(hasMarker && !countAttribsWithMarker){
-     ChangesetUtils.buildRemoveRange(this.rep, builder, [lineNum, 0], [lineNum, 1]);
-   }else{
-     ChangesetUtils.buildKeepRange(this.rep, builder, [lineNum, 0], [lineNum, 1], attribs, this.rep.apool);
-   }
+    // if we have marker and any of attributes don't need to have marker. we need delete it
+    if (hasMarker && !countAttribsWithMarker) {
+      ChangesetUtils.buildRemoveRange(this.rep, builder, [lineNum, 0], [lineNum, 1]);
+    } else {
+      ChangesetUtils.buildKeepRange(this.rep, builder, [lineNum, 0], [lineNum, 1], attribs, this.rep.apool);
+    }
 
-   return this.applyChangeset(builder);
- },
+    return this.applyChangeset(builder);
+  },
 
-   /*
+  /*
      Toggles a line attribute for the specified line number
      If a line attribute with the specified name exists with any value it will be removed
      Otherwise it will be set to the given value
@@ -400,20 +387,19 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
      @param attributeKey: the name of the attribute to toggle, e.g. list
      @param attributeValue: the value to pass to the attribute (e.g. indention level)
   */
-  toggleAttributeOnLine: function(lineNum, attributeName, attributeValue) {
-    return this.getAttributeOnLine(lineNum, attributeName) ?
-      this.removeAttributeOnLine(lineNum, attributeName) :
-      this.setAttributeOnLine(lineNum, attributeName, attributeValue);
-
+  toggleAttributeOnLine(lineNum, attributeName, attributeValue) {
+    return this.getAttributeOnLine(lineNum, attributeName)
+      ? this.removeAttributeOnLine(lineNum, attributeName)
+      : this.setAttributeOnLine(lineNum, attributeName, attributeValue);
   },
 
-  hasAttributeOnSelectionOrCaretPosition: function(attributeName) {
-    var hasSelection = ((this.rep.selStart[0] !== this.rep.selEnd[0]) || (this.rep.selEnd[1] !== this.rep.selStart[1]));
-    var hasAttrib;
+  hasAttributeOnSelectionOrCaretPosition(attributeName) {
+    const hasSelection = ((this.rep.selStart[0] !== this.rep.selEnd[0]) || (this.rep.selEnd[1] !== this.rep.selStart[1]));
+    let hasAttrib;
     if (hasSelection) {
       hasAttrib = this.getAttributeOnSelection(attributeName);
-    }else {
-      var attributesOnCaretPosition = this.getAttributesOnCaret();
+    } else {
+      const attributesOnCaretPosition = this.getAttributesOnCaret();
       hasAttrib = _.contains(_.flatten(attributesOnCaretPosition), attributeName);
     }
     return hasAttrib;

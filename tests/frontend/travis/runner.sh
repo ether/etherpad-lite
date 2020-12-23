@@ -1,48 +1,45 @@
-#!/bin/bash
-if [ -z "${SAUCE_USERNAME}" ]; then echo "SAUCE_USERNAME is unset - exiting"; exit 1; fi
-if [ -z "${SAUCE_ACCESS_KEY}" ]; then echo "SAUCE_ACCESS_KEY is unset - exiting"; exit 1; fi
+#!/bin/sh
 
-# do not continue if there is an error
-set -eu
+pecho() { printf %s\\n "$*"; }
+log() { pecho "$@"; }
+error() { log "ERROR: $@" >&2; }
+fatal() { error "$@"; exit 1; }
+try() { "$@" || fatal "'$@' failed"; }
 
-# source: https://stackoverflow.com/questions/59895/get-the-source-directory-of-a-bash-script-from-within-the-script-itself#246128
-MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+[ -n "${SAUCE_USERNAME}" ] || fatal "SAUCE_USERNAME is unset - exiting"
+[ -n "${SAUCE_ACCESS_KEY}" ] || fatal "SAUCE_ACCESS_KEY is unset - exiting"
+
+MY_DIR=$(try cd "${0%/*}" && try pwd) || exit 1
 
 # reliably move to the etherpad base folder before running it
-cd "${MY_DIR}/../../../"
+try cd "${MY_DIR}/../../../"
 
-# start Etherpad, assuming all dependencies are already installed.
-#
-# This is possible because the "install" section of .travis.yml already contains
-# a call to bin/installDeps.sh
-echo "Running Etherpad directly, assuming bin/installDeps.sh has already been run"
-node node_modules/ep_etherpad-lite/node/server.js "${@}" &
+log "Assuming bin/installDeps.sh has already been run"
+node node_modules/ep_etherpad-lite/node/server.js --experimental-worker "${@}" &
+ep_pid=$!
 
-echo "Now I will try for 15 seconds to connect to Etherpad on http://localhost:9001"
-
-# wait for at most 15 seconds until Etherpad starts accepting connections
-#
-# modified from:
-# https://unix.stackexchange.com/questions/5277/how-do-i-tell-a-script-to-wait-for-a-process-to-start-accepting-requests-on-a-po#349138
-#
-(timeout 15 bash -c 'until echo > /dev/tcp/localhost/9001; do sleep 0.5; done') || \
-    (echo "Could not connect to Etherpad on http://localhost:9001" ; exit 1)
-
-echo "Successfully connected to Etherpad on http://localhost:9001"
-
-# On the Travis VM, remote_runner.js is found at
-# /home/travis/build/ether/[secure]/tests/frontend/travis/remote_runner.js
-# which is the same directory that contains this script.
-# Let's move back there.
-#
-# Probably remote_runner.js is injected by Saucelabs.
-cd "${MY_DIR}"
+log "Waiting for Etherpad to accept connections (http://localhost:9001)..."
+connected=false
+can_connect() {
+    curl -sSfo /dev/null http://localhost:9001/ || return 1
+    connected=true
+}
+now() { date +%s; }
+start=$(now)
+while [ $(($(now) - $start)) -le 15 ] && ! can_connect; do
+    sleep 1
+done
+[ "$connected" = true ] \
+    || fatal "Timed out waiting for Etherpad to accept connections"
+log "Successfully connected to Etherpad on http://localhost:9001"
 
 # start the remote runner
-echo "Now starting the remote runner"
+try cd "${MY_DIR}"
+log "Starting the remote runner..."
 node remote_runner.js
 exit_code=$?
 
-kill $(cat /tmp/sauce.pid)
-
-exit $exit_code
+kill "$(cat /tmp/sauce.pid)"
+kill "$ep_pid" && wait "$ep_pid"
+log "Done."
+exit "$exit_code"

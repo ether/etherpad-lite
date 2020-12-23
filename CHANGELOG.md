@@ -1,5 +1,88 @@
-# Develop -- TODO Change to 1.8.x.
-* ...
+# 1.8.7
+### Compatibility-breaking changes
+* **IMPORTANT:** It is no longer possible to protect a group pad with a
+  password. All API calls to `setPassword` or `isPasswordProtected` will fail.
+  Existing group pads that were previously password protected will no longer be
+  password protected. If you need fine-grained access control, you can restrict
+  API session creation in your frontend service, or you can use plugins.
+* All workarounds for Microsoft Internet Explorer have been removed. IE might
+  still work, but it is untested.
+* Plugin hook functions are now subject to new sanity checks. Buggy hook
+  functions will cause an error message to be logged
+* Authorization failures now return 403 by default instead of 401
+* The `authorize` hook is now only called after successful authentication. Use
+  the new `preAuthorize` hook if you need to bypass authentication
+* The `authFailure` hook is deprecated; use the new `authnFailure` and
+  `authzFailure` hooks instead
+* The `indexCustomInlineScripts` hook was removed
+* The `client` context property for the `handleMessage` and
+  `handleMessageSecurity` hooks has been renamed to `socket` (the old name is
+  still usable but deprecated)
+* The `aceAttribClasses` hook functions are now called synchronously
+* The format of `ENTER`, `CREATE`, and `LEAVE` log messages has changed
+* Strings passed to `$.gritter.add()` are now expected to be plain text, not
+  HTML. Use jQuery or DOM objects if you need formatting
+
+### Notable new features
+* Users can now import without creating and editing the pad first
+* Added a new `readOnly` user setting that makes it possible to create users in
+  `settings.json` that can read pads but not create or modify them
+* Added a new `canCreate` user setting that makes it possible to create users in
+  `settings.json` that can modify pads but not create them
+* The `authorize` hook now accepts `readOnly` to grant read-only access to a pad
+* The `authorize` hook now accepts `modify` to grant modify-only (creation
+  prohibited) access to a pad
+* All authentication successes and failures are now logged
+* Added a new `cookie.sameSite` setting that makes it possible to enable
+  authentication when Etherpad is embedded in an iframe from another site
+* New `exportHTMLAdditionalContent` hook to include additional HTML content
+* New `exportEtherpadAdditionalContent` hook to include additional database
+  content in `.etherpad` exports
+* New `expressCloseServer` hook to close Express when required
+* The `padUpdate` hook context now includes `revs` and `changeset`
+* `checkPlugins.js` has various improvements to help plugin developers
+* The HTTP request object (and therefore the express-session state) is now
+  accessible from within most `eejsBlock_*` hooks
+* Users without a `password` or `hash` property in `settings.json` are no longer
+  ignored, so they can now be used by authentication plugins
+* New permission denied modal and block ``permissionDenied``
+* Plugins are now updated to the latest version instead of minor or patches
+
+### Notable fixes
+* Fixed rate limit accounting when Etherpad is behind a reverse proxy
+* Fixed typos that prevented access to pads via an HTTP API session
+* Fixed authorization failures for pad URLs containing a percent-encoded
+  character
+* Fixed exporting of read-only pads
+* Passwords are no longer written to connection state database entries or logged
+  in debug logs
+* When using the keyboard to navigate through the toolbar buttons the button
+  with the focus is now highlighted
+* Fixed support for Node.js 10 by passing the `--experimental-worker` flag
+* Fixed export of HTML attributes within a line
+* Fixed occasional "Cannot read property 'offsetTop' of undefined" error in
+  timeslider when "follow pad contents" is checked
+* socket.io errors are now displayed instead of silently ignored
+* Pasting while the caret is in a link now works (except for middle-click paste
+  on X11 systems)
+* Removal of Microsoft Internet Explorer specific code
+* Import better handles line breaks and white space
+* Fix issue with ``createDiffHTML`` incorrect call of ``getInternalRevisionAText``
+* Allow additional characters in URLs
+* MySQL engine fix and various other UeberDB updates (See UeberDB changelog).
+* Admin UI improvements on search results (to remove duplicate items)
+* Removal of unused cruft from ``clientVars`` (``ip`` and ``userAgent``)
+
+
+### Minor changes
+* Temporary disconnections no longer force a full page refresh
+* Toolbar layout for narrow screens is improved
+* Fixed `SameSite` cookie attribute for the `language`, `token`, and `pref`
+  cookies
+* Fixed superfluous database accesses when deleting a pad
+* Expanded test coverage.
+* `package-lock.json` is now lint checked on commit
+* Various lint fixes/modernization of code
 
 # 1.8.6
 * IMPORTANT: This fixes a severe problem with postgresql in 1.8.5

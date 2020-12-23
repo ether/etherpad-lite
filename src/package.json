@@ -45,18 +45,21 @@
     "find-root": "1.1.0",
     "formidable": "1.2.1",
     "graceful-fs": "4.2.4",
-    "http-errors": "1.7.3",
+    "http-errors": "1.8.0",
+    "js-cookie": "^2.2.1",
     "jsonminify": "0.4.1",
     "languages4translatewiki": "0.1.3",
     "lodash.clonedeep": "4.5.0",
     "log4js": "0.6.35",
     "measured-core": "1.11.2",
+    "mime-types": "^2.1.27",
     "nodeify": "1.0.1",
-    "npm": "6.14.5",
+    "npm": "6.14.8",
     "openapi-backend": "2.4.1",
+    "proxy-addr": "^2.0.6",
     "rate-limiter-flexible": "^2.1.4",
     "rehype": "^10.0.0",
-    "rehype-format": "^3.0.1",
+    "rehype-minify-whitespace": "^4.0.5",
     "request": "2.88.2",
     "resolve": "1.1.7",
     "security": "1.0.0",
@@ -67,21 +70,74 @@
     "threads": "^1.4.0",
     "tiny-worker": "^2.3.0",
     "tinycon": "0.0.1",
-    "ueberdb2": "^0.5.3",
+    "ueberdb2": "^0.5.6",
     "underscore": "1.8.3",
     "unorm": "1.4.1"
   },
   "bin": {
-    "etherpad-lite": "./node/server.js"
+    "etherpad-lite": "node/server.js"
   },
   "devDependencies": {
+    "eslint": "^7.15.0",
+    "eslint-config-etherpad": "^1.0.20",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-mocha": "^8.0.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prefer-arrow": "^1.2.2",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-you-dont-need-lodash-underscore": "^6.10.0",
+    "etherpad-cli-client": "0.0.9",
     "mocha": "7.1.2",
     "mocha-froth": "^0.2.10",
     "nyc": "15.0.1",
     "set-cookie-parser": "^2.4.6",
+    "sinon": "^9.2.0",
+    "superagent": "^3.8.3",
     "supertest": "4.0.2",
-    "wd": "1.12.1",
-    "wtfnode": "^0.8.3"
+    "wd": "1.12.1"
+  },
+  "eslintConfig": {
+    "ignorePatterns": [
+      "/static/js/admin/jquery.autosize.js",
+      "/static/js/admin/minify.json.js",
+      "/static/js/browser.js",
+      "/static/js/excanvas.js",
+      "/static/js/farbtastic.js",
+      "/static/js/gritter.js",
+      "/static/js/html10n.js",
+      "/static/js/jquery.js",
+      "/static/js/vendors/nice-select.js"
+    ],
+    "overrides": [
+      {
+        "files": [
+          "**/.eslintrc.js"
+        ],
+        "extends": "etherpad/node"
+      },
+      {
+        "files": [
+          "**/*"
+        ],
+        "excludedFiles": [
+          "**/.eslintrc.js"
+        ],
+        "extends": "etherpad/node"
+      },
+      {
+        "files": [
+          "static/**/*"
+        ],
+        "excludedFiles": [
+          "**/.eslintrc.js"
+        ],
+        "extends": "etherpad/browser",
+        "env": {
+          "shared-node-browser": true
+        }
+      }
+    ],
+    "root": true
   },
   "engines": {
     "node": ">=10.13.0",
@@ -92,9 +148,10 @@
     "url": "https://github.com/ether/etherpad-lite.git"
   },
   "scripts": {
-    "test": "nyc wtfnode node_modules/.bin/_mocha --timeout 5000 --recursive ../tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
+    "lint": "eslint .",
+    "test": "nyc mocha --timeout 30000 --recursive ../tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api"
   },
-  "version": "1.8.6",
+  "version": "1.8.7",
   "license": "Apache-2.0"
 }

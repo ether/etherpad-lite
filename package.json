@@ -1,0 +1,105 @@
+{
+  "dependencies": {
+    "ep_etherpad-lite": "file:src"
+  },
+  "devDependencies": {
+    "eslint": "^7.15.0",
+    "eslint-config-etherpad": "^1.0.20",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-mocha": "^8.0.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prefer-arrow": "^1.2.2",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-you-dont-need-lodash-underscore": "^6.10.0"
+  },
+  "eslintConfig": {
+    "ignorePatterns": [
+      "/src/",
+      "/tests/frontend/lib/"
+    ],
+    "overrides": [
+      {
+        "files": [
+          "**/.eslintrc.js"
+        ],
+        "extends": "etherpad/node"
+      },
+      {
+        "files": [
+          "**/*"
+        ],
+        "excludedFiles": [
+          "**/.eslintrc.js",
+          "tests/frontend/**/*"
+        ],
+        "extends": "etherpad/node"
+      },
+      {
+        "files": [
+          "tests/**/*"
+        ],
+        "excludedFiles": [
+          "**/.eslintrc.js"
+        ],
+        "extends": "etherpad/tests",
+        "rules": {
+          "mocha/no-exports": "off",
+          "mocha/no-top-level-hooks": "off"
+        }
+      },
+      {
+        "files": [
+          "tests/backend/**/*"
+        ],
+        "excludedFiles": [
+          "**/.eslintrc.js"
+        ],
+        "extends": "etherpad/tests/backend",
+        "overrides": [
+          {
+            "files": [
+              "tests/backend/**/*"
+            ],
+            "excludedFiles": [
+              "tests/backend/specs/**/*"
+            ],
+            "rules": {
+              "mocha/no-exports": "off",
+              "mocha/no-top-level-hooks": "off"
+            }
+          }
+        ]
+      },
+      {
+        "files": [
+          "tests/frontend/**/*"
+        ],
+        "excludedFiles": [
+          "**/.eslintrc.js"
+        ],
+        "extends": "etherpad/tests/frontend",
+        "overrides": [
+          {
+            "files": [
+              "tests/frontend/**/*"
+            ],
+            "excludedFiles": [
+              "tests/frontend/specs/**/*"
+            ],
+            "rules": {
+              "mocha/no-exports": "off",
+              "mocha/no-top-level-hooks": "off"
+            }
+          }
+        ]
+      }
+    ],
+    "root": true
+  },
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "engines": {
+    "node": ">=10.13.0"
+  }
+}

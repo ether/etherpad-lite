@@ -18,18 +18,16 @@
  * limitations under the License.
  */
 
-var authorManager = require("./AuthorManager");
-var hooks = require("ep_etherpad-lite/static/js/pluginfw/hooks.js");
-var padManager = require("./PadManager");
-var sessionManager = require("./SessionManager");
-var settings = require("../utils/Settings");
+const authorManager = require('./AuthorManager');
+const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks.js');
+const padManager = require('./PadManager');
+const sessionManager = require('./SessionManager');
+const settings = require('../utils/Settings');
 const webaccess = require('../hooks/express/webaccess');
-var log4js = require('log4js');
-var authLogger = log4js.getLogger("auth");
+const log4js = require('log4js');
+const authLogger = log4js.getLogger('auth');
 
 const DENY = Object.freeze({accessStatus: 'deny'});
-const WRONG_PASSWORD = Object.freeze({accessStatus: 'wrongPassword'});
-const NEED_PASSWORD = Object.freeze({accessStatus: 'needPassword'});
 
 /**
  * Determines whether the user can access a pad.
@@ -42,42 +40,46 @@ const NEED_PASSWORD = Object.freeze({accessStatus: 'needPassword'});
  *     is false and the user is accessing a public pad. If there is not an author already associated
  *     with this token then a new author object is created (including generating an author ID) and
  *     associated with this token.
- * @param password is the password the user has given to access this pad. It can be null.
  * @param userSettings is the settings.users[username] object (or equivalent from an authn plugin).
- * @return {accessStatus: grant|deny|wrongPassword|needPassword, authorID: a.xxxxxx}. The caller
- *     must use the author ID returned in this object when making any changes associated with the
- *     author.
+ * @return {accessStatus: grant|deny, authorID: a.xxxxxx}. The caller must use the author ID
+ *     returned in this object when making any changes associated with the author.
  *
  * WARNING: Tokens and session IDs MUST be kept secret, otherwise users will be able to impersonate
  * each other (which might allow them to gain privileges).
  */
-exports.checkAccess = async function(padID, sessionCookie, token, password, userSettings)
-{
+exports.checkAccess = async function (padID, sessionCookie, token, userSettings) {
   if (!padID) {
     authLogger.debug('access denied: missing padID');
     return DENY;
   }
 
-  if (settings.requireAuthentication) {
-    // Make sure the user has authenticated if authentication is required. The caller should have
-    // already performed this check, but it is repeated here just in case.
+  let canCreate = !settings.editOnly;
+
+  // Authentication and authorization checks.
+  if (settings.loadTest) {
+    console.warn(
+        'bypassing socket.io authentication and authorization checks due to settings.loadTest');
+  } else if (settings.requireAuthentication) {
     if (userSettings == null) {
       authLogger.debug('access denied: authentication is required');
       return DENY;
     }
-    // Check whether the user is authorized. Note that userSettings.padAuthorizations will still be
-    // populated even if settings.requireAuthorization is false.
+    if (userSettings.canCreate != null && !userSettings.canCreate) canCreate = false;
+    if (userSettings.readOnly) canCreate = false;
+    // Note: userSettings.padAuthorizations should still be populated even if
+    // settings.requireAuthorization is false.
     const padAuthzs = userSettings.padAuthorizations || {};
     const level = webaccess.normalizeAuthzLevel(padAuthzs[padID]);
     if (!level) {
       authLogger.debug('access denied: unauthorized');
       return DENY;
     }
+    if (level !== 'create') canCreate = false;
   }
 
   // allow plugins to deny access
   const isFalse = (x) => x === false;
-  if (hooks.callAll('onAccessCheck', {padID, password, token, sessionCookie}).some(isFalse)) {
+  if (hooks.callAll('onAccessCheck', {padID, token, sessionCookie}).some(isFalse)) {
     authLogger.debug('access denied: an onAccessCheck hook function returned false');
     return DENY;
   }
@@ -88,7 +90,7 @@ exports.checkAccess = async function(padID, sessionCookie, token, password, user
   const p_padExists = padManager.doesPadExist(padID);
 
   const padExists = await p_padExists;
-  if (!padExists && settings.editOnly) {
+  if (!padExists && !canCreate) {
     authLogger.debug('access denied: user attempted to create a pad, which is prohibited');
     return DENY;
   }
@@ -105,8 +107,7 @@ exports.checkAccess = async function(padID, sessionCookie, token, password, user
   };
 
   if (!padID.includes('$')) {
-    // Only group pads can be private or have passwords, so there is nothing more to check for this
-    // non-group pad.
+    // Only group pads can be private, so there is nothing more to check for this non-group pad.
     return grant;
   }
 
@@ -115,7 +116,7 @@ exports.checkAccess = async function(padID, sessionCookie, token, password, user
       authLogger.debug('access denied: must have an HTTP API session to create a group pad');
       return DENY;
     }
-    // Creating a group pad, so there is no password or public status to check.
+    // Creating a group pad, so there is no public status to check.
     return grant;
   }
 
@@ -124,19 +125,6 @@ exports.checkAccess = async function(padID, sessionCookie, token, password, user
   if (!pad.getPublicStatus() && sessionAuthorID == null) {
     authLogger.debug('access denied: must have an HTTP API session to access private group pads');
     return DENY;
-  }
-
-  const passwordExempt = settings.sessionNoPassword && sessionAuthorID != null;
-  const requirePassword = pad.isPasswordProtected() && !passwordExempt;
-  if (requirePassword) {
-    if (password == null) {
-      authLogger.debug('access denied: password required');
-      return NEED_PASSWORD;
-    }
-    if (!password || !pad.isCorrectPassword(password)) {
-      authLogger.debug('access denied: wrong password');
-      return WRONG_PASSWORD;
-    }
   }
 
   return grant;

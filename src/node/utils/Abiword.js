@@ -18,45 +18,39 @@
  * limitations under the License.
  */
 
-var spawn = require('child_process').spawn;
-var async = require("async");
-var settings = require("./Settings");
-var os = require('os');
+const spawn = require('child_process').spawn;
+const async = require('async');
+const settings = require('./Settings');
+const os = require('os');
 
-var doConvertTask;
+let doConvertTask;
 
-//on windows we have to spawn a process for each convertion, cause the plugin abicommand doesn't exist on this platform
-if(os.type().indexOf("Windows") > -1)
-{
-  var stdoutBuffer = "";
+// on windows we have to spawn a process for each convertion, cause the plugin abicommand doesn't exist on this platform
+if (os.type().indexOf('Windows') > -1) {
+  let stdoutBuffer = '';
 
-  doConvertTask = function(task, callback)
-  {
-    //span an abiword process to perform the conversion
-    var abiword = spawn(settings.abiword, ["--to=" + task.destFile, task.srcFile]);
+  doConvertTask = function (task, callback) {
+    // span an abiword process to perform the conversion
+    const abiword = spawn(settings.abiword, [`--to=${task.destFile}`, task.srcFile]);
 
-    //delegate the processing of stdout to another function
-    abiword.stdout.on('data', function (data)
-    {
-      //add data to buffer
-      stdoutBuffer+=data.toString();
-    });
-
-    //append error messages to the buffer
-    abiword.stderr.on('data', function (data)
-    {
+    // delegate the processing of stdout to another function
+    abiword.stdout.on('data', (data) => {
+      // add data to buffer
       stdoutBuffer += data.toString();
     });
 
-    //throw exceptions if abiword is dieing
-    abiword.on('exit', function (code)
-    {
-      if(code != 0) {
+    // append error messages to the buffer
+    abiword.stderr.on('data', (data) => {
+      stdoutBuffer += data.toString();
+    });
+
+    // throw exceptions if abiword is dieing
+    abiword.on('exit', (code) => {
+      if (code != 0) {
         return callback(`Abiword died with exit code ${code}`);
       }
 
-      if(stdoutBuffer != "")
-      {
+      if (stdoutBuffer != '') {
         console.log(stdoutBuffer);
       }
 
@@ -64,55 +58,48 @@ if(os.type().indexOf("Windows") > -1)
     });
   };
 
-  exports.convertFile = function(srcFile, destFile, type, callback)
-  {
-    doConvertTask({"srcFile": srcFile, "destFile": destFile, "type": type}, callback);
+  exports.convertFile = function (srcFile, destFile, type, callback) {
+    doConvertTask({srcFile, destFile, type}, callback);
   };
 }
-//on unix operating systems, we can start abiword with abicommand and communicate with it via stdin/stdout
-//thats much faster, about factor 10
-else
-{
-  //spawn the abiword process
-  var abiword;
-  var stdoutCallback = null;
-  var spawnAbiword = function (){
-    abiword = spawn(settings.abiword, ["--plugin", "AbiCommand"]);
-    var stdoutBuffer = "";
-    var firstPrompt = true;
+// on unix operating systems, we can start abiword with abicommand and communicate with it via stdin/stdout
+// thats much faster, about factor 10
+else {
+  // spawn the abiword process
+  let abiword;
+  let stdoutCallback = null;
+  var spawnAbiword = function () {
+    abiword = spawn(settings.abiword, ['--plugin', 'AbiCommand']);
+    let stdoutBuffer = '';
+    let firstPrompt = true;
 
-    //append error messages to the buffer
-    abiword.stderr.on('data', function (data)
-    {
+    // append error messages to the buffer
+    abiword.stderr.on('data', (data) => {
       stdoutBuffer += data.toString();
     });
 
-    //abiword died, let's restart abiword and return an error with the callback
-    abiword.on('exit', function (code)
-    {
+    // abiword died, let's restart abiword and return an error with the callback
+    abiword.on('exit', (code) => {
       spawnAbiword();
       stdoutCallback(`Abiword died with exit code ${code}`);
     });
 
-    //delegate the processing of stdout to a other function
-    abiword.stdout.on('data',function (data)
-    {
-      //add data to buffer
-      stdoutBuffer+=data.toString();
+    // delegate the processing of stdout to a other function
+    abiword.stdout.on('data', (data) => {
+      // add data to buffer
+      stdoutBuffer += data.toString();
 
-      //we're searching for the prompt, cause this means everything we need is in the buffer
-      if(stdoutBuffer.search("AbiWord:>") != -1)
-      {
-        //filter the feedback message
-        var err = stdoutBuffer.search("OK") != -1 ? null : stdoutBuffer;
+      // we're searching for the prompt, cause this means everything we need is in the buffer
+      if (stdoutBuffer.search('AbiWord:>') != -1) {
+        // filter the feedback message
+        const err = stdoutBuffer.search('OK') != -1 ? null : stdoutBuffer;
 
-        //reset the buffer
-        stdoutBuffer = "";
+        // reset the buffer
+        stdoutBuffer = '';
 
-        //call the callback with the error message
-        //skip the first prompt
-        if(stdoutCallback != null && !firstPrompt)
-        {
+        // call the callback with the error message
+        // skip the first prompt
+        if (stdoutCallback != null && !firstPrompt) {
           stdoutCallback(err);
           stdoutCallback = null;
         }
@@ -123,26 +110,23 @@ else
   };
   spawnAbiword();
 
-  doConvertTask = function(task, callback)
-  {
-    abiword.stdin.write("convert " + task.srcFile + " " + task.destFile + " " + task.type + "\n");
-    //create a callback that calls the task callback and the caller callback
-    stdoutCallback = function (err)
-    {
+  doConvertTask = function (task, callback) {
+    abiword.stdin.write(`convert ${task.srcFile} ${task.destFile} ${task.type}\n`);
+    // create a callback that calls the task callback and the caller callback
+    stdoutCallback = function (err) {
       callback();
-      console.log("queue continue");
-      try{
+      console.log('queue continue');
+      try {
         task.callback(err);
-      }catch(e){
-        console.error("Abiword File failed to convert", e);
+      } catch (e) {
+        console.error('Abiword File failed to convert', e);
       }
     };
   };
 
-  //Queue with the converts we have to do
-  var queue = async.queue(doConvertTask, 1);
-  exports.convertFile = function(srcFile, destFile, type, callback)
-  {
-    queue.push({"srcFile": srcFile, "destFile": destFile, "type": type, "callback": callback});
+  // Queue with the converts we have to do
+  const queue = async.queue(doConvertTask, 1);
+  exports.convertFile = function (srcFile, destFile, type, callback) {
+    queue.push({srcFile, destFile, type, callback});
   };
 }

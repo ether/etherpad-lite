@@ -13,7 +13,7 @@ exports.firstSatisfies = (promises, predicate) => {
   // value does not satisfy `predicate`. These transformed Promises will be passed to Promise.race,
   // yielding the first resolved value that satisfies `predicate`.
   const newPromises = promises.map(
-    (p) => new Promise((resolve, reject) => p.then((v) => predicate(v) && resolve(v), reject)));
+      (p) => new Promise((resolve, reject) => p.then((v) => predicate(v) && resolve(v), reject)));
 
   // If `promises` is an empty array or if none of them resolve to a value that satisfies
   // `predicate`, then `Promise.race(newPromises)` will never resolve. To handle that, add another
@@ -35,27 +35,21 @@ exports.firstSatisfies = (promises, predicate) => {
   return Promise.race(newPromises);
 };
 
-exports.timesLimit = function(ltMax, concurrency, promiseCreator) {
-  var done = 0
-  var current = 0
-
-  function addAnother () {
-    function _internalRun () {
-      done++
-
-      if (done < ltMax) {
-        addAnother()
-      }
-    }
-
-    promiseCreator(current)
-      .then(_internalRun)
-      .catch(_internalRun)
-
-    current++
+// Calls `promiseCreator(i)` a total number of `total` times, where `i` is 0 through `total - 1` (in
+// order). The `concurrency` argument specifies the maximum number of Promises returned by
+// `promiseCreator` that are allowed to be active (unresolved) simultaneously. (In other words: If
+// `total` is greater than `concurrency`, then `concurrency` Promises will be created right away,
+// and each remaining Promise will be created once one of the earlier Promises resolves.) This async
+// function resolves once all `total` Promises have resolved.
+exports.timesLimit = async (total, concurrency, promiseCreator) => {
+  if (total > 0 && concurrency <= 0) throw new RangeError('concurrency must be positive');
+  let next = 0;
+  const addAnother = () => promiseCreator(next++).finally(() => {
+    if (next < total) return addAnother();
+  });
+  const promises = [];
+  for (let i = 0; i < concurrency && i < total; i++) {
+    promises.push(addAnother());
   }
-
-  for (var i = 0; i < concurrency && i < ltMax; i++) {
-    addAnother()
-  }
-}
+  await Promise.all(promises);
+};

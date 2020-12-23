@@ -40,9 +40,7 @@
 	"pad.colorpicker.cancel": "Cancelar",
 	"pad.loading": "A carregar…",
 	"pad.noCookie": "Não foi possível encontrar o ''cookie''. Por favor, permita ''cookies'' no seu navegador! A sua sessão e as definições não foram guardadas entre as visitas. Isto poderá ter ocorrido porque Etherpad foi incluído numa iFrame em alguns «Navegadores». Por favor, certifique-se que Etherpad está no mesmo subdomínio / domínio que a iFrame fonte",
-	"pad.passwordRequired": "Precisa de uma palavra-passe para aceder a esta nota",
 	"pad.permissionDenied": "Não tem permissão para aceder a esta nota",
-	"pad.wrongPassword": "A sua palavra-passe estava errada",
 	"pad.settings.padSettings": "Configurações da nota",
 	"pad.settings.myView": "A minha vista",
 	"pad.settings.stickychat": "Conversação sempre no ecrã",
@@ -133,9 +131,6 @@
 	"pad.savedrevs.timeslider": "Pode consultar as revisões gravadas visitando a linha do tempo",
 	"pad.userlist.entername": "Insira o seu nome",
 	"pad.userlist.unnamed": "sem nome",
-	"pad.userlist.guest": "Convidado",
-	"pad.userlist.deny": "Negar",
-	"pad.userlist.approve": "Aprovar",
 	"pad.editbar.clearcolors": "Limpar as cores de autoria do documento todo? Esta operação não pode ser desfeita",
 	"pad.impexp.importbutton": "Importar agora",
 	"pad.impexp.importing": "Importando...",
@@ -146,6 +141,5 @@
 	"pad.impexp.importfailed": "A importação falhou",
 	"pad.impexp.copypaste": "Copie e insira, por favor",
 	"pad.impexp.exportdisabled": "A exportação no formato {{type}} está desativada. Por favor, contacte o administrador do sistema para mais informações.",
-	"pad.impexp.maxFileSize": "Ficheiro demasiado grande. Contacte o administrador do ''site'' para aumentar o tamanho máximo dos ficheiros importados",
-	"pad.impexp.permission": "A importação está desativada porque nunca contribuiu para esta nota. Contribua pelo menos uma vez antes de importar, por favor"
+	"pad.impexp.maxFileSize": "Ficheiro demasiado grande. Contacte o administrador do ''site'' para aumentar o tamanho máximo dos ficheiros importados"
 }

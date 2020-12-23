@@ -14,6 +14,11 @@
 			"محمد أحمد عبد الفتاح"
 		]
 	},
+	"admin_plugins.description": "الوصف",
+	"admin_plugins.name": "الاسم",
+	"admin_plugins.version": "الإصدار",
+	"admin_plugins_info.version_number": "رقم الإصدار",
+	"admin_settings": "إعدادات",
 	"index.newPad": "باد جديد",
 	"index.createOpenPad": "أو صنع/فتح باد بوضع اسمه:",
 	"index.openPad": "افتح باد موجودة بالاسم:",
@@ -38,9 +43,7 @@
 	"pad.colorpicker.cancel": "إلغاء",
 	"pad.loading": "جارٍ التحميل...",
 	"pad.noCookie": "الكوكيز غير متاحة. الرجاء السماح بتحميل الكوكيز على متصفحك!",
-	"pad.passwordRequired": "تحتاج إلى كلمة سر للوصول إلى هذا الباد",
 	"pad.permissionDenied": "ليس لديك إذن لدخول هذا الباد",
-	"pad.wrongPassword": "كانت كلمة السر خاطئة",
 	"pad.settings.padSettings": "إعدادات الباد",
 	"pad.settings.myView": "رؤيتي",
 	"pad.settings.stickychat": "الدردشة دائما على الشاشة",
@@ -128,9 +131,6 @@
 	"pad.savedrevs.timeslider": "يمكنك عرض المراجعات المحفوظة بزيارة متصفح التاريخ",
 	"pad.userlist.entername": "أدخل اسمك",
 	"pad.userlist.unnamed": "غير مسمى",
-	"pad.userlist.guest": "ضيف",
-	"pad.userlist.deny": "رفض",
-	"pad.userlist.approve": "موافقة",
 	"pad.editbar.clearcolors": "مسح ألوان التأليف أو المستند بأكمله؟ هذا لا يمكن التراجع عنه",
 	"pad.impexp.importbutton": "الاستيراد الآن",
 	"pad.impexp.importing": "الاستيراد...",
@@ -141,6 +141,5 @@
 	"pad.impexp.importfailed": "فشل الاستيراد",
 	"pad.impexp.copypaste": "الرجاء نسخ/لصق",
 	"pad.impexp.exportdisabled": "تصدير التنسيق {{type}} معطل. يرجى الاتصال بمسؤول النظام الخاص بك للحصول على التفاصيل.",
-	"pad.impexp.maxFileSize": "الملف كبير جدا. اتصل بإداري الموقع الخاص بك لزيادة حجم الملف المسموح به للاستيراد",
-	"pad.impexp.permission": "الاستيراد معطل لأنك لم تساهم مسبقا لهذه الباد. من فضلك ساهم على الأقل مرة واحدة قبل الاستيراد"
+	"pad.impexp.maxFileSize": "الملف كبير جدا. اتصل بإداري الموقع الخاص بك لزيادة حجم الملف المسموح به للاستيراد"
 }

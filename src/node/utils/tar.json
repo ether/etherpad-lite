@@ -17,10 +17,12 @@
   , "pad_connectionstatus.js"
   , "chat.js"
   , "gritter.js"
+  , "$js-cookie/src/js.cookie.js"
   , "$tinycon/tinycon.js"
   , "excanvas.js"
   , "farbtastic.js"
   , "skin_variants.js"
+  , "socketio.js"
   ]
 , "timeslider.js": [
     "timeslider.js"
@@ -44,6 +46,7 @@
   , "broadcast.js"
   , "broadcast_slider.js"
   , "broadcast_revisions.js"
+  , "socketio.js"
   ]
 , "ace2_inner.js": [
     "ace2_inner.js"
@@ -70,7 +73,6 @@
   , "jquery.js"
   , "rjquery.js"
   , "$async.js"
-  , "$async/lib/async.js"
   , "underscore.js"
   , "$underscore.js"
   , "$underscore/underscore.js"

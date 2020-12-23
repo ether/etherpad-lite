@@ -1,12 +1,12 @@
 # A real-time collaborative editor for the web
 <a href="https://hub.docker.com/r/etherpad/etherpad"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/etherpad/etherpad"></a>
 
-[![Travis (.org)](https://api.travis-ci.org/ether/etherpad-lite.svg?branch=develop)](https://travis-ci.org/github/ether/etherpad-lite)
+[![Travis (.com)](https://api.travis-ci.com/ether/etherpad-lite.svg?branch=develop)](https://travis-ci.com/github/ether/etherpad-lite)
 
 ![Demo Etherpad Animated Jif](doc/images/etherpad_demo.gif "Etherpad in action")
 
 # About
-Etherpad is a real-time collaborative editor scalable to thousands of simultaneous real time users. It provides full data export capabilities, and runs on _your_ server, under _your_ control.
+Etherpad is a real-time collaborative editor [scalable to thousands of simultaneous real time users](http://scale.etherpad.org/). It provides [full data export](https://github.com/ether/etherpad-lite/wiki/Understanding-Etherpad's-Full-Data-Export-capabilities) capabilities, and runs on _your_ server, under _your_ control.
 
 **[Try it out](https://video.etherpad.com)**
 
@@ -19,7 +19,7 @@ Etherpad is a real-time collaborative editor scalable to thousands of simultaneo
 
 ### Quick install on Debian/Ubuntu
 ```
-curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt install -y nodejs
 git clone --branch master https://github.com/ether/etherpad-lite.git && cd etherpad-lite && bin/run.sh
 ```
@@ -127,7 +127,8 @@ Read our [**Developer Guidelines**](https://github.com/ether/etherpad-lite/blob/
 # Get in touch
 The official channel for contacting the development team is via the [Github issues](https://github.com/ether/etherpad-lite/issues).
 
-For **responsible disclosure of vulnerabilities**, please write a mail to the maintainer (a.mux@inwind.it).
+For **responsible disclosure of vulnerabilities**, please write a mail to the maintainers (a.mux@inwind.it and contact@etherpad.org).
+Join the official [Etherpad Discord Channel](https://discord.com/invite/daEjfhw)
 
 # HTTP API
 Etherpad is designed to be easily embeddable and provides a [HTTP API](https://github.com/ether/etherpad-lite/wiki/HTTP-API)

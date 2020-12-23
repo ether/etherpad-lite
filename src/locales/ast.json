@@ -28,9 +28,7 @@
 	"pad.colorpicker.cancel": "Encaboxar",
 	"pad.loading": "Cargando...",
 	"pad.noCookie": "Nun pudo alcontrase la cookie. ¡Por favor, permite les cookies nel navegador! La sesión y preferencies  nun se guarden ente visites. Esto pué debese a qu'Etherpad inclúyese nun iFrame en dalgunos restoladores. Asegúrate de qu'Etherpad tea nel mesmu subdominiu/dominiu que la iFrame padre",
-	"pad.passwordRequired": "Necesites una contraseña pa entrar a esti bloc",
 	"pad.permissionDenied": "Nun tienes permisu pa entrar a esti bloc",
-	"pad.wrongPassword": "La contraseña era incorreuta",
 	"pad.settings.padSettings": "Configuración del bloc",
 	"pad.settings.myView": "la mio vista",
 	"pad.settings.stickychat": "Alderique en pantalla siempres",
@@ -118,9 +116,6 @@
 	"pad.savedrevs.timeslider": "Pues ver les revisiones guardaes visitando la llinia temporal",
 	"pad.userlist.entername": "Escribi'l to nome",
 	"pad.userlist.unnamed": "ensin nome",
-	"pad.userlist.guest": "Invitáu",
-	"pad.userlist.deny": "Refugar",
-	"pad.userlist.approve": "Aprobar",
 	"pad.editbar.clearcolors": "¿Llimpiar los colores d'autoría nel documentu ensembre? Esto nun pue desfacese",
 	"pad.impexp.importbutton": "Importar agora",
 	"pad.impexp.importing": "Importando...",
@@ -131,6 +126,5 @@
 	"pad.impexp.importfailed": "Falló la importación",
 	"pad.impexp.copypaste": "Por favor, copia y apega",
 	"pad.impexp.exportdisabled": "La esportación en formatu {{type}} ta desactivada. Por favor, comunica col alministrador del sistema pa más detalles.",
-	"pad.impexp.maxFileSize": "El ficheru ye demasiao grande. Comunícate col alministrador del sitiu p'aumentar el tamañu de ficheru permitíu na importación",
-	"pad.impexp.permission": "La importación ta desactivada porque nunca contribuisti nesti bloc. Contribuye polo menos una vez antes d'importar"
+	"pad.impexp.maxFileSize": "El ficheru ye demasiao grande. Comunícate col alministrador del sitiu p'aumentar el tamañu de ficheru permitíu na importación"
 }

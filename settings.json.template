@@ -264,12 +264,6 @@
   "editOnly": false,
 
   /*
-   * If set to true, those users who have a valid session will automatically be
-   * granted access to password protected pads.
-   */
-  "sessionNoPassword": false,
-
-  /*
    * If true, all css & js will be minified before sending to the client.
    *
    * This will improve the loading performance massively, but makes it difficult
@@ -340,6 +334,24 @@
   "trustProxy": false,
 
   /*
+   * Settings controlling the session cookie issued by Etherpad.
+   */
+  "cookie": {
+    /*
+     * Value of the SameSite cookie property. "Lax" is recommended unless
+     * Etherpad will be embedded in an iframe from another site, in which case
+     * this must be set to "None". Note: "None" will not work (the browser will
+     * not send the cookie to Etherpad) unless https is used to access Etherpad
+     * (either directly or via a reverse proxy with "trustProxy" set to true).
+     *
+     * "Strict" is not recommended because it has few security benefits but
+     * significant usability drawbacks vs. "Lax". See
+     * https://stackoverflow.com/q/41841880 for discussion.
+     */
+    "sameSite": "Lax"
+  },
+
+  /*
    * Privacy: disable IP logging
    */
   "disableIPlogging": false,
@@ -394,10 +406,22 @@
   },
 
   /*
-   * Users for basic authentication.
+   * User accounts. These accounts are used by:
+   *   - default HTTP basic authentication if no plugin handles authentication
+   *   - some but not all authentication plugins
+   *   - some but not all authorization plugins
    *
-   * is_admin = true gives access to /admin.
-   * If you do not uncomment this, /admin will not be available!
+   * User properties:
+   *   - password: The user's password. Some authentication plugins will ignore
+   *     this.
+   *   - is_admin: true gives access to /admin. Defaults to false. If you do not
+   *     uncomment this, /admin will not be available!
+   *   - readOnly: If true, this user will not be able to create new pads or
+   *     modify existing pads. Defaults to false.
+   *   - canCreate: If this is true and readOnly is false, this user can create
+   *     new pads. Defaults to true.
+   *
+   * Authentication and authorization plugins may define additional properties.
    *
    * WARNING: passwords should not be stored in plaintext in this file.
    *          If you want to mitigate this, please install ep_hash_auth and
@@ -466,19 +490,6 @@
    * File size is specified in bytes. Default is 50 MB.
    */
   "importMaxFileSize": 52428800, // 50 * 1024 * 1024
-
-
-  /*
-   * From Etherpad 1.8.3 onwards import was restricted to authors who had
-   * content within the pad.
-   *
-   * This setting will override that restriction and allow any user to import
-   * without the requirement to add content to a pad.
-   *
-   * This setting is useful for when you use a plugin for authentication so you
-   * can already trust each user.
-   */
-  "allowAnyoneToImport": false, 
 
   /*
    * From Etherpad 1.9.0 onwards, when Etherpad is in production mode commits from individual users are rate limited

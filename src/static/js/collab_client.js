@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -20,162 +22,116 @@
  * limitations under the License.
  */
 
-var chat = require('./chat').chat;
-var hooks = require('./pluginfw/hooks');
+const chat = require('./chat').chat;
+const hooks = require('./pluginfw/hooks');
+const browser = require('./browser');
 
 // Dependency fill on init. This exists for `pad.socket` only.
 // TODO: bind directly to the socket.
-var pad = undefined;
-function getSocket() {
-  return pad && pad.socket;
-}
+let pad = undefined;
+const getSocket = () => pad && pad.socket;
 
 /** Call this when the document is ready, and a new Ace2Editor() has been created and inited.
     ACE's ready callback does not need to have fired yet.
     "serverVars" are from calling doc.getCollabClientVars() on the server. */
-function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
-{
-  var editor = ace2editor;
+function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad) {
+  const editor = ace2editor;
   pad = _pad; // Inject pad to avoid a circular dependency.
 
-  var rev = serverVars.rev;
-  var padId = serverVars.padId;
+  let rev = serverVars.rev;
+  let state = 'IDLE';
+  let stateMessage;
+  let channelState = 'CONNECTING';
+  let lastCommitTime = 0;
+  let initialStartConnectTime = 0;
 
-  var state = "IDLE";
-  var stateMessage;
-  var channelState = "CONNECTING";
-  var appLevelDisconnectReason = null;
-
-  var lastCommitTime = 0;
-  var initialStartConnectTime = 0;
-
-  var userId = initialUserInfo.userId;
-  //var socket;
-  var userSet = {}; // userId -> userInfo
+  const userId = initialUserInfo.userId;
+  // var socket;
+  const userSet = {}; // userId -> userInfo
   userSet[userId] = initialUserInfo;
 
-  var caughtErrors = [];
-  var caughtErrorCatchers = [];
-  var caughtErrorTimes = [];
-  var debugMessages = [];
-  var msgQueue = [];
+  const caughtErrors = [];
+  const caughtErrorCatchers = [];
+  const caughtErrorTimes = [];
+  const msgQueue = [];
 
-  var isPendingRevision = false;
+  let isPendingRevision = false;
 
-  tellAceAboutHistoricalAuthors(serverVars.historicalAuthorData);
-  tellAceActiveAuthorInfo(initialUserInfo);
-
-  var callbacks = {
-    onUserJoin: function()
-    {},
-    onUserLeave: function()
-    {},
-    onUpdateUserInfo: function()
-    {},
-    onChannelStateChange: function()
-    {},
-    onClientMessage: function()
-    {},
-    onInternalAction: function()
-    {},
-    onConnectionTrouble: function()
-    {},
-    onServerMessage: function()
-    {}
+  const callbacks = {
+    onUserJoin: () => {},
+    onUserLeave: () => {},
+    onUpdateUserInfo: () => {},
+    onChannelStateChange: () => {},
+    onClientMessage: () => {},
+    onInternalAction: () => {},
+    onConnectionTrouble: () => {},
+    onServerMessage: () => {},
   };
-  if (browser.firefox)
-  {
+  if (browser.firefox) {
     // Prevent "escape" from taking effect and canceling a comet connection;
     // doesn't work if focus is on an iframe.
-    $(window).bind("keydown", function(evt)
-    {
-      if (evt.which == 27)
-      {
-        evt.preventDefault()
+    $(window).bind('keydown', (evt) => {
+      if (evt.which === 27) {
+        evt.preventDefault();
       }
     });
   }
 
-  editor.setProperty("userAuthor", userId);
-  editor.setBaseAttributedText(serverVars.initialAttributedText, serverVars.apool);
-  editor.setUserChangeNotificationCallback(wrapRecordingErrors("handleUserChanges", handleUserChanges));
-
-  function dmesg(str)
-  {
-    if (typeof window.ajlog == "string") window.ajlog += str + '\n';
-    debugMessages.push(str);
-  }
-
-  function handleUserChanges()
-  {
+  const handleUserChanges = () => {
     if (editor.getInInternationalComposition()) return;
-    if ((!getSocket()) || channelState == "CONNECTING")
-    {
-      if (channelState == "CONNECTING" && (((+new Date()) - initialStartConnectTime) > 20000))
-      {
-        setChannelState("DISCONNECTED", "initsocketfail");
-      }
-      else
-      {
+    if ((!getSocket()) || channelState === 'CONNECTING') {
+      if (channelState === 'CONNECTING' && (((+new Date()) - initialStartConnectTime) > 20000)) {
+        setChannelState('DISCONNECTED', 'initsocketfail');
+      } else {
         // check again in a bit
-        setTimeout(wrapRecordingErrors("setTimeout(handleUserChanges)", handleUserChanges), 1000);
+        setTimeout(wrapRecordingErrors('setTimeout(handleUserChanges)', handleUserChanges), 1000);
       }
       return;
     }
 
-    var t = (+new Date());
+    const t = (+new Date());
 
-    if (state != "IDLE")
-    {
-      if (state == "COMMITTING" && msgQueue.length == 0 && (t - lastCommitTime) > 20000)
-      {
+    if (state !== 'IDLE') {
+      if (state === 'COMMITTING' && msgQueue.length === 0 && (t - lastCommitTime) > 20000) {
         // a commit is taking too long
-        setChannelState("DISCONNECTED", "slowcommit");
-      }
-      else if (state == "COMMITTING" && msgQueue.length == 0 && (t - lastCommitTime) > 5000)
-      {
-        callbacks.onConnectionTrouble("SLOW");
-      }
-      else
-      {
+        setChannelState('DISCONNECTED', 'slowcommit');
+      } else if (state === 'COMMITTING' && msgQueue.length === 0 && (t - lastCommitTime) > 5000) {
+        callbacks.onConnectionTrouble('SLOW');
+      } else {
         // run again in a few seconds, to detect a disconnect
-        setTimeout(wrapRecordingErrors("setTimeout(handleUserChanges)", handleUserChanges), 3000);
+        setTimeout(wrapRecordingErrors('setTimeout(handleUserChanges)', handleUserChanges), 3000);
       }
       return;
     }
 
-    var earliestCommit = lastCommitTime + 500;
-    if (t < earliestCommit)
-    {
-      setTimeout(wrapRecordingErrors("setTimeout(handleUserChanges)", handleUserChanges), earliestCommit - t);
+    const earliestCommit = lastCommitTime + 500;
+    if (t < earliestCommit) {
+      setTimeout(
+          wrapRecordingErrors('setTimeout(handleUserChanges)', handleUserChanges),
+          earliestCommit - t);
       return;
     }
 
     // apply msgQueue changeset.
-    if (msgQueue.length != 0) {
-      var msg;
-      while (msg = msgQueue.shift()) {
-        var newRev = msg.newRev;
-        rev=newRev;
-        if (msg.type == "ACCEPT_COMMIT")
-        {
+    if (msgQueue.length !== 0) {
+      let msg;
+      while ((msg = msgQueue.shift())) {
+        const newRev = msg.newRev;
+        rev = newRev;
+        if (msg.type === 'ACCEPT_COMMIT') {
           editor.applyPreparedChangesetToBase();
           setStateIdle();
-          callCatchingErrors("onInternalAction", function()
-          {
-            callbacks.onInternalAction("commitAcceptedByServer");
+          callCatchingErrors('onInternalAction', () => {
+            callbacks.onInternalAction('commitAcceptedByServer');
           });
-          callCatchingErrors("onConnectionTrouble", function()
-          {
-            callbacks.onConnectionTrouble("OK");
+          callCatchingErrors('onConnectionTrouble', () => {
+            callbacks.onConnectionTrouble('OK');
           });
           handleUserChanges();
-        }
-        else if (msg.type == "NEW_CHANGES")
-        {
-          var changeset = msg.changeset;
-          var author = (msg.author || '');
-          var apool = msg.apool;
+        } else if (msg.type === 'NEW_CHANGES') {
+          const changeset = msg.changeset;
+          const author = (msg.author || '');
+          const apool = msg.apool;
 
           editor.applyChangesToBase(changeset, author, apool);
         }
@@ -185,114 +141,88 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
       }
     }
 
-    var sentMessage = false;
+    let sentMessage = false;
     // Check if there are any pending revisions to be received from server.
     // Allow only if there are no pending revisions to be received from server
-    if (!isPendingRevision)
-    {
-        var userChangesData = editor.prepareUserChangeset();
-        if (userChangesData.changeset)
-        {
-          lastCommitTime = t;
-          state = "COMMITTING";
-          stateMessage = {
-            type: "USER_CHANGES",
-            baseRev: rev,
-            changeset: userChangesData.changeset,
-            apool: userChangesData.apool
-          };
-          sendMessage(stateMessage);
-          sentMessage = true;
-          callbacks.onInternalAction("commitPerformed");
-        }
-    }
-    else
-    {
-        // run again in a few seconds, to check if there was a reconnection attempt
-        setTimeout(wrapRecordingErrors("setTimeout(handleUserChanges)", handleUserChanges), 3000);
+    if (!isPendingRevision) {
+      const userChangesData = editor.prepareUserChangeset();
+      if (userChangesData.changeset) {
+        lastCommitTime = t;
+        state = 'COMMITTING';
+        stateMessage = {
+          type: 'USER_CHANGES',
+          baseRev: rev,
+          changeset: userChangesData.changeset,
+          apool: userChangesData.apool,
+        };
+        sendMessage(stateMessage);
+        sentMessage = true;
+        callbacks.onInternalAction('commitPerformed');
+      }
+    } else {
+      // run again in a few seconds, to check if there was a reconnection attempt
+      setTimeout(wrapRecordingErrors('setTimeout(handleUserChanges)', handleUserChanges), 3000);
     }
 
-    if (sentMessage)
-    {
+    if (sentMessage) {
       // run again in a few seconds, to detect a disconnect
-      setTimeout(wrapRecordingErrors("setTimeout(handleUserChanges)", handleUserChanges), 3000);
+      setTimeout(wrapRecordingErrors('setTimeout(handleUserChanges)', handleUserChanges), 3000);
     }
-  }
+  };
 
-  function setUpSocket()
-  {
-    hiccupCount = 0;
-    setChannelState("CONNECTED");
+  const setUpSocket = () => {
+    setChannelState('CONNECTED');
     doDeferredActions();
 
     initialStartConnectTime = +new Date();
-  }
+  };
 
-  var hiccupCount = 0;
-
-  function sendMessage(msg)
-  {
+  const sendMessage = (msg) => {
     getSocket().json.send(
-    {
-      type: "COLLABROOM",
-      component: "pad",
-      data: msg
-    });
-  }
+        {
+          type: 'COLLABROOM',
+          component: 'pad',
+          data: msg,
+        });
+  };
 
-  function wrapRecordingErrors(catcher, func)
-  {
-    return function()
-    {
-      try
-      {
-        return func.apply(this, Array.prototype.slice.call(arguments));
-      }
-      catch (e)
-      {
-        caughtErrors.push(e);
-        caughtErrorCatchers.push(catcher);
-        caughtErrorTimes.push(+new Date());
-        //console.dir({catcher: catcher, e: e});
-        throw e;
-      }
-    };
-  }
+  const wrapRecordingErrors = (catcher, func) => function (...args) {
+    try {
+      return func.call(this, ...args);
+    } catch (e) {
+      caughtErrors.push(e);
+      caughtErrorCatchers.push(catcher);
+      caughtErrorTimes.push(+new Date());
+      // console.dir({catcher: catcher, e: e});
+      throw e;
+    }
+  };
 
-  function callCatchingErrors(catcher, func)
-  {
-    try
-    {
+  const callCatchingErrors = (catcher, func) => {
+    try {
       wrapRecordingErrors(catcher, func)();
+    } catch (e) { /* absorb*/
     }
-    catch (e)
-    { /*absorb*/
-    }
-  }
+  };
 
-  function handleMessageFromServer(evt)
-  {
+  const handleMessageFromServer = (evt) => {
     if (!getSocket()) return;
     if (!evt.data) return;
-    var wrapper = evt;
-    if (wrapper.type != "COLLABROOM" && wrapper.type != "CUSTOM") return;
-    var msg = wrapper.data;
+    const wrapper = evt;
+    if (wrapper.type !== 'COLLABROOM' && wrapper.type !== 'CUSTOM') return;
+    const msg = wrapper.data;
 
-    if (msg.type == "NEW_CHANGES")
-    {
-      var newRev = msg.newRev;
-      var changeset = msg.changeset;
-      var author = (msg.author || '');
-      var apool = msg.apool;
+    if (msg.type === 'NEW_CHANGES') {
+      const newRev = msg.newRev;
+      const changeset = msg.changeset;
+      const author = (msg.author || '');
+      const apool = msg.apool;
 
       // When inInternationalComposition, msg pushed msgQueue.
       if (msgQueue.length > 0 || editor.getInInternationalComposition()) {
-        if (msgQueue.length > 0) var oldRev = msgQueue[msgQueue.length - 1].newRev;
-        else oldRev = rev;
-
-        if (newRev != (oldRev + 1))
-        {
-          window.console.warn("bad message revision on NEW_CHANGES: " + newRev + " not " + (oldRev + 1));
+        const oldRev = msgQueue.length > 0 ? msgQueue[msgQueue.length - 1].newRev : rev;
+        if (newRev !== (oldRev + 1)) {
+          window.console.warn(`bad message revision on NEW_CHANGES: ${newRev} not ${oldRev + 1}`);
           // setChannelState("DISCONNECTED", "badmessage_newchanges");
           return;
         }
@@ -300,34 +230,20 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
         return;
       }
 
-      if (newRev != (rev + 1))
-      {
-        window.console.warn("bad message revision on NEW_CHANGES: " + newRev + " not " + (rev + 1));
+      if (newRev !== (rev + 1)) {
+        window.console.warn(`bad message revision on NEW_CHANGES: ${newRev} not ${rev + 1}`);
         // setChannelState("DISCONNECTED", "badmessage_newchanges");
         return;
       }
       rev = newRev;
 
       editor.applyChangesToBase(changeset, author, apool);
-    }
-    else if (msg.type == "ACCEPT_COMMIT")
-    {
-      /*
-       * this is the first time this user contributed to this pad. Let's record
-       * it, because it will be used for allowing import.
-       *
-       * TODO: here, we are changing this variable on the client side only. The
-       *       server has all the informations to make the same deduction, and
-       *       broadcast to the client.
-       */
-      clientVars.thisUserHasEditedThisPad = true;
-
-      var newRev = msg.newRev;
-      if (msgQueue.length > 0)
-      {
-        if (newRev != (msgQueue[msgQueue.length - 1].newRev + 1))
-        {
-          window.console.warn("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (msgQueue[msgQueue.length - 1][0] + 1));
+    } else if (msg.type === 'ACCEPT_COMMIT') {
+      const newRev = msg.newRev;
+      if (msgQueue.length > 0) {
+        if (newRev !== (msgQueue[msgQueue.length - 1].newRev + 1)) {
+          window.console.warn('bad message revision on ACCEPT_COMMIT: ' +
+                              `${newRev} not ${msgQueue[msgQueue.length - 1][0] + 1}`);
           // setChannelState("DISCONNECTED", "badmessage_acceptcommit");
           return;
         }
@@ -335,426 +251,335 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
         return;
       }
 
-      if (newRev != (rev + 1))
-      {
-        window.console.warn("bad message revision on ACCEPT_COMMIT: " + newRev + " not " + (rev + 1));
+      if (newRev !== (rev + 1)) {
+        window.console.warn(`bad message revision on ACCEPT_COMMIT: ${newRev} not ${rev + 1}`);
         // setChannelState("DISCONNECTED", "badmessage_acceptcommit");
         return;
       }
       rev = newRev;
       editor.applyPreparedChangesetToBase();
       setStateIdle();
-      callCatchingErrors("onInternalAction", function()
-      {
-        callbacks.onInternalAction("commitAcceptedByServer");
+      callCatchingErrors('onInternalAction', () => {
+        callbacks.onInternalAction('commitAcceptedByServer');
       });
-      callCatchingErrors("onConnectionTrouble", function()
-      {
-        callbacks.onConnectionTrouble("OK");
+      callCatchingErrors('onConnectionTrouble', () => {
+        callbacks.onConnectionTrouble('OK');
       });
       handleUserChanges();
-    }
-    else if (msg.type == 'CLIENT_RECONNECT')
-    {
-      // Server sends a CLIENT_RECONNECT message when there is a client reconnect. Server also returns
-      // all pending revisions along with this CLIENT_RECONNECT message
-      if (msg.noChanges)
-      {
+    } else if (msg.type === 'CLIENT_RECONNECT') {
+      // Server sends a CLIENT_RECONNECT message when there is a client reconnect.
+      // Server also returns all pending revisions along with this CLIENT_RECONNECT message
+      if (msg.noChanges) {
         // If no revisions are pending, just make everything normal
         setIsPendingRevision(false);
         return;
       }
 
-      var headRev = msg.headRev;
-      var newRev = msg.newRev;
-      var changeset = msg.changeset;
-      var author = (msg.author || '');
-      var apool = msg.apool;
+      const headRev = msg.headRev;
+      const newRev = msg.newRev;
+      const changeset = msg.changeset;
+      const author = (msg.author || '');
+      const apool = msg.apool;
 
-      if (msgQueue.length > 0)
-      {
-        if (newRev != (msgQueue[msgQueue.length - 1].newRev + 1))
-        {
-          window.console.warn("bad message revision on CLIENT_RECONNECT: " + newRev + " not " + (msgQueue[msgQueue.length - 1][0] + 1));
+      if (msgQueue.length > 0) {
+        if (newRev !== (msgQueue[msgQueue.length - 1].newRev + 1)) {
+          window.console.warn('bad message revision on CLIENT_RECONNECT: ' +
+                              `${newRev} not ${msgQueue[msgQueue.length - 1][0] + 1}`);
           // setChannelState("DISCONNECTED", "badmessage_acceptcommit");
           return;
         }
-        msg.type = "NEW_CHANGES";
+        msg.type = 'NEW_CHANGES';
         msgQueue.push(msg);
         return;
       }
 
-      if (newRev != (rev + 1))
-      {
-        window.console.warn("bad message revision on CLIENT_RECONNECT: " + newRev + " not " + (rev + 1));
+      if (newRev !== (rev + 1)) {
+        window.console.warn(`bad message revision on CLIENT_RECONNECT: ${newRev} not ${rev + 1}`);
         // setChannelState("DISCONNECTED", "badmessage_acceptcommit");
         return;
       }
 
       rev = newRev;
-      if (author == pad.getUserId())
-      {
+      if (author === pad.getUserId()) {
         editor.applyPreparedChangesetToBase();
         setStateIdle();
-        callCatchingErrors("onInternalAction", function()
-        {
-          callbacks.onInternalAction("commitAcceptedByServer");
+        callCatchingErrors('onInternalAction', () => {
+          callbacks.onInternalAction('commitAcceptedByServer');
         });
-        callCatchingErrors("onConnectionTrouble", function()
-        {
-          callbacks.onConnectionTrouble("OK");
+        callCatchingErrors('onConnectionTrouble', () => {
+          callbacks.onConnectionTrouble('OK');
         });
         handleUserChanges();
-      }
-      else
-      {
+      } else {
         editor.applyChangesToBase(changeset, author, apool);
       }
 
-      if (newRev == headRev)
-      {
+      if (newRev === headRev) {
         // Once we have applied all pending revisions, make everything normal
         setIsPendingRevision(false);
       }
-    }
-    else if (msg.type == "NO_COMMIT_PENDING")
-    {
-      if (state == "COMMITTING")
-      {
+    } else if (msg.type === 'NO_COMMIT_PENDING') {
+      if (state === 'COMMITTING') {
         // server missed our commit message; abort that commit
         setStateIdle();
         handleUserChanges();
       }
-    }
-    else if (msg.type == "USER_NEWINFO")
-    {
-      var userInfo = msg.userInfo;
-      var id = userInfo.userId;
+    } else if (msg.type === 'USER_NEWINFO') {
+      const userInfo = msg.userInfo;
+      const id = userInfo.userId;
 
       // Avoid a race condition when setting colors.  If our color was set by a
       // query param, ignore our own "new user" message's color value.
-      if (id === initialUserInfo.userId && initialUserInfo.globalUserColor)
-      {
+      if (id === initialUserInfo.userId && initialUserInfo.globalUserColor) {
         msg.userInfo.colorId = initialUserInfo.globalUserColor;
       }
 
 
-      if (userSet[id])
-      {
+      if (userSet[id]) {
         userSet[id] = userInfo;
         callbacks.onUpdateUserInfo(userInfo);
-      }
-      else
-      {
+      } else {
         userSet[id] = userInfo;
         callbacks.onUserJoin(userInfo);
       }
       tellAceActiveAuthorInfo(userInfo);
-    }
-    else if (msg.type == "USER_LEAVE")
-    {
-      var userInfo = msg.userInfo;
-      var id = userInfo.userId;
-      if (userSet[id])
-      {
+    } else if (msg.type === 'USER_LEAVE') {
+      const userInfo = msg.userInfo;
+      const id = userInfo.userId;
+      if (userSet[id]) {
         delete userSet[userInfo.userId];
         fadeAceAuthorInfo(userInfo);
         callbacks.onUserLeave(userInfo);
       }
-    }
-
-    else if (msg.type == "DISCONNECT_REASON")
-    {
-      appLevelDisconnectReason = msg.reason;
-    }
-    else if (msg.type == "CLIENT_MESSAGE")
-    {
+    } else if (msg.type === 'CLIENT_MESSAGE') {
       callbacks.onClientMessage(msg.payload);
-    }
-    else if (msg.type == "CHAT_MESSAGE")
-    {
+    } else if (msg.type === 'CHAT_MESSAGE') {
       chat.addMessage(msg, true, false);
-    }
-    else if (msg.type == "CHAT_MESSAGES")
-    {
-      for(var i = msg.messages.length - 1; i >= 0; i--)
-      {
+    } else if (msg.type === 'CHAT_MESSAGES') {
+      for (let i = msg.messages.length - 1; i >= 0; i--) {
         chat.addMessage(msg.messages[i], true, true);
       }
-      if(!chat.gotInitalMessages)
-      {
+      if (!chat.gotInitalMessages) {
         chat.scrollDown();
         chat.gotInitalMessages = true;
         chat.historyPointer = clientVars.chatHead - msg.messages.length;
       }
 
       // messages are loaded, so hide the loading-ball
-      $("#chatloadmessagesball").css("display", "none");
+      $('#chatloadmessagesball').css('display', 'none');
 
       // there are less than 100 messages or we reached the top
-      if(chat.historyPointer <= 0)
-        $("#chatloadmessagesbutton").css("display", "none");
-      else // there are still more messages, re-show the load-button
-        $("#chatloadmessagesbutton").css("display", "block");
-    }
-    else if (msg.type == "SERVER_MESSAGE")
-    {
-      callbacks.onServerMessage(msg.payload);
+      if (chat.historyPointer <= 0) {
+        $('#chatloadmessagesbutton').css('display', 'none');
+      } else {
+        // there are still more messages, re-show the load-button
+        $('#chatloadmessagesbutton').css('display', 'block');
+      }
     }
 
-    //HACKISH: User messages do not have "payload" but "userInfo", so that all "handleClientMessage_USER_" hooks would work, populate payload
-    //FIXME: USER_* messages to have "payload" property instead of "userInfo", seems like a quite a big work
-    if(msg.type.indexOf("USER_") > -1) {
+    // HACKISH: User messages do not have "payload" but "userInfo", so that all
+    // "handleClientMessage_USER_" hooks would work, populate payload
+    // FIXME: USER_* messages to have "payload" property instead of "userInfo",
+    // seems like a quite a big work
+    if (msg.type.indexOf('USER_') > -1) {
       msg.payload = msg.userInfo;
     }
     // Similar for NEW_CHANGES
-    if(msg.type === "NEW_CHANGES") msg.payload = msg;
+    if (msg.type === 'NEW_CHANGES') msg.payload = msg;
 
-    hooks.callAll('handleClientMessage_' + msg.type, {payload: msg.payload});
-  }
+    hooks.callAll(`handleClientMessage_${msg.type}`, {payload: msg.payload});
+  };
 
-  function updateUserInfo(userInfo)
-  {
+  const updateUserInfo = (userInfo) => {
     userInfo.userId = userId;
     userSet[userId] = userInfo;
     tellAceActiveAuthorInfo(userInfo);
     if (!getSocket()) return;
     sendMessage(
-    {
-      type: "USERINFO_UPDATE",
-      userInfo: userInfo
-    });
-  }
+        {
+          type: 'USERINFO_UPDATE',
+          userInfo,
+        });
+  };
 
-  function tellAceActiveAuthorInfo(userInfo)
-  {
+  const tellAceActiveAuthorInfo = (userInfo) => {
     tellAceAuthorInfo(userInfo.userId, userInfo.colorId);
-  }
+  };
 
-  function tellAceAuthorInfo(userId, colorId, inactive)
-  {
-    if(typeof colorId == "number")
-    {
+  const tellAceAuthorInfo = (userId, colorId, inactive) => {
+    if (typeof colorId === 'number') {
       colorId = clientVars.colorPalette[colorId];
     }
 
-    var cssColor = colorId;
-    if (inactive)
-    {
+    const cssColor = colorId;
+    if (inactive) {
       editor.setAuthorInfo(userId, {
         bgcolor: cssColor,
-        fade: 0.5
+        fade: 0.5,
       });
-    }
-    else
-    {
+    } else {
       editor.setAuthorInfo(userId, {
-        bgcolor: cssColor
+        bgcolor: cssColor,
       });
     }
-  }
+  };
 
-  function fadeAceAuthorInfo(userInfo)
-  {
+  const fadeAceAuthorInfo = (userInfo) => {
     tellAceAuthorInfo(userInfo.userId, userInfo.colorId, true);
-  }
+  };
 
-  function getConnectedUsers()
-  {
-    return valuesArray(userSet);
-  }
+  const getConnectedUsers = () => valuesArray(userSet);
 
-  function tellAceAboutHistoricalAuthors(hadata)
-  {
-    for (var author in hadata)
-    {
-      var data = hadata[author];
-      if (!userSet[author])
-      {
+  const tellAceAboutHistoricalAuthors = (hadata) => {
+    for (const [author, data] of Object.entries(hadata)) {
+      if (!userSet[author]) {
         tellAceAuthorInfo(author, data.colorId, true);
       }
     }
-  }
+  };
 
-  function setChannelState(newChannelState, moreInfo)
-  {
-    if (newChannelState != channelState)
-    {
+  const setChannelState = (newChannelState, moreInfo) => {
+    if (newChannelState !== channelState) {
       channelState = newChannelState;
       callbacks.onChannelStateChange(channelState, moreInfo);
     }
-  }
+  };
 
-  function valuesArray(obj)
-  {
-    var array = [];
-    $.each(obj, function(k, v)
-    {
+  const valuesArray = (obj) => {
+    const array = [];
+    $.each(obj, (k, v) => {
       array.push(v);
     });
     return array;
-  }
+  };
 
   // We need to present a working interface even before the socket
   // is connected for the first time.
-  var deferredActions = [];
+  let deferredActions = [];
 
-  function defer(func, tag)
-  {
-    return function()
-    {
-      var that = this;
-      var args = arguments;
-
-      function action()
-      {
-        func.apply(that, args);
-      }
-      action.tag = tag;
-      if (channelState == "CONNECTING")
-      {
-        deferredActions.push(action);
-      }
-      else
-      {
-        action();
-      }
+  const defer = (func, tag) => function (...args) {
+    const action = () => {
+      func.call(this, ...args);
+    };
+    action.tag = tag;
+    if (channelState === 'CONNECTING') {
+      deferredActions.push(action);
+    } else {
+      action();
     }
-  }
+  };
 
-  function doDeferredActions(tag)
-  {
-    var newArray = [];
-    for (var i = 0; i < deferredActions.length; i++)
-    {
-      var a = deferredActions[i];
-      if ((!tag) || (tag == a.tag))
-      {
+  const doDeferredActions = (tag) => {
+    const newArray = [];
+    for (let i = 0; i < deferredActions.length; i++) {
+      const a = deferredActions[i];
+      if ((!tag) || (tag === a.tag)) {
         a();
-      }
-      else
-      {
+      } else {
         newArray.push(a);
       }
     }
     deferredActions = newArray;
-  }
+  };
 
-  function sendClientMessage(msg)
-  {
+  const sendClientMessage = (msg) => {
     sendMessage(
-    {
-      type: "CLIENT_MESSAGE",
-      payload: msg
-    });
-  }
+        {
+          type: 'CLIENT_MESSAGE',
+          payload: msg,
+        });
+  };
 
-  function getCurrentRevisionNumber()
-  {
-    return rev;
-  }
+  const getCurrentRevisionNumber = () => rev;
 
-  function getMissedChanges()
-  {
-    var obj = {};
+  const getMissedChanges = () => {
+    const obj = {};
     obj.userInfo = userSet[userId];
     obj.baseRev = rev;
-    if (state == "COMMITTING" && stateMessage)
-    {
+    if (state === 'COMMITTING' && stateMessage) {
       obj.committedChangeset = stateMessage.changeset;
       obj.committedChangesetAPool = stateMessage.apool;
       editor.applyPreparedChangesetToBase();
     }
-    var userChangesData = editor.prepareUserChangeset();
-    if (userChangesData.changeset)
-    {
+    const userChangesData = editor.prepareUserChangeset();
+    if (userChangesData.changeset) {
       obj.furtherChangeset = userChangesData.changeset;
       obj.furtherChangesetAPool = userChangesData.apool;
     }
     return obj;
-  }
+  };
 
-  function setStateIdle()
-  {
-    state = "IDLE";
-    callbacks.onInternalAction("newlyIdle");
+  const setStateIdle = () => {
+    state = 'IDLE';
+    callbacks.onInternalAction('newlyIdle');
     schedulePerhapsCallIdleFuncs();
-  }
+  };
 
-  function setIsPendingRevision(value)
-  {
+  const setIsPendingRevision = (value) => {
     isPendingRevision = value;
-  }
+  };
 
-  function callWhenNotCommitting(func)
-  {
+  const idleFuncs = [];
+
+  const callWhenNotCommitting = (func) => {
     idleFuncs.push(func);
     schedulePerhapsCallIdleFuncs();
-  }
+  };
 
-  var idleFuncs = [];
-
-  function schedulePerhapsCallIdleFuncs()
-  {
-    setTimeout(function()
-    {
-      if (state == "IDLE")
-      {
-        while (idleFuncs.length > 0)
-        {
-          var f = idleFuncs.shift();
+  const schedulePerhapsCallIdleFuncs = () => {
+    setTimeout(() => {
+      if (state === 'IDLE') {
+        while (idleFuncs.length > 0) {
+          const f = idleFuncs.shift();
           f();
         }
       }
     }, 0);
-  }
+  };
 
-  var self = {
-    setOnUserJoin: function(cb)
-    {
+  const self = {
+    setOnUserJoin: (cb) => {
       callbacks.onUserJoin = cb;
     },
-    setOnUserLeave: function(cb)
-    {
+    setOnUserLeave: (cb) => {
       callbacks.onUserLeave = cb;
     },
-    setOnUpdateUserInfo: function(cb)
-    {
+    setOnUpdateUserInfo: (cb) => {
       callbacks.onUpdateUserInfo = cb;
     },
-    setOnChannelStateChange: function(cb)
-    {
+    setOnChannelStateChange: (cb) => {
       callbacks.onChannelStateChange = cb;
     },
-    setOnClientMessage: function(cb)
-    {
+    setOnClientMessage: (cb) => {
       callbacks.onClientMessage = cb;
     },
-    setOnInternalAction: function(cb)
-    {
+    setOnInternalAction: (cb) => {
       callbacks.onInternalAction = cb;
     },
-    setOnConnectionTrouble: function(cb)
-    {
+    setOnConnectionTrouble: (cb) => {
       callbacks.onConnectionTrouble = cb;
     },
-    setOnServerMessage: function(cb)
-    {
-      callbacks.onServerMessage = cb;
-    },
     updateUserInfo: defer(updateUserInfo),
-    handleMessageFromServer: handleMessageFromServer,
-    getConnectedUsers: getConnectedUsers,
-    sendClientMessage: sendClientMessage,
-    sendMessage: sendMessage,
-    getCurrentRevisionNumber: getCurrentRevisionNumber,
-    getMissedChanges: getMissedChanges,
-    callWhenNotCommitting: callWhenNotCommitting,
+    handleMessageFromServer,
+    getConnectedUsers,
+    sendClientMessage,
+    sendMessage,
+    getCurrentRevisionNumber,
+    getMissedChanges,
+    callWhenNotCommitting,
     addHistoricalAuthors: tellAceAboutHistoricalAuthors,
-    setChannelState: setChannelState,
-    setStateIdle: setStateIdle,
-    setIsPendingRevision: setIsPendingRevision
+    setChannelState,
+    setStateIdle,
+    setIsPendingRevision,
   };
+
+  tellAceAboutHistoricalAuthors(serverVars.historicalAuthorData);
+  tellAceActiveAuthorInfo(initialUserInfo);
+
+  editor.setProperty('userAuthor', userId);
+  editor.setBaseAttributedText(serverVars.initialAttributedText, serverVars.apool);
+  editor.setUserChangeNotificationCallback(
+      wrapRecordingErrors('handleUserChanges', handleUserChanges));
 
   setUpSocket();
   return self;

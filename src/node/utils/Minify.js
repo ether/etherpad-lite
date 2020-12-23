@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This Module manages all /minified/* requests. It controls the
  * minification && compression of Javascript and CSS.
@@ -19,142 +21,132 @@
  * limitations under the License.
  */
 
-var ERR = require("async-stacktrace");
-var settings = require('./Settings');
-var async = require('async');
-var fs = require('fs');
-var StringDecoder = require('string_decoder').StringDecoder;
-var CleanCSS = require('clean-css');
-var path = require('path');
-var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugin_defs");
-var RequireKernel = require('etherpad-require-kernel');
-var urlutil = require('url');
-var mime = require('mime-types')
-var Threads = require('threads')
-var log4js = require('log4js');
+const ERR = require('async-stacktrace');
+const settings = require('./Settings');
+const async = require('async');
+const fs = require('fs');
+const path = require('path');
+const plugins = require('../../static/js/pluginfw/plugin_defs');
+const RequireKernel = require('etherpad-require-kernel');
+const urlutil = require('url');
+const mime = require('mime-types');
+const Threads = require('threads');
+const log4js = require('log4js');
 
-var logger = log4js.getLogger("Minify");
+const logger = log4js.getLogger('Minify');
 
-var ROOT_DIR = path.normalize(__dirname + "/../../static/");
-var TAR_PATH = path.join(__dirname, 'tar.json');
-var tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
+const ROOT_DIR = path.normalize(`${__dirname}/../../static/`);
+const TAR_PATH = path.join(__dirname, 'tar.json');
+const tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
 
-var threadsPool = Threads.Pool(function () {
-  return Threads.spawn(new Threads.Worker("./MinifyWorker"))
-}, 2)
+const threadsPool = new Threads.Pool(() => Threads.spawn(new Threads.Worker('./MinifyWorker')), 2);
 
-var LIBRARY_WHITELIST = [
-      'async'
-    , 'security'
-    , 'tinycon'
-    , 'underscore'
-    , 'unorm'
-    ];
+const LIBRARY_WHITELIST = [
+  'async',
+  'js-cookie',
+  'security',
+  'tinycon',
+  'underscore',
+  'unorm',
+];
 
 // Rewrite tar to include modules with no extensions and proper rooted paths.
-var LIBRARY_PREFIX = 'ep_etherpad-lite/static/js';
+const LIBRARY_PREFIX = 'ep_etherpad-lite/static/js';
 exports.tar = {};
-function prefixLocalLibraryPath(path) {
-  if (path.charAt(0) == '$') {
+const prefixLocalLibraryPath = (path) => {
+  if (path.charAt(0) === '$') {
     return path.slice(1);
   } else {
-    return LIBRARY_PREFIX + '/' + path;
+    return `${LIBRARY_PREFIX}/${path}`;
   }
-}
-
-for (var key in tar) {
-  exports.tar[prefixLocalLibraryPath(key)] =
-    tar[key].map(prefixLocalLibraryPath).concat(
-      tar[key].map(prefixLocalLibraryPath).map(function (p) {
-        return p.replace(/\.js$/, '');
-      })
-    ).concat(
-      tar[key].map(prefixLocalLibraryPath).map(function (p) {
-        return p.replace(/\.js$/, '') + '/index.js';
-      })
-    );
+};
+for (const [key, relativeFiles] of Object.entries(tar)) {
+  const files = relativeFiles.map(prefixLocalLibraryPath);
+  exports.tar[prefixLocalLibraryPath(key)] = files
+      .concat(files.map((p) => p.replace(/\.js$/, '')))
+      .concat(files.map((p) => `${p.replace(/\.js$/, '')}/index.js`));
 }
 
 // What follows is a terrible hack to avoid loop-back within the server.
 // TODO: Serve files from another service, or directly from the file system.
-function requestURI(url, method, headers, callback) {
-  var parsedURL = urlutil.parse(url);
+const requestURI = (url, method, headers, callback) => {
+  const parsedURL = urlutil.parse(url);
 
-  var status = 500, headers = {}, content = [];
+  let status = 500;
+  var headers = {};
+  const content = [];
 
-  var mockRequest = {
-    url: url
-  , method: method
-  , params: {filename: parsedURL.path.replace(/^\/static\//, '')}
-  , headers: headers
+  const mockRequest = {
+    url,
+    method,
+    params: {filename: parsedURL.path.replace(/^\/static\//, '')},
+    headers,
   };
-  var mockResponse = {
-    writeHead: function (_status, _headers) {
+  const mockResponse = {
+    writeHead: (_status, _headers) => {
       status = _status;
-      for (var header in _headers) {
+      for (const header in _headers) {
         if (Object.prototype.hasOwnProperty.call(_headers, header)) {
           headers[header] = _headers[header];
         }
       }
-    }
-  , setHeader: function (header, value) {
+    },
+    setHeader: (header, value) => {
       headers[header.toLowerCase()] = value.toString();
-    }
-  , header: function (header, value) {
+    },
+    header: (header, value) => {
       headers[header.toLowerCase()] = value.toString();
-    }
-  , write: function (_content) {
-    _content && content.push(_content);
-    }
-  , end: function (_content) {
+    },
+    write: (_content) => {
+      _content && content.push(_content);
+    },
+    end: (_content) => {
       _content && content.push(_content);
       callback(status, headers, content.join(''));
-    }
+    },
   };
 
   minify(mockRequest, mockResponse);
-}
-function requestURIs(locations, method, headers, callback) {
-  var pendingRequests = locations.length;
-  var responses = [];
+};
 
-  function respondFor(i) {
-    return function (status, headers, content) {
-      responses[i] = [status, headers, content];
-      if (--pendingRequests == 0) {
-        completed();
-      }
-    };
-  }
+const requestURIs = (locations, method, headers, callback) => {
+  let pendingRequests = locations.length;
+  const responses = [];
 
-  for (var i = 0, ii = locations.length; i < ii; i++) {
+  const completed = () => {
+    const statuss = responses.map((x) => x[0]);
+    const headerss = responses.map((x) => x[1]);
+    const contentss = responses.map((x) => x[2]);
+    callback(statuss, headerss, contentss);
+  };
+
+  const respondFor = (i) => (status, headers, content) => {
+    responses[i] = [status, headers, content];
+    if (--pendingRequests === 0) {
+      completed();
+    }
+  };
+
+  for (let i = 0, ii = locations.length; i < ii; i++) {
     requestURI(locations[i], method, headers, respondFor(i));
   }
-
-  function completed() {
-    var statuss = responses.map(function (x) {return x[0];});
-    var headerss = responses.map(function (x) {return x[1];});
-    var contentss = responses.map(function (x) {return x[2];});
-    callback(statuss, headerss, contentss);
-  }
-}
+};
 
 /**
  * creates the minifed javascript for the given minified name
  * @param req the Express request
  * @param res the Express response
  */
-function minify(req, res)
-{
-  var filename = req.params['filename'];
+const minify = (req, res) => {
+  let filename = req.params.filename;
 
   // No relative paths, especially if they may go up the file hierarchy.
   filename = path.normalize(path.join(ROOT_DIR, filename));
-  filename = filename.replace(/\.\./g, '')
+  filename = filename.replace(/\.\./g, '');
 
-  if (filename.indexOf(ROOT_DIR) == 0) {
+  if (filename.indexOf(ROOT_DIR) === 0) {
     filename = filename.slice(ROOT_DIR.length);
-    filename = filename.replace(/\\/g, '/')
+    filename = filename.replace(/\\/g, '/');
   } else {
     res.writeHead(404, {});
     res.end();
@@ -166,36 +158,36 @@ function minify(req, res)
      are rewritten into ROOT_PATH_OF_MYPLUGIN/static/js/test.js,
      commonly ETHERPAD_ROOT/node_modules/ep_myplugin/static/js/test.js
   */
-  var match = filename.match(/^plugins\/([^\/]+)(\/(?:(static\/.*)|.*))?$/);
+  const match = filename.match(/^plugins\/([^/]+)(\/(?:(static\/.*)|.*))?$/);
   if (match) {
-    var library = match[1];
-    var libraryPath = match[2] || '';
+    const library = match[1];
+    const libraryPath = match[2] || '';
 
     if (plugins.plugins[library] && match[3]) {
-      var plugin = plugins.plugins[library];
-      var pluginPath = plugin.package.realPath;
+      const plugin = plugins.plugins[library];
+      const pluginPath = plugin.package.realPath;
       filename = path.relative(ROOT_DIR, pluginPath + libraryPath);
       filename = filename.replace(/\\/g, '/'); // windows path fix
-    } else if (LIBRARY_WHITELIST.indexOf(library) != -1) {
+    } else if (LIBRARY_WHITELIST.indexOf(library) !== -1) {
       // Go straight into node_modules
       // Avoid `require.resolve()`, since 'mustache' and 'mustache/index.js'
       // would end up resolving to logically distinct resources.
-      filename = '../node_modules/' + library + libraryPath;
+      filename = `../node_modules/${library}${libraryPath}`;
     }
   }
 
-  var contentType = mime.lookup(filename);
+  const contentType = mime.lookup(filename);
 
-  statFile(filename, function (error, date, exists) {
+  statFile(filename, (error, date, exists) => {
     if (date) {
       date = new Date(date);
       date.setMilliseconds(0);
       res.setHeader('last-modified', date.toUTCString());
       res.setHeader('date', (new Date()).toUTCString());
       if (settings.maxAge !== undefined) {
-        var expiresDate = new Date(Date.now()+settings.maxAge*1000);
+        const expiresDate = new Date(Date.now() + settings.maxAge * 1000);
         res.setHeader('expires', expiresDate.toUTCString());
-        res.setHeader('cache-control', 'max-age=' + settings.maxAge);
+        res.setHeader('cache-control', `max-age=${settings.maxAge}`);
       }
     }
 
@@ -208,74 +200,76 @@ function minify(req, res)
     } else if (new Date(req.headers['if-modified-since']) >= date) {
       res.writeHead(304, {});
       res.end();
-    } else {
-      if (req.method == 'HEAD') {
-        res.header("Content-Type", contentType);
-        res.writeHead(200, {});
-        res.end();
-      } else if (req.method == 'GET') {
-        getFileCompressed(filename, contentType, function (error, content) {
-          if(ERR(error, function(){
-            res.writeHead(500, {});
-            res.end();
-          })) return;
-          res.header("Content-Type", contentType);
-          res.writeHead(200, {});
-          res.write(content);
+    } else if (req.method === 'HEAD') {
+      res.header('Content-Type', contentType);
+      res.writeHead(200, {});
+      res.end();
+    } else if (req.method === 'GET') {
+      getFileCompressed(filename, contentType, (error, content) => {
+        if (ERR(error, () => {
+          res.writeHead(500, {});
           res.end();
-        });
-      } else {
-        res.writeHead(405, {'allow': 'HEAD, GET'});
+        })) return;
+        res.header('Content-Type', contentType);
+        res.writeHead(200, {});
+        res.write(content);
         res.end();
-      }
+      });
+    } else {
+      res.writeHead(405, {allow: 'HEAD, GET'});
+      res.end();
     }
   }, 3);
-}
+};
 
 // find all includes in ace.js and embed them.
-function getAceFile(callback) {
-  fs.readFile(ROOT_DIR + 'js/ace.js', "utf8", function(err, data) {
-    if(ERR(err, callback)) return;
+const getAceFile = (callback) => {
+  fs.readFile(`${ROOT_DIR}js/ace.js`, 'utf8', (err, data) => {
+    if (ERR(err, callback)) return;
 
     // Find all includes in ace.js and embed them
-    var founds = data.match(/\$\$INCLUDE_[a-zA-Z_]+\("[^"]*"\)/gi);
-    if (!settings.minify) {
-      founds = [];
+    const filenames = [];
+    if (settings.minify) {
+      const regex = /\$\$INCLUDE_[a-zA-Z_]+\((['"])([^'"]*)\1\)/gi;
+      // This logic can be simplified via String.prototype.matchAll() once support for Node.js
+      // v11.x and older is dropped.
+      let matches;
+      while ((matches = regex.exec(data)) != null) {
+        filenames.push(matches[2]);
+      }
     }
     // Always include the require kernel.
-    founds.push('$$INCLUDE_JS("../static/js/require-kernel.js")');
+    filenames.push('../static/js/require-kernel.js');
 
     data += ';\n';
     data += 'Ace2Editor.EMBEDED = Ace2Editor.EMBEDED || {};\n';
 
     // Request the contents of the included file on the server-side and write
     // them into the file.
-    async.forEach(founds, function (item, callback) {
-      var filename = item.match(/"([^"]*)"/)[1];
-
+    async.forEach(filenames, (filename, callback) => {
       // Hostname "invalid.invalid" is a dummy value to allow parsing as a URI.
-      var baseURI = 'http://invalid.invalid';
-      var resourceURI = baseURI + path.normalize(path.join('/static/', filename));
+      const baseURI = 'http://invalid.invalid';
+      let resourceURI = baseURI + path.normalize(path.join('/static/', filename));
       resourceURI = resourceURI.replace(/\\/g, '/'); // Windows (safe generally?)
 
-      requestURI(resourceURI, 'GET', {}, function (status, headers, body) {
-        var error = !(status == 200 || status == 404);
+      requestURI(resourceURI, 'GET', {}, (status, headers, body) => {
+        const error = !(status === 200 || status === 404);
         if (!error) {
-          data += 'Ace2Editor.EMBEDED[' + JSON.stringify(filename) + '] = '
-              +  JSON.stringify(status == 200 ? body || '' : null) + ';\n';
+          data += `Ace2Editor.EMBEDED[${JSON.stringify(filename)}] = ${
+            JSON.stringify(status === 200 ? body || '' : null)};\n`;
         } else {
           console.error(`getAceFile(): error getting ${resourceURI}. Status code: ${status}`);
         }
         callback();
       });
-    }, function(error) {
+    }, (error) => {
       callback(error, data);
     });
   });
-}
+};
 
 // Check for the existance of the file and get the last modification date.
-function statFile(filename, callback, dirStatLimit) {
+const statFile = (filename, callback, dirStatLimit) => {
   /*
    * The only external call to this function provides an explicit value for
    * dirStatLimit: this check could be removed.
@@ -284,24 +278,24 @@ function statFile(filename, callback, dirStatLimit) {
     dirStatLimit = 3;
   }
 
-  if (dirStatLimit < 1 || filename == '' || filename == '/') {
+  if (dirStatLimit < 1 || filename === '' || filename === '/') {
     callback(null, null, false);
-  } else if (filename == 'js/ace.js') {
+  } else if (filename === 'js/ace.js') {
     // Sometimes static assets are inlined into this file, so we have to stat
     // everything.
-    lastModifiedDateOfEverything(function (error, date) {
+    lastModifiedDateOfEverything((error, date) => {
       callback(error, date, !error);
     });
-  } else if (filename == 'js/require-kernel.js') {
+  } else if (filename === 'js/require-kernel.js') {
     callback(null, requireLastModified(), true);
   } else {
-    fs.stat(ROOT_DIR + filename, function (error, stats) {
+    fs.stat(ROOT_DIR + filename, (error, stats) => {
       if (error) {
-        if (error.code == "ENOENT") {
+        if (error.code === 'ENOENT') {
           // Stat the directory instead.
-          statFile(path.dirname(filename), function (error, date, exists) {
+          statFile(path.dirname(filename), (error, date, exists) => {
             callback(error, date, false);
-          }, dirStatLimit-1);
+          }, dirStatLimit - 1);
         } else {
           callback(error);
         }
@@ -312,35 +306,31 @@ function statFile(filename, callback, dirStatLimit) {
       }
     });
   }
-}
-function lastModifiedDateOfEverything(callback) {
-  var folders2check = [ROOT_DIR + 'js/', ROOT_DIR + 'css/'];
-  var latestModification = 0;
-  //go trough this two folders
-  async.forEach(folders2check, function(path, callback)
-  {
-    //read the files in the folder
-    fs.readdir(path, function(err, files)
-    {
-      if(ERR(err, callback)) return;
+};
 
-      //we wanna check the directory itself for changes too
-      files.push(".");
+const lastModifiedDateOfEverything = (callback) => {
+  const folders2check = [`${ROOT_DIR}js/`, `${ROOT_DIR}css/`];
+  let latestModification = 0;
+  // go trough this two folders
+  async.forEach(folders2check, (path, callback) => {
+    // read the files in the folder
+    fs.readdir(path, (err, files) => {
+      if (ERR(err, callback)) return;
 
-      //go trough all files in this folder
-      async.forEach(files, function(filename, callback)
-      {
-        //get the stat data of this file
-        fs.stat(path + "/" + filename, function(err, stats)
-        {
-          if(ERR(err, callback)) return;
+      // we wanna check the directory itself for changes too
+      files.push('.');
 
-          //get the modification time
-          var modificationTime = stats.mtime.getTime();
+      // go trough all files in this folder
+      async.forEach(files, (filename, callback) => {
+        // get the stat data of this file
+        fs.stat(`${path}/${filename}`, (err, stats) => {
+          if (ERR(err, callback)) return;
 
-          //compare the modification time to the highest found
-          if(modificationTime > latestModification)
-          {
+          // get the modification time
+          const modificationTime = stats.mtime.getTime();
+
+          // compare the modification time to the highest found
+          if (modificationTime > latestModification) {
             latestModification = modificationTime;
           }
 
@@ -348,29 +338,25 @@ function lastModifiedDateOfEverything(callback) {
         });
       }, callback);
     });
-  }, function () {
+  }, () => {
     callback(null, latestModification);
   });
-}
+};
 
 // This should be provided by the module, but until then, just use startup
 // time.
-var _requireLastModified = new Date();
-function requireLastModified() {
-  return _requireLastModified.toUTCString();
-}
-function requireDefinition() {
-  return 'var require = ' + RequireKernel.kernelSource + ';\n';
-}
+const _requireLastModified = new Date();
+const requireLastModified = () => _requireLastModified.toUTCString();
+const requireDefinition = () => `var require = ${RequireKernel.kernelSource};\n`;
 
-function getFileCompressed(filename, contentType, callback) {
-  getFile(filename, function (error, content) {
+const getFileCompressed = (filename, contentType, callback) => {
+  getFile(filename, (error, content) => {
     if (error || !content || !settings.minify) {
       callback(error, content);
-    } else if (contentType == 'text/javascript') {
-      threadsPool.queue(async ({ compressJS }) => {
+    } else if (contentType === 'application/javascript') {
+      threadsPool.queue(async ({compressJS}) => {
         try {
-          logger.info('Compress JS file %s.', filename)
+          logger.info('Compress JS file %s.', filename);
 
           content = content.toString();
           const compressResult = await compressJS(content);
@@ -381,15 +367,16 @@ function getFileCompressed(filename, contentType, callback) {
             content = compressResult.code.toString(); // Convert content obj code to string
           }
         } catch (error) {
-          console.error(`getFile() returned an error in getFileCompressed(${filename}, ${contentType}): ${error}`);
+          console.error('getFile() returned an error in ' +
+                        `getFileCompressed(${filename}, ${contentType}): ${error}`);
         }
 
         callback(null, content);
-      })
-    } else if (contentType == 'text/css') {
-      threadsPool.queue(async ({ compressCSS }) => {
+      });
+    } else if (contentType === 'text/css') {
+      threadsPool.queue(async ({compressCSS}) => {
         try {
-          logger.info('Compress CSS file %s.', filename)
+          logger.info('Compress CSS file %s.', filename);
 
           content = await compressCSS(filename, ROOT_DIR);
         } catch (error) {
@@ -397,24 +384,28 @@ function getFileCompressed(filename, contentType, callback) {
         }
 
         callback(null, content);
-      })
+      });
     } else {
       callback(null, content);
     }
   });
-}
+};
 
-function getFile(filename, callback) {
-  if (filename == 'js/ace.js') {
+const getFile = (filename, callback) => {
+  if (filename === 'js/ace.js') {
     getAceFile(callback);
-  } else if (filename == 'js/require-kernel.js') {
+  } else if (filename === 'js/require-kernel.js') {
     callback(undefined, requireDefinition());
   } else {
     fs.readFile(ROOT_DIR + filename, callback);
   }
-}
+};
 
 exports.minify = minify;
 
 exports.requestURI = requestURI;
 exports.requestURIs = requestURIs;
+
+exports.shutdown = async (hookName, context) => {
+  await threadsPool.terminate();
+};
