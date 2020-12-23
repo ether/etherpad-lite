@@ -57,5 +57,5 @@ console.log('Once merged into master please run the following commands');
 console.log(`git tag -a ${newVersion} && git push origin master`);
 console.log(`cd ether.github.com && git add . && git commit -m ${newVersion} docs`);
 
-console.log('Once the new docs are uploaded then modify the download link on etherpad.org and then pull master onto develop';
+console.log('Once the new docs are uploaded then modify the download link on etherpad.org and then pull master onto develop');
 console.log('Finally go public with an announcement via our comms channels :)');
