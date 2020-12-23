@@ -134,22 +134,47 @@ describe(__filename, function () {
       const expectedResource = "require.define({\n  \"ep_etherpad-lite/static/js/ace2_inner2.js\": null\n});\n";
       await agent.get(missingResource)
           .then((res) => {
-          assert.equal(expectedResource, res.text); 
-          assert.equal(res.statusCode, 200);
+            assert.equal(expectedResource, res.text); 
+            assert.equal(res.statusCode, 200);
           });
     });
 
-    it('should return 400 for unknown and known resources without jsonp callback', async function() {
+    it('should return 400 for resources without jsonp callback', async function() {
       const missingCallbackUnknownFile = '/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner2.js';
       const missingCallbackKnownFile = '/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js';
       await agent.get(missingCallbackUnknownFile)
           .then((res) => {
-          assert.equal(res.statusCode, 400);
+            assert.equal(res.statusCode, 500);
           });
       await agent.get(missingCallbackKnownFile)
           .then((res) => {
-          assert.equal(res.statusCode, 400);
+            assert.equal(res.statusCode, 500);
           });
+    });
+
+    it('if a query parameter v is given, it must equal the versionString', async function() {
+      const vQueryWrong = '/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define&v=123';
+      const vQueryRight = `/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define&v=${settings.randomVersionString}`;
+      await agent.get(vQueryRight)
+          .then((res) => {
+            assert.equal(res.statusCode, 200);
+          });
+      await agent.get(vQueryWrong)
+          .then((res) => {
+            assert.equal(res.statusCode, 500);
+          });
+    });
+
+    it('any parameter except v and callback is forbidden', async function() {
+      const notAllowed = [ `/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define&v=${settings.randomVersionString}&anotherParam`,
+                           `/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define&v=${settings.randomVersionString}&anotherParam=123`,
+      ]
+      await Promise.all(notAllowed.map(async (resource) =>
+        await agent.get(resource)
+            .then((res) => {
+              assert.equal(res.statusCode, 500)
+            })
+      ));
     });
 
     context('expiration', function(){
@@ -163,7 +188,7 @@ describe(__filename, function () {
               assert.notEqual(lastModified, 'Invalid Date');
               assert.notEqual(expires, 'Invalid Date');
             })));
-        });
+      });
 
       it('maxAge is set and limits the expires value', async function() {
         await Promise.all(packages.map(async (resource) => await agent.get(resource)
@@ -266,22 +291,45 @@ describe(__filename, function () {
       const expectedResource = "require.define({\n  \"ep_etherpad-lite/static/js/ace2_inner2.js\": null\n});\n";
       await agent.get(missingResource)
           .then((res) => {
-          assert.equal(expectedResource, res.text); 
-          assert.equal(res.statusCode, 200);
+            assert.equal(expectedResource, res.text); 
+            assert.equal(res.statusCode, 200);
           });
     });
 
-    it('should return 400 for unknown and known resources without jsonp callback', async function() {
+    it('should return 400 for resources without jsonp callback', async function() {
       const missingCallbackUnknownFile = '/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner2.js';
       const missingCallbackKnownFile = '/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js';
       await agent.get(missingCallbackUnknownFile)
           .then((res) => {
-          assert.equal(res.statusCode, 400);
+            assert.equal(res.statusCode, 500);
           });
       await agent.get(missingCallbackKnownFile)
           .then((res) => {
-          assert.equal(res.statusCode, 400);
+            assert.equal(res.statusCode, 500);
           });
+    });
+
+    it('if a query parameter v is given, it must equal the versionString', async function() {
+      const vQueryWrong = '/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define&v=123';
+      const vQueryRight = `/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define&v=${settings.randomVersionString}`;
+      await agent.get(vQueryRight)
+          .then((res) => {
+            assert.equal(res.statusCode, 200);
+          });
+      await agent.get(vQueryWrong)
+          .then((res) => {
+            assert.equal(res.statusCode, 500);
+          });
+    });
+
+    it('any parameter except v and callback is forbidden', async function() {
+      const notAllowed = [ `/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define&v=${settings.randomVersionString}&anotherParam`,
+                           `/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define&v=${settings.randomVersionString}&anotherParam=123`,
+      ]
+      await Promise.all(notAllowed.map(async (resource) => await agent.get(resource)
+          .then((res) => {
+            assert.equal(res.statusCode, 500)
+          })));
     });
 
     context('expiration', function(){

@@ -94,13 +94,26 @@ CachingMiddleware.prototype = new function () {
         (req.get('Accept-Encoding') || '').indexOf('gzip') !== -1;
 
     const URL = url.parse(req.url);
-    const path = URL.pathname;
     const query = queryString.parse(URL.query);
 
+    // callback must be `require.define`
     if (query.callback !== 'require.define') {
-      return res.sendStatus(400);
+      return next('cm1', req, res);
     }
 
+    // in case the v parameter is given, it must contain the current version string
+    if (query.v && query.v !== settings.randomVersionString) {
+      return next('cm2', req, res);
+    }
+
+    // does it contain more than the two allowed parameter `callback` and `v`?
+    Object.keys(query).forEach((param) => {
+      if (param !== 'callback' && param !== 'v') {
+        return next('cm3', req, res);
+      }
+    });
+
+    const path = URL.path;
     const cacheKey = generateCacheKey(path);
 
     fs.stat(`${CACHE_DIR}minified_${cacheKey}`, (error, stats) => {
