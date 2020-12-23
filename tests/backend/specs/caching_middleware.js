@@ -76,8 +76,17 @@ describe(__filename, function () {
             assert.match(res.header['content-type'], /application\/javascript/);
             assert.equal(res.header['content-encoding'], undefined);
             assert.equal(isPlaintextResponse(res.text, resource), true);
-            return;
           })));
+    });
+    
+    // need to use head here - cant unset Accept-Encoding in GET requests 
+    it('head request without Accept-Encoding header does not set Content-Encoding', async function () {
+      await agent
+          .head(packages[0]) 
+          .then((res) => {
+            assert.match(res.header['content-type'], /application\/javascript/);
+            assert.equal(res.header['content-encoding'], undefined);
+          });
     });
 
     it('gets packages compressed with Accept-Encoding gzip', async function () {
@@ -88,7 +97,6 @@ describe(__filename, function () {
             assert.match(res.header['content-type'], /application\/javascript/);
             assert.equal(res.header['content-encoding'], 'gzip');
             assert.equal(isPlaintextResponse(res.text, resource), false);
-            return;
           })));
     });
 
@@ -126,8 +134,17 @@ describe(__filename, function () {
             assert.match(res.header['content-type'], /application\/javascript/);
             assert.equal(res.header['content-encoding'], undefined);
             assert.equal(isPlaintextResponse(res.text, resource), true);
-            return;
           })));
+    });
+
+    // need to use head here - cant unset Accept-Encoding in GET requests 
+    it('head request without Accept-Encoding header does not set Content-Encoding', async function () {
+      await agent
+          .head(packages[0]) 
+          .then((res) => {
+            assert.match(res.header['content-type'], /application\/javascript/);
+            assert.equal(res.header['content-encoding'], undefined);
+          });
     });
 
     it('gets packages compressed with Accept-Encoding gzip', async function () {
@@ -138,7 +155,6 @@ describe(__filename, function () {
             assert.match(res.header['content-type'], /application\/javascript/);
             assert.equal(res.header['content-encoding'], 'gzip');
             assert.equal(isPlaintextResponse(res.text, resource), false);
-            return;
           })));
     });
 
