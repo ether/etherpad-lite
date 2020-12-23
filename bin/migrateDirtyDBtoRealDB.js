@@ -1,3 +1,5 @@
+'use strict';
+
 require('ep_etherpad-lite/node_modules/npm').load({}, (er, npm) => {
   process.chdir(`${npm.root}/..`);
 
@@ -10,14 +12,19 @@ require('ep_etherpad-lite/node_modules/npm').load({}, (er, npm) => {
 
 
   const settings = require('ep_etherpad-lite/node/utils/Settings');
-  let dirty = require('../src/node_modules/dirty');
-  const ueberDB = require('../src/node_modules/ueberdb2');
-  const log4js = require('../src/node_modules/log4js');
+  let dirty = require(`${__dirname}/../src/node_modules/dirty`);
+  const ueberDB = require(`${__dirname}/../src/node_modules/ueberdb2`);
+  const log4js = require(`${__dirname}/../src/node_modules/log4js`);
   const dbWrapperSettings = {
     cache: '0', // The cache slows things down when you're mostly writing.
     writeInterval: 0, // Write directly to the database, don't buffer
   };
-  const db = new ueberDB.database(settings.dbType, settings.dbSettings, dbWrapperSettings, log4js.getLogger('ueberDB'));
+  const db = new ueberDB.Database(
+      settings.dbType,
+      settings.dbSettings,
+      dbWrapperSettings,
+      log4js.getLogger('ueberDB')
+  );
   let i = 0;
   let length = 0;
 
@@ -30,14 +37,14 @@ require('ep_etherpad-lite/node_modules/npm').load({}, (er, npm) => {
       console.log(`Found ${length} records, processing now.`);
 
       dirty.forEach(async (key, value) => {
-        const error = await db.set(key, value);
+        await db.set(key, value);
         console.log(`Wrote record ${i}`);
         i++;
 
         if (i === length) {
           console.log('finished, just clearing up for a bit...');
           setTimeout(() => {
-            process.exit(0);
+            throw new Error();
           }, 5000);
         }
       });

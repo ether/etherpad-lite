@@ -1,8 +1,11 @@
+/* eslint max-len: 0 */
+// Allowing eslint to ignore SQL Statements
+'use strict';
+
 const startTime = Date.now();
 const fs = require('fs');
-const ueberDB = require('../src/node_modules/ueberdb2');
-const mysql = require('../src/node_modules/ueberdb2/node_modules/mysql');
-const async = require('../src/node_modules/async');
+const mysql = require(`${__dirname}/../src/node_modules/ueberdb2/node_modules/mysql`);
+const async = require(`${__dirname}/../src/node_modules/async`);
 const Changeset = require('ep_etherpad-lite/static/js/Changeset');
 const randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 const AttributePool = require('ep_etherpad-lite/static/js/AttributePool');
@@ -13,7 +16,7 @@ const sqlOutputFile = process.argv[3];
 // stop if the settings file is not set
 if (!settingsFile || !sqlOutputFile) {
   console.error('Use: node convert.js $SETTINGSFILE $SQLOUTPUT');
-  process.exit(1);
+  throw new Error();
 }
 
 log('read settings file...');
@@ -48,7 +51,7 @@ let padIDs;
 
 async.series([
   // get all padids out of the database...
-  function (callback) {
+  (callback) => {
     log('get all padIds out of the database...');
 
     etherpadDB.query('SELECT ID FROM PAD_META', [], (err, _padIDs) => {
@@ -56,7 +59,7 @@ async.series([
       callback(err);
     });
   },
-  function (callback) {
+  (callback) => {
     log('done');
 
     // create a queue with a concurrency 100
@@ -80,12 +83,16 @@ async.series([
 
   // write the groups
   let sql = '';
-  for (const proID in proID2groupID) {
+  for (const proID of proID2groupID) {
     const groupID = proID2groupID[proID];
     const subdomain = proID2subdomain[proID];
 
-    sql += `REPLACE INTO store VALUES (${etherpadDB.escape(`group:${groupID}`)}, ${etherpadDB.escape(JSON.stringify(groups[groupID]))});\n`;
-    sql += `REPLACE INTO store VALUES (${etherpadDB.escape(`mapper2group:subdomain:${subdomain}`)}, ${etherpadDB.escape(groupID)});\n`;
+    sql += `REPLACE INTO store VALUES (
+      ${etherpadDB.escape(`group:${groupID}`)},
+      ${etherpadDB.escape(JSON.stringify(groups[groupID]))});\n`;
+    sql += `REPLACE INTO store VALUES (
+      ${etherpadDB.escape(`mapper2group:subdomain:${subdomain}`)},
+      ${etherpadDB.escape(groupID)});\n`;
   }
 
   // close transaction
@@ -96,29 +103,29 @@ async.series([
   fs.closeSync(sqlOutput);
 
   log('finished.');
-  process.exit(0);
+  throw new Error();
 });
 
-function log(str) {
+const log = (str) => {
   console.log(`${(Date.now() - startTime) / 1000}\t${str}`);
-}
+};
 
 let padsDone = 0;
 
-function incrementPadStats() {
+const incrementPadStats = () => {
   padsDone++;
 
-  if (padsDone % 100 == 0) {
+  if (padsDone % 100 === 0) {
     const averageTime = Math.round(padsDone / ((Date.now() - startTime) / 1000));
     log(`${padsDone}/${padIDs.length}\t${averageTime} pad/s`);
   }
-}
+};
 
-var proID2groupID = {};
-var proID2subdomain = {};
-var groups = {};
+const proID2groupID = {};
+const proID2subdomain = {};
+const groups = {};
 
-function convertPad(padId, callback) {
+const convertPad = (padId, callback) => {
   const changesets = [];
   const changesetsMeta = [];
   const chatMessages = [];
@@ -129,10 +136,10 @@ function convertPad(padId, callback) {
 
   async.series([
     // get all needed db values
-    function (callback) {
+    (callback) => {
       async.parallel([
         // get the pad revisions
-        function (callback) {
+        (callback) => {
           const sql = 'SELECT * FROM `PAD_CHAT_TEXT` WHERE NUMID = (SELECT `NUMID` FROM `PAD_CHAT_META` WHERE ID=?)';
 
           etherpadDB.query(sql, [padId], (err, results) => {
@@ -140,7 +147,9 @@ function convertPad(padId, callback) {
               try {
                 // parse the pages
                 for (let i = 0, length = results.length; i < length; i++) {
-                  parsePage(chatMessages, results[i].PAGESTART, results[i].OFFSETS, results[i].DATA, true);
+                  parsePage(
+                      chatMessages, results[i].PAGESTART, results[i].OFFSETS, results[i].DATA, true
+                  );
                 }
               } catch (e) { err = e; }
             }
@@ -149,7 +158,7 @@ function convertPad(padId, callback) {
           });
         },
         // get the chat entries
-        function (callback) {
+        (callback) => {
           const sql = 'SELECT * FROM `PAD_REVS_TEXT` WHERE NUMID = (SELECT `NUMID` FROM `PAD_REVS_META` WHERE ID=?)';
 
           etherpadDB.query(sql, [padId], (err, results) => {
@@ -157,7 +166,9 @@ function convertPad(padId, callback) {
               try {
                 // parse the pages
                 for (let i = 0, length = results.length; i < length; i++) {
-                  parsePage(changesets, results[i].PAGESTART, results[i].OFFSETS, results[i].DATA, false);
+                  parsePage(
+                      changesets, results[i].PAGESTART, results[i].OFFSETS, results[i].DATA, false
+                  );
                 }
               } catch (e) { err = e; }
             }
@@ -166,7 +177,7 @@ function convertPad(padId, callback) {
           });
         },
         // get the pad revisions meta data
-        function (callback) {
+        (callback) => {
           const sql = 'SELECT * FROM `PAD_REVMETA_TEXT` WHERE NUMID = (SELECT `NUMID` FROM `PAD_REVMETA_META` WHERE ID=?)';
 
           etherpadDB.query(sql, [padId], (err, results) => {
@@ -183,7 +194,7 @@ function convertPad(padId, callback) {
           });
         },
         // get the attribute pool of this pad
-        function (callback) {
+        (callback) => {
           const sql = 'SELECT `JSON` FROM `PAD_APOOL` WHERE `ID` = ?';
 
           etherpadDB.query(sql, [padId], (err, results) => {
@@ -197,7 +208,7 @@ function convertPad(padId, callback) {
           });
         },
         // get the authors informations
-        function (callback) {
+        (callback) => {
           const sql = 'SELECT * FROM `PAD_AUTHORS_TEXT` WHERE NUMID = (SELECT `NUMID` FROM `PAD_AUTHORS_META` WHERE ID=?)';
 
           etherpadDB.query(sql, [padId], (err, results) => {
@@ -214,7 +225,7 @@ function convertPad(padId, callback) {
           });
         },
         // get the pad information
-        function (callback) {
+        (callback) => {
           const sql = 'SELECT JSON FROM `PAD_META` WHERE ID=?';
 
           etherpadDB.query(sql, [padId], (err, results) => {
@@ -228,9 +239,9 @@ function convertPad(padId, callback) {
           });
         },
         // get the subdomain
-        function (callback) {
+        (callback) => {
           // skip if this is no proPad
-          if (padId.indexOf('$') == -1) {
+          if (padId.indexOf('$') === -1) {
             callback();
             return;
           }
@@ -250,12 +261,12 @@ function convertPad(padId, callback) {
         },
       ], callback);
     },
-    function (callback) {
+    (callback) => {
       // saves all values that should be written to the database
       const values = {};
 
       // this is a pro pad, let's convert it to a group pad
-      if (padId.indexOf('$') != -1) {
+      if (padId.indexOf('$') !== -1) {
         const padIdParts = padId.split('$');
         const proID = padIdParts[0];
         const padName = padIdParts[1];
@@ -288,23 +299,28 @@ function convertPad(padId, callback) {
 
         // replace the authors with generated authors
         // we need to do that cause where the original etherpad saves pad local authors, the new (lite) etherpad uses them global
-        for (var i in apool.numToAttrib) {
-          var key = apool.numToAttrib[i][0];
+        for (const i of apool.numToAttrib) {
+          const key = apool.numToAttrib[i][0];
           const value = apool.numToAttrib[i][1];
 
           // skip non authors and anonymous authors
-          if (key != 'author' || value == '') continue;
+          if (key !== 'author' || value === '') continue;
 
           // generate new author values
           const authorID = `a.${randomString(16)}`;
-          const authorColorID = authors[i].colorId || Math.floor(Math.random() * (exports.getColorPalette().length));
+          const authorColorID = authors[i].colorId ||
+            Math.floor(Math.random() * (exports.getColorPalette().length));
           const authorName = authors[i].name || null;
 
           // overwrite the authorID of the attribute pool
           apool.numToAttrib[i][1] = authorID;
 
           // write the author to the database
-          values[`globalAuthor:${authorID}`] = {colorId: authorColorID, name: authorName, timestamp};
+          values[`globalAuthor:${authorID}`] = {
+            colorId: authorColorID,
+            name: authorName,
+            timestamp,
+          };
 
           // save in mappers
           newAuthorIDs[i] = authorID;
@@ -312,7 +328,7 @@ function convertPad(padId, callback) {
         }
 
         // save all revisions
-        for (var i = 0; i < changesets.length; i++) {
+        for (let i = 0; i < changesets.length; i++) {
           values[`pad:${padId}:revs:${i}`] = {changeset: changesets[i],
             meta: {
               author: newAuthorIDs[changesetsMeta[i].a],
@@ -322,7 +338,7 @@ function convertPad(padId, callback) {
         }
 
         // save all chat messages
-        for (var i = 0; i < chatMessages.length; i++) {
+        for (let i = 0; i < chatMessages.length; i++) {
           values[`pad:${padId}:chat:${i}`] = {text: chatMessages[i].lineText,
             userId: oldName2newName[chatMessages[i].userId],
             time: chatMessages[i].time};
@@ -351,7 +367,7 @@ function convertPad(padId, callback) {
       }
 
       let sql = '';
-      for (var key in values) {
+      for (const key of values) {
         sql += `REPLACE INTO store VALUES (${etherpadDB.escape(key)}, ${etherpadDB.escape(JSON.stringify(values[key]))});\n`;
       }
 
@@ -359,14 +375,14 @@ function convertPad(padId, callback) {
       callback();
     },
   ], callback);
-}
+};
 
 /**
  * This parses a Page like Etherpad uses them in the databases
  * The offsets describes the length of a unit in the page, the data are
  * all values behind each other
  */
-function parsePage(array, pageStart, offsets, data, json) {
+const parsePage = (array, pageStart, offsets, data, json) => {
   let start = 0;
   const lengths = offsets.split(',');
 
@@ -374,7 +390,7 @@ function parsePage(array, pageStart, offsets, data, json) {
     let unitLength = lengths[i];
 
     // skip empty units
-    if (unitLength == '') continue;
+    if (unitLength === '') continue;
 
     // parse the number
     unitLength = Number(unitLength);
@@ -388,4 +404,4 @@ function parsePage(array, pageStart, offsets, data, json) {
     // update start
     start += unitLength;
   }
-}
+};

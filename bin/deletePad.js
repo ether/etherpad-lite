@@ -1,17 +1,18 @@
+'use strict';
+
 /*
  * A tool for deleting pads from the CLI, because sometimes a brick is required
  * to fix a window.
  */
 
-const request = require('../src/node_modules/request');
 const settings = require(`${__dirname}/../tests/container/loadSettings`).loadSettings();
 const supertest = require(`${__dirname}/../src/node_modules/supertest`);
 const api = supertest(`http://${settings.ip}:${settings.port}`);
 const path = require('path');
 const fs = require('fs');
-if (process.argv.length != 3) {
+if (process.argv.length !== 3) {
   console.error('Use: node deletePad.js $PADID');
-  process.exit(1);
+  throw new Error();
 }
 
 // get the padID

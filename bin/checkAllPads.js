@@ -1,18 +1,19 @@
+'use strict';
 /*
  * This is a debug tool. It checks all revisions for data corruption
  */
 
-if (process.argv.length != 2) {
+if (process.argv.length !== 2) {
   console.error('Use: node bin/checkAllPads.js');
-  process.exit(1);
+  throw new Error();
 }
 
 // load and initialize NPM
-const npm = require('../src/node_modules/npm');
+const npm = require(`${__dirname}/../src/node_modules/npm`);
 npm.load({}, async () => {
   try {
     // initialize the database
-    const settings = require('../src/node/utils/Settings');
+    require('../src/node/utils/Settings');
     const db = require('../src/node/db/DB');
     await db.init();
 
@@ -77,15 +78,15 @@ npm.load({}, async () => {
             const cs = revisions[rev].changeset;
             atext = Changeset.applyToAText(cs, atext, apool);
           } catch (e) {
-            console.error(`[${pad.id}] Bad changeset at revision ${i} - ${e.message}`);
+            console.error(`[${pad.id}] Bad changeset at revision ${rev} - ${e.message}`);
           }
         }
       }
       console.log('finished');
-      process.exit(0);
+      throw new Error();
     }
   } catch (err) {
     console.trace(err);
-    process.exit(1);
+    throw new Error();
   }
 });

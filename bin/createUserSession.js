@@ -1,3 +1,5 @@
+'use strict';
+
 /*
  * A tool for generating a test user session which can be used for debugging configs
  * that require sessions.
@@ -7,7 +9,6 @@ const m = (f) => `${__dirname}/../${f}`;
 const fs = require('fs');
 const path = require('path');
 const querystring = require('querystring');
-const request = require(m('src/node_modules/request'));
 const settings = require(m('src/node/utils/Settings'));
 const supertest = require(m('src/node_modules/supertest'));
 

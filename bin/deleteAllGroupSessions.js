@@ -1,9 +1,10 @@
+'use strict';
+
 /*
 * A tool for deleting ALL GROUP sessions Etherpad user sessions from the CLI,
 * because sometimes a brick is required to fix a face.
 */
 
-const request = require('../src/node_modules/request');
 const settings = require(`${__dirname}/../tests/container/loadSettings`).loadSettings();
 const supertest = require(`${__dirname}/../src/node_modules/supertest`);
 const api = supertest(`http://${settings.ip}:${settings.port}`);
@@ -31,14 +32,16 @@ api.get('/api/')
           .then((res) => {
             guids = res.body.data.groupIDs;
             guids.forEach((groupID) => {
-              const luri = `/api/${apiVersion}/listSessionsOfGroup?apikey=${apikey}&groupID=${groupID}`;
+              const luri =
+                `/api/${apiVersion}/listSessionsOfGroup?apikey=${apikey}&groupID=${groupID}`;
               api.get(luri)
                   .then((res) => {
                     if (res.body.data) {
                       Object.keys(res.body.data).forEach((sessionID) => {
                         if (sessionID) {
                           console.log('Deleting', sessionID);
-                          const duri = `/api/${apiVersion}/deleteSession?apikey=${apikey}&sessionID=${sessionID}`;
+                          const duri =
+                              `/api/${apiVersion}/deleteSession?apikey=${apikey}&sessionID=${sessionID}`;
                           api.post(duri); // deletes
                         }
                       });

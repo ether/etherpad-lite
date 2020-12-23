@@ -1,27 +1,29 @@
+'use strict';
+
 /*
  * This is a repair tool. It extracts all datas of a pad, removes and inserts them again.
  */
 
 console.warn('WARNING: This script must not be used while etherpad is running!');
 
-if (process.argv.length != 3) {
+if (process.argv.length !== 3) {
   console.error('Use: node bin/repairPad.js $PADID');
-  process.exit(1);
+  throw new Error();
 }
 
 // get the padID
 const padId = process.argv[2];
 
-const npm = require('../src/node_modules/npm');
+const npm = require(`${__dirname}/../src/node_modules/npm`);
 npm.load({}, async (er) => {
   if (er) {
     console.error(`Could not load NPM: ${er}`);
-    process.exit(1);
+    throw new Error();
   }
 
   try {
     // intialize database
-    const settings = require('../src/node/utils/Settings');
+    require('../src/node/utils/Settings');
     const db = require('../src/node/db/DB');
     await db.init();
 
@@ -56,7 +58,7 @@ npm.load({}, async (er) => {
     //     See gitlab issue #3545
     //
     console.info('aborting [gitlab #3545]');
-    process.exit(1);
+    throw new Error();
 
     // now fetch and reinsert every key
     neededDBValues.forEach((key, value) => {
@@ -66,7 +68,7 @@ npm.load({}, async (er) => {
     });
 
     console.info('finished');
-    process.exit(0);
+    throw new Error();
   } catch (er) {
     if (er.name === 'apierror') {
       console.error(er);

@@ -1,21 +1,22 @@
+'use strict';
 /*
  * This is a debug tool. It checks all revisions for data corruption
  */
 
-if (process.argv.length != 3) {
+if (process.argv.length !== 3) {
   console.error('Use: node bin/checkPad.js $PADID');
-  process.exit(1);
+  throw new Error();
 }
 
 // get the padID
 const padId = process.argv[2];
 
 // load and initialize NPM;
-const npm = require('../src/node_modules/npm');
+const npm = require(`${__dirname}/../src/node_modules/npm`);
 npm.load({}, async () => {
   try {
     // initialize database
-    const settings = require('../src/node/utils/Settings');
+    require('../src/node/utils/Settings');
     const db = require('../src/node/db/DB');
     await db.init();
 
@@ -26,7 +27,7 @@ npm.load({}, async () => {
     const exists = await padManager.doesPadExists(padId);
     if (!exists) {
       console.error('Pad does not exist');
-      process.exit(1);
+      throw new Error();
     }
 
     // get the pad
@@ -60,11 +61,13 @@ npm.load({}, async () => {
       // check if the pad has a pool
       if (pad.pool === undefined) {
         console.error('Attribute pool is missing');
-        process.exit(1);
+        throw new Error();
       }
 
       // check if there is an atext in the keyRevisions
-      if (revisions[keyRev] === undefined || revisions[keyRev].meta === undefined || revisions[keyRev].meta.atext === undefined) {
+      if (revisions[keyRev] === undefined ||
+        revisions[keyRev].meta === undefined ||
+        revisions[keyRev].meta.atext === undefined) {
         console.error(`No atext in key revision ${keyRev}`);
         continue;
       }
@@ -83,10 +86,10 @@ npm.load({}, async () => {
         }
       }
       console.log('finished');
-      process.exit(0);
+      throw new Error();
     }
   } catch (e) {
     console.trace(e);
-    process.exit(1);
+    throw new Error();
   }
 });
