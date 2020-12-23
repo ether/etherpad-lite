@@ -129,6 +129,30 @@ describe(__filename, function () {
       }));
     });
 
+    it('should 200 for unknown resources with jsonp callback', async function() {
+      const missingResource = '/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner2.js?callback=require.define';
+      const expectedResource = "require.define({\n  \"ep_etherpad-lite/static/js/ace2_inner2.js\": null\n});\n";
+      await agent.get(missingResource)
+          .then((res) => {
+          assert.equal(expectedResource, res.text); 
+          assert.equal(res.statusCode, 200);
+          });
+    });
+
+    // TODO should probably be 404
+    it('should 502 for unknown and known resources without jsonp callback', async function() {
+      const missingCallbackUnknownFile = '/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner2.js';
+      const missingCallbackKnownFile = '/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js';
+      await agent.get(missingCallbackUnknownFile)
+          .then((res) => {
+          assert.equal(res.statusCode, 502);
+          });
+      await agent.get(missingCallbackKnownFile)
+          .then((res) => {
+          assert.equal(res.statusCode, 502);
+          });
+    });
+
     context('expiration', function(){
       it('has date, last-modified and expires header', async function() {
         await Promise.all(packages.map(async (resource) => await agent.get(resource)
@@ -236,6 +260,30 @@ describe(__filename, function () {
             assert.equal(res.statusCode, 405)
           })
       }));
+    });
+
+    it('should 200 for unknown resources with jsonp callback', async function() {
+      const missingResource = '/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner2.js?callback=require.define';
+      const expectedResource = "require.define({\n  \"ep_etherpad-lite/static/js/ace2_inner2.js\": null\n});\n";
+      await agent.get(missingResource)
+          .then((res) => {
+          assert.equal(expectedResource, res.text); 
+          assert.equal(res.statusCode, 200);
+          });
+    });
+
+    // TODO should probably be 404
+    it('should 502 for unknown and known resources without jsonp callback', async function() {
+      const missingCallbackUnknownFile = '/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner2.js';
+      const missingCallbackKnownFile = '/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js';
+      await agent.get(missingCallbackUnknownFile)
+          .then((res) => {
+          assert.equal(res.statusCode, 502);
+          });
+      await agent.get(missingCallbackKnownFile)
+          .then((res) => {
+          assert.equal(res.statusCode, 502);
+          });
     });
 
     context('expiration', function(){
