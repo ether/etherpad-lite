@@ -127,5 +127,18 @@ exports.checkAccess = async function (padID, sessionCookie, token, userSettings)
     return DENY;
   }
 
+  const passwordExempt = settings.sessionNoPassword && sessionAuthorID != null;
+  const requirePassword = pad.isPasswordProtected() && !passwordExempt;
+  if (requirePassword) {
+    if (password == null) {
+      authLogger.debug('access denied: password required');
+      return NEED_PASSWORD;
+    }
+    if (!password || !pad.isCorrectPassword(password)) {
+      authLogger.debug('access denied: wrong password');
+      return WRONG_PASSWORD;
+    }
+  }
+
   return grant;
 };
