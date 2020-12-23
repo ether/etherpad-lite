@@ -21,6 +21,8 @@ const path = require('path');
 const zlib = require('zlib');
 const settings = require('./Settings');
 const existsSync = require('./path_exists');
+const queryString = require('querystring');
+const url = require('url');
 
 /*
  * The crypto module can be absent on reduced node installations.
@@ -89,9 +91,16 @@ CachingMiddleware.prototype = new function () {
     const old_res = {};
 
     const supportsGzip =
-        (req.get('Accept-Encoding') || '').indexOf('gzip') != -1;
+        (req.get('Accept-Encoding') || '').indexOf('gzip') !== -1;
 
-    const path = require('url').parse(req.url).pathname;
+    const URL = url.parse(req.url);
+    const path = URL.pathname;
+    const query = queryString.parse(URL.query);
+
+    if (query.callback !== 'require.define') {
+      return res.sendStatus(400);
+    }
+
     const cacheKey = generateCacheKey(path);
 
     fs.stat(`${CACHE_DIR}minified_${cacheKey}`, (error, stats) => {

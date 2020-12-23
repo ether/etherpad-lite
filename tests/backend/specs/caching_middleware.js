@@ -139,17 +139,16 @@ describe(__filename, function () {
           });
     });
 
-    // TODO should probably be 404
-    it('should 502 for unknown and known resources without jsonp callback', async function() {
+    it('should return 400 for unknown and known resources without jsonp callback', async function() {
       const missingCallbackUnknownFile = '/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner2.js';
       const missingCallbackKnownFile = '/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js';
       await agent.get(missingCallbackUnknownFile)
           .then((res) => {
-          assert.equal(res.statusCode, 502);
+          assert.equal(res.statusCode, 400);
           });
       await agent.get(missingCallbackKnownFile)
           .then((res) => {
-          assert.equal(res.statusCode, 502);
+          assert.equal(res.statusCode, 400);
           });
     });
 
@@ -272,17 +271,16 @@ describe(__filename, function () {
           });
     });
 
-    // TODO should probably be 404
-    it('should 502 for unknown and known resources without jsonp callback', async function() {
+    it('should return 400 for unknown and known resources without jsonp callback', async function() {
       const missingCallbackUnknownFile = '/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner2.js';
       const missingCallbackKnownFile = '/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js';
       await agent.get(missingCallbackUnknownFile)
           .then((res) => {
-          assert.equal(res.statusCode, 502);
+          assert.equal(res.statusCode, 400);
           });
       await agent.get(missingCallbackKnownFile)
           .then((res) => {
-          assert.equal(res.statusCode, 502);
+          assert.equal(res.statusCode, 400);
           });
     });
 
