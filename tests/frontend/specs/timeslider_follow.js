@@ -46,7 +46,6 @@ describe('timeslider follow', function () {
       '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n');
     await helper.edit('Another test line', 40);
 
-
     await helper.gotoTimeslider();
 
     // set to follow contents as it arrives
