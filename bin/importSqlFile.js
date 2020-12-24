@@ -2,12 +2,50 @@
 
 const startTime = Date.now();
 
+const unescape = (val) => {
+  // value is a string
+  if (val.substr(0, 1) === "'") {
+    val = val.substr(0, val.length - 1).substr(1);
+
+    return val.replace(/\\[0nrbtZ\\'"]/g, (s) => {
+      switch (s) {
+        case '\\0': return '\0';
+        case '\\n': return '\n';
+        case '\\r': return '\r';
+        case '\\b': return '\b';
+        case '\\t': return '\t';
+        case '\\Z': return '\x1a';
+        default: return s.substr(1);
+      }
+    });
+  }
+
+  // value is a boolean or NULL
+  if (val === 'NULL') {
+    return null;
+  }
+  if (val === 'true') {
+    return true;
+  }
+  if (val === 'false') {
+    return false;
+  }
+
+  // value is a number
+  return val;
+};
+
+
 require('ep_etherpad-lite/node_modules/npm').load({}, (er, npm) => {
   const fs = require('fs');
 
   const ueberDB = require('ep_etherpad-lite/node_modules/ueberdb2');
   const settings = require('ep_etherpad-lite/node/utils/Settings');
   const log4js = require('ep_etherpad-lite/node_modules/log4js');
+
+  const log = (str) => {
+    console.log(`${(Date.now() - startTime) / 1000}\t${str}`);
+  };
 
   const dbWrapperSettings = {
     cache: 0,
@@ -73,40 +111,3 @@ require('ep_etherpad-lite/node_modules/npm').load({}, (er, npm) => {
     }
   });
 });
-
-const log = (str) => {
-  console.log(`${(Date.now() - startTime) / 1000}\t${str}`);
-};
-
-const unescape = (val) => {
-  // value is a string
-  if (val.substr(0, 1) === "'") {
-    val = val.substr(0, val.length - 1).substr(1);
-
-    return val.replace(/\\[0nrbtZ\\'"]/g, (s) => {
-      switch (s) {
-        case '\\0': return '\0';
-        case '\\n': return '\n';
-        case '\\r': return '\r';
-        case '\\b': return '\b';
-        case '\\t': return '\t';
-        case '\\Z': return '\x1a';
-        default: return s.substr(1);
-      }
-    });
-  }
-
-  // value is a boolean or NULL
-  if (val === 'NULL') {
-    return null;
-  }
-  if (val === 'true') {
-    return true;
-  }
-  if (val === 'false') {
-    return false;
-  }
-
-  // value is a number
-  return val;
-};
