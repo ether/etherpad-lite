@@ -10,6 +10,7 @@ if (process.argv.length !== 3) {
 
 // get the padID
 const padId = process.argv[2];
+let checkRevisionCount = 0;
 
 // load and initialize NPM;
 const npm = require(`${__dirname}/../src/node_modules/npm`);
@@ -42,7 +43,8 @@ npm.load({}, async () => {
     }
 
     // run through all key revisions
-    for (const keyRev of keyRevisions) {
+    for (let keyRev of Object.keys(keyRevisions)) {
+      keyRev = parseInt(keyRev);
       // create an array of revisions we need till the next keyRevision or the End
       const revisionsNeeded = [];
       for (let rev = keyRev; rev <= keyRev + 100 && rev <= head; rev++) {
@@ -76,8 +78,8 @@ npm.load({}, async () => {
       let atext = revisions[keyRev].meta.atext;
 
       for (let rev = keyRev + 1; rev <= keyRev + 100 && rev <= head; rev++) {
+        checkRevisionCount++;
         try {
-          // console.log("check revision " + rev);
           const cs = revisions[rev].changeset;
           atext = Changeset.applyToAText(cs, atext, apool);
         } catch (e) {
@@ -85,8 +87,7 @@ npm.load({}, async () => {
           continue;
         }
       }
-      console.log('finished');
-      throw new Error();
+      console.log(`Finished: Checked ${checkRevisionCount} revisions`);
     }
   } catch (e) {
     console.trace(e);
