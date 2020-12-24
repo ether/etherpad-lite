@@ -1,3 +1,6 @@
+/* eslint max-len: 0 */
+'use strict';
+
 /*
 *
 * Usage -- see README.md
@@ -17,22 +20,28 @@ const pluginName = process.argv[2];
 
 if (!pluginName) {
   console.error('no plugin name specified');
-  process.exit(1);
+  throw new Error();
 }
 
 const pluginPath = `node_modules/${pluginName}`;
+let autoFix, autoUpdate, autoCommit;
 
 console.log(`Checking the plugin: ${pluginName}`);
 
 // Should we autofix?
-if (process.argv[3] && process.argv[3] === 'autofix') var autoFix = true;
+if (process.argv[3] && process.argv[3] === 'autofix') {
+  autoFix = true;
+}
 
 // Should we update files where possible?
-if (process.argv[5] && process.argv[5] === 'autoupdate') var autoUpdate = true;
+if (process.argv[5] && process.argv[5] === 'autoupdate') {
+  autoUpdate = true;
+}
 
 // Should we automcommit and npm publish?!
-if (process.argv[4] && process.argv[4] === 'autocommit') var autoCommit = true;
-
+if (process.argv[4] && process.argv[4] === 'autocommit') {
+  autoCommit = true;
+}
 
 if (autoCommit) {
   console.warn('Auto commit is enabled, I hope you know what you are doing...');
@@ -59,13 +68,13 @@ fs.readdir(pluginPath, (err, rootFiles) => {
 
   if (files.indexOf('.git') === -1) {
     console.error('No .git folder, aborting');
-    process.exit(1);
+    throw new Error();
   }
 
   // do a git pull...
-  var child_process = require('child_process');
+  const childProcess = require('child_process');
   try {
-    child_process.execSync('git pull ', {cwd: `${pluginPath}/`});
+    childProcess.execSync('git pull ', {cwd: `${pluginPath}/`});
   } catch (e) {
     console.error('Error git pull', e);
   }
@@ -190,9 +199,9 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         parsedPackageJSON.devDependencies = devDependencies;
         fs.writeFileSync(`${pluginPath}/package.json`, JSON.stringify(parsedPackageJSON, null, 2));
 
-        const child_process = require('child_process');
+        const childProcess = require('child_process');
         try {
-          child_process.execSync('npm install', {cwd: `${pluginPath}/`});
+          childProcess.execSync('npm install', {cwd: `${pluginPath}/`});
           hasAutoFixed = true;
         } catch (e) {
           console.error('Failed to create package-lock.json');
@@ -210,9 +219,9 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         hasAutoFixed = true;
         parsedPackageJSON.peerDependencies = peerDependencies;
         fs.writeFileSync(`${pluginPath}/package.json`, JSON.stringify(parsedPackageJSON, null, 2));
-        const child_process = require('child_process');
+        const childProcess = require('child_process');
         try {
-          child_process.execSync('npm install --no-save ep_etherpad-lite@file:../../src', {cwd: `${pluginPath}/`});
+          childProcess.execSync('npm install --no-save ep_etherpad-lite@file:../../src', {cwd: `${pluginPath}/`});
           hasAutoFixed = true;
         } catch (e) {
           console.error('Failed to create package-lock.json');
@@ -262,9 +271,8 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   if (files.indexOf('package-lock.json') === -1) {
     console.warn('package-lock.json file not found.  Please run npm install in the plugin folder and commit the package-lock.json file.');
     if (autoFix) {
-      var child_process = require('child_process');
       try {
-        child_process.execSync('npm install', {cwd: `${pluginPath}/`});
+        childProcess.execSync('npm install', {cwd: `${pluginPath}/`});
         console.log('Making package-lock.json');
         hasAutoFixed = true;
       } catch (e) {
@@ -422,14 +430,15 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   }
 
   // linting begins
+  let lintCmd;
   if (autoFix) {
-    var lintCmd = 'npm run lint:fix';
+    lintCmd = 'npm run lint:fix';
   } else {
-    var lintCmd = 'npm run lint';
+    lintCmd = 'npm run lint';
   }
 
   try {
-    child_process.execSync(lintCmd, {cwd: `${pluginPath}/`});
+    childProcess.execSync(lintCmd, {cwd: `${pluginPath}/`});
     console.log('Linting...');
     if (autoFix) {
       // todo: if npm run lint doesn't do anything no need for...
@@ -458,7 +467,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
           return;
         }
         console.log("I think she's got it! By George she's got it!");
-        process.exit(0);
       });
     } else {
       console.log(`cd node_modules/${pluginName} && git add -A && git commit --allow-empty -m 'autofixes from Etherpad checkPlugins.js' && npm version patch && git add package.json && git commit --allow-empty -m 'bump version' && git push && npm publish && cd ../..`);
