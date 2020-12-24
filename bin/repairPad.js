@@ -14,6 +14,8 @@ if (process.argv.length !== 3) {
 // get the padID
 const padId = process.argv[2];
 
+let valueCount = 0;
+
 const npm = require(`${__dirname}/../src/node_modules/npm`);
 npm.load({}, async (er) => {
   if (er) {
@@ -21,59 +23,39 @@ npm.load({}, async (er) => {
     throw new Error();
   }
 
-  try {
-    // intialize database
-    require('../src/node/utils/Settings');
-    const db = require('../src/node/db/DB');
-    await db.init();
+  // intialize database
+  require('../src/node/utils/Settings');
+  const db = require('../src/node/db/DB');
+  await db.init();
 
-    // get the pad
-    const padManager = require('../src/node/db/PadManager');
-    const pad = await padManager.getPad(padId);
+  // get the pad
+  const padManager = require('../src/node/db/PadManager');
+  const pad = await padManager.getPad(padId);
 
-    // accumulate the required keys
-    const neededDBValues = [`pad:${padId}`];
+  // accumulate the required keys
+  const neededDBValues = [`pad:${padId}`];
 
-    // add all authors
-    neededDBValues.push(...pad.getAllAuthors().map((author) => 'globalAuthor:'));
+  // add all authors
+  neededDBValues.push(...pad.getAllAuthors().map((author) => `globalAuthor:${author}`));
 
-    // add all revisions
-    for (let rev = 0; rev <= pad.head; ++rev) {
-      neededDBValues.push(`pad:${padId}:revs:${rev}`);
-    }
-
-    // add all chat values
-    for (let chat = 0; chat <= pad.chatHead; ++chat) {
-      neededDBValues.push(`pad:${padId}:chat:${chat}`);
-    }
-
-    //
-    // NB: this script doesn't actually does what's documented
-    //     since the `value` fields in the following `.forEach`
-    //     block are just the array index numbers
-    //
-    //     the script therefore craps out now before it can do
-    //     any damage.
-    //
-    //     See gitlab issue #3545
-    //
-    console.info('aborting [gitlab #3545]');
-    throw new Error();
-
-    // now fetch and reinsert every key
-    neededDBValues.forEach((key, value) => {
-      console.log(`Key: ${key}, value: ${value}`);
-      db.remove(key);
-      db.set(key, value);
-    });
-
-    console.info('finished');
-    throw new Error();
-  } catch (er) {
-    if (er.name === 'apierror') {
-      console.error(er);
-    } else {
-      console.trace(er);
-    }
+  // add all revisions
+  for (let rev = 0; rev <= pad.head; ++rev) {
+    neededDBValues.push(`pad:${padId}:revs:${rev}`);
   }
+
+  // add all chat values
+  for (let chat = 0; chat <= pad.chatHead; ++chat) {
+    neededDBValues.push(`pad:${padId}:chat:${chat}`);
+  }
+  // now fetch and reinsert every key
+  for (const key of neededDBValues) {
+    const value = await db.get(key);
+    // if it isn't a globalAuthor value which we want to ignore..
+    // console.log(`Key: ${key}, value: ${JSON.stringify(value)}`);
+    await db.remove(key);
+    await db.set(key, value);
+    valueCount++;
+  }
+
+  console.info(`Finished: Replaced ${valueCount} values in the database`);
 });
