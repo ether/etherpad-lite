@@ -6,30 +6,30 @@
  * there. It outputs a dirtydb file
  */
 
-if (process.argv.length != 3) {
+if (process.argv.length !== 3) {
   console.error('Use: node extractPadData.js $PADID');
-  process.exit(1);
+  throw new Error();
 }
 
 // get the padID
 const padId = process.argv[2];
 
-const npm = require('../src/node_modules/npm');
+const npm = require(`${__dirname}/../src/node_modules/npm`);
 
 npm.load({}, async (er) => {
   if (er) {
     console.error(`Could not load NPM: ${er}`);
-    process.exit(1);
+    throw new Error();
   }
 
   try {
     // initialize database
-    const settings = require('../src/node/utils/Settings');
+    require('../src/node/utils/Settings');
     const db = require('../src/node/db/DB');
     await db.init();
 
     // load extra modules
-    const dirtyDB = require('../src/node_modules/dirty');
+    const dirtyDB = require(`${__dirname}/../src/node_modules/dirty`);
     const padManager = require('../src/node/db/PadManager');
     const util = require('util');
 
@@ -69,9 +69,8 @@ npm.load({}, async (er) => {
     }
 
     console.log('finished');
-    process.exit(0);
   } catch (er) {
     console.error(er);
-    process.exit(1);
+    throw new Error();
   }
 });
