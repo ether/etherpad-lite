@@ -1,3 +1,4 @@
+/* eslint max-len: 0 */
 'use strict';
 
 /*
@@ -17,7 +18,7 @@ const pluginName = process.argv[2];
 
 if (!pluginName) {
   console.error('no plugin name specified');
-  process.exit(1);
+  throw new Error();
 }
 
 const pluginPath = `node_modules/${pluginName}`;
@@ -109,7 +110,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
 
   if (files.indexOf('.git') === -1) {
     console.error('No .git folder, aborting');
-    process.exit(1);
+    throw new Error();
   }
   prepareRepo();
 
