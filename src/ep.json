@@ -21,6 +21,12 @@
       }
     },
     {
+      "name": "errorhandling",
+      "hooks": {
+        "expressCreateServer": "ep_etherpad-lite/node/hooks/express/errorhandling"
+      }
+    },
+    {
       "name": "static",
       "hooks": {
         "expressCreateServer": "ep_etherpad-lite/node/hooks/express/static"
@@ -72,12 +78,6 @@
       "name": "importexport",
       "hooks": {
         "expressCreateServer": "ep_etherpad-lite/node/hooks/express/importexport"
-      }
-    },
-    {
-      "name": "errorhandling",
-      "hooks": {
-        "expressCreateServer": "ep_etherpad-lite/node/hooks/express/errorhandling"
       }
     },
     {

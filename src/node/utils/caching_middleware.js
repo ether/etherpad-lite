@@ -97,19 +97,27 @@ CachingMiddleware.prototype = new function () {
     const query = queryString.parse(URL.query);
 
     // callback must be `require.define`
+    // implicitly also checks for the parameter to not be present more than once
     if (query.callback !== 'require.define') {
-      return next('cm1', req, res);
+      const error = new Error('query parameter callback is not require.define');
+      error.status = 400;
+      return next(error);
     }
 
     // in case the v parameter is given, it must contain the current version string
+    // implicitly also checks for the parameter to not be present more than once
     if (query.v && query.v !== settings.randomVersionString) {
-      return next('cm2', req, res);
+      const error = new Error('query parameter v contains the wrong version string');
+      error.status = 400;
+      return next(error);
     }
 
     // does it contain more than the two allowed parameter `callback` and `v`?
     Object.keys(query).forEach((param) => {
       if (param !== 'callback' && param !== 'v') {
-        return next('cm3', req, res);
+        const error = new Error('an unknown query parameter is present');
+        error.status = 400;
+        return next(error);
       }
     });
 

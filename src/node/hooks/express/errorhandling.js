@@ -1,26 +1,23 @@
+'use strict';
+
 const stats = require('ep_etherpad-lite/node/stats');
 
-exports.expressCreateServer = function (hook_name, args, cb) {
-  exports.app = args.app;
-
-  // Handle errors
+/**
+ * Express already comes with an error handler that is attached
+ * as the last middleware. Within all routes it's possible to call
+ * `next(err)` where `err` is an Error object. You can specify
+ * `statusCode` and `statusMessage`.
+ * For more details see "The default error handler" section on
+ * https://expressjs.com/en/guide/error-handling.html
+ *
+ * This method is only used for metrics
+ *
+ */
+exports.expressCreateServer = (hookName, args, cb) => {
   args.app.use((err, req, res, next) => {
-    // These are errors from caching_middleware, handle them with a 400
-    if (err.toString() === 'cm1') {
-      res.status(400).send({error: 'query parameter callback is not require.define'});
-    } else if (err.toString() === 'cm2') {
-      res.status(400).send({error: 'query parameter v contains the wrong version string'});
-    } else if (err.toString() === 'cm3') {
-      res.status(400).send({error: 'an unknown query parameter is present'});
-    } else {
-      // if an error occurs Connect will pass it down
-      // through these "error-handling" middleware
-      // allowing you to respond however you like
-      res.status(500).send({error: 'Sorry, something bad happened!'});
-      console.error(err.stack ? err.stack : err.toString());
-      stats.meter('http500').mark();
-    }
-
+    const status = err.statusCode || err.status;
+    stats.meter(`http${status}`).mark();
+    next(err);
   });
 
   return cb();

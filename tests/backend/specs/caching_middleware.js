@@ -144,11 +144,11 @@ describe(__filename, function () {
       const missingCallbackKnownFile = '/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js';
       await agent.get(missingCallbackUnknownFile)
           .then((res) => {
-            assert.equal(res.statusCode, 500);
+            assert.equal(res.statusCode, 400);
           });
       await agent.get(missingCallbackKnownFile)
           .then((res) => {
-            assert.equal(res.statusCode, 500);
+            assert.equal(res.statusCode, 400);
           });
     });
 
@@ -161,7 +161,7 @@ describe(__filename, function () {
           });
       await agent.get(vQueryWrong)
           .then((res) => {
-            assert.equal(res.statusCode, 500);
+            assert.equal(res.statusCode, 400);
           });
     });
 
@@ -172,7 +172,19 @@ describe(__filename, function () {
       await Promise.all(notAllowed.map(async (resource) =>
         await agent.get(resource)
             .then((res) => {
-              assert.equal(res.statusCode, 500)
+              assert.equal(res.statusCode, 400)
+            })
+      ));
+    });
+
+    it('a parameter is not allowed to appear more than once', async function() {
+      const notAllowed = [ `/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define&v=${settings.randomVersionString}&v=${settings.randomVersionString}`,
+                           `/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define&v=${settings.randomVersionString}&callback=require.define`,
+      ]
+      await Promise.all(notAllowed.map(async (resource) =>
+        await agent.get(resource)
+            .then((res) => {
+              assert.equal(res.statusCode, 400)
             })
       ));
     });
@@ -301,11 +313,11 @@ describe(__filename, function () {
       const missingCallbackKnownFile = '/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js';
       await agent.get(missingCallbackUnknownFile)
           .then((res) => {
-            assert.equal(res.statusCode, 500);
+            assert.equal(res.statusCode, 400);
           });
       await agent.get(missingCallbackKnownFile)
           .then((res) => {
-            assert.equal(res.statusCode, 500);
+            assert.equal(res.statusCode, 400);
           });
     });
 
@@ -318,7 +330,7 @@ describe(__filename, function () {
           });
       await agent.get(vQueryWrong)
           .then((res) => {
-            assert.equal(res.statusCode, 500);
+            assert.equal(res.statusCode, 400);
           });
     });
 
@@ -328,8 +340,20 @@ describe(__filename, function () {
       ]
       await Promise.all(notAllowed.map(async (resource) => await agent.get(resource)
           .then((res) => {
-            assert.equal(res.statusCode, 500)
+            assert.equal(res.statusCode, 400)
           })));
+    });
+
+    it('a parameter is not allowed to appear more than once', async function() {
+      const notAllowed = [ `/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define&v=${settings.randomVersionString}&v=${settings.randomVersionString}`,
+                           `/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define&v=${settings.randomVersionString}&callback=require.define`,
+      ]
+      await Promise.all(notAllowed.map(async (resource) =>
+        await agent.get(resource)
+            .then((res) => {
+              assert.equal(res.statusCode, 400)
+            })
+      ));
     });
 
     context('expiration', function(){
