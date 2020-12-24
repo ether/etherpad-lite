@@ -5,50 +5,37 @@
 * because sometimes a brick is required to fix a face.
 */
 
-const settings = require(`${__dirname}/../tests/container/loadSettings`).loadSettings();
 const supertest = require(`${__dirname}/../src/node_modules/supertest`);
-const api = supertest(`http://${settings.ip}:${settings.port}`);
 const path = require('path');
 const fs = require('fs');
+let deleteCount = 0;
+
 
 // get the API Key
 const filePath = path.join(__dirname, '../APIKEY.txt');
-const apikey = fs.readFileSync(filePath, {encoding: 'utf-8'});
+(async () => {
+  const settings = require(`${__dirname}/../tests/container/loadSettings`).loadSettings();
+  const apikey = fs.readFileSync(filePath, {encoding: 'utf-8'});
+  const api = supertest(`http://${settings.ip}:${settings.port}`);
 
-// Set apiVersion to base value, we change this later.
-let apiVersion = 1;
-let guids;
+  const apiVersionResponse = await api.get('/api/');
+  const apiVersion = apiVersionResponse.body.currentVersion; // 1.12.5
 
-// Update the apiVersion
-api.get('/api/')
-    .expect((res) => {
-      apiVersion = res.body.currentVersion;
-      if (!res.body.currentVersion) throw new Error('No version set in API');
-      return;
-    })
-    .then(() => {
-      const guri = `/api/${apiVersion}/listAllGroups?apikey=${apikey}`;
-      api.get(guri)
-          .then((res) => {
-            guids = res.body.data.groupIDs;
-            guids.forEach((groupID) => {
-              const luri =
-                `/api/${apiVersion}/listSessionsOfGroup?apikey=${apikey}&groupID=${groupID}`;
-              api.get(luri)
-                  .then((res) => {
-                    if (res.body.data) {
-                      Object.keys(res.body.data).forEach((sessionID) => {
-                        if (sessionID) {
-                          console.log('Deleting', sessionID);
-                          const duri =
-                              `/api/${apiVersion}/deleteSession?apikey=${apikey}&sessionID=${sessionID}`;
-                          api.post(duri); // deletes
-                        }
-                      });
-                    } else {
-                      // no session in this group.
-                    }
-                  });
-            });
-          });
-    });
+  const groupsResponse = await api.get(`/api/${apiVersion}/listAllGroups?apikey=${apikey}`);
+  const groups = groupsResponse.body.data.groupIDs; // ['whateverGroupID']
+
+  for(const groupId of groups){
+
+    const sessionURI = `/api/${apiVersion}/listSessionsOfGroup?apikey=${apikey}&groupID=${groupID}`;
+    const sessionsResponse = await api.get(sessionURI);
+    const sessions = sessionsResponse.body.data;
+
+    for(const session of Object.keys(sessions)){
+      const deleteURI = `/api/${apiVersion}/deleteSession?apikey=${apikey}&sessionID=${sessionID}`;
+      const deleteResponse = await api.get(deleteURI); // delete
+      deleteCount++;
+    }
+
+  }
+  console.log(`Deleted ${deleteCount} sessions`);
+})();

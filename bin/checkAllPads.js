@@ -21,10 +21,11 @@ npm.load({}, async () => {
     const Changeset = require('../src/static/js/Changeset');
     const padManager = require('../src/node/db/PadManager');
 
+    let revTestedCount = 0;
+
     // get all pads
     const res = await padManager.listAllPads();
-
-    for (const padId of res.padIDs) {
+    for (const padId of Object.keys(res.padIDs)) {
       const pad = await padManager.getPad(padId);
 
       // check if the pad has a pool
@@ -32,7 +33,6 @@ npm.load({}, async () => {
         console.error(`[${pad.id}] Missing attribute pool`);
         continue;
       }
-
       // create an array with key kevisions
       // key revisions always save the full pad atext
       const head = pad.getHeadRevisionNumber();
@@ -72,19 +72,21 @@ npm.load({}, async () => {
 
         const apool = pad.pool;
         let atext = revisions[keyRev].meta.atext;
-
         for (let rev = keyRev + 1; rev <= keyRev + 100 && rev <= head; rev++) {
           try {
             const cs = revisions[rev].changeset;
             atext = Changeset.applyToAText(cs, atext, apool);
+            revTestedCount++;
           } catch (e) {
             console.error(`[${pad.id}] Bad changeset at revision ${rev} - ${e.message}`);
           }
         }
       }
-      console.log('finished');
-      throw new Error();
     }
+    if (revTestedCount === 0) {
+      throw new Error('No revisions tested');
+    }
+    console.log(`Finished: Tested ${revTestedCount} revisions`);
   } catch (err) {
     console.trace(err);
     throw new Error();
