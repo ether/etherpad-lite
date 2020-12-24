@@ -1,3 +1,5 @@
+'use strict';
+
 /*
  * This is a debug tool. It helps to extract all datas of a pad and move it from
  * a productive environment and to a develop environment to reproduce bugs

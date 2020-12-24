@@ -1,8 +1,8 @@
 'use strict';
 
 const fs = require('fs');
-const child_process = require('child_process');
-const semver = require('../src/node_modules/semver');
+const childProcess = require('child_process');
+const semver = require(`${__dirname}/../src/node_modules/semver`);
 
 /*
 
@@ -44,24 +44,25 @@ packageJson.version = newVersion;
 fs.writeFileSync('src/package.json', JSON.stringify(packageJson, null, 2));
 
 // run npm version `release` where release is patch, minor or major
-child_process.execSync('npm install --package-lock-only', {cwd: 'src/'});
+childProcess.execSync('npm install --package-lock-only', {cwd: 'src/'});
 // run npm install --package-lock-only <-- required???
 
-child_process.execSync(`git checkout -b release/${newVersion}`);
-child_process.execSync('git add src/package.json');
-child_process.execSync('git add src/package-lock.json');
-child_process.execSync('git commit -m \'bump version\'');
-child_process.execSync(`git push origin release/${newVersion}`);
+childProcess.execSync(`git checkout -b release/${newVersion}`);
+childProcess.execSync('git add src/package.json');
+childProcess.execSync('git add src/package-lock.json');
+childProcess.execSync('git commit -m \'bump version\'');
+childProcess.execSync(`git push origin release/${newVersion}`);
 
 
-child_process.execSync('make docs');
-child_process.execSync('git clone git@github.com:ether/ether.github.com.git');
-child_process.execSync(`cp -R out/doc/ ether.github.com/doc/${newVersion}`);
+childProcess.execSync('make docs');
+childProcess.execSync('git clone git@github.com:ether/ether.github.com.git');
+childProcess.execSync(`cp -R out/doc/ ether.github.com/doc/${newVersion}`);
 
 console.log('Once merged into master please run the following commands');
 console.log(`git tag -a ${newVersion} -m ${newVersion} && git push origin master`);
 console.log(`cd ether.github.com && git add . && git commit -m '${newVersion} docs'`);
 console.log('Build the windows zip');
 console.log(`Visit https://github.com/ether/etherpad-lite/releases/new and create a new release with 'master' as the target and the version is ${newVersion}.  Include the windows zip as an assett`);
-console.log('Once the new docs are uploaded then modify the download link on etherpad.org and then pull master onto develop');
+console.log(`Once the new docs are uploaded then modify the download
+   link on etherpad.org and then pull master onto develop`);
 console.log('Finally go public with an announcement via our comms channels :)');
