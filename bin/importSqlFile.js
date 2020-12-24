@@ -52,7 +52,7 @@ require('ep_etherpad-lite/node_modules/npm').load({}, (er, npm) => {
     writeInterval: 100,
     json: false, // data is already json encoded
   };
-  const db = new ueberDB.database(
+  const db = new ueberDB.database( // eslint-disable-line new-cap
       settings.dbType,
       settings.dbSettings,
       dbWrapperSettings,
