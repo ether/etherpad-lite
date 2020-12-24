@@ -25,7 +25,7 @@ npm.load({}, async () => {
 
     // get all pads
     const res = await padManager.listAllPads();
-    for (const padId of Object.keys(res.padIDs)) {
+    for (const padId of res.padIDs) {
       const pad = await padManager.getPad(padId);
 
       // check if the pad has a pool
