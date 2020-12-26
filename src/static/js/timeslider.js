@@ -29,6 +29,7 @@ require('./jquery');
 const Cookies = require('./pad_utils').Cookies;
 const randomString = require('./pad_utils').randomString;
 const hooks = require('./pluginfw/hooks');
+const socketio = require('./socketio');
 
 let token, padId, exportLinks, socket, changesetLoader, BroadcastSlider;
 
@@ -51,24 +52,18 @@ const init = () => {
       Cookies.set('token', token, {expires: 60});
     }
 
-    const loc = document.location;
-    // get the correct port
-    const port = loc.port === '' ? (loc.protocol === 'https:' ? 443 : 80) : loc.port;
-    // create the url
-    const url = `${loc.protocol}//${loc.hostname}:${port}/`;
-    // find out in which subfolder we are
-    const resource = `${exports.baseURL.substring(1)}socket.io`;
-
-    // build up the socket io connection
-    socket = io.connect(url, {path: `${exports.baseURL}socket.io`, resource});
+    socket = socketio.connect(exports.baseURL);
 
     // send the ready message once we're connected
     socket.on('connect', () => {
       sendSocketMsg('CLIENT_READY', {});
     });
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', (reason) => {
       BroadcastSlider.showReconnectUI();
+      // The socket.io client will automatically try to reconnect for all reasons other than "io
+      // server disconnect".
+      if (reason === 'io server disconnect') socket.connect();
     });
 
     // route the incoming messages

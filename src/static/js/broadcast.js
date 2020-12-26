@@ -177,7 +177,7 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         const ecb = document.getElementById('editorcontainerbox');
         // Chrome 55 - 59 bugfix
         if (ecb.scrollTo) {
-          ecb.scrollTo({top: newY, behavior: 'smooth'});
+          ecb.scrollTo({top: newY, behavior: 'auto'});
         } else {
           $('#editorcontainerbox').scrollTop(newY);
         }
