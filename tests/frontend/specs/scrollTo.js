@@ -13,7 +13,7 @@ describe('scrolls to line', function () {
   it('Scrolls down to Line 4', async function () {
     this.timeout(10000);
     const chrome$ = helper.padChrome$;
-    await helper.waitFor(() => {
+    await helper.waitForPromise(() => {
       const topOffset = parseInt(chrome$('iframe').first('iframe')
           .contents().find('#outerdocbody').css('top'));
       return (topOffset >= 100);
@@ -34,7 +34,7 @@ describe('doesnt break on weird hash input', function () {
   it('Does NOT change scroll', async function () {
     this.timeout(10000);
     const chrome$ = helper.padChrome$;
-    await helper.waitFor(() => {
+    await helper.waitForPromise(() => {
       const topOffset = parseInt(chrome$('iframe').first('iframe')
           .contents().find('#outerdocbody').css('top'));
       return (!topOffset); // no css top should be set.
