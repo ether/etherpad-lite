@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -22,25 +24,25 @@
 
 const padmodals = require('./pad_modals').padmodals;
 
-const padconnectionstatus = (function () {
+const padconnectionstatus = (() => {
   let status = {
     what: 'connecting',
   };
 
   const self = {
-    init() {
+    init: () => {
       $('button#forcereconnect').click(() => {
         window.location.reload();
       });
     },
-    connected() {
+    connected: () => {
       status = {
         what: 'connected',
       };
       padmodals.showModal('connected');
       padmodals.hideOverlay();
     },
-    reconnecting() {
+    reconnecting: () => {
       status = {
         what: 'reconnecting',
       };
@@ -48,8 +50,8 @@ const padconnectionstatus = (function () {
       padmodals.showModal('reconnecting');
       padmodals.showOverlay();
     },
-    disconnected(msg) {
-      if (status.what == 'disconnected') return;
+    disconnected: (msg) => {
+      if (status.what === 'disconnected') return;
 
       status = {
         what: 'disconnected',
@@ -81,14 +83,10 @@ const padconnectionstatus = (function () {
       padmodals.showModal(k);
       padmodals.showOverlay();
     },
-    isFullyConnected() {
-      return status.what == 'connected';
-    },
-    getStatus() {
-      return status;
-    },
+    isFullyConnected: () => status.what === 'connected',
+    getStatus: () => status,
   };
   return self;
-}());
+})();
 
 exports.padconnectionstatus = padconnectionstatus;

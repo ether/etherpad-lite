@@ -319,7 +319,7 @@ window.onload = function () {\n\
           return path;
         }
         return `../static/plugins/${path}`;
-      },
+      }
       );
       includedCSS = includedCSS.concat(additionalCSS);
       $$INCLUDE_CSS(`../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`);

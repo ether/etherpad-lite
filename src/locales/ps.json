@@ -67,9 +67,6 @@
 	"pad.savedrevs.marked": "اوس دا مخکتنه د يوې خوندي شوې مخکتنې په توگه په نښه شوه",
 	"pad.userlist.entername": "نوم مو ورکړۍ",
 	"pad.userlist.unnamed": "بې نومه",
-	"pad.userlist.guest": "مېلمه",
-	"pad.userlist.deny": "ردول",
-	"pad.userlist.approve": "منل",
 	"pad.impexp.importbutton": "اوس واردول",
 	"pad.impexp.importing": "په واردولو کې دی...",
 	"pad.impexp.copypaste": "لطفاً لمېسل لېښل ترسره کړئ"

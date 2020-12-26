@@ -52,9 +52,6 @@
 	"timeslider.unnamedauthors": "{{num}} ဟွံကဵုယၟု {[ဂမၠိုၚ်(num) မွဲ: ကဝိ, တၞဟ်: ကဝိဂမၠိုၚ် ]}",
 	"pad.userlist.entername": "စုတ် ယၟုညးလွပ်",
 	"pad.userlist.unnamed": "ဟွံကဵုလဝ်ယၟု",
-	"pad.userlist.guest": "ကၟုဲ",
-	"pad.userlist.deny": "တးပဲါ",
-	"pad.userlist.approve": "သ္ပကဵုဒတန်",
 	"pad.impexp.importbutton": " မပၠောပ်စုတ် လၟုဟ်",
 	"pad.impexp.importing": "မပၠောပ်စုတ်ဒၟံၚ်...",
 	"pad.impexp.importfailed": "မပၠောပ်စုတ်တအ်လီုအာ"

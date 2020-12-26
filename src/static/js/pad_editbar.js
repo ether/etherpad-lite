@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -25,8 +27,8 @@ const hooks = require('./pluginfw/hooks');
 const padutils = require('./pad_utils').padutils;
 const padeditor = require('./pad_editor').padeditor;
 const padsavedrevs = require('./pad_savedrevs');
-const _ = require('ep_etherpad-lite/static/js/underscore');
-require('ep_etherpad-lite/static/js/vendors/nice-select');
+const _ = require('underscore');
+require('./vendors/nice-select');
 
 const ToolbarItem = function (element) {
   this.$el = element;
@@ -54,11 +56,11 @@ ToolbarItem.prototype.getType = function () {
 };
 
 ToolbarItem.prototype.isSelect = function () {
-  return this.getType() == 'select';
+  return this.getType() === 'select';
 };
 
 ToolbarItem.prototype.isButton = function () {
-  return this.getType() == 'button';
+  return this.getType() === 'button';
 };
 
 ToolbarItem.prototype.bind = function (callback) {
@@ -78,8 +80,8 @@ ToolbarItem.prototype.bind = function (callback) {
 };
 
 
-var padeditbar = (function () {
-  const syncAnimation = (function () {
+const padeditbar = (function () {
+  const syncAnimationFn = () => {
     const SYNCING = -100;
     const DONE = 100;
     let state = DONE;
@@ -89,7 +91,7 @@ var padeditbar = (function () {
     const T_FADE = 1.0;
     const T_GONE = 1.5;
     const animator = padutils.makeAnimationScheduler(() => {
-      if (state == SYNCING || state == DONE) {
+      if (state === SYNCING || state === DONE) {
         return false;
       } else if (state >= T_GONE) {
         state = DONE;
@@ -112,19 +114,20 @@ var padeditbar = (function () {
       }
     }, step * 1000);
     return {
-      syncing() {
+      syncing: () => {
         state = SYNCING;
         $('#syncstatussyncing').css('display', 'block');
         $('#syncstatusdone').css('display', 'none');
       },
-      done() {
+      done: () => {
         state = T_START;
         animator.scheduleAnimation();
       },
     };
-  }());
+  };
+  const syncAnimation = syncAnimationFn();
 
-  var self = {
+  const self = {
     init() {
       const self = this;
       self.dropdowns = [];
@@ -170,13 +173,11 @@ var padeditbar = (function () {
         $('#editbar').toggleClass('editor-scrolled', $(this).scrollTop() > 2);
       });
     },
-    isEnabled() {
-      return true;
-    },
-    disable() {
+    isEnabled: () => true,
+    disable: () => {
       $('#editbar').addClass('disabledtoolbar').removeClass('enabledtoolbar');
     },
-    enable() {
+    enable: () => {
       $('#editbar').addClass('enabledtoolbar').removeClass('disabledtoolbar');
     },
     commands: {},
@@ -204,7 +205,7 @@ var padeditbar = (function () {
       }
       if (padeditor.ace) padeditor.ace.focus();
     },
-    toggleDropDown(moduleName, cb) {
+    toggleDropDown: (moduleName, cb) => {
       // do nothing if users are sticked
       if (moduleName === 'users' && $('#users').hasClass('stickyUsers')) {
         return;
@@ -214,15 +215,15 @@ var padeditbar = (function () {
       $('.toolbar-popup').removeClass('popup-show');
 
       // hide all modules and remove highlighting of all buttons
-      if (moduleName == 'none') {
+      if (moduleName === 'none') {
         const returned = false;
-        for (var i = 0; i < self.dropdowns.length; i++) {
-          var thisModuleName = self.dropdowns[i];
+        for (let i = 0; i < self.dropdowns.length; i++) {
+          const thisModuleName = self.dropdowns[i];
 
           // skip the userlist
-          if (thisModuleName == 'users') continue;
+          if (thisModuleName === 'users') continue;
 
-          var module = $(`#${thisModuleName}`);
+          const module = $(`#${thisModuleName}`);
 
           // skip any "force reconnect" message
           const isAForceReconnectMessage = module.find('button#forcereconnect:visible').length > 0;
@@ -237,14 +238,14 @@ var padeditbar = (function () {
       } else {
         // hide all modules that are not selected and remove highlighting
         // respectively add highlighting to the corresponding button
-        for (var i = 0; i < self.dropdowns.length; i++) {
-          var thisModuleName = self.dropdowns[i];
-          var module = $(`#${thisModuleName}`);
+        for (let i = 0; i < self.dropdowns.length; i++) {
+          const thisModuleName = self.dropdowns[i];
+          const module = $(`#${thisModuleName}`);
 
           if (module.hasClass('popup-show')) {
             $(`li[data-key=${thisModuleName}] > a`).removeClass('selected');
             module.removeClass('popup-show');
-          } else if (thisModuleName == moduleName) {
+          } else if (thisModuleName === moduleName) {
             $(`li[data-key=${thisModuleName}] > a`).addClass('selected');
             module.addClass('popup-show');
             if (cb) {
@@ -254,35 +255,42 @@ var padeditbar = (function () {
         }
       }
     },
-    setSyncStatus(status) {
-      if (status == 'syncing') {
+    setSyncStatus: (status) => {
+      if (status === 'syncing') {
         syncAnimation.syncing();
-      } else if (status == 'done') {
+      } else if (status === 'done') {
         syncAnimation.done();
       }
     },
-    setEmbedLinks() {
+    setEmbedLinks: () => {
       const padUrl = window.location.href.split('?')[0];
+      const params = '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false';
+      const props = 'width="100%" height="600" frameborder="0"';
 
       if ($('#readonlyinput').is(':checked')) {
         const urlParts = padUrl.split('/');
         urlParts.pop();
         const readonlyLink = `${urlParts.join('/')}/${clientVars.readOnlyId}`;
-        $('#embedinput').val(`<iframe name="embed_readonly" src="${readonlyLink}?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width="100%" height="600" frameborder="0"></iframe>`);
+        $('#embedinput')
+            .val(`<iframe name="embed_readonly" src="${readonlyLink}${params}" ${props}></iframe>`);
         $('#linkinput').val(readonlyLink);
       } else {
-        $('#embedinput').val(`<iframe name="embed_readwrite" src="${padUrl}?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false" width="100%" height="600" frameborder="0"></iframe>`);
+        $('#embedinput')
+            .val(`<iframe name="embed_readwrite" src="${padUrl}${params}" ${props}></iframe>`);
         $('#linkinput').val(padUrl);
       }
     },
-    checkAllIconsAreDisplayedInToolbar() {
+    checkAllIconsAreDisplayedInToolbar: () => {
       // reset style
       $('.toolbar').removeClass('cropped');
       $('body').removeClass('mobile-layout');
       const menu_left = $('.toolbar .menu_left')[0];
 
-      const menuRightWidth = 280; // this is approximate, we cannot measure it because on mobileLayour it takes the full width on the bottom of the page
-      if (menu_left && menu_left.scrollWidth > $('.toolbar').width() - menuRightWidth || $('.toolbar').width() < 1000) {
+      // this is approximate, we cannot measure it because on mobile
+      // Layout it takes the full width on the bottom of the page
+      const menuRightWidth = 280;
+      if (menu_left && menu_left.scrollWidth > $('.toolbar').width() - menuRightWidth ||
+          $('.toolbar').width() < 1000) {
         $('body').addClass('mobile-layout');
       }
       if (menu_left && menu_left.scrollWidth > $('.toolbar').width()) {
@@ -293,7 +301,7 @@ var padeditbar = (function () {
 
   let editbarPosition = 0;
 
-  function bodyKeyEvent(evt) {
+  const bodyKeyEvent = (evt) => {
     // If the event is Alt F9 or Escape & we're already in the editbar menu
     // Send the users focus back to the pad
     if ((evt.keyCode === 120 && evt.altKey) || evt.keyCode === 27) {
@@ -317,7 +325,8 @@ var padeditbar = (function () {
         }
       } else {
         // Focus on the editbar :)
-        const firstEditbarElement = parent.parent.$('#editbar').children('ul').first().children().first().children().first().children().first();
+        const firstEditbarElement = parent.parent.$('#editbar button').first();
+
         $(this).blur();
         firstEditbarElement.focus();
         evt.preventDefault();
@@ -353,13 +362,13 @@ var padeditbar = (function () {
         $(focusItems[editbarPosition]).focus();
       }
     }
-  }
+  };
 
-  function aceAttributeCommand(cmd, ace) {
+  const aceAttributeCommand = (cmd, ace) => {
     ace.ace_toggleAttributeOnSelection(cmd);
-  }
+  };
 
-  function registerDefaultCommands(toolbar) {
+  const registerDefaultCommands = (toolbar) => {
     toolbar.registerDropdownCommand('showusers', 'users');
     toolbar.registerDropdownCommand('settings');
     toolbar.registerDropdownCommand('connectivity');
@@ -440,12 +449,13 @@ var padeditbar = (function () {
     toolbar.registerAceCommand('clearauthorship', (cmd, ace) => {
       // If we have the whole document selected IE control A has been hit
       const rep = ace.ace_getRep();
+      let doPrompt = false;
       const lastChar = rep.lines.atIndex(rep.lines.length() - 1).width - 1;
       const lastLineIndex = rep.lines.length() - 1;
       if (rep.selStart[0] === 0 && rep.selStart[1] === 0) {
         // nesting intentionally here to make things readable
         if (rep.selEnd[0] === lastLineIndex && rep.selEnd[1] === lastChar) {
-          var doPrompt = true;
+          doPrompt = true;
         }
       }
       /*
@@ -470,13 +480,16 @@ var padeditbar = (function () {
     });
 
     toolbar.registerCommand('timeslider_returnToPad', (cmd) => {
-      if (document.referrer.length > 0 && document.referrer.substring(document.referrer.lastIndexOf('/') - 1, document.referrer.lastIndexOf('/')) === 'p') {
+      if (document.referrer.length > 0 &&
+            document.referrer.substring(document.referrer.lastIndexOf('/') - 1,
+                document.referrer.lastIndexOf('/')) === 'p') {
         document.location = document.referrer;
       } else {
-        document.location = document.location.href.substring(0, document.location.href.lastIndexOf('/'));
+        document.location = document.location.href
+            .substring(0, document.location.href.lastIndexOf('/'));
       }
     });
-  }
+  };
 
   return self;
 }());

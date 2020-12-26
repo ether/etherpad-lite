@@ -5,6 +5,8 @@
   Existing group pads that were previously password protected will no longer be
   password protected. If you need fine-grained access control, you can restrict
   API session creation in your frontend service, or you can use plugins.
+* All workarounds for Microsoft Internet Explorer have been removed. IE might
+  still work, but it is untested.
 * Plugin hook functions are now subject to new sanity checks. Buggy hook
   functions will cause an error message to be logged
 * Authorization failures now return 403 by default instead of 401
@@ -36,12 +38,15 @@
 * New `exportHTMLAdditionalContent` hook to include additional HTML content
 * New `exportEtherpadAdditionalContent` hook to include additional database
   content in `.etherpad` exports
+* New `expressCloseServer` hook to close Express when required
 * The `padUpdate` hook context now includes `revs` and `changeset`
 * `checkPlugins.js` has various improvements to help plugin developers
 * The HTTP request object (and therefore the express-session state) is now
   accessible from within most `eejsBlock_*` hooks
 * Users without a `password` or `hash` property in `settings.json` are no longer
   ignored, so they can now be used by authentication plugins
+* New permission denied modal and block ``permissionDenied``
+* Plugins are now updated to the latest version instead of minor or patches
 
 ### Notable fixes
 * Fixed rate limit accounting when Etherpad is behind a reverse proxy
@@ -60,6 +65,14 @@
 * socket.io errors are now displayed instead of silently ignored
 * Pasting while the caret is in a link now works (except for middle-click paste
   on X11 systems)
+* Removal of Microsoft Internet Explorer specific code
+* Import better handles line breaks and white space
+* Fix issue with ``createDiffHTML`` incorrect call of ``getInternalRevisionAText``
+* Allow additional characters in URLs
+* MySQL engine fix and various other UeberDB updates (See UeberDB changelog).
+* Admin UI improvements on search results (to remove duplicate items)
+* Removal of unused cruft from ``clientVars`` (``ip`` and ``userAgent``)
+
 
 ### Minor changes
 * Temporary disconnections no longer force a full page refresh
@@ -69,6 +82,7 @@
 * Fixed superfluous database accesses when deleting a pad
 * Expanded test coverage.
 * `package-lock.json` is now lint checked on commit
+* Various lint fixes/modernization of code
 
 # 1.8.6
 * IMPORTANT: This fixes a severe problem with postgresql in 1.8.5

@@ -25,7 +25,7 @@ const Cookies = require('./pad_utils').Cookies;
 const padcookie = require('./pad_cookie').padcookie;
 const padutils = require('./pad_utils').padutils;
 
-const padeditor = (function () {
+const padeditor = (() => {
   let Ace2Editor = undefined;
   let pad = undefined;
   let settings = undefined;
@@ -34,12 +34,12 @@ const padeditor = (function () {
     ace: null,
     // this is accessed directly from other files
     viewZoom: 100,
-    init(readyFunc, initialViewOptions, _pad) {
+    init: (readyFunc, initialViewOptions, _pad) => {
       Ace2Editor = require('./ace').Ace2Editor;
       pad = _pad;
       settings = pad.settings;
 
-      function aceReady() {
+      const aceReady = () => {
         $('#editorloadingbox').hide();
         if (readyFunc) {
           readyFunc();
@@ -53,7 +53,7 @@ const padeditor = (function () {
 
           exports.focusOnLine(self.ace);
         }
-      }
+      };
 
       self.ace = new Ace2Editor();
       self.ace.init('editorcontainer', '', aceReady);
@@ -96,9 +96,11 @@ const padeditor = (function () {
       html10n.bind('localized', () => {
         $('#languagemenu').val(html10n.getLanguage());
         // translate the value of 'unnamed' and 'Enter your name' textboxes in the userlist
-        // this does not interfere with html10n's normal value-setting because html10n
-        // just ingores <input>s  also, a value which has been set by the user will be not
-        // overwritten since a user-edited <input> does *not* have the editempty-class
+
+        // this does not interfere with html10n's normal value-setting because
+        // html10n just ingores <input>s
+        // also, a value which has been set by the user will be not overwritten
+        // since a user-edited <input> does *not* have the editempty-class
         $('input[data-l10n-id]').each((key, input) => {
           input = $(input);
           if (input.hasClass('editempty')) {
@@ -169,7 +171,7 @@ const padeditor = (function () {
     },
   };
   return self;
-}());
+})();
 
 exports.padeditor = padeditor;
 

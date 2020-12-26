@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Spys on socket.io messages and saves them into several arrays
  * that are visible in tests
@@ -216,4 +218,21 @@ helper.timesliderTextLines = function () {
   return helper.contentWindow().$('.ace-line').map(function () {
     return $(this).text();
   }).get();
+};
+
+helper.padIsEmpty = () => (
+  !helper.padInner$.document.getSelection().isCollapsed ||
+  (helper.padInner$('div').length === 1 && helper.padInner$('div').first().html() === '<br>'));
+
+helper.clearPad = async () => {
+  if (helper.padIsEmpty()) return;
+  const commitsBefore = helper.commits.length;
+  const lines = helper.linesDiv();
+  helper.selectLines(lines[0], lines[lines.length - 1]);
+  await helper.waitForPromise(() => !helper.padInner$.document.getSelection().isCollapsed);
+  const e = new helper.padInner$.Event(helper.evtType);
+  e.keyCode = 8; // delete key
+  helper.padInner$('#innerdocbody').trigger(e);
+  await helper.waitForPromise(helper.padIsEmpty);
+  await helper.waitForPromise(() => helper.commits.length > commitsBefore);
 };

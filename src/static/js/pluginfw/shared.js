@@ -92,7 +92,7 @@ exports.clientPluginNames = function () {
   const client_plugin_names = _.uniq(
       defs.parts
           .filter((part) => part.hasOwnProperty('client_hooks'))
-          .map((part) => `plugin-${part.plugin}`),
+          .map((part) => `plugin-${part.plugin}`)
   );
 
   return client_plugin_names;

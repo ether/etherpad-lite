@@ -33,6 +33,7 @@ const hooks = require('./pluginfw/hooks');
 const linestylefilter = {};
 const _ = require('./underscore');
 const AttributeManager = require('./AttributeManager');
+const padutils = require('./pad_utils').padutils;
 
 linestylefilter.ATTRIB_CLASSES = {
   bold: 'tag:b',
@@ -224,11 +225,7 @@ linestylefilter.getRegexpFilter = function (regExp, tag) {
 };
 
 
-linestylefilter.REGEX_WORDCHAR = /[\u0030-\u0039\u0041-\u005A\u0061-\u007A\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\u0100-\u1FFF\u3040-\u9FFF\uF900-\uFDFF\uFE70-\uFEFE\uFF10-\uFF19\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFDC]/;
-linestylefilter.REGEX_URLCHAR = new RegExp(`(${/[-:@a-zA-Z0-9_.,~%+\/\\?=&#!;()$]/.source}|${linestylefilter.REGEX_WORDCHAR.source})`);
-linestylefilter.REGEX_URL = new RegExp(`${/(?:(?:https?|s?ftp|ftps|file|nfs):\/\/|(about|geo|mailto|tel):|www\.)/.source + linestylefilter.REGEX_URLCHAR.source}*(?![:.,;])${linestylefilter.REGEX_URLCHAR.source}`, 'g');
-linestylefilter.getURLFilter = linestylefilter.getRegexpFilter(
-    linestylefilter.REGEX_URL, 'url');
+linestylefilter.getURLFilter = linestylefilter.getRegexpFilter(padutils.urlRegex, 'url');
 
 linestylefilter.textAndClassFuncSplitter = function (func, splitPointsOpt) {
   let nextPointIndex = 0;
@@ -278,13 +275,6 @@ linestylefilter.getFilterStack = function (lineText, textAndClassFunc, abrowser)
     func = hookFilter(lineText, func);
   });
 
-  if (abrowser !== undefined && abrowser.msie) {
-    // IE7+ will take an e-mail address like <foo@bar.com> and linkify it to foo@bar.com.
-    // We then normalize it back to text with no angle brackets.  It's weird.  So always
-    // break spans at an "at" sign.
-    func = linestylefilter.getAtSignSplitterFilter(
-        lineText, func);
-  }
   return func;
 };
 

@@ -52,6 +52,7 @@
     "lodash.clonedeep": "4.5.0",
     "log4js": "0.6.35",
     "measured-core": "1.11.2",
+    "mime-types": "^2.1.27",
     "nodeify": "1.0.1",
     "npm": "6.14.8",
     "openapi-backend": "2.4.1",
@@ -74,15 +75,17 @@
     "unorm": "1.4.1"
   },
   "bin": {
-    "etherpad-lite": "./node/server.js"
+    "etherpad-lite": "node/server.js"
   },
   "devDependencies": {
-    "eslint": "^7.14.0",
-    "eslint-config-etherpad": "^1.0.13",
+    "eslint": "^7.15.0",
+    "eslint-config-etherpad": "^1.0.20",
+    "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-mocha": "^8.0.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prefer-arrow": "^1.2.2",
     "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-you-dont-need-lodash-underscore": "^6.10.0",
     "etherpad-cli-client": "0.0.9",
     "mocha": "7.1.2",
     "mocha-froth": "^0.2.10",
@@ -149,6 +152,6 @@
     "test": "nyc mocha --timeout 30000 --recursive ../tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api"
   },
-  "version": "1.8.6",
+  "version": "1.8.7",
   "license": "Apache-2.0"
 }

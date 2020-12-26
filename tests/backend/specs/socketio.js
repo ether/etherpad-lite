@@ -1,14 +1,12 @@
-/* global __dirname, __filename, afterEach, before, beforeEach, clearTimeout, describe, it, require, setTimeout */
-
-function m(mod) { return `${__dirname}/../../../src/${mod}`; }
+'use strict';
 
 const assert = require('assert').strict;
 const common = require('../common');
-const io = require(m('node_modules/socket.io-client'));
-const padManager = require(m('node/db/PadManager'));
-const plugins = require(m('static/js/pluginfw/plugin_defs'));
-const setCookieParser = require(m('node_modules/set-cookie-parser'));
-const settings = require(m('node/utils/Settings'));
+const io = require('ep_etherpad-lite/node_modules/socket.io-client');
+const padManager = require('ep_etherpad-lite/node/db/PadManager');
+const plugins = require('ep_etherpad-lite/static/js/pluginfw/plugin_defs');
+const setCookieParser = require('ep_etherpad-lite/node_modules/set-cookie-parser');
+const settings = require('ep_etherpad-lite/node/utils/Settings');
 
 const logger = common.logger;
 
@@ -50,7 +48,8 @@ const getSocketEvent = async (socket, event) => {
 const connect = async (res) => {
   // Convert the `set-cookie` header(s) into a `cookie` header.
   const resCookies = (res == null) ? {} : setCookieParser.parse(res, {map: true});
-  const reqCookieHdr = Object.entries(resCookies).map(([name, cookie]) => `${name}=${encodeURIComponent(cookie.value)}`).join('; ');
+  const reqCookieHdr = Object.entries(resCookies).map(
+      ([name, cookie]) => `${name}=${encodeURIComponent(cookie.value)}`).join('; ');
 
   logger.debug('socket.io connecting...');
   const socket = io(`${common.baseUrl}/`, {

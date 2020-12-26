@@ -19,7 +19,7 @@ Etherpad is a real-time collaborative editor [scalable to thousands of simultane
 
 ### Quick install on Debian/Ubuntu
 ```
-curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt install -y nodejs
 git clone --branch master https://github.com/ether/etherpad-lite.git && cd etherpad-lite && bin/run.sh
 ```

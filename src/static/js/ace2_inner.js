@@ -19,17 +19,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+const padutils = require('./pad_utils').padutils;
+
 let _, $, jQuery, plugins, Ace2Common;
 const browser = require('./browser');
-if (browser.msie) {
-  // Honestly fuck IE royally.
-  // Basically every hack we have since V11 causes a problem
-  if (parseInt(browser.version) >= 11) {
-    delete browser.msie;
-    browser.chrome = true;
-    browser.modernIE = true;
-  }
-}
 
 Ace2Common = require('./ace2_common');
 
@@ -1178,12 +1172,6 @@ function Ace2Inner() {
         const dirtyNodes = [];
         for (let n = firstDirtyNode; n && !(n.previousSibling && n.previousSibling == lastDirtyNode);
           n = n.nextSibling) {
-          if (browser.msie) {
-            // try to undo IE's pesky and overzealous linkification
-            try {
-              n.createTextRange().execCommand('unlink', false, null);
-            } catch (e) {}
-          }
           cc.collectContent(n);
           dirtyNodes.push(n);
         }
@@ -1211,13 +1199,12 @@ function Ace2Inner() {
         var scrollToTheLeftNeeded = false;
 
         if (linesWrapped > 0) {
-          if (!browser.msie) {
-            // chrome decides in it's infinite wisdom that its okay to put the browsers visisble window in the middle of the span
-            // an outcome of this is that the first chars of the string are no longer visible to the user..  Yay chrome..
-            // Move the browsers visible area to the left hand side of the span
-            // Firefox isn't quite so bad, but it's still pretty quirky.
-            var scrollToTheLeftNeeded = true;
-          }
+          // Chrome decides in its infinite wisdom that it's okay to put the browser's visisble
+          // window in the middle of the span. An outcome of this is that the first chars of the
+          // string are no longer visible to the user.. Yay chrome.. Move the browser's visible area
+          // to the left hand side of the span. Firefox isn't quite so bad, but it's still pretty
+          // quirky.
+          var scrollToTheLeftNeeded = true;
         }
 
         if (ss[0] >= 0) selStart = [ss[0] + a + netNumLinesChangeSoFar, ss[1]];
@@ -1470,15 +1457,6 @@ function Ace2Inner() {
     let after = false;
     if (charsLeft === 0) {
       let index = 0;
-
-      if (browser.msie && parseInt(browser.version) >= 11) {
-        browser.msie = false; // Temp fix to resolve enter and backspace issues..
-        // Note that this makes MSIE behave like modern browsers..
-      }
-      if (browser.msie && line == (rep.lines.length() - 1) && lineNode.childNodes.length === 0) {
-        // best to stay at end of last empty div in IE
-        index = 1;
-      }
       return {
         node: lineNode,
         index,
@@ -1512,11 +1490,7 @@ function Ace2Inner() {
   }
 
   function nodeText(n) {
-    if (browser.msie) {
-	  return n.innerText;
-    } else {
-	  return n.textContent || n.nodeValue || '';
-    }
+    return n.textContent || n.nodeValue || '';
   }
 
   function getLineAndCharForPoint(point) {
@@ -2279,59 +2253,7 @@ function Ace2Inner() {
   }
 
   function doCreateDomLine(nonEmpty) {
-    if (browser.msie && (!nonEmpty)) {
-      const result = {
-        node: null,
-        appendSpan: noop,
-        prepareForAdd: noop,
-        notifyAdded: noop,
-        clearSpans: noop,
-        finishUpdate: noop,
-        lineMarker: 0,
-      };
-
-      const lineElem = doc.createElement('div');
-      result.node = lineElem;
-
-      result.notifyAdded = function () {
-        // magic -- settng an empty div's innerHTML to the empty string
-        // keeps it from collapsing.  Apparently innerHTML must be set *after*
-        // adding the node to the DOM.
-        // Such a div is what IE 6 creates naturally when you make a blank line
-        // in a document of divs.  However, when copy-and-pasted the div will
-        // contain a space, so we note its emptiness with a property.
-        lineElem.innerHTML = ' '; // Frist we set a value that isnt blank
-        // a primitive-valued property survives copy-and-paste
-        setAssoc(lineElem, 'shouldBeEmpty', true);
-        // an object property doesn't
-        setAssoc(lineElem, 'unpasted', {});
-        lineElem.innerHTML = ''; // Then we make it blank..  New line and no space = Awesome :)
-      };
-      let lineClass = 'ace-line';
-      result.appendSpan = function (txt, cls) {
-        if ((!txt) && cls) {
-          // gain a whole-line style (currently to show insertion point in CSS)
-          lineClass = domline.addToLineClass(lineClass, cls);
-        }
-        // otherwise, ignore appendSpan, this is an empty line
-      };
-      result.clearSpans = function () {
-        lineClass = ''; // non-null to cause update
-      };
-
-      const writeClass = function () {
-        if (lineClass !== null) lineElem.className = lineClass;
-      };
-
-      result.prepareForAdd = writeClass;
-      result.finishUpdate = writeClass;
-      result.getInnerHTML = function () {
-        return '';
-      };
-      return result;
-    } else {
-      return domline.createDomLine(nonEmpty, doesWrap, browser, doc);
-    }
+    return domline.createDomLine(nonEmpty, doesWrap, browser, doc);
   }
 
   function textify(str) {
@@ -2556,12 +2478,6 @@ function Ace2Inner() {
     const dirtiness = {};
     dirtiness.nodeId = uniqueId(n);
     dirtiness.knownHTML = n.innerHTML;
-    if (browser.msie) {
-      // adding a space to an "empty" div in IE designMode doesn't
-      // change the innerHTML of the div's parent; also, other
-      // browsers don't support innerText
-      dirtiness.knownText = n.innerText;
-    }
     setAssoc(n, 'dirtiness', dirtiness);
   }
 
@@ -2571,9 +2487,6 @@ function Ace2Inner() {
     const data = getAssoc(n, 'dirtiness');
     if (!data) return true;
     if (n.id !== data.nodeId) return true;
-    if (browser.msie) {
-      if (n.innerText !== data.knownText) return true;
-    }
     if (n.innerHTML !== data.knownHTML) return true;
     p.end();
     return false;
@@ -2807,13 +2720,9 @@ function Ace2Inner() {
     }
   }
 
-  // set of "letter or digit" chars is based on section 20.5.16 of the original Java Language Spec
-  const REGEX_WORDCHAR = /[\u0030-\u0039\u0041-\u005A\u0061-\u007A\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\u0100-\u1FFF\u3040-\u9FFF\uF900-\uFDFF\uFE70-\uFEFE\uFF10-\uFF19\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFDC]/;
   const REGEX_SPACE = /\s/;
 
-  function isWordChar(c) {
-    return !!REGEX_WORDCHAR.exec(c);
-  }
+  const isWordChar = (c) => padutils.wordCharRegex.test(c);
   editorInfo.ace_isWordChar = isWordChar;
 
   function isSpaceChar(c) {
@@ -2841,20 +2750,11 @@ function Ace2Inner() {
     // On Mac and Linux, move right moves to end of word and move left moves to start;
     // on Windows, always move to start of word.
     // On Windows, Firefox and IE disagree on whether to stop for punctuation (FF says no).
-    if (browser.msie && forwardNotBack) {
-      while ((!isDone()) && isWordChar(nextChar())) {
-        advance();
-      }
-      while ((!isDone()) && !isWordChar(nextChar())) {
-        advance();
-      }
-    } else {
-      while ((!isDone()) && !isWordChar(nextChar())) {
-        advance();
-      }
-      while ((!isDone()) && isWordChar(nextChar())) {
-        advance();
-      }
+    while ((!isDone()) && !isWordChar(nextChar())) {
+      advance();
+    }
+    while ((!isDone()) && isWordChar(nextChar())) {
+      advance();
     }
 
     return i;
@@ -2893,8 +2793,8 @@ function Ace2Inner() {
       return; // This stops double enters in Opera but double Tabs still show on single tab keypress, adding keyCode == 9 to this doesn't help as the event is fired twice
     }
     let specialHandled = false;
-    const isTypeForSpecialKey = ((browser.msie || browser.safari || browser.chrome || browser.firefox) ? (type == 'keydown') : (type == 'keypress'));
-    const isTypeForCmdKey = ((browser.msie || browser.safari || browser.chrome || browser.firefox) ? (type == 'keydown') : (type == 'keypress'));
+    const isTypeForSpecialKey = ((browser.safari || browser.chrome || browser.firefox) ? (type == 'keydown') : (type == 'keypress'));
+    const isTypeForCmdKey = ((browser.safari || browser.chrome || browser.firefox) ? (type == 'keydown') : (type == 'keypress'));
     let stopped = false;
 
     inCallStackIfNecessary('handleKeyEvent', function () {
@@ -3321,259 +3221,80 @@ function Ace2Inner() {
     else return 1;
   }
 
-  function hasIESelection() {
-    let browserSelection;
-    try {
-      browserSelection = doc.selection;
-    } catch (e) {}
-    if (!browserSelection) return false;
-    let origSelectionRange;
-    try {
-      origSelectionRange = browserSelection.createRange();
-    } catch (e) {}
-    if (!origSelectionRange) return false;
-    return true;
-  }
-
   function getSelection() {
     // returns null, or a structure containing startPoint and endPoint,
     // each of which has node (a magicdom node), index, and maxIndex.  If the node
     // is a text node, maxIndex is the length of the text; else maxIndex is 1.
     // index is between 0 and maxIndex, inclusive.
-    if (browser.msie) {
-      var browserSelection;
-      try {
-        browserSelection = doc.selection;
-      } catch (e) {}
-      if (!browserSelection) return null;
-      let origSelectionRange;
-      try {
-        origSelectionRange = browserSelection.createRange();
-      } catch (e) {}
-      if (!origSelectionRange) return null;
-      const selectionParent = origSelectionRange.parentElement();
-      if (selectionParent.ownerDocument != doc) return null;
+    var browserSelection = window.getSelection();
+    if (!browserSelection || browserSelection.type === 'None' ||
+        browserSelection.rangeCount === 0) {
+      return null;
+    }
+    const range = browserSelection.getRangeAt(0);
 
-      const newRange = function () {
-        return doc.body.createTextRange();
-      };
+    function isInBody(n) {
+      while (n && !(n.tagName && n.tagName.toLowerCase() == 'body')) {
+        n = n.parentNode;
+      }
+      return !!n;
+    }
 
-      const rangeForElementNode = function (nd) {
-        const rng = newRange();
-        // doesn't work on text nodes
-        rng.moveToElementText(nd);
-        return rng;
-      };
-
-      const pointFromCollapsedRange = function (rng) {
-        const parNode = rng.parentElement();
-        let elemBelow = -1;
-        let elemAbove = parNode.childNodes.length;
-        const rangeWithin = rangeForElementNode(parNode);
-
-        if (rng.compareEndPoints('StartToStart', rangeWithin) === 0) {
-          return {
-            node: parNode,
-            index: 0,
-            maxIndex: 1,
-          };
-        } else if (rng.compareEndPoints('EndToEnd', rangeWithin) === 0) {
-          if (isBlockElement(parNode) && parNode.nextSibling) {
-            // caret after block is not consistent across browsers
-            // (same line vs next) so put caret before next node
-            return {
-              node: parNode.nextSibling,
-              index: 0,
-              maxIndex: 1,
-            };
-          }
-          return {
-            node: parNode,
-            index: 1,
-            maxIndex: 1,
-          };
-        } else if (parNode.childNodes.length === 0) {
-          return {
-            node: parNode,
-            index: 0,
-            maxIndex: 1,
-          };
-        }
-
-        for (let i = 0; i < parNode.childNodes.length; i++) {
-          const n = parNode.childNodes.item(i);
-          if (!isNodeText(n)) {
-            const nodeRange = rangeForElementNode(n);
-            const startComp = rng.compareEndPoints('StartToStart', nodeRange);
-            const endComp = rng.compareEndPoints('EndToEnd', nodeRange);
-            if (startComp >= 0 && endComp <= 0) {
-              let index = 0;
-              if (startComp > 0) {
-                index = 1;
-              }
-              return {
-                node: n,
-                index,
-                maxIndex: 1,
-              };
-            } else if (endComp > 0) {
-              if (i > elemBelow) {
-                elemBelow = i;
-                rangeWithin.setEndPoint('StartToEnd', nodeRange);
-              }
-            } else if (startComp < 0) {
-              if (i < elemAbove) {
-                elemAbove = i;
-                rangeWithin.setEndPoint('EndToStart', nodeRange);
-              }
-            }
-          }
-        }
-        if ((elemAbove - elemBelow) == 1) {
-          if (elemBelow >= 0) {
-            return {
-              node: parNode.childNodes.item(elemBelow),
-              index: 1,
-              maxIndex: 1,
-            };
-          } else {
-            return {
-              node: parNode.childNodes.item(elemAbove),
-              index: 0,
-              maxIndex: 1,
-            };
-          }
-        }
-        let idx = 0;
-        const r = rng.duplicate();
-        // infinite stateful binary search! call function for values 0 to inf,
-        // expecting the answer to be about 40.  return index of smallest
-        // true value.
-        const indexIntoRange = binarySearchInfinite(40, (i) => {
-          // the search algorithm whips the caret back and forth,
-          // though it has to be moved relatively and may hit
-          // the end of the buffer
-          const delta = i - idx;
-          const moved = Math.abs(r.move('character', -delta));
-          // next line is work-around for fact that when moving left, the beginning
-          // of a text node is considered to be after the start of the parent element:
-          if (r.move('character', -1)) r.move('character', 1);
-          if (delta < 0) idx -= moved;
-          else idx += moved;
-          return (r.compareEndPoints('StartToStart', rangeWithin) <= 0);
-        });
-        // iterate over consecutive text nodes, point is in one of them
-        let textNode = elemBelow + 1;
-        let indexLeft = indexIntoRange;
-        while (textNode < elemAbove) {
-          var tn = parNode.childNodes.item(textNode);
-          if (indexLeft <= tn.nodeValue.length) {
-            return {
-              node: tn,
-              index: indexLeft,
-              maxIndex: tn.nodeValue.length,
-            };
-          }
-          indexLeft -= tn.nodeValue.length;
-          textNode++;
-        }
-        var tn = parNode.childNodes.item(textNode - 1);
+    function pointFromRangeBound(container, offset) {
+      if (!isInBody(container)) {
+        // command-click in Firefox selects whole document, HEAD and BODY!
         return {
-          node: tn,
-          index: tn.nodeValue.length,
-          maxIndex: tn.nodeValue.length,
+          node: root,
+          index: 0,
+          maxIndex: 1,
         };
-      };
-
-      var selection = {};
-      if (origSelectionRange.compareEndPoints('StartToEnd', origSelectionRange) === 0) {
-        // collapsed
-        const pnt = pointFromCollapsedRange(origSelectionRange);
-        selection.startPoint = pnt;
-        selection.endPoint = {
-          node: pnt.node,
-          index: pnt.index,
-          maxIndex: pnt.maxIndex,
+      }
+      const n = container;
+      const childCount = n.childNodes.length;
+      if (isNodeText(n)) {
+        return {
+          node: n,
+          index: offset,
+          maxIndex: n.nodeValue.length,
+        };
+      } else if (childCount === 0) {
+        return {
+          node: n,
+          index: 0,
+          maxIndex: 1,
+        };
+      }
+      // treat point between two nodes as BEFORE the second (rather than after the first)
+      // if possible; this way point at end of a line block-element is treated as
+      // at beginning of next line
+      else if (offset == childCount) {
+        var nd = n.childNodes.item(childCount - 1);
+        var max = nodeMaxIndex(nd);
+        return {
+          node: nd,
+          index: max,
+          maxIndex: max,
         };
       } else {
-        const start = origSelectionRange.duplicate();
-        start.collapse(true);
-        const end = origSelectionRange.duplicate();
-        end.collapse(false);
-        selection.startPoint = pointFromCollapsedRange(start);
-        selection.endPoint = pointFromCollapsedRange(end);
+        var nd = n.childNodes.item(offset);
+        var max = nodeMaxIndex(nd);
+        return {
+          node: nd,
+          index: 0,
+          maxIndex: max,
+        };
       }
-      return selection;
-    } else {
-      // non-IE browser
-      var browserSelection = window.getSelection();
-      if (browserSelection && browserSelection.type != 'None' && browserSelection.rangeCount !== 0) {
-        const range = browserSelection.getRangeAt(0);
-
-        function isInBody(n) {
-          while (n && !(n.tagName && n.tagName.toLowerCase() == 'body')) {
-            n = n.parentNode;
-          }
-          return !!n;
-        }
-
-        function pointFromRangeBound(container, offset) {
-          if (!isInBody(container)) {
-            // command-click in Firefox selects whole document, HEAD and BODY!
-            return {
-              node: root,
-              index: 0,
-              maxIndex: 1,
-            };
-          }
-          const n = container;
-          const childCount = n.childNodes.length;
-          if (isNodeText(n)) {
-            return {
-              node: n,
-              index: offset,
-              maxIndex: n.nodeValue.length,
-            };
-          } else if (childCount === 0) {
-            return {
-              node: n,
-              index: 0,
-              maxIndex: 1,
-            };
-          }
-          // treat point between two nodes as BEFORE the second (rather than after the first)
-          // if possible; this way point at end of a line block-element is treated as
-          // at beginning of next line
-          else if (offset == childCount) {
-            var nd = n.childNodes.item(childCount - 1);
-            var max = nodeMaxIndex(nd);
-            return {
-              node: nd,
-              index: max,
-              maxIndex: max,
-            };
-          } else {
-            var nd = n.childNodes.item(offset);
-            var max = nodeMaxIndex(nd);
-            return {
-              node: nd,
-              index: 0,
-              maxIndex: max,
-            };
-          }
-        }
-        var selection = {};
-        selection.startPoint = pointFromRangeBound(range.startContainer, range.startOffset);
-        selection.endPoint = pointFromRangeBound(range.endContainer, range.endOffset);
-        selection.focusAtStart = (((range.startContainer != range.endContainer) || (range.startOffset != range.endOffset)) && browserSelection.anchorNode && (browserSelection.anchorNode == range.endContainer) && (browserSelection.anchorOffset == range.endOffset));
-
-        if (selection.startPoint.node.ownerDocument !== window.document) {
-          return null;
-        }
-
-        return selection;
-      } else { return null; }
     }
+    var selection = {};
+    selection.startPoint = pointFromRangeBound(range.startContainer, range.startOffset);
+    selection.endPoint = pointFromRangeBound(range.endContainer, range.endOffset);
+    selection.focusAtStart = (((range.startContainer != range.endContainer) || (range.startOffset != range.endOffset)) && browserSelection.anchorNode && (browserSelection.anchorNode == range.endContainer) && (browserSelection.anchorOffset == range.endOffset));
+
+    if (selection.startPoint.node.ownerDocument !== window.document) {
+      return null;
+    }
+
+    return selection;
   }
 
   function setSelection(selection) {
@@ -3584,191 +3305,80 @@ function Ace2Inner() {
         maxIndex: pt.maxIndex,
       };
     }
-    if (browser.msie) {
-      // Oddly enough, accessing scrollHeight fixes return key handling on IE 8,
-      // presumably by forcing some kind of internal DOM update.
-      doc.body.scrollHeight;
+    let isCollapsed;
 
-      function moveToElementText(s, n) {
-        while (n.firstChild && !isNodeText(n.firstChild)) {
-          n = n.firstChild;
-        }
-        s.moveToElementText(n);
-      }
-
-      function newRange() {
-        return doc.body.createTextRange();
-      }
-
-      function setCollapsedBefore(s, n) {
-        // s is an IE TextRange, n is a dom node
-        if (isNodeText(n)) {
-          // previous node should not also be text, but prevent inf recurs
-          if (n.previousSibling && !isNodeText(n.previousSibling)) {
-            setCollapsedAfter(s, n.previousSibling);
-          } else {
-            setCollapsedBefore(s, n.parentNode);
-          }
-        } else {
-          moveToElementText(s, n);
-          // work around for issue that caret at beginning of line
-          // somehow ends up at end of previous line
-          if (s.move('character', 1)) {
-            s.move('character', -1);
-          }
-          s.collapse(true); // to start
-        }
-      }
-
-      function setCollapsedAfter(s, n) {
-        // s is an IE TextRange, n is a magicdom node
-        if (isNodeText(n)) {
-          // can't use end of container when no nextSibling (could be on next line),
-          // so use previousSibling or start of container and move forward.
-          setCollapsedBefore(s, n);
-          s.move('character', n.nodeValue.length);
-        } else {
-          moveToElementText(s, n);
-          s.collapse(false); // to end
-        }
-      }
-
-      function getPointRange(point) {
-        const s = newRange();
-        const n = point.node;
-        if (isNodeText(n)) {
-          setCollapsedBefore(s, n);
-          s.move('character', point.index);
-        } else if (point.index === 0) {
-          setCollapsedBefore(s, n);
-        } else {
-          setCollapsedAfter(s, n);
-        }
-        return s;
-      }
-
-      if (selection) {
-        if (!hasIESelection()) {
-          return; // don't steal focus
-        }
-
-        const startPoint = copyPoint(selection.startPoint);
-        const endPoint = copyPoint(selection.endPoint);
-
-        // fix issue where selection can't be extended past end of line
-        // with shift-rightarrow or shift-downarrow
-        if (endPoint.index == endPoint.maxIndex && endPoint.node.nextSibling) {
-          endPoint.node = endPoint.node.nextSibling;
-          endPoint.index = 0;
-          endPoint.maxIndex = nodeMaxIndex(endPoint.node);
-        }
-        var range = getPointRange(startPoint);
-        range.setEndPoint('EndToEnd', getPointRange(endPoint));
-
-        // setting the selection in IE causes everything to scroll
-        // so that the selection is visible.  if setting the selection
-        // definitely accomplishes nothing, don't do it.
-
-
-        function isEqualToDocumentSelection(rng) {
-          let browserSelection;
-          try {
-            browserSelection = doc.selection;
-          } catch (e) {}
-          if (!browserSelection) return false;
-          const rng2 = browserSelection.createRange();
-          if (rng2.parentElement().ownerDocument != doc) return false;
-          if (rng.compareEndPoints('StartToStart', rng2) !== 0) return false;
-          if (rng.compareEndPoints('EndToEnd', rng2) !== 0) return false;
-          return true;
-        }
-        if (!isEqualToDocumentSelection(range)) {
-          // dmesg(toSource(selection));
-          // dmesg(escapeHTML(doc.body.innerHTML));
-          range.select();
-        }
-      } else {
-        try {
-          doc.selection.empty();
-        } catch (e) {}
-      }
-    } else {
-      // non-IE browser
-      let isCollapsed;
-
-      function pointToRangeBound(pt) {
-        const p = copyPoint(pt);
-        // Make sure Firefox cursor is deep enough; fixes cursor jumping when at top level,
-        // and also problem where cut/copy of a whole line selected with fake arrow-keys
-        // copies the next line too.
-        if (isCollapsed) {
-          function diveDeep() {
-            while (p.node.childNodes.length > 0) {
-              // && (p.node == root || p.node.parentNode == root)) {
-              if (p.index === 0) {
-                p.node = p.node.firstChild;
-                p.maxIndex = nodeMaxIndex(p.node);
-              } else if (p.index == p.maxIndex) {
-                p.node = p.node.lastChild;
-                p.maxIndex = nodeMaxIndex(p.node);
-                p.index = p.maxIndex;
-              } else { break; }
-            }
-          }
-          // now fix problem where cursor at end of text node at end of span-like element
-          // with background doesn't seem to show up...
-          if (isNodeText(p.node) && p.index == p.maxIndex) {
-            let n = p.node;
-            while ((!n.nextSibling) && (n != root) && (n.parentNode != root)) {
-              n = n.parentNode;
-            }
-            if (n.nextSibling && (!((typeof n.nextSibling.tagName) === 'string' && n.nextSibling.tagName.toLowerCase() == 'br')) && (n != p.node) && (n != root) && (n.parentNode != root)) {
-              // found a parent, go to next node and dive in
-              p.node = n.nextSibling;
+    function pointToRangeBound(pt) {
+      const p = copyPoint(pt);
+      // Make sure Firefox cursor is deep enough; fixes cursor jumping when at top level,
+      // and also problem where cut/copy of a whole line selected with fake arrow-keys
+      // copies the next line too.
+      if (isCollapsed) {
+        function diveDeep() {
+          while (p.node.childNodes.length > 0) {
+            // && (p.node == root || p.node.parentNode == root)) {
+            if (p.index === 0) {
+              p.node = p.node.firstChild;
               p.maxIndex = nodeMaxIndex(p.node);
-              p.index = 0;
-              diveDeep();
-            }
+            } else if (p.index == p.maxIndex) {
+              p.node = p.node.lastChild;
+              p.maxIndex = nodeMaxIndex(p.node);
+              p.index = p.maxIndex;
+            } else { break; }
           }
-          // try to make sure insertion point is styled;
-          // also fixes other FF problems
-          if (!isNodeText(p.node)) {
+        }
+        // now fix problem where cursor at end of text node at end of span-like element
+        // with background doesn't seem to show up...
+        if (isNodeText(p.node) && p.index == p.maxIndex) {
+          let n = p.node;
+          while ((!n.nextSibling) && (n != root) && (n.parentNode != root)) {
+            n = n.parentNode;
+          }
+          if (n.nextSibling && (!((typeof n.nextSibling.tagName) === 'string' && n.nextSibling.tagName.toLowerCase() == 'br')) && (n != p.node) && (n != root) && (n.parentNode != root)) {
+            // found a parent, go to next node and dive in
+            p.node = n.nextSibling;
+            p.maxIndex = nodeMaxIndex(p.node);
+            p.index = 0;
             diveDeep();
           }
         }
-        if (isNodeText(p.node)) {
-          return {
-            container: p.node,
-            offset: p.index,
-          };
-        } else {
-          // p.index in {0,1}
-          return {
-            container: p.node.parentNode,
-            offset: childIndex(p.node) + p.index,
-          };
+        // try to make sure insertion point is styled;
+        // also fixes other FF problems
+        if (!isNodeText(p.node)) {
+          diveDeep();
         }
       }
-      const browserSelection = window.getSelection();
-      if (browserSelection) {
-        browserSelection.removeAllRanges();
-        if (selection) {
-          isCollapsed = (selection.startPoint.node === selection.endPoint.node && selection.startPoint.index === selection.endPoint.index);
-          const start = pointToRangeBound(selection.startPoint);
-          const end = pointToRangeBound(selection.endPoint);
+      if (isNodeText(p.node)) {
+        return {
+          container: p.node,
+          offset: p.index,
+        };
+      } else {
+        // p.index in {0,1}
+        return {
+          container: p.node.parentNode,
+          offset: childIndex(p.node) + p.index,
+        };
+      }
+    }
+    const browserSelection = window.getSelection();
+    if (browserSelection) {
+      browserSelection.removeAllRanges();
+      if (selection) {
+        isCollapsed = (selection.startPoint.node === selection.endPoint.node && selection.startPoint.index === selection.endPoint.index);
+        const start = pointToRangeBound(selection.startPoint);
+        const end = pointToRangeBound(selection.endPoint);
 
-          if ((!isCollapsed) && selection.focusAtStart && browserSelection.collapse && browserSelection.extend) {
-            // can handle "backwards"-oriented selection, shift-arrow-keys move start
-            // of selection
-            browserSelection.collapse(end.container, end.offset);
-            browserSelection.extend(start.container, start.offset);
-          } else {
-            var range = doc.createRange();
-            range.setStart(start.container, start.offset);
-            range.setEnd(end.container, end.offset);
-            browserSelection.removeAllRanges();
-            browserSelection.addRange(range);
-          }
+        if ((!isCollapsed) && selection.focusAtStart && browserSelection.collapse && browserSelection.extend) {
+          // can handle "backwards"-oriented selection, shift-arrow-keys move start
+          // of selection
+          browserSelection.collapse(end.container, end.offset);
+          browserSelection.extend(start.container, start.offset);
+        } else {
+          var range = doc.createRange();
+          range.setStart(start.container, start.offset);
+          range.setEnd(end.container, end.offset);
+          browserSelection.removeAllRanges();
+          browserSelection.addRange(range);
         }
       }
     }
@@ -3804,30 +3414,6 @@ function Ace2Inner() {
     });
   }
 
-  const iePastedLines = null;
-
-  function handleIEPaste(evt) {
-    // Pasting in IE loses blank lines in a way that loses information;
-    // "one\n\ntwo\nthree" becomes "<p>one</p><p>two</p><p>three</p>",
-    // which becomes "one\ntwo\nthree".  We can get the correct text
-    // from the clipboard directly, but we still have to let the paste
-    // happen to get the style information.
-    const clipText = window.clipboardData && window.clipboardData.getData('Text');
-    if (clipText && doc.selection) {
-      // this "paste" event seems to mess with the selection whether we try to
-      // stop it or not, so can't really do document-level manipulation now
-      // or in an idle call-stack.  instead, use IE native manipulation
-      // function escapeLine(txt) {
-      // return processSpaces(escapeHTML(textify(txt)));
-      // }
-      // var newHTML = map(clipText.replace(/\r/g,'').split('\n'), escapeLine).join('<br>');
-      // doc.selection.createRange().pasteHTML(newHTML);
-      // evt.preventDefault();
-      // iePastedLines = map(clipText.replace(/\r/g,'').split('\n'), textify);
-    }
-  }
-
-
   var inInternationalComposition = false;
   function handleCompositionEvent(evt) {
     // international input events, fired in FF3, at least;  allow e.g. Japanese input
@@ -3854,10 +3440,6 @@ function Ace2Inner() {
     // $(document).on("cut", handleCut);
 
     $(root).on('blur', handleBlur);
-    if (browser.msie) {
-      $(document).on('click', handleIEOuterClick);
-    }
-    if (browser.msie) $(root).on('paste', handleIEPaste);
 
     // If non-nullish, pasting on a link should be suppressed.
     let suppressPasteOnLink = null;
@@ -3934,11 +3516,8 @@ function Ace2Inner() {
       });
     });
 
-    // CompositionEvent is not implemented below IE version 8
-    if (!(browser.msie && parseInt(browser.version <= 9)) && document.documentElement) {
-      $(document.documentElement).on('compositionstart', handleCompositionEvent);
-      $(document.documentElement).on('compositionend', handleCompositionEvent);
-    }
+    $(document.documentElement).on('compositionstart', handleCompositionEvent);
+    $(document.documentElement).on('compositionend', handleCompositionEvent);
   }
 
   function topLevel(n) {
@@ -3947,26 +3526,6 @@ function Ace2Inner() {
       n = n.parentNode;
     }
     return n;
-  }
-
-  function handleIEOuterClick(evt) {
-    if ((evt.target.tagName || '').toLowerCase() != 'html') {
-      return;
-    }
-    if (!(evt.pageY > root.clientHeight)) {
-      return;
-    }
-
-    // click below the body
-    inCallStackIfNecessary('handleOuterClick', () => {
-      // put caret at bottom of doc
-      fastIncorp(11);
-      if (isCaret()) { // don't interfere with drag
-        const lastLine = rep.lines.length() - 1;
-        const lastCol = rep.lines.atIndex(lastLine).text.length;
-        performSelectionChange([lastLine, lastCol], [lastLine, lastCol]);
-      }
-    });
   }
 
   function getClassArray(elem, optFilter) {
@@ -3987,14 +3546,7 @@ function Ace2Inner() {
     window.focus();
   }
 
-  function handleBlur(evt) {
-    if (browser.msie) {
-      // a fix: in IE, clicking on a control like a button outside the
-      // iframe can "blur" the editor, causing it to stop getting
-      // events, though typing still affects it(!).
-      setSelection(null);
-    }
-  }
+  function handleBlur(evt) {}
 
   function getSelectionPointX(point) {
     // doesn't work in wrap-mode
@@ -4337,7 +3889,6 @@ function Ace2Inner() {
         root = body; // defined as a var in scope outside
         if (browser.firefox) $(root).addClass('mozilla');
         if (browser.safari) $(root).addClass('safari');
-        if (browser.msie) $(root).addClass('msie');
         root.classList.toggle('authorColors', true);
         root.classList.toggle('doesWrap', doesWrap);
 

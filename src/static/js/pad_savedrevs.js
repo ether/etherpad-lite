@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Copyright 2012 Peter 'Pita' Martischka
  *
@@ -16,13 +18,14 @@
 
 let pad;
 
-exports.saveNow = function () {
+exports.saveNow = () => {
   pad.collabClient.sendMessage({type: 'SAVE_REVISION'});
   $.gritter.add({
     // (string | mandatory) the heading of the notification
-    title: _('pad.savedrevs.marked'),
+    title: html10n.get('pad.savedrevs.marked'),
     // (string | mandatory) the text inside the notification
-    text: _('pad.savedrevs.timeslider') || 'You can view saved revisions in the timeslider',
+    text: html10n.get('pad.savedrevs.timeslider') ||
+        'You can view saved revisions in the timeslider',
     // (bool | optional) if you want it to fade out on its own or just sit there
     sticky: false,
     time: 3000,
@@ -30,6 +33,6 @@ exports.saveNow = function () {
   });
 };
 
-exports.init = function (_pad) {
+exports.init = (_pad) => {
   pad = _pad;
 };
