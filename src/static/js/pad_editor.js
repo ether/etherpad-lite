@@ -181,7 +181,7 @@ exports.focusOnLine = (ace) => {
   if (lineNumber) {
     if (lineNumber[0] === 'L') {
       const $outerdoc = $('iframe[name="ace_outer"]').contents().find('#outerdocbody');
-      const lineNumberInt = parseInt(lineNumber.replace('L', ''));
+      const lineNumberInt = parseInt(lineNumber.substr(1));
       if (lineNumberInt) {
         const $inner = $('iframe[name="ace_outer"]').contents().find('iframe')
             .contents().find('#innerdocbody');
