@@ -1,4 +1,5 @@
-var helper = {};
+'use strict';
+const helper = {}; // eslint-disable-line
 
 (function () {
   let $iframe; const
@@ -29,10 +30,9 @@ var helper = {};
 
   const getFrameJQuery = function ($iframe) {
     /*
-      I tried over 9000 ways to inject javascript into iframes.
+      I tried over 9001 ways to inject javascript into iframes.
       This is the only way I found that worked in IE 7+8+9, FF and Chrome
     */
-
     const win = $iframe[0].contentWindow;
     const doc = win.document;
 
@@ -68,7 +68,8 @@ var helper = {};
   // I don't fully understand it, but this function seems to properly simulate
   // padCookie.setPref in the client code
   helper.setPadPrefCookie = function (prefs) {
-    helper.padChrome$.document.cookie = (`prefsHttp=${escape(JSON.stringify(prefs))};expires=Thu, 01 Jan 3000 00:00:00 GMT`);
+    helper.padChrome$.document.cookie =
+        (`prefsHttp=${escape(JSON.stringify(prefs))};expires=Thu, 01 Jan 3000 00:00:00 GMT`);
   };
 
   // Functionality for knowing what key event type is required for tests
@@ -102,8 +103,13 @@ var helper = {};
     }
 
     // if opts.params is set we manipulate the URL to include URL parameters IE ?foo=Bah.
+    let encodedParams;
     if (opts.params) {
-      var encodedParams = `?${$.param(opts.params)}`;
+      encodedParams = `?${$.param(opts.params)}`;
+    }
+    let hash;
+    if (opts.hash) {
+      hash = `#${opts.hash}`;
     }
 
     // clear cookies
@@ -112,8 +118,7 @@ var helper = {};
     }
 
     if (!padName) padName = `FRONTEND_TEST_${helper.randomString(20)}`;
-    $iframe = $(`<iframe src='/p/${padName}${encodedParams || ''}'></iframe>`);
-
+    $iframe = $(`<iframe src='/p/${padName}${hash || ''}${encodedParams || ''}'></iframe>`);
     // needed for retry
     const origPadName = padName;
 
@@ -132,7 +137,8 @@ var helper = {};
       if (opts.padPrefs) {
         helper.setPadPrefCookie(opts.padPrefs);
       }
-      helper.waitFor(() => !$iframe.contents().find('#editorloadingbox').is(':visible'), 10000).done(() => {
+      helper.waitFor(() => !$iframe.contents().find('#editorloadingbox')
+          .is(':visible'), 10000).done(() => {
         helper.padOuter$ = getFrameJQuery(helper.padChrome$('iframe[name="ace_outer"]'));
         helper.padInner$ = getFrameJQuery(helper.padOuter$('iframe[name="ace_inner"]'));
 
@@ -175,7 +181,7 @@ var helper = {};
   };
 
   helper.waitFor = function (conditionFunc, timeoutTime = 1900, intervalTime = 10) {
-    const deferred = $.Deferred();
+    const deferred = $.Deferred();  // eslint-disable-line
 
     const _fail = deferred.fail.bind(deferred);
     let listenForFail = false;
@@ -245,7 +251,7 @@ var helper = {};
     selection.addRange(range);
   };
 
-  var getTextNodeAndOffsetOf = function ($targetLine, targetOffsetAtLine) {
+  const getTextNodeAndOffsetOf = function ($targetLine, targetOffsetAtLine) {
     const $textNodes = $targetLine.find('*').contents().filter(function () {
       return this.nodeType === Node.TEXT_NODE;
     });
@@ -268,7 +274,7 @@ var helper = {};
     });
 
     // edge cases
-    if (textNodeWhereOffsetIs === null) {
+    if (textNodeWhereOffsetIs == null) {
       // there was no text node inside $targetLine, so it is an empty line (<br>).
       // Use beginning of line
       textNodeWhereOffsetIs = $targetLine.get(0);

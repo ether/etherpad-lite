@@ -101,6 +101,7 @@ body.mozilla, body.safari {
   font-size: 9px;
   padding: 0 14px 0 10px;
   font-family: monospace;
+  cursor: pointer;
 }
 .plugin-ep_author_neat #sidedivinner.authorColors .line-number {
   padding-right: 10px;

@@ -676,6 +676,7 @@ function Ace2Inner() {
   editorInfo.ace_doReturnKey = doReturnKey;
   editorInfo.ace_isBlockElement = isBlockElement;
   editorInfo.ace_getLineListType = getLineListType;
+  editorInfo.ace_setSelection = setSelection;
 
   editorInfo.ace_callWithAce = function (fn, callStack, normalize) {
     let wrapper = function () {

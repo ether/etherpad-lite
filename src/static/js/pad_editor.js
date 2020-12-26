@@ -1,5 +1,4 @@
 'use strict';
-
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -44,6 +43,15 @@ const padeditor = (() => {
         $('#editorloadingbox').hide();
         if (readyFunc) {
           readyFunc();
+
+          // Listen for clicks on sidediv items
+          const $outerdoc = $('iframe[name="ace_outer"]').contents().find('#outerdocbody');
+          $outerdoc.find('#sidedivinner').on('click', 'div', function () {
+            const targetLineNumber = $(this).index() + 1;
+            window.location.hash = `L${targetLineNumber}`;
+          });
+
+          exports.focusOnLine(self.ace);
         }
       };
 
@@ -55,7 +63,6 @@ const padeditor = (() => {
       }
       self.initViewOptions();
       self.setViewOptions(initialViewOptions);
-
       // view bar
       $('#viewbarcontents').show();
     },
@@ -89,6 +96,7 @@ const padeditor = (() => {
       html10n.bind('localized', () => {
         $('#languagemenu').val(html10n.getLanguage());
         // translate the value of 'unnamed' and 'Enter your name' textboxes in the userlist
+
         // this does not interfere with html10n's normal value-setting because
         // html10n just ingores <input>s
         // also, a value which has been set by the user will be not overwritten
@@ -166,3 +174,50 @@ const padeditor = (() => {
 })();
 
 exports.padeditor = padeditor;
+
+exports.focusOnLine = (ace) => {
+  // If a number is in the URI IE #L124 go to that line number
+  const lineNumber = window.location.hash.substr(1);
+  if (lineNumber) {
+    if (lineNumber[0] === 'L') {
+      const $outerdoc = $('iframe[name="ace_outer"]').contents().find('#outerdocbody');
+      const lineNumberInt = parseInt(lineNumber.substr(1));
+      if (lineNumberInt) {
+        const $inner = $('iframe[name="ace_outer"]').contents().find('iframe')
+            .contents().find('#innerdocbody');
+        const line = $inner.find(`div:nth-child(${lineNumberInt})`);
+        if (line.length !== 0) {
+          let offsetTop = line.offset().top;
+          offsetTop += parseInt($outerdoc.css('padding-top').replace('px', ''));
+          const hasMobileLayout = $('body').hasClass('mobile-layout');
+          if (!hasMobileLayout) {
+            offsetTop += parseInt($inner.css('padding-top').replace('px', ''));
+          }
+          const $outerdocHTML = $('iframe[name="ace_outer"]').contents()
+              .find('#outerdocbody').parent();
+          $outerdoc.css({top: `${offsetTop}px`}); // Chrome
+          $outerdocHTML.animate({scrollTop: offsetTop}); // needed for FF
+          const node = line[0];
+          ace.callWithAce((ace) => {
+            const selection = {
+              startPoint: {
+                index: 0,
+                focusAtStart: true,
+                maxIndex: 1,
+                node,
+              },
+              endPoint: {
+                index: 0,
+                focusAtStart: true,
+                maxIndex: 1,
+                node,
+              },
+            };
+            ace.ace_setSelection(selection);
+          });
+        }
+      }
+    }
+  }
+  // End of setSelection / set Y position of editor
+};
