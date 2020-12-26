@@ -82,8 +82,5 @@
 	"timeslider.unnamedauthors": "{{num}} {[plural(num) one: ónevndur rithøvundur, other: ónevndir rithøvundar ]}",
 	"pad.savedrevs.marked": "Henda endurskoðanin er nú merkt sum ein goymd endurskoðan",
 	"pad.userlist.entername": "Skriva títt navn",
-	"pad.userlist.unnamed": "ikki-navngivið",
-	"pad.userlist.guest": "Gestur",
-	"pad.userlist.deny": "Nokta",
-	"pad.userlist.approve": "Góðkenn"
+	"pad.userlist.unnamed": "ikki-navngivið"
 }

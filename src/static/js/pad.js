@@ -29,6 +29,7 @@ let socket;
 require('./jquery');
 require('./farbtastic');
 require('./excanvas');
+require('./gritter');
 
 const Cookies = require('./pad_utils').Cookies;
 const chat = require('./chat').chat;
@@ -44,7 +45,7 @@ const paduserlist = require('./pad_userlist').paduserlist;
 const padutils = require('./pad_utils').padutils;
 const colorutils = require('./colorutils').colorutils;
 const randomString = require('./pad_utils').randomString;
-require('./gritter'); // Mutates the jQuery object to make $.gritter available.
+const socketio = require('./socketio');
 
 const hooks = require('./pluginfw/hooks');
 
@@ -218,18 +219,7 @@ const sendClientReady = (isReconnect, messageType) => {
 };
 
 const handshake = () => {
-  const loc = document.location;
-  // get the correct port
-  const port = loc.port === '' ? (loc.protocol === 'https:' ? 443 : 80) : loc.port;
-  // create the url
-  const url = `${loc.protocol}//${loc.hostname}:${port}/`;
-  // find out in which subfolder we are
-  const resource = `${exports.baseURL.substring(1)}socket.io`;
-  // connect
-  socket = pad.socket = io.connect(url, {
-    // Allow deployers to host Etherpad on a non-root path
-    path: `${exports.baseURL}socket.io`,
-    resource,
+  socket = pad.socket = socketio.connect(exports.baseURL, '/', {
     reconnectionAttempts: 5,
     reconnection: true,
     reconnectionDelay: 1000,
@@ -248,14 +238,24 @@ const handshake = () => {
     sendClientReady(receivedClientVars);
   });
 
-  socket.on('reconnecting', () => {
+  const socketReconnecting = () => {
     // pad.collabClient might be null if the hanshake failed (or it never got that far).
     if (pad.collabClient != null) {
       pad.collabClient.setStateIdle();
       pad.collabClient.setIsPendingRevision(true);
       pad.collabClient.setChannelState('RECONNECTING');
     }
+  };
+
+  socket.on('disconnect', (reason) => {
+    // The socket.io client will automatically try to reconnect for all reasons other than "io
+    // server disconnect".
+    if (reason !== 'io server disconnect') return;
+    socketReconnecting();
+    socket.connect();
   });
+
+  socket.on('reconnecting', socketReconnecting);
 
   socket.on('reconnect_failed', (error) => {
     // pad.collabClient might be null if the hanshake failed (or it never got that far).

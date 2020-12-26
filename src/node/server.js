@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+
+'use strict';
+
 /**
  * This module is started with bin/run.sh. It sets up a Express HTTP and a Socket.IO Server.
  * Static file Requests are answered directly from this module, Socket.IO messages are passed
@@ -35,9 +38,9 @@ NodeVersion.checkDeprecationStatus('10.13.0', '1.8.3');
 const UpdateCheck = require('./utils/UpdateCheck');
 const db = require('./db/DB');
 const express = require('./hooks/express');
-const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+const hooks = require('../static/js/pluginfw/hooks');
 const npm = require('npm/lib/npm.js');
-const plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');
+const plugins = require('../static/js/pluginfw/plugins');
 const settings = require('./utils/Settings');
 const util = require('util');
 

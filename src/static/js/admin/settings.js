@@ -1,16 +1,19 @@
-$(document).ready(() => {
-  let socket;
-  const loc = document.location;
-  const port = loc.port == '' ? (loc.protocol == 'https:' ? 443 : 80) : loc.port;
-  const url = `${loc.protocol}//${loc.hostname}:${port}/`;
-  const pathComponents = location.pathname.split('/');
-  // Strip admin/plugins
-  const baseURL = `${pathComponents.slice(0, pathComponents.length - 2).join('/')}/`;
-  const resource = `${baseURL.substring(1)}socket.io`;
+'use strict';
 
-  // connect
-  const room = `${url}settings`;
-  socket = io.connect(room, {path: `${baseURL}socket.io`, resource});
+/* global socketio */
+
+$(document).ready(() => {
+  const socket = socketio.connect('..', '/settings');
+
+  socket.on('connect', () => {
+    socket.emit('load');
+  });
+
+  socket.on('disconnect', (reason) => {
+    // The socket.io client will automatically try to reconnect for all reasons other than "io
+    // server disconnect".
+    if (reason === 'io server disconnect') socket.connect();
+  });
 
   socket.on('settings', (settings) => {
     /* Check whether the settings.json is authorized to be viewed */
@@ -53,23 +56,16 @@ $(document).ready(() => {
     $('#response').text(progress);
     $('#response').fadeOut('slow');
   });
-
-  socket.emit('load'); // Load the JSON from the server
 });
 
 
-function isJSONClean(data) {
+const isJSONClean = (data) => {
   let cleanSettings = JSON.minify(data);
   // this is a bit naive. In theory some key/value might contain the sequences ',]' or ',}'
   cleanSettings = cleanSettings.replace(',]', ']').replace(',}', '}');
   try {
-    var response = jQuery.parseJSON(cleanSettings);
+    return typeof jQuery.parseJSON(cleanSettings) === 'object';
   } catch (e) {
     return false; // the JSON failed to be parsed
   }
-  if (typeof response !== 'object') {
-    return false;
-  } else {
-    return true;
-  }
-}
+};

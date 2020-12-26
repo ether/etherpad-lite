@@ -683,7 +683,6 @@ exports.reloadSettings = function reloadSettings() {
 
   log4js.configure(exports.logconfig);// Configure the logging appenders
   log4js.setGlobalLogLevel(exports.loglevel);// set loglevel
-  process.env.DEBUG = `socket.io:${exports.loglevel}`; // Used by SocketIO for Debug
   log4js.replaceConsole();
 
   if (!exports.skinName) {
