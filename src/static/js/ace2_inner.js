@@ -888,6 +888,7 @@ function Ace2Inner() {
         if (isTimeUp()) return;
 
         const visibleRange = scroll.getVisibleCharRange(rep);
+        top.console.log('getVisibleCharRange', visibleRange);
         const docRange = [0, rep.lines.totalWidth()];
         finishedImportantWork = true;
         finishedWork = true;
@@ -1455,7 +1456,7 @@ function Ace2Inner() {
     let n = lineNode;
     let after = false;
     if (charsLeft === 0) {
-      let index = 0;
+      const index = 0;
       return {
         node: lineNode,
         index,
@@ -3050,6 +3051,8 @@ function Ace2Inner() {
           evt.preventDefault(); // This is required, browsers will try to do normal default behavior on page up / down and the default behavior SUCKS
 
           const oldVisibleLineRange = scroll.getVisibleLineRange(rep);
+          top.console.log('oldviz', oldVisibleLineRange)
+          let visLines = oldVisibleLineRange[1] - oldVisibleLineRange[0];
           let topOffset = rep.selStart[0] - oldVisibleLineRange[0];
           if (topOffset < 0) {
             topOffset = 0;
@@ -3058,42 +3061,14 @@ function Ace2Inner() {
           const isPageDown = evt.which === 34;
           const isPageUp = evt.which === 33;
 
-          scheduler.setTimeout(() => {
-            const newVisibleLineRange = scroll.getVisibleLineRange(rep); // the visible lines IE 1,10
-            const linesCount = rep.lines.length(); // total count of lines in pad IE 10
-            const numberOfLinesInViewport = newVisibleLineRange[1] - newVisibleLineRange[0]; // How many lines are in the viewport right now?
+          if(isPageDown){
+            rep.selStart[0] += visLines;
+            rep.selEnd[0] += visLines;
+            updateBrowserSelectionFromRep(); // works
+            scroll.scrollNodeVerticallyIntoView(); // always slightly off...
 
-            if (isPageUp && padShortcutEnabled.pageUp) {
-              rep.selEnd[0] = rep.selEnd[0] - numberOfLinesInViewport; // move to the bottom line +1 in the viewport (essentially skipping over a page)
-              rep.selStart[0] = rep.selStart[0] - numberOfLinesInViewport; // move to the bottom line +1 in the viewport (essentially skipping over a page)
-            }
 
-            if (isPageDown && padShortcutEnabled.pageDown) { // if we hit page down
-              if (rep.selEnd[0] >= oldVisibleLineRange[0]) { // If the new viewpoint position is actually further than where we are right now
-                rep.selStart[0] = oldVisibleLineRange[1] - 1; // dont go further in the page down than what's visible IE go from 0 to 50 if 50 is visible on screen but dont go below that else we miss content
-                rep.selEnd[0] = oldVisibleLineRange[1] - 1; // dont go further in the page down than what's visible IE go from 0 to 50 if 50 is visible on screen but dont go below that else we miss content
-              }
-            }
-
-            // ensure min and max
-            if (rep.selEnd[0] < 0) {
-              rep.selEnd[0] = 0;
-            }
-            if (rep.selStart[0] < 0) {
-              rep.selStart[0] = 0;
-            }
-            if (rep.selEnd[0] >= linesCount) {
-              rep.selEnd[0] = linesCount - 1;
-            }
-            updateBrowserSelectionFromRep();
-            const myselection = document.getSelection(); // get the current caret selection, can't use rep. here because that only gives us the start position not the current
-            let caretOffsetTop = myselection.focusNode.parentNode.offsetTop || myselection.focusNode.offsetTop; // get the carets selection offset in px IE 214
-
-            // sometimes the first selection is -1 which causes problems (Especially with ep_page_view)
-            // so use focusNode.offsetTop value.
-            if (caretOffsetTop === -1) caretOffsetTop = myselection.focusNode.offsetTop;
-            scroll.setScrollY(caretOffsetTop); // set the scrollY offset of the viewport on the document
-          }, 200);
+          }
         }
 
         // scroll to viewport when user presses arrow keys and caret is out of the viewport
@@ -3225,7 +3200,7 @@ function Ace2Inner() {
     // each of which has node (a magicdom node), index, and maxIndex.  If the node
     // is a text node, maxIndex is the length of the text; else maxIndex is 1.
     // index is between 0 and maxIndex, inclusive.
-    var browserSelection = window.getSelection();
+    const browserSelection = window.getSelection();
     if (!browserSelection || browserSelection.type === 'None' ||
         browserSelection.rangeCount === 0) {
       return null;
@@ -3284,7 +3259,7 @@ function Ace2Inner() {
         };
       }
     }
-    var selection = {};
+    const selection = {};
     selection.startPoint = pointFromRangeBound(range.startContainer, range.startOffset);
     selection.endPoint = pointFromRangeBound(range.endContainer, range.endOffset);
     selection.focusAtStart = (((range.startContainer != range.endContainer) || (range.startOffset != range.endOffset)) && browserSelection.anchorNode && (browserSelection.anchorNode == range.endContainer) && (browserSelection.anchorOffset == range.endOffset));
@@ -3373,7 +3348,7 @@ function Ace2Inner() {
           browserSelection.collapse(end.container, end.offset);
           browserSelection.extend(start.container, start.offset);
         } else {
-          var range = doc.createRange();
+          const range = doc.createRange();
           range.setStart(start.container, start.offset);
           range.setEnd(end.container, end.offset);
           browserSelection.removeAllRanges();
