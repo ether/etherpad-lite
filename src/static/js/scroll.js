@@ -280,13 +280,12 @@ Scroll.prototype.scrollNodeVerticallyIntoView = function (rep, innerHeight, isPa
   // to inside of the viewport. Tested on IE, Firefox, Chrome in releases from 2015 until now
   // So, when the line scrolled gets outside of the viewport we let the browser handle it.
   const linePosition = caretPosition.getPosition();
-
   if (isPageUp) {
     // redraw entire page into view putting rep.selStart[0] at top left
     const distanceOfTopOfViewport = linePosition.top - viewport.top;
     const pixelsToScroll =
       distanceOfTopOfViewport - this._getPixelsRelativeToPercentageOfViewport(innerHeight, true);
-    this._scrollYPage(pixelsToScroll);
+    this._scrollYPage(pixelsToScroll - linePosition.height);
     return;
   }
 
