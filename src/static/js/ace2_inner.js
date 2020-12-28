@@ -472,10 +472,8 @@ function Ace2Inner() {
         inCallStackIfNecessary('setStyled', () => {
           fastIncorp(12);
           const clearStyles = [];
-          for (const k in STYLE_ATTRIBS) {
-            if (STYLE_ATTRIBS[k]) {
-              clearStyles.push([k, '']);
-            }
+          for (const k of Object.keys(STYLE_ATTRIBS)) {
+            clearStyles.push([k, '']);
           }
           performDocumentApplyAttributesToCharRange(0, rep.alltext.length, clearStyles);
         });
