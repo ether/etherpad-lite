@@ -3077,16 +3077,25 @@ function Ace2Inner() {
               rep.selStart[0] += visibleLineRange[1] - visibleLineRange[0] - 1;
               rep.selEnd[0] += visibleLineRange[1] - visibleLineRange[0] - 1;
             } else {
-              rep.selStart[0] = visibleLineRange[1] - visibleLineRange[0];
-              rep.selEnd[0] = visibleLineRange[1] - visibleLineRange[0];
+              top.console.log('am here..', visibleLineRange);
+              rep.selStart[0] = rep.selStart[0] + (visibleLineRange[1] - visibleLineRange[0]);
+              rep.selEnd[0] = rep.selEnd[0] + (visibleLineRange[1] - visibleLineRange[0]);
             }
+            top.console.log(rep.selStart[0]);
             if (rep.selStart[0] === -1) rep.selStart[0] = 0;
             if (rep.selEnd[0] === -1) rep.selEnd[0] = 0;
             // if the new rep is beyond the viewport
             // put the caret on the last line at the end of the line
             if (rep.selStart[0] >= (linesLength - 1)) {
+              top.console.log('wait wut?');
+              let line;
               // need current character length of line
-              const line = rep.lines.atIndex(rep.selEnd[0]);
+              try {
+                line = rep.lines.atIndex(rep.selEnd[0]);
+              } catch (e) {
+                // silently fail, no big deal..
+              }
+
               let lineLength;
               if (line) { // need to test if this is needed or not.
                 lineLength = line.width;
@@ -3096,6 +3105,7 @@ function Ace2Inner() {
               rep.selStart = [linesLength - 1, lineLength];
               rep.selEnd = [linesLength - 1, lineLength];
             }
+            top.console.log('waittt', rep);
             // TODO: Handle if character is X offset from content
           }
 
