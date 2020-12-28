@@ -365,7 +365,8 @@ Scroll.prototype.getVisibleLineRange = function (rep) {
 
 Scroll.prototype.getVisibleCharRange = function (rep) {
   const lineRange = this.getVisibleLineRange(rep);
-  // top.console.log(rep.lines);
+  // top.console.log('char range', 0, rep.lines.offsetOfIndex(lineRange[0]));
+  // top.console.log('char range', 1, rep.lines.offsetOfIndex(lineRange[1]));
   return [rep.lines.offsetOfIndex(lineRange[0]), rep.lines.offsetOfIndex(lineRange[1])];
 };
 
