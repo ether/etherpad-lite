@@ -291,11 +291,18 @@ Scroll.prototype.scrollNodeVerticallyIntoView = function (rep, innerHeight, isPa
   }
 
   if (isPageDown) {
+    console.log(linePosition);
+    console.log(viewport);
     // redraw entire page into view putting rep.selStart[0] at top left
-    this._scrollYPage(linePosition.top);
+    // this._scrollYPage(linePosition.top);
+    // redraw entire page into view putting rep.selStart[0] at top left
+    // const distanceOfTopOfViewport = linePosition.top - viewport.top;
+    // const pixelsToScroll =
+    //   distanceOfTopOfViewport - this._getPixelsRelativeToPercentageOfViewport(innerHeight, true);
+    this._scrollYPage(viewport.bottom - viewport.top);
     return;
   }
-
+/*
   if (linePosition) {
     const distanceOfTopOfViewport = linePosition.top - viewport.top;
     const distanceOfBottomOfViewport = viewport.bottom - linePosition.bottom;
@@ -314,6 +321,7 @@ Scroll.prototype.scrollNodeVerticallyIntoView = function (rep, innerHeight, isPa
       this.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary(rep, true, innerHeight);
     }
   }
+  */
 };
 
 Scroll.prototype._partOfRepLineIsOutOfViewport = function (viewportPosition, rep) {

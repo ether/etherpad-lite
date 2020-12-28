@@ -3059,6 +3059,7 @@ function Ace2Inner() {
           const linesLength = rep.lines.length();
 
           if (isPageUp) {
+            top.console.log('page up');
             // go to the top of the visible content
             rep.selStart[0] -= visibleLineRange[1] - visibleLineRange[0];
             rep.selEnd[0] -= visibleLineRange[1] - visibleLineRange[0];
@@ -3070,11 +3071,19 @@ function Ace2Inner() {
           }
 
           if (isPageDown) {
+            top.console.log('pag edown');
             // go to the bottom of the last visible content
-            rep.selStart[0] += visibleLineRange[1] - 1;
-            rep.selEnd[0] += visibleLineRange[1] - 1;
+            if(rep.selStart[0] === 0){
+              rep.selStart[0] += visibleLineRange[1] - visibleLineRange[0] - 1;
+              rep.selEnd[0] += visibleLineRange[1] - visibleLineRange[0] - 1;
+            }else{
+              // handle if we're on first line as it will do weird things.
+              rep.selStart[0] += visibleLineRange[1] - visibleLineRange[0];
+              rep.selEnd[0] += visibleLineRange[1] - visibleLineRange[0];
+            }
             // if the new rep is beyond the viewport, put the caret on the last line
             if (rep.selStart[0] > linesLength) {
+              top.console.log('beyond scope');
               rep.selStart = [linesLength - 1, 0];
               rep.selEnd = [linesLength - 1, 0];
             }
