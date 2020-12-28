@@ -9,10 +9,13 @@ var helper = {};
       // make sure we don't override existing jquery
       jsLibraries.jquery = `if(typeof $ === 'undefined') {\n${code}\n}`;
 
-      $.get('/tests/frontend/lib/sendkeys.js').done((code) => {
-        jsLibraries.sendkeys = code;
+      $.get('/tests/frontend/lib/bililiteRange.js').done((code) => {
+        jsLibraries.bililiteRange = code;
 
-        cb();
+        $.get('/tests/frontend/lib/jquery.sendkeys.js').done((code) => {
+          jsLibraries.sendkeys = code;
+          cb();
+        });
       });
     });
   };
@@ -41,6 +44,7 @@ var helper = {};
     win.execScript && win.execScript('null');
 
     win.eval(jsLibraries.jquery);
+    win.eval(jsLibraries.bililiteRange);
     win.eval(jsLibraries.sendkeys);
 
     win.$.window = win;

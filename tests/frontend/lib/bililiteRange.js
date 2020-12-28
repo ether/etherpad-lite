@@ -3,13 +3,13 @@
 let bililiteRange; // create one global variable
 
 (function(){
-
+	
 const datakey = Symbol(); // use as the key to modify elements.
 
 bililiteRange = function(el){
 	var ret;
 	if (el.setSelectionRange){
-		// Element is an input or textarea
+		// Element is an input or textarea 
 		// note that some input elements do not allow selections
 		try{
 			el.selectionStart = el.selectionStart;
@@ -26,16 +26,16 @@ bililiteRange = function(el){
 	ret._doc = el.ownerDocument;
 	ret._win = ret._doc.defaultView;
 	ret._bounds = [0, ret.length];
-
+	
 	// selection tracking. We want clicks to set the selection to the clicked location but tabbing in or element.focus() should restore
 	// the selection to what it was.
 	// There's no good way to do this. I just assume that a mousedown (or a drag and drop
 	// into the element) within 100 ms of the focus event must have caused the focus, and
 	// therefore we should not restore the selection.
-	if (!(el[datakey])){ // we haven't processed this element yet
+	if (!(el[datakey])){ // we haven't processed this element yet	
 		const data = createDataObject (el);
 		startupHooks.forEach ( hook => hook (el, ret, data) );
-	}
+	}	
 	return ret;
 }
 
@@ -49,7 +49,7 @@ startupHooks.add (correctNewlines);
 
 function trackSelection (element, range, data){
 	data.selection = [0,0];
-	range.listen('focusout', evt => data.selection = range._nativeSelection() );
+	range.listen('focusout', evt => data.selection = range._nativeSelection() );	
 	range.listen('mousedown', evt => data.mousetime = evt.timeStamp );
 	range.listen('drop', evt => data.mousetime = evt.timeStamp );
 	range.listen('focus', evt => {
@@ -63,7 +63,7 @@ function fixInputEvents (element, range, data){
 	// have a data field with the text inserted, but thatisn't enough to fully describe the change;
 	// we need to know the old text (or at least its length)
 	// and *where* the new text was inserted.
-	// So we enhance input events with that information.
+	// So we enhance input events with that information. 
 	// the "newText" should always be the same as the 'data' field, if it is defined
 	data.oldText = range.all();
 	data.liveRanges = new Set();
@@ -77,7 +77,7 @@ function fixInputEvents (element, range, data){
 			}
 		}
 		data.oldText = newText;
-
+		
 		// Also update live ranges on this element
 		data.liveRanges.forEach( rng => {
 			const start = evt.bililiteRange.start;
@@ -99,7 +99,7 @@ function fixInputEvents (element, range, data){
 			}else{
 				b1 = start;
 			}
-			rng.bounds([b0, b1]);
+			rng.bounds([b0, b1]);				
 		})
 	});
 }
@@ -181,7 +181,7 @@ function inputEventInit(type, oldText, newText, start, inputType){
 // base class
 function Range(){}
 Range.prototype = {
-	 // allow use of range[0] and range[1] for start and end of bounds
+	 // allow use of range[0] and range[1] for start and end of bounds 
 	get 0(){
 		return this.bounds()[0];
 	},
@@ -457,7 +457,7 @@ W3CRange.prototype._nativeRange = function (bounds){
 		rng.collapse (true);
 		w3cmoveBoundary (rng, bounds[1]-bounds[0], false, this._el);
 	}
-	return rng;
+	return rng;					
 };
 W3CRange.prototype._nativeSelect = function (rng){
 	this._win.getSelection().removeAllRanges();
@@ -556,11 +556,11 @@ var     START_TO_END                   = 1;
 var     END_TO_END                     = 2;
 var     END_TO_START                   = 3;
 // from the Mozilla documentation, for range.compareBoundaryPoints(how, sourceRange)
-// -1, 0, or 1, indicating whether the corresponding boundary-point of range is respectively before, equal to, or after the corresponding boundary-point of sourceRange.
+// -1, 0, or 1, indicating whether the corresponding boundary-point of range is respectively before, equal to, or after the corresponding boundary-point of sourceRange. 
     // * Range.END_TO_END compares the end boundary-point of sourceRange to the end boundary-point of range.
     // * Range.END_TO_START compares the end boundary-point of sourceRange to the start boundary-point of range.
     // * Range.START_TO_END compares the start boundary-point of sourceRange to the end boundary-point of range.
-    // * Range.START_TO_START compares the start boundary-point of sourceRange to the start boundary-point of range.
+    // * Range.START_TO_START compares the start boundary-point of sourceRange to the start boundary-point of range. 
 function w3cstart(rng, constraint){
 	if (rng.compareBoundaryPoints (START_TO_START, constraint) <= 0) return 0; // at or before the beginning
 	if (rng.compareBoundaryPoints (END_TO_START, constraint) >= 0) return constraint.toString().length;
@@ -610,7 +610,7 @@ function signalMonitor(prop, value, element){
 	const attr = `data-${prop}`;
 	element.dispatchEvent(new CustomEvent(attr, {bubbles: true, detail: value}));
 	try{
-		element.setAttribute (attr, value); // illegal attribute names will throw. Ignore it
+		element.setAttribute (attr, value); // illegal attribute names will throw. Ignore it			
 	} finally { /* ignore */ }
 }
 
@@ -619,7 +619,7 @@ function createDataObject (el){
 		set(obj, prop, value) {
 			obj[prop] = value;
 			if (monitored.has(prop)) signalMonitor(prop, value, obj.sourceElement);
-			return true; // in strict mode, 'set' returns a success flag
+			return true; // in strict mode, 'set' returns a success flag 
 		}
 	});
 }
@@ -666,3 +666,4 @@ bililiteRange.createOption = function (name, desc = {}){
 }
 
 })();
+
