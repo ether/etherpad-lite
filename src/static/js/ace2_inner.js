@@ -3071,8 +3071,8 @@ function Ace2Inner() {
 
           if (isPageDown) {
             // go to the bottom of the last visible content
-            rep.selStart[0] += visibleLineRange[1];
-            rep.selEnd[0] += visibleLineRange[1];
+            rep.selStart[0] += visibleLineRange[1] - 1;
+            rep.selEnd[0] += visibleLineRange[1] - 1;
             // if the new rep is beyond the viewport, put the caret on the last line
             if (rep.selStart[0] > linesLength) {
               rep.selStart = [linesLength - 1, 0];
@@ -3082,7 +3082,9 @@ function Ace2Inner() {
           }
 
           updateBrowserSelectionFromRep(); // works
-          scroll.scrollNodeVerticallyIntoView(); // TODO: always slightly off...
+          scroll.scrollNodeVerticallyIntoView(null, null, isPageUp, isPageDown);
+          // TODO: always slightly off...
+          // TODO: if enough content is visible below show all of that content
         }
 
         // scroll to viewport when user presses arrow keys and caret is out of the viewport

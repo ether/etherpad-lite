@@ -273,24 +273,35 @@ Scroll.prototype._triggerScrollWithAnimation =
 // needed to be completely in view. If the value is greater than 0 and less than or equal to 1,
 // besides of scrolling the minimum needed to be visible, it scrolls additionally
 // (viewport height * scrollAmountWhenFocusLineIsOutOfViewport) pixels
-Scroll.prototype.scrollNodeVerticallyIntoView = function (rep, innerHeight) {
+Scroll.prototype.scrollNodeVerticallyIntoView = function (rep, innerHeight, isPageUp, isPageDown) {
   const viewport = this._getViewPortTopBottom();
 
   // when the selection changes outside of the viewport the browser automatically scrolls the line
   // to inside of the viewport. Tested on IE, Firefox, Chrome in releases from 2015 until now
   // So, when the line scrolled gets outside of the viewport we let the browser handle it.
   const linePosition = caretPosition.getPosition();
-  if (linePosition) {
-    // top.console.log('linepos', linePosition);
+
+  if (isPageUp) {
+    // redraw entire page into view putting rep.selStart[0] at top left
     const distanceOfTopOfViewport = linePosition.top - viewport.top;
-    // TODO: Replace the below hack with the current caret location line height
-    const HACK = 20;
-    const distanceOfBottomOfViewport = viewport.bottom - linePosition.bottom - HACK;
-    // guessed value..  The above line needs to know the height of this element!
+    const pixelsToScroll =
+      distanceOfTopOfViewport - this._getPixelsRelativeToPercentageOfViewport(innerHeight, true);
+    this._scrollYPage(pixelsToScroll);
+    return;
+  }
+
+  if (isPageDown) {
+    // redraw entire page into view putting rep.selStart[0] at top left
+    this._scrollYPage(linePosition.top);
+    return;
+  }
+
+  if (linePosition) {
+    const distanceOfTopOfViewport = linePosition.top - viewport.top;
+    const distanceOfBottomOfViewport = viewport.bottom - linePosition.bottom;
 
     const caretIsAboveOfViewport = distanceOfTopOfViewport < 0;
     const caretIsBelowOfViewport = distanceOfBottomOfViewport < 0;
-    // top.console.log('isbelow', caretIsBelowOfViewport);
     if (caretIsAboveOfViewport) {
       const pixelsToScroll =
         distanceOfTopOfViewport - this._getPixelsRelativeToPercentageOfViewport(innerHeight, true);
