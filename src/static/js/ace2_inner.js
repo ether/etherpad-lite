@@ -888,7 +888,7 @@ function Ace2Inner() {
         if (isTimeUp()) return;
 
         const visibleRange = scroll.getVisibleCharRange(rep);
-        top.console.log('getVisibleCharRange', visibleRange);
+        // top.console.log('getVisibleCharRange', visibleRange);
         const docRange = [0, rep.lines.totalWidth()];
         finishedImportantWork = true;
         finishedWork = true;
@@ -3048,27 +3048,41 @@ function Ace2Inner() {
         }
         if ((evt.which == 36 && evt.ctrlKey == true) && padShortcutEnabled.ctrlHome) { scroll.setScrollY(0); } // Control Home send to Y = 0
         if ((evt.which == 33 || evt.which == 34) && type == 'keydown' && !evt.ctrlKey) {
-          evt.preventDefault(); // This is required, browsers will try to do normal default behavior on page up / down and the default behavior SUCKS
+          // This is required, browsers will try to do normal default behavior on page up / down
+          // and the default behavior SUCKS
+          evt.preventDefault();
 
-          const oldVisibleLineRange = scroll.getVisibleLineRange(rep);
-          top.console.log('oldviz', oldVisibleLineRange)
-          let visLines = oldVisibleLineRange[1] - oldVisibleLineRange[0];
-          let topOffset = rep.selStart[0] - oldVisibleLineRange[0];
-          if (topOffset < 0) {
-            topOffset = 0;
-          }
+          const visibleLineRange = scroll.getVisibleLineRange(rep); // [0,6]
 
           const isPageDown = evt.which === 34;
           const isPageUp = evt.which === 33;
+          const linesLength = rep.lines.length();
 
-          if(isPageDown){
-            rep.selStart[0] += visLines;
-            rep.selEnd[0] += visLines;
-            updateBrowserSelectionFromRep(); // works
-            scroll.scrollNodeVerticallyIntoView(); // always slightly off...
-
-
+          if (isPageUp) {
+            // go to the top of the visible content
+            rep.selStart[0] -= visibleLineRange[1] - visibleLineRange[0];
+            rep.selEnd[0] -= visibleLineRange[1] - visibleLineRange[0];
+            // if the new rep is beyond the viewport, put the caret on the last line
+            if (rep.selStart[0] < 0) {
+              rep.selStart = [0, 0];
+              rep.selEnd = [0, 0];
+            }
           }
+
+          if (isPageDown) {
+            // go to the bottom of the last visible content
+            rep.selStart[0] += visibleLineRange[1];
+            rep.selEnd[0] += visibleLineRange[1];
+            // if the new rep is beyond the viewport, put the caret on the last line
+            if (rep.selStart[0] > linesLength) {
+              rep.selStart = [linesLength - 1, 0];
+              rep.selEnd = [linesLength - 1, 0];
+            }
+            // TODO: Handle if character is X offset from content
+          }
+
+          updateBrowserSelectionFromRep(); // works
+          scroll.scrollNodeVerticallyIntoView(); // TODO: always slightly off...
         }
 
         // scroll to viewport when user presses arrow keys and caret is out of the viewport

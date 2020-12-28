@@ -281,14 +281,16 @@ Scroll.prototype.scrollNodeVerticallyIntoView = function (rep, innerHeight) {
   // So, when the line scrolled gets outside of the viewport we let the browser handle it.
   const linePosition = caretPosition.getPosition();
   if (linePosition) {
-    top.console.log('linepos', linePosition);
+    // top.console.log('linepos', linePosition);
     const distanceOfTopOfViewport = linePosition.top - viewport.top;
-    const distanceOfBottomOfViewport = viewport.bottom - linePosition.bottom - 20;
+    // TODO: Replace the below hack with the current caret location line height
+    const HACK = 20;
+    const distanceOfBottomOfViewport = viewport.bottom - linePosition.bottom - HACK;
     // guessed value..  The above line needs to know the height of this element!
 
     const caretIsAboveOfViewport = distanceOfTopOfViewport < 0;
     const caretIsBelowOfViewport = distanceOfBottomOfViewport < 0;
-    top.console.log('isbelow', caretIsBelowOfViewport);
+    // top.console.log('isbelow', caretIsBelowOfViewport);
     if (caretIsAboveOfViewport) {
       const pixelsToScroll =
         distanceOfTopOfViewport - this._getPixelsRelativeToPercentageOfViewport(innerHeight, true);
@@ -345,7 +347,7 @@ Scroll.prototype.getVisibleLineRange = function (rep) {
 
 Scroll.prototype.getVisibleCharRange = function (rep) {
   const lineRange = this.getVisibleLineRange(rep);
-  top.console.log(rep.lines);
+  // top.console.log(rep.lines);
   return [rep.lines.offsetOfIndex(lineRange[0]), rep.lines.offsetOfIndex(lineRange[1])];
 };
 
