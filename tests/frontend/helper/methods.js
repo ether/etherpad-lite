@@ -236,3 +236,64 @@ helper.clearPad = async () => {
   await helper.waitForPromise(helper.padIsEmpty);
   await helper.waitForPromise(() => helper.commits.length > commitsBefore);
 };
+
+/**
+ * Scrolls up in the editor
+ * TODO: is `getSelection` always defined?
+ */
+helper.pageUp = async () => {
+  // the caret is in this node
+  const caretNode = helper.padInner$.document.getSelection().anchorNode;
+  const event = new helper.padInner$.Event(helper.evtType);
+  event.which = 33;
+  helper.padInner$('#innerdocbody').trigger(event);
+
+  // return as soon as the selection has changed
+  await helper.waitForPromise(() => helper.padInner$.document.getSelection().anchorNode !== caretNode);
+};
+
+/**
+ * Scrolls down in the editor
+ * TODO: is `getSelection` always defined?
+ */
+helper.pageDown = async () => {
+  // the caret is in this node
+  const caretNode = helper.padInner$.document.getSelection().anchorNode;
+  const event = new helper.padInner$.Event(helper.evtType);
+  event.which = 34;
+  helper.padInner$('#innerdocbody').trigger(event);
+
+  // return as soon as the selection has changed
+  await helper.waitForPromise(() => helper.padInner$.document.getSelection().anchorNode !== caretNode);
+};
+
+/**
+ * Gets the line number where the caret is currently in
+ *
+ * @returns {number} line number
+ */
+helper.caretLineNumber = () => {
+  if (helper.padInner$.document.getSelection()) {
+    let caretNode = helper.padInner$.document.getSelection().anchorNode;;
+    let bodyElement = helper.padInner$('body')[0];
+
+    // a text node does not have a classList method
+    if (caretNode.nodeType === 3) {
+      caretNode = caretNode.parentNode;
+    }
+
+    // find the ace-line that contains the caret
+    while (!caretNode.classList.contains('ace-line') && caretNode !== bodyElement ) {
+      caretNode = caretNode.parentNode;
+
+      // a text node does not have a classList method
+      if (caretNode.nodeType === 3) {
+        caretNode = caretNode.parentNode;
+      }
+    }
+
+    // find the index of that line in the array of all lines
+    const lines = helper.linesDiv().map((line) => line[0]);
+    return lines.indexOf(caretNode) + 1;
+  }
+};
