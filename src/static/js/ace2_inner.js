@@ -3071,6 +3071,42 @@ function Ace2Inner() {
           const isPageUp = evt.which === 33;
           const linesLength = rep.lines.length();
 
+          // input is a line
+          // returned is the number of characters in that index that are currently
+          // visible in the viewport
+          // TODO CAKE JM
+          const getVisibleCharRangeOfLineInViewport = (line) => {
+            const range = document.createRange();
+            const chars = line.text.split(''); // split "abc" into ["a","b","c"]
+            const parentElement = document.getElementById(line.domInfo.node.id).childNodes;
+            top.console.log(parentElement);
+            const nodeArray = Array.from(document.body.childNodes).filter;
+            top.console.log(nodeArray);
+            const characterTopOffset = [];
+            for (const node of parentElement) {
+              // each span..
+              top.console.log('span', node); // shows all nodes from the collection
+              top.console.log('span length', node.offsetTop); // shows all nodes from the collection
+
+              // now do each character
+              let i = 0;
+              while (i < node.textContent.length) {
+                top.console.log(i, node.textContent[i]);
+                const range = document.createRange();
+                range.setStart(node, i);
+                range.setEnd(node, i + 1);
+                const char = range.getClientRects();
+                if (char.length) {
+                  for (const element in chars) {
+                    top.console.log(element.top);
+                  }
+                }
+                i++;
+              }
+            }
+            return 1000;
+          };
+
           if (isPageUp) {
             // go to the top of the visible content
             rep.selStart[0] -= visibleLineRange[1] - visibleLineRange[0];
@@ -3097,6 +3133,7 @@ function Ace2Inner() {
                 rep.selEnd[1] = previousCharacterOffset;
               }
             }
+            // TODO/JM: Handle page up in really long lines
           }
 
           if (isPageDown) {
@@ -3141,7 +3178,7 @@ function Ace2Inner() {
               // if the last line is a blank line then don't throw an error.
               if (line) {
                 lineLength = line.width;
-              }else{
+              } else {
                 lineLength = 0;
               }
               rep.selStart = [linesLength - 1, lineLength];
@@ -3154,8 +3191,9 @@ function Ace2Inner() {
             if (rep.selEnd[0] === visibleLineRange[1]) {
               top.console.log('line too long, can\'t see the next line');
               // TODO JM CAKE: Figure out how many chars are visible in viewport.
-              rep.selStart[1] = 50;
-              rep.selEnd[1] = 50;
+              const visibleCharsInViewport = getVisibleCharRangeOfLineInViewport(line);
+              rep.selStart[1] += visibleCharsInViewport;
+              rep.selEnd[1] += visibleCharsInViewport;
             }
 
             top.console.log('Final rep: ', rep.selStart);
