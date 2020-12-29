@@ -2806,6 +2806,9 @@ function Ace2Inner() {
     } else {
       previousCharacterOffset = 0;
     }
+    // previousLine is used in page up/down to ensure that
+    // a page down event always goes across X characters on that line
+    const previousLine = rep.selEnd[0]; // TODO: cake jm
 
     inCallStackIfNecessary('handleKeyEvent', function () {
       if (type == 'keypress' || (isTypeForSpecialKey && keyCode == 13 /* return*/)) {
@@ -3097,44 +3100,35 @@ function Ace2Inner() {
           }
 
           if (isPageDown) {
-            top.console.log('prevcharoffset', previousCharacterOffset);
+            let line;
+            // need current character length of line
+            try {
+              line = rep.lines.atIndex(rep.selEnd[0]);
+            } catch (e) {
+              // silently fail, no big deal..
+              line = rep.lines.atIndex(visibleLineRange[1]);
+            }
+            // Keep the X character offset on page down
+            if (previousCharacterOffset <= line.width) {
+              rep.selStart[1] = previousCharacterOffset;
+              rep.selEnd[1] = previousCharacterOffset;
+            }
+            top.console.log('visibleLineRange', visibleLineRange);
+            rep.selStart[0] = rep.selStart[0] + (visibleLineRange[1] - visibleLineRange[0]);
+            rep.selEnd[0] = rep.selEnd[0] + (visibleLineRange[1] - visibleLineRange[0]);
 
-            // go to the bottom of the last visible content
-            if (rep.selStart[0] === 0) {
-              rep.selStart[0] += visibleLineRange[1] - visibleLineRange[0] - 1;
-              rep.selEnd[0] += visibleLineRange[1] - visibleLineRange[0] - 1;
-            } else {
-              top.console.log('am here..', visibleLineRange);
-              let line;
-              // need current character length of line
-              try {
-                line = rep.lines.atIndex(rep.selEnd[0]);
-              } catch (e) {
-                // silently fail, no big deal..
-                line = rep.lines.atIndex(visibleLineRange[1]);
-              }
+            if (rep.selEnd[0] < 0 || rep.selStart[0] < 0) {
+              top.console.log('trying to visit a negative line?!');
+              // don't go to negative lines..
+              rep.selStart[0] = 0;
+              rep.selEnd[0] = 0;
+              return;
+            }
 
-              const lineLength = line.width;
-              // Keep the X character offset on page down
-              if (previousCharacterOffset <= line.width) {
-                rep.selStart[1] = previousCharacterOffset;
-                rep.selEnd[1] = previousCharacterOffset;
-              }
-              rep.selStart[0] = rep.selStart[0] + (visibleLineRange[1] - visibleLineRange[0]);
-              rep.selEnd[0] = rep.selEnd[0] + (visibleLineRange[1] - visibleLineRange[0]);
-            }
-            top.console.log(rep.selStart[0]);
-            if (rep.selStart[0] === -1) {
-              return rep.selStart[0] = 0;
-            }
-            if (rep.selEnd[0] === -1) {
-              return rep.selEnd[0] = 0;
-            }
             // if the new rep is beyond the viewport
             // put the caret on the last line at the end of the line
-            top.console.log(rep.selStart[0]);
             if (rep.selStart[0] >= (linesLength - 1)) {
-              top.console.log('wait wut?', rep.selStart[0], linesLength - 1);
+              top.console.log('putting caret on the last line at the end of the line', rep.selStart[0], linesLength - 1);
               let line;
               // need current character length of line
               try {
@@ -3143,14 +3137,29 @@ function Ace2Inner() {
                 // silently fail, no big deal..
                 line = rep.lines.atIndex(visibleLineRange[1]);
               }
-
-              const lineLength = line.width;
-
+              let lineLength;
+              // if the last line is a blank line then don't throw an error.
+              if (line) {
+                lineLength = line.width;
+              }else{
+                lineLength = 0;
+              }
               rep.selStart = [linesLength - 1, lineLength];
               rep.selEnd = [linesLength - 1, lineLength];
             }
-            top.console.log('waittt', rep);
-            // TODO: Handle if character is X offset from content
+
+            // lines that are very long might fill the entire page.
+            // if we can't see the end of the current line (IE see the next line)
+            // then we need to scroll the X position, not the Y
+            if (rep.selEnd[0] === visibleLineRange[1]) {
+              top.console.log('line too long, can\'t see the next line');
+              // TODO JM CAKE: Figure out how many chars are visible in viewport.
+              rep.selStart[1] = 50;
+              rep.selEnd[1] = 50;
+            }
+
+            top.console.log('Final rep: ', rep.selStart);
+            top.console.log('Final rep: ', rep.selEnd);
           }
 
           updateBrowserSelectionFromRep(); // works
