@@ -2798,6 +2798,15 @@ function Ace2Inner() {
     const isTypeForCmdKey = ((browser.safari || browser.chrome || browser.firefox) ? (type == 'keydown') : (type == 'keypress'));
     let stopped = false;
 
+    // previousCharacterOffset is used for ensuring caret
+    // location is kept on up/pagedown events
+    let previousCharacterOffset;
+    if (rep.selEnd[1] > 0) {
+      previousCharacterOffset = rep.selEnd[1];
+    } else {
+      previousCharacterOffset = 0;
+    }
+
     inCallStackIfNecessary('handleKeyEvent', function () {
       if (type == 'keypress' || (isTypeForSpecialKey && keyCode == 13 /* return*/)) {
         // in IE, special keys don't send keypress, the keydown does the action
@@ -3068,16 +3077,49 @@ function Ace2Inner() {
               // put the caret on the first line in the first position
               rep.selStart = [0, 0];
               rep.selEnd = [0, 0];
+            } else {
+              let line;
+              // need current character length of line
+              try {
+                line = rep.lines.atIndex(rep.selEnd[0]);
+              } catch (e) {
+                // silently fail, no big deal..
+                line = rep.lines.atIndex(visibleLineRange[1]);
+              }
+
+              const lineLength = line.width;
+              // Keep the X character offset on page down
+              if (previousCharacterOffset <= line.width) {
+                rep.selStart[1] = previousCharacterOffset;
+                rep.selEnd[1] = previousCharacterOffset;
+              }
             }
           }
 
           if (isPageDown) {
+            top.console.log('prevcharoffset', previousCharacterOffset);
+
             // go to the bottom of the last visible content
             if (rep.selStart[0] === 0) {
               rep.selStart[0] += visibleLineRange[1] - visibleLineRange[0] - 1;
               rep.selEnd[0] += visibleLineRange[1] - visibleLineRange[0] - 1;
             } else {
               top.console.log('am here..', visibleLineRange);
+              let line;
+              // need current character length of line
+              try {
+                line = rep.lines.atIndex(rep.selEnd[0]);
+              } catch (e) {
+                // silently fail, no big deal..
+                line = rep.lines.atIndex(visibleLineRange[1]);
+              }
+
+              const lineLength = line.width;
+              // Keep the X character offset on page down
+              if (previousCharacterOffset <= line.width) {
+                rep.selStart[1] = previousCharacterOffset;
+                rep.selEnd[1] = previousCharacterOffset;
+              }
               rep.selStart[0] = rep.selStart[0] + (visibleLineRange[1] - visibleLineRange[0]);
               rep.selEnd[0] = rep.selEnd[0] + (visibleLineRange[1] - visibleLineRange[0]);
             }
