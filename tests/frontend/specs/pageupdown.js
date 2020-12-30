@@ -1,5 +1,4 @@
 'use strict';
-/*
 describe('Page Up/Down', function () {
   beforeEach(function (cb) {
     helper.newPad({
@@ -296,7 +295,6 @@ describe('Viewport based Page Up/Down', function () {
     await helper.waitForPromise(() => currentLineNumber < 5);
   });
 });
-*/
 describe('Shift Page Up/Down', function () {
   beforeEach(function (cb) {
     helper.newPad({
