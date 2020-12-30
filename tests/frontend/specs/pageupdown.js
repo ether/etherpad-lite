@@ -1,4 +1,5 @@
 'use strict';
+/*
 describe('Page Up/Down', function () {
   beforeEach(function (cb) {
     helper.newPad({
@@ -268,7 +269,7 @@ describe('Really long text line goes to character within text line if text line 
   });
 });
 
-describe('Viewport baesd Page Up/Down', function () {
+describe('Viewport based Page Up/Down', function () {
   beforeEach(function (cb) {
     helper.newPad({
       cb: async () => {
@@ -293,5 +294,28 @@ describe('Viewport baesd Page Up/Down', function () {
     helper.padOuter$('#outerdocbody').parent().scrollTop(100);
     helper.pageUp();
     await helper.waitForPromise(() => currentLineNumber < 5);
+  });
+});
+*/
+describe('Shift Page Up/Down', function () {
+  beforeEach(function (cb) {
+    helper.newPad({
+      cb: async () => {
+        await helper.clearPad();
+        // 200 lines
+        await helper.edit('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n');
+        cb();
+      },
+    });
+  });
+
+  it('highlights multiple lines on shift page down', async function () {
+    await helper.edit('xxx', 1); // caret is offset 6
+
+    helper.pageUp();
+    helper.pageDown({
+      shift: true,
+    });
+    await helper.waitForPromise(() => helper.padInner$.document.getSelection().type === 'Range');
   });
 });

@@ -241,11 +241,16 @@ helper.clearPad = async () => {
  * Scrolls up in the editor
  * TODO: is `getSelection` always defined?
  */
-helper.pageUp = async () => {
+helper.pageUp = async (opts) => {
   // the caret is in this node
   const caretNode = helper.padInner$.document.getSelection().anchorNode;
   const event = new helper.padInner$.Event(helper.evtType);
   event.which = 33;
+  if (opts) {
+    if (opts.shift) {
+      event.shiftKey = true;
+    }
+  }
   helper.padInner$('#innerdocbody').trigger(event);
 
   // return as soon as the selection has changed
@@ -256,11 +261,16 @@ helper.pageUp = async () => {
  * Scrolls down in the editor
  * TODO: is `getSelection` always defined?
  */
-helper.pageDown = async () => {
+helper.pageDown = async (opts) => {
   // the caret is in this node
   const caretNode = helper.padInner$.document.getSelection().anchorNode;
   const event = new helper.padInner$.Event(helper.evtType);
   event.which = 34;
+  if (opts) {
+    if (opts.shift) {
+      event.shiftKey = true;
+    }
+  }
   helper.padInner$('#innerdocbody').trigger(event);
 
   // return as soon as the selection has changed
@@ -274,8 +284,9 @@ helper.pageDown = async () => {
  */
 helper.caretLineNumber = () => {
   if (helper.padInner$.document.getSelection()) {
-    let caretNode = helper.padInner$.document.getSelection().anchorNode;;
-    let bodyElement = helper.padInner$('body')[0];
+    let caretNode = helper.padInner$.document.getSelection().anchorNode;
+    console.log('caretNode', caretNode);
+    const bodyElement = helper.padInner$('body')[0];
 
     // a text node does not have a classList method
     if (caretNode.nodeType === 3) {
@@ -283,7 +294,7 @@ helper.caretLineNumber = () => {
     }
 
     // find the ace-line that contains the caret
-    while (!caretNode.classList.contains('ace-line') && caretNode !== bodyElement ) {
+    while (!caretNode.classList.contains('ace-line') && caretNode !== bodyElement) {
       caretNode = caretNode.parentNode;
 
       // a text node does not have a classList method
