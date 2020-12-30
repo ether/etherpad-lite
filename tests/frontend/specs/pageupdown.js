@@ -160,22 +160,18 @@ describe('X character offset integrity is kept between page up/down', function (
   });
 
   it('Page down with an offset of 3 and check we keep our x offset', async function () {
-    /*
-       Consider this document..
+    // Consider this document..
+    //   hello*
+    //   world
+    //   .
+    //   .
+    //   .
+    //   BOO!
 
-       hello*
-       world
-       .
-       .
-       .
-       BOO!
+    // Hitting page down at the star point should put your caret after BOO!
+    // Now consider that the empty lines are very long and the caret lands in them.
+    // We respect the original x character offset and try to pass it forward.
 
-       Hitting page down at the star point should put your caret after BOO!
-
-       Now consider that the empty lines are very long and the caret lands in them.
-       We respect the original x character offset and try to pass it forward.
-
-    */
     // this places the caret in the first line
     await helper.edit('xxx', 1); // caret is offset 6
 
@@ -210,5 +206,92 @@ describe('X character offset integrity is kept between page up/down', function (
     await helper.waitForPromise(() => currentLineNumber > helper.caretLineNumber());
     await helper.waitForPromise(() => helper.padInner$.document.getSelection().anchorOffset === originalOffset ||
       !helper.padInner$.document.getSelection().anchorNode.length);
+  });
+});
+
+describe('Really long text line goes to character within text line if text line is last line in viewport', function () {
+  beforeEach(function (cb) {
+    helper.newPad({
+      cb: async () => {
+        await helper.clearPad();
+        // 200 lines
+        await helper.edit(
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world\n ' +
+          'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world ');
+        cb();
+      },
+    });
+  });
+
+  it('Page down on really long line keeps character on the same line but with a large X offset', async function () {
+    await helper.edit('xxx', 1); // caret is offset 6
+    await helper.waitForPromise(() => {
+      if ((helper.padInner$.document.getSelection().anchorOffset === 0) && (helper.caretLineNumber() === 1)) {
+        return true;
+      } else {
+        helper.pageUp();
+      }
+    });
+    helper.pageDown();
+    await helper.waitForPromise(() => {
+      if ((helper.padInner$.document.getSelection().anchorOffset > 0) && (helper.caretLineNumber() === 1)) {
+        throw new Error('This test will pass but it should not..   We need logic to check we were at the last possible caret');
+        return true;
+      }
+    });
+  });
+});
+
+describe('Viewport baesd Page Up/Down', function () {
+  beforeEach(function (cb) {
+    helper.newPad({
+      cb: async () => {
+        await helper.clearPad();
+        // 200 lines
+        await helper.edit(
+            '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n' +
+          '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n' +
+          '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n' +
+          '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n' +
+          '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n');
+        cb();
+      },
+    });
+  });
+
+  // scrolls up 3 times
+  it('scrolls down on page down key stroke when top is at 0', async function () {
+    // by default page down when caret is at end of the document will leave it in the same place.
+    // viewport based pageup/down changes that
+    const currentLineNumber = helper.caretLineNumber();
+    helper.padOuter$('#outerdocbody').parent().scrollTop(100);
+    helper.pageUp();
+    await helper.waitForPromise(() => currentLineNumber < 5);
   });
 });
