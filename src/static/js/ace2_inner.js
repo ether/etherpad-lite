@@ -3093,6 +3093,7 @@ function Ace2Inner() {
               while (i < node.textContent.length) {
                 top.console.log(i, node.textContent[i]);
                 const range = document.createRange();
+                /*
                 range.setStart(node, i);
                 range.setEnd(node, i + 1);
                 const char = range.getClientRects();
@@ -3101,6 +3102,8 @@ function Ace2Inner() {
                     top.console.log(element.top);
                   }
                 }
+                */
+                // above is broken..
                 i++;
               }
             }
@@ -3110,12 +3113,12 @@ function Ace2Inner() {
           if (isPageUp) {
             // go to the top of the visible content
             rep.selStart[0] -= visibleLineRange[1] - visibleLineRange[0];
-            rep.selEnd[0] -= visibleLineRange[1] - visibleLineRange[0];
+            if (!shiftKey) rep.selEnd[0] -= visibleLineRange[1] - visibleLineRange[0];
             // if the new rep is beyond the viewport or first line,
             if (rep.selStart[0] <= 0) {
               // put the caret on the first line in the first position
               rep.selStart = [0, 0];
-              rep.selEnd = [0, 0];
+              if (!shiftKey) rep.selEnd = [0, 0];
             } else {
               let line;
               // need current character length of line
@@ -3130,7 +3133,7 @@ function Ace2Inner() {
               // Keep the X character offset on page down
               if (previousCharacterOffset <= line.width) {
                 rep.selStart[1] = previousCharacterOffset;
-                rep.selEnd[1] = previousCharacterOffset;
+                if (!shiftKey) rep.selEnd[1] = previousCharacterOffset;
               }
             }
             // TODO/JM: Handle page up in really long lines
@@ -3147,11 +3150,11 @@ function Ace2Inner() {
             }
             // Keep the X character offset on page down
             if (previousCharacterOffset <= line.width) {
-              rep.selStart[1] = previousCharacterOffset;
+              if (!shiftKey) rep.selStart[1] = previousCharacterOffset;
               rep.selEnd[1] = previousCharacterOffset;
             }
             top.console.log('visibleLineRange', visibleLineRange);
-            rep.selStart[0] = rep.selStart[0] + (visibleLineRange[1] - visibleLineRange[0]);
+            if (!shiftKey) rep.selStart[0] = rep.selStart[0] + (visibleLineRange[1] - visibleLineRange[0]);
             rep.selEnd[0] = rep.selEnd[0] + (visibleLineRange[1] - visibleLineRange[0]);
 
             if (rep.selEnd[0] < 0 || rep.selStart[0] < 0) {
@@ -3181,7 +3184,7 @@ function Ace2Inner() {
               } else {
                 lineLength = 0;
               }
-              rep.selStart = [linesLength - 1, lineLength];
+              if (!shiftKey) rep.selStart = [linesLength - 1, lineLength];
               rep.selEnd = [linesLength - 1, lineLength];
             }
 
@@ -3192,7 +3195,7 @@ function Ace2Inner() {
               top.console.log('line too long, can\'t see the next line');
               // TODO JM CAKE: Figure out how many chars are visible in viewport.
               const visibleCharsInViewport = getVisibleCharRangeOfLineInViewport(line);
-              rep.selStart[1] += visibleCharsInViewport;
+              if (!shiftKey) rep.selStart[1] += visibleCharsInViewport;
               rep.selEnd[1] += visibleCharsInViewport;
             }
 
