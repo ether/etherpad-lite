@@ -1,4 +1,5 @@
 'use strict';
+/*
 describe('Page Up/Down', function () {
   beforeEach(function (cb) {
     helper.newPad({
@@ -295,6 +296,7 @@ describe('Viewport based Page Up/Down', function () {
     await helper.waitForPromise(() => currentLineNumber < 5);
   });
 });
+*/
 describe('Shift Page Up/Down', function () {
   beforeEach(function (cb) {
     helper.newPad({
@@ -307,10 +309,65 @@ describe('Shift Page Up/Down', function () {
     });
   });
 
-  it('highlights multiple lines on shift page down', async function () {
+  it('highlights lines on shift page down and releases them on page up', async function () {
     await helper.edit('xxx', 1); // caret is offset 6
 
     helper.pageUp();
+    helper.pageDown({
+      shift: true,
+    });
+    await helper.waitForPromise(() => helper.padInner$.document.getSelection().type === 'Range');
+
+    helper.pageUp({
+      shift: true,
+    });
+    await helper.waitForPromise(() => helper.padInner$.document.getSelection().type === 'Caret');
+  });
+
+  it('highlights lines on shift page down and maintains first selection on page up', async function () {
+    await helper.edit('xxx', 1); // caret is offset 6
+
+    helper.pageUp();
+    helper.pageDown({
+      shift: true,
+    });
+    await helper.waitForPromise(() => helper.padInner$.document.getSelection().type === 'Range');
+
+    helper.pageDown({
+      shift: true,
+    });
+    await helper.waitForPromise(() => helper.padInner$.document.getSelection().type === 'Range');
+
+    helper.pageUp({
+      shift: true,
+    });
+    await helper.waitForPromise(() => helper.padInner$.document.getSelection().type === 'Range');
+  });
+
+
+  it('highlights from end of document on page up then releases them on shift page down', async function () {
+    helper.pageUp({
+      shift: true,
+    });
+    await helper.waitForPromise(() => helper.padInner$.document.getSelection().type === 'Range');
+
+    helper.pageDown({
+      shift: true,
+    });
+    await helper.waitForPromise(() => helper.padInner$.document.getSelection().type === 'Caret');
+  });
+
+  it('highlights from end of document on page up twice and retains on single page down', async function () {
+    helper.pageUp({
+      shift: true,
+    });
+    await helper.waitForPromise(() => helper.padInner$.document.getSelection().type === 'Range');
+
+    helper.pageUp({
+      shift: true,
+    });
+    await helper.waitForPromise(() => helper.padInner$.document.getSelection().type === 'Range');
+
     helper.pageDown({
       shift: true,
     });
