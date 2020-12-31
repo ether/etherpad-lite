@@ -1,5 +1,4 @@
 'use strict';
-/*
 describe('Page Up/Down', function () {
   beforeEach(function (cb) {
     helper.newPad({
@@ -296,7 +295,6 @@ describe('Viewport based Page Up/Down', function () {
     await helper.waitForPromise(() => currentLineNumber < 5);
   });
 });
-*/
 describe('Shift Page Up/Down', function () {
   beforeEach(function (cb) {
     helper.newPad({
@@ -369,6 +367,19 @@ describe('Shift Page Up/Down', function () {
     await helper.waitForPromise(() => helper.padInner$.document.getSelection().type === 'Range');
 
     helper.pageDown({
+      shift: true,
+    });
+    await helper.waitForPromise(() => helper.padInner$.document.getSelection().type === 'Range');
+  });
+  it('highlights from 3rd line on page up twice should keep highlight', async function () {
+    await helper.edit('xxx', 3); // caret is offset 6
+
+    helper.pageUp({
+      shift: true,
+    });
+    await helper.waitForPromise(() => helper.padInner$.document.getSelection().type === 'Range');
+
+    helper.pageUp({
       shift: true,
     });
     await helper.waitForPromise(() => helper.padInner$.document.getSelection().type === 'Range');

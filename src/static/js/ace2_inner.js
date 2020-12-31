@@ -3071,6 +3071,9 @@ function Ace2Inner() {
           const isPageUp = evt.which === 33;
           const linesLength = rep.lines.length();
 
+          // boolean - reflects if the user is attempting to highlight content
+          const highlighting = shiftKey && (rep.selStart[0] !== rep.selEnd[0] || rep.selStart[1] !== rep.selEnd[1]);
+
           // input is a line
           // returned is the number of characters in that index that are currently
           // visible in the viewport
@@ -3111,29 +3114,47 @@ function Ace2Inner() {
           };
 
           if (isPageUp) {
-            // go to the top of the visible content
-            rep.selStart[0] -= visibleLineRange[1] - visibleLineRange[0];
-            if (!shiftKey) rep.selEnd[0] -= visibleLineRange[1] - visibleLineRange[0];
-            // if the new rep is beyond the viewport or first line,
-            if (rep.selStart[0] <= 0) {
-              // put the caret on the first line in the first position
-              rep.selStart = [0, 0];
-              if (!shiftKey) rep.selEnd = [0, 0];
-            } else {
-              let line;
-              // need current character length of line
-              try {
-                line = rep.lines.atIndex(rep.selEnd[0]);
-              } catch (e) {
-                // silently fail, no big deal..
-                line = rep.lines.atIndex(visibleLineRange[1]);
-              }
+            // would the new location be before the document?
+            // top.console.log(rep.selEnd[0] - (visibleLineRange[1] - visibleLineRange[0]));
+            const targetLine = rep.selEnd[0] - (visibleLineRange[1] - visibleLineRange[0]);
+            const beforeViewport = targetLine <= 0;
+            top.console.log('beforeVP', beforeViewport);
+            top.console.log('highlighting', highlighting);
+            top.console.log('shitKey', shiftKey);
 
-              const lineLength = line.width;
-              // Keep the X character offset on page down
-              if (previousCharacterOffset <= line.width) {
-                rep.selStart[1] = previousCharacterOffset;
-                if (!shiftKey) rep.selEnd[1] = previousCharacterOffset;
+            if (extendSelection) {
+              if (beforeViewport || targetLine === 1) {
+              // lets assume we select end of document then hit page up
+                if (highlighting) {
+                  top.console.log('resetting...');
+                  // put the caret on the first line in the first position
+                  if (shiftKey) rep.selStart = [0, 0];
+                  if (shiftKey) rep.selEnd = [0, 0];
+                } else {
+                // we should always keep our selEnd..
+                  rep.selStart = [0, 0];
+                  if (!shiftKey) rep.selEnd = [0, 0];
+                }
+              // TODO Handle long lines!
+              } else {
+                top.console.log('MAM');
+                if (shiftKey) rep.selStart[0] -= visibleLineRange[1] - visibleLineRange[0];
+                if (!shiftKey) rep.selEnd[0] -= visibleLineRange[1] - visibleLineRange[0];
+                let line;
+                // need current character length of line
+                try {
+                  line = rep.lines.atIndex(rep.selEnd[0]);
+                } catch (e) {
+                // silently fail, no big deal..
+                  line = rep.lines.atIndex(visibleLineRange[1]);
+                }
+
+                const lineLength = line.width;
+                // Keep the X character offset on page down
+                if (previousCharacterOffset <= line.width) {
+                  rep.selStart[1] = previousCharacterOffset;
+                  if (!shiftKey) rep.selEnd[1] = previousCharacterOffset;
+                }
               }
             }
             // TODO/JM: Handle page up in really long lines
