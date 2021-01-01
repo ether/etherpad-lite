@@ -280,7 +280,7 @@ Scroll.prototype.scrollNodeVerticallyIntoView = function (rep, innerHeight, isPa
   // to inside of the viewport. Tested on IE, Firefox, Chrome in releases from 2015 until now
   // So, when the line scrolled gets outside of the viewport we let the browser handle it.
   const linePosition = caretPosition.getPosition();
-  if (isPageUp) {
+  if (isPageUp || isPageDown) {
     // redraw entire page into view putting rep.selStart[0] at top left
     const distanceOfTopOfViewport = linePosition.top - viewport.top;
     const pixelsToScroll =
@@ -288,39 +288,6 @@ Scroll.prototype.scrollNodeVerticallyIntoView = function (rep, innerHeight, isPa
     this._scrollYPage(pixelsToScroll - linePosition.height);
     return;
   }
-
-  if (isPageDown) {
-    console.log(linePosition);
-    console.log(viewport);
-    // redraw entire page into view putting rep.selStart[0] at top left
-    // this._scrollYPage(linePosition.top);
-    // redraw entire page into view putting rep.selStart[0] at top left
-    // const distanceOfTopOfViewport = linePosition.top - viewport.top;
-    // const pixelsToScroll =
-    //   distanceOfTopOfViewport - this._getPixelsRelativeToPercentageOfViewport(innerHeight, true);
-    this._scrollYPage(viewport.bottom - viewport.top);
-    return;
-  }
-/*
-  if (linePosition) {
-    const distanceOfTopOfViewport = linePosition.top - viewport.top;
-    const distanceOfBottomOfViewport = viewport.bottom - linePosition.bottom;
-
-    const caretIsAboveOfViewport = distanceOfTopOfViewport < 0;
-    const caretIsBelowOfViewport = distanceOfBottomOfViewport < 0;
-    if (caretIsAboveOfViewport) {
-      const pixelsToScroll =
-        distanceOfTopOfViewport - this._getPixelsRelativeToPercentageOfViewport(innerHeight, true);
-      this._scrollYPage(pixelsToScroll);
-    } else if (caretIsBelowOfViewport) {
-      const pixelsToScroll = -distanceOfBottomOfViewport +
-        this._getPixelsRelativeToPercentageOfViewport(innerHeight);
-      this._scrollYPage(pixelsToScroll);
-    } else {
-      this.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary(rep, true, innerHeight);
-    }
-  }
-  */
 };
 
 Scroll.prototype._partOfRepLineIsOutOfViewport = function (viewportPosition, rep) {
@@ -350,16 +317,14 @@ Scroll.prototype._arrowUpWasPressedInTheFirstLineOfTheViewport = function (arrow
 
 Scroll.prototype.getVisibleLineRange = function (rep) {
   const viewport = this._getViewPortTopBottom();
-  // console.log("viewport top/bottom: %o", viewport);
   const obj = {};
   const self = this;
   const start = rep.lines.search((e) => self._getLineEntryTopBottom(e, obj).bottom > viewport.top);
   // return the first line that the top position is greater or equal than
   // the viewport. That is the first line that is below the viewport bottom.
   // So the line that is in the bottom of the viewport is the very previous one.
-  let end = rep.lines.search((e) => self._getLineEntryTopBottom(e, obj).top >= viewport.bottom);
+  let end = rep.lines.search((e) => self._getLineEntryTopBottom(e, obj).bottom >= viewport.bottom);
   if (end < start) end = start; // unlikely
-  // top.console.log(start+","+(end -1));
   return [start, end - 1];
 };
 

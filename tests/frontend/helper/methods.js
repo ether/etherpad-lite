@@ -285,7 +285,6 @@ helper.pageDown = async (opts) => {
 helper.caretLineNumber = () => {
   if (helper.padInner$.document.getSelection()) {
     let caretNode = helper.padInner$.document.getSelection().anchorNode;
-    console.log('caretNode', caretNode);
     const bodyElement = helper.padInner$('body')[0];
 
     // a text node does not have a classList method

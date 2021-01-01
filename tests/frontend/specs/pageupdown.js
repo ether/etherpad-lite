@@ -1,5 +1,6 @@
 'use strict';
-describe('Page Up/Down', function () {
+
+describe('Page Up & Page Down', function () {
   beforeEach(function (cb) {
     helper.newPad({
       cb: async () => {
@@ -49,6 +50,7 @@ describe('Page Up/Down', function () {
     await helper.waitForPromise(() => currentLineNumber < helper.caretLineNumber());
   });
 });
+
 describe('Page Up/Down Beginning and End position', function () {
   beforeEach(function (cb) {
     helper.newPad({
@@ -89,6 +91,7 @@ describe('Page Up/Down Beginning and End position', function () {
     await helper.waitForPromise(() => pos.anchorOffset === 0);
   });
 });
+
 describe('Line number integrity is kept between page up/down', function () {
   beforeEach(function (cb) {
     helper.newPad({
@@ -129,19 +132,20 @@ describe('Line number integrity is kept between page up/down', function () {
     let futureLineNumber = helper.caretLineNumber();
     helper.pageUp();
     await helper.waitForPromise(() => futureLineNumber > helper.caretLineNumber());
-    if (helper.caretLineNumber() !== lineHistory[lineHistory.length]) {
-      throw new Error('Line History not being properly maintained');
+    if (helper.caretLineNumber() !== lineHistory[lineHistory.length - 1]) {
+      throw new Error('Line History not being properly maintained on page up #1');
     }
     lineHistory.pop();
 
     futureLineNumber = helper.caretLineNumber();
     helper.pageUp();
     await helper.waitForPromise(() => futureLineNumber > helper.caretLineNumber());
-    if (helper.caretLineNumber() !== lineHistory[lineHistory.length]) {
-      throw new Error('Line History not being properly maintained');
+    if (helper.caretLineNumber() !== lineHistory[lineHistory.length - 1]) {
+      throw new Error('Line History not being properly maintained on page up #2');
     }
   });
 });
+
 describe('X character offset integrity is kept between page up/down', function () {
   beforeEach(function (cb) {
     helper.newPad({
@@ -295,6 +299,8 @@ describe('Viewport based Page Up/Down', function () {
     await helper.waitForPromise(() => currentLineNumber < 5);
   });
 });
+
+/*
 describe('Shift Page Up/Down', function () {
   beforeEach(function (cb) {
     helper.newPad({
@@ -385,3 +391,4 @@ describe('Shift Page Up/Down', function () {
     await helper.waitForPromise(() => helper.padInner$.document.getSelection().type === 'Range');
   });
 });
+*/

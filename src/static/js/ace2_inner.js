@@ -889,7 +889,6 @@ function Ace2Inner() {
         if (isTimeUp()) return;
 
         const visibleRange = scroll.getVisibleCharRange(rep);
-        // top.console.log('getVisibleCharRange', visibleRange);
         const docRange = [0, rep.lines.totalWidth()];
         finishedImportantWork = true;
         finishedWork = true;
@@ -3065,7 +3064,10 @@ function Ace2Inner() {
           // and the default behavior SUCKS
           evt.preventDefault();
 
-          const visibleLineRange = scroll.getVisibleLineRange(rep); // [0,6]
+          const visibleLineRange = scroll.getVisibleLineRange(rep); // [1,6]
+          // 5, leaving us with [1,5] in array -- just makes sure we never
+          // just a comfort blanket to make sure we never go too far
+          // I'd like to see this above change removed before merging.
 
           const isPageDown = evt.which === 34;
           const isPageUp = evt.which === 33;
@@ -3082,9 +3084,10 @@ function Ace2Inner() {
             const range = document.createRange();
             const chars = line.text.split(''); // split "abc" into ["a","b","c"]
             const parentElement = document.getElementById(line.domInfo.node.id).childNodes;
-            top.console.log(parentElement);
+            // top.console.log(parentElement);
             const nodeArray = Array.from(document.body.childNodes).filter;
-            top.console.log(nodeArray);
+            // top.console.log(nodeArray);
+            /*
             const characterTopOffset = [];
             for (const node of parentElement) {
               // each span..
@@ -3096,7 +3099,6 @@ function Ace2Inner() {
               while (i < node.textContent.length) {
                 top.console.log(i, node.textContent[i]);
                 const range = document.createRange();
-                /*
                 range.setStart(node, i);
                 range.setEnd(node, i + 1);
                 const char = range.getClientRects();
@@ -3105,11 +3107,11 @@ function Ace2Inner() {
                     top.console.log(element.top);
                   }
                 }
-                */
                 // above is broken..
                 i++;
               }
             }
+            */
             return 1000;
           };
 
@@ -3122,24 +3124,18 @@ function Ace2Inner() {
             top.console.log('highlighting', highlighting);
             top.console.log('shitKey', shiftKey);
 
-            if (extendSelection) {
-              if (beforeViewport || targetLine === 1) {
-              // lets assume we select end of document then hit page up
-                if (highlighting) {
-                  top.console.log('resetting...');
-                  // put the caret on the first line in the first position
-                  if (shiftKey) rep.selStart = [0, 0];
-                  if (shiftKey) rep.selEnd = [0, 0];
-                } else {
-                // we should always keep our selEnd..
-                  rep.selStart = [0, 0];
-                  if (!shiftKey) rep.selEnd = [0, 0];
-                }
-              // TODO Handle long lines!
-              } else {
-                top.console.log('MAM');
-                if (shiftKey) rep.selStart[0] -= visibleLineRange[1] - visibleLineRange[0];
-                if (!shiftKey) rep.selEnd[0] -= visibleLineRange[1] - visibleLineRange[0];
+            // if page up is above view port.
+            if (beforeViewport || targetLine === 1) {
+              if (!shiftKey || highlighting) {
+                rep.selEnd = [0, 0];
+                rep.selStart = [0, 0];
+              }
+              top.console.log('some shit...');
+            } else {
+              // not above view port, so selection within visible document
+              if (!shiftKey || highlighting) {
+                rep.selStart[0] -= visibleLineRange[1] - visibleLineRange[0];
+                rep.selEnd[0] -= visibleLineRange[1] - visibleLineRange[0];
                 let line;
                 // need current character length of line
                 try {
@@ -3148,16 +3144,50 @@ function Ace2Inner() {
                 // silently fail, no big deal..
                   line = rep.lines.atIndex(visibleLineRange[1]);
                 }
-
                 const lineLength = line.width;
                 // Keep the X character offset on page down
                 if (previousCharacterOffset <= line.width) {
                   rep.selStart[1] = previousCharacterOffset;
-                  if (!shiftKey) rep.selEnd[1] = previousCharacterOffset;
+                  rep.selEnd[1] = previousCharacterOffset;
                 }
               }
             }
+            /*
+            if (beforeViewport || targetLine === 1) {
+            // lets assume we select end of document then hit page up
+              if (highlighting) {
+                top.console.log('resetting...');
+                // put the caret on the first line in the first position
+                if (shiftKey) rep.selStart = [0, 0];
+                if (shiftKey) rep.selEnd = [0, 0];
+              } else {
+              // we should always keep our selEnd..
+                rep.selStart = [0, 0];
+                if (!shiftKey) rep.selEnd = [0, 0];
+              }
+            // TODO Handle long lines!
+            } else {
+              top.console.log('MAM');
+              if (shiftKey) rep.selStart[0] -= visibleLineRange[1] - visibleLineRange[0];
+              if (!shiftKey) rep.selEnd[0] -= visibleLineRange[1] - visibleLineRange[0];
+              let line;
+              // need current character length of line
+              try {
+                line = rep.lines.atIndex(rep.selEnd[0]);
+              } catch (e) {
+              // silently fail, no big deal..
+                line = rep.lines.atIndex(visibleLineRange[1]);
+              }
+
+              const lineLength = line.width;
+              // Keep the X character offset on page down
+              if (previousCharacterOffset <= line.width) {
+                rep.selStart[1] = previousCharacterOffset;
+                if (!shiftKey) rep.selEnd[1] = previousCharacterOffset;
+              }
+            }
             // TODO/JM: Handle page up in really long lines
+            */
           }
 
           if (isPageDown) {
@@ -3174,7 +3204,6 @@ function Ace2Inner() {
               if (!shiftKey) rep.selStart[1] = previousCharacterOffset;
               rep.selEnd[1] = previousCharacterOffset;
             }
-            top.console.log('visibleLineRange', visibleLineRange);
             if (!shiftKey) rep.selStart[0] = rep.selStart[0] + (visibleLineRange[1] - visibleLineRange[0]);
             rep.selEnd[0] = rep.selEnd[0] + (visibleLineRange[1] - visibleLineRange[0]);
 
@@ -3219,9 +3248,6 @@ function Ace2Inner() {
               if (!shiftKey) rep.selStart[1] += visibleCharsInViewport;
               rep.selEnd[1] += visibleCharsInViewport;
             }
-
-            top.console.log('Final rep: ', rep.selStart);
-            top.console.log('Final rep: ', rep.selEnd);
           }
 
           updateBrowserSelectionFromRep(); // works
