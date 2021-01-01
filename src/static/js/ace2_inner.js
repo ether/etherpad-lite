@@ -3068,6 +3068,7 @@ function Ace2Inner() {
           // 5, leaving us with [1,5] in array -- just makes sure we never
           // just a comfort blanket to make sure we never go too far
           // I'd like to see this above change removed before merging.
+          top.console.log('VIZZZY', scroll.getVisibleCharRange(rep));
 
           const isPageDown = evt.which === 34;
           const isPageUp = evt.which === 33;
@@ -3120,9 +3121,9 @@ function Ace2Inner() {
             // top.console.log(rep.selEnd[0] - (visibleLineRange[1] - visibleLineRange[0]));
             const targetLine = rep.selEnd[0] - (visibleLineRange[1] - visibleLineRange[0]);
             const beforeViewport = targetLine <= 0;
-            top.console.log('beforeVP', beforeViewport);
-            top.console.log('highlighting', highlighting);
-            top.console.log('shitKey', shiftKey);
+            // top.console.log('beforeVP', beforeViewport);
+            // top.console.log('highlighting', highlighting);
+            // top.console.log('shitKey', shiftKey);
 
             // if page up is above view port.
             if (beforeViewport || targetLine === 1) {
@@ -3130,21 +3131,22 @@ function Ace2Inner() {
                 rep.selEnd = [0, 0];
                 rep.selStart = [0, 0];
               }
-              top.console.log('some shit...');
             } else {
               // not above view port, so selection within visible document
               if (!shiftKey || highlighting) {
                 rep.selStart[0] -= visibleLineRange[1] - visibleLineRange[0];
                 rep.selEnd[0] -= visibleLineRange[1] - visibleLineRange[0];
+
                 let line;
                 // need current character length of line
                 try {
                   line = rep.lines.atIndex(rep.selEnd[0]);
                 } catch (e) {
-                // silently fail, no big deal..
+                  // silently fail, no big deal..  But this could be better
                   line = rep.lines.atIndex(visibleLineRange[1]);
                 }
                 const lineLength = line.width;
+
                 // Keep the X character offset on page down
                 if (previousCharacterOffset <= line.width) {
                   rep.selStart[1] = previousCharacterOffset;
@@ -3152,73 +3154,28 @@ function Ace2Inner() {
                 }
               }
             }
-            /*
-            if (beforeViewport || targetLine === 1) {
-            // lets assume we select end of document then hit page up
-              if (highlighting) {
-                top.console.log('resetting...');
-                // put the caret on the first line in the first position
-                if (shiftKey) rep.selStart = [0, 0];
-                if (shiftKey) rep.selEnd = [0, 0];
-              } else {
-              // we should always keep our selEnd..
-                rep.selStart = [0, 0];
-                if (!shiftKey) rep.selEnd = [0, 0];
-              }
-            // TODO Handle long lines!
-            } else {
-              top.console.log('MAM');
-              if (shiftKey) rep.selStart[0] -= visibleLineRange[1] - visibleLineRange[0];
-              if (!shiftKey) rep.selEnd[0] -= visibleLineRange[1] - visibleLineRange[0];
-              let line;
-              // need current character length of line
-              try {
-                line = rep.lines.atIndex(rep.selEnd[0]);
-              } catch (e) {
-              // silently fail, no big deal..
-                line = rep.lines.atIndex(visibleLineRange[1]);
-              }
-
-              const lineLength = line.width;
-              // Keep the X character offset on page down
-              if (previousCharacterOffset <= line.width) {
-                rep.selStart[1] = previousCharacterOffset;
-                if (!shiftKey) rep.selEnd[1] = previousCharacterOffset;
-              }
-            }
-            // TODO/JM: Handle page up in really long lines
-            */
           }
 
           if (isPageDown) {
-            let line;
-            // need current character length of line
-            try {
-              line = rep.lines.atIndex(rep.selEnd[0]);
-            } catch (e) {
-              // silently fail, no big deal..
-              line = rep.lines.atIndex(visibleLineRange[1]);
-            }
-            // Keep the X character offset on page down
-            if (previousCharacterOffset <= line.width) {
-              if (!shiftKey) rep.selStart[1] = previousCharacterOffset;
-              rep.selEnd[1] = previousCharacterOffset;
-            }
-            if (!shiftKey) rep.selStart[0] = rep.selStart[0] + (visibleLineRange[1] - visibleLineRange[0]);
-            rep.selEnd[0] = rep.selEnd[0] + (visibleLineRange[1] - visibleLineRange[0]);
+            // boolean - Can the editor see the next line?
+            const nextLineIsVisibleInViewport = rep.selEnd[0] <= visibleLineRange[1];
+            top.console.log(rep.selEnd[0], visibleLineRange[1]);
+            top.console.log('nextLineIsVisibleInViewport', nextLineIsVisibleInViewport);
 
-            if (rep.selEnd[0] < 0 || rep.selStart[0] < 0) {
-              top.console.log('trying to visit a negative line?!');
-              // don't go to negative lines..
-              rep.selStart[0] = 0;
-              rep.selEnd[0] = 0;
-              return;
+            // lines that are very long might fill the entire page.
+            // if we can't see the end of the current line (IE see the next line)
+            // then we need to scroll the X position, not the Y
+            if (!nextLineIsVisibleInViewport) {
+              top.console.log('line too long, can nott see the next line');
+              // TODO JM CAKE: Figure out how many chars are visible in viewport.
+              const visibleCharsInViewport =
+                  getVisibleCharRangeOfLineInViewport(rep.lines.atIndex(rep.selEnd[0]));
+              top.console.log('erm', visibleCharsInViewport);
+              rep.selStart[1] += visibleCharsInViewport;
+              rep.selEnd[1] += visibleCharsInViewport;
             }
 
-            // if the new rep is beyond the viewport
-            // put the caret on the last line at the end of the line
-            if (rep.selStart[0] >= (linesLength - 1)) {
-              top.console.log('putting caret on the last line at the end of the line', rep.selStart[0], linesLength - 1);
+            if (nextLineIsVisibleInViewport) {
               let line;
               // need current character length of line
               try {
@@ -3227,26 +3184,36 @@ function Ace2Inner() {
                 // silently fail, no big deal..
                 line = rep.lines.atIndex(visibleLineRange[1]);
               }
-              let lineLength;
-              // if the last line is a blank line then don't throw an error.
-              if (line) {
-                lineLength = line.width;
-              } else {
-                lineLength = 0;
+              // Keep the X character offset on page down
+              if (previousCharacterOffset <= line.width) {
+                if (!shiftKey) rep.selStart[1] = previousCharacterOffset;
+                rep.selEnd[1] = previousCharacterOffset;
               }
-              if (!shiftKey) rep.selStart = [linesLength - 1, lineLength];
-              rep.selEnd = [linesLength - 1, lineLength];
-            }
+              if (!shiftKey) rep.selStart[0] = rep.selStart[0] + (visibleLineRange[1] - visibleLineRange[0]);
+              rep.selEnd[0] = rep.selEnd[0] + (visibleLineRange[1] - visibleLineRange[0]);
 
-            // lines that are very long might fill the entire page.
-            // if we can't see the end of the current line (IE see the next line)
-            // then we need to scroll the X position, not the Y
-            if (rep.selEnd[0] === visibleLineRange[1]) {
-              top.console.log('line too long, can\'t see the next line');
-              // TODO JM CAKE: Figure out how many chars are visible in viewport.
-              const visibleCharsInViewport = getVisibleCharRangeOfLineInViewport(line);
-              if (!shiftKey) rep.selStart[1] += visibleCharsInViewport;
-              rep.selEnd[1] += visibleCharsInViewport;
+              // if the new rep is beyond the viewport
+              // put the caret on the last line at the end of the line
+              if (rep.selStart[0] >= (linesLength - 1)) {
+                top.console.log('putting caret on the last line at the end of the line', rep.selStart[0], linesLength - 1);
+                let line;
+                // need current character length of line
+                try {
+                  line = rep.lines.atIndex(rep.selEnd[0]);
+                } catch (e) {
+                  // silently fail, no big deal..
+                  line = rep.lines.atIndex(visibleLineRange[1]);
+                }
+                let lineLength;
+                // if the last line is a blank line then don't throw an error.
+                if (line) {
+                  lineLength = line.width;
+                } else {
+                  lineLength = 0;
+                }
+                if (!shiftKey) rep.selStart = [linesLength - 1, lineLength];
+                rep.selEnd = [linesLength - 1, lineLength];
+              }
             }
           }
 

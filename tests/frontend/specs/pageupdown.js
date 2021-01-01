@@ -213,7 +213,7 @@ describe('X character offset integrity is kept between page up/down', function (
   });
 });
 
-describe('Really long text line goes to character within text line if text line is last line in viewport', function () {
+describe('Really long text line goes to character within text line if text line is last line in viewport if the second line is also incredibly long', function () {
   beforeEach(function (cb) {
     helper.newPad({
       cb: async () => {
@@ -247,7 +247,32 @@ describe('Really long text line goes to character within text line if text line 
           'hello world hello world hello world hello world hello world hello world hello world ' +
           'hello world hello world hello world hello world hello world hello world hello world\n ' +
           'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ');
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+        'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+          'hello world hello world hello world hello world hello world hello world hello world\n\n\n\n\n\n\n\n\n ');
         cb();
       },
     });
@@ -266,6 +291,13 @@ describe('Really long text line goes to character within text line if text line 
     await helper.waitForPromise(() => {
       if ((helper.padInner$.document.getSelection().anchorOffset > 0) && (helper.caretLineNumber() === 1)) {
         throw new Error('This test will pass but it should not..   We need logic to check we were at the last possible caret');
+        return true;
+      }
+    });
+    helper.pageUp();
+    await helper.waitForPromise(() => {
+      if ((helper.padInner$.document.getSelection().anchorOffset > 0) && (helper.caretLineNumber() === 1)) {
+        throw new Error('This test will pass but it should not..   We need logic to check we were at the last possible caret accessible via the page up after the page down');
         return true;
       }
     });
