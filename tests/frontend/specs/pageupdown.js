@@ -300,7 +300,6 @@ describe('Viewport based Page Up/Down', function () {
   });
 });
 
-/*
 describe('Shift Page Up/Down', function () {
   beforeEach(function (cb) {
     helper.newPad({
@@ -391,4 +390,3 @@ describe('Shift Page Up/Down', function () {
     await helper.waitForPromise(() => helper.padInner$.document.getSelection().type === 'Range');
   });
 });
-*/
