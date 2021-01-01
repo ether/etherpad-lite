@@ -328,6 +328,17 @@ Scroll.prototype.getVisibleLineRange = function (rep) {
   return [start, end - 1];
 };
 
+Scroll.prototype.getPartiallyVisibleLineRange = function (rep) {
+  const viewport = this._getViewPortTopBottom();
+  const obj = {};
+  const self = this;
+  const start = rep.lines.search((e) => self._getLineEntryTopBottom(e, obj).top > viewport.top);
+  let end = rep.lines.search((e) => self._getLineEntryTopBottom(e, obj).top >= viewport.bottom);
+  if (end < start) end = start; // unlikely
+  return [start, end - 1];
+};
+
+
 Scroll.prototype.getVisibleCharRange = function (rep) {
   const lineRange = this.getVisibleLineRange(rep);
   // top.console.log('char range', 0, rep.lines.offsetOfIndex(lineRange[0]));

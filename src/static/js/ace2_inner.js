@@ -3064,11 +3064,8 @@ function Ace2Inner() {
           // and the default behavior SUCKS
           evt.preventDefault();
 
-          const visibleLineRange = scroll.getVisibleLineRange(rep); // [1,6]
-          // 5, leaving us with [1,5] in array -- just makes sure we never
-          // just a comfort blanket to make sure we never go too far
-          // I'd like to see this above change removed before merging.
-          top.console.log('VIZZZY', scroll.getVisibleCharRange(rep));
+          const visibleLineRange = scroll.getVisibleLineRange(rep);
+          const partiallyVisibleLineRange = scroll.getPartiallyVisibleLineRange(rep);
 
           const isPageDown = evt.which === 34;
           const isPageUp = evt.which === 33;
@@ -3115,7 +3112,7 @@ function Ace2Inner() {
             */
             return 1000;
           };
-
+          /*
           if (isPageUp) {
             // would the new location be before the document?
             // top.console.log(rep.selEnd[0] - (visibleLineRange[1] - visibleLineRange[0]));
@@ -3155,12 +3152,61 @@ function Ace2Inner() {
               }
             }
           }
+          */
+          if (isPageUp) {
+            // boolean - Can the editor see the next line?
+            let previousLineIsVisibleInViewport = rep.selStart[0] <= visibleLineRange[1];
+            top.console.log('previousLineIsVisibleInViewport ', previousLineIsVisibleInViewport, rep.selStart[0], visibleLineRange);
+            // boolean is partial of the next line visible at least?
+            const previousLineIsPartiallyVisibleLineRange = rep.selStart[0] < partiallyVisibleLineRange[1]; // cake
+            if (previousLineIsPartiallyVisibleLineRange) previousLineIsVisibleInViewport = true;
+
+            // lines that are very long might fill the entire page.
+            // if we can't see the end of the current line (IE see the next line)
+            // then we need to scroll the X position, not the Y
+            if (!previousLineIsVisibleInViewport) {
+              top.console.log('line too long, can nott see the previous line');
+              // TODO JM CAKE: Figure out how many chars are visible in viewport.
+              const visibleCharsInViewport =
+                  getVisibleCharRangeOfLineInViewport(rep.lines.atIndex(rep.selStart[0]));
+              rep.selStart[1] -= visibleCharsInViewport;
+              rep.selEnd[1] -= visibleCharsInViewport;
+            }
+
+            if (previousLineIsVisibleInViewport) {
+              let line;
+              // need current character length of line
+              try {
+                line = rep.lines.atIndex(rep.selStart[0]);
+              } catch (e) {
+                // silently fail, no big deal..
+                line = rep.lines.atIndex(partiallyVisibleLineRange[1]);
+              }
+              // Keep the X character offset on page down
+              if (previousCharacterOffset <= line.width) {
+                top.console.log('previousCharacterOffset', previousCharacterOffset);
+                if (!shiftKey) rep.selStart[1] = previousCharacterOffset;
+                rep.selEnd[1] = previousCharacterOffset;
+              }
+              if (!shiftKey) rep.selStart[0] = rep.selStart[0] - (partiallyVisibleLineRange[1] - visibleLineRange[0]);
+              rep.selEnd[0] = rep.selEnd[0] - (partiallyVisibleLineRange[1] - visibleLineRange[0]);
+              // if the new rep is before the viewport
+              // put the caret on the first line at the end of the line
+              if (rep.selStart[0] <= 0) {
+                top.console.log('putting caret on the first line at the end of the line', rep.selStart[0], linesLength - 1);
+                rep.selStart = [0, 0];
+                if (!shiftKey) rep.selEnd = [0, 0];
+              }
+            }
+          }
 
           if (isPageDown) {
             // boolean - Can the editor see the next line?
-            const nextLineIsVisibleInViewport = rep.selEnd[0] <= visibleLineRange[1];
-            top.console.log(rep.selEnd[0], visibleLineRange[1]);
-            top.console.log('nextLineIsVisibleInViewport', nextLineIsVisibleInViewport);
+            let nextLineIsVisibleInViewport = rep.selEnd[0] <= visibleLineRange[1];
+
+            // boolean is partial of the next line visible at least?
+            const nextLineIsPartiallyVisibleLineRange = rep.selEnd[0] < partiallyVisibleLineRange[1]; // cake
+            if (nextLineIsPartiallyVisibleLineRange) nextLineIsVisibleInViewport = true;
 
             // lines that are very long might fill the entire page.
             // if we can't see the end of the current line (IE see the next line)
@@ -3170,7 +3216,6 @@ function Ace2Inner() {
               // TODO JM CAKE: Figure out how many chars are visible in viewport.
               const visibleCharsInViewport =
                   getVisibleCharRangeOfLineInViewport(rep.lines.atIndex(rep.selEnd[0]));
-              top.console.log('erm', visibleCharsInViewport);
               rep.selStart[1] += visibleCharsInViewport;
               rep.selEnd[1] += visibleCharsInViewport;
             }
@@ -3182,16 +3227,16 @@ function Ace2Inner() {
                 line = rep.lines.atIndex(rep.selEnd[0]);
               } catch (e) {
                 // silently fail, no big deal..
-                line = rep.lines.atIndex(visibleLineRange[1]);
+                line = rep.lines.atIndex(partiallyVisibleLineRange[1]);
               }
               // Keep the X character offset on page down
               if (previousCharacterOffset <= line.width) {
+                top.console.log('previousCharacterOffset', previousCharacterOffset);
                 if (!shiftKey) rep.selStart[1] = previousCharacterOffset;
                 rep.selEnd[1] = previousCharacterOffset;
               }
-              if (!shiftKey) rep.selStart[0] = rep.selStart[0] + (visibleLineRange[1] - visibleLineRange[0]);
-              rep.selEnd[0] = rep.selEnd[0] + (visibleLineRange[1] - visibleLineRange[0]);
-
+              if (!shiftKey) rep.selStart[0] = rep.selStart[0] + (partiallyVisibleLineRange[1] - visibleLineRange[0]);
+              rep.selEnd[0] = rep.selEnd[0] + (partiallyVisibleLineRange[1] - visibleLineRange[0]);
               // if the new rep is beyond the viewport
               // put the caret on the last line at the end of the line
               if (rep.selStart[0] >= (linesLength - 1)) {
