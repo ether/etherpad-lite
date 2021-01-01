@@ -20,5 +20,8 @@ jobs:
     - name: Install lockfile-lint
       run: npm install lockfile-lint
 
-    - name: Run lockfile-lint on package-lock.json
+    - name: Run lockfile-lint on src/package-lock.json
       run: npx lockfile-lint --path src/package-lock.json --validate-https --allowed-hosts npm
+
+    - name: Run lockfile-lint on package-lock.json
+      run: npx lockfile-lint --path package-lock.json --validate-https --allowed-hosts npm
