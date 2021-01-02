@@ -17,7 +17,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Install all dependencies and symlink for ep_etherpad-lite
+    - name: Install all dependencies
       run: bin/installDeps.sh
 
     - name: Install etherpad-load-test
@@ -39,7 +39,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Install all dependencies and symlink for ep_etherpad-lite
+    - name: Install all dependencies
       run: bin/installDeps.sh
 
     - name: Install etherpad-load-test

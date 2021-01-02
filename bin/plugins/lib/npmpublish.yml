@@ -38,7 +38,7 @@ jobs:
       # Etherpad plugins from piggybacking off of ep_etherpad-lite's
       # devDependencies. If we had that, we could change this line to only
       # install production dependencies.
-      - run: cd ../etherpad-lite/src && npm ci
+      - run: cd ../etherpad-lite && npm ci
       - run: npm ci
       # This runs some sanity checks and creates a symlink at
       # node_modules/ep_etherpad-lite that points to ../../etherpad-lite/src.

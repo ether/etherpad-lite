@@ -42,7 +42,7 @@ jobs:
         - "mv ../[plugin_name] node_modules"
         - "bin/installDeps.sh"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
-        - "cd src && npm install && cd -"
+        - "npm install"
       script:
         - "tests/frontend/travis/runnerBackend.sh"
     - name: "Test the Frontend"

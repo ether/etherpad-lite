@@ -9,14 +9,7 @@ cmd /C node -e "" || ( echo "Please install node.js ( https://nodejs.org )" && e
 echo _
 echo Ensure that all dependencies are up to date...  If this is the first time you have run Etherpad please be patient.
 
-mkdir node_modules
-cd /D node_modules
-mklink /D "ep_etherpad-lite" "..\src"
-
-cd /D "ep_etherpad-lite"
 cmd /C npm ci || exit /B 1
-
-cd /D "%~dp0\.."
 
 echo _
 echo Clearing cache...

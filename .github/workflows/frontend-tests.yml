@@ -19,7 +19,7 @@ jobs:
         TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}
       run: tests/frontend/travis/sauce_tunnel.sh
 
-    - name: Install all dependencies and symlink for ep_etherpad-lite
+    - name: Install all dependencies
       run: bin/installDeps.sh
 
     - name: export GIT_HASH to env
@@ -55,7 +55,7 @@ jobs:
         TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}
       run: tests/frontend/travis/sauce_tunnel.sh
 
-    - name: Install all dependencies and symlink for ep_etherpad-lite
+    - name: Install all dependencies
       run: bin/installDeps.sh
 
     - name: Install etherpad plugins

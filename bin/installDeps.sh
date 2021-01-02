@@ -35,13 +35,11 @@ fi
 
 log "Ensure that all dependencies are up to date...  If this is the first time you have run Etherpad please be patient."
 (
-  mkdir -p node_modules
-  cd node_modules
-  [ -e ep_etherpad-lite ] || ln -s ../src ep_etherpad-lite
-  cd ep_etherpad-lite
   npm ci
 ) || {
   rm -rf src/node_modules
+  rm -rf node_modules
+  git restore node_modules/ep_etherpad-lite
   exit 1
 }
 
