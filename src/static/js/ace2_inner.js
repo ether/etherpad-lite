@@ -3071,50 +3071,14 @@ function Ace2Inner() {
           // boolean - reflects if the user is attempting to highlight content
           const highlighting = shiftKey && (rep.selStart[0] !== rep.selEnd[0] || rep.selStart[1] !== rep.selEnd[1]);
 
-          // input is a line
-          // returned is the number of characters in that index that are currently
-          // visible in the viewport
-          // TODO CAKE JM
-          const getVisibleCharRangeOfLineInViewport = (line) => {
-            const range = document.createRange();
-            const chars = line.text.split(''); // split "abc" into ["a","b","c"]
-            const parentElement = document.getElementById(line.domInfo.node.id).childNodes;
-            // top.console.log(parentElement);
-            const nodeArray = Array.from(document.body.childNodes).filter;
-            // top.console.log(nodeArray);
-            /*
-            const characterTopOffset = [];
-            for (const node of parentElement) {
-              // each span..
-              top.console.log('span', node); // shows all nodes from the collection
-              top.console.log('span length', node.offsetTop); // shows all nodes from the collection
-
-              // now do each character
-              let i = 0;
-              while (i < node.textContent.length) {
-                top.console.log(i, node.textContent[i]);
-                const range = document.createRange();
-                range.setStart(node, i);
-                range.setEnd(node, i + 1);
-                const char = range.getClientRects();
-                if (char.length) {
-                  for (const element in chars) {
-                    top.console.log(element.top);
-                  }
-                }
-                // above is broken..
-                i++;
-              }
-            }
-            */
-            return 1000;
-          };
           if (isPageUp) {
             // Approach #99991248928174 to solve this problem....
             scroll.movePage('up');
-            const firstVisible = scroll.getFirstVisibleCharacter('up', rep);
-            rep.selStart[0] = firstVisible;
-            rep.selEnd[0] = firstVisible;
+            const modifiedRep = scroll.getFirstVisibleCharacter('up', rep);
+            rep.selStart[0] = modifiedRep.selStart[0];
+            rep.selEnd[0] = modifiedRep.selEnd[0];
+            rep.selStart[1] = modifiedRep.selStart[1];
+            rep.selEnd[1] = modifiedRep.selEnd[1];
           }
           if (isPageDown) {
             /** *
@@ -3124,33 +3088,39 @@ function Ace2Inner() {
             const lengthOfLastLine = rep.lines.atIndex(rep.selEnd[0]).width - 1;
             const endOfLine = lengthOfLastLine === rep.selEnd[1];
             const atBottom = (rep.lines.length() - 1) === rep.selEnd[0];
+            const originalPosition = scroll._getViewPortTopBottom();
+
             // If we are right at the bottom of the document, no need to continue
             if (atBottom && endOfLine) return;
-
 
             /** *
             *  Move the actual view
             */
 
             scroll.movePage('down');
+            const hasMoved = originalPosition.top !== scroll._getViewPortTopBottom().top;
 
             /** *
             *  Move the caret
             */
 
-            const firstVisible = scroll.getFirstVisibleCharacter('down', rep);
-            top.console.log('fB', firstVisible);
-            top.console.log(rep.lines.length());
+            const modifiedRep = scroll.getFirstVisibleCharacter('down', rep);
+            rep.selStart[0] = modifiedRep.selStart[0];
+            rep.selEnd[0] = modifiedRep.selEnd[0];
+            rep.selStart[1] = modifiedRep.selStart[1];
+            rep.selEnd[1] = modifiedRep.selEnd[1];
 
-            if (rep.selStart[0] === firstVisible) {
-              // we're at the bottom
+            top.console.log(rep.lines.length());
+            if (!hasMoved) {
+              // we're at the bottom so select the last bit of content.
               rep.selStart[0] = rep.lines.length() - 1;
               rep.selEnd[0] = rep.lines.length() - 1;
               rep.selStart[1] = rep.lines.atIndex(rep.selStart[0]).length;
               rep.selEnd[1] = rep.lines.atIndex(rep.selStart[0]).length;
             } else {
-              rep.selStart[0] = firstVisible;
-              rep.selEnd[0] = firstVisible;
+              // we moved, this will need modifying to support remembered x offset
+              rep.selStart[0] = modifiedRep.selStart[0];
+              rep.selEnd[0] = modifiedRep.selEnd[0];
             }
           }
 

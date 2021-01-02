@@ -369,30 +369,115 @@ Scroll.prototype.movePage = function (direction) {
   return;
 };
 
-Scroll.prototype.getFirstVisibleCharacter = function (direction) {
+Scroll.prototype.getFirstVisibleCharacter = function (direction, rep) {
   const viewport = this._getViewPortTopBottom();
   console.log('viewport', viewport);
   const editor = parent.document.getElementsByTagName('iframe');
   const lines = $(editor).contents().find('div');
-  let goToLine = 0;
+  // const currentLine = $(editor).contents().find('#innerdocbody');
+  const currentLine = rep.lines.atIndex(rep.selEnd[0]);
+  console.log('currentLine', currentLine);
+  const modifiedRep = {};
+  modifiedRep.selStart = [];
+  modifiedRep.selEnd = [];
+  let willGoToNextLine = false;
+  // we have moved the viewport at this point, we want to know which
+  // line is visible?
   $.each(lines, (index, line) => {
-    const lineTopOffset = $(line).offset().top;
-    // console.log(index, line);
-    // console.log($(line).offset().top);
-    // console.log(index, 'lineTopOffset', lineTopOffset);
-    // console.log('viewport.top', viewport.top);
+    // Line height important for supporting long lines that fill viewport.
+    const lineBase = $(line).offset().top + $(line).height();
 
     // is each line in the viewport?
+    if (lineBase > viewport.top) {
+      top.console.log('returning', index);
+      modifiedRep.selEnd[0] = index;
+      modifiedRep.selStart[0] = index;
+      modifiedRep.selEnd[1] = 0;
+      modifiedRep.selStart[1] = 0;
 
-    // JM TODO Long lines...
-    if (lineTopOffset > viewport.top) {
-      // top.console.log('returning', index);
-      goToLine = index;
-      return false;
+      // Important for supporting long lines.
+      if (modifiedRep.selEnd[0] !== rep.selEnd[0]) willGoToNextLine = true;
+      return false; // exit $.each because we found a lovely line :)
     }
   });
-  // go to this rep.
-  return goToLine;
+
+  if (willGoToNextLine) return modifiedRep;
+
+  // oh dear, looks like the original line is still the first in the viewport..
+  // we will need to move the rep X chars within that original position.
+  console.log('CANT SEE NEXT LiNE!');
+  modifiedRep.selStart[0] = rep.selStart[0];
+  modifiedRep.selEnd[0] = rep.selEnd[0];
+
+  const numberOfVisibleChars = this.getCountOfVisibleCharsInViewport(currentLine, viewport);
+
+  // TODO, figure out how many chars are visible in line.
+  modifiedRep.selStart[1] = rep.selStart[1] + numberOfVisibleChars;
+  modifiedRep.selEnd[1] = rep.selEnd[1] + numberOfVisibleChars;
+  return modifiedRep;
+};
+
+// line is a DOM Line
+// returned is the number of characters in that index that are currently visible
+// IE 120,240
+Scroll.prototype.getCountOfVisibleCharsInViewport = (line, viewport) => {
+  const range = document.createRange();
+  const chars = line.text.split(''); // split "abc" into ["a","b","c"]
+  const parentElement = document.getElementById(line.domInfo.node.id).childNodes;
+  const charNumber = [];
+  // top.console.log(parentElement);
+  for (let node of parentElement) {
+    // each span..
+    // top.console.log('span', node); // shows all nodes from the collection
+    // top.console.log('span length', node.offsetTop); // shows all nodes from the collection
+
+    // each character
+    let i = 0;
+    console.log(node);
+    node = node.childNodes[0];
+    if (node.childNodes && node.childNodes[1].length === 0) return;
+    console.log(node);
+    console.log(node.wholeText.length);
+    while (i < node.wholeText.length) {
+      // top.console.log(i, node.textContent[i]);
+      const range = document.createRange();
+      let failed = false;
+      try {
+        range.setStart(node, i);
+      } catch (e) {
+        failed = true;
+        console.log('fail', e);
+        // console.log('node', node);
+      }
+      try {
+        range.setEnd(node, i + 1);
+      } catch (e) {
+        failed = true;
+        console.log('fail', e);
+        console.log('node', node);
+      }
+      // console.log('range', range);
+      let char;
+      if (!failed) char = range.getClientRects();
+      console.log(node);
+      console.log('charr????', char);
+      if (char) return;
+      if (char && char.length && char[0]) {
+        const topOffset = char[0].y;
+        charNumber.push(topOffset);
+        // is this element in view?
+        console.log('topOffset', topOffset, 'viewport', viewport);
+        if (topOffset > viewport.top) {
+          console.log('can put rep here!', i);
+          return;
+        }
+      }
+      i++;
+    }
+    top.console.log('charNumber', charNumber);
+    return; // TEMPJM CAKE remove once stable
+  }
+  return 1000;
 };
 
 
