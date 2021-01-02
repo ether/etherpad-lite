@@ -46,10 +46,10 @@ describe(__filename, function () {
   const backups = {};
   const fantasyEncoding = 'brainwaves'; // non-working encoding until https://github.com/visionmedia/superagent/pull/1560 is resolved
   const packages = [
-    '/javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define',
-    '/javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define',
-    '/javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define',
-    '/javascripts/lib/ep_etherpad-lite/static/js/timeslider.js?callback=require.define',
+    '/javascripts/lib/static/js/ace2_common.js?callback=require.define',
+    '/javascripts/lib/static/js/ace2_inner.js?callback=require.define',
+    '/javascripts/lib/static/js/pad.js?callback=require.define',
+    '/javascripts/lib/static/js/timeslider.js?callback=require.define',
   ];
 
   before(async function () {

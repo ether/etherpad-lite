@@ -1,11 +1,11 @@
 const startTime = Date.now();
 
-require('ep_etherpad-lite/node_modules/npm').load({}, (er, npm) => {
+require('npm').load({}, (er, npm) => {
   const fs = require('fs');
 
-  const ueberDB = require('ep_etherpad-lite/node_modules/ueberdb2');
-  const settings = require('ep_etherpad-lite/node/utils/Settings');
-  const log4js = require('ep_etherpad-lite/node_modules/log4js');
+  const ueberDB = require('ueberdb2');
+  const settings = require('../src/node/utils/Settings');
+  const log4js = require('log4js');
 
   const dbWrapperSettings = {
     cache: 0,

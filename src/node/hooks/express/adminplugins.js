@@ -10,7 +10,7 @@ const UpdateCheck = require('../../utils/UpdateCheck');
 
 exports.expressCreateServer = (hookName, args, cb) => {
   args.app.get('/admin/plugins', (req, res) => {
-    res.send(eejs.require('ep_etherpad-lite/templates/admin/plugins.html', {
+    res.send(eejs.require('../../../templates/admin/plugins.html', {
       plugins: plugins.plugins,
       req,
       errors: [],
@@ -21,7 +21,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
     const gitCommit = settings.getGitCommit();
     const epVersion = settings.getEpVersion();
 
-    res.send(eejs.require('ep_etherpad-lite/templates/admin/plugins-info.html', {
+    res.send(eejs.require('../../../templates/admin/plugins-info.html', {
       gitCommit,
       epVersion,
       latestVersion: UpdateCheck.getLatestVersion(),

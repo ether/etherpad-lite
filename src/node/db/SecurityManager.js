@@ -19,7 +19,7 @@
  */
 
 const authorManager = require('./AuthorManager');
-const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks.js');
+const hooks = require('../../static/js/pluginfw/hooks.js');
 const padManager = require('./PadManager');
 const sessionManager = require('./SessionManager');
 const settings = require('../utils/Settings');

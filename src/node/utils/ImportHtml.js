@@ -15,8 +15,8 @@
  */
 
 const log4js = require('log4js');
-const Changeset = require('ep_etherpad-lite/static/js/Changeset');
-const contentcollector = require('ep_etherpad-lite/static/js/contentcollector');
+const Changeset = require('../../static/js/Changeset');
+const contentcollector = require('../../static/js/contentcollector');
 const cheerio = require('cheerio');
 const rehype = require('rehype');
 const minifyWhitespace = require('rehype-minify-whitespace');

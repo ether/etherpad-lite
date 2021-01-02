@@ -8,9 +8,9 @@ if (process.argv.length != 4 && process.argv.length != 5) {
   process.exit(1);
 }
 
-const npm = require('../src/node_modules/npm');
-const async = require('../src/node_modules/async');
-const ueberDB = require('../src/node_modules/ueberdb2');
+const npm = require('npm');
+const async = require('async');
+const ueberDB = require('ueberdb2');
 
 const padId = process.argv[2];
 const newRevHead = process.argv[3];
@@ -75,7 +75,7 @@ async.series([
   function (callback) {
     // Rebuild Pad from revisions up to and including the new revision head
     AuthorManager = require('../src/node/db/AuthorManager');
-    Changeset = require('ep_etherpad-lite/static/js/Changeset');
+    Changeset = require('../src/static/js/Changeset');
     // Author attributes are derived from changesets, but there can also be
     // non-author attributes with specific mappings that changesets depend on
     // and, AFAICT, cannot be recreated any other way

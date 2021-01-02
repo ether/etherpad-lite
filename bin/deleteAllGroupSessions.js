@@ -3,9 +3,9 @@
 * because sometimes a brick is required to fix a face.
 */
 
-const request = require('../src/node_modules/request');
+const request = require('request');
 const settings = require(`${__dirname}/../tests/container/loadSettings`).loadSettings();
-const supertest = require(`${__dirname}/../src/node_modules/supertest`);
+const supertest = require('supertest');
 const api = supertest(`http://${settings.ip}:${settings.port}`);
 const path = require('path');
 const fs = require('fs');

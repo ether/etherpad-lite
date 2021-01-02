@@ -22,7 +22,7 @@
 const ejs = require('ejs');
 const fs = require('fs');
 const path = require('path');
-const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks.js');
+const hooks = require('../../static/js/pluginfw/hooks.js');
 const resolve = require('resolve');
 const settings = require('../utils/Settings');
 

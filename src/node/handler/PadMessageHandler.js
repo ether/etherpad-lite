@@ -21,19 +21,19 @@
 /* global exports, process, require */
 
 const padManager = require('../db/PadManager');
-const Changeset = require('ep_etherpad-lite/static/js/Changeset');
-const AttributePool = require('ep_etherpad-lite/static/js/AttributePool');
-const AttributeManager = require('ep_etherpad-lite/static/js/AttributeManager');
+const Changeset = require('../../static/js/Changeset');
+const AttributePool = require('../../static/js/AttributePool');
+const AttributeManager = require('../../static/js/AttributeManager');
 const authorManager = require('../db/AuthorManager');
 const readOnlyManager = require('../db/ReadOnlyManager');
 const settings = require('../utils/Settings');
 const securityManager = require('../db/SecurityManager');
-const plugins = require('ep_etherpad-lite/static/js/pluginfw/plugin_defs.js');
+const plugins = require('../../static/js/pluginfw/plugin_defs.js');
 const log4js = require('log4js');
 const messageLogger = log4js.getLogger('message');
 const accessLogger = log4js.getLogger('access');
 const _ = require('underscore');
-const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks.js');
+const hooks = require('../../static/js/pluginfw/hooks.js');
 const channels = require('channels');
 const stats = require('../stats');
 const assert = require('assert').strict;

@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-const Changeset = require('ep_etherpad-lite/static/js/Changeset');
+const Changeset = require('../../static/js/Changeset');
 const padManager = require('../db/PadManager');
 const _analyzeLine = require('./ExportHelper')._analyzeLine;
 

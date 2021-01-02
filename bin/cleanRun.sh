@@ -32,7 +32,7 @@ if [ "$(id -u)" -eq 0 ] && [ $ignoreRoot -eq 0 ]; then
 fi
 
 #Clean the current environment
-rm -rf src/node_modules
+rm -rf node_modules
 
 #Prepare the environment
 bin/installDeps.sh "$@" || exit 1
@@ -41,4 +41,4 @@ bin/installDeps.sh "$@" || exit 1
 echo "Started Etherpad..."
 
 SCRIPTPATH=$(pwd -P)
-node $(compute_node_args) "${SCRIPTPATH}/node_modules/ep_etherpad-lite/node/server.js" "$@"
+node $(compute_node_args) "${SCRIPTPATH}/src/node/server.js" "$@"

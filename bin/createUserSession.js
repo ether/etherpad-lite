@@ -7,9 +7,9 @@ const m = (f) => `${__dirname}/../${f}`;
 const fs = require('fs');
 const path = require('path');
 const querystring = require('querystring');
-const request = require(m('src/node_modules/request'));
+const request = require('request');
 const settings = require(m('src/node/utils/Settings'));
-const supertest = require(m('src/node_modules/supertest'));
+const supertest = require('supertest');
 
 (async () => {
   const api = supertest(`http://${settings.ip}:${settings.port}`);

@@ -7,7 +7,7 @@ const settings = require('../../utils/Settings');
 
 exports.expressCreateServer = (hookName, args, cb) => {
   args.app.get('/admin/settings', (req, res) => {
-    res.send(eejs.require('ep_etherpad-lite/templates/admin/settings.html', {
+    res.send(eejs.require('../../../templates/admin/settings.html', {
       req,
       settings: '',
       errors: [],

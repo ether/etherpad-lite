@@ -30,7 +30,7 @@ const os = require('os');
 const importHtml = require('../utils/ImportHtml');
 const importEtherpad = require('../utils/ImportEtherpad');
 const log4js = require('log4js');
-const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks.js');
+const hooks = require('../../static/js/pluginfw/hooks.js');
 const util = require('util');
 
 const fsp_exists = util.promisify(fs.exists);

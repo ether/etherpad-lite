@@ -12,12 +12,12 @@ const settings = require(`${__dirname}/../../../../src/node/utils/Settings`);
 const padManager = require(`${__dirname}/../../../../src/node/db/PadManager`);
 const plugins = require(`${__dirname}/../../../../src/static/js/pluginfw/plugin_defs`);
 
-const padText = fs.readFileSync('../tests/backend/specs/api/test.txt');
-const etherpadDoc = fs.readFileSync('../tests/backend/specs/api/test.etherpad');
-const wordDoc = fs.readFileSync('../tests/backend/specs/api/test.doc');
-const wordXDoc = fs.readFileSync('../tests/backend/specs/api/test.docx');
-const odtDoc = fs.readFileSync('../tests/backend/specs/api/test.odt');
-const pdfDoc = fs.readFileSync('../tests/backend/specs/api/test.pdf');
+const padText = fs.readFileSync('tests/backend/specs/api/test.txt');
+const etherpadDoc = fs.readFileSync('tests/backend/specs/api/test.etherpad');
+const wordDoc = fs.readFileSync('tests/backend/specs/api/test.doc');
+const wordXDoc = fs.readFileSync('tests/backend/specs/api/test.docx');
+const odtDoc = fs.readFileSync('tests/backend/specs/api/test.odt');
+const pdfDoc = fs.readFileSync('tests/backend/specs/api/test.pdf');
 
 let agent;
 const apiKey = common.apiKey;

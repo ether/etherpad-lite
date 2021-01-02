@@ -15,9 +15,9 @@ const expect = require('expect.js');
 const diff = require('diff');
 var async = require('async');
 
-const npm = require('../src/node_modules/npm');
-var async = require('ep_etherpad-lite/node_modules/async');
-const Changeset = require('ep_etherpad-lite/static/js/Changeset');
+const npm = require('npm');
+var async = require('async');
+const Changeset = require('../src/static/js/Changeset');
 
 npm.load({}, async () => {
   try {
@@ -27,7 +27,7 @@ npm.load({}, async () => {
     await db.init();
 
     // load modules
-    const Changeset = require('ep_etherpad-lite/static/js/Changeset');
+    const Changeset = require('../src/static/js/Changeset');
     const padManager = require('../src/node/db/PadManager');
 
     const exists = await padManager.doesPadExists(padId);

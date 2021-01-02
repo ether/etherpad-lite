@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const child_process = require('child_process');
-const semver = require('../src/node_modules/semver');
+const semver = require('semver');
 
 /*
 

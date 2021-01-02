@@ -11,7 +11,7 @@ if (process.argv.length != 3) {
 const padId = process.argv[2];
 
 // load and initialize NPM;
-const npm = require('../src/node_modules/npm');
+const npm = require('npm');
 npm.load({}, async () => {
   try {
     // initialize database
@@ -20,7 +20,7 @@ npm.load({}, async () => {
     await db.init();
 
     // load modules
-    const Changeset = require('ep_etherpad-lite/static/js/Changeset');
+    const Changeset = require('../src/static/js/Changeset');
     const padManager = require('../src/node/db/PadManager');
 
     const exists = await padManager.doesPadExists(padId);

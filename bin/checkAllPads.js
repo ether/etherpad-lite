@@ -8,7 +8,7 @@ if (process.argv.length != 2) {
 }
 
 // load and initialize NPM
-const npm = require('../src/node_modules/npm');
+const npm = require('npm');
 npm.load({}, async () => {
   try {
     // initialize the database

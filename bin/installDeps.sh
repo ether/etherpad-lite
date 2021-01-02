@@ -37,9 +37,7 @@ log "Ensure that all dependencies are up to date...  If this is the first time y
 (
   npm ci
 ) || {
-  rm -rf src/node_modules
   rm -rf node_modules
-  git restore node_modules/ep_etherpad-lite
   exit 1
 }
 

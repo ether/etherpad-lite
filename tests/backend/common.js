@@ -1,12 +1,12 @@
 'use strict';
 
-const apiHandler = require('ep_etherpad-lite/node/handler/APIHandler');
-const log4js = require('ep_etherpad-lite/node_modules/log4js');
+const apiHandler = require('../../src/node/handler/APIHandler');
+const log4js = require('log4js');
 const process = require('process');
-const server = require('ep_etherpad-lite/node/server');
-const settings = require('ep_etherpad-lite/node/utils/Settings');
-const supertest = require('ep_etherpad-lite/node_modules/supertest');
-const webaccess = require('ep_etherpad-lite/node/hooks/express/webaccess');
+const server = require('../../src/node/server');
+const settings = require('../../src/node/utils/Settings');
+const supertest = require('supertest');
+const webaccess = require('../../src/node/hooks/express/webaccess');
 
 const backups = {};
 let inited = false;

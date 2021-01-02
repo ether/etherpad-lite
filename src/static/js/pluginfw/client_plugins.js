@@ -43,12 +43,12 @@ const adoptPluginsFromAncestorsOf = (frame) => {
 
   if (!parentRequire) throw new Error('Parent plugins could not be found.');
 
-  const ancestorPluginDefs = parentRequire('ep_etherpad-lite/static/js/pluginfw/plugin_defs');
+  const ancestorPluginDefs = parentRequire('./plugin_defs');
   defs.hooks = ancestorPluginDefs.hooks;
   defs.loaded = ancestorPluginDefs.loaded;
   defs.parts = ancestorPluginDefs.parts;
   defs.plugins = ancestorPluginDefs.plugins;
-  const ancestorPlugins = parentRequire('ep_etherpad-lite/static/js/pluginfw/client_plugins');
+  const ancestorPlugins = parentRequire('./client_plugins');
   exports.baseURL = ancestorPlugins.baseURL;
   exports.ensure = ancestorPlugins.ensure;
   exports.update = ancestorPlugins.update;

@@ -1,11 +1,11 @@
 const startTime = Date.now();
 const fs = require('fs');
-const ueberDB = require('../src/node_modules/ueberdb2');
-const mysql = require('../src/node_modules/ueberdb2/node_modules/mysql');
-const async = require('../src/node_modules/async');
-const Changeset = require('ep_etherpad-lite/static/js/Changeset');
-const randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
-const AttributePool = require('ep_etherpad-lite/static/js/AttributePool');
+const ueberDB = require('ueberdb2');
+const mysql = require('ueberdb2/node_modules/mysql');
+const async = require('async');
+const Changeset = require('../src/static/js/Changeset');
+const randomString = require('../src/static/js/pad_utils').randomString;
+const AttributePool = require('../src/static/js/AttributePool');
 
 const settingsFile = process.argv[2];
 const sqlOutputFile = process.argv[3];

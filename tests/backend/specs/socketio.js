@@ -2,11 +2,11 @@
 
 const assert = require('assert').strict;
 const common = require('../common');
-const io = require('ep_etherpad-lite/node_modules/socket.io-client');
-const padManager = require('ep_etherpad-lite/node/db/PadManager');
-const plugins = require('ep_etherpad-lite/static/js/pluginfw/plugin_defs');
-const setCookieParser = require('ep_etherpad-lite/node_modules/set-cookie-parser');
-const settings = require('ep_etherpad-lite/node/utils/Settings');
+const io = require('socket.io-client');
+const padManager = require('../../../src/node/db/PadManager');
+const plugins = require('../../../src/static/js/pluginfw/plugin_defs');
+const setCookieParser = require('set-cookie-parser');
+const settings = require('../../../src/node/utils/Settings');
 
 const logger = common.logger;
 

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-const Changeset = require('ep_etherpad-lite/static/js/Changeset');
+const Changeset = require('../../static/js/Changeset');
 const padManager = require('../db/PadManager');
 const _ = require('underscore');
-const Security = require('ep_etherpad-lite/static/js/security');
-const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
-const eejs = require('ep_etherpad-lite/node/eejs');
+const Security = require('../../static/js/security');
+const hooks = require('../../static/js/pluginfw/hooks');
+const eejs = require('../eejs');
 const _analyzeLine = require('./ExportHelper')._analyzeLine;
 const _encodeWhitespace = require('./ExportHelper')._encodeWhitespace;
 const padutils = require('../../static/js/pad_utils').padutils;
@@ -453,7 +453,7 @@ exports.getPadHTMLDocument = async function (padId, revNum) {
     html += hookHtml;
   }
 
-  return eejs.require('ep_etherpad-lite/templates/export_html.html', {
+  return eejs.require('../../templates/export_html.html', {
     body: html,
     padId: Security.escapeHTML(padId),
     extraCSS: stylesForExportCSS,

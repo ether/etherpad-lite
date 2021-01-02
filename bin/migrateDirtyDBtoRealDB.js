@@ -1,4 +1,4 @@
-require('ep_etherpad-lite/node_modules/npm').load({}, (er, npm) => {
+require('npm').load({}, (er, npm) => {
   process.chdir(`${npm.root}/..`);
 
   // This script requires that you have modified your settings.json file
@@ -9,10 +9,10 @@ require('ep_etherpad-lite/node_modules/npm').load({}, (er, npm) => {
   // `node --max-old-space-size=4096 bin/migrateDirtyDBtoRealDB.js`
 
 
-  const settings = require('ep_etherpad-lite/node/utils/Settings');
-  let dirty = require('../src/node_modules/dirty');
-  const ueberDB = require('../src/node_modules/ueberdb2');
-  const log4js = require('../src/node_modules/log4js');
+  const settings = require('../src/node/utils/Settings');
+  let dirty = require('dirty');
+  const ueberDB = require('ueberdb2');
+  const log4js = require('log4js');
   const dbWrapperSettings = {
     cache: '0', // The cache slows things down when you're mostly writing.
     writeInterval: 0, // Write directly to the database, don't buffer

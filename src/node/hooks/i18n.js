@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('underscore');
 const npm = require('npm');
-const plugins = require('ep_etherpad-lite/static/js/pluginfw/plugin_defs.js').plugins;
+const plugins = require('../../static/js/pluginfw/plugin_defs.js').plugins;
 const semver = require('semver');
 const existsSync = require('../utils/path_exists');
 const settings = require('../utils/Settings')
@@ -39,7 +39,7 @@ function getAllLocales() {
   }
 
   // add core supported languages first
-  extractLangs(`${npm.root}/ep_etherpad-lite/locales`);
+  extractLangs(`${npm.root}/src/locales`);
 
   // add plugins languages (if any)
   for (const pluginName in plugins) extractLangs(path.join(npm.root, pluginName, 'locales'));

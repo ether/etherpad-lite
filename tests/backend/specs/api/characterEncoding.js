@@ -58,7 +58,7 @@ describe(__filename, function () {
 
   describe('setHTML', function () {
     it('Sets the HTML of a Pad attempting to weird utf8 encoded content', function (done) {
-      fs.readFile('../tests/backend/specs/api/emojis.html', 'utf8', (err, html) => {
+      fs.readFile('tests/backend/specs/api/emojis.html', 'utf8', (err, html) => {
         api.post(endPoint('setHTML'))
             .send({
               padID: testPadId,

@@ -16,7 +16,7 @@
 
 
 const db = require('../db/DB');
-const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+const hooks = require('../../static/js/pluginfw/hooks');
 
 exports.getPadRaw = async function (padId) {
   const padKey = `pad:${padId}`;

@@ -22,4 +22,4 @@ echo "Running directly, without checking/installing dependencies"
 cd "${DIR}/.."
 
 # run Etherpad main class
-node $(compute_node_args) "${DIR}/../node_modules/ep_etherpad-lite/node/server.js" "$@"
+node $(compute_node_args) "${DIR}/../src/node/server.js" "$@"

@@ -1,14 +1,14 @@
 const path = require('path');
-const eejs = require('ep_etherpad-lite/node/eejs');
-const toolbar = require('ep_etherpad-lite/node/utils/toolbar');
-const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+const eejs = require('../../eejs');
+const toolbar = require('../../utils/toolbar');
+const hooks = require('../../../static/js/pluginfw/hooks');
 const settings = require('../../utils/Settings');
 const webaccess = require('./webaccess');
 
 exports.expressCreateServer = function (hook_name, args, cb) {
   // expose current stats
   args.app.get('/stats', (req, res) => {
-    res.json(require('ep_etherpad-lite/node/stats').toJSON());
+    res.json(require('../../stats').toJSON());
   });
 
   // serve index.html under /

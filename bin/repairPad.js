@@ -12,7 +12,7 @@ if (process.argv.length != 3) {
 // get the padID
 const padId = process.argv[2];
 
-const npm = require('../src/node_modules/npm');
+const npm = require('npm');
 npm.load({}, async (er) => {
   if (er) {
     console.error(`Could not load NPM: ${er}`);

@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-const Changeset = require('ep_etherpad-lite/static/js/Changeset');
+const Changeset = require('../../static/js/Changeset');
 
 exports.getPadPlainText = function (pad, revNum) {
   const _analyzeLine = exports._analyzeLine;

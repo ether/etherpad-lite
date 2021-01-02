@@ -32,4 +32,4 @@ bin/installDeps.sh "$@" || exit 1
 log "Starting Etherpad..."
 
 SCRIPTPATH=$(pwd -P)
-exec node $(compute_node_args) "$SCRIPTPATH/node_modules/ep_etherpad-lite/node/server.js" "$@"
+exec node $(compute_node_args) "$SCRIPTPATH/src/node/server.js" "$@"

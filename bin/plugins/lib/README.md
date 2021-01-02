@@ -23,7 +23,7 @@ Visit http://whatever/tests/frontend/ to run the frontend tests.
 
 ### backend
 
-Type ``cd src && npm run test`` to run the backend tests.
+Type ``npm run test`` to run the backend tests.
 
 ## LICENSE
 Apache 2.0

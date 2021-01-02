@@ -1,5 +1,5 @@
 const common = require('../common');
-const settings = require('ep_etherpad-lite/node/utils/Settings');
+const settings = require('../../../src/node/utils/Settings');
 
 describe(__filename, function () {
   let agent;

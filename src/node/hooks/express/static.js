@@ -1,5 +1,5 @@
 const minify = require('../../utils/Minify');
-const plugins = require('ep_etherpad-lite/static/js/pluginfw/plugin_defs');
+const plugins = require('../../../static/js/pluginfw/plugin_defs');
 const CachingMiddleware = require('../../utils/caching_middleware');
 const settings = require('../../utils/Settings');
 const Yajsml = require('etherpad-yajsml');

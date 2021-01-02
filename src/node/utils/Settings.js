@@ -437,7 +437,7 @@ exports.getGitCommit = function () {
 
 // Return etherpad version from package.json
 exports.getEpVersion = function () {
-  return require('ep_etherpad-lite/package.json').version;
+  return require('../../../package.json').version;
 };
 
 /**

@@ -19,7 +19,7 @@
  */
 
 const customError = require('../utils/customError');
-const randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
+const randomString = require('../../static/js/pad_utils').randomString;
 const db = require('./DB');
 const padManager = require('./PadManager');
 const sessionManager = require('./SessionManager');

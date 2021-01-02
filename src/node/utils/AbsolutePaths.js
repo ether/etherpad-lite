@@ -87,7 +87,7 @@ exports.findEtherpadRoot = function () {
    *
    *   <BASE_DIR>\src
    */
-  let maybeEtherpadRoot = popIfEndsWith(splitFoundRoot, ['src']);
+  let maybeEtherpadRoot = popIfEndsWith(splitFoundRoot, []);
 
   if ((maybeEtherpadRoot === false) && (process.platform === 'win32')) {
     /*
@@ -97,14 +97,15 @@ exports.findEtherpadRoot = function () {
      *
      *   <BASE_DIR>\node_modules\ep_etherpad-lite
      */
-    maybeEtherpadRoot = popIfEndsWith(splitFoundRoot, ['node_modules', 'ep_etherpad-lite']);
+    maybeEtherpadRoot = popIfEndsWith(splitFoundRoot, []);
   }
 
   if (maybeEtherpadRoot === false) {
-    absPathLogger.error(`Could not identity Etherpad base path in this ${process.platform} installation in "${foundRoot}"`);
+    absPathLogger.error(`Could not identify Etherpad base path in this ${process.platform} installation in "${foundRoot}"`);
     process.exit(1);
   }
 
+  maybeEtherpadRoot.pop();
   //  SIDE EFFECT on this module-level variable
   etherpadRoot = maybeEtherpadRoot.join(path.sep);
 
