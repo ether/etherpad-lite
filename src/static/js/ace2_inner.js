@@ -3064,9 +3064,6 @@ function Ace2Inner() {
           // and the default behavior SUCKS
           evt.preventDefault();
 
-          const visibleLineRange = scroll.getVisibleLineRange(rep);
-          const partiallyVisibleLineRange = scroll.getPartiallyVisibleLineRange(rep);
-
           const isPageDown = evt.which === 34;
           const isPageUp = evt.which === 33;
           const linesLength = rep.lines.length();
@@ -3112,160 +3109,52 @@ function Ace2Inner() {
             */
             return 1000;
           };
-          /*
           if (isPageUp) {
-            // would the new location be before the document?
-            // top.console.log(rep.selEnd[0] - (visibleLineRange[1] - visibleLineRange[0]));
-            const targetLine = rep.selEnd[0] - (visibleLineRange[1] - visibleLineRange[0]);
-            const beforeViewport = targetLine <= 0;
-            // top.console.log('beforeVP', beforeViewport);
-            // top.console.log('highlighting', highlighting);
-            // top.console.log('shitKey', shiftKey);
-
-            // if page up is above view port.
-            if (beforeViewport || targetLine === 1) {
-              if (!shiftKey || highlighting) {
-                rep.selEnd = [0, 0];
-                rep.selStart = [0, 0];
-              }
-            } else {
-              // not above view port, so selection within visible document
-              if (!shiftKey || highlighting) {
-                rep.selStart[0] -= visibleLineRange[1] - visibleLineRange[0];
-                rep.selEnd[0] -= visibleLineRange[1] - visibleLineRange[0];
-
-                let line;
-                // need current character length of line
-                try {
-                  line = rep.lines.atIndex(rep.selEnd[0]);
-                } catch (e) {
-                  // silently fail, no big deal..  But this could be better
-                  line = rep.lines.atIndex(visibleLineRange[1]);
-                }
-                const lineLength = line.width;
-
-                // Keep the X character offset on page down
-                if (previousCharacterOffset <= line.width) {
-                  rep.selStart[1] = previousCharacterOffset;
-                  rep.selEnd[1] = previousCharacterOffset;
-                }
-              }
-            }
+            // Approach #99991248928174 to solve this problem....
+            scroll.movePage('up');
+            const firstVisible = scroll.getFirstVisibleCharacter('up', rep);
+            rep.selStart[0] = firstVisible;
+            rep.selEnd[0] = firstVisible;
           }
-          */
-          if (isPageUp) {
-            // boolean - Can the editor see the next line?
-            let previousLineIsVisibleInViewport = rep.selStart[0] <= visibleLineRange[1];
-            top.console.log('previousLineIsVisibleInViewport ', previousLineIsVisibleInViewport, rep.selStart[0], visibleLineRange);
-            // boolean is partial of the next line visible at least?
-            const previousLineIsPartiallyVisibleLineRange = rep.selStart[0] < partiallyVisibleLineRange[1]; // cake
-            if (previousLineIsPartiallyVisibleLineRange) previousLineIsVisibleInViewport = true;
-
-            // lines that are very long might fill the entire page.
-            // if we can't see the end of the current line (IE see the next line)
-            // then we need to scroll the X position, not the Y
-            if (!previousLineIsVisibleInViewport) {
-              top.console.log('line too long, can nott see the previous line');
-              // TODO JM CAKE: Figure out how many chars are visible in viewport.
-              const visibleCharsInViewport =
-                  getVisibleCharRangeOfLineInViewport(rep.lines.atIndex(rep.selStart[0]));
-              rep.selStart[1] -= visibleCharsInViewport;
-              rep.selEnd[1] -= visibleCharsInViewport;
-            }
-
-            if (previousLineIsVisibleInViewport) {
-              let line;
-              // need current character length of line
-              try {
-                line = rep.lines.atIndex(rep.selStart[0]);
-              } catch (e) {
-                // silently fail, no big deal..
-                line = rep.lines.atIndex(partiallyVisibleLineRange[1]);
-              }
-              // Keep the X character offset on page down
-              if (previousCharacterOffset <= line.width) {
-                top.console.log('previousCharacterOffset', previousCharacterOffset);
-                if (!shiftKey) rep.selStart[1] = previousCharacterOffset;
-                rep.selEnd[1] = previousCharacterOffset;
-              }
-              if (!shiftKey) rep.selStart[0] = rep.selStart[0] - (partiallyVisibleLineRange[1] - visibleLineRange[0]);
-              rep.selEnd[0] = rep.selEnd[0] - (partiallyVisibleLineRange[1] - visibleLineRange[0]);
-              // if the new rep is before the viewport
-              // put the caret on the first line at the end of the line
-              if (rep.selStart[0] <= 0) {
-                top.console.log('putting caret on the first line at the end of the line', rep.selStart[0], linesLength - 1);
-                rep.selStart = [0, 0];
-                if (!shiftKey) rep.selEnd = [0, 0];
-              }
-            }
-          }
-
           if (isPageDown) {
-            // boolean - Can the editor see the next line?
-            let nextLineIsVisibleInViewport = rep.selEnd[0] <= visibleLineRange[1];
+            /** *
+            *  Bottom of document - do nothing if we are at the very end
+            */
+            // JM TODO: Check if Linemarker modifies width..
+            const lengthOfLastLine = rep.lines.atIndex(rep.selEnd[0]).width - 1;
+            const endOfLine = lengthOfLastLine === rep.selEnd[1];
+            const atBottom = (rep.lines.length() - 1) === rep.selEnd[0];
+            // If we are right at the bottom of the document, no need to continue
+            if (atBottom && endOfLine) return;
 
-            // boolean is partial of the next line visible at least?
-            const nextLineIsPartiallyVisibleLineRange = rep.selEnd[0] < partiallyVisibleLineRange[1]; // cake
-            if (nextLineIsPartiallyVisibleLineRange) nextLineIsVisibleInViewport = true;
 
-            // lines that are very long might fill the entire page.
-            // if we can't see the end of the current line (IE see the next line)
-            // then we need to scroll the X position, not the Y
-            if (!nextLineIsVisibleInViewport) {
-              top.console.log('line too long, can nott see the next line');
-              // TODO JM CAKE: Figure out how many chars are visible in viewport.
-              const visibleCharsInViewport =
-                  getVisibleCharRangeOfLineInViewport(rep.lines.atIndex(rep.selEnd[0]));
-              rep.selStart[1] += visibleCharsInViewport;
-              rep.selEnd[1] += visibleCharsInViewport;
-            }
+            /** *
+            *  Move the actual view
+            */
 
-            if (nextLineIsVisibleInViewport) {
-              let line;
-              // need current character length of line
-              try {
-                line = rep.lines.atIndex(rep.selEnd[0]);
-              } catch (e) {
-                // silently fail, no big deal..
-                line = rep.lines.atIndex(partiallyVisibleLineRange[1]);
-              }
-              // Keep the X character offset on page down
-              if (previousCharacterOffset <= line.width) {
-                top.console.log('previousCharacterOffset', previousCharacterOffset);
-                if (!shiftKey) rep.selStart[1] = previousCharacterOffset;
-                rep.selEnd[1] = previousCharacterOffset;
-              }
-              if (!shiftKey) rep.selStart[0] = rep.selStart[0] + (partiallyVisibleLineRange[1] - visibleLineRange[0]);
-              rep.selEnd[0] = rep.selEnd[0] + (partiallyVisibleLineRange[1] - visibleLineRange[0]);
-              // if the new rep is beyond the viewport
-              // put the caret on the last line at the end of the line
-              if (rep.selStart[0] >= (linesLength - 1)) {
-                top.console.log('putting caret on the last line at the end of the line', rep.selStart[0], linesLength - 1);
-                let line;
-                // need current character length of line
-                try {
-                  line = rep.lines.atIndex(rep.selEnd[0]);
-                } catch (e) {
-                  // silently fail, no big deal..
-                  line = rep.lines.atIndex(visibleLineRange[1]);
-                }
-                let lineLength;
-                // if the last line is a blank line then don't throw an error.
-                if (line) {
-                  lineLength = line.width;
-                } else {
-                  lineLength = 0;
-                }
-                if (!shiftKey) rep.selStart = [linesLength - 1, lineLength];
-                rep.selEnd = [linesLength - 1, lineLength];
-              }
+            scroll.movePage('down');
+
+            /** *
+            *  Move the caret
+            */
+
+            const firstVisible = scroll.getFirstVisibleCharacter('down', rep);
+            top.console.log('fB', firstVisible);
+            top.console.log(rep.lines.length());
+
+            if (rep.selStart[0] === firstVisible) {
+              // we're at the bottom
+              rep.selStart[0] = rep.lines.length() - 1;
+              rep.selEnd[0] = rep.lines.length() - 1;
+              rep.selStart[1] = rep.lines.atIndex(rep.selStart[0]).length;
+              rep.selEnd[1] = rep.lines.atIndex(rep.selStart[0]).length;
+            } else {
+              rep.selStart[0] = firstVisible;
+              rep.selEnd[0] = firstVisible;
             }
           }
 
-          updateBrowserSelectionFromRep(); // works
-          scroll.scrollNodeVerticallyIntoView(null, null, isPageUp, isPageDown);
-          // TODO: always slightly off...
-          // TODO: if enough content is visible below show all of that content
+          updateBrowserSelectionFromRep();
         }
 
         // scroll to viewport when user presses arrow keys and caret is out of the viewport

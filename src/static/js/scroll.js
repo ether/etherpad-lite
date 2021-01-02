@@ -346,4 +346,54 @@ Scroll.prototype.getVisibleCharRange = function (rep) {
   return [rep.lines.offsetOfIndex(lineRange[0]), rep.lines.offsetOfIndex(lineRange[1])];
 };
 
+// moves viewport to next page
+Scroll.prototype.movePage = function (direction) {
+  const viewport = this._getViewPortTopBottom();
+
+  // linePosition contains top and bottom, might be useful
+  // if the buffer of a fixed value isn't working as intended
+  const linePosition = caretPosition.getPosition();
+  const buffer = 25;
+
+  let pixelsToScroll = viewport.top - viewport.bottom;
+
+  if (direction === 'up') {
+    // buffer pixels unscrolled our safety net here.  You can't use the current or previous
+    // line height because it might be a very long line..
+    pixelsToScroll = -Math.abs(pixelsToScroll + buffer);
+  } else {
+    pixelsToScroll = Math.abs(pixelsToScroll + buffer);
+  }
+
+  this.outerWin.scrollBy(0, pixelsToScroll);
+  return;
+};
+
+Scroll.prototype.getFirstVisibleCharacter = function (direction) {
+  const viewport = this._getViewPortTopBottom();
+  console.log('viewport', viewport);
+  const editor = parent.document.getElementsByTagName('iframe');
+  const lines = $(editor).contents().find('div');
+  let goToLine = 0;
+  $.each(lines, (index, line) => {
+    const lineTopOffset = $(line).offset().top;
+    // console.log(index, line);
+    // console.log($(line).offset().top);
+    // console.log(index, 'lineTopOffset', lineTopOffset);
+    // console.log('viewport.top', viewport.top);
+
+    // is each line in the viewport?
+
+    // JM TODO Long lines...
+    if (lineTopOffset > viewport.top) {
+      // top.console.log('returning', index);
+      goToLine = index;
+      return false;
+    }
+  });
+  // go to this rep.
+  return goToLine;
+};
+
+
 exports.init = (outerWin) => new Scroll(outerWin);
