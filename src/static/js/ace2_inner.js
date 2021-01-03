@@ -2797,18 +2797,6 @@ function Ace2Inner() {
     const isTypeForCmdKey = ((browser.safari || browser.chrome || browser.firefox) ? (type == 'keydown') : (type == 'keypress'));
     let stopped = false;
 
-    // previousCharacterOffset is used for ensuring caret
-    // location is kept on up/pagedown events
-    let previousCharacterOffset;
-    if (rep.selEnd[1] > 0) {
-      previousCharacterOffset = rep.selEnd[1];
-    } else {
-      previousCharacterOffset = 0;
-    }
-    // previousLine is used in page up/down to ensure that
-    // a page down event always goes across X characters on that line
-    const previousLine = rep.selEnd[0]; // TODO: cake jm
-
     inCallStackIfNecessary('handleKeyEvent', function () {
       if (type == 'keypress' || (isTypeForSpecialKey && keyCode == 13 /* return*/)) {
         // in IE, special keys don't send keypress, the keydown does the action
@@ -3067,6 +3055,15 @@ function Ace2Inner() {
           const isPageDown = evt.which === 34;
           const isPageUp = evt.which === 33;
           const linesLength = rep.lines.length();
+          let previousCharacterOffset;
+
+          // only make history of x offset if it's not 0.
+          if (rep.selStart[1] !== 0 && rep.selEnd[1] !== 0) {
+            previousCharacterOffset = [
+              rep.selStart[1],
+              rep.selEnd[1],
+            ];
+          }
 
           // boolean - reflects if the user is attempting to highlight content
           const highlighting = shiftKey && (rep.selStart[0] !== rep.selEnd[0] || rep.selStart[1] !== rep.selEnd[1]);
@@ -3077,8 +3074,25 @@ function Ace2Inner() {
             const modifiedRep = scroll.getFirstVisibleCharacter('up', rep);
             rep.selStart[0] = modifiedRep.selStart[0];
             rep.selEnd[0] = modifiedRep.selEnd[0];
-            rep.selStart[1] = modifiedRep.selStart[1];
-            rep.selEnd[1] = modifiedRep.selEnd[1];
+
+            // Should we try to maintain X position?
+            if (previousCharacterOffset[0] >= 1 || previousCharacterOffset[1] >= 1) {
+              const lengthOfFirstLine = rep.lines.atIndex(rep.selStart[0]).width - 1;
+              const lengthOfLastLine = rep.lines.atIndex(rep.selEnd[0]).width - 1;
+              if (previousCharacterOffset[0] <= lengthOfFirstLine) {
+                rep.selStart[1] = previousCharacterOffset[0];
+              } else {
+                rep.selStart[1] = lengthOfFirstLine;
+              }
+              if (previousCharacterOffset[1] <= lengthOfLastLine) {
+                rep.selEnd[1] = previousCharacterOffset[1];
+              } else {
+                rep.selEnd[1] = lengthOfLastLine;
+              }
+            } else {
+              rep.selStart[1] = modifiedRep.selStart[1];
+              rep.selEnd[1] = modifiedRep.selEnd[1];
+            }
           }
           if (isPageDown) {
             /** *
@@ -3110,7 +3124,6 @@ function Ace2Inner() {
             rep.selStart[1] = modifiedRep.selStart[1];
             rep.selEnd[1] = modifiedRep.selEnd[1];
 
-            top.console.log(rep.lines.length());
             if (!hasMoved) {
               // we're at the bottom so select the last bit of content.
               rep.selStart[0] = rep.lines.length() - 1;
@@ -3118,6 +3131,24 @@ function Ace2Inner() {
               rep.selStart[1] = rep.lines.atIndex(rep.selStart[0]).length;
               rep.selEnd[1] = rep.lines.atIndex(rep.selStart[0]).length;
             } else {
+              // Should we try to maintain X position?
+              if (previousCharacterOffset[0] >= 1 || previousCharacterOffset[1] >= 1) {
+                const lengthOfFirstLine = rep.lines.atIndex(rep.selStart[0]).width - 1;
+                const lengthOfLastLine = rep.lines.atIndex(rep.selEnd[0]).width - 1;
+                if (previousCharacterOffset[0] <= lengthOfFirstLine) {
+                  rep.selStart[1] = previousCharacterOffset[0];
+                } else {
+                  rep.selStart[1] = lengthOfFirstLine;
+                }
+                if (previousCharacterOffset[1] <= lengthOfLastLine) {
+                  rep.selEnd[1] = previousCharacterOffset[1];
+                } else {
+                  rep.selEnd[1] = lengthOfLastLine;
+                }
+              } else {
+                rep.selStart[1] = modifiedRep.selStart[1];
+                rep.selEnd[1] = modifiedRep.selEnd[1];
+              }
               // we moved, this will need modifying to support remembered x offset
               rep.selStart[0] = modifiedRep.selStart[0];
               rep.selEnd[0] = modifiedRep.selEnd[0];
