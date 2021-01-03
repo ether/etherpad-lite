@@ -319,15 +319,26 @@ describe('Viewport based Page Up/Down', function () {
       },
     });
   });
-
-  // scrolls up 3 times
-  it('scrolls down on page down key stroke when top is at 0', async function () {
+  it('page up when top is at 100 and caret is at bottom', async function () {
     // by default page down when caret is at end of the document will leave it in the same place.
     // viewport based pageup/down changes that
-    const currentLineNumber = helper.caretLineNumber();
+    const initialLineNumber = helper.caretLineNumber();
+    helper.pageDown();
     helper.padOuter$('#outerdocbody').parent().scrollTop(100);
     helper.pageUp();
-    await helper.waitForPromise(() => currentLineNumber < 5);
+    await helper.waitForPromise(() => helper.caretLineNumber() < initialLineNumber);
+  });
+
+  it('page down when top is at 0 and caret is at bottom', async function () {
+    // by default page down when caret is at end of the document will leave it in the same place.
+    // viewport based pageup/down changes that
+    const initialLineNumber = helper.caretLineNumber();
+    helper.padOuter$('#outerdocbody').parent().scrollTop(0);
+    await helper.waitForPromise(() => helper.padOuter$('#outerdocbody').parent().scrollTop() === 0);
+    helper.pageUp(); // I think this might not be right..
+    helper.pageDown();
+
+    await helper.waitForPromise(() => (helper.caretLineNumber() < initialLineNumber) && (helper.caretLineNumber() > 1));
   });
 });
 
