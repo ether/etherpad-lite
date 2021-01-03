@@ -426,12 +426,13 @@ Scroll.prototype.getCountOfVisibleCharsInViewport = (line, viewport) => {
   const parentElement = document.getElementById(line.domInfo.node.id).childNodes;
   const charNumber = [];
   // top.console.log(parentElement);
-  for (let node of parentElement) {
+  for (const node of parentElement) {
     // each span..
     // top.console.log('span', node); // shows all nodes from the collection
     // top.console.log('span length', node.offsetTop); // shows all nodes from the collection
 
     // each character
+    /*
     let i = 0;
     console.log(node);
     if (!node || !node.childNodes) return;
@@ -477,6 +478,7 @@ Scroll.prototype.getCountOfVisibleCharsInViewport = (line, viewport) => {
       i++;
     }
     top.console.log('charNumber', charNumber);
+    */
     return; // TEMPJM CAKE remove once stable
   }
   return 1000;

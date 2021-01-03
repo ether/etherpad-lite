@@ -3057,26 +3057,29 @@ function Ace2Inner() {
           const linesLength = rep.lines.length();
           let previousCharacterOffset;
 
-          // only make history of x offset if it's not 0.
-          if (rep.selStart[1] !== 0 && rep.selEnd[1] !== 0) {
-            previousCharacterOffset = [
-              rep.selStart[1],
-              rep.selEnd[1],
-            ];
-          } else {
-            previousCharacterOffset = [0, 0];
-          }
           top.console.log('previousCharacterOffset', previousCharacterOffset);
 
           // boolean - reflects if the user is attempting to highlight content
           const highlighting = shiftKey && (rep.selStart[0] !== rep.selEnd[0] || rep.selStart[1] !== rep.selEnd[1]);
+          const isShiftKey = shiftKey;
 
           if (isPageUp) {
             // Approach #99991248928174 to solve this problem....
+
+            // only make history of x offset if it's not 0.
+            if (rep.selStart[1] !== 0 && rep.selEnd[1] !== 0) {
+              previousCharacterOffset = [
+                rep.selStart[1],
+                rep.selEnd[1],
+              ];
+            } else {
+              previousCharacterOffset = [0, 0];
+            }
+
             scroll.movePage('up');
             const modifiedRep = scroll.getFirstVisibleCharacter('up', rep);
             rep.selStart[0] = modifiedRep.selStart[0];
-            rep.selEnd[0] = modifiedRep.selEnd[0];
+            if (!isShiftKey) rep.selEnd[0] = modifiedRep.selEnd[0];
 
             // Should we try to maintain X position?
             if (previousCharacterOffset[0] >= 1 || previousCharacterOffset[1] >= 1) {
@@ -3088,16 +3091,25 @@ function Ace2Inner() {
                 rep.selStart[1] = lengthOfFirstLine;
               }
               if (previousCharacterOffset[1] <= lengthOfLastLine) {
-                rep.selEnd[1] = previousCharacterOffset[1];
-              } else {
-                rep.selEnd[1] = lengthOfLastLine;
-              }
+                // shift key on page up only modifies selStart, never selEnd!
+                if (!isShiftKey) rep.selEnd[1] = previousCharacterOffset[1];
+              } else if (!isShiftKey) { rep.selEnd[1] = lengthOfLastLine; }
             } else {
               rep.selStart[1] = modifiedRep.selStart[1];
-              rep.selEnd[1] = modifiedRep.selEnd[1];
+              if (!isShiftKey) rep.selEnd[1] = modifiedRep.selEnd[1];
             }
           }
           if (isPageDown) {
+            // only make history of x offset if it's not 0.
+            if (rep.selStart[1] !== 0 && rep.selEnd[1] !== 0) {
+              previousCharacterOffset = [
+                rep.selStart[1],
+                rep.selEnd[1],
+              ];
+            } else {
+              previousCharacterOffset = [0, 0];
+            }
+
             /** *
             *  Bottom of document - do nothing if we are at the very end
             */
@@ -3122,16 +3134,17 @@ function Ace2Inner() {
             */
 
             const modifiedRep = scroll.getFirstVisibleCharacter('down', rep);
-            rep.selStart[0] = modifiedRep.selStart[0];
+            // shift key on page down only modifies selEnd, never selStart!
+            if (!isShiftKey) rep.selStart[0] = modifiedRep.selStart[0];
             rep.selEnd[0] = modifiedRep.selEnd[0];
-            rep.selStart[1] = modifiedRep.selStart[1];
+            if (!isShiftKey) rep.selStart[1] = modifiedRep.selStart[1];
             rep.selEnd[1] = modifiedRep.selEnd[1];
 
             if (!hasMoved) {
               // we're at the bottom so select the last bit of content.
-              rep.selStart[0] = rep.lines.length() - 1;
+              if (!isShiftKey) rep.selStart[0] = rep.lines.length() - 1;
               rep.selEnd[0] = rep.lines.length() - 1;
-              rep.selStart[1] = rep.lines.atIndex(rep.selStart[0]).length;
+              if (!isShiftKey) rep.selStart[1] = rep.lines.atIndex(rep.selStart[0]).length;
               rep.selEnd[1] = rep.lines.atIndex(rep.selStart[0]).length;
             } else {
               // Should we try to maintain X position?
@@ -3139,21 +3152,19 @@ function Ace2Inner() {
                 const lengthOfFirstLine = rep.lines.atIndex(rep.selStart[0]).width - 1;
                 const lengthOfLastLine = rep.lines.atIndex(rep.selEnd[0]).width - 1;
                 if (previousCharacterOffset[0] <= lengthOfFirstLine) {
-                  rep.selStart[1] = previousCharacterOffset[0];
-                } else {
-                  rep.selStart[1] = lengthOfFirstLine;
-                }
+                  if (!isShiftKey) rep.selStart[1] = previousCharacterOffset[0];
+                } else if (!isShiftKey) { rep.selStart[1] = lengthOfFirstLine; }
                 if (previousCharacterOffset[1] <= lengthOfLastLine) {
                   rep.selEnd[1] = previousCharacterOffset[1];
                 } else {
                   rep.selEnd[1] = lengthOfLastLine;
                 }
               } else {
-                rep.selStart[1] = modifiedRep.selStart[1];
+                if (!isShiftKey) rep.selStart[1] = modifiedRep.selStart[1];
                 rep.selEnd[1] = modifiedRep.selEnd[1];
               }
               // we moved, this will need modifying to support remembered x offset
-              rep.selStart[0] = modifiedRep.selStart[0];
+              if (!isShiftKey) rep.selStart[0] = modifiedRep.selStart[0];
               rep.selEnd[0] = modifiedRep.selEnd[0];
             }
           }
