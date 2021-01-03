@@ -3063,7 +3063,10 @@ function Ace2Inner() {
               rep.selStart[1],
               rep.selEnd[1],
             ];
+          } else {
+            previousCharacterOffset = [0, 0];
           }
+          top.console.log('previousCharacterOffset', previousCharacterOffset);
 
           // boolean - reflects if the user is attempting to highlight content
           const highlighting = shiftKey && (rep.selStart[0] !== rep.selEnd[0] || rep.selStart[1] !== rep.selEnd[1]);
