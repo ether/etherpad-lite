@@ -434,7 +434,9 @@ Scroll.prototype.getCountOfVisibleCharsInViewport = (line, viewport) => {
     // each character
     let i = 0;
     console.log(node);
+    if (!node || !node.childNodes) return;
     node = node.childNodes[0];
+    if (!node) return; // temp patch to be removed.
     if (node.childNodes && node.childNodes[1].length === 0) return;
     console.log(node);
     console.log(node.wholeText.length);
