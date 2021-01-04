@@ -3109,7 +3109,10 @@ function Ace2Inner() {
             top.console.log('AFTER', rep.selStart, rep.selEnd);
             */
             rep.selStart = [9, 0];
-            rep.selEnd = [10, 0]; // WTF is going on here..!?!
+            rep.selEnd = [10, 0]; // works..
+            rep.selStart = [9, 0];
+            rep.selEnd = [0, 0]; // DOES NOT work..
+            // WTF is going on here..!?!
             top.console.log(rep);
             updateBrowserSelectionFromRep();
           }
