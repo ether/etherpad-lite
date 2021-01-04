@@ -246,15 +246,28 @@ helper.pageUp = async (opts) => {
   const caretNode = helper.padInner$.document.getSelection().anchorNode;
   const event = new helper.padInner$.Event(helper.evtType);
   event.which = 33;
+
   if (opts) {
     if (opts.shift) {
       event.shiftKey = true;
     }
   }
-  helper.padInner$('#innerdocbody').trigger(event);
+
+  if (opts && opts.pressAndHold) {
+    let i = 0;
+    while (i < 100) {
+      // TODO: This triggers the same 100 times, not press and hold..
+      helper.padInner$('#innerdocbody').trigger(event);
+      i++;
+    }
+    await helper.waitForPromise(() => ((helper.padInner$.document.getSelection().anchorNode !== caretNode) && (i === 100)));
+  } else {
+    helper.padInner$('#innerdocbody').trigger(event);
+    // return as soon as the selection has changed
+    await helper.waitForPromise(() => helper.padInner$.document.getSelection().anchorNode !== caretNode);
+  }
 
   // return as soon as the selection has changed
-  await helper.waitForPromise(() => helper.padInner$.document.getSelection().anchorNode !== caretNode);
 };
 
 /**
@@ -266,15 +279,25 @@ helper.pageDown = async (opts) => {
   const caretNode = helper.padInner$.document.getSelection().anchorNode;
   const event = new helper.padInner$.Event(helper.evtType);
   event.which = 34;
+
   if (opts) {
     if (opts.shift) {
       event.shiftKey = true;
     }
   }
-  helper.padInner$('#innerdocbody').trigger(event);
-
-  // return as soon as the selection has changed
-  await helper.waitForPromise(() => helper.padInner$.document.getSelection().anchorNode !== caretNode);
+  if (opts && opts.pressAndHold) {
+    let i = 0;
+    while (i < 100) {
+      // TODO: This triggers the same 100 times, not press and hold..
+      helper.padInner$('#innerdocbody').trigger(event);
+      i++;
+    }
+    await helper.waitForPromise(() => ((helper.padInner$.document.getSelection().anchorNode !== caretNode) && (i === 100)));
+  } else {
+    helper.padInner$('#innerdocbody').trigger(event);
+    // return as soon as the selection has changed
+    await helper.waitForPromise(() => helper.padInner$.document.getSelection().anchorNode !== caretNode);
+  }
 };
 
 /**
