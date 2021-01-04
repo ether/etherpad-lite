@@ -3057,13 +3057,12 @@ function Ace2Inner() {
           const linesLength = rep.lines.length();
           let previousCharacterOffset;
 
-          top.console.log('previousCharacterOffset', previousCharacterOffset);
-
           // boolean - reflects if the user is attempting to highlight content
           const highlighting = shiftKey && (rep.selStart[0] !== rep.selEnd[0] || rep.selStart[1] !== rep.selEnd[1]);
           const isShiftKey = shiftKey;
 
           if (isPageUp) {
+            top.console.log('BEFORE', rep.selStart, rep.selEnd);
             // Approach #99991248928174 to solve this problem....
 
             // only make history of x offset if it's not 0.
@@ -3077,28 +3076,44 @@ function Ace2Inner() {
             }
 
             scroll.movePage('up');
+            /*
             const modifiedRep = scroll.getFirstVisibleCharacter('up', rep);
-            rep.selStart[0] = modifiedRep.selStart[0];
-            if (!isShiftKey) rep.selEnd[0] = modifiedRep.selEnd[0];
+            const shiftToStartOfFirstLine = false;
 
-            // Should we try to maintain X position?
+            if (!isShiftKey) rep.selStart[0] = modifiedRep.selStart[0];
+            rep.selEnd[0] = modifiedRep.selEnd[0];
+
             if (previousCharacterOffset[0] >= 1 || previousCharacterOffset[1] >= 1) {
               const lengthOfFirstLine = rep.lines.atIndex(rep.selStart[0]).width - 1;
               const lengthOfLastLine = rep.lines.atIndex(rep.selEnd[0]).width - 1;
+
               if (previousCharacterOffset[0] <= lengthOfFirstLine) {
-                rep.selStart[1] = previousCharacterOffset[0];
-              } else {
-                rep.selStart[1] = lengthOfFirstLine;
-              }
+                if (!isShiftKey) rep.selStart[1] = previousCharacterOffset[0];
+              } else if (!isShiftKey) { rep.selStart[1] = lengthOfFirstLine; }
+
               if (previousCharacterOffset[1] <= lengthOfLastLine) {
-                // shift key on page up only modifies selStart, never selEnd!
-                if (!isShiftKey) rep.selEnd[1] = previousCharacterOffset[1];
-              } else if (!isShiftKey) { rep.selEnd[1] = lengthOfLastLine; }
+                // If we're at the same offset as previous event and we're on the top line
+                // we sohuld go to position 0 :)
+                if ((previousCharacterOffset[1] === rep.selEnd[1]) && (rep.selEnd[0] === 0)) {
+                  rep.selEnd[1] = 0;
+                } else {
+                  rep.selEnd[1] = previousCharacterOffset[1];
+                }
+              } else {
+                rep.selEnd[1] = lengthOfLastLine;
+              }
             } else {
-              rep.selStart[1] = modifiedRep.selStart[1];
-              if (!isShiftKey) rep.selEnd[1] = modifiedRep.selEnd[1];
+              rep.selEnd[1] = modifiedRep.selEnd[1];
+              if (!isShiftKey) rep.selStart[1] = modifiedRep.selStart[1];
             }
+            top.console.log('AFTER', rep.selStart, rep.selEnd);
+            */
+            rep.selStart = [9, 0];
+            rep.selEnd = [10, 0]; // WTF is going on here..!?!
+            top.console.log(rep);
+            updateBrowserSelectionFromRep();
           }
+          // END OF PAGE UP
           if (isPageDown) {
             // only make history of x offset if it's not 0.
             if (rep.selStart[1] !== 0 && rep.selEnd[1] !== 0) {
@@ -3110,9 +3125,7 @@ function Ace2Inner() {
               previousCharacterOffset = [0, 0];
             }
 
-            /** *
-            *  Bottom of document - do nothing if we are at the very end
-            */
+            // Bottom of document - do nothing if we are at the very end
             // JM TODO: Check if Linemarker modifies width..
             const lengthOfLastLine = rep.lines.atIndex(rep.selEnd[0]).width - 1;
             const endOfLine = lengthOfLastLine === rep.selEnd[1];
@@ -3122,24 +3135,18 @@ function Ace2Inner() {
             // If we are right at the bottom of the document, no need to continue
             if (atBottom && endOfLine) return;
 
-            /** *
-            *  Move the actual view
-            */
+            // Move the actual view
 
             scroll.movePage('down');
             const hasMoved = originalPosition.top !== scroll._getViewPortTopBottom().top;
 
-            /** *
-            *  Move the caret
-            */
-
+            // Move the caret
             const modifiedRep = scroll.getFirstVisibleCharacter('down', rep);
             // shift key on page down only modifies selEnd, never selStart!
             if (!isShiftKey) rep.selStart[0] = modifiedRep.selStart[0];
             rep.selEnd[0] = modifiedRep.selEnd[0];
             if (!isShiftKey) rep.selStart[1] = modifiedRep.selStart[1];
             rep.selEnd[1] = modifiedRep.selEnd[1];
-
             if (!hasMoved) {
               // we're at the bottom so select the last bit of content.
               if (!isShiftKey) rep.selStart[0] = rep.lines.length() - 1;
@@ -3167,9 +3174,9 @@ function Ace2Inner() {
               if (!isShiftKey) rep.selStart[0] = modifiedRep.selStart[0];
               rep.selEnd[0] = modifiedRep.selEnd[0];
             }
+            top.console.log('FINAL', rep);
+            updateBrowserSelectionFromRep();
           }
-
-          updateBrowserSelectionFromRep();
         }
 
         // scroll to viewport when user presses arrow keys and caret is out of the viewport
