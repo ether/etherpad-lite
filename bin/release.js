@@ -56,7 +56,7 @@ child_process.execSync(`git push origin release/${newVersion}`);
 
 child_process.execSync(`make docs`);
 child_process.execSync(`git clone git@github.com:ether/ether.github.com.git`);
-child_process.execSync(`cp -R out/doc/ ether.github.com/doc/${newVersion}`);
+child_process.execSync(`cp -R out/doc/ ether.github.com/doc/v${newVersion}`);
 
 console.log('Once merged into master please run the following commands');
 console.log(`git tag -a ${newVersion} -m ${newVersion} && git push origin master`);
