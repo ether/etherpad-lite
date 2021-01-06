@@ -70,7 +70,7 @@
     "threads": "^1.4.0",
     "tiny-worker": "^2.3.0",
     "tinycon": "0.0.1",
-    "ueberdb2": "^0.5.6",
+    "ueberdb2": "^1.1.7",
     "underscore": "1.8.3",
     "unorm": "1.4.1"
   },
