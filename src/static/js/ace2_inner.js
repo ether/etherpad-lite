@@ -3054,11 +3054,7 @@ function Ace2Inner() {
 
           const isPageDown = evt.which === 34;
           const isPageUp = evt.which === 33;
-          const linesLength = rep.lines.length();
           let previousCharacterOffset;
-
-          // boolean - reflects if the user is attempting to highlight content
-          const highlighting = shiftKey && (rep.selStart[0] !== rep.selEnd[0] || rep.selStart[1] !== rep.selEnd[1]);
           const isShiftKey = shiftKey;
           if (isPageUp) {
             // Approach #99991248928175 to solve this problem....
@@ -3098,26 +3094,26 @@ function Ace2Inner() {
             }
 
             // if we're not pressing and holding shift, destroy the selection
-            if(!shiftKey){
+            if (!shiftKey) {
               rep.selStart[0] = modifiedRep.selStart[0];
               rep.selStart[1] = modifiedRep.selStart[1];
               rep.selEnd[0] = modifiedRep.selEnd[0];
               rep.selEnd[1] = modifiedRep.selEnd[1];
 
               // if the previousCharacterOffset is the same as this time, go to Y 0
-              if(previousCharacterOffset[0] === rep.selStart[1]) {
+              if (previousCharacterOffset[0] === rep.selStart[1]) {
                 rep.selStart[1] = 0;
                 retainPosition = false;
               }
             }
 
-            if(retainPosition && rep.selFocusAtStart) {
+            if (retainPosition && rep.selFocusAtStart) {
               // top.console.log("RETAINING ON UP");
-              if(previousCharacterOffset[1] > 0) {
+              if (previousCharacterOffset[1] > 0) {
                 const lengthOfLine = rep.lines.atIndex(rep.selEnd[0]).width - 1;
-                if(lengthOfLine >= previousCharacterOffset[1]) {
+                if (lengthOfLine >= previousCharacterOffset[1]) {
                   rep.selStart[1] = previousCharacterOffset[1];
-                  if(!isShiftKey) rep.selEnd[1] = previousCharacterOffset[1];
+                  if (!isShiftKey) rep.selEnd[1] = previousCharacterOffset[1];
                 } else {
                   // top.console.log("line isn't long enough..")
                 }
@@ -3128,9 +3124,6 @@ function Ace2Inner() {
           if (isPageDown) {
             // Bottom of document - do nothing if we are at the very end
             // JM TODO: Check if Linemarker modifies width..
-            const lengthOfLastLine = rep.lines.atIndex(rep.selEnd[0]).width - 1;
-            const endOfLine = lengthOfLastLine === rep.selEnd[1];
-            const atBottom = (rep.lines.length() - 1) === rep.selEnd[0];
             const originalPosition = scroll._getViewPortTopBottom();
 
             scroll.movePage('down');
@@ -3164,7 +3157,7 @@ function Ace2Inner() {
             }
 
             // if we're not pressing and holding shift, destroy the selection
-            if(!isShiftKey && hasMoved){
+            if (!isShiftKey && hasMoved) {
               rep.selStart[0] = modifiedRep.selStart[0];
               rep.selStart[1] = modifiedRep.selStart[1];
               rep.selEnd[0] = modifiedRep.selEnd[0];
@@ -3175,7 +3168,7 @@ function Ace2Inner() {
             if (!hasMoved && isShiftKey && rep.selFocusAtStart) {
               // we're at the bottom so select the last bit of content.
               rep.selStart[0] = rep.selEnd[0];
-              rep.selStart[1] = rep.selEnd[1]
+              rep.selStart[1] = rep.selEnd[1];
               rep.selEnd[0] = rep.lines.length() - 1;
               rep.selEnd[1] = rep.lines.atIndex(rep.selStart[0]).length;
               retainPosition = false;
@@ -3191,7 +3184,7 @@ function Ace2Inner() {
             }
 
             // move to last character without selection
-            if(!hasMoved && !isShiftKey){
+            if (!hasMoved && !isShiftKey) {
               rep.selStart[0] = rep.lines.length() - 1;
               rep.selStart[1] = rep.lines.atIndex(rep.lines.length() - 1).length;
               rep.selEnd[0] = rep.lines.length() - 1;
@@ -3199,11 +3192,11 @@ function Ace2Inner() {
               retainPosition = false;
             }
 
-            if(retainPosition && !rep.selFocusAtStart) {
-              if(previousCharacterOffset[1] > 0) {
+            if (retainPosition && !rep.selFocusAtStart) {
+              if (previousCharacterOffset[1] > 0) {
                 const lengthOfLine = rep.lines.atIndex(rep.selEnd[0]).width - 1;
-                if(lengthOfLine >= previousCharacterOffset[1]) {
-                  if(!isShiftKey) rep.selStart[1] = previousCharacterOffset[1];
+                if (lengthOfLine >= previousCharacterOffset[1]) {
+                  if (!isShiftKey) rep.selStart[1] = previousCharacterOffset[1];
                   rep.selEnd[1] = previousCharacterOffset[1];
                 }
               }
