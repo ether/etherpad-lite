@@ -3179,6 +3179,7 @@ function Ace2Inner() {
               rep.selEnd[0] = rep.lines.length() - 1;
               rep.selEnd[1] = rep.lines.atIndex(rep.selStart[0]).length;
               retainPosition = false;
+              rep.selFocusAtStart = false;
             }
 
             // destroy selection if we're at the end
