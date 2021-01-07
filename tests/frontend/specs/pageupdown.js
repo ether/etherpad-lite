@@ -348,12 +348,16 @@ describe('Shift Page Up/Down', function () {
       cb: async () => {
         await helper.clearPad();
         // 200 lines
-        await helper.edit('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n');
+        await helper.edit(
+            '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n' +
+          '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n' +
+          '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n' +
+          '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n' +
+          '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n');
         cb();
       },
     });
   });
-
   it('highlights lines on shift page down and releases them on page up', async function () {
     await helper.edit('xxx', 1); // caret is offset 6
 
@@ -368,7 +372,6 @@ describe('Shift Page Up/Down', function () {
     });
     await helper.waitForPromise(() => helper.padInner$.document.getSelection().type === 'Caret');
   });
-
   it('highlights lines on shift page down and maintains first selection on page up', async function () {
     await helper.edit('xxx', 1); // caret is offset 6
 
@@ -388,9 +391,7 @@ describe('Shift Page Up/Down', function () {
     });
     await helper.waitForPromise(() => helper.padInner$.document.getSelection().type === 'Range');
   });
-
-
-  it('highlights from end of document on page up then releases them on shift page down', async function () {
+  it('BROKEN JM TO FIX - highlights from end of document on page up then releases them on shift page down', async function () {
     helper.pageUp({
       shift: true,
     });
@@ -401,7 +402,6 @@ describe('Shift Page Up/Down', function () {
     });
     await helper.waitForPromise(() => helper.padInner$.document.getSelection().type === 'Caret');
   });
-
   it('highlights from end of document on page up twice and retains on single page down', async function () {
     helper.pageUp({
       shift: true,
@@ -431,6 +431,24 @@ describe('Shift Page Up/Down', function () {
     });
     await helper.waitForPromise(() => helper.padInner$.document.getSelection().type === 'Range');
   });
+
+  it('highlights (a few lines) range forward then hit page up, selStart should be prior to initial selStart and selEnd should be the original selStart', async function () {
+    throw new Error("JM TO DO")
+  });
+
+  it('highlights (a few lines) range forwards then hit page down, selStart should be initial selStart and selEnd further than original selEnd', async function () {
+    throw new Error("JM TO DO")
+  });
+
+  it('highlights (a few lines) range backwards (rep.selFocusAtStart) then hit page up, selEnd should be initial selStart, selStart should be less than original selStart', async function () {
+    throw new Error("JM TO DO")
+  });
+
+  it('highlights (a few lines) range backwards (rep.selFocusAtStart) then hit page down, selStart should be initial selEnd and selEnd further than original selEnd', async function () {
+    throw new Error("JM TO DO")
+  });
+
+
 });
 
 describe('Press and Hold Page Up/Down', function () {
