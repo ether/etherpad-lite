@@ -357,7 +357,7 @@ describe('Shift Page Up/Down', function () {
       },
     });
   });
-/*
+
   it('highlights lines on shift page down and releases them on page up', async function () {
     await helper.edit('xxx', 1); // caret is offset 6
 
@@ -391,8 +391,18 @@ describe('Shift Page Up/Down', function () {
     });
     await helper.waitForPromise(() => helper.padInner$.document.getSelection().type === 'Range');
   });
-*/
-  it('BROKEN JM TO FIX - highlights from end of document on page up then releases them on shift page down', async function () {
+
+  it('Highlights from end of document on page up then releases them on shift page down', async function () {
+    // TODO: JM NEEDS HELP:  Why isn't this working?  It works if you do the same in browser..
+    throw new Error("I NEED HELPZ PLZ")
+
+    await helper.waitForPromise(() => helper.caretLineNumber() >= 201);
+    // make sure we're at bottom
+    helper.pageDown({
+      pressAndHold: true,
+    });
+    await helper.waitForPromise(() => helper.caretLineNumber() >= 201);
+
     helper.pageUp({
       shift: true,
     });
@@ -403,7 +413,6 @@ describe('Shift Page Up/Down', function () {
     });
     await helper.waitForPromise(() => helper.padInner$.document.getSelection().type === 'Caret');
   });
-/*
   it('highlights from end of document on page up twice and retains on single page down', async function () {
     helper.pageUp({
       shift: true,
@@ -451,7 +460,7 @@ describe('Shift Page Up/Down', function () {
   xit('highlights (a few lines) range backwards (rep.selFocusAtStart) then hit page down, selStart should be initial selEnd and selEnd further than original selEnd', async function () {
     throw new Error("JM TO DO")
   });
-*/
+
 });
 
 describe('Press and Hold Page Up/Down', function () {

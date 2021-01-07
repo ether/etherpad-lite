@@ -354,15 +354,15 @@ Scroll.prototype.movePage = function (direction) {
   // if the buffer of a fixed value isn't working as intended
   const linePosition = caretPosition.getPosition();
   const buffer = 25;
-
-  let pixelsToScroll = viewport.top - viewport.bottom;
-
+  // we need to remember that lineoffset needs to be removed too..
+  let offset = linePosition.bottom - viewport.top;
+  let pixelsToScroll = viewport.top - viewport.bottom + offset;
   if (direction === 'up') {
     // buffer pixels unscrolled our safety net here.  You can't use the current or previous
     // line height because it might be a very long line..
-    pixelsToScroll = -Math.abs(pixelsToScroll + buffer);
+    pixelsToScroll = -Math.abs(pixelsToScroll + buffer/2);
   } else {
-    pixelsToScroll = Math.abs(pixelsToScroll + buffer);
+    pixelsToScroll = Math.abs(pixelsToScroll + buffer/2);
   }
 
   this.outerWin.scrollBy(0, pixelsToScroll);
@@ -371,12 +371,10 @@ Scroll.prototype.movePage = function (direction) {
 
 Scroll.prototype.getFirstVisibleCharacter = function (direction, rep) {
   const viewport = this._getViewPortTopBottom();
-  console.log('viewport', viewport);
   const editor = parent.document.getElementsByTagName('iframe');
   const lines = $(editor).contents().find('div');
   // const currentLine = $(editor).contents().find('#innerdocbody');
   const currentLine = rep.lines.atIndex(rep.selEnd[0]);
-  console.log('currentLine', currentLine);
   const modifiedRep = {};
   modifiedRep.selStart = [];
   modifiedRep.selEnd = [];
@@ -389,7 +387,6 @@ Scroll.prototype.getFirstVisibleCharacter = function (direction, rep) {
 
     // is each line in the viewport?
     if (lineBase > viewport.top) {
-      top.console.log('returning', index);
       modifiedRep.selEnd[0] = index;
       modifiedRep.selStart[0] = index;
       modifiedRep.selEnd[1] = 0;
@@ -405,7 +402,6 @@ Scroll.prototype.getFirstVisibleCharacter = function (direction, rep) {
 
   // oh dear, looks like the original line is still the first in the viewport..
   // we will need to move the rep X chars within that original position.
-  console.log('CANT SEE NEXT LiNE!');
   modifiedRep.selStart[0] = rep.selStart[0];
   modifiedRep.selEnd[0] = rep.selEnd[0];
 
