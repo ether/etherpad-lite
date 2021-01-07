@@ -356,13 +356,14 @@ Scroll.prototype.movePage = function (direction) {
   const buffer = 25;
   // we need to remember that lineoffset needs to be removed too..
   let offset = linePosition.bottom - viewport.top;
+  let lineHeight = linePosition.top - linePosition.bottom;
   let pixelsToScroll = viewport.top - viewport.bottom + offset;
   if (direction === 'up') {
     // buffer pixels unscrolled our safety net here.  You can't use the current or previous
     // line height because it might be a very long line..
-    pixelsToScroll = -Math.abs(pixelsToScroll + buffer/2);
+    pixelsToScroll = -Math.abs(pixelsToScroll - lineHeight);
   } else {
-    pixelsToScroll = Math.abs(pixelsToScroll + buffer/2);
+    pixelsToScroll = Math.abs(pixelsToScroll - lineHeight);
   }
 
   this.outerWin.scrollBy(0, pixelsToScroll);
