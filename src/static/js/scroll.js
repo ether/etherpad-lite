@@ -412,8 +412,8 @@ Scroll.prototype.getFirstVisibleCharacter = function (direction, rep) {
   const numberOfVisibleChars = this.getCountOfVisibleCharsInViewport(currentLine, viewport);
 
   // TODO, figure out how many chars are visible in line.
-  modifiedRep.selStart[1] = rep.selStart[1] + numberOfVisibleChars;
-  modifiedRep.selEnd[1] = rep.selEnd[1] + numberOfVisibleChars;
+  modifiedRep.selStart[1] = rep.selStart[1] + numberOfVisibleChars || 0;
+  modifiedRep.selEnd[1] = rep.selEnd[1] + numberOfVisibleChars || 0;
   return modifiedRep;
 };
 

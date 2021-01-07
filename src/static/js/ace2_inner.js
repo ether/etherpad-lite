@@ -3060,10 +3060,9 @@ function Ace2Inner() {
           // boolean - reflects if the user is attempting to highlight content
           const highlighting = shiftKey && (rep.selStart[0] !== rep.selEnd[0] || rep.selStart[1] !== rep.selEnd[1]);
           const isShiftKey = shiftKey;
-
+          top.console.log("rep.selFocusAtStart", rep.selFocusAtStart)
           if (isPageUp) {
-            top.console.log('BEFORE', rep.selStart, rep.selEnd);
-            // Approach #99991248928174 to solve this problem....
+            // Approach #99991248928175 to solve this problem....
 
             // only make history of x offset if it's not 0.
             if (rep.selStart[1] !== 0 && rep.selEnd[1] !== 0) {
@@ -3076,20 +3075,78 @@ function Ace2Inner() {
             }
 
             scroll.movePage('up');
-            /*
             const modifiedRep = scroll.getFirstVisibleCharacter('up', rep);
-            const shiftToStartOfFirstLine = false;
+            // if we're highlighting
+            if (isShiftKey) {
+              // if it's a backwards selection IE [5,0][0,0]
+              if (rep.selFocusAtStart) {
+                rep.selStart[0] = modifiedRep.selStart[0];
+                rep.selStart[1] = modifiedRep.selStart[1];
+                top.console.log("YAY");
+              }
+              // if it's a forward selection IE [0,0][5,0]
+              if (!rep.selFocusAtStart) {
+                rep.selEnd[0] = rep.selStart[0];
+                rep.selEnd[1] = rep.selStart[1];
+                rep.selStart[0] = modifiedRep.selStart[0];
+                rep.selStart[1] = modifiedRep.selStart[1];
 
-            if (!isShiftKey) rep.selStart[0] = modifiedRep.selStart[0];
-            rep.selEnd[0] = modifiedRep.selEnd[0];
+                rep.selFocusAtStart = true;
+                top.console.log("DERP")
+              }
+            }
+
+            // if we're not pressing and holding shift, destroy the selection
+            if(!shiftKey){
+              top.console.log("DOH");
+              rep.selStart[0] = modifiedRep.selStart[0];
+              rep.selStart[1] = modifiedRep.selStart[1];
+              rep.selEnd[0] = modifiedRep.selEnd[0];
+              rep.selEnd[1] = modifiedRep.selEnd[1];
+
+              // if the previousCharacterOffset is the same as this time, go to Y 0
+top.console.log("AM HERE", previousCharacterOffset[0], rep.selStart[1])
+              if(previousCharacterOffset[0] === rep.selStart[1]) {
+                top.console.log("going to start of line");
+                rep.selStart[1] = 0;
+              }
+            }
+/*
+            if (isShiftKey) {
+              if (rep.selFocusAtStart) {
+                top.console.log("yo");
+                rep.selStart[0] = modifiedRep.selStart[0];
+                rep.selStart[1] = modifiedRep.selStart[1];
+              } else {
+                top.console.log('HI!xxx');
+                rep.selEnd[0] = modifiedRep.selEnd[0];
+                rep.selEnd[1] = modifiedRep.selEnd[1];
+              }
+            } else {
+              rep.selStart[0] = modifiedRep.selStart[0];
+              rep.selStart[1] = modifiedRep.selStart[1];
+              rep.selEnd[0] = modifiedRep.selEnd[0];
+              rep.selEnd[1] = modifiedRep.selEnd[1];
+            }
 
             if (previousCharacterOffset[0] >= 1 || previousCharacterOffset[1] >= 1) {
               const lengthOfFirstLine = rep.lines.atIndex(rep.selStart[0]).width - 1;
               const lengthOfLastLine = rep.lines.atIndex(rep.selEnd[0]).width - 1;
 
+              // Are we trying to maintain our X offset?
               if (previousCharacterOffset[0] <= lengthOfFirstLine) {
-                if (!isShiftKey) rep.selStart[1] = previousCharacterOffset[0];
-              } else if (!isShiftKey) { rep.selStart[1] = lengthOfFirstLine; }
+                if (shiftKey) {
+                  top.console.log('ZOMG');
+
+                  if (rep.selFocusAtStart) {
+                    top.console.log('SOME SHIT');
+                    rep.selStart[1] = previousCharacterOffset[0];
+                  } else {
+                    top.console.log('going to ', lengthOfFirstLine, rep);
+                    rep.selStart[1] = lengthOfFirstLine;
+                  }
+                }
+              }
 
               if (previousCharacterOffset[1] <= lengthOfLastLine) {
                 // If we're at the same offset as previous event and we're on the top line
@@ -3102,22 +3159,35 @@ function Ace2Inner() {
               } else {
                 rep.selEnd[1] = lengthOfLastLine;
               }
+            } else if (shiftKey) {
+              top.console.log('shift key ');
+              if (rep.selFocusAtStart) {
+                top.console.log('sel focus at start');
+                rep.selStart[1] = modifiedRep.selStart[1];
+              } else {
+                top.console.log('sel focus at end', rep);
+                rep.selEnd[1] = modifiedRep.selEnd[1];
+              }
             } else {
+              rep.selStart[1] = modifiedRep.selStart[1];
               rep.selEnd[1] = modifiedRep.selEnd[1];
-              if (!isShiftKey) rep.selStart[1] = modifiedRep.selStart[1];
             }
-            top.console.log('AFTER', rep.selStart, rep.selEnd);
-            */
-            rep.selStart = [9, 0];
-            rep.selEnd = [10, 0]; // works..
-            rep.selStart = [9, 0];
-            rep.selEnd = [0, 0]; // DOES NOT work..
-            // WTF is going on here..!?!
-            top.console.log(rep);
-            updateBrowserSelectionFromRep();
+*/
           }
           // END OF PAGE UP
           if (isPageDown) {
+            // Bottom of document - do nothing if we are at the very end
+            // JM TODO: Check if Linemarker modifies width..
+            const lengthOfLastLine = rep.lines.atIndex(rep.selEnd[0]).width - 1;
+            const endOfLine = lengthOfLastLine === rep.selEnd[1];
+            const atBottom = (rep.lines.length() - 1) === rep.selEnd[0];
+            const originalPosition = scroll._getViewPortTopBottom();
+
+            scroll.movePage('down');
+
+            const hasMoved = originalPosition.top !== scroll._getViewPortTopBottom().top;
+            top.console.log("hasMoved", hasMoved)
+            const modifiedRep = scroll.getFirstVisibleCharacter('down', rep);
             // only make history of x offset if it's not 0.
             if (rep.selStart[1] !== 0 && rep.selEnd[1] !== 0) {
               previousCharacterOffset = [
@@ -3128,31 +3198,94 @@ function Ace2Inner() {
               previousCharacterOffset = [0, 0];
             }
 
-            // Bottom of document - do nothing if we are at the very end
-            // JM TODO: Check if Linemarker modifies width..
-            const lengthOfLastLine = rep.lines.atIndex(rep.selEnd[0]).width - 1;
-            const endOfLine = lengthOfLastLine === rep.selEnd[1];
-            const atBottom = (rep.lines.length() - 1) === rep.selEnd[0];
-            const originalPosition = scroll._getViewPortTopBottom();
+            // if it's a backwards selection IE [5,0][0,0]
+            if (hasMoved && isShiftKey && rep.selFocusAtStart) {
+              top.console.log("PAOIN")
+              rep.selStart[0] = rep.selStart[0];
+              rep.selStart[1] = rep.selStart[1];
+              rep.selEnd[0] = modifiedRep.selStart[0];
+              rep.selEnd[1] = modifiedRep.selStart[1];
+            }
 
-            // If we are right at the bottom of the document, no need to continue
-            if (atBottom && endOfLine) return;
+            // if it's a forward selection IE [0,0][5,0]
+            if (hasMoved && isShiftKey && !rep.selFocusAtStart) {
+              top.console.log("NO", rep, modifiedRep)
+              // rep.selEnd[0] = rep.selStart[0];
+              // rep.selEnd[1] = rep.selStart[1];
+              rep.selEnd[0] = modifiedRep.selEnd[0];
+              rep.selEnd[1] = modifiedRep.selEnd[1];
+            }
+
+            // if we're not pressing and holding shift, destroy the selection
+            if(!isShiftKey && hasMoved){
+              top.console.log("CHAUDD")
+              rep.selStart[0] = modifiedRep.selStart[0];
+              rep.selStart[1] = modifiedRep.selStart[1];
+              rep.selEnd[0] = modifiedRep.selEnd[0];
+              rep.selEnd[1] = modifiedRep.selEnd[1];
+            }
+
+            // move to last character WITH selection
+            if (!hasMoved && isShiftKey && rep.selFocusAtStart) {
+              top.console.log("MOFO ", rep.selEnd)
+              // we're at the bottom so select the last bit of content.
+              rep.selStart[0] = rep.selEnd[0];
+              rep.selStart[1] = rep.selEnd[1]
+              rep.selEnd[0] = rep.lines.length() - 1;
+              rep.selEnd[1] = rep.lines.atIndex(rep.selStart[0]).length;
+              top.console.log(rep.selStart);
+            }
+
+            // destroy selection if we're at the end
+            if (!hasMoved && isShiftKey && !rep.selFocusAtStart) {
+              top.console.log("WELL SHITTTT!")
+              // if (rep.selEnd[0] !== rep.lines.length() - 1) return;
+              // we're at the bottom so select the last bit of content.
+              // rep.selStart[0] = rep.lines.length() - 1;
+              // rep.selStart[1] = rep.lines.atIndex(rep.selStart[0]).length;
+              rep.selEnd[0] = rep.lines.length() - 1;
+              rep.selEnd[1] = rep.lines.atIndex(rep.selStart[0]).length;
+            }
+
+            // move to last character without selection
+            if(!hasMoved && !isShiftKey){
+              top.console.log("moving ")
+              rep.selStart[0] = rep.lines.length() - 1;
+              rep.selStart[1] = rep.lines.atIndex(rep.lines.length() - 1).length;
+              rep.selEnd[0] = rep.lines.length() - 1;
+              rep.selEnd[1] = rep.lines.atIndex(rep.lines.length() - 1).length;
+            }
+            top.console.log("rep", rep)
+            /*
+
 
             // Move the actual view
 
             scroll.movePage('down');
-            const hasMoved = originalPosition.top !== scroll._getViewPortTopBottom().top;
 
             // Move the caret
             const modifiedRep = scroll.getFirstVisibleCharacter('down', rep);
-            // shift key on page down only modifies selEnd, never selStart!
-            if (!isShiftKey) rep.selStart[0] = modifiedRep.selStart[0];
-            rep.selEnd[0] = modifiedRep.selEnd[0];
-            if (!isShiftKey) rep.selStart[1] = modifiedRep.selStart[1];
-            rep.selEnd[1] = modifiedRep.selEnd[1];
+
+            if (isShiftKey) {
+              if (rep.selFocusAtStart) {
+                rep.selStart[0] = modifiedRep.selStart[0];
+                rep.selStart[1] = modifiedRep.selStart[1];
+              } else {
+                rep.selEnd[0] = modifiedRep.selEnd[0];
+                rep.selEnd[1] = modifiedRep.selEnd[1];
+              }
+            } else {
+              rep.selStart[0] = modifiedRep.selStart[0];
+              rep.selStart[1] = modifiedRep.selStart[1];
+              rep.selEnd[0] = modifiedRep.selEnd[0];
+              rep.selEnd[1] = modifiedRep.selEnd[1];
+            }
+
             if (!hasMoved) {
               // we're at the bottom so select the last bit of content.
-              if (!isShiftKey) rep.selStart[0] = rep.lines.length() - 1;
+              if (rep.selFocusAtStart) {
+                rep.selStart[0] = rep.lines.length() - 1;
+              }
               rep.selEnd[0] = rep.lines.length() - 1;
               if (!isShiftKey) rep.selStart[1] = rep.lines.atIndex(rep.selStart[0]).length;
               rep.selEnd[1] = rep.lines.atIndex(rep.selStart[0]).length;
@@ -3169,17 +3302,22 @@ function Ace2Inner() {
                 } else {
                   rep.selEnd[1] = lengthOfLastLine;
                 }
+              } else if (rep.selFocusAtStart) {
+                rep.selStart[1] = modifiedRep.selStart[1];
               } else {
-                if (!isShiftKey) rep.selStart[1] = modifiedRep.selStart[1];
                 rep.selEnd[1] = modifiedRep.selEnd[1];
               }
               // we moved, this will need modifying to support remembered x offset
-              if (!isShiftKey) rep.selStart[0] = modifiedRep.selStart[0];
-              rep.selEnd[0] = modifiedRep.selEnd[0];
+              if (rep.selFocusAtStart) {
+                rep.selStart[0] = modifiedRep.selStart[0];
+              } else {
+                rep.selEnd[0] = modifiedRep.selEnd[0];
+              }
             }
             top.console.log('FINAL', rep);
-            updateBrowserSelectionFromRep();
+            */
           }
+          updateBrowserSelectionFromRep();
         }
 
         // scroll to viewport when user presses arrow keys and caret is out of the viewport
