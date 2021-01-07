@@ -6,12 +6,12 @@
  */
 helper.spyOnSocketIO = function () {
   helper.contentWindow().pad.socket.on('message', (msg) => {
-    if (msg.type == 'COLLABROOM') {
-      if (msg.data.type == 'ACCEPT_COMMIT') {
+    if (msg.type === 'COLLABROOM') {
+      if (msg.data.type === 'ACCEPT_COMMIT') {
         helper.commits.push(msg);
-      } else if (msg.data.type == 'USER_NEWINFO') {
+      } else if (msg.data.type === 'USER_NEWINFO') {
         helper.userInfos.push(msg);
-      } else if (msg.data.type == 'CHAT_MESSAGE') {
+      } else if (msg.data.type === 'CHAT_MESSAGE') {
         helper.chatMessages.push(msg);
       }
     }
@@ -260,11 +260,13 @@ helper.pageUp = async (opts) => {
       helper.padInner$('#innerdocbody').trigger(event);
       i++;
     }
-    await helper.waitForPromise(() => ((helper.padInner$.document.getSelection().anchorNode !== caretNode) && (i === 100)));
+    await helper.waitForPromise(() => ((helper
+        .padInner$.document.getSelection().anchorNode !== caretNode) && (i === 100)));
   } else {
     helper.padInner$('#innerdocbody').trigger(event);
     // return as soon as the selection has changed
-    await helper.waitForPromise(() => helper.padInner$.document.getSelection().anchorNode !== caretNode);
+    await helper.waitForPromise(() => helper
+        .padInner$.document.getSelection().anchorNode !== caretNode);
   }
 
   // return as soon as the selection has changed
@@ -292,11 +294,13 @@ helper.pageDown = async (opts) => {
       helper.padInner$('#innerdocbody').trigger(event);
       i++;
     }
-    await helper.waitForPromise(() => ((helper.padInner$.document.getSelection().anchorNode !== caretNode) && (i === 100)));
+    await helper.waitForPromise(() => ((helper
+        .padInner$.document.getSelection().anchorNode !== caretNode) && (i === 100)));
   } else {
     helper.padInner$('#innerdocbody').trigger(event);
     // return as soon as the selection has changed
-    await helper.waitForPromise(() => helper.padInner$.document.getSelection().anchorNode !== caretNode);
+    await helper.waitForPromise(() => helper
+        .padInner$.document.getSelection().anchorNode !== caretNode);
   }
 };
 
