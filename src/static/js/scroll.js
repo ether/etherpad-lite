@@ -353,10 +353,9 @@ Scroll.prototype.movePage = function (direction) {
   // linePosition contains top and bottom, might be useful
   // if the buffer of a fixed value isn't working as intended
   const linePosition = caretPosition.getPosition();
-  const buffer = 25;
   // we need to remember that lineoffset needs to be removed too..
-  let offset = linePosition.bottom - viewport.top;
-  let lineHeight = linePosition.top - linePosition.bottom;
+  const offset = linePosition.bottom - viewport.top;
+  const lineHeight = linePosition.top - linePosition.bottom;
   let pixelsToScroll = viewport.top - viewport.bottom + offset;
   if (direction === 'up') {
     // buffer pixels unscrolled our safety net here.  You can't use the current or previous
