@@ -72,22 +72,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   }
 
   try {
-    const packages = [
-      'eslint',
-      'eslint-config-etherpad',
-      'eslint-plugin-eslint-comments',
-      'eslint-plugin-mocha',
-      'eslint-plugin-node',
-      'eslint-plugin-prefer-arrow',
-      'eslint-plugin-promise',
-      'eslint-plugin-you-dont-need-lodash-underscore',
-    ];
-    childProcess.execSync(`npm install --save-dev ${packages.join(' ')}`, {cwd: `${pluginPath}/`});
-  } catch (e) {
-    console.error('Error npm updating pull', e);
-  }
-
-  try {
     const path = `${pluginPath}/.github/workflows/npmpublish.yml`;
     if (!fs.existsSync(path)) {
       console.log('no .github/workflows/npmpublish.yml');
@@ -201,31 +185,33 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     }
 
     // include lint config
-    if (packageJSON.toLowerCase().indexOf('devdependencies') === -1 ||
-        !parsedPackageJSON.devDependencies.eslint ||
-        !parsedPackageJSON.devDependencies['eslint-plugin-you-dont-need-lodash-underscore']) {
-      console.warn('Missing an eslint reference in devDependencies');
-      if (autoFix) {
-        const devDependencies = {
-          'eslint': '^7.17.0',
-          'eslint-config-etherpad': '^1.0.22',
-          'eslint-plugin-eslint-comments': '^3.2.0',
-          'eslint-plugin-mocha': '^8.0.0',
-          'eslint-plugin-node': '^11.1.0',
-          'eslint-plugin-prefer-arrow': '^1.2.2',
-          'eslint-plugin-promise': '^4.2.1',
-          'eslint-plugin-you-dont-need-lodash-underscore': '^6.10.0',
-        };
-        hasAutoFixed = true;
-        parsedPackageJSON.devDependencies = devDependencies;
-        fs.writeFileSync(`${pluginPath}/package.json`, JSON.stringify(parsedPackageJSON, null, 2));
-
-        try {
-          childProcess.execSync('npm install', {cwd: `${pluginPath}/`});
-          hasAutoFixed = true;
-        } catch (e) {
-          console.error('Failed to create package-lock.json');
-        }
+    const lintDeps = {
+      'eslint': '^7.17.0',
+      'eslint-config-etherpad': '^1.0.22',
+      'eslint-plugin-eslint-comments': '^3.2.0',
+      'eslint-plugin-mocha': '^8.0.0',
+      'eslint-plugin-node': '^11.1.0',
+      'eslint-plugin-prefer-arrow': '^1.2.2',
+      'eslint-plugin-promise': '^4.2.1',
+      'eslint-plugin-you-dont-need-lodash-underscore': '^6.10.0',
+    };
+    const {devDependencies = {}} = parsedPackageJSON;
+    let lintDepsNeedUpdating = false;
+    for (const [pkg, ver] of Object.entries(lintDeps)) {
+      if (devDependencies[pkg] !== ver) {
+        console.warn(`Missing/outdated ESLint dependency: '${pkg}': '${ver}' ` +
+                     `(current: ${devDependencies[pkg]})`);
+        lintDepsNeedUpdating = true;
+      }
+    }
+    if (lintDepsNeedUpdating && autoFix) {
+      hasAutoFixed = true;
+      parsedPackageJSON.devDependencies = Object.assign(devDependencies, lintDeps);
+      fs.writeFileSync(`${pluginPath}/package.json`, JSON.stringify(parsedPackageJSON, null, 2));
+      try {
+        childProcess.execSync('npm install', {cwd: `${pluginPath}/`});
+      } catch (err) {
+        console.error(`Failed to create package-lock.json: ${err.stack || err}`);
       }
     }
 
