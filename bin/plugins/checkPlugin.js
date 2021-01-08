@@ -1,3 +1,5 @@
+'use strict';
+
 /*
 *
 * Usage -- see README.md
@@ -10,7 +12,7 @@ node bin/plugins/checkPlugins.js ep_whatever autofix autocommit
 */
 
 const fs = require('fs');
-const {exec} = require('child_process');
+const childProcess = require('child_process');
 
 // get plugin name & path from user input
 const pluginName = process.argv[2];
@@ -24,15 +26,16 @@ const pluginPath = `node_modules/${pluginName}`;
 
 console.log(`Checking the plugin: ${pluginName}`);
 
+const optArgs = process.argv.slice(3, 0);
+
 // Should we autofix?
-if (process.argv[3] && process.argv[3] === 'autofix') var autoFix = true;
+const autoFix = optArgs.indexOf('autofix') !== -1;
 
 // Should we update files where possible?
-if (process.argv[5] && process.argv[5] === 'autoupdate') var autoUpdate = true;
+const autoUpdate = optArgs.indexOf('autoupdate') !== -1;
 
 // Should we automcommit and npm publish?!
-if (process.argv[4] && process.argv[4] === 'autocommit') var autoCommit = true;
-
+const autoCommit = optArgs.indexOf('autocommit') !== -1;
 
 if (autoCommit) {
   console.warn('Auto commit is enabled, I hope you know what you are doing...');
@@ -62,18 +65,33 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     process.exit(1);
   }
 
-  // do a git pull...
-  var child_process = require('child_process');
   try {
-    child_process.execSync('git pull ', {cwd: `${pluginPath}/`});
+    childProcess.execSync('git pull ', {cwd: `${pluginPath}/`});
   } catch (e) {
     console.error('Error git pull', e);
   }
 
   try {
+    const packages = [
+      'eslint',
+      'eslint-config-etherpad',
+      'eslint-plugin-eslint-comments',
+      'eslint-plugin-mocha',
+      'eslint-plugin-node',
+      'eslint-plugin-prefer-arrow',
+      'eslint-plugin-promise',
+      'eslint-plugin-you-dont-need-lodash-underscore',
+    ];
+    childProcess.execSync(`npm install --save-dev ${packages.join(' ')}`, {cwd: `${pluginPath}/`});
+  } catch (e) {
+    console.error('Error npm updating pull', e);
+  }
+
+  try {
     const path = `${pluginPath}/.github/workflows/npmpublish.yml`;
     if (!fs.existsSync(path)) {
-      console.log('no .github/workflows/npmpublish.yml, create one and set npm secret to auto publish to npm on commit');
+      console.log('no .github/workflows/npmpublish.yml');
+      console.log('create one and set npm secret to auto publish to npm on commit');
       if (autoFix) {
         const npmpublish =
             fs.readFileSync('bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
@@ -89,11 +107,14 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       // checkVersion takes two file paths and checks for a version string in them.
       const currVersionFile = fs.readFileSync(path, {encoding: 'utf8', flag: 'r'});
       const existingConfigLocation = currVersionFile.indexOf('##ETHERPAD_NPM_V=');
-      const existingValue = parseInt(currVersionFile.substr(existingConfigLocation + 17, existingConfigLocation.length));
+      const existingValue = parseInt(
+          currVersionFile.substr(existingConfigLocation + 17, existingConfigLocation.length));
 
-      const reqVersionFile = fs.readFileSync('bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
+      const reqVersionFile =
+          fs.readFileSync('bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
       const reqConfigLocation = reqVersionFile.indexOf('##ETHERPAD_NPM_V=');
-      const reqValue = parseInt(reqVersionFile.substr(reqConfigLocation + 17, reqConfigLocation.length));
+      const reqValue =
+          parseInt(reqVersionFile.substr(reqConfigLocation + 17, reqConfigLocation.length));
 
       if (!existingValue || (reqValue > existingValue)) {
         const npmpublish =
@@ -111,7 +132,8 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   try {
     const path = `${pluginPath}/.github/workflows/backend-tests.yml`;
     if (!fs.existsSync(path)) {
-      console.log('no .github/workflows/backend-tests.yml, create one and set npm secret to auto publish to npm on commit');
+      console.log('no .github/workflows/backend-tests.yml');
+      console.log('create one and set npm secret to auto publish to npm on commit');
       if (autoFix) {
         const backendTests =
             fs.readFileSync('bin/plugins/lib/backend-tests.yml', {encoding: 'utf8', flag: 'r'});
@@ -124,11 +146,14 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       // checkVersion takes two file paths and checks for a version string in them.
       const currVersionFile = fs.readFileSync(path, {encoding: 'utf8', flag: 'r'});
       const existingConfigLocation = currVersionFile.indexOf('##ETHERPAD_NPM_V=');
-      const existingValue = parseInt(currVersionFile.substr(existingConfigLocation + 17, existingConfigLocation.length));
+      const existingValue = parseInt(
+          currVersionFile.substr(existingConfigLocation + 17, existingConfigLocation.length));
 
-      const reqVersionFile = fs.readFileSync('bin/plugins/lib/backend-tests.yml', {encoding: 'utf8', flag: 'r'});
+      const reqVersionFile =
+          fs.readFileSync('bin/plugins/lib/backend-tests.yml', {encoding: 'utf8', flag: 'r'});
       const reqConfigLocation = reqVersionFile.indexOf('##ETHERPAD_NPM_V=');
-      const reqValue = parseInt(reqVersionFile.substr(reqConfigLocation + 17, reqConfigLocation.length));
+      const reqValue =
+          parseInt(reqVersionFile.substr(reqConfigLocation + 17, reqConfigLocation.length));
 
       if (!existingValue || (reqValue > existingValue)) {
         const backendTests =
@@ -147,7 +172,8 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   }
 
   if (files.indexOf('package.json') !== -1) {
-    const packageJSON = fs.readFileSync(`${pluginPath}/package.json`, {encoding: 'utf8', flag: 'r'});
+    const packageJSON =
+        fs.readFileSync(`${pluginPath}/package.json`, {encoding: 'utf8', flag: 'r'});
     const parsedPackageJSON = JSON.parse(packageJSON);
     if (autoFix) {
       let updatedPackageJSON = false;
@@ -167,7 +193,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     if (packageJSON.toLowerCase().indexOf('repository') === -1) {
       console.warn('No repository in package.json');
       if (autoFix) {
-        console.warn('Repository not detected in package.json.  Please add repository section manually.');
+        console.warn('Repository not detected in package.json.  Add repository section.');
       }
     } else {
       // useful for creating README later.
@@ -175,8 +201,10 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     }
 
     // include lint config
-    if (packageJSON.toLowerCase().indexOf('devdependencies') === -1 || !parsedPackageJSON.devDependencies.eslint) {
-      console.warn('Missing eslint reference in devDependencies');
+    if (packageJSON.toLowerCase().indexOf('devdependencies') === -1 ||
+        !parsedPackageJSON.devDependencies.eslint ||
+        !parsedPackageJSON.devDependencies['eslint-plugin-you-dont-need-lodash-underscore']) {
+      console.warn('Missing an eslint reference in devDependencies');
       if (autoFix) {
         const devDependencies = {
           'eslint': '^7.14.0',
@@ -185,14 +213,14 @@ fs.readdir(pluginPath, (err, rootFiles) => {
           'eslint-plugin-node': '^11.1.0',
           'eslint-plugin-prefer-arrow': '^1.2.2',
           'eslint-plugin-promise': '^4.2.1',
+          'eslint-plugin-you-dont-need-lodash-underscore': '^6.10.0',
         };
         hasAutoFixed = true;
         parsedPackageJSON.devDependencies = devDependencies;
         fs.writeFileSync(`${pluginPath}/package.json`, JSON.stringify(parsedPackageJSON, null, 2));
 
-        const child_process = require('child_process');
         try {
-          child_process.execSync('npm install', {cwd: `${pluginPath}/`});
+          childProcess.execSync('npm install', {cwd: `${pluginPath}/`});
           hasAutoFixed = true;
         } catch (e) {
           console.error('Failed to create package-lock.json');
@@ -210,9 +238,9 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         hasAutoFixed = true;
         parsedPackageJSON.peerDependencies = peerDependencies;
         fs.writeFileSync(`${pluginPath}/package.json`, JSON.stringify(parsedPackageJSON, null, 2));
-        const child_process = require('child_process');
         try {
-          child_process.execSync('npm install --no-save ep_etherpad-lite@file:../../src', {cwd: `${pluginPath}/`});
+          childProcess.execSync(
+              'npm install --no-save ep_etherpad-lite@file:../../src', {cwd: `${pluginPath}/`});
           hasAutoFixed = true;
         } catch (e) {
           console.error('Failed to create package-lock.json');
@@ -260,11 +288,11 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   }
 
   if (files.indexOf('package-lock.json') === -1) {
-    console.warn('package-lock.json file not found.  Please run npm install in the plugin folder and commit the package-lock.json file.');
+    console.warn('package-lock.json file not found.');
+    console.warn('Run npm install in the plugin folder and commit the package-lock.json file.');
     if (autoFix) {
-      var child_process = require('child_process');
       try {
-        child_process.execSync('npm install', {cwd: `${pluginPath}/`});
+        childProcess.execSync('npm install', {cwd: `${pluginPath}/`});
         console.log('Making package-lock.json');
         hasAutoFixed = true;
       } catch (e) {
@@ -276,7 +304,8 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   if (files.indexOf('readme') === -1 && files.indexOf('readme.md') === -1) {
     console.warn('README.md file not found, please create');
     if (autoFix) {
-      console.log('Autofixing missing README.md file, please edit the README.md file further to include plugin specific details.');
+      console.log('Autofixing missing README.md file');
+      console.log('please edit the README.md file further to include plugin specific details.');
       let readme = fs.readFileSync('bin/plugins/lib/README.md', {encoding: 'utf8', flag: 'r'});
       readme = readme.replace(/\[plugin_name\]/g, pluginName);
       if (repository) {
@@ -317,7 +346,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     if (autoFix) {
       hasAutoFixed = true;
       console.log('Autofixing missing LICENSE.md file, including Apache 2 license.');
-      exec('git config user.name', (error, name, stderr) => {
+      childProcess.exec('git config user.name', (error, name, stderr) => {
         if (error) {
           console.log(`error: ${error.message}`);
           return;
@@ -422,14 +451,9 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   }
 
   // linting begins
-  if (autoFix) {
-    var lintCmd = 'npm run lint:fix';
-  } else {
-    var lintCmd = 'npm run lint';
-  }
-
   try {
-    child_process.execSync(lintCmd, {cwd: `${pluginPath}/`});
+    const lintCmd = autoFix ? 'npx eslint --fix .' : 'npx eslint';
+    childProcess.execSync(lintCmd, {cwd: `${pluginPath}/`});
     console.log('Linting...');
     if (autoFix) {
       // todo: if npm run lint doesn't do anything no need for...
@@ -444,11 +468,19 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   if (hasAutoFixed) {
     console.log('Fixes applied, please check git diff then run the following command:\n\n');
     // bump npm Version
+    const cmd = [
+      `cd node_modules/${pluginName}`,
+      'git rm -rf node_modules --ignore-unmatch',
+      'git add -A',
+      'git commit --allow-empty -m "autofixes from Etherpad checkPlugins.js"',
+      'git push',
+      'cd ../..',
+    ].join(' && ');
     if (autoCommit) {
       // holy shit you brave.
       console.log('Attempting autocommit and auto publish to npm');
       // github should push to npm for us :)
-      exec(`cd node_modules/${pluginName} && git rm -rf node_modules --ignore-unmatch && git add -A && git commit --allow-empty -m 'autofixes from Etherpad checkPlugins.js' && git push && cd ../..`, (error, name, stderr) => {
+      childProcess.exec(cmd, (error, name, stderr) => {
         if (error) {
           console.log(`error: ${error.message}`);
           return;
@@ -461,7 +493,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         process.exit(0);
       });
     } else {
-      console.log(`cd node_modules/${pluginName} && git add -A && git commit --allow-empty -m 'autofixes from Etherpad checkPlugins.js' && npm version patch && git add package.json && git commit --allow-empty -m 'bump version' && git push && npm publish && cd ../..`);
+      console.log(cmd);
     }
   }
 
