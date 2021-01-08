@@ -449,16 +449,10 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   } else {
     console.warn('Test files not found, please create tests.  https://github.com/ether/etherpad-lite/wiki/Creating-a-plugin#writing-and-running-front-end-tests-for-your-plugin');
   }
-  let lintCmd;
 
   // linting begins
-  if (autoFix) {
-    lintCmd = 'npx eslint --fix .';
-  } else {
-    lintCmd = 'npx eslint';
-  }
-
   try {
+    const lintCmd = autoFix ? 'npx eslint --fix .' : 'npx eslint';
     childProcess.execSync(lintCmd, {cwd: `${pluginPath}/`});
     console.log('Linting...');
     if (autoFix) {
