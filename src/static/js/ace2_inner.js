@@ -2792,6 +2792,10 @@ function Ace2Inner() {
     if (keyCode == 13 && browser.opera && (type == 'keypress')) {
       return; // This stops double enters in Opera but double Tabs still show on single tab keypress, adding keyCode == 9 to this doesn't help as the event is fired twice
     }
+    // Ensure caret is always on focus on enter key
+    if (keyCode === 13 && (type === 'keypress')) {
+      fixView();
+    }
     let specialHandled = false;
     const isTypeForSpecialKey = ((browser.safari || browser.chrome || browser.firefox) ? (type == 'keydown') : (type == 'keypress'));
     const isTypeForCmdKey = ((browser.safari || browser.chrome || browser.firefox) ? (type == 'keydown') : (type == 'keypress'));
