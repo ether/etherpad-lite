@@ -72,8 +72,17 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   }
 
   try {
-    const install = 'npm install --save-dev eslint eslint-plugin-eslint-comments eslint-plugin-mocha eslint-plugin-node eslint-plugin-prefer-arrow eslint-plugin-promise eslint-plugin-you-dont-need-lodash-underscore eslint-config-etherpad';
-    childProcess.execSync(install, {cwd: `${pluginPath}/`});
+    const packages = [
+      'eslint',
+      'eslint-config-etherpad',
+      'eslint-plugin-eslint-comments',
+      'eslint-plugin-mocha',
+      'eslint-plugin-node',
+      'eslint-plugin-prefer-arrow',
+      'eslint-plugin-promise',
+      'eslint-plugin-you-dont-need-lodash-underscore',
+    ];
+    childProcess.execSync(`npm install --save-dev ${packages.join(' ')}`, {cwd: `${pluginPath}/`});
   } catch (e) {
     console.error('Error npm updating pull', e);
   }
