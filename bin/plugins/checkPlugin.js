@@ -207,8 +207,8 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       console.warn('Missing an eslint reference in devDependencies');
       if (autoFix) {
         const devDependencies = {
-          'eslint': '^7.14.0',
-          'eslint-config-etherpad': '^1.0.13',
+          'eslint': '^7.17.0',
+          'eslint-config-etherpad': '^1.0.22',
           'eslint-plugin-mocha': '^8.0.0',
           'eslint-plugin-node': '^11.1.0',
           'eslint-plugin-prefer-arrow': '^1.2.2',
