@@ -15,12 +15,12 @@ node bin/plugins/checkPlugin.js ep_webrtc
 
 ## Autofixing - will autofix any issues it can
 ```
-node bin/plugins/checkPlugins.js ep_whatever autofix
+node bin/plugins/checkPlugin.js ep_whatever autofix
 ```
 
 ## Autocommitting, push, npm minor patch and npm publish (highly dangerous)
 ```
-node bin/plugins/checkPlugins.js ep_whatever autofix autocommit
+node bin/plugins/checkPlugin.js ep_whatever autofix autocommit
 ```
 
 # All the plugins
