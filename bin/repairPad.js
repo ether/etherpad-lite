@@ -17,17 +17,17 @@ const padId = process.argv[2];
 
 let valueCount = 0;
 
-const npm = require(`${__dirname}/../src/node_modules/npm`);
+const npm = require('ep_etherpad-lite/node_modules/npm');
 npm.load({}, async (err) => {
   if (err) throw err;
 
   // intialize database
-  require('../src/node/utils/Settings');
-  const db = require('../src/node/db/DB');
+  require('ep_etherpad-lite/node/utils/Settings');
+  const db = require('ep_etherpad-lite/node/db/DB');
   await db.init();
 
   // get the pad
-  const padManager = require('../src/node/db/PadManager');
+  const padManager = require('ep_etherpad-lite/node/db/PadManager');
   const pad = await padManager.getPad(padId);
 
   // accumulate the required keys

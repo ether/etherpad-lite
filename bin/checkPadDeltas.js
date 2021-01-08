@@ -13,19 +13,19 @@ if (process.argv.length !== 3) throw new Error('Use: node bin/checkPadDeltas.js 
 const padId = process.argv[2];
 
 // load and initialize NPM;
-const expect = require(`${__dirname}/../tests/frontend/lib/expect.js`);
-const diff = require(`${__dirname}/../src/node_modules/diff`);
-const npm = require(`${__dirname}/../src/node_modules/npm`);
+const expect = require('../tests/frontend/lib/expect');
+const diff = require('ep_etherpad-lite/node_modules/diff');
+const npm = require('ep_etherpad-lite/node_modules/npm');
 
 npm.load({}, async () => {
   // initialize database
-  require('../src/node/utils/Settings');
-  const db = require('../src/node/db/DB');
+  require('ep_etherpad-lite/node/utils/Settings');
+  const db = require('ep_etherpad-lite/node/db/DB');
   await db.init();
 
   // load modules
   const Changeset = require('ep_etherpad-lite/static/js/Changeset');
-  const padManager = require('../src/node/db/PadManager');
+  const padManager = require('ep_etherpad-lite/node/db/PadManager');
 
   const exists = await padManager.doesPadExists(padId);
   if (!exists) throw new Error('Pad does not exist');

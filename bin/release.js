@@ -6,7 +6,7 @@ process.on('unhandledRejection', (err) => { throw err; });
 
 const fs = require('fs');
 const childProcess = require('child_process');
-const semver = require(`${__dirname}/../src/node_modules/semver`);
+const semver = require('ep_etherpad-lite/node_modules/semver');
 
 /*
 

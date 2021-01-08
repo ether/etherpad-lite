@@ -13,8 +13,8 @@ if (process.argv.length !== 4 && process.argv.length !== 5) {
   throw new Error('Use: node bin/repairPad.js $PADID $REV [$NEWPADID]');
 }
 
-const npm = require(`${__dirname}/../src/node_modules/npm`);
-const async = require(`${__dirname}/../src/node_modules/async`);
+const async = require('ep_etherpad-lite/node_modules/async');
+const npm = require('ep_etherpad-lite/node_modules/npm');
 
 const padId = process.argv[2];
 const newRevHead = process.argv[3];
@@ -27,12 +27,12 @@ async.series([
   (callback) => npm.load({}, callback),
   (callback) => {
     // Get a handle into the database
-    db = require('../src/node/db/DB');
+    db = require('ep_etherpad-lite/node/db/DB');
     db.init(callback);
   },
   (callback) => {
-    PadManager = require('../src/node/db/PadManager');
-    Pad = require('../src/node/db/Pad').Pad;
+    Pad = require('ep_etherpad-lite/node/db/Pad').Pad;
+    PadManager = require('ep_etherpad-lite/node/db/PadManager');
     // Get references to the original pad and to a newly created pad
     // HACK: This is a standalone script, so we want to write everything
     // out to the database immediately.  The only problem with this is
@@ -65,7 +65,7 @@ async.series([
   },
   (callback) => {
     // Rebuild Pad from revisions up to and including the new revision head
-    const AuthorManager = require('../src/node/db/AuthorManager');
+    const AuthorManager = require('ep_etherpad-lite/node/db/AuthorManager');
     const Changeset = require('ep_etherpad-lite/static/js/Changeset');
     // Author attributes are derived from changesets, but there can also be
     // non-author attributes with specific mappings that changesets depend on

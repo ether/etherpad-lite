@@ -28,8 +28,8 @@ require('ep_etherpad-lite/node_modules/npm').load({}, async (er, npm) => {
 
 
   const settings = require('ep_etherpad-lite/node/utils/Settings');
-  const log4js = require(`${__dirname}/../src/node_modules/log4js`);
-  const ueberDB = require(`${__dirname}/../src/node_modules/ueberdb2`);
+  const log4js = require('ep_etherpad-lite/node_modules/log4js');
+  const ueberDB = require('ep_etherpad-lite/node_modules/ueberdb2');
   const dbWrapperSettings = {
     cache: '0', // The cache slows things down when you're mostly writing.
     writeInterval: 0, // Write directly to the database, don't buffer
@@ -40,7 +40,7 @@ require('ep_etherpad-lite/node_modules/npm').load({}, async (er, npm) => {
       dbWrapperSettings,
       log4js.getLogger('ueberDB')
   );
-  let dirty = require(`${__dirname}/../src/node_modules/dirty`);
+  let dirty = require('ep_etherpad-lite/node_modules/dirty');
 
   await db.init();
 

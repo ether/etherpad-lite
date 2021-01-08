@@ -14,17 +14,17 @@ const padId = process.argv[2];
 let checkRevisionCount = 0;
 
 // load and initialize NPM;
-const npm = require(`${__dirname}/../src/node_modules/npm`);
+const npm = require('ep_etherpad-lite/node_modules/npm');
 npm.load({}, async () => {
   try {
     // initialize database
-    require('../src/node/utils/Settings');
-    const db = require('../src/node/db/DB');
+    require('ep_etherpad-lite/node/utils/Settings');
+    const db = require('ep_etherpad-lite/node/db/DB');
     await db.init();
 
     // load modules
     const Changeset = require('ep_etherpad-lite/static/js/Changeset');
-    const padManager = require('../src/node/db/PadManager');
+    const padManager = require('ep_etherpad-lite/node/db/PadManager');
 
     const exists = await padManager.doesPadExists(padId);
     if (!exists) throw new Error('Pad does not exist');

@@ -9,7 +9,7 @@
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
 process.on('unhandledRejection', (err) => { throw err; });
 
-const supertest = require(`${__dirname}/../src/node_modules/supertest`);
+const supertest = require('ep_etherpad-lite/node_modules/supertest');
 const path = require('path');
 const fs = require('fs');
 
@@ -22,7 +22,7 @@ const filePath = path.join(__dirname, '../APIKEY.txt');
 console.log('Deleting all group sessions, please be patient.');
 
 (async () => {
-  const settings = require(`${__dirname}/../tests/container/loadSettings`).loadSettings();
+  const settings = require('../tests/container/loadSettings').loadSettings();
   const apikey = fs.readFileSync(filePath, {encoding: 'utf-8'});
   const api = supertest(`http://${settings.ip}:${settings.port}`);
 
