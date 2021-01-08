@@ -358,7 +358,6 @@ Scroll.prototype.movePage = function (direction) {
   const lineHeight = linePosition.top - linePosition.bottom;
   let pixelsToScroll = viewport.top - viewport.bottom + offset;
   if (direction === 'up') {
-    // buffer pixels unscrolled our safety net here.  You can't use the current or previous
     // line height because it might be a very long line..
     pixelsToScroll = -Math.abs(pixelsToScroll - lineHeight);
   } else {

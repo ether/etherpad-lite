@@ -59,6 +59,7 @@ function Ace2Inner() {
   const DEBUG = false; // $$ build script replaces the string "var DEBUG=true;//$$" with "var DEBUG=false;"
   // changed to false
   let isSetUp = false;
+  let lastPageUpOrDownEvent;
 
   const THE_TAB = '    '; // 4
   const MAX_LIST_LEVEL = 16;
@@ -3064,8 +3065,29 @@ function Ace2Inner() {
           const isPageUp = evt.which === 33;
           let previousCharacterOffset;
           const isShiftKey = shiftKey;
+
+          const pageUpOrDownTooSoon = () => {
+            const delay = 250;
+
+            if (!lastPageUpOrDownEvent) {
+              lastPageUpOrDownEvent = Date.now();
+              return false;
+            }
+
+            const nextValidTime = lastPageUpOrDownEvent + delay;
+            if (Date.now() >= nextValidTime) {
+              lastPageUpOrDownEvent = Date.now();
+              return false;
+            } else {
+              return true;
+            }
+          }
+
           if (isPageUp) {
             // Approach #99991248928175 to solve this problem....
+
+            // debounce / throttle press and hold page key
+            if (pageUpOrDownTooSoon()) return;
 
             // only make history of x offset if it's not 0.
             if (rep.selStart[1] !== 0 && rep.selEnd[1] !== 0) {
@@ -3130,6 +3152,9 @@ function Ace2Inner() {
           }
           // END OF PAGE UP
           if (isPageDown) {
+            // debounce / throttle press and hold page key
+            if (pageUpOrDownTooSoon()) return;
+
             // Bottom of document - do nothing if we are at the very end
             // JM TODO: Check if Linemarker modifies width..
             const originalPosition = scroll._getViewPortTopBottom();
