@@ -6,6 +6,10 @@
  */
 const m = (f) => `${__dirname}/../${f}`;
 
+// As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
+// unhandled rejection into an uncaught exception, which does cause Node.js to exit.
+process.on('unhandledRejection', (err) => { throw err; });
+
 const fs = require('fs');
 const path = require('path');
 const querystring = require('querystring');

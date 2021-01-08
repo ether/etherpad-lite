@@ -5,6 +5,10 @@
   known "good" revision.
 */
 
+// As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
+// unhandled rejection into an uncaught exception, which does cause Node.js to exit.
+process.on('unhandledRejection', (err) => { throw err; });
+
 if (process.argv.length !== 4 && process.argv.length !== 5) {
   throw new Error('Use: node bin/repairPad.js $PADID $REV [$NEWPADID]');
 }

@@ -5,6 +5,10 @@
 * because sometimes a brick is required to fix a face.
 */
 
+// As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
+// unhandled rejection into an uncaught exception, which does cause Node.js to exit.
+process.on('unhandledRejection', (err) => { throw err; });
+
 const supertest = require(`${__dirname}/../src/node_modules/supertest`);
 const path = require('path');
 const fs = require('fs');

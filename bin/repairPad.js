@@ -4,6 +4,10 @@
  * This is a repair tool. It extracts all datas of a pad, removes and inserts them again.
  */
 
+// As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
+// unhandled rejection into an uncaught exception, which does cause Node.js to exit.
+process.on('unhandledRejection', (err) => { throw err; });
+
 console.warn('WARNING: This script must not be used while etherpad is running!');
 
 if (process.argv.length !== 3) throw new Error('Use: node bin/repairPad.js $PADID');

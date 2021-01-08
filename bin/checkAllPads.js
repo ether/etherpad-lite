@@ -3,6 +3,10 @@
  * This is a debug tool. It checks all revisions for data corruption
  */
 
+// As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
+// unhandled rejection into an uncaught exception, which does cause Node.js to exit.
+process.on('unhandledRejection', (err) => { throw err; });
+
 if (process.argv.length !== 2) throw new Error('Use: node bin/checkAllPads.js');
 
 // load and initialize NPM
