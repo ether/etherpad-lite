@@ -3,10 +3,7 @@
  * This is a debug tool. It checks all revisions for data corruption
  */
 
-if (process.argv.length !== 3) {
-  console.error('Use: node bin/checkPadDeltas.js $PADID');
-  throw new Error();
-}
+if (process.argv.length !== 3) throw new Error('Use: node bin/checkPadDeltas.js $PADID');
 
 // get the padID
 const padId = process.argv[2];
@@ -27,10 +24,7 @@ npm.load({}, async () => {
   const padManager = require('../src/node/db/PadManager');
 
   const exists = await padManager.doesPadExists(padId);
-  if (!exists) {
-    console.error('Pad does not exist');
-    throw new Error();
-  }
+  if (!exists) throw new Error('Pad does not exist');
 
   // get the pad
   const pad = await padManager.getPad(padId);

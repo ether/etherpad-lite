@@ -62,18 +62,13 @@ require('ep_etherpad-lite/node_modules/npm').load({}, (er, npm) => {
   const sqlFile = process.argv[2];
 
   // stop if the settings file is not set
-  if (!sqlFile) {
-    console.error('Use: node importSqlFile.js $SQLFILE');
-    throw new Error();
-  }
+  if (!sqlFile) throw new Error('Use: node importSqlFile.js $SQLFILE');
 
   log('initializing db');
   db.init((err) => {
     // there was an error while initializing the database, output it and stop
     if (err) {
-      console.error('ERROR: Problem while initializing the database');
-      console.error(err.stack ? err.stack : err);
-      throw new Error();
+      throw err;
     } else {
       log('done');
 

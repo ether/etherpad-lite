@@ -3,10 +3,7 @@
  * This is a debug tool. It checks all revisions for data corruption
  */
 
-if (process.argv.length !== 3) {
-  console.error('Use: node bin/checkPad.js $PADID');
-  throw new Error();
-}
+if (process.argv.length !== 3) throw new Error('Use: node bin/checkPad.js $PADID');
 
 // get the padID
 const padId = process.argv[2];
@@ -26,10 +23,7 @@ npm.load({}, async () => {
     const padManager = require('../src/node/db/PadManager');
 
     const exists = await padManager.doesPadExists(padId);
-    if (!exists) {
-      console.error('Pad does not exist');
-      throw new Error();
-    }
+    if (!exists) throw new Error('Pad does not exist');
 
     // get the pad
     const pad = await padManager.getPad(padId);
@@ -61,10 +55,7 @@ npm.load({}, async () => {
       }
 
       // check if the pad has a pool
-      if (pad.pool === undefined) {
-        console.error('Attribute pool is missing');
-        throw new Error();
-      }
+      if (pad.pool === undefined) throw new Error('Attribute pool is missing');
 
       // check if there is an atext in the keyRevisions
       if (revisions[keyRev] === undefined ||
@@ -89,8 +80,8 @@ npm.load({}, async () => {
       }
       console.log(`Finished: Checked ${checkRevisionCount} revisions`);
     }
-  } catch (e) {
-    console.trace(e);
-    throw new Error();
+  } catch (err) {
+    console.trace(err);
+    throw err;
   }
 });

@@ -6,21 +6,15 @@
  * there. It outputs a dirtydb file
  */
 
-if (process.argv.length !== 3) {
-  console.error('Use: node extractPadData.js $PADID');
-  throw new Error();
-}
+if (process.argv.length !== 3) throw new Error('Use: node extractPadData.js $PADID');
 
 // get the padID
 const padId = process.argv[2];
 
 const npm = require(`${__dirname}/../src/node_modules/npm`);
 
-npm.load({}, async (er) => {
-  if (er) {
-    console.error(`Could not load NPM: ${er}`);
-    throw new Error();
-  }
+npm.load({}, async (err) => {
+  if (err) throw err;
 
   try {
     // initialize database
@@ -69,8 +63,8 @@ npm.load({}, async (er) => {
     }
 
     console.log('finished');
-  } catch (er) {
-    console.error(er);
-    throw new Error();
+  } catch (err) {
+    console.error(err);
+    throw err;
   }
 });

@@ -11,10 +11,7 @@ const api = supertest(`http://${settings.ip}:${settings.port}`);
 const path = require('path');
 const fs = require('fs');
 
-if (process.argv.length !== 3) {
-  console.error('Use: node deletePad.js $PADID');
-  throw new Error();
-}
+if (process.argv.length !== 3) throw new Error('Use: node deletePad.js $PADID');
 
 // get the padID
 const padId = process.argv[2];
@@ -31,10 +28,6 @@ const apikey = fs.readFileSync(filePath, {encoding: 'utf-8'});
   // Now we know the latest API version, let's delete pad
   const uri = `/api/${apiVersion}/deletePad?apikey=${apikey}&padID=${padId}`;
   const deleteAttempt = await api.post(uri);
-  if (deleteAttempt.body.code === 1) {
-    console.error('Error deleting pad', deleteAttempt.body);
-    throw new Error('Error deleting pad');
-  } else {
-    console.log('Deleted pad', deleteAttempt.body);
-  }
+  if (deleteAttempt.body.code === 1) throw new Error(`Error deleting pad ${deleteAttempt.body}`);
+  console.log('Deleted pad', deleteAttempt.body);
 })();

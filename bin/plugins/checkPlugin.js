@@ -16,10 +16,7 @@ const childProcess = require('child_process');
 // get plugin name & path from user input
 const pluginName = process.argv[2];
 
-if (!pluginName) {
-  console.error('no plugin name specified');
-  throw new Error();
-}
+if (!pluginName) throw new Error('no plugin name specified');
 
 const pluginPath = `node_modules/${pluginName}`;
 
@@ -108,10 +105,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     files.push(rootFiles[i].toLowerCase());
   }
 
-  if (files.indexOf('.git') === -1) {
-    console.error('No .git folder, aborting');
-    throw new Error();
-  }
+  if (files.indexOf('.git') === -1) throw new Error('No .git folder, aborting');
   prepareRepo();
 
   try {

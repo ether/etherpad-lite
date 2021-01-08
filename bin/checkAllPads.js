@@ -3,10 +3,7 @@
  * This is a debug tool. It checks all revisions for data corruption
  */
 
-if (process.argv.length !== 2) {
-  console.error('Use: node bin/checkAllPads.js');
-  throw new Error();
-}
+if (process.argv.length !== 2) throw new Error('Use: node bin/checkAllPads.js');
 
 // load and initialize NPM
 const npm = require(`${__dirname}/../src/node_modules/npm`);
@@ -89,6 +86,6 @@ npm.load({}, async () => {
     console.log(`Finished: Tested ${revTestedCount} revisions`);
   } catch (err) {
     console.trace(err);
-    throw new Error();
+    throw err;
   }
 });

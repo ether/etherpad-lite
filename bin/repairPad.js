@@ -6,10 +6,7 @@
 
 console.warn('WARNING: This script must not be used while etherpad is running!');
 
-if (process.argv.length !== 3) {
-  console.error('Use: node bin/repairPad.js $PADID');
-  throw new Error();
-}
+if (process.argv.length !== 3) throw new Error('Use: node bin/repairPad.js $PADID');
 
 // get the padID
 const padId = process.argv[2];
@@ -17,11 +14,8 @@ const padId = process.argv[2];
 let valueCount = 0;
 
 const npm = require(`${__dirname}/../src/node_modules/npm`);
-npm.load({}, async (er) => {
-  if (er) {
-    console.error(`Could not load NPM: ${er}`);
-    throw new Error();
-  }
+npm.load({}, async (err) => {
+  if (err) throw err;
 
   // intialize database
   require('../src/node/utils/Settings');

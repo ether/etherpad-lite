@@ -6,8 +6,7 @@
 */
 
 if (process.argv.length !== 4 && process.argv.length !== 5) {
-  console.error('Use: node bin/repairPad.js $PADID $REV [$NEWPADID]');
-  throw new Error();
+  throw new Error('Use: node bin/repairPad.js $PADID $REV [$NEWPADID]');
 }
 
 const npm = require(`${__dirname}/../src/node_modules/npm`);
@@ -21,16 +20,7 @@ let db, oldPad, newPad;
 let Pad, PadManager;
 
 async.series([
-  (callback) => {
-    npm.load({}, (err) => {
-      if (err) {
-        console.error(`Could not load NPM: ${err}`);
-        throw new Error();
-      } else {
-        callback();
-      }
-    });
-  },
+  (callback) => npm.load({}, callback),
   (callback) => {
     // Get a handle into the database
     db = require('../src/node/db/DB');
@@ -47,14 +37,10 @@ async.series([
     // Validate the newPadId if specified and that a pad with that ID does
     // not already exist to avoid overwriting it.
     if (!PadManager.isValidPadId(newPadId)) {
-      console.error('Cannot create a pad with that id as it is invalid');
-      throw new Error();
+      throw new Error('Cannot create a pad with that id as it is invalid');
     }
     PadManager.doesPadExists(newPadId, (err, exists) => {
-      if (exists) {
-        console.error('Cannot create a pad with that id as it already exists');
-        throw new Error();
-      }
+      if (exists) throw new Error('Cannot create a pad with that id as it already exists');
     });
     PadManager.getPad(padId, (err, pad) => {
       oldPad = pad;
