@@ -25,16 +25,17 @@ if (!pluginName) {
 const pluginPath = `node_modules/${pluginName}`;
 
 console.log(`Checking the plugin: ${pluginName}`);
-let autoFix, autoUpdate, autoCommit;
+
+const optArgs = process.argv.slice(3, 0);
 
 // Should we autofix?
-if (process.argv[3] && process.argv[3] === 'autofix') autoFix = true;
+const autoFix = optArgs.indexOf('autofix') !== -1;
 
 // Should we update files where possible?
-if (process.argv[5] && process.argv[5] === 'autoupdate') autoUpdate = true;
+const autoUpdate = optArgs.indexOf('autoupdate') !== -1;
 
 // Should we automcommit and npm publish?!
-if (process.argv[4] && process.argv[4] === 'autocommit') autoCommit = true;
+const autoCommit = optArgs.indexOf('autocommit') !== -1;
 
 if (autoCommit) {
   console.warn('Auto commit is enabled, I hope you know what you are doing...');
