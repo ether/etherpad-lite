@@ -346,7 +346,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     if (autoFix) {
       hasAutoFixed = true;
       console.log('Autofixing missing LICENSE.md file, including Apache 2 license.');
-      childProcess.execSync('git config user.name', (error, name, stderr) => {
+      childProcess.exec('git config user.name', (error, name, stderr) => {
         if (error) {
           console.log(`error: ${error.message}`);
           return;
@@ -478,7 +478,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       // holy shit you brave.
       console.log('Attempting autocommit and auto publish to npm');
       // github should push to npm for us :)
-      childProcess.execSync(`cd node_modules/${pluginName} && git rm -rf node_modules --ignore-unmatch && git add -A && git commit --allow-empty -m 'autofixes from Etherpad checkPlugins.js' && git push && cd ../..`, (error, name, stderr) => {
+      childProcess.exec(`cd node_modules/${pluginName} && git rm -rf node_modules --ignore-unmatch && git add -A && git commit --allow-empty -m 'autofixes from Etherpad checkPlugins.js' && git push && cd ../..`, (error, name, stderr) => {
         if (error) {
           console.log(`error: ${error.message}`);
           return;
