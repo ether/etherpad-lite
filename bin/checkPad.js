@@ -59,12 +59,12 @@ npm.load({}, async () => {
       }
 
       // check if the pad has a pool
-      if (pad.pool === undefined) throw new Error('Attribute pool is missing');
+      if (pad.pool == null) throw new Error('Attribute pool is missing');
 
       // check if there is an atext in the keyRevisions
-      if (revisions[keyRev] === undefined ||
-          revisions[keyRev].meta === undefined ||
-          revisions[keyRev].meta.atext === undefined) {
+      if (revisions[keyRev] == null ||
+          revisions[keyRev].meta == null ||
+          revisions[keyRev].meta.atext == null) {
         console.error(`No atext in key revision ${keyRev}`);
         continue;
       }
