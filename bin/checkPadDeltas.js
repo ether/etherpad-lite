@@ -59,6 +59,7 @@ npm.load({}, async () => {
       revision.meta === undefined ||
       revision.meta.atext === undefined)) {
       console.error(`No atext in key revision ${revNum}`);
+      continue;
     }
 
     // try glue everything together
@@ -68,6 +69,7 @@ npm.load({}, async () => {
       atext = Changeset.applyToAText(cs, atext, pad.pool);
     } catch (e) {
       console.error(`Bad changeset at revision ${revNum} - ${e.message}`);
+      continue;
     }
 
     // check things are working properly
@@ -83,6 +85,7 @@ npm.load({}, async () => {
         // console.error(e)
         // console.log('KeyRev. :', revision.meta.atext)
         // console.log('Computed:', atext)
+        continue;
       }
     }
   }
