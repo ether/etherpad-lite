@@ -26,7 +26,7 @@ const pluginPath = `node_modules/${pluginName}`;
 
 console.log(`Checking the plugin: ${pluginName}`);
 
-const optArgs = process.argv.slice(3, 0);
+const optArgs = process.argv.slice(3);
 
 // Should we autofix?
 const autoFix = optArgs.indexOf('autofix') !== -1;
