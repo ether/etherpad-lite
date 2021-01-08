@@ -41,7 +41,7 @@ npm.load({}, async () => {
     }
 
     // run through all key revisions
-    for (let keyRev of Object.keys(keyRevisions)) {
+    for (let keyRev of keyRevisions) {
       keyRev = parseInt(keyRev);
       // create an array of revisions we need till the next keyRevision or the End
       const revisionsNeeded = [];
