@@ -372,6 +372,7 @@ Scroll.prototype.movePage = function (direction) {
 Scroll.prototype.getFirstVisibleCharacter = function (direction, rep) {
   const viewport = this._getViewPortTopBottom();
   const editor = parent.document.getElementsByTagName('iframe');
+  // TODO can we make a better guess here or do we need to iterate over every line?
   const lines = $(editor).contents().find('div');
   // const currentLine = $(editor).contents().find('#innerdocbody');
   const currentLine = rep.lines.atIndex(rep.selEnd[0]);
@@ -413,72 +414,149 @@ Scroll.prototype.getFirstVisibleCharacter = function (direction, rep) {
   return modifiedRep;
 };
 
-// line is a DOM Line
-// returned is the number of characters in that index that are currently visible
-// IE 120,240
+/**
+ * The fully visible characters of a DOM line.
+ * If the whole line is visible, then all characters inside that line are visible, too.
+ * It works by comparing the top and bottom of DOM line parts and the viewport.
+ *
+ * The returned array is of the form:
+ * - first character visible: [0, x]
+ * - first character not visible: [x, y] where x > 0
+ * - last character visible: [x, y] where y == text length of the line
+ * - last character not visible: [x, y] where y < text length of the line
+ * - null, if no character of the line is visible
+ *
+ * Note that only whole lines count, ie in case of subscript/superscript or different font sizes
+ * inside a visible line, the upper or lower most pixels of the union of all characters must
+ * be visible. In other words: the first visible character of a line will always be the first
+ * character of that line and this function won't return an array of characters, that are in the
+ * middle of a line in the viewport (though it can return characters that are in the middle of a
+ * DOM line)
+ *
+ *TODO rtl languages
+ *
+ *
+ * @param {HTMLElement} line A DOM line that can be wrapped across multiple visible lines
+ * @param {{top: number, bottom: number}} viewport
+ * @returns {[number, number]|null} fully visible characters in the DOM line
+ */
 Scroll.prototype.getCountOfVisibleCharsInViewport = (line, viewport) => {
-  const range = document.createRange();
-  const chars = line.text.split(''); // split "abc" into ["a","b","c"]
-  const parentElement = document.getElementById(line.domInfo.node.id).childNodes;
-  const charNumber = [];
-  // top.console.log(parentElement);
-  for (const node of parentElement) {
-    // each span..
-    // top.console.log('span', node); // shows all nodes from the collection
-    // top.console.log('span length', node.offsetTop); // shows all nodes from the collection
+  const node = document.getElementById(line.domInfo.node.id);
+  const nodeTop = node.offsetTop;
+  const nodeHeight = node.offsetHeight;
+  const nodeBottom = nodeTop + nodeHeight;
+  const nodeLength = node.textContent.length;
 
-    // each character
-    /*
-    let i = 0;
-    console.log(node);
-    if (!node || !node.childNodes) return;
-    node = node.childNodes[0];
-    if (!node) return; // temp patch to be removed.
-    if (node.childNodes && node.childNodes[1].length === 0) return;
-    console.log(node);
-    console.log(node.wholeText.length);
-    while (i < node.wholeText.length) {
-      // top.console.log(i, node.textContent[i]);
-      const range = document.createRange();
-      let failed = false;
-      try {
-        range.setStart(node, i);
-      } catch (e) {
-        failed = true;
-        console.log('fail', e);
-        // console.log('node', node);
-      }
-      try {
-        range.setEnd(node, i + 1);
-      } catch (e) {
-        failed = true;
-        console.log('fail', e);
-        console.log('node', node);
-      }
-      // console.log('range', range);
-      let char;
-      if (!failed) char = range.getClientRects();
-      console.log(node);
-      console.log('charr????', char);
-      if (char) return;
-      if (char && char.length && char[0]) {
-        const topOffset = char[0].y;
-        charNumber.push(topOffset);
-        // is this element in view?
-        console.log('topOffset', topOffset, 'viewport', viewport);
-        if (topOffset > viewport.top) {
-          console.log('can put rep here!', i);
-          return;
-        }
-      }
-      i++;
+  // we can't compare viewport.bottom > nodeTop+lineHeight because that would not work on long lines
+  const startVisible = viewport.top < nodeTop && viewport.bottom > nodeTop;
+  const endVisible = viewport.bottom > nodeBottom && viewport.top < nodeBottom;
+
+  // the whole line is visible
+  if (startVisible && endVisible) return [0, nodeLength];
+  if (!startVisible && !endVisible) {
+    if (nodeTop < viewport.top && nodeBottom > viewport.bottom) {
+      return null;
+      // TODO only some chars visible in the middle of very long line that fills the whole viewport
+    } else {
+      // no character is visible
+      return null;
     }
-    top.console.log('charNumber', charNumber);
-    */
-    return; // TEMPJM CAKE remove once stable
   }
-  return 1000;
+  // if we are here we know that at least some pixel of the line are visible. If some pixel in a
+  // non-wrapped line are not visible, the whole line is considered not visible.
+
+  // is the line wrapped at viewport top or bottom?
+  let wrapAt;
+  if (startVisible && !endVisible) {
+    wrapAt = 'bottom';
+  } else if (!startVisible && endVisible) {
+    wrapAt = 'top';
+  }
+  const texts = [];
+  textNodes(node, texts);
+
+  const range = document.createRange();
+  if (wrapAt === 'top') {
+    const lastNode = texts[texts.length - 1];
+    range.setEnd(lastNode, lastNode.length - 1);
+
+    // text node we're working on
+    let textIndex = 0;
+    // characters in texts[textIndex]
+    let charIndex = 0;
+    // how many chars we need to skip to reach the first visible char
+    let skippedChars = 0;
+    // forward direction
+    range.setStart(texts[textIndex], charIndex);
+
+    let bb = range.getBoundingClientRect();
+
+    while (bb.top < viewport.top) {
+      if (texts[textIndex].length - 1 > charIndex) {
+        // we are not at the end of this text node yet
+        charIndex += 1;
+        skippedChars += 1;
+      } else if (texts.length - 1 > textIndex) {
+        // we have more text nodes
+        textIndex += 1;
+        charIndex = 0;
+        skippedChars += 1;
+      } else {
+        // all text nodes consumed, but none is fully visible
+        return null;
+      }
+      range.setStart(texts[textIndex], charIndex);
+      bb = range.getBoundingClientRect();
+    }
+    return [skippedChars, nodeLength - 1];
+  }
+
+  if (wrapAt === 'bottom') {
+    range.setStart(texts[0], 0);
+
+    // text node we're working on
+    let textIndex = texts.length - 1;
+    // character in texts[textIndex]
+    let charIndex = texts[textIndex].length - 1;
+    // how many chars we need to skip to reach the first visible char
+    let skippedChars = 0;
+    // backward direction
+    range.setEnd(texts[textIndex], charIndex);
+    while (range.getBoundingClientRect().bottom > viewport.bottom) {
+      if (charIndex > 0) {
+        // we are not at the beginning of the text node yet
+        charIndex -= 1;
+        skippedChars += 1;
+      } else if (textIndex > 0) {
+        // we have more text nodes
+        textIndex -= 1;
+        charIndex = texts[textIndex].length;
+        skippedChars += 1;
+      } else {
+        // all text nodes consumed, but none is fully visible
+        return null;
+      }
+      range.setEnd(texts[textIndex], charIndex);
+    }
+    return [0, nodeLength - skippedChars - 1];
+  }
 };
+
+/**
+ * Iterates over a node and returns all text node descendants
+ *
+ * @param {HTMLElement} node A DOM line
+ */
+function textNodes(node, texts) {
+  node.childNodes.forEach((child) => {
+    // lists somehow end up as a text node here, but they don't have a nodeValue
+    if (child.nodeType === 3 && child.nodeValue !== '') {
+      texts.push(child);
+    } else {
+      textNodes(child, texts);
+    }
+  });
+}
 
 
 exports.init = (outerWin) => new Scroll(outerWin);

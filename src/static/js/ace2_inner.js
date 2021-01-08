@@ -1441,6 +1441,13 @@ function Ace2Inner() {
     }
   }
 
+  /**
+   * Returns the node and index into this node that corresponds to a given line number and character
+   * position.
+   *
+   * @params {[number, number]} lineAndChar an array of the form [row, col]
+   * @returns {{node: HTMLElement, index: number, maxIndex: number}}
+   */
   function getPointForLineAndChar(lineAndChar) {
     const line = lineAndChar[0];
     let charsLeft = lineAndChar[1];
@@ -1455,6 +1462,7 @@ function Ace2Inner() {
     const lineNode = lineEntry.lineNode;
     let n = lineNode;
     let after = false;
+    // at [x, 0] of a line with line attributes
     if (charsLeft === 0) {
       const index = 0;
       return {
