@@ -110,11 +110,11 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       const existingValue = parseInt(
           currVersionFile.substr(existingConfigLocation + 17, existingConfigLocation.length));
 
-      const reqVersionFile = fs.readFileSync(
-          'bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
+      const reqVersionFile =
+          fs.readFileSync('bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
       const reqConfigLocation = reqVersionFile.indexOf('##ETHERPAD_NPM_V=');
-      const reqValue = parseInt(
-          reqVersionFile.substr(reqConfigLocation + 17, reqConfigLocation.length));
+      const reqValue =
+          parseInt(reqVersionFile.substr(reqConfigLocation + 17, reqConfigLocation.length));
 
       if (!existingValue || (reqValue > existingValue)) {
         const npmpublish =
@@ -149,11 +149,11 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       const existingValue = parseInt(
           currVersionFile.substr(existingConfigLocation + 17, existingConfigLocation.length));
 
-      const reqVersionFile = fs.readFileSync(
-          'bin/plugins/lib/backend-tests.yml', {encoding: 'utf8', flag: 'r'});
+      const reqVersionFile =
+          fs.readFileSync('bin/plugins/lib/backend-tests.yml', {encoding: 'utf8', flag: 'r'});
       const reqConfigLocation = reqVersionFile.indexOf('##ETHERPAD_NPM_V=');
-      const reqValue = parseInt(
-          reqVersionFile.substr(reqConfigLocation + 17, reqConfigLocation.length));
+      const reqValue =
+          parseInt(reqVersionFile.substr(reqConfigLocation + 17, reqConfigLocation.length));
 
       if (!existingValue || (reqValue > existingValue)) {
         const backendTests =
