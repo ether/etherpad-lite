@@ -30,7 +30,7 @@ npm.load({}, async () => {
       const pad = await padManager.getPad(padId);
 
       // check if the pad has a pool
-      if (pad.pool === undefined) {
+      if (pad.pool == null) {
         console.error(`[${pad.id}] Missing attribute pool`);
         continue;
       }
@@ -66,7 +66,7 @@ npm.load({}, async () => {
         }
 
         // check if there is a atext in the keyRevisions
-        if (revisions[keyRev].meta === undefined || revisions[keyRev].meta.atext === undefined) {
+        if (revisions[keyRev].meta == null || revisions[keyRev].meta.atext == null) {
           console.error(`[${pad.id}] Missing atext in revision ${keyRev}`);
           continue;
         }
