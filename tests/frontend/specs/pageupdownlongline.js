@@ -9,59 +9,139 @@ describe(`Really long text line goes to character within text line if text line 
         // 200 lines
         await helper.edit(
             'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-          'hello world hello world hello world hello world hello world hello world hello world\n ' +
-          'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        'hello world hello world hello world hello world hello world hello world hello world ' +
-        '\n\n\n\n\n\n\n\n\n ');
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            ' \n ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            '\n\n\n\n\n\n\n\n\n ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ' +
+            'hello world hello world hello world hello world hello world hello world hello world ');
         cb();
       },
     });
@@ -84,12 +164,30 @@ describe(`Really long text line goes to character within text line if text line 
         return true;
       }
     });
+    let previousLineNumber;
+
+    helper.pageDown();
+    await helper.waitForPromise(() => helper.caretLineNumber() >= previousLineNumber);
+    previousLineNumber = helper.caretLineNumber();
+    helper.pageDown();
+    await helper.waitForPromise(() => helper.caretLineNumber() >= previousLineNumber);
+    previousLineNumber = helper.caretLineNumber();
+    helper.pageDown();
+    await helper.waitForPromise(() => helper.caretLineNumber() >= previousLineNumber);
+    previousLineNumber = helper.caretLineNumber();
+    helper.pageDown();
+    await helper.waitForPromise(() => helper.caretLineNumber() >= previousLineNumber);
+    previousLineNumber = helper.caretLineNumber();
+    helper.pageDown();
+    await helper.waitForPromise(() => helper.caretLineNumber() >= previousLineNumber);
+    previousLineNumber = helper.caretLineNumber();
+    helper.pageDown();
+    await helper.waitForPromise(() => helper.caretLineNumber() >= previousLineNumber);
+    previousLineNumber = helper.caretLineNumber();
+
+    // we're at the bottom..
     helper.pageUp();
-    await helper.waitForPromise(() => {
-      if ((helper.padInner$.document.getSelection().anchorOffset > 0) &&
-          (helper.caretLineNumber() === 1)) {
-        return true;
-      }
-    });
+    // goes up within line but not pad
+    await helper.waitForPromise(() => helper.caretLineNumber() === previousLineNumber);
   });
 });
