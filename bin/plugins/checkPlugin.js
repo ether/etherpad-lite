@@ -209,6 +209,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         const devDependencies = {
           'eslint': '^7.17.0',
           'eslint-config-etherpad': '^1.0.22',
+          'eslint-plugin-eslint-comments': '^3.2.0',
           'eslint-plugin-mocha': '^8.0.0',
           'eslint-plugin-node': '^11.1.0',
           'eslint-plugin-prefer-arrow': '^1.2.2',
