@@ -6,6 +6,10 @@ process.on('unhandledRejection', (err) => { throw err; });
 
 const startTime = Date.now();
 
+const log = (str) => {
+  console.log(`${(Date.now() - startTime) / 1000}\t${str}`);
+};
+
 const unescape = (val) => {
   // value is a string
   if (val.substr(0, 1) === "'") {
@@ -46,10 +50,6 @@ require('ep_etherpad-lite/node_modules/npm').load({}, (er, npm) => {
   const ueberDB = require('ep_etherpad-lite/node_modules/ueberdb2');
   const settings = require('ep_etherpad-lite/node/utils/Settings');
   const log4js = require('ep_etherpad-lite/node_modules/log4js');
-
-  const log = (str) => {
-    console.log(`${(Date.now() - startTime) / 1000}\t${str}`);
-  };
 
   const dbWrapperSettings = {
     cache: 0,
