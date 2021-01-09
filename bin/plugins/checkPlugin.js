@@ -42,6 +42,9 @@ const execSync = (cmd, opts = {}) => (childProcess.execSync(cmd, {
   ...opts,
 }) || '').toString().replace(/\n+$/, '');
 
+const writePackageJson =
+    (obj) => fs.writeFileSync(`${pluginPath}/package.json`, JSON.stringify(obj, null, 2));
+
 const prepareRepo = () => {
   let branch = execSync('git symbolic-ref HEAD');
   if (branch !== 'refs/heads/master' && branch !== 'refs/heads/main') {
@@ -193,7 +196,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       }
       if (updatedPackageJSON) {
         hasAutoFixed = true;
-        fs.writeFileSync(`${pluginPath}/package.json`, JSON.stringify(parsedPackageJSON, null, 2));
+        writePackageJson(parsedPackageJSON);
       }
     }
 
@@ -230,7 +233,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     if (lintDepsNeedUpdating && autoFix) {
       hasAutoFixed = true;
       parsedPackageJSON.devDependencies = Object.assign(devDependencies, lintDeps);
-      fs.writeFileSync(`${pluginPath}/package.json`, JSON.stringify(parsedPackageJSON, null, 2));
+      writePackageJson(parsedPackageJSON);
       try {
         execSync('npm install', {stdio: 'inherit'});
       } catch (err) {
@@ -247,7 +250,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         };
         hasAutoFixed = true;
         parsedPackageJSON.peerDependencies = peerDependencies;
-        fs.writeFileSync(`${pluginPath}/package.json`, JSON.stringify(parsedPackageJSON, null, 2));
+        writePackageJson(parsedPackageJSON);
         try {
           execSync('npm install --no-save ep_etherpad-lite@file:../../src', {stdio: 'inherit'});
           hasAutoFixed = true;
@@ -266,7 +269,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         };
         hasAutoFixed = true;
         parsedPackageJSON.eslintConfig = eslintConfig;
-        fs.writeFileSync(`${pluginPath}/package.json`, JSON.stringify(parsedPackageJSON, null, 2));
+        writePackageJson(parsedPackageJSON);
       }
     }
 
@@ -279,7 +282,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         };
         hasAutoFixed = true;
         parsedPackageJSON.scripts = scripts;
-        fs.writeFileSync(`${pluginPath}/package.json`, JSON.stringify(parsedPackageJSON, null, 2));
+        writePackageJson(parsedPackageJSON);
       }
     }
 
@@ -291,7 +294,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         };
         hasAutoFixed = true;
         parsedPackageJSON.engines = engines;
-        fs.writeFileSync(`${pluginPath}/package.json`, JSON.stringify(parsedPackageJSON, null, 2));
+        writePackageJson(parsedPackageJSON);
       }
     }
   }
