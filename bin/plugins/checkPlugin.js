@@ -467,7 +467,8 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     const cmd = [
       'git rm -rf node_modules --ignore-unmatch',
       'git add -A',
-      'git commit --allow-empty -m "autofixes from Etherpad checkPlugin.js"',
+      '{ ! git diff-index --cached --quiet HEAD || exit 0; }',
+      'git commit -m "autofixes from Etherpad checkPlugin.js"',
       'git push',
     ].join(' && ');
     if (autoCommit) {
