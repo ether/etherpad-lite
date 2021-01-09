@@ -1,13 +1,13 @@
+'use strict';
+
 describe('enter keystroke', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
     helper.newPad(cb);
     this.timeout(60000);
   });
-
   it('creates a new line & puts cursor onto a new line', function (done) {
     const inner$ = helper.padInner$;
-    const chrome$ = helper.padChrome$;
 
     // get the first text element out of the inner iframe
     const $firstTextElement = inner$('div').first();
@@ -28,5 +28,33 @@ describe('enter keystroke', function () {
       expect($newSecondLine.text()).to.be(originalTextValue); // expect the second line to be the same as the original first line.
       done();
     });
+  });
+
+  it('enter is always visible after event', async function () {
+    const originalLength = helper.padInner$('div').length;
+    let $lastLine = helper.padInner$('div').last();
+
+    // simulate key presses to enter content
+    let i = 0;
+    const numberOfLines = 15;
+    let previousLineLength = originalLength;
+    while (i < numberOfLines) {
+      $lastLine = helper.padInner$('div').last();
+      $lastLine.sendkeys('{enter}');
+      await helper.waitFor(() => helper.padInner$('div').length > previousLineLength);
+      previousLineLength = helper.padInner$('div').length;
+      // check we can see the caret..
+
+      i++;
+    }
+    await helper.waitFor(() => helper.padInner$('div').length === numberOfLines + originalLength);
+
+    // is edited line fully visible?
+    const lastLine = helper.padInner$('div').last();
+    const bottomOfLastLine = lastLine.offset().top + lastLine.height();
+    const scrolledWindow = helper.padChrome$('iframe')[0];
+    const scrolledAmount = scrolledWindow.contentWindow.pageYOffset +
+        scrolledWindow.contentWindow.innerHeight;
+    await helper.waitFor(() => scrolledAmount >= bottomOfLastLine);
   });
 });
