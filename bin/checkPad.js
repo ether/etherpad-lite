@@ -62,15 +62,13 @@ npm.load({}, async () => {
       if (pad.pool == null) throw new Error('Attribute pool is missing');
 
       // check if there is an atext in the keyRevisions
-      if (revisions[keyRev] == null ||
-          revisions[keyRev].meta == null ||
-          revisions[keyRev].meta.atext == null) {
+      let {meta: {atext} = {}} = revisions[keyRev] || {};
+      if (atext == null) {
         console.error(`No atext in key revision ${keyRev}`);
         continue;
       }
 
       const apool = pad.pool;
-      let atext = revisions[keyRev].meta.atext;
 
       for (let rev = keyRev + 1; rev <= keyRev + 100 && rev <= head; rev++) {
         checkRevisionCount++;
