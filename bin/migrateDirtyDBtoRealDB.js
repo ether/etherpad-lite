@@ -29,8 +29,7 @@ require('ep_etherpad-lite/node_modules/npm').load({}, async (er, npm) => {
       settings.dbType,
       settings.dbSettings,
       dbWrapperSettings,
-      log4js.getLogger('ueberDB')
-  );
+      log4js.getLogger('ueberDB'));
   await db.init();
 
   console.log('Waiting for dirtyDB to parse its file.');

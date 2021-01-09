@@ -60,8 +60,7 @@ require('ep_etherpad-lite/node_modules/npm').load({}, (er, npm) => {
       settings.dbType,
       settings.dbSettings,
       dbWrapperSettings,
-      log4js.getLogger('ueberDB')
-  );
+      log4js.getLogger('ueberDB'));
 
   const sqlFile = process.argv[2];
 
@@ -99,9 +98,8 @@ require('ep_etherpad-lite/node_modules/npm').load({}, (er, npm) => {
         }
       });
       process.stdout.write('\n');
-      process.stdout.write(
-          'done. waiting for db to finish transaction. depended on dbms this may take some time..\n'
-      );
+      process.stdout.write('done. waiting for db to finish transaction. ' +
+                           'depended on dbms this may take some time..\n');
 
       db.close(() => {
         log(`finished, imported ${keyNo} keys.`);
