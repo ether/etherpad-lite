@@ -433,9 +433,9 @@ fs.readdir(pluginPath, (err, rootFiles) => {
 
   // linting begins
   try {
+    console.log('Linting...');
     const lintCmd = autoFix ? 'npx eslint --fix .' : 'npx eslint';
     execSync(lintCmd);
-    console.log('Linting...');
     if (autoFix) {
       // todo: if npm run lint doesn't do anything no need for...
       hasAutoFixed = true;
@@ -447,7 +447,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   // linting ends.
 
   if (hasAutoFixed) {
-    console.log('Fixes applied, please check git diff then run the following command:\n\n');
     // bump npm Version
     const cmd = [
       'git rm -rf node_modules --ignore-unmatch',
@@ -460,6 +459,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       console.log('Attempting autocommit and auto publish to npm');
       execSync(cmd);
     } else {
+      console.log('Fixes applied, please check git diff then run the following command:');
       console.log(`(cd node_modules/${pluginName} && ${cmd})`);
     }
   }
