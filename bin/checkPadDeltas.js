@@ -80,7 +80,8 @@ npm.load({}, async () => {
       } catch (e) {
         console.error(`Atext in key revision ${revNum} doesn't match computed one.`);
         console.log(diff.diffChars(atext.text, revision.meta.atext.text).map((op) => {
-          if (!op.added && !op.removed) op.value = op.value.length; return op;
+          if (!op.added && !op.removed) op.value = op.value.length;
+          return op;
         }));
         // console.error(e)
         // console.log('KeyRev. :', revision.meta.atext)
