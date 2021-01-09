@@ -39,7 +39,7 @@ console.log('Deleting all group sessions, please be patient.');
 
     for (const sessionID of Object.keys(sessions)) {
       const deleteURI = `/api/${apiVersion}/deleteSession?apikey=${apikey}&sessionID=${sessionID}`;
-      await api.get(deleteURI); // delete
+      await api.post(deleteURI); // delete
       deleteCount++;
     }
   }
