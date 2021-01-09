@@ -53,7 +53,7 @@ const prepareRepo = () => {
   execSync('git rev-parse --verify @{u}'); // Make sure there's a remote tracking branch.
   const dirtyFiles = execSync('git ls-files -dmo --exclude-standard');
   if (dirtyFiles !== '') throw new Error(`working directory is unclean:\n${dirtyFiles}`);
-  const indexStatus = execSync('git diff-index --cached --compact-summary HEAD');
+  const indexStatus = execSync('git diff-index --cached --name-status HEAD');
   if (indexStatus !== '') throw new Error(`uncommitted staged changes to files:\n${indexStatus}`);
   execSync('git pull --ff-only', {stdio: 'inherit'});
   if (execSync('git rev-list @{u}...') !== '') throw new Error('repo contains unpushed commits');
