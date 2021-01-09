@@ -37,6 +37,11 @@ const autoUpdate = optArgs.indexOf('autoupdate') !== -1;
 // Should we automcommit and npm publish?!
 const autoCommit = optArgs.indexOf('autocommit') !== -1;
 
+const execSync = (cmd, opts = {}) => (childProcess.execSync(cmd, {
+  cwd: `${pluginPath}/`,
+  ...opts,
+}) || '').toString().replace(/\n+$/, '');
+
 if (autoCommit) {
   console.warn('Auto commit is enabled, I hope you know what you are doing...');
 }
@@ -66,7 +71,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   }
 
   try {
-    childProcess.execSync('git pull ', {cwd: `${pluginPath}/`});
+    execSync('git pull');
   } catch (e) {
     console.error('Error git pull', e);
   }
@@ -209,7 +214,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       parsedPackageJSON.devDependencies = Object.assign(devDependencies, lintDeps);
       fs.writeFileSync(`${pluginPath}/package.json`, JSON.stringify(parsedPackageJSON, null, 2));
       try {
-        childProcess.execSync('npm install', {cwd: `${pluginPath}/`});
+        execSync('npm install');
       } catch (err) {
         console.error(`Failed to create package-lock.json: ${err.stack || err}`);
       }
@@ -226,8 +231,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         parsedPackageJSON.peerDependencies = peerDependencies;
         fs.writeFileSync(`${pluginPath}/package.json`, JSON.stringify(parsedPackageJSON, null, 2));
         try {
-          childProcess.execSync(
-              'npm install --no-save ep_etherpad-lite@file:../../src', {cwd: `${pluginPath}/`});
+          execSync('npm install --no-save ep_etherpad-lite@file:../../src');
           hasAutoFixed = true;
         } catch (e) {
           console.error('Failed to create package-lock.json');
@@ -279,7 +283,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     console.warn('Run npm install in the plugin folder and commit the package-lock.json file.');
     if (autoFix) {
       try {
-        childProcess.execSync('npm install', {cwd: `${pluginPath}/`});
+        execSync('npm install');
         console.log('Making package-lock.json');
         hasAutoFixed = true;
       } catch (e) {
@@ -333,20 +337,10 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     if (autoFix) {
       hasAutoFixed = true;
       console.log('Autofixing missing LICENSE.md file, including Apache 2 license.');
-      childProcess.exec('git config user.name', (error, name, stderr) => {
-        if (error) {
-          console.log(`error: ${error.message}`);
-          return;
-        }
-        if (stderr) {
-          console.log(`stderr: ${stderr}`);
-          return;
-        }
-        let license = fs.readFileSync('bin/plugins/lib/LICENSE.md', {encoding: 'utf8', flag: 'r'});
-        license = license.replace('[yyyy]', new Date().getFullYear());
-        license = license.replace('[name of copyright owner]', name);
-        fs.writeFileSync(`${pluginPath}/LICENSE.md`, license);
-      });
+      let license = fs.readFileSync('bin/plugins/lib/LICENSE.md', {encoding: 'utf8', flag: 'r'});
+      license = license.replace('[yyyy]', new Date().getFullYear());
+      license = license.replace('[name of copyright owner]', execSync('git config user.name'));
+      fs.writeFileSync(`${pluginPath}/LICENSE.md`, license);
     }
   }
 
@@ -440,7 +434,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   // linting begins
   try {
     const lintCmd = autoFix ? 'npx eslint --fix .' : 'npx eslint';
-    childProcess.execSync(lintCmd, {cwd: `${pluginPath}/`});
+    execSync(lintCmd);
     console.log('Linting...');
     if (autoFix) {
       // todo: if npm run lint doesn't do anything no need for...
@@ -456,31 +450,17 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     console.log('Fixes applied, please check git diff then run the following command:\n\n');
     // bump npm Version
     const cmd = [
-      `cd node_modules/${pluginName}`,
       'git rm -rf node_modules --ignore-unmatch',
       'git add -A',
       'git commit --allow-empty -m "autofixes from Etherpad checkPlugin.js"',
       'git push',
-      'cd ../..',
     ].join(' && ');
     if (autoCommit) {
       // holy shit you brave.
       console.log('Attempting autocommit and auto publish to npm');
-      // github should push to npm for us :)
-      childProcess.exec(cmd, (error, name, stderr) => {
-        if (error) {
-          console.log(`error: ${error.message}`);
-          return;
-        }
-        if (stderr) {
-          console.log(`stderr: ${stderr}`);
-          return;
-        }
-        console.log("I think she's got it! By George she's got it!");
-        process.exit(0);
-      });
+      execSync(cmd);
     } else {
-      console.log(cmd);
+      console.log(`(cd node_modules/${pluginName} && ${cmd})`);
     }
   }
 
