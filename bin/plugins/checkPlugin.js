@@ -237,11 +237,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       hasAutoFixed = true;
       parsedPackageJSON.devDependencies = Object.assign(devDependencies, lintDeps);
       writePackageJson(parsedPackageJSON);
-      try {
-        execSync('npm install', {stdio: 'inherit'});
-      } catch (err) {
-        console.error(`Failed to create package-lock.json: ${err.stack || err}`);
-      }
     }
 
     // include peer deps config
@@ -254,12 +249,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         hasAutoFixed = true;
         parsedPackageJSON.peerDependencies = peerDependencies;
         writePackageJson(parsedPackageJSON);
-        try {
-          execSync('npm install --no-save ep_etherpad-lite@file:../../src', {stdio: 'inherit'});
-          hasAutoFixed = true;
-        } catch (e) {
-          console.error('Failed to create package-lock.json');
-        }
       }
     }
 
@@ -303,16 +292,9 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   }
 
   if (files.indexOf('package-lock.json') === -1) {
-    console.warn('package-lock.json file not found.');
-    console.warn('Run npm install in the plugin folder and commit the package-lock.json file.');
-    if (autoFix) {
-      try {
-        execSync('npm install', {stdio: 'inherit'});
-        console.log('Making package-lock.json');
-        hasAutoFixed = true;
-      } catch (e) {
-        console.error('Failed to create package-lock.json');
-      }
+    console.warn('package-lock.json not found');
+    if (!autoFix) {
+      console.warn('Run npm install in the plugin folder and commit the package-lock.json file.');
     }
   }
 
@@ -454,6 +436,13 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   } else {
     console.warn('Test files not found, please create tests.  https://github.com/ether/etherpad-lite/wiki/Creating-a-plugin#writing-and-running-front-end-tests-for-your-plugin');
   }
+
+  // Install dependencies so we can run ESLint. This should also create or update package-lock.json
+  // if autoFix is enabled.
+  const npmInstall = `npm install${autoFix ? '' : ' --no-package-lock'}`;
+  execSync(npmInstall, {stdio: 'inherit'});
+  // The ep_etherpad-lite peer dep must be installed last otherwise `npm install` will nuke it.
+  execSync(`${npmInstall} --no-save ep_etherpad-lite@file:../../src`, {stdio: 'inherit'});
 
   // linting begins
   try {
