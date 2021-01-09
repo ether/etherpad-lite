@@ -66,13 +66,13 @@ npm.load({}, async () => {
         }
 
         // check if there is a atext in the keyRevisions
-        if (revisions[keyRev].meta == null || revisions[keyRev].meta.atext == null) {
+        let {meta: {atext} = {}} = revisions[keyRev];
+        if (atext == null) {
           console.error(`[${pad.id}] Missing atext in revision ${keyRev}`);
           continue;
         }
 
         const apool = pad.pool;
-        let atext = revisions[keyRev].meta.atext;
         for (let rev = keyRev + 1; rev <= keyRev + 100 && rev <= head; rev++) {
           try {
             const cs = revisions[rev].changeset;
