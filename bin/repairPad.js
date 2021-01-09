@@ -18,8 +18,10 @@ const padId = process.argv[2];
 let valueCount = 0;
 
 const npm = require('ep_etherpad-lite/node_modules/npm');
-npm.load({}, async (err) => {
-  if (err) throw err;
+const util = require('util');
+
+(async () => {
+  await util.promisify(npm.load)({});
 
   // intialize database
   require('ep_etherpad-lite/node/utils/Settings');
@@ -56,4 +58,4 @@ npm.load({}, async (err) => {
   }
 
   console.info(`Finished: Replaced ${valueCount} values in the database`);
-});
+})();

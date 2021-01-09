@@ -16,9 +16,10 @@ if (process.argv.length !== 3) throw new Error('Use: node extractPadData.js $PAD
 const padId = process.argv[2];
 
 const npm = require('ep_etherpad-lite/node_modules/npm');
+const util = require('util');
 
-npm.load({}, async (err) => {
-  if (err) throw err;
+(async () => {
+  await util.promisify(npm.load)({});
 
   try {
     // initialize database
@@ -29,7 +30,6 @@ npm.load({}, async (err) => {
     // load extra modules
     const dirtyDB = require('ep_etherpad-lite/node_modules/dirty');
     const padManager = require('ep_etherpad-lite/node/db/PadManager');
-    const util = require('util');
 
     // initialize output database
     const dirty = dirtyDB(`${padId}.db`);
@@ -71,4 +71,4 @@ npm.load({}, async (err) => {
     console.error(err);
     throw err;
   }
-});
+})();
