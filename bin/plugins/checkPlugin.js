@@ -42,8 +42,11 @@ const execSync = (cmd, opts = {}) => (childProcess.execSync(cmd, {
   ...opts,
 }) || '').toString().replace(/\n+$/, '');
 
-const writePackageJson =
-    (obj) => fs.writeFileSync(`${pluginPath}/package.json`, JSON.stringify(obj, null, 2));
+const writePackageJson = (obj) => {
+  let s = JSON.stringify(obj, null, 2);
+  if (s.length && s.slice(s.length - 1) !== '\n') s += '\n';
+  return fs.writeFileSync(`${pluginPath}/package.json`, s);
+};
 
 const prepareRepo = () => {
   let branch = execSync('git symbolic-ref HEAD');
