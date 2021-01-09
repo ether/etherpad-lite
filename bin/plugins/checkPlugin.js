@@ -37,6 +37,8 @@ const autoUpdate = optArgs.indexOf('autoupdate') !== -1;
 // Should we automcommit and npm publish?!
 const autoCommit = optArgs.indexOf('autocommit') !== -1;
 
+let hasAutoFixed = false;
+
 const execSync = (cmd, opts = {}) => (childProcess.execSync(cmd, {
   cwd: `${pluginPath}/`,
   ...opts,
@@ -46,6 +48,28 @@ const writePackageJson = (obj) => {
   let s = JSON.stringify(obj, null, 2);
   if (s.length && s.slice(s.length - 1) !== '\n') s += '\n';
   return fs.writeFileSync(`${pluginPath}/package.json`, s);
+};
+
+const updateDeps = (parsedPackageJson, key, wantDeps) => {
+  const {[key]: deps = {}} = parsedPackageJson;
+  let changed = false;
+  for (const [pkg, ver] of Object.entries(wantDeps)) {
+    if (deps[pkg] === ver) continue;
+    if (deps[pkg] == null) {
+      console.warn(`Missing dependency in ${key}: '${pkg}': '${ver}'`);
+    } else {
+      console.warn(`Dependency mismatch in ${key}: '${pkg}': '${ver}' (current: ${deps[pkg]})`);
+    }
+    if (autoFix) {
+      deps[pkg] = ver;
+      changed = true;
+    }
+  }
+  if (changed) {
+    hasAutoFixed = true;
+    parsedPackageJson[key] = deps;
+    writePackageJson(parsedPackageJson);
+  }
 };
 
 const prepareRepo = () => {
@@ -87,7 +111,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   // some files we need to know the actual file name.  Not compulsory but might help in the future.
   let readMeFileName;
   let repository;
-  let hasAutoFixed = false;
 
   for (let i = 0; i < rootFiles.length; i++) {
     if (rootFiles[i].toLowerCase().indexOf('readme') !== -1) readMeFileName = rootFiles[i];
@@ -213,8 +236,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       repository = parsedPackageJSON.repository.url;
     }
 
-    // include lint config
-    const lintDeps = {
+    updateDeps(parsedPackageJSON, 'devDependencies', {
       'eslint': '^7.17.0',
       'eslint-config-etherpad': '^1.0.22',
       'eslint-plugin-eslint-comments': '^3.2.0',
@@ -223,21 +245,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       'eslint-plugin-prefer-arrow': '^1.2.2',
       'eslint-plugin-promise': '^4.2.1',
       'eslint-plugin-you-dont-need-lodash-underscore': '^6.10.0',
-    };
-    const {devDependencies = {}} = parsedPackageJSON;
-    let lintDepsNeedUpdating = false;
-    for (const [pkg, ver] of Object.entries(lintDeps)) {
-      if (devDependencies[pkg] !== ver) {
-        console.warn(`Missing/outdated ESLint dependency: '${pkg}': '${ver}' ` +
-                     `(current: ${devDependencies[pkg]})`);
-        lintDepsNeedUpdating = true;
-      }
-    }
-    if (lintDepsNeedUpdating && autoFix) {
-      hasAutoFixed = true;
-      parsedPackageJSON.devDependencies = Object.assign(devDependencies, lintDeps);
-      writePackageJson(parsedPackageJSON);
-    }
+    });
 
     // include peer deps config
     if (packageJSON.toLowerCase().indexOf('peerdependencies') === -1 || !parsedPackageJSON.peerDependencies) {
