@@ -71,7 +71,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   }
 
   try {
-    execSync('git pull');
+    execSync('git pull', {stdio: 'inherit'});
   } catch (e) {
     console.error('Error git pull', e);
   }
@@ -214,7 +214,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       parsedPackageJSON.devDependencies = Object.assign(devDependencies, lintDeps);
       fs.writeFileSync(`${pluginPath}/package.json`, JSON.stringify(parsedPackageJSON, null, 2));
       try {
-        execSync('npm install');
+        execSync('npm install', {stdio: 'inherit'});
       } catch (err) {
         console.error(`Failed to create package-lock.json: ${err.stack || err}`);
       }
@@ -231,7 +231,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         parsedPackageJSON.peerDependencies = peerDependencies;
         fs.writeFileSync(`${pluginPath}/package.json`, JSON.stringify(parsedPackageJSON, null, 2));
         try {
-          execSync('npm install --no-save ep_etherpad-lite@file:../../src');
+          execSync('npm install --no-save ep_etherpad-lite@file:../../src', {stdio: 'inherit'});
           hasAutoFixed = true;
         } catch (e) {
           console.error('Failed to create package-lock.json');
@@ -283,7 +283,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     console.warn('Run npm install in the plugin folder and commit the package-lock.json file.');
     if (autoFix) {
       try {
-        execSync('npm install');
+        execSync('npm install', {stdio: 'inherit'});
         console.log('Making package-lock.json');
         hasAutoFixed = true;
       } catch (e) {
@@ -435,7 +435,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   try {
     console.log('Linting...');
     const lintCmd = autoFix ? 'npx eslint --fix .' : 'npx eslint';
-    execSync(lintCmd);
+    execSync(lintCmd, {stdio: 'inherit'});
     if (autoFix) {
       // todo: if npm run lint doesn't do anything no need for...
       hasAutoFixed = true;
@@ -457,7 +457,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     if (autoCommit) {
       // holy shit you brave.
       console.log('Attempting autocommit and auto publish to npm');
-      execSync(cmd);
+      execSync(cmd, {stdio: 'inherit'});
     } else {
       console.log('Fixes applied, please check git diff then run the following command:');
       console.log(`(cd node_modules/${pluginName} && ${cmd})`);
