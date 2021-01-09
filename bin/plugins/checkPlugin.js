@@ -51,8 +51,10 @@ const prepareRepo = () => {
   execSync('git rev-parse --verify -q HEAD^0 || ' +
            `{ echo "Error: no commits on ${branch}" >&2; exit 1; }`);
   execSync('git rev-parse --verify @{u}'); // Make sure there's a remote tracking branch.
-  const dirtyFiles = execSync('git ls-files -dmo --exclude-standard');
-  if (dirtyFiles !== '') throw new Error(`working directory is unclean:\n${dirtyFiles}`);
+  const modified = execSync('git diff-files --name-status');
+  if (modified !== '') throw new Error(`working directory has modifications:\n${modified}`);
+  const untracked = execSync('git ls-files -o --exclude-standard');
+  if (untracked !== '') throw new Error(`working directory has untracked files:\n${untracked}`);
   const indexStatus = execSync('git diff-index --cached --name-status HEAD');
   if (indexStatus !== '') throw new Error(`uncommitted staged changes to files:\n${indexStatus}`);
   execSync('git pull --ff-only', {stdio: 'inherit'});
