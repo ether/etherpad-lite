@@ -42,6 +42,27 @@ const execSync = (cmd, opts = {}) => (childProcess.execSync(cmd, {
   ...opts,
 }) || '').toString().replace(/\n+$/, '');
 
+const prepareRepo = () => {
+  let branch = execSync('git symbolic-ref HEAD');
+  if (branch !== 'refs/heads/master' && branch !== 'refs/heads/main') {
+    throw new Error('master/main must be checked out');
+  }
+  branch = branch.replace(/^refs\/heads\//, '');
+  execSync('git rev-parse --verify -q HEAD^0 || ' +
+           `{ echo "Error: no commits on ${branch}" >&2; exit 1; }`);
+  execSync('git rev-parse --verify @{u}'); // Make sure there's a remote tracking branch.
+  const dirtyFiles = execSync('git ls-files -dmo --exclude-standard');
+  if (dirtyFiles !== '') throw new Error(`working directory is unclean:\n${dirtyFiles}`);
+  const indexStatus = execSync('git diff-index --cached --compact-summary HEAD');
+  if (indexStatus !== '') throw new Error(`uncommitted staged changes to files:\n${indexStatus}`);
+  execSync('git pull --ff-only', {stdio: 'inherit'});
+  if (execSync('git rev-list @{u}...') !== '') throw new Error('repo contains unpushed commits');
+  if (autoCommit) {
+    execSync('git config --get user.name');
+    execSync('git config --get user.email');
+  }
+};
+
 if (autoCommit) {
   console.warn('Auto commit is enabled, I hope you know what you are doing...');
 }
@@ -69,12 +90,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     console.error('No .git folder, aborting');
     process.exit(1);
   }
-
-  try {
-    execSync('git pull', {stdio: 'inherit'});
-  } catch (e) {
-    console.error('Error git pull', e);
-  }
+  prepareRepo();
 
   try {
     const path = `${pluginPath}/.github/workflows/npmpublish.yml`;
