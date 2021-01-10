@@ -2219,7 +2219,6 @@ function Ace2Inner() {
       if (!docTextChanged) {
         const isScrollableEvent = !isPadLoading(currentCallStack.type) && isScrollableEditEvent(currentCallStack.type);
         const innerHeight = getInnerHeight();
-        // CAKE WTF?!
         scroll.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary(rep, isScrollableEvent, innerHeight*2);
       }
 
