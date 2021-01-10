@@ -446,6 +446,14 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         'untracked=$(git ls-files -o --exclude-standard) || exit 1; ' +
         'git diff-files --quiet && [ -z "$untracked" ] && echo true || echo false'));
     if (!unchanged) {
+      // Display a diff of changes. Git doesn't diff untracked files, so they must be added to the
+      // index. Use a temporary index file to avoid modifying Git's default index file.
+      execSync('git read-tree HEAD; git add -A && git diff-index -p --cached HEAD && echo ""', {
+        env: {...process.env, GIT_INDEX_FILE: '.git/checkPlugin.index'},
+        stdio: 'inherit',
+      });
+      fs.unlinkSync(`${pluginPath}/.git/checkPlugin.index`);
+
       const cmd = [
         'git add -A',
         'git commit -m "autofixes from Etherpad checkPlugin.js"',
@@ -455,7 +463,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         console.log('Attempting autocommit and auto publish to npm');
         execSync(cmd, {stdio: 'inherit'});
       } else {
-        console.log('Fixes applied, please check git diff then run the following command:');
+        console.log('Fixes applied. Check the above git diff then run the following command:');
         console.log(`(cd node_modules/${pluginName} && ${cmd})`);
       }
     } else {
