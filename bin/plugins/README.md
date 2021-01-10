@@ -24,7 +24,7 @@ node bin/plugins/checkPlugin.js ep_whatever autofix
 ## Autocommitting, push, npm minor patch and npm publish (highly dangerous)
 
 ```
-node bin/plugins/checkPlugin.js ep_whatever autofix autocommit
+node bin/plugins/checkPlugin.js ep_whatever autocommit
 ```
 
 # All the plugins
@@ -41,7 +41,7 @@ cd ..
 for dir in node_modules/ep_*; do
   dir=${dir#node_modules/}
   [ "$dir" != ep_etherpad-lite ] || continue
-  node bin/plugins/checkPlugin.js "$dir" autofix autocommit
+  node bin/plugins/checkPlugin.js "$dir" autocommit
 done
 ```
 

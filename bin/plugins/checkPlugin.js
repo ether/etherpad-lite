@@ -1,15 +1,13 @@
 'use strict';
 
 /*
-*
-* Usage -- see README.md
-*
-* Normal usage:                node bin/plugins/checkPlugin.js ep_whatever
-* Auto fix the things it can:  node bin/plugins/checkPlugin.js ep_whatever autofix
-* Auto commit, push and publish(to npm) * highly dangerous:
-node bin/plugins/checkPlugin.js ep_whatever autofix autocommit
-
-*/
+ * Usage -- see README.md
+ *
+ * Normal usage:                node bin/plugins/checkPlugin.js ep_whatever
+ * Auto fix the things it can:  node bin/plugins/checkPlugin.js ep_whatever autofix
+ * Auto commit, push and publish to npm (highly dangerous):
+ *                              node bin/plugins/checkPlugin.js ep_whatever autocommit
+ */
 
 const fs = require('fs');
 const childProcess = require('child_process');
@@ -27,15 +25,9 @@ const pluginPath = `node_modules/${pluginName}`;
 console.log(`Checking the plugin: ${pluginName}`);
 
 const optArgs = process.argv.slice(3);
-
-// Should we autofix?
-const autoFix = optArgs.indexOf('autofix') !== -1;
-
-// Should we update files where possible?
-const autoUpdate = optArgs.indexOf('autoupdate') !== -1;
-
-// Should we automcommit and npm publish?!
 const autoCommit = optArgs.indexOf('autocommit') !== -1;
+const autoUpdate = autoCommit || optArgs.indexOf('autoupdate') !== -1;
+const autoFix = autoUpdate || optArgs.indexOf('autofix') !== -1;
 
 const execSync = (cmd, opts = {}) => (childProcess.execSync(cmd, {
   cwd: `${pluginPath}/`,
