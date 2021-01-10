@@ -294,7 +294,7 @@ Scroll.prototype.scrollNodeVerticallyIntoView = function (rep, innerHeight) {
       setTimeout(() => {
         const outer = window.parent;
         // scroll to the very end of the pad outer
-        outer.scrollTo(0, outer[0].innerHeight); 
+        outer.scrollTo(0, outer[0].innerHeight);
       }, 150);
       // if the above setTimeout and functionality is removed then hitting an enter
       // key while on the last line wont be an optimal user experience
