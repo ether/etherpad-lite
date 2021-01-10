@@ -21,6 +21,7 @@ function Scroll(outerWin) {
 
 Scroll.prototype.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary =
   function (rep, isScrollableEvent, innerHeight) {
+    top.console.log("scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary");
   // are we placing the caret on the line at the bottom of viewport?
   // And if so, do we need to scroll the editor, as defined on the settings.json?
     const shouldScrollWhenCaretIsAtBottomOfViewport =
@@ -58,6 +59,7 @@ Scroll.prototype.scrollWhenPressArrowKeys = function (arrowUp, rep, innerHeight)
 // if (caretLine() === rep.lines.length() - 1) is not enough. We need to check if there are
 // other lines after caretLine(), and all of them are out of viewport.
 Scroll.prototype._isCaretAtTheBottomOfViewport = function (rep) {
+  top.console.log("_isCaretAtTheBottomOfViewport");
   // computing a line position using getBoundingClientRect() is expensive.
   // (obs: getBoundingClientRect() is called on caretPosition.getPosition())
   // To avoid that, we only call this function when it is possible that the
@@ -81,6 +83,7 @@ Scroll.prototype._isCaretAtTheBottomOfViewport = function (rep) {
 };
 
 Scroll.prototype._isLinePartiallyVisibleOnViewport = function (lineNumber, rep) {
+  top.console.log('_isLinePartiallyVisibleOnViewport');
   const lineNode = rep.lines.atIndex(lineNumber);
   const linePosition = this._getLineEntryTopBottom(lineNode);
   const lineTop = linePosition.top;
@@ -228,6 +231,7 @@ Scroll.prototype._getPixelsToScrollWhenUserPressesArrowUp = function (innerHeigh
 };
 
 Scroll.prototype._scrollYPage = function (pixelsToScroll) {
+  top.console.log("scrollYPage");
   const durationOfAnimationToShowFocusline = this.scrollSettings.duration;
   if (durationOfAnimationToShowFocusline) {
     this._scrollYPageWithAnimation(pixelsToScroll, durationOfAnimationToShowFocusline);
@@ -274,6 +278,7 @@ Scroll.prototype._triggerScrollWithAnimation =
 // besides of scrolling the minimum needed to be visible, it scrolls additionally
 // (viewport height * scrollAmountWhenFocusLineIsOutOfViewport) pixels
 Scroll.prototype.scrollNodeVerticallyIntoView = function (rep, innerHeight) {
+  top.console.log("scrollNodeVerticallyIntoView");
   const viewport = this._getViewPortTopBottom();
 
   // when the selection changes outside of the viewport the browser automatically scrolls the line
@@ -284,15 +289,19 @@ Scroll.prototype.scrollNodeVerticallyIntoView = function (rep, innerHeight) {
     const distanceOfTopOfViewport = linePosition.top - viewport.top;
     const distanceOfBottomOfViewport = viewport.bottom - linePosition.bottom;
     const caretIsAboveOfViewport = distanceOfTopOfViewport < 0;
-    const caretIsBelowOfViewport = distanceOfBottomOfViewport < 0;
+    const caretIsBelowOfViewport = true;
     if (caretIsAboveOfViewport) {
       const pixelsToScroll =
         distanceOfTopOfViewport - this._getPixelsRelativeToPercentageOfViewport(innerHeight, true);
       this._scrollYPage(pixelsToScroll);
     } else if (caretIsBelowOfViewport) {
-      const pixelsToScroll = -distanceOfBottomOfViewport +
-        this._getPixelsRelativeToPercentageOfViewport(innerHeight);
-      this._scrollYPage(pixelsToScroll);
+      top.console.log("caretIsBelowOfViewport")
+      setTimeout(function(){
+        const outer = window.parent;
+        top.console.log(outer.outerHeight);
+        outer.scrollTo(0,outer[0].innerHeight)
+      }, 150);
+      // this._scrollYPageWithoutAnimation(50);
     } else {
       this.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary(rep, true, innerHeight);
     }

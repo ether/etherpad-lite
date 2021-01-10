@@ -2219,7 +2219,8 @@ function Ace2Inner() {
       if (!docTextChanged) {
         const isScrollableEvent = !isPadLoading(currentCallStack.type) && isScrollableEditEvent(currentCallStack.type);
         const innerHeight = getInnerHeight();
-        scroll.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary(rep, isScrollableEvent, innerHeight);
+        // CAKE WTF?!
+        scroll.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary(rep, isScrollableEvent, innerHeight*2);
       }
 
       return true;
@@ -2791,10 +2792,6 @@ function Ace2Inner() {
     // If the key is a keypress and the browser is opera and the key is enter, do nothign at all as this fires twice.
     if (keyCode == 13 && browser.opera && (type == 'keypress')) {
       return; // This stops double enters in Opera but double Tabs still show on single tab keypress, adding keyCode == 9 to this doesn't help as the event is fired twice
-    }
-    // Ensure caret is always on focus on enter key
-    if (keyCode === 13 && (type === 'keypress')) {
-      fixView();
     }
     let specialHandled = false;
     const isTypeForSpecialKey = ((browser.safari || browser.chrome || browser.firefox) ? (type == 'keydown') : (type == 'keypress'));
