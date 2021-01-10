@@ -53,11 +53,13 @@ const writePackageJson = (obj) => {
 const updateDeps = (parsedPackageJson, key, wantDeps) => {
   const {[key]: deps = {}} = parsedPackageJson;
   let changed = false;
-  for (const [pkg, ver] of Object.entries(wantDeps)) {
+  for (const [pkg, verInfo] of Object.entries(wantDeps)) {
+    const {ver, overwrite = true} = typeof verInfo === 'string' ? {ver: verInfo} : verInfo;
     if (deps[pkg] === ver) continue;
     if (deps[pkg] == null) {
       console.warn(`Missing dependency in ${key}: '${pkg}': '${ver}'`);
     } else {
+      if (!overwrite) continue;
       console.warn(`Dependency mismatch in ${key}: '${pkg}': '${ver}' (current: ${deps[pkg]})`);
     }
     if (autoFix) {
@@ -247,18 +249,10 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       'eslint-plugin-you-dont-need-lodash-underscore': '^6.10.0',
     });
 
-    // include peer deps config
-    if (packageJSON.toLowerCase().indexOf('peerdependencies') === -1 || !parsedPackageJSON.peerDependencies) {
-      console.warn('Missing peer deps reference in package.json');
-      if (autoFix) {
-        const peerDependencies = {
-          'ep_etherpad-lite': '>=1.8.6',
-        };
-        hasAutoFixed = true;
-        parsedPackageJSON.peerDependencies = peerDependencies;
-        writePackageJson(parsedPackageJSON);
-      }
-    }
+    updateDeps(parsedPackageJSON, 'peerDependencies', {
+      // Some plugins require a newer version of Etherpad so don't overwrite if already set.
+      'ep_etherpad-lite': {ver: '>=1.8.6', overwrite: false},
+    });
 
     if (packageJSON.toLowerCase().indexOf('eslintconfig') === -1) {
       console.warn('No esLintConfig in package.json');
