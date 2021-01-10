@@ -37,8 +37,6 @@ const autoUpdate = optArgs.indexOf('autoupdate') !== -1;
 // Should we automcommit and npm publish?!
 const autoCommit = optArgs.indexOf('autocommit') !== -1;
 
-let hasAutoFixed = false;
-
 const execSync = (cmd, opts = {}) => (childProcess.execSync(cmd, {
   cwd: `${pluginPath}/`,
   ...opts,
@@ -68,7 +66,6 @@ const updateDeps = (parsedPackageJson, key, wantDeps) => {
     }
   }
   if (changed) {
-    hasAutoFixed = true;
     parsedPackageJson[key] = deps;
     writePackageJson(parsedPackageJson);
   }
@@ -135,7 +132,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
             fs.readFileSync('bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
         fs.mkdirSync(`${pluginPath}/.github/workflows`, {recursive: true});
         fs.writeFileSync(path, npmpublish);
-        hasAutoFixed = true;
         console.log("If you haven't already, setup autopublish for this plugin https://github.com/ether/etherpad-lite/wiki/Plugins:-Automatically-publishing-to-npm-on-commit-to-Github-Repo");
       } else {
         console.log('Setup autopublish for this plugin https://github.com/ether/etherpad-lite/wiki/Plugins:-Automatically-publishing-to-npm-on-commit-to-Github-Repo');
@@ -159,7 +155,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
             fs.readFileSync('bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
         fs.mkdirSync(`${pluginPath}/.github/workflows`, {recursive: true});
         fs.writeFileSync(path, npmpublish);
-        hasAutoFixed = true;
       }
     }
   } catch (err) {
@@ -177,7 +172,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
             fs.readFileSync('bin/plugins/lib/backend-tests.yml', {encoding: 'utf8', flag: 'r'});
         fs.mkdirSync(`${pluginPath}/.github/workflows`, {recursive: true});
         fs.writeFileSync(path, backendTests);
-        hasAutoFixed = true;
       }
     } else {
       // autopublish exists, we should check the version..
@@ -198,7 +192,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
             fs.readFileSync('bin/plugins/lib/backend-tests.yml', {encoding: 'utf8', flag: 'r'});
         fs.mkdirSync(`${pluginPath}/.github/workflows`, {recursive: true});
         fs.writeFileSync(path, backendTests);
-        hasAutoFixed = true;
       }
     }
   } catch (err) {
@@ -223,7 +216,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         };
       }
       if (updatedPackageJSON) {
-        hasAutoFixed = true;
         writePackageJson(parsedPackageJSON);
       }
     }
@@ -261,7 +253,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
           root: true,
           extends: 'etherpad/plugin',
         };
-        hasAutoFixed = true;
         parsedPackageJSON.eslintConfig = eslintConfig;
         writePackageJson(parsedPackageJSON);
       }
@@ -274,7 +265,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
           'lint': 'eslint .',
           'lint:fix': 'eslint --fix .',
         };
-        hasAutoFixed = true;
         parsedPackageJSON.scripts = scripts;
         writePackageJson(parsedPackageJSON);
       }
@@ -286,7 +276,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         const engines = {
           node: '>=10.13.0',
         };
-        hasAutoFixed = true;
         parsedPackageJSON.engines = engines;
         writePackageJson(parsedPackageJSON);
       }
@@ -343,7 +332,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   if (files.indexOf('license') === -1 && files.indexOf('license.md') === -1) {
     console.warn('LICENSE.md file not found, please create');
     if (autoFix) {
-      hasAutoFixed = true;
       console.log('Autofixing missing LICENSE.md file, including Apache 2 license.');
       let license = fs.readFileSync('bin/plugins/lib/LICENSE.md', {encoding: 'utf8', flag: 'r'});
       license = license.replace('[yyyy]', new Date().getFullYear());
@@ -359,7 +347,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     console.warn('.travis.yml file not found, please create.  .travis.yml is used for automatically CI testing Etherpad.  It is useful to know if your plugin breaks another feature for example.');
     // TODO: Make it check version of the .travis file to see if it needs an update.
     if (autoFix) {
-      hasAutoFixed = true;
       console.log('Autofixing missing .travis.yml file');
       fs.writeFileSync(`${pluginPath}/.travis.yml`, travisConfig);
       console.log('Travis file created, please sign into travis and enable this repository');
@@ -380,14 +367,12 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     } else if (newValue > existingValue) {
       console.log('updating .travis.yml');
       fs.writeFileSync(`${pluginPath}/.travis.yml`, travisConfig);
-      hasAutoFixed = true;
     }//
   }
 
   if (files.indexOf('.gitignore') === -1) {
     console.warn(".gitignore file not found, please create.  .gitignore files are useful to ensure files aren't incorrectly commited to a repository.");
     if (autoFix) {
-      hasAutoFixed = true;
       console.log('Autofixing missing .gitignore file');
       const gitignore = fs.readFileSync('bin/plugins/lib/gitignore', {encoding: 'utf8', flag: 'r'});
       fs.writeFileSync(`${pluginPath}/.gitignore`, gitignore);
@@ -400,7 +385,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       if (autoFix) {
         gitignore += 'node_modules/';
         fs.writeFileSync(`${pluginPath}/.gitignore`, gitignore);
-        hasAutoFixed = true;
       }
     }
   }
@@ -414,7 +398,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   if (files.indexOf('.ep_initialized') !== -1) {
     console.warn('.ep_initialized found, please remove.  .ep_initialized should never be commited to git and should only exist once the plugin has been executed one time.');
     if (autoFix) {
-      hasAutoFixed = true;
       console.log('Autofixing incorrectly existing .ep_initialized file');
       fs.unlinkSync(`${pluginPath}/.ep_initialized`);
     }
@@ -423,7 +406,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   if (files.indexOf('npm-debug.log') !== -1) {
     console.warn('npm-debug.log found, please remove.  npm-debug.log should never be commited to your repository.');
     if (autoFix) {
-      hasAutoFixed = true;
       console.log('Autofixing incorrectly existing npm-debug.log file');
       fs.unlinkSync(`${pluginPath}/npm-debug.log`);
     }
@@ -453,32 +435,32 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     console.log('Linting...');
     const lintCmd = autoFix ? 'npx eslint --fix .' : 'npx eslint';
     execSync(lintCmd, {stdio: 'inherit'});
-    if (autoFix) {
-      // todo: if npm run lint doesn't do anything no need for...
-      hasAutoFixed = true;
-    }
   } catch (e) {
     // it is gonna throw an error anyway
     console.log('Manual linting probably required, check with: npm run lint');
   }
   // linting ends.
 
-  if (hasAutoFixed) {
-    // bump npm Version
-    const cmd = [
-      'git rm -rf node_modules --ignore-unmatch',
-      'git add -A',
-      '{ ! git diff-index --cached --quiet HEAD || exit 0; }',
-      'git commit -m "autofixes from Etherpad checkPlugin.js"',
-      'git push',
-    ].join(' && ');
-    if (autoCommit) {
-      // holy shit you brave.
-      console.log('Attempting autocommit and auto publish to npm');
-      execSync(cmd, {stdio: 'inherit'});
+  if (autoFix) {
+    const unchanged = JSON.parse(execSync(
+        'untracked=$(git ls-files -o --exclude-standard) || exit 1; ' +
+        'git diff-files --quiet && [ -z "$untracked" ] && echo true || echo false'));
+    if (!unchanged) {
+      const cmd = [
+        'git rm -rf node_modules --ignore-unmatch',
+        'git add -A',
+        'git commit -m "autofixes from Etherpad checkPlugin.js"',
+        'git push',
+      ].join(' && ');
+      if (autoCommit) {
+        console.log('Attempting autocommit and auto publish to npm');
+        execSync(cmd, {stdio: 'inherit'});
+      } else {
+        console.log('Fixes applied, please check git diff then run the following command:');
+        console.log(`(cd node_modules/${pluginName} && ${cmd})`);
+      }
     } else {
-      console.log('Fixes applied, please check git diff then run the following command:');
-      console.log(`(cd node_modules/${pluginName} && ${cmd})`);
+      console.log('No changes.');
     }
   }
 
