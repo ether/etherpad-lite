@@ -441,8 +441,10 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   // if autoFix is enabled.
   const npmInstall = `npm install${autoFix ? '' : ' --no-package-lock'}`;
   execSync(npmInstall, {stdio: 'inherit'});
-  // The ep_etherpad-lite peer dep must be installed last otherwise `npm install` will nuke it.
-  execSync(`${npmInstall} --no-save ep_etherpad-lite@file:../../src`, {stdio: 'inherit'});
+  // The ep_etherpad-lite peer dep must be installed last otherwise `npm install` will nuke it. An
+  // absolute path to etherpad-lite/src is used here so that pluginPath can be a symlink.
+  execSync(
+      `${npmInstall} --no-save ep_etherpad-lite@file:${__dirname}/../../src`, {stdio: 'inherit'});
 
   // linting begins
   try {
