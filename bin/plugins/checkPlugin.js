@@ -447,7 +447,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         'git diff-files --quiet && [ -z "$untracked" ] && echo true || echo false'));
     if (!unchanged) {
       const cmd = [
-        'git rm -rf node_modules --ignore-unmatch',
         'git add -A',
         'git commit -m "autofixes from Etherpad checkPlugin.js"',
         'git push',
