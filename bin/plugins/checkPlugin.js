@@ -26,8 +26,7 @@ console.log(`Checking the plugin: ${pluginName}`);
 
 const optArgs = process.argv.slice(3);
 const autoCommit = optArgs.indexOf('autocommit') !== -1;
-const autoUpdate = autoCommit || optArgs.indexOf('autoupdate') !== -1;
-const autoFix = autoUpdate || optArgs.indexOf('autofix') !== -1;
+const autoFix = autoCommit || optArgs.indexOf('autofix') !== -1;
 
 const execSync = (cmd, opts = {}) => (childProcess.execSync(cmd, {
   cwd: `${pluginPath}/`,
@@ -344,7 +343,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       console.log('Travis file created, please sign into travis and enable this repository');
     }
   }
-  if (autoFix && autoUpdate) {
+  if (autoFix) {
     // checks the file versioning of .travis and updates it to the latest.
     const existingConfig = fs.readFileSync(`${pluginPath}/.travis.yml`, {encoding: 'utf8', flag: 'r'});
     const existingConfigLocation = existingConfig.indexOf('##ETHERPAD_TRAVIS_V=');
