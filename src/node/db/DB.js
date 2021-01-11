@@ -49,7 +49,7 @@ exports.init = async () => await new Promise((resolve, reject) => {
     }
 
     // everything ok, set up Promise-based methods
-    ['get', 'set', 'findKeys', 'getSub', 'setSub', 'remove', 'doShutdown'].forEach((fn) => {
+    ['get', 'set', 'findKeys', 'getSub', 'setSub', 'remove'].forEach((fn) => {
       exports[fn] = util.promisify(db[fn].bind(db));
     });
 
@@ -73,6 +73,6 @@ exports.init = async () => await new Promise((resolve, reject) => {
 });
 
 exports.shutdown = async (hookName, context) => {
-  await exports.doShutdown();
+  await util.promisify(db.close.bind(db))();
   console.log('Database closed');
 };

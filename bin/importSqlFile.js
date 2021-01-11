@@ -57,7 +57,7 @@ require('ep_etherpad-lite/node_modules/npm').load({}, (er, npm) => {
       process.stdout.write('\n');
       process.stdout.write('done. waiting for db to finish transaction. depended on dbms this may take some time...\n');
 
-      db.doShutdown(() => {
+      db.close(() => {
         log(`finished, imported ${keyNo} keys.`);
         process.exit(0);
       });
