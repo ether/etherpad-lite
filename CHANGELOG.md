@@ -1,3 +1,7 @@
+# Changes for the next release
+### Notable new features
+* Database performance is significantly improved.
+
 # 1.8.7
 ### Compatibility-breaking changes
 * **IMPORTANT:** It is no longer possible to protect a group pad with a
