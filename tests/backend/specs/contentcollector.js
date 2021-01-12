@@ -15,6 +15,13 @@ const AttributePool = require('../../../src/static/js/AttributePool');
 const cheerio = require('../../../src/node_modules/cheerio');
 
 const tests = {
+  image: {
+    description: 'Puts an image in the content',
+    html: '<html><body><p>image</p><img src="fooo.png"></body></html>',
+    expectedLineAttribs: ['+5', '*0*1*2+1'],
+    expectedText: ['image', '*'],
+  },
+/*
   nestedLi: {
     description: 'Complex nested Li',
     html: '<!doctype html><html><body><ol><li>one</li><li><ol><li>1.1</li></ol></li><li>two</li></ol></body></html>',
@@ -271,6 +278,7 @@ pre
     expectedLineAttribs: ['+f*0+2+2'],
     expectedText: ['Need more space s !']
   },
+*/
 };
 
 describe(__filename, function () {
@@ -300,7 +308,7 @@ describe(__filename, function () {
 
         // Check recieved text matches the expected text
         if (arraysEqual(recievedText[0], expectedText)) {
-          // console.log("PASS: Recieved Text did match Expected Text\nRecieved:", recievedText[0], "\nExpected:", testObj.expectedText)
+          console.log("PASS: Recieved Text did match Expected Text\nRecieved:", recievedText[0], "\nExpected:", testObj.expectedText)
         } else {
           console.error('FAIL: Recieved Text did not match Expected Text\nRecieved:', recievedText[0], '\nExpected:', testObj.expectedText);
           throw new Error();
@@ -308,7 +316,7 @@ describe(__filename, function () {
 
         // Check recieved attributes matches the expected attributes
         if (arraysEqual(recievedAttributes, expectedAttributes)) {
-          // console.log("PASS: Recieved Attributes matched Expected Attributes");
+          console.log("PASS: Recieved Attributes matched Expected Attributes", recievedAttributes, expectedAttributes);
           done();
         } else {
           console.error('FAIL', test, testObj.description);

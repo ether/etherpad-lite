@@ -76,6 +76,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     p: 1,
     pre: 1,
     li: 1,
+    img: 1,
   };
 
   _.each(hooks.callAll('ccRegisterBlockElements'), (element) => {
@@ -421,12 +422,10 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
           cls,
           node,
         });
-      } else {
-        // THIS SEEMS VERY HACKY! -- Please submit a better fix!
-        delete state.lineAttributes.img;
-      }
+        // cc.doAttrib(state, 'image:foo.png');
+        state.lineAttributes.img = 'foo.png';
 
-      if (tname == 'br') {
+      } else if (tname == 'br') {
         this.breakLine = true;
         const tvalue = dom.nodeAttr(node, 'value');
         const induceLineBreak = hooks.callAll('collectContentLineBreak', {
