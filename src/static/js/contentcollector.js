@@ -393,7 +393,14 @@ const makeContentCollector = function (
       const tname = (dom.nodeTagName(node) || '').toLowerCase();
       const styl = dom.nodeAttr(node, 'style');
       const cls = dom.nodeAttr(node, 'class');
-      console.warn(tname);
+
+      // clear to avoid pollution of trailing blank lines after lines with attributes
+      // during import
+      if (state.lineAttributes) {
+        delete state.lineAttributes;
+        state.lineAttributes = {};
+      }
+
       if (tname === 'img') {
         // no hook sare called in this branch, just a demo..
         hooks.callAll('collectContentImage', {
