@@ -393,6 +393,7 @@ const makeContentCollector = function (
       const tname = (dom.nodeTagName(node) || '').toLowerCase();
       const styl = dom.nodeAttr(node, 'style');
       const cls = dom.nodeAttr(node, 'class');
+      console.warn(tname);
       if (tname === 'img') {
         // no hook sare called in this branch, just a demo..
         hooks.callAll('collectContentImage', {
@@ -403,13 +404,16 @@ const makeContentCollector = function (
           cls,
           node,
         });
+        // Client side processing
         if (node.src) state.lineAttributes.img = node.src;
-        this.breakLine = true;
+        // Server side processing
+        if (node.attribs && node.attribs.src) state.lineAttributes.img = node.attribs.src;
       } else if (tname === 'br') {
         // Delete line Attributes that can pollute line breaks, they should only
         // be present in the line itself, not in any attributes of a line..
         // uncommenting the below will make duplicate images.. :)
         if (state.lineAttributes) delete state.lineAttributes;
+        console.warn("state", state);
         this.breakLine = true;
         const tvalue = dom.nodeAttr(node, 'value');
         const induceLineBreak = hooks.callAll('collectContentLineBreak', {
@@ -605,6 +609,7 @@ const makeContentCollector = function (
         if (oldAuthorOrNull) {
           _exitAuthor(state, oldAuthorOrNull);
         }
+        console.warn("state", state.lineAttributes);
       }
     }
     _reachBlockPoint(node, 1, state);
