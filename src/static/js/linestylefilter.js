@@ -72,7 +72,6 @@ linestylefilter.getLineStyleFilter = (lineLength, aline, textAndClassFunc, apool
     const attribsToClasses = (attribs) => {
       let classes = '';
       let isLineAttribMarker = false;
-top.console.log("attribs", attribs)
       // For each attribute number
       Changeset.eachAttribNumber(attribs, (n) => {
         // Give us this attributes key
@@ -92,6 +91,8 @@ top.console.log("attribs", attribs)
               classes += ` start:${value}`;
             } else if (linestylefilter.ATTRIB_CLASSES[key]) {
               classes += ` ${linestylefilter.ATTRIB_CLASSES[key]}`;
+            } else if (key === 'img') {
+              classes += ` img:${value}`;
             } else {
               classes += hooks.callAllStr('aceAttribsToClasses', {
                 linestylefilter,

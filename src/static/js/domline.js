@@ -97,7 +97,8 @@ domline.createDomLine = (nonEmpty, doesWrap, optBrowser, optDocument) => {
       });
 
       if (img) {
-        // do some shit with an image... cake
+        preHtml += `<img src="${img[1]}">`;
+        processedMarker = true;
       }
 
       if (listType) {
