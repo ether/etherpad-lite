@@ -82,6 +82,8 @@ domline.createDomLine = function (nonEmpty, doesWrap, optBrowser, optDocument) {
   let lineClass = 'ace-line';
 
   result.appendSpan = function (txt, cls) {
+console.log("cls", cls);
+    // console.log("domline", domline, "txt", txt, "cls", cls)
     let processedMarker = false;
     // Handle lineAttributeMarker, if present
     if (cls.indexOf(lineAttributeMarker) >= 0) {
@@ -96,6 +98,8 @@ domline.createDomLine = function (nonEmpty, doesWrap, optBrowser, optDocument) {
         postHtml += modifier.postHtml;
         processedMarker |= modifier.processedMarker;
       });
+
+
 
       if (listType) {
         listType = listType[1];

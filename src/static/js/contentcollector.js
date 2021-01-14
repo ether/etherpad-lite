@@ -395,6 +395,7 @@ const makeContentCollector = function (
       const cls = dom.nodeAttr(node, 'class');
 
       if (tname === 'img') {
+        /*
         hooks.callAll('collectContentImage', {
           cc,
           state,
@@ -403,8 +404,11 @@ const makeContentCollector = function (
           cls,
           node,
         });
-        // cc.doAttrib(state, 'image:foo.png');
-        state.lineAttributes.img = 'foo.png';
+        */
+        state.lineAttributes.img = node.src;
+//        cc.doAttrib(state, 'img');
+//        cc.startNewLine(state);
+
       } else if (tname === 'br') {
         this.breakLine = true;
         const tvalue = dom.nodeAttr(node, 'value');
@@ -444,8 +448,8 @@ const makeContentCollector = function (
           // for now it shows how to fix the problem
           return;
         }
-
         if (collectStyles) {
+          if(tname === "img") debugger;
           hooks.callAll('collectContentPre', {
             cc,
             state,

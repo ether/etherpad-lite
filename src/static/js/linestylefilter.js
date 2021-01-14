@@ -73,7 +73,7 @@ linestylefilter.getLineStyleFilter = function (lineLength, aline, textAndClassFu
     function attribsToClasses(attribs) {
       let classes = '';
       let isLineAttribMarker = false;
-
+top.console.log("attribs", attribs)
       // For each attribute number
       Changeset.eachAttribNumber(attribs, (n) => {
         // Give us this attributes key
