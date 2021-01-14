@@ -3322,6 +3322,104 @@ function Ace2Inner() {
   };
   editorInfo.ace_doUndoRedo = doUndoRedo;
 
+  const setSelection = (selection) => {
+    const copyPoint = (pt) => ({
+      node: pt.node,
+      index: pt.index,
+      maxIndex: pt.maxIndex,
+    });
+    let isCollapsed;
+
+    const pointToRangeBound = (pt) => {
+      const p = copyPoint(pt);
+      // Make sure Firefox cursor is deep enough; fixes cursor jumping when at top level,
+      // and also problem where cut/copy of a whole line selected with fake arrow-keys
+      // copies the next line too.
+      if (isCollapsed) {
+        const diveDeep = () => {
+          while (p.node.childNodes.length > 0) {
+            // && (p.node == root || p.node.parentNode == root)) {
+            if (p.index === 0) {
+              p.node = p.node.firstChild;
+              p.maxIndex = nodeMaxIndex(p.node);
+            } else if (p.index === p.maxIndex) {
+              p.node = p.node.lastChild;
+              p.maxIndex = nodeMaxIndex(p.node);
+              p.index = p.maxIndex;
+            } else { break; }
+          }
+        };
+        // now fix problem where cursor at end of text node at end of span-like element
+        // with background doesn't seem to show up...
+        if (isNodeText(p.node) && p.index === p.maxIndex) {
+          let n = p.node;
+          while ((!n.nextSibling) && (n !== root) && (n.parentNode !== root)) {
+            n = n.parentNode;
+          }
+          if (
+            n.nextSibling &&
+            (!((typeof n.nextSibling.tagName) === 'string' &&
+              n.nextSibling.tagName.toLowerCase() === 'br')) &&
+              (n !== p.node) && (n !== root) && (n.parentNode !== root)
+          ) {
+            // found a parent, go to next node and dive in
+            p.node = n.nextSibling;
+            p.maxIndex = nodeMaxIndex(p.node);
+            p.index = 0;
+            diveDeep();
+          }
+        }
+        // try to make sure insertion point is styled;
+        // also fixes other FF problems
+        if (!isNodeText(p.node)) {
+          diveDeep();
+        }
+      }
+      if (isNodeText(p.node)) {
+        return {
+          container: p.node,
+          offset: p.index,
+        };
+      } else {
+        // p.index in {0,1}
+        return {
+          container: p.node.parentNode,
+          offset: childIndex(p.node) + p.index,
+        };
+      }
+    };
+    const browserSelection = window.getSelection();
+    if (browserSelection) {
+      browserSelection.removeAllRanges();
+      if (selection) {
+        isCollapsed = (
+          selection.startPoint.node === selection.endPoint.node &&
+          selection.startPoint.index === selection.endPoint.index
+        );
+        const start = pointToRangeBound(selection.startPoint);
+        const end = pointToRangeBound(selection.endPoint);
+
+        if (
+          (!isCollapsed) &&
+          selection.focusAtStart &&
+          browserSelection.collapse &&
+          browserSelection.extend
+        ) {
+          // can handle "backwards"-oriented selection, shift-arrow-keys move start
+          // of selection
+          browserSelection.collapse(end.container, end.offset);
+          browserSelection.extend(start.container, start.offset);
+        } else {
+          const range = doc.createRange();
+          range.setStart(start.container, start.offset);
+          range.setEnd(end.container, end.offset);
+          browserSelection.removeAllRanges();
+          browserSelection.addRange(range);
+        }
+      }
+    }
+  };
+
   const updateBrowserSelectionFromRep = () => {
     // requires normalized DOM!
     const selStart = rep.selStart;
@@ -3448,104 +3546,6 @@ function Ace2Inner() {
     }
 
     return selection;
-  };
-
-  const setSelection = (selection) => {
-    const copyPoint = (pt) => ({
-      node: pt.node,
-      index: pt.index,
-      maxIndex: pt.maxIndex,
-    });
-    let isCollapsed;
-
-    const pointToRangeBound = (pt) => {
-      const p = copyPoint(pt);
-      // Make sure Firefox cursor is deep enough; fixes cursor jumping when at top level,
-      // and also problem where cut/copy of a whole line selected with fake arrow-keys
-      // copies the next line too.
-      if (isCollapsed) {
-        const diveDeep = () => {
-          while (p.node.childNodes.length > 0) {
-            // && (p.node == root || p.node.parentNode == root)) {
-            if (p.index === 0) {
-              p.node = p.node.firstChild;
-              p.maxIndex = nodeMaxIndex(p.node);
-            } else if (p.index === p.maxIndex) {
-              p.node = p.node.lastChild;
-              p.maxIndex = nodeMaxIndex(p.node);
-              p.index = p.maxIndex;
-            } else { break; }
-          }
-        };
-        // now fix problem where cursor at end of text node at end of span-like element
-        // with background doesn't seem to show up...
-        if (isNodeText(p.node) && p.index === p.maxIndex) {
-          let n = p.node;
-          while ((!n.nextSibling) && (n !== root) && (n.parentNode !== root)) {
-            n = n.parentNode;
-          }
-          if (
-            n.nextSibling &&
-            (!((typeof n.nextSibling.tagName) === 'string' &&
-              n.nextSibling.tagName.toLowerCase() === 'br')) &&
-              (n !== p.node) && (n !== root) && (n.parentNode !== root)
-          ) {
-            // found a parent, go to next node and dive in
-            p.node = n.nextSibling;
-            p.maxIndex = nodeMaxIndex(p.node);
-            p.index = 0;
-            diveDeep();
-          }
-        }
-        // try to make sure insertion point is styled;
-        // also fixes other FF problems
-        if (!isNodeText(p.node)) {
-          diveDeep();
-        }
-      }
-      if (isNodeText(p.node)) {
-        return {
-          container: p.node,
-          offset: p.index,
-        };
-      } else {
-        // p.index in {0,1}
-        return {
-          container: p.node.parentNode,
-          offset: childIndex(p.node) + p.index,
-        };
-      }
-    };
-    const browserSelection = window.getSelection();
-    if (browserSelection) {
-      browserSelection.removeAllRanges();
-      if (selection) {
-        isCollapsed = (
-          selection.startPoint.node === selection.endPoint.node &&
-          selection.startPoint.index === selection.endPoint.index
-        );
-        const start = pointToRangeBound(selection.startPoint);
-        const end = pointToRangeBound(selection.endPoint);
-
-        if (
-          (!isCollapsed) &&
-          selection.focusAtStart &&
-          browserSelection.collapse &&
-          browserSelection.extend
-        ) {
-          // can handle "backwards"-oriented selection, shift-arrow-keys move start
-          // of selection
-          browserSelection.collapse(end.container, end.offset);
-          browserSelection.extend(start.container, start.offset);
-        } else {
-          const range = doc.createRange();
-          range.setStart(start.container, start.offset);
-          range.setEnd(end.container, end.offset);
-          browserSelection.removeAllRanges();
-          browserSelection.addRange(range);
-        }
-      }
-    }
   };
 
   const childIndex = (n) => {
