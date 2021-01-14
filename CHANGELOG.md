@@ -1,3 +1,7 @@
+# Changes for the next release
+### Notable new features
+* Database performance is significantly improved.
+
 # 1.8.7
 ### Compatibility-breaking changes
 * **IMPORTANT:** It is no longer possible to protect a group pad with a
@@ -40,7 +44,7 @@
   content in `.etherpad` exports
 * New `expressCloseServer` hook to close Express when required
 * The `padUpdate` hook context now includes `revs` and `changeset`
-* `checkPlugins.js` has various improvements to help plugin developers
+* `checkPlugin.js` has various improvements to help plugin developers
 * The HTTP request object (and therefore the express-session state) is now
   accessible from within most `eejsBlock_*` hooks
 * Users without a `password` or `hash` property in `settings.json` are no longer

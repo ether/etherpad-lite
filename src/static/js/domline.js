@@ -1,8 +1,4 @@
-/**
- * This code is mostly from the old Etherpad. Please help us to comment this code.
- * This helps other people to understand this code better and helps them to improve it.
- * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
- */
+'use strict';
 
 // THIS FILE IS ALSO AN APPJET MODULE: etherpad.collab.ace.domline
 // %APPJET%: import("etherpad.admin.plugins");
@@ -166,7 +162,7 @@ domline.createDomLine = function (nonEmpty, doesWrap, optBrowser, optDocument) {
       lineClass = domline.addToLineClass(lineClass, cls);
     } else if (txt) {
       if (href) {
-        urn_schemes = new RegExp('^(about|geo|mailto|tel):');
+        const urn_schemes = new RegExp('^(about|geo|mailto|tel):');
         if (!~href.indexOf('://') && !urn_schemes.test(href)) // if the url doesn't include a protocol prefix, assume http
         {
           href = `http://${href}`;
