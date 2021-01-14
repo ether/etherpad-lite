@@ -609,7 +609,6 @@ const makeContentCollector = function (
         if (oldAuthorOrNull) {
           _exitAuthor(state, oldAuthorOrNull);
         }
-        console.warn("state", state.lineAttributes);
       }
     }
     _reachBlockPoint(node, 1, state);
