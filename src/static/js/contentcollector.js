@@ -394,11 +394,10 @@ const makeContentCollector = function (
       const styl = dom.nodeAttr(node, 'style');
       const cls = dom.nodeAttr(node, 'class');
 
-      // clear to avoid pollution of trailing blank lines after lines with attributes
-      // during import
-      if (state.lineAttributes) {
-        delete state.lineAttributes;
-        state.lineAttributes = {};
+      // clear to avoid pollution of trailing blank lines after image lines
+      // with attributes during import
+      if (state.lineAttributes && state.lineAttributes.img) {
+        delete state.lineAttributes.img;
       }
 
       if (tname === 'img') {
@@ -420,7 +419,6 @@ const makeContentCollector = function (
         // be present in the line itself, not in any attributes of a line..
         // uncommenting the below will make duplicate images.. :)
         if (state.lineAttributes) delete state.lineAttributes;
-        console.warn("state", state);
         this.breakLine = true;
         const tvalue = dom.nodeAttr(node, 'value');
         const induceLineBreak = hooks.callAll('collectContentLineBreak', {
