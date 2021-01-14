@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Dbc334",
+			"Eleassar",
 			"HairyFotr",
 			"Mateju",
 			"Skalcaa",
@@ -33,7 +34,7 @@
 	"pad.noCookie": "Piškotka ni bilo mogoče najti. Prosimo, dovolite piškotke v vašem brskalniku!",
 	"pad.permissionDenied": "Nimate dovoljenja za dostop do tega dokumenta.",
 	"pad.settings.padSettings": "Nastavitve dokumenta",
-	"pad.settings.myView": "Moj pogled",
+	"pad.settings.myView": "Moj prikaz",
 	"pad.settings.stickychat": "Vsebina klepeta je vedno na zaslonu",
 	"pad.settings.chatandusers": "Prikaži klepet in uporabnike",
 	"pad.settings.colorcheck": "Barve avtorstva",
