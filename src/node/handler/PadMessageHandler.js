@@ -89,6 +89,19 @@ exports.handleConnect = (socket) => {
 
   // Initalize sessioninfos for this new session
   sessioninfos[socket.id] = {};
+
+  stats.gauge('activePads', () => {
+    const padIds = [];
+    for (const session of Object.keys(sessioninfos)) {
+      if(sessioninfos[session].padId) {
+        if(padIds.indexOf(sessioninfos[session].padId) === -1) {
+          padIds.push(sessioninfos[session].padId);
+        }
+      }
+    };
+    return padIds.length;
+  });
+
 };
 
 /**
