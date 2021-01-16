@@ -267,9 +267,8 @@ const makeContentCollector = function (
     const attributes = [
       ['lmkr', '1'],
       ['insertorder', 'first'],
-    ].concat(
-        _.map(state.lineAttributes, (value, key) => [key, value])
-    );
+      ...Object.entries(state.lineAttributes)
+    ];
     lines.appendText('*', Changeset.makeAttribsString('+', attributes, apool));
   };
   cc.startNewLine = (state) => {
@@ -394,7 +393,9 @@ const makeContentCollector = function (
       const cls = dom.nodeAttr(node, 'class');
 
       // clear to avoid pollution of trailing blank lines after image lines
-      // with attributes during import
+      // with attributes during import - this could and should be handled better
+      // one option would be to pop up a gritter if an image is detected and
+      // no support is present, but this feels out of scope for lint fix.
       if (state.lineAttributes && state.lineAttributes.img) {
         delete state.lineAttributes.img;
       }
@@ -413,7 +414,10 @@ const makeContentCollector = function (
         // Delete line Attributes that can pollute line breaks, they should only
         // be present in the line itself, not in any attributes of a line..
         // uncommenting the below will make duplicate images.. :)
-        if (state.lineAttributes) delete state.lineAttributes;
+        // I think the cause of this is because lineAttributes such as list items
+        // do need to be continued onto the next line so you don't lose list items
+        // on a keypress event but also if you are within an <ol> or <ul>.
+        if (state.lineAttributes && state.lineAttributes.img) delete state.lineAttributes;
         this.breakLine = true;
         const tvalue = dom.nodeAttr(node, 'value');
         const induceLineBreak = hooks.callAll('collectContentLineBreak', {
