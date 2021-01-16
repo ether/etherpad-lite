@@ -707,11 +707,7 @@ const makeContentCollector = function (
           fixLineNumber(se);
           linesWrapped++;
           numLinesAfter += newStrings.length;
-
-          newStrings.unshift(i, 1);
-          // Still to fix linting issue below.
-          lineStrings.splice.apply(lineStrings, newStrings);
-          newAttribStrings.unshift(i, 1);
+          lineStrings.splice(i, 1, ...newStrings);
           lineAttribs.splice.apply(lineAttribs, newAttribStrings);
         }
       }
