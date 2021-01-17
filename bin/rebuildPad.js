@@ -15,6 +15,7 @@ if (process.argv.length !== 4 && process.argv.length !== 5) {
 
 const async = require('ep_etherpad-lite/node_modules/async');
 const npm = require('ep_etherpad-lite/node_modules/npm');
+const util = require('util');
 
 const padId = process.argv[2];
 const newRevHead = process.argv[3];
@@ -105,7 +106,7 @@ async.series([
     // Save the source pad
     db.db.set(`pad:${newPadId}`, newPad, (err) => {
       console.log(`Created: Source Pad: pad:${newPadId}`);
-      newPad.saveToDatabase().then(() => callback(), callback);
+      util.callbackify(newPad.saveToDatabase.bind(newPad))(callback);
     });
   },
 ], (err) => {
