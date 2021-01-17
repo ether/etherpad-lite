@@ -63,8 +63,8 @@ npm.load({}, async () => {
 
       // check if there is an atext in the keyRevisions
       if (revisions[keyRev] === undefined ||
-        revisions[keyRev].meta === undefined ||
-        revisions[keyRev].meta.atext === undefined) {
+          revisions[keyRev].meta === undefined ||
+          revisions[keyRev].meta.atext === undefined) {
         console.error(`No atext in key revision ${keyRev}`);
         continue;
       }

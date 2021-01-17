@@ -55,9 +55,9 @@ npm.load({}, async () => {
     const revision = await db.get(`pad:${padId}:revs:${revNum}`);
     // check if there is a atext in the keyRevisions
     if (~keyRevisions.indexOf(revNum) &&
-    (revision === undefined ||
-      revision.meta === undefined ||
-      revision.meta.atext === undefined)) {
+        (revision === undefined ||
+         revision.meta === undefined ||
+         revision.meta.atext === undefined)) {
       console.error(`No atext in key revision ${revNum}`);
       continue;
     }
