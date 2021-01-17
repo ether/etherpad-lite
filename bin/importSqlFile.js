@@ -105,7 +105,6 @@ require('ep_etherpad-lite/node_modules/npm').load({}, (er, npm) => {
 
       db.close(() => {
         log(`finished, imported ${keyNo} keys.`);
-        throw new Error();
       });
     }
   });

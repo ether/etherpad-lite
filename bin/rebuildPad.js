@@ -110,8 +110,6 @@ async.series([
     });
   },
 ], (err) => {
-  if (err) { throw err; } else {
-    console.info('finished');
-    throw new Error();
-  }
+  if (err) throw err;
+  console.info('finished');
 });
