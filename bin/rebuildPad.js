@@ -29,7 +29,7 @@ async.series([
   (callback) => {
     // Get a handle into the database
     db = require('ep_etherpad-lite/node/db/DB');
-    db.init(callback);
+    util.callbackify(db.init)(callback);
   },
   (callback) => {
     Pad = require('ep_etherpad-lite/node/db/Pad').Pad;
@@ -44,10 +44,10 @@ async.series([
     if (!PadManager.isValidPadId(newPadId)) {
       throw new Error('Cannot create a pad with that id as it is invalid');
     }
-    PadManager.doesPadExists(newPadId, (err, exists) => {
+    util.callbackify(PadManager.doesPadExist)(newPadId, (err, exists) => {
       if (exists) throw new Error('Cannot create a pad with that id as it already exists');
     });
-    PadManager.getPad(padId, (err, pad) => {
+    util.callbackify(PadManager.getPad)(padId, (err, pad) => {
       oldPad = pad;
       newPad = new Pad(newPadId);
       callback();
