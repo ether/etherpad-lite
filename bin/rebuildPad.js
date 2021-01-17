@@ -45,9 +45,14 @@ async.series([
       throw new Error('Cannot create a pad with that id as it is invalid');
     }
     util.callbackify(PadManager.doesPadExist)(newPadId, (err, exists) => {
+      if (err != null) return callback(err);
       if (exists) throw new Error('Cannot create a pad with that id as it already exists');
+      callback();
     });
+  },
+  (callback) => {
     util.callbackify(PadManager.getPad)(padId, (err, pad) => {
+      if (err) return callback(err);
       oldPad = pad;
       newPad = new Pad(newPadId);
       callback();
@@ -102,12 +107,11 @@ async.series([
     newPad.savedRevisions = newSavedRevisions;
     callback();
   },
+  // Save the source pad
+  (callback) => db.db.set(`pad:${newPadId}`, newPad, callback),
   (callback) => {
-    // Save the source pad
-    db.db.set(`pad:${newPadId}`, newPad, (err) => {
-      console.log(`Created: Source Pad: pad:${newPadId}`);
-      util.callbackify(newPad.saveToDatabase.bind(newPad))(callback);
-    });
+    console.log(`Created: Source Pad: pad:${newPadId}`);
+    util.callbackify(newPad.saveToDatabase.bind(newPad))(callback);
   },
 ], (err) => {
   if (err) throw err;
