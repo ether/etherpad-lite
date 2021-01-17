@@ -4,17 +4,7 @@
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
 process.on('unhandledRejection', (err) => { throw err; });
 
-const fullWrite = (key) => {
-  console.log('Fully written', key);
-};
-
-const bufferWrite = (key) => {
-  console.log('Buffer written', key);
-};
-
-const finish = () => {
-  console.log('Finished and database has finished writing');
-};
+const util = require('util');
 
 require('ep_etherpad-lite/node_modules/npm').load({}, async (er, npm) => {
   process.chdir(`${npm.root}/..`);
@@ -28,8 +18,9 @@ require('ep_etherpad-lite/node_modules/npm').load({}, async (er, npm) => {
 
 
   const settings = require('ep_etherpad-lite/node/utils/Settings');
-  const log4js = require('ep_etherpad-lite/node_modules/log4js');
+  const dirtyDb = require('ep_etherpad-lite/node_modules/dirty');
   const ueberDB = require('ep_etherpad-lite/node_modules/ueberdb2');
+  const log4js = require('ep_etherpad-lite/node_modules/log4js');
   const dbWrapperSettings = {
     cache: '0', // The cache slows things down when you're mostly writing.
     writeInterval: 0, // Write directly to the database, don't buffer
@@ -40,26 +31,30 @@ require('ep_etherpad-lite/node_modules/npm').load({}, async (er, npm) => {
       dbWrapperSettings,
       log4js.getLogger('ueberDB')
   );
-  let dirty = require('ep_etherpad-lite/node_modules/dirty');
-
   await db.init();
 
   console.log('Waiting for dirtyDB to parse its file.');
-  let length = 0;
+  const dirty = dirtyDb('var/dirty.db');
+  const length = await new Promise((resolve) => { dirty.once('load', resolve); });
 
-  dirty = dirty('var/dirty.db').on('load', async () => {
-    dirty.forEach(() => {
-      length++;
-    });
-
-    console.log(`Found ${length} records, processing now.`);
-
-    dirty.forEach(async (key, value) => {
-      await db.set(key, value, bufferWrite(key), fullWrite(key));
-      // console.log(`Wrote record ${key}`);
-    });
-
-    db.doShutdown(finish);
+  console.log(`Found ${length} records, processing now.`);
+  const p = [];
+  let numWritten = 0;
+  dirty.forEach((key, value) => {
+    let bcb, wcb;
+    p.push(new Promise((resolve, reject) => {
+      bcb = (err) => { if (err != null) return reject(err); };
+      wcb = (err) => {
+        if (err != null) return reject(err);
+        if (++numWritten % 100 === 0) console.log(`Wrote record ${numWritten} of ${length}`);
+        resolve();
+      };
+    }));
+    db.set(key, value, bcb, wcb);
   });
-  console.log('done?');
+  await Promise.all(p);
+  console.log(`Wrote all ${numWritten} records`);
+
+  await util.promisify(db.close.bind(db))();
+  console.log('Finished.');
 });
