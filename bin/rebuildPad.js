@@ -92,8 +92,7 @@ async.series([
     // Add saved revisions up to the new revision head
     console.log(newPad.head);
     const newSavedRevisions = [];
-    for (const i of oldPad.savedRevisions) {
-      const savedRev = oldPad.savedRevisions[i];
+    for (const savedRev of oldPad.savedRevisions) {
       if (savedRev.revNum <= newRevHead) {
         newSavedRevisions.push(savedRev);
         console.log(`Added: Saved Revision: ${savedRev.revNum}`);
