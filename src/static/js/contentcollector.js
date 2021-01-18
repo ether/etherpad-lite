@@ -33,8 +33,7 @@ const _ = require('./underscore');
 
 const sanitizeUnicode = (s) => UNorm.nfc(s);
 
-const makeContentCollector = function (
-    collectStyles, abrowser, apool, domInterface, className2Author) {
+const makeContentCollector = (collectStyles, abrowser, apool, domInterface, className2Author) => {
   const dom = domInterface || {
     isNodeText: (n) => (n.nodeType === 3),
     nodeTagName: (n) => n.tagName,
