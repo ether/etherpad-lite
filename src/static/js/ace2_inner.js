@@ -3515,18 +3515,15 @@ function Ace2Inner() {
         };
       }
     };
-    const selection = {};
-    selection.startPoint = pointFromRangeBound(range.startContainer, range.startOffset);
-    selection.endPoint = pointFromRangeBound(range.endContainer, range.endOffset);
-    selection.focusAtStart = (
-        (
-          (range.startContainer !== range.endContainer) ||
-          (range.startOffset !== range.endOffset)
-        ) &&
+    const selection = {
+      startPoint: pointFromRangeBound(range.startContainer, range.startOffset),
+      endPoint: pointFromRangeBound(range.endContainer, range.endOffset),
+      focusAtStart:
+          (range.startContainer !== range.endContainer || range.startOffset !== range.endOffset) &&
           browserSelection.anchorNode &&
-          (browserSelection.anchorNode === range.endContainer) &&
-          (browserSelection.anchorOffset === range.endOffset)
-      );
+          browserSelection.anchorNode === range.endContainer &&
+          browserSelection.anchorOffset === range.endOffset,
+    };
 
     if (selection.startPoint.node.ownerDocument !== window.document) {
       return null;
