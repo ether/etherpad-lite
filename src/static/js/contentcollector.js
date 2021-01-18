@@ -710,7 +710,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
           linesWrapped++;
           numLinesAfter += newStrings.length;
           lineStrings.splice(i, 1, ...newStrings);
-          lineAttribs.splice.apply(lineAttribs, newAttribStrings);
+          lineAttribs.splice(i, 1, ...newAttribStrings);
         }
       }
       return {
