@@ -29,7 +29,6 @@ const _MAX_LIST_LEVEL = 16;
 const UNorm = require('unorm');
 const Changeset = require('./Changeset');
 const hooks = require('./pluginfw/hooks');
-const _ = require('./underscore');
 
 const sanitizeUnicode = (s) => UNorm.nfc(s);
 
@@ -64,7 +63,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
     li: 1,
   };
 
-  _.each(hooks.callAll('ccRegisterBlockElements'), (element) => {
+  hooks.callAll('ccRegisterBlockElements').forEach((element) => {
     _blockElems[element] = 1;
   });
 
@@ -142,7 +141,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
   const _pointHere = (charsAfter, state) => {
     const ln = lines.length() - 1;
     let chr = lines.textOfLine(ln).length;
-    if (chr === 0 && !_.isEmpty(state.lineAttributes)) {
+    if (chr === 0 && Object.keys(state.lineAttributes).length !== 0) {
       chr += 1; // listMarker
     }
     chr += charsAfter;
@@ -273,7 +272,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
   cc.startNewLine = (state) => {
     if (state) {
       const atBeginningOfLine = lines.textOfLine(lines.length() - 1).length === 0;
-      if (atBeginningOfLine && !_.isEmpty(state.lineAttributes)) {
+      if (atBeginningOfLine && Object.keys(state.lineAttributes).length !== 0) {
         _produceLineAttributesMarker(state);
       }
     }
@@ -375,7 +374,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
           // newlines in the source mustn't become spaces at beginning of line box
           txt2 = txt2.replace(/^\n*/, '');
         }
-        if (atBeginningOfLine && !_.isEmpty(state.lineAttributes)) {
+        if (atBeginningOfLine && Object.keys(state.lineAttributes).length !== 0) {
           _produceLineAttributesMarker(state);
         }
         lines.appendText(textify(txt2), state.attribString);
