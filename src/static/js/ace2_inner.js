@@ -323,12 +323,6 @@ function Ace2Inner() {
       // top.console.error(err);
     }
 
-    let profiling = false;
-
-    const profileRest = () => {
-      profiling = true; // eslint-disable-line
-    };
-
     const newEditEvent = (eventType) => ({
       eventType,
       backset: null,
@@ -378,7 +372,6 @@ function Ace2Inner() {
       selectionAffected: false,
       userChangedSelection: false,
       domClean: false,
-      profileRest,
       isUserChange: false,
       // is this a "user change" type of call-stack
       repChanged: false,
@@ -1576,7 +1569,6 @@ function Ace2Inner() {
       },
       get: (i) => `${rep.lines.atIndex(i).text}\n`,
       length: () => rep.lines.length(),
-      slice_notused: (start, end) => _.map(rep.lines.slice(start, end), (e) => `${e.text}\n`),
     };
 
     Changeset.mutateTextLines(changes, linesMutatee);
