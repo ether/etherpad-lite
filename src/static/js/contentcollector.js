@@ -507,12 +507,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
             } else {
               if (tname === 'ul') {
                 if ((type && type.match('indent')) ||
-                    (
-                      node.attribs &&
-                      node.attribs.class &&
-                      node.attribs.class.match('indent')
-                    )
-                ) {
+                    (node.attribs && node.attribs.class && node.attribs.class.match('indent'))) {
                   type = 'indent';
                 } else {
                   type = 'bullet';
