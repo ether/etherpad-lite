@@ -125,9 +125,9 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
     // consider clean blank lines pasted in IE to be empty
     if (dom.nodeNumChildren(node) === 0) return true;
     if (dom.nodeNumChildren(node) === 1 &&
-      getAssoc(node, 'shouldBeEmpty') &&
-      dom.optNodeInnerHTML(node) === '&nbsp;' &&
-      !getAssoc(node, 'unpasted')) {
+        getAssoc(node, 'shouldBeEmpty') &&
+        dom.optNodeInnerHTML(node) === '&nbsp;' &&
+        !getAssoc(node, 'unpasted')) {
       if (state) {
         const child = dom.nodeChild(node, 0);
         _reachPoint(child, 0, state);
@@ -463,23 +463,23 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
             cls,
           });
           if (tname === 'b' ||
-            (styl && /\bfont-weight:\s*bold\b/i.exec(styl)) ||
-            tname === 'strong') {
+              (styl && /\bfont-weight:\s*bold\b/i.exec(styl)) ||
+              tname === 'strong') {
             cc.doAttrib(state, 'bold');
           }
           if (tname === 'i' ||
-          (styl && /\bfont-style:\s*italic\b/i.exec(styl)) ||
-          tname === 'em') {
+              (styl && /\bfont-style:\s*italic\b/i.exec(styl)) ||
+              tname === 'em') {
             cc.doAttrib(state, 'italic');
           }
           if (tname === 'u' ||
-            (styl && /\btext-decoration:\s*underline\b/i.exec(styl)) ||
-            tname === 'ins') {
+              (styl && /\btext-decoration:\s*underline\b/i.exec(styl)) ||
+              tname === 'ins') {
             cc.doAttrib(state, 'underline');
           }
           if (tname === 's' ||
-            (styl && /\btext-decoration:\s*line-through\b/i.exec(styl)) ||
-            tname === 'del') {
+              (styl && /\btext-decoration:\s*line-through\b/i.exec(styl)) ||
+              tname === 'del') {
             cc.doAttrib(state, 'strikethrough');
           }
           let type;
@@ -507,11 +507,11 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
             } else {
               if (tname === 'ul') {
                 if ((type && type.match('indent')) ||
-                (
-                  node.attribs &&
-                  node.attribs.class &&
-                  node.attribs.class.match('indent')
-                )
+                    (
+                      node.attribs &&
+                      node.attribs.class &&
+                      node.attribs.class.match('indent')
+                    )
                 ) {
                   type = 'indent';
                 } else {
