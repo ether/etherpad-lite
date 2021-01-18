@@ -34,7 +34,7 @@ const sanitizeUnicode = (s) => UNorm.nfc(s);
 
 const makeContentCollector = (collectStyles, abrowser, apool, domInterface, className2Author) => {
   const dom = domInterface || {
-    isNodeText: (n) => (n.nodeType === 3),
+    isNodeText: (n) => n.nodeType === 3,
     nodeTagName: (n) => n.tagName,
     nodeValue: (n) => n.nodeValue,
     nodeNumChildren: (n) => {
