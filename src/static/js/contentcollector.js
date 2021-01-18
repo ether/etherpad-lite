@@ -265,7 +265,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
     const attributes = [
       ['lmkr', '1'],
       ['insertorder', 'first'],
-      ...Object.entries(state.lineAttributes)
+      ...Object.entries(state.lineAttributes),
     ];
     lines.appendText('*', Changeset.makeAttribsString('+', attributes, apool));
   };
