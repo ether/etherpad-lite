@@ -250,8 +250,8 @@ function Ace2Inner() {
       authorStyle.backgroundColor = bgcolor;
       parentAuthorStyle.backgroundColor = bgcolor;
 
-      const textColor = colorutils.
-          textColorFromBackgroundColor(bgcolor, parent.parent.clientVars.skinName);
+      const textColor =
+          colorutils.textColorFromBackgroundColor(bgcolor, parent.parent.clientVars.skinName);
       authorStyle.color = textColor;
       parentAuthorStyle.color = textColor;
     }
@@ -318,8 +318,7 @@ function Ace2Inner() {
     if (currentCallStack) {
       // Do not uncomment this in production.  It will break Etherpad being provided in iFrames.
       // I am leaving this in for testing usefulness.
-      const err = `Can't enter callstack ${type}, already in ${currentCallStack.type}`; // eslint-disable-line
-      // top.console.error(err);
+      // top.console.error(`Can't enter callstack ${type}, already in ${currentCallStack.type}`);
     }
 
     const newEditEvent = (eventType) => ({
@@ -967,7 +966,7 @@ function Ace2Inner() {
   clearObservedChanges();
 
   const getCleanNodeByKey = (key) => {
-    const p = PROFILER('getCleanNodeByKey', false); // eslint-disable-line
+    const p = PROFILER('getCleanNodeByKey', false); // eslint-disable-line new-cap
     p.extra = 0;
     let n = doc.getElementById(key);
     // copying and pasting can lead to duplicate ids
@@ -1043,7 +1042,7 @@ function Ace2Inner() {
     if (currentCallStack.observedSelection) return;
     currentCallStack.observedSelection = true;
 
-    const p = PROFILER('getSelection', false); // eslint-disable-line
+    const p = PROFILER('getSelection', false); // eslint-disable-line new-cap
     const selection = getSelection();
     p.end();
 
@@ -1078,7 +1077,7 @@ function Ace2Inner() {
 
     if (DEBUG && window.DONT_INCORP || window.DEBUG_DONT_INCORP) return false;
 
-    const p = PROFILER('incorp', false); // eslint-disable-line
+    const p = PROFILER('incorp', false); // eslint-disable-line new-cap
 
     // returns true if dom changes were made
     if (!root.firstChild) {
@@ -1320,7 +1319,8 @@ function Ace2Inner() {
 
   const isStyleAttribute = (aname) => !!STYLE_ATTRIBS[aname];
 
-  const isDefaultLineAttribute = (aname) => AttributeManager.DEFAULT_LINE_ATTRIBUTES.indexOf(aname) !== -1; // eslint-disable-line
+  const isDefaultLineAttribute =
+      (aname) => AttributeManager.DEFAULT_LINE_ATTRIBUTES.indexOf(aname) !== -1;
 
   const insertDomLines = (nodeToAddAfter, infoStructs) => {
     let lastEntry;
@@ -1328,7 +1328,7 @@ function Ace2Inner() {
     if (infoStructs.length < 1) return;
 
     infoStructs.forEach((info) => {
-      const p2 = PROFILER('insertLine', false); // eslint-disable-line
+      const p2 = PROFILER('insertLine', false); // eslint-disable-line new-cap
       const node = info.node;
       const key = uniqueId(node);
       let entry;
@@ -1556,8 +1556,8 @@ function Ace2Inner() {
     if (rep.selStart && rep.selEnd) {
       const selStartChar = rep.lines.offsetOfIndex(rep.selStart[0]) + rep.selStart[1];
       const selEndChar = rep.lines.offsetOfIndex(rep.selEnd[0]) + rep.selEnd[1];
-      const result = Changeset.
-          characterRangeFollow(changes, selStartChar, selEndChar, insertsAfterSelection);
+      const result =
+          Changeset.characterRangeFollow(changes, selStartChar, selEndChar, insertsAfterSelection);
       requiredSelectionSetting = [result[0], result[1], rep.selFocusAtStart];
     }
 
@@ -1662,10 +1662,8 @@ function Ace2Inner() {
 
   const performDocumentApplyAttributesToCharRange = (start, end, attribs) => {
     end = Math.min(end, rep.alltext.length - 1);
-    documentAttributeManager.
-        setAttributesOnRange(lineAndColumnFromChar(start),
-            lineAndColumnFromChar(end), attribs
-        );
+    documentAttributeManager.setAttributesOnRange(
+        lineAndColumnFromChar(start), lineAndColumnFromChar(end), attribs);
   };
 
   editorInfo.ace_performDocumentApplyAttributesToCharRange =
@@ -2213,18 +2211,16 @@ function Ace2Inner() {
 
   const selectFormattingButtonIfLineHasStyleApplied = (rep) => {
     FORMATTING_STYLES.forEach((style) => {
-      const hasStyleOnRepSelection = documentAttributeManager.
-          hasAttributeOnSelectionOrCaretPosition(style);
+      const hasStyleOnRepSelection =
+          documentAttributeManager.hasAttributeOnSelectionOrCaretPosition(style);
       updateStyleButtonState(style, hasStyleOnRepSelection);
     });
   };
 
   const doCreateDomLine = (nonEmpty) => domline.createDomLine(nonEmpty, doesWrap, browser, doc);
 
-  const textify = (str) => str.
-      replace(/[\n\r ]/g, ' ').
-      replace(/\xa0/g, ' ').
-      replace(/\t/g, '        ');
+  const textify =
+      (str) => str.replace(/[\n\r ]/g, ' ').replace(/\xa0/g, ' ').replace(/\t/g, '        ');
 
   const _blockElems = {
     div: 1,
@@ -2249,7 +2245,7 @@ function Ace2Inner() {
     // indicating inserted content.  for example, [0,0] means content was inserted
     // at the top of the document, while [3,4] means line 3 was deleted, modified,
     // or replaced with one or more new lines of content. ranges do not touch.
-    const p = PROFILER('getDirtyRanges', false); // eslint-disable-line
+    const p = PROFILER('getDirtyRanges', false); // eslint-disable-line new-cap
     p.forIndices = 0;
     p.consecutives = 0;
     p.corrections = 0;
@@ -2449,7 +2445,7 @@ function Ace2Inner() {
   };
 
   const isNodeDirty = (n) => {
-    const p = PROFILER('cleanCheck', false); // eslint-disable-line
+    const p = PROFILER('cleanCheck', false); // eslint-disable-line new-cap
     if (n.parentNode !== root) return true;
     const data = getAssoc(n, 'dirtiness');
     if (!data) return true;
@@ -3519,7 +3515,7 @@ function Ace2Inner() {
         };
       }
     };
-    var selection = {};
+    const selection = {};
     selection.startPoint = pointFromRangeBound(range.startContainer, range.startOffset);
     selection.endPoint = pointFromRangeBound(range.endContainer, range.endOffset);
     selection.focusAtStart = (
@@ -3904,8 +3900,8 @@ function Ace2Inner() {
   // Init documentAttributeManager
   documentAttributeManager = new AttributeManager(rep, performDocumentApplyChangeset);
 
-  editorInfo.ace_performDocumentApplyAttributesToRange = (...args) => documentAttributeManager.
-      setAttributesOnRange(args);
+  editorInfo.ace_performDocumentApplyAttributesToRange =
+      (...args) => documentAttributeManager.setAttributesOnRange(args);
 
   this.init = () => {
     $(document).ready(() => {
