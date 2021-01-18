@@ -482,13 +482,8 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
               tname === 'del') {
             cc.doAttrib(state, 'strikethrough');
           }
-          let type;
           if (tname === 'ul' || tname === 'ol') {
-            if (node.attribs) {
-              type = node.attribs.class;
-            } else {
-              type = null;
-            }
+            let type = node.attribs ? node.attribs.class : null;
             const rr = cls && /(?:^| )list-([a-z]+[0-9]+)\b/.exec(cls);
             // lists do not need to have a type, so before we make a wrong guess
             // check if we find a better hint within the node's children
@@ -521,7 +516,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
           } else if ((tname === 'div' || tname === 'p') && cls && cls.match(/(?:^| )ace-line\b/)) {
             // This has undesirable behavior in Chrome but is right in other browsers.
             // See https://github.com/ether/etherpad-lite/issues/2412 for reasoning
-            if (!abrowser.chrome) oldListTypeOrNull = (_enterList(state, type) || 'none');
+            if (!abrowser.chrome) oldListTypeOrNull = (_enterList(state, undefined) || 'none');
           } else if ((tname === 'li')) {
             state.lineAttributes.start = state.start || 0;
             _recalcAttribString(state);
