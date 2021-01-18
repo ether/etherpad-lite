@@ -1,43 +1,39 @@
+'use strict';
+
 /*
   This is a repair tool. It rebuilds an old pad at a new pad location up to a
   known "good" revision.
 */
 
-if (process.argv.length != 4 && process.argv.length != 5) {
-  console.error('Use: node bin/repairPad.js $PADID $REV [$NEWPADID]');
-  process.exit(1);
+// As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
+// unhandled rejection into an uncaught exception, which does cause Node.js to exit.
+process.on('unhandledRejection', (err) => { throw err; });
+
+if (process.argv.length !== 4 && process.argv.length !== 5) {
+  throw new Error('Use: node bin/repairPad.js $PADID $REV [$NEWPADID]');
 }
 
-const npm = require('../src/node_modules/npm');
-const async = require('../src/node_modules/async');
-const ueberDB = require('../src/node_modules/ueberdb2');
+const async = require('ep_etherpad-lite/node_modules/async');
+const npm = require('ep_etherpad-lite/node_modules/npm');
+const util = require('util');
 
 const padId = process.argv[2];
 const newRevHead = process.argv[3];
 const newPadId = process.argv[4] || `${padId}-rebuilt`;
 
-let db, oldPad, newPad, settings;
-let AuthorManager, ChangeSet, Pad, PadManager;
+let db, oldPad, newPad;
+let Pad, PadManager;
 
 async.series([
-  function (callback) {
-    npm.load({}, (err) => {
-      if (err) {
-        console.error(`Could not load NPM: ${err}`);
-        process.exit(1);
-      } else {
-        callback();
-      }
-    });
-  },
-  function (callback) {
+  (callback) => npm.load({}, callback),
+  (callback) => {
     // Get a handle into the database
-    db = require('../src/node/db/DB');
+    db = require('ep_etherpad-lite/node/db/DB');
     db.init(callback);
   },
-  function (callback) {
-    PadManager = require('../src/node/db/PadManager');
-    Pad = require('../src/node/db/Pad').Pad;
+  (callback) => {
+    Pad = require('ep_etherpad-lite/node/db/Pad').Pad;
+    PadManager = require('ep_etherpad-lite/node/db/PadManager');
     // Get references to the original pad and to a newly created pad
     // HACK: This is a standalone script, so we want to write everything
     // out to the database immediately.  The only problem with this is
@@ -46,14 +42,10 @@ async.series([
     // Validate the newPadId if specified and that a pad with that ID does
     // not already exist to avoid overwriting it.
     if (!PadManager.isValidPadId(newPadId)) {
-      console.error('Cannot create a pad with that id as it is invalid');
-      process.exit(1);
+      throw new Error('Cannot create a pad with that id as it is invalid');
     }
     PadManager.doesPadExists(newPadId, (err, exists) => {
-      if (exists) {
-        console.error('Cannot create a pad with that id as it already exists');
-        process.exit(1);
-      }
+      if (exists) throw new Error('Cannot create a pad with that id as it already exists');
     });
     PadManager.getPad(padId, (err, pad) => {
       oldPad = pad;
@@ -61,10 +53,10 @@ async.series([
       callback();
     });
   },
-  function (callback) {
+  (callback) => {
     // Clone all Chat revisions
     const chatHead = oldPad.chatHead;
-    for (var i = 0, curHeadNum = 0; i <= chatHead; i++) {
+    for (let i = 0, curHeadNum = 0; i <= chatHead; i++) {
       db.db.get(`pad:${padId}:chat:${i}`, (err, chat) => {
         db.db.set(`pad:${newPadId}:chat:${curHeadNum++}`, chat);
         console.log(`Created: Chat Revision: pad:${newPadId}:chat:${curHeadNum}`);
@@ -72,10 +64,10 @@ async.series([
     }
     callback();
   },
-  function (callback) {
+  (callback) => {
     // Rebuild Pad from revisions up to and including the new revision head
-    AuthorManager = require('../src/node/db/AuthorManager');
-    Changeset = require('ep_etherpad-lite/static/js/Changeset');
+    const AuthorManager = require('ep_etherpad-lite/node/db/AuthorManager');
+    const Changeset = require('ep_etherpad-lite/static/js/Changeset');
     // Author attributes are derived from changesets, but there can also be
     // non-author attributes with specific mappings that changesets depend on
     // and, AFAICT, cannot be recreated any other way
@@ -83,7 +75,7 @@ async.series([
     for (let curRevNum = 0; curRevNum <= newRevHead; curRevNum++) {
       db.db.get(`pad:${padId}:revs:${curRevNum}`, (err, rev) => {
         if (rev.meta) {
-          throw 'The specified revision number could not be found.';
+          throw new Error('The specified revision number could not be found.');
         }
         const newRevNum = ++newPad.head;
         const newRevId = `pad:${newPad.id}:revs:${newRevNum}`;
@@ -91,18 +83,17 @@ async.series([
         AuthorManager.addPad(rev.meta.author, newPad.id);
         newPad.atext = Changeset.applyToAText(rev.changeset, newPad.atext, newPad.pool);
         console.log(`Created: Revision: pad:${newPad.id}:revs:${newRevNum}`);
-        if (newRevNum == newRevHead) {
+        if (newRevNum === newRevHead) {
           callback();
         }
       });
     }
   },
-  function (callback) {
+  (callback) => {
     // Add saved revisions up to the new revision head
     console.log(newPad.head);
     const newSavedRevisions = [];
-    for (const i in oldPad.savedRevisions) {
-      savedRev = oldPad.savedRevisions[i];
+    for (const savedRev of oldPad.savedRevisions) {
       if (savedRev.revNum <= newRevHead) {
         newSavedRevisions.push(savedRev);
         console.log(`Added: Saved Revision: ${savedRev.revNum}`);
@@ -111,16 +102,14 @@ async.series([
     newPad.savedRevisions = newSavedRevisions;
     callback();
   },
-  function (callback) {
+  (callback) => {
     // Save the source pad
     db.db.set(`pad:${newPadId}`, newPad, (err) => {
       console.log(`Created: Source Pad: pad:${newPadId}`);
-      newPad.saveToDatabase().then(() => callback(), callback);
+      util.callbackify(newPad.saveToDatabase.bind(newPad))(callback);
     });
   },
 ], (err) => {
-  if (err) { throw err; } else {
-    console.info('finished');
-    process.exit(0);
-  }
+  if (err) throw err;
+  console.info('finished');
 });

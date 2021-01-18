@@ -1,28 +1,31 @@
+'use strict';
 /*
  * This is a debug tool. It checks all revisions for data corruption
  */
 
-if (process.argv.length != 2) {
-  console.error('Use: node bin/checkAllPads.js');
-  process.exit(1);
-}
+// As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
+// unhandled rejection into an uncaught exception, which does cause Node.js to exit.
+process.on('unhandledRejection', (err) => { throw err; });
+
+if (process.argv.length !== 2) throw new Error('Use: node bin/checkAllPads.js');
 
 // load and initialize NPM
-const npm = require('../src/node_modules/npm');
+const npm = require('ep_etherpad-lite/node_modules/npm');
 npm.load({}, async () => {
   try {
     // initialize the database
-    const settings = require('../src/node/utils/Settings');
-    const db = require('../src/node/db/DB');
+    require('ep_etherpad-lite/node/utils/Settings');
+    const db = require('ep_etherpad-lite/node/db/DB');
     await db.init();
 
     // load modules
-    const Changeset = require('../src/static/js/Changeset');
-    const padManager = require('../src/node/db/PadManager');
+    const Changeset = require('ep_etherpad-lite/static/js/Changeset');
+    const padManager = require('ep_etherpad-lite/node/db/PadManager');
+
+    let revTestedCount = 0;
 
     // get all pads
     const res = await padManager.listAllPads();
-
     for (const padId of res.padIDs) {
       const pad = await padManager.getPad(padId);
 
@@ -31,7 +34,6 @@ npm.load({}, async () => {
         console.error(`[${pad.id}] Missing attribute pool`);
         continue;
       }
-
       // create an array with key kevisions
       // key revisions always save the full pad atext
       const head = pad.getHeadRevisionNumber();
@@ -71,21 +73,23 @@ npm.load({}, async () => {
 
         const apool = pad.pool;
         let atext = revisions[keyRev].meta.atext;
-
         for (let rev = keyRev + 1; rev <= keyRev + 100 && rev <= head; rev++) {
           try {
             const cs = revisions[rev].changeset;
             atext = Changeset.applyToAText(cs, atext, apool);
+            revTestedCount++;
           } catch (e) {
-            console.error(`[${pad.id}] Bad changeset at revision ${i} - ${e.message}`);
+            console.error(`[${pad.id}] Bad changeset at revision ${rev} - ${e.message}`);
           }
         }
       }
-      console.log('finished');
-      process.exit(0);
     }
+    if (revTestedCount === 0) {
+      throw new Error('No revisions tested');
+    }
+    console.log(`Finished: Tested ${revTestedCount} revisions`);
   } catch (err) {
     console.trace(err);
-    process.exit(1);
+    throw err;
   }
 });
