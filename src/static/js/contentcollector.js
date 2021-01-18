@@ -385,37 +385,23 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
         }
       }
     } else {
-      // Not a text node..
       const tname = (dom.nodeTagName(node) || '').toLowerCase();
-      const styl = dom.nodeAttr(node, 'style');
-      const cls = dom.nodeAttr(node, 'class');
-
-      // clear to avoid pollution of trailing blank lines after image lines
-      // with attributes during import - this could and should be handled better
-      // one option would be to pop up a gritter if an image is detected and
-      // no support is present, but this feels out of scope for lint fix.
-      if (state.lineAttributes && state.lineAttributes.img) {
-        delete state.lineAttributes.img;
-      }
 
       if (tname === 'img') {
-        // no hook sare called in this branch, just a demo..
         hooks.callAll('collectContentImage', {
           cc,
           state,
           tname,
-          styl,
-          cls,
+          styl: null,
+          cls: null,
           node,
         });
-      } else if (tname === 'br') {
-        // Delete line Attributes that can pollute line breaks, they should only
-        // be present in the line itself, not in any attributes of a line..
-        // uncommenting the below will make duplicate images.. :)
-        // I think the cause of this is because lineAttributes such as list items
-        // do need to be continued onto the next line so you don't lose list items
-        // on a keypress event but also if you are within an <ol> or <ul>.
-        if (state.lineAttributes && state.lineAttributes.img) delete state.lineAttributes;
+      } else {
+        // THIS SEEMS VERY HACKY! -- Please submit a better fix!
+        delete state.lineAttributes.img;
+      }
+
+      if (tname === 'br') {
         this.breakLine = true;
         const tvalue = dom.nodeAttr(node, 'value');
         const induceLineBreak = hooks.callAll('collectContentLineBreak', {
@@ -438,7 +424,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
         let styl = dom.nodeAttr(node, 'style');
         let cls = dom.nodeAttr(node, 'class');
         let isPre = (tname === 'pre');
-        if ((!isPre) && abrowser && abrowser.safari) {
+        if ((!isPre) && abrowser.safari) {
           isPre = (styl && /\bwhite-space:\s*pre\b/i.exec(styl));
         }
         if (isPre) cc.incrementFlag(state, 'preMode');
