@@ -24,7 +24,7 @@ let tasks = 0;
 function wrapTaskCb(cb) {
   tasks++;
 
-  return function () {
+  return function (...arguments) {
     cb && cb.apply(this, arguments);
     tasks--;
     if (tasks === 0) onAllTasksFinished();
