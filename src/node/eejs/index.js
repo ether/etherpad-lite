@@ -84,13 +84,14 @@ exports.require = (name, args, mod) => {
   args.require = require;
 
   const cache = settings.maxAge !== 0;
-  const template = cache && templateCache.get(ejspath) ||
-      `<% e._init(__output); %>${fs.readFileSync(ejspath).toString()}<% e._exit(); %>`;
+  const template = cache && templateCache.get(ejspath) || ejs.compile(
+      `<% e._init(__output); %>${fs.readFileSync(ejspath).toString()}<% e._exit(); %>`,
+      {filename: ejspath});
   if (cache) templateCache.set(ejspath, template);
 
   exports.info.args.push(args);
   exports.info.file_stack.push({path: ejspath});
-  const res = ejs.render(template, args, {cache, filename: ejspath});
+  const res = template(args);
   exports.info.file_stack.pop();
   exports.info.args.pop();
 
