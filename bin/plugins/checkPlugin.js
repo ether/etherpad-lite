@@ -263,7 +263,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       console.warn('No engines or node engine in package.json');
       if (autoFix) {
         const engines = {
-          node: '>=10.13.0',
+          node: '^10.17.0 || >=11.14.0',
         };
         parsedPackageJSON.engines = engines;
         writePackageJson(parsedPackageJSON);
