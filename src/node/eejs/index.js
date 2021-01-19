@@ -47,27 +47,19 @@ exports._exit = (b, recursive) => {
   exports.info.__output = exports.info.__output_stack.pop();
 };
 
-exports.begin_capture = () => {
-  exports.info.__output_stack.push(exports.info.__output.concat());
-  exports.info.__output.splice(0, exports.info.__output.length);
-};
-
-exports.end_capture = () => {
-  const res = exports.info.__output.join('');
-  exports.info.__output.splice(
-      0, exports.info.__output.length, ...exports.info.__output_stack.pop());
-  return res;
-};
-
 exports.begin_block = (name) => {
   exports.info.block_stack.push(name);
-  exports.begin_capture();
+  exports.info.__output_stack.push(exports.info.__output.concat());
+  exports.info.__output.splice(0, exports.info.__output.length);
 };
 
 exports.end_block = () => {
   const name = exports.info.block_stack.pop();
   const renderContext = exports.info.args[exports.info.args.length - 1];
-  const args = {content: exports.end_capture(), renderContext};
+  const content = exports.info.__output.join('');
+  exports.info.__output.splice(
+      0, exports.info.__output.length, ...exports.info.__output_stack.pop());
+  const args = {content, renderContext};
   hooks.callAll(`eejsBlock_${name}`, args);
   exports.info.__output.push(args.content);
 };
