@@ -1,4 +1,4 @@
-/* global exports, require */
+'use strict';
 
 const _ = require('underscore');
 const pluginDefs = require('./plugin_defs');
@@ -15,30 +15,28 @@ exports.deprecationNotices = {};
 
 const deprecationWarned = {};
 
-function checkDeprecation(hook) {
+const checkDeprecation = (hook) => {
   const notice = exports.deprecationNotices[hook.hook_name];
   if (notice == null) return;
   if (deprecationWarned[hook.hook_fn_name]) return;
   console.warn(`${hook.hook_name} hook used by the ${hook.part.plugin} plugin ` +
                `(${hook.hook_fn_name}) is deprecated: ${notice}`);
   deprecationWarned[hook.hook_fn_name] = true;
-}
+};
 
 exports.bubbleExceptions = true;
 
-const hookCallWrapper = function (hook, hook_name, args, cb) {
-  if (cb === undefined) cb = function (x) { return x; };
+const hookCallWrapper = (hook, hook_name, args, cb) => {
+  if (cb === undefined) cb = (x) => x;
 
   checkDeprecation(hook);
 
   // Normalize output to list for both sync and async cases
-  const normalize = function (x) {
+  const normalize = (x) => {
     if (x === undefined) return [];
     return x;
   };
-  const normalizedhook = function () {
-    return normalize(hook.hook_fn(hook_name, args, (x) => cb(normalize(x))));
-  };
+  const normalizedhook = () => normalize(hook.hook_fn(hook_name, args, (x) => cb(normalize(x))));
 
   if (exports.bubbleExceptions) {
     return normalizedhook();
@@ -51,7 +49,7 @@ const hookCallWrapper = function (hook, hook_name, args, cb) {
   }
 };
 
-exports.syncMapFirst = function (lst, fn) {
+exports.syncMapFirst = (lst, fn) => {
   let i;
   let result;
   for (i = 0; i < lst.length; i++) {
@@ -61,11 +59,11 @@ exports.syncMapFirst = function (lst, fn) {
   return [];
 };
 
-exports.mapFirst = function (lst, fn, cb, predicate) {
+exports.mapFirst = (lst, fn, cb, predicate) => {
   if (predicate == null) predicate = (x) => (x != null && x.length > 0);
   let i = 0;
 
-  var next = function () {
+  const next = () => {
     if (i >= lst.length) return cb(null, []);
     fn(lst[i++], (err, result) => {
       if (err) return cb(err);
@@ -104,7 +102,7 @@ exports.mapFirst = function (lst, fn, cb, predicate) {
 //
 // See the tests in tests/backend/specs/hooks.js for examples of supported and prohibited behaviors.
 //
-function callHookFnSync(hook, context) {
+const callHookFnSync = (hook, context) => {
   checkDeprecation(hook);
 
   // This var is used to keep track of whether the hook function already settled.
@@ -190,7 +188,7 @@ function callHookFnSync(hook, context) {
 
   settle(null, val, 'returned value');
   return outcome.val;
-}
+};
 
 // Invokes all registered hook functions synchronously.
 //
@@ -203,7 +201,7 @@ function callHookFnSync(hook, context) {
 //     1. Collect all values returned by the hook functions into an array.
 //     2. Convert each `undefined` entry into `[]`.
 //     3. Flatten one level.
-exports.callAll = function (hookName, context) {
+exports.callAll = (hookName, context) => {
   if (context == null) context = {};
   const hooks = pluginDefs.hooks[hookName] || [];
   return _.flatten(hooks.map((hook) => {
@@ -248,7 +246,7 @@ exports.callAll = function (hookName, context) {
 //
 // See the tests in tests/backend/specs/hooks.js for examples of supported and prohibited behaviors.
 //
-async function callHookFnAsync(hook, context) {
+const callHookFnAsync = async (hook, context) => {
   checkDeprecation(hook);
   return await new Promise((resolve, reject) => {
     // This var is used to keep track of whether the hook function already settled.
@@ -326,7 +324,7 @@ async function callHookFnAsync(hook, context) {
         (val) => settle(null, val, 'returned value'),
         (err) => settle(err, null, 'Promise rejection'));
   });
-}
+};
 
 // Invokes all registered hook functions asynchronously.
 //
@@ -350,20 +348,22 @@ exports.aCallAll = async (hookName, context, cb) => {
   const hooks = pluginDefs.hooks[hookName] || [];
   let resultsPromise = Promise.all(hooks.map((hook) => callHookFnAsync(hook, context)
   // `undefined` (but not `null`!) is treated the same as [].
-      .then((result) => (result === undefined) ? [] : result))).then((results) => _.flatten(results, 1));
+      .then((result) => (result === undefined) ? [] : result)))
+      .then((results) => _.flatten(results, 1));
   if (cb != null) resultsPromise = resultsPromise.then((val) => cb(null, val), cb);
   return await resultsPromise;
 };
 
-exports.callFirst = function (hook_name, args) {
+exports.callFirst = (hook_name, args) => {
   if (!args) args = {};
   if (pluginDefs.hooks[hook_name] === undefined) return [];
-  return exports.syncMapFirst(pluginDefs.hooks[hook_name], (hook) => hookCallWrapper(hook, hook_name, args));
+  return exports.syncMapFirst(pluginDefs.hooks[hook_name],
+      (hook) => hookCallWrapper(hook, hook_name, args));
 };
 
-function aCallFirst(hook_name, args, cb, predicate) {
+const aCallFirst = (hook_name, args, cb, predicate) => {
   if (!args) args = {};
-  if (!cb) cb = function () {};
+  if (!cb) cb = () => {};
   if (pluginDefs.hooks[hook_name] === undefined) return cb(null, []);
   exports.mapFirst(
       pluginDefs.hooks[hook_name],
@@ -373,10 +373,10 @@ function aCallFirst(hook_name, args, cb, predicate) {
       cb,
       predicate
   );
-}
+};
 
 /* return a Promise if cb is not supplied */
-exports.aCallFirst = function (hook_name, args, cb, predicate) {
+exports.aCallFirst = (hook_name, args, cb, predicate) => {
   if (cb === undefined) {
     return new Promise((resolve, reject) => {
       aCallFirst(hook_name, args, (err, res) => err ? reject(err) : resolve(res), predicate);
@@ -386,10 +386,10 @@ exports.aCallFirst = function (hook_name, args, cb, predicate) {
   }
 };
 
-exports.callAllStr = function (hook_name, args, sep, pre, post) {
-  if (sep == undefined) sep = '';
-  if (pre == undefined) pre = '';
-  if (post == undefined) post = '';
+exports.callAllStr = (hook_name, args, sep, pre, post) => {
+  if (sep === undefined) sep = '';
+  if (pre === undefined) pre = '';
+  if (post === undefined) post = '';
   const newCallhooks = [];
   const callhooks = exports.callAll(hook_name, args);
   for (let i = 0, ii = callhooks.length; i < ii; i++) {
