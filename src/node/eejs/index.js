@@ -1,3 +1,4 @@
+'use strict';
 /*
  * Copyright (c) 2011 RedHog (Egil Möller) <egil.moller@freecode.no>
  *
@@ -21,8 +22,8 @@
 
 const ejs = require('ejs');
 const fs = require('fs');
+const hooks = require('../../static/js/pluginfw/hooks.js');
 const path = require('path');
-const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks.js');
 const resolve = require('resolve');
 const settings = require('../utils/Settings');
 
@@ -35,50 +36,43 @@ exports.info = {
   args: [],
 };
 
-function getCurrentFile() {
-  return exports.info.file_stack[exports.info.file_stack.length - 1];
-}
+const getCurrentFile = () => exports.info.file_stack[exports.info.file_stack.length - 1];
 
-function createBlockId(name) {
-  return `${getCurrentFile().path}|${name}`;
-}
-
-exports._init = function (b, recursive) {
+exports._init = (b, recursive) => {
   exports.info.__output_stack.push(exports.info.__output);
   exports.info.__output = b;
 };
 
-exports._exit = function (b, recursive) {
+exports._exit = (b, recursive) => {
   getCurrentFile().inherit.forEach((item) => {
     exports._require(item.name, item.args);
   });
   exports.info.__output = exports.info.__output_stack.pop();
 };
 
-exports.begin_capture = function () {
+exports.begin_capture = () => {
   exports.info.__output_stack.push(exports.info.__output.concat());
   exports.info.__output.splice(0, exports.info.__output.length);
 };
 
-exports.end_capture = function () {
+exports.end_capture = () => {
   const res = exports.info.__output.join('');
-  exports.info.__output.splice.apply(
-      exports.info.__output,
-      [0, exports.info.__output.length].concat(exports.info.__output_stack.pop()));
+  exports.info.__output.splice(
+      0, exports.info.__output.length, ...exports.info.__output_stack.pop());
   return res;
 };
 
-exports.begin_define_block = function (name) {
+exports.begin_define_block = (name) => {
   exports.info.block_stack.push(name);
   exports.begin_capture();
 };
 
-exports.end_define_block = function () {
+exports.end_define_block = () => {
   const content = exports.end_capture();
   return content;
 };
 
-exports.end_block = function () {
+exports.end_block = () => {
   const name = exports.info.block_stack.pop();
   const renderContext = exports.info.args[exports.info.args.length - 1];
   const args = {content: exports.end_define_block(), renderContext};
@@ -88,12 +82,12 @@ exports.end_block = function () {
 
 exports.begin_block = exports.begin_define_block;
 
-exports.inherit = function (name, args) {
+exports.inherit = (name, args) => {
   getCurrentFile().inherit.push({name, args});
 };
 
-exports.require = function (name, args, mod) {
-  if (args == undefined) args = {};
+exports.require = (name, args, mod) => {
+  if (args == null) args = {};
 
   let basedir = __dirname;
   let paths = [];
@@ -132,17 +126,13 @@ exports.require = function (name, args, mod) {
 
   exports.info.args.push(args);
   exports.info.file_stack.push({path: ejspath, inherit: []});
-  if (settings.maxAge !== 0) {
-    var res = ejs.render(template, args, {cache: true, filename: ejspath});
-  } else {
-    var res = ejs.render(template, args, {cache: false, filename: ejspath});
-  }
+  const res = ejs.render(template, args, {cache: settings.maxAge !== 0, filename: ejspath});
   exports.info.file_stack.pop();
   exports.info.args.pop();
 
   return res;
 };
 
-exports._require = function (name, args) {
+exports._require = (name, args) => {
   exports.info.__output.push(exports.require(name, args));
 };
