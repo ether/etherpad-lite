@@ -95,7 +95,7 @@ exports.extractHooks = extractHooks;
 exports.clientPluginNames = () => {
   const client_plugin_names = _.uniq(
       defs.parts
-          .filter((part) => part.hasOwnProperty('client_hooks'))
+          .filter((part) => Object.prototype.hasOwnProperty.call(part, 'client_hooks'))
           .map((part) => `plugin-${part.plugin}`)
   );
 
