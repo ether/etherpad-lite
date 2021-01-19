@@ -83,21 +83,14 @@ exports.require = (name, args, mod) => {
   args.e = exports;
   args.require = require;
 
-  let template;
-  if (settings.maxAge !== 0) { // don't cache if maxAge is 0
-    if (!templateCache.has(ejspath)) {
-      template = `<% e._init(__output); %>${fs.readFileSync(ejspath).toString()}<% e._exit(); %>`;
-      templateCache.set(ejspath, template);
-    } else {
-      template = templateCache.get(ejspath);
-    }
-  } else {
-    template = `<% e._init(__output); %>${fs.readFileSync(ejspath).toString()}<% e._exit(); %>`;
-  }
+  const cache = settings.maxAge !== 0;
+  const template = cache && templateCache.get(ejspath) ||
+      `<% e._init(__output); %>${fs.readFileSync(ejspath).toString()}<% e._exit(); %>`;
+  if (cache) templateCache.set(ejspath, template);
 
   exports.info.args.push(args);
   exports.info.file_stack.push({path: ejspath});
-  const res = ejs.render(template, args, {cache: settings.maxAge !== 0, filename: ejspath});
+  const res = ejs.render(template, args, {cache, filename: ejspath});
   exports.info.file_stack.pop();
   exports.info.args.pop();
 
