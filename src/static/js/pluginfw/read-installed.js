@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 // A copy of npm/lib/utils/read-installed.js
 // that is hacked to not cache everything :)
 
@@ -252,7 +252,7 @@ const resolveInheritance = (obj) => {
 // find unmet deps by walking up the tree object.
 // No I/O
 const fuSeen = [];
-const findUnmet = obj => {
+const findUnmet = (obj) => {
   if (typeof obj === 'string') return;
   if (fuSeen.indexOf(obj) !== -1) return;
   fuSeen.push(obj);
@@ -295,10 +295,10 @@ const copy = (obj) => {
 
   const o = {};
   for (const i in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, i)){
+    if (Object.prototype.hasOwnProperty.call(obj, i)) {
       o[i] = copy(obj[i]);
     }
-  };
+  }
   return o;
 };
 
@@ -319,7 +319,7 @@ if (module === require.main) {
     if (seen.indexOf(map) !== -1) return;
     seen.push(map);
     for (const i in map) {
-      if (Object.prototype.hasOwnProperty.call(map, i)){
+      if (Object.prototype.hasOwnProperty.call(map, i)) {
         switch (i) {
           case '_id':
           case 'path':
