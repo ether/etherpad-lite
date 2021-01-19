@@ -100,14 +100,7 @@ exports.require = (name, args, mod) => {
     paths = mod.paths;
   }
 
-  const ejspath = resolve.sync(
-      name,
-      {
-        paths,
-        basedir,
-        extensions: ['.html', '.ejs'],
-      }
-  );
+  const ejspath = resolve.sync(name, {paths, basedir, extensions: ['.html', '.ejs']});
 
   args.e = exports;
   args.require = require;
