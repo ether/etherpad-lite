@@ -1,3 +1,4 @@
+'use strict'
 // A copy of npm/lib/utils/read-installed.js
 // that is hacked to not cache everything :)
 
@@ -96,7 +97,7 @@ const asyncMap = require('slide').asyncMap;
 const semver = require('semver');
 const log = require('log4js').getLogger('pluginfw');
 
-function readJson(file, callback) {
+const readJson = (file, callback) => {
   fs.readFile(file, (er, buf) => {
     if (er) {
       callback(er);
@@ -108,17 +109,13 @@ function readJson(file, callback) {
       callback(er);
     }
   });
-}
+};
 
-module.exports = readInstalled;
-
-function readInstalled(folder, cb) {
+const readInstalled = (folder, cb) => {
   /* This is where we clear the cache, these three lines are all the
    * new code there is */
   rpSeen = {};
   riSeen = [];
-  const fuSeen = [];
-
   const d = npm.config.get('depth');
   readInstalled_(folder, null, null, null, 0, d, (er, obj) => {
     if (er) return cb(er);
@@ -127,10 +124,12 @@ function readInstalled(folder, cb) {
     resolveInheritance(obj);
     cb(null, obj);
   });
-}
+};
 
-var rpSeen = {};
-function readInstalled_(folder, parent, name, reqver, depth, maxDepth, cb) {
+module.exports = readInstalled;
+
+let rpSeen = {};
+const readInstalled_ = (folder, parent, name, reqver, depth, maxDepth, cb) => {
   // console.error(folder, name)
 
   let installed,
@@ -170,7 +169,7 @@ function readInstalled_(folder, parent, name, reqver, depth, maxDepth, cb) {
 
   let errState = null;
   let called = false;
-  function next(er) {
+  const next = (er) => {
     if (errState) return;
     if (er) {
       errState = er;
@@ -230,12 +229,12 @@ function readInstalled_(folder, parent, name, reqver, depth, maxDepth, cb) {
       }
       return cb(null, obj);
     });
-  }
-}
+  };
+};
 
 // starting from a root object, call findUnmet on each layer of children
-var riSeen = [];
-function resolveInheritance(obj) {
+let riSeen = [];
+const resolveInheritance = (obj) => {
   if (typeof obj !== 'object') return;
   if (riSeen.indexOf(obj) !== -1) return;
   riSeen.push(obj);
@@ -248,12 +247,13 @@ function resolveInheritance(obj) {
   Object.keys(obj.dependencies).forEach((dep) => {
     resolveInheritance(obj.dependencies[dep]);
   });
-}
+};
 
 // find unmet deps by walking up the tree object.
 // No I/O
 const fuSeen = [];
-function findUnmet(obj) {
+const findUnmet = obj => {
+  if (typeof obj === 'string') return;
   if (fuSeen.indexOf(obj) !== -1) return;
   fuSeen.push(obj);
   // console.error("find unmet", obj.name, obj.parent && obj.parent.name)
@@ -287,16 +287,20 @@ function findUnmet(obj) {
         }
       });
   return obj;
-}
+};
 
-function copy(obj) {
+const copy = (obj) => {
   if (!obj || typeof obj !== 'object') return obj;
   if (Array.isArray(obj)) return obj.map(copy);
 
   const o = {};
-  for (const i in obj) o[i] = copy(obj[i]);
+  for (const i in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, i)){
+      o[i] = copy(obj[i]);
+    }
+  };
   return o;
-}
+};
 
 if (module === require.main) {
   const util = require('util');
@@ -311,29 +315,31 @@ if (module === require.main) {
   });
 
   const seen = [];
-  function cleanup(map) {
+  const cleanup = (map) => {
     if (seen.indexOf(map) !== -1) return;
     seen.push(map);
-    for (var i in map) {
-      switch (i) {
-        case '_id':
-        case 'path':
-        case 'extraneous': case 'invalid':
-        case 'dependencies': case 'name':
-          continue;
-        default: delete map[i];
+    for (const i in map) {
+      if (Object.prototype.hasOwnProperty.call(map, i)){
+        switch (i) {
+          case '_id':
+          case 'path':
+          case 'extraneous': case 'invalid':
+          case 'dependencies': case 'name':
+            continue;
+          default: delete map[i];
+        }
       }
     }
     const dep = map.dependencies;
     //    delete map.dependencies
     if (dep) {
       //      map.dependencies = dep
-      for (var i in dep) {
-        if (typeof dep[i] === 'object') {
-          cleanup(dep[i]);
+      for (const j in dep) {
+        if (typeof dep[j] === 'object') {
+          cleanup(dep[j]);
         }
       }
     }
     return map;
-  }
+  };
 }
