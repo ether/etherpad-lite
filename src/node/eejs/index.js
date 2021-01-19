@@ -17,7 +17,7 @@
 
 /* Basic usage:
  *
- * require("./index").require("./examples/foo.ejs")
+ * require("./index").require("./path/to/template.ejs")
  */
 
 const ejs = require('ejs');
