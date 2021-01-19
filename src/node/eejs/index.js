@@ -44,9 +44,6 @@ exports._init = (b, recursive) => {
 };
 
 exports._exit = (b, recursive) => {
-  getCurrentFile().inherit.forEach((item) => {
-    exports._require(item.name, item.args);
-  });
   exports.info.__output = exports.info.__output_stack.pop();
 };
 
@@ -62,28 +59,17 @@ exports.end_capture = () => {
   return res;
 };
 
-exports.begin_define_block = (name) => {
+exports.begin_block = (name) => {
   exports.info.block_stack.push(name);
   exports.begin_capture();
-};
-
-exports.end_define_block = () => {
-  const content = exports.end_capture();
-  return content;
 };
 
 exports.end_block = () => {
   const name = exports.info.block_stack.pop();
   const renderContext = exports.info.args[exports.info.args.length - 1];
-  const args = {content: exports.end_define_block(), renderContext};
+  const args = {content: exports.end_capture(), renderContext};
   hooks.callAll(`eejsBlock_${name}`, args);
   exports.info.__output.push(args.content);
-};
-
-exports.begin_block = exports.begin_define_block;
-
-exports.inherit = (name, args) => {
-  getCurrentFile().inherit.push({name, args});
 };
 
 exports.require = (name, args, mod) => {
@@ -118,14 +104,10 @@ exports.require = (name, args, mod) => {
   }
 
   exports.info.args.push(args);
-  exports.info.file_stack.push({path: ejspath, inherit: []});
+  exports.info.file_stack.push({path: ejspath});
   const res = ejs.render(template, args, {cache: settings.maxAge !== 0, filename: ejspath});
   exports.info.file_stack.pop();
   exports.info.args.pop();
 
   return res;
-};
-
-exports._require = (name, args) => {
-  exports.info.__output.push(exports.require(name, args));
 };
