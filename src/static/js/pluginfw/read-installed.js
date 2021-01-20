@@ -281,6 +281,7 @@ const findUnmet = (obj) => {
             }' but will load\n${
               found.path},\nwhich is version ${found.version}`
             , 'unmet dependency');
+            found = {}; // this is not the right solution.  TODO
             found.invalid = true;
           }
           deps[d] = found;
