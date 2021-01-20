@@ -90,7 +90,6 @@ as far as the left-most node_modules folder.
 */
 
 
-const npm = require('npm/lib/npm.js');
 const fs = require('graceful-fs');
 const path = require('path');
 const asyncMap = require('slide').asyncMap;
@@ -116,8 +115,8 @@ const readInstalled = (folder, cb) => {
    * new code there is */
   rpSeen = {};
   riSeen = [];
-  const d = npm.config.get('depth');
-  readInstalled_(folder, null, null, null, 0, d, (er, obj) => {
+  const depth = 1;
+  readInstalled_(folder, null, null, null, 0, depth, (er, obj) => {
     if (er) return cb(er);
     // now obj has all the installed things, where they're installed
     // figure out the inheritance links, now that the object is built.
@@ -130,8 +129,6 @@ module.exports = readInstalled;
 
 let rpSeen = {};
 const readInstalled_ = (folder, parent, name, reqver, depth, maxDepth, cb) => {
-  // console.error(folder, name)
-
   let installed,
     obj,
     real,
@@ -281,6 +278,7 @@ const findUnmet = (obj) => {
             }' but will load\n${
               found.path},\nwhich is version ${found.version}`
             , 'unmet dependency');
+            found = {};
             found.invalid = true;
           }
           deps[d] = found;
@@ -307,13 +305,13 @@ if (module === require.main) {
   console.error('testing');
 
   let called = 0;
+
   readInstalled(process.cwd(), (er, map) => {
     console.error(called++);
     if (er) return console.error(er.stack || er.message);
     cleanup(map);
     console.error(util.inspect(map, true, 10, true));
   });
-
   const seen = [];
   const cleanup = (map) => {
     if (seen.indexOf(map) !== -1) return;
