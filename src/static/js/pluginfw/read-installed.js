@@ -1,4 +1,5 @@
 'use strict';
+
 // A copy of npm/lib/utils/read-installed.js
 // that is hacked to not cache everything :)
 
@@ -111,11 +112,14 @@ const readJson = (file, callback) => {
   });
 };
 
+module.exports = readInstalled;
+
 const readInstalled = (folder, cb) => {
   /* This is where we clear the cache, these three lines are all the
    * new code there is */
   rpSeen = {};
   riSeen = [];
+
   const d = npm.config.get('depth');
   readInstalled_(folder, null, null, null, 0, d, (er, obj) => {
     if (er) return cb(er);
@@ -125,8 +129,6 @@ const readInstalled = (folder, cb) => {
     cb(null, obj);
   });
 };
-
-module.exports = readInstalled;
 
 let rpSeen = {};
 const readInstalled_ = (folder, parent, name, reqver, depth, maxDepth, cb) => {
@@ -253,7 +255,6 @@ const resolveInheritance = (obj) => {
 // No I/O
 const fuSeen = [];
 const findUnmet = (obj) => {
-  if (typeof obj === 'string') return;
   if (fuSeen.indexOf(obj) !== -1) return;
   fuSeen.push(obj);
   // console.error("find unmet", obj.name, obj.parent && obj.parent.name)
@@ -281,7 +282,6 @@ const findUnmet = (obj) => {
             }' but will load\n${
               found.path},\nwhich is version ${found.version}`
             , 'unmet dependency');
-            found = {}; // this is not the right solution.  TODO
             found.invalid = true;
           }
           deps[d] = found;
@@ -295,11 +295,7 @@ const copy = (obj) => {
   if (Array.isArray(obj)) return obj.map(copy);
 
   const o = {};
-  for (const i in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, i)) {
-      o[i] = copy(obj[i]);
-    }
-  }
+  for (const i in obj) o[i] = copy(obj[i]);
   return o;
 };
 
@@ -320,24 +316,22 @@ if (module === require.main) {
     if (seen.indexOf(map) !== -1) return;
     seen.push(map);
     for (const i in map) {
-      if (Object.prototype.hasOwnProperty.call(map, i)) {
-        switch (i) {
-          case '_id':
-          case 'path':
-          case 'extraneous': case 'invalid':
-          case 'dependencies': case 'name':
-            continue;
-          default: delete map[i];
-        }
+      switch (i) {
+        case '_id':
+        case 'path':
+        case 'extraneous': case 'invalid':
+        case 'dependencies': case 'name':
+          continue;
+        default: delete map[i];
       }
     }
     const dep = map.dependencies;
     //    delete map.dependencies
     if (dep) {
       //      map.dependencies = dep
-      for (const j in dep) {
-        if (typeof dep[j] === 'object') {
-          cleanup(dep[j]);
+      for (const i in dep) {
+        if (typeof dep[i] === 'object') {
+          cleanup(dep[i]);
         }
       }
     }
