@@ -295,7 +295,7 @@ const copy = (obj) => {
   if (Array.isArray(obj)) return obj.map(copy);
 
   const o = {};
-  for (const i in obj) o[i] = copy(obj[i]);
+  for (const i of Object.keys(obj)) o[i] = copy(obj[i]);
   return o;
 };
 
@@ -315,8 +315,8 @@ if (module === require.main) {
   const cleanup = (map) => {
     if (seen.indexOf(map) !== -1) return;
     seen.push(map);
-    for (const i in map) {
-      switch (i) {
+    for (const i of map) {
+      switch (map[i]) {
         case '_id':
         case 'path':
         case 'extraneous': case 'invalid':
