@@ -112,7 +112,6 @@ const readJson = (file, callback) => {
   });
 };
 
-module.exports = readInstalled;
 
 const readInstalled = (folder, cb) => {
   /* This is where we clear the cache, these three lines are all the
@@ -338,3 +337,5 @@ if (module === require.main) {
     return map;
   };
 }
+
+module.exports = readInstalled;
