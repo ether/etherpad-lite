@@ -98,7 +98,7 @@ Etherpad is very customizable through plugins. Instructions for installing theme
 Run the following command in your Etherpad folder to get all of the features visible in the demo gif:
 
 ```
-npm install ep_headings2 ep_markdown ep_comments_page ep_align ep_page_view ep_font_color ep_webrtc ep_embedded_hyperlinks2
+npm install ep_headings2 ep_markdown ep_comments_page ep_align ep_font_color ep_webrtc ep_embedded_hyperlinks2
 ```
 
 ## Customize the style with skin variants
