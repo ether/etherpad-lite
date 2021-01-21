@@ -43,7 +43,8 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
     // .tagName works with DOM and cheerio 0.22.0, but:
     //   * With DOM, .tagName is an uppercase string.
     //   * With cheerio 0.22.0, .tagName is a lowercase string.
-    nodeTagName: (n) => n.tagName,
+    // For consistency, this function always returns a lowercase string.
+    nodeTagName: (n) => n.tagName && n.tagName.toLowerCase(),
     // .nodeValue works with DOM and cheerio 0.22.0.
     nodeValue: (n) => n.nodeValue,
     // Returns the number of Node children (n.childNodes.length), not the number of Element children
@@ -88,7 +89,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
     _blockElems[element] = 1;
   });
 
-  const isBlockElement = (n) => !!_blockElems[(dom.nodeTagName(n) || '').toLowerCase()];
+  const isBlockElement = (n) => !!_blockElems[dom.nodeTagName(n) || ''];
 
   const textify = (str) => sanitizeUnicode(
       str.replace(/(\n | \n)/g, ' ')
@@ -406,7 +407,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
         }
       }
     } else {
-      const tname = (dom.nodeTagName(node) || '').toLowerCase();
+      const tname = dom.nodeTagName(node) || '';
 
       if (tname === 'img') {
         hooks.callAll('collectContentImage', {
