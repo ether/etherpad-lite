@@ -32,8 +32,8 @@ const hooks = require('./pluginfw/hooks');
 
 const sanitizeUnicode = (s) => UNorm.nfc(s);
 
-const makeContentCollector = (collectStyles, abrowser, apool, domInterface, className2Author) => {
-  const dom = domInterface || {
+const makeContentCollector = (collectStyles, abrowser, apool, className2Author) => {
+  const dom = {
     isNodeText: (n) => n.nodeType === 3,
     nodeTagName: (n) => n.tagName,
     nodeValue: (n) => n.nodeValue,
