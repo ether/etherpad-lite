@@ -256,9 +256,9 @@ const fuSeen = [];
 const findUnmet = (obj) => {
   if (fuSeen.indexOf(obj) !== -1) return;
   fuSeen.push(obj);
-  if (typeof obj === 'string') return;
   // console.error("find unmet", obj.name, obj.parent && obj.parent.name)
-  const deps = obj.dependencies = obj.dependencies || {};
+  const deps = ((obj || {}).dependencies || {});
+
   // console.error(deps)
   Object.keys(deps)
       .filter((d) => typeof deps[d] === 'string')
@@ -282,6 +282,7 @@ const findUnmet = (obj) => {
             }' but will load\n${
               found.path},\nwhich is version ${found.version}`
             , 'unmet dependency');
+            if (typeof found === 'string') found = {};
             found.invalid = true;
           }
           deps[d] = found;
@@ -296,10 +297,10 @@ const copy = (obj) => {
 
   const o = {};
   for (const i in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, i)){
+    if (Object.prototype.hasOwnProperty.call(obj, i)) {
       o[i] = copy(obj[i]);
     }
-  };
+  }
 
   return o;
 };
@@ -322,7 +323,7 @@ if (module === require.main) {
     seen.push(map);
 
     for (const i in map) {
-      if (Object.prototype.hasOwnProperty.call(map, i)){
+      if (Object.prototype.hasOwnProperty.call(map, i)) {
         switch (i) {
           case '_id':
           case 'path':
@@ -331,7 +332,6 @@ if (module === require.main) {
             continue;
           default: delete map[i];
         }
-
       }
     }
     const dep = map.dependencies;
