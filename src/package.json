@@ -149,7 +149,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "nyc mocha --timeout 30000 --recursive ../tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
+    "test": "nyc mocha --timeout 120000 --recursive ../tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api"
   },
   "version": "1.8.7",
