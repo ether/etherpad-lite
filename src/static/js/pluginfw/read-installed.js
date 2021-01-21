@@ -256,7 +256,7 @@ const findUnmet = (obj) => {
   if (fuSeen.indexOf(obj) !== -1) return;
   fuSeen.push(obj);
   // console.error("find unmet", obj.name, obj.parent && obj.parent.name)
-  if (typeof obj === 'string') return;
+  // if (typeof obj === 'string') return;
   const deps = obj.dependencies = obj.dependencies || {};
   // console.error(deps)
   Object.keys(deps)
@@ -281,7 +281,7 @@ const findUnmet = (obj) => {
             }' but will load\n${
               found.path},\nwhich is version ${found.version}`
             , 'unmet dependency');
-            if(typeof found === 'string') found = {}
+            // if(typeof found === 'string') found = {}
             found.invalid = true;
           }
           deps[d] = found;
