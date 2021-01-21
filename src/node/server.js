@@ -32,8 +32,8 @@ log4js.replaceConsole();
  * any modules that require newer versions of NodeJS
  */
 const NodeVersion = require('./utils/NodeVersion');
-NodeVersion.enforceMinNodeVersion('10.13.0');
-NodeVersion.checkDeprecationStatus('10.13.0', '1.8.3');
+NodeVersion.enforceMinNodeVersion('10.17.0');
+NodeVersion.checkDeprecationStatus('10.17.0', '1.8.3');
 
 const UpdateCheck = require('./utils/UpdateCheck');
 const db = require('./db/DB');

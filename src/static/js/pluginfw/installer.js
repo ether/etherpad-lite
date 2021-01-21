@@ -1,8 +1,8 @@
 'use strict';
 
 const log4js = require('log4js');
-const plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');
-const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+const plugins = require('./plugins');
+const hooks = require('./hooks');
 const npm = require('npm');
 const request = require('request');
 const util = require('util');
@@ -23,9 +23,8 @@ let tasks = 0;
 
 function wrapTaskCb(cb) {
   tasks++;
-
-  return function (...arguments) {
-    cb && cb.apply(this, arguments);
+  return function (...args) {
+    cb && cb.apply(this, args);
     tasks--;
     if (tasks === 0) onAllTasksFinished();
   };

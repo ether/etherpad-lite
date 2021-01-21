@@ -252,7 +252,8 @@ const resolveInheritance = (obj) => {
 // find unmet deps by walking up the tree object.
 // No I/O
 const fuSeen = [];
-const findUnmet = obj => {
+
+const findUnmet = (obj) => {
   if (fuSeen.indexOf(obj) !== -1) return;
   fuSeen.push(obj);
   if (typeof obj === 'string') return;
@@ -299,6 +300,7 @@ const copy = (obj) => {
       o[i] = copy(obj[i]);
     }
   };
+
   return o;
 };
 
@@ -318,6 +320,7 @@ if (module === require.main) {
   const cleanup = (map) => {
     if (seen.indexOf(map) !== -1) return;
     seen.push(map);
+
     for (const i in map) {
       if (Object.prototype.hasOwnProperty.call(map, i)){
         switch (i) {
@@ -328,6 +331,7 @@ if (module === require.main) {
             continue;
           default: delete map[i];
         }
+
       }
     }
     const dep = map.dependencies;
@@ -343,3 +347,5 @@ if (module === require.main) {
     return map;
   };
 }
+
+module.exports = readInstalled;
