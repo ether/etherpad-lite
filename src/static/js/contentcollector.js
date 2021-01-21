@@ -425,7 +425,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
       if (tname === 'br') {
         this.breakLine = true;
         const tvalue = dom.getAttribute(node, 'value');
-        const induceLineBreak = hooks.callAll('collectContentLineBreak', {
+        const [startNewLine = true] = hooks.callAll('collectContentLineBreak', {
           cc: this,
           state,
           tname,
@@ -433,9 +433,6 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
           styl: null,
           cls: null,
         });
-        const startNewLine = (
-          typeof (induceLineBreak) === 'object' &&
-            induceLineBreak.length === 0) ? true : induceLineBreak[0];
         if (startNewLine) {
           cc.startNewLine(state);
         }
