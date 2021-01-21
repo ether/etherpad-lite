@@ -296,9 +296,9 @@ const copy = (obj) => {
 
   const o = {};
   for (const i in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, i)) {
+    // if (Object.prototype.hasOwnProperty.call(obj, i)) {
       o[i] = copy(obj[i]);
-    }
+    // }
   }
   return o;
 };
@@ -320,7 +320,7 @@ if (module === require.main) {
     if (seen.indexOf(map) !== -1) return;
     seen.push(map);
     for (const i in map) {
-      if (Object.prototype.hasOwnProperty.call(map, i)) {
+      // if (Object.prototype.hasOwnProperty.call(map, i)) {
         switch (i) {
           case '_id':
           case 'path':
@@ -329,7 +329,7 @@ if (module === require.main) {
             continue;
           default: delete map[i];
         }
-      }
+      // }
     }
     const dep = map.dependencies;
     //    delete map.dependencies
