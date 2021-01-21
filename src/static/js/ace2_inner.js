@@ -649,12 +649,10 @@ function Ace2Inner() {
 
   const execCommand = (cmd, ...args) => {
     cmd = cmd.toLowerCase();
-    // TODO: Rhansen to check this logic.
-    const cmdArgs = args;
     if (CMDS[cmd]) {
       inCallStackIfNecessary(cmd, () => {
         fastIncorp(9);
-        CMDS[cmd](CMDS, ...cmdArgs);
+        CMDS[cmd](...args);
       });
     }
   };
