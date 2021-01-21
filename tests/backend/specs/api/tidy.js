@@ -1,27 +1,26 @@
-const assert = require('assert');
-os = require('os'),
-fs = require('fs'),
-path = require('path'),
-TidyHtml = null,
-Settings = null;
+'use strict';
 
-const npm = require('../../../../src/node_modules/npm/lib/npm.js');
-const nodeify = require('../../../../src/node_modules/nodeify');
+const assert = require('assert');
+const os = require('os');
+const fs = require('fs');
+const path = require('path');
+let TidyHtml;
+let Settings;
+const npm = require('ep_etherpad-lite/node_modules/npm/lib/npm.js');
+const nodeify = require('ep_etherpad-lite/node_modules/nodeify');
 
 describe(__filename, function () {
   describe('tidyHtml', function () {
     before(function (done) {
       npm.load({}, (err) => {
         assert.ok(!err);
-        TidyHtml = require('../../../../src/node/utils/TidyHtml');
-        Settings = require('../../../../src/node/utils/Settings');
+        TidyHtml = require('ep_etherpad-lite/node/utils/TidyHtml');
+        Settings = require('ep_etherpad-lite/node/utils/Settings');
         return done();
       });
     });
 
-    function tidy(file, callback) {
-      return nodeify(TidyHtml.tidy(file), callback);
-    }
+    const tidy = (file, callback) => nodeify(TidyHtml.tidy(file), callback);
 
     it('Tidies HTML', function (done) {
       // If the user hasn't configured Tidy, we skip this tests as it's required for this test
@@ -53,7 +52,7 @@ describe(__filename, function () {
           '</html>',
         ].join('\n');
         assert.notStrictEqual(cleanedHtml.indexOf(expectedHtml), -1);
-        return done();
+        done();
       });
     });
 
@@ -65,7 +64,7 @@ describe(__filename, function () {
 
       tidy('/some/none/existing/file.html', (err) => {
         assert.ok(err);
-        return done();
+        done();
       });
     });
   });
