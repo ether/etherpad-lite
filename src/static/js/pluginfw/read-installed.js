@@ -1,4 +1,4 @@
-'use strict';
+// 'use strict';
 // A copy of npm/lib/utils/read-installed.js
 // that is hacked to not cache everything :)
 
