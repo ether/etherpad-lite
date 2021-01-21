@@ -498,7 +498,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
             if (!rr && !type) {
               for (let i = 0; i < dom.numChildNodes(node); i++) {
                 const child = dom.childNode(node, i);
-                if (child && child.name === 'ul') {
+                if (child.name === 'ul') {
                   type = dom.getAttribute(child, 'class');
                   if (type) {
                     break;
