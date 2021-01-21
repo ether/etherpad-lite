@@ -4,7 +4,6 @@ const eejs = require('../../eejs');
 const settings = require('../../utils/Settings');
 const installer = require('../../../static/js/pluginfw/installer');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
-const _ = require('underscore');
 const semver = require('semver');
 const UpdateCheck = require('../../utils/UpdateCheck');
 
@@ -51,7 +50,7 @@ exports.socketio = (hookName, args, cb) => {
       try {
         const results = await installer.getAvailablePlugins(/* maxCacheAge:*/ 60 * 10);
 
-        const updatable = _(plugins.plugins).keys().filter((plugin) => {
+        const updatable = Object.keys(plugins.plugins).filter((plugin) => {
           if (!results[plugin]) return false;
 
           const latestVersion = results[plugin].version;
