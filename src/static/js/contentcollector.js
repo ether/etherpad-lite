@@ -484,7 +484,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
             if (!rr && !type) {
               for (let i = 0; i < dom.numChildNodes(node); i++) {
                 const child = dom.childNode(node, i);
-                if (child.name !== 'ul') continue;
+                if (dom.tagName(child) !== 'ul') continue;
                 type = dom.getAttribute(child, 'class');
                 if (type) break;
               }
@@ -519,7 +519,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
                Note how the <ol> item has to be inside a <li>
                Because of this we don't increment the start number
               */
-              if (node.parentNode && node.parentNode.name !== 'ol') {
+              if (node.parentNode && dom.tagName(node.parentNode) !== 'ol') {
                 /*
                 TODO: start number has to increment based on indentLevel(numberX)
                 This means we have to build an object IE
@@ -536,7 +536,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
               }
             }
             // UL list items never modify the start value.
-            if (node.parentNode && node.parentNode.name === 'ul') {
+            if (node.parentNode && dom.tagName(node.parentNode) === 'ul') {
               state.start++;
               // TODO, this is hacky.
               // Because if the first item is an UL it will increment a list no?
