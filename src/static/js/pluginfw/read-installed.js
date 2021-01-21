@@ -253,9 +253,9 @@ const resolveInheritance = (obj) => {
 // No I/O
 const fuSeen = [];
 const findUnmet = obj => {
-  if (typeof obj === 'string') return;
   if (fuSeen.indexOf(obj) !== -1) return;
   fuSeen.push(obj);
+  if (typeof obj === 'string') return;
   // console.error("find unmet", obj.name, obj.parent && obj.parent.name)
   const deps = obj.dependencies = obj.dependencies || {};
   // console.error(deps)
