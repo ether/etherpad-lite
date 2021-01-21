@@ -1,3 +1,4 @@
+'use strict';
 const securityManager = require('./db/SecurityManager');
 
 // checks for padAccess
