@@ -251,24 +251,23 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
   const _recalcAttribString = (state) => {
     const lst = [];
     for (const [a, count] of Object.entries(state.attribs)) {
-      if (count) {
-        // The following splitting of the attribute name is a workaround
-        // to enable the content collector to store key-value attributes
-        // see https://github.com/ether/etherpad-lite/issues/2567 for more information
-        // in long term the contentcollector should be refactored to get rid of this workaround
-        const ATTRIBUTE_SPLIT_STRING = '::';
+      if (!count) continue;
+      // The following splitting of the attribute name is a workaround
+      // to enable the content collector to store key-value attributes
+      // see https://github.com/ether/etherpad-lite/issues/2567 for more information
+      // in long term the contentcollector should be refactored to get rid of this workaround
+      const ATTRIBUTE_SPLIT_STRING = '::';
 
-        // see if attributeString is splittable
-        const attributeSplits = a.split(ATTRIBUTE_SPLIT_STRING);
-        if (attributeSplits.length > 1) {
-          // the attribute name follows the convention key::value
-          // so save it as a key value attribute
-          lst.push([attributeSplits[0], attributeSplits[1]]);
-        } else {
-          // the "normal" case, the attribute is just a switch
-          // so set it true
-          lst.push([a, 'true']);
-        }
+      // see if attributeString is splittable
+      const attributeSplits = a.split(ATTRIBUTE_SPLIT_STRING);
+      if (attributeSplits.length > 1) {
+        // the attribute name follows the convention key::value
+        // so save it as a key value attribute
+        lst.push([attributeSplits[0], attributeSplits[1]]);
+      } else {
+        // the "normal" case, the attribute is just a switch
+        // so set it true
+        lst.push([a, 'true']);
       }
     }
     if (state.authorLevel > 0) {
@@ -498,12 +497,9 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
             if (!rr && !type) {
               for (let i = 0; i < dom.numChildNodes(node); i++) {
                 const child = dom.childNode(node, i);
-                if (child.name === 'ul') {
-                  type = dom.getAttribute(child, 'class');
-                  if (type) {
-                    break;
-                  }
-                }
+                if (child.name !== 'ul') continue;
+                type = dom.getAttribute(child, 'class');
+                if (type) break;
               }
             }
             if (rr && rr[1]) {
