@@ -491,14 +491,14 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
             cc.doAttrib(state, 'strikethrough');
           }
           if (tname === 'ul' || tname === 'ol') {
-            let type = node.attribs ? node.attribs.class : null;
+            let type = dom.nodeAttr(node, 'class');
             const rr = cls && /(?:^| )list-([a-z]+[0-9]+)\b/.exec(cls);
             // lists do not need to have a type, so before we make a wrong guess
             // check if we find a better hint within the node's children
             if (!rr && !type) {
               for (const i in node.children) {
                 if (node.children[i] && node.children[i].name === 'ul') {
-                  type = node.children[i].attribs.class;
+                  type = dom.nodeAttr(node.children[i], 'class');
                   if (type) {
                     break;
                   }
@@ -509,8 +509,8 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
               type = rr[1];
             } else {
               if (tname === 'ul') {
-                if ((type && type.match('indent')) ||
-                    (node.attribs && node.attribs.class && node.attribs.class.match('indent'))) {
+                const cls = dom.nodeAttr(node, 'class');
+                if ((type && type.match('indent')) || (cls && cls.match('indent'))) {
                   type = 'indent';
                 } else {
                   type = 'bullet';
