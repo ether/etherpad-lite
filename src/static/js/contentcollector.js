@@ -29,47 +29,31 @@ const _MAX_LIST_LEVEL = 16;
 const UNorm = require('unorm');
 const Changeset = require('./Changeset');
 const hooks = require('./pluginfw/hooks');
-const _ = require('./underscore');
 
-function sanitizeUnicode(s) {
-  return UNorm.nfc(s);
-}
+const sanitizeUnicode = (s) => UNorm.nfc(s);
 
-function makeContentCollector(collectStyles, abrowser, apool, domInterface, className2Author) {
-  abrowser = abrowser || {};
-  // I don't like the above.
-
+const makeContentCollector = (collectStyles, abrowser, apool, domInterface, className2Author) => {
   const dom = domInterface || {
-    isNodeText(n) {
-      return (n.nodeType == 3);
-    },
-    nodeTagName(n) {
-      return n.tagName;
-    },
-    nodeValue(n) {
-      return n.nodeValue;
-    },
-    nodeNumChildren(n) {
+    isNodeText: (n) => n.nodeType === 3,
+    nodeTagName: (n) => n.tagName,
+    nodeValue: (n) => n.nodeValue,
+    nodeNumChildren: (n) => {
       if (n.childNodes == null) return 0;
       return n.childNodes.length;
     },
-    nodeChild(n, i) {
+    nodeChild: (n, i) => {
       if (n.childNodes.item == null) {
         return n.childNodes[i];
       }
       return n.childNodes.item(i);
     },
-    nodeProp(n, p) {
-      return n[p];
-    },
-    nodeAttr(n, a) {
+    nodeProp: (n, p) => n[p],
+    nodeAttr: (n, a) => {
       if (n.getAttribute != null) return n.getAttribute(a);
       if (n.attribs != null) return n.attribs[a];
       return null;
     },
-    optNodeInnerHTML(n) {
-      return n.innerHTML;
-    },
+    optNodeInnerHTML: (n) => n.innerHTML,
   };
 
   const _blockElems = {
@@ -79,58 +63,45 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     li: 1,
   };
 
-  _.each(hooks.callAll('ccRegisterBlockElements'), (element) => {
+  hooks.callAll('ccRegisterBlockElements').forEach((element) => {
     _blockElems[element] = 1;
   });
 
-  function isBlockElement(n) {
-    return !!_blockElems[(dom.nodeTagName(n) || '').toLowerCase()];
-  }
+  const isBlockElement = (n) => !!_blockElems[(dom.nodeTagName(n) || '').toLowerCase()];
 
-  function textify(str) {
-    return sanitizeUnicode(
-        str.replace(/(\n | \n)/g, ' ').replace(/[\n\r ]/g, ' ').replace(/\xa0/g, ' ').replace(/\t/g, '        '));
-  }
+  const textify = (str) => sanitizeUnicode(
+      str.replace(/(\n | \n)/g, ' ')
+          .replace(/[\n\r ]/g, ' ')
+          .replace(/\xa0/g, ' ')
+          .replace(/\t/g, '        '));
 
-  function getAssoc(node, name) {
-    return dom.nodeProp(node, `_magicdom_${name}`);
-  }
+  const getAssoc = (node, name) => dom.nodeProp(node, `_magicdom_${name}`);
 
-  const lines = (function () {
+  const lines = (() => {
     const textArray = [];
     const attribsArray = [];
     let attribsBuilder = null;
     const op = Changeset.newOp('+');
-    var self = {
-      length() {
-        return textArray.length;
-      },
-      atColumnZero() {
-        return textArray[textArray.length - 1] === '';
-      },
-      startNew() {
+    const self = {
+      length: () => textArray.length,
+      atColumnZero: () => textArray[textArray.length - 1] === '',
+      startNew: () => {
         textArray.push('');
         self.flush(true);
         attribsBuilder = Changeset.smartOpAssembler();
       },
-      textOfLine(i) {
-        return textArray[i];
-      },
-      appendText(txt, attrString) {
+      textOfLine: (i) => textArray[i],
+      appendText: (txt, attrString) => {
         textArray[textArray.length - 1] += txt;
         // dmesg(txt+" / "+attrString);
         op.attribs = attrString;
         op.chars = txt.length;
         attribsBuilder.append(op);
       },
-      textLines() {
-        return textArray.slice();
-      },
-      attribLines() {
-        return attribsArray;
-      },
+      textLines: () => textArray.slice(),
+      attribLines: () => attribsArray,
       // call flush only when you're done
-      flush(withNewline) {
+      flush: (withNewline) => {
         if (attribsBuilder) {
           attribsArray.push(attribsBuilder.toString());
           attribsBuilder = null;
@@ -139,21 +110,24 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     };
     self.startNew();
     return self;
-  }());
+  })();
   const cc = {};
 
-  function _ensureColumnZero(state) {
+  const _ensureColumnZero = (state) => {
     if (!lines.atColumnZero()) {
       cc.startNewLine(state);
     }
-  }
+  };
   let selection, startPoint, endPoint;
   let selStart = [-1, -1];
   let selEnd = [-1, -1];
-  function _isEmpty(node, state) {
+  const _isEmpty = (node, state) => {
     // consider clean blank lines pasted in IE to be empty
-    if (dom.nodeNumChildren(node) == 0) return true;
-    if (dom.nodeNumChildren(node) == 1 && getAssoc(node, 'shouldBeEmpty') && dom.optNodeInnerHTML(node) == '&nbsp;' && !getAssoc(node, 'unpasted')) {
+    if (dom.nodeNumChildren(node) === 0) return true;
+    if (dom.nodeNumChildren(node) === 1 &&
+        getAssoc(node, 'shouldBeEmpty') &&
+        dom.optNodeInnerHTML(node) === '&nbsp;' &&
+        !getAssoc(node, 'unpasted')) {
       if (state) {
         const child = dom.nodeChild(node, 0);
         _reachPoint(child, 0, state);
@@ -162,37 +136,37 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
       return true;
     }
     return false;
-  }
+  };
 
-  function _pointHere(charsAfter, state) {
+  const _pointHere = (charsAfter, state) => {
     const ln = lines.length() - 1;
     let chr = lines.textOfLine(ln).length;
-    if (chr == 0 && !_.isEmpty(state.lineAttributes)) {
+    if (chr === 0 && Object.keys(state.lineAttributes).length !== 0) {
       chr += 1; // listMarker
     }
     chr += charsAfter;
     return [ln, chr];
-  }
+  };
 
-  function _reachBlockPoint(nd, idx, state) {
+  const _reachBlockPoint = (nd, idx, state) => {
     if (!dom.isNodeText(nd)) _reachPoint(nd, idx, state);
-  }
+  };
 
-  function _reachPoint(nd, idx, state) {
-    if (startPoint && nd == startPoint.node && startPoint.index == idx) {
+  const _reachPoint = (nd, idx, state) => {
+    if (startPoint && nd === startPoint.node && startPoint.index === idx) {
       selStart = _pointHere(0, state);
     }
-    if (endPoint && nd == endPoint.node && endPoint.index == idx) {
+    if (endPoint && nd === endPoint.node && endPoint.index === idx) {
       selEnd = _pointHere(0, state);
     }
-  }
-  cc.incrementFlag = function (state, flagName) {
+  };
+  cc.incrementFlag = (state, flagName) => {
     state.flags[flagName] = (state.flags[flagName] || 0) + 1;
   };
-  cc.decrementFlag = function (state, flagName) {
+  cc.decrementFlag = (state, flagName) => {
     state.flags[flagName]--;
   };
-  cc.incrementAttrib = function (state, attribName) {
+  cc.incrementAttrib = (state, attribName) => {
     if (!state.attribs[attribName]) {
       state.attribs[attribName] = 1;
     } else {
@@ -200,15 +174,15 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     }
     _recalcAttribString(state);
   };
-  cc.decrementAttrib = function (state, attribName) {
+  cc.decrementAttrib = (state, attribName) => {
     state.attribs[attribName]--;
     _recalcAttribString(state);
   };
 
-  function _enterList(state, listType) {
+  const _enterList = (state, listType) => {
     if (!listType) return;
     const oldListType = state.lineAttributes.list;
-    if (listType != 'none') {
+    if (listType !== 'none') {
       state.listNesting = (state.listNesting || 0) + 1;
       // reminder that listType can be "number2", "number3" etc.
       if (listType.indexOf('number') !== -1) {
@@ -223,36 +197,36 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     }
     _recalcAttribString(state);
     return oldListType;
-  }
+  };
 
-  function _exitList(state, oldListType) {
+  const _exitList = (state, oldListType) => {
     if (state.lineAttributes.list) {
       state.listNesting--;
     }
-    if (oldListType && oldListType != 'none') {
+    if (oldListType && oldListType !== 'none') {
       state.lineAttributes.list = oldListType;
     } else {
       delete state.lineAttributes.list;
       delete state.lineAttributes.start;
     }
     _recalcAttribString(state);
-  }
+  };
 
-  function _enterAuthor(state, author) {
+  const _enterAuthor = (state, author) => {
     const oldAuthor = state.author;
     state.authorLevel = (state.authorLevel || 0) + 1;
     state.author = author;
     _recalcAttribString(state);
     return oldAuthor;
-  }
+  };
 
-  function _exitAuthor(state, oldAuthor) {
+  const _exitAuthor = (state, oldAuthor) => {
     state.authorLevel--;
     state.author = oldAuthor;
     _recalcAttribString(state);
-  }
+  };
 
-  function _recalcAttribString(state) {
+  const _recalcAttribString = (state) => {
     const lst = [];
     for (const a in state.attribs) {
       if (state.attribs[a]) {
@@ -284,35 +258,34 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
       }
     }
     state.attribString = Changeset.makeAttribsString('+', lst, apool);
-  }
+  };
 
-  function _produceLineAttributesMarker(state) {
+  const _produceLineAttributesMarker = (state) => {
     // TODO: This has to go to AttributeManager.
     const attributes = [
       ['lmkr', '1'],
       ['insertorder', 'first'],
-    ].concat(
-        _.map(state.lineAttributes, (value, key) => [key, value])
-    );
+      ...Object.entries(state.lineAttributes),
+    ];
     lines.appendText('*', Changeset.makeAttribsString('+', attributes, apool));
-  }
-  cc.startNewLine = function (state) {
+  };
+  cc.startNewLine = (state) => {
     if (state) {
-      const atBeginningOfLine = lines.textOfLine(lines.length() - 1).length == 0;
-      if (atBeginningOfLine && !_.isEmpty(state.lineAttributes)) {
+      const atBeginningOfLine = lines.textOfLine(lines.length() - 1).length === 0;
+      if (atBeginningOfLine && Object.keys(state.lineAttributes).length !== 0) {
         _produceLineAttributesMarker(state);
       }
     }
     lines.startNew();
   };
-  cc.notifySelection = function (sel) {
+  cc.notifySelection = (sel) => {
     if (sel) {
       selection = sel;
       startPoint = selection.startPoint;
       endPoint = selection.endPoint;
     }
   };
-  cc.doAttrib = function (state, na) {
+  cc.doAttrib = (state, na) => {
     state.localAttribs = (state.localAttribs || []);
     state.localAttribs.push(na);
     cc.incrementAttrib(state, na);
@@ -342,9 +315,10 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     if (isBlock) _ensureColumnZero(state);
     const startLine = lines.length() - 1;
     _reachBlockPoint(node, 0, state);
+
     if (dom.isNodeText(node)) {
       let txt = dom.nodeValue(node);
-      var tname = dom.nodeAttr(node.parentNode, 'name');
+      const tname = dom.nodeAttr(node.parentNode, 'name');
 
       const txtFromHook = hooks.callAll('collectContentLineText', {
         cc: this,
@@ -364,11 +338,11 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
 
       let rest = '';
       let x = 0; // offset into original text
-      if (txt.length == 0) {
-        if (startPoint && node == startPoint.node) {
+      if (txt.length === 0) {
+        if (startPoint && node === startPoint.node) {
           selStart = _pointHere(0, state);
         }
-        if (endPoint && node == endPoint.node) {
+        if (endPoint && node === endPoint.node) {
           selEnd = _pointHere(0, state);
         }
       }
@@ -381,10 +355,10 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
           txt = firstLine;
         } else { /* will only run this loop body once */
         }
-        if (startPoint && node == startPoint.node && startPoint.index - x <= txt.length) {
+        if (startPoint && node === startPoint.node && startPoint.index - x <= txt.length) {
           selStart = _pointHere(startPoint.index - x, state);
         }
-        if (endPoint && node == endPoint.node && endPoint.index - x <= txt.length) {
+        if (endPoint && node === endPoint.node && endPoint.index - x <= txt.length) {
           selEnd = _pointHere(endPoint.index - x, state);
         }
         let txt2 = txt;
@@ -395,12 +369,12 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
           // removing "\n" from pasted HTML will collapse words together.
           txt2 = '';
         }
-        const atBeginningOfLine = lines.textOfLine(lines.length() - 1).length == 0;
+        const atBeginningOfLine = lines.textOfLine(lines.length() - 1).length === 0;
         if (atBeginningOfLine) {
           // newlines in the source mustn't become spaces at beginning of line box
           txt2 = txt2.replace(/^\n*/, '');
         }
-        if (atBeginningOfLine && !_.isEmpty(state.lineAttributes)) {
+        if (atBeginningOfLine && Object.keys(state.lineAttributes).length !== 0) {
           _produceLineAttributesMarker(state);
         }
         lines.appendText(textify(txt2), state.attribString);
@@ -411,15 +385,15 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
         }
       }
     } else {
-      var tname = (dom.nodeTagName(node) || '').toLowerCase();
+      const tname = (dom.nodeTagName(node) || '').toLowerCase();
 
-      if (tname == 'img') {
-        const collectContentImage = hooks.callAll('collectContentImage', {
+      if (tname === 'img') {
+        hooks.callAll('collectContentImage', {
           cc,
           state,
           tname,
-          styl,
-          cls,
+          styl: null,
+          cls: null,
           node,
         });
       } else {
@@ -427,7 +401,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
         delete state.lineAttributes.img;
       }
 
-      if (tname == 'br') {
+      if (tname === 'br') {
         this.breakLine = true;
         const tvalue = dom.nodeAttr(node, 'value');
         const induceLineBreak = hooks.callAll('collectContentLineBreak', {
@@ -438,17 +412,19 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
           styl: null,
           cls: null,
         });
-        const startNewLine = (typeof (induceLineBreak) === 'object' && induceLineBreak.length == 0) ? true : induceLineBreak[0];
+        const startNewLine = (
+          typeof (induceLineBreak) === 'object' &&
+            induceLineBreak.length === 0) ? true : induceLineBreak[0];
         if (startNewLine) {
           cc.startNewLine(state);
         }
-      } else if (tname == 'script' || tname == 'style') {
+      } else if (tname === 'script' || tname === 'style') {
         // ignore
       } else if (!isEmpty) {
-        var styl = dom.nodeAttr(node, 'style');
-        var cls = dom.nodeAttr(node, 'class');
-        let isPre = (tname == 'pre');
-        if ((!isPre) && abrowser.safari) {
+        let styl = dom.nodeAttr(node, 'style');
+        let cls = dom.nodeAttr(node, 'class');
+        let isPre = (tname === 'pre');
+        if ((!isPre) && abrowser && abrowser.safari) {
           isPre = (styl && /\bwhite-space:\s*pre\b/i.exec(styl));
         }
         if (isPre) cc.incrementFlag(state, 'preMode');
@@ -460,10 +436,10 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
           styl = null;
           cls = null;
 
-          // We have to return here but this could break things in the future, for now it shows how to fix the problem
+          // We have to return here but this could break things in the future,
+          // for now it shows how to fix the problem
           return;
         }
-
         if (collectStyles) {
           hooks.callAll('collectContentPre', {
             cc,
@@ -472,29 +448,34 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
             styl,
             cls,
           });
-          if (tname == 'b' || (styl && /\bfont-weight:\s*bold\b/i.exec(styl)) || tname == 'strong') {
+          if (tname === 'b' ||
+              (styl && /\bfont-weight:\s*bold\b/i.exec(styl)) ||
+              tname === 'strong') {
             cc.doAttrib(state, 'bold');
           }
-          if (tname == 'i' || (styl && /\bfont-style:\s*italic\b/i.exec(styl)) || tname == 'em') {
+          if (tname === 'i' ||
+              (styl && /\bfont-style:\s*italic\b/i.exec(styl)) ||
+              tname === 'em') {
             cc.doAttrib(state, 'italic');
           }
-          if (tname == 'u' || (styl && /\btext-decoration:\s*underline\b/i.exec(styl)) || tname == 'ins') {
+          if (tname === 'u' ||
+              (styl && /\btext-decoration:\s*underline\b/i.exec(styl)) ||
+              tname === 'ins') {
             cc.doAttrib(state, 'underline');
           }
-          if (tname == 's' || (styl && /\btext-decoration:\s*line-through\b/i.exec(styl)) || tname == 'del') {
+          if (tname === 's' ||
+              (styl && /\btext-decoration:\s*line-through\b/i.exec(styl)) ||
+              tname === 'del') {
             cc.doAttrib(state, 'strikethrough');
           }
-          if (tname == 'ul' || tname == 'ol') {
-            if (node.attribs) {
-              var type = node.attribs.class;
-            } else {
-              var type = null;
-            }
+          if (tname === 'ul' || tname === 'ol') {
+            let type = node.attribs ? node.attribs.class : null;
             const rr = cls && /(?:^| )list-([a-z]+[0-9]+)\b/.exec(cls);
-            // lists do not need to have a type, so before we make a wrong guess, check if we find a better hint within the node's children
+            // lists do not need to have a type, so before we make a wrong guess
+            // check if we find a better hint within the node's children
             if (!rr && !type) {
-              for (var i in node.children) {
-                if (node.children[i] && node.children[i].name == 'ul') {
+              for (const i in node.children) {
+                if (node.children[i] && node.children[i].name === 'ul') {
                   type = node.children[i].attribs.class;
                   if (type) {
                     break;
@@ -505,8 +486,9 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
             if (rr && rr[1]) {
               type = rr[1];
             } else {
-              if (tname == 'ul') {
-                if ((type && type.match('indent')) || (node.attribs && node.attribs.class && node.attribs.class.match('indent'))) {
+              if (tname === 'ul') {
+                if ((type && type.match('indent')) ||
+                    (node.attribs && node.attribs.class && node.attribs.class.match('indent'))) {
                   type = 'indent';
                 } else {
                   type = 'bullet';
@@ -517,10 +499,10 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
               type += String(Math.min(_MAX_LIST_LEVEL, (state.listNesting || 0) + 1));
             }
             oldListTypeOrNull = (_enterList(state, type) || 'none');
-          } else if ((tname == 'div' || tname == 'p') && cls && cls.match(/(?:^| )ace-line\b/)) {
+          } else if ((tname === 'div' || tname === 'p') && cls && cls.match(/(?:^| )ace-line\b/)) {
             // This has undesirable behavior in Chrome but is right in other browsers.
             // See https://github.com/ether/etherpad-lite/issues/2412 for reasoning
-            if (!abrowser.chrome) oldListTypeOrNull = (_enterList(state, type) || 'none');
+            if (!abrowser.chrome) oldListTypeOrNull = (_enterList(state, undefined) || 'none');
           } else if ((tname === 'li')) {
             state.lineAttributes.start = state.start || 0;
             _recalcAttribString(state);
@@ -565,8 +547,8 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
           if (className2Author && cls) {
             const classes = cls.match(/\S+/g);
             if (classes && classes.length > 0) {
-              for (var i = 0; i < classes.length; i++) {
-                var c = classes[i];
+              for (let i = 0; i < classes.length; i++) {
+                const c = classes[i];
                 const a = className2Author(c);
                 if (a) {
                   oldAuthorOrNull = (_enterAuthor(state, a) || 'none');
@@ -578,8 +560,8 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
         }
 
         const nc = dom.nodeNumChildren(node);
-        for (var i = 0; i < nc; i++) {
-          var c = dom.nodeChild(node, i);
+        for (let i = 0; i < nc; i++) {
+          const c = dom.nodeChild(node, i);
           cc.collectContent(c, state);
         }
 
@@ -595,7 +577,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
 
         if (isPre) cc.decrementFlag(state, 'preMode');
         if (state.localAttribs) {
-          for (var i = 0; i < state.localAttribs.length; i++) {
+          for (let i = 0; i < state.localAttribs.length; i++) {
             cc.decrementAttrib(state, state.localAttribs[i]);
           }
         }
@@ -609,7 +591,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     }
     _reachBlockPoint(node, 1, state);
     if (isBlock) {
-      if (lines.length() - 1 == startLine) {
+      if (lines.length() - 1 === startLine) {
         // added additional check to resolve https://github.com/JohnMcLear/ep_copy_paste_images/issues/20
         // this does mean that images etc can't be pasted on lists but imho that's fine
 
@@ -626,7 +608,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     state.localAttribs = localAttribs;
   };
   // can pass a falsy value for end of doc
-  cc.notifyNextNode = function (node) {
+  cc.notifyNextNode = (node) => {
     // an "empty block" won't end a line; this addresses an issue in IE with
     // typing into a blank line at the end of the document.  typed text
     // goes into the body, and the empty line div still looks clean.
@@ -637,21 +619,15 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     }
   };
   // each returns [line, char] or [-1,-1]
-  const getSelectionStart = function () {
-    return selStart;
-  };
-  const getSelectionEnd = function () {
-    return selEnd;
-  };
+  const getSelectionStart = () => selStart;
+  const getSelectionEnd = () => selEnd;
 
   // returns array of strings for lines found, last entry will be "" if
   // last line is complete (i.e. if a following span should be on a new line).
   // can be called at any point
-  cc.getLines = function () {
-    return lines.textLines();
-  };
+  cc.getLines = () => lines.textLines();
 
-  cc.finish = function () {
+  cc.finish = () => {
     lines.flush();
     const lineAttribs = lines.attribLines();
     const lineStrings = cc.getLines();
@@ -662,17 +638,17 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
     const ss = getSelectionStart();
     const se = getSelectionEnd();
 
-    function fixLongLines() {
+    const fixLongLines = () => {
       // design mode does not deal with with really long lines!
       const lineLimit = 2000; // chars
       const buffer = 10; // chars allowed over before wrapping
       let linesWrapped = 0;
       let numLinesAfter = 0;
-      for (var i = lineStrings.length - 1; i >= 0; i--) {
+      for (let i = lineStrings.length - 1; i >= 0; i--) {
         let oldString = lineStrings[i];
         let oldAttribString = lineAttribs[i];
         if (oldString.length > lineLimit + buffer) {
-          var newStrings = [];
+          const newStrings = [];
           const newAttribStrings = [];
           while (oldString.length > lineLimit) {
             // var semiloc = oldString.lastIndexOf(';', lineLimit-1);
@@ -688,13 +664,13 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
             newAttribStrings.push(oldAttribString);
           }
 
-          function fixLineNumber(lineChar) {
+          const fixLineNumber = (lineChar) => {
             if (lineChar[0] < 0) return;
             let n = lineChar[0];
             let c = lineChar[1];
             if (n > i) {
               n += (newStrings.length - 1);
-            } else if (n == i) {
+            } else if (n === i) {
               let a = 0;
               while (c > newStrings[a].length) {
                 c -= newStrings[a].length;
@@ -704,23 +680,20 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
             }
             lineChar[0] = n;
             lineChar[1] = c;
-          }
+          };
           fixLineNumber(ss);
           fixLineNumber(se);
           linesWrapped++;
           numLinesAfter += newStrings.length;
-
-          newStrings.unshift(i, 1);
-          lineStrings.splice.apply(lineStrings, newStrings);
-          newAttribStrings.unshift(i, 1);
-          lineAttribs.splice.apply(lineAttribs, newAttribStrings);
+          lineStrings.splice(i, 1, ...newStrings);
+          lineAttribs.splice(i, 1, ...newAttribStrings);
         }
       }
       return {
         linesWrapped,
         numLinesAfter,
       };
-    }
+    };
     const wrapData = fixLongLines();
 
     return {
@@ -734,7 +707,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
   };
 
   return cc;
-}
+};
 
 exports.sanitizeUnicode = sanitizeUnicode;
 exports.makeContentCollector = makeContentCollector;
