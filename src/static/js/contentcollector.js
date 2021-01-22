@@ -424,7 +424,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
         let styl = dom.nodeAttr(node, 'style');
         let cls = dom.nodeAttr(node, 'class');
         let isPre = (tname === 'pre');
-        if ((!isPre) && abrowser.safari) {
+        if ((!isPre) && abrowser && abrowser.safari) {
           isPre = (styl && /\bwhite-space:\s*pre\b/i.exec(styl));
         }
         if (isPre) cc.incrementFlag(state, 'preMode');
