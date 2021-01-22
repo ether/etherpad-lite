@@ -79,7 +79,6 @@ domline.createDomLine = (nonEmpty, doesWrap, optBrowser, optDocument) => {
   let lineClass = 'ace-line';
 
   result.appendSpan = (txt, cls) => {
-    // console.log("domline", domline, "txt", txt, "cls", cls)
     let processedMarker = false;
     // Handle lineAttributeMarker, if present
     if (cls.indexOf(lineAttributeMarker) >= 0) {
