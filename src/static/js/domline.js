@@ -184,12 +184,11 @@ domline.createDomLine = (nonEmpty, doesWrap, optBrowser, optDocument) => {
         simpleTags.reverse();
         extraCloseTags = `</${simpleTags.join('></')}>${extraCloseTags}`;
       }
-      html.push('<span class="', Security.escapeHTMLAttribute(cls || ''),
+      html.push(
+          '<span class="', Security.escapeHTMLAttribute(cls || ''),
           '">',
           extraOpenTags,
-          perTextNodeProcess(
-              Security.escapeHTML(txt)
-          ),
+          perTextNodeProcess(Security.escapeHTML(txt)),
           extraCloseTags,
           '</span>');
     }
