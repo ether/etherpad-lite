@@ -1,33 +1,33 @@
+'use strict';
 /*
  * This is a debug tool. It checks all revisions for data corruption
  */
 
-if (process.argv.length != 3) {
-  console.error('Use: node bin/checkPad.js $PADID');
-  process.exit(1);
-}
+// As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
+// unhandled rejection into an uncaught exception, which does cause Node.js to exit.
+process.on('unhandledRejection', (err) => { throw err; });
+
+if (process.argv.length !== 3) throw new Error('Use: node bin/checkPad.js $PADID');
 
 // get the padID
 const padId = process.argv[2];
+let checkRevisionCount = 0;
 
 // load and initialize NPM;
-const npm = require('../src/node_modules/npm');
+const npm = require('ep_etherpad-lite/node_modules/npm');
 npm.load({}, async () => {
   try {
     // initialize database
-    const settings = require('../src/node/utils/Settings');
-    const db = require('../src/node/db/DB');
+    require('ep_etherpad-lite/node/utils/Settings');
+    const db = require('ep_etherpad-lite/node/db/DB');
     await db.init();
 
     // load modules
     const Changeset = require('ep_etherpad-lite/static/js/Changeset');
-    const padManager = require('../src/node/db/PadManager');
+    const padManager = require('ep_etherpad-lite/node/db/PadManager');
 
     const exists = await padManager.doesPadExists(padId);
-    if (!exists) {
-      console.error('Pad does not exist');
-      process.exit(1);
-    }
+    if (!exists) throw new Error('Pad does not exist');
 
     // get the pad
     const pad = await padManager.getPad(padId);
@@ -41,7 +41,8 @@ npm.load({}, async () => {
     }
 
     // run through all key revisions
-    for (const keyRev of keyRevisions) {
+    for (let keyRev of keyRevisions) {
+      keyRev = parseInt(keyRev);
       // create an array of revisions we need till the next keyRevision or the End
       const revisionsNeeded = [];
       for (let rev = keyRev; rev <= keyRev + 100 && rev <= head; rev++) {
@@ -58,13 +59,12 @@ npm.load({}, async () => {
       }
 
       // check if the pad has a pool
-      if (pad.pool === undefined) {
-        console.error('Attribute pool is missing');
-        process.exit(1);
-      }
+      if (pad.pool === undefined) throw new Error('Attribute pool is missing');
 
       // check if there is an atext in the keyRevisions
-      if (revisions[keyRev] === undefined || revisions[keyRev].meta === undefined || revisions[keyRev].meta.atext === undefined) {
+      if (revisions[keyRev] === undefined ||
+          revisions[keyRev].meta === undefined ||
+          revisions[keyRev].meta.atext === undefined) {
         console.error(`No atext in key revision ${keyRev}`);
         continue;
       }
@@ -73,8 +73,8 @@ npm.load({}, async () => {
       let atext = revisions[keyRev].meta.atext;
 
       for (let rev = keyRev + 1; rev <= keyRev + 100 && rev <= head; rev++) {
+        checkRevisionCount++;
         try {
-          // console.log("check revision " + rev);
           const cs = revisions[rev].changeset;
           atext = Changeset.applyToAText(cs, atext, apool);
         } catch (e) {
@@ -82,11 +82,10 @@ npm.load({}, async () => {
           continue;
         }
       }
-      console.log('finished');
-      process.exit(0);
+      console.log(`Finished: Checked ${checkRevisionCount} revisions`);
     }
-  } catch (e) {
-    console.trace(e);
-    process.exit(1);
+  } catch (err) {
+    console.trace(err);
+    throw err;
   }
 });

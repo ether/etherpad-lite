@@ -1,3 +1,5 @@
+'use strict';
+
 // Farbtastic 2.0 alpha
 // edited by Sebastian Castro <sebastian.castro@protonmail.com> on 2020-04-06
 (function ($) {
@@ -158,12 +160,12 @@ $._farbtastic = function (container, options) {
     m.lineWidth = w / r;
     m.scale(r, r);
     // Each segment goes from angle1 to angle2.
-    for (var i = 0; i <= n; ++i) {
+    for (let i = 0; i <= n; ++i) {
       var d2 = i / n,
           angle2 = d2 * Math.PI * 2,
           // Endpoints
           x1 = Math.sin(angle1), y1 = -Math.cos(angle1);
-          x2 = Math.sin(angle2), y2 = -Math.cos(angle2),
+          const x2 = Math.sin(angle2), y2 = -Math.cos(angle2),
           // Midpoint chosen so that the endpoints are tangent to the circle.
           am = (angle1 + angle2) / 2,
           tan = 1 / Math.cos((angle2 - angle1) / 2),
@@ -171,37 +173,16 @@ $._farbtastic = function (container, options) {
           // New color
           color2 = fb.pack(fb.HSLToRGB([d2, 1, 0.5]));
       if (i > 0) {
-        if (browser.msie) {
-          // IE's gradient calculations mess up the colors. Correct along the diagonals.
-          var corr = (1 + Math.min(Math.abs(Math.tan(angle1)), Math.abs(Math.tan(Math.PI / 2 - angle1)))) / n;
-          color1 = fb.pack(fb.HSLToRGB([d1 - 0.15 * corr, 1, 0.5]));
-          color2 = fb.pack(fb.HSLToRGB([d2 + 0.15 * corr, 1, 0.5]));
-          // Create gradient fill between the endpoints.
-          var grad = m.createLinearGradient(x1, y1, x2, y2);
-          grad.addColorStop(0, color1);
-          grad.addColorStop(1, color2);
-          m.fillStyle = grad;
-          // Draw quadratic curve segment as a fill.
-          var r1 = (r + w / 2) / r, r2 = (r - w / 2) / r; // inner/outer radius.
-          m.beginPath();
-          m.moveTo(x1 * r1, y1 * r1);
-          m.quadraticCurveTo(xm * r1, ym * r1, x2 * r1, y2 * r1);
-          m.lineTo(x2 * r2, y2 * r2);
-          m.quadraticCurveTo(xm * r2, ym * r2, x1 * r2, y1 * r2);
-          m.fill();
-        }
-        else {
-          // Create gradient fill between the endpoints.
-          var grad = m.createLinearGradient(x1, y1, x2, y2);
-          grad.addColorStop(0, color1);
-          grad.addColorStop(1, color2);
-          m.strokeStyle = grad;
-          // Draw quadratic curve segment.
-          m.beginPath();
-          m.moveTo(x1, y1);
-          m.quadraticCurveTo(xm, ym, x2, y2);
-          m.stroke();
-        }
+        // Create gradient fill between the endpoints.
+        var grad = m.createLinearGradient(x1, y1, x2, y2);
+        grad.addColorStop(0, color1);
+        grad.addColorStop(1, color2);
+        m.strokeStyle = grad;
+        // Draw quadratic curve segment.
+        m.beginPath();
+        m.moveTo(x1, y1);
+        m.quadraticCurveTo(xm, ym, x2, y2);
+        m.stroke();
       }
       // Prevent seams where curves join.
       angle1 = angle2 - nudge; color1 = color2; d1 = d2;
@@ -245,7 +226,7 @@ $._farbtastic = function (container, options) {
       var ctx = buffer.getContext('2d');
       var frame = ctx.getImageData(0, 0, sz + 1, sz + 1);
 
-      var i = 0;
+      let i = 0;
       calculateMask(sz, sz, function (x, y, c, a) {
         frame.data[i++] = frame.data[i++] = frame.data[i++] = c * 255;
         frame.data[i++] = a * 255;
@@ -320,7 +301,7 @@ $._farbtastic = function (container, options) {
 
     // Update the overlay canvas.
     fb.ctxOverlay.clearRect(-fb.mid, -fb.mid, sz, sz);
-    for (i in circles) {
+    for (let i in circles) {
       var c = circles[i];
       fb.ctxOverlay.lineWidth = c.lw;
       fb.ctxOverlay.strokeStyle = c.c;

@@ -3,10 +3,10 @@ You can easily embed your etherpad-lite into any webpage by using iframes. You c
 
 Example:
 
-Cut and paste the following code into any webpage to embed a pad. The parameters below will hide the chat and the line numbers.
+Cut and paste the following code into any webpage to embed a pad. The parameters below will hide the chat and the line numbers and will auto-focus on Line 4.
 
 ```
-<iframe src='http://pad.test.de/p/PAD_NAME?showChat=false&showLineNumbers=false' width=600 height=400></iframe>
+<iframe src='http://pad.test.de/p/PAD_NAME#L4?showChat=false&showLineNumbers=false' width=600 height=400></iframe>
 ```
 
 ## showLineNumbers
@@ -65,4 +65,11 @@ Example: `lang=ar` (translates the interface into Arabic)
 
 Default: true
 Displays pad text from right to left.
+
+## #L
+ * Int
+
+Default: 0
+Focuses pad at specific line number and places caret at beginning of this line
+Special note: Is not a URL parameter but instead of a Hash value
 

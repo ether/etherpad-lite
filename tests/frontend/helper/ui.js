@@ -77,7 +77,49 @@ helper.settingsMenu = function () { return helper.padChrome$('#settings'); };
  *
  * @returns {HTMLElement} the settings button
  */
-helper.settingsButton = function () { return helper.padChrome$("button[data-l10n-id='pad.toolbar.settings.title']"); };
+helper.settingsButton = function () {
+  return helper.padChrome$("button[data-l10n-id='pad.toolbar.settings.title']");
+};
+
+/**
+ * Toggles user list
+ */
+helper.toggleUserList = async function () {
+  const isVisible = helper.userListShown();
+  const button = helper.padChrome$("button[data-l10n-id='pad.toolbar.showusers.title']");
+  button.click();
+  await helper.waitForPromise(() => !isVisible);
+};
+
+/**
+ * Gets the user name input field
+ *
+ * @returns {HTMLElement} user name input field
+ */
+helper.usernameField = function () {
+  return helper.padChrome$("input[data-l10n-id='pad.userlist.entername']");
+};
+
+/**
+ * Is the user list popup shown?
+ *
+ * @returns {boolean}
+ */
+helper.userListShown = function () {
+  return helper.padChrome$('div#users').hasClass('popup-show');
+};
+
+/**
+ * Sets the user name
+ *
+ */
+helper.setUserName = async (name) => {
+  const userElement = helper.usernameField();
+  userElement.click();
+  userElement.val(name);
+  userElement.blur();
+  await helper.waitForPromise(() => !helper.usernameField().hasClass('editactive'));
+};
 
 /**
  * Gets the titlecross icon

@@ -25,7 +25,7 @@ exports.expressCreateServer = (hook_name, args, cb) => {
     }
 
     console.debug('Sent browser the following test specs:', files);
-    res.setHeader('content-type', 'text/javascript');
+    res.setHeader('content-type', 'application/javascript');
     res.end(`var specs_list = ${JSON.stringify(files)};\n`);
   });
 
@@ -56,6 +56,8 @@ exports.expressCreateServer = (hook_name, args, cb) => {
       if (err) { return res.send(500); }
 
       content = `describe(${JSON.stringify(specFileName)}, function(){${content}});`;
+
+      if(!specFilePath.endsWith('index.html')) res.setHeader('content-type', 'application/javascript');
 
       res.send(content);
     });

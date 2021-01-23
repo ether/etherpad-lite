@@ -1,34 +1,34 @@
+'use strict';
+
 /*
  * This is a debug tool. It helps to extract all datas of a pad and move it from
  * a productive environment and to a develop environment to reproduce bugs
  * there. It outputs a dirtydb file
  */
 
-if (process.argv.length != 3) {
-  console.error('Use: node extractPadData.js $PADID');
-  process.exit(1);
-}
+// As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
+// unhandled rejection into an uncaught exception, which does cause Node.js to exit.
+process.on('unhandledRejection', (err) => { throw err; });
+
+if (process.argv.length !== 3) throw new Error('Use: node extractPadData.js $PADID');
 
 // get the padID
 const padId = process.argv[2];
 
-const npm = require('../src/node_modules/npm');
+const npm = require('ep_etherpad-lite/node_modules/npm');
 
-npm.load({}, async (er) => {
-  if (er) {
-    console.error(`Could not load NPM: ${er}`);
-    process.exit(1);
-  }
+npm.load({}, async (err) => {
+  if (err) throw err;
 
   try {
     // initialize database
-    const settings = require('../src/node/utils/Settings');
-    const db = require('../src/node/db/DB');
+    require('ep_etherpad-lite/node/utils/Settings');
+    const db = require('ep_etherpad-lite/node/db/DB');
     await db.init();
 
     // load extra modules
-    const dirtyDB = require('../src/node_modules/dirty');
-    const padManager = require('../src/node/db/PadManager');
+    const dirtyDB = require('ep_etherpad-lite/node_modules/dirty');
+    const padManager = require('ep_etherpad-lite/node/db/PadManager');
     const util = require('util');
 
     // initialize output database
@@ -67,9 +67,8 @@ npm.load({}, async (er) => {
     }
 
     console.log('finished');
-    process.exit(0);
-  } catch (er) {
-    console.error(er);
-    process.exit(1);
+  } catch (err) {
+    console.error(err);
+    throw err;
   }
 });

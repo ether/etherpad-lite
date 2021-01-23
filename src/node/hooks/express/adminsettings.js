@@ -1,11 +1,11 @@
 'use strict';
 
-const eejs = require('ep_etherpad-lite/node/eejs');
-const settings = require('ep_etherpad-lite/node/utils/Settings');
-const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+const eejs = require('../../eejs');
 const fs = require('fs');
+const hooks = require('../../../static/js/pluginfw/hooks');
+const settings = require('../../utils/Settings');
 
-exports.expressCreateServer = (hook_name, args, cb) => {
+exports.expressCreateServer = (hookName, args, cb) => {
   args.app.get('/admin/settings', (req, res) => {
     res.send(eejs.require('ep_etherpad-lite/templates/admin/settings.html', {
       req,
@@ -16,10 +16,11 @@ exports.expressCreateServer = (hook_name, args, cb) => {
   return cb();
 };
 
-exports.socketio = (hook_name, args, cb) => {
+exports.socketio = (hookName, args, cb) => {
   const io = args.io.of('/settings');
   io.on('connection', (socket) => {
-    if (!socket.conn.request.session || !socket.conn.request.session.user || !socket.conn.request.session.user.is_admin) return;
+    const {session: {user: {is_admin: isAdmin} = {}} = {}} = socket.conn.request;
+    if (!isAdmin) return;
 
     socket.on('load', (query) => {
       fs.readFile('settings.json', 'utf8', (err, data) => {

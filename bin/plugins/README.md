@@ -2,28 +2,33 @@ The files in this folder are for Plugin developers.
 
 # Get suggestions to improve your Plugin
 
-This code will check your plugin for known usual issues and some suggestions for improvements.  No changes will be made to your project.
+This code will check your plugin for known usual issues and some suggestions for
+improvements. No changes will be made to your project.
 
 ```
 node bin/plugins/checkPlugin.js $PLUGIN_NAME$
 ```
 
 # Basic Example:
+
 ```
 node bin/plugins/checkPlugin.js ep_webrtc
 ```
 
 ## Autofixing - will autofix any issues it can
+
 ```
-node bin/plugins/checkPlugins.js ep_whatever autofix
+node bin/plugins/checkPlugin.js ep_whatever autofix
 ```
 
 ## Autocommitting, push, npm minor patch and npm publish (highly dangerous)
+
 ```
-node bin/plugins/checkPlugins.js ep_whatever autofix autocommit
+node bin/plugins/checkPlugin.js ep_whatever autocommit
 ```
 
 # All the plugins
+
 Replace johnmclear with your github username
 
 ```
@@ -33,19 +38,15 @@ GHUSER=johnmclear; curl "https://api.github.com/users/$GHUSER/repos?per_page=100
 cd ..
 
 # autofixes and autocommits /pushes & npm publishes
-for dir in `ls node_modules`;
-do
-# echo $0
-if [[ $dir == *"ep_"* ]]; then
-if [[ $dir != "ep_etherpad-lite" ]]; then
-node bin/plugins/checkPlugin.js $dir autofix autocommit
-fi
-fi
-# echo $dir
+for dir in node_modules/ep_*; do
+  dir=${dir#node_modules/}
+  [ "$dir" != ep_etherpad-lite ] || continue
+  node bin/plugins/checkPlugin.js "$dir" autocommit
 done
 ```
 
 # Automating update of ether organization plugins
+
 ```
 getCorePlugins.sh
 updateCorePlugins.sh

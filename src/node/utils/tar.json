@@ -22,6 +22,7 @@
   , "excanvas.js"
   , "farbtastic.js"
   , "skin_variants.js"
+  , "socketio.js"
   ]
 , "timeslider.js": [
     "timeslider.js"
@@ -45,6 +46,7 @@
   , "broadcast.js"
   , "broadcast_slider.js"
   , "broadcast_revisions.js"
+  , "socketio.js"
   ]
 , "ace2_inner.js": [
     "ace2_inner.js"

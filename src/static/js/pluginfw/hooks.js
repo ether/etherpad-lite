@@ -371,7 +371,7 @@ function aCallFirst(hook_name, args, cb, predicate) {
         hookCallWrapper(hook, hook_name, args, (res) => { cb(null, res); });
       },
       cb,
-      predicate,
+      predicate
   );
 }
 

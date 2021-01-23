@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * general topological sort
  * from https://gist.github.com/1232505
@@ -7,7 +9,7 @@
  * @returns Array : topological sorted list of IDs
  **/
 
-function tsort(edges) {
+const tsort = (edges) => {
   const nodes = {}; // hash: stringified id of the node => { id: id, afters: lisf of ids }
   const sorted = []; // sorted list of IDs ( returned value )
   const visited = {}; // hash: id of already visited node => true
@@ -26,8 +28,7 @@ function tsort(edges) {
     nodes[from].afters.push(to);
   });
 
-  // 2. topological sort
-  Object.keys(nodes).forEach(function visit(idstr, ancestors) {
+  const visit = (idstr, ancestors) => {
     const node = nodes[idstr];
     const id = node.id;
 
@@ -41,14 +42,17 @@ function tsort(edges) {
     visited[idstr] = true;
 
     node.afters.forEach((afterID) => {
-      if (ancestors.indexOf(afterID) >= 0) // if already in ancestors, a closed chain exists.
-      { throw new Error(`closed chain : ${afterID} is in ${id}`); }
+      // if already in ancestors, a closed chain exists.
+      if (ancestors.indexOf(afterID) >= 0) throw new Error(`closed chain : ${afterID} is in ${id}`);
 
       visit(afterID.toString(), ancestors.map((v) => v)); // recursive call
     });
 
     sorted.unshift(id);
-  });
+  };
+
+  // 2. topological sort
+  Object.keys(nodes).forEach(visit);
 
   return sorted;
 }
@@ -56,7 +60,7 @@ function tsort(edges) {
 /**
  * TEST
  **/
-function tsortTest() {
+const tsortTest = () => {
   // example 1: success
   let edges = [
     [1, 2],
@@ -82,15 +86,13 @@ function tsortTest() {
   }
 
   // example 3: generate random edges
-  const max = 100; const
-    iteration = 30;
-  function randomInt(max) {
-    return Math.floor(Math.random() * max) + 1;
-  }
+  const max = 100;
+  const iteration = 30;
+  const randomInt = (max) => Math.floor(Math.random() * max) + 1;
 
-  edges = (function () {
-    const ret = []; let
-      i = 0;
+  edges = (() => {
+    const ret = [];
+    let i = 0;
     while (i++ < iteration) ret.push([randomInt(max), randomInt(max)]);
     return ret;
   })();
@@ -101,8 +103,7 @@ function tsortTest() {
   } catch (e) {
     console.log('failed', e.message);
   }
-}
-
+};
 
 // for node.js
 if (typeof exports === 'object' && exports === this) {

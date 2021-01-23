@@ -19,7 +19,7 @@ Etherpad is a real-time collaborative editor [scalable to thousands of simultane
 
 ### Quick install on Debian/Ubuntu
 ```
-curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt install -y nodejs
 git clone --branch master https://github.com/ether/etherpad-lite.git && cd etherpad-lite && bin/run.sh
 ```
@@ -98,7 +98,7 @@ Etherpad is very customizable through plugins. Instructions for installing theme
 Run the following command in your Etherpad folder to get all of the features visible in the demo gif:
 
 ```
-npm install ep_headings2 ep_markdown ep_comments_page ep_align ep_page_view ep_font_color ep_webrtc ep_embedded_hyperlinks2
+npm install ep_headings2 ep_markdown ep_comments_page ep_align ep_font_color ep_webrtc ep_embedded_hyperlinks2
 ```
 
 ## Customize the style with skin variants

@@ -90,7 +90,7 @@ PadDiff.prototype._createClearAuthorship = async function (rev) {
 
 PadDiff.prototype._createClearStartAtext = async function (rev) {
   // get the atext of this revision
-  const atext = this._pad.getInternalRevisionAText(rev);
+  const atext = await this._pad.getInternalRevisionAText(rev);
 
   // create the clearAuthorship changeset
   const changeset = await this._createClearAuthorship(rev);

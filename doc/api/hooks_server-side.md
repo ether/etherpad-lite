@@ -76,6 +76,25 @@ Things in context:
 
 This hook gets called after the application object has been created, but before it starts listening. This is similar to the expressConfigure hook, but it's not guaranteed that the application object will have all relevant configuration variables.
 
+## expressCloseServer
+
+Called from: src/node/hooks/express.js
+
+Things in context: Nothing
+
+This hook is called when the HTTP server is closing, which happens during
+shutdown (see the shutdown hook) and when the server restarts (e.g., when a
+plugin is installed via the `/admin/plugins` page). The HTTP server may or may
+not already be closed when this hook executes.
+
+Example:
+
+```
+exports.expressCloseServer = async () => {
+  await doSomeCleanup();
+};
+```
+
 ## eejsBlock_`<name>`
 Called from: src/node/eejs/index.js
 

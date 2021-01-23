@@ -25,10 +25,10 @@ exports.setPadHTML = async (pad, html) => {
   const apiLogger = log4js.getLogger('ImportHtml');
 
   rehype()
-    .use(minifyWhitespace, {newlines: false})
-    .process(html, (err, output) => {
-      html = String(output);
-    });
+      .use(minifyWhitespace, {newlines: false})
+      .process(html, (err, output) => {
+        html = String(output);
+      });
 
   const $ = cheerio.load(html);
 
@@ -36,7 +36,7 @@ exports.setPadHTML = async (pad, html) => {
   // below the last line of an import
   $('body').append('<p></p>');
 
-  const doc = $('html')[0];
+  const doc = $('body')[0];
   apiLogger.debug('html:');
   apiLogger.debug(html);
 

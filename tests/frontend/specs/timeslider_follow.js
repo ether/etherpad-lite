@@ -1,9 +1,13 @@
+'use strict';
+
 describe('timeslider follow', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
     helper.newPad(cb);
   });
 
+  // TODO needs test if content is also followed, when user a makes edits
+  // while user b is in the timeslider
   it("content as it's added to timeslider", async function () {
     // send 6 revisions
     const revs = 6;
@@ -23,7 +27,7 @@ describe('timeslider follow', function () {
     helper.contentWindow().$('#playpause_button_icon').click();
 
     let newTop;
-    return helper.waitForPromise(() => {
+    await helper.waitForPromise(() => {
       newTop = helper.contentWindow().$('#innerdocbody').offset();
       return newTop.top < originalTop.top;
     });
@@ -33,23 +37,15 @@ describe('timeslider follow', function () {
    * Tests for bug described in #4389
    * The goal is to scroll to the first line that contains a change right before
    * the change is applied.
-   *
    */
-  it('only to lines that exist in the current pad view, see #4389', async function () {
-    // Select everything and clear via delete key
-    const e = helper.padInner$.Event(helper.evtType);
-    e.keyCode = 8; // delete key
-    const lines = helper.linesDiv();
-    helper.selectLines(lines[0], lines[lines.length - 1]); // select all lines
-    // probably unnecessary, but wait for the selection to be Range not Caret
-    await helper.waitForPromise(() => !helper.padInner$.document.getSelection().isCollapsed
-        // only supported in FF57+
-        // return helper.padInner$.document.getSelection().type === 'Range';
-    );
-    helper.padInner$('#innerdocbody').trigger(e);
-    await helper.waitForPromise(() => helper.commits.length === 1);
-    await helper.edit('Test line\n\n');
-    await helper.edit('Another test line', 3);
+  it('only to lines that exist in the pad view, regression test for #4389', async function () {
+    await helper.clearPad();
+    await helper.edit('Test line\n' +
+      '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n' +
+      '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n' +
+      '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n');
+    await helper.edit('Another test line', 40);
+
 
     await helper.gotoTimeslider();
 
@@ -62,13 +58,13 @@ describe('timeslider follow', function () {
     /**
      * pad content rev 0 [default Pad text]
      * pad content rev 1 ['']
-     * pad content rev 2 ['Test line','','']
-     * pad content rev 3 ['Test line','','Another test line']
+     * pad content rev 2 ['Test line','','', ..., '']
+     * pad content rev 3 ['Test line','',..., 'Another test line', ..., '']
      */
 
-    // line 3 changed
+    // line 40 changed
     helper.contentWindow().$('#leftstep').click();
-    await helper.waitForPromise(() => hasFollowedToLine(3));
+    await helper.waitForPromise(() => hasFollowedToLine(40));
 
     // line 1 is the first line that changed
     helper.contentWindow().$('#leftstep').click();
@@ -86,9 +82,9 @@ describe('timeslider follow', function () {
     helper.contentWindow().$('#rightstep').click();
     await helper.waitForPromise(() => hasFollowedToLine(1));
 
-    // line 3 changed
+    // line 40 changed
     helper.contentWindow().$('#rightstep').click();
-    return helper.waitForPromise(() => hasFollowedToLine(3));
+    helper.waitForPromise(() => hasFollowedToLine(40));
   });
 });
 
@@ -96,9 +92,9 @@ describe('timeslider follow', function () {
  * @param {number} lineNum
  * @returns {boolean} scrolled to the lineOffset?
  */
-function hasFollowedToLine(lineNum) {
+const hasFollowedToLine = (lineNum) => {
   const scrollPosition = helper.contentWindow().$('#editorcontainerbox')[0].scrollTop;
-  const lineOffset = helper.contentWindow().$('#innerdocbody').find(`div:nth-child(${lineNum})`)[0].offsetTop;
-
+  const lineOffset =
+      helper.contentWindow().$('#innerdocbody').find(`div:nth-child(${lineNum})`)[0].offsetTop;
   return Math.abs(scrollPosition - lineOffset) < 1;
-}
+};

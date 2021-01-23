@@ -1,15 +1,19 @@
+'use strict';
+
 /*
  * A tool for generating a test user session which can be used for debugging configs
  * that require sessions.
  */
-const m = (f) => `${__dirname}/../${f}`;
+
+// As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
+// unhandled rejection into an uncaught exception, which does cause Node.js to exit.
+process.on('unhandledRejection', (err) => { throw err; });
 
 const fs = require('fs');
 const path = require('path');
 const querystring = require('querystring');
-const request = require(m('src/node_modules/request'));
-const settings = require(m('src/node/utils/Settings'));
-const supertest = require(m('src/node_modules/supertest'));
+const settings = require('ep_etherpad-lite/node/utils/Settings');
+const supertest = require('ep_etherpad-lite/node_modules/supertest');
 
 (async () => {
   const api = supertest(`http://${settings.ip}:${settings.port}`);

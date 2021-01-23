@@ -1,17 +1,14 @@
 'use strict';
 
-$(document).ready(() => {
-  const loc = document.location;
-  const port = loc.port === '' ? (loc.protocol === 'https:' ? 443 : 80) : loc.port;
-  const url = `${loc.protocol}//${loc.hostname}:${port}/`;
-  const pathComponents = location.pathname.split('/');
-  // Strip admin/plugins
-  const baseURL = `${pathComponents.slice(0, pathComponents.length - 2).join('/')}/`;
-  const resource = `${baseURL.substring(1)}socket.io`;
+/* global socketio */
 
-  // connect
-  const room = `${url}pluginfw/installer`;
-  const socket = io.connect(room, {path: `${baseURL}socket.io`, resource});
+$(document).ready(() => {
+  const socket = socketio.connect('..', '/pluginfw/installer');
+  socket.on('disconnect', (reason) => {
+    // The socket.io client will automatically try to reconnect for all reasons other than "io
+    // server disconnect".
+    if (reason === 'io server disconnect') socket.connect();
+  });
 
   const search = (searchTerm, limit) => {
     if (search.searchTerm !== searchTerm) {
@@ -259,10 +256,12 @@ $(document).ready(() => {
     search.results = [];
   });
 
-  // init
-  updateHandlers();
-  socket.emit('getInstalled');
-  search('');
+  socket.on('connect', () => {
+    updateHandlers();
+    socket.emit('getInstalled');
+    search.searchTerm = null;
+    search($('#search-query').val());
+  });
 
   // check for updates every 5mins
   setInterval(() => {
