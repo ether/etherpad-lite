@@ -21,10 +21,4 @@ describe('Admin page', function () {
     helper.admin$('a[data-l10n-id="admin_plugins"]')[0].click();
     //TODO check if we're on plugins page
   });
-
-  //TODO why does it not work?
-  xit('Shows Troubleshooting information', async function () {
-    helper.admin$('a[data-l10n-id="admin_plugins_info"]')[0].click();
-    await helper.waitForPromise(() => helper.admin$ && helper.admin$('tbody.results').find('tr').length > 50);
-  });
 });
