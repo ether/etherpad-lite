@@ -29,9 +29,6 @@ jobs:
     - name: Write custom settings.json with loglevel WARN
       run: "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/' < settings.json.template > settings.json"
 
-    - name: Write custom settings.json that enables the Admin UI tests
-      run: "sed -i 's/\"enableAdminUITests\": false/\"enableAdminUITests\": true,\\n\"users\":{\"admin\":{\"password\":\"changeme\",\"is_admin\":true}}/' settings.json"
-
     - name: Run the frontend tests
       shell: bash
       env:
@@ -61,9 +58,8 @@ jobs:
     - name: Install all dependencies and symlink for ep_etherpad-lite
       run: bin/installDeps.sh
 
-      # We intentionally install a slightly older ep_align version to test update against
     - name: Install etherpad plugins
-      run: npm install ep_align@0.3.18 ep_author_hover ep_cursortrace ep_font_size ep_hash_auth ep_headings2 ep_markdown ep_readonly_guest ep_spellcheck ep_subscript_and_superscript ep_table_of_contents ep_set_title_on_pad
+      run: npm install ep_align ep_author_hover ep_cursortrace ep_font_size ep_hash_auth ep_headings2 ep_markdown ep_readonly_guest ep_spellcheck ep_subscript_and_superscript ep_table_of_contents ep_set_title_on_pad
 
     - name: export GIT_HASH to env
       id: environment
