@@ -58,8 +58,21 @@ jobs:
     - name: Install all dependencies and symlink for ep_etherpad-lite
       run: bin/installDeps.sh
 
-    - name: Install etherpad plugins
-      run: npm install ep_align ep_author_hover ep_cursortrace ep_font_size ep_hash_auth ep_headings2 ep_markdown ep_readonly_guest ep_spellcheck ep_subscript_and_superscript ep_table_of_contents ep_set_title_on_pad
+    - name: Install Etherpad plugins
+      run: >
+        npm install
+        ep_align
+        ep_author_hover
+        ep_cursortrace
+        ep_font_size
+        ep_hash_auth
+        ep_headings2
+        ep_markdown
+        ep_readonly_guest
+        ep_set_title_on_pad
+        ep_spellcheck
+        ep_subscript_and_superscript
+        ep_table_of_contents
 
     - name: export GIT_HASH to env
       id: environment
