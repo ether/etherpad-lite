@@ -22,9 +22,9 @@ jobs:
     - name: Install all dependencies and symlink for ep_etherpad-lite
       run: bin/installDeps.sh
 
-      # We intentionally install a slightly older ep_align version to test update against
+      # We intentionally install a much old ep_align version to test update minor versions
     - name: Install etherpad plugins
-      run: npm install ep_align@0.3.18
+      run: npm install ep_align@0.2.27
 
     - name: export GIT_HASH to env
       id: environment

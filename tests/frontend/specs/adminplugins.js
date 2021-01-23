@@ -29,6 +29,8 @@ describe('Plugins page', function () {
   });
 
   it('Attempt to Update a plugin', async function () {
+    const minorVersionBefore =
+        helper.admin$('#installed-plugins .ep_align .version').text().split('.')[1];
     helper.admin$('#installed-plugins .ep_align .do-update').click();
     // ensure its showing as Updating
     await helper.waitForPromise(
@@ -37,6 +39,13 @@ describe('Plugins page', function () {
     // ensure its gone
     await helper.waitForPromise(
         () => helper.admin$('#installed-plugins .ep_align').length === 0);
+
+    // Ensure it's a higher minor version IE 0.3.x as 0.2.x was installed
+    // Coverage for https://github.com/ether/etherpad-lite/issues/4536
+    await helper.waitForPromise(
+        () => helper.admin$(
+            '#installed-plugins .ep_align .version'
+        ).text().split('.')[1] > minorVersionBefore);
   });
 
   it('Attempt to install a plugin', async function () {
