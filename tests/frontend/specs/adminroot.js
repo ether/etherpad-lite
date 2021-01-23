@@ -4,7 +4,7 @@ describe('Admin page', function () {
   before(async function () {
     let success = false;
     $.ajax({
-      url: 'http://admin:changeme@localhost:9001/admin/',
+      url: `${location.protocol}//admin:changeme@${location.hostname}:${location.port}/admin/`,
       type: 'GET',
       success: () => success = true
     })

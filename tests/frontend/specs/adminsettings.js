@@ -4,7 +4,7 @@ describe('Admin > Settings', function () {
   before(async function () {
     let success = false;
     $.ajax({
-      url: 'http://admin:changeme@localhost:9001/admin/',
+      url: `${location.protocol}//admin:changeme@${location.hostname}:${location.port}/admin/`,
       type: 'GET',
       success: () => success = true
     })
@@ -18,17 +18,21 @@ describe('Admin > Settings', function () {
   });
 
   it('Are Settings visible, populated, does save work', async function () {
+    // save old value
     const settings = helper.admin$('.settings').val();
     const settingsLength =  settings.length;
+    // set new value
     helper.admin$('.settings').val((_, text) => '/* test */\n' + text);
     await helper.waitForPromise(() => settingsLength + 11 === helper.admin$('.settings').val().length)
-    helper.admin$('#saveSettings').click(); // saves
+     // saves
+    helper.admin$('#saveSettings').click();
     await helper.waitForPromise(() => helper.admin$('#response').is(':visible'));
 
     // new value for settings.json should now be saved
     // reset it to the old value
     helper.newAdmin('settings');
     await helper.waitForPromise(() => helper.admin$ && helper.admin$('.settings').val().length > 0);
+    // replace the test value with a line break
     helper.admin$('.settings').val((_, text) => text.replace('/* test */\n', ''));
     await helper.waitForPromise(() => settingsLength === helper.admin$('.settings').val().length)
     helper.admin$('#saveSettings').click(); // saves
