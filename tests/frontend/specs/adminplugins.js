@@ -53,7 +53,8 @@ describe('Plugins page', function () {
     helper.admin$('#installed-plugins .ep_activepads .do-uninstall').click();
     // ensure its showing uninstalling
     await helper.waitForPromise(
-        () => helper.admin$('#installed-plugins .ep_activepads .message').text() === 'Uninstalling');
+        () => helper.admin$('#installed-plugins .ep_activepads .message')
+            .text() === 'Uninstalling');
     // ensure its gone
     await helper.waitForPromise(
         () => helper.admin$('#installed-plugins .ep_activepads').length === 0);

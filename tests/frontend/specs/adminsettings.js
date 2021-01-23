@@ -6,8 +6,8 @@ describe('Admin > Settings', function () {
     $.ajax({
       url: `${location.protocol}//admin:changeme@${location.hostname}:${location.port}/admin/`,
       type: 'GET',
-      success: () => success = true
-    })
+      success: () => success = true,
+    });
     await helper.waitForPromise(() => success === true);
   });
 
@@ -20,11 +20,14 @@ describe('Admin > Settings', function () {
   it('Are Settings visible, populated, does save work', async function () {
     // save old value
     const settings = helper.admin$('.settings').val();
-    const settingsLength =  settings.length;
+    const settingsLength = settings.length;
+
     // set new value
-    helper.admin$('.settings').val((_, text) => '/* test */\n' + text);
-    await helper.waitForPromise(() => settingsLength + 11 === helper.admin$('.settings').val().length)
-     // saves
+    helper.admin$('.settings').val((_, text) => `/* test */\n${text}`);
+    await helper.waitForPromise(
+        () => settingsLength + 11 === helper.admin$('.settings').val().length);
+
+    // saves
     helper.admin$('#saveSettings').click();
     await helper.waitForPromise(() => helper.admin$('#response').is(':visible'));
 
@@ -32,9 +35,11 @@ describe('Admin > Settings', function () {
     // reset it to the old value
     helper.newAdmin('settings');
     await helper.waitForPromise(() => helper.admin$ && helper.admin$('.settings').val().length > 0);
+
     // replace the test value with a line break
     helper.admin$('.settings').val((_, text) => text.replace('/* test */\n', ''));
-    await helper.waitForPromise(() => settingsLength === helper.admin$('.settings').val().length)
+    await helper.waitForPromise(() => settingsLength === helper.admin$('.settings').val().length);
+
     helper.admin$('#saveSettings').click(); // saves
     await helper.waitForPromise(() => helper.admin$('#response').is(':visible'));
 
@@ -44,25 +49,22 @@ describe('Admin > Settings', function () {
     expect(settings).to.be(helper.admin$('.settings').val());
   });
 
-  xit('restart works', async function(){
-    helper.admin$('#restartEtherpad').click(); // restarts
-    await timeout(5000); // Hacky...  Other suggestions welcome..
-    try {
-      await $.get('/');
-      expect(true).to.be(true);
-    } catch (e) {
-      expect(true).to.be(false);
-      throw new Error('Unable to load Admin page after restart.');
-    }
-  });
-  /*
-  TODO: Other tests
-    Is JSON parseable (note that we need an additional library for this).
-    If we modify JSON and save it is it available after clicking "save?"
-    If we modify JSON and save/restart is the setting applied?
-  */
-
   function timeout(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
+
+  it('restart works', async function () {
+    // restarts
+    helper.admin$('#restartEtherpad').click();
+
+    // Hacky...  Other suggestions welcome..
+    await timeout(50000);
+    let success = false;
+    $.ajax({
+      url: `${location.protocol}//admin:changeme@${location.hostname}:${location.port}/admin`,
+      type: 'GET',
+      success: () => success = true,
+    });
+    await helper.waitForPromise(() => success === true);
+  });
 });
