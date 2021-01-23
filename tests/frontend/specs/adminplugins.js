@@ -15,11 +15,7 @@ describe('Plugins page', function () {
   beforeEach(async function () {
     helper.newAdmin('plugins');
     await helper.waitForPromise(
-        () => helper.admin$ && helper.admin$('.menu').find('li').length === 3);
-  });
-
-  it('Shows Plugin page', async function () {
-    helper.admin$('a[data-l10n-id="admin_plugins"]')[0].click();
+        () => helper.admin$ && helper.admin$('.menu').find('li').length >= 3);
   });
 
   it('Lists some plugins', async function () {
@@ -27,9 +23,20 @@ describe('Plugins page', function () {
   });
 
   it('Searches for plugin', async function () {
-    helper.admin$('#search-query').val('ep_activepads');
+    helper.admin$('#search-query').val('ep_font_color');
     await helper.waitForPromise(() => helper.admin$('.results').children().length < 300);
     await helper.waitForPromise(() => helper.admin$('.results').children().length > 0);
+  });
+
+  it('Attempt to Update a plugin', async function () {
+    helper.admin$('#installed-plugins .ep_align .do-update').click();
+    // ensure its showing as Updating
+    await helper.waitForPromise(
+        () => helper.admin$('#installed-plugins .ep_align .message')
+            .text() === 'Updating');
+    // ensure its gone
+    await helper.waitForPromise(
+        () => helper.admin$('#installed-plugins .ep_align').length === 0);
   });
 
   it('Attempt to install a plugin', async function () {
@@ -58,16 +65,5 @@ describe('Plugins page', function () {
     // ensure its gone
     await helper.waitForPromise(
         () => helper.admin$('#installed-plugins .ep_activepads').length === 0);
-  });
-
-  it('Attempt to Update a plugin', async function () {
-    helper.admin$('#installed-plugins .ep_align .do-update').click();
-    // ensure its showing as Updating
-    await helper.waitForPromise(
-        () => helper.admin$('#installed-plugins .ep_align .message')
-            .text() === 'Updating');
-    // ensure its gone
-    await helper.waitForPromise(
-        () => helper.admin$('#installed-plugins .ep_align').length === 0);
   });
 });
