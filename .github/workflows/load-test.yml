@@ -56,6 +56,7 @@ jobs:
         ep_headings2
         ep_markdown
         ep_readonly_guest
+        ep_set_title_on_pad
         ep_spellcheck
         ep_subscript_and_superscript
         ep_table_of_contents
