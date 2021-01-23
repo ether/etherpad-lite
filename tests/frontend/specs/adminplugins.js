@@ -59,4 +59,15 @@ describe('Plugins page', function () {
     await helper.waitForPromise(
         () => helper.admin$('#installed-plugins .ep_activepads').length === 0);
   });
+
+  it('Attempt to Update a plugin', async function () {
+    helper.admin$('#installed-plugins .ep_align .do-update').click();
+    // ensure its showing as Updating
+    await helper.waitForPromise(
+        () => helper.admin$('#installed-plugins .ep_align .message')
+            .text() === 'Updating');
+    // ensure its gone
+    await helper.waitForPromise(
+        () => helper.admin$('#installed-plugins .ep_align').length === 0);
+  });
 });
