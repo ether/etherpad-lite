@@ -27,36 +27,36 @@ describe('Plugins page', function () {
   });
 
   it('Searches for plugin', async function () {
-    helper.admin$('#search-query').val('ep_font_size');
+    helper.admin$('#search-query').val('ep_activepads');
     await helper.waitForPromise(() => helper.admin$('.results').children().length < 300);
     await helper.waitForPromise(() => helper.admin$('.results').children().length > 0);
   });
 
   it('Attempt to install a plugin', async function () {
-    helper.admin$('#search-query').val('ep_font_size');
+    helper.admin$('#search-query').val('ep_activepads');
     await helper.waitForPromise(() => helper.admin$('.results').children().length < 300);
     await helper.waitForPromise(() => helper.admin$('.results').children().length > 0);
 
-    helper.admin$('.ep_font_size .do-install').click();
+    helper.admin$('.ep_activepads .do-install').click();
     // ensure install has attempted to be started
     await helper.waitForPromise(
-        () => helper.admin$('#installed-plugins .ep_font_size .do-install').length !== 0);
+        () => helper.admin$('#installed-plugins .ep_activepads .do-install').length !== 0);
     // ensure its not showing installing any more
     await helper.waitForPromise(
-        () => helper.admin$('#installed-plugins .ep_font_size .message').text() === '');
+        () => helper.admin$('#installed-plugins .ep_activepads .message').text() === '');
     // ensure uninstall button is visible
     await helper.waitForPromise(
-        () => helper.admin$('#installed-plugins .ep_font_size .do-uninstall').length !== 0);
+        () => helper.admin$('#installed-plugins .ep_activepads .do-uninstall').length !== 0);
   });
 
   it('Attempt to Uninstall a plugin', async function () {
-    helper.admin$('#installed-plugins .ep_font_size .do-uninstall').click();
+    helper.admin$('#installed-plugins .ep_activepads .do-uninstall').click();
     // ensure its showing uninstalling
     await helper.waitForPromise(
-        () => helper.admin$('#installed-plugins .ep_font_size .message').text() === 'Uninstalling');
+        () => helper.admin$('#installed-plugins .ep_activepads .message').text() === 'Uninstalling');
     // ensure its gone
     await helper.waitForPromise(
-        () => helper.admin$('#installed-plugins .ep_font_size').length === 0);
+        () => helper.admin$('#installed-plugins .ep_activepads').length === 0);
   });
 /*
   it('Lists installed hooks', async function () {
