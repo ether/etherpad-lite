@@ -58,12 +58,4 @@ describe('Plugins page', function () {
     await helper.waitForPromise(
         () => helper.admin$('#installed-plugins .ep_activepads').length === 0);
   });
-/*
-  it('Lists installed hooks', async function () {
-    const parts = helper.admin$('dt');
-    if(parts.length <= 20) {
-      throw new Error("Not enough hooks being displayed...");
-    }
-  });
-  */
 });
