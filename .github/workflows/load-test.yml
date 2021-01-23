@@ -39,9 +39,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Install all dependencies and symlink for ep_etherpad-lite
-      run: bin/installDeps.sh
-
     - name: Install etherpad-load-test
       run: sudo npm install -g etherpad-load-test
 
@@ -60,6 +57,16 @@ jobs:
         ep_spellcheck
         ep_subscript_and_superscript
         ep_table_of_contents
+
+    # This must be run after installing the plugins, otherwise npm will try to
+    # hoist common dependencies by removing them from src/node_modules and
+    # installing them in the top-level node_modules. As of v6.14.10, npm's hoist
+    # logic appears to be buggy, because it sometimes removes dependencies from
+    # src/node_modules but fails to add them to the top-level node_modules. Even
+    # if npm correctly hoists the dependencies, the hoisting seems to confuse
+    # tools such as `npm outdated`, `npm update`, and some ESLint rules.
+    - name: Install all dependencies and symlink for ep_etherpad-lite
+      run: bin/installDeps.sh
 
     # configures some settings and runs npm run test
     - name: Run load test
