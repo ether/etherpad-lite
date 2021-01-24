@@ -1,3 +1,22 @@
+# Next Release
+
+### Compatibility changes
+
+* For plugin authors:
+  * Etherpad now uses [jsdom](https://github.com/jsdom/jsdom) instead of
+    [cheerio](https://cheerio.js.org/) for processing HTML imports. There are
+    two consequences of this change:
+    * `require('ep_etherpad-lite/node_modules/cheerio')` no longer works. To
+      fix, your plugin should directly depend on `cheerio` and do
+      `require('cheerio')`.
+    * The `node` context argument passed to the `collectContentImage` hook is
+      now an
+      [`HTMLImageElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement)
+      object rather than a Cheerio Node-like object, so the API is slightly
+      different. See
+      [citizenos/ep_image_upload#49](https://github.com/citizenos/ep_image_upload/pull/49)
+      for an example fix.
+
 # 1.8.14
 
 ### Security fixes

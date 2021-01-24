@@ -11,8 +11,8 @@
 
 const AttributePool = require('../../../static/js/AttributePool');
 const assert = require('assert').strict;
-const cheerio = require('cheerio');
 const contentcollector = require('../../../static/js/contentcollector');
+const jsdom = require('jsdom');
 
 const tests = {
   nestedLi: {
@@ -286,14 +286,13 @@ describe(__filename, function () {
 
       it(testObj.description, async function () {
         this.timeout(250);
-        const $ = cheerio.load(testObj.html); // Load HTML into Cheerio
-        const doc = $('body')[0]; // Creates a dom-like representation of HTML
+        const {window: {document}} = new jsdom.JSDOM(testObj.html);
         // Create an empty attribute pool
         const apool = new AttributePool();
         // Convert a dom tree into a list of lines and attribute liens
         // using the content collector object
         const cc = contentcollector.makeContentCollector(true, null, apool);
-        cc.collectContent(doc);
+        cc.collectContent(document.body);
         const result = cc.finish();
         const gotAttributes = result.lineAttribs;
         const wantAttributes = testObj.wantLineAttribs;

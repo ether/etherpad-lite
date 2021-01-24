@@ -18,7 +18,7 @@
 const log4js = require('log4js');
 const Changeset = require('../../static/js/Changeset');
 const contentcollector = require('../../static/js/contentcollector');
-const cheerio = require('cheerio');
+const jsdom = require('jsdom');
 const rehype = require('rehype');
 const minifyWhitespace = require('rehype-minify-whitespace');
 
@@ -31,13 +31,12 @@ exports.setPadHTML = async (pad, html) => {
         html = String(output);
       });
 
-  const $ = cheerio.load(html);
+  const {window: {document}} = new jsdom.JSDOM(html);
 
   // Appends a line break, used by Etherpad to ensure a caret is available
   // below the last line of an import
-  $('body').append('<p></p>');
+  document.body.appendChild(document.createElement('p'));
 
-  const doc = $('body')[0];
   apiLogger.debug('html:');
   apiLogger.debug(html);
 
@@ -46,7 +45,7 @@ exports.setPadHTML = async (pad, html) => {
   const cc = contentcollector.makeContentCollector(true, null, pad.pool);
   try {
     // we use a try here because if the HTML is bad it will blow up
-    cc.collectContent(doc);
+    cc.collectContent(document.body);
   } catch (e) {
     apiLogger.warn('HTML was not properly formed', e);
 
