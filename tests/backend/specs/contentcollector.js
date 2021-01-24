@@ -221,11 +221,11 @@ const tests = {
   multiLineParagraphWithPre: {
     description: 'lines in preformatted text should be kept intact',
     html: `<html><body><p>
-а б в г ґ д е є ж з и і ї й к л м н о<pre>multiple
+а б в г ґ д е є ж з и і ї й к л м н о</p><pre>multiple
 lines
 in
 pre
-</pre></p><p>п р с т у ф х ц ч ш щ ю я
+</pre><p>п р с т у ф х ц ч ш щ ю я
 ь</p>
 </body></html>`,
     expectedLineAttribs: ['+11', '+8', '+5', '+2', '+3', '+r'],
@@ -242,8 +242,8 @@ pre
     description: 'pre should be on a new line not preceeded by a space',
     html: `<html><body><p>
     1
-<pre>preline
-</pre></p></body></html>`,
+</p><pre>preline
+</pre></body></html>`,
     expectedLineAttribs: ['+6', '+7'],
     expectedText: ['    1 ', 'preline'],
   },
