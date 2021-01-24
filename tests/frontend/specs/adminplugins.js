@@ -61,8 +61,8 @@ describe('Plugins page', function () {
         '#installed-plugins .ep_align .version'
     )
         .text()
-        .split('.')[1]) > minorVersionBefore, 20000, 1000);
-    // allow 20 seconds, check every 1 second.
+        .split('.')[1]) > minorVersionBefore, 50000, 1000);
+    // allow 50 seconds, check every 1 second.
   });
   it('Attempt to install a plugin', async function () {
     this.timeout(30000);
