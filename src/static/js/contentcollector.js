@@ -39,6 +39,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
   const dom = {
     // .nodeType works with DOM and cheerio 0.22.0. Note: Cheerio 0.22.0 does not provide the
     // Node.*_NODE constants, so they cannot be used here.
+    isElementNode: (n) => n.nodeType === 1, // Node.ELEMENT_NODE
     isTextNode: (n) => n.nodeType === 3, // Node.TEXT_NODE
     // .tagName works with DOM and cheerio 0.22.0, but:
     //   * With DOM, .tagName is an uppercase string.
@@ -395,7 +396,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
           cc.startNewLine(state);
         }
       }
-    } else {
+    } else if (dom.isElementNode(node)) {
       const tname = dom.tagName(node) || '';
 
       if (tname === 'img') {
