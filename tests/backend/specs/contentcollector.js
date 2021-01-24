@@ -1,18 +1,17 @@
 'use strict';
 
-/* eslint-disable max-len */
 /*
- * While importexport tests target the `setHTML` API endpoint, which is nearly identical to what happens
- * when a user manually imports a document via the UI, the contentcollector tests here don't use rehype to process
- * the document. Rehype removes spaces and newĺines were applicable, so the expected results here can
- * differ from importexport.js.
+ * While importexport tests target the `setHTML` API endpoint, which is nearly identical to what
+ * happens when a user manually imports a document via the UI, the contentcollector tests here don't
+ * use rehype to process the document. Rehype removes spaces and newĺines were applicable, so the
+ * expected results here can differ from importexport.js.
  *
  * If you add tests here, please also add them to importexport.js
  */
 
-const contentcollector = require('../../../src/static/js/contentcollector');
-const AttributePool = require('../../../src/static/js/AttributePool');
-const cheerio = require('../../../src/node_modules/cheerio');
+const AttributePool = require('ep_etherpad-lite/static/js/AttributePool');
+const cheerio = require('ep_etherpad-lite/node_modules/cheerio');
+const contentcollector = require('ep_etherpad-lite/static/js/contentcollector');
 
 const tests = {
   nestedLi: {
@@ -124,74 +123,74 @@ const tests = {
   lineWithMultipleSpaces: {
     description: 'Multiple spaces should be preserved',
     html: '<html><body>Text with  more   than    one space.<br></body></html>',
-    expectedLineAttribs: [ '+10' ],
-    expectedText: ['Text with  more   than    one space.']
+    expectedLineAttribs: ['+10'],
+    expectedText: ['Text with  more   than    one space.'],
   },
   lineWithMultipleNonBreakingAndNormalSpaces: {
     description: 'non-breaking and normal space should be preserved',
     html: '<html><body>Text&nbsp;with&nbsp; more&nbsp;&nbsp;&nbsp;than   &nbsp;one space.<br></body></html>',
-    expectedLineAttribs: [ '+10' ],
-    expectedText: ['Text with  more   than    one space.']
+    expectedLineAttribs: ['+10'],
+    expectedText: ['Text with  more   than    one space.'],
   },
   multiplenbsp: {
     description: 'Multiple nbsp should be preserved',
     html: '<html><body>&nbsp;&nbsp;<br></body></html>',
-    expectedLineAttribs: [ '+2' ],
-    expectedText: ['  ']
+    expectedLineAttribs: ['+2'],
+    expectedText: ['  '],
   },
   multipleNonBreakingSpaceBetweenWords: {
     description: 'Multiple nbsp between words ',
     html: '<html><body>&nbsp;&nbsp;word1&nbsp;&nbsp;word2&nbsp;&nbsp;&nbsp;word3<br></body></html>',
-    expectedLineAttribs: [ '+m' ],
-    expectedText: ['  word1  word2   word3']
+    expectedLineAttribs: ['+m'],
+    expectedText: ['  word1  word2   word3'],
   },
   nonBreakingSpacePreceededBySpaceBetweenWords: {
     description: 'A non-breaking space preceeded by a normal space',
     html: '<html><body> &nbsp;word1 &nbsp;word2 &nbsp;word3<br></body></html>',
-    expectedLineAttribs: [ '+l' ],
-    expectedText: ['  word1  word2  word3']
+    expectedLineAttribs: ['+l'],
+    expectedText: ['  word1  word2  word3'],
   },
   nonBreakingSpaceFollowededBySpaceBetweenWords: {
     description: 'A non-breaking space followed by a normal space',
     html: '<html><body>&nbsp; word1&nbsp; word2&nbsp; word3<br></body></html>',
-    expectedLineAttribs: [ '+l' ],
-    expectedText: ['  word1  word2  word3']
+    expectedLineAttribs: ['+l'],
+    expectedText: ['  word1  word2  word3'],
   },
   spacesAfterNewline: {
     description: 'Don\'t collapse spaces that follow a newline',
-    html:'<!doctype html><html><body>something<br>             something<br></body></html>',
+    html: '<!doctype html><html><body>something<br>             something<br></body></html>',
     expectedLineAttribs: ['+9', '+m'],
-    expectedText: ['something', '             something']
+    expectedText: ['something', '             something'],
   },
   spacesAfterNewlineP: {
     description: 'Don\'t collapse spaces that follow a empty paragraph',
-    html:'<!doctype html><html><body>something<p></p>             something<br></body></html>',
+    html: '<!doctype html><html><body>something<p></p>             something<br></body></html>',
     expectedLineAttribs: ['+9', '', '+m'],
-    expectedText: ['something', '', '             something']
+    expectedText: ['something', '', '             something'],
   },
   spacesAtEndOfLine: {
     description: 'Don\'t collapse spaces that preceed/follow a newline',
-    html:'<html><body>something            <br>             something<br></body></html>',
+    html: '<html><body>something            <br>             something<br></body></html>',
     expectedLineAttribs: ['+l', '+m'],
-    expectedText: ['something            ', '             something']
+    expectedText: ['something            ', '             something'],
   },
   spacesAtEndOfLineP: {
     description: 'Don\'t collapse spaces that preceed/follow a empty paragraph',
-    html:'<html><body>something            <p></p>             something<br></body></html>',
+    html: '<html><body>something            <p></p>             something<br></body></html>',
     expectedLineAttribs: ['+l', '', '+m'],
-    expectedText: ['something            ', '', '             something']
+    expectedText: ['something            ', '', '             something'],
   },
   nonBreakingSpacesAfterNewlines: {
     description: 'Don\'t collapse non-breaking spaces that follow a newline',
-    html:'<html><body>something<br>&nbsp;&nbsp;&nbsp;something<br></body></html>',
+    html: '<html><body>something<br>&nbsp;&nbsp;&nbsp;something<br></body></html>',
     expectedLineAttribs: ['+9', '+c'],
-    expectedText: ['something', '   something']
+    expectedText: ['something', '   something'],
   },
   nonBreakingSpacesAfterNewlinesP: {
     description: 'Don\'t collapse non-breaking spaces that follow a paragraph',
-    html:'<html><body>something<p></p>&nbsp;&nbsp;&nbsp;something<br></body></html>',
+    html: '<html><body>something<p></p>&nbsp;&nbsp;&nbsp;something<br></body></html>',
     expectedLineAttribs: ['+9', '', '+c'],
-    expectedText: ['something', '', '   something']
+    expectedText: ['something', '', '   something'],
   },
   preserveSpacesInsideElements: {
     description: 'Preserve all spaces when multiple are present',
@@ -207,27 +206,27 @@ const tests = {
           space
           <i>  s </i>
           !<br></body></html>`,
-    expectedLineAttribs: [ '+19*0+4+b' ],
-    expectedText: [ 'Need           more           space            s           !' ]
+    expectedLineAttribs: ['+19*0+4+b'],
+    expectedText: ['Need           more           space            s           !'],
   },
   multipleNewLinesAtBeginning: {
     description: 'Multiple new lines at the beginning should be preserved',
     html: '<html><body><br><br><p></p><p></p>first line<br><br>second line<br></body></html>',
     expectedLineAttribs: ['', '', '', '', '+a', '', '+b'],
-    expectedText: [ '', '', '', '', 'first line', '', 'second line']
+    expectedText: ['', '', '', '', 'first line', '', 'second line'],
   },
-  multiLineParagraph:{
-    description: "A paragraph with multiple lines should not loose spaces when lines are combined",
-    html:`<html><body><p>
+  multiLineParagraph: {
+    description: 'A paragraph with multiple lines should not loose spaces when lines are combined',
+    html: `<html><body><p>
 а б в г ґ д е є ж з и і ї й к л м н о
 п р с т у ф х ц ч ш щ ю я ь</p>
 </body></html>`,
-    expectedLineAttribs: [ '+1t' ],
-    expectedText: ["а б в г ґ д е є ж з и і ї й к л м н о п р с т у ф х ц ч ш щ ю я ь"]
+    expectedLineAttribs: ['+1t'],
+    expectedText: ['а б в г ґ д е є ж з и і ї й к л м н о п р с т у ф х ц ч ш щ ю я ь'],
   },
-  multiLineParagraphWithPre:{
-    description: "lines in preformatted text should be kept intact",
-    html:`<html><body><p>
+  multiLineParagraphWithPre: {
+    description: 'lines in preformatted text should be kept intact',
+    html: `<html><body><p>
 а б в г ґ д е є ж з и і ї й к л м н о<pre>multiple
 lines
 in
@@ -235,41 +234,48 @@ pre
 </pre></p><p>п р с т у ф х ц ч ш щ ю я
 ь</p>
 </body></html>`,
-    expectedLineAttribs: [ '+11', '+8', '+5', '+2', '+3', '+r' ],
-    expectedText: ['а б в г ґ д е є ж з и і ї й к л м н о', 'multiple', 'lines', 'in', 'pre', 'п р с т у ф х ц ч ш щ ю я ь']
+    expectedLineAttribs: ['+11', '+8', '+5', '+2', '+3', '+r'],
+    expectedText: [
+      'а б в г ґ д е є ж з и і ї й к л м н о',
+      'multiple',
+      'lines',
+      'in',
+      'pre',
+      'п р с т у ф х ц ч ш щ ю я ь',
+    ],
   },
   preIntroducesASpace: {
-    description: "pre should be on a new line not preceeded by a space",
-    html:`<html><body><p>
+    description: 'pre should be on a new line not preceeded by a space',
+    html: `<html><body><p>
     1
 <pre>preline
 </pre></p></body></html>`,
-    expectedLineAttribs: [ '+6', '+7' ],
-    expectedText: ['    1 ', 'preline']
+    expectedLineAttribs: ['+6', '+7'],
+    expectedText: ['    1 ', 'preline'],
   },
   dontDeleteSpaceInsideElements: {
     description: 'Preserve spaces on the beginning and end of a element',
     html: '<html><body>Need<span> more </span>space<i> s </i>!<br></body></html>',
     expectedLineAttribs: ['+f*0+3+1'],
-    expectedText: ['Need more space s !']
+    expectedText: ['Need more space s !'],
   },
   dontDeleteSpaceOutsideElements: {
     description: 'Preserve spaces outside elements',
     html: '<html><body>Need <span>more</span> space <i>s</i> !<br></body></html>',
     expectedLineAttribs: ['+g*0+1+2'],
-    expectedText: ['Need more space s !']
+    expectedText: ['Need more space s !'],
   },
   dontDeleteSpaceAtEndOfElement: {
     description: 'Preserve spaces at the end of an element',
     html: '<html><body>Need <span>more </span>space <i>s </i>!<br></body></html>',
     expectedLineAttribs: ['+g*0+2+1'],
-    expectedText: ['Need more space s !']
+    expectedText: ['Need more space s !'],
   },
   dontDeleteSpaceAtBeginOfElements: {
     description: 'Preserve spaces at the start of an element',
     html: '<html><body>Need<span> more</span> space<i> s</i> !<br></body></html>',
     expectedLineAttribs: ['+f*0+2+2'],
-    expectedText: ['Need more space s !']
+    expectedText: ['Need more space s !'],
   },
 };
 
@@ -325,7 +331,7 @@ describe(__filename, function () {
 function arraysEqual(a, b) {
   if (a === b) return true;
   if (a == null || b == null) return false;
-  if (a.length != b.length) return false;
+  if (a.length !== b.length) return false;
 
   // If you don't care about the order of the elements inside
   // the array, you should sort both arrays here.
