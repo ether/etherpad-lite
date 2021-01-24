@@ -10,6 +10,7 @@
  */
 
 const AttributePool = require('ep_etherpad-lite/static/js/AttributePool');
+const assert = require('assert').strict;
 const cheerio = require('ep_etherpad-lite/node_modules/cheerio');
 const contentcollector = require('ep_etherpad-lite/static/js/contentcollector');
 
@@ -298,24 +299,8 @@ describe(__filename, function () {
         const recievedText = new Array(result.lines);
         const expectedText = testObj.expectedText;
 
-        // Check recieved text matches the expected text
-        if (arraysEqual(recievedText[0], expectedText)) {
-          // console.log("PASS: Recieved Text did match Expected Text\nRecieved:", recievedText[0], "\nExpected:", testObj.expectedText)
-        } else {
-          console.error('FAIL: Recieved Text did not match Expected Text\nRecieved:', recievedText[0], '\nExpected:', testObj.expectedText);
-          throw new Error();
-        }
-
-        // Check recieved attributes matches the expected attributes
-        if (arraysEqual(recievedAttributes, expectedAttributes)) {
-          // console.log("PASS: Recieved Attributes matched Expected Attributes");
-          done();
-        } else {
-          console.error('FAIL', test, testObj.description);
-          console.error('FAIL: Recieved Attributes did not match Expected Attributes\nRecieved: ', recievedAttributes, '\nExpected: ', expectedAttributes);
-          console.error('FAILING HTML', testObj.html);
-          throw new Error();
-        }
+        assert.deepEqual(recievedText[0], expectedText);
+        assert.deepEqual(recievedAttributes, expectedAttributes);
       });
     });
   }
