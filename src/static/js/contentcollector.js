@@ -33,26 +33,47 @@ const hooks = require('./pluginfw/hooks');
 const sanitizeUnicode = (s) => UNorm.nfc(s);
 
 const makeContentCollector = (collectStyles, abrowser, apool, className2Author) => {
+  // This file is used both in browsers and with cheerio in Node.js (for importing HTML). Cheerio's
+  // Node-like objects are not 100% API compatible with the DOM Node specification; this `dom`
+  // object abstracts away the differences.
   const dom = {
-    isNodeText: (n) => n.nodeType === 3,
+    // .nodeType works with DOM and cheerio 0.22.0. Note: Cheerio 0.22.0 does not provide the
+    // Node.*_NODE constants, so they cannot be used here.
+    isNodeText: (n) => n.nodeType === 3, // Node.TEXT_NODE
+    // .tagName works with DOM and cheerio 0.22.0, but:
+    //   * With DOM, .tagName is an uppercase string.
+    //   * With cheerio 0.22.0, .tagName is a lowercase string.
     nodeTagName: (n) => n.tagName,
+    // .nodeValue works with DOM and cheerio 0.22.0.
     nodeValue: (n) => n.nodeValue,
+    // Returns the number of Node children (n.childNodes.length), not the number of Element children
+    // (n.children.length in DOM).
     nodeNumChildren: (n) => {
+      // .childNodes.length works with DOM and cheerio 0.22.0, except in cheerio the .childNodes
+      // property does not exist on text nodes (and maybe other non-element nodes).
       if (n.childNodes == null) return 0;
       return n.childNodes.length;
     },
+    // Returns the i'th Node child (n.childNodes[i]), not the i'th Element child (n.children[i] in
+    // DOM).
     nodeChild: (n, i) => {
       if (n.childNodes.item == null) {
+        // .childNodes[] works with DOM and cheerio 0.22.0.
         return n.childNodes[i];
       }
+      // .childNodes.item() works with DOM but not with cheerio 0.22.0.
       return n.childNodes.item(i);
     },
     nodeProp: (n, p) => n[p],
     nodeAttr: (n, a) => {
+      // .getAttribute() works with DOM but not with cheerio 0.22.0.
       if (n.getAttribute != null) return n.getAttribute(a);
+      // .attribs[] works with cheerio 0.22.0 but not with DOM.
       if (n.attribs != null) return n.attribs[a];
       return null;
     },
+    // .innerHTML works with DOM but not with cheerio 0.22.0. Cheerio's Element-like objects have no
+    // equivalent. (Cheerio objects have an .html() method, but that isn't accessible here.)
     optNodeInnerHTML: (n) => n.innerHTML,
   };
 
