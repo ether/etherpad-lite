@@ -33,7 +33,7 @@ describe('Plugins page', function () {
   });
 
   it('Attempt to Update a plugin', async function () {
-    this.timeout(30000);
+    this.timeout(60000);
     await helper.waitForPromise(
         () => helper.admin$('#installed-plugins .ep_align .version').text().split('.').length >= 2);
 
@@ -61,11 +61,11 @@ describe('Plugins page', function () {
         '#installed-plugins .ep_align .version'
     )
         .text()
-        .split('.')[1]) > minorVersionBefore, 50000, 1000);
+        .split('.')[1]) > minorVersionBefore, 60000, 1000);
     // allow 50 seconds, check every 1 second.
   });
   it('Attempt to install a plugin', async function () {
-    this.timeout(30000);
+    this.timeout(60000);
     helper.admin$('#search-query').val('ep_activepads');
     await helper.waitForPromise(() => helper.admin$('.results').children().length < 300);
     await helper.waitForPromise(() => helper.admin$('.results').children().length > 0);
@@ -83,7 +83,7 @@ describe('Plugins page', function () {
   });
 
   it('Attempt to Uninstall a plugin', async function () {
-    this.timeout(30000);
+    this.timeout(60000);
     helper.admin$('#installed-plugins .ep_activepads .do-uninstall').click();
     // ensure its showing uninstalling
     await helper.waitForPromise(
