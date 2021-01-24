@@ -227,15 +227,15 @@ const testImports = {
 
 describe(__filename, function () {
   Object.keys(testImports).forEach((testName) => {
-    const testPadId = makeid();
-    const test = testImports[testName];
-    if (test.disabled) {
-      return xit(`DISABLED: ${testName}`, function (done) {
-        done();
-      });
-    }
-    describe(`createPad ${testName}`, function () {
-      it('creates a new Pad', function (done) {
+    describe(testName, function () {
+      const testPadId = makeid();
+      const test = testImports[testName];
+      if (test.disabled) {
+        return xit(`DISABLED: ${testName}`, function (done) {
+          done();
+        });
+      }
+      it('createPad', function (done) {
         api.get(`${endPoint('createPad')}&padID=${testPadId}`)
             .expect((res) => {
               if (res.body.code !== 0) throw new Error('Unable to create new Pad');
@@ -243,10 +243,8 @@ describe(__filename, function () {
             .expect('Content-Type', /json/)
             .expect(200, done);
       });
-    });
 
-    describe(`setHTML ${testName}`, function () {
-      it('Sets the HTML', function (done) {
+      it('setHTML', function (done) {
         api.get(`${endPoint('setHTML')}&padID=${testPadId}&html=${encodeURIComponent(test.input)}`)
             .expect((res) => {
               if (res.body.code !== 0) throw new Error(`Error:${testName}`);
@@ -254,10 +252,8 @@ describe(__filename, function () {
             .expect('Content-Type', /json/)
             .expect(200, done);
       });
-    });
 
-    describe(`getHTML ${testName}`, function () {
-      it('Gets back the HTML of a Pad', function (done) {
+      it('getHTML', function (done) {
         api.get(`${endPoint('getHTML')}&padID=${testPadId}`)
             .expect((res) => {
               const receivedHtml = res.body.data.html;
@@ -279,10 +275,8 @@ describe(__filename, function () {
             .expect('Content-Type', /json/)
             .expect(200, done);
       });
-    });
 
-    describe(`getText ${testName}`, function () {
-      it('Gets back the Text of a Pad', function (done) {
+      it('getText', function (done) {
         api.get(`${endPoint('getText')}&padID=${testPadId}`)
             .expect((res) => {
               const receivedText = res.body.data.text;
