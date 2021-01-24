@@ -623,7 +623,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
             } else {
               // an unknown error happened
               // log it and throw internal error
-              apiLogger.error(err);
+              apiLogger.error(err.stack || err.toString());
               throw new createHTTPError.InternalError('internal error');
             }
           });
