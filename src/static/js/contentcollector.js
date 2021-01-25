@@ -32,38 +32,31 @@ const hooks = require('./pluginfw/hooks');
 
 const sanitizeUnicode = (s) => UNorm.nfc(s);
 
-const makeContentCollector = (collectStyles, abrowser, apool, className2Author) => {
-  // This file is used both in browsers and with cheerio in Node.js (for importing HTML). Cheerio's
-  // Node-like objects are not 100% API compatible with the DOM Node specification; this `dom`
-  // object abstracts away the differences.
-  const dom = {
-    // .nodeType works with DOM and cheerio 0.22.0. Note: Cheerio 0.22.0 does not provide the
-    // Node.*_NODE constants, so they cannot be used here.
-    isElementNode: (n) => n.nodeType === 1, // Node.ELEMENT_NODE
-    isTextNode: (n) => n.nodeType === 3, // Node.TEXT_NODE
-    // .tagName works with DOM and cheerio 0.22.0, but:
-    //   * With DOM, .tagName is an uppercase string.
-    //   * With cheerio 0.22.0, .tagName is a lowercase string.
-    // For consistency, this function always returns a lowercase string.
-    tagName: (n) => n.tagName && n.tagName.toLowerCase(),
-    // .nodeValue works with DOM and cheerio 0.22.0.
-    nodeValue: (n) => n.nodeValue,
-    // .childNodes works with DOM and cheerio 0.22.0, except in cheerio the .childNodes property
-    // does not exist on text nodes (and maybe other non-element nodes).
-    childNodes: (n) => n.childNodes || [],
-    nodeProp: (n, p) => n[p],
-    getAttribute: (n, a) => {
-      // .getAttribute() works with DOM but not with cheerio 0.22.0.
-      if (n.getAttribute != null) return n.getAttribute(a);
-      // .attribs[] works with cheerio 0.22.0 but not with DOM.
-      if (n.attribs != null) return n.attribs[a];
-      return null;
-    },
-    // .innerHTML works with DOM but not with cheerio 0.22.0. Cheerio's Element-like objects have no
-    // equivalent. (Cheerio objects have an .html() method, but that isn't accessible here.)
-    innerHTML: (n) => n.innerHTML,
-  };
+// This file is used both in browsers and with cheerio in Node.js (for importing HTML). Cheerio's
+// Node-like objects are not 100% API compatible with the DOM specification; the following functions
+// abstract away the differences.
 
+// .nodeType works with DOM and cheerio 0.22.0, but cheerio 0.22.0 does not provide the Node.*_NODE
+// constants so they cannot be used here.
+const isElementNode = (n) => n.nodeType === 1; // Node.ELEMENT_NODE
+const isTextNode = (n) => n.nodeType === 3; // Node.TEXT_NODE
+// .tagName works with DOM and cheerio 0.22.0, but:
+//   * With DOM, .tagName is an uppercase string.
+//   * With cheerio 0.22.0, .tagName is a lowercase string.
+// For consistency, this function always returns a lowercase string.
+const tagName = (n) => n.tagName && n.tagName.toLowerCase();
+// .childNodes works with DOM and cheerio 0.22.0, except in cheerio the .childNodes property does
+// not exist on text nodes (and maybe other non-element nodes).
+const childNodes = (n) => n.childNodes || [];
+const getAttribute = (n, a) => {
+  // .getAttribute() works with DOM but not with cheerio 0.22.0.
+  if (n.getAttribute != null) return n.getAttribute(a);
+  // .attribs[] works with cheerio 0.22.0 but not with DOM.
+  if (n.attribs != null) return n.attribs[a];
+  return null;
+};
+
+const makeContentCollector = (collectStyles, abrowser, apool, className2Author) => {
   const _blockElems = {
     div: 1,
     p: 1,
@@ -75,7 +68,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
     _blockElems[element] = 1;
   });
 
-  const isBlockElement = (n) => !!_blockElems[dom.tagName(n) || ''];
+  const isBlockElement = (n) => !!_blockElems[tagName(n) || ''];
 
   const textify = (str) => sanitizeUnicode(
       str.replace(/(\n | \n)/g, ' ')
@@ -83,7 +76,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
           .replace(/\xa0/g, ' ')
           .replace(/\t/g, '        '));
 
-  const getAssoc = (node, name) => dom.nodeProp(node, `_magicdom_${name}`);
+  const getAssoc = (node, name) => node[`_magicdom_${name}`];
 
   const lines = (() => {
     const textArray = [];
@@ -131,13 +124,17 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
   let selEnd = [-1, -1];
   const _isEmpty = (node, state) => {
     // consider clean blank lines pasted in IE to be empty
-    if (dom.childNodes(node).length === 0) return true;
-    if (dom.childNodes(node).length === 1 &&
+    if (childNodes(node).length === 0) return true;
+    if (childNodes(node).length === 1 &&
         getAssoc(node, 'shouldBeEmpty') &&
-        dom.innerHTML(node) === '&nbsp;' &&
+        // Note: The .innerHTML property exists on DOM Element objects but not on cheerio's
+        // Element-like objects (cheerio v0.22.0) so this equality check will always be false.
+        // Cheerio's Element-like objects have no equivalent to .innerHTML. (Cheerio objects have an
+        // .html() method, but that isn't accessible here.)
+        node.innerHTML === '&nbsp;' &&
         !getAssoc(node, 'unpasted')) {
       if (state) {
-        const child = dom.childNodes(node)[0];
+        const child = childNodes(node)[0];
         _reachPoint(child, 0, state);
         _reachPoint(child, 1, state);
       }
@@ -157,7 +154,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
   };
 
   const _reachBlockPoint = (nd, idx, state) => {
-    if (!dom.isTextNode(nd)) _reachPoint(nd, idx, state);
+    if (!isTextNode(nd)) _reachPoint(nd, idx, state);
   };
 
   const _reachPoint = (nd, idx, state) => {
@@ -323,15 +320,15 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
     const startLine = lines.length() - 1;
     _reachBlockPoint(node, 0, state);
 
-    if (dom.isTextNode(node)) {
-      const tname = dom.getAttribute(node.parentNode, 'name');
-      const context = {cc: this, state, tname, node, text: dom.nodeValue(node)};
+    if (isTextNode(node)) {
+      const tname = getAttribute(node.parentNode, 'name');
+      const context = {cc: this, state, tname, node, text: node.nodeValue};
       // Hook functions may either return a string (deprecated) or modify context.text. If any hook
       // function modifies context.text then all returned strings are ignored. If no hook functions
       // modify context.text, the first hook function to return a string wins.
       const [hookTxt] =
           hooks.callAll('collectContentLineText', context).filter((s) => typeof s === 'string');
-      let txt = context.text === dom.nodeValue(node) && hookTxt != null ? hookTxt : context.text;
+      let txt = context.text === node.nodeValue && hookTxt != null ? hookTxt : context.text;
 
       let rest = '';
       let x = 0; // offset into original text
@@ -381,8 +378,8 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
           cc.startNewLine(state);
         }
       }
-    } else if (dom.isElementNode(node)) {
-      const tname = dom.tagName(node) || '';
+    } else if (isElementNode(node)) {
+      const tname = tagName(node) || '';
 
       if (tname === 'img') {
         hooks.callAll('collectContentImage', {
@@ -400,7 +397,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
 
       if (tname === 'br') {
         this.breakLine = true;
-        const tvalue = dom.getAttribute(node, 'value');
+        const tvalue = getAttribute(node, 'value');
         const [startNewLine = true] = hooks.callAll('collectContentLineBreak', {
           cc: this,
           state,
@@ -415,8 +412,8 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
       } else if (tname === 'script' || tname === 'style') {
         // ignore
       } else if (!isEmpty) {
-        let styl = dom.getAttribute(node, 'style');
-        let cls = dom.getAttribute(node, 'class');
+        let styl = getAttribute(node, 'style');
+        let cls = getAttribute(node, 'class');
         let isPre = (tname === 'pre');
         if ((!isPre) && abrowser && abrowser.safari) {
           isPre = (styl && /\bwhite-space:\s*pre\b/i.exec(styl));
@@ -463,14 +460,14 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
             cc.doAttrib(state, 'strikethrough');
           }
           if (tname === 'ul' || tname === 'ol') {
-            let type = dom.getAttribute(node, 'class');
+            let type = getAttribute(node, 'class');
             const rr = cls && /(?:^| )list-([a-z]+[0-9]+)\b/.exec(cls);
             // lists do not need to have a type, so before we make a wrong guess
             // check if we find a better hint within the node's children
             if (!rr && !type) {
-              for (const child of dom.childNodes(node)) {
-                if (dom.tagName(child) !== 'ul') continue;
-                type = dom.getAttribute(child, 'class');
+              for (const child of childNodes(node)) {
+                if (tagName(child) !== 'ul') continue;
+                type = getAttribute(child, 'class');
                 if (type) break;
               }
             }
@@ -478,7 +475,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
               type = rr[1];
             } else {
               if (tname === 'ul') {
-                const cls = dom.getAttribute(node, 'class');
+                const cls = getAttribute(node, 'class');
                 if ((type && type.match('indent')) || (cls && cls.match('indent'))) {
                   type = 'indent';
                 } else {
@@ -504,7 +501,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
                Note how the <ol> item has to be inside a <li>
                Because of this we don't increment the start number
               */
-              if (node.parentNode && dom.tagName(node.parentNode) !== 'ol') {
+              if (node.parentNode && tagName(node.parentNode) !== 'ol') {
                 /*
                 TODO: start number has to increment based on indentLevel(numberX)
                 This means we have to build an object IE
@@ -521,7 +518,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
               }
             }
             // UL list items never modify the start value.
-            if (node.parentNode && dom.tagName(node.parentNode) === 'ul') {
+            if (node.parentNode && tagName(node.parentNode) === 'ul') {
               state.start++;
               // TODO, this is hacky.
               // Because if the first item is an UL it will increment a list no?
@@ -550,7 +547,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
           }
         }
 
-        for (const c of dom.childNodes(node)) {
+        for (const c of childNodes(node)) {
           cc.collectContent(c, state);
         }
 
