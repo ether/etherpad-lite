@@ -48,24 +48,9 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
     tagName: (n) => n.tagName && n.tagName.toLowerCase(),
     // .nodeValue works with DOM and cheerio 0.22.0.
     nodeValue: (n) => n.nodeValue,
-    // Returns the number of Node children (n.childNodes.length), not the number of Element children
-    // (n.children.length in DOM).
-    numChildNodes: (n) => {
-      // .childNodes.length works with DOM and cheerio 0.22.0, except in cheerio the .childNodes
-      // property does not exist on text nodes (and maybe other non-element nodes).
-      if (n.childNodes == null) return 0;
-      return n.childNodes.length;
-    },
-    // Returns the i'th Node child (n.childNodes[i]), not the i'th Element child (n.children[i] in
-    // DOM).
-    childNode: (n, i) => {
-      if (n.childNodes.item == null) {
-        // .childNodes[] works with DOM and cheerio 0.22.0.
-        return n.childNodes[i];
-      }
-      // .childNodes.item() works with DOM but not with cheerio 0.22.0.
-      return n.childNodes.item(i);
-    },
+    // .childNodes works with DOM and cheerio 0.22.0, except in cheerio the .childNodes property
+    // does not exist on text nodes (and maybe other non-element nodes).
+    childNodes: (n) => n.childNodes || [],
     nodeProp: (n, p) => n[p],
     getAttribute: (n, a) => {
       // .getAttribute() works with DOM but not with cheerio 0.22.0.
@@ -146,13 +131,13 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
   let selEnd = [-1, -1];
   const _isEmpty = (node, state) => {
     // consider clean blank lines pasted in IE to be empty
-    if (dom.numChildNodes(node) === 0) return true;
-    if (dom.numChildNodes(node) === 1 &&
+    if (dom.childNodes(node).length === 0) return true;
+    if (dom.childNodes(node).length === 1 &&
         getAssoc(node, 'shouldBeEmpty') &&
         dom.innerHTML(node) === '&nbsp;' &&
         !getAssoc(node, 'unpasted')) {
       if (state) {
-        const child = dom.childNode(node, 0);
+        const child = dom.childNodes(node)[0];
         _reachPoint(child, 0, state);
         _reachPoint(child, 1, state);
       }
@@ -483,8 +468,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
             // lists do not need to have a type, so before we make a wrong guess
             // check if we find a better hint within the node's children
             if (!rr && !type) {
-              for (let i = 0; i < dom.numChildNodes(node); i++) {
-                const child = dom.childNode(node, i);
+              for (const child of dom.childNodes(node)) {
                 if (dom.tagName(child) !== 'ul') continue;
                 type = dom.getAttribute(child, 'class');
                 if (type) break;
@@ -566,9 +550,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
           }
         }
 
-        const nc = dom.numChildNodes(node);
-        for (let i = 0; i < nc; i++) {
-          const c = dom.childNode(node, i);
+        for (const c of dom.childNodes(node)) {
           cc.collectContent(c, state);
         }
 
