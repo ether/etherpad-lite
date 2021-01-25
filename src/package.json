@@ -89,6 +89,7 @@
     "etherpad-cli-client": "0.0.9",
     "mocha": "7.1.2",
     "mocha-froth": "^0.2.10",
+    "mochawesome": "^6.2.1",
     "nyc": "15.0.1",
     "set-cookie-parser": "^2.4.6",
     "sinon": "^9.2.0",
@@ -151,6 +152,8 @@
     "lint": "eslint .",
     "test": "nyc mocha --timeout 30000 --recursive ../tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api"
+# leaving for reference, might re-use
+# --reporter mochawesome --reporter-options html=false
   },
   "version": "1.8.7",
   "license": "Apache-2.0"
