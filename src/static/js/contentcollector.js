@@ -509,7 +509,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
             // This has undesirable behavior in Chrome but is right in other browsers.
             // See https://github.com/ether/etherpad-lite/issues/2412 for reasoning
             if (!abrowser.chrome) oldListTypeOrNull = (_enterList(state, undefined) || 'none');
-          } else if ((tname === 'li')) {
+          } else if (tname === 'li') {
             state.lineAttributes.start = state.start || 0;
             _recalcAttribString(state);
             if (state.lineAttributes.list.indexOf('number') !== -1) {
