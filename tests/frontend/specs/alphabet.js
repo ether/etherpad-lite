@@ -8,6 +8,7 @@ describe('All the alphabet works n stuff', function () {
   });
 
   it('when you enter any char it appears right', function (done) {
+    this.timeout(100);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
