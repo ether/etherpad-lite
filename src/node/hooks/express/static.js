@@ -5,8 +5,11 @@ const plugins = require('../../../static/js/pluginfw/plugin_defs');
 const CachingMiddleware = require('../../utils/caching_middleware');
 const Yajsml = require('etherpad-yajsml');
 const _ = require('underscore');
+const stats = require('../../stats');
 
 exports.expressCreateServer = (hookName, args, cb) => {
+  stats.gauge('minificationDuration', () => minificationDuration);
+  const preMinification = Date.now();
   // Cache both minified and static.
   const assetCache = new CachingMiddleware();
   args.app.all(/\/javascripts\/(.*)/, assetCache.handle);
@@ -18,6 +21,10 @@ exports.expressCreateServer = (hookName, args, cb) => {
   // Setup middleware that will package JavaScript files served by minify for
   // CommonJS loader on the client-side.
   // Hostname "invalid.invalid" is a dummy value to allow parsing as a URI.
+  const minificationDuration = Date.now() - preMinification;
+
+  stats.gauge('YajsmlDuration', () => yajsmlDuration);
+  const preYajsml = Date.now();
   const jsServer = new (Yajsml.Server)({
     rootPath: 'javascripts/src/',
     rootURI: 'http://invalid.invalid/static/js/',
@@ -33,6 +40,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
   jsServer.setAssociator(associator);
 
   args.app.use(jsServer.handle.bind(jsServer));
+  const yajsmlDuration = Date.now() - preYajsml;
 
   // serve plugin definitions
   // not very static, but served here so that client can do

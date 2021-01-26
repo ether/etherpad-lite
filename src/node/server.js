@@ -62,12 +62,10 @@ exports.start = async () => {
 
   // Performance stats gauges
   // We use gauges because a reload might replace the value
-  stats.gauge('postNpmLoad', () => preNpmLoad);
-  stats.gauge('postNpmLoad', () => postNpmLoad);
-
+  stats.gauge('npmLoadDuration', () => postNpmLoad);
   const preNpmLoad = Date.now() - stats.startTime;
   await util.promisify(npm.load)();
-  const postNpmLoad = Date.now() - stats.startTime;
+  const npmLoadDuration = Date.now() - stats.startTime;
 
   try {
     stats.gauge('dbInitDuration', () => dbInitDuration);
