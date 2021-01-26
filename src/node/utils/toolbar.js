@@ -59,7 +59,7 @@ ButtonsGroup.prototype.addButton = function (button) {
 ButtonsGroup.prototype.render = function () {
   if (this.buttons && this.buttons.length === 1) {
     this.buttons[0].grouping = '';
-  } else {
+  } else if (this.buttons && this.buttons.length > 1) {
     _.first(this.buttons).grouping = 'grouped-left';
     _.last(this.buttons).grouping = 'grouped-right';
     _.each(this.buttons.slice(1, -1), (btn) => {
