@@ -1,6 +1,10 @@
 'use strict';
 
 // Farbtastic 2.0 alpha
+// Original can be found at:
+// https://github.com/mattfarina/farbtastic/blob/71ca15f4a09c8e5a08a1b0d1cf37ef028adf22f0/src/farbtastic.js
+// Licensed under the terms of the GNU General Public License v2.0:
+// https://github.com/mattfarina/farbtastic/blob/71ca15f4a09c8e5a08a1b0d1cf37ef028adf22f0/LICENSE.txt
 // edited by Sebastian Castro <sebastian.castro@protonmail.com> on 2020-04-06
 (function ($) {
 
