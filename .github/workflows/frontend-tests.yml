@@ -90,7 +90,7 @@ jobs:
 
     - name: Write custom settings.json with loglevel WARN
       run: |
-        "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/' < settings.json.template > settings.json.loglevel"
+        "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/' < settings.json.template > settings.json.log"
 
     - name: Set minify to false
       run: "sed -i 's/\"minify\": \"true\",/\"minify\": \"false\",/' settings.json"
