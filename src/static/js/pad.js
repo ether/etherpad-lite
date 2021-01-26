@@ -28,7 +28,6 @@ let socket;
 // assigns to the global `$` and augments it with plugins.
 require('./jquery');
 require('./farbtastic');
-require('./excanvas');
 require('./gritter');
 
 const Cookies = require('./pad_utils').Cookies;

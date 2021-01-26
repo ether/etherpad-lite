@@ -1,3 +1,4 @@
+'use strict';
 /**
  * The API Handler handles all API http requests
  */
@@ -37,7 +38,8 @@ try {
   apikey = fs.readFileSync(apikeyFilename, 'utf8');
   apiHandlerLogger.info(`Api key file read from: "${apikeyFilename}"`);
 } catch (e) {
-  apiHandlerLogger.info(`Api key file "${apikeyFilename}" not found. Creating with random contents.`);
+  apiHandlerLogger.info(
+      `Api key file "${apikeyFilename}" not found.  Creating with random contents.`);
   apikey = randomString(32);
   fs.writeFileSync(apikeyFilename, apikey, 'utf8');
 }

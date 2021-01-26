@@ -1,3 +1,4 @@
+'use strict';
 /**
  * The Group Manager provides functions to manage groups in the database
  */
@@ -18,13 +19,13 @@
  * limitations under the License.
  */
 
-const customError = require('../utils/customError');
-const randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
+const CustomError = require('../utils/customError');
+const randomString = require('../../static/js/pad_utils').randomString;
 const db = require('./DB');
 const padManager = require('./PadManager');
 const sessionManager = require('./SessionManager');
 
-exports.listAllGroups = async function () {
+exports.listAllGroups = async () => {
   let groups = await db.get('groups');
   groups = groups || {};
 
@@ -32,17 +33,20 @@ exports.listAllGroups = async function () {
   return {groupIDs};
 };
 
-exports.deleteGroup = async function (groupID) {
+exports.deleteGroup = async (groupID) => {
   const group = await db.get(`group:${groupID}`);
 
   // ensure group exists
   if (group == null) {
     // group does not exist
-    throw new customError('groupID does not exist', 'apierror');
+    throw new CustomError('groupID does not exist', 'apierror');
   }
 
   // iterate through all pads of this group and delete them (in parallel)
-  await Promise.all(Object.keys(group.pads).map((padID) => padManager.getPad(padID).then((pad) => pad.remove())));
+  await Promise.all(Object.keys(group.pads)
+      .map((padID) => padManager.getPad(padID)
+          .then((pad) => pad.remove())
+      ));
 
   // iterate through group2sessions and delete all sessions
   const group2sessions = await db.get(`group2sessions:${groupID}`);
@@ -76,14 +80,14 @@ exports.deleteGroup = async function (groupID) {
   await db.set('groups', newGroups);
 };
 
-exports.doesGroupExist = async function (groupID) {
+exports.doesGroupExist = async (groupID) => {
   // try to get the group entry
   const group = await db.get(`group:${groupID}`);
 
   return (group != null);
 };
 
-exports.createGroup = async function () {
+exports.createGroup = async () => {
   // search for non existing groupID
   const groupID = `g.${randomString(16)}`;
 
@@ -103,10 +107,10 @@ exports.createGroup = async function () {
   return {groupID};
 };
 
-exports.createGroupIfNotExistsFor = async function (groupMapper) {
+exports.createGroupIfNotExistsFor = async (groupMapper) => {
   // ensure mapper is optional
   if (typeof groupMapper !== 'string') {
-    throw new customError('groupMapper is not a string', 'apierror');
+    throw new CustomError('groupMapper is not a string', 'apierror');
   }
 
   // try to get a group for this mapper
@@ -128,7 +132,7 @@ exports.createGroupIfNotExistsFor = async function (groupMapper) {
   return result;
 };
 
-exports.createGroupPad = async function (groupID, padName, text) {
+exports.createGroupPad = async (groupID, padName, text) => {
   // create the padID
   const padID = `${groupID}$${padName}`;
 
@@ -136,7 +140,7 @@ exports.createGroupPad = async function (groupID, padName, text) {
   const groupExists = await exports.doesGroupExist(groupID);
 
   if (!groupExists) {
-    throw new customError('groupID does not exist', 'apierror');
+    throw new CustomError('groupID does not exist', 'apierror');
   }
 
   // ensure pad doesn't exist already
@@ -144,7 +148,7 @@ exports.createGroupPad = async function (groupID, padName, text) {
 
   if (padExists) {
     // pad exists already
-    throw new customError('padName does already exist', 'apierror');
+    throw new CustomError('padName does already exist', 'apierror');
   }
 
   // create the pad
@@ -156,12 +160,12 @@ exports.createGroupPad = async function (groupID, padName, text) {
   return {padID};
 };
 
-exports.listPads = async function (groupID) {
+exports.listPads = async (groupID) => {
   const exists = await exports.doesGroupExist(groupID);
 
   // ensure the group exists
   if (!exists) {
-    throw new customError('groupID does not exist', 'apierror');
+    throw new CustomError('groupID does not exist', 'apierror');
   }
 
   // group exists, let's get the pads

@@ -1,9 +1,11 @@
-'use strict';
-
 // Farbtastic 2.0 alpha
+// Original can be found at:
+// https://github.com/mattfarina/farbtastic/blob/71ca15f4a09c8e5a08a1b0d1cf37ef028adf22f0/src/farbtastic.js
+// Licensed under the terms of the GNU General Public License v2.0:
+// https://github.com/mattfarina/farbtastic/blob/71ca15f4a09c8e5a08a1b0d1cf37ef028adf22f0/LICENSE.txt
 // edited by Sebastian Castro <sebastian.castro@protonmail.com> on 2020-04-06
 (function ($) {
-
+  
 var __debug = false;
 var __factor = 0.8;
 
@@ -19,7 +21,7 @@ $.farbtastic = function (container, options) {
 
 $._farbtastic = function (container, options) {
   var fb = this;
-
+  
   /////////////////////////////////////////////////////
 
   /**
@@ -84,16 +86,6 @@ $._farbtastic = function (container, options) {
   }
 
   /////////////////////////////////////////////////////
-  //excanvas-compatible building of canvases
-  fb._makeCanvas = function(className){
-    var c = document.createElement('canvas');
-    if (!c.getContext) { // excanvas hack
-        c = window.G_vmlCanvasManager.initElement(c);
-        c.getContext(); //this creates the excanvas children
-    }
-    $(c).addClass(className);
-    return c;
-  }
 
   /**
    * Initialize the color picker widget.
@@ -109,14 +101,26 @@ $._farbtastic = function (container, options) {
       .html(
         '<div class="farbtastic" style="position: relative">' +
           '<div class="farbtastic-solid"></div>' +
+          '<canvas class="farbtastic-mask"></canvas>' +
+          '<canvas class="farbtastic-overlay"></canvas>' +
         '</div>'
       )
-      .children('.farbtastic')
-        .append(fb._makeCanvas('farbtastic-mask'))
-        .append(fb._makeCanvas('farbtastic-overlay'))
-      .end()
       .find('*').attr(dim).css(dim).end()
       .find('div>*').css('position', 'absolute');
+
+    // IE Fix: Recreate canvas elements with doc.createElement and excanvas.
+    browser.msie && $('canvas', container).each(function () {
+      // Fetch info.
+      var attr = { 'class': $(this).attr('class'), style: this.getAttribute('style') },
+          e = document.createElement('canvas');
+      // Replace element.
+      $(this).before($(e).attr(attr)).remove();
+      // Init with explorerCanvas.
+      G_vmlCanvasManager && G_vmlCanvasManager.initElement(e);
+      // Set explorerCanvas elements dimensions and absolute positioning.
+      $(e).attr(dim).css(dim).css('position', 'absolute')
+        .find('*').attr(dim).css(dim);
+    });
 
     // Determine layout
     fb.radius = (options.width - options.wheelWidth) / 2 - 1;
@@ -137,7 +141,7 @@ $._farbtastic = function (container, options) {
     fb.ctxOverlay = fb.cnvOverlay[0].getContext('2d');
     fb.ctxMask.translate(fb.mid, fb.mid);
     fb.ctxOverlay.translate(fb.mid, fb.mid);
-
+    
     // Draw widget base layers.
     fb.drawCircle();
     fb.drawMask();
@@ -160,12 +164,12 @@ $._farbtastic = function (container, options) {
     m.lineWidth = w / r;
     m.scale(r, r);
     // Each segment goes from angle1 to angle2.
-    for (let i = 0; i <= n; ++i) {
+    for (var i = 0; i <= n; ++i) {
       var d2 = i / n,
           angle2 = d2 * Math.PI * 2,
           // Endpoints
           x1 = Math.sin(angle1), y1 = -Math.cos(angle1);
-          const x2 = Math.sin(angle2), y2 = -Math.cos(angle2),
+          x2 = Math.sin(angle2), y2 = -Math.cos(angle2),
           // Midpoint chosen so that the endpoints are tangent to the circle.
           am = (angle1 + angle2) / 2,
           tan = 1 / Math.cos((angle2 - angle1) / 2),
@@ -173,16 +177,37 @@ $._farbtastic = function (container, options) {
           // New color
           color2 = fb.pack(fb.HSLToRGB([d2, 1, 0.5]));
       if (i > 0) {
-        // Create gradient fill between the endpoints.
-        var grad = m.createLinearGradient(x1, y1, x2, y2);
-        grad.addColorStop(0, color1);
-        grad.addColorStop(1, color2);
-        m.strokeStyle = grad;
-        // Draw quadratic curve segment.
-        m.beginPath();
-        m.moveTo(x1, y1);
-        m.quadraticCurveTo(xm, ym, x2, y2);
-        m.stroke();
+        if (browser.msie) {
+          // IE's gradient calculations mess up the colors. Correct along the diagonals.
+          var corr = (1 + Math.min(Math.abs(Math.tan(angle1)), Math.abs(Math.tan(Math.PI / 2 - angle1)))) / n;
+          color1 = fb.pack(fb.HSLToRGB([d1 - 0.15 * corr, 1, 0.5]));
+          color2 = fb.pack(fb.HSLToRGB([d2 + 0.15 * corr, 1, 0.5]));
+          // Create gradient fill between the endpoints.
+          var grad = m.createLinearGradient(x1, y1, x2, y2);
+          grad.addColorStop(0, color1);
+          grad.addColorStop(1, color2);
+          m.fillStyle = grad;
+          // Draw quadratic curve segment as a fill.
+          var r1 = (r + w / 2) / r, r2 = (r - w / 2) / r; // inner/outer radius.
+          m.beginPath();
+          m.moveTo(x1 * r1, y1 * r1);
+          m.quadraticCurveTo(xm * r1, ym * r1, x2 * r1, y2 * r1);
+          m.lineTo(x2 * r2, y2 * r2);
+          m.quadraticCurveTo(xm * r2, ym * r2, x1 * r2, y1 * r2);
+          m.fill();
+        }
+        else {
+          // Create gradient fill between the endpoints.
+          var grad = m.createLinearGradient(x1, y1, x2, y2);
+          grad.addColorStop(0, color1);
+          grad.addColorStop(1, color2);
+          m.strokeStyle = grad;
+          // Draw quadratic curve segment.
+          m.beginPath();
+          m.moveTo(x1, y1);
+          m.quadraticCurveTo(xm, ym, x2, y2);
+          m.stroke();
+        }
       }
       // Prevent seams where curves join.
       angle1 = angle2 - nudge; color1 = color2; d1 = d2;
@@ -190,7 +215,7 @@ $._farbtastic = function (container, options) {
     m.restore();
     __debug && $('body').append('<div>drawCircle '+ (+(new Date()) - tm) +'ms');
   };
-
+  
   /**
    * Draw the saturation/luminance mask.
    */
@@ -214,9 +239,9 @@ $._farbtastic = function (container, options) {
 
           outputPixel(x, y, c, a);
         }
-      }
+      }      
     }
-
+ 
     // Method #1: direct pixel access (new Canvas).
     if (fb.ctxMask.getImageData) {
       // Create half-resolution buffer.
@@ -226,7 +251,7 @@ $._farbtastic = function (container, options) {
       var ctx = buffer.getContext('2d');
       var frame = ctx.getImageData(0, 0, sz + 1, sz + 1);
 
-      let i = 0;
+      var i = 0;
       calculateMask(sz, sz, function (x, y, c, a) {
         frame.data[i++] = frame.data[i++] = frame.data[i++] = c * 255;
         frame.data[i++] = a * 255;
@@ -277,7 +302,7 @@ $._farbtastic = function (container, options) {
         }
         cache.push([c, a]);
       });
-    }
+    }    
     __debug && $('body').append('<div>drawMask '+ (+(new Date()) - tm) +'ms');
   }
 
@@ -301,7 +326,7 @@ $._farbtastic = function (container, options) {
 
     // Update the overlay canvas.
     fb.ctxOverlay.clearRect(-fb.mid, -fb.mid, sz, sz);
-    for (let i in circles) {
+    for (i in circles) {
       var c = circles[i];
       fb.ctxOverlay.lineWidth = c.lw;
       fb.ctxOverlay.strokeStyle = c.c;
@@ -323,7 +348,7 @@ $._farbtastic = function (container, options) {
 
     // Draw markers
     fb.drawMarkers();
-
+    
     // Linked elements or callback
     if (typeof fb.callback == 'object') {
       // Set background/foreground color
@@ -343,15 +368,15 @@ $._farbtastic = function (container, options) {
       fb.callback.call(fb, fb.color);
     }
   }
-
+  
   /**
    * Helper for returning coordinates relative to the center.
    */
   fb.widgetCoords = function (event) {
     return {
-      x: event.pageX - fb.offset.left - fb.mid,
+      x: event.pageX - fb.offset.left - fb.mid,    
       y: event.pageY - fb.offset.top - fb.mid
-    };
+    };    
   }
 
   /**
@@ -414,7 +439,7 @@ $._farbtastic = function (container, options) {
   fb.packDX = function (c, a) {
     return '#' + fb.dec2hex(a) + fb.dec2hex(c) + fb.dec2hex(c) + fb.dec2hex(c);
   };
-
+  
   fb.pack = function (rgb) {
     var r = Math.round(rgb[0] * 255);
     var g = Math.round(rgb[1] * 255);

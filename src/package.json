@@ -65,7 +65,7 @@
     "security": "1.0.0",
     "semver": "5.6.0",
     "slide": "1.1.6",
-    "socket.io": "^2.3.0",
+    "socket.io": "^2.4.1",
     "terser": "^4.7.0",
     "threads": "^1.4.0",
     "tiny-worker": "^2.3.0",
@@ -102,7 +102,6 @@
       "/static/js/admin/jquery.autosize.js",
       "/static/js/admin/minify.json.js",
       "/static/js/browser.js",
-      "/static/js/excanvas.js",
       "/static/js/farbtastic.js",
       "/static/js/gritter.js",
       "/static/js/html10n.js",
@@ -150,7 +149,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "nyc mocha --timeout 30000 --recursive ../tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs --reporter mochawesome",
+    "test": "nyc mocha --timeout 120000 --recursive ../tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs --reporter mochawesome",
     "test-container": "nyc mocha --timeout 5000 ../tests/container/specs/api --reporter mochawesome"
   },
   "version": "1.8.7",
