@@ -29,7 +29,7 @@ jobs:
     - name: Write custom settings.json with loglevel WARN and minify true
       run: |
         "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/' < settings.json.template > settings.json"
-        "sed -i 's/\"minify\": \"true\",/\"minify\": \"false\",/' settings.json"
+      #  "sed -i 's/\"minify\": \"true\",/\"minify\": \"false\",/' settings.json"
 
     - name: Run the frontend tests
       shell: bash
@@ -90,7 +90,7 @@ jobs:
     - name: Write custom settings.json with loglevel WARN and minify true
       run: |
         "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/' < settings.json.template > settings.json.loglevel"
-        "sed -i 's/\"minify\": \"true\",/\"minify\": \"false\",/' settings.json"
+      # "sed -i 's/\"minify\": \"true\",/\"minify\": \"false\",/' settings.json"
 
       # XXX we should probably run all tests, because plugins could effect their results
     - name: Remove standard frontend test files, so only plugin tests are run
