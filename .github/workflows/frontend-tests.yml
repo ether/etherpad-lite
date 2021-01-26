@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   withoutpluginsAndWithoutMinification:
-    name: without plugins
+    name: without plugins and without minification
     runs-on: ubuntu-latest
 
     steps:
@@ -42,7 +42,7 @@ jobs:
         tests/frontend/travis/runner.sh
 
   withpluginsAndWithoutMinification:
-    name: with plugins
+    name: with plugins and without minification
     runs-on: ubuntu-latest
 
     steps:
@@ -107,7 +107,7 @@ jobs:
         tests/frontend/travis/runner.sh
 
   withoutpluginsAndWithMinification:
-    name: without plugins
+    name: without plugins and with minification
     runs-on: ubuntu-latest
 
     steps:
@@ -143,7 +143,7 @@ jobs:
         tests/frontend/travis/runner.sh
 
   withpluginsAndWithMinification:
-    name: with plugins
+    name: with plugins and with minification
     runs-on: ubuntu-latest
 
     steps:
