@@ -26,10 +26,10 @@ jobs:
       id: environment
       run: echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.sha }})"
 
-    - name: Write custom settings.json with loglevel WARN
+    - name: Write custom settings.json with loglevel WARN and minify true
       run: |
-        "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/' < settings.json.template > settings.json.loglevel"
-        "sed 's/\"minify\": \"true\",/\"minify\": \"false\",/' < settings.json.loglevel > settings.json"
+        "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/' < settings.json.template > settings.json"
+        "sed -i 's/\"minify\": \"true\",/\"minify\": \"false\",/' settings.json"
 
     - name: Run the frontend tests
       shell: bash
@@ -87,10 +87,10 @@ jobs:
       id: environment
       run: echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.sha }})"
 
-    - name: Write custom settings.json with loglevel WARN
+    - name: Write custom settings.json with loglevel WARN and minify true
       run: |
         "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/' < settings.json.template > settings.json.loglevel"
-        "sed 's/\"minify\": \"true\",/\"minify\": \"false\",/' < settings.json.loglevel > settings.json"
+        "sed -i 's/\"minify\": \"true\",/\"minify\": \"false\",/' settings.json"
 
       # XXX we should probably run all tests, because plugins could effect their results
     - name: Remove standard frontend test files, so only plugin tests are run
