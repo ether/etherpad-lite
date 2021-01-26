@@ -60,16 +60,39 @@ exports.start = async () => {
   stats.gauge('memoryUsage', () => process.memoryUsage().rss);
   stats.gauge('memoryUsageHeap', () => process.memoryUsage().heapUsed);
 
+  // Performance stats gauges
+  // We use gauges because a reload might replace the value
+  stats.gauge('postNpmLoad', () => preNpmLoad);
+  stats.gauge('postNpmLoad', () => postNpmLoad);
+
+  const preNpmLoad = Date.now() - stats.startTime;
   await util.promisify(npm.load)();
+  const postNpmLoad = Date.now() - stats.startTime;
 
   try {
+    stats.gauge('dbInitDuration', () => dbInitDuration);
+    const preDbInit = Date.now();
     await db.init();
+    const dbInitDuration = Date.now() - preDbInit;
+
+    stats.gauge('loadPluginsDuration', () => loadPluginsDuration);
+    const prePluginsUpdate = Date.now();
     await plugins.update();
+    const loadPluginsDuration = Date.now() - prePluginsUpdate;
+
     console.info(`Installed plugins: ${plugins.formatPluginsWithVersion()}`);
     console.debug(`Installed parts:\n${plugins.formatParts()}`);
     console.debug(`Installed hooks:\n${plugins.formatHooks()}`);
+
+    stats.gauge('loadSettingDuration', () => loadSettingsDuration);
+    const preLoadSettings = Date.now();
     await hooks.aCallAll('loadSettings', {settings});
+    const loadSettingsDuration = Date.now() - preLoadSettings;
+
+    stats.gauge('createSettingsDuration', () => createSettingsDuration);
+    const preCreateServer = Date.now();
     await hooks.aCallAll('createServer');
+    const createSettingsDuration = Date.now() - preCreateServer;
   } catch (e) {
     console.error(`exception thrown: ${e.message}`);
     if (e.stack) console.log(e.stack);
