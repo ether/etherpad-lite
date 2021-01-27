@@ -50,7 +50,7 @@ describe('Chat messages and UI', function () {
   });
 
   it('makes chat stick to right side of the screen via settings, remove sticky via settings, close it', async function () {
-    this.timeout(2000);
+    this.timeout(5000);
     await helper.showSettings();
 
     await helper.enableStickyChatviaSettings();
@@ -67,7 +67,7 @@ describe('Chat messages and UI', function () {
   });
 
   it('makes chat stick to right side of the screen via icon on the top right, remove sticky via icon, close it', async function () {
-    this.timeout(2000);
+    this.timeout(5000);
     await helper.showChat();
 
     await helper.enableStickyChatviaIcon();
