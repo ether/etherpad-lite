@@ -8,7 +8,7 @@ describe('assign ordered list', function () {
   });
 
   it('inserts ordered list text', function (done) {
-    this.timeout(100);
+    this.timeout(200);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -56,7 +56,7 @@ describe('assign ordered list', function () {
       });
 
       it('inserts unordered list', function (done) {
-        this.timeout(100);
+        this.timeout(200);
         helper.waitFor(() => helper.padInner$('div').first().find('ol li').length === 1).done(done);
       });
     });
@@ -129,7 +129,7 @@ describe('Pressing Tab in an OL increases and decreases indentation', function (
   });
 
   it('indent and de-indent list item with keypress', function (done) {
-    this.timeout(100);
+    this.timeout(200);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -164,7 +164,7 @@ describe('Pressing indent/outdent button in an OL increases and decreases indent
   });
 
   it('indent and de-indent list item with indent button', function (done) {
-    this.timeout(100);
+    this.timeout(200);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
