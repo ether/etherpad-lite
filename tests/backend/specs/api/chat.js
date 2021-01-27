@@ -1,3 +1,5 @@
+'use strict';
+
 function m(mod) { return `${__dirname}/../../../../src/${mod}`; }
 
 const common = require('../../common');
@@ -53,7 +55,9 @@ describe(__filename, function () {
     it('Creates an author with a name set', function (done) {
       api.get(endPoint('createAuthor'))
           .expect((res) => {
-            if (res.body.code !== 0 || !res.body.data.authorID) throw new Error('Unable to create author');
+            if (res.body.code !== 0 || !res.body.data.authorID) {
+              throw new Error('Unable to create author');
+            }
             authorID = res.body.data.authorID; // we will be this author for the rest of the tests
           })
           .expect('Content-Type', /json/)
@@ -75,7 +79,7 @@ describe(__filename, function () {
 
 
   describe('getChatHead', function () {
-    this.timeout(20);
+    this.timeout(100);
     it('Gets the head of chat', function (done) {
       api.get(`${endPoint('getChatHead')}&padID=${padID}`)
           .expect((res) => {
@@ -93,7 +97,9 @@ describe(__filename, function () {
     it('Gets Chat History of a Pad', function (done) {
       api.get(`${endPoint('getChatHistory')}&padID=${padID}`)
           .expect((res) => {
-            if (res.body.data.messages.length !== 1) throw new Error('Chat History Length is wrong');
+            if (res.body.data.messages.length !== 1) {
+              throw new Error('Chat History Length is wrong');
+            }
             if (res.body.code !== 0) throw new Error('Unable to get chat history');
           })
           .expect('Content-Type', /json/)
@@ -102,7 +108,7 @@ describe(__filename, function () {
   });
 });
 
-var endPoint = function (point) {
+const endPoint = function (point) {
   return `/api/${apiVersion}/${point}?apikey=${apiKey}`;
 };
 
