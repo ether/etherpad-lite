@@ -4,7 +4,7 @@ describe('chat-load-messages', function () {
   let padName;
 
   it('creates a pad', function (done) {
-    this.timeout(3000);
+    this.timeout(5000);
     padName = helper.newPad(done);
   });
 

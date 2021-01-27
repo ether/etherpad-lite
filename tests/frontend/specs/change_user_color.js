@@ -8,7 +8,7 @@ describe('change user color', function () {
   });
 
   it('Color picker remembers the user color after a refresh', function (done) {
-    this.timeout(5000);
+    this.timeout(10000);
     const chrome$ = helper.padChrome$;
 
     // click on the settings button to make settings visible
