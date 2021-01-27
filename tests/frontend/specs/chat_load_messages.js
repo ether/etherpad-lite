@@ -4,12 +4,12 @@ describe('chat-load-messages', function () {
   let padName;
 
   it('creates a pad', function (done) {
-    this.timeout(5000);
+    this.timeout(20000);
     padName = helper.newPad(done);
   });
 
   it('adds a lot of messages', function (done) {
-    this.timeout(5000);
+    this.timeout(10000);
     const chrome$ = helper.padChrome$;
     const chatButton = chrome$('#chaticon');
     chatButton.click();
