@@ -26,10 +26,12 @@ describe(__filename, function () {
     const timesLimitPromise = promises.timesLimit(total, concurrency, makePromise);
 
     it('honors concurrency', async function () {
+      this.timeout(50);
       assert.equal(wantIndex, concurrency);
     });
 
     it('creates another when one completes', async function () {
+      this.timeout(50);
       const {promise, resolve} = testPromises.shift();
       resolve();
       await promise;
@@ -37,6 +39,7 @@ describe(__filename, function () {
     });
 
     it('creates the expected total number of promises', async function () {
+      this.timeout(50);
       while (testPromises.length > 0) {
         // Resolve them in random order to ensure that the resolution order doesn't matter.
         const i = Math.floor(Math.random() * Math.floor(testPromises.length));
@@ -48,10 +51,12 @@ describe(__filename, function () {
     });
 
     it('resolves', async function () {
+      this.timeout(50);
       await timesLimitPromise;
     });
 
     it('does not create too many promises if total < concurrency', async function () {
+      this.timeout(50);
       wantIndex = 0;
       assert.equal(testPromises.length, 0);
       const total = 7;
@@ -67,6 +72,7 @@ describe(__filename, function () {
     });
 
     it('accepts total === 0, concurrency > 0', async function () {
+      this.timeout(50);
       wantIndex = 0;
       assert.equal(testPromises.length, 0);
       await promises.timesLimit(0, concurrency, makePromise);
@@ -74,6 +80,7 @@ describe(__filename, function () {
     });
 
     it('accepts total === 0, concurrency === 0', async function () {
+      this.timeout(50);
       wantIndex = 0;
       assert.equal(testPromises.length, 0);
       await promises.timesLimit(0, 0, makePromise);
@@ -81,6 +88,7 @@ describe(__filename, function () {
     });
 
     it('rejects total > 0, concurrency === 0', async function () {
+      this.timeout(50);
       await assert.rejects(promises.timesLimit(total, 0, makePromise), RangeError);
     });
   });
