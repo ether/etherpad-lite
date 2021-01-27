@@ -7,7 +7,7 @@ describe('Chat messages and UI', function () {
   });
 
   it('opens chat, sends a message, makes sure it exists and hides chat', async function () {
-    this.timeout(1000);
+    this.timeout(2000);
     const chatValue = 'JohnMcLear';
 
     await helper.showChat();
@@ -30,7 +30,7 @@ describe('Chat messages and UI', function () {
   });
 
   it("makes sure that an empty message can't be sent", async function () {
-    this.timeout(1000);
+    this.timeout(2000);
     const chatValue = 'mluto';
 
     await helper.showChat();
@@ -50,7 +50,7 @@ describe('Chat messages and UI', function () {
   });
 
   it('makes chat stick to right side of the screen via settings, remove sticky via settings, close it', async function () {
-    this.timeout(1000);
+    this.timeout(2000);
     await helper.showSettings();
 
     await helper.enableStickyChatviaSettings();
@@ -67,7 +67,7 @@ describe('Chat messages and UI', function () {
   });
 
   it('makes chat stick to right side of the screen via icon on the top right, remove sticky via icon, close it', async function () {
-    this.timeout(1000);
+    this.timeout(2000);
     await helper.showChat();
 
     await helper.enableStickyChatviaIcon();
@@ -108,9 +108,9 @@ describe('Chat messages and UI', function () {
                 done();
               },
             });
-          }, 1000);
+          }, 2000);
         },
       });
-    }, 1000);
+    }, 2000);
   });
 });
