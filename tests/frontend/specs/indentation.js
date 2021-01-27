@@ -1,3 +1,5 @@
+'use strict';
+
 describe('indentation button', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
@@ -6,8 +8,8 @@ describe('indentation button', function () {
   });
 
   it('indent text with keypress', function (done) {
+    this.timeout(100);
     const inner$ = helper.padInner$;
-    const chrome$ = helper.padChrome$;
 
     // get the first text element out of the inner iframe
     const $firstTextElement = inner$('div').first();
@@ -23,6 +25,7 @@ describe('indentation button', function () {
   });
 
   it('indent text with button', function (done) {
+    this.timeout(100);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -33,6 +36,7 @@ describe('indentation button', function () {
   });
 
   it('keeps the indent on enter for the new line', function (done) {
+    this.timeout(150);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -57,8 +61,8 @@ describe('indentation button', function () {
   });
 
   it("indents text with spaces on enter if previous line ends with ':', '[', '(', or '{'", function (done) {
+    this.timeout(150);
     const inner$ = helper.padInner$;
-    const chrome$ = helper.padChrome$;
 
     // type a bit, make a line break and type again
     const $firstTextElement = inner$('div').first();
@@ -77,7 +81,8 @@ describe('indentation button', function () {
       // curly braces
       const $lineWithCurlyBraces = inner$('div').first().next().next().next();
       $lineWithCurlyBraces.sendkeys('{{}');
-      pressEnter(); // cannot use sendkeys('{enter}') here, browser does not read the command properly
+      // cannot use sendkeys('{enter}') here, browser does not read the command properly
+      pressEnter();
       const $lineAfterCurlyBraces = inner$('div').first().next().next().next().next();
       expect($lineAfterCurlyBraces.text()).to.match(/\s{4}/); // tab === 4 spaces
 
@@ -107,8 +112,8 @@ describe('indentation button', function () {
   });
 
   it("appends indentation to the indent of previous line if previous line ends with ':', '[', '(', or '{'", function (done) {
+    this.timeout(150);
     const inner$ = helper.padInner$;
-    const chrome$ = helper.padChrome$;
 
     // type a bit, make a line break and type again
     const $firstTextElement = inner$('div').first();
@@ -124,13 +129,15 @@ describe('indentation button', function () {
       $lineWithColon.sendkeys(':');
       pressEnter();
       const $lineAfterColon = inner$('div').first().next();
-      expect($lineAfterColon.text()).to.match(/\s{6}/); // previous line indentation + regular tab (4 spaces)
+      // previous line indentation + regular tab (4 spaces)
+      expect($lineAfterColon.text()).to.match(/\s{6}/);
 
       done();
     });
   });
 
   it("issue #2772 shows '*' when multiple indented lines receive a style and are outdented", function (done) {
+    this.timeout(150);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -302,9 +309,9 @@ describe('indentation button', function () {
   });*/
 });
 
-function pressEnter() {
+const pressEnter = () => {
   const inner$ = helper.padInner$;
   const e = inner$.Event(helper.evtType);
   e.keyCode = 13; // enter :|
   inner$('#innerdocbody').trigger(e);
-}
+};

@@ -1,3 +1,5 @@
+'use strict';
+
 describe('select formatting buttons when selection has style applied', function () {
   const STYLES = ['italic', 'bold', 'underline', 'strikethrough'];
   const SHORTCUT_KEYS = ['I', 'B', 'U', '5']; // italic, bold, underline, strikethrough
@@ -21,7 +23,7 @@ describe('select formatting buttons when selection has style applied', function 
     return $formattingButton.parent().hasClass('selected');
   };
 
-  var selectLine = function (lineNumber, offsetStart, offsetEnd) {
+  const selectLine = function (lineNumber, offsetStart, offsetEnd) {
     const inner$ = helper.padInner$;
     const $line = inner$('div').eq(lineNumber);
     helper.selectLines($line, $line, offsetStart, offsetEnd);
@@ -40,12 +42,14 @@ describe('select formatting buttons when selection has style applied', function 
 
   const testIfFormattingButtonIsDeselected = function (style) {
     it(`deselects the ${style} button`, function (done) {
+      this.timeout(50);
       helper.waitFor(() => isButtonSelected(style) === false).done(done);
     });
   };
 
   const testIfFormattingButtonIsSelected = function (style) {
     it(`selects the ${style} button`, function (done) {
+      this.timeout(50);
       helper.waitFor(() => isButtonSelected(style)).done(done);
     });
   };
@@ -58,7 +62,7 @@ describe('select formatting buttons when selection has style applied', function 
     applyStyleOnLineOnFullLineAndRemoveSelection(line, style, placeCaretOnLine, cb);
   };
 
-  var applyStyleOnLineOnFullLineAndRemoveSelection = function (line, style, selectTarget, cb) {
+  const applyStyleOnLineOnFullLineAndRemoveSelection = function (line, style, selectTarget, cb) {
     // see if line html has changed
     const inner$ = helper.padInner$;
     const oldLineHTML = inner$.find('div')[line];
@@ -80,7 +84,6 @@ describe('select formatting buttons when selection has style applied', function 
 
   const pressFormattingShortcutOnSelection = function (key) {
     const inner$ = helper.padInner$;
-    const chrome$ = helper.padChrome$;
 
     // get the first text element out of the inner iframe
     const $firstTextElement = inner$('div').first();
@@ -134,6 +137,7 @@ describe('select formatting buttons when selection has style applied', function 
     });
 
     it('selects the style button', function (done) {
+      this.timeout(50);
       expect(isButtonSelected(style)).to.be(true);
       done();
     });

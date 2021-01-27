@@ -69,7 +69,7 @@ $(() => {
       }, 60000 * 3);
 
       const medium = test.slow() / 2;
-      test.speed = test.duration > test.slow()
+      test.speed = test.duratoin > test.slow()
         ? 'slow'
         : test.duration > medium
           ? 'medium'

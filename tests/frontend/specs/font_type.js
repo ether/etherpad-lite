@@ -1,3 +1,5 @@
+'use strict';
+
 describe('font select', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
@@ -6,6 +8,7 @@ describe('font select', function () {
   });
 
   it('makes text RobotoMono', function (done) {
+    this.timeout(100);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -15,7 +18,6 @@ describe('font select', function () {
 
     // get the font menu and RobotoMono option
     const $viewfontmenu = chrome$('#viewfontmenu');
-    const $RobotoMonooption = $viewfontmenu.find('[value=RobotoMono]');
 
     // select RobotoMono and fire change event
     // $RobotoMonooption.attr('selected','selected');

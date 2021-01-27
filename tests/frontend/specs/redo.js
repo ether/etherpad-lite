@@ -1,3 +1,5 @@
+'use strict';
+
 describe('undo button then redo button', function () {
   beforeEach(function (cb) {
     helper.newPad(cb); // creates a new pad
@@ -5,6 +7,7 @@ describe('undo button then redo button', function () {
   });
 
   it('redo some typing with button', function (done) {
+    this.timeout(100);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -32,8 +35,8 @@ describe('undo button then redo button', function () {
   });
 
   it('redo some typing with keypress', function (done) {
+    this.timeout(100);
     const inner$ = helper.padInner$;
-    const chrome$ = helper.padChrome$;
 
     // get the first text element inside the editable space
     const $firstTextElement = inner$('div span').first();
@@ -44,12 +47,12 @@ describe('undo button then redo button', function () {
     const modifiedValue = $firstTextElement.text(); // get the modified value
     expect(modifiedValue).not.to.be(originalValue); // expect the value to change
 
-    var e = inner$.Event(helper.evtType);
+    let e = inner$.Event(helper.evtType);
     e.ctrlKey = true; // Control key
     e.which = 90; // z
     inner$('#innerdocbody').trigger(e);
 
-    var e = inner$.Event(helper.evtType);
+    e = inner$.Event(helper.evtType);
     e.ctrlKey = true; // Control key
     e.which = 121; // y
     inner$('#innerdocbody').trigger(e);

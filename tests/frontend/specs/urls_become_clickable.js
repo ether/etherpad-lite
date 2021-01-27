@@ -20,6 +20,7 @@ describe('urls', function () {
   describe('entering a URL makes a link', function () {
     for (const url of ['https://etherpad.org', 'www.etherpad.org']) {
       it(url, async function () {
+        this.timeout(5000);
         const url = 'https://etherpad.org';
         await helper.edit(url);
         await helper.waitForPromise(() => txt().find('a').length === 1, 2000);
@@ -34,6 +35,7 @@ describe('urls', function () {
     for (const char of '-:@_.,~%+/?=&#!;()$\'*') {
       const url = `https://etherpad.org/${char}foo`;
       it(url, async function () {
+        this.timeout(5000);
         await helper.edit(url);
         await helper.waitForPromise(() => txt().find('a').length === 1);
         const link = txt().find('a');
@@ -48,6 +50,7 @@ describe('urls', function () {
       const want = 'https://etherpad.org';
       const input = want + char;
       it(input, async function () {
+        this.timeout(5000);
         await helper.edit(input);
         await helper.waitForPromise(() => txt().find('a').length === 1);
         const link = txt().find('a');

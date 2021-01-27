@@ -1,3 +1,5 @@
+'use strict';
+
 describe('the test helper', function () {
   describe('the newPad method', function () {
     xit("doesn't leak memory if you creates iframes over and over again", function (done) {
@@ -5,7 +7,7 @@ describe('the test helper', function () {
 
       let times = 10;
 
-      var loadPad = function () {
+      const loadPad = function () {
         helper.newPad(() => {
           times--;
           if (times > 0) {

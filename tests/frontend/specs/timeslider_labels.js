@@ -1,3 +1,5 @@
+'use strict';
+
 describe('timeslider', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
@@ -7,7 +9,8 @@ describe('timeslider', function () {
   /**
    * @todo test authorsList
    */
-  it("Shows a date and time in the timeslider and make sure it doesn't include NaN", async function () {
+  it('Shows a correctly formatted date and time', async function () {
+    this.timeout(12000);
     // make some changes to produce 3 revisions
     const revs = 3;
 

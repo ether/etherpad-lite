@@ -1,3 +1,5 @@
+'use strict';
+
 describe('timeslider', function () {
   const padId = 735773577357 + (Math.round(Math.random() * 1000));
 
@@ -7,6 +9,8 @@ describe('timeslider', function () {
   });
 
   it('Makes sure the export URIs are as expected when the padID is numeric', async function () {
+    this.timeout(6000);
+
     await helper.edit('a\n');
 
     await helper.gotoTimeslider(1);

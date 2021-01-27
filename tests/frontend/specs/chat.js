@@ -1,10 +1,13 @@
+'use strict';
+
 describe('Chat messages and UI', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
     helper.newPad(cb);
   });
 
-  it('opens chat, sends a message, makes sure it exists on the page and hides chat', async function () {
+  it('opens chat, sends a message, makes sure it exists and hides chat', async function () {
+    this.timeout(100);
     const chatValue = 'JohnMcLear';
 
     await helper.showChat();
@@ -27,11 +30,13 @@ describe('Chat messages and UI', function () {
   });
 
   it("makes sure that an empty message can't be sent", async function () {
+    this.timeout(100);
     const chatValue = 'mluto';
 
     await helper.showChat();
 
-    await helper.sendChatMessage(`{enter}${chatValue}{enter}`); // simulate a keypress of typing enter, mluto and enter (to send 'mluto')
+    // simulate a keypress of typing enter, mluto and enter (to send 'mluto')
+    await helper.sendChatMessage(`{enter}${chatValue}{enter}`);
 
     const chat = helper.chatTextParagraphs();
 
@@ -45,6 +50,7 @@ describe('Chat messages and UI', function () {
   });
 
   it('makes chat stick to right side of the screen via settings, remove sticky via settings, close it', async function () {
+    this.timeout(200);
     await helper.showSettings();
 
     await helper.enableStickyChatviaSettings();
@@ -61,6 +67,7 @@ describe('Chat messages and UI', function () {
   });
 
   it('makes chat stick to right side of the screen via icon on the top right, remove sticky via icon, close it', async function () {
+    this.timeout(200);
     await helper.showChat();
 
     await helper.enableStickyChatviaIcon();
@@ -76,10 +83,8 @@ describe('Chat messages and UI', function () {
     expect(helper.isChatboxShown()).to.be(false);
   });
 
-  xit('Checks showChat=false URL Parameter hides chat then when removed it shows chat', function (done) {
+  xit('Checks showChat=false URL Parameter shows/hides chat', function (done) {
     this.timeout(60000);
-    const inner$ = helper.padInner$;
-    const chrome$ = helper.padChrome$;
 
     setTimeout(() => { // give it a second to save the username on the server side
       helper.newPad({ // get a new pad, but don't clear the cookies

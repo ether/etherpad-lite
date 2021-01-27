@@ -1,3 +1,5 @@
+'use strict';
+
 describe('bold button', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
@@ -6,6 +8,7 @@ describe('bold button', function () {
   });
 
   it('makes text bold on click', function (done) {
+    this.timeout(50);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -19,7 +22,8 @@ describe('bold button', function () {
     const $boldButton = chrome$('.buttonicon-bold');
     $boldButton.click();
 
-    // ace creates a new dom element when you press a button, so just get the first text element again
+    // ace creates a new dom element when you press a button
+    // so just get the first text element again
     const $newFirstTextElement = inner$('div').first();
 
     // is there a <b> element now?
@@ -35,8 +39,8 @@ describe('bold button', function () {
   });
 
   it('makes text bold on keypress', function (done) {
+    this.timeout(50);
     const inner$ = helper.padInner$;
-    const chrome$ = helper.padChrome$;
 
     // get the first text element out of the inner iframe
     const $firstTextElement = inner$('div').first();
@@ -49,7 +53,8 @@ describe('bold button', function () {
     e.which = 66; // b
     inner$('#innerdocbody').trigger(e);
 
-    // ace creates a new dom element when you press a button, so just get the first text element again
+    // ace creates a new dom element when you press a button
+    // so just get the first text element again
     const $newFirstTextElement = inner$('div').first();
 
     // is there a <b> element now?

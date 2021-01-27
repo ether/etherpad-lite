@@ -1,3 +1,5 @@
+'use strict';
+
 describe('Automatic pad reload on Force Reconnect message', function () {
   let padId, $originalPadFrame;
 
@@ -59,9 +61,8 @@ describe('Automatic pad reload on Force Reconnect message', function () {
     });
 
     it('reloads the pad', function (done) {
-      helper.waitFor(() => padWasReloaded, 5000).done(done);
-
       this.timeout(5000);
+      helper.waitFor(() => padWasReloaded, 5000).done(done);
     });
   });
 });

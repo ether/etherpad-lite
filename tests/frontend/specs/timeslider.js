@@ -1,3 +1,5 @@
+'use strict';
+
 // deactivated, we need a nice way to get the timeslider, this is ugly
 xdescribe('timeslider button takes you to the timeslider of a pad', function () {
   beforeEach(function (cb) {

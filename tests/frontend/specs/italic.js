@@ -1,3 +1,5 @@
+'use strict';
+
 describe('italic some text', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
@@ -6,6 +8,7 @@ describe('italic some text', function () {
   });
 
   it('makes text italic using button', function (done) {
+    this.timeout(50);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -19,7 +22,6 @@ describe('italic some text', function () {
     const $boldButton = chrome$('.buttonicon-italic');
     $boldButton.click();
 
-    // ace creates a new dom element when you press a button, so just get the first text element again
     const $newFirstTextElement = inner$('div').first();
 
     // is there a <i> element now?
@@ -35,8 +37,8 @@ describe('italic some text', function () {
   });
 
   it('makes text italic using keypress', function (done) {
+    this.timeout(50);
     const inner$ = helper.padInner$;
-    const chrome$ = helper.padChrome$;
 
     // get the first text element out of the inner iframe
     const $firstTextElement = inner$('div').first();
@@ -49,7 +51,6 @@ describe('italic some text', function () {
     e.which = 105; // i
     inner$('#innerdocbody').trigger(e);
 
-    // ace creates a new dom element when you press a button, so just get the first text element again
     const $newFirstTextElement = inner$('div').first();
 
     // is there a <i> element now?

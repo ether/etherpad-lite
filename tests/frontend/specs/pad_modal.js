@@ -1,3 +1,5 @@
+'use strict';
+
 describe('Pad modal', function () {
   context('when modal is a "force reconnect" message', function () {
     const MODAL_SELECTOR = '#connectivity';
@@ -16,6 +18,7 @@ describe('Pad modal', function () {
     });
 
     it('disables editor', function (done) {
+      this.timeout(20);
       expect(isEditorDisabled()).to.be(true);
 
       done();
@@ -27,6 +30,7 @@ describe('Pad modal', function () {
       });
 
       it('does not close the modal', function (done) {
+        this.timeout(20);
         const $modal = helper.padChrome$(MODAL_SELECTOR);
         const modalIsVisible = $modal.hasClass('popup-show');
 
@@ -42,6 +46,7 @@ describe('Pad modal', function () {
       });
 
       it('does not close the modal', function (done) {
+        this.timeout(20);
         const $modal = helper.padChrome$(MODAL_SELECTOR);
         const modalIsVisible = $modal.hasClass('popup-show');
 
@@ -76,6 +81,7 @@ describe('Pad modal', function () {
       });
 
       it('closes the modal', function (done) {
+        this.timeout(20);
         expect(isModalOpened(MODAL_SELECTOR)).to.be(false);
         done();
       });
@@ -87,23 +93,24 @@ describe('Pad modal', function () {
       });
 
       it('closes the modal', function (done) {
+        this.timeout(20);
         expect(isModalOpened(MODAL_SELECTOR)).to.be(false);
         done();
       });
     });
   });
 
-  var clickOnPadInner = function () {
+  const clickOnPadInner = function () {
     const $editor = helper.padInner$('#innerdocbody');
     $editor.click();
   };
 
-  var clickOnPadOuter = function () {
+  const clickOnPadOuter = function () {
     const $lineNumbersColumn = helper.padOuter$('#sidedivinner');
     $lineNumbersColumn.click();
   };
 
-  var openSettingsAndWaitForModalToBeVisible = function (done) {
+  const openSettingsAndWaitForModalToBeVisible = function (done) {
     helper.padChrome$('.buttonicon-settings').click();
 
     // wait for modal to be displayed
@@ -111,7 +118,7 @@ describe('Pad modal', function () {
     helper.waitFor(() => isModalOpened(modalSelector), 10000).done(done);
   };
 
-  var isEditorDisabled = function () {
+  const isEditorDisabled = function () {
     const editorDocument = helper.padOuter$("iframe[name='ace_inner']").get(0).contentDocument;
     const editorBody = editorDocument.getElementById('innerdocbody');
 
@@ -121,7 +128,7 @@ describe('Pad modal', function () {
     return editorIsDisabled;
   };
 
-  var isModalOpened = function (modalSelector) {
+  const isModalOpened = function (modalSelector) {
     const $modal = helper.padChrome$(modalSelector);
 
     return $modal.hasClass('popup-show');

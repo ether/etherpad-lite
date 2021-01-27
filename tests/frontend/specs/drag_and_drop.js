@@ -1,4 +1,7 @@
-// WARNING: drag and drop is only simulated on these tests, so manual testing might also be necessary
+'use strict';
+
+// WARNING: drag and drop is only simulated on these tests
+// so manual testing might also be necessary
 describe('drag and drop', function () {
   before(function (done) {
     helper.newPad(() => {
@@ -27,6 +30,7 @@ describe('drag and drop', function () {
       });
 
       it('moves text back to its original place', function (done) {
+        this.timeout(50);
         // test text was removed from drop target
         const $targetLine = getLine(TARGET_LINE);
         expect($targetLine.text()).to.be('Target line []');
@@ -62,6 +66,7 @@ describe('drag and drop', function () {
       });
 
       it('moves text back to its original place', function (done) {
+        this.timeout(50);
         // test text was removed from drop target
         const $targetLine = getLine(TARGET_LINE);
         expect($targetLine.text()).to.be('Target line []');
@@ -78,18 +83,19 @@ describe('drag and drop', function () {
   });
 
   /* ********************* Helper functions/constants ********************* */
-  var TARGET_LINE = 2;
-  var FIRST_SOURCE_LINE = 5;
+  const TARGET_LINE = 2;
+  const FIRST_SOURCE_LINE = 5;
 
-  var getLine = function (lineNumber) {
+  const getLine = function (lineNumber) {
     const $lines = helper.padInner$('div');
     return $lines.slice(lineNumber, lineNumber + 1);
   };
 
-  var createScriptWithSeveralLines = function (done) {
+  const createScriptWithSeveralLines = function (done) {
     // create some lines to be used on the tests
     const $firstLine = helper.padInner$('div').first();
-    $firstLine.html('...<br>...<br>Target line []<br>...<br>...<br>Source line 1.<br>Source line 2.<br>');
+    $firstLine.html(
+        '...<br>...<br>Target line []<br>...<br>...<br>Source line 1.<br>Source line 2.<br>');
 
     // wait for lines to be split
     helper.waitFor(() => {
@@ -98,7 +104,7 @@ describe('drag and drop', function () {
     }).done(done);
   };
 
-  var selectPartOfSourceLine = function () {
+  const selectPartOfSourceLine = function () {
     const $sourceLine = getLine(FIRST_SOURCE_LINE);
 
     // select 'line 1' from 'Source line 1.'
@@ -106,14 +112,14 @@ describe('drag and drop', function () {
     const end = start + 'line 1'.length;
     helper.selectLines($sourceLine, $sourceLine, start, end);
   };
-  var selectMultipleSourceLines = function () {
+  const selectMultipleSourceLines = function () {
     const $firstSourceLine = getLine(FIRST_SOURCE_LINE);
     const $lastSourceLine = getLine(FIRST_SOURCE_LINE + 1);
 
     helper.selectLines($firstSourceLine, $lastSourceLine);
   };
 
-  var dragSelectedTextAndDropItIntoMiddleOfLine = function (targetLineNumber) {
+  const dragSelectedTextAndDropItIntoMiddleOfLine = function (targetLineNumber) {
     // dragstart: start dragging content
     triggerEvent('dragstart');
 
@@ -126,7 +132,7 @@ describe('drag and drop', function () {
     triggerEvent('dragend');
   };
 
-  var getHtmlFromSelectedText = function () {
+  const getHtmlFromSelectedText = function () {
     const innerDocument = helper.padInner$.document;
 
     const range = innerDocument.getSelection().getRangeAt(0);
@@ -139,12 +145,12 @@ describe('drag and drop', function () {
     return draggedHtml;
   };
 
-  var triggerEvent = function (eventName) {
+  const triggerEvent = function (eventName) {
     const event = helper.padInner$.Event(eventName);
     helper.padInner$('#innerdocbody').trigger(event);
   };
 
-  var moveSelectionIntoTarget = function (draggedHtml, targetLineNumber) {
+  const moveSelectionIntoTarget = function (draggedHtml, targetLineNumber) {
     const innerDocument = helper.padInner$.document;
 
     // delete original content

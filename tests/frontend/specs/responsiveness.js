@@ -1,3 +1,5 @@
+'use strict';
+
 // Test for https://github.com/ether/etherpad-lite/issues/1763
 
 // This test fails in Opera, IE and Safari

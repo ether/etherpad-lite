@@ -1,3 +1,5 @@
+'use strict';
+
 describe('assign ordered list', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
@@ -6,6 +8,7 @@ describe('assign ordered list', function () {
   });
 
   it('inserts ordered list text', function (done) {
+    this.timeout(100);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -23,6 +26,7 @@ describe('assign ordered list', function () {
       });
 
       it('inserts unordered list', function (done) {
+        this.timeout(50);
         helper.waitFor(() => helper.padInner$('div').first().find('ol li').length === 1).done(done);
       });
     });
@@ -34,6 +38,7 @@ describe('assign ordered list', function () {
       });
 
       it('does not insert unordered list', function (done) {
+        this.timeout(3000);
         helper.waitFor(() => helper.padInner$('div').first().find('ol li').length === 1).done(() => {
           expect().fail(() => 'Unordered list inserted, should ignore shortcut');
         }).fail(() => {
@@ -51,6 +56,7 @@ describe('assign ordered list', function () {
       });
 
       it('inserts unordered list', function (done) {
+        this.timeout(100);
         helper.waitFor(() => helper.padInner$('div').first().find('ol li').length === 1).done(done);
       });
     });
@@ -62,6 +68,7 @@ describe('assign ordered list', function () {
       });
 
       it('does not insert unordered list', function (done) {
+        this.timeout(3000);
         helper.waitFor(() => helper.padInner$('div').first().find('ol li').length === 1).done(() => {
           expect().fail(() => 'Unordered list inserted, should ignore shortcut');
         }).fail(() => {
@@ -91,12 +98,13 @@ describe('assign ordered list', function () {
       expect(hasOLElement).to.be(true);
       expect($newSecondLine.text()).to.be('line 2');
       const hasLineNumber = $newSecondLine.find('ol').attr('start') === 2;
-      expect(hasLineNumber).to.be(true); // This doesn't work because pasting in content doesn't work
+      // This doesn't work because pasting in content doesn't work
+      expect(hasLineNumber).to.be(true);
       done();
     });
   });
 
-  var triggerCtrlShiftShortcut = function (shortcutChar) {
+  const triggerCtrlShiftShortcut = function (shortcutChar) {
     const inner$ = helper.padInner$;
     const e = inner$.Event(helper.evtType);
     e.ctrlKey = true;
@@ -105,10 +113,10 @@ describe('assign ordered list', function () {
     inner$('#innerdocbody').trigger(e);
   };
 
-  var makeSureShortcutIsDisabled = function (shortcut) {
+  const makeSureShortcutIsDisabled = function (shortcut) {
     helper.padChrome$.window.clientVars.padShortcutEnabled[shortcut] = false;
   };
-  var makeSureShortcutIsEnabled = function (shortcut) {
+  const makeSureShortcutIsEnabled = function (shortcut) {
     helper.padChrome$.window.clientVars.padShortcutEnabled[shortcut] = true;
   };
 });
@@ -121,6 +129,7 @@ describe('Pressing Tab in an OL increases and decreases indentation', function (
   });
 
   it('indent and de-indent list item with keypress', function (done) {
+    this.timeout(100);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -155,6 +164,7 @@ describe('Pressing indent/outdent button in an OL increases and decreases indent
   });
 
   it('indent and de-indent list item with indent button', function (done) {
+    this.timeout(100);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 

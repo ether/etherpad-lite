@@ -1,3 +1,5 @@
+'use strict';
+
 describe('strikethrough button', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
@@ -6,6 +8,7 @@ describe('strikethrough button', function () {
   });
 
   it('makes text strikethrough', function (done) {
+    this.timeout(100);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -19,7 +22,8 @@ describe('strikethrough button', function () {
     const $strikethroughButton = chrome$('.buttonicon-strikethrough');
     $strikethroughButton.click();
 
-    // ace creates a new dom element when you press a button, so just get the first text element again
+    // ace creates a new dom element when you press a button
+    // so just get the first text element again
     const $newFirstTextElement = inner$('div').first();
 
     // is there a <i> element now?

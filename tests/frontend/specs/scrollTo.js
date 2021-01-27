@@ -11,7 +11,7 @@ describe('scrolls to line', function () {
   });
 
   it('Scrolls down to Line 4', async function () {
-    this.timeout(10000);
+    this.timeout(100);
     const chrome$ = helper.padChrome$;
     await helper.waitForPromise(() => {
       const topOffset = parseInt(chrome$('iframe').first('iframe')
@@ -32,7 +32,7 @@ describe('doesnt break on weird hash input', function () {
   });
 
   it('Does NOT change scroll', async function () {
-    this.timeout(10000);
+    this.timeout(100);
     const chrome$ = helper.padChrome$;
     await helper.waitForPromise(() => {
       const topOffset = parseInt(chrome$('iframe').first('iframe')

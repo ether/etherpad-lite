@@ -1,3 +1,5 @@
+'use strict';
+
 describe('assign unordered list', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
@@ -6,6 +8,7 @@ describe('assign unordered list', function () {
   });
 
   it('insert unordered list text then removes by outdent', function (done) {
+    this.timeout(100);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
     const originalText = inner$('div').first().text();
@@ -32,6 +35,7 @@ describe('assign unordered list', function () {
 });
 
 describe('unassign unordered list', function () {
+  this.timeout(100);
   // create a new pad before each test run
   beforeEach(function (cb) {
     helper.newPad(cb);
@@ -39,6 +43,7 @@ describe('unassign unordered list', function () {
   });
 
   it('insert unordered list text then remove by clicking list again', function (done) {
+    this.timeout(100);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
     const originalText = inner$('div').first().text();
@@ -74,6 +79,7 @@ describe('keep unordered list on enter key', function () {
   });
 
   it('Keeps the unordered list on enter for the new line', function (done) {
+    this.timeout(1000);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -98,6 +104,7 @@ describe('keep unordered list on enter key', function () {
 });
 
 describe('Pressing Tab in an UL increases and decreases indentation', function () {
+  this.timeout(100);
   // create a new pad before each test run
   beforeEach(function (cb) {
     helper.newPad(cb);
@@ -105,6 +112,7 @@ describe('Pressing Tab in an UL increases and decreases indentation', function (
   });
 
   it('indent and de-indent list item with keypress', function (done) {
+    this.timeout(100);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -138,6 +146,7 @@ describe('Pressing indent/outdent button in an UL increases and decreases indent
   });
 
   it('indent and de-indent list item with indent button', function (done) {
+    this.timeout(100);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 

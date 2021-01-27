@@ -1,6 +1,8 @@
-function deletecookie(name) {
+'use strict';
+
+const deletecookie = (name) => {
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
-}
+};
 
 describe('Language select and change', function () {
   // Destroy language cookies
@@ -14,7 +16,7 @@ describe('Language select and change', function () {
 
   // Destroy language cookies
   it('makes text german', function (done) {
-    const inner$ = helper.padInner$;
+    this.timeout(100);
     const chrome$ = helper.padChrome$;
 
     // click on the settings button to make settings visible
@@ -29,7 +31,7 @@ describe('Language select and change', function () {
     $languageoption.attr('selected', 'selected');
     $language.change();
 
-    helper.waitFor(() => chrome$('.buttonicon-bold').parent()[0].title == 'Fett (Strg-B)')
+    helper.waitFor(() => chrome$('.buttonicon-bold').parent()[0].title === 'Fett (Strg-B)')
         .done(() => {
           // get the value of the bold button
           const $boldButton = chrome$('.buttonicon-bold').parent();
@@ -44,7 +46,7 @@ describe('Language select and change', function () {
   });
 
   it('makes text English', function (done) {
-    const inner$ = helper.padInner$;
+    this.timeout(100);
     const chrome$ = helper.padChrome$;
 
     // click on the settings button to make settings visible
@@ -60,7 +62,7 @@ describe('Language select and change', function () {
     // get the value of the bold button
     const $boldButton = chrome$('.buttonicon-bold').parent();
 
-    helper.waitFor(() => $boldButton[0].title != 'Fett (Strg+B)')
+    helper.waitFor(() => $boldButton[0].title !== 'Fett (Strg+B)')
         .done(() => {
           // get the value of the bold button
           const $boldButton = chrome$('.buttonicon-bold').parent();
@@ -75,7 +77,7 @@ describe('Language select and change', function () {
   });
 
   it('changes direction when picking an rtl lang', function (done) {
-    const inner$ = helper.padInner$;
+    this.timeout(200);
     const chrome$ = helper.padChrome$;
 
     // click on the settings button to make settings visible
@@ -91,7 +93,7 @@ describe('Language select and change', function () {
     $language.val('ar');
     $languageoption.change();
 
-    helper.waitFor(() => chrome$('html')[0].dir != 'ltr')
+    helper.waitFor(() => chrome$('html')[0].dir !== 'ltr')
         .done(() => {
           // check if the document's direction was changed
           expect(chrome$('html')[0].dir).to.be('rtl');
@@ -100,7 +102,7 @@ describe('Language select and change', function () {
   });
 
   it('changes direction when picking an ltr lang', function (done) {
-    const inner$ = helper.padInner$;
+    this.timeout(200);
     const chrome$ = helper.padChrome$;
 
     // click on the settings button to make settings visible
@@ -117,7 +119,7 @@ describe('Language select and change', function () {
     $language.val('en');
     $languageoption.change();
 
-    helper.waitFor(() => chrome$('html')[0].dir != 'rtl')
+    helper.waitFor(() => chrome$('html')[0].dir !== 'rtl')
         .done(() => {
           // check if the document's direction was changed
           expect(chrome$('html')[0].dir).to.be('ltr');

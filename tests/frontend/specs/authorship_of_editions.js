@@ -1,3 +1,5 @@
+'use strict';
+
 describe('author of pad edition', function () {
   const REGULAR_LINE = 0;
   const LINE_WITH_ORDERED_LIST = 1;
@@ -56,14 +58,17 @@ describe('author of pad edition', function () {
 
   // author 2 makes some changes on the pad
   it('marks only the new content as changes of the second user on a regular line', function (done) {
+    this.timeout(100);
     changeLineAndCheckOnlyThatChangeIsFromThisAuthor(REGULAR_LINE, 'x', done);
   });
 
   it('marks only the new content as changes of the second user on a line with ordered list', function (done) {
+    this.timeout(100);
     changeLineAndCheckOnlyThatChangeIsFromThisAuthor(LINE_WITH_ORDERED_LIST, 'y', done);
   });
 
   it('marks only the new content as changes of the second user on a line with unordered list', function (done) {
+    this.timeout(100);
     changeLineAndCheckOnlyThatChangeIsFromThisAuthor(LINE_WITH_UNORDERED_LIST, 'z', done);
   });
 
