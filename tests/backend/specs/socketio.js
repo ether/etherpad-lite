@@ -89,6 +89,7 @@ const handshake = async (socket, padID) => {
 };
 
 describe(__filename, function () {
+  this.timeout(30000);
   let agent;
   let authorize;
   const backups = {};
@@ -136,23 +137,27 @@ describe(__filename, function () {
 
   describe('Normal accesses', function () {
     it('!authn anonymous cookie /p/pad -> 200, ok', async function () {
+      this.timeout(400);
       const res = await agent.get('/p/pad').expect(200);
       socket = await connect(res);
       const clientVars = await handshake(socket, 'pad');
       assert.equal(clientVars.type, 'CLIENT_VARS');
     });
     it('!authn !cookie -> ok', async function () {
+      this.timeout(250);
       socket = await connect(null);
       const clientVars = await handshake(socket, 'pad');
       assert.equal(clientVars.type, 'CLIENT_VARS');
     });
     it('!authn user /p/pad -> 200, ok', async function () {
+      this.timeout(250);
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
       socket = await connect(res);
       const clientVars = await handshake(socket, 'pad');
       assert.equal(clientVars.type, 'CLIENT_VARS');
     });
     it('authn user /p/pad -> 200, ok', async function () {
+      this.timeout(250);
       settings.requireAuthentication = true;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
       socket = await connect(res);
@@ -160,6 +165,7 @@ describe(__filename, function () {
       assert.equal(clientVars.type, 'CLIENT_VARS');
     });
     it('authz user /p/pad -> 200, ok', async function () {
+      this.timeout(250);
       settings.requireAuthentication = true;
       settings.requireAuthorization = true;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
@@ -168,6 +174,7 @@ describe(__filename, function () {
       assert.equal(clientVars.type, 'CLIENT_VARS');
     });
     it('supports pad names with characters that must be percent-encoded', async function () {
+      this.timeout(250);
       settings.requireAuthentication = true;
       // requireAuthorization is set to true here to guarantee that the user's padAuthorizations
       // object is populated. Technically this isn't necessary because the user's padAuthorizations
@@ -184,6 +191,7 @@ describe(__filename, function () {
 
   describe('Abnormal access attempts', function () {
     it('authn anonymous /p/pad -> 401, error', async function () {
+      this.timeout(250);
       settings.requireAuthentication = true;
       const res = await agent.get('/p/pad').expect(401);
       // Despite the 401, try to create the pad via a socket.io connection anyway.
@@ -192,12 +200,14 @@ describe(__filename, function () {
       assert.equal(message.accessStatus, 'deny');
     });
     it('authn !cookie -> error', async function () {
+      this.timeout(400);
       settings.requireAuthentication = true;
       socket = await connect(null);
       const message = await handshake(socket, 'pad');
       assert.equal(message.accessStatus, 'deny');
     });
     it('authorization bypass attempt -> error', async function () {
+      this.timeout(250);
       // Only allowed to access /p/pad.
       authorize = (req) => req.path === '/p/pad';
       settings.requireAuthentication = true;
@@ -218,6 +228,7 @@ describe(__filename, function () {
     });
 
     it("level='create' -> can create", async function () {
+      this.timeout(250);
       authorize = () => 'create';
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
       socket = await connect(res);
@@ -226,6 +237,7 @@ describe(__filename, function () {
       assert.equal(clientVars.data.readonly, false);
     });
     it('level=true -> can create', async function () {
+      this.timeout(250);
       authorize = () => true;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
       socket = await connect(res);
@@ -234,6 +246,7 @@ describe(__filename, function () {
       assert.equal(clientVars.data.readonly, false);
     });
     it("level='modify' -> can modify", async function () {
+      this.timeout(250);
       await padManager.getPad('pad'); // Create the pad.
       authorize = () => 'modify';
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
@@ -243,6 +256,7 @@ describe(__filename, function () {
       assert.equal(clientVars.data.readonly, false);
     });
     it("level='create' settings.editOnly=true -> unable to create", async function () {
+      this.timeout(250);
       authorize = () => 'create';
       settings.editOnly = true;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
@@ -251,6 +265,7 @@ describe(__filename, function () {
       assert.equal(message.accessStatus, 'deny');
     });
     it("level='modify' settings.editOnly=false -> unable to create", async function () {
+      this.timeout(250);
       authorize = () => 'modify';
       settings.editOnly = false;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
@@ -259,6 +274,7 @@ describe(__filename, function () {
       assert.equal(message.accessStatus, 'deny');
     });
     it("level='readOnly' -> unable to create", async function () {
+      this.timeout(250);
       authorize = () => 'readOnly';
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
       socket = await connect(res);
@@ -266,6 +282,7 @@ describe(__filename, function () {
       assert.equal(message.accessStatus, 'deny');
     });
     it("level='readOnly' -> unable to modify", async function () {
+      this.timeout(250);
       await padManager.getPad('pad'); // Create the pad.
       authorize = () => 'readOnly';
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
@@ -282,6 +299,7 @@ describe(__filename, function () {
     });
 
     it('user.canCreate = true -> can create and modify', async function () {
+      this.timeout(250);
       settings.users.user.canCreate = true;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
       socket = await connect(res);
@@ -290,6 +308,7 @@ describe(__filename, function () {
       assert.equal(clientVars.data.readonly, false);
     });
     it('user.canCreate = false -> unable to create', async function () {
+      this.timeout(250);
       settings.users.user.canCreate = false;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
       socket = await connect(res);
@@ -297,6 +316,7 @@ describe(__filename, function () {
       assert.equal(message.accessStatus, 'deny');
     });
     it('user.readOnly = true -> unable to create', async function () {
+      this.timeout(250);
       settings.users.user.readOnly = true;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
       socket = await connect(res);
@@ -304,6 +324,7 @@ describe(__filename, function () {
       assert.equal(message.accessStatus, 'deny');
     });
     it('user.readOnly = true -> unable to modify', async function () {
+      this.timeout(250);
       await padManager.getPad('pad'); // Create the pad.
       settings.users.user.readOnly = true;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
@@ -313,6 +334,7 @@ describe(__filename, function () {
       assert.equal(clientVars.data.readonly, true);
     });
     it('user.readOnly = false -> can create and modify', async function () {
+      this.timeout(250);
       settings.users.user.readOnly = false;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
       socket = await connect(res);
@@ -321,6 +343,7 @@ describe(__filename, function () {
       assert.equal(clientVars.data.readonly, false);
     });
     it('user.readOnly = true, user.canCreate = true -> unable to create', async function () {
+      this.timeout(250);
       settings.users.user.canCreate = true;
       settings.users.user.readOnly = true;
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
@@ -337,6 +360,7 @@ describe(__filename, function () {
     });
 
     it('authorize hook does not elevate level from user settings', async function () {
+      this.timeout(250);
       settings.users.user.readOnly = true;
       authorize = () => 'create';
       const res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
@@ -345,6 +369,7 @@ describe(__filename, function () {
       assert.equal(message.accessStatus, 'deny');
     });
     it('user settings does not elevate level from authorize hook', async function () {
+      this.timeout(250);
       settings.users.user.readOnly = false;
       settings.users.user.canCreate = true;
       authorize = () => 'readOnly';
