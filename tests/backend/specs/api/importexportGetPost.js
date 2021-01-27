@@ -26,11 +26,12 @@ const testPadId = makeid();
 const testPadIdEnc = encodeURIComponent(testPadId);
 
 describe(__filename, function () {
-  this.timeout(30000);
+  this.timeout(45000);
   before(async function () { agent = await common.init(); });
 
   describe('Connectivity', function () {
     it('can connect', async function () {
+      this.timeout(250);
       await agent.get('/api/')
           .expect(200)
           .expect('Content-Type', /json/);
@@ -39,6 +40,7 @@ describe(__filename, function () {
 
   describe('API Versioning', function () {
     it('finds the version tag', async function () {
+      this.timeout(100);
       await agent.get('/api/')
           .expect(200)
           .expect((res) => assert(res.body.currentVersion));
@@ -94,6 +96,7 @@ describe(__filename, function () {
     });
 
     it('creates a new Pad, imports content to it, checks that content', async function () {
+      this.timeout(500);
       await agent.get(`${endPoint('createPad')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -107,6 +110,7 @@ describe(__filename, function () {
     });
 
     it('gets read only pad Id and exports the html and text for this pad', async function () {
+      this.timeout(250);
       const ro = await agent.get(`${endPoint('getReadOnlyID')}&padID=${testPadId}`)
           .expect(200)
           .expect((res) => assert.ok(JSON.parse(res.text).data.readOnlyID));
@@ -133,6 +137,7 @@ describe(__filename, function () {
       // For some reason word import does not work in testing..
       // TODO: fix support for .doc files..
       it('Tries to import .doc that uses soffice or abiword', async function () {
+        this.timeout(1000);
         await agent.post(`/p/${testPadId}/import`)
             .attach('file', wordDoc, {filename: '/test.doc', contentType: 'application/msword'})
             .expect(200)
@@ -140,6 +145,7 @@ describe(__filename, function () {
       });
 
       it('exports DOC', async function () {
+        this.timeout(1000);
         await agent.get(`/p/${testPadId}/export/doc`)
             .buffer(true).parse(superagent.parse['application/octet-stream'])
             .expect(200)
@@ -147,6 +153,7 @@ describe(__filename, function () {
       });
 
       it('Tries to import .docx that uses soffice or abiword', async function () {
+        this.timeout(1000);
         await agent.post(`/p/${testPadId}/import`)
             .attach('file', wordXDoc, {
               filename: '/test.docx',
@@ -158,6 +165,7 @@ describe(__filename, function () {
       });
 
       it('exports DOC from imported DOCX', async function () {
+        this.timeout(1000);
         await agent.get(`/p/${testPadId}/export/doc`)
             .buffer(true).parse(superagent.parse['application/octet-stream'])
             .expect(200)
@@ -165,6 +173,7 @@ describe(__filename, function () {
       });
 
       it('Tries to import .pdf that uses soffice or abiword', async function () {
+        this.timeout(1000);
         await agent.post(`/p/${testPadId}/import`)
             .attach('file', pdfDoc, {filename: '/test.pdf', contentType: 'application/pdf'})
             .expect(200)
@@ -172,6 +181,7 @@ describe(__filename, function () {
       });
 
       it('exports PDF', async function () {
+        this.timeout(1000);
         await agent.get(`/p/${testPadId}/export/pdf`)
             .buffer(true).parse(superagent.parse['application/octet-stream'])
             .expect(200)
@@ -179,6 +189,7 @@ describe(__filename, function () {
       });
 
       it('Tries to import .odt that uses soffice or abiword', async function () {
+        this.timeout(1000);
         await agent.post(`/p/${testPadId}/import`)
             .attach('file', odtDoc, {filename: '/test.odt', contentType: 'application/odt'})
             .expect(200)
@@ -186,6 +197,7 @@ describe(__filename, function () {
       });
 
       it('exports ODT', async function () {
+        this.timeout(1000);
         await agent.get(`/p/${testPadId}/export/odt`)
             .buffer(true).parse(superagent.parse['application/octet-stream'])
             .expect(200)
@@ -194,6 +206,7 @@ describe(__filename, function () {
     }); // End of AbiWord/LibreOffice tests.
 
     it('Tries to import .etherpad', async function () {
+      this.timeout(1000);
       await agent.post(`/p/${testPadId}/import`)
           .attach('file', etherpadDoc, {
             filename: '/test.etherpad',
@@ -204,6 +217,7 @@ describe(__filename, function () {
     });
 
     it('exports Etherpad', async function () {
+      this.timeout(1000);
       await agent.get(`/p/${testPadId}/export/etherpad`)
           .buffer(true).parse(superagent.parse.text)
           .expect(200)
@@ -211,6 +225,7 @@ describe(__filename, function () {
     });
 
     it('exports HTML for this Etherpad file', async function () {
+      this.timeout(1000);
       await agent.get(`/p/${testPadId}/export/html`)
           .expect(200)
           .expect('content-type', 'text/html; charset=utf-8')
@@ -218,6 +233,7 @@ describe(__filename, function () {
     });
 
     it('Tries to import unsupported file type', async function () {
+      this.timeout(1000);
       settings.allowUnknownFileEnds = false;
       await agent.post(`/p/${testPadId}/import`)
           .attach('file', padText, {filename: '/test.xasdasdxx', contentType: 'weirdness/jobby'})
@@ -253,6 +269,7 @@ describe(__filename, function () {
       });
 
       it('!authn !exist -> create', async function () {
+        this.timeout(100);
         await agent.post(`/p/${testPadIdEnc}/import`)
             .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
             .expect(200);
@@ -262,6 +279,7 @@ describe(__filename, function () {
       });
 
       it('!authn exist -> replace', async function () {
+        this.timeout(100);
         const pad = await createTestPad('before import');
         await agent.post(`/p/${testPadIdEnc}/import`)
             .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
@@ -271,6 +289,7 @@ describe(__filename, function () {
       });
 
       it('authn anonymous !exist -> fail', async function () {
+        this.timeout(100);
         settings.requireAuthentication = true;
         await agent.post(`/p/${testPadIdEnc}/import`)
             .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
@@ -279,6 +298,7 @@ describe(__filename, function () {
       });
 
       it('authn anonymous exist -> fail', async function () {
+        this.timeout(100);
         settings.requireAuthentication = true;
         const pad = await createTestPad('before import\n');
         await agent.post(`/p/${testPadIdEnc}/import`)
@@ -288,6 +308,7 @@ describe(__filename, function () {
       });
 
       it('authn user create !exist -> create', async function () {
+        this.timeout(100);
         settings.requireAuthentication = true;
         await agent.post(`/p/${testPadIdEnc}/import`)
             .auth('user', 'user-password')
@@ -299,6 +320,7 @@ describe(__filename, function () {
       });
 
       it('authn user modify !exist -> fail', async function () {
+        this.timeout(100);
         settings.requireAuthentication = true;
         authorize = () => 'modify';
         await agent.post(`/p/${testPadIdEnc}/import`)
@@ -309,6 +331,7 @@ describe(__filename, function () {
       });
 
       it('authn user readonly !exist -> fail', async function () {
+        this.timeout(100);
         settings.requireAuthentication = true;
         authorize = () => 'readOnly';
         await agent.post(`/p/${testPadIdEnc}/import`)
@@ -319,6 +342,7 @@ describe(__filename, function () {
       });
 
       it('authn user create exist -> replace', async function () {
+        this.timeout(100);
         settings.requireAuthentication = true;
         const pad = await createTestPad('before import\n');
         await agent.post(`/p/${testPadIdEnc}/import`)
@@ -329,6 +353,7 @@ describe(__filename, function () {
       });
 
       it('authn user modify exist -> replace', async function () {
+        this.timeout(100);
         settings.requireAuthentication = true;
         authorize = () => 'modify';
         const pad = await createTestPad('before import\n');
@@ -340,6 +365,7 @@ describe(__filename, function () {
       });
 
       it('authn user readonly exist -> fail', async function () {
+        this.timeout(100);
         const pad = await createTestPad('before import\n');
         settings.requireAuthentication = true;
         authorize = () => 'readOnly';
