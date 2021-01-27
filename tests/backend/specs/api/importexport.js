@@ -246,7 +246,7 @@ describe(__filename, function () {
       });
 
       it('setHTML', function (done) {
-        this.timeout(100);
+        this.timeout(150);
         api.get(`${endPoint('setHTML')}&padID=${testPadId}&html=${encodeURIComponent(test.input)}`)
             .expect((res) => {
               if (res.body.code !== 0) throw new Error(`Error:${testName}`);
@@ -256,7 +256,7 @@ describe(__filename, function () {
       });
 
       it('getHTML', function (done) {
-        this.timeout(100);
+        this.timeout(150);
         api.get(`${endPoint('getHTML')}&padID=${testPadId}`)
             .expect((res) => {
               const gotHtml = res.body.data.html;

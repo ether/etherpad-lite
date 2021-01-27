@@ -64,7 +64,7 @@ describe(__filename, function () {
 
   describe('setHTML', function () {
     it('Sets the HTML of a Pad attempting to weird utf8 encoded content', function (done) {
-      this.timeout(150);
+      this.timeout(600);
       fs.readFile('../tests/backend/specs/api/emojis.html', 'utf8', (err, html) => {
         api.post(endPoint('setHTML'))
             .send({
@@ -82,7 +82,7 @@ describe(__filename, function () {
 
   describe('getHTML', function () {
     it('get the HTML of Pad with emojis', function (done) {
-      this.timeout(150);
+      this.timeout(400);
       api.get(`${endPoint('getHTML')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.data.html.indexOf('&#127484') === -1) {

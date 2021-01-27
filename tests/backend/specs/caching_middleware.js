@@ -71,7 +71,7 @@ describe(__filename, function () {
       settings.minify = false;
     });
     it('gets packages uncompressed without Accept-Encoding gzip', async function () {
-      this.timeout(1500);
+      this.timeout(2500);
       await Promise.all(packages.map(async (resource) => agent.get(resource)
           .set('Accept-Encoding', fantasyEncoding)
           .use(disableAutoDeflate)

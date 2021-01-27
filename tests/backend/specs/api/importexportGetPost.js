@@ -40,7 +40,7 @@ describe(__filename, function () {
 
   describe('API Versioning', function () {
     it('finds the version tag', async function () {
-      this.timeout(100);
+      this.timeout;
       await agent.get('/api/')
           .expect(200)
           .expect((res) => assert(res.body.currentVersion));

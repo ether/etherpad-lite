@@ -39,7 +39,7 @@ describe(__filename, function () {
   */
 
   describe('createPad', function () {
-    this.timeout(40);
+    this.timeout(250);
     it('creates a new Pad', function (done) {
       api.get(`${endPoint('createPad')}&padID=${padID}`)
           .expect((res) => {
@@ -51,7 +51,7 @@ describe(__filename, function () {
   });
 
   describe('createAuthor', function () {
-    this.timeout(30);
+    this.timeout(100);
     it('Creates an author with a name set', function (done) {
       api.get(endPoint('createAuthor'))
           .expect((res) => {
@@ -66,7 +66,7 @@ describe(__filename, function () {
   });
 
   describe('appendChatMessage', function () {
-    this.timeout(30);
+    this.timeout(100);
     it('Adds a chat message to the pad', function (done) {
       api.get(`${endPoint('appendChatMessage')}&padID=${padID}&text=blalblalbha&authorID=${authorID}&time=${timestamp}`)
           .expect((res) => {
@@ -93,7 +93,7 @@ describe(__filename, function () {
   });
 
   describe('getChatHistory', function () {
-    this.timeout(20);
+    this.timeout(40);
     it('Gets Chat History of a Pad', function (done) {
       api.get(`${endPoint('getChatHistory')}&padID=${padID}`)
           .expect((res) => {
