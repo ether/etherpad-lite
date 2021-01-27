@@ -285,6 +285,7 @@ describe(__filename, function () {
       }
 
       it(testObj.description, async function () {
+        this.timeout(150);
         const $ = cheerio.load(testObj.html); // Load HTML into Cheerio
         const doc = $('body')[0]; // Creates a dom-like representation of HTML
         // Create an empty attribute pool
