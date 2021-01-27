@@ -391,9 +391,9 @@ const defaultResponseRefs = {
 
 // convert to a dictionary of operation objects
 const operations = {};
-for (const resource in resources) {
-  for (const action in resources[resource]) {
-    const {operationId, responseSchema, ...operation} = resources[resource][action];
+for (const [resource, actions] of Object.entries(resources)) {
+  for (const [action, spec] of Object.entries(actions)) {
+    const {operationId, responseSchema, ...operation} = spec;
 
     // add response objects
     const responses = {...defaultResponseRefs};
@@ -623,7 +623,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
             } else {
               // an unknown error happened
               // log it and throw internal error
-              apiLogger.error(err);
+              apiLogger.error(err.stack || err.toString());
               throw new createHTTPError.InternalError('internal error');
             }
           });
