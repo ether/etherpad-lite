@@ -16,8 +16,6 @@ describe('chat-load-messages', function () {
     const chatInput = chrome$('#chatinput');
     const chatText = chrome$('#chattext');
 
-    this.timeout(60000);
-
     const messages = 140;
     for (let i = 1; i <= messages; i++) {
       let num = `${i}`;

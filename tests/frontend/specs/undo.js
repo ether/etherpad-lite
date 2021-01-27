@@ -7,7 +7,7 @@ describe('undo button', function () {
   });
 
   it('undo some typing by clicking undo button', function (done) {
-    this.timeout(100);
+    this.timeout(150);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -32,7 +32,7 @@ describe('undo button', function () {
   });
 
   it('undo some typing using a keypress', function (done) {
-    this.timeout(100);
+    this.timeout(150);
     const inner$ = helper.padInner$;
 
     // get the first text element inside the editable space

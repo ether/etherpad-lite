@@ -16,7 +16,7 @@ describe('Language select and change', function () {
 
   // Destroy language cookies
   it('makes text german', function (done) {
-    this.timeout(100);
+    this.timeout(200);
     const chrome$ = helper.padChrome$;
 
     // click on the settings button to make settings visible
@@ -46,7 +46,7 @@ describe('Language select and change', function () {
   });
 
   it('makes text English', function (done) {
-    this.timeout(100);
+    this.timeout(200);
     const chrome$ = helper.padChrome$;
 
     // click on the settings button to make settings visible

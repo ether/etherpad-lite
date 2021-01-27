@@ -36,7 +36,7 @@ describe('indentation button', function () {
   });
 
   it('keeps the indent on enter for the new line', function (done) {
-    this.timeout(150);
+    this.timeout(500);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -61,7 +61,7 @@ describe('indentation button', function () {
   });
 
   it("indents text with spaces on enter if previous line ends with ':', '[', '(', or '{'", function (done) {
-    this.timeout(150);
+    this.timeout(500);
     const inner$ = helper.padInner$;
 
     // type a bit, make a line break and type again
@@ -112,7 +112,7 @@ describe('indentation button', function () {
   });
 
   it("appends indentation to the indent of previous line if previous line ends with ':', '[', '(', or '{'", function (done) {
-    this.timeout(150);
+    this.timeout(500);
     const inner$ = helper.padInner$;
 
     // type a bit, make a line break and type again
@@ -137,7 +137,7 @@ describe('indentation button', function () {
   });
 
   it("issue #2772 shows '*' when multiple indented lines receive a style and are outdented", function (done) {
-    this.timeout(150);
+    this.timeout(500);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
