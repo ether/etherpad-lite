@@ -7,7 +7,7 @@ describe('change username value', function () {
   });
 
   it('Remembers the user name after a refresh', async function () {
-    this.timeout(200);
+    this.timeout(500);
     helper.toggleUserList();
     helper.setUserName('😃');
 

@@ -62,7 +62,7 @@ describe('change user color', function () {
   });
 
   it('Own user color is shown when you enter a chat', function (done) {
-    this.timeout(500);
+    this.timeout(1000);
     const chrome$ = helper.padChrome$;
 
     const $colorOption = helper.padChrome$('#options-colorscheck');
