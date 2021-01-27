@@ -164,7 +164,7 @@ describe('Pressing indent/outdent button in an OL increases and decreases indent
   });
 
   it('indent and de-indent list item with indent button', function (done) {
-    this.timeout(200);
+    this.timeout(1000);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
