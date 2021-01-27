@@ -64,7 +64,7 @@ describe(__filename, function () {
 
   describe('setHTML', function () {
     it('Sets the HTML of a Pad attempting to weird utf8 encoded content', function (done) {
-      this.timeout(600);
+      this.timeout(1000);
       fs.readFile('../tests/backend/specs/api/emojis.html', 'utf8', (err, html) => {
         api.post(endPoint('setHTML'))
             .send({

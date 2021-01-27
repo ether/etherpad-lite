@@ -37,7 +37,7 @@ describe(__filename, function () {
 
   describe('OpenAPI definition', function () {
     it('generates valid openapi definition document', function (done) {
-      this.timeout(10000);
+      this.timeout(15000);
       api
           .get('/api/openapi.json')
           .expect((res) => {
