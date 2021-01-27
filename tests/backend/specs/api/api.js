@@ -1,3 +1,4 @@
+'use strict';
 /**
  * API specs
  *
@@ -11,7 +12,8 @@ const supertest = require(`${__dirname}/../../../../src/node_modules/supertest`)
 const settings = require(`${__dirname}/../../../../src/node/utils/Settings`);
 const api = supertest(`http://${settings.ip}:${settings.port}`);
 
-const validateOpenAPI = require(`${__dirname}/../../../../src/node_modules/openapi-schema-validation`).validate;
+const validateOpenAPI =
+    require(`${__dirname}/../../../../src/node_modules/openapi-schema-validation`).validate;
 
 const apiKey = common.apiKey;
 let apiVersion = 1;
@@ -21,6 +23,7 @@ const testPadId = makeid();
 describe(__filename, function () {
   describe('API Versioning', function () {
     it('errors if can not connect', function (done) {
+      this.timeout(150);
       api
           .get('/api/')
           .expect((res) => {
@@ -34,13 +37,15 @@ describe(__filename, function () {
 
   describe('OpenAPI definition', function () {
     it('generates valid openapi definition document', function (done) {
+      this.timeout(150);
       api
           .get('/api/openapi.json')
           .expect((res) => {
             const {valid, errors} = validateOpenAPI(res.body, 3);
             if (!valid) {
               const prettyErrors = JSON.stringify(errors, null, 2);
-              throw new Error(`Document is not valid OpenAPI. ${errors.length} validation errors:\n${prettyErrors}`);
+              throw new Error(`Document is not valid OpenAPI.
+                  ${errors.length} validation errors:\n${prettyErrors}`);
             }
             return;
           })
@@ -50,6 +55,7 @@ describe(__filename, function () {
 
   describe('jsonp support', function () {
     it('supports jsonp calls', function (done) {
+      this.timeout(150);
       api
           .get(`${endPoint('createPad')}&jsonp=jsonp_1&padID=${testPadId}`)
           .expect((res) => {
@@ -61,9 +67,7 @@ describe(__filename, function () {
   });
 });
 
-var endPoint = function (point) {
-  return `/api/${apiVersion}/${point}?apikey=${apiKey}`;
-};
+const endPoint = (point) => `/api/${apiVersion}/${point}?apikey=${apiKey}`;
 
 function makeid() {
   let text = '';
