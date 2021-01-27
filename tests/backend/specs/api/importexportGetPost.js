@@ -26,6 +26,7 @@ const testPadId = makeid();
 const testPadIdEnc = encodeURIComponent(testPadId);
 
 describe(__filename, function () {
+  this.timeout(30000);
   before(async function () { agent = await common.init(); });
 
   describe('Connectivity', function () {
