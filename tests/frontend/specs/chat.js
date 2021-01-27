@@ -7,7 +7,7 @@ describe('Chat messages and UI', function () {
   });
 
   it('opens chat, sends a message, makes sure it exists and hides chat', async function () {
-    this.timeout(2000);
+    this.timeout(3000);
     const chatValue = 'JohnMcLear';
 
     await helper.showChat();
@@ -30,7 +30,7 @@ describe('Chat messages and UI', function () {
   });
 
   it("makes sure that an empty message can't be sent", async function () {
-    this.timeout(2000);
+    this.timeout(3000);
     const chatValue = 'mluto';
 
     await helper.showChat();
@@ -108,9 +108,9 @@ describe('Chat messages and UI', function () {
                 done();
               },
             });
-          }, 2000);
+          }, );
         },
       });
-    }, 2000);
+    }, 3000);
   });
 });

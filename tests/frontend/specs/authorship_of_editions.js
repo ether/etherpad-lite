@@ -48,7 +48,7 @@ describe('author of pad edition', function () {
               helper.padChrome$.document.cookie = 'token=foo;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
 
               helper.newPad(done, padId);
-            }, 5000);
+            }, 10000);
           });
         });
       });
@@ -58,17 +58,17 @@ describe('author of pad edition', function () {
 
   // author 2 makes some changes on the pad
   it('marks only the new content as changes of the second user on a regular line', function (done) {
-    this.timeout(500);
+    this.timeout(1000);
     changeLineAndCheckOnlyThatChangeIsFromThisAuthor(REGULAR_LINE, 'x', done);
   });
 
   it('marks only the new content as changes of the second user on a line with ordered list', function (done) {
-    this.timeout(500);
+    this.timeout(1000);
     changeLineAndCheckOnlyThatChangeIsFromThisAuthor(LINE_WITH_ORDERED_LIST, 'y', done);
   });
 
   it('marks only the new content as changes of the second user on a line with unordered list', function (done) {
-    this.timeout(500);
+    this.timeout(1000);
     changeLineAndCheckOnlyThatChangeIsFromThisAuthor(LINE_WITH_UNORDERED_LIST, 'z', done);
   });
 
