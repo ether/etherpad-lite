@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * caching_middleware is responsible for serving everything under path `/javascripts/`
  * That includes packages as defined in `src/node/utils/tar.json` and probably also plugin code
@@ -43,6 +45,7 @@ function disableAutoDeflate(request) {
 }
 
 describe(__filename, function () {
+  this.timeout(40000);
   const backups = {};
   const fantasyEncoding = 'brainwaves'; // non-working encoding until https://github.com/visionmedia/superagent/pull/1560 is resolved
   const packages = [
@@ -68,6 +71,7 @@ describe(__filename, function () {
       settings.minify = false;
     });
     it('gets packages uncompressed without Accept-Encoding gzip', async function () {
+      this.timeout(1500);
       await Promise.all(packages.map(async (resource) => agent.get(resource)
           .set('Accept-Encoding', fantasyEncoding)
           .use(disableAutoDeflate)
@@ -80,6 +84,7 @@ describe(__filename, function () {
     });
 
     it('gets packages compressed with Accept-Encoding gzip', async function () {
+      this.timeout(1500);
       await Promise.all(packages.map(async (resource) => agent.get(resource)
           .set('Accept-Encoding', 'gzip')
           .use(disableAutoDeflate)
@@ -92,6 +97,7 @@ describe(__filename, function () {
     });
 
     it('does not cache content-encoding headers', async function () {
+      this.timeout(1500);
       await agent.get(packages[0])
           .set('Accept-Encoding', fantasyEncoding)
           .then((res) => assert.equal(res.header['content-encoding'], undefined));
@@ -109,6 +115,7 @@ describe(__filename, function () {
       settings.minify = true;
     });
     it('gets packages uncompressed without Accept-Encoding gzip', async function () {
+      this.timeout(1500);
       await Promise.all(packages.map(async (resource) => agent.get(resource)
           .set('Accept-Encoding', fantasyEncoding)
           .use(disableAutoDeflate)
@@ -121,6 +128,7 @@ describe(__filename, function () {
     });
 
     it('gets packages compressed with Accept-Encoding gzip', async function () {
+      this.timeout(1500);
       await Promise.all(packages.map(async (resource) => agent.get(resource)
           .set('Accept-Encoding', 'gzip')
           .use(disableAutoDeflate)
@@ -133,6 +141,7 @@ describe(__filename, function () {
     });
 
     it('does not cache content-encoding headers', async function () {
+      this.timeout(1500);
       await agent.get(packages[0])
           .set('Accept-Encoding', fantasyEncoding)
           .then((res) => assert.equal(res.header['content-encoding'], undefined));
