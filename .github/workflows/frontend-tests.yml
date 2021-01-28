@@ -73,6 +73,7 @@ jobs:
         ep_spellcheck
         ep_subscript_and_superscript
         ep_table_of_contents
+	ep_performance_test_hooks
 
     # This must be run after installing the plugins, otherwise npm will try to
     # hoist common dependencies by removing them from src/node_modules and
@@ -176,6 +177,7 @@ jobs:
         ep_spellcheck
         ep_subscript_and_superscript
         ep_table_of_contents
+	ep_performance_test_hooks
 
     # This must be run after installing the plugins, otherwise npm will try to
     # hoist common dependencies by removing them from src/node_modules and
