@@ -137,7 +137,7 @@ describe(__filename, function () {
       // For some reason word import does not work in testing..
       // TODO: fix support for .doc files..
       it('Tries to import .doc that uses soffice or abiword', async function () {
-        this.timeout(3000);
+        this.timeout(5000);
         await agent.post(`/p/${testPadId}/import`)
             .attach('file', wordDoc, {filename: '/test.doc', contentType: 'application/msword'})
             .expect(200)
