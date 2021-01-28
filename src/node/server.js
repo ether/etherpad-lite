@@ -58,7 +58,7 @@ exports.start = async () => {
   // start up stats counting system
   const stats = require('./stats');
   let startDurations = {};
-  stats.gauge('startDurations', () => durations);
+  stats.gauge('startDurations', () => startDurations);
   stats.gauge('memoryUsage', () => process.memoryUsage().rss);
   stats.gauge('memoryUsageHeap', () => process.memoryUsage().heapUsed);
 
