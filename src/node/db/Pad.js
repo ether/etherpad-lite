@@ -418,7 +418,7 @@ Pad.prototype.copy = async function copy(destinationID, force) {
   await padManager.getPad(destinationID, null); // this runs too early.
 
   // let the plugins know the pad was copied
-  hooks.callAll('padCopy', {originalPad: this, destinationID});
+  await hooks.aCallAll('padCopy', {originalPad: this, destinationID});
 
   return {padID: destinationID};
 };
@@ -520,7 +520,7 @@ Pad.prototype.copyPadWithoutHistory = async function copyPadWithoutHistory(desti
   const changeset = Changeset.pack(oldLength, newLength, assem.toString(), newText);
   newPad.appendRevision(changeset);
 
-  hooks.callAll('padCopy', {originalPad: this, destinationID});
+  await hooks.aCallAll('padCopy', {originalPad: this, destinationID});
 
   return {padID: destinationID};
 };
@@ -574,7 +574,7 @@ Pad.prototype.remove = async function remove() {
 
   // delete the pad entry and delete pad from padManager
   p.push(padManager.removePad(padID));
-  hooks.callAll('padRemove', {padID});
+  p.push(hooks.aCallAll('padRemove', {padID}));
   await Promise.all(p);
 };
 
