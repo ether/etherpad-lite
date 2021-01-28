@@ -48,8 +48,6 @@ let started = false;
 let stopped = false;
 
 exports.start = async () => {
-  let startDurations = {};
-  stats.gauge('startDurations', () => durations);
   if (started) return express.server;
   started = true;
   if (stopped) throw new Error('restart not supported');
@@ -59,6 +57,8 @@ exports.start = async () => {
 
   // start up stats counting system
   const stats = require('./stats');
+  let startDurations = {};
+  stats.gauge('startDurations', () => durations);
   stats.gauge('memoryUsage', () => process.memoryUsage().rss);
   stats.gauge('memoryUsageHeap', () => process.memoryUsage().heapUsed);
 
