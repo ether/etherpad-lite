@@ -48,6 +48,8 @@ let started = false;
 let stopped = false;
 
 exports.start = async () => {
+  let startDurations = {};
+  stats.gauge('startDurations', () => durations);
   if (started) return express.server;
   started = true;
   if (stopped) throw new Error('restart not supported');
@@ -62,35 +64,30 @@ exports.start = async () => {
 
   // Performance stats gauges
   // We use gauges because a reload might replace the value
-  stats.gauge('npmLoadDuration', () => npmLoadDuration);
   const preNpmLoad = Date.now();
   await util.promisify(npm.load)();
-  const npmLoadDuration = Date.now() - preNpmLoad;
+  const startDurations.npmLoad = Date.now() - preNpmLoad;
 
   try {
-    stats.gauge('dbInitDuration', () => dbInitDuration);
     const preDbInit = Date.now();
     await db.init();
-    const dbInitDuration = Date.now() - preDbInit;
+    durations.dbInit = Date.now() - preDbInit;
 
-    stats.gauge('loadPluginsDuration', () => loadPluginsDuration);
     const prePluginsUpdate = Date.now();
     await plugins.update();
-    const loadPluginsDuration = Date.now() - prePluginsUpdate;
+    durations.loadPlugins = Date.now() - prePluginsUpdate;
 
     console.info(`Installed plugins: ${plugins.formatPluginsWithVersion()}`);
     console.debug(`Installed parts:\n${plugins.formatParts()}`);
     console.debug(`Installed hooks:\n${plugins.formatHooks()}`);
 
-    stats.gauge('loadSettingDuration', () => loadSettingsDuration);
     const preLoadSettings = Date.now();
     await hooks.aCallAll('loadSettings', {settings});
-    const loadSettingsDuration = Date.now() - preLoadSettings;
+    durations.loadSettings = Date.now() - preLoadSettings;
 
-    stats.gauge('createSettingsDuration', () => createSettingsDuration);
     const preCreateServer = Date.now();
     await hooks.aCallAll('createServer');
-    const createSettingsDuration = Date.now() - preCreateServer;
+    durations.createSettings = Date.now() - preCreateServer;
   } catch (e) {
     console.error(`exception thrown: ${e.message}`);
     if (e.stack) console.log(e.stack);
