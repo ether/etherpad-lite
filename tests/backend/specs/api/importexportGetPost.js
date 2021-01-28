@@ -137,7 +137,7 @@ describe(__filename, function () {
       // For some reason word import does not work in testing..
       // TODO: fix support for .doc files..
       it('Tries to import .doc that uses soffice or abiword', async function () {
-        this.timeout(2000);
+        this.timeout(3000);
         await agent.post(`/p/${testPadId}/import`)
             .attach('file', wordDoc, {filename: '/test.doc', contentType: 'application/msword'})
             .expect(200)
@@ -145,7 +145,7 @@ describe(__filename, function () {
       });
 
       it('exports DOC', async function () {
-        this.timeout(2000);
+        this.timeout(3000);
         await agent.get(`/p/${testPadId}/export/doc`)
             .buffer(true).parse(superagent.parse['application/octet-stream'])
             .expect(200)
@@ -153,7 +153,7 @@ describe(__filename, function () {
       });
 
       it('Tries to import .docx that uses soffice or abiword', async function () {
-        this.timeout(2000);
+        this.timeout(3000);
         await agent.post(`/p/${testPadId}/import`)
             .attach('file', wordXDoc, {
               filename: '/test.docx',
@@ -165,7 +165,7 @@ describe(__filename, function () {
       });
 
       it('exports DOC from imported DOCX', async function () {
-        this.timeout(2000);
+        this.timeout(3000);
         await agent.get(`/p/${testPadId}/export/doc`)
             .buffer(true).parse(superagent.parse['application/octet-stream'])
             .expect(200)
@@ -173,7 +173,7 @@ describe(__filename, function () {
       });
 
       it('Tries to import .pdf that uses soffice or abiword', async function () {
-        this.timeout(2000);
+        this.timeout(3000);
         await agent.post(`/p/${testPadId}/import`)
             .attach('file', pdfDoc, {filename: '/test.pdf', contentType: 'application/pdf'})
             .expect(200)
@@ -181,7 +181,7 @@ describe(__filename, function () {
       });
 
       it('exports PDF', async function () {
-        this.timeout(2000);
+        this.timeout(3000);
         await agent.get(`/p/${testPadId}/export/pdf`)
             .buffer(true).parse(superagent.parse['application/octet-stream'])
             .expect(200)
@@ -189,7 +189,7 @@ describe(__filename, function () {
       });
 
       it('Tries to import .odt that uses soffice or abiword', async function () {
-        this.timeout(2000);
+        this.timeout(3000);
         await agent.post(`/p/${testPadId}/import`)
             .attach('file', odtDoc, {filename: '/test.odt', contentType: 'application/odt'})
             .expect(200)
@@ -197,7 +197,7 @@ describe(__filename, function () {
       });
 
       it('exports ODT', async function () {
-        this.timeout(2000);
+        this.timeout(3000);
         await agent.get(`/p/${testPadId}/export/odt`)
             .buffer(true).parse(superagent.parse['application/octet-stream'])
             .expect(200)
@@ -206,7 +206,7 @@ describe(__filename, function () {
     }); // End of AbiWord/LibreOffice tests.
 
     it('Tries to import .etherpad', async function () {
-      this.timeout(2000);
+      this.timeout(3000);
       await agent.post(`/p/${testPadId}/import`)
           .attach('file', etherpadDoc, {
             filename: '/test.etherpad',
@@ -217,7 +217,7 @@ describe(__filename, function () {
     });
 
     it('exports Etherpad', async function () {
-      this.timeout(2000);
+      this.timeout(3000);
       await agent.get(`/p/${testPadId}/export/etherpad`)
           .buffer(true).parse(superagent.parse.text)
           .expect(200)
@@ -225,7 +225,7 @@ describe(__filename, function () {
     });
 
     it('exports HTML for this Etherpad file', async function () {
-      this.timeout(2000);
+      this.timeout(3000);
       await agent.get(`/p/${testPadId}/export/html`)
           .expect(200)
           .expect('content-type', 'text/html; charset=utf-8')
@@ -233,7 +233,7 @@ describe(__filename, function () {
     });
 
     it('Tries to import unsupported file type', async function () {
-      this.timeout(2000);
+      this.timeout(3000);
       settings.allowUnknownFileEnds = false;
       await agent.post(`/p/${testPadId}/import`)
           .attach('file', padText, {filename: '/test.xasdasdxx', contentType: 'weirdness/jobby'})
