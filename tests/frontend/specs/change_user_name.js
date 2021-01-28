@@ -22,7 +22,7 @@ describe('change username value', function () {
   });
 
   it('Own user name is shown when you enter a chat', async function () {
-    this.timeout(200);
+    this.timeout(500);
     helper.toggleUserList();
     helper.setUserName('😃');
 
