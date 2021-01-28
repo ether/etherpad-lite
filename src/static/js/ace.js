@@ -53,23 +53,11 @@ function Ace2Editor() {
 
   let actionsPendingInit = [];
 
-  function pendingInit(func, optDoNow) {
-    return function () {
-      const that = this;
-      const args = arguments;
-      const action = function () {
-        func.apply(that, args);
-      };
-      if (optDoNow) {
-        optDoNow.apply(that, args);
-      }
-      if (loaded) {
-        action();
-      } else {
-        actionsPendingInit.push(action);
-      }
-    };
-  }
+  const pendingInit = (func) => function (...args) {
+    const action = () => func.apply(this, args);
+    if (loaded) return action();
+    actionsPendingInit.push(action);
+  };
 
   function doActionsPendingInit() {
     _.each(actionsPendingInit, (fn, i) => {
@@ -102,21 +90,14 @@ function Ace2Editor() {
     'execCommand',
     'replaceRange'];
 
-  _.each(aceFunctionsPendingInit, (fnName, i) => {
-    const prefix = 'ace_';
-    const name = prefix + fnName;
-    editor[fnName] = pendingInit(function () {
-      if (fnName === 'setAuthorInfo') {
-        if (!arguments[0]) {
-          // setAuthorInfo AuthorId not set for some reason
-        } else {
-          info[prefix + fnName].apply(this, arguments);
-        }
-      } else {
-        info[prefix + fnName].apply(this, arguments);
-      }
+  for (const fnName of aceFunctionsPendingInit) {
+    // Note: info[`ace_${fnName}`] does not exist yet, so it can't be passed directly to
+    // pendingInit(). A simple wrapper is used to defer the info[`ace_${fnName}`] lookup until
+    // method invocation.
+    editor[fnName] = pendingInit(function (...args) {
+      info[`ace_${fnName}`].apply(this, args);
     });
-  });
+  }
 
   editor.exportText = function () {
     if (!loaded) return '(awaiting init)\n';
