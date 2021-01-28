@@ -258,6 +258,7 @@ function Ace2Inner() {
   };
 
   const setAuthorInfo = (author, info) => {
+    if (!author) return; // author ID not set for some reason
     if ((typeof author) !== 'string') {
       // Potentially caused by: https://github.com/ether/etherpad-lite/issues/2802");
       throw new Error(`setAuthorInfo: author (${author}) is not a string`);
