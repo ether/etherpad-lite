@@ -66,16 +66,16 @@ exports.start = async () => {
   // We use gauges because a reload might replace the value
   const preNpmLoad = Date.now();
   await util.promisify(npm.load)();
-  const startDurations.npmLoad = Date.now() - preNpmLoad;
+  startDurations.npmLoad = Date.now() - preNpmLoad;
 
   try {
     const preDbInit = Date.now();
     await db.init();
-    durations.dbInit = Date.now() - preDbInit;
+    startDurations.dbInit = Date.now() - preDbInit;
 
     const prePluginsUpdate = Date.now();
     await plugins.update();
-    durations.loadPlugins = Date.now() - prePluginsUpdate;
+    startDurations.loadPlugins = Date.now() - prePluginsUpdate;
 
     console.info(`Installed plugins: ${plugins.formatPluginsWithVersion()}`);
     console.debug(`Installed parts:\n${plugins.formatParts()}`);
@@ -83,11 +83,11 @@ exports.start = async () => {
 
     const preLoadSettings = Date.now();
     await hooks.aCallAll('loadSettings', {settings});
-    durations.loadSettings = Date.now() - preLoadSettings;
+    startDurations.loadSettings = Date.now() - preLoadSettings;
 
     const preCreateServer = Date.now();
     await hooks.aCallAll('createServer');
-    durations.createSettings = Date.now() - preCreateServer;
+    startDurations.createSettings = Date.now() - preCreateServer;
   } catch (e) {
     console.error(`exception thrown: ${e.message}`);
     if (e.stack) console.log(e.stack);
