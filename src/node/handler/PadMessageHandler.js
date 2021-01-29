@@ -1217,7 +1217,7 @@ const handleChangesetRequest = async (socket, message) => {
     socket.json.send({type: 'CHANGESET_REQ', data});
   } catch (err) {
     console.error(`Error while handling a changeset request for ${padIds.padId}`,
-                  err.toString(), message.data);
+        err.toString(), message.data);
   }
 };
 

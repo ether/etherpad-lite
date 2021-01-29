@@ -55,7 +55,7 @@ const tsort = (edges) => {
   Object.keys(nodes).forEach(visit);
 
   return sorted;
-}
+};
 
 /**
  * TEST
