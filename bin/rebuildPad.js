@@ -91,5 +91,6 @@ const newPadId = process.argv[4] || `${padId}-rebuilt`;
   console.log(`Created: Source Pad: pad:${newPadId}`);
   await newPad.saveToDatabase();
 
+  await db.shutdown();
   console.info('finished');
 })();
