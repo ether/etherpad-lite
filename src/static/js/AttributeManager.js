@@ -349,7 +349,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     const hasMarker = this.lineHasMarker(lineNum);
     let found = false;
 
-    const attribs = _(this.getAttributesOnLine(lineNum)).map(function (attrib) {
+    const attribs = _(this.getAttributesOnLine(lineNum)).map((attrib) => {
       if (attrib[0] === attributeName && (!attributeValue || attrib[0] === attributeValue)) {
         found = true;
         return [attributeName, ''];
