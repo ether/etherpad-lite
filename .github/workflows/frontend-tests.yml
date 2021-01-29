@@ -20,7 +20,7 @@ jobs:
       run: tests/frontend/travis/sauce_tunnel.sh
 
     - name: Install ep_preformance_test_hook
-      run: ep_performance_test_hooks
+      run: npm install ep_performance_test_hooks
 
     - name: Install all dependencies and symlink for ep_etherpad-lite
       run: bin/installDeps.sh
@@ -65,7 +65,7 @@ jobs:
       run: tests/frontend/travis/sauce_tunnel.sh
 
     - name: Install ep_preformance_test_hook
-      run: ep_performance_test_hooks
+      run: npm install ep_performance_test_hooks
 
     - name: Install all dependencies and symlink for ep_etherpad-lite
       run: bin/installDeps.sh
