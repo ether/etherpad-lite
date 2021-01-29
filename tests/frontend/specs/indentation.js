@@ -136,42 +136,40 @@ describe('indentation button', function () {
     });
   });
 
-  it("issue #2772 shows '*' when multiple indented lines receive a style and are outdented", function (done) {
+  it("issue #2772 shows '*' when multiple indented lines receive a style and are outdented", async function () {
     this.timeout(1200);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
     // make sure pad has more than one line
     inner$('div').first().sendkeys('First{enter}Second{enter}');
-    helper.waitFor(() => inner$('div').first().text().trim() === 'First').done(() => {
-      // indent first 2 lines
-      const $lines = inner$('div');
-      const $firstLine = $lines.first();
-      const $secondLine = $lines.slice(1, 2);
-      helper.selectLines($firstLine, $secondLine);
+    await helper.waitForPromise(() => inner$('div').first().text().trim() === 'First');
 
-      const $indentButton = chrome$('.buttonicon-indent');
-      $indentButton.click();
+    // indent first 2 lines
+    const $lines = inner$('div');
+    const $firstLine = $lines.first();
+    let $secondLine = $lines.slice(1, 2);
+    helper.selectLines($firstLine, $secondLine);
 
-      helper.waitFor(() => inner$('div').first().find('ul li').length === 1).done(() => {
-        // apply bold
-        const $boldButton = chrome$('.buttonicon-bold');
-        $boldButton.click();
+    const $indentButton = chrome$('.buttonicon-indent');
+    $indentButton.click();
 
-        helper.waitFor(() => inner$('div').first().find('b').length === 1).done(() => {
-          // outdent first 2 lines
-          const $outdentButton = chrome$('.buttonicon-outdent');
-          $outdentButton.click();
-          helper.waitFor(() => inner$('div').first().find('ul li').length === 0).done(() => {
-            // check if '*' is displayed
-            const $secondLine = inner$('div').slice(1, 2);
-            expect($secondLine.text().trim()).to.be('Second');
+    await helper.waitForPromise(() => inner$('div').first().find('ul li').length === 1);
 
-            done();
-          });
-        });
-      });
-    });
+    // apply bold
+    const $boldButton = chrome$('.buttonicon-bold');
+    $boldButton.click();
+
+    await helper.waitForPromise(() => inner$('div').first().find('b').length === 1);
+
+    // outdent first 2 lines
+    const $outdentButton = chrome$('.buttonicon-outdent');
+    $outdentButton.click();
+    await helper.waitForPromise(() => inner$('div').first().find('ul li').length === 0);
+
+    // check if '*' is displayed
+    $secondLine = inner$('div').slice(1, 2);
+    expect($secondLine.text().trim()).to.be('Second');
   });
 
   /*
