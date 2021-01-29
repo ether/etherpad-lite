@@ -255,13 +255,13 @@ plugins.ensure(function () {\n\
 
       iframeHTML.push('</head><body id="innerdocbody" class="innerdocbody" role="application" class="syntax" spellcheck="false">&nbsp;</body></html>');
 
-      // Expose myself to global for my child frame.
-      const thisFunctionsName = 'ChildAccessibleAce2Editor';
-      (function () { return this; }())[thisFunctionsName] = Ace2Editor;
+      // eslint-disable-next-line node/no-unsupported-features/es-builtins
+      const gt = typeof globalThis === 'object' ? globalThis : window;
+      gt.ChildAccessibleAce2Editor = Ace2Editor;
 
       const outerScript = `\
 editorId = ${JSON.stringify(info.id)};\n\
-editorInfo = parent[${JSON.stringify(thisFunctionsName)}].registry[editorId];\n\
+editorInfo = parent.ChildAccessibleAce2Editor.registry[editorId];\n\
 window.onload = function () {\n\
   window.onload = null;\n\
   setTimeout(function () {\n\
