@@ -28,11 +28,6 @@ const newPadId = process.argv[4] || `${padId}-rebuilt`;
 
   const PadManager = require('ep_etherpad-lite/node/db/PadManager');
   const Pad = require('ep_etherpad-lite/node/db/Pad').Pad;
-  // Get references to the original pad and to a newly created pad
-  // HACK: This is a standalone script, so we want to write everything
-  // out to the database immediately.  The only problem with this is
-  // that a driver (like the mysql driver) can hardcode these values.
-  db.db.db.settings = {cache: 0, writeInterval: 0, json: true};
   // Validate the newPadId if specified and that a pad with that ID does
   // not already exist to avoid overwriting it.
   if (!PadManager.isValidPadId(newPadId)) {
