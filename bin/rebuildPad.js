@@ -56,9 +56,7 @@ const newPadId = process.argv[4] || `${padId}-rebuilt`;
   newPad.pool.numToAttrib = oldPad.pool.numToAttrib;
   for (let curRevNum = 0; curRevNum <= newRevHead; curRevNum++) {
     const rev = await db.get(`pad:${padId}:revs:${curRevNum}`);
-    if (rev.meta) {
-      throw new Error('The specified revision number could not be found.');
-    }
+    if (!rev || !rev.meta) throw new Error('The specified revision number could not be found.');
     const newRevNum = ++newPad.head;
     const newRevId = `pad:${newPad.id}:revs:${newRevNum}`;
     await Promise.all([
