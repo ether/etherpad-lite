@@ -26,8 +26,8 @@ const newPadId = process.argv[4] || `${padId}-rebuilt`;
   const db = require('ep_etherpad-lite/node/db/DB');
   await db.init();
 
-  const Pad = require('ep_etherpad-lite/node/db/Pad').Pad;
   const PadManager = require('ep_etherpad-lite/node/db/PadManager');
+  const Pad = require('ep_etherpad-lite/node/db/Pad').Pad;
   // Get references to the original pad and to a newly created pad
   // HACK: This is a standalone script, so we want to write everything
   // out to the database immediately.  The only problem with this is
