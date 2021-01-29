@@ -352,10 +352,10 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     const attribs = _(this.getAttributesOnLine(lineNum)).map((attrib) => {
       if (attrib[0] === attributeName && (!attributeValue || attrib[0] === attributeValue)) {
         found = true;
-        return [attributeName, ''];
+        return [attrib[0], ''];
       } else if (attrib[0] === 'author') {
         // update last author to make changes to line attributes on this line
-        return [attributeName, this.author];
+        return [attrib[0], this.author];
       }
       return attrib;
     });
