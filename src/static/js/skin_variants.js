@@ -50,6 +50,6 @@ if (window.location.hash.toLowerCase() === '#skinvariantsbuilder') {
     updateSkinVariantsClasses();
   });
 
-  updateSkinVariantsClasses();
   updateCheckboxFromSkinClasses();
+  updateSkinVariantsClasses();
 }
