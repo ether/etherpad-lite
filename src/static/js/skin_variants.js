@@ -31,10 +31,6 @@ if (window.location.hash.toLowerCase() === '#skinvariantsbuilder') {
     domsToUpdate.forEach((el) => { el.addClass(newClasses.join(' ')); });
 
     $('#skin-variants-result').val(`"skinVariants": "${newClasses.join(' ')}",`);
-
-    $('.skin-variant').change(() => {
-      updateSkinVariantsClasses();
-    });
   };
 
   // run on init
@@ -49,6 +45,10 @@ if (window.location.hash.toLowerCase() === '#skinvariantsbuilder') {
 
     $('#skin-variant-full-width').prop('checked', $('html').hasClass('full-width-editor'));
   };
+
+  $('.skin-variant').change(() => {
+    updateSkinVariantsClasses();
+  });
 
   updateSkinVariantsClasses();
   updateCheckboxFromSkinClasses();
