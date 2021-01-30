@@ -12,8 +12,7 @@ const supertest = require(`${__dirname}/../../../../src/node_modules/supertest`)
 const settings = require(`${__dirname}/../../../../src/node/utils/Settings`);
 const api = supertest(`http://${settings.ip}:${settings.port}`);
 
-const validateOpenAPI =
-    require(`${__dirname}/../../../../src/node_modules/openapi-schema-validation`).validate;
+const validateOpenAPI = require('ep_etherpad-lite/node_modules/openapi-schema-validation').validate;
 
 const apiKey = common.apiKey;
 let apiVersion = 1;
