@@ -4,6 +4,9 @@
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
 process.on('unhandledRejection', (err) => { throw err; });
 
+const npm = require('ep_etherpad-lite/node_modules/npm');
+const util = require('util');
+
 const startTime = Date.now();
 
 const log = (str) => {
@@ -43,10 +46,10 @@ const unescape = (val) => {
   return val;
 };
 
+(async () => {
+  await util.promisify(npm.load)({});
 
-require('ep_etherpad-lite/node_modules/npm').load({}, (er, npm) => {
   const fs = require('fs');
-
   const ueberDB = require('ep_etherpad-lite/node_modules/ueberdb2');
   const settings = require('ep_etherpad-lite/node/utils/Settings');
   const log4js = require('ep_etherpad-lite/node_modules/log4js');
@@ -68,42 +71,35 @@ require('ep_etherpad-lite/node_modules/npm').load({}, (er, npm) => {
   if (!sqlFile) throw new Error('Use: node importSqlFile.js $SQLFILE');
 
   log('initializing db');
-  db.init((err) => {
-    // there was an error while initializing the database, output it and stop
-    if (err) {
-      throw err;
-    } else {
-      log('done');
+  await util.promisify(db.init.bind(db))();
+  log('done');
 
-      log('open output file...');
-      const lines = fs.readFileSync(sqlFile, 'utf8').split('\n');
+  log('open output file...');
+  const lines = fs.readFileSync(sqlFile, 'utf8').split('\n');
 
-      const count = lines.length;
-      let keyNo = 0;
+  const count = lines.length;
+  let keyNo = 0;
 
-      process.stdout.write(`Start importing ${count} keys...\n`);
-      lines.forEach((l) => {
-        if (l.substr(0, 27) === 'REPLACE INTO store VALUES (') {
-          const pos = l.indexOf("', '");
-          const key = l.substr(28, pos - 28);
-          let value = l.substr(pos + 3);
-          value = value.substr(0, value.length - 2);
-          console.log(`key: ${key} val: ${value}`);
-          console.log(`unval: ${unescape(value)}`);
-          db.set(key, unescape(value), null);
-          keyNo++;
-          if (keyNo % 1000 === 0) {
-            process.stdout.write(` ${keyNo}/${count}\n`);
-          }
-        }
-      });
-      process.stdout.write('\n');
-      process.stdout.write('done. waiting for db to finish transaction. ' +
-                           'depended on dbms this may take some time..\n');
-
-      db.close(() => {
-        log(`finished, imported ${keyNo} keys.`);
-      });
+  process.stdout.write(`Start importing ${count} keys...\n`);
+  lines.forEach((l) => {
+    if (l.substr(0, 27) === 'REPLACE INTO store VALUES (') {
+      const pos = l.indexOf("', '");
+      const key = l.substr(28, pos - 28);
+      let value = l.substr(pos + 3);
+      value = value.substr(0, value.length - 2);
+      console.log(`key: ${key} val: ${value}`);
+      console.log(`unval: ${unescape(value)}`);
+      db.set(key, unescape(value), null);
+      keyNo++;
+      if (keyNo % 1000 === 0) {
+        process.stdout.write(` ${keyNo}/${count}\n`);
+      }
     }
   });
-});
+  process.stdout.write('\n');
+  process.stdout.write('done. waiting for db to finish transaction. ' +
+                       'depended on dbms this may take some time..\n');
+
+  await util.promisify(db.close.bind(db))();
+  log(`finished, imported ${keyNo} keys.`);
+})();
