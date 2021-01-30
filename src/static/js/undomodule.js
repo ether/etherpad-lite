@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -23,8 +25,8 @@
 const Changeset = require('./Changeset');
 const _ = require('./underscore');
 
-var undoModule = (function () {
-  const stack = (function () {
+const undoModule = (() => {
+  const stack = (() => {
     const stackElements = [];
     // two types of stackElements:
     // 1) { elementType: UNDOABLE_EVENT, eventType: "anything", [backset: <changeset>,]
@@ -36,7 +38,7 @@ var undoModule = (function () {
     const UNDOABLE_EVENT = 'undoableEvent';
     const EXTERNAL_CHANGE = 'externalChange';
 
-    function clearStack() {
+    const clearStack = () => {
       stackElements.length = 0;
       stackElements.push(
           {
@@ -44,22 +46,23 @@ var undoModule = (function () {
             eventType: 'bottom',
           });
       numUndoableEvents = 1;
-    }
+    };
     clearStack();
 
-    function pushEvent(event) {
+    const pushEvent = (event) => {
       const e = _.extend(
           {}, event);
       e.elementType = UNDOABLE_EVENT;
       stackElements.push(e);
       numUndoableEvents++;
       // dmesg("pushEvent backset: "+event.backset);
-    }
+    };
 
-    function pushExternalChange(cs) {
+    const pushExternalChange = (cs) => {
       const idx = stackElements.length - 1;
-      if (stackElements[idx].elementType == EXTERNAL_CHANGE) {
-        stackElements[idx].changeset = Changeset.compose(stackElements[idx].changeset, cs, getAPool());
+      if (stackElements[idx].elementType === EXTERNAL_CHANGE) {
+        stackElements[idx].changeset =
+            Changeset.compose(stackElements[idx].changeset, cs, getAPool());
       } else {
         stackElements.push(
             {
@@ -67,14 +70,14 @@ var undoModule = (function () {
               changeset: cs,
             });
       }
-    }
+    };
 
-    function _exposeEvent(nthFromTop) {
+    const _exposeEvent = (nthFromTop) => {
       // precond: 0 <= nthFromTop < numUndoableEvents
       const targetIndex = stackElements.length - 1 - nthFromTop;
       let idx = stackElements.length - 1;
-      while (idx > targetIndex || stackElements[idx].elementType == EXTERNAL_CHANGE) {
-        if (stackElements[idx].elementType == EXTERNAL_CHANGE) {
+      while (idx > targetIndex || stackElements[idx].elementType === EXTERNAL_CHANGE) {
+        if (stackElements[idx].elementType === EXTERNAL_CHANGE) {
           const ex = stackElements[idx];
           const un = stackElements[idx - 1];
           if (un.backset) {
@@ -86,15 +89,16 @@ var undoModule = (function () {
               const newSel = Changeset.characterRangeFollow(excs, un.selStart, un.selEnd);
               un.selStart = newSel[0];
               un.selEnd = newSel[1];
-              if (un.selStart == un.selEnd) {
+              if (un.selStart === un.selEnd) {
                 un.selFocusAtStart = false;
               }
             }
           }
           stackElements[idx - 1] = ex;
           stackElements[idx] = un;
-          if (idx >= 2 && stackElements[idx - 2].elementType == EXTERNAL_CHANGE) {
-            ex.changeset = Changeset.compose(stackElements[idx - 2].changeset, ex.changeset, getAPool());
+          if (idx >= 2 && stackElements[idx - 2].elementType === EXTERNAL_CHANGE) {
+            ex.changeset =
+                Changeset.compose(stackElements[idx - 2].changeset, ex.changeset, getAPool());
             stackElements.splice(idx - 2, 1);
             idx--;
           }
@@ -102,24 +106,22 @@ var undoModule = (function () {
           idx--;
         }
       }
-    }
+    };
 
-    function getNthFromTop(n) {
+    const getNthFromTop = (n) => {
       // precond: 0 <= n < numEvents()
       _exposeEvent(n);
       return stackElements[stackElements.length - 1 - n];
-    }
+    };
 
-    function numEvents() {
-      return numUndoableEvents;
-    }
+    const numEvents = () => numUndoableEvents;
 
-    function popEvent() {
+    const popEvent = () => {
       // precond: numEvents() > 0
       _exposeEvent(0);
       numUndoableEvents--;
       return stackElements.pop();
-    }
+    };
 
     return {
       numEvents,
@@ -134,12 +136,12 @@ var undoModule = (function () {
   // invariant: stack always has at least one undoable event
   let undoPtr = 0; // zero-index from top of stack, 0 == top
 
-  function clearHistory() {
+  const clearHistory = () => {
     stack.clearStack();
     undoPtr = 0;
-  }
+  };
 
-  function _charOccurrences(str, c) {
+  const _charOccurrences = (str, c) => {
     let i = 0;
     let count = 0;
     while (i >= 0 && i < str.length) {
@@ -150,13 +152,11 @@ var undoModule = (function () {
       }
     }
     return count;
-  }
+  };
 
-  function _opcodeOccurrences(cs, opcode) {
-    return _charOccurrences(Changeset.unpack(cs).ops, opcode);
-  }
+  const _opcodeOccurrences = (cs, opcode) => _charOccurrences(Changeset.unpack(cs).ops, opcode);
 
-  function _mergeChangesets(cs1, cs2) {
+  const _mergeChangesets = (cs1, cs2) => {
     if (!cs1) return cs2;
     if (!cs2) return cs1;
 
@@ -170,40 +170,40 @@ var undoModule = (function () {
     const plusCount2 = _opcodeOccurrences(cs2, '+');
     const minusCount1 = _opcodeOccurrences(cs1, '-');
     const minusCount2 = _opcodeOccurrences(cs2, '-');
-    if (plusCount1 == 1 && plusCount2 == 1 && minusCount1 == 0 && minusCount2 == 0) {
-      var merge = Changeset.compose(cs1, cs2, getAPool());
-      var plusCount3 = _opcodeOccurrences(merge, '+');
-      var minusCount3 = _opcodeOccurrences(merge, '-');
-      if (plusCount3 == 1 && minusCount3 == 0) {
+    if (plusCount1 === 1 && plusCount2 === 1 && minusCount1 === 0 && minusCount2 === 0) {
+      const merge = Changeset.compose(cs1, cs2, getAPool());
+      const plusCount3 = _opcodeOccurrences(merge, '+');
+      const minusCount3 = _opcodeOccurrences(merge, '-');
+      if (plusCount3 === 1 && minusCount3 === 0) {
         return merge;
       }
-    } else if (plusCount1 == 0 && plusCount2 == 0 && minusCount1 == 1 && minusCount2 == 1) {
-      var merge = Changeset.compose(cs1, cs2, getAPool());
-      var plusCount3 = _opcodeOccurrences(merge, '+');
-      var minusCount3 = _opcodeOccurrences(merge, '-');
-      if (plusCount3 == 0 && minusCount3 == 1) {
+    } else if (plusCount1 === 0 && plusCount2 === 0 && minusCount1 === 1 && minusCount2 === 1) {
+      const merge = Changeset.compose(cs1, cs2, getAPool());
+      const plusCount3 = _opcodeOccurrences(merge, '+');
+      const minusCount3 = _opcodeOccurrences(merge, '-');
+      if (plusCount3 === 0 && minusCount3 === 1) {
         return merge;
       }
     }
     return null;
-  }
+  };
 
-  function reportEvent(event) {
+  const reportEvent = (event) => {
     const topEvent = stack.getNthFromTop(0);
 
-    function applySelectionToTop() {
+    const applySelectionToTop = () => {
       if ((typeof event.selStart) === 'number') {
         topEvent.selStart = event.selStart;
         topEvent.selEnd = event.selEnd;
         topEvent.selFocusAtStart = event.selFocusAtStart;
       }
-    }
+    };
 
     if ((!event.backset) || Changeset.isIdentity(event.backset)) {
       applySelectionToTop();
     } else {
       let merged = false;
-      if (topEvent.eventType == event.eventType) {
+      if (topEvent.eventType === event.eventType) {
         const merge = _mergeChangesets(event.backset, topEvent.backset);
         if (merge) {
           topEvent.backset = merge;
@@ -225,15 +225,15 @@ var undoModule = (function () {
       }
       undoPtr = 0;
     }
-  }
+  };
 
-  function reportExternalChange(changeset) {
+  const reportExternalChange = (changeset) => {
     if (changeset && !Changeset.isIdentity(changeset)) {
       stack.pushExternalChange(changeset);
     }
-  }
+  };
 
-  function _getSelectionInfo(event) {
+  const _getSelectionInfo = (event) => {
     if ((typeof event.selStart) !== 'number') {
       return null;
     } else {
@@ -243,7 +243,7 @@ var undoModule = (function () {
         selFocusAtStart: event.selFocusAtStart,
       };
     }
-  }
+  };
 
   // For "undo" and "redo", the change event must be returned
   // by eventFunc and NOT reported through the normal mechanism.
@@ -251,7 +251,7 @@ var undoModule = (function () {
   // or can be called with no arguments to mean that no undo is possible.
   // "eventFunc" will be called exactly once.
 
-  function performUndo(eventFunc) {
+  const performUndo = (eventFunc) => {
     if (undoPtr < stack.numEvents() - 1) {
       const backsetEvent = stack.getNthFromTop(undoPtr);
       const selectionEvent = stack.getNthFromTop(undoPtr + 1);
@@ -259,9 +259,9 @@ var undoModule = (function () {
       stack.pushEvent(undoEvent);
       undoPtr += 2;
     } else { eventFunc(); }
-  }
+  };
 
-  function performRedo(eventFunc) {
+  const performRedo = (eventFunc) => {
     if (undoPtr >= 2) {
       const backsetEvent = stack.getNthFromTop(0);
       const selectionEvent = stack.getNthFromTop(1);
@@ -269,11 +269,9 @@ var undoModule = (function () {
       stack.popEvent();
       undoPtr -= 2;
     } else { eventFunc(); }
-  }
+  };
 
-  function getAPool() {
-    return undoModule.apool;
-  }
+  const getAPool = () => undoModule.apool;
 
   return {
     clearHistory,
