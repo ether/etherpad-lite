@@ -43,8 +43,8 @@ describe(__filename, function () {
             const {valid, errors} = validateOpenAPI(res.body, 3);
             if (!valid) {
               const prettyErrors = JSON.stringify(errors, null, 2);
-              throw new Error(`Document is not valid OpenAPI.
-                  ${errors.length} validation errors:\n${prettyErrors}`);
+              throw new Error('Document is not valid OpenAPI. ' +
+                              `${errors.length} validation errors:\n${prettyErrors}`);
             }
             return;
           })
