@@ -386,18 +386,6 @@ exports.aCallFirst = (hook_name, args, cb, predicate) => {
   }
 };
 
-exports.callAllStr = (hook_name, args, sep, pre, post) => {
-  if (sep === undefined) sep = '';
-  if (pre === undefined) pre = '';
-  if (post === undefined) post = '';
-  const newCallhooks = [];
-  const callhooks = exports.callAll(hook_name, args);
-  for (let i = 0, ii = callhooks.length; i < ii; i++) {
-    newCallhooks[i] = pre + callhooks[i] + post;
-  }
-  return newCallhooks.join(sep || '');
-};
-
 exports.exportedForTestingOnly = {
   callHookFnAsync,
   callHookFnSync,

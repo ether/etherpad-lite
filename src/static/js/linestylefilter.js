@@ -93,11 +93,8 @@ linestylefilter.getLineStyleFilter = (lineLength, aline, textAndClassFunc, apool
             } else if (linestylefilter.ATTRIB_CLASSES[key]) {
               classes += ` ${linestylefilter.ATTRIB_CLASSES[key]}`;
             } else {
-              classes += hooks.callAllStr('aceAttribsToClasses', {
-                linestylefilter,
-                key,
-                value,
-              }, ' ', ' ', '');
+              const results = hooks.callAll('aceAttribsToClasses', {linestylefilter, key, value});
+              classes += ` ${results.join(' ')}`;
             }
           }
         }
