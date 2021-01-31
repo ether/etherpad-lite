@@ -39,7 +39,7 @@ const hookCallWrapper = (hook, hookName, args, cb) => {
   return () => normalize(hook.hook_fn(hookName, args, (x) => cb(normalize(x))));
 };
 
-exports.syncMapFirst = (lst, fn) => {
+const syncMapFirst = (lst, fn) => {
   let i;
   let result;
   for (i = 0; i < lst.length; i++) {
@@ -49,7 +49,7 @@ exports.syncMapFirst = (lst, fn) => {
   return [];
 };
 
-exports.mapFirst = (lst, fn, cb, predicate) => {
+const mapFirst = (lst, fn, cb, predicate) => {
   if (predicate == null) predicate = (x) => (x != null && x.length > 0);
   let i = 0;
 
@@ -347,7 +347,7 @@ exports.aCallAll = async (hookName, context, cb) => {
 exports.callFirst = (hookName, args) => {
   if (!args) args = {};
   if (pluginDefs.hooks[hookName] === undefined) return [];
-  return exports.syncMapFirst(pluginDefs.hooks[hookName],
+  return syncMapFirst(pluginDefs.hooks[hookName],
       (hook) => hookCallWrapper(hook, hookName, args));
 };
 
@@ -355,7 +355,7 @@ const aCallFirst = (hookName, args, cb, predicate) => {
   if (!args) args = {};
   if (!cb) cb = () => {};
   if (pluginDefs.hooks[hookName] === undefined) return cb(null, []);
-  exports.mapFirst(
+  mapFirst(
       pluginDefs.hooks[hookName],
       (hook, cb) => {
         hookCallWrapper(hook, hookName, args, (res) => { cb(null, res); });
