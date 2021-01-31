@@ -26,7 +26,7 @@ const checkDeprecation = (hook) => {
 // Flattens the array one level.
 const flatten1 = (array) => array.reduce((a, b) => a.concat(b), []);
 
-const hookCallWrapper = (hook, hookName, args, cb) => {
+const hookCallWrapper = (hook, hookName, context, cb) => {
   if (cb === undefined) cb = (x) => x;
 
   checkDeprecation(hook);
@@ -36,7 +36,7 @@ const hookCallWrapper = (hook, hookName, args, cb) => {
     if (x === undefined) return [];
     return x;
   };
-  return () => normalize(hook.hook_fn(hookName, args, (x) => cb(normalize(x))));
+  return () => normalize(hook.hook_fn(hookName, context, (x) => cb(normalize(x))));
 };
 
 const syncMapFirst = (lst, fn) => {
@@ -344,21 +344,21 @@ exports.aCallAll = async (hookName, context, cb) => {
   return await resultsPromise;
 };
 
-exports.callFirst = (hookName, args) => {
-  if (!args) args = {};
+exports.callFirst = (hookName, context) => {
+  if (!context) context = {};
   if (pluginDefs.hooks[hookName] === undefined) return [];
   return syncMapFirst(pluginDefs.hooks[hookName],
-      (hook) => hookCallWrapper(hook, hookName, args));
+      (hook) => hookCallWrapper(hook, hookName, context));
 };
 
-const aCallFirst = (hookName, args, cb, predicate) => {
-  if (!args) args = {};
+const aCallFirst = (hookName, context, cb, predicate) => {
+  if (!context) context = {};
   if (!cb) cb = () => {};
   if (pluginDefs.hooks[hookName] === undefined) return cb(null, []);
   mapFirst(
       pluginDefs.hooks[hookName],
       (hook, cb) => {
-        hookCallWrapper(hook, hookName, args, (res) => { cb(null, res); });
+        hookCallWrapper(hook, hookName, context, (res) => { cb(null, res); });
       },
       cb,
       predicate
@@ -366,13 +366,13 @@ const aCallFirst = (hookName, args, cb, predicate) => {
 };
 
 /* return a Promise if cb is not supplied */
-exports.aCallFirst = (hookName, args, cb, predicate) => {
+exports.aCallFirst = (hookName, context, cb, predicate) => {
   if (cb === undefined) {
     return new Promise((resolve, reject) => {
-      aCallFirst(hookName, args, (err, res) => err ? reject(err) : resolve(res), predicate);
+      aCallFirst(hookName, context, (err, res) => err ? reject(err) : resolve(res), predicate);
     });
   } else {
-    return aCallFirst(hookName, args, cb, predicate);
+    return aCallFirst(hookName, context, cb, predicate);
   }
 };
 
