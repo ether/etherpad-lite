@@ -33,20 +33,24 @@ const attachCallback = (p, cb) => p.then(
     // problems, always pass a truthy value as the first argument if the Promise is rejected.
     (err) => cb(err || new Error(err)));
 
+// Normalizes the value provided by hook functions so that it is always an array. `undefined` (but
+// not `null`!) becomes an empty array, array values are returned unmodified, and non-array values
+// are wrapped in an array (so `null` becomes `[null]`).
+const normalizeValue = (val) => {
+  // `undefined` is treated the same as `[]`. IMPORTANT: `null` is *not* treated the same as `[]`
+  // because some hooks use `null` as a special value.
+  if (val === undefined) return [];
+  if (Array.isArray(val)) return val;
+  return [val];
+};
+
 // Flattens the array one level.
 const flatten1 = (array) => array.reduce((a, b) => a.concat(b), []);
 
 const hookCallWrapper = (hook, hookName, context, cb) => {
   if (cb === undefined) cb = (x) => x;
-
   checkDeprecation(hook);
-
-  // Normalize output to list for both sync and async cases
-  const normalize = (x) => {
-    if (x === undefined) return [];
-    return x;
-  };
-  return () => normalize(hook.hook_fn(hookName, context, (x) => cb(normalize(x))));
+  return () => normalizeValue(hook.hook_fn(hookName, context, (x) => cb(normalizeValue(x))));
 };
 
 // Calls the hook function synchronously and returns the value provided by the hook function (via
@@ -192,12 +196,7 @@ const callHookFnSync = (hook, context) => {
 exports.callAll = (hookName, context) => {
   if (context == null) context = {};
   const hooks = pluginDefs.hooks[hookName] || [];
-  return flatten1(hooks.map((hook) => {
-    const ret = callHookFnSync(hook, context);
-    // `undefined` (but not `null`!) is treated the same as [].
-    if (ret === undefined) return [];
-    return ret;
-  }));
+  return flatten1(hooks.map((hook) => normalizeValue(callHookFnSync(hook, context))));
 };
 
 // Calls the hook function asynchronously and returns a Promise that either resolves to the hook
@@ -347,9 +346,8 @@ exports.aCallAll = async (hookName, context, cb = null) => {
   if (cb != null) return await attachCallback(exports.aCallAll(hookName, context), cb);
   if (context == null) context = {};
   const hooks = pluginDefs.hooks[hookName] || [];
-  const results = await Promise.all(hooks.map((hook) => callHookFnAsync(hook, context)
-  // `undefined` (but not `null`!) is treated the same as [].
-      .then((result) => (result === undefined) ? [] : result)));
+  const results = await Promise.all(
+      hooks.map(async (hook) => normalizeValue(await callHookFnAsync(hook, context))));
   return flatten1(results);
 };
 
