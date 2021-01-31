@@ -26,8 +26,6 @@ const checkDeprecation = (hook) => {
 // Flattens the array one level.
 const flatten1 = (array) => array.reduce((a, b) => a.concat(b), []);
 
-exports.bubbleExceptions = true;
-
 const hookCallWrapper = (hook, hookName, args, cb) => {
   if (cb === undefined) cb = (x) => x;
 
@@ -38,17 +36,7 @@ const hookCallWrapper = (hook, hookName, args, cb) => {
     if (x === undefined) return [];
     return x;
   };
-  const normalizedhook = () => normalize(hook.hook_fn(hookName, args, (x) => cb(normalize(x))));
-
-  if (exports.bubbleExceptions) {
-    return normalizedhook();
-  } else {
-    try {
-      return normalizedhook();
-    } catch (ex) {
-      console.error([hookName, hook.part.full_name, ex.stack || ex]);
-    }
-  }
+  return () => normalize(hook.hook_fn(hookName, args, (x) => cb(normalize(x))));
 };
 
 exports.syncMapFirst = (lst, fn) => {
