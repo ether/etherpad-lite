@@ -40,15 +40,6 @@ const hookCallWrapper = (hook, hookName, context, cb) => {
   return () => normalize(hook.hook_fn(hookName, context, (x) => cb(normalize(x))));
 };
 
-const mapFirst = async (hooks, fn, predicate = null) => {
-  if (predicate == null) predicate = (val) => val.length;
-  for (const hook of hooks) {
-    const val = await fn(hook);
-    if (predicate(val)) return val;
-  }
-  return [];
-};
-
 // Calls the hook function synchronously and returns the value provided by the hook function (via
 // callback or return value).
 //
@@ -364,12 +355,18 @@ exports.callFirst = (hookName, context) => {
   return [];
 };
 
-const aCallFirst = (hookName, context, cb, predicate) => {
+const aCallFirst = (hookName, context, cb, predicate = null) => {
   if (!context) context = {};
   if (!cb) cb = () => {};
+  if (predicate == null) predicate = (val) => val.length;
   const hooks = pluginDefs.hooks[hookName] || [];
-  const fn = async (hook) => await util.promisify(hookCallWrapper)(hook, hookName, context);
-  util.callbackify(mapFirst)(hooks, fn, predicate, cb);
+  util.callbackify(async () => {
+    for (const hook of hooks) {
+      const val = await util.promisify(hookCallWrapper)(hook, hookName, context);
+      if (predicate(val)) return val;
+    }
+    return [];
+  })(cb);
 };
 
 /* return a Promise if cb is not supplied */
