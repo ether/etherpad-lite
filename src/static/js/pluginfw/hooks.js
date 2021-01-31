@@ -39,12 +39,11 @@ const hookCallWrapper = (hook, hookName, context, cb) => {
   return () => normalize(hook.hook_fn(hookName, context, (x) => cb(normalize(x))));
 };
 
-const syncMapFirst = (lst, fn) => {
-  let i;
-  let result;
-  for (i = 0; i < lst.length; i++) {
-    result = fn(lst[i]);
-    if (result.length) return result;
+const syncMapFirst = (hooks, fn) => {
+  const predicate = (val) => val.length;
+  for (const hook of hooks) {
+    const val = fn(hook);
+    if (predicate(val)) return val;
   }
   return [];
 };
