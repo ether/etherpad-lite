@@ -40,15 +40,6 @@ const hookCallWrapper = (hook, hookName, context, cb) => {
   return () => normalize(hook.hook_fn(hookName, context, (x) => cb(normalize(x))));
 };
 
-const syncMapFirst = (hooks, fn) => {
-  const predicate = (val) => val.length;
-  for (const hook of hooks) {
-    const val = fn(hook);
-    if (predicate(val)) return val;
-  }
-  return [];
-};
-
 const mapFirst = async (hooks, fn, predicate = null) => {
   if (predicate == null) predicate = (val) => val.length;
   for (const hook of hooks) {
@@ -364,9 +355,13 @@ exports.aCallAll = async (hookName, context, cb) => {
 
 exports.callFirst = (hookName, context) => {
   if (!context) context = {};
-  if (pluginDefs.hooks[hookName] === undefined) return [];
-  return syncMapFirst(pluginDefs.hooks[hookName],
-      (hook) => hookCallWrapper(hook, hookName, context));
+  const predicate = (val) => val.length;
+  const hooks = pluginDefs.hooks[hookName] || [];
+  for (const hook of hooks) {
+    const val = hookCallWrapper(hook, hookName, context);
+    if (predicate(val)) return val;
+  }
+  return [];
 };
 
 const aCallFirst = (hookName, context, cb, predicate) => {
