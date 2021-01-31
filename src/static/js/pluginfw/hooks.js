@@ -165,14 +165,27 @@ const callHookFnSync = (hook, context) => {
       // The hook function is assumed to not have a callback parameter, so fall through and accept
       // `undefined` as the resolved value.
       //
-      // IMPORTANT: "Rest" parameters and default parameters are not counted in`Function.length`, so
-      // the assumption does not hold for wrappers like `(...args) => { real(...args); }`. Such
-      // functions will still work properly without any logged warnings or errors for now, but:
+      // IMPORTANT: "Rest" parameters and default parameters are not included in `Function.length`,
+      // so the assumption does not hold for wrappers such as:
+      //
+      //     const wrapper = (...args) => real(...args);
+      //
+      // ECMAScript does not provide a way to determine whether a function has default or rest
+      // parameters, so there is no way to be certain that a hook function with `length` < 3 will
+      // not call the callback. Synchronous hook functions that call the callback even though
+      // `length` < 3 will still work properly without any logged warnings or errors, but:
+      //
       //   * Once the hook is upgraded to support asynchronous hook functions, calling the callback
-      //     will (eventually) cause a double settle error, and the function might prematurely
+      //     asynchronously will cause a double settle error, and the hook function will prematurely
       //     resolve to `undefined` instead of the desired value.
+      //
       //   * The above "unsettled function" warning is not logged if the function fails to call the
       //     callback like it is supposed to.
+      //
+      // Wrapper functions can avoid problems by setting the wrapper's `length` property to match
+      // the real function's `length` property:
+      //
+      //     Object.defineProperty(wrapper, 'length', {value: real.length});
     }
   }
 
@@ -300,10 +313,21 @@ const callHookFnAsync = async (hook, context) => {
         // The hook function is assumed to not have a callback parameter, so fall through and accept
         // `undefined` as the resolved value.
         //
-        // IMPORTANT: "Rest" parameters and default parameters are not counted in `Function.length`,
-        // so the assumption does not hold for wrappers like `(...args) => { real(...args); }`. For
-        // such functions, calling the callback will (eventually) cause a double settle error, and
-        // the function might prematurely resolve to `undefined` instead of the desired value.
+        // IMPORTANT: "Rest" parameters and default parameters are not included in
+        // `Function.length`, so the assumption does not hold for wrappers such as:
+        //
+        //     const wrapper = (...args) => real(...args);
+        //
+        // ECMAScript does not provide a way to determine whether a function has default or rest
+        // parameters, so there is no way to be certain that a hook function with `length` < 3 will
+        // not call the callback. Hook functions with `length` < 3 that call the callback
+        // asynchronously will cause a double settle error, and the hook function will prematurely
+        // resolve to `undefined` instead of the desired value.
+        //
+        // Wrapper functions can avoid problems by setting the wrapper's `length` property to match
+        // the real function's `length` property:
+        //
+        //     Object.defineProperty(wrapper, 'length', {value: real.length});
       }
     }
 
