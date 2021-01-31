@@ -1,6 +1,7 @@
 'use strict';
 
 const pluginDefs = require('./plugin_defs');
+const util = require('util');
 
 // Maps the name of a server-side hook to a string explaining the deprecation
 // (e.g., 'use the foo hook instead').
@@ -48,19 +49,13 @@ const syncMapFirst = (hooks, fn) => {
   return [];
 };
 
-const mapFirst = (lst, fn, cb, predicate) => {
-  if (predicate == null) predicate = (x) => (x != null && x.length > 0);
-  let i = 0;
-
-  const next = () => {
-    if (i >= lst.length) return cb(null, []);
-    fn(lst[i++], (err, result) => {
-      if (err) return cb(err);
-      if (predicate(result)) return cb(null, result);
-      next();
-    });
-  };
-  next();
+const mapFirst = async (hooks, fn, predicate = null) => {
+  if (predicate == null) predicate = (val) => val.length;
+  for (const hook of hooks) {
+    const val = await fn(hook);
+    if (predicate(val)) return val;
+  }
+  return [];
 };
 
 // Calls the hook function synchronously and returns the value provided by the hook function (via
@@ -377,15 +372,9 @@ exports.callFirst = (hookName, context) => {
 const aCallFirst = (hookName, context, cb, predicate) => {
   if (!context) context = {};
   if (!cb) cb = () => {};
-  if (pluginDefs.hooks[hookName] === undefined) return cb(null, []);
-  mapFirst(
-      pluginDefs.hooks[hookName],
-      (hook, cb) => {
-        hookCallWrapper(hook, hookName, context, (res) => { cb(null, res); });
-      },
-      cb,
-      predicate
-  );
+  const hooks = pluginDefs.hooks[hookName] || [];
+  const fn = async (hook) => await util.promisify(hookCallWrapper)(hook, hookName, context);
+  util.callbackify(mapFirst)(hooks, fn, predicate, cb);
 };
 
 /* return a Promise if cb is not supplied */
