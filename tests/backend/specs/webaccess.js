@@ -1,11 +1,9 @@
-/* global __dirname, __filename, Buffer, afterEach, before, beforeEach, describe, it, require */
-
-function m(mod) { return `${__dirname}/../../../src/${mod}`; }
+'use strict';
 
 const assert = require('assert').strict;
 const common = require('../common');
-const plugins = require(m('static/js/pluginfw/plugin_defs'));
-const settings = require(m('node/utils/Settings'));
+const plugins = require('ep_etherpad-lite/static/js/pluginfw/plugin_defs');
+const settings = require('ep_etherpad-lite/node/utils/Settings');
 
 describe(__filename, function () {
   let agent;
@@ -402,7 +400,7 @@ describe(__filename, function () {
     };
     const handlers = {};
 
-    beforeEach(function () {
+    beforeEach(async function () {
       failHookNames.forEach((hookName) => {
         const handler = new Handler(hookName);
         handlers[hookName] = handler;
