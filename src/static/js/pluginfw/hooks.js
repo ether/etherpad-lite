@@ -1,6 +1,5 @@
 'use strict';
 
-const _ = require('underscore');
 const pluginDefs = require('./plugin_defs');
 
 // Maps the name of a server-side hook to a string explaining the deprecation
@@ -24,9 +23,12 @@ const checkDeprecation = (hook) => {
   deprecationWarned[hook.hook_fn_name] = true;
 };
 
+// Flattens the array one level.
+const flatten1 = (array) => array.reduce((a, b) => a.concat(b), []);
+
 exports.bubbleExceptions = true;
 
-const hookCallWrapper = (hook, hook_name, args, cb) => {
+const hookCallWrapper = (hook, hookName, args, cb) => {
   if (cb === undefined) cb = (x) => x;
 
   checkDeprecation(hook);
@@ -36,7 +38,7 @@ const hookCallWrapper = (hook, hook_name, args, cb) => {
     if (x === undefined) return [];
     return x;
   };
-  const normalizedhook = () => normalize(hook.hook_fn(hook_name, args, (x) => cb(normalize(x))));
+  const normalizedhook = () => normalize(hook.hook_fn(hookName, args, (x) => cb(normalize(x))));
 
   if (exports.bubbleExceptions) {
     return normalizedhook();
@@ -44,7 +46,7 @@ const hookCallWrapper = (hook, hook_name, args, cb) => {
     try {
       return normalizedhook();
     } catch (ex) {
-      console.error([hook_name, hook.part.full_name, ex.stack || ex]);
+      console.error([hookName, hook.part.full_name, ex.stack || ex]);
     }
   }
 };
@@ -204,12 +206,12 @@ const callHookFnSync = (hook, context) => {
 exports.callAll = (hookName, context) => {
   if (context == null) context = {};
   const hooks = pluginDefs.hooks[hookName] || [];
-  return _.flatten(hooks.map((hook) => {
+  return flatten1(hooks.map((hook) => {
     const ret = callHookFnSync(hook, context);
     // `undefined` (but not `null`!) is treated the same as [].
     if (ret === undefined) return [];
     return ret;
-  }), 1);
+  }));
 };
 
 // Calls the hook function asynchronously and returns a Promise that either resolves to the hook
@@ -349,26 +351,26 @@ exports.aCallAll = async (hookName, context, cb) => {
   let resultsPromise = Promise.all(hooks.map((hook) => callHookFnAsync(hook, context)
   // `undefined` (but not `null`!) is treated the same as [].
       .then((result) => (result === undefined) ? [] : result)))
-      .then((results) => _.flatten(results, 1));
+      .then(flatten1);
   if (cb != null) resultsPromise = resultsPromise.then((val) => cb(null, val), cb);
   return await resultsPromise;
 };
 
-exports.callFirst = (hook_name, args) => {
+exports.callFirst = (hookName, args) => {
   if (!args) args = {};
-  if (pluginDefs.hooks[hook_name] === undefined) return [];
-  return exports.syncMapFirst(pluginDefs.hooks[hook_name],
-      (hook) => hookCallWrapper(hook, hook_name, args));
+  if (pluginDefs.hooks[hookName] === undefined) return [];
+  return exports.syncMapFirst(pluginDefs.hooks[hookName],
+      (hook) => hookCallWrapper(hook, hookName, args));
 };
 
-const aCallFirst = (hook_name, args, cb, predicate) => {
+const aCallFirst = (hookName, args, cb, predicate) => {
   if (!args) args = {};
   if (!cb) cb = () => {};
-  if (pluginDefs.hooks[hook_name] === undefined) return cb(null, []);
+  if (pluginDefs.hooks[hookName] === undefined) return cb(null, []);
   exports.mapFirst(
-      pluginDefs.hooks[hook_name],
+      pluginDefs.hooks[hookName],
       (hook, cb) => {
-        hookCallWrapper(hook, hook_name, args, (res) => { cb(null, res); });
+        hookCallWrapper(hook, hookName, args, (res) => { cb(null, res); });
       },
       cb,
       predicate
@@ -376,13 +378,13 @@ const aCallFirst = (hook_name, args, cb, predicate) => {
 };
 
 /* return a Promise if cb is not supplied */
-exports.aCallFirst = (hook_name, args, cb, predicate) => {
+exports.aCallFirst = (hookName, args, cb, predicate) => {
   if (cb === undefined) {
     return new Promise((resolve, reject) => {
-      aCallFirst(hook_name, args, (err, res) => err ? reject(err) : resolve(res), predicate);
+      aCallFirst(hookName, args, (err, res) => err ? reject(err) : resolve(res), predicate);
     });
   } else {
-    return aCallFirst(hook_name, args, cb, predicate);
+    return aCallFirst(hookName, args, cb, predicate);
   }
 };
 

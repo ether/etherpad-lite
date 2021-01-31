@@ -1,14 +1,9 @@
-/* global __dirname, __filename, afterEach, beforeEach, describe, it, process, require */
-
-function m(mod) { return `${__dirname}/../../../src/${mod}`; }
+'use strict';
 
 const assert = require('assert').strict;
-const common = require('../common');
-const hooks = require(m('static/js/pluginfw/hooks'));
-const plugins = require(m('static/js/pluginfw/plugin_defs'));
-const sinon = require(m('node_modules/sinon'));
-
-const logger = common.logger;
+const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+const plugins = require('ep_etherpad-lite/static/js/pluginfw/plugin_defs');
+const sinon = require('ep_etherpad-lite/node_modules/sinon');
 
 describe(__filename, function () {
   const hookName = 'testHook';
@@ -203,7 +198,7 @@ describe(__filename, function () {
     // Test various ways a hook might attempt to settle twice. (Examples: call the callback a second
     // time, or call the callback and then return a value.)
     describe('bad hook function behavior (double settle)', function () {
-      beforeEach(function () {
+      beforeEach(async function () {
         sinon.stub(console, 'error');
       });
 
@@ -558,7 +553,7 @@ describe(__filename, function () {
     // Test various ways a hook might attempt to settle twice. (Examples: call the callback a second
     // time, or call the callback and then return a value.)
     describe('bad hook function behavior (double settle)', function () {
-      beforeEach(function () {
+      beforeEach(async function () {
         sinon.stub(console, 'error');
       });
 
