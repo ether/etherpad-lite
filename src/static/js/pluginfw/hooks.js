@@ -344,6 +344,9 @@ exports.aCallAll = async (hookName, context, cb = null) => {
   return flatten1(results);
 };
 
+// DEPRECATED: Use `aCallFirst()` instead.
+//
+// Like `aCallFirst()`, but synchronous. Hook functions must provide their values synchronously.
 exports.callFirst = (hookName, context) => {
   if (context == null) context = {};
   const predicate = (val) => val.length;
@@ -355,6 +358,27 @@ exports.callFirst = (hookName, context) => {
   return [];
 };
 
+// Invokes the registered hook functions one at a time until one provides a value that meets a
+// customizable condition.
+//
+// Arguments:
+//   * hookName: Name of the hook to invoke.
+//   * context: Passed unmodified to the hook functions, except nullish becomes {}.
+//   * cb: Deprecated callback. The following:
+//         const p1 = hooks.aCallFirst('myHook', context, cb);
+//     is equivalent to:
+//         const p2 = hooks.aCallFirst('myHook', context).then(
+//             (val) => cb(null, val), (err) => cb(err || new Error(err)));
+//   * predicate: Optional predicate function that returns true if the hook function provided a
+//     value that satisfies a desired condition. If nullish, the predicate defaults to a non-empty
+//     array check. The predicate is invoked each time a hook function returns. It takes one
+//     argument: the normalized value provided by the hook function. If the predicate returns
+//     truthy, iteration over the hook functions stops (no more hook functions will be called).
+//
+// Return value:
+//   If cb is nullish, resolves to an array that is either the normalized value that satisfied the
+//   predicate or empty if the predicate was never satisfied. If cb is non-nullish, resolves to the
+//   value returned from cb().
 exports.aCallFirst = async (hookName, context, cb = null, predicate = null) => {
   if (cb != null) {
     return await attachCallback(exports.aCallFirst(hookName, context, null, predicate), cb);
