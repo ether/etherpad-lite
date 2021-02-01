@@ -1,3 +1,5 @@
+'use strict';
+
 describe('undo button', function () {
   beforeEach(function (cb) {
     helper.newPad(cb); // creates a new pad
@@ -30,7 +32,6 @@ describe('undo button', function () {
 
   it('undo some typing using a keypress', function (done) {
     const inner$ = helper.padInner$;
-    const chrome$ = helper.padChrome$;
 
     // get the first text element inside the editable space
     const $firstTextElement = inner$('div span').first();
