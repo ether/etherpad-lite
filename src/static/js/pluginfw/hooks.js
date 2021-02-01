@@ -1,7 +1,6 @@
 'use strict';
 
 const pluginDefs = require('./plugin_defs');
-const util = require('util');
 
 // Maps the name of a server-side hook to a string explaining the deprecation
 // (e.g., 'use the foo hook instead').
@@ -46,12 +45,6 @@ const normalizeValue = (val) => {
 
 // Flattens the array one level.
 const flatten1 = (array) => array.reduce((a, b) => a.concat(b), []);
-
-const hookCallWrapper = (hook, hookName, context, cb) => {
-  if (cb === undefined) cb = (x) => x;
-  checkDeprecation(hook);
-  return () => normalizeValue(hook.hook_fn(hookName, context, (x) => cb(normalizeValue(x))));
-};
 
 // Calls the hook function synchronously and returns the value provided by the hook function (via
 // callback or return value).
@@ -356,7 +349,7 @@ exports.callFirst = (hookName, context) => {
   const predicate = (val) => val.length;
   const hooks = pluginDefs.hooks[hookName] || [];
   for (const hook of hooks) {
-    const val = hookCallWrapper(hook, hookName, context);
+    const val = normalizeValue(callHookFnSync(hook, context));
     if (predicate(val)) return val;
   }
   return [];
@@ -370,7 +363,7 @@ exports.aCallFirst = async (hookName, context, cb = null, predicate = null) => {
   if (predicate == null) predicate = (val) => val.length;
   const hooks = pluginDefs.hooks[hookName] || [];
   for (const hook of hooks) {
-    const val = await util.promisify(hookCallWrapper)(hook, hookName, context);
+    const val = normalizeValue(await callHookFnAsync(hook, context));
     if (predicate(val)) return val;
   }
   return [];
