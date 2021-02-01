@@ -39,7 +39,9 @@
           "tests/**/*"
         ],
         "excludedFiles": [
-          "**/.eslintrc.js"
+          "**/.eslintrc.js",
+          "tests/frontend/travis/**/*",
+          "tests/ratelimit/**/*"
         ],
         "extends": "etherpad/tests",
         "rules": {
@@ -75,7 +77,8 @@
           "tests/frontend/**/*"
         ],
         "excludedFiles": [
-          "**/.eslintrc.js"
+          "**/.eslintrc.js",
+          "tests/frontend/travis/**/*"
         ],
         "extends": "etherpad/tests/frontend",
         "overrides": [
@@ -92,6 +95,12 @@
             }
           }
         ]
+      },
+      {
+        "files": [
+          "tests/frontend/travis/**/*"
+        ],
+        "extends": "etherpad/node"
       }
     ],
     "root": true
