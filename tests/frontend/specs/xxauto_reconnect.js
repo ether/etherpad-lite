@@ -1,3 +1,5 @@
+'use strict';
+
 describe('Automatic pad reload on Force Reconnect message', function () {
   let padId, $originalPadFrame;
 

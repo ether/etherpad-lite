@@ -1,3 +1,5 @@
+'use strict';
+
 describe('timeslider', function () {
   const padId = 735773577357 + (Math.round(Math.random() * 1000));
 

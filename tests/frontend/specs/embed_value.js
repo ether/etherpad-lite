@@ -1,3 +1,5 @@
+'use strict';
+
 describe('embed links', function () {
   const objectify = function (str) {
     const hash = {};
