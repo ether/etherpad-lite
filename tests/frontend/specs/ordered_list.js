@@ -104,7 +104,7 @@ describe('assign ordered list', function () {
 
   const triggerCtrlShiftShortcut = (shortcutChar) => {
     const inner$ = helper.padInner$;
-    const e = inner$.Event(helper.evtType);
+    const e = new inner$.Event(helper.evtType);
     e.ctrlKey = true;
     e.shiftKey = true;
     e.which = shortcutChar.toString().charCodeAt(0);
@@ -139,7 +139,7 @@ describe('Pressing Tab in an OL increases and decreases indentation', function (
     const $insertorderedlistButton = chrome$('.buttonicon-insertorderedlist');
     $insertorderedlistButton.click();
 
-    const e = inner$.Event(helper.evtType);
+    const e = new inner$.Event(helper.evtType);
     e.keyCode = 9; // tab
     inner$('#innerdocbody').trigger(e);
 

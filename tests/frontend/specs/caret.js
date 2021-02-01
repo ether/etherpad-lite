@@ -309,7 +309,7 @@ const prepareDocument = (n, target) => {
 
 // sends a charCode to the window
 const keyEvent = (target, charCode, ctrl, shift) => {
-  const e = target.Event(helper.evtType);
+  const e = new target.Event(helper.evtType);
   if (ctrl) {
     e.ctrlKey = true; // Control key
   }

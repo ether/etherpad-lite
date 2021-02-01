@@ -89,7 +89,7 @@ describe('select formatting buttons when selection has style applied', function 
     // select this text element
     $firstTextElement.sendkeys('{selectall}');
 
-    const e = inner$.Event(helper.evtType);
+    const e = new inner$.Event(helper.evtType);
     e.ctrlKey = true; // Control key
     e.which = key.charCodeAt(0); // I, U, B, 5
     inner$('#innerdocbody').trigger(e);

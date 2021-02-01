@@ -70,7 +70,7 @@ xdescribe('Responsiveness of Editor', function () {
       for (let i = 0; i < keysToSend.length; ++i) {
         const x = keysToSend.charCodeAt(i);
         ['keyup', 'keypress', 'keydown'].forEach((type) => {
-          const e = $.Event(type);
+          const e = new $.Event(type);
           e.keyCode = x;
           el.trigger(e);
         });

@@ -45,7 +45,7 @@ describe('italic some text', function () {
     // select this text element
     $firstTextElement.sendkeys('{selectall}');
 
-    const e = inner$.Event(helper.evtType);
+    const e = new inner$.Event(helper.evtType);
     e.ctrlKey = true; // Control key
     e.which = 105; // i
     inner$('#innerdocbody').trigger(e);

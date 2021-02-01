@@ -16,7 +16,7 @@ describe('indentation button', function () {
     // select this text element
     $firstTextElement.sendkeys('{selectall}');
 
-    const e = inner$.Event(helper.evtType);
+    const e = new inner$.Event(helper.evtType);
     e.keyCode = 9; // tab :|
     inner$('#innerdocbody').trigger(e);
 
@@ -309,7 +309,7 @@ describe('indentation button', function () {
 
 const pressEnter = () => {
   const inner$ = helper.padInner$;
-  const e = inner$.Event(helper.evtType);
+  const e = new inner$.Event(helper.evtType);
   e.keyCode = 13; // enter :|
   inner$('#innerdocbody').trigger(e);
 };

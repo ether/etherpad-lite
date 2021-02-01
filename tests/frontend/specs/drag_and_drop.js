@@ -143,7 +143,7 @@ describe('drag and drop', function () {
   };
 
   const triggerEvent = (eventName) => {
-    const event = helper.padInner$.Event(eventName);
+    const event = new helper.padInner$.Event(eventName);
     helper.padInner$('#innerdocbody').trigger(event);
   };
 
