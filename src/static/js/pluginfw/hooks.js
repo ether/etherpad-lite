@@ -352,7 +352,7 @@ exports.aCallAll = async (hookName, context, cb = null) => {
 };
 
 exports.callFirst = (hookName, context) => {
-  if (!context) context = {};
+  if (context == null) context = {};
   const predicate = (val) => val.length;
   const hooks = pluginDefs.hooks[hookName] || [];
   for (const hook of hooks) {
@@ -366,7 +366,7 @@ exports.aCallFirst = async (hookName, context, cb = null, predicate = null) => {
   if (cb != null) {
     return await attachCallback(exports.aCallFirst(hookName, context, null, predicate), cb);
   }
-  if (!context) context = {};
+  if (context == null) context = {};
   if (predicate == null) predicate = (val) => val.length;
   const hooks = pluginDefs.hooks[hookName] || [];
   for (const hook of hooks) {
