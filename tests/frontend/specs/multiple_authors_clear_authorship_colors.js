@@ -1,7 +1,9 @@
+'use strict';
+
 describe('author of pad edition', function () {
   // author 1 creates a new pad with some content (regular lines and lists)
   before(function (done) {
-    var padId = helper.newPad(() => {
+    const padId = helper.newPad(() => {
       // make sure pad has at least 3 lines
       const $firstLine = helper.padInner$('div').first();
       $firstLine.html('Hello World');
@@ -13,7 +15,8 @@ describe('author of pad edition', function () {
         setTimeout(() => {
           // Expire cookie, so author is changed after reloading the pad.
           // See https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie#Example_4_Reset_the_previous_cookie
-          helper.padChrome$.document.cookie = 'token=foo;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+          helper.padChrome$.document.cookie =
+              'token=foo;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
 
           helper.newPad(done, padId);
         }, 1000);
@@ -27,7 +30,7 @@ describe('author of pad edition', function () {
     clearAuthorship(done);
   });
 
-  var clearAuthorship = function (done) {
+  const clearAuthorship = (done) => {
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
