@@ -1,3 +1,5 @@
+'use strict';
+
 // deactivated, we need a nice way to get the timeslider, this is ugly
 xdescribe('timeslider button takes you to the timeslider of a pad', function () {
   beforeEach(function (cb) {
@@ -12,7 +14,6 @@ xdescribe('timeslider button takes you to the timeslider of a pad', function () 
     // get the first text element inside the editable space
     const $firstTextElement = inner$('div span').first();
     const originalValue = $firstTextElement.text(); // get the original value
-    const newValue = `Testing${originalValue}`;
     $firstTextElement.sendkeys('Testing'); // send line 1 to the pad
 
     const modifiedValue = $firstTextElement.text(); // get the modified value
