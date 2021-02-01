@@ -175,6 +175,8 @@ const callHookFnSync = (hook, context) => {
   return outcome.val;
 };
 
+// DEPRECATED: Use `callAllSerial()` or `aCallAll()` instead.
+//
 // Invokes all registered hook functions synchronously.
 //
 // Arguments:
@@ -317,7 +319,10 @@ const callHookFnAsync = async (hook, context) => {
   });
 };
 
-// Invokes all registered hook functions asynchronously.
+// Invokes all registered hook functions asynchronously and concurrently. This is NOT the async
+// equivalent of `callAll()`: `callAll()` calls the hook functions serially (one at a time) but this
+// function calls them concurrently. Use `callAllSerial()` if the hook functions must be called one
+// at a time.
 //
 // Arguments:
 //   * hookName: Name of the hook to invoke.
@@ -341,6 +346,19 @@ exports.aCallAll = async (hookName, context, cb = null) => {
   const hooks = pluginDefs.hooks[hookName] || [];
   const results = await Promise.all(
       hooks.map(async (hook) => normalizeValue(await callHookFnAsync(hook, context))));
+  return flatten1(results);
+};
+
+// Like `aCallAll()` except the hook functions are called one at a time instead of concurrently.
+// Only use this function if the hook functions must be called one at a time, otherwise use
+// `aCallAll()`.
+exports.callAllSerial = async (hookName, context) => {
+  if (context == null) context = {};
+  const hooks = pluginDefs.hooks[hookName] || [];
+  const results = [];
+  for (const hook of hooks) {
+    results.push(normalizeValue(await callHookFnAsync(hook, context)));
+  }
   return flatten1(results);
 };
 
