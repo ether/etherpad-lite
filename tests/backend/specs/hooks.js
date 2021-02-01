@@ -968,6 +968,89 @@ describe(__filename, function () {
     });
   });
 
+  describe('hooks.callAllSerial', function () {
+    describe('basic behavior', function () {
+      it('calls all asynchronously, serially, in order', async function () {
+        const gotCalls = [];
+        testHooks.length = 0;
+        for (let i = 0; i < 3; i++) {
+          const hook = makeHook();
+          hook.hook_fn = async () => {
+            gotCalls.push(i);
+            // Check gotCalls asynchronously to ensure that the next hook function does not start
+            // executing before this hook function has resolved.
+            return await new Promise((resolve) => {
+              setImmediate(() => {
+                assert.deepEqual(gotCalls, [...Array(i + 1).keys()]);
+                resolve(i);
+              });
+            });
+          };
+          testHooks.push(hook);
+        }
+        assert.deepEqual(await hooks.callAllSerial(hookName), [0, 1, 2]);
+        assert.deepEqual(gotCalls, [0, 1, 2]);
+      });
+
+      it('passes hook name', async function () {
+        hook.hook_fn = async (hn) => { assert.equal(hn, hookName); };
+        await hooks.callAllSerial(hookName);
+      });
+
+      it('undefined context -> {}', async function () {
+        hook.hook_fn = async (hn, ctx) => { assert.deepEqual(ctx, {}); };
+        await hooks.callAllSerial(hookName);
+      });
+
+      it('null context -> {}', async function () {
+        hook.hook_fn = async (hn, ctx) => { assert.deepEqual(ctx, {}); };
+        await hooks.callAllSerial(hookName, null);
+      });
+
+      it('context unmodified', async function () {
+        const wantContext = {};
+        hook.hook_fn = async (hn, ctx) => { assert.equal(ctx, wantContext); };
+        await hooks.callAllSerial(hookName, wantContext);
+      });
+    });
+
+    describe('result processing', function () {
+      it('no registered hooks (undefined) -> []', async function () {
+        delete plugins.hooks[hookName];
+        assert.deepEqual(await hooks.callAllSerial(hookName), []);
+      });
+
+      it('no registered hooks (empty list) -> []', async function () {
+        testHooks.length = 0;
+        assert.deepEqual(await hooks.callAllSerial(hookName), []);
+      });
+
+      it('flattens one level', async function () {
+        testHooks.length = 0;
+        testHooks.push(makeHook(1), makeHook([2]), makeHook([[3]]));
+        assert.deepEqual(await hooks.callAllSerial(hookName), [1, 2, [3]]);
+      });
+
+      it('filters out undefined', async function () {
+        testHooks.length = 0;
+        testHooks.push(makeHook(), makeHook([2]), makeHook([[3]]), makeHook(Promise.resolve()));
+        assert.deepEqual(await hooks.callAllSerial(hookName), [2, [3]]);
+      });
+
+      it('preserves null', async function () {
+        testHooks.length = 0;
+        testHooks.push(makeHook(null), makeHook([2]), makeHook(Promise.resolve(null)));
+        assert.deepEqual(await hooks.callAllSerial(hookName), [null, 2, null]);
+      });
+
+      it('all undefined -> []', async function () {
+        testHooks.length = 0;
+        testHooks.push(makeHook(), makeHook(Promise.resolve()));
+        assert.deepEqual(await hooks.callAllSerial(hookName), []);
+      });
+    });
+  });
+
   describe('hooks.aCallFirst', function () {
     it('no registered hooks (undefined) -> []', async function () {
       delete plugins.hooks.testHook;
