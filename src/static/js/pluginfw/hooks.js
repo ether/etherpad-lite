@@ -362,29 +362,21 @@ exports.callFirst = (hookName, context) => {
   return [];
 };
 
-const aCallFirst = (hookName, context, cb, predicate = null) => {
+const aCallFirst = async (hookName, context, predicate = null) => {
   if (!context) context = {};
-  if (!cb) cb = () => {};
   if (predicate == null) predicate = (val) => val.length;
   const hooks = pluginDefs.hooks[hookName] || [];
-  util.callbackify(async () => {
-    for (const hook of hooks) {
-      const val = await util.promisify(hookCallWrapper)(hook, hookName, context);
-      if (predicate(val)) return val;
-    }
-    return [];
-  })(cb);
+  for (const hook of hooks) {
+    const val = await util.promisify(hookCallWrapper)(hook, hookName, context);
+    if (predicate(val)) return val;
+  }
+  return [];
 };
 
 /* return a Promise if cb is not supplied */
 exports.aCallFirst = (hookName, context, cb, predicate) => {
-  if (cb === undefined) {
-    return new Promise((resolve, reject) => {
-      aCallFirst(hookName, context, (err, res) => err ? reject(err) : resolve(res), predicate);
-    });
-  } else {
-    return aCallFirst(hookName, context, cb, predicate);
-  }
+  if (cb == null) return aCallFirst(hookName, context, predicate);
+  util.callbackify(aCallFirst)(hookName, context, predicate, cb);
 };
 
 exports.exportedForTestingOnly = {
