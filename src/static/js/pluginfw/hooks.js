@@ -27,7 +27,11 @@ const checkDeprecation = (hook) => {
 // Calls the node-style callback when the Promise settles. Unlike util.callbackify, this takes a
 // Promise (rather than a function that returns a Promise), and it returns a Promise (rather than a
 // function that returns undefined).
-const attachCallback = (p, cb) => p.then((val) => cb(null, val), cb);
+const attachCallback = (p, cb) => p.then(
+    (val) => cb(null, val),
+    // Callbacks often only check the truthiness, not the nullness, of the first parameter. To avoid
+    // problems, always pass a truthy value as the first argument if the Promise is rejected.
+    (err) => cb(err || new Error(err)));
 
 // Flattens the array one level.
 const flatten1 = (array) => array.reduce((a, b) => a.concat(b), []);
@@ -326,10 +330,11 @@ const callHookFnAsync = async (hook, context) => {
 // Arguments:
 //   * hookName: Name of the hook to invoke.
 //   * context: Passed unmodified to the hook functions, except nullish becomes {}.
-//   * cb: Deprecated callback. The following:
+//   * cb: Deprecated. Optional node-style callback. The following:
 //         const p1 = hooks.aCallAll('myHook', context, cb);
 //     is equivalent to:
-//         const p2 = hooks.aCallAll('myHook', context).then((val) => cb(null, val), cb);
+//         const p2 = hooks.aCallAll('myHook', context).then(
+//             (val) => cb(null, val), (err) => cb(err || new Error(err)));
 //
 // Return value:
 //   If cb is nullish, this function resolves to a flattened array of hook results. Specifically, it
