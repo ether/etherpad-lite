@@ -41,7 +41,7 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
     console.log(`Remote sauce test '${name}' started! ${url}`);
 
     // tear down the test excecution
-    const stopSauce = function (success, timesup) {
+    const stopSauce = (success, timesup) => {
       clearInterval(getStatusInterval);
       clearTimeout(timeout);
 
