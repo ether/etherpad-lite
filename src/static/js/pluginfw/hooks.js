@@ -24,6 +24,11 @@ const checkDeprecation = (hook) => {
   deprecationWarned[hook.hook_fn_name] = true;
 };
 
+// Calls the node-style callback when the Promise settles. Unlike util.callbackify, this takes a
+// Promise (rather than a function that returns a Promise), and it returns a Promise (rather than a
+// function that returns undefined).
+const attachCallback = (p, cb) => p.then((val) => cb(null, val), cb);
+
 // Flattens the array one level.
 const flatten1 = (array) => array.reduce((a, b) => a.concat(b), []);
 
@@ -333,15 +338,14 @@ const callHookFnAsync = async (hook, context) => {
 //     2. Convert each `undefined` entry into `[]`.
 //     3. Flatten one level.
 //   If cb is non-null, this function resolves to the value returned by cb.
-exports.aCallAll = async (hookName, context, cb) => {
+exports.aCallAll = async (hookName, context, cb = null) => {
+  if (cb != null) return await attachCallback(exports.aCallAll(hookName, context), cb);
   if (context == null) context = {};
   const hooks = pluginDefs.hooks[hookName] || [];
-  let resultsPromise = Promise.all(hooks.map((hook) => callHookFnAsync(hook, context)
+  const results = await Promise.all(hooks.map((hook) => callHookFnAsync(hook, context)
   // `undefined` (but not `null`!) is treated the same as [].
-      .then((result) => (result === undefined) ? [] : result)))
-      .then(flatten1);
-  if (cb != null) resultsPromise = resultsPromise.then((val) => cb(null, val), cb);
-  return await resultsPromise;
+      .then((result) => (result === undefined) ? [] : result)));
+  return flatten1(results);
 };
 
 exports.callFirst = (hookName, context) => {
