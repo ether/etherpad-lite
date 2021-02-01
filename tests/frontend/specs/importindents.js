@@ -16,9 +16,6 @@ describe('import indents functionality', function () {
   }
   function importrequest(data, importurl, type) {
     let error;
-    const dataStr = 'Content-Type: multipart/form-data; boundary=--boundary\r\n\r\n--boundary\r\n' +
-    `Content-Disposition: form-data; name="file"; filename="import.${type}"\r\n` +
-    `Content-Type: text/plain\r\n\r\n${data}\r\n\r\n--boundary`;
     const result = $.ajax({
       url: importurl,
       type: 'post',
@@ -28,7 +25,17 @@ describe('import indents functionality', function () {
       accepts: {
         text: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
       },
-      data: dataStr,
+      data: [
+        'Content-Type: multipart/form-data; boundary=--boundary',
+        '',
+        '--boundary',
+        `Content-Disposition: form-data; name="file"; filename="import.${type}"`,
+        'Content-Type: text/plain',
+        '',
+        data,
+        '',
+        '--boundary',
+      ].join('\r\n'),
       error(res) {
         error = res;
       },
@@ -67,8 +74,8 @@ describe('import indents functionality', function () {
     const results = exportfunc(helper.padChrome$.window.location.href);
     /* eslint-disable-next-line max-len */
     expect(results[0][1]).to.be('<ul class="indent"><li>indent line 1</li><li>indent line 2</li><ul class="indent"><li>indent2 line 1</li><li>indent2 line 2</li></ul></ul><br>');
-    expect(results[1][1]).to
-        .be('\tindent line 1\n\tindent line 2\n\t\tindent2 line 1\n\t\tindent2 line 2\n\n');
+    expect(results[1][1])
+        .to.be('\tindent line 1\n\tindent line 2\n\t\tindent2 line 1\n\t\tindent2 line 2\n\n');
     done();
   });
 

@@ -1,8 +1,9 @@
 'use strict';
 
 describe('As the caret is moved is the UI properly updated?', function () {
-  // const numberOfRows = 50;
   /*
+  let padName;
+  const numberOfRows = 50;
 
   //create a new pad before each test run
   beforeEach(function(cb){
@@ -228,7 +229,7 @@ console.log(inner$);
 
     // Is this Element now visible to the pad user?
     helper.waitFor(function(){ // Wait for the DOM to register the new items
-    // Wait for the DOM to scroll into place
+      // Wait for the DOM to scroll into place
       return isScrolledIntoView(inner$("div:nth-child("+numberOfRows+")"), inner$);
     }).done(function(){ // Once the DOM has registered the items
       // Randomize the item heights (replicates images / headings etc)

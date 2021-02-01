@@ -19,9 +19,6 @@ describe('import functionality', function () {
   }
   function importrequest(data, importurl, type) {
     let error;
-    const dataStr = 'Content-Type: multipart/form-data; boundary=--boundary\r\n\r' +
-    `\n--boundary\r\nContent-Disposition: form-data; name="file"; filename="import.${type}` +
-    `"\r\nContent-Type: text/plain\r\n\r\n${data}\r\n\r\n--boundary`;
     const result = $.ajax({
       url: importurl,
       type: 'post',
@@ -31,7 +28,17 @@ describe('import functionality', function () {
       accepts: {
         text: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
       },
-      data: dataStr,
+      data: [
+        'Content-Type: multipart/form-data; boundary=--boundary',
+        '',
+        '--boundary',
+        `Content-Disposition: form-data; name="file"; filename="import.${type}"`,
+        'Content-Type: text/plain',
+        '',
+        data,
+        '',
+        '--boundary',
+      ].join('\r\n'),
       error(res) {
         error = res;
       },

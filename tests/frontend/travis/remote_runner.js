@@ -1,9 +1,7 @@
 'use strict';
 
-const process = require('process');
-const srcFolder = '../../../src/node_modules/';
-const wd = require(`${srcFolder}wd`);
-const async = require(`${srcFolder}async`);
+const wd = require('ep_etherpad-lite/node_modules/wd');
+const async = require('ep_etherpad-lite/node_modules/async');
 
 const config = {
   host: 'ondemand.saucelabs.com',

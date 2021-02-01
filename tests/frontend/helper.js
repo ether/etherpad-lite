@@ -1,6 +1,5 @@
 'use strict';
-// eslint-disable-next-line no-redeclare
-const helper = {};
+const helper = {}; // eslint-disable-line no-redeclare
 
 (function () {
   let $iframe; const
@@ -182,8 +181,7 @@ const helper = {};
   };
 
   helper.waitFor = function (conditionFunc, timeoutTime = 1900, intervalTime = 10) {
-    // eslint-disable-next-line new-cap
-    const deferred = $.Deferred();
+    const deferred = new $.Deferred();
 
     const _fail = deferred.fail.bind(deferred);
     let listenForFail = false;

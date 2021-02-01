@@ -2,7 +2,7 @@
 
 let etherpad;
 try {
-  etherpad = require('../../src/node_modules/etherpad-cli-client');
+  etherpad = require('ep_etherpad-lite/node_modules/etherpad-cli-client');
   // ugly
 } catch {
   /* eslint-disable-next-line node/no-missing-require */
