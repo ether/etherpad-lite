@@ -1,3 +1,5 @@
+'use strict';
+
 describe('author of pad edition', function () {
   const REGULAR_LINE = 0;
   const LINE_WITH_ORDERED_LIST = 1;
@@ -5,10 +7,11 @@ describe('author of pad edition', function () {
 
   // author 1 creates a new pad with some content (regular lines and lists)
   before(function (done) {
-    var padId = helper.newPad(() => {
+    const padId = helper.newPad(() => {
       // make sure pad has at least 3 lines
       const $firstLine = helper.padInner$('div').first();
-      const threeLines = ['regular line', 'line with ordered list', 'line with unordered list'].join('<br>');
+      const threeLines = ['regular line', 'line with ordered list', 'line with unordered list']
+          .join('<br>');
       $firstLine.html(threeLines);
 
       // wait for lines to be processed by Etherpad
@@ -43,7 +46,8 @@ describe('author of pad edition', function () {
             setTimeout(() => {
               // Expire cookie, so author is changed after reloading the pad.
               // See https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie#Example_4_Reset_the_previous_cookie
-              helper.padChrome$.document.cookie = 'token=foo;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+              helper.padChrome$.document.cookie =
+                  'token=foo;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
 
               helper.newPad(done, padId);
             }, 1000);
@@ -59,24 +63,22 @@ describe('author of pad edition', function () {
     changeLineAndCheckOnlyThatChangeIsFromThisAuthor(REGULAR_LINE, 'x', done);
   });
 
-  it('marks only the new content as changes of the second user on a line with ordered list', function (done) {
+  it('marks only the new content as changes of the second user on a ' +
+      'line with ordered list', function (done) {
     changeLineAndCheckOnlyThatChangeIsFromThisAuthor(LINE_WITH_ORDERED_LIST, 'y', done);
   });
 
-  it('marks only the new content as changes of the second user on a line with unordered list', function (done) {
+  it('marks only the new content as changes of the second user on ' +
+      'a line with unordered list', function (done) {
     changeLineAndCheckOnlyThatChangeIsFromThisAuthor(LINE_WITH_UNORDERED_LIST, 'z', done);
   });
 
   /* ********************** Helper functions ************************ */
-  var getLine = function (lineNumber) {
-    return helper.padInner$('div').eq(lineNumber);
-  };
+  const getLine = (lineNumber) => helper.padInner$('div').eq(lineNumber);
 
-  const getAuthorFromClassList = function (classes) {
-    return classes.find((cls) => cls.startsWith('author'));
-  };
+  const getAuthorFromClassList = (classes) => classes.find((cls) => cls.startsWith('author'));
 
-  var changeLineAndCheckOnlyThatChangeIsFromThisAuthor = function (lineNumber, textChange, done) {
+  const changeLineAndCheckOnlyThatChangeIsFromThisAuthor = (lineNumber, textChange, done) => {
     // get original author class
     const classes = getLine(lineNumber).find('span').first().attr('class').split(' ');
     const originalAuthor = getAuthorFromClassList(classes);
