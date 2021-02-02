@@ -35,13 +35,13 @@ describe('Plugins page', function () {
   it('Attempt to Update a plugin', async function () {
     this.timeout(120000);
 
-    if (helper.admin$('#installed-plugins .ep_align').length === 0) this.skip();
+    if (helper.admin$('.ep_align').length === 0) this.skip();
 
     await helper.waitForPromise(
-        () => helper.admin$('#installed-plugins .ep_align .version').text().split('.').length >= 2);
+        () => helper.admin$('.ep_align .version').text().split('.').length >= 2);
 
     const minorVersionBefore =
-        parseInt(helper.admin$('#installed-plugins .ep_align .version').text().split('.')[1]);
+        parseInt(helper.admin$('.ep_align .version').text().split('.')[1]);
 
     if (!minorVersionBefore) {
       throw new Error('Unable to get minor number of plugin, is the plugin installed?');
@@ -63,45 +63,47 @@ describe('Plugins page', function () {
     // Ensure it's a higher minor version IE 0.3.x as 0.2.x was installed
     // Coverage for https://github.com/ether/etherpad-lite/issues/4536
     await helper.waitForPromise(() => parseInt(helper.admin$(
-        '#installed-plugins .ep_align .version'
+        '.ep_align .version'
     )
         .text()
         .split('.')[1]) > minorVersionBefore, 60000, 1000);
     // allow 50 seconds, check every 1 second.
   });
-  it('Attempt to install a plugin', async function () {
-    this.timeout(60000);
-    if (helper.admin$('#installed-plugins .ep_activepads').length !== 0) this.skip();
+  it('Attempt to Install a plugin', async function () {
+    this.timeout(240000);
 
     helper.admin$('#search-query').val('ep_activepads');
-    await helper.waitForPromise(() => helper.admin$('.results').children().length < 300);
-    await helper.waitForPromise(() => helper.admin$('.results').children().length > 0);
+    await helper.waitForPromise(() => helper.admin$('.results').children().length < 300, 6000);
+    await helper.waitForPromise(() => helper.admin$('.results').children().length > 0, 6000);
+
+    // skip if we already have ep_activepads installed..
+    if (helper.admin$('.ep_activepads .do-install').is(':visible') === false) this.skip();
 
     helper.admin$('.ep_activepads .do-install').click();
     // ensure install has attempted to be started
     await helper.waitForPromise(
-        () => helper.admin$('#installed-plugins .ep_activepads .do-install').length !== 0, 60000);
+        () => helper.admin$('.ep_activepads .do-install').length !== 0, 120000);
     // ensure its not showing installing any more
     await helper.waitForPromise(
-        () => helper.admin$('#installed-plugins .ep_activepads .message').text() === '', 60000);
+        () => helper.admin$('.ep_activepads .message').text() === '', 180000);
     // ensure uninstall button is visible
     await helper.waitForPromise(
-        () => helper.admin$('#installed-plugins .ep_activepads .do-uninstall').length !== 0, 60000);
+        () => helper.admin$('.ep_activepads .do-uninstall').length !== 0, 120000);
   });
 
   it('Attempt to Uninstall a plugin', async function () {
-    this.timeout(60000);
+    this.timeout(240000);
     await helper.waitForPromise(
-        () => helper.admin$('#installed-plugins .ep_activepads .do-uninstall').length !== 0, 60000);
+        () => helper.admin$('.ep_activepads .do-uninstall').length !== 0, 120000);
 
-    helper.admin$('#installed-plugins .ep_activepads .do-uninstall').click();
+    helper.admin$('.ep_activepads .do-uninstall').click();
 
     // ensure its showing uninstalling
     await helper.waitForPromise(
-        () => helper.admin$('#installed-plugins .ep_activepads .message')
-            .text() === 'Uninstalling', 60000);
+        () => helper.admin$('.ep_activepads .message')
+            .text() === 'Uninstalling', 120000);
     // ensure its gone
     await helper.waitForPromise(
-        () => helper.admin$('#installed-plugins .ep_activepads').length === 0, 60000);
+        () => helper.admin$('.ep_activepads').length === 0, 180000);
   });
 });
