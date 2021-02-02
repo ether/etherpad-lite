@@ -28,12 +28,15 @@ describe('Plugins page', function () {
 
   it('Searches for plugin', async function () {
     helper.admin$('#search-query').val('ep_font_color');
-    await helper.waitForPromise(() => helper.admin$('.results').children().length < 300);
-    await helper.waitForPromise(() => helper.admin$('.results').children().length > 0);
+    await helper.waitForPromise(() => helper.admin$('.results').children().length < 300, 5000);
+    await helper.waitForPromise(() => helper.admin$('.results').children().length > 0, 5000);
   });
 
   it('Attempt to Update a plugin', async function () {
     this.timeout(60000);
+
+    if(helper.admin$('#installed-plugins .ep_align').length === 0) this.skip();
+
     await helper.waitForPromise(
         () => helper.admin$('#installed-plugins .ep_align .version').text().split('.').length >= 2);
 
@@ -43,6 +46,8 @@ describe('Plugins page', function () {
     if (!minorVersionBefore) {
       throw new Error('Unable to get minor number of plugin, is the plugin installed?');
     }
+
+    if(minorVersionBefore !== 2) this.skip();
 
     helper.waitForPromise(
         () => helper.admin$('.ep_align .do-update').length === 1);
@@ -73,18 +78,19 @@ describe('Plugins page', function () {
     helper.admin$('.ep_activepads .do-install').click();
     // ensure install has attempted to be started
     await helper.waitForPromise(
-        () => helper.admin$('#installed-plugins .ep_activepads .do-install').length !== 0);
+        () => helper.admin$('#installed-plugins .ep_activepads .do-install').length !== 0, 60000);
     // ensure its not showing installing any more
     await helper.waitForPromise(
-        () => helper.admin$('#installed-plugins .ep_activepads .message').text() === '');
+        () => helper.admin$('#installed-plugins .ep_activepads .message').text() === '', 60000);
     // ensure uninstall button is visible
     await helper.waitForPromise(
-        () => helper.admin$('#installed-plugins .ep_activepads .do-uninstall').length !== 0);
+        () => helper.admin$('#installed-plugins .ep_activepads .do-uninstall').length !== 0, 60000);
   });
 
   it('Attempt to Uninstall a plugin', async function () {
     this.timeout(60000);
     helper.admin$('#installed-plugins .ep_activepads .do-uninstall').click();
+
     // ensure its showing uninstalling
     await helper.waitForPromise(
         () => helper.admin$('#installed-plugins .ep_activepads .message')
