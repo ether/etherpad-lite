@@ -71,7 +71,7 @@ describe('Plugins page', function () {
   });
   it('Attempt to install a plugin', async function () {
     this.timeout(60000);
-    if (helper.admin$('#installed-plugins .ep_activepads').length === 0) this.skip();
+    if (helper.admin$('#installed-plugins .ep_activepads').length !== 0) this.skip();
 
     helper.admin$('#search-query').val('ep_activepads');
     await helper.waitForPromise(() => helper.admin$('.results').children().length < 300);
