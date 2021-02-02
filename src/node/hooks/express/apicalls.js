@@ -1,9 +1,11 @@
+'use strict';
+
 const log4js = require('log4js');
 const clientLogger = log4js.getLogger('client');
 const formidable = require('formidable');
 const apiHandler = require('../../handler/APIHandler');
 
-exports.expressCreateServer = function (hook_name, args, cb) {
+exports.expressCreateServer = (hookName, args, cb) => {
   // The Etherpad client side sends information about how a disconnect happened
   args.app.post('/ep/pad/connection-diagnostic-info', (req, res) => {
     new formidable.IncomingForm().parse(req, (err, fields, files) => {
@@ -15,8 +17,9 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   // The Etherpad client side sends information about client side javscript errors
   args.app.post('/jserror', (req, res) => {
     new formidable.IncomingForm().parse(req, (err, fields, files) => {
+      let data;
       try {
-        var data = JSON.parse(fields.errorInfo);
+        data = JSON.parse(fields.errorInfo);
       } catch (e) {
         return res.end();
       }

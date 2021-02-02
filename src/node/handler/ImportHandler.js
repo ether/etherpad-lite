@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Handles the import requests
  */
@@ -30,7 +31,7 @@ const os = require('os');
 const importHtml = require('../utils/ImportHtml');
 const importEtherpad = require('../utils/ImportEtherpad');
 const log4js = require('log4js');
-const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks.js');
+const hooks = require('../../static/js/pluginfw/hooks.js');
 const util = require('util');
 
 const fsp_exists = util.promisify(fs.exists);
@@ -42,7 +43,7 @@ let convertor = null;
 let exportExtension = 'htm';
 
 // load abiword only if it is enabled and if soffice is disabled
-if (settings.abiword != null && settings.soffice === null) {
+if (settings.abiword != null && settings.soffice == null) {
   convertor = require('../utils/Abiword');
 }
 
@@ -57,7 +58,7 @@ const tmpDirectory = os.tmpdir();
 /**
  * do a requested import
  */
-async function doImport(req, res, padId) {
+const doImport = async (req, res, padId) => {
   const apiLogger = log4js.getLogger('ImportHandler');
 
   // pipe to a file
@@ -112,7 +113,8 @@ async function doImport(req, res, padId) {
   // ensure this is a file ending we know, else we change the file ending to .txt
   // this allows us to accept source code files like .c or .java
   const fileEnding = path.extname(srcFile).toLowerCase();
-  const knownFileEndings = ['.txt', '.doc', '.docx', '.pdf', '.odt', '.html', '.htm', '.etherpad', '.rtf'];
+  const knownFileEndings =
+    ['.txt', '.doc', '.docx', '.pdf', '.odt', '.html', '.htm', '.etherpad', '.rtf'];
   const fileEndingUnknown = (knownFileEndings.indexOf(fileEnding) < 0);
 
   if (fileEndingUnknown) {
@@ -146,7 +148,7 @@ async function doImport(req, res, padId) {
     const headCount = _pad.head;
 
     if (headCount >= 10) {
-      apiLogger.warn("Direct database Import attempt of a pad that already has content, we won't be doing this");
+      apiLogger.warn('Aborting direct database import attempt of a pad that already has content');
       throw 'padHasData';
     }
 
@@ -251,9 +253,9 @@ async function doImport(req, res, padId) {
   if (await fsp_exists(destFile)) {
     fsp_unlink(destFile);
   }
-}
+};
 
-exports.doImport = function (req, res, padId) {
+exports.doImport = (req, res, padId) => {
   /**
    * NB: abuse the 'req' object by storing an additional
    * 'directDatabaseAccess' property on it so that it can
@@ -266,7 +268,10 @@ exports.doImport = function (req, res, padId) {
   let status = 'ok';
   doImport(req, res, padId).catch((err) => {
     // check for known errors and replace the status
-    if (err == 'uploadFailed' || err == 'convertFailed' || err == 'padHasData' || err == 'maxFileSize') {
+    if (err === 'uploadFailed' ||
+        err === 'convertFailed' ||
+        err === 'padHasData' ||
+        err === 'maxFileSize') {
       status = err;
     } else {
       throw err;

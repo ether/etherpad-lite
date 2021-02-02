@@ -27,13 +27,17 @@
 const log4js = require('log4js');
 log4js.replaceConsole();
 
+// wtfnode should be loaded after log4js.replaceConsole() so that it uses log4js for logging, and it
+// should be above everything else so that it can hook in before resources are used.
+const wtfnode = require('wtfnode');
+
 /*
  * early check for version compatibility before calling
  * any modules that require newer versions of NodeJS
  */
 const NodeVersion = require('./utils/NodeVersion');
-NodeVersion.enforceMinNodeVersion('10.13.0');
-NodeVersion.checkDeprecationStatus('10.13.0', '1.8.3');
+NodeVersion.enforceMinNodeVersion('10.17.0');
+NodeVersion.checkDeprecationStatus('10.17.0', '1.8.8');
 
 const UpdateCheck = require('./utils/UpdateCheck');
 const db = require('./db/DB');
@@ -44,13 +48,45 @@ const plugins = require('../static/js/pluginfw/plugins');
 const settings = require('./utils/Settings');
 const util = require('util');
 
-let started = false;
-let stopped = false;
+const State = {
+  INITIAL: 1,
+  STARTING: 2,
+  RUNNING: 3,
+  STOPPING: 4,
+  STOPPED: 5,
+  EXITING: 6,
+  WAITING_FOR_EXIT: 7,
+};
 
+let state = State.INITIAL;
+
+const removeSignalListener = (signal, listener) => {
+  console.debug(`Removing ${signal} listener because it might interfere with shutdown tasks. ` +
+                `Function code:\n${listener.toString()}\n` +
+                `Current stack:\n${(new Error()).stack.split('\n').slice(1).join('\n')}`);
+  process.off(signal, listener);
+};
+
+const runningCallbacks = [];
 exports.start = async () => {
-  if (started) return express.server;
-  started = true;
-  if (stopped) throw new Error('restart not supported');
+  switch (state) {
+    case State.INITIAL:
+      break;
+    case State.STARTING:
+      await new Promise((resolve) => runningCallbacks.push(resolve));
+      // fall through
+    case State.RUNNING:
+      return express.server;
+    case State.STOPPING:
+    case State.STOPPED:
+    case State.EXITING:
+    case State.WAITING_FOR_EXIT:
+      throw new Error('restart not supported');
+    default:
+      throw new Error(`unknown State: ${state.toString()}`);
+  }
+  console.log('Starting Etherpad...');
+  state = State.STARTING;
 
   // Check if Etherpad version is up-to-date
   UpdateCheck.check();
@@ -58,78 +94,134 @@ exports.start = async () => {
   // start up stats counting system
   const stats = require('./stats');
   stats.gauge('memoryUsage', () => process.memoryUsage().rss);
-
-  await util.promisify(npm.load)();
-
-  try {
-    await db.init();
-    await plugins.update();
-    console.info(`Installed plugins: ${plugins.formatPluginsWithVersion()}`);
-    console.debug(`Installed parts:\n${plugins.formatParts()}`);
-    console.debug(`Installed hooks:\n${plugins.formatHooks()}`);
-    await hooks.aCallAll('loadSettings', {settings});
-    await hooks.aCallAll('createServer');
-  } catch (e) {
-    console.error(`exception thrown: ${e.message}`);
-    if (e.stack) console.log(e.stack);
-    process.exit(1);
-  }
+  stats.gauge('memoryUsageHeap', () => process.memoryUsage().heapUsed);
 
   process.on('uncaughtException', exports.exit);
+  // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
+  // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
+  process.on('unhandledRejection', (err) => { throw err; });
 
-  /*
-   * Connect graceful shutdown with sigint and uncaught exception
-   *
-   * Until Etherpad 1.7.5, process.on('SIGTERM') and process.on('SIGINT') were
-   * not hooked up under Windows, because old nodejs versions did not support
-   * them.
-   *
-   * According to nodejs 6.x documentation, it is now safe to do so. This
-   * allows to gracefully close the DB connection when hitting CTRL+C under
-   * Windows, for example.
-   *
-   * Source: https://nodejs.org/docs/latest-v6.x/api/process.html#process_signal_events
-   *
-   *   - SIGTERM is not supported on Windows, it can be listened on.
-   *   - SIGINT from the terminal is supported on all platforms, and can usually
-   *     be generated with <Ctrl>+C (though this may be configurable). It is not
-   *     generated when terminal raw mode is enabled.
-   */
-  process.on('SIGINT', exports.exit);
+  for (const signal of ['SIGINT', 'SIGTERM']) {
+    // Forcibly remove other signal listeners to prevent them from terminating node before we are
+    // done cleaning up. See https://github.com/andywer/threads.js/pull/329 for an example of a
+    // problematic listener. This means that exports.exit is solely responsible for performing all
+    // necessary cleanup tasks.
+    for (const listener of process.listeners(signal)) {
+      removeSignalListener(signal, listener);
+    }
+    process.on(signal, exports.exit);
+    // Prevent signal listeners from being added in the future.
+    process.on('newListener', (event, listener) => {
+      if (event !== signal) return;
+      removeSignalListener(signal, listener);
+    });
+  }
 
-  // When running as PID1 (e.g. in docker container) allow graceful shutdown on SIGTERM c.f. #3265.
-  // Pass undefined to exports.exit because this is not an abnormal termination.
-  process.on('SIGTERM', () => exports.exit());
+  await util.promisify(npm.load)();
+  await db.init();
+  await plugins.update();
+  console.info(`Installed plugins: ${plugins.formatPluginsWithVersion()}`);
+  console.debug(`Installed parts:\n${plugins.formatParts()}`);
+  console.debug(`Installed hooks:\n${plugins.formatHooks()}`);
+  await hooks.aCallAll('loadSettings', {settings});
+  await hooks.aCallAll('createServer');
+
+  console.log('Etherpad is running');
+  state = State.RUNNING;
+  while (runningCallbacks.length > 0) setImmediate(runningCallbacks.pop());
 
   // Return the HTTP server to make it easier to write tests.
   return express.server;
 };
 
+const stoppedCallbacks = [];
 exports.stop = async () => {
-  if (stopped) return;
-  stopped = true;
+  switch (state) {
+    case State.STARTING:
+      await exports.start();
+      // Don't fall through to State.RUNNING in case another caller is also waiting for startup.
+      return await exports.stop();
+    case State.RUNNING:
+      break;
+    case State.STOPPING:
+      await new Promise((resolve) => stoppedCallbacks.push(resolve));
+      // fall through
+    case State.INITIAL:
+    case State.STOPPED:
+    case State.EXITING:
+    case State.WAITING_FOR_EXIT:
+      return;
+    default:
+      throw new Error(`unknown State: ${state.toString()}`);
+  }
   console.log('Stopping Etherpad...');
-  await new Promise(async (resolve, reject) => {
-    const id = setTimeout(() => reject(new Error('Timed out waiting for shutdown tasks')), 3000);
-    await hooks.aCallAll('shutdown');
-    clearTimeout(id);
-    resolve();
-  });
+  state = State.STOPPING;
+  let timeout = null;
+  await Promise.race([
+    hooks.aCallAll('shutdown'),
+    new Promise((resolve, reject) => {
+      timeout = setTimeout(() => reject(new Error('Timed out waiting for shutdown tasks')), 3000);
+    }),
+  ]);
+  clearTimeout(timeout);
+  console.log('Etherpad stopped');
+  state = State.STOPPED;
+  while (stoppedCallbacks.length > 0) setImmediate(stoppedCallbacks.pop());
 };
 
-exports.exit = async (err) => {
-  let exitCode = 0;
-  if (err) {
-    exitCode = 1;
-    console.error(err.stack ? err.stack : err);
+const exitCallbacks = [];
+let exitCalled = false;
+exports.exit = async (err = null) => {
+  /* eslint-disable no-process-exit */
+  if (err === 'SIGTERM') {
+    // Termination from SIGTERM is not treated as an abnormal termination.
+    console.log('Received SIGTERM signal');
+    err = null;
+  } else if (err != null) {
+    console.error(err.stack || err.toString());
+    process.exitCode = 1;
+    if (exitCalled) {
+      console.error('Error occurred while waiting to exit. Forcing an immediate unclean exit...');
+      process.exit(1);
+    }
   }
-  try {
-    await exports.stop();
-  } catch (err) {
-    exitCode = 1;
-    console.error(err.stack ? err.stack : err);
+  exitCalled = true;
+  switch (state) {
+    case State.STARTING:
+    case State.RUNNING:
+    case State.STOPPING:
+      await exports.stop();
+      // Don't fall through to State.STOPPED in case another caller is also waiting for stop().
+      // Don't pass err to exports.exit() because this err has already been processed. (If err is
+      // passed again to exit() then exit() will think that a second error occurred while exiting.)
+      return await exports.exit();
+    case State.INITIAL:
+    case State.STOPPED:
+      break;
+    case State.EXITING:
+      await new Promise((resolve) => exitCallbacks.push(resolve));
+      // fall through
+    case State.WAITING_FOR_EXIT:
+      return;
+    default:
+      throw new Error(`unknown State: ${state.toString()}`);
   }
-  process.exit(exitCode);
+  console.log('Exiting...');
+  state = State.EXITING;
+  while (exitCallbacks.length > 0) setImmediate(exitCallbacks.pop());
+  // Node.js should exit on its own without further action. Add a timeout to force Node.js to exit
+  // just in case something failed to get cleaned up during the shutdown hook. unref() is called on
+  // the timeout so that the timeout itself does not prevent Node.js from exiting.
+  setTimeout(() => {
+    console.error('Something that should have been cleaned up during the shutdown hook (such as ' +
+                  'a timer, worker thread, or open connection) is preventing Node.js from exiting');
+    wtfnode.dump();
+    console.error('Forcing an unclean exit...');
+    process.exit(1);
+  }, 5000).unref();
+  console.log('Waiting for Node.js to exit...');
+  state = State.WAITING_FOR_EXIT;
+  /* eslint-enable no-process-exit */
 };
 
 if (require.main === module) exports.start();

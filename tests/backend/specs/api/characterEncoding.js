@@ -1,3 +1,5 @@
+'use strict';
+
 /*
  * This file is copied & modified from <basedir>/tests/backend/specs/api/pad.js
  *

@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Handles the export requests
  */
@@ -25,7 +26,7 @@ const exportEtherpad = require('../utils/ExportEtherpad');
 const fs = require('fs');
 const settings = require('../utils/Settings');
 const os = require('os');
-const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+const hooks = require('../../static/js/pluginfw/hooks');
 const TidyHtml = require('../utils/TidyHtml');
 const util = require('util');
 
@@ -49,7 +50,7 @@ const tempDirectory = os.tmpdir();
 /**
  * do a requested export
  */
-async function doExport(req, res, padId, readOnlyId, type) {
+const doExport = async (req, res, padId, readOnlyId, type) => {
   // avoid naming the read-only file as the original pad's id
   let fileName = readOnlyId ? readOnlyId : padId;
 
@@ -104,7 +105,6 @@ async function doExport(req, res, padId, readOnlyId, type) {
     const result = await hooks.aCallAll('exportConvert', {srcFile, destFile, req, res});
     if (result.length > 0) {
       // console.log("export handled by plugin", destFile);
-      handledByPlugin = true;
     } else {
       // @TODO no Promise interface for convertors (yet)
       await new Promise((resolve, reject) => {
@@ -115,7 +115,6 @@ async function doExport(req, res, padId, readOnlyId, type) {
     }
 
     // send the file
-    const sendFile = util.promisify(res.sendFile);
     await res.sendFile(destFile, null);
 
     // clean up temporary files
@@ -128,9 +127,9 @@ async function doExport(req, res, padId, readOnlyId, type) {
 
     await fsp_unlink(destFile);
   }
-}
+};
 
-exports.doExport = function (req, res, padId, readOnlyId, type) {
+exports.doExport = (req, res, padId, readOnlyId, type) => {
   doExport(req, res, padId, readOnlyId, type).catch((err) => {
     if (err !== 'stop') {
       throw err;

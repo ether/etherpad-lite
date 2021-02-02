@@ -19,7 +19,6 @@
   , "gritter.js"
   , "$js-cookie/src/js.cookie.js"
   , "$tinycon/tinycon.js"
-  , "excanvas.js"
   , "farbtastic.js"
   , "skin_variants.js"
   , "socketio.js"

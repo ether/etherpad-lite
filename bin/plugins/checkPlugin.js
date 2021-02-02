@@ -9,16 +9,17 @@
  *                              node bin/plugins/checkPlugin.js ep_whatever autocommit
  */
 
+// As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
+// unhandled rejection into an uncaught exception, which does cause Node.js to exit.
+process.on('unhandledRejection', (err) => { throw err; });
+
 const fs = require('fs');
 const childProcess = require('child_process');
 
 // get plugin name & path from user input
 const pluginName = process.argv[2];
 
-if (!pluginName) {
-  console.error('no plugin name specified');
-  process.exit(1);
-}
+if (!pluginName) throw new Error('no plugin name specified');
 
 const pluginPath = `node_modules/${pluginName}`;
 
@@ -107,10 +108,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     files.push(rootFiles[i].toLowerCase());
   }
 
-  if (files.indexOf('.git') === -1) {
-    console.error('No .git folder, aborting');
-    process.exit(1);
-  }
+  if (files.indexOf('.git') === -1) throw new Error('No .git folder, aborting');
   prepareRepo();
 
   try {
@@ -222,12 +220,12 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     }
 
     updateDeps(parsedPackageJSON, 'devDependencies', {
-      'eslint': '^7.17.0',
-      'eslint-config-etherpad': '^1.0.22',
+      'eslint': '^7.18.0',
+      'eslint-config-etherpad': '^1.0.24',
       'eslint-plugin-eslint-comments': '^3.2.0',
       'eslint-plugin-mocha': '^8.0.0',
       'eslint-plugin-node': '^11.1.0',
-      'eslint-plugin-prefer-arrow': '^1.2.2',
+      'eslint-plugin-prefer-arrow': '^1.2.3',
       'eslint-plugin-promise': '^4.2.1',
       'eslint-plugin-you-dont-need-lodash-underscore': '^6.10.0',
     });
@@ -265,7 +263,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       console.warn('No engines or node engine in package.json');
       if (autoFix) {
         const engines = {
-          node: '>=10.13.0',
+          node: '^10.17.0 || >=11.14.0',
         };
         parsedPackageJSON.engines = engines;
         writePackageJson(parsedPackageJSON);
@@ -302,8 +300,10 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   if (files.indexOf('contributing') === -1 && files.indexOf('contributing.md') === -1) {
     console.warn('CONTRIBUTING.md file not found, please create');
     if (autoFix) {
-      console.log('Autofixing missing CONTRIBUTING.md file, please edit the CONTRIBUTING.md file further to include plugin specific details.');
-      let contributing = fs.readFileSync('bin/plugins/lib/CONTRIBUTING.md', {encoding: 'utf8', flag: 'r'});
+      console.log('Autofixing missing CONTRIBUTING.md file, please edit the CONTRIBUTING.md ' +
+                  'file further to include plugin specific details.');
+      let contributing =
+          fs.readFileSync('bin/plugins/lib/CONTRIBUTING.md', {encoding: 'utf8', flag: 'r'});
       contributing = contributing.replace(/\[plugin_name\]/g, pluginName);
       fs.writeFileSync(`${pluginPath}/CONTRIBUTING.md`, contributing);
     }
@@ -311,7 +311,8 @@ fs.readdir(pluginPath, (err, rootFiles) => {
 
 
   if (files.indexOf('readme') !== -1 && files.indexOf('readme.md') !== -1) {
-    const readme = fs.readFileSync(`${pluginPath}/${readMeFileName}`, {encoding: 'utf8', flag: 'r'});
+    const readme =
+        fs.readFileSync(`${pluginPath}/${readMeFileName}`, {encoding: 'utf8', flag: 'r'});
     if (readme.toLowerCase().indexOf('license') === -1) {
       console.warn('No license section in README');
       if (autoFix) {
@@ -335,7 +336,9 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   travisConfig = travisConfig.replace(/\[plugin_name\]/g, pluginName);
 
   if (files.indexOf('.travis.yml') === -1) {
-    console.warn('.travis.yml file not found, please create.  .travis.yml is used for automatically CI testing Etherpad.  It is useful to know if your plugin breaks another feature for example.');
+    console.warn('.travis.yml file not found, please create.  ' +
+                 '.travis.yml is used for automatically CI testing Etherpad.  ' +
+                 'It is useful to know if your plugin breaks another feature for example.');
     // TODO: Make it check version of the .travis file to see if it needs an update.
     if (autoFix) {
       console.log('Autofixing missing .travis.yml file');
@@ -345,9 +348,11 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   }
   if (autoFix) {
     // checks the file versioning of .travis and updates it to the latest.
-    const existingConfig = fs.readFileSync(`${pluginPath}/.travis.yml`, {encoding: 'utf8', flag: 'r'});
+    const existingConfig =
+        fs.readFileSync(`${pluginPath}/.travis.yml`, {encoding: 'utf8', flag: 'r'});
     const existingConfigLocation = existingConfig.indexOf('##ETHERPAD_TRAVIS_V=');
-    const existingValue = parseInt(existingConfig.substr(existingConfigLocation + 20, existingConfig.length));
+    const existingValue =
+        parseInt(existingConfig.substr(existingConfigLocation + 20, existingConfig.length));
 
     const newConfigLocation = travisConfig.indexOf('##ETHERPAD_TRAVIS_V=');
     const newValue = parseInt(travisConfig.substr(newConfigLocation + 20, travisConfig.length));
@@ -362,7 +367,8 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   }
 
   if (files.indexOf('.gitignore') === -1) {
-    console.warn(".gitignore file not found, please create.  .gitignore files are useful to ensure files aren't incorrectly commited to a repository.");
+    console.warn('.gitignore file not found, please create.  .gitignore files are useful to ' +
+                 "ensure files aren't incorrectly commited to a repository.");
     if (autoFix) {
       console.log('Autofixing missing .gitignore file');
       const gitignore = fs.readFileSync('bin/plugins/lib/gitignore', {encoding: 'utf8', flag: 'r'});
@@ -382,12 +388,15 @@ fs.readdir(pluginPath, (err, rootFiles) => {
 
   // if we include templates but don't have translations...
   if (files.indexOf('templates') !== -1 && files.indexOf('locales') === -1) {
-    console.warn('Translations not found, please create.  Translation files help with Etherpad accessibility.');
+    console.warn('Translations not found, please create.  ' +
+                 'Translation files help with Etherpad accessibility.');
   }
 
 
   if (files.indexOf('.ep_initialized') !== -1) {
-    console.warn('.ep_initialized found, please remove.  .ep_initialized should never be commited to git and should only exist once the plugin has been executed one time.');
+    console.warn(
+        '.ep_initialized found, please remove.  .ep_initialized should never be commited to git ' +
+        'and should only exist once the plugin has been executed one time.');
     if (autoFix) {
       console.log('Autofixing incorrectly existing .ep_initialized file');
       fs.unlinkSync(`${pluginPath}/.ep_initialized`);
@@ -395,7 +404,8 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   }
 
   if (files.indexOf('npm-debug.log') !== -1) {
-    console.warn('npm-debug.log found, please remove.  npm-debug.log should never be commited to your repository.');
+    console.warn('npm-debug.log found, please remove.  npm-debug.log should never be commited to ' +
+                 'your repository.');
     if (autoFix) {
       console.log('Autofixing incorrectly existing npm-debug.log file');
       fs.unlinkSync(`${pluginPath}/npm-debug.log`);

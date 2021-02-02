@@ -1,16 +1,10 @@
+'use strict';
 /**
  * The Toolbar Module creates and renders the toolbars and buttons
  */
 const _ = require('underscore');
-let tagAttributes;
-let tag;
-let Button;
-let ButtonsGroup;
-let Separator;
-let defaultButtonAttributes;
-let removeItem;
 
-removeItem = function (array, what) {
+const removeItem = (array, what) => {
   let ax;
   while ((ax = array.indexOf(what)) !== -1) {
     array.splice(ax, 1);
@@ -18,15 +12,13 @@ removeItem = function (array, what) {
   return array;
 };
 
-defaultButtonAttributes = function (name, overrides) {
-  return {
-    command: name,
-    localizationId: `pad.toolbar.${name}.title`,
-    class: `buttonicon buttonicon-${name}`,
-  };
-};
+const defaultButtonAttributes = (name, overrides) => ({
+  command: name,
+  localizationId: `pad.toolbar.${name}.title`,
+  class: `buttonicon buttonicon-${name}`,
+});
 
-tag = function (name, attributes, contents) {
+const tag = (name, attributes, contents) => {
   const aStr = tagAttributes(attributes);
 
   if (_.isString(contents) && contents.length > 0) {
@@ -36,7 +28,7 @@ tag = function (name, attributes, contents) {
   }
 };
 
-tagAttributes = function (attributes) {
+const tagAttributes = (attributes) => {
   attributes = _.reduce(attributes || {}, (o, val, name) => {
     if (!_.isUndefined(val)) {
       o[name] = val;
@@ -47,7 +39,7 @@ tagAttributes = function (attributes) {
   return ` ${_.map(attributes, (val, name) => `${name}="${_.escape(val)}"`).join(' ')}`;
 };
 
-ButtonsGroup = function () {
+const ButtonsGroup = function () {
   this.buttons = [];
 };
 
@@ -65,9 +57,9 @@ ButtonsGroup.prototype.addButton = function (button) {
 };
 
 ButtonsGroup.prototype.render = function () {
-  if (this.buttons && this.buttons.length == 1) {
+  if (this.buttons && this.buttons.length === 1) {
     this.buttons[0].grouping = '';
-  } else {
+  } else if (this.buttons && this.buttons.length > 1) {
     _.first(this.buttons).grouping = 'grouped-left';
     _.last(this.buttons).grouping = 'grouped-right';
     _.each(this.buttons.slice(1, -1), (btn) => {
@@ -80,11 +72,11 @@ ButtonsGroup.prototype.render = function () {
   }).join('\n');
 };
 
-Button = function (attributes) {
+const Button = function (attributes) {
   this.attributes = attributes;
 };
 
-Button.load = function (btnName) {
+Button.load = (btnName) => {
   const button = module.exports.availableButtons[btnName];
   try {
     if (button.constructor === Button || button.constructor === SelectButton) {
@@ -108,14 +100,17 @@ _.extend(Button.prototype, {
     };
     return tag('li', liAttributes,
         tag('a', {'class': this.grouping, 'data-l10n-id': this.attributes.localizationId},
-            tag('button', {'class': ` ${this.attributes.class}`, 'data-l10n-id': this.attributes.localizationId})
+            tag('button', {
+              'class': ` ${this.attributes.class}`,
+              'data-l10n-id': this.attributes.localizationId,
+            })
         )
     );
   },
 });
 
 
-var SelectButton = function (attributes) {
+const SelectButton = function (attributes) {
   this.attributes = attributes;
   this.options = [];
 };
@@ -155,7 +150,7 @@ _.extend(SelectButton.prototype, Button.prototype, {
   },
 });
 
-Separator = function () {};
+const Separator = function () {};
 Separator.prototype.render = function () {
   return tag('li', {class: 'separator'});
 };
@@ -235,15 +230,11 @@ module.exports = {
     this.availableButtons[buttonName] = buttonInfo;
   },
 
-  button(attributes) {
-    return new Button(attributes);
-  },
-  separator() {
-    return (new Separator()).render();
-  },
-  selectButton(attributes) {
-    return new SelectButton(attributes);
-  },
+  button: (attributes) => new Button(attributes),
+
+  separator: () => (new Separator()).render(),
+
+  selectButton: (attributes) => new SelectButton(attributes),
 
   /*
    * Valid values for whichMenu: 'left' | 'right' | 'timeslider-right'
@@ -271,7 +262,8 @@ module.exports = {
        * sufficient to visit a single read only pad to cause the disappearence
        * of the star button from all the pads.
        */
-      if ((buttons[0].indexOf('savedrevision') === -1) && (whichMenu === 'right') && (page === 'pad')) {
+      if ((buttons[0].indexOf('savedrevision') === -1) &&
+          (whichMenu === 'right') && (page === 'pad')) {
         buttons[0].push('savedrevision');
       }
     }

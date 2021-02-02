@@ -1,3 +1,5 @@
+'use strict';
+
 describe('assign ordered list', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
@@ -34,7 +36,8 @@ describe('assign ordered list', function () {
       });
 
       it('does not insert unordered list', function (done) {
-        helper.waitFor(() => helper.padInner$('div').first().find('ol li').length === 1).done(() => {
+        helper.waitFor(
+            () => helper.padInner$('div').first().find('ol li').length === 1).done(() => {
           expect().fail(() => 'Unordered list inserted, should ignore shortcut');
         }).fail(() => {
           done();
@@ -62,7 +65,8 @@ describe('assign ordered list', function () {
       });
 
       it('does not insert unordered list', function (done) {
-        helper.waitFor(() => helper.padInner$('div').first().find('ol li').length === 1).done(() => {
+        helper.waitFor(
+            () => helper.padInner$('div').first().find('ol li').length === 1).done(() => {
           expect().fail(() => 'Unordered list inserted, should ignore shortcut');
         }).fail(() => {
           done();
@@ -71,7 +75,8 @@ describe('assign ordered list', function () {
     });
   });
 
-  xit('issue #1125 keeps the numbered list on enter for the new line - EMULATES PASTING INTO A PAD', function (done) {
+  xit('issue #1125 keeps the numbered list on enter for the new line', function (done) {
+    // EMULATES PASTING INTO A PAD
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -91,24 +96,25 @@ describe('assign ordered list', function () {
       expect(hasOLElement).to.be(true);
       expect($newSecondLine.text()).to.be('line 2');
       const hasLineNumber = $newSecondLine.find('ol').attr('start') === 2;
-      expect(hasLineNumber).to.be(true); // This doesn't work because pasting in content doesn't work
+      // This doesn't work because pasting in content doesn't work
+      expect(hasLineNumber).to.be(true);
       done();
     });
   });
 
-  var triggerCtrlShiftShortcut = function (shortcutChar) {
+  const triggerCtrlShiftShortcut = (shortcutChar) => {
     const inner$ = helper.padInner$;
-    const e = inner$.Event(helper.evtType);
+    const e = new inner$.Event(helper.evtType);
     e.ctrlKey = true;
     e.shiftKey = true;
     e.which = shortcutChar.toString().charCodeAt(0);
     inner$('#innerdocbody').trigger(e);
   };
 
-  var makeSureShortcutIsDisabled = function (shortcut) {
+  const makeSureShortcutIsDisabled = (shortcut) => {
     helper.padChrome$.window.clientVars.padShortcutEnabled[shortcut] = false;
   };
-  var makeSureShortcutIsEnabled = function (shortcut) {
+  const makeSureShortcutIsEnabled = (shortcut) => {
     helper.padChrome$.window.clientVars.padShortcutEnabled[shortcut] = true;
   };
 });
@@ -133,7 +139,7 @@ describe('Pressing Tab in an OL increases and decreases indentation', function (
     const $insertorderedlistButton = chrome$('.buttonicon-insertorderedlist');
     $insertorderedlistButton.click();
 
-    const e = inner$.Event(helper.evtType);
+    const e = new inner$.Event(helper.evtType);
     e.keyCode = 9; // tab
     inner$('#innerdocbody').trigger(e);
 
@@ -147,7 +153,8 @@ describe('Pressing Tab in an OL increases and decreases indentation', function (
 });
 
 
-describe('Pressing indent/outdent button in an OL increases and decreases indentation and bullet / ol formatting', function () {
+describe('Pressing indent/outdent button in an OL increases and ' +
+    'decreases indentation and bullet / ol formatting', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
     helper.newPad(cb);
