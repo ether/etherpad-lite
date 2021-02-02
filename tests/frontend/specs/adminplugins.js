@@ -33,9 +33,9 @@ describe('Plugins page', function () {
   });
 
   it('Attempt to Update a plugin', async function () {
-    this.timeout(60000);
+    this.timeout(120000);
 
-    if(helper.admin$('#installed-plugins .ep_align').length === 0) this.skip();
+    if (helper.admin$('#installed-plugins .ep_align').length === 0) this.skip();
 
     await helper.waitForPromise(
         () => helper.admin$('#installed-plugins .ep_align .version').text().split('.').length >= 2);
@@ -47,7 +47,7 @@ describe('Plugins page', function () {
       throw new Error('Unable to get minor number of plugin, is the plugin installed?');
     }
 
-    if(minorVersionBefore !== 2) this.skip();
+    if (minorVersionBefore !== 2) this.skip();
 
     helper.waitForPromise(
         () => helper.admin$('.ep_align .do-update').length === 1);
@@ -71,6 +71,8 @@ describe('Plugins page', function () {
   });
   it('Attempt to install a plugin', async function () {
     this.timeout(60000);
+    if (helper.admin$('#installed-plugins .ep_activepads').length === 0) this.skip();
+
     helper.admin$('#search-query').val('ep_activepads');
     await helper.waitForPromise(() => helper.admin$('.results').children().length < 300);
     await helper.waitForPromise(() => helper.admin$('.results').children().length > 0);
@@ -89,14 +91,17 @@ describe('Plugins page', function () {
 
   it('Attempt to Uninstall a plugin', async function () {
     this.timeout(60000);
+    await helper.waitForPromise(
+        () => helper.admin$('#installed-plugins .ep_activepads .do-uninstall').length !== 0, 60000);
+
     helper.admin$('#installed-plugins .ep_activepads .do-uninstall').click();
 
     // ensure its showing uninstalling
     await helper.waitForPromise(
         () => helper.admin$('#installed-plugins .ep_activepads .message')
-            .text() === 'Uninstalling');
+            .text() === 'Uninstalling', 60000);
     // ensure its gone
     await helper.waitForPromise(
-        () => helper.admin$('#installed-plugins .ep_activepads').length === 0);
+        () => helper.admin$('#installed-plugins .ep_activepads').length === 0, 60000);
   });
 });
