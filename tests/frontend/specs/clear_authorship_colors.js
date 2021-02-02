@@ -1,3 +1,5 @@
+'use strict';
+
 describe('clear authorship colors button', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
@@ -17,9 +19,6 @@ describe('clear authorship colors button', function () {
     // get the first text element out of the inner iframe
     const $firstTextElement = inner$('div').first();
 
-    // Get the original text
-    const originalText = inner$('div').first().text();
-
     // Set some new text
     const sentText = 'Hello';
 
@@ -28,7 +27,8 @@ describe('clear authorship colors button', function () {
     $firstTextElement.sendkeys(sentText);
     $firstTextElement.sendkeys('{rightarrow}');
 
-    helper.waitFor(() => inner$('div span').first().attr('class').indexOf('author') !== -1 // wait until we have the full value available
+    // wait until we have the full value available
+    helper.waitFor(() => inner$('div span').first().attr('class').indexOf('author') !== -1
     ).done(() => {
       // IE hates you if you don't give focus to the inner frame bevore you do a clearAuthorship
       inner$('div').first().focus();
@@ -37,16 +37,13 @@ describe('clear authorship colors button', function () {
       const $clearauthorshipcolorsButton = chrome$('.buttonicon-clearauthorship');
       $clearauthorshipcolorsButton.click();
 
-      // does the first divs span include an author class?
-      var hasAuthorClass = inner$('div span').first().attr('class').indexOf('author') !== -1;
-      // expect(hasAuthorClass).to.be(false);
-
       // does the first div include an author class?
-      var hasAuthorClass = inner$('div').first().attr('class').indexOf('author') !== -1;
+      const hasAuthorClass = inner$('div').first().attr('class').indexOf('author') !== -1;
       expect(hasAuthorClass).to.be(false);
 
       helper.waitFor(() => {
-        const disconnectVisible = chrome$('div.disconnected').attr('class').indexOf('visible') === -1;
+        const disconnectVisible =
+            chrome$('div.disconnected').attr('class').indexOf('visible') === -1;
         return (disconnectVisible === true);
       });
 
@@ -69,9 +66,6 @@ describe('clear authorship colors button', function () {
     // get the first text element out of the inner iframe
     const $firstTextElement = inner$('div').first();
 
-    // Get the original text
-    const originalText = inner$('div').first().text();
-
     // Set some new text
     const sentText = 'Hello';
 
@@ -80,7 +74,9 @@ describe('clear authorship colors button', function () {
     $firstTextElement.sendkeys(sentText);
     $firstTextElement.sendkeys('{rightarrow}');
 
-    helper.waitFor(() => inner$('div span').first().attr('class').indexOf('author') !== -1 // wait until we have the full value available
+    // wait until we have the full value available
+    helper.waitFor(
+        () => inner$('div span').first().attr('class').indexOf('author') !== -1
     ).done(() => {
       // IE hates you if you don't give focus to the inner frame bevore you do a clearAuthorship
       inner$('div').first().focus();
@@ -89,15 +85,11 @@ describe('clear authorship colors button', function () {
       const $clearauthorshipcolorsButton = chrome$('.buttonicon-clearauthorship');
       $clearauthorshipcolorsButton.click();
 
-      // does the first divs span include an author class?
-      var hasAuthorClass = inner$('div span').first().attr('class').indexOf('author') !== -1;
-      // expect(hasAuthorClass).to.be(false);
-
       // does the first div include an author class?
-      var hasAuthorClass = inner$('div').first().attr('class').indexOf('author') !== -1;
+      let hasAuthorClass = inner$('div').first().attr('class').indexOf('author') !== -1;
       expect(hasAuthorClass).to.be(false);
 
-      const e = inner$.Event(helper.evtType);
+      const e = new inner$.Event(helper.evtType);
       e.ctrlKey = true; // Control key
       e.which = 90; // z
       inner$('#innerdocbody').trigger(e); // shouldn't od anything
@@ -115,7 +107,8 @@ describe('clear authorship colors button', function () {
       expect(hasAuthorClass).to.be(false);
 
       helper.waitFor(() => {
-        const disconnectVisible = chrome$('div.disconnected').attr('class').indexOf('visible') === -1;
+        const disconnectVisible =
+            chrome$('div.disconnected').attr('class').indexOf('visible') === -1;
         return (disconnectVisible === true);
       });
 

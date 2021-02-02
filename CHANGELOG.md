@@ -1,4 +1,8 @@
 # Changes for the next release
+
+### Compatibility changes
+* Node.js 10.17.0 or newer is now required.
+
 ### Notable new features
 * Database performance is significantly improved.
 

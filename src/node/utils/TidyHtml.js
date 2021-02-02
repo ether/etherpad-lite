@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Tidy up the HTML in a given file
  */
@@ -6,7 +7,7 @@ const log4js = require('log4js');
 const settings = require('./Settings');
 const spawn = require('child_process').spawn;
 
-exports.tidy = function (srcFile) {
+exports.tidy = (srcFile) => {
   const logger = log4js.getLogger('TidyHtml');
 
   return new Promise((resolve, reject) => {

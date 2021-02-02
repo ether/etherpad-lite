@@ -1,17 +1,19 @@
-var srcFolder = '../../../src/node_modules/';
-var wd = require(`${srcFolder}wd`);
-var async = require(`${srcFolder}async`);
+'use strict';
 
-var config = {
+const wd = require('ep_etherpad-lite/node_modules/wd');
+const async = require('ep_etherpad-lite/node_modules/async');
+
+const config = {
   host: 'ondemand.saucelabs.com',
   port: 80,
   username: process.env.SAUCE_USER,
   accessKey: process.env.SAUCE_ACCESS_KEY,
 };
 
-var allTestsPassed = true;
+let allTestsPassed = true;
 // overwrite the default exit code
-// in case not all worker can be run (due to saucelabs limits), `queue.drain` below will not be called
+// in case not all worker can be run (due to saucelabs limits),
+// `queue.drain` below will not be called
 // and the script would silently exit with error code 0
 process.exitCode = 2;
 process.on('exit', (code) => {
@@ -20,13 +22,18 @@ process.on('exit', (code) => {
   }
 });
 
-var sauceTestWorker = async.queue((testSettings, callback) => {
-  const browser = wd.promiseChainRemote(config.host, config.port, config.username, config.accessKey);
-  const name = `${process.env.GIT_HASH} - ${testSettings.browserName} ${testSettings.version}, ${testSettings.platform}`;
+const sauceTestWorker = async.queue((testSettings, callback) => {
+  const browser = wd.promiseChainRemote(
+      config.host, config.port, config.username, config.accessKey);
+  const name =
+      `${process.env.GIT_HASH} - ${testSettings.browserName} ` +
+      `${testSettings.version}, ${testSettings.platform}`;
   testSettings.name = name;
   testSettings.public = true;
   testSettings.build = process.env.GIT_HASH;
-  testSettings.extendedDebugging = true; // console.json can be downloaded via saucelabs, don't know how to print them into output of the tests
+  // console.json can be downloaded via saucelabs,
+  // don't know how to print them into output of the tests
+  testSettings.extendedDebugging = true;
   testSettings.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
 
   browser.init(testSettings).get('http://localhost:9001/tests/frontend/', () => {
@@ -34,7 +41,7 @@ var sauceTestWorker = async.queue((testSettings, callback) => {
     console.log(`Remote sauce test '${name}' started! ${url}`);
 
     // tear down the test excecution
-    const stopSauce = function (success, timesup) {
+    const stopSauce = (success, timesup) => {
       clearInterval(getStatusInterval);
       clearTimeout(timeout);
 
@@ -43,12 +50,15 @@ var sauceTestWorker = async.queue((testSettings, callback) => {
           allTestsPassed = false;
         }
 
-        // if stopSauce is called via timeout (in contrast to via getStatusInterval) than the log of up to the last
+        // if stopSauce is called via timeout
+        // (in contrast to via getStatusInterval) than the log of up to the last
         // five seconds may not be available here. It's an error anyway, so don't care about it.
         printLog(logIndex);
 
         if (timesup) {
-          console.log(`[${testSettings.browserName} ${testSettings.platform}${testSettings.version === '' ? '' : (` ${testSettings.version}`)}] \x1B[31mFAILED\x1B[39m allowed test duration exceeded`);
+          console.log(`[${testSettings.browserName} ${testSettings.platform}` +
+            `${testSettings.version === '' ? '' : (` ${testSettings.version}`)}]` +
+            ' \x1B[31mFAILED\x1B[39m allowed test duration exceeded');
         }
         console.log(`Remote sauce test '${name}' finished! ${url}`);
 
@@ -58,17 +68,19 @@ var sauceTestWorker = async.queue((testSettings, callback) => {
 
     /**
        * timeout if a test hangs or the job exceeds 14.5 minutes
-       * It's necessary because if travis kills the saucelabs session due to inactivity, we don't get any output
-       * @todo this should be configured in testSettings, see https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-Timeouts
+       * It's necessary because if travis kills the saucelabs session due to inactivity,
+       * we don't get any output
+       * @todo this should be configured in testSettings, see
+       * https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-Timeouts
        */
-    var timeout = setTimeout(() => {
+    const timeout = setTimeout(() => {
       stopSauce(false, true);
     }, 870000); // travis timeout is 15 minutes, set this to a slightly lower value
 
     let knownConsoleText = '';
     // how many characters of the log have been sent to travis
     let logIndex = 0;
-    var getStatusInterval = setInterval(() => {
+    const getStatusInterval = setInterval(() => {
       browser.eval("$('#console').text()", (err, consoleText) => {
         if (!consoleText || err) {
           return;
@@ -76,9 +88,10 @@ var sauceTestWorker = async.queue((testSettings, callback) => {
         knownConsoleText = consoleText;
 
         if (knownConsoleText.indexOf('FINISHED') > 0) {
-          const match = knownConsoleText.match(/FINISHED.*([0-9]+) tests passed, ([0-9]+) tests failed/);
+          const match = knownConsoleText.match(
+              /FINISHED.*([0-9]+) tests passed, ([0-9]+) tests failed/);
           // finished without failures
-          if (match[2] && match[2] == '0') {
+          if (match[2] && match[2] === '0') {
             stopSauce(true);
 
             // finished but some tests did not return or some tests failed
@@ -99,13 +112,17 @@ var sauceTestWorker = async.queue((testSettings, callback) => {
        *
        * @param {number} index offset from where to start
        */
-    function printLog(index) {
-      let testResult = knownConsoleText.substring(index).replace(/\[red\]/g, '\x1B[31m').replace(/\[yellow\]/g, '\x1B[33m')
+    const printLog = (index) => {
+      let testResult = knownConsoleText.substring(index)
+          .replace(/\[red\]/g, '\x1B[31m').replace(/\[yellow\]/g, '\x1B[33m')
           .replace(/\[green\]/g, '\x1B[32m').replace(/\[clear\]/g, '\x1B[39m');
-      testResult = testResult.split('\\n').map((line) => `[${testSettings.browserName} ${testSettings.platform}${testSettings.version === '' ? '' : (` ${testSettings.version}`)}] ${line}`).join('\n');
+      testResult = testResult.split('\\n').map((line) => `[${testSettings.browserName} ` +
+        `${testSettings.platform}` +
+        `${testSettings.version === '' ? '' : (` ${testSettings.version}`)}]` +
+        `${line}`).join('\n');
 
       console.log(testResult);
-    }
+    };
   });
 }, 6); // run 6 tests in parrallel
 

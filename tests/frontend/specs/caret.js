@@ -1,7 +1,9 @@
+'use strict';
+
 describe('As the caret is moved is the UI properly updated?', function () {
+  /*
   let padName;
   const numberOfRows = 50;
-  /*
 
   //create a new pad before each test run
   beforeEach(function(cb){
@@ -16,7 +18,8 @@ describe('As the caret is moved is the UI properly updated?', function () {
 */
 
   /* Tests to do
-  * Keystroke up (38), down (40), left (37), right (39) with and without special keys IE control / shift
+  * Keystroke up (38), down (40), left (37), right (39)
+  * with and without special keys IE control / shift
   * Page up (33) / down (34) with and without special keys
   * Page up on the first line shouldn't move the viewport
   * Down down on the last line shouldn't move the viewport
@@ -25,7 +28,9 @@ describe('As the caret is moved is the UI properly updated?', function () {
   */
 
   /* Challenges
-  * How do we keep the authors focus on a line if the lines above the author are modified?  We should only redraw the user to a location if they are typing and make sure shift and arrow keys aren't redrawing the UI else highlight - copy/paste would get broken
+  * How do we keep the authors focus on a line if the lines above the author are modified?
+  * We should only redraw the user to a location if they are typing and make sure shift
+  * and arrow keys aren't redrawing the UI else highlight - copy/paste would get broken
   * How can we simulate an edit event in the test framework?
   */
   /*
@@ -200,7 +205,8 @@ console.log(inner$);
     var chrome$ = helper.padChrome$;
     var numberOfRows = 50;
 
-    //ace creates a new dom element when you press a keystroke, so just get the first text element again
+    // ace creates a new dom element when you press a keystroke,
+    // so just get the first text element again
     var $newFirstTextElement = inner$("div").first();
     var originalDivHeight = inner$("div").first().css("height");
     prepareDocument(numberOfRows, $newFirstTextElement); // N lines into the first div as a target
@@ -208,28 +214,33 @@ console.log(inner$);
     helper.waitFor(function(){ // Wait for the DOM to register the new items
       return inner$("div").first().text().length == 6;
     }).done(function(){ // Once the DOM has registered the items
-      inner$("div").each(function(index){ // Randomize the item heights (replicates images / headings etc)
+      // Randomize the item heights (replicates images / headings etc)
+      inner$("div").each(function(index){
         var random = Math.floor(Math.random() * (50)) + 20;
         $(this).css("height", random+"px");
       });
 
       console.log(caretPosition(inner$));
       var newDivHeight = inner$("div").first().css("height");
-      var heightHasChanged = originalDivHeight != newDivHeight; // has the new div height changed from the original div height
+      // has the new div height changed from the original div height
+      var heightHasChanged = originalDivHeight != newDivHeight;
       expect(heightHasChanged).to.be(true); // expect the first line to be blank
     });
 
     // Is this Element now visible to the pad user?
     helper.waitFor(function(){ // Wait for the DOM to register the new items
-      return isScrolledIntoView(inner$("div:nth-child("+numberOfRows+")"), inner$); // Wait for the DOM to scroll into place
+      // Wait for the DOM to scroll into place
+      return isScrolledIntoView(inner$("div:nth-child("+numberOfRows+")"), inner$);
     }).done(function(){ // Once the DOM has registered the items
-      inner$("div").each(function(index){ // Randomize the item heights (replicates images / headings etc)
+      // Randomize the item heights (replicates images / headings etc)
+      inner$("div").each(function(index){
         var random = Math.floor(Math.random() * (80 - 20 + 1)) + 20;
         $(this).css("height", random+"px");
       });
 
       var newDivHeight = inner$("div").first().css("height");
-      var heightHasChanged = originalDivHeight != newDivHeight; // has the new div height changed from the original div height
+      // has the new div height changed from the original div height
+      var heightHasChanged = originalDivHeight != newDivHeight;
       expect(heightHasChanged).to.be(true); // expect the first line to be blank
     });
     var i = 0;
@@ -241,7 +252,8 @@ console.log(inner$);
     // Does scrolling back up the pad with the up arrow show the correct contents?
     helper.waitFor(function(){ // Wait for the new position to be in place
       try{
-        return isScrolledIntoView(inner$("div:nth-child("+numberOfRows+")"), inner$); // Wait for the DOM to scroll into place
+        // Wait for the DOM to scroll into place
+        return isScrolledIntoView(inner$("div:nth-child("+numberOfRows+")"), inner$);
       }catch(e){
         return false;
       }
@@ -256,7 +268,8 @@ console.log(inner$);
       // Does scrolling back up the pad with the up arrow show the correct contents?
       helper.waitFor(function(){ // Wait for the new position to be in place
         try{
-          return isScrolledIntoView(inner$("div:nth-child(0)"), inner$); // Wait for the DOM to scroll into place
+          // Wait for the DOM to scroll into place
+          return isScrolledIntoView(inner$("div:nth-child(0)"), inner$);
         }catch(e){
           return false;
         }
@@ -276,7 +289,8 @@ console.log(inner$);
 
     // Does scrolling back up the pad with the up arrow show the correct contents?
     helper.waitFor(function(){ // Wait for the new position to be in place
-      return isScrolledIntoView(inner$("div:nth-child(1)"), inner$); // Wait for the DOM to scroll into place
+      // Wait for the DOM to scroll into place
+      return isScrolledIntoView(inner$("div:nth-child(1)"), inner$);
     }).done(function(){ // Once the DOM has registered the items
       expect(true).to.be(true);
       done();
@@ -284,17 +298,19 @@ console.log(inner$);
 */
 });
 
-function prepareDocument(n, target) { // generates a random document with random content on n lines
+// generates a random document with random content on n lines
+const prepareDocument = (n, target) => {
   let i = 0;
   while (i < n) { // for each line
     target.sendkeys(makeStr()); // generate a random string and send that to the editor
     target.sendkeys('{enter}'); // generator an enter keypress
     i++; // rinse n times
   }
-}
+};
 
-function keyEvent(target, charCode, ctrl, shift) { // sends a charCode to the window
-  const e = target.Event(helper.evtType);
+// sends a charCode to the window
+const keyEvent = (target, charCode, ctrl, shift) => {
+  const e = new target.Event(helper.evtType);
   if (ctrl) {
     e.ctrlKey = true; // Control key
   }
@@ -304,30 +320,33 @@ function keyEvent(target, charCode, ctrl, shift) { // sends a charCode to the wi
   e.which = charCode;
   e.keyCode = charCode;
   target('#innerdocbody').trigger(e);
-}
+};
 
 
-function makeStr() { // from http://stackoverflow.com/questions/1349404/generate-a-string-of-5-random-characters-in-javascript
+// from http://stackoverflow.com/questions/1349404/generate-a-string-of-5-random-characters-in-javascript
+const makeStr = () => {
   let text = '';
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
   for (let i = 0; i < 5; i++) text += possible.charAt(Math.floor(Math.random() * possible.length));
   return text;
-}
+};
 
-function isScrolledIntoView(elem, $) { // from http://stackoverflow.com/questions/487073/check-if-element-is-visible-after-scrolling
+// from http://stackoverflow.com/questions/487073/check-if-element-is-visible-after-scrolling
+const isScrolledIntoView = (elem, $) => {
   const docViewTop = $(window).scrollTop();
   const docViewBottom = docViewTop + $(window).height();
   const elemTop = $(elem).offset().top; // how far the element is from the top of it's container
-  let elemBottom = elemTop + $(elem).height(); // how far plus the height of the elem..  IE is it all in?
+  // how far plus the height of the elem..  IE is it all in?
+  let elemBottom = elemTop + $(elem).height();
   elemBottom -= 16; // don't ask, sorry but this is needed..
   return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
-}
+};
 
-function caretPosition($) {
+const caretPosition = ($) => {
   const doc = $.window.document;
   const pos = doc.getSelection();
   pos.y = pos.anchorNode.parentElement.offsetTop;
   pos.x = pos.anchorNode.parentElement.offsetLeft;
   return pos;
-}
+};

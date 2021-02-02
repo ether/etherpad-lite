@@ -4,9 +4,12 @@
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
 process.on('unhandledRejection', (err) => { throw err; });
 
+const npm = require('ep_etherpad-lite/node_modules/npm');
 const util = require('util');
 
-require('ep_etherpad-lite/node_modules/npm').load({}, async (er, npm) => {
+(async () => {
+  await util.promisify(npm.load)({});
+
   process.chdir(`${npm.root}/..`);
 
   // This script requires that you have modified your settings.json file
@@ -56,4 +59,4 @@ require('ep_etherpad-lite/node_modules/npm').load({}, async (er, npm) => {
 
   await util.promisify(db.close.bind(db))();
   console.log('Finished.');
-});
+})();
