@@ -1,4 +1,4 @@
-/* global __dirname, __filename, afterEach, before, beforeEach, describe, it, require */
+'use strict';
 
 /*
  * Import and Export tests for the /p/whateverPadId/import and /p/whateverPadId/export endpoints.
@@ -6,11 +6,11 @@
 
 const assert = require('assert').strict;
 const common = require('../../common');
-const superagent = require(`${__dirname}/../../../../src/node_modules/superagent`);
+const superagent = require('ep_etherpad-lite/node_modules/superagent');
 const fs = require('fs');
-const settings = require(`${__dirname}/../../../../src/node/utils/Settings`);
-const padManager = require(`${__dirname}/../../../../src/node/db/PadManager`);
-const plugins = require(`${__dirname}/../../../../src/static/js/pluginfw/plugin_defs`);
+const settings = require('ep_etherpad-lite/node/utils/Settings');
+const padManager = require('ep_etherpad-lite/node/db/PadManager');
+const plugins = require('ep_etherpad-lite/static/js/pluginfw/plugin_defs');
 
 const padText = fs.readFileSync('../tests/backend/specs/api/test.txt');
 const etherpadDoc = fs.readFileSync('../tests/backend/specs/api/test.etherpad');
@@ -122,7 +122,7 @@ describe(__filename, function () {
 
 
     describe('Import/Export tests requiring AbiWord/LibreOffice', function () {
-      before(function () {
+      before(async function () {
         if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
             (!settings.soffice || settings.soffice.indexOf('/') === -1)) {
           this.skip();
@@ -149,7 +149,8 @@ describe(__filename, function () {
         await agent.post(`/p/${testPadId}/import`)
             .attach('file', wordXDoc, {
               filename: '/test.docx',
-              contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+              contentType:
+                  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             })
             .expect(200)
             .expect(/FrameCall\('undefined', 'ok'\);/);
@@ -352,7 +353,7 @@ describe(__filename, function () {
 }); // End of tests.
 
 
-var endPoint = function (point, version) {
+const endPoint = (point, version) => {
   version = version || apiVersion;
   return `/api/${version}/${point}?apikey=${apiKey}`;
 };

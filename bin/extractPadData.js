@@ -16,59 +16,54 @@ if (process.argv.length !== 3) throw new Error('Use: node extractPadData.js $PAD
 const padId = process.argv[2];
 
 const npm = require('ep_etherpad-lite/node_modules/npm');
+const util = require('util');
 
-npm.load({}, async (err) => {
-  if (err) throw err;
+(async () => {
+  await util.promisify(npm.load)({});
 
-  try {
-    // initialize database
-    require('ep_etherpad-lite/node/utils/Settings');
-    const db = require('ep_etherpad-lite/node/db/DB');
-    await db.init();
+  // initialize database
+  require('ep_etherpad-lite/node/utils/Settings');
+  const db = require('ep_etherpad-lite/node/db/DB');
+  await db.init();
 
-    // load extra modules
-    const dirtyDB = require('ep_etherpad-lite/node_modules/dirty');
-    const padManager = require('ep_etherpad-lite/node/db/PadManager');
-    const util = require('util');
+  // load extra modules
+  const dirtyDB = require('ep_etherpad-lite/node_modules/dirty');
+  const padManager = require('ep_etherpad-lite/node/db/PadManager');
 
-    // initialize output database
-    const dirty = dirtyDB(`${padId}.db`);
+  // initialize output database
+  const dirty = dirtyDB(`${padId}.db`);
 
-    // Promise wrapped get and set function
-    const wrapped = db.db.db.wrappedDB;
-    const get = util.promisify(wrapped.get.bind(wrapped));
-    const set = util.promisify(dirty.set.bind(dirty));
+  // Promise wrapped get and set function
+  const wrapped = db.db.db.wrappedDB;
+  const get = util.promisify(wrapped.get.bind(wrapped));
+  const set = util.promisify(dirty.set.bind(dirty));
 
-    // array in which required key values will be accumulated
-    const neededDBValues = [`pad:${padId}`];
+  // array in which required key values will be accumulated
+  const neededDBValues = [`pad:${padId}`];
 
-    // get the actual pad object
-    const pad = await padManager.getPad(padId);
+  // get the actual pad object
+  const pad = await padManager.getPad(padId);
 
-    // add all authors
-    neededDBValues.push(...pad.getAllAuthors().map((author) => `globalAuthor:${author}`));
+  // add all authors
+  neededDBValues.push(...pad.getAllAuthors().map((author) => `globalAuthor:${author}`));
 
-    // add all revisions
-    for (let rev = 0; rev <= pad.head; ++rev) {
-      neededDBValues.push(`pad:${padId}:revs:${rev}`);
-    }
-
-    // add all chat values
-    for (let chat = 0; chat <= pad.chatHead; ++chat) {
-      neededDBValues.push(`pad:${padId}:chat:${chat}`);
-    }
-
-    for (const dbkey of neededDBValues) {
-      let dbvalue = await get(dbkey);
-      if (dbvalue && typeof dbvalue !== 'object') {
-        dbvalue = JSON.parse(dbvalue);
-      }
-      await set(dbkey, dbvalue);
-    }
-
-    console.log('finished');
-  } catch (err) {
-    console.error(err);
-    throw err;
+  // add all revisions
+  for (let rev = 0; rev <= pad.head; ++rev) {
+    neededDBValues.push(`pad:${padId}:revs:${rev}`);
   }
-});
+
+  // add all chat values
+  for (let chat = 0; chat <= pad.chatHead; ++chat) {
+    neededDBValues.push(`pad:${padId}:chat:${chat}`);
+  }
+
+  for (const dbkey of neededDBValues) {
+    let dbvalue = await get(dbkey);
+    if (dbvalue && typeof dbvalue !== 'object') {
+      dbvalue = JSON.parse(dbvalue);
+    }
+    await set(dbkey, dbvalue);
+  }
+
+  console.log('finished');
+})();

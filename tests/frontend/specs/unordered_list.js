@@ -1,3 +1,5 @@
+'use strict';
+
 describe('assign unordered list', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
@@ -130,7 +132,8 @@ describe('Pressing Tab in an UL increases and decreases indentation', function (
   });
 });
 
-describe('Pressing indent/outdent button in an UL increases and decreases indentation and bullet / ol formatting', function () {
+describe('Pressing indent/outdent button in an UL increases and decreases indentation ' +
+  'and bullet / ol formatting', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
     helper.newPad(cb);

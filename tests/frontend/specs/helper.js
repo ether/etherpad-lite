@@ -1,3 +1,5 @@
+'use strict';
+
 describe('the test helper', function () {
   describe('the newPad method', function () {
     xit("doesn't leak memory if you creates iframes over and over again", function (done) {
@@ -5,7 +7,7 @@ describe('the test helper', function () {
 
       let times = 10;
 
-      var loadPad = function () {
+      const loadPad = () => {
         helper.newPad(() => {
           times--;
           if (times > 0) {
@@ -75,13 +77,14 @@ describe('the test helper', function () {
         // Before refreshing, make sure the name is there
         expect($usernameInput.val()).to.be('John McLear');
 
-        // Now that we have a chrome, we can set a pad cookie, so we can confirm it gets wiped as well
+        // Now that we have a chrome, we can set a pad cookie
+        // so we can confirm it gets wiped as well
         chrome$.document.cookie = 'prefsHtml=baz;expires=Thu, 01 Jan 3030 00:00:00 GMT';
         expect(chrome$.document.cookie).to.contain('prefsHtml=baz');
 
-        // Cookies are weird. Because it's attached to chrome$ (as helper.setPadCookies does), AND we
-        // didn't put path=/, we shouldn't expect it to be visible on window.document.cookie. Let's just
-        // be sure.
+        // Cookies are weird. Because it's attached to chrome$ (as helper.setPadCookies does)
+        // AND we didn't put path=/, we shouldn't expect it to be visible on
+        // window.document.cookie. Let's just be sure.
         expect(window.document.cookie).to.not.contain('prefsHtml=baz');
 
         setTimeout(() => { // give it a second to save the username on the server side
@@ -266,7 +269,8 @@ describe('the test helper', function () {
       this.timeout(60000);
     });
 
-    it('changes editor selection to be between startOffset of $startLine and endOffset of $endLine', function (done) {
+    it('changes editor selection to be between startOffset of $startLine ' +
+        'and endOffset of $endLine', function (done) {
       const inner$ = helper.padInner$;
 
       const startOffset = 2;
@@ -313,7 +317,8 @@ describe('the test helper', function () {
        * is not consistent between browsers but that's the situation so that's
        * how I'm covering it in this test.
        */
-      expect(cleanText(selection.toString().replace(/(\r\n|\n|\r)/gm, ''))).to.be('ort lines to test');
+      expect(cleanText(
+          selection.toString().replace(/(\r\n|\n|\r)/gm, ''))).to.be('ort lines to test');
 
       done();
     });
@@ -365,12 +370,14 @@ describe('the test helper', function () {
        * is not consistent between browsers but that's the situation so that's
        * how I'm covering it in this test.
        */
-      expect(cleanText(selection.toString().replace(/(\r\n|\n|\r)/gm, ''))).to.be('ort lines to test');
+      expect(cleanText(
+          selection.toString().replace(/(\r\n|\n|\r)/gm, ''))).to.be('ort lines to test');
 
       done();
     });
 
-    it('selects all text between beginning of $startLine and end of $endLine when no offset is provided', function (done) {
+    it('selects all text between beginning of $startLine and end of $endLine ' +
+        'when no offset is provided', function (done) {
       const inner$ = helper.padInner$;
 
       const $lines = inner$('div');
@@ -388,7 +395,8 @@ describe('the test helper', function () {
        * is not consistent between browsers but that's the situation so that's
        * how I'm covering it in this test.
        */
-      expect(cleanText(selection.toString().replace(/(\r\n|\n|\r)/gm, ''))).to.be('short lines to test');
+      expect(cleanText(
+          selection.toString().replace(/(\r\n|\n|\r)/gm, ''))).to.be('short lines to test');
 
       done();
     });

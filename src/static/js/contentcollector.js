@@ -32,30 +32,31 @@ const hooks = require('./pluginfw/hooks');
 
 const sanitizeUnicode = (s) => UNorm.nfc(s);
 
-const makeContentCollector = (collectStyles, abrowser, apool, domInterface, className2Author) => {
-  const dom = domInterface || {
-    isNodeText: (n) => n.nodeType === 3,
-    nodeTagName: (n) => n.tagName,
-    nodeValue: (n) => n.nodeValue,
-    nodeNumChildren: (n) => {
-      if (n.childNodes == null) return 0;
-      return n.childNodes.length;
-    },
-    nodeChild: (n, i) => {
-      if (n.childNodes.item == null) {
-        return n.childNodes[i];
-      }
-      return n.childNodes.item(i);
-    },
-    nodeProp: (n, p) => n[p],
-    nodeAttr: (n, a) => {
-      if (n.getAttribute != null) return n.getAttribute(a);
-      if (n.attribs != null) return n.attribs[a];
-      return null;
-    },
-    optNodeInnerHTML: (n) => n.innerHTML,
-  };
+// This file is used both in browsers and with cheerio in Node.js (for importing HTML). Cheerio's
+// Node-like objects are not 100% API compatible with the DOM specification; the following functions
+// abstract away the differences.
 
+// .nodeType works with DOM and cheerio 0.22.0, but cheerio 0.22.0 does not provide the Node.*_NODE
+// constants so they cannot be used here.
+const isElementNode = (n) => n.nodeType === 1; // Node.ELEMENT_NODE
+const isTextNode = (n) => n.nodeType === 3; // Node.TEXT_NODE
+// .tagName works with DOM and cheerio 0.22.0, but:
+//   * With DOM, .tagName is an uppercase string.
+//   * With cheerio 0.22.0, .tagName is a lowercase string.
+// For consistency, this function always returns a lowercase string.
+const tagName = (n) => n.tagName && n.tagName.toLowerCase();
+// .childNodes works with DOM and cheerio 0.22.0, except in cheerio the .childNodes property does
+// not exist on text nodes (and maybe other non-element nodes).
+const childNodes = (n) => n.childNodes || [];
+const getAttribute = (n, a) => {
+  // .getAttribute() works with DOM but not with cheerio 0.22.0.
+  if (n.getAttribute != null) return n.getAttribute(a);
+  // .attribs[] works with cheerio 0.22.0 but not with DOM.
+  if (n.attribs != null) return n.attribs[a];
+  return null;
+};
+
+const makeContentCollector = (collectStyles, abrowser, apool, className2Author) => {
   const _blockElems = {
     div: 1,
     p: 1,
@@ -67,7 +68,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
     _blockElems[element] = 1;
   });
 
-  const isBlockElement = (n) => !!_blockElems[(dom.nodeTagName(n) || '').toLowerCase()];
+  const isBlockElement = (n) => !!_blockElems[tagName(n) || ''];
 
   const textify = (str) => sanitizeUnicode(
       str.replace(/(\n | \n)/g, ' ')
@@ -75,7 +76,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
           .replace(/\xa0/g, ' ')
           .replace(/\t/g, '        '));
 
-  const getAssoc = (node, name) => dom.nodeProp(node, `_magicdom_${name}`);
+  const getAssoc = (node, name) => node[`_magicdom_${name}`];
 
   const lines = (() => {
     const textArray = [];
@@ -123,13 +124,17 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
   let selEnd = [-1, -1];
   const _isEmpty = (node, state) => {
     // consider clean blank lines pasted in IE to be empty
-    if (dom.nodeNumChildren(node) === 0) return true;
-    if (dom.nodeNumChildren(node) === 1 &&
+    if (childNodes(node).length === 0) return true;
+    if (childNodes(node).length === 1 &&
         getAssoc(node, 'shouldBeEmpty') &&
-        dom.optNodeInnerHTML(node) === '&nbsp;' &&
+        // Note: The .innerHTML property exists on DOM Element objects but not on cheerio's
+        // Element-like objects (cheerio v0.22.0) so this equality check will always be false.
+        // Cheerio's Element-like objects have no equivalent to .innerHTML. (Cheerio objects have an
+        // .html() method, but that isn't accessible here.)
+        node.innerHTML === '&nbsp;' &&
         !getAssoc(node, 'unpasted')) {
       if (state) {
-        const child = dom.nodeChild(node, 0);
+        const child = childNodes(node)[0];
         _reachPoint(child, 0, state);
         _reachPoint(child, 1, state);
       }
@@ -149,7 +154,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
   };
 
   const _reachBlockPoint = (nd, idx, state) => {
-    if (!dom.isNodeText(nd)) _reachPoint(nd, idx, state);
+    if (!isTextNode(nd)) _reachPoint(nd, idx, state);
   };
 
   const _reachPoint = (nd, idx, state) => {
@@ -228,25 +233,24 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
 
   const _recalcAttribString = (state) => {
     const lst = [];
-    for (const a in state.attribs) {
-      if (state.attribs[a]) {
-        // The following splitting of the attribute name is a workaround
-        // to enable the content collector to store key-value attributes
-        // see https://github.com/ether/etherpad-lite/issues/2567 for more information
-        // in long term the contentcollector should be refactored to get rid of this workaround
-        const ATTRIBUTE_SPLIT_STRING = '::';
+    for (const [a, count] of Object.entries(state.attribs)) {
+      if (!count) continue;
+      // The following splitting of the attribute name is a workaround
+      // to enable the content collector to store key-value attributes
+      // see https://github.com/ether/etherpad-lite/issues/2567 for more information
+      // in long term the contentcollector should be refactored to get rid of this workaround
+      const ATTRIBUTE_SPLIT_STRING = '::';
 
-        // see if attributeString is splittable
-        const attributeSplits = a.split(ATTRIBUTE_SPLIT_STRING);
-        if (attributeSplits.length > 1) {
-          // the attribute name follows the convention key::value
-          // so save it as a key value attribute
-          lst.push([attributeSplits[0], attributeSplits[1]]);
-        } else {
-          // the "normal" case, the attribute is just a switch
-          // so set it true
-          lst.push([a, 'true']);
-        }
+      // see if attributeString is splittable
+      const attributeSplits = a.split(ATTRIBUTE_SPLIT_STRING);
+      if (attributeSplits.length > 1) {
+        // the attribute name follows the convention key::value
+        // so save it as a key value attribute
+        lst.push([attributeSplits[0], attributeSplits[1]]);
+      } else {
+        // the "normal" case, the attribute is just a switch
+        // so set it true
+        lst.push([a, 'true']);
       }
     }
     if (state.authorLevel > 0) {
@@ -316,25 +320,15 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
     const startLine = lines.length() - 1;
     _reachBlockPoint(node, 0, state);
 
-    if (dom.isNodeText(node)) {
-      let txt = dom.nodeValue(node);
-      const tname = dom.nodeAttr(node.parentNode, 'name');
-
-      const txtFromHook = hooks.callAll('collectContentLineText', {
-        cc: this,
-        state,
-        tname,
-        node,
-        text: txt,
-        styl: null,
-        cls: null,
-      });
-
-      if (typeof (txtFromHook) === 'object') {
-        txt = dom.nodeValue(node);
-      } else if (txtFromHook) {
-        txt = txtFromHook;
-      }
+    if (isTextNode(node)) {
+      const tname = getAttribute(node.parentNode, 'name');
+      const context = {cc: this, state, tname, node, text: node.nodeValue};
+      // Hook functions may either return a string (deprecated) or modify context.text. If any hook
+      // function modifies context.text then all returned strings are ignored. If no hook functions
+      // modify context.text, the first hook function to return a string wins.
+      const [hookTxt] =
+          hooks.callAll('collectContentLineText', context).filter((s) => typeof s === 'string');
+      let txt = context.text === node.nodeValue && hookTxt != null ? hookTxt : context.text;
 
       let rest = '';
       let x = 0; // offset into original text
@@ -384,8 +378,8 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
           cc.startNewLine(state);
         }
       }
-    } else {
-      const tname = (dom.nodeTagName(node) || '').toLowerCase();
+    } else if (isElementNode(node)) {
+      const tname = tagName(node) || '';
 
       if (tname === 'img') {
         hooks.callAll('collectContentImage', {
@@ -403,8 +397,8 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
 
       if (tname === 'br') {
         this.breakLine = true;
-        const tvalue = dom.nodeAttr(node, 'value');
-        const induceLineBreak = hooks.callAll('collectContentLineBreak', {
+        const tvalue = getAttribute(node, 'value');
+        const [startNewLine = true] = hooks.callAll('collectContentLineBreak', {
           cc: this,
           state,
           tname,
@@ -412,17 +406,14 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
           styl: null,
           cls: null,
         });
-        const startNewLine = (
-          typeof (induceLineBreak) === 'object' &&
-            induceLineBreak.length === 0) ? true : induceLineBreak[0];
         if (startNewLine) {
           cc.startNewLine(state);
         }
       } else if (tname === 'script' || tname === 'style') {
         // ignore
       } else if (!isEmpty) {
-        let styl = dom.nodeAttr(node, 'style');
-        let cls = dom.nodeAttr(node, 'class');
+        let styl = getAttribute(node, 'style');
+        let cls = getAttribute(node, 'class');
         let isPre = (tname === 'pre');
         if ((!isPre) && abrowser && abrowser.safari) {
           isPre = (styl && /\bwhite-space:\s*pre\b/i.exec(styl));
@@ -469,26 +460,23 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
             cc.doAttrib(state, 'strikethrough');
           }
           if (tname === 'ul' || tname === 'ol') {
-            let type = node.attribs ? node.attribs.class : null;
+            let type = getAttribute(node, 'class');
             const rr = cls && /(?:^| )list-([a-z]+[0-9]+)\b/.exec(cls);
             // lists do not need to have a type, so before we make a wrong guess
             // check if we find a better hint within the node's children
             if (!rr && !type) {
-              for (const i in node.children) {
-                if (node.children[i] && node.children[i].name === 'ul') {
-                  type = node.children[i].attribs.class;
-                  if (type) {
-                    break;
-                  }
-                }
+              for (const child of childNodes(node)) {
+                if (tagName(child) !== 'ul') continue;
+                type = getAttribute(child, 'class');
+                if (type) break;
               }
             }
             if (rr && rr[1]) {
               type = rr[1];
             } else {
               if (tname === 'ul') {
-                if ((type && type.match('indent')) ||
-                    (node.attribs && node.attribs.class && node.attribs.class.match('indent'))) {
+                const cls = getAttribute(node, 'class');
+                if ((type && type.match('indent')) || (cls && cls.match('indent'))) {
                   type = 'indent';
                 } else {
                   type = 'bullet';
@@ -503,7 +491,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
             // This has undesirable behavior in Chrome but is right in other browsers.
             // See https://github.com/ether/etherpad-lite/issues/2412 for reasoning
             if (!abrowser.chrome) oldListTypeOrNull = (_enterList(state, undefined) || 'none');
-          } else if ((tname === 'li')) {
+          } else if (tname === 'li') {
             state.lineAttributes.start = state.start || 0;
             _recalcAttribString(state);
             if (state.lineAttributes.list.indexOf('number') !== -1) {
@@ -513,7 +501,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
                Note how the <ol> item has to be inside a <li>
                Because of this we don't increment the start number
               */
-              if (node.parent && node.parent.name !== 'ol') {
+              if (node.parentNode && tagName(node.parentNode) !== 'ol') {
                 /*
                 TODO: start number has to increment based on indentLevel(numberX)
                 This means we have to build an object IE
@@ -530,7 +518,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
               }
             }
             // UL list items never modify the start value.
-            if (node.parent && node.parent.name === 'ul') {
+            if (node.parentNode && tagName(node.parentNode) === 'ul') {
               state.start++;
               // TODO, this is hacky.
               // Because if the first item is an UL it will increment a list no?
@@ -559,9 +547,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, domInterface, clas
           }
         }
 
-        const nc = dom.nodeNumChildren(node);
-        for (let i = 0; i < nc; i++) {
-          const c = dom.nodeChild(node, i);
+        for (const c of childNodes(node)) {
           cc.collectContent(c, state);
         }
 

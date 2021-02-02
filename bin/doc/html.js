@@ -1,3 +1,5 @@
+'use strict';
+
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,17 +25,17 @@ const fs = require('fs');
 const marked = require('marked');
 const path = require('path');
 
-module.exports = toHTML;
 
-function toHTML(input, filename, template, cb) {
+const toHTML = (input, filename, template, cb) => {
   const lexed = marked.lexer(input);
   fs.readFile(template, 'utf8', (er, template) => {
     if (er) return cb(er);
     render(lexed, filename, template, cb);
   });
-}
+};
+module.exports = toHTML;
 
-function render(lexed, filename, template, cb) {
+const render = (lexed, filename, template, cb) => {
   // get the section
   const section = getSection(lexed);
 
@@ -52,23 +54,23 @@ function render(lexed, filename, template, cb) {
 
     // content has to be the last thing we do with
     // the lexed tokens, because it's destructive.
-    content = marked.parser(lexed);
+    const content = marked.parser(lexed);
     template = template.replace(/__CONTENT__/g, content);
 
     cb(null, template);
   });
-}
+};
 
 
 // just update the list item text in-place.
 // lists that come right after a heading are what we're after.
-function parseLists(input) {
+const parseLists = (input) => {
   let state = null;
   let depth = 0;
   const output = [];
   output.links = input.links;
   input.forEach((tok) => {
-    if (state === null) {
+    if (state == null) {
       if (tok.type === 'heading') {
         state = 'AFTERHEADING';
       }
@@ -112,29 +114,27 @@ function parseLists(input) {
   });
 
   return output;
-}
+};
 
 
-function parseListItem(text) {
-  text = text.replace(/\{([^\}]+)\}/, '<span class="type">$1</span>');
+const parseListItem = (text) => {
+  text = text.replace(/\{([^}]+)\}/, '<span class="type">$1</span>');
   // XXX maybe put more stuff here?
   return text;
-}
+};
 
 
 // section is just the first heading
-function getSection(lexed) {
-  const section = '';
+const getSection = (lexed) => {
   for (let i = 0, l = lexed.length; i < l; i++) {
     const tok = lexed[i];
     if (tok.type === 'heading') return tok.text;
   }
   return '';
-}
+};
 
 
-function buildToc(lexed, filename, cb) {
-  const indent = 0;
+const buildToc = (lexed, filename, cb) => {
   let toc = [];
   let depth = 0;
   lexed.forEach((tok) => {
@@ -155,18 +155,18 @@ function buildToc(lexed, filename, cb) {
 
   toc = marked.parse(toc.join('\n'));
   cb(null, toc);
-}
+};
 
 const idCounters = {};
-function getId(text) {
+const getId = (text) => {
   text = text.toLowerCase();
   text = text.replace(/[^a-z0-9]+/g, '_');
   text = text.replace(/^_+|_+$/, '');
   text = text.replace(/^([^a-z])/, '_$1');
-  if (idCounters.hasOwnProperty(text)) {
+  if (Object.prototype.hasOwnProperty.call(idCounters, text)) {
     text += `_${++idCounters[text]}`;
   } else {
     idCounters[text] = 0;
   }
   return text;
-}
+};

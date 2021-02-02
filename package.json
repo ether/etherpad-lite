@@ -3,12 +3,12 @@
     "ep_etherpad-lite": "file:src"
   },
   "devDependencies": {
-    "eslint": "^7.15.0",
-    "eslint-config-etherpad": "^1.0.20",
+    "eslint": "^7.18.0",
+    "eslint-config-etherpad": "^1.0.24",
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-mocha": "^8.0.0",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prefer-arrow": "^1.2.2",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-you-dont-need-lodash-underscore": "^6.10.0"
   },
@@ -39,7 +39,9 @@
           "tests/**/*"
         ],
         "excludedFiles": [
-          "**/.eslintrc.js"
+          "**/.eslintrc.js",
+          "tests/frontend/travis/**/*",
+          "tests/ratelimit/**/*"
         ],
         "extends": "etherpad/tests",
         "rules": {
@@ -75,7 +77,8 @@
           "tests/frontend/**/*"
         ],
         "excludedFiles": [
-          "**/.eslintrc.js"
+          "**/.eslintrc.js",
+          "tests/frontend/travis/**/*"
         ],
         "extends": "etherpad/tests/frontend",
         "overrides": [
@@ -92,6 +95,12 @@
             }
           }
         ]
+      },
+      {
+        "files": [
+          "tests/frontend/travis/**/*"
+        ],
+        "extends": "etherpad/node"
       }
     ],
     "root": true
@@ -100,6 +109,6 @@
     "lint": "eslint ."
   },
   "engines": {
-    "node": ">=10.13.0"
+    "node": "^10.17.0 || >=11.14.0"
   }
 }

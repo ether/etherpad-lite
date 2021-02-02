@@ -1139,7 +1139,7 @@ function Ace2Inner() {
 
       lastDirtyNode = (lastDirtyNode && isNodeDirty(lastDirtyNode) && lastDirtyNode);
       if (firstDirtyNode && lastDirtyNode) {
-        const cc = makeContentCollector(isStyled, browser, rep.apool, null, className2Author);
+        const cc = makeContentCollector(isStyled, browser, rep.apool, className2Author);
         cc.notifySelection(selection);
         const dirtyNodes = [];
         for (let n = firstDirtyNode; n &&

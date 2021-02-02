@@ -1,5 +1,7 @@
+'use strict';
 /**
- * The Session Manager provides functions to manage session in the database, it only provides session management for sessions created by the API
+ * The Session Manager provides functions to manage session in the database,
+ * it only provides session management for sessions created by the API
  */
 
 /*
@@ -18,7 +20,7 @@
  * limitations under the License.
  */
 
-const customError = require('../utils/customError');
+const CustomError = require('../utils/customError');
 const promises = require('../utils/promises');
 const randomString = require('../utils/randomstring');
 const db = require('./DB');
@@ -40,7 +42,8 @@ exports.findAuthorID = async (groupID, sessionCookie) => {
    * Sometimes, RFC 6265-compliant web servers may send back a cookie whose
    * value is enclosed in double quotes, such as:
    *
-   *   Set-Cookie: sessionCookie="s.37cf5299fbf981e14121fba3a588c02b,s.2b21517bf50729d8130ab85736a11346"; Version=1; Path=/; Domain=localhost; Discard
+   *   Set-Cookie: sessionCookie="s.37cf5299fbf981e14121fba3a588c02b,
+   * s.2b21517bf50729d8130ab85736a11346"; Version=1; Path=/; Domain=localhost; Discard
    *
    * Where the double quotes at the start and the end of the header value are
    * just delimiters. This is perfectly legal: Etherpad parsing logic should
@@ -78,26 +81,26 @@ exports.findAuthorID = async (groupID, sessionCookie) => {
   return sessionInfo.authorID;
 };
 
-exports.doesSessionExist = async function (sessionID) {
+exports.doesSessionExist = async (sessionID) => {
   // check if the database entry of this session exists
   const session = await db.get(`session:${sessionID}`);
-  return (session !== null);
+  return (session != null);
 };
 
 /**
  * Creates a new session between an author and a group
  */
-exports.createSession = async function (groupID, authorID, validUntil) {
+exports.createSession = async (groupID, authorID, validUntil) => {
   // check if the group exists
   const groupExists = await groupManager.doesGroupExist(groupID);
   if (!groupExists) {
-    throw new customError('groupID does not exist', 'apierror');
+    throw new CustomError('groupID does not exist', 'apierror');
   }
 
   // check if the author exists
   const authorExists = await authorManager.doesAuthorExist(authorID);
   if (!authorExists) {
-    throw new customError('authorID does not exist', 'apierror');
+    throw new CustomError('authorID does not exist', 'apierror');
   }
 
   // try to parse validUntil if it's not a number
@@ -107,22 +110,22 @@ exports.createSession = async function (groupID, authorID, validUntil) {
 
   // check it's a valid number
   if (isNaN(validUntil)) {
-    throw new customError('validUntil is not a number', 'apierror');
+    throw new CustomError('validUntil is not a number', 'apierror');
   }
 
   // ensure this is not a negative number
   if (validUntil < 0) {
-    throw new customError('validUntil is a negative number', 'apierror');
+    throw new CustomError('validUntil is a negative number', 'apierror');
   }
 
   // ensure this is not a float value
-  if (!is_int(validUntil)) {
-    throw new customError('validUntil is a float value', 'apierror');
+  if (!isInt(validUntil)) {
+    throw new CustomError('validUntil is a float value', 'apierror');
   }
 
   // check if validUntil is in the future
   if (validUntil < Math.floor(Date.now() / 1000)) {
-    throw new customError('validUntil is in the past', 'apierror');
+    throw new CustomError('validUntil is in the past', 'apierror');
   }
 
   // generate sessionID
@@ -170,13 +173,13 @@ exports.createSession = async function (groupID, authorID, validUntil) {
   return {sessionID};
 };
 
-exports.getSessionInfo = async function (sessionID) {
+exports.getSessionInfo = async (sessionID) => {
   // check if the database entry of this session exists
   const session = await db.get(`session:${sessionID}`);
 
   if (session == null) {
     // session does not exist
-    throw new customError('sessionID does not exist', 'apierror');
+    throw new CustomError('sessionID does not exist', 'apierror');
   }
 
   // everything is fine, return the sessioninfos
@@ -186,11 +189,11 @@ exports.getSessionInfo = async function (sessionID) {
 /**
  * Deletes a session
  */
-exports.deleteSession = async function (sessionID) {
+exports.deleteSession = async (sessionID) => {
   // ensure that the session exists
   const session = await db.get(`session:${sessionID}`);
   if (session == null) {
-    throw new customError('sessionID does not exist', 'apierror');
+    throw new CustomError('sessionID does not exist', 'apierror');
   }
 
   // everything is fine, use the sessioninfos
@@ -217,22 +220,22 @@ exports.deleteSession = async function (sessionID) {
   }
 };
 
-exports.listSessionsOfGroup = async function (groupID) {
+exports.listSessionsOfGroup = async (groupID) => {
   // check that the group exists
   const exists = await groupManager.doesGroupExist(groupID);
   if (!exists) {
-    throw new customError('groupID does not exist', 'apierror');
+    throw new CustomError('groupID does not exist', 'apierror');
   }
 
   const sessions = await listSessionsWithDBKey(`group2sessions:${groupID}`);
   return sessions;
 };
 
-exports.listSessionsOfAuthor = async function (authorID) {
+exports.listSessionsOfAuthor = async (authorID) => {
   // check that the author exists
   const exists = await authorManager.doesAuthorExist(authorID);
   if (!exists) {
-    throw new customError('authorID does not exist', 'apierror');
+    throw new CustomError('authorID does not exist', 'apierror');
   }
 
   const sessions = await listSessionsWithDBKey(`author2sessions:${authorID}`);
@@ -241,7 +244,7 @@ exports.listSessionsOfAuthor = async function (authorID) {
 
 // this function is basically the code listSessionsOfAuthor and listSessionsOfGroup has in common
 // required to return null rather than an empty object if there are none
-async function listSessionsWithDBKey(dbkey) {
+const listSessionsWithDBKey = async (dbkey) => {
   // get the group2sessions entry
   const sessionObject = await db.get(dbkey);
   const sessions = sessionObject ? sessionObject.sessionIDs : null;
@@ -252,7 +255,7 @@ async function listSessionsWithDBKey(dbkey) {
       const sessionInfo = await exports.getSessionInfo(sessionID);
       sessions[sessionID] = sessionInfo;
     } catch (err) {
-      if (err == 'apierror: sessionID does not exist') {
+      if (err === 'apierror: sessionID does not exist') {
         console.warn(`Found bad session ${sessionID} in ${dbkey}`);
         sessions[sessionID] = null;
       } else {
@@ -262,9 +265,7 @@ async function listSessionsWithDBKey(dbkey) {
   }
 
   return sessions;
-}
+};
 
 // checks if a number is an int
-function is_int(value) {
-  return (parseFloat(value) == parseInt(value)) && !isNaN(value);
-}
+const isInt = (value) => (parseFloat(value) === parseInt(value)) && !isNaN(value);

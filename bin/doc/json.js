@@ -1,3 +1,4 @@
+'use strict';
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,7 +27,7 @@ module.exports = doJSON;
 
 const marked = require('marked');
 
-function doJSON(input, filename, cb) {
+const doJSON = (input, filename, cb) => {
   const root = {source: filename};
   const stack = [root];
   let depth = 0;
@@ -40,7 +41,7 @@ function doJSON(input, filename, cb) {
     // <!-- type = module -->
     // This is for cases where the markdown semantic structure is lacking.
     if (type === 'paragraph' || type === 'html') {
-      const metaExpr = /<!--([^=]+)=([^\-]+)-->\n*/g;
+      const metaExpr = /<!--([^=]+)=([^-]+)-->\n*/g;
       text = text.replace(metaExpr, (_0, k, v) => {
         current[k.trim()] = v.trim();
         return '';
@@ -146,7 +147,7 @@ function doJSON(input, filename, cb) {
   }
 
   return cb(null, root);
-}
+};
 
 
 // go from something like this:
@@ -191,7 +192,7 @@ function doJSON(input, filename, cb) {
 //          desc: 'whether or not to send output to parent\'s stdio.',
 //          default: 'false' } ] } ]
 
-function processList(section) {
+const processList = (section) => {
   const list = section.list;
   const values = [];
   let current;
@@ -203,13 +204,13 @@ function processList(section) {
     if (type === 'space') return;
     if (type === 'list_item_start') {
       if (!current) {
-        var n = {};
+        const n = {};
         values.push(n);
         current = n;
       } else {
         current.options = current.options || [];
         stack.push(current);
-        var n = {};
+        const n = {};
         current.options.push(n);
         current = n;
       }
@@ -283,11 +284,11 @@ function processList(section) {
 
   // section.listParsed = values;
   delete section.list;
-}
+};
 
 
 // textRaw = "someobject.someMethod(a, [b=100], [c])"
-function parseSignature(text, sig) {
+const parseSignature = (text, sig) => {
   let params = text.match(paramExpr);
   if (!params) return;
   params = params[1];
@@ -322,10 +323,10 @@ function parseSignature(text, sig) {
     if (optional) param.optional = true;
     if (def !== undefined) param.default = def;
   });
-}
+};
 
 
-function parseListItem(item) {
+const parseListItem = (item) => {
   if (item.options) item.options.forEach(parseListItem);
   if (!item.textRaw) return;
 
@@ -341,7 +342,7 @@ function parseListItem(item) {
     item.name = 'return';
     text = text.replace(retExpr, '');
   } else {
-    const nameExpr = /^['`"]?([^'`": \{]+)['`"]?\s*:?\s*/;
+    const nameExpr = /^['`"]?([^'`": {]+)['`"]?\s*:?\s*/;
     const name = text.match(nameExpr);
     if (name) {
       item.name = name[1];
@@ -358,7 +359,7 @@ function parseListItem(item) {
   }
 
   text = text.trim();
-  const typeExpr = /^\{([^\}]+)\}/;
+  const typeExpr = /^\{([^}]+)\}/;
   const type = text.match(typeExpr);
   if (type) {
     item.type = type[1];
@@ -376,10 +377,10 @@ function parseListItem(item) {
   text = text.replace(/^\s*-\s*/, '');
   text = text.trim();
   if (text) item.desc = text;
-}
+};
 
 
-function finishSection(section, parent) {
+const finishSection = (section, parent) => {
   if (!section || !parent) {
     throw new Error(`Invalid finishSection call\n${
       JSON.stringify(section)}\n${
@@ -479,50 +480,50 @@ function finishSection(section, parent) {
 
   parent[plur] = parent[plur] || [];
   parent[plur].push(section);
-}
+};
 
 
 // Not a general purpose deep copy.
 // But sufficient for these basic things.
-function deepCopy(src, dest) {
+const deepCopy = (src, dest) => {
   Object.keys(src).filter((k) => !dest.hasOwnProperty(k)).forEach((k) => {
     dest[k] = deepCopy_(src[k]);
   });
-}
+};
 
-function deepCopy_(src) {
+const deepCopy_ = (src) => {
   if (!src) return src;
   if (Array.isArray(src)) {
-    var c = new Array(src.length);
+    const c = new Array(src.length);
     src.forEach((v, i) => {
       c[i] = deepCopy_(v);
     });
     return c;
   }
   if (typeof src === 'object') {
-    var c = {};
+    const c = {};
     Object.keys(src).forEach((k) => {
       c[k] = deepCopy_(src[k]);
     });
     return c;
   }
   return src;
-}
+};
 
 
 // these parse out the contents of an H# tag
 const eventExpr = /^Event(?::|\s)+['"]?([^"']+).*$/i;
 const classExpr = /^Class:\s*([^ ]+).*?$/i;
-const propExpr = /^(?:property:?\s*)?[^\.]+\.([^ \.\(\)]+)\s*?$/i;
-const braceExpr = /^(?:property:?\s*)?[^\.\[]+(\[[^\]]+\])\s*?$/i;
+const propExpr = /^(?:property:?\s*)?[^.]+\.([^ .()]+)\s*?$/i;
+const braceExpr = /^(?:property:?\s*)?[^.[]+(\[[^\]]+\])\s*?$/i;
 const classMethExpr =
-  /^class\s*method\s*:?[^\.]+\.([^ \.\(\)]+)\([^\)]*\)\s*?$/i;
+  /^class\s*method\s*:?[^.]+\.([^ .()]+)\([^)]*\)\s*?$/i;
 const methExpr =
-  /^(?:method:?\s*)?(?:[^\.]+\.)?([^ \.\(\)]+)\([^\)]*\)\s*?$/i;
-const newExpr = /^new ([A-Z][a-z]+)\([^\)]*\)\s*?$/;
-var paramExpr = /\((.*)\);?$/;
+  /^(?:method:?\s*)?(?:[^.]+\.)?([^ .()]+)\([^)]*\)\s*?$/i;
+const newExpr = /^new ([A-Z][a-z]+)\([^)]*\)\s*?$/;
+const paramExpr = /\((.*)\);?$/;
 
-function newSection(tok) {
+const newSection = (tok) => {
   const section = {};
   // infer the type from the text.
   const text = section.textRaw = tok.text;
@@ -551,4 +552,4 @@ function newSection(tok) {
     section.name = text;
   }
   return section;
-}
+};

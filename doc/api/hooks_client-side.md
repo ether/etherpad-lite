@@ -421,7 +421,20 @@ Things in context:
 4. text - the text for that line
 
 This hook allows you to validate/manipulate the text before it's sent to the
-server side. The return value should be the validated/manipulated text.
+server side. To change the text, either:
+
+* Set the `text` context property to the desired value and return `undefined`.
+* (Deprecated) Return a string. If a hook function changes the `text` context
+  property, the return value is ignored. If no hook function changes `text` but
+  multiple hook functions return a string, the first one wins.
+
+Example:
+
+```
+exports.collectContentLineText = (hookName, context) => {
+  context.text = tweakText(context.text);
+};
+```
 
 ## collectContentLineBreak
 

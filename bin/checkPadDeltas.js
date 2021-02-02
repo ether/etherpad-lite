@@ -12,12 +12,14 @@ if (process.argv.length !== 3) throw new Error('Use: node bin/checkPadDeltas.js 
 // get the padID
 const padId = process.argv[2];
 
-// load and initialize NPM;
 const expect = require('../tests/frontend/lib/expect');
 const diff = require('ep_etherpad-lite/node_modules/diff');
 const npm = require('ep_etherpad-lite/node_modules/npm');
+const util = require('util');
 
-npm.load({}, async () => {
+(async () => {
+  await util.promisify(npm.load)({});
+
   // initialize database
   require('ep_etherpad-lite/node/utils/Settings');
   const db = require('ep_etherpad-lite/node/db/DB');
@@ -54,10 +56,8 @@ npm.load({}, async () => {
     // console.log('Fetching', revNum)
     const revision = await db.get(`pad:${padId}:revs:${revNum}`);
     // check if there is a atext in the keyRevisions
-    if (~keyRevisions.indexOf(revNum) &&
-        (revision === undefined ||
-         revision.meta === undefined ||
-         revision.meta.atext === undefined)) {
+    const {meta: {atext: revAtext} = {}} = revision || {};
+    if (~keyRevisions.indexOf(revNum) && revAtext == null) {
       console.error(`No atext in key revision ${revNum}`);
       continue;
     }
@@ -104,4 +104,4 @@ npm.load({}, async () => {
       }
     }));
   }
-});
+})();

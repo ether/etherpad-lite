@@ -1,3 +1,4 @@
+'use strict';
 const _ = require('underscore');
 const defs = require('./plugin_defs');
 
@@ -8,13 +9,13 @@ const disabledHookReasons = {
   },
 };
 
-function loadFn(path, hookName) {
+const loadFn = (path, hookName) => {
   let functionName;
   const parts = path.split(':');
 
   // on windows: C:\foo\bar:xyz
-  if (parts[0].length == 1) {
-    if (parts.length == 3) {
+  if (parts[0].length === 1) {
+    if (parts.length === 3) {
       functionName = parts.pop();
     }
     path = parts.join(':');
@@ -30,9 +31,9 @@ function loadFn(path, hookName) {
     fn = fn[name];
   });
   return fn;
-}
+};
 
-function extractHooks(parts, hook_set_name, normalizer) {
+const extractHooks = (parts, hook_set_name, normalizer) => {
   const hooks = {};
   _.each(parts, (part) => {
     _.chain(part[hook_set_name] || {})
@@ -50,20 +51,23 @@ function extractHooks(parts, hook_set_name, normalizer) {
 
           const disabledReason = (disabledHookReasons[hook_set_name] || {})[hook_name];
           if (disabledReason) {
-            console.error(`Hook ${hook_set_name}/${hook_name} is disabled. Reason: ${disabledReason}`);
+            console.error(
+                `Hook ${hook_set_name}/${hook_name} is disabled. Reason: ${disabledReason}`);
             console.error(`The hook function ${hook_fn_name} from plugin ${part.plugin} ` +
-                      'will never be called, which may cause the plugin to fail');
-            console.error(`Please update the ${part.plugin} plugin to not use the ${hook_name} hook`);
+                          'will never be called, which may cause the plugin to fail');
+            console.error(
+                `Please update the ${part.plugin} plugin to not use the ${hook_name} hook`);
             return;
           }
-
+          let hook_fn;
           try {
-            var hook_fn = loadFn(hook_fn_name, hook_name);
+            hook_fn = loadFn(hook_fn_name, hook_name);
             if (!hook_fn) {
-              throw 'Not a function';
+              throw new Error('Not a function');
             }
           } catch (exc) {
-            console.error(`Failed to load '${hook_fn_name}' for '${part.full_name}/${hook_set_name}/${hook_name}': ${exc.toString()}`);
+            console.error(`Failed to load '${hook_fn_name}' for ` +
+                          `'${part.full_name}/${hook_set_name}/${hook_name}': ${exc.toString()}`);
           }
           if (hook_fn) {
             if (hooks[hook_name] == null) hooks[hook_name] = [];
@@ -72,7 +76,7 @@ function extractHooks(parts, hook_set_name, normalizer) {
         });
   });
   return hooks;
-}
+};
 
 exports.extractHooks = extractHooks;
 
@@ -88,10 +92,10 @@ exports.extractHooks = extractHooks;
  *   No plugins:   []
  *   Some plugins: [ 'ep_adminpads', 'ep_add_buttons', 'ep_activepads' ]
  */
-exports.clientPluginNames = function () {
+exports.clientPluginNames = () => {
   const client_plugin_names = _.uniq(
       defs.parts
-          .filter((part) => part.hasOwnProperty('client_hooks'))
+          .filter((part) => Object.prototype.hasOwnProperty.call(part, 'client_hooks'))
           .map((part) => `plugin-${part.plugin}`)
   );
 

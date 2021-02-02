@@ -1,3 +1,5 @@
+'use strict';
+
 describe('change username value', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {

@@ -1,3 +1,4 @@
+'use strict';
 /**
  * 2014 John McLear (Etherpad Foundation / McLear Ltd)
  *
@@ -16,9 +17,9 @@
 
 
 const db = require('../db/DB');
-const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+const hooks = require('../../static/js/pluginfw/hooks');
 
-exports.getPadRaw = async function (padId) {
+exports.getPadRaw = async (padId) => {
   const padKey = `pad:${padId}`;
   const padcontent = await db.get(padKey);
 

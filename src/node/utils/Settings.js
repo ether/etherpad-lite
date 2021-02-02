@@ -1,3 +1,4 @@
+'use strict';
 /**
  * The Settings module reads the settings out of settings.json and provides
  * this information to the other modules
@@ -31,7 +32,6 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const argv = require('./Cli').argv;
-const npm = require('npm/lib/npm.js');
 const jsonminify = require('jsonminify');
 const log4js = require('log4js');
 const randomString = require('./randomstring');
@@ -387,29 +387,30 @@ exports.enableAdminUITests = false;
 
 
 // checks if abiword is avaiable
-exports.abiwordAvailable = function () {
+exports.abiwordAvailable = () => {
   if (exports.abiword != null) {
-    return os.type().indexOf('Windows') != -1 ? 'withoutPDF' : 'yes';
+    return os.type().indexOf('Windows') !== -1 ? 'withoutPDF' : 'yes';
   } else {
     return 'no';
   }
 };
 
-exports.sofficeAvailable = function () {
+exports.sofficeAvailable = () => {
   if (exports.soffice != null) {
-    return os.type().indexOf('Windows') != -1 ? 'withoutPDF' : 'yes';
+    return os.type().indexOf('Windows') !== -1 ? 'withoutPDF' : 'yes';
   } else {
     return 'no';
   }
 };
 
-exports.exportAvailable = function () {
+exports.exportAvailable = () => {
   const abiword = exports.abiwordAvailable();
   const soffice = exports.sofficeAvailable();
 
-  if (abiword == 'no' && soffice == 'no') {
+  if (abiword === 'no' && soffice === 'no') {
     return 'no';
-  } else if ((abiword == 'withoutPDF' && soffice == 'no') || (abiword == 'no' && soffice == 'withoutPDF')) {
+  } else if ((abiword === 'withoutPDF' && soffice === 'no') ||
+      (abiword === 'no' && soffice === 'withoutPDF')) {
     return 'withoutPDF';
   } else {
     return 'yes';
@@ -417,7 +418,7 @@ exports.exportAvailable = function () {
 };
 
 // Provide git version if available
-exports.getGitCommit = function () {
+exports.getGitCommit = () => {
   let version = '';
   try {
     let rootPath = exports.root;
@@ -442,9 +443,7 @@ exports.getGitCommit = function () {
 };
 
 // Return etherpad version from package.json
-exports.getEpVersion = function () {
-  return require('ep_etherpad-lite/package.json').version;
-};
+exports.getEpVersion = () => require('../../package.json').version;
 
 /**
  * Receives a settingsObj and, if the property name is a valid configuration
@@ -453,7 +452,7 @@ exports.getEpVersion = function () {
  * This code refactors a previous version that copied & pasted the same code for
  * both "settings.json" and "credentials.json".
  */
-function storeSettings(settingsObj) {
+const storeSettings = (settingsObj) => {
   for (const i in settingsObj) {
     // test if the setting starts with a lowercase character
     if (i.charAt(0).search('[a-z]') !== 0) {
@@ -462,7 +461,7 @@ function storeSettings(settingsObj) {
 
     // we know this setting, so we overwrite it
     // or it's a settings hash, specific to a plugin
-    if (exports[i] !== undefined || i.indexOf('ep_') == 0) {
+    if (exports[i] !== undefined || i.indexOf('ep_') === 0) {
       if (_.isObject(settingsObj[i]) && !_.isArray(settingsObj[i])) {
         exports[i] = _.defaults(settingsObj[i], exports[i]);
       } else {
@@ -473,7 +472,7 @@ function storeSettings(settingsObj) {
       console.warn(`Unknown Setting: '${i}'. This setting doesn't exist or it was removed`);
     }
   }
-}
+};
 
 /*
  * If stringValue is a numeric string, or its value is "true" or "false", coerce
@@ -487,7 +486,7 @@ function storeSettings(settingsObj) {
  * short syntax "${ABIWORD}", and not "${ABIWORD:null}": the latter would result
  * in the literal string "null", instead.
  */
-function coerceValue(stringValue) {
+const coerceValue = (stringValue) => {
   // cooked from https://stackoverflow.com/questions/175739/built-in-way-in-javascript-to-check-if-a-string-is-a-valid-number
   const isNumeric = !isNaN(stringValue) && !isNaN(parseFloat(stringValue) && isFinite(stringValue));
 
@@ -508,7 +507,7 @@ function coerceValue(stringValue) {
 
   // otherwise, return this value as-is
   return stringValue;
-}
+};
 
 /**
  * Takes a javascript object containing Etherpad's configuration, and returns
@@ -546,7 +545,7 @@ function coerceValue(stringValue) {
  *
  * see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter
  */
-function lookupEnvironmentVariables(obj) {
+const lookupEnvironmentVariables = (obj) => {
   const stringifiedAndReplaced = JSON.stringify(obj, (key, value) => {
     /*
      * the first invocation of replacer() is with an empty key. Just go on, or
@@ -575,7 +574,7 @@ function lookupEnvironmentVariables(obj) {
     // MUXATOR 2019-03-21: we could use named capture groups here once we migrate to nodejs v10
     const match = value.match(/^\$\{([^:]*)(:((.|\n)*))?\}$/);
 
-    if (match === null) {
+    if (match == null) {
       // no match: use the value literally, without any substitution
 
       return value;
@@ -619,7 +618,7 @@ function lookupEnvironmentVariables(obj) {
   const newSettings = JSON.parse(stringifiedAndReplaced);
 
   return newSettings;
-}
+};
 
 /**
  * - reads the JSON configuration file settingsFilename from disk
@@ -629,7 +628,7 @@ function lookupEnvironmentVariables(obj) {
  *
  * The isSettings variable only controls the error logging.
  */
-function parseSettings(settingsFilename, isSettings) {
+const parseSettings = (settingsFilename, isSettings) => {
   let settingsStr = '';
 
   let settingsType, notFoundMessage, notFoundFunction;
@@ -669,9 +668,9 @@ function parseSettings(settingsFilename, isSettings) {
 
     process.exit(1);
   }
-}
+};
 
-exports.reloadSettings = function reloadSettings() {
+exports.reloadSettings = () => {
   // Discover where the settings file lives
   const settingsFilename = absolutePaths.makeAbsolute(argv.settings || 'settings.json');
 
@@ -701,7 +700,7 @@ exports.reloadSettings = function reloadSettings() {
     const skinBasePath = path.join(exports.root, 'src', 'static', 'skins');
     const countPieces = exports.skinName.split(path.sep).length;
 
-    if (countPieces != 1) {
+    if (countPieces !== 1) {
       console.error(`skinName must be the name of a directory under "${skinBasePath}". This is not valid: "${exports.skinName}". Falling back to the default "colibris".`);
 
       exports.skinName = 'colibris';
@@ -772,7 +771,7 @@ exports.reloadSettings = function reloadSettings() {
   }
 
   if (exports.dbType === 'dirty') {
-    const dirtyWarning = 'DirtyDB is used. This is fine for testing but not recommended for production.';
+    const dirtyWarning = 'DirtyDB is used. This is not recommended for production.';
     if (!exports.suppressErrorsInPadText) {
       exports.defaultPadText = `${exports.defaultPadText}\nWarning: ${dirtyWarning}${suppressDisableMsg}`;
     }

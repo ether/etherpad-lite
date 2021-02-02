@@ -1,3 +1,5 @@
+'use strict';
+
 describe('change user color', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
@@ -5,7 +7,8 @@ describe('change user color', function () {
     this.timeout(60000);
   });
 
-  it('Color picker matches original color and remembers the user color after a refresh', function (done) {
+  it('Color picker matches original color and remembers the user color' +
+      ' after a refresh', function (done) {
     this.timeout(60000);
     const chrome$ = helper.padChrome$;
 
@@ -60,7 +63,6 @@ describe('change user color', function () {
   });
 
   it('Own user color is shown when you enter a chat', function (done) {
-    const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
     const $colorOption = helper.padChrome$('#options-colorscheck');
@@ -90,13 +92,15 @@ describe('change user color', function () {
     $chatButton.click();
     const $chatInput = chrome$('#chatinput');
     $chatInput.sendkeys('O hi'); // simulate a keypress of typing user
-    $chatInput.sendkeys('{enter}'); // simulate a keypress of enter actually does evt.which = 10 not 13
+    // simulate a keypress of enter actually does evt.which = 10 not 13
+    $chatInput.sendkeys('{enter}');
 
-    // check if chat shows up
-    helper.waitFor(() => chrome$('#chattext').children('p').length !== 0 // wait until the chat message shows up
+    // wait until the chat message shows up
+    helper.waitFor(() => chrome$('#chattext').children('p').length !== 0
     ).done(() => {
       const $firstChatMessage = chrome$('#chattext').children('p');
-      expect($firstChatMessage.css('background-color')).to.be(testColorRGB); // expect the first chat message to be of the user's color
+      // expect the first chat message to be of the user's color
+      expect($firstChatMessage.css('background-color')).to.be(testColorRGB);
       done();
     });
   });

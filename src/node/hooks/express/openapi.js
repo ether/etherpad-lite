@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * node/hooks/express/openapi.js
  *
@@ -31,7 +33,9 @@ const OPENAPI_VERSION = '3.0.2'; // Swagger/OAS version
 const info = {
   title: 'Etherpad API',
   description:
-    'Etherpad is a real-time collaborative editor scalable to thousands of simultaneous real time users. It provides full data export capabilities, and runs on your server, under your control.',
+      'Etherpad is a real-time collaborative editor scalable to thousands of simultaneous ' +
+      'real time users. It provides full data export capabilities, and runs on your server, ' +
+      'under your control.',
   termsOfService: 'https://etherpad.org/',
   contact: {
     name: 'The Etherpad Foundation',
@@ -80,7 +84,9 @@ const resources = {
     listSessions: {
       operationId: 'listSessionsOfGroup',
       summary: '',
-      responseSchema: {sessions: {type: 'array', items: {$ref: '#/components/schemas/SessionInfo'}}},
+      responseSchema: {
+        sessions: {type: 'array', items: {$ref: '#/components/schemas/SessionInfo'}},
+      },
     },
     list: {
       operationId: 'listAllGroups',
@@ -109,7 +115,9 @@ const resources = {
     listSessions: {
       operationId: 'listSessionsOfAuthor',
       summary: 'returns all sessions of an author',
-      responseSchema: {sessions: {type: 'array', items: {$ref: '#/components/schemas/SessionInfo'}}},
+      responseSchema: {
+        sessions: {type: 'array', items: {$ref: '#/components/schemas/SessionInfo'}},
+      },
     },
     // We need an operation that return a UserInfo so it can be picked up by the codegen :(
     getName: {
@@ -153,7 +161,8 @@ const resources = {
     create: {
       operationId: 'createPad',
       description:
-        'creates a new (non-group) pad. Note that if you need to create a group Pad, you should call createGroupPad',
+          'creates a new (non-group) pad. Note that if you need to create a group Pad, ' +
+          'you should call createGroupPad',
     },
     getText: {
       operationId: 'getText',
@@ -382,9 +391,9 @@ const defaultResponseRefs = {
 
 // convert to a dictionary of operation objects
 const operations = {};
-for (const resource in resources) {
-  for (const action in resources[resource]) {
-    const {operationId, responseSchema, ...operation} = resources[resource][action];
+for (const [resource, actions] of Object.entries(resources)) {
+  for (const [action, spec] of Object.entries(actions)) {
+    const {operationId, responseSchema, ...operation} = spec;
 
     // add response objects
     const responses = {...defaultResponseRefs};
@@ -607,14 +616,14 @@ exports.expressCreateServer = (hookName, args, cb) => {
             if (createHTTPError.isHttpError(err)) {
               // pass http errors thrown by handler forward
               throw err;
-            } else if (err.name == 'apierror') {
+            } else if (err.name === 'apierror') {
               // parameters were wrong and the api stopped execution, pass the error
               // convert to http error
               throw new createHTTPError.BadRequest(err.message);
             } else {
               // an unknown error happened
               // log it and throw internal error
-              apiLogger.error(err);
+              apiLogger.error(err.stack || err.toString());
               throw new createHTTPError.InternalError('internal error');
             }
           });

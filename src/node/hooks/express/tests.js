@@ -6,7 +6,7 @@ const fs = require('fs');
 const util = require('util');
 const settings = require('../../utils/Settings');
 
-exports.expressCreateServer = (hook_name, args, cb) => {
+exports.expressCreateServer = (hookName, args, cb) => {
   args.app.get('/tests/frontend/specs_list.js', async (req, res) => {
     const [coreTests, pluginTests] = await Promise.all([
       exports.getCoreTests(),
@@ -34,7 +34,7 @@ exports.expressCreateServer = (hook_name, args, cb) => {
 
   const url2FilePath = (url) => {
     let subPath = url.substr('/tests/frontend'.length);
-    if (subPath == '') {
+    if (subPath === '') {
       subPath = 'index.html';
     }
     subPath = subPath.split('?')[0];
@@ -57,8 +57,9 @@ exports.expressCreateServer = (hook_name, args, cb) => {
 
       content = `describe(${JSON.stringify(specFileName)}, function(){${content}});`;
 
-      if(!specFilePath.endsWith('index.html')) res.setHeader('content-type', 'application/javascript');
-
+      if (!specFilePath.endsWith('index.html')) {
+        res.setHeader('content-type', 'application/javascript');
+      }
       res.send(content);
     });
   });
