@@ -19,9 +19,12 @@ describe('assign ordered list', function () {
 
   context('when user presses Ctrl+Shift+N', function () {
     context('and pad shortcut is enabled', function () {
-      beforeEach(function () {
+      beforeEach(async function () {
+        const originalHTML = helper.padInner$('body').html();
         makeSureShortcutIsEnabled('cmdShiftN');
         triggerCtrlShiftShortcut('N');
+        await helper.waitForPromise(
+            () => helper.padInner$('body').html !== originalHTML);
       });
 
       it('inserts unordered list', function (done) {
@@ -30,9 +33,12 @@ describe('assign ordered list', function () {
     });
 
     context('and pad shortcut is disabled', function () {
-      beforeEach(function () {
+      beforeEach(async function () {
+        const originalHTML = helper.padInner$('body').html();
         makeSureShortcutIsDisabled('cmdShiftN');
         triggerCtrlShiftShortcut('N');
+        await helper.waitForPromise(
+            () => helper.padInner$('body').html !== originalHTML);
       });
 
       it('does not insert unordered list', function (done) {
@@ -48,9 +54,12 @@ describe('assign ordered list', function () {
 
   context('when user presses Ctrl+Shift+1', function () {
     context('and pad shortcut is enabled', function () {
-      beforeEach(function () {
+      beforeEach(async function () {
+        const originalHTML = helper.padInner$('body').html();
         makeSureShortcutIsEnabled('cmdShift1');
         triggerCtrlShiftShortcut('1');
+        await helper.waitForPromise(
+            () => helper.padInner$('body').html !== originalHTML);
       });
 
       it('inserts unordered list', function (done) {
@@ -59,9 +68,12 @@ describe('assign ordered list', function () {
     });
 
     context('and pad shortcut is disabled', function () {
-      beforeEach(function () {
+      beforeEach(async function () {
+        const originalHTML = helper.padInner$('body').html();
         makeSureShortcutIsDisabled('cmdShift1');
         triggerCtrlShiftShortcut('1');
+        await helper.waitForPromise(
+            () => helper.padInner$('body').html !== originalHTML);
       });
 
       it('does not insert unordered list', function (done) {
@@ -117,71 +129,71 @@ describe('assign ordered list', function () {
   const makeSureShortcutIsEnabled = (shortcut) => {
     helper.padChrome$.window.clientVars.padShortcutEnabled[shortcut] = true;
   };
-});
 
-describe('Pressing Tab in an OL increases and decreases indentation', function () {
-  // create a new pad before each test run
-  beforeEach(function (cb) {
-    helper.newPad(cb);
-    this.timeout(60000);
+  describe('Pressing Tab in an OL increases and decreases indentation', function () {
+    // create a new pad before each test run
+    beforeEach(function (cb) {
+      helper.newPad(cb);
+      this.timeout(60000);
+    });
+
+    it('indent and de-indent list item with keypress', function (done) {
+      const inner$ = helper.padInner$;
+      const chrome$ = helper.padChrome$;
+
+      // get the first text element out of the inner iframe
+      const $firstTextElement = inner$('div').first();
+
+      // select this text element
+      $firstTextElement.sendkeys('{selectall}');
+
+      const $insertorderedlistButton = chrome$('.buttonicon-insertorderedlist');
+      $insertorderedlistButton.click();
+
+      const e = new inner$.Event(helper.evtType);
+      e.keyCode = 9; // tab
+      inner$('#innerdocbody').trigger(e);
+
+      expect(inner$('div').first().find('.list-number2').length === 1).to.be(true);
+      e.shiftKey = true; // shift
+      e.keyCode = 9; // tab
+      inner$('#innerdocbody').trigger(e);
+
+      helper.waitFor(() => inner$('div').first().find('.list-number1').length === 1).done(done);
+    });
   });
 
-  it('indent and de-indent list item with keypress', function (done) {
-    const inner$ = helper.padInner$;
-    const chrome$ = helper.padChrome$;
 
-    // get the first text element out of the inner iframe
-    const $firstTextElement = inner$('div').first();
+  describe('Pressing indent/outdent button in an OL increases and ' +
+      'decreases indentation and bullet / ol formatting', function () {
+    // create a new pad before each test run
+    beforeEach(function (cb) {
+      helper.newPad(cb);
+      this.timeout(60000);
+    });
 
-    // select this text element
-    $firstTextElement.sendkeys('{selectall}');
+    it('indent and de-indent list item with indent button', function (done) {
+      const inner$ = helper.padInner$;
+      const chrome$ = helper.padChrome$;
 
-    const $insertorderedlistButton = chrome$('.buttonicon-insertorderedlist');
-    $insertorderedlistButton.click();
+      // get the first text element out of the inner iframe
+      const $firstTextElement = inner$('div').first();
 
-    const e = new inner$.Event(helper.evtType);
-    e.keyCode = 9; // tab
-    inner$('#innerdocbody').trigger(e);
+      // select this text element
+      $firstTextElement.sendkeys('{selectall}');
 
-    expect(inner$('div').first().find('.list-number2').length === 1).to.be(true);
-    e.shiftKey = true; // shift
-    e.keyCode = 9; // tab
-    inner$('#innerdocbody').trigger(e);
+      const $insertorderedlistButton = chrome$('.buttonicon-insertorderedlist');
+      $insertorderedlistButton.click();
 
-    helper.waitFor(() => inner$('div').first().find('.list-number1').length === 1).done(done);
-  });
-});
+      const $indentButton = chrome$('.buttonicon-indent');
+      $indentButton.click(); // make it indented twice
 
+      expect(inner$('div').first().find('.list-number2').length === 1).to.be(true);
 
-describe('Pressing indent/outdent button in an OL increases and ' +
-    'decreases indentation and bullet / ol formatting', function () {
-  // create a new pad before each test run
-  beforeEach(function (cb) {
-    helper.newPad(cb);
-    this.timeout(60000);
-  });
+      const $outdentButton = chrome$('.buttonicon-outdent');
+      $outdentButton.click(); // make it deindented to 1
 
-  it('indent and de-indent list item with indent button', function (done) {
-    const inner$ = helper.padInner$;
-    const chrome$ = helper.padChrome$;
-
-    // get the first text element out of the inner iframe
-    const $firstTextElement = inner$('div').first();
-
-    // select this text element
-    $firstTextElement.sendkeys('{selectall}');
-
-    const $insertorderedlistButton = chrome$('.buttonicon-insertorderedlist');
-    $insertorderedlistButton.click();
-
-    const $indentButton = chrome$('.buttonicon-indent');
-    $indentButton.click(); // make it indented twice
-
-    expect(inner$('div').first().find('.list-number2').length === 1).to.be(true);
-
-    const $outdentButton = chrome$('.buttonicon-outdent');
-    $outdentButton.click(); // make it deindented to 1
-
-    helper.waitFor(() => inner$('div').first().find('.list-number1').length === 1).done(done);
+      helper.waitFor(() => inner$('div').first().find('.list-number1').length === 1).done(done);
+    });
   });
 });
