@@ -1,6 +1,7 @@
+'use strict';
 const fs = require('fs');
 
-const check = function (path) {
+const check = (path) => {
   const existsSync = fs.statSync || fs.existsSync || path.existsSync;
 
   let result;

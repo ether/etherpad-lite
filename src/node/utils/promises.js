@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Helpers to manipulate promises (like async but for promises).
  */

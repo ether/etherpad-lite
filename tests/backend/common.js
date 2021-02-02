@@ -50,10 +50,10 @@ exports.init = async function () {
 
   after(async function () {
     webaccess.authnFailureDelayMs = backups.authnFailureDelayMs;
-    await server.stop();
     // Note: This does not unset settings that were added.
     Object.assign(settings, backups.settings);
     log4js.setGlobalLogLevel(logLevel);
+    await server.exit();
   });
 
   return exports.agent;

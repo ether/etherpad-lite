@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -20,14 +22,15 @@
  * limitations under the License.
  */
 
-function makeCSSManager(emptyStylesheetTitle, doc) {
+const makeCSSManager = (emptyStylesheetTitle, doc) => {
   if (doc === true) {
     doc = 'parent';
   } else if (!doc) {
     doc = 'inner';
   }
 
-  function getSheetByTitle(title) {
+  const getSheetByTitle = (title) => {
+    let win;
     if (doc === 'parent') {
       win = window.parent.parent;
     } else if (doc === 'inner') {
@@ -35,46 +38,44 @@ function makeCSSManager(emptyStylesheetTitle, doc) {
     } else if (doc === 'outer') {
       win = window.parent;
     } else {
-      throw 'Unknown dynamic style container';
+      throw new Error('Unknown dynamic style container');
     }
     const allSheets = win.document.styleSheets;
 
     for (let i = 0; i < allSheets.length; i++) {
       const s = allSheets[i];
-      if (s.title == title) {
+      if (s.title === title) {
         return s;
       }
     }
     return null;
-  }
+  };
 
   const browserSheet = getSheetByTitle(emptyStylesheetTitle);
 
-  function browserRules() {
-    return (browserSheet.cssRules || browserSheet.rules);
-  }
+  const browserRules = () => (browserSheet.cssRules || browserSheet.rules);
 
-  function browserDeleteRule(i) {
+  const browserDeleteRule = (i) => {
     if (browserSheet.deleteRule) browserSheet.deleteRule(i);
     else browserSheet.removeRule(i);
-  }
+  };
 
-  function browserInsertRule(i, selector) {
+  const browserInsertRule = (i, selector) => {
     if (browserSheet.insertRule) browserSheet.insertRule(`${selector} {}`, i);
     else browserSheet.addRule(selector, null, i);
-  }
+  };
   const selectorList = [];
 
-  function indexOfSelector(selector) {
+  const indexOfSelector = (selector) => {
     for (let i = 0; i < selectorList.length; i++) {
-      if (selectorList[i] == selector) {
+      if (selectorList[i] === selector) {
         return i;
       }
     }
     return -1;
-  }
+  };
 
-  function selectorStyle(selector) {
+  const selectorStyle = (selector) => {
     let i = indexOfSelector(selector);
     if (i < 0) {
       // add selector
@@ -83,23 +84,21 @@ function makeCSSManager(emptyStylesheetTitle, doc) {
       i = 0;
     }
     return browserRules().item(i).style;
-  }
+  };
 
-  function removeSelectorStyle(selector) {
+  const removeSelectorStyle = (selector) => {
     const i = indexOfSelector(selector);
     if (i >= 0) {
       browserDeleteRule(i);
       selectorList.splice(i, 1);
     }
-  }
+  };
 
   return {
     selectorStyle,
     removeSelectorStyle,
-    info() {
-      return `${selectorList.length}:${browserRules().length}`;
-    },
+    info: () => `${selectorList.length}:${browserRules().length}`,
   };
-}
+};
 
 exports.makeCSSManager = makeCSSManager;

@@ -1,11 +1,12 @@
+'use strict';
+
 const minify = require('../../utils/Minify');
-const plugins = require('ep_etherpad-lite/static/js/pluginfw/plugin_defs');
+const plugins = require('../../../static/js/pluginfw/plugin_defs');
 const CachingMiddleware = require('../../utils/caching_middleware');
-const settings = require('../../utils/Settings');
 const Yajsml = require('etherpad-yajsml');
 const _ = require('underscore');
 
-exports.expressCreateServer = function (hook_name, args, cb) {
+exports.expressCreateServer = (hookName, args, cb) => {
   // Cache both minified and static.
   const assetCache = new CachingMiddleware();
   args.app.all(/\/javascripts\/(.*)/, assetCache.handle);
@@ -34,7 +35,8 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   args.app.use(jsServer.handle.bind(jsServer));
 
   // serve plugin definitions
-  // not very static, but served here so that client can do require("pluginfw/static/js/plugin-definitions.js");
+  // not very static, but served here so that client can do
+  // require("pluginfw/static/js/plugin-definitions.js");
   args.app.get('/pluginfw/plugin-definitions.json', (req, res, next) => {
     const clientParts = _(plugins.parts)
         .filter((part) => _(part).has('client_hooks'));

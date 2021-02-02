@@ -1,6 +1,7 @@
+'use strict';
+
 const fs = require('fs').promises;
 const hooks = require('./hooks');
-const npm = require('npm/lib/npm.js');
 const readInstalled = require('./read-installed.js');
 const path = require('path');
 const tsort = require('./tsort');
@@ -13,11 +14,9 @@ const defs = require('./plugin_defs');
 
 exports.prefix = 'ep_';
 
-exports.formatPlugins = function () {
-  return _.keys(defs.plugins).join(', ');
-};
+exports.formatPlugins = () => Object.keys(defs.plugins).join(', ');
 
-exports.formatPluginsWithVersion = function () {
+exports.formatPluginsWithVersion = () => {
   const plugins = [];
   _.forEach(defs.plugins, (plugin) => {
     if (plugin.package.name !== 'ep_etherpad-lite') {
@@ -28,17 +27,16 @@ exports.formatPluginsWithVersion = function () {
   return plugins.join(', ');
 };
 
-exports.formatParts = function () {
-  return _.map(defs.parts, (part) => part.full_name).join('\n');
-};
+exports.formatParts = () => _.map(defs.parts, (part) => part.full_name).join('\n');
 
-exports.formatHooks = function (hook_set_name) {
+exports.formatHooks = (hook_set_name) => {
   const res = [];
   const hooks = pluginUtils.extractHooks(defs.parts, hook_set_name || 'hooks');
 
   _.chain(hooks).keys().forEach((hook_name) => {
     _.forEach(hooks[hook_name], (hook) => {
-      res.push(`<dt>${hook.hook_name}</dt><dd>${hook.hook_fn_name} from ${hook.part.full_name}</dd>`);
+      res.push(`<dt>${hook.hook_name}</dt><dd>${hook.hook_fn_name} ` +
+               `from ${hook.part.full_name}</dd>`);
     });
   });
   return `<dl>${res.join('\n')}</dl>`;
@@ -57,7 +55,7 @@ const callInit = async () => {
   }));
 };
 
-exports.pathNormalization = function (part, hook_fn_name, hook_name) {
+exports.pathNormalization = (part, hook_fn_name, hook_name) => {
   const tmp = hook_fn_name.split(':'); // hook_fn_name might be something like 'C:\\foo.js:myFunc'.
   // If there is a single colon assume it's 'filename:funcname' not 'C:\\filename'.
   const functionName = (tmp.length > 1 ? tmp.pop() : null) || hook_name;
@@ -67,7 +65,7 @@ exports.pathNormalization = function (part, hook_fn_name, hook_name) {
   return `${fileName}:${functionName}`;
 };
 
-exports.update = async function () {
+exports.update = async () => {
   const packages = await exports.getPackages();
   const parts = {}; // Key is full name. sortParts converts this into a topologically sorted array.
   const plugins = {};
@@ -83,13 +81,14 @@ exports.update = async function () {
   await callInit();
 };
 
-exports.getPackages = async function () {
-  // Load list of installed NPM packages, flatten it to a list, and filter out only packages with names that
+exports.getPackages = async () => {
+  // Load list of installed NPM packages, flatten it to a list,
+  // and filter out only packages with names that
   const dir = settings.root;
   const data = await util.promisify(readInstalled)(dir);
 
   const packages = {};
-  function flatten(deps) {
+  const flatten = (deps) => {
     _.chain(deps).keys().each((name) => {
       if (name.indexOf(exports.prefix) === 0) {
         packages[name] = _.clone(deps[name]);
@@ -102,7 +101,7 @@ exports.getPackages = async function () {
       // I don't think we need recursion
       // if (deps[name].dependencies !== undefined) flatten(deps[name].dependencies);
     });
-  }
+  };
 
   const tmp = {};
   tmp[data.name] = data;
@@ -110,7 +109,7 @@ exports.getPackages = async function () {
   return packages;
 };
 
-async function loadPlugin(packages, plugin_name, plugins, parts) {
+const loadPlugin = async (packages, plugin_name, plugins, parts) => {
   const plugin_path = path.resolve(packages[plugin_name].path, 'ep.json');
   try {
     const data = await fs.readFile(plugin_path);
@@ -129,9 +128,9 @@ async function loadPlugin(packages, plugin_name, plugins, parts) {
   } catch (er) {
     console.error(`Unable to load plugin definition file ${plugin_path}`);
   }
-}
+};
 
-function partsToParentChildList(parts) {
+const partsToParentChildList = (parts) => {
   const res = [];
   _.chain(parts).keys().forEach((name) => {
     _.each(parts[name].post || [], (child_name) => {
@@ -145,15 +144,9 @@ function partsToParentChildList(parts) {
     }
   });
   return res;
-}
+};
 
 // Used only in Node, so no need for _
-function sortParts(parts) {
-  return tsort(
-      partsToParentChildList(parts)
-  ).filter(
-      (name) => parts[name] !== undefined
-  ).map(
-      (name) => parts[name]
-  );
-}
+const sortParts = (parts) => tsort(partsToParentChildList(parts))
+    .filter((name) => parts[name] !== undefined)
+    .map((name) => parts[name]);

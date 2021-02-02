@@ -1,5 +1,5 @@
 'use strict';
-const helper = {}; // eslint-disable-line
+const helper = {}; // eslint-disable-line no-redeclare
 
 (function () {
   let $iframe; const
@@ -181,7 +181,7 @@ const helper = {}; // eslint-disable-line
   };
 
   helper.waitFor = function (conditionFunc, timeoutTime = 1900, intervalTime = 10) {
-    const deferred = $.Deferred();  // eslint-disable-line
+    const deferred = new $.Deferred();
 
     const _fail = deferred.fail.bind(deferred);
     let listenForFail = false;

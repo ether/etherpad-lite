@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Copyright Yaco Sistemas S.L. 2011.
  *
@@ -15,8 +16,8 @@
  */
 
 const log4js = require('log4js');
-const Changeset = require('ep_etherpad-lite/static/js/Changeset');
-const contentcollector = require('ep_etherpad-lite/static/js/contentcollector');
+const Changeset = require('../../static/js/Changeset');
+const contentcollector = require('../../static/js/contentcollector');
 const cheerio = require('cheerio');
 const rehype = require('rehype');
 const minifyWhitespace = require('rehype-minify-whitespace');
@@ -69,7 +70,7 @@ exports.setPadHTML = async (pad, html) => {
   apiLogger.debug(newText);
   const newAttribs = `${result.lineAttribs.join('|1+1')}|1+1`;
 
-  function eachAttribRun(attribs, func /* (startInNewText, endInNewText, attribs)*/) {
+  const eachAttribRun = (attribs, func /* (startInNewText, endInNewText, attribs)*/) => {
     const attribsIter = Changeset.opIterator(attribs);
     let textIndex = 0;
     const newTextStart = 0;
@@ -82,7 +83,7 @@ exports.setPadHTML = async (pad, html) => {
       }
       textIndex = nextIndex;
     }
-  }
+  };
 
   // create a new changeset with a helper builder object
   const builder = Changeset.builder(1);

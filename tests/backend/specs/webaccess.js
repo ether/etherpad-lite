@@ -1,17 +1,22 @@
-/* global __dirname, __filename, Buffer, afterEach, before, beforeEach, describe, it, require */
-
-function m(mod) { return `${__dirname}/../../../src/${mod}`; }
+'use strict';
 
 const assert = require('assert').strict;
 const common = require('../common');
-const plugins = require(m('static/js/pluginfw/plugin_defs'));
-const settings = require(m('node/utils/Settings'));
+const plugins = require('ep_etherpad-lite/static/js/pluginfw/plugin_defs');
+const settings = require('ep_etherpad-lite/node/utils/Settings');
 
 describe(__filename, function () {
   let agent;
   const backups = {};
   const authHookNames = ['preAuthorize', 'authenticate', 'authorize'];
   const failHookNames = ['preAuthzFailure', 'authnFailure', 'authzFailure', 'authFailure'];
+  const makeHook = (hookName, hookFn) => ({
+    hook_fn: hookFn,
+    hook_fn_name: `fake_plugin/${hookName}`,
+    hook_name: hookName,
+    part: {plugin: 'fake_plugin'},
+  });
+
   before(async function () { agent = await common.init(); });
   beforeEach(async function () {
     backups.hooks = {};
@@ -141,7 +146,10 @@ describe(__filename, function () {
         const h0 = new Handler(hookName, '_0');
         const h1 = new Handler(hookName, '_1');
         handlers[hookName] = [h0, h1];
-        plugins.hooks[hookName] = [{hook_fn: h0.handle.bind(h0)}, {hook_fn: h1.handle.bind(h1)}];
+        plugins.hooks[hookName] = [
+          makeHook(hookName, h0.handle.bind(h0)),
+          makeHook(hookName, h1.handle.bind(h1)),
+        ];
       }
     });
 
@@ -197,7 +205,7 @@ describe(__filename, function () {
       it('runs preAuthzFailure hook when access is denied', async function () {
         handlers.preAuthorize[0].innerHandle = () => [false];
         let called = false;
-        plugins.hooks.preAuthzFailure = [{hook_fn: (hookName, {req, res}, cb) => {
+        plugins.hooks.preAuthzFailure = [makeHook('preAuthzFailure', (hookName, {req, res}, cb) => {
           assert.equal(hookName, 'preAuthzFailure');
           assert(req != null);
           assert(res != null);
@@ -205,7 +213,7 @@ describe(__filename, function () {
           called = true;
           res.status(200).send('injected');
           return cb([true]);
-        }}];
+        })];
         await agent.get('/admin/').auth('admin', 'admin-password').expect(200, 'injected');
         assert(called);
       });
@@ -402,11 +410,11 @@ describe(__filename, function () {
     };
     const handlers = {};
 
-    beforeEach(function () {
+    beforeEach(async function () {
       failHookNames.forEach((hookName) => {
         const handler = new Handler(hookName);
         handlers[hookName] = handler;
-        plugins.hooks[hookName] = [{hook_fn: handler.handle.bind(handler)}];
+        plugins.hooks[hookName] = [makeHook(hookName, handler.handle.bind(handler))];
       });
       settings.requireAuthentication = true;
       settings.requireAuthorization = true;

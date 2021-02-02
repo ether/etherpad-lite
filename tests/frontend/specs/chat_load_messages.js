@@ -1,3 +1,5 @@
+'use strict';
+
 describe('chat-load-messages', function () {
   let padName;
 
@@ -7,7 +9,6 @@ describe('chat-load-messages', function () {
   });
 
   it('adds a lot of messages', function (done) {
-    const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
     const chatButton = chrome$('#chaticon');
     chatButton.click();
@@ -19,12 +20,12 @@ describe('chat-load-messages', function () {
     const messages = 140;
     for (let i = 1; i <= messages; i++) {
       let num = `${i}`;
-      if (num.length == 1) num = `00${num}`;
-      if (num.length == 2) num = `0${num}`;
+      if (num.length === 1) num = `00${num}`;
+      if (num.length === 2) num = `0${num}`;
       chatInput.sendkeys(`msg${num}`);
       chatInput.sendkeys('{enter}');
     }
-    helper.waitFor(() => chatText.children('p').length == messages, 60000).always(() => {
+    helper.waitFor(() => chatText.children('p').length === messages, 60000).always(() => {
       expect(chatText.children('p').length).to.be(messages);
       helper.newPad(done, padName);
     });
@@ -38,7 +39,7 @@ describe('chat-load-messages', function () {
       const chatButton = chrome$('#chaticon');
       chatButton.click();
       chatText = chrome$('#chattext');
-      return chatText.children('p').length == expectedCount;
+      return chatText.children('p').length === expectedCount;
     }).always(() => {
       expect(chatText.children('p').length).to.be(expectedCount);
       done();
@@ -54,7 +55,7 @@ describe('chat-load-messages', function () {
     const loadMsgBtn = chrome$('#chatloadmessagesbutton');
 
     loadMsgBtn.click();
-    helper.waitFor(() => chatText.children('p').length == expectedCount).always(() => {
+    helper.waitFor(() => chatText.children('p').length === expectedCount).always(() => {
       expect(chatText.children('p').length).to.be(expectedCount);
       done();
     });
@@ -65,13 +66,12 @@ describe('chat-load-messages', function () {
     const chrome$ = helper.padChrome$;
     const chatButton = chrome$('#chaticon');
     chatButton.click();
-    const chatText = chrome$('#chattext');
     const loadMsgBtn = chrome$('#chatloadmessagesbutton');
     const loadMsgBall = chrome$('#chatloadmessagesball');
 
     loadMsgBtn.click();
-    helper.waitFor(() => loadMsgBtn.css('display') == expectedDisplay &&
-             loadMsgBall.css('display') == expectedDisplay).always(() => {
+    helper.waitFor(() => loadMsgBtn.css('display') === expectedDisplay &&
+             loadMsgBall.css('display') === expectedDisplay).always(() => {
       expect(loadMsgBtn.css('display')).to.be(expectedDisplay);
       expect(loadMsgBall.css('display')).to.be(expectedDisplay);
       done();
