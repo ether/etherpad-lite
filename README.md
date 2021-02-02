@@ -13,7 +13,7 @@ Etherpad is a real-time collaborative editor [scalable to thousands of simultane
 # Installation
 
 ## Requirements
-- `nodejs` >= **10.13.0**.
+- `nodejs` >= **10.17.0**.
 
 ## GNU/Linux and other UNIX-like systems
 
@@ -25,7 +25,7 @@ git clone --branch master https://github.com/ether/etherpad-lite.git && cd ether
 ```
 
 ### Manual install
-You'll need git and [node.js](https://nodejs.org) installed (minimum required Node version: **10.13.0**).
+You'll need git and [node.js](https://nodejs.org) installed (minimum required Node version: **10.17.0**).
 
 **As any user (we recommend creating a separate user called etherpad):**
 
@@ -98,7 +98,7 @@ Etherpad is very customizable through plugins. Instructions for installing theme
 Run the following command in your Etherpad folder to get all of the features visible in the demo gif:
 
 ```
-npm install ep_headings2 ep_markdown ep_comments_page ep_align ep_page_view ep_font_color ep_webrtc ep_embedded_hyperlinks2
+npm install ep_headings2 ep_markdown ep_comments_page ep_align ep_font_color ep_webrtc ep_embedded_hyperlinks2
 ```
 
 ## Customize the style with skin variants

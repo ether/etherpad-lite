@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * the contentWindow is either the normal pad or timeslider
  *

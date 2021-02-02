@@ -1,14 +1,9 @@
-/* global __dirname, __filename, afterEach, beforeEach, describe, it, process, require */
-
-function m(mod) { return `${__dirname}/../../../src/${mod}`; }
+'use strict';
 
 const assert = require('assert').strict;
-const common = require('../common');
-const hooks = require(m('static/js/pluginfw/hooks'));
-const plugins = require(m('static/js/pluginfw/plugin_defs'));
-const sinon = require(m('node_modules/sinon'));
-
-const logger = common.logger;
+const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+const plugins = require('ep_etherpad-lite/static/js/pluginfw/plugin_defs');
+const sinon = require('ep_etherpad-lite/node_modules/sinon');
 
 describe(__filename, function () {
   const hookName = 'testHook';
@@ -203,7 +198,7 @@ describe(__filename, function () {
     // Test various ways a hook might attempt to settle twice. (Examples: call the callback a second
     // time, or call the callback and then return a value.)
     describe('bad hook function behavior (double settle)', function () {
-      beforeEach(function () {
+      beforeEach(async function () {
         sinon.stub(console, 'error');
       });
 
@@ -394,6 +389,90 @@ describe(__filename, function () {
     });
   });
 
+  describe('hooks.callFirst', function () {
+    it('no registered hooks (undefined) -> []', async function () {
+      delete plugins.hooks.testHook;
+      assert.deepEqual(hooks.callFirst(hookName), []);
+    });
+
+    it('no registered hooks (empty list) -> []', async function () {
+      testHooks.length = 0;
+      assert.deepEqual(hooks.callFirst(hookName), []);
+    });
+
+    it('passes hook name => {}', async function () {
+      hook.hook_fn = (hn) => { assert.equal(hn, hookName); };
+      hooks.callFirst(hookName);
+    });
+
+    it('undefined context => {}', async function () {
+      hook.hook_fn = (hn, ctx) => { assert.deepEqual(ctx, {}); };
+      hooks.callFirst(hookName);
+    });
+
+    it('null context => {}', async function () {
+      hook.hook_fn = (hn, ctx) => { assert.deepEqual(ctx, {}); };
+      hooks.callFirst(hookName, null);
+    });
+
+    it('context unmodified', async function () {
+      const wantContext = {};
+      hook.hook_fn = (hn, ctx) => { assert.equal(ctx, wantContext); };
+      hooks.callFirst(hookName, wantContext);
+    });
+
+    it('predicate never satisfied -> calls all in order', async function () {
+      const gotCalls = [];
+      testHooks.length = 0;
+      for (let i = 0; i < 3; i++) {
+        const hook = makeHook();
+        hook.hook_fn = () => { gotCalls.push(i); };
+        testHooks.push(hook);
+      }
+      assert.deepEqual(hooks.callFirst(hookName), []);
+      assert.deepEqual(gotCalls, [0, 1, 2]);
+    });
+
+    it('stops when predicate is satisfied', async function () {
+      testHooks.length = 0;
+      testHooks.push(makeHook(), makeHook('val1'), makeHook('val2'));
+      assert.deepEqual(hooks.callFirst(hookName), ['val1']);
+    });
+
+    it('skips values that do not satisfy predicate (undefined)', async function () {
+      testHooks.length = 0;
+      testHooks.push(makeHook(), makeHook('val1'));
+      assert.deepEqual(hooks.callFirst(hookName), ['val1']);
+    });
+
+    it('skips values that do not satisfy predicate (empty list)', async function () {
+      testHooks.length = 0;
+      testHooks.push(makeHook([]), makeHook('val1'));
+      assert.deepEqual(hooks.callFirst(hookName), ['val1']);
+    });
+
+    it('null satisifes the predicate', async function () {
+      testHooks.length = 0;
+      testHooks.push(makeHook(null), makeHook('val1'));
+      assert.deepEqual(hooks.callFirst(hookName), [null]);
+    });
+
+    it('non-empty arrays are returned unmodified', async function () {
+      const want = ['val1'];
+      testHooks.length = 0;
+      testHooks.push(makeHook(want), makeHook(['val2']));
+      assert.equal(hooks.callFirst(hookName), want); // Note: *NOT* deepEqual!
+    });
+
+    it('value can be passed via callback', async function () {
+      const want = {};
+      hook.hook_fn = (hn, ctx, cb) => { cb(want); };
+      const got = hooks.callFirst(hookName);
+      assert.deepEqual(got, [want]);
+      assert.equal(got[0], want); // Note: *NOT* deepEqual!
+    });
+  });
+
   describe('callHookFnAsync', function () {
     const callHookFnAsync = hooks.exportedForTestingOnly.callHookFnAsync; // Convenience shorthand.
 
@@ -558,7 +637,7 @@ describe(__filename, function () {
     // Test various ways a hook might attempt to settle twice. (Examples: call the callback a second
     // time, or call the callback and then return a value.)
     describe('bad hook function behavior (double settle)', function () {
-      beforeEach(function () {
+      beforeEach(async function () {
         sinon.stub(console, 'error');
       });
 
@@ -886,6 +965,245 @@ describe(__filename, function () {
         testHooks.push(makeHook(), makeHook(Promise.resolve()));
         assert.deepEqual(await hooks.aCallAll(hookName), []);
       });
+    });
+  });
+
+  describe('hooks.callAllSerial', function () {
+    describe('basic behavior', function () {
+      it('calls all asynchronously, serially, in order', async function () {
+        const gotCalls = [];
+        testHooks.length = 0;
+        for (let i = 0; i < 3; i++) {
+          const hook = makeHook();
+          hook.hook_fn = async () => {
+            gotCalls.push(i);
+            // Check gotCalls asynchronously to ensure that the next hook function does not start
+            // executing before this hook function has resolved.
+            return await new Promise((resolve) => {
+              setImmediate(() => {
+                assert.deepEqual(gotCalls, [...Array(i + 1).keys()]);
+                resolve(i);
+              });
+            });
+          };
+          testHooks.push(hook);
+        }
+        assert.deepEqual(await hooks.callAllSerial(hookName), [0, 1, 2]);
+        assert.deepEqual(gotCalls, [0, 1, 2]);
+      });
+
+      it('passes hook name', async function () {
+        hook.hook_fn = async (hn) => { assert.equal(hn, hookName); };
+        await hooks.callAllSerial(hookName);
+      });
+
+      it('undefined context -> {}', async function () {
+        hook.hook_fn = async (hn, ctx) => { assert.deepEqual(ctx, {}); };
+        await hooks.callAllSerial(hookName);
+      });
+
+      it('null context -> {}', async function () {
+        hook.hook_fn = async (hn, ctx) => { assert.deepEqual(ctx, {}); };
+        await hooks.callAllSerial(hookName, null);
+      });
+
+      it('context unmodified', async function () {
+        const wantContext = {};
+        hook.hook_fn = async (hn, ctx) => { assert.equal(ctx, wantContext); };
+        await hooks.callAllSerial(hookName, wantContext);
+      });
+    });
+
+    describe('result processing', function () {
+      it('no registered hooks (undefined) -> []', async function () {
+        delete plugins.hooks[hookName];
+        assert.deepEqual(await hooks.callAllSerial(hookName), []);
+      });
+
+      it('no registered hooks (empty list) -> []', async function () {
+        testHooks.length = 0;
+        assert.deepEqual(await hooks.callAllSerial(hookName), []);
+      });
+
+      it('flattens one level', async function () {
+        testHooks.length = 0;
+        testHooks.push(makeHook(1), makeHook([2]), makeHook([[3]]));
+        assert.deepEqual(await hooks.callAllSerial(hookName), [1, 2, [3]]);
+      });
+
+      it('filters out undefined', async function () {
+        testHooks.length = 0;
+        testHooks.push(makeHook(), makeHook([2]), makeHook([[3]]), makeHook(Promise.resolve()));
+        assert.deepEqual(await hooks.callAllSerial(hookName), [2, [3]]);
+      });
+
+      it('preserves null', async function () {
+        testHooks.length = 0;
+        testHooks.push(makeHook(null), makeHook([2]), makeHook(Promise.resolve(null)));
+        assert.deepEqual(await hooks.callAllSerial(hookName), [null, 2, null]);
+      });
+
+      it('all undefined -> []', async function () {
+        testHooks.length = 0;
+        testHooks.push(makeHook(), makeHook(Promise.resolve()));
+        assert.deepEqual(await hooks.callAllSerial(hookName), []);
+      });
+    });
+  });
+
+  describe('hooks.aCallFirst', function () {
+    it('no registered hooks (undefined) -> []', async function () {
+      delete plugins.hooks.testHook;
+      assert.deepEqual(await hooks.aCallFirst(hookName), []);
+    });
+
+    it('no registered hooks (empty list) -> []', async function () {
+      testHooks.length = 0;
+      assert.deepEqual(await hooks.aCallFirst(hookName), []);
+    });
+
+    it('passes hook name => {}', async function () {
+      hook.hook_fn = (hn) => { assert.equal(hn, hookName); };
+      await hooks.aCallFirst(hookName);
+    });
+
+    it('undefined context => {}', async function () {
+      hook.hook_fn = (hn, ctx) => { assert.deepEqual(ctx, {}); };
+      await hooks.aCallFirst(hookName);
+    });
+
+    it('null context => {}', async function () {
+      hook.hook_fn = (hn, ctx) => { assert.deepEqual(ctx, {}); };
+      await hooks.aCallFirst(hookName, null);
+    });
+
+    it('context unmodified', async function () {
+      const wantContext = {};
+      hook.hook_fn = (hn, ctx) => { assert.equal(ctx, wantContext); };
+      await hooks.aCallFirst(hookName, wantContext);
+    });
+
+    it('default predicate: predicate never satisfied -> calls all in order', async function () {
+      const gotCalls = [];
+      testHooks.length = 0;
+      for (let i = 0; i < 3; i++) {
+        const hook = makeHook();
+        hook.hook_fn = () => { gotCalls.push(i); };
+        testHooks.push(hook);
+      }
+      assert.deepEqual(await hooks.aCallFirst(hookName), []);
+      assert.deepEqual(gotCalls, [0, 1, 2]);
+    });
+
+    it('calls hook functions serially', async function () {
+      const gotCalls = [];
+      testHooks.length = 0;
+      for (let i = 0; i < 3; i++) {
+        const hook = makeHook();
+        hook.hook_fn = async () => {
+          gotCalls.push(i);
+          // Check gotCalls asynchronously to ensure that the next hook function does not start
+          // executing before this hook function has resolved.
+          return await new Promise((resolve) => {
+            setImmediate(() => {
+              assert.deepEqual(gotCalls, [...Array(i + 1).keys()]);
+              resolve();
+            });
+          });
+        };
+        testHooks.push(hook);
+      }
+      assert.deepEqual(await hooks.aCallFirst(hookName), []);
+      assert.deepEqual(gotCalls, [0, 1, 2]);
+    });
+
+    it('default predicate: stops when satisfied', async function () {
+      testHooks.length = 0;
+      testHooks.push(makeHook(), makeHook('val1'), makeHook('val2'));
+      assert.deepEqual(await hooks.aCallFirst(hookName), ['val1']);
+    });
+
+    it('default predicate: skips values that do not satisfy (undefined)', async function () {
+      testHooks.length = 0;
+      testHooks.push(makeHook(), makeHook('val1'));
+      assert.deepEqual(await hooks.aCallFirst(hookName), ['val1']);
+    });
+
+    it('default predicate: skips values that do not satisfy (empty list)', async function () {
+      testHooks.length = 0;
+      testHooks.push(makeHook([]), makeHook('val1'));
+      assert.deepEqual(await hooks.aCallFirst(hookName), ['val1']);
+    });
+
+    it('default predicate: null satisifes', async function () {
+      testHooks.length = 0;
+      testHooks.push(makeHook(null), makeHook('val1'));
+      assert.deepEqual(await hooks.aCallFirst(hookName), [null]);
+    });
+
+    it('custom predicate: called for each hook function', async function () {
+      testHooks.length = 0;
+      testHooks.push(makeHook(0), makeHook(1), makeHook(2));
+      let got = 0;
+      await hooks.aCallFirst(hookName, null, null, (val) => { ++got; return false; });
+      assert.equal(got, 3);
+    });
+
+    it('custom predicate: boolean false/true continues/stops iteration', async function () {
+      testHooks.length = 0;
+      testHooks.push(makeHook(1), makeHook(2), makeHook(3));
+      let nCall = 0;
+      const predicate = (val) => {
+        assert.deepEqual(val, [++nCall]);
+        return nCall === 2;
+      };
+      assert.deepEqual(await hooks.aCallFirst(hookName, null, null, predicate), [2]);
+      assert.equal(nCall, 2);
+    });
+
+    it('custom predicate: non-boolean falsy/truthy continues/stops iteration', async function () {
+      testHooks.length = 0;
+      testHooks.push(makeHook(1), makeHook(2), makeHook(3));
+      let nCall = 0;
+      const predicate = (val) => {
+        assert.deepEqual(val, [++nCall]);
+        return nCall === 2 ? {} : null;
+      };
+      assert.deepEqual(await hooks.aCallFirst(hookName, null, null, predicate), [2]);
+      assert.equal(nCall, 2);
+    });
+
+    it('custom predicate: array value passed unmodified to predicate', async function () {
+      const want = [0];
+      hook.hook_fn = () => want;
+      const predicate = (got) => { assert.equal(got, want); }; // Note: *NOT* deepEqual!
+      await hooks.aCallFirst(hookName, null, null, predicate);
+    });
+
+    it('custom predicate: normalized value passed to predicate (undefined)', async function () {
+      const predicate = (got) => { assert.deepEqual(got, []); };
+      await hooks.aCallFirst(hookName, null, null, predicate);
+    });
+
+    it('custom predicate: normalized value passed to predicate (null)', async function () {
+      hook.hook_fn = () => null;
+      const predicate = (got) => { assert.deepEqual(got, [null]); };
+      await hooks.aCallFirst(hookName, null, null, predicate);
+    });
+
+    it('non-empty arrays are returned unmodified', async function () {
+      const want = ['val1'];
+      testHooks.length = 0;
+      testHooks.push(makeHook(want), makeHook(['val2']));
+      assert.equal(await hooks.aCallFirst(hookName), want); // Note: *NOT* deepEqual!
+    });
+
+    it('value can be passed via callback', async function () {
+      const want = {};
+      hook.hook_fn = (hn, ctx, cb) => { cb(want); };
+      const got = await hooks.aCallFirst(hookName);
+      assert.deepEqual(got, [want]);
+      assert.equal(got[0], want); // Note: *NOT* deepEqual!
     });
   });
 });

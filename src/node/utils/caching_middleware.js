@@ -1,3 +1,5 @@
+'use strict';
+
 /*
  * 2011 Peter 'Pita' Martischka (Primary Technology Ltd)
  *
@@ -47,18 +49,16 @@ CACHE_DIR = existsSync(CACHE_DIR) ? CACHE_DIR : undefined;
 
 const responseCache = {};
 
-function djb2Hash(data) {
+const djb2Hash = (data) => {
   const chars = data.split('').map((str) => str.charCodeAt(0));
   return `${chars.reduce((prev, curr) => ((prev << 5) + prev) + curr, 5381)}`;
-}
+};
 
-function generateCacheKeyWithSha256(path) {
-  return _crypto.createHash('sha256').update(path).digest('hex');
-}
+const generateCacheKeyWithSha256 =
+    (path) => _crypto.createHash('sha256').update(path).digest('hex');
 
-function generateCacheKeyWithDjb2(path) {
-  return Buffer.from(djb2Hash(path)).toString('hex');
-}
+const generateCacheKeyWithDjb2 =
+    (path) => Buffer.from(djb2Hash(path)).toString('hex');
 
 let generateCacheKey;
 
@@ -66,7 +66,7 @@ if (_crypto) {
   generateCacheKey = generateCacheKeyWithSha256;
 } else {
   generateCacheKey = generateCacheKeyWithDjb2;
-  console.warn('No crypto support in this nodejs runtime. A fallback to Djb2 (weaker) will be used.');
+  console.warn('No crypto support in this nodejs runtime. Djb2 (weaker) will be used.');
 }
 
 // MIMIC https://github.com/microsoft/TypeScript/commit/9677b0641cc5ba7d8b701b4f892ed7e54ceaee9a - END
@@ -80,8 +80,8 @@ if (_crypto) {
 function CachingMiddleware() {
 }
 CachingMiddleware.prototype = new function () {
-  function handle(req, res, next) {
-    if (!(req.method == 'GET' || req.method == 'HEAD') || !CACHE_DIR) {
+  const handle = (req, res, next) => {
+    if (!(req.method === 'GET' || req.method === 'HEAD') || !CACHE_DIR) {
       return next(undefined, req, res);
     }
 
@@ -89,7 +89,7 @@ CachingMiddleware.prototype = new function () {
     const old_res = {};
 
     const supportsGzip =
-        (req.get('Accept-Encoding') || '').indexOf('gzip') != -1;
+        (req.get('Accept-Encoding') || '').indexOf('gzip') !== -1;
 
     const path = require('url').parse(req.url).path;
     const cacheKey = generateCacheKey(path);
@@ -116,7 +116,7 @@ CachingMiddleware.prototype = new function () {
 
       const _headers = {};
       old_res.setHeader = res.setHeader;
-      res.setHeader = function (key, value) {
+      res.setHeader = (key, value) => {
         // Don't set cookies, see issue #707
         if (key.toLowerCase() === 'set-cookie') return;
 
@@ -126,11 +126,8 @@ CachingMiddleware.prototype = new function () {
 
       old_res.writeHead = res.writeHead;
       res.writeHead = function (status, headers) {
-        const lastModified = (res.getHeader('last-modified') &&
-            new Date(res.getHeader('last-modified')));
-
         res.writeHead = old_res.writeHead;
-        if (status == 200) {
+        if (status === 200) {
           // Update cache
           let buffer = '';
 
@@ -169,7 +166,7 @@ CachingMiddleware.prototype = new function () {
               respond();
             });
           };
-        } else if (status == 304) {
+        } else if (status === 304) {
           // Nothing new changed from the cached version.
           old_res.write = res.write;
           old_res.end = res.end;
@@ -204,10 +201,10 @@ CachingMiddleware.prototype = new function () {
         const lastModified = (headers['last-modified'] &&
             new Date(headers['last-modified']));
 
-        if (statusCode == 200 && lastModified <= modifiedSince) {
+        if (statusCode === 200 && lastModified <= modifiedSince) {
           res.writeHead(304, headers);
           res.end();
-        } else if (req.method == 'GET') {
+        } else if (req.method === 'GET') {
           const readStream = fs.createReadStream(pathStr);
           res.writeHead(statusCode, headers);
           readStream.pipe(res);
@@ -217,7 +214,7 @@ CachingMiddleware.prototype = new function () {
         }
       }
     });
-  }
+  };
 
   this.handle = handle;
 }();

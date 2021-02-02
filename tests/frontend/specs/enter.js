@@ -18,14 +18,12 @@ describe('enter keystroke', function () {
     // simulate key presses to enter content
     $firstTextElement.sendkeys('{enter}');
 
-    // ace creates a new dom element when you press a keystroke, so just get the first text element again
-    const $newFirstTextElement = inner$('div').first();
-
     helper.waitFor(() => inner$('div').first().text() === '').done(() => {
       const $newSecondLine = inner$('div').first().next();
       const newFirstTextElementValue = inner$('div').first().text();
       expect(newFirstTextElementValue).to.be(''); // expect the first line to be blank
-      expect($newSecondLine.text()).to.be(originalTextValue); // expect the second line to be the same as the original first line.
+      // expect the second line to be the same as the original first line.
+      expect($newSecondLine.text()).to.be(originalTextValue);
       done();
     });
   });

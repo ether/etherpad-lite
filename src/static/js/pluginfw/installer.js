@@ -1,6 +1,8 @@
+'use strict';
+
 const log4js = require('log4js');
-const plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins');
-const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+const plugins = require('./plugins');
+const hooks = require('./hooks');
 const npm = require('npm');
 const request = require('request');
 const util = require('util');
@@ -13,20 +15,20 @@ const loadNpm = async () => {
   npm.on('log', log4js.getLogger('npm').log);
 };
 
+const onAllTasksFinished = () => {
+  hooks.aCallAll('restartServer', {}, () => {});
+};
+
 let tasks = 0;
 
 function wrapTaskCb(cb) {
   tasks++;
 
-  return function () {
-    cb && cb.apply(this, arguments);
+  return function (...args) {
+    cb && cb.apply(this, args);
     tasks--;
-    if (tasks == 0) onAllTasksFinished();
+    if (tasks === 0) onAllTasksFinished();
   };
-}
-
-function onAllTasksFinished() {
-  hooks.aCallAll('restartServer', {}, () => {});
 }
 
 exports.uninstall = async (pluginName, cb = null) => {
@@ -60,7 +62,7 @@ exports.install = async (pluginName, cb = null) => {
 exports.availablePlugins = null;
 let cacheTimestamp = 0;
 
-exports.getAvailablePlugins = function (maxCacheAge) {
+exports.getAvailablePlugins = (maxCacheAge) => {
   const nowTimestamp = Math.round(Date.now() / 1000);
 
   return new Promise((resolve, reject) => {
@@ -87,31 +89,33 @@ exports.getAvailablePlugins = function (maxCacheAge) {
 };
 
 
-exports.search = function (searchTerm, maxCacheAge) {
-  return exports.getAvailablePlugins(maxCacheAge).then((results) => {
-    const res = {};
+exports.search = (searchTerm, maxCacheAge) => exports.getAvailablePlugins(maxCacheAge).then(
+    (results) => {
+      const res = {};
 
-    if (searchTerm) {
-      searchTerm = searchTerm.toLowerCase();
-    }
-
-    for (const pluginName in results) {
-      // for every available plugin
-      if (pluginName.indexOf(plugins.prefix) != 0) continue; // TODO: Also search in keywords here!
-
-      if (searchTerm && !~results[pluginName].name.toLowerCase().indexOf(searchTerm) &&
-         (typeof results[pluginName].description !== 'undefined' && !~results[pluginName].description.toLowerCase().indexOf(searchTerm))
-      ) {
-        if (typeof results[pluginName].description === 'undefined') {
-          console.debug('plugin without Description: %s', results[pluginName].name);
-        }
-
-        continue;
+      if (searchTerm) {
+        searchTerm = searchTerm.toLowerCase();
       }
 
-      res[pluginName] = results[pluginName];
-    }
+      for (const pluginName in results) {
+        // for every available plugin
+        // TODO: Also search in keywords here!
+        if (pluginName.indexOf(plugins.prefix) !== 0) continue;
 
-    return res;
-  });
-};
+        if (searchTerm && !~results[pluginName].name.toLowerCase().indexOf(searchTerm) &&
+           (typeof results[pluginName].description !== 'undefined' &&
+              !~results[pluginName].description.toLowerCase().indexOf(searchTerm))
+        ) {
+          if (typeof results[pluginName].description === 'undefined') {
+            console.debug('plugin without Description: %s', results[pluginName].name);
+          }
+
+          continue;
+        }
+
+        res[pluginName] = results[pluginName];
+      }
+
+      return res;
+    }
+);
