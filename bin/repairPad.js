@@ -23,7 +23,7 @@ const util = require('util');
 (async () => {
   await util.promisify(npm.load)({});
 
-  // intialize database
+  // initialize database
   require('ep_etherpad-lite/node/utils/Settings');
   const db = require('ep_etherpad-lite/node/db/DB');
   await db.init();

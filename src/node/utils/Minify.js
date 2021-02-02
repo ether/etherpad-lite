@@ -311,7 +311,7 @@ const statFile = (filename, callback, dirStatLimit) => {
 const lastModifiedDateOfEverything = (callback) => {
   const folders2check = [`${ROOT_DIR}js/`, `${ROOT_DIR}css/`];
   let latestModification = 0;
-  // go trough this two folders
+  // go through this two folders
   async.forEach(folders2check, (path, callback) => {
     // read the files in the folder
     fs.readdir(path, (err, files) => {
@@ -320,7 +320,7 @@ const lastModifiedDateOfEverything = (callback) => {
       // we wanna check the directory itself for changes too
       files.push('.');
 
-      // go trough all files in this folder
+      // go through all files in this folder
       async.forEach(files, (filename, callback) => {
         // get the stat data of this file
         fs.stat(`${path}/${filename}`, (err, stats) => {
