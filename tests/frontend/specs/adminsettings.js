@@ -1,6 +1,7 @@
 'use strict';
 
 describe('Admin > Settings', function () {
+  if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) this.skip();
   this.timeout(360000);
 
   before(async function () {
