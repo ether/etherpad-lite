@@ -35,11 +35,11 @@ describe('select formatting buttons when selection has style applied', function 
     $line.sendkeys('{leftarrow}');
   };
 
-  const undo = function () {
+  const undo = async function () {
     const originalHTML = helper.padInner$('body').html();
     const $undoButton = helper.padChrome$('.buttonicon-undo');
     $undoButton.click();
-    helper.waitFor(() => originalHTML !== helper.padInner$('body').html());
+    await helper.waitFor(() => originalHTML !== helper.padInner$('body').html());
   };
 
   const testIfFormattingButtonIsDeselected = function (style) {
@@ -82,7 +82,7 @@ describe('select formatting buttons when selection has style applied', function 
     // }, 1000);
   };
 
-  const pressFormattingShortcutOnSelection = function (key) {
+  const pressFormattingShortcutOnSelection = async function (key) {
     const inner$ = helper.padInner$;
     const originalHTML = helper.padInner$('body').html();
 
@@ -97,7 +97,8 @@ describe('select formatting buttons when selection has style applied', function 
     e.ctrlKey = true; // Control key
     e.which = key.charCodeAt(0); // I, U, B, 5
     inner$('#innerdocbody').trigger(e);
-    helper.waitForPromise(() => originalHTML !== helper.padInner$('body').html());
+    await helper.waitForPromise(
+      () => originalHTML !== helper.padInner$('body').html());
   };
 
   STYLES.forEach((style) => {
@@ -131,12 +132,11 @@ describe('select formatting buttons when selection has style applied', function 
   context('when user applies a style and the selection does not change', function () {
     const style = STYLES[0]; // italic
 
-    it('selects the style button', function (done) {
+    it('selects the style button', async function () {
       applyStyleOnLine(style, FIRST_LINE);
-      helper.waitForPromise(() => isButtonSelected(style) === true);
+      await helper.waitForPromise(() => isButtonSelected(style) === true);
       expect(isButtonSelected(style)).to.be(true);
       applyStyleOnLine(style, FIRST_LINE);
-      done();
     });
   });
 
