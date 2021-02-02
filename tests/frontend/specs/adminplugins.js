@@ -1,7 +1,7 @@
 'use strict';
 
 describe('Plugins page', function () {
-  if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) this.skip();
+  if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) this.skip();
   function timeout(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }

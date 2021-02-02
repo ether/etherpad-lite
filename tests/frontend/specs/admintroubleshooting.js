@@ -1,7 +1,7 @@
 'use strict';
 
 describe('Admin Troupbleshooting page', function () {
-  if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) this.skip();
+  if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) this.skip();
   before(async function () {
     let success = false;
     $.ajax({
