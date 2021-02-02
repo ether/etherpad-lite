@@ -1,7 +1,6 @@
 'use strict';
 
 describe('Admin page', function () {
-  if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) this.skip();
   before(async function () {
     let success = false;
     $.ajax({

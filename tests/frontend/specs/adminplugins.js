@@ -1,7 +1,6 @@
 'use strict';
 
 describe('Plugins page', function () {
-  if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) this.skip();
   function timeout(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
@@ -34,6 +33,8 @@ describe('Plugins page', function () {
   });
 
   it('Attempt to Update a plugin', async function () {
+    // !IMPORTANT! We only run admin tests in one browser!
+    if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) this.skip();
     this.timeout(120000);
 
     if (helper.admin$('.ep_align').length === 0) this.skip();
@@ -71,6 +72,8 @@ describe('Plugins page', function () {
     // allow 50 seconds, check every 1 second.
   });
   it('Attempt to Install a plugin', async function () {
+    // !IMPORTANT! We only run admin tests in one browser!
+    if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) this.skip();
     this.timeout(240000);
 
     helper.admin$('#search-query').val('ep_activepads');
@@ -93,6 +96,8 @@ describe('Plugins page', function () {
   });
 
   it('Attempt to Uninstall a plugin', async function () {
+    // !IMPORTANT! We only run admin tests in one browser!
+    if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) this.skip();
     this.timeout(360000);
     await helper.waitForPromise(
         () => helper.admin$('.ep_activepads .do-uninstall').length !== 0, 120000);

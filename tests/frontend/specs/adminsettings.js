@@ -1,7 +1,6 @@
 'use strict';
 
 describe('Admin > Settings', function () {
-  if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) this.skip();
   this.timeout(360000);
 
   before(async function () {
@@ -21,6 +20,9 @@ describe('Admin > Settings', function () {
   });
 
   it('Are Settings visible, populated, does save work', async function () {
+    // !IMPORTANT! We only run admin tests in one browser!
+    if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) this.skip();
+
     // save old value
     const settings = helper.admin$('.settings').val();
     const settingsLength = settings.length;
@@ -58,6 +60,9 @@ describe('Admin > Settings', function () {
   }
 
   it('restart works', async function () {
+    // !IMPORTANT! We only run admin tests in one browser!
+    if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) this.skip();
+
     // restarts
     helper.admin$('#restartEtherpad').click();
 
