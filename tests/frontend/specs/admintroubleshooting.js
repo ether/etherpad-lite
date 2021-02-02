@@ -1,8 +1,6 @@
 'use strict';
 
 describe('Admin Troupbleshooting page', function () {
-  // !IMPORTANT! We only run admin tests in one browser!
-  if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) this.skip();
   before(async function () {
     let success = false;
     $.ajax({
