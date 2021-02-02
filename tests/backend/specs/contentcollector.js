@@ -140,7 +140,7 @@ const tests = {
     wantText: ['  word1  word2   word3'],
   },
   nonBreakingSpacePreceededBySpaceBetweenWords: {
-    description: 'A non-breaking space preceeded by a normal space',
+    description: 'A non-breaking space preceded by a normal space',
     html: '<html><body> &nbsp;word1 &nbsp;word2 &nbsp;word3<br></body></html>',
     wantLineAttribs: ['+l'],
     wantText: ['  word1  word2  word3'],
@@ -240,7 +240,7 @@ pre
     ],
   },
   preIntroducesASpace: {
-    description: 'pre should be on a new line not preceeded by a space',
+    description: 'pre should be on a new line not preceded by a space',
     html: `<html><body><p>
     1
 </p><pre>preline

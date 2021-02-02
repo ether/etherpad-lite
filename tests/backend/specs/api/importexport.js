@@ -94,7 +94,7 @@ const testImports = {
     wantText: '  word1  word2   word3\n\n',
   },
   'nonBreakingSpacePreceededBySpaceBetweenWords': {
-    description: 'A non-breaking space preceeded by a normal space',
+    description: 'A non-breaking space preceded by a normal space',
     input: '<html><body> &nbsp;word1 &nbsp;word2 &nbsp;word3<br></body></html>',
     wantHTML: '<!DOCTYPE HTML><html><body>&nbsp;word1&nbsp; word2&nbsp; word3<br><br></body></html>',
     wantText: ' word1  word2  word3\n\n',
@@ -191,7 +191,7 @@ const testImports = {
     wantText: 'а б в г ґ д е є ж з и і ї й к л м н о\nmultiple\n   lines\n in\n      pre\n\nп р с т у ф х ц ч ш щ ю я ь\n\n',
   },
   'preIntroducesASpace': {
-    description: 'pre should be on a new line not preceeded by a space',
+    description: 'pre should be on a new line not preceded by a space',
     input: `<html><body><p>
     1
 <pre>preline

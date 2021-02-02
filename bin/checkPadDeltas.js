@@ -51,7 +51,7 @@ const util = require('util');
 
   let atext = Changeset.makeAText('\n');
 
-  // run trough all revisions
+  // run through all revisions
   for (const revNum of revisions) {
     // console.log('Fetching', revNum)
     const revision = await db.get(`pad:${padId}:revs:${revNum}`);

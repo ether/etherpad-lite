@@ -139,7 +139,7 @@ exports.getPad = async (id, text) => {
   // try to load pad
   pad = new Pad(id);
 
-  // initalize the pad
+  // initialize the pad
   await pad.init(text);
   globalPads.set(id, pad);
   padList.addPad(id);

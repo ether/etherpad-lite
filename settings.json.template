@@ -162,7 +162,7 @@
    *
    *
    * Database specific settings are dependent on dbType, and go in dbSettings.
-   * Remember that since Etherpad 1.6.0 you can also store these informations in
+   * Remember that since Etherpad 1.6.0 you can also store these information in
    * credentials.json.
    *
    * For a complete list of the supported drivers, please refer to:

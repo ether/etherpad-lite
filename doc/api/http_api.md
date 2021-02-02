@@ -263,7 +263,7 @@ deletes a session
 #### getSessionInfo(sessionID)
  * API >= 1
 
-returns informations about a session
+returns information about a session
 
 *Example returns:*
   * `{code: 0, message:"ok", data: {authorID: "a.s8oes9dhwrvt0zif", groupID: g.s8oes9dhwrvt0zif, validUntil: 1312201246}}`

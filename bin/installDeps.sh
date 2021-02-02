@@ -3,7 +3,7 @@
 # Move to the folder where ep-lite is installed
 cd "$(dirname "$0")"/..
 
-# Source constants and usefull functions
+# Source constants and useful functions
 . bin/functions.sh
 
 # Is node installed?
