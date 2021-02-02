@@ -1,5 +1,4 @@
 'use strict';
-
 const eejs = require('../../eejs');
 
 exports.expressCreateServer = (hookName, args, cb) => {
