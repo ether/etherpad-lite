@@ -92,7 +92,7 @@ describe('Plugins page', function () {
   });
 
   it('Attempt to Uninstall a plugin', async function () {
-    this.timeout(240000);
+    this.timeout(360000);
     await helper.waitForPromise(
         () => helper.admin$('.ep_activepads .do-uninstall').length !== 0, 120000);
 
@@ -104,6 +104,10 @@ describe('Plugins page', function () {
             .text() === 'Uninstalling', 120000);
     // ensure its gone
     await helper.waitForPromise(
-        () => helper.admin$('.ep_activepads').length === 0, 180000);
+        () => helper.admin$('.ep_activepads').length === 0, 240000);
+
+    helper.admin$('#search-query').val('ep_headings2');
+    await helper.waitForPromise(() => helper.admin$('.results').children().length < 300, 6000);
+    await helper.waitForPromise(() => helper.admin$('.results').children().length > 0, 6000);
   });
 });

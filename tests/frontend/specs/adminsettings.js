@@ -1,6 +1,8 @@
 'use strict';
 
 describe('Admin > Settings', function () {
+  this.timeout(360000);
+
   before(async function () {
     let success = false;
     $.ajax({
@@ -45,7 +47,8 @@ describe('Admin > Settings', function () {
 
     // settings should have the old value
     helper.newAdmin('settings');
-    await helper.waitForPromise(() => helper.admin$ && helper.admin$('.settings').val().length > 0);
+    await helper.waitForPromise(
+        () => helper.admin$ && helper.admin$('.settings').val().length > 0, 18000);
     expect(settings).to.be(helper.admin$('.settings').val());
   });
 
