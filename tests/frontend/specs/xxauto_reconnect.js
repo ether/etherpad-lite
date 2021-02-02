@@ -34,9 +34,11 @@ describe('Automatic pad reload on Force Reconnect message', function () {
   });
 
   context('and user clicks on Cancel', function () {
-    beforeEach(function () {
+    beforeEach(async function () {
       const $errorMessageModal = helper.padChrome$('#connectivity .userdup');
       $errorMessageModal.find('#cancelreconnect').click();
+      await helper.waitFor(
+          () => helper.padChrome$('#connectivity .userdup').is(':visible') === true);
     });
 
     it('does not show Cancel button nor timer anymore', function (done) {
@@ -54,16 +56,16 @@ describe('Automatic pad reload on Force Reconnect message', function () {
   context('and user does not click on Cancel until timer expires', function () {
     let padWasReloaded = false;
 
-    beforeEach(function () {
+    beforeEach(async function () {
       $originalPadFrame.one('load', () => {
         padWasReloaded = true;
       });
     });
 
     it('reloads the pad', function (done) {
-      helper.waitFor(() => padWasReloaded, 5000).done(done);
+      helper.waitFor(() => padWasReloaded, 10000).done(done);
 
-      this.timeout(5000);
+      this.timeout(10000);
     });
   });
 });
