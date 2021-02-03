@@ -1,33 +1,35 @@
 'use strict';
 
-describe('assign unordered list', function () {
-  // create a new pad before each test run
-  beforeEach(function (cb) {
-    helper.newPad(cb);
-    this.timeout(60000);
-  });
+describe('unordered_list.js', function () {
+  describe('assign unordered list', function () {
+    // create a new pad before each test run
+    beforeEach(function (cb) {
+      helper.newPad(cb);
+      this.timeout(60000);
+    });
 
-  it('insert unordered list text then removes by outdent', function (done) {
-    const inner$ = helper.padInner$;
-    const chrome$ = helper.padChrome$;
-    const originalText = inner$('div').first().text();
+    it('insert unordered list text then removes by outdent', function (done) {
+      const inner$ = helper.padInner$;
+      const chrome$ = helper.padChrome$;
+      const originalText = inner$('div').first().text();
 
-    const $insertunorderedlistButton = chrome$('.buttonicon-insertunorderedlist');
-    $insertunorderedlistButton.click();
+      const $insertunorderedlistButton = chrome$('.buttonicon-insertunorderedlist');
+      $insertunorderedlistButton.click();
 
-    helper.waitFor(() => {
-      const newText = inner$('div').first().text();
-      if (newText === originalText) {
-        return inner$('div').first().find('ul li').length === 1;
-      }
-    }).done(() => {
-      // remove indentation by bullet and ensure text string remains the same
-      chrome$('.buttonicon-outdent').click();
       helper.waitFor(() => {
         const newText = inner$('div').first().text();
-        return (newText === originalText);
+        if (newText === originalText) {
+          return inner$('div').first().find('ul li').length === 1;
+        }
       }).done(() => {
-        done();
+        // remove indentation by bullet and ensure text string remains the same
+        chrome$('.buttonicon-outdent').click();
+        helper.waitFor(() => {
+          const newText = inner$('div').first().text();
+          return (newText === originalText);
+        }).done(() => {
+          done();
+        });
       });
     });
   });
