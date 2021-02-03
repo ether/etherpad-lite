@@ -133,7 +133,6 @@ describe('select formatting buttons when selection has style applied', function 
     it('selects the style button', async function () {
       applyStyleOnLine(style, FIRST_LINE);
       await helper.waitForPromise(() => isButtonSelected(style) === true);
-      expect(isButtonSelected(style)).to.be(true);
       applyStyleOnLine(style, FIRST_LINE);
     });
   });

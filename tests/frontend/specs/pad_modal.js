@@ -70,7 +70,6 @@ describe('Pad modal', function () {
       it('closes the modal', async function () {
         clickOnPadInner();
         await helper.waitForPromise(() => isModalOpened(MODAL_SELECTOR) === false);
-        expect(isModalOpened(MODAL_SELECTOR)).to.be(false);
       });
     });
 
@@ -78,7 +77,6 @@ describe('Pad modal', function () {
       it('closes the modal', async function () {
         clickOnPadOuter();
         await helper.waitForPromise(() => isModalOpened(MODAL_SELECTOR) === false);
-        expect(isModalOpened(MODAL_SELECTOR)).to.be(false);
       });
     });
   });
