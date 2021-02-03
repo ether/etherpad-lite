@@ -86,7 +86,6 @@ describe('select formatting buttons when selection has style applied', function 
     const inner$ = helper.padInner$;
     const originalHTML = helper.padInner$('body').html();
 
-    helper.waitFor(() => originalHTML !== helper.padInner$('body').html());
     // get the first text element out of the inner iframe
     const $firstTextElement = inner$('div').first();
 
