@@ -67,20 +67,18 @@ describe('Pad modal', function () {
     });
 */
     context('and user clicks on editor', function () {
-      it('closes the modal', function (done) {
+      it('closes the modal', async function () {
         clickOnPadInner();
-        helper.waitForPromise(() => isModalOpened(MODAL_SELECTOR) === false);
+        await helper.waitForPromise(() => isModalOpened(MODAL_SELECTOR) === false);
         expect(isModalOpened(MODAL_SELECTOR)).to.be(false);
-        done();
       });
     });
 
     context('and user clicks on pad outer', function () {
-      it('closes the modal', function (done) {
+      it('closes the modal', async function () {
         clickOnPadOuter();
-        helper.waitForPromise(() => isModalOpened(MODAL_SELECTOR) === false);
+        await helper.waitForPromise(() => isModalOpened(MODAL_SELECTOR) === false);
         expect(isModalOpened(MODAL_SELECTOR)).to.be(false);
-        done();
       });
     });
   });
