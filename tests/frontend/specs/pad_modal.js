@@ -28,7 +28,7 @@ describe('Pad modal', function () {
         clickOnPadInner();
         const $modal = helper.padChrome$(MODAL_SELECTOR);
         const modalIsVisible = $modal.hasClass('popup-show');
-        helper.waitForPromise(() => $modal.hasClass('popup-show') === true);
+
         expect(modalIsVisible).to.be(true);
 
         done();
@@ -37,12 +37,10 @@ describe('Pad modal', function () {
 
     context('and user clicks on pad outer', function () {
       it('does not close the modal', function (done) {
+        clickOnPadOuter();
         const $modal = helper.padChrome$(MODAL_SELECTOR);
         const modalIsVisible = $modal.hasClass('popup-show');
 
-        clickOnPadOuter();
-
-        helper.waitForPromise(() => $modal.hasClass('popup-show') === true);
         expect(modalIsVisible).to.be(true);
 
         done();
