@@ -5,10 +5,7 @@ describe('scrolls to line', function () {
   before(async function () {
     this.timeout(60000);
     await new Promise((resolve, reject) => helper.newPad({
-      cb: (err) => {
-        if (err != null) return reject(err);
-        resolve();
-      },
+      cb: (err) => (err != null) ? reject(err) : resolve(),
       hash: 'L4',
     }));
   });
@@ -28,10 +25,7 @@ describe('scrolls to line', function () {
     before(async function () {
       this.timeout(60000);
       await new Promise((resolve, reject) => helper.newPad({
-        cb: (err) => {
-          if (err != null) return reject(err);
-          resolve();
-        },
+        cb: (err) => (err != null) ? reject(err) : resolve(),
         hash: '#DEEZ123123NUTS',
       }));
     });
