@@ -104,7 +104,8 @@
       "/static/js/gritter.js",
       "/static/js/html10n.js",
       "/static/js/jquery.js",
-      "/static/js/vendors/nice-select.js"
+      "/static/js/vendors/nice-select.js",
+      "/tests/frontend/lib/"
     ],
     "overrides": [
       {
@@ -118,7 +119,8 @@
           "**/*"
         ],
         "excludedFiles": [
-          "**/.eslintrc.js"
+          "**/.eslintrc.js",
+          "tests/frontend/**/*"
         ],
         "extends": "etherpad/node"
       },
@@ -133,6 +135,74 @@
         "env": {
           "shared-node-browser": true
         }
+      },
+      {
+        "files": [
+          "tests/**/*"
+        ],
+        "excludedFiles": [
+          "**/.eslintrc.js",
+          "tests/frontend/travis/**/*",
+          "tests/ratelimit/**/*"
+        ],
+        "extends": "etherpad/tests",
+        "rules": {
+          "mocha/no-exports": "off",
+          "mocha/no-top-level-hooks": "off"
+        }
+      },
+      {
+        "files": [
+          "tests/backend/**/*"
+        ],
+        "excludedFiles": [
+          "**/.eslintrc.js"
+        ],
+        "extends": "etherpad/tests/backend",
+        "overrides": [
+          {
+            "files": [
+              "tests/backend/**/*"
+            ],
+            "excludedFiles": [
+              "tests/backend/specs/**/*"
+            ],
+            "rules": {
+              "mocha/no-exports": "off",
+              "mocha/no-top-level-hooks": "off"
+            }
+          }
+        ]
+      },
+      {
+        "files": [
+          "tests/frontend/**/*"
+        ],
+        "excludedFiles": [
+          "**/.eslintrc.js",
+          "tests/frontend/travis/**/*"
+        ],
+        "extends": "etherpad/tests/frontend",
+        "overrides": [
+          {
+            "files": [
+              "tests/frontend/**/*"
+            ],
+            "excludedFiles": [
+              "tests/frontend/specs/**/*"
+            ],
+            "rules": {
+              "mocha/no-exports": "off",
+              "mocha/no-top-level-hooks": "off"
+            }
+          }
+        ]
+      },
+      {
+        "files": [
+          "tests/frontend/travis/**/*"
+        ],
+        "extends": "etherpad/node"
       }
     ],
     "root": true

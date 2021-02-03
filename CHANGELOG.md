@@ -2,6 +2,9 @@
 
 ### Compatibility changes
 * Node.js 10.17.0 or newer is now required.
+* The `bin/` and `tests/` directories were moved under `src/`. Symlinks were
+  added at the old locations to hopefully avoid breaking user scripts and other
+  stuff.
 
 ### Notable new features
 * Database performance is significantly improved.
