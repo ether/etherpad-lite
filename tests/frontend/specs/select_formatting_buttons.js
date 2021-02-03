@@ -39,7 +39,7 @@ describe('select formatting buttons when selection has style applied', function 
     const originalHTML = helper.padInner$('body').html();
     const $undoButton = helper.padChrome$('.buttonicon-undo');
     $undoButton.click();
-    await helper.waitFor(() => originalHTML !== helper.padInner$('body').html());
+    await helper.waitForPromise(() => originalHTML !== helper.padInner$('body').html());
   };
 
   const testIfFormattingButtonIsDeselected = function (style) {
