@@ -22,8 +22,6 @@ describe('bold button', function () {
     const $boldButton = chrome$('.buttonicon-bold');
     $boldButton.click();
 
-    // ace creates a new dom element when you press a button
-    // so just get the first text element again
     const $newFirstTextElement = inner$('div').first();
 
     // is there a <b> element now?
@@ -48,13 +46,11 @@ describe('bold button', function () {
     // select this text element
     $firstTextElement.sendkeys('{selectall}');
 
-    const e = inner$.Event(helper.evtType);
+    const e = new inner$.Event(helper.evtType);
     e.ctrlKey = true; // Control key
     e.which = 66; // b
     inner$('#innerdocbody').trigger(e);
 
-    // ace creates a new dom element when you press a button
-    // so just get the first text element again
     const $newFirstTextElement = inner$('div').first();
 
     // is there a <b> element now?

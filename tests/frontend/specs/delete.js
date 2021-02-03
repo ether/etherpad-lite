@@ -22,8 +22,6 @@ describe('delete keystroke', function () {
     $firstTextElement.sendkeys('{leftarrow}'); // simulate a keypress of the left arrow key
     $firstTextElement.sendkeys('{del}'); // simulate a keypress of delete
 
-    // ace creates a new dom element when you press a keystroke
-    // so just get the first text element again
     const $newFirstTextElement = inner$('div').first();
 
     // get the new length of this element

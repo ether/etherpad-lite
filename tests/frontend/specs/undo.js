@@ -43,7 +43,7 @@ describe('undo button', function () {
     const modifiedValue = $firstTextElement.text(); // get the modified value
     expect(modifiedValue).not.to.be(originalValue); // expect the value to change
 
-    const e = inner$.Event(helper.evtType);
+    const e = new inner$.Event(helper.evtType);
     e.ctrlKey = true; // Control key
     e.which = 90; // z
     inner$('#innerdocbody').trigger(e);

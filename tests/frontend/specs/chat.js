@@ -6,8 +6,10 @@ describe('Chat messages and UI', function () {
     helper.newPad(cb);
   });
 
-  it('opens chat, sends a message, makes sure it exists and hides chat', async function () {
+  it('opens chat, sends a message, makes sure it exists ' +
+      'on the page and hides chat', async function () {
     this.timeout(3000);
+
     const chatValue = 'JohnMcLear';
 
     await helper.showChat();
@@ -49,7 +51,8 @@ describe('Chat messages and UI', function () {
     expect(chat.text()).to.be(`${username}${time} ${chatValue}`);
   });
 
-  it('makes chat stick to right side of the screen via settings, remove sticky via settings, close it', async function () {
+  it('makes chat stick to right side of the screen via settings, ' +
+      'remove sticky via settings, close it', async function () {
     this.timeout(5000);
     await helper.showSettings();
 
@@ -66,8 +69,10 @@ describe('Chat messages and UI', function () {
     expect(helper.isChatboxShown()).to.be(false);
   });
 
-  it('makes chat stick to right side of the screen via icon on the top right, remove sticky via icon, close it', async function () {
+  it('makes chat stick to right side of the screen via icon on the top' +
+      ' right, remove sticky via icon, close it', async function () {
     this.timeout(5000);
+
     await helper.showChat();
 
     await helper.enableStickyChatviaIcon();
@@ -83,7 +88,8 @@ describe('Chat messages and UI', function () {
     expect(helper.isChatboxShown()).to.be(false);
   });
 
-  xit('Checks showChat=false URL Parameter shows/hides chat', function (done) {
+  xit('Checks showChat=false URL Parameter hides chat then' +
+      ' when removed it shows chat', function (done) {
     this.timeout(60000);
 
     setTimeout(() => { // give it a second to save the username on the server side

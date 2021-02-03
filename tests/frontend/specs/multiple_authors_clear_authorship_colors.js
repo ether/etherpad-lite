@@ -15,8 +15,8 @@ describe('author of pad edition', function () {
         setTimeout(() => {
           // Expire cookie, so author is changed after reloading the pad.
           // See https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie#Example_4_Reset_the_previous_cookie
-          const cookieVal = 'token=foo;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
-          helper.padChrome$.document.cookie = cookieVal;
+          helper.padChrome$.document.cookie =
+              'token=foo;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
 
           helper.newPad(done, padId);
         }, 1000);
@@ -25,7 +25,12 @@ describe('author of pad edition', function () {
     this.timeout(60000);
   });
 
-  const clearAuthorship = function (done) {
+  // author 2 makes some changes on the pad
+  it('Clears Authorship by second user', function (done) {
+    clearAuthorship(done);
+  });
+
+  const clearAuthorship = (done) => {
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 

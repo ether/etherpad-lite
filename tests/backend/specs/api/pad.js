@@ -107,9 +107,9 @@ describe(__filename, function () {
                          -> setText(padId, "hello world")
                           -> getLastEdited(padID) -- Should be when pad was made
                            -> getText(padId) -- Should be "hello world"
-                            -> movePad(padID, newPadId) -- Should provide consistant pad data
+                            -> movePad(padID, newPadId) -- Should provide consistent pad data
                              -> getText(newPadId) -- Should be "hello world"
-                              -> movePad(newPadID, originalPadId) -- Should provide consistant pad data
+                              -> movePad(newPadID, originalPadId) -- Should provide consistent pad data
                                -> getText(originalPadId) -- Should be "hello world"
                                 -> getLastEdited(padID) -- Should not be 0
                                 -> appendText(padID, "hello")

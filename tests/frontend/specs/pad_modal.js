@@ -100,17 +100,17 @@ describe('Pad modal', function () {
     });
   });
 
-  const clickOnPadInner = function () {
+  const clickOnPadInner = () => {
     const $editor = helper.padInner$('#innerdocbody');
     $editor.click();
   };
 
-  const clickOnPadOuter = function () {
+  const clickOnPadOuter = () => {
     const $lineNumbersColumn = helper.padOuter$('#sidedivinner');
     $lineNumbersColumn.click();
   };
 
-  const openSettingsAndWaitForModalToBeVisible = function (done) {
+  const openSettingsAndWaitForModalToBeVisible = (done) => {
     helper.padChrome$('.buttonicon-settings').click();
 
     // wait for modal to be displayed
@@ -118,7 +118,7 @@ describe('Pad modal', function () {
     helper.waitFor(() => isModalOpened(modalSelector), 10000).done(done);
   };
 
-  const isEditorDisabled = function () {
+  const isEditorDisabled = () => {
     const editorDocument = helper.padOuter$("iframe[name='ace_inner']").get(0).contentDocument;
     const editorBody = editorDocument.getElementById('innerdocbody');
 
@@ -128,7 +128,7 @@ describe('Pad modal', function () {
     return editorIsDisabled;
   };
 
-  const isModalOpened = function (modalSelector) {
+  const isModalOpened = (modalSelector) => {
     const $modal = helper.padChrome$(modalSelector);
 
     return $modal.hasClass('popup-show');

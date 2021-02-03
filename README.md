@@ -13,7 +13,7 @@ Etherpad is a real-time collaborative editor [scalable to thousands of simultane
 # Installation
 
 ## Requirements
-- `nodejs` >= **10.13.0**.
+- `nodejs` >= **10.17.0**.
 
 ## GNU/Linux and other UNIX-like systems
 
@@ -25,7 +25,7 @@ git clone --branch master https://github.com/ether/etherpad-lite.git && cd ether
 ```
 
 ### Manual install
-You'll need git and [node.js](https://nodejs.org) installed (minimum required Node version: **10.13.0**).
+You'll need git and [node.js](https://nodejs.org) installed (minimum required Node version: **10.17.0**).
 
 **As any user (we recommend creating a separate user called etherpad):**
 

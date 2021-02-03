@@ -26,8 +26,8 @@ describe('timeslider', function () {
 
     setTimeout(() => {
       // go to timeslider
-      $('#iframe-container iframe')
-          .attr('src', `${$('#iframe-container iframe').attr('src')}/timeslider`);
+      $('#iframe-container iframe').attr('src',
+          `${$('#iframe-container iframe').attr('src')}/timeslider`);
 
       setTimeout(() => {
         const timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
@@ -84,8 +84,8 @@ describe('timeslider', function () {
 
     setTimeout(() => {
       // go to timeslider
-      $('#iframe-container iframe')
-          .attr('src', `${$('#iframe-container iframe').attr('src')}/timeslider`);
+      $('#iframe-container iframe').attr('src',
+          `${$('#iframe-container iframe').attr('src')}/timeslider`);
 
       setTimeout(() => {
         const timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
@@ -102,15 +102,16 @@ describe('timeslider', function () {
         helper.waitFor(
             () => $('#iframe-container iframe')[0].contentWindow.location.hash !== oldUrl, 6000)
             .always(() => {
-              expect($('#iframe-container iframe')[0].contentWindow.location.hash)
-                  .not.to.eql(oldUrl);
+              expect(
+                  $('#iframe-container iframe')[0].contentWindow.location.hash
+              ).not.to.eql(oldUrl);
               done();
             });
       }, 6000);
     }, revs * timePerRev);
   });
   it('jumps to a revision given in the url', function (done) {
-    this.timeout(6000);
+    this.timeout(40000);
     const inner$ = helper.padInner$;
 
     // wait for the text to be loaded
@@ -132,15 +133,16 @@ describe('timeslider', function () {
         return lenOkay && colorOkay;
       }, 10000).always(() => {
         // go to timeslider with a specific revision set
-        $('#iframe-container iframe')
-            .attr('src', `${$('#iframe-container iframe').attr('src')}/timeslider#0`);
+
+        $('#iframe-container iframe').attr('src',
+            `${$('#iframe-container iframe').attr('src')}/timeslider#0`);
 
         // wait for the timeslider to be loaded
         helper.waitFor(() => {
           try {
             timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
           } catch (e) {
-            // silently fart.  Deadly.
+            // Empty catch block <3
           }
           if (timeslider$) {
             return timeslider$('#innerdocbody').text().length === oldLength;
@@ -161,8 +163,8 @@ describe('timeslider', function () {
 
     setTimeout(() => {
       // go to timeslider
-      $('#iframe-container iframe')
-          .attr('src', `${$('#iframe-container iframe').attr('src')}/timeslider#0`);
+      $('#iframe-container iframe').attr('src',
+          `${$('#iframe-container iframe').attr('src')}/timeslider#0`);
       let timeslider$;
       let exportLink;
 
@@ -170,7 +172,7 @@ describe('timeslider', function () {
         try {
           timeslider$ = $('#iframe-container iframe')[0].contentWindow.$;
         } catch (e) {
-          // silently give up on life.
+          // Empty catch block <3
         }
         if (!timeslider$) return false;
         exportLink = timeslider$('#exportplaina').attr('href');

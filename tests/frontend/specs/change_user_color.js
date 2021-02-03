@@ -7,7 +7,8 @@ describe('change user color', function () {
     this.timeout(60000);
   });
 
-  it('Color picker remembers the user color after a refresh', function (done) {
+  it('Color picker matches original color and remembers the user color' +
+      ' after a refresh', function (done) {
     this.timeout(10000);
     const chrome$ = helper.padChrome$;
 
@@ -95,7 +96,6 @@ describe('change user color', function () {
     // simulate a keypress of enter actually does evt.which = 10 not 13
     $chatInput.sendkeys('{enter}');
 
-    // check if chat shows up
     // wait until the chat message shows up
     helper.waitFor(() => chrome$('#chattext').children('p').length !== 0
     ).done(() => {

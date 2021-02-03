@@ -92,7 +92,7 @@ describe('clear authorship colors button', function () {
       let hasAuthorClass = inner$('div').first().attr('class').indexOf('author') !== -1;
       expect(hasAuthorClass).to.be(false);
 
-      const e = inner$.Event(helper.evtType);
+      const e = new inner$.Event(helper.evtType);
       e.ctrlKey = true; // Control key
       e.which = 90; // z
       inner$('#innerdocbody').trigger(e); // shouldn't od anything

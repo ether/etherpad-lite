@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+
+'use strict';
+
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -20,7 +23,6 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-const marked = require('marked');
 const fs = require('fs');
 const path = require('path');
 
@@ -33,12 +35,12 @@ let template = null;
 let inputFile = null;
 
 args.forEach((arg) => {
-  if (!arg.match(/^\-\-/)) {
+  if (!arg.match(/^--/)) {
     inputFile = arg;
-  } else if (arg.match(/^\-\-format=/)) {
-    format = arg.replace(/^\-\-format=/, '');
-  } else if (arg.match(/^\-\-template=/)) {
-    template = arg.replace(/^\-\-template=/, '');
+  } else if (arg.match(/^--format=/)) {
+    format = arg.replace(/^--format=/, '');
+  } else if (arg.match(/^--template=/)) {
+    template = arg.replace(/^--template=/, '');
   }
 });
 
@@ -56,11 +58,11 @@ fs.readFile(inputFile, 'utf8', (er, input) => {
 });
 
 
-const includeExpr = /^@include\s+([A-Za-z0-9-_\/]+)(?:\.)?([a-zA-Z]*)$/gmi;
+const includeExpr = /^@include\s+([A-Za-z0-9-_/]+)(?:\.)?([a-zA-Z]*)$/gmi;
 const includeData = {};
-function processIncludes(inputFile, input, cb) {
+const processIncludes = (inputFile, input, cb) => {
   const includes = input.match(includeExpr);
-  if (includes === null) return cb(null, input);
+  if (includes == null) return cb(null, input);
   let errState = null;
   console.error(includes);
   let incCount = includes.length;
@@ -70,7 +72,7 @@ function processIncludes(inputFile, input, cb) {
     let fname = include.replace(/^@include\s+/, '');
     if (!fname.match(/\.md$/)) fname += '.md';
 
-    if (includeData.hasOwnProperty(fname)) {
+    if (Object.prototype.hasOwnProperty.call(includeData, fname)) {
       input = input.split(include).join(includeData[fname]);
       incCount--;
       if (incCount === 0) {
@@ -94,10 +96,10 @@ function processIncludes(inputFile, input, cb) {
       });
     });
   });
-}
+};
 
 
-function next(er, input) {
+const next = (er, input) => {
   if (er) throw er;
   switch (format) {
     case 'json':
@@ -117,4 +119,4 @@ function next(er, input) {
     default:
       throw new Error(`Invalid format: ${format}`);
   }
-}
+};

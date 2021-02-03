@@ -1,8 +1,12 @@
+'use strict';
+
+let etherpad;
 try {
-  var etherpad = require('../../src/node_modules/etherpad-cli-client');
+  etherpad = require('ep_etherpad-lite/node_modules/etherpad-cli-client');
   // ugly
 } catch {
-  var etherpad = require('etherpad-cli-client');
+  /* eslint-disable-next-line node/no-missing-require */
+  etherpad = require('etherpad-cli-client'); // uses global
 }
 const pad = etherpad.connect(process.argv[2]);
 pad.on('connected', () => {
@@ -18,7 +22,7 @@ pad.on('connected', () => {
 });
 // in case of disconnect exit code 1
 pad.on('message', (message) => {
-  if (message.disconnect == 'rateLimited') {
+  if (message.disconnect === 'rateLimited') {
     process.exit(1);
   }
 });

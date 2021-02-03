@@ -17,7 +17,7 @@ describe('indentation button', function () {
     // select this text element
     $firstTextElement.sendkeys('{selectall}');
 
-    const e = inner$.Event(helper.evtType);
+    const e = new inner$.Event(helper.evtType);
     e.keyCode = 9; // tab :|
     inner$('#innerdocbody').trigger(e);
 
@@ -60,7 +60,8 @@ describe('indentation button', function () {
     });
   });
 
-  it("indents text with spaces on enter if previous line ends with ':', '[', '(', or '{'", function (done) {
+  it('indents text with spaces on enter if previous line ends ' +
+    "with ':', '[', '(', or '{'", function (done) {
     this.timeout(1200);
     const inner$ = helper.padInner$;
 
@@ -111,7 +112,8 @@ describe('indentation button', function () {
     });
   });
 
-  it("appends indentation to the indent of previous line if previous line ends with ':', '[', '(', or '{'", function (done) {
+  it('appends indentation to the indent of previous line if previous line ends ' +
+    "with ':', '[', '(', or '{'", function (done) {
     this.timeout(1200);
     const inner$ = helper.padInner$;
 
@@ -136,7 +138,8 @@ describe('indentation button', function () {
     });
   });
 
-  it("issue #2772 shows '*' when multiple indented lines receive a style and are outdented", async function () {
+  it("issue #2772 shows '*' when multiple indented lines " +
+      ' receive a style and are outdented', async function () {
     this.timeout(1200);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
@@ -189,7 +192,6 @@ describe('indentation button', function () {
     var $indentButton = testHelper.$getPadChrome().find(".buttonicon-indent");
     $indentButton.click();
 
-    //ace creates a new dom element when you press a button, so just get the first text element again
     var newFirstTextElement = $inner.find("div").first();
 
     // is there a list-indent class element now?
@@ -227,7 +229,6 @@ describe('indentation button', function () {
     $outdentButton.click();
     $outdentButton.click();
 
-    //ace creates a new dom element when you press a button, so just get the first text element again
     var newFirstTextElement = $inner.find("div").first();
 
     // is there a list-indent class element now?
@@ -274,7 +275,9 @@ describe('indentation button', function () {
 
     //get the second text element out of the inner iframe
     setTimeout(function(){ // THIS IS REALLY BAD
-      var secondTextElement = $('iframe').contents().find('iframe').contents().find('iframe').contents().find('body > div').get(1); // THIS IS UGLY
+      var secondTextElement = $('iframe').contents()
+          .find('iframe').contents()
+          .find('iframe').contents().find('body > div').get(1); // THIS IS UGLY
 
       // is there a list-indent class element now?
       var firstChild = secondTextElement.children(":first");
@@ -289,7 +292,10 @@ describe('indentation button', function () {
       expect(isLI).to.be(true);
 
       //get the first text element out of the inner iframe
-      var thirdTextElement = $('iframe').contents().find('iframe').contents().find('iframe').contents().find('body > div').get(2); // THIS IS UGLY TOO
+      var thirdTextElement = $('iframe').contents()
+          .find('iframe').contents()
+          .find('iframe').contents()
+          .find('body > div').get(2); // THIS IS UGLY TOO
 
       // is there a list-indent class element now?
       var firstChild = thirdTextElement.children(":first");
@@ -309,7 +315,7 @@ describe('indentation button', function () {
 
 const pressEnter = () => {
   const inner$ = helper.padInner$;
-  const e = inner$.Event(helper.evtType);
+  const e = new inner$.Event(helper.evtType);
   e.keyCode = 13; // enter :|
   inner$('#innerdocbody').trigger(e);
 };

@@ -6,12 +6,12 @@
  */
 helper.spyOnSocketIO = function () {
   helper.contentWindow().pad.socket.on('message', (msg) => {
-    if (msg.type == 'COLLABROOM') {
-      if (msg.data.type == 'ACCEPT_COMMIT') {
+    if (msg.type === 'COLLABROOM') {
+      if (msg.data.type === 'ACCEPT_COMMIT') {
         helper.commits.push(msg);
-      } else if (msg.data.type == 'USER_NEWINFO') {
+      } else if (msg.data.type === 'USER_NEWINFO') {
         helper.userInfos.push(msg);
-      } else if (msg.data.type == 'CHAT_MESSAGE') {
+      } else if (msg.data.type === 'CHAT_MESSAGE') {
         helper.chatMessages.push(msg);
       }
     }

@@ -42,7 +42,7 @@ function runTest(number) {
     let fN = '/test.txt';
     let cT = 'text/plain';
 
-    // To be more agressive every other test we mess with Etherpad
+    // To be more aggressive every other test we mess with Etherpad
     // We provide a weird file name and also set a weird contentType
     if (number % 2 == 0) {
       fN = froth().toString();

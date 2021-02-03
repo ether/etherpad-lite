@@ -170,7 +170,7 @@ $(() => {
     }
   });
 
-  // initalize the test helper
+  // initialize the test helper
   helper.init(() => {
     // configure and start the test framework
     const grep = getURLParameter('grep');
