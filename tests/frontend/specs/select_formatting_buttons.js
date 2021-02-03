@@ -39,7 +39,7 @@ describe('select formatting buttons when selection has style applied', function 
     const originalHTML = helper.padInner$('body').html();
     const $undoButton = helper.padChrome$('.buttonicon-undo');
     $undoButton.click();
-    await helper.waitForPromise(() => originalHTML !== helper.padInner$('body').html());
+    await helper.waitForPromise(() => helper.padInner$('body').html() !== originalHTML);
   };
 
   const testIfFormattingButtonIsDeselected = function (style) {
@@ -97,7 +97,7 @@ describe('select formatting buttons when selection has style applied', function 
     e.which = key.charCodeAt(0); // I, U, B, 5
     inner$('#innerdocbody').trigger(e);
     await helper.waitForPromise(
-      () => originalHTML !== helper.padInner$('body').html());
+        () => helper.padInner$('body').html() !== originalHTML);
   };
 
   STYLES.forEach((style) => {

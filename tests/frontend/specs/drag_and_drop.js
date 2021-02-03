@@ -28,7 +28,7 @@ describe('drag and drop', function () {
         const $undoButton = helper.padChrome$('.buttonicon-undo');
         $undoButton.click();
         await helper.waitForPromise(
-            () => originalHTML !== helper.padInner$('body').html()
+            () => helper.padInner$('body').html() !== originalHTML
         );
       });
 
@@ -67,7 +67,7 @@ describe('drag and drop', function () {
         const $undoButton = helper.padChrome$('.buttonicon-undo');
         $undoButton.click();
         await helper.waitForPromise(
-            () => originalHTML !== helper.padInner$('body').html()
+            () => helper.padInner$('body').html() !== originalHTML
         );
       });
 
