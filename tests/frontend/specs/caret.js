@@ -297,6 +297,7 @@ console.log(inner$);
     });
 */
 });
+
 /*
 // generates a random document with random content on n lines
 const prepareDocument = (n, target) => {
