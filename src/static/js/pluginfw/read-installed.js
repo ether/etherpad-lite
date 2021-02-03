@@ -1,3 +1,5 @@
+'use strict';
+
 // A copy of npm/lib/utils/read-installed.js
 // that is hacked to not cache everything :)
 
@@ -88,7 +90,6 @@ as far as the left-most node_modules folder.
 
 */
 
-
 const npm = require('npm/lib/npm.js');
 const fs = require('graceful-fs');
 const path = require('path');
@@ -97,8 +98,10 @@ const semver = require('semver');
 const log = require('log4js').getLogger('pluginfw');
 
 let fuSeen = [];
+let riSeen = [];
+let rpSeen = {};
 
-function readJson(file, callback) {
+const readJson = (file, callback) => {
   fs.readFile(file, (er, buf) => {
     if (er) {
       callback(er);
@@ -110,11 +113,9 @@ function readJson(file, callback) {
       callback(er);
     }
   });
-}
+};
 
-module.exports = readInstalled;
-
-function readInstalled(folder, cb) {
+const readInstalled = (folder, cb) => {
   /* This is where we clear the cache, these three lines are all the
    * new code there is */
   fuSeen = [];
@@ -129,10 +130,11 @@ function readInstalled(folder, cb) {
     resolveInheritance(obj);
     cb(null, obj);
   });
-}
+};
 
-var rpSeen = {};
-function readInstalled_(folder, parent, name, reqver, depth, maxDepth, cb) {
+module.exports = readInstalled;
+
+const readInstalled_ = (folder, parent, name, reqver, depth, maxDepth, cb) => {
   let installed,
     obj,
     real,
@@ -229,11 +231,10 @@ function readInstalled_(folder, parent, name, reqver, depth, maxDepth, cb) {
       return cb(null, obj);
     });
   }
-}
+};
 
 // starting from a root object, call findUnmet on each layer of children
-var riSeen = [];
-function resolveInheritance(obj) {
+const resolveInheritance = (obj) => {
   if (typeof obj !== 'object') return;
   if (riSeen.indexOf(obj) !== -1) return;
   riSeen.push(obj);
@@ -246,11 +247,11 @@ function resolveInheritance(obj) {
   Object.keys(obj.dependencies).forEach((dep) => {
     resolveInheritance(obj.dependencies[dep]);
   });
-}
+};
 
 // find unmet deps by walking up the tree object.
 // No I/O
-function findUnmet(obj) {
+const findUnmet = (obj) => {
   if (typeof obj !== 'object') return;
   if (fuSeen.indexOf(obj) !== -1) return;
   fuSeen.push(obj);
@@ -282,16 +283,16 @@ function findUnmet(obj) {
         }
       });
   return obj;
-}
+};
 
-function copy(obj) {
+const copy = (obj) => {
   if (!obj || typeof obj !== 'object') return obj;
   if (Array.isArray(obj)) return obj.map(copy);
 
   const o = {};
-  for (const i in obj) o[i] = copy(obj[i]);
+  for (const [i, v] of Object.entries(obj)) o[i] = copy(v);
   return o;
-}
+};
 
 if (module === require.main) {
   const util = require('util');
@@ -312,7 +313,7 @@ if (module === require.main) {
   function cleanup(map) {
     if (seen.indexOf(map) !== -1) return;
     seen.push(map);
-    for (var i in map) {
+    for (const i of Object.keys(map)) {
       switch (i) {
         case '_id':
         case 'path':
@@ -322,12 +323,9 @@ if (module === require.main) {
         default: delete map[i];
       }
     }
-    const dep = map.dependencies;
-    if (dep) {
-      for (var i in dep) {
-        if (typeof dep[i] === 'object') {
-          cleanup(dep[i]);
-        }
+    for (const dep of Object.values(map.dependencies || {})) {
+      if (typeof dep === 'object') {
+        cleanup(dep);
       }
     }
     return map;
