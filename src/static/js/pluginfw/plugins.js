@@ -6,7 +6,6 @@ const readInstalled = require('./read-installed.js');
 const path = require('path');
 const tsort = require('./tsort');
 const util = require('util');
-const _ = require('underscore');
 const settings = require('../../../node/utils/Settings');
 
 const pluginUtils = require('./shared');
@@ -16,49 +15,42 @@ exports.prefix = 'ep_';
 
 exports.formatPlugins = () => Object.keys(defs.plugins).join(', ');
 
-exports.formatPluginsWithVersion = () => {
-  const plugins = [];
-  _.forEach(defs.plugins, (plugin) => {
-    if (plugin.package.name !== 'ep_etherpad-lite') {
-      const pluginStr = `${plugin.package.name}@${plugin.package.version}`;
-      plugins.push(pluginStr);
-    }
-  });
-  return plugins.join(', ');
-};
+exports.formatPluginsWithVersion = () => Object.values(defs.plugins)
+    .filter((plugin) => plugin.package.name !== 'ep_etherpad-lite')
+    .map((plugin) => `${plugin.package.name}@${plugin.package.version}`)
+    .join(', ');
 
-exports.formatParts = () => _.map(defs.parts, (part) => part.full_name).join('\n');
+exports.formatParts = () => defs.parts.map((part) => part.full_name).join('\n');
 
-exports.formatHooks = (hook_set_name) => {
+exports.formatHooks = (hookSetName) => {
   const res = [];
-  const hooks = pluginUtils.extractHooks(defs.parts, hook_set_name || 'hooks');
-
-  _.chain(hooks).keys().forEach((hook_name) => {
-    _.forEach(hooks[hook_name], (hook) => {
+  const hooks = pluginUtils.extractHooks(defs.parts, hookSetName || 'hooks');
+  for (const registeredHooks of Object.values(hooks)) {
+    for (const hook of registeredHooks) {
       res.push(`<dt>${hook.hook_name}</dt><dd>${hook.hook_fn_name} ` +
                `from ${hook.part.full_name}</dd>`);
-    });
-  });
+    }
+  }
   return `<dl>${res.join('\n')}</dl>`;
 };
 
 const callInit = async () => {
-  await Promise.all(Object.keys(defs.plugins).map(async (plugin_name) => {
-    const plugin = defs.plugins[plugin_name];
-    const ep_init = path.normalize(path.join(plugin.package.path, '.ep_initialized'));
+  await Promise.all(Object.keys(defs.plugins).map(async (pluginName) => {
+    const plugin = defs.plugins[pluginName];
+    const epInit = path.normalize(path.join(plugin.package.path, '.ep_initialized'));
     try {
-      await fs.stat(ep_init);
+      await fs.stat(epInit);
     } catch (err) {
-      await fs.writeFile(ep_init, 'done');
-      await hooks.aCallAll(`init_${plugin_name}`, {});
+      await fs.writeFile(epInit, 'done');
+      await hooks.aCallAll(`init_${pluginName}`, {});
     }
   }));
 };
 
-exports.pathNormalization = (part, hook_fn_name, hook_name) => {
-  const tmp = hook_fn_name.split(':'); // hook_fn_name might be something like 'C:\\foo.js:myFunc'.
+exports.pathNormalization = (part, hookFnName, hookName) => {
+  const tmp = hookFnName.split(':'); // hookFnName might be something like 'C:\\foo.js:myFunc'.
   // If there is a single colon assume it's 'filename:funcname' not 'C:\\filename'.
-  const functionName = (tmp.length > 1 ? tmp.pop() : null) || hook_name;
+  const functionName = (tmp.length > 1 ? tmp.pop() : null) || hookName;
   const moduleName = tmp.join(':') || part.plugin;
   const packageDir = path.dirname(defs.plugins[part.plugin].package.path);
   const fileName = path.normalize(path.join(packageDir, moduleName));
@@ -89,15 +81,15 @@ exports.getPackages = async () => {
 
   const packages = {};
   const flatten = (deps) => {
-    _.chain(deps).keys().each((name) => {
+    for (const [name, dep] of Object.entries(deps)) {
       if (name.indexOf(exports.prefix) === 0) {
-        packages[name] = _.clone(deps[name]);
+        packages[name] = {...dep};
         // Delete anything that creates loops so that the plugin
         // list can be sent as JSON to the web client
         delete packages[name].dependencies;
         delete packages[name].parent;
       }
-    });
+    }
   };
 
   const tmp = {};
@@ -106,40 +98,40 @@ exports.getPackages = async () => {
   return packages;
 };
 
-const loadPlugin = async (packages, plugin_name, plugins, parts) => {
-  const plugin_path = path.resolve(packages[plugin_name].path, 'ep.json');
+const loadPlugin = async (packages, pluginName, plugins, parts) => {
+  const pluginPath = path.resolve(packages[pluginName].path, 'ep.json');
   try {
-    const data = await fs.readFile(plugin_path);
+    const data = await fs.readFile(pluginPath);
     try {
       const plugin = JSON.parse(data);
-      plugin.package = packages[plugin_name];
-      plugins[plugin_name] = plugin;
-      _.each(plugin.parts, (part) => {
-        part.plugin = plugin_name;
-        part.full_name = `${plugin_name}/${part.name}`;
+      plugin.package = packages[pluginName];
+      plugins[pluginName] = plugin;
+      for (const part of plugin.parts) {
+        part.plugin = pluginName;
+        part.full_name = `${pluginName}/${part.name}`;
         parts[part.full_name] = part;
-      });
+      }
     } catch (ex) {
-      console.error(`Unable to parse plugin definition file ${plugin_path}: ${ex.toString()}`);
+      console.error(`Unable to parse plugin definition file ${pluginPath}: ${ex.toString()}`);
     }
   } catch (er) {
-    console.error(`Unable to load plugin definition file ${plugin_path}`);
+    console.error(`Unable to load plugin definition file ${pluginPath}`);
   }
 };
 
 const partsToParentChildList = (parts) => {
   const res = [];
-  _.chain(parts).keys().forEach((name) => {
-    _.each(parts[name].post || [], (child_name) => {
-      res.push([name, child_name]);
-    });
-    _.each(parts[name].pre || [], (parent_name) => {
-      res.push([parent_name, name]);
-    });
+  for (const name of Object.keys(parts)) {
+    for (const childName of parts[name].post || []) {
+      res.push([name, childName]);
+    }
+    for (const parentName of parts[name].pre || []) {
+      res.push([parentName, name]);
+    }
     if (!parts[name].pre && !parts[name].post) {
       res.push([name, `:${name}`]); // Include apps with no dependency info
     }
-  });
+  }
   return res;
 };
 
