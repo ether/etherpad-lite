@@ -96,8 +96,7 @@ describe('select formatting buttons when selection has style applied', function 
     e.ctrlKey = true; // Control key
     e.which = key.charCodeAt(0); // I, U, B, 5
     inner$('#innerdocbody').trigger(e);
-    await helper.waitForPromise(
-        () => helper.padInner$('body').html() !== originalHTML);
+    await helper.waitForPromise(() => helper.padInner$('body').html() !== originalHTML);
   };
 
   STYLES.forEach((style) => {

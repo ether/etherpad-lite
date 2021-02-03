@@ -27,9 +27,7 @@ describe('drag and drop', function () {
         const originalHTML = helper.padInner$('body').html();
         const $undoButton = helper.padChrome$('.buttonicon-undo');
         $undoButton.click();
-        await helper.waitForPromise(
-            () => helper.padInner$('body').html() !== originalHTML
-        );
+        await helper.waitForPromise(() => helper.padInner$('body').html() !== originalHTML);
       });
 
       it('moves text back to its original place', function (done) {
@@ -66,9 +64,7 @@ describe('drag and drop', function () {
         const originalHTML = helper.padInner$('body').html();
         const $undoButton = helper.padChrome$('.buttonicon-undo');
         $undoButton.click();
-        await helper.waitForPromise(
-            () => helper.padInner$('body').html() !== originalHTML
-        );
+        await helper.waitForPromise(() => helper.padInner$('body').html() !== originalHTML);
       });
 
       it('moves text back to its original place', function (done) {

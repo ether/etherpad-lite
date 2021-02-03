@@ -23,8 +23,7 @@ describe('assign ordered list', function () {
         const originalHTML = helper.padInner$('body').html();
         makeSureShortcutIsEnabled('cmdShiftN');
         triggerCtrlShiftShortcut('N');
-        await helper.waitForPromise(
-            () => helper.padInner$('body').html() !== originalHTML);
+        await helper.waitForPromise(() => helper.padInner$('body').html() !== originalHTML);
       });
 
       it('inserts unordered list', function (done) {
@@ -37,8 +36,7 @@ describe('assign ordered list', function () {
         const originalHTML = helper.padInner$('body').html();
         makeSureShortcutIsDisabled('cmdShiftN');
         triggerCtrlShiftShortcut('N');
-        await helper.waitForPromise(
-            () => helper.padInner$('body').html() !== originalHTML);
+        await helper.waitForPromise(() => helper.padInner$('body').html() !== originalHTML);
       });
 
       it('does not insert unordered list', function (done) {
@@ -58,8 +56,7 @@ describe('assign ordered list', function () {
         const originalHTML = helper.padInner$('body').html();
         makeSureShortcutIsEnabled('cmdShift1');
         triggerCtrlShiftShortcut('1');
-        await helper.waitForPromise(
-            () => helper.padInner$('body').html() !== originalHTML);
+        await helper.waitForPromise(() => helper.padInner$('body').html() !== originalHTML);
       });
 
       it('inserts unordered list', function (done) {
@@ -72,8 +69,7 @@ describe('assign ordered list', function () {
         const originalHTML = helper.padInner$('body').html();
         makeSureShortcutIsDisabled('cmdShift1');
         triggerCtrlShiftShortcut('1');
-        await helper.waitForPromise(
-            () => helper.padInner$('body').html() !== originalHTML);
+        await helper.waitForPromise(() => helper.padInner$('body').html() !== originalHTML);
       });
 
       it('does not insert unordered list', function (done) {
