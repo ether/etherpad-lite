@@ -93,6 +93,83 @@ describe(__filename, function () {
             assert(res.body.data.groupID);
           });
     });
+
+    // Test coverage for https://github.com/ether/etherpad-lite/issues/4227
+    // Creates a group, creates 2 sessions, 2 pads and then deletes the group.
+    it('createGroup', async function () {
+      await api.get(endPoint('createGroup'))
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect((res) => {
+            assert.equal(res.body.code, 0);
+            assert(res.body.data.groupID);
+            groupID = res.body.data.groupID;
+          });
+    });
+
+    it('createAuthor', async function () {
+      await api.get(endPoint('createAuthor'))
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect((res) => {
+            assert.equal(res.body.code, 0);
+            assert(res.body.data.authorID);
+            authorID = res.body.data.authorID;
+          });
+    });
+
+    it('createSession', async function () {
+      await api.get(`${endPoint('createSession')
+      }&authorID=${authorID}&groupID=${groupID}&validUntil=999999999999`)
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect((res) => {
+            assert.equal(res.body.code, 0);
+            assert(res.body.data.sessionID);
+            sessionID = res.body.data.sessionID;
+          });
+    });
+
+    it('createSession', async function () {
+      await api.get(`${endPoint('createSession')
+      }&authorID=${authorID}&groupID=${groupID}&validUntil=999999999999`)
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect((res) => {
+            assert.equal(res.body.code, 0);
+            assert(res.body.data.sessionID);
+            sessionID = res.body.data.sessionID;
+          });
+    });
+
+    it('createGroupPad', async function () {
+      await api.get(`${endPoint('createGroupPad')}&groupID=${groupID}&padName=x1234567`)
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect((res) => {
+            assert.equal(res.body.code, 0);
+          });
+    });
+
+    it('createGroupPad', async function () {
+      await api.get(`${endPoint('createGroupPad')}&groupID=${groupID}&padName=x12345678`)
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect((res) => {
+            assert.equal(res.body.code, 0);
+          });
+    });
+
+    it('deleteGroup', async function () {
+      await api.get(`${endPoint('deleteGroup')}&groupID=${groupID}`)
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect((res) => {
+            assert.equal(res.body.code, 0);
+          });
+    });
+    // End of coverage for https://github.com/ether/etherpad-lite/issues/4227
+
   });
 
   describe('API: Author creation', function () {
