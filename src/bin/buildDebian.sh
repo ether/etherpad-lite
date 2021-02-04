@@ -14,7 +14,7 @@ rm -rf ${DIST}
 mkdir -p ${DIST}/
 
 rm -rf ${SRC}
-rsync -a bin/deb-src/ ${SRC}/
+rsync -a src/bin/deb-src/ ${SRC}/
 mkdir -p ${SYSROOT}/opt/
 
 rsync --exclude '.git' -a . ${SYSROOT}/opt/etherpad/ --delete

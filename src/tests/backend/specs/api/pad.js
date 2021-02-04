@@ -1,6 +1,6 @@
 /*
  * ACHTUNG: there is a copied & modified version of this file in
- * <basedir>/tests/container/specs/api/pad.js
+ * <basedir>/src/tests/container/specs/api/pad.js
  *
  * TODO: unify those two files, and merge in a single one.
  */

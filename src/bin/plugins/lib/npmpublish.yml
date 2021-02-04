@@ -80,4 +80,4 @@ jobs:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
 ##ETHERPAD_NPM_V=2
-## NPM configuration automatically created using bin/plugins/updateAllPluginsScript.sh
+## NPM configuration automatically created using src/bin/plugins/updateAllPluginsScript.sh

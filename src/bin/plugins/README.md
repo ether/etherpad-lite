@@ -6,25 +6,25 @@ This code will check your plugin for known usual issues and some suggestions for
 improvements. No changes will be made to your project.
 
 ```
-node bin/plugins/checkPlugin.js $PLUGIN_NAME$
+node src/bin/plugins/checkPlugin.js $PLUGIN_NAME$
 ```
 
 # Basic Example:
 
 ```
-node bin/plugins/checkPlugin.js ep_webrtc
+node src/bin/plugins/checkPlugin.js ep_webrtc
 ```
 
 ## Autofixing - will autofix any issues it can
 
 ```
-node bin/plugins/checkPlugin.js ep_whatever autofix
+node src/bin/plugins/checkPlugin.js ep_whatever autofix
 ```
 
 ## Autocommitting, push, npm minor patch and npm publish (highly dangerous)
 
 ```
-node bin/plugins/checkPlugin.js ep_whatever autocommit
+node src/bin/plugins/checkPlugin.js ep_whatever autocommit
 ```
 
 # All the plugins
@@ -41,7 +41,7 @@ cd ..
 for dir in node_modules/ep_*; do
   dir=${dir#node_modules/}
   [ "$dir" != ep_etherpad-lite ] || continue
-  node bin/plugins/checkPlugin.js "$dir" autocommit
+  node src/bin/plugins/checkPlugin.js "$dir" autocommit
 done
 ```
 

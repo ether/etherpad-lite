@@ -134,7 +134,7 @@ function create_builds {
   git clone $ETHER_WEB_REPO
   echo "Creating windows build..."
   cd etherpad-lite
-  bin/buildForWindows.sh
+  src/bin/buildForWindows.sh
   [[ $? != 0 ]] && echo "Aborting: Error creating build for windows" && exit 1
   echo "Creating docs..."
   make docs

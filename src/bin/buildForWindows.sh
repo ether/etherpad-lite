@@ -32,7 +32,7 @@ rm -f etherpad-lite-win.zip
 export NODE_ENV=production
 
 log "do a normal unix install first..."
-bin/installDeps.sh || exit 1
+src/bin/installDeps.sh || exit 1
 
 log "copy the windows settings template..."
 cp settings.json.template settings.json
@@ -43,8 +43,7 @@ rm -rf node_modules
 mv node_modules_resolved node_modules
 
 log "download windows node..."
-cd bin
-wget "https://nodejs.org/dist/latest-erbium/win-x86/node.exe" -O ../node.exe
+wget "https://nodejs.org/dist/latest-erbium/win-x86/node.exe" -O node.exe
 
 log "remove git history to reduce folder size"
 rm -rf .git/objects

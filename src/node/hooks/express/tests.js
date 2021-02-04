@@ -91,4 +91,4 @@ exports.getPluginTests = async (callback) => {
   return Promise.all(promises).then(() => pluginSpecs);
 };
 
-exports.getCoreTests = () => readdir('tests/frontend/specs');
+exports.getCoreTests = () => readdir('src/tests/frontend/specs');

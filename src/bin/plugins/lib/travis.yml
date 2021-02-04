@@ -12,7 +12,7 @@ install:
   - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
 
 #script:
-#  - "tests/frontend/travis/runner.sh"
+#  - "src/tests/frontend/travis/runner.sh"
 
 env:
   global:
@@ -40,14 +40,14 @@ jobs:
         - "cd etherpad"
         - "mkdir -p node_modules"
         - "mv ../[plugin_name] node_modules"
-        - "bin/installDeps.sh"
+        - "src/bin/installDeps.sh"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
         - "cd src && npm install && cd -"
       script:
-        - "tests/frontend/travis/runnerBackend.sh"
+        - "src/tests/frontend/travis/runnerBackend.sh"
     - name: "Test the Frontend"
       before_script:
-        - "tests/frontend/travis/sauce_tunnel.sh"
+        - "src/tests/frontend/travis/sauce_tunnel.sh"
       install:
         - "npm install"
         - "mkdir [plugin_name]"
@@ -56,10 +56,10 @@ jobs:
         - "cd etherpad"
         - "mkdir -p node_modules"
         - "mv ../[plugin_name] node_modules"
-        - "bin/installDeps.sh"
+        - "src/bin/installDeps.sh"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
       script:
-        - "tests/frontend/travis/runner.sh"
+        - "src/tests/frontend/travis/runner.sh"
 
 notifications:
   irc:
@@ -67,4 +67,4 @@ notifications:
       - "irc.freenode.org#etherpad-lite-dev"
 
 ##ETHERPAD_TRAVIS_V=9
-## Travis configuration automatically created using bin/plugins/updateAllPluginsScript.sh
+## Travis configuration automatically created using src/bin/plugins/updateAllPluginsScript.sh

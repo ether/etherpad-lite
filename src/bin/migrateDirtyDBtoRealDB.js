@@ -10,7 +10,7 @@ process.on('unhandledRejection', (err) => { throw err; });
   // file before using this script, just to be safe.
 
   // It might be necessary to run the script using more memory:
-  // `node --max-old-space-size=4096 bin/migrateDirtyDBtoRealDB.js`
+  // `node --max-old-space-size=4096 src/bin/migrateDirtyDBtoRealDB.js`
 
   const dirtyDb = require('dirty');
   const log4js = require('log4js');

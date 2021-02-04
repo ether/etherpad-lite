@@ -3,10 +3,10 @@
 /*
  * Usage -- see README.md
  *
- * Normal usage:                node bin/plugins/checkPlugin.js ep_whatever
- * Auto fix the things it can:  node bin/plugins/checkPlugin.js ep_whatever autofix
+ * Normal usage:                node src/bin/plugins/checkPlugin.js ep_whatever
+ * Auto fix the things it can:  node src/bin/plugins/checkPlugin.js ep_whatever autofix
  * Auto commit, push and publish to npm (highly dangerous):
- *                              node bin/plugins/checkPlugin.js ep_whatever autocommit
+ *                              node src/bin/plugins/checkPlugin.js ep_whatever autocommit
  */
 
 // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
@@ -118,7 +118,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       console.log('create one and set npm secret to auto publish to npm on commit');
       if (autoFix) {
         const npmpublish =
-            fs.readFileSync('bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
+            fs.readFileSync('src/bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
         fs.mkdirSync(`${pluginPath}/.github/workflows`, {recursive: true});
         fs.writeFileSync(path, npmpublish);
         console.log("If you haven't already, setup autopublish for this plugin https://github.com/ether/etherpad-lite/wiki/Plugins:-Automatically-publishing-to-npm-on-commit-to-Github-Repo");
@@ -134,14 +134,14 @@ fs.readdir(pluginPath, (err, rootFiles) => {
           currVersionFile.substr(existingConfigLocation + 17, existingConfigLocation.length));
 
       const reqVersionFile =
-          fs.readFileSync('bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
+          fs.readFileSync('src/bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
       const reqConfigLocation = reqVersionFile.indexOf('##ETHERPAD_NPM_V=');
       const reqValue =
           parseInt(reqVersionFile.substr(reqConfigLocation + 17, reqConfigLocation.length));
 
       if (!existingValue || (reqValue > existingValue)) {
         const npmpublish =
-            fs.readFileSync('bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
+            fs.readFileSync('src/bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
         fs.mkdirSync(`${pluginPath}/.github/workflows`, {recursive: true});
         fs.writeFileSync(path, npmpublish);
       }
@@ -158,7 +158,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       console.log('create one and set npm secret to auto publish to npm on commit');
       if (autoFix) {
         const backendTests =
-            fs.readFileSync('bin/plugins/lib/backend-tests.yml', {encoding: 'utf8', flag: 'r'});
+            fs.readFileSync('src/bin/plugins/lib/backend-tests.yml', {encoding: 'utf8', flag: 'r'});
         fs.mkdirSync(`${pluginPath}/.github/workflows`, {recursive: true});
         fs.writeFileSync(path, backendTests);
       }
@@ -171,14 +171,14 @@ fs.readdir(pluginPath, (err, rootFiles) => {
           currVersionFile.substr(existingConfigLocation + 17, existingConfigLocation.length));
 
       const reqVersionFile =
-          fs.readFileSync('bin/plugins/lib/backend-tests.yml', {encoding: 'utf8', flag: 'r'});
+          fs.readFileSync('src/bin/plugins/lib/backend-tests.yml', {encoding: 'utf8', flag: 'r'});
       const reqConfigLocation = reqVersionFile.indexOf('##ETHERPAD_NPM_V=');
       const reqValue =
           parseInt(reqVersionFile.substr(reqConfigLocation + 17, reqConfigLocation.length));
 
       if (!existingValue || (reqValue > existingValue)) {
         const backendTests =
-            fs.readFileSync('bin/plugins/lib/backend-tests.yml', {encoding: 'utf8', flag: 'r'});
+            fs.readFileSync('src/bin/plugins/lib/backend-tests.yml', {encoding: 'utf8', flag: 'r'});
         fs.mkdirSync(`${pluginPath}/.github/workflows`, {recursive: true});
         fs.writeFileSync(path, backendTests);
       }
@@ -283,7 +283,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     if (autoFix) {
       console.log('Autofixing missing README.md file');
       console.log('please edit the README.md file further to include plugin specific details.');
-      let readme = fs.readFileSync('bin/plugins/lib/README.md', {encoding: 'utf8', flag: 'r'});
+      let readme = fs.readFileSync('src/bin/plugins/lib/README.md', {encoding: 'utf8', flag: 'r'});
       readme = readme.replace(/\[plugin_name\]/g, pluginName);
       if (repository) {
         const org = repository.split('/')[3];
@@ -303,7 +303,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       console.log('Autofixing missing CONTRIBUTING.md file, please edit the CONTRIBUTING.md ' +
                   'file further to include plugin specific details.');
       let contributing =
-          fs.readFileSync('bin/plugins/lib/CONTRIBUTING.md', {encoding: 'utf8', flag: 'r'});
+          fs.readFileSync('src/bin/plugins/lib/CONTRIBUTING.md', {encoding: 'utf8', flag: 'r'});
       contributing = contributing.replace(/\[plugin_name\]/g, pluginName);
       fs.writeFileSync(`${pluginPath}/CONTRIBUTING.md`, contributing);
     }
@@ -325,14 +325,16 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     console.warn('LICENSE.md file not found, please create');
     if (autoFix) {
       console.log('Autofixing missing LICENSE.md file, including Apache 2 license.');
-      let license = fs.readFileSync('bin/plugins/lib/LICENSE.md', {encoding: 'utf8', flag: 'r'});
+      let license =
+          fs.readFileSync('src/bin/plugins/lib/LICENSE.md', {encoding: 'utf8', flag: 'r'});
       license = license.replace('[yyyy]', new Date().getFullYear());
       license = license.replace('[name of copyright owner]', execSync('git config user.name'));
       fs.writeFileSync(`${pluginPath}/LICENSE.md`, license);
     }
   }
 
-  let travisConfig = fs.readFileSync('bin/plugins/lib/travis.yml', {encoding: 'utf8', flag: 'r'});
+  let travisConfig =
+      fs.readFileSync('src/bin/plugins/lib/travis.yml', {encoding: 'utf8', flag: 'r'});
   travisConfig = travisConfig.replace(/\[plugin_name\]/g, pluginName);
 
   if (files.indexOf('.travis.yml') === -1) {
@@ -371,7 +373,8 @@ fs.readdir(pluginPath, (err, rootFiles) => {
                  "ensure files aren't incorrectly commited to a repository.");
     if (autoFix) {
       console.log('Autofixing missing .gitignore file');
-      const gitignore = fs.readFileSync('bin/plugins/lib/gitignore', {encoding: 'utf8', flag: 'r'});
+      const gitignore =
+          fs.readFileSync('src/bin/plugins/lib/gitignore', {encoding: 'utf8', flag: 'r'});
       fs.writeFileSync(`${pluginPath}/.gitignore`, gitignore);
     }
   } else {

@@ -10,7 +10,7 @@ process.on('unhandledRejection', (err) => { throw err; });
 
 console.warn('WARNING: This script must not be used while etherpad is running!');
 
-if (process.argv.length !== 3) throw new Error('Use: node bin/repairPad.js $PADID');
+if (process.argv.length !== 3) throw new Error('Use: node src/bin/repairPad.js $PADID');
 
 // get the padID
 const padId = process.argv[2];

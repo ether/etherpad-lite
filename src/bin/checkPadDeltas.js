@@ -7,7 +7,7 @@
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
 process.on('unhandledRejection', (err) => { throw err; });
 
-if (process.argv.length !== 3) throw new Error('Use: node bin/checkPadDeltas.js $PADID');
+if (process.argv.length !== 3) throw new Error('Use: node src/bin/checkPadDeltas.js $PADID');
 
 // get the padID
 const padId = process.argv[2];
