@@ -303,11 +303,14 @@ if (module === require.main) {
   console.error('testing');
 
   let called = 0;
-  readInstalled(process.cwd(), (er, map) => {
-    console.error(called++);
-    if (er) return console.error(er.stack || er.message);
-    cleanup(map);
-    console.error(util.inspect(map, true, 10, true));
+  npm.load({}, (err) => {
+    if (err != null) throw err;
+    readInstalled(process.cwd(), (er, map) => {
+      console.error(called++);
+      if (er) return console.error(er.stack || er.message);
+      cleanup(map);
+      console.error(util.inspect(map, true, 10, true));
+    });
   });
 
   const seen = [];
