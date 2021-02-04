@@ -7,9 +7,6 @@
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
 process.on('unhandledRejection', (err) => { throw err; });
 
-/* eslint-disable-next-line no-unused-vars */
-const settings = require('ep_etherpad-lite/node/utils/Settings');
-
 if (process.argv.length !== 3) throw new Error('Use: node bin/checkPad.js $PADID');
 
 // get the padID
@@ -18,6 +15,7 @@ let checkRevisionCount = 0;
 
 (async () => {
   // initialize database
+  require('ep_etherpad-lite/node/utils/Settings');
   const db = require('ep_etherpad-lite/node/db/DB');
   await db.init();
 
