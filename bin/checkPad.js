@@ -14,7 +14,6 @@ if (process.argv.length !== 3) throw new Error('Use: node bin/checkPad.js $PADID
 
 // get the padID
 const padId = process.argv[2];
-
 let checkRevisionCount = 0;
 
 (async () => {
@@ -25,6 +24,7 @@ let checkRevisionCount = 0;
   // load modules
   const Changeset = require('ep_etherpad-lite/static/js/Changeset');
   const padManager = require('ep_etherpad-lite/node/db/PadManager');
+
   const exists = await padManager.doesPadExists(padId);
   if (!exists) throw new Error('Pad does not exist');
 
