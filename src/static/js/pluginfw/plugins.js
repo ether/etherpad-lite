@@ -15,11 +15,6 @@ exports.prefix = 'ep_';
 
 exports.formatPlugins = () => Object.keys(defs.plugins).join(', ');
 
-exports.formatPluginsWithVersion = () => Object.values(defs.plugins)
-    .filter((plugin) => plugin.package.name !== 'ep_etherpad-lite')
-    .map((plugin) => `${plugin.package.name}@${plugin.package.version}`)
-    .join(', ');
-
 exports.formatParts = () => defs.parts.map((part) => part.full_name).join('\n');
 
 exports.formatHooks = (hookSetName) => {
