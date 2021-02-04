@@ -13,16 +13,11 @@ if (process.argv.length !== 4 && process.argv.length !== 5) {
   throw new Error('Use: node bin/repairPad.js $PADID $REV [$NEWPADID]');
 }
 
-const npm = require('ep_etherpad-lite/node_modules/npm');
-const util = require('util');
-
 const padId = process.argv[2];
 const newRevHead = process.argv[3];
 const newPadId = process.argv[4] || `${padId}-rebuilt`;
 
 (async () => {
-  await util.promisify(npm.load)({});
-
   const db = require('ep_etherpad-lite/node/db/DB');
   await db.init();
 
