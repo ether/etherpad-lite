@@ -10,9 +10,6 @@ const settings = require('ep_etherpad-lite/node/utils/Settings');
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
 process.on('unhandledRejection', (err) => { throw err; });
 
-const log4js = require('ep_etherpad-lite/node_modules/log4js');
-exports.logger = log4js.getLogger(__filename);
-
 if (process.argv.length !== 3) throw new Error('Use: node bin/checkPad.js $PADID');
 
 // get the padID
@@ -66,7 +63,7 @@ let checkRevisionCount = 0;
     // check if there is an atext in the keyRevisions
     let {meta: {atext} = {}} = revisions[keyRev] || {};
     if (atext == null) {
-      exports.logger.error(`No atext in key revision ${keyRev}`);
+      console.error(`No atext in key revision ${keyRev}`);
       continue;
     }
 
@@ -78,12 +75,10 @@ let checkRevisionCount = 0;
         const cs = revisions[rev].changeset;
         atext = Changeset.applyToAText(cs, atext, apool);
       } catch (e) {
-        exports.logger.error(`Bad changeset at revision ${rev} - ${e.message}`);
+        console.error(`Bad changeset at revision ${rev} - ${e.message}`);
         continue;
       }
     }
-    // The below console.warn should be a log BUT if the server is configured
-    // to loglevel warn then a log msg wont show up..  So this needs fixing.
-    exports.logger.info(`Finished: Checked ${checkRevisionCount} revisions`);
+    console.log(`Finished: Checked ${checkRevisionCount} revisions`);
   }
 })();
