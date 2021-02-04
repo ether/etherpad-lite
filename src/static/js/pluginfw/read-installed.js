@@ -250,6 +250,7 @@ function resolveInheritance(obj) {
 // No I/O
 const fuSeen = [];
 function findUnmet(obj) {
+  if (typeof obj !== 'object') return;
   if (fuSeen.indexOf(obj) !== -1) return;
   fuSeen.push(obj);
   const deps = obj.dependencies = obj.dependencies || {};
