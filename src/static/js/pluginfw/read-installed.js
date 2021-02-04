@@ -131,8 +131,6 @@ function readInstalled(folder, cb) {
 
 var rpSeen = {};
 function readInstalled_(folder, parent, name, reqver, depth, maxDepth, cb) {
-  // console.error(folder, name)
-
   let installed,
     obj,
     real,
@@ -161,7 +159,6 @@ function readInstalled_(folder, parent, name, reqver, depth, maxDepth, cb) {
       return next(er);
     }
     fs.realpath(folder, (er, rp) => {
-      // console.error("realpath(%j) = %j", folder, rp)
       real = rp;
       if (st.isSymbolicLink()) link = rp;
       next(er);
@@ -176,7 +173,6 @@ function readInstalled_(folder, parent, name, reqver, depth, maxDepth, cb) {
       errState = er;
       return cb(null, []);
     }
-    // console.error('next', installed, obj && typeof obj, name, real)
     if (!installed || !obj || !real || called) return;
     called = true;
     if (rpSeen[real]) return cb(null, rpSeen[real]);
@@ -256,13 +252,10 @@ const fuSeen = [];
 function findUnmet(obj) {
   if (fuSeen.indexOf(obj) !== -1) return;
   fuSeen.push(obj);
-  // console.error("find unmet", obj.name, obj.parent && obj.parent.name)
   const deps = obj.dependencies = obj.dependencies || {};
-  // console.error(deps)
   Object.keys(deps)
       .filter((d) => typeof deps[d] === 'string')
       .forEach((d) => {
-      // console.error("find unmet", obj.name, d, deps[d])
         let r = obj.parent;
         let found = null;
         while (r && !found && typeof deps[d] === 'string') {
@@ -328,9 +321,7 @@ if (module === require.main) {
       }
     }
     const dep = map.dependencies;
-    //    delete map.dependencies
     if (dep) {
-      //      map.dependencies = dep
       for (var i in dep) {
         if (typeof dep[i] === 'object') {
           cleanup(dep[i]);

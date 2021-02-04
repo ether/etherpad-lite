@@ -97,9 +97,6 @@ exports.getPackages = async () => {
         delete packages[name].dependencies;
         delete packages[name].parent;
       }
-
-      // I don't think we need recursion
-      // if (deps[name].dependencies !== undefined) flatten(deps[name].dependencies);
     });
   };
 
