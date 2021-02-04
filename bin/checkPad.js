@@ -3,18 +3,21 @@
  * This is a debug tool. It checks all revisions for data corruption
  */
 
+/* eslint-disable-next-line no-unused-vars */
+const settings = require('ep_etherpad-lite/node/utils/Settings');
+
 // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
-
-const process = require('process');
-const settings = require('ep_etherpad-lite/node/utils/Settings');
-settings.loglevel = 'debug';
-
 process.on('unhandledRejection', (err) => { throw err; });
+
+const log4js = require('ep_etherpad-lite/node_modules/log4js');
+exports.logger = log4js.getLogger(__filename);
+
 if (process.argv.length !== 3) throw new Error('Use: node bin/checkPad.js $PADID');
 
 // get the padID
 const padId = process.argv[2];
+
 let checkRevisionCount = 0;
 
 (async () => {
@@ -63,7 +66,7 @@ let checkRevisionCount = 0;
     // check if there is an atext in the keyRevisions
     let {meta: {atext} = {}} = revisions[keyRev] || {};
     if (atext == null) {
-      console.error(`No atext in key revision ${keyRev}`);
+      exports.logger.error(`No atext in key revision ${keyRev}`);
       continue;
     }
 
@@ -75,10 +78,12 @@ let checkRevisionCount = 0;
         const cs = revisions[rev].changeset;
         atext = Changeset.applyToAText(cs, atext, apool);
       } catch (e) {
-        console.error(`Bad changeset at revision ${rev} - ${e.message}`);
+        exports.logger.error(`Bad changeset at revision ${rev} - ${e.message}`);
         continue;
       }
     }
-    console.warn(`Finished: Checked ${checkRevisionCount} revisions`);
+    // The below console.warn should be a log BUT if the server is configured
+    // to loglevel warn then a log msg wont show up..  So this needs fixing.
+    exports.logger.info(`Finished: Checked ${checkRevisionCount} revisions`);
   }
 })();
