@@ -14,12 +14,8 @@ const padId = process.argv[2];
 
 const expect = require('../tests/frontend/lib/expect');
 const diff = require('ep_etherpad-lite/node_modules/diff');
-const npm = require('ep_etherpad-lite/node_modules/npm');
-const util = require('util');
 
 (async () => {
-  await util.promisify(npm.load)({});
-
   // initialize database
   require('ep_etherpad-lite/node/utils/Settings');
   const db = require('ep_etherpad-lite/node/db/DB');
