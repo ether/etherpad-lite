@@ -13,6 +13,7 @@ process.on('unhandledRejection', (err) => { throw err; });
   // `node --max-old-space-size=4096 bin/migrateDirtyDBtoRealDB.js`
 
 
+  const util = require('util');
   const settings = require('ep_etherpad-lite/node/utils/Settings');
   const dirtyDb = require('ep_etherpad-lite/node_modules/dirty');
   const ueberDB = require('ep_etherpad-lite/node_modules/ueberdb2');
