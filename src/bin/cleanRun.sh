@@ -1,15 +1,11 @@
 #!/bin/sh
 
-# Move to the folder where ep-lite is installed
-cd "$(dirname "$0")"/..
+# Move to the Etherpad base directory.
+MY_DIR=$(cd "${0%/*}" && pwd -P) || exit 1
+cd "${MY_DIR}/../.." || exit 1
 
 # Source constants and useful functions
-. bin/functions.sh
-
-#Was this script started in the bin folder? if yes move out
-if [ -d "../bin" ]; then
-  cd "../"
-fi
+. src/bin/functions.sh
 
 ignoreRoot=0
 for ARG in "$@"
@@ -35,7 +31,7 @@ fi
 rm -rf src/node_modules
 
 #Prepare the environment
-bin/installDeps.sh "$@" || exit 1
+src/bin/installDeps.sh "$@" || exit 1
 
 #Move to the node folder and start
 echo "Started Etherpad..."

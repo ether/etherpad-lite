@@ -1,7 +1,7 @@
 'use strict';
 /*
  * ACHTUNG: there is a copied & modified version of this file in
- * <basedir>/tests/container/spacs/api/pad.js
+ * <basedir>/src/tests/container/spacs/api/pad.js
  *
  * TODO: unify those two files, and merge in a single one.
  */

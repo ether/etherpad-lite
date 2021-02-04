@@ -30,7 +30,7 @@ jobs:
         repository: ether/etherpad-lite
 
     - name: Install all dependencies and symlink for ep_etherpad-lite
-      run: bin/installDeps.sh
+      run: src/bin/installDeps.sh
 
     # clone this repository into node_modules/ep_plugin-name
     - name: Checkout plugin repository
@@ -45,7 +45,7 @@ jobs:
 
     # configures some settings and runs npm run test
     - name: Run the backend tests
-      run: tests/frontend/travis/runnerBackend.sh
+      run: src/tests/frontend/travis/runnerBackend.sh
 
 ##ETHERPAD_NPM_V=1
-## NPM configuration automatically created using bin/plugins/updateAllPluginsScript.sh
+## NPM configuration automatically created using src/bin/plugins/updateAllPluginsScript.sh

@@ -12,12 +12,12 @@ const superagent = require('superagent');
 const padManager = require('../../../../node/db/PadManager');
 const plugins = require('../../../../static/js/pluginfw/plugin_defs');
 
-const padText = fs.readFileSync('../tests/backend/specs/api/test.txt');
-const etherpadDoc = fs.readFileSync('../tests/backend/specs/api/test.etherpad');
-const wordDoc = fs.readFileSync('../tests/backend/specs/api/test.doc');
-const wordXDoc = fs.readFileSync('../tests/backend/specs/api/test.docx');
-const odtDoc = fs.readFileSync('../tests/backend/specs/api/test.odt');
-const pdfDoc = fs.readFileSync('../tests/backend/specs/api/test.pdf');
+const padText = fs.readFileSync(`${__dirname}/test.txt`);
+const etherpadDoc = fs.readFileSync(`${__dirname}/test.etherpad`);
+const wordDoc = fs.readFileSync(`${__dirname}/test.doc`);
+const wordXDoc = fs.readFileSync(`${__dirname}/test.docx`);
+const odtDoc = fs.readFileSync(`${__dirname}/test.odt`);
+const pdfDoc = fs.readFileSync(`${__dirname}/test.pdf`);
 
 let agent;
 const apiKey = common.apiKey;

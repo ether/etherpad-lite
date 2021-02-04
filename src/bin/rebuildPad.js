@@ -10,7 +10,7 @@
 process.on('unhandledRejection', (err) => { throw err; });
 
 if (process.argv.length !== 4 && process.argv.length !== 5) {
-  throw new Error('Use: node bin/repairPad.js $PADID $REV [$NEWPADID]');
+  throw new Error('Use: node src/bin/repairPad.js $PADID $REV [$NEWPADID]');
 }
 
 const padId = process.argv[2];

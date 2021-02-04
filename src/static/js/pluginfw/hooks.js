@@ -72,7 +72,8 @@ const flatten1 = (array) => array.reduce((a, b) => a.concat(b), []);
 // there will be an unhandled promise rejection depending on whether the the subsequent attempt is a
 // duplicate (same value or error) or different, respectively.
 //
-// See the tests in tests/backend/specs/hooks.js for examples of supported and prohibited behaviors.
+// See the tests in src/tests/backend/specs/hooks.js for examples of supported and prohibited
+// behaviors.
 //
 const callHookFnSync = (hook, context) => {
   checkDeprecation(hook);
@@ -226,7 +227,8 @@ exports.callAll = (hookName, context) => {
 // effect except either an error message is logged or an Error object is thrown depending on whether
 // the the subsequent attempt is a duplicate (same value or error) or different, respectively.
 //
-// See the tests in tests/backend/specs/hooks.js for examples of supported and prohibited behaviors.
+// See the tests in src/tests/backend/specs/hooks.js for examples of supported and prohibited
+// behaviors.
 //
 const callHookFnAsync = async (hook, context) => {
   checkDeprecation(hook);

@@ -72,5 +72,5 @@ Each type of heading has a description block.
 
 Run the following from the etherpad-lite root directory:
 ```sh
-$ node bin/doc/generate doc/index.md --format=html --template=doc/template.html > out.html
+$ node src/bin/doc/generate doc/index.md --format=html --template=doc/template.html > out.html
 ```

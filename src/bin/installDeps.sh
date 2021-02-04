@@ -1,10 +1,11 @@
 #!/bin/sh
 
-# Move to the folder where ep-lite is installed
-cd "$(dirname "$0")"/..
+# Move to the Etherpad base directory.
+MY_DIR=$(cd "${0%/*}" && pwd -P) || exit 1
+cd "${MY_DIR}/../.." || exit 1
 
 # Source constants and useful functions
-. bin/functions.sh
+. src/bin/functions.sh
 
 # Is node installed?
 # Not checking io.js, default installation creates a symbolic link to node

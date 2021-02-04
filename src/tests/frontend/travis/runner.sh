@@ -9,12 +9,11 @@ try() { "$@" || fatal "'$@' failed"; }
 [ -n "${SAUCE_USERNAME}" ] || fatal "SAUCE_USERNAME is unset - exiting"
 [ -n "${SAUCE_ACCESS_KEY}" ] || fatal "SAUCE_ACCESS_KEY is unset - exiting"
 
-MY_DIR=$(try cd "${0%/*}" && try pwd) || exit 1
+# Move to the Etherpad base directory.
+MY_DIR=$(try cd "${0%/*}" && try pwd -P) || exit 1
+try cd "${MY_DIR}/../../../.."
 
-# reliably move to the etherpad base folder before running it
-try cd "${MY_DIR}/../../../"
-
-log "Assuming bin/installDeps.sh has already been run"
+log "Assuming src/bin/installDeps.sh has already been run"
 node node_modules/ep_etherpad-lite/node/server.js --experimental-worker "${@}" &
 ep_pid=$!
 

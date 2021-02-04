@@ -23,8 +23,9 @@ fatal() { error "$@"; exit 1; }
 
 LAST_EMAIL_SEND=0
 
-# Move to the folder where ep-lite is installed
-cd "$(dirname "$0")"/..
+# Move to the Etherpad base directory.
+MY_DIR=$(try cd "${0%/*}" && try pwd -P) || exit 1
+try cd "${MY_DIR}/../.."
 
 # Check if a logfile parameter is set
 LOG="$1"
@@ -39,7 +40,7 @@ while true; do
   [ -w "${LOG}" ] || fatal "Logfile '${LOG}' is not writeable"
 
   # Start the application
-  bin/run.sh "$@" >>${LOG} 2>>${LOG}
+  src/bin/run.sh "$@" >>${LOG} 2>>${LOG}
 
   TIME_FMT=$(date +%Y-%m-%dT%H:%M:%S%z)
 

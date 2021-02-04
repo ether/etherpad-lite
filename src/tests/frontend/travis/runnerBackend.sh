@@ -6,10 +6,9 @@ error() { log "ERROR: $@" >&2; }
 fatal() { error "$@"; exit 1; }
 try() { "$@" || fatal "'$@' failed"; }
 
-MY_DIR=$(try cd "${0%/*}" && try pwd) || fatal "failed to find script directory"
-
-# reliably move to the etherpad base folder before running it
-try cd "${MY_DIR}/../../../"
+# Move to the Etherpad base directory.
+MY_DIR=$(try cd "${0%/*}" && try pwd -P) || exit 1
+try cd "${MY_DIR}/../../../.."
 
 try sed -e '
 s!"soffice":[^,]*!"soffice": "/usr/bin/soffice"!
@@ -20,7 +19,7 @@ s!"points":[^,]*!"points": 1000!
 s!"loglevel":[^,]*!"loglevel": "WARN"!
 ' settings.json.template >settings.json
 
-log "Assuming bin/installDeps.sh has already been run"
+log "Assuming src/bin/installDeps.sh has already been run"
 node node_modules/ep_etherpad-lite/node/server.js "${@}" &
 ep_pid=$!
 

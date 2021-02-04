@@ -12,10 +12,11 @@ const semver = require('semver');
 
 Usage
 
-node bin/release.js patch
+node src/bin/release.js patch
 
 */
-const usage = 'node bin/release.js [patch/minor/major] -- example: "node bin/release.js patch"';
+const usage =
+    'node src/bin/release.js [patch/minor/major] -- example: "node src/bin/release.js patch"';
 
 const release = process.argv[2];
 
