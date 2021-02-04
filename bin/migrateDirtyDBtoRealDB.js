@@ -52,6 +52,6 @@ process.on('unhandledRejection', (err) => { throw err; });
   await Promise.all(p);
   console.log(`Wrote all ${numWritten} records`);
 
-  await db.close();
+  await util.promisify(db.close.bind(db))();
   console.log('Finished.');
 })();
