@@ -279,7 +279,6 @@ const findUnmet = (obj) => {
       deps[d] = found;
     }
   }
-  return obj;
 };
 
 const copy = (obj) => {
