@@ -5,11 +5,12 @@
 
 // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
+
+const process = require('process');
+const settings = require('ep_etherpad-lite/node/utils/Settings');
+settings.loglevel = 'debug';
+
 process.on('unhandledRejection', (err) => { throw err; });
-
-const npm = require('ep_etherpad-lite/node_modules/npm');
-const util = require('util');
-
 if (process.argv.length !== 3) throw new Error('Use: node bin/checkPad.js $PADID');
 
 // get the padID
@@ -17,17 +18,13 @@ const padId = process.argv[2];
 let checkRevisionCount = 0;
 
 (async () => {
-  await util.promisify(npm.load)({});
-
   // initialize database
-  require('ep_etherpad-lite/node/utils/Settings');
   const db = require('ep_etherpad-lite/node/db/DB');
   await db.init();
 
   // load modules
   const Changeset = require('ep_etherpad-lite/static/js/Changeset');
   const padManager = require('ep_etherpad-lite/node/db/PadManager');
-
   const exists = await padManager.doesPadExists(padId);
   if (!exists) throw new Error('Pad does not exist');
 
@@ -82,6 +79,6 @@ let checkRevisionCount = 0;
         continue;
       }
     }
-    console.log(`Finished: Checked ${checkRevisionCount} revisions`);
+    console.warn(`Finished: Checked ${checkRevisionCount} revisions`);
   }
 })();
