@@ -3,12 +3,12 @@
  * This is a debug tool. It checks all revisions for data corruption
  */
 
-/* eslint-disable-next-line no-unused-vars */
-const settings = require('ep_etherpad-lite/node/utils/Settings');
-
 // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
 process.on('unhandledRejection', (err) => { throw err; });
+
+/* eslint-disable-next-line no-unused-vars */
+const settings = require('ep_etherpad-lite/node/utils/Settings');
 
 if (process.argv.length !== 3) throw new Error('Use: node bin/checkPad.js $PADID');
 
