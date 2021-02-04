@@ -31,7 +31,7 @@ process.on('unhandledRejection', (err) => { throw err; });
   await db.init();
 
   console.log('Waiting for dirtyDB to parse its file.');
-  const dirty = dirtyDb('var/dirty.db');
+  const dirty = dirtyDb(`${__dirname}/../var/dirty.db`);
   const length = await new Promise((resolve) => { dirty.once('load', resolve); });
 
   console.log(`Found ${length} records, processing now.`);
