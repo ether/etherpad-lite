@@ -96,6 +96,8 @@ const asyncMap = require('slide').asyncMap;
 const semver = require('semver');
 const log = require('log4js').getLogger('pluginfw');
 
+let fuSeen = [];
+
 function readJson(file, callback) {
   fs.readFile(file, (er, buf) => {
     if (er) {
@@ -115,9 +117,9 @@ module.exports = readInstalled;
 function readInstalled(folder, cb) {
   /* This is where we clear the cache, these three lines are all the
    * new code there is */
+  fuSeen = [];
   rpSeen = {};
   riSeen = [];
-  const fuSeen = [];
 
   const d = npm.config.get('depth');
   readInstalled_(folder, null, null, null, 0, d, (er, obj) => {
@@ -248,7 +250,6 @@ function resolveInheritance(obj) {
 
 // find unmet deps by walking up the tree object.
 // No I/O
-const fuSeen = [];
 function findUnmet(obj) {
   if (typeof obj !== 'object') return;
   if (fuSeen.indexOf(obj) !== -1) return;
