@@ -81,7 +81,7 @@
 	"pad.modals.corruptPad.explanation": "Dokument, do katerega želite dostopati, je poškodovan.",
 	"pad.modals.corruptPad.cause": "Razlog za to je morda napačna konfiguracija strežnika ali neko drugo nepričakovano vedenje. Prosimo, stopite v stik s skrbnikom storitve.",
 	"pad.modals.deleted": "Izbrisano.",
-	"pad.modals.deleted.explanation": "Dokument je bil odstranjen.",
+	"pad.modals.deleted.explanation": "Dokument je odstranjen.",
 	"pad.modals.disconnected": "Vaša povezava je bila prekinjena.",
 	"pad.modals.disconnected.explanation": "Povezava s strežnikom je bila izgubljena.",
 	"pad.modals.disconnected.cause": "Strežnik morda ni na voljo. Prosimo, obvestite skrbnika storitve, če se to zgodi večkrat.",

@@ -122,7 +122,7 @@
 * MINOR: Fix ?showChat URL param issue
 * MINOR: Issue where timeslider URI fails to be correct if padID is numeric
 * MINOR: Include prompt for clear authorship when entire document is selected
-* MINOR: Include full document aText every 100 revisions to make pad restoration on database curruption achievable
+* MINOR: Include full document aText every 100 revisions to make pad restoration on database corruption achievable
 * MINOR: Several Colibris CSS fixes
 * MINOR: Use mime library for mime types instead of hard-coded.
 * MINOR: Don't show "new pad button" if instance is read only
@@ -372,7 +372,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
 # 1.5.3
  * NEW: Accessibility support for Screen readers, includes new fonts and keyboard shortcuts
  * NEW: API endpoint for Append Chat Message and Chat Backend Tests
- * NEW: Error messages displayed on load are included in Default Pad Text (can be supressed)
+ * NEW: Error messages displayed on load are included in Default Pad Text (can be suppressed)
  * NEW: Content Collector can handle key values
  * NEW: getAttributesOnPosition Method
  * FIX: Firefox keeps attributes (bold etc) on cut/copy -> paste
@@ -441,7 +441,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
  * Fix: Timeslider UI Fix
  * Fix: Remove Dokuwiki
  * Fix: Remove long paths from windows build (stops error during extract)
- * Fix: Various globals remvoed
+ * Fix: Various globals removed
  * Fix: Move all scripts into bin/
  * Fix: Various CSS bugfixes for Mobile devices
  * Fix: Overflow Toolbar
@@ -517,7 +517,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
  * FIX: HTML import (don't crash on malformed or blank HTML input; strip title out of html during import)
  * FIX: check if uploaded file only contains ascii chars when abiword disabled
  * FIX: Plugin search in /admin/plugins
- * FIX: Don't create new pad if a non-existant read-only pad is accessed
+ * FIX: Don't create new pad if a non-existent read-only pad is accessed
  * FIX: Drop messages from unknown connections (would lead to a crash after a restart)
  * FIX: API: fix createGroupFor endpoint, if mapped group is deleted
  * FIX: Import form for other locales
@@ -534,7 +534,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
  * NEW: Bump log4js for improved logging
  * Fix: Remove URL schemes which don't have RFC standard
  * Fix: Fix safeRun subsequent restarts issue
- * Fix: Allow safeRun to pass arguements to run.sh
+ * Fix: Allow safeRun to pass arguments to run.sh
  * Fix: Include script for more efficient import
  * Fix: Fix sysv comptibile script
  * Fix: Fix client side changeset spamming
@@ -573,7 +573,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
  * Fix: Support Node 0.10
  * Fix: Log HTTP on DEBUG log level
  * Fix: Server wont crash on import fails on 0 file import.
- * Fix: Import no longer fails consistantly
+ * Fix: Import no longer fails consistently
  * Fix: Language support for non existing languages
  * Fix: Mobile support for chat notifications are now usable
  * Fix: Re-Enable Editbar buttons on reconnect
@@ -605,7 +605,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
  * NEW: Admin dashboard mobile device support and new hooks for Admin dashboard
  * NEW: Get current API version from API
  * NEW: CLI script to delete pads
- * Fix: Automatic client reconnection on disonnect
+ * Fix: Automatic client reconnection on disconnect
  * Fix: Text Export indentation now supports multiple indentations
  * Fix: Bugfix getChatHistory API method
  * Fix: Stop Chrome losing caret after paste is texted
@@ -625,7 +625,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
  * Fix: Stop Opera browser inserting two new lines on enter keypress
  * Fix: Stop timeslider from showing NaN on pads with only one revision
  * Other: Allow timeslider tests to run and provide & fix various other frontend-tests
- * Other: Begin dropping referene to Lite.  Etherpad Lite is now named "Etherpad"
+ * Other: Begin dropping reference to Lite.  Etherpad Lite is now named "Etherpad"
  * Other: Update to latest jQuery
  * Other: Change loading message asking user to please wait on first build
  * Other: Allow etherpad to use global npm installation (Safe since node 6.3)

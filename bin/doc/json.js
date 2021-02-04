@@ -248,11 +248,11 @@ const processList = (section) => {
   switch (section.type) {
     case 'ctor':
     case 'classMethod':
-    case 'method':
+    case 'method': {
       // each item is an argument, unless the name is 'return',
       // in which case it's the return value.
       section.signatures = section.signatures || [];
-      var sig = {};
+      const sig = {};
       section.signatures.push(sig);
       sig.params = values.filter((v) => {
         if (v.name === 'return') {
@@ -263,11 +263,11 @@ const processList = (section) => {
       });
       parseSignature(section.textRaw, sig);
       break;
-
-    case 'property':
+    }
+    case 'property': {
       // there should be only one item, which is the value.
       // copy the data up to the section.
-      var value = values[0] || {};
+      const value = values[0] || {};
       delete value.name;
       section.typeof = value.type;
       delete value.type;
@@ -275,14 +275,15 @@ const processList = (section) => {
         section[k] = value[k];
       });
       break;
+    }
 
-    case 'event':
+    case 'event': {
       // event: each item is an argument.
       section.params = values;
       break;
+    }
   }
 
-  // section.listParsed = values;
   delete section.list;
 };
 
@@ -417,7 +418,7 @@ const finishSection = (section, parent) => {
       ctor.signatures.forEach((sig) => {
         sig.desc = ctor.desc;
       });
-      sigs.push.apply(sigs, ctor.signatures);
+      sigs.push(...ctor.signatures);
     });
     delete section.ctors;
   }
@@ -486,7 +487,7 @@ const finishSection = (section, parent) => {
 // Not a general purpose deep copy.
 // But sufficient for these basic things.
 const deepCopy = (src, dest) => {
-  Object.keys(src).filter((k) => !dest.hasOwnProperty(k)).forEach((k) => {
+  Object.keys(src).filter((k) => !Object.prototype.hasOwnProperty.call(dest, k)).forEach((k) => {
     dest[k] = deepCopy_(src[k]);
   });
 };

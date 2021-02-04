@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * The DB Module provides a database initalized with the settings
+ * The DB Module provides a database initialized with the settings
  * provided by the settings module
  */
 
@@ -36,7 +36,7 @@ const db =
 exports.db = null;
 
 /**
- * Initalizes the database with the settings provided by the settings module
+ * Initializes the database with the settings provided by the settings module
  * @param {Function} callback
  */
 exports.init = async () => await new Promise((resolve, reject) => {

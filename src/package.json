@@ -64,7 +64,6 @@
     "resolve": "1.1.7",
     "security": "1.0.0",
     "semver": "5.6.0",
-    "slide": "1.1.6",
     "socket.io": "^2.4.1",
     "terser": "^4.7.0",
     "threads": "^1.4.0",

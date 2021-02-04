@@ -46,7 +46,7 @@ const rateLimiter = new RateLimiterMemory({
 });
 
 /**
- * A associative array that saves informations about a session
+ * A associative array that saves information about a session
  * key = sessionId
  * values = padId, readonlyPadId, readonly, author, rev
  *   padId = the real padId of the pad
@@ -88,7 +88,7 @@ exports.setSocketIO = (socket_io) => {
 exports.handleConnect = (socket) => {
   stats.meter('connects').mark();
 
-  // Initalize sessioninfos for this new session
+  // Initialize sessioninfos for this new session
   sessioninfos[socket.id] = {};
 };
 

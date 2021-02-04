@@ -1,3 +1,5 @@
+'use strict';
+
 // A copy of npm/lib/utils/read-installed.js
 // that is hacked to not cache everything :)
 
@@ -88,15 +90,18 @@ as far as the left-most node_modules folder.
 
 */
 
-
 const npm = require('npm/lib/npm.js');
 const fs = require('graceful-fs');
 const path = require('path');
-const asyncMap = require('slide').asyncMap;
 const semver = require('semver');
 const log = require('log4js').getLogger('pluginfw');
+const util = require('util');
 
-function readJson(file, callback) {
+let fuSeen = [];
+let riSeen = [];
+let rpSeen = {};
+
+const readJson = (file, callback) => {
   fs.readFile(file, (er, buf) => {
     if (er) {
       callback(er);
@@ -108,16 +113,14 @@ function readJson(file, callback) {
       callback(er);
     }
   });
-}
+};
 
-module.exports = readInstalled;
-
-function readInstalled(folder, cb) {
+const readInstalled = (folder, cb) => {
   /* This is where we clear the cache, these three lines are all the
    * new code there is */
+  fuSeen = [];
   rpSeen = {};
   riSeen = [];
-  const fuSeen = [];
 
   const d = npm.config.get('depth');
   readInstalled_(folder, null, null, null, 0, d, (er, obj) => {
@@ -127,62 +130,32 @@ function readInstalled(folder, cb) {
     resolveInheritance(obj);
     cb(null, obj);
   });
-}
+};
 
-var rpSeen = {};
-function readInstalled_(folder, parent, name, reqver, depth, maxDepth, cb) {
-  // console.error(folder, name)
+module.exports = readInstalled;
 
+const readInstalled_ = (folder, parent, name, reqver, depth, maxDepth, cb) => {
   let installed,
     obj,
     real,
     link;
-
-  fs.readdir(path.resolve(folder, 'node_modules'), (er, i) => {
-    // error indicates that nothing is installed here
-    if (er) i = [];
-    installed = i.filter((f) => f.charAt(0) !== '.');
-    next();
-  });
-
-  readJson(path.resolve(folder, 'package.json'), (er, data) => {
-    obj = copy(data);
-
-    if (!parent) {
-      obj = obj || true;
-      er = null;
-    }
-    return next(er);
-  });
-
-  fs.lstat(folder, (er, st) => {
-    if (er) {
-      if (!parent) real = true;
-      return next(er);
-    }
-    fs.realpath(folder, (er, rp) => {
-      // console.error("realpath(%j) = %j", folder, rp)
-      real = rp;
-      if (st.isSymbolicLink()) link = rp;
-      next(er);
-    });
-  });
-
   let errState = null;
   let called = false;
-  function next(er) {
+
+  const next = (er) => {
     if (errState) return;
     if (er) {
       errState = er;
       return cb(null, []);
     }
-    // console.error('next', installed, obj && typeof obj, name, real)
     if (!installed || !obj || !real || called) return;
     called = true;
     if (rpSeen[real]) return cb(null, rpSeen[real]);
     if (obj === true) {
       obj = {dependencies: {}, path: folder};
-      installed.forEach((i) => { obj.dependencies[i] = '*'; });
+      for (const i of installed) {
+        obj.dependencies[i] = '*';
+      }
     }
     if (name && obj.name !== name) obj.invalid = true;
     obj.realName = name || obj.name;
@@ -207,114 +180,123 @@ function readInstalled_(folder, parent, name, reqver, depth, maxDepth, cb) {
     rpSeen[real] = obj;
     obj.depth = depth;
     if (depth >= maxDepth) return cb(null, obj);
-    asyncMap(installed, (pkg, cb) => {
+    Promise.all(installed.map(async (pkg) => {
       let rv = obj.dependencies[pkg];
       if (!rv && obj.devDependencies) rv = obj.devDependencies[pkg];
-      readInstalled_(path.resolve(folder, `node_modules/${pkg}`)
-          , obj, pkg, obj.dependencies[pkg], depth + 1, maxDepth
-          , cb);
-    }, (er, installedData) => {
-      if (er) return cb(er);
-      installedData.forEach((dep) => {
+      const dir = path.resolve(folder, `node_modules/${pkg}`);
+      const deps = obj.dependencies[pkg];
+      return await util.promisify(readInstalled_)(dir, obj, pkg, deps, depth + 1, maxDepth);
+    })).then((installedData) => {
+      for (const dep of installedData) {
         obj.dependencies[dep.realName] = dep;
-      });
+      }
 
       // any strings here are unmet things.  however, if it's
       // optional, then that's fine, so just delete it.
       if (obj.optionalDependencies) {
-        Object.keys(obj.optionalDependencies).forEach((dep) => {
+        for (const dep of Object.keys(obj.optionalDependencies)) {
           if (typeof obj.dependencies[dep] === 'string') {
             delete obj.dependencies[dep];
           }
-        });
+        }
       }
       return cb(null, obj);
+    }, (err) => cb(err || new Error(err)));
+  };
+
+  fs.readdir(path.resolve(folder, 'node_modules'), (er, i) => {
+    // error indicates that nothing is installed here
+    if (er) i = [];
+    installed = i.filter((f) => f.charAt(0) !== '.');
+    next();
+  });
+
+  readJson(path.resolve(folder, 'package.json'), (er, data) => {
+    obj = copy(data);
+
+    if (!parent) {
+      obj = obj || true;
+      er = null;
+    }
+    return next(er);
+  });
+
+  fs.lstat(folder, (er, st) => {
+    if (er) {
+      if (!parent) real = true;
+      return next(er);
+    }
+    fs.realpath(folder, (er, rp) => {
+      real = rp;
+      if (st.isSymbolicLink()) link = rp;
+      next(er);
     });
-  }
-}
+  });
+};
 
 // starting from a root object, call findUnmet on each layer of children
-var riSeen = [];
-function resolveInheritance(obj) {
+const resolveInheritance = (obj) => {
   if (typeof obj !== 'object') return;
   if (riSeen.indexOf(obj) !== -1) return;
   riSeen.push(obj);
   if (typeof obj.dependencies !== 'object') {
     obj.dependencies = {};
   }
-  Object.keys(obj.dependencies).forEach((dep) => {
+  for (const dep of Object.keys(obj.dependencies)) {
     findUnmet(obj.dependencies[dep]);
-  });
-  Object.keys(obj.dependencies).forEach((dep) => {
+  }
+  for (const dep of Object.keys(obj.dependencies)) {
     resolveInheritance(obj.dependencies[dep]);
-  });
-}
+  }
+};
 
 // find unmet deps by walking up the tree object.
 // No I/O
-const fuSeen = [];
-function findUnmet(obj) {
+const findUnmet = (obj) => {
+  if (typeof obj !== 'object') return;
   if (fuSeen.indexOf(obj) !== -1) return;
   fuSeen.push(obj);
-  // console.error("find unmet", obj.name, obj.parent && obj.parent.name)
   const deps = obj.dependencies = obj.dependencies || {};
-  // console.error(deps)
-  Object.keys(deps)
-      .filter((d) => typeof deps[d] === 'string')
-      .forEach((d) => {
-      // console.error("find unmet", obj.name, d, deps[d])
-        let r = obj.parent;
-        let found = null;
-        while (r && !found && typeof deps[d] === 'string') {
-        // if r is a valid choice, then use that.
-          found = r.dependencies[d];
-          if (!found && r.realName === d) found = r;
+  for (const d of Object.keys(deps).filter((d) => typeof deps[d] === 'string')) {
+    let r = obj.parent;
+    let found = null;
+    while (r && !found && typeof deps[d] === 'string') {
+      // if r is a valid choice, then use that.
+      found = r.dependencies[d];
+      if (!found && r.realName === d) found = r;
 
-          if (!found) {
-            r = r.link ? null : r.parent;
-            continue;
-          }
-          if (typeof deps[d] === 'string' &&
-            !semver.satisfies(found.version, deps[d])) {
-          // the bad thing will happen
-            log.warn(`${obj.path} requires ${d}@'${deps[d]
-            }' but will load\n${
-              found.path},\nwhich is version ${found.version}`
-            , 'unmet dependency');
-            found.invalid = true;
-          }
-          deps[d] = found;
-        }
-      });
-  return obj;
-}
+      if (!found) {
+        r = r.link ? null : r.parent;
+        continue;
+      }
+      if (typeof deps[d] === 'string' &&
+          !semver.satisfies(found.version, deps[d])) {
+        // the bad thing will happen
+        log.warn(`${obj.path} requires ${d}@'${deps[d]}' but will load\n${found.path},\n` +
+                 `which is version ${found.version}`, 'unmet dependency');
+        found.invalid = true;
+      }
+      deps[d] = found;
+    }
+  }
+};
 
-function copy(obj) {
+const copy = (obj) => {
   if (!obj || typeof obj !== 'object') return obj;
   if (Array.isArray(obj)) return obj.map(copy);
 
   const o = {};
-  for (const i in obj) o[i] = copy(obj[i]);
+  for (const [i, v] of Object.entries(obj)) o[i] = copy(v);
   return o;
-}
+};
 
 if (module === require.main) {
-  const util = require('util');
-  console.error('testing');
-
-  let called = 0;
-  readInstalled(process.cwd(), (er, map) => {
-    console.error(called++);
-    if (er) return console.error(er.stack || er.message);
-    cleanup(map);
-    console.error(util.inspect(map, true, 10, true));
-  });
-
   const seen = [];
-  function cleanup(map) {
+
+  const cleanup = (map) => {
     if (seen.indexOf(map) !== -1) return;
     seen.push(map);
-    for (var i in map) {
+    for (const i of Object.keys(map)) {
       switch (i) {
         case '_id':
         case 'path':
@@ -324,16 +306,25 @@ if (module === require.main) {
         default: delete map[i];
       }
     }
-    const dep = map.dependencies;
-    //    delete map.dependencies
-    if (dep) {
-      //      map.dependencies = dep
-      for (var i in dep) {
-        if (typeof dep[i] === 'object') {
-          cleanup(dep[i]);
-        }
+    for (const dep of Object.values(map.dependencies || {})) {
+      if (typeof dep === 'object') {
+        cleanup(dep);
       }
     }
     return map;
-  }
+  };
+
+  const util = require('util');
+  console.error('testing');
+
+  let called = 0;
+  npm.load({}, (err) => {
+    if (err != null) throw err;
+    readInstalled(process.cwd(), (er, map) => {
+      console.error(called++);
+      if (er) return console.error(er.stack || er.message);
+      cleanup(map);
+      console.error(util.inspect(map, true, 10, true));
+    });
+  });
 }
