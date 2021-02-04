@@ -4,9 +4,6 @@
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
 process.on('unhandledRejection', (err) => { throw err; });
 
-const npm = require('ep_etherpad-lite/node_modules/npm');
-const util = require('util');
-
 const startTime = Date.now();
 
 const log = (str) => {
@@ -47,8 +44,6 @@ const unescape = (val) => {
 };
 
 (async () => {
-  await util.promisify(npm.load)({});
-
   const fs = require('fs');
   const ueberDB = require('ep_etherpad-lite/node_modules/ueberdb2');
   const settings = require('ep_etherpad-lite/node/utils/Settings');

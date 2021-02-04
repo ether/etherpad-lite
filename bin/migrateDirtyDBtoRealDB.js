@@ -4,14 +4,7 @@
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
 process.on('unhandledRejection', (err) => { throw err; });
 
-const npm = require('ep_etherpad-lite/node_modules/npm');
-const util = require('util');
-
 (async () => {
-  await util.promisify(npm.load)({});
-
-  process.chdir(`${npm.root}/..`);
-
   // This script requires that you have modified your settings.json file
   // to work with a real database.  Please make a backup of your dirty.db
   // file before using this script, just to be safe.
@@ -20,6 +13,7 @@ const util = require('util');
   // `node --max-old-space-size=4096 bin/migrateDirtyDBtoRealDB.js`
 
 
+  const util = require('util');
   const settings = require('ep_etherpad-lite/node/utils/Settings');
   const dirtyDb = require('ep_etherpad-lite/node_modules/dirty');
   const ueberDB = require('ep_etherpad-lite/node_modules/ueberdb2');
@@ -36,7 +30,7 @@ const util = require('util');
   await db.init();
 
   console.log('Waiting for dirtyDB to parse its file.');
-  const dirty = dirtyDb('var/dirty.db');
+  const dirty = dirtyDb(`${__dirname}/../var/dirty.db`);
   const length = await new Promise((resolve) => { dirty.once('load', resolve); });
 
   console.log(`Found ${length} records, processing now.`);
