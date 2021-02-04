@@ -4,13 +4,8 @@
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
 process.on('unhandledRejection', (err) => { throw err; });
 
-const npm = require('ep_etherpad-lite/node_modules/npm');
-const util = require('util');
-
 (async () => {
-  await util.promisify(npm.load)({});
-
-  process.chdir(`${npm.root}/..`);
+  // process.chdir(`${npm.root}/..`);
 
   // This script requires that you have modified your settings.json file
   // to work with a real database.  Please make a backup of your dirty.db
@@ -57,6 +52,6 @@ const util = require('util');
   await Promise.all(p);
   console.log(`Wrote all ${numWritten} records`);
 
-  await util.promisify(db.close.bind(db))();
+  await db.close();
   console.log('Finished.');
 })();
