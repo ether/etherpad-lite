@@ -153,7 +153,9 @@ const readInstalled_ = (folder, parent, name, reqver, depth, maxDepth, cb) => {
     if (rpSeen[real]) return cb(null, rpSeen[real]);
     if (obj === true) {
       obj = {dependencies: {}, path: folder};
-      installed.forEach((i) => { obj.dependencies[i] = '*'; });
+      for (const i of installed) {
+        obj.dependencies[i] = '*';
+      }
     }
     if (name && obj.name !== name) obj.invalid = true;
     obj.realName = name || obj.name;
@@ -185,18 +187,18 @@ const readInstalled_ = (folder, parent, name, reqver, depth, maxDepth, cb) => {
       const deps = obj.dependencies[pkg];
       return await util.promisify(readInstalled_)(dir, obj, pkg, deps, depth + 1, maxDepth);
     })).then((installedData) => {
-      installedData.forEach((dep) => {
+      for (const dep of installedData) {
         obj.dependencies[dep.realName] = dep;
-      });
+      }
 
       // any strings here are unmet things.  however, if it's
       // optional, then that's fine, so just delete it.
       if (obj.optionalDependencies) {
-        Object.keys(obj.optionalDependencies).forEach((dep) => {
+        for (const dep of Object.keys(obj.optionalDependencies)) {
           if (typeof obj.dependencies[dep] === 'string') {
             delete obj.dependencies[dep];
           }
-        });
+        }
       }
       return cb(null, obj);
     }, (err) => cb(err || new Error(err)));
@@ -240,12 +242,12 @@ const resolveInheritance = (obj) => {
   if (typeof obj.dependencies !== 'object') {
     obj.dependencies = {};
   }
-  Object.keys(obj.dependencies).forEach((dep) => {
+  for (const dep of Object.keys(obj.dependencies)) {
     findUnmet(obj.dependencies[dep]);
-  });
-  Object.keys(obj.dependencies).forEach((dep) => {
+  }
+  for (const dep of Object.keys(obj.dependencies)) {
     resolveInheritance(obj.dependencies[dep]);
-  });
+  }
 };
 
 // find unmet deps by walking up the tree object.
@@ -255,32 +257,28 @@ const findUnmet = (obj) => {
   if (fuSeen.indexOf(obj) !== -1) return;
   fuSeen.push(obj);
   const deps = obj.dependencies = obj.dependencies || {};
-  Object.keys(deps)
-      .filter((d) => typeof deps[d] === 'string')
-      .forEach((d) => {
-        let r = obj.parent;
-        let found = null;
-        while (r && !found && typeof deps[d] === 'string') {
-        // if r is a valid choice, then use that.
-          found = r.dependencies[d];
-          if (!found && r.realName === d) found = r;
+  for (const d of Object.keys(deps).filter((d) => typeof deps[d] === 'string')) {
+    let r = obj.parent;
+    let found = null;
+    while (r && !found && typeof deps[d] === 'string') {
+      // if r is a valid choice, then use that.
+      found = r.dependencies[d];
+      if (!found && r.realName === d) found = r;
 
-          if (!found) {
-            r = r.link ? null : r.parent;
-            continue;
-          }
-          if (typeof deps[d] === 'string' &&
-            !semver.satisfies(found.version, deps[d])) {
-          // the bad thing will happen
-            log.warn(`${obj.path} requires ${d}@'${deps[d]
-            }' but will load\n${
-              found.path},\nwhich is version ${found.version}`
-            , 'unmet dependency');
-            found.invalid = true;
-          }
-          deps[d] = found;
-        }
-      });
+      if (!found) {
+        r = r.link ? null : r.parent;
+        continue;
+      }
+      if (typeof deps[d] === 'string' &&
+          !semver.satisfies(found.version, deps[d])) {
+        // the bad thing will happen
+        log.warn(`${obj.path} requires ${d}@'${deps[d]}' but will load\n${found.path},\n` +
+                 `which is version ${found.version}`, 'unmet dependency');
+        found.invalid = true;
+      }
+      deps[d] = found;
+    }
+  }
   return obj;
 };
 
