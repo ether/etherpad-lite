@@ -5,8 +5,6 @@
 process.on('unhandledRejection', (err) => { throw err; });
 
 (async () => {
-  // process.chdir(`${npm.root}/..`);
-
   // This script requires that you have modified your settings.json file
   // to work with a real database.  Please make a backup of your dirty.db
   // file before using this script, just to be safe.
