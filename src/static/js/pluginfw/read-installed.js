@@ -139,39 +139,10 @@ const readInstalled_ = (folder, parent, name, reqver, depth, maxDepth, cb) => {
     obj,
     real,
     link;
-
-  fs.readdir(path.resolve(folder, 'node_modules'), (er, i) => {
-    // error indicates that nothing is installed here
-    if (er) i = [];
-    installed = i.filter((f) => f.charAt(0) !== '.');
-    next();
-  });
-
-  readJson(path.resolve(folder, 'package.json'), (er, data) => {
-    obj = copy(data);
-
-    if (!parent) {
-      obj = obj || true;
-      er = null;
-    }
-    return next(er);
-  });
-
-  fs.lstat(folder, (er, st) => {
-    if (er) {
-      if (!parent) real = true;
-      return next(er);
-    }
-    fs.realpath(folder, (er, rp) => {
-      real = rp;
-      if (st.isSymbolicLink()) link = rp;
-      next(er);
-    });
-  });
-
   let errState = null;
   let called = false;
-  function next(er) {
+
+  const next = (er) => {
     if (errState) return;
     if (er) {
       errState = er;
@@ -230,7 +201,36 @@ const readInstalled_ = (folder, parent, name, reqver, depth, maxDepth, cb) => {
       }
       return cb(null, obj);
     });
-  }
+  };
+
+  fs.readdir(path.resolve(folder, 'node_modules'), (er, i) => {
+    // error indicates that nothing is installed here
+    if (er) i = [];
+    installed = i.filter((f) => f.charAt(0) !== '.');
+    next();
+  });
+
+  readJson(path.resolve(folder, 'package.json'), (er, data) => {
+    obj = copy(data);
+
+    if (!parent) {
+      obj = obj || true;
+      er = null;
+    }
+    return next(er);
+  });
+
+  fs.lstat(folder, (er, st) => {
+    if (er) {
+      if (!parent) real = true;
+      return next(er);
+    }
+    fs.realpath(folder, (er, rp) => {
+      real = rp;
+      if (st.isSymbolicLink()) link = rp;
+      next(er);
+    });
+  });
 };
 
 // starting from a root object, call findUnmet on each layer of children
@@ -295,22 +295,9 @@ const copy = (obj) => {
 };
 
 if (module === require.main) {
-  const util = require('util');
-  console.error('testing');
-
-  let called = 0;
-  npm.load({}, (err) => {
-    if (err != null) throw err;
-    readInstalled(process.cwd(), (er, map) => {
-      console.error(called++);
-      if (er) return console.error(er.stack || er.message);
-      cleanup(map);
-      console.error(util.inspect(map, true, 10, true));
-    });
-  });
-
   const seen = [];
-  function cleanup(map) {
+
+  const cleanup = (map) => {
     if (seen.indexOf(map) !== -1) return;
     seen.push(map);
     for (const i of Object.keys(map)) {
@@ -329,5 +316,19 @@ if (module === require.main) {
       }
     }
     return map;
-  }
+  };
+
+  const util = require('util');
+  console.error('testing');
+
+  let called = 0;
+  npm.load({}, (err) => {
+    if (err != null) throw err;
+    readInstalled(process.cwd(), (er, map) => {
+      console.error(called++);
+      if (er) return console.error(er.stack || er.message);
+      cleanup(map);
+      console.error(util.inspect(map, true, 10, true));
+    });
+  });
 }
