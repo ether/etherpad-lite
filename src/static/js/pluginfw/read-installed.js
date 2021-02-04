@@ -93,9 +93,9 @@ as far as the left-most node_modules folder.
 const npm = require('npm/lib/npm.js');
 const fs = require('graceful-fs');
 const path = require('path');
-const asyncMap = require('slide').asyncMap;
 const semver = require('semver');
 const log = require('log4js').getLogger('pluginfw');
+const util = require('util');
 
 let fuSeen = [];
 let riSeen = [];
@@ -178,14 +178,13 @@ const readInstalled_ = (folder, parent, name, reqver, depth, maxDepth, cb) => {
     rpSeen[real] = obj;
     obj.depth = depth;
     if (depth >= maxDepth) return cb(null, obj);
-    asyncMap(installed, (pkg, cb) => {
+    Promise.all(installed.map(async (pkg) => {
       let rv = obj.dependencies[pkg];
       if (!rv && obj.devDependencies) rv = obj.devDependencies[pkg];
-      readInstalled_(path.resolve(folder, `node_modules/${pkg}`)
-          , obj, pkg, obj.dependencies[pkg], depth + 1, maxDepth
-          , cb);
-    }, (er, installedData) => {
-      if (er) return cb(er);
+      const dir = path.resolve(folder, `node_modules/${pkg}`);
+      const deps = obj.dependencies[pkg];
+      return await util.promisify(readInstalled_)(dir, obj, pkg, deps, depth + 1, maxDepth);
+    })).then((installedData) => {
       installedData.forEach((dep) => {
         obj.dependencies[dep.realName] = dep;
       });
@@ -200,7 +199,7 @@ const readInstalled_ = (folder, parent, name, reqver, depth, maxDepth, cb) => {
         });
       }
       return cb(null, obj);
-    });
+    }, (err) => cb(err || new Error(err)));
   };
 
   fs.readdir(path.resolve(folder, 'node_modules'), (er, i) => {
