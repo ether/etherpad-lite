@@ -4,6 +4,7 @@ const path = require('path');
 const npm = require('npm');
 const fs = require('fs');
 const util = require('util');
+const settings = require('../../utils/Settings');
 
 exports.expressCreateServer = (hookName, args, cb) => {
   args.app.get('/tests/frontend/specs_list.js', async (req, res) => {
@@ -17,6 +18,11 @@ exports.expressCreateServer = (hookName, args, cb) => {
 
     // Keep only *.js files
     files = files.filter((f) => f.endsWith('.js'));
+
+    // remove admin tests if the setting to enable them isn't in settings.json
+    if (!settings.enableAdminUITests) {
+      files = files.filter((file) => file.indexOf('admin') !== 0);
+    }
 
     console.debug('Sent browser the following test specs:', files);
     res.setHeader('content-type', 'application/javascript');
@@ -49,7 +55,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
     fs.readFile(specFilePath, (err, content) => {
       if (err) { return res.send(500); }
 
-      content = `describe(${JSON.stringify(specFileName)}, function(){   ${content}   });`;
+      content = `describe(${JSON.stringify(specFileName)}, function(){${content}});`;
 
       if (!specFilePath.endsWith('index.html')) {
         res.setHeader('content-type', 'application/javascript');
