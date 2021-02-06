@@ -60,7 +60,7 @@
 	"pad.toolbar.ol.title": "Lista ordenada (Ctrl+Shift+N)",
 	"pad.toolbar.ul.title": "Lista desordenada (Ctrl+Shift+L)",
 	"pad.toolbar.indent.title": "Indentar (TAB)",
-	"pad.toolbar.unindent.title": "Indentação (Shift+TAB)",
+	"pad.toolbar.unindent.title": "Remover indentação (Shift+TAB)",
 	"pad.toolbar.undo.title": "Desfazer (Ctrl+Z)",
 	"pad.toolbar.redo.title": "Refazer (Ctrl+Y)",
 	"pad.toolbar.clearAuthorship.title": "Limpar cores de autoria (Ctrl+Shift+C)",

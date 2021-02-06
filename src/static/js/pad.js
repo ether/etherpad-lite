@@ -294,7 +294,7 @@ const handshake = () => {
       // set some client vars
       window.clientVars = obj.data;
 
-      // initalize the pad
+      // initialize the pad
       pad._afterHandshake();
 
       if (clientVars.readonly) {

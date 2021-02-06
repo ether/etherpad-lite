@@ -64,7 +64,6 @@
     "resolve": "1.1.7",
     "security": "1.0.0",
     "semver": "5.6.0",
-    "slide": "1.1.6",
     "socket.io": "^2.4.1",
     "terser": "^4.7.0",
     "threads": "^1.4.0",
@@ -105,7 +104,8 @@
       "/static/js/gritter.js",
       "/static/js/html10n.js",
       "/static/js/jquery.js",
-      "/static/js/vendors/nice-select.js"
+      "/static/js/vendors/nice-select.js",
+      "/tests/frontend/lib/"
     ],
     "overrides": [
       {
@@ -119,7 +119,8 @@
           "**/*"
         ],
         "excludedFiles": [
-          "**/.eslintrc.js"
+          "**/.eslintrc.js",
+          "tests/frontend/**/*"
         ],
         "extends": "etherpad/node"
       },
@@ -134,6 +135,74 @@
         "env": {
           "shared-node-browser": true
         }
+      },
+      {
+        "files": [
+          "tests/**/*"
+        ],
+        "excludedFiles": [
+          "**/.eslintrc.js",
+          "tests/frontend/travis/**/*",
+          "tests/ratelimit/**/*"
+        ],
+        "extends": "etherpad/tests",
+        "rules": {
+          "mocha/no-exports": "off",
+          "mocha/no-top-level-hooks": "off"
+        }
+      },
+      {
+        "files": [
+          "tests/backend/**/*"
+        ],
+        "excludedFiles": [
+          "**/.eslintrc.js"
+        ],
+        "extends": "etherpad/tests/backend",
+        "overrides": [
+          {
+            "files": [
+              "tests/backend/**/*"
+            ],
+            "excludedFiles": [
+              "tests/backend/specs/**/*"
+            ],
+            "rules": {
+              "mocha/no-exports": "off",
+              "mocha/no-top-level-hooks": "off"
+            }
+          }
+        ]
+      },
+      {
+        "files": [
+          "tests/frontend/**/*"
+        ],
+        "excludedFiles": [
+          "**/.eslintrc.js",
+          "tests/frontend/travis/**/*"
+        ],
+        "extends": "etherpad/tests/frontend",
+        "overrides": [
+          {
+            "files": [
+              "tests/frontend/**/*"
+            ],
+            "excludedFiles": [
+              "tests/frontend/specs/**/*"
+            ],
+            "rules": {
+              "mocha/no-exports": "off",
+              "mocha/no-top-level-hooks": "off"
+            }
+          }
+        ]
+      },
+      {
+        "files": [
+          "tests/frontend/travis/**/*"
+        ],
+        "extends": "etherpad/node"
       }
     ],
     "root": true
@@ -148,8 +217,8 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "mocha --timeout 120000 --recursive ../tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
-    "test-container": "mocha --timeout 5000 ../tests/container/specs/api"
+    "test": "mocha --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
+    "test-container": "mocha --timeout 5000 tests/container/specs/api"
   },
   "version": "1.8.7",
   "license": "Apache-2.0"

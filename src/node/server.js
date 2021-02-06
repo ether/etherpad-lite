@@ -3,7 +3,7 @@
 'use strict';
 
 /**
- * This module is started with bin/run.sh. It sets up a Express HTTP and a Socket.IO Server.
+ * This module is started with src/bin/run.sh. It sets up a Express HTTP and a Socket.IO Server.
  * Static file Requests are answered directly from this module, Socket.IO messages are passed
  * to MessageHandler and minfied requests are passed to minified.
  */
@@ -44,6 +44,7 @@ const db = require('./db/DB');
 const express = require('./hooks/express');
 const hooks = require('../static/js/pluginfw/hooks');
 const npm = require('npm/lib/npm.js');
+const pluginDefs = require('../static/js/pluginfw/plugin_defs');
 const plugins = require('../static/js/pluginfw/plugins');
 const settings = require('./utils/Settings');
 const util = require('util');
@@ -120,7 +121,11 @@ exports.start = async () => {
   await util.promisify(npm.load)();
   await db.init();
   await plugins.update();
-  console.info(`Installed plugins: ${plugins.formatPluginsWithVersion()}`);
+  const installedPlugins = Object.values(pluginDefs.plugins)
+      .filter((plugin) => plugin.package.name !== 'ep_etherpad-lite')
+      .map((plugin) => `${plugin.package.name}@${plugin.package.version}`)
+      .join(', ');
+  console.info(`Installed plugins: ${installedPlugins}`);
   console.debug(`Installed parts:\n${plugins.formatParts()}`);
   console.debug(`Installed hooks:\n${plugins.formatHooks()}`);
   await hooks.aCallAll('loadSettings', {settings});
