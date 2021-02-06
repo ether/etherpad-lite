@@ -11,5 +11,5 @@ heading.
 
 Every `.html` file is generated based on the corresponding
 `.md` file in the `doc/api/` folder in the source tree. The
-documentation is generated using the `bin/doc/generate.js` program.
+documentation is generated using the `src/bin/doc/generate.js` program.
 The HTML template is located at `doc/template.html`.

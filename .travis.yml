@@ -46,19 +46,19 @@ jobs:
       name: "Test the Frontend without Plugins"
       install:
         - *set_loglevel_warn
-        - "tests/frontend/travis/sauce_tunnel.sh"
-        - "bin/installDeps.sh"
+        - "src/tests/frontend/travis/sauce_tunnel.sh"
+        - "src/bin/installDeps.sh"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
       script:
-        - "./tests/frontend/travis/runner.sh"
+        - "./src/tests/frontend/travis/runner.sh"
     - name: "Run the Backend tests without Plugins"
       install:
         - *install_libreoffice
         - *set_loglevel_warn
-        - "bin/installDeps.sh"
+        - "src/bin/installDeps.sh"
         - "cd src && npm install && cd -"
       script:
-        - "tests/frontend/travis/runnerBackend.sh"
+        - "src/tests/frontend/travis/runnerBackend.sh"
     - name: "Test the Dockerfile"
       install:
         - "cd src && npm install && cd -"
@@ -69,24 +69,24 @@ jobs:
     - name: "Load test Etherpad without Plugins"
       install:
         - *set_loglevel_warn
-        - "bin/installDeps.sh"
+        - "src/bin/installDeps.sh"
         - "cd src && npm install && cd -"
         - "npm install -g etherpad-load-test"
       script:
-        - "tests/frontend/travis/runnerLoadTest.sh"
+        - "src/tests/frontend/travis/runnerLoadTest.sh"
     # we can only frontend tests from the ether/ organization and not from forks.
     # To request tests to be run ask a maintainer to fork your repo to ether/
     - if: fork = false
       name: "Test the Frontend Plugins only"
       install:
         - *set_loglevel_warn
-        - "tests/frontend/travis/sauce_tunnel.sh"
-        - "bin/installDeps.sh"
-        - "rm tests/frontend/specs/*"
+        - "src/tests/frontend/travis/sauce_tunnel.sh"
+        - "src/bin/installDeps.sh"
+        - "rm src/tests/frontend/specs/*"
         - *install_plugins
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
       script:
-        - "./tests/frontend/travis/runner.sh"
+        - "./src/tests/frontend/travis/runner.sh"
     - name: "Lint test package-lock.json"
       install:
         - "npm install lockfile-lint"
@@ -96,11 +96,11 @@ jobs:
       install:
         - *install_libreoffice
         - *set_loglevel_warn
-        - "bin/installDeps.sh"
+        - "src/bin/installDeps.sh"
         - *install_plugins
         - "cd src && npm install && cd -"
       script:
-        - "tests/frontend/travis/runnerBackend.sh"
+        - "src/tests/frontend/travis/runnerBackend.sh"
     - name: "Test the Dockerfile"
       install:
         - "cd src && npm install && cd -"
@@ -111,24 +111,24 @@ jobs:
     - name: "Load test Etherpad with Plugins"
       install:
         - *set_loglevel_warn
-        - "bin/installDeps.sh"
+        - "src/bin/installDeps.sh"
         - *install_plugins
         - "cd src && npm install && cd -"
         - "npm install -g etherpad-load-test"
       script:
-        - "tests/frontend/travis/runnerLoadTest.sh"
+        - "src/tests/frontend/travis/runnerLoadTest.sh"
     - name: "Test rate limit"
       install:
         - "docker network create --subnet=172.23.42.0/16 ep_net"
         - "docker build -f Dockerfile -t epl-debian-slim ."
-        - "docker build -f tests/ratelimit/Dockerfile.nginx -t nginx-latest ."
-        - "docker build -f tests/ratelimit/Dockerfile.anotherip -t anotherip ."
+        - "docker build -f src/tests/ratelimit/Dockerfile.nginx -t nginx-latest ."
+        - "docker build -f src/tests/ratelimit/Dockerfile.anotherip -t anotherip ."
         - "docker run -p 8081:80 --rm --network ep_net --ip 172.23.42.1 -d nginx-latest"
         - "docker run --name etherpad-docker -p 9000:9001 --rm --network ep_net --ip 172.23.42.2 -e 'TRUST_PROXY=true' epl-debian-slim &"
         - "docker run --rm --network ep_net --ip 172.23.42.3 --name anotherip -dt anotherip"
-        - "./bin/installDeps.sh"
+        - "./src/bin/installDeps.sh"
       script:
-        - "cd tests/ratelimit && bash testlimits.sh"
+        - "cd src/tests/ratelimit && bash testlimits.sh"
 
 notifications:
   irc:

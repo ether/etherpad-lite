@@ -282,7 +282,7 @@ Scroll.prototype.scrollNodeVerticallyIntoView = function (rep, innerHeight) {
   const linePosition = caretPosition.getPosition();
   if (linePosition) {
     const distanceOfTopOfViewport = linePosition.top - viewport.top;
-    const distanceOfBottomOfViewport = viewport.bottom - linePosition.bottom;
+    const distanceOfBottomOfViewport = viewport.bottom - linePosition.bottom - linePosition.height;
     const caretIsAboveOfViewport = distanceOfTopOfViewport < 0;
     const caretIsBelowOfViewport = distanceOfBottomOfViewport < 0;
     if (caretIsAboveOfViewport) {
@@ -290,11 +290,15 @@ Scroll.prototype.scrollNodeVerticallyIntoView = function (rep, innerHeight) {
         distanceOfTopOfViewport - this._getPixelsRelativeToPercentageOfViewport(innerHeight, true);
       this._scrollYPage(pixelsToScroll);
     } else if (caretIsBelowOfViewport) {
-      const pixelsToScroll = -distanceOfBottomOfViewport +
-        this._getPixelsRelativeToPercentageOfViewport(innerHeight);
-      this._scrollYPage(pixelsToScroll);
-    } else {
-      this.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary(rep, true, innerHeight);
+      // setTimeout is required here as line might not be fully rendered onto the pad
+      setTimeout(() => {
+        const outer = window.parent;
+        // scroll to the very end of the pad outer
+        outer.scrollTo(0, outer[0].innerHeight);
+      }, 150);
+      // if the above setTimeout and functionality is removed then hitting an enter
+      // key while on the last line wont be an optimal user experience
+      // Details at: https://github.com/ether/etherpad-lite/pull/4639/files
     }
   }
 };

@@ -18,13 +18,13 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Install all dependencies and symlink for ep_etherpad-lite
-      run: bin/installDeps.sh
+      run: src/bin/installDeps.sh
 
     - name: Install etherpad-load-test
       run: sudo npm install -g etherpad-load-test
 
     - name: Run load test
-      run: tests/frontend/travis/runnerLoadTest.sh
+      run: src/tests/frontend/travis/runnerLoadTest.sh
 
   withplugins:
     # run on pushes to any branch
@@ -66,8 +66,8 @@ jobs:
     # if npm correctly hoists the dependencies, the hoisting seems to confuse
     # tools such as `npm outdated`, `npm update`, and some ESLint rules.
     - name: Install all dependencies and symlink for ep_etherpad-lite
-      run: bin/installDeps.sh
+      run: src/bin/installDeps.sh
 
     # configures some settings and runs npm run test
     - name: Run load test
-      run: tests/frontend/travis/runnerLoadTest.sh
+      run: src/tests/frontend/travis/runnerLoadTest.sh

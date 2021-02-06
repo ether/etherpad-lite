@@ -141,7 +141,7 @@ const resources = {
     // We need an operation that returns a SessionInfo so it can be picked up by the codegen :(
     info: {
       operationId: 'getSessionInfo',
-      summary: 'returns informations about a session',
+      summary: 'returns information about a session',
       responseSchema: {info: {$ref: '#/components/schemas/SessionInfo'}},
     },
   },

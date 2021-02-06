@@ -22,6 +22,7 @@
 
 const log4js = require('log4js');
 const messageLogger = log4js.getLogger('message');
+const stats = require('../stats');
 
 /**
  * Saves all components
@@ -77,6 +78,11 @@ exports.setSocketIO = (_socket) => {
     });
 
     client.on('disconnect', () => {
+      // store the lastDisconnect as a timestamp, this is useful if you want to know
+      // when the last user disconnected.  If your activePads is 0 and totalUsers is 0
+      // you can say, if there has been no active pads or active users for 10 minutes
+      // this instance can be brought out of a scaling cluster.
+      stats.gauge('lastDisconnect', () => Date.now());
       // tell all components about this disconnect
       for (const i in components) {
         components[i].handleDisconnect(client);

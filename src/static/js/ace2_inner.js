@@ -696,7 +696,6 @@ function Ace2Inner() {
         sideDiv.parentNode.classList.toggle('line-numbers-hidden', !hasLineNumbers);
         fixView();
       },
-      grayedout: (val) => outerWin.document.body.classList.toggle('grayedout', !!val),
       dmesg: () => { dmesg = window.dmesg = value; },
       userauthor: (value) => {
         thisAuthor = String(value);
@@ -2180,7 +2179,7 @@ function Ace2Inner() {
             isScrollableEditEvent(currentCallStack.type);
         const innerHeight = getInnerHeight();
         scroll.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary(
-            rep, isScrollableEvent, innerHeight
+            rep, isScrollableEvent, innerHeight*2
         );
       }
 
