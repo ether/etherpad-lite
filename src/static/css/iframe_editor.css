@@ -151,6 +151,3 @@ body.mozilla, body.safari {
 #innerdocbody a {
   cursor: pointer !important;
 }
-body.grayedout {
-  background-color: #eee !important
-}
