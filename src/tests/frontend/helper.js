@@ -1,4 +1,5 @@
 'use strict';
+
 const helper = {}; // eslint-disable-line no-redeclare
 
 (function () {
@@ -178,6 +179,22 @@ const helper = {}; // eslint-disable-line no-redeclare
     });
 
     return padName;
+  };
+
+  helper.newAdmin = async function (page) {
+    // define the iframe
+    $iframe = $(`<iframe src='/admin/${page}'></iframe>`);
+
+    // clean up inner iframe references
+    helper.admin$ = null;
+
+    // remove old iframe
+    $('#iframe-container iframe').remove();
+    // set new iframe
+    $('#iframe-container').append($iframe);
+    $iframe.one('load', () => {
+      helper.admin$ = getFrameJQuery($('#iframe-container iframe'));
+    });
   };
 
   helper.waitFor = function (conditionFunc, timeoutTime = 1900, intervalTime = 10) {
