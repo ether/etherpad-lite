@@ -380,6 +380,12 @@ exports.commitRateLimiting = {
  */
 exports.importMaxFileSize = 50 * 1024 * 1024;
 
+/*
+ * Disable Admin UI tests 
+ */
+exports.enableAdminUITests = false;
+
+
 // checks if abiword is avaiable
 exports.abiwordAvailable = () => {
   if (exports.abiword != null) {
