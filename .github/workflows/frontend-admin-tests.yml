@@ -17,10 +17,10 @@ jobs:
         SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
         SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
         TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}
-      run: tests/frontend/travis/sauce_tunnel.sh
+      run: src/tests/frontend/travis/sauce_tunnel.sh
 
     - name: Install all dependencies and symlink for ep_etherpad-lite
-      run: bin/installDeps.sh
+      run: src/bin/installDeps.sh
 
       # We intentionally install a much old ep_align version to test update minor versions
     - name: Install etherpad plugins
@@ -37,7 +37,7 @@ jobs:
       run: "sed -i 's/\"enableAdminUITests\": false/\"enableAdminUITests\": true,\\n\"users\":{\"admin\":{\"password\":\"changeme\",\"is_admin\":true}}/' settings.json"
 
     - name: Remove standard frontend test files, so only admin tests are run
-      run: mv tests/frontend/specs/* /tmp && mv /tmp/admin*.js tests/frontend/specs
+      run: mv src/tests/frontend/specs/* /tmp && mv /tmp/admin*.js src/tests/frontend/specs
 
     - name: Run the frontend admin tests
       shell: bash
@@ -47,4 +47,4 @@ jobs:
         TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}
         GIT_HASH: ${{ steps.environment.outputs.sha_short }}
       run: |
-        tests/frontend/travis/runner.sh
+        src/tests/frontend/travis/runner.sh
