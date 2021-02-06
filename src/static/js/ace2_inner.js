@@ -2179,7 +2179,7 @@ function Ace2Inner() {
             isScrollableEditEvent(currentCallStack.type);
         const innerHeight = getInnerHeight();
         scroll.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary(
-            rep, isScrollableEvent, innerHeight
+            rep, isScrollableEvent, innerHeight*2
         );
       }
 
