@@ -161,7 +161,6 @@ const padeditor = (() => {
     },
     disable: () => {
       if (self.ace) {
-        self.ace.setProperty('grayedOut', true);
         self.ace.setEditable(false);
       }
     },
