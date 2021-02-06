@@ -237,6 +237,8 @@ const getTXTFromAtext = (pad, atext, authorColors) => {
         if (line.listLevel > 1) {
           let x = 1;
           while (x <= line.listLevel - 1) {
+            // if it's undefined to avoid undefined.undefined.1 for 0.0.1
+            if (!listNumbers[x]) listNumbers[x] = 0;
             pieces.push(`${listNumbers[x]}.`);
             x++;
           }
