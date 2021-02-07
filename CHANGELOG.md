@@ -1,26 +1,54 @@
 # 1.8.8
 
 ### Compatibility changes
+
 * Node.js 10.17.0 or newer is now required.
 * The `bin/` and `tests/` directories were moved under `src/`. Symlinks were
   added at the old locations to hopefully avoid breaking user scripts and other
-  stuff.
+  tools.
+* The top-level `package.json` file, added in v1.8.7, has been removed due to
+  problematic npm behavior. Whenever you install a plugin you will see the
+  following benign warnings that can be safely ignored:
+
+  ```
+  npm WARN saveError ENOENT: no such file or directory, open '.../package.json'
+  npm WARN enoent ENOENT: no such file or directory, open '.../package.json'
+  npm WARN develop No description
+  npm WARN develop No repository field.
+  npm WARN develop No README data
+  npm WARN develop No license field.
+  ```
 
 ### Notable new features
+
+* You can now generate a link to a specific line number in a pad. Appending
+  `#L10` to a pad URL will cause your browser to scroll down to line 10.
 * Database performance is significantly improved.
-* Admin UI is now test covered in CI and can be enable in `settings.json`.
-* New Stats endpoints activePads & lastDisconnected.
+* Admin UI now has test coverage in CI. (The tests are not enabled by default;
+  see `settings.json`.)
+* New stats: `activePads`, `lastDisconnected`, `memoryUsageHeap`.
+* For plugin authors:
+  * New `callAllSerial()` function that invokes hook functions like `callAll()`
+    except it supports asynchronous hook functions.
+  * `callFirst()` and `aCallFirst()` now support the same wide range of hook
+    function behaviors that `callAll()`, `aCallAll()`, and `callAllSerial()`
+    support. Also, they now warn when a hook function misbehaves.
+  * The `padCopy` and `padRemove` hooks now support asynchronous hook functions.
+  * Backend tests for plugins can now use the
+    [`ep_etherpad-lite/tests/backend/common`](src/tests/backend/common.js)
+    module to start the server and simplify API access.
 
 ### Notable fixes
+
 * Enter key now stays in focus when inserted at bottom of viewport.
 * Interface no longer loses color variants on disconnect/reconnect event.
 * Removed npm.load to support npm7.
 * General code quality is further significantly improved.
-* Server shut down / restart after admin event reliability improved.
+* Improved reliability of server shutdown and restart.
 * No longer error if no buttons are visible.
-* Resolve issue within database layer which stopped certain user attributes being stored.
-* Update SocketIO to patch a security advisory
-
+* Update Socket.IO to address a minor security vulnerability.
+* For plugin authors:
+  * Fixed `collectContentLineText` return value handling.
 
 # 1.8.7
 ### Compatibility-breaking changes
