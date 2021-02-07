@@ -34,10 +34,17 @@ const log4js = require('log4js');
 const hooks = require('../../static/js/pluginfw/hooks.js');
 const util = require('util');
 
-const fsp_exists = util.promisify(fs.exists);
 const fsp_rename = util.promisify(fs.rename);
 const fsp_readFile = util.promisify(fs.readFile);
 const fsp_unlink = util.promisify(fs.unlink);
+
+const rm = async (path) => {
+  try {
+    await fsp_unlink(path);
+  } catch (err) {
+    if (err.code !== 'ENOENT') throw err;
+  }
+};
 
 let convertor = null;
 let exportExtension = 'htm';
@@ -239,19 +246,8 @@ const doImport = async (req, res, padId) => {
   await padMessageHandler.updatePadClients(pad);
 
   // clean up temporary files
-
-  /*
-   * TODO: directly delete the file and handle the eventual error. Checking
-   * before for existence is prone to race conditions, and does not handle any
-   * errors anyway.
-   */
-  if (await fsp_exists(srcFile)) {
-    fsp_unlink(srcFile);
-  }
-
-  if (await fsp_exists(destFile)) {
-    fsp_unlink(destFile);
-  }
+  rm(srcFile);
+  rm(destFile);
 };
 
 exports.doImport = (req, res, padId) => {
