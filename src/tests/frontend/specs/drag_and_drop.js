@@ -23,9 +23,13 @@ describe('drag and drop', function () {
     });
 
     context('and user triggers UNDO', function () {
-      before(function () {
+      before(async function () {
+        const originalHTML = helper.padInner$('body').html();
         const $undoButton = helper.padChrome$('.buttonicon-undo');
         $undoButton.click();
+        await helper.waitForPromise(
+            () => originalHTML !== helper.padInner$('body').html()
+        );
       });
 
       it('moves text back to its original place', function (done) {
@@ -58,9 +62,13 @@ describe('drag and drop', function () {
     });
 
     context('and user triggers UNDO', function () {
-      before(function () {
+      before(async function () {
+        const originalHTML = helper.padInner$('body').html();
         const $undoButton = helper.padChrome$('.buttonicon-undo');
         $undoButton.click();
+        await helper.waitForPromise(
+            () => originalHTML !== helper.padInner$('body').html()
+        );
       });
 
       it('moves text back to its original place', function (done) {
