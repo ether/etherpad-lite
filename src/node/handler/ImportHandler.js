@@ -174,7 +174,7 @@ const doImport = async (req, res, padId) => {
     // See https://github.com/ether/etherpad-lite/issues/2572
     if (fileIsHTML || !useConvertor) {
       // if no convertor only rename
-      fs.renameSync(srcFile, destFile);
+      await fsp_rename(srcFile, destFile);
     } else {
       // @TODO - no Promise interface for convertors (yet)
       await new Promise((resolve, reject) => {
