@@ -35,11 +35,9 @@ describe('select formatting buttons when selection has style applied', function 
     $line.sendkeys('{leftarrow}');
   };
 
-  const undo = async function () {
-    const originalHTML = helper.padInner$('body').html();
+  const undo = function () {
     const $undoButton = helper.padChrome$('.buttonicon-undo');
     $undoButton.click();
-    await helper.waitFor(() => originalHTML !== helper.padInner$('body').html());
   };
 
   const testIfFormattingButtonIsDeselected = function (style) {
@@ -82,11 +80,9 @@ describe('select formatting buttons when selection has style applied', function 
     // }, 1000);
   };
 
-  const pressFormattingShortcutOnSelection = async function (key) {
+  const pressFormattingShortcutOnSelection = function (key) {
     const inner$ = helper.padInner$;
-    const originalHTML = helper.padInner$('body').html();
 
-    helper.waitFor(() => originalHTML !== helper.padInner$('body').html());
     // get the first text element out of the inner iframe
     const $firstTextElement = inner$('div').first();
 
@@ -97,8 +93,6 @@ describe('select formatting buttons when selection has style applied', function 
     e.ctrlKey = true; // Control key
     e.which = key.charCodeAt(0); // I, U, B, 5
     inner$('#innerdocbody').trigger(e);
-    await helper.waitForPromise(
-      () => originalHTML !== helper.padInner$('body').html());
   };
 
   STYLES.forEach((style) => {
@@ -108,8 +102,8 @@ describe('select formatting buttons when selection has style applied', function 
         applyStyleOnLineAndSelectIt(FIRST_LINE, style, done);
       });
 
-      after(async function () {
-        await undo();
+      after(function () {
+        undo();
       });
 
       testIfFormattingButtonIsSelected(style);
@@ -121,8 +115,8 @@ describe('select formatting buttons when selection has style applied', function 
         applyStyleOnLineAndPlaceCaretOnit(FIRST_LINE, style, done);
       });
 
-      after(async function () {
-        await undo();
+      after(function () {
+        undo();
       });
 
       testIfFormattingButtonIsSelected(style);
@@ -131,27 +125,33 @@ describe('select formatting buttons when selection has style applied', function 
 
   context('when user applies a style and the selection does not change', function () {
     const style = STYLES[0]; // italic
+    before(function () {
+      applyStyleOnLine(style, FIRST_LINE);
+    });
 
-    it('selects the style button', async function () {
+    // clean the style applied
+    after(function () {
       applyStyleOnLine(style, FIRST_LINE);
-      await helper.waitForPromise(() => isButtonSelected(style) === true);
+    });
+
+    it('selects the style button', function (done) {
       expect(isButtonSelected(style)).to.be(true);
-      applyStyleOnLine(style, FIRST_LINE);
+      done();
     });
   });
 
   SHORTCUT_KEYS.forEach((key, index) => {
     const styleOfTheShortcut = STYLES[index]; // italic, bold, ...
     context(`when user presses CMD + ${key}`, function () {
-      before(async function () {
-        await pressFormattingShortcutOnSelection(key);
+      before(function () {
+        pressFormattingShortcutOnSelection(key);
       });
 
       testIfFormattingButtonIsSelected(styleOfTheShortcut);
 
       context(`and user presses CMD + ${key} again`, function () {
-        before(async function () {
-          await pressFormattingShortcutOnSelection(key);
+        before(function () {
+          pressFormattingShortcutOnSelection(key);
         });
 
         testIfFormattingButtonIsDeselected(styleOfTheShortcut);

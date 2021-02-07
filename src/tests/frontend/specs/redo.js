@@ -45,12 +45,12 @@ describe('undo button then redo button', function () {
     const modifiedValue = $firstTextElement.text(); // get the modified value
     expect(modifiedValue).not.to.be(originalValue); // expect the value to change
 
-    let e = new inner$.Event(helper.evtType);
+    let e = inner$.Event(helper.evtType);
     e.ctrlKey = true; // Control key
     e.which = 90; // z
     inner$('#innerdocbody').trigger(e);
 
-    e = new inner$.Event(helper.evtType);
+    e = inner$.Event(helper.evtType);
     e.ctrlKey = true; // Control key
     e.which = 121; // y
     inner$('#innerdocbody').trigger(e);
