@@ -1,4 +1,4 @@
-# Changes for the next release
+# 1.8.8
 
 ### Compatibility changes
 * Node.js 10.17.0 or newer is now required.
@@ -8,6 +8,19 @@
 
 ### Notable new features
 * Database performance is significantly improved.
+* Admin UI is now test covered in CI and can be enable in `settings.json`.
+* New Stats endpoints activePads & lastDisconnected.
+
+### Notable fixes
+* Enter key now stays in focus when inserted at bottom of viewport.
+* Interface no longer loses color variants on disconnect/reconnect event.
+* Removed npm.load to support npm7.
+* General code quality is further significantly improved.
+* Server shut down / restart after admin event reliability improved.
+* No longer error if no buttons are visible.
+* Resolve issue within database layer which stopped certain user attributes being stored.
+* Update SocketIO to patch a security advisory
+
 
 # 1.8.7
 ### Compatibility-breaking changes
