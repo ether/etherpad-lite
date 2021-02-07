@@ -152,7 +152,6 @@ const doImport = async (req, res, padId) => {
       throw 'padHasData';
     }
 
-    const fsp_readFile = util.promisify(fs.readFile);
     const _text = await fsp_readFile(srcFile, 'utf8');
     req.directDatabaseAccess = true;
     await importEtherpad.setPadRaw(padId, _text);
