@@ -24,14 +24,11 @@ describe('Pad modal', function () {
     });
 
     context('and user clicks on editor', function () {
-      beforeEach(function () {
-        clickOnPadInner();
-      });
-
       it('does not close the modal', function (done) {
+        clickOnPadInner();
         const $modal = helper.padChrome$(MODAL_SELECTOR);
         const modalIsVisible = $modal.hasClass('popup-show');
-
+        helper.waitForPromise(() => $modal.hasClass('popup-show') === true);
         expect(modalIsVisible).to.be(true);
 
         done();
@@ -39,14 +36,13 @@ describe('Pad modal', function () {
     });
 
     context('and user clicks on pad outer', function () {
-      beforeEach(function () {
-        clickOnPadOuter();
-      });
-
       it('does not close the modal', function (done) {
         const $modal = helper.padChrome$(MODAL_SELECTOR);
         const modalIsVisible = $modal.hasClass('popup-show');
 
+        clickOnPadOuter();
+
+        helper.waitForPromise(() => $modal.hasClass('popup-show') === true);
         expect(modalIsVisible).to.be(true);
 
         done();
@@ -73,22 +69,18 @@ describe('Pad modal', function () {
     });
 */
     context('and user clicks on editor', function () {
-      beforeEach(function () {
-        clickOnPadInner();
-      });
-
       it('closes the modal', function (done) {
+        clickOnPadInner();
+        helper.waitForPromise(() => isModalOpened(MODAL_SELECTOR) === false);
         expect(isModalOpened(MODAL_SELECTOR)).to.be(false);
         done();
       });
     });
 
     context('and user clicks on pad outer', function () {
-      beforeEach(function () {
-        clickOnPadOuter();
-      });
-
       it('closes the modal', function (done) {
+        clickOnPadOuter();
+        helper.waitForPromise(() => isModalOpened(MODAL_SELECTOR) === false);
         expect(isModalOpened(MODAL_SELECTOR)).to.be(false);
         done();
       });
