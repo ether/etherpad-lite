@@ -39,7 +39,7 @@ describe('select formatting buttons when selection has style applied', function 
     const originalHTML = helper.padInner$('body').html();
     const $undoButton = helper.padChrome$('.buttonicon-undo');
     $undoButton.click();
-    await helper.waitFor(() => originalHTML !== helper.padInner$('body').html());
+    await helper.waitForPromise(() => helper.padInner$('body').html() !== originalHTML);
   };
 
   const testIfFormattingButtonIsDeselected = function (style) {
@@ -86,7 +86,6 @@ describe('select formatting buttons when selection has style applied', function 
     const inner$ = helper.padInner$;
     const originalHTML = helper.padInner$('body').html();
 
-    helper.waitFor(() => originalHTML !== helper.padInner$('body').html());
     // get the first text element out of the inner iframe
     const $firstTextElement = inner$('div').first();
 
@@ -97,8 +96,7 @@ describe('select formatting buttons when selection has style applied', function 
     e.ctrlKey = true; // Control key
     e.which = key.charCodeAt(0); // I, U, B, 5
     inner$('#innerdocbody').trigger(e);
-    await helper.waitForPromise(
-      () => originalHTML !== helper.padInner$('body').html());
+    await helper.waitForPromise(() => helper.padInner$('body').html() !== originalHTML);
   };
 
   STYLES.forEach((style) => {
@@ -130,12 +128,10 @@ describe('select formatting buttons when selection has style applied', function 
   });
 
   context('when user applies a style and the selection does not change', function () {
-    const style = STYLES[0]; // italic
-
     it('selects the style button', async function () {
+      const style = STYLES[0]; // italic
       applyStyleOnLine(style, FIRST_LINE);
       await helper.waitForPromise(() => isButtonSelected(style) === true);
-      expect(isButtonSelected(style)).to.be(true);
       applyStyleOnLine(style, FIRST_LINE);
     });
   });

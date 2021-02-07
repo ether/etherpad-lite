@@ -1,134 +1,136 @@
 'use strict';
 
-describe('assign ordered list', function () {
-  // create a new pad before each test run
-  beforeEach(function (cb) {
-    helper.newPad(cb);
-    this.timeout(60000);
-  });
-
-  it('inserts ordered list text', function (done) {
-    const inner$ = helper.padInner$;
-    const chrome$ = helper.padChrome$;
-
-    const $insertorderedlistButton = chrome$('.buttonicon-insertorderedlist');
-    $insertorderedlistButton.click();
-
-    helper.waitFor(() => inner$('div').first().find('ol li').length === 1).done(done);
-  });
-
-  context('when user presses Ctrl+Shift+N', function () {
-    context('and pad shortcut is enabled', function () {
-      beforeEach(async function () {
-        const originalHTML = helper.padInner$('body').html();
-        makeSureShortcutIsEnabled('cmdShiftN');
-        triggerCtrlShiftShortcut('N');
-        await helper.waitForPromise(
-            () => helper.padInner$('body').html !== originalHTML);
-      });
-
-      it('inserts unordered list', function (done) {
-        helper.waitFor(() => helper.padInner$('div').first().find('ol li').length === 1).done(done);
-      });
+describe('ordered_list.js', function () {
+  describe('assign ordered list', function () {
+    // create a new pad before each test run
+    beforeEach(function (cb) {
+      helper.newPad(cb);
+      this.timeout(60000);
     });
 
-    context('and pad shortcut is disabled', function () {
-      beforeEach(async function () {
-        const originalHTML = helper.padInner$('body').html();
-        makeSureShortcutIsDisabled('cmdShiftN');
-        triggerCtrlShiftShortcut('N');
-        await helper.waitForPromise(
-            () => helper.padInner$('body').html !== originalHTML);
+    it('inserts ordered list text', function (done) {
+      const inner$ = helper.padInner$;
+      const chrome$ = helper.padChrome$;
+
+      const $insertorderedlistButton = chrome$('.buttonicon-insertorderedlist');
+      $insertorderedlistButton.click();
+
+      helper.waitFor(() => inner$('div').first().find('ol li').length === 1).done(done);
+    });
+
+    context('when user presses Ctrl+Shift+N', function () {
+      context('and pad shortcut is enabled', function () {
+        beforeEach(async function () {
+          const originalHTML = helper.padInner$('body').html();
+          makeSureShortcutIsEnabled('cmdShiftN');
+          triggerCtrlShiftShortcut('N');
+          await helper.waitForPromise(() => helper.padInner$('body').html() !== originalHTML);
+        });
+
+        it('inserts unordered list', function (done) {
+          helper.waitFor(() => helper.padInner$('div').first().find('ol li').length === 1)
+              .done(done);
+        });
       });
 
-      it('does not insert unordered list', function (done) {
-        helper.waitFor(
-            () => helper.padInner$('div').first().find('ol li').length === 1).done(() => {
-          expect().fail(() => 'Unordered list inserted, should ignore shortcut');
-        }).fail(() => {
-          done();
+      context('and pad shortcut is disabled', function () {
+        beforeEach(async function () {
+          const originalHTML = helper.padInner$('body').html();
+          makeSureShortcutIsDisabled('cmdShiftN');
+          triggerCtrlShiftShortcut('N');
+          await helper.waitForPromise(() => helper.padInner$('body').html() !== originalHTML);
+        });
+
+        it('does not insert unordered list', function (done) {
+          helper.waitFor(() => helper.padInner$('div').first().find('ol li').length === 1)
+              .done(() => {
+                expect().fail(() => 'Unordered list inserted, should ignore shortcut');
+              })
+              .fail(() => {
+                done();
+              });
         });
       });
     });
-  });
 
-  context('when user presses Ctrl+Shift+1', function () {
-    context('and pad shortcut is enabled', function () {
-      beforeEach(async function () {
-        const originalHTML = helper.padInner$('body').html();
-        makeSureShortcutIsEnabled('cmdShift1');
-        triggerCtrlShiftShortcut('1');
-        await helper.waitForPromise(
-            () => helper.padInner$('body').html !== originalHTML);
+    context('when user presses Ctrl+Shift+1', function () {
+      context('and pad shortcut is enabled', function () {
+        beforeEach(async function () {
+          const originalHTML = helper.padInner$('body').html();
+          makeSureShortcutIsEnabled('cmdShift1');
+          triggerCtrlShiftShortcut('1');
+          await helper.waitForPromise(() => helper.padInner$('body').html() !== originalHTML);
+        });
+
+        it('inserts unordered list', function (done) {
+          helper.waitFor(() => helper.padInner$('div').first().find('ol li').length === 1)
+              .done(done);
+        });
       });
 
-      it('inserts unordered list', function (done) {
-        helper.waitFor(() => helper.padInner$('div').first().find('ol li').length === 1).done(done);
-      });
-    });
+      context('and pad shortcut is disabled', function () {
+        beforeEach(async function () {
+          const originalHTML = helper.padInner$('body').html();
+          makeSureShortcutIsDisabled('cmdShift1');
+          triggerCtrlShiftShortcut('1');
+          await helper.waitForPromise(() => helper.padInner$('body').html() !== originalHTML);
+        });
 
-    context('and pad shortcut is disabled', function () {
-      beforeEach(async function () {
-        const originalHTML = helper.padInner$('body').html();
-        makeSureShortcutIsDisabled('cmdShift1');
-        triggerCtrlShiftShortcut('1');
-        await helper.waitForPromise(
-            () => helper.padInner$('body').html !== originalHTML);
-      });
-
-      it('does not insert unordered list', function (done) {
-        helper.waitFor(
-            () => helper.padInner$('div').first().find('ol li').length === 1).done(() => {
-          expect().fail(() => 'Unordered list inserted, should ignore shortcut');
-        }).fail(() => {
-          done();
+        it('does not insert unordered list', function (done) {
+          helper.waitFor(() => helper.padInner$('div').first().find('ol li').length === 1)
+              .done(() => {
+                expect().fail(() => 'Unordered list inserted, should ignore shortcut');
+              })
+              .fail(() => {
+                done();
+              });
         });
       });
     });
-  });
 
-  xit('issue #1125 keeps the numbered list on enter for the new line', function (done) {
-    // EMULATES PASTING INTO A PAD
-    const inner$ = helper.padInner$;
-    const chrome$ = helper.padChrome$;
+    xit('issue #1125 keeps the numbered list on enter for the new line', function (done) {
+      // EMULATES PASTING INTO A PAD
+      const inner$ = helper.padInner$;
+      const chrome$ = helper.padChrome$;
 
-    const $insertorderedlistButton = chrome$('.buttonicon-insertorderedlist');
-    $insertorderedlistButton.click();
+      const $insertorderedlistButton = chrome$('.buttonicon-insertorderedlist');
+      $insertorderedlistButton.click();
 
-    // type a bit, make a line break and type again
-    const $firstTextElement = inner$('div span').first();
-    $firstTextElement.sendkeys('line 1');
-    $firstTextElement.sendkeys('{enter}');
-    $firstTextElement.sendkeys('line 2');
-    $firstTextElement.sendkeys('{enter}');
+      // type a bit, make a line break and type again
+      const $firstTextElement = inner$('div span').first();
+      $firstTextElement.sendkeys('line 1');
+      $firstTextElement.sendkeys('{enter}');
+      $firstTextElement.sendkeys('line 2');
+      $firstTextElement.sendkeys('{enter}');
 
-    helper.waitFor(() => inner$('div span').first().text().indexOf('line 2') === -1).done(() => {
-      const $newSecondLine = inner$('div').first().next();
-      const hasOLElement = $newSecondLine.find('ol li').length === 1;
-      expect(hasOLElement).to.be(true);
-      expect($newSecondLine.text()).to.be('line 2');
-      const hasLineNumber = $newSecondLine.find('ol').attr('start') === 2;
-      // This doesn't work because pasting in content doesn't work
-      expect(hasLineNumber).to.be(true);
-      done();
+      helper.waitFor(() => inner$('div span').first().text().indexOf('line 2') === -1).done(() => {
+        const $newSecondLine = inner$('div').first().next();
+        const hasOLElement = $newSecondLine.find('ol li').length === 1;
+        expect(hasOLElement).to.be(true);
+        expect($newSecondLine.text()).to.be('line 2');
+        const hasLineNumber = $newSecondLine.find('ol').attr('start') === 2;
+        // This doesn't work because pasting in content doesn't work
+        expect(hasLineNumber).to.be(true);
+        done();
+      });
     });
+
+    const triggerCtrlShiftShortcut = (shortcutChar) => {
+      const inner$ = helper.padInner$;
+      const e = new inner$.Event(helper.evtType);
+      e.ctrlKey = true;
+      e.shiftKey = true;
+      e.which = shortcutChar.toString().charCodeAt(0);
+      inner$('#innerdocbody').trigger(e);
+    };
+
+    const makeSureShortcutIsDisabled = (shortcut) => {
+      helper.padChrome$.window.clientVars.padShortcutEnabled[shortcut] = false;
+    };
+    const makeSureShortcutIsEnabled = (shortcut) => {
+      helper.padChrome$.window.clientVars.padShortcutEnabled[shortcut] = true;
+    };
   });
-
-  const triggerCtrlShiftShortcut = (shortcutChar) => {
-    const inner$ = helper.padInner$;
-    const e = new inner$.Event(helper.evtType);
-    e.ctrlKey = true;
-    e.shiftKey = true;
-    e.which = shortcutChar.toString().charCodeAt(0);
-    inner$('#innerdocbody').trigger(e);
-  };
-
-  const makeSureShortcutIsDisabled = (shortcut) => {
-    helper.padChrome$.window.clientVars.padShortcutEnabled[shortcut] = false;
-  };
-  const makeSureShortcutIsEnabled = (shortcut) => {
-    helper.padChrome$.window.clientVars.padShortcutEnabled[shortcut] = true;
-  };
 
   describe('Pressing Tab in an OL increases and decreases indentation', function () {
     // create a new pad before each test run
