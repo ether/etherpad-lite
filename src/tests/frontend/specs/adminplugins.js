@@ -113,7 +113,7 @@ describe('Plugins page', function () {
         () => helper.admin$('.ep_activepads').length === 0, 240000);
 
     helper.admin$('#search-query').val('ep_headings2');
-    await helper.waitForPromise(() => helper.admin$('.results').children().length < 300, 6000);
-    await helper.waitForPromise(() => helper.admin$('.results').children().length > 0, 6000);
+    await helper.waitForPromise(() => helper.admin$('.results').children().length < 300, 60000);
+    await helper.waitForPromise(() => helper.admin$('.results').children().length > 0, 60000);
   });
 });
