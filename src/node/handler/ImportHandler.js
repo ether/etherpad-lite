@@ -23,7 +23,7 @@
 
 const padManager = require('../db/PadManager');
 const padMessageHandler = require('./PadMessageHandler');
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 const settings = require('../utils/Settings');
 const formidable = require('formidable');
@@ -32,15 +32,10 @@ const importHtml = require('../utils/ImportHtml');
 const importEtherpad = require('../utils/ImportEtherpad');
 const log4js = require('log4js');
 const hooks = require('../../static/js/pluginfw/hooks.js');
-const util = require('util');
-
-const fsp_rename = util.promisify(fs.rename);
-const fsp_readFile = util.promisify(fs.readFile);
-const fsp_unlink = util.promisify(fs.unlink);
 
 const rm = async (path) => {
   try {
-    await fsp_unlink(path);
+    await fs.unlink(path);
   } catch (err) {
     if (err.code !== 'ENOENT') throw err;
   }
@@ -132,7 +127,7 @@ const doImport = async (req, res, padId) => {
       const oldSrcFile = srcFile;
 
       srcFile = path.join(path.dirname(srcFile), `${path.basename(srcFile, fileEnding)}.txt`);
-      await fsp_rename(oldSrcFile, srcFile);
+      await fs.rename(oldSrcFile, srcFile);
     } else {
       console.warn('Not allowing unknown file type to be imported', fileEnding);
       throw 'uploadFailed';
@@ -159,7 +154,7 @@ const doImport = async (req, res, padId) => {
       throw 'padHasData';
     }
 
-    const _text = await fsp_readFile(srcFile, 'utf8');
+    const _text = await fs.readFile(srcFile, 'utf8');
     req.directDatabaseAccess = true;
     await importEtherpad.setPadRaw(padId, _text);
   }
@@ -174,7 +169,7 @@ const doImport = async (req, res, padId) => {
     // See https://github.com/ether/etherpad-lite/issues/2572
     if (fileIsHTML || !useConvertor) {
       // if no convertor only rename
-      await fsp_rename(srcFile, destFile);
+      await fs.rename(srcFile, destFile);
     } else {
       // @TODO - no Promise interface for convertors (yet)
       await new Promise((resolve, reject) => {
@@ -192,7 +187,7 @@ const doImport = async (req, res, padId) => {
 
   if (!useConvertor && !req.directDatabaseAccess) {
     // Read the file with no encoding for raw buffer access.
-    const buf = await fsp_readFile(destFile);
+    const buf = await fs.readFile(destFile);
 
     // Check if there are only ascii chars in the uploaded file
     const isAscii = !Array.prototype.some.call(buf, (c) => (c > 240));
@@ -209,7 +204,7 @@ const doImport = async (req, res, padId) => {
   let text;
 
   if (!req.directDatabaseAccess) {
-    text = await fsp_readFile(destFile, 'utf8');
+    text = await fs.readFile(destFile, 'utf8');
 
     // node on windows has a delay on releasing of the file lock.
     // We add a 100ms delay to work around this
