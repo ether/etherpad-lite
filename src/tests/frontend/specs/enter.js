@@ -39,21 +39,22 @@ describe('enter keystroke', function () {
     while (i < numberOfLines) {
       $lastLine = helper.padInner$('div').last();
       $lastLine.sendkeys('{enter}');
-      await helper.waitFor(() => helper.padInner$('div').length > previousLineLength);
+      await helper.waitForPromise(() => helper.padInner$('div').length > previousLineLength);
       previousLineLength = helper.padInner$('div').length;
       // check we can see the caret..
 
       i++;
     }
-    await helper.waitFor(() => helper.padInner$('div').length === numberOfLines + originalLength);
+    await helper.waitForPromise(
+        () => helper.padInner$('div').length === numberOfLines + originalLength);
 
     // is edited line fully visible?
     const lastLine = helper.padInner$('div').last();
     const bottomOfLastLine = lastLine.offset().top + lastLine.height();
     const scrolledWindow = helper.padChrome$('iframe')[0];
-    await helper.waitFor(() => {
-      const scrolledAmount = scrolledWindow.contentWindow.pageYOffset +
-        scrolledWindow.contentWindow.innerHeight;
+    await helper.waitForPromise(() => {
+      const scrolledAmount =
+          scrolledWindow.contentWindow.pageYOffset + scrolledWindow.contentWindow.innerHeight;
       return scrolledAmount >= bottomOfLastLine;
     });
   });
