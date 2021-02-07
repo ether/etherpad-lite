@@ -39,7 +39,7 @@ if (!newVersion) {
 const changelogIncludesVersion = changelog.indexOf(newVersion) !== -1;
 
 if (!changelogIncludesVersion) {
-  throw new Error('No changelog record for ', newVersion, ' - please create changelog record');
+  throw new Error(`No changelog record for ${newVersion}, please create changelog record`);
 }
 
 console.log('Okay looks good, lets create the package.json and package-lock.json');
