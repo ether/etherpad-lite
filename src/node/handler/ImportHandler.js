@@ -99,16 +99,15 @@ const doImport = async (req, res, padId) => {
 
         // I hate doing indexOf here but I can't see anything to use...
         if (err && err.stack && err.stack.indexOf('maxFileSize') !== -1) {
-          reject('maxFileSize');
+          return reject('maxFileSize');
         }
 
-        reject('uploadFailed');
+        return reject('uploadFailed');
       }
       if (!files.file) { // might not be a graceful fix but it works
-        reject('uploadFailed');
-      } else {
-        resolve(files.file.path);
+        return reject('uploadFailed');
       }
+      resolve(files.file.path);
     });
   });
 
@@ -177,7 +176,7 @@ const doImport = async (req, res, padId) => {
           // catch convert errors
           if (err) {
             console.warn('Converting Error:', err);
-            reject('convertFailed');
+            return reject('convertFailed');
           }
           resolve();
         });
