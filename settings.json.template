@@ -600,5 +600,8 @@
     }, // logconfig
 
   /* Override any strings found in locale directories */
-  "customLocaleStrings": {}
+  "customLocaleStrings": {},
+
+  /* Disable Admin UI tests */
+  "enableAdminUITests": false
 }
