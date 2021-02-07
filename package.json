@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "ep_etherpad-lite": "file:src"
-  },
-  "engines": {
-    "node": "^10.17.0 || >=11.14.0"
-  }
-}

@@ -51,8 +51,10 @@ describe('enter keystroke', function () {
     const lastLine = helper.padInner$('div').last();
     const bottomOfLastLine = lastLine.offset().top + lastLine.height();
     const scrolledWindow = helper.padChrome$('iframe')[0];
-    const scrolledAmount = scrolledWindow.contentWindow.pageYOffset +
+    await helper.waitFor(() => {
+      const scrolledAmount = scrolledWindow.contentWindow.pageYOffset +
         scrolledWindow.contentWindow.innerHeight;
-    await helper.waitFor(() => scrolledAmount >= bottomOfLastLine);
+      return scrolledAmount >= bottomOfLastLine;
+    });
   });
 });

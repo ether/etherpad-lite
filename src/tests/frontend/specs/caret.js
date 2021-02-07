@@ -297,7 +297,7 @@ console.log(inner$);
     });
 */
 });
-
+/*
 // generates a random document with random content on n lines
 const prepareDocument = (n, target) => {
   let i = 0;
@@ -350,3 +350,4 @@ const caretPosition = ($) => {
   pos.x = pos.anchorNode.parentElement.offsetLeft;
   return pos;
 };
+*/
