@@ -1,7 +1,7 @@
 'use strict';
 
 describe('Admin > Settings', function () {
-  this.timeout(360000);
+  this.timeout(480000);
 
   before(async function () {
     let success = false;
@@ -51,7 +51,7 @@ describe('Admin > Settings', function () {
     // settings should have the old value
     helper.newAdmin('settings');
     await helper.waitForPromise(
-        () => helper.admin$ && helper.admin$('.settings').val().length > 0, 18000);
+        () => helper.admin$ && helper.admin$('.settings').val().length > 0, 36000);
     expect(settings).to.be(helper.admin$('.settings').val());
   });
 
@@ -67,7 +67,7 @@ describe('Admin > Settings', function () {
     helper.admin$('#restartEtherpad').click();
 
     // Hacky...  Other suggestions welcome..
-    await timeout(50000);
+    await timeout(200000);
     let success = false;
     $.ajax({
       url: `${location.protocol}//admin:changeme@${location.hostname}:${location.port}/admin`,

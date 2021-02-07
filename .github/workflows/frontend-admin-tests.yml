@@ -26,6 +26,10 @@ jobs:
     - name: Install etherpad plugins
       run: npm install ep_align@0.2.27
 
+      # Nuke plugin tests
+    - name: Install etherpad plugins
+      run: rm -Rf node_modules/ep_align/static/tests/*
+
     - name: export GIT_HASH to env
       id: environment
       run: echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.sha }})"
