@@ -90,7 +90,6 @@ as far as the left-most node_modules folder.
 
 */
 
-const npm = require('npm/lib/npm.js');
 const fs = require('graceful-fs');
 const path = require('path');
 const semver = require('semver');
@@ -122,7 +121,7 @@ const readInstalled = (folder, cb) => {
   rpSeen = {};
   riSeen = [];
 
-  const d = npm.config.get('depth');
+  const d = Infinity;
   readInstalled_(folder, null, null, null, 0, d, (er, obj) => {
     if (er) return cb(er);
     // now obj has all the installed things, where they're installed
@@ -318,13 +317,10 @@ if (module === require.main) {
   console.error('testing');
 
   let called = 0;
-  npm.load({}, (err) => {
-    if (err != null) throw err;
-    readInstalled(process.cwd(), (er, map) => {
-      console.error(called++);
-      if (er) return console.error(er.stack || er.message);
-      cleanup(map);
-      console.error(util.inspect(map, true, 10, true));
-    });
+  readInstalled(process.cwd(), (er, map) => {
+    console.error(called++);
+    if (er) return console.error(er.stack || er.message);
+    cleanup(map);
+    console.error(util.inspect(map, true, 10, true));
   });
 }
