@@ -325,7 +325,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     if (readme.toLowerCase().indexOf('travis') !== -1) {
       console.warn('Remove Travis badges');
     }
-    if (readme.toLowerCase().indexOf('workflows/Node.js%20Package/badge.svg') === -1) {
+    if (readme.indexOf('workflows/Node.js%20Package/badge.svg') === -1) {
       console.warn('No Github workflow badge detected');
       if (autoFix) {
         readme = `${badgeOne} ${badgeTwo}\n${readme}`;
