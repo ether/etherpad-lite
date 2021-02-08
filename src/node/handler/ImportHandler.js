@@ -33,6 +33,8 @@ const importEtherpad = require('../utils/ImportEtherpad');
 const log4js = require('log4js');
 const hooks = require('../../static/js/pluginfw/hooks.js');
 
+const logger = log4js.getLogger('ImportHandler');
+
 // `status` must be a string supported by `importErrorMessage()` in `src/static/js/pad_impexp.js`.
 class ImportError extends Error {
   constructor(status, ...args) {
@@ -73,8 +75,6 @@ const tmpDirectory = os.tmpdir();
  * do a requested import
  */
 const doImport = async (req, res, padId) => {
-  const apiLogger = log4js.getLogger('ImportHandler');
-
   // pipe to a file
   // convert file to html via abiword or soffice
   // set html in the pad
@@ -161,7 +161,7 @@ const doImport = async (req, res, padId) => {
     const headCount = _pad.head;
 
     if (headCount >= 10) {
-      apiLogger.warn('Aborting direct database import attempt of a pad that already has content');
+      logger.warn('Aborting direct database import attempt of a pad that already has content');
       throw new ImportError('padHasData');
     }
 
@@ -230,7 +230,7 @@ const doImport = async (req, res, padId) => {
       try {
         await importHtml.setPadHTML(pad, text);
       } catch (e) {
-        apiLogger.warn('Error importing, possibly caused by malformed HTML');
+        logger.warn('Error importing, possibly caused by malformed HTML');
       }
     } else {
       await pad.setText(text);
