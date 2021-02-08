@@ -74,24 +74,19 @@ const padimpexp = (() => {
   };
 
   const importErrorMessage = (status) => {
-    let msg = '';
-
-    if (status === 'convertFailed') {
-      msg = html10n.get('pad.impexp.convertFailed');
-    } else if (status === 'uploadFailed') {
-      msg = html10n.get('pad.impexp.uploadFailed');
-    } else if (status === 'padHasData') {
-      msg = html10n.get('pad.impexp.padHasData');
-    } else if (status === 'maxFileSize') {
-      msg = html10n.get('pad.impexp.maxFileSize');
-    } else if (status === 'permission') {
-      msg = html10n.get('pad.impexp.permission');
-    }
+    const known = [
+      'convertFailed',
+      'uploadFailed',
+      'padHasData',
+      'maxFileSize',
+      'permission',
+    ];
+    const msg = html10n.get(`pad.impexp.${known.indexOf(status) !== -1 ? status : 'copypaste'}`);
 
     const showError = (fade) => {
       $('#importmessagefail').html(
           `<strong style="color: red">${html10n.get('pad.impexp.importfailed')}:</strong> ` +
-          `${msg || html10n.get('pad.impexp.copypaste', '')}`)[(fade ? 'fadeIn' : 'show')]();
+          `${msg}`)[(fade ? 'fadeIn' : 'show')]();
     };
 
     if ($('#importexport .importmessage').is(':visible')) {
