@@ -328,7 +328,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     if (readme.indexOf('workflows/Node.js%20Package/badge.svg') === -1) {
       console.warn('No Github workflow badge detected');
       if (autoFix) {
-        readme = `${badgeOne} ${badgeTwo}\n${readme}`;
+        readme = `${badgeOne} ${badgeTwo}\n\n${readme}`;
       }
       // write readme to file system
       fs.writeFileSync(`${pluginPath}/${readMeFileName}`, readme);
