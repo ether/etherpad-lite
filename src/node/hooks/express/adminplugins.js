@@ -65,8 +65,8 @@ exports.socketio = (hookName, args, cb) => {
         });
 
         socket.emit('results:updatable', {updatable});
-      } catch (er) {
-        console.warn(er);
+      } catch (err) {
+        console.warn(err.stack || err.toString());
 
         socket.emit('results:updatable', {updatable: {}});
       }
@@ -99,22 +99,22 @@ exports.socketio = (hookName, args, cb) => {
     });
 
     socket.on('install', (pluginName) => {
-      installer.install(pluginName, (er) => {
-        if (er) console.warn(er);
+      installer.install(pluginName, (err) => {
+        if (err) console.warn(err.stack || err.toString());
 
         socket.emit('finished:install', {
           plugin: pluginName,
-          code: er ? er.code : null,
-          error: er ? er.message : null,
+          code: err ? err.code : null,
+          error: err ? err.message : null,
         });
       });
     });
 
     socket.on('uninstall', (pluginName) => {
-      installer.uninstall(pluginName, (er) => {
-        if (er) console.warn(er);
+      installer.uninstall(pluginName, (err) => {
+        if (err) console.warn(err.stack || err.toString());
 
-        socket.emit('finished:uninstall', {plugin: pluginName, error: er ? er.message : null});
+        socket.emit('finished:uninstall', {plugin: pluginName, error: err ? err.message : null});
       });
     });
   });
