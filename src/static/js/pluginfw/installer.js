@@ -3,17 +3,8 @@
 const log4js = require('log4js');
 const plugins = require('./plugins');
 const hooks = require('./hooks');
-const npm = require('npm');
 const request = require('request');
 const util = require('util');
-
-let npmIsLoaded = false;
-const loadNpm = async () => {
-  if (npmIsLoaded) return;
-  await util.promisify(npm.load)({});
-  npmIsLoaded = true;
-  npm.on('log', log4js.getLogger('npm').log);
-};
 
 const onAllTasksFinished = () => {
   hooks.aCallAll('restartServer', {}, () => {});
@@ -34,8 +25,8 @@ function wrapTaskCb(cb) {
 exports.uninstall = async (pluginName, cb = null) => {
   cb = wrapTaskCb(cb);
   try {
-    await loadNpm();
     await util.promisify(npm.commands.uninstall)([pluginName]);
+    // TODO above line
     await hooks.aCallAll('pluginUninstall', {pluginName});
     await plugins.update();
   } catch (err) {
@@ -48,8 +39,8 @@ exports.uninstall = async (pluginName, cb = null) => {
 exports.install = async (pluginName, cb = null) => {
   cb = wrapTaskCb(cb);
   try {
-    await loadNpm();
-    await util.promisify(npm.commands.install)([`${pluginName}@latest`]);
+    // await util.promisify(npm.commands.install)([`${pluginName}@latest`]);
+    // TODO above line.
     await hooks.aCallAll('pluginInstall', {pluginName});
     await plugins.update();
   } catch (err) {

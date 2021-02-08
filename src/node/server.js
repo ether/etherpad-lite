@@ -43,7 +43,6 @@ const UpdateCheck = require('./utils/UpdateCheck');
 const db = require('./db/DB');
 const express = require('./hooks/express');
 const hooks = require('../static/js/pluginfw/hooks');
-const npm = require('npm/lib/npm.js');
 const pluginDefs = require('../static/js/pluginfw/plugin_defs');
 const plugins = require('../static/js/pluginfw/plugins');
 const settings = require('./utils/Settings');
@@ -118,7 +117,6 @@ exports.start = async () => {
     });
   }
 
-  await util.promisify(npm.load)();
   await db.init();
   await plugins.update();
   const installedPlugins = Object.values(pluginDefs.plugins)
