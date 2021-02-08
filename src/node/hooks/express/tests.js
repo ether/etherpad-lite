@@ -1,7 +1,6 @@
 'use strict';
 
 const path = require('path');
-const npm = require('npm');
 const fs = require('fs');
 const util = require('util');
 const settings = require('../../utils/Settings');
@@ -30,7 +29,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
   });
 
   // path.join seems to normalize by default, but we'll just be explicit
-  const rootTestFolder = path.normalize(path.join(npm.root, '../tests/frontend/'));
+  const rootTestFolder = path.normalize(path.join(__dirname, '../../../tests/frontend/'));
 
   const url2FilePath = (url) => {
     let subPath = url.substr('/tests/frontend'.length);

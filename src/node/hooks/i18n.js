@@ -38,7 +38,7 @@ const getAllLocales = () => {
   };
 
   // add core supported languages first
-  extractLangs(`${npm.root}/ep_etherpad-lite/locales`);
+  extractLangs(`${__dirname}/../../../node_modules/ep_etherpad-lite/locales`);
 
   // add plugins languages (if any)
   for (const pluginName in plugins) extractLangs(path.join(npm.root, pluginName, 'locales'));
