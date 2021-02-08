@@ -171,7 +171,6 @@ const padimpexp = (() => {
       $('.disabledexport').click(cantExport);
     },
     handleFrameCall: (directDatabaseAccess, status) => {
-      if (directDatabaseAccess === 'undefined') directDatabaseAccess = false;
       if (status !== 'ok') {
         importErrorMessage(status);
       } else {
