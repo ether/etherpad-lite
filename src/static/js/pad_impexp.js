@@ -44,31 +44,29 @@ const padimpexp = (() => {
 
   const fileInputSubmit = () => {
     $('#importmessagefail').fadeOut('fast');
-    const ret = window.confirm(html10n.get('pad.impexp.confirmimport'));
-    if (ret) {
-      currentImportTimer = window.setTimeout(() => {
-        if (!currentImportTimer) {
-          return;
-        }
-        currentImportTimer = null;
-        importErrorMessage('Request timed out.');
-        importDone();
-      }, 25000); // time out after some number of seconds
-      $('#importsubmitinput').attr(
+    if (!window.confirm(html10n.get('pad.impexp.confirmimport'))) return false;
+    currentImportTimer = window.setTimeout(() => {
+      if (!currentImportTimer) {
+        return;
+      }
+      currentImportTimer = null;
+      importErrorMessage('Request timed out.');
+      importDone();
+    }, 25000); // time out after some number of seconds
+    $('#importsubmitinput').attr(
+        {
+          disabled: true,
+        }).val(html10n.get('pad.impexp.importing'));
+
+    window.setTimeout(() => {
+      $('#importfileinput').attr(
           {
             disabled: true,
-          }).val(html10n.get('pad.impexp.importing'));
-
-      window.setTimeout(() => {
-        $('#importfileinput').attr(
-            {
-              disabled: true,
-            });
-      }, 0);
-      $('#importarrow').stop(true, true).hide();
-      $('#importstatusball').show();
-    }
-    return ret;
+          });
+    }, 0);
+    $('#importarrow').stop(true, true).hide();
+    $('#importstatusball').show();
+    return true;
   };
 
   const importDone = () => {
