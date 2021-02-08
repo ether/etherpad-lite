@@ -32,13 +32,22 @@ describe('ordered_list.js', function () {
               .done(done);
         });
       });
-
       context('and pad shortcut is disabled', function () {
         beforeEach(async function () {
           const originalHTML = helper.padInner$('body').html();
           makeSureShortcutIsDisabled('cmdShiftN');
           triggerCtrlShiftShortcut('N');
-          await helper.waitForPromise(() => helper.padInner$('body').html() !== originalHTML);
+          try {
+            // The HTML should not change. Briefly wait for it to change and fail if it does change.
+            await helper.waitForPromise(
+                () => helper.padInner$('body').html() !== originalHTML, 500);
+          } catch (err) {
+            // We want the test to pass if the above wait timed out. (If it timed out that
+            // means the HTML never changed, which is a good thing.)
+            // TODO: Re-throw non-"condition never became true" errors to avoid false positives.
+          }
+          // This will fail if the above `waitForPromise()` succeeded.
+          helper.waitForPromise(() => helper.padInner$('body').html() === originalHTML);
         });
 
         it('does not insert unordered list', function (done) {
@@ -73,7 +82,17 @@ describe('ordered_list.js', function () {
           const originalHTML = helper.padInner$('body').html();
           makeSureShortcutIsDisabled('cmdShift1');
           triggerCtrlShiftShortcut('1');
-          await helper.waitForPromise(() => helper.padInner$('body').html() !== originalHTML);
+          try {
+            // The HTML should not change. Briefly wait for it to change and fail if it does change.
+            await helper.waitForPromise(
+                () => helper.padInner$('body').html() !== originalHTML, 500);
+          } catch (err) {
+            // We want the test to pass if the above wait timed out. (If it timed out that
+            // means the HTML never changed, which is a good thing.)
+            // TODO: Re-throw non-"condition never became true" errors to avoid false positives.
+          }
+          // This will fail if the above `waitForPromise()` succeeded.
+          helper.waitForPromise(() => helper.padInner$('body').html() === originalHTML);
         });
 
         it('does not insert unordered list', function (done) {
