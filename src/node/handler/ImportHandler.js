@@ -33,6 +33,18 @@ const importEtherpad = require('../utils/ImportEtherpad');
 const log4js = require('log4js');
 const hooks = require('../../static/js/pluginfw/hooks.js');
 
+// `status` must be a string supported by `importErrorMessage()` in `src/static/js/pad_impexp.js`.
+class ImportError extends Error {
+  constructor(status, ...args) {
+    super(...args);
+    if (Error.captureStackTrace) Error.captureStackTrace(this, ImportError);
+    this.name = 'ImportError';
+    this.status = status;
+    const msg = this.message == null ? '' : String(this.message);
+    if (status !== '') this.message = msg === '' ? status : `${status}: ${msg}`;
+  }
+}
+
 const rm = async (path) => {
   try {
     await fs.unlink(path);
@@ -99,13 +111,13 @@ const doImport = async (req, res, padId) => {
 
         // I hate doing indexOf here but I can't see anything to use...
         if (err && err.stack && err.stack.indexOf('maxFileSize') !== -1) {
-          return reject('maxFileSize');
+          return reject(new ImportError('maxFileSize'));
         }
 
-        return reject('uploadFailed');
+        return reject(new ImportError('uploadFailed'));
       }
       if (!files.file) { // might not be a graceful fix but it works
-        return reject('uploadFailed');
+        return reject(new ImportError('uploadFailed'));
       }
       resolve(files.file.path);
     });
@@ -129,7 +141,7 @@ const doImport = async (req, res, padId) => {
       await fs.rename(oldSrcFile, srcFile);
     } else {
       console.warn('Not allowing unknown file type to be imported', fileEnding);
-      throw 'uploadFailed';
+      throw new ImportError('uploadFailed');
     }
   }
 
@@ -150,7 +162,7 @@ const doImport = async (req, res, padId) => {
 
     if (headCount >= 10) {
       apiLogger.warn('Aborting direct database import attempt of a pad that already has content');
-      throw 'padHasData';
+      throw new ImportError('padHasData');
     }
 
     const _text = await fs.readFile(srcFile, 'utf8');
@@ -176,7 +188,7 @@ const doImport = async (req, res, padId) => {
           // catch convert errors
           if (err) {
             console.warn('Converting Error:', err);
-            return reject('convertFailed');
+            return reject(new ImportError('convertFailed'));
           }
           resolve();
         });
@@ -192,7 +204,7 @@ const doImport = async (req, res, padId) => {
     const isAscii = !Array.prototype.some.call(buf, (c) => (c > 240));
 
     if (!isAscii) {
-      throw 'uploadFailed';
+      throw new ImportError('uploadFailed');
     }
   }
 
@@ -256,15 +268,8 @@ exports.doImport = (req, res, padId) => {
    */
   let status = 'ok';
   doImport(req, res, padId).catch((err) => {
-    // check for known errors and replace the status
-    if (err === 'uploadFailed' ||
-        err === 'convertFailed' ||
-        err === 'padHasData' ||
-        err === 'maxFileSize') {
-      status = err;
-    } else {
-      throw err;
-    }
+    if (!(err instanceof ImportError) || !err.status) throw err;
+    status = err.status;
   }).then(() => {
     // close the connection
     res.send(`<script>document.addEventListener('DOMContentLoaded', function(){ var impexp = window.parent.padimpexp.handleFrameCall('${req.directDatabaseAccess}', '${status}'); })</script>`);
