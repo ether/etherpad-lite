@@ -5,10 +5,17 @@ const plugins = require('./plugins');
 const hooks = require('./hooks');
 const request = require('request');
 const util = require('util');
+const childProcess = require('child_process');
 
 const onAllTasksFinished = () => {
   hooks.aCallAll('restartServer', {}, () => {});
 };
+
+const execSync = (cmd, opts = {}) => (childProcess.execSync(cmd, {
+  cwd: `${__dirname}/../../../../`,
+  ...opts,
+}) || '').toString().replace(/\n+$/, '');
+
 
 let tasks = 0;
 
@@ -26,7 +33,8 @@ exports.uninstall = async (pluginName, cb = null) => {
   cb = wrapTaskCb(cb);
   try {
     await util.promisify(npm.commands.uninstall)([pluginName]);
-    // TODO above line
+    const npmCommand = `npm uninstall ${pluginName}`;
+    execSync(npmCommand, {stdio: 'inherit'});
     await hooks.aCallAll('pluginUninstall', {pluginName});
     await plugins.update();
   } catch (err) {
@@ -39,8 +47,8 @@ exports.uninstall = async (pluginName, cb = null) => {
 exports.install = async (pluginName, cb = null) => {
   cb = wrapTaskCb(cb);
   try {
-    // await util.promisify(npm.commands.install)([`${pluginName}@latest`]);
-    // TODO above line.
+    const npmCommand = `npm install ${pluginName}`;
+    execSync(npmCommand, {stdio: 'inherit'});
     await hooks.aCallAll('pluginInstall', {pluginName});
     await plugins.update();
   } catch (err) {
