@@ -323,9 +323,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     // eslint-disable-next-line max-len
     const badgeTwo = `![Publish Status](https://github.com/ether/${pluginName}/workflows/Node.js%20Package/badge.svg)`;
     if (readme.toLowerCase().indexOf('travis') !== -1) {
-      console.warn('Replacing Travis badge with Github actions.');
-      console.warn(badgeOne);
-      console.warn(badgeTwo);
+      console.warn('Remove Travis badges');
     }
     if (readme.toLowerCase().indexOf('workflows/Node.js%20Package/badge.svg') === -1) {
       console.warn('No Github workflow badge detected')
