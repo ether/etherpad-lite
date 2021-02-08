@@ -32,6 +32,7 @@ describe('ordered_list.js', function () {
               .done(done);
         });
       });
+
       context('and pad shortcut is disabled', function () {
         beforeEach(async function () {
           const originalHTML = helper.padInner$('body').html();
@@ -47,7 +48,7 @@ describe('ordered_list.js', function () {
             // TODO: Re-throw non-"condition never became true" errors to avoid false positives.
           }
           // This will fail if the above `waitForPromise()` succeeded.
-          helper.waitForPromise(() => helper.padInner$('body').html() === originalHTML);
+          expect(() => helper.padInner$('body').html()).to.be(originalHTML);
         });
 
         it('does not insert unordered list', function (done) {
@@ -92,7 +93,7 @@ describe('ordered_list.js', function () {
             // TODO: Re-throw non-"condition never became true" errors to avoid false positives.
           }
           // This will fail if the above `waitForPromise()` succeeded.
-          helper.waitForPromise(() => helper.padInner$('body').html() === originalHTML);
+          expect(() => helper.padInner$('body').html()).to.be(originalHTML);
         });
 
         it('does not insert unordered list', function (done) {
