@@ -276,7 +276,7 @@ exports.doImport = (req, res, padId) => {
       '<script>',
       "document.addEventListener('DOMContentLoaded', () => {",
       '  window.parent.padimpexp.handleFrameCall(',
-      `      '${req.directDatabaseAccess}', '${status}');`,
+      `      ${JSON.stringify(!!req.directDatabaseAccess)}, ${JSON.stringify(status)});`,
       '});',
       '</script>',
     ].join('\n'));
