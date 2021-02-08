@@ -84,9 +84,12 @@ const padimpexp = (() => {
     const msg = html10n.get(`pad.impexp.${known.indexOf(status) !== -1 ? status : 'copypaste'}`);
 
     const showError = (fade) => {
-      $('#importmessagefail').html(
-          `<strong style="color: red">${html10n.get('pad.impexp.importfailed')}:</strong> ` +
-          `${msg}`)[(fade ? 'fadeIn' : 'show')]();
+      const popup = $('#importmessagefail').empty()
+          .append($('<strong>')
+              .css('color', 'red')
+              .text(`${html10n.get('pad.impexp.importfailed')}: `))
+          .append(document.createTextNode(msg));
+      popup[(fade ? 'fadeIn' : 'show')]();
     };
 
     if ($('#importexport .importmessage').is(':visible')) {
