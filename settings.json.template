@@ -492,7 +492,7 @@
   "importMaxFileSize": 52428800, // 50 * 1024 * 1024
 
   /*
-   * From Etherpad 1.9.0 onwards, when Etherpad is in production mode commits from individual users are rate limited
+   * From Etherpad 1.8.5 onwards, when Etherpad is in production mode commits from individual users are rate limited
    *
    * The default is to allow at most 10 changes per IP in a 1 second window.
    * After that the change is rejected.
@@ -503,7 +503,7 @@
     // duration of the rate limit window (seconds)
     "duration": 1,
 
-    // maximum number of chanes per IP to allow during the rate limit window
+    // maximum number of changes per IP to allow during the rate limit window
     "points": 10
   },
 
