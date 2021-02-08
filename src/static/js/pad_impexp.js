@@ -46,24 +46,13 @@ const padimpexp = (() => {
     $('#importmessagefail').fadeOut('fast');
     if (!window.confirm(html10n.get('pad.impexp.confirmimport'))) return false;
     currentImportTimer = window.setTimeout(() => {
-      if (!currentImportTimer) {
-        return;
-      }
+      if (!currentImportTimer) return;
       currentImportTimer = null;
       importErrorMessage('Request timed out.');
       importDone();
     }, 25000); // time out after some number of seconds
-    $('#importsubmitinput').attr(
-        {
-          disabled: true,
-        }).val(html10n.get('pad.impexp.importing'));
-
-    window.setTimeout(() => {
-      $('#importfileinput').attr(
-          {
-            disabled: true,
-          });
-    }, 0);
+    $('#importsubmitinput').attr({disabled: true}).val(html10n.get('pad.impexp.importing'));
+    window.setTimeout(() => $('#importfileinput').attr({disabled: true}), 0);
     $('#importarrow').stop(true, true).hide();
     $('#importstatusball').show();
     return true;
@@ -71,9 +60,7 @@ const padimpexp = (() => {
 
   const importDone = () => {
     $('#importsubmitinput').removeAttr('disabled').val(html10n.get('pad.impexp.importbutton'));
-    window.setTimeout(() => {
-      $('#importfileinput').removeAttr('disabled');
-    }, 0);
+    window.setTimeout(() => $('#importfileinput').removeAttr('disabled'), 0);
     $('#importstatusball').hide();
     importClearTimeout();
     addImportFrames();
@@ -109,9 +96,7 @@ const padimpexp = (() => {
 
     if ($('#importexport .importmessage').is(':visible')) {
       $('#importmessagesuccess').fadeOut('fast');
-      $('#importmessagefail').fadeOut('fast', () => {
-        showError(true);
-      });
+      $('#importmessagefail').fadeOut('fast', () => showError(true));
     } else {
       showError();
     }
