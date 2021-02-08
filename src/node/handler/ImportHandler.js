@@ -272,6 +272,13 @@ exports.doImport = (req, res, padId) => {
     status = err.status;
   }).then(() => {
     // close the connection
-    res.send(`<script>document.addEventListener('DOMContentLoaded', function(){ var impexp = window.parent.padimpexp.handleFrameCall('${req.directDatabaseAccess}', '${status}'); })</script>`);
+    res.send([
+      '<script>',
+      "document.addEventListener('DOMContentLoaded', () => {",
+      '  window.parent.padimpexp.handleFrameCall(',
+      `      '${req.directDatabaseAccess}', '${status}');`,
+      '});',
+      '</script>',
+    ].join('\n'));
   });
 };
