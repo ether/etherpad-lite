@@ -1,6 +1,6 @@
 'use strict';
 
-const fs = require('fs');
+const fs = require('fs').promises;
 const minify = require('../../utils/Minify');
 const path = require('path');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
@@ -9,7 +9,7 @@ const CachingMiddleware = require('../../utils/caching_middleware');
 const Yajsml = require('etherpad-yajsml');
 
 // Rewrite tar to include modules with no extensions and proper rooted paths.
-const getTar = () => {
+const getTar = async () => {
   const prefixLocalLibraryPath = (path) => {
     if (path.charAt(0) === '$') {
       return path.slice(1);
@@ -17,7 +17,7 @@ const getTar = () => {
       return `ep_etherpad-lite/static/js/${path}`;
     }
   };
-  const tarJson = fs.readFileSync(path.join(settings.root, 'src/node/utils/tar.json'), 'utf8');
+  const tarJson = await fs.readFile(path.join(settings.root, 'src/node/utils/tar.json'), 'utf8');
   const tar = {};
   for (const [key, relativeFiles] of Object.entries(JSON.parse(tarJson))) {
     const files = relativeFiles.map(prefixLocalLibraryPath);
@@ -28,7 +28,7 @@ const getTar = () => {
   return tar;
 };
 
-exports.expressCreateServer = (hookName, args, cb) => {
+exports.expressCreateServer = async (hookName, args) => {
   // Cache both minified and static.
   const assetCache = new CachingMiddleware();
   args.app.all(/\/javascripts\/(.*)/, assetCache.handle);
@@ -49,7 +49,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
   });
 
   const StaticAssociator = Yajsml.associators.StaticAssociator;
-  const associations = Yajsml.associators.associationsForSimpleMapping(getTar());
+  const associations = Yajsml.associators.associationsForSimpleMapping(await getTar());
   const associator = new StaticAssociator(associations);
   jsServer.setAssociator(associator);
 
@@ -69,6 +69,4 @@ exports.expressCreateServer = (hookName, args, cb) => {
     res.write(JSON.stringify({plugins: clientPlugins, parts: clientParts}));
     res.end();
   });
-
-  return cb();
 };
