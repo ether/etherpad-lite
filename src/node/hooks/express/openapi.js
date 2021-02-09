@@ -25,7 +25,7 @@ const settings = require('../../utils/Settings');
 const isValidJSONPName = require('./isValidJSONPName');
 
 const log4js = require('log4js');
-const apiLogger = log4js.getLogger('API');
+const logger = log4js.getLogger('API');
 
 // https://github.com/OAI/OpenAPI-Specification/tree/master/schemas/v3.0
 const OPENAPI_VERSION = '3.0.2'; // Swagger/OAS version
@@ -607,8 +607,9 @@ exports.expressCreateServer = (hookName, args, cb) => {
 
           const fields = Object.assign({}, header, params, query, formData);
 
-          // log request
-          apiLogger.info(`REQUEST, v${version}:${funcName}, ${JSON.stringify(fields)}`);
+          if (logger.isDebugEnabled()) {
+            logger.debug(`REQUEST, v${version}:${funcName}, ${JSON.stringify(fields)}`);
+          }
 
           // pass to api handler
           const data = await apiHandler.handle(version, funcName, fields, req, res).catch((err) => {
@@ -623,7 +624,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
             } else {
               // an unknown error happened
               // log it and throw internal error
-              apiLogger.error(err.stack || err.toString());
+              logger.error(err.stack || err.toString());
               throw new createHTTPError.InternalError('internal error');
             }
           });
@@ -631,8 +632,9 @@ exports.expressCreateServer = (hookName, args, cb) => {
           // return in common format
           const response = {code: 0, message: 'ok', data: data || null};
 
-          // log response
-          apiLogger.info(`RESPONSE, ${funcName}, ${JSON.stringify(response)}`);
+          if (logger.isDebugEnabled()) {
+            logger.debug(`RESPONSE, ${funcName}, ${JSON.stringify(response)}`);
+          }
 
           // return the response data
           return response;
