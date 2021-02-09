@@ -4,7 +4,6 @@ const minify = require('../../utils/Minify');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
 const CachingMiddleware = require('../../utils/caching_middleware');
 const Yajsml = require('etherpad-yajsml');
-const _ = require('underscore');
 
 exports.expressCreateServer = (hookName, args, cb) => {
   // Cache both minified and static.
@@ -38,19 +37,12 @@ exports.expressCreateServer = (hookName, args, cb) => {
   // not very static, but served here so that client can do
   // require("pluginfw/static/js/plugin-definitions.js");
   args.app.get('/pluginfw/plugin-definitions.json', (req, res, next) => {
-    const clientParts = _(plugins.parts)
-        .filter((part) => _(part).has('client_hooks'));
-
+    const clientParts = plugins.parts.filter((part) => part.client_hooks != null);
     const clientPlugins = {};
-
-    _(clientParts).chain()
-        .map((part) => part.plugin)
-        .uniq()
-        .each((name) => {
-          clientPlugins[name] = _(plugins.plugins[name]).clone();
-          delete clientPlugins[name].package;
-        });
-
+    for (const name of new Set(clientParts.map((part) => part.plugin))) {
+      clientPlugins[name] = {...plugins.plugins[name]};
+      delete clientPlugins[name].package;
+    }
     res.header('Content-Type', 'application/json; charset=utf-8');
     res.write(JSON.stringify({plugins: clientPlugins, parts: clientParts}));
     res.end();
