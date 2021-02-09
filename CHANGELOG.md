@@ -33,7 +33,8 @@
   * `callFirst()` and `aCallFirst()` now support the same wide range of hook
     function behaviors that `callAll()`, `aCallAll()`, and `callAllSerial()`
     support. Also, they now warn when a hook function misbehaves.
-  * The `padCopy` and `padRemove` hooks now support asynchronous hook functions.
+  * The following server-side hooks now support asynchronous hook functions:
+    `expressConfigure`, `expressCreateServer`, `padCopy`, `padRemove`
   * Backend tests for plugins can now use the
     [`ep_etherpad-lite/tests/backend/common`](src/tests/backend/common.js)
     module to start the server and simplify API access.

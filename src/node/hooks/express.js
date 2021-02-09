@@ -182,9 +182,10 @@ exports.restartServer = async () => {
 
   app.use(cookieParser(settings.sessionKey, {}));
 
-  hooks.callAll('expressConfigure', {app});
-  hooks.callAll('expressCreateServer', {app, server: exports.server});
-
+  await Promise.all([
+    hooks.aCallAll('expressConfigure', {app}),
+    hooks.aCallAll('expressCreateServer', {app, server: exports.server}),
+  ]);
   await util.promisify(exports.server.listen).bind(exports.server)(settings.port, settings.ip);
 };
 
