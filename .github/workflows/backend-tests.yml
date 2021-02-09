@@ -17,6 +17,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - uses: actions/setup-node@v2
+      with:
+        node-version: 12
+
     - name: Install libreoffice
       run: |
         sudo add-apt-repository -y ppa:libreoffice/ppa
@@ -42,6 +46,10 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+
+    - uses: actions/setup-node@v2
+      with:
+        node-version: 12
 
     - name: Install libreoffice
       run: |
