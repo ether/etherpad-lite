@@ -26,8 +26,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
   });
 
   const StaticAssociator = Yajsml.associators.StaticAssociator;
-  const associations =
-    Yajsml.associators.associationsForSimpleMapping(minify.tar);
+  const associations = Yajsml.associators.associationsForSimpleMapping(minify.getTar());
   const associator = new StaticAssociator(associations);
   jsServer.setAssociator(associator);
 

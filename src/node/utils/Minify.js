@@ -36,8 +36,6 @@ const log4js = require('log4js');
 const logger = log4js.getLogger('Minify');
 
 const ROOT_DIR = path.normalize(`${__dirname}/../../static/`);
-const TAR_PATH = path.join(__dirname, 'tar.json');
-const tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
 
 const threadsPool = new Threads.Pool(() => Threads.spawn(new Threads.Worker('./MinifyWorker')), 2);
 
@@ -51,21 +49,24 @@ const LIBRARY_WHITELIST = [
 ];
 
 // Rewrite tar to include modules with no extensions and proper rooted paths.
-const LIBRARY_PREFIX = 'ep_etherpad-lite/static/js';
-exports.tar = {};
-const prefixLocalLibraryPath = (path) => {
-  if (path.charAt(0) === '$') {
-    return path.slice(1);
-  } else {
-    return `${LIBRARY_PREFIX}/${path}`;
+exports.getTar = () => {
+  const prefixLocalLibraryPath = (path) => {
+    if (path.charAt(0) === '$') {
+      return path.slice(1);
+    } else {
+      return `ep_etherpad-lite/static/js/${path}`;
+    }
+  };
+  const tarJson = fs.readFileSync(path.join(__dirname, 'tar.json'), 'utf8');
+  const tar = {};
+  for (const [key, relativeFiles] of Object.entries(JSON.parse(tarJson))) {
+    const files = relativeFiles.map(prefixLocalLibraryPath);
+    tar[prefixLocalLibraryPath(key)] = files
+        .concat(files.map((p) => p.replace(/\.js$/, '')))
+        .concat(files.map((p) => `${p.replace(/\.js$/, '')}/index.js`));
   }
+  return tar;
 };
-for (const [key, relativeFiles] of Object.entries(tar)) {
-  const files = relativeFiles.map(prefixLocalLibraryPath);
-  exports.tar[prefixLocalLibraryPath(key)] = files
-      .concat(files.map((p) => p.replace(/\.js$/, '')))
-      .concat(files.map((p) => `${p.replace(/\.js$/, '')}/index.js`));
-}
 
 // What follows is a terrible hack to avoid loop-back within the server.
 // TODO: Serve files from another service, or directly from the file system.
