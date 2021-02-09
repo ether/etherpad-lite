@@ -59,6 +59,7 @@ const State = {
   STOPPED: 5,
   EXITING: 6,
   WAITING_FOR_EXIT: 7,
+  STATE_TRANSITION_FAILED: 8,
 };
 
 let state = State.INITIAL;
@@ -85,13 +86,15 @@ exports.start = async () => {
       break;
     case State.STARTING:
       await startDoneGate;
-      // fall through
+      // Retry. Don't fall through because it might have transitioned to STATE_TRANSITION_FAILED.
+      return await exports.start();
     case State.RUNNING:
       return express.server;
     case State.STOPPING:
     case State.STOPPED:
     case State.EXITING:
     case State.WAITING_FOR_EXIT:
+    case State.STATE_TRANSITION_FAILED:
       throw new Error('restart not supported');
     default:
       throw new Error(`unknown State: ${state.toString()}`);
@@ -99,48 +102,54 @@ exports.start = async () => {
   logger.info('Starting Etherpad...');
   startDoneGate = new Gate();
   state = State.STARTING;
+  try {
+    // Check if Etherpad version is up-to-date
+    UpdateCheck.check();
 
-  // Check if Etherpad version is up-to-date
-  UpdateCheck.check();
+    // start up stats counting system
+    const stats = require('./stats');
+    stats.gauge('memoryUsage', () => process.memoryUsage().rss);
+    stats.gauge('memoryUsageHeap', () => process.memoryUsage().heapUsed);
 
-  // start up stats counting system
-  const stats = require('./stats');
-  stats.gauge('memoryUsage', () => process.memoryUsage().rss);
-  stats.gauge('memoryUsageHeap', () => process.memoryUsage().heapUsed);
+    process.on('uncaughtException', (err) => exports.exit(err));
+    // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
+    // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
+    process.on('unhandledRejection', (err) => { throw err; });
 
-  process.on('uncaughtException', (err) => exports.exit(err));
-  // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
-  // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
-  process.on('unhandledRejection', (err) => { throw err; });
-
-  for (const signal of ['SIGINT', 'SIGTERM']) {
-    // Forcibly remove other signal listeners to prevent them from terminating node before we are
-    // done cleaning up. See https://github.com/andywer/threads.js/pull/329 for an example of a
-    // problematic listener. This means that exports.exit is solely responsible for performing all
-    // necessary cleanup tasks.
-    for (const listener of process.listeners(signal)) {
-      removeSignalListener(signal, listener);
+    for (const signal of ['SIGINT', 'SIGTERM']) {
+      // Forcibly remove other signal listeners to prevent them from terminating node before we are
+      // done cleaning up. See https://github.com/andywer/threads.js/pull/329 for an example of a
+      // problematic listener. This means that exports.exit is solely responsible for performing all
+      // necessary cleanup tasks.
+      for (const listener of process.listeners(signal)) {
+        removeSignalListener(signal, listener);
+      }
+      process.on(signal, exports.exit);
+      // Prevent signal listeners from being added in the future.
+      process.on('newListener', (event, listener) => {
+        if (event !== signal) return;
+        removeSignalListener(signal, listener);
+      });
     }
-    process.on(signal, exports.exit);
-    // Prevent signal listeners from being added in the future.
-    process.on('newListener', (event, listener) => {
-      if (event !== signal) return;
-      removeSignalListener(signal, listener);
-    });
-  }
 
-  await util.promisify(npm.load)();
-  await db.init();
-  await plugins.update();
-  const installedPlugins = Object.values(pluginDefs.plugins)
-      .filter((plugin) => plugin.package.name !== 'ep_etherpad-lite')
-      .map((plugin) => `${plugin.package.name}@${plugin.package.version}`)
-      .join(', ');
-  logger.info(`Installed plugins: ${installedPlugins}`);
-  logger.debug(`Installed parts:\n${plugins.formatParts()}`);
-  logger.debug(`Installed hooks:\n${plugins.formatHooks()}`);
-  await hooks.aCallAll('loadSettings', {settings});
-  await hooks.aCallAll('createServer');
+    await util.promisify(npm.load)();
+    await db.init();
+    await plugins.update();
+    const installedPlugins = Object.values(pluginDefs.plugins)
+        .filter((plugin) => plugin.package.name !== 'ep_etherpad-lite')
+        .map((plugin) => `${plugin.package.name}@${plugin.package.version}`)
+        .join(', ');
+    logger.info(`Installed plugins: ${installedPlugins}`);
+    logger.debug(`Installed parts:\n${plugins.formatParts()}`);
+    logger.debug(`Installed hooks:\n${plugins.formatHooks()}`);
+    await hooks.aCallAll('loadSettings', {settings});
+    await hooks.aCallAll('createServer');
+  } catch (err) {
+    logger.error('Error occurred while starting Etherpad');
+    state = State.STATE_TRANSITION_FAILED;
+    startDoneGate.resolve();
+    return await exports.exit(err);
+  }
 
   logger.info('Etherpad is running');
   state = State.RUNNING;
@@ -166,6 +175,7 @@ exports.stop = async () => {
     case State.STOPPED:
     case State.EXITING:
     case State.WAITING_FOR_EXIT:
+    case State.STATE_TRANSITION_FAILED:
       return;
     default:
       throw new Error(`unknown State: ${state.toString()}`);
@@ -173,14 +183,21 @@ exports.stop = async () => {
   logger.info('Stopping Etherpad...');
   let stopDoneGate = new Gate();
   state = State.STOPPING;
-  let timeout = null;
-  await Promise.race([
-    hooks.aCallAll('shutdown'),
-    new Promise((resolve, reject) => {
-      timeout = setTimeout(() => reject(new Error('Timed out waiting for shutdown tasks')), 3000);
-    }),
-  ]);
-  clearTimeout(timeout);
+  try {
+    let timeout = null;
+    await Promise.race([
+      hooks.aCallAll('shutdown'),
+      new Promise((resolve, reject) => {
+        timeout = setTimeout(() => reject(new Error('Timed out waiting for shutdown tasks')), 3000);
+      }),
+    ]);
+    clearTimeout(timeout);
+  } catch (err) {
+    logger.error('Error occurred while stopping Etherpad');
+    state = State.STATE_TRANSITION_FAILED;
+    stopDoneGate.resolve();
+    return await exports.exit(err);
+  }
   logger.info('Etherpad stopped');
   state = State.STOPPED;
   stopDoneGate.resolve();
@@ -214,6 +231,7 @@ exports.exit = async (err = null) => {
       return await exports.exit();
     case State.INITIAL:
     case State.STOPPED:
+    case State.STATE_TRANSITION_FAILED:
       break;
     case State.EXITING:
       await exitGate;
