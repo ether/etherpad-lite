@@ -48,7 +48,7 @@ describe('ordered_list.js', function () {
             // TODO: Re-throw non-"condition never became true" errors to avoid false positives.
           }
           // This will fail if the above `waitForPromise()` succeeded.
-          expect(() => helper.padInner$('body').html()).to.be(originalHTML);
+          expect(helper.padInner$('body').html()).to.be(originalHTML);
         });
 
         it('does not insert unordered list', function (done) {
@@ -93,7 +93,7 @@ describe('ordered_list.js', function () {
             // TODO: Re-throw non-"condition never became true" errors to avoid false positives.
           }
           // This will fail if the above `waitForPromise()` succeeded.
-          expect(() => helper.padInner$('body').html()).to.be(originalHTML);
+          expect(helper.padInner$('body').html()).to.be(originalHTML);
         });
 
         it('does not insert unordered list', function (done) {
