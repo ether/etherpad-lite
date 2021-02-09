@@ -63,6 +63,14 @@ const State = {
 
 let state = State.INITIAL;
 
+class Gate extends Promise {
+  constructor() {
+    let res;
+    super((resolve) => { res = resolve; });
+    this.resolve = res;
+  }
+}
+
 const removeSignalListener = (signal, listener) => {
   logger.debug(`Removing ${signal} listener because it might interfere with shutdown tasks. ` +
                `Function code:\n${listener.toString()}\n` +
@@ -70,13 +78,13 @@ const removeSignalListener = (signal, listener) => {
   process.off(signal, listener);
 };
 
-const runningCallbacks = [];
+let startDoneGate;
 exports.start = async () => {
   switch (state) {
     case State.INITIAL:
       break;
     case State.STARTING:
-      await new Promise((resolve) => runningCallbacks.push(resolve));
+      await startDoneGate;
       // fall through
     case State.RUNNING:
       return express.server;
@@ -89,6 +97,7 @@ exports.start = async () => {
       throw new Error(`unknown State: ${state.toString()}`);
   }
   logger.info('Starting Etherpad...');
+  startDoneGate = new Gate();
   state = State.STARTING;
 
   // Check if Etherpad version is up-to-date
@@ -135,13 +144,13 @@ exports.start = async () => {
 
   logger.info('Etherpad is running');
   state = State.RUNNING;
-  while (runningCallbacks.length > 0) setImmediate(runningCallbacks.pop());
+  startDoneGate.resolve();
 
   // Return the HTTP server to make it easier to write tests.
   return express.server;
 };
 
-const stoppedCallbacks = [];
+let stopDoneGate;
 exports.stop = async () => {
   switch (state) {
     case State.STARTING:
@@ -151,7 +160,7 @@ exports.stop = async () => {
     case State.RUNNING:
       break;
     case State.STOPPING:
-      await new Promise((resolve) => stoppedCallbacks.push(resolve));
+      await stopDoneGate;
       // fall through
     case State.INITIAL:
     case State.STOPPED:
@@ -162,6 +171,7 @@ exports.stop = async () => {
       throw new Error(`unknown State: ${state.toString()}`);
   }
   logger.info('Stopping Etherpad...');
+  let stopDoneGate = new Gate();
   state = State.STOPPING;
   let timeout = null;
   await Promise.race([
@@ -173,10 +183,10 @@ exports.stop = async () => {
   clearTimeout(timeout);
   logger.info('Etherpad stopped');
   state = State.STOPPED;
-  while (stoppedCallbacks.length > 0) setImmediate(stoppedCallbacks.pop());
+  stopDoneGate.resolve();
 };
 
-const exitCallbacks = [];
+let exitGate;
 let exitCalled = false;
 exports.exit = async (err = null) => {
   /* eslint-disable no-process-exit */
@@ -206,7 +216,7 @@ exports.exit = async (err = null) => {
     case State.STOPPED:
       break;
     case State.EXITING:
-      await new Promise((resolve) => exitCallbacks.push(resolve));
+      await exitGate;
       // fall through
     case State.WAITING_FOR_EXIT:
       return;
@@ -214,8 +224,9 @@ exports.exit = async (err = null) => {
       throw new Error(`unknown State: ${state.toString()}`);
   }
   logger.info('Exiting...');
+  exitGate = new Gate();
   state = State.EXITING;
-  while (exitCallbacks.length > 0) setImmediate(exitCallbacks.pop());
+  exitGate.resolve();
   // Node.js should exit on its own without further action. Add a timeout to force Node.js to exit
   // just in case something failed to get cleaned up during the shutdown hook. unref() is called on
   // the timeout so that the timeout itself does not prevent Node.js from exiting.
