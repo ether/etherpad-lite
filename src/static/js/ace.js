@@ -197,7 +197,7 @@ const Ace2Editor = function () {
 
       pushStyleTagsFor(iframeHTML, includedCSS);
 
-      if (!Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[KERNEL_SOURCE]) {
+      if (!Ace2Editor.EMBEDED || !Ace2Editor.EMBEDED[KERNEL_SOURCE]) {
         // Remotely src'd script tag will not work in IE; it must be embedded, so
         // throw an error if it is not.
         throw new Error('Require kernel could not be found.');
