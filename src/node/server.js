@@ -49,6 +49,8 @@ const plugins = require('../static/js/pluginfw/plugins');
 const settings = require('./utils/Settings');
 const util = require('util');
 
+const logger = log4js.getLogger('server');
+
 const State = {
   INITIAL: 1,
   STARTING: 2,
@@ -62,9 +64,9 @@ const State = {
 let state = State.INITIAL;
 
 const removeSignalListener = (signal, listener) => {
-  console.debug(`Removing ${signal} listener because it might interfere with shutdown tasks. ` +
-                `Function code:\n${listener.toString()}\n` +
-                `Current stack:\n${(new Error()).stack.split('\n').slice(1).join('\n')}`);
+  logger.debug(`Removing ${signal} listener because it might interfere with shutdown tasks. ` +
+               `Function code:\n${listener.toString()}\n` +
+               `Current stack:\n${(new Error()).stack.split('\n').slice(1).join('\n')}`);
   process.off(signal, listener);
 };
 
@@ -86,7 +88,7 @@ exports.start = async () => {
     default:
       throw new Error(`unknown State: ${state.toString()}`);
   }
-  console.log('Starting Etherpad...');
+  logger.info('Starting Etherpad...');
   state = State.STARTING;
 
   // Check if Etherpad version is up-to-date
@@ -125,13 +127,13 @@ exports.start = async () => {
       .filter((plugin) => plugin.package.name !== 'ep_etherpad-lite')
       .map((plugin) => `${plugin.package.name}@${plugin.package.version}`)
       .join(', ');
-  console.info(`Installed plugins: ${installedPlugins}`);
-  console.debug(`Installed parts:\n${plugins.formatParts()}`);
-  console.debug(`Installed hooks:\n${plugins.formatHooks()}`);
+  logger.info(`Installed plugins: ${installedPlugins}`);
+  logger.debug(`Installed parts:\n${plugins.formatParts()}`);
+  logger.debug(`Installed hooks:\n${plugins.formatHooks()}`);
   await hooks.aCallAll('loadSettings', {settings});
   await hooks.aCallAll('createServer');
 
-  console.log('Etherpad is running');
+  logger.info('Etherpad is running');
   state = State.RUNNING;
   while (runningCallbacks.length > 0) setImmediate(runningCallbacks.pop());
 
@@ -159,7 +161,7 @@ exports.stop = async () => {
     default:
       throw new Error(`unknown State: ${state.toString()}`);
   }
-  console.log('Stopping Etherpad...');
+  logger.info('Stopping Etherpad...');
   state = State.STOPPING;
   let timeout = null;
   await Promise.race([
@@ -169,7 +171,7 @@ exports.stop = async () => {
     }),
   ]);
   clearTimeout(timeout);
-  console.log('Etherpad stopped');
+  logger.info('Etherpad stopped');
   state = State.STOPPED;
   while (stoppedCallbacks.length > 0) setImmediate(stoppedCallbacks.pop());
 };
@@ -180,13 +182,13 @@ exports.exit = async (err = null) => {
   /* eslint-disable no-process-exit */
   if (err === 'SIGTERM') {
     // Termination from SIGTERM is not treated as an abnormal termination.
-    console.log('Received SIGTERM signal');
+    logger.info('Received SIGTERM signal');
     err = null;
   } else if (err != null) {
-    console.error(err.stack || err.toString());
+    logger.error(err.stack || err.toString());
     process.exitCode = 1;
     if (exitCalled) {
-      console.error('Error occurred while waiting to exit. Forcing an immediate unclean exit...');
+      logger.error('Error occurred while waiting to exit. Forcing an immediate unclean exit...');
       process.exit(1);
     }
   }
@@ -211,20 +213,20 @@ exports.exit = async (err = null) => {
     default:
       throw new Error(`unknown State: ${state.toString()}`);
   }
-  console.log('Exiting...');
+  logger.info('Exiting...');
   state = State.EXITING;
   while (exitCallbacks.length > 0) setImmediate(exitCallbacks.pop());
   // Node.js should exit on its own without further action. Add a timeout to force Node.js to exit
   // just in case something failed to get cleaned up during the shutdown hook. unref() is called on
   // the timeout so that the timeout itself does not prevent Node.js from exiting.
   setTimeout(() => {
-    console.error('Something that should have been cleaned up during the shutdown hook (such as ' +
-                  'a timer, worker thread, or open connection) is preventing Node.js from exiting');
+    logger.error('Something that should have been cleaned up during the shutdown hook (such as ' +
+                 'a timer, worker thread, or open connection) is preventing Node.js from exiting');
     wtfnode.dump();
-    console.error('Forcing an unclean exit...');
+    logger.error('Forcing an unclean exit...');
     process.exit(1);
   }, 5000).unref();
-  console.log('Waiting for Node.js to exit...');
+  logger.info('Waiting for Node.js to exit...');
   state = State.WAITING_FOR_EXIT;
   /* eslint-enable no-process-exit */
 };
