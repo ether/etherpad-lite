@@ -319,20 +319,20 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       }
     }
     // eslint-disable-next-line max-len
-    const badgeOne = `![Publish Status](https://github.com/ether/${pluginName}/workflows/Node.js%20Package/badge.svg)`;
+    const publishBadge = `![Publish Status](https://github.com/ether/${pluginName}/workflows/Node.js%20Package/badge.svg)`;
     // eslint-disable-next-line max-len
-    const badgeTwo = `![Publish Status](https://github.com/ether/${pluginName}/workflows/Node.js%20Package/badge.svg)`;
+    const testBadge = `![Backend Tests Status](https://github.com/ether/${pluginName}/workflows/Backend%20tests/badge.svg)`;
     if (readme.toLowerCase().indexOf('travis') !== -1) {
       console.warn('Remove Travis badges');
     }
     if (readme.indexOf('workflows/Node.js%20Package/badge.svg') === -1) {
       console.warn('No Github workflow badge detected');
       if (autoFix) {
-        readme = `${badgeOne} ${badgeTwo}\n\n${readme}`;
+        readme = `${publishBadge} ${testBadge}\n\n${readme}`;
+        // write readme to file system
+        fs.writeFileSync(`${pluginPath}/${readMeFileName}`, readme);
+        console.log('Wrote Github workflow badges to README');
       }
-      // write readme to file system
-      fs.writeFileSync(`${pluginPath}/${readMeFileName}`, readme);
-      console.log('Wrote Github workflow badges to README');
     }
   }
 
