@@ -277,7 +277,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       console.warn('Run npm install in the plugin folder and commit the package-lock.json file.');
     }
   }
-
   if (files.indexOf('readme') === -1 && files.indexOf('readme.md') === -1) {
     console.warn('README.md file not found, please create');
     if (autoFix) {
@@ -310,13 +309,29 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   }
 
 
-  if (files.indexOf('readme') !== -1 && files.indexOf('readme.md') !== -1) {
-    const readme =
+  if (readMeFileName) {
+    let readme =
         fs.readFileSync(`${pluginPath}/${readMeFileName}`, {encoding: 'utf8', flag: 'r'});
     if (readme.toLowerCase().indexOf('license') === -1) {
       console.warn('No license section in README');
       if (autoFix) {
         console.warn('Please add License section to README manually.');
+      }
+    }
+    // eslint-disable-next-line max-len
+    const publishBadge = `![Publish Status](https://github.com/ether/${pluginName}/workflows/Node.js%20Package/badge.svg)`;
+    // eslint-disable-next-line max-len
+    const testBadge = `![Backend Tests Status](https://github.com/ether/${pluginName}/workflows/Backend%20tests/badge.svg)`;
+    if (readme.toLowerCase().indexOf('travis') !== -1) {
+      console.warn('Remove Travis badges');
+    }
+    if (readme.indexOf('workflows/Node.js%20Package/badge.svg') === -1) {
+      console.warn('No Github workflow badge detected');
+      if (autoFix) {
+        readme = `${publishBadge} ${testBadge}\n\n${readme}`;
+        // write readme to file system
+        fs.writeFileSync(`${pluginPath}/${readMeFileName}`, readme);
+        console.log('Wrote Github workflow badges to README');
       }
     }
   }
@@ -331,41 +346,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       license = license.replace('[name of copyright owner]', execSync('git config user.name'));
       fs.writeFileSync(`${pluginPath}/LICENSE.md`, license);
     }
-  }
-
-  let travisConfig =
-      fs.readFileSync('src/bin/plugins/lib/travis.yml', {encoding: 'utf8', flag: 'r'});
-  travisConfig = travisConfig.replace(/\[plugin_name\]/g, pluginName);
-
-  if (files.indexOf('.travis.yml') === -1) {
-    console.warn('.travis.yml file not found, please create.  ' +
-                 '.travis.yml is used for automatically CI testing Etherpad.  ' +
-                 'It is useful to know if your plugin breaks another feature for example.');
-    // TODO: Make it check version of the .travis file to see if it needs an update.
-    if (autoFix) {
-      console.log('Autofixing missing .travis.yml file');
-      fs.writeFileSync(`${pluginPath}/.travis.yml`, travisConfig);
-      console.log('Travis file created, please sign into travis and enable this repository');
-    }
-  }
-  if (autoFix) {
-    // checks the file versioning of .travis and updates it to the latest.
-    const existingConfig =
-        fs.readFileSync(`${pluginPath}/.travis.yml`, {encoding: 'utf8', flag: 'r'});
-    const existingConfigLocation = existingConfig.indexOf('##ETHERPAD_TRAVIS_V=');
-    const existingValue =
-        parseInt(existingConfig.substr(existingConfigLocation + 20, existingConfig.length));
-
-    const newConfigLocation = travisConfig.indexOf('##ETHERPAD_TRAVIS_V=');
-    const newValue = parseInt(travisConfig.substr(newConfigLocation + 20, travisConfig.length));
-    if (existingConfigLocation === -1) {
-      console.warn('no previous .travis.yml version found so writing new.');
-      // we will write the newTravisConfig to the location.
-      fs.writeFileSync(`${pluginPath}/.travis.yml`, travisConfig);
-    } else if (newValue > existingValue) {
-      console.log('updating .travis.yml');
-      fs.writeFileSync(`${pluginPath}/.travis.yml`, travisConfig);
-    }//
   }
 
   if (files.indexOf('.gitignore') === -1) {
@@ -433,7 +413,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   // absolute path to etherpad-lite/src is used here so that pluginPath can be a symlink.
   execSync(
       `${npmInstall} --no-save ep_etherpad-lite@file:${__dirname}/../../`, {stdio: 'inherit'});
-
   // linting begins
   try {
     console.log('Linting...');
