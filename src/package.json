@@ -44,7 +44,6 @@
     "express-session": "1.17.1",
     "find-root": "1.1.0",
     "formidable": "1.2.1",
-    "graceful-fs": "4.2.4",
     "http-errors": "1.8.0",
     "js-cookie": "^2.2.1",
     "jsonminify": "0.4.1",
