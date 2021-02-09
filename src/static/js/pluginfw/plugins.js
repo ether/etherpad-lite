@@ -2,8 +2,8 @@
 
 const fs = require('fs').promises;
 const hooks = require('./hooks');
-const readInstalled = require('./read-installed.js');
 const path = require('path');
+const runNpm = require('../../../node/utils/run_npm');
 const tsort = require('./tsort');
 const util = require('util');
 const settings = require('../../../node/utils/Settings');
@@ -69,28 +69,29 @@ exports.update = async () => {
 };
 
 exports.getPackages = async () => {
-  // Load list of installed NPM packages, flatten it to a list,
-  // and filter out only packages with names that
-  const dir = settings.root;
-  const data = await util.promisify(readInstalled)(dir);
-
-  const packages = {};
-  const flatten = (deps) => {
-    for (const [name, dep] of Object.entries(deps)) {
-      if (name.indexOf(exports.prefix) === 0) {
-        packages[name] = {...dep};
-        // Delete anything that creates loops so that the plugin
-        // list can be sent as JSON to the web client
-        delete packages[name].dependencies;
-        delete packages[name].parent;
-      }
+  // Note: Do not pass `--prod` because it does not work if there is no package.json.
+  const np = runNpm(['ls', '--long', '--json', '--depth=0'], {
+    stdoutLogger: null, // We want to capture stdout, so don't attempt to log it.
+    env: {
+      ...process.env,
+      // NODE_ENV must be set to development for `npm ls` to show files without a package.json.
+      NODE_ENV: 'development',
+    },
+  });
+  const chunks = [];
+  await Promise.all([
+    (async () => { for await (const chunk of np.stdout) chunks.push(chunk); })(),
+    np, // Await in parallel to avoid unhandled rejection if np rejects during chunk read.
+  ]);
+  const {dependencies = {}} = JSON.parse(Buffer.concat(chunks).toString());
+  await Promise.all(Object.entries(dependencies).map(async ([pkg, info]) => {
+    if (!pkg.startsWith(exports.prefix)) {
+      delete dependencies[pkg];
+      return;
     }
-  };
-
-  const tmp = {};
-  tmp[data.name] = data;
-  flatten(tmp[data.name].dependencies);
-  return packages;
+    info.realPath = await fs.realpath(info.path);
+  }));
+  return dependencies;
 };
 
 const loadPlugin = async (packages, pluginName, plugins, parts) => {
