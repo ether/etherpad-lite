@@ -41,6 +41,7 @@
 ### Notable fixes
 
 * Enter key now stays in focus when inserted at bottom of viewport.
+* Suppressed benign socket.io connection errors
 * Interface no longer loses color variants on disconnect/reconnect event.
 * Removed npm.load to support npm7.
 * General code quality is further significantly improved.
