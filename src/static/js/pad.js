@@ -271,7 +271,9 @@ const handshake = () => {
       pad.collabClient.setStateIdle();
       pad.collabClient.setIsPendingRevision(true);
     }
-    throw new Error(`socket.io connection error: ${JSON.stringify(error)}`);
+    // Don't throw an exception. Error events do not indicate problems that are not already
+    // addressed by reconnection logic, so throwing an exception each time there's a socket.io error
+    // just annoys users and fills logs.
   });
 
   socket.on('message', (obj) => {
