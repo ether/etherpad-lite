@@ -719,7 +719,7 @@ exports.reloadSettings = () => {
     }
 
     // informative variable, just for the log messages
-    let skinPath = path.normalize(path.join(skinBasePath, exports.skinName));
+    let skinPath = path.join(skinBasePath, exports.skinName);
 
     // what if someone sets skinName == ".." or "."? We catch him!
     if (absolutePaths.isSubdir(skinBasePath, skinPath) === false) {

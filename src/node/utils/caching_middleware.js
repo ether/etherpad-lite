@@ -44,7 +44,7 @@ try {
   _crypto = undefined;
 }
 
-let CACHE_DIR = path.normalize(path.join(settings.root, 'var/'));
+let CACHE_DIR = path.join(settings.root, 'var/');
 CACHE_DIR = existsSync(CACHE_DIR) ? CACHE_DIR : undefined;
 
 const responseCache = {};

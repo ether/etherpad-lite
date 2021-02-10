@@ -32,7 +32,7 @@ exports.formatHooks = (hookSetName) => {
 const callInit = async () => {
   await Promise.all(Object.keys(defs.plugins).map(async (pluginName) => {
     const plugin = defs.plugins[pluginName];
-    const epInit = path.normalize(path.join(plugin.package.path, '.ep_initialized'));
+    const epInit = path.join(plugin.package.path, '.ep_initialized');
     try {
       await fs.stat(epInit);
     } catch (err) {
@@ -48,7 +48,7 @@ exports.pathNormalization = (part, hookFnName, hookName) => {
   const functionName = (tmp.length > 1 ? tmp.pop() : null) || hookName;
   const moduleName = tmp.join(':') || part.plugin;
   const packageDir = path.dirname(defs.plugins[part.plugin].package.path);
-  const fileName = path.normalize(path.join(packageDir, moduleName));
+  const fileName = path.join(packageDir, moduleName);
   return `${fileName}:${functionName}`;
 };
 
