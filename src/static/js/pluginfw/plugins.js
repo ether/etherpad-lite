@@ -73,14 +73,13 @@ exports.update = async () => {
 
 exports.getPackages = async () => {
   logger.info('Running npm to get a list of installed plugins...');
-  // Note: Do not pass `--prod` because it does not work if there is no package.json.
-  const np = runNpm(['ls', '--long', '--json', '--depth=0'], {
+  // Notes:
+  //   * Do not pass `--prod` otherwise `npm ls` will fail if there is no `package.json`.
+  //   * The `--no-production` flag is required (or the `NODE_ENV` environment variable must be
+  //     unset or set to `development`) because otherwise `npm ls` will not mention any packages
+  //     that are not included in `package.json` (which is expected to not exist).
+  const np = runNpm(['ls', '--long', '--json', '--depth=0', '--no-production'], {
     stdoutLogger: null, // We want to capture stdout, so don't attempt to log it.
-    env: {
-      ...process.env,
-      // NODE_ENV must be set to development for `npm ls` to show files without a package.json.
-      NODE_ENV: 'development',
-    },
   });
   const chunks = [];
   await Promise.all([
