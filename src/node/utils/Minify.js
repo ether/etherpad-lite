@@ -101,7 +101,7 @@ const minify = async (req, res) => {
   let filename = req.params.filename;
 
   // No relative paths, especially if they may go up the file hierarchy.
-  filename = path.normalize(path.join(ROOT_DIR, filename));
+  filename = path.join(ROOT_DIR, filename);
   filename = filename.replace(/\.\./g, '');
 
   if (filename.indexOf(ROOT_DIR) === 0) {
@@ -198,7 +198,7 @@ const getAceFile = async () => {
   await Promise.all(filenames.map(async (filename) => {
     // Hostname "invalid.invalid" is a dummy value to allow parsing as a URI.
     const baseURI = 'http://invalid.invalid';
-    let resourceURI = baseURI + path.normalize(path.join('/static/', filename));
+    let resourceURI = baseURI + path.join('/static/', filename);
     resourceURI = resourceURI.replace(/\\/g, '/'); // Windows (safe generally?)
 
     const [status, , body] = await requestURI(resourceURI, 'GET', {});
