@@ -21,13 +21,8 @@ const stderrLogger = (line) => npmLogger.error(line);
  */
 module.exports = exports = (args, opts = {}) => {
   const cmd = ['npm', ...args];
-  logger.info(`Executing command: ${cmd.join(' ')}`);
-  const p = runCmd(cmd, {stdoutLogger, stderrLogger, ...opts});
-  p.then(
-      () => logger.info(`Successfully ran command: ${cmd.join(' ')}`),
-      () => logger.error(`npm command failed: ${cmd.join(' ')}`));
   // MUST return the original Promise returned from runCmd so that the caller can access stdout.
-  return p;
+  return runCmd(cmd, {stdoutLogger, stderrLogger, ...opts});
 };
 
 // Log the version of npm at startup.
