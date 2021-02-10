@@ -4,8 +4,7 @@ const languages = require('languages4translatewiki');
 const fs = require('fs');
 const path = require('path');
 const _ = require('underscore');
-const npm = require('npm');
-const plugins = require('../../static/js/pluginfw/plugin_defs.js').plugins;
+const pluginDefs = require('../../static/js/pluginfw/plugin_defs.js');
 const existsSync = require('../utils/path_exists');
 const settings = require('../utils/Settings');
 
@@ -38,10 +37,12 @@ const getAllLocales = () => {
   };
 
   // add core supported languages first
-  extractLangs(`${npm.root}/ep_etherpad-lite/locales`);
+  extractLangs(path.join(settings.root, 'src/locales'));
 
   // add plugins languages (if any)
-  for (const pluginName in plugins) extractLangs(path.join(npm.root, pluginName, 'locales'));
+  for (const {package: {path: pluginPath}} of Object.values(pluginDefs.plugins)) {
+    extractLangs(path.join(pluginPath, 'locales'));
+  }
 
   // Build a locale index (merge all locale data other than user-supplied overrides)
   const locales = {};

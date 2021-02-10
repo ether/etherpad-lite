@@ -32,7 +32,7 @@ const log4js = require('log4js');
 
 const logger = log4js.getLogger('Minify');
 
-const ROOT_DIR = path.normalize(`${__dirname}/../../static/`);
+const ROOT_DIR = path.join(settings.root, 'src/static/');
 
 const threadsPool = new Threads.Pool(() => Threads.spawn(new Threads.Worker('./MinifyWorker')), 2);
 

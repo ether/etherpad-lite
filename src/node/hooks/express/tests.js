@@ -1,7 +1,6 @@
 'use strict';
 
 const path = require('path');
-const npm = require('npm');
 const fs = require('fs');
 const util = require('util');
 const settings = require('../../utils/Settings');
@@ -29,7 +28,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
     res.end(`var specs_list = ${JSON.stringify(files)};\n`);
   });
 
-  const rootTestFolder = path.join(npm.root, '../tests/frontend/');
+  const rootTestFolder = path.join(settings.root, 'src/tests/frontend/');
 
   const url2FilePath = (url) => {
     let subPath = url.substr('/tests/frontend'.length);
