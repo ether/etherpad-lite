@@ -21,15 +21,15 @@ const onAllTasksFinished = () => {
 
 let tasks = 0;
 
-function wrapTaskCb(cb) {
+const wrapTaskCb = (cb) => {
   tasks++;
 
-  return function (...args) {
-    cb && cb.apply(this, args);
+  return (...args) => {
+    cb && cb(...args);
     tasks--;
     if (tasks === 0) onAllTasksFinished();
   };
-}
+};
 
 exports.uninstall = async (pluginName, cb = null) => {
   cb = wrapTaskCb(cb);

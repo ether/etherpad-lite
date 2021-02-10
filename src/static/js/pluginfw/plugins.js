@@ -5,9 +5,6 @@ const hooks = require('./hooks');
 const path = require('path');
 const runNpm = require('../../../node/utils/run_npm');
 const tsort = require('./tsort');
-const util = require('util');
-const settings = require('../../../node/utils/Settings');
-
 const pluginUtils = require('./shared');
 const defs = require('./plugin_defs');
 
