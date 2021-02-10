@@ -2,11 +2,14 @@
 
 const fs = require('fs').promises;
 const hooks = require('./hooks');
+const log4js = require('log4js');
 const path = require('path');
 const runNpm = require('../../../node/utils/run_npm');
 const tsort = require('./tsort');
 const pluginUtils = require('./shared');
 const defs = require('./plugin_defs');
+
+const logger = log4js.getLogger('plugins');
 
 exports.prefix = 'ep_';
 
@@ -55,8 +58,11 @@ exports.update = async () => {
   const plugins = {};
 
   // Load plugin metadata ep.json
-  await Promise.all(Object.keys(packages).map(
-      async (pluginName) => await loadPlugin(packages, pluginName, plugins, parts)));
+  await Promise.all(Object.keys(packages).map(async (pluginName) => {
+    logger.info(`Loading plugin ${pluginName}...`);
+    await loadPlugin(packages, pluginName, plugins, parts);
+  }));
+  logger.info(`Loaded ${Object.keys(packages).length} plugins`);
 
   defs.plugins = plugins;
   defs.parts = sortParts(parts);
@@ -66,6 +72,7 @@ exports.update = async () => {
 };
 
 exports.getPackages = async () => {
+  logger.info('Running npm to get a list of installed plugins...');
   // Note: Do not pass `--prod` because it does not work if there is no package.json.
   const np = runNpm(['ls', '--long', '--json', '--depth=0'], {
     stdoutLogger: null, // We want to capture stdout, so don't attempt to log it.
@@ -104,11 +111,11 @@ const loadPlugin = async (packages, pluginName, plugins, parts) => {
         part.full_name = `${pluginName}/${part.name}`;
         parts[part.full_name] = part;
       }
-    } catch (ex) {
-      console.error(`Unable to parse plugin definition file ${pluginPath}: ${ex.toString()}`);
+    } catch (err) {
+      logger.error(`Unable to parse plugin definition file ${pluginPath}: ${err.stack || err}`);
     }
-  } catch (er) {
-    console.error(`Unable to load plugin definition file ${pluginPath}`);
+  } catch (err) {
+    logger.error(`Unable to load plugin definition file ${pluginPath}: ${err.stack || err}`);
   }
 };
 

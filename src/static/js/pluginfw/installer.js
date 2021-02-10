@@ -7,6 +7,8 @@ const npm = require('npm');
 const request = require('request');
 const util = require('util');
 
+const logger = log4js.getLogger('plugins');
+
 let npmIsLoaded = false;
 const loadNpm = async () => {
   if (npmIsLoaded) return;
@@ -33,13 +35,16 @@ const wrapTaskCb = (cb) => {
 
 exports.uninstall = async (pluginName, cb = null) => {
   cb = wrapTaskCb(cb);
+  logger.info(`Uninstalling plugin ${pluginName}...`);
   try {
     await loadNpm();
     await util.promisify(npm.commands.uninstall)([pluginName]);
   } catch (err) {
+    logger.error(`Failed to uninstall plugin ${pluginName}`);
     cb(err || new Error(err));
     throw err;
   }
+  logger.info(`Successfully uninstalled plugin ${pluginName}`);
   await hooks.aCallAll('pluginUninstall', {pluginName});
   await plugins.update();
   cb(null);
@@ -47,13 +52,16 @@ exports.uninstall = async (pluginName, cb = null) => {
 
 exports.install = async (pluginName, cb = null) => {
   cb = wrapTaskCb(cb);
+  logger.info(`Installing plugin ${pluginName}...`);
   try {
     await loadNpm();
     await util.promisify(npm.commands.install)([`${pluginName}@latest`]);
   } catch (err) {
+    logger.error(`Failed to install plugin ${pluginName}`);
     cb(err || new Error(err));
     throw err;
   }
+  logger.info(`Successfully installed plugin ${pluginName}`);
   await hooks.aCallAll('pluginInstall', {pluginName});
   await plugins.update();
   cb(null);
@@ -77,7 +85,7 @@ exports.getAvailablePlugins = (maxCacheAge) => {
       try {
         plugins = JSON.parse(plugins);
       } catch (err) {
-        console.error('error parsing plugins.json:', err);
+        logger.error(`error parsing plugins.json: ${err.stack || err}`);
         plugins = [];
       }
 
@@ -107,7 +115,7 @@ exports.search = (searchTerm, maxCacheAge) => exports.getAvailablePlugins(maxCac
               !~results[pluginName].description.toLowerCase().indexOf(searchTerm))
         ) {
           if (typeof results[pluginName].description === 'undefined') {
-            console.debug('plugin without Description: %s', results[pluginName].name);
+            logger.debug(`plugin without Description: ${results[pluginName].name}`);
           }
 
           continue;
