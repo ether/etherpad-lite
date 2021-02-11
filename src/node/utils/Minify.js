@@ -22,7 +22,7 @@
  */
 
 const settings = require('./Settings');
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 const plugins = require('../../static/js/pluginfw/plugin_defs');
 const RequireKernel = require('etherpad-require-kernel');
@@ -30,7 +30,6 @@ const urlutil = require('url');
 const mime = require('mime-types');
 const Threads = require('threads');
 const log4js = require('log4js');
-const util = require('util');
 
 const logger = log4js.getLogger('Minify');
 
@@ -195,7 +194,7 @@ const minify = async (req, res) => {
 
 // find all includes in ace.js and embed them.
 const getAceFile = async () => {
-  let data = await util.promisify(fs.readFile)(`${ROOT_DIR}js/ace.js`, 'utf8');
+  let data = await fs.readFile(`${ROOT_DIR}js/ace.js`, 'utf8');
 
   // Find all includes in ace.js and embed them
   const filenames = [];
@@ -255,7 +254,7 @@ const statFile = async (filename, dirStatLimit) => {
   } else {
     let stats;
     try {
-      stats = await util.promisify(fs.stat)(ROOT_DIR + filename);
+      stats = await fs.stat(ROOT_DIR + filename);
     } catch (err) {
       if (err.code === 'ENOENT') {
         // Stat the directory instead.
@@ -274,7 +273,7 @@ const lastModifiedDateOfEverything = async () => {
   // go through this two folders
   await Promise.all(folders2check.map(async (path) => {
     // read the files in the folder
-    const files = await util.promisify(fs.readdir)(path);
+    const files = await fs.readdir(path);
 
     // we wanna check the directory itself for changes too
     files.push('.');
@@ -282,7 +281,7 @@ const lastModifiedDateOfEverything = async () => {
     // go through all files in this folder
     await Promise.all(files.map(async (filename) => {
       // get the stat data of this file
-      const stats = await util.promisify(fs.stat)(`${path}/${filename}`);
+      const stats = await fs.stat(`${path}/${filename}`);
 
       // get the modification time
       const modificationTime = stats.mtime.getTime();
@@ -348,7 +347,7 @@ const getFileCompressed = async (filename, contentType) => {
 const getFile = async (filename) => {
   if (filename === 'js/ace.js') return await getAceFile();
   if (filename === 'js/require-kernel.js') return requireDefinition();
-  return await util.promisify(fs.readFile)(ROOT_DIR + filename);
+  return await fs.readFile(ROOT_DIR + filename);
 };
 
 exports.minify = (req, res, next) => minify(req, res).catch((err) => next(err || new Error(err)));
