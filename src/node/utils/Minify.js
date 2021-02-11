@@ -21,7 +21,6 @@
  * limitations under the License.
  */
 
-const ERR = require('async-stacktrace');
 const settings = require('./Settings');
 const fs = require('fs');
 const path = require('path');
@@ -53,7 +52,7 @@ const LIBRARY_WHITELIST = [
 const requestURI = async (url, method, headers) => {
   var headers = {};
 
-  return await new Promise((resolve) => {
+  return await new Promise((resolve, reject) => {
     const parsedURL = urlutil.parse(url);
     let status = 500;
     const content = [];
@@ -86,7 +85,7 @@ const requestURI = async (url, method, headers) => {
         resolve([status, headers, content.join('')]);
       },
     };
-    minify(mockRequest, mockResponse);
+    minify(mockRequest, mockResponse).catch(reject);
   });
 };
 
@@ -104,7 +103,7 @@ const requestURIs = (locations, method, headers, callback) => {
  * @param req the Express request
  * @param res the Express response
  */
-const minify = (req, res) => {
+const minify = async (req, res) => {
   let filename = req.params.filename;
 
   // No relative paths, especially if they may go up the file hierarchy.
@@ -145,50 +144,53 @@ const minify = (req, res) => {
 
   const contentType = mime.lookup(filename);
 
-  util.callbackify(statFile)(filename, 3, (error, [date, exists]) => {
-    if (error) {
+  let date, exists;
+  try {
+    [date, exists] = await statFile(filename, 3);
+  } catch (err) {
+    res.writeHead(500, {});
+    res.end();
+    return;
+  }
+  if (date) {
+    date = new Date(date);
+    date.setMilliseconds(0);
+    res.setHeader('last-modified', date.toUTCString());
+    res.setHeader('date', (new Date()).toUTCString());
+    if (settings.maxAge !== undefined) {
+      const expiresDate = new Date(Date.now() + settings.maxAge * 1000);
+      res.setHeader('expires', expiresDate.toUTCString());
+      res.setHeader('cache-control', `max-age=${settings.maxAge}`);
+    }
+  }
+
+  if (!exists) {
+    res.writeHead(404, {});
+    res.end();
+  } else if (new Date(req.headers['if-modified-since']) >= date) {
+    res.writeHead(304, {});
+    res.end();
+  } else if (req.method === 'HEAD') {
+    res.header('Content-Type', contentType);
+    res.writeHead(200, {});
+    res.end();
+  } else if (req.method === 'GET') {
+    let content;
+    try {
+      content = await getFileCompressed(filename, contentType);
+    } catch (err) {
       res.writeHead(500, {});
       res.end();
       return;
     }
-    if (date) {
-      date = new Date(date);
-      date.setMilliseconds(0);
-      res.setHeader('last-modified', date.toUTCString());
-      res.setHeader('date', (new Date()).toUTCString());
-      if (settings.maxAge !== undefined) {
-        const expiresDate = new Date(Date.now() + settings.maxAge * 1000);
-        res.setHeader('expires', expiresDate.toUTCString());
-        res.setHeader('cache-control', `max-age=${settings.maxAge}`);
-      }
-    }
-
-    if (!exists) {
-      res.writeHead(404, {});
-      res.end();
-    } else if (new Date(req.headers['if-modified-since']) >= date) {
-      res.writeHead(304, {});
-      res.end();
-    } else if (req.method === 'HEAD') {
-      res.header('Content-Type', contentType);
-      res.writeHead(200, {});
-      res.end();
-    } else if (req.method === 'GET') {
-      util.callbackify(getFileCompressed)(filename, contentType, (error, content) => {
-        if (ERR(error, () => {
-          res.writeHead(500, {});
-          res.end();
-        })) return;
-        res.header('Content-Type', contentType);
-        res.writeHead(200, {});
-        res.write(content);
-        res.end();
-      });
-    } else {
-      res.writeHead(405, {allow: 'HEAD, GET'});
-      res.end();
-    }
-  });
+    res.header('Content-Type', contentType);
+    res.writeHead(200, {});
+    res.write(content);
+    res.end();
+  } else {
+    res.writeHead(405, {allow: 'HEAD, GET'});
+    res.end();
+  }
 };
 
 // find all includes in ace.js and embed them.
@@ -349,7 +351,7 @@ const getFile = async (filename) => {
   return await util.promisify(fs.readFile)(ROOT_DIR + filename);
 };
 
-exports.minify = minify;
+exports.minify = (req, res, next) => minify(req, res).catch((err) => next(err || new Error(err)));
 
 exports.requestURIs = requestURIs;
 
