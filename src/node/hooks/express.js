@@ -181,9 +181,16 @@ exports.restartServer = async () => {
   app.use(exports.sessionMiddleware);
 
   app.use(cookieParser(settings.sessionKey, {}));
+  const expressHooksDurations = {};
+  stats.gauge('expressHooksDurations', () => expressHooksDurations);
 
+  const preExpressConfigure = Date.now();
   hooks.callAll('expressConfigure', {app});
+  expressHooksDurations.configure = Date.now() - preExpressConfigure;
+
+  const preExpressCreateServer = Date.now();
   hooks.callAll('expressCreateServer', {app, server: exports.server});
+  expressHooksDurations.createServer = Date.now() - preExpressCreateServer;
 
   await util.promisify(exports.server.listen).bind(exports.server)(settings.port, settings.ip);
 };

@@ -5,8 +5,12 @@ const plugins = require('../../../static/js/pluginfw/plugin_defs');
 const CachingMiddleware = require('../../utils/caching_middleware');
 const Yajsml = require('etherpad-yajsml');
 const _ = require('underscore');
+const stats = require('../../stats');
 
 exports.expressCreateServer = (hookName, args, cb) => {
+  const expressDurations = {};
+  stats.gauge('expressDurations', () => expressDurations);
+  const preMinification = Date.now();
   // Cache both minified and static.
   const assetCache = new CachingMiddleware();
   args.app.all(/\/javascripts\/(.*)/, assetCache.handle);
@@ -14,6 +18,9 @@ exports.expressCreateServer = (hookName, args, cb) => {
   // Minify will serve static files compressed (minify enabled). It also has
   // file-specific hacks for ace/require-kernel/etc.
   args.app.all('/static/:filename(*)', minify.minify);
+
+  expressDurations.minification = Date.now() - preMinification;
+  const preYajsml = Date.now();
 
   // Setup middleware that will package JavaScript files served by minify for
   // CommonJS loader on the client-side.
@@ -33,6 +40,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
   jsServer.setAssociator(associator);
 
   args.app.use(jsServer.handle.bind(jsServer));
+  expressDurations.yajsml = Date.now() - preYajsml;
 
   // serve plugin definitions
   // not very static, but served here so that client can do

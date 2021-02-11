@@ -108,6 +108,8 @@ exports.start = async () => {
 
     // start up stats counting system
     const stats = require('./stats');
+    const startDurations = {};
+    stats.gauge('startDurations', () => startDurations);
     stats.gauge('memoryUsage', () => process.memoryUsage().rss);
     stats.gauge('memoryUsageHeap', () => process.memoryUsage().heapUsed);
 
@@ -132,9 +134,18 @@ exports.start = async () => {
       });
     }
 
+    const preNpmLoad = Date.now();
     await util.promisify(npm.load)();
+    startDurations.npmLoad = Date.now() - preNpmLoad;
+
+    const preDbInit = Date.now();
     await db.init();
+    startDurations.dbInit = Date.now() - preDbInit;
+
+    const prePluginsUpdate = Date.now();
     await plugins.update();
+    startDurations.loadPlugins = Date.now() - prePluginsUpdate;
+
     const installedPlugins = Object.values(pluginDefs.plugins)
         .filter((plugin) => plugin.package.name !== 'ep_etherpad-lite')
         .map((plugin) => `${plugin.package.name}@${plugin.package.version}`)
@@ -142,7 +153,9 @@ exports.start = async () => {
     logger.info(`Installed plugins: ${installedPlugins}`);
     logger.debug(`Installed parts:\n${plugins.formatParts()}`);
     logger.debug(`Installed hooks:\n${plugins.formatHooks()}`);
+    const preLoadSettings = Date.now();
     await hooks.aCallAll('loadSettings', {settings});
+    startDurations.loadSettings = Date.now() - preLoadSettings;
     await hooks.aCallAll('createServer');
   } catch (err) {
     logger.error('Error occurred while starting Etherpad');
