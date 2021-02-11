@@ -119,7 +119,7 @@ describe('ordered_list.js', function () {
       const $secondLine = inner$('div').first().next();
       $secondLine.sendkeys('{selectall}');
       $insertorderedlistButton.click();
-      expect($secondLine.hasClass('list-number2')).to.be(true);
+      expect($secondLine.find('ol').attr('start') === 2);
       done();
     });
 
