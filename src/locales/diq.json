@@ -11,7 +11,7 @@
 		]
 	},
 	"admin.page-title": "Panoyê İdarekari - Etherpad",
-	"admin_plugins": "İdarekarê Dekerdeki",
+	"admin_plugins": "Gıredayışê raverberi",
 	"admin_plugins.available": "Mewcud Dekerdeki",
 	"admin_plugins.available_not-found": "Dekerdek nevineya",
 	"admin_plugins.available_fetching": "Aniyeno...",
@@ -134,7 +134,7 @@
 	"timeslider.pageTitle": "Ğızagê zemani {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Peyser şo bloknot",
 	"timeslider.toolbar.authors": "Nuştoği:",
-	"timeslider.toolbar.authorsList": "Nuştoği çıniyê",
+	"timeslider.toolbar.authorsList": "Nuştekari çıniyê",
 	"timeslider.toolbar.exportlink.title": "Teberdayış",
 	"timeslider.exportCurrent": "Versiyonê enewki teber de:",
 	"timeslider.version": "Versiyonê {{version}}",
