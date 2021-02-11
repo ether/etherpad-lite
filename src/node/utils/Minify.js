@@ -172,7 +172,7 @@ const minify = (req, res) => {
       res.writeHead(200, {});
       res.end();
     } else if (req.method === 'GET') {
-      getFileCompressed(filename, contentType, (error, content) => {
+      util.callbackify(getFileCompressed)(filename, contentType, (error, content) => {
         if (ERR(error, () => {
           res.writeHead(500, {});
           res.end();
@@ -298,11 +298,12 @@ const _requireLastModified = new Date();
 const requireLastModified = () => _requireLastModified.toUTCString();
 const requireDefinition = () => `var require = ${RequireKernel.kernelSource};\n`;
 
-const getFileCompressed = (filename, contentType, callback) => {
-  util.callbackify(getFile)(filename, (error, content) => {
-    if (error || !content || !settings.minify) {
-      callback(error, content);
-    } else if (contentType === 'application/javascript') {
+const getFileCompressed = async (filename, contentType) => {
+  let content = await getFile(filename);
+  if (!content || !settings.minify) {
+    return content;
+  } else if (contentType === 'application/javascript') {
+    return await new Promise((resolve) => {
       threadsPool.queue(async ({compressJS}) => {
         try {
           logger.info('Compress JS file %s.', filename);
@@ -319,10 +320,11 @@ const getFileCompressed = (filename, contentType, callback) => {
           console.error('getFile() returned an error in ' +
                         `getFileCompressed(${filename}, ${contentType}): ${error}`);
         }
-
-        callback(null, content);
+        resolve(content);
       });
-    } else if (contentType === 'text/css') {
+    });
+  } else if (contentType === 'text/css') {
+    return await new Promise((resolve) => {
       threadsPool.queue(async ({compressCSS}) => {
         try {
           logger.info('Compress CSS file %s.', filename);
@@ -331,13 +333,12 @@ const getFileCompressed = (filename, contentType, callback) => {
         } catch (error) {
           console.error(`CleanCSS.minify() returned an error on ${filename}: ${error}`);
         }
-
-        callback(null, content);
+        resolve(content);
       });
-    } else {
-      callback(null, content);
-    }
-  });
+    });
+  } else {
+    return content;
+  }
 };
 
 const getFile = async (filename) => {
