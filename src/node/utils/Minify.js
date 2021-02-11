@@ -190,45 +190,44 @@ const minify = (req, res) => {
 };
 
 // find all includes in ace.js and embed them.
-const getAceFile = (callback) => {
-  fs.readFile(`${ROOT_DIR}js/ace.js`, 'utf8', (err, data) => {
-    if (ERR(err, callback)) return;
+const getAceFile = async () => {
+  let data = await util.promisify(fs.readFile)(`${ROOT_DIR}js/ace.js`, 'utf8');
 
-    // Find all includes in ace.js and embed them
-    const filenames = [];
-    if (settings.minify) {
-      const regex = /\$\$INCLUDE_[a-zA-Z_]+\((['"])([^'"]*)\1\)/gi;
-      // This logic can be simplified via String.prototype.matchAll() once support for Node.js
-      // v11.x and older is dropped.
-      let matches;
-      while ((matches = regex.exec(data)) != null) {
-        filenames.push(matches[2]);
-      }
+  // Find all includes in ace.js and embed them
+  const filenames = [];
+  if (settings.minify) {
+    const regex = /\$\$INCLUDE_[a-zA-Z_]+\((['"])([^'"]*)\1\)/gi;
+    // This logic can be simplified via String.prototype.matchAll() once support for Node.js
+    // v11.x and older is dropped.
+    let matches;
+    while ((matches = regex.exec(data)) != null) {
+      filenames.push(matches[2]);
     }
-    // Always include the require kernel.
-    filenames.push('../static/js/require-kernel.js');
+  }
+  // Always include the require kernel.
+  filenames.push('../static/js/require-kernel.js');
 
-    data += ';\n';
-    data += 'Ace2Editor.EMBEDED = Ace2Editor.EMBEDED || {};\n';
+  data += ';\n';
+  data += 'Ace2Editor.EMBEDED = Ace2Editor.EMBEDED || {};\n';
 
-    // Request the contents of the included file on the server-side and write
-    // them into the file.
-    Promise.all(filenames.map(async (filename) => {
-      // Hostname "invalid.invalid" is a dummy value to allow parsing as a URI.
-      const baseURI = 'http://invalid.invalid';
-      let resourceURI = baseURI + path.normalize(path.join('/static/', filename));
-      resourceURI = resourceURI.replace(/\\/g, '/'); // Windows (safe generally?)
+  // Request the contents of the included file on the server-side and write
+  // them into the file.
+  await Promise.all(filenames.map(async (filename) => {
+    // Hostname "invalid.invalid" is a dummy value to allow parsing as a URI.
+    const baseURI = 'http://invalid.invalid';
+    let resourceURI = baseURI + path.normalize(path.join('/static/', filename));
+    resourceURI = resourceURI.replace(/\\/g, '/'); // Windows (safe generally?)
 
-      const [status, , body] = await requestURI(resourceURI, 'GET', {});
-      const error = !(status === 200 || status === 404);
-      if (!error) {
-        data += `Ace2Editor.EMBEDED[${JSON.stringify(filename)}] = ${
-          JSON.stringify(status === 200 ? body || '' : null)};\n`;
-      } else {
-        console.error(`getAceFile(): error getting ${resourceURI}. Status code: ${status}`);
-      }
-    })).then(() => callback(null, data), (err) => callback(err || new Error(err)));
-  });
+    const [status, , body] = await requestURI(resourceURI, 'GET', {});
+    const error = !(status === 200 || status === 404);
+    if (!error) {
+      data += `Ace2Editor.EMBEDED[${JSON.stringify(filename)}] = ${
+        JSON.stringify(status === 200 ? body || '' : null)};\n`;
+    } else {
+      console.error(`getAceFile(): error getting ${resourceURI}. Status code: ${status}`);
+    }
+  }));
+  return data;
 };
 
 // Check for the existance of the file and get the last modification date.
@@ -348,7 +347,7 @@ const getFileCompressed = (filename, contentType, callback) => {
 
 const getFile = (filename, callback) => {
   if (filename === 'js/ace.js') {
-    getAceFile(callback);
+    util.callbackify(getAceFile)(callback);
   } else if (filename === 'js/require-kernel.js') {
     callback(undefined, requireDefinition());
   } else {
