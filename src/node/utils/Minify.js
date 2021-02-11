@@ -245,9 +245,9 @@ const statFile = (filename, callback, dirStatLimit) => {
   } else if (filename === 'js/ace.js') {
     // Sometimes static assets are inlined into this file, so we have to stat
     // everything.
-    lastModifiedDateOfEverything((error, date) => {
-      callback(error, date, !error);
-    });
+    lastModifiedDateOfEverything().then(
+        (date) => callback(null, date, true),
+        (err) => callback(err || new Error(err)));
   } else if (filename === 'js/require-kernel.js') {
     callback(null, requireLastModified(), true);
   } else {
@@ -270,11 +270,11 @@ const statFile = (filename, callback, dirStatLimit) => {
   }
 };
 
-const lastModifiedDateOfEverything = (callback) => {
+const lastModifiedDateOfEverything = async () => {
   const folders2check = [`${ROOT_DIR}js/`, `${ROOT_DIR}css/`];
   let latestModification = 0;
   // go through this two folders
-  Promise.all(folders2check.map(async (path) => {
+  await Promise.all(folders2check.map(async (path) => {
     // read the files in the folder
     const files = await util.promisify(fs.readdir)(path);
 
@@ -294,7 +294,8 @@ const lastModifiedDateOfEverything = (callback) => {
         latestModification = modificationTime;
       }
     }));
-  })).then(() => callback(null, latestModification), (err) => callback(err || new Error(err)));
+  }));
+  return latestModification;
 };
 
 // This should be provided by the module, but until then, just use startup
