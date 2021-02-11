@@ -145,7 +145,7 @@ const minify = (req, res) => {
 
   const contentType = mime.lookup(filename);
 
-  statFile(filename, (error, date, exists) => {
+  util.callbackify(statFile)(filename, 3, (error, [date, exists]) => {
     if (date) {
       date = new Date(date);
       date.setMilliseconds(0);
@@ -186,7 +186,7 @@ const minify = (req, res) => {
       res.writeHead(405, {allow: 'HEAD, GET'});
       res.end();
     }
-  }, 3);
+  });
 };
 
 // find all includes in ace.js and embed them.
@@ -231,7 +231,7 @@ const getAceFile = async () => {
 };
 
 // Check for the existance of the file and get the last modification date.
-const statFile = (filename, callback, dirStatLimit) => {
+const statFile = async (filename, dirStatLimit) => {
   /*
    * The only external call to this function provides an explicit value for
    * dirStatLimit: this check could be removed.
@@ -241,32 +241,26 @@ const statFile = (filename, callback, dirStatLimit) => {
   }
 
   if (dirStatLimit < 1 || filename === '' || filename === '/') {
-    callback(null, null, false);
+    return [null, false];
   } else if (filename === 'js/ace.js') {
     // Sometimes static assets are inlined into this file, so we have to stat
     // everything.
-    lastModifiedDateOfEverything().then(
-        (date) => callback(null, date, true),
-        (err) => callback(err || new Error(err)));
+    return [await lastModifiedDateOfEverything(), true];
   } else if (filename === 'js/require-kernel.js') {
-    callback(null, requireLastModified(), true);
+    return [requireLastModified(), true];
   } else {
-    fs.stat(ROOT_DIR + filename, (error, stats) => {
-      if (error) {
-        if (error.code === 'ENOENT') {
-          // Stat the directory instead.
-          statFile(path.dirname(filename), (error, date, exists) => {
-            callback(error, date, false);
-          }, dirStatLimit - 1);
-        } else {
-          callback(error);
-        }
-      } else if (stats.isFile()) {
-        callback(null, stats.mtime.getTime(), true);
-      } else {
-        callback(null, stats.mtime.getTime(), false);
+    let stats;
+    try {
+      stats = await util.promisify(fs.stat)(ROOT_DIR + filename);
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        // Stat the directory instead.
+        const [date] = await statFile(path.dirname(filename), dirStatLimit - 1);
+        return [date, false];
       }
-    });
+      throw err;
+    }
+    return [stats.mtime.getTime(), stats.isFile()];
   }
 };
 
