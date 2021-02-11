@@ -50,7 +50,11 @@ exports._exit = (b, recursive) => {
 exports.begin_block = (name) => {
   exports.info.block_stack.push(name);
   exports.info.__output_stack.push(exports.info.__output.concat());
-  exports.info.__output.splice(0, exports.info.__output.length);
+  if(exports.info.__output !== ''){
+    exports.info.__output.splice(0, exports.info.__output.length);
+  } else {
+    exports.info.__output = [];
+  }
 };
 
 exports.end_block = () => {
