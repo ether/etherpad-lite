@@ -91,26 +91,12 @@ const requestURI = async (url, method, headers) => {
 };
 
 const requestURIs = (locations, method, headers, callback) => {
-  let pendingRequests = locations.length;
-  const responses = [];
-
-  const completed = () => {
+  Promise.all(locations.map((loc) => requestURI(loc, method, headers))).then((responses) => {
     const statuss = responses.map((x) => x[0]);
     const headerss = responses.map((x) => x[1]);
     const contentss = responses.map((x) => x[2]);
     callback(statuss, headerss, contentss);
-  };
-
-  const respondFor = (i) => (response) => {
-    responses[i] = response;
-    if (--pendingRequests === 0) {
-      completed();
-    }
-  };
-
-  for (let i = 0, ii = locations.length; i < ii; i++) {
-    requestURI(locations[i], method, headers).then(respondFor(i));
-  }
+  });
 };
 
 /**
