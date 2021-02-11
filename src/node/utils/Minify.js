@@ -152,7 +152,6 @@ const minify = async (req, res) => {
     return;
   }
   if (date) {
-    date = new Date(date);
     date.setMilliseconds(0);
     res.setHeader('last-modified', date.toUTCString());
     res.setHeader('date', (new Date()).toUTCString());
@@ -250,7 +249,7 @@ const statFile = async (filename, dirStatLimit) => {
     // everything.
     return [await lastModifiedDateOfEverything(), true];
   } else if (filename === 'js/require-kernel.js') {
-    return [requireLastModified(), true];
+    return [_requireLastModified, true];
   } else {
     let stats;
     try {
@@ -263,13 +262,13 @@ const statFile = async (filename, dirStatLimit) => {
       }
       throw err;
     }
-    return [stats.mtime.getTime(), stats.isFile()];
+    return [stats.mtime, stats.isFile()];
   }
 };
 
 const lastModifiedDateOfEverything = async () => {
   const folders2check = [`${ROOT_DIR}js/`, `${ROOT_DIR}css/`];
-  let latestModification = 0;
+  let latestModification = null;
   // go through this two folders
   await Promise.all(folders2check.map(async (path) => {
     // read the files in the folder
@@ -283,12 +282,9 @@ const lastModifiedDateOfEverything = async () => {
       // get the stat data of this file
       const stats = await fs.stat(`${path}/${filename}`);
 
-      // get the modification time
-      const modificationTime = stats.mtime.getTime();
-
       // compare the modification time to the highest found
-      if (modificationTime > latestModification) {
-        latestModification = modificationTime;
+      if (latestModification == null || stats.mtime > latestModification) {
+        latestModification = stats.mtime;
       }
     }));
   }));
@@ -298,7 +294,6 @@ const lastModifiedDateOfEverything = async () => {
 // This should be provided by the module, but until then, just use startup
 // time.
 const _requireLastModified = new Date();
-const requireLastModified = () => _requireLastModified.toUTCString();
 const requireDefinition = () => `var require = ${RequireKernel.kernelSource};\n`;
 
 const getFileCompressed = async (filename, contentType) => {
