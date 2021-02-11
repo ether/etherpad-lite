@@ -305,7 +305,7 @@ const requireLastModified = () => _requireLastModified.toUTCString();
 const requireDefinition = () => `var require = ${RequireKernel.kernelSource};\n`;
 
 const getFileCompressed = (filename, contentType, callback) => {
-  getFile(filename, (error, content) => {
+  util.callbackify(getFile)(filename, (error, content) => {
     if (error || !content || !settings.minify) {
       callback(error, content);
     } else if (contentType === 'application/javascript') {
@@ -346,14 +346,10 @@ const getFileCompressed = (filename, contentType, callback) => {
   });
 };
 
-const getFile = (filename, callback) => {
-  if (filename === 'js/ace.js') {
-    util.callbackify(getAceFile)(callback);
-  } else if (filename === 'js/require-kernel.js') {
-    callback(undefined, requireDefinition());
-  } else {
-    fs.readFile(ROOT_DIR + filename, callback);
-  }
+const getFile = async (filename) => {
+  if (filename === 'js/ace.js') return await getAceFile();
+  if (filename === 'js/require-kernel.js') return requireDefinition();
+  return await util.promisify(fs.readFile)(ROOT_DIR + filename);
 };
 
 exports.minify = minify;
