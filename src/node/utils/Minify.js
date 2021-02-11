@@ -23,7 +23,6 @@
 
 const ERR = require('async-stacktrace');
 const settings = require('./Settings');
-const async = require('async');
 const fs = require('fs');
 const path = require('path');
 const plugins = require('../../static/js/pluginfw/plugin_defs');
@@ -32,6 +31,7 @@ const urlutil = require('url');
 const mime = require('mime-types');
 const Threads = require('threads');
 const log4js = require('log4js');
+const util = require('util');
 
 const logger = log4js.getLogger('Minify');
 
@@ -213,25 +213,21 @@ const getAceFile = (callback) => {
 
     // Request the contents of the included file on the server-side and write
     // them into the file.
-    async.forEach(filenames, (filename, callback) => {
+    Promise.all(filenames.map(async (filename) => {
       // Hostname "invalid.invalid" is a dummy value to allow parsing as a URI.
       const baseURI = 'http://invalid.invalid';
       let resourceURI = baseURI + path.normalize(path.join('/static/', filename));
       resourceURI = resourceURI.replace(/\\/g, '/'); // Windows (safe generally?)
 
-      requestURI(resourceURI, 'GET', {}).then(([status, headers, body]) => {
-        const error = !(status === 200 || status === 404);
-        if (!error) {
-          data += `Ace2Editor.EMBEDED[${JSON.stringify(filename)}] = ${
-            JSON.stringify(status === 200 ? body || '' : null)};\n`;
-        } else {
-          console.error(`getAceFile(): error getting ${resourceURI}. Status code: ${status}`);
-        }
-        callback();
-      });
-    }, (error) => {
-      callback(error, data);
-    });
+      const [status, , body] = await requestURI(resourceURI, 'GET', {});
+      const error = !(status === 200 || status === 404);
+      if (!error) {
+        data += `Ace2Editor.EMBEDED[${JSON.stringify(filename)}] = ${
+          JSON.stringify(status === 200 ? body || '' : null)};\n`;
+      } else {
+        console.error(`getAceFile(): error getting ${resourceURI}. Status code: ${status}`);
+      }
+    })).then(() => callback(null, data), (err) => callback(err || new Error(err)));
   });
 };
 
@@ -279,35 +275,27 @@ const lastModifiedDateOfEverything = (callback) => {
   const folders2check = [`${ROOT_DIR}js/`, `${ROOT_DIR}css/`];
   let latestModification = 0;
   // go through this two folders
-  async.forEach(folders2check, (path, callback) => {
+  Promise.all(folders2check.map(async (path) => {
     // read the files in the folder
-    fs.readdir(path, (err, files) => {
-      if (ERR(err, callback)) return;
+    const files = await util.promisify(fs.readdir)(path);
 
-      // we wanna check the directory itself for changes too
-      files.push('.');
+    // we wanna check the directory itself for changes too
+    files.push('.');
 
-      // go through all files in this folder
-      async.forEach(files, (filename, callback) => {
-        // get the stat data of this file
-        fs.stat(`${path}/${filename}`, (err, stats) => {
-          if (ERR(err, callback)) return;
+    // go through all files in this folder
+    await Promise.all(files.map(async (filename) => {
+      // get the stat data of this file
+      const stats = await util.promisify(fs.stat)(`${path}/${filename}`);
 
-          // get the modification time
-          const modificationTime = stats.mtime.getTime();
+      // get the modification time
+      const modificationTime = stats.mtime.getTime();
 
-          // compare the modification time to the highest found
-          if (modificationTime > latestModification) {
-            latestModification = modificationTime;
-          }
-
-          callback();
-        });
-      }, callback);
-    });
-  }, () => {
-    callback(null, latestModification);
-  });
+      // compare the modification time to the highest found
+      if (modificationTime > latestModification) {
+        latestModification = modificationTime;
+      }
+    }));
+  })).then(() => callback(null, latestModification), (err) => callback(err || new Error(err)));
 };
 
 // This should be provided by the module, but until then, just use startup
