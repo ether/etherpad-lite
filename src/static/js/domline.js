@@ -101,7 +101,7 @@ domline.createDomLine = (nonEmpty, doesWrap, optBrowser, optDocument) => {
             postHtml = `</li></ul>${postHtml}`;
           } else {
             if (start) { // is it a start of a list with more than one item in?
-              if (parseInt(start[1]) === 1) { // if its the first one at this level?
+              if (Number.parseInt(start[1]) === 1) { // if its the first one at this level?
                 // Add start class to DIV node
                 lineClass = `${lineClass} ` + `list-start-${listType}`;
               }
