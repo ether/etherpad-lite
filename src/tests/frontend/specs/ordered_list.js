@@ -108,6 +108,21 @@ describe('ordered_list.js', function () {
       });
     });
 
+    it('issue #4748 keeps numbers increment on OL', function (done) {
+      this.timeout(5000);
+      const inner$ = helper.padInner$;
+      const chrome$ = helper.padChrome$;
+      const $insertorderedlistButton = chrome$('.buttonicon-insertorderedlist');
+      const $firstLine = inner$('div').first();
+      $firstLine.sendkeys('{selectall}');
+      $insertorderedlistButton.click();
+      const $secondLine = inner$('div').first().next();
+      $secondLine.sendkeys('{selectall}');
+      $insertorderedlistButton.click();
+      expect($secondLine.hasClass('list-number2')).to.be(true);
+      done();
+    });
+
     xit('issue #1125 keeps the numbered list on enter for the new line', function (done) {
       // EMULATES PASTING INTO A PAD
       const inner$ = helper.padInner$;
