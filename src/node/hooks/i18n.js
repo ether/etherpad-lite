@@ -109,6 +109,7 @@ exports.expressCreateServer = (n, args, cb) => {
     // works with /locale/en and /locale/en.json requests
     const locale = req.params.locale.split('.')[0];
     if (exports.availableLangs.hasOwnProperty(locale)) {
+      res.setHeader('Cache-Control', `public, max-age=${settings.maxAge}`);
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
       res.send(`{"${locale}":${JSON.stringify(locales[locale])}}`);
     } else {
