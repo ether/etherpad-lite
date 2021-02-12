@@ -15,7 +15,7 @@ describe('Admin page', function () {
   beforeEach(async function () {
     helper.newAdmin('');
     await helper.waitForPromise(
-        () => helper.admin$ && helper.admin$('.menu').find('li').length >= 3, 60000);
+        () => helper.admin$('.menu').find('li').length >= 3, 200000);
   });
 
   it('Shows Plugin Manager Link', async function () {
