@@ -26,7 +26,6 @@ const fs = require('fs').promises;
 const path = require('path');
 const plugins = require('../../static/js/pluginfw/plugin_defs');
 const RequireKernel = require('etherpad-require-kernel');
-const urlutil = require('url');
 const mime = require('mime-types');
 const Threads = require('threads');
 const log4js = require('log4js');
@@ -49,13 +48,13 @@ const LIBRARY_WHITELIST = [
 // What follows is a terrible hack to avoid loop-back within the server.
 // TODO: Serve files from another service, or directly from the file system.
 const requestURI = async (url, method, headers) => await new Promise((resolve, reject) => {
-  const parsedURL = urlutil.parse(url);
+  const parsedUrl = new URL(url);
   let status = 500;
   const content = [];
   const mockRequest = {
     url,
     method,
-    params: {filename: parsedURL.path.replace(/^\/static\//, '')},
+    params: {filename: (parsedUrl.pathname + parsedUrl.search).replace(/^\/static\//, '')},
     headers,
   };
   const mockResponse = {
