@@ -24,8 +24,8 @@ describe('chat-load-messages', function () {
       if (num.length === 2) num = `0${num}`;
       chatInput.sendkeys(`msg${num}`);
       chatInput.sendkeys('{enter}');
+      await helper.waitForPromise(() => chatText.children('p').length === i);
     }
-    await helper.waitForPromise(() => chatText.children('p').length === messages, 60000);
     await new Promise((resolve) => helper.newPad(() => resolve(), padName));
   });
 
