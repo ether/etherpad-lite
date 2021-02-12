@@ -66,6 +66,7 @@ jobs:
         ep_font_size
         ep_hash_auth
         ep_headings2
+        ep_image_upload
         ep_markdown
         ep_readonly_guest
         ep_set_title_on_pad
