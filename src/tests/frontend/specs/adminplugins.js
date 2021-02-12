@@ -35,6 +35,8 @@ describe('Plugins page', function () {
   it('Attempt to Update a plugin', async function () {
     this.timeout(280000);
 
+    await helper.waitForPromise(() => helper.admin$('.results').children().length > 50, 20000);
+
     if (helper.admin$('.ep_align').length === 0) this.skip();
 
     await helper.waitForPromise(
