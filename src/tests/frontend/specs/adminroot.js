@@ -1,6 +1,7 @@
 'use strict';
 
 describe('Admin page', function () {
+  this.timeout(480000);
   before(async function () {
     let success = false;
     $.ajax({
@@ -14,7 +15,7 @@ describe('Admin page', function () {
   beforeEach(async function () {
     helper.newAdmin('');
     await helper.waitForPromise(
-        () => helper.admin$ && helper.admin$('.menu').find('li').length >= 3, 20000);
+        () => helper.admin$ && helper.admin$('.menu').find('li').length >= 3, 60000);
   });
 
   it('Shows Plugin Manager Link', async function () {
