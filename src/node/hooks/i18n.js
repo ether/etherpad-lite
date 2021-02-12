@@ -117,6 +117,7 @@ exports.expressCreateServer = (n, args, cb) => {
   });
 
   args.app.get('/locales.json', (req, res) => {
+    res.setHeader('Cache-Control', `public, max-age=${settings.maxAge}`);
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.send(localeIndex);
   });
