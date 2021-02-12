@@ -8,7 +8,7 @@ describe('chat-load-messages', function () {
     this.timeout(60000);
   });
 
-  it('adds a lot of messages', function (done) {
+  it('adds a lot of messages', async function () {
     const chrome$ = helper.padChrome$;
     const chatButton = chrome$('#chaticon');
     chatButton.click();
@@ -25,9 +25,8 @@ describe('chat-load-messages', function () {
       chatInput.sendkeys(`msg${num}`);
       chatInput.sendkeys('{enter}');
     }
-    helper.waitFor(() => chatText.children('p').length === messages, 60000).always(() => {
-      helper.newPad(done, padName);
-    });
+    await helper.waitForPromise(() => chatText.children('p').length === messages, 60000);
+    await new Promise((resolve) => helper.newPad(() => resolve(), padName));
   });
 
   it('checks initial message count', function (done) {
