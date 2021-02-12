@@ -25,7 +25,7 @@ describe('Plugins page', function () {
 
   it('Lists some plugins', async function () {
     this.timeout(280000);
-    await helper.waitForPromise(() => helper.admin$('.results').children().length > 50);
+    await helper.waitForPromise(() => helper.admin$('.results').children().length > 50, 20000);
   });
 
   it('Searches for plugin', async function () {
