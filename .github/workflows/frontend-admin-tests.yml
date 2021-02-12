@@ -7,13 +7,23 @@ jobs:
     name: with plugins
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [10, 12, 14, 15]
+
     steps:
+    - name: Generate Sauce Labs strings
+      id: sauce_strings
+      run: |
+        printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}-node${{ matrix.node }}'
+
     - name: Checkout repository
       uses: actions/checkout@v2
 
     - uses: actions/setup-node@v2
       with:
-        node-version: 12
+        node-version: ${{ matrix.node }}
 
     - name: Install etherpad plugins
       # We intentionally install an old ep_align version to test upgrades to the minor version number.
@@ -52,14 +62,14 @@ jobs:
       with:
         username: ${{ secrets.SAUCE_USERNAME }}
         accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-        tunnelIdentifier: ${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}
+        tunnelIdentifier: ${{ steps.sauce_strings.outputs.tunnel_id }}
 
     - name: Run the frontend admin tests
       shell: bash
       env:
         SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
         SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-        TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}
+        TRAVIS_JOB_NUMBER: ${{ steps.sauce_strings.outputs.tunnel_id }}
         GIT_HASH: ${{ steps.environment.outputs.sha_short }}
       run: |
         src/tests/frontend/travis/adminrunner.sh
