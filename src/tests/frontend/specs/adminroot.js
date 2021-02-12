@@ -9,7 +9,7 @@ describe('Admin page', function () {
       type: 'GET',
       success: () => success = true,
     });
-    await helper.waitForPromise(() => success === true, 400000);
+    await helper.admin$ && helper.waitForPromise(() => success === true, 400000);
   });
 
   beforeEach(async function () {
