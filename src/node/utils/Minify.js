@@ -143,14 +143,7 @@ const minify = async (req, res) => {
 
   const contentType = mime.lookup(filename);
 
-  let date, exists;
-  try {
-    [date, exists] = await statFile(filename, 3);
-  } catch (err) {
-    res.writeHead(500, {});
-    res.end();
-    return;
-  }
+  const [date, exists] = await statFile(filename, 3);
   if (date) {
     date.setMilliseconds(0);
     res.setHeader('last-modified', date.toUTCString());
@@ -173,14 +166,7 @@ const minify = async (req, res) => {
     res.writeHead(200, {});
     res.end();
   } else if (req.method === 'GET') {
-    let content;
-    try {
-      content = await getFileCompressed(filename, contentType);
-    } catch (err) {
-      res.writeHead(500, {});
-      res.end();
-      return;
-    }
+    const content = await getFileCompressed(filename, contentType);
     res.header('Content-Type', contentType);
     res.writeHead(200, {});
     res.write(content);
