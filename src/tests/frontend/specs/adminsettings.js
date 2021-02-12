@@ -16,7 +16,8 @@ describe('Admin > Settings', function () {
   beforeEach(async function () {
     helper.newAdmin('settings');
     // needed, because the load event is fired to early
-    await helper.waitForPromise(() => helper.admin$ && helper.admin$('.settings').val().length > 0);
+    await helper.waitForPromise(
+        () => helper.admin$ && helper.admin$('.settings').val().length > 0, 5000);
   });
 
   it('Are Settings visible, populated, does save work', async function () {
@@ -27,16 +28,17 @@ describe('Admin > Settings', function () {
     // set new value
     helper.admin$('.settings').val((_, text) => `/* test */\n${text}`);
     await helper.waitForPromise(
-        () => settingsLength + 11 === helper.admin$('.settings').val().length);
+        () => settingsLength + 11 === helper.admin$('.settings').val().length, 5000);
 
     // saves
     helper.admin$('#saveSettings').click();
-    await helper.waitForPromise(() => helper.admin$('#response').is(':visible'));
+    await helper.waitForPromise(() => helper.admin$('#response').is(':visible'), 5000);
 
     // new value for settings.json should now be saved
     // reset it to the old value
     helper.newAdmin('settings');
-    await helper.waitForPromise(() => helper.admin$ && helper.admin$('.settings').val().length > 0);
+    await helper.waitForPromise(
+        () => helper.admin$ && helper.admin$('.settings').val().length > 0, 20000);
 
     // replace the test value with a line break
     helper.admin$('.settings').val((_, text) => text.replace('/* test */\n', ''));
