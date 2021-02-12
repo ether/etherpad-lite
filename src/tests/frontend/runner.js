@@ -65,8 +65,8 @@ $(() => {
     runner.on('pass', (test) => {
       if (killTimeout) clearTimeout(killTimeout);
       killTimeout = setTimeout(() => {
-        append('FINISHED - [red]no test started since 3 minutes, tests stopped[clear]');
-      }, 60000 * 3);
+        append('FINISHED - [red]no test started since 5 minutes, tests stopped[clear]');
+      }, 60000 * 5);
 
       const medium = test.slow() / 2;
       test.speed = test.duration > test.slow()
@@ -82,8 +82,8 @@ $(() => {
     runner.on('fail', (test, err) => {
       if (killTimeout) clearTimeout(killTimeout);
       killTimeout = setTimeout(() => {
-        append('FINISHED - [red]no test started since 3 minutes, tests stopped[clear]');
-      }, 60000 * 3);
+        append('FINISHED - [red]no test started since 5 minutes, tests stopped[clear]');
+      }, 60000 * 5);
 
       stats.failures++;
       test.err = err;
@@ -93,8 +93,8 @@ $(() => {
     runner.on('pending', (test) => {
       if (killTimeout) clearTimeout(killTimeout);
       killTimeout = setTimeout(() => {
-        append('FINISHED - [red]no test started since 3 minutes, tests stopped[clear]');
-      }, 60000 * 3);
+        append('FINISHED - [red]no test started since 5 minutes, tests stopped[clear]');
+      }, 60000 * 5);
 
       stats.pending++;
       append(`-> [yellow]PENDING[clear]: ${test.title}`);
