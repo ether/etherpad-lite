@@ -66,6 +66,7 @@ exports.expressCreateServer = async (hookName, args) => {
       delete clientPlugins[name].package;
     }
     res.header('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Cache-Control', `public, max-age=${settings.maxAge}`);
     res.write(JSON.stringify({plugins: clientPlugins, parts: clientParts}));
     res.end();
   });
