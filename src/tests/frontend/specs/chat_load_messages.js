@@ -26,7 +26,6 @@ describe('chat-load-messages', function () {
       chatInput.sendkeys('{enter}');
     }
     helper.waitFor(() => chatText.children('p').length === messages, 60000).always(() => {
-      expect(chatText.children('p').length).to.be(messages);
       helper.newPad(done, padName);
     });
   });
