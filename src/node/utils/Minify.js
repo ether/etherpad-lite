@@ -146,6 +146,11 @@ const minify = (req, res) => {
   const contentType = mime.lookup(filename);
 
   util.callbackify(statFile)(filename, 3, (error, [date, exists]) => {
+    if (error) {
+      res.writeHead(500, {});
+      res.end();
+      return;
+    }
     if (date) {
       date = new Date(date);
       date.setMilliseconds(0);
@@ -158,10 +163,7 @@ const minify = (req, res) => {
       }
     }
 
-    if (error) {
-      res.writeHead(500, {});
-      res.end();
-    } else if (!exists) {
+    if (!exists) {
       res.writeHead(404, {});
       res.end();
     } else if (new Date(req.headers['if-modified-since']) >= date) {
