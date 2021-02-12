@@ -9,11 +9,9 @@
  */
 
 const common = require('../../common');
-const settings = require('../../../../node/utils/Settings');
-const supertest = require('supertest');
 const validateOpenAPI = require('openapi-schema-validation').validate;
 
-const api = supertest(`http://${settings.ip}:${settings.port}`);
+let agent;
 const apiKey = common.apiKey;
 let apiVersion = 1;
 
@@ -32,8 +30,10 @@ const testPadId = makeid();
 const endPoint = (point) => `/api/${apiVersion}/${point}?apikey=${apiKey}`;
 
 describe(__filename, function () {
+  before(async function () { agent = await common.init(); });
+
   it('can obtain API version', function (done) {
-    api
+    agent
         .get('/api/')
         .expect((res) => {
           apiVersion = res.body.currentVersion;
@@ -44,7 +44,7 @@ describe(__filename, function () {
   });
 
   it('can obtain valid openapi definition document', function (done) {
-    api
+    agent
         .get('/api/openapi.json')
         .expect((res) => {
           const {valid, errors} = validateOpenAPI(res.body, 3);
@@ -59,7 +59,7 @@ describe(__filename, function () {
   });
 
   it('supports jsonp calls', function (done) {
-    api
+    agent
         .get(`${endPoint('createPad')}&jsonp=jsonp_1&padID=${testPadId}`)
         .expect((res) => {
           if (!res.text.match('jsonp_1')) throw new Error('no jsonp call seen');
