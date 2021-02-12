@@ -1,6 +1,7 @@
 'use strict';
 
 describe('Plugins page', function () {
+  this.timeout(280000);
   function timeout(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
@@ -23,10 +24,12 @@ describe('Plugins page', function () {
   });
 
   it('Lists some plugins', async function () {
+    this.timeout(280000);
     await helper.waitForPromise(() => helper.admin$('.results').children().length > 50);
   });
 
   it('Searches for plugin', async function () {
+    this.timeout(280000);
     helper.admin$('#search-query').val('ep_font_color');
     await helper.waitForPromise(() => helper.admin$('.results').children().length < 300, 5000);
     await helper.waitForPromise(() => helper.admin$('.results').children().length > 0, 5000);
