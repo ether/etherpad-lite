@@ -1,7 +1,6 @@
 'use strict';
 
 describe('Plugins page', function () {
-  this.timeout(280000);
   function timeout(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
@@ -20,16 +19,14 @@ describe('Plugins page', function () {
   beforeEach(async function () {
     helper.newAdmin('plugins');
     await helper.waitForPromise(
-        () => helper.admin$ && helper.admin$('.menu').find('li').length >= 3);
+        () => helper.admin$ && helper.admin$('.menu').find('li').length >= 3, 30000);
   });
 
   it('Lists some plugins', async function () {
-    this.timeout(280000);
     await helper.waitForPromise(() => helper.admin$('.results').children().length > 50, 20000);
   });
 
   it('Searches for plugin', async function () {
-    this.timeout(280000);
     helper.admin$('#search-query').val('ep_font_color');
     await helper.waitForPromise(() => helper.admin$('.results').children().length < 300, 5000);
     await helper.waitForPromise(() => helper.admin$('.results').children().length > 0, 5000);
@@ -75,39 +72,39 @@ describe('Plugins page', function () {
   it('Attempt to Install a plugin', async function () {
     this.timeout(280000);
 
-    helper.admin$('#search-query').val('ep_headings2');
+    helper.admin$('#search-query').val('ep_activepads');
     await helper.waitForPromise(() => helper.admin$('.results').children().length < 300, 6000);
     await helper.waitForPromise(() => helper.admin$('.results').children().length > 0, 6000);
 
-    // skip if we already have ep_headings2 installed..
-    if (helper.admin$('.ep_headings2 .do-install').is(':visible') === false) this.skip();
+    // skip if we already have ep_activepads installed..
+    if (helper.admin$('.ep_activepads .do-install').is(':visible') === false) this.skip();
 
-    helper.admin$('.ep_headings2 .do-install').click();
+    helper.admin$('.ep_activepads .do-install').click();
     // ensure install has attempted to be started
     await helper.waitForPromise(
-        () => helper.admin$('.ep_headings2 .do-install').length !== 0, 120000);
+        () => helper.admin$('.ep_activepads .do-install').length !== 0, 120000);
     // ensure its not showing installing any more
     await helper.waitForPromise(
-        () => helper.admin$('.ep_headings2 .message').text() === '', 180000);
+        () => helper.admin$('.ep_activepads .message').text() === '', 180000);
     // ensure uninstall button is visible
     await helper.waitForPromise(
-        () => helper.admin$('.ep_headings2 .do-uninstall').length !== 0, 120000);
+        () => helper.admin$('.ep_activepads .do-uninstall').length !== 0, 120000);
   });
 
   it('Attempt to Uninstall a plugin', async function () {
     this.timeout(360000);
     await helper.waitForPromise(
-        () => helper.admin$('.ep_headings2 .do-uninstall').length !== 0, 120000);
+        () => helper.admin$('.ep_activepads .do-uninstall').length !== 0, 120000);
 
-    helper.admin$('.ep_headings2 .do-uninstall').click();
+    helper.admin$('.ep_activepads .do-uninstall').click();
 
     // ensure its showing uninstalling
     await helper.waitForPromise(
-        () => helper.admin$('.ep_headings2 .message')
+        () => helper.admin$('.ep_activepads .message')
             .text() === 'Uninstalling', 120000);
     // ensure its gone
     await helper.waitForPromise(
-        () => helper.admin$('.ep_headings2').length === 0, 240000);
+        () => helper.admin$('.ep_activepads').length === 0, 240000);
 
     helper.admin$('#search-query').val('ep_font');
     await helper.waitForPromise(() => helper.admin$('.results').children().length < 300, 240000);
