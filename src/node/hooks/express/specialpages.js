@@ -83,7 +83,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
         settings.skinName,
         'favicon.ico'
     );
-
+    res.setHeader('Cache-Control', `public, max-age=${settings.maxAge}`);
     res.sendFile(filePath, (err) => {
       // there is no custom favicon, send the default favicon
       if (err) {
