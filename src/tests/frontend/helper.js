@@ -211,9 +211,9 @@ const helper = {};
       return _fail(...args);
     };
 
-    const check = () => {
+    const check = async () => {
       try {
-        if (!conditionFunc()) return;
+        if (!await conditionFunc()) return;
         deferred.resolve();
       } catch (err) {
         deferred.reject(err);

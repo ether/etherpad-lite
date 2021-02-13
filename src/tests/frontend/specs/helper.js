@@ -210,6 +210,19 @@ describe('the test helper', function () {
         await helper.waitFor(() => true, 0);
       });
     });
+
+    it('accepts async functions', async function () {
+      await helper.waitFor(async () => true).fail(() => {});
+      // Make sure it checks the truthiness of the Promise's resolved value, not the truthiness of
+      // the Promise itself (a Promise is always truthy).
+      let ok = false;
+      try {
+        await helper.waitFor(async () => false, 0).fail(() => {});
+      } catch (err) {
+        ok = true;
+      }
+      expect(ok).to.be(true);
+    });
   });
 
   describe('the waitForPromise method', function () {
