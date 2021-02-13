@@ -18,6 +18,15 @@
   npm WARN develop No README data
   npm WARN develop No license field.
   ```
+* Use ci --no-optional-flags to speed installation.  This will have the impact
+  on optional dependencies such as sqlite which will require additional steps
+  for installation. 
+
+* Limit SocketIO to 1M characters max message size by default.  This may
+  cause issues with plugins that support large files IE images.
+
+* Switch checkPlugins.js script (plugin developer tool) to automatically add
+  Github CI test coverage badges for backend tests and npm publish.
 
 ### Notable new features
 
@@ -39,6 +48,7 @@
   * Backend tests for plugins can now use the
     [`ep_etherpad-lite/tests/backend/common`](src/tests/backend/common.js)
     module to start the server and simplify API access.
+  * Users can now pick absolute white (#fff) as their color.
 
 ### Notable fixes
 
@@ -47,11 +57,18 @@
 * Interface no longer loses color variants on disconnect/reconnect event.
 * Removed npm.load to support npm7.
 * General code quality is further significantly improved.
+* Test coverage timeouts introduced to ensure user experience is maintained.
+* Improve /admin/settings restart experience and logic.
 * Improved reliability of server shutdown and restart.
 * No longer error if no buttons are visible.
 * Update Socket.IO to address a minor security vulnerability.
 * For plugin authors:
   * Fixed `collectContentLineText` return value handling.
+* Introduce maxAge for plugin definition and language files to improve
+  subsequent page loads when maxAge is > 0.
+* Express is now responsible for rendering a 500 error page.
+* Ordered list items properly increment in text export.
+* Ensure docker images have rate limiting available in settings file.
 
 # 1.8.7
 ### Compatibility-breaking changes
