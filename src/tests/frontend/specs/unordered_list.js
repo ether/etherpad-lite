@@ -79,7 +79,7 @@ describe('unordered_list.js', function () {
     });
 
     it('Keeps the unordered list on enter for the new line', function (done) {
-      this.timeout(150);
+      this.timeout(250);
       const inner$ = helper.padInner$;
       const chrome$ = helper.padChrome$;
 
