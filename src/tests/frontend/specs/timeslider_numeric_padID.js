@@ -9,6 +9,7 @@ describe('timeslider', function () {
   });
 
   it('Makes sure the export URIs are as expected when the padID is numeric', async function () {
+    this.timeout(60000);
     await helper.edit('a\n');
 
     await helper.gotoTimeslider(1);

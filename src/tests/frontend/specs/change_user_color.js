@@ -9,7 +9,7 @@ describe('change user color', function () {
 
   it('Color picker matches original color and remembers the user color' +
       ' after a refresh', function (done) {
-    this.timeout(60000);
+    this.timeout(10000);
     const chrome$ = helper.padChrome$;
 
     // click on the settings button to make settings visible
@@ -63,6 +63,7 @@ describe('change user color', function () {
   });
 
   it('Own user color is shown when you enter a chat', function (done) {
+    this.timeout(1000);
     const chrome$ = helper.padChrome$;
 
     const $colorOption = helper.padChrome$('#options-colorscheck');

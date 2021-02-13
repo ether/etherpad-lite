@@ -27,6 +27,7 @@ describe('author of pad edition', function () {
 
   // author 2 makes some changes on the pad
   it('Clears Authorship by second user', function (done) {
+    this.timeout(100);
     clearAuthorship(done);
   });
 

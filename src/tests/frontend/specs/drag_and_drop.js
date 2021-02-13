@@ -31,6 +31,7 @@ describe('drag and drop', function () {
       });
 
       it('moves text back to its original place', function (done) {
+        this.timeout(50);
         // test text was removed from drop target
         const $targetLine = getLine(TARGET_LINE);
         expect($targetLine.text()).to.be('Target line []');
@@ -68,6 +69,7 @@ describe('drag and drop', function () {
       });
 
       it('moves text back to its original place', function (done) {
+        this.timeout(50);
         // test text was removed from drop target
         const $targetLine = getLine(TARGET_LINE);
         expect($targetLine.text()).to.be('Target line []');
