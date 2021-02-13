@@ -4,7 +4,7 @@
  * Spys on socket.io messages and saves them into several arrays
  * that are visible in tests
  */
-helper.spyOnSocketIO = function () {
+helper.spyOnSocketIO = () => {
   helper.contentWindow().pad.socket.on('message', (msg) => {
     if (msg.type === 'COLLABROOM') {
       if (msg.data.type === 'ACCEPT_COMMIT') {
@@ -30,7 +30,7 @@ helper.spyOnSocketIO = function () {
  * @todo needs to support writing to a specified caret position
  *
  */
-helper.edit = async function (message, line) {
+helper.edit = async (message, line) => {
   const editsNum = helper.commits.length;
   line = line ? line - 1 : 0;
   helper.linesDiv()[line].sendkeys(message);
@@ -45,7 +45,7 @@ helper.edit = async function (message, line) {
  *
  * @returns {Array.<HTMLElement>} array of divs
  */
-helper.linesDiv = function () {
+helper.linesDiv = () => {
   return helper.padInner$('.ace-line').map(function () {
     return $(this);
   }).get();
@@ -57,18 +57,15 @@ helper.linesDiv = function () {
  *
  * @returns {Array.<string>} lines of text
  */
-helper.textLines = function () {
-  return helper.linesDiv().map((div) => div.text());
-};
+helper.textLines = () => helper.linesDiv().map((div) => div.text());
 
 /**
  * The default pad text transmitted via `clientVars`
  *
  * @returns {string}
  */
-helper.defaultText = function () {
-  return helper.padChrome$.window.clientVars.collab_client_vars.initialAttributedText.text;
-};
+helper.defaultText =
+    () => helper.padChrome$.window.clientVars.collab_client_vars.initialAttributedText.text;
 
 /**
  * Sends a chat `message` via `sendKeys`
@@ -84,7 +81,7 @@ helper.defaultText = function () {
  * @param {string} message the chat message to be sent
  * @returns {Promise}
  */
-helper.sendChatMessage = function (message) {
+helper.sendChatMessage = (message) => {
   const noOfChatMessages = helper.chatMessages.length;
   helper.padChrome$('#chatinput').sendkeys(message);
   return helper.waitForPromise(() => noOfChatMessages + 1 === helper.chatMessages.length);
@@ -95,7 +92,7 @@ helper.sendChatMessage = function (message) {
  *
  * @returns {Promise}
  */
-helper.showSettings = function () {
+helper.showSettings = () => {
   if (!helper.isSettingsShown()) {
     helper.settingsButton().click();
     return helper.waitForPromise(() => helper.isSettingsShown(), 2000);
@@ -108,7 +105,7 @@ helper.showSettings = function () {
  * @returns {Promise}
  * @todo untested
  */
-helper.hideSettings = function () {
+helper.hideSettings = () => {
   if (helper.isSettingsShown()) {
     helper.settingsButton().click();
     return helper.waitForPromise(() => !helper.isSettingsShown(), 2000);
@@ -121,7 +118,7 @@ helper.hideSettings = function () {
  *
  * @returns {Promise}
  */
-helper.enableStickyChatviaSettings = function () {
+helper.enableStickyChatviaSettings = () => {
   const stickyChat = helper.padChrome$('#options-stickychat');
   if (helper.isSettingsShown() && !stickyChat.is(':checked')) {
     stickyChat.click();
@@ -135,7 +132,7 @@ helper.enableStickyChatviaSettings = function () {
  *
  * @returns {Promise}
  */
-helper.disableStickyChatviaSettings = function () {
+helper.disableStickyChatviaSettings = () => {
   const stickyChat = helper.padChrome$('#options-stickychat');
   if (helper.isSettingsShown() && stickyChat.is(':checked')) {
     stickyChat.click();
@@ -149,7 +146,7 @@ helper.disableStickyChatviaSettings = function () {
  *
  * @returns {Promise}
  */
-helper.enableStickyChatviaIcon = function () {
+helper.enableStickyChatviaIcon = () => {
   const stickyChat = helper.padChrome$('#titlesticky');
   if (helper.isChatboxShown() && !helper.isChatboxSticky()) {
     stickyChat.click();
@@ -163,7 +160,7 @@ helper.enableStickyChatviaIcon = function () {
  *
  * @returns {Promise}
  */
-helper.disableStickyChatviaIcon = function () {
+helper.disableStickyChatviaIcon = () => {
   if (helper.isChatboxShown() && helper.isChatboxSticky()) {
     helper.titlecross().click();
     return helper.waitForPromise(() => !helper.isChatboxSticky(), 2000);
@@ -182,7 +179,7 @@ helper.disableStickyChatviaIcon = function () {
  * @todo for some reason this does only work the first time, you cannot
  * goto rev 0 and then via the same method to rev 5. Use buttons instead
  */
-helper.gotoTimeslider = function (revision) {
+helper.gotoTimeslider = (revision) => {
   revision = Number.isInteger(revision) ? `#${revision}` : '';
   const iframe = $('#iframe-container iframe');
   iframe.attr('src', `${iframe.attr('src')}/timeslider${revision}`);
@@ -198,7 +195,7 @@ helper.gotoTimeslider = function (revision) {
  * @todo no mousemove test
  * @param {number} X coordinate
  */
-helper.sliderClick = function (X) {
+helper.sliderClick = (X) => {
   const sliderBar = helper.sliderBar();
   const edown = new jQuery.Event('mousedown');
   const eup = new jQuery.Event('mouseup');
@@ -214,11 +211,9 @@ helper.sliderClick = function (X) {
  *
  * @returns {Array.<string>} lines of text
  */
-helper.timesliderTextLines = function () {
-  return helper.contentWindow().$('.ace-line').map(function () {
-    return $(this).text();
-  }).get();
-};
+helper.timesliderTextLines = () => helper.contentWindow().$('.ace-line').map(function () {
+  return $(this).text();
+}).get();
 
 helper.padIsEmpty = () => (
   !helper.padInner$.document.getSelection().isCollapsed ||

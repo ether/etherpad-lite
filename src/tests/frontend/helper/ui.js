@@ -5,9 +5,7 @@
  *
  * @returns {HTMLElement} contentWindow
  */
-helper.contentWindow = function () {
-  return $('#iframe-container iframe')[0].contentWindow;
-};
+helper.contentWindow = () => $('#iframe-container iframe')[0].contentWindow;
 
 /**
  * Opens the chat unless it is already open via an
@@ -15,7 +13,7 @@ helper.contentWindow = function () {
  *
  * @returns {Promise}
  */
-helper.showChat = function () {
+helper.showChat = () => {
   const chaticon = helper.chatIcon();
   if (chaticon.hasClass('visible')) {
     chaticon.click();
@@ -28,7 +26,7 @@ helper.showChat = function () {
  *
  * @returns {Promise}
  */
-helper.hideChat = function () {
+helper.hideChat = () => {
   if (helper.isChatboxShown() && !helper.isChatboxSticky()) {
     helper.titlecross().click();
     return helper.waitForPromise(() => !helper.isChatboxShown(), 2000);
@@ -40,53 +38,48 @@ helper.hideChat = function () {
  *
  * @returns {HTMLElement} the chat icon
  */
-helper.chatIcon = function () { return helper.padChrome$('#chaticon'); };
+helper.chatIcon = () => helper.padChrome$('#chaticon');
 
 /**
  * The chat messages from the UI
  *
  * @returns {Array.<HTMLElement>}
  */
-helper.chatTextParagraphs = function () { return helper.padChrome$('#chattext').children('p'); };
+helper.chatTextParagraphs = () => helper.padChrome$('#chattext').children('p');
 
 /**
  * Returns true if the chat box is sticky
  *
  * @returns {boolean} stickyness of the chat box
  */
-helper.isChatboxSticky = function () {
-  return helper.padChrome$('#chatbox').hasClass('stickyChat');
-};
+helper.isChatboxSticky = () => helper.padChrome$('#chatbox').hasClass('stickyChat');
 
 /**
  * Returns true if the chat box is shown
  *
  * @returns {boolean} visibility of the chat box
  */
-helper.isChatboxShown = function () {
-  return helper.padChrome$('#chatbox').hasClass('visible');
-};
+helper.isChatboxShown = () => helper.padChrome$('#chatbox').hasClass('visible');
 
 /**
  * Gets the settings menu
  *
  * @returns {HTMLElement} the settings menu
  */
-helper.settingsMenu = function () { return helper.padChrome$('#settings'); };
+helper.settingsMenu = () => helper.padChrome$('#settings');
 
 /**
  * Gets the settings button
  *
  * @returns {HTMLElement} the settings button
  */
-helper.settingsButton = function () {
-  return helper.padChrome$("button[data-l10n-id='pad.toolbar.settings.title']");
-};
+helper.settingsButton =
+    () => helper.padChrome$("button[data-l10n-id='pad.toolbar.settings.title']");
 
 /**
  * Toggles user list
  */
-helper.toggleUserList = async function () {
+helper.toggleUserList = async () => {
   const isVisible = helper.userListShown();
   const button = helper.padChrome$("button[data-l10n-id='pad.toolbar.showusers.title']");
   button.click();
@@ -98,18 +91,14 @@ helper.toggleUserList = async function () {
  *
  * @returns {HTMLElement} user name input field
  */
-helper.usernameField = function () {
-  return helper.padChrome$("input[data-l10n-id='pad.userlist.entername']");
-};
+helper.usernameField = () => helper.padChrome$("input[data-l10n-id='pad.userlist.entername']");
 
 /**
  * Is the user list popup shown?
  *
  * @returns {boolean}
  */
-helper.userListShown = function () {
-  return helper.padChrome$('div#users').hasClass('popup-show');
-};
+helper.userListShown = () => helper.padChrome$('div#users').hasClass('popup-show');
 
 /**
  * Sets the user name
@@ -128,23 +117,21 @@ helper.setUserName = async (name) => {
  *
  * @returns {HTMLElement} the titlecross icon
  */
-helper.titlecross = function () { return helper.padChrome$('#titlecross'); };
+helper.titlecross = () => helper.padChrome$('#titlecross');
 
 /**
  * Returns true if the settings menu is visible
  *
  * @returns {boolean} is the settings menu shown?
  */
-helper.isSettingsShown = function () {
-  return helper.padChrome$('#settings').hasClass('popup-show');
-};
+helper.isSettingsShown = () => helper.padChrome$('#settings').hasClass('popup-show');
 
 /**
  * Gets the timer div of a timeslider that has the datetime of the revision
  *
  * @returns {HTMLElement} timer
  */
-helper.timesliderTimer = function () {
+helper.timesliderTimer = () => {
   if (typeof helper.contentWindow().$ === 'function') {
     return helper.contentWindow().$('#timer');
   }
@@ -155,7 +142,7 @@ helper.timesliderTimer = function () {
  *
  * @returns {HTMLElement} timer
  */
-helper.timesliderTimerTime = function () {
+helper.timesliderTimerTime = () => {
   if (helper.timesliderTimer()) {
     return helper.timesliderTimer().text();
   }
@@ -166,9 +153,7 @@ helper.timesliderTimerTime = function () {
  *
  * @returns {HTMLElement}
  */
-helper.sliderBar = function () {
-  return helper.contentWindow().$('#ui-slider-bar');
-};
+helper.sliderBar = () => helper.contentWindow().$('#ui-slider-bar');
 
 /**
  * revision_date element
@@ -176,9 +161,7 @@ helper.sliderBar = function () {
  *
  * @returns {HTMLElement}
  */
-helper.revisionDateElem = function () {
-  return helper.contentWindow().$('#revision_date').text();
-};
+helper.revisionDateElem = () => helper.contentWindow().$('#revision_date').text();
 
 /**
  * revision_label element
@@ -186,6 +169,4 @@ helper.revisionDateElem = function () {
  *
  * @returns {HTMLElement}
  */
-helper.revisionLabelElem = function () {
-  return helper.contentWindow().$('#revision_label');
-};
+helper.revisionLabelElem = () => helper.contentWindow().$('#revision_label');

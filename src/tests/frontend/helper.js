@@ -2,11 +2,11 @@
 
 const helper = {}; // eslint-disable-line no-redeclare
 
-(function () {
-  let $iframe; const
-    jsLibraries = {};
+(() => {
+  let $iframe;
+  const jsLibraries = {};
 
-  helper.init = function (cb) {
+  helper.init = (cb) => {
     $.get('/static/js/jquery.js').done((code) => {
       // make sure we don't override existing jquery
       jsLibraries.jquery = `if(typeof $ === 'undefined') {\n${code}\n}`;
@@ -19,7 +19,7 @@ const helper = {}; // eslint-disable-line no-redeclare
     });
   };
 
-  helper.randomString = function randomString(len) {
+  helper.randomString = (len) => {
     const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
     let randomstring = '';
     for (let i = 0; i < len; i++) {
@@ -29,7 +29,7 @@ const helper = {}; // eslint-disable-line no-redeclare
     return randomstring;
   };
 
-  const getFrameJQuery = function ($iframe) {
+  const getFrameJQuery = ($iframe) => {
     /*
       I tried over 9001 ways to inject javascript into iframes.
       This is the only way I found that worked in IE 7+8+9, FF and Chrome
@@ -38,7 +38,7 @@ const helper = {}; // eslint-disable-line no-redeclare
     const doc = win.document;
 
     // IE 8+9 Hack to make eval appear
-    // http://stackoverflow.com/questions/2720444/why-does-this-window-object-not-have-the-eval-function
+    // https://stackoverflow.com/q/2720444
     win.execScript && win.execScript('null');
 
     win.eval(jsLibraries.jquery);
@@ -50,15 +50,15 @@ const helper = {}; // eslint-disable-line no-redeclare
     return win.$;
   };
 
-  helper.clearSessionCookies = function () {
-    // Expire cookies, so author and language are changed after reloading the pad.
-    // See https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie#Example_4_Reset_the_previous_cookie
+  helper.clearSessionCookies = () => {
+    // Expire cookies, so author and language are changed after reloading the pad. See:
+    // https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie#example_4_reset_the_previous_cookie
     window.document.cookie = 'token=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
     window.document.cookie = 'language=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
   };
 
   // Can only happen when the iframe exists, so we're doing it separately from other cookies
-  helper.clearPadPrefCookie = function () {
+  helper.clearPadPrefCookie = () => {
     helper.padChrome$.document.cookie = 'prefsHttp=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
   };
 
@@ -68,7 +68,7 @@ const helper = {}; // eslint-disable-line no-redeclare
   // seem to have independent cookies, UNLESS we put path=/ here (which we don't).
   // I don't fully understand it, but this function seems to properly simulate
   // padCookie.setPref in the client code
-  helper.setPadPrefCookie = function (prefs) {
+  helper.setPadPrefCookie = (prefs) => {
     helper.padChrome$.document.cookie =
         (`prefsHttp=${escape(JSON.stringify(prefs))};expires=Thu, 01 Jan 3000 00:00:00 GMT`);
   };
@@ -94,7 +94,7 @@ const helper = {}; // eslint-disable-line no-redeclare
   // This ensures that tests run regardless of this problem
   helper.retry = 0;
 
-  helper.newPad = function (cb, padName) {
+  helper.newPad = (cb, padName) => {
     // build opts object
     let opts = {clearCookies: true};
     if (typeof cb === 'function') {
@@ -181,7 +181,7 @@ const helper = {}; // eslint-disable-line no-redeclare
     return padName;
   };
 
-  helper.newAdmin = async function (page) {
+  helper.newAdmin = async (page) => {
     // define the iframe
     $iframe = $(`<iframe src='/admin/${page}'></iframe>`);
 
@@ -197,7 +197,7 @@ const helper = {}; // eslint-disable-line no-redeclare
     });
   };
 
-  helper.waitFor = function (conditionFunc, timeoutTime = 1900, intervalTime = 10) {
+  helper.waitFor = (conditionFunc, timeoutTime = 1900, intervalTime = 10) => {
     const deferred = new $.Deferred();
 
     const _fail = deferred.fail.bind(deferred);
@@ -242,14 +242,12 @@ const helper = {}; // eslint-disable-line no-redeclare
    * @returns {Promise}
    *
    */
-  helper.waitForPromise = async function (...args) {
-    // Note: waitFor() has a strange API: On timeout it rejects, but it also throws an uncatchable
-    // exception unless .fail() has been called. That uncatchable exception is disabled here by
-    // passing a no-op function to .fail().
-    return await this.waitFor(...args).fail(() => {});
-  };
+  // Note: waitFor() has a strange API: On timeout it rejects, but it also throws an uncatchable
+  // exception unless .fail() has been called. That uncatchable exception is disabled here by
+  // passing a no-op function to .fail().
+  helper.waitForPromise = async (...args) => await helper.waitFor(...args).fail(() => {});
 
-  helper.selectLines = function ($startLine, $endLine, startOffset, endOffset) {
+  helper.selectLines = ($startLine, $endLine, startOffset, endOffset) => {
     // if no offset is provided, use beginning of start line and end of end line
     startOffset = startOffset || 0;
     endOffset = endOffset === undefined ? $endLine.text().length : endOffset;
@@ -268,7 +266,7 @@ const helper = {}; // eslint-disable-line no-redeclare
     selection.addRange(range);
   };
 
-  const getTextNodeAndOffsetOf = function ($targetLine, targetOffsetAtLine) {
+  const getTextNodeAndOffsetOf = ($targetLine, targetOffsetAtLine) => {
     const $textNodes = $targetLine.find('*').contents().filter(function () {
       return this.nodeType === Node.TEXT_NODE;
     });
@@ -310,5 +308,5 @@ const helper = {}; // eslint-disable-line no-redeclare
 
   /* Ensure console.log doesn't blow up in IE, ugly but ok for a test framework imho*/
   window.console = window.console || {};
-  window.console.log = window.console.log || function () {};
+  window.console.log = window.console.log || (() => {});
 })();
