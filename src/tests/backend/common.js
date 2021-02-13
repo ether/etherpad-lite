@@ -9,7 +9,7 @@ const supertest = require('supertest');
 const webaccess = require('../../node/hooks/express/webaccess');
 
 const backups = {};
-let inited = false;
+let agentPromise = null;
 
 exports.apiKey = apiHandler.exportedForTestingOnly.apiKey;
 exports.agent = null;
@@ -24,8 +24,9 @@ const logLevel = exports.logger.level;
 process.on('unhandledRejection', (reason, promise) => { throw reason; });
 
 exports.init = async function () {
-  if (inited) return exports.agent;
-  inited = true;
+  if (agentPromise != null) return await agentPromise;
+  let agentResolve;
+  agentPromise = new Promise((resolve) => { agentResolve = resolve; });
 
   if (!logLevel.isLessThanOrEqualTo(log4js.levels.DEBUG)) {
     exports.logger.warn('Disabling non-test logging for the duration of the test. ' +
@@ -56,5 +57,6 @@ exports.init = async function () {
     await server.exit();
   });
 
+  agentResolve(exports.agent);
   return exports.agent;
 };
