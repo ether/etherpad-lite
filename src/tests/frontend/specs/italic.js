@@ -8,6 +8,7 @@ describe('italic some text', function () {
   });
 
   it('makes text italic using button', function (done) {
+    this.timeout(100);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -37,6 +38,7 @@ describe('italic some text', function () {
   });
 
   it('makes text italic using keypress', function (done) {
+    this.timeout(100);
     const inner$ = helper.padInner$;
 
     // get the first text element out of the inner iframe

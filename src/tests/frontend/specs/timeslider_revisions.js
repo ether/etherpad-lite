@@ -8,6 +8,7 @@ describe('timeslider', function () {
   });
 
   it('loads adds a hundred revisions', function (done) { // passes
+    this.timeout(100000);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 

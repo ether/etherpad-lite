@@ -8,6 +8,7 @@ describe('delete keystroke', function () {
   });
 
   it('makes text delete', function (done) {
+    this.timeout(50);
     const inner$ = helper.padInner$;
 
     // get the first text element out of the inner iframe

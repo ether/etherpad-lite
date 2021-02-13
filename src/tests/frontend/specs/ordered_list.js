@@ -9,6 +9,7 @@ describe('ordered_list.js', function () {
     });
 
     it('inserts ordered list text', function (done) {
+      this.timeout(200);
       const inner$ = helper.padInner$;
       const chrome$ = helper.padChrome$;
 
@@ -28,6 +29,7 @@ describe('ordered_list.js', function () {
         });
 
         it('inserts unordered list', function (done) {
+          this.timeout(50);
           helper.waitFor(() => helper.padInner$('div').first().find('ol li').length === 1)
               .done(done);
         });
@@ -52,6 +54,7 @@ describe('ordered_list.js', function () {
         });
 
         it('does not insert unordered list', function (done) {
+          this.timeout(3000);
           helper.waitFor(() => helper.padInner$('div').first().find('ol li').length === 1)
               .done(() => {
                 expect().fail(() => 'Unordered list inserted, should ignore shortcut');
@@ -73,6 +76,7 @@ describe('ordered_list.js', function () {
         });
 
         it('inserts unordered list', function (done) {
+          this.timeout(200);
           helper.waitFor(() => helper.padInner$('div').first().find('ol li').length === 1)
               .done(done);
         });
@@ -97,6 +101,7 @@ describe('ordered_list.js', function () {
         });
 
         it('does not insert unordered list', function (done) {
+          this.timeout(3000);
           helper.waitFor(() => helper.padInner$('div').first().find('ol li').length === 1)
               .done(() => {
                 expect().fail(() => 'Unordered list inserted, should ignore shortcut');
@@ -175,6 +180,7 @@ describe('ordered_list.js', function () {
     });
 
     it('indent and de-indent list item with keypress', function (done) {
+      this.timeout(200);
       const inner$ = helper.padInner$;
       const chrome$ = helper.padChrome$;
 
@@ -210,6 +216,7 @@ describe('ordered_list.js', function () {
     });
 
     it('indent and de-indent list item with indent button', function (done) {
+      this.timeout(1000);
       const inner$ = helper.padInner$;
       const chrome$ = helper.padChrome$;
 

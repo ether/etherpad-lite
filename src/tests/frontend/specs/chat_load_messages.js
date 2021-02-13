@@ -30,6 +30,7 @@ describe('chat-load-messages', function () {
   });
 
   it('checks initial message count', function (done) {
+    this.timeout(1000);
     let chatText;
     const expectedCount = 101;
     const chrome$ = helper.padChrome$;
@@ -45,6 +46,7 @@ describe('chat-load-messages', function () {
   });
 
   it('loads more messages', function (done) {
+    this.timeout(3000);
     const expectedCount = 122;
     const chrome$ = helper.padChrome$;
     const chatButton = chrome$('#chaticon');
@@ -60,6 +62,7 @@ describe('chat-load-messages', function () {
   });
 
   it('checks for button vanishing', function (done) {
+    this.timeout(2000);
     const expectedDisplay = 'none';
     const chrome$ = helper.padChrome$;
     const chatButton = chrome$('#chaticon');

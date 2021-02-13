@@ -43,6 +43,7 @@ describe(__filename, function () {
   });
 
   it('can obtain valid openapi definition document', async function () {
+    this.timeout(15000);
     await agent.get('/api/openapi.json')
         .expect(200)
         .expect((res) => {
@@ -56,6 +57,7 @@ describe(__filename, function () {
   });
 
   it('supports jsonp calls', async function () {
+    this.timeout(150);
     await agent.get(`${endPoint('createPad')}&jsonp=jsonp_1&padID=${testPadId}`)
         .expect(200)
         .expect('Content-Type', /javascript/)

@@ -7,6 +7,7 @@ describe('enter keystroke', function () {
     this.timeout(60000);
   });
   it('creates a new line & puts cursor onto a new line', function (done) {
+    this.timeout(2000);
     const inner$ = helper.padInner$;
 
     // get the first text element out of the inner iframe

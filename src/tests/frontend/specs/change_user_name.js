@@ -7,6 +7,7 @@ describe('change username value', function () {
   });
 
   it('Remembers the user name after a refresh', async function () {
+    this.timeout(1500);
     helper.toggleUserList();
     helper.setUserName('😃');
 
@@ -21,6 +22,7 @@ describe('change username value', function () {
   });
 
   it('Own user name is shown when you enter a chat', async function () {
+    this.timeout(1500);
     helper.toggleUserList();
     helper.setUserName('😃');
 
