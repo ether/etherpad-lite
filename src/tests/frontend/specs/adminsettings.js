@@ -54,22 +54,30 @@ describe('Admin > Settings', function () {
     expect(settings).to.be(helper.admin$('.settings').val());
   });
 
-  function timeout(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
   it('restart works', async function () {
-    // restarts
+    this.timeout(60000);
+    const getUptime = async () => {
+      try {
+        const {httpUptime} = await $.ajax({
+          url: new URL('/stats', window.location.href),
+          method: 'GET',
+          dataType: 'json',
+          timeout: 450, // Slightly less than the waitForPromise() interval.
+        });
+        return httpUptime;
+      } catch (err) {
+        return null;
+      }
+    };
+    await helper.waitForPromise(async () => {
+      const uptime = await getUptime();
+      return uptime != null && uptime > 0;
+    }, 1000, 500);
+    const clickTime = Date.now();
     helper.admin$('#restartEtherpad').click();
-
-    // Hacky...  Other suggestions welcome..
-    await timeout(200000);
-    let success = false;
-    $.ajax({
-      url: `${location.protocol}//admin:changeme@${location.hostname}:${location.port}/admin`,
-      type: 'GET',
-      success: () => success = true,
-    });
-    await helper.waitForPromise(() => success === true);
+    await helper.waitForPromise(async () => {
+      const uptime = await getUptime();
+      return uptime != null && Date.now() - uptime >= clickTime;
+    }, 60000, 500);
   });
 });
