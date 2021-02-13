@@ -1,6 +1,6 @@
 'use strict';
 
-const helper = {}; // eslint-disable-line no-redeclare
+const helper = {};
 
 (() => {
   let $iframe;
