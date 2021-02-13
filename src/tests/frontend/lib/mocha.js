@@ -3216,10 +3216,10 @@ function HTML(runner, options) {
   runner.on(EVENT_TEST_PASS, function(test) {
     var url = self.testURL(test);
     var markup =
-      '<li class="test pass %e"><h2>%e<span class="duration">%ems</span> ' +
+      '<li class="test pass %e"><h2>%e</h2><span class="duration">%ems</span> ' +
       '<a href="%s" class="replay">' +
       playIcon +
-      '</a></h2></li>';
+      '</a></li>';
     var el = fragment(markup, test.speed, test.title, test.duration, url);
     self.addCodeToggle(el, test.body);
     appendToStack(el);
