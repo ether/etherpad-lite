@@ -8,7 +8,7 @@ describe('clear authorship colors button', function () {
   });
 
   it('makes text clear authorship colors', function (done) {
-    this.timeout(1500);
+    this.timeout(2500);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 

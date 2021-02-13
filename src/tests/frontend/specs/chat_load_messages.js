@@ -5,7 +5,7 @@ describe('chat-load-messages', function () {
 
   it('creates a pad', function (done) {
     padName = helper.newPad(done);
-    this.timeout(20000);
+    this.timeout(60000);
   });
 
   it('adds a lot of messages', async function () {
@@ -15,7 +15,7 @@ describe('chat-load-messages', function () {
     const chatInput = chrome$('#chatinput');
     const chatText = chrome$('#chattext');
 
-    this.timeout(20000);
+    this.timeout(30000);
 
     const messages = 140;
     for (let i = 1; i <= messages; i++) {
