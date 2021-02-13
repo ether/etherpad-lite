@@ -170,7 +170,6 @@ describe(__filename, function () {
           });
     });
     // End of coverage for https://github.com/ether/etherpad-lite/issues/4227
-
   });
 
   describe('API: Author creation', function () {

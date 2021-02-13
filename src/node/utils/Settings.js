@@ -381,7 +381,7 @@ exports.commitRateLimiting = {
 exports.importMaxFileSize = 50 * 1024 * 1024;
 
 /*
- * Disable Admin UI tests 
+ * Disable Admin UI tests
  */
 exports.enableAdminUITests = false;
 

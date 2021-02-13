@@ -94,15 +94,14 @@ exports.handleConnect = (socket) => {
   stats.gauge('activePads', () => {
     const padIds = [];
     for (const session of Object.keys(sessioninfos)) {
-      if(sessioninfos[session].padId) {
-        if(padIds.indexOf(sessioninfos[session].padId) === -1) {
+      if (sessioninfos[session].padId) {
+        if (padIds.indexOf(sessioninfos[session].padId) === -1) {
           padIds.push(sessioninfos[session].padId);
         }
       }
-    };
+    }
     return padIds.length;
   });
-
 };
 
 /**
