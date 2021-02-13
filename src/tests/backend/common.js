@@ -23,6 +23,11 @@ const logLevel = exports.logger.level;
 // https://github.com/mochajs/mocha/issues/2640
 process.on('unhandledRejection', (reason, promise) => { throw reason; });
 
+before(async function () {
+  this.timeout(60000);
+  await exports.init();
+});
+
 exports.init = async function () {
   if (agentPromise != null) return await agentPromise;
   let agentResolve;
