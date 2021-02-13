@@ -198,6 +198,10 @@ const helper = {};
   };
 
   helper.waitFor = (conditionFunc, timeoutTime = 1900, intervalTime = 10) => {
+    // Create an Error object to use if the condition is never satisfied. This is created here so
+    // that the Error has a useful stack trace associated with it.
+    const timeoutError =
+        new Error(`waitFor condition never became true ${conditionFunc.toString()}`);
     const deferred = new $.Deferred();
 
     const _fail = deferred.fail.bind(deferred);
@@ -222,11 +226,10 @@ const helper = {};
 
     const timeout = setTimeout(() => {
       clearInterval(intervalCheck);
-      const error = new Error(`wait for condition never became true ${conditionFunc.toString()}`);
-      deferred.reject(error);
+      deferred.reject(timeoutError);
 
       if (!listenForFail) {
-        throw error;
+        throw timeoutError;
       }
     }, timeoutTime);
 
