@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * API specs
  *
@@ -15,7 +17,19 @@ const api = supertest(`http://${settings.ip}:${settings.port}`);
 const apiKey = common.apiKey;
 let apiVersion = 1;
 
+const makeid = () => {
+  let text = '';
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+  for (let i = 0; i < 5; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
+};
+
 const testPadId = makeid();
+
+const endPoint = (point) => `/api/${apiVersion}/${point}?apikey=${apiKey}`;
 
 describe(__filename, function () {
   describe('API Versioning', function () {
@@ -39,7 +53,8 @@ describe(__filename, function () {
             const {valid, errors} = validateOpenAPI(res.body, 3);
             if (!valid) {
               const prettyErrors = JSON.stringify(errors, null, 2);
-              throw new Error(`Document is not valid OpenAPI. ${errors.length} validation errors:\n${prettyErrors}`);
+              throw new Error(`Document is not valid OpenAPI. ${errors.length} ` +
+                              `validation errors:\n${prettyErrors}`);
             }
             return;
           })
@@ -59,17 +74,3 @@ describe(__filename, function () {
     });
   });
 });
-
-var endPoint = function (point) {
-  return `/api/${apiVersion}/${point}?apikey=${apiKey}`;
-};
-
-function makeid() {
-  let text = '';
-  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-  for (let i = 0; i < 5; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
-}

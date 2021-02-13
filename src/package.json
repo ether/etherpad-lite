@@ -88,6 +88,7 @@
     "etherpad-cli-client": "0.0.9",
     "mocha": "7.1.2",
     "mocha-froth": "^0.2.10",
+    "openapi-schema-validation": "^0.4.2",
     "set-cookie-parser": "^2.4.6",
     "sinon": "^9.2.0",
     "superagent": "^3.8.3",
