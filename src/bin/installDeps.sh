@@ -40,7 +40,7 @@ log "Ensure that all dependencies are up to date...  If this is the first time y
   cd node_modules
   [ -e ep_etherpad-lite ] || ln -s ../src ep_etherpad-lite
   cd ep_etherpad-lite
-  npm ci
+  npm ci --no-optional
 ) || {
   rm -rf src/node_modules
   exit 1
