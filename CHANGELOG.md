@@ -26,7 +26,8 @@
 * Database performance is significantly improved.
 * Admin UI now has test coverage in CI. (The tests are not enabled by default;
   see `settings.json`.)
-* New stats: `activePads`, `lastDisconnected`, `memoryUsageHeap`.
+* New stats/metrics: `activePads`, `httpUptime`, `lastDisconnected`,
+  `memoryUsageHeap`.
 * For plugin authors:
   * New `callAllSerial()` function that invokes hook functions like `callAll()`
     except it supports asynchronous hook functions.
