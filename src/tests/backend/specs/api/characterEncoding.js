@@ -19,6 +19,7 @@ const testPadId = makeid();
 describe(__filename, function () {
   describe('Connectivity For Character Encoding', function () {
     it('can connect', function (done) {
+      this.timeout(250);
       api.get('/api/')
           .expect('Content-Type', /json/)
           .expect(200, done);
@@ -26,6 +27,7 @@ describe(__filename, function () {
   });
 
   describe('API Versioning', function () {
+    this.timeout(150);
     it('finds the version tag', function (done) {
       api.get('/api/')
           .expect((res) => {
@@ -39,6 +41,7 @@ describe(__filename, function () {
 
   describe('Permission', function () {
     it('errors with invalid APIKey', function (done) {
+      this.timeout(150);
       // This is broken because Etherpad doesn't handle HTTP codes properly see #2343
       // If your APIKey is password you deserve to fail all tests anyway
       const permErrorURL = `/api/${apiVersion}/createPad?apikey=password&padID=test`;
@@ -49,6 +52,7 @@ describe(__filename, function () {
 
   describe('createPad', function () {
     it('creates a new Pad', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('createPad')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Unable to create new Pad');
@@ -60,6 +64,7 @@ describe(__filename, function () {
 
   describe('setHTML', function () {
     it('Sets the HTML of a Pad attempting to weird utf8 encoded content', function (done) {
+      this.timeout(1000);
       fs.readFile('tests/backend/specs/api/emojis.html', 'utf8', (err, html) => {
         api.post(endPoint('setHTML'))
             .send({
@@ -77,6 +82,7 @@ describe(__filename, function () {
 
   describe('getHTML', function () {
     it('get the HTML of Pad with emojis', function (done) {
+      this.timeout(400);
       api.get(`${endPoint('getHTML')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.data.html.indexOf('&#127484') === -1) {

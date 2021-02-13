@@ -47,6 +47,7 @@ const expectedSpaceHtml = '<!doctype html><html><body><ul class="bullet"><li>one
 describe(__filename, function () {
   describe('Connectivity', function () {
     it('can connect', function (done) {
+      this.timeout(200);
       api.get('/api/')
           .expect('Content-Type', /json/)
           .expect(200, done);
@@ -55,6 +56,7 @@ describe(__filename, function () {
 
   describe('API Versioning', function () {
     it('finds the version tag', function (done) {
+      this.timeout(150);
       api.get('/api/')
           .expect((res) => {
             apiVersion = res.body.currentVersion;
@@ -67,6 +69,7 @@ describe(__filename, function () {
 
   describe('Permission', function () {
     it('errors with invalid APIKey', function (done) {
+      this.timeout(150);
       // This is broken because Etherpad doesn't handle HTTP codes properly see #2343
       // If your APIKey is password you deserve to fail all tests anyway
       const permErrorURL = `/api/${apiVersion}/createPad?apikey=password&padID=test`;
@@ -119,6 +122,7 @@ describe(__filename, function () {
 
   describe('deletePad', function () {
     it('deletes a Pad', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('deletePad')}&padID=${testPadId}`)
           .expect('Content-Type', /json/)
           .expect(200, done); // @TODO: we shouldn't expect 200 here since the pad may not exist
@@ -127,6 +131,7 @@ describe(__filename, function () {
 
   describe('createPad', function () {
     it('creates a new Pad', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('createPad')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Unable to create new Pad');
@@ -138,6 +143,7 @@ describe(__filename, function () {
 
   describe('getRevisionsCount', function () {
     it('gets revision count of Pad', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('getRevisionsCount')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Unable to get Revision Count');
@@ -150,6 +156,7 @@ describe(__filename, function () {
 
   describe('getSavedRevisionsCount', function () {
     it('gets saved revisions count of Pad', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('getSavedRevisionsCount')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Unable to get Saved Revisions Count');
@@ -162,6 +169,7 @@ describe(__filename, function () {
 
   describe('listSavedRevisions', function () {
     it('gets saved revision list of Pad', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('listSavedRevisions')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Unable to get Saved Revisions List');
@@ -174,6 +182,7 @@ describe(__filename, function () {
 
   describe('getHTML', function () {
     it('get the HTML of Pad', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('getHTML')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.data.html.length <= 1) throw new Error('Unable to get the HTML');
@@ -185,6 +194,7 @@ describe(__filename, function () {
 
   describe('listAllPads', function () {
     it('list all pads', function (done) {
+      this.timeout(150);
       api.get(endPoint('listAllPads'))
           .expect((res) => {
             if (res.body.data.padIDs.includes(testPadId) !== true) {
@@ -198,6 +208,7 @@ describe(__filename, function () {
 
   describe('deletePad', function () {
     it('deletes a Pad', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('deletePad')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Pad Deletion failed');
@@ -209,6 +220,7 @@ describe(__filename, function () {
 
   describe('listAllPads', function () {
     it('list all pads', function (done) {
+      this.timeout(150);
       api.get(endPoint('listAllPads'))
           .expect((res) => {
             if (res.body.data.padIDs.includes(testPadId) !== false) {
@@ -222,6 +234,7 @@ describe(__filename, function () {
 
   describe('getHTML', function () {
     it('get the HTML of a Pad -- Should return a failure', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('getHTML')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.code !== 1) throw new Error('Pad deletion failed');
@@ -233,6 +246,7 @@ describe(__filename, function () {
 
   describe('createPad', function () {
     it('creates a new Pad with text', function (done) {
+      this.timeout(200);
       api.get(`${endPoint('createPad')}&padID=${testPadId}&text=testText`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Pad Creation failed');
@@ -244,6 +258,7 @@ describe(__filename, function () {
 
   describe('getText', function () {
     it('gets the Pad text and expect it to be testText with \n which is a line break', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('getText')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.data.text !== 'testText\n') throw new Error('Pad Creation with text');
@@ -255,6 +270,7 @@ describe(__filename, function () {
 
   describe('setText', function () {
     it('creates a new Pad with text', function (done) {
+      this.timeout(200);
       api.post(endPoint('setText'))
           .send({
             padID: testPadId,
@@ -270,6 +286,7 @@ describe(__filename, function () {
 
   describe('getText', function () {
     it('gets the Pad text', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('getText')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.data.text !== 'testTextTwo\n') throw new Error('Setting Text');
@@ -281,6 +298,7 @@ describe(__filename, function () {
 
   describe('getRevisionsCount', function () {
     it('gets Revision Count of a Pad', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('getRevisionsCount')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.data.revisions !== 1) throw new Error('Unable to get text revision count');
@@ -292,6 +310,7 @@ describe(__filename, function () {
 
   describe('saveRevision', function () {
     it('saves Revision', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('saveRevision')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Unable to save Revision');
@@ -303,6 +322,7 @@ describe(__filename, function () {
 
   describe('getSavedRevisionsCount', function () {
     it('gets saved revisions count of Pad', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('getSavedRevisionsCount')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Unable to get Saved Revisions Count');
@@ -315,6 +335,7 @@ describe(__filename, function () {
 
   describe('listSavedRevisions', function () {
     it('gets saved revision list of Pad', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('listSavedRevisions')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Unable to get Saved Revisions List');
@@ -326,6 +347,7 @@ describe(__filename, function () {
   });
   describe('padUsersCount', function () {
     it('gets User Count of a Pad', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('padUsersCount')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.data.padUsersCount !== 0) throw new Error('Incorrect Pad User count');
@@ -337,6 +359,7 @@ describe(__filename, function () {
 
   describe('getReadOnlyID', function () {
     it('Gets the Read Only ID of a Pad', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('getReadOnlyID')}&padID=${testPadId}`)
           .expect((res) => {
             if (!res.body.data.readOnlyID) throw new Error('No Read Only ID for Pad');
@@ -348,6 +371,7 @@ describe(__filename, function () {
 
   describe('listAuthorsOfPad', function () {
     it('Get Authors of the Pad', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('listAuthorsOfPad')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.data.authorIDs.length !== 0) throw new Error('# of Authors of pad is not 0');
@@ -359,6 +383,7 @@ describe(__filename, function () {
 
   describe('getLastEdited', function () {
     it('Get When Pad was left Edited', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('getLastEdited')}&padID=${testPadId}`)
           .expect((res) => {
             if (!res.body.data.lastEdited) {
@@ -374,6 +399,7 @@ describe(__filename, function () {
 
   describe('setText', function () {
     it('creates a new Pad with text', function (done) {
+      this.timeout(200);
       api.post(endPoint('setText'))
           .send({
             padID: testPadId,
@@ -389,6 +415,7 @@ describe(__filename, function () {
 
   describe('getLastEdited', function () {
     it('Get When Pad was left Edited', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('getLastEdited')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.data.lastEdited <= lastEdited) {
@@ -402,6 +429,7 @@ describe(__filename, function () {
 
   describe('padUsers', function () {
     it('gets User Count of a Pad', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('padUsers')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.data.padUsers.length !== 0) throw new Error('Incorrect Pad Users');
@@ -413,6 +441,7 @@ describe(__filename, function () {
 
   describe('deletePad', function () {
     it('deletes a Pad', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('deletePad')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Pad Deletion failed');
@@ -428,6 +457,7 @@ describe(__filename, function () {
 
   describe('createPad', function () {
     it('creates a new Pad with text', function (done) {
+      this.timeout(200);
       api.get(`${endPoint('createPad')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Pad Creation failed');
@@ -439,6 +469,7 @@ describe(__filename, function () {
 
   describe('setText', function () {
     it('Sets text on a pad Id', function (done) {
+      this.timeout(150);
       api.post(`${endPoint('setText')}&padID=${testPadId}`)
           .field({text})
           .expect((res) => {
@@ -451,6 +482,7 @@ describe(__filename, function () {
 
   describe('getText', function () {
     it('Gets text on a pad Id', function (done) {
+      this.timeout(200);
       api.get(`${endPoint('getText')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Pad Get Text failed');
@@ -463,6 +495,7 @@ describe(__filename, function () {
 
   describe('setText', function () {
     it('Sets text on a pad Id including an explicit newline', function (done) {
+      this.timeout(200);
       api.post(`${endPoint('setText')}&padID=${testPadId}`)
           .field({text: `${text}\n`})
           .expect((res) => {
@@ -475,6 +508,7 @@ describe(__filename, function () {
 
   describe('getText', function () {
     it("Gets text on a pad Id and doesn't have an excess newline", function (done) {
+      this.timeout(150);
       api.get(`${endPoint('getText')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Pad Get Text failed');
@@ -487,6 +521,7 @@ describe(__filename, function () {
 
   describe('getLastEdited', function () {
     it('Gets when pad was last edited', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('getLastEdited')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.lastEdited === 0) throw new Error('Get Last Edited Failed');
@@ -498,6 +533,7 @@ describe(__filename, function () {
 
   describe('movePad', function () {
     it('Move a Pad to a different Pad ID', function (done) {
+      this.timeout(200);
       api.get(`${endPoint('movePad')}&sourceID=${testPadId}&destinationID=${newPadId}&force=true`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Moving Pad Failed');
@@ -509,6 +545,7 @@ describe(__filename, function () {
 
   describe('getText', function () {
     it('Gets text on a pad Id', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('getText')}&padID=${newPadId}`)
           .expect((res) => {
             if (res.body.data.text !== `${text}\n`) throw new Error('Pad Get Text failed');
@@ -520,6 +557,7 @@ describe(__filename, function () {
 
   describe('movePad', function () {
     it('Move a Pad to a different Pad ID', function (done) {
+      this.timeout(200);
       api.get(`${endPoint('movePad')}&sourceID=${newPadId}&destinationID=${testPadId}&force=false`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Moving Pad Failed');
@@ -531,6 +569,7 @@ describe(__filename, function () {
 
   describe('getText', function () {
     it('Gets text on a pad Id', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('getText')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.data.text !== `${text}\n`) throw new Error('Pad Get Text failed');
@@ -542,6 +581,7 @@ describe(__filename, function () {
 
   describe('getLastEdited', function () {
     it('Gets when pad was last edited', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('getLastEdited')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.lastEdited === 0) throw new Error('Get Last Edited Failed');
@@ -553,6 +593,7 @@ describe(__filename, function () {
 
   describe('appendText', function () {
     it('Append text to a pad Id', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('appendText', '1.2.13')}&padID=${testPadId}&text=hello`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Pad Append Text failed');
@@ -564,6 +605,7 @@ describe(__filename, function () {
 
   describe('getText', function () {
     it('Gets text on a pad Id', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('getText')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Pad Get Text failed');
@@ -577,6 +619,7 @@ describe(__filename, function () {
 
   describe('setHTML', function () {
     it('Sets the HTML of a Pad attempting to pass ugly HTML', function (done) {
+      this.timeout(200);
       const html = '<div><b>Hello HTML</title></head></div>';
       api.post(endPoint('setHTML'))
           .send({
@@ -593,6 +636,7 @@ describe(__filename, function () {
 
   describe('setHTML', function () {
     it('Sets the HTML of a Pad with complex nested lists of different types', function (done) {
+      this.timeout(200);
       api.post(endPoint('setHTML'))
           .send({
             padID: testPadId,
@@ -608,6 +652,7 @@ describe(__filename, function () {
 
   describe('getHTML', function () {
     it('Gets back the HTML of a Pad with complex nested lists of different types', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('getHTML')}&padID=${testPadId}`)
           .expect((res) => {
             const receivedHtml = res.body.data.html.replace('<br></body>', '</body>').toLowerCase();
@@ -631,6 +676,7 @@ describe(__filename, function () {
 
   describe('setHTML', function () {
     it('Sets the HTML of a Pad with white space between list items', function (done) {
+      this.timeout(200);
       api.get(`${endPoint('setHTML')}&padID=${testPadId}&html=${ulSpaceHtml}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('List HTML cant be imported');
@@ -642,6 +688,7 @@ describe(__filename, function () {
 
   describe('getHTML', function () {
     it('Gets back the HTML of a Pad with complex nested lists of different types', function (done) {
+      this.timeout(150);
       api.get(`${endPoint('getHTML')}&padID=${testPadId}`)
           .expect((res) => {
             const receivedHtml = res.body.data.html.replace('<br></body>', '</body>').toLowerCase();
@@ -664,6 +711,7 @@ describe(__filename, function () {
 
   describe('createPad', function () {
     it('errors if pad can be created', function (done) {
+      this.timeout(150);
       const badUrlChars = ['/', '%23', '%3F', '%26'];
       async.map(
           badUrlChars,
@@ -681,6 +729,7 @@ describe(__filename, function () {
 
   describe('copyPad', function () {
     it('copies the content of a existent pad', function (done) {
+      this.timeout(200);
       api.get(`${endPoint('copyPad')}&sourceID=${testPadId}&destinationID=${copiedPadId}&force=true`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Copy Pad Failed');
@@ -703,6 +752,7 @@ describe(__filename, function () {
     });
 
     it('returns a successful response', function (done) {
+      this.timeout(200);
       api.get(`${endPoint('copyPadWithoutHistory')}&sourceID=${sourcePadId}&destinationID=${newPad}&force=false`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Copy Pad Without History Failed');
@@ -713,6 +763,7 @@ describe(__filename, function () {
 
     // this test validates if the source pad's text and attributes are kept
     it('creates a new pad with the same content as the source pad', function (done) {
+      this.timeout(200);
       api.get(`${endPoint('copyPadWithoutHistory')}&sourceID=${sourcePadId}&destinationID=${newPad}&force=false`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Copy Pad Without History Failed');
@@ -742,6 +793,7 @@ describe(__filename, function () {
       const padId = makeid();
       const padWithNonExistentGroup = `notExistentGroup$${padId}`;
       it('throws an error', function (done) {
+        this.timeout(150);
         api.get(`${endPoint('copyPadWithoutHistory')}&sourceID=${sourcePadId}&destinationID=${padWithNonExistentGroup}&force=true`)
             .expect((res) => {
               // code 1, it means an error has happened
@@ -760,6 +812,7 @@ describe(__filename, function () {
 
       context('and force is false', function () {
         it('throws an error', function (done) {
+          this.timeout(150);
           api.get(`${endPoint('copyPadWithoutHistory')}&sourceID=${sourcePadId}&destinationID=${padIdExistent}&force=false`)
               .expect((res) => {
                 // code 1, it means an error has happened
@@ -771,6 +824,7 @@ describe(__filename, function () {
 
       context('and force is true', function () {
         it('returns a successful response', function (done) {
+          this.timeout(200);
           api.get(`${endPoint('copyPadWithoutHistory')}&sourceID=${sourcePadId}&destinationID=${padIdExistent}&force=true`)
               .expect((res) => {
                 // code 1, it means an error has happened

@@ -15,6 +15,7 @@ let padID = makeid();
 describe(__filename, function () {
   describe('API Versioning', function () {
     it('errors if can not connect', async function () {
+      this.timeout(200);
       await api.get('/api/')
           .expect(200)
           .expect((res) => {
@@ -56,6 +57,7 @@ describe(__filename, function () {
 
   describe('API: Group creation and deletion', function () {
     it('createGroup', async function () {
+      this.timeout(100);
       await api.get(endPoint('createGroup'))
           .expect(200)
           .expect('Content-Type', /json/)
@@ -67,6 +69,7 @@ describe(__filename, function () {
     });
 
     it('listSessionsOfGroup for empty group', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('listSessionsOfGroup')}&groupID=${groupID}`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -77,6 +80,7 @@ describe(__filename, function () {
     });
 
     it('deleteGroup', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('deleteGroup')}&groupID=${groupID}`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -86,6 +90,7 @@ describe(__filename, function () {
     });
 
     it('createGroupIfNotExistsFor', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('createGroupIfNotExistsFor')}&groupMapper=management`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -98,6 +103,7 @@ describe(__filename, function () {
     // Test coverage for https://github.com/ether/etherpad-lite/issues/4227
     // Creates a group, creates 2 sessions, 2 pads and then deletes the group.
     it('createGroup', async function () {
+      this.timeout(100);
       await api.get(endPoint('createGroup'))
           .expect(200)
           .expect('Content-Type', /json/)
@@ -109,6 +115,7 @@ describe(__filename, function () {
     });
 
     it('createAuthor', async function () {
+      this.timeout(100);
       await api.get(endPoint('createAuthor'))
           .expect(200)
           .expect('Content-Type', /json/)
@@ -120,6 +127,7 @@ describe(__filename, function () {
     });
 
     it('createSession', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('createSession')
       }&authorID=${authorID}&groupID=${groupID}&validUntil=999999999999`)
           .expect(200)
@@ -132,6 +140,7 @@ describe(__filename, function () {
     });
 
     it('createSession', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('createSession')
       }&authorID=${authorID}&groupID=${groupID}&validUntil=999999999999`)
           .expect(200)
@@ -144,6 +153,7 @@ describe(__filename, function () {
     });
 
     it('createGroupPad', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('createGroupPad')}&groupID=${groupID}&padName=x1234567`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -153,6 +163,7 @@ describe(__filename, function () {
     });
 
     it('createGroupPad', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('createGroupPad')}&groupID=${groupID}&padName=x12345678`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -162,6 +173,7 @@ describe(__filename, function () {
     });
 
     it('deleteGroup', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('deleteGroup')}&groupID=${groupID}`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -174,6 +186,7 @@ describe(__filename, function () {
 
   describe('API: Author creation', function () {
     it('createGroup', async function () {
+      this.timeout(100);
       await api.get(endPoint('createGroup'))
           .expect(200)
           .expect('Content-Type', /json/)
@@ -185,6 +198,7 @@ describe(__filename, function () {
     });
 
     it('createAuthor', async function () {
+      this.timeout(100);
       await api.get(endPoint('createAuthor'))
           .expect(200)
           .expect('Content-Type', /json/)
@@ -195,6 +209,7 @@ describe(__filename, function () {
     });
 
     it('createAuthor with name', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('createAuthor')}&name=john`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -206,6 +221,7 @@ describe(__filename, function () {
     });
 
     it('createAuthorIfNotExistsFor', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('createAuthorIfNotExistsFor')}&authorMapper=chris`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -216,6 +232,7 @@ describe(__filename, function () {
     });
 
     it('getAuthorName', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('getAuthorName')}&authorID=${authorID}`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -228,6 +245,7 @@ describe(__filename, function () {
 
   describe('API: Sessions', function () {
     it('createSession', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('createSession')
       }&authorID=${authorID}&groupID=${groupID}&validUntil=999999999999`)
           .expect(200)
@@ -240,6 +258,7 @@ describe(__filename, function () {
     });
 
     it('getSessionInfo', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('getSessionInfo')}&sessionID=${sessionID}`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -252,6 +271,7 @@ describe(__filename, function () {
     });
 
     it('listSessionsOfGroup', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('listSessionsOfGroup')}&groupID=${groupID}`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -262,6 +282,7 @@ describe(__filename, function () {
     });
 
     it('deleteSession', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('deleteSession')}&sessionID=${sessionID}`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -271,6 +292,7 @@ describe(__filename, function () {
     });
 
     it('getSessionInfo of deleted session', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('getSessionInfo')}&sessionID=${sessionID}`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -282,6 +304,7 @@ describe(__filename, function () {
 
   describe('API: Group pad management', function () {
     it('listPads', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('listPads')}&groupID=${groupID}`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -292,6 +315,7 @@ describe(__filename, function () {
     });
 
     it('createGroupPad', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('createGroupPad')}&groupID=${groupID}&padName=${padID}`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -302,6 +326,7 @@ describe(__filename, function () {
     });
 
     it('listPads after creating a group pad', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('listPads')}&groupID=${groupID}`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -314,6 +339,7 @@ describe(__filename, function () {
 
   describe('API: Pad security', function () {
     it('getPublicStatus', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('getPublicStatus')}&padID=${padID}`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -324,6 +350,7 @@ describe(__filename, function () {
     });
 
     it('setPublicStatus', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('setPublicStatus')}&padID=${padID}&publicStatus=true`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -333,6 +360,7 @@ describe(__filename, function () {
     });
 
     it('getPublicStatus after changing public status', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('getPublicStatus')}&padID=${padID}`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -349,6 +377,7 @@ describe(__filename, function () {
 
   describe('API: Misc', function () {
     it('listPadsOfAuthor', async function () {
+      this.timeout(100);
       await api.get(`${endPoint('listPadsOfAuthor')}&authorID=${authorID}`)
           .expect(200)
           .expect('Content-Type', /json/)
