@@ -125,7 +125,9 @@
       },
       {
         "files": [
-          "static/**/*"
+          "static/**/*",
+          "tests/frontend/helper.js",
+          "tests/frontend/helper/**/*"
         ],
         "excludedFiles": [
           "**/.eslintrc.js"
@@ -133,7 +135,17 @@
         "extends": "etherpad/browser",
         "env": {
           "shared-node-browser": true
-        }
+        },
+        "overrides": [
+          {
+            "files": [
+              "tests/frontend/helper/**/*"
+            ],
+            "globals": {
+              "helper": "readonly"
+            }
+          }
+        ]
       },
       {
         "files": [
@@ -142,6 +154,8 @@
         "excludedFiles": [
           "**/.eslintrc.js",
           "tests/frontend/travis/**/*",
+          "tests/frontend/helper.js",
+          "tests/frontend/helper/**/*",
           "tests/ratelimit/**/*"
         ],
         "extends": "etherpad/tests",
@@ -179,6 +193,8 @@
         ],
         "excludedFiles": [
           "**/.eslintrc.js",
+          "tests/frontend/helper.js",
+          "tests/frontend/helper/**/*",
           "tests/frontend/travis/**/*"
         ],
         "extends": "etherpad/tests/frontend",
