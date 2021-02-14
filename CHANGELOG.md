@@ -30,9 +30,11 @@
 * You can now generate a link to a specific line number in a pad. Appending
   `#L10` to a pad URL will cause your browser to scroll down to line 10.
 * Database performance is significantly improved.
-* Browser caching improvements.
-* New stats/metrics: `activePads`, `httpUptime`, `lastDisconnected`,
+* Admin UI now has test coverage in CI. (The tests are not enabled by default;
+  see `settings.json`.)
+* New stats/metrics: `activePads`, `httpStartTime`, `lastDisconnected`,
   `memoryUsageHeap`.
+* Browser caching improvements.
 * Users can now pick absolute white (`#fff`) as their color.
 * The `settings.json` template used for Docker images has new variables for
   controlling rate limiting.

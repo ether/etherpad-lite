@@ -56,28 +56,28 @@ describe('Admin > Settings', function () {
 
   it('restart works', async function () {
     this.timeout(60000);
-    const getUptime = async () => {
+    const getStartTime = async () => {
       try {
-        const {httpUptime} = await $.ajax({
+        const {httpStartTime} = await $.ajax({
           url: new URL('/stats', window.location.href),
           method: 'GET',
           dataType: 'json',
           timeout: 450, // Slightly less than the waitForPromise() interval.
         });
-        return httpUptime;
+        return httpStartTime;
       } catch (err) {
         return null;
       }
     };
     await helper.waitForPromise(async () => {
-      const uptime = await getUptime();
-      return uptime != null && uptime > 0;
+      const startTime = await getStartTime();
+      return startTime != null && startTime > 0 && Date.now() > startTime;
     }, 1000, 500);
     const clickTime = Date.now();
     helper.admin$('#restartEtherpad').click();
     await helper.waitForPromise(async () => {
-      const uptime = await getUptime();
-      return uptime != null && Date.now() - uptime >= clickTime;
+      const startTime = await getStartTime();
+      return startTime != null && startTime >= clickTime;
     }, 60000, 500);
   });
 });
