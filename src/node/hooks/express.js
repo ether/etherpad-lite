@@ -17,7 +17,7 @@ const logger = log4js.getLogger('http');
 let serverName;
 const sockets = new Set();
 const socketsEvents = new events.EventEmitter();
-let startTime = null;
+const startTime = stats.settableGauge('httpStartTime');
 
 exports.server = null;
 
@@ -46,11 +46,11 @@ const closeServer = async () => {
   await p;
   clearTimeout(timeout);
   exports.server = null;
+  startTime.setValue(0);
   logger.info('HTTP server closed');
 };
 
 exports.createServer = async () => {
-  stats.gauge('httpUptime', () => startTime == null ? 0 : new Date() - startTime);
   console.log('Report bugs at https://github.com/ether/etherpad-lite/issues');
 
   serverName = `Etherpad ${settings.getGitCommit()} (https://etherpad.org)`;
@@ -217,7 +217,7 @@ exports.restartServer = async () => {
     });
   });
   await util.promisify(exports.server.listen).bind(exports.server)(settings.port, settings.ip);
-  startTime = new Date();
+  startTime.setValue(Date.now());
   logger.info('HTTP server listening for connections');
 };
 
