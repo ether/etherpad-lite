@@ -49,19 +49,18 @@ exports._exit = (b, recursive) => {
 
 exports.begin_block = (name) => {
   exports.info.block_stack.push(name);
-  exports.info.__output_stack.push(exports.info.__output.concat());
-  exports.info.__output.splice(0, exports.info.__output.length);
+  exports.info.__output_stack.push(exports.info.__output.get());
+  exports.info.__output.set('');
 };
 
 exports.end_block = () => {
   const name = exports.info.block_stack.pop();
   const renderContext = exports.info.args[exports.info.args.length - 1];
-  const content = exports.info.__output.join('');
-  exports.info.__output.splice(
-      0, exports.info.__output.length, ...exports.info.__output_stack.pop());
+  const content = exports.info.__output.get();
+  exports.info.__output.set(exports.info.__output_stack.pop());
   const args = {content, renderContext};
   hooks.callAll(`eejsBlock_${name}`, args);
-  exports.info.__output.push(args.content);
+  exports.info.__output.set(exports.info.__output.get().concat(args.content));
 };
 
 exports.require = (name, args, mod) => {
@@ -85,7 +84,7 @@ exports.require = (name, args, mod) => {
 
   const cache = settings.maxAge !== 0;
   const template = cache && templateCache.get(ejspath) || ejs.compile(
-      `<% e._init(__output); %>${fs.readFileSync(ejspath).toString()}<% e._exit(); %>`,
+      `<% e._init({get: () => __output, set: (s) => { __output = s; }}); %>${fs.readFileSync(ejspath).toString()}<% e._exit(); %>`,
       {filename: ejspath});
   if (cache) templateCache.set(ejspath, template);
 
