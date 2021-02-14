@@ -9,9 +9,10 @@
 * Dependencies are now installed with the `--no-optional` flag to speed
   installation. Optional dependencies such as `sqlite3` must now be manually
   installed (e.g., `(cd src && npm i sqlite3)`).
-* Socket.IO messages are now limited to 1MiB to make denial of service attacks
-  more difficult. This may cause issues with plugins that send large messages,
-  e.g., `ep_image_upload`.
+* Socket.IO messages are now limited to 10K bytes to make denial of service
+  attacks more difficult. This may cause issues when pasting large amounts of
+  text or with plugins that send large messages (e.g., `ep_image_upload`). You
+  can change the limit via `settings.json`; see `socketIo.maxHttpBufferSize`.
 * The top-level `package.json` file, added in v1.8.7, has been removed due to
   problematic npm behavior. Whenever you install a plugin you will see the
   following benign warnings that can be safely ignored:

@@ -104,6 +104,18 @@ exports.ssl = false;
  **/
 exports.socketTransportProtocols = ['xhr-polling', 'jsonp-polling', 'htmlfile'];
 
+exports.socketIo = {
+  /**
+   * Maximum permitted client message size (in bytes).
+   *
+   * All messages from clients that are larger than this will be rejected. Large values make it
+   * possible to paste large amounts of text, and plugins may require a larger value to work
+   * properly, but increasing the value increases susceptibility to denial of service attacks
+   * (malicious clients can exhaust memory).
+   */
+  maxHttpBufferSize: 10000,
+};
+
 /*
  * The Type of the database
  */
