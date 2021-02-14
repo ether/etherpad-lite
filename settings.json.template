@@ -603,5 +603,12 @@
   "customLocaleStrings": {},
 
   /* Disable Admin UI tests */
-  "enableAdminUITests": false
+  "enableAdminUITests": false,
+
+  /* SocketIO security / functionality.
+   *
+   * Change maximum socket packet length(in bytes) allowed to be sent from a client
+   * to Etherpad, useful for copy/pasting large pads but at the cost of stability
+   */
+  "maxHttpBufferSize": 10000,
 }
