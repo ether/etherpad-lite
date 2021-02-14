@@ -102,11 +102,11 @@ body {
 }
 
 #mocha .test.pass.medium .duration {
-  background: #C09853;
+  background: #ffd285;
 }
 
 #mocha .test.pass.slow .duration {
-  background: #B94A48;
+  background: #ffc2c0;
 }
 
 #mocha .test.pass::before {
@@ -122,19 +122,11 @@ body {
   font-size: 9px;
   margin-left: 5px;
   padding: 2px 5px;
-  color: white;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.2);
-  -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,.2);
-  box-shadow: inset 0 1px 1px rgba(0,0,0,.2);
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  -ms-border-radius: 5px;
-  -o-border-radius: 5px;
   border-radius: 5px;
 }
 
 #mocha .test.pass.fast .duration {
-  display: none;
+  background: #d3ffe9;
 }
 
 #mocha .test.pending {
