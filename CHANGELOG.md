@@ -6,6 +6,12 @@
 * The `bin/` and `tests/` directories were moved under `src/`. Symlinks were
   added at the old locations to hopefully avoid breaking user scripts and other
   tools.
+* Dependencies are now installed with the `--no-optional` flag to speed
+  installation. Optional dependencies such as `sqlite3` must now be manually
+  installed (e.g., `(cd src && npm i sqlite3)`).
+* Socket.IO messages are now limited to 1MiB to make denial of service attacks
+  more difficult. This may cause issues with plugins that send large messages,
+  e.g., `ep_image_upload`.
 * The top-level `package.json` file, added in v1.8.7, has been removed due to
   problematic npm behavior. Whenever you install a plugin you will see the
   following benign warnings that can be safely ignored:
@@ -19,7 +25,7 @@
   npm WARN develop No license field.
   ```
 
-### Notable new features
+### Notable enhancements
 
 * You can now generate a link to a specific line number in a pad. Appending
   `#L10` to a pad URL will cause your browser to scroll down to line 10.
@@ -28,6 +34,12 @@
   see `settings.json`.)
 * New stats/metrics: `activePads`, `httpStartTime`, `lastDisconnected`,
   `memoryUsageHeap`.
+* Browser caching improvements.
+* Users can now pick absolute white (`#fff`) as their color.
+* The `settings.json` template used for Docker images has new variables for
+  controlling rate limiting.
+* Admin UI now has test coverage in CI. (The tests are not enabled by default
+  because the admin password is required; see `settings.json`.)
 * For plugin authors:
   * New `callAllSerial()` function that invokes hook functions like `callAll()`
     except it supports asynchronous hook functions.
@@ -39,17 +51,20 @@
   * Backend tests for plugins can now use the
     [`ep_etherpad-lite/tests/backend/common`](src/tests/backend/common.js)
     module to start the server and simplify API access.
+  * The `checkPlugins.js` script now automatically adds GitHub CI test coverage
+    badges for backend tests and npm publish.
 
 ### Notable fixes
 
 * Enter key now stays in focus when inserted at bottom of viewport.
+* Numbering for ordered list items now properly increments when exported to
+  text.
 * Suppressed benign socket.io connection errors
 * Interface no longer loses color variants on disconnect/reconnect event.
-* Removed npm.load to support npm7.
 * General code quality is further significantly improved.
+* Restarting Etherpad via `/admin` actions is more robust.
 * Improved reliability of server shutdown and restart.
 * No longer error if no buttons are visible.
-* Update Socket.IO to address a minor security vulnerability.
 * For plugin authors:
   * Fixed `collectContentLineText` return value handling.
 
