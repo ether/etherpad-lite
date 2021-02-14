@@ -74,7 +74,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
      *   https://github.com/socketio/socket.io/issues/2276#issuecomment-147184662 (not totally true, actually, see above)
      */
     cookie: false,
-    maxHttpBufferSize: 10E3,
+    maxHttpBufferSize: settings.maxHttpBufferSize,
   });
 
   io.on('connect', (socket) => {

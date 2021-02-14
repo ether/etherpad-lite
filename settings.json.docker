@@ -594,5 +594,12 @@
     }, // logconfig
 
   /* Override any strings found in locale directories */
-  "customLocaleStrings": {}
+  "customLocaleStrings": {},
+
+  /* SocketIO security / functionality.
+   *
+   * Change maximum socket packet length(in bytes) allowed to be sent from a client
+   * to Etherpad, useful for copy/pasting large pads but at the cost of stability
+   */
+  "maxHttpBufferSize": 10000,
 }

@@ -385,6 +385,12 @@ exports.importMaxFileSize = 50 * 1024 * 1024;
  */
 exports.enableAdminUITests = false;
 
+/* SocketIO security / functionality.
+ *
+ * Change maximum socket packet length(in bytes) allowed to be sent from a client
+ * to Etherpad, useful for copy/pasting large pads but at the cost of stability
+ */
+exports.maxHttpBufferSize = 10000;
 
 // checks if abiword is avaiable
 exports.abiwordAvailable = () => {
