@@ -34,6 +34,7 @@
   see `settings.json`.)
 * New stats/metrics: `activePads`, `httpStartTime`, `lastDisconnected`,
   `memoryUsageHeap`.
+* Improved import UX.
 * Browser caching improvements.
 * Users can now pick absolute white (`#fff`) as their color.
 * The `settings.json` template used for Docker images has new variables for
