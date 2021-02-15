@@ -52,11 +52,9 @@ fs.writeFileSync('src/package.json', JSON.stringify(packageJson, null, 2));
 childProcess.execSync('npm install --package-lock-only', {cwd: 'src/'});
 // run npm install --package-lock-only <-- required???
 
-childProcess.execSync(`git checkout -b release/${newVersion}`);
 childProcess.execSync('git add src/package.json');
 childProcess.execSync('git add src/package-lock.json');
 childProcess.execSync('git commit -m "bump version"');
-childProcess.execSync(`git push origin release/${newVersion}`);
 
 
 childProcess.execSync('make docs');
