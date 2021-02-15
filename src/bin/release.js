@@ -107,9 +107,7 @@ if (!newVersion) {
   throw new Error('Unable to generate new version from input');
 }
 
-const changelogIncludesVersion = changelog.indexOf(newVersion) !== -1;
-
-if (!changelogIncludesVersion) {
+if (!changelog.startsWith(`# ${newVersion}\n`)) {
   throw new Error(`No changelog record for ${newVersion}, please create changelog record`);
 }
 
