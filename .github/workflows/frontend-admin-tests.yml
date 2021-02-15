@@ -15,12 +15,6 @@ jobs:
       with:
         node-version: 12
 
-    - uses: saucelabs/sauce-connect-action@v1.1.2
-      with:
-        username: ${{ secrets.SAUCE_USERNAME }}
-        accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-        tunnelIdentifier: ${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}
-
     - name: Install etherpad plugins
       # We intentionally install an old ep_align version to test upgrades to the minor version number.
       # The --legacy-peer-deps flag is required to work around a bug in npm v7:
@@ -53,6 +47,12 @@ jobs:
 
     - name: Remove standard frontend test files, so only admin tests are run
       run: mv src/tests/frontend/specs/* /tmp && mv /tmp/admin*.js src/tests/frontend/specs
+
+    - uses: saucelabs/sauce-connect-action@v1.1.2
+      with:
+        username: ${{ secrets.SAUCE_USERNAME }}
+        accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+        tunnelIdentifier: ${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}
 
     - name: Run the frontend admin tests
       shell: bash
