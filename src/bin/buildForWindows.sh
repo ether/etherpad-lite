@@ -54,7 +54,7 @@ rm -rf "$TMP_FOLDER"/src/node_modules/nodemailer/node_modules/mailcomposer/node_
 
 log "create the zip..."
 cd "$TMP_FOLDER"
-zip -9 -r "$START_FOLDER"/etherpad-lite-win.zip ./*
+zip -9 -r "$START_FOLDER"/etherpad-lite-win.zip ./* -x var
 
 log "clean up..."
 rm -rf "$TMP_FOLDER"
