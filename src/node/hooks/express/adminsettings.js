@@ -3,6 +3,7 @@
 const eejs = require('../../eejs');
 const fs = require('fs');
 const hooks = require('../../../static/js/pluginfw/hooks');
+const plugins = require('../../../static/js/pluginfw/plugins');
 const settings = require('../../utils/Settings');
 
 exports.expressCreateServer = (hookName, args, cb) => {
@@ -47,6 +48,8 @@ exports.socketio = (hookName, args, cb) => {
     socket.on('restartServer', async () => {
       console.log('Admin request to restart server through a socket on /admin/settings');
       settings.reloadSettings();
+      await plugins.update();
+      await hooks.aCallAll('loadSettings', {settings});
       await hooks.aCallAll('restartServer');
     });
   });
