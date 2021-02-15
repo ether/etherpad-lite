@@ -6,6 +6,7 @@ process.on('unhandledRejection', (err) => { throw err; });
 
 const fs = require('fs');
 const childProcess = require('child_process');
+const path = require('path');
 const semver = require('semver');
 
 /*
@@ -24,6 +25,9 @@ if (!release) {
   console.log(usage);
   throw new Error('No release type included');
 }
+
+const cwd = path.join(fs.realpathSync(__dirname), '../../');
+process.chdir(cwd);
 
 const readJson = (filename) => JSON.parse(fs.readFileSync(filename, {encoding: 'utf8', flag: 'r'}));
 const writeJson = (filename, obj) => {
