@@ -60,12 +60,12 @@ childProcess.execSync(`git push origin release/${newVersion}`);
 
 
 childProcess.execSync('make docs');
-childProcess.execSync('git clone git@github.com:ether/ether.github.com.git');
-childProcess.execSync(`cp -R out/doc/ ether.github.com/doc/v${newVersion}`);
+childProcess.execSync('cd .. && git clone git@github.com:ether/ether.github.com.git');
+childProcess.execSync(`cp -R out/doc/ ../ether.github.com/doc/v${newVersion}`);
 
 console.log('Once merged into master please run the following commands');
 console.log(`git tag -a ${newVersion} -m ${newVersion} && git push origin master`);
-console.log(`cd ether.github.com && git add . && git commit -m '${newVersion} docs'`);
+console.log(`cd ../ether.github.com && git add . && git commit -m '${newVersion} docs'`);
 console.log('Build the windows zip');
 console.log('Visit https://github.com/ether/etherpad-lite/releases/new and create a new release ' +
             `with 'master' as the target and the version is ${newVersion}.  Include the windows ` +
