@@ -25,10 +25,12 @@ if (!release) {
   throw new Error('No release type included');
 }
 
+const readJson = (filename) => JSON.parse(fs.readFileSync(filename, {encoding: 'utf8', flag: 'r'}));
+const writeJson = (filename, obj) => fs.writeFileSync(filename, JSON.stringify(obj, null, 2));
+
 const changelog = fs.readFileSync('CHANGELOG.md', {encoding: 'utf8', flag: 'r'});
-let packageJson = fs.readFileSync('./src/package.json', {encoding: 'utf8', flag: 'r'});
-packageJson = JSON.parse(packageJson);
-const currentVersion = packageJson.version;
+const pkg = readJson('./src/package.json');
+const currentVersion = pkg.version;
 
 const newVersion = semver.inc(currentVersion, release);
 if (!newVersion) {
@@ -44,9 +46,9 @@ if (!changelogIncludesVersion) {
 
 console.log('Okay looks good, lets create the package.json and package-lock.json');
 
-packageJson.version = newVersion;
+pkg.version = newVersion;
 
-fs.writeFileSync('src/package.json', JSON.stringify(packageJson, null, 2));
+writeJson('./src/package.json', pkg);
 
 // run npm version `release` where release is patch, minor or major
 childProcess.execSync('npm install --package-lock-only', {cwd: 'src/'});
