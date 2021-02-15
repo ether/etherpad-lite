@@ -475,7 +475,11 @@
   <!-- Bootstrap page -->
   <script type="text/javascript">
       // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
-      var clientVars = {};
+      var clientVars = {
+        // This is needed to fetch /pluginfw/plugin-definitions.json, which happens before the
+        // server sends the CLIENT_VARS message.
+        randomVersionString: <%-JSON.stringify(settings.randomVersionString)%>,
+      };
       (function () {
         var pathComponents = location.pathname.split('/');
 

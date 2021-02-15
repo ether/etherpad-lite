@@ -12,9 +12,10 @@ exports.update = (cb) => {
   // of execution on Firefox. This schedules the response in the run-loop,
   // which appears to fix the issue.
   const callback = () => setTimeout(cb, 0);
-  $.ajaxSetup({cache: false});
 
-  jQuery.getJSON(`${exports.baseURL}pluginfw/plugin-definitions.json`).done((data) => {
+  jQuery.getJSON(
+      `${exports.baseURL}pluginfw/plugin-definitions.json?v=${clientVars.randomVersionString}`
+  ).done((data) => {
     defs.plugins = data.plugins;
     defs.parts = data.parts;
     defs.hooks = pluginUtils.extractHooks(defs.parts, 'client_hooks');

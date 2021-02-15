@@ -42,20 +42,6 @@ const _ = require('underscore');
 exports.root = absolutePaths.findEtherpadRoot();
 console.log(`All relative paths will be interpreted relative to the identified Etherpad base dir: ${exports.root}`);
 
-/*
- * At each start, Etherpad generates a random string and appends it as query
- * parameter to the URLs of the static assets, in order to force their reload.
- * Subsequent requests will be cached, as long as the server is not reloaded.
- *
- * For the rationale behind this choice, see
- * https://github.com/ether/etherpad-lite/pull/3958
- *
- * ACHTUNG: this may prevent caching HTTP proxies to work
- * TODO: remove the "?v=randomstring" parameter, and replace with hashed filenames instead
- */
-exports.randomVersionString = randomString(4);
-console.log(`Random string used for versioning assets: ${exports.randomVersionString}`);
-
 /**
  * The app title, visible e.g. in the browser window
  */
@@ -796,6 +782,20 @@ exports.reloadSettings = () => {
     // using Unix socket for connectivity
     console.warn('The settings file contains an empty string ("") for the "ip" parameter. The "port" parameter will be interpreted as the path to a Unix socket to bind at.');
   }
+
+  /*
+   * At each start, Etherpad generates a random string and appends it as query
+   * parameter to the URLs of the static assets, in order to force their reload.
+   * Subsequent requests will be cached, as long as the server is not reloaded.
+   *
+   * For the rationale behind this choice, see
+   * https://github.com/ether/etherpad-lite/pull/3958
+   *
+   * ACHTUNG: this may prevent caching HTTP proxies to work
+   * TODO: remove the "?v=randomstring" parameter, and replace with hashed filenames instead
+   */
+  exports.randomVersionString = randomString(4);
+  console.log(`Random string used for versioning assets: ${exports.randomVersionString}`);
 };
 
 // initially load settings

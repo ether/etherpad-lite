@@ -5,11 +5,14 @@ const plugins = require('./plugins');
 const hooks = require('./hooks');
 const request = require('request');
 const runCmd = require('../../../node/utils/run_cmd');
+const settings = require('../../../node/utils/Settings');
 
 const logger = log4js.getLogger('plugins');
 
-const onAllTasksFinished = () => {
-  hooks.aCallAll('restartServer', {}, () => {});
+const onAllTasksFinished = async () => {
+  settings.reloadSettings();
+  await hooks.aCallAll('loadSettings', {settings});
+  await hooks.aCallAll('restartServer');
 };
 
 let tasks = 0;
