@@ -26,7 +26,11 @@ if (!release) {
 }
 
 const readJson = (filename) => JSON.parse(fs.readFileSync(filename, {encoding: 'utf8', flag: 'r'}));
-const writeJson = (filename, obj) => fs.writeFileSync(filename, JSON.stringify(obj, null, 2));
+const writeJson = (filename, obj) => {
+  let json = JSON.stringify(obj, null, 2);
+  if (json !== '' && !json.endsWith('\n')) json += '\n';
+  fs.writeFileSync(filename, json);
+};
 
 const changelog = fs.readFileSync('CHANGELOG.md', {encoding: 'utf8', flag: 'r'});
 const pkg = readJson('./src/package.json');
