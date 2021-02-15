@@ -29,6 +29,9 @@ if (!release) {
 const cwd = path.join(fs.realpathSync(__dirname), '../../');
 process.chdir(cwd);
 
+// Run command capturing stdout. Trailing newlines are stripped (like the shell does).
+const runc =
+    (cmd, opts = {}) => childProcess.execSync(cmd, {encoding: 'utf8', ...opts}).replace(/\n+$/, '');
 // Run command without capturing stdout.
 const run = (cmd, opts = {}) => childProcess.execSync(cmd, {stdio: 'inherit', ...opts});
 
@@ -38,6 +41,61 @@ const writeJson = (filename, obj) => {
   if (json !== '' && !json.endsWith('\n')) json += '\n';
   fs.writeFileSync(filename, json);
 };
+
+const assertWorkDirClean = (opts = {}) => {
+  opts.cwd = runc('git rev-parse --show-cdup', opts) || cwd;
+  const m = runc('git diff-files --name-status', opts);
+  if (m !== '') throw new Error(`modifications in working directory ${opts.cwd}:\n${m}`);
+  const u = runc('git ls-files -o --exclude-standard', opts);
+  if (u !== '') throw new Error(`untracked files in working directory ${opts.cwd}:\n${u}`);
+  const s = runc('git diff-index --cached --name-status HEAD', opts);
+  if (s !== '') throw new Error(`uncommitted changes in working directory ${opts.cwd}:\n${s}`);
+};
+
+const assertBranchCheckedOut = (branch, opts = {}) => {
+  const b = runc('git symbolic-ref HEAD', opts);
+  if (b !== `refs/heads/${branch}`) {
+    const d = opts.cwd ? path.resolve(cwd, opts.cwd) : cwd;
+    throw new Error(`${branch} must be checked out (cwd: ${d})`);
+  }
+};
+
+const assertUpstreamOk = (branch, opts = {}) => {
+  const upstream = runc(`git rev-parse --symbolic-full-name ${branch}@{u}`, opts);
+  if (!(new RegExp(`^refs/remotes/[^/]+/${branch}`)).test(upstream)) {
+    throw new Error(`${branch} should track origin/${branch}; see git branch --set-upstream-to`);
+  }
+  try {
+    run(`git merge-base --is-ancestor ${branch} ${branch}@{u}`);
+  } catch (err) {
+    if (err.status !== 1) throw err;
+    throw new Error(`${branch} is ahead of origin/${branch}; do you need to push?`);
+  }
+};
+
+const dirExists = (dir) => {
+  try {
+    return fs.statSync(dir).isDirectory();
+  } catch (err) {
+    if (err.code !== 'ENOENT') throw err;
+    return false;
+  }
+};
+
+// Sanity checks for Etherpad repo.
+assertWorkDirClean();
+assertBranchCheckedOut('develop');
+assertUpstreamOk('develop');
+assertUpstreamOk('master');
+
+// Sanity checks for documentation repo.
+if (!dirExists('../ether.github.com')) {
+  throw new Error('please clone documentation repo: ' +
+                  '(cd .. && git clone git@github.com:ether/ether.github.com.git)');
+}
+assertWorkDirClean({cwd: '../ether.github.com/'});
+assertBranchCheckedOut('master', {cwd: '../ether.github.com/'});
+assertUpstreamOk('master', {cwd: '../ether.github.com/'});
 
 const changelog = fs.readFileSync('CHANGELOG.md', {encoding: 'utf8', flag: 'r'});
 const pkg = readJson('./src/package.json');
