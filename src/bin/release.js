@@ -77,7 +77,6 @@ run('git commit -m "bump version"');
 
 
 run('make docs');
-run('cd .. && git clone git@github.com:ether/ether.github.com.git');
 run(`cp -R out/doc/ ../ether.github.com/doc/v${newVersion}`);
 
 console.log('Once merged into master please run the following commands');
