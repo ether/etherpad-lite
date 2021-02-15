@@ -62,7 +62,7 @@
     "request": "2.88.2",
     "resolve": "1.19.0",
     "security": "1.0.0",
-    "semver": "5.6.0",
+    "semver": "5.7.1",
     "socket.io": "^2.4.1",
     "terser": "^4.7.0",
     "threads": "^1.4.0",
