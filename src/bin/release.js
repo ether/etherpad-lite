@@ -29,6 +29,8 @@ if (!release) {
 const cwd = path.join(fs.realpathSync(__dirname), '../../');
 process.chdir(cwd);
 
+const run = childProcess.execSync;
+
 const readJson = (filename) => JSON.parse(fs.readFileSync(filename, {encoding: 'utf8', flag: 'r'}));
 const writeJson = (filename, obj) => {
   let json = JSON.stringify(obj, null, 2);
@@ -59,7 +61,7 @@ pkg.version = newVersion;
 writeJson('./src/package.json', pkg);
 
 // run npm version `release` where release is patch, minor or major
-childProcess.execSync('npm install --package-lock-only', {cwd: 'src/'});
+run('npm install --package-lock-only', {cwd: 'src/'});
 // run npm install --package-lock-only <-- required???
 
 // Many users will be using the latest LTS version of npm, and the latest LTS version of npm uses
@@ -68,14 +70,14 @@ if (readJson('./src/package-lock.json').lockfileVersion !== 1) {
   throw new Error('Please regenerate package-lock.json with npm v6.x.');
 }
 
-childProcess.execSync('git add src/package.json');
-childProcess.execSync('git add src/package-lock.json');
-childProcess.execSync('git commit -m "bump version"');
+run('git add src/package.json');
+run('git add src/package-lock.json');
+run('git commit -m "bump version"');
 
 
-childProcess.execSync('make docs');
-childProcess.execSync('cd .. && git clone git@github.com:ether/ether.github.com.git');
-childProcess.execSync(`cp -R out/doc/ ../ether.github.com/doc/v${newVersion}`);
+run('make docs');
+run('cd .. && git clone git@github.com:ether/ether.github.com.git');
+run(`cp -R out/doc/ ../ether.github.com/doc/v${newVersion}`);
 
 console.log('Once merged into master please run the following commands');
 console.log(`git checkout master && git tag -a ${newVersion} -m ${newVersion} && git push origin master`);
