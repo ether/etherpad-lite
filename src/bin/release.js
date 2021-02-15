@@ -62,6 +62,12 @@ writeJson('./src/package.json', pkg);
 childProcess.execSync('npm install --package-lock-only', {cwd: 'src/'});
 // run npm install --package-lock-only <-- required???
 
+// Many users will be using the latest LTS version of npm, and the latest LTS version of npm uses
+// lockfileVersion 1. Enforce v1 so that users don't see a (benign) compatibility warning.
+if (readJson('./src/package-lock.json').lockfileVersion !== 1) {
+  throw new Error('Please regenerate package-lock.json with npm v6.x.');
+}
+
 childProcess.execSync('git add src/package.json');
 childProcess.execSync('git add src/package-lock.json');
 childProcess.execSync('git commit -m "bump version"');
