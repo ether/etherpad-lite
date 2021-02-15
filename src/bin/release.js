@@ -144,6 +144,7 @@ console.log('bin/buildForWindows.sh');
 console.log('Visit https://github.com/ether/etherpad-lite/releases/new and create a new release ' +
             `with 'master' as the target and the version is ${newVersion}.  Include the windows ` +
             'zip as an asset');
-console.log(`Once the new docs are uploaded then modify the download
-   links (replace ${currentVersion} with ${newVersion} on etherpad.org and then pull master onto develop`);
+console.log('Once the new docs are uploaded then modify the download links (replace ' +
+            `${currentVersion} with ${newVersion} on etherpad.org and then pull master onto ` +
+            'develop)');
 console.log('Finally go public with an announcement via our comms channels :)');
