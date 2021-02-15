@@ -1,3 +1,4 @@
+'use strict';
 /*
  * Stores session data in the database
  * Source; https://github.com/edy-b/SciFlowWriter/blob/develop/available_plugins/ep_sciflowwriter/db/DirtyStore.js
@@ -7,9 +8,9 @@
  *      express-session, which can't actually use promises anyway.
  */
 
-const DB = require('ep_etherpad-lite/node/db/DB');
-const Store = require('ep_etherpad-lite/node_modules/express-session').Store;
-const log4js = require('ep_etherpad-lite/node_modules/log4js');
+const DB = require('./DB');
+const Store = require('express-session').Store;
+const log4js = require('log4js');
 
 const logger = log4js.getLogger('SessionStore');
 

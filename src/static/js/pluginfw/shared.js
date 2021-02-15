@@ -1,4 +1,5 @@
-const _ = require('underscore');
+'use strict';
+
 const defs = require('./plugin_defs');
 
 const disabledHookReasons = {
@@ -8,13 +9,13 @@ const disabledHookReasons = {
   },
 };
 
-function loadFn(path, hookName) {
+const loadFn = (path, hookName) => {
   let functionName;
   const parts = path.split(':');
 
   // on windows: C:\foo\bar:xyz
-  if (parts[0].length == 1) {
-    if (parts.length == 3) {
+  if (parts[0].length === 1) {
+    if (parts.length === 3) {
       functionName = parts.pop();
     }
     path = parts.join(':');
@@ -26,53 +27,51 @@ function loadFn(path, hookName) {
   let fn = require(path);
   functionName = functionName ? functionName : hookName;
 
-  _.each(functionName.split('.'), (name) => {
+  for (const name of functionName.split('.')) {
     fn = fn[name];
-  });
+  }
   return fn;
-}
+};
 
-function extractHooks(parts, hook_set_name, normalizer) {
+const extractHooks = (parts, hookSetName, normalizer) => {
   const hooks = {};
-  _.each(parts, (part) => {
-    _.chain(part[hook_set_name] || {})
-        .keys()
-        .each((hook_name) => {
-          let hook_fn_name = part[hook_set_name][hook_name];
-
-          /* On the server side, you can't just
+  for (const part of parts) {
+    for (const [hookName, regHookFnName] of Object.entries(part[hookSetName] || {})) {
+      /* On the server side, you can't just
        * require("pluginname/whatever") if the plugin is installed as
        * a dependency of another plugin! Bah, pesky little details of
        * npm... */
-          if (normalizer) {
-            hook_fn_name = normalizer(part, hook_fn_name, hook_name);
-          }
+      const hookFnName = normalizer ? normalizer(part, regHookFnName, hookName) : regHookFnName;
 
-          const disabledReason = (disabledHookReasons[hook_set_name] || {})[hook_name];
-          if (disabledReason) {
-            console.error(`Hook ${hook_set_name}/${hook_name} is disabled. Reason: ${disabledReason}`);
-            console.error(`The hook function ${hook_fn_name} from plugin ${part.plugin} ` +
+      const disabledReason = (disabledHookReasons[hookSetName] || {})[hookName];
+      if (disabledReason) {
+        console.error(`Hook ${hookSetName}/${hookName} is disabled. Reason: ${disabledReason}`);
+        console.error(`The hook function ${hookFnName} from plugin ${part.plugin} ` +
                       'will never be called, which may cause the plugin to fail');
-            console.error(`Please update the ${part.plugin} plugin to not use the ${hook_name} hook`);
-            return;
-          }
-
-          try {
-            var hook_fn = loadFn(hook_fn_name, hook_name);
-            if (!hook_fn) {
-              throw 'Not a function';
-            }
-          } catch (exc) {
-            console.error(`Failed to load '${hook_fn_name}' for '${part.full_name}/${hook_set_name}/${hook_name}': ${exc.toString()}`);
-          }
-          if (hook_fn) {
-            if (hooks[hook_name] == null) hooks[hook_name] = [];
-            hooks[hook_name].push({hook_name, hook_fn, hook_fn_name, part});
-          }
+        console.error(`Please update the ${part.plugin} plugin to not use the ${hookName} hook`);
+        return;
+      }
+      let hookFn;
+      try {
+        hookFn = loadFn(hookFnName, hookName);
+        if (!hookFn) throw new Error('Not a function');
+      } catch (exc) {
+        console.error(`Failed to load '${hookFnName}' for ` +
+                      `'${part.full_name}/${hookSetName}/${hookName}': ${exc.toString()}`);
+      }
+      if (hookFn) {
+        if (hooks[hookName] == null) hooks[hookName] = [];
+        hooks[hookName].push({
+          hook_name: hookName,
+          hook_fn: hookFn,
+          hook_fn_name: hookFnName,
+          part,
         });
-  });
+      }
+    }
+  }
   return hooks;
-}
+};
 
 exports.extractHooks = extractHooks;
 
@@ -88,12 +87,9 @@ exports.extractHooks = extractHooks;
  *   No plugins:   []
  *   Some plugins: [ 'ep_adminpads', 'ep_add_buttons', 'ep_activepads' ]
  */
-exports.clientPluginNames = function () {
-  const client_plugin_names = _.uniq(
-      defs.parts
-          .filter((part) => part.hasOwnProperty('client_hooks'))
-          .map((part) => `plugin-${part.plugin}`)
-  );
-
-  return client_plugin_names;
+exports.clientPluginNames = () => {
+  const clientPluginNames = defs.parts
+      .filter((part) => Object.prototype.hasOwnProperty.call(part, 'client_hooks'))
+      .map((part) => `plugin-${part.plugin}`);
+  return [...new Set(clientPluginNames)];
 };

@@ -35,7 +35,7 @@ WORKDIR /opt/etherpad-lite
 COPY --chown=etherpad:0 ./ ./
 
 # install node dependencies for Etherpad
-RUN bin/installDeps.sh && \
+RUN src/bin/installDeps.sh && \
 	rm -rf ~/.npm/_cacache
 
 # Install the plugins, if ETHERPAD_PLUGINS is not empty.

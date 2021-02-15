@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -22,33 +24,23 @@
 
 const Security = require('./security');
 
-function isNodeText(node) {
-  return (node.nodeType == 3);
-}
+const isNodeText = (node) => (node.nodeType === 3);
 
-function object(o) {
-  const f = function () {};
-  f.prototype = o;
-  return new f();
-}
+const getAssoc = (obj, name) => obj[`_magicdom_${name}`];
 
-function getAssoc(obj, name) {
-  return obj[`_magicdom_${name}`];
-}
-
-function setAssoc(obj, name, value) {
+const setAssoc = (obj, name, value) => {
   // note that in IE designMode, properties of a node can get
   // copied to new nodes that are spawned during editing; also,
   // properties representable in HTML text can survive copy-and-paste
   obj[`_magicdom_${name}`] = value;
-}
+};
 
 // "func" is a function over 0..(numItems-1) that is monotonically
 // "increasing" with index (false, then true).  Finds the boundary
 // between false and true, a number between 0 and numItems inclusive.
 
 
-function binarySearch(numItems, func) {
+const binarySearch = (numItems, func) => {
   if (numItems < 1) return 0;
   if (func(0)) return 0;
   if (!func(numItems - 1)) return numItems;
@@ -60,22 +52,19 @@ function binarySearch(numItems, func) {
     else low = x;
   }
   return high;
-}
+};
 
-function binarySearchInfinite(expectedLength, func) {
+const binarySearchInfinite = (expectedLength, func) => {
   let i = 0;
   while (!func(i)) i += expectedLength;
   return binarySearch(i, func);
-}
+};
 
-function htmlPrettyEscape(str) {
-  return Security.escapeHTML(str).replace(/\r?\n/g, '\\n');
-}
+const htmlPrettyEscape = (str) => Security.escapeHTML(str).replace(/\r?\n/g, '\\n');
 
-const noop = function () {};
+const noop = () => {};
 
 exports.isNodeText = isNodeText;
-exports.object = object;
 exports.getAssoc = getAssoc;
 exports.setAssoc = setAssoc;
 exports.binarySearch = binarySearch;

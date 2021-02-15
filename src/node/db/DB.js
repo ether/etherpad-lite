@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * The DB Module provides a database initalized with the settings
+ * The DB Module provides a database initialized with the settings
  * provided by the settings module
  */
 
@@ -36,7 +36,7 @@ const db =
 exports.db = null;
 
 /**
- * Initalizes the database with the settings provided by the settings module
+ * Initializes the database with the settings provided by the settings module
  * @param {Function} callback
  */
 exports.init = async () => await new Promise((resolve, reject) => {
@@ -49,7 +49,7 @@ exports.init = async () => await new Promise((resolve, reject) => {
     }
 
     // everything ok, set up Promise-based methods
-    ['get', 'set', 'findKeys', 'getSub', 'setSub', 'remove', 'doShutdown'].forEach((fn) => {
+    ['get', 'set', 'findKeys', 'getSub', 'setSub', 'remove'].forEach((fn) => {
       exports[fn] = util.promisify(db[fn].bind(db));
     });
 
@@ -73,6 +73,6 @@ exports.init = async () => await new Promise((resolve, reject) => {
 });
 
 exports.shutdown = async (hookName, context) => {
-  await exports.doShutdown();
+  await util.promisify(db.close.bind(db))();
   console.log('Database closed');
 };

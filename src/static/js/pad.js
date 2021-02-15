@@ -28,7 +28,6 @@ let socket;
 // assigns to the global `$` and augments it with plugins.
 require('./jquery');
 require('./farbtastic');
-require('./excanvas');
 require('./gritter');
 
 const Cookies = require('./pad_utils').Cookies;
@@ -272,7 +271,9 @@ const handshake = () => {
       pad.collabClient.setStateIdle();
       pad.collabClient.setIsPendingRevision(true);
     }
-    throw new Error(`socket.io connection error: ${JSON.stringify(error)}`);
+    // Don't throw an exception. Error events do not indicate problems that are not already
+    // addressed by reconnection logic, so throwing an exception each time there's a socket.io error
+    // just annoys users and fills logs.
   });
 
   socket.on('message', (obj) => {
@@ -295,7 +296,7 @@ const handshake = () => {
       // set some client vars
       window.clientVars = obj.data;
 
-      // initalize the pad
+      // initialize the pad
       pad._afterHandshake();
 
       if (clientVars.readonly) {
@@ -718,10 +719,6 @@ const pad = {
     $('form#reconnectform input.missedChanges')
         .val(JSON.stringify(pad.collabClient.getMissedChanges()));
     $('form#reconnectform').submit();
-  },
-  // this is called from code put into a frame from the server:
-  handleImportExportFrameCall: (callName, varargs) => {
-    padimpexp.handleFrameCall.call(padimpexp, callName, Array.prototype.slice.call(arguments, 1));
   },
   callWhenNotCommitting: (f) => {
     pad.collabClient.callWhenNotCommitting(f);

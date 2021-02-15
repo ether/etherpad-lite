@@ -2,6 +2,7 @@
 
 const _ = require('underscore');
 const cookieParser = require('cookie-parser');
+const events = require('events');
 const express = require('express');
 const expressSession = require('express-session');
 const fs = require('fs');
@@ -14,17 +15,38 @@ const util = require('util');
 
 const logger = log4js.getLogger('http');
 let serverName;
+const sockets = new Set();
+const socketsEvents = new events.EventEmitter();
+const startTime = stats.settableGauge('httpStartTime');
 
 exports.server = null;
 
 const closeServer = async () => {
   if (exports.server == null) return;
   logger.info('Closing HTTP server...');
-  await Promise.all([
-    util.promisify(exports.server.close.bind(exports.server))(),
-    hooks.aCallAll('expressCloseServer'),
-  ]);
+  // Call exports.server.close() to reject new connections but don't await just yet because the
+  // Promise won't resolve until all preexisting connections are closed.
+  const p = util.promisify(exports.server.close.bind(exports.server))();
+  await hooks.aCallAll('expressCloseServer');
+  // Give existing connections some time to close on their own before forcibly terminating. The time
+  // should be long enough to avoid interrupting most preexisting transmissions but short enough to
+  // avoid a noticeable outage.
+  const timeout = setTimeout(async () => {
+    logger.info(`Forcibly terminating remaining ${sockets.size} HTTP connections...`);
+    for (const socket of sockets) socket.destroy(new Error('HTTP server is closing'));
+  }, 5000);
+  let lastLogged = 0;
+  while (sockets.size > 0) {
+    if (Date.now() - lastLogged > 1000) { // Rate limit to avoid filling logs.
+      logger.info(`Waiting for ${sockets.size} HTTP clients to disconnect...`);
+      lastLogged = Date.now();
+    }
+    await events.once(socketsEvents, 'updated');
+  }
+  await p;
+  clearTimeout(timeout);
   exports.server = null;
+  startTime.setValue(0);
   logger.info('HTTP server closed');
 };
 
@@ -182,10 +204,21 @@ exports.restartServer = async () => {
 
   app.use(cookieParser(settings.sessionKey, {}));
 
-  hooks.callAll('expressConfigure', {app});
-  hooks.callAll('expressCreateServer', {app, server: exports.server});
-
+  await Promise.all([
+    hooks.aCallAll('expressConfigure', {app}),
+    hooks.aCallAll('expressCreateServer', {app, server: exports.server}),
+  ]);
+  exports.server.on('connection', (socket) => {
+    sockets.add(socket);
+    socketsEvents.emit('updated');
+    socket.on('close', () => {
+      sockets.delete(socket);
+      socketsEvents.emit('updated');
+    });
+  });
   await util.promisify(exports.server.listen).bind(exports.server)(settings.port, settings.ip);
+  startTime.setValue(Date.now());
+  logger.info('HTTP server listening for connections');
 };
 
 exports.shutdown = async (hookName, context) => {

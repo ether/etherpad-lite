@@ -1,3 +1,5 @@
+'use strict';
+
 const RESERVED_WORDS = [
   'abstract',
   'arguments',
@@ -65,9 +67,9 @@ const RESERVED_WORDS = [
   'yield',
 ];
 
-const regex = /^[a-zA-Z_$][0-9a-zA-Z_$]*(?:\[(?:".+"|\'.+\'|\d+)\])*?$/;
+const regex = /^[a-zA-Z_$][0-9a-zA-Z_$]*(?:\[(?:".+"|'.+'|\d+)\])*?$/;
 
-module.exports.check = function (inputStr) {
+module.exports.check = (inputStr) => {
   let isValid = true;
   inputStr.split('.').forEach((part) => {
     if (!regex.test(part)) {

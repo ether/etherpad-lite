@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Helpers for export requests
  */
@@ -18,9 +19,9 @@
  * limitations under the License.
  */
 
-const Changeset = require('ep_etherpad-lite/static/js/Changeset');
+const Changeset = require('../../static/js/Changeset');
 
-exports.getPadPlainText = function (pad, revNum) {
+exports.getPadPlainText = (pad, revNum) => {
   const _analyzeLine = exports._analyzeLine;
   const atext = ((revNum !== undefined) ? pad.getInternalRevisionAText(revNum) : pad.atext);
   const textLines = atext.text.slice(0, -1).split('\n');
@@ -43,7 +44,7 @@ exports.getPadPlainText = function (pad, revNum) {
 };
 
 
-exports._analyzeLine = function (text, aline, apool) {
+exports._analyzeLine = (text, aline, apool) => {
   const line = {};
 
   // identify list
@@ -81,6 +82,5 @@ exports._analyzeLine = function (text, aline, apool) {
 };
 
 
-exports._encodeWhitespace = function (s) {
-  return s.replace(/[^\x21-\x7E\s\t\n\r]/gu, (c) => `&#${c.codePointAt(0)};`);
-};
+exports._encodeWhitespace =
+  (s) => s.replace(/[^\x21-\x7E\s\t\n\r]/gu, (c) => `&#${c.codePointAt(0)};`);

@@ -1,3 +1,79 @@
+# 1.8.8
+
+### Security patches
+
+* EJS has been updated to 3.1.6 to mitigate an Arbitrary Code Injection
+
+### Compatibility changes
+
+* Node.js 10.17.0 or newer is now required.
+* The `bin/` and `tests/` directories were moved under `src/`. Symlinks were
+  added at the old locations to hopefully avoid breaking user scripts and other
+  tools.
+* Dependencies are now installed with the `--no-optional` flag to speed
+  installation. Optional dependencies such as `sqlite3` must now be manually
+  installed (e.g., `(cd src && npm i sqlite3)`).
+* Socket.IO messages are now limited to 10K bytes to make denial of service
+  attacks more difficult. This may cause issues when pasting large amounts of
+  text or with plugins that send large messages (e.g., `ep_image_upload`). You
+  can change the limit via `settings.json`; see `socketIo.maxHttpBufferSize`.
+* The top-level `package.json` file, added in v1.8.7, has been removed due to
+  problematic npm behavior. Whenever you install a plugin you will see the
+  following benign warnings that can be safely ignored:
+
+  ```
+  npm WARN saveError ENOENT: no such file or directory, open '.../package.json'
+  npm WARN enoent ENOENT: no such file or directory, open '.../package.json'
+  npm WARN develop No description
+  npm WARN develop No repository field.
+  npm WARN develop No README data
+  npm WARN develop No license field.
+  ```
+
+### Notable enhancements
+
+* You can now generate a link to a specific line number in a pad. Appending
+  `#L10` to a pad URL will cause your browser to scroll down to line 10.
+* Database performance is significantly improved.
+* Admin UI now has test coverage in CI. (The tests are not enabled by default;
+  see `settings.json`.)
+* New stats/metrics: `activePads`, `httpStartTime`, `lastDisconnected`,
+  `memoryUsageHeap`.
+* Improved import UX.
+* Browser caching improvements.
+* Users can now pick absolute white (`#fff`) as their color.
+* The `settings.json` template used for Docker images has new variables for
+  controlling rate limiting.
+* Admin UI now has test coverage in CI. (The tests are not enabled by default
+  because the admin password is required; see `settings.json`.)
+* For plugin authors:
+  * New `callAllSerial()` function that invokes hook functions like `callAll()`
+    except it supports asynchronous hook functions.
+  * `callFirst()` and `aCallFirst()` now support the same wide range of hook
+    function behaviors that `callAll()`, `aCallAll()`, and `callAllSerial()`
+    support. Also, they now warn when a hook function misbehaves.
+  * The following server-side hooks now support asynchronous hook functions:
+    `expressConfigure`, `expressCreateServer`, `padCopy`, `padRemove`
+  * Backend tests for plugins can now use the
+    [`ep_etherpad-lite/tests/backend/common`](src/tests/backend/common.js)
+    module to start the server and simplify API access.
+  * The `checkPlugins.js` script now automatically adds GitHub CI test coverage
+    badges for backend tests and npm publish.
+
+### Notable fixes
+
+* Enter key now stays in focus when inserted at bottom of viewport.
+* Numbering for ordered list items now properly increments when exported to
+  text.
+* Suppressed benign socket.io connection errors
+* Interface no longer loses color variants on disconnect/reconnect event.
+* General code quality is further significantly improved.
+* Restarting Etherpad via `/admin` actions is more robust.
+* Improved reliability of server shutdown and restart.
+* No longer error if no buttons are visible.
+* For plugin authors:
+  * Fixed `collectContentLineText` return value handling.
+
 # 1.8.7
 ### Compatibility-breaking changes
 * **IMPORTANT:** It is no longer possible to protect a group pad with a
@@ -40,7 +116,7 @@
   content in `.etherpad` exports
 * New `expressCloseServer` hook to close Express when required
 * The `padUpdate` hook context now includes `revs` and `changeset`
-* `checkPlugins.js` has various improvements to help plugin developers
+* `checkPlugin.js` has various improvements to help plugin developers
 * The HTTP request object (and therefore the express-session state) is now
   accessible from within most `eejsBlock_*` hooks
 * Users without a `password` or `hash` property in `settings.json` are no longer
@@ -114,7 +190,7 @@
 * MINOR: Fix ?showChat URL param issue
 * MINOR: Issue where timeslider URI fails to be correct if padID is numeric
 * MINOR: Include prompt for clear authorship when entire document is selected
-* MINOR: Include full document aText every 100 revisions to make pad restoration on database curruption achievable
+* MINOR: Include full document aText every 100 revisions to make pad restoration on database corruption achievable
 * MINOR: Several Colibris CSS fixes
 * MINOR: Use mime library for mime types instead of hard-coded.
 * MINOR: Don't show "new pad button" if instance is read only
@@ -364,7 +440,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
 # 1.5.3
  * NEW: Accessibility support for Screen readers, includes new fonts and keyboard shortcuts
  * NEW: API endpoint for Append Chat Message and Chat Backend Tests
- * NEW: Error messages displayed on load are included in Default Pad Text (can be supressed)
+ * NEW: Error messages displayed on load are included in Default Pad Text (can be suppressed)
  * NEW: Content Collector can handle key values
  * NEW: getAttributesOnPosition Method
  * FIX: Firefox keeps attributes (bold etc) on cut/copy -> paste
@@ -433,7 +509,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
  * Fix: Timeslider UI Fix
  * Fix: Remove Dokuwiki
  * Fix: Remove long paths from windows build (stops error during extract)
- * Fix: Various globals remvoed
+ * Fix: Various globals removed
  * Fix: Move all scripts into bin/
  * Fix: Various CSS bugfixes for Mobile devices
  * Fix: Overflow Toolbar
@@ -509,7 +585,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
  * FIX: HTML import (don't crash on malformed or blank HTML input; strip title out of html during import)
  * FIX: check if uploaded file only contains ascii chars when abiword disabled
  * FIX: Plugin search in /admin/plugins
- * FIX: Don't create new pad if a non-existant read-only pad is accessed
+ * FIX: Don't create new pad if a non-existent read-only pad is accessed
  * FIX: Drop messages from unknown connections (would lead to a crash after a restart)
  * FIX: API: fix createGroupFor endpoint, if mapped group is deleted
  * FIX: Import form for other locales
@@ -526,7 +602,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
  * NEW: Bump log4js for improved logging
  * Fix: Remove URL schemes which don't have RFC standard
  * Fix: Fix safeRun subsequent restarts issue
- * Fix: Allow safeRun to pass arguements to run.sh
+ * Fix: Allow safeRun to pass arguments to run.sh
  * Fix: Include script for more efficient import
  * Fix: Fix sysv comptibile script
  * Fix: Fix client side changeset spamming
@@ -565,7 +641,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
  * Fix: Support Node 0.10
  * Fix: Log HTTP on DEBUG log level
  * Fix: Server wont crash on import fails on 0 file import.
- * Fix: Import no longer fails consistantly
+ * Fix: Import no longer fails consistently
  * Fix: Language support for non existing languages
  * Fix: Mobile support for chat notifications are now usable
  * Fix: Re-Enable Editbar buttons on reconnect
@@ -597,7 +673,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
  * NEW: Admin dashboard mobile device support and new hooks for Admin dashboard
  * NEW: Get current API version from API
  * NEW: CLI script to delete pads
- * Fix: Automatic client reconnection on disonnect
+ * Fix: Automatic client reconnection on disconnect
  * Fix: Text Export indentation now supports multiple indentations
  * Fix: Bugfix getChatHistory API method
  * Fix: Stop Chrome losing caret after paste is texted
@@ -617,7 +693,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
  * Fix: Stop Opera browser inserting two new lines on enter keypress
  * Fix: Stop timeslider from showing NaN on pads with only one revision
  * Other: Allow timeslider tests to run and provide & fix various other frontend-tests
- * Other: Begin dropping referene to Lite.  Etherpad Lite is now named "Etherpad"
+ * Other: Begin dropping reference to Lite.  Etherpad Lite is now named "Etherpad"
  * Other: Update to latest jQuery
  * Other: Change loading message asking user to please wait on first build
  * Other: Allow etherpad to use global npm installation (Safe since node 6.3)

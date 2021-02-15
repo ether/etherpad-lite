@@ -13,7 +13,7 @@ Etherpad is a real-time collaborative editor [scalable to thousands of simultane
 # Installation
 
 ## Requirements
-- `nodejs` >= **10.13.0**.
+- `nodejs` >= **10.17.0**.
 
 ## GNU/Linux and other UNIX-like systems
 
@@ -21,19 +21,22 @@ Etherpad is a real-time collaborative editor [scalable to thousands of simultane
 ```
 curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt install -y nodejs
-git clone --branch master https://github.com/ether/etherpad-lite.git && cd etherpad-lite && bin/run.sh
+git clone --branch master https://github.com/ether/etherpad-lite.git &&
+cd etherpad-lite &&
+src/bin/run.sh
 ```
 
 ### Manual install
-You'll need git and [node.js](https://nodejs.org) installed (minimum required Node version: **10.13.0**).
+You'll need git and [node.js](https://nodejs.org) installed (minimum required Node version: **10.17.0**).
 
 **As any user (we recommend creating a separate user called etherpad):**
 
 1. Move to a folder where you want to install Etherpad. Clone the git repository: `git clone --branch master git://github.com/ether/etherpad-lite.git`
 2. Change into the new directory containing the cloned source code: `cd etherpad-lite`
-3. run `bin/run.sh` and open <http://127.0.0.1:9001> in your browser.
+3. run `src/bin/run.sh` and open <http://127.0.0.1:9001> in your browser.
 
-To update to the latest released version, execute `git pull origin`. The next start with `bin/run.sh` will update the dependencies.
+To update to the latest released version, execute `git pull origin`. The next
+start with `src/bin/run.sh` will update the dependencies.
 
 [Next steps](#next-steps).
 
@@ -53,11 +56,13 @@ You'll need [node.js](https://nodejs.org) and (optionally, though recommended) g
 1. Grab the source, either
   - download <https://github.com/ether/etherpad-lite/zipball/master>
   - or `git clone --branch master https://github.com/ether/etherpad-lite.git`
-2. With a "Run as administrator" command prompt execute `bin\installOnWindows.bat`
+2. With a "Run as administrator" command prompt execute
+   `src\bin\installOnWindows.bat`
 
 Now, run `start.bat` and open <http://localhost:9001> in your browser.
 
-Update to the latest version with `git pull origin`, then run `bin\installOnWindows.bat`, again.
+Update to the latest version with `git pull origin`, then run
+`src\bin\installOnWindows.bat`, again.
 
 If cloning to a subdirectory within another project, you may need to do the following:
 
@@ -73,7 +78,9 @@ Find [here](doc/docker.md) information on running Etherpad in a container.
 
 ## Tweak the settings
 You can modify the settings in `settings.json`.
-If you need to handle multiple settings files, you can pass the path to a settings file to `bin/run.sh` using the `-s|--settings` option: this allows you to run multiple Etherpad instances from the same installation.
+If you need to handle multiple settings files, you can pass the path to a
+settings file to `src/bin/run.sh` using the `-s|--settings` option: this allows
+you to run multiple Etherpad instances from the same installation.
 Similarly, `--credentials` can be used to give a settings override file, `--apikey` to give a different APIKEY.txt file and `--sessionkey` to give a non-default SESSIONKEY.txt.
 **Each configuration parameter can also be set via an environment variable**, using the syntax `"${ENV_VAR}"` or `"${ENV_VAR:default_value}"`. For details, refer to `settings.json.template`.
 Once you have access to your `/admin` section settings can be modified through the web browser.
@@ -98,7 +105,7 @@ Etherpad is very customizable through plugins. Instructions for installing theme
 Run the following command in your Etherpad folder to get all of the features visible in the demo gif:
 
 ```
-npm install ep_headings2 ep_markdown ep_comments_page ep_align ep_page_view ep_font_color ep_webrtc ep_embedded_hyperlinks2
+npm install ep_headings2 ep_markdown ep_comments_page ep_align ep_font_color ep_webrtc ep_embedded_hyperlinks2
 ```
 
 ## Customize the style with skin variants
@@ -115,9 +122,13 @@ Documentation can be found in `doc/`.
 # Development
 
 ## Things you should know
-You can debug Etherpad using `bin/debugRun.sh`.
 
-You can run Etherpad quickly launching `bin/fastRun.sh`. It's convenient for developers and advanced users. Be aware that it will skip the dependencies update, so remember to run `bin/installDeps.sh` after installing a new dependency or upgrading version.
+You can debug Etherpad using `src/bin/debugRun.sh`.
+
+You can run Etherpad quickly launching `src/bin/fastRun.sh`. It's convenient for
+developers and advanced users. Be aware that it will skip the dependencies
+update, so remember to run `src/bin/installDeps.sh` after installing a new
+dependency or upgrading version.
 
 If you want to find out how Etherpad's `Easysync` works (the library that makes it really realtime), start with this [PDF](https://github.com/ether/etherpad-lite/raw/master/doc/easysync/easysync-full-description.pdf) (complex, but worth reading).
 

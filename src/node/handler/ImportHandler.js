@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Handles the import requests
  */
@@ -22,7 +23,7 @@
 
 const padManager = require('../db/PadManager');
 const padMessageHandler = require('./PadMessageHandler');
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 const settings = require('../utils/Settings');
 const formidable = require('formidable');
@@ -30,19 +31,35 @@ const os = require('os');
 const importHtml = require('../utils/ImportHtml');
 const importEtherpad = require('../utils/ImportEtherpad');
 const log4js = require('log4js');
-const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks.js');
-const util = require('util');
+const hooks = require('../../static/js/pluginfw/hooks.js');
 
-const fsp_exists = util.promisify(fs.exists);
-const fsp_rename = util.promisify(fs.rename);
-const fsp_readFile = util.promisify(fs.readFile);
-const fsp_unlink = util.promisify(fs.unlink);
+const logger = log4js.getLogger('ImportHandler');
+
+// `status` must be a string supported by `importErrorMessage()` in `src/static/js/pad_impexp.js`.
+class ImportError extends Error {
+  constructor(status, ...args) {
+    super(...args);
+    if (Error.captureStackTrace) Error.captureStackTrace(this, ImportError);
+    this.name = 'ImportError';
+    this.status = status;
+    const msg = this.message == null ? '' : String(this.message);
+    if (status !== '') this.message = msg === '' ? status : `${status}: ${msg}`;
+  }
+}
+
+const rm = async (path) => {
+  try {
+    await fs.unlink(path);
+  } catch (err) {
+    if (err.code !== 'ENOENT') throw err;
+  }
+};
 
 let convertor = null;
 let exportExtension = 'htm';
 
 // load abiword only if it is enabled and if soffice is disabled
-if (settings.abiword != null && settings.soffice === null) {
+if (settings.abiword != null && settings.soffice == null) {
   convertor = require('../utils/Abiword');
 }
 
@@ -57,9 +74,7 @@ const tmpDirectory = os.tmpdir();
 /**
  * do a requested import
  */
-async function doImport(req, res, padId) {
-  const apiLogger = log4js.getLogger('ImportHandler');
-
+const doImport = async (req, res, padId) => {
   // pipe to a file
   // convert file to html via abiword or soffice
   // set html in the pad
@@ -96,23 +111,23 @@ async function doImport(req, res, padId) {
 
         // I hate doing indexOf here but I can't see anything to use...
         if (err && err.stack && err.stack.indexOf('maxFileSize') !== -1) {
-          reject('maxFileSize');
+          return reject(new ImportError('maxFileSize'));
         }
 
-        reject('uploadFailed');
+        return reject(new ImportError('uploadFailed'));
       }
       if (!files.file) { // might not be a graceful fix but it works
-        reject('uploadFailed');
-      } else {
-        resolve(files.file.path);
+        return reject(new ImportError('uploadFailed'));
       }
+      resolve(files.file.path);
     });
   });
 
   // ensure this is a file ending we know, else we change the file ending to .txt
   // this allows us to accept source code files like .c or .java
   const fileEnding = path.extname(srcFile).toLowerCase();
-  const knownFileEndings = ['.txt', '.doc', '.docx', '.pdf', '.odt', '.html', '.htm', '.etherpad', '.rtf'];
+  const knownFileEndings =
+    ['.txt', '.doc', '.docx', '.pdf', '.odt', '.html', '.htm', '.etherpad', '.rtf'];
   const fileEndingUnknown = (knownFileEndings.indexOf(fileEnding) < 0);
 
   if (fileEndingUnknown) {
@@ -123,10 +138,10 @@ async function doImport(req, res, padId) {
       const oldSrcFile = srcFile;
 
       srcFile = path.join(path.dirname(srcFile), `${path.basename(srcFile, fileEnding)}.txt`);
-      await fsp_rename(oldSrcFile, srcFile);
+      await fs.rename(oldSrcFile, srcFile);
     } else {
       console.warn('Not allowing unknown file type to be imported', fileEnding);
-      throw 'uploadFailed';
+      throw new ImportError('uploadFailed');
     }
   }
 
@@ -140,24 +155,24 @@ async function doImport(req, res, padId) {
   const fileIsHTML = (fileEnding === '.html' || fileEnding === '.htm');
   const fileIsTXT = (fileEnding === '.txt');
 
+  let directDatabaseAccess = false;
   if (fileIsEtherpad) {
     // we do this here so we can see if the pad has quite a few edits
     const _pad = await padManager.getPad(padId);
     const headCount = _pad.head;
 
     if (headCount >= 10) {
-      apiLogger.warn("Direct database Import attempt of a pad that already has content, we won't be doing this");
-      throw 'padHasData';
+      logger.warn('Aborting direct database import attempt of a pad that already has content');
+      throw new ImportError('padHasData');
     }
 
-    const fsp_readFile = util.promisify(fs.readFile);
-    const _text = await fsp_readFile(srcFile, 'utf8');
-    req.directDatabaseAccess = true;
+    const _text = await fs.readFile(srcFile, 'utf8');
+    directDatabaseAccess = true;
     await importEtherpad.setPadRaw(padId, _text);
   }
 
   // convert file to html if necessary
-  if (!importHandledByPlugin && !req.directDatabaseAccess) {
+  if (!importHandledByPlugin && !directDatabaseAccess) {
     if (fileIsTXT) {
       // Don't use convertor for text files
       useConvertor = false;
@@ -166,7 +181,7 @@ async function doImport(req, res, padId) {
     // See https://github.com/ether/etherpad-lite/issues/2572
     if (fileIsHTML || !useConvertor) {
       // if no convertor only rename
-      fs.renameSync(srcFile, destFile);
+      await fs.rename(srcFile, destFile);
     } else {
       // @TODO - no Promise interface for convertors (yet)
       await new Promise((resolve, reject) => {
@@ -174,7 +189,7 @@ async function doImport(req, res, padId) {
           // catch convert errors
           if (err) {
             console.warn('Converting Error:', err);
-            reject('convertFailed');
+            return reject(new ImportError('convertFailed'));
           }
           resolve();
         });
@@ -182,15 +197,15 @@ async function doImport(req, res, padId) {
     }
   }
 
-  if (!useConvertor && !req.directDatabaseAccess) {
+  if (!useConvertor && !directDatabaseAccess) {
     // Read the file with no encoding for raw buffer access.
-    const buf = await fsp_readFile(destFile);
+    const buf = await fs.readFile(destFile);
 
     // Check if there are only ascii chars in the uploaded file
     const isAscii = !Array.prototype.some.call(buf, (c) => (c > 240));
 
     if (!isAscii) {
-      throw 'uploadFailed';
+      throw new ImportError('uploadFailed');
     }
   }
 
@@ -200,8 +215,8 @@ async function doImport(req, res, padId) {
   // read the text
   let text;
 
-  if (!req.directDatabaseAccess) {
-    text = await fsp_readFile(destFile, 'utf8');
+  if (!directDatabaseAccess) {
+    text = await fs.readFile(destFile, 'utf8');
 
     // node on windows has a delay on releasing of the file lock.
     // We add a 100ms delay to work around this
@@ -211,12 +226,12 @@ async function doImport(req, res, padId) {
   }
 
   // change text of the pad and broadcast the changeset
-  if (!req.directDatabaseAccess) {
+  if (!directDatabaseAccess) {
     if (importHandledByPlugin || useConvertor || fileIsHTML) {
       try {
         await importHtml.setPadHTML(pad, text);
       } catch (e) {
-        apiLogger.warn('Error importing, possibly caused by malformed HTML');
+        logger.warn('Error importing, possibly caused by malformed HTML');
       }
     } else {
       await pad.setText(text);
@@ -230,49 +245,31 @@ async function doImport(req, res, padId) {
 
   // direct Database Access means a pad user should perform a switchToPad
   // and not attempt to receive updated pad data
-  if (req.directDatabaseAccess) {
-    return;
-  }
+  if (directDatabaseAccess) return true;
 
   // tell clients to update
   await padMessageHandler.updatePadClients(pad);
 
   // clean up temporary files
+  rm(srcFile);
+  rm(destFile);
 
-  /*
-   * TODO: directly delete the file and handle the eventual error. Checking
-   * before for existence is prone to race conditions, and does not handle any
-   * errors anyway.
-   */
-  if (await fsp_exists(srcFile)) {
-    fsp_unlink(srcFile);
+  return false;
+};
+
+exports.doImport = async (req, res, padId) => {
+  let httpStatus = 200;
+  let code = 0;
+  let message = 'ok';
+  let directDatabaseAccess;
+  try {
+    directDatabaseAccess = await doImport(req, res, padId);
+  } catch (err) {
+    const known = err instanceof ImportError && err.status;
+    if (!known) logger.error(`Internal error during import: ${err.stack || err}`);
+    httpStatus = known ? 400 : 500;
+    code = known ? 1 : 2;
+    message = known ? err.status : 'internalError';
   }
-
-  if (await fsp_exists(destFile)) {
-    fsp_unlink(destFile);
-  }
-}
-
-exports.doImport = function (req, res, padId) {
-  /**
-   * NB: abuse the 'req' object by storing an additional
-   * 'directDatabaseAccess' property on it so that it can
-   * be passed back in the HTML below.
-   *
-   * this is necessary because in the 'throw' paths of
-   * the function above there's no other way to return
-   * a value to the caller.
-   */
-  let status = 'ok';
-  doImport(req, res, padId).catch((err) => {
-    // check for known errors and replace the status
-    if (err == 'uploadFailed' || err == 'convertFailed' || err == 'padHasData' || err == 'maxFileSize') {
-      status = err;
-    } else {
-      throw err;
-    }
-  }).then(() => {
-    // close the connection
-    res.send(`<script>document.addEventListener('DOMContentLoaded', function(){ var impexp = window.parent.padimpexp.handleFrameCall('${req.directDatabaseAccess}', '${status}'); })</script>`);
-  });
+  res.status(httpStatus).json({code, message, data: {directDatabaseAccess}});
 };

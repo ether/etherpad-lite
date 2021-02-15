@@ -1,3 +1,4 @@
+'use strict';
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -25,64 +26,40 @@
 
 const KERNEL_SOURCE = '../static/js/require-kernel.js';
 
-Ace2Editor.registry = {
-  nextId: 1,
-};
-
 const hooks = require('./pluginfw/hooks');
 const pluginUtils = require('./pluginfw/shared');
-const _ = require('./underscore');
 
-function scriptTag(source) {
-  return (
-    `<script type="text/javascript">\n${
-      source.replace(/<\//g, '<\\/')
-    }</script>`
-  );
-}
+const scriptTag =
+    (source) => `<script type="text/javascript">\n${source.replace(/<\//g, '<\\/')}</script>`;
 
-function Ace2Editor() {
+const Ace2Editor = function () {
   const ace2 = Ace2Editor;
 
-  const editor = {};
   let info = {
-    editor,
+    editor: this,
     id: (ace2.registry.nextId++),
   };
   let loaded = false;
 
   let actionsPendingInit = [];
 
-  function pendingInit(func, optDoNow) {
-    return function () {
-      const that = this;
-      const args = arguments;
-      const action = function () {
-        func.apply(that, args);
-      };
-      if (optDoNow) {
-        optDoNow.apply(that, args);
-      }
-      if (loaded) {
-        action();
-      } else {
-        actionsPendingInit.push(action);
-      }
-    };
-  }
+  const pendingInit = (func) => function (...args) {
+    const action = () => func.apply(this, args);
+    if (loaded) return action();
+    actionsPendingInit.push(action);
+  };
 
-  function doActionsPendingInit() {
-    _.each(actionsPendingInit, (fn, i) => {
-      fn();
-    });
+  const doActionsPendingInit = () => {
+    for (const fn of actionsPendingInit) fn();
     actionsPendingInit = [];
-  }
+  };
 
   ace2.registry[info.id] = info;
 
   // The following functions (prefixed by 'ace_')  are exposed by editor, but
   // execution is delayed until init is complete
-  const aceFunctionsPendingInit = ['importText',
+  const aceFunctionsPendingInit = [
+    'importText',
     'importAText',
     'focus',
     'setEditable',
@@ -100,64 +77,41 @@ function Ace2Editor() {
     'setAuthorSelectionRange',
     'callWithAce',
     'execCommand',
-    'replaceRange'];
+    'replaceRange',
+  ];
 
-  _.each(aceFunctionsPendingInit, (fnName, i) => {
-    const prefix = 'ace_';
-    const name = prefix + fnName;
-    editor[fnName] = pendingInit(function () {
-      if (fnName === 'setAuthorInfo') {
-        if (!arguments[0]) {
-          // setAuthorInfo AuthorId not set for some reason
-        } else {
-          info[prefix + fnName].apply(this, arguments);
-        }
-      } else {
-        info[prefix + fnName].apply(this, arguments);
-      }
+  for (const fnName of aceFunctionsPendingInit) {
+    // Note: info[`ace_${fnName}`] does not exist yet, so it can't be passed directly to
+    // pendingInit(). A simple wrapper is used to defer the info[`ace_${fnName}`] lookup until
+    // method invocation.
+    this[fnName] = pendingInit(function (...args) {
+      info[`ace_${fnName}`].apply(this, args);
     });
-  });
+  }
 
-  editor.exportText = function () {
-    if (!loaded) return '(awaiting init)\n';
-    return info.ace_exportText();
-  };
+  this.exportText = () => loaded ? info.ace_exportText() : '(awaiting init)\n';
 
-  editor.getFrame = function () {
-    return info.frame || null;
-  };
+  this.getFrame = () => info.frame || null;
 
-  editor.getDebugProperty = function (prop) {
-    return info.ace_getDebugProperty(prop);
-  };
+  this.getDebugProperty = (prop) => info.ace_getDebugProperty(prop);
 
-  editor.getInInternationalComposition = function () {
-    if (!loaded) return false;
-    return info.ace_getInInternationalComposition();
-  };
+  this.getInInternationalComposition =
+      () => loaded ? info.ace_getInInternationalComposition() : false;
 
   // prepareUserChangeset:
   // Returns null if no new changes or ACE not ready.  Otherwise, bundles up all user changes
   // to the latest base text into a Changeset, which is returned (as a string if encodeAsString).
-  // If this method returns a truthy value, then applyPreparedChangesetToBase can be called
-  // at some later point to consider these changes part of the base, after which prepareUserChangeset
-  // must be called again before applyPreparedChangesetToBase.  Multiple consecutive calls
-  // to prepareUserChangeset will return an updated changeset that takes into account the
-  // latest user changes, and modify the changeset to be applied by applyPreparedChangesetToBase
-  // accordingly.
-  editor.prepareUserChangeset = function () {
-    if (!loaded) return null;
-    return info.ace_prepareUserChangeset();
-  };
+  // If this method returns a truthy value, then applyPreparedChangesetToBase can be called at some
+  // later point to consider these changes part of the base, after which prepareUserChangeset must
+  // be called again before applyPreparedChangesetToBase. Multiple consecutive calls to
+  // prepareUserChangeset will return an updated changeset that takes into account the latest user
+  // changes, and modify the changeset to be applied by applyPreparedChangesetToBase accordingly.
+  this.prepareUserChangeset = () => loaded ? info.ace_prepareUserChangeset() : null;
 
-  editor.getUnhandledErrors = function () {
-    if (!loaded) return [];
-    // returns array of {error: <browser Error object>, time: +new Date()}
-    return info.ace_getUnhandledErrors();
-  };
+  // returns array of {error: <browser Error object>, time: +new Date()}
+  this.getUnhandledErrors = () => loaded ? info.ace_getUnhandledErrors() : [];
 
-
-  function sortFilesByEmbeded(files) {
+  const sortFilesByEmbeded = (files) => {
     const embededFiles = [];
     let remoteFiles = [];
 
@@ -175,43 +129,42 @@ function Ace2Editor() {
     }
 
     return {embeded: embededFiles, remote: remoteFiles};
-  }
-  function pushStyleTagsFor(buffer, files) {
+  };
+
+  const pushStyleTagsFor = (buffer, files) => {
     const sorted = sortFilesByEmbeded(files);
     const embededFiles = sorted.embeded;
     const remoteFiles = sorted.remote;
 
     if (embededFiles.length > 0) {
       buffer.push('<style type="text/css">');
-      for (var i = 0, ii = embededFiles.length; i < ii; i++) {
-        var file = embededFiles[i];
+      for (const file of embededFiles) {
         buffer.push((Ace2Editor.EMBEDED[file] || '').replace(/<\//g, '<\\/'));
       }
-      buffer.push('<\/style>');
+      buffer.push('</style>');
     }
-    for (var i = 0, ii = remoteFiles.length; i < ii; i++) {
-      var file = remoteFiles[i];
-      buffer.push(`<link rel="stylesheet" type="text/css" href="${encodeURI(file)}"\/>`);
+    for (const file of remoteFiles) {
+      buffer.push(`<link rel="stylesheet" type="text/css" href="${encodeURI(file)}"/>`);
     }
-  }
+  };
 
-  editor.destroy = pendingInit(() => {
+  this.destroy = pendingInit(() => {
     info.ace_dispose();
     info.frame.parentNode.removeChild(info.frame);
     delete ace2.registry[info.id];
     info = null; // prevent IE 6 closure memory leaks
   });
 
-  editor.init = function (containerId, initialCode, doneFunc) {
-    editor.importText(initialCode);
+  this.init = function (containerId, initialCode, doneFunc) {
+    this.importText(initialCode);
 
-    info.onEditorReady = function () {
+    info.onEditorReady = () => {
       loaded = true;
       doActionsPendingInit();
       doneFunc();
     };
 
-    (function () {
+    (() => {
       const doctype = '<!doctype html>';
 
       const iframeHTML = [];
@@ -223,8 +176,8 @@ function Ace2Editor() {
       // and compressed, putting the compressed code from the named file directly into the
       // source here.
       // these lines must conform to a specific format because they are passed by the build script:
-      var includedCSS = [];
-      var $$INCLUDE_CSS = function (filename) { includedCSS.push(filename); };
+      let includedCSS = [];
+      let $$INCLUDE_CSS = (filename) => { includedCSS.push(filename); };
       $$INCLUDE_CSS('../static/css/iframe_editor.css');
 
       // disableCustomScriptsAndStyles can be used to disable loading of custom scripts
@@ -232,18 +185,19 @@ function Ace2Editor() {
         $$INCLUDE_CSS(`../static/css/pad.css?v=${clientVars.randomVersionString}`);
       }
 
-      var additionalCSS = _(hooks.callAll('aceEditorCSS')).map((path) => {
+      let additionalCSS = hooks.callAll('aceEditorCSS').map((path) => {
         if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
           return path;
         }
         return `../static/plugins/${path}`;
       });
       includedCSS = includedCSS.concat(additionalCSS);
-      $$INCLUDE_CSS(`../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`);
+      $$INCLUDE_CSS(
+          `../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`);
 
       pushStyleTagsFor(iframeHTML, includedCSS);
 
-      if (!Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[KERNEL_SOURCE]) {
+      if (!Ace2Editor.EMBEDED || !Ace2Editor.EMBEDED[KERNEL_SOURCE]) {
         // Remotely src'd script tag will not work in IE; it must be embedded, so
         // throw an error if it is not.
         throw new Error('Require kernel could not be found.');
@@ -272,15 +226,16 @@ plugins.ensure(function () {\n\
         iframeHTML,
       });
 
-      iframeHTML.push('</head><body id="innerdocbody" class="innerdocbody" role="application" class="syntax" spellcheck="false">&nbsp;</body></html>');
+      iframeHTML.push('</head><body id="innerdocbody" class="innerdocbody" role="application" ' +
+                      'class="syntax" spellcheck="false">&nbsp;</body></html>');
 
-      // Expose myself to global for my child frame.
-      const thisFunctionsName = 'ChildAccessibleAce2Editor';
-      (function () { return this; }())[thisFunctionsName] = Ace2Editor;
+      // eslint-disable-next-line node/no-unsupported-features/es-builtins
+      const gt = typeof globalThis === 'object' ? globalThis : window;
+      gt.ChildAccessibleAce2Editor = Ace2Editor;
 
       const outerScript = `\
 editorId = ${JSON.stringify(info.id)};\n\
-editorInfo = parent[${JSON.stringify(thisFunctionsName)}].registry[editorId];\n\
+editorInfo = parent.ChildAccessibleAce2Editor.registry[editorId];\n\
 window.onload = function () {\n\
   window.onload = null;\n\
   setTimeout(function () {\n\
@@ -306,23 +261,24 @@ window.onload = function () {\n\
   }, 0);\n\
 }`;
 
-      const outerHTML = [doctype, `<html class="inner-editor outerdoc ${clientVars.skinVariants}"><head>`];
+      const outerHTML =
+          [doctype, `<html class="inner-editor outerdoc ${clientVars.skinVariants}"><head>`];
 
-      var includedCSS = [];
-      var $$INCLUDE_CSS = function (filename) { includedCSS.push(filename); };
+      includedCSS = [];
+      $$INCLUDE_CSS = (filename) => { includedCSS.push(filename); };
       $$INCLUDE_CSS('../static/css/iframe_editor.css');
       $$INCLUDE_CSS(`../static/css/pad.css?v=${clientVars.randomVersionString}`);
 
 
-      var additionalCSS = _(hooks.callAll('aceEditorCSS')).map((path) => {
+      additionalCSS = hooks.callAll('aceEditorCSS').map((path) => {
         if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
           return path;
         }
         return `../static/plugins/${path}`;
-      }
-      );
+      });
       includedCSS = includedCSS.concat(additionalCSS);
-      $$INCLUDE_CSS(`../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`);
+      $$INCLUDE_CSS(
+          `../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`);
 
       pushStyleTagsFor(outerHTML, includedCSS);
 
@@ -353,8 +309,10 @@ window.onload = function () {\n\
       editorDocument.close();
     })();
   };
+};
 
-  return editor;
-}
+Ace2Editor.registry = {
+  nextId: 1,
+};
 
 exports.Ace2Editor = Ace2Editor;
