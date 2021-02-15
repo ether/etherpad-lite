@@ -6,8 +6,11 @@ process.on('unhandledRejection', (err) => { throw err; });
 
 const fs = require('fs');
 const childProcess = require('child_process');
+const log4js = require('log4js');
 const path = require('path');
 const semver = require('semver');
+
+log4js.replaceConsole();
 
 /*
 
