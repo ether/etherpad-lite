@@ -64,12 +64,12 @@ childProcess.execSync('cd .. && git clone git@github.com:ether/ether.github.com.
 childProcess.execSync(`cp -R out/doc/ ../ether.github.com/doc/v${newVersion}`);
 
 console.log('Once merged into master please run the following commands');
-console.log(`git tag -a ${newVersion} -m ${newVersion} && git push origin master`);
-console.log(`cd ../ether.github.com && git add . && git commit -m '${newVersion} docs'`);
-console.log('Build the windows zip');
+console.log(`git checkout master && git tag -a ${newVersion} -m ${newVersion} && git push origin master`);
+console.log(`cd ../ether.github.com && git add . && git commit -m '${newVersion} docs' && git push`);
+console.log('bin/buildForWindows.sh');
 console.log('Visit https://github.com/ether/etherpad-lite/releases/new and create a new release ' +
             `with 'master' as the target and the version is ${newVersion}.  Include the windows ` +
             'zip as an asset');
 console.log(`Once the new docs are uploaded then modify the download
-   link on etherpad.org and then pull master onto develop`);
+   links (replace ${currentVersion} with ${newVersion} on etherpad.org and then pull master onto develop`);
 console.log('Finally go public with an announcement via our comms channels :)');
