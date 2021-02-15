@@ -29,7 +29,8 @@ if (!release) {
 const cwd = path.join(fs.realpathSync(__dirname), '../../');
 process.chdir(cwd);
 
-const run = childProcess.execSync;
+// Run command without capturing stdout.
+const run = (cmd, opts = {}) => childProcess.execSync(cmd, {stdio: 'inherit', ...opts});
 
 const readJson = (filename) => JSON.parse(fs.readFileSync(filename, {encoding: 'utf8', flag: 'r'}));
 const writeJson = (filename, obj) => {
