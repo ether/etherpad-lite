@@ -1,5 +1,9 @@
 # 1.8.8
 
+### Security patches
+
+* EJS has been updated to 3.1.6 to mitigate an Arbitrary Code Injection
+
 ### Compatibility changes
 
 * Node.js 10.17.0 or newer is now required.
