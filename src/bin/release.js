@@ -114,48 +114,72 @@ if (!changelog.startsWith(`# ${newVersion}\n`)) {
 // ////////////////////////////////////////////////////////////////////////////////////////////////
 // Done with sanity checks, now it's time to make changes.
 
-console.log('Updating develop branch...');
-run('git pull --ff-only');
+try {
+  console.log('Updating develop branch...');
+  run('git pull --ff-only');
 
-console.log(`Bumping ${release} version (to ${newVersion})...`);
-pkg.version = newVersion;
+  console.log(`Bumping ${release} version (to ${newVersion})...`);
+  pkg.version = newVersion;
 
-writeJson('./src/package.json', pkg);
+  writeJson('./src/package.json', pkg);
 
-// run npm version `release` where release is patch, minor or major
-run('npm install --package-lock-only', {cwd: 'src/'});
-// run npm install --package-lock-only <-- required???
+  // run npm version `release` where release is patch, minor or major
+  run('npm install --package-lock-only', {cwd: 'src/'});
+  // run npm install --package-lock-only <-- required???
 
-// Many users will be using the latest LTS version of npm, and the latest LTS version of npm uses
-// lockfileVersion 1. Enforce v1 so that users don't see a (benign) compatibility warning.
-if (readJson('./src/package-lock.json').lockfileVersion !== 1) {
-  throw new Error('Please regenerate package-lock.json with npm v6.x.');
+  // Many users will be using the latest LTS version of npm, and the latest LTS version of npm uses
+  // lockfileVersion 1. Enforce v1 so that users don't see a (benign) compatibility warning.
+  if (readJson('./src/package-lock.json').lockfileVersion !== 1) {
+    throw new Error('Please regenerate package-lock.json with npm v6.x.');
+  }
+
+  run('git add src/package.json');
+  run('git add src/package-lock.json');
+  run('git commit -m "bump version"');
+  console.log('Switching to master...');
+  run('git checkout master');
+  console.log('Updating master branch...');
+  run('git pull --ff-only');
+  console.log('Merging develop into master...');
+  run('git merge --no-ff --no-edit develop');
+  console.log(`Creating ${newVersion} tag...`);
+  run(`git tag -s '${newVersion}' -m '${newVersion}'`);
+  console.log('Switching back to develop...');
+  run('git checkout develop');
+  console.log('Merging master into develop...');
+  run('git merge --no-ff --no-edit master');
+} catch (err) {
+  console.error(err.toString());
+  console.warn('Resetting repository...');
+  console.warn('Resetting master...');
+  run('git checkout -f master');
+  run('git reset --hard @{u}');
+  console.warn('Resetting develop...');
+  run('git checkout -f develop');
+  run('git reset --hard @{u}');
+  console.warn(`Deleting ${newVersion} tag...`);
+  run(`git rev-parse -q --verify refs/tags/'${newVersion}' >/dev/null || exit 0; ` +
+      `git tag -d '${newVersion}'`);
+  throw err;
 }
 
-run('git add src/package.json');
-run('git add src/package-lock.json');
-run('git commit -m "bump version"');
-console.log('Switching to master...');
-run('git checkout master');
-console.log('Updating master branch...');
-run('git pull --ff-only');
-console.log('Merging develop into master...');
-run('git merge --no-ff --no-edit develop');
-console.log(`Creating ${newVersion} tag...`);
-run(`git tag -s '${newVersion}' -m '${newVersion}'`);
-console.log('Switching back to develop...');
-run('git checkout develop');
-console.log('Merging master into develop...');
-run('git merge --no-ff --no-edit master');
-
-console.log('Building documentation...');
-run('make docs');
-console.log('Updating ether.github.com master branch...');
-run('git pull --ff-only', {cwd: '../ether.github.com/'});
-console.log('Committing documentation...');
-run(`cp -R out/doc/ ../ether.github.com/doc/v'${newVersion}'`);
-run('git add .', {cwd: '../ether.github.com/'});
-run(`git commit -m '${newVersion} docs'`, {cwd: '../ether.github.com/'});
+try {
+  console.log('Building documentation...');
+  run('make docs');
+  console.log('Updating ether.github.com master branch...');
+  run('git pull --ff-only', {cwd: '../ether.github.com/'});
+  console.log('Committing documentation...');
+  run(`cp -R out/doc/ ../ether.github.com/doc/v'${newVersion}'`);
+  run('git add .', {cwd: '../ether.github.com/'});
+  run(`git commit -m '${newVersion} docs'`, {cwd: '../ether.github.com/'});
+} catch (err) {
+  console.error(err.toString());
+  console.warn('Resetting repository...');
+  console.warn('Resetting master...');
+  run('git checkout -f master', {cwd: '../ether.github.com/'});
+  run('git reset --hard @{u}', {cwd: '../ether.github.com/'});
+  throw err;
+}
 
 console.log('Done.');
 console.log('Review the new commits and the new tag:');
