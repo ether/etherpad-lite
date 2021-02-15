@@ -111,8 +111,13 @@ if (!changelog.startsWith(`# ${newVersion}\n`)) {
   throw new Error(`No changelog record for ${newVersion}, please create changelog record`);
 }
 
-console.log('Okay looks good, lets create the package.json and package-lock.json');
+// ////////////////////////////////////////////////////////////////////////////////////////////////
+// Done with sanity checks, now it's time to make changes.
 
+console.log('Updating develop branch...');
+run('git pull --ff-only');
+
+console.log(`Bumping ${release} version (to ${newVersion})...`);
 pkg.version = newVersion;
 
 writeJson('./src/package.json', pkg);
@@ -130,15 +135,38 @@ if (readJson('./src/package-lock.json').lockfileVersion !== 1) {
 run('git add src/package.json');
 run('git add src/package-lock.json');
 run('git commit -m "bump version"');
+console.log('Switching to master...');
+run('git checkout master');
+console.log('Updating master branch...');
+run('git pull --ff-only');
+console.log('Merging develop into master...');
+run('git merge --no-ff --no-edit develop');
+console.log(`Creating ${newVersion} tag...`);
+run(`git tag -s '${newVersion}' -m '${newVersion}'`);
+console.log('Switching back to develop...');
+run('git checkout develop');
+console.log('Merging master into develop...');
+run('git merge --no-ff --no-edit master');
 
-
+console.log('Building documentation...');
 run('make docs');
-run(`cp -R out/doc/ ../ether.github.com/doc/v${newVersion}`);
+console.log('Updating ether.github.com master branch...');
+run('git pull --ff-only', {cwd: '../ether.github.com/'});
+console.log('Committing documentation...');
+run(`cp -R out/doc/ ../ether.github.com/doc/v'${newVersion}'`);
+run('git add .', {cwd: '../ether.github.com/'});
+run(`git commit -m '${newVersion} docs'`, {cwd: '../ether.github.com/'});
 
-console.log('Once merged into master please run the following commands');
-console.log(`git checkout master && git tag -a ${newVersion} -m ${newVersion} && git push origin master`);
-console.log(`cd ../ether.github.com && git add . && git commit -m '${newVersion} docs' && git push`);
-console.log('bin/buildForWindows.sh');
+console.log('Done.');
+console.log('Review the new commits and the new tag:');
+console.log('  git log --graph --date-order --boundary --oneline --decorate develop@{u}..develop');
+console.log(`  git show '${newVersion}'`);
+console.log('  (cd ../ether.github.com && git show)');
+console.log('If everything looks good then push:');
+console.log(`  git push origin master develop '${newVersion}'`);
+console.log('  (cd ../ether.github.com && git push)');
+console.log('Create a Windows build:');
+console.log('  bin/buildForWindows.sh');
 console.log('Visit https://github.com/ether/etherpad-lite/releases/new and create a new release ' +
             `with 'master' as the target and the version is ${newVersion}.  Include the windows ` +
             'zip as an asset');
