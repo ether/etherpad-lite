@@ -218,7 +218,11 @@ const sendClientReady = (isReconnect, messageType) => {
 };
 
 const handshake = () => {
-  socket = pad.socket = socketio.connect(exports.baseURL, '/', {
+  let padId = document.location.pathname.substring(document.location.pathname.lastIndexOf('/') + 1);
+  // unescape neccesary due to Safari and Opera interpretation of spaces
+  padId = decodeURIComponent(padId);
+
+  socket = pad.socket = socketio.connect(exports.baseURL, padId, {
     reconnectionAttempts: 5,
     reconnection: true,
     reconnectionDelay: 1000,
