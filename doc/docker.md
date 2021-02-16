@@ -29,6 +29,11 @@ The variable value has to be a space separated, double quoted list of plugin nam
 
 Some plugins will need personalized settings. Just refer to the previous section, and include them in your custom `settings.json.docker`.
 
+### Rebuilding including export functionality for DOC/PDF/ODT
+If you want to be able to export your pads to DOC/PDF/ODT files, you can set the INSTALL_ABIWORD build variable to any value other than "0".
+
+Also, you will need to configure the path to the abiword executable (`/usr/bin/abiword`) via editing `<BASEDIR>/settings.json.docker` or via setting the environment variable `ABIWORD` to `/usr/bin/abiword`.
+
 ### Examples
 
 Build a Docker image from the currently checked-out code:

@@ -15,6 +15,14 @@ LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 #   ETHERPAD_PLUGINS="ep_codepad ep_author_neat"
 ARG ETHERPAD_PLUGINS=
 
+# Control whether abiword will be installed, enabling exports to DOC/PDF/ODT formats.
+# By default, it is not installed.
+# If given any value except 0, abiword will be installed.
+#
+# EXAMPLE:
+#   INSTALL_ABIWORD=true
+ARG INSTALL_ABIWORD=0
+
 # By default, Etherpad container is built and run in "production" mode. This is
 # leaner (development dependencies are not installed) and runs faster (among
 # other things, assets are minified & compressed).
@@ -27,6 +35,9 @@ ENV NODE_ENV=production
 RUN useradd --uid 5001 --create-home etherpad
 
 RUN mkdir /opt/etherpad-lite && chown etherpad:0 /opt/etherpad-lite
+
+# install abiword for DOC/PDF/ODT export
+RUN if [ "${INSTALL_ABIWORD}" != "0" ]; then apt update && apt -y install abiword && rm -rf /var/lib/apt/lists/*; fi
 
 USER etherpad
 
