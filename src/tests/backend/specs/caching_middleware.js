@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * caching_middleware is responsible for serving everything under path `/javascripts/`
  * That includes packages as defined in `src/node/utils/tar.json` and probably also plugin code
@@ -6,7 +8,6 @@
 
 const common = require('../common');
 const assert = require('assert').strict;
-const url = require('url');
 const queryString = require('querystring');
 const settings = require('../../../node/utils/Settings');
 
@@ -23,7 +24,7 @@ let agent;
  */
 function isPlaintextResponse(fileContent, resource) {
   // callback=require.define&v=1234
-  const query = url.parse(resource).query;
+  const query = (new URL(resource, 'http://localhost')).search.slice(1);
   // require.define
   const jsonp = queryString.parse(query).callback;
 

@@ -16,6 +16,8 @@ const apiKey = common.apiKey;
 let apiVersion = 1;
 const testPadId = makeid();
 
+const endPoint = (point, version) => `/api/${version || apiVersion}/${point}?apikey=${apiKey}`;
+
 describe(__filename, function () {
   describe('Connectivity For Character Encoding', function () {
     it('can connect', function (done) {
@@ -100,11 +102,6 @@ describe(__filename, function () {
   End of test
 
 */
-
-var endPoint = function (point, version) {
-  version = version || apiVersion;
-  return `/api/${version}/${point}?apikey=${apiKey}`;
-};
 
 function makeid() {
   let text = '';

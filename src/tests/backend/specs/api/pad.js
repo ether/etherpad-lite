@@ -1,3 +1,5 @@
+'use strict';
+
 /*
  * ACHTUNG: there is a copied & modified version of this file in
  * <basedir>/src/tests/container/specs/api/pad.js
@@ -5,6 +7,7 @@
  * TODO: unify those two files, and merge in a single one.
  */
 
+const assert = require('assert').strict;
 const async = require('async');
 const common = require('../../common');
 const settings = require('../../../../node/utils/Settings');
@@ -17,6 +20,8 @@ let apiVersion = 1;
 const testPadId = makeid();
 let lastEdited = '';
 const text = generateLongText();
+
+const endPoint = (point, version) => `/api/${version || apiVersion}/${point}?apikey=${apiKey}`;
 
 /*
  * Html document with nested lists of different types, to test its import and
@@ -160,7 +165,9 @@ describe(__filename, function () {
       api.get(`${endPoint('getSavedRevisionsCount')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Unable to get Saved Revisions Count');
-            if (res.body.data.savedRevisions !== 0) throw new Error('Incorrect Saved Revisions Count');
+            if (res.body.data.savedRevisions !== 0) {
+              throw new Error('Incorrect Saved Revisions Count');
+            }
           })
           .expect('Content-Type', /json/)
           .expect(200, done);
@@ -173,7 +180,7 @@ describe(__filename, function () {
       api.get(`${endPoint('listSavedRevisions')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Unable to get Saved Revisions List');
-            if (!res.body.data.savedRevisions.equals([])) throw new Error('Incorrect Saved Revisions List');
+            assert.deepEqual(res.body.data.savedRevisions, []);
           })
           .expect('Content-Type', /json/)
           .expect(200, done);
@@ -326,7 +333,9 @@ describe(__filename, function () {
       api.get(`${endPoint('getSavedRevisionsCount')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Unable to get Saved Revisions Count');
-            if (res.body.data.savedRevisions !== 1) throw new Error('Incorrect Saved Revisions Count');
+            if (res.body.data.savedRevisions !== 1) {
+              throw new Error('Incorrect Saved Revisions Count');
+            }
           })
           .expect('Content-Type', /json/)
           .expect(200, done);
@@ -339,7 +348,7 @@ describe(__filename, function () {
       api.get(`${endPoint('listSavedRevisions')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Unable to get Saved Revisions List');
-            if (!res.body.data.savedRevisions.equals([1])) throw new Error('Incorrect Saved Revisions List');
+            assert.deepEqual(res.body.data.savedRevisions, [1]);
           })
           .expect('Content-Type', /json/)
           .expect(200, done);
@@ -374,7 +383,9 @@ describe(__filename, function () {
       this.timeout(150);
       api.get(`${endPoint('listAuthorsOfPad')}&padID=${testPadId}`)
           .expect((res) => {
-            if (res.body.data.authorIDs.length !== 0) throw new Error('# of Authors of pad is not 0');
+            if (res.body.data.authorIDs.length !== 0) {
+              throw new Error('# of Authors of pad is not 0');
+            }
           })
           .expect('Content-Type', /json/)
           .expect(200, done);
@@ -451,7 +462,6 @@ describe(__filename, function () {
     });
   });
 
-  const originalPadId = testPadId;
   const newPadId = makeid();
   const copiedPadId = makeid();
 
@@ -609,7 +619,9 @@ describe(__filename, function () {
       api.get(`${endPoint('getText')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Pad Get Text failed');
-            if (res.body.data.text !== `${text}hello\n`) throw new Error('Pad Text not set properly');
+            if (res.body.data.text !== `${text}hello\n`) {
+              throw new Error('Pad Text not set properly');
+            }
           })
           .expect('Content-Type', /json/)
           .expect(200, done);
@@ -627,7 +639,9 @@ describe(__filename, function () {
             html,
           })
           .expect((res) => {
-            if (res.body.code !== 0) throw new Error("Crappy HTML Can't be Imported[we weren't able to sanitize it']");
+            if (res.body.code !== 0) {
+              throw new Error("Crappy HTML Can't be Imported[we weren't able to sanitize it']");
+            }
           })
           .expect('Content-Type', /json/)
           .expect(200, done);
@@ -730,7 +744,8 @@ describe(__filename, function () {
   describe('copyPad', function () {
     it('copies the content of a existent pad', function (done) {
       this.timeout(200);
-      api.get(`${endPoint('copyPad')}&sourceID=${testPadId}&destinationID=${copiedPadId}&force=true`)
+      api.get(`${endPoint('copyPad')}&sourceID=${testPadId}&destinationID=${copiedPadId}` +
+              '&force=true')
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Copy Pad Failed');
           })
@@ -747,13 +762,14 @@ describe(__filename, function () {
       createNewPadWithHtml(sourcePadId, ulHtml, done);
     });
 
-    beforeEach(function () {
+    beforeEach(async function () {
       newPad = makeid();
     });
 
     it('returns a successful response', function (done) {
       this.timeout(200);
-      api.get(`${endPoint('copyPadWithoutHistory')}&sourceID=${sourcePadId}&destinationID=${newPad}&force=false`)
+      api.get(`${endPoint('copyPadWithoutHistory')}&sourceID=${sourcePadId}` +
+              `&destinationID=${newPad}&force=false`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Copy Pad Without History Failed');
           })
@@ -764,14 +780,16 @@ describe(__filename, function () {
     // this test validates if the source pad's text and attributes are kept
     it('creates a new pad with the same content as the source pad', function (done) {
       this.timeout(200);
-      api.get(`${endPoint('copyPadWithoutHistory')}&sourceID=${sourcePadId}&destinationID=${newPad}&force=false`)
+      api.get(`${endPoint('copyPadWithoutHistory')}&sourceID=${sourcePadId}` +
+              `&destinationID=${newPad}&force=false`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Copy Pad Without History Failed');
           })
           .end(() => {
             api.get(`${endPoint('getHTML')}&padID=${newPad}`)
                 .expect((res) => {
-                  const receivedHtml = res.body.data.html.replace('<br><br></body>', '</body>').toLowerCase();
+                  const receivedHtml =
+                      res.body.data.html.replace('<br><br></body>', '</body>').toLowerCase();
 
                   if (receivedHtml !== expectedHtml) {
                     throw new Error(`HTML received from export is not the one we were expecting.
@@ -794,7 +812,8 @@ describe(__filename, function () {
       const padWithNonExistentGroup = `notExistentGroup$${padId}`;
       it('throws an error', function (done) {
         this.timeout(150);
-        api.get(`${endPoint('copyPadWithoutHistory')}&sourceID=${sourcePadId}&destinationID=${padWithNonExistentGroup}&force=true`)
+        api.get(`${endPoint('copyPadWithoutHistory')}&sourceID=${sourcePadId}&` +
+                `destinationID=${padWithNonExistentGroup}&force=true`)
             .expect((res) => {
               // code 1, it means an error has happened
               if (res.body.code !== 1) throw new Error('It should report an error');
@@ -813,7 +832,8 @@ describe(__filename, function () {
       context('and force is false', function () {
         it('throws an error', function (done) {
           this.timeout(150);
-          api.get(`${endPoint('copyPadWithoutHistory')}&sourceID=${sourcePadId}&destinationID=${padIdExistent}&force=false`)
+          api.get(`${endPoint('copyPadWithoutHistory')}&sourceID=${sourcePadId}` +
+                  `&destinationID=${padIdExistent}&force=false`)
               .expect((res) => {
                 // code 1, it means an error has happened
                 if (res.body.code !== 1) throw new Error('It should report an error');
@@ -825,10 +845,13 @@ describe(__filename, function () {
       context('and force is true', function () {
         it('returns a successful response', function (done) {
           this.timeout(200);
-          api.get(`${endPoint('copyPadWithoutHistory')}&sourceID=${sourcePadId}&destinationID=${padIdExistent}&force=true`)
+          api.get(`${endPoint('copyPadWithoutHistory')}&sourceID=${sourcePadId}` +
+                  `&destinationID=${padIdExistent}&force=true`)
               .expect((res) => {
                 // code 1, it means an error has happened
-                if (res.body.code !== 0) throw new Error('Copy pad without history with force true failed');
+                if (res.body.code !== 0) {
+                  throw new Error('Copy pad without history with force true failed');
+                }
               })
               .expect(200, done);
         });
@@ -842,7 +865,7 @@ describe(__filename, function () {
 
 */
 
-var createNewPadWithHtml = function (padId, html, cb) {
+const createNewPadWithHtml = (padId, html, cb) => {
   api.get(`${endPoint('createPad')}&padID=${padId}`)
       .end(() => {
         api.post(endPoint('setHTML'))
@@ -852,11 +875,6 @@ var createNewPadWithHtml = function (padId, html, cb) {
             })
             .end(cb);
       });
-};
-
-var endPoint = function (point, version) {
-  version = version || apiVersion;
-  return `/api/${version}/${point}?apikey=${apiKey}`;
 };
 
 function makeid() {
@@ -878,22 +896,3 @@ function generateLongText() {
   }
   return text;
 }
-
-// Need this to compare arrays (listSavedRevisions test)
-Array.prototype.equals = function (array) {
-  // if the other array is a falsy value, return
-  if (!array) return false;
-  // compare lengths - can save a lot of time
-  if (this.length != array.length) return false;
-  for (let i = 0, l = this.length; i < l; i++) {
-    // Check if we have nested arrays
-    if (this[i] instanceof Array && array[i] instanceof Array) {
-      // recurse into the nested arrays
-      if (!this[i].equals(array[i])) return false;
-    } else if (this[i] != array[i]) {
-      // Warning - two different object instances will never be equal: {x:20} != {x:20}
-      return false;
-    }
-  }
-  return true;
-};

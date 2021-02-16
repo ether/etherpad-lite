@@ -14,6 +14,8 @@ const api = supertest(`http://${settings.ip}:${settings.port}`);
 const apiKey = common.apiKey;
 const apiVersion = 1;
 
+const endPoint = (point, version) => `/api/${version || apiVersion}/${point}?apikey=${apiKey}`;
+
 const testImports = {
   'malformed': {
     input: '<html><body><li>wtf</ul></body></html>',
@@ -305,12 +307,6 @@ describe(__filename, function () {
     });
   });
 });
-
-
-function endPoint(point, version) {
-  version = version || apiVersion;
-  return `/api/${version}/${point}?apikey=${apiKey}`;
-}
 
 function makeid() {
   let text = '';

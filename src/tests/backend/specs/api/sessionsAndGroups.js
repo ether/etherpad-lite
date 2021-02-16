@@ -1,3 +1,5 @@
+'use strict';
+
 const assert = require('assert').strict;
 const common = require('../../common');
 const settings = require('../../../../node/utils/Settings');
@@ -11,6 +13,8 @@ let groupID = '';
 let authorID = '';
 let sessionID = '';
 let padID = makeid();
+
+const endPoint = (point) => `/api/${apiVersion}/${point}?apikey=${apiKey}`;
 
 describe(__filename, function () {
   describe('API Versioning', function () {
@@ -388,11 +392,6 @@ describe(__filename, function () {
     });
   });
 });
-
-
-const endPoint = function (point) {
-  return `/api/${apiVersion}/${point}?apikey=${apiKey}`;
-};
 
 function makeid() {
   let text = '';

@@ -1,3 +1,5 @@
+'use strict';
+
 const common = require('../../common');
 const settings = require('../../../../node/utils/Settings');
 const supertest = require('supertest');
@@ -8,6 +10,8 @@ let apiVersion = 1;
 let authorID = '';
 const padID = makeid();
 const timestamp = Date.now();
+
+const endPoint = (point) => `/api/${apiVersion}/${point}?apikey=${apiKey}`;
 
 describe(__filename, function () {
   describe('API Versioning', function () {
@@ -51,7 +55,9 @@ describe(__filename, function () {
     it('Creates an author with a name set', function (done) {
       api.get(endPoint('createAuthor'))
           .expect((res) => {
-            if (res.body.code !== 0 || !res.body.data.authorID) throw new Error('Unable to create author');
+            if (res.body.code !== 0 || !res.body.data.authorID) {
+              throw new Error('Unable to create author');
+            }
             authorID = res.body.data.authorID; // we will be this author for the rest of the tests
           })
           .expect('Content-Type', /json/)
@@ -62,7 +68,8 @@ describe(__filename, function () {
   describe('appendChatMessage', function () {
     this.timeout(100);
     it('Adds a chat message to the pad', function (done) {
-      api.get(`${endPoint('appendChatMessage')}&padID=${padID}&text=blalblalbha&authorID=${authorID}&time=${timestamp}`)
+      api.get(`${endPoint('appendChatMessage')}&padID=${padID}&text=blalblalbha` +
+              `&authorID=${authorID}&time=${timestamp}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Unable to create chat message');
           })
@@ -91,7 +98,9 @@ describe(__filename, function () {
     it('Gets Chat History of a Pad', function (done) {
       api.get(`${endPoint('getChatHistory')}&padID=${padID}`)
           .expect((res) => {
-            if (res.body.data.messages.length !== 1) throw new Error('Chat History Length is wrong');
+            if (res.body.data.messages.length !== 1) {
+              throw new Error('Chat History Length is wrong');
+            }
             if (res.body.code !== 0) throw new Error('Unable to get chat history');
           })
           .expect('Content-Type', /json/)
@@ -99,10 +108,6 @@ describe(__filename, function () {
     });
   });
 });
-
-var endPoint = function (point) {
-  return `/api/${apiVersion}/${point}?apikey=${apiKey}`;
-};
 
 function makeid() {
   let text = '';
