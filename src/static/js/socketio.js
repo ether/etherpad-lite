@@ -9,7 +9,7 @@
  *     https://socket.io/docs/v2/client-api/#new-Manager-url-options
  * @return socket.io Socket object
  */
-const connect = (etherpadBaseUrl, namespace = '/', options = {}) => {
+const connect = (etherpadBaseUrl, namespace, options = {}) => {
   // The API for socket.io's io() function is awkward. The documentation says that the first
   // argument is a URL, but it is not the URL of the socket.io endpoint. The URL's path part is used
   // as the name of the socket.io namespace to join, and the rest of the URL (including query
@@ -19,7 +19,7 @@ const connect = (etherpadBaseUrl, namespace = '/', options = {}) => {
   const baseUrl = new URL(etherpadBaseUrl, window.location);
   const socketioUrl = new URL('socket.io', baseUrl);
   const namespaceUrl = new URL(namespace, new URL('/', baseUrl));
-  return io(namespaceUrl.href, Object.assign({path: socketioUrl.pathname}, options));
+  return io(namespaceUrl, Object.assign({path: socketioUrl.pathname}, options));
 };
 
 if (typeof exports === 'object') {
