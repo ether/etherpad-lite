@@ -173,6 +173,7 @@ try {
   run('git pull --ff-only', {cwd: '../ether.github.com/'});
   console.log('Committing documentation...');
   run(`cp -R out/doc/ ../ether.github.com/doc/v'${newVersion}'`);
+  run(`rm -f latest && ln -s 'v${newVersion}' latest`, {cwd: '../ether.github.com/doc/'});
   run('git add .', {cwd: '../ether.github.com/'});
   run(`git commit -m '${newVersion} docs'`, {cwd: '../ether.github.com/'});
 } catch (err) {
