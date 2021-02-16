@@ -44,14 +44,14 @@ describe('select formatting buttons when selection has style applied', function 
 
   const testIfFormattingButtonIsDeselected = function (style) {
     it(`deselects the ${style} button`, function (done) {
-      this.timeout(50);
+      this.timeout(100);
       helper.waitFor(() => isButtonSelected(style) === false).done(done);
     });
   };
 
   const testIfFormattingButtonIsSelected = function (style) {
     it(`selects the ${style} button`, function (done) {
-      this.timeout(50);
+      this.timeout(100);
       helper.waitFor(() => isButtonSelected(style)).done(done);
     });
   };
@@ -131,7 +131,7 @@ describe('select formatting buttons when selection has style applied', function 
 
   context('when user applies a style and the selection does not change', function () {
     it('selects the style button', async function () {
-      this.timeout(50);
+      this.timeout(100);
       const style = STYLES[0]; // italic
       applyStyleOnLine(style, FIRST_LINE);
       await helper.waitForPromise(() => isButtonSelected(style) === true);
