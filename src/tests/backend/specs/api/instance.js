@@ -6,21 +6,20 @@
  * Section "GLOBAL FUNCTIONS" in src/node/db/API.js
  */
 const common = require('../../common');
-const settings = require('../../../../node/utils/Settings');
-const supertest = require('supertest');
 
-const api = supertest(`http://${settings.ip}:${settings.port}`);
-
+let agent;
 const apiKey = common.apiKey;
 const apiVersion = '1.2.14';
 
 const endPoint = (point, version) => `/api/${version || apiVersion}/${point}?apikey=${apiKey}`;
 
 describe(__filename, function () {
+  before(async function () { agent = await common.init(); });
+
   describe('Connectivity for instance-level API tests', function () {
     it('can connect', function (done) {
       this.timeout(150);
-      api.get('/api/')
+      agent.get('/api/')
           .expect('Content-Type', /json/)
           .expect(200, done);
     });
@@ -29,7 +28,7 @@ describe(__filename, function () {
   describe('getStats', function () {
     it('Gets the stats of a running instance', function (done) {
       this.timeout(100);
-      api.get(endPoint('getStats'))
+      agent.get(endPoint('getStats'))
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('getStats() failed');
 

@@ -30,9 +30,8 @@ jobs:
     - name: Install all dependencies and symlink for ep_etherpad-lite
       run: src/bin/installDeps.sh
 
-    # configures some settings and runs npm run test
     - name: Run the backend tests
-      run: src/tests/frontend/travis/runnerBackend.sh
+      run: cd src && npm test
 
   withplugins:
     # run on pushes to any branch
@@ -84,6 +83,5 @@ jobs:
     - name: Install all dependencies and symlink for ep_etherpad-lite
       run: src/bin/installDeps.sh
 
-    # configures some settings and runs npm run test
     - name: Run the backend tests
-      run: src/tests/frontend/travis/runnerBackend.sh
+      run: cd src && npm test
