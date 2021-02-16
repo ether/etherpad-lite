@@ -9,7 +9,7 @@ Explain what your plugin does and who it's useful for.
 ## Installing
 
 ```
-npm install --no-save [plugin_name]
+npm install --no-save --legacy-peer-deps [plugin_name]
 ```
 
 or Use the Etherpad ``/admin`` interface.
