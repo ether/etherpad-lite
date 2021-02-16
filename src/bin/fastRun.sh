@@ -19,4 +19,4 @@ cd "${MY_DIR}/../.." || exit 1
 echo "Running directly, without checking/installing dependencies"
 
 # run Etherpad main class
-node $(compute_node_args) "node_modules/ep_etherpad-lite/node/server.js" "$@"
+exec node $(compute_node_args) src/node/server.js "$@"
