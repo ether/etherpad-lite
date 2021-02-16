@@ -1,6 +1,6 @@
 'use strict';
 
-const childProcess = require('child_process');
+const spawn = require('cross-spawn');
 const log4js = require('log4js');
 const path = require('path');
 const settings = require('./Settings');
@@ -28,14 +28,14 @@ const logLines = (readable, logLineFn) => {
 };
 
 /**
- * Similar to `util.promisify(childProcess.exec)`, except:
+ * Similar to `util.promisify(child_rocess.exec)`, except:
  *   - `cwd` defaults to the Etherpad root directory.
  *   - PATH is prefixed with src/node_modules/.bin so that utilities from installed dependencies
  *     (e.g., npm) are preferred over system utilities.
  *   - Output is passed to logger callback functions by default. See below for details.
  *
  * @param args Array of command-line arguments, where `args[0]` is the command to run.
- * @param opts Optional options that will be passed to `childProcess.spawn()` with two extensions:
+ * @param opts Optional options that will be passed to `child_process.spawn()` with two extensions:
  *   - `stdoutLogger`: Callback that is called each time a line of text is written to stdout (utf8
  *     is assumed). The line (without trailing newline) is passed as the only argument. If null,
  *     stdout is not logged. If unset, defaults to no-op. Ignored if stdout is not a pipe.
@@ -48,7 +48,7 @@ module.exports = exports = (args, opts = {}) => {
   logger.debug(`Executing command: ${args.join(' ')}`);
 
   const {stdoutLogger = () => {}, stderrLogger = () => {}} = opts;
-  // Avoid confusing childProcess.spawn() with our extensions.
+  // Avoid confusing child_process.spawn() with our extensions.
   opts = {...opts}; // Make a copy to avoid mutating the caller's copy.
   delete opts.stdoutLogger;
   delete opts.stderrLogger;
@@ -70,7 +70,7 @@ module.exports = exports = (args, opts = {}) => {
   // process's `exit` handler so that we get a useful stack trace.
   const procFailedErr = new Error(`Command exited non-zero: ${args.join(' ')}`);
 
-  const proc = childProcess.spawn(args[0], args.slice(1), {cwd: settings.root, ...opts, env});
+  const proc = spawn(args[0], args.slice(1), {cwd: settings.root, ...opts, env});
   if (proc.stdout != null && stdoutLogger != null) logLines(proc.stdout, stdoutLogger);
   if (proc.stderr != null && stderrLogger != null) logLines(proc.stderr, stderrLogger);
   const p = new Promise((resolve, reject) => {
