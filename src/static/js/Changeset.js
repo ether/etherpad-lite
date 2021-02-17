@@ -2016,21 +2016,19 @@ exports.follow = (cs1, cs2, reverseInsertOrder, pool) => {
           whichToDo = 1;
         } else if (insertFirst2 && !insertFirst1) {
           whichToDo = 2;
-        }
-        // insert string that doesn't start with a newline first so as not to break up lines
-        else if (firstChar1 == '\n' && firstChar2 != '\n') {
+        } else if (firstChar1 === '\n' && firstChar2 !== '\n') {
+          // insert string that doesn't start with a newline first so as not to break up lines
           whichToDo = 2;
-        } else if (firstChar1 != '\n' && firstChar2 == '\n') {
+        } else if (firstChar1 !== '\n' && firstChar2 === '\n') {
           whichToDo = 1;
-        }
-        // break symmetry:
-        else if (reverseInsertOrder) {
+        } else if (reverseInsertOrder) {
+          // break symmetry:
           whichToDo = 2;
         } else {
           whichToDo = 1;
         }
       }
-      if (whichToDo == 1) {
+      if (whichToDo === 1) {
         chars1.skip(op1.chars);
         opOut.opcode = '=';
         opOut.lines = op1.lines;
