@@ -463,10 +463,6 @@
 
   <script type="text/javascript" src="../socket.io/socket.io.js?v=<%=settings.randomVersionString%>"></script>
 
-  <!-- Include base packages manually (this help with debugging) -->
-  <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define&v=<%=settings.randomVersionString%>"></script>
-  <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define&v=<%=settings.randomVersionString%>"></script>
-
   <% e.begin_block("customScripts"); %>
   <script type="text/javascript" src="../static/skins/<%=encodeURI(settings.skinName)%>/pad.js?v=<%=settings.randomVersionString%>"></script>
   <% e.end_block(); %>
