@@ -66,6 +66,7 @@
   , "AttributeManager.js"
   , "scroll.js"
   , "caretPosition.js"
+  , "pad_utils.js"
   ]
 , "ace2_common.js": [
     "ace2_common.js"
