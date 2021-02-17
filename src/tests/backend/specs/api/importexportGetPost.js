@@ -127,7 +127,7 @@ describe(__filename, function () {
 
 
     describe('Import/Export tests requiring AbiWord/LibreOffice', function () {
-      this.timeout(60000);
+      this.timeout(10000);
 
       before(async function () {
         if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
@@ -139,7 +139,6 @@ describe(__filename, function () {
       // For some reason word import does not work in testing..
       // TODO: fix support for .doc files..
       it('Tries to import .doc that uses soffice or abiword', async function () {
-        this.timeout(10000);
         await agent.post(`/p/${testPadId}/import`)
             .attach('file', wordDoc, {filename: '/test.doc', contentType: 'application/msword'})
             .expect(200)
@@ -152,7 +151,6 @@ describe(__filename, function () {
       });
 
       it('exports DOC', async function () {
-        this.timeout(3000);
         await agent.get(`/p/${testPadId}/export/doc`)
             .buffer(true).parse(superagent.parse['application/octet-stream'])
             .expect(200)
@@ -160,7 +158,6 @@ describe(__filename, function () {
       });
 
       it('Tries to import .docx that uses soffice or abiword', async function () {
-        this.timeout(3000);
         await agent.post(`/p/${testPadId}/import`)
             .attach('file', wordXDoc, {
               filename: '/test.docx',
@@ -177,7 +174,6 @@ describe(__filename, function () {
       });
 
       it('exports DOC from imported DOCX', async function () {
-        this.timeout(3000);
         await agent.get(`/p/${testPadId}/export/doc`)
             .buffer(true).parse(superagent.parse['application/octet-stream'])
             .expect(200)
@@ -185,7 +181,6 @@ describe(__filename, function () {
       });
 
       it('Tries to import .pdf that uses soffice or abiword', async function () {
-        this.timeout(3000);
         await agent.post(`/p/${testPadId}/import`)
             .attach('file', pdfDoc, {filename: '/test.pdf', contentType: 'application/pdf'})
             .expect(200)
@@ -198,7 +193,6 @@ describe(__filename, function () {
       });
 
       it('exports PDF', async function () {
-        this.timeout(3000);
         await agent.get(`/p/${testPadId}/export/pdf`)
             .buffer(true).parse(superagent.parse['application/octet-stream'])
             .expect(200)
@@ -206,7 +200,6 @@ describe(__filename, function () {
       });
 
       it('Tries to import .odt that uses soffice or abiword', async function () {
-        this.timeout(3000);
         await agent.post(`/p/${testPadId}/import`)
             .attach('file', odtDoc, {filename: '/test.odt', contentType: 'application/odt'})
             .expect(200)
@@ -219,7 +212,6 @@ describe(__filename, function () {
       });
 
       it('exports ODT', async function () {
-        this.timeout(3000);
         await agent.get(`/p/${testPadId}/export/odt`)
             .buffer(true).parse(superagent.parse['application/octet-stream'])
             .expect(200)
