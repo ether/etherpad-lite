@@ -37,7 +37,7 @@ RUN useradd --uid 5001 --create-home etherpad
 RUN mkdir /opt/etherpad-lite && chown etherpad:0 /opt/etherpad-lite
 
 # install abiword for DOC/PDF/ODT export
-RUN if [ "${INSTALL_ABIWORD}" != "0" ]; then apt update && apt -y install abiword && rm -rf /var/lib/apt/lists/*; fi
+RUN [ -z "${INSTALL_ABIWORD}" ] || apt update && apt -y install abiword && rm -rf /var/lib/apt/lists/*
 
 USER etherpad
 
