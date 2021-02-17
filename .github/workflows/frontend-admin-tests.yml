@@ -16,6 +16,7 @@ jobs:
     - name: Generate Sauce Labs strings
       id: sauce_strings
       run: |
+        printf %s\\n '::set-output name=name::${{ github.workflow }} - ${{ github.job }} - Node ${{ matrix.node }}'
         printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}-node${{ matrix.node }}'
 
     - name: Checkout repository
@@ -69,6 +70,7 @@ jobs:
       env:
         SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
         SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+        SAUCE_NAME: ${{ steps.sauce_strings.outputs.name }}
         TRAVIS_JOB_NUMBER: ${{ steps.sauce_strings.outputs.tunnel_id }}
         GIT_HASH: ${{ steps.environment.outputs.sha_short }}
       run: |

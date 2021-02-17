@@ -8,6 +8,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Generate Sauce Labs strings
+      id: sauce_strings
+      run: |
+        printf %s\\n '::set-output name=name::${{ github.workflow }} - ${{ github.job }}'
+        printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
+
     - name: Checkout repository
       uses: actions/checkout@v2
 
@@ -29,14 +35,15 @@ jobs:
       with:
         username: ${{ secrets.SAUCE_USERNAME }}
         accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-        tunnelIdentifier: ${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}
+        tunnelIdentifier: ${{ steps.sauce_strings.outputs.tunnel_id }}
 
     - name: Run the frontend tests
       shell: bash
       env:
         SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
         SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-        TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}
+        SAUCE_NAME: ${{ steps.sauce_strings.outputs.name }}
+        TRAVIS_JOB_NUMBER: ${{ steps.sauce_strings.outputs.tunnel_id }}
         GIT_HASH: ${{ steps.environment.outputs.sha_short }}
       run: |
         src/tests/frontend/travis/runner.sh
@@ -46,6 +53,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Generate Sauce Labs strings
+      id: sauce_strings
+      run: |
+        printf %s\\n '::set-output name=name::${{ github.workflow }} - ${{ github.job }}'
+        printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
+
     - name: Checkout repository
       uses: actions/checkout@v2
 
@@ -100,14 +113,15 @@ jobs:
       with:
         username: ${{ secrets.SAUCE_USERNAME }}
         accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-        tunnelIdentifier: ${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}
+        tunnelIdentifier: ${{ steps.sauce_strings.outputs.tunnel_id }}
 
     - name: Run the frontend tests
       shell: bash
       env:
         SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
         SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-        TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}
+        SAUCE_NAME: ${{ steps.sauce_strings.outputs.name }}
+        TRAVIS_JOB_NUMBER: ${{ steps.sauce_strings.outputs.tunnel_id }}
         GIT_HASH: ${{ steps.environment.outputs.sha_short }}
       run: |
         src/tests/frontend/travis/runner.sh
