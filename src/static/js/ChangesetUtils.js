@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This module contains several helper Functions to build Changesets
  * based on a SkipList
