@@ -541,7 +541,8 @@ exports.stringAssembler = () => {
 /**
  * This class allows to iterate and modify texts which have several lines
  * It is used for applying Changesets on arrays of lines
- * Note from prev docs: "lines" need not be an array as long as it supports certain calls (lines_foo inside).
+ * Note from prev docs: "lines" need not be an array as long as it supports
+ * certain calls (lines_foo inside).
  */
 exports.textLinesMutator = (lines) => {
   // Mutates lines, an array of strings, in place.
@@ -645,7 +646,8 @@ exports.textLinesMutator = (lines) => {
         curLine += L;
         curCol = 0;
       }
-      // print(inSplice+" / "+isCurLineInSplice()+" / "+curSplice[0]+" / "+curSplice[1]+" / "+lines.length);
+      // print(inSplice+" / "+isCurLineInSplice()+" / "+curSplice[0]+" /
+      // "+curSplice[1]+" / "+lines.length);
       /* if (inSplice && (! isCurLineInSplice()) && (curSplice[0] + curSplice[1] < lines.length)) {
   print("BLAH");
   putCurLineInSplice();
@@ -696,7 +698,8 @@ exports.textLinesMutator = (lines) => {
           curSplice[1] += L - 1;
           const sline = curSplice.length - 1;
           removed = curSplice[sline].substring(curCol) + removed;
-          curSplice[sline] = curSplice[sline].substring(0, curCol) + lines_get(curSplice[0] + curSplice[1]);
+          curSplice[sline] = curSplice[sline].substring(0, curCol) +
+              lines_get(curSplice[0] + curSplice[1]);
           curSplice[1] += 1;
         }
       } else {
@@ -719,7 +722,8 @@ exports.textLinesMutator = (lines) => {
         }
         const sline = putCurLineInSplice();
         removed = curSplice[sline].substring(curCol, curCol + N);
-        curSplice[sline] = curSplice[sline].substring(0, curCol) + curSplice[sline].substring(curCol + N);
+        curSplice[sline] = curSplice[sline].substring(0, curCol) +
+            curSplice[sline].substring(curCol + N);
         // debugPrint("remove");
       }
     }
@@ -761,7 +765,8 @@ exports.textLinesMutator = (lines) => {
         if (!curSplice[sline]) {
           console.error('curSplice[sline] not populated, actual curSplice contents is ', curSplice, '. Possibly related to https://github.com/ether/etherpad-lite/issues/2802');
         }
-        curSplice[sline] = curSplice[sline].substring(0, curCol) + text + curSplice[sline].substring(curCol);
+        curSplice[sline] = curSplice[sline].substring(0, curCol) + text +
+            curSplice[sline].substring(curCol);
         curCol += text.length;
       }
       // debugPrint("insert");
@@ -868,7 +873,8 @@ exports.unpack = (cs) => {
  */
 exports.pack = (oldLen, newLen, opsStr, bank) => {
   const lenDiff = newLen - oldLen;
-  const lenDiffStr = (lenDiff >= 0 ? `>${exports.numToString(lenDiff)}` : `<${exports.numToString(-lenDiff)}`);
+  const lenDiffStr = (lenDiff >= 0 ? `>${exports.numToString(lenDiff)}`
+    : `<${exports.numToString(-lenDiff)}`);
   const a = [];
   a.push('Z:', exports.numToString(oldLen), lenDiffStr, opsStr, '$', bank);
   return a.join('');
@@ -881,7 +887,8 @@ exports.pack = (oldLen, newLen, opsStr, bank) => {
  */
 exports.applyToText = (cs, str) => {
   const unpacked = exports.unpack(cs);
-  exports.assert(str.length == unpacked.oldLen, 'mismatched apply: ', str.length, ' / ', unpacked.oldLen);
+  exports.assert(str.length == unpacked.oldLen, 'mismatched apply: ', str.length,
+      ' / ', unpacked.oldLen);
   const csIter = exports.opIterator(unpacked.ops);
   const bankIter = exports.stringIterator(unpacked.charBank);
   const strIter = exports.stringIterator(str);
@@ -1071,7 +1078,8 @@ exports._slicerZipperFunc = (attOp, csOp, opOut, pool) => {
           opOut.opcode = attOp.opcode;
           opOut.chars = csOp.chars;
           opOut.lines = csOp.lines;
-          opOut.attribs = exports.composeAttributes(attOp.attribs, csOp.attribs, attOp.opcode === '=', pool);
+          opOut.attribs = exports.composeAttributes(
+              attOp.attribs, csOp.attribs, attOp.opcode === '=', pool);
           csOp.opcode = '';
           attOp.chars -= csOp.chars;
           attOp.lines -= csOp.lines;
@@ -1083,7 +1091,8 @@ exports._slicerZipperFunc = (attOp, csOp, opOut, pool) => {
           opOut.opcode = attOp.opcode;
           opOut.chars = attOp.chars;
           opOut.lines = attOp.lines;
-          opOut.attribs = exports.composeAttributes(attOp.attribs, csOp.attribs, attOp.opcode == '=', pool);
+          opOut.attribs = exports.composeAttributes(
+              attOp.attribs, csOp.attribs, attOp.opcode == '=', pool);
           attOp.opcode = '';
           csOp.chars -= attOp.chars;
           csOp.lines -= attOp.lines;
@@ -1109,7 +1118,8 @@ exports._slicerZipperFunc = (attOp, csOp, opOut, pool) => {
 exports.applyToAttribution = (cs, astr, pool) => {
   const unpacked = exports.unpack(cs);
 
-  return exports.applyZip(astr, 0, unpacked.ops, 0, (op1, op2, opOut) => exports._slicerZipperFunc(op1, op2, opOut, pool));
+  return exports.applyZip(astr, 0, unpacked.ops, 0,
+      (op1, op2, opOut) => exports._slicerZipperFunc(op1, op2, opOut, pool));
 };
 
 /* exports.oneInsertedLineAtATimeOpIterator = function(opsStr, optStartIndex, charBank) {
@@ -1167,11 +1177,13 @@ exports.mutateAttributionLines = (cs, lines, pool) => {
       csIter.next(csOp);
     }
     // print(csOp.toSource()+" "+attOp.toSource()+" "+opOut.toSource());
-    // print(csOp.opcode+"/"+csOp.lines+"/"+csOp.attribs+"/"+lineAssem+"/"+lineIter+"/"+(lineIter?lineIter.hasNext():null));
+    // print(csOp.opcode+"/"+csOp.lines+"/"+csOp.attribs+"/"+lineAssem+
+    // "/"+lineIter+"/"+(lineIter?lineIter.hasNext():null));
     // print("csOp: "+csOp.toSource());
     if ((!csOp.opcode) && (!attOp.opcode) && (!lineAssem) && (!(lineIter && lineIter.hasNext()))) {
       break; // done
-    } else if (csOp.opcode === '=' && csOp.lines > 0 && (!csOp.attribs) && (!attOp.opcode) && (!lineAssem) && (!(lineIter && lineIter.hasNext()))) {
+    } else if (csOp.opcode === '=' && csOp.lines > 0 && (!csOp.attribs) &&
+        (!attOp.opcode) && (!lineAssem) && (!(lineIter && lineIter.hasNext()))) {
       // skip multiple lines; this is what makes small changes not order of the document size
       mut.skipLines(csOp.lines);
       // print("skipped: "+csOp.lines);
@@ -1776,7 +1788,8 @@ exports.subattribution = (astr, start, optEnd) => {
       while (csOp.opcode && (attOp.opcode || iter.hasNext())) {
         if (!attOp.opcode) iter.next(attOp);
 
-        if (csOp.opcode && attOp.opcode && csOp.chars >= attOp.chars && attOp.lines > 0 && csOp.lines <= 0) {
+        if (csOp.opcode && attOp.opcode && csOp.chars >= attOp.chars &&
+              attOp.lines > 0 && csOp.lines <= 0) {
           csOp.lines++;
         }
 
@@ -1872,7 +1885,8 @@ exports.inverse = (cs, lines, alines, pool) => {
         curLineOpIter.next(curLineNextOp);
       }
       const charsToUse = Math.min(numChars, curLineNextOp.chars);
-      func(charsToUse, curLineNextOp.attribs, charsToUse == curLineNextOp.chars && curLineNextOp.lines > 0);
+      func(charsToUse, curLineNextOp.attribs, charsToUse == curLineNextOp.chars &&
+          curLineNextOp.lines > 0);
       numChars -= charsToUse;
       curLineNextOp.chars -= charsToUse;
       curChar += charsToUse;
@@ -2178,8 +2192,10 @@ exports.composeWithDeletions = (cs1, cs2, pool) => {
   return exports.pack(len1, len3, newOps, bankAssem.toString());
 };
 
-// This function is 95% like _slicerZipperFunc, we just changed two lines to ensure it merges the attribs of deletions properly.
-// This is necassary for correct paddiff. But to ensure these changes doesn't affect anything else, we've created a seperate function only used for paddiffs
+// This function is 95% like _slicerZipperFunc, we just changed two lines to
+// ensure it merges the attribs of deletions properly.
+// This is necassary for correct paddiff. But to ensure these changes doesn't
+// affect anything else, we've created a seperate function only used for paddiffs
 exports._slicerZipperFuncWithDeletions = (attOp, csOp, opOut, pool) => {
   // attOp is the op from the sequence that is being operated on, either an
   // attribution string or the earlier of two exportss being composed.
@@ -2237,7 +2253,8 @@ exports._slicerZipperFuncWithDeletions = (attOp, csOp, opOut, pool) => {
           opOut.opcode = attOp.opcode;
           opOut.chars = csOp.chars;
           opOut.lines = csOp.lines;
-          opOut.attribs = exports.composeAttributes(attOp.attribs, csOp.attribs, attOp.opcode === '=', pool);
+          opOut.attribs = exports.composeAttributes(
+              attOp.attribs, csOp.attribs, attOp.opcode === '=', pool);
           csOp.opcode = '';
           attOp.chars -= csOp.chars;
           attOp.lines -= csOp.lines;
@@ -2249,7 +2266,8 @@ exports._slicerZipperFuncWithDeletions = (attOp, csOp, opOut, pool) => {
           opOut.opcode = attOp.opcode;
           opOut.chars = attOp.chars;
           opOut.lines = attOp.lines;
-          opOut.attribs = exports.composeAttributes(attOp.attribs, csOp.attribs, attOp.opcode === '=', pool);
+          opOut.attribs = exports.composeAttributes(
+              attOp.attribs, csOp.attribs, attOp.opcode === '=', pool);
           attOp.opcode = '';
           csOp.chars -= attOp.chars;
           csOp.lines -= attOp.lines;
