@@ -46,5 +46,5 @@ jobs:
     - name: Run the backend tests
       run: cd src && npm test
 
-##ETHERPAD_NPM_V=1
+##ETHERPAD_NPM_V=2
 ## NPM configuration automatically created using src/bin/plugins/updateAllPluginsScript.sh
