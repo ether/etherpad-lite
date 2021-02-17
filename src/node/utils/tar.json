@@ -29,6 +29,7 @@
   , "colorutils.js"
   , "draggable.js"
   , "pad_utils.js"
+  , "$js-cookie/src/js.cookie.js"
   , "browser.js"
   , "pad_cookie.js"
   , "pad_editor.js"
@@ -69,6 +70,7 @@
   , "scroll.js"
   , "caretPosition.js"
   , "pad_utils.js"
+  , "$js-cookie/src/js.cookie.js"
   ]
 , "ace2_common.js": [
     "ace2_common.js"
