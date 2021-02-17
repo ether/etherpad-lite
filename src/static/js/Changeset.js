@@ -417,7 +417,7 @@ exports.mergingOpAssembler = () => {
           bufOp.chars += bufOpAdditionalCharsAfterNewline + op.chars;
           bufOp.lines += op.lines;
           bufOpAdditionalCharsAfterNewline = 0;
-        } else if (bufOp.lines == 0) {
+        } else if (bufOp.lines === 0) {
           // both bufOp and op are in-line
           bufOp.chars += op.chars;
         } else {
@@ -687,7 +687,7 @@ exports.textLinesMutator = (lines) => {
       };
       if (isCurLineInSplice()) {
         // print(curCol);
-        if (curCol == 0) {
+        if (curCol === 0) {
           removed = curSplice[curSplice.length - 1];
           // print("FOO"); // case foo
           curSplice.length--;
@@ -887,7 +887,7 @@ exports.pack = (oldLen, newLen, opsStr, bank) => {
  */
 exports.applyToText = (cs, str) => {
   const unpacked = exports.unpack(cs);
-  exports.assert(str.length == unpacked.oldLen, 'mismatched apply: ', str.length,
+  exports.assert(str.length === unpacked.oldLen, 'mismatched apply: ', str.length,
       ' / ', unpacked.oldLen);
   const csIter = exports.opIterator(unpacked.ops);
   const bankIter = exports.stringIterator(unpacked.charBank);
@@ -899,7 +899,7 @@ exports.applyToText = (cs, str) => {
       case '+':
       // op is + and op.lines 0: no newlines must be in op.chars
       // op is + and op.lines >0: op.chars must include op.lines newlines
-        if (op.lines != bankIter.peek(op.chars).split('\n').length - 1) {
+        if (op.lines !== bankIter.peek(op.chars).split('\n').length - 1) {
           throw new Error(`newline count is wrong in op +; cs:${cs} and text:${str}`);
         }
         assem.append(bankIter.take(op.chars));
@@ -907,7 +907,7 @@ exports.applyToText = (cs, str) => {
       case '-':
       // op is - and op.lines 0: no newlines must be in the deleted string
       // op is - and op.lines >0: op.lines newlines must be in the deleted string
-        if (op.lines != strIter.peek(op.chars).split('\n').length - 1) {
+        if (op.lines !== strIter.peek(op.chars).split('\n').length - 1) {
           throw new Error(`newline count is wrong in op -; cs:${cs} and text:${str}`);
         }
         strIter.skip(op.chars);
@@ -915,7 +915,7 @@ exports.applyToText = (cs, str) => {
       case '=':
       // op is = and op.lines 0: no newlines must be in the copied string
       // op is = and op.lines >0: op.lines newlines must be in the copied string
-        if (op.lines != strIter.peek(op.chars).split('\n').length - 1) {
+        if (op.lines !== strIter.peek(op.chars).split('\n').length - 1) {
           throw new Error(`newline count is wrong in op =; cs:${cs} and text:${str}`);
         }
         assem.append(strIter.take(op.chars));
@@ -992,7 +992,7 @@ exports.composeAttributes = (att1, att2, resultIsMutation, pool) => {
     let found = false;
     for (let i = 0; i < atts.length; i++) {
       const oldPair = atts[i];
-      if (oldPair[0] == pair[0]) {
+      if (oldPair[0] === pair[0]) {
         if (pair[1] || resultIsMutation) {
           oldPair[1] = pair[1];
         } else {
@@ -1038,7 +1038,7 @@ exports._slicerZipperFunc = (attOp, csOp, opOut, pool) => {
       {
         if (csOp.chars <= attOp.chars) {
           // delete or delete part
-          if (attOp.opcode == '=') {
+          if (attOp.opcode === '=') {
             opOut.opcode = '-';
             opOut.chars = csOp.chars;
             opOut.lines = csOp.lines;
@@ -1092,7 +1092,7 @@ exports._slicerZipperFunc = (attOp, csOp, opOut, pool) => {
           opOut.chars = attOp.chars;
           opOut.lines = attOp.lines;
           opOut.attribs = exports.composeAttributes(
-              attOp.attribs, csOp.attribs, attOp.opcode == '=', pool);
+              attOp.attribs, csOp.attribs, attOp.opcode === '=', pool);
           attOp.opcode = '';
           csOp.chars -= attOp.chars;
           csOp.lines -= attOp.lines;
@@ -1162,7 +1162,7 @@ exports.mutateAttributionLines = (cs, lines, pool) => {
     }
     lineAssem.append(op);
     if (op.lines > 0) {
-      exports.assert(op.lines == 1, "Can't have op.lines of ", op.lines, ' in attribution lines');
+      exports.assert(op.lines === 1, "Can't have op.lines of ", op.lines, ' in attribution lines');
       // ship it to the mut
       mut.insert(lineAssem.toString(), 1);
       lineAssem = null;
@@ -1267,7 +1267,7 @@ exports.splitAttributionLines = (attrOps, text) => {
       numChars -= op.chars;
       numLines -= op.lines;
     }
-    if (numLines == 1) {
+    if (numLines === 1) {
       op.chars = numChars;
       op.lines = 1;
     }
@@ -1294,7 +1294,7 @@ exports.compose = (cs1, cs2, pool) => {
   const unpacked2 = exports.unpack(cs2);
   const len1 = unpacked1.oldLen;
   const len2 = unpacked1.newLen;
-  exports.assert(len2 == unpacked2.oldLen, 'mismatched composition of two changesets');
+  exports.assert(len2 === unpacked2.oldLen, 'mismatched composition of two changesets');
   const len3 = unpacked2.newLen;
   const bankIter1 = exports.stringIterator(unpacked1.charBank);
   const bankIter2 = exports.stringIterator(unpacked2.charBank);
@@ -1675,7 +1675,7 @@ exports.prepareForWire = (cs, pool) => {
  */
 exports.isIdentity = (cs) => {
   const unpacked = exports.unpack(cs);
-  return unpacked.ops === '' && unpacked.oldLen == unpacked.newLen;
+  return unpacked.ops === '' && unpacked.oldLen === unpacked.newLen;
 };
 
 /**
@@ -1698,7 +1698,7 @@ exports.attribsAttributeValue = (attribs, key, pool) => {
   let value = '';
   if (attribs) {
     exports.eachAttribNumber(attribs, (n) => {
-      if (pool.getAttribKey(n) == key) {
+      if (pool.getAttribKey(n) === key) {
         value = pool.getAttribValue(n);
       }
     });
@@ -1856,7 +1856,7 @@ exports.inverse = (cs, lines, alines, pool) => {
   const builder = exports.builder(unpacked.newLen);
 
   const consumeAttribRuns = (numChars, func /* (len, attribs, endsLine)*/) => {
-    if ((!curLineOpIter) || (curLineOpIterLine != curLine)) {
+    if ((!curLineOpIter) || (curLineOpIterLine !== curLine)) {
       // create curLineOpIter and advance it to curChar
       curLineOpIter = exports.opIterator(alines_get(curLine));
       curLineOpIterLine = curLine;
@@ -1885,7 +1885,7 @@ exports.inverse = (cs, lines, alines, pool) => {
         curLineOpIter.next(curLineNextOp);
       }
       const charsToUse = Math.min(numChars, curLineNextOp.chars);
-      func(charsToUse, curLineNextOp.attribs, charsToUse == curLineNextOp.chars &&
+      func(charsToUse, curLineNextOp.attribs, charsToUse === curLineNextOp.chars &&
           curLineNextOp.lines > 0);
       numChars -= charsToUse;
       curLineNextOp.chars -= charsToUse;
@@ -1902,7 +1902,7 @@ exports.inverse = (cs, lines, alines, pool) => {
     if (L) {
       curLine += L;
       curChar = 0;
-    } else if (curLineOpIter && curLineOpIterLine == curLine) {
+    } else if (curLineOpIter && curLineOpIterLine === curLine) {
       consumeAttribRuns(N, () => {});
     } else {
       curChar += N;
@@ -1955,7 +1955,7 @@ exports.inverse = (cs, lines, alines, pool) => {
             const appliedKey = attribKeys[i];
             const appliedValue = attribValues[i];
             const oldValue = exports.attribsAttributeValue(attribs, appliedKey, pool);
-            if (appliedValue != oldValue) {
+            if (appliedValue !== oldValue) {
               backAttribs.push([appliedKey, oldValue]);
             }
           }
@@ -1989,7 +1989,7 @@ exports.follow = (cs1, cs2, reverseInsertOrder, pool) => {
   const unpacked2 = exports.unpack(cs2);
   const len1 = unpacked1.oldLen;
   const len2 = unpacked2.oldLen;
-  exports.assert(len1 == len2, 'mismatched follow - cannot transform cs1 on top of cs2');
+  exports.assert(len1 === len2, 'mismatched follow - cannot transform cs1 on top of cs2');
   const chars1 = exports.stringIterator(unpacked1.charBank);
   const chars2 = exports.stringIterator(unpacked2.charBank);
 
@@ -2141,7 +2141,7 @@ exports.followAttributes = (att1, att2, pool) => {
     const pair1 = pool.getAttrib(exports.parseNum(a));
     for (let i = 0; i < atts.length; i++) {
       const pair2 = atts[i];
-      if (pair1[0] == pair2[0]) {
+      if (pair1[0] === pair2[0]) {
         if (pair1[1] <= pair2[1]) {
           // winner of merge is pair1, delete this attribute
           atts.splice(i, 1);
@@ -2165,7 +2165,7 @@ exports.composeWithDeletions = (cs1, cs2, pool) => {
   const unpacked2 = exports.unpack(cs2);
   const len1 = unpacked1.oldLen;
   const len2 = unpacked1.newLen;
-  exports.assert(len2 == unpacked2.oldLen, 'mismatched composition of two changesets');
+  exports.assert(len2 === unpacked2.oldLen, 'mismatched composition of two changesets');
   const len3 = unpacked2.newLen;
   const bankIter1 = exports.stringIterator(unpacked1.charBank);
   const bankIter2 = exports.stringIterator(unpacked2.charBank);
