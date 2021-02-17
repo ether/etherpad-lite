@@ -39,6 +39,7 @@
   , "pad_savedrevs.js"
   , "pad_impexp.js"
   , "AttributePool.js"
+  , "ChangesetUtils.js"
   , "Changeset.js"
   , "domline.js"
   , "linestylefilter.js"
