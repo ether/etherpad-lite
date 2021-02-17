@@ -38,8 +38,9 @@ const logLines = (readable, logLineFn) => {
  * @param opts Optional options that will be passed to `child_process.spawn()` with two extensions:
  *   - `stdoutLogger`: Callback that is called each time a line of text is written to stdout (utf8
  *     is assumed). The line (without trailing newline) is passed as the only argument. If null,
- *     stdout is not logged. If unset, defaults to no-op. Ignored if stdout is not a pipe.
- *   - `stderrLogger`: Like `stdoutLogger` but for stderr.
+ *     stdout is not logged. If unset, defaults to logging to the Etherpad logs at log level INFO.
+ *     Ignored if stdout is not a pipe.
+ *   - `stderrLogger`: Like `stdoutLogger` but for stderr and log level ERROR.
  *
  * @returns A Promise with `stdout`, `stderr`, and `child` properties containing the stdout stream,
  *     stderr stream, and ChildProcess objects, respectively.
@@ -47,7 +48,11 @@ const logLines = (readable, logLineFn) => {
 module.exports = exports = (args, opts = {}) => {
   logger.debug(`Executing command: ${args.join(' ')}`);
 
-  const {stdoutLogger = () => {}, stderrLogger = () => {}} = opts;
+  const cmdLogger = log4js.getLogger(`runCmd|${args[0]}`);
+  const {
+    stdoutLogger = (line) => cmdLogger.info(line),
+    stderrLogger = (line) => cmdLogger.error(line),
+  } = opts;
   // Avoid confusing child_process.spawn() with our extensions.
   opts = {...opts}; // Make a copy to avoid mutating the caller's copy.
   delete opts.stdoutLogger;

@@ -4,17 +4,12 @@ const log4js = require('log4js');
 const runCmd = require('./run_cmd');
 
 const logger = log4js.getLogger('runNpm');
-const npmLogger = log4js.getLogger('npm');
-
-const stdoutLogger = (line) => npmLogger.info(line);
-const stderrLogger = (line) => npmLogger.error(line);
 
 /**
- * Wrapper around `runCmd()` that logs output to an npm logger by default.
+ * Wrapper around `runCmd()` to make it easier to run npm.
  *
  * @param args Command-line arguments to pass to npm.
- * @param opts See the documentation for `runCmd()`. The `stdoutLogger` and `stderrLogger` options
- *     default to a log4js logger.
+ * @param opts See the documentation for `runCmd()`.
  *
  * @returns A Promise with additional `stdout`, `stderr`, and `child` properties. See the
  *     documentation for `runCmd()`.
@@ -22,7 +17,7 @@ const stderrLogger = (line) => npmLogger.error(line);
 module.exports = exports = (args, opts = {}) => {
   const cmd = ['npm', ...args];
   // MUST return the original Promise returned from runCmd so that the caller can access stdout.
-  return runCmd(cmd, {stdoutLogger, stderrLogger, ...opts});
+  return runCmd(cmd, opts);
 };
 
 // Log the version of npm at startup.
@@ -30,11 +25,11 @@ let loggedVersion = false;
 (async () => {
   if (loggedVersion) return;
   loggedVersion = true;
-  const p = runCmd(['npm', '--version'], {stdoutLogger: null, stderrLogger});
+  const p = runCmd(['npm', '--version'], {stdoutLogger: null});
   const chunks = [];
   await Promise.all([
     (async () => { for await (const chunk of p.stdout) chunks.push(chunk); })(),
-    p, // Await in parallel to avoid unhandled rejection if np rejects during chunk read.
+    p, // Await in parallel to avoid unhandled rejection if p rejects during chunk read.
   ]);
   const version = Buffer.concat(chunks).toString().replace(/\n+$/g, '');
   logger.info(`npm --version: ${version}`);
