@@ -42,6 +42,7 @@
   , "Changeset.js"
   , "domline.js"
   , "linestylefilter.js"
+  , "AttributeManager.js"
   , "cssmanager.js"
   , "broadcast.js"
   , "broadcast_slider.js"
