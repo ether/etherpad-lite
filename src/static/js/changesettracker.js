@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -23,7 +25,7 @@
 const AttributePool = require('./AttributePool');
 const Changeset = require('./Changeset');
 
-function makeChangesetTracker(scheduler, apool, aceCallbacksProvider) {
+const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
   // latest official text from server
   let baseAText = Changeset.makeAText('\n');
   // changes applied to baseText that have been submitted
@@ -42,7 +44,7 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider) {
 
   let changeCallbackTimeout = null;
 
-  function setChangeCallbackTimeout() {
+  const setChangeCallbackTimeout = () => {
     // can call this multiple times per call-stack, because
     // we only schedule a call to changeCallback if it exists
     // and if there isn't a timeout already scheduled.
@@ -55,17 +57,15 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider) {
         }
       }, 0);
     }
-  }
+  };
 
   let self;
   return self = {
-    isTracking() {
-      return tracking;
-    },
-    setBaseText(text) {
+    isTracking: () => tracking,
+    setBaseText: (text) => {
       self.setBaseAttributedText(Changeset.makeAText(text), null);
     },
-    setBaseAttributedText(atext, apoolJsonObj) {
+    setBaseAttributedText: (atext, apoolJsonObj) => {
       aceCallbacksProvider.withCallbacks('setBaseText', (callbacks) => {
         tracking = true;
         baseAText = Changeset.cloneAText(atext);
@@ -83,7 +83,7 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider) {
         }
       });
     },
-    composeUserChangeset(c) {
+    composeUserChangeset: (c) => {
       if (!tracking) return;
       if (applyingNonUserChanges) return;
       if (Changeset.isIdentity(c)) return;
@@ -91,7 +91,7 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider) {
 
       setChangeCallbackTimeout();
     },
-    applyChangesToBase(c, optAuthor, apoolJsonObj) {
+    applyChangesToBase: (c, optAuthor, apoolJsonObj) => {
       if (!tracking) return;
 
       aceCallbacksProvider.withCallbacks('applyChangesToBase', (callbacks) => {
@@ -123,7 +123,7 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider) {
         }
       });
     },
-    prepareUserChangeset() {
+    prepareUserChangeset: () => {
       // If there are user changes to submit, 'changeset' will be the
       // changeset, else it will be null.
       let toSubmit;
@@ -201,7 +201,7 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider) {
       };
       return data;
     },
-    applyPreparedChangesetToBase() {
+    applyPreparedChangesetToBase: () => {
       if (!submittedChangeset) {
         // violation of protocol; use prepareUserChangeset first
         throw new Error('applySubmittedChangesToBase: no submitted changes to apply');
@@ -210,13 +210,11 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider) {
       baseAText = Changeset.applyToAText(submittedChangeset, baseAText, apool);
       submittedChangeset = null;
     },
-    setUserChangeNotificationCallback(callback) {
+    setUserChangeNotificationCallback: (callback) => {
       changeCallback = callback;
     },
-    hasUncommittedChanges() {
-      return !!(submittedChangeset || (!Changeset.isIdentity(userChangeset)));
-    },
+    hasUncommittedChanges: () => !!(submittedChangeset || (!Changeset.isIdentity(userChangeset))),
   };
-}
+};
 
 exports.makeChangesetTracker = makeChangesetTracker;
