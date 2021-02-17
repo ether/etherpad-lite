@@ -612,7 +612,7 @@ exports.textLinesMutator = (lines) => {
 
   const isCurLineInSplice = () => (curLine - curSplice[0] < (curSplice.length - 2));
 
-  const debugPrint = (typ) => {
+  const debugPrint = (typ) => { /* eslint-disable-line no-unused-vars */
     print(`${typ}: ${curSplice.toSource()} / ${curLine},${curCol} / ${lines_toSource()}`);
   };
 
@@ -745,7 +745,7 @@ exports.textLinesMutator = (lines) => {
           // curLine += newLines.length;
           // }
           // else {
-          var sline = curSplice.length - 1;
+          const sline = curSplice.length - 1;
           const theLine = curSplice[sline];
           const lineCol = curCol;
           curSplice[sline] = theLine.substring(0, lineCol) + newLines[0];
@@ -761,7 +761,7 @@ exports.textLinesMutator = (lines) => {
           curLine += newLines.length;
         }
       } else {
-        var sline = putCurLineInSplice();
+        const sline = putCurLineInSplice();
         if (!curSplice[sline]) {
           console.error('curSplice[sline] not populated, actual curSplice contents is ', curSplice, '. Possibly related to https://github.com/ether/etherpad-lite/issues/2802');
         }
@@ -1716,7 +1716,7 @@ exports.builder = (oldLen) => {
   const o = exports.newOp();
   const charBank = exports.stringAssembler();
 
-  var self = {
+  const self = {
     // attribs are [[key1,value1],[key2,value2],...] or '*0*1...' (no pool needed in latter case)
     keep: (N, L, attribs, pool) => {
       o.opcode = '=';
@@ -1949,7 +1949,7 @@ exports.inverse = (cs, lines, alines, pool) => {
           attribKeys.push(pool.getAttribKey(n));
           attribValues.push(pool.getAttribValue(n));
         });
-        var undoBackToAttribs = cachedStrFunc((attribs) => {
+        const undoBackToAttribs = cachedStrFunc((attribs) => {
           const backAttribs = [];
           for (let i = 0; i < attribKeys.length; i++) {
             const appliedKey = attribKeys[i];
@@ -1971,8 +1971,8 @@ exports.inverse = (cs, lines, alines, pool) => {
     } else if (csOp.opcode === '+') {
       builder.remove(csOp.chars, csOp.lines);
     } else if (csOp.opcode === '-') {
-      var textBank = nextText(csOp.chars);
-      var textBankIndex = 0;
+      const textBank = nextText(csOp.chars);
+      let textBankIndex = 0;
       consumeAttribRuns(csOp.chars, (len, attribs, endsLine) => {
         builder.insert(textBank.substr(textBankIndex, len), attribs);
         textBankIndex += len;
