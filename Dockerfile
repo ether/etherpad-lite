@@ -48,7 +48,8 @@ RUN mkdir /opt/etherpad-lite && chown etherpad:0 /opt/etherpad-lite
 RUN [ -z "${INSTALL_ABIWORD}" ] || (apt update && apt -y install abiword && apt clean && rm -rf /var/lib/apt/lists/*)
 
 # install libreoffice for DOC/PDF/ODT export
-RUN [ -z "${INSTALL_SOFFICE}" ] || (apt update && apt -y install libreoffice-common && apt clean && rm -rf /var/lib/apt/lists/*)
+# the mkdir is needed for configuration of openjdk-11-jre-headless, see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199
+RUN [ -z "${INSTALL_SOFFICE}" ] || (apt update && mkdir -p /usr/share/man/man1 && apt -y install libreoffice && apt clean && rm -rf /var/lib/apt/lists/*)
 
 USER etherpad
 
