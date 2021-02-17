@@ -308,20 +308,20 @@ exports.smartOpAssembler = () => {
     if (!op.opcode) return;
     if (!op.chars) return;
 
-    if (op.opcode == '-') {
-      if (lastOpcode == '=') {
+    if (op.opcode === '-') {
+      if (lastOpcode === '=') {
         flushKeeps();
       }
       minusAssem.append(op);
       lengthChange -= op.chars;
-    } else if (op.opcode == '+') {
-      if (lastOpcode == '=') {
+    } else if (op.opcode === '+') {
+      if (lastOpcode === '=') {
         flushKeeps();
       }
       plusAssem.append(op);
       lengthChange += op.chars;
-    } else if (op.opcode == '=') {
-      if (lastOpcode != '=') {
+    } else if (op.opcode === '=') {
+      if (lastOpcode !== '=') {
         flushPlusMinus();
       }
       keepAssem.append(op);
@@ -394,7 +394,7 @@ exports.mergingOpAssembler = () => {
 
   const flush = (isEndDocument) => {
     if (bufOp.opcode) {
-      if (isEndDocument && bufOp.opcode == '=' && !bufOp.attribs) {
+      if (isEndDocument && bufOp.opcode === '=' && !bufOp.attribs) {
         // final merged keep, leave it implicit
       } else {
         assem.append(bufOp);
@@ -411,7 +411,7 @@ exports.mergingOpAssembler = () => {
 
   const append = (op) => {
     if (op.chars > 0) {
-      if (bufOp.opcode == op.opcode && bufOp.attribs == op.attribs) {
+      if (bufOp.opcode === op.opcode && bufOp.attribs === op.attribs) {
         if (op.lines > 0) {
           // bufOp and additional chars are all mergeable into a multi-line op
           bufOp.chars += bufOpAdditionalCharsAfterNewline + op.chars;
@@ -844,7 +844,7 @@ exports.unpack = (cs) => {
     exports.error(`Not a exports: ${cs}`);
   }
   const oldLen = exports.parseNum(headerMatch[1]);
-  const changeSign = (headerMatch[2] == '>') ? 1 : -1;
+  const changeSign = (headerMatch[2] === '>') ? 1 : -1;
   const changeMag = exports.parseNum(headerMatch[3]);
   const newLen = oldLen + changeSign * changeMag;
   const opsStart = headerMatch[0].length;
@@ -1019,7 +1019,7 @@ exports._slicerZipperFunc = (attOp, csOp, opOut, pool) => {
   // attribution string or the earlier of two exportss being composed.
   // pool can be null if definitely not needed.
   // print(csOp.toSource()+" "+attOp.toSource()+" "+opOut.toSource());
-  if (attOp.opcode == '-') {
+  if (attOp.opcode === '-') {
     exports.copyOp(attOp, opOut);
     attOp.opcode = '';
   } else if (!attOp.opcode) {
@@ -1045,7 +1045,7 @@ exports._slicerZipperFunc = (attOp, csOp, opOut, pool) => {
           }
         } else {
           // delete and keep going
-          if (attOp.opcode == '=') {
+          if (attOp.opcode === '=') {
             opOut.opcode = '-';
             opOut.chars = attOp.chars;
             opOut.lines = attOp.lines;
@@ -1071,7 +1071,7 @@ exports._slicerZipperFunc = (attOp, csOp, opOut, pool) => {
           opOut.opcode = attOp.opcode;
           opOut.chars = csOp.chars;
           opOut.lines = csOp.lines;
-          opOut.attribs = exports.composeAttributes(attOp.attribs, csOp.attribs, attOp.opcode == '=', pool);
+          opOut.attribs = exports.composeAttributes(attOp.attribs, csOp.attribs, attOp.opcode === '=', pool);
           csOp.opcode = '';
           attOp.chars -= csOp.chars;
           attOp.lines -= csOp.lines;
@@ -1171,12 +1171,12 @@ exports.mutateAttributionLines = (cs, lines, pool) => {
     // print("csOp: "+csOp.toSource());
     if ((!csOp.opcode) && (!attOp.opcode) && (!lineAssem) && (!(lineIter && lineIter.hasNext()))) {
       break; // done
-    } else if (csOp.opcode == '=' && csOp.lines > 0 && (!csOp.attribs) && (!attOp.opcode) && (!lineAssem) && (!(lineIter && lineIter.hasNext()))) {
+    } else if (csOp.opcode === '=' && csOp.lines > 0 && (!csOp.attribs) && (!attOp.opcode) && (!lineAssem) && (!(lineIter && lineIter.hasNext()))) {
       // skip multiple lines; this is what makes small changes not order of the document size
       mut.skipLines(csOp.lines);
       // print("skipped: "+csOp.lines);
       csOp.opcode = '';
-    } else if (csOp.opcode == '+') {
+    } else if (csOp.opcode === '+') {
       if (csOp.lines > 1) {
         const firstLineLen = csBank.indexOf('\n', csBankIndex) + 1 - csBankIndex;
         exports.copyOp(csOp, opOut);
@@ -1296,12 +1296,12 @@ exports.compose = (cs1, cs2, pool) => {
     // debugBuilder.append(' / ');
     const op1code = op1.opcode;
     const op2code = op2.opcode;
-    if (op1code == '+' && op2code == '-') {
+    if (op1code === '+' && op2code === '-') {
       bankIter1.skip(Math.min(op1.chars, op2.chars));
     }
     exports._slicerZipperFunc(op1, op2, opOut, pool);
-    if (opOut.opcode == '+') {
-      if (op2code == '+') {
+    if (opOut.opcode === '+') {
+      if (op2code === '+') {
         bankAssem.append(bankIter2.take(opOut.chars));
       } else {
         bankAssem.append(bankIter1.take(opOut.chars));
@@ -1396,7 +1396,7 @@ exports.toSplices = (cs) => {
   let inSplice = false;
   while (iter.hasNext()) {
     const op = iter.next();
-    if (op.opcode == '=') {
+    if (op.opcode === '=') {
       oldPos += op.chars;
       inSplice = false;
     } else {
@@ -1404,10 +1404,10 @@ exports.toSplices = (cs) => {
         splices.push([oldPos, oldPos, '']);
         inSplice = true;
       }
-      if (op.opcode == '-') {
+      if (op.opcode === '-') {
         oldPos += op.chars;
         splices[splices.length - 1][1] += op.chars;
-      } else if (op.opcode == '+') {
+      } else if (op.opcode === '+') {
         splices[splices.length - 1][2] += charIter.take(op.chars);
       }
     }
@@ -1663,7 +1663,7 @@ exports.prepareForWire = (cs, pool) => {
  */
 exports.isIdentity = (cs) => {
   const unpacked = exports.unpack(cs);
-  return unpacked.ops == '' && unpacked.oldLen == unpacked.newLen;
+  return unpacked.ops === '' && unpacked.oldLen == unpacked.newLen;
 };
 
 /**
@@ -1755,7 +1755,7 @@ exports.makeAttribsString = (opcode, attribs, pool) => {
     const result = [];
     for (let i = 0; i < attribs.length; i++) {
       const pair = attribs[i];
-      if (opcode == '=' || (opcode == '+' && pair[1])) {
+      if (opcode === '=' || (opcode === '+' && pair[1])) {
         result.push(`*${exports.numToString(pool.putAttrib(pair))}`);
       }
     }
@@ -1927,7 +1927,7 @@ exports.inverse = (cs, lines, alines, pool) => {
   const attribValues = [];
   while (csIter.hasNext()) {
     const csOp = csIter.next();
-    if (csOp.opcode == '=') {
+    if (csOp.opcode === '=') {
       if (csOp.attribs) {
         attribKeys.length = 0;
         attribValues.length = 0;
@@ -1954,9 +1954,9 @@ exports.inverse = (cs, lines, alines, pool) => {
         skip(csOp.chars, csOp.lines);
         builder.keep(csOp.chars, csOp.lines);
       }
-    } else if (csOp.opcode == '+') {
+    } else if (csOp.opcode === '+') {
       builder.remove(csOp.chars, csOp.lines);
-    } else if (csOp.opcode == '-') {
+    } else if (csOp.opcode === '-') {
       var textBank = nextText(csOp.chars);
       var textBankIndex = 0;
       consumeAttribRuns(csOp.chars, (len, attribs, endsLine) => {
@@ -1986,11 +1986,11 @@ exports.follow = (cs1, cs2, reverseInsertOrder, pool) => {
   const hasInsertFirst = exports.attributeTester(['insertorder', 'first'], pool);
 
   const newOps = exports.applyZip(unpacked1.ops, 0, unpacked2.ops, 0, (op1, op2, opOut) => {
-    if (op1.opcode == '+' || op2.opcode == '+') {
+    if (op1.opcode === '+' || op2.opcode === '+') {
       let whichToDo;
-      if (op2.opcode != '+') {
+      if (op2.opcode !== '+') {
         whichToDo = 1;
-      } else if (op1.opcode != '+') {
+      } else if (op1.opcode !== '+') {
         whichToDo = 2;
       } else {
         // both +
@@ -2029,7 +2029,7 @@ exports.follow = (cs1, cs2, reverseInsertOrder, pool) => {
         exports.copyOp(op2, opOut);
         op2.opcode = '';
       }
-    } else if (op1.opcode == '-') {
+    } else if (op1.opcode === '-') {
       if (!op2.opcode) {
         op1.opcode = '';
       } else if (op1.chars <= op2.chars) {
@@ -2044,7 +2044,7 @@ exports.follow = (cs1, cs2, reverseInsertOrder, pool) => {
         op1.lines -= op2.lines;
         op2.opcode = '';
       }
-    } else if (op2.opcode == '-') {
+    } else if (op2.opcode === '-') {
       exports.copyOp(op2, opOut);
       if (!op1.opcode) {
         op2.opcode = '';
@@ -2162,12 +2162,12 @@ exports.composeWithDeletions = (cs1, cs2, pool) => {
   const newOps = exports.applyZip(unpacked1.ops, 0, unpacked2.ops, 0, (op1, op2, opOut) => {
     const op1code = op1.opcode;
     const op2code = op2.opcode;
-    if (op1code == '+' && op2code == '-') {
+    if (op1code === '+' && op2code === '-') {
       bankIter1.skip(Math.min(op1.chars, op2.chars));
     }
     exports._slicerZipperFuncWithDeletions(op1, op2, opOut, pool);
-    if (opOut.opcode == '+') {
-      if (op2code == '+') {
+    if (opOut.opcode === '+') {
+      if (op2code === '+') {
         bankAssem.append(bankIter2.take(opOut.chars));
       } else {
         bankAssem.append(bankIter1.take(opOut.chars));
@@ -2185,7 +2185,7 @@ exports._slicerZipperFuncWithDeletions = (attOp, csOp, opOut, pool) => {
   // attribution string or the earlier of two exportss being composed.
   // pool can be null if definitely not needed.
   // print(csOp.toSource()+" "+attOp.toSource()+" "+opOut.toSource());
-  if (attOp.opcode == '-') {
+  if (attOp.opcode === '-') {
     exports.copyOp(attOp, opOut);
     attOp.opcode = '';
   } else if (!attOp.opcode) {
@@ -2197,7 +2197,7 @@ exports._slicerZipperFuncWithDeletions = (attOp, csOp, opOut, pool) => {
       {
         if (csOp.chars <= attOp.chars) {
           // delete or delete part
-          if (attOp.opcode == '=') {
+          if (attOp.opcode === '=') {
             opOut.opcode = '-';
             opOut.chars = csOp.chars;
             opOut.lines = csOp.lines;
@@ -2211,7 +2211,7 @@ exports._slicerZipperFuncWithDeletions = (attOp, csOp, opOut, pool) => {
           }
         } else {
           // delete and keep going
-          if (attOp.opcode == '=') {
+          if (attOp.opcode === '=') {
             opOut.opcode = '-';
             opOut.chars = attOp.chars;
             opOut.lines = attOp.lines;
@@ -2237,7 +2237,7 @@ exports._slicerZipperFuncWithDeletions = (attOp, csOp, opOut, pool) => {
           opOut.opcode = attOp.opcode;
           opOut.chars = csOp.chars;
           opOut.lines = csOp.lines;
-          opOut.attribs = exports.composeAttributes(attOp.attribs, csOp.attribs, attOp.opcode == '=', pool);
+          opOut.attribs = exports.composeAttributes(attOp.attribs, csOp.attribs, attOp.opcode === '=', pool);
           csOp.opcode = '';
           attOp.chars -= csOp.chars;
           attOp.lines -= csOp.lines;
@@ -2249,7 +2249,7 @@ exports._slicerZipperFuncWithDeletions = (attOp, csOp, opOut, pool) => {
           opOut.opcode = attOp.opcode;
           opOut.chars = attOp.chars;
           opOut.lines = attOp.lines;
-          opOut.attribs = exports.composeAttributes(attOp.attribs, csOp.attribs, attOp.opcode == '=', pool);
+          opOut.attribs = exports.composeAttributes(attOp.attribs, csOp.attribs, attOp.opcode === '=', pool);
           attOp.opcode = '';
           csOp.chars -= attOp.chars;
           csOp.lines -= attOp.lines;
