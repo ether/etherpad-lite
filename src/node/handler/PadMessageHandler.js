@@ -40,10 +40,14 @@ const nodeify = require('nodeify');
 const {RateLimiterMemory} = require('rate-limiter-flexible');
 const webaccess = require('../hooks/express/webaccess');
 
-const rateLimiter = new RateLimiterMemory({
-  points: settings.commitRateLimiting.points,
-  duration: settings.commitRateLimiting.duration,
-});
+let rateLimiter;
+
+exports.socketio = () => {
+  // The rate limiter is created in this hook so that restarting the server resets the limiter. The
+  // settings.commitRateLimiting object is passed directly to the rate limiter so that the limits
+  // can be dynamically changed during runtime by modifying its properties.
+  rateLimiter = new RateLimiterMemory(settings.commitRateLimiting);
+};
 
 /**
  * A associative array that saves information about a session
