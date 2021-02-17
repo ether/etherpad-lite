@@ -1336,9 +1336,7 @@ exports.attributeTester = (attribPair, pool) => {
     return never;
   } else {
     const re = new RegExp(`\\*${exports.numToString(attribNum)}(?!\\w)`);
-    return function (attribs) {
-      return re.test(attribs);
-    };
+    return (attribs) => re.test(attribs);
   }
 };
 
@@ -1538,9 +1536,7 @@ exports.eachAttribNumber = (cs, func) => {
  * @param filter {function} fnc which returns true if an
  *        attribute X (int) should be kept in the Changeset
  */
-exports.filterAttribNumbers = (cs, filter) => {
-  return exports.mapAttribNumbers(cs, filter);
-};
+exports.filterAttribNumbers = (cs, filter) => exports.mapAttribNumbers(cs, filter);
 
 /**
  * does exactly the same as exports.filterAttribNumbers
@@ -1572,12 +1568,10 @@ exports.mapAttribNumbers = (cs, func) => {
  * @attribs attribs {string} optional, operations which insert
  *    the text and also puts the right attributes
  */
-exports.makeAText = (text, attribs) => {
-  return {
-    text,
-    attribs: (attribs || exports.makeAttribution(text)),
-  };
-};
+exports.makeAText = (text, attribs) => ({
+  text,
+  attribs: (attribs || exports.makeAttribution(text)),
+});
 
 /**
  * Apply a Changeset to a AText
@@ -1585,12 +1579,10 @@ exports.makeAText = (text, attribs) => {
  * @param atext {AText}
  * @param pool {AttribPool} Attribute Pool to add to
  */
-exports.applyToAText = (cs, atext, pool) => {
-  return {
-    text: exports.applyToText(cs, atext.text),
-    attribs: exports.applyToAttribution(cs, atext.attribs, pool),
-  };
-};
+exports.applyToAText = (cs, atext, pool) => ({
+  text: exports.applyToText(cs, atext.text),
+  attribs: exports.applyToAttribution(cs, atext.attribs, pool),
+});
 
 /**
  * Clones a AText structure
@@ -1714,7 +1706,7 @@ exports.builder = (oldLen) => {
 
   var self = {
     // attribs are [[key1,value1],[key2,value2],...] or '*0*1...' (no pool needed in latter case)
-    keep(N, L, attribs, pool) {
+    keep: (N, L, attribs, pool) => {
       o.opcode = '=';
       o.attribs = (attribs && exports.makeAttribsString('=', attribs, pool)) || '';
       o.chars = N;
@@ -1726,12 +1718,12 @@ exports.builder = (oldLen) => {
       assem.appendOpWithText('=', text, attribs, pool);
       return self;
     },
-    insert(text, attribs, pool) {
+    insert: (text, attribs, pool) => {
       assem.appendOpWithText('+', text, attribs, pool);
       charBank.append(text);
       return self;
     },
-    remove(N, L) {
+    remove: (N, L) => {
       o.opcode = '-';
       o.attribs = '';
       o.chars = N;
@@ -1739,7 +1731,7 @@ exports.builder = (oldLen) => {
       assem.append(o);
       return self;
     },
-    toString() {
+    toString: () => {
       assem.endDocument();
       const newLen = oldLen + assem.getLengthChange();
       return exports.pack(oldLen, newLen, assem.toString(), charBank.toString());
@@ -1795,7 +1787,7 @@ exports.subattribution = (astr, start, optEnd) => {
         }
       }
     }
-  }
+  };
 
   csOp.opcode = '-';
   csOp.chars = start;
@@ -1830,7 +1822,7 @@ exports.inverse = (cs, lines, alines, pool) => {
     } else {
       return lines[idx];
     }
-  }
+  };
 
   const alines_get = (idx) => {
     if (alines.get) {
@@ -1838,7 +1830,7 @@ exports.inverse = (cs, lines, alines, pool) => {
     } else {
       return alines[idx];
     }
-  }
+  };
 
   let curLine = 0;
   let curChar = 0;
@@ -1890,7 +1882,7 @@ exports.inverse = (cs, lines, alines, pool) => {
       curLine++;
       curChar = 0;
     }
-  }
+  };
 
   const skip = (N, L) => {
     if (L) {
@@ -1919,17 +1911,17 @@ exports.inverse = (cs, lines, alines, pool) => {
     }
 
     return assem.toString().substring(0, numChars);
-  }
+  };
 
   const cachedStrFunc = (func) => {
     const cache = {};
-    return function (s) {
+    return (s) => {
       if (!cache[s]) {
         cache[s] = func(s);
       }
       return cache[s];
     };
-  }
+  };
 
   const attribKeys = [];
   const attribValues = [];
