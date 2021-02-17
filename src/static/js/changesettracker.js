@@ -48,11 +48,13 @@ const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
     // can call this multiple times per call-stack, because
     // we only schedule a call to changeCallback if it exists
     // and if there isn't a timeout already scheduled.
-    if (changeCallback && changeCallbackTimeout === null) {
+    if (changeCallback && changeCallbackTimeout == null) {
       changeCallbackTimeout = scheduler.setTimeout(() => {
         try {
           changeCallback();
-        } catch (pseudoError) {} finally {
+        } catch (pseudoError) {
+          // as empty as my soul
+        } finally {
           changeCallbackTimeout = null;
         }
       }, 0);
@@ -150,28 +152,30 @@ const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
         // We need to replace all author attribs with thisSession.author,
         // in case they copy/pasted or otherwise inserted other peoples changes
         if (apool.numToAttrib) {
+          let authorAttr;
           for (const attr in apool.numToAttrib) {
-            if (apool.numToAttrib[attr][0] == 'author' && apool.numToAttrib[attr][1] == authorId) {
-              var authorAttr = Number(attr).toString(36);
+            if (apool.numToAttrib[attr][0] === 'author' &&
+                apool.numToAttrib[attr][1] === authorId) {
+              authorAttr = Number(attr).toString(36);
             }
           }
 
           // Replace all added 'author' attribs with the value of the current user
-          var cs = Changeset.unpack(userChangeset);
+          const cs = Changeset.unpack(userChangeset);
           const iterator = Changeset.opIterator(cs.ops);
           let op;
           const assem = Changeset.mergingOpAssembler();
 
           while (iterator.hasNext()) {
             op = iterator.next();
-            if (op.opcode == '+') {
-              var newAttrs = '';
+            if (op.opcode === '+') {
+              let newAttrs = '';
 
               op.attribs.split('*').forEach((attrNum) => {
                 if (!attrNum) return;
                 const attr = apool.getAttrib(parseInt(attrNum, 36));
                 if (!attr) return;
-                if ('author' == attr[0]) {
+                if ('author' === attr[0]) {
                   // replace that author with the current one
                   newAttrs += `*${authorAttr}`;
                 } else { newAttrs += `*${attrNum}`; } // overtake all other attribs as is
@@ -188,7 +192,7 @@ const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
         else toSubmit = userChangeset;
       }
 
-      var cs = null;
+      let cs = null;
       if (toSubmit) {
         submittedChangeset = toSubmit;
         userChangeset = Changeset.identity(Changeset.newLen(toSubmit));
