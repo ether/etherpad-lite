@@ -39,7 +39,7 @@
     "cross-spawn": "^7.0.3",
     "ejs": "^3.1.6",
     "etherpad-require-kernel": "1.0.9",
-    "etherpad-yajsml": "0.0.2",
+    "etherpad-yajsml": "0.0.4",
     "express": "4.17.1",
     "express-rate-limit": "5.2.3",
     "express-session": "1.17.1",
