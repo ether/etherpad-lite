@@ -3,19 +3,10 @@
 const log4js = require('log4js');
 const plugins = require('./plugins');
 const hooks = require('./hooks');
-const npm = require('npm');
 const request = require('request');
-const util = require('util');
+const runCmd = require('../../../node/utils/run_cmd');
 
 const logger = log4js.getLogger('plugins');
-
-let npmIsLoaded = false;
-const loadNpm = async () => {
-  if (npmIsLoaded) return;
-  await util.promisify(npm.load)({});
-  npmIsLoaded = true;
-  npm.on('log', log4js.getLogger('npm').log);
-};
 
 const onAllTasksFinished = () => {
   hooks.aCallAll('restartServer', {}, () => {});
@@ -37,8 +28,8 @@ exports.uninstall = async (pluginName, cb = null) => {
   cb = wrapTaskCb(cb);
   logger.info(`Uninstalling plugin ${pluginName}...`);
   try {
-    await loadNpm();
-    await util.promisify(npm.commands.uninstall)([pluginName]);
+    // The --no-save flag prevents npm from creating package.json or package-lock.json.
+    await runCmd(['npm', 'uninstall', '--no-save', pluginName]);
   } catch (err) {
     logger.error(`Failed to uninstall plugin ${pluginName}`);
     cb(err || new Error(err));
@@ -54,8 +45,8 @@ exports.install = async (pluginName, cb = null) => {
   cb = wrapTaskCb(cb);
   logger.info(`Installing plugin ${pluginName}...`);
   try {
-    await loadNpm();
-    await util.promisify(npm.commands.install)([`${pluginName}@latest`]);
+    // The --no-save flag prevents npm from creating package.json or package-lock.json.
+    await runCmd(['npm', 'install', '--no-save', pluginName]);
   } catch (err) {
     logger.error(`Failed to install plugin ${pluginName}`);
     cb(err || new Error(err));
