@@ -1,3 +1,15 @@
+# 1.8.9
+
+### Notable fixes
+
+* Fixed HTTP 400 error when importing via the UI.
+* Fixed "Error: spawn npm ENOENT" crash on startup in Windows.
+
+### Notable enhancements
+
+* Removed some unnecessary arrow key handling logic.
+* Dependency updates.
+
 # 1.8.8
 
 ### Security patches

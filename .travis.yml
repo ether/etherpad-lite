@@ -64,7 +64,7 @@ jobs:
         - "src/bin/installDeps.sh"
         - "cd src && npm install && cd -"
       script:
-        - "src/tests/frontend/travis/runnerBackend.sh"
+        - "cd src && npm test"
     - name: "Test the Dockerfile"
       install:
         - "cd src && npm install && cd -"
@@ -107,7 +107,7 @@ jobs:
         - *install_plugins
         - "cd src && npm install && cd -"
       script:
-        - "src/tests/frontend/travis/runnerBackend.sh"
+        - "cd src && npm test"
     - name: "Test the Dockerfile"
       install:
         - "cd src && npm install && cd -"

@@ -17,7 +17,7 @@ s!"points":[^,]*!"points": 1000!
 ' settings.json.template >settings.json
 
 log "Assuming src/bin/installDeps.sh has already been run"
-node node_modules/ep_etherpad-lite/node/server.js "${@}" >/dev/null &
+node src/node/server.js "${@}" >/dev/null &
 ep_pid=$!
 
 log "Waiting for Etherpad to accept connections (http://localhost:9001)..."

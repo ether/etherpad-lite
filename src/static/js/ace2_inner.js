@@ -3197,28 +3197,6 @@ function Ace2Inner() {
             scroll.setScrollY(caretOffsetTop);
           }, 200);
         }
-
-        // scroll to viewport when user presses arrow keys and caret is out of the viewport
-        if ((evt.which === 37 || evt.which === 38 || evt.which === 39 || evt.which === 40)) {
-          // we use arrowKeyWasReleased to avoid triggering the animation when a key
-          // is continuously pressed
-          // this makes the scroll smooth
-          if (!continuouslyPressingArrowKey(type)) {
-            // the caret position is not synchronized with the rep.
-            // For example, when an user presses arrow
-            // We use getSelection() instead of rep to get the caret position.
-            // This avoids errors like when down to scroll the pad without releasing the key.
-            // When the key is released the rep is not
-            // synchronized, so we don't get the right node where caret is.
-            const selection = getSelection();
-
-            if (selection) {
-              const arrowUp = evt.which === 38;
-              const innerHeight = getInnerHeight();
-              scroll.scrollWhenPressArrowKeys(arrowUp, rep, innerHeight);
-            }
-          }
-        }
       }
 
       if (type === 'keydown') {
@@ -3263,19 +3241,6 @@ function Ace2Inner() {
   };
 
   let thisKeyDoesntTriggerNormalize = false;
-  let arrowKeyWasReleased = true;
-  const continuouslyPressingArrowKey = (type) => {
-    let firstTimeKeyIsContinuouslyPressed = false;
-
-    if (type === 'keyup') {
-      arrowKeyWasReleased = true;
-    } else if (type === 'keydown' && arrowKeyWasReleased) {
-      firstTimeKeyIsContinuouslyPressed = true;
-      arrowKeyWasReleased = false;
-    }
-
-    return !firstTimeKeyIsContinuouslyPressed;
-  };
 
   const doUndoRedo = (which) => {
     // precond: normalized DOM

@@ -8,19 +8,21 @@
 
 const common = require('../../common');
 const fs = require('fs');
-const settings = require('../../../../node/utils/Settings');
-const supertest = require('supertest');
 
-const api = supertest(`http://${settings.ip}:${settings.port}`);
+let agent;
 const apiKey = common.apiKey;
 let apiVersion = 1;
 const testPadId = makeid();
 
+const endPoint = (point, version) => `/api/${version || apiVersion}/${point}?apikey=${apiKey}`;
+
 describe(__filename, function () {
+  before(async function () { agent = await common.init(); });
+
   describe('Connectivity For Character Encoding', function () {
     it('can connect', function (done) {
       this.timeout(250);
-      api.get('/api/')
+      agent.get('/api/')
           .expect('Content-Type', /json/)
           .expect(200, done);
     });
@@ -29,7 +31,7 @@ describe(__filename, function () {
   describe('API Versioning', function () {
     this.timeout(150);
     it('finds the version tag', function (done) {
-      api.get('/api/')
+      agent.get('/api/')
           .expect((res) => {
             apiVersion = res.body.currentVersion;
             if (!res.body.currentVersion) throw new Error('No version set in API');
@@ -45,7 +47,7 @@ describe(__filename, function () {
       // This is broken because Etherpad doesn't handle HTTP codes properly see #2343
       // If your APIKey is password you deserve to fail all tests anyway
       const permErrorURL = `/api/${apiVersion}/createPad?apikey=password&padID=test`;
-      api.get(permErrorURL)
+      agent.get(permErrorURL)
           .expect(401, done);
     });
   });
@@ -53,7 +55,7 @@ describe(__filename, function () {
   describe('createPad', function () {
     it('creates a new Pad', function (done) {
       this.timeout(150);
-      api.get(`${endPoint('createPad')}&padID=${testPadId}`)
+      agent.get(`${endPoint('createPad')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Unable to create new Pad');
           })
@@ -66,7 +68,7 @@ describe(__filename, function () {
     it('Sets the HTML of a Pad attempting to weird utf8 encoded content', function (done) {
       this.timeout(1000);
       fs.readFile('tests/backend/specs/api/emojis.html', 'utf8', (err, html) => {
-        api.post(endPoint('setHTML'))
+        agent.post(endPoint('setHTML'))
             .send({
               padID: testPadId,
               html,
@@ -83,7 +85,7 @@ describe(__filename, function () {
   describe('getHTML', function () {
     it('get the HTML of Pad with emojis', function (done) {
       this.timeout(400);
-      api.get(`${endPoint('getHTML')}&padID=${testPadId}`)
+      agent.get(`${endPoint('getHTML')}&padID=${testPadId}`)
           .expect((res) => {
             if (res.body.data.html.indexOf('&#127484') === -1) {
               throw new Error('Unable to get the HTML');
@@ -100,11 +102,6 @@ describe(__filename, function () {
   End of test
 
 */
-
-var endPoint = function (point, version) {
-  version = version || apiVersion;
-  return `/api/${version}/${point}?apikey=${apiKey}`;
-};
 
 function makeid() {
   let text = '';

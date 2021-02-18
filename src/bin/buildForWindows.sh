@@ -7,7 +7,7 @@ fatal() { error "$@"; exit 1; }
 is_cmd() { command -v "$@" >/dev/null 2>&1; }
 
 # Move to the folder where ep-lite is installed
-cd "$(dirname "$0")"/..
+cd "$(cd "${0%/*}" && pwd -P)/../.."
 
 # Is wget installed?
 is_cmd wget || fatal "Please install wget"
@@ -54,7 +54,7 @@ rm -rf "$TMP_FOLDER"/src/node_modules/nodemailer/node_modules/mailcomposer/node_
 
 log "create the zip..."
 cd "$TMP_FOLDER"
-zip -9 -r "$START_FOLDER"/etherpad-lite-win.zip ./*
+zip -9 -r "$START_FOLDER"/etherpad-lite-win.zip ./* -x var
 
 log "clean up..."
 rm -rf "$TMP_FOLDER"
