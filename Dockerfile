@@ -15,6 +15,22 @@ LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 #   ETHERPAD_PLUGINS="ep_codepad ep_author_neat"
 ARG ETHERPAD_PLUGINS=
 
+# Control whether abiword will be installed, enabling exports to DOC/PDF/ODT formats.
+# By default, it is not installed.
+# If given any value, abiword will be installed.
+#
+# EXAMPLE:
+#   INSTALL_ABIWORD=true
+ARG INSTALL_ABIWORD=
+
+# Control whether libreoffice will be installed, enabling exports to DOC/PDF/ODT formats.
+# By default, it is not installed.
+# If given any value, libreoffice will be installed.
+#
+# EXAMPLE:
+#   INSTALL_LIBREOFFICE=true
+ARG INSTALL_SOFFICE=
+
 # By default, Etherpad container is built and run in "production" mode. This is
 # leaner (development dependencies are not installed) and runs faster (among
 # other things, assets are minified & compressed).
@@ -27,6 +43,13 @@ ENV NODE_ENV=production
 RUN useradd --uid 5001 --create-home etherpad
 
 RUN mkdir /opt/etherpad-lite && chown etherpad:0 /opt/etherpad-lite
+
+# install abiword for DOC/PDF/ODT export
+RUN [ -z "${INSTALL_ABIWORD}" ] || (apt update && apt -y install abiword && apt clean && rm -rf /var/lib/apt/lists/*)
+
+# install libreoffice for DOC/PDF/ODT export
+# the mkdir is needed for configuration of openjdk-11-jre-headless, see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199
+RUN [ -z "${INSTALL_SOFFICE}" ] || (apt update && mkdir -p /usr/share/man/man1 && apt -y install libreoffice && apt clean && rm -rf /var/lib/apt/lists/*)
 
 USER etherpad
 
