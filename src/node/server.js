@@ -65,9 +65,9 @@ const State = {
 let state = State.INITIAL;
 
 class Gate extends Promise {
-  constructor() {
+  constructor(executor = null) {
     let res;
-    super((resolve) => { res = resolve; });
+    super((resolve, reject) => { res = resolve; if (executor != null) executor(resolve, reject); });
     this.resolve = res;
   }
 }
