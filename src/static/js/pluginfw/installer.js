@@ -36,12 +36,12 @@ exports.uninstall = async (pluginName, cb = null) => {
   try {
     await loadNpm();
     await util.promisify(npm.commands.uninstall)([pluginName]);
-    await hooks.aCallAll('pluginUninstall', {pluginName});
-    await plugins.update();
   } catch (err) {
     cb(err || new Error(err));
     throw err;
   }
+  await hooks.aCallAll('pluginUninstall', {pluginName});
+  await plugins.update();
   cb(null);
 };
 
@@ -50,12 +50,12 @@ exports.install = async (pluginName, cb = null) => {
   try {
     await loadNpm();
     await util.promisify(npm.commands.install)([`${pluginName}@latest`]);
-    await hooks.aCallAll('pluginInstall', {pluginName});
-    await plugins.update();
   } catch (err) {
     cb(err || new Error(err));
     throw err;
   }
+  await hooks.aCallAll('pluginInstall', {pluginName});
+  await plugins.update();
   cb(null);
 };
 
