@@ -12,22 +12,15 @@ const defs = require('./plugin_defs');
 const logger = log4js.getLogger('plugins');
 
 // Log the version of npm at startup.
-let loggedVersion = false;
 (async () => {
-  if (loggedVersion) return;
-  loggedVersion = true;
-  const p = runCmd(['npm', '--version'], {stdoutLogger: null});
-  const chunks = [];
-  await Promise.all([
-    (async () => { for await (const chunk of p.stdout) chunks.push(chunk); })(),
-    p, // Await in parallel to avoid unhandled rejection if p rejects during chunk read.
-  ]);
-  const version = Buffer.concat(chunks).toString().replace(/\n+$/g, '');
-  logger.info(`npm --version: ${version}`);
-})().catch((err) => {
-  logger.error(`Failed to get npm version: ${err.stack || err}`);
-  // This isn't a fatal error so don't re-throw.
-});
+  try {
+    const version = await runCmd(['npm', '--version'], {stdio: [null, 'string']});
+    logger.info(`npm --version: ${version}`);
+  } catch (err) {
+    logger.error(`Failed to get npm version: ${err.stack || err}`);
+    // This isn't a fatal error so don't re-throw.
+  }
+})();
 
 exports.prefix = 'ep_';
 
@@ -96,15 +89,8 @@ exports.getPackages = async () => {
   //   * The `--no-production` flag is required (or the `NODE_ENV` environment variable must be
   //     unset or set to `development`) because otherwise `npm ls` will not mention any packages
   //     that are not included in `package.json` (which is expected to not exist).
-  const p = runCmd(['npm', 'ls', '--long', '--json', '--depth=0', '--no-production'], {
-    stdoutLogger: null, // We want to capture stdout, so don't attempt to log it.
-  });
-  const chunks = [];
-  await Promise.all([
-    (async () => { for await (const chunk of p.stdout) chunks.push(chunk); })(),
-    p, // Await in parallel to avoid unhandled rejection if p rejects during chunk read.
-  ]);
-  const {dependencies = {}} = JSON.parse(Buffer.concat(chunks).toString());
+  const cmd = ['npm', 'ls', '--long', '--json', '--depth=0', '--no-production'];
+  const {dependencies = {}} = JSON.parse(await runCmd(cmd, {stdio: [null, 'string']}));
   await Promise.all(Object.entries(dependencies).map(async ([pkg, info]) => {
     if (!pkg.startsWith(exports.prefix)) {
       delete dependencies[pkg];
