@@ -43,13 +43,13 @@ jobs:
         path: etherpad-lite-win.zip
 
   deploy:
-    needs: build
         # run on pushes to any branch
     # run on PRs from external forks
     if: |
          (github.event_name != 'pull_request')
          || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
     name: Deploy Windows Zip on Windows
+    needs: build
     runs-on: windows-latest
 
     steps:
