@@ -54,11 +54,13 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Download all workflow run artifacts
+    - name: Download zip
       uses: actions/download-artifact@v2
+      with:
+        name: etherpad-lite-win.zip
 
     - name: Extract Etherpad
-      run: 7z x e\etherpad-lite-win.zip -oetherpad
+      run: 7z x etherpad-lite-win.zip -oetherpad
 
     - name: list
       run: dir etherpad
