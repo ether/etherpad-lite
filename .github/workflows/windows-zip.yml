@@ -44,7 +44,7 @@ jobs:
 
 
   deploy:
-        # run on pushes to any branch
+    # run on pushes to any branch
     # run on PRs from external forks
     if: |
          (github.event_name != 'pull_request')
