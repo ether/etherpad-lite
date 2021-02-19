@@ -66,5 +66,5 @@ jobs:
     - name: Run Etherpad
       run: |
             cd etherpad
-            cmd /C start.bat &
+            node node_modules\ep_etherpad-lite\node\server.js &
             curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001
