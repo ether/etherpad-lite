@@ -19,7 +19,7 @@ jobs:
 
     - uses: actions/download-artifact@v2
       with:
-        name: windows-dist
+        name: my-artifact
 
     - name: Display structure of downloaded files
       run: dir
