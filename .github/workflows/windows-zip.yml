@@ -64,5 +64,6 @@ jobs:
       run: 7z x e\etherpad-lite-win.zip
 
     - name: Run Etherpad
-      run: cd e\etherpad-lite-win
-      run: start.bat
+      run: |
+            cd e\etherpad-lite-win
+            start.bat
