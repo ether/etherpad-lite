@@ -40,5 +40,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: windows-dist
-        path: |
-          /*.zip
+        path: etherpad-lite-win.zip
