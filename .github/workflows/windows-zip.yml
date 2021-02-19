@@ -71,4 +71,4 @@ jobs:
             cd etherpad
             node node_modules\ep_etherpad-lite\node\server.js &
     #        cmd /C start.bat &
-            curl http://127.0.0.1:9001
+    #        curl http://127.0.0.1:9001
