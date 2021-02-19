@@ -72,8 +72,8 @@ function Ace2Inner() {
   let sideDivInner;
 
   const initLineNumbers = () => {
-    const htmlOpen = '<div id="sidedivinner" class="sidedivinner"><div><span class="line-number">1';
-    const htmlClose = '</span></div></div>';
+    const htmlOpen = '<div id="sidedivinner" class="sidedivinner"><div><div class="line-number">1';
+    const htmlClose = '</div></div></div>';
     lineNumbersShown = 1;
     sideDiv.innerHTML = `${htmlOpen}${htmlClose}`;
     sideDivInner = outerWin.document.getElementById('sidedivinner');
@@ -3841,8 +3841,9 @@ function Ace2Inner() {
         const div = odoc.createElement('DIV');
         if (lineHeights[currentLine]) {
           div.style.height = `${lineHeights[currentLine]}px`;
+          div.style.lineHeight = `${lineHeights[currentLine]}px`;
         }
-        $(div).append($(`<span class='line-number'>${String(lineNumbersShown)}</span>`));
+        $(div).append($(`<div class='line-number'>${String(lineNumbersShown)}</div>`));
         fragment.appendChild(div);
         currentLine++;
       }

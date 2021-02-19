@@ -12,8 +12,13 @@
 }
 
 #sidedivinner>div .line-number {
-  line-height: 24px;
+  line-height: inherit;
   font-family: RobotoMono;
   color: #576273;
   color: var(--text-soft-color);
+  height:100%;
+}
+
+#sidedivinner>div .line-number:hover {
+  background: var(--bg-soft-color);
 }
