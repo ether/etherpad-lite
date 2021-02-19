@@ -21,14 +21,21 @@ jobs:
         accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
         tunnelIdentifier: ${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}
 
+    - name: Install etherpad plugins
+      # We intentionally install an old ep_align version to test upgrades to the minor version number.
+      run: npm install --no-save ep_align@0.2.27
+
+    # This must be run after installing the plugins, otherwise npm will try to
+    # hoist common dependencies by removing them from src/node_modules and
+    # installing them in the top-level node_modules. As of v6.14.10, npm's hoist
+    # logic appears to be buggy, because it sometimes removes dependencies from
+    # src/node_modules but fails to add them to the top-level node_modules. Even
+    # if npm correctly hoists the dependencies, the hoisting seems to confuse
+    # tools such as `npm outdated`, `npm update`, and some ESLint rules.
     - name: Install all dependencies and symlink for ep_etherpad-lite
       run: src/bin/installDeps.sh
 
-      # We intentionally install a much old ep_align version to test update minor versions
-    - name: Install etherpad plugins
-      run: npm install --no-save ep_align@0.2.27
-
-      # Nuke plugin tests
+    # Nuke plugin tests
     - name: Install etherpad plugins
       run: rm -Rf node_modules/ep_align/static/tests/*
 
