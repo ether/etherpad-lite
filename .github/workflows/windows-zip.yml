@@ -58,13 +58,13 @@ jobs:
       uses: actions/download-artifact@v2
 
     - name: Extract Etherpad
-      run: 7z x e\etherpad-lite-win.zip
+      run: 7z x e\etherpad-lite-win.zip etherpad
 
 
     - name: list
-      run: dir e
+      run: dir etherpad
 
     - name: Run Etherpad
       run: |
-            cd e\etherpad-lite-win
+            cd etherpad
             start.bat
