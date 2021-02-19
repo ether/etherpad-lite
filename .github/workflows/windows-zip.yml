@@ -43,7 +43,7 @@ jobs:
         path: etherpad-lite-win.zip
 
   deploy:
-    needs: withoutpluginsLinux
+    needs: build
         # run on pushes to any branch
     # run on PRs from external forks
     if: |
