@@ -59,7 +59,7 @@ jobs:
     - name: Download all workflow run artifacts
     - uses: actions/download-artifact@v2
 
-#    - name: Display structure of downloaded files
-  #    run: dir
+    - name: Display structure of downloaded files
+      run: dir
 
     # !!TODO: Turn off symlinks!!
