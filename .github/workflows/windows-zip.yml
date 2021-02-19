@@ -39,7 +39,7 @@ jobs:
     - name: Archive production artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: my-artifact
+        name: e
         path: etherpad-lite-win.zip
 
 
@@ -59,3 +59,6 @@ jobs:
 
     - name: list
       run: dir
+
+    - name: extract
+      run: 7z x e\etherpad-lite-win.zip
