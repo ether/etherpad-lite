@@ -60,5 +60,9 @@ jobs:
     - name: list
       run: dir
 
-    - name: extract
+    - name: Extract Etherpad
       run: 7z x e\etherpad-lite-win.zip
+
+    - name: Run Etherpad
+      run: cd e\etherpad-lite-win
+      run: start.bat
