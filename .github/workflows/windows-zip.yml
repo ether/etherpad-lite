@@ -53,12 +53,10 @@ jobs:
     needs: build
     runs-on: windows-latest
 
-    # TODO: Disable symlinks.
-
     steps:
     - name: Disable git symlink support in Windows
       run: git config --add core.symlinks false
-      
+
     - name: Download all workflow run artifacts
       uses: actions/download-artifact@v2
 
@@ -73,4 +71,4 @@ jobs:
             cd etherpad
     #        node node_modules\ep_etherpad-lite\node\server.js &
             cmd /C start.bat &
-    # TODO: Use start.bat
+            curl http://127.0.0.1:9001
