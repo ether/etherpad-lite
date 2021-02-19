@@ -57,11 +57,12 @@ jobs:
     - name: Download all workflow run artifacts
       uses: actions/download-artifact@v2
 
-    - name: list
-      run: dir
-
     - name: Extract Etherpad
       run: 7z x e\etherpad-lite-win.zip
+
+
+    - name: list
+      run: dir e
 
     - name: Run Etherpad
       run: |
