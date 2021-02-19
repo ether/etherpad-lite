@@ -66,4 +66,4 @@ jobs:
     - name: Run Etherpad
       run: |
             cd etherpad
-            call start.bat
+            node node_modules\ep_etherpad-lite\node\server.js
