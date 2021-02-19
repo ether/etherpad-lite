@@ -20,7 +20,7 @@ jobs:
       uses: actions/download-artifact@v2
 
     - name: Extract Etherpad
-      run: 7z x e\etherpad-lite-win.zip -o etherpad
+      run: 7z x e\etherpad-lite-win.zip -oetherpad
 
     - name: list
       run: dir etherpad
