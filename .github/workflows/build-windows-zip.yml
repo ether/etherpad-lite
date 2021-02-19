@@ -1,4 +1,4 @@
-name: "Backend tests"
+name: "Build Windows Zip"
 
 # any branch is useful for testing before a PR is submitted
 on: [push, pull_request]
