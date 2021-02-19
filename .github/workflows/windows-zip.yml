@@ -54,9 +54,6 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Disable git symlink support in Windows
-      run: git config --add core.symlinks false
-
     - name: Download all workflow run artifacts
       uses: actions/download-artifact@v2
 
