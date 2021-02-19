@@ -135,7 +135,7 @@ jobs:
 
     - name: Install Etherpad plugins
       run: >
-        npm install
+        npm install --no-save
         ep_align
         ep_author_hover
         ep_cursortrace
