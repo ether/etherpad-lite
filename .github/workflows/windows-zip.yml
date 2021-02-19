@@ -67,4 +67,4 @@ jobs:
       run: |
             cd etherpad
             cmd /C start.bat &
-            curl http://127.0.0.1:9001 --connect-timeout 60 --max-time 60
+            curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001
