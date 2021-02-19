@@ -67,4 +67,4 @@ jobs:
       run: |
             cd etherpad
             cmd /C start.bat &
-            curl http://127.0.0.1:9001 --connect-timeout 30
+            curl http://127.0.0.1:9001 --connect-timeout 60 --max-time 60
