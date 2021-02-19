@@ -24,9 +24,8 @@
 
 let socket;
 
-// These jQuery things should create local references, but for now `require()`
-// assigns to the global `$` and augments it with plugins.
-require('./jquery');
+// TODO: these globals should be removed when possible
+window.$ = window.jQuery = require('./rjquery').$;
 require('./farbtastic');
 require('./gritter');
 

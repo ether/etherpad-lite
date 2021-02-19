@@ -481,7 +481,8 @@
         require.setLibraryURI(baseURL + "javascripts/lib");
         require.setGlobalKeyPath("require");
 
-        $ = jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery; // Expose jQuery #HACK
+        // intentionally moved here before first using $/jQuery
+        pad = require('ep_etherpad-lite/static/js/pad').pad;
         browser = require('ep_etherpad-lite/static/js/browser');
 
         var plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
@@ -494,13 +495,12 @@
             hooks.aCallAll('documentReady');
           });
 
-          var pad = require('ep_etherpad-lite/static/js/pad');
-          pad.baseURL = baseURL;
-          pad.init();
+          const _pad = require('ep_etherpad-lite/static/js/pad');
+          _pad.baseURL = baseURL;
+          _pad.init();
         });
 
         /* TODO: These globals shouldn't exist. */
-        pad = require('ep_etherpad-lite/static/js/pad').pad;
         chat = require('ep_etherpad-lite/static/js/chat').chat;
         padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
         padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
