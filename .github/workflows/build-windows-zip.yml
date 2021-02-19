@@ -10,7 +10,7 @@ jobs:
     if: |
          (github.event_name != 'pull_request')
          || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
-    name: Linux without plugins
+    name: Building Windows Zip on Linux without plugins
     runs-on: ubuntu-latest
 
     steps:
