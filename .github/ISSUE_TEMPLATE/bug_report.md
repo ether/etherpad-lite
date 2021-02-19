@@ -23,6 +23,12 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
+**Server (please complete the following information):**
+ - Etherpad version:
+ - OS: [e.g., Ubuntu 20.04]
+ - Node.js version (`node --version`):
+ - npm version (`npm --version`):
+
 **Desktop (please complete the following information):**
  - OS: [e.g. iOS]
  - Browser [e.g. chrome, safari]
