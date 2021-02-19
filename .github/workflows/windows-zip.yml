@@ -1,10 +1,10 @@
-name: "Build Windows Zip"
+name: "Build Windows Zip without plugins"
 
 # any branch is useful for testing before a PR is submitted
 on: [push, pull_request]
 
 jobs:
-  withoutpluginsLinux:
+  build:
     # run on pushes to any branch
     # run on PRs from external forks
     if: |
@@ -42,8 +42,9 @@ jobs:
         name: my-artifact
         path: etherpad-lite-win.zip
 
-  withoutpluginsWindowsZipDeploy:
-    # run on pushes to any branch
+  deploy:
+    needs: withoutpluginsLinux
+        # run on pushes to any branch
     # run on PRs from external forks
     if: |
          (github.event_name != 'pull_request')
