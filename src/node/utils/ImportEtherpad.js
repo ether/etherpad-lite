@@ -89,7 +89,6 @@ exports.setPadRaw = (padId, r) => {
         if (prefix === oldPadId[0]) newKey = `${prefix}:${padId}`;
       }
     }
-    //
 
     // Write the value to the server
     await db.set(newKey, value);
