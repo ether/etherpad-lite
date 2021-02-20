@@ -52,7 +52,7 @@
   <% e.end_block(); %>
 
   <link rel="localizations" type="application/l10n+json" href="../locales.json" />
-  <script type="text/javascript" src="../static/js/html10n.js?v=<%=settings.randomVersionString%>"></script>
+  <script type="text/javascript" src="../static/js/vendors/html10n.js?v=<%=settings.randomVersionString%>"></script>
   <script type="text/javascript" src="../static/js/l10n.js?v=<%=settings.randomVersionString%>"></script>
 
   <!-- head and body had been removed intentionally -->
@@ -487,7 +487,7 @@
         require.setGlobalKeyPath("require");
 
         $ = jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery; // Expose jQuery #HACK
-        browser = require('ep_etherpad-lite/static/js/browser');
+        browser = require('ep_etherpad-lite/static/js/vendors/browser');
 
         var plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
         var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');

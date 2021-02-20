@@ -18,7 +18,6 @@
 
 const padutils = require('./pad_utils').padutils;
 const hooks = require('./pluginfw/hooks');
-const browser = require('./browser');
 
 let myUserInfo = {};
 
