@@ -21,12 +21,6 @@ jobs:
       with:
         node-version: 12
 
-    - name: Install libreoffice
-      run: |
-        sudo add-apt-repository -y ppa:libreoffice/ppa
-        sudo apt update
-        sudo apt install -y --no-install-recommends libreoffice libreoffice-pdfimport
-
     - name: Install all dependencies and symlink for ep_etherpad-lite
       run: src/bin/installDeps.sh
 
