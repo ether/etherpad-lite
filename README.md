@@ -21,6 +21,8 @@ Etherpad is a real-time collaborative editor [scalable to thousands of simultane
 ### Uptake
 <a href="https://hub.docker.com/r/etherpad/etherpad"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/etherpad/etherpad"></a>
 
+### Plugins
+![Etherpad plugins](https://img.shields.io/endpoint?url=https%3A%2F%2Fstatic.etherpad.org%2Fshields.json "Etherpad plugins")
 
 # Installation
 
