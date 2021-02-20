@@ -72,7 +72,7 @@
   , "vendors/jquery.js"
   , "rjquery.js"
   , "$async.js"
-  , "underscore.js"
+  , "vendors/underscore.js"
   , "$underscore.js"
   , "$underscore/underscore.js"
   , "security.js"
