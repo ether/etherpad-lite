@@ -1,7 +1,4 @@
 # A real-time collaborative editor for the web
-<a href="https://hub.docker.com/r/etherpad/etherpad"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/etherpad/etherpad"></a>
-
-[![Travis (.com)](https://api.travis-ci.com/ether/etherpad-lite.svg?branch=develop)](https://travis-ci.com/github/ether/etherpad-lite)
 
 ![Demo Etherpad Animated Jif](doc/images/etherpad_demo.gif "Etherpad in action")
 
@@ -20,6 +17,10 @@ Etherpad is a real-time collaborative editor [scalable to thousands of simultane
 
 ### Frontend
 [![Frontend admin tests](https://github.com/ether/etherpad-lite/actions/workflows/frontend-admin-tests.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/frontend-admin-tests.yml) [![Frontend tests](https://github.com/ether/etherpad-lite/actions/workflows/frontend-tests.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/frontend-tests.yml)
+
+### Uptake
+<a href="https://hub.docker.com/r/etherpad/etherpad"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/etherpad/etherpad"></a>
+
 
 # Installation
 
