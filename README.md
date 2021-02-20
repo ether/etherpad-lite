@@ -11,27 +11,15 @@ Etherpad is a real-time collaborative editor [scalable to thousands of simultane
 **[Try it out](https://video.etherpad.com)**
 
 # Project Status
-[![Code Quality](https://github.com/ether/etherpad-lite/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/codeql-analysis.yml)
 
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/ether/etherpad-lite.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ether/etherpad-lite/alerts/)
+### Code
+[![Code Quality](https://github.com/ether/etherpad-lite/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/codeql-analysis.yml) [![Total alerts](https://img.shields.io/lgtm/alerts/g/ether/etherpad-lite.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ether/etherpad-lite/alerts/) [![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/ether/etherpad-lite.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ether/etherpad-lite/context:javascript) [![package.lock](https://github.com/ether/etherpad-lite/actions/workflows/lint-package-lock.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/lint-package-lock.yml)
 
-[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/ether/etherpad-lite.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ether/etherpad-lite/context:javascript)
+### Backend
+[![Backend tests](https://github.com/ether/etherpad-lite/actions/workflows/backend-tests.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/backend-tests.yml) [![Simulated Load](https://github.com/ether/etherpad-lite/actions/workflows/load-test.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/load-test.yml) [![Rate Limit](https://github.com/ether/etherpad-lite/actions/workflows/rate-limit.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/rate-limit.yml) [![Windows Zip](https://github.com/ether/etherpad-lite/actions/workflows/windows-zip.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/windows-zip.yml) [![Docker file](https://github.com/ether/etherpad-lite/actions/workflows/dockerfile.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/dockerfile.yml)
 
-[![package.lock](https://github.com/ether/etherpad-lite/actions/workflows/lint-package-lock.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/lint-package-lock.yml)
-
-[![Backend tests](https://github.com/ether/etherpad-lite/actions/workflows/backend-tests.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/backend-tests.yml)
-
-[![Simulated Load](https://github.com/ether/etherpad-lite/actions/workflows/load-test.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/load-test.yml)
-
-[![Rate Limit](https://github.com/ether/etherpad-lite/actions/workflows/rate-limit.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/rate-limit.yml)
-
-[![Windows Zip](https://github.com/ether/etherpad-lite/actions/workflows/windows-zip.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/windows-zip.yml)
-
-[![Docker file](https://github.com/ether/etherpad-lite/actions/workflows/dockerfile.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/dockerfile.yml)
-
-[![Frontend admin tests](https://github.com/ether/etherpad-lite/actions/workflows/frontend-admin-tests.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/frontend-admin-tests.yml)
-
-[![Frontend tests](https://github.com/ether/etherpad-lite/actions/workflows/frontend-tests.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/frontend-tests.yml)
+### Frontend
+[![Frontend admin tests](https://github.com/ether/etherpad-lite/actions/workflows/frontend-admin-tests.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/frontend-admin-tests.yml) [![Frontend tests](https://github.com/ether/etherpad-lite/actions/workflows/frontend-tests.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/frontend-tests.yml)
 
 # Installation
 
