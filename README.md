@@ -9,24 +9,16 @@ Etherpad is a real-time collaborative editor [scalable to thousands of simultane
 
 # Project Status
 
-### Code
+### Code Quality
 [![Code Quality](https://github.com/ether/etherpad-lite/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/codeql-analysis.yml) [![Total alerts](https://img.shields.io/lgtm/alerts/g/ether/etherpad-lite.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ether/etherpad-lite/alerts/) [![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/ether/etherpad-lite.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ether/etherpad-lite/context:javascript) [![package.lock](https://github.com/ether/etherpad-lite/actions/workflows/lint-package-lock.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/lint-package-lock.yml)
 
-### Backend
+### Testing
 [![Backend tests](https://github.com/ether/etherpad-lite/actions/workflows/backend-tests.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/backend-tests.yml) [![Simulated Load](https://github.com/ether/etherpad-lite/actions/workflows/load-test.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/load-test.yml) [![Rate Limit](https://github.com/ether/etherpad-lite/actions/workflows/rate-limit.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/rate-limit.yml) [![Windows Zip](https://github.com/ether/etherpad-lite/actions/workflows/windows-zip.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/windows-zip.yml) [![Docker file](https://github.com/ether/etherpad-lite/actions/workflows/dockerfile.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/dockerfile.yml)
-
-### Frontend
 [![Frontend admin tests](https://github.com/ether/etherpad-lite/actions/workflows/frontend-admin-tests.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/frontend-admin-tests.yml) [![Frontend tests](https://github.com/ether/etherpad-lite/actions/workflows/frontend-tests.yml/badge.svg)](https://github.com/ether/etherpad-lite/actions/workflows/frontend-tests.yml)
 
-### Uptake
+### Engagement
 <a href="https://hub.docker.com/r/etherpad/etherpad"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/etherpad/etherpad"></a>
-![GitHub all releases](https://img.shields.io/github/downloads/ether/etherpad-lite/total)
-
-### Community
-![Discord](https://img.shields.io/discord/741309013593030667)
-
-### Plugins
-![Etherpad plugins](https://img.shields.io/endpoint?url=https%3A%2F%2Fstatic.etherpad.org%2Fshields.json "Etherpad plugins")
+![GitHub all releases](https://img.shields.io/github/downloads/ether/etherpad-lite/total) ![Discord](https://img.shields.io/discord/741309013593030667) ![Etherpad plugins](https://img.shields.io/endpoint?url=https%3A%2F%2Fstatic.etherpad.org%2Fshields.json "Etherpad plugins")
 
 # Installation
 
