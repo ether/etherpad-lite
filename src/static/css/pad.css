@@ -74,4 +74,6 @@ input {
 .etherpadBrand{
   width:20%;
   max-width:100px;
+  margin-left:auto;
+  margin-right:auto;
 }
