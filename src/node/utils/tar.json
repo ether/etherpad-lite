@@ -42,6 +42,13 @@
   , "pad_impexp.js"
   , "colorutils.js"
   , "socketio.js"
+  , "AttributePool.js"
+  , "Changeset.js"
+  , "cssmanager.js"
+  , "domline.js"
+  , "linestylefilter.js"
+  , "AttributeManager.js"
+  , "ChangesetUtils.js"
   ]
 , "timeslider.js": [
     "timeslider.js"

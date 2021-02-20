@@ -187,8 +187,6 @@ const getAceFile = async () => {
       filenames.push(matches[2]);
     }
   }
-  // Always include the require kernel.
-  filenames.push('../static/js/require-kernel.js');
 
   data += ';\n';
   data += 'Ace2Editor.EMBEDED = Ace2Editor.EMBEDED || {};\n';

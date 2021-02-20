@@ -24,8 +24,6 @@
 // requires: top
 // requires: undefined
 
-const KERNEL_SOURCE = '../static/js/require-kernel.js';
-
 const hooks = require('./pluginfw/hooks');
 const pluginUtils = require('./pluginfw/shared');
 
@@ -196,18 +194,19 @@ const Ace2Editor = function () {
           `../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`);
 
       pushStyleTagsFor(iframeHTML, includedCSS);
-
-      if (!Ace2Editor.EMBEDED || !Ace2Editor.EMBEDED[KERNEL_SOURCE]) {
-        // Remotely src'd script tag will not work in IE; it must be embedded, so
-        // throw an error if it is not.
-        throw new Error('Require kernel could not be found.');
-      }
+      iframeHTML.push(`<script type="text/javascript" src="../static/js/require-kernel.js?v=${clientVars.randomVersionString}"></script>`);
 
       iframeHTML.push(scriptTag(
-          `${Ace2Editor.EMBEDED[KERNEL_SOURCE]}\n\
+          `
 require.setRootURI("../javascripts/src");\n\
 require.setLibraryURI("../javascripts/lib");\n\
 require.setGlobalKeyPath("require");\n\
+// we can't reuse require-kernel from main window (the one that embeds sidediv+ace_outer)
+// as it would be scoped to the main window, but we need it scoped to ace_inner
+
+window.__pad = require('ep_etherpad-lite/static/js/pad');\n\
+delete window.__pad;\n\
+
 \n\
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/client_plugins");\n\
 plugins.adoptPluginsFromAncestorsOf(window);\n\
