@@ -132,7 +132,7 @@ exports.makeAbsolute = (somePath) => {
     return somePath;
   }
 
-  const rewrittenPath = path.normalize(path.join(exports.findEtherpadRoot(), somePath));
+  const rewrittenPath = path.join(exports.findEtherpadRoot(), somePath);
 
   absPathLogger.debug(`Relative path "${somePath}" can be rewritten to "${rewrittenPath}"`);
   return rewrittenPath;

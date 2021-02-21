@@ -43,11 +43,9 @@ const UpdateCheck = require('./utils/UpdateCheck');
 const db = require('./db/DB');
 const express = require('./hooks/express');
 const hooks = require('../static/js/pluginfw/hooks');
-const npm = require('npm/lib/npm.js');
 const pluginDefs = require('../static/js/pluginfw/plugin_defs');
 const plugins = require('../static/js/pluginfw/plugins');
 const settings = require('./utils/Settings');
-const util = require('util');
 
 const logger = log4js.getLogger('server');
 
@@ -65,9 +63,9 @@ const State = {
 let state = State.INITIAL;
 
 class Gate extends Promise {
-  constructor() {
+  constructor(executor = null) {
     let res;
-    super((resolve) => { res = resolve; });
+    super((resolve, reject) => { res = resolve; if (executor != null) executor(resolve, reject); });
     this.resolve = res;
   }
 }
@@ -111,10 +109,16 @@ exports.start = async () => {
     stats.gauge('memoryUsage', () => process.memoryUsage().rss);
     stats.gauge('memoryUsageHeap', () => process.memoryUsage().heapUsed);
 
-    process.on('uncaughtException', (err) => exports.exit(err));
+    process.on('uncaughtException', (err) => {
+      logger.debug(`uncaught exception: ${err.stack || err}`);
+      exports.exit(err);
+    });
     // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
     // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
-    process.on('unhandledRejection', (err) => { throw err; });
+    process.on('unhandledRejection', (err) => {
+      logger.debug(`unhandled rejection: ${err.stack || err}`);
+      throw err;
+    });
 
     for (const signal of ['SIGINT', 'SIGTERM']) {
       // Forcibly remove other signal listeners to prevent them from terminating node before we are
@@ -132,7 +136,6 @@ exports.start = async () => {
       });
     }
 
-    await util.promisify(npm.load)();
     await db.init();
     await plugins.update();
     const installedPlugins = Object.values(pluginDefs.plugins)
@@ -219,6 +222,7 @@ exports.exit = async (err = null) => {
       process.exit(1);
     }
   }
+  if (!exitCalled) logger.info('Exiting...');
   exitCalled = true;
   switch (state) {
     case State.STARTING:
@@ -241,7 +245,6 @@ exports.exit = async (err = null) => {
     default:
       throw new Error(`unknown State: ${state.toString()}`);
   }
-  logger.info('Exiting...');
   exitGate = new Gate();
   state = State.EXITING;
   exitGate.resolve();

@@ -29,7 +29,7 @@ _install_libreoffice: &install_libreoffice >-
   sudo apt-get -y install libreoffice libreoffice-pdfimport
 
 _install_plugins: &install_plugins >-
-  npm install
+  npm install --no-save
   ep_align
   ep_author_hover
   ep_cursortrace

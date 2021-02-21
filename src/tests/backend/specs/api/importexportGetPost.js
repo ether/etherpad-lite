@@ -280,6 +280,8 @@ describe(__filename, function () {
         return pad;
       };
 
+      this.timeout(1000);
+
       beforeEach(async function () {
         await deleteTestPad();
         settings.requireAuthorization = true;
@@ -292,7 +294,6 @@ describe(__filename, function () {
       });
 
       it('!authn !exist -> create', async function () {
-        this.timeout(100);
         await agent.post(`/p/${testPadIdEnc}/import`)
             .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
             .expect(200);
@@ -302,7 +303,6 @@ describe(__filename, function () {
       });
 
       it('!authn exist -> replace', async function () {
-        this.timeout(100);
         const pad = await createTestPad('before import');
         await agent.post(`/p/${testPadIdEnc}/import`)
             .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
@@ -312,7 +312,6 @@ describe(__filename, function () {
       });
 
       it('authn anonymous !exist -> fail', async function () {
-        this.timeout(100);
         settings.requireAuthentication = true;
         await agent.post(`/p/${testPadIdEnc}/import`)
             .attach('file', padText, {filename: '/test.txt', contentType: 'text/plain'})
@@ -321,7 +320,6 @@ describe(__filename, function () {
       });
 
       it('authn anonymous exist -> fail', async function () {
-        this.timeout(100);
         settings.requireAuthentication = true;
         const pad = await createTestPad('before import\n');
         await agent.post(`/p/${testPadIdEnc}/import`)
@@ -331,7 +329,6 @@ describe(__filename, function () {
       });
 
       it('authn user create !exist -> create', async function () {
-        this.timeout(100);
         settings.requireAuthentication = true;
         await agent.post(`/p/${testPadIdEnc}/import`)
             .auth('user', 'user-password')
@@ -343,7 +340,6 @@ describe(__filename, function () {
       });
 
       it('authn user modify !exist -> fail', async function () {
-        this.timeout(100);
         settings.requireAuthentication = true;
         authorize = () => 'modify';
         await agent.post(`/p/${testPadIdEnc}/import`)
@@ -354,7 +350,6 @@ describe(__filename, function () {
       });
 
       it('authn user readonly !exist -> fail', async function () {
-        this.timeout(100);
         settings.requireAuthentication = true;
         authorize = () => 'readOnly';
         await agent.post(`/p/${testPadIdEnc}/import`)
@@ -365,7 +360,6 @@ describe(__filename, function () {
       });
 
       it('authn user create exist -> replace', async function () {
-        this.timeout(100);
         settings.requireAuthentication = true;
         const pad = await createTestPad('before import\n');
         await agent.post(`/p/${testPadIdEnc}/import`)
@@ -376,7 +370,6 @@ describe(__filename, function () {
       });
 
       it('authn user modify exist -> replace', async function () {
-        this.timeout(100);
         settings.requireAuthentication = true;
         authorize = () => 'modify';
         const pad = await createTestPad('before import\n');
@@ -388,7 +381,6 @@ describe(__filename, function () {
       });
 
       it('authn user readonly exist -> fail', async function () {
-        this.timeout(100);
         const pad = await createTestPad('before import\n');
         settings.requireAuthentication = true;
         authorize = () => 'readOnly';

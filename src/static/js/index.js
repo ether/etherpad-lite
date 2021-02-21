@@ -1,3 +1,6 @@
+'use strict';
+
+/* eslint-disable-next-line max-len */
 // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt Apache-2.0
 /**
  * Copyright 2011 Peter Martischka, Primary Technology.
@@ -16,28 +19,26 @@
  * limitations under the License.
  */
 
-/* global $, customStart */
-
-function randomPadName() {
+const randomPadName = () => {
   // the number of distinct chars (64) is chosen to ensure that the selection will be uniform when
   // using the PRNG below
   const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_';
   // the length of the pad name is chosen to get 120-bit security: log2(64^20) = 120
-  const string_length = 20;
+  const stringLength = 20;
   // make room for 8-bit integer values that span from 0 to 255.
-  const randomarray = new Uint8Array(string_length);
+  const randomarray = new Uint8Array(stringLength);
   // use browser's PRNG to generate a "unique" sequence
   const cryptoObj = window.crypto || window.msCrypto; // for IE 11
   cryptoObj.getRandomValues(randomarray);
   let randomstring = '';
-  for (let i = 0; i < string_length; i++) {
+  for (let i = 0; i < stringLength; i++) {
     // instead of writing "Math.floor(randomarray[i]/256*64)"
     // we can save some cycles.
     const rnum = Math.floor(randomarray[i] / 4);
     randomstring += chars.substring(rnum, rnum + 1);
   }
   return randomstring;
-}
+};
 
 $(() => {
   $('#go2Name').submit(() => {
@@ -55,7 +56,7 @@ $(() => {
   });
 
   // start the custom js
-  if (typeof customStart === 'function') customStart();
+  if (typeof window.customStart === 'function') window.customStart();
 });
 
 // @license-end

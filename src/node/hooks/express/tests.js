@@ -1,7 +1,6 @@
 'use strict';
 
 const path = require('path');
-const npm = require('npm');
 const fs = require('fs');
 const util = require('util');
 const settings = require('../../utils/Settings');
@@ -29,8 +28,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
     res.end(`var specs_list = ${JSON.stringify(files)};\n`);
   });
 
-  // path.join seems to normalize by default, but we'll just be explicit
-  const rootTestFolder = path.normalize(path.join(npm.root, '../tests/frontend/'));
+  const rootTestFolder = path.join(settings.root, 'src/tests/frontend/');
 
   const url2FilePath = (url) => {
     let subPath = url.substr('/tests/frontend'.length);
@@ -39,7 +37,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
     }
     subPath = subPath.split('?')[0];
 
-    let filePath = path.normalize(path.join(rootTestFolder, subPath));
+    let filePath = path.join(rootTestFolder, subPath);
 
     // make sure we jail the paths to the test folder, otherwise serve index
     if (filePath.indexOf(rootTestFolder) !== 0) {
