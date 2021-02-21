@@ -212,7 +212,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
         let hasAttrib = true;
 
         // from selStart to the end of the first line
-        hasAttrib = hasAttrib && rangeHasAttrib(
+        hasAttrib = rangeHasAttrib(
             selStart, [selStart[0], rep.lines.atIndex(selStart[0]).text.length]);
 
         // for all lines in between
