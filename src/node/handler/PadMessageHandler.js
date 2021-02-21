@@ -669,7 +669,8 @@ const handleUserChanges = async (socket, message) => {
     if (Changeset.oldLen(changeset) !== prevText.length) {
       socket.json.send({disconnect: 'badChangeset'});
       stats.meter('failedChangesets').mark();
-      throw new Error(`Can't apply USER_CHANGES ${changeset} with oldLen ${Changeset.oldLen(changeset)} to document of length ${prevText.length}`);
+      throw new Error(`Can't apply USER_CHANGES ${changeset} with oldLen ` +
+                      `${Changeset.oldLen(changeset)} to document of length ${prevText.length}`);
     }
 
     try {
@@ -887,7 +888,8 @@ const handleClientReady = async (socket, message, authorID) => {
   }
 
   if (message.protocolVersion !== 2) {
-    messageLogger.warn(`Dropped message, CLIENT_READY Message has a unknown protocolVersion '${message.protocolVersion}'!`);
+    messageLogger.warn('Dropped message, CLIENT_READY Message has a unknown protocolVersion ' +
+                       `'${message.protocolVersion}'!`);
     return;
   }
 
@@ -1085,12 +1087,16 @@ const handleClientReady = async (socket, message, authorID) => {
       indentationOnNewLine: settings.indentationOnNewLine,
       scrollWhenFocusLineIsOutOfViewport: {
         percentage: {
-          editionAboveViewport: settings.scrollWhenFocusLineIsOutOfViewport.percentage.editionAboveViewport,
-          editionBelowViewport: settings.scrollWhenFocusLineIsOutOfViewport.percentage.editionBelowViewport,
+          editionAboveViewport:
+              settings.scrollWhenFocusLineIsOutOfViewport.percentage.editionAboveViewport,
+          editionBelowViewport:
+              settings.scrollWhenFocusLineIsOutOfViewport.percentage.editionBelowViewport,
         },
         duration: settings.scrollWhenFocusLineIsOutOfViewport.duration,
-        scrollWhenCaretIsInTheLastLineOfViewport: settings.scrollWhenFocusLineIsOutOfViewport.scrollWhenCaretIsInTheLastLineOfViewport,
-        percentageToScrollWhenUserPressesArrowUp: settings.scrollWhenFocusLineIsOutOfViewport.percentageToScrollWhenUserPressesArrowUp,
+        scrollWhenCaretIsInTheLastLineOfViewport:
+            settings.scrollWhenFocusLineIsOutOfViewport.scrollWhenCaretIsInTheLastLineOfViewport,
+        percentageToScrollWhenUserPressesArrowUp:
+            settings.scrollWhenFocusLineIsOutOfViewport.percentageToScrollWhenUserPressesArrowUp,
       },
       initialChangesets: [], // FIXME: REMOVE THIS SHIT
     };
@@ -1380,7 +1386,8 @@ const composePadChangesets = async (padId, startNum, endNum) => {
   // get all changesets
   const changesets = {};
   await Promise.all(changesetsNeeded.map(
-      (revNum) => pad.getRevisionChangeset(revNum).then((changeset) => changesets[revNum] = changeset)
+      (revNum) => pad.getRevisionChangeset(revNum)
+          .then((changeset) => changesets[revNum] = changeset)
   ));
 
   // compose Changesets
@@ -1406,7 +1413,7 @@ const _getRoomSockets = (padID) => {
   const room = socketio.sockets.adapter.rooms[padID];
 
   if (room) {
-    for (const id in room.sockets) {
+    for (const id of Object.keys(room.sockets)) {
       roomSockets.push(socketio.sockets.sockets[id]);
     }
   }
