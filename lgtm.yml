@@ -3,7 +3,7 @@ extraction:
     index:
       exclude:
         - src/static/js/vendors
-  javascript:
+  python:
     index:
       exclude:
         - *
