@@ -22,7 +22,6 @@ const createHTTPError = require('http-errors');
 
 const apiHandler = require('../../handler/APIHandler');
 const settings = require('../../utils/Settings');
-const isValidJSONPName = require('./isValidJSONPName');
 
 const log4js = require('log4js');
 const logger = log4js.getLogger('API');
