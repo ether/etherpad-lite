@@ -65,7 +65,7 @@ exports.setPadRaw = (padId, r) => {
       if (value.pool) {
         for (const attrib of Object.keys(value.pool.numToAttrib)) {
           const attribName = value.pool.numToAttrib[attrib][0];
-          if(blockElems.indexOf(attribName) === -1) {
+          if (blockElems.indexOf(attribName) === -1) {
             console.warn('Plugin missing: ' +
                 `You might want to install a plugin to support this node name: ${attribName}`);
           }
