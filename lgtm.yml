@@ -6,4 +6,4 @@ extraction:
   python:
     index:
       exclude:
-        - *
+        - /
