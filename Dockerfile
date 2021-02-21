@@ -4,7 +4,7 @@
 #
 # Author: muxator
 
-FROM node:10-buster-slim
+FROM node:14-buster-slim
 LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 
 # plugins to install while building the container. By default no plugins are
