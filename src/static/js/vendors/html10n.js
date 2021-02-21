@@ -1,3 +1,5 @@
+// WARNING: This file has been modified from the Original
+
 /**
  * Copyright (c) 2012 Marcel Klehr
  * Copyright (c) 2011-2012 Fabien Cazenave, Mozilla

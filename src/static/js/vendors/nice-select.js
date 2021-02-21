@@ -1,3 +1,6 @@
+// WARNING: This file has been modified from the Original
+// TODO: Nice Select seems relatively abandoned, we should consider other options.
+
 /*  jQuery Nice Select - v1.1.0
     https://github.com/hernansartorio/jquery-nice-select
     Made by Hernán Sartorio  */

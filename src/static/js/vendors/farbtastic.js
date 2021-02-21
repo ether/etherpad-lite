@@ -1,3 +1,6 @@
+// WARNING: This file has been modified from original.
+// TODO: Replace with https://github.com/Simonwep/pickr
+
 // Farbtastic 2.0 alpha
 // Original can be found at:
 // https://github.com/mattfarina/farbtastic/blob/71ca15f4a09c8e5a08a1b0d1cf37ef028adf22f0/src/farbtastic.js
