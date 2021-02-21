@@ -2,6 +2,18 @@
 
 ### Notable fixes
 
+### Notable enhancements
+
+* Improved line number alignment and user experience around line anchors
+* Notification to admin console if a plugin is missing during user file import
+* Beautiful loading and reconnecting animation
+* Additional code quality improvements
+* Dependency updates
+
+# 1.8.9
+
+### Notable fixes
+
 * Fixed HTTP 400 error when importing via the UI.
 * Fixed "Error: spawn npm ENOENT" crash on startup in Windows.
 
