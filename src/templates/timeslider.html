@@ -282,7 +282,7 @@
 
     const plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
     const socket = require('ep_etherpad-lite/static/js/timeslider').socket;
-    const BroadcastSlider = require('ep_etherpad-lite/static/js/timeslider').BroadcastSlider;
+    BroadcastSlider = require('ep_etherpad-lite/static/js/timeslider').BroadcastSlider;
     plugins.baseURL = baseURL;
 
     plugins.update(function () {
