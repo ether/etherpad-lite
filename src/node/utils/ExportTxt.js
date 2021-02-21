@@ -202,7 +202,7 @@ const getTXTFromAtext = (pad, atext, authorColors) => {
 
     if (line.listTypeName !== 'number') {
       // We're no longer in an OL so we can reset counting
-      for (const key in listNumbers) {
+      for (const key of Object.keys(listNumbers)) {
         delete listNumbers[key];
       }
     }
