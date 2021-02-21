@@ -491,7 +491,7 @@ const generateDefinitionForVersion = (version, style = APIPathStyle.FLAT) => {
   };
 
   // build operations
-  for (const funcName in apiHandler.version[version]) {
+  for (const funcName of Object.keys(apiHandler.version[version])) {
     let operation = {};
     if (operations[funcName]) {
       operation = {...operations[funcName]};
@@ -545,7 +545,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
   const {app} = args;
 
   // create openapi-backend handlers for each api version under /api/{version}/*
-  for (const version in apiHandler.version) {
+  for (const version of Object.keys(apiHandler.version)) {
     // we support two different styles of api: flat + rest
     // TODO: do we really want to support both?
 
@@ -591,7 +591,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
       });
 
       // register operation handlers
-      for (const funcName in apiHandler.version[version]) {
+      for (const funcName of Object.keys(apiHandler.version[version])) {
         const handler = async (c, req, res) => {
           // parse fields from request
           const {header, params, query} = c.request;
