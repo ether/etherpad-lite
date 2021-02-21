@@ -2,7 +2,7 @@
 
 const Changeset = require('./Changeset');
 const ChangesetUtils = require('./ChangesetUtils');
-const _ = require('./underscore');
+const _ = require('./vendors/underscore');
 
 const lineMarkerAttribute = 'lmkr';
 

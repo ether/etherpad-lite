@@ -18,7 +18,7 @@
  */
 let documentAttributeManager;
 
-const browser = require('./browser');
+const browser = require('./vendors/browser');
 const padutils = require('./pad_utils').padutils;
 const Ace2Common = require('./ace2_common');
 const $ = require('./rjquery').$;

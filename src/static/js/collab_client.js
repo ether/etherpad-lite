@@ -24,7 +24,7 @@
 
 const chat = require('./chat').chat;
 const hooks = require('./pluginfw/hooks');
-const browser = require('./browser');
+const browser = require('./vendors/browser');
 
 // Dependency fill on init. This exists for `pad.socket` only.
 // TODO: bind directly to the socket.

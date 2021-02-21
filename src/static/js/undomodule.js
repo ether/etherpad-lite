@@ -23,7 +23,7 @@
  */
 
 const Changeset = require('./Changeset');
-const _ = require('./underscore');
+const _ = require('./vendors/underscore');
 
 const undoModule = (() => {
   const stack = (() => {

@@ -24,7 +24,7 @@
 
 const Security = require('./security');
 const hooks = require('./pluginfw/hooks');
-const _ = require('./underscore');
+const _ = require('./vendors/underscore');
 const lineAttributeMarker = require('./linestylefilter').lineAttributeMarker;
 const noop = () => {};
 

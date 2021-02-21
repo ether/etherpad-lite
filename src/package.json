@@ -100,11 +100,11 @@
     "ignorePatterns": [
       "/static/js/admin/jquery.autosize.js",
       "/static/js/admin/minify.json.js",
-      "/static/js/browser.js",
-      "/static/js/farbtastic.js",
-      "/static/js/gritter.js",
-      "/static/js/html10n.js",
-      "/static/js/jquery.js",
+      "/static/js/vendors/browser.js",
+      "/static/js/vendors/farbtastic.js",
+      "/static/js/vendors/gritter.js",
+      "/static/js/vendors/html10n.js",
+      "/static/js/vendors/jquery.js",
       "/static/js/vendors/nice-select.js",
       "/tests/frontend/lib/"
     ],
