@@ -84,7 +84,7 @@ $(document).ready(() => {
 
       for (const attr in plugin) {
         if (attr === 'name') { // Hack to rewrite URLS into name
-          const link = $('<a />', {
+          const link = $('<a rel="noopener noreferrer"/>', {
             href: `https://npmjs.org/package/${plugin.name}`,
             target: '_blank',
           });
