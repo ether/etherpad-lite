@@ -84,7 +84,8 @@ exports.require = (name, args, mod) => {
 
   const cache = settings.maxAge !== 0;
   const template = cache && templateCache.get(ejspath) || ejs.compile(
-      `<% e._init({get: () => __output, set: (s) => { __output = s; }}); %>${fs.readFileSync(ejspath).toString()}<% e._exit(); %>`,
+      '<% e._init({get: () => __output, set: (s) => { __output = s; }}); %>' +
+        `${fs.readFileSync(ejspath).toString()}<% e._exit(); %>`,
       {filename: ejspath});
   if (cache) templateCache.set(ejspath, template);
 
