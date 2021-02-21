@@ -33,7 +33,7 @@ const hooks = require('./pluginfw/hooks');
 
 // These parameters were global, now they are injected. A reference to the
 // Timeslider controller would probably be more appropriate.
-function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider) {
+const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider) => {
   let goToRevisionIfEnabledCount = 0;
   let changesetLoader = undefined;
 
@@ -488,6 +488,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
   receiveAuthorData(clientVars.collab_client_vars.historicalAuthorData);
 
   return changesetLoader;
-}
+};
 
 exports.loadBroadcastJS = loadBroadcastJS;

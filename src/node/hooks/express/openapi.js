@@ -573,7 +573,6 @@ exports.expressCreateServer = (hookName, args, cb) => {
 
       // build openapi-backend instance for this api version
       const api = new OpenAPIBackend({
-        apiRoot, // each api version has its own root
         definition,
         validate: false,
         // for a small optimisation, we can run the quick startup for older

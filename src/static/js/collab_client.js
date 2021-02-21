@@ -34,7 +34,7 @@ const getSocket = () => pad && pad.socket;
 /** Call this when the document is ready, and a new Ace2Editor() has been created and inited.
     ACE's ready callback does not need to have fired yet.
     "serverVars" are from calling doc.getCollabClientVars() on the server. */
-function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad) {
+const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad) => {
   const editor = ace2editor;
   pad = _pad; // Inject pad to avoid a circular dependency.
 
@@ -583,6 +583,6 @@ function getCollabClient(ace2editor, serverVars, initialUserInfo, options, _pad)
 
   setUpSocket();
   return self;
-}
+};
 
 exports.getCollabClient = getCollabClient;
