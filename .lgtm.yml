@@ -1,3 +1,5 @@
-queries:
-  - exclude: src/bin/*.py
-  - exclude: src/static/js/vendors
+extraction:
+  javascript:
+    index:
+      exclude:
+        - src/static/js/vendors
