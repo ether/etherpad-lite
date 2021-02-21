@@ -4,7 +4,7 @@
 // This function is useful to get the caret position of the line as
 // is represented by the browser
 exports.getPosition = () => {
-  let rect, line;
+  let line;
   const range = getSelectionRange();
   const isSelectionInsideTheEditor = range &&
       $(range.endContainer).closest('body')[0].id === 'innerdocbody';
@@ -17,22 +17,6 @@ exports.getPosition = () => {
       const clonedRange = createSelectionRange(range);
       line = getPositionOfElementOrSelection(clonedRange);
       clonedRange.detach();
-    }
-
-    // when there's a <br> or any element that has no height, we can't get
-    // the dimension of the element where the caret is
-    if (rect.height === 0) {
-      const clonedRange = createSelectionRange(range);
-
-      // as we can't get the element height, we create a text node to get the dimensions
-      // on the position
-      const shadowCaret = $(document.createTextNode('|'));
-      clonedRange.insertNode(shadowCaret[0]);
-      clonedRange.selectNode(shadowCaret[0]);
-
-      line = getPositionOfElementOrSelection(clonedRange);
-      clonedRange.detach();
-      shadowCaret.remove();
     }
   }
   return line;
