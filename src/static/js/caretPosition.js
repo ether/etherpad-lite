@@ -6,15 +6,6 @@
 exports.getPosition = () => {
   const range = getSelectionRange();
   if (!range || $(range.endContainer).closest('body')[0].id !== 'innerdocbody') return null;
-  let line;
-
-  // when we have the caret in an empty line, e.g. a line with only a <br>,
-  // getBoundingClientRect() returns all dimensions value as 0
-  const selectionIsInTheBeginningOfLine = range.endOffset > 0;
-  if (selectionIsInTheBeginningOfLine) {
-    const clonedRange = createSelectionRange(range);
-    line = getPositionOfElementOrSelection(clonedRange);
-  }
 
   // when there's a <br> or any element that has no height, we can't get
   // the dimension of the element where the caret is
@@ -26,7 +17,7 @@ exports.getPosition = () => {
   clonedRange.insertNode(shadowCaret[0]);
   clonedRange.selectNode(shadowCaret[0]);
 
-  line = getPositionOfElementOrSelection(clonedRange);
+  const line = getPositionOfElementOrSelection(clonedRange);
   shadowCaret.remove();
   return line;
 };
