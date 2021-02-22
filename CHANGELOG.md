@@ -1,4 +1,9 @@
-# 1.8.9
+# 1.8.10
+
+### Compatibility changes
+
+* JSONP API has been removed in favor of using the mature OpenAPI implementation.
+* Node 14 is now required for Docker Deployments
 
 ### Notable fixes
 
