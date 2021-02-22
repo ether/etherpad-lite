@@ -4,7 +4,7 @@
 #
 # Author: muxator
 
-FROM node:10-buster-slim
+FROM node:14-buster-slim
 LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 
 # plugins to install while building the container. By default no plugins are
@@ -74,4 +74,4 @@ COPY --chown=etherpad:0 ./settings.json.docker /opt/etherpad-lite/settings.json
 RUN chmod -R g=u .
 
 EXPOSE 9001
-CMD ["node", "--experimental-worker", "src/node/server.js"]
+CMD ["node", "src/node/server.js"]
