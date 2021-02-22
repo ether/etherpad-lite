@@ -6,17 +6,13 @@
 exports.getPosition = () => {
   const range = getSelectionRange();
   if (!range || $(range.endContainer).closest('body')[0].id !== 'innerdocbody') return null;
-
-  // when there's a <br> or any element that has no height, we can't get
-  // the dimension of the element where the caret is
+  // When there's a <br> or any element that has no height, we can't get the dimension of the
+  // element where the caret is. As we can't get the element height, we create a text node to get
+  // the dimensions on the position.
   const clonedRange = createSelectionRange(range);
-
-  // as we can't get the element height, we create a text node to get the dimensions
-  // on the position
   const shadowCaret = $(document.createTextNode('|'));
   clonedRange.insertNode(shadowCaret[0]);
   clonedRange.selectNode(shadowCaret[0]);
-
   const line = getPositionOfElementOrSelection(clonedRange);
   shadowCaret.remove();
   return line;
