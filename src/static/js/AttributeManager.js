@@ -209,10 +209,8 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
       if (selStart[1] === selEnd[1] && selStart[0] === selEnd[0]) return false;
 
       if (selStart[0] !== selEnd[0]) { // -> More than one line selected
-        let hasAttrib = true;
-
         // from selStart to the end of the first line
-        hasAttrib = rangeHasAttrib(
+        let hasAttrib = rangeHasAttrib(
             selStart, [selStart[0], rep.lines.atIndex(selStart[0]).text.length]);
 
         // for all lines in between
