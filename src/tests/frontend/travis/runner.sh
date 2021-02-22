@@ -6,9 +6,6 @@ error() { log "ERROR: $@" >&2; }
 fatal() { error "$@"; exit 1; }
 try() { "$@" || fatal "'$@' failed"; }
 
-[ -n "${SAUCE_USERNAME}" ] || fatal "SAUCE_USERNAME is unset - exiting"
-[ -n "${SAUCE_ACCESS_KEY}" ] || fatal "SAUCE_ACCESS_KEY is unset - exiting"
-
 # Move to the Etherpad base directory.
 MY_DIR=$(try cd "${0%/*}" && try pwd -P) || exit 1
 try cd "${MY_DIR}/../../../.."
@@ -38,7 +35,6 @@ log "Starting the remote runner..."
 node remote_runner.js
 exit_code=$?
 
-kill "$(cat /tmp/sauce.pid)"
 kill "$ep_pid" && wait "$ep_pid"
 log "Done."
 exit "$exit_code"
