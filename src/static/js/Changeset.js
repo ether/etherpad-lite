@@ -1759,7 +1759,7 @@ exports.makeAttribsString = (opcode, attribs, pool) => {
     return '';
   } else if ((typeof attribs) === 'string') {
     return attribs;
-  } else if (pool && attribs && attribs.length) {
+  } else if (pool && attribs.length) {
     if (attribs.length > 1) {
       attribs = attribs.slice();
       attribs.sort();

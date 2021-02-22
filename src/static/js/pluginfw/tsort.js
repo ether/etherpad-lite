@@ -81,6 +81,7 @@ const tsortTest = () => {
 
   try {
     sorted = tsort(edges);
+    console.log('succeeded', sorted);
   } catch (e) {
     console.log(e.message);
   }

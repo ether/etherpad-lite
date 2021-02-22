@@ -314,7 +314,7 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
       await hooks.aCallAll('getLineHTMLForExport', context);
       // To create list parent elements
       if ((!prevLine || prevLine.listLevel !== line.listLevel) ||
-          (prevLine && line.listTypeName !== prevLine.listTypeName)) {
+          (line.listTypeName !== prevLine.listTypeName)) {
         const exists = _.find(openLists, (item) => (
           item.level === line.listLevel && item.type === line.listTypeName)
         );
@@ -414,7 +414,7 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
       if ((!nextLine ||
            !nextLine.listLevel ||
            nextLine.listLevel < line.listLevel) ||
-          (nextLine && line.listTypeName !== nextLine.listTypeName)) {
+          (line.listTypeName !== nextLine.listTypeName)) {
         let nextLevel = 0;
         if (nextLine && nextLine.listLevel) {
           nextLevel = nextLine.listLevel;

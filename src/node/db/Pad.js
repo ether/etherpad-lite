@@ -87,7 +87,7 @@ Pad.prototype.appendRevision = async function appendRevision(aChangeset, author)
 
   // ex. getNumForAuthor
   if (author !== '') {
-    this.pool.putAttrib(['author', author || '']);
+    this.pool.putAttrib(['author', author]);
   }
 
   if (newRev % 100 === 0) {

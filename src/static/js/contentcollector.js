@@ -195,7 +195,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
       }
     }
 
-    if (listType === 'none' || !listType) {
+    if (listType === 'none') {
       delete state.lineAttributes.list;
     } else {
       state.lineAttributes.list = listType;

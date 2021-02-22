@@ -3782,7 +3782,7 @@ function Ace2Inner() {
 
   // We apply the height of a line in the doc body, to the corresponding sidediv line number
   const updateLineNumbers = () => {
-    if (!currentCallStack || currentCallStack && !currentCallStack.domClean) return;
+    if (!currentCallStack || !currentCallStack.domClean) return;
 
     // Refs #4228, to avoid layout trashing, we need to first calculate all the heights,
     // and then apply at once all new height to div elements
