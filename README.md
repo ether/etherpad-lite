@@ -17,7 +17,7 @@ Etherpad is a real-time collaborative editor [scalable to thousands of simultane
 [![Frontend admin tests](https://github.com/ether/etherpad-lite/actions/workflows/frontend-admin-tests.yml/badge.svg?color=%2344b492)](https://github.com/ether/etherpad-lite/actions/workflows/frontend-admin-tests.yml) [![Frontend tests](https://github.com/ether/etherpad-lite/actions/workflows/frontend-tests.yml/badge.svg?color=%2344b492)](https://github.com/ether/etherpad-lite/actions/workflows/frontend-tests.yml)
 
 ### Engagement
-<a href="https://hub.docker.com/r/etherpad/etherpad"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/etherpad/etherpad?color=%2344b492"></a> ![Discord](https://img.shields.io/discord/741309013593030667?color=%2344b492) ![Etherpad plugins](https://img.shields.io/endpoint?url=https%3A%2F%2Fstatic.etherpad.org%2Fshields.json&color=%2344b492 "Etherpad plugins") ![Languages](https://img.shields.io/static/v1?label=Languages&message=105&color=#44b492) ![Translation Coverage](https://img.shields.io/static/v1?label=Languages&message=98%&color=#44b492)
+<a href="https://hub.docker.com/r/etherpad/etherpad"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/etherpad/etherpad?color=%2344b492"></a> ![Discord](https://img.shields.io/discord/741309013593030667?color=%2344b492) ![Etherpad plugins](https://img.shields.io/endpoint?url=https%3A%2F%2Fstatic.etherpad.org%2Fshields.json&color=%2344b492 "Etherpad plugins") ![Languages](https://img.shields.io/static/v1?label=Languages&message=105&color=%2344b492) ![Translation Coverage](https://img.shields.io/static/v1?label=Languages&message=98%&color=%2344b492)
 
 # Installation
 
