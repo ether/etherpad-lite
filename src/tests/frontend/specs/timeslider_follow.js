@@ -19,7 +19,7 @@ describe('timeslider follow', function () {
     }
 
     await helper.gotoTimeslider(0);
-    await helper.waitForPromise(() => helper.contentWindow().location.hash === '#0');
+    await helper.waitForPromise(() => helper.contentWindow().location.hash === '#0', 10000);
 
     const originalTop = helper.contentWindow().$('#innerdocbody').offset();
 
@@ -31,7 +31,7 @@ describe('timeslider follow', function () {
     await helper.waitForPromise(() => {
       newTop = helper.contentWindow().$('#innerdocbody').offset();
       return newTop.top < originalTop.top;
-    });
+    }, 10000);
   });
 
   /**
