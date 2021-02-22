@@ -28,12 +28,8 @@ jobs:
       id: environment
       run: echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.sha }})"
 
-    - name: Create settings.json
-      run: cp settings.json.template settings.json
-
-    - name: Disable import/export rate limiting
-      run: |
-        sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 0/' -i settings.json
+    - name: Write custom settings.json with loglevel WARN
+      run: "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/' < settings.json.template > settings.json"
 
     - uses: saucelabs/sauce-connect-action@v1.1.2
       with:
@@ -103,12 +99,11 @@ jobs:
       id: environment
       run: echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.sha }})"
 
-    - name: Create settings.json
-      run: cp settings.json.template settings.json
+    - name: Write custom settings.json with loglevel WARN
+      run: "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/' < settings.json.template > settings.json"
 
-    - name: Disable import/export rate limiting
-      run: |
-        sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 0/' -i settings.json
+    - name: Write custom settings.json that enables the Admin UI tests
+      run: "sed -i 's/\"enableAdminUITests\": false/\"enableAdminUITests\": true,\\n\"users\":{\"admin\":{\"password\":\"changeme\",\"is_admin\":true}}/' settings.json"
 
       # XXX we should probably run all tests, because plugins could effect their results
     - name: Remove standard frontend test files, so only plugin tests are run
