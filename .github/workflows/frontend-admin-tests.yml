@@ -50,8 +50,8 @@ jobs:
       id: environment
       run: echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.sha }})"
 
-    - name: Write custom settings.json with loglevel WARN
-      run: "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/' < settings.json.template > settings.json"
+    - name: Create settings.json
+      run: cp settings.json.template settings.json
 
     - name: Write custom settings.json that enables the Admin UI tests
       run: "sed -i 's/\"enableAdminUITests\": false/\"enableAdminUITests\": true,\\n\"users\":{\"admin\":{\"password\":\"changeme\",\"is_admin\":true}}/' settings.json"
