@@ -22,7 +22,6 @@ const createHTTPError = require('http-errors');
 
 const apiHandler = require('../../handler/APIHandler');
 const settings = require('../../utils/Settings');
-const isValidJSONPName = require('./isValidJSONPName');
 
 const log4js = require('log4js');
 const logger = log4js.getLogger('API');
@@ -684,12 +683,6 @@ exports.expressCreateServer = (hookName, args, cb) => {
               response = {code: 1, message: err.message, data: null};
               break;
           }
-        }
-
-        // support jsonp response format
-        if (req.query.jsonp && isValidJSONPName.check(req.query.jsonp)) {
-          res.header('Content-Type', 'application/javascript');
-          response = `${req.query.jsonp}(${JSON.stringify(response)})`;
         }
 
         // send response

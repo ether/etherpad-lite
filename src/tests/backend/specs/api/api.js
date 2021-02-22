@@ -56,13 +56,4 @@ describe(__filename, function () {
         });
   });
 
-  it('supports jsonp calls', async function () {
-    this.timeout(150);
-    await agent.get(`${endPoint('createPad')}&jsonp=jsonp_1&padID=${testPadId}`)
-        .expect(200)
-        .expect('Content-Type', /javascript/)
-        .expect((res) => {
-          if (!res.text.match('jsonp_1')) throw new Error('no jsonp call seen');
-        });
-  });
 });

@@ -134,13 +134,6 @@ Authentication works via a token that is sent with each request as a post parame
 
 All functions will also be available through a node module accessible from other node.js applications.
 
-### JSONP
-
-The API provides _JSONP_ support to allow requests from a server in a different domain.
-Simply add `&jsonp=?` to the API call.
-
-Example usage: https://api.jquery.com/jQuery.getJSON/
-
 ## API Methods
 
 ### Groups
@@ -636,4 +629,3 @@ get stats of the etherpad instance
 
 *Example returns*
  * `{"code":0,"message":"ok","data":{"totalPads":3,"totalSessions": 2,"totalActivePads": 1}}`
-
