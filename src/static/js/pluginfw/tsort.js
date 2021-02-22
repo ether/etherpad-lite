@@ -79,6 +79,12 @@ const tsortTest = () => {
     ['C', 'A'],
   ];
 
+  try {
+    sorted = tsort(edges);
+  } catch (e) {
+    console.log(e.message);
+  }
+
   // example 3: generate random edges
   const max = 100;
   const iteration = 30;
