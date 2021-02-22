@@ -14,7 +14,6 @@ exports.getPosition = () => {
   if (selectionIsInTheBeginningOfLine) {
     const clonedRange = createSelectionRange(range);
     line = getPositionOfElementOrSelection(clonedRange);
-    clonedRange.detach();
   }
 
   // when there's a <br> or any element that has no height, we can't get
@@ -28,7 +27,6 @@ exports.getPosition = () => {
   clonedRange.selectNode(shadowCaret[0]);
 
   line = getPositionOfElementOrSelection(clonedRange);
-  clonedRange.detach();
   shadowCaret.remove();
   return line;
 };
