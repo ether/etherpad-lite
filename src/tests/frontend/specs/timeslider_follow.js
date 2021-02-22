@@ -8,7 +8,7 @@ describe('timeslider follow', function () {
 
   // TODO needs test if content is also followed, when user a makes edits
   // while user b is in the timeslider
-  xit("content as it's added to timeslider", async function () {
+  it("content as it's added to timeslider", async function () {
     this.timeout(20000);
     // send 6 revisions
     const revs = 6;
