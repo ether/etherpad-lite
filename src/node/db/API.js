@@ -722,7 +722,7 @@ Example returns:
 */
 
 exports.sendClientsMessage = async (padID, msg) => {
-  await getPadSafe(padID, true);
+  await getPadSafe(padID, true); // Throw if the padID is invalid or if the pad does not exist.
   padMessageHandler.handleCustomMessage(padID, msg);
 };
 
