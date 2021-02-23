@@ -133,7 +133,7 @@ if (!isAdminRunner) {
   sauceTestWorker.push({
     platform: 'Windows 7',
     browserName: 'firefox',
-    version: '52.0',
+    version: '84.0',
   });
 
   // 2) Chrome on Linux
