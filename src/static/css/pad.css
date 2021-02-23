@@ -70,3 +70,10 @@ input {
 @media (max-width: 800px) {
   .hide-for-mobile { display: none; }
 }
+
+.etherpadBrand{
+  width:20%;
+  max-width:100px;
+  margin-left:auto;
+  margin-right:auto;
+}
