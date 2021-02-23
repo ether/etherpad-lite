@@ -57,7 +57,7 @@ describe('embed links', function () {
 
     describe('the share link', function () {
       it('is the actual pad url', function (done) {
-        this.timeout(50);
+        this.timeout(100);
         const chrome$ = helper.padChrome$;
 
         // open share dropdown
