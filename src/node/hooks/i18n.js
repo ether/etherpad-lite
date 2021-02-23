@@ -84,18 +84,18 @@ const getAllLocales = () => {
 // e.g. { es: {nativeName: "español", direction: "ltr"}, ... }
 const getAvailableLangs = (locales) => {
   const result = {};
-  for (const langcode of Object.keys(locales)) {
+  _.each(_.keys(locales), (langcode) => {
     result[langcode] = languages.getLanguageInfo(langcode);
-  }
+  });
   return result;
 };
 
 // returns locale index that will be served in /locales.json
 const generateLocaleIndex = (locales) => {
   const result = _.clone(locales); // keep English strings
-  for (const langcode of Object.keys(locales)) {
+  _.each(_.keys(locales), (langcode) => {
     if (langcode !== 'en') result[langcode] = `locales/${langcode}.json`;
-  }
+  });
   return JSON.stringify(result);
 };
 
@@ -109,7 +109,7 @@ exports.expressCreateServer = (n, args, cb) => {
   args.app.get('/locales/:locale', (req, res) => {
     // works with /locale/en and /locale/en.json requests
     const locale = req.params.locale.split('.')[0];
-    if (Object.prototype.hasOwnProperty.call(exports.availableLangs, locale)) {
+    if (exports.availableLangs.hasOwnProperty(locale)) {
       res.setHeader('Cache-Control', `public, max-age=${settings.maxAge}`);
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
       res.send(`{"${locale}":${JSON.stringify(locales[locale])}}`);
