@@ -131,7 +131,7 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
 if (!isAdminRunner) {
   // 1) Firefox on Linux
   sauceTestWorker.push({
-    platform: 'Windows 7',
+    platform: 'Windows 10',
     browserName: 'firefox',
     version: '84.0',
   });
