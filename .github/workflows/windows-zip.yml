@@ -10,10 +10,16 @@ jobs:
     if: |
          (github.event_name != 'pull_request')
          || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
-    name: Building Windows Zip on Linux without plugins
-    runs-on: ubuntu-latest
+    name: Build
+    runs-on: windows-latest
 
     steps:
+    - uses: msys2/setup-msys2@v2
+      with:
+        path-type: inherit
+        install: >-
+          zip
+
     - name: Checkout repository
       uses: actions/checkout@v2
 
@@ -22,12 +28,15 @@ jobs:
         node-version: 12
 
     - name: Install all dependencies and symlink for ep_etherpad-lite
+      shell: msys2 {0}
       run: src/bin/installDeps.sh
 
     - name: Run the backend tests
+      shell: msys2 {0}
       run: cd src && npm test
 
     - name: Build the .zip
+      shell: msys2 {0}
       run: src/bin/buildForWindows.sh
 
     - name: Archive production artifacts
@@ -43,7 +52,7 @@ jobs:
     if: |
          (github.event_name != 'pull_request')
          || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
-    name: Deploy Windows Zip on Windows
+    name: Deploy
     needs: build
     runs-on: windows-latest
 
