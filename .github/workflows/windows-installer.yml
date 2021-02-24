@@ -39,15 +39,16 @@ jobs:
     - name: Grab nsis config
       run: git clone https://github.com/ether/etherpad_nsis.git
 
-    - name: Check something..
-      run: ls etherpad_nsis
-
     - name: Create installer
       uses: joncloud/makensis-action@v3.4
       with:
         script-file: 'etherpad_nsis/etherpad.nsi'
 
+    - name: Check something..
+      run: ls etherpad_nsis
+
     - name: Archive production artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: etherpad_nsis/etherpad-server-windows.exe
+        name: etherpad-server-windows.exe
+        path: etherpad_nsis/etherpad-server-windows.exe
