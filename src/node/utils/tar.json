@@ -82,4 +82,5 @@
   , "pluginfw/shared.js"
   , "pluginfw/hooks.js"
   ]
+, "jquery.js": ["jquery.js"]
 }
