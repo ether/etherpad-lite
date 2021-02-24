@@ -112,7 +112,7 @@ module.exports = exports = (args, opts = {}) => {
       ...(PATH ? PATH.split(path.delimiter) : []),
     ].join(path.delimiter),
   };
-  logger.debug(`${pathVarName}=${env[pathVarName]}`);
+  logger.debug(`${pathVarName}=${opts.env[pathVarName]}`);
 
   // Create an error object to use in case the process fails. This is done here rather than in the
   // process's `exit` handler so that we get a useful stack trace.
