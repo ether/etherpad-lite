@@ -1,4 +1,2 @@
-'use strict';
-
-window.customStart = () => {
-};
+function customStart() {
+}
