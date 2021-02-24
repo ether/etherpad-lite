@@ -1,4 +1,4 @@
-name: "Windows Zip"
+name: "Windows Installer"
 
 # any branch is useful for testing before a PR is submitted
 on: [push, pull_request]
@@ -43,7 +43,7 @@ jobs:
       uses: joncloud/makensis-action@v3.4
       with:
         arguments: '/V3'
-        script-file: 'etherpad_nsis/nsis_installer.nsi'
+        script-file: 'etherpad_nsis/etherpad.nsi'
 
     - name: Archive production artifacts
       uses: actions/upload-artifact@v2
