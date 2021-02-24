@@ -137,6 +137,12 @@ const getSection = (lexed) => {
 const buildToc = (lexed, filename, cb) => {
   let toc = [];
   let depth = 0;
+
+  marked.setOptions({
+    headerIds: true,
+    headerPrefix: `${filename}_`,
+  });
+
   lexed.forEach((tok) => {
     if (tok.type !== 'heading') return;
     if (tok.depth - depth > 1) {
