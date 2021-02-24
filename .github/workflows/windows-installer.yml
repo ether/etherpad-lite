@@ -34,7 +34,7 @@ jobs:
       run: src/bin/buildForWindows.sh
 
     - name: Extract the .zip into folder
-      run: unzip etherpad-lite-win.zip etherpad-lite-new
+      run: unzip etherpad-lite-win.zip -d etherpad-lite-new
 
     - name: Grab nsis config
       uses: actions/checkout@master
