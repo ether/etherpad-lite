@@ -37,9 +37,7 @@ jobs:
       run: unzip etherpad-lite-win.zip -d etherpad-lite-new
 
     - name: Grab nsis config
-      uses: actions/checkout@master
-      with:
-        name: ether/etherpad_nsis
+      run: git clone https://github.com/ether/etherpad_nsis.git
 
     - name: Create installer
       uses: joncloud/makensis-action@v3.4
