@@ -61,7 +61,7 @@ start with `src/bin/run.sh` will update the dependencies.
 ## Windows
 
 ### Prebuilt Windows package
-This package runs on any Windows machine, but for development purposes, please do a manual install.
+This package runs on any Windows machine. You can perform a manual installation via git for development purposes, but as this uses symlinks which performs unreliably on Windows, please stick to the prebuilt package if possible.
 
 1. [Download the latest Windows package](https://etherpad.org/#download)
 2. Extract the folder
