@@ -1,0 +1,53 @@
+name: "Windows Zip"
+
+# any branch is useful for testing before a PR is submitted
+on: [push, pull_request]
+
+jobs:
+  build:
+    # run on pushes to any branch
+    # run on PRs from external forks
+    if: |
+         (github.event_name != 'pull_request')
+         || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
+    name: Building Windows Zip on Linux without plugins
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 'Install makensis (apt)'
+      run: sudo apt update && sudo apt install -y nsis nsis-pluginapi
+
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - uses: actions/setup-node@v2
+      with:
+        node-version: 12
+
+    - name: Install all dependencies and symlink for ep_etherpad-lite
+      run: src/bin/installDeps.sh
+
+    - name: Run the backend tests
+      run: cd src && npm test
+
+    - name: Build the .zip
+      run: src/bin/buildForWindows.sh
+
+    - name: Extract the .zip into folder
+      run: unzip etherpad-lite-win.zip etherpad-lite-new
+
+    - name: Grab nsis config
+      uses: actions/checkout@master
+      with:
+        name: ether/etherpad_nsis
+
+    - name: Create installer
+      uses: joncloud/makensis-action@v3.4
+      with:
+        arguments: '/V3'
+        script-file: 'etherpad_nsis/nsis_installer.nsi'
+
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: etherpad-server-windows.exe
