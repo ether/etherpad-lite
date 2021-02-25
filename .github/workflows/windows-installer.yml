@@ -54,9 +54,15 @@ jobs:
     - name: Install the Executable
       run: etherpad_nsis/etherpad-server-windows.exe /S
 
+    - name: Install Cypress
+      run: npm install cypress
+
     - name: Cypress run
       uses: cypress-io/github-action@v2
       with:
+        wait-on: 'http://localhost:9001/p/test'
+        wait-on-timeout: 120
+        config: pageLoadTimeout=100000,baseUrl=http://localhost:9001
         # just for full picture after installing Cypress
         # print information about detected browsers, etc
         # see https://on.cypress.io/command-line#cypress-info
