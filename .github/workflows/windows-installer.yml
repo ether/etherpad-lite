@@ -51,11 +51,17 @@ jobs:
       with:
         script-file: 'etherpad_nsis/etherpad.nsi'
 
-    - name: dir
-      run: dir
-
     - name: Install the Executable
       run: etherpad_nsis/etherpad-server-windows.exe /S
+
+    - name: Cypress run
+      uses: cypress-io/github-action@v2
+      with:
+        # just for full picture after installing Cypress
+        # print information about detected browsers, etc
+        # see https://on.cypress.io/command-line#cypress-info
+        build: npx cypress info
+        working-directory: src/tests/frontend/cypress
 
     - name: Archive production artifacts
       uses: actions/upload-artifact@v2
