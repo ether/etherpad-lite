@@ -77,6 +77,9 @@ jobs:
     - name: Install Cypress
       run: npm install cypress --save-dev
 
+    - name: dir
+      run: dir node_modules\ep_etherpad-lite\
+
     - name: Cypress run
       uses: cypress-io/github-action@v2
       with:
@@ -86,5 +89,5 @@ jobs:
         # just for full picture after installing Cypress
         # print information about detected browsers, etc
         # see https://on.cypress.io/command-line#cypress-info
+        # working-directory: node_modules\ep_etherpad-lite\tests\frontend\cypress
         build: npx cypress info
-        working-directory: node_modules\ep_etherpad-lite\tests\frontend\cypress
