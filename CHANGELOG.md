@@ -1,11 +1,17 @@
 # 1.8.10
 
+### Security Patches
+
+* Resolve potential ReDoS vulnerability in your project - GHSL-2020-359
+
 ### Compatibility changes
 
 * JSONP API has been removed in favor of using the mature OpenAPI implementation.
 * Node 14 is now required for Docker Deployments
 
 ### Notable fixes
+
+* Various performance and stability fixes
 
 ### Notable enhancements
 
