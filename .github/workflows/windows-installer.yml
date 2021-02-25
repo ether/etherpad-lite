@@ -51,11 +51,11 @@ jobs:
       with:
         script-file: 'etherpad_nsis/etherpad.nsi'
 
-    - name: Install the Executable
+    - name: Install the Executable (Etherpad Server)
       run: etherpad_nsis/etherpad-server-windows.exe /S
 
     - name: Install Cypress
-      run: npm install cypress
+      run: npm install cypress --save-dev
 
     - name: Cypress run
       uses: cypress-io/github-action@v2

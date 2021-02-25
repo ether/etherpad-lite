@@ -1,0 +1,11 @@
+{
+  "name": "etherpad_cypress",
+  "version": "0.0.1",
+  "description": "Cypress tests within Etherpad",
+  "main": "test.js",
+  "scripts": {
+    "e2e": "cypress open"
+  },
+  "author": "John McLear",
+  "license": "Apache 2"
+}
