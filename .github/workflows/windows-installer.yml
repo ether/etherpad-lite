@@ -51,8 +51,8 @@ jobs:
       with:
         script-file: 'etherpad_nsis/etherpad.nsi'
 
-    - name: Check something..
-      run: ls etherpad_nsis
+    - name: Install the Executable
+      run: installer.exe /S etherpad-server-windows.exe
 
     - name: Archive production artifacts
       uses: actions/upload-artifact@v2
