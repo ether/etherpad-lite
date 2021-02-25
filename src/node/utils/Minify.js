@@ -21,6 +21,7 @@
  * limitations under the License.
  */
 
+const assert = require('assert').strict;
 const settings = require('./Settings');
 const fs = require('fs').promises;
 const path = require('path');
@@ -92,6 +93,36 @@ const requestURIs = (locations, method, headers, callback) => {
   });
 };
 
+const sanitizePathname = (p) => {
+  // Replace all backslashes with forward slashes to support Windows. This MUST be done BEFORE path
+  // normalization, otherwise an attacker will be able to read arbitrary files anywhere on the
+  // filesystem. See https://nvd.nist.gov/vuln/detail/CVE-2015-3297. Node.js treats both the
+  // backlash and the forward slash characters as pathname component separators on Windows so this
+  // does not change the meaning of the pathname.
+  p = p.replace(/\\/g, '/');
+  // The Node.js documentation says that path.join() normalizes, and the documentation for
+  // path.normalize() says that it resolves '..' and '.' components. The word "resolve" implies that
+  // it examines the filesystem to resolve symbolic links, so 'a/../b' might not be the same thing
+  // as 'b'. Most path normalization functions from other libraries (e.g. Python's
+  // os.path.normpath()) clearly state that they do not examine the filesystem -- they are simple
+  // string manipulations. Node.js's path.normalize() probably also does a simple string
+  // manipulation, but if not it must be given a real pathname. Join with ROOT_DIR here just in
+  // case. ROOT_DIR will be removed later.
+  p = path.join(ROOT_DIR, p);
+  // Prevent attempts to read outside of ROOT_DIR via extra '..' components. ROOT_DIR is assumed to
+  // be normalized.
+  assert(ROOT_DIR.endsWith(path.sep));
+  if (!p.startsWith(ROOT_DIR)) throw new Error(`attempt to read outside ROOT_DIR (${ROOT_DIR})`);
+  // Convert back to a relative pathname.
+  p = p.slice(ROOT_DIR.length);
+  // On Windows, path.normalize replaces forward slashes with backslashes. Convert back to forward
+  // slashes. THIS IS DANGEROUS UNLESS BACKSLASHES ARE REPLACED WITH FORWARD SLASHES BEFORE PATH
+  // NORMALIZATION, otherwise on POSIXish systems '..\\' in the input pathname would not be
+  // normalized away before being converted to '../'.
+  p = p.replace(/\\/g, '/');
+  return p;
+};
+
 /**
  * creates the minifed javascript for the given minified name
  * @param req the Express request
@@ -99,15 +130,10 @@ const requestURIs = (locations, method, headers, callback) => {
  */
 const minify = async (req, res) => {
   let filename = req.params.filename;
-
-  // No relative paths, especially if they may go up the file hierarchy.
-  filename = path.join(ROOT_DIR, filename);
-  filename = filename.replace(/\.\./g, '');
-
-  if (filename.indexOf(ROOT_DIR) === 0) {
-    filename = filename.slice(ROOT_DIR.length);
-    filename = filename.replace(/\\/g, '/');
-  } else {
+  try {
+    filename = sanitizePathname(filename);
+  } catch (err) {
+    logger.error(`sanitization of pathname "${filename}" failed: ${err.stack || err}`);
     res.writeHead(404, {});
     res.end();
     return;
@@ -134,7 +160,13 @@ const minify = async (req, res) => {
       const plugin = plugins.plugins[library];
       const pluginPath = plugin.package.realPath;
       filename = path.relative(ROOT_DIR, pluginPath + libraryPath);
-      filename = filename.replace(/\\/g, '/'); // windows path fix
+      // On Windows, path.relative converts forward slashes to backslashes. Convert them back
+      // because some of the code below assumes forward slashes. Node.js treats both the backlash
+      // and the forward slash characters as pathname component separators on Windows so this does
+      // not change the meaning of the pathname. This conversion does not introduce a directory
+      // traversal vulnerability because all '..\\' substrings have already been removed by
+      // sanitizePathname.
+      filename = filename.replace(/\\/g, '/');
     } else if (LIBRARY_WHITELIST.indexOf(library) !== -1) {
       // Go straight into node_modules
       // Avoid `require.resolve()`, since 'mustache' and 'mustache/index.js'
