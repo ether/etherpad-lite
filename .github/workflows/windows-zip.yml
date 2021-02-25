@@ -80,7 +80,7 @@ jobs:
     - name: Cypress run
       uses: cypress-io/github-action@v2
       with:
-        wait-on: 'http://127.0.0.1:9001/p/test'
+        wait-on: 'http://127.0.0.1:9001'
         wait-on-timeout: 120
         # just for full picture after installing Cypress
         # print information about detected browsers, etc
