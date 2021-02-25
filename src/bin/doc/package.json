@@ -7,7 +7,7 @@
     "node": ">=10.17.0"
   },
   "dependencies": {
-    "marked": "1.1.1"
+    "marked": "^2.0.0"
   },
   "devDependencies": {},
   "optionalDependencies": {},
