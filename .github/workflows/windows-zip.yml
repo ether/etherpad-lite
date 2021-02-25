@@ -68,22 +68,23 @@ jobs:
     - name: list
       run: dir etherpad
 
+    - name: Install Cypress
+      run: npm install cypress --save-dev
+
     - name: Run Etherpad
       run: |
             cd etherpad
             node node_modules\ep_etherpad-lite\node\server.js &
             curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
 
-    - name: Install Cypress
-      run: npm install cypress --save-dev
-
     - name: Cypress run
       uses: cypress-io/github-action@v2
       with:
-        wait-on: 'http://127.0.0.1:9001'
-        wait-on-timeout: 120
+        wait-on: 'http://127.0.0.1:9001/p/test'
+        wait-on-timeout: 600
         # just for full picture after installing Cypress
         # print information about detected browsers, etc
         # see https://on.cypress.io/command-line#cypress-info
         working-directory: etherpad\node_modules\ep_etherpad-lite\tests\frontend\cypress
         build: npx cypress info
+        start: cd etherpad && node node_modules\ep_etherpad-lite\node\server.js &
