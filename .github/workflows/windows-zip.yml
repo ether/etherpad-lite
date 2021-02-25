@@ -87,4 +87,4 @@ jobs:
         # see https://on.cypress.io/command-line#cypress-info
         working-directory: etherpad\node_modules\ep_etherpad-lite\tests\frontend\cypress
         build: npx cypress info
-        start: cd etherpad && node node_modules\ep_etherpad-lite\node\server.js &
+        start: npm start

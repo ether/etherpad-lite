@@ -5,6 +5,7 @@
   "main": "test.js",
   "scripts": {
     "e2e": "cypress open"
+    "start" : "node ../../../node/server.js"
   },
   "author": "John McLear",
   "license": "Apache 2"
