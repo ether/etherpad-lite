@@ -10,12 +10,16 @@ jobs:
     if: |
          (github.event_name != 'pull_request')
          || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
-    name: Building Windows Zip and Executable Installer on Linux without plugins
-    runs-on: ubuntu-latest
+
+    name: Build Zip & Exe
+    runs-on: windows-latest
 
     steps:
-    - name: 'Install makensis (apt)'
-      run: sudo apt update && sudo apt install -y nsis nsis-pluginapi
+    - uses: msys2/setup-msys2@v2
+      with:
+        path-type: inherit
+        install: >-
+          zip
 
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -25,16 +29,19 @@ jobs:
         node-version: 12
 
     - name: Install all dependencies and symlink for ep_etherpad-lite
+      shell: msys2 {0}
       run: src/bin/installDeps.sh
 
     - name: Run the backend tests
+      shell: msys2 {0}
       run: cd src && npm test
 
     - name: Build the .zip
+      shell: msys2 {0}
       run: src/bin/buildForWindows.sh
 
     - name: Extract the .zip into folder
-      run: unzip etherpad-lite-win.zip -d etherpad-lite-new
+      run: 7z x etherpad-lite-win.zip -oetherpad-lite-new
 
     - name: Grab nsis config
       run: git clone https://github.com/ether/etherpad_nsis.git
