@@ -87,4 +87,4 @@ jobs:
         # print information about detected browsers, etc
         # see https://on.cypress.io/command-line#cypress-info
         build: npx cypress info
-        working-directory: src/tests/frontend/cypress
+        working-directory: node_modules\ep_etherpad-lite\tests\frontend\cypress
