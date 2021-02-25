@@ -159,7 +159,7 @@ const minify = async (req, res) => {
     if (plugins.plugins[library] && match[3]) {
       const plugin = plugins.plugins[library];
       const pluginPath = plugin.package.realPath;
-      filename = path.relative(ROOT_DIR, pluginPath + libraryPath);
+      filename = path.relative(ROOT_DIR, path.join(pluginPath, libraryPath));
       // On Windows, path.relative converts forward slashes to backslashes. Convert them back
       // because some of the code below assumes forward slashes. Node.js treats both the backlash
       // and the forward slash characters as pathname component separators on Windows so this does
@@ -171,7 +171,7 @@ const minify = async (req, res) => {
       // Go straight into node_modules
       // Avoid `require.resolve()`, since 'mustache' and 'mustache/index.js'
       // would end up resolving to logically distinct resources.
-      filename = `../node_modules/${library}${libraryPath}`;
+      filename = path.join('../node_modules/', library, libraryPath);
     }
   }
 
@@ -213,7 +213,7 @@ const minify = async (req, res) => {
 
 // find all includes in ace.js and embed them.
 const getAceFile = async () => {
-  let data = await fs.readFile(`${ROOT_DIR}js/ace.js`, 'utf8');
+  let data = await fs.readFile(path.join(ROOT_DIR, 'js/ace.js'), 'utf8');
 
   // Find all includes in ace.js and embed them
   const filenames = [];
@@ -273,7 +273,7 @@ const statFile = async (filename, dirStatLimit) => {
   } else {
     let stats;
     try {
-      stats = await fs.stat(ROOT_DIR + filename);
+      stats = await fs.stat(path.join(ROOT_DIR, filename));
     } catch (err) {
       if (err.code === 'ENOENT') {
         // Stat the directory instead.
@@ -287,12 +287,12 @@ const statFile = async (filename, dirStatLimit) => {
 };
 
 const lastModifiedDateOfEverything = async () => {
-  const folders2check = [`${ROOT_DIR}js/`, `${ROOT_DIR}css/`];
+  const folders2check = [path.join(ROOT_DIR, 'js/'), path.join(ROOT_DIR, 'css/')];
   let latestModification = null;
   // go through this two folders
-  await Promise.all(folders2check.map(async (path) => {
+  await Promise.all(folders2check.map(async (dir) => {
     // read the files in the folder
-    const files = await fs.readdir(path);
+    const files = await fs.readdir(dir);
 
     // we wanna check the directory itself for changes too
     files.push('.');
@@ -300,7 +300,7 @@ const lastModifiedDateOfEverything = async () => {
     // go through all files in this folder
     await Promise.all(files.map(async (filename) => {
       // get the stat data of this file
-      const stats = await fs.stat(`${path}/${filename}`);
+      const stats = await fs.stat(path.join(dir, filename));
 
       // compare the modification time to the highest found
       if (latestModification == null || stats.mtime > latestModification) {
@@ -362,7 +362,7 @@ const getFileCompressed = async (filename, contentType) => {
 const getFile = async (filename) => {
   if (filename === 'js/ace.js') return await getAceFile();
   if (filename === 'js/require-kernel.js') return requireDefinition();
-  return await fs.readFile(ROOT_DIR + filename);
+  return await fs.readFile(path.join(ROOT_DIR, filename));
 };
 
 exports.minify = (req, res, next) => minify(req, res).catch((err) => next(err || new Error(err)));
