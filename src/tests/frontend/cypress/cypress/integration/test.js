@@ -1,33 +1,18 @@
 'use strict';
-
+/* globals cy */
 /* eslint-disable-next-line mocha/no-mocha-arrows, mocha/no-synchronous-tests */
 it('Pad content exists', () => {
   cy.visit('http://127.0.0.1:9001/p/test');
-  getIframeBodyOuter().find('.line-number:first').should('have.text', '1');
-  getIframeBodyInner().find('.ace-line').should('be.visible');
+  getIframeBody('ace_outer').find('.line-number:first').should('have.text', '1');
+  getIframeBody('ace_inner').find('.ace-line').should('be.visible');
 });
 
-const getIframeBodyOuter = () => {
-  // get the iframe > document > body
-  // and retry until the body element is not empty
-  return cy
-  .get('iframe[name="ace_outer"]')
-  .its('0.contentDocument.body').should('not.be.empty')
-  // wraps "body" DOM element to allow
-  // chaining more Cypress commands, like ".find(...)"
-  // https://on.cypress.io/wrap
-  .then(cy.wrap)
-}
-
-
-const getIframeBodyInner = () => {
-  // get the iframe > document > body
-  // and retry until the body element is not empty
-  return cy
-  .get('iframe[name="ace_inner"]')
-  .its('0.contentDocument.body').should('not.be.empty')
-  // wraps "body" DOM element to allow
-  // chaining more Cypress commands, like ".find(...)"
-  // https://on.cypress.io/wrap
-  .then(cy.wrap)
-}
+// get the iframe > document > body
+// and retry until the body element is not empty
+const getIframeBody = (iframeName) => cy
+    .get(`iframe[name="${iframeName}"]`)
+    .its('0.contentDocument.body').should('not.be.empty')
+    .then(cy.wrap);
+// wraps "body" DOM element to allow
+// chaining more Cypress commands, like ".find(...)"
+// https://on.cypress.io/wrap
