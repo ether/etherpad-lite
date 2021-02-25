@@ -227,7 +227,6 @@ const getAceFile = async () => {
     }
   }
 
-  data += ';\n';
   data += 'Ace2Editor.EMBEDED = Ace2Editor.EMBEDED || {};\n';
 
   // Request the contents of the included file on the server-side and write
