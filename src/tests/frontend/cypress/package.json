@@ -4,7 +4,7 @@
   "description": "Cypress tests within Etherpad",
   "main": "test.js",
   "scripts": {
-    "e2e": "cypress open"
+    "e2e": "cypress open",
     "start" : "node ../../../node/server.js"
   },
   "author": "John McLear",
