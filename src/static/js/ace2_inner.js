@@ -18,7 +18,7 @@
  */
 let documentAttributeManager;
 
-const browser = require('./browser');
+const browser = require('./vendors/browser');
 const padutils = require('./pad_utils').padutils;
 const Ace2Common = require('./ace2_common');
 const $ = require('./rjquery').$;
@@ -3782,11 +3782,28 @@ function Ace2Inner() {
 
   // We apply the height of a line in the doc body, to the corresponding sidediv line number
   const updateLineNumbers = () => {
-    if (!currentCallStack || currentCallStack && !currentCallStack.domClean) return;
+    if (!currentCallStack || !currentCallStack.domClean) return;
 
     // Refs #4228, to avoid layout trashing, we need to first calculate all the heights,
     // and then apply at once all new height to div elements
+    const lineOffsets = [];
+
+    // To place the line number on the same Z point as the first character of the first line
+    // we need to know the line height including the margins of the firstChild within the line
+    // This is somewhat computationally expensive as it looks at the first element within
+    // the line.  Alternative, cheaper approaches are welcome.
+    // Original Issue: https://github.com/ether/etherpad-lite/issues/4527
     const lineHeights = [];
+
+    // 24 is the default line height within Etherpad - There may be quirks here such as
+    // none text elements (images/embeds etc) where the line height will be greater
+    // but as it's non-text type the line-height/margins might not be present and it
+    // could be that this breaks a theme that has a different default line height..
+    // So instead of using an integer here we get the value from the Editor CSS.
+    const innerdocbody = document.querySelector('#innerdocbody');
+    const innerdocbodyStyles = getComputedStyle(innerdocbody);
+    const defaultLineHeight = parseInt(innerdocbodyStyles['line-height']);
+
     let docLine = doc.body.firstChild;
     let currentLine = 0;
     let h = null;
@@ -3811,7 +3828,21 @@ function Ace2Inner() {
         // last line
         h = (docLine.clientHeight || docLine.offsetHeight);
       }
-      lineHeights.push(h);
+      lineOffsets.push(h);
+
+      if (docLine.clientHeight !== defaultLineHeight) {
+        // line is wrapped OR has a larger line height within so we will do additional
+        // computation to figure out the line-height of the first element and
+        // use that for displaying the side div line number inline with the first line
+        // of content -- This is used in ep_headings, ep_font_size etc. where the line
+        // height is increased.
+        const elementStyle = window.getComputedStyle(docLine.firstChild);
+        const lineHeight = parseInt(elementStyle.getPropertyValue('line-height'));
+        const marginBottom = parseInt(elementStyle.getPropertyValue('margin-bottom'));
+        lineHeights.push(lineHeight + marginBottom);
+      } else {
+        lineHeights.push(defaultLineHeight);
+      }
       docLine = docLine.nextSibling;
       currentLine++;
     }
@@ -3823,8 +3854,9 @@ function Ace2Inner() {
     // Apply height to existing sidediv lines
     currentLine = 0;
     while (sidebarLine && currentLine <= lineNumbersShown) {
-      if (lineHeights[currentLine] != null) {
-        sidebarLine.style.height = `${lineHeights[currentLine]}px`;
+      if (lineOffsets[currentLine] != null) {
+        sidebarLine.style.height = `${lineOffsets[currentLine]}px`;
+        sidebarLine.style.lineHeight = `${lineHeights[currentLine]}px`;
       }
       sidebarLine = sidebarLine.nextSibling;
       currentLine++;
@@ -3839,8 +3871,9 @@ function Ace2Inner() {
       while (lineNumbersShown < newNumLines) {
         lineNumbersShown++;
         const div = odoc.createElement('DIV');
-        if (lineHeights[currentLine]) {
-          div.style.height = `${lineHeights[currentLine]}px`;
+        if (lineOffsets[currentLine]) {
+          div.style.height = `${lineOffsets[currentLine]}px`;
+          div.style.lineHeight = `${lineHeights[currentLine]}px`;
         }
         $(div).append($(`<span class='line-number'>${String(lineNumbersShown)}</span>`));
         fragment.appendChild(div);

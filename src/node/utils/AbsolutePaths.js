@@ -43,8 +43,9 @@ let etherpadRoot = null;
  */
 const popIfEndsWith = (stringArray, lastDesiredElements) => {
   if (stringArray.length <= lastDesiredElements.length) {
-    absPathLogger.debug(`In order to pop "${lastDesiredElements.join(path.sep)}" from "${stringArray.join(path.sep)}", it should contain at least ${lastDesiredElements.length + 1} elements`);
-
+    absPathLogger.debug(`In order to pop "${lastDesiredElements.join(path.sep)}" ` +
+                        `from "${stringArray.join(path.sep)}", it should contain at least ` +
+                        `${lastDesiredElements.length + 1} elements`);
     return false;
   }
 
@@ -54,7 +55,8 @@ const popIfEndsWith = (stringArray, lastDesiredElements) => {
     return _.initial(stringArray, lastDesiredElements.length);
   }
 
-  absPathLogger.debug(`${stringArray.join(path.sep)} does not end with "${lastDesiredElements.join(path.sep)}"`);
+  absPathLogger.debug(
+      `${stringArray.join(path.sep)} does not end with "${lastDesiredElements.join(path.sep)}"`);
   return false;
 };
 
@@ -102,7 +104,8 @@ exports.findEtherpadRoot = () => {
   }
 
   if (maybeEtherpadRoot === false) {
-    absPathLogger.error(`Could not identity Etherpad base path in this ${process.platform} installation in "${foundRoot}"`);
+    absPathLogger.error('Could not identity Etherpad base path in this ' +
+                        `${process.platform} installation in "${foundRoot}"`);
     process.exit(1);
   }
 
@@ -113,7 +116,8 @@ exports.findEtherpadRoot = () => {
     return etherpadRoot;
   }
 
-  absPathLogger.error(`To run, Etherpad has to identify an absolute base path. This is not: "${etherpadRoot}"`);
+  absPathLogger.error(
+      `To run, Etherpad has to identify an absolute base path. This is not: "${etherpadRoot}"`);
   process.exit(1);
 };
 
@@ -132,7 +136,7 @@ exports.makeAbsolute = (somePath) => {
     return somePath;
   }
 
-  const rewrittenPath = path.normalize(path.join(exports.findEtherpadRoot(), somePath));
+  const rewrittenPath = path.join(exports.findEtherpadRoot(), somePath);
 
   absPathLogger.debug(`Relative path "${somePath}" can be rewritten to "${rewrittenPath}"`);
   return rewrittenPath;

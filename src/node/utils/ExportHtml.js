@@ -75,7 +75,7 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
   if (authorColors) {
     css += '<style>\n';
 
-    for (const a in apool.numToAttrib) {
+    for (const a of Object.keys(apool.numToAttrib)) {
       const attr = apool.numToAttrib[a];
 
       // skip non author attributes
@@ -106,7 +106,7 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
   // this pad, and if yes puts its attrib id->props value into anumMap
   props.forEach((propName, i) => {
     let attrib = [propName, true];
-    if (_.isArray(propName)) {
+    if (Array.isArray(propName)) {
       // propName can be in the form of ['color', 'red'],
       // see hook exportHtmlAdditionalTagsWithData
       attrib = propName;
@@ -135,7 +135,7 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
 
       // we are not insterested on properties in the form of ['color', 'red'],
       // see hook exportHtmlAdditionalTagsWithData
-      if (_.isArray(property)) {
+      if (Array.isArray(property)) {
         return false;
       }
 
@@ -154,7 +154,7 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
     // data attributes
     const isSpanWithData = (i) => {
       const property = props[i];
-      return _.isArray(property);
+      return Array.isArray(property);
     };
 
     const emitOpenTag = (i) => {
@@ -314,7 +314,7 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
       await hooks.aCallAll('getLineHTMLForExport', context);
       // To create list parent elements
       if ((!prevLine || prevLine.listLevel !== line.listLevel) ||
-          (prevLine && line.listTypeName !== prevLine.listTypeName)) {
+          (line.listTypeName !== prevLine.listTypeName)) {
         const exists = _.find(openLists, (item) => (
           item.level === line.listLevel && item.type === line.listTypeName)
         );
@@ -414,7 +414,7 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
       if ((!nextLine ||
            !nextLine.listLevel ||
            nextLine.listLevel < line.listLevel) ||
-          (nextLine && line.listTypeName !== nextLine.listTypeName)) {
+          (line.listTypeName !== nextLine.listTypeName)) {
         let nextLevel = 0;
         if (nextLine && nextLine.listLevel) {
           nextLevel = nextLine.listLevel;

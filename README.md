@@ -1,14 +1,32 @@
 # A real-time collaborative editor for the web
-<a href="https://hub.docker.com/r/etherpad/etherpad"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/etherpad/etherpad"></a>
-
-[![Travis (.com)](https://api.travis-ci.com/ether/etherpad-lite.svg?branch=develop)](https://travis-ci.com/github/ether/etherpad-lite)
 
 ![Demo Etherpad Animated Jif](doc/images/etherpad_demo.gif "Etherpad in action")
 
 # About
 Etherpad is a real-time collaborative editor [scalable to thousands of simultaneous real time users](http://scale.etherpad.org/). It provides [full data export](https://github.com/ether/etherpad-lite/wiki/Understanding-Etherpad's-Full-Data-Export-capabilities) capabilities, and runs on _your_ server, under _your_ control.
 
-**[Try it out](https://video.etherpad.com)**
+# Try it out
+Etherpad is extremely flexible providing you the means to modify it to solve whatever problem your community has.  We provide some demo instances for you try different experiences available within Etherpad.  Pad content is automatically removed after 24 hours.
+
+* [Rich Editing](https://rich.etherpad.com) - A full rich text WYSIWYG editor.
+* [Minimalist editor](https://minimalist.etherpad.com) - A minimalist editor that can be embedded within your tool.
+* [Dark Mode](https://dark.etherpad.com) - Theme settings to have Etherpad start in dark mode, ideal for using Etherpad at night or for long durations.
+* [Images](https://image.etherpad.com) - Plugins to improve provide Image support within a pad.
+* [Video Chat](https://video.etherpad.com) - Plugins to enable Video and Audio chat in a pad.
+* [Collaboration++](https://collab.etherpad.com) - Plugins to improve the really-real time collaboration experience, suitable for busy pads.
+* [Document Analysis](https://analysis.etherpad.com) - Plugins to improve author and document analysis during and post creation.
+
+# Project Status
+
+### Code Quality
+[![Code Quality](https://github.com/ether/etherpad-lite/actions/workflows/codeql-analysis.yml/badge.svg?color=%2344b492)](https://github.com/ether/etherpad-lite/actions/workflows/codeql-analysis.yml) [![Total alerts](https://img.shields.io/lgtm/alerts/g/ether/etherpad-lite.svg?logo=lgtm&logoWidth=18&color=%2344b492)](https://lgtm.com/projects/g/ether/etherpad-lite/alerts/) [![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/ether/etherpad-lite.svg?logo=lgtm&logoWidth=18&color=%2344b492)](https://lgtm.com/projects/g/ether/etherpad-lite/context:javascript) [![package.lock](https://github.com/ether/etherpad-lite/actions/workflows/lint-package-lock.yml/badge.svg?color=%2344b492)](https://github.com/ether/etherpad-lite/actions/workflows/lint-package-lock.yml)
+
+### Testing
+[![Backend tests](https://github.com/ether/etherpad-lite/actions/workflows/backend-tests.yml/badge.svg?color=%2344b492)](https://github.com/ether/etherpad-lite/actions/workflows/backend-tests.yml) [![Simulated Load](https://github.com/ether/etherpad-lite/actions/workflows/load-test.yml/badge.svg?color=%2344b492)](https://github.com/ether/etherpad-lite/actions/workflows/load-test.yml) [![Rate Limit](https://github.com/ether/etherpad-lite/actions/workflows/rate-limit.yml/badge.svg?color=%2344b492)](https://github.com/ether/etherpad-lite/actions/workflows/rate-limit.yml) [![Windows Zip](https://github.com/ether/etherpad-lite/actions/workflows/windows-zip.yml/badge.svg?color=%2344b492)](https://github.com/ether/etherpad-lite/actions/workflows/windows-zip.yml) [![Docker file](https://github.com/ether/etherpad-lite/actions/workflows/dockerfile.yml/badge.svg?color=%2344b492)](https://github.com/ether/etherpad-lite/actions/workflows/dockerfile.yml)
+[![Frontend admin tests](https://github.com/ether/etherpad-lite/actions/workflows/frontend-admin-tests.yml/badge.svg?color=%2344b492)](https://github.com/ether/etherpad-lite/actions/workflows/frontend-admin-tests.yml) [![Frontend tests](https://github.com/ether/etherpad-lite/actions/workflows/frontend-tests.yml/badge.svg?color=%2344b492)](https://github.com/ether/etherpad-lite/actions/workflows/frontend-tests.yml) [![Windows Installer](https://github.com/ether/etherpad-lite/actions/workflows/windows-installer.yml/badge.svg?color=%2344b492)](https://github.com/ether/etherpad-lite/actions/workflows/windows-installer.yml)
+
+### Engagement
+<a href="https://hub.docker.com/r/etherpad/etherpad"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/etherpad/etherpad?color=%2344b492"></a> ![Discord](https://img.shields.io/discord/741309013593030667?color=%2344b492) ![Etherpad plugins](https://img.shields.io/endpoint?url=https%3A%2F%2Fstatic.etherpad.org%2Fshields.json&color=%2344b492 "Etherpad plugins") ![Languages](https://img.shields.io/static/v1?label=Languages&message=105&color=%2344b492) ![Translation Coverage](https://img.shields.io/static/v1?label=Languages&message=98%&color=%2344b492)
 
 # Installation
 
@@ -43,7 +61,7 @@ start with `src/bin/run.sh` will update the dependencies.
 ## Windows
 
 ### Prebuilt Windows package
-This package runs on any Windows machine, but for development purposes, please do a manual install.
+This package runs on any Windows machine. You can perform a manual installation via git for development purposes, but as this uses symlinks which performs unreliably on Windows, please stick to the prebuilt package if possible.
 
 1. [Download the latest Windows package](https://etherpad.org/#download)
 2. Extract the folder
@@ -105,7 +123,7 @@ Etherpad is very customizable through plugins. Instructions for installing theme
 Run the following command in your Etherpad folder to get all of the features visible in the demo gif:
 
 ```
-npm install ep_headings2 ep_markdown ep_comments_page ep_align ep_font_color ep_webrtc ep_embedded_hyperlinks2
+npm install --no-save --legacy-peer-deps ep_headings2 ep_markdown ep_comments_page ep_align ep_font_color ep_webrtc ep_embedded_hyperlinks2
 ```
 
 ## Customize the style with skin variants

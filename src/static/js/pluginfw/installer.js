@@ -3,59 +3,65 @@
 const log4js = require('log4js');
 const plugins = require('./plugins');
 const hooks = require('./hooks');
-const npm = require('npm');
 const request = require('request');
-const util = require('util');
+const runCmd = require('../../../node/utils/run_cmd');
+const settings = require('../../../node/utils/Settings');
 
-let npmIsLoaded = false;
-const loadNpm = async () => {
-  if (npmIsLoaded) return;
-  await util.promisify(npm.load)({});
-  npmIsLoaded = true;
-  npm.on('log', log4js.getLogger('npm').log);
-};
+const logger = log4js.getLogger('plugins');
 
-const onAllTasksFinished = () => {
-  hooks.aCallAll('restartServer', {}, () => {});
+const onAllTasksFinished = async () => {
+  settings.reloadSettings();
+  await hooks.aCallAll('loadSettings', {settings});
+  await hooks.aCallAll('restartServer');
 };
 
 let tasks = 0;
 
-function wrapTaskCb(cb) {
+const wrapTaskCb = (cb) => {
   tasks++;
 
-  return function (...args) {
-    cb && cb.apply(this, args);
+  return (...args) => {
+    cb && cb(...args);
     tasks--;
     if (tasks === 0) onAllTasksFinished();
   };
-}
+};
 
 exports.uninstall = async (pluginName, cb = null) => {
   cb = wrapTaskCb(cb);
+  logger.info(`Uninstalling plugin ${pluginName}...`);
   try {
-    await loadNpm();
-    await util.promisify(npm.commands.uninstall)([pluginName]);
-    await hooks.aCallAll('pluginUninstall', {pluginName});
-    await plugins.update();
+    // The --no-save flag prevents npm from creating package.json or package-lock.json.
+    // The --legacy-peer-deps flag is required to work around a bug in npm v7:
+    // https://github.com/npm/cli/issues/2199
+    await runCmd(['npm', 'uninstall', '--no-save', '--legacy-peer-deps', pluginName]);
   } catch (err) {
+    logger.error(`Failed to uninstall plugin ${pluginName}`);
     cb(err || new Error(err));
     throw err;
   }
+  logger.info(`Successfully uninstalled plugin ${pluginName}`);
+  await hooks.aCallAll('pluginUninstall', {pluginName});
+  await plugins.update();
   cb(null);
 };
 
 exports.install = async (pluginName, cb = null) => {
   cb = wrapTaskCb(cb);
+  logger.info(`Installing plugin ${pluginName}...`);
   try {
-    await loadNpm();
-    await util.promisify(npm.commands.install)([`${pluginName}@latest`]);
-    await hooks.aCallAll('pluginInstall', {pluginName});
-    await plugins.update();
+    // The --no-save flag prevents npm from creating package.json or package-lock.json.
+    // The --legacy-peer-deps flag is required to work around a bug in npm v7:
+    // https://github.com/npm/cli/issues/2199
+    await runCmd(['npm', 'install', '--no-save', '--legacy-peer-deps', pluginName]);
   } catch (err) {
+    logger.error(`Failed to install plugin ${pluginName}`);
     cb(err || new Error(err));
     throw err;
   }
+  logger.info(`Successfully installed plugin ${pluginName}`);
+  await hooks.aCallAll('pluginInstall', {pluginName});
+  await plugins.update();
   cb(null);
 };
 
@@ -77,7 +83,7 @@ exports.getAvailablePlugins = (maxCacheAge) => {
       try {
         plugins = JSON.parse(plugins);
       } catch (err) {
-        console.error('error parsing plugins.json:', err);
+        logger.error(`error parsing plugins.json: ${err.stack || err}`);
         plugins = [];
       }
 
@@ -107,7 +113,7 @@ exports.search = (searchTerm, maxCacheAge) => exports.getAvailablePlugins(maxCac
               !~results[pluginName].description.toLowerCase().indexOf(searchTerm))
         ) {
           if (typeof results[pluginName].description === 'undefined') {
-            console.debug('plugin without Description: %s', results[pluginName].name);
+            logger.debug(`plugin without Description: ${results[pluginName].name}`);
           }
 
           continue;

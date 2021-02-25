@@ -1,25 +1,15 @@
 'use strict';
 
+const Settings = require('../../../../node/utils/Settings');
+const TidyHtml = require('../../../../node/utils/TidyHtml');
 const assert = require('assert');
 const os = require('os');
 const fs = require('fs');
 const path = require('path');
-let TidyHtml;
-let Settings;
-const npm = require('npm/lib/npm.js');
 const nodeify = require('nodeify');
 
 describe(__filename, function () {
   describe('tidyHtml', function () {
-    before(function (done) {
-      npm.load({}, (err) => {
-        assert.ok(!err);
-        TidyHtml = require('../../../../node/utils/TidyHtml');
-        Settings = require('../../../../node/utils/Settings');
-        return done();
-      });
-    });
-
     const tidy = (file, callback) => nodeify(TidyHtml.tidy(file), callback);
 
     it('Tidies HTML', function (done) {

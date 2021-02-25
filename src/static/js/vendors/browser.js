@@ -1,3 +1,7 @@
+// WARNING: This file may have been modified from original.
+// TODO: Check requirement of this file, this afaik was to cover weird edge cases
+// that have probably been fixed in browsers.
+
 /*!
   * Bowser - a browser detector
   * https://github.com/ded/bowser

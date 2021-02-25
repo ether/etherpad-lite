@@ -28,8 +28,10 @@ _install_libreoffice: &install_libreoffice >-
   sudo apt-get update &&
   sudo apt-get -y install libreoffice libreoffice-pdfimport
 
+# The --legacy-peer-deps flag is required to work around a bug in npm v7:
+# https://github.com/npm/cli/issues/2199
 _install_plugins: &install_plugins >-
-  npm install
+  npm install --no-save --legacy-peer-deps
   ep_align
   ep_author_hover
   ep_cursortrace

@@ -27,9 +27,9 @@ process.on('exit', (code) => {
 const sauceTestWorker = async.queue((testSettings, callback) => {
   const browser = wd.promiseChainRemote(
       config.host, config.port, config.username, config.accessKey);
-  const name =
-      `${process.env.GIT_HASH} - ${testSettings.browserName} ` +
-      `${testSettings.version}, ${testSettings.platform}`;
+  const name = [process.env.GIT_HASH].concat(process.env.SAUCE_NAME || []).concat([
+    `${testSettings.browserName} ${testSettings.version}, ${testSettings.platform}`,
+  ]).join(' - ');
   testSettings.name = name;
   testSettings.public = true;
   testSettings.build = process.env.GIT_HASH;
@@ -131,9 +131,9 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
 if (!isAdminRunner) {
   // 1) Firefox on Linux
   sauceTestWorker.push({
-    platform: 'Windows 7',
+    platform: 'Windows 10',
     browserName: 'firefox',
-    version: '52.0',
+    version: '84.0',
   });
 
   // 2) Chrome on Linux

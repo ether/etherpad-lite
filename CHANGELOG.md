@@ -1,3 +1,26 @@
+# 1.8.10
+
+### Security Patches
+
+* Resolve potential ReDoS vulnerability in your project - GHSL-2020-359
+
+### Compatibility changes
+
+* JSONP API has been removed in favor of using the mature OpenAPI implementation.
+* Node 14 is now required for Docker Deployments
+
+### Notable fixes
+
+* Various performance and stability fixes
+
+### Notable enhancements
+
+* Improved line number alignment and user experience around line anchors
+* Notification to admin console if a plugin is missing during user file import
+* Beautiful loading and reconnecting animation
+* Additional code quality improvements
+* Dependency updates
+
 # 1.8.9
 
 ### Notable fixes

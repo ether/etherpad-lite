@@ -195,7 +195,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
       }
     }
 
-    if (listType === 'none' || !listType) {
+    if (listType === 'none') {
       delete state.lineAttributes.list;
     } else {
       state.lineAttributes.list = listType;
@@ -315,6 +315,10 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
     const localAttribs = state.localAttribs;
     state.localAttribs = null;
     const isBlock = isBlockElement(node);
+    if (!isBlock && node.name && (node.name !== 'body') && (node.name !== 'br')) {
+      console.warn('Plugin missing: ' +
+          `You might want to install a plugin to support this node name: ${node.name}`);
+    }
     const isEmpty = _isEmpty(node, state);
     if (isBlock) _ensureColumnZero(state);
     const startLine = lines.length() - 1;

@@ -2,10 +2,12 @@
 	"@metadata": {
 		"authors": [
 			"Besnik b",
+			"Eraldkerciku",
 			"Kosovastar",
 			"Liridon"
 		]
 	},
+	"admin.page-title": "Paneli i Administratorit - Etherpad",
 	"admin_plugins": "Përgjegjës shtojcash",
 	"admin_plugins.available": "Shtojca të gatshme",
 	"admin_plugins.available_not-found": "S’u gjetën shtojca.",
