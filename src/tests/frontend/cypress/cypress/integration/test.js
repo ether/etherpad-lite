@@ -1,4 +1,13 @@
 'use strict';
+
+Cypress.Commands.add('iframe', { prevSubject: 'element' }, $iframe => {
+  return new Cypress.Promise(resolve => {
+      $iframe.ready(function() {
+        resolve($iframe.contents().find('body'));
+      });
+  });
+});
+
 /* globals cy */
 /* eslint-disable-next-line mocha/no-mocha-arrows, mocha/no-synchronous-tests */
 it('Pad content exists', () => { /* eslint-disable-line mocha/no-global-tests */
