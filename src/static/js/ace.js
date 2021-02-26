@@ -162,31 +162,29 @@ const Ace2Editor = function () {
       doneFunc();
     };
 
+    // calls to these functions ($$INCLUDE_...)  are replaced when this file is processed
+    // and compressed, putting the compressed code from the named file directly into the
+    // source here.
+    // these lines must conform to a specific format because they are passed by the build script:
+    const includedCSS = [];
+    const $$INCLUDE_CSS = (filename) => { includedCSS.push(filename); };
+    $$INCLUDE_CSS('../static/css/iframe_editor.css');
+    $$INCLUDE_CSS(`../static/css/pad.css?v=${clientVars.randomVersionString}`);
+    includedCSS.push(...hooks.callAll('aceEditorCSS').map((path) => {
+      if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
+        return path;
+      }
+      return `../static/plugins/${path}`;
+    }));
+    $$INCLUDE_CSS(
+        `../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`);
+
     const doctype = '<!doctype html>';
 
     const iframeHTML = [];
 
     iframeHTML.push(doctype);
     iframeHTML.push(`<html class='inner-editor ${clientVars.skinVariants}'><head>`);
-
-    // calls to these functions ($$INCLUDE_...)  are replaced when this file is processed
-    // and compressed, putting the compressed code from the named file directly into the
-    // source here.
-    // these lines must conform to a specific format because they are passed by the build script:
-    let includedCSS = [];
-    let $$INCLUDE_CSS = (filename) => { includedCSS.push(filename); };
-    $$INCLUDE_CSS('../static/css/iframe_editor.css');
-    $$INCLUDE_CSS(`../static/css/pad.css?v=${clientVars.randomVersionString}`);
-    let additionalCSS = hooks.callAll('aceEditorCSS').map((path) => {
-      if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
-        return path;
-      }
-      return `../static/plugins/${path}`;
-    });
-    includedCSS = includedCSS.concat(additionalCSS);
-    $$INCLUDE_CSS(
-        `../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`);
-
     pushStyleTagsFor(iframeHTML, includedCSS);
     iframeHTML.push(`<script type="text/javascript" src="../static/js/require-kernel.js?v=${clientVars.randomVersionString}"></script>`);
 
@@ -246,23 +244,6 @@ const Ace2Editor = function () {
 
     const outerHTML =
         [doctype, `<html class="inner-editor outerdoc ${clientVars.skinVariants}"><head>`];
-
-    includedCSS = [];
-    $$INCLUDE_CSS = (filename) => { includedCSS.push(filename); };
-    $$INCLUDE_CSS('../static/css/iframe_editor.css');
-    $$INCLUDE_CSS(`../static/css/pad.css?v=${clientVars.randomVersionString}`);
-
-
-    additionalCSS = hooks.callAll('aceEditorCSS').map((path) => {
-      if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
-        return path;
-      }
-      return `../static/plugins/${path}`;
-    });
-    includedCSS = includedCSS.concat(additionalCSS);
-    $$INCLUDE_CSS(
-        `../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`);
-
     pushStyleTagsFor(outerHTML, includedCSS);
 
     // bizarrely, in FF2, a file with no "external" dependencies won't finish loading properly
