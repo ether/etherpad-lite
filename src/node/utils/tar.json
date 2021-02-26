@@ -83,4 +83,5 @@
   , "pluginfw/hooks.js"
   ]
 , "jquery.js": ["jquery.js"]
+, "underscore.js": ["underscore.js"]
 }
