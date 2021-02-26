@@ -222,7 +222,7 @@ plugins.ensure(function () {\n\
       });
 
       iframeHTML.push('</head><body id="innerdocbody" class="innerdocbody" role="application" ' +
-                      'class="syntax" spellcheck="false">&nbsp;</body></html>');
+                      'spellcheck="false">&nbsp;</body></html>');
 
       // eslint-disable-next-line node/no-unsupported-features/es-builtins
       const gt = typeof globalThis === 'object' ? globalThis : window;
