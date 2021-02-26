@@ -199,21 +199,20 @@ const Ace2Editor = function () {
       iframeHTML.push(`<script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define&v=${clientVars.randomVersionString}"></script>`);
       iframeHTML.push(`<script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define&v=${clientVars.randomVersionString}"></script>`);
 
-      iframeHTML.push(scriptTag(`
-        require.setRootURI("../javascripts/src");
-        require.setLibraryURI("../javascripts/lib");
-        require.setGlobalKeyPath("require");
+      iframeHTML.push(scriptTag(`(() => {
+        const require = window.require;
+        require.setRootURI('../javascripts/src');
+        require.setLibraryURI('../javascripts/lib');
+        require.setGlobalKeyPath('require');
 
-        var plugins = require("ep_etherpad-lite/static/js/pluginfw/client_plugins");
-        plugins.adoptPluginsFromAncestorsOf(window);
+        window.plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
+        window.plugins.adoptPluginsFromAncestorsOf(window);
 
-        $ = jQuery = require("ep_etherpad-lite/static/js/rjquery").jQuery; // Expose jQuery #HACK
-        var Ace2Inner = require("ep_etherpad-lite/static/js/ace2_inner");
+        window.$ = window.jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery;
+        window.Ace2Inner = require('ep_etherpad-lite/static/js/ace2_inner');
 
-        plugins.ensure(function () {
-          Ace2Inner.init();
-        });
-      `));
+        window.plugins.ensure(() => { window.Ace2Inner.init(); });
+      })()`));
 
       iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
 
@@ -229,29 +228,26 @@ const Ace2Editor = function () {
       gt.ChildAccessibleAce2Editor = Ace2Editor;
 
       const outerScript = `
-        editorId = ${JSON.stringify(info.id)};
-        editorInfo = parent.ChildAccessibleAce2Editor.registry[editorId];
-        window.onload = function () {
+        window.editorInfo = parent.ChildAccessibleAce2Editor.registry[${JSON.stringify(info.id)}];
+        window.onload = () => {
           window.onload = null;
-          setTimeout(function () {
-            var iframe = document.createElement("IFRAME");
-            iframe.name = "ace_inner";
-            iframe.title = "pad";
-            iframe.scrolling = "no";
-            var outerdocbody = document.getElementById("outerdocbody");
+          setTimeout(() => {
+            const iframe = document.createElement('iframe');
+            iframe.name = 'ace_inner';
+            iframe.title = 'pad';
+            iframe.scrolling = 'no';
             iframe.frameBorder = 0;
             iframe.allowTransparency = true; // for IE
-            outerdocbody.insertBefore(iframe, outerdocbody.firstChild);
             iframe.ace_outerWin = window;
-            readyFunc = function () {
-              editorInfo.onEditorReady();
-              readyFunc = null;
-              editorInfo = null;
+            document.body.insertBefore(iframe, document.body.firstChild);
+            window.readyFunc = () => {
+              delete window.readyFunc;
+              window.editorInfo.onEditorReady();
+              delete window.editorInfo;
             };
-            var doc = iframe.contentWindow.document;
+            const doc = iframe.contentWindow.document;
             doc.open();
-            var text = (${JSON.stringify(iframeHTML.join('\n'))});
-            doc.write(text);
+            doc.write(${JSON.stringify(iframeHTML.join('\n'))});
             doc.close();
           }, 0);
         }
