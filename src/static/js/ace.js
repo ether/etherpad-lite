@@ -160,145 +160,143 @@ const Ace2Editor = function () {
       doneFunc();
     };
 
-    (() => {
-      const doctype = '<!doctype html>';
+    const doctype = '<!doctype html>';
 
-      const iframeHTML = [];
+    const iframeHTML = [];
 
-      iframeHTML.push(doctype);
-      iframeHTML.push(`<html class='inner-editor ${clientVars.skinVariants}'><head>`);
+    iframeHTML.push(doctype);
+    iframeHTML.push(`<html class='inner-editor ${clientVars.skinVariants}'><head>`);
 
-      // calls to these functions ($$INCLUDE_...)  are replaced when this file is processed
-      // and compressed, putting the compressed code from the named file directly into the
-      // source here.
-      // these lines must conform to a specific format because they are passed by the build script:
-      let includedCSS = [];
-      let $$INCLUDE_CSS = (filename) => { includedCSS.push(filename); };
-      $$INCLUDE_CSS('../static/css/iframe_editor.css');
+    // calls to these functions ($$INCLUDE_...)  are replaced when this file is processed
+    // and compressed, putting the compressed code from the named file directly into the
+    // source here.
+    // these lines must conform to a specific format because they are passed by the build script:
+    let includedCSS = [];
+    let $$INCLUDE_CSS = (filename) => { includedCSS.push(filename); };
+    $$INCLUDE_CSS('../static/css/iframe_editor.css');
 
-      // disableCustomScriptsAndStyles can be used to disable loading of custom scripts
-      if (!clientVars.disableCustomScriptsAndStyles) {
-        $$INCLUDE_CSS(`../static/css/pad.css?v=${clientVars.randomVersionString}`);
-      }
-
-      let additionalCSS = hooks.callAll('aceEditorCSS').map((path) => {
-        if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
-          return path;
-        }
-        return `../static/plugins/${path}`;
-      });
-      includedCSS = includedCSS.concat(additionalCSS);
-      $$INCLUDE_CSS(
-          `../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`);
-
-      pushStyleTagsFor(iframeHTML, includedCSS);
-      iframeHTML.push(`<script type="text/javascript" src="../static/js/require-kernel.js?v=${clientVars.randomVersionString}"></script>`);
-      // fill the cache
-      iframeHTML.push(`<script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define&v=${clientVars.randomVersionString}"></script>`);
-      iframeHTML.push(`<script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define&v=${clientVars.randomVersionString}"></script>`);
-
-      iframeHTML.push(scriptTag(`(() => {
-        const require = window.require;
-        require.setRootURI('../javascripts/src');
-        require.setLibraryURI('../javascripts/lib');
-        require.setGlobalKeyPath('require');
-
-        // intentially moved before requiring client_plugins to save a 307
-        window.Ace2Inner = require('ep_etherpad-lite/static/js/ace2_inner');
-        window.plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
-        window.plugins.adoptPluginsFromAncestorsOf(window);
-
-        window.$ = window.jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery;
-
-        window.plugins.ensure(() => { window.Ace2Inner.init(); });
-      })();`));
-
-      iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
-
-      hooks.callAll('aceInitInnerdocbodyHead', {
-        iframeHTML,
-      });
-
-      iframeHTML.push('</head><body id="innerdocbody" class="innerdocbody" role="application" ' +
-                      'spellcheck="false">&nbsp;</body></html>');
-
-      // eslint-disable-next-line node/no-unsupported-features/es-builtins
-      const gt = typeof globalThis === 'object' ? globalThis : window;
-      gt.ChildAccessibleAce2Editor = Ace2Editor;
-
-      const outerScript = `(() => {
-        window.editorInfo = parent.ChildAccessibleAce2Editor.registry[${JSON.stringify(info.id)}];
-        window.onload = () => {
-          window.onload = null;
-          setTimeout(() => {
-            const iframe = document.createElement('iframe');
-            iframe.name = 'ace_inner';
-            iframe.title = 'pad';
-            iframe.scrolling = 'no';
-            iframe.frameBorder = 0;
-            iframe.allowTransparency = true; // for IE
-            iframe.ace_outerWin = window;
-            document.body.insertBefore(iframe, document.body.firstChild);
-            window.readyFunc = () => {
-              delete window.readyFunc;
-              window.editorInfo.onEditorReady();
-              delete window.editorInfo;
-            };
-            const doc = iframe.contentWindow.document;
-            doc.open();
-            doc.write(${JSON.stringify(iframeHTML.join('\n'))});
-            doc.close();
-          }, 0);
-        }
-      })();`;
-
-      const outerHTML =
-          [doctype, `<html class="inner-editor outerdoc ${clientVars.skinVariants}"><head>`];
-
-      includedCSS = [];
-      $$INCLUDE_CSS = (filename) => { includedCSS.push(filename); };
-      $$INCLUDE_CSS('../static/css/iframe_editor.css');
+    // disableCustomScriptsAndStyles can be used to disable loading of custom scripts
+    if (!clientVars.disableCustomScriptsAndStyles) {
       $$INCLUDE_CSS(`../static/css/pad.css?v=${clientVars.randomVersionString}`);
+    }
+
+    let additionalCSS = hooks.callAll('aceEditorCSS').map((path) => {
+      if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
+        return path;
+      }
+      return `../static/plugins/${path}`;
+    });
+    includedCSS = includedCSS.concat(additionalCSS);
+    $$INCLUDE_CSS(
+        `../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`);
+
+    pushStyleTagsFor(iframeHTML, includedCSS);
+    iframeHTML.push(`<script type="text/javascript" src="../static/js/require-kernel.js?v=${clientVars.randomVersionString}"></script>`);
+    // fill the cache
+    iframeHTML.push(`<script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define&v=${clientVars.randomVersionString}"></script>`);
+    iframeHTML.push(`<script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define&v=${clientVars.randomVersionString}"></script>`);
+
+    iframeHTML.push(scriptTag(`(() => {
+      const require = window.require;
+      require.setRootURI('../javascripts/src');
+      require.setLibraryURI('../javascripts/lib');
+      require.setGlobalKeyPath('require');
+
+      // intentially moved before requiring client_plugins to save a 307
+      window.Ace2Inner = require('ep_etherpad-lite/static/js/ace2_inner');
+      window.plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
+      window.plugins.adoptPluginsFromAncestorsOf(window);
+
+      window.$ = window.jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery;
+
+      window.plugins.ensure(() => { window.Ace2Inner.init(); });
+    })();`));
+
+    iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
+
+    hooks.callAll('aceInitInnerdocbodyHead', {
+      iframeHTML,
+    });
+
+    iframeHTML.push('</head><body id="innerdocbody" class="innerdocbody" role="application" ' +
+                    'spellcheck="false">&nbsp;</body></html>');
+
+    // eslint-disable-next-line node/no-unsupported-features/es-builtins
+    const gt = typeof globalThis === 'object' ? globalThis : window;
+    gt.ChildAccessibleAce2Editor = Ace2Editor;
+
+    const outerScript = `(() => {
+      window.editorInfo = parent.ChildAccessibleAce2Editor.registry[${JSON.stringify(info.id)}];
+      window.onload = () => {
+        window.onload = null;
+        setTimeout(() => {
+          const iframe = document.createElement('iframe');
+          iframe.name = 'ace_inner';
+          iframe.title = 'pad';
+          iframe.scrolling = 'no';
+          iframe.frameBorder = 0;
+          iframe.allowTransparency = true; // for IE
+          iframe.ace_outerWin = window;
+          document.body.insertBefore(iframe, document.body.firstChild);
+          window.readyFunc = () => {
+            delete window.readyFunc;
+            window.editorInfo.onEditorReady();
+            delete window.editorInfo;
+          };
+          const doc = iframe.contentWindow.document;
+          doc.open();
+          doc.write(${JSON.stringify(iframeHTML.join('\n'))});
+          doc.close();
+        }, 0);
+      }
+    })();`;
+
+    const outerHTML =
+        [doctype, `<html class="inner-editor outerdoc ${clientVars.skinVariants}"><head>`];
+
+    includedCSS = [];
+    $$INCLUDE_CSS = (filename) => { includedCSS.push(filename); };
+    $$INCLUDE_CSS('../static/css/iframe_editor.css');
+    $$INCLUDE_CSS(`../static/css/pad.css?v=${clientVars.randomVersionString}`);
 
 
-      additionalCSS = hooks.callAll('aceEditorCSS').map((path) => {
-        if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
-          return path;
-        }
-        return `../static/plugins/${path}`;
-      });
-      includedCSS = includedCSS.concat(additionalCSS);
-      $$INCLUDE_CSS(
-          `../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`);
+    additionalCSS = hooks.callAll('aceEditorCSS').map((path) => {
+      if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
+        return path;
+      }
+      return `../static/plugins/${path}`;
+    });
+    includedCSS = includedCSS.concat(additionalCSS);
+    $$INCLUDE_CSS(
+        `../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`);
 
-      pushStyleTagsFor(outerHTML, includedCSS);
+    pushStyleTagsFor(outerHTML, includedCSS);
 
-      // bizarrely, in FF2, a file with no "external" dependencies won't finish loading properly
-      // (throbs busy while typing)
-      const pluginNames = pluginUtils.clientPluginNames();
-      outerHTML.push(
-          '<style type="text/css" title="dynamicsyntax"></style>',
-          '<link rel="stylesheet" type="text/css" href="data:text/css,"/>',
-          scriptTag(outerScript),
-          '</head>',
-          '<body id="outerdocbody" class="outerdocbody ', pluginNames.join(' '), '">',
-          '<div id="sidediv" class="sidediv"><!-- --></div>',
-          '<div id="linemetricsdiv">x</div>',
-          '</body></html>');
+    // bizarrely, in FF2, a file with no "external" dependencies won't finish loading properly
+    // (throbs busy while typing)
+    const pluginNames = pluginUtils.clientPluginNames();
+    outerHTML.push(
+        '<style type="text/css" title="dynamicsyntax"></style>',
+        '<link rel="stylesheet" type="text/css" href="data:text/css,"/>',
+        scriptTag(outerScript),
+        '</head>',
+        '<body id="outerdocbody" class="outerdocbody ', pluginNames.join(' '), '">',
+        '<div id="sidediv" class="sidediv"><!-- --></div>',
+        '<div id="linemetricsdiv">x</div>',
+        '</body></html>');
 
-      const outerFrame = document.createElement('IFRAME');
-      outerFrame.name = 'ace_outer';
-      outerFrame.frameBorder = 0; // for IE
-      outerFrame.title = 'Ether';
-      info.frame = outerFrame;
-      document.getElementById(containerId).appendChild(outerFrame);
+    const outerFrame = document.createElement('IFRAME');
+    outerFrame.name = 'ace_outer';
+    outerFrame.frameBorder = 0; // for IE
+    outerFrame.title = 'Ether';
+    info.frame = outerFrame;
+    document.getElementById(containerId).appendChild(outerFrame);
 
-      const editorDocument = outerFrame.contentWindow.document;
+    const editorDocument = outerFrame.contentWindow.document;
 
-      editorDocument.open();
-      editorDocument.write(outerHTML.join(''));
-      editorDocument.close();
-    })();
+    editorDocument.open();
+    editorDocument.write(outerHTML.join(''));
+    editorDocument.close();
   };
 };
 
