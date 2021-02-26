@@ -199,23 +199,21 @@ const Ace2Editor = function () {
       iframeHTML.push(`<script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define&v=${clientVars.randomVersionString}"></script>`);
       iframeHTML.push(`<script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define&v=${clientVars.randomVersionString}"></script>`);
 
-      iframeHTML.push(scriptTag(
-          `\n\
-require.setRootURI("../javascripts/src");\n\
-require.setLibraryURI("../javascripts/lib");\n\
-require.setGlobalKeyPath("require");\n\
-\n\
-// intentially moved before requiring client_plugins to save a 307
-var Ace2Inner = require("ep_etherpad-lite/static/js/ace2_inner");\n\
-var plugins = require("ep_etherpad-lite/static/js/pluginfw/client_plugins");\n\
-plugins.adoptPluginsFromAncestorsOf(window);\n\
-\n\
-$ = jQuery = require("ep_etherpad-lite/static/js/rjquery").jQuery; // Expose jQuery #HACK\n\
-\n\
-plugins.ensure(function () {\n\
-  Ace2Inner.init();\n\
-});\n\
-`));
+      iframeHTML.push(scriptTag(`
+        require.setRootURI("../javascripts/src");
+        require.setLibraryURI("../javascripts/lib");
+        require.setGlobalKeyPath("require");
+
+        var plugins = require("ep_etherpad-lite/static/js/pluginfw/client_plugins");
+        plugins.adoptPluginsFromAncestorsOf(window);
+
+        $ = jQuery = require("ep_etherpad-lite/static/js/rjquery").jQuery; // Expose jQuery #HACK
+        var Ace2Inner = require("ep_etherpad-lite/static/js/ace2_inner");
+
+        plugins.ensure(function () {
+          Ace2Inner.init();
+        });
+      `));
 
       iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
 
@@ -230,33 +228,34 @@ plugins.ensure(function () {\n\
       const gt = typeof globalThis === 'object' ? globalThis : window;
       gt.ChildAccessibleAce2Editor = Ace2Editor;
 
-      const outerScript = `\
-editorId = ${JSON.stringify(info.id)};\n\
-editorInfo = parent.ChildAccessibleAce2Editor.registry[editorId];\n\
-window.onload = function () {\n\
-  window.onload = null;\n\
-  setTimeout(function () {\n\
-    var iframe = document.createElement("IFRAME");\n\
-    iframe.name = "ace_inner";\n\
-    iframe.title = "pad";\n\
-    iframe.scrolling = "no";\n\
-    var outerdocbody = document.getElementById("outerdocbody");\n\
-    iframe.frameBorder = 0;\n\
-    iframe.allowTransparency = true; // for IE\n\
-    outerdocbody.insertBefore(iframe, outerdocbody.firstChild);\n\
-    iframe.ace_outerWin = window;\n\
-    readyFunc = function () {\n\
-      editorInfo.onEditorReady();\n\
-      readyFunc = null;\n\
-      editorInfo = null;\n\
-    };\n\
-    var doc = iframe.contentWindow.document;\n\
-    doc.open();\n\
-    var text = (${JSON.stringify(iframeHTML.join('\n'))});\n\
-    doc.write(text);\n\
-    doc.close();\n\
-  }, 0);\n\
-}`;
+      const outerScript = `
+        editorId = ${JSON.stringify(info.id)};
+        editorInfo = parent.ChildAccessibleAce2Editor.registry[editorId];
+        window.onload = function () {
+          window.onload = null;
+          setTimeout(function () {
+            var iframe = document.createElement("IFRAME");
+            iframe.name = "ace_inner";
+            iframe.title = "pad";
+            iframe.scrolling = "no";
+            var outerdocbody = document.getElementById("outerdocbody");
+            iframe.frameBorder = 0;
+            iframe.allowTransparency = true; // for IE
+            outerdocbody.insertBefore(iframe, outerdocbody.firstChild);
+            iframe.ace_outerWin = window;
+            readyFunc = function () {
+              editorInfo.onEditorReady();
+              readyFunc = null;
+              editorInfo = null;
+            };
+            var doc = iframe.contentWindow.document;
+            doc.open();
+            var text = (${JSON.stringify(iframeHTML.join('\n'))});
+            doc.write(text);
+            doc.close();
+          }, 0);
+        }
+      `;
 
       const outerHTML =
           [doctype, `<html class="inner-editor outerdoc ${clientVars.skinVariants}"><head>`];
