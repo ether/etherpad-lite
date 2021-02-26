@@ -4,7 +4,8 @@
 it('Pad content exists', () => { /* eslint-disable-line mocha/no-global-tests */
   cy.visit('http://127.0.0.1:9001/p/test');
   getIframeBody('ace_outer').find('.line-number:first').should('have.text', '1');
-  // getIframeBody('ace_inner').find('.ace-line:first').should('be.visible');
+  cy.get('iframe[name="ace_outer"]').iframe().find('iframe[name="ace_inner"]').iframe()
+      .find('.ace-line:first').should('be.visible');
 });
 
 // get the iframe > document > body
