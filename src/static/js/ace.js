@@ -162,22 +162,17 @@ const Ace2Editor = function () {
       doneFunc();
     };
 
-    // calls to these functions ($$INCLUDE_...)  are replaced when this file is processed
-    // and compressed, putting the compressed code from the named file directly into the
-    // source here.
-    // these lines must conform to a specific format because they are passed by the build script:
-    const includedCSS = [];
-    const $$INCLUDE_CSS = (filename) => { includedCSS.push(filename); };
-    $$INCLUDE_CSS('../static/css/iframe_editor.css');
-    $$INCLUDE_CSS(`../static/css/pad.css?v=${clientVars.randomVersionString}`);
-    includedCSS.push(...hooks.callAll('aceEditorCSS').map((path) => {
-      if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
-        return path;
-      }
-      return `../static/plugins/${path}`;
-    }));
-    $$INCLUDE_CSS(
-        `../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`);
+    const includedCSS = [
+      '../static/css/iframe_editor.css',
+      `../static/css/pad.css?v=${clientVars.randomVersionString}`,
+      ...hooks.callAll('aceEditorCSS').map((path) => {
+        if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
+          return path;
+        }
+        return `../static/plugins/${path}`;
+      }),
+      `../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`,
+    ];
 
     const doctype = '<!doctype html>';
 
