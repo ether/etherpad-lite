@@ -165,12 +165,8 @@ const Ace2Editor = function () {
     const includedCSS = [
       '../static/css/iframe_editor.css',
       `../static/css/pad.css?v=${clientVars.randomVersionString}`,
-      ...hooks.callAll('aceEditorCSS').map((path) => {
-        if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
-          return path;
-        }
-        return `../static/plugins/${path}`;
-      }),
+      // Allow urls to external CSS - http(s):// and //some/path.css
+      ...hooks.callAll('aceEditorCSS').map((p) => /\/\//.test(p) ? p : `../static/plugins/${p}`),
       `../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`,
     ];
 
