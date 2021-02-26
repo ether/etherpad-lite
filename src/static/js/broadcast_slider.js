@@ -23,7 +23,7 @@
 
 // These parameters were global, now they are injected. A reference to the
 // Timeslider controller would probably be more appropriate.
-const _ = require('./vendors/underscore');
+const _ = require('./underscore');
 const padmodals = require('./pad_modals').padmodals;
 const colorutils = require('./colorutils').colorutils;
 

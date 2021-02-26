@@ -141,17 +141,9 @@ const minify = async (req, res) => {
 
   // Backward compatibility for plugins that were written when jQuery lived at
   // src/static/js/jquery.js.
-  if (['js/jquery.js', 'plugins/ep_etherpad-lite/static/js/jquery.js'].indexOf(filename) !== -1) {
+  if (filename.endsWith('js/jquery.js')) {
     logger.warn(`request for deprecated jQuery path: ${filename}`);
     filename = 'js/vendors/jquery.js';
-  }
-
-  // Backward compatibility for plugins that were written when underscore lived at
-  // src/static/js/underscore.js.
-  if (['js/underscore.js', 'plugins/ep_etherpad-lite/static/js/underscore.js']
-      .indexOf(filename) !== -1) {
-    logger.warn(`request for deprecated underscore path: ${filename}`);
-    filename = 'js/vendors/underscore.js';
   }
 
   /* Handle static files for plugins/libraries:
