@@ -27,9 +27,6 @@
 const hooks = require('./pluginfw/hooks');
 const pluginUtils = require('./pluginfw/shared');
 
-const scriptTag =
-    (source) => `<script type="text/javascript">\n${source.replace(/<\//g, '<\\/')}</script>`;
-
 const Ace2Editor = function () {
   const ace2 = Ace2Editor;
 
@@ -129,20 +126,24 @@ const Ace2Editor = function () {
     return {embeded: embededFiles, remote: remoteFiles};
   };
 
-  const pushStyleTagsFor = (buffer, files) => {
+  const addStyleTagsFor = (doc, files) => {
     const sorted = sortFilesByEmbeded(files);
     const embededFiles = sorted.embeded;
     const remoteFiles = sorted.remote;
 
     if (embededFiles.length > 0) {
-      buffer.push('<style type="text/css">');
-      for (const file of embededFiles) {
-        buffer.push((Ace2Editor.EMBEDED[file] || '').replace(/<\//g, '<\\/'));
-      }
-      buffer.push('</style>');
+      const css = embededFiles.map((f) => Ace2Editor.EMBEDED[f]).join('\n');
+      const style = doc.createElement('style');
+      style.type = 'text/css';
+      style.appendChild(doc.createTextNode(css));
+      doc.head.appendChild(style);
     }
     for (const file of remoteFiles) {
-      buffer.push(`<link rel="stylesheet" type="text/css" href="${encodeURI(file)}"/>`);
+      const link = doc.createElement('link');
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = encodeURI(file);
+      doc.head.appendChild(link);
     }
   };
 
@@ -170,98 +171,107 @@ const Ace2Editor = function () {
       `../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`,
     ];
 
-    const doctype = '<!doctype html>';
-
-    const iframeHTML = [];
-
-    iframeHTML.push(doctype);
-    iframeHTML.push(`<html class='inner-editor ${clientVars.skinVariants}'><head>`);
-    pushStyleTagsFor(iframeHTML, includedCSS);
-    iframeHTML.push(`<script type="text/javascript" src="../static/js/require-kernel.js?v=${clientVars.randomVersionString}"></script>`);
-
-    iframeHTML.push(scriptTag(`(() => {
-      const require = window.require;
-      require.setRootURI('../javascripts/src');
-      require.setLibraryURI('../javascripts/lib');
-      require.setGlobalKeyPath('require');
-
-      window.plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
-      window.plugins.adoptPluginsFromAncestorsOf(window);
-
-      window.$ = window.jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery;
-      window.Ace2Inner = require('ep_etherpad-lite/static/js/ace2_inner');
-
-      window.plugins.ensure(() => { window.Ace2Inner.init(); });
-    })()`));
-
-    iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
-
-    hooks.callAll('aceInitInnerdocbodyHead', {
-      iframeHTML,
-    });
-
-    iframeHTML.push('</head><body id="innerdocbody" class="innerdocbody" role="application" ' +
-                    'spellcheck="false">&nbsp;</body></html>');
-
-    // eslint-disable-next-line node/no-unsupported-features/es-builtins
-    const gt = typeof globalThis === 'object' ? globalThis : window;
-    gt.ChildAccessibleAce2Editor = Ace2Editor;
-
-    const outerScript = `
-      window.editorInfo = parent.ChildAccessibleAce2Editor.registry[${JSON.stringify(info.id)}];
-      window.onload = () => {
-        window.onload = null;
-        setTimeout(() => {
-          const iframe = document.createElement('iframe');
-          iframe.name = 'ace_inner';
-          iframe.title = 'pad';
-          iframe.scrolling = 'no';
-          iframe.frameBorder = 0;
-          iframe.allowTransparency = true; // for IE
-          iframe.ace_outerWin = window;
-          document.body.insertBefore(iframe, document.body.firstChild);
-          window.readyFunc = () => {
-            delete window.readyFunc;
-            window.editorInfo.onEditorReady();
-            delete window.editorInfo;
-          };
-          const doc = iframe.contentWindow.document;
-          doc.open();
-          doc.write(${JSON.stringify(iframeHTML.join('\n'))});
-          doc.close();
-        }, 0);
-      }
-    `;
-
-    const outerHTML =
-        [doctype, `<html class="inner-editor outerdoc ${clientVars.skinVariants}"><head>`];
-    pushStyleTagsFor(outerHTML, includedCSS);
-
-    // bizarrely, in FF2, a file with no "external" dependencies won't finish loading properly
-    // (throbs busy while typing)
-    const pluginNames = pluginUtils.clientPluginNames();
-    outerHTML.push(
-        '<style type="text/css" title="dynamicsyntax"></style>',
-        '<link rel="stylesheet" type="text/css" href="data:text/css,"/>',
-        scriptTag(outerScript),
-        '</head>',
-        '<body id="outerdocbody" class="outerdocbody ', pluginNames.join(' '), '">',
-        '<div id="sidediv" class="sidediv"><!-- --></div>',
-        '<div id="linemetricsdiv">x</div>',
-        '</body></html>');
-
-    const outerFrame = document.createElement('IFRAME');
+    const outerFrame = document.createElement('iframe');
     outerFrame.name = 'ace_outer';
     outerFrame.frameBorder = 0; // for IE
     outerFrame.title = 'Ether';
     info.frame = outerFrame;
     document.getElementById(containerId).appendChild(outerFrame);
 
-    const editorDocument = outerFrame.contentWindow.document;
+    const outerWindow = outerFrame.contentWindow;
+    const outerDocument = outerWindow.document;
+    const skinVariants = clientVars.skinVariants.split(' ').filter((x) => x !== '');
+    outerDocument.documentElement.classList.add('inner-editor', 'outerdoc', ...skinVariants);
+    addStyleTagsFor(outerDocument, includedCSS);
 
-    editorDocument.open();
-    editorDocument.write(outerHTML.join(''));
-    editorDocument.close();
+    const style = outerDocument.createElement('style');
+    style.type = 'text/css';
+    style.title = 'dynamicsyntax';
+    outerDocument.head.appendChild(style);
+
+    const link = outerDocument.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = 'data:text/css,';
+    outerDocument.head.appendChild(link);
+
+    outerWindow.editorInfo = Ace2Editor.registry[info.id];
+    outerWindow.onload = () => {
+      outerWindow.onload = null;
+      const window = outerWindow;
+      const document = outerDocument;
+      setTimeout(() => {
+        const iframe = document.createElement('iframe');
+        iframe.name = 'ace_inner';
+        iframe.title = 'pad';
+        iframe.scrolling = 'no';
+        iframe.frameBorder = 0;
+        iframe.allowTransparency = true; // for IE
+        iframe.ace_outerWin = window;
+        document.body.insertBefore(iframe, document.body.firstChild);
+        window.readyFunc = () => {
+          delete window.readyFunc;
+          window.editorInfo.onEditorReady();
+          delete window.editorInfo;
+        };
+        const innerWindow = iframe.contentWindow;
+        const innerDocument = innerWindow.document;
+        innerDocument.documentElement.classList.add('inner-editor', ...skinVariants);
+        addStyleTagsFor(innerDocument, includedCSS);
+
+        const script = innerDocument.createElement('script');
+        script.type = 'text/javascript';
+        script.src = `../static/js/require-kernel.js?v=${clientVars.randomVersionString}`;
+        innerDocument.head.appendChild(script);
+
+        innerWindow.onload = () => {
+          innerWindow.onload = null;
+          const window = innerWindow;
+          const require = window.require;
+          require.setRootURI('../javascripts/src');
+          require.setLibraryURI('../javascripts/lib');
+          require.setGlobalKeyPath('require');
+
+          window.plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
+          window.plugins.adoptPluginsFromAncestorsOf(window);
+
+          window.$ = window.jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery;
+          window.Ace2Inner = require('ep_etherpad-lite/static/js/ace2_inner');
+
+          window.plugins.ensure(() => window.Ace2Inner.init());
+        };
+
+        const style = innerDocument.createElement('style');
+        style.type = 'text/css';
+        style.title = 'dynamicsyntax';
+        innerDocument.head.appendChild(style);
+
+        const headLines = [];
+        hooks.callAll('aceInitInnerdocbodyHead', {iframeHTML: headLines});
+        const tmp = innerDocument.createElement('div');
+        tmp.innerHTML = headLines.join('\n');
+        while (tmp.firstChild) innerDocument.head.appendChild(tmp.firstChild);
+
+        innerDocument.body.id = 'innerdocbody';
+        innerDocument.body.classList.add('innerdocbody');
+        innerDocument.body.setAttribute('role', 'application');
+        innerDocument.body.setAttribute('spellcheck', 'false');
+        innerDocument.body.appendChild(innerDocument.createTextNode('\u00A0')); // &nbsp;
+      }, 0);
+    };
+
+    outerDocument.body.id = 'outerdocbody';
+    outerDocument.body.classList.add('outerdocbody', ...pluginUtils.clientPluginNames());
+
+    const sideDiv = outerDocument.createElement('div');
+    sideDiv.id = 'sidediv';
+    sideDiv.classList.add('sidediv');
+    outerDocument.body.appendChild(sideDiv);
+
+    const lineMetricsDiv = outerDocument.createElement('div');
+    lineMetricsDiv.id = 'linemetricsdiv';
+    lineMetricsDiv.appendChild(outerDocument.createTextNode('x'));
+    outerDocument.body.appendChild(lineMetricsDiv);
   };
 };
 
