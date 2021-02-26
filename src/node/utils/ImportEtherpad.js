@@ -22,6 +22,13 @@ const hooks = require('../../static/js/pluginfw/hooks');
 exports.setPadRaw = (padId, r) => {
   const records = JSON.parse(r);
 
+  const blockElems = ['div', 'br', 'p', 'pre', 'li', 'author', 'lmkr', 'insertorder'];
+
+  // get supported block Elements from plugins, we will use this later.
+  hooks.callAll('ccRegisterBlockElements').forEach((element) => {
+    blockElems.push(element);
+  });
+
   Object.keys(records).forEach(async (key) => {
     let value = records[key];
 
@@ -53,6 +60,17 @@ exports.setPadRaw = (padId, r) => {
     } else {
       // Not author data, probably pad data
       // we can split it to look to see if it's pad data
+
+      // is this an attribute we support or not?  If not, tell the admin
+      if (value.pool) {
+        for (const attrib of Object.keys(value.pool.numToAttrib)) {
+          const attribName = value.pool.numToAttrib[attrib][0];
+          if (blockElems.indexOf(attribName) === -1) {
+            console.warn('Plugin missing: ' +
+                `You might want to install a plugin to support this node name: ${attribName}`);
+          }
+        }
+      }
       const oldPadId = key.split(':');
 
       // we know it's pad data

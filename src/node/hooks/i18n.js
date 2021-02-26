@@ -4,8 +4,7 @@ const languages = require('languages4translatewiki');
 const fs = require('fs');
 const path = require('path');
 const _ = require('underscore');
-const npm = require('npm');
-const plugins = require('../../static/js/pluginfw/plugin_defs.js').plugins;
+const pluginDefs = require('../../static/js/pluginfw/plugin_defs.js');
 const existsSync = require('../utils/path_exists');
 const settings = require('../utils/Settings');
 
@@ -38,10 +37,12 @@ const getAllLocales = () => {
   };
 
   // add core supported languages first
-  extractLangs(`${npm.root}/ep_etherpad-lite/locales`);
+  extractLangs(path.join(settings.root, 'src/locales'));
 
   // add plugins languages (if any)
-  for (const pluginName in plugins) extractLangs(path.join(npm.root, pluginName, 'locales'));
+  for (const {package: {path: pluginPath}} of Object.values(pluginDefs.plugins)) {
+    extractLangs(path.join(pluginPath, 'locales'));
+  }
 
   // Build a locale index (merge all locale data other than user-supplied overrides)
   const locales = {};
@@ -83,18 +84,18 @@ const getAllLocales = () => {
 // e.g. { es: {nativeName: "español", direction: "ltr"}, ... }
 const getAvailableLangs = (locales) => {
   const result = {};
-  _.each(_.keys(locales), (langcode) => {
+  for (const langcode of Object.keys(locales)) {
     result[langcode] = languages.getLanguageInfo(langcode);
-  });
+  }
   return result;
 };
 
 // returns locale index that will be served in /locales.json
 const generateLocaleIndex = (locales) => {
   const result = _.clone(locales); // keep English strings
-  _.each(_.keys(locales), (langcode) => {
+  for (const langcode of Object.keys(locales)) {
     if (langcode !== 'en') result[langcode] = `locales/${langcode}.json`;
-  });
+  }
   return JSON.stringify(result);
 };
 
@@ -108,7 +109,7 @@ exports.expressCreateServer = (n, args, cb) => {
   args.app.get('/locales/:locale', (req, res) => {
     // works with /locale/en and /locale/en.json requests
     const locale = req.params.locale.split('.')[0];
-    if (exports.availableLangs.hasOwnProperty(locale)) {
+    if (Object.prototype.hasOwnProperty.call(exports.availableLangs, locale)) {
       res.setHeader('Cache-Control', `public, max-age=${settings.maxAge}`);
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
       res.send(`{"${locale}":${JSON.stringify(locales[locale])}}`);

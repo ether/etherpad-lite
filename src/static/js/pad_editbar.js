@@ -22,7 +22,7 @@
  * limitations under the License.
  */
 
-const browser = require('./browser');
+const browser = require('./vendors/browser');
 const hooks = require('./pluginfw/hooks');
 const padutils = require('./pad_utils').padutils;
 const padeditor = require('./pad_editor').padeditor;

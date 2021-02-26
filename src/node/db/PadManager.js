@@ -173,7 +173,7 @@ const padIdTransforms = [
 ];
 
 // returns a sanitized padId, respecting legacy pad id formats
-exports.sanitizePadId = async function sanitizePadId(padId) {
+exports.sanitizePadId = async (padId) => {
   for (let i = 0, n = padIdTransforms.length; i < n; ++i) {
     const exists = await exports.doesPadExist(padId);
 

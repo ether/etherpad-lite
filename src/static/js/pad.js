@@ -26,9 +26,9 @@ let socket;
 
 // These jQuery things should create local references, but for now `require()`
 // assigns to the global `$` and augments it with plugins.
-require('./jquery');
-require('./farbtastic');
-require('./gritter');
+require('./vendors/jquery');
+require('./vendors/farbtastic');
+require('./vendors/gritter');
 
 const Cookies = require('./pad_utils').Cookies;
 const chat = require('./chat').chat;

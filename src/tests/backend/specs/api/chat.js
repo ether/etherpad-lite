@@ -1,18 +1,22 @@
-const common = require('../../common');
-const settings = require('../../../../node/utils/Settings');
-const supertest = require('supertest');
+'use strict';
 
-const api = supertest(`http://${settings.ip}:${settings.port}`);
+const common = require('../../common');
+
+let agent;
 const apiKey = common.apiKey;
 let apiVersion = 1;
 let authorID = '';
 const padID = makeid();
 const timestamp = Date.now();
 
+const endPoint = (point) => `/api/${apiVersion}/${point}?apikey=${apiKey}`;
+
 describe(__filename, function () {
+  before(async function () { agent = await common.init(); });
+
   describe('API Versioning', function () {
     it('errors if can not connect', function (done) {
-      api.get('/api/')
+      agent.get('/api/')
           .expect((res) => {
             apiVersion = res.body.currentVersion;
             if (!res.body.currentVersion) throw new Error('No version set in API');
@@ -37,7 +41,7 @@ describe(__filename, function () {
   describe('createPad', function () {
     this.timeout(400);
     it('creates a new Pad', function (done) {
-      api.get(`${endPoint('createPad')}&padID=${padID}`)
+      agent.get(`${endPoint('createPad')}&padID=${padID}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Unable to create new Pad');
           })
@@ -49,9 +53,11 @@ describe(__filename, function () {
   describe('createAuthor', function () {
     this.timeout(100);
     it('Creates an author with a name set', function (done) {
-      api.get(endPoint('createAuthor'))
+      agent.get(endPoint('createAuthor'))
           .expect((res) => {
-            if (res.body.code !== 0 || !res.body.data.authorID) throw new Error('Unable to create author');
+            if (res.body.code !== 0 || !res.body.data.authorID) {
+              throw new Error('Unable to create author');
+            }
             authorID = res.body.data.authorID; // we will be this author for the rest of the tests
           })
           .expect('Content-Type', /json/)
@@ -62,7 +68,8 @@ describe(__filename, function () {
   describe('appendChatMessage', function () {
     this.timeout(100);
     it('Adds a chat message to the pad', function (done) {
-      api.get(`${endPoint('appendChatMessage')}&padID=${padID}&text=blalblalbha&authorID=${authorID}&time=${timestamp}`)
+      agent.get(`${endPoint('appendChatMessage')}&padID=${padID}&text=blalblalbha` +
+                `&authorID=${authorID}&time=${timestamp}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Unable to create chat message');
           })
@@ -75,7 +82,7 @@ describe(__filename, function () {
   describe('getChatHead', function () {
     this.timeout(100);
     it('Gets the head of chat', function (done) {
-      api.get(`${endPoint('getChatHead')}&padID=${padID}`)
+      agent.get(`${endPoint('getChatHead')}&padID=${padID}`)
           .expect((res) => {
             if (res.body.data.chatHead !== 0) throw new Error('Chat Head Length is wrong');
 
@@ -89,9 +96,11 @@ describe(__filename, function () {
   describe('getChatHistory', function () {
     this.timeout(40);
     it('Gets Chat History of a Pad', function (done) {
-      api.get(`${endPoint('getChatHistory')}&padID=${padID}`)
+      agent.get(`${endPoint('getChatHistory')}&padID=${padID}`)
           .expect((res) => {
-            if (res.body.data.messages.length !== 1) throw new Error('Chat History Length is wrong');
+            if (res.body.data.messages.length !== 1) {
+              throw new Error('Chat History Length is wrong');
+            }
             if (res.body.code !== 0) throw new Error('Unable to get chat history');
           })
           .expect('Content-Type', /json/)
@@ -99,10 +108,6 @@ describe(__filename, function () {
     });
   });
 });
-
-var endPoint = function (point) {
-  return `/api/${apiVersion}/${point}?apikey=${apiKey}`;
-};
 
 function makeid() {
   let text = '';

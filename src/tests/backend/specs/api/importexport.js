@@ -7,12 +7,12 @@
  */
 
 const common = require('../../common');
-const settings = require('../../../container/loadSettings.js').loadSettings();
-const supertest = require('supertest');
 
-const api = supertest(`http://${settings.ip}:${settings.port}`);
+let agent;
 const apiKey = common.apiKey;
 const apiVersion = 1;
+
+const endPoint = (point, version) => `/api/${version || apiVersion}/${point}?apikey=${apiKey}`;
 
 const testImports = {
   'malformed': {
@@ -226,6 +226,8 @@ const testImports = {
 };
 
 describe(__filename, function () {
+  before(async function () { agent = await common.init(); });
+
   Object.keys(testImports).forEach((testName) => {
     describe(testName, function () {
       const testPadId = makeid();
@@ -237,7 +239,7 @@ describe(__filename, function () {
       }
       it('createPad', function (done) {
         this.timeout(200);
-        api.get(`${endPoint('createPad')}&padID=${testPadId}`)
+        agent.get(`${endPoint('createPad')}&padID=${testPadId}`)
             .expect((res) => {
               if (res.body.code !== 0) throw new Error('Unable to create new Pad');
             })
@@ -247,7 +249,8 @@ describe(__filename, function () {
 
       it('setHTML', function (done) {
         this.timeout(150);
-        api.get(`${endPoint('setHTML')}&padID=${testPadId}&html=${encodeURIComponent(test.input)}`)
+        agent.get(`${endPoint('setHTML')}&padID=${testPadId}` +
+                  `&html=${encodeURIComponent(test.input)}`)
             .expect((res) => {
               if (res.body.code !== 0) throw new Error(`Error:${testName}`);
             })
@@ -257,7 +260,7 @@ describe(__filename, function () {
 
       it('getHTML', function (done) {
         this.timeout(150);
-        api.get(`${endPoint('getHTML')}&padID=${testPadId}`)
+        agent.get(`${endPoint('getHTML')}&padID=${testPadId}`)
             .expect((res) => {
               const gotHtml = res.body.data.html;
               if (gotHtml !== test.wantHTML) {
@@ -281,7 +284,7 @@ describe(__filename, function () {
 
       it('getText', function (done) {
         this.timeout(100);
-        api.get(`${endPoint('getText')}&padID=${testPadId}`)
+        agent.get(`${endPoint('getText')}&padID=${testPadId}`)
             .expect((res) => {
               const gotText = res.body.data.text;
               if (gotText !== test.wantText) {
@@ -305,12 +308,6 @@ describe(__filename, function () {
     });
   });
 });
-
-
-function endPoint(point, version) {
-  version = version || apiVersion;
-  return `/api/${version}/${point}?apikey=${apiKey}`;
-}
 
 function makeid() {
   let text = '';

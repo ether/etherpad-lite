@@ -28,12 +28,12 @@ const AttribPool = require('./AttributePool');
 const Changeset = require('./Changeset');
 const linestylefilter = require('./linestylefilter').linestylefilter;
 const colorutils = require('./colorutils').colorutils;
-const _ = require('./underscore');
+const _ = require('./vendors/underscore');
 const hooks = require('./pluginfw/hooks');
 
 // These parameters were global, now they are injected. A reference to the
 // Timeslider controller would probably be more appropriate.
-function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider) {
+const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, BroadcastSlider) => {
   let goToRevisionIfEnabledCount = 0;
   let changesetLoader = undefined;
 
@@ -488,6 +488,6 @@ function loadBroadcastJS(socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
   receiveAuthorData(clientVars.collab_client_vars.historicalAuthorData);
 
   return changesetLoader;
-}
+};
 
 exports.loadBroadcastJS = loadBroadcastJS;

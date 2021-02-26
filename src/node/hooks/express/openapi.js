@@ -22,7 +22,6 @@ const createHTTPError = require('http-errors');
 
 const apiHandler = require('../../handler/APIHandler');
 const settings = require('../../utils/Settings');
-const isValidJSONPName = require('./isValidJSONPName');
 
 const log4js = require('log4js');
 const logger = log4js.getLogger('API');
@@ -491,7 +490,7 @@ const generateDefinitionForVersion = (version, style = APIPathStyle.FLAT) => {
   };
 
   // build operations
-  for (const funcName in apiHandler.version[version]) {
+  for (const funcName of Object.keys(apiHandler.version[version])) {
     let operation = {};
     if (operations[funcName]) {
       operation = {...operations[funcName]};
@@ -545,7 +544,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
   const {app} = args;
 
   // create openapi-backend handlers for each api version under /api/{version}/*
-  for (const version in apiHandler.version) {
+  for (const version of Object.keys(apiHandler.version)) {
     // we support two different styles of api: flat + rest
     // TODO: do we really want to support both?
 
@@ -573,7 +572,6 @@ exports.expressCreateServer = (hookName, args, cb) => {
 
       // build openapi-backend instance for this api version
       const api = new OpenAPIBackend({
-        apiRoot, // each api version has its own root
         definition,
         validate: false,
         // for a small optimisation, we can run the quick startup for older
@@ -592,7 +590,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
       });
 
       // register operation handlers
-      for (const funcName in apiHandler.version[version]) {
+      for (const funcName of Object.keys(apiHandler.version[version])) {
         const handler = async (c, req, res) => {
           // parse fields from request
           const {header, params, query} = c.request;
@@ -685,12 +683,6 @@ exports.expressCreateServer = (hookName, args, cb) => {
               response = {code: 1, message: err.message, data: null};
               break;
           }
-        }
-
-        // support jsonp response format
-        if (req.query.jsonp && isValidJSONPName.check(req.query.jsonp)) {
-          res.header('Content-Type', 'application/javascript');
-          response = `${req.query.jsonp}(${JSON.stringify(response)})`;
         }
 
         // send response

@@ -8,20 +8,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Generate Sauce Labs strings
+      id: sauce_strings
+      run: |
+        printf %s\\n '::set-output name=name::${{ github.workflow }} - ${{ github.job }}'
+        printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
+
     - name: Checkout repository
       uses: actions/checkout@v2
 
     - uses: actions/setup-node@v2
       with:
         node-version: 12
-
-    - name: Run sauce-connect-action
-      shell: bash
-      env:
-        SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
-        SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-        TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}
-      run: src/tests/frontend/travis/sauce_tunnel.sh
 
     - name: Install all dependencies and symlink for ep_etherpad-lite
       run: src/bin/installDeps.sh
@@ -30,15 +28,26 @@ jobs:
       id: environment
       run: echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.sha }})"
 
-    - name: Write custom settings.json with loglevel WARN
-      run: "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/' < settings.json.template > settings.json"
+    - name: Create settings.json
+      run: cp settings.json.template settings.json
+
+    - name: Disable import/export rate limiting
+      run: |
+        sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 0/' -i settings.json
+
+    - uses: saucelabs/sauce-connect-action@v1.1.2
+      with:
+        username: ${{ secrets.SAUCE_USERNAME }}
+        accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+        tunnelIdentifier: ${{ steps.sauce_strings.outputs.tunnel_id }}
 
     - name: Run the frontend tests
       shell: bash
       env:
         SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
         SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-        TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}
+        SAUCE_NAME: ${{ steps.sauce_strings.outputs.name }}
+        TRAVIS_JOB_NUMBER: ${{ steps.sauce_strings.outputs.tunnel_id }}
         GIT_HASH: ${{ steps.environment.outputs.sha_short }}
       run: |
         src/tests/frontend/travis/runner.sh
@@ -48,6 +57,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Generate Sauce Labs strings
+      id: sauce_strings
+      run: |
+        printf %s\\n '::set-output name=name::${{ github.workflow }} - ${{ github.job }}'
+        printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
+
     - name: Checkout repository
       uses: actions/checkout@v2
 
@@ -55,17 +70,11 @@ jobs:
       with:
         node-version: 12
 
-    - name: Run sauce-connect-action
-      shell: bash
-      env:
-        SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
-        SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-        TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}
-      run: src/tests/frontend/travis/sauce_tunnel.sh
-
     - name: Install Etherpad plugins
+      # The --legacy-peer-deps flag is required to work around a bug in npm v7:
+      # https://github.com/npm/cli/issues/2199
       run: >
-        npm install
+        npm install --no-save --legacy-peer-deps
         ep_align
         ep_author_hover
         ep_cursortrace
@@ -94,22 +103,30 @@ jobs:
       id: environment
       run: echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.sha }})"
 
-    - name: Write custom settings.json with loglevel WARN
-      run: "sed 's/\"loglevel\": \"INFO\",/\"loglevel\": \"WARN\",/' < settings.json.template > settings.json"
+    - name: Create settings.json
+      run: cp settings.json.template settings.json
 
-    - name: Write custom settings.json that enables the Admin UI tests
-      run: "sed -i 's/\"enableAdminUITests\": false/\"enableAdminUITests\": true,\\n\"users\":{\"admin\":{\"password\":\"changeme\",\"is_admin\":true}}/' settings.json"
+    - name: Disable import/export rate limiting
+      run: |
+        sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 0/' -i settings.json
 
       # XXX we should probably run all tests, because plugins could effect their results
     - name: Remove standard frontend test files, so only plugin tests are run
       run: rm src/tests/frontend/specs/*
+
+    - uses: saucelabs/sauce-connect-action@v1.1.2
+      with:
+        username: ${{ secrets.SAUCE_USERNAME }}
+        accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+        tunnelIdentifier: ${{ steps.sauce_strings.outputs.tunnel_id }}
 
     - name: Run the frontend tests
       shell: bash
       env:
         SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
         SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-        TRAVIS_JOB_NUMBER: ${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}
+        SAUCE_NAME: ${{ steps.sauce_strings.outputs.name }}
+        TRAVIS_JOB_NUMBER: ${{ steps.sauce_strings.outputs.tunnel_id }}
         GIT_HASH: ${{ steps.environment.outputs.sha_short }}
       run: |
         src/tests/frontend/travis/runner.sh

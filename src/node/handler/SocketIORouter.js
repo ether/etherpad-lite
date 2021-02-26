@@ -60,7 +60,7 @@ exports.setSocketIO = (_socket) => {
     };
 
     // tell all components about this connect
-    for (const i in components) {
+    for (const i of Object.keys(components)) {
       components[i].handleConnect(client);
     }
 
@@ -84,7 +84,7 @@ exports.setSocketIO = (_socket) => {
       // this instance can be brought out of a scaling cluster.
       stats.gauge('lastDisconnect', () => Date.now());
       // tell all components about this disconnect
-      for (const i in components) {
+      for (const i of Object.keys(components)) {
         components[i].handleDisconnect(client);
       }
     });

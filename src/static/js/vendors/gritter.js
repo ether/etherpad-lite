@@ -1,3 +1,5 @@
+// WARNING: This file has been modified from the Original
+
 /*
  * Gritter for jQuery
  * http://www.boedesign.com/

@@ -7,7 +7,7 @@ fatal() { error "$@"; exit 1; }
 is_cmd() { command -v "$@" >/dev/null 2>&1; }
 
 # Move to the folder where ep-lite is installed
-cd "$(dirname "$0")"/..
+cd "$(cd "${0%/*}" && pwd -P)/../.."
 
 # Is wget installed?
 is_cmd wget || fatal "Please install wget"

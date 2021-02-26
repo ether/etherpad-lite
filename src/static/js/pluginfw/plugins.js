@@ -2,14 +2,25 @@
 
 const fs = require('fs').promises;
 const hooks = require('./hooks');
+const log4js = require('log4js');
 const path = require('path');
-const runNpm = require('../../../node/utils/run_npm');
+const runCmd = require('../../../node/utils/run_cmd');
 const tsort = require('./tsort');
-const util = require('util');
-const settings = require('../../../node/utils/Settings');
-
 const pluginUtils = require('./shared');
 const defs = require('./plugin_defs');
+
+const logger = log4js.getLogger('plugins');
+
+// Log the version of npm at startup.
+(async () => {
+  try {
+    const version = await runCmd(['npm', '--version'], {stdio: [null, 'string']});
+    logger.info(`npm --version: ${version}`);
+  } catch (err) {
+    logger.error(`Failed to get npm version: ${err.stack || err}`);
+    // This isn't a fatal error so don't re-throw.
+  }
+})();
 
 exports.prefix = 'ep_';
 
@@ -32,7 +43,7 @@ exports.formatHooks = (hookSetName) => {
 const callInit = async () => {
   await Promise.all(Object.keys(defs.plugins).map(async (pluginName) => {
     const plugin = defs.plugins[pluginName];
-    const epInit = path.normalize(path.join(plugin.package.path, '.ep_initialized'));
+    const epInit = path.join(plugin.package.path, '.ep_initialized');
     try {
       await fs.stat(epInit);
     } catch (err) {
@@ -48,7 +59,7 @@ exports.pathNormalization = (part, hookFnName, hookName) => {
   const functionName = (tmp.length > 1 ? tmp.pop() : null) || hookName;
   const moduleName = tmp.join(':') || part.plugin;
   const packageDir = path.dirname(defs.plugins[part.plugin].package.path);
-  const fileName = path.normalize(path.join(packageDir, moduleName));
+  const fileName = path.join(packageDir, moduleName);
   return `${fileName}:${functionName}`;
 };
 
@@ -58,8 +69,11 @@ exports.update = async () => {
   const plugins = {};
 
   // Load plugin metadata ep.json
-  await Promise.all(Object.keys(packages).map(
-      async (pluginName) => await loadPlugin(packages, pluginName, plugins, parts)));
+  await Promise.all(Object.keys(packages).map(async (pluginName) => {
+    logger.info(`Loading plugin ${pluginName}...`);
+    await loadPlugin(packages, pluginName, plugins, parts);
+  }));
+  logger.info(`Loaded ${Object.keys(packages).length} plugins`);
 
   defs.plugins = plugins;
   defs.parts = sortParts(parts);
@@ -69,21 +83,14 @@ exports.update = async () => {
 };
 
 exports.getPackages = async () => {
-  // Note: Do not pass `--prod` because it does not work if there is no package.json.
-  const np = runNpm(['ls', '--long', '--json', '--depth=0'], {
-    stdoutLogger: null, // We want to capture stdout, so don't attempt to log it.
-    env: {
-      ...process.env,
-      // NODE_ENV must be set to development for `npm ls` to show files without a package.json.
-      NODE_ENV: 'development',
-    },
-  });
-  const chunks = [];
-  await Promise.all([
-    (async () => { for await (const chunk of np.stdout) chunks.push(chunk); })(),
-    np, // Await in parallel to avoid unhandled rejection if np rejects during chunk read.
-  ]);
-  const {dependencies = {}} = JSON.parse(Buffer.concat(chunks).toString());
+  logger.info('Running npm to get a list of installed plugins...');
+  // Notes:
+  //   * Do not pass `--prod` otherwise `npm ls` will fail if there is no `package.json`.
+  //   * The `--no-production` flag is required (or the `NODE_ENV` environment variable must be
+  //     unset or set to `development`) because otherwise `npm ls` will not mention any packages
+  //     that are not included in `package.json` (which is expected to not exist).
+  const cmd = ['npm', 'ls', '--long', '--json', '--depth=0', '--no-production'];
+  const {dependencies = {}} = JSON.parse(await runCmd(cmd, {stdio: [null, 'string']}));
   await Promise.all(Object.entries(dependencies).map(async ([pkg, info]) => {
     if (!pkg.startsWith(exports.prefix)) {
       delete dependencies[pkg];
@@ -107,11 +114,11 @@ const loadPlugin = async (packages, pluginName, plugins, parts) => {
         part.full_name = `${pluginName}/${part.name}`;
         parts[part.full_name] = part;
       }
-    } catch (ex) {
-      console.error(`Unable to parse plugin definition file ${pluginPath}: ${ex.toString()}`);
+    } catch (err) {
+      logger.error(`Unable to parse plugin definition file ${pluginPath}: ${err.stack || err}`);
     }
-  } catch (er) {
-    console.error(`Unable to load plugin definition file ${pluginPath}`);
+  } catch (err) {
+    logger.error(`Unable to load plugin definition file ${pluginPath}: ${err.stack || err}`);
   }
 };
 

@@ -42,7 +42,7 @@ const padimpexp = (() => {
     $('#importmessagefail').fadeOut('fast');
   };
 
-  const fileInputSubmit = (e) => {
+  const fileInputSubmit = function (e) {
     e.preventDefault();
     $('#importmessagefail').fadeOut('fast');
     if (!window.confirm(html10n.get('pad.impexp.confirmimport'))) return;

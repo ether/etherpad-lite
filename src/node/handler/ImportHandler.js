@@ -103,20 +103,16 @@ const doImport = async (req, res, padId) => {
   // locally wrapped Promise, since form.parse requires a callback
   let srcFile = await new Promise((resolve, reject) => {
     form.parse(req, (err, fields, files) => {
-      if (err || files.file === undefined) {
-        // the upload failed, stop at this point
-        if (err) {
-          console.warn(`Uploading Error: ${err.stack}`);
-        }
-
+      if (err != null) {
+        logger.warn(`Import failed due to form error: ${err.stack || err}`);
         // I hate doing indexOf here but I can't see anything to use...
         if (err && err.stack && err.stack.indexOf('maxFileSize') !== -1) {
           return reject(new ImportError('maxFileSize'));
         }
-
         return reject(new ImportError('uploadFailed'));
       }
-      if (!files.file) { // might not be a graceful fix but it works
+      if (!files.file) {
+        logger.warn('Import failed because form had no file');
         return reject(new ImportError('uploadFailed'));
       }
       resolve(files.file.path);
@@ -140,7 +136,7 @@ const doImport = async (req, res, padId) => {
       srcFile = path.join(path.dirname(srcFile), `${path.basename(srcFile, fileEnding)}.txt`);
       await fs.rename(oldSrcFile, srcFile);
     } else {
-      console.warn('Not allowing unknown file type to be imported', fileEnding);
+      logger.warn(`Not allowing unknown file type to be imported: ${fileEnding}`);
       throw new ImportError('uploadFailed');
     }
   }
@@ -188,7 +184,7 @@ const doImport = async (req, res, padId) => {
         convertor.convertFile(srcFile, destFile, exportExtension, (err) => {
           // catch convert errors
           if (err) {
-            console.warn('Converting Error:', err);
+            logger.warn(`Converting Error: ${err.stack || err}`);
             return reject(new ImportError('convertFailed'));
           }
           resolve();
@@ -205,6 +201,7 @@ const doImport = async (req, res, padId) => {
     const isAscii = !Array.prototype.some.call(buf, (c) => (c > 240));
 
     if (!isAscii) {
+      logger.warn('Attempt to import non-ASCII file');
       throw new ImportError('uploadFailed');
     }
   }
@@ -230,8 +227,8 @@ const doImport = async (req, res, padId) => {
     if (importHandledByPlugin || useConvertor || fileIsHTML) {
       try {
         await importHtml.setPadHTML(pad, text);
-      } catch (e) {
-        logger.warn('Error importing, possibly caused by malformed HTML');
+      } catch (err) {
+        logger.warn(`Error importing, possibly caused by malformed HTML: ${err.stack || err}`);
       }
     } else {
       await pad.setText(text);

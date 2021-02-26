@@ -2,7 +2,7 @@
   "pad.js": [
     "pad.js"
   , "pad_utils.js"
-  , "browser.js"
+  , "vendors/browser.js"
   , "pad_cookie.js"
   , "pad_editor.js"
   , "pad_editbar.js"
@@ -16,10 +16,10 @@
   , "pad_savedrevs.js"
   , "pad_connectionstatus.js"
   , "chat.js"
-  , "gritter.js"
+  , "vendors/gritter.js"
   , "$js-cookie/src/js.cookie.js"
   , "$tinycon/tinycon.js"
-  , "farbtastic.js"
+  , "vendors/farbtastic.js"
   , "skin_variants.js"
   , "socketio.js"
   ]
@@ -28,7 +28,7 @@
   , "colorutils.js"
   , "draggable.js"
   , "pad_utils.js"
-  , "browser.js"
+  , "vendors/browser.js"
   , "pad_cookie.js"
   , "pad_editor.js"
   , "pad_editbar.js"
@@ -49,7 +49,7 @@
   ]
 , "ace2_inner.js": [
     "ace2_inner.js"
-  , "browser.js"
+  , "vendors/browser.js"
   , "AttributePool.js"
   , "Changeset.js"
   , "ChangesetUtils.js"
@@ -68,11 +68,11 @@
   ]
 , "ace2_common.js": [
     "ace2_common.js"
-  , "browser.js"
-  , "jquery.js"
+  , "vendors/browser.js"
+  , "vendors/jquery.js"
   , "rjquery.js"
   , "$async.js"
-  , "underscore.js"
+  , "vendors/underscore.js"
   , "$underscore.js"
   , "$underscore/underscore.js"
   , "security.js"
@@ -82,4 +82,5 @@
   , "pluginfw/shared.js"
   , "pluginfw/hooks.js"
   ]
+, "jquery.js": ["jquery.js"]
 }

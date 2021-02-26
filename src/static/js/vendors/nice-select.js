@@ -1,3 +1,6 @@
+// WARNING: This file has been modified from the Original
+// TODO: Nice Select seems relatively abandoned, we should consider other options.
+
 /*  jQuery Nice Select - v1.1.0
     https://github.com/hernansartorio/jquery-nice-select
     Made by Hernán Sartorio  */
@@ -60,14 +63,14 @@
         .addClass($select.attr('class') || '')
         .addClass($select.attr('disabled') ? 'disabled' : '')
         .attr('tabindex', $select.attr('disabled') ? null : '0')
-        .html('<span class="current"></span><ul class="list thin-scrollbar"></ul>')
+        .html('<span class="current"></span><ul class="list"></ul>')
       );
 
       var $dropdown = $select.next();
       var $options = $select.find('option');
       var $selected = $select.find('option:selected');
 
-      $dropdown.find('.current').html($selected.data('display') || $selected.text());
+      $dropdown.find('.current').html($selected.data('display') || $selected.text());
 
       $options.each(function(i) {
         var $option = $(this);
@@ -94,31 +97,12 @@
       var $dropdown = $(this);
 
       $('.nice-select').not($dropdown).removeClass('open');
-
       $dropdown.toggleClass('open');
 
       if ($dropdown.hasClass('open')) {
         $dropdown.find('.option');
         $dropdown.find('.focus').removeClass('focus');
         $dropdown.find('.selected').addClass('focus');
-        if ($dropdown.closest('.toolbar').length > 0) {
-          $dropdown.find('.list').css('left', $dropdown.offset().left);
-          $dropdown.find('.list').css('top', $dropdown.offset().top + $dropdown.outerHeight());
-          $dropdown.find('.list').css('min-width', $dropdown.outerWidth() + 'px');
-        }
-
-        $listHeight = $dropdown.find('.list').outerHeight();
-        $top = $dropdown.parent().offset().top;
-        $bottom = $('body').height() - $top;
-        $maxListHeight = $bottom - $dropdown.outerHeight() - 20;
-        if ($maxListHeight < 200) {
-          $dropdown.addClass('reverse');
-          $maxListHeight = 250;
-        } else {
-          $dropdown.removeClass('reverse')
-        }
-        $dropdown.find('.list').css('max-height', $maxListHeight + 'px');
-
       } else {
         $dropdown.focus();
       }

@@ -7,7 +7,10 @@ Explain what your plugin does and who it's useful for.
 ![screenshot](https://user-images.githubusercontent.com/220864/99979953-97841d80-2d9f-11eb-9782-5f65817c58f4.PNG)
 
 ## Installing
-npm install [plugin_name]
+
+```
+npm install --no-save --legacy-peer-deps [plugin_name]
+```
 
 or Use the Etherpad ``/admin`` interface.
 

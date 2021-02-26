@@ -52,7 +52,7 @@
   <% e.end_block(); %>
 
   <link rel="localizations" type="application/l10n+json" href="../locales.json" />
-  <script type="text/javascript" src="../static/js/html10n.js?v=<%=settings.randomVersionString%>"></script>
+  <script type="text/javascript" src="../static/js/vendors/html10n.js?v=<%=settings.randomVersionString%>"></script>
   <script type="text/javascript" src="../static/js/l10n.js?v=<%=settings.randomVersionString%>"></script>
 
   <!-- head and body had been removed intentionally -->
@@ -100,6 +100,7 @@
         <% e.end_block(); %>
         <% e.begin_block("loading"); %>
         <p data-l10n-id="pad.loading" id="loading" class="editorloadingbox-message">
+          <img src='../static/img/brand.svg' class='etherpadBrand'><br/>
           Loading...
         </p>
         <% e.end_block(); %>
@@ -237,7 +238,9 @@
           </div>
           <div class="reconnecting">
             <h1 data-l10n-id="pad.modals.reconnecting"></h1>
-            <i class='buttonicon buttonicon-spin5 icon-spin'></i>
+            <i class='buttonicon buttonicon-spin5 icon-spin'>
+              <img src='../static/img/brand.svg' class='etherpadBrand'><br/>
+            </i>
           </div>
           <div class="userdup">
             <h1 data-l10n-id="pad.modals.userdup"></h1>
@@ -441,20 +444,19 @@
 
   <script type="text/javascript" src="../static/js/require-kernel.js?v=<%=settings.randomVersionString%>"></script>
 
-  <!-- Include pad_utils manually -->
-  <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/pad_utils.js?callback=require.define&v=<%=settings.randomVersionString%>"></script>
-
   <script type="text/javascript">
       // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
       (function() {
         // Display errors on page load to the user
         // (Gets overridden by padutils.setupGlobalExceptionHandler)
-        var originalHandler = window.onerror;
+        const originalHandler = window.onerror;
         window.onerror = function(msg, url, line) {
-          var box   = document.getElementById('editorloadingbox');
-          box.innerHTML = '<p><b>An error occurred while loading the pad</b></p>'
-                        + '<p><b>'+msg+'</b> '
-                        + '<small>in '+ padutils.escapeHTML(url) +' (line '+ line +')</small></p>';
+          const box   = document.getElementById('editorloadingbox');
+          const cleanMessage = msg.replace(/[^0-9a-zA-Z=\.?&:\/]+/,'');
+          const cleanSource = url.replace(/[^0-9a-zA-Z=\.?&:\/]+/,'');
+          const cleanLine = parseInt(line);
+          box.innerText = `An error occurred while loading the pad\n${cleanMessage} in
+            ${cleanSource} at line ${cleanLine}`
           // call original error handler
           if(typeof(originalHandler) == 'function') originalHandler.call(null, arguments);
         };
@@ -475,7 +477,11 @@
   <!-- Bootstrap page -->
   <script type="text/javascript">
       // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
-      var clientVars = {};
+      var clientVars = {
+        // This is needed to fetch /pluginfw/plugin-definitions.json, which happens before the
+        // server sends the CLIENT_VARS message.
+        randomVersionString: <%-JSON.stringify(settings.randomVersionString)%>,
+      };
       (function () {
         var pathComponents = location.pathname.split('/');
 
@@ -487,7 +493,7 @@
         require.setGlobalKeyPath("require");
 
         $ = jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery; // Expose jQuery #HACK
-        browser = require('ep_etherpad-lite/static/js/browser');
+        browser = require('ep_etherpad-lite/static/js/vendors/browser');
 
         var plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
         var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');

@@ -43,9 +43,8 @@ jobs:
         cd node_modules/${{github.event.repository.name}}
         npm ci
 
-    # configures some settings and runs npm run test
     - name: Run the backend tests
-      run: src/tests/frontend/travis/runnerBackend.sh
+      run: cd src && npm test
 
-##ETHERPAD_NPM_V=1
+##ETHERPAD_NPM_V=2
 ## NPM configuration automatically created using src/bin/plugins/updateAllPluginsScript.sh
