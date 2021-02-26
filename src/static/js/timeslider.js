@@ -52,7 +52,9 @@ const init = () => {
       Cookies.set('token', token, {expires: 60});
     }
 
-    socket = socketio.connect(exports.baseURL);
+    socket = socketio.connect(exports.baseURL, {
+      query: `padId=${padId}`,
+    });
 
     // send the ready message once we're connected
     socket.on('connect', () => {
