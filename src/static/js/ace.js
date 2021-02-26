@@ -174,12 +174,7 @@ const Ace2Editor = function () {
     let includedCSS = [];
     let $$INCLUDE_CSS = (filename) => { includedCSS.push(filename); };
     $$INCLUDE_CSS('../static/css/iframe_editor.css');
-
-    // disableCustomScriptsAndStyles can be used to disable loading of custom scripts
-    if (!clientVars.disableCustomScriptsAndStyles) {
-      $$INCLUDE_CSS(`../static/css/pad.css?v=${clientVars.randomVersionString}`);
-    }
-
+    $$INCLUDE_CSS(`../static/css/pad.css?v=${clientVars.randomVersionString}`);
     let additionalCSS = hooks.callAll('aceEditorCSS').map((path) => {
       if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
         return path;
