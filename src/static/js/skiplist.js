@@ -23,7 +23,7 @@
  */
 
 const Ace2Common = require('./ace2_common');
-const _ = require('./vendors/underscore');
+const _ = require('./underscore');
 
 const noop = Ace2Common.noop;
 
