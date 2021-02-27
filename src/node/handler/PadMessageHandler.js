@@ -1438,14 +1438,13 @@ exports.padUsers = async (padID) => {
   await Promise.all(_getRoomSockets(padID).map(async (roomSocket) => {
     const s = sessioninfos[roomSocket.id];
     if (s) {
-      return authorManager.getAuthor(s.author).then((author) => {
-        // Fixes: https://github.com/ether/etherpad-lite/issues/4120
-        // On restart author might not be populated?
-        if (author) {
-          author.id = s.author;
-          padUsers.push(author);
-        }
-      });
+      const author = await authorManager.getAuthor(s.author);
+      // Fixes: https://github.com/ether/etherpad-lite/issues/4120
+      // On restart author might not be populated?
+      if (author) {
+        author.id = s.author;
+        padUsers.push(author);
+      }
     }
   }));
 
