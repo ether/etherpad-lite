@@ -108,6 +108,41 @@ CachingMiddleware.prototype = new function () {
       oldReq.method = req.method;
       req.method = 'GET';
 
+      // This handles read/write synchronization as well as its predecessor,
+      // which is to say, not at all.
+      // TODO: Implement locking on write or ditch caching of gzip and use
+      // existing middlewares.
+      const respond = () => {
+        req.method = oldReq.method || req.method;
+        res.write = oldRes.write || res.write;
+        res.end = oldRes.end || res.end;
+
+        const headers = {};
+        Object.assign(headers, (responseCache[cacheKey].headers || {}));
+        const statusCode = responseCache[cacheKey].statusCode;
+
+        let pathStr = `${CACHE_DIR}minified_${cacheKey}`;
+        if (supportsGzip && /application\/javascript/.test(headers['content-type'])) {
+          pathStr += '.gz';
+          headers['content-encoding'] = 'gzip';
+        }
+
+        const lastModified = (headers['last-modified'] &&
+            new Date(headers['last-modified']));
+
+        if (statusCode === 200 && lastModified <= modifiedSince) {
+          res.writeHead(304, headers);
+          res.end();
+        } else if (req.method === 'GET') {
+          const readStream = fs.createReadStream(pathStr);
+          res.writeHead(statusCode, headers);
+          readStream.pipe(res);
+        } else {
+          res.writeHead(statusCode, headers);
+          res.end();
+        }
+      };
+
       const expirationDate = new Date(((responseCache[cacheKey] || {}).headers || {}).expires);
       if (expirationDate > new Date()) {
         // Our cached version is still valid.
@@ -178,41 +213,6 @@ CachingMiddleware.prototype = new function () {
       };
 
       next(undefined, req, res);
-
-      // This handles read/write synchronization as well as its predecessor,
-      // which is to say, not at all.
-      // TODO: Implement locking on write or ditch caching of gzip and use
-      // existing middlewares.
-      function respond() {
-        req.method = oldReq.method || req.method;
-        res.write = oldRes.write || res.write;
-        res.end = oldRes.end || res.end;
-
-        const headers = {};
-        Object.assign(headers, (responseCache[cacheKey].headers || {}));
-        const statusCode = responseCache[cacheKey].statusCode;
-
-        let pathStr = `${CACHE_DIR}minified_${cacheKey}`;
-        if (supportsGzip && /application\/javascript/.test(headers['content-type'])) {
-          pathStr += '.gz';
-          headers['content-encoding'] = 'gzip';
-        }
-
-        const lastModified = (headers['last-modified'] &&
-            new Date(headers['last-modified']));
-
-        if (statusCode === 200 && lastModified <= modifiedSince) {
-          res.writeHead(304, headers);
-          res.end();
-        } else if (req.method === 'GET') {
-          const readStream = fs.createReadStream(pathStr);
-          res.writeHead(statusCode, headers);
-          readStream.pipe(res);
-        } else {
-          res.writeHead(statusCode, headers);
-          res.end();
-        }
-      }
     });
   };
 
