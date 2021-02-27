@@ -73,8 +73,5 @@ jobs:
       with:
         wait-on: 'http://127.0.0.1:9001/p/test'
         wait-on-timeout: 600
-        # just for full picture after installing Cypress
-        # print information about detected browsers, etc
-        # see https://on.cypress.io/command-line#cypress-info
         working-directory: etherpad\node_modules\ep_etherpad-lite\tests\frontend\cypress
         start: node ../../../node/server.js
