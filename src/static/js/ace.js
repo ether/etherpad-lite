@@ -195,6 +195,9 @@ const Ace2Editor = function () {
 
       pushStyleTagsFor(iframeHTML, includedCSS);
       iframeHTML.push(`<script type="text/javascript" src="../static/js/require-kernel.js?v=${clientVars.randomVersionString}"></script>`);
+      // fill the cache
+      iframeHTML.push(`<script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define&v=${clientVars.randomVersionString}"></script>`);
+      iframeHTML.push(`<script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define&v=${clientVars.randomVersionString}"></script>`);
 
       iframeHTML.push(scriptTag(
           `\n\
