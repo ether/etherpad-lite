@@ -202,11 +202,12 @@ require.setRootURI("../javascripts/src");\n\
 require.setLibraryURI("../javascripts/lib");\n\
 require.setGlobalKeyPath("require");\n\
 \n\
+// intentially moved before requiring client_plugins to save a 307
+var Ace2Inner = require("ep_etherpad-lite/static/js/ace2_inner");\n\
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/client_plugins");\n\
 plugins.adoptPluginsFromAncestorsOf(window);\n\
 \n\
 $ = jQuery = require("ep_etherpad-lite/static/js/rjquery").jQuery; // Expose jQuery #HACK\n\
-var Ace2Inner = require("ep_etherpad-lite/static/js/ace2_inner");\n\
 \n\
 plugins.ensure(function () {\n\
   Ace2Inner.init();\n\
