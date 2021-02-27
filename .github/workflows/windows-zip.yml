@@ -66,7 +66,7 @@ jobs:
       run: 7z x etherpad-lite-win.zip -oetherpad
 
     - name: Install Cypress
-      run: npm install cypress --save-dev
+      run: npm install cypress --no-save
 
     - name: Cypress run
       uses: cypress-io/github-action@v2
@@ -77,5 +77,4 @@ jobs:
         # print information about detected browsers, etc
         # see https://on.cypress.io/command-line#cypress-info
         working-directory: etherpad\node_modules\ep_etherpad-lite\tests\frontend\cypress
-        build: npx cypress info
-        start: npm start
+        start: node ../../../node/server.js
