@@ -195,6 +195,9 @@ const Ace2Editor = function () {
 
       pushStyleTagsFor(iframeHTML, includedCSS);
       iframeHTML.push(`<script type="text/javascript" src="../static/js/require-kernel.js?v=${clientVars.randomVersionString}"></script>`);
+      // fill the cache
+      iframeHTML.push(`<script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define&v=${clientVars.randomVersionString}"></script>`);
+      iframeHTML.push(`<script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define&v=${clientVars.randomVersionString}"></script>`);
 
       iframeHTML.push(scriptTag(
           `\n\
@@ -202,11 +205,12 @@ require.setRootURI("../javascripts/src");\n\
 require.setLibraryURI("../javascripts/lib");\n\
 require.setGlobalKeyPath("require");\n\
 \n\
+// intentially moved before requiring client_plugins to save a 307
+var Ace2Inner = require("ep_etherpad-lite/static/js/ace2_inner");\n\
 var plugins = require("ep_etherpad-lite/static/js/pluginfw/client_plugins");\n\
 plugins.adoptPluginsFromAncestorsOf(window);\n\
 \n\
 $ = jQuery = require("ep_etherpad-lite/static/js/rjquery").jQuery; // Expose jQuery #HACK\n\
-var Ace2Inner = require("ep_etherpad-lite/static/js/ace2_inner");\n\
 \n\
 plugins.ensure(function () {\n\
   Ace2Inner.init();\n\

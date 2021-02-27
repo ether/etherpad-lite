@@ -2,6 +2,9 @@
   "pad.js": [
     "pad.js"
   , "pad_utils.js"
+  , "$js-cookie/src/js.cookie.js"
+  , "security.js"
+  , "$security.js"
   , "vendors/browser.js"
   , "pad_cookie.js"
   , "pad_editor.js"
@@ -22,12 +25,14 @@
   , "vendors/farbtastic.js"
   , "skin_variants.js"
   , "socketio.js"
+  , "colorutils.js"
   ]
 , "timeslider.js": [
     "timeslider.js"
   , "colorutils.js"
   , "draggable.js"
   , "pad_utils.js"
+  , "$js-cookie/src/js.cookie.js"
   , "vendors/browser.js"
   , "pad_cookie.js"
   , "pad_editor.js"
@@ -46,6 +51,8 @@
   , "broadcast_slider.js"
   , "broadcast_revisions.js"
   , "socketio.js"
+  , "AttributeManager.js"
+  , "ChangesetUtils.js"
   ]
 , "ace2_inner.js": [
     "ace2_inner.js"
@@ -65,6 +72,10 @@
   , "AttributeManager.js"
   , "scroll.js"
   , "caretPosition.js"
+  , "pad_utils.js"
+  , "$js-cookie/src/js.cookie.js"
+  , "security.js"
+  , "$security.js"
   ]
 , "ace2_common.js": [
     "ace2_common.js"
@@ -72,7 +83,7 @@
   , "vendors/jquery.js"
   , "rjquery.js"
   , "$async.js"
-  , "vendors/underscore.js"
+  , "underscore.js"
   , "$underscore.js"
   , "$underscore/underscore.js"
   , "security.js"
@@ -82,5 +93,4 @@
   , "pluginfw/shared.js"
   , "pluginfw/hooks.js"
   ]
-, "jquery.js": ["jquery.js"]
 }
