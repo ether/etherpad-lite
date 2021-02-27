@@ -72,7 +72,7 @@
   , "vendors/jquery.js"
   , "rjquery.js"
   , "$async.js"
-  , "vendors/underscore.js"
+  , "underscore.js"
   , "$underscore.js"
   , "$underscore/underscore.js"
   , "security.js"
@@ -82,6 +82,4 @@
   , "pluginfw/shared.js"
   , "pluginfw/hooks.js"
   ]
-, "jquery.js": ["jquery.js"]
-, "underscore.js": ["underscore.js"]
 }

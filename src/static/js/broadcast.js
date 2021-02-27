@@ -28,7 +28,7 @@ const AttribPool = require('./AttributePool');
 const Changeset = require('./Changeset');
 const linestylefilter = require('./linestylefilter').linestylefilter;
 const colorutils = require('./colorutils').colorutils;
-const _ = require('./vendors/underscore');
+const _ = require('./underscore');
 const hooks = require('./pluginfw/hooks');
 
 // These parameters were global, now they are injected. A reference to the

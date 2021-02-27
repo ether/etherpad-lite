@@ -146,14 +146,6 @@ const minify = async (req, res) => {
     filename = 'js/vendors/jquery.js';
   }
 
-  // Backward compatibility for plugins that were written when underscore lived at
-  // src/static/js/underscore.js.
-  if (['js/underscore.js', 'plugins/ep_etherpad-lite/static/js/underscore.js']
-      .indexOf(filename) !== -1) {
-    logger.warn(`request for deprecated underscore path: ${filename}`);
-    filename = 'js/vendors/underscore.js';
-  }
-
   /* Handle static files for plugins/libraries:
      paths like "plugins/ep_myplugin/static/js/test.js"
      are rewritten into ROOT_PATH_OF_MYPLUGIN/static/js/test.js,
