@@ -1,3 +1,16 @@
+# 1.8.11
+
+### Notable fixes
+
+* Fix server crash issue within PadMessageHandler due to SocketIO handling
+* Fix editor issue with drop downs not being visible
+* Ensure correct version is passed when loading front end resources
+* Ensure underscore and jquery are available in original location for plugin comptability
+
+### Notable enhancements
+
+* Improved page load speeds
+
 # 1.8.10
 
 ### Security Patches
