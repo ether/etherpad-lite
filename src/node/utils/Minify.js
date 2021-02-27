@@ -141,7 +141,7 @@ const minify = async (req, res) => {
 
   // Backward compatibility for plugins that were written when jQuery lived at
   // src/static/js/jquery.js.
-  if (filename.endsWith('js/jquery.js')) {
+  if (['js/jquery.js', 'plugins/ep_etherpad-lite/static/js/jquery.js'].indexOf(filename) !== -1) {
     logger.warn(`request for deprecated jQuery path: ${filename}`);
     filename = 'js/vendors/jquery.js';
   }
