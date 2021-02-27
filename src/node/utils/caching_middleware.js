@@ -77,10 +77,8 @@ if (_crypto) {
   should replace this.
 */
 
-function CachingMiddleware() {
-}
-CachingMiddleware.prototype = new function () {
-  const handle = (req, res, next) => {
+module.exports = class CachingMiddleware {
+  handle(req, res, next) {
     if (!(req.method === 'GET' || req.method === 'HEAD') || !CACHE_DIR) {
       return next(undefined, req, res);
     }
@@ -214,9 +212,5 @@ CachingMiddleware.prototype = new function () {
 
       next(undefined, req, res);
     });
-  };
-
-  this.handle = handle;
-}();
-
-module.exports = CachingMiddleware;
+  }
+};
