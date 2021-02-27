@@ -85,14 +85,14 @@ CachingMiddleware.prototype = new function () {
       return next(undefined, req, res);
     }
 
-    const old_req = {};
-    const old_res = {};
+    const oldReq = {};
+    const oldRes = {};
 
     const supportsGzip =
         (req.get('Accept-Encoding') || '').indexOf('gzip') !== -1;
 
-    const path = require('url').parse(req.url).path;
-    const cacheKey = generateCacheKey(path);
+    const url = new URL(req.url, 'http://localhost');
+    const cacheKey = generateCacheKey(url.pathname + url.search);
 
     fs.stat(`${CACHE_DIR}minified_${cacheKey}`, (error, stats) => {
       const modifiedSince = (req.headers['if-modified-since'] &&
@@ -105,7 +105,7 @@ CachingMiddleware.prototype = new function () {
       }
 
       // Always issue get to downstream.
-      old_req.method = req.method;
+      oldReq.method = req.method;
       req.method = 'GET';
 
       const expirationDate = new Date(((responseCache[cacheKey] || {}).headers || {}).expires);
@@ -115,18 +115,18 @@ CachingMiddleware.prototype = new function () {
       }
 
       const _headers = {};
-      old_res.setHeader = res.setHeader;
+      oldRes.setHeader = res.setHeader;
       res.setHeader = (key, value) => {
         // Don't set cookies, see issue #707
         if (key.toLowerCase() === 'set-cookie') return;
 
         _headers[key.toLowerCase()] = value;
-        old_res.setHeader.call(res, key, value);
+        oldRes.setHeader.call(res, key, value);
       };
 
-      old_res.writeHead = res.writeHead;
-      res.writeHead = function (status, headers) {
-        res.writeHead = old_res.writeHead;
+      oldRes.writeHead = res.writeHead;
+      res.writeHead = (status, headers) => {
+        res.writeHead = oldRes.writeHead;
         if (status === 200) {
           // Update cache
           let buffer = '';
@@ -136,20 +136,20 @@ CachingMiddleware.prototype = new function () {
           });
           headers = _headers;
 
-          old_res.write = res.write;
-          old_res.end = res.end;
-          res.write = function (data, encoding) {
+          oldRes.write = res.write;
+          oldRes.end = res.end;
+          res.write = (data, encoding) => {
             buffer += data.toString(encoding);
           };
-          res.end = function (data, encoding) {
+          res.end = (data, encoding) => {
             async.parallel([
-              function (callback) {
+              (callback) => {
                 const path = `${CACHE_DIR}minified_${cacheKey}`;
                 fs.writeFile(path, buffer, (error, stats) => {
                   callback();
                 });
               },
-              function (callback) {
+              (callback) => {
                 const path = `${CACHE_DIR}minified_${cacheKey}.gz`;
                 zlib.gzip(buffer, (error, content) => {
                   if (error) {
@@ -168,10 +168,10 @@ CachingMiddleware.prototype = new function () {
           };
         } else if (status === 304) {
           // Nothing new changed from the cached version.
-          old_res.write = res.write;
-          old_res.end = res.end;
-          res.write = function (data, encoding) {};
-          res.end = function (data, encoding) { respond(); };
+          oldRes.write = res.write;
+          oldRes.end = res.end;
+          res.write = (data, encoding) => {};
+          res.end = (data, encoding) => { respond(); };
         } else {
           res.writeHead(status, headers);
         }
@@ -184,9 +184,9 @@ CachingMiddleware.prototype = new function () {
       // TODO: Implement locking on write or ditch caching of gzip and use
       // existing middlewares.
       function respond() {
-        req.method = old_req.method || req.method;
-        res.write = old_res.write || res.write;
-        res.end = old_res.end || res.end;
+        req.method = oldReq.method || req.method;
+        res.write = oldRes.write || res.write;
+        res.end = oldRes.end || res.end;
 
         const headers = {};
         Object.assign(headers, (responseCache[cacheKey].headers || {}));
