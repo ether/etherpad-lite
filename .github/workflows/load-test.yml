@@ -106,6 +106,6 @@ jobs:
       run: sudo npm install -g etherpad-load-test
 
 
-    # configures some settings and runs npm run test for 5000 seconds(50 mins) with 5 authors
+    # configures some settings and runs npm run test
     - name: Run load test
       run: src/tests/frontend/travis/runnerLoadTest.sh 5000 5
