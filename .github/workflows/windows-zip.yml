@@ -69,7 +69,7 @@ jobs:
       run: npm install cypress --no-save
 
     - name: Start Etherpad
-      run: node etherpad/src/node/server.js &
+      run: node etherpad/src/node/server.js
 
     - name: Cypress run
       uses: cypress-io/github-action@v2
