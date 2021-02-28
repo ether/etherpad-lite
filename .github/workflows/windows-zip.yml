@@ -66,22 +66,14 @@ jobs:
       run: 7z x etherpad-lite-win.zip -oetherpad
 
     - name: Install Cypress
-      run: npm install cypress --no-save
+      run: npm install cypress
 
     - name: Start Etherpad
-      run: cd etherpad && node node_modules\ep_etherpad-lite\node\server.js &
-
-    - name: Test connectivity.
-      run: curl --connect-timeout 20 --max-time 30 --retry 10 --retry-delay 20 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
+      run: |
+            cd etherpad
+            node node_modules\ep_etherpad-lite\node\server.js &
+            curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
 
       ## Works C:\etherpad-lite\src\tests\frontend\cypress>cypress run --spec cypress\integration\test.js
     - name: Run Cypress test
       run: cd etherpad\src\tests\frontend\cypress && cypress run --spec cypress\integration\test.js
-
-    #- name: Cypress run
-    #  uses: cypress-io/github-action@v2
-    #  with:
-    #    spec: tests/frontend/cypress/cypress/integration/test.js
-    #    install-command: echo HAX
-    #    working-directory: etherpad/src
-    #    config-file: tests/frontend/cypress/cypress.json
