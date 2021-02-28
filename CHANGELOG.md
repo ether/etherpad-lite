@@ -1,3 +1,10 @@
+# 1.8.12
+
+### Notable fixes
+
+* Fixed a bug in the `dirty` database driver that sometimes caused Node.js to
+  crash during shutdown and lose buffered database writes.
+
 # 1.8.11
 
 ### Notable fixes
