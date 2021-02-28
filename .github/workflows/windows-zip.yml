@@ -65,16 +65,13 @@ jobs:
     - name: Extract Etherpad
       run: 7z x etherpad-lite-win.zip -oetherpad
 
-    - name: Install root dependencies
-      uses: bahmutov/npm-install@v1
-
     - name: Install Cypress
       run: npm install cypress --no-save
 
     - name: Cypress run
       uses: cypress-io/github-action@v2
       with:
+        spec: etherad/tests/frontend/cypress/cypress/integration/test.js
         wait-on: 'http://127.0.0.1:9001/p/test'
         wait-on-timeout: 600
-        working-directory: etherpad\node_modules\ep_etherpad-lite\tests\frontend\cypress
-        start: node ../../../node/server.js
+        start: node etherpad/src/node/server.js
