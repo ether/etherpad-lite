@@ -4,6 +4,8 @@
 
 * Fixed a bug in the `dirty` database driver that sometimes caused Node.js to
   crash during shutdown and lose buffered database writes.
+* Fixed a regression in v1.8.8 that caused "Uncaught TypeError: Cannot read
+  property '0' of undefined" with some plugins (#4885)
 
 # 1.8.11
 
