@@ -171,11 +171,10 @@ const Ace2Editor = function () {
 
     const outerFrame = document.createElement('iframe');
     outerFrame.name = 'ace_outer';
-    outerFrame.frameBorder = 0; // for IE
     outerFrame.title = 'Ether';
     info.frame = outerFrame;
 
-    const postOuterFrame = () => {	
+    const postOuterFrame = () => {
       const outerWindow = outerFrame.contentWindow;
       const outerDocument = outerWindow.document;
       const skinVariants = clientVars.skinVariants.split(' ').filter((x) => x !== '');
@@ -195,19 +194,20 @@ const Ace2Editor = function () {
 
       outerWindow.editorInfo = Ace2Editor.registry[info.id];
       const postRequire = () => {
-	const w = document.querySelectorAll('iframe[name=ace_outer]')[0].contentDocument
-		  .querySelectorAll('iframe[name=ace_inner]')[0].contentWindow;
+        const w = document.querySelectorAll('iframe[name=ace_outer]')[0].contentDocument
+            .querySelectorAll('iframe[name=ace_inner]')[0].contentWindow;
         const require = w.require;
         require.setRootURI('../javascripts/src');
         require.setLibraryURI('../javascripts/lib');
         require.setGlobalKeyPath('require');
+
+        w.Ace2Inner = require('ep_etherpad-lite/static/js/ace2_inner');
 
         w.plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
         w.plugins.adoptPluginsFromAncestorsOf(w);
 
         w.jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery;
         w.$ = w.jQuery;
-        w.Ace2Inner = require('ep_etherpad-lite/static/js/ace2_inner');
 
         w.plugins.ensure(() => w.Ace2Inner.init());
       };
@@ -248,8 +248,6 @@ const Ace2Editor = function () {
       const iframe = outerDocument.createElement('iframe');
       iframe.name = 'ace_inner';
       iframe.title = 'pad';
-      iframe.scrolling = 'no';
-      iframe.frameBorder = 0;
       iframe.allowTransparency = true; // for IE
       iframe.ace_outerWin = outerWindow;
       iframe.onload = postInnerFrame;
