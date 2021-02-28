@@ -123,6 +123,15 @@ const sanitizePathname = (p) => {
   return p;
 };
 
+const compatPaths = {
+  'js/browser.js': 'js/vendors/browser.js',
+  'js/farbtastic.js': 'js/vendors/farbtastic.js',
+  'js/gritter.js': 'js/vendors/gritter.js',
+  'js/html10n.js': 'js/vendors/html10n.js',
+  'js/jquery.js': 'js/vendors/jquery.js',
+  'js/nice-select.js': 'js/vendors/nice-select.js',
+};
+
 /**
  * creates the minifed javascript for the given minified name
  * @param req the Express request
@@ -139,11 +148,11 @@ const minify = async (req, res) => {
     return;
   }
 
-  // Backward compatibility for plugins that were written when jQuery lived at
-  // src/static/js/jquery.js.
-  if (['js/jquery.js', 'plugins/ep_etherpad-lite/static/js/jquery.js'].indexOf(filename) !== -1) {
-    logger.warn(`request for deprecated jQuery path: ${filename}`);
-    filename = 'js/vendors/jquery.js';
+  // Backward compatibility for plugins that require() files from old paths.
+  const newLocation = compatPaths[filename.replace(/^plugins\/ep_etherpad-lite\/static\//, '')];
+  if (newLocation != null) {
+    logger.warn(`request for deprecated path "${filename}", replacing with "${newLocation}"`);
+    filename = newLocation;
   }
 
   /* Handle static files for plugins/libraries:
