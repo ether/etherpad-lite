@@ -74,5 +74,6 @@ jobs:
         spec: tests/frontend/cypress/cypress/integration/test.js
         wait-on: 'http://127.0.0.1:9001/p/test'
         wait-on-timeout: 600
+        install-command: echo HAX
         working-directory: etherpad/src
         start: node node/server.js
