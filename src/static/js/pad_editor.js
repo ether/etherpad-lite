@@ -56,7 +56,8 @@ const padeditor = (() => {
       };
 
       self.ace = new Ace2Editor();
-      self.ace.init('editorcontainer', '', aceReady);
+      self.ace.init('editorcontainer', '').then(
+          () => aceReady(), (err) => { throw err || new Error(err); });
       self.ace.setProperty('wraps', true);
       if (pad.getIsDebugEnabled()) {
         self.ace.setProperty('dmesg', pad.dmesg);

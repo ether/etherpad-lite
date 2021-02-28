@@ -150,14 +150,8 @@ const Ace2Editor = function () {
     info = null; // prevent IE 6 closure memory leaks
   });
 
-  this.init = function (containerId, initialCode, doneFunc) {
+  this.init = async function (containerId, initialCode) {
     this.importText(initialCode);
-
-    info.onEditorReady = () => {
-      loaded = true;
-      doActionsPendingInit();
-      doneFunc();
-    };
 
     // calls to these functions ($$INCLUDE_...)  are replaced when this file is processed
     // and compressed, putting the compressed code from the named file directly into the
@@ -190,7 +184,7 @@ const Ace2Editor = function () {
       iframeHTML.push(`<script type="text/javascript" src="${url}"></script>`);
     }
 
-    iframeHTML.push(scriptTag(`(() => {
+    iframeHTML.push(scriptTag(`(async () => {
       const require = window.require;
       require.setRootURI(${JSON.stringify(absUrl('../javascripts/src'))});
       require.setLibraryURI(${JSON.stringify(absUrl('../javascripts/lib'))});
@@ -203,10 +197,12 @@ const Ace2Editor = function () {
 
       window.$ = window.jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery;
 
-      window.plugins.ensure(() => {
-        const editorInfo = parent.parent.ace2EditorInfo;
-        window.Ace2Inner.init(editorInfo, editorInfo.onEditorReady);
-      });
+      await new Promise((resolve, reject) => window.plugins.ensure(
+          (err) => err != null ? reject(err) : resolve()));
+      const editorInfo = parent.parent.ace2EditorInfo;
+      await new Promise((resolve, reject) => window.Ace2Inner.init(
+          editorInfo, (err) => err != null ? reject(err) : resolve()));
+      editorInfo.onEditorReady();
     })();`));
 
     iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
@@ -218,24 +214,22 @@ const Ace2Editor = function () {
     iframeHTML.push('</head><body id="innerdocbody" class="innerdocbody" role="application" ' +
                     'spellcheck="false">&nbsp;</body></html>');
 
-    const outerScript = `(() => {
-      window.onload = () => {
-        window.onload = null;
-        setTimeout(() => {
-          const iframe = document.createElement('iframe');
-          iframe.name = 'ace_inner';
-          iframe.title = 'pad';
-          iframe.scrolling = 'no';
-          iframe.frameBorder = 0;
-          iframe.allowTransparency = true; // for IE
-          iframe.ace_outerWin = window;
-          document.body.insertBefore(iframe, document.body.firstChild);
-          const doc = iframe.contentWindow.document;
-          doc.open();
-          doc.write(${JSON.stringify(iframeHTML.join('\n'))});
-          doc.close();
-        }, 0);
-      }
+    const outerScript = `(async () => {
+      await new Promise((resolve) => { window.onload = () => resolve(); });
+      window.onload = null;
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      const iframe = document.createElement('iframe');
+      iframe.name = 'ace_inner';
+      iframe.title = 'pad';
+      iframe.scrolling = 'no';
+      iframe.frameBorder = 0;
+      iframe.allowTransparency = true; // for IE
+      iframe.ace_outerWin = window;
+      document.body.insertBefore(iframe, document.body.firstChild);
+      const doc = iframe.contentWindow.document;
+      doc.open();
+      doc.write(${JSON.stringify(iframeHTML.join('\n'))});
+      doc.close();
     })();`;
 
     const outerHTML =
@@ -264,9 +258,14 @@ const Ace2Editor = function () {
 
     const editorDocument = outerFrame.contentWindow.document;
 
-    editorDocument.open();
-    editorDocument.write(outerHTML.join(''));
-    editorDocument.close();
+    await new Promise((resolve, reject) => {
+      info.onEditorReady = (err) => err != null ? reject(err) : resolve();
+      editorDocument.open();
+      editorDocument.write(outerHTML.join(''));
+      editorDocument.close();
+    });
+    loaded = true;
+    doActionsPendingInit();
   };
 };
 
