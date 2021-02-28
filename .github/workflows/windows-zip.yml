@@ -66,9 +66,9 @@ jobs:
       run: 7z x etherpad-lite-win.zip -oetherpad
 
     - name: Install Cypress
-      run: npm install cypress
+      run: npm install cypress -g
 
-    - name: Start Etherpad
+    - name: Run Etherpad
       run: |
             cd etherpad
             node node_modules\ep_etherpad-lite\node\server.js &
