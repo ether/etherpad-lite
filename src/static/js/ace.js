@@ -198,7 +198,7 @@ const Ace2Editor = function () {
         const w = document.querySelectorAll('iframe[name=ace_outer]')[0].contentDocument
             .querySelectorAll('iframe[name=ace_inner]')[0].contentWindow;
         const require = w.require;
-        require.setRootURI('../javascripts/src');
+        require.setRootURI('http://localhost:9001/javascripts/src');
         require.setLibraryURI('../javascripts/lib');
         require.setGlobalKeyPath('require');
 
@@ -225,7 +225,7 @@ const Ace2Editor = function () {
 
         const script = innerDocument.createElement('script');
         script.type = 'text/javascript';
-        script.src = `../static/js/require-kernel.js?v=${clientVars.randomVersionString}`;
+        script.src = `http://localhost:9001/static/js/require-kernel.js?v=${clientVars.randomVersionString}`;
         script.onload = postRequire;
         innerDocument.head.appendChild(script);
 
