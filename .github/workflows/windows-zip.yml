@@ -71,7 +71,7 @@ jobs:
     - name: Cypress run
       uses: cypress-io/github-action@v2
       with:
-        spec: etherad/tests/frontend/cypress/cypress/integration/test.js
+        spec: etherad/src/tests/frontend/cypress/cypress/integration/test.js
         wait-on: 'http://127.0.0.1:9001/p/test'
         wait-on-timeout: 600
         working-directory: etherpad/src
