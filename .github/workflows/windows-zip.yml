@@ -65,6 +65,9 @@ jobs:
     - name: Extract Etherpad
       run: 7z x etherpad-lite-win.zip -oetherpad
 
+    - name: Install root dependencies
+      uses: bahmutov/npm-install@v1
+
     - name: Install Cypress
       run: npm install cypress --no-save
 
