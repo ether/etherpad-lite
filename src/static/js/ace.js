@@ -209,7 +209,7 @@ const Ace2Editor = function () {
 
       window.$ = window.jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery;
 
-      window.plugins.ensure(() => { window.Ace2Inner.init(); });
+      window.plugins.ensure(() => { window.Ace2Inner.init(parent.editorInfo, parent.readyFunc); });
     })();`));
 
     iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
