@@ -28,7 +28,7 @@ jobs:
       run: sudo npm install -g etherpad-load-test
 
     - name: Run load test
-      run: src/tests/frontend/travis/runnerLoadTest.sh 25
+      run: src/tests/frontend/travis/runnerLoadTest.sh 25 50
 
   withplugins:
     # run on pushes to any branch
@@ -80,7 +80,7 @@ jobs:
 
     # configures some settings and runs npm run test
     - name: Run load test
-      run: src/tests/frontend/travis/runnerLoadTest.sh 25
+      run: src/tests/frontend/travis/runnerLoadTest.sh 25 50
 
   long:
     # run on pushes to any branch
@@ -106,4 +106,4 @@ jobs:
       run: sudo npm install -g etherpad-load-test
 
     - name: Run load test
-      run: src/tests/frontend/travis/runnerLoadTest.sh 5000
+      run: src/tests/frontend/travis/runnerLoadTest.sh 5000 5
