@@ -42,7 +42,7 @@ try curl http://localhost:9001/p/minifyme -f -s >/dev/null
 sleep 10
 
 log "Running the load tests..."
-etherpad-loadtest -d 25
+etherpad-loadtest -d $1
 exit_code=$?
 
 kill "$ep_pid" && wait "$ep_pid"
