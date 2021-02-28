@@ -173,6 +173,7 @@ const Ace2Editor = function () {
     outerFrame.name = 'ace_outer';
     outerFrame.title = 'Ether';
     info.frame = outerFrame;
+    outerFrame.src = 'about:blank';
 
     const postOuterFrame = () => {
       const outerWindow = outerFrame.contentWindow;
