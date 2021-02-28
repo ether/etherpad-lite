@@ -250,6 +250,7 @@ const Ace2Editor = function () {
       iframe.title = 'pad';
       iframe.allowTransparency = true; // for IE
       iframe.ace_outerWin = outerWindow;
+      iframe.src = 'about:blank';
       iframe.onload = postInnerFrame;
       outerDocument.body.insertBefore(iframe, outerDocument.body.firstChild);
 
