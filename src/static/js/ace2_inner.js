@@ -3894,7 +3894,7 @@ function Ace2Inner() {
   documentAttributeManager = new AttributeManager(rep, performDocumentApplyChangeset);
 
   editorInfo.ace_performDocumentApplyAttributesToRange =
-      (...args) => documentAttributeManager.setAttributesOnRange(args);
+      (...args) => documentAttributeManager.setAttributesOnRange(...args);
 
   this.init = () => {
     $(document).ready(() => {

@@ -1409,16 +1409,14 @@ const composePadChangesets = async (padId, startNum, endNum) => {
 };
 
 const _getRoomSockets = (padID) => {
-  const roomSockets = [];
-  const room = socketio.sockets.adapter.rooms[padID];
-
-  if (room) {
-    for (const id of Object.keys(room.sockets)) {
-      roomSockets.push(socketio.sockets.sockets[id]);
-    }
-  }
-
-  return roomSockets;
+  const ns = socketio.sockets; // Default namespace.
+  const adapter = ns.adapter;
+  // We could call adapter.clients(), but that method is unnecessarily asynchronous. Replicate what
+  // it does here, but synchronously to avoid a race condition. This code will have to change when
+  // we update to socket.io v3.
+  const room = adapter.rooms[padID];
+  if (!room) return [];
+  return Object.keys(room.sockets).map((id) => ns.connected[id]).filter((s) => s);
 };
 
 /**
@@ -1438,14 +1436,13 @@ exports.padUsers = async (padID) => {
   await Promise.all(_getRoomSockets(padID).map(async (roomSocket) => {
     const s = sessioninfos[roomSocket.id];
     if (s) {
-      return authorManager.getAuthor(s.author).then((author) => {
-        // Fixes: https://github.com/ether/etherpad-lite/issues/4120
-        // On restart author might not be populated?
-        if (author) {
-          author.id = s.author;
-          padUsers.push(author);
-        }
-      });
+      const author = await authorManager.getAuthor(s.author);
+      // Fixes: https://github.com/ether/etherpad-lite/issues/4120
+      // On restart author might not be populated?
+      if (author) {
+        author.id = s.author;
+        padUsers.push(author);
+      }
     }
   }));
 

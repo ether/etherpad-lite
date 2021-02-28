@@ -31,7 +31,7 @@ const getTar = async () => {
 exports.expressCreateServer = async (hookName, args) => {
   // Cache both minified and static.
   const assetCache = new CachingMiddleware();
-  args.app.all(/\/javascripts\/(.*)/, assetCache.handle);
+  args.app.all(/\/javascripts\/(.*)/, assetCache.handle.bind(assetCache));
 
   // Minify will serve static files compressed (minify enabled). It also has
   // file-specific hacks for ace/require-kernel/etc.

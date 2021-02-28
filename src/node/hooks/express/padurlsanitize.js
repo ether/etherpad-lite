@@ -18,7 +18,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
       next();
     } else {
       // the pad id was sanitized, so we redirect to the sanitized version
-      const realURL = encodeURIComponent(sanitizedPadId) + new URL(req.url).search;
+      const realURL = encodeURIComponent(sanitizedPadId) + new URL(req.url, 'http://invalid.invalid').search;
       res.header('Location', realURL);
       res.status(302).send(`You should be redirected to <a href="${realURL}">${realURL}</a>`);
     }

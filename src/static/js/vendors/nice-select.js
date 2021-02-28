@@ -63,7 +63,7 @@
         .addClass($select.attr('class') || '')
         .addClass($select.attr('disabled') ? 'disabled' : '')
         .attr('tabindex', $select.attr('disabled') ? null : '0')
-        .html('<span class="current"></span><ul class="list"></ul>')
+        .html('<span class="current"></span><ul class="list thin-scrollbar"></ul>')
       );
 
       var $dropdown = $select.next();
@@ -97,12 +97,31 @@
       var $dropdown = $(this);
 
       $('.nice-select').not($dropdown).removeClass('open');
+
       $dropdown.toggleClass('open');
 
       if ($dropdown.hasClass('open')) {
         $dropdown.find('.option');
         $dropdown.find('.focus').removeClass('focus');
         $dropdown.find('.selected').addClass('focus');
+        if ($dropdown.closest('.toolbar').length > 0) {
+          $dropdown.find('.list').css('left', $dropdown.offset().left);
+          $dropdown.find('.list').css('top', $dropdown.offset().top + $dropdown.outerHeight());
+          $dropdown.find('.list').css('min-width', $dropdown.outerWidth() + 'px');
+        }
+
+        $listHeight = $dropdown.find('.list').outerHeight();
+        $top = $dropdown.parent().offset().top;
+        $bottom = $('body').height() - $top;
+        $maxListHeight = $bottom - $dropdown.outerHeight() - 20;
+        if ($maxListHeight < 200) {
+          $dropdown.addClass('reverse');
+          $maxListHeight = 250;
+        } else {
+          $dropdown.removeClass('reverse')
+        }
+        $dropdown.find('.list').css('max-height', $maxListHeight + 'px');
+
       } else {
         $dropdown.focus();
       }
