@@ -30,7 +30,7 @@ const htmlPrettyEscape = Ace2Common.htmlPrettyEscape;
 const noop = Ace2Common.noop;
 const hooks = require('./pluginfw/hooks');
 
-function Ace2Inner() {
+function Ace2Inner(editorInfo) {
   const makeChangesetTracker = require('./changesettracker').makeChangesetTracker;
   const colorutils = require('./colorutils').colorutils;
   const makeContentCollector = require('./contentcollector').makeContentCollector;
@@ -57,7 +57,6 @@ function Ace2Inner() {
   let thisAuthor = '';
 
   let disposed = false;
-  const editorInfo = parent.editorInfo;
 
   const focus = () => {
     window.focus();
@@ -3896,7 +3895,7 @@ function Ace2Inner() {
   editorInfo.ace_performDocumentApplyAttributesToRange =
       (...args) => documentAttributeManager.setAttributesOnRange(...args);
 
-  this.init = () => {
+  this.init = (cb) => {
     $(document).ready(() => {
       doc = document; // defined as a var in scope outside
       inCallStack('setup', () => {
@@ -3928,14 +3927,12 @@ function Ace2Inner() {
         documentAttributeManager,
       });
 
-      scheduler.setTimeout(() => {
-        parent.readyFunc(); // defined in code that sets up the inner iframe
-      }, 0);
+      scheduler.setTimeout(cb, 0);
     });
   };
 }
 
-exports.init = () => {
-  const editor = new Ace2Inner();
-  editor.init();
+exports.init = (editorInfo, cb) => {
+  const editor = new Ace2Inner(editorInfo);
+  editor.init(cb);
 };
