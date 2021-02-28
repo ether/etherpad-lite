@@ -69,7 +69,7 @@ jobs:
       run: npm install cypress --no-save
 
     - name: Start Etherpad
-      run: node etherpad\node_modules\ep_etherpad-lite\node\server.js &
+      run: cd etherpad && node node_modules\ep_etherpad-lite\node\server.js
 
     - name: Test connectivity.
       run: curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
