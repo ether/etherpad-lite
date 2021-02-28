@@ -42,6 +42,8 @@ try curl http://localhost:9001/p/minifyme -f -s >/dev/null
 sleep 10
 
 log "Running the load tests..."
+# -d is duration of test, -a is number of authors to test with
+# by specifying the number of authors we set the overall rate of messages
 etherpad-loadtest -d $1 -a $2
 exit_code=$?
 
