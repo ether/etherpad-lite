@@ -68,6 +68,9 @@ jobs:
     - name: Install Cypress
       run: npm install cypress --no-save
 
+    - name: Start Etherpad
+      run: node etherpad/src/node/server.js &
+
     - name: Cypress run
       uses: cypress-io/github-action@v2
       with:
@@ -76,4 +79,3 @@ jobs:
         wait-on-timeout: 600
         install-command: echo HAX
         working-directory: etherpad/src
-        start: node node/server.js
