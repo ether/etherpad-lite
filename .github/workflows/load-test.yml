@@ -78,7 +78,7 @@ jobs:
     - name: Install all dependencies and symlink for ep_etherpad-lite
       run: src/bin/installDeps.sh
 
-    # configures some settings and runs npm run test for 25 seconds with 50 authors
+    # configures some settings and runs npm run test
     - name: Run load test
       run: src/tests/frontend/travis/runnerLoadTest.sh 25 50
 
