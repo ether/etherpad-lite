@@ -19,6 +19,6 @@ describe(__filename, function () {
   it('supports pads with spaces and query, regression test for #4883', async function () {
     await agent.get('/p/pads with spaces?showChat=true&noColors=false')
         .expect(302)
-        .expect((res) => assert.equal(res.header.location, 'pads_with_spaces?showChat=true&noColors=false'));
+        .expect('location', 'pads_with_spaces?showChat=true&noColors=false');
   });
 });
