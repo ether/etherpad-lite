@@ -86,8 +86,6 @@ const Ace2Editor = function () {
 
   this.exportText = () => loaded ? info.ace_exportText() : '(awaiting init)\n';
 
-  this.getFrame = () => info.frame || null;
-
   this.getDebugProperty = (prop) => info.ace_getDebugProperty(prop);
 
   this.getInInternationalComposition =
@@ -176,44 +174,49 @@ const Ace2Editor = function () {
     outerFrame.frameBorder = 0; // for IE
     outerFrame.title = 'Ether';
     info.frame = outerFrame;
-    document.getElementById(containerId).appendChild(outerFrame);
 
-    const outerWindow = outerFrame.contentWindow;
-    const outerDocument = outerWindow.document;
-    const skinVariants = clientVars.skinVariants.split(' ').filter((x) => x !== '');
-    outerDocument.documentElement.classList.add('inner-editor', 'outerdoc', ...skinVariants);
-    addStyleTagsFor(outerDocument, includedCSS);
+    const postOuterFrame = () => {	
+      const outerWindow = outerFrame.contentWindow;
+      const outerDocument = outerWindow.document;
+      const skinVariants = clientVars.skinVariants.split(' ').filter((x) => x !== '');
+      outerDocument.documentElement.classList.add('inner-editor', 'outerdoc', ...skinVariants);
+      addStyleTagsFor(outerDocument, includedCSS);
 
-    const style = outerDocument.createElement('style');
-    style.type = 'text/css';
-    style.title = 'dynamicsyntax';
-    outerDocument.head.appendChild(style);
+      const styleO = outerDocument.createElement('style');
+      styleO.type = 'text/css';
+      styleO.title = 'dynamicsyntax';
+      outerDocument.head.appendChild(styleO);
 
-    const link = outerDocument.createElement('link');
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'data:text/css,';
-    outerDocument.head.appendChild(link);
+      const link = outerDocument.createElement('link');
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = 'data:text/css,';
+      outerDocument.head.appendChild(link);
 
-    outerWindow.editorInfo = Ace2Editor.registry[info.id];
-    outerWindow.onload = () => {
-      outerWindow.onload = null;
-      const window = outerWindow;
-      const document = outerDocument;
-      setTimeout(() => {
-        const iframe = document.createElement('iframe');
-        iframe.name = 'ace_inner';
-        iframe.title = 'pad';
-        iframe.scrolling = 'no';
-        iframe.frameBorder = 0;
-        iframe.allowTransparency = true; // for IE
-        iframe.ace_outerWin = window;
-        document.body.insertBefore(iframe, document.body.firstChild);
-        window.readyFunc = () => {
-          delete window.readyFunc;
-          window.editorInfo.onEditorReady();
-          delete window.editorInfo;
-        };
+      outerWindow.editorInfo = Ace2Editor.registry[info.id];
+      const postRequire = () => {
+	const w = document.querySelectorAll('iframe[name=ace_outer]')[0].contentDocument
+		  .querySelectorAll('iframe[name=ace_inner]')[0].contentWindow;
+        const require = w.require;
+        require.setRootURI('../javascripts/src');
+        require.setLibraryURI('../javascripts/lib');
+        require.setGlobalKeyPath('require');
+
+        w.plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
+        w.plugins.adoptPluginsFromAncestorsOf(w);
+
+        w.jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery;
+        w.$ = w.jQuery;
+        w.Ace2Inner = require('ep_etherpad-lite/static/js/ace2_inner');
+
+        w.plugins.ensure(() => w.Ace2Inner.init());
+      };
+      outerWindow.readyFunc = () => {
+        delete outerWindow.readyFunc;
+        outerWindow.editorInfo.onEditorReady();
+        delete outerWindow.editorInfo;
+      };
+      const postInnerFrame = () => {
         const innerWindow = iframe.contentWindow;
         const innerDocument = innerWindow.document;
         innerDocument.documentElement.classList.add('inner-editor', ...skinVariants);
@@ -222,29 +225,13 @@ const Ace2Editor = function () {
         const script = innerDocument.createElement('script');
         script.type = 'text/javascript';
         script.src = `../static/js/require-kernel.js?v=${clientVars.randomVersionString}`;
+        script.onload = postRequire;
         innerDocument.head.appendChild(script);
 
-        innerWindow.onload = () => {
-          innerWindow.onload = null;
-          const window = innerWindow;
-          const require = window.require;
-          require.setRootURI('../javascripts/src');
-          require.setLibraryURI('../javascripts/lib');
-          require.setGlobalKeyPath('require');
-
-          window.plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
-          window.plugins.adoptPluginsFromAncestorsOf(window);
-
-          window.$ = window.jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery;
-          window.Ace2Inner = require('ep_etherpad-lite/static/js/ace2_inner');
-
-          window.plugins.ensure(() => window.Ace2Inner.init());
-        };
-
-        const style = innerDocument.createElement('style');
-        style.type = 'text/css';
-        style.title = 'dynamicsyntax';
-        innerDocument.head.appendChild(style);
+        const styleI = innerDocument.createElement('style');
+        styleI.type = 'text/css';
+        styleI.title = 'dynamicsyntax';
+        innerDocument.head.appendChild(styleI);
 
         const headLines = [];
         hooks.callAll('aceInitInnerdocbodyHead', {iframeHTML: headLines});
@@ -257,21 +244,32 @@ const Ace2Editor = function () {
         innerDocument.body.setAttribute('role', 'application');
         innerDocument.body.setAttribute('spellcheck', 'false');
         innerDocument.body.appendChild(innerDocument.createTextNode('\u00A0')); // &nbsp;
-      }, 0);
+      };
+      const iframe = outerDocument.createElement('iframe');
+      iframe.name = 'ace_inner';
+      iframe.title = 'pad';
+      iframe.scrolling = 'no';
+      iframe.frameBorder = 0;
+      iframe.allowTransparency = true; // for IE
+      iframe.ace_outerWin = outerWindow;
+      iframe.onload = postInnerFrame;
+      outerDocument.body.insertBefore(iframe, outerDocument.body.firstChild);
+
+      outerDocument.body.id = 'outerdocbody';
+      outerDocument.body.classList.add('outerdocbody', ...pluginUtils.clientPluginNames());
+
+      const sideDiv = outerDocument.createElement('div');
+      sideDiv.id = 'sidediv';
+      sideDiv.classList.add('sidediv');
+      outerDocument.body.appendChild(sideDiv);
+
+      const lineMetricsDiv = outerDocument.createElement('div');
+      lineMetricsDiv.id = 'linemetricsdiv';
+      lineMetricsDiv.appendChild(outerDocument.createTextNode('x'));
+      outerDocument.body.appendChild(lineMetricsDiv);
     };
-
-    outerDocument.body.id = 'outerdocbody';
-    outerDocument.body.classList.add('outerdocbody', ...pluginUtils.clientPluginNames());
-
-    const sideDiv = outerDocument.createElement('div');
-    sideDiv.id = 'sidediv';
-    sideDiv.classList.add('sidediv');
-    outerDocument.body.appendChild(sideDiv);
-
-    const lineMetricsDiv = outerDocument.createElement('div');
-    lineMetricsDiv.id = 'linemetricsdiv';
-    lineMetricsDiv.appendChild(outerDocument.createTextNode('x'));
-    outerDocument.body.appendChild(lineMetricsDiv);
+    outerFrame.onload = postOuterFrame;
+    document.getElementById(containerId).appendChild(outerFrame);
   };
 };
 
