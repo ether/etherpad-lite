@@ -178,39 +178,8 @@ const Ace2Editor = function () {
   // returns array of {error: <browser Error object>, time: +new Date()}
   this.getUnhandledErrors = () => loaded ? info.ace_getUnhandledErrors() : [];
 
-  const sortFilesByEmbeded = (files) => {
-    const embededFiles = [];
-    let remoteFiles = [];
-
-    if (Ace2Editor.EMBEDED) {
-      for (let i = 0, ii = files.length; i < ii; i++) {
-        const file = files[i];
-        if (Object.prototype.hasOwnProperty.call(Ace2Editor.EMBEDED, file)) {
-          embededFiles.push(file);
-        } else {
-          remoteFiles.push(file);
-        }
-      }
-    } else {
-      remoteFiles = files;
-    }
-
-    return {embeded: embededFiles, remote: remoteFiles};
-  };
-
   const addStyleTagsFor = (doc, files) => {
-    const sorted = sortFilesByEmbeded(files);
-    const embededFiles = sorted.embeded;
-    const remoteFiles = sorted.remote;
-
-    if (embededFiles.length > 0) {
-      const css = embededFiles.map((f) => Ace2Editor.EMBEDED[f]).join('\n');
-      const style = doc.createElement('style');
-      style.type = 'text/css';
-      style.appendChild(doc.createTextNode(css));
-      doc.head.appendChild(style);
-    }
-    for (const file of remoteFiles) {
+    for (const file of files) {
       const link = doc.createElement('link');
       link.rel = 'stylesheet';
       link.type = 'text/css';
@@ -229,19 +198,14 @@ const Ace2Editor = function () {
     debugLog('Ace2Editor.init()');
     this.importText(initialCode);
 
-    // calls to these functions ($$INCLUDE_...)  are replaced when this file is processed
-    // and compressed, putting the compressed code from the named file directly into the
-    // source here.
-    // these lines must conform to a specific format because they are passed by the build script:
-    const includedCSS = [];
-    const $$INCLUDE_CSS = (filename) => { includedCSS.push(filename); };
-    $$INCLUDE_CSS('../static/css/iframe_editor.css');
-    $$INCLUDE_CSS(`../static/css/pad.css?v=${clientVars.randomVersionString}`);
-    includedCSS.push(...hooks.callAll('aceEditorCSS').map(
-        // Allow urls to external CSS - http(s):// and //some/path.css
-        (p) => /\/\//.test(p) ? p : `../static/plugins/${p}`));
-    $$INCLUDE_CSS(
-        `../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`);
+    const includedCSS = [
+      '../static/css/iframe_editor.css',
+      `../static/css/pad.css?v=${clientVars.randomVersionString}`,
+      ...hooks.callAll('aceEditorCSS').map(
+          // Allow urls to external CSS - http(s):// and //some/path.css
+          (p) => /\/\//.test(p) ? p : `../static/plugins/${p}`),
+      `../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`,
+    ];
 
     const skinVariants = clientVars.skinVariants.split(' ').filter((x) => x !== '');
 
