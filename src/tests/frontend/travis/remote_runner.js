@@ -170,9 +170,10 @@ if (!isAdminRunner) {
   */
   // 5) Edge on Win 10
   sauceTestWorker.push({
-    platform: 'Windows 10',
-    browserName: 'microsoftedge',
-    version: '83.0',
+    'platform': 'Windows 10',
+    'browserName': 'microsoftedge',
+    'version': '83.0',
+    'sauce:options': {build: 'sauce-status-badge-tests-v1.3', public: 'public'},
   });
   // 6) Firefox on Win 7
   sauceTestWorker.push({
