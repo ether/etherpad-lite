@@ -22,12 +22,13 @@ const hooks = require('../../static/js/pluginfw/hooks');
 exports.setPadRaw = (padId, r) => {
   const records = JSON.parse(r);
 
-  const blockElems = ['div', 'br', 'p', 'pre', 'li', 'author', 'lmkr', 'insertorder',
+  // supportedElems are Supported natively within Etherpad and don't require a plugin
+  const supportedElems = ['div', 'br', 'p', 'pre', 'li', 'author', 'lmkr', 'insertorder',
     'strong', 'ul', 'ol', 'span', 'font', 'i'];
 
   // get supported block Elements from plugins, we will use this later.
   hooks.callAll('ccRegisterBlockElements').forEach((element) => {
-    blockElems.push(element);
+    supportedElems.push(element);
   });
 
   Object.keys(records).forEach(async (key) => {
@@ -66,7 +67,7 @@ exports.setPadRaw = (padId, r) => {
       if (value.pool) {
         for (const attrib of Object.keys(value.pool.numToAttrib)) {
           const attribName = value.pool.numToAttrib[attrib][0];
-          if (blockElems.indexOf(attribName) === -1) {
+          if (supportedElems.indexOf(attribName) === -1) {
             console.warn('Plugin missing: ' +
                 `You might want to install a plugin to support this node name: ${attribName}`);
           }
