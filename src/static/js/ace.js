@@ -36,12 +36,8 @@ const scriptTag =
     (source) => `<script type="text/javascript">\n${source.replace(/<\//g, '<\\/')}</script>`;
 
 const Ace2Editor = function () {
-  const ace2 = Ace2Editor;
-
-  let info = {
-    editor: this,
-    id: (ace2.registry.nextId++),
-  };
+  let info = {editor: this};
+  window.ace2EditorInfo = info; // Make it accessible to iframes.
   let loaded = false;
 
   let actionsPendingInit = [];
@@ -56,8 +52,6 @@ const Ace2Editor = function () {
     for (const fn of actionsPendingInit) fn();
     actionsPendingInit = [];
   };
-
-  ace2.registry[info.id] = info;
 
   // The following functions (prefixed by 'ace_')  are exposed by editor, but
   // execution is delayed until init is complete
@@ -152,7 +146,7 @@ const Ace2Editor = function () {
   this.destroy = pendingInit(() => {
     info.ace_dispose();
     info.frame.parentNode.removeChild(info.frame);
-    delete ace2.registry[info.id];
+    delete window.ace2EditorInfo;
     info = null; // prevent IE 6 closure memory leaks
   });
 
@@ -209,7 +203,10 @@ const Ace2Editor = function () {
 
       window.$ = window.jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery;
 
-      window.plugins.ensure(() => { window.Ace2Inner.init(parent.editorInfo, parent.readyFunc); });
+      window.plugins.ensure(() => {
+        const editorInfo = parent.parent.ace2EditorInfo;
+        window.Ace2Inner.init(editorInfo, editorInfo.onEditorReady);
+      });
     })();`));
 
     iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
@@ -221,12 +218,7 @@ const Ace2Editor = function () {
     iframeHTML.push('</head><body id="innerdocbody" class="innerdocbody" role="application" ' +
                     'spellcheck="false">&nbsp;</body></html>');
 
-    // eslint-disable-next-line node/no-unsupported-features/es-builtins
-    const gt = typeof globalThis === 'object' ? globalThis : window;
-    gt.ChildAccessibleAce2Editor = Ace2Editor;
-
     const outerScript = `(() => {
-      window.editorInfo = parent.ChildAccessibleAce2Editor.registry[${JSON.stringify(info.id)}];
       window.onload = () => {
         window.onload = null;
         setTimeout(() => {
@@ -238,11 +230,6 @@ const Ace2Editor = function () {
           iframe.allowTransparency = true; // for IE
           iframe.ace_outerWin = window;
           document.body.insertBefore(iframe, document.body.firstChild);
-          window.readyFunc = () => {
-            delete window.readyFunc;
-            window.editorInfo.onEditorReady();
-            delete window.editorInfo;
-          };
           const doc = iframe.contentWindow.document;
           doc.open();
           doc.write(${JSON.stringify(iframeHTML.join('\n'))});
@@ -281,10 +268,6 @@ const Ace2Editor = function () {
     editorDocument.write(outerHTML.join(''));
     editorDocument.close();
   };
-};
-
-Ace2Editor.registry = {
-  nextId: 1,
 };
 
 exports.Ace2Editor = Ace2Editor;
