@@ -65,23 +65,24 @@ jobs:
     - name: Extract Etherpad
       run: 7z x etherpad-lite-win.zip -oetherpad
 
-    - name: Install Cypress
-      run: npm install cypress -g
-
-    - name: Run Etherpad
+    - name: Create & mount network share and Run / Test Etherpad
       run: |
-            cd etherpad
+            net share etherpad=d:\a\_temp\etherpad /grant:everyone,FULL
+            net mount y: \\localhost\etherpad
+            dir y:\
+            y:
             node node_modules\ep_etherpad-lite\node\server.js &
             curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
             cd src\tests\frontend
             cypress run --spec cypress\integration\test.js --config-file cypress\cypress.json
 
-    - name: Create and mount network share
+    ## TODO: move this back up above network share stuff..
+    - name: Install Cypress
+      run: npm install cypress -g
+
+    - name: Run / Test Etherpad
       run: |
-            net share etherpad=etherpad /grant:everyone,FULL
-            net mount y: \\localhost\etherpad
-            dir y:\
-            y:
+            cd etherpad
             node node_modules\ep_etherpad-lite\node\server.js &
             curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
             cd src\tests\frontend
