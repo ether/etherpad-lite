@@ -8,7 +8,7 @@ Cypress.Commands.add('iframe', {prevSubject: 'element'},
     }));
 
 describe(__filename, () => {
-  it('Pad content exists', async () => {
+  it('Pad content exists', () => {
     cy.visit('http://127.0.0.1:9001/p/test');
     cy.get('iframe[name="ace_outer"]', {timeout: 10000}).iframe()
         .find('.line-number:first')

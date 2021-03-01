@@ -79,7 +79,8 @@
   },
   "devDependencies": {
     "eslint": "^7.20.0",
-    "eslint-config-etherpad": "^1.0.25",
+    "eslint-config-etherpad": "^1.0.26",
+    "eslint-plugin-cypress": "^2.11.2",
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-mocha": "^8.0.0",
     "eslint-plugin-node": "^11.1.0",
@@ -155,9 +156,10 @@
         ],
         "excludedFiles": [
           "**/.eslintrc.js",
-          "tests/frontend/travis/**/*",
+          "tests/frontend/cypress/**/*",
           "tests/frontend/helper.js",
           "tests/frontend/helper/**/*",
+          "tests/frontend/travis/**/*",
           "tests/ratelimit/**/*"
         ],
         "extends": "etherpad/tests",
@@ -195,6 +197,7 @@
         ],
         "excludedFiles": [
           "**/.eslintrc.js",
+          "tests/frontend/cypress/**/*",
           "tests/frontend/helper.js",
           "tests/frontend/helper/**/*",
           "tests/frontend/travis/**/*"
@@ -214,6 +217,12 @@
             }
           }
         ]
+      },
+      {
+        "files": [
+          "tests/frontend/cypress/**/*"
+        ],
+        "extends": "etherpad/tests/cypress"
       },
       {
         "files": [
