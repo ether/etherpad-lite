@@ -65,11 +65,13 @@ jobs:
     - name: Extract Etherpad
       run: 7z x etherpad-lite-win.zip -oetherpad
 
-    - name: list
-      run: dir etherpad
+    - name: Install Cypress
+      run: npm install cypress -g
 
     - name: Run Etherpad
       run: |
             cd etherpad
             node node_modules\ep_etherpad-lite\node\server.js &
             curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
+            cd src\tests\frontend
+            cypress run --spec cypress\integration\test.js --config-file cypress\cypress.json
