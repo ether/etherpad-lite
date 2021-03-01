@@ -168,7 +168,7 @@ const minify = async (req, res) => {
     if (plugins.plugins[library] && match[3]) {
       const plugin = plugins.plugins[library];
       const pluginPath = plugin.package.realPath;
-      filename = path.relative(ROOT_DIR, path.join(pluginPath, libraryPath));
+      filename = path.join(pluginPath, libraryPath);
       // On Windows, path.relative converts forward slashes to backslashes. Convert them back
       // because some of the code below assumes forward slashes. Node.js treats both the backlash
       // and the forward slash characters as pathname component separators on Windows so this does
@@ -241,7 +241,7 @@ const statFile = async (filename, dirStatLimit) => {
   } else {
     let stats;
     try {
-      stats = await fs.stat(path.join(ROOT_DIR, filename));
+      stats = await fs.stat(path.resolve(ROOT_DIR, filename));
     } catch (err) {
       if (err.code === 'ENOENT') {
         // Stat the directory instead.
@@ -329,7 +329,7 @@ const getFileCompressed = async (filename, contentType) => {
 
 const getFile = async (filename) => {
   if (filename === 'js/require-kernel.js') return requireDefinition();
-  return await fs.readFile(path.join(ROOT_DIR, filename));
+  return await fs.readFile(path.resolve(ROOT_DIR, filename));
 };
 
 exports.minify = (req, res, next) => minify(req, res).catch((err) => next(err || new Error(err)));

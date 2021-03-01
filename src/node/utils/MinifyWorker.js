@@ -12,7 +12,7 @@ const compressJS = (content) => Terser.minify(content);
 
 const compressCSS = (filename, ROOT_DIR) => new Promise((res, rej) => {
   try {
-    const absPath = path.join(ROOT_DIR, filename);
+    const absPath = path.resolve(ROOT_DIR, filename);
 
     /*
        * Changes done to migrate CleanCSS 3.x -> 4.x:
