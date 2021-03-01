@@ -57,20 +57,39 @@ const helper = {};
     window.document.cookie = 'language=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
   };
 
-  // Can only happen when the iframe exists, so we're doing it separately from other cookies
+  //
+  // Regarding `setPadPrefCookie` and `clearPadPrefCookie`, some accumulation of knowledge:
+  //
+  // I believe that the cookie needs to be visible to `helper.padChrome$.document.cookie`
+  // (the iframe) in order for this to work in tests. Those cookies seem to be independent
+  // from `document.cookie`, EXCEPT for cookies using path=/ (and maybe other pahts?), in
+  // which case it's visible to both. Also notable that we have to wait for the iframe to
+  // load before setting `helper.padChrome$.document.cookie`, unlike `document.cookie`.
+  //
+  // Previously, prefsHttp was not using path=/, so we had to set
+  // `helper.padChrome$.document.cookie` directly. But more recently, after a
+  // pad_cookie.js refactor, it seems that two interesting things happened:
+  //
+  // 1) Due to some internal state (self.prefs_) we now need to set the prefsHttps
+  // cookie before the iframe is loaded, so we can no longer use
+  // `helper.padChrome$.document.cookie`
+  //
+  // 2) We started using path=/ for prefsHttps, so we can now use `document.cookie`
+  // instead.
+  //
+  // This is perhaps a lucky coincidence, or perhaps it reflects similar problems and
+  // workarounds that happenend in the client code. At any rate, if there is trouble
+  // dealing with cookies in test going forward, these are factors to look at.
+
+  // Clear all prefs in padcookie. Assumes http, not https.
   helper.clearPadPrefCookie = () => {
-    helper.padChrome$.document.cookie = 'prefsHttp=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    document.cookie = 'prefsHttp=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;sameSite=Lax';
   };
 
-  // Overwrite all prefs in pad cookie. Assumes http, not https.
-  //
-  // `helper.padChrome$.document.cookie` (the iframe) and `window.document.cookie`
-  // seem to have independent cookies, UNLESS we put path=/ here (which we don't).
-  // I don't fully understand it, but this function seems to properly simulate
-  // padCookie.setPref in the client code
+  // Overwrite all prefs in padcookie. Assumes http, not https.
   helper.setPadPrefCookie = (prefs) => {
-    helper.padChrome$.document.cookie =
-        (`prefsHttp=${escape(JSON.stringify(prefs))};expires=Thu, 01 Jan 3000 00:00:00 GMT`);
+    document.cookie =
+        ("prefsHttp=" + escape(JSON.stringify(prefs)) + "; expires=Thu, 01 Jan 3000 00:00:00 GMT; path=/;sameSite=Lax;");
   };
 
   // Functionality for knowing what key event type is required for tests
@@ -130,14 +149,14 @@ const helper = {};
     $('#iframe-container iframe').remove();
     // set new iframe
     $('#iframe-container').append($iframe);
+    if (opts.clearCookies) {
+      helper.clearPadPrefCookie();
+    }
+    if (opts.padPrefs) {
+      helper.setPadPrefCookie(opts.padPrefs);
+    }
     $iframe.one('load', () => {
       helper.padChrome$ = getFrameJQuery($('#iframe-container iframe'));
-      if (opts.clearCookies) {
-        helper.clearPadPrefCookie();
-      }
-      if (opts.padPrefs) {
-        helper.setPadPrefCookie(opts.padPrefs);
-      }
       helper.waitFor(() => !$iframe.contents().find('#editorloadingbox')
           .is(':visible'), 10000).done(() => {
         helper.padOuter$ = getFrameJQuery(helper.padChrome$('iframe[name="ace_outer"]'));

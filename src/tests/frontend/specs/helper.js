@@ -55,63 +55,64 @@ describe('the test helper', function () {
       expect(window.document.cookie).to.contain('token=foo');
       expect(window.document.cookie).to.contain('language=bar');
 
-      helper.newPad(() => {
-        // helper function seems to have cleared cookies
-        // NOTE: this doesn't yet mean it's proven to have taken effect by this point in execution
-        const firstCookie = window.document.cookie;
-        expect(firstCookie).to.not.contain('token=foo');
-        expect(firstCookie).to.not.contain('language=bar');
+      helper.newPad({
+        padPrefs: {delete:"me"},
+        cb: () => {
+          // helper function seems to have cleared cookies
+          // NOTE: this doesn't yet mean it's proven to have taken effect by this point in execution
+          expect(window.document.cookie).to.not.contain('token=foo');
+          expect(window.document.cookie).to.not.contain('language=bar');
 
-        const chrome$ = helper.padChrome$;
+          // The token has changed from 'foo' to something randomly generated.
+          // Grab the first 10 characters to confirm that it changed again after the next pad reload.
+          const tokenIndex = window.document.cookie.indexOf('token=')
+          const firstTokenSegment = window.document.cookie.slice(tokenIndex + 8, tokenIndex + 18)
 
-        // click on the settings button to make settings visible
-        const $userButton = chrome$('.buttonicon-showusers');
-        $userButton.click();
+          // Prove that we grabbed it right in the first place
+          expect(window.document.cookie).to.contain(firstTokenSegment);
 
-        const $usernameInput = chrome$('#myusernameedit');
-        $usernameInput.click();
+          const chrome$ = helper.padChrome$;
 
-        $usernameInput.val('John McLear');
-        $usernameInput.blur();
+          // click on the settings button to make settings visible
+          const $userButton = chrome$('.buttonicon-showusers');
+          $userButton.click();
 
-        // Before refreshing, make sure the name is there
-        expect($usernameInput.val()).to.be('John McLear');
+          const $usernameInput = chrome$('#myusernameedit');
+          $usernameInput.click();
 
-        // Now that we have a chrome, we can set a pad cookie
-        // so we can confirm it gets wiped as well
-        chrome$.document.cookie = 'prefsHtml=baz;expires=Thu, 01 Jan 3030 00:00:00 GMT';
-        expect(chrome$.document.cookie).to.contain('prefsHtml=baz');
+          $usernameInput.val('John McLear');
+          $usernameInput.blur();
 
-        // Cookies are weird. Because it's attached to chrome$ (as helper.setPadCookies does)
-        // AND we didn't put path=/, we shouldn't expect it to be visible on
-        // window.document.cookie. Let's just be sure.
-        expect(window.document.cookie).to.not.contain('prefsHtml=baz');
+          // Before refreshing, make sure the name is there
+          expect($usernameInput.val()).to.be('John McLear');
 
-        setTimeout(() => { // give it a second to save the username on the server side
-          helper.newPad(() => { // get a new pad, let it clear the cookies
-            const chrome$ = helper.padChrome$;
+          // Make sure pad prefs are here before we test the clearing from reload
+          expect(window.document.cookie).to.contain('delete%22:%22me');
 
-            // helper function seems to have cleared cookies
-            // NOTE: this doesn't yet mean cookies were cleared effectively.
-            // We still need to test below that we're in a new session
-            expect(window.document.cookie).to.not.contain('token=foo');
-            expect(window.document.cookie).to.not.contain('language=bar');
-            expect(chrome$.document.cookie).to.contain('prefsHtml=baz');
-            expect(window.document.cookie).to.not.contain('prefsHtml=baz');
+          setTimeout(() => { // give it a second to save the username on the server side
+            helper.newPad(() => { // get a new pad, let it clear the cookies
+              const chrome$ = helper.padChrome$;
 
-            expect(window.document.cookie).to.not.be(firstCookie);
+              // Make sure the token is none of the previous ones
+              expect(window.document.cookie).to.not.contain('token=foo');
+              expect(window.document.cookie).to.not.contain(firstTokenSegment);
 
-            // click on the settings button to make settings visible
-            const $userButton = chrome$('.buttonicon-showusers');
-            $userButton.click();
+              // Make sure the language and pad prefs are cleared
+              expect(window.document.cookie).to.not.contain('language=');
+              expect(window.document.cookie).to.not.contain('delete%22:%22me');
 
-            // confirm that the session was actually cleared
-            const $usernameInput = chrome$('#myusernameedit');
-            expect($usernameInput.val()).to.be('');
+              // click on the settings button to make settings visible
+              const $userButton = chrome$('.buttonicon-showusers');
+              $userButton.click();
 
-            done();
-          });
-        }, 1000);
+              // confirm that the session was actually cleared
+              const $usernameInput = chrome$('#myusernameedit');
+              expect($usernameInput.val()).to.be('');
+
+              done();
+            });
+          }, 1000);
+        }
       });
     });
 
@@ -119,12 +120,31 @@ describe('the test helper', function () {
       this.timeout(60000);
 
       helper.newPad({
-        padPrefs: {foo: 'bar'},
-        cb() {
-          const chrome$ = helper.padChrome$;
-          expect(chrome$.document.cookie).to.contain('prefsHttp=%7B%22');
-          expect(chrome$.document.cookie).to.contain('foo%22%3A%22bar');
-          done();
+        padPrefs: {update:"me", delete:"me"},
+        clearCookies: false,
+        cb: function(){
+          var chrome$ = helper.padChrome$;
+          // Kind of weird that the cookies decoded { and : in particular. This wasn't always the case.
+          expect(window.document.cookie).to.contain('prefsHttp={%22');
+          expect(window.document.cookie).to.contain('update%22:%22me');
+          expect(window.document.cookie).to.contain('delete%22:%22me');
+          helper.newPad({
+            padPrefs: {update: "this"},
+            clearCookies: false,
+            cb: function(){
+              var chrome$ = helper.padChrome$;
+              expect(window.document.cookie).to.contain('prefsHttp={%22');
+              expect(window.document.cookie).to.contain('update%22:%22this');
+
+              // If this one fails, there's probably some goofy nonsense going on again with
+              // two different cookies of the same name being stored by `helper.setPadPrefCookie`
+              expect(window.document.cookie).to.not.contain('update%22:%22me');
+              // If this one fails, same basic deal, but as it pertains to `helper.clearPadPrefCookie`.
+              // It's clearing the wrong one of the two copies of it.
+              expect(window.document.cookie).to.not.contain('delete%22:%22me');
+              done();
+            }
+          });
         },
       });
     });
