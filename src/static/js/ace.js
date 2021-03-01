@@ -27,6 +27,8 @@
 const hooks = require('./pluginfw/hooks');
 const pluginUtils = require('./pluginfw/shared');
 
+const debugLog = (...args) => {};
+
 // The inner and outer iframe's locations are about:blank, so relative URLs are relative to that.
 // Firefox and Chrome seem to do what the developer intends if given a relative URL, but Safari
 // errors out unless given an absolute URL for a JavaScript-created element.
@@ -41,11 +43,13 @@ const eventFired = async (obj, event, cleanups = [], predicate = () => true) => 
     let cleanup;
     const successCb = () => {
       if (!predicate()) return;
+      debugLog(`Ace2Editor.init() ${event} event on`, obj);
       cleanup();
       resolve();
     };
     const errorCb = () => {
       const err = new Error(`Ace2Editor.init() error event while waiting for ${event} event`);
+      debugLog(`${err} on object`, obj);
       cleanup();
       reject(err);
     };
@@ -69,7 +73,9 @@ const pollCondition = async (predicate, cleanups, pollPeriod, timeout) => {
   while (!done && !predicate()) {
     if (Date.now() - start > timeout) throw new Error('timeout');
     await new Promise((resolve) => setTimeout(resolve, pollPeriod));
+    debugLog('Ace2Editor.init() polling');
   }
+  if (!done) debugLog('Ace2Editor.init() poll condition became true');
 };
 
 // Resolves when the frame's document is ready to be mutated:
@@ -220,6 +226,7 @@ const Ace2Editor = function () {
   });
 
   this.init = async function (containerId, initialCode) {
+    debugLog('Ace2Editor.init()');
     this.importText(initialCode);
 
     // calls to these functions ($$INCLUDE_...)  are replaced when this file is processed
@@ -249,7 +256,9 @@ const Ace2Editor = function () {
     // For some unknown reason Firefox replaces outerWindow.document with a new Document object some
     // time between running the above code and firing the outerWindow load event. Work around it by
     // waiting until the load event fires before mutating the Document object.
+    debugLog('Ace2Editor.init() waiting for outer frame');
     await frameReady(outerFrame);
+    debugLog('Ace2Editor.init() outer frame ready');
 
     // This must be done after the Window's load event. See above comment.
     const outerDocument = outerWindow.document;
@@ -292,7 +301,9 @@ const Ace2Editor = function () {
     const innerWindow = innerFrame.contentWindow;
 
     // Wait before mutating the inner document. See above comment recarding outerWindow load.
+    debugLog('Ace2Editor.init() waiting for inner frame');
     await frameReady(innerFrame);
+    debugLog('Ace2Editor.init() inner frame ready');
 
     // This must be done after the Window's load event. See above comment.
     const innerDocument = innerWindow.document;
@@ -332,7 +343,9 @@ const Ace2Editor = function () {
     innerDocument.body.setAttribute('spellcheck', 'false');
     innerDocument.body.appendChild(innerDocument.createTextNode('\u00A0')); // &nbsp;
 
+    debugLog('Ace2Editor.init() waiting for require kernel load');
     await eventFired(requireKernel, 'load');
+    debugLog('Ace2Editor.init() require kernel loaded');
     const require = innerWindow.require;
     require.setRootURI(absUrl('../javascripts/src'));
     require.setLibraryURI(absUrl('../javascripts/lib'));
@@ -345,12 +358,16 @@ const Ace2Editor = function () {
 
     innerWindow.$ = innerWindow.jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery;
 
+    debugLog('Ace2Editor.init() waiting for plugins');
     await new Promise((resolve, reject) => innerWindow.plugins.ensure(
         (err) => err != null ? reject(err) : resolve()));
+    debugLog('Ace2Editor.init() waiting for Ace2Inner.init()');
     await new Promise((resolve, reject) => innerWindow.Ace2Inner.init(
         info, (err) => err != null ? reject(err) : resolve()));
+    debugLog('Ace2Editor.init() Ace2Inner.init() returned');
     loaded = true;
     doActionsPendingInit();
+    debugLog('Ace2Editor.init() done');
   };
 };
 
