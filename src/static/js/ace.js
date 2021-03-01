@@ -162,11 +162,11 @@ const Ace2Editor = function () {
     };
 
     const includedCSS = [
-      '../static/css/iframe_editor.css',
-      `../static/css/pad.css?v=${clientVars.randomVersionString}`,
+      'http://localhost:9001/static/css/iframe_editor.css',
+      `http://localhost:9001/static/css/pad.css?v=${clientVars.randomVersionString}`,
       // Allow urls to external CSS - http(s):// and //some/path.css
-      ...hooks.callAll('aceEditorCSS').map((p) => /\/\//.test(p) ? p : `../static/plugins/${p}`),
-      `../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`,
+      ...hooks.callAll('aceEditorCSS').map((p) => /\/\//.test(p) ? p : `http://localhost:9001/static/plugins/${p}`),
+      `http://localhost:9001/static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`,
     ];
 
     const outerFrame = document.createElement('iframe');
