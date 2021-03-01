@@ -1,8 +1,5 @@
 'use strict';
 
-// TODO: See if there's an ESLint environment for Cypress.
-/* global Cypress, cy */
-
 Cypress.Commands.add('iframe', {prevSubject: 'element'},
     ($iframe) => new Cypress.Promise((resolve) => {
       $iframe.ready(() => {
