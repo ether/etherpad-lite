@@ -78,6 +78,7 @@ jobs:
         ep_align
         ep_author_hover
         ep_cursortrace
+        ep_embedmedia
         ep_font_size
         ep_hash_auth
         ep_headings2
