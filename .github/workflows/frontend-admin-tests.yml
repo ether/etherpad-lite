@@ -1,4 +1,5 @@
-name: "Frontend admin tests"
+# Leave the powered by Sauce Labs bit in as this means we get additional concurrency
+name: "Frontend admin tests powered by Sauce Labs"
 
 on: [push]
 
