@@ -27,6 +27,11 @@
 const hooks = require('./pluginfw/hooks');
 const pluginUtils = require('./pluginfw/shared');
 
+// The inner and outer iframe's locations are about:blank, so relative URLs are relative to that.
+// Firefox and Chrome seem to do what the developer intends if given a relative URL, but Safari
+// errors out unless given an absolute URL for a JavaScript-created element.
+const absUrl = (url) => new URL(url, window.location.href).href;
+
 const scriptTag =
     (source) => `<script type="text/javascript">\n${source.replace(/<\//g, '<\\/')}</script>`;
 
@@ -140,7 +145,7 @@ const Ace2Editor = function () {
       buffer.push('</style>');
     }
     for (const file of remoteFiles) {
-      buffer.push(`<link rel="stylesheet" type="text/css" href="${encodeURI(file)}"/>`);
+      buffer.push(`<link rel="stylesheet" type="text/css" href="${absUrl(encodeURI(file))}"/>`);
     }
   };
 
@@ -181,15 +186,20 @@ const Ace2Editor = function () {
     iframeHTML.push(doctype);
     iframeHTML.push(`<html class='inner-editor ${clientVars.skinVariants}'><head>`);
     pushStyleTagsFor(iframeHTML, includedCSS);
-    iframeHTML.push(`<script type="text/javascript" src="../static/js/require-kernel.js?v=${clientVars.randomVersionString}"></script>`);
-    // fill the cache
-    iframeHTML.push(`<script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_inner.js?callback=require.define&v=${clientVars.randomVersionString}"></script>`);
-    iframeHTML.push(`<script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define&v=${clientVars.randomVersionString}"></script>`);
+    const requireKernelUrl =
+        absUrl(`../static/js/require-kernel.js?v=${clientVars.randomVersionString}`);
+    iframeHTML.push(`<script type="text/javascript" src="${requireKernelUrl}"></script>`);
+    // Pre-fetch modules to improve load performance.
+    for (const module of ['ace2_inner', 'ace2_common']) {
+      const url = absUrl(`../javascripts/lib/ep_etherpad-lite/static/js/${module}.js` +
+                         `?callback=require.define&v=${clientVars.randomVersionString}`);
+      iframeHTML.push(`<script type="text/javascript" src="${url}"></script>`);
+    }
 
     iframeHTML.push(scriptTag(`(() => {
       const require = window.require;
-      require.setRootURI('../javascripts/src');
-      require.setLibraryURI('../javascripts/lib');
+      require.setRootURI(${JSON.stringify(absUrl('../javascripts/src'))});
+      require.setLibraryURI(${JSON.stringify(absUrl('../javascripts/lib'))});
       require.setGlobalKeyPath('require');
 
       // intentially moved before requiring client_plugins to save a 307
