@@ -220,44 +220,6 @@ const minify = async (req, res) => {
   }
 };
 
-// find all includes in ace.js and embed them.
-const getAceFile = async () => {
-  let data = await fs.readFile(path.join(ROOT_DIR, 'js/ace.js'), 'utf8');
-
-  // Find all includes in ace.js and embed them
-  const filenames = [];
-  if (settings.minify) {
-    const regex = /\$\$INCLUDE_[a-zA-Z_]+\((['"])([^'"]*)\1\)/gi;
-    // This logic can be simplified via String.prototype.matchAll() once support for Node.js
-    // v11.x and older is dropped.
-    let matches;
-    while ((matches = regex.exec(data)) != null) {
-      filenames.push(matches[2]);
-    }
-  }
-
-  data += 'Ace2Editor.EMBEDED = Ace2Editor.EMBEDED || {};\n';
-
-  // Request the contents of the included file on the server-side and write
-  // them into the file.
-  await Promise.all(filenames.map(async (filename) => {
-    // Hostname "invalid.invalid" is a dummy value to allow parsing as a URI.
-    const baseURI = 'http://invalid.invalid';
-    let resourceURI = baseURI + path.join('/static/', filename);
-    resourceURI = resourceURI.replace(/\\/g, '/'); // Windows (safe generally?)
-
-    const [status, , body] = await requestURI(resourceURI, 'GET', {});
-    const error = !(status === 200 || status === 404);
-    if (!error) {
-      data += `Ace2Editor.EMBEDED[${JSON.stringify(filename)}] = ${
-        JSON.stringify(status === 200 ? body || '' : null)};\n`;
-    } else {
-      console.error(`getAceFile(): error getting ${resourceURI}. Status code: ${status}`);
-    }
-  }));
-  return data;
-};
-
 // Check for the existance of the file and get the last modification date.
 const statFile = async (filename, dirStatLimit) => {
   /*
@@ -366,7 +328,6 @@ const getFileCompressed = async (filename, contentType) => {
 };
 
 const getFile = async (filename) => {
-  if (filename === 'js/ace.js') return await getAceFile();
   if (filename === 'js/require-kernel.js') return requireDefinition();
   return await fs.readFile(path.join(ROOT_DIR, filename));
 };
