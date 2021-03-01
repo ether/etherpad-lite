@@ -22,7 +22,8 @@ const hooks = require('../../static/js/pluginfw/hooks');
 exports.setPadRaw = (padId, r) => {
   const records = JSON.parse(r);
 
-  const blockElems = ['div', 'br', 'p', 'pre', 'li', 'author', 'lmkr', 'insertorder'];
+  const blockElems = ['div', 'br', 'p', 'pre', 'li', 'author', 'lmkr', 'insertorder',
+    'strong', 'ul', 'ol', 'span', 'font', 'i'];
 
   // get supported block Elements from plugins, we will use this later.
   hooks.callAll('ccRegisterBlockElements').forEach((element) => {
