@@ -89,8 +89,6 @@ const Ace2Editor = function () {
 
   this.exportText = () => loaded ? info.ace_exportText() : '(awaiting init)\n';
 
-  this.getFrame = () => info.frame || null;
-
   this.getDebugProperty = (prop) => info.ace_getDebugProperty(prop);
 
   this.getInInternationalComposition =
