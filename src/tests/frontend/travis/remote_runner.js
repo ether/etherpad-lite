@@ -32,7 +32,7 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
   ]).join(' - ');
   testSettings.name = name;
   testSettings.public = true;
-  testSettings.build = process.env.GIT_HASH;
+  testSettings.build = 'sauce-status-badge-tests-v1.3';
   // console.json can be downloaded via saucelabs,
   // don't know how to print them into output of the tests
   testSettings.extendedDebugging = true;
@@ -170,10 +170,9 @@ if (!isAdminRunner) {
   */
   // 5) Edge on Win 10
   sauceTestWorker.push({
-    'platform': 'Windows 10',
-    'browserName': 'microsoftedge',
-    'version': '83.0',
-    'sauce:options': {build: 'sauce-status-badge-tests-v1.3', public: 'public'},
+    platform: 'Windows 10',
+    browserName: 'microsoftedge',
+    version: '83.0',
   });
   // 6) Firefox on Win 7
   sauceTestWorker.push({
