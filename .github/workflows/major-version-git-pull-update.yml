@@ -1,4 +1,4 @@
-name: "Backend tests"
+name: "In-place git pull from master"
 
 # any branch is useful for testing before a PR is submitted
 on: [push, pull_request]
