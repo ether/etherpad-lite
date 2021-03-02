@@ -55,6 +55,28 @@ const getAttribute = (n, a) => {
   if (n.attribs != null) return n.attribs[a];
   return null;
 };
+// supportedElems are Supported natively within Etherpad and don't require a plugin
+const supportedElems = [
+  'author',
+  'b',
+  'bold',
+  'br',
+  'div',
+  'font',
+  'i',
+  'insertorder',
+  'italic',
+  'li',
+  'lmkr',
+  'ol',
+  'p',
+  'pre',
+  'strong',
+  's',
+  'span',
+  'u',
+  'ul',
+];
 
 const makeContentCollector = (collectStyles, abrowser, apool, className2Author) => {
   const _blockElems = {
@@ -66,6 +88,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
 
   hooks.callAll('ccRegisterBlockElements').forEach((element) => {
     _blockElems[element] = 1;
+    supportedElems.push(element);
   });
 
   const isBlockElement = (n) => !!_blockElems[tagName(n) || ''];
@@ -315,9 +338,11 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
     const localAttribs = state.localAttribs;
     state.localAttribs = null;
     const isBlock = isBlockElement(node);
-    if (!isBlock && node.name && (node.name !== 'body') && (node.name !== 'br')) {
-      console.warn('Plugin missing: ' +
+    if (!isBlock && node.name && (node.name !== 'body')) {
+      if (supportedElems.indexOf(node.name) === -1) {
+        console.warn('Plugin missing: ' +
           `You might want to install a plugin to support this node name: ${node.name}`);
+      }
     }
     const isEmpty = _isEmpty(node, state);
     if (isBlock) _ensureColumnZero(state);
@@ -701,3 +726,4 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
 
 exports.sanitizeUnicode = sanitizeUnicode;
 exports.makeContentCollector = makeContentCollector;
+exports.supportedElems = supportedElems;
