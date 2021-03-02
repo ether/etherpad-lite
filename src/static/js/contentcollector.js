@@ -57,22 +57,25 @@ const getAttribute = (n, a) => {
 };
 // supportedElems are Supported natively within Etherpad and don't require a plugin
 const supportedElems = [
-  'div',
-  'br',
-  'p',
-  'pre',
-  'li',
   'author',
-  'lmkr',
-  'insertorder',
-  'strong',
-  'ul',
-  'ol',
-  'span',
+  'b',
+  'bold',
+  'br',
+  'div',
   'font',
   'i',
-  'bold',
+  'insertorder',
   'italic',
+  'li',
+  'lmkr',
+  'ol',
+  'p',
+  'pre',
+  'strong',
+  's',
+  'span',
+  'u',
+  'ul',
 ];
 
 const makeContentCollector = (collectStyles, abrowser, apool, className2Author) => {
