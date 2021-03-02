@@ -79,7 +79,8 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
     'ol',
     'span',
     'font',
-    'i'];
+    'i',
+  ];
 
   hooks.callAll('ccRegisterBlockElements').forEach((element) => {
     _blockElems[element] = 1;
