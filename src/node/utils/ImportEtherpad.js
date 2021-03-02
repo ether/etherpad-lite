@@ -18,25 +18,10 @@
 
 const db = require('../db/DB');
 const hooks = require('../../static/js/pluginfw/hooks');
+const supportedElems = require('../../static/js/contentcollector').supportedElems;
 
 exports.setPadRaw = (padId, r) => {
   const records = JSON.parse(r);
-
-  // supportedElems are Supported natively within Etherpad and don't require a plugin
-  const supportedElems = ['div',
-    'br',
-    'p',
-    'pre',
-    'li',
-    'author',
-    'lmkr',
-    'insertorder',
-    'strong',
-    'ul',
-    'ol',
-    'span',
-    'font',
-    'i'];
 
   // get supported block Elements from plugins, we will use this later.
   hooks.callAll('ccRegisterBlockElements').forEach((element) => {

@@ -55,6 +55,25 @@ const getAttribute = (n, a) => {
   if (n.attribs != null) return n.attribs[a];
   return null;
 };
+// supportedElems are Supported natively within Etherpad and don't require a plugin
+const supportedElems = [
+  'div',
+  'br',
+  'p',
+  'pre',
+  'li',
+  'author',
+  'lmkr',
+  'insertorder',
+  'strong',
+  'ul',
+  'ol',
+  'span',
+  'font',
+  'i',
+  'bold',
+  'italic',
+];
 
 const makeContentCollector = (collectStyles, abrowser, apool, className2Author) => {
   const _blockElems = {
@@ -63,24 +82,6 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
     pre: 1,
     li: 1,
   };
-
-  // supportedElems are Supported natively within Etherpad and don't require a plugin
-  const supportedElems = [
-    'div',
-    'br',
-    'p',
-    'pre',
-    'li',
-    'author',
-    'lmkr',
-    'insertorder',
-    'strong',
-    'ul',
-    'ol',
-    'span',
-    'font',
-    'i',
-  ];
 
   hooks.callAll('ccRegisterBlockElements').forEach((element) => {
     _blockElems[element] = 1;
@@ -722,3 +723,4 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
 
 exports.sanitizeUnicode = sanitizeUnicode;
 exports.makeContentCollector = makeContentCollector;
+exports.supportedElems = supportedElems;
