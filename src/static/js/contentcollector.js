@@ -65,7 +65,8 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
   };
 
   // supportedElems are Supported natively within Etherpad and don't require a plugin
-  const supportedElems = ['div',
+  const supportedElems = [
+    'div',
     'br',
     'p',
     'pre',
