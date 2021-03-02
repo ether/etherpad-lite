@@ -86,7 +86,6 @@ jobs:
 
     - name: Run Etherpad
       run: |
-            cd etherpad
             node src/node/server.js &
             curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
             cd src/tests/frontend
