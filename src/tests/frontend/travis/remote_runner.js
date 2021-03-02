@@ -31,7 +31,7 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
     `${testSettings.browserName} ${testSettings.version}, ${testSettings.platform}`,
   ]).join(' - ');
   testSettings.name = name;
-  testSettings.public = true;
+  testSettings.public = 'public';
   testSettings.build = 'sauce-status-badge-tests-v1.3';
   // console.json can be downloaded via saucelabs,
   // don't know how to print them into output of the tests
