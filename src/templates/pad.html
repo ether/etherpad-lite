@@ -170,7 +170,7 @@
 
           <h2 data-l10n-id="pad.settings.about">About</h2>
           <span data-l10n-id="pad.settings.poweredBy">Powered by</span>
-          <a href="https://etherpad.org">Etherpad</a>
+          <a href="https://etherpad.org">Etherpad-lite</a>
           <% if (settings.exposeVersion) { %>(commit <%=settings.getGitCommit()%>)<% } %>
       </div></div>
 
@@ -464,7 +464,7 @@
       // @license-end
   </script>
 
-  <script type="text/javascript" src="../socket.io/socket.io.js?v=<%=settings.randomVersionString%>"></script>
+  <script type="text/javascript" src="../socket.io/socket.io.js"></script>
 
   <!-- Include base packages manually (this help with debugging) -->
   <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define&v=<%=settings.randomVersionString%>"></script>

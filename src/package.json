@@ -64,7 +64,8 @@
     "resolve": "1.19.0",
     "security": "1.0.0",
     "semver": "5.7.1",
-    "socket.io": "^2.4.1",
+    "socket.io": "^3.1.2",
+    "socket.io-client": "^3.1.2",
     "terser": "^4.7.0",
     "threads": "^1.4.0",
     "tiny-worker": "^2.3.0",
@@ -243,7 +244,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "mocha --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
+    "test": "mocha --timeout 12000000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
     "test-container": "mocha --timeout 5000 tests/container/specs/api"
   },
   "version": "1.8.11",

@@ -214,7 +214,7 @@ const sendClientReady = (isReconnect, messageType) => {
     msg.reconnect = true;
   }
 
-  socket.json.send(msg);
+  socket.emit("message", msg);
 };
 
 const handshake = () => {

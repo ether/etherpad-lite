@@ -54,7 +54,7 @@ const connect = async (res) => {
   logger.debug('socket.io connecting...');
   const socket = io(`${common.baseUrl}/`, {
     forceNew: true, // Different tests will have different query parameters.
-    path: '/socket.io',
+    // path: '/socket.io',
     // socketio.js-client on node.js doesn't support cookies (see https://git.io/JU8u9), so the
     // express_sid cookie must be passed as a query parameter.
     query: {cookie: reqCookieHdr},
@@ -74,7 +74,7 @@ const connect = async (res) => {
 // Returns the CLIENT_VARS message from the server.
 const handshake = async (socket, padID) => {
   logger.debug('sending CLIENT_READY...');
-  socket.send({
+  socket.emit("message",{
     component: 'pad',
     type: 'CLIENT_READY',
     padId: padID,
@@ -104,7 +104,7 @@ describe(__filename, function () {
   };
   let socket;
 
-  before(async function () { agent = await common.init(); });
+  before(async function () {agent = await common.init(); });
   beforeEach(async function () {
     backups.hooks = {};
     for (const hookName of ['preAuthorize', 'authenticate', 'authorize']) {
@@ -194,7 +194,6 @@ describe(__filename, function () {
       this.timeout(400);
       settings.requireAuthentication = true;
       const res = await agent.get('/p/pad').expect(401);
-      // Despite the 401, try to create the pad via a socket.io connection anyway.
       socket = await connect(res);
       const message = await handshake(socket, 'pad');
       assert.equal(message.accessStatus, 'deny');
