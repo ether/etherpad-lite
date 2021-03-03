@@ -7,8 +7,8 @@ execute its own functionality based on these events.
 Publicly available plugins can be found in the npm registry (see
 <https://npmjs.org>). Etherpad's naming convention for plugins is to prefix your
 plugins with `ep_`. So, e.g. it's `ep_flubberworms`. Thus you can install
-plugins from npm, using `npm install ep_flubberworm` in Etherpad's root
-directory.
+plugins from npm, using `npm install --no-save --legacy-peer-deps
+ep_flubberworm` in Etherpad's root directory.
 
 You can also browse to `http://yourEtherpadInstan.ce/admin/plugins`, which will
 list all installed plugins and those available on npm. It even provides
@@ -225,7 +225,7 @@ publish your plugin.
   "author": "USERNAME (REAL NAME) <MAIL@EXAMPLE.COM>",
   "contributors": [],
   "dependencies": {"MODULE": "0.3.20"},
-  "engines": { "node": ">= 10.13.0"}
+  "engines": { "node": "^10.17.0 || >=11.14.0"}
 }
 ```
 

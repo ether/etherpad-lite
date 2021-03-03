@@ -1,7 +1,8 @@
+'use strict';
 const securityManager = require('./db/SecurityManager');
 
 // checks for padAccess
-module.exports = async function (req, res) {
+module.exports = async (req, res) => {
   try {
     const {session: {user} = {}} = req;
     const accessObj = await securityManager.checkAccess(

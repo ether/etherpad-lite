@@ -1,3 +1,4 @@
+'use strict';
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -23,66 +24,111 @@
 // requires: top
 // requires: undefined
 
-const KERNEL_SOURCE = '../static/js/require-kernel.js';
-
-Ace2Editor.registry = {
-  nextId: 1,
-};
-
 const hooks = require('./pluginfw/hooks');
 const pluginUtils = require('./pluginfw/shared');
-const _ = require('./underscore');
 
-function scriptTag(source) {
-  return (
-    `<script type="text/javascript">\n${
-      source.replace(/<\//g, '<\\/')
-    }</script>`
-  );
-}
+const debugLog = (...args) => {};
 
-function Ace2Editor() {
-  const ace2 = Ace2Editor;
+// The inner and outer iframe's locations are about:blank, so relative URLs are relative to that.
+// Firefox and Chrome seem to do what the developer intends if given a relative URL, but Safari
+// errors out unless given an absolute URL for a JavaScript-created element.
+const absUrl = (url) => new URL(url, window.location.href).href;
 
-  const editor = {};
-  let info = {
-    editor,
-    id: (ace2.registry.nextId++),
-  };
+const eventFired = async (obj, event, cleanups = [], predicate = () => true) => {
+  if (typeof cleanups === 'function') {
+    predicate = cleanups;
+    cleanups = [];
+  }
+  await new Promise((resolve, reject) => {
+    let cleanup;
+    const successCb = () => {
+      if (!predicate()) return;
+      debugLog(`Ace2Editor.init() ${event} event on`, obj);
+      cleanup();
+      resolve();
+    };
+    const errorCb = () => {
+      const err = new Error(`Ace2Editor.init() error event while waiting for ${event} event`);
+      debugLog(`${err} on object`, obj);
+      cleanup();
+      reject(err);
+    };
+    cleanup = () => {
+      cleanup = () => {};
+      obj.removeEventListener(event, successCb);
+      obj.removeEventListener('error', errorCb);
+    };
+    cleanups.push(cleanup);
+    obj.addEventListener(event, successCb);
+    obj.addEventListener('error', errorCb);
+  });
+};
+
+const pollCondition = async (predicate, cleanups, pollPeriod, timeout) => {
+  let done = false;
+  cleanups.push(() => { done = true; });
+  // Pause a tick to give the predicate a chance to become true before adding latency.
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  const start = Date.now();
+  while (!done && !predicate()) {
+    if (Date.now() - start > timeout) throw new Error('timeout');
+    await new Promise((resolve) => setTimeout(resolve, pollPeriod));
+    debugLog('Ace2Editor.init() polling');
+  }
+  if (!done) debugLog('Ace2Editor.init() poll condition became true');
+};
+
+// Resolves when the frame's document is ready to be mutated:
+//   - Firefox seems to replace the frame's contentWindow.document object with a different object
+//     after the frame is created so we need to wait for the window's load event before continuing.
+//   - Chrome doesn't need any waiting (not even next tick), but on Windows it never seems to fire
+//     any events. Eventually the document's readyState becomes 'complete' (even though it never
+//     fires a readystatechange event), so this function waits for that to happen to avoid returning
+//     too soon on Firefox.
+//   - Safari behaves like Chrome.
+// I'm not sure how other browsers behave, so this function throws the kitchen sink at the problem.
+// Maybe one day we'll find a concise general solution.
+const frameReady = async (frame) => {
+  // Can't do `const doc = frame.contentDocument;` because Firefox seems to asynchronously replace
+  // the document object after the frame is first created for some reason. ¯\_(ツ)_/¯
+  const doc = () => frame.contentDocument;
+  const cleanups = [];
+  try {
+    await Promise.race([
+      eventFired(frame, 'load', cleanups),
+      eventFired(frame.contentWindow, 'load', cleanups),
+      eventFired(doc(), 'load', cleanups),
+      eventFired(doc(), 'DOMContentLoaded', cleanups),
+      eventFired(doc(), 'readystatechange', cleanups, () => doc.readyState === 'complete'),
+      // If all else fails, poll.
+      pollCondition(() => doc().readyState === 'complete', cleanups, 10, 5000),
+    ]);
+  } finally {
+    for (const cleanup of cleanups) cleanup();
+  }
+};
+
+const Ace2Editor = function () {
+  let info = {editor: this};
   let loaded = false;
 
   let actionsPendingInit = [];
 
-  function pendingInit(func, optDoNow) {
-    return function () {
-      const that = this;
-      const args = arguments;
-      const action = function () {
-        func.apply(that, args);
-      };
-      if (optDoNow) {
-        optDoNow.apply(that, args);
-      }
-      if (loaded) {
-        action();
-      } else {
-        actionsPendingInit.push(action);
-      }
-    };
-  }
+  const pendingInit = (func) => function (...args) {
+    const action = () => func.apply(this, args);
+    if (loaded) return action();
+    actionsPendingInit.push(action);
+  };
 
-  function doActionsPendingInit() {
-    _.each(actionsPendingInit, (fn, i) => {
-      fn();
-    });
+  const doActionsPendingInit = () => {
+    for (const fn of actionsPendingInit) fn();
     actionsPendingInit = [];
-  }
-
-  ace2.registry[info.id] = info;
+  };
 
   // The following functions (prefixed by 'ace_')  are exposed by editor, but
   // execution is delayed until init is complete
-  const aceFunctionsPendingInit = ['importText',
+  const aceFunctionsPendingInit = [
+    'importText',
     'importAText',
     'focus',
     'setEditable',
@@ -100,261 +146,193 @@ function Ace2Editor() {
     'setAuthorSelectionRange',
     'callWithAce',
     'execCommand',
-    'replaceRange'];
+    'replaceRange',
+  ];
 
-  _.each(aceFunctionsPendingInit, (fnName, i) => {
-    const prefix = 'ace_';
-    const name = prefix + fnName;
-    editor[fnName] = pendingInit(function () {
-      if (fnName === 'setAuthorInfo') {
-        if (!arguments[0]) {
-          // setAuthorInfo AuthorId not set for some reason
-        } else {
-          info[prefix + fnName].apply(this, arguments);
-        }
-      } else {
-        info[prefix + fnName].apply(this, arguments);
-      }
+  for (const fnName of aceFunctionsPendingInit) {
+    // Note: info[`ace_${fnName}`] does not exist yet, so it can't be passed directly to
+    // pendingInit(). A simple wrapper is used to defer the info[`ace_${fnName}`] lookup until
+    // method invocation.
+    this[fnName] = pendingInit(function (...args) {
+      info[`ace_${fnName}`].apply(this, args);
     });
-  });
+  }
 
-  editor.exportText = function () {
-    if (!loaded) return '(awaiting init)\n';
-    return info.ace_exportText();
-  };
+  this.exportText = () => loaded ? info.ace_exportText() : '(awaiting init)\n';
 
-  editor.getFrame = function () {
-    return info.frame || null;
-  };
+  this.getDebugProperty = (prop) => info.ace_getDebugProperty(prop);
 
-  editor.getDebugProperty = function (prop) {
-    return info.ace_getDebugProperty(prop);
-  };
-
-  editor.getInInternationalComposition = function () {
-    if (!loaded) return false;
-    return info.ace_getInInternationalComposition();
-  };
+  this.getInInternationalComposition =
+      () => loaded ? info.ace_getInInternationalComposition() : false;
 
   // prepareUserChangeset:
   // Returns null if no new changes or ACE not ready.  Otherwise, bundles up all user changes
   // to the latest base text into a Changeset, which is returned (as a string if encodeAsString).
-  // If this method returns a truthy value, then applyPreparedChangesetToBase can be called
-  // at some later point to consider these changes part of the base, after which prepareUserChangeset
-  // must be called again before applyPreparedChangesetToBase.  Multiple consecutive calls
-  // to prepareUserChangeset will return an updated changeset that takes into account the
-  // latest user changes, and modify the changeset to be applied by applyPreparedChangesetToBase
-  // accordingly.
-  editor.prepareUserChangeset = function () {
-    if (!loaded) return null;
-    return info.ace_prepareUserChangeset();
+  // If this method returns a truthy value, then applyPreparedChangesetToBase can be called at some
+  // later point to consider these changes part of the base, after which prepareUserChangeset must
+  // be called again before applyPreparedChangesetToBase. Multiple consecutive calls to
+  // prepareUserChangeset will return an updated changeset that takes into account the latest user
+  // changes, and modify the changeset to be applied by applyPreparedChangesetToBase accordingly.
+  this.prepareUserChangeset = () => loaded ? info.ace_prepareUserChangeset() : null;
+
+  // returns array of {error: <browser Error object>, time: +new Date()}
+  this.getUnhandledErrors = () => loaded ? info.ace_getUnhandledErrors() : [];
+
+  const addStyleTagsFor = (doc, files) => {
+    for (const file of files) {
+      const link = doc.createElement('link');
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = absUrl(encodeURI(file));
+      doc.head.appendChild(link);
+    }
   };
 
-  editor.getUnhandledErrors = function () {
-    if (!loaded) return [];
-    // returns array of {error: <browser Error object>, time: +new Date()}
-    return info.ace_getUnhandledErrors();
-  };
-
-
-  function sortFilesByEmbeded(files) {
-    const embededFiles = [];
-    let remoteFiles = [];
-
-    if (Ace2Editor.EMBEDED) {
-      for (let i = 0, ii = files.length; i < ii; i++) {
-        const file = files[i];
-        if (Object.prototype.hasOwnProperty.call(Ace2Editor.EMBEDED, file)) {
-          embededFiles.push(file);
-        } else {
-          remoteFiles.push(file);
-        }
-      }
-    } else {
-      remoteFiles = files;
-    }
-
-    return {embeded: embededFiles, remote: remoteFiles};
-  }
-  function pushStyleTagsFor(buffer, files) {
-    const sorted = sortFilesByEmbeded(files);
-    const embededFiles = sorted.embeded;
-    const remoteFiles = sorted.remote;
-
-    if (embededFiles.length > 0) {
-      buffer.push('<style type="text/css">');
-      for (var i = 0, ii = embededFiles.length; i < ii; i++) {
-        var file = embededFiles[i];
-        buffer.push((Ace2Editor.EMBEDED[file] || '').replace(/<\//g, '<\\/'));
-      }
-      buffer.push('<\/style>');
-    }
-    for (var i = 0, ii = remoteFiles.length; i < ii; i++) {
-      var file = remoteFiles[i];
-      buffer.push(`<link rel="stylesheet" type="text/css" href="${encodeURI(file)}"\/>`);
-    }
-  }
-
-  editor.destroy = pendingInit(() => {
+  this.destroy = pendingInit(() => {
     info.ace_dispose();
     info.frame.parentNode.removeChild(info.frame);
-    delete ace2.registry[info.id];
     info = null; // prevent IE 6 closure memory leaks
   });
 
-  editor.init = function (containerId, initialCode, doneFunc) {
-    editor.importText(initialCode);
+  this.init = async function (containerId, initialCode) {
+    debugLog('Ace2Editor.init()');
+    this.importText(initialCode);
 
-    info.onEditorReady = function () {
-      loaded = true;
-      doActionsPendingInit();
-      doneFunc();
-    };
+    const includedCSS = [
+      '../static/css/iframe_editor.css',
+      `../static/css/pad.css?v=${clientVars.randomVersionString}`,
+      ...hooks.callAll('aceEditorCSS').map(
+          // Allow urls to external CSS - http(s):// and //some/path.css
+          (p) => /\/\//.test(p) ? p : `../static/plugins/${p}`),
+      `../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`,
+    ];
 
-    (function () {
-      const doctype = '<!doctype html>';
+    const skinVariants = clientVars.skinVariants.split(' ').filter((x) => x !== '');
 
-      const iframeHTML = [];
+    const outerFrame = document.createElement('iframe');
+    outerFrame.name = 'ace_outer';
+    outerFrame.frameBorder = 0; // for IE
+    outerFrame.title = 'Ether';
+    info.frame = outerFrame;
+    document.getElementById(containerId).appendChild(outerFrame);
+    const outerWindow = outerFrame.contentWindow;
 
-      iframeHTML.push(doctype);
-      iframeHTML.push(`<html class='inner-editor ${clientVars.skinVariants}'><head>`);
+    // For some unknown reason Firefox replaces outerWindow.document with a new Document object some
+    // time between running the above code and firing the outerWindow load event. Work around it by
+    // waiting until the load event fires before mutating the Document object.
+    debugLog('Ace2Editor.init() waiting for outer frame');
+    await frameReady(outerFrame);
+    debugLog('Ace2Editor.init() outer frame ready');
 
-      // calls to these functions ($$INCLUDE_...)  are replaced when this file is processed
-      // and compressed, putting the compressed code from the named file directly into the
-      // source here.
-      // these lines must conform to a specific format because they are passed by the build script:
-      var includedCSS = [];
-      var $$INCLUDE_CSS = function (filename) { includedCSS.push(filename); };
-      $$INCLUDE_CSS('../static/css/iframe_editor.css');
+    // This must be done after the Window's load event. See above comment.
+    const outerDocument = outerWindow.document;
 
-      // disableCustomScriptsAndStyles can be used to disable loading of custom scripts
-      if (!clientVars.disableCustomScriptsAndStyles) {
-        $$INCLUDE_CSS(`../static/css/pad.css?v=${clientVars.randomVersionString}`);
-      }
+    // <html> tag
+    outerDocument.documentElement.classList.add('inner-editor', 'outerdoc', ...skinVariants);
 
-      var additionalCSS = _(hooks.callAll('aceEditorCSS')).map((path) => {
-        if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
-          return path;
-        }
-        return `../static/plugins/${path}`;
-      });
-      includedCSS = includedCSS.concat(additionalCSS);
-      $$INCLUDE_CSS(`../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`);
+    // <head> tag
+    addStyleTagsFor(outerDocument, includedCSS);
+    const outerStyle = outerDocument.createElement('style');
+    outerStyle.type = 'text/css';
+    outerStyle.title = 'dynamicsyntax';
+    outerDocument.head.appendChild(outerStyle);
+    const link = outerDocument.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = 'data:text/css,';
+    outerDocument.head.appendChild(link);
 
-      pushStyleTagsFor(iframeHTML, includedCSS);
+    // <body> tag
+    outerDocument.body.id = 'outerdocbody';
+    outerDocument.body.classList.add('outerdocbody', ...pluginUtils.clientPluginNames());
+    const sideDiv = outerDocument.createElement('div');
+    sideDiv.id = 'sidediv';
+    sideDiv.classList.add('sidediv');
+    outerDocument.body.appendChild(sideDiv);
+    const lineMetricsDiv = outerDocument.createElement('div');
+    lineMetricsDiv.id = 'linemetricsdiv';
+    lineMetricsDiv.appendChild(outerDocument.createTextNode('x'));
+    outerDocument.body.appendChild(lineMetricsDiv);
 
-      if (!Ace2Editor.EMBEDED && Ace2Editor.EMBEDED[KERNEL_SOURCE]) {
-        // Remotely src'd script tag will not work in IE; it must be embedded, so
-        // throw an error if it is not.
-        throw new Error('Require kernel could not be found.');
-      }
+    const innerFrame = outerDocument.createElement('iframe');
+    innerFrame.name = 'ace_inner';
+    innerFrame.title = 'pad';
+    innerFrame.scrolling = 'no';
+    innerFrame.frameBorder = 0;
+    innerFrame.allowTransparency = true; // for IE
+    innerFrame.ace_outerWin = outerWindow;
+    outerDocument.body.insertBefore(innerFrame, outerDocument.body.firstChild);
+    const innerWindow = innerFrame.contentWindow;
 
-      iframeHTML.push(scriptTag(
-          `${Ace2Editor.EMBEDED[KERNEL_SOURCE]}\n\
-require.setRootURI("../javascripts/src");\n\
-require.setLibraryURI("../javascripts/lib");\n\
-require.setGlobalKeyPath("require");\n\
-\n\
-var plugins = require("ep_etherpad-lite/static/js/pluginfw/client_plugins");\n\
-plugins.adoptPluginsFromAncestorsOf(window);\n\
-\n\
-$ = jQuery = require("ep_etherpad-lite/static/js/rjquery").jQuery; // Expose jQuery #HACK\n\
-var Ace2Inner = require("ep_etherpad-lite/static/js/ace2_inner");\n\
-\n\
-plugins.ensure(function () {\n\
-  Ace2Inner.init();\n\
-});\n\
-`));
+    // Wait before mutating the inner document. See above comment recarding outerWindow load.
+    debugLog('Ace2Editor.init() waiting for inner frame');
+    await frameReady(innerFrame);
+    debugLog('Ace2Editor.init() inner frame ready');
 
-      iframeHTML.push('<style type="text/css" title="dynamicsyntax"></style>');
+    // This must be done after the Window's load event. See above comment.
+    const innerDocument = innerWindow.document;
 
-      hooks.callAll('aceInitInnerdocbodyHead', {
-        iframeHTML,
-      });
+    // <html> tag
+    innerDocument.documentElement.classList.add('inner-editor', ...skinVariants);
 
-      iframeHTML.push('</head><body id="innerdocbody" class="innerdocbody" role="application" class="syntax" spellcheck="false">&nbsp;</body></html>');
+    // <head> tag
+    addStyleTagsFor(innerDocument, includedCSS);
+    const requireKernel = innerDocument.createElement('script');
+    requireKernel.type = 'text/javascript';
+    requireKernel.src =
+        absUrl(`../static/js/require-kernel.js?v=${clientVars.randomVersionString}`);
+    innerDocument.head.appendChild(requireKernel);
+    // Pre-fetch modules to improve load performance.
+    for (const module of ['ace2_inner', 'ace2_common']) {
+      const script = innerDocument.createElement('script');
+      script.type = 'text/javascript';
+      script.src = absUrl(`../javascripts/lib/ep_etherpad-lite/static/js/${module}.js` +
+                          `?callback=require.define&v=${clientVars.randomVersionString}`);
+      innerDocument.head.appendChild(script);
+    }
+    const innerStyle = innerDocument.createElement('style');
+    innerStyle.type = 'text/css';
+    innerStyle.title = 'dynamicsyntax';
+    innerDocument.head.appendChild(innerStyle);
+    const headLines = [];
+    hooks.callAll('aceInitInnerdocbodyHead', {iframeHTML: headLines});
+    const tmp = innerDocument.createElement('div');
+    tmp.innerHTML = headLines.join('\n');
+    while (tmp.firstChild) innerDocument.head.appendChild(tmp.firstChild);
 
-      // Expose myself to global for my child frame.
-      const thisFunctionsName = 'ChildAccessibleAce2Editor';
-      (function () { return this; }())[thisFunctionsName] = Ace2Editor;
+    // <body> tag
+    innerDocument.body.id = 'innerdocbody';
+    innerDocument.body.classList.add('innerdocbody');
+    innerDocument.body.setAttribute('role', 'application');
+    innerDocument.body.setAttribute('spellcheck', 'false');
+    innerDocument.body.appendChild(innerDocument.createTextNode('\u00A0')); // &nbsp;
 
-      const outerScript = `\
-editorId = ${JSON.stringify(info.id)};\n\
-editorInfo = parent[${JSON.stringify(thisFunctionsName)}].registry[editorId];\n\
-window.onload = function () {\n\
-  window.onload = null;\n\
-  setTimeout(function () {\n\
-    var iframe = document.createElement("IFRAME");\n\
-    iframe.name = "ace_inner";\n\
-    iframe.title = "pad";\n\
-    iframe.scrolling = "no";\n\
-    var outerdocbody = document.getElementById("outerdocbody");\n\
-    iframe.frameBorder = 0;\n\
-    iframe.allowTransparency = true; // for IE\n\
-    outerdocbody.insertBefore(iframe, outerdocbody.firstChild);\n\
-    iframe.ace_outerWin = window;\n\
-    readyFunc = function () {\n\
-      editorInfo.onEditorReady();\n\
-      readyFunc = null;\n\
-      editorInfo = null;\n\
-    };\n\
-    var doc = iframe.contentWindow.document;\n\
-    doc.open();\n\
-    var text = (${JSON.stringify(iframeHTML.join('\n'))});\n\
-    doc.write(text);\n\
-    doc.close();\n\
-  }, 0);\n\
-}`;
+    debugLog('Ace2Editor.init() waiting for require kernel load');
+    await eventFired(requireKernel, 'load');
+    debugLog('Ace2Editor.init() require kernel loaded');
+    const require = innerWindow.require;
+    require.setRootURI(absUrl('../javascripts/src'));
+    require.setLibraryURI(absUrl('../javascripts/lib'));
+    require.setGlobalKeyPath('require');
 
-      const outerHTML = [doctype, `<html class="inner-editor outerdoc ${clientVars.skinVariants}"><head>`];
+    // intentially moved before requiring client_plugins to save a 307
+    innerWindow.Ace2Inner = require('ep_etherpad-lite/static/js/ace2_inner');
+    innerWindow.plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
+    innerWindow.plugins.adoptPluginsFromAncestorsOf(innerWindow);
 
-      var includedCSS = [];
-      var $$INCLUDE_CSS = function (filename) { includedCSS.push(filename); };
-      $$INCLUDE_CSS('../static/css/iframe_editor.css');
-      $$INCLUDE_CSS(`../static/css/pad.css?v=${clientVars.randomVersionString}`);
+    innerWindow.$ = innerWindow.jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery;
 
-
-      var additionalCSS = _(hooks.callAll('aceEditorCSS')).map((path) => {
-        if (path.match(/\/\//)) { // Allow urls to external CSS - http(s):// and //some/path.css
-          return path;
-        }
-        return `../static/plugins/${path}`;
-      }
-      );
-      includedCSS = includedCSS.concat(additionalCSS);
-      $$INCLUDE_CSS(`../static/skins/${clientVars.skinName}/pad.css?v=${clientVars.randomVersionString}`);
-
-      pushStyleTagsFor(outerHTML, includedCSS);
-
-      // bizarrely, in FF2, a file with no "external" dependencies won't finish loading properly
-      // (throbs busy while typing)
-      const pluginNames = pluginUtils.clientPluginNames();
-      outerHTML.push(
-          '<style type="text/css" title="dynamicsyntax"></style>',
-          '<link rel="stylesheet" type="text/css" href="data:text/css,"/>',
-          scriptTag(outerScript),
-          '</head>',
-          '<body id="outerdocbody" class="outerdocbody ', pluginNames.join(' '), '">',
-          '<div id="sidediv" class="sidediv"><!-- --></div>',
-          '<div id="linemetricsdiv">x</div>',
-          '</body></html>');
-
-      const outerFrame = document.createElement('IFRAME');
-      outerFrame.name = 'ace_outer';
-      outerFrame.frameBorder = 0; // for IE
-      outerFrame.title = 'Ether';
-      info.frame = outerFrame;
-      document.getElementById(containerId).appendChild(outerFrame);
-
-      const editorDocument = outerFrame.contentWindow.document;
-
-      editorDocument.open();
-      editorDocument.write(outerHTML.join(''));
-      editorDocument.close();
-    })();
+    debugLog('Ace2Editor.init() waiting for plugins');
+    await new Promise((resolve, reject) => innerWindow.plugins.ensure(
+        (err) => err != null ? reject(err) : resolve()));
+    debugLog('Ace2Editor.init() waiting for Ace2Inner.init()');
+    await new Promise((resolve, reject) => innerWindow.Ace2Inner.init(
+        info, (err) => err != null ? reject(err) : resolve()));
+    debugLog('Ace2Editor.init() Ace2Inner.init() returned');
+    loaded = true;
+    doActionsPendingInit();
+    debugLog('Ace2Editor.init() done');
   };
-
-  return editor;
-}
+};
 
 exports.Ace2Editor = Ace2Editor;

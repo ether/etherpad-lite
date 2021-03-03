@@ -1,3 +1,4 @@
+'use strict';
 /**
  * This module provides all API functions
  */
@@ -18,8 +19,8 @@
  * limitations under the License.
  */
 
-const Changeset = require('ep_etherpad-lite/static/js/Changeset');
-const customError = require('../utils/customError');
+const Changeset = require('../../static/js/Changeset');
+const CustomError = require('../utils/customError');
 const padManager = require('./PadManager');
 const padMessageHandler = require('../handler/PadMessageHandler');
 const readOnlyManager = require('./ReadOnlyManager');
@@ -101,7 +102,7 @@ Example returns:
 }
 
 */
-exports.getAttributePool = async function (padID) {
+exports.getAttributePool = async (padID) => {
   const pad = await getPadSafe(padID, true);
   return {pool: pad.pool};
 };
@@ -119,7 +120,7 @@ Example returns:
 }
 
 */
-exports.getRevisionChangeset = async function (padID, rev) {
+exports.getRevisionChangeset = async (padID, rev) => {
   // try to parse the revision number
   if (rev !== undefined) {
     rev = checkValidRev(rev);
@@ -133,7 +134,7 @@ exports.getRevisionChangeset = async function (padID, rev) {
   if (rev !== undefined) {
     // check if this is a valid revision
     if (rev > head) {
-      throw new customError('rev is higher than the head revision of the pad', 'apierror');
+      throw new CustomError('rev is higher than the head revision of the pad', 'apierror');
     }
 
     // get the changeset for this revision
@@ -152,7 +153,7 @@ Example returns:
 {code: 0, message:"ok", data: {text:"Welcome Text"}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getText = async function (padID, rev) {
+exports.getText = async (padID, rev) => {
   // try to parse the revision number
   if (rev !== undefined) {
     rev = checkValidRev(rev);
@@ -166,7 +167,7 @@ exports.getText = async function (padID, rev) {
   if (rev !== undefined) {
     // check if this is a valid revision
     if (rev > head) {
-      throw new customError('rev is higher than the head revision of the pad', 'apierror');
+      throw new CustomError('rev is higher than the head revision of the pad', 'apierror');
     }
 
     // get the text of this revision
@@ -188,10 +189,10 @@ Example returns:
 {code: 1, message:"padID does not exist", data: null}
 {code: 1, message:"text too long", data: null}
 */
-exports.setText = async function (padID, text) {
+exports.setText = async (padID, text) => {
   // text is required
   if (typeof text !== 'string') {
-    throw new customError('text is not a string', 'apierror');
+    throw new CustomError('text is not a string', 'apierror');
   }
 
   // get the pad
@@ -212,10 +213,10 @@ Example returns:
 {code: 1, message:"padID does not exist", data: null}
 {code: 1, message:"text too long", data: null}
 */
-exports.appendText = async function (padID, text) {
+exports.appendText = async (padID, text) => {
   // text is required
   if (typeof text !== 'string') {
-    throw new customError('text is not a string', 'apierror');
+    throw new CustomError('text is not a string', 'apierror');
   }
 
   const pad = await getPadSafe(padID, true);
@@ -233,7 +234,7 @@ Example returns:
 {code: 0, message:"ok", data: {text:"Welcome <strong>Text</strong>"}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getHTML = async function (padID, rev) {
+exports.getHTML = async (padID, rev) => {
   if (rev !== undefined) {
     rev = checkValidRev(rev);
   }
@@ -245,7 +246,7 @@ exports.getHTML = async function (padID, rev) {
     // check if this is a valid revision
     const head = pad.getHeadRevisionNumber();
     if (rev > head) {
-      throw new customError('rev is higher than the head revision of the pad', 'apierror');
+      throw new CustomError('rev is higher than the head revision of the pad', 'apierror');
     }
   }
 
@@ -265,10 +266,10 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.setHTML = async function (padID, html) {
+exports.setHTML = async (padID, html) => {
   // html string is required
   if (typeof html !== 'string') {
-    throw new customError('html is not a string', 'apierror');
+    throw new CustomError('html is not a string', 'apierror');
   }
 
   // get the pad
@@ -278,7 +279,7 @@ exports.setHTML = async function (padID, html) {
   try {
     await importHtml.setPadHTML(pad, cleanText(html));
   } catch (e) {
-    throw new customError('HTML is malformed', 'apierror');
+    throw new CustomError('HTML is malformed', 'apierror');
   }
 
   // update the clients on the pad
@@ -294,23 +295,25 @@ getChatHistory(padId, start, end), returns a part of or the whole chat-history o
 
 Example returns:
 
-{"code":0,"message":"ok","data":{"messages":[{"text":"foo","authorID":"a.foo","time":1359199533759,"userName":"test"},
-                                             {"text":"bar","authorID":"a.foo","time":1359199534622,"userName":"test"}]}}
+{"code":0,"message":"ok","data":{"messages":[
+  {"text":"foo","authorID":"a.foo","time":1359199533759,"userName":"test"},
+  {"text":"bar","authorID":"a.foo","time":1359199534622,"userName":"test"}
+]}}
 
 {code: 1, message:"start is higher or equal to the current chatHead", data: null}
 
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getChatHistory = async function (padID, start, end) {
+exports.getChatHistory = async (padID, start, end) => {
   if (start && end) {
     if (start < 0) {
-      throw new customError('start is below zero', 'apierror');
+      throw new CustomError('start is below zero', 'apierror');
     }
     if (end < 0) {
-      throw new customError('end is below zero', 'apierror');
+      throw new CustomError('end is below zero', 'apierror');
     }
     if (start > end) {
-      throw new customError('start is higher than end', 'apierror');
+      throw new CustomError('start is higher than end', 'apierror');
     }
   }
 
@@ -320,16 +323,16 @@ exports.getChatHistory = async function (padID, start, end) {
   const chatHead = pad.chatHead;
 
   // fall back to getting the whole chat-history if a parameter is missing
-  if (!start || !end) {
+  if (!start || !end) {
     start = 0;
     end = pad.chatHead;
   }
 
   if (start > chatHead) {
-    throw new customError('start is higher than the current chatHead', 'apierror');
+    throw new CustomError('start is higher than the current chatHead', 'apierror');
   }
   if (end > chatHead) {
-    throw new customError('end is higher than the current chatHead', 'apierror');
+    throw new CustomError('end is higher than the current chatHead', 'apierror');
   }
 
   // the the whole message-log and return it to the client
@@ -339,21 +342,22 @@ exports.getChatHistory = async function (padID, start, end) {
 };
 
 /**
-appendChatMessage(padID, text, authorID, time), creates a chat message for the pad id, time is a timestamp
+appendChatMessage(padID, text, authorID, time), creates a chat message for the pad id,
+time is a timestamp
 
 Example returns:
 
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.appendChatMessage = async function (padID, text, authorID, time) {
+exports.appendChatMessage = async (padID, text, authorID, time) => {
   // text is required
   if (typeof text !== 'string') {
-    throw new customError('text is not a string', 'apierror');
+    throw new CustomError('text is not a string', 'apierror');
   }
 
   // if time is not an integer value set time to current timestamp
-  if (time === undefined || !is_int(time)) {
+  if (time === undefined || !isInt(time)) {
     time = Date.now();
   }
 
@@ -375,7 +379,7 @@ Example returns:
 {code: 0, message:"ok", data: {revisions: 56}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getRevisionsCount = async function (padID) {
+exports.getRevisionsCount = async (padID) => {
   // get the pad
   const pad = await getPadSafe(padID, true);
   return {revisions: pad.getHeadRevisionNumber()};
@@ -389,7 +393,7 @@ Example returns:
 {code: 0, message:"ok", data: {savedRevisions: 42}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getSavedRevisionsCount = async function (padID) {
+exports.getSavedRevisionsCount = async (padID) => {
   // get the pad
   const pad = await getPadSafe(padID, true);
   return {savedRevisions: pad.getSavedRevisionsNumber()};
@@ -403,7 +407,7 @@ Example returns:
 {code: 0, message:"ok", data: {savedRevisions: [2, 42, 1337]}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.listSavedRevisions = async function (padID) {
+exports.listSavedRevisions = async (padID) => {
   // get the pad
   const pad = await getPadSafe(padID, true);
   return {savedRevisions: pad.getSavedRevisionsList()};
@@ -417,7 +421,7 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.saveRevision = async function (padID, rev) {
+exports.saveRevision = async (padID, rev) => {
   // check if rev is a number
   if (rev !== undefined) {
     rev = checkValidRev(rev);
@@ -430,7 +434,7 @@ exports.saveRevision = async function (padID, rev) {
   // the client asked for a special revision
   if (rev !== undefined) {
     if (rev > head) {
-      throw new customError('rev is higher than the head revision of the pad', 'apierror');
+      throw new CustomError('rev is higher than the head revision of the pad', 'apierror');
     }
   } else {
     rev = pad.getHeadRevisionNumber();
@@ -448,7 +452,7 @@ Example returns:
 {code: 0, message:"ok", data: {lastEdited: 1340815946602}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getLastEdited = async function (padID) {
+exports.getLastEdited = async (padID) => {
   // get the pad
   const pad = await getPadSafe(padID, true);
   const lastEdited = await pad.getLastEdit();
@@ -463,16 +467,16 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"pad does already exist", data: null}
 */
-exports.createPad = async function (padID, text) {
+exports.createPad = async (padID, text) => {
   if (padID) {
     // ensure there is no $ in the padID
     if (padID.indexOf('$') !== -1) {
-      throw new customError("createPad can't create group pads", 'apierror');
+      throw new CustomError("createPad can't create group pads", 'apierror');
     }
 
     // check for url special characters
     if (padID.match(/(\/|\?|&|#)/)) {
-      throw new customError('malformed padID: Remove special characters', 'apierror');
+      throw new CustomError('malformed padID: Remove special characters', 'apierror');
     }
   }
 
@@ -488,7 +492,7 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.deletePad = async function (padID) {
+exports.deletePad = async (padID) => {
   const pad = await getPadSafe(padID, true);
   await pad.remove();
 };
@@ -501,10 +505,10 @@ exports.deletePad = async function (padID) {
  {code:0, message:"ok", data:null}
  {code: 1, message:"padID does not exist", data: null}
  */
-exports.restoreRevision = async function (padID, rev) {
+exports.restoreRevision = async (padID, rev) => {
   // check if rev is a number
   if (rev === undefined) {
-    throw new customError('rev is not defined', 'apierror');
+    throw new CustomError('rev is not defined', 'apierror');
   }
   rev = checkValidRev(rev);
 
@@ -513,7 +517,7 @@ exports.restoreRevision = async function (padID, rev) {
 
   // check if this is a valid revision
   if (rev > pad.getHeadRevisionNumber()) {
-    throw new customError('rev is higher than the head revision of the pad', 'apierror');
+    throw new CustomError('rev is higher than the head revision of the pad', 'apierror');
   }
 
   const atext = await pad.getInternalRevisionAText(rev);
@@ -521,7 +525,7 @@ exports.restoreRevision = async function (padID, rev) {
   const oldText = pad.text();
   atext.text += '\n';
 
-  function eachAttribRun(attribs, func) {
+  const eachAttribRun = (attribs, func) => {
     const attribsIter = Changeset.opIterator(attribs);
     let textIndex = 0;
     const newTextStart = 0;
@@ -534,7 +538,7 @@ exports.restoreRevision = async function (padID, rev) {
       }
       textIndex = nextIndex;
     }
-  }
+  };
 
   // create a new changeset with a helper builder object
   const builder = Changeset.builder(oldText.length);
@@ -569,7 +573,7 @@ Example returns:
 {code: 0, message:"ok", data: {padID: destinationID}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.copyPad = async function (sourceID, destinationID, force) {
+exports.copyPad = async (sourceID, destinationID, force) => {
   const pad = await getPadSafe(sourceID, true);
   await pad.copy(destinationID, force);
 };
@@ -583,7 +587,7 @@ Example returns:
 {code: 0, message:"ok", data: {padID: destinationID}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.copyPadWithoutHistory = async function (sourceID, destinationID, force) {
+exports.copyPadWithoutHistory = async (sourceID, destinationID, force) => {
   const pad = await getPadSafe(sourceID, true);
   await pad.copyPadWithoutHistory(destinationID, force);
 };
@@ -597,7 +601,7 @@ Example returns:
 {code: 0, message:"ok", data: {padID: destinationID}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.movePad = async function (sourceID, destinationID, force) {
+exports.movePad = async (sourceID, destinationID, force) => {
   const pad = await getPadSafe(sourceID, true);
   await pad.copy(destinationID, force);
   await pad.remove();
@@ -611,7 +615,7 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getReadOnlyID = async function (padID) {
+exports.getReadOnlyID = async (padID) => {
   // we don't need the pad object, but this function does all the security stuff for us
   await getPadSafe(padID, true);
 
@@ -629,11 +633,11 @@ Example returns:
 {code: 0, message:"ok", data: {padID: padID}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getPadID = async function (roID) {
+exports.getPadID = async (roID) => {
   // get the PadId
   const padID = await readOnlyManager.getPadId(roID);
-  if (padID === null) {
-    throw new customError('padID does not exist', 'apierror');
+  if (padID == null) {
+    throw new CustomError('padID does not exist', 'apierror');
   }
 
   return {padID};
@@ -647,7 +651,7 @@ Example returns:
 {code: 0, message:"ok", data: null}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.setPublicStatus = async function (padID, publicStatus) {
+exports.setPublicStatus = async (padID, publicStatus) => {
   // ensure this is a group pad
   checkGroupPad(padID, 'publicStatus');
 
@@ -670,7 +674,7 @@ Example returns:
 {code: 0, message:"ok", data: {publicStatus: true}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getPublicStatus = async function (padID) {
+exports.getPublicStatus = async (padID) => {
   // ensure this is a group pad
   checkGroupPad(padID, 'publicStatus');
 
@@ -687,7 +691,7 @@ Example returns:
 {code: 0, message:"ok", data: {authorIDs : ["a.s8oes9dhwrvt0zif", "a.akf8finncvomlqva"]}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.listAuthorsOfPad = async function (padID) {
+exports.listAuthorsOfPad = async (padID) => {
   // get the pad
   const pad = await getPadSafe(padID, true);
   const authorIDs = pad.getAllAuthors();
@@ -717,8 +721,8 @@ Example returns:
 {code: 1, message:"padID does not exist"}
 */
 
-exports.sendClientsMessage = async function (padID, msg) {
-  const pad = await getPadSafe(padID, true);
+exports.sendClientsMessage = async (padID, msg) => {
+  await getPadSafe(padID, true); // Throw if the padID is invalid or if the pad does not exist.
   padMessageHandler.handleCustomMessage(padID, msg);
 };
 
@@ -730,7 +734,7 @@ Example returns:
 {"code":0,"message":"ok","data":null}
 {"code":4,"message":"no or wrong API Key","data":null}
 */
-exports.checkToken = async function () {
+exports.checkToken = async () => {
 };
 
 /**
@@ -741,7 +745,7 @@ Example returns:
 {code: 0, message:"ok", data: {chatHead: 42}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getChatHead = async function (padID) {
+exports.getChatHead = async (padID) => {
   // get the pad
   const pad = await getPadSafe(padID, true);
   return {chatHead: pad.chatHead};
@@ -751,11 +755,21 @@ exports.getChatHead = async function (padID) {
 createDiffHTML(padID, startRev, endRev) returns an object of diffs from 2 points in a pad
 
 Example returns:
-
-{"code":0,"message":"ok","data":{"html":"<style>\n.authora_HKIv23mEbachFYfH {background-color: #a979d9}\n.authora_n4gEeMLsv1GivNeh {background-color: #a9b5d9}\n.removed {text-decoration: line-through; -ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)'; filter: alpha(opacity=80); opacity: 0.8; }\n</style>Welcome to Etherpad!<br><br>This pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!<br><br>Get involved with Etherpad at <a href=\"http&#x3a;&#x2F;&#x2F;etherpad&#x2e;org\">http:&#x2F;&#x2F;etherpad.org</a><br><span class=\"authora_HKIv23mEbachFYfH\">aw</span><br><br>","authors":["a.HKIv23mEbachFYfH",""]}}
+{
+  "code": 0,
+  "message": "ok",
+  "data": {
+    "html": "...",
+    "authors": [
+      "a.HKIv23mEbachFYfH",
+      ""
+    ]
+  }
+}
 {"code":4,"message":"no or wrong API Key","data":null}
+
 */
-exports.createDiffHTML = async function (padID, startRev, endRev) {
+exports.createDiffHTML = async (padID, startRev, endRev) => {
   // check if startRev is a number
   if (startRev !== undefined) {
     startRev = checkValidRev(startRev);
@@ -768,8 +782,9 @@ exports.createDiffHTML = async function (padID, startRev, endRev) {
 
   // get the pad
   const pad = await getPadSafe(padID, true);
+  let padDiff;
   try {
-    var padDiff = new PadDiff(pad, startRev, endRev);
+    padDiff = new PadDiff(pad, startRev, endRev);
   } catch (e) {
     throw {stop: e.message};
   }
@@ -793,7 +808,7 @@ exports.createDiffHTML = async function (padID, startRev, endRev) {
  {"code":4,"message":"no or wrong API Key","data":null}
  */
 
-exports.getStats = async function () {
+exports.getStats = async () => {
   const sessionInfos = padMessageHandler.sessioninfos;
 
   const sessionKeys = Object.keys(sessionInfos);
@@ -813,20 +828,18 @@ exports.getStats = async function () {
  **************************** */
 
 // checks if a number is an int
-function is_int(value) {
-  return (parseFloat(value) == parseInt(value, 10)) && !isNaN(value);
-}
+const isInt = (value) => (parseFloat(value) === parseInt(value, 10)) && !isNaN(value);
 
 // gets a pad safe
 async function getPadSafe(padID, shouldExist, text) {
   // check if padID is a string
   if (typeof padID !== 'string') {
-    throw new customError('padID is not a string', 'apierror');
+    throw new CustomError('padID is not a string', 'apierror');
   }
 
   // check if the padID maches the requirements
   if (!padManager.isValidPadId(padID)) {
-    throw new customError('padID did not match requirements', 'apierror');
+    throw new CustomError('padID did not match requirements', 'apierror');
   }
 
   // check if the pad exists
@@ -834,12 +847,12 @@ async function getPadSafe(padID, shouldExist, text) {
 
   if (!exists && shouldExist) {
     // does not exist, but should
-    throw new customError('padID does not exist', 'apierror');
+    throw new CustomError('padID does not exist', 'apierror');
   }
 
   if (exists && !shouldExist) {
     // does exist, but shouldn't
-    throw new customError('padID does already exist', 'apierror');
+    throw new CustomError('padID does already exist', 'apierror');
   }
 
   // pad exists, let's get it
@@ -848,33 +861,34 @@ async function getPadSafe(padID, shouldExist, text) {
 
 // checks if a rev is a legal number
 // pre-condition is that `rev` is not undefined
-function checkValidRev(rev) {
+const checkValidRev = (rev) => {
   if (typeof rev !== 'number') {
     rev = parseInt(rev, 10);
   }
 
   // check if rev is a number
   if (isNaN(rev)) {
-    throw new customError('rev is not a number', 'apierror');
+    throw new CustomError('rev is not a number', 'apierror');
   }
 
   // ensure this is not a negative number
   if (rev < 0) {
-    throw new customError('rev is not a negative number', 'apierror');
+    throw new CustomError('rev is not a negative number', 'apierror');
   }
 
   // ensure this is not a float value
-  if (!is_int(rev)) {
-    throw new customError('rev is a float value', 'apierror');
+  if (!isInt(rev)) {
+    throw new CustomError('rev is a float value', 'apierror');
   }
 
   return rev;
-}
+};
 
 // checks if a padID is part of a group
-function checkGroupPad(padID, field) {
+const checkGroupPad = (padID, field) => {
   // ensure this is a group pad
   if (padID && padID.indexOf('$') === -1) {
-    throw new customError(`You can only get/set the ${field} of pads that belong to a group`, 'apierror');
+    throw new CustomError(
+        `You can only get/set the ${field} of pads that belong to a group`, 'apierror');
   }
-}
+};

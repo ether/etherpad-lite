@@ -29,6 +29,30 @@ The variable value has to be a space separated, double quoted list of plugin nam
 
 Some plugins will need personalized settings. Just refer to the previous section, and include them in your custom `settings.json.docker`.
 
+### Rebuilding including export functionality for DOC/PDF/ODT
+
+If you want to be able to export your pads to DOC/PDF/ODT files, you can install
+either Abiword or Libreoffice via setting a build variable.
+
+#### Via Abiword
+
+For installing Abiword, set the `INSTALL_ABIWORD` build variable to any value.
+
+Also, you will need to configure the path to the abiword executable
+via setting the `abiword` property in `<BASEDIR>/settings.json.docker` to 
+`/usr/bin/abiword` or via setting the environment variable  `ABIWORD` to 
+`/usr/bin/abiword`.
+
+#### Via Libreoffice
+
+For installing Libreoffice instead, set the `INSTALL_SOFFICE` build variable
+to any value.
+
+Also, you will need to configure the path to the libreoffice executable
+via setting the `soffice` property in `<BASEDIR>/settings.json.docker` to 
+`/usr/bin/soffice` or via setting the environment variable  `SOFFICE` to 
+`/usr/bin/soffice`.
+
 ### Examples
 
 Build a Docker image from the currently checked-out code:
@@ -168,6 +192,8 @@ For the editor container, you can also make it full width by adding `full-width-
 | `IMPORT_MAX_FILE_SIZE`            | maximum allowed file size when importing a pad, in bytes.                                                                                                                                              | `52428800` (50 MB) |
 | `IMPORT_EXPORT_MAX_REQ_PER_IP`    | maximum number of import/export calls per IP.                                                                                                                                                          | `10`               |
 | `IMPORT_EXPORT_RATE_LIMIT_WINDOW` | the call rate for import/export requests will be estimated in this time window (in milliseconds)                                                                                                       | `90000`            |
+| `COMMIT_RATE_LIMIT_DURATION`      | duration of the rate limit window for commits by individual users/IPs (in seconds)                                                                                                                     | `1`                |
+| `COMMIT_RATE_LIMIT_POINTS`        | maximum number of changes per IP to allow during the rate limit window                                                                                                                                 | `10`               |
 | `SUPPRESS_ERRORS_IN_PAD_TEXT`     | Should we suppress errors from being visible in the default Pad Text?                                                                                                                                  | `false`            |
 | `REQUIRE_SESSION`                 | If this option is enabled, a user must have a session to access pads. This effectively allows only group pads to be accessed.                                                                          | `false`            |
 | `EDIT_ONLY`                       | Users may edit pads but not create new ones. Pad creation is only via the API. This applies both to group pads and regular pads.                                                                       | `false`            |

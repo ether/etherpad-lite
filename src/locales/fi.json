@@ -18,6 +18,7 @@
 			"VezonThunder"
 		]
 	},
+	"admin_plugins.available": "Saatavilla olevat liitännäiset",
 	"admin_plugins.available_install.value": "Lataa",
 	"admin_plugins.available_search.placeholder": "Etsi asennettavia laajennuksia",
 	"admin_plugins.description": "Kuvaus",
@@ -92,7 +93,7 @@
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
 	"pad.importExport.abiword.innerHTML": "Tuonti on tuettu vain HTML- ja raakatekstitiedostoista. Monipuoliset tuontiominaisuudet ovat käytettävissä <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">asentamalla AbiWordin tai LibreOfficen</a>.",
 	"pad.modals.connected": "Yhdistetty.",
-	"pad.modals.reconnecting": "Muodostetaan yhteyttä muistioon uudelleen...",
+	"pad.modals.reconnecting": "Muodostetaan yhteyttä muistioon uudelleen…",
 	"pad.modals.forcereconnect": "Pakota yhdistämään uudelleen",
 	"pad.modals.reconnecttimer": "Yritetään yhdistää uudelleen",
 	"pad.modals.cancel": "Peruuta",

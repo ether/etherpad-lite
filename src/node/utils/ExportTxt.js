@@ -1,3 +1,4 @@
+'use strict';
 /**
  * TXT export
  */
@@ -18,15 +19,15 @@
  * limitations under the License.
  */
 
-const Changeset = require('ep_etherpad-lite/static/js/Changeset');
+const Changeset = require('../../static/js/Changeset');
 const padManager = require('../db/PadManager');
 const _analyzeLine = require('./ExportHelper')._analyzeLine;
 
 // This is slightly different than the HTML method as it passes the output to getTXTFromAText
-const getPadTXT = async function (pad, revNum) {
+const getPadTXT = async (pad, revNum) => {
   let atext = pad.atext;
 
-  if (revNum != undefined) {
+  if (revNum !== undefined) {
     // fetch revision atext
     atext = await pad.getInternalRevisionAText(revNum);
   }
@@ -37,7 +38,7 @@ const getPadTXT = async function (pad, revNum) {
 
 // This is different than the functionality provided in ExportHtml as it provides formatting
 // functionality that is designed specifically for TXT exports
-function getTXTFromAtext(pad, atext, authorColors) {
+const getTXTFromAtext = (pad, atext, authorColors) => {
   const apool = pad.apool();
   const textLines = atext.text.slice(0, -1).split('\n');
   const attribLines = Changeset.splitAttributionLines(atext.attribs, atext.text);
@@ -53,7 +54,7 @@ function getTXTFromAtext(pad, atext, authorColors) {
     }
   });
 
-  function getLineTXT(text, attribs) {
+  const getLineTXT = (text, attribs) => {
     const propVals = [false, false, false];
     const ENTER = 1;
     const STAY = 2;
@@ -69,7 +70,7 @@ function getTXTFromAtext(pad, atext, authorColors) {
 
     let idx = 0;
 
-    function processNextChars(numChars) {
+    const processNextChars = (numChars) => {
       if (numChars <= 0) {
         return;
       }
@@ -79,7 +80,7 @@ function getTXTFromAtext(pad, atext, authorColors) {
 
       while (iter.hasNext()) {
         const o = iter.next();
-        var propChanged = false;
+        let propChanged = false;
 
         Changeset.eachAttribNumber(o.attribs, (a) => {
           if (a in anumMap) {
@@ -94,7 +95,7 @@ function getTXTFromAtext(pad, atext, authorColors) {
           }
         });
 
-        for (var i = 0; i < propVals.length; i++) {
+        for (let i = 0; i < propVals.length; i++) {
           if (propVals[i] === true) {
             propVals[i] = LEAVE;
             propChanged = true;
@@ -110,7 +111,7 @@ function getTXTFromAtext(pad, atext, authorColors) {
           // leaving bold (e.g.) also leaves italics, etc.
           let left = false;
 
-          for (var i = 0; i < propVals.length; i++) {
+          for (let i = 0; i < propVals.length; i++) {
             const v = propVals[i];
 
             if (!left) {
@@ -123,9 +124,9 @@ function getTXTFromAtext(pad, atext, authorColors) {
             }
           }
 
-          var tags2close = [];
+          const tags2close = [];
 
-          for (var i = propVals.length - 1; i >= 0; i--) {
+          for (let i = propVals.length - 1; i >= 0; i--) {
             if (propVals[i] === LEAVE) {
               // emitCloseTag(i);
               tags2close.push(i);
@@ -136,7 +137,7 @@ function getTXTFromAtext(pad, atext, authorColors) {
             }
           }
 
-          for (var i = 0; i < propVals.length; i++) {
+          for (let i = 0; i < propVals.length; i++) {
             if (propVals[i] === ENTER || propVals[i] === STAY) {
               propVals[i] = true;
             }
@@ -163,18 +164,20 @@ function getTXTFromAtext(pad, atext, authorColors) {
         assem.append(s);
       } // end iteration over spans in line
 
-      var tags2close = [];
-      for (var i = propVals.length - 1; i >= 0; i--) {
+      const tags2close = [];
+      for (let i = propVals.length - 1; i >= 0; i--) {
         if (propVals[i]) {
           tags2close.push(i);
           propVals[i] = false;
         }
       }
-    } // end processNextChars
+    };
+    // end processNextChars
 
     processNextChars(text.length - idx);
     return (assem.toString());
-  } // end getLineHTML
+  };
+  // end getLineHTML
 
   const pieces = [css];
 
@@ -193,13 +196,13 @@ function getTXTFromAtext(pad, atext, authorColors) {
     const line = _analyzeLine(textLines[i], attribLines[i], apool);
     let lineContent = getLineTXT(line.text, line.aline);
 
-    if (line.listTypeName == 'bullet') {
+    if (line.listTypeName === 'bullet') {
       lineContent = `* ${lineContent}`; // add a bullet
     }
 
     if (line.listTypeName !== 'number') {
       // We're no longer in an OL so we can reset counting
-      for (const key in listNumbers) {
+      for (const key of Object.keys(listNumbers)) {
         delete listNumbers[key];
       }
     }
@@ -212,7 +215,7 @@ function getTXTFromAtext(pad, atext, authorColors) {
         }
       }
 
-      if (line.listTypeName == 'number') {
+      if (line.listTypeName === 'number') {
         /*
         * listLevel == amount of indentation
         * listNumber(s) == item number
@@ -234,6 +237,8 @@ function getTXTFromAtext(pad, atext, authorColors) {
         if (line.listLevel > 1) {
           let x = 1;
           while (x <= line.listLevel - 1) {
+            // if it's undefined to avoid undefined.undefined.1 for 0.0.1
+            if (!listNumbers[x]) listNumbers[x] = 0;
             pieces.push(`${listNumbers[x]}.`);
             x++;
           }
@@ -249,11 +254,11 @@ function getTXTFromAtext(pad, atext, authorColors) {
   }
 
   return pieces.join('');
-}
+};
 
 exports.getTXTFromAtext = getTXTFromAtext;
 
-exports.getPadTXTDocument = async function (padId, revNum) {
+exports.getPadTXTDocument = async (padId, revNum) => {
   const pad = await padManager.getPad(padId);
   return getPadTXT(pad, revNum);
 };

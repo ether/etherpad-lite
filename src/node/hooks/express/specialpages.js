@@ -1,14 +1,16 @@
+'use strict';
+
 const path = require('path');
-const eejs = require('ep_etherpad-lite/node/eejs');
-const toolbar = require('ep_etherpad-lite/node/utils/toolbar');
-const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+const eejs = require('../../eejs');
+const toolbar = require('../../utils/toolbar');
+const hooks = require('../../../static/js/pluginfw/hooks');
 const settings = require('../../utils/Settings');
 const webaccess = require('./webaccess');
 
-exports.expressCreateServer = function (hook_name, args, cb) {
+exports.expressCreateServer = (hookName, args, cb) => {
   // expose current stats
   args.app.get('/stats', (req, res) => {
-    res.json(require('ep_etherpad-lite/node/stats').toJSON());
+    res.json(require('../../stats').toJSON());
   });
 
   // serve index.html under /
@@ -24,7 +26,14 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   // serve robots.txt
   args.app.get('/robots.txt', (req, res) => {
-    let filePath = path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'robots.txt');
+    let filePath = path.join(
+        settings.root,
+        'src',
+        'static',
+        'skins',
+        settings.skinName,
+        'robots.txt'
+    );
     res.sendFile(filePath, (err) => {
       // there is no custom robots.txt, send the default robots.txt which dissallows all
       if (err) {
@@ -66,8 +75,15 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   // serve favicon.ico from all path levels except as a pad name
   args.app.get(/\/favicon.ico$/, (req, res) => {
-    let filePath = path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'favicon.ico');
-
+    let filePath = path.join(
+        settings.root,
+        'src',
+        'static',
+        'skins',
+        settings.skinName,
+        'favicon.ico'
+    );
+    res.setHeader('Cache-Control', `public, max-age=${settings.maxAge}`);
     res.sendFile(filePath, (err) => {
       // there is no custom favicon, send the default favicon
       if (err) {

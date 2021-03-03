@@ -84,7 +84,8 @@
       "name": "socketio",
       "hooks": {
         "expressCloseServer": "ep_etherpad-lite/node/hooks/express/socketio",
-        "expressCreateServer": "ep_etherpad-lite/node/hooks/express/socketio"
+        "expressCreateServer": "ep_etherpad-lite/node/hooks/express/socketio",
+        "socketio": "ep_etherpad-lite/node/handler/PadMessageHandler"
       }
     },
     {

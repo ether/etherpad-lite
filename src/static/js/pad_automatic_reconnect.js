@@ -113,7 +113,7 @@ const reconnectionTries = {
 
   nextTry() {
     // double the time to try to reconnect on every time reconnection fails
-    const nextCounterFactor = Math.pow(2, this.counter);
+    const nextCounterFactor = 2 ** this.counter;
     this.counter++;
 
     return nextCounterFactor;

@@ -1,3 +1,5 @@
+// 'use strict';
+// Uncommenting above breaks tests.
 /**
  * 2014 John McLear (Etherpad Foundation / McLear Ltd)
  *
@@ -14,12 +16,17 @@
  * limitations under the License.
  */
 
-const log4js = require('log4js');
 const db = require('../db/DB');
-const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+const hooks = require('../../static/js/pluginfw/hooks');
+const supportedElems = require('../../static/js/contentcollector').supportedElems;
 
-exports.setPadRaw = function (padId, records) {
-  records = JSON.parse(records);
+exports.setPadRaw = (padId, r) => {
+  const records = JSON.parse(r);
+
+  // get supported block Elements from plugins, we will use this later.
+  hooks.callAll('ccRegisterBlockElements').forEach((element) => {
+    supportedElems.push(element);
+  });
 
   Object.keys(records).forEach(async (key) => {
     let value = records[key];
@@ -52,6 +59,17 @@ exports.setPadRaw = function (padId, records) {
     } else {
       // Not author data, probably pad data
       // we can split it to look to see if it's pad data
+
+      // is this an attribute we support or not?  If not, tell the admin
+      if (value.pool) {
+        for (const attrib of Object.keys(value.pool.numToAttrib)) {
+          const attribName = value.pool.numToAttrib[attrib][0];
+          if (supportedElems.indexOf(attribName) === -1) {
+            console.warn('Plugin missing: ' +
+                `You might want to install a plugin to support this node name: ${attribName}`);
+          }
+        }
+      }
       const oldPadId = key.split(':');
 
       // we know it's pad data

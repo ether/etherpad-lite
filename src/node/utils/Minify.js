@@ -21,23 +21,19 @@
  * limitations under the License.
  */
 
-const ERR = require('async-stacktrace');
+const assert = require('assert').strict;
 const settings = require('./Settings');
-const async = require('async');
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 const plugins = require('../../static/js/pluginfw/plugin_defs');
 const RequireKernel = require('etherpad-require-kernel');
-const urlutil = require('url');
 const mime = require('mime-types');
 const Threads = require('threads');
 const log4js = require('log4js');
 
 const logger = log4js.getLogger('Minify');
 
-const ROOT_DIR = path.normalize(`${__dirname}/../../static/`);
-const TAR_PATH = path.join(__dirname, 'tar.json');
-const tar = JSON.parse(fs.readFileSync(TAR_PATH, 'utf8'));
+const ROOT_DIR = path.join(settings.root, 'src/static/');
 
 const threadsPool = new Threads.Pool(() => Threads.spawn(new Threads.Worker('./MinifyWorker')), 2);
 
@@ -50,36 +46,16 @@ const LIBRARY_WHITELIST = [
   'unorm',
 ];
 
-// Rewrite tar to include modules with no extensions and proper rooted paths.
-const LIBRARY_PREFIX = 'ep_etherpad-lite/static/js';
-exports.tar = {};
-const prefixLocalLibraryPath = (path) => {
-  if (path.charAt(0) === '$') {
-    return path.slice(1);
-  } else {
-    return `${LIBRARY_PREFIX}/${path}`;
-  }
-};
-for (const [key, relativeFiles] of Object.entries(tar)) {
-  const files = relativeFiles.map(prefixLocalLibraryPath);
-  exports.tar[prefixLocalLibraryPath(key)] = files
-      .concat(files.map((p) => p.replace(/\.js$/, '')))
-      .concat(files.map((p) => `${p.replace(/\.js$/, '')}/index.js`));
-}
-
 // What follows is a terrible hack to avoid loop-back within the server.
 // TODO: Serve files from another service, or directly from the file system.
-const requestURI = (url, method, headers, callback) => {
-  const parsedURL = urlutil.parse(url);
-
+const requestURI = async (url, method, headers) => await new Promise((resolve, reject) => {
+  const parsedUrl = new URL(url);
   let status = 500;
-  var headers = {};
   const content = [];
-
   const mockRequest = {
     url,
     method,
-    params: {filename: parsedURL.path.replace(/^\/static\//, '')},
+    params: {filename: (parsedUrl.pathname + parsedUrl.search).replace(/^\/static\//, '')},
     headers,
   };
   const mockResponse = {
@@ -102,34 +78,58 @@ const requestURI = (url, method, headers, callback) => {
     },
     end: (_content) => {
       _content && content.push(_content);
-      callback(status, headers, content.join(''));
+      resolve([status, headers, content.join('')]);
     },
   };
-
-  minify(mockRequest, mockResponse);
-};
+  minify(mockRequest, mockResponse).catch(reject);
+});
 
 const requestURIs = (locations, method, headers, callback) => {
-  let pendingRequests = locations.length;
-  const responses = [];
-
-  const completed = () => {
+  Promise.all(locations.map((loc) => requestURI(loc, method, headers))).then((responses) => {
     const statuss = responses.map((x) => x[0]);
     const headerss = responses.map((x) => x[1]);
     const contentss = responses.map((x) => x[2]);
     callback(statuss, headerss, contentss);
-  };
+  });
+};
 
-  const respondFor = (i) => (status, headers, content) => {
-    responses[i] = [status, headers, content];
-    if (--pendingRequests === 0) {
-      completed();
-    }
-  };
+const sanitizePathname = (p) => {
+  // Replace all backslashes with forward slashes to support Windows. This MUST be done BEFORE path
+  // normalization, otherwise an attacker will be able to read arbitrary files anywhere on the
+  // filesystem. See https://nvd.nist.gov/vuln/detail/CVE-2015-3297. Node.js treats both the
+  // backlash and the forward slash characters as pathname component separators on Windows so this
+  // does not change the meaning of the pathname.
+  p = p.replace(/\\/g, '/');
+  // The Node.js documentation says that path.join() normalizes, and the documentation for
+  // path.normalize() says that it resolves '..' and '.' components. The word "resolve" implies that
+  // it examines the filesystem to resolve symbolic links, so 'a/../b' might not be the same thing
+  // as 'b'. Most path normalization functions from other libraries (e.g. Python's
+  // os.path.normpath()) clearly state that they do not examine the filesystem -- they are simple
+  // string manipulations. Node.js's path.normalize() probably also does a simple string
+  // manipulation, but if not it must be given a real pathname. Join with ROOT_DIR here just in
+  // case. ROOT_DIR will be removed later.
+  p = path.join(ROOT_DIR, p);
+  // Prevent attempts to read outside of ROOT_DIR via extra '..' components. ROOT_DIR is assumed to
+  // be normalized.
+  assert(ROOT_DIR.endsWith(path.sep));
+  if (!p.startsWith(ROOT_DIR)) throw new Error(`attempt to read outside ROOT_DIR (${ROOT_DIR})`);
+  // Convert back to a relative pathname.
+  p = p.slice(ROOT_DIR.length);
+  // On Windows, path.normalize replaces forward slashes with backslashes. Convert back to forward
+  // slashes. THIS IS DANGEROUS UNLESS BACKSLASHES ARE REPLACED WITH FORWARD SLASHES BEFORE PATH
+  // NORMALIZATION, otherwise on POSIXish systems '..\\' in the input pathname would not be
+  // normalized away before being converted to '../'.
+  p = p.replace(/\\/g, '/');
+  return p;
+};
 
-  for (let i = 0, ii = locations.length; i < ii; i++) {
-    requestURI(locations[i], method, headers, respondFor(i));
-  }
+const compatPaths = {
+  'js/browser.js': 'js/vendors/browser.js',
+  'js/farbtastic.js': 'js/vendors/farbtastic.js',
+  'js/gritter.js': 'js/vendors/gritter.js',
+  'js/html10n.js': 'js/vendors/html10n.js',
+  'js/jquery.js': 'js/vendors/jquery.js',
+  'js/nice-select.js': 'js/vendors/nice-select.js',
 };
 
 /**
@@ -137,20 +137,22 @@ const requestURIs = (locations, method, headers, callback) => {
  * @param req the Express request
  * @param res the Express response
  */
-const minify = (req, res) => {
+const minify = async (req, res) => {
   let filename = req.params.filename;
-
-  // No relative paths, especially if they may go up the file hierarchy.
-  filename = path.normalize(path.join(ROOT_DIR, filename));
-  filename = filename.replace(/\.\./g, '');
-
-  if (filename.indexOf(ROOT_DIR) === 0) {
-    filename = filename.slice(ROOT_DIR.length);
-    filename = filename.replace(/\\/g, '/');
-  } else {
+  try {
+    filename = sanitizePathname(filename);
+  } catch (err) {
+    logger.error(`sanitization of pathname "${filename}" failed: ${err.stack || err}`);
     res.writeHead(404, {});
     res.end();
     return;
+  }
+
+  // Backward compatibility for plugins that require() files from old paths.
+  const newLocation = compatPaths[filename.replace(/^plugins\/ep_etherpad-lite\/static\//, '')];
+  if (newLocation != null) {
+    logger.warn(`request for deprecated path "${filename}", replacing with "${newLocation}"`);
+    filename = newLocation;
   }
 
   /* Handle static files for plugins/libraries:
@@ -166,110 +168,60 @@ const minify = (req, res) => {
     if (plugins.plugins[library] && match[3]) {
       const plugin = plugins.plugins[library];
       const pluginPath = plugin.package.realPath;
-      filename = path.relative(ROOT_DIR, pluginPath + libraryPath);
-      filename = filename.replace(/\\/g, '/'); // windows path fix
+      filename = path.join(pluginPath, libraryPath);
+      // On Windows, path.relative converts forward slashes to backslashes. Convert them back
+      // because some of the code below assumes forward slashes. Node.js treats both the backlash
+      // and the forward slash characters as pathname component separators on Windows so this does
+      // not change the meaning of the pathname. This conversion does not introduce a directory
+      // traversal vulnerability because all '..\\' substrings have already been removed by
+      // sanitizePathname.
+      filename = filename.replace(/\\/g, '/');
     } else if (LIBRARY_WHITELIST.indexOf(library) !== -1) {
       // Go straight into node_modules
       // Avoid `require.resolve()`, since 'mustache' and 'mustache/index.js'
       // would end up resolving to logically distinct resources.
-      filename = `../node_modules/${library}${libraryPath}`;
+      filename = path.join('../node_modules/', library, libraryPath);
     }
   }
 
   const contentType = mime.lookup(filename);
 
-  statFile(filename, (error, date, exists) => {
-    if (date) {
-      date = new Date(date);
-      date.setMilliseconds(0);
-      res.setHeader('last-modified', date.toUTCString());
-      res.setHeader('date', (new Date()).toUTCString());
-      if (settings.maxAge !== undefined) {
-        const expiresDate = new Date(Date.now() + settings.maxAge * 1000);
-        res.setHeader('expires', expiresDate.toUTCString());
-        res.setHeader('cache-control', `max-age=${settings.maxAge}`);
-      }
+  const [date, exists] = await statFile(filename, 3);
+  if (date) {
+    date.setMilliseconds(0);
+    res.setHeader('last-modified', date.toUTCString());
+    res.setHeader('date', (new Date()).toUTCString());
+    if (settings.maxAge !== undefined) {
+      const expiresDate = new Date(Date.now() + settings.maxAge * 1000);
+      res.setHeader('expires', expiresDate.toUTCString());
+      res.setHeader('cache-control', `max-age=${settings.maxAge}`);
     }
+  }
 
-    if (error) {
-      res.writeHead(500, {});
-      res.end();
-    } else if (!exists) {
-      res.writeHead(404, {});
-      res.end();
-    } else if (new Date(req.headers['if-modified-since']) >= date) {
-      res.writeHead(304, {});
-      res.end();
-    } else if (req.method === 'HEAD') {
-      res.header('Content-Type', contentType);
-      res.writeHead(200, {});
-      res.end();
-    } else if (req.method === 'GET') {
-      getFileCompressed(filename, contentType, (error, content) => {
-        if (ERR(error, () => {
-          res.writeHead(500, {});
-          res.end();
-        })) return;
-        res.header('Content-Type', contentType);
-        res.writeHead(200, {});
-        res.write(content);
-        res.end();
-      });
-    } else {
-      res.writeHead(405, {allow: 'HEAD, GET'});
-      res.end();
-    }
-  }, 3);
-};
-
-// find all includes in ace.js and embed them.
-const getAceFile = (callback) => {
-  fs.readFile(`${ROOT_DIR}js/ace.js`, 'utf8', (err, data) => {
-    if (ERR(err, callback)) return;
-
-    // Find all includes in ace.js and embed them
-    const filenames = [];
-    if (settings.minify) {
-      const regex = /\$\$INCLUDE_[a-zA-Z_]+\((['"])([^'"]*)\1\)/gi;
-      // This logic can be simplified via String.prototype.matchAll() once support for Node.js
-      // v11.x and older is dropped.
-      let matches;
-      while ((matches = regex.exec(data)) != null) {
-        filenames.push(matches[2]);
-      }
-    }
-    // Always include the require kernel.
-    filenames.push('../static/js/require-kernel.js');
-
-    data += ';\n';
-    data += 'Ace2Editor.EMBEDED = Ace2Editor.EMBEDED || {};\n';
-
-    // Request the contents of the included file on the server-side and write
-    // them into the file.
-    async.forEach(filenames, (filename, callback) => {
-      // Hostname "invalid.invalid" is a dummy value to allow parsing as a URI.
-      const baseURI = 'http://invalid.invalid';
-      let resourceURI = baseURI + path.normalize(path.join('/static/', filename));
-      resourceURI = resourceURI.replace(/\\/g, '/'); // Windows (safe generally?)
-
-      requestURI(resourceURI, 'GET', {}, (status, headers, body) => {
-        const error = !(status === 200 || status === 404);
-        if (!error) {
-          data += `Ace2Editor.EMBEDED[${JSON.stringify(filename)}] = ${
-            JSON.stringify(status === 200 ? body || '' : null)};\n`;
-        } else {
-          console.error(`getAceFile(): error getting ${resourceURI}. Status code: ${status}`);
-        }
-        callback();
-      });
-    }, (error) => {
-      callback(error, data);
-    });
-  });
+  if (!exists) {
+    res.writeHead(404, {});
+    res.end();
+  } else if (new Date(req.headers['if-modified-since']) >= date) {
+    res.writeHead(304, {});
+    res.end();
+  } else if (req.method === 'HEAD') {
+    res.header('Content-Type', contentType);
+    res.writeHead(200, {});
+    res.end();
+  } else if (req.method === 'GET') {
+    const content = await getFileCompressed(filename, contentType);
+    res.header('Content-Type', contentType);
+    res.writeHead(200, {});
+    res.write(content);
+    res.end();
+  } else {
+    res.writeHead(405, {allow: 'HEAD, GET'});
+    res.end();
+  }
 };
 
 // Check for the existance of the file and get the last modification date.
-const statFile = (filename, callback, dirStatLimit) => {
+const statFile = async (filename, dirStatLimit) => {
   /*
    * The only external call to this function provides an explicit value for
    * dirStatLimit: this check could be removed.
@@ -279,81 +231,65 @@ const statFile = (filename, callback, dirStatLimit) => {
   }
 
   if (dirStatLimit < 1 || filename === '' || filename === '/') {
-    callback(null, null, false);
+    return [null, false];
   } else if (filename === 'js/ace.js') {
     // Sometimes static assets are inlined into this file, so we have to stat
     // everything.
-    lastModifiedDateOfEverything((error, date) => {
-      callback(error, date, !error);
-    });
+    return [await lastModifiedDateOfEverything(), true];
   } else if (filename === 'js/require-kernel.js') {
-    callback(null, requireLastModified(), true);
+    return [_requireLastModified, true];
   } else {
-    fs.stat(ROOT_DIR + filename, (error, stats) => {
-      if (error) {
-        if (error.code === 'ENOENT') {
-          // Stat the directory instead.
-          statFile(path.dirname(filename), (error, date, exists) => {
-            callback(error, date, false);
-          }, dirStatLimit - 1);
-        } else {
-          callback(error);
-        }
-      } else if (stats.isFile()) {
-        callback(null, stats.mtime.getTime(), true);
-      } else {
-        callback(null, stats.mtime.getTime(), false);
+    let stats;
+    try {
+      stats = await fs.stat(path.resolve(ROOT_DIR, filename));
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        // Stat the directory instead.
+        const [date] = await statFile(path.dirname(filename), dirStatLimit - 1);
+        return [date, false];
       }
-    });
+      throw err;
+    }
+    return [stats.mtime, stats.isFile()];
   }
 };
 
-const lastModifiedDateOfEverything = (callback) => {
-  const folders2check = [`${ROOT_DIR}js/`, `${ROOT_DIR}css/`];
-  let latestModification = 0;
-  // go trough this two folders
-  async.forEach(folders2check, (path, callback) => {
+const lastModifiedDateOfEverything = async () => {
+  const folders2check = [path.join(ROOT_DIR, 'js/'), path.join(ROOT_DIR, 'css/')];
+  let latestModification = null;
+  // go through this two folders
+  await Promise.all(folders2check.map(async (dir) => {
     // read the files in the folder
-    fs.readdir(path, (err, files) => {
-      if (ERR(err, callback)) return;
+    const files = await fs.readdir(dir);
 
-      // we wanna check the directory itself for changes too
-      files.push('.');
+    // we wanna check the directory itself for changes too
+    files.push('.');
 
-      // go trough all files in this folder
-      async.forEach(files, (filename, callback) => {
-        // get the stat data of this file
-        fs.stat(`${path}/${filename}`, (err, stats) => {
-          if (ERR(err, callback)) return;
+    // go through all files in this folder
+    await Promise.all(files.map(async (filename) => {
+      // get the stat data of this file
+      const stats = await fs.stat(path.join(dir, filename));
 
-          // get the modification time
-          const modificationTime = stats.mtime.getTime();
-
-          // compare the modification time to the highest found
-          if (modificationTime > latestModification) {
-            latestModification = modificationTime;
-          }
-
-          callback();
-        });
-      }, callback);
-    });
-  }, () => {
-    callback(null, latestModification);
-  });
+      // compare the modification time to the highest found
+      if (latestModification == null || stats.mtime > latestModification) {
+        latestModification = stats.mtime;
+      }
+    }));
+  }));
+  return latestModification;
 };
 
 // This should be provided by the module, but until then, just use startup
 // time.
 const _requireLastModified = new Date();
-const requireLastModified = () => _requireLastModified.toUTCString();
 const requireDefinition = () => `var require = ${RequireKernel.kernelSource};\n`;
 
-const getFileCompressed = (filename, contentType, callback) => {
-  getFile(filename, (error, content) => {
-    if (error || !content || !settings.minify) {
-      callback(error, content);
-    } else if (contentType === 'application/javascript') {
+const getFileCompressed = async (filename, contentType) => {
+  let content = await getFile(filename);
+  if (!content || !settings.minify) {
+    return content;
+  } else if (contentType === 'application/javascript') {
+    return await new Promise((resolve) => {
       threadsPool.queue(async ({compressJS}) => {
         try {
           logger.info('Compress JS file %s.', filename);
@@ -370,10 +306,11 @@ const getFileCompressed = (filename, contentType, callback) => {
           console.error('getFile() returned an error in ' +
                         `getFileCompressed(${filename}, ${contentType}): ${error}`);
         }
-
-        callback(null, content);
+        resolve(content);
       });
-    } else if (contentType === 'text/css') {
+    });
+  } else if (contentType === 'text/css') {
+    return await new Promise((resolve) => {
       threadsPool.queue(async ({compressCSS}) => {
         try {
           logger.info('Compress CSS file %s.', filename);
@@ -382,28 +319,21 @@ const getFileCompressed = (filename, contentType, callback) => {
         } catch (error) {
           console.error(`CleanCSS.minify() returned an error on ${filename}: ${error}`);
         }
-
-        callback(null, content);
+        resolve(content);
       });
-    } else {
-      callback(null, content);
-    }
-  });
-};
-
-const getFile = (filename, callback) => {
-  if (filename === 'js/ace.js') {
-    getAceFile(callback);
-  } else if (filename === 'js/require-kernel.js') {
-    callback(undefined, requireDefinition());
+    });
   } else {
-    fs.readFile(ROOT_DIR + filename, callback);
+    return content;
   }
 };
 
-exports.minify = minify;
+const getFile = async (filename) => {
+  if (filename === 'js/require-kernel.js') return requireDefinition();
+  return await fs.readFile(path.resolve(ROOT_DIR, filename));
+};
 
-exports.requestURI = requestURI;
+exports.minify = (req, res, next) => minify(req, res).catch((err) => next(err || new Error(err)));
+
 exports.requestURIs = requestURIs;
 
 exports.shutdown = async (hookName, context) => {

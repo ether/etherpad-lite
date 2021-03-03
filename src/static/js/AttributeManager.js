@@ -1,3 +1,5 @@
+'use strict';
+
 const Changeset = require('./Changeset');
 const ChangesetUtils = require('./ChangesetUtils');
 const _ = require('./underscore');
@@ -72,10 +74,12 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
 
       const rowChangeset = this._setAttributesOnRangeByLine(row, startCol, endCol, attribs);
 
-      // compose changesets of all rows into a single changeset, as the range might not be continuous
+      // compose changesets of all rows into a single changeset
+      // as the range might not be continuous
       // due to the presence of line markers on the rows
       if (allChangesets) {
-        allChangesets = Changeset.compose(allChangesets.toString(), rowChangeset.toString(), this.rep.apool);
+        allChangesets = Changeset.compose(
+            allChangesets.toString(), rowChangeset.toString(), this.rep.apool);
       } else {
         allChangesets = rowChangeset;
       }
@@ -118,7 +122,8 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
   _setAttributesOnRangeByLine(row, startCol, endCol, attribs) {
     const builder = Changeset.builder(this.rep.lines.totalWidth());
     ChangesetUtils.buildKeepToStartOfRange(this.rep, builder, [row, startCol]);
-    ChangesetUtils.buildKeepRange(this.rep, builder, [row, startCol], [row, endCol], attribs, this.rep.apool);
+    ChangesetUtils.buildKeepRange(
+        this.rep, builder, [row, startCol], [row, endCol], attribs, this.rep.apool);
     return builder;
   },
 
@@ -127,9 +132,8 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     @param lineNum: the number of the line
   */
   lineHasMarker(lineNum) {
-    const that = this;
-
-    return _.find(lineAttributes, (attribute) => that.getAttributeOnLine(lineNum, attribute) != '') !== undefined;
+    return lineAttributes.find(
+        (attribute) => this.getAttributeOnLine(lineNum, attribute) !== '') !== undefined;
   },
 
   /*
@@ -184,7 +188,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     if (!(rep.selStart && rep.selEnd)) return;
     // If we're looking for the caret attribute not the selection
     // has the user already got a selection or is this purely a caret location?
-    const isNotSelection = (rep.selStart[0] == rep.selEnd[0] && rep.selEnd[1] === rep.selStart[1]);
+    const isNotSelection = (rep.selStart[0] === rep.selEnd[0] && rep.selEnd[1] === rep.selStart[1]);
     if (isNotSelection) {
       if (prevChar) {
         // If it's not the start of the line
@@ -198,21 +202,16 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
       [attributeName, 'true'],
     ], rep.apool);
     const withItRegex = new RegExp(`${withIt.replace(/\*/g, '\\*')}(\\*|$)`);
-    function hasIt(attribs) {
-      return withItRegex.test(attribs);
-    }
+    const hasIt = (attribs) => withItRegex.test(attribs);
 
-    return rangeHasAttrib(rep.selStart, rep.selEnd);
-
-    function rangeHasAttrib(selStart, selEnd) {
+    const rangeHasAttrib = (selStart, selEnd) => {
       // if range is collapsed -> no attribs in range
-      if (selStart[1] == selEnd[1] && selStart[0] == selEnd[0]) return false;
+      if (selStart[1] === selEnd[1] && selStart[0] === selEnd[0]) return false;
 
-      if (selStart[0] != selEnd[0]) { // -> More than one line selected
-        var hasAttrib = true;
-
+      if (selStart[0] !== selEnd[0]) { // -> More than one line selected
         // from selStart to the end of the first line
-        hasAttrib = hasAttrib && rangeHasAttrib(selStart, [selStart[0], rep.lines.atIndex(selStart[0]).text.length]);
+        let hasAttrib = rangeHasAttrib(
+            selStart, [selStart[0], rep.lines.atIndex(selStart[0]).text.length]);
 
         // for all lines in between
         for (let n = selStart[0] + 1; n < selEnd[0]; n++) {
@@ -230,7 +229,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
       const lineNum = selStart[0];
       const start = selStart[1];
       const end = selEnd[1];
-      var hasAttrib = true;
+      let hasAttrib = true;
 
       // Iterate over attribs on this line
 
@@ -244,7 +243,8 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
         if (!hasIt(op.attribs)) {
           // does op overlap selection?
           if (!(opEndInLine <= start || opStartInLine >= end)) {
-            hasAttrib = false; // since it's overlapping but hasn't got the attrib -> range hasn't got it
+            // since it's overlapping but hasn't got the attrib -> range hasn't got it
+            hasAttrib = false;
             break;
           }
         }
@@ -252,7 +252,8 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
       }
 
       return hasAttrib;
-    }
+    };
+    return rangeHasAttrib(rep.selStart, rep.selEnd);
   },
 
   /*
@@ -349,13 +350,13 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     const hasMarker = this.lineHasMarker(lineNum);
     let found = false;
 
-    const attribs = _(this.getAttributesOnLine(lineNum)).map(function (attrib) {
+    const attribs = this.getAttributesOnLine(lineNum).map((attrib) => {
       if (attrib[0] === attributeName && (!attributeValue || attrib[0] === attributeValue)) {
         found = true;
-        return [attributeName, ''];
+        return [attrib[0], ''];
       } else if (attrib[0] === 'author') {
         // update last author to make changes to line attributes on this line
-        return [attributeName, this.author];
+        return [attrib[0], this.author];
       }
       return attrib;
     });
@@ -373,7 +374,8 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     if (hasMarker && !countAttribsWithMarker) {
       ChangesetUtils.buildRemoveRange(this.rep, builder, [lineNum, 0], [lineNum, 1]);
     } else {
-      ChangesetUtils.buildKeepRange(this.rep, builder, [lineNum, 0], [lineNum, 1], attribs, this.rep.apool);
+      ChangesetUtils.buildKeepRange(
+          this.rep, builder, [lineNum, 0], [lineNum, 1], attribs, this.rep.apool);
     }
 
     return this.applyChangeset(builder);
@@ -394,13 +396,16 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
   },
 
   hasAttributeOnSelectionOrCaretPosition(attributeName) {
-    const hasSelection = ((this.rep.selStart[0] !== this.rep.selEnd[0]) || (this.rep.selEnd[1] !== this.rep.selStart[1]));
+    const hasSelection = (
+      (this.rep.selStart[0] !== this.rep.selEnd[0]) || (this.rep.selEnd[1] !== this.rep.selStart[1])
+    );
     let hasAttrib;
     if (hasSelection) {
       hasAttrib = this.getAttributeOnSelection(attributeName);
     } else {
       const attributesOnCaretPosition = this.getAttributesOnCaret();
-      hasAttrib = _.contains(_.flatten(attributesOnCaretPosition), attributeName);
+      const allAttribs = [].concat(...attributesOnCaretPosition); // flatten
+      hasAttrib = allAttribs.includes(attributeName);
     }
     return hasAttrib;
   },

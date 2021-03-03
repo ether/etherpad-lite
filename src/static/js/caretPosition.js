@@ -4,37 +4,17 @@
 // This function is useful to get the caret position of the line as
 // is represented by the browser
 exports.getPosition = () => {
-  let rect, line;
   const range = getSelectionRange();
-  const isSelectionInsideTheEditor = range &&
-      $(range.endContainer).closest('body')[0].id === 'innerdocbody';
-
-  if (isSelectionInsideTheEditor) {
-    // when we have the caret in an empty line, e.g. a line with only a <br>,
-    // getBoundingClientRect() returns all dimensions value as 0
-    const selectionIsInTheBeginningOfLine = range.endOffset > 0;
-    if (selectionIsInTheBeginningOfLine) {
-      const clonedRange = createSelectionRange(range);
-      line = getPositionOfElementOrSelection(clonedRange);
-      clonedRange.detach();
-    }
-
-    // when there's a <br> or any element that has no height, we can't get
-    // the dimension of the element where the caret is
-    if (!rect || rect.height === 0) {
-      const clonedRange = createSelectionRange(range);
-
-      // as we can't get the element height, we create a text node to get the dimensions
-      // on the position
-      const shadowCaret = $(document.createTextNode('|'));
-      clonedRange.insertNode(shadowCaret[0]);
-      clonedRange.selectNode(shadowCaret[0]);
-
-      line = getPositionOfElementOrSelection(clonedRange);
-      clonedRange.detach();
-      shadowCaret.remove();
-    }
-  }
+  if (!range || $(range.endContainer).closest('body')[0].id !== 'innerdocbody') return null;
+  // When there's a <br> or any element that has no height, we can't get the dimension of the
+  // element where the caret is. As we can't get the element height, we create a text node to get
+  // the dimensions on the position.
+  const clonedRange = createSelectionRange(range);
+  const shadowCaret = $(document.createTextNode('|'));
+  clonedRange.insertNode(shadowCaret[0]);
+  clonedRange.selectNode(shadowCaret[0]);
+  const line = getPositionOfElementOrSelection(clonedRange);
+  shadowCaret.remove();
   return line;
 };
 

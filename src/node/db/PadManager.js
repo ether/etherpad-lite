@@ -1,3 +1,4 @@
+'use strict';
 /**
  * The Pad Manager is a Factory for pad Objects
  */
@@ -18,7 +19,7 @@
  * limitations under the License.
  */
 
-const customError = require('../utils/customError');
+const CustomError = require('../utils/customError');
 const Pad = require('../db/Pad').Pad;
 const db = require('./DB');
 
@@ -109,22 +110,22 @@ const padList = {
  * @param id A String with the id of the pad
  * @param {Function} callback
  */
-exports.getPad = async function (id, text) {
+exports.getPad = async (id, text) => {
   // check if this is a valid padId
   if (!exports.isValidPadId(id)) {
-    throw new customError(`${id} is not a valid padId`, 'apierror');
+    throw new CustomError(`${id} is not a valid padId`, 'apierror');
   }
 
   // check if this is a valid text
   if (text != null) {
     // check if text is a string
     if (typeof text !== 'string') {
-      throw new customError('text is not a string', 'apierror');
+      throw new CustomError('text is not a string', 'apierror');
     }
 
     // check if text is less than 100k chars
     if (text.length > 100000) {
-      throw new customError('text must be less than 100k chars', 'apierror');
+      throw new CustomError('text must be less than 100k chars', 'apierror');
     }
   }
 
@@ -138,7 +139,7 @@ exports.getPad = async function (id, text) {
   // try to load pad
   pad = new Pad(id);
 
-  // initalize the pad
+  // initialize the pad
   await pad.init(text);
   globalPads.set(id, pad);
   padList.addPad(id);
@@ -146,14 +147,14 @@ exports.getPad = async function (id, text) {
   return pad;
 };
 
-exports.listAllPads = async function () {
+exports.listAllPads = async () => {
   const padIDs = await padList.getPads();
 
   return {padIDs};
 };
 
 // checks if a pad exists
-exports.doesPadExist = async function (padId) {
+exports.doesPadExist = async (padId) => {
   const value = await db.get(`pad:${padId}`);
 
   return (value != null && value.atext);
@@ -172,7 +173,7 @@ const padIdTransforms = [
 ];
 
 // returns a sanitized padId, respecting legacy pad id formats
-exports.sanitizePadId = async function sanitizePadId(padId) {
+exports.sanitizePadId = async (padId) => {
   for (let i = 0, n = padIdTransforms.length; i < n; ++i) {
     const exists = await exports.doesPadExist(padId);
 
@@ -189,9 +190,7 @@ exports.sanitizePadId = async function sanitizePadId(padId) {
   return padId;
 };
 
-exports.isValidPadId = function (padId) {
-  return /^(g.[a-zA-Z0-9]{16}\$)?[^$]{1,50}$/.test(padId);
-};
+exports.isValidPadId = (padId) => /^(g.[a-zA-Z0-9]{16}\$)?[^$]{1,50}$/.test(padId);
 
 /**
  * Removes the pad from database and unloads it.
@@ -204,6 +203,6 @@ exports.removePad = async (padId) => {
 };
 
 // removes a pad from the cache
-exports.unloadPad = function (padId) {
+exports.unloadPad = (padId) => {
   globalPads.remove(padId);
 };

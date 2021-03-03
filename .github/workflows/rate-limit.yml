@@ -16,14 +16,18 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - uses: actions/setup-node@v2
+      with:
+        node-version: 12
+
     - name: docker network
       run: docker network create --subnet=172.23.42.0/16 ep_net
 
     - name: build docker image
       run: |
         docker build -f Dockerfile -t epl-debian-slim .
-        docker build -f tests/ratelimit/Dockerfile.nginx -t nginx-latest .
-        docker build -f tests/ratelimit/Dockerfile.anotherip -t anotherip .
+        docker build -f src/tests/ratelimit/Dockerfile.nginx -t nginx-latest .
+        docker build -f src/tests/ratelimit/Dockerfile.anotherip -t anotherip .
     - name: run docker images
       run: |
         docker run --name etherpad-docker -p 9000:9001 --rm --network ep_net --ip 172.23.42.2 -e 'TRUST_PROXY=true' epl-debian-slim &
@@ -31,9 +35,9 @@ jobs:
         docker run --rm --network ep_net --ip 172.23.42.3 --name anotherip -dt anotherip
 
     - name: install dependencies and create symlink for ep_etherpad-lite
-      run: bin/installDeps.sh
+      run: src/bin/installDeps.sh
 
     - name: run rate limit test
       run: |
-        cd tests/ratelimit
+        cd src/tests/ratelimit
         ./testlimits.sh

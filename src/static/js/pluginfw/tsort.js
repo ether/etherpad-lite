@@ -55,7 +55,7 @@ const tsort = (edges) => {
   Object.keys(nodes).forEach(visit);
 
   return sorted;
-}
+};
 
 /**
  * TEST
@@ -81,6 +81,7 @@ const tsortTest = () => {
 
   try {
     sorted = tsort(edges);
+    console.log('succeeded', sorted);
   } catch (e) {
     console.log(e.message);
   }
