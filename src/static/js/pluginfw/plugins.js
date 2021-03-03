@@ -28,16 +28,48 @@ exports.formatPlugins = () => Object.keys(defs.plugins).join(', ');
 
 exports.formatParts = () => defs.parts.map((part) => part.full_name).join('\n');
 
-exports.formatHooks = (hookSetName) => {
-  const res = [];
-  const hooks = pluginUtils.extractHooks(defs.parts, hookSetName || 'hooks');
-  for (const registeredHooks of Object.values(hooks)) {
-    for (const hook of registeredHooks) {
-      res.push(`<dt>${hook.hook_name}</dt><dd>${hook.hook_fn_name} ` +
-               `from ${hook.part.full_name}</dd>`);
+exports.formatHooks = (hookSetName, html) => {
+  let hooks = new Map();
+  for (const [pluginName, def] of Object.entries(defs.plugins)) {
+    for (const part of def.parts) {
+      for (const [hookName, hookFnName] of Object.entries(part[hookSetName] || {})) {
+        let hookEntry = hooks.get(hookName);
+        if (!hookEntry) {
+          hookEntry = new Map();
+          hooks.set(hookName, hookEntry);
+        }
+        let pluginEntry = hookEntry.get(pluginName);
+        if (!pluginEntry) {
+          pluginEntry = new Map();
+          hookEntry.set(pluginName, pluginEntry);
+        }
+        pluginEntry.set(part.name, hookFnName);
+      }
     }
   }
-  return `<dl>${res.join('\n')}</dl>`;
+  const lines = [];
+  const sortStringKeys = (a, b) => String(a[0]).localeCompare(b[0]);
+  if (html) lines.push('<dl>');
+  hooks = new Map([...hooks].sort(sortStringKeys));
+  for (const [hookName, hookEntry] of hooks) {
+    lines.push(html ? `  <dt>${hookName}:</dt><dd><dl>` : `  ${hookName}:`);
+    const sortedHookEntry = new Map([...hookEntry].sort(sortStringKeys));
+    hooks.set(hookName, sortedHookEntry);
+    for (const [pluginName, pluginEntry] of sortedHookEntry) {
+      lines.push(html ? `    <dt>${pluginName}:</dt><dd><dl>` : `    ${pluginName}:`);
+      const sortedPluginEntry = new Map([...pluginEntry].sort(sortStringKeys));
+      sortedHookEntry.set(pluginName, sortedPluginEntry);
+      for (const [partName, hookFnName] of sortedPluginEntry) {
+        lines.push(html
+          ? `      <dt>${partName}:</dt><dd>${hookFnName}</dd>`
+          : `      ${partName}: ${hookFnName}`);
+      }
+      if (html) lines.push('    </dl></dd>');
+    }
+    if (html) lines.push('  </dl></dd>');
+  }
+  if (html) lines.push('</dl>');
+  return lines.join('\n');
 };
 
 const callInit = async () => {
