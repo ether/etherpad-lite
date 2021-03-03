@@ -55,9 +55,10 @@ const extractHooks = (parts, hookSetName, normalizer) => {
       try {
         hookFn = loadFn(hookFnName, hookName);
         if (!hookFn) throw new Error('Not a function');
-      } catch (exc) {
-        console.error(`Failed to load '${hookFnName}' for ` +
-                      `'${part.full_name}/${hookSetName}/${hookName}': ${exc.toString()}`);
+      } catch (err) {
+        console.error(`Failed to load hook function "${hookFnName}" for plugin "${part.plugin}" ` +
+                      `part "${part.name}" hook set "${hookSetName}" hook "${hookName}": ` +
+                      `${err.stack || err}`);
       }
       if (hookFn) {
         if (hooks[hookName] == null) hooks[hookName] = [];
