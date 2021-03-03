@@ -72,11 +72,7 @@ COPY --chown=etherpad:etherpad ./ ./
 RUN src/bin/installDeps.sh && \
 	rm -rf ~/.npm/_cacache
 
-# Install the plugins, if ETHERPAD_PLUGINS is not empty.
-#
-# Bash trick: in the for loop ${ETHERPAD_PLUGINS} is NOT quoted, in order to be
-# able to split at spaces.
-RUN for PLUGIN_NAME in ${ETHERPAD_PLUGINS}; do npm install "${PLUGIN_NAME}" || exit 1; done
+RUN [ -z "${ETHERPAD_PLUGINS}" ] || npm install ${ETHERPAD_PLUGINS}
 
 # Copy the configuration file.
 COPY --chown=etherpad:etherpad ./settings.json.docker "${EP_DIR}"/settings.json
