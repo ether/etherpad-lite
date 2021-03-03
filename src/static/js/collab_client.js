@@ -178,7 +178,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
   };
 
   const sendMessage = (msg) => {
-    getSocket().emit("message",
+    getSocket().emit('message',
         {
           type: 'COLLABROOM',
           component: 'pad',

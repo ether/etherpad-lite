@@ -51,32 +51,6 @@ exports.expressCreateServer = (hookName, args, cb) => {
   // there shouldn't be a browser that isn't compatible to all
   // transports in this list at once
   // e.g. XHR is disabled in IE by default, so in IE it should use jsonp-polling
-  // io = socketio({
-  //   transports: settings.socketTransportProtocols,
-  // }).listen(args.server, {
-  //   /*
-  //    * Do not set the "io" cookie.
-  //    *
-  //    * The "io" cookie is created by socket.io, and its purpose is to offer an
-  //    * handle to perform load balancing with session stickiness when the library
-  //    * falls back to long polling or below.
-  //    *
-  //    * In Etherpad's case, if an operator needs to load balance, he can use the
-  //    * "express_sid" cookie, and thus "io" is of no use.
-  //    *
-  //    * Moreover, socket.io API does not offer a way of setting the "secure" flag
-  //    * on it, and thus is a liability.
-  //    *
-  //    * Let's simply nuke "io".
-  //    *
-  //    * references:
-  //    *   https://socket.io/docs/using-multiple-nodes/#Sticky-load-balancing
-  //    *   https://github.com/socketio/socket.io/issues/2276#issuecomment-147184662 (not totally true, actually, see above)
-  //    */
-  //   cookie: false,
-  //   maxHttpBufferSize: settings.socketIo.maxHttpBufferSize,
-  // });
-
   const io = new Server(args.server, {
     //    * Do not set the "io" cookie.
     //    *

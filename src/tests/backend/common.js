@@ -32,14 +32,14 @@ exports.init = async function () {
   if (agentPromise != null) return await agentPromise;
   let agentResolve;
   agentPromise = new Promise((resolve) => { agentResolve = resolve; });
-  
-  // if (!logLevel.isLessThanOrEqualTo(log4js.levels.DEBUG)) {
-  //   exports.logger.warn('Disabling non-test logging for the duration of the test. ' +
-  //   'To enable non-test logging, change the loglevel setting to DEBUG.');
-  //   log4js.setGlobalLogLevel(log4js.levels.OFF);
-  //   exports.logger.setLevel(logLevel);
-  // }
-  
+
+  if (!logLevel.isLessThanOrEqualTo(log4js.levels.DEBUG)) {
+    exports.logger.warn('Disabling non-test logging for the duration of the test. ' +
+    'To enable non-test logging, change the loglevel setting to DEBUG.');
+    log4js.setGlobalLogLevel(log4js.levels.OFF);
+    exports.logger.setLevel(logLevel);
+  }
+
   // Note: This is only a shallow backup.
   backups.settings = Object.assign({}, settings);
   // Start the Etherpad server on a random unused port.
