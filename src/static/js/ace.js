@@ -215,7 +215,6 @@ const Ace2Editor = function () {
     const pluginNames = pluginUtils.clientPluginNames();
     outerHTML.push(
         '<style type="text/css" title="dynamicsyntax"></style>',
-        '<link rel="stylesheet" type="text/css" href="data:text/css,"/>',
         scriptTag(outerScript),
         '</head>',
         '<body id="outerdocbody" class="outerdocbody ', pluginNames.join(' '), '">',
