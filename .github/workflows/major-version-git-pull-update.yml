@@ -28,12 +28,6 @@ jobs:
       with:
         node-version: ${{ matrix.node }}
 
-    - name: Install libreoffice
-      run: |
-        sudo add-apt-repository -y ppa:libreoffice/ppa
-        sudo apt update
-        sudo apt install -y --no-install-recommends libreoffice libreoffice-pdfimport
-
     - name: Install Etherpad plugins
       # The --legacy-peer-deps flag is required to work around a bug in npm v7:
       # https://github.com/npm/cli/issues/2199
