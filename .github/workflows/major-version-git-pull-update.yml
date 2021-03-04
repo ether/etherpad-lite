@@ -70,7 +70,7 @@ jobs:
       run: git fetch
 
     - name: Checkout this branch over master
-      run: git checkout ${GITHUB_REF##*/}
+      run: git checkout "${GITHUB_SHA}"
 
     - name: Pull
       run: git pull
