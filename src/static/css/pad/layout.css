@@ -4,7 +4,7 @@ html, body {
   margin: 0;
   padding: 0;
 }
-html:not(.inner-editor), html:not(.inner-editor) body {
+html.pad, html.pad body {
   overflow: hidden;
 }
 body {

@@ -4,7 +4,7 @@
 
 @import url('./lists_and_indents.css');
 
-html.inner-editor {
+html.outer-editor, html.inner-editor {
   height: auto !important;
   background-color: transparent !important;
 }
