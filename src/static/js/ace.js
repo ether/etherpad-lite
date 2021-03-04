@@ -207,7 +207,7 @@ const Ace2Editor = function () {
     })();`;
 
     const outerHTML =
-        [doctype, `<html class="inner-editor outerdoc ${clientVars.skinVariants}"><head>`];
+        [doctype, `<html class="outer-editor outerdoc ${clientVars.skinVariants}"><head>`];
     pushStyleTagsFor(outerHTML, includedCSS);
 
     // bizarrely, in FF2, a file with no "external" dependencies won't finish loading properly
