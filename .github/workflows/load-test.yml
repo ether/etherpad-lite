@@ -48,7 +48,7 @@ jobs:
         node-version: 12
 
     - name: Install etherpad-load-test
-      run: sudo npm install -g etherpad-load-test
+      run: sudo npm install -g etherpad-load-test@0.3.0
 
     - name: Install etherpad plugins
       # The --legacy-peer-deps flag is required to work around a bug in npm v7:
