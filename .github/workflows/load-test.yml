@@ -25,7 +25,7 @@ jobs:
       run: src/bin/installDeps.sh
 
     - name: Install etherpad-load-test
-      run: sudo npm install -g etherpad-load-test
+      run: sudo npm install -g etherpad-load-test@beta
 
     - name: Run load test
       run: src/tests/frontend/travis/runnerLoadTest.sh 25 50
