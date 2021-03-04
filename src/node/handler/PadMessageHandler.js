@@ -733,7 +733,6 @@ exports.updatePadClients = async (pad) => {
       const revChangeset = revision.changeset;
       const currentTime = revision.meta.timestamp;
 
-      console.log(sessioninfos, sid);
       // next if session has not been deleted
       if (sessioninfos[sid] == null) {
         continue;
@@ -1412,9 +1411,15 @@ const composePadChangesets = async (padId, startNum, endNum) => {
 };
 
 const _getRoomSockets = (padID) => {
-  if (!socketio.in(padID).engine.clients) return [];
-  const data = Object.keys(socketio.in(padID).engine.clients).map((socketId) => socketio.in(padID).engine.clients[socketId]);
-  return data;
+  const ns = socketio.sockets; // Default namespace.
+  const rooms = ns.adapter.rooms;
+  if(!rooms.has(padID)) return [];
+  const room = rooms.get(padID); // array of socketIds in room
+  const result = [];
+  room.forEach(socketId => {
+    if(ns.sockets.has(socketId)) result.push(ns.sockets.get(socketId))
+  });
+  return result;
 };
 
 /**
