@@ -72,9 +72,6 @@ jobs:
     - name: Checkout this branch over master
       run: git checkout "${GITHUB_SHA}"
 
-    - name: Pull
-      run: git pull
-
     - name: Install all dependencies and symlink for ep_etherpad-lite
       run: src/bin/installDeps.sh
 
