@@ -39,22 +39,24 @@ const suppressDisableMsg = ' -- To suppress these warning messages change ' +
     'suppressErrorsInPadText to true in your settings.json\n';
 const _ = require('underscore');
 
+const defaultSettings = {}
+
 /* Root path of the installation */
-exports.root = absolutePaths.findEtherpadRoot();
+defaultSettings.root = absolutePaths.findEtherpadRoot();
 console.log('All relative paths will be interpreted relative to the identified ' +
-            `Etherpad base dir: ${exports.root}`);
+            `Etherpad base dir: ${defaultSettings.root}`);
 
 /**
  * The app title, visible e.g. in the browser window
  */
-exports.title = 'Etherpad';
+defaultSettings.title = 'Etherpad';
 
 /**
  * The app favicon fully specified url, visible e.g. in the browser window
  */
-exports.favicon = 'favicon.ico';
-exports.faviconPad = `../${exports.favicon}`;
-exports.faviconTimeslider = `../../${exports.favicon}`;
+defaultSettings.favicon = 'favicon.ico';
+defaultSettings.faviconPad = `../${defaultSettings.favicon}`;
+defaultSettings.faviconTimeslider = `../../${defaultSettings.favicon}`;
 
 /*
  * Skin name.
@@ -62,37 +64,37 @@ exports.faviconTimeslider = `../../${exports.favicon}`;
  * Initialized to null, so we can spot an old configuration file and invite the
  * user to update it before falling back to the default.
  */
-exports.skinName = null;
+defaultSettings.skinName = null;
 
-exports.skinVariants = 'super-light-toolbar super-light-editor light-background';
+defaultSettings.skinVariants = 'super-light-toolbar super-light-editor light-background';
 
 /**
  * The IP ep-lite should listen to
  */
-exports.ip = '0.0.0.0';
+defaultSettings.ip = '0.0.0.0';
 
 /**
  * The Port ep-lite should listen to
  */
-exports.port = process.env.PORT || 9001;
+defaultSettings.port = process.env.PORT || 9001;
 
 /**
  * Should we suppress Error messages from being in Pad Contents
  */
-exports.suppressErrorsInPadText = false;
+defaultSettings.suppressErrorsInPadText = false;
 
 /**
  * The SSL signed server key and the Certificate Authority's own certificate
  * default case: ep-lite does *not* use SSL. A signed server key is not required in this case.
  */
-exports.ssl = false;
+defaultSettings.ssl = false;
 
 /**
  * socket.io transport methods
  **/
-exports.socketTransportProtocols = ['xhr-polling', 'jsonp-polling', 'htmlfile'];
+defaultSettings.socketTransportProtocols = ['xhr-polling', 'jsonp-polling', 'htmlfile'];
 
-exports.socketIo = {
+defaultSettings.socketIo = {
   /**
    * Maximum permitted client message size (in bytes).
    *
@@ -107,16 +109,16 @@ exports.socketIo = {
 /*
  * The Type of the database
  */
-exports.dbType = 'dirty';
+defaultSettings.dbType = 'dirty';
 /**
  * This setting is passed with dbType to ueberDB to set up the database
  */
-exports.dbSettings = {filename: path.join(exports.root, 'var/dirty.db')};
+defaultSettings.dbSettings = {filename: path.join(defaultSettings.root, 'var/dirty.db')};
 
 /**
  * The default Text of a new pad
  */
-exports.defaultPadText = [
+defaultSettings.defaultPadText = [
   'Welcome to Etherpad!',
   '',
   'This pad text is synchronized as you type, so that everyone viewing this page sees the same ' +
@@ -128,7 +130,7 @@ exports.defaultPadText = [
 /**
  * The default Pad Settings for a user (Can be overridden by changing the setting
  */
-exports.padOptions = {
+defaultSettings.padOptions = {
   noColors: false,
   showControls: true,
   showChat: true,
@@ -145,7 +147,7 @@ exports.padOptions = {
 /**
  * Whether certain shortcut keys are enabled for a user in the pad
  */
-exports.padShortcutEnabled = {
+defaultSettings.padShortcutEnabled = {
   altF9: true,
   altC: true,
   delete: true,
@@ -173,7 +175,7 @@ exports.padShortcutEnabled = {
 /**
  * The toolbar buttons and order.
  */
-exports.toolbar = {
+defaultSettings.toolbar = {
   left: [
     ['bold', 'italic', 'underline', 'strikethrough'],
     ['orderedlist', 'unorderedlist', 'indent', 'outdent'],
@@ -193,87 +195,87 @@ exports.toolbar = {
 /**
  * A flag that requires any user to have a valid session (via the api) before accessing a pad
  */
-exports.requireSession = false;
+defaultSettings.requireSession = false;
 
 /**
  * A flag that prevents users from creating new pads
  */
-exports.editOnly = false;
+defaultSettings.editOnly = false;
 
 /**
  * Max age that responses will have (affects caching layer).
  */
-exports.maxAge = 1000 * 60 * 60 * 6; // 6 hours
+defaultSettings.maxAge = 1000 * 60 * 60 * 6; // 6 hours
 
 /**
  * A flag that shows if minification is enabled or not
  */
-exports.minify = true;
+defaultSettings.minify = true;
 
 /**
  * The path of the abiword executable
  */
-exports.abiword = null;
+defaultSettings.abiword = null;
 
 /**
  * The path of the libreoffice executable
  */
-exports.soffice = null;
+defaultSettings.soffice = null;
 
 /**
  * The path of the tidy executable
  */
-exports.tidyHtml = null;
+defaultSettings.tidyHtml = null;
 
 /**
  * Should we support none natively supported file types on import?
  */
-exports.allowUnknownFileEnds = true;
+defaultSettings.allowUnknownFileEnds = true;
 
 /**
  * The log level of log4js
  */
-exports.loglevel = 'INFO';
+defaultSettings.loglevel = 'INFO';
 
 /**
  * Disable IP logging
  */
-exports.disableIPlogging = false;
+defaultSettings.disableIPlogging = false;
 
 /**
  * Number of seconds to automatically reconnect pad
  */
-exports.automaticReconnectionTimeout = 0;
+defaultSettings.automaticReconnectionTimeout = 0;
 
 /**
  * Disable Load Testing
  */
-exports.loadTest = false;
+defaultSettings.loadTest = false;
 
 /**
  * Enable indentation on new lines
  */
-exports.indentationOnNewLine = true;
+defaultSettings.indentationOnNewLine = true;
 
 /*
  * log4js appender configuration
  */
-exports.logconfig = {appenders: [{type: 'console'}]};
+defaultSettings.logconfig = {appenders: [{type: 'console'}]};
 
 /*
  * Session Key, do not sure this.
  */
-exports.sessionKey = false;
+defaultSettings.sessionKey = false;
 
 /*
  * Trust Proxy, whether or not trust the x-forwarded-for header.
  */
-exports.trustProxy = false;
+defaultSettings.trustProxy = false;
 
 /*
  * Settings controlling the session cookie issued by Etherpad.
  */
-exports.cookie = {
+defaultSettings.cookie = {
   /*
    * Value of the SameSite cookie property. "Lax" is recommended unless
    * Etherpad will be embedded in an iframe from another site, in which case
@@ -293,20 +295,20 @@ exports.cookie = {
  * authorization. Note: /admin always requires authentication, and
  * either authorization by a module, or a user with is_admin set
  */
-exports.requireAuthentication = false;
-exports.requireAuthorization = false;
-exports.users = {};
+defaultSettings.requireAuthentication = false;
+defaultSettings.requireAuthorization = false;
+defaultSettings.users = {};
 
 /*
  * Show settings in admin page, by default it is true
  */
-exports.showSettingsInAdminPage = true;
+defaultSettings.showSettingsInAdminPage = true;
 
 /*
  * By default, when caret is moved out of viewport, it scrolls the minimum
  * height needed to make this line visible.
  */
-exports.scrollWhenFocusLineIsOutOfViewport = {
+defaultSettings.scrollWhenFocusLineIsOutOfViewport = {
   /*
    * Percentage of viewport height to be additionally scrolled.
    */
@@ -339,12 +341,12 @@ exports.scrollWhenFocusLineIsOutOfViewport = {
  *
  * Do not enable on production machines.
  */
-exports.exposeVersion = false;
+defaultSettings.exposeVersion = false;
 
 /*
  * Override any strings found in locale directories
  */
-exports.customLocaleStrings = {};
+defaultSettings.customLocaleStrings = {};
 
 /*
  * From Etherpad 1.8.3 onwards, import and export of pads is always rate
@@ -355,7 +357,7 @@ exports.customLocaleStrings = {};
  *
  * See https://github.com/nfriedly/express-rate-limit for more options
  */
-exports.importExportRateLimiting = {
+defaultSettings.importExportRateLimiting = {
   // duration of the rate limit window (milliseconds)
   windowMs: 90000,
 
@@ -371,7 +373,7 @@ exports.importExportRateLimiting = {
  *
  * See https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#websocket-single-connection-prevent-flooding for more options
  */
-exports.commitRateLimiting = {
+defaultSettings.commitRateLimiting = {
   // duration of the rate limit window (seconds)
   duration: 1,
 
@@ -385,17 +387,17 @@ exports.commitRateLimiting = {
  *
  * File size is specified in bytes. Default is 50 MB.
  */
-exports.importMaxFileSize = 50 * 1024 * 1024;
+defaultSettings.importMaxFileSize = 50 * 1024 * 1024;
 
 /*
  * Disable Admin UI tests
  */
-exports.enableAdminUITests = false;
+defaultSettings.enableAdminUITests = false;
 
 
 // checks if abiword is avaiable
 exports.abiwordAvailable = () => {
-  if (exports.abiword != null) {
+  if (defaultSettings.abiword != null) { // TODO wait do I want this?
     return os.type().indexOf('Windows') !== -1 ? 'withoutPDF' : 'yes';
   } else {
     return 'no';
@@ -403,7 +405,7 @@ exports.abiwordAvailable = () => {
 };
 
 exports.sofficeAvailable = () => {
-  if (exports.soffice != null) {
+  if (defaultSettings.soffice != null) { // TODO wait do I want this?
     return os.type().indexOf('Windows') !== -1 ? 'withoutPDF' : 'yes';
   } else {
     return 'no';
@@ -428,7 +430,7 @@ exports.exportAvailable = () => {
 exports.getGitCommit = () => {
   let version = '';
   try {
-    let rootPath = exports.root;
+    let rootPath = defaultSettings.root;
     if (fs.lstatSync(`${rootPath}/.git`).isFile()) {
       rootPath = fs.readFileSync(`${rootPath}/.git`, 'utf8');
       rootPath = rootPath.split(' ').pop().trim();
@@ -453,6 +455,38 @@ exports.getGitCommit = () => {
 exports.getEpVersion = () => require('../../package.json').version;
 
 /**
+ * Sets all settings to the defaults defined in this file. (Does not set any plugin settings).
+ * This way we get a fresh start before merging in custom settings via storeSettings. We
+ * previously had some problems when removing items from custom settings and reloading via
+ * admin.
+ */
+function setDefaults() {
+  for (var i in defaultSettings) {
+    // Test if the setting starts with a lowercase character or looks like a plugin name
+    // These would fail only based on what we set to `defaults`, but it's a good sanity
+    // check.
+    if (i.charAt(0).search("[a-z]") !== 0) {
+      console.warn(`Settings should start with a lowercase character: '${i}'`);
+    } else if (i.indexOf('ep_') === 0) {
+      console.warn(`Settings should not start with 'ep_' so as to not confuse them with plugin settings`);
+    } else {
+      // TODO - do we want to make a copy of this, to make sure the default isn't modified?
+      // Or will the `_.defaults` used below help us in this regard?
+      exports[i] = defaultSettings[i];
+    }
+  }
+  // Wipe out settings for plugins in case we're reloading with
+  // new settings (via admin change, etc) that deleted settings for this plugin.
+  // TODO - is there anything like "defaults" for plugin settings?
+  //   If so, I want to make sure I'm not nuking them here.
+  for (var i in exports) {
+    if (i.indexOf('ep_') === 0) {
+      exports[i] = undefined
+    }
+  }
+}
+
+/**
  * Receives a settingsObj and, if the property name is a valid configuration
  * item, stores it in the module's exported properties via a side effect.
  *
@@ -468,7 +502,7 @@ const storeSettings = (settingsObj) => {
 
     // we know this setting, so we overwrite it
     // or it's a settings hash, specific to a plugin
-    if (exports[i] !== undefined || i.indexOf('ep_') === 0) {
+    if (defaultSettings[i] !== undefined || i.indexOf('ep_') === 0) {
       if (_.isObject(settingsObj[i]) && !Array.isArray(settingsObj[i])) {
         exports[i] = _.defaults(settingsObj[i], exports[i]);
       } else {
@@ -694,6 +728,7 @@ exports.reloadSettings = () => {
   // try to parse the credentials
   const credentials = parseSettings(credentialsFilename, false);
 
+  setDefaults()
   storeSettings(settings);
   storeSettings(credentials);
 
