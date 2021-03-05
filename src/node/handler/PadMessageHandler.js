@@ -1233,12 +1233,10 @@ const handleChangesetRequest = async (socket, message) => {
  */
 const getChangesetInfo = async (padId, startNum, endNum, granularity) => {
   const pad = await padManager.getPad(padId);
-  const head_revision = pad.getHeadRevisionNumber();
+  const headRevision = pad.getHeadRevisionNumber();
 
   // calculate the last full endnum
-  if (endNum > head_revision + 1) {
-    endNum = head_revision + 1;
-  }
+  if (endNum > headRevision + 1) endNum = headRevision + 1;
   endNum = Math.floor(endNum / granularity) * granularity;
 
   const compositesChangesetNeeded = [];
@@ -1300,9 +1298,7 @@ const getChangesetInfo = async (padId, startNum, endNum, granularity) => {
 
   for (let compositeStart = startNum; compositeStart < endNum; compositeStart += granularity) {
     const compositeEnd = compositeStart + granularity;
-    if (compositeEnd > endNum || compositeEnd > head_revision + 1) {
-      break;
-    }
+    if (compositeEnd > endNum || compositeEnd > headRevision + 1) break;
 
     const forwards = composedChangesets[`${compositeStart}/${compositeEnd}`];
     const backwards = Changeset.inverse(forwards, lines.textlines, lines.alines, pad.apool());

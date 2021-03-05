@@ -530,15 +530,15 @@ exports.textLinesMutator = (lines) => {
    * It is called when leaving the splice
    * @param {Array} s curSplice
    */
-  const lines_applySplice = (s) => {
-    lines.splice.apply(lines, s);
+  const linesApplySplice = (s) => {
+    lines.splice(...s);
   };
 
   /**
    * Get a line from lines at given index
    * @param {Number} idx an index
    */
-  const lines_get = (idx) => {
+  const linesGet = (idx) => {
     if (lines.get) {
       return lines.get(idx);
     } else {
@@ -552,7 +552,7 @@ exports.textLinesMutator = (lines) => {
    * @param {Number} start the start index
    * @param {Number} end the end index
    */
-  const lines_slice = (start, end) => {
+  const linesSlice = (start, end) => {
     if (lines.slice) {
       return lines.slice(start, end);
     } else {
@@ -563,7 +563,7 @@ exports.textLinesMutator = (lines) => {
   /**
    * Return the length of lines array
    */
-  const lines_length = () => {
+  const linesLength = () => {
     if ((typeof lines.length) === 'number') {
       return lines.length;
     } else {
@@ -591,7 +591,7 @@ exports.textLinesMutator = (lines) => {
    * This is called via close or TODO(doc)
    */
   const leaveSplice = () => {
-    lines_applySplice(curSplice);
+    linesApplySplice(curSplice);
     curSplice.length = 2;
     curSplice[0] = curSplice[1] = 0;
     inSplice = false;
@@ -614,7 +614,7 @@ exports.textLinesMutator = (lines) => {
    */
   const putCurLineInSplice = () => {
     if (!isCurLineInSplice()) {
-      curSplice.push(lines_get(curSplice[0] + curSplice[1]));
+      curSplice.push(linesGet(curSplice[0] + curSplice[1]));
       curSplice[1]++;
     }
     return 2 + curLine - curSplice[0]; // TODO should be the same as curSplice.length - 1
@@ -698,7 +698,7 @@ exports.textLinesMutator = (lines) => {
        */
       const nextKLinesText = (k) => {
         const m = curSplice[0] + curSplice[1];
-        return lines_slice(m, m + k).join('');
+        return linesSlice(m, m + k).join('');
       };
       if (isCurLineInSplice()) {
         if (curCol === 0) {
@@ -712,7 +712,7 @@ exports.textLinesMutator = (lines) => {
           const sline = curSplice.length - 1;
           removed = curSplice[sline].substring(curCol) + removed;
           curSplice[sline] = curSplice[sline].substring(0, curCol) +
-              lines_get(curSplice[0] + curSplice[1]);
+              linesGet(curSplice[0] + curSplice[1]);
           curSplice[1] += 1;
         }
       } else {
@@ -803,7 +803,7 @@ exports.textLinesMutator = (lines) => {
    * @return {Boolean} indicates if there are lines left
    */
   const hasMore = () => {
-    let docLines = lines_length();
+    let docLines = linesLength();
     if (inSplice) {
       docLines += curSplice.length - 2 - curSplice[1];
     }
@@ -1826,7 +1826,7 @@ exports.inverse = (cs, lines, alines, pool) => {
   // They may be arrays or objects with .get(i) and .length methods.
   // They include final newlines on lines.
 
-  const lines_get = (idx) => {
+  const linesGet = (idx) => {
     if (lines.get) {
       return lines.get(idx);
     } else {
@@ -1834,7 +1834,7 @@ exports.inverse = (cs, lines, alines, pool) => {
     }
   };
 
-  const alines_get = (idx) => {
+  const alinesGet = (idx) => {
     if (alines.get) {
       return alines.get(idx);
     } else {
@@ -1855,7 +1855,7 @@ exports.inverse = (cs, lines, alines, pool) => {
   const consumeAttribRuns = (numChars, func /* (len, attribs, endsLine)*/) => {
     if ((!curLineOpIter) || (curLineOpIterLine !== curLine)) {
       // create curLineOpIter and advance it to curChar
-      curLineOpIter = exports.opIterator(alines_get(curLine));
+      curLineOpIter = exports.opIterator(alinesGet(curLine));
       curLineOpIterLine = curLine;
       let indexIntoLine = 0;
       let done = false;
@@ -1876,7 +1876,7 @@ exports.inverse = (cs, lines, alines, pool) => {
         curChar = 0;
         curLineOpIterLine = curLine;
         curLineNextOp.chars = 0;
-        curLineOpIter = exports.opIterator(alines_get(curLine));
+        curLineOpIter = exports.opIterator(alinesGet(curLine));
       }
       if (!curLineNextOp.chars) {
         curLineOpIter.next(curLineNextOp);
@@ -1909,13 +1909,13 @@ exports.inverse = (cs, lines, alines, pool) => {
   const nextText = (numChars) => {
     let len = 0;
     const assem = exports.stringAssembler();
-    const firstString = lines_get(curLine).substring(curChar);
+    const firstString = linesGet(curLine).substring(curChar);
     len += firstString.length;
     assem.append(firstString);
 
     let lineNum = curLine + 1;
     while (len < numChars) {
-      const nextString = lines_get(lineNum);
+      const nextString = linesGet(lineNum);
       len += nextString.length;
       assem.append(nextString);
       lineNum++;
