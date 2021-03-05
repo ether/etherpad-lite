@@ -34,7 +34,6 @@ describe(__filename, function () {
           const hasExpressSessionCookie =
               res.headers['set-cookie'][0].indexOf('express_sid');
           assert(hasExpressSessionCookie === -1);
-          console.error(res);
           const newCount = store.length();
           assert(newCount === previousCount);
         })
