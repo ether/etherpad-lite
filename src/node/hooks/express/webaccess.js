@@ -10,12 +10,20 @@ const readOnlyManager = require('../../db/ReadOnlyManager');
 hooks.deprecationNotices.authFailure = 'use the authnFailure and authzFailure hooks instead';
 
 const staticPathsRE = new RegExp(`^/(?:${[
-  'api/.*',
+  'api(?:/.*)?',
   'favicon\\.ico',
+  'ep/pad/connection-diagnostic-info',
+  'javascript',
   'javascripts/.*',
+  'jserror/?',
   'locales\\.json',
+  'locales/.*',
+  'rest/.*',
   'pluginfw/.*',
+  'robots.txt',
   'static/.*',
+  'stats/?',
+  'tests/frontend(?:/.*)?'
 ].join('|')})$`);
 
 exports.normalizeAuthzLevel = (level) => {

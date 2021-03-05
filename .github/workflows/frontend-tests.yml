@@ -1,4 +1,5 @@
-name: "Frontend tests"
+# Leave the powered by Sauce Labs bit in as this means we get additional concurrency
+name: "Frontend tests powered by Sauce Labs"
 
 on: [push]
 
@@ -35,7 +36,7 @@ jobs:
       run: |
         sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 0/' -i settings.json
 
-    - uses: saucelabs/sauce-connect-action@v1.1.2
+    - uses: saucelabs/sauce-connect-action@v1
       with:
         username: ${{ secrets.SAUCE_USERNAME }}
         accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
@@ -115,7 +116,7 @@ jobs:
     - name: Remove standard frontend test files, so only plugin tests are run
       run: rm src/tests/frontend/specs/*
 
-    - uses: saucelabs/sauce-connect-action@v1.1.2
+    - uses: saucelabs/sauce-connect-action@v1
       with:
         username: ${{ secrets.SAUCE_USERNAME }}
         accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}

@@ -168,7 +168,7 @@ const minify = async (req, res) => {
     if (plugins.plugins[library] && match[3]) {
       const plugin = plugins.plugins[library];
       const pluginPath = plugin.package.realPath;
-      filename = path.relative(ROOT_DIR, path.join(pluginPath, libraryPath));
+      filename = path.join(pluginPath, libraryPath);
       // On Windows, path.relative converts forward slashes to backslashes. Convert them back
       // because some of the code below assumes forward slashes. Node.js treats both the backlash
       // and the forward slash characters as pathname component separators on Windows so this does
@@ -220,44 +220,6 @@ const minify = async (req, res) => {
   }
 };
 
-// find all includes in ace.js and embed them.
-const getAceFile = async () => {
-  let data = await fs.readFile(path.join(ROOT_DIR, 'js/ace.js'), 'utf8');
-
-  // Find all includes in ace.js and embed them
-  const filenames = [];
-  if (settings.minify) {
-    const regex = /\$\$INCLUDE_[a-zA-Z_]+\((['"])([^'"]*)\1\)/gi;
-    // This logic can be simplified via String.prototype.matchAll() once support for Node.js
-    // v11.x and older is dropped.
-    let matches;
-    while ((matches = regex.exec(data)) != null) {
-      filenames.push(matches[2]);
-    }
-  }
-
-  data += 'Ace2Editor.EMBEDED = Ace2Editor.EMBEDED || {};\n';
-
-  // Request the contents of the included file on the server-side and write
-  // them into the file.
-  await Promise.all(filenames.map(async (filename) => {
-    // Hostname "invalid.invalid" is a dummy value to allow parsing as a URI.
-    const baseURI = 'http://invalid.invalid';
-    let resourceURI = baseURI + path.join('/static/', filename);
-    resourceURI = resourceURI.replace(/\\/g, '/'); // Windows (safe generally?)
-
-    const [status, , body] = await requestURI(resourceURI, 'GET', {});
-    const error = !(status === 200 || status === 404);
-    if (!error) {
-      data += `Ace2Editor.EMBEDED[${JSON.stringify(filename)}] = ${
-        JSON.stringify(status === 200 ? body || '' : null)};\n`;
-    } else {
-      console.error(`getAceFile(): error getting ${resourceURI}. Status code: ${status}`);
-    }
-  }));
-  return data;
-};
-
 // Check for the existance of the file and get the last modification date.
 const statFile = async (filename, dirStatLimit) => {
   /*
@@ -279,7 +241,7 @@ const statFile = async (filename, dirStatLimit) => {
   } else {
     let stats;
     try {
-      stats = await fs.stat(path.join(ROOT_DIR, filename));
+      stats = await fs.stat(path.resolve(ROOT_DIR, filename));
     } catch (err) {
       if (err.code === 'ENOENT') {
         // Stat the directory instead.
@@ -366,9 +328,8 @@ const getFileCompressed = async (filename, contentType) => {
 };
 
 const getFile = async (filename) => {
-  if (filename === 'js/ace.js') return await getAceFile();
   if (filename === 'js/require-kernel.js') return requireDefinition();
-  return await fs.readFile(path.join(ROOT_DIR, filename));
+  return await fs.readFile(path.resolve(ROOT_DIR, filename));
 };
 
 exports.minify = (req, res, next) => minify(req, res).catch((err) => next(err || new Error(err)));
