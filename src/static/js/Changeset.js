@@ -71,20 +71,6 @@ exports.parseNum = (str) => parseInt(str, 36);
 exports.numToString = (num) => num.toString(36).toLowerCase();
 
 /**
- * Converts stuff before $ to base 10
- * @obsolete not really used anywhere??
- * @param cs {string} the string
- * @return integer
- */
-exports.toBaseTen = (cs) => {
-  const dollarIndex = cs.indexOf('$');
-  const beforeDollar = cs.substring(0, dollarIndex);
-  const fromDollar = cs.substring(dollarIndex);
-  return beforeDollar.replace(/[0-9a-z]+/g, (s) => String(exports.parseNum(s))) + fromDollar;
-};
-
-
-/**
  * ==================== Changeset Functions =======================
  */
 
@@ -206,11 +192,6 @@ exports.opString = (op) => {
   assem.append(op);
   return assem.toString();
 };
-
-/**
- * Used just for debugging
- */
-exports.stringOp = (str) => exports.opIterator(str).next();
 
 /**
  * Used to check if a Changeset if valid

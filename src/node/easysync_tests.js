@@ -31,6 +31,18 @@ function random() {
   this.nextDouble = (maxValue) => Math.random();
 }
 
+/**
+ * Converts stuff before $ to base 10
+ * @param cs {string} the string
+ * @return integer
+ */
+const toBaseTen = (cs) => {
+  const dollarIndex = cs.indexOf('$');
+  const beforeDollar = cs.substring(0, dollarIndex);
+  const fromDollar = cs.substring(dollarIndex);
+  return beforeDollar.replace(/[0-9a-z]+/g, (s) => String(Changeset.parseNum(s))) + fromDollar;
+};
+
 const runTests = () => {
   const print = (str) => {
     console.log(str);
@@ -602,9 +614,9 @@ const runTests = () => {
     const change3 = x3[0];
     const text3 = x3[1];
 
-    // print(literal(Changeset.toBaseTen(startText)));
-    // print(literal(Changeset.toBaseTen(change1)));
-    // print(literal(Changeset.toBaseTen(change2)));
+    // print(literal(toBaseTen(startText)));
+    // print(literal(toBaseTen(change1)));
+    // print(literal(toBaseTen(change2)));
     const change12 = Changeset.checkRep(Changeset.compose(change1, change2, p));
     const change23 = Changeset.checkRep(Changeset.compose(change2, change3, p));
     const change123 = Changeset.checkRep(Changeset.compose(change12, change3, p));
@@ -769,22 +781,24 @@ const runTests = () => {
     p.putAttrib(['name', 'david']);
     p.putAttrib(['color', 'green']);
 
+    const stringOp = (str) => Changeset.opIterator(str).next();
+
     assertEqualStrings('david',
-        Changeset.opAttributeValue(Changeset.stringOp('*0*1+1'), 'name', p));
+        Changeset.opAttributeValue(stringOp('*0*1+1'), 'name', p));
     assertEqualStrings('david',
-        Changeset.opAttributeValue(Changeset.stringOp('*0+1'), 'name', p));
+        Changeset.opAttributeValue(stringOp('*0+1'), 'name', p));
     assertEqualStrings('',
-        Changeset.opAttributeValue(Changeset.stringOp('*1+1'), 'name', p));
+        Changeset.opAttributeValue(stringOp('*1+1'), 'name', p));
     assertEqualStrings('',
-        Changeset.opAttributeValue(Changeset.stringOp('+1'), 'name', p));
+        Changeset.opAttributeValue(stringOp('+1'), 'name', p));
     assertEqualStrings('green',
-        Changeset.opAttributeValue(Changeset.stringOp('*0*1+1'), 'color', p));
+        Changeset.opAttributeValue(stringOp('*0*1+1'), 'color', p));
     assertEqualStrings('green',
-        Changeset.opAttributeValue(Changeset.stringOp('*1+1'), 'color', p));
+        Changeset.opAttributeValue(stringOp('*1+1'), 'color', p));
     assertEqualStrings('',
-        Changeset.opAttributeValue(Changeset.stringOp('*0+1'), 'color', p));
+        Changeset.opAttributeValue(stringOp('*0+1'), 'color', p));
     assertEqualStrings('',
-        Changeset.opAttributeValue(Changeset.stringOp('+1'), 'color', p));
+        Changeset.opAttributeValue(stringOp('+1'), 'color', p));
   })();
 
   const testAppendATextToAssembler = (testId, atext, correctOps) => {
