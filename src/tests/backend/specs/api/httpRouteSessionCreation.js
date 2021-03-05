@@ -6,11 +6,11 @@ const settings = require('../../../../node/utils/Settings');
 const fs = require('fs');
 let agent;
 
-const shouldCreateSession = [
+const shouldCreateExpressSession = [
   '/p/foo',
   '/p/foo/export/html',
 ];
-const shouldNotCreateSession = [
+const shouldNotCreateExpressSession = [
   '/',
   '/api/',
   '/favicon.ico',
@@ -29,12 +29,12 @@ const getDatabaseSize = () => {
 describe(__filename, function () {
   before(async function () { agent = await common.init(); });
 
-  describe('Session Creation on endpoint', function () {
+  describe('Express Session Creation on endpoint', function () {
     if (settings.dbType !== 'dirty') this.skip;
 
     this.timeout(100);
 
-    for (const endpoint of shouldNotCreateSession) {
+    for (const endpoint of shouldNotCreateExpressSession) {
       it(endpoint, async function () {
         const previousCount = getDatabaseSize();
         await agent.get(endpoint)
@@ -46,7 +46,7 @@ describe(__filename, function () {
       });
     }
 
-    for (const endpoint of shouldCreateSession) {
+    for (const endpoint of shouldCreateExpressSession) {
       const previousCount = getDatabaseSize();
       it(endpoint, async function () {
         await agent.get(endpoint)
