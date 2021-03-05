@@ -41,4 +41,8 @@ module.exports = class SessionStore extends Store {
     logger.debug(`DESTROY ${sid}`);
     DB.db.remove(`sessionstorage:${sid}`, fn);
   }
+
+  store(fn) {
+    Store.length(null, fn);
+  }
 };
