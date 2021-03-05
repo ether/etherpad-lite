@@ -9,10 +9,12 @@
 			"Upwinxp"
 		]
 	},
+	"admin_plugins.description": "Opis",
 	"admin_plugins.last-update": "Zadnja posodobitev",
 	"admin_plugins.name": "Ime",
 	"admin_plugins.version": "Različica",
 	"admin_settings": "Nastavitve",
+	"admin_settings.current_save.value": "Shrani nastavitve",
 	"index.newPad": "Nov dokument",
 	"index.createOpenPad": "ali pa ustvari/odpri dokument z imenom:",
 	"pad.toolbar.bold.title": "Krepko (Ctrl-B)",

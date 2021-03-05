@@ -40,9 +40,20 @@ ENV NODE_ENV=production
 #
 # Running as non-root enables running this image in platforms like OpenShift
 # that do not allow images running as root.
-RUN useradd --uid 5001 --create-home etherpad
+#
+# If any of the following args are set to the empty string, default
+# values will be chosen.
+ARG EP_HOME=
+ARG EP_UID=5001
+ARG EP_GID=0
+ARG EP_SHELL=
+RUN groupadd --system ${EP_GID:+--gid "${EP_GID}" --non-unique} etherpad && \
+    useradd --system ${EP_UID:+--uid "${EP_UID}" --non-unique} --gid etherpad \
+        ${EP_HOME:+--home-dir "${EP_HOME}"} --create-home \
+        ${EP_SHELL:+--shell "${EP_SHELL}"} etherpad
 
-RUN mkdir /opt/etherpad-lite && chown etherpad:0 /opt/etherpad-lite
+ARG EP_DIR=/opt/etherpad-lite
+RUN mkdir -p "${EP_DIR}" && chown etherpad:etherpad "${EP_DIR}"
 
 # install abiword for DOC/PDF/ODT export
 RUN [ -z "${INSTALL_ABIWORD}" ] || (apt update && apt -y install abiword && apt clean && rm -rf /var/lib/apt/lists/*)
@@ -53,24 +64,20 @@ RUN [ -z "${INSTALL_SOFFICE}" ] || (apt update && mkdir -p /usr/share/man/man1 &
 
 USER etherpad
 
-WORKDIR /opt/etherpad-lite
+WORKDIR "${EP_DIR}"
 
-COPY --chown=etherpad:0 ./ ./
+COPY --chown=etherpad:etherpad ./ ./
 
 # install node dependencies for Etherpad
 RUN src/bin/installDeps.sh && \
 	rm -rf ~/.npm/_cacache
 
-# Install the plugins, if ETHERPAD_PLUGINS is not empty.
-#
-# Bash trick: in the for loop ${ETHERPAD_PLUGINS} is NOT quoted, in order to be
-# able to split at spaces.
-RUN for PLUGIN_NAME in ${ETHERPAD_PLUGINS}; do npm install "${PLUGIN_NAME}" || exit 1; done
+RUN [ -z "${ETHERPAD_PLUGINS}" ] || npm install ${ETHERPAD_PLUGINS}
 
 # Copy the configuration file.
-COPY --chown=etherpad:0 ./settings.json.docker /opt/etherpad-lite/settings.json
+COPY --chown=etherpad:etherpad ./settings.json.docker "${EP_DIR}"/settings.json
 
-# Fix permissions for root group
+# Fix group permissions
 RUN chmod -R g=u .
 
 EXPOSE 9001

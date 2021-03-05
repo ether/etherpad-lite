@@ -26,8 +26,8 @@ exports.expressCreateServer = (hookName, args, cb) => {
       epVersion,
       installedPlugins: `<pre>${plugins.formatPlugins().replace(/, /g, '\n')}</pre>`,
       installedParts: `<pre>${plugins.formatParts()}</pre>`,
-      installedServerHooks: `<div>${plugins.formatHooks()}</div>`,
-      installedClientHooks: `<div>${plugins.formatHooks('client_hooks')}</div>`,
+      installedServerHooks: `<div>${plugins.formatHooks('hooks', true)}</div>`,
+      installedClientHooks: `<div>${plugins.formatHooks('client_hooks', true)}</div>`,
       latestVersion: UpdateCheck.getLatestVersion(),
       req,
     }));

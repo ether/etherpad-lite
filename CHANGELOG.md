@@ -1,3 +1,28 @@
+# 1.8.12
+
+Special mention: Thanks to Sauce Labs for additional testing tunnels to help us grow! :)
+
+### Security patches
+
+* Fixed a regression in v1.8.11 which caused some pad names to cause Etherpad to restart.
+
+### Notable fixes
+
+* Fixed a bug in the `dirty` database driver that sometimes caused Node.js to
+  crash during shutdown and lose buffered database writes.
+* Fixed a regression in v1.8.8 that caused "Uncaught TypeError: Cannot read
+  property '0' of undefined" with some plugins (#4885)
+* Less warnings in server console for supported element types on import.
+* Support Azure and other network share installations by using a 
+  more truthful relative path.
+
+### Notable enhancements
+
+* Dependency updates
+* Various Docker deployment improvements
+* Various new translations
+* Improvement of rendering of plugin hook list and error message handling
+
 # 1.8.11
 
 ### Notable fixes
