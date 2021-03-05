@@ -5,6 +5,7 @@ const fs = require('fs');
 const hooks = require('../../../static/js/pluginfw/hooks');
 const plugins = require('../../../static/js/pluginfw/plugins');
 const settings = require('../../utils/Settings');
+const {socketSessionMiddleware} = require('./socketio');
 
 exports.expressCreateServer = (hookName, args, cb) => {
   args.app.get('/admin/settings', (req, res) => {
@@ -19,6 +20,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
 
 exports.socketio = (hookName, args, cb) => {
   const io = args.io.of('/settings');
+  io.use(socketSessionMiddleware);
   io.on('connection', (socket) => {
     const {session: {user: {is_admin: isAdmin} = {}} = {}} = socket.conn.request;
     if (!isAdmin) return;

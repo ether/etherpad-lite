@@ -46,6 +46,25 @@ exports.expressCloseServer = async () => {
   logger.info('All socket.io clients have disconnected');
 };
 
+exports.socketSessionMiddleware = (socket, next) => {
+  const req = socket.request;
+  // Express sets req.ip but socket.io does not. Replicate Express's behavior here.
+  if (req.ip == null) {
+    if (settings.trustProxy) {
+      req.ip = proxyaddr(req, args.app.get('trust proxy fn'));
+    } else {
+      req.ip = socket.handshake.address;
+    }
+  }
+  if (!req.headers.cookie) {
+    // socketio.js-client on node.js doesn't support cookies (see https://git.io/JU8u9), so the
+    // token and express_sid cookies have to be passed via a query parameter for unit tests.
+    req.headers.cookie = socket.handshake.query.cookie;
+  }
+  // See: https://socket.io/docs/faq/#Usage-with-express-session
+  express.sessionMiddleware(req, {}, next);
+};
+
 exports.expressCreateServer = (hookName, args, cb) => {
   // init socket.io and redirect all requests to the MessageHandler
   // there shouldn't be a browser that isn't compatible to all
@@ -77,8 +96,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
   io.on('connection', (socket) => {
     sockets.add(socket);
     socketsEvents.emit('updated');
-    
-    //https://socket.io/docs/v3/faq/index.html
+    // https://socket.io/docs/v3/faq/index.html
     const session = socket.request.session;
     session.connections++;
     session.save();
@@ -89,24 +107,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
     });
   });
 
-  io.use((socket, next) => {
-    const req = socket.request;
-    // Express sets req.ip but socket.io does not. Replicate Express's behavior here.
-    if (req.ip == null) {
-      if (settings.trustProxy) {
-        req.ip = proxyaddr(req, args.app.get('trust proxy fn'));
-      } else {
-        req.ip = socket.handshake.address;
-      }
-    }
-    if (!req.headers.cookie) {
-      // socketio.js-client on node.js doesn't support cookies (see https://git.io/JU8u9), so the
-      // token and express_sid cookies have to be passed via a query parameter for unit tests.
-      req.headers.cookie = socket.handshake.query.cookie;
-    }
-    // See: https://socket.io/docs/faq/#Usage-with-express-session
-    express.sessionMiddleware(req, {}, next);
-  });
+  io.use(exports.socketSessionMiddleware);
 
   // var socketIOLogger = log4js.getLogger("socket.io");
   // Debug logging now has to be set at an environment level, this is stupid.

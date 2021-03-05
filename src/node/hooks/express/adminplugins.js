@@ -7,6 +7,7 @@ const pluginDefs = require('../../../static/js/pluginfw/plugin_defs');
 const plugins = require('../../../static/js/pluginfw/plugins');
 const semver = require('semver');
 const UpdateCheck = require('../../utils/UpdateCheck');
+const {socketSessionMiddleware} = require('./socketio');
 
 exports.expressCreateServer = (hookName, args, cb) => {
   args.app.get('/admin/plugins', (req, res) => {
@@ -38,6 +39,8 @@ exports.expressCreateServer = (hookName, args, cb) => {
 
 exports.socketio = (hookName, args, cb) => {
   const io = args.io.of('/pluginfw/installer');
+  io.use(socketSessionMiddleware);
+
   io.on('connection', (socket) => {
     const {session: {user: {is_admin: isAdmin} = {}} = {}} = socket.conn.request;
     if (!isAdmin) return;
