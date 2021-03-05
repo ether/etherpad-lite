@@ -907,7 +907,11 @@ const textLinesMutator = (lines) => {
       // there may be more chars in the line (newline is not reached)
       const sline = putCurLineInSplice();
       if (!curSplice[sline]) {
-        console.error('curSplice[sline] not populated, actual curSplice contents is ', curSplice, '. Possibly related to https://github.com/ether/etherpad-lite/issues/2802');
+        const err = new Error(
+            'curSplice[sline] not populated, actual curSplice contents is ' +
+            `${JSON.stringify(curSplice)}. Possibly related to ` +
+            'https://github.com/ether/etherpad-lite/issues/2802');
+        console.error(err.stack || err.toString());
       }
       curSplice[sline] = curSplice[sline].substring(0, curCol) + text +
           curSplice[sline].substring(curCol);
