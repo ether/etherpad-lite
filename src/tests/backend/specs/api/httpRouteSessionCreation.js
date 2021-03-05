@@ -3,13 +3,18 @@
 const assert = require('assert').strict;
 const common = require('../../common');
 const settings = require('../../../../node/utils/Settings');
+const staticPathsRE = require('../../../../node/hooks/express/webaccess').staticPathsRE;
 const fs = require('fs');
 let agent;
 
 const shouldCreateExpressSession = [
   '/p/foo',
   '/p/foo/export/html',
+  '/socket.io',
+  '/ep_example',
+  '/admin',
 ];
+
 const shouldNotCreateExpressSession = [
   '/',
   '/api/',
