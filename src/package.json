@@ -61,7 +61,7 @@
     "rehype": "^10.0.0",
     "rehype-minify-whitespace": "^4.0.5",
     "request": "2.88.2",
-    "resolve": "1.19.0",
+    "resolve": "1.20.0",
     "security": "1.0.0",
     "semver": "5.7.1",
     "socket.io": "^2.4.1",
@@ -246,6 +246,6 @@
     "test": "mocha --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
     "test-container": "mocha --timeout 5000 tests/container/specs/api"
   },
-  "version": "1.8.11",
+  "version": "1.8.12",
   "license": "Apache-2.0"
 }
