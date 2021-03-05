@@ -3,8 +3,11 @@
 const assert = require('assert').strict;
 const common = require('../../common');
 const settings = require('../../../../node/utils/Settings');
-const staticPathsRE = require('../../../../node/hooks/express/webaccess').staticPathsRE;
+const shouldNotCreateExpressSession =
+    require('../../../../node/hooks/express/webaccess').staticPaths;
 const fs = require('fs');
+const SessionStore = require('../../../../node/db/SessionStore');
+const store = new SessionStore;
 let agent;
 
 const shouldCreateExpressSession = [
@@ -14,22 +17,6 @@ const shouldCreateExpressSession = [
   '/ep_example',
   '/admin',
 ];
-
-const shouldNotCreateExpressSession = [
-  '/',
-  '/api/',
-  '/favicon.ico',
-  '/locales.json',
-  '/pluginfw/plugin-definitions.json',
-  '/static/js/pad.js',
-  '/stats/',
-];
-
-const getDatabaseSize = () => {
-  const dbFile = settings.dbSettings.filename;
-  const database = fs.readFileSync(settings.dbSettings.filename, 'utf8');
-  return database.split('\n').length;
-}
 
 describe(__filename, function () {
   before(async function () { agent = await common.init(); });
@@ -41,23 +28,29 @@ describe(__filename, function () {
 
     for (const endpoint of shouldNotCreateExpressSession) {
       it(endpoint, async function () {
-        const previousCount = getDatabaseSize();
+        const previousCount = store.length();
         await agent.get(endpoint)
         .expect(200)
         .expect(() => {
-          const newCount = getDatabaseSize();
+          const newCount = store.length();
           assert(newCount === previousCount);
         })
       });
     }
 
-    for (const endpoint of shouldCreateExpressSession) {
-      const previousCount = getDatabaseSize();
+    for (let endpoint of shouldCreateExpressSession) {
+      // clean up endpoint as it's designed for use in regex
+      endpoint = endpoint.split('(')[0];
+      endpoint = endpoint.replace('\\', '');
+      endpoint = endpoint.replace('.*', '');
+      endpoint = endpoint.replace('?', '');
+      const previousCount = store.length();
       it(endpoint, async function () {
         await agent.get(endpoint)
         .expect(200)
         .expect(() => {
-          const newCount = getDatabaseSize();
+          const newCount = store.length();
+          console.log(newCount);
           assert(newCount > previousCount);
         })
       });
