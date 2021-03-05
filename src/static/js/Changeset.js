@@ -160,17 +160,6 @@ exports.newOp = (optOpcode) => ({
 });
 
 /**
- * Clones an Op
- * @param op Op to be cloned
- */
-exports.cloneOp = (op) => ({
-  opcode: op.opcode,
-  chars: op.chars,
-  lines: op.lines,
-  attribs: op.attribs,
-});
-
-/**
  * Copies op1 to op2
  * @param op1 src Op
  * @param op2 dest Op
@@ -180,17 +169,6 @@ exports.copyOp = (op1, op2) => {
   op2.chars = op1.chars;
   op2.lines = op1.lines;
   op2.attribs = op1.attribs;
-};
-
-/**
- * Writes the Op in a string the way that changesets need it
- */
-exports.opString = (op) => {
-  // just for debugging
-  if (!op.opcode) return 'null';
-  const assem = exports.opAssembler();
-  assem.append(op);
-  return assem.toString();
 };
 
 /**
@@ -556,8 +534,6 @@ exports.textLinesMutator = (lines) => {
     lines.splice.apply(lines, s);
   };
 
-  const lines_toSource = () => lines.toSource();
-
   /**
    * Get a line from lines at given index
    * @param {Number} idx an index
@@ -629,10 +605,6 @@ exports.textLinesMutator = (lines) => {
    * @returns {Boolean} true if curLine is in splice
    */
   const isCurLineInSplice = () => (curLine - curSplice[0] < (curSplice.length - 2));
-
-  const debugPrint = (typ) => { /* eslint-disable-line no-unused-vars */
-    print(`${typ}: ${curSplice.toSource()} / ${curLine},${curCol} / ${lines_toSource()}`);
-  };
 
   /**
    * Incorporates current line into the splice
@@ -1424,7 +1396,6 @@ exports.makeSplice = (oldFullText, spliceStart, numRemoved, newText, optNewTextA
  * @param cs Changeset
  */
 exports.toSplices = (cs) => {
-  //
   const unpacked = exports.unpack(cs);
   const splices = [];
 
