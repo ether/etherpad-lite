@@ -25,13 +25,16 @@ describe(__filename, function () {
     if (settings.dbType !== 'dirty') this.skip;
 
     this.timeout(100);
-
     for (const endpoint of shouldNotCreateExpressSession) {
       it(endpoint, async function () {
         const previousCount = store.length();
         await agent.get(endpoint)
         .expect(200)
-        .expect(() => {
+        .expect((res) => {
+          const hasExpressSessionCookie =
+              res.headers['set-cookie'][0].indexOf('express_sid');
+          assert(hasExpressSessionCookie === -1);
+          console.error(res);
           const newCount = store.length();
           assert(newCount === previousCount);
         })
@@ -48,7 +51,11 @@ describe(__filename, function () {
       it(endpoint, async function () {
         await agent.get(endpoint)
         .expect(200)
-        .expect(() => {
+        .expect((res) => {
+          console.error(res.headers['set-cookie']);
+          const hasExpressSessionCookie =
+              res.headers['set-cookie'][0].indexOf('express_sid');
+          assert(hasExpressSessionCookie !== -1);
           const newCount = store.length();
           console.log(newCount);
           assert(newCount > previousCount);
