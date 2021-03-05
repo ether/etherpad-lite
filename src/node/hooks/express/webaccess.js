@@ -23,7 +23,7 @@ const staticPathsRE = new RegExp(`^/(?:${[
   'robots.txt',
   'static/.*',
   'stats/?',
-  'tests/frontend(?:/.*)?'
+  'tests/frontend(?:/.*)?',
 ].join('|')})$`);
 
 exports.normalizeAuthzLevel = (level) => {
@@ -198,3 +198,5 @@ exports.expressConfigure = (hookName, args, cb) => {
   args.app.use((req, res, next) => { checkAccess(req, res, next).catch(next); });
   return cb();
 };
+
+exports.staticPathsRE = staticPathsRE;
