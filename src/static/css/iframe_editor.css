@@ -37,6 +37,11 @@ html.outer-editor, html.inner-editor {
   white-space: normal;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  /*
+   * Make the contenteditable area at least as big as the screen so that mobile
+   * users can tap anywhere to bring up their device's keyboard.
+   */
+  min-height: 100vh;
 }
 
 #innerdocbody, #sidediv {
