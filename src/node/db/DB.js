@@ -24,6 +24,7 @@
 const ueberDB = require('ueberdb2');
 const settings = require('../utils/Settings');
 const log4js = require('log4js');
+const stats = require('../stats');
 const util = require('util');
 
 // set database settings
@@ -46,6 +47,13 @@ exports.init = async () => await new Promise((resolve, reject) => {
       console.error('ERROR: Problem while initalizing the database');
       console.error(err.stack ? err.stack : err);
       process.exit(1);
+    }
+
+    if (db.metrics != null) {
+      for (const [metric, value] of Object.entries(db.metrics)) {
+        if (typeof value !== 'number') continue;
+        stats.gauge(`ueberdb_${metric}`, () => db.metrics[metric]);
+      }
     }
 
     // everything ok, set up Promise-based methods
