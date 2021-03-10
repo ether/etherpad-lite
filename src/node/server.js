@@ -46,6 +46,7 @@ const hooks = require('../static/js/pluginfw/hooks');
 const pluginDefs = require('../static/js/pluginfw/plugin_defs');
 const plugins = require('../static/js/pluginfw/plugins');
 const settings = require('./utils/Settings');
+const stats = require('./stats');
 
 const logger = log4js.getLogger('server');
 
@@ -104,8 +105,6 @@ exports.start = async () => {
     // Check if Etherpad version is up-to-date
     UpdateCheck.check();
 
-    // start up stats counting system
-    const stats = require('./stats');
     stats.gauge('memoryUsage', () => process.memoryUsage().rss);
     stats.gauge('memoryUsageHeap', () => process.memoryUsage().heapUsed);
 
@@ -215,6 +214,7 @@ exports.exit = async (err = null) => {
     logger.info('Received SIGTERM signal');
     err = null;
   } else if (err != null) {
+    logger.error(`Metrics at time of fatal error:\n${JSON.stringify(stats.toJSON(), null, 2)}`);
     logger.error(err.stack || err.toString());
     process.exitCode = 1;
     if (exitCalled) {
