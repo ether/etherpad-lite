@@ -52,7 +52,7 @@
     "lodash.clonedeep": "4.5.0",
     "log4js": "0.6.38",
     "measured-core": "1.51.1",
-    "mime-types": "^2.1.27",
+    "mime-types": "^2.1.29",
     "nodeify": "1.0.1",
     "npm": "6.14.11",
     "openapi-backend": "^3.9.0",
