@@ -5,10 +5,7 @@ html, body {
   padding: 0;
 }
 
-html.timeslider {
-  height: 100%;
-}
-
+/* used in pad and timeslider */
 html.pad, html.pad body {
   overflow: hidden;
   height: 100%;
