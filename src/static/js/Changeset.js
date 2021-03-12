@@ -50,10 +50,9 @@ exports.error = (msg) => {
  * @param b {boolean} assertion condition
  * @param msgParts {string} error to be passed if it fails
  */
-exports.assert = (b, msgParts) => {
+exports.assert = (b, ...msgParts) => {
   if (!b) {
-    const msg = Array.prototype.slice.call(arguments, 1).join('');
-    exports.error(`Failed assertion: ${msg}`);
+    exports.error(`Failed assertion: ${msgParts.join('')}`);
   }
 };
 
