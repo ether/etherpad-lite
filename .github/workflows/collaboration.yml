@@ -38,13 +38,13 @@ jobs:
       run: |
             node src\node\server.js &
             cd src\tests\frontend
-            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json &
-            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json &
-            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json &
-            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json
+            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json --videosFolder cypress/videos/browser1 &
+            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json --videosFolder cypress/videos/browser2 &
+            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json --videosFolder cypress/videos/browser3 &
+            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json --videosFolder cypress/videos/browser4
 
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v2
       if: always()
       with:
         name: cypress-videos
-        path: src/tests/frontend/cypress/videos
+        path: src/tests/frontend/cypress/videos/
