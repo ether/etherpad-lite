@@ -1,0 +1,46 @@
+name: "Multiple clients collaborating on a single pad"
+
+# any branch is useful for testing before a PR is submitted
+on: [push, pull_request]
+
+jobs:
+  build:
+    # run on pushes to any branch
+    # run on PRs from external forks
+    if: |
+         (github.event_name != 'pull_request')
+         || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
+    name: Test
+    runs-on: windows-latest
+
+    steps:
+    - uses: msys2/setup-msys2@v2
+      with:
+        path-type: inherit
+        install: >-
+          zip
+
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - uses: actions/setup-node@v2
+      with:
+        node-version: 12
+
+    - name: Install all dependencies and symlink for ep_etherpad-lite
+      shell: msys2 {0}
+      run: src/bin/installDeps.sh
+
+    - name: Install Cypress
+      run: npm install cypress -g
+
+    - name: Run Etherpad
+      run: |
+            cd etherpad
+            node node_modules\ep_etherpad-lite\node\server.js &
+            curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
+            cd src\tests\frontend
+            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json > client1.txt &
+            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json > client2.txt &
+            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json > client3.txt &
+            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json > client4.txt &
