@@ -47,4 +47,4 @@ jobs:
       if: always()
       with:
         name: cypress-videos
-        path: src/tests/cypress/videos
+        path: src/tests/frontend/cypress/videos
