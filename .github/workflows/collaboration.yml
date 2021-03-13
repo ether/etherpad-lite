@@ -38,9 +38,9 @@ jobs:
       run: |
             node src\node\server.js &
             cd src\tests\frontend
-            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json
-            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json
-            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json
+            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json &
+            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json &
+            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json &
             cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json
 
     - uses: actions/upload-artifact@v1
