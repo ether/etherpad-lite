@@ -37,10 +37,10 @@ jobs:
     - name: Run Etherpad
       run: |
             node src\node\server.js &
-            cd src\tests\frontend
 
     - name: Run Tests
       run: |
+            cd src\tests\frontend
             cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json
             cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json
             cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json
