@@ -38,14 +38,14 @@ jobs:
       run: |
             node src\node\server.js &
             cd src\tests\frontend
+
     - name: Run Tests
-    - run: |
+      run: |
             cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json
             cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json
             cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json
             cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json
 
-    # Test run video was always captured, so this action uses "always()" condition
     - uses: actions/upload-artifact@v1
       if: always()
       with:
