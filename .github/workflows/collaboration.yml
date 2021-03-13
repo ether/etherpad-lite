@@ -41,4 +41,11 @@ jobs:
             cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json > client1.txt &
             cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json > client2.txt &
             cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json > client3.txt &
-            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json > client4.txt &
+            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json > client4.txt
+
+    # Test run video was always captured, so this action uses "always()" condition
+    - uses: actions/upload-artifact@v1
+      if: always()
+      with:
+        name: cypress-videos
+        path: cypress/videos
