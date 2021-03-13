@@ -34,12 +34,9 @@ jobs:
     - name: Install Cypress
       run: npm install cypress -g
 
-    - name: Run Etherpad
+    - name: Run Etherpad & Tests
       run: |
             node src\node\server.js &
-
-    - name: Run Tests
-      run: |
             cd src\tests\frontend
             cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json
             cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json
