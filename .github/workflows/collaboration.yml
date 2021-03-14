@@ -25,6 +25,9 @@ jobs:
     - name: Install all dependencies and symlink for ep_etherpad-lite
       run: src/bin/installDeps.sh
 
+    - name: Install XVFB
+      run: sudo apt-get install xvfb
+
     - name: Install Cypress
       run: npm install cypress -g
 
