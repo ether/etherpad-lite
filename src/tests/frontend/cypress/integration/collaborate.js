@@ -45,7 +45,7 @@ describe(__filename, () => {
     let originalLineCount;
     cy.visit('http://127.0.0.1:9001/p/collab', {timeout: 120000});
     // Until we find a better way, this is required.
-    cy.wait(10000); // wait for Minified JS to be built...
+    cy.wait(20000); // wait for Minified JS to be built...
     cy.get('iframe[name="ace_outer"]', {timeout: 120000}).iframe()
         .find('iframe[name="ace_inner"]').iframe()
         .find('.ace-line:first')
@@ -72,7 +72,7 @@ describe(__filename, () => {
       cy.get('iframe[name="ace_outer"]').iframe()
           .find('iframe[name="ace_inner"]').iframe()
           .find('.ace-line:last')
-          .type(Math.random().toString(36).slice(2));
+          .type(`${Math.random().toString(36).slice(2)} ${Math.random().toString(36).slice(2)}`);
       // shameless copy/pasted from
       // https://stackoverflow.com/questions/10726909/random-alpha-numeric-string-in-javascript
       i++;
@@ -90,5 +90,15 @@ describe(__filename, () => {
           // line count has grown
           expect($inner.find('div').length).to.be.at.least(enterKeyCount + originalLineCount);
         });
+
+    // Now make one final edit and make sure it's visible within 10 ms.
+    cy.get('iframe[name="ace_outer"]').iframe()
+        .find('iframe[name="ace_inner"]').iframe()
+        .find('.ace-line:last')
+        .type(`${Math.random().toString(36).slice(2)} ${Math.random().toString(36).slice(2)}`);
+
+    cy.get('iframe[name="ace_outer"]').iframe()
+        .find('iframe[name="ace_inner"]').iframe()
+        .find('.ace-line:last', {timeout: 10});
   });
 });
