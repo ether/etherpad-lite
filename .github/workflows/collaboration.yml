@@ -31,6 +31,13 @@ jobs:
     - name: Install Cypress
       run: npm install cypress -g
 
+#  - name: Create settings.json
+#    run: cp settings.json.template settings.json
+
+#  - name: Disable import/export rate limiting
+#    run: |
+#      sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 0/' -i settings.json
+
     - name: Run Etherpad & Tests
       run: |
             node src/node/server.js &
@@ -40,8 +47,6 @@ jobs:
             # build first
             xvfb-run -a cypress run --spec cypress/integration/test.js --config-file cypress/cypress.json --config videosFolder=cypress/videos
             # run collaboration tests
-            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config video=false &
-            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config video=false &
             xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config video=false &
             xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config videosFolder=cypress/videos
 
