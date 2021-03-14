@@ -6,7 +6,7 @@
 // We need to get up to 700 lines so the additional space breaks and enter keys
 // in specialKeys are intentional.
 
-const numberOfEdits = 3500; // should be 3500
+const numberOfEdits = 700; // 7000 total
 const specialKeys = ['{{}',
   '{backspace}',
   '{del}',

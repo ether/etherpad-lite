@@ -48,7 +48,15 @@ jobs:
             xvfb-run -a cypress run --spec cypress/integration/test.js --config-file cypress/cypress.json --config video=false
             # run collaboration tests
             xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config video=false &
-            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config videosFolder=cypress/videos,screenshotsFolder=cypress/screenshots
+            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config video=false &
+            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config video=false &
+            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config video=false &
+            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config video=false &
+            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config video=false &
+            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config video=false &
+            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config video=false &
+            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config video=false &
+            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config video=false,screenshotsFolder=cypress/screenshots
 
     - uses: actions/upload-artifact@v2
       if: always()
