@@ -53,5 +53,11 @@ jobs:
     - uses: actions/upload-artifact@v2
       if: always()
       with:
-        name: videos-and-screenshots
-        path: src/tests/frontend/cypress
+        name: cypress-videos
+        path: src/tests/frontend/cypress/videos/
+
+    - uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: cypress-screenshots
+        path: src/tests/frontend/cypress/screenshots/
