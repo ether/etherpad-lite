@@ -48,21 +48,10 @@ jobs:
             xvfb-run -a cypress run --spec cypress/integration/test.js --config-file cypress/cypress.json --config video=false
             # run collaboration tests
             xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config video=false &
-            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config videosFolder=cypress/videos,videoCompression=0,screenshotsFolder=cypress/screenshots
-
-    - name: Sleep for 30 seconds for videos to encode
-      uses: whatnick/wait-action@master
-      with:
-        time: '30s'
+            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config videosFolder=cypress/videos,screenshotsFolder=cypress/screenshots
 
     - uses: actions/upload-artifact@v2
       if: always()
       with:
-        name: cypress-videos
-        path: src/tests/frontend/cypress/videos/
-
-    - uses: actions/upload-artifact@v2
-      if: always()
-      with:
-        name: cypress-screenshots
-        path: src/tests/frontend/cypress/screenshots
+        name: videos-and-screenshots
+        path: src/tests/frontend/cypress
