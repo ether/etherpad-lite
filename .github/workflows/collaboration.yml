@@ -11,14 +11,10 @@ jobs:
          (github.event_name != 'pull_request')
          || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
     name: Test
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
 
     steps:
-    - uses: msys2/setup-msys2@v2
-      with:
-        path-type: inherit
-
     - name: Checkout repository
       uses: actions/checkout@v2
 
@@ -27,7 +23,6 @@ jobs:
         node-version: 12
 
     - name: Install all dependencies and symlink for ep_etherpad-lite
-      shell: msys2 {0}
       run: src/bin/installDeps.sh
 
     - name: Install Cypress
@@ -36,11 +31,11 @@ jobs:
     - name: Run Etherpad & Tests
       run: |
             node src\node\server.js &
+            curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
             cd src\tests\frontend
             cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json --config videosFolder=cypress/videos/browser1 &
-            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json --config videosFolder=cypress/videos/browser2 &
-            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json --config videosFolder=cypress/videos/browser3 &
-            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json --config videosFolder=cypress/videos/browser4
+            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json --config videosFolder=cypress/videos/browser2
+      # We still to do a curl check above just to ensure Etherpad is responding before cypress starts
 
     - uses: actions/upload-artifact@v2
       if: always()
