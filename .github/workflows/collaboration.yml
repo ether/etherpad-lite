@@ -36,13 +36,13 @@ jobs:
             node src/node/server.js &
             curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
             cd src/tests/frontend
-            cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config videosFolder=cypress/videos/browser1 &
-            cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config videosFolder=cypress/videos/browser2 &
-            cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config videosFolder=cypress/videos/browser3 &
-            cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config videosFolder=cypress/videos/browser4
+            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config videosFolder=cypress/videos/browser1 &
+            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config videosFolder=cypress/videos/browser2 &
+            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config videosFolder=cypress/videos/browser3 &
+            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config videosFolder=cypress/videos/browser4
       # We still to do a curl check above just to ensure Etherpad is responding before cypress starts
 
-    - name: Sleep for 30 seconds for all videos to encode
+    - name: Sleep for 30 seconds for videos to encode
       uses: whatnick/wait-action@master
       with:
         time: '30s'
