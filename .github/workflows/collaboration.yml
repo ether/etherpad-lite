@@ -40,9 +40,9 @@ jobs:
             # build first
             xvfb-run -a cypress run --spec cypress/integration/test.js --config-file cypress/cypress.json --config videosFolder=cypress/videos/build
             # run collaboration tests
-            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config videosFolder=cypress/videos/browser1 &
-            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config videosFolder=cypress/videos/browser2 &
-            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config videosFolder=cypress/videos/browser3 &
+            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config video=false &
+            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config video=false &
+            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config video=false &
             xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config videosFolder=cypress/videos/browser4
 
     - name: Sleep for 30 seconds for videos to encode
