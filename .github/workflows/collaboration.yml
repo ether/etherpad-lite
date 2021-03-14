@@ -45,10 +45,10 @@ jobs:
             curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
             cd src/tests/frontend
             # build first
-            xvfb-run -a cypress run --spec cypress/integration/test.js --config-file cypress/cypress.json --config videosFolder=cypress/videos
+            xvfb-run -a cypress run --spec cypress/integration/test.js --config-file cypress/cypress.json --config video=false
             # run collaboration tests
             xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config video=false &
-            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config videosFolder=cypress/videos
+            xvfb-run -a cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config videosFolder=cypress/videos videoCompression=0 screenshotsFolder=cypress/screenshots
 
     - name: Sleep for 30 seconds for videos to encode
       uses: whatnick/wait-action@master
@@ -60,3 +60,9 @@ jobs:
       with:
         name: cypress-videos
         path: src/tests/frontend/cypress/videos/
+
+    - uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: cypress-screenshots
+        path: src/tests/frontend/cypress/screenshots

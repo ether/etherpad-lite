@@ -45,7 +45,6 @@ describe(__filename, () => {
     let originalLineCount;
     cy.visit('http://127.0.0.1:9001/p/collab', {timeout: 120000});
     // Until we find a better way, this is required.
-    cy.wait(20000); // wait for Minified JS to be built...
     cy.get('iframe[name="ace_outer"]', {timeout: 120000}).iframe()
         .find('iframe[name="ace_inner"]').iframe()
         .find('.ace-line:first')
