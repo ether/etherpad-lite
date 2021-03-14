@@ -6,7 +6,7 @@
 // We need to get up to 700 lines so the additional space breaks and enter keys
 // in specialKeys are intentional.
 
-const numberOfEdits = 100;
+const numberOfEdits = 10; // should be 1750
 const specialKeys = ['{{}',
   '{backspace}',
   '{del}',
@@ -72,8 +72,9 @@ describe(__filename, () => {
       cy.get('iframe[name="ace_outer"]').iframe()
           .find('iframe[name="ace_inner"]').iframe()
           .find('.ace-line:last')
-          .type(randomString(16));
-
+          .type(Math.random().toString(36).slice(2));
+      // shameless copy/pasted from
+      // https://stackoverflow.com/questions/10726909/random-alpha-numeric-string-in-javascript
       i++;
     }
 
@@ -91,15 +92,3 @@ describe(__filename, () => {
         });
   });
 });
-
-const randomString = (stringLength) => {
-  let randomstring = '';
-  for (let i = 0; i < stringLength; i++) {
-    const charNumber = Math.random() * (300 - 1) + 1;
-    const str = String.fromCharCode(parseInt(charNumber));
-    // This method generates sufficient noise
-    // It also includes white space and non ASCII Chars
-    randomstring += str;
-  }
-  return randomstring;
-};
