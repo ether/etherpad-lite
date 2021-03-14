@@ -43,10 +43,10 @@ Cypress.Commands.add('iframe', {prevSubject: 'element'},
 describe(__filename, () => {
   it('Makes edits to pad', () => {
     let originalLineCount;
-    cy.visit('http://127.0.0.1:9001/p/collab', {timeout: 30000});
+    cy.visit('http://127.0.0.1:9001/p/collab', {timeout: 120000});
     // Until we find a better way, this is required.
     cy.wait(10000); // wait for Minified JS to be built...
-    cy.get('iframe[name="ace_outer"]', {timeout: 30000}).iframe()
+    cy.get('iframe[name="ace_outer"]', {timeout: 120000}).iframe()
         .find('iframe[name="ace_inner"]').iframe()
         .find('.ace-line:first')
         .should('be.visible');
