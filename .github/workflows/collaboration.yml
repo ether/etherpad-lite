@@ -30,11 +30,11 @@ jobs:
 
     - name: Run Etherpad & Tests
       run: |
-            node src\node\server.js &
+            node src/node/server.js &
             curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
-            cd src\tests\frontend
-            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json --config videosFolder=cypress/videos/browser1 &
-            cypress run --spec cypress\integration\collaborate.js --config-file cypress\cypress.json --config videosFolder=cypress/videos/browser2
+            cd src/tests/frontend
+            cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config videosFolder=cypress/videos/browser1 &
+            cypress run --spec cypress/integration/collaborate.js --config-file cypress/cypress.json --config videosFolder=cypress/videos/browser2
       # We still to do a curl check above just to ensure Etherpad is responding before cypress starts
 
     - uses: actions/upload-artifact@v2
