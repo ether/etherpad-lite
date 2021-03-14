@@ -15,6 +15,10 @@ jobs:
 
 
     steps:
+    - uses: msys2/setup-msys2@v2
+      with:
+        path-type: inherit
+
     - name: Checkout repository
       uses: actions/checkout@v2
 
