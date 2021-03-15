@@ -8,11 +8,11 @@ describe('Responsiveness of Editor', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
     helper.newPad(cb, 'TEST_PAD_collab');
-    this.timeout(120000);
+    this.timeout(1200000);
   });
 
   it('Fast response to keypress in pad with large amount of contents', async function () {
-    this.timeout(120000);
+    this.timeout(1200000);
     if (top.window.location.search.indexOf('&collab=true') === -1) this.skip();
     const numberOfEdits = 3000; // creates 700+ lines
     const allowableLatency = 100; // allow 100 ms of latency to see our edit
