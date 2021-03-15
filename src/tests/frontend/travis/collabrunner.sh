@@ -36,5 +36,5 @@ node remote_runner.js collab
 exit_code=$?
 
 kill "$ep_pid" && wait "$ep_pid"
-log "Done."
+log "Done"
 exit "$exit_code"
