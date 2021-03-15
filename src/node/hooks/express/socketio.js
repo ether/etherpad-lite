@@ -62,7 +62,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
      * falls back to long polling or below.
      *
      * In Etherpad's case, if an operator needs to load balance, he can use the
-     * "express_sid" cookie, and thus "io" is of no use.
+     * "ep_express_sid" cookie, and thus "io" is of no use.
      *
      * Moreover, socket.io API does not offer a way of setting the "secure" flag
      * on it, and thus is a liability.
@@ -98,7 +98,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
     }
     if (!req.headers.cookie) {
       // socketio.js-client on node.js doesn't support cookies (see https://git.io/JU8u9), so the
-      // token and express_sid cookies have to be passed via a query parameter for unit tests.
+      // token and ep_express_sid cookies have to be passed via a query parameter for unit tests.
       req.headers.cookie = socket.handshake.query.cookie;
     }
     // See: https://socket.io/docs/faq/#Usage-with-express-session

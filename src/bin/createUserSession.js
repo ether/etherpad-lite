@@ -47,5 +47,5 @@ const supertest = require('supertest');
   res = await api.post(uri('createSession', {apikey, groupID, authorID, validUntil}));
   if (res.body.code === 1) throw new Error(`Error creating session: ${res.body}`);
   console.log('Session made: ====> create a cookie named sessionID and set the value to',
-      res.body.data.sessionID);
+      res.body.data.ep_sessionID);
 })();

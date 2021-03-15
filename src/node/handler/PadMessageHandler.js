@@ -857,7 +857,7 @@ const createSessionInfoAuth = (sessionInfo, message) => {
   // the sessionId of this connection is still valid
   // since it could have been deleted by the API.
   sessionInfo.auth = {
-    sessionID: message.sessionID,
+    ep_sessionID: message.sessionID,
     padID: message.padId,
     token: message.token,
   };

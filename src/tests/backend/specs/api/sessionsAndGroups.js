@@ -137,8 +137,8 @@ describe(__filename, function () {
           .expect('Content-Type', /json/)
           .expect((res) => {
             assert.equal(res.body.code, 0);
-            assert(res.body.data.sessionID);
-            sessionID = res.body.data.sessionID;
+            assert(res.body.data.ep_sessionID);
+            sessionID = res.body.data.ep_sessionID;
           });
     });
 
@@ -150,8 +150,8 @@ describe(__filename, function () {
           .expect('Content-Type', /json/)
           .expect((res) => {
             assert.equal(res.body.code, 0);
-            assert(res.body.data.sessionID);
-            sessionID = res.body.data.sessionID;
+            assert(res.body.data.ep_sessionID);
+            sessionID = res.body.data.ep_sessionID;
           });
     });
 
@@ -255,8 +255,8 @@ describe(__filename, function () {
           .expect('Content-Type', /json/)
           .expect((res) => {
             assert.equal(res.body.code, 0);
-            assert(res.body.data.sessionID);
-            sessionID = res.body.data.sessionID;
+            assert(res.body.data.ep_sessionID);
+            sessionID = res.body.data.ep_sessionID;
           });
     });
 
