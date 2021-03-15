@@ -8,15 +8,16 @@ describe('Responsiveness of Editor', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
     helper.newPad(cb, 'TEST_PAD_collab');
-    this.timeout(600000);
+    this.timeout(60000000);
   });
 
   it('Fast response to keypress in pad with large amount of contents', async function () {
-    this.timeout(9999999);
+    this.timeout(999999999);
     if (top.window.location.search.indexOf('&collab=true') === -1) this.skip();
-    const numberOfEdits = 1500; // TODO; edit to 1500 or so
+    const numberOfEdits = 3000; // creates ~700 lines
 
-    // wait a minute for everyone to connect
+    // wait a minute for everyone to connect, this is skipped if &test=true is in the url
+    // so that it's easier to do local debug/testing without lots of users connected
     if (top.window.location.search.indexOf('&test=true') === -1) {
       await helper.waitForPromise(
           () => parseInt(helper.padChrome$('#online_count').text()) >= 4, 60000);
