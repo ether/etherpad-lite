@@ -14,7 +14,7 @@ describe('Responsiveness of Editor', function () {
   it('Fast response to keypress in pad with large amount of contents', async function () {
     this.timeout(999999999);
     if (top.window.location.search.indexOf('&collab=true') === -1) this.skip();
-    const numberOfEdits = 3000; // creates ~700 lines
+    const numberOfEdits = 5000; // creates ~700 lines
 
     // wait a minute for everyone to connect, this is skipped if &test=true is in the url
     // so that it's easier to do local debug/testing without lots of users connected
