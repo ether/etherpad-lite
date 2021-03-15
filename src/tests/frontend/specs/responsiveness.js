@@ -18,7 +18,7 @@ describe('Responsiveness of Editor', function () {
 
     // wait a minute for everyone to connect
     await helper.waitForPromise(
-        () => parseInt(helper.padChrome$('#online_count').text()) === 4, 60000);
+        () => parseInt(helper.padChrome$('#online_count').text()) >= 4, 60000);
 
     // send random characters to last div
     let i = 0;
