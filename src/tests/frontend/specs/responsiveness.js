@@ -17,12 +17,14 @@ describe('Responsiveness of Editor', function () {
     const numberOfEdits = 1500; // TODO; edit to 1500 or so
 
     // wait a minute for everyone to connect
-    await helper.waitForPromise(
-        () => parseInt(helper.padChrome$('#online_count').text()) >= 4, 60000);
-
+    if (top.window.location.search.indexOf('&test=true') === -1) {
+      await helper.waitForPromise(
+          () => parseInt(helper.padChrome$('#online_count').text()) >= 4, 60000);
+    }
     // send random characters to last div
     let i = 0;
     while (i < numberOfEdits) {
+      helper.padOuter$('#outerdocbody').scrollTop(helper.padOuter$('#outerdocbody').height());
       // Put the text contents into the pad
       // intentional white space at end of string
       helper.padInner$('div').last().sendkeys('{rightarrow}');
@@ -30,10 +32,11 @@ describe('Responsiveness of Editor', function () {
       helper.padInner$('div').last().sendkeys('{rightarrow}');
       helper.padInner$('div').last().sendkeys('{rightarrow}');
       helper.padInner$('div').last().sendkeys(`${Math.random().toString(36).substring(7)} `);
-      // wait 1500 milliseconds to simulate 40wpm
       // 5% chance for every word we will do an enter
       if (Math.random() < 0.05) helper.padInner$('div').last().sendkeys('{enter}');
-      await wait(1500);
+      // wait 1500 milliseconds to simulate 40wpm if you have 20 authors you would do this
+      // but to speed up the test and as we only have 5 authors, we can do things 4 times faster.
+      await wait(350);
       i++;
     }
     // we shoild probably wait here for all editors to have finished editing.
