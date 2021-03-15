@@ -14,7 +14,7 @@ describe('Responsiveness of Editor', function () {
   it('Fast response to keypress in pad with large amount of contents', async function () {
     this.timeout(9999999);
     if (top.window.location.search.indexOf('&collab=true') === -1) this.skip();
-    const numberOfEdits = 10; // TODO; edit to 1500 or so
+    const numberOfEdits = 100; // TODO; edit to 1500 or so
 
     // wait a minute for everyone to connect
     await helper.waitForPromise(
@@ -36,5 +36,6 @@ describe('Responsiveness of Editor', function () {
       await wait(1500);
       i++;
     }
+    // we shoild probably wait here for all editors to have finished editing.
   });
 });
