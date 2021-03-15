@@ -52,10 +52,6 @@ describe('Responsiveness of Editor', function () {
     await helper.waitForPromise(
         () => helper.padInner$('div').length >= expectedLinesMin, 60000);
 
-    expect(helper.padInner$('div').length).to.be.above(expectedLinesMin);
-    // check span count is > 6*700
-    expect(helper.padInner$('span').length).to.be.above(expectedSpans);
-
     // do an edit, ensure it's on the screen within 200 ms.
     const rand = Math.random().toString(36).substring(7);
     helper.padInner$('div').last().sendkeys(`finaledit: ${rand}`);
