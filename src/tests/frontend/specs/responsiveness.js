@@ -49,6 +49,9 @@ describe('Responsiveness of Editor', function () {
     const expectedLinesMin = numberOfEdits / 4;
     const expectedSpans = expectedLinesMin * 7;
     // check line count is > 700
+    await helper.waitForPromise(
+        () => helper.padInner$('div').length >= expectedLinesMin, 60000);
+
     expect(helper.padInner$('div').length).to.be.above(expectedLinesMin);
     // check span count is > 6*700
     expect(helper.padInner$('span').length).to.be.above(expectedSpans);
@@ -56,7 +59,7 @@ describe('Responsiveness of Editor', function () {
     // do an edit, ensure it's on the screen within 200 ms.
     const rand = Math.random().toString(36).substring(7);
     helper.padInner$('div').last().sendkeys(`finaledit: ${rand}`);
-    helper.waitForPromise(
+    await helper.waitForPromise(
         () => helper.padInner$('div').text().indexOf(rand) !== -1, allowableLatency);
   });
 });
