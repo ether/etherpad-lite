@@ -11,6 +11,7 @@ const config = {
 };
 
 const isAdminRunner = process.argv[2] === 'admin';
+const isCollabRunner = process.argv[2] === 'collab';
 
 let allTestsPassed = true;
 // overwrite the default exit code
@@ -37,8 +38,14 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
   // don't know how to print them into output of the tests
   testSettings.extendedDebugging = true;
   testSettings.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
+  let testURL;
+  if (isCollabRunner) {
+    testURL = 'http://localhost:9001/tests/frontend/index.html?grep=responsiveness%5C.js&collab=true';
+  } else {
+    testURL = 'http://localhost:9001/tests/frontend/';
+  }
 
-  browser.init(testSettings).get('http://localhost:9001/tests/frontend/', () => {
+  browser.init(testSettings).get(testURL, () => {
     const url = `https://saucelabs.com/jobs/${browser.sessionID}`;
     console.log(`Remote sauce test '${name}' started! ${url}`);
 
