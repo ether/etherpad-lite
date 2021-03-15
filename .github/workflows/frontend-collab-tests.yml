@@ -4,8 +4,8 @@ name: "Frontend Collaboration tests powered by Sauce Labs"
 on: [push]
 
 jobs:
-  collab:
-    name: with plugins
+  withoutplugins:
+    name: without plugins
     runs-on: ubuntu-latest
 
     steps:
@@ -22,13 +22,6 @@ jobs:
       with:
         node-version: 12
 
-    # This must be run after installing the plugins, otherwise npm will try to
-    # hoist common dependencies by removing them from src/node_modules and
-    # installing them in the top-level node_modules. As of v6.14.10, npm's hoist
-    # logic appears to be buggy, because it sometimes removes dependencies from
-    # src/node_modules but fails to add them to the top-level node_modules. Even
-    # if npm correctly hoists the dependencies, the hoisting seems to confuse
-    # tools such as `npm outdated`, `npm update`, and some ESLint rules.
     - name: Install all dependencies and symlink for ep_etherpad-lite
       run: src/bin/installDeps.sh
 
@@ -49,7 +42,7 @@ jobs:
         accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
         tunnelIdentifier: ${{ steps.sauce_strings.outputs.tunnel_id }}
 
-    - name: Run the frontend Collaboration tests
+    - name: Run the frontend tests
       shell: bash
       env:
         SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
