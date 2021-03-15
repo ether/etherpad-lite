@@ -14,7 +14,7 @@ describe('Responsiveness of Editor', function () {
   it('Fast response to keypress in pad with large amount of contents', async function () {
     this.timeout(9999999);
     if (top.window.location.search.indexOf('&collab=true') === -1) this.skip();
-    const numberOfEdits = 100; // TODO; edit to 1500 or so
+    const numberOfEdits = 1500; // TODO; edit to 1500 or so
 
     // wait a minute for everyone to connect
     await helper.waitForPromise(
@@ -31,8 +31,8 @@ describe('Responsiveness of Editor', function () {
       helper.padInner$('div').last().sendkeys('{rightarrow}');
       helper.padInner$('div').last().sendkeys(`${Math.random().toString(36).substring(7)} `);
       // wait 1500 milliseconds to simulate 40wpm
-      // 2% chance for every word we will do an enter, 50 words per line?
-      if (Math.random() < 0.02) helper.padInner$('div').last().sendkeys('{enter}');
+      // 5% chance for every word we will do an enter
+      if (Math.random() < 0.05) helper.padInner$('div').last().sendkeys('{enter}');
       await wait(1500);
       i++;
     }
