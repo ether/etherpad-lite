@@ -14,7 +14,7 @@ describe('Responsiveness of Editor', function () {
   it('Fast response to keypress in pad with large amount of contents', async function () {
     this.timeout(999999999);
     if (top.window.location.search.indexOf('&collab=true') === -1) this.skip();
-    const numberOfEdits = 5000; // creates ~700 lines
+    const numberOfEdits = 3000; // creates ~700 lines
 
     // wait a minute for everyone to connect, this is skipped if &test=true is in the url
     // so that it's easier to do local debug/testing without lots of users connected
@@ -40,8 +40,9 @@ describe('Responsiveness of Editor', function () {
         helper.padInner$('div').last().sendkeys('{enter}');
       }
       // wait 1500 milliseconds to simulate 40wpm if you have 20 authors you would do this
-      // but to speed up the test and as we only have 5 authors, we can do things 4 times faster.
-      await wait(350);
+      // but to speed up the test and as we only have 5 authors, we can do things 4 times faster
+      // and a bit more to get the test done on time...
+      await wait(200);
       i++;
     }
     // we shoild probably wait here for all editors to have finished editing.
