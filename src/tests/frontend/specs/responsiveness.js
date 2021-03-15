@@ -47,7 +47,6 @@ describe('Responsiveness of Editor', function () {
       i++;
     }
     const expectedLinesMin = numberOfEdits / 4;
-    const expectedSpans = expectedLinesMin * 7;
     // check line count is > 700
     await helper.waitForPromise(
         () => helper.padInner$('div').length >= expectedLinesMin, 60000);
