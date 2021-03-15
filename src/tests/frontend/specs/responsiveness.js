@@ -14,7 +14,8 @@ describe('Responsiveness of Editor', function () {
   it('Fast response to keypress in pad with large amount of contents', async function () {
     this.timeout(999999999);
     if (top.window.location.search.indexOf('&collab=true') === -1) this.skip();
-    const numberOfEdits = 3000; // creates ~700 lines
+    const numberOfEdits = 3000; // creates 700+ lines
+    const allowableLatency = 100;
 
     // wait a minute for everyone to connect, this is skipped if &test=true is in the url
     // so that it's easier to do local debug/testing without lots of users connected
@@ -45,6 +46,17 @@ describe('Responsiveness of Editor', function () {
       await wait(200);
       i++;
     }
-    // we shoild probably wait here for all editors to have finished editing.
+    const expectedLinesMin = numberOfEdits / 4;
+    const expectedSpans = expectedLinesMin * 7;
+    // check line count is > 700
+    expect(helper.padInner$('div').length).to.be.above(expectedLinesMin);
+    // check span count is > 6*700
+    expect(helper.padInner$('span').length).to.be.above(expectedSpans);
+
+    // do an edit, ensure it's on the screen within 200 ms.
+    const rand = Math.random().toString(36).substring(7);
+    helper.padInner$('div').last().sendkeys(`finaledit: ${rand}`);
+    helper.waitForPromise(
+        () => helper.padInner$('div').text().indexOf(rand) !== -1, allowableLatency);
   });
 });
