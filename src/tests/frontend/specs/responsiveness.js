@@ -22,6 +22,10 @@ describe('Responsiveness of Editor', function () {
     while (i < numberOfEdits) {
       // Put the text contents into the pad
       // intentional white space at end of string
+      helper.padInner$('div').last().sendkeys('{rightarrow}');
+      helper.padInner$('div').last().sendkeys('{rightarrow}');
+      helper.padInner$('div').last().sendkeys('{rightarrow}');
+      helper.padInner$('div').last().sendkeys('{rightarrow}');
       helper.padInner$('div').last().sendkeys(`${Math.random().toString(36).substring(7)} `);
       // wait 1500 milliseconds to simulate 40wpm
       await wait(1500);
