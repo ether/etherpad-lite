@@ -32,9 +32,13 @@ describe('Responsiveness of Editor', function () {
       helper.padInner$('div').last().sendkeys('{rightarrow}');
       helper.padInner$('div').last().sendkeys('{rightarrow}');
       helper.padInner$('div').last().sendkeys('{rightarrow}');
-      helper.padInner$('div').last().sendkeys(`${Math.random().toString(36).substring(7)} `);
+      helper.padInner$('div').last().sendkeys(`${i}: ${Math.random().toString(36).substring(7)} `);
       // 5% chance for every word we will do an enter
-      if (Math.random() < 0.05) helper.padInner$('div').last().sendkeys('{enter}');
+      // This doesn't appear to be working in Chrome?
+      if (Math.random() < 0.05) {
+        helper.padInner$('div').last().sendkeys('{leftarrow}');
+        helper.padInner$('div').last().sendkeys('{enter}');
+      }
       // wait 1500 milliseconds to simulate 40wpm if you have 20 authors you would do this
       // but to speed up the test and as we only have 5 authors, we can do things 4 times faster.
       await wait(350);
