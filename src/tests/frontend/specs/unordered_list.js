@@ -1,6 +1,39 @@
 'use strict';
 
 describe('unordered_list.js', function () {
+  describe('exports correct HTML', function () {
+    // create a new pad before each test run
+    beforeEach(function (cb) {
+      helper.newPad(cb);
+      this.timeout(60000);
+    });
+    it('Creates indented content and ensures HTML looks right', async function () {
+      helper.padInner$('#innerdocbody').text('Hello world');
+      // Coverage for https://github.com/ether/etherpad-lite/issues/4426
+      helper.padChrome$('.buttonicon-indent').click();
+      helper.padChrome$('.buttonicon-indent').click();
+      await helper.waitForPromise(
+          () => helper.padInner$('div').first().find('ul').length !== 0);
+      helper.padChrome$('.buttonicon-insertunorderedlist').click();
+      await helper.waitForPromise(
+          () => helper.padInner$('div').first().find('.list-bullet2').length !== 0);
+
+      let gotHtml;
+      await helper.waitForPromise(async () => {
+        // export this.
+        const link = helper.padChrome$('#exporthtmla').attr('href');
+        const url = new URL(link, helper.padChrome$.window.location.href).href;
+        gotHtml = await $.ajax({url, dataType: 'html'});
+        return gotHtml.indexOf('bullet') !== -1;
+      }, 5000, 1000);
+      const expectedHtml =
+          '<ul class="indent"><li><ul class="bullet"><li>Hello world</ul></li></ul>';
+      if (gotHtml.indexOf(expectedHtml) === -1) {
+        throw new Error(`Expected <body> to contain ${expectedHtml}, got ${gotHtml}`);
+      }
+    });
+  });
+
   describe('assign unordered list', function () {
     // create a new pad before each test run
     beforeEach(function (cb) {
