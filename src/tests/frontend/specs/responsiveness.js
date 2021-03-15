@@ -5,10 +5,11 @@ describe('Responsiveness of Editor', function () {
   // create a new pad before each test run
   beforeEach(function (cb) {
     helper.newPad(cb, 'TEST_PAD_collab');
-    this.timeout(6000);
+    this.timeout(600000);
   });
 
   it('Fast response to keypress in pad with large amount of contents', async function () {
+    this.timeout(9999999);
     if (top.window.location.search.indexOf('&collab=true') === -1) this.skip();
     const numberOfEdits = 10; // TODO; edit to 1500 or so
 
