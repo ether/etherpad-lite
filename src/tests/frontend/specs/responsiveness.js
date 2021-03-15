@@ -1,5 +1,8 @@
 'use strict';
 
+// Wait helper function, for simulating words per minute.
+const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
 // Test for https://github.com/ether/etherpad-lite/issues/1763
 describe('Responsiveness of Editor', function () {
   // create a new pad before each test run
@@ -28,10 +31,10 @@ describe('Responsiveness of Editor', function () {
       helper.padInner$('div').last().sendkeys('{rightarrow}');
       helper.padInner$('div').last().sendkeys(`${Math.random().toString(36).substring(7)} `);
       // wait 1500 milliseconds to simulate 40wpm
+      // 2% chance for every word we will do an enter, 50 words per line?
+      if (Math.random() < 0.02) helper.padInner$('div').last().sendkeys('{enter}');
       await wait(1500);
       i++;
     }
   });
 });
-
-const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
