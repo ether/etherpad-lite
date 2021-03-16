@@ -311,6 +311,11 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
       if (i < textLines.length) {
         nextLine = _analyzeLine(textLines[i + 1], attribLines[i + 1], apool);
       }
+      // lineBulletLevel is used to ensure that the bullet is only drawn on
+      // the <ul> item that needs to display a bullet, this is to stop multiple
+      // bullets being drawn in an indented list.
+      // https://github.com/ether/etherpad-lite/issues/4426 for details.
+      let lineBulletLevel = 1;
       await hooks.aCallAll('getLineHTMLForExport', context);
       // To create list parent elements
       if ((!prevLine || prevLine.listLevel !== line.listLevel) ||
@@ -386,7 +391,13 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
                 pieces.push(`<ol class="${line.listTypeName}">`);
               }
             } else {
-              pieces.push(`<ul class="${line.listTypeName}">`);
+              // listLevel is when we want to include bullet
+              if (lineBulletLevel === line.listLevel) {
+                pieces.push(`<ul class="${line.listTypeName}">`);
+              } else {
+                pieces.push('<ul class="indent">');
+                lineBulletLevel++;
+              }
             }
           }
         }
