@@ -73,10 +73,7 @@ const doConvertTask = (task, callback) => {
       libreOfficeLogger.debug(`Renaming ${sourcePath} to ${task.destFile}`);
       fs.rename(sourcePath, task.destFile, callback);
     },
-  ], (err) => {
-    callback();
-    task.callback(err);
-  });
+  ], callback);
 };
 
 // Conversion tasks will be queued up, so we don't overload the system
@@ -116,17 +113,15 @@ exports.convertFile = (srcFile, destFile, type, callback) => {
         destFile: intermediateFile,
         type: 'odt',
         fileExtension: 'odt',
-        callback,
-      }),
+      }, callback),
       (callback) => queue.push({
         srcFile: intermediateFile,
         destFile,
         type,
-        callback,
         fileExtension,
-      }),
+      }, callback),
     ], callback);
   } else {
-    queue.push({srcFile, destFile, type, callback, fileExtension});
+    queue.push({srcFile, destFile, type, fileExtension}, callback);
   }
 };
