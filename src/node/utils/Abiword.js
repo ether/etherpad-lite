@@ -81,7 +81,6 @@ if (os.type().indexOf('Windows') > -1) {
     abiword.stdin.write(`convert ${task.srcFile} ${task.destFile} ${task.type}\n`);
     stdoutCallback = (err) => {
       callback();
-      console.log('queue continue');
       try {
         task.callback(err);
       } catch (e) {
