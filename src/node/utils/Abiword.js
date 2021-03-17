@@ -77,17 +77,15 @@ if (os.type().indexOf('Windows') > -1) {
   };
   spawnAbiword();
 
-  doConvertTask = (task, callback) => {
+  const queue = async.queue((task, callback) => {
     abiword.stdin.write(`convert ${task.srcFile} ${task.destFile} ${task.type}\n`);
     stdoutCallback = (err) => {
-      callback();
       if (err != null) console.error('Abiword File failed to convert', err);
-      task.callback(err);
+      callback(err);
     };
-  };
+  }, 1);
 
-  const queue = async.queue(doConvertTask, 1);
   exports.convertFile = (srcFile, destFile, type, callback) => {
-    queue.push({srcFile, destFile, type, callback});
+    queue.push({srcFile, destFile, type}, callback);
   };
 }
