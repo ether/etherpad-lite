@@ -59,7 +59,7 @@ if (os.type().indexOf('Windows') > -1) {
     abiword.stderr.on('data', (data) => { stdoutBuffer += data.toString(); });
     abiword.on('exit', (code) => {
       spawnAbiword();
-      stdoutCallback(new Error(`Abiword died with exit code ${code}`));
+      if (stdoutCallback != null) stdoutCallback(new Error(`Abiword died with exit code ${code}`));
     });
     abiword.stdout.on('data', (data) => {
       stdoutBuffer += data.toString();
