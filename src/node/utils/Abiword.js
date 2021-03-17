@@ -81,11 +81,8 @@ if (os.type().indexOf('Windows') > -1) {
     abiword.stdin.write(`convert ${task.srcFile} ${task.destFile} ${task.type}\n`);
     stdoutCallback = (err) => {
       callback();
-      try {
-        task.callback(err);
-      } catch (e) {
-        console.error('Abiword File failed to convert', e);
-      }
+      if (err != null) console.error('Abiword File failed to convert', err);
+      task.callback(err);
     };
   };
 
