@@ -100,11 +100,7 @@ exports.doExport = async (req, res, padId, readOnlyId, type) => {
       // console.log("export handled by plugin", destFile);
     } else {
       // @TODO no Promise interface for convertors (yet)
-      await new Promise((resolve, reject) => {
-        convertor.convertFile(srcFile, destFile, type, (err) => {
-          err ? reject(new Error('convertFailed')) : resolve();
-        });
-      });
+      await util.promisify(convertor.convertFile)(srcFile, destFile, type);
     }
 
     // send the file
