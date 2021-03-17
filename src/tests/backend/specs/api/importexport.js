@@ -226,6 +226,8 @@ const testImports = {
 };
 
 describe(__filename, function () {
+  this.timeout(1000);
+
   before(async function () { agent = await common.init(); });
 
   Object.keys(testImports).forEach((testName) => {
@@ -238,7 +240,6 @@ describe(__filename, function () {
         });
       }
       it('createPad', function (done) {
-        this.timeout(200);
         agent.get(`${endPoint('createPad')}&padID=${testPadId}`)
             .expect((res) => {
               if (res.body.code !== 0) throw new Error('Unable to create new Pad');
@@ -248,7 +249,6 @@ describe(__filename, function () {
       });
 
       it('setHTML', function (done) {
-        this.timeout(150);
         agent.get(`${endPoint('setHTML')}&padID=${testPadId}` +
                   `&html=${encodeURIComponent(test.input)}`)
             .expect((res) => {
@@ -259,7 +259,6 @@ describe(__filename, function () {
       });
 
       it('getHTML', function (done) {
-        this.timeout(150);
         agent.get(`${endPoint('getHTML')}&padID=${testPadId}`)
             .expect((res) => {
               const gotHtml = res.body.data.html;
@@ -283,7 +282,6 @@ describe(__filename, function () {
       });
 
       it('getText', function (done) {
-        this.timeout(100);
         agent.get(`${endPoint('getText')}&padID=${testPadId}`)
             .expect((res) => {
               const gotText = res.body.data.text;
