@@ -35,9 +35,7 @@ if (os.type().indexOf('Windows') > -1) {
     abiword.stdout.on('data', (data) => { stdoutBuffer += data.toString(); });
     abiword.stderr.on('data', (data) => { stdoutBuffer += data.toString(); });
     abiword.on('exit', (code) => {
-      if (code !== 0) {
-        return callback(`Abiword died with exit code ${code}`);
-      }
+      if (code !== 0) return callback(new Error(`Abiword died with exit code ${code}`));
       if (stdoutBuffer !== '') {
         console.log(stdoutBuffer);
       }
@@ -61,13 +59,13 @@ if (os.type().indexOf('Windows') > -1) {
     abiword.stderr.on('data', (data) => { stdoutBuffer += data.toString(); });
     abiword.on('exit', (code) => {
       spawnAbiword();
-      stdoutCallback(`Abiword died with exit code ${code}`);
+      stdoutCallback(new Error(`Abiword died with exit code ${code}`));
     });
     abiword.stdout.on('data', (data) => {
       stdoutBuffer += data.toString();
       // we're searching for the prompt, cause this means everything we need is in the buffer
       if (stdoutBuffer.search('AbiWord:>') !== -1) {
-        const err = stdoutBuffer.search('OK') !== -1 ? null : stdoutBuffer;
+        const err = stdoutBuffer.search('OK') !== -1 ? null : new Error(stdoutBuffer);
         stdoutBuffer = '';
         if (stdoutCallback != null && !firstPrompt) {
           stdoutCallback(err);

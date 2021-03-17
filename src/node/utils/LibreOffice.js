@@ -59,7 +59,8 @@ const doConvertTask = (task, callback) => {
       soffice.on('exit', (code) => {
         clearTimeout(hangTimeout);
         if (code !== 0) {
-          return callback(`LibreOffice died with exit code ${code} and message: ${stdoutBuffer}`);
+          return callback(
+              new Error(`LibreOffice died with exit code ${code} and message: ${stdoutBuffer}`));
         }
         callback();
       });
