@@ -33,11 +33,6 @@ const util = require('util');
 const fsp_writeFile = util.promisify(fs.writeFile);
 const fsp_unlink = util.promisify(fs.unlink);
 
-const converter =
-    settings.soffice != null ? require('../utils/LibreOffice')
-    : settings.abiword != null ? require('../utils/Abiword')
-    : null;
-
 const tempDirectory = os.tmpdir();
 
 /**
@@ -99,6 +94,10 @@ exports.doExport = async (req, res, padId, readOnlyId, type) => {
     if (result.length > 0) {
       // console.log("export handled by plugin", destFile);
     } else {
+      const converter =
+          settings.soffice != null ? require('../utils/LibreOffice')
+          : settings.abiword != null ? require('../utils/Abiword')
+          : null;
       // @TODO no Promise interface for converters (yet)
       await util.promisify(converter.convertFile)(srcFile, destFile, type);
     }
