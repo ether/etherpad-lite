@@ -43,7 +43,7 @@ const tempDirectory = os.tmpdir();
 /**
  * do a requested export
  */
-const doExport = async (req, res, padId, readOnlyId, type) => {
+exports.doExport = async (req, res, padId, readOnlyId, type) => {
   // avoid naming the read-only file as the original pad's id
   let fileName = readOnlyId ? readOnlyId : padId;
 
@@ -78,7 +78,7 @@ const doExport = async (req, res, padId, readOnlyId, type) => {
       const newHTML = await hooks.aCallFirst('exportHTMLSend', html);
       if (newHTML.length) html = newHTML;
       res.send(html);
-      throw 'stop';
+      return;
     }
 
     // else write the html export to a file
@@ -120,12 +120,4 @@ const doExport = async (req, res, padId, readOnlyId, type) => {
 
     await fsp_unlink(destFile);
   }
-};
-
-exports.doExport = (req, res, padId, readOnlyId, type) => {
-  doExport(req, res, padId, readOnlyId, type).catch((err) => {
-    if (err !== 'stop') {
-      throw err;
-    }
-  });
 };
