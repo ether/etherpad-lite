@@ -29,10 +29,9 @@ let doConvertTask;
 // on windows we have to spawn a process for each convertion,
 // cause the plugin abicommand doesn't exist on this platform
 if (os.type().indexOf('Windows') > -1) {
-  let stdoutBuffer = '';
-
   doConvertTask = (task, callback) => {
     const abiword = spawn(settings.abiword, [`--to=${task.destFile}`, task.srcFile]);
+    let stdoutBuffer = '';
     abiword.stdout.on('data', (data) => { stdoutBuffer += data.toString(); });
     abiword.stderr.on('data', (data) => { stdoutBuffer += data.toString(); });
     abiword.on('exit', (code) => {
