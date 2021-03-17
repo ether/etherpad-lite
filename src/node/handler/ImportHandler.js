@@ -55,17 +55,17 @@ const rm = async (path) => {
   }
 };
 
-let convertor = null;
+let converter = null;
 let exportExtension = 'htm';
 
 // load abiword only if it is enabled and if soffice is disabled
 if (settings.abiword != null && settings.soffice == null) {
-  convertor = require('../utils/Abiword');
+  converter = require('../utils/Abiword');
 }
 
 // load soffice only if it is enabled
 if (settings.soffice != null) {
-  convertor = require('../utils/LibreOffice');
+  converter = require('../utils/LibreOffice');
   exportExtension = 'html';
 }
 
@@ -80,8 +80,8 @@ const doImport = async (req, res, padId) => {
   // set html in the pad
   const randNum = Math.floor(Math.random() * 0xFFFFFFFF);
 
-  // setting flag for whether to use convertor or not
-  let useConvertor = (convertor != null);
+  // setting flag for whether to use converter or not
+  let useConverter = (converter != null);
 
   const form = new formidable.IncomingForm();
   form.keepExtensions = true;
@@ -170,18 +170,18 @@ const doImport = async (req, res, padId) => {
   // convert file to html if necessary
   if (!importHandledByPlugin && !directDatabaseAccess) {
     if (fileIsTXT) {
-      // Don't use convertor for text files
-      useConvertor = false;
+      // Don't use converter for text files
+      useConverter = false;
     }
 
     // See https://github.com/ether/etherpad-lite/issues/2572
-    if (fileIsHTML || !useConvertor) {
-      // if no convertor only rename
+    if (fileIsHTML || !useConverter) {
+      // if no converter only rename
       await fs.rename(srcFile, destFile);
     } else {
-      // @TODO - no Promise interface for convertors (yet)
+      // @TODO - no Promise interface for converters (yet)
       await new Promise((resolve, reject) => {
-        convertor.convertFile(srcFile, destFile, exportExtension, (err) => {
+        converter.convertFile(srcFile, destFile, exportExtension, (err) => {
           // catch convert errors
           if (err) {
             logger.warn(`Converting Error: ${err.stack || err}`);
@@ -193,7 +193,7 @@ const doImport = async (req, res, padId) => {
     }
   }
 
-  if (!useConvertor && !directDatabaseAccess) {
+  if (!useConverter && !directDatabaseAccess) {
     // Read the file with no encoding for raw buffer access.
     const buf = await fs.readFile(destFile);
 
@@ -224,7 +224,7 @@ const doImport = async (req, res, padId) => {
 
   // change text of the pad and broadcast the changeset
   if (!directDatabaseAccess) {
-    if (importHandledByPlugin || useConvertor || fileIsHTML) {
+    if (importHandledByPlugin || useConverter || fileIsHTML) {
       try {
         await importHtml.setPadHTML(pad, text);
       } catch (err) {
