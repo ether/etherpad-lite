@@ -38,7 +38,7 @@
     "cookie-parser": "1.4.5",
     "cross-spawn": "^7.0.3",
     "ejs": "^3.1.6",
-    "etherpad-require-kernel": "1.0.9",
+    "etherpad-require-kernel": "1.0.10",
     "etherpad-yajsml": "0.0.4",
     "express": "4.17.1",
     "express-rate-limit": "5.2.5",
