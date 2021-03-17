@@ -102,7 +102,7 @@ exports.doExport = async (req, res, padId, readOnlyId, type) => {
       // @TODO no Promise interface for convertors (yet)
       await new Promise((resolve, reject) => {
         convertor.convertFile(srcFile, destFile, type, (err) => {
-          err ? reject('convertFailed') : resolve();
+          err ? reject(new Error('convertFailed')) : resolve();
         });
       });
     }
