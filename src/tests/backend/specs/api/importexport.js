@@ -239,27 +239,30 @@ describe(__filename, function () {
           done();
         });
       }
-      it('createPad', function (done) {
-        agent.get(`${endPoint('createPad')}&padID=${testPadId}`)
+
+      it('createPad', async function () {
+        await agent.get(`${endPoint('createPad')}&padID=${testPadId}`)
+            .expect(200)
+            .expect('Content-Type', /json/)
             .expect((res) => {
               if (res.body.code !== 0) throw new Error('Unable to create new Pad');
-            })
-            .expect('Content-Type', /json/)
-            .expect(200, done);
+            });
       });
 
-      it('setHTML', function (done) {
-        agent.get(`${endPoint('setHTML')}&padID=${testPadId}` +
-                  `&html=${encodeURIComponent(test.input)}`)
+      it('setHTML', async function () {
+        await agent.get(`${endPoint('setHTML')}&padID=${testPadId}` +
+                        `&html=${encodeURIComponent(test.input)}`)
+            .expect(200)
+            .expect('Content-Type', /json/)
             .expect((res) => {
               if (res.body.code !== 0) throw new Error(`Error:${testName}`);
-            })
-            .expect('Content-Type', /json/)
-            .expect(200, done);
+            });
       });
 
-      it('getHTML', function (done) {
-        agent.get(`${endPoint('getHTML')}&padID=${testPadId}`)
+      it('getHTML', async function () {
+        await agent.get(`${endPoint('getHTML')}&padID=${testPadId}`)
+            .expect(200)
+            .expect('Content-Type', /json/)
             .expect((res) => {
               const gotHtml = res.body.data.html;
               if (gotHtml !== test.wantHTML) {
@@ -276,13 +279,13 @@ describe(__filename, function () {
              Which is a different version of the originally imported one:
              ${test.input}`);
               }
-            })
-            .expect('Content-Type', /json/)
-            .expect(200, done);
+            });
       });
 
-      it('getText', function (done) {
-        agent.get(`${endPoint('getText')}&padID=${testPadId}`)
+      it('getText', async function () {
+        await agent.get(`${endPoint('getText')}&padID=${testPadId}`)
+            .expect(200)
+            .expect('Content-Type', /json/)
             .expect((res) => {
               const gotText = res.body.data.text;
               if (gotText !== test.wantText) {
@@ -299,9 +302,7 @@ describe(__filename, function () {
              Which is a different version of the originally imported one:
              ${test.input}`);
               }
-            })
-            .expect('Content-Type', /json/)
-            .expect(200, done);
+            });
       });
     });
   });
