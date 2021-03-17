@@ -33,7 +33,7 @@ const util = require('util');
 const fsp_writeFile = util.promisify(fs.writeFile);
 const fsp_unlink = util.promisify(fs.unlink);
 
-const convertor =
+const converter =
     settings.soffice != null ? require('../utils/LibreOffice')
     : settings.abiword != null ? require('../utils/Abiword')
     : null;
@@ -91,7 +91,7 @@ exports.doExport = async (req, res, padId, readOnlyId, type) => {
     html = null;
     await TidyHtml.tidy(srcFile);
 
-    // send the convert job to the convertor (abiword, libreoffice, ..)
+    // send the convert job to the converter (abiword, libreoffice, ..)
     const destFile = `${tempDirectory}/etherpad_export_${randNum}.${type}`;
 
     // Allow plugins to overwrite the convert in export process
@@ -99,8 +99,8 @@ exports.doExport = async (req, res, padId, readOnlyId, type) => {
     if (result.length > 0) {
       // console.log("export handled by plugin", destFile);
     } else {
-      // @TODO no Promise interface for convertors (yet)
-      await util.promisify(convertor.convertFile)(srcFile, destFile, type);
+      // @TODO no Promise interface for converters (yet)
+      await util.promisify(converter.convertFile)(srcFile, destFile, type);
     }
 
     // send the file
