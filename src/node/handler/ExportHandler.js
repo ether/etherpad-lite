@@ -33,17 +33,10 @@ const util = require('util');
 const fsp_writeFile = util.promisify(fs.writeFile);
 const fsp_unlink = util.promisify(fs.unlink);
 
-let convertor = null;
-
-// load abiword only if it is enabled
-if (settings.abiword != null) {
-  convertor = require('../utils/Abiword');
-}
-
-// Use LibreOffice if an executable has been defined in the settings
-if (settings.soffice != null) {
-  convertor = require('../utils/LibreOffice');
-}
+const convertor =
+    settings.soffice != null ? require('../utils/LibreOffice')
+    : settings.abiword != null ? require('../utils/Abiword')
+    : null;
 
 const tempDirectory = os.tmpdir();
 

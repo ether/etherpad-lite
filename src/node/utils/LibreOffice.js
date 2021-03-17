@@ -31,10 +31,6 @@ const doConvertTask = (task, callback) => {
   const tmpDir = os.tmpdir();
 
   async.series([
-    /*
-     * use LibreOffice to convert task.srcFile to another format, given in
-     * task.type
-     */
     (callback) => {
       libreOfficeLogger.debug(
           `Converting ${task.srcFile} to format ${task.type}. The result will be put in ${tmpDir}`
@@ -57,32 +53,18 @@ const doConvertTask = (task, callback) => {
         soffice.stdin.pause(); // required to kill hanging threads
         soffice.kill();
       }, 120000);
-
       let stdoutBuffer = '';
-
-      // Delegate the processing of stdout to another function
-      soffice.stdout.on('data', (data) => {
-        stdoutBuffer += data.toString();
-      });
-
-      // Append error messages to the buffer
-      soffice.stderr.on('data', (data) => {
-        stdoutBuffer += data.toString();
-      });
-
+      soffice.stdout.on('data', (data) => { stdoutBuffer += data.toString(); });
+      soffice.stderr.on('data', (data) => { stdoutBuffer += data.toString(); });
       soffice.on('exit', (code) => {
         clearTimeout(hangTimeout);
         if (code !== 0) {
-          // Throw an exception if libreoffice failed
           return callback(`LibreOffice died with exit code ${code} and message: ${stdoutBuffer}`);
         }
-
-        // if LibreOffice exited succesfully, go on with processing
         callback();
       });
     },
 
-    // Move the converted file to the correct place
     (callback) => {
       const filename = path.basename(task.srcFile);
       const sourceFile = `${filename.substr(0, filename.lastIndexOf('.'))}.${task.fileExtension}`;
@@ -91,10 +73,7 @@ const doConvertTask = (task, callback) => {
       fs.rename(sourcePath, task.destFile, callback);
     },
   ], (err) => {
-    // Invoke the callback for the local queue
     callback();
-
-    // Invoke the callback for the task
     task.callback(err);
   });
 };
