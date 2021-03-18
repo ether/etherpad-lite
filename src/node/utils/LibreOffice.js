@@ -110,23 +110,22 @@ exports.convertFile = (srcFile, destFile, type, callback) => {
   // to avoid `Error: no export filter for /tmp/xxxx.doc` error
   if (type === 'doc') {
     const intermediateFile = destFile.replace(/\.doc$/, '.odt');
-    queue.push({
-      srcFile,
-      destFile: intermediateFile,
-      type: 'odt',
-      fileExtension: 'odt',
-      callback: () => {
-        queue.push(
-            {
-              srcFile: intermediateFile,
-              destFile,
-              type,
-              callback,
-              fileExtension,
-            }
-        );
-      },
-    });
+    async.series([
+      (callback) => queue.push({
+        srcFile,
+        destFile: intermediateFile,
+        type: 'odt',
+        fileExtension: 'odt',
+        callback,
+      }),
+      (callback) => queue.push({
+        srcFile: intermediateFile,
+        destFile,
+        type,
+        callback,
+        fileExtension,
+      }),
+    ], callback);
   } else {
     queue.push({srcFile, destFile, type, callback, fileExtension});
   }
