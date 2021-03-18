@@ -109,15 +109,16 @@ exports.convertFile = (srcFile, destFile, type, callback) => {
   // we need to convert to odt first, then to doc
   // to avoid `Error: no export filter for /tmp/xxxx.doc` error
   if (type === 'doc') {
+    const intermediateFile = destFile.replace(/\.doc$/, '.odt');
     queue.push({
       srcFile,
-      destFile: destFile.replace(/\.doc$/, '.odt'),
+      destFile: intermediateFile,
       type: 'odt',
       fileExtension: 'odt',
       callback: () => {
         queue.push(
             {
-              srcFile: srcFile.replace(/\.html$/, '.odt'),
+              srcFile: intermediateFile,
               destFile,
               type,
               callback,
