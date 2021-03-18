@@ -113,6 +113,7 @@ exports.convertFile = (srcFile, destFile, type, callback) => {
       srcFile,
       destFile: destFile.replace(/\.doc$/, '.odt'),
       type: 'odt',
+      fileExtension: 'odt',
       callback: () => {
         queue.push(
             {
