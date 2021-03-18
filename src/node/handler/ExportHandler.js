@@ -98,8 +98,7 @@ exports.doExport = async (req, res, padId, readOnlyId, type) => {
           settings.soffice != null ? require('../utils/LibreOffice')
           : settings.abiword != null ? require('../utils/Abiword')
           : null;
-      // @TODO no Promise interface for converters (yet)
-      await util.promisify(converter.convertFile)(srcFile, destFile, type);
+      await converter.convertFile(srcFile, destFile, type);
     }
 
     // send the file

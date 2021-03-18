@@ -179,17 +179,12 @@ const doImport = async (req, res, padId) => {
       // if no converter only rename
       await fs.rename(srcFile, destFile);
     } else {
-      // @TODO - no Promise interface for converters (yet)
-      await new Promise((resolve, reject) => {
-        converter.convertFile(srcFile, destFile, exportExtension, (err) => {
-          // catch convert errors
-          if (err) {
-            logger.warn(`Converting Error: ${err.stack || err}`);
-            return reject(new ImportError('convertFailed'));
-          }
-          resolve();
-        });
-      });
+      try {
+        await converter.convertFile(srcFile, destFile, exportExtension);
+      } catch (err) {
+        logger.warn(`Converting Error: ${err.stack || err}`);
+        throw new ImportError('convertFailed');
+      }
     }
   }
 

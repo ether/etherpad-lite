@@ -24,27 +24,23 @@ const async = require('async');
 const settings = require('./Settings');
 const os = require('os');
 
-let doConvertTask;
-
 // on windows we have to spawn a process for each convertion,
 // cause the plugin abicommand doesn't exist on this platform
 if (os.type().indexOf('Windows') > -1) {
-  doConvertTask = (task, callback) => {
-    const abiword = spawn(settings.abiword, [`--to=${task.destFile}`, task.srcFile]);
+  exports.convertFile = async (srcFile, destFile, type) => {
+    const abiword = spawn(settings.abiword, [`--to=${destFile}`, srcFile]);
     let stdoutBuffer = '';
     abiword.stdout.on('data', (data) => { stdoutBuffer += data.toString(); });
     abiword.stderr.on('data', (data) => { stdoutBuffer += data.toString(); });
-    abiword.on('exit', (code) => {
-      if (code !== 0) return callback(new Error(`Abiword died with exit code ${code}`));
-      if (stdoutBuffer !== '') {
-        console.log(stdoutBuffer);
-      }
-      callback();
+    await new Promise((resolve, reject) => {
+      abiword.on('exit', (code) => {
+        if (code !== 0) return reject(new Error(`Abiword died with exit code ${code}`));
+        if (stdoutBuffer !== '') {
+          console.log(stdoutBuffer);
+        }
+        resolve();
+      });
     });
-  };
-
-  exports.convertFile = (srcFile, destFile, type, callback) => {
-    doConvertTask({srcFile, destFile, type}, callback);
   };
   // on unix operating systems, we can start abiword with abicommand and
   // communicate with it via stdin/stdout
@@ -85,7 +81,7 @@ if (os.type().indexOf('Windows') > -1) {
     };
   }, 1);
 
-  exports.convertFile = (srcFile, destFile, type, callback) => {
-    queue.push({srcFile, destFile, type}, callback);
+  exports.convertFile = async (srcFile, destFile, type) => {
+    await queue.pushAsync({srcFile, destFile, type});
   };
 }
