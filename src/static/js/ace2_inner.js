@@ -3895,44 +3895,41 @@ function Ace2Inner(editorInfo) {
   editorInfo.ace_performDocumentApplyAttributesToRange =
       (...args) => documentAttributeManager.setAttributesOnRange(...args);
 
-  this.init = (cb) => {
-    $(document).ready(() => {
-      doc = document; // defined as a var in scope outside
-      inCallStack('setup', () => {
-        const body = doc.getElementById('innerdocbody');
-        root = body; // defined as a var in scope outside
-        if (browser.firefox) $(root).addClass('mozilla');
-        if (browser.safari) $(root).addClass('safari');
-        root.classList.toggle('authorColors', true);
-        root.classList.toggle('doesWrap', doesWrap);
+  this.init = async () => {
+    await $.ready;
+    doc = document; // defined as a var in scope outside
+    inCallStack('setup', () => {
+      const body = doc.getElementById('innerdocbody');
+      root = body; // defined as a var in scope outside
+      if (browser.firefox) $(root).addClass('mozilla');
+      if (browser.safari) $(root).addClass('safari');
+      root.classList.toggle('authorColors', true);
+      root.classList.toggle('doesWrap', doesWrap);
 
-        initDynamicCSS();
+      initDynamicCSS();
 
-        enforceEditability();
+      enforceEditability();
 
-        // set up dom and rep
-        while (root.firstChild) root.removeChild(root.firstChild);
-        const oneEntry = createDomLineEntry('');
-        doRepLineSplice(0, rep.lines.length(), [oneEntry]);
-        insertDomLines(null, [oneEntry.domInfo]);
-        rep.alines = Changeset.splitAttributionLines(
-            Changeset.makeAttribution('\n'), '\n');
+      // set up dom and rep
+      while (root.firstChild) root.removeChild(root.firstChild);
+      const oneEntry = createDomLineEntry('');
+      doRepLineSplice(0, rep.lines.length(), [oneEntry]);
+      insertDomLines(null, [oneEntry.domInfo]);
+      rep.alines = Changeset.splitAttributionLines(
+          Changeset.makeAttribution('\n'), '\n');
 
-        bindTheEventHandlers();
-      });
+      bindTheEventHandlers();
+    });
 
-      hooks.callAll('aceInitialized', {
-        editorInfo,
-        rep,
-        documentAttributeManager,
-      });
-
-      scheduler.setTimeout(cb, 0);
+    hooks.callAll('aceInitialized', {
+      editorInfo,
+      rep,
+      documentAttributeManager,
     });
   };
 }
 
-exports.init = (editorInfo, cb) => {
+exports.init = async (editorInfo) => {
   const editor = new Ace2Inner(editorInfo);
-  editor.init(cb);
+  await editor.init();
 };

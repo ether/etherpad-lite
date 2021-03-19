@@ -307,8 +307,7 @@ const Ace2Editor = function () {
     await new Promise((resolve, reject) => innerWindow.plugins.ensure(
         (err) => err != null ? reject(err) : resolve()));
     debugLog('Ace2Editor.init() waiting for Ace2Inner.init()');
-    await new Promise((resolve, reject) => innerWindow.Ace2Inner.init(
-        info, (err) => err != null ? reject(err) : resolve()));
+    await innerWindow.Ace2Inner.init(info);
     debugLog('Ace2Editor.init() Ace2Inner.init() returned');
     loaded = true;
     doActionsPendingInit();
