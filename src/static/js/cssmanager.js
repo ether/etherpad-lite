@@ -43,7 +43,9 @@ const makeCSSManager = (emptyStylesheetTitle, doc) => {
     for (const s of win.document.styleSheets) {
       if (s.title === title) return s;
     }
-    return null;
+    const err = new Error(`no sheet with title ${title} in doc ${doc}`)
+    console.error(err);
+    throw err;
   };
 
   const browserSheet = getSheetByTitle(emptyStylesheetTitle);
