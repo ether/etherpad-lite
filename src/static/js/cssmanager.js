@@ -40,13 +40,8 @@ const makeCSSManager = (emptyStylesheetTitle, doc) => {
     } else {
       throw new Error('Unknown dynamic style container');
     }
-    const allSheets = win.document.styleSheets;
-
-    for (let i = 0; i < allSheets.length; i++) {
-      const s = allSheets[i];
-      if (s.title === title) {
-        return s;
-      }
+    for (const s of win.document.styleSheets) {
+      if (s.title === title) return s;
     }
     return null;
   };
