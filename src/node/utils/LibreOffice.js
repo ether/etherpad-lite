@@ -74,10 +74,7 @@ const doConvertTask = async (task) => {
 };
 
 // Conversion tasks will be queued up, so we don't overload the system
-const queue = async.queue(
-    // For some reason util.callbackify() throws "TypeError [ERR_INVALID_ARG_TYPE]: The last
-    // argument must be of type Function. Received type object" on Node.js 10.x.
-    (task, cb) => doConvertTask(task).then(() => cb(), (err) => cb(err || new Error(err))), 1);
+const queue = async.queue(doConvertTask, 1);
 
 /**
  * Convert a file from one type to another
