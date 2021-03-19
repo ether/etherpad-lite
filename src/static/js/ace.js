@@ -64,30 +64,9 @@ const eventFired = async (obj, event, cleanups = [], predicate = () => true) => 
   });
 };
 
-const pollCondition = async (predicate, cleanups, pollPeriod, timeout) => {
-  let done = false;
-  cleanups.push(() => { done = true; });
-  // Pause a tick to give the predicate a chance to become true before adding latency.
-  await new Promise((resolve) => setTimeout(resolve, 0));
-  const start = Date.now();
-  while (!done && !predicate()) {
-    if (Date.now() - start > timeout) throw new Error('timeout');
-    await new Promise((resolve) => setTimeout(resolve, pollPeriod));
-    debugLog('Ace2Editor.init() polling');
-  }
-  if (!done) debugLog('Ace2Editor.init() poll condition became true');
-};
-
-// Resolves when the frame's document is ready to be mutated:
-//   - Firefox seems to replace the frame's contentWindow.document object with a different object
-//     after the frame is created so we need to wait for the window's load event before continuing.
-//   - Chrome doesn't need any waiting (not even next tick), but on Windows it never seems to fire
-//     any events. Eventually the document's readyState becomes 'complete' (even though it never
-//     fires a readystatechange event), so this function waits for that to happen to avoid returning
-//     too soon on Firefox.
-//   - Safari behaves like Chrome.
-// I'm not sure how other browsers behave, so this function throws the kitchen sink at the problem.
-// Maybe one day we'll find a concise general solution.
+// Resolves when the frame's document is ready to be mutated. Browsers seem to be quirky about
+// iframe ready events so this function throws the kitchen sink at the problem. Maybe one day we'll
+// find a concise general solution.
 const frameReady = async (frame) => {
   // Can't do `const doc = frame.contentDocument;` because Firefox seems to asynchronously replace
   // the document object after the frame is first created for some reason. ¯\_(ツ)_/¯
@@ -100,8 +79,6 @@ const frameReady = async (frame) => {
       eventFired(doc(), 'load', cleanups),
       eventFired(doc(), 'DOMContentLoaded', cleanups),
       eventFired(doc(), 'readystatechange', cleanups, () => doc.readyState === 'complete'),
-      // If all else fails, poll.
-      pollCondition(() => doc().readyState === 'complete', cleanups, 10, 5000),
     ]);
   } finally {
     for (const cleanup of cleanups) cleanup();
@@ -213,23 +190,27 @@ const Ace2Editor = function () {
     outerFrame.name = 'ace_outer';
     outerFrame.frameBorder = 0; // for IE
     outerFrame.title = 'Ether';
+    // Some browsers do strange things unless the iframe has a src or srcdoc property:
+    //   - Firefox replaces the frame's contentWindow.document object with a different object after
+    //     the frame is created. This can be worked around by waiting for the window's load event
+    //     before continuing.
+    //   - Chrome never fires any events on the frame or document. Eventually the document's
+    //     readyState becomes 'complete' even though it never fires a readystatechange event.
+    //   - Safari behaves like Chrome.
+    outerFrame.srcdoc = '<!DOCTYPE html>';
     info.frame = outerFrame;
     document.getElementById(containerId).appendChild(outerFrame);
     const outerWindow = outerFrame.contentWindow;
 
-    // For some unknown reason Firefox replaces outerWindow.document with a new Document object some
-    // time between running the above code and firing the outerWindow load event. Work around it by
-    // waiting until the load event fires before mutating the Document object.
     debugLog('Ace2Editor.init() waiting for outer frame');
     await frameReady(outerFrame);
     debugLog('Ace2Editor.init() outer frame ready');
 
-    // This must be done after the Window's load event. See above comment.
+    // Firefox might replace the outerWindow.document object after iframe creation so this variable
+    // is assigned after the Window's load event.
     const outerDocument = outerWindow.document;
 
     // <html> tag
-    outerDocument.insertBefore(
-        outerDocument.implementation.createDocumentType('html', '', ''), outerDocument.firstChild);
     outerDocument.documentElement.classList.add('outer-editor', 'outerdoc', ...skinVariants);
 
     // <head> tag
@@ -257,21 +238,22 @@ const Ace2Editor = function () {
     innerFrame.scrolling = 'no';
     innerFrame.frameBorder = 0;
     innerFrame.allowTransparency = true; // for IE
+    // The iframe MUST have a src or srcdoc property to avoid browser quirks. See the comment above
+    // outerFrame.srcdoc.
+    innerFrame.srcdoc = '<!DOCTYPE html>';
     innerFrame.ace_outerWin = outerWindow;
     outerDocument.body.insertBefore(innerFrame, outerDocument.body.firstChild);
     const innerWindow = innerFrame.contentWindow;
 
-    // Wait before mutating the inner document. See above comment recarding outerWindow load.
     debugLog('Ace2Editor.init() waiting for inner frame');
     await frameReady(innerFrame);
     debugLog('Ace2Editor.init() inner frame ready');
 
-    // This must be done after the Window's load event. See above comment.
+    // Firefox might replace the innerWindow.document object after iframe creation so this variable
+    // is assigned after the Window's load event.
     const innerDocument = innerWindow.document;
 
     // <html> tag
-    innerDocument.insertBefore(
-        innerDocument.implementation.createDocumentType('html', '', ''), innerDocument.firstChild);
     innerDocument.documentElement.classList.add('inner-editor', ...skinVariants);
 
     // <head> tag
