@@ -468,14 +468,14 @@ const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
   BroadcastSlider.onSlider(goToRevisionIfEnabled);
 
-  const dynamicCSS = makeCSSManager('dynamicsyntax');
+  const dynamicCSS = makeCSSManager(document.querySelector('style[title="dynamicsyntax"]').sheet);
   const authorData = {};
 
   const receiveAuthorData = (newAuthorData) => {
     for (const [author, data] of Object.entries(newAuthorData)) {
       const bgcolor = typeof data.colorId === 'number'
         ? clientVars.colorPalette[data.colorId] : data.colorId;
-      if (bgcolor && dynamicCSS) {
+      if (bgcolor) {
         const selector = dynamicCSS.selectorStyle(`.${linestylefilter.getAuthorClassName(author)}`);
         selector.backgroundColor = bgcolor;
         selector.color = (colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.5)
