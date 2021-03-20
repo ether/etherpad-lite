@@ -41,7 +41,7 @@
     "etherpad-require-kernel": "1.0.9",
     "etherpad-yajsml": "0.0.4",
     "express": "4.17.1",
-    "express-rate-limit": "5.2.5",
+    "express-rate-limit": "5.2.6",
     "express-session": "1.17.1",
     "find-root": "1.1.0",
     "formidable": "1.2.2",
