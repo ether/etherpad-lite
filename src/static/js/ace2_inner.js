@@ -1475,27 +1475,25 @@ function Ace2Inner(editorInfo, cssManagers) {
       throw new Error(`doRepApplyChangeset length mismatch: ${errMsg}`);
     }
 
-    ((changes) => {
-      const editEvent = currentCallStack.editEvent;
-      if (editEvent.eventType === 'nonundoable') {
-        if (!editEvent.changeset) {
-          editEvent.changeset = changes;
-        } else {
-          editEvent.changeset = Changeset.compose(editEvent.changeset, changes, rep.apool);
-        }
+    const editEvent = currentCallStack.editEvent;
+    if (editEvent.eventType === 'nonundoable') {
+      if (!editEvent.changeset) {
+        editEvent.changeset = changes;
       } else {
-        const inverseChangeset = Changeset.inverse(changes, {
-          get: (i) => `${rep.lines.atIndex(i).text}\n`,
-          length: () => rep.lines.length(),
-        }, rep.alines, rep.apool);
-
-        if (!editEvent.backset) {
-          editEvent.backset = inverseChangeset;
-        } else {
-          editEvent.backset = Changeset.compose(inverseChangeset, editEvent.backset, rep.apool);
-        }
+        editEvent.changeset = Changeset.compose(editEvent.changeset, changes, rep.apool);
       }
-    })(changes);
+    } else {
+      const inverseChangeset = Changeset.inverse(changes, {
+        get: (i) => `${rep.lines.atIndex(i).text}\n`,
+        length: () => rep.lines.length(),
+      }, rep.alines, rep.apool);
+
+      if (!editEvent.backset) {
+        editEvent.backset = inverseChangeset;
+      } else {
+        editEvent.backset = Changeset.compose(inverseChangeset, editEvent.backset, rep.apool);
+      }
+    }
 
     Changeset.mutateAttributionLines(changes, rep.alines, rep.apool);
 
