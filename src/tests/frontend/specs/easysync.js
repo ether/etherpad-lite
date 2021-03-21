@@ -92,7 +92,7 @@ describe('easysync', function () {
   const runMutationTest = (testId, origLines, muts, correct) => {
     it(`runMutationTest#${testId}`, async function () {
       let lines = origLines.slice();
-      const mu = Changeset.exportedForTestingOnly.textLinesMutator(lines);
+      const mu = new Changeset.exportedForTestingOnly.TextLinesMutator(lines);
       applyMutations(mu, muts);
       mu.close();
       expect(lines).to.eql(correct);
@@ -211,7 +211,7 @@ describe('easysync', function () {
     const lines = ['1\n', '2\n', '3\n', '4\n'];
     let mu;
 
-    mu = Changeset.exportedForTestingOnly.textLinesMutator(lines);
+    mu = new Changeset.exportedForTestingOnly.TextLinesMutator(lines);
     expect(mu.hasMore()).to.be(true);
     mu.skip(8, 4);
     expect(mu.hasMore()).to.be(false);
@@ -219,7 +219,7 @@ describe('easysync', function () {
     expect(mu.hasMore()).to.be(false);
 
     // still 1,2,3,4
-    mu = Changeset.exportedForTestingOnly.textLinesMutator(lines);
+    mu = new Changeset.exportedForTestingOnly.TextLinesMutator(lines);
     expect(mu.hasMore()).to.be(true);
     mu.remove(2, 1);
     expect(mu.hasMore()).to.be(true);
@@ -235,7 +235,7 @@ describe('easysync', function () {
     expect(mu.hasMore()).to.be(false);
 
     // 2,3,4,5 now
-    mu = Changeset.exportedForTestingOnly.textLinesMutator(lines);
+    mu = new Changeset.exportedForTestingOnly.TextLinesMutator(lines);
     expect(mu.hasMore()).to.be(true);
     mu.remove(6, 3);
     expect(mu.hasMore()).to.be(true);
