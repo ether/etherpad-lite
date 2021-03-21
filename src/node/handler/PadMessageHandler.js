@@ -1256,39 +1256,22 @@ const getChangesetInfo = async (padId, startNum, endNum, granularity) => {
     revTimesNeeded.push(end - 1);
   }
 
-  // get all needed db values parallel - no await here since
-  // it would make all the lookups run in series
-
-  // get all needed composite Changesets
+  // Get all needed db values in parallel.
   const composedChangesets = {};
-  const p1 = Promise.all(
-      compositesChangesetNeeded.map(
-          (item) => composePadChangesets(
-              padId, item.start, item.end
-          ).then(
-              (changeset) => {
-                composedChangesets[`${item.start}/${item.end}`] = changeset;
-              }
-          )
-      )
-  );
-
-  // get all needed revision Dates
   const revisionDate = [];
-  const p2 = Promise.all(revTimesNeeded.map((revNum) => pad.getRevisionDate(revNum)
-      .then((revDate) => {
-        revisionDate[revNum] = Math.floor(revDate / 1000);
-      })
-  ));
-
-  // get the lines
-  let lines;
-  const p3 = getPadLines(padId, startNum - 1).then((_lines) => {
-    lines = _lines;
-  });
-
-  // wait for all of the above to complete
-  await Promise.all([p1, p2, p3]);
+  const [lines] = await Promise.all([
+    getPadLines(padId, startNum - 1),
+    // Get all needed composite Changesets.
+    ...compositesChangesetNeeded.map(async (item) => {
+      const changeset = await composePadChangesets(padId, item.start, item.end);
+      composedChangesets[`${item.start}/${item.end}`] = changeset;
+    }),
+    // Get all needed revision Dates.
+    ...revTimesNeeded.map(async (revNum) => {
+      const revDate = await pad.getRevisionDate(revNum);
+      revisionDate[revNum] = Math.floor(revDate / 1000);
+    }),
+  ]);
 
   // doesn't know what happens here exactly :/
   const timeDeltas = [];
