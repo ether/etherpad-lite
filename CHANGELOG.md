@@ -1,5 +1,11 @@
 # 1.8.13
 
+Note to plugin developers: If you link to static resources (CSS, JS) ensure that you include a version string, so that after updates clients get the most recent version of a file.
+
+In the backend you'd need to `const settings = require('ep_etherpad-lite/node/utils/Settings');` and include the version string by appending `?v=${settings.randomVersionString}` to the resource.
+
+For client side code take a look at https://github.com/ether/etherpad-require-kernel/blob/master/kernel.js#L270 on how to accomplish the same. Basically, you need to grab randomVersionString from clientVars, which is in scope of the ace_outer's parent window (when embedding pads this is not window.top!).
+
 ### Notable fixes
 
 * Fixed a bug in the safeRun.sh script (#4935)
