@@ -43,6 +43,10 @@
   * Changes to the `src/static/js/Changeset.js` library:
     * `opIterator()`: The unused start index parameter has been removed, as has
       the unused `lastIndex()` method on the returned object.
+    * Several functions that should have never been public are no longer
+      exported: `applyZip()`, `assert()`, `clearOp()`, `cloneOp()`, `copyOp()`,
+      `error()`, `followAttributes()`, `opString()`, `stringOp()`,
+      `textLinesMutator()`, `toBaseTen()`, `toSplices()`.
 
 ### Notable enhancements
 

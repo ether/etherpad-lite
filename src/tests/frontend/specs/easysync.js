@@ -92,7 +92,7 @@ describe('easysync', function () {
   const runMutationTest = (testId, origLines, muts, correct) => {
     it(`runMutationTest#${testId}`, async function () {
       let lines = origLines.slice();
-      const mu = Changeset.textLinesMutator(lines);
+      const mu = Changeset.exportedForTestingOnly.textLinesMutator(lines);
       applyMutations(mu, muts);
       mu.close();
       expect(lines).to.eql(correct);
@@ -211,7 +211,7 @@ describe('easysync', function () {
     const lines = ['1\n', '2\n', '3\n', '4\n'];
     let mu;
 
-    mu = Changeset.textLinesMutator(lines);
+    mu = Changeset.exportedForTestingOnly.textLinesMutator(lines);
     expect(mu.hasMore()).to.be(true);
     mu.skip(8, 4);
     expect(mu.hasMore()).to.be(false);
@@ -219,7 +219,7 @@ describe('easysync', function () {
     expect(mu.hasMore()).to.be(false);
 
     // still 1,2,3,4
-    mu = Changeset.textLinesMutator(lines);
+    mu = Changeset.exportedForTestingOnly.textLinesMutator(lines);
     expect(mu.hasMore()).to.be(true);
     mu.remove(2, 1);
     expect(mu.hasMore()).to.be(true);
@@ -235,7 +235,7 @@ describe('easysync', function () {
     expect(mu.hasMore()).to.be(false);
 
     // 2,3,4,5 now
-    mu = Changeset.textLinesMutator(lines);
+    mu = Changeset.exportedForTestingOnly.textLinesMutator(lines);
     expect(mu.hasMore()).to.be(true);
     mu.remove(6, 3);
     expect(mu.hasMore()).to.be(true);
@@ -610,8 +610,8 @@ describe('easysync', function () {
 
     const testFollow = (a, b, afb, bfa, merge) => {
       it(`testFollow manual #${++n}`, async function () {
-        expect(Changeset.followAttributes(a, b, p)).to.equal(afb);
-        expect(Changeset.followAttributes(b, a, p)).to.equal(bfa);
+        expect(Changeset.exportedForTestingOnly.followAttributes(a, b, p)).to.equal(afb);
+        expect(Changeset.exportedForTestingOnly.followAttributes(b, a, p)).to.equal(bfa);
         expect(Changeset.composeAttributes(a, afb, true, p)).to.equal(merge);
         expect(Changeset.composeAttributes(b, bfa, true, p)).to.equal(merge);
       });
@@ -701,7 +701,7 @@ describe('easysync', function () {
       [5, 8, '123456789'],
       [9, 17, 'abcdefghijk'],
     ];
-    expect(Changeset.toSplices(cs)).to.eql(correctSplices);
+    expect(Changeset.exportedForTestingOnly.toSplices(cs)).to.eql(correctSplices);
   });
 
   const testCharacterRangeFollow = (testId, cs, oldRange, insertionsAfter, correctNewRange) => {
