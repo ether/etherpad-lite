@@ -1450,7 +1450,6 @@ function Ace2Inner(editorInfo, cssManagers) {
     }
 
     const linesMutatee = {
-      // TODO: Rhansen to check usage of args here.
       splice: (start, numRemoved, ...args) => {
         domAndRepSplice(start, numRemoved, args.map((s) => s.slice(0, -1)));
       },
