@@ -1771,33 +1771,26 @@ exports.copyAText = (atext1, atext2) => {
 exports.appendATextToAssembler = (atext, assem) => {
   // intentionally skips last newline char of atext
   const iter = exports.opIterator(atext.attribs);
+  let lastOp = null;
   while (iter.hasNext()) {
-    const op = iter.next();
-    if (!iter.hasNext()) {
-      // last op, exclude final newline
-      if (op.lines <= 1) {
-        op.lines = 0;
-        op.chars--;
-        if (op.chars) {
-          assem.append(op);
-        }
-      } else {
-        const nextToLastNewlineEnd =
-        atext.text.lastIndexOf('\n', atext.text.length - 2) + 1;
-        const lastLineLength = atext.text.length - nextToLastNewlineEnd - 1;
-        op.lines--;
-        op.chars -= (lastLineLength + 1);
-        assem.append(op);
-        op.lines = 0;
-        op.chars = lastLineLength;
-        if (op.chars) {
-          assem.append(op);
-        }
-      }
-    } else {
-      assem.append(op);
-    }
+    if (lastOp != null) assem.append(lastOp);
+    lastOp = iter.next();
   }
+  if (lastOp == null) return;
+  // exclude final newline
+  if (lastOp.lines <= 1) {
+    lastOp.lines = 0;
+    lastOp.chars--;
+  } else {
+    const nextToLastNewlineEnd = atext.text.lastIndexOf('\n', atext.text.length - 2) + 1;
+    const lastLineLength = atext.text.length - nextToLastNewlineEnd - 1;
+    lastOp.lines--;
+    lastOp.chars -= (lastLineLength + 1);
+    assem.append(lastOp);
+    lastOp.lines = 0;
+    lastOp.chars = lastLineLength;
+  }
+  if (lastOp.chars) assem.append(lastOp);
 };
 
 /**
