@@ -1,3 +1,26 @@
+# 1.8.13
+
+### Notable fixes
+
+* Fixed a bug in the safeRun.sh script (#4935)
+* Don't create sessions on some static resources (#4921)
+* Fixed issue with non-opening device keyboard on smartphones (#4929)
+* Add version string to iframe_editor.css to prevent stale cache entry (#4964)
+
+### Notable enhancements
+
+* Refactor pad loading (no document.write anymore) (#4960)
+* Improve import/export functionality, logging and tests (#4957)
+* Refactor CSS manager creation (#4963)
+* Better metrics
+* Add test for client height (#4965)
+
+### Dependencies
+
+* ueberDB2 1.3.2 -> 1.4.4
+* express-rate-limit 5.2.5 -> 5.2.6
+* etherpad-require-kernel 1.0.9 -> 1.0.11
+
 # 1.8.12
 
 Special mention: Thanks to Sauce Labs for additional testing tunnels to help us grow! :)
