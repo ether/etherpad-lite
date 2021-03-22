@@ -126,10 +126,9 @@ exports.opIterator = (opsStr, optStartIndex) => {
     return result;
   };
   let regexResult = nextRegexMatch();
-  const obj = exports.newOp();
 
-  const next = (optObj) => {
-    const op = (optObj || obj);
+  const next = (optOp) => {
+    const op = optOp || exports.newOp();
     if (regexResult[0]) {
       op.attribs = regexResult[1];
       op.lines = exports.parseNum(regexResult[2] || 0);
