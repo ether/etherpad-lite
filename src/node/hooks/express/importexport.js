@@ -60,7 +60,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
         }
 
         console.log(`Exporting pad "${req.params.pad}" in ${req.params.type} format`);
-        exportHandler.doExport(req, res, padId, readOnlyId, req.params.type);
+        await exportHandler.doExport(req, res, padId, readOnlyId, req.params.type);
       }
     })().catch((err) => next(err || new Error(err)));
   });

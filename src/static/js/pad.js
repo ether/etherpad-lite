@@ -501,7 +501,7 @@ const pad = {
     // order of inits is important here:
     padimpexp.init(this);
     padsavedrevs.init(this);
-    padeditor.init(postAceInit, pad.padOptions.view || {}, this);
+    padeditor.init(pad.padOptions.view || {}, this).then(postAceInit);
     paduserlist.init(pad.myUserInfo, this);
     padconnectionstatus.init();
     padmodals.init(this);

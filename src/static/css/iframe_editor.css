@@ -4,8 +4,7 @@
 
 @import url('./lists_and_indents.css');
 
-html.inner-editor {
-  height: auto !important;
+html.outer-editor, html.inner-editor {
   background-color: transparent !important;
 }
 #outerdocbody {
@@ -38,6 +37,11 @@ html.inner-editor {
   white-space: normal;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  /*
+   * Make the contenteditable area at least as big as the screen so that mobile
+   * users can tap anywhere to bring up their device's keyboard.
+   */
+  min-height: 100vh;
 }
 
 #innerdocbody, #sidediv {

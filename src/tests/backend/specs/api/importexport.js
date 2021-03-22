@@ -6,6 +6,7 @@
  * TODO: unify those two files, and merge in a single one.
  */
 
+const assert = require('assert').strict;
 const common = require('../../common');
 
 let agent;
@@ -226,6 +227,8 @@ const testImports = {
 };
 
 describe(__filename, function () {
+  this.timeout(1000);
+
   before(async function () { agent = await common.init(); });
 
   Object.keys(testImports).forEach((testName) => {
@@ -237,73 +240,34 @@ describe(__filename, function () {
           done();
         });
       }
-      it('createPad', function (done) {
-        this.timeout(200);
-        agent.get(`${endPoint('createPad')}&padID=${testPadId}`)
-            .expect((res) => {
-              if (res.body.code !== 0) throw new Error('Unable to create new Pad');
-            })
-            .expect('Content-Type', /json/)
-            .expect(200, done);
+
+      it('createPad', async function () {
+        const res = await agent.get(`${endPoint('createPad')}&padID=${testPadId}`)
+            .expect(200)
+            .expect('Content-Type', /json/);
+        assert.equal(res.body.code, 0);
       });
 
-      it('setHTML', function (done) {
-        this.timeout(150);
-        agent.get(`${endPoint('setHTML')}&padID=${testPadId}` +
-                  `&html=${encodeURIComponent(test.input)}`)
-            .expect((res) => {
-              if (res.body.code !== 0) throw new Error(`Error:${testName}`);
-            })
-            .expect('Content-Type', /json/)
-            .expect(200, done);
+      it('setHTML', async function () {
+        const res = await agent.get(`${endPoint('setHTML')}&padID=${testPadId}` +
+                        `&html=${encodeURIComponent(test.input)}`)
+            .expect(200)
+            .expect('Content-Type', /json/);
+        assert.equal(res.body.code, 0);
       });
 
-      it('getHTML', function (done) {
-        this.timeout(150);
-        agent.get(`${endPoint('getHTML')}&padID=${testPadId}`)
-            .expect((res) => {
-              const gotHtml = res.body.data.html;
-              if (gotHtml !== test.wantHTML) {
-                throw new Error(`HTML received from export is not the one we were expecting.
-             Test Name:
-             ${testName}
-
-             Got:
-             ${JSON.stringify(gotHtml)}
-
-             Want:
-             ${JSON.stringify(test.wantHTML)}
-
-             Which is a different version of the originally imported one:
-             ${test.input}`);
-              }
-            })
-            .expect('Content-Type', /json/)
-            .expect(200, done);
+      it('getHTML', async function () {
+        const res = await agent.get(`${endPoint('getHTML')}&padID=${testPadId}`)
+            .expect(200)
+            .expect('Content-Type', /json/);
+        assert.equal(res.body.data.html, test.wantHTML);
       });
 
-      it('getText', function (done) {
-        this.timeout(100);
-        agent.get(`${endPoint('getText')}&padID=${testPadId}`)
-            .expect((res) => {
-              const gotText = res.body.data.text;
-              if (gotText !== test.wantText) {
-                throw new Error(`Text received from export is not the one we were expecting.
-             Test Name:
-             ${testName}
-
-             Got:
-             ${JSON.stringify(gotText)}
-
-             Want:
-             ${JSON.stringify(test.wantText)}
-
-             Which is a different version of the originally imported one:
-             ${test.input}`);
-              }
-            })
-            .expect('Content-Type', /json/)
-            .expect(200, done);
+      it('getText', async function () {
+        const res = await agent.get(`${endPoint('getText')}&padID=${testPadId}`)
+            .expect(200)
+            .expect('Content-Type', /json/);
+        assert.equal(res.body.data.text, test.wantText);
       });
     });
   });
