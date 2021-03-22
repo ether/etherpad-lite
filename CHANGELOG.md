@@ -3,7 +3,7 @@
 ### Notable fixes
 
 * Fixed a bug in the safeRun.sh script (#4935)
-* Don't create sessions on some static resources (#4921)
+* Add more endpoints that do not need authentication/authorization (#4921)
 * Fixed issue with non-opening device keyboard on smartphones (#4929)
 * Add version string to iframe_editor.css to prevent stale cache entry (#4964)
 
