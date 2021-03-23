@@ -1172,92 +1172,42 @@ exports.composeAttributes = (att1, att2, resultIsMutation, pool) => {
  */
 const slicerZipperFunc = (attOp, csOp, pool) => {
   const opOut = exports.newOp();
-  if (attOp.opcode === '-') {
+  if (!attOp.opcode) {
+    copyOp(csOp, opOut);
+    csOp.opcode = '';
+  } else if (!csOp.opcode) {
     copyOp(attOp, opOut);
     attOp.opcode = '';
-  } else if (!attOp.opcode) {
+  } else if (attOp.opcode === '-') {
+    copyOp(attOp, opOut);
+    attOp.opcode = '';
+  } else if (csOp.opcode === '+') {
     copyOp(csOp, opOut);
     csOp.opcode = '';
   } else {
-    switch (csOp.opcode) {
-      case '-':
-      {
-        if (csOp.chars <= attOp.chars) {
-          // delete or delete part
-          if (attOp.opcode === '=') {
-            opOut.opcode = '-';
-            opOut.chars = csOp.chars;
-            opOut.lines = csOp.lines;
-            // csOp is a remove op and remove ops normally never have any attributes, so this should
-            // normally be the empty string. However, padDiff.js adds attributes to remove ops and
-            // needs them preserved so they are copied here.
-            opOut.attribs = csOp.attribs;
-          }
-          attOp.chars -= csOp.chars;
-          attOp.lines -= csOp.lines;
-          csOp.opcode = '';
-          if (!attOp.chars) {
-            attOp.opcode = '';
-          }
-        } else {
-          // delete and keep going
-          if (attOp.opcode === '=') {
-            opOut.opcode = '-';
-            opOut.chars = attOp.chars;
-            opOut.lines = attOp.lines;
-            // csOp is a remove op and remove ops normally never have any attributes, so this should
-            // normally be the empty string. However, padDiff.js adds attributes to remove ops and
-            // needs them preserved so they are copied here.
-            opOut.attribs = csOp.attribs;
-          }
-          csOp.chars -= attOp.chars;
-          csOp.lines -= attOp.lines;
-          attOp.opcode = '';
-        }
-        break;
-      }
-      case '+':
-      {
-        // insert
-        copyOp(csOp, opOut);
-        csOp.opcode = '';
-        break;
-      }
-      case '=':
-      {
-        if (csOp.chars <= attOp.chars) {
-          // keep or keep part
-          opOut.opcode = attOp.opcode;
-          opOut.chars = csOp.chars;
-          opOut.lines = csOp.lines;
-          opOut.attribs = exports.composeAttributes(
-              attOp.attribs, csOp.attribs, attOp.opcode === '=', pool);
-          csOp.opcode = '';
-          attOp.chars -= csOp.chars;
-          attOp.lines -= csOp.lines;
-          if (!attOp.chars) {
-            attOp.opcode = '';
-          }
-        } else {
-          // keep and keep going
-          opOut.opcode = attOp.opcode;
-          opOut.chars = attOp.chars;
-          opOut.lines = attOp.lines;
-          opOut.attribs = exports.composeAttributes(
-              attOp.attribs, csOp.attribs, attOp.opcode === '=', pool);
-          attOp.opcode = '';
-          csOp.chars -= attOp.chars;
-          csOp.lines -= attOp.lines;
-        }
-        break;
-      }
-      case '':
-      {
-        copyOp(attOp, opOut);
-        attOp.opcode = '';
-        break;
-      }
-    }
+    opOut.opcode = {
+      '+': {
+        '-': '', // The '-' cancels out (some of) the '+', leaving any remainder for the next call.
+        '=': '+',
+      },
+      '=': {
+        '-': '-',
+        '=': '=',
+      },
+    }[attOp.opcode][csOp.opcode];
+    const [fullyConsumedOp, partiallyConsumedOp] = [attOp, csOp].sort((a, b) => a.chars - b.chars);
+    opOut.chars = fullyConsumedOp.chars;
+    opOut.lines = fullyConsumedOp.lines;
+    opOut.attribs = csOp.opcode === '-'
+      // csOp is a remove op and remove ops normally never have any attributes, so this should
+      // normally be the empty string. However, padDiff.js adds attributes to remove ops and needs
+      // them preserved so they are copied here.
+      ? csOp.attribs
+      : exports.composeAttributes(attOp.attribs, csOp.attribs, attOp.opcode === '=', pool);
+    partiallyConsumedOp.chars -= fullyConsumedOp.chars;
+    partiallyConsumedOp.lines -= fullyConsumedOp.lines;
+    if (!partiallyConsumedOp.chars) partiallyConsumedOp.opcode = '';
+    fullyConsumedOp.opcode = '';
   }
   return opOut;
 };
