@@ -1185,6 +1185,17 @@ const slicerZipperFunc = (attOp, csOp, pool) => {
     copyOp(csOp, opOut);
     csOp.opcode = '';
   } else {
+    for (const op of [attOp, csOp]) {
+      assert(op.chars >= op.lines, `op has more newlines than chars: ${op.toString()}`);
+    }
+    assert(
+        attOp.chars < csOp.chars ? attOp.lines <= csOp.lines
+        : attOp.chars > csOp.chars ? attOp.lines >= csOp.lines
+        : attOp.lines === csOp.lines,
+        'line count mismatch when composing changesets A*B; ' +
+        `opA: ${attOp.toString()} opB: ${csOp.toString()}`);
+    assert(['+', '='].includes(attOp.opcode), `unexpected opcode in op: ${attOp.toString()}`);
+    assert(['-', '='].includes(csOp.opcode), `unexpected opcode in op: ${csOp.toString()}`);
     opOut.opcode = {
       '+': {
         '-': '', // The '-' cancels out (some of) the '+', leaving any remainder for the next call.
