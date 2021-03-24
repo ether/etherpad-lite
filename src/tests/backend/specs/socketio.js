@@ -52,7 +52,10 @@ const connect = async (res) => {
       ([name, cookie]) => `${name}=${encodeURIComponent(cookie.value)}`).join('; ');
 
   logger.debug('socket.io connecting...');
-  const padId = res.req.path.split('/p/')[1];
+  let padId = null;
+  if (res) {
+    padId = res.req.path.split('/p/')[1];
+  }
   const socket = io(`${common.baseUrl}/`, {
     forceNew: true, // Different tests will have different query parameters.
     path: '/socket.io',
