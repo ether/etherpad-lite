@@ -53,7 +53,7 @@ const connect = async (res) => {
 
   logger.debug('socket.io connecting...');
   let padId = null;
-  if (res.req) {
+  if (res) {
     padId = res.req.path.split('/p/')[1];
   }
   const socket = io(`${common.baseUrl}/`, {
