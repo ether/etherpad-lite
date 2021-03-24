@@ -97,6 +97,10 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
         setChannelState('DISCONNECTED', 'slowcommit');
       } else if (state === 'COMMITTING' && msgQueue.length === 0 && (t - lastCommitTime) > 5000) {
         callbacks.onConnectionTrouble('SLOW');
+      } else if (msgQueue.length > 0) {
+        // in slow or bad network conditions, there might be enqueued messages
+        // while the state is still COMMITTING
+        dequeueMessages();
       } else {
         // run again in a few seconds, to detect a disconnect
         setTimeout(wrapRecordingErrors('setTimeout(handleUserChanges)', handleUserChanges), 3000);
@@ -114,31 +118,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
 
     // apply msgQueue changeset.
     if (msgQueue.length !== 0) {
-      let msg;
-      while ((msg = msgQueue.shift())) {
-        const newRev = msg.newRev;
-        rev = newRev;
-        if (msg.type === 'ACCEPT_COMMIT') {
-          editor.applyPreparedChangesetToBase();
-          setStateIdle();
-          callCatchingErrors('onInternalAction', () => {
-            callbacks.onInternalAction('commitAcceptedByServer');
-          });
-          callCatchingErrors('onConnectionTrouble', () => {
-            callbacks.onConnectionTrouble('OK');
-          });
-          handleUserChanges();
-        } else if (msg.type === 'NEW_CHANGES') {
-          const changeset = msg.changeset;
-          const author = (msg.author || '');
-          const apool = msg.apool;
-
-          editor.applyChangesToBase(changeset, author, apool);
-        }
-      }
-      if (isPendingRevision) {
-        setIsPendingRevision(false);
-      }
+      dequeueMessages();
     }
 
     let sentMessage = false;
@@ -167,6 +147,42 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     if (sentMessage) {
       // run again in a few seconds, to detect a disconnect
       setTimeout(wrapRecordingErrors('setTimeout(handleUserChanges)', handleUserChanges), 3000);
+    }
+  };
+
+  const acceptCommit = () => {
+    editor.applyPreparedChangesetToBase();
+    setStateIdle();
+    callCatchingErrors('onInternalAction', () => {
+      callbacks.onInternalAction('commitAcceptedByServer');
+    });
+    callCatchingErrors('onConnectionTrouble', () => {
+      callbacks.onConnectionTrouble('OK');
+    });
+    handleUserChanges();
+  };
+
+  const enqueueMessage = (msg) => {
+    msgQueue.push(msg);
+  };
+
+  const dequeueMessages = () => {
+    let msg;
+    while ((msg = msgQueue.shift())) {
+      const newRev = msg.newRev;
+      rev = newRev;
+      if (msg.type === 'ACCEPT_COMMIT') {
+        acceptCommit();
+      } else if (msg.type === 'NEW_CHANGES') {
+        const changeset = msg.changeset;
+        const author = (msg.author || '');
+        const apool = msg.apool;
+
+        editor.applyChangesToBase(changeset, author, apool);
+      }
+    }
+    if (isPendingRevision) {
+      setIsPendingRevision(false);
     }
   };
 
@@ -226,7 +242,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
           // setChannelState("DISCONNECTED", "badmessage_newchanges");
           return;
         }
-        msgQueue.push(msg);
+        enqueueMessage(msg);
         return;
       }
 
@@ -247,7 +263,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
           // setChannelState("DISCONNECTED", "badmessage_acceptcommit");
           return;
         }
-        msgQueue.push(msg);
+        enqueueMessage(msg);
         return;
       }
 
@@ -257,15 +273,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
         return;
       }
       rev = newRev;
-      editor.applyPreparedChangesetToBase();
-      setStateIdle();
-      callCatchingErrors('onInternalAction', () => {
-        callbacks.onInternalAction('commitAcceptedByServer');
-      });
-      callCatchingErrors('onConnectionTrouble', () => {
-        callbacks.onConnectionTrouble('OK');
-      });
-      handleUserChanges();
+      acceptCommit();
     } else if (msg.type === 'CLIENT_RECONNECT') {
       // Server sends a CLIENT_RECONNECT message when there is a client reconnect.
       // Server also returns all pending revisions along with this CLIENT_RECONNECT message
@@ -289,7 +297,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
           return;
         }
         msg.type = 'NEW_CHANGES';
-        msgQueue.push(msg);
+        enqueueMessage(msg);
         return;
       }
 
