@@ -89,19 +89,11 @@ const helper = {};
   }
   helper.evtType = evtType;
 
-  // @todo needs fixing asap
-  // newPad occasionally timeouts, might be a problem with ready/onload code during page setup
-  // This ensures that tests run regardless of this problem
-  helper.retry = 0;
-
-  helper.newPad = (cb, padName) => {
-    // build opts object
-    let opts = {clearCookies: true};
-    if (typeof cb === 'function') {
-      opts.cb = cb;
-    } else {
-      opts = _.defaults(cb, opts);
-    }
+  helper.newPad = (opts, padName) => {
+    opts = Object.assign({
+      _retry: 0,
+      clearCookies: true,
+    }, typeof opts === 'function' ? {cb: opts} : opts);
 
     // if opts.params is set we manipulate the URL to include URL parameters IE ?foo=Bah.
     let encodedParams;
@@ -120,8 +112,6 @@ const helper = {};
 
     if (!padName) padName = `FRONTEND_TEST_${helper.randomString(20)}`;
     $iframe = $(`<iframe src='/p/${padName}${hash || ''}${encodedParams || ''}'></iframe>`);
-    // needed for retry
-    const origPadName = padName;
 
     // clean up inner iframe references
     helper.padChrome$ = helper.padOuter$ = helper.padInner$ = null;
@@ -170,11 +160,8 @@ const helper = {};
         helper.spyOnSocketIO();
         opts.cb();
       }).fail(() => {
-        if (helper.retry > 3) {
-          throw new Error('Pad never loaded');
-        }
-        helper.retry++;
-        helper.newPad(cb, origPadName);
+        if (opts._retry++ >= 4) throw new Error('Pad never loaded');
+        helper.newPad(opts, padName);
       });
     });
 
