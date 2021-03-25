@@ -92,6 +92,7 @@ const helper = {};
   helper.newPad = (opts, padName) => {
     opts = Object.assign({
       _retry: 0,
+      cb: (err) => { if (err != null) throw err; },
       clearCookies: true,
     }, typeof opts === 'function' ? {cb: opts} : opts);
 
