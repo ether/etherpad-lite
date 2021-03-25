@@ -89,12 +89,22 @@ const helper = {};
   }
   helper.evtType = evtType;
 
-  helper.newPad = (opts, padName) => {
+  // Deprecated; use helper.aNewPad() instead.
+  helper.newPad = (opts, id) => {
+    if (!id) id = `FRONTEND_TEST_${helper.randomString(20)}`;
+    opts = Object.assign({id}, typeof opts === 'function' ? {cb: opts} : opts);
+    const {cb = (err) => { if (err != null) throw err; }} = opts;
+    delete opts.cb;
+    helper.aNewPad(opts).then((id) => cb(null, id), (err) => cb(err || new Error(err)));
+    return id;
+  };
+
+  helper.aNewPad = async (opts = {}) => {
     opts = Object.assign({
       _retry: 0,
-      cb: (err) => { if (err != null) throw err; },
       clearCookies: true,
-    }, typeof opts === 'function' ? {cb: opts} : opts);
+      id: `FRONTEND_TEST_${helper.randomString(20)}`,
+    }, opts);
 
     // if opts.params is set we manipulate the URL to include URL parameters IE ?foo=Bah.
     let encodedParams;
@@ -111,8 +121,7 @@ const helper = {};
       helper.clearSessionCookies();
     }
 
-    if (!padName) padName = `FRONTEND_TEST_${helper.randomString(20)}`;
-    $iframe = $(`<iframe src='/p/${padName}${hash || ''}${encodedParams || ''}'></iframe>`);
+    $iframe = $(`<iframe src='/p/${opts.id}${hash || ''}${encodedParams || ''}'></iframe>`);
 
     // clean up inner iframe references
     helper.padChrome$ = helper.padOuter$ = helper.padInner$ = null;
@@ -121,52 +130,51 @@ const helper = {};
     $('#iframe-container iframe').remove();
     // set new iframe
     $('#iframe-container').append($iframe);
-    $iframe.one('load', () => {
-      helper.padChrome$ = getFrameJQuery($('#iframe-container iframe'));
-      if (opts.clearCookies) {
-        helper.clearPadPrefCookie();
-      }
-      if (opts.padPrefs) {
-        helper.setPadPrefCookie(opts.padPrefs);
-      }
-      helper.waitFor(() => !$iframe.contents().find('#editorloadingbox')
-          .is(':visible'), 10000).done(() => {
-        helper.padOuter$ = getFrameJQuery(helper.padChrome$('iframe[name="ace_outer"]'));
-        helper.padInner$ = getFrameJQuery(helper.padOuter$('iframe[name="ace_inner"]'));
+    await new Promise((resolve) => $iframe.one('load', resolve));
+    helper.padChrome$ = getFrameJQuery($('#iframe-container iframe'));
+    if (opts.clearCookies) {
+      helper.clearPadPrefCookie();
+    }
+    if (opts.padPrefs) {
+      helper.setPadPrefCookie(opts.padPrefs);
+    }
+    try {
+      await helper.waitForPromise(
+          () => !$iframe.contents().find('#editorloadingbox').is(':visible'), 10000);
+    } catch (err) {
+      if (opts._retry++ >= 4) throw new Error('Pad never loaded');
+      return await helper.aNewPad(opts);
+    }
+    helper.padOuter$ = getFrameJQuery(helper.padChrome$('iframe[name="ace_outer"]'));
+    helper.padInner$ = getFrameJQuery(helper.padOuter$('iframe[name="ace_inner"]'));
 
-        // disable all animations, this makes tests faster and easier
-        helper.padChrome$.fx.off = true;
-        helper.padOuter$.fx.off = true;
-        helper.padInner$.fx.off = true;
+    // disable all animations, this makes tests faster and easier
+    helper.padChrome$.fx.off = true;
+    helper.padOuter$.fx.off = true;
+    helper.padInner$.fx.off = true;
 
-        /*
-         * chat messages received
-         * @type {Array}
-         */
-        helper.chatMessages = [];
+    /*
+     * chat messages received
+     * @type {Array}
+     */
+    helper.chatMessages = [];
 
-        /*
-         * changeset commits from the server
-         * @type {Array}
-         */
-        helper.commits = [];
+    /*
+     * changeset commits from the server
+     * @type {Array}
+     */
+    helper.commits = [];
 
-        /*
-         * userInfo messages from the server
-         * @type {Array}
-         */
-        helper.userInfos = [];
+    /*
+     * userInfo messages from the server
+     * @type {Array}
+     */
+    helper.userInfos = [];
 
-        // listen for server messages
-        helper.spyOnSocketIO();
-        opts.cb();
-      }).fail(() => {
-        if (opts._retry++ >= 4) throw new Error('Pad never loaded');
-        helper.newPad(opts, padName);
-      });
-    });
+    // listen for server messages
+    helper.spyOnSocketIO();
 
-    return padName;
+    return opts.id;
   };
 
   helper.newAdmin = async (page) => {
