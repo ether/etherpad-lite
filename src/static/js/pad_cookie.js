@@ -21,15 +21,16 @@ const Cookies = require('./pad_utils').Cookies;
 exports.padcookie = new class {
   constructor() {
     this.cookieName_ = window.location.protocol === 'https:' ? 'prefs' : 'prefsHttp';
+  }
+
+  init() {
     const prefs = this.readPrefs_() || {};
     delete prefs.userId;
     delete prefs.name;
     delete prefs.colorId;
     this.prefs_ = prefs;
     this.savePrefs_();
-  }
-
-  init() {
+    // Re-read the saved cookie to test if cookies are enabled.
     if (this.readPrefs_() == null) {
       $.gritter.add({
         title: 'Error',
