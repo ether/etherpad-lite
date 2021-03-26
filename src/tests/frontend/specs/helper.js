@@ -45,8 +45,8 @@ describe('the test helper', function () {
       this.timeout(60000);
 
       // set cookies far into the future to make sure they're not expired yet
-      window.document.cookie = 'token=foo;expires=Thu, 01 Jan 3030 00:00:00 GMT; path=/';
-      window.document.cookie = 'language=bar;expires=Thu, 01 Jan 3030 00:00:00 GMT; path=/';
+      window.Cookies.set('token', 'foo', {expires: 7 /* days */});
+      window.Cookies.set('language', 'bar', {expires: 7 /* days */});
 
       expect(window.document.cookie).to.contain('token=foo');
       expect(window.document.cookie).to.contain('language=bar');
@@ -56,8 +56,8 @@ describe('the test helper', function () {
       // helper function seems to have cleared cookies
       // NOTE: this doesn't yet mean it's proven to have taken effect by this point in execution
       const firstCookie = window.document.cookie;
-      expect(firstCookie).to.not.contain('token=foo');
-      expect(firstCookie).to.not.contain('language=bar');
+      expect(window.Cookies.get('token')).to.not.be('foo');
+      expect(window.Cookies.get('language') == null).to.be(true);
 
       let chrome$ = helper.padChrome$;
 
@@ -76,21 +76,26 @@ describe('the test helper', function () {
 
       // Now that we have a chrome, we can set a pad cookie
       // so we can confirm it gets wiped as well
-      chrome$.document.cookie = 'prefsHttp=baz;expires=Thu, 01 Jan 3030 00:00:00 GMT; path=/';
-      expect(chrome$.document.cookie).to.contain('prefsHttp=baz');
+      const getPadcookie =
+          () => helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad_cookie').padcookie;
+      let padcookie = getPadcookie();
+      padcookie.clear();
+      padcookie.setPref('foo', 'bar');
+      expect(padcookie.getPref('foo')).to.be('bar');
 
       // give it a second to save the username on the server side
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       await helper.aNewPad(); // get a new pad, let it clear the cookies
       chrome$ = helper.padChrome$;
+      padcookie = getPadcookie();
 
       // helper function seems to have cleared cookies
       // NOTE: this doesn't yet mean cookies were cleared effectively.
       // We still need to test below that we're in a new session
-      expect(window.document.cookie).to.not.contain('token=foo');
-      expect(window.document.cookie).to.not.contain('language=bar');
-      expect(chrome$.document.cookie).to.contain('prefsHttp=baz');
+      expect(window.Cookies.get('token')).to.not.be('foo');
+      expect(window.Cookies.get('language') == null).to.be(true);
+      expect(padcookie.getPref('foo') == null).to.be(true);
 
       expect(window.document.cookie).to.not.be(firstCookie);
 
@@ -105,10 +110,9 @@ describe('the test helper', function () {
 
     it('sets pad prefs cookie', async function () {
       this.timeout(60000);
-      await helper.aNewPad({padPrefs: {foo: 'bar'}});
-      const chrome$ = helper.padChrome$;
-      expect(chrome$.document.cookie).to.contain('prefsHttp=%7B%22');
-      expect(chrome$.document.cookie).to.contain('foo%22%3A%22bar');
+      await helper.aNewPad({padPrefs: {foo: 'padPrefs test'}});
+      const {padcookie} = helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad_cookie');
+      expect(padcookie.getPref('foo')).to.be('padPrefs test');
     });
   });
 

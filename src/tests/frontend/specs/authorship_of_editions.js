@@ -50,8 +50,8 @@ describe('author of pad edition', function () {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // Expire cookie, so author is changed after reloading the pad.
-    // See https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie#Example_4_Reset_the_previous_cookie
-    helper.padChrome$.document.cookie = 'token=foo;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    const {Cookies} = helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad_utils');
+    Cookies.remove('token');
 
     // Reload pad, to make changes as a second user.
     await helper.aNewPad({id: padId});

@@ -1,12 +1,8 @@
 'use strict';
 
-const deletecookie = (name) => {
-  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/`;
-};
-
 describe('Language select and change', function () {
   // Destroy language cookies
-  deletecookie('language', null);
+  window.Cookies.remove('language');
 
   // create a new pad before each test run
   beforeEach(function (cb) {
