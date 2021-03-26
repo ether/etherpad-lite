@@ -50,9 +50,6 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
   const userSet = {}; // userId -> userInfo
   userSet[userId] = initialUserInfo;
 
-  const caughtErrors = [];
-  const caughtErrorCatchers = [];
-  const caughtErrorTimes = [];
   const msgQueue = [];
 
   let isPendingRevision = false;
@@ -84,7 +81,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
         setChannelState('DISCONNECTED', 'initsocketfail');
       } else {
         // check again in a bit
-        setTimeout(wrapRecordingErrors('setTimeout(handleUserChanges)', handleUserChanges), 1000);
+        setTimeout(handleUserChanges, 1000);
       }
       return;
     }
@@ -99,16 +96,14 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
         callbacks.onConnectionTrouble('SLOW');
       } else {
         // run again in a few seconds, to detect a disconnect
-        setTimeout(wrapRecordingErrors('setTimeout(handleUserChanges)', handleUserChanges), 3000);
+        setTimeout(handleUserChanges, 3000);
       }
       return;
     }
 
     const earliestCommit = lastCommitTime + 500;
     if (t < earliestCommit) {
-      setTimeout(
-          wrapRecordingErrors('setTimeout(handleUserChanges)', handleUserChanges),
-          earliestCommit - t);
+      setTimeout(handleUserChanges, earliestCommit - t);
       return;
     }
 
@@ -153,24 +148,22 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
       }
     } else {
       // run again in a few seconds, to check if there was a reconnection attempt
-      setTimeout(wrapRecordingErrors('setTimeout(handleUserChanges)', handleUserChanges), 3000);
+      setTimeout(handleUserChanges, 3000);
     }
 
     if (sentMessage) {
       // run again in a few seconds, to detect a disconnect
-      setTimeout(wrapRecordingErrors('setTimeout(handleUserChanges)', handleUserChanges), 3000);
+      setTimeout(handleUserChanges, 3000);
     }
   };
 
   const acceptCommit = () => {
     editor.applyPreparedChangesetToBase();
     setStateIdle();
-    callCatchingErrors('onInternalAction', () => {
+    try {
       callbacks.onInternalAction('commitAcceptedByServer');
-    });
-    callCatchingErrors('onConnectionTrouble', () => {
       callbacks.onConnectionTrouble('OK');
-    });
+    } catch (err) { /* intentionally ignored */ }
     handleUserChanges();
   };
 
@@ -188,25 +181,6 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
           component: 'pad',
           data: msg,
         });
-  };
-
-  const wrapRecordingErrors = (catcher, func) => function (...args) {
-    try {
-      return func.call(this, ...args);
-    } catch (e) {
-      caughtErrors.push(e);
-      caughtErrorCatchers.push(catcher);
-      caughtErrorTimes.push(+new Date());
-      // console.dir({catcher: catcher, e: e});
-      throw e;
-    }
-  };
-
-  const callCatchingErrors = (catcher, func) => {
-    try {
-      wrapRecordingErrors(catcher, func)();
-    } catch (e) { /* absorb*/
-    }
   };
 
   const handleMessageFromServer = (evt) => {
@@ -566,8 +540,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
 
   editor.setProperty('userAuthor', userId);
   editor.setBaseAttributedText(serverVars.initialAttributedText, serverVars.apool);
-  editor.setUserChangeNotificationCallback(
-      wrapRecordingErrors('handleUserChanges', handleUserChanges));
+  editor.setUserChangeNotificationCallback(handleUserChanges);
 
   setUpSocket();
   return self;
