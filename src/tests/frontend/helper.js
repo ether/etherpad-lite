@@ -51,22 +51,21 @@ const helper = {};
   };
 
   helper.clearSessionCookies = () => {
-    // Expire cookies, so author and language are changed after reloading the pad. See:
-    // https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie#example_4_reset_the_previous_cookie
-    window.document.cookie = 'token=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
-    window.document.cookie = 'language=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    window.Cookies.remove('token');
+    window.Cookies.remove('language');
   };
 
   // Can only happen when the iframe exists, so we're doing it separately from other cookies
   helper.clearPadPrefCookie = () => {
-    helper.padChrome$.document.cookie = 'prefsHttp=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    const {padcookie} = helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad_cookie');
+    padcookie.clear();
   };
 
-  // Overwrite all prefs in pad cookie. Assumes http, not https.
+  // Overwrite all prefs in pad cookie.
   helper.setPadPrefCookie = (prefs) => {
-    const val = encodeURIComponent(JSON.stringify(prefs));
-    helper.padChrome$.document.cookie =
-        `prefsHttp=${val};expires=Thu, 01 Jan 3000 00:00:00 GMT; path=/`;
+    const {padcookie} = helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad_cookie');
+    padcookie.clear();
+    for (const [key, value] of Object.entries(prefs)) padcookie.setPref(key, value);
   };
 
   // Functionality for knowing what key event type is required for tests

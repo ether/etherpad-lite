@@ -63,4 +63,8 @@ exports.padcookie = new class {
     prefs[prefName] = value;
     this.writePrefs_(prefs);
   }
+
+  clear() {
+    this.writePrefs_({});
+  }
 }();
