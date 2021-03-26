@@ -28,8 +28,7 @@ exports.padcookie = new class {
     delete prefs.userId;
     delete prefs.name;
     delete prefs.colorId;
-    this.prefs_ = prefs;
-    this.savePrefs_();
+    this.writePrefs_(prefs);
     // Re-read the saved cookie to test if cookies are enabled.
     if (this.readPrefs_() == null) {
       $.gritter.add({
@@ -51,16 +50,17 @@ exports.padcookie = new class {
     }
   }
 
-  savePrefs_() {
-    Cookies.set(this.cookieName_, JSON.stringify(this.prefs_), {expires: 365 * 100});
+  writePrefs_(prefs) {
+    Cookies.set(this.cookieName_, JSON.stringify(prefs), {expires: 365 * 100});
   }
 
   getPref(prefName) {
-    return this.prefs_[prefName];
+    return this.readPrefs_()[prefName];
   }
 
   setPref(prefName, value) {
-    this.prefs_[prefName] = value;
-    this.savePrefs_();
+    const prefs = this.readPrefs_();
+    prefs[prefName] = value;
+    this.writePrefs_(prefs);
   }
 }();
