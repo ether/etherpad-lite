@@ -119,15 +119,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
         const newRev = msg.newRev;
         rev = newRev;
         if (msg.type === 'ACCEPT_COMMIT') {
-          editor.applyPreparedChangesetToBase();
-          setStateIdle();
-          callCatchingErrors('onInternalAction', () => {
-            callbacks.onInternalAction('commitAcceptedByServer');
-          });
-          callCatchingErrors('onConnectionTrouble', () => {
-            callbacks.onConnectionTrouble('OK');
-          });
-          handleUserChanges();
+          acceptCommit();
         } else if (msg.type === 'NEW_CHANGES') {
           const changeset = msg.changeset;
           const author = (msg.author || '');
@@ -168,6 +160,18 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
       // run again in a few seconds, to detect a disconnect
       setTimeout(wrapRecordingErrors('setTimeout(handleUserChanges)', handleUserChanges), 3000);
     }
+  };
+
+  const acceptCommit = () => {
+    editor.applyPreparedChangesetToBase();
+    setStateIdle();
+    callCatchingErrors('onInternalAction', () => {
+      callbacks.onInternalAction('commitAcceptedByServer');
+    });
+    callCatchingErrors('onConnectionTrouble', () => {
+      callbacks.onConnectionTrouble('OK');
+    });
+    handleUserChanges();
   };
 
   const setUpSocket = () => {
@@ -257,15 +261,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
         return;
       }
       rev = newRev;
-      editor.applyPreparedChangesetToBase();
-      setStateIdle();
-      callCatchingErrors('onInternalAction', () => {
-        callbacks.onInternalAction('commitAcceptedByServer');
-      });
-      callCatchingErrors('onConnectionTrouble', () => {
-        callbacks.onConnectionTrouble('OK');
-      });
-      handleUserChanges();
+      acceptCommit();
     } else if (msg.type === 'CLIENT_RECONNECT') {
       // Server sends a CLIENT_RECONNECT message when there is a client reconnect.
       // Server also returns all pending revisions along with this CLIENT_RECONNECT message
@@ -301,15 +297,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
 
       rev = newRev;
       if (author === pad.getUserId()) {
-        editor.applyPreparedChangesetToBase();
-        setStateIdle();
-        callCatchingErrors('onInternalAction', () => {
-          callbacks.onInternalAction('commitAcceptedByServer');
-        });
-        callCatchingErrors('onConnectionTrouble', () => {
-          callbacks.onConnectionTrouble('OK');
-        });
-        handleUserChanges();
+        acceptCommit();
       } else {
         editor.applyChangesToBase(changeset, author, apool);
       }
