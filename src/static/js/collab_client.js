@@ -76,8 +76,9 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
 
   const handleUserChanges = () => {
     if (editor.getInInternationalComposition()) return;
+    const now = Date.now();
     if ((!getSocket()) || channelState === 'CONNECTING') {
-      if (channelState === 'CONNECTING' && (((+new Date()) - initialStartConnectTime) > 20000)) {
+      if (channelState === 'CONNECTING' && (now - initialStartConnectTime) > 20000) {
         setChannelState('DISCONNECTED', 'initsocketfail');
       } else {
         // check again in a bit
@@ -86,13 +87,11 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
       return;
     }
 
-    const t = (+new Date());
-
     if (committing) {
-      if (msgQueue.length === 0 && (t - lastCommitTime) > 20000) {
+      if (msgQueue.length === 0 && (now - lastCommitTime) > 20000) {
         // a commit is taking too long
         setChannelState('DISCONNECTED', 'slowcommit');
-      } else if (msgQueue.length === 0 && (t - lastCommitTime) > 5000) {
+      } else if (msgQueue.length === 0 && (now - lastCommitTime) > 5000) {
         callbacks.onConnectionTrouble('SLOW');
       } else {
         // run again in a few seconds, to detect a disconnect
@@ -102,8 +101,8 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     }
 
     const earliestCommit = lastCommitTime + 500;
-    if (t < earliestCommit) {
-      setTimeout(handleUserChanges, earliestCommit - t);
+    if (now < earliestCommit) {
+      setTimeout(handleUserChanges, earliestCommit - now);
       return;
     }
 
@@ -134,7 +133,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     if (!isPendingRevision) {
       const userChangesData = editor.prepareUserChangeset();
       if (userChangesData.changeset) {
-        lastCommitTime = t;
+        lastCommitTime = now;
         committing = true;
         stateMessage = {
           type: 'USER_CHANGES',
@@ -171,7 +170,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     setChannelState('CONNECTED');
     doDeferredActions();
 
-    initialStartConnectTime = +new Date();
+    initialStartConnectTime = Date.now();
   };
 
   const sendMessage = (msg) => {
