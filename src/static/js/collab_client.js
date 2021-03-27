@@ -39,7 +39,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
   pad = _pad; // Inject pad to avoid a circular dependency.
 
   let rev = serverVars.rev;
-  let state = 'IDLE';
+  let committing = false;
   let stateMessage;
   let channelState = 'CONNECTING';
   let lastCommitTime = 0;
@@ -88,11 +88,11 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
 
     const t = (+new Date());
 
-    if (state !== 'IDLE') {
-      if (state === 'COMMITTING' && msgQueue.length === 0 && (t - lastCommitTime) > 20000) {
+    if (committing) {
+      if (msgQueue.length === 0 && (t - lastCommitTime) > 20000) {
         // a commit is taking too long
         setChannelState('DISCONNECTED', 'slowcommit');
-      } else if (state === 'COMMITTING' && msgQueue.length === 0 && (t - lastCommitTime) > 5000) {
+      } else if (msgQueue.length === 0 && (t - lastCommitTime) > 5000) {
         callbacks.onConnectionTrouble('SLOW');
       } else {
         // run again in a few seconds, to detect a disconnect
@@ -135,7 +135,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
       const userChangesData = editor.prepareUserChangeset();
       if (userChangesData.changeset) {
         lastCommitTime = t;
-        state = 'COMMITTING';
+        committing = true;
         stateMessage = {
           type: 'USER_CHANGES',
           baseRev: rev,
@@ -281,7 +281,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
         setIsPendingRevision(false);
       }
     } else if (msg.type === 'NO_COMMIT_PENDING') {
-      if (state === 'COMMITTING') {
+      if (committing) {
         // server missed our commit message; abort that commit
         setStateIdle();
         handleUserChanges();
@@ -458,7 +458,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     const obj = {};
     obj.userInfo = userSet[userId];
     obj.baseRev = rev;
-    if (state === 'COMMITTING' && stateMessage) {
+    if (committing && stateMessage) {
       obj.committedChangeset = stateMessage.changeset;
       obj.committedChangesetAPool = stateMessage.apool;
       editor.applyPreparedChangesetToBase();
@@ -472,7 +472,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
   };
 
   const setStateIdle = () => {
-    state = 'IDLE';
+    committing = false;
     callbacks.onInternalAction('newlyIdle');
     schedulePerhapsCallIdleFuncs();
   };
@@ -490,7 +490,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
 
   const schedulePerhapsCallIdleFuncs = () => {
     setTimeout(() => {
-      if (state === 'IDLE') {
+      if (!committing) {
         while (idleFuncs.length > 0) {
           const f = idleFuncs.shift();
           f();
