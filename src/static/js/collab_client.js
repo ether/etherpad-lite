@@ -241,12 +241,6 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
           setIsPendingRevision(false);
         }
       });
-    } else if (msg.type === 'NO_COMMIT_PENDING') {
-      if (committing) {
-        // server missed our commit message; abort that commit
-        setStateIdle();
-        handleUserChanges();
-      }
     } else if (msg.type === 'USER_NEWINFO') {
       const userInfo = msg.userInfo;
       const id = userInfo.userId;
