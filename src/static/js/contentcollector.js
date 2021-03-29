@@ -56,7 +56,7 @@ const getAttribute = (n, a) => {
   return null;
 };
 // supportedElems are Supported natively within Etherpad and don't require a plugin
-const supportedElems = [
+const supportedElems = new Set([
   'author',
   'b',
   'bold',
@@ -76,7 +76,7 @@ const supportedElems = [
   'span',
   'u',
   'ul',
-];
+]);
 
 const makeContentCollector = (collectStyles, abrowser, apool, className2Author) => {
   const _blockElems = {
@@ -88,7 +88,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
 
   hooks.callAll('ccRegisterBlockElements').forEach((element) => {
     _blockElems[element] = 1;
-    supportedElems.push(element);
+    supportedElems.add(element);
   });
 
   const isBlockElement = (n) => !!_blockElems[tagName(n) || ''];
@@ -339,7 +339,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
     state.localAttribs = null;
     const isBlock = isBlockElement(node);
     if (!isBlock && node.name && (node.name !== 'body')) {
-      if (supportedElems.indexOf(node.name) === -1) {
+      if (!supportedElems.has(node.name)) {
         console.warn('Plugin missing: ' +
           `You might want to install a plugin to support this node name: ${node.name}`);
       }

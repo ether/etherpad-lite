@@ -25,7 +25,7 @@ exports.setPadRaw = (padId, r) => {
 
   // get supported block Elements from plugins, we will use this later.
   hooks.callAll('ccRegisterBlockElements').forEach((element) => {
-    supportedElems.push(element);
+    supportedElems.add(element);
   });
 
   Object.keys(records).forEach(async (key) => {
@@ -64,7 +64,7 @@ exports.setPadRaw = (padId, r) => {
       if (value.pool) {
         for (const attrib of Object.keys(value.pool.numToAttrib)) {
           const attribName = value.pool.numToAttrib[attrib][0];
-          if (supportedElems.indexOf(attribName) === -1) {
+          if (!supportedElems.has(attribName)) {
             console.warn('Plugin missing: ' +
                 `You might want to install a plugin to support this node name: ${attribName}`);
           }
