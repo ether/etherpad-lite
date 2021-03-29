@@ -141,7 +141,7 @@ const Ace2Editor = function () {
   this.getDebugProperty = (prop) => info.ace_getDebugProperty(prop);
 
   this.getInInternationalComposition =
-      () => loaded ? info.ace_getInInternationalComposition() : false;
+      () => loaded ? info.ace_getInInternationalComposition() : null;
 
   // prepareUserChangeset:
   // Returns null if no new changes or ACE not ready.  Otherwise, bundles up all user changes

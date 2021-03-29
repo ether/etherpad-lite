@@ -3504,16 +3504,7 @@ function Ace2Inner(editorInfo, cssManagers) {
 
   const teardown = () => _teardownActions.forEach((a) => a());
 
-  let inInternationalComposition = false;
-  const handleCompositionEvent = (evt) => {
-    // international input events, fired in FF3, at least;  allow e.g. Japanese input
-    if (evt.type === 'compositionstart') {
-      inInternationalComposition = true;
-    } else if (evt.type === 'compositionend') {
-      inInternationalComposition = false;
-    }
-  };
-
+  let inInternationalComposition = null;
   editorInfo.ace_getInInternationalComposition = () => inInternationalComposition;
 
   const bindTheEventHandlers = () => {
@@ -3602,8 +3593,15 @@ function Ace2Inner(editorInfo, cssManagers) {
       });
     });
 
-    $(document.documentElement).on('compositionstart', handleCompositionEvent);
-    $(document.documentElement).on('compositionend', handleCompositionEvent);
+    $(document.documentElement).on('compositionstart', () => {
+      if (inInternationalComposition) return;
+      inInternationalComposition = new Promise((resolve) => {
+        $(document.documentElement).one('compositionend', () => {
+          inInternationalComposition = null;
+          resolve();
+        });
+      });
+    });
   };
 
   const topLevel = (n) => {
