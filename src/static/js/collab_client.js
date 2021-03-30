@@ -31,6 +31,18 @@ const browser = require('./vendors/browser');
 let pad = undefined;
 const getSocket = () => pad && pad.socket;
 
+// Gate is a normal Promise that resolves when its open() method is called.
+class Gate extends Promise {
+  constructor(executor = null) {
+    let open;
+    super((resolve, reject) => {
+      open = resolve;
+      if (executor != null) executor(resolve, reject);
+    });
+    this.open = open;
+  }
+}
+
 /** Call this when the document is ready, and a new Ace2Editor() has been created and inited.
     ACE's ready callback does not need to have fired yet.
     "serverVars" are from calling doc.getCollabClientVars() on the server. */
@@ -63,6 +75,12 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     onConnectionTrouble: () => {},
     onServerMessage: () => {},
   };
+
+  // We need to present a working interface even before the socket is connected for the first time.
+  // Use a Gate to block actions until connected. Once connected, the Gate is opened which causes
+  // post-connect actions to start running.
+  let connectedGate = new Gate();
+
   if (browser.firefox) {
     // Prevent "escape" from taking effect and canceling a comet connection;
     // doesn't work if focus is on an iframe.
@@ -302,7 +320,8 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     hooks.callAll(`handleClientMessage_${msg.type}`, {payload: msg.payload});
   };
 
-  const updateUserInfo = (userInfo) => {
+  const updateUserInfo = async (userInfo) => {
+    await connectedGate;
     userInfo.userId = userId;
     userSet[userId] = userInfo;
     tellAceActiveAuthorInfo(userInfo);
@@ -352,6 +371,12 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
 
   const setChannelState = (newChannelState, moreInfo) => {
     if (newChannelState === channelState) return;
+    if (channelState === 'CONNECTED') {
+      // The old channel state is CONNECTED, which means we have just disconnected. Re-initialize
+      // connectedGate so that actions are deferred until connected again. Do this before calling
+      // onChannelStateChange() so that the event handler can create deferred actions if desired.
+      connectedGate = new Gate();
+    }
     channelState = newChannelState;
     callbacks.onChannelStateChange(channelState, moreInfo);
     switch (channelState) {
@@ -360,7 +385,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
         startConnectTime = Date.now();
         break;
       case 'CONNECTED':
-        doDeferredActions();
+        connectedGate.open();
         break;
     }
   };
@@ -371,26 +396,6 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
       array.push(v);
     });
     return array;
-  };
-
-  // We need to present a working interface even before the socket
-  // is connected for the first time.
-  let deferredActions = [];
-
-  const defer = (func) => function (...args) {
-    const action = () => {
-      func.call(this, ...args);
-    };
-    if (channelState !== 'CONNECTED') {
-      deferredActions.push(action);
-    } else {
-      action();
-    }
-  };
-
-  const doDeferredActions = () => {
-    for (const action of deferredActions) action();
-    deferredActions = [];
   };
 
   const sendClientMessage = (msg) => {
@@ -470,7 +475,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     setOnConnectionTrouble: (cb) => {
       callbacks.onConnectionTrouble = cb;
     },
-    updateUserInfo: defer(updateUserInfo),
+    updateUserInfo,
     handleMessageFromServer,
     getConnectedUsers,
     sendClientMessage,
