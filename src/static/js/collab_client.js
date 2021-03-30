@@ -498,7 +498,6 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
   editor.setBaseAttributedText(serverVars.initialAttributedText, serverVars.apool);
   editor.setUserChangeNotificationCallback(handleUserChanges);
 
-  setChannelState('CONNECTED');
   return self;
 };
 
