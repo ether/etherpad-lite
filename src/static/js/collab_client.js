@@ -377,11 +377,10 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
   // is connected for the first time.
   let deferredActions = [];
 
-  const defer = (func, tag) => function (...args) {
+  const defer = (func) => function (...args) {
     const action = () => {
       func.call(this, ...args);
     };
-    action.tag = tag;
     if (channelState !== 'CONNECTED') {
       deferredActions.push(action);
     } else {
@@ -389,17 +388,9 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     }
   };
 
-  const doDeferredActions = (tag) => {
-    const newArray = [];
-    for (let i = 0; i < deferredActions.length; i++) {
-      const a = deferredActions[i];
-      if ((!tag) || (tag === a.tag)) {
-        a();
-      } else {
-        newArray.push(a);
-      }
-    }
-    deferredActions = newArray;
+  const doDeferredActions = () => {
+    for (const action of deferredActions) action();
+    deferredActions = [];
   };
 
   const sendClientMessage = (msg) => {
