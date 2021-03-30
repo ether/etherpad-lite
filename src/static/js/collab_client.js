@@ -379,7 +379,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
       func.call(this, ...args);
     };
     action.tag = tag;
-    if (channelState === 'CONNECTING') {
+    if (channelState !== 'CONNECTED') {
       deferredActions.push(action);
     } else {
       action();
