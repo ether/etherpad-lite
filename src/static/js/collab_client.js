@@ -357,10 +357,9 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
   };
 
   const setChannelState = (newChannelState, moreInfo) => {
-    if (newChannelState !== channelState) {
-      channelState = newChannelState;
-      callbacks.onChannelStateChange(channelState, moreInfo);
-    }
+    if (newChannelState === channelState) return;
+    channelState = newChannelState;
+    callbacks.onChannelStateChange(channelState, moreInfo);
   };
 
   const valuesArray = (obj) => {
