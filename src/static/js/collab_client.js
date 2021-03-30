@@ -148,11 +148,6 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     handleUserChanges();
   };
 
-  const setUpSocket = () => {
-    setChannelState('CONNECTED');
-    doDeferredActions();
-  };
-
   const sendMessage = (msg) => {
     getSocket().json.send(
         {
@@ -362,6 +357,9 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
       case 'CONNECTING':
         startConnectTime = Date.now();
         break;
+      case 'CONNECTED':
+        doDeferredActions();
+        break;
     }
   };
 
@@ -502,7 +500,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
   editor.setBaseAttributedText(serverVars.initialAttributedText, serverVars.apool);
   editor.setUserChangeNotificationCallback(handleUserChanges);
 
-  setUpSocket();
+  setChannelState('CONNECTED');
   return self;
 };
 

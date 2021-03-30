@@ -443,7 +443,6 @@ const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
   };
 
   // to start upon window load, just push a function onto this array
-  // window['onloadFuncts'].push(setUpSocket);
   // window['onloadFuncts'].push(function ()
   fireWhenAllScriptsAreLoaded.push(() => {
     // set up the currentDivs and DOM
