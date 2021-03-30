@@ -43,7 +43,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
   let stateMessage;
   let channelState = 'CONNECTING';
   let lastCommitTime = 0;
-  let initialStartConnectTime = 0;
+  let startConnectTime = Date.now();
   let commitDelay = 500;
 
   const userId = initialUserInfo.userId;
@@ -81,7 +81,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     }
     const now = Date.now();
     if ((!getSocket()) || channelState === 'CONNECTING') {
-      if (channelState === 'CONNECTING' && (now - initialStartConnectTime) > 20000) {
+      if (channelState === 'CONNECTING' && now - startConnectTime > 20000) {
         setChannelState('DISCONNECTED', 'initsocketfail');
       } else {
         // check again in a bit
@@ -151,8 +151,6 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
   const setUpSocket = () => {
     setChannelState('CONNECTED');
     doDeferredActions();
-
-    initialStartConnectTime = Date.now();
   };
 
   const sendMessage = (msg) => {
@@ -360,6 +358,11 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     if (newChannelState === channelState) return;
     channelState = newChannelState;
     callbacks.onChannelStateChange(channelState, moreInfo);
+    switch (channelState) {
+      case 'CONNECTING':
+        startConnectTime = Date.now();
+        break;
+    }
   };
 
   const valuesArray = (obj) => {
