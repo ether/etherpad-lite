@@ -215,6 +215,10 @@ const sendClientReady = (isReconnect, messageType) => {
   }
 
   socket.json.send(msg);
+
+  // If this is a reconnect then the server won't send another CLIENT_VARS because we are already
+  // configured and ready to send arbitrary messages to the server.
+  if (isReconnect) pad.collabClient.setChannelState('CONNECTED');
 };
 
 const handshake = () => {
@@ -237,10 +241,6 @@ const handshake = () => {
   });
 
   socket.on('reconnect', () => {
-    // pad.collabClient might be null if the hanshake failed (or it never got that far).
-    if (pad.collabClient != null) {
-      pad.collabClient.setChannelState('CONNECTED');
-    }
     sendClientReady(receivedClientVars);
   });
 
