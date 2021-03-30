@@ -283,7 +283,7 @@ const handshake = () => {
     // just annoys users and fills logs.
   });
 
-  socket.on('message', (obj) => {
+  socket.on('message', async (obj) => {
     // the access was not granted, give the user a message
     if (obj.accessStatus) {
       if (obj.accessStatus === 'deny') {
@@ -304,7 +304,7 @@ const handshake = () => {
       window.clientVars = obj.data;
 
       // initialize the pad
-      pad._afterHandshake();
+      await pad._afterHandshake();
 
       if (clientVars.readonly) {
         chat.hide();
@@ -444,7 +444,7 @@ const pad = {
       padcookie.init();
     });
   },
-  _afterHandshake() {
+  async _afterHandshake() {
     pad.clientTimeOffset = Date.now() - clientVars.serverTimestamp;
     // initialize the chat
     chat.init(this);
@@ -461,56 +461,15 @@ const pad = {
       colorId: clientVars.userColor,
     };
 
-    const postAceInit = () => {
-      padeditbar.init();
-      setTimeout(() => {
-        padeditor.ace.focus();
-      }, 0);
-      // if we have a cookie for always showing chat then show it
-      if (padcookie.getPref('chatAlwaysVisible')) {
-        chat.stickToScreen(true); // stick it to the screen
-        $('#options-stickychat').prop('checked', true); // set the checkbox to on
-      }
-      // if we have a cookie for always showing chat then show it
-      if (padcookie.getPref('chatAndUsers')) {
-        chat.chatAndUsers(true); // stick it to the screen
-        $('#options-chatandusers').prop('checked', true); // set the checkbox to on
-      }
-      if (padcookie.getPref('showAuthorshipColors') === false) {
-        pad.changeViewOption('showAuthorColors', false);
-      }
-      if (padcookie.getPref('showLineNumbers') === false) {
-        pad.changeViewOption('showLineNumbers', false);
-      }
-      if (padcookie.getPref('rtlIsTrue') === true) {
-        pad.changeViewOption('rtlIsTrue', true);
-      }
-      pad.changeViewOption('padFontFamily', padcookie.getPref('padFontFamily'));
-      $('#viewfontmenu').val(padcookie.getPref('padFontFamily')).niceSelect('update');
-
-      // Prevent sticky chat or chat and users to be checked for mobiles
-      const checkChatAndUsersVisibility = (x) => {
-        if (x.matches) { // If media query matches
-          $('#options-chatandusers:checked').click();
-          $('#options-stickychat:checked').click();
-        }
-      };
-      const mobileMatch = window.matchMedia('(max-width: 800px)');
-      mobileMatch.addListener(checkChatAndUsersVisibility); // check if window resized
-      setTimeout(() => { checkChatAndUsersVisibility(mobileMatch); }, 0); // check now after load
-
-      $('#editorcontainer').addClass('initialized');
-
-      hooks.aCallAll('postAceInit', {ace: padeditor.ace, clientVars, pad});
-    };
-
-    // order of inits is important here:
     padimpexp.init(this);
     padsavedrevs.init(this);
-    padeditor.init(pad.padOptions.view || {}, this).then(postAceInit);
     paduserlist.init(pad.myUserInfo, this);
     padconnectionstatus.init();
     padmodals.init(this);
+    // padeditor.init() should be called late because it hides #editorloadingbox, which tests use as
+    // a signal that the pad is ready.
+    await padeditor.init(pad.padOptions.view || {}, this);
+    padeditbar.init();
 
     pad.collabClient = getCollabClient(
         padeditor.ace, clientVars.collab_client_vars, pad.myUserInfo,
@@ -532,6 +491,46 @@ const pad = {
       // there are no messages
       $('#chatloadmessagesbutton').css('display', 'none');
     }
+
+    setTimeout(() => {
+      padeditor.ace.focus();
+    }, 0);
+    // if we have a cookie for always showing chat then show it
+    if (padcookie.getPref('chatAlwaysVisible')) {
+      chat.stickToScreen(true); // stick it to the screen
+      $('#options-stickychat').prop('checked', true); // set the checkbox to on
+    }
+    // if we have a cookie for always showing chat then show it
+    if (padcookie.getPref('chatAndUsers')) {
+      chat.chatAndUsers(true); // stick it to the screen
+      $('#options-chatandusers').prop('checked', true); // set the checkbox to on
+    }
+    if (padcookie.getPref('showAuthorshipColors') === false) {
+      pad.changeViewOption('showAuthorColors', false);
+    }
+    if (padcookie.getPref('showLineNumbers') === false) {
+      pad.changeViewOption('showLineNumbers', false);
+    }
+    if (padcookie.getPref('rtlIsTrue') === true) {
+      pad.changeViewOption('rtlIsTrue', true);
+    }
+    pad.changeViewOption('padFontFamily', padcookie.getPref('padFontFamily'));
+    $('#viewfontmenu').val(padcookie.getPref('padFontFamily')).niceSelect('update');
+
+    // Prevent sticky chat or chat and users to be checked for mobiles
+    const checkChatAndUsersVisibility = (x) => {
+      if (x.matches) { // If media query matches
+        $('#options-chatandusers:checked').click();
+        $('#options-stickychat:checked').click();
+      }
+    };
+    const mobileMatch = window.matchMedia('(max-width: 800px)');
+    mobileMatch.addListener(checkChatAndUsersVisibility); // check if window resized
+    setTimeout(() => { checkChatAndUsersVisibility(mobileMatch); }, 0); // check now after load
+
+    $('#editorcontainer').addClass('initialized');
+
+    await hooks.aCallAll('postAceInit', {ace: padeditor.ace, clientVars, pad});
   },
   dispose: () => {
     padeditor.dispose();
