@@ -167,7 +167,8 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     handleUserChanges();
   };
 
-  const sendMessage = (msg) => {
+  const sendMessage = async (msg) => {
+    await connectedGate;
     getSocket().json.send(
         {
           type: 'COLLABROOM',
@@ -326,7 +327,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     userSet[userId] = userInfo;
     tellAceActiveAuthorInfo(userInfo);
     if (!getSocket()) return;
-    sendMessage(
+    await sendMessage(
         {
           type: 'USERINFO_UPDATE',
           userInfo,
@@ -398,8 +399,8 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     return array;
   };
 
-  const sendClientMessage = (msg) => {
-    sendMessage(
+  const sendClientMessage = async (msg) => {
+    await sendMessage(
         {
           type: 'CLIENT_MESSAGE',
           payload: msg,
