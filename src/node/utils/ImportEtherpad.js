@@ -18,7 +18,10 @@
 
 const db = require('../db/DB');
 const hooks = require('../../static/js/pluginfw/hooks');
+const log4js = require('log4js');
 const supportedElems = require('../../static/js/contentcollector').supportedElems;
+
+const logger = log4js.getLogger('ImportEtherpad');
 
 exports.setPadRaw = (padId, r) => {
   const records = JSON.parse(r);
@@ -27,6 +30,8 @@ exports.setPadRaw = (padId, r) => {
   hooks.callAll('ccRegisterBlockElements').forEach((element) => {
     supportedElems.add(element);
   });
+
+  const unsupportedElements = new Set();
 
   Object.keys(records).forEach(async (key) => {
     let value = records[key];
@@ -64,10 +69,7 @@ exports.setPadRaw = (padId, r) => {
       if (value.pool) {
         for (const attrib of Object.keys(value.pool.numToAttrib)) {
           const attribName = value.pool.numToAttrib[attrib][0];
-          if (!supportedElems.has(attribName)) {
-            console.warn('Plugin missing: ' +
-                `You might want to install a plugin to support this node name: ${attribName}`);
-          }
+          if (!supportedElems.has(attribName)) unsupportedElements.add(attribName);
         }
       }
       const oldPadId = key.split(':');
@@ -92,4 +94,9 @@ exports.setPadRaw = (padId, r) => {
     // Write the value to the server
     await db.set(newKey, value);
   });
+
+  if (unsupportedElements.size) {
+    logger.warn('Ignoring unsupported elements (you might want to install a plugin): ' +
+                `${[...unsupportedElements].join(', ')}`);
+  }
 };

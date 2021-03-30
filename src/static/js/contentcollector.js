@@ -318,6 +318,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
     cc.incrementAttrib(state, na);
   };
   cc.collectContent = function (node, state) {
+    let unsupportedElements = null;
     if (!state) {
       state = {
         flags: { /* name -> nesting counter*/
@@ -333,16 +334,15 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
           'list': 'bullet1',
           */
         },
+        unsupportedElements: new Set(),
       };
+      unsupportedElements = state.unsupportedElements;
     }
     const localAttribs = state.localAttribs;
     state.localAttribs = null;
     const isBlock = isBlockElement(node);
     if (!isBlock && node.name && (node.name !== 'body')) {
-      if (!supportedElems.has(node.name)) {
-        console.warn('Plugin missing: ' +
-          `You might want to install a plugin to support this node name: ${node.name}`);
-      }
+      if (!supportedElems.has(node.name)) state.unsupportedElements.add(node.name);
     }
     const isEmpty = _isEmpty(node, state);
     if (isBlock) _ensureColumnZero(state);
@@ -621,6 +621,10 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
       }
     }
     state.localAttribs = localAttribs;
+    if (unsupportedElements && unsupportedElements.size) {
+      console.warn('Ignoring unsupported elements (you might want to install a plugin): ' +
+                   `${[...unsupportedElements].join(', ')}`);
+    }
   };
   // can pass a falsy value for end of doc
   cc.notifyNextNode = (node) => {
