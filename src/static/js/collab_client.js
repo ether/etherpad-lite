@@ -80,8 +80,9 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
       return;
     }
     const now = Date.now();
-    if ((!getSocket()) || channelState === 'CONNECTING') {
-      if (channelState === 'CONNECTING' && now - startConnectTime > 20000) {
+    const connecting = ['CONNECTING', 'RECONNECTING'].includes(channelState);
+    if (!getSocket() || connecting) {
+      if (connecting && now - startConnectTime > 20000) {
         setChannelState('DISCONNECTED', 'initsocketfail');
       } else {
         // check again in a bit
@@ -355,6 +356,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     callbacks.onChannelStateChange(channelState, moreInfo);
     switch (channelState) {
       case 'CONNECTING':
+      case 'RECONNECTING':
         startConnectTime = Date.now();
         break;
       case 'CONNECTED':
