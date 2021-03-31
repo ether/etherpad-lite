@@ -59,19 +59,14 @@ const helper = {};
 
   // Can only happen when the iframe exists, so we're doing it separately from other cookies
   helper.clearPadPrefCookie = () => {
-    helper.padChrome$.document.cookie = 'prefsHttp=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    helper.padChrome$.document.cookie = 'prefsHttp=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
   };
 
   // Overwrite all prefs in pad cookie. Assumes http, not https.
-  //
-  // `helper.padChrome$.document.cookie` (the iframe) and `window.document.cookie`
-  // seem to have independent cookies, UNLESS we put path=/ here (which we don't).
-  // I don't fully understand it, but this function seems to properly simulate
-  // padCookie.setPref in the client code
   helper.setPadPrefCookie = (prefs) => {
     const val = encodeURIComponent(JSON.stringify(prefs));
     helper.padChrome$.document.cookie =
-        `prefsHttp=${val};expires=Thu, 01 Jan 3000 00:00:00 GMT`;
+        `prefsHttp=${val};expires=Thu, 01 Jan 3000 00:00:00 GMT; path=/`;
   };
 
   // Functionality for knowing what key event type is required for tests
