@@ -76,10 +76,10 @@ helper.defaultText =
  * @param {string} message the chat message to be sent
  * @returns {Promise}
  */
-helper.sendChatMessage = (message) => {
+helper.sendChatMessage = async (message) => {
   const noOfChatMessages = helper.chatMessages.length;
   helper.padChrome$('#chatinput').sendkeys(message);
-  return helper.waitForPromise(() => noOfChatMessages + 1 === helper.chatMessages.length);
+  await helper.waitForPromise(() => noOfChatMessages + 1 === helper.chatMessages.length);
 };
 
 /**
@@ -87,10 +87,10 @@ helper.sendChatMessage = (message) => {
  *
  * @returns {Promise}
  */
-helper.showSettings = () => {
+helper.showSettings = async () => {
   if (helper.isSettingsShown()) return;
   helper.settingsButton().click();
-  return helper.waitForPromise(() => helper.isSettingsShown(), 2000);
+  await helper.waitForPromise(() => helper.isSettingsShown(), 2000);
 };
 
 /**
@@ -99,10 +99,10 @@ helper.showSettings = () => {
  * @returns {Promise}
  * @todo untested
  */
-helper.hideSettings = () => {
+helper.hideSettings = async () => {
   if (!helper.isSettingsShown()) return;
   helper.settingsButton().click();
-  return helper.waitForPromise(() => !helper.isSettingsShown(), 2000);
+  await helper.waitForPromise(() => !helper.isSettingsShown(), 2000);
 };
 
 /**
@@ -111,11 +111,11 @@ helper.hideSettings = () => {
  *
  * @returns {Promise}
  */
-helper.enableStickyChatviaSettings = () => {
+helper.enableStickyChatviaSettings = async () => {
   const stickyChat = helper.padChrome$('#options-stickychat');
   if (!helper.isSettingsShown() || stickyChat.is(':checked')) return;
   stickyChat.click();
-  return helper.waitForPromise(() => helper.isChatboxSticky(), 2000);
+  await helper.waitForPromise(() => helper.isChatboxSticky(), 2000);
 };
 
 /**
@@ -124,11 +124,11 @@ helper.enableStickyChatviaSettings = () => {
  *
  * @returns {Promise}
  */
-helper.disableStickyChatviaSettings = () => {
+helper.disableStickyChatviaSettings = async () => {
   const stickyChat = helper.padChrome$('#options-stickychat');
   if (!helper.isSettingsShown() || !stickyChat.is(':checked')) return;
   stickyChat.click();
-  return helper.waitForPromise(() => !helper.isChatboxSticky(), 2000);
+  await helper.waitForPromise(() => !helper.isChatboxSticky(), 2000);
 };
 
 /**
@@ -137,11 +137,11 @@ helper.disableStickyChatviaSettings = () => {
  *
  * @returns {Promise}
  */
-helper.enableStickyChatviaIcon = () => {
+helper.enableStickyChatviaIcon = async () => {
   const stickyChat = helper.padChrome$('#titlesticky');
   if (!helper.isChatboxShown() || helper.isChatboxSticky()) return;
   stickyChat.click();
-  return helper.waitForPromise(() => helper.isChatboxSticky(), 2000);
+  await helper.waitForPromise(() => helper.isChatboxSticky(), 2000);
 };
 
 /**
@@ -150,10 +150,10 @@ helper.enableStickyChatviaIcon = () => {
  *
  * @returns {Promise}
  */
-helper.disableStickyChatviaIcon = () => {
+helper.disableStickyChatviaIcon = async () => {
   if (!helper.isChatboxShown() || !helper.isChatboxSticky()) return;
   helper.titlecross().click();
-  return helper.waitForPromise(() => !helper.isChatboxSticky(), 2000);
+  await helper.waitForPromise(() => !helper.isChatboxSticky(), 2000);
 };
 
 /**
@@ -168,12 +168,12 @@ helper.disableStickyChatviaIcon = () => {
  * @todo for some reason this does only work the first time, you cannot
  * goto rev 0 and then via the same method to rev 5. Use buttons instead
  */
-helper.gotoTimeslider = (revision) => {
+helper.gotoTimeslider = async (revision) => {
   revision = Number.isInteger(revision) ? `#${revision}` : '';
   const iframe = $('#iframe-container iframe');
   iframe.attr('src', `${iframe.attr('src')}/timeslider${revision}`);
 
-  return helper.waitForPromise(() => helper.timesliderTimerTime() &&
+  await helper.waitForPromise(() => helper.timesliderTimerTime() &&
       !Number.isNaN(new Date(helper.timesliderTimerTime()).getTime()), 10000);
 };
 
