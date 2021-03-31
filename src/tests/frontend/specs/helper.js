@@ -21,23 +21,19 @@ describe('the test helper', function () {
       loadPad();
     });
 
-    it('gives me 3 jquery instances of chrome, outer and inner', function (done) {
+    it('gives me 3 jquery instances of chrome, outer and inner', async function () {
       this.timeout(10000);
-
-      helper.newPad(() => {
-        // check if the jquery selectors have the desired elements
-        expect(helper.padChrome$('#editbar').length).to.be(1);
-        expect(helper.padOuter$('#outerdocbody').length).to.be(1);
-        expect(helper.padInner$('#innerdocbody').length).to.be(1);
-
-        // check if the document object was set correctly
-        expect(helper.padChrome$.window.document).to.be(helper.padChrome$.document);
-        expect(helper.padOuter$.window.document).to.be(helper.padOuter$.document);
-        expect(helper.padInner$.window.document).to.be(helper.padInner$.document);
-
-        done();
-      });
+      await helper.aNewPad();
+      // check if the jquery selectors have the desired elements
+      expect(helper.padChrome$('#editbar').length).to.be(1);
+      expect(helper.padOuter$('#outerdocbody').length).to.be(1);
+      expect(helper.padInner$('#innerdocbody').length).to.be(1);
+      // check if the document object was set correctly
+      expect(helper.padChrome$.window.document).to.be(helper.padChrome$.document);
+      expect(helper.padOuter$.window.document).to.be(helper.padOuter$.document);
+      expect(helper.padInner$.window.document).to.be(helper.padInner$.document);
     });
+
     // Make sure the cookies are cleared, and make sure that the cookie
     // clearing has taken effect at this point in the code. It has been
     // observed that the former can happen without the latter if there
@@ -45,7 +41,7 @@ describe('the test helper', function () {
     // However this doesn't seem to always be easily replicated, so this
     // timeout may or may end up in the code. None the less, we test here
     // to catch it if the bug comes up again.
-    it('clears cookies', function (done) {
+    it('clears cookies', async function () {
       this.timeout(60000);
 
       // set cookies far into the future to make sure they're not expired yet
@@ -55,78 +51,70 @@ describe('the test helper', function () {
       expect(window.document.cookie).to.contain('token=foo');
       expect(window.document.cookie).to.contain('language=bar');
 
-      helper.newPad(() => {
-        // helper function seems to have cleared cookies
-        // NOTE: this doesn't yet mean it's proven to have taken effect by this point in execution
-        const firstCookie = window.document.cookie;
-        expect(firstCookie).to.not.contain('token=foo');
-        expect(firstCookie).to.not.contain('language=bar');
+      await helper.aNewPad();
 
-        const chrome$ = helper.padChrome$;
+      // helper function seems to have cleared cookies
+      // NOTE: this doesn't yet mean it's proven to have taken effect by this point in execution
+      const firstCookie = window.document.cookie;
+      expect(firstCookie).to.not.contain('token=foo');
+      expect(firstCookie).to.not.contain('language=bar');
 
-        // click on the settings button to make settings visible
-        const $userButton = chrome$('.buttonicon-showusers');
-        $userButton.click();
+      let chrome$ = helper.padChrome$;
 
-        const $usernameInput = chrome$('#myusernameedit');
-        $usernameInput.click();
+      // click on the settings button to make settings visible
+      let $userButton = chrome$('.buttonicon-showusers');
+      $userButton.click();
 
-        $usernameInput.val('John McLear');
-        $usernameInput.blur();
+      let $usernameInput = chrome$('#myusernameedit');
+      $usernameInput.click();
 
-        // Before refreshing, make sure the name is there
-        expect($usernameInput.val()).to.be('John McLear');
+      $usernameInput.val('John McLear');
+      $usernameInput.blur();
 
-        // Now that we have a chrome, we can set a pad cookie
-        // so we can confirm it gets wiped as well
-        chrome$.document.cookie = 'prefsHtml=baz;expires=Thu, 01 Jan 3030 00:00:00 GMT';
-        expect(chrome$.document.cookie).to.contain('prefsHtml=baz');
+      // Before refreshing, make sure the name is there
+      expect($usernameInput.val()).to.be('John McLear');
 
-        // Cookies are weird. Because it's attached to chrome$ (as helper.setPadCookies does)
-        // AND we didn't put path=/, we shouldn't expect it to be visible on
-        // window.document.cookie. Let's just be sure.
-        expect(window.document.cookie).to.not.contain('prefsHtml=baz');
+      // Now that we have a chrome, we can set a pad cookie
+      // so we can confirm it gets wiped as well
+      chrome$.document.cookie = 'prefsHtml=baz;expires=Thu, 01 Jan 3030 00:00:00 GMT';
+      expect(chrome$.document.cookie).to.contain('prefsHtml=baz');
 
-        setTimeout(() => { // give it a second to save the username on the server side
-          helper.newPad(() => { // get a new pad, let it clear the cookies
-            const chrome$ = helper.padChrome$;
+      // Cookies are weird. Because it's attached to chrome$ (as helper.setPadCookies does)
+      // AND we didn't put path=/, we shouldn't expect it to be visible on
+      // window.document.cookie. Let's just be sure.
+      expect(window.document.cookie).to.not.contain('prefsHtml=baz');
 
-            // helper function seems to have cleared cookies
-            // NOTE: this doesn't yet mean cookies were cleared effectively.
-            // We still need to test below that we're in a new session
-            expect(window.document.cookie).to.not.contain('token=foo');
-            expect(window.document.cookie).to.not.contain('language=bar');
-            expect(chrome$.document.cookie).to.contain('prefsHtml=baz');
-            expect(window.document.cookie).to.not.contain('prefsHtml=baz');
+      // give it a second to save the username on the server side
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-            expect(window.document.cookie).to.not.be(firstCookie);
+      await helper.aNewPad(); // get a new pad, let it clear the cookies
+      chrome$ = helper.padChrome$;
 
-            // click on the settings button to make settings visible
-            const $userButton = chrome$('.buttonicon-showusers');
-            $userButton.click();
+      // helper function seems to have cleared cookies
+      // NOTE: this doesn't yet mean cookies were cleared effectively.
+      // We still need to test below that we're in a new session
+      expect(window.document.cookie).to.not.contain('token=foo');
+      expect(window.document.cookie).to.not.contain('language=bar');
+      expect(chrome$.document.cookie).to.contain('prefsHtml=baz');
+      expect(window.document.cookie).to.not.contain('prefsHtml=baz');
 
-            // confirm that the session was actually cleared
-            const $usernameInput = chrome$('#myusernameedit');
-            expect($usernameInput.val()).to.be('');
+      expect(window.document.cookie).to.not.be(firstCookie);
 
-            done();
-          });
-        }, 1000);
-      });
+      // click on the settings button to make settings visible
+      $userButton = chrome$('.buttonicon-showusers');
+      $userButton.click();
+
+      // confirm that the session was actually cleared
+      $usernameInput = chrome$('#myusernameedit');
+      expect($usernameInput.val()).to.be('');
     });
 
-    it('sets pad prefs cookie', function (done) {
+    it('sets pad prefs cookie', async function () {
       this.timeout(60000);
-
-      helper.newPad({
-        padPrefs: {foo: 'bar'},
-        cb() {
-          const chrome$ = helper.padChrome$;
-          expect(chrome$.document.cookie).to.contain('prefsHttp=%7B%22');
-          expect(chrome$.document.cookie).to.contain('foo%22%3A%22bar');
-          done();
-        },
-      });
+      await helper.aNewPad({padPrefs: {foo: 'bar'}});
+      const chrome$ = helper.padChrome$;
+      expect(chrome$.document.cookie).to.contain('prefsHttp=%7B%22');
+      expect(chrome$.document.cookie).to.contain('foo%22%3A%22bar');
     });
   });
 
@@ -416,10 +404,8 @@ describe('the test helper', function () {
   });
 
   describe('helper', function () {
-    before(function (cb) {
-      helper.newPad(() => {
-        cb();
-      });
+    before(async function () {
+      await helper.aNewPad();
     });
 
     it('.textLines() returns the text of the pad as strings', async function () {
