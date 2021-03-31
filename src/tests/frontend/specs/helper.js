@@ -76,8 +76,8 @@ describe('the test helper', function () {
 
       // Now that we have a chrome, we can set a pad cookie
       // so we can confirm it gets wiped as well
-      chrome$.document.cookie = 'prefsHtml=baz;expires=Thu, 01 Jan 3030 00:00:00 GMT; path=/';
-      expect(chrome$.document.cookie).to.contain('prefsHtml=baz');
+      chrome$.document.cookie = 'prefsHttp=baz;expires=Thu, 01 Jan 3030 00:00:00 GMT; path=/';
+      expect(chrome$.document.cookie).to.contain('prefsHttp=baz');
 
       // give it a second to save the username on the server side
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -90,7 +90,7 @@ describe('the test helper', function () {
       // We still need to test below that we're in a new session
       expect(window.document.cookie).to.not.contain('token=foo');
       expect(window.document.cookie).to.not.contain('language=bar');
-      expect(chrome$.document.cookie).to.contain('prefsHtml=baz');
+      expect(chrome$.document.cookie).to.contain('prefsHttp=baz');
 
       expect(window.document.cookie).to.not.be(firstCookie);
 
