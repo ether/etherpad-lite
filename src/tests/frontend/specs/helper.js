@@ -76,13 +76,8 @@ describe('the test helper', function () {
 
       // Now that we have a chrome, we can set a pad cookie
       // so we can confirm it gets wiped as well
-      chrome$.document.cookie = 'prefsHtml=baz;expires=Thu, 01 Jan 3030 00:00:00 GMT';
+      chrome$.document.cookie = 'prefsHtml=baz;expires=Thu, 01 Jan 3030 00:00:00 GMT; path=/';
       expect(chrome$.document.cookie).to.contain('prefsHtml=baz');
-
-      // Cookies are weird. Because it's attached to chrome$ (as helper.setPadCookies does)
-      // AND we didn't put path=/, we shouldn't expect it to be visible on
-      // window.document.cookie. Let's just be sure.
-      expect(window.document.cookie).to.not.contain('prefsHtml=baz');
 
       // give it a second to save the username on the server side
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -96,7 +91,6 @@ describe('the test helper', function () {
       expect(window.document.cookie).to.not.contain('token=foo');
       expect(window.document.cookie).to.not.contain('language=bar');
       expect(chrome$.document.cookie).to.contain('prefsHtml=baz');
-      expect(window.document.cookie).to.not.contain('prefsHtml=baz');
 
       expect(window.document.cookie).to.not.be(firstCookie);
 
