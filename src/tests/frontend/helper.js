@@ -69,8 +69,9 @@ const helper = {};
   // I don't fully understand it, but this function seems to properly simulate
   // padCookie.setPref in the client code
   helper.setPadPrefCookie = (prefs) => {
+    const val = encodeURIComponent(JSON.stringify(prefs));
     helper.padChrome$.document.cookie =
-        (`prefsHttp=${escape(JSON.stringify(prefs))};expires=Thu, 01 Jan 3000 00:00:00 GMT`);
+        `prefsHttp=${val};expires=Thu, 01 Jan 3000 00:00:00 GMT`;
   };
 
   // Functionality for knowing what key event type is required for tests
