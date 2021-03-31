@@ -13,11 +13,11 @@ helper.contentWindow = () => $('#iframe-container iframe')[0].contentWindow;
  *
  * @returns {Promise}
  */
-helper.showChat = () => {
+helper.showChat = async () => {
   const chaticon = helper.chatIcon();
   if (!chaticon.hasClass('visible')) return;
   chaticon.click();
-  return helper.waitForPromise(() => !chaticon.hasClass('visible'), 2000);
+  await helper.waitForPromise(() => !chaticon.hasClass('visible'), 2000);
 };
 
 /**
@@ -25,10 +25,10 @@ helper.showChat = () => {
  *
  * @returns {Promise}
  */
-helper.hideChat = () => {
+helper.hideChat = async () => {
   if (!helper.isChatboxShown() || helper.isChatboxSticky()) return;
   helper.titlecross().click();
-  return helper.waitForPromise(() => !helper.isChatboxShown(), 2000);
+  await helper.waitForPromise(() => !helper.isChatboxShown(), 2000);
 };
 
 /**
