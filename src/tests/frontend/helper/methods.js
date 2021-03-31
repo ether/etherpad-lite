@@ -6,14 +6,13 @@
  */
 helper.spyOnSocketIO = () => {
   helper.contentWindow().pad.socket.on('message', (msg) => {
-    if (msg.type === 'COLLABROOM') {
-      if (msg.data.type === 'ACCEPT_COMMIT') {
-        helper.commits.push(msg);
-      } else if (msg.data.type === 'USER_NEWINFO') {
-        helper.userInfos.push(msg);
-      } else if (msg.data.type === 'CHAT_MESSAGE') {
-        helper.chatMessages.push(msg);
-      }
+    if (msg.type !== 'COLLABROOM') return;
+    if (msg.data.type === 'ACCEPT_COMMIT') {
+      helper.commits.push(msg);
+    } else if (msg.data.type === 'USER_NEWINFO') {
+      helper.userInfos.push(msg);
+    } else if (msg.data.type === 'CHAT_MESSAGE') {
+      helper.chatMessages.push(msg);
     }
   });
 };
@@ -93,10 +92,9 @@ helper.sendChatMessage = (message) => {
  * @returns {Promise}
  */
 helper.showSettings = () => {
-  if (!helper.isSettingsShown()) {
-    helper.settingsButton().click();
-    return helper.waitForPromise(() => helper.isSettingsShown(), 2000);
-  }
+  if (helper.isSettingsShown()) return;
+  helper.settingsButton().click();
+  return helper.waitForPromise(() => helper.isSettingsShown(), 2000);
 };
 
 /**
@@ -106,10 +104,9 @@ helper.showSettings = () => {
  * @todo untested
  */
 helper.hideSettings = () => {
-  if (helper.isSettingsShown()) {
-    helper.settingsButton().click();
-    return helper.waitForPromise(() => !helper.isSettingsShown(), 2000);
-  }
+  if (!helper.isSettingsShown()) return;
+  helper.settingsButton().click();
+  return helper.waitForPromise(() => !helper.isSettingsShown(), 2000);
 };
 
 /**
@@ -120,10 +117,9 @@ helper.hideSettings = () => {
  */
 helper.enableStickyChatviaSettings = () => {
   const stickyChat = helper.padChrome$('#options-stickychat');
-  if (helper.isSettingsShown() && !stickyChat.is(':checked')) {
-    stickyChat.click();
-    return helper.waitForPromise(() => helper.isChatboxSticky(), 2000);
-  }
+  if (!helper.isSettingsShown() || stickyChat.is(':checked')) return;
+  stickyChat.click();
+  return helper.waitForPromise(() => helper.isChatboxSticky(), 2000);
 };
 
 /**
@@ -134,10 +130,9 @@ helper.enableStickyChatviaSettings = () => {
  */
 helper.disableStickyChatviaSettings = () => {
   const stickyChat = helper.padChrome$('#options-stickychat');
-  if (helper.isSettingsShown() && stickyChat.is(':checked')) {
-    stickyChat.click();
-    return helper.waitForPromise(() => !helper.isChatboxSticky(), 2000);
-  }
+  if (!helper.isSettingsShown() || !stickyChat.is(':checked')) return;
+  stickyChat.click();
+  return helper.waitForPromise(() => !helper.isChatboxSticky(), 2000);
 };
 
 /**
@@ -148,10 +143,9 @@ helper.disableStickyChatviaSettings = () => {
  */
 helper.enableStickyChatviaIcon = () => {
   const stickyChat = helper.padChrome$('#titlesticky');
-  if (helper.isChatboxShown() && !helper.isChatboxSticky()) {
-    stickyChat.click();
-    return helper.waitForPromise(() => helper.isChatboxSticky(), 2000);
-  }
+  if (!helper.isChatboxShown() || helper.isChatboxSticky()) return;
+  stickyChat.click();
+  return helper.waitForPromise(() => helper.isChatboxSticky(), 2000);
 };
 
 /**
@@ -161,10 +155,9 @@ helper.enableStickyChatviaIcon = () => {
  * @returns {Promise}
  */
 helper.disableStickyChatviaIcon = () => {
-  if (helper.isChatboxShown() && helper.isChatboxSticky()) {
-    helper.titlecross().click();
-    return helper.waitForPromise(() => !helper.isChatboxSticky(), 2000);
-  }
+  if (!helper.isChatboxShown() || !helper.isChatboxSticky()) return;
+  helper.titlecross().click();
+  return helper.waitForPromise(() => !helper.isChatboxSticky(), 2000);
 };
 
 /**

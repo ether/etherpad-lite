@@ -15,10 +15,9 @@ helper.contentWindow = () => $('#iframe-container iframe')[0].contentWindow;
  */
 helper.showChat = () => {
   const chaticon = helper.chatIcon();
-  if (chaticon.hasClass('visible')) {
-    chaticon.click();
-    return helper.waitForPromise(() => !chaticon.hasClass('visible'), 2000);
-  }
+  if (!chaticon.hasClass('visible')) return;
+  chaticon.click();
+  return helper.waitForPromise(() => !chaticon.hasClass('visible'), 2000);
 };
 
 /**
@@ -27,10 +26,9 @@ helper.showChat = () => {
  * @returns {Promise}
  */
 helper.hideChat = () => {
-  if (helper.isChatboxShown() && !helper.isChatboxSticky()) {
-    helper.titlecross().click();
-    return helper.waitForPromise(() => !helper.isChatboxShown(), 2000);
-  }
+  if (!helper.isChatboxShown() || helper.isChatboxSticky()) return;
+  helper.titlecross().click();
+  return helper.waitForPromise(() => !helper.isChatboxShown(), 2000);
 };
 
 /**
@@ -132,9 +130,8 @@ helper.isSettingsShown = () => helper.padChrome$('#settings').hasClass('popup-sh
  * @returns {HTMLElement} timer
  */
 helper.timesliderTimer = () => {
-  if (typeof helper.contentWindow().$ === 'function') {
-    return helper.contentWindow().$('#timer');
-  }
+  if (typeof helper.contentWindow().$ !== 'function') return;
+  return helper.contentWindow().$('#timer');
 };
 
 /**
@@ -143,9 +140,8 @@ helper.timesliderTimer = () => {
  * @returns {HTMLElement} timer
  */
 helper.timesliderTimerTime = () => {
-  if (helper.timesliderTimer()) {
-    return helper.timesliderTimer().text();
-  }
+  if (!helper.timesliderTimer()) return;
+  return helper.timesliderTimer().text();
 };
 
 /**
