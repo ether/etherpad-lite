@@ -9,18 +9,10 @@ describe('timeslider', function () {
 
   it('loads adds a hundred revisions', async function () {
     this.timeout(100000);
-    const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
-    // make some changes to produce 100 revisions
-    const timePerRev = 900;
-    const revs = 99;
-    this.timeout(revs * timePerRev + 10000);
-    for (let i = 0; i < revs; i++) {
-      await new Promise((resolve) => setTimeout(resolve, timePerRev));
-      // enter 'a' in the first text element
-      inner$('div').first().sendkeys('a');
-    }
+    // Create a bunch of revisions.
+    for (let i = 0; i < 99; i++) await helper.edit('a');
     chrome$('.buttonicon-savedRevision').click();
 
     // go to timeslider
@@ -65,17 +57,8 @@ describe('timeslider', function () {
 
   // Disabled as jquery trigger no longer works properly
   xit('changes the url when clicking on the timeslider', async function () {
-    const inner$ = helper.padInner$;
-
-    // make some changes to produce 7 revisions
-    const timePerRev = 1000;
-    const revs = 20;
-    this.timeout(revs * timePerRev + 10000);
-    for (let i = 0; i < revs; i++) {
-      await new Promise((resolve) => setTimeout(resolve, timePerRev));
-      // enter 'a' in the first text element
-      inner$('div').first().sendkeys('a');
-    }
+    // Create some revisions.
+    for (let i = 0; i < 20; i++) await helper.edit('a');
 
     // go to timeslider
     $('#iframe-container iframe')
