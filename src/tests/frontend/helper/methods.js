@@ -32,8 +32,11 @@ helper.spyOnSocketIO = () => {
 helper.edit = async (message, line) => {
   const editsNum = helper.commits.length;
   line = line ? line - 1 : 0;
-  helper.linesDiv()[line].sendkeys(message);
-  return helper.waitForPromise(() => editsNum + 1 === helper.commits.length);
+  await helper.withFastCommit(async (incorp) => {
+    helper.linesDiv()[line].sendkeys(message);
+    incorp();
+    await helper.waitForPromise(() => editsNum + 1 === helper.commits.length);
+  });
 };
 
 /**
@@ -216,7 +219,10 @@ helper.clearPad = async () => {
   await helper.waitForPromise(() => !helper.padInner$.document.getSelection().isCollapsed);
   const e = new helper.padInner$.Event(helper.evtType);
   e.keyCode = 8; // delete key
-  helper.padInner$('#innerdocbody').trigger(e);
-  await helper.waitForPromise(helper.padIsEmpty);
-  await helper.waitForPromise(() => helper.commits.length > commitsBefore);
+  await helper.withFastCommit(async (incorp) => {
+    helper.padInner$('#innerdocbody').trigger(e);
+    incorp();
+    await helper.waitForPromise(helper.padIsEmpty);
+    await helper.waitForPromise(() => helper.commits.length > commitsBefore);
+  });
 };

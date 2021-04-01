@@ -127,6 +127,8 @@ const helper = {};
     $('#iframe-container').append($iframe);
     await new Promise((resolve) => $iframe.one('load', resolve));
     helper.padChrome$ = getFrameJQuery($('#iframe-container iframe'));
+    helper.padChrome$.padeditor =
+        helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad_editor').padeditor;
     if (opts.clearCookies) {
       helper.clearPadPrefCookie();
     }
@@ -258,6 +260,22 @@ const helper = {};
 
     selection.removeAllRanges();
     selection.addRange(range);
+  };
+
+  // Temporarily reduces minimum time between commits and calls the provided function with a single
+  // argument: a function that immediately incorporates all pad edits (as opposed to waiting for the
+  // idle timer to fire).
+  helper.withFastCommit = async (fn) => {
+    const incorp = () => helper.padChrome$.padeditor.ace.callWithAce(
+        (ace) => ace.ace_inCallStackIfNecessary('helper.edit', () => ace.ace_fastIncorp()));
+    const cc = helper.padChrome$.window.pad.collabClient;
+    const {commitDelay} = cc;
+    cc.commitDelay = 0;
+    try {
+      return await fn(incorp);
+    } finally {
+      cc.commitDelay = commitDelay;
+    }
   };
 
   const getTextNodeAndOffsetOf = ($targetLine, targetOffsetAtLine) => {

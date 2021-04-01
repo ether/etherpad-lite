@@ -44,6 +44,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
   let channelState = 'CONNECTING';
   let lastCommitTime = 0;
   let initialStartConnectTime = 0;
+  let commitDelay = 500;
 
   const userId = initialUserInfo.userId;
   // var socket;
@@ -102,7 +103,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
       return;
     }
 
-    const earliestCommit = lastCommitTime + 500;
+    const earliestCommit = lastCommitTime + commitDelay;
     if (now < earliestCommit) {
       setTimeout(handleUserChanges, earliestCommit - now);
       return;
@@ -488,6 +489,8 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     setChannelState,
     setStateIdle,
     setIsPendingRevision,
+    set commitDelay(ms) { commitDelay = ms; },
+    get commitDelay() { return commitDelay; },
   };
 
   tellAceAboutHistoricalAuthors(serverVars.historicalAuthorData);
