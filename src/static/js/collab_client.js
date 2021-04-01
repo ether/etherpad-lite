@@ -102,7 +102,8 @@ class CollabClient {
 
     this._serverMessageTaskQueue = new TaskQueue();
 
-    this._idleFuncs = [];
+    this._idleGate = new Gate();
+    this._idleGate.open();
 
     this.addHistoricalAuthors(serverVars.historicalAuthorData);
     this._tellAceActiveAuthorInfo(this._initialUserInfo);
@@ -157,6 +158,7 @@ class CollabClient {
       if (userChangesData.changeset) {
         this._lastCommitTime = now;
         this._committing = true;
+        this._idleGate = new Gate();
         this._stateMessage = {
           type: 'USER_CHANGES',
           baseRev: this._rev,
@@ -434,28 +436,17 @@ class CollabClient {
 
   setStateIdle() {
     this._committing = false;
+    this._idleGate.open();
     this._callbacks.onInternalAction('newlyIdle');
-    this._schedulePerhapsCallIdleFuncs();
   }
 
   setIsPendingRevision(value) {
     this._isPendingRevision = value;
   }
 
-  callWhenNotCommitting(func) {
-    this._idleFuncs.push(func);
-    this._schedulePerhapsCallIdleFuncs();
-  }
-
-  _schedulePerhapsCallIdleFuncs() {
-    setTimeout(() => {
-      if (!this._committing) {
-        while (this._idleFuncs.length > 0) {
-          const f = this._idleFuncs.shift();
-          f();
-        }
-      }
-    }, 0);
+  async callWhenNotCommitting(func) {
+    await this._idleGate;
+    return await func();
   }
 
   setOnUserJoin(cb) {
