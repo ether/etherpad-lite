@@ -102,9 +102,6 @@ class CollabClient {
 
     this._serverMessageTaskQueue = new TaskQueue();
 
-    this._idleGate = new Gate();
-    this._idleGate.open();
-
     this.addHistoricalAuthors(serverVars.historicalAuthorData);
     this._tellAceActiveAuthorInfo(this._initialUserInfo);
 
@@ -158,7 +155,6 @@ class CollabClient {
       if (userChangesData.changeset) {
         this._lastCommitTime = now;
         this._committing = true;
-        this._idleGate = new Gate();
         this._stateMessage = {
           type: 'USER_CHANGES',
           baseRev: this._rev,
@@ -436,17 +432,11 @@ class CollabClient {
 
   setStateIdle() {
     this._committing = false;
-    this._idleGate.open();
     this._callbacks.onInternalAction('newlyIdle');
   }
 
   setIsPendingRevision(value) {
     this._isPendingRevision = value;
-  }
-
-  async callWhenNotCommitting(func) {
-    await this._idleGate;
-    return await func();
   }
 
   setOnUserJoin(cb) {

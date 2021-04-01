@@ -715,9 +715,6 @@ const pad = {
         .val(JSON.stringify(pad.collabClient.getMissedChanges()));
     $('form#reconnectform').submit();
   },
-  callWhenNotCommitting: (f) => {
-    pad.collabClient.callWhenNotCommitting(f);
-  },
   getCollabRevisionNumber: () => pad.collabClient.getCurrentRevisionNumber(),
   isFullyConnected: () => padconnectionstatus.isFullyConnected(),
   addHistoricalAuthors: (data) => {
