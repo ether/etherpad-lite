@@ -356,7 +356,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, pad) => {
 
   const getConnectedUsers = () => Object.values(userSet);
 
-  const tellAceAboutHistoricalAuthors = (hadata) => {
+  const addHistoricalAuthors = (hadata) => {
     for (const [author, data] of Object.entries(hadata)) {
       if (!userSet[author]) {
         tellAceAuthorInfo(author, data.colorId, true);
@@ -470,7 +470,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, pad) => {
     getCurrentRevisionNumber,
     getMissedChanges,
     callWhenNotCommitting,
-    addHistoricalAuthors: tellAceAboutHistoricalAuthors,
+    addHistoricalAuthors,
     setChannelState,
     setStateIdle,
     setIsPendingRevision,
@@ -478,7 +478,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, pad) => {
     get commitDelay() { return commitDelay; },
   };
 
-  tellAceAboutHistoricalAuthors(serverVars.historicalAuthorData);
+  addHistoricalAuthors(serverVars.historicalAuthorData);
   tellAceActiveAuthorInfo(initialUserInfo);
 
   editor.setProperty('userAuthor', userId);
