@@ -1,12 +1,12 @@
 'use strict';
 
 describe('undo button', function () {
-  beforeEach(function (cb) {
-    helper.newPad(cb); // creates a new pad
+  beforeEach(async function () {
     this.timeout(60000);
+    await helper.aNewPad();
   });
 
-  it('undo some typing by clicking undo button', function (done) {
+  it('undo some typing by clicking undo button', async function () {
     this.timeout(100);
     this.timeout(150);
     const inner$ = helper.padInner$;
@@ -25,14 +25,10 @@ describe('undo button', function () {
     // click the button
     $undoButton.click();
 
-    helper.waitFor(() => inner$('div span').first().text() === originalValue).done(() => {
-      const finalValue = inner$('div span').first().text();
-      expect(finalValue).to.be(originalValue); // expect the value to change
-      done();
-    });
+    await helper.waitForPromise(() => inner$('div span').first().text() === originalValue);
   });
 
-  it('undo some typing using a keypress', function (done) {
+  it('undo some typing using a keypress', async function () {
     this.timeout(150);
     const inner$ = helper.padInner$;
 
@@ -49,10 +45,6 @@ describe('undo button', function () {
     e.which = 90; // z
     inner$('#innerdocbody').trigger(e);
 
-    helper.waitFor(() => inner$('div span').first().text() === originalValue).done(() => {
-      const finalValue = inner$('div span').first().text();
-      expect(finalValue).to.be(originalValue); // expect the value to change
-      done();
-    });
+    await helper.waitForPromise(() => inner$('div span').first().text() === originalValue);
   });
 });

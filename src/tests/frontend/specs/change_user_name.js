@@ -2,8 +2,8 @@
 
 describe('change username value', function () {
   // create a new pad before each test run
-  beforeEach(function (cb) {
-    helper.newPad(cb);
+  beforeEach(async function () {
+    await helper.aNewPad();
   });
 
   it('Remembers the user name after a refresh', async function () {

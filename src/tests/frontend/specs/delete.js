@@ -2,12 +2,12 @@
 
 describe('delete keystroke', function () {
   // create a new pad before each test run
-  beforeEach(function (cb) {
-    helper.newPad(cb);
+  beforeEach(async function () {
     this.timeout(60000);
+    await helper.aNewPad();
   });
 
-  it('makes text delete', function (done) {
+  it('makes text delete', async function () {
     this.timeout(50);
     const inner$ = helper.padInner$;
 
@@ -28,7 +28,5 @@ describe('delete keystroke', function () {
 
     // expect it to be one char less in length
     expect(newElementLength).to.be((elementLength - 1));
-
-    done();
   });
 });

@@ -4,9 +4,9 @@ describe('All the alphabet works n stuff', function () {
   const expectedString = 'abcdefghijklmnopqrstuvwxyz';
 
   // create a new pad before each test run
-  beforeEach(function (cb) {
-    helper.newPad(cb);
+  beforeEach(async function () {
     this.timeout(60000);
+    await helper.aNewPad();
   });
 
   it('when you enter any char it appears right', function (done) {

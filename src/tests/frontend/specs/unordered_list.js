@@ -3,12 +3,12 @@
 describe('unordered_list.js', function () {
   describe('assign unordered list', function () {
     // create a new pad before each test run
-    beforeEach(function (cb) {
-      helper.newPad(cb);
+    beforeEach(async function () {
       this.timeout(60000);
+      await helper.aNewPad();
     });
 
-    it('insert unordered list text then removes by outdent', function (done) {
+    it('insert unordered list text then removes by outdent', async function () {
       this.timeout(150);
       const inner$ = helper.padInner$;
       const chrome$ = helper.padChrome$;
@@ -17,32 +17,25 @@ describe('unordered_list.js', function () {
       const $insertunorderedlistButton = chrome$('.buttonicon-insertunorderedlist');
       $insertunorderedlistButton.click();
 
-      helper.waitFor(() => {
+      await helper.waitForPromise(() => {
         const newText = inner$('div').first().text();
-        if (newText === originalText) {
-          return inner$('div').first().find('ul li').length === 1;
-        }
-      }).done(() => {
-        // remove indentation by bullet and ensure text string remains the same
-        chrome$('.buttonicon-outdent').click();
-        helper.waitFor(() => {
-          const newText = inner$('div').first().text();
-          return (newText === originalText);
-        }).done(() => {
-          done();
-        });
+        return newText === originalText && inner$('div').first().find('ul li').length === 1;
       });
+
+      // remove indentation by bullet and ensure text string remains the same
+      chrome$('.buttonicon-outdent').click();
+      await helper.waitForPromise(() => inner$('div').first().text() === originalText);
     });
   });
 
   describe('unassign unordered list', function () {
     // create a new pad before each test run
-    beforeEach(function (cb) {
-      helper.newPad(cb);
+    beforeEach(async function () {
       this.timeout(60000);
+      await helper.aNewPad();
     });
 
-    it('insert unordered list text then remove by clicking list again', function (done) {
+    it('insert unordered list text then remove by clicking list again', async function () {
       this.timeout(150);
       const inner$ = helper.padInner$;
       const chrome$ = helper.padChrome$;
@@ -51,34 +44,26 @@ describe('unordered_list.js', function () {
       const $insertunorderedlistButton = chrome$('.buttonicon-insertunorderedlist');
       $insertunorderedlistButton.click();
 
-      helper.waitFor(() => {
+      await helper.waitForPromise(() => {
         const newText = inner$('div').first().text();
-        if (newText === originalText) {
-          return inner$('div').first().find('ul li').length === 1;
-        }
-      }).done(() => {
-        // remove indentation by bullet and ensure text string remains the same
-        $insertunorderedlistButton.click();
-        helper.waitFor(() => {
-          const isList = inner$('div').find('ul').length === 1;
-          // sohuldn't be list
-          return (isList === false);
-        }).done(() => {
-          done();
-        });
+        return newText === originalText && inner$('div').first().find('ul li').length === 1;
       });
+
+      // remove indentation by bullet and ensure text string remains the same
+      $insertunorderedlistButton.click();
+      await helper.waitForPromise(() => inner$('div').find('ul').length !== 1);
     });
   });
 
 
   describe('keep unordered list on enter key', function () {
     // create a new pad before each test run
-    beforeEach(function (cb) {
-      helper.newPad(cb);
+    beforeEach(async function () {
       this.timeout(60000);
+      await helper.aNewPad();
     });
 
-    it('Keeps the unordered list on enter for the new line', function (done) {
+    it('Keeps the unordered list on enter for the new line', async function () {
       this.timeout(250);
       const inner$ = helper.padInner$;
       const chrome$ = helper.padChrome$;
@@ -93,24 +78,23 @@ describe('unordered_list.js', function () {
       $firstTextElement.sendkeys('line 2');
       $firstTextElement.sendkeys('{enter}');
 
-      helper.waitFor(() => inner$('div span').first().text().indexOf('line 2') === -1).done(() => {
-        const $newSecondLine = inner$('div').first().next();
-        const hasULElement = $newSecondLine.find('ul li').length === 1;
-        expect(hasULElement).to.be(true);
-        expect($newSecondLine.text()).to.be('line 2');
-        done();
-      });
+      await helper.waitForPromise(() => inner$('div span').first().text().indexOf('line 2') === -1);
+
+      const $newSecondLine = inner$('div').first().next();
+      const hasULElement = $newSecondLine.find('ul li').length === 1;
+      expect(hasULElement).to.be(true);
+      expect($newSecondLine.text()).to.be('line 2');
     });
   });
 
   describe('Pressing Tab in an UL increases and decreases indentation', function () {
     // create a new pad before each test run
-    beforeEach(function (cb) {
-      helper.newPad(cb);
+    beforeEach(async function () {
       this.timeout(60000);
+      await helper.aNewPad();
     });
 
-    it('indent and de-indent list item with keypress', function (done) {
+    it('indent and de-indent list item with keypress', async function () {
       this.timeout(150);
       const inner$ = helper.padInner$;
       const chrome$ = helper.padChrome$;
@@ -133,19 +117,19 @@ describe('unordered_list.js', function () {
       e.keyCode = 9; // tab
       inner$('#innerdocbody').trigger(e);
 
-      helper.waitFor(() => inner$('div').first().find('.list-bullet1').length === 1).done(done);
+      await helper.waitForPromise(() => inner$('div').first().find('.list-bullet1').length === 1);
     });
   });
 
   describe('Pressing indent/outdent button in an UL increases and decreases indentation ' +
     'and bullet / ol formatting', function () {
     // create a new pad before each test run
-    beforeEach(function (cb) {
-      helper.newPad(cb);
+    beforeEach(async function () {
       this.timeout(60000);
+      await helper.aNewPad();
     });
 
-    it('indent and de-indent list item with indent button', function (done) {
+    it('indent and de-indent list item with indent button', async function () {
       this.timeout(150);
       const inner$ = helper.padInner$;
       const chrome$ = helper.padChrome$;
@@ -166,7 +150,7 @@ describe('unordered_list.js', function () {
       const $outdentButton = chrome$('.buttonicon-outdent');
       $outdentButton.click(); // make it deindented to 1
 
-      helper.waitFor(() => inner$('div').first().find('.list-bullet1').length === 1).done(done);
+      await helper.waitForPromise(() => inner$('div').first().find('.list-bullet1').length === 1);
     });
   });
 });

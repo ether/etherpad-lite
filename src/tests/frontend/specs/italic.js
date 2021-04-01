@@ -2,12 +2,12 @@
 
 describe('italic some text', function () {
   // create a new pad before each test run
-  beforeEach(function (cb) {
-    helper.newPad(cb);
+  beforeEach(async function () {
     this.timeout(60000);
+    await helper.aNewPad();
   });
 
-  it('makes text italic using button', function (done) {
+  it('makes text italic using button', async function () {
     this.timeout(100);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
@@ -33,11 +33,9 @@ describe('italic some text', function () {
 
     // make sure the text hasn't changed
     expect($newFirstTextElement.text()).to.eql($firstTextElement.text());
-
-    done();
   });
 
-  it('makes text italic using keypress', function (done) {
+  it('makes text italic using keypress', async function () {
     this.timeout(100);
     const inner$ = helper.padInner$;
 
@@ -63,7 +61,5 @@ describe('italic some text', function () {
 
     // make sure the text hasn't changed
     expect($newFirstTextElement.text()).to.eql($firstTextElement.text());
-
-    done();
   });
 });

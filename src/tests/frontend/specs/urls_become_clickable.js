@@ -7,10 +7,7 @@ describe('urls', function () {
 
   before(async function () {
     this.timeout(60000);
-    await new Promise((resolve, reject) => helper.newPad((err) => {
-      if (err != null) return reject(err);
-      resolve();
-    }));
+    await helper.aNewPad();
   });
 
   beforeEach(async function () {
