@@ -38,6 +38,21 @@ class Gate extends Promise {
   }
 }
 
+class TaskQueue {
+  constructor() {
+    this._promiseChain = Promise.resolve();
+  }
+
+  async enqueue(fn) {
+    const taskPromise = this._promiseChain.then(fn);
+    // Use .catch() to prevent rejections from halting the queue.
+    this._promiseChain = taskPromise.catch(() => {});
+    // Do NOT do `return await this._promiseChain;` because the caller would not see an error if
+    // fn() throws/rejects (due to the .catch() added above).
+    return await taskPromise;
+  }
+}
+
 /** Call this when the document is ready, and a new Ace2Editor() has been created and inited.
     ACE's ready callback does not need to have fired yet.
     "serverVars" are from calling doc.getCollabClientVars() on the server. */
@@ -171,20 +186,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, pad) => {
         });
   };
 
-  const serverMessageTaskQueue = new class {
-    constructor() {
-      this._promiseChain = Promise.resolve();
-    }
-
-    async enqueue(fn) {
-      const taskPromise = this._promiseChain.then(fn);
-      // Use .catch() to prevent rejections from halting the queue.
-      this._promiseChain = taskPromise.catch(() => {});
-      // Do NOT do `return await this._promiseChain;` because the caller would not see an error if
-      // fn() throws/rejects (due to the .catch() added above).
-      return await taskPromise;
-    }
-  }();
+  const serverMessageTaskQueue = new TaskQueue();
 
   const handleMessageFromServer = (evt) => {
     if (!pad.socket) return;
