@@ -471,9 +471,8 @@ const pad = {
     await padeditor.init(pad.padOptions.view || {}, this);
     padeditbar.init();
 
-    pad.collabClient = getCollabClient(
-        padeditor.ace, clientVars.collab_client_vars, pad.myUserInfo,
-        {colorPalette: pad.getColorPalette()}, pad);
+    pad.collabClient =
+        getCollabClient(padeditor.ace, clientVars.collab_client_vars, pad.myUserInfo, pad);
     pad.collabClient.setOnUserJoin(pad.handleUserJoin);
     pad.collabClient.setOnUpdateUserInfo(pad.handleUserUpdate);
     pad.collabClient.setOnUserLeave(pad.handleUserLeave);
