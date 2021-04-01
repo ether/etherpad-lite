@@ -24,8 +24,6 @@ describe('author of pad edition', function () {
 
   // author 2 makes some changes on the pad
   it('Clears Authorship by second user', async function () {
-    this.timeout(100);
-
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 

@@ -8,7 +8,6 @@ describe('strikethrough button', function () {
   });
 
   it('makes text strikethrough', async function () {
-    this.timeout(100);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 

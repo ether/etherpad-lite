@@ -57,7 +57,6 @@ describe('embed links', function () {
 
     describe('the share link', function () {
       it('is the actual pad url', async function () {
-        this.timeout(100);
         const chrome$ = helper.padChrome$;
 
         // open share dropdown
@@ -72,7 +71,6 @@ describe('embed links', function () {
 
     describe('the embed as iframe code', function () {
       it('is an iframe with the the correct url parameters and correct size', async function () {
-        this.timeout(50);
         const chrome$ = helper.padChrome$;
 
         // open share dropdown
@@ -94,7 +92,6 @@ describe('embed links', function () {
 
     describe('the share link', function () {
       it('shows a read only url', async function () {
-        this.timeout(50);
         const chrome$ = helper.padChrome$;
 
         // open share dropdown
@@ -111,7 +108,6 @@ describe('embed links', function () {
 
     describe('the embed as iframe code', function () {
       it('is an iframe with the the correct url parameters and correct size', async function () {
-        this.timeout(50);
         const chrome$ = helper.padChrome$;
 
         // open share dropdown

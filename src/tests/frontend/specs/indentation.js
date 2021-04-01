@@ -8,7 +8,6 @@ describe('indentation button', function () {
   });
 
   it('indent text with keypress', async function () {
-    this.timeout(100);
     const inner$ = helper.padInner$;
 
     // get the first text element out of the inner iframe
@@ -25,7 +24,6 @@ describe('indentation button', function () {
   });
 
   it('indent text with button', async function () {
-    this.timeout(100);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
