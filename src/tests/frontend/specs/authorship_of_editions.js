@@ -17,10 +17,9 @@ describe('author of pad edition', function () {
     $firstLine.html(threeLines);
 
     // wait for lines to be processed by Etherpad
-    await helper.waitForPromise(() => {
-      const $lineWithUnorderedList = getLine(LINE_WITH_UNORDERED_LIST);
-      return $lineWithUnorderedList.text() === 'line with unordered list';
-    });
+    await helper.waitForPromise(() => (
+      getLine(LINE_WITH_UNORDERED_LIST).text() === 'line with unordered list' &&
+      helper.commits.length === 1));
 
     // create the unordered list
     const $lineWithUnorderedList = getLine(LINE_WITH_UNORDERED_LIST);
@@ -29,10 +28,9 @@ describe('author of pad edition', function () {
     const $insertUnorderedListButton = helper.padChrome$('.buttonicon-insertunorderedlist');
     $insertUnorderedListButton.click();
 
-    await helper.waitForPromise(() => {
-      const $lineWithUnorderedList = getLine(LINE_WITH_UNORDERED_LIST);
-      return $lineWithUnorderedList.find('ul li').length === 1;
-    });
+    await helper.waitForPromise(() => (
+      getLine(LINE_WITH_UNORDERED_LIST).find('ul li').length === 1 &&
+      helper.commits.length === 2));
 
     // create the ordered list
     const $lineWithOrderedList = getLine(LINE_WITH_ORDERED_LIST);
@@ -41,13 +39,9 @@ describe('author of pad edition', function () {
     const $insertOrderedListButton = helper.padChrome$('.buttonicon-insertorderedlist');
     $insertOrderedListButton.click();
 
-    await helper.waitForPromise(() => {
-      const $lineWithOrderedList = getLine(LINE_WITH_ORDERED_LIST);
-      return $lineWithOrderedList.find('ol li').length === 1;
-    });
-
-    // Need a timeout here to make sure all changes were saved.
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await helper.waitForPromise(() => (
+      getLine(LINE_WITH_ORDERED_LIST).find('ol li').length === 1 &&
+      helper.commits.length === 3));
 
     // Expire cookie, so author is changed after reloading the pad.
     const {Cookies} = helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad_utils');

@@ -11,10 +11,8 @@ describe('author of pad edition', function () {
     $firstLine.html('Hello World');
 
     // wait for lines to be processed by Etherpad
-    await helper.waitForPromise(() => $firstLine.text() === 'Hello World');
-
-    // Need a timeout here to make sure all changes were saved.
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await helper.waitForPromise(() => (
+      $firstLine.text() === 'Hello World' && helper.commits.length === 1));
 
     // Delete token cookie, so author is changed after reloading the pad.
     const {Cookies} = helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad_utils');
