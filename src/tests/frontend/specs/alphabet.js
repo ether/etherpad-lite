@@ -10,7 +10,6 @@ describe('All the alphabet works n stuff', function () {
   });
 
   it('when you enter any char it appears right', function (done) {
-    this.timeout(250);
     const inner$ = helper.padInner$;
 
     // get the first text element out of the inner iframe

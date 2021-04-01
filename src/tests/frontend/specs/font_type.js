@@ -8,7 +8,6 @@ describe('font select', function () {
   });
 
   it('makes text RobotoMono', async function () {
-    this.timeout(100);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 

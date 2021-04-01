@@ -9,7 +9,6 @@ describe('scrollTo.js', function () {
     });
 
     it('Scrolls down to Line 4', async function () {
-      this.timeout(100);
       const chrome$ = helper.padChrome$;
       await helper.waitForPromise(() => {
         const topOffset = parseInt(chrome$('iframe').first('iframe')
@@ -27,7 +26,6 @@ describe('scrollTo.js', function () {
     });
 
     it('Does NOT change scroll', async function () {
-      this.timeout(100);
       const chrome$ = helper.padChrome$;
       await helper.waitForPromise(() => {
         const topOffset = parseInt(chrome$('iframe').first('iframe')

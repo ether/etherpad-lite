@@ -9,7 +9,6 @@ describe('ordered_list.js', function () {
     });
 
     it('inserts ordered list text', async function () {
-      this.timeout(200);
       const inner$ = helper.padInner$;
       const chrome$ = helper.padChrome$;
 
@@ -29,7 +28,6 @@ describe('ordered_list.js', function () {
         });
 
         it('inserts unordered list', async function () {
-          this.timeout(50);
           await helper.waitForPromise(
               () => helper.padInner$('div').first().find('ol li').length === 1);
         });
@@ -76,7 +74,6 @@ describe('ordered_list.js', function () {
         });
 
         it('inserts unordered list', async function () {
-          this.timeout(200);
           helper.waitForPromise(() => helper.padInner$('div').first().find('ol li').length === 1);
         });
       });
@@ -177,7 +174,6 @@ describe('ordered_list.js', function () {
     });
 
     it('indent and de-indent list item with keypress', async function () {
-      this.timeout(200);
       const inner$ = helper.padInner$;
       const chrome$ = helper.padChrome$;
 

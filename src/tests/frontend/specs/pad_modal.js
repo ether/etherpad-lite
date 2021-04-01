@@ -17,13 +17,11 @@ describe('Pad modal', function () {
     });
 
     it('disables editor', async function () {
-      this.timeout(200);
       expect(isEditorDisabled()).to.be(true);
     });
 
     context('and user clicks on editor', function () {
       it('does not close the modal', async function () {
-        this.timeout(200);
         clickOnPadInner();
         const $modal = helper.padChrome$(MODAL_SELECTOR);
         const modalIsVisible = $modal.hasClass('popup-show');
@@ -34,7 +32,6 @@ describe('Pad modal', function () {
 
     context('and user clicks on pad outer', function () {
       it('does not close the modal', async function () {
-        this.timeout(200);
         clickOnPadOuter();
         const $modal = helper.padChrome$(MODAL_SELECTOR);
         const modalIsVisible = $modal.hasClass('popup-show');
@@ -61,7 +58,6 @@ describe('Pad modal', function () {
 
     context('and user clicks on editor', function () {
       it('closes the modal', async function () {
-        this.timeout(200);
         clickOnPadInner();
         await helper.waitForPromise(() => isModalOpened(MODAL_SELECTOR) === false);
       });
@@ -69,7 +65,6 @@ describe('Pad modal', function () {
 
     context('and user clicks on pad outer', function () {
       it('closes the modal', async function () {
-        this.timeout(200);
         clickOnPadOuter();
         await helper.waitForPromise(() => isModalOpened(MODAL_SELECTOR) === false);
       });

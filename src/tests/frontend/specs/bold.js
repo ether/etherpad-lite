@@ -8,7 +8,6 @@ describe('bold button', function () {
   });
 
   it('makes text bold on click', function (done) {
-    this.timeout(200);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -37,7 +36,6 @@ describe('bold button', function () {
   });
 
   it('makes text bold on keypress', function (done) {
-    this.timeout(200);
     const inner$ = helper.padInner$;
 
     // get the first text element out of the inner iframe

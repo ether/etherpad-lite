@@ -9,7 +9,6 @@ describe('unordered_list.js', function () {
     });
 
     it('insert unordered list text then removes by outdent', async function () {
-      this.timeout(150);
       const inner$ = helper.padInner$;
       const chrome$ = helper.padChrome$;
       const originalText = inner$('div').first().text();
@@ -36,7 +35,6 @@ describe('unordered_list.js', function () {
     });
 
     it('insert unordered list text then remove by clicking list again', async function () {
-      this.timeout(150);
       const inner$ = helper.padInner$;
       const chrome$ = helper.padChrome$;
       const originalText = inner$('div').first().text();
@@ -64,7 +62,6 @@ describe('unordered_list.js', function () {
     });
 
     it('Keeps the unordered list on enter for the new line', async function () {
-      this.timeout(250);
       const inner$ = helper.padInner$;
       const chrome$ = helper.padChrome$;
 
@@ -95,7 +92,6 @@ describe('unordered_list.js', function () {
     });
 
     it('indent and de-indent list item with keypress', async function () {
-      this.timeout(150);
       const inner$ = helper.padInner$;
       const chrome$ = helper.padChrome$;
 
@@ -130,7 +126,6 @@ describe('unordered_list.js', function () {
     });
 
     it('indent and de-indent list item with indent button', async function () {
-      this.timeout(150);
       const inner$ = helper.padInner$;
       const chrome$ = helper.padChrome$;
 
