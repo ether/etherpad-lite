@@ -26,11 +26,6 @@ const chat = require('./chat').chat;
 const hooks = require('./pluginfw/hooks');
 const browser = require('./vendors/browser');
 
-// Dependency fill on init. This exists for `pad.socket` only.
-// TODO: bind directly to the socket.
-let pad = undefined;
-const getSocket = () => pad && pad.socket;
-
 // Gate is a normal Promise that resolves when its open() method is called.
 class Gate extends Promise {
   constructor(executor = null) {
@@ -46,9 +41,8 @@ class Gate extends Promise {
 /** Call this when the document is ready, and a new Ace2Editor() has been created and inited.
     ACE's ready callback does not need to have fired yet.
     "serverVars" are from calling doc.getCollabClientVars() on the server. */
-const getCollabClient = (ace2editor, serverVars, initialUserInfo, _pad) => {
+const getCollabClient = (ace2editor, serverVars, initialUserInfo, pad) => {
   const editor = ace2editor;
-  pad = _pad; // Inject pad to avoid a circular dependency.
 
   let rev = serverVars.rev;
   let committing = false;
@@ -99,7 +93,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, _pad) => {
     }
     const now = Date.now();
     const connecting = ['CONNECTING', 'RECONNECTING'].includes(channelState);
-    if (!getSocket() || connecting) {
+    if (!pad.socket || connecting) {
       if (connecting && now - startConnectTime > 20000) {
         setChannelState('DISCONNECTED', 'initsocketfail');
       } else {
@@ -169,7 +163,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, _pad) => {
 
   const sendMessage = async (msg) => {
     await connectedGate;
-    getSocket().json.send(
+    pad.socket.json.send(
         {
           type: 'COLLABROOM',
           component: 'pad',
@@ -193,7 +187,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, _pad) => {
   }();
 
   const handleMessageFromServer = (evt) => {
-    if (!getSocket()) return;
+    if (!pad.socket) return;
     if (!evt.data) return;
     const wrapper = evt;
     if (wrapper.type !== 'COLLABROOM' && wrapper.type !== 'CUSTOM') return;
@@ -326,7 +320,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, _pad) => {
     userInfo.userId = userId;
     userSet[userId] = userInfo;
     tellAceActiveAuthorInfo(userInfo);
-    if (!getSocket()) return;
+    if (!pad.socket) return;
     await sendMessage(
         {
           type: 'USERINFO_UPDATE',
