@@ -2,23 +2,9 @@
 
 describe('the test helper', function () {
   describe('the newPad method', function () {
-    xit("doesn't leak memory if you creates iframes over and over again", function (done) {
+    xit("doesn't leak memory if you creates iframes over and over again", async function () {
       this.timeout(100000);
-
-      let times = 10;
-
-      const loadPad = () => {
-        helper.newPad(() => {
-          times--;
-          if (times > 0) {
-            loadPad();
-          } else {
-            done();
-          }
-        });
-      };
-
-      loadPad();
+      for (let i = 0; i < 10; ++i) await helper.aNewPad();
     });
 
     it('gives me 3 jquery instances of chrome, outer and inner', async function () {
@@ -252,20 +238,19 @@ describe('the test helper', function () {
           .replace(/\s/gi, ' ');
     };
 
-    before(function (done) {
-      helper.newPad(() => {
-        // create some lines to be used on the tests
-        const $firstLine = helper.padInner$('div').first();
-        $firstLine.sendkeys('{selectall}some{enter}short{enter}lines{enter}to test{enter}{enter}');
-
-        // wait for lines to be split
-        helper.waitFor(() => {
-          const $fourthLine = helper.padInner$('div').eq(3);
-          return $fourthLine.text() === 'to test';
-        }).done(done);
-      });
-
+    before(async function () {
       this.timeout(60000);
+      await helper.aNewPad();
+
+      // create some lines to be used on the tests
+      const $firstLine = helper.padInner$('div').first();
+      $firstLine.sendkeys('{selectall}some{enter}short{enter}lines{enter}to test{enter}{enter}');
+
+      // wait for lines to be split
+      await helper.waitForPromise(() => {
+        const $fourthLine = helper.padInner$('div').eq(3);
+        return $fourthLine.text() === 'to test';
+      });
     });
 
     it('changes editor selection to be between startOffset of $startLine ' +
@@ -322,7 +307,7 @@ describe('the test helper', function () {
       done();
     });
 
-    it('ends selection at beginning of $endLine when its offset is zero', function (done) {
+    it('ends selection at beginning of $endLine when its offset is zero', async function () {
       const inner$ = helper.padInner$;
 
       const startOffset = 2;
@@ -344,8 +329,6 @@ describe('the test helper', function () {
        * how I'm covering it in this test.
        */
       expect(cleanText(selection.toString().replace(/(\r\n|\n|\r)/gm, ''))).to.be('ort lines ');
-
-      done();
     });
 
     it('selects full line when offset is longer than line content', function (done) {
@@ -376,7 +359,7 @@ describe('the test helper', function () {
     });
 
     it('selects all text between beginning of $startLine and end of $endLine ' +
-        'when no offset is provided', function (done) {
+        'when no offset is provided', async function () {
       const inner$ = helper.padInner$;
 
       const $lines = inner$('div');
@@ -396,8 +379,6 @@ describe('the test helper', function () {
        */
       expect(cleanText(
           selection.toString().replace(/(\r\n|\n|\r)/gm, ''))).to.be('short lines to test');
-
-      done();
     });
   });
 

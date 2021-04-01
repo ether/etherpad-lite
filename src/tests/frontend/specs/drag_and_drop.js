@@ -2,24 +2,23 @@
 
 // WARNING: drag and drop is only simulated on these tests, manual testing might also be necessary
 describe('drag and drop', function () {
-  before(function (done) {
-    helper.newPad(() => {
-      createScriptWithSeveralLines(done);
-    });
+  before(async function () {
     this.timeout(60000);
+    await helper.aNewPad();
+    await createScriptWithSeveralLines();
   });
 
   context('when user drags part of one line and drops it far form its original place', function () {
-    before(function (done) {
+    before(async function () {
       selectPartOfSourceLine();
       dragSelectedTextAndDropItIntoMiddleOfLine(TARGET_LINE);
 
       // make sure DnD was correctly simulated
-      helper.waitFor(() => {
+      await helper.waitForPromise(() => {
         const $targetLine = getLine(TARGET_LINE);
         const sourceWasMovedToTarget = $targetLine.text() === 'Target line [line 1]';
         return sourceWasMovedToTarget;
-      }).done(done);
+      });
     });
 
     context('and user triggers UNDO', function () {
@@ -30,7 +29,7 @@ describe('drag and drop', function () {
         await helper.waitForPromise(() => helper.padInner$('body').html() !== originalHTML);
       });
 
-      it('moves text back to its original place', function (done) {
+      it('moves text back to its original place', async function () {
         this.timeout(50);
         // test text was removed from drop target
         const $targetLine = getLine(TARGET_LINE);
@@ -41,23 +40,21 @@ describe('drag and drop', function () {
         const $lastSourceLine = getLine(FIRST_SOURCE_LINE + 1);
         expect($firstSourceLine.text()).to.be('Source line 1.');
         expect($lastSourceLine.text()).to.be('Source line 2.');
-
-        done();
       });
     });
   });
 
   context('when user drags some lines far form its original place', function () {
-    before(function (done) {
+    before(async function () {
       selectMultipleSourceLines();
       dragSelectedTextAndDropItIntoMiddleOfLine(TARGET_LINE);
 
       // make sure DnD was correctly simulated
-      helper.waitFor(() => {
+      await helper.waitForPromise(() => {
         const $lineAfterTarget = getLine(TARGET_LINE + 1);
         const sourceWasMovedToTarget = $lineAfterTarget.text() !== '...';
         return sourceWasMovedToTarget;
-      }).done(done);
+      });
     });
 
     context('and user triggers UNDO', function () {
@@ -68,7 +65,7 @@ describe('drag and drop', function () {
         await helper.waitForPromise(() => helper.padInner$('body').html() !== originalHTML);
       });
 
-      it('moves text back to its original place', function (done) {
+      it('moves text back to its original place', async function () {
         this.timeout(50);
         // test text was removed from drop target
         const $targetLine = getLine(TARGET_LINE);
@@ -79,8 +76,6 @@ describe('drag and drop', function () {
         const $lastSourceLine = getLine(FIRST_SOURCE_LINE + 1);
         expect($firstSourceLine.text()).to.be('Source line 1.');
         expect($lastSourceLine.text()).to.be('Source line 2.');
-
-        done();
       });
     });
   });
@@ -94,17 +89,17 @@ describe('drag and drop', function () {
     return $lines.slice(lineNumber, lineNumber + 1);
   };
 
-  const createScriptWithSeveralLines = (done) => {
+  const createScriptWithSeveralLines = async () => {
     // create some lines to be used on the tests
     const $firstLine = helper.padInner$('div').first();
     $firstLine.html('...<br>...<br>Target line []<br>...<br>...<br>' +
         'Source line 1.<br>Source line 2.<br>');
 
     // wait for lines to be split
-    helper.waitFor(() => {
+    await helper.waitForPromise(() => {
       const $lastSourceLine = getLine(FIRST_SOURCE_LINE + 1);
       return $lastSourceLine.text() === 'Source line 2.';
-    }).done(done);
+    });
   };
 
   const selectPartOfSourceLine = () => {

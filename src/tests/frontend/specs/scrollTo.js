@@ -5,10 +5,7 @@ describe('scrollTo.js', function () {
     // create a new pad with URL hash set before each test run
     before(async function () {
       this.timeout(60000);
-      await new Promise((resolve, reject) => helper.newPad({
-        cb: (err) => (err != null) ? reject(err) : resolve(),
-        hash: 'L4',
-      }));
+      await helper.aNewPad({hash: 'L4'});
     });
 
     it('Scrolls down to Line 4', async function () {
@@ -26,10 +23,7 @@ describe('scrollTo.js', function () {
     // create a new pad with URL hash set before each test run
     before(async function () {
       this.timeout(60000);
-      await new Promise((resolve, reject) => helper.newPad({
-        cb: (err) => (err != null) ? reject(err) : resolve(),
-        hash: '#DEEZ123123NUTS',
-      }));
+      await helper.aNewPad({hash: '#DEEZ123123NUTS'});
     });
 
     it('Does NOT change scroll', async function () {

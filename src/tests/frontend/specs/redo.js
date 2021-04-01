@@ -1,12 +1,12 @@
 'use strict';
 
 describe('undo button then redo button', function () {
-  beforeEach(function (cb) {
-    helper.newPad(cb); // creates a new pad
+  beforeEach(async function () {
     this.timeout(60000);
+    await helper.aNewPad();
   });
 
-  it('redo some typing with button', function (done) {
+  it('redo some typing with button', async function () {
     this.timeout(200);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
@@ -27,14 +27,12 @@ describe('undo button then redo button', function () {
     $undoButton.click(); // removes foo
     $redoButton.click(); // resends foo
 
-    helper.waitFor(() => inner$('div span').first().text() === newString).done(() => {
-      const finalValue = inner$('div').first().text();
-      expect(finalValue).to.be(modifiedValue); // expect the value to change
-      done();
-    });
+    await helper.waitForPromise(() => inner$('div span').first().text() === newString);
+    const finalValue = inner$('div').first().text();
+    expect(finalValue).to.be(modifiedValue); // expect the value to change
   });
 
-  it('redo some typing with keypress', function (done) {
+  it('redo some typing with keypress', async function () {
     this.timeout(200);
     const inner$ = helper.padInner$;
 
@@ -57,10 +55,8 @@ describe('undo button then redo button', function () {
     e.which = 121; // y
     inner$('#innerdocbody').trigger(e);
 
-    helper.waitFor(() => inner$('div span').first().text() === newString).done(() => {
-      const finalValue = inner$('div').first().text();
-      expect(finalValue).to.be(modifiedValue); // expect the value to change
-      done();
-    });
+    await helper.waitForPromise(() => inner$('div span').first().text() === newString);
+    const finalValue = inner$('div').first().text();
+    expect(finalValue).to.be(modifiedValue); // expect the value to change
   });
 });

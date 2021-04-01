@@ -2,8 +2,8 @@
 
 describe('timeslider', function () {
   // create a new pad before each test run
-  beforeEach(function (cb) {
-    helper.newPad(cb);
+  beforeEach(async function () {
+    await helper.aNewPad();
   });
 
   /**

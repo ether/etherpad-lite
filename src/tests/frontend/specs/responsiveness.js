@@ -20,17 +20,18 @@
 
 xdescribe('Responsiveness of Editor', function () {
   // create a new pad before each test run
-  beforeEach(function (cb) {
-    helper.newPad(cb);
+  beforeEach(async function () {
     this.timeout(6000);
+    await helper.aNewPad();
   });
+
   // JM commented out on 8th Sep 2020 for a release, after release this needs uncommenting
   // And the test needs to be fixed to work in Firefox 52 on Windows 7.
   // I am not sure why it fails on this specific platform
   // The errors show this.timeout... then crash the browser but
   // I am sure something is actually causing the stack trace and
   // I just need to narrow down what, offers to help accepted.
-  it('Fast response to keypress in pad with large amount of contents', function (done) {
+  it('Fast response to keypress in pad with large amount of contents', async function () {
     // skip on Windows Firefox 52.0
     if (window.bowser &&
         window.bowser.windows && window.bowser.firefox && window.bowser.version === '52.0') {
@@ -60,32 +61,31 @@ xdescribe('Responsiveness of Editor', function () {
     inner$('div').first().text(text); // Put the text contents into the pad
 
     // Wait for the new contents to be on the pad
-    helper.waitFor(() => inner$('div').text().length > length).done(() => {
-      // has the text changed?
-      expect(inner$('div').text().length).to.be.greaterThan(length);
-      const start = Date.now(); // get the start time
+    await helper.waitForPromise(() => inner$('div').text().length > length, 10000);
 
-      // send some new text to the screen (ensure all 3 key events are sent)
-      const el = inner$('div').first();
-      for (let i = 0; i < keysToSend.length; ++i) {
-        const x = keysToSend.charCodeAt(i);
-        ['keyup', 'keypress', 'keydown'].forEach((type) => {
-          const e = new $.Event(type);
-          e.keyCode = x;
-          el.trigger(e);
-        });
-      }
+    // has the text changed?
+    expect(inner$('div').text().length).to.be.greaterThan(length);
+    const start = Date.now(); // get the start time
 
-      helper.waitFor(() => { // Wait for the ability to process
-        const el = inner$('body');
-        if (el[0].textContent.length > amount) return true;
-      }).done(() => {
-        const end = Date.now(); // get the current time
-        const delay = end - start; // get the delay as the current time minus the start time
+    // send some new text to the screen (ensure all 3 key events are sent)
+    const el = inner$('div').first();
+    for (let i = 0; i < keysToSend.length; ++i) {
+      const x = keysToSend.charCodeAt(i);
+      ['keyup', 'keypress', 'keydown'].forEach((type) => {
+        const e = new $.Event(type);
+        e.keyCode = x;
+        el.trigger(e);
+      });
+    }
 
-        expect(delay).to.be.below(600);
-        done();
-      }, 5000);
-    }, 10000);
+    await helper.waitForPromise(() => { // Wait for the ability to process
+      const el = inner$('body');
+      if (el[0].textContent.length > amount) return true;
+    }, 5000);
+
+    const end = Date.now(); // get the current time
+    const delay = end - start; // get the delay as the current time minus the start time
+
+    expect(delay).to.be.below(600);
   });
 });

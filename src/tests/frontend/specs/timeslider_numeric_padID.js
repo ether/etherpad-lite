@@ -4,8 +4,8 @@ describe('timeslider', function () {
   const padId = 735773577357 + (Math.round(Math.random() * 1000));
 
   // create a new pad before each test run
-  beforeEach(function (cb) {
-    helper.newPad(cb, padId);
+  beforeEach(async function () {
+    await helper.aNewPad({id: padId});
   });
 
   it('Makes sure the export URIs are as expected when the padID is numeric', async function () {

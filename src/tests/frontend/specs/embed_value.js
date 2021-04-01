@@ -50,13 +50,13 @@ describe('embed links', function () {
 
   describe('read and write', function () {
     // create a new pad before each test run
-    beforeEach(function (cb) {
-      helper.newPad(cb);
+    beforeEach(async function () {
       this.timeout(60000);
+      await helper.aNewPad();
     });
 
     describe('the share link', function () {
-      it('is the actual pad url', function (done) {
+      it('is the actual pad url', async function () {
         this.timeout(100);
         const chrome$ = helper.padChrome$;
 
@@ -67,13 +67,11 @@ describe('embed links', function () {
         const shareLink = chrome$('#linkinput').val();
         const padURL = chrome$.window.location.href;
         expect(shareLink).to.be(padURL);
-
-        done();
       });
     });
 
     describe('the embed as iframe code', function () {
-      it('is an iframe with the the correct url parameters and correct size', function (done) {
+      it('is an iframe with the the correct url parameters and correct size', async function () {
         this.timeout(50);
         const chrome$ = helper.padChrome$;
 
@@ -84,20 +82,18 @@ describe('embed links', function () {
         const embedCode = chrome$('#embedinput').val();
 
         checkiFrameCode(embedCode, false);
-
-        done();
       });
     });
   });
 
   describe('when read only option is set', function () {
-    beforeEach(function (cb) {
-      helper.newPad(cb);
+    beforeEach(async function () {
       this.timeout(60000);
+      await helper.aNewPad();
     });
 
     describe('the share link', function () {
-      it('shows a read only url', function (done) {
+      it('shows a read only url', async function () {
         this.timeout(50);
         const chrome$ = helper.padChrome$;
 
@@ -110,13 +106,11 @@ describe('embed links', function () {
         const shareLink = chrome$('#linkinput').val();
         const containsReadOnlyLink = shareLink.indexOf('r.') > 0;
         expect(containsReadOnlyLink).to.be(true);
-
-        done();
       });
     });
 
     describe('the embed as iframe code', function () {
-      it('is an iframe with the the correct url parameters and correct size', function (done) {
+      it('is an iframe with the the correct url parameters and correct size', async function () {
         this.timeout(50);
         const chrome$ = helper.padChrome$;
 
@@ -131,8 +125,6 @@ describe('embed links', function () {
         const embedCode = chrome$('#embedinput').val();
 
         checkiFrameCode(embedCode, true);
-
-        done();
       });
     });
   });

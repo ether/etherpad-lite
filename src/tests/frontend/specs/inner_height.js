@@ -1,12 +1,12 @@
 'use strict';
 
 describe('height regression after ace.js refactoring', function () {
-  before(function (cb) {
-    helper.newPad(cb);
+  before(async function () {
+    await helper.aNewPad();
   });
 
   // everything fits inside the viewport
-  it('clientHeight should equal scrollHeight with few lines', function() {
+  it('clientHeight should equal scrollHeight with few lines', async function () {
     const aceOuter = helper.padChrome$('iframe')[0].contentDocument;
     const clientHeight = aceOuter.documentElement.clientHeight;
     const scrollHeight = aceOuter.documentElement.scrollHeight;
