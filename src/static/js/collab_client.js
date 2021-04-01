@@ -360,7 +360,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, _pad) => {
     tellAceAuthorInfo(userInfo.userId, userInfo.colorId, true);
   };
 
-  const getConnectedUsers = () => valuesArray(userSet);
+  const getConnectedUsers = () => Object.values(userSet);
 
   const tellAceAboutHistoricalAuthors = (hadata) => {
     for (const [author, data] of Object.entries(hadata)) {
@@ -389,14 +389,6 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, _pad) => {
         connectedGate.open();
         break;
     }
-  };
-
-  const valuesArray = (obj) => {
-    const array = [];
-    $.each(obj, (k, v) => {
-      array.push(v);
-    });
-    return array;
   };
 
   const sendClientMessage = async (msg) => {
