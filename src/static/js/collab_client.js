@@ -53,150 +53,160 @@ class TaskQueue {
   }
 }
 
-/** Call this when the document is ready, and a new Ace2Editor() has been created and inited.
-    ACE's ready callback does not need to have fired yet.
-    "serverVars" are from calling doc.getCollabClientVars() on the server. */
-const getCollabClient = (ace2editor, serverVars, initialUserInfo, pad) => {
-  const editor = ace2editor;
+class CollabClient {
+  constructor(ace2editor, serverVars, initialUserInfo, pad) {
+    this.commitDelay = 500; // public so that tests can be sped up
 
-  let rev = serverVars.rev;
-  let committing = false;
-  let stateMessage;
-  let channelState = 'CONNECTING';
-  let lastCommitTime = 0;
-  let startConnectTime = Date.now();
-  let commitDelay = 500;
+    this._editor = ace2editor;
+    this._initialUserInfo = initialUserInfo;
+    this._pad = pad;
 
-  const userId = initialUserInfo.userId;
-  // var socket;
-  const userSet = {}; // userId -> userInfo
-  userSet[userId] = initialUserInfo;
+    this._rev = serverVars.rev;
+    this._committing = false;
+    this._stateMessage;
+    this._channelState = 'CONNECTING';
+    this._lastCommitTime = 0;
+    this._startConnectTime = Date.now();
 
-  let isPendingRevision = false;
+    this._userId = this._initialUserInfo.userId;
+    this._userSet = {}; // userId -> userInfo
+    this._userSet[this._userId] = this._initialUserInfo;
 
-  const callbacks = {
-    onUserJoin: () => {},
-    onUserLeave: () => {},
-    onUpdateUserInfo: () => {},
-    onChannelStateChange: () => {},
-    onClientMessage: () => {},
-    onInternalAction: () => {},
-    onConnectionTrouble: () => {},
-    onServerMessage: () => {},
-  };
+    this._isPendingRevision = false;
 
-  // We need to present a working interface even before the socket is connected for the first time.
-  // Use a Gate to block actions until connected. Once connected, the Gate is opened which causes
-  // post-connect actions to start running.
-  let connectedGate = new Gate();
+    this._callbacks = {
+      onUserJoin: () => {},
+      onUserLeave: () => {},
+      onUpdateUserInfo: () => {},
+      onChannelStateChange: () => {},
+      onClientMessage: () => {},
+      onInternalAction: () => {},
+      onConnectionTrouble: () => {},
+      onServerMessage: () => {},
+    };
 
-  if (browser.firefox) {
-    // Prevent "escape" from taking effect and canceling a comet connection;
-    // doesn't work if focus is on an iframe.
-    $(window).bind('keydown', (evt) => {
-      if (evt.which === 27) {
-        evt.preventDefault();
-      }
-    });
+    // We need to present a working interface even before the socket is connected for the first
+    // time. Use a Gate to block actions until connected. Once connected, the Gate is opened which
+    // causes post-connect actions to start running.
+    this._connectedGate = new Gate();
+
+    if (browser.firefox) {
+      // Prevent "escape" from taking effect and canceling a comet connection;
+      // doesn't work if focus is on an iframe.
+      $(window).bind('keydown', (evt) => {
+        if (evt.which === 27) {
+          evt.preventDefault();
+        }
+      });
+    }
+
+    this._serverMessageTaskQueue = new TaskQueue();
+
+    this._idleFuncs = [];
+
+    this.addHistoricalAuthors(serverVars.historicalAuthorData);
+    this._tellAceActiveAuthorInfo(this._initialUserInfo);
+
+    this._editor.setProperty('userAuthor', this._userId);
+    this._editor.setBaseAttributedText(serverVars.initialAttributedText, serverVars.apool);
+    this._editor.setUserChangeNotificationCallback(() => this._handleUserChanges());
   }
 
-  const handleUserChanges = () => {
-    if (editor.getInInternationalComposition()) {
-      // handleUserChanges() will be called again once composition ends so there's no need to set up
-      // a future call before returning.
+  _handleUserChanges() {
+    if (this._editor.getInInternationalComposition()) {
+      // _handleUserChanges() will be called again once composition ends so there's no need to set
+      // up a future call before returning.
       return;
     }
     const now = Date.now();
-    const connecting = ['CONNECTING', 'RECONNECTING'].includes(channelState);
-    if (!pad.socket || connecting) {
-      if (connecting && now - startConnectTime > 20000) {
-        setChannelState('DISCONNECTED', 'initsocketfail');
+    const connecting = ['CONNECTING', 'RECONNECTING'].includes(this._channelState);
+    if (!this._pad.socket || connecting) {
+      if (connecting && now - this._startConnectTime > 20000) {
+        this.setChannelState('DISCONNECTED', 'initsocketfail');
       } else {
         // check again in a bit
-        setTimeout(handleUserChanges, 1000);
+        setTimeout(() => this._handleUserChanges(), 1000);
       }
       return;
     }
 
-    if (committing) {
-      if (now - lastCommitTime > 20000) {
+    if (this._committing) {
+      if (now - this._lastCommitTime > 20000) {
         // a commit is taking too long
-        setChannelState('DISCONNECTED', 'slowcommit');
-      } else if (now - lastCommitTime > 5000) {
-        callbacks.onConnectionTrouble('SLOW');
+        this.setChannelState('DISCONNECTED', 'slowcommit');
+      } else if (now - this._lastCommitTime > 5000) {
+        this._callbacks.onConnectionTrouble('SLOW');
       } else {
         // run again in a few seconds, to detect a disconnect
-        setTimeout(handleUserChanges, 3000);
+        setTimeout(() => this._handleUserChanges(), 3000);
       }
       return;
     }
 
-    const earliestCommit = lastCommitTime + commitDelay;
+    const earliestCommit = this._lastCommitTime + this.commitDelay;
     if (now < earliestCommit) {
-      setTimeout(handleUserChanges, earliestCommit - now);
+      setTimeout(() => this._handleUserChanges(), earliestCommit - now);
       return;
     }
 
     let sentMessage = false;
     // Check if there are any pending revisions to be received from server.
     // Allow only if there are no pending revisions to be received from server
-    if (!isPendingRevision) {
-      const userChangesData = editor.prepareUserChangeset();
+    if (!this._isPendingRevision) {
+      const userChangesData = this._editor.prepareUserChangeset();
       if (userChangesData.changeset) {
-        lastCommitTime = now;
-        committing = true;
-        stateMessage = {
+        this._lastCommitTime = now;
+        this._committing = true;
+        this._stateMessage = {
           type: 'USER_CHANGES',
-          baseRev: rev,
+          baseRev: this._rev,
           changeset: userChangesData.changeset,
           apool: userChangesData.apool,
         };
-        sendMessage(stateMessage);
+        this.sendMessage(this._stateMessage);
         sentMessage = true;
-        callbacks.onInternalAction('commitPerformed');
+        this._callbacks.onInternalAction('commitPerformed');
       }
     } else {
       // run again in a few seconds, to check if there was a reconnection attempt
-      setTimeout(handleUserChanges, 3000);
+      setTimeout(() => this._handleUserChanges(), 3000);
     }
 
     if (sentMessage) {
       // run again in a few seconds, to detect a disconnect
-      setTimeout(handleUserChanges, 3000);
+      setTimeout(() => this._handleUserChanges(), 3000);
     }
-  };
+  }
 
-  const acceptCommit = () => {
-    editor.applyPreparedChangesetToBase();
-    setStateIdle();
+  _acceptCommit() {
+    this._editor.applyPreparedChangesetToBase();
+    this.setStateIdle();
     try {
-      callbacks.onInternalAction('commitAcceptedByServer');
-      callbacks.onConnectionTrouble('OK');
+      this._callbacks.onInternalAction('commitAcceptedByServer');
+      this._callbacks.onConnectionTrouble('OK');
     } catch (err) { /* intentionally ignored */ }
-    handleUserChanges();
-  };
+    this._handleUserChanges();
+  }
 
-  const sendMessage = async (msg) => {
-    await connectedGate;
-    pad.socket.json.send(
+  async sendMessage(msg) {
+    await this._connectedGate;
+    this._pad.socket.json.send(
         {
           type: 'COLLABROOM',
           component: 'pad',
           data: msg,
         });
-  };
+  }
 
-  const serverMessageTaskQueue = new TaskQueue();
-
-  const handleMessageFromServer = (evt) => {
-    if (!pad.socket) return;
+  handleMessageFromServer(evt) {
+    if (!this._pad.socket) return;
     if (!evt.data) return;
     const wrapper = evt;
     if (wrapper.type !== 'COLLABROOM' && wrapper.type !== 'CUSTOM') return;
     const msg = wrapper.data;
 
     if (msg.type === 'NEW_CHANGES') {
-      serverMessageTaskQueue.enqueue(async () => {
+      this._serverMessageTaskQueue.enqueue(async () => {
         // Avoid updating the DOM while the user is composing a character. Notes about this `await`:
         //   * `await null;` is equivalent to `await Promise.resolve(null);`, so if the user is not
         //     currently composing a character then execution will continue without error.
@@ -204,51 +214,54 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, pad) => {
         //     the `await` but before the next line of code after the `await` (or, if it is
         //     possible, that the chances are so small or the consequences so minor that it's not
         //     worth addressing).
-        await editor.getInInternationalComposition();
+        await this._editor.getInInternationalComposition();
         const {newRev, changeset, author = '', apool} = msg;
-        if (newRev !== (rev + 1)) {
-          window.console.warn(`bad message revision on NEW_CHANGES: ${newRev} not ${rev + 1}`);
+        const nextRev = this._rev + 1;
+        if (newRev !== nextRev) {
+          window.console.warn(`bad message revision on NEW_CHANGES: ${newRev} not ${nextRev}`);
           // setChannelState("DISCONNECTED", "badmessage_newchanges");
           return;
         }
-        rev = newRev;
-        editor.applyChangesToBase(changeset, author, apool);
+        this._rev = newRev;
+        this._editor.applyChangesToBase(changeset, author, apool);
       });
     } else if (msg.type === 'ACCEPT_COMMIT') {
-      serverMessageTaskQueue.enqueue(() => {
+      this._serverMessageTaskQueue.enqueue(() => {
         const newRev = msg.newRev;
-        if (newRev !== (rev + 1)) {
-          window.console.warn(`bad message revision on ACCEPT_COMMIT: ${newRev} not ${rev + 1}`);
+        const nextRev = this._rev + 1;
+        if (newRev !== nextRev) {
+          window.console.warn(`bad message revision on ACCEPT_COMMIT: ${newRev} not ${nextRev}`);
           // setChannelState("DISCONNECTED", "badmessage_acceptcommit");
           return;
         }
-        rev = newRev;
-        acceptCommit();
+        this._rev = newRev;
+        this._acceptCommit();
       });
     } else if (msg.type === 'CLIENT_RECONNECT') {
       // Server sends a CLIENT_RECONNECT message when there is a client reconnect.
       // Server also returns all pending revisions along with this CLIENT_RECONNECT message
-      serverMessageTaskQueue.enqueue(() => {
+      this._serverMessageTaskQueue.enqueue(() => {
         if (msg.noChanges) {
           // If no revisions are pending, just make everything normal
-          setIsPendingRevision(false);
+          this.setIsPendingRevision(false);
           return;
         }
         const {headRev, newRev, changeset, author = '', apool} = msg;
-        if (newRev !== (rev + 1)) {
-          window.console.warn(`bad message revision on CLIENT_RECONNECT: ${newRev} not ${rev + 1}`);
+        const nextRev = this._rev + 1;
+        if (newRev !== nextRev) {
+          window.console.warn(`bad message revision on CLIENT_RECONNECT: ${newRev} not ${nextRev}`);
           // setChannelState("DISCONNECTED", "badmessage_acceptcommit");
           return;
         }
-        rev = newRev;
-        if (author === pad.getUserId()) {
-          acceptCommit();
+        this._rev = newRev;
+        if (author === this._pad.getUserId()) {
+          this._acceptCommit();
         } else {
-          editor.applyChangesToBase(changeset, author, apool);
+          this._editor.applyChangesToBase(changeset, author, apool);
         }
         if (newRev === headRev) {
           // Once we have applied all pending revisions, make everything normal
-          setIsPendingRevision(false);
+          this.setIsPendingRevision(false);
         }
       });
     } else if (msg.type === 'USER_NEWINFO') {
@@ -257,29 +270,29 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, pad) => {
 
       // Avoid a race condition when setting colors.  If our color was set by a
       // query param, ignore our own "new user" message's color value.
-      if (id === initialUserInfo.userId && initialUserInfo.globalUserColor) {
-        msg.userInfo.colorId = initialUserInfo.globalUserColor;
+      if (id === this._initialUserInfo.userId && this._initialUserInfo.globalUserColor) {
+        msg.userInfo.colorId = this._initialUserInfo.globalUserColor;
       }
 
 
-      if (userSet[id]) {
-        userSet[id] = userInfo;
-        callbacks.onUpdateUserInfo(userInfo);
+      if (this._userSet[id]) {
+        this._userSet[id] = userInfo;
+        this._callbacks.onUpdateUserInfo(userInfo);
       } else {
-        userSet[id] = userInfo;
-        callbacks.onUserJoin(userInfo);
+        this._userSet[id] = userInfo;
+        this._callbacks.onUserJoin(userInfo);
       }
-      tellAceActiveAuthorInfo(userInfo);
+      this._tellAceActiveAuthorInfo(userInfo);
     } else if (msg.type === 'USER_LEAVE') {
       const userInfo = msg.userInfo;
       const id = userInfo.userId;
-      if (userSet[id]) {
-        delete userSet[userInfo.userId];
-        fadeAceAuthorInfo(userInfo);
-        callbacks.onUserLeave(userInfo);
+      if (this._userSet[id]) {
+        delete this._userSet[userInfo.userId];
+        this._fadeAceAuthorInfo(userInfo);
+        this._callbacks.onUserLeave(userInfo);
       }
     } else if (msg.type === 'CLIENT_MESSAGE') {
-      callbacks.onClientMessage(msg.payload);
+      this._callbacks.onClientMessage(msg.payload);
     } else if (msg.type === 'CHAT_MESSAGE') {
       chat.addMessage(msg, true, false);
     } else if (msg.type === 'CHAT_MESSAGES') {
@@ -315,179 +328,167 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, pad) => {
     if (msg.type === 'NEW_CHANGES') msg.payload = msg;
 
     hooks.callAll(`handleClientMessage_${msg.type}`, {payload: msg.payload});
-  };
+  }
 
-  const updateUserInfo = async (userInfo) => {
-    await connectedGate;
-    userInfo.userId = userId;
-    userSet[userId] = userInfo;
-    tellAceActiveAuthorInfo(userInfo);
-    if (!pad.socket) return;
-    await sendMessage(
+  async updateUserInfo(userInfo) {
+    await this._connectedGate;
+    userInfo.userId = this._userId;
+    this._userSet[this._userId] = userInfo;
+    this._tellAceActiveAuthorInfo(userInfo);
+    if (!this._pad.socket) return;
+    await this.sendMessage(
         {
           type: 'USERINFO_UPDATE',
           userInfo,
         });
-  };
+  }
 
-  const tellAceActiveAuthorInfo = (userInfo) => {
-    tellAceAuthorInfo(userInfo.userId, userInfo.colorId);
-  };
+  _tellAceActiveAuthorInfo(userInfo) {
+    this._tellAceAuthorInfo(userInfo.userId, userInfo.colorId);
+  }
 
-  const tellAceAuthorInfo = (userId, colorId, inactive) => {
+  _tellAceAuthorInfo(userId, colorId, inactive) {
     if (typeof colorId === 'number') {
       colorId = clientVars.colorPalette[colorId];
     }
 
     const cssColor = colorId;
     if (inactive) {
-      editor.setAuthorInfo(userId, {
+      this._editor.setAuthorInfo(userId, {
         bgcolor: cssColor,
         fade: 0.5,
       });
     } else {
-      editor.setAuthorInfo(userId, {
+      this._editor.setAuthorInfo(userId, {
         bgcolor: cssColor,
       });
     }
-  };
+  }
 
-  const fadeAceAuthorInfo = (userInfo) => {
-    tellAceAuthorInfo(userInfo.userId, userInfo.colorId, true);
-  };
+  _fadeAceAuthorInfo(userInfo) {
+    this._tellAceAuthorInfo(userInfo.userId, userInfo.colorId, true);
+  }
 
-  const getConnectedUsers = () => Object.values(userSet);
+  getConnectedUsers() {
+    return Object.values(this._userSet);
+  }
 
-  const addHistoricalAuthors = (hadata) => {
+  addHistoricalAuthors(hadata) {
     for (const [author, data] of Object.entries(hadata)) {
-      if (!userSet[author]) {
-        tellAceAuthorInfo(author, data.colorId, true);
+      if (!this._userSet[author]) {
+        this._tellAceAuthorInfo(author, data.colorId, true);
       }
     }
-  };
+  }
 
-  const setChannelState = (newChannelState, moreInfo) => {
-    if (newChannelState === channelState) return;
-    if (channelState === 'CONNECTED') {
+  setChannelState(newChannelState, moreInfo) {
+    if (newChannelState === this._channelState) return;
+    if (this._channelState === 'CONNECTED') {
       // The old channel state is CONNECTED, which means we have just disconnected. Re-initialize
-      // connectedGate so that actions are deferred until connected again. Do this before calling
-      // onChannelStateChange() so that the event handler can create deferred actions if desired.
-      connectedGate = new Gate();
+      // this._connectedGate so that actions are deferred until connected again. Do this before
+      // calling onChannelStateChange() so that the event handler can create deferred actions if
+      // desired.
+      this._connectedGate = new Gate();
     }
-    channelState = newChannelState;
-    callbacks.onChannelStateChange(channelState, moreInfo);
-    switch (channelState) {
+    this._channelState = newChannelState;
+    this._callbacks.onChannelStateChange(this._channelState, moreInfo);
+    switch (this._channelState) {
       case 'CONNECTING':
       case 'RECONNECTING':
-        startConnectTime = Date.now();
+        this._startConnectTime = Date.now();
         break;
       case 'CONNECTED':
-        connectedGate.open();
+        this._connectedGate.open();
         break;
     }
-  };
+  }
 
-  const sendClientMessage = async (msg) => {
-    await sendMessage(
+  async sendClientMessage(msg) {
+    await this.sendMessage(
         {
           type: 'CLIENT_MESSAGE',
           payload: msg,
         });
-  };
+  }
 
-  const getCurrentRevisionNumber = () => rev;
+  getCurrentRevisionNumber() {
+    return this._rev;
+  }
 
-  const getMissedChanges = () => {
+  getMissedChanges() {
     const obj = {};
-    obj.userInfo = userSet[userId];
-    obj.baseRev = rev;
-    if (committing && stateMessage) {
-      obj.committedChangeset = stateMessage.changeset;
-      obj.committedChangesetAPool = stateMessage.apool;
-      editor.applyPreparedChangesetToBase();
+    obj.userInfo = this._userSet[this._userId];
+    obj.baseRev = this._rev;
+    if (this._committing && this._stateMessage) {
+      obj.committedChangeset = this._stateMessage.changeset;
+      obj.committedChangesetAPool = this._stateMessage.apool;
+      this._editor.applyPreparedChangesetToBase();
     }
-    const userChangesData = editor.prepareUserChangeset();
+    const userChangesData = this._editor.prepareUserChangeset();
     if (userChangesData.changeset) {
       obj.furtherChangeset = userChangesData.changeset;
       obj.furtherChangesetAPool = userChangesData.apool;
     }
     return obj;
-  };
+  }
 
-  const setStateIdle = () => {
-    committing = false;
-    callbacks.onInternalAction('newlyIdle');
-    schedulePerhapsCallIdleFuncs();
-  };
+  setStateIdle() {
+    this._committing = false;
+    this._callbacks.onInternalAction('newlyIdle');
+    this._schedulePerhapsCallIdleFuncs();
+  }
 
-  const setIsPendingRevision = (value) => {
-    isPendingRevision = value;
-  };
+  setIsPendingRevision(value) {
+    this._isPendingRevision = value;
+  }
 
-  const idleFuncs = [];
+  callWhenNotCommitting(func) {
+    this._idleFuncs.push(func);
+    this._schedulePerhapsCallIdleFuncs();
+  }
 
-  const callWhenNotCommitting = (func) => {
-    idleFuncs.push(func);
-    schedulePerhapsCallIdleFuncs();
-  };
-
-  const schedulePerhapsCallIdleFuncs = () => {
+  _schedulePerhapsCallIdleFuncs() {
     setTimeout(() => {
-      if (!committing) {
-        while (idleFuncs.length > 0) {
-          const f = idleFuncs.shift();
+      if (!this._committing) {
+        while (this._idleFuncs.length > 0) {
+          const f = this._idleFuncs.shift();
           f();
         }
       }
     }, 0);
-  };
+  }
 
-  const self = {
-    setOnUserJoin: (cb) => {
-      callbacks.onUserJoin = cb;
-    },
-    setOnUserLeave: (cb) => {
-      callbacks.onUserLeave = cb;
-    },
-    setOnUpdateUserInfo: (cb) => {
-      callbacks.onUpdateUserInfo = cb;
-    },
-    setOnChannelStateChange: (cb) => {
-      callbacks.onChannelStateChange = cb;
-    },
-    setOnClientMessage: (cb) => {
-      callbacks.onClientMessage = cb;
-    },
-    setOnInternalAction: (cb) => {
-      callbacks.onInternalAction = cb;
-    },
-    setOnConnectionTrouble: (cb) => {
-      callbacks.onConnectionTrouble = cb;
-    },
-    updateUserInfo,
-    handleMessageFromServer,
-    getConnectedUsers,
-    sendClientMessage,
-    sendMessage,
-    getCurrentRevisionNumber,
-    getMissedChanges,
-    callWhenNotCommitting,
-    addHistoricalAuthors,
-    setChannelState,
-    setStateIdle,
-    setIsPendingRevision,
-    set commitDelay(ms) { commitDelay = ms; },
-    get commitDelay() { return commitDelay; },
-  };
+  setOnUserJoin(cb) {
+    this._callbacks.onUserJoin = cb;
+  }
 
-  addHistoricalAuthors(serverVars.historicalAuthorData);
-  tellAceActiveAuthorInfo(initialUserInfo);
+  setOnUserLeave(cb) {
+    this._callbacks.onUserLeave = cb;
+  }
 
-  editor.setProperty('userAuthor', userId);
-  editor.setBaseAttributedText(serverVars.initialAttributedText, serverVars.apool);
-  editor.setUserChangeNotificationCallback(handleUserChanges);
+  setOnUpdateUserInfo(cb) {
+    this._callbacks.onUpdateUserInfo = cb;
+  }
 
-  return self;
-};
+  setOnChannelStateChange(cb) {
+    this._callbacks.onChannelStateChange = cb;
+  }
 
-exports.getCollabClient = getCollabClient;
+  setOnClientMessage(cb) {
+    this._callbacks.onClientMessage = cb;
+  }
+
+  setOnInternalAction(cb) {
+    this._callbacks.onInternalAction = cb;
+  }
+
+  setOnConnectionTrouble(cb) {
+    this._callbacks.onConnectionTrouble = cb;
+  }
+}
+
+/** Call this when the document is ready, and a new Ace2Editor() has been created and inited.
+    ACE's ready callback does not need to have fired yet.
+    "serverVars" are from calling doc.getCollabClientVars() on the server. */
+exports.getCollabClient = (ace2editor, serverVars, initialUserInfo, pad) => (
+  new CollabClient(ace2editor, serverVars, initialUserInfo, pad));
