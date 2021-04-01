@@ -7,27 +7,22 @@ describe('change username value', function () {
   });
 
   it('Remembers the user name after a refresh', async function () {
-    this.timeout(1500);
-    helper.toggleUserList();
-    helper.setUserName('😃');
-
-    helper.newPad({ // get a new pad, but don't clear the cookies
-      clearCookies: false,
-      cb() {
-        helper.toggleUserList();
-
-        expect(helper.usernameField().val()).to.be('😃');
-      },
-    });
+    this.timeout(10000);
+    await helper.toggleUserList();
+    await helper.setUserName('😃');
+    // get a new pad, but don't clear the cookies
+    await helper.aNewPad({clearCookies: false});
+    await helper.toggleUserList();
+    expect(helper.usernameField().val()).to.be('😃');
   });
 
   it('Own user name is shown when you enter a chat', async function () {
-    this.timeout(1500);
-    helper.toggleUserList();
-    helper.setUserName('😃');
+    this.timeout(10000);
+    await helper.toggleUserList();
+    await helper.setUserName('😃');
 
-    helper.showChat();
-    helper.sendChatMessage('O hi{enter}');
+    await helper.showChat();
+    await helper.sendChatMessage('O hi{enter}');
 
     await helper.waitForPromise(() => {
       // username:hours:minutes text
