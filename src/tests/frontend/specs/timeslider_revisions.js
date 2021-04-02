@@ -14,6 +14,9 @@ describe('timeslider', function () {
     // Create a bunch of revisions.
     for (let i = 0; i < 99; i++) await helper.edit('a');
     chrome$('.buttonicon-savedRevision').click();
+    await helper.waitForPromise(() => helper.padChrome$('.saved-revision').length > 0);
+    // Give some time to send the SAVE_REVISION message to the server before navigating away.
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     // go to timeslider
     $('#iframe-container iframe')
