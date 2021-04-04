@@ -47,7 +47,7 @@ const padeditor = (() => {
         const targetLineNumber = $(this).index() + 1;
         window.location.hash = `L${targetLineNumber}`;
       });
-      exports.focusOnLine(self.ace);
+      focusOnLine(self.ace);
       self.ace.setProperty('wraps', true);
       self.initViewOptions();
       self.setViewOptions(initialViewOptions);
@@ -162,7 +162,7 @@ const padeditor = (() => {
 
 exports.padeditor = padeditor;
 
-exports.focusOnLine = (ace) => {
+const focusOnLine = (ace) => {
   // If a number is in the URI IE #L124 go to that line number
   const lineNumber = window.location.hash.substr(1);
   if (!lineNumber || lineNumber[0] !== 'L') return;
