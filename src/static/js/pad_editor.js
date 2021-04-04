@@ -165,46 +165,41 @@ exports.padeditor = padeditor;
 exports.focusOnLine = (ace) => {
   // If a number is in the URI IE #L124 go to that line number
   const lineNumber = window.location.hash.substr(1);
-  if (lineNumber) {
-    if (lineNumber[0] === 'L') {
-      const $outerdoc = $('iframe[name="ace_outer"]').contents().find('#outerdocbody');
-      const lineNumberInt = parseInt(lineNumber.substr(1));
-      if (lineNumberInt) {
-        const $inner = $('iframe[name="ace_outer"]').contents().find('iframe')
-            .contents().find('#innerdocbody');
-        const line = $inner.find(`div:nth-child(${lineNumberInt})`);
-        if (line.length !== 0) {
-          let offsetTop = line.offset().top;
-          offsetTop += parseInt($outerdoc.css('padding-top').replace('px', ''));
-          const hasMobileLayout = $('body').hasClass('mobile-layout');
-          if (!hasMobileLayout) {
-            offsetTop += parseInt($inner.css('padding-top').replace('px', ''));
-          }
-          const $outerdocHTML = $('iframe[name="ace_outer"]').contents()
-              .find('#outerdocbody').parent();
-          $outerdoc.css({top: `${offsetTop}px`}); // Chrome
-          $outerdocHTML.animate({scrollTop: offsetTop}); // needed for FF
-          const node = line[0];
-          ace.callWithAce((ace) => {
-            const selection = {
-              startPoint: {
-                index: 0,
-                focusAtStart: true,
-                maxIndex: 1,
-                node,
-              },
-              endPoint: {
-                index: 0,
-                focusAtStart: true,
-                maxIndex: 1,
-                node,
-              },
-            };
-            ace.ace_setSelection(selection);
-          });
-        }
-      }
-    }
+  if (!lineNumber || lineNumber[0] !== 'L') return;
+  const $outerdoc = $('iframe[name="ace_outer"]').contents().find('#outerdocbody');
+  const lineNumberInt = parseInt(lineNumber.substr(1));
+  if (!lineNumberInt) return;
+  const $inner = $('iframe[name="ace_outer"]').contents().find('iframe')
+      .contents().find('#innerdocbody');
+  const line = $inner.find(`div:nth-child(${lineNumberInt})`);
+  if (line.length === 0) return;
+  let offsetTop = line.offset().top;
+  offsetTop += parseInt($outerdoc.css('padding-top').replace('px', ''));
+  const hasMobileLayout = $('body').hasClass('mobile-layout');
+  if (!hasMobileLayout) {
+    offsetTop += parseInt($inner.css('padding-top').replace('px', ''));
   }
+  const $outerdocHTML = $('iframe[name="ace_outer"]').contents()
+      .find('#outerdocbody').parent();
+  $outerdoc.css({top: `${offsetTop}px`}); // Chrome
+  $outerdocHTML.animate({scrollTop: offsetTop}); // needed for FF
+  const node = line[0];
+  ace.callWithAce((ace) => {
+    const selection = {
+      startPoint: {
+        index: 0,
+        focusAtStart: true,
+        maxIndex: 1,
+        node,
+      },
+      endPoint: {
+        index: 0,
+        focusAtStart: true,
+        maxIndex: 1,
+        node,
+      },
+    };
+    ace.ace_setSelection(selection);
+  });
   // End of setSelection / set Y position of editor
 };
