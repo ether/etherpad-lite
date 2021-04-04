@@ -46,6 +46,7 @@ const padeditor = (() => {
       $outerdoc.find('#sidedivinner').on('click', 'div', function () {
         const targetLineNumber = $(this).index() + 1;
         window.location.hash = `L${targetLineNumber}`;
+        focusOnLine(self.ace);
       });
       focusOnLine(self.ace);
       self.ace.setProperty('wraps', true);
