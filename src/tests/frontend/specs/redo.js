@@ -2,7 +2,6 @@
 
 describe('undo button then redo button', function () {
   beforeEach(async function () {
-    this.timeout(60000);
     await helper.aNewPad();
   });
 

@@ -4,7 +4,6 @@ describe('scrollTo.js', function () {
   describe('scrolls to line', function () {
     // create a new pad with URL hash set before each test run
     before(async function () {
-      this.timeout(60000);
       await helper.aNewPad({hash: 'L4'});
     });
 
@@ -21,7 +20,6 @@ describe('scrollTo.js', function () {
   describe('doesnt break on weird hash input', function () {
     // create a new pad with URL hash set before each test run
     before(async function () {
-      this.timeout(60000);
       await helper.aNewPad({hash: '#DEEZ123123NUTS'});
     });
 

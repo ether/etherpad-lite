@@ -4,7 +4,6 @@ describe('Automatic pad reload on Force Reconnect message', function () {
   let padId, $originalPadFrame;
 
   beforeEach(async function () {
-    this.timeout(60000);
     padId = await helper.aNewPad();
 
     // enable userdup error to have timer to force reconnect

@@ -28,8 +28,6 @@ describe('the test helper', function () {
     // timeout may or may end up in the code. None the less, we test here
     // to catch it if the bug comes up again.
     it('clears cookies', async function () {
-      this.timeout(60000);
-
       // set cookies far into the future to make sure they're not expired yet
       window.Cookies.set('token', 'foo', {expires: 7 /* days */});
       window.Cookies.set('language', 'bar', {expires: 7 /* days */});
@@ -95,7 +93,6 @@ describe('the test helper', function () {
     });
 
     it('sets pad prefs cookie', async function () {
-      this.timeout(60000);
       await helper.aNewPad({padPrefs: {foo: 'padPrefs test'}});
       const {padcookie} = helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad_cookie');
       expect(padcookie.getPref('foo')).to.be('padPrefs test');
@@ -239,7 +236,6 @@ describe('the test helper', function () {
     };
 
     before(async function () {
-      this.timeout(60000);
       await helper.aNewPad();
 
       // create some lines to be used on the tests

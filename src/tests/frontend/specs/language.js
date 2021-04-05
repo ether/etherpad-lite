@@ -6,7 +6,6 @@ describe('Language select and change', function () {
 
   // create a new pad before each test run
   beforeEach(async function () {
-    this.timeout(60000);
     await helper.aNewPad();
   });
 

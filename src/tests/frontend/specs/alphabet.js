@@ -5,7 +5,6 @@ describe('All the alphabet works n stuff', function () {
 
   // create a new pad before each test run
   beforeEach(async function () {
-    this.timeout(60000);
     await helper.aNewPad();
   });
 

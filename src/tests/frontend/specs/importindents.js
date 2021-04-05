@@ -2,7 +2,6 @@
 
 describe('import indents functionality', function () {
   beforeEach(async function () {
-    this.timeout(60000);
     await helper.aNewPad();
   });
 

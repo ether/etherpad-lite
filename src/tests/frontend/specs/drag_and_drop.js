@@ -3,7 +3,6 @@
 // WARNING: drag and drop is only simulated on these tests, manual testing might also be necessary
 describe('drag and drop', function () {
   before(async function () {
-    this.timeout(60000);
     await helper.aNewPad();
     await createScriptWithSeveralLines();
   });
