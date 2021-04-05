@@ -4,7 +4,6 @@ describe('unordered_list.js', function () {
   describe('assign unordered list', function () {
     // create a new pad before each test run
     beforeEach(async function () {
-      this.timeout(60000);
       await helper.aNewPad();
     });
 
@@ -30,7 +29,6 @@ describe('unordered_list.js', function () {
   describe('unassign unordered list', function () {
     // create a new pad before each test run
     beforeEach(async function () {
-      this.timeout(60000);
       await helper.aNewPad();
     });
 
@@ -57,7 +55,6 @@ describe('unordered_list.js', function () {
   describe('keep unordered list on enter key', function () {
     // create a new pad before each test run
     beforeEach(async function () {
-      this.timeout(60000);
       await helper.aNewPad();
     });
 
@@ -87,7 +84,6 @@ describe('unordered_list.js', function () {
   describe('Pressing Tab in an UL increases and decreases indentation', function () {
     // create a new pad before each test run
     beforeEach(async function () {
-      this.timeout(60000);
       await helper.aNewPad();
     });
 
@@ -121,7 +117,6 @@ describe('unordered_list.js', function () {
     'and bullet / ol formatting', function () {
     // create a new pad before each test run
     beforeEach(async function () {
-      this.timeout(60000);
       await helper.aNewPad();
     });
 

@@ -3,7 +3,6 @@
 describe('author of pad edition', function () {
   // author 1 creates a new pad with some content (regular lines and lists)
   before(async function () {
-    this.timeout(60000);
     const padId = await helper.aNewPad();
 
     // make sure pad has at least 3 lines

@@ -5,7 +5,6 @@ describe('Pad modal', function () {
     const MODAL_SELECTOR = '#connectivity';
 
     beforeEach(async function () {
-      this.timeout(60000);
       await helper.aNewPad();
 
       // force a "slowcommit" error
@@ -46,7 +45,6 @@ describe('Pad modal', function () {
     const MODAL_SELECTOR = '#settings';
 
     beforeEach(async function () {
-      this.timeout(60000);
       await helper.aNewPad();
       await openSettingsAndWaitForModalToBeVisible();
     });

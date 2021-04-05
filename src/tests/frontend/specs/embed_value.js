@@ -51,7 +51,6 @@ describe('embed links', function () {
   describe('read and write', function () {
     // create a new pad before each test run
     beforeEach(async function () {
-      this.timeout(60000);
       await helper.aNewPad();
     });
 
@@ -86,7 +85,6 @@ describe('embed links', function () {
 
   describe('when read only option is set', function () {
     beforeEach(async function () {
-      this.timeout(60000);
       await helper.aNewPad();
     });
 

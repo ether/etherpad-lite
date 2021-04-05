@@ -4,7 +4,6 @@ describe('chat-load-messages', function () {
   let padName;
 
   it('creates a pad', async function () {
-    this.timeout(60000);
     padName = await helper.aNewPad();
   });
 
@@ -14,8 +13,6 @@ describe('chat-load-messages', function () {
     chatButton.click();
     const chatInput = chrome$('#chatinput');
     const chatText = chrome$('#chattext');
-
-    this.timeout(60000);
 
     const messages = 140;
     for (let i = 1; i <= messages; i++) {

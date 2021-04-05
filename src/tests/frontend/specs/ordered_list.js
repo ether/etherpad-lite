@@ -4,7 +4,6 @@ describe('ordered_list.js', function () {
   describe('assign ordered list', function () {
     // create a new pad before each test run
     beforeEach(async function () {
-      this.timeout(60000);
       await helper.aNewPad();
     });
 
@@ -169,7 +168,6 @@ describe('ordered_list.js', function () {
   describe('Pressing Tab in an OL increases and decreases indentation', function () {
     // create a new pad before each test run
     beforeEach(async function () {
-      this.timeout(60000);
       await helper.aNewPad();
     });
 
@@ -204,7 +202,6 @@ describe('ordered_list.js', function () {
       'decreases indentation and bullet / ol formatting', function () {
     // create a new pad before each test run
     beforeEach(async function () {
-      this.timeout(60000);
       await helper.aNewPad();
     });
 

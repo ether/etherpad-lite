@@ -87,7 +87,6 @@ describe('Chat messages and UI', function () {
 
   xit('Checks showChat=false URL Parameter hides chat then' +
       ' when removed it shows chat', async function () {
-    this.timeout(60000);
 
     // give it a second to save the username on the server side
     await new Promise((resolve) => setTimeout(resolve, 3000));

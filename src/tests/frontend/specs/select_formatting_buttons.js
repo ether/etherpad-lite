@@ -6,7 +6,6 @@ describe('select formatting buttons when selection has style applied', function 
   const FIRST_LINE = 0;
 
   before(async function () {
-    this.timeout(60000);
     await helper.aNewPad();
   });
 

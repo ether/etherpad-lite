@@ -6,7 +6,6 @@ describe('urls', function () {
   const txt = () => helper.padInner$('div').first();
 
   before(async function () {
-    this.timeout(60000);
     await helper.aNewPad();
   });
 

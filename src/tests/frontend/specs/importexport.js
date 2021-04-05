@@ -499,7 +499,6 @@ describe('importexport.js', function () {
 
   let confirm;
   before(async function () {
-    this.timeout(60000);
     await helper.aNewPad();
     confirm = helper.padChrome$.window.confirm;
     helper.padChrome$.window.confirm = () => true;
