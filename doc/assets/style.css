@@ -33,3 +33,18 @@ code{
 img {
   max-width: 100%;
 }
+
+table, th, td {
+  text-align: left;
+  border: 1px solid gray;
+  border-collapse: collapse;
+}
+
+th {
+  padding: 0.5em;
+  background: #EEE;
+}
+
+td {
+  padding: 0.5em;
+}
