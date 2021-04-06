@@ -1,4 +1,4 @@
-body{
+body {
   border-top: solid #44b492 5pt;
   line-height:150%;
   font-family: 'Quicksand',sans-serif;
@@ -8,28 +8,43 @@ body{
   padding: 20px;
 }
 
-a{
+a {
   color: #555;
 }
 
-h1{
+h1 {
   color: #44b492;
   line-height:100%;
 }
 
-a:hover{
+a:hover {
   color: #44b492;
 }
 
-pre{
+pre {
   background-color: #e0e0e0;
   padding:20px;
 }
 
-code{
+code {
   background-color: #e0e0e0;
 }
 
 img {
   max-width: 100%;
+}
+
+table, th, td {
+  text-align: left;
+  border: 1px solid gray;
+  border-collapse: collapse;
+}
+
+th {
+  padding: 0.5em;
+  background: #EEE;
+}
+
+td {
+  padding: 0.5em;
 }
