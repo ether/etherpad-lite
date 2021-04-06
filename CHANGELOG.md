@@ -1,7 +1,344 @@
+# 1.8.13
+
+### Notable fixes
+
+* Fixed a bug in the safeRun.sh script (#4935)
+* Add more endpoints that do not need authentication/authorization (#4921)
+* Fixed issue with non-opening device keyboard on smartphones (#4929)
+* Add version string to iframe_editor.css to prevent stale cache entry (#4964)
+
+### Notable enhancements
+
+* Refactor pad loading (no document.write anymore) (#4960)
+* Improve import/export functionality, logging and tests (#4957)
+* Refactor CSS manager creation (#4963)
+* Better metrics
+* Add test for client height (#4965)
+
+### Dependencies
+
+* ueberDB2 1.3.2 -> 1.4.4
+* express-rate-limit 5.2.5 -> 5.2.6
+* etherpad-require-kernel 1.0.9 -> 1.0.11
+
+# 1.8.12
+
+Special mention: Thanks to Sauce Labs for additional testing tunnels to help us grow! :)
+
+### Security patches
+
+* Fixed a regression in v1.8.11 which caused some pad names to cause Etherpad to restart.
+
+### Notable fixes
+
+* Fixed a bug in the `dirty` database driver that sometimes caused Node.js to
+  crash during shutdown and lose buffered database writes.
+* Fixed a regression in v1.8.8 that caused "Uncaught TypeError: Cannot read
+  property '0' of undefined" with some plugins (#4885)
+* Less warnings in server console for supported element types on import.
+* Support Azure and other network share installations by using a 
+  more truthful relative path.
+
+### Notable enhancements
+
+* Dependency updates
+* Various Docker deployment improvements
+* Various new translations
+* Improvement of rendering of plugin hook list and error message handling
+
+# 1.8.11
+
+### Notable fixes
+
+* Fix server crash issue within PadMessageHandler due to SocketIO handling
+* Fix editor issue with drop downs not being visible
+* Ensure correct version is passed when loading front end resources
+* Ensure underscore and jquery are available in original location for plugin comptability
+
+### Notable enhancements
+
+* Improved page load speeds
+
+# 1.8.10
+
+### Security Patches
+
+* Resolve potential ReDoS vulnerability in your project - GHSL-2020-359
+
+### Compatibility changes
+
+* JSONP API has been removed in favor of using the mature OpenAPI implementation.
+* Node 14 is now required for Docker Deployments
+
+### Notable fixes
+
+* Various performance and stability fixes
+
+### Notable enhancements
+
+* Improved line number alignment and user experience around line anchors
+* Notification to admin console if a plugin is missing during user file import
+* Beautiful loading and reconnecting animation
+* Additional code quality improvements
+* Dependency updates
+
+# 1.8.9
+
+### Notable fixes
+
+* Fixed HTTP 400 error when importing via the UI.
+* Fixed "Error: spawn npm ENOENT" crash on startup in Windows.
+
+### Notable enhancements
+
+* Removed some unnecessary arrow key handling logic.
+* Dependency updates.
+
+# 1.8.8
+
+### Security patches
+
+* EJS has been updated to 3.1.6 to mitigate an Arbitrary Code Injection
+
+### Compatibility changes
+
+* Node.js 10.17.0 or newer is now required.
+* The `bin/` and `tests/` directories were moved under `src/`. Symlinks were
+  added at the old locations to hopefully avoid breaking user scripts and other
+  tools.
+* Dependencies are now installed with the `--no-optional` flag to speed
+  installation. Optional dependencies such as `sqlite3` must now be manually
+  installed (e.g., `(cd src && npm i sqlite3)`).
+* Socket.IO messages are now limited to 10K bytes to make denial of service
+  attacks more difficult. This may cause issues when pasting large amounts of
+  text or with plugins that send large messages (e.g., `ep_image_upload`). You
+  can change the limit via `settings.json`; see `socketIo.maxHttpBufferSize`.
+* The top-level `package.json` file, added in v1.8.7, has been removed due to
+  problematic npm behavior. Whenever you install a plugin you will see the
+  following benign warnings that can be safely ignored:
+
+  ```
+  npm WARN saveError ENOENT: no such file or directory, open '.../package.json'
+  npm WARN enoent ENOENT: no such file or directory, open '.../package.json'
+  npm WARN develop No description
+  npm WARN develop No repository field.
+  npm WARN develop No README data
+  npm WARN develop No license field.
+  ```
+
+### Notable enhancements
+
+* You can now generate a link to a specific line number in a pad. Appending
+  `#L10` to a pad URL will cause your browser to scroll down to line 10.
+* Database performance is significantly improved.
+* Admin UI now has test coverage in CI. (The tests are not enabled by default;
+  see `settings.json`.)
+* New stats/metrics: `activePads`, `httpStartTime`, `lastDisconnected`,
+  `memoryUsageHeap`.
+* Improved import UX.
+* Browser caching improvements.
+* Users can now pick absolute white (`#fff`) as their color.
+* The `settings.json` template used for Docker images has new variables for
+  controlling rate limiting.
+* Admin UI now has test coverage in CI. (The tests are not enabled by default
+  because the admin password is required; see `settings.json`.)
+* For plugin authors:
+  * New `callAllSerial()` function that invokes hook functions like `callAll()`
+    except it supports asynchronous hook functions.
+  * `callFirst()` and `aCallFirst()` now support the same wide range of hook
+    function behaviors that `callAll()`, `aCallAll()`, and `callAllSerial()`
+    support. Also, they now warn when a hook function misbehaves.
+  * The following server-side hooks now support asynchronous hook functions:
+    `expressConfigure`, `expressCreateServer`, `padCopy`, `padRemove`
+  * Backend tests for plugins can now use the
+    [`ep_etherpad-lite/tests/backend/common`](src/tests/backend/common.js)
+    module to start the server and simplify API access.
+  * The `checkPlugins.js` script now automatically adds GitHub CI test coverage
+    badges for backend tests and npm publish.
+
+### Notable fixes
+
+* Enter key now stays in focus when inserted at bottom of viewport.
+* Numbering for ordered list items now properly increments when exported to
+  text.
+* Suppressed benign socket.io connection errors
+* Interface no longer loses color variants on disconnect/reconnect event.
+* General code quality is further significantly improved.
+* Restarting Etherpad via `/admin` actions is more robust.
+* Improved reliability of server shutdown and restart.
+* No longer error if no buttons are visible.
+* For plugin authors:
+  * Fixed `collectContentLineText` return value handling.
+
+# 1.8.7
+### Compatibility-breaking changes
+* **IMPORTANT:** It is no longer possible to protect a group pad with a
+  password. All API calls to `setPassword` or `isPasswordProtected` will fail.
+  Existing group pads that were previously password protected will no longer be
+  password protected. If you need fine-grained access control, you can restrict
+  API session creation in your frontend service, or you can use plugins.
+* All workarounds for Microsoft Internet Explorer have been removed. IE might
+  still work, but it is untested.
+* Plugin hook functions are now subject to new sanity checks. Buggy hook
+  functions will cause an error message to be logged
+* Authorization failures now return 403 by default instead of 401
+* The `authorize` hook is now only called after successful authentication. Use
+  the new `preAuthorize` hook if you need to bypass authentication
+* The `authFailure` hook is deprecated; use the new `authnFailure` and
+  `authzFailure` hooks instead
+* The `indexCustomInlineScripts` hook was removed
+* The `client` context property for the `handleMessage` and
+  `handleMessageSecurity` hooks has been renamed to `socket` (the old name is
+  still usable but deprecated)
+* The `aceAttribClasses` hook functions are now called synchronously
+* The format of `ENTER`, `CREATE`, and `LEAVE` log messages has changed
+* Strings passed to `$.gritter.add()` are now expected to be plain text, not
+  HTML. Use jQuery or DOM objects if you need formatting
+
+### Notable new features
+* Users can now import without creating and editing the pad first
+* Added a new `readOnly` user setting that makes it possible to create users in
+  `settings.json` that can read pads but not create or modify them
+* Added a new `canCreate` user setting that makes it possible to create users in
+  `settings.json` that can modify pads but not create them
+* The `authorize` hook now accepts `readOnly` to grant read-only access to a pad
+* The `authorize` hook now accepts `modify` to grant modify-only (creation
+  prohibited) access to a pad
+* All authentication successes and failures are now logged
+* Added a new `cookie.sameSite` setting that makes it possible to enable
+  authentication when Etherpad is embedded in an iframe from another site
+* New `exportHTMLAdditionalContent` hook to include additional HTML content
+* New `exportEtherpadAdditionalContent` hook to include additional database
+  content in `.etherpad` exports
+* New `expressCloseServer` hook to close Express when required
+* The `padUpdate` hook context now includes `revs` and `changeset`
+* `checkPlugin.js` has various improvements to help plugin developers
+* The HTTP request object (and therefore the express-session state) is now
+  accessible from within most `eejsBlock_*` hooks
+* Users without a `password` or `hash` property in `settings.json` are no longer
+  ignored, so they can now be used by authentication plugins
+* New permission denied modal and block ``permissionDenied``
+* Plugins are now updated to the latest version instead of minor or patches
+
+### Notable fixes
+* Fixed rate limit accounting when Etherpad is behind a reverse proxy
+* Fixed typos that prevented access to pads via an HTTP API session
+* Fixed authorization failures for pad URLs containing a percent-encoded
+  character
+* Fixed exporting of read-only pads
+* Passwords are no longer written to connection state database entries or logged
+  in debug logs
+* When using the keyboard to navigate through the toolbar buttons the button
+  with the focus is now highlighted
+* Fixed support for Node.js 10 by passing the `--experimental-worker` flag
+* Fixed export of HTML attributes within a line
+* Fixed occasional "Cannot read property 'offsetTop' of undefined" error in
+  timeslider when "follow pad contents" is checked
+* socket.io errors are now displayed instead of silently ignored
+* Pasting while the caret is in a link now works (except for middle-click paste
+  on X11 systems)
+* Removal of Microsoft Internet Explorer specific code
+* Import better handles line breaks and white space
+* Fix issue with ``createDiffHTML`` incorrect call of ``getInternalRevisionAText``
+* Allow additional characters in URLs
+* MySQL engine fix and various other UeberDB updates (See UeberDB changelog).
+* Admin UI improvements on search results (to remove duplicate items)
+* Removal of unused cruft from ``clientVars`` (``ip`` and ``userAgent``)
+
+
+### Minor changes
+* Temporary disconnections no longer force a full page refresh
+* Toolbar layout for narrow screens is improved
+* Fixed `SameSite` cookie attribute for the `language`, `token`, and `pref`
+  cookies
+* Fixed superfluous database accesses when deleting a pad
+* Expanded test coverage.
+* `package-lock.json` is now lint checked on commit
+* Various lint fixes/modernization of code
+
+# 1.8.6
+* IMPORTANT: This fixes a severe problem with postgresql in 1.8.5
+* SECURITY: Fix authentication and authorization bypass vulnerabilities
+* API: Update version to 1.2.15
+* FEATURE: Add copyPadWithoutHistory API (#4295)
+* FEATURE: Package more asset files to save http requests (#4286)
+* MINOR: Improve UI when reconnecting
+* TESTS: Improve tests
+
+# 1.8.5
+* IMPORTANT DROP OF SUPPORT: Drop support for IE.  Browsers now need async/await.
+* IMPORTANT SECURITY: Rate limit Commits when env=production
+* SECURITY: Non completed uploads no longer crash Etherpad
+* SECURITY: Log authentication requests
+* FEATURE: Support ES6 (migrate from Uglify-JS to Terser)
+* FEATURE: Improve support for non-cookie enabled browsers
+* FEATURE: New hooks for ``index.html``
+* FEATURE: New script to delete sessions.
+* FEATURE: New setting to allow import withing an author session on a pad
+* FEATURE: Checks Etherpad version on startup and notifies if update is available.  Also available in ``/admin`` interface.
+* FEATURE: Timeslider updates pad location to most recent edit
+* MINOR: Outdent UL/LI items on removal of list item
+* MINOR: Various UL/LI import/export bugs
+* MINOR: PDF export fix
+* MINOR: Front end tests no longer run (and subsequently error) on pull requests
+* MINOR: Fix issue with </li> closing a list before it opens
+* MINOR: Fix bug where large pads would fire a console error in timeslider
+* MINOR: Fix ?showChat URL param issue
+* MINOR: Issue where timeslider URI fails to be correct if padID is numeric
+* MINOR: Include prompt for clear authorship when entire document is selected
+* MINOR: Include full document aText every 100 revisions to make pad restoration on database corruption achievable
+* MINOR: Several Colibris CSS fixes
+* MINOR: Use mime library for mime types instead of hard-coded.
+* MINOR: Don't show "new pad button" if instance is read only
+* MINOR: Use latest NodeJS when doing Windows build
+* MINOR: Change disconnect logic to reconnect instead of silently failing
+* MINOR: Update SocketIO, async, jQuery and Mocha which were stuck due to stale code.
+* MINOR: Rewrite the majority of the ``bin`` scripts to use more modern syntax
+* MINOR: Improved CSS anomation through prefers-reduced-motion
+* PERFORMANCE: Use workers (where possible) to minify CSS/JS on first page request.  This improves initial startup times.
+* PERFORMANCE: Cache EJS files improving page load speed when maxAge > 0.
+* PERFORMANCE: Fix performance for large pads
+* TESTS: Additional test coverage for OL/LI/Import/Export
+* TESTS: Include Simulated Load Testing in CI.
+* TESTS: Include content collector tests to test contentcollector.js logic external to pad dependents.
+* TESTS: Include fuzzing import test.
+* TESTS: Ensure CI is no longer using any cache
+* TESTS: Fix various tests...
+* TESTS: Various additional Travis testing including libreoffice import/export
+
+# 1.8.4
+* FIX: fix a performance regression on MySQL introduced in 1.8.3
+* FIX: when running behind a reverse proxy and exposed in an inner directory, fonts and toolbar icons should now be visible. This is a regression introduced in 1.8.3
+* FIX: cleanups in the UI after the CSS rehaul of 1.8.3
+* MINOR: protect against bugged/stale UI elements after updates. An explicit cache busting via random query string is performed at each start. This needs to be replaced with hashed names in static assets.
+* MINOR: improved some tests
+* MINOR: fixed long-standing bugs in the maintenance tools in /bin (migrateDirtyDBtoRealDB, rebuildPad, convert, importSqlFile)
+
 # 1.8.3
+* FEATURE: colibris is now the default skin for new installs
+* FEATURE: improved colibris visuals, and migrated to Flexbox layout
+* FEATURE: skin variants: colibris skin colors can be easily customized. Visit http://127.0.0.1:9001/p/test#skinvariantsbuilder
 * REQUIREMENTS: minimum required Node version is **10.13.0 LTS**.
+* MINOR: stability fixes for the async migration in 1.8.0 (fixed many UnhandledPromiseRejectionWarning and the few remaining crashes)
+* MINOR: improved stability of import/export functionality
+* MINOR: fixed many small UI quirks (timeslider, import/export, chat)
+* MINOR: Docker images are now built & run in production mode by default
+* MINOR: reduced the size of the Docker images
+* MINOR: better documented cookies and configuration parameters of the Docker image
+* MINOR: better database support (especially MySQL)
+* MINOR: additional test coverage
+* MINOR: restored compatibility with ep_hash_auth
+* MINOR: migrate from swagger-node-express to openapi-backend
+* MINOR: honor the Accept-Language HTTP headers sent by browsers, eventually serving language variants
+* PERFORMANCE: correctly send HTTP/304 for minified files
+* SECURITY: bumped many dependencies. At the time of the release, this version has 0 reported vulnerabilities by npm audit
+* SECURITY: never send referrer when opening a link
+* SECURITY: rate limit imports and exports
+* SECURITY: do not allow pad import if a user never contributed to that pad
+* SECURITY: expose configuration parameter for limiting max import size
 
 *BREAKING CHANGE*: undoing the "clear authorship colors" command is no longer supported (see https://github.com/ether/etherpad-lite/issues/2802)
+*BREAKING CHANGE*: the visuals and CSS structure of the page was updated. Plugins may need a CSS rehaul
 
 # 1.8
 * SECURITY: change referrer policy so that Etherpad addresses aren't leaked when links are clicked (discussion: https://github.com/ether/etherpad-lite/pull/3636)
@@ -199,7 +536,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
 # 1.5.3
  * NEW: Accessibility support for Screen readers, includes new fonts and keyboard shortcuts
  * NEW: API endpoint for Append Chat Message and Chat Backend Tests
- * NEW: Error messages displayed on load are included in Default Pad Text (can be supressed)
+ * NEW: Error messages displayed on load are included in Default Pad Text (can be suppressed)
  * NEW: Content Collector can handle key values
  * NEW: getAttributesOnPosition Method
  * FIX: Firefox keeps attributes (bold etc) on cut/copy -> paste
@@ -268,7 +605,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
  * Fix: Timeslider UI Fix
  * Fix: Remove Dokuwiki
  * Fix: Remove long paths from windows build (stops error during extract)
- * Fix: Various globals remvoed
+ * Fix: Various globals removed
  * Fix: Move all scripts into bin/
  * Fix: Various CSS bugfixes for Mobile devices
  * Fix: Overflow Toolbar
@@ -344,7 +681,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
  * FIX: HTML import (don't crash on malformed or blank HTML input; strip title out of html during import)
  * FIX: check if uploaded file only contains ascii chars when abiword disabled
  * FIX: Plugin search in /admin/plugins
- * FIX: Don't create new pad if a non-existant read-only pad is accessed
+ * FIX: Don't create new pad if a non-existent read-only pad is accessed
  * FIX: Drop messages from unknown connections (would lead to a crash after a restart)
  * FIX: API: fix createGroupFor endpoint, if mapped group is deleted
  * FIX: Import form for other locales
@@ -361,7 +698,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
  * NEW: Bump log4js for improved logging
  * Fix: Remove URL schemes which don't have RFC standard
  * Fix: Fix safeRun subsequent restarts issue
- * Fix: Allow safeRun to pass arguements to run.sh
+ * Fix: Allow safeRun to pass arguments to run.sh
  * Fix: Include script for more efficient import
  * Fix: Fix sysv comptibile script
  * Fix: Fix client side changeset spamming
@@ -400,7 +737,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
  * Fix: Support Node 0.10
  * Fix: Log HTTP on DEBUG log level
  * Fix: Server wont crash on import fails on 0 file import.
- * Fix: Import no longer fails consistantly
+ * Fix: Import no longer fails consistently
  * Fix: Language support for non existing languages
  * Fix: Mobile support for chat notifications are now usable
  * Fix: Re-Enable Editbar buttons on reconnect
@@ -432,7 +769,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
  * NEW: Admin dashboard mobile device support and new hooks for Admin dashboard
  * NEW: Get current API version from API
  * NEW: CLI script to delete pads
- * Fix: Automatic client reconnection on disonnect
+ * Fix: Automatic client reconnection on disconnect
  * Fix: Text Export indentation now supports multiple indentations
  * Fix: Bugfix getChatHistory API method
  * Fix: Stop Chrome losing caret after paste is texted
@@ -452,7 +789,7 @@ finally put them back in their new location, uder `src/static/skins/no-skin`.
  * Fix: Stop Opera browser inserting two new lines on enter keypress
  * Fix: Stop timeslider from showing NaN on pads with only one revision
  * Other: Allow timeslider tests to run and provide & fix various other frontend-tests
- * Other: Begin dropping referene to Lite.  Etherpad Lite is now named "Etherpad"
+ * Other: Begin dropping reference to Lite.  Etherpad Lite is now named "Etherpad"
  * Other: Update to latest jQuery
  * Other: Change loading message asking user to please wait on first build
  * Other: Allow etherpad to use global npm installation (Safe since node 6.3)

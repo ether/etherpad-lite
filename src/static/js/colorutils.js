@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -22,132 +24,98 @@
  * limitations under the License.
  */
 
-var colorutils = {};
+const colorutils = {};
 
 // Check that a given value is a css hex color value, e.g.
 // "#ffffff" or "#fff"
-colorutils.isCssHex = function(cssColor)
-{
-  return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(cssColor);
-}
+colorutils.isCssHex = (cssColor) => /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(cssColor);
 
 // "#ffffff" or "#fff" or "ffffff" or "fff" to [1.0, 1.0, 1.0]
-colorutils.css2triple = function(cssColor)
-{
-  var sixHex = colorutils.css2sixhex(cssColor);
+colorutils.css2triple = (cssColor) => {
+  const sixHex = colorutils.css2sixhex(cssColor);
 
-  function hexToFloat(hh)
-  {
-    return Number("0x" + hh) / 255;
-  }
-  return [hexToFloat(sixHex.substr(0, 2)), hexToFloat(sixHex.substr(2, 2)), hexToFloat(sixHex.substr(4, 2))];
-}
+  const hexToFloat = (hh) => Number(`0x${hh}`) / 255;
+  return [
+    hexToFloat(sixHex.substr(0, 2)),
+    hexToFloat(sixHex.substr(2, 2)),
+    hexToFloat(sixHex.substr(4, 2)),
+  ];
+};
 
 // "#ffffff" or "#fff" or "ffffff" or "fff" to "ffffff"
-colorutils.css2sixhex = function(cssColor)
-{
-  var h = /[0-9a-fA-F]+/.exec(cssColor)[0];
-  if (h.length != 6)
-  {
-    var a = h.charAt(0);
-    var b = h.charAt(1);
-    var c = h.charAt(2);
+colorutils.css2sixhex = (cssColor) => {
+  let h = /[0-9a-fA-F]+/.exec(cssColor)[0];
+  if (h.length !== 6) {
+    const a = h.charAt(0);
+    const b = h.charAt(1);
+    const c = h.charAt(2);
     h = a + a + b + b + c + c;
   }
   return h;
-}
+};
 
 // [1.0, 1.0, 1.0] -> "#ffffff"
-colorutils.triple2css = function(triple)
-{
-  function floatToHex(n)
-  {
-    var n2 = colorutils.clamp(Math.round(n * 255), 0, 255);
-    return ("0" + n2.toString(16)).slice(-2);
-  }
-  return "#" + floatToHex(triple[0]) + floatToHex(triple[1]) + floatToHex(triple[2]);
-}
-
-
-colorutils.clamp = function(v, bot, top)
-{
-  return v < bot ? bot : (v > top ? top : v);
-};
-colorutils.min3 = function(a, b, c)
-{
-  return (a < b) ? (a < c ? a : c) : (b < c ? b : c);
-};
-colorutils.max3 = function(a, b, c)
-{
-  return (a > b) ? (a > c ? a : c) : (b > c ? b : c);
-};
-colorutils.colorMin = function(c)
-{
-  return colorutils.min3(c[0], c[1], c[2]);
-};
-colorutils.colorMax = function(c)
-{
-  return colorutils.max3(c[0], c[1], c[2]);
-};
-colorutils.scale = function(v, bot, top)
-{
-  return colorutils.clamp(bot + v * (top - bot), 0, 1);
-};
-colorutils.unscale = function(v, bot, top)
-{
-  return colorutils.clamp((v - bot) / (top - bot), 0, 1);
+colorutils.triple2css = (triple) => {
+  const floatToHex = (n) => {
+    const n2 = colorutils.clamp(Math.round(n * 255), 0, 255);
+    return (`0${n2.toString(16)}`).slice(-2);
+  };
+  return `#${floatToHex(triple[0])}${floatToHex(triple[1])}${floatToHex(triple[2])}`;
 };
 
-colorutils.scaleColor = function(c, bot, top)
-{
-  return [colorutils.scale(c[0], bot, top), colorutils.scale(c[1], bot, top), colorutils.scale(c[2], bot, top)];
-}
 
-colorutils.unscaleColor = function(c, bot, top)
-{
-  return [colorutils.unscale(c[0], bot, top), colorutils.unscale(c[1], bot, top), colorutils.unscale(c[2], bot, top)];
-}
+colorutils.clamp = (v, bot, top) => v < bot ? bot : (v > top ? top : v);
+colorutils.min3 = (a, b, c) => (a < b) ? (a < c ? a : c) : (b < c ? b : c);
+colorutils.max3 = (a, b, c) => (a > b) ? (a > c ? a : c) : (b > c ? b : c);
+colorutils.colorMin = (c) => colorutils.min3(c[0], c[1], c[2]);
+colorutils.colorMax = (c) => colorutils.max3(c[0], c[1], c[2]);
+colorutils.scale = (v, bot, top) => colorutils.clamp(bot + v * (top - bot), 0, 1);
+colorutils.unscale = (v, bot, top) => colorutils.clamp((v - bot) / (top - bot), 0, 1);
 
-colorutils.luminosity = function(c)
-{
-  // rule of thumb for RGB brightness; 1.0 is white
-  return c[0] * 0.30 + c[1] * 0.59 + c[2] * 0.11;
-}
+colorutils.scaleColor = (c, bot, top) => [
+  colorutils.scale(c[0], bot, top),
+  colorutils.scale(c[1], bot, top),
+  colorutils.scale(c[2], bot, top),
+];
 
-colorutils.saturate = function(c)
-{
-  var min = colorutils.colorMin(c);
-  var max = colorutils.colorMax(c);
+colorutils.unscaleColor = (c, bot, top) => [
+  colorutils.unscale(c[0], bot, top),
+  colorutils.unscale(c[1], bot, top),
+  colorutils.unscale(c[2], bot, top),
+];
+
+// rule of thumb for RGB brightness; 1.0 is white
+colorutils.luminosity = (c) => c[0] * 0.30 + c[1] * 0.59 + c[2] * 0.11;
+
+colorutils.saturate = (c) => {
+  const min = colorutils.colorMin(c);
+  const max = colorutils.colorMax(c);
   if (max - min <= 0) return [1.0, 1.0, 1.0];
   return colorutils.unscaleColor(c, min, max);
-}
+};
 
-colorutils.blend = function(c1, c2, t)
-{
-  return [colorutils.scale(t, c1[0], c2[0]), colorutils.scale(t, c1[1], c2[1]), colorutils.scale(t, c1[2], c2[2])];
-}
+colorutils.blend = (c1, c2, t) => [
+  colorutils.scale(t, c1[0], c2[0]),
+  colorutils.scale(t, c1[1], c2[1]),
+  colorutils.scale(t, c1[2], c2[2]),
+];
 
-colorutils.invert = function(c)
-{
-  return [1 - c[0], 1 - c[1], 1- c[2]];
-}
+colorutils.invert = (c) => [1 - c[0], 1 - c[1], 1 - c[2]];
 
-colorutils.complementary = function(c)
-{
-  var inv = colorutils.invert(c);
+colorutils.complementary = (c) => {
+  const inv = colorutils.invert(c);
   return [
     (inv[0] >= c[0]) ? Math.min(inv[0] * 1.30, 1) : (c[0] * 0.30),
     (inv[1] >= c[1]) ? Math.min(inv[1] * 1.59, 1) : (c[1] * 0.59),
-    (inv[2] >= c[2]) ? Math.min(inv[2] * 1.11, 1) : (c[2] * 0.11)
+    (inv[2] >= c[2]) ? Math.min(inv[2] * 1.11, 1) : (c[2] * 0.11),
   ];
-}
+};
 
-colorutils.textColorFromBackgroundColor = function(bgcolor, skinName)
-{
-  var white = skinName == 'colibris' ? 'var(--super-light-color)' : '#fff';
-  var black = skinName == 'colibris' ? 'var(--super-dark-color)' : '#222';
+colorutils.textColorFromBackgroundColor = (bgcolor, skinName) => {
+  const white = skinName === 'colibris' ? 'var(--super-light-color)' : '#fff';
+  const black = skinName === 'colibris' ? 'var(--super-dark-color)' : '#222';
 
   return colorutils.luminosity(colorutils.css2triple(bgcolor)) < 0.5 ? white : black;
-}
+};
 
 exports.colorutils = colorutils;

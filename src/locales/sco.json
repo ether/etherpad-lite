@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"AmaryllisGardener",
-			"John Reid"
+			"John Reid",
+			"Nintendofan885"
 		]
 	},
 	"index.newPad": "New Pad",
@@ -28,9 +29,7 @@
 	"pad.colorpicker.cancel": "Cancel",
 	"pad.loading": "Laidin...",
 	"pad.noCookie": "Cookie could nae be foond. Please allae cookies in yer brouser!",
-	"pad.passwordRequired": "Ye need ae passwaird fer tae access this pad",
 	"pad.permissionDenied": "Ye dinna hae permeession tae access this pad",
-	"pad.wrongPassword": "Yer password wis wrang",
 	"pad.settings.padSettings": "Pad Settins",
 	"pad.settings.myView": "Ma Luik",
 	"pad.settings.stickychat": "Tauk aye oan screen",
@@ -106,15 +105,12 @@
 	"timeslider.month.september": "September",
 	"timeslider.month.october": "October",
 	"timeslider.month.november": "November",
-	"timeslider.month.december": "Dizember",
+	"timeslider.month.december": "December",
 	"timeslider.unnamedauthors": "{{num}} onnamed {[plural(num) one: writer, other: writers ]}",
 	"pad.savedrevs.marked": "This reveesion is nou tagged aes ae hained reveesion",
 	"pad.savedrevs.timeslider": "Ye can see saved reveesions bi veesitin the timeslider",
 	"pad.userlist.entername": "Enter yer name",
 	"pad.userlist.unnamed": "onnamed",
-	"pad.userlist.guest": "Guest",
-	"pad.userlist.deny": "Bar",
-	"pad.userlist.approve": "Appruiv",
 	"pad.editbar.clearcolors": "Clear authership colours oan the entire document?",
 	"pad.impexp.importbutton": "Import Nou",
 	"pad.impexp.importing": "Importing...",

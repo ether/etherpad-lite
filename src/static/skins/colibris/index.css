@@ -6,7 +6,7 @@ form {
 
 body {
   background: url(images/fond.jpg) center center no-repeat fixed #fff;
-  font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif !important;
+  font-family: Quicksand, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   font-size: 16px;
   line-height: 1.42857143;
   color: #333;
@@ -22,6 +22,10 @@ body {
   padding: 0;
   background: 0 0;
   box-shadow: none
+}
+
+input {
+  color: #4a5d5c;
 }
 
 #inner {
@@ -65,14 +69,15 @@ button[type=submit] {
   background: #586a69;
   border: none;
   top: 0;
+  opacity: 1;
+  transition: .2s background;
 }
 
 #button:hover,
 button[type=submit]:hover {
   cursor: pointer;
-  background: #64d29b;
-  border: 2px solid #586a69;
-  color: #586a69;
+  background: #4a5d5c;
+  color: #64d29b;
 }
 
 #padname {

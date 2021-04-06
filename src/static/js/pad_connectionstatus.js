@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -20,69 +22,71 @@
  * limitations under the License.
  */
 
-var padmodals = require('./pad_modals').padmodals;
+const padmodals = require('./pad_modals').padmodals;
 
-var padconnectionstatus = (function()
-{
-
-  var status = {
-    what: 'connecting'
+const padconnectionstatus = (() => {
+  let status = {
+    what: 'connecting',
   };
 
-  var self = {
-    init: function()
-    {
-      $('button#forcereconnect').click(function()
-      {
+  const self = {
+    init: () => {
+      $('button#forcereconnect').click(() => {
         window.location.reload();
       });
     },
-    connected: function()
-    {
+    connected: () => {
       status = {
-        what: 'connected'
+        what: 'connected',
       };
       padmodals.showModal('connected');
       padmodals.hideOverlay();
     },
-    reconnecting: function()
-    {
+    reconnecting: () => {
       status = {
-        what: 'reconnecting'
+        what: 'reconnecting',
       };
 
       padmodals.showModal('reconnecting');
       padmodals.showOverlay();
     },
-    disconnected: function(msg)
-    {
-      if(status.what == "disconnected")
-        return;
+    disconnected: (msg) => {
+      if (status.what === 'disconnected') return;
 
       status = {
         what: 'disconnected',
-        why: msg
+        why: msg,
       };
 
-      var k = String(msg); // known reason why
-      if (!(k == 'userdup' || k == 'deleted' || k == 'looping' || k == 'slowcommit' || k == 'initsocketfail' || k == 'unauth' || k == 'badChangeset' || k == 'corruptPad'))
-      {
+      // These message IDs correspond to localized strings that are presented to the user. If a new
+      // message ID is added here then a new div must be added to src/templates/pad.html and the
+      // corresponding l10n IDs must be added to the language files in src/locales.
+      const knownReasons = [
+        'badChangeset',
+        'corruptPad',
+        'deleted',
+        'disconnected',
+        'initsocketfail',
+        'looping',
+        'rateLimited',
+        'rejected',
+        'slowcommit',
+        'unauth',
+        'userdup',
+      ];
+      let k = String(msg);
+      if (knownReasons.indexOf(k) === -1) {
+        // Fall back to a generic message.
         k = 'disconnected';
       }
 
       padmodals.showModal(k);
       padmodals.showOverlay();
     },
-    isFullyConnected: function()
-    {
-      return status.what == 'connected';
-    },
-    getStatus: function()
-    {
-      return status;
-    }
+    isFullyConnected: () => status.what === 'connected',
+    getStatus: () => status,
   };
   return self;
-}());
+})();
 
 exports.padconnectionstatus = padconnectionstatus;

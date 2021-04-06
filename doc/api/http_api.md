@@ -134,13 +134,6 @@ Authentication works via a token that is sent with each request as a post parame
 
 All functions will also be available through a node module accessible from other node.js applications.
 
-### JSONP
-
-The API provides _JSONP_ support to allow requests from a server in a different domain.
-Simply add `&jsonp=?` to the API call.
-
-Example usage: https://api.jquery.com/jQuery.getJSON/
-
 ## API Methods
 
 ### Groups
@@ -263,7 +256,7 @@ deletes a session
 #### getSessionInfo(sessionID)
  * API >= 1
 
-returns informations about a session
+returns information about a session
 
 *Example returns:*
   * `{code: 0, message:"ok", data: {authorID: "a.s8oes9dhwrvt0zif", groupID: g.s8oes9dhwrvt0zif, validUntil: 1312201246}}`
@@ -526,6 +519,16 @@ copies a pad with full history and chat. If force is true and the destination pa
   * `{code: 0, message:"ok", data: null}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
+#### copyPadWithoutHistory(sourceID, destinationID[, force=false])
+* API >= 1.2.15
+
+copies a pad without copying the history and chat. If force is true and the destination pad exists, it will be overwritten.
+Note that all the revisions will be lost! In most of the cases one should use `copyPad` API instead.
+
+*Example returns:*
+* `{code: 0, message:"ok", data: null}`
+* `{code: 1, message:"padID does not exist", data: null}`
+
 #### movePad(sourceID, destinationID[, force=false])
  * API >= 1.2.8
 
@@ -569,24 +572,6 @@ return true of false
 
 *Example returns:*
   * `{code: 0, message:"ok", data: {publicStatus: true}}`
-  * `{code: 1, message:"padID does not exist", data: null}`
-
-#### setPassword(padID, password)
- * API >= 1
-
-returns ok or an error message
-
-*Example returns:*
-  * `{code: 0, message:"ok", data: null}`
-  * `{code: 1, message:"padID does not exist", data: null}`
-
-#### isPasswordProtected(padID)
- * API >= 1
-
-returns true or false
-
-*Example returns:*
-  * `{code: 0, message:"ok", data: {passwordProtection: true}}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
 #### listAuthorsOfPad(padID)
@@ -644,4 +629,3 @@ get stats of the etherpad instance
 
 *Example returns*
  * `{"code":0,"message":"ok","data":{"totalPads":3,"totalSessions": 2,"totalActivePads": 1}}`
-

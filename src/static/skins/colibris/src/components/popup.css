@@ -41,7 +41,20 @@
   min-width: 180px;
 }
 
-@media (max-width: 720px) {
+@media (prefers-reduced-motion) {
+  .popup>.popup-content {
+    transform: scale(1);
+    transition: none;
+  }
+  .nice-select .list {
+    transform: scale(1) translateY(0px);
+    -webkit-transform: scale(1) translateY(0px);
+    -ms-transform: scale(1) translateY(0px);
+    transition: none;
+  }
+}
+
+@media (max-width: 800px) {
   .popup-content {
     padding: 1rem;
     box-shadow: 0 0 0 1px rgba(99, 114, 130, 0.16), -1px 1px 16px 3px rgba(27, 39, 51, 0.12);

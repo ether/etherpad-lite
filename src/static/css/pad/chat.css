@@ -39,7 +39,7 @@
   position: relative;
   width: auto;
   flex: 1 auto; /* take reminaning vertical space */
-  height: auto;
+  height: 100%;
   right: 0;
   display: flex;
 }
@@ -152,7 +152,7 @@
   display: none;
 }
 
-@media only screen and (max-width: 720px) {
+@media only screen and (max-width: 800px) {
   #chatbox {
     right: 0;
     bottom: 0;

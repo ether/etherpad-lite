@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Copyright Yaco Sistemas S.L. 2011.
  *
@@ -14,81 +15,90 @@
  * limitations under the License.
  */
 
-var log4js = require('log4js');
-var Changeset = require("ep_etherpad-lite/static/js/Changeset");
-var contentcollector = require("ep_etherpad-lite/static/js/contentcollector");
-var cheerio = require("cheerio");
+const log4js = require('log4js');
+const Changeset = require('../../static/js/Changeset');
+const contentcollector = require('../../static/js/contentcollector');
+const cheerio = require('cheerio');
+const rehype = require('rehype');
+const minifyWhitespace = require('rehype-minify-whitespace');
 
-exports.setPadHTML = function(pad, html)
-{
-  var apiLogger = log4js.getLogger("ImportHtml");
+exports.setPadHTML = async (pad, html) => {
+  const apiLogger = log4js.getLogger('ImportHtml');
 
-  var $ = cheerio.load(html);
+  rehype()
+      .use(minifyWhitespace, {newlines: false})
+      .process(html, (err, output) => {
+        html = String(output);
+      });
+
+  const $ = cheerio.load(html);
 
   // Appends a line break, used by Etherpad to ensure a caret is available
   // below the last line of an import
-  $('body').append("<p></p>");
+  $('body').append('<p></p>');
 
-  var doc = $('html')[0];
+  const doc = $('body')[0];
   apiLogger.debug('html:');
   apiLogger.debug(html);
 
   // Convert a dom tree into a list of lines and attribute liens
   // using the content collector object
-  var cc = contentcollector.makeContentCollector(true, null, pad.pool);
+  const cc = contentcollector.makeContentCollector(true, null, pad.pool);
   try {
     // we use a try here because if the HTML is bad it will blow up
     cc.collectContent(doc);
-  } catch(e) {
-    apiLogger.warn("HTML was not properly formed", e);
+  } catch (e) {
+    apiLogger.warn('HTML was not properly formed', e);
 
     // don't process the HTML because it was bad
     throw e;
   }
 
-  var result = cc.finish();
+  const result = cc.finish();
 
   apiLogger.debug('Lines:');
 
-  var i;
+  let i;
   for (i = 0; i < result.lines.length; i++) {
-    apiLogger.debug('Line ' + (i + 1) + ' text: ' + result.lines[i]);
-    apiLogger.debug('Line ' + (i + 1) + ' attributes: ' + result.lineAttribs[i]);
+    apiLogger.debug(`Line ${i + 1} text: ${result.lines[i]}`);
+    apiLogger.debug(`Line ${i + 1} attributes: ${result.lineAttribs[i]}`);
   }
 
   // Get the new plain text and its attributes
-  var newText = result.lines.join('\n');
+  const newText = result.lines.join('\n');
   apiLogger.debug('newText:');
   apiLogger.debug(newText);
-  var newAttribs = result.lineAttribs.join('|1+1') + '|1+1';
+  const newAttribs = `${result.lineAttribs.join('|1+1')}|1+1`;
 
-  function eachAttribRun(attribs, func /*(startInNewText, endInNewText, attribs)*/ ) {
-    var attribsIter = Changeset.opIterator(attribs);
-    var textIndex = 0;
-    var newTextStart = 0;
-    var newTextEnd = newText.length;
+  const eachAttribRun = (attribs, func /* (startInNewText, endInNewText, attribs)*/) => {
+    const attribsIter = Changeset.opIterator(attribs);
+    let textIndex = 0;
+    const newTextStart = 0;
+    const newTextEnd = newText.length;
     while (attribsIter.hasNext()) {
-      var op = attribsIter.next();
-      var nextIndex = textIndex + op.chars;
+      const op = attribsIter.next();
+      const nextIndex = textIndex + op.chars;
       if (!(nextIndex <= newTextStart || textIndex >= newTextEnd)) {
         func(Math.max(newTextStart, textIndex), Math.min(newTextEnd, nextIndex), op.attribs);
       }
       textIndex = nextIndex;
     }
-  }
+  };
 
   // create a new changeset with a helper builder object
-  var builder = Changeset.builder(1);
+  const builder = Changeset.builder(1);
 
   // assemble each line into the builder
-  eachAttribRun(newAttribs, function(start, end, attribs) {
+  eachAttribRun(newAttribs, (start, end, attribs) => {
     builder.insert(newText.substring(start, end), attribs);
   });
 
   // the changeset is ready!
-  var theChangeset = builder.toString();
+  const theChangeset = builder.toString();
 
-  apiLogger.debug('The changeset: ' + theChangeset);
-  pad.setText("\n");
-  pad.appendRevision(theChangeset);
-}
+  apiLogger.debug(`The changeset: ${theChangeset}`);
+  await Promise.all([
+    pad.setText('\n'),
+    pad.appendRevision(theChangeset),
+  ]);
+};

@@ -1,3 +1,4 @@
+'use strict';
 /**
  * The API Handler handles all API http requests
  */
@@ -18,132 +19,123 @@
  * limitations under the License.
  */
 
-var absolutePaths = require('../utils/AbsolutePaths');
-var fs = require("fs");
-var api = require("../db/API");
-var log4js = require('log4js');
-var padManager = require("../db/PadManager");
-var randomString = require("../utils/randomstring");
-var argv = require('../utils/Cli').argv;
-var createHTTPError = require('http-errors');
+const absolutePaths = require('../utils/AbsolutePaths');
+const fs = require('fs');
+const api = require('../db/API');
+const log4js = require('log4js');
+const padManager = require('../db/PadManager');
+const randomString = require('../utils/randomstring');
+const argv = require('../utils/Cli').argv;
+const createHTTPError = require('http-errors');
 
-var apiHandlerLogger = log4js.getLogger('APIHandler');
+const apiHandlerLogger = log4js.getLogger('APIHandler');
 
-//ensure we have an apikey
-var apikey = null;
-var apikeyFilename = absolutePaths.makeAbsolute(argv.apikey || "./APIKEY.txt");
+// ensure we have an apikey
+let apikey = null;
+const apikeyFilename = absolutePaths.makeAbsolute(argv.apikey || './APIKEY.txt');
 
 try {
-  apikey = fs.readFileSync(apikeyFilename,"utf8");
+  apikey = fs.readFileSync(apikeyFilename, 'utf8');
   apiHandlerLogger.info(`Api key file read from: "${apikeyFilename}"`);
-} catch(e) {
-  apiHandlerLogger.info(`Api key file "${apikeyFilename}" not found. Creating with random contents.`);
+} catch (e) {
+  apiHandlerLogger.info(
+      `Api key file "${apikeyFilename}" not found.  Creating with random contents.`);
   apikey = randomString(32);
-  fs.writeFileSync(apikeyFilename,apikey,"utf8");
+  fs.writeFileSync(apikeyFilename, apikey, 'utf8');
 }
 
 // a list of all functions
-var version = {};
+const version = {};
 
-version["1"] = Object.assign({},
-  { "createGroup"               : []
-  , "createGroupIfNotExistsFor" : ["groupMapper"]
-  , "deleteGroup"               : ["groupID"]
-  , "listPads"                  : ["groupID"]
-  , "createPad"                 : ["padID", "text"]
-  , "createGroupPad"            : ["groupID", "padName", "text"]
-  , "createAuthor"              : ["name"]
-  , "createAuthorIfNotExistsFor": ["authorMapper" , "name"]
-  , "listPadsOfAuthor"          : ["authorID"]
-  , "createSession"             : ["groupID", "authorID", "validUntil"]
-  , "deleteSession"             : ["sessionID"]
-  , "getSessionInfo"            : ["sessionID"]
-  , "listSessionsOfGroup"       : ["groupID"]
-  , "listSessionsOfAuthor"      : ["authorID"]
-  , "getText"                   : ["padID", "rev"]
-  , "setText"                   : ["padID", "text"]
-  , "getHTML"                   : ["padID", "rev"]
-  , "setHTML"                   : ["padID", "html"]
-  , "getRevisionsCount"         : ["padID"]
-  , "getLastEdited"             : ["padID"]
-  , "deletePad"                 : ["padID"]
-  , "getReadOnlyID"             : ["padID"]
-  , "setPublicStatus"           : ["padID", "publicStatus"]
-  , "getPublicStatus"           : ["padID"]
-  , "setPassword"               : ["padID", "password"]
-  , "isPasswordProtected"       : ["padID"]
-  , "listAuthorsOfPad"          : ["padID"]
-  , "padUsersCount"             : ["padID"]
-  }
+version['1'] = Object.assign({},
+    {createGroup: [],
+      createGroupIfNotExistsFor: ['groupMapper'],
+      deleteGroup: ['groupID'],
+      listPads: ['groupID'],
+      createPad: ['padID', 'text'],
+      createGroupPad: ['groupID', 'padName', 'text'],
+      createAuthor: ['name'],
+      createAuthorIfNotExistsFor: ['authorMapper', 'name'],
+      listPadsOfAuthor: ['authorID'],
+      createSession: ['groupID', 'authorID', 'validUntil'],
+      deleteSession: ['sessionID'],
+      getSessionInfo: ['sessionID'],
+      listSessionsOfGroup: ['groupID'],
+      listSessionsOfAuthor: ['authorID'],
+      getText: ['padID', 'rev'],
+      setText: ['padID', 'text'],
+      getHTML: ['padID', 'rev'],
+      setHTML: ['padID', 'html'],
+      getRevisionsCount: ['padID'],
+      getLastEdited: ['padID'],
+      deletePad: ['padID'],
+      getReadOnlyID: ['padID'],
+      setPublicStatus: ['padID', 'publicStatus'],
+      getPublicStatus: ['padID'],
+      listAuthorsOfPad: ['padID'],
+      padUsersCount: ['padID']}
 );
 
-version["1.1"] = Object.assign({}, version["1"],
-  { "getAuthorName"             : ["authorID"]
-  , "padUsers"                  : ["padID"]
-  , "sendClientsMessage"        : ["padID", "msg"]
-  , "listAllGroups"             : []
-  }
+version['1.1'] = Object.assign({}, version['1'],
+    {getAuthorName: ['authorID'],
+      padUsers: ['padID'],
+      sendClientsMessage: ['padID', 'msg'],
+      listAllGroups: []}
 );
 
-version["1.2"] = Object.assign({}, version["1.1"],
-  { "checkToken"                : []
-  }
+version['1.2'] = Object.assign({}, version['1.1'],
+    {checkToken: []}
 );
 
-version["1.2.1"] = Object.assign({}, version["1.2"],
-  { "listAllPads"               : []
-  }
+version['1.2.1'] = Object.assign({}, version['1.2'],
+    {listAllPads: []}
 );
 
-version["1.2.7"] = Object.assign({}, version["1.2.1"],
-  { "createDiffHTML"            : ["padID", "startRev", "endRev"]
-  , "getChatHistory"            : ["padID", "start", "end"]
-  , "getChatHead"               : ["padID"]
-  }
+version['1.2.7'] = Object.assign({}, version['1.2.1'],
+    {createDiffHTML: ['padID', 'startRev', 'endRev'],
+      getChatHistory: ['padID', 'start', 'end'],
+      getChatHead: ['padID']}
 );
 
-version["1.2.8"] = Object.assign({}, version["1.2.7"],
-  { "getAttributePool"          : ["padID"]
-  , "getRevisionChangeset"      : ["padID", "rev"]
-  }
+version['1.2.8'] = Object.assign({}, version['1.2.7'],
+    {getAttributePool: ['padID'],
+      getRevisionChangeset: ['padID', 'rev']}
 );
 
-version["1.2.9"] = Object.assign({}, version["1.2.8"],
-  { "copyPad"                   : ["sourceID", "destinationID", "force"]
-  , "movePad"                   : ["sourceID", "destinationID", "force"]
-  }
+version['1.2.9'] = Object.assign({}, version['1.2.8'],
+    {copyPad: ['sourceID', 'destinationID', 'force'],
+      movePad: ['sourceID', 'destinationID', 'force']}
 );
 
-version["1.2.10"] = Object.assign({}, version["1.2.9"],
-  { "getPadID"                  : ["roID"]
-  }
+version['1.2.10'] = Object.assign({}, version['1.2.9'],
+    {getPadID: ['roID']}
 );
 
-version["1.2.11"] = Object.assign({}, version["1.2.10"],
-  { "getSavedRevisionsCount"    : ["padID"]
-  , "listSavedRevisions"        : ["padID"]
-  , "saveRevision"              : ["padID", "rev"]
-  , "restoreRevision"           : ["padID", "rev"]
-  }
+version['1.2.11'] = Object.assign({}, version['1.2.10'],
+    {getSavedRevisionsCount: ['padID'],
+      listSavedRevisions: ['padID'],
+      saveRevision: ['padID', 'rev'],
+      restoreRevision: ['padID', 'rev']}
 );
 
-version["1.2.12"] = Object.assign({}, version["1.2.11"],
-  { "appendChatMessage"         : ["padID", "text", "authorID", "time"]
-  }
+version['1.2.12'] = Object.assign({}, version['1.2.11'],
+    {appendChatMessage: ['padID', 'text', 'authorID', 'time']}
 );
 
-version["1.2.13"] = Object.assign({}, version["1.2.12"],
-  { "appendText"                : ["padID", "text"]
-  }
+version['1.2.13'] = Object.assign({}, version['1.2.12'],
+    {appendText: ['padID', 'text']}
 );
 
-version["1.2.14"] = Object.assign({}, version["1.2.13"],
-  { "getStats"                : []
-  }
+version['1.2.14'] = Object.assign({}, version['1.2.13'],
+    {getStats: []}
+);
+
+version['1.2.15'] = Object.assign({}, version['1.2.14'],
+    {copyPadWithoutHistory: ['sourceID', 'destinationID', 'force']}
 );
 
 // set the latest available API version here
-exports.latestApiVersion = '1.2.14';
+exports.latestApiVersion = '1.2.15';
 
 // exports the versions so it can be used by the new Swagger endpoint
 exports.version = version;
@@ -155,8 +147,7 @@ exports.version = version;
  * @req express request object
  * @res express response object
  */
-exports.handle = async function(apiVersion, functionName, fields, req, res)
-{
+exports.handle = async function (apiVersion, functionName, fields, req, res) {
   // say goodbye if this is an unknown API version
   if (!(apiVersion in version)) {
     throw new createHTTPError.NotFound('no such api version');
@@ -168,28 +159,30 @@ exports.handle = async function(apiVersion, functionName, fields, req, res)
   }
 
   // check the api key!
-  fields["apikey"] = fields["apikey"] || fields["api_key"];
+  fields.apikey = fields.apikey || fields.api_key;
 
-  if (fields["apikey"] !== apikey.trim()) {
+  if (fields.apikey !== apikey.trim()) {
     throw new createHTTPError.Unauthorized('no or wrong API Key');
   }
 
   // sanitize any padIDs before continuing
-  if (fields["padID"]) {
-    fields["padID"] = await padManager.sanitizePadId(fields["padID"]);
+  if (fields.padID) {
+    fields.padID = await padManager.sanitizePadId(fields.padID);
   }
   // there was an 'else' here before - removed it to ensure
   // that this sanitize step can't be circumvented by forcing
   // the first branch to be taken
-  if (fields["padName"]) {
-    fields["padName"] = await padManager.sanitizePadId(fields["padName"]);
+  if (fields.padName) {
+    fields.padName = await padManager.sanitizePadId(fields.padName);
   }
 
   // put the function parameters in an array
-  var functionParams = version[apiVersion][functionName].map(function (field) {
-    return fields[field]
-  });
+  const functionParams = version[apiVersion][functionName].map((field) => fields[field]);
 
   // call the api function
   return api[functionName].apply(this, functionParams);
-}
+};
+
+exports.exportedForTestingOnly = {
+  apiKey: apikey,
+};

@@ -1,8 +1,14 @@
 html, body {
   width: 100%;
-  height: 100%;
+  height: auto;
   margin: 0;
   padding: 0;
+}
+
+/* used in pad and timeslider */
+html.pad, html.pad body {
+  overflow: hidden;
+  height: 100%;
 }
 body {
   display: flex;
@@ -23,12 +29,15 @@ body {
 }
 #editorcontainerbox #editorcontainer {
   display: flex; /* transfer flex properties to nested elements, here the iframe */
-  height: 100%;
+  height: auto;
   flex: 1 auto;
+}
+#editorcontainerbox #editorcontainer:not(.initialized) {
+  visibility: hidden;
 }
 #editorcontainerbox #editorcontainer iframe {
   width: 100%;
-  height: 100%;
+  height: auto;
 }
 #editorcontainerbox .sticky-container { /* container for #users, #chat, #toc (table of content) and so on... */
   display: flex;
@@ -41,8 +50,6 @@ body {
   width: 0; /* hide when the container is empty */
 }
 
-@media only screen and (max-width: 720px) {
-  #editorcontainerbox {
-    margin-bottom: 39px; /* Leave space for the bottom toolbar on mobile */
-  }
+.mobile-layout #editorcontainerbox {
+  margin-bottom: 39px; /* Leave space for the bottom toolbar on mobile */
 }

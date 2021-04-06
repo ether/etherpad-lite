@@ -70,6 +70,8 @@
 .timeslider #authorsList .author {
   padding: 2px 5px;
   border-radius: 3px;
+  margin-right: 4px;
+  margin-bottom: 4px;
 }
 
 .timeslider-title {
@@ -78,4 +80,19 @@
 .timeslider-subtitle {
   margin-top: 6px;
   font-size: .9em;
+}
+
+@media (max-width: 800px) {
+
+  #slider-btn-container {
+    margin-top: 0;
+    margin-right: 5px;
+  }
+  #slider-btn-container #playpause_button_icon {
+    width: 30px;
+    height: 30px;
+  }
+  #slider-btn-container #playpause_button_icon:before {
+    font-size: 18px;
+  }
 }

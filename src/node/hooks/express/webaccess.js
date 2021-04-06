@@ -1,161 +1,200 @@
-var express = require('express');
-var log4js = require('log4js');
-var httpLogger = log4js.getLogger("http");
-var settings = require('../../utils/Settings');
-var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
-var ueberStore = require('../../db/SessionStore');
-var stats = require('ep_etherpad-lite/node/stats');
-var sessionModule = require('express-session');
-var cookieParser = require('cookie-parser');
+'use strict';
 
-//checks for basic http auth
-exports.basicAuth = function (req, res, next) {
-  var hookResultMangle = function (cb) {
-    return function (err, data) {
-      return cb(!err && data.length && data[0]);
-    }
+const assert = require('assert').strict;
+const log4js = require('log4js');
+const httpLogger = log4js.getLogger('http');
+const settings = require('../../utils/Settings');
+const hooks = require('../../../static/js/pluginfw/hooks');
+const readOnlyManager = require('../../db/ReadOnlyManager');
+
+hooks.deprecationNotices.authFailure = 'use the authnFailure and authzFailure hooks instead';
+
+const staticPathsRE = new RegExp(`^/(?:${[
+  'api(?:/.*)?',
+  'favicon\\.ico',
+  'ep/pad/connection-diagnostic-info',
+  'javascript',
+  'javascripts/.*',
+  'jserror/?',
+  'locales\\.json',
+  'locales/.*',
+  'rest/.*',
+  'pluginfw/.*',
+  'robots.txt',
+  'static/.*',
+  'stats/?',
+  'tests/frontend(?:/.*)?'
+].join('|')})$`);
+
+exports.normalizeAuthzLevel = (level) => {
+  if (!level) return false;
+  switch (level) {
+    case true:
+      return 'create';
+    case 'readOnly':
+    case 'modify':
+    case 'create':
+      return level;
+    default:
+      httpLogger.warn(`Unknown authorization level '${level}', denying access`);
   }
+  return false;
+};
 
-  var authorize = function (cb) {
-    // Do not require auth for static paths and the API...this could be a bit brittle
-    if (req.path.match(/^\/(static|javascripts|pluginfw|api)/)) return cb(true);
+exports.userCanModify = (padId, req) => {
+  if (readOnlyManager.isReadOnlyId(padId)) return false;
+  if (!settings.requireAuthentication) return true;
+  const {session: {user} = {}} = req;
+  assert(user); // If authn required and user == null, the request should have already been denied.
+  if (user.readOnly) return false;
+  assert(user.padAuthorizations); // This is populated even if !settings.requireAuthorization.
+  const level = exports.normalizeAuthzLevel(user.padAuthorizations[padId]);
+  assert(level); // If !level, the request should have already been denied.
+  return level !== 'readOnly';
+};
 
-    if (req.path.toLowerCase().indexOf('/admin') != 0) {
-      if (!settings.requireAuthentication) return cb(true);
-      if (!settings.requireAuthorization && req.session && req.session.user) return cb(true);
-    }
+// Exported so that tests can set this to 0 to avoid unnecessary test slowness.
+exports.authnFailureDelayMs = 1000;
 
-    if (req.session && req.session.user && req.session.user.is_admin) return cb(true);
-
-    hooks.aCallFirst("authorize", {req: req, res:res, next:next, resource: req.path}, hookResultMangle(cb));
-  }
-
-  var authenticate = function (cb) {
-    // If auth headers are present use them to authenticate...
-    if (req.headers.authorization && req.headers.authorization.search('Basic ') === 0) {
-      var userpass = Buffer.from(req.headers.authorization.split(' ')[1], 'base64').toString().split(":")
-      var username = userpass.shift();
-      var password = userpass.join(':');
-      var fallback = function(success) {
-        if (success) return cb(true);
-        if (settings.users[username] != undefined && settings.users[username].password === password) {
-          settings.users[username].username = username;
-          req.session.user = settings.users[username];
-          return cb(true);
-        }
-        return cb(false);
-      };
-      return hooks.aCallFirst("authenticate", {req: req, res:res, next:next, username: username, password: password}, hookResultMangle(fallback));
-    }
-    hooks.aCallFirst("authenticate", {req: req, res:res, next:next}, hookResultMangle(cb));
-  }
-
-
-  /* Authentication OR authorization failed. */
-  var failure = function () {
-    return hooks.aCallFirst("authFailure", {req: req, res:res, next:next}, hookResultMangle(function (ok) {
-    if (ok) return;
-      /* No plugin handler for invalid auth. Return Auth required
-       * Headers, delayed for 1 second, if authentication failed
-       * before. */
-      res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
-      if (req.headers.authorization) {
-        setTimeout(function () {
-          res.status(401).send('Authentication required');
-        }, 1000);
-      } else {
-        res.status(401).send('Authentication required');
-      }
-    }));
-  }
-
-
-  /* This is the actual authentication/authorization hoop. It is done in four steps:
-
-     1) Try to just access the thing
-     2) If not allowed using whatever creds are in the current session already, try to authenticate
-     3) If authentication using already supplied credentials succeeds, try to access the thing again
-     4) If all els fails, give the user a 401 to request new credentials
-
-     Note that the process could stop already in step 3 with a redirect to login page.
-
-  */
-
-  authorize(function (ok) {
-    if (ok) return next();
-    authenticate(function (ok) {
-      if (!ok) return failure();
-      authorize(function (ok) {
-        if (ok) return next();
-        failure();
-      });
-    });
+const checkAccess = async (req, res, next) => {
+  // Promisified wrapper around hooks.aCallFirst.
+  const aCallFirst = (hookName, context, pred = null) => new Promise((resolve, reject) => {
+    hooks.aCallFirst(hookName, context, (err, r) => err != null ? reject(err) : resolve(r), pred);
   });
-}
 
-exports.secret = null;
+  const aCallFirst0 =
+      async (hookName, context, pred = null) => (await aCallFirst(hookName, context, pred))[0];
 
-exports.expressConfigure = function (hook_name, args, cb) {
-  // Measure response time
-  args.app.use(function(req, res, next) {
-    var stopWatch = stats.timer('httpRequests').start();
-    var sendFn = res.send
-    res.send = function() {
-      stopWatch.end()
-      sendFn.apply(res, arguments)
-    }
-    next()
-  })
+  const requireAdmin = req.path.toLowerCase().indexOf('/admin') === 0;
 
-  // If the log level specified in the config file is WARN or ERROR the application server never starts listening to requests as reported in issue #158.
-  // Not installing the log4js connect logger when the log level has a higher severity than INFO since it would not log at that level anyway.
-  if (!(settings.loglevel === "WARN" || settings.loglevel == "ERROR"))
-    args.app.use(log4js.connectLogger(httpLogger, { level: log4js.levels.DEBUG, format: ':status, :method :url'}));
+  // This helper is used in steps 2 and 4 below, so it may be called twice per access: once before
+  // authentication is checked and once after (if settings.requireAuthorization is true).
+  const authorize = async () => {
+    const grant = (level) => {
+      level = exports.normalizeAuthzLevel(level);
+      if (!level) return false;
+      const user = req.session.user;
+      if (user == null) return true; // This will happen if authentication is not required.
+      const encodedPadId = (req.path.match(/^\/p\/([^/]*)/) || [])[1];
+      if (encodedPadId == null) return true;
+      const padId = decodeURIComponent(encodedPadId);
+      // The user was granted access to a pad. Remember the authorization level in the user's
+      // settings so that SecurityManager can approve or deny specific actions.
+      if (user.padAuthorizations == null) user.padAuthorizations = {};
+      user.padAuthorizations[padId] = level;
+      return true;
+    };
+    const isAuthenticated = req.session && req.session.user;
+    if (isAuthenticated && req.session.user.is_admin) return grant('create');
+    const requireAuthn = requireAdmin || settings.requireAuthentication;
+    if (!requireAuthn) return grant('create');
+    if (!isAuthenticated) return grant(false);
+    if (requireAdmin && !req.session.user.is_admin) return grant(false);
+    if (!settings.requireAuthorization) return grant('create');
+    return grant(await aCallFirst0('authorize', {req, res, next, resource: req.path}));
+  };
 
-  /* Do not let express create the session, so that we can retain a
-   * reference to it for socket.io to use. Also, set the key (cookie
-   * name) to a javascript identifier compatible string. Makes code
-   * handling it cleaner :) */
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
+  // Step 1: Check the preAuthorize hook for early permit/deny (permit is only allowed for non-admin
+  // pages). If any plugin explicitly grants or denies access, skip the remaining steps. Plugins can
+  // use the preAuthzFailure hook to override the default 403 error.
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
 
-  if (!exports.sessionStore) {
-    exports.sessionStore = new ueberStore();
-    exports.secret = settings.sessionKey;
+  let results;
+  try {
+    results = await aCallFirst('preAuthorize', {req, res, next},
+        // This predicate will cause aCallFirst to call the hook functions one at a time until one
+        // of them returns a non-empty list, with an exception: If the request is for an /admin
+        // page, truthy entries are filtered out before checking to see whether the list is empty.
+        // This prevents plugin authors from accidentally granting admin privileges to the general
+        // public.
+        (r) => (r != null && r.filter((x) => (!requireAdmin || !x)).length > 0));
+  } catch (err) {
+    httpLogger.error(`Error in preAuthorize hook: ${err.stack || err.toString()}`);
+    return res.status(500).send('Internal Server Error');
+  }
+  if (staticPathsRE.test(req.path)) results.push(true);
+  if (requireAdmin) {
+    // Filter out all 'true' entries to prevent plugin authors from accidentally granting admin
+    // privileges to the general public.
+    results = results.filter((x) => !x);
+  }
+  if (results.length > 0) {
+    // Access was explicitly granted or denied. If any value is false then access is denied.
+    if (results.every((x) => x)) return next();
+    if (await aCallFirst0('preAuthzFailure', {req, res})) return;
+    // No plugin handled the pre-authentication authorization failure.
+    return res.status(403).send('Forbidden');
   }
 
-  args.app.sessionStore = exports.sessionStore;
-  args.app.use(sessionModule({
-    secret: exports.secret,
-    store: args.app.sessionStore,
-    resave: false,
-    saveUninitialized: true,
-    name: 'express_sid',
-    proxy: true,
-    cookie: {
-      /*
-       * The automatic express-session mechanism for determining if the
-       * application is being served over ssl is similar to the one used for
-       * setting the language cookie, which check if one of these conditions is
-       * true:
-       *
-       * 1. we are directly serving the nodejs application over SSL, using the
-       *    "ssl" options in settings.json
-       *
-       * 2. we are serving the nodejs application in plaintext, but we are using
-       *    a reverse proxy that terminates SSL for us. In this case, the user
-       *    has to set trustProxy = true in settings.json, and the information
-       *    wheter the application is over SSL or not will be extracted from the
-       *    X-Forwarded-Proto HTTP header
-       *
-       * Please note that this will not be compatible with applications being
-       * served over http and https at the same time.
-       *
-       * reference: https://github.com/expressjs/session/blob/v1.17.0/README.md#cookiesecure
-       */
-      secure: 'auto',
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
+  // Step 2: Try to just access the thing. If access fails (perhaps authentication has not yet
+  // completed, or maybe different credentials are required), go to the next step.
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
+
+  if (await authorize()) return next();
+
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
+  // Step 3: Authenticate the user. (Or, if already logged in, reauthenticate with different
+  // credentials if supported by the authn scheme.) If authentication fails, give the user a 401
+  // error to request new credentials. Otherwise, go to the next step. Plugins can use the
+  // authnFailure hook to override the default error handling behavior (e.g., to redirect to a login
+  // page).
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
+
+  if (settings.users == null) settings.users = {};
+  const ctx = {req, res, users: settings.users, next};
+  // If the HTTP basic auth header is present, extract the username and password so it can be given
+  // to authn plugins.
+  const httpBasicAuth =
+      req.headers.authorization && req.headers.authorization.search('Basic ') === 0;
+  if (httpBasicAuth) {
+    const userpass =
+        Buffer.from(req.headers.authorization.split(' ')[1], 'base64').toString().split(':');
+    ctx.username = userpass.shift();
+    ctx.password = userpass.join(':');
+  }
+  if (!(await aCallFirst0('authenticate', ctx))) {
+    // Fall back to HTTP basic auth.
+    const {[ctx.username]: {password} = {}} = settings.users;
+    if (!httpBasicAuth || password == null || password !== ctx.password) {
+      httpLogger.info(`Failed authentication from IP ${req.ip}`);
+      if (await aCallFirst0('authnFailure', {req, res})) return;
+      if (await aCallFirst0('authFailure', {req, res, next})) return;
+      // No plugin handled the authentication failure. Fall back to basic authentication.
+      res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
+      // Delay the error response for 1s to slow down brute force attacks.
+      await new Promise((resolve) => setTimeout(resolve, exports.authnFailureDelayMs));
+      res.status(401).send('Authentication Required');
+      return;
     }
-  }));
+    settings.users[ctx.username].username = ctx.username;
+    // Make a shallow copy so that the password property can be deleted (to prevent it from
+    // appearing in logs or in the database) without breaking future authentication attempts.
+    req.session.user = {...settings.users[ctx.username]};
+    delete req.session.user.password;
+  }
+  if (req.session.user == null) {
+    httpLogger.error('authenticate hook failed to add user settings to session');
+    return res.status(500).send('Internal Server Error');
+  }
+  const {username = '<no username>'} = req.session.user;
+  httpLogger.info(`Successful authentication from IP ${req.ip} for user ${username}`);
 
-  args.app.use(cookieParser(settings.sessionKey, {}));
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
+  // Step 4: Try to access the thing again. If this fails, give the user a 403 error. Plugins can
+  // use the authzFailure hook to override the default error handling behavior (e.g., to redirect to
+  // a login page).
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
 
-  args.app.use(exports.basicAuth);
-}
+  if (await authorize()) return next();
+  if (await aCallFirst0('authzFailure', {req, res})) return;
+  if (await aCallFirst0('authFailure', {req, res, next})) return;
+  // No plugin handled the authorization failure.
+  res.status(403).send('Forbidden');
+};
+
+exports.expressConfigure = (hookName, args, cb) => {
+  args.app.use((req, res, next) => { checkAccess(req, res, next).catch(next); });
+  return cb();
+};

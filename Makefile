@@ -6,7 +6,14 @@ docassets = $(addprefix out/,$(wildcard doc/assets/*))
 VERSION = $(shell node -e "console.log( require('./src/package.json').version )")
 UNAME := $(shell uname -s)
 
-docs: $(outdoc_files) $(docassets)
+ensure_marked_is_installed:
+	set -eu; \
+	hash npm; \
+	if [ $(shell npm list --prefix src/bin/doc >/dev/null 2>/dev/null; echo $$?) -ne "0" ]; then \
+		npm ci --prefix=src/bin/doc; \
+	fi
+
+docs: ensure_marked_is_installed $(outdoc_files) $(docassets)
 
 out/doc/assets/%: doc/assets/%
 	mkdir -p $(@D)
@@ -14,7 +21,7 @@ out/doc/assets/%: doc/assets/%
 
 out/doc/%.html: doc/%.md
 	mkdir -p $(@D)
-	node bin/doc/generate.js --format=html --template=doc/template.html $< > $@
+	node src/bin/doc/generate.js --format=html --template=doc/template.html $< > $@
 ifeq ($(UNAME),Darwin)
 	sed -i '' 's/__VERSION__/${VERSION}/' $@
 else

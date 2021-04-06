@@ -104,6 +104,7 @@
 .buttonicon-pencil-alt:before { content: '\e808'; } /* '' */
 .buttonicon-file-code:before { content: '\e809'; } /* '' */
 .buttonicon-mail:before { content: '\e80a'; } /* '' */
+.buttonicon-home:before { content: '\e80b'; } /* '' */
 .buttonicon-trash:before { content: '\e80e'; } /* '' */
 .buttonicon-times:before { content: '\e826'; } /* '' */
 .buttonicon-pause:before { content: '\e829'; } /* '' */
@@ -129,7 +130,6 @@
 .buttonicon-microphone-alt-slash:before { content: '\e83e'; } /* '' */
 .buttonicon-compress:before { content: '\e83f'; } /* '' */
 .buttonicon-expand:before { content: '\e840'; } /* '' */
-.buttonicon-spin5:before { content: '\e841'; } /* '' */
 .buttonicon-eye-slash:before { content: '\e843'; } /* '' */
 .buttonicon-list-ol:before { content: '\e844'; } /* '' */
 .buttonicon-bold:before { content: '\e845'; } /* '' */

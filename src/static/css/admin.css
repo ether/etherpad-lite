@@ -222,7 +222,7 @@ pre {
   word-wrap: break-word;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 800px) {
   div.innerwrapper {
     padding: 0 15px 15px 15px;
   }

@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Controls the communication with the Abiword application
  */
@@ -18,131 +19,72 @@
  * limitations under the License.
  */
 
-var spawn = require('child_process').spawn;
-var async = require("async");
-var settings = require("./Settings");
-var os = require('os');
+const spawn = require('child_process').spawn;
+const async = require('async');
+const settings = require('./Settings');
+const os = require('os');
 
-var doConvertTask;
-
-//on windows we have to spawn a process for each convertion, cause the plugin abicommand doesn't exist on this platform
-if(os.type().indexOf("Windows") > -1)
-{
-  var stdoutBuffer = "";
-
-  doConvertTask = function(task, callback)
-  {
-    //span an abiword process to perform the conversion
-    var abiword = spawn(settings.abiword, ["--to=" + task.destFile, task.srcFile]);
-
-    //delegate the processing of stdout to another function
-    abiword.stdout.on('data', function (data)
-    {
-      //add data to buffer
-      stdoutBuffer+=data.toString();
-    });
-
-    //append error messages to the buffer
-    abiword.stderr.on('data', function (data)
-    {
-      stdoutBuffer += data.toString();
-    });
-
-    //throw exceptions if abiword is dieing
-    abiword.on('exit', function (code)
-    {
-      if(code != 0) {
-        return callback(`Abiword died with exit code ${code}`);
-      }
-
-      if(stdoutBuffer != "")
-      {
-        console.log(stdoutBuffer);
-      }
-
-      callback();
+// on windows we have to spawn a process for each convertion,
+// cause the plugin abicommand doesn't exist on this platform
+if (os.type().indexOf('Windows') > -1) {
+  exports.convertFile = async (srcFile, destFile, type) => {
+    const abiword = spawn(settings.abiword, [`--to=${destFile}`, srcFile]);
+    let stdoutBuffer = '';
+    abiword.stdout.on('data', (data) => { stdoutBuffer += data.toString(); });
+    abiword.stderr.on('data', (data) => { stdoutBuffer += data.toString(); });
+    await new Promise((resolve, reject) => {
+      abiword.on('exit', (code) => {
+        if (code !== 0) return reject(new Error(`Abiword died with exit code ${code}`));
+        if (stdoutBuffer !== '') {
+          console.log(stdoutBuffer);
+        }
+        resolve();
+      });
     });
   };
-
-  exports.convertFile = function(srcFile, destFile, type, callback)
-  {
-    doConvertTask({"srcFile": srcFile, "destFile": destFile, "type": type}, callback);
-  };
-}
-//on unix operating systems, we can start abiword with abicommand and communicate with it via stdin/stdout
-//thats much faster, about factor 10
-else
-{
-  //spawn the abiword process
-  var abiword;
-  var stdoutCallback = null;
-  var spawnAbiword = function (){
-    abiword = spawn(settings.abiword, ["--plugin", "AbiCommand"]);
-    var stdoutBuffer = "";
-    var firstPrompt = true;
-
-    //append error messages to the buffer
-    abiword.stderr.on('data', function (data)
-    {
-      stdoutBuffer += data.toString();
-    });
-
-    //abiword died, let's restart abiword and return an error with the callback
-    abiword.on('exit', function (code)
-    {
+  // on unix operating systems, we can start abiword with abicommand and
+  // communicate with it via stdin/stdout
+  // thats much faster, about factor 10
+} else {
+  let abiword;
+  let stdoutCallback = null;
+  const spawnAbiword = () => {
+    abiword = spawn(settings.abiword, ['--plugin', 'AbiCommand']);
+    let stdoutBuffer = '';
+    let firstPrompt = true;
+    abiword.stderr.on('data', (data) => { stdoutBuffer += data.toString(); });
+    abiword.on('exit', (code) => {
       spawnAbiword();
-      stdoutCallback(`Abiword died with exit code ${code}`);
+      if (stdoutCallback != null) {
+        stdoutCallback(new Error(`Abiword died with exit code ${code}`));
+        stdoutCallback = null;
+      }
     });
-
-    //delegate the processing of stdout to a other function
-    abiword.stdout.on('data',function (data)
-    {
-      //add data to buffer
-      stdoutBuffer+=data.toString();
-
-      //we're searching for the prompt, cause this means everything we need is in the buffer
-      if(stdoutBuffer.search("AbiWord:>") != -1)
-      {
-        //filter the feedback message
-        var err = stdoutBuffer.search("OK") != -1 ? null : stdoutBuffer;
-
-        //reset the buffer
-        stdoutBuffer = "";
-
-        //call the callback with the error message
-        //skip the first prompt
-        if(stdoutCallback != null && !firstPrompt)
-        {
+    abiword.stdout.on('data', (data) => {
+      stdoutBuffer += data.toString();
+      // we're searching for the prompt, cause this means everything we need is in the buffer
+      if (stdoutBuffer.search('AbiWord:>') !== -1) {
+        const err = stdoutBuffer.search('OK') !== -1 ? null : new Error(stdoutBuffer);
+        stdoutBuffer = '';
+        if (stdoutCallback != null && !firstPrompt) {
           stdoutCallback(err);
           stdoutCallback = null;
         }
-
         firstPrompt = false;
       }
     });
   };
   spawnAbiword();
 
-  doConvertTask = function(task, callback)
-  {
-    abiword.stdin.write("convert " + task.srcFile + " " + task.destFile + " " + task.type + "\n");
-    //create a callback that calls the task callback and the caller callback
-    stdoutCallback = function (err)
-    {
-      callback();
-      console.log("queue continue");
-      try{
-        task.callback(err);
-      }catch(e){
-        console.error("Abiword File failed to convert", e);
-      }
+  const queue = async.queue((task, callback) => {
+    abiword.stdin.write(`convert ${task.srcFile} ${task.destFile} ${task.type}\n`);
+    stdoutCallback = (err) => {
+      if (err != null) console.error('Abiword File failed to convert', err);
+      callback(err);
     };
-  };
+  }, 1);
 
-  //Queue with the converts we have to do
-  var queue = async.queue(doConvertTask, 1);
-  exports.convertFile = function(srcFile, destFile, type, callback)
-  {
-    queue.push({"srcFile": srcFile, "destFile": destFile, "type": type, "callback": callback});
+  exports.convertFile = async (srcFile, destFile, type) => {
+    await queue.pushAsync({srcFile, destFile, type});
   };
 }

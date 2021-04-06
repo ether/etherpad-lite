@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * node/hooks/express/openapi.js
  *
@@ -14,16 +16,15 @@
 
 const OpenAPIBackend = require('openapi-backend').default;
 const formidable = require('formidable');
-const { promisify } = require('util');
+const {promisify} = require('util');
 const cloneDeep = require('lodash.clonedeep');
 const createHTTPError = require('http-errors');
 
 const apiHandler = require('../../handler/APIHandler');
 const settings = require('../../utils/Settings');
-const isValidJSONPName = require('./isValidJSONPName');
 
 const log4js = require('log4js');
-const apiLogger = log4js.getLogger('API');
+const logger = log4js.getLogger('API');
 
 // https://github.com/OAI/OpenAPI-Specification/tree/master/schemas/v3.0
 const OPENAPI_VERSION = '3.0.2'; // Swagger/OAS version
@@ -31,7 +32,9 @@ const OPENAPI_VERSION = '3.0.2'; // Swagger/OAS version
 const info = {
   title: 'Etherpad API',
   description:
-    'Etherpad is a real-time collaborative editor scalable to thousands of simultaneous real time users. It provides full data export capabilities, and runs on your server, under your control.',
+      'Etherpad is a real-time collaborative editor scalable to thousands of simultaneous ' +
+      'real time users. It provides full data export capabilities, and runs on your server, ' +
+      'under your control.',
   termsOfService: 'https://etherpad.org/',
   contact: {
     name: 'The Etherpad Foundation',
@@ -57,12 +60,12 @@ const resources = {
     create: {
       operationId: 'createGroup',
       summary: 'creates a new group',
-      responseSchema: { groupID: { type: 'string' } },
+      responseSchema: {groupID: {type: 'string'}},
     },
     createIfNotExistsFor: {
       operationId: 'createGroupIfNotExistsFor',
       summary: 'this functions helps you to map your application group ids to Etherpad group ids',
-      responseSchema: { groupID: { type: 'string' } },
+      responseSchema: {groupID: {type: 'string'}},
     },
     delete: {
       operationId: 'deleteGroup',
@@ -71,7 +74,7 @@ const resources = {
     listPads: {
       operationId: 'listPads',
       summary: 'returns all pads of this group',
-      responseSchema: { padIDs: { type: 'array', items: { type: 'string' } } },
+      responseSchema: {padIDs: {type: 'array', items: {type: 'string'}}},
     },
     createPad: {
       operationId: 'createGroupPad',
@@ -80,12 +83,14 @@ const resources = {
     listSessions: {
       operationId: 'listSessionsOfGroup',
       summary: '',
-      responseSchema: { sessions: { type: 'array', items: { $ref: '#/components/schemas/SessionInfo' } } },
+      responseSchema: {
+        sessions: {type: 'array', items: {$ref: '#/components/schemas/SessionInfo'}},
+      },
     },
     list: {
       operationId: 'listAllGroups',
       summary: '',
-      responseSchema: { groupIDs: { type: 'array', items: { type: 'string' } } },
+      responseSchema: {groupIDs: {type: 'array', items: {type: 'string'}}},
     },
   },
 
@@ -94,28 +99,30 @@ const resources = {
     create: {
       operationId: 'createAuthor',
       summary: 'creates a new author',
-      responseSchema: { authorID: { type: 'string' } },
+      responseSchema: {authorID: {type: 'string'}},
     },
     createIfNotExistsFor: {
       operationId: 'createAuthorIfNotExistsFor',
       summary: 'this functions helps you to map your application author ids to Etherpad author ids',
-      responseSchema: { authorID: { type: 'string' } },
+      responseSchema: {authorID: {type: 'string'}},
     },
     listPads: {
       operationId: 'listPadsOfAuthor',
       summary: 'returns an array of all pads this author contributed to',
-      responseSchema: { padIDs: { type: 'array', items: { type: 'string' } } },
+      responseSchema: {padIDs: {type: 'array', items: {type: 'string'}}},
     },
     listSessions: {
       operationId: 'listSessionsOfAuthor',
       summary: 'returns all sessions of an author',
-      responseSchema: { sessions: { type: 'array', items: { $ref: '#/components/schemas/SessionInfo' } } },
+      responseSchema: {
+        sessions: {type: 'array', items: {$ref: '#/components/schemas/SessionInfo'}},
+      },
     },
     // We need an operation that return a UserInfo so it can be picked up by the codegen :(
     getName: {
       operationId: 'getAuthorName',
       summary: 'Returns the Author Name of the author',
-      responseSchema: { info: { $ref: '#/components/schemas/UserInfo' } },
+      responseSchema: {info: {$ref: '#/components/schemas/UserInfo'}},
     },
   },
 
@@ -124,7 +131,7 @@ const resources = {
     create: {
       operationId: 'createSession',
       summary: 'creates a new session. validUntil is an unix timestamp in seconds',
-      responseSchema: { sessionID: { type: 'string' } },
+      responseSchema: {sessionID: {type: 'string'}},
     },
     delete: {
       operationId: 'deleteSession',
@@ -133,8 +140,8 @@ const resources = {
     // We need an operation that returns a SessionInfo so it can be picked up by the codegen :(
     info: {
       operationId: 'getSessionInfo',
-      summary: 'returns informations about a session',
-      responseSchema: { info: { $ref: '#/components/schemas/SessionInfo' } },
+      summary: 'returns information about a session',
+      responseSchema: {info: {$ref: '#/components/schemas/SessionInfo'}},
     },
   },
 
@@ -143,7 +150,7 @@ const resources = {
     listAll: {
       operationId: 'listAllPads',
       summary: 'list all the pads',
-      responseSchema: { padIDs: { type: 'array', items: { type: 'string' } } },
+      responseSchema: {padIDs: {type: 'array', items: {type: 'string'}}},
     },
     createDiffHTML: {
       operationId: 'createDiffHTML',
@@ -153,12 +160,13 @@ const resources = {
     create: {
       operationId: 'createPad',
       description:
-        'creates a new (non-group) pad. Note that if you need to create a group Pad, you should call createGroupPad',
+          'creates a new (non-group) pad. Note that if you need to create a group Pad, ' +
+          'you should call createGroupPad',
     },
     getText: {
       operationId: 'getText',
       summary: 'returns the text of a pad',
-      responseSchema: { text: { type: 'string' } },
+      responseSchema: {text: {type: 'string'}},
     },
     setText: {
       operationId: 'setText',
@@ -167,7 +175,7 @@ const resources = {
     getHTML: {
       operationId: 'getHTML',
       summary: 'returns the text of a pad formatted as HTML',
-      responseSchema: { html: { type: 'string' } },
+      responseSchema: {html: {type: 'string'}},
     },
     setHTML: {
       operationId: 'setHTML',
@@ -176,12 +184,12 @@ const resources = {
     getRevisionsCount: {
       operationId: 'getRevisionsCount',
       summary: 'returns the number of revisions of this pad',
-      responseSchema: { revisions: { type: 'integer' } },
+      responseSchema: {revisions: {type: 'integer'}},
     },
     getLastEdited: {
       operationId: 'getLastEdited',
       summary: 'returns the timestamp of the last revision of the pad',
-      responseSchema: { lastEdited: { type: 'integer' } },
+      responseSchema: {lastEdited: {type: 'integer'}},
     },
     delete: {
       operationId: 'deletePad',
@@ -190,7 +198,7 @@ const resources = {
     getReadOnlyID: {
       operationId: 'getReadOnlyID',
       summary: 'returns the read only link of a pad',
-      responseSchema: { readOnlyID: { type: 'string' } },
+      responseSchema: {readOnlyID: {type: 'string'}},
     },
     setPublicStatus: {
       operationId: 'setPublicStatus',
@@ -199,31 +207,22 @@ const resources = {
     getPublicStatus: {
       operationId: 'getPublicStatus',
       summary: 'return true of false',
-      responseSchema: { publicStatus: { type: 'boolean' } },
-    },
-    setPassword: {
-      operationId: 'setPassword',
-      summary: 'returns ok or a error message',
-    },
-    isPasswordProtected: {
-      operationId: 'isPasswordProtected',
-      summary: 'returns true or false',
-      responseSchema: { passwordProtection: { type: 'boolean' } },
+      responseSchema: {publicStatus: {type: 'boolean'}},
     },
     authors: {
       operationId: 'listAuthorsOfPad',
       summary: 'returns an array of authors who contributed to this pad',
-      responseSchema: { authorIDs: { type: 'array', items: { type: 'string' } } },
+      responseSchema: {authorIDs: {type: 'array', items: {type: 'string'}}},
     },
     usersCount: {
       operationId: 'padUsersCount',
       summary: 'returns the number of user that are currently editing this pad',
-      responseSchema: { padUsersCount: { type: 'integer' } },
+      responseSchema: {padUsersCount: {type: 'integer'}},
     },
     users: {
       operationId: 'padUsers',
       summary: 'returns the list of users that are currently editing this pad',
-      responseSchema: { padUsers: { type: 'array', items: { $ref: '#/components/schemas/UserInfo' } } },
+      responseSchema: {padUsers: {type: 'array', items: {$ref: '#/components/schemas/UserInfo'}}},
     },
     sendClientsMessage: {
       operationId: 'sendClientsMessage',
@@ -236,13 +235,13 @@ const resources = {
     getChatHistory: {
       operationId: 'getChatHistory',
       summary: 'returns the chat history',
-      responseSchema: { messages: { type: 'array', items: { $ref: '#/components/schemas/Message' } } },
+      responseSchema: {messages: {type: 'array', items: {$ref: '#/components/schemas/Message'}}},
     },
     // We need an operation that returns a Message so it can be picked up by the codegen :(
     getChatHead: {
       operationId: 'getChatHead',
       summary: 'returns the chatHead (chat-message) of the pad',
-      responseSchema: { chatHead: { $ref: '#/components/schemas/Message' } },
+      responseSchema: {chatHead: {$ref: '#/components/schemas/Message'}},
     },
     appendChatMessage: {
       operationId: 'appendChatMessage',
@@ -391,12 +390,12 @@ const defaultResponseRefs = {
 
 // convert to a dictionary of operation objects
 const operations = {};
-for (const resource in resources) {
-  for (const action in resources[resource]) {
-    const { operationId, responseSchema, ...operation } = resources[resource][action];
+for (const [resource, actions] of Object.entries(resources)) {
+  for (const [action, spec] of Object.entries(actions)) {
+    const {operationId, responseSchema, ...operation} = spec;
 
     // add response objects
-    const responses = { ...defaultResponseRefs };
+    const responses = {...defaultResponseRefs};
     if (responseSchema) {
       responses[200] = cloneDeep(defaultResponses.Success);
       responses[200].content['application/json'].schema.properties.data = {
@@ -487,14 +486,14 @@ const generateDefinitionForVersion = (version, style = APIPathStyle.FLAT) => {
         },
       },
     },
-    security: [{ ApiKey: [] }],
+    security: [{ApiKey: []}],
   };
 
   // build operations
-  for (const funcName in apiHandler.version[version]) {
+  for (const funcName of Object.keys(apiHandler.version[version])) {
     let operation = {};
     if (operations[funcName]) {
-      operation = { ...operations[funcName] };
+      operation = {...operations[funcName]};
     } else {
       // console.warn(`No operation found for function: ${funcName}`);
       operation = {
@@ -506,7 +505,7 @@ const generateDefinitionForVersion = (version, style = APIPathStyle.FLAT) => {
     // set parameters
     operation.parameters = operation.parameters || [];
     for (const paramName of apiHandler.version[version][funcName]) {
-      operation.parameters.push({ $ref: `#/components/parameters/${paramName}` });
+      operation.parameters.push({$ref: `#/components/parameters/${paramName}`});
       if (!definition.components.parameters[paramName]) {
         definition.components.parameters[paramName] = {
           name: paramName,
@@ -541,11 +540,11 @@ const generateDefinitionForVersion = (version, style = APIPathStyle.FLAT) => {
   return definition;
 };
 
-exports.expressCreateServer = async (_, args) => {
-  const { app } = args;
+exports.expressCreateServer = (hookName, args, cb) => {
+  const {app} = args;
 
   // create openapi-backend handlers for each api version under /api/{version}/*
-  for (const version in apiHandler.version) {
+  for (const version of Object.keys(apiHandler.version)) {
     // we support two different styles of api: flat + rest
     // TODO: do we really want to support both?
 
@@ -559,7 +558,7 @@ exports.expressCreateServer = async (_, args) => {
       app.get(`${apiRoot}/openapi.json`, (req, res) => {
         // For openapi definitions, wide CORS is probably fine
         res.header('Access-Control-Allow-Origin', '*');
-        res.json({ ...definition, servers: [generateServerForApiVersion(apiRoot, req)] });
+        res.json({...definition, servers: [generateServerForApiVersion(apiRoot, req)]});
       });
 
       // serve latest openapi definition file under /api/openapi.json
@@ -567,13 +566,12 @@ exports.expressCreateServer = async (_, args) => {
       if (isLatestAPIVersion) {
         app.get(`/${style}/openapi.json`, (req, res) => {
           res.header('Access-Control-Allow-Origin', '*');
-          res.json({ ...definition, servers: [generateServerForApiVersion(apiRoot, req)] });
+          res.json({...definition, servers: [generateServerForApiVersion(apiRoot, req)]});
         });
       }
 
       // build openapi-backend instance for this api version
       const api = new OpenAPIBackend({
-        apiRoot, // each api version has its own root
         definition,
         validate: false,
         // for a small optimisation, we can run the quick startup for older
@@ -584,18 +582,18 @@ exports.expressCreateServer = async (_, args) => {
       // register default handlers
       api.register({
         notFound: () => {
-          throw new createHTTPError.notFound('no such function');
+          throw new createHTTPError.NotFound('no such function');
         },
         notImplemented: () => {
-          throw new createHTTPError.notImplemented('function not implemented');
+          throw new createHTTPError.NotImplemented('function not implemented');
         },
       });
 
       // register operation handlers
-      for (const funcName in apiHandler.version[version]) {
+      for (const funcName of Object.keys(apiHandler.version[version])) {
         const handler = async (c, req, res) => {
           // parse fields from request
-          const { header, params, query } = c.request;
+          const {header, params, query} = c.request;
 
           // read form data if method was POST
           let formData = {};
@@ -607,32 +605,34 @@ exports.expressCreateServer = async (_, args) => {
 
           const fields = Object.assign({}, header, params, query, formData);
 
-          // log request
-          apiLogger.info(`REQUEST, v${version}:${funcName}, ${JSON.stringify(fields)}`);
+          if (logger.isDebugEnabled()) {
+            logger.debug(`REQUEST, v${version}:${funcName}, ${JSON.stringify(fields)}`);
+          }
 
           // pass to api handler
-          let data = await apiHandler.handle(version, funcName, fields, req, res).catch((err) => {
+          const data = await apiHandler.handle(version, funcName, fields, req, res).catch((err) => {
             // convert all errors to http errors
-            if (err instanceof createHTTPError.HttpError) {
+            if (createHTTPError.isHttpError(err)) {
               // pass http errors thrown by handler forward
               throw err;
-            } else if (err.name == 'apierror') {
+            } else if (err.name === 'apierror') {
               // parameters were wrong and the api stopped execution, pass the error
               // convert to http error
               throw new createHTTPError.BadRequest(err.message);
             } else {
               // an unknown error happened
               // log it and throw internal error
-              apiLogger.error(err);
+              logger.error(err.stack || err.toString());
               throw new createHTTPError.InternalError('internal error');
             }
           });
 
           // return in common format
-          let response = { code: 0, message: 'ok', data: data || null };
+          const response = {code: 0, message: 'ok', data: data || null};
 
-          // log response
-          apiLogger.info(`RESPONSE, ${funcName}, ${JSON.stringify(response)}`);
+          if (logger.isDebugEnabled()) {
+            logger.debug(`RESPONSE, ${funcName}, ${JSON.stringify(response)}`);
+          }
 
           // return the response data
           return response;
@@ -663,32 +663,26 @@ exports.expressCreateServer = async (_, args) => {
           // https://github.com/ether/etherpad-lite/tree/master/doc/api/http_api.md#response-format
           switch (res.statusCode) {
             case 403: // forbidden
-              response = { code: 4, message: err.message, data: null };
+              response = {code: 4, message: err.message, data: null};
               break;
             case 401: // unauthorized (no or wrong api key)
-              response = { code: 4, message: err.message, data: null };
+              response = {code: 4, message: err.message, data: null};
               break;
             case 404: // not found (no such function)
-              response = { code: 3, message: err.message, data: null };
+              response = {code: 3, message: err.message, data: null};
               break;
             case 500: // server error (internal error)
-              response = { code: 2, message: err.message, data: null };
+              response = {code: 2, message: err.message, data: null};
               break;
             case 400: // bad request (wrong parameters)
               // respond with 200 OK to keep old behavior and pass tests
               res.statusCode = 200; // @TODO: this is bad api design
-              response = { code: 1, message: err.message, data: null };
+              response = {code: 1, message: err.message, data: null};
               break;
             default:
-              response = { code: 1, message: err.message, data: null };
+              response = {code: 1, message: err.message, data: null};
               break;
           }
-        }
-
-        // support jsonp response format
-        if (req.query.jsonp && isValidJSONPName.check(req.query.jsonp)) {
-          res.header('Content-Type', 'application/javascript');
-          response = `${req.query.jsonp}(${JSON.stringify(response)}`;
         }
 
         // send response
@@ -696,6 +690,7 @@ exports.expressCreateServer = async (_, args) => {
       });
     }
   }
+  return cb();
 };
 
 // helper to get api root

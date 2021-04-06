@@ -1,0 +1,1 @@
+This is the contents we insert into pads when testing the import functions.  Thanks for using Etherpad!

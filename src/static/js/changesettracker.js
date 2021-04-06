@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -20,88 +22,70 @@
  * limitations under the License.
  */
 
-var AttributePool = require('./AttributePool');
-var Changeset = require('./Changeset');
+const AttributePool = require('./AttributePool');
+const Changeset = require('./Changeset');
 
-function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
-{
-
+const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
   // latest official text from server
-  var baseAText = Changeset.makeAText("\n");
+  let baseAText = Changeset.makeAText('\n');
   // changes applied to baseText that have been submitted
-  var submittedChangeset = null;
+  let submittedChangeset = null;
   // changes applied to submittedChangeset since it was prepared
-  var userChangeset = Changeset.identity(1);
+  let userChangeset = Changeset.identity(1);
   // is the changesetTracker enabled
-  var tracking = false;
+  let tracking = false;
   // stack state flag so that when we change the rep we don't
   // handle the notification recursively.  When setting, always
   // unset in a "finally" block.  When set to true, the setter
   // takes change of userChangeset.
-  var applyingNonUserChanges = false;
+  let applyingNonUserChanges = false;
 
-  var changeCallback = null;
+  let changeCallback = null;
 
-  var changeCallbackTimeout = null;
+  let changeCallbackTimeout = null;
 
-  function setChangeCallbackTimeout()
-  {
+  const setChangeCallbackTimeout = () => {
     // can call this multiple times per call-stack, because
     // we only schedule a call to changeCallback if it exists
     // and if there isn't a timeout already scheduled.
-    if (changeCallback && changeCallbackTimeout === null)
-    {
-      changeCallbackTimeout = scheduler.setTimeout(function()
-      {
-        try
-        {
+    if (changeCallback && changeCallbackTimeout == null) {
+      changeCallbackTimeout = scheduler.setTimeout(() => {
+        try {
           changeCallback();
-        }
-        catch(pseudoError) {}
-        finally
-        {
+        } catch (pseudoError) {
+          // as empty as my soul
+        } finally {
           changeCallbackTimeout = null;
         }
       }, 0);
     }
-  }
+  };
 
-  var self;
+  let self;
   return self = {
-    isTracking: function()
-    {
-      return tracking;
-    },
-    setBaseText: function(text)
-    {
+    isTracking: () => tracking,
+    setBaseText: (text) => {
       self.setBaseAttributedText(Changeset.makeAText(text), null);
     },
-    setBaseAttributedText: function(atext, apoolJsonObj)
-    {
-      aceCallbacksProvider.withCallbacks("setBaseText", function(callbacks)
-      {
+    setBaseAttributedText: (atext, apoolJsonObj) => {
+      aceCallbacksProvider.withCallbacks('setBaseText', (callbacks) => {
         tracking = true;
         baseAText = Changeset.cloneAText(atext);
-        if (apoolJsonObj)
-        {
-          var wireApool = (new AttributePool()).fromJsonable(apoolJsonObj);
+        if (apoolJsonObj) {
+          const wireApool = (new AttributePool()).fromJsonable(apoolJsonObj);
           baseAText.attribs = Changeset.moveOpsToNewPool(baseAText.attribs, wireApool, apool);
         }
         submittedChangeset = null;
         userChangeset = Changeset.identity(atext.text.length);
         applyingNonUserChanges = true;
-        try
-        {
+        try {
           callbacks.setDocumentAttributedText(atext);
-        }
-        finally
-        {
+        } finally {
           applyingNonUserChanges = false;
         }
       });
     },
-    composeUserChangeset: function(c)
-    {
+    composeUserChangeset: (c) => {
       if (!tracking) return;
       if (applyingNonUserChanges) return;
       if (Changeset.isIdentity(c)) return;
@@ -109,155 +93,139 @@ function makeChangesetTracker(scheduler, apool, aceCallbacksProvider)
 
       setChangeCallbackTimeout();
     },
-    applyChangesToBase: function(c, optAuthor, apoolJsonObj)
-    {
+    applyChangesToBase: (c, optAuthor, apoolJsonObj) => {
       if (!tracking) return;
 
-      aceCallbacksProvider.withCallbacks("applyChangesToBase", function(callbacks)
-      {
-
-        if (apoolJsonObj)
-        {
-          var wireApool = (new AttributePool()).fromJsonable(apoolJsonObj);
+      aceCallbacksProvider.withCallbacks('applyChangesToBase', (callbacks) => {
+        if (apoolJsonObj) {
+          const wireApool = (new AttributePool()).fromJsonable(apoolJsonObj);
           c = Changeset.moveOpsToNewPool(c, wireApool, apool);
         }
 
         baseAText = Changeset.applyToAText(c, baseAText, apool);
 
-        var c2 = c;
-        if (submittedChangeset)
-        {
-          var oldSubmittedChangeset = submittedChangeset;
+        let c2 = c;
+        if (submittedChangeset) {
+          const oldSubmittedChangeset = submittedChangeset;
           submittedChangeset = Changeset.follow(c, oldSubmittedChangeset, false, apool);
           c2 = Changeset.follow(oldSubmittedChangeset, c, true, apool);
         }
 
-        var preferInsertingAfterUserChanges = true;
-        var oldUserChangeset = userChangeset;
-        userChangeset = Changeset.follow(c2, oldUserChangeset, preferInsertingAfterUserChanges, apool);
-        var postChange = Changeset.follow(oldUserChangeset, c2, !preferInsertingAfterUserChanges, apool);
+        const preferInsertingAfterUserChanges = true;
+        const oldUserChangeset = userChangeset;
+        userChangeset = Changeset.follow(
+            c2, oldUserChangeset, preferInsertingAfterUserChanges, apool);
+        const postChange = Changeset.follow(
+            oldUserChangeset, c2, !preferInsertingAfterUserChanges, apool);
 
-        var preferInsertionAfterCaret = true; //(optAuthor && optAuthor > thisAuthor);
+        const preferInsertionAfterCaret = true; // (optAuthor && optAuthor > thisAuthor);
         applyingNonUserChanges = true;
-        try
-        {
+        try {
           callbacks.applyChangesetToDocument(postChange, preferInsertionAfterCaret);
-        }
-        finally
-        {
+        } finally {
           applyingNonUserChanges = false;
         }
       });
     },
-    prepareUserChangeset: function()
-    {
+    prepareUserChangeset: () => {
       // If there are user changes to submit, 'changeset' will be the
       // changeset, else it will be null.
-      var toSubmit;
-      if (submittedChangeset)
-      {
+      let toSubmit;
+      if (submittedChangeset) {
         // submission must have been canceled, prepare new changeset
         // that includes old submittedChangeset
         toSubmit = Changeset.compose(submittedChangeset, userChangeset, apool);
-      }
-      else
-      {
-
+      } else {
         // add forEach function to Array.prototype for IE8
         if (!('forEach' in Array.prototype)) {
-          Array.prototype.forEach= function(action, that /*opt*/) {
-            for (var i= 0, n= this.length; i<n; i++)
-              if (i in this)
-                action.call(that, this[i], i, this);
+          Array.prototype.forEach = function (action, that /* opt*/) {
+            for (let i = 0, n = this.length; i < n; i++) {
+              if (i in this) action.call(that, this[i], i, this);
+            }
           };
         }
 
         // Get my authorID
-        var authorId = parent.parent.pad.myUserInfo.userId;
+        const authorId = parent.parent.pad.myUserInfo.userId;
 
         // Sanitize authorship
-        // We need to replace all author attribs with thisSession.author, in case they copy/pasted or otherwise inserted other peoples changes
-        if(apool.numToAttrib){
-          for (var attr in apool.numToAttrib){
-            if (apool.numToAttrib[attr][0] == 'author' && apool.numToAttrib[attr][1] == authorId) var authorAttr = Number(attr).toString(36)
+        // We need to replace all author attribs with thisSession.author,
+        // in case they copy/pasted or otherwise inserted other peoples changes
+        if (apool.numToAttrib) {
+          let authorAttr;
+          for (const attr in apool.numToAttrib) {
+            if (apool.numToAttrib[attr][0] === 'author' &&
+                apool.numToAttrib[attr][1] === authorId) {
+              authorAttr = Number(attr).toString(36);
+            }
           }
 
           // Replace all added 'author' attribs with the value of the current user
-          var cs = Changeset.unpack(userChangeset)
-            , iterator = Changeset.opIterator(cs.ops)
-            , op
-            , assem = Changeset.mergingOpAssembler();
+          const cs = Changeset.unpack(userChangeset);
+          const iterator = Changeset.opIterator(cs.ops);
+          let op;
+          const assem = Changeset.mergingOpAssembler();
 
-          while(iterator.hasNext()) {
-            op = iterator.next()
-            if(op.opcode == '+') {
-              var newAttrs = ''
+          while (iterator.hasNext()) {
+            op = iterator.next();
+            if (op.opcode === '+') {
+              let newAttrs = '';
 
-              op.attribs.split('*').forEach(function(attrNum) {
-                if(!attrNum) return
-                var attr = apool.getAttrib(parseInt(attrNum, 36))
-                if(!attr) return
-                if('author' == attr[0])  {
+              op.attribs.split('*').forEach((attrNum) => {
+                if (!attrNum) return;
+                const attr = apool.getAttrib(parseInt(attrNum, 36));
+                if (!attr) return;
+                if ('author' === attr[0]) {
                   // replace that author with the current one
-                  newAttrs += '*'+authorAttr;
-                }
-                else newAttrs += '*'+attrNum // overtake all other attribs as is
-              })
-              op.attribs = newAttrs
+                  newAttrs += `*${authorAttr}`;
+                } else { newAttrs += `*${attrNum}`; } // overtake all other attribs as is
+              });
+              op.attribs = newAttrs;
             }
-            assem.append(op)
+            assem.append(op);
           }
           assem.endDocument();
-          userChangeset = Changeset.pack(cs.oldLen, cs.newLen, assem.toString(), cs.charBank)
-          Changeset.checkRep(userChangeset)
+          userChangeset = Changeset.pack(cs.oldLen, cs.newLen, assem.toString(), cs.charBank);
+          Changeset.checkRep(userChangeset);
         }
         if (Changeset.isIdentity(userChangeset)) toSubmit = null;
         else toSubmit = userChangeset;
       }
 
-      var cs = null;
-      if (toSubmit)
-      {
+      let cs = null;
+      if (toSubmit) {
         submittedChangeset = toSubmit;
         userChangeset = Changeset.identity(Changeset.newLen(toSubmit));
 
         cs = toSubmit;
       }
-      var wireApool = null;
-      if (cs)
-      {
-        var forWire = Changeset.prepareForWire(cs, apool);
+      let wireApool = null;
+      if (cs) {
+        const forWire = Changeset.prepareForWire(cs, apool);
         wireApool = forWire.pool.toJsonable();
         cs = forWire.translated;
       }
 
-      var data = {
+      const data = {
         changeset: cs,
-        apool: wireApool
+        apool: wireApool,
       };
       return data;
     },
-    applyPreparedChangesetToBase: function()
-    {
-      if (!submittedChangeset)
-      {
+    applyPreparedChangesetToBase: () => {
+      if (!submittedChangeset) {
         // violation of protocol; use prepareUserChangeset first
-        throw new Error("applySubmittedChangesToBase: no submitted changes to apply");
+        throw new Error('applySubmittedChangesToBase: no submitted changes to apply');
       }
-      //bumpDebug("applying committed changeset: "+submittedChangeset.encodeToString(false));
+      // bumpDebug("applying committed changeset: "+submittedChangeset.encodeToString(false));
       baseAText = Changeset.applyToAText(submittedChangeset, baseAText, apool);
       submittedChangeset = null;
     },
-    setUserChangeNotificationCallback: function(callback)
-    {
+    setUserChangeNotificationCallback: (callback) => {
       changeCallback = callback;
     },
-    hasUncommittedChanges: function()
-    {
-      return !!(submittedChangeset || (!Changeset.isIdentity(userChangeset)));
-    }
+    hasUncommittedChanges: () => !!(submittedChangeset || (!Changeset.isIdentity(userChangeset))),
   };
-
-}
+};
 
 exports.makeChangesetTracker = makeChangesetTracker;

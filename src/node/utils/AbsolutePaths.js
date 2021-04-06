@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Library for deterministic relative filename expansion for Etherpad.
  */
@@ -18,17 +19,17 @@
  * limitations under the License.
  */
 
-var log4js = require('log4js');
-var path = require('path');
-var _ = require('underscore');
+const log4js = require('log4js');
+const path = require('path');
+const _ = require('underscore');
 
-var absPathLogger = log4js.getLogger('AbsolutePaths');
+const absPathLogger = log4js.getLogger('AbsolutePaths');
 
 /*
  * findEtherpadRoot() computes its value only on first invocation.
  * Subsequent invocations are served from this variable.
  */
-var etherpadRoot = null;
+let etherpadRoot = null;
 
 /**
  * If stringArray's last elements are exactly equal to lastDesiredElements,
@@ -40,10 +41,11 @@ var etherpadRoot = null;
  * @return {string[]|boolean} The shortened array, or false if there was no
  *                            overlap.
  */
-var popIfEndsWith = function(stringArray, lastDesiredElements) {
+const popIfEndsWith = (stringArray, lastDesiredElements) => {
   if (stringArray.length <= lastDesiredElements.length) {
-    absPathLogger.debug(`In order to pop "${lastDesiredElements.join(path.sep)}" from "${stringArray.join(path.sep)}", it should contain at least ${lastDesiredElements.length + 1 } elements`);
-
+    absPathLogger.debug(`In order to pop "${lastDesiredElements.join(path.sep)}" ` +
+                        `from "${stringArray.join(path.sep)}", it should contain at least ` +
+                        `${lastDesiredElements.length + 1} elements`);
     return false;
   }
 
@@ -53,7 +55,8 @@ var popIfEndsWith = function(stringArray, lastDesiredElements) {
     return _.initial(stringArray, lastDesiredElements.length);
   }
 
-  absPathLogger.debug(`${stringArray.join(path.sep)} does not end with "${lastDesiredElements.join(path.sep)}"`);
+  absPathLogger.debug(
+      `${stringArray.join(path.sep)} does not end with "${lastDesiredElements.join(path.sep)}"`);
   return false;
 };
 
@@ -72,8 +75,8 @@ var popIfEndsWith = function(stringArray, lastDesiredElements) {
  * @return {string} The identified absolute base path. If such path cannot be
  *                  identified, prints a log and exits the application.
  */
-exports.findEtherpadRoot = function() {
-  if (etherpadRoot !== null) {
+exports.findEtherpadRoot = () => {
+  if (etherpadRoot != null) {
     return etherpadRoot;
   }
 
@@ -87,7 +90,7 @@ exports.findEtherpadRoot = function() {
    *
    *   <BASE_DIR>\src
    */
-  var maybeEtherpadRoot = popIfEndsWith(splitFoundRoot, ['src']);
+  let maybeEtherpadRoot = popIfEndsWith(splitFoundRoot, ['src']);
 
   if ((maybeEtherpadRoot === false) && (process.platform === 'win32')) {
     /*
@@ -101,7 +104,8 @@ exports.findEtherpadRoot = function() {
   }
 
   if (maybeEtherpadRoot === false) {
-    absPathLogger.error(`Could not identity Etherpad base path in this ${process.platform} installation in "${foundRoot}"`);
+    absPathLogger.error('Could not identity Etherpad base path in this ' +
+                        `${process.platform} installation in "${foundRoot}"`);
     process.exit(1);
   }
 
@@ -112,7 +116,8 @@ exports.findEtherpadRoot = function() {
     return etherpadRoot;
   }
 
-  absPathLogger.error(`To run, Etherpad has to identify an absolute base path. This is not: "${etherpadRoot}"`);
+  absPathLogger.error(
+      `To run, Etherpad has to identify an absolute base path. This is not: "${etherpadRoot}"`);
   process.exit(1);
 };
 
@@ -126,12 +131,12 @@ exports.findEtherpadRoot = function() {
  *                  it is returned unchanged. Otherwise it is interpreted
  *                  relative to exports.root.
  */
-exports.makeAbsolute = function(somePath) {
+exports.makeAbsolute = (somePath) => {
   if (path.isAbsolute(somePath)) {
     return somePath;
   }
 
-  const rewrittenPath = path.normalize(path.join(exports.findEtherpadRoot(), somePath));
+  const rewrittenPath = path.join(exports.findEtherpadRoot(), somePath);
 
   absPathLogger.debug(`Relative path "${somePath}" can be rewritten to "${rewrittenPath}"`);
   return rewrittenPath;
@@ -145,7 +150,7 @@ exports.makeAbsolute = function(somePath) {
  *                                 a subdirectory of the base one
  * @return {boolean}
  */
-exports.isSubdir = function(parent, arbitraryDir) {
+exports.isSubdir = (parent, arbitraryDir) => {
   // modified from: https://stackoverflow.com/questions/37521893/determine-if-a-path-is-subdirectory-of-another-in-node-js#45242825
   const relative = path.relative(parent, arbitraryDir);
   const isSubdir = !!relative && !relative.startsWith('..') && !path.isAbsolute(relative);

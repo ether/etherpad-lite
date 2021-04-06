@@ -1,13 +1,14 @@
-var readOnlyManager = require("../../db/ReadOnlyManager");
-var hasPadAccess = require("../../padaccess");
-var exporthtml = require("../../utils/ExportHtml");
+'use strict';
 
-exports.expressCreateServer = function (hook_name, args, cb) {
+const readOnlyManager = require('../../db/ReadOnlyManager');
+const hasPadAccess = require('../../padaccess');
+const exporthtml = require('../../utils/ExportHtml');
+
+exports.expressCreateServer = (hookName, args, cb) => {
   // serve read only pad
-  args.app.get('/ro/:id', async function(req, res) {
-
+  args.app.get('/ro/:id', async (req, res) => {
     // translate the read only pad to a padId
-    let padId = await readOnlyManager.getPadId(req.params.id);
+    const padId = await readOnlyManager.getPadId(req.params.id);
     if (padId == null) {
       res.status(404).send('404 - Not Found');
       return;
@@ -18,9 +19,9 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
     if (await hasPadAccess(req, res)) {
       // render the html document
-      let html = await exporthtml.getPadHTMLDocument(padId, null);
+      const html = await exporthtml.getPadHTMLDocument(padId, null);
       res.send(html);
     }
   });
-
-}
+  return cb();
+};
