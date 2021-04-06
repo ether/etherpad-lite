@@ -129,6 +129,7 @@ exports.chat = (() => {
             'Replacing with "unknown". This may be a bug or a database corruption.');
       }
 
+      msg.userId = padutils.escapeHtml(msg.userId);
       const authorClass = `author-${msg.userId.replace(/[^a-y0-9]/g, (c) => {
         if (c === '.') return '-';
         return `z${c.charCodeAt(0)}z`;
