@@ -1,21 +1,16 @@
 'use strict';
 
-const deletecookie = (name) => {
-  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
-};
-
 describe('Language select and change', function () {
   // Destroy language cookies
-  deletecookie('language', null);
+  window.Cookies.remove('language');
 
   // create a new pad before each test run
-  beforeEach(function (cb) {
-    helper.newPad(cb);
-    this.timeout(60000);
+  beforeEach(async function () {
+    await helper.aNewPad();
   });
 
   // Destroy language cookies
-  it('makes text german', function (done) {
+  it('makes text german', async function () {
     this.timeout(1000);
     const chrome$ = helper.padChrome$;
 
@@ -31,21 +26,20 @@ describe('Language select and change', function () {
     $languageoption.attr('selected', 'selected');
     $language.change();
 
-    helper.waitFor(() => chrome$('.buttonicon-bold').parent()[0].title === 'Fett (Strg-B)')
-        .done(() => {
-          // get the value of the bold button
-          const $boldButton = chrome$('.buttonicon-bold').parent();
+    await helper.waitForPromise(
+        () => chrome$('.buttonicon-bold').parent()[0].title === 'Fett (Strg-B)');
 
-          // get the title of the bold button
-          const boldButtonTitle = $boldButton[0].title;
+    // get the value of the bold button
+    const $boldButton = chrome$('.buttonicon-bold').parent();
 
-          // check if the language is now german
-          expect(boldButtonTitle).to.be('Fett (Strg-B)');
-          done();
-        });
+    // get the title of the bold button
+    const boldButtonTitle = $boldButton[0].title;
+
+    // check if the language is now german
+    expect(boldButtonTitle).to.be('Fett (Strg-B)');
   });
 
-  it('makes text English', function (done) {
+  it('makes text English', async function () {
     this.timeout(1000);
     const chrome$ = helper.padChrome$;
 
@@ -60,23 +54,21 @@ describe('Language select and change', function () {
     $language.change();
 
     // get the value of the bold button
-    const $boldButton = chrome$('.buttonicon-bold').parent();
+    let $boldButton = chrome$('.buttonicon-bold').parent();
 
-    helper.waitFor(() => $boldButton[0].title !== 'Fett (Strg+B)')
-        .done(() => {
-          // get the value of the bold button
-          const $boldButton = chrome$('.buttonicon-bold').parent();
+    await helper.waitForPromise(() => $boldButton[0].title !== 'Fett (Strg+B)');
 
-          // get the title of the bold button
-          const boldButtonTitle = $boldButton[0].title;
+    // get the value of the bold button
+    $boldButton = chrome$('.buttonicon-bold').parent();
 
-          // check if the language is now English
-          expect(boldButtonTitle).to.be('Bold (Ctrl+B)');
-          done();
-        });
+    // get the title of the bold button
+    const boldButtonTitle = $boldButton[0].title;
+
+    // check if the language is now English
+    expect(boldButtonTitle).to.be('Bold (Ctrl+B)');
   });
 
-  it('changes direction when picking an rtl lang', function (done) {
+  it('changes direction when picking an rtl lang', async function () {
     this.timeout(1000);
     const chrome$ = helper.padChrome$;
 
@@ -93,15 +85,13 @@ describe('Language select and change', function () {
     $language.val('ar');
     $languageoption.change();
 
-    helper.waitFor(() => chrome$('html')[0].dir !== 'ltr')
-        .done(() => {
-          // check if the document's direction was changed
-          expect(chrome$('html')[0].dir).to.be('rtl');
-          done();
-        });
+    await helper.waitForPromise(() => chrome$('html')[0].dir !== 'ltr');
+
+    // check if the document's direction was changed
+    expect(chrome$('html')[0].dir).to.be('rtl');
   });
 
-  it('changes direction when picking an ltr lang', function (done) {
+  it('changes direction when picking an ltr lang', async function () {
     const chrome$ = helper.padChrome$;
 
     // click on the settings button to make settings visible
@@ -118,11 +108,9 @@ describe('Language select and change', function () {
     $language.val('en');
     $languageoption.change();
 
-    helper.waitFor(() => chrome$('html')[0].dir !== 'rtl')
-        .done(() => {
-          // check if the document's direction was changed
-          expect(chrome$('html')[0].dir).to.be('ltr');
-          done();
-        });
+    await helper.waitForPromise(() => chrome$('html')[0].dir !== 'rtl');
+
+    // check if the document's direction was changed
+    expect(chrome$('html')[0].dir).to.be('ltr');
   });
 });

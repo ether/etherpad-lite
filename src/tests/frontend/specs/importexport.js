@@ -499,9 +499,7 @@ describe('importexport.js', function () {
 
   let confirm;
   before(async function () {
-    this.timeout(60000);
-    await new Promise(
-        (resolve, reject) => helper.newPad((err) => err != null ? reject(err) : resolve()));
+    await helper.aNewPad();
     confirm = helper.padChrome$.window.confirm;
     helper.padChrome$.window.confirm = () => true;
     // As of 2021-02-22 a mutable FileList cannot be directly created so DataTransfer is used as a

@@ -218,7 +218,14 @@ const sendClientReady = (isReconnect, messageType) => {
 };
 
 const handshake = () => {
+  let padId = document.location.pathname.substring(document.location.pathname.lastIndexOf('/') + 1);
+  // unescape neccesary due to Safari and Opera interpretation of spaces
+  padId = decodeURIComponent(padId);
+
+  // padId is used here for sharding / scaling.  We prefix the padId with padId: so it's clear
+  // to the proxy/gateway/whatever that this is a pad connection and should be treated as such
   socket = pad.socket = socketio.connect(exports.baseURL, '/', {
+    query: {padId},
     reconnectionAttempts: 5,
     reconnection: true,
     reconnectionDelay: 1000,
@@ -501,7 +508,7 @@ const pad = {
     // order of inits is important here:
     padimpexp.init(this);
     padsavedrevs.init(this);
-    padeditor.init(postAceInit, pad.padOptions.view || {}, this);
+    padeditor.init(pad.padOptions.view || {}, this).then(postAceInit);
     paduserlist.init(pad.myUserInfo, this);
     padconnectionstatus.init();
     padmodals.init(this);

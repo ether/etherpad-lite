@@ -50,14 +50,12 @@ describe('embed links', function () {
 
   describe('read and write', function () {
     // create a new pad before each test run
-    beforeEach(function (cb) {
-      helper.newPad(cb);
-      this.timeout(60000);
+    beforeEach(async function () {
+      await helper.aNewPad();
     });
 
     describe('the share link', function () {
-      it('is the actual pad url', function (done) {
-        this.timeout(100);
+      it('is the actual pad url', async function () {
         const chrome$ = helper.padChrome$;
 
         // open share dropdown
@@ -67,14 +65,11 @@ describe('embed links', function () {
         const shareLink = chrome$('#linkinput').val();
         const padURL = chrome$.window.location.href;
         expect(shareLink).to.be(padURL);
-
-        done();
       });
     });
 
     describe('the embed as iframe code', function () {
-      it('is an iframe with the the correct url parameters and correct size', function (done) {
-        this.timeout(50);
+      it('is an iframe with the the correct url parameters and correct size', async function () {
         const chrome$ = helper.padChrome$;
 
         // open share dropdown
@@ -84,21 +79,17 @@ describe('embed links', function () {
         const embedCode = chrome$('#embedinput').val();
 
         checkiFrameCode(embedCode, false);
-
-        done();
       });
     });
   });
 
   describe('when read only option is set', function () {
-    beforeEach(function (cb) {
-      helper.newPad(cb);
-      this.timeout(60000);
+    beforeEach(async function () {
+      await helper.aNewPad();
     });
 
     describe('the share link', function () {
-      it('shows a read only url', function (done) {
-        this.timeout(50);
+      it('shows a read only url', async function () {
         const chrome$ = helper.padChrome$;
 
         // open share dropdown
@@ -110,14 +101,11 @@ describe('embed links', function () {
         const shareLink = chrome$('#linkinput').val();
         const containsReadOnlyLink = shareLink.indexOf('r.') > 0;
         expect(containsReadOnlyLink).to.be(true);
-
-        done();
       });
     });
 
     describe('the embed as iframe code', function () {
-      it('is an iframe with the the correct url parameters and correct size', function (done) {
-        this.timeout(50);
+      it('is an iframe with the the correct url parameters and correct size', async function () {
         const chrome$ = helper.padChrome$;
 
         // open share dropdown
@@ -131,8 +119,6 @@ describe('embed links', function () {
         const embedCode = chrome$('#embedinput').val();
 
         checkiFrameCode(embedCode, true);
-
-        done();
       });
     });
   });

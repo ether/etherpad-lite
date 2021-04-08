@@ -30,11 +30,10 @@ const htmlPrettyEscape = Ace2Common.htmlPrettyEscape;
 const noop = Ace2Common.noop;
 const hooks = require('./pluginfw/hooks');
 
-function Ace2Inner(editorInfo) {
+function Ace2Inner(editorInfo, cssManagers) {
   const makeChangesetTracker = require('./changesettracker').makeChangesetTracker;
   const colorutils = require('./colorutils').colorutils;
   const makeContentCollector = require('./contentcollector').makeContentCollector;
-  const makeCSSManager = require('./cssmanager').makeCSSManager;
   const domline = require('./domline').domline;
   const AttribPool = require('./AttributePool');
   const Changeset = require('./Changeset');
@@ -157,10 +156,6 @@ function Ace2Inner(editorInfo) {
 
   const scheduler = parent; // hack for opera required
 
-  let dynamicCSS = null;
-  let outerDynamicCSS = null;
-  let parentDynamicCSS = null;
-
   const performDocumentReplaceRange = (start, end, newText) => {
     if (start === undefined) start = rep.selStart;
     if (end === undefined) end = rep.selEnd;
@@ -179,12 +174,6 @@ function Ace2Inner(editorInfo) {
     const cs = builder.toString();
 
     performDocumentApplyChangeset(cs);
-  };
-
-  const initDynamicCSS = () => {
-    dynamicCSS = makeCSSManager('dynamicsyntax');
-    outerDynamicCSS = makeCSSManager('dynamicsyntax', 'outer');
-    parentDynamicCSS = makeCSSManager('dynamicsyntax', 'parent');
   };
 
   const changesetTracker = makeChangesetTracker(scheduler, rep.apool, {
@@ -214,15 +203,12 @@ function Ace2Inner(editorInfo) {
   editorInfo.ace_getAuthorInfos = getAuthorInfos;
 
   const setAuthorStyle = (author, info) => {
-    if (!dynamicCSS) {
-      return;
-    }
     const authorSelector = getAuthorColorClassSelector(getAuthorClassName(author));
 
     const authorStyleSet = hooks.callAll('aceSetAuthorStyle', {
-      dynamicCSS,
-      parentDynamicCSS,
-      outerDynamicCSS,
+      dynamicCSS: cssManagers.inner,
+      outerDynamicCSS: cssManagers.outer,
+      parentDynamicCSS: cssManagers.parent,
       info,
       author,
       authorSelector,
@@ -234,16 +220,16 @@ function Ace2Inner(editorInfo) {
     }
 
     if (!info) {
-      dynamicCSS.removeSelectorStyle(authorSelector);
-      parentDynamicCSS.removeSelectorStyle(authorSelector);
+      cssManagers.inner.removeSelectorStyle(authorSelector);
+      cssManagers.parent.removeSelectorStyle(authorSelector);
     } else if (info.bgcolor) {
       let bgcolor = info.bgcolor;
       if ((typeof info.fade) === 'number') {
         bgcolor = fadeColor(bgcolor, info.fade);
       }
 
-      const authorStyle = dynamicCSS.selectorStyle(authorSelector);
-      const parentAuthorStyle = parentDynamicCSS.selectorStyle(authorSelector);
+      const authorStyle = cssManagers.inner.selectorStyle(authorSelector);
+      const parentAuthorStyle = cssManagers.parent.selectorStyle(authorSelector);
 
       // author color
       authorStyle.backgroundColor = bgcolor;
@@ -3518,16 +3504,7 @@ function Ace2Inner(editorInfo) {
 
   const teardown = () => _teardownActions.forEach((a) => a());
 
-  let inInternationalComposition = false;
-  const handleCompositionEvent = (evt) => {
-    // international input events, fired in FF3, at least;  allow e.g. Japanese input
-    if (evt.type === 'compositionstart') {
-      inInternationalComposition = true;
-    } else if (evt.type === 'compositionend') {
-      inInternationalComposition = false;
-    }
-  };
-
+  let inInternationalComposition = null;
   editorInfo.ace_getInInternationalComposition = () => inInternationalComposition;
 
   const bindTheEventHandlers = () => {
@@ -3616,8 +3593,15 @@ function Ace2Inner(editorInfo) {
       });
     });
 
-    $(document.documentElement).on('compositionstart', handleCompositionEvent);
-    $(document.documentElement).on('compositionend', handleCompositionEvent);
+    $(document.documentElement).on('compositionstart', () => {
+      if (inInternationalComposition) return;
+      inInternationalComposition = new Promise((resolve) => {
+        $(document.documentElement).one('compositionend', () => {
+          inInternationalComposition = null;
+          resolve();
+        });
+      });
+    });
   };
 
   const topLevel = (n) => {
@@ -3895,44 +3879,39 @@ function Ace2Inner(editorInfo) {
   editorInfo.ace_performDocumentApplyAttributesToRange =
       (...args) => documentAttributeManager.setAttributesOnRange(...args);
 
-  this.init = (cb) => {
-    $(document).ready(() => {
-      doc = document; // defined as a var in scope outside
-      inCallStack('setup', () => {
-        const body = doc.getElementById('innerdocbody');
-        root = body; // defined as a var in scope outside
-        if (browser.firefox) $(root).addClass('mozilla');
-        if (browser.safari) $(root).addClass('safari');
-        root.classList.toggle('authorColors', true);
-        root.classList.toggle('doesWrap', doesWrap);
+  this.init = async () => {
+    await $.ready;
+    doc = document; // defined as a var in scope outside
+    inCallStack('setup', () => {
+      const body = doc.getElementById('innerdocbody');
+      root = body; // defined as a var in scope outside
+      if (browser.firefox) $(root).addClass('mozilla');
+      if (browser.safari) $(root).addClass('safari');
+      root.classList.toggle('authorColors', true);
+      root.classList.toggle('doesWrap', doesWrap);
 
-        initDynamicCSS();
+      enforceEditability();
 
-        enforceEditability();
+      // set up dom and rep
+      while (root.firstChild) root.removeChild(root.firstChild);
+      const oneEntry = createDomLineEntry('');
+      doRepLineSplice(0, rep.lines.length(), [oneEntry]);
+      insertDomLines(null, [oneEntry.domInfo]);
+      rep.alines = Changeset.splitAttributionLines(
+          Changeset.makeAttribution('\n'), '\n');
 
-        // set up dom and rep
-        while (root.firstChild) root.removeChild(root.firstChild);
-        const oneEntry = createDomLineEntry('');
-        doRepLineSplice(0, rep.lines.length(), [oneEntry]);
-        insertDomLines(null, [oneEntry.domInfo]);
-        rep.alines = Changeset.splitAttributionLines(
-            Changeset.makeAttribution('\n'), '\n');
+      bindTheEventHandlers();
+    });
 
-        bindTheEventHandlers();
-      });
-
-      hooks.callAll('aceInitialized', {
-        editorInfo,
-        rep,
-        documentAttributeManager,
-      });
-
-      scheduler.setTimeout(cb, 0);
+    hooks.callAll('aceInitialized', {
+      editorInfo,
+      rep,
+      documentAttributeManager,
     });
   };
 }
 
-exports.init = (editorInfo, cb) => {
-  const editor = new Ace2Inner(editorInfo);
-  editor.init(cb);
+exports.init = async (editorInfo, cssManagers) => {
+  const editor = new Ace2Inner(editorInfo, cssManagers);
+  await editor.init();
 };

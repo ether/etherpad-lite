@@ -2,11 +2,11 @@
 
 describe('enter keystroke', function () {
   // create a new pad before each test run
-  beforeEach(function (cb) {
-    helper.newPad(cb);
-    this.timeout(60000);
+  beforeEach(async function () {
+    await helper.aNewPad();
   });
-  it('creates a new line & puts cursor onto a new line', function (done) {
+
+  it('creates a new line & puts cursor onto a new line', async function () {
     this.timeout(2000);
     const inner$ = helper.padInner$;
 
@@ -19,14 +19,13 @@ describe('enter keystroke', function () {
     // simulate key presses to enter content
     $firstTextElement.sendkeys('{enter}');
 
-    helper.waitFor(() => inner$('div').first().text() === '').done(() => {
-      const $newSecondLine = inner$('div').first().next();
-      const newFirstTextElementValue = inner$('div').first().text();
-      expect(newFirstTextElementValue).to.be(''); // expect the first line to be blank
-      // expect the second line to be the same as the original first line.
-      expect($newSecondLine.text()).to.be(originalTextValue);
-      done();
-    });
+    await helper.waitForPromise(() => inner$('div').first().text() === '');
+
+    const $newSecondLine = inner$('div').first().next();
+    const newFirstTextElementValue = inner$('div').first().text();
+    expect(newFirstTextElementValue).to.be(''); // expect the first line to be blank
+    // expect the second line to be the same as the original first line.
+    expect($newSecondLine.text()).to.be(originalTextValue);
   });
 
   it('enter is always visible after event', async function () {

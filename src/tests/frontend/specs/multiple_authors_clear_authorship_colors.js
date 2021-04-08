@@ -2,36 +2,27 @@
 
 describe('author of pad edition', function () {
   // author 1 creates a new pad with some content (regular lines and lists)
-  before(function (done) {
-    const padId = helper.newPad(() => {
-      // make sure pad has at least 3 lines
-      const $firstLine = helper.padInner$('div').first();
-      $firstLine.html('Hello World');
+  before(async function () {
+    const padId = await helper.aNewPad();
 
-      // wait for lines to be processed by Etherpad
-      helper.waitFor(() => $firstLine.text() === 'Hello World').done(() => {
-        // Reload pad, to make changes as a second user. Need a timeout here to make sure
-        // all changes were saved before reloading
-        setTimeout(() => {
-          // Expire cookie, so author is changed after reloading the pad.
-          // See https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie#Example_4_Reset_the_previous_cookie
-          helper.padChrome$.document.cookie =
-              'token=foo;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    // make sure pad has at least 3 lines
+    const $firstLine = helper.padInner$('div').first();
+    $firstLine.html('Hello World');
 
-          helper.newPad(done, padId);
-        }, 1000);
-      });
-    });
-    this.timeout(60000);
+    // wait for lines to be processed by Etherpad
+    await helper.waitForPromise(() => (
+      $firstLine.text() === 'Hello World' && helper.commits.length === 1));
+
+    // Delete token cookie, so author is changed after reloading the pad.
+    const {Cookies} = helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad_utils');
+    Cookies.remove('token');
+
+    // Reload pad, to make changes as a second user.
+    await helper.aNewPad({id: padId});
   });
 
   // author 2 makes some changes on the pad
-  it('Clears Authorship by second user', function (done) {
-    this.timeout(100);
-    clearAuthorship(done);
-  });
-
-  const clearAuthorship = (done) => {
+  it('Clears Authorship by second user', async function () {
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -48,6 +39,5 @@ describe('author of pad edition', function () {
     const hasAuthorClass = inner$('div span').first().attr('class').indexOf('author') !== -1;
 
     expect(hasAuthorClass).to.be(false);
-    done();
-  };
+  });
 });

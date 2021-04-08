@@ -2,13 +2,11 @@
 
 describe('italic some text', function () {
   // create a new pad before each test run
-  beforeEach(function (cb) {
-    helper.newPad(cb);
-    this.timeout(60000);
+  beforeEach(async function () {
+    await helper.aNewPad();
   });
 
-  it('makes text italic using button', function (done) {
-    this.timeout(100);
+  it('makes text italic using button', async function () {
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -33,12 +31,9 @@ describe('italic some text', function () {
 
     // make sure the text hasn't changed
     expect($newFirstTextElement.text()).to.eql($firstTextElement.text());
-
-    done();
   });
 
-  it('makes text italic using keypress', function (done) {
-    this.timeout(100);
+  it('makes text italic using keypress', async function () {
     const inner$ = helper.padInner$;
 
     // get the first text element out of the inner iframe
@@ -63,7 +58,5 @@ describe('italic some text', function () {
 
     // make sure the text hasn't changed
     expect($newFirstTextElement.text()).to.eql($firstTextElement.text());
-
-    done();
   });
 });

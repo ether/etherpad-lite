@@ -2,13 +2,11 @@
 
 describe('delete keystroke', function () {
   // create a new pad before each test run
-  beforeEach(function (cb) {
-    helper.newPad(cb);
-    this.timeout(60000);
+  beforeEach(async function () {
+    await helper.aNewPad();
   });
 
-  it('makes text delete', function (done) {
-    this.timeout(50);
+  it('makes text delete', async function () {
     const inner$ = helper.padInner$;
 
     // get the first text element out of the inner iframe
@@ -28,7 +26,5 @@ describe('delete keystroke', function () {
 
     // expect it to be one char less in length
     expect(newElementLength).to.be((elementLength - 1));
-
-    done();
   });
 });

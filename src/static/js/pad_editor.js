@@ -34,30 +34,20 @@ const padeditor = (() => {
     ace: null,
     // this is accessed directly from other files
     viewZoom: 100,
-    init: (readyFunc, initialViewOptions, _pad) => {
+    init: async (initialViewOptions, _pad) => {
       Ace2Editor = require('./ace').Ace2Editor;
       pad = _pad;
       settings = pad.settings;
-
-      const aceReady = () => {
-        $('#editorloadingbox').hide();
-        if (readyFunc) {
-          readyFunc();
-
-          // Listen for clicks on sidediv items
-          const $outerdoc = $('iframe[name="ace_outer"]').contents().find('#outerdocbody');
-          $outerdoc.find('#sidedivinner').on('click', 'div', function () {
-            const targetLineNumber = $(this).index() + 1;
-            window.location.hash = `L${targetLineNumber}`;
-          });
-
-          exports.focusOnLine(self.ace);
-        }
-      };
-
       self.ace = new Ace2Editor();
-      self.ace.init('editorcontainer', '').then(
-          () => aceReady(), (err) => { throw err || new Error(err); });
+      await self.ace.init('editorcontainer', '');
+      $('#editorloadingbox').hide();
+      // Listen for clicks on sidediv items
+      const $outerdoc = $('iframe[name="ace_outer"]').contents().find('#outerdocbody');
+      $outerdoc.find('#sidedivinner').on('click', 'div', function () {
+        const targetLineNumber = $(this).index() + 1;
+        window.location.hash = `L${targetLineNumber}`;
+      });
+      exports.focusOnLine(self.ace);
       self.ace.setProperty('wraps', true);
       if (pad.getIsDebugEnabled()) {
         self.ace.setProperty('dmesg', pad.dmesg);

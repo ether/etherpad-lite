@@ -2,13 +2,11 @@
 
 describe('bold button', function () {
   // create a new pad before each test run
-  beforeEach(function (cb) {
-    helper.newPad(cb);
-    this.timeout(60000);
+  beforeEach(async function () {
+    await helper.aNewPad();
   });
 
   it('makes text bold on click', function (done) {
-    this.timeout(200);
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -37,7 +35,6 @@ describe('bold button', function () {
   });
 
   it('makes text bold on keypress', function (done) {
-    this.timeout(200);
     const inner$ = helper.padInner$;
 
     // get the first text element out of the inner iframe

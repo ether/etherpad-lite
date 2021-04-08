@@ -52,11 +52,15 @@ const connect = async (res) => {
       ([name, cookie]) => `${name}=${encodeURIComponent(cookie.value)}`).join('; ');
 
   logger.debug('socket.io connecting...');
+  let padId = null;
+  if (res) {
+    padId = res.req.path.split('/p/')[1];
+  }
   const socket = io(`${common.baseUrl}/`, {
     forceNew: true, // Different tests will have different query parameters.
     // socketio.js-client on node.js doesn't support cookies (see https://git.io/JU8u9), so the
     // express_sid cookie must be passed as a query parameter.
-    query: {cookie: reqCookieHdr},
+    query: {cookie: reqCookieHdr, padId},
   });
   try {
     await getSocketEvent(socket, 'connect');

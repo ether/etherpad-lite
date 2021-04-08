@@ -24,8 +24,8 @@ fatal() { error "$@"; exit 1; }
 LAST_EMAIL_SEND=0
 
 # Move to the Etherpad base directory.
-MY_DIR=$(try cd "${0%/*}" && try pwd -P) || exit 1
-try cd "${MY_DIR}/../.."
+MY_DIR=$(cd "${0%/*}" && pwd -P) || exit 1
+cd "${MY_DIR}/../.." || exit 1
 
 # Check if a logfile parameter is set
 LOG="$1"

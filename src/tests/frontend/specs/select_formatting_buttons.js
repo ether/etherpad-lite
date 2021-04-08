@@ -5,9 +5,8 @@ describe('select formatting buttons when selection has style applied', function 
   const SHORTCUT_KEYS = ['I', 'B', 'U', '5']; // italic, bold, underline, strikethrough
   const FIRST_LINE = 0;
 
-  before(function (cb) {
-    helper.newPad(cb);
-    this.timeout(60000);
+  before(async function () {
+    await helper.aNewPad();
   });
 
   const applyStyleOnLine = function (style, line) {
@@ -43,45 +42,40 @@ describe('select formatting buttons when selection has style applied', function 
   };
 
   const testIfFormattingButtonIsDeselected = function (style) {
-    it(`deselects the ${style} button`, function (done) {
-      this.timeout(100);
-      helper.waitFor(() => isButtonSelected(style) === false).done(done);
+    it(`deselects the ${style} button`, async function () {
+      await helper.waitForPromise(() => !isButtonSelected(style));
     });
   };
 
   const testIfFormattingButtonIsSelected = function (style) {
-    it(`selects the ${style} button`, function (done) {
-      this.timeout(100);
-      helper.waitFor(() => isButtonSelected(style)).done(done);
+    it(`selects the ${style} button`, async function () {
+      await helper.waitForPromise(() => isButtonSelected(style));
     });
   };
 
-  const applyStyleOnLineAndSelectIt = function (line, style, cb) {
-    applyStyleOnLineOnFullLineAndRemoveSelection(line, style, selectLine, cb);
+  const applyStyleOnLineAndSelectIt = async function (line, style) {
+    await applyStyleOnLineOnFullLineAndRemoveSelection(line, style, selectLine);
   };
 
-  const applyStyleOnLineAndPlaceCaretOnit = function (line, style, cb) {
-    applyStyleOnLineOnFullLineAndRemoveSelection(line, style, placeCaretOnLine, cb);
+  const applyStyleOnLineAndPlaceCaretOnit = async function (line, style) {
+    await applyStyleOnLineOnFullLineAndRemoveSelection(line, style, placeCaretOnLine);
   };
 
-  const applyStyleOnLineOnFullLineAndRemoveSelection = function (line, style, selectTarget, cb) {
+  const applyStyleOnLineOnFullLineAndRemoveSelection = async function (line, style, selectTarget) {
     // see if line html has changed
     const inner$ = helper.padInner$;
     const oldLineHTML = inner$.find('div')[line];
     applyStyleOnLine(style, line);
 
-    helper.waitFor(() => {
+    await helper.waitForPromise(() => {
       const lineHTML = inner$.find('div')[line];
       return lineHTML !== oldLineHTML;
     });
     // remove selection from previous line
     selectLine(line + 1);
-    // setTimeout(function() {
     // select the text or place the caret on a position that
     // has the formatting text applied previously
     selectTarget(line);
-    cb();
-    // }, 1000);
   };
 
   const pressFormattingShortcutOnSelection = async function (key) {
@@ -103,9 +97,9 @@ describe('select formatting buttons when selection has style applied', function 
 
   STYLES.forEach((style) => {
     context(`when selection is in a text with ${style} applied`, function () {
-      before(function (done) {
+      before(async function () {
         this.timeout(4000);
-        applyStyleOnLineAndSelectIt(FIRST_LINE, style, done);
+        await applyStyleOnLineAndSelectIt(FIRST_LINE, style);
       });
 
       after(async function () {
@@ -116,9 +110,9 @@ describe('select formatting buttons when selection has style applied', function 
     });
 
     context(`when caret is in a position with ${style} applied`, function () {
-      before(function (done) {
+      before(async function () {
         this.timeout(4000);
-        applyStyleOnLineAndPlaceCaretOnit(FIRST_LINE, style, done);
+        await applyStyleOnLineAndPlaceCaretOnit(FIRST_LINE, style);
       });
 
       after(async function () {
@@ -131,7 +125,6 @@ describe('select formatting buttons when selection has style applied', function 
 
   context('when user applies a style and the selection does not change', function () {
     it('selects the style button', async function () {
-      this.timeout(100);
       const style = STYLES[0]; // italic
       applyStyleOnLine(style, FIRST_LINE);
       await helper.waitForPromise(() => isButtonSelected(style) === true);

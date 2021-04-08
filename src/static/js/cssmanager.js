@@ -22,37 +22,7 @@
  * limitations under the License.
  */
 
-const makeCSSManager = (emptyStylesheetTitle, doc) => {
-  if (doc === true) {
-    doc = 'parent';
-  } else if (!doc) {
-    doc = 'inner';
-  }
-
-  const getSheetByTitle = (title) => {
-    let win;
-    if (doc === 'parent') {
-      win = window.parent.parent;
-    } else if (doc === 'inner') {
-      win = window;
-    } else if (doc === 'outer') {
-      win = window.parent;
-    } else {
-      throw new Error('Unknown dynamic style container');
-    }
-    const allSheets = win.document.styleSheets;
-
-    for (let i = 0; i < allSheets.length; i++) {
-      const s = allSheets[i];
-      if (s.title === title) {
-        return s;
-      }
-    }
-    return null;
-  };
-
-  const browserSheet = getSheetByTitle(emptyStylesheetTitle);
-
+exports.makeCSSManager = (browserSheet) => {
   const browserRules = () => (browserSheet.cssRules || browserSheet.rules);
 
   const browserDeleteRule = (i) => {
@@ -100,5 +70,3 @@ const makeCSSManager = (emptyStylesheetTitle, doc) => {
     info: () => `${selectorList.length}:${browserRules().length}`,
   };
 };
-
-exports.makeCSSManager = makeCSSManager;

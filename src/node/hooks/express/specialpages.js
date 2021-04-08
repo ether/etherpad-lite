@@ -54,6 +54,8 @@ exports.expressCreateServer = (hookName, args, cb) => {
       isReadOnly,
     });
 
+    // can be removed when require-kernel is dropped
+    res.header('Feature-Policy', 'sync-xhr \'self\'');
     res.send(eejs.require('ep_etherpad-lite/templates/pad.html', {
       req,
       toolbar,

@@ -50,10 +50,9 @@ exports.error = (msg) => {
  * @param b {boolean} assertion condition
  * @param msgParts {string} error to be passed if it fails
  */
-exports.assert = (b, msgParts) => {
+exports.assert = (b, ...msgParts) => {
   if (!b) {
-    const msg = Array.prototype.slice.call(arguments, 1).join('');
-    exports.error(`Failed assertion: ${msg}`);
+    exports.error(`Failed assertion: ${msgParts.join('')}`);
   }
 };
 
@@ -127,10 +126,9 @@ exports.opIterator = (opsStr, optStartIndex) => {
     return result;
   };
   let regexResult = nextRegexMatch();
-  const obj = exports.newOp();
 
-  const next = (optObj) => {
-    const op = (optObj || obj);
+  const next = (optOp) => {
+    const op = optOp || exports.newOp();
     if (regexResult[0]) {
       op.attribs = regexResult[1];
       op.lines = exports.parseNum(regexResult[2] || 0);
