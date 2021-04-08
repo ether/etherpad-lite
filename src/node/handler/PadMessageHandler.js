@@ -949,8 +949,6 @@ const handleClientReady = async (socket, message, authorID) => {
       padIds.readonly || !webaccess.userCanModify(message.padId, socket.client.request);
 
   const {session: {user} = {}} = socket.client.request;
-  const {accessStatus} = await securityManager
-      .checkAccess(sessioninfos[socket.id].auth.padID, sessioninfos[socket.id].auth.sessionID, sessioninfos[socket.id].auth.token, user);
 
   accessLogger.info(`${`[${pad.head > 0 ? 'ENTER' : 'CREATE'}]` +
                     ` pad:${padIds.padId}` +
