@@ -160,7 +160,6 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
         {
           type: 'COLLABROOM',
           component: 'pad',
-          padId: clientVars.padId,
           data: msg,
         });
   };
