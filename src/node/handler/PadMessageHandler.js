@@ -1062,7 +1062,6 @@ const handleClientReady = async (socket, message, authorID) => {
         rev: pad.getHeadRevisionNumber(),
         time: currentTime,
       },
-      accessStatus,
       colorPalette: authorManager.getColorPalette(),
       clientIp: '127.0.0.1',
       userColor: authorColorId,
