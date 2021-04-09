@@ -194,7 +194,7 @@ exports.chat = (() => {
                   .append($('<span>').addClass('author-name').text(ctx.authorName))
                   // ctx.text was HTML-escaped before calling the hook. Hook functions are trusted
                   // to not introduce an XSS vulnerability by adding unescaped user input.
-                  .append(ctx.text),
+                  .append($('<div>').html(ctx.text).contents()),
               sticky: ctx.sticky,
               time: 5000,
               position: 'bottom',
