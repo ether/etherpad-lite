@@ -164,15 +164,22 @@ exports.chat = (() => {
       // Call chat message hook
       hooks.aCallAll('chatNewMessage', ctx, () => {
         const cls = authorClass(ctx.author);
-        const html =
-            `<p data-authorId='${padutils.escapeHtml(ctx.author)}' class='${cls}'>` +
-            `<b>${padutils.escapeHtml(ctx.authorName)}:</b>` +
-            // ctx.text was HTML-escaped before calling the hook, and ctx.timeStr couldn't have had
-            // any HTML. Hook functions are trusted to not introduce an XSS vulnerability by adding
-            // unescaped user input to either ctx.text or ctx.timeStr.
-            `<span class='time ${cls}'>${ctx.timeStr}</span> ${ctx.text}</p>`;
-        if (isHistoryAdd) $(html).insertAfter('#chatloadmessagesbutton');
-        else $('#chattext').append(html);
+        const chatMsg = $('<p>')
+            .attr('data-authorId', ctx.author)
+            .addClass(cls)
+            .append($('<b>').text(`${ctx.authorName}:`))
+            .append($('<span>')
+                .addClass('time')
+                .addClass(cls)
+                // Hook functions are trusted to not introduce an XSS vulnerability by adding
+                // unescaped user input to ctx.timeStr.
+                .html(ctx.timeStr))
+            .append(' ')
+            // ctx.text was HTML-escaped before calling the hook. Hook functions are trusted to not
+            // introduce an XSS vulnerability by adding unescaped user input.
+            .append($('<div>').html(ctx.text).contents());
+        if (isHistoryAdd) chatMsg.insertAfter('#chatloadmessagesbutton');
+        else $('#chattext').append(chatMsg);
 
         // should we increment the counter??
         if (increment && !isHistoryAdd) {
