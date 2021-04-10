@@ -25,6 +25,49 @@
 const _entryWidth = (e) => (e && e.width) || 0;
 const _getNodeAtPoint = (point) => point.nodes[0].downPtrs[0];
 
+// A "point" object at index x allows modifications immediately after the first x elements of the
+// skiplist, such as multiple inserts or deletes. After an insert or delete using point P, the point
+// is still valid and points to the same index in the skiplist. Other operations with other points
+// invalidate this point.
+class Point {
+  constructor(skipList, loc) {
+    this._skipList = skipList;
+    this.loc = loc;
+    const numLevels = this._skipList._start.levels;
+    let lvl = numLevels - 1;
+    let i = -1;
+    let ws = 0;
+    const nodes = new Array(numLevels);
+    const idxs = new Array(numLevels);
+    const widthSkips = new Array(numLevels);
+    nodes[lvl] = this._skipList._start;
+    idxs[lvl] = -1;
+    widthSkips[lvl] = 0;
+    while (lvl >= 0) {
+      let n = nodes[lvl];
+      while (n.downPtrs[lvl] && (i + n.downSkips[lvl] < this.loc)) {
+        i += n.downSkips[lvl];
+        ws += n.downSkipWidths[lvl];
+        n = n.downPtrs[lvl];
+      }
+      nodes[lvl] = n;
+      idxs[lvl] = i;
+      widthSkips[lvl] = ws;
+      lvl--;
+      if (lvl >= 0) {
+        nodes[lvl] = n;
+      }
+    }
+    this.idxs = idxs;
+    this.nodes = nodes;
+    this.widthSkips = widthSkips;
+  }
+
+  toString() {
+    return `Point(${this.loc})`;
+  }
+}
+
 /**
  * The skip-list contains "entries", JavaScript objects that each must have a unique "key"
  * property that is a string.
@@ -53,46 +96,6 @@ class SkipList {
     this._keyToNodeMap = {};
     this._start.downPtrs[0] = this._end;
     this._end.upPtrs[0] = this._start;
-  }
-
-  // a "point" object at location x allows modifications immediately after the first
-  // x elements of the skiplist, such as multiple inserts or deletes.
-  // After an insert or delete using point P, the point is still valid and points
-  // to the same index in the skiplist.  Other operations with other points invalidate
-  // this point.
-  _getPoint(targetLoc) {
-    const numLevels = this._start.levels;
-    let lvl = numLevels - 1;
-    let i = -1;
-    let ws = 0;
-    const nodes = new Array(numLevels);
-    const idxs = new Array(numLevels);
-    const widthSkips = new Array(numLevels);
-    nodes[lvl] = this._start;
-    idxs[lvl] = -1;
-    widthSkips[lvl] = 0;
-    while (lvl >= 0) {
-      let n = nodes[lvl];
-      while (n.downPtrs[lvl] && (i + n.downSkips[lvl] < targetLoc)) {
-        i += n.downSkips[lvl];
-        ws += n.downSkipWidths[lvl];
-        n = n.downPtrs[lvl];
-      }
-      nodes[lvl] = n;
-      idxs[lvl] = i;
-      widthSkips[lvl] = ws;
-      lvl--;
-      if (lvl >= 0) {
-        nodes[lvl] = n;
-      }
-    }
-    return {
-      nodes,
-      idxs,
-      loc: targetLoc,
-      widthSkips,
-      toString: () => `getPoint(${targetLoc})`,
-    };
   }
 
   _getNodeAtOffset(targetOffset) {
@@ -258,7 +261,7 @@ class SkipList {
   atIndex(i) {
     if (i < 0) console.warn(`atIndex(${i})`);
     if (i >= this._numNodes) console.warn(`atIndex(${i}>=${this._numNodes})`);
-    return _getNodeAtPoint(this._getPoint(i)).entry;
+    return _getNodeAtPoint(new Point(this, i)).entry;
   }
 
   // differs from Array.splice() in that new elements are in an array, not varargs
@@ -271,7 +274,7 @@ class SkipList {
     }
 
     if (!newEntryArray) newEntryArray = [];
-    const pt = this._getPoint(start);
+    const pt = new Point(this, start);
     for (let i = 0; i < deleteCount; i++) {
       this._deleteKeyAtPoint(pt);
     }
