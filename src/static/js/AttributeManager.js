@@ -115,13 +115,13 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     return [startCol, endCol];
   },
 
-  /*
-    Sets attributes on a range, by line
-    @param row the row where range is
-    @param startCol column where range starts
-    @param endCol column where range ends
-    @param attribs: an array of attributes
-  */
+  /**
+   * Sets attributes on a range, by line
+   * @param row the row where range is
+   * @param startCol column where range starts
+   * @param endCol column where range ends (one past the last selected column)
+   * @param attribs an array of attributes
+   */
   _setAttributesOnRangeByLine(row, startCol, endCol, attribs) {
     const builder = Changeset.builder(this.rep.lines.totalWidth());
     ChangesetUtils.buildKeepToStartOfRange(this.rep, builder, [row, startCol]);

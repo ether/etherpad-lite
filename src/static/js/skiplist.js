@@ -24,6 +24,10 @@
 
 const _ = require('./underscore');
 
+/**
+ * The skip-list contains "entries", JavaScript objects that each must have a unique "key"
+ * property that is a string.
+ */
 function SkipList() {
   // if there are N elements in the skiplist, "start" is element -1 and "end" is element N
   const start = {
@@ -47,13 +51,12 @@ function SkipList() {
   const keyToNodeMap = {};
   start.downPtrs[0] = end;
   end.upPtrs[0] = start;
+
   // a "point" object at location x allows modifications immediately after the first
   // x elements of the skiplist, such as multiple inserts or deletes.
   // After an insert or delete using point P, the point is still valid and points
   // to the same index in the skiplist.  Other operations with other points invalidate
   // this point.
-
-
   const _getPoint = (targetLoc) => {
     const numLevels = start.levels;
     let lvl = numLevels - 1;
@@ -225,8 +228,6 @@ function SkipList() {
   // Returns index of first entry such that entryFunc(entry) is truthy,
   // or length() if no such entry.  Assumes all falsy entries come before
   // all truthy entries.
-
-
   const _search = (entryFunc) => {
     let low = start;
     let lvl = start.levels - 1;
@@ -250,10 +251,6 @@ function SkipList() {
     return lowIndex + 1;
   };
 
-  /*
-The skip-list contains "entries", JavaScript objects that each must have a unique "key" property
-that is a string.
-  */
   const self = this;
   _.extend(this, {
     length: () => numNodes,

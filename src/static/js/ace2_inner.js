@@ -86,14 +86,24 @@ function Ace2Inner(editorInfo, cssManagers) {
   let outsideKeyPress = (e) => true;
   let outsideNotifyDirty = noop;
 
-  // selFocusAtStart -- determines whether the selection extends "backwards", so that the focus
-  // point (controlled with the arrow keys) is at the beginning; not supported in IE, though
-  // native IE selections have that behavior (which we try not to interfere with).
-  // Must be false if selection is collapsed!
+  // Document representation.
   const rep = {
+    // Each entry in this skip list is an object created by createDomLineEntry(). The object
+    // represents a line (paragraph) of content.
     lines: new SkipList(),
+    // Points at the start of the selection. Represented as [zeroBasedLineNumber,
+    // zeroBasedColumnNumber].
+    // TODO: If the selection starts at the beginning of a line, I think this could be either
+    // [lineNumber, 0] or [previousLineNumber, previousLineLength]. Need to confirm.
     selStart: null,
+    // Points at the character just past the last selected character. Same representation as
+    // selStart.
+    // TODO: If the last selected character is the last character of a line, I think this could be
+    // either [lineNumber, lineLength] or [lineNumber+1, 0]. Need to confirm.
     selEnd: null,
+    // Whether the selection extends "backwards", so that the focus point (controlled with the arrow
+    // keys) is at the beginning. This is not supported in IE, though native IE selections have that
+    // behavior (which we try not to interfere with). Must be false if selection is collapsed!
     selFocusAtStart: false,
     alltext: '',
     alines: [],
@@ -646,9 +656,11 @@ function Ace2Inner(editorInfo, cssManagers) {
     }
   };
 
-  // This methed exposes a setter for some ace properties
-  // @param key the name of the parameter
-  // @param value the value to set to
+  /**
+   * This methed exposes a setter for some ace properties
+   * @param key the name of the parameter
+   * @param value the value to set to
+   */
   editorInfo.ace_setProperty = (key, value) => {
     // These properties are exposed
     const setters = {
@@ -1301,8 +1313,6 @@ function Ace2Inner(editorInfo, cssManagers) {
   editorInfo.ace_isCaret = isCaret;
 
   // prereq: isCaret()
-
-
   const caretLine = () => rep.selStart[0];
 
   editorInfo.ace_caretLine = caretLine;
@@ -1542,9 +1552,9 @@ function Ace2Inner(editorInfo, cssManagers) {
     }
   };
 
-  /*
-    Converts the position of a char (index in String) into a [row, col] tuple
-  */
+  /**
+   * Converts the position of a char (index in String) into a [row, col] tuple
+   */
   const lineAndColumnFromChar = (x) => {
     const lineEntry = rep.lines.atOffset(x);
     const lineStart = rep.lines.offsetOfEntry(lineEntry);
