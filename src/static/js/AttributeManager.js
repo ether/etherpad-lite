@@ -63,6 +63,14 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     @param attribs: an array of attributes
   */
   setAttributesOnRange(start, end, attribs) {
+    if (start[0] < 0) throw new RangeError('selection start line number is negative');
+    if (start[1] < 0) throw new RangeError('selection start column number is negative');
+    if (end[0] < 0) throw new RangeError('selection end line number is negative');
+    if (end[1] < 0) throw new RangeError('selection end column number is negative');
+    if (start[0] > end[0] || (start[0] === end[0] && start[1] > end[1])) {
+      throw new RangeError('selection ends before it starts');
+    }
+
     // instead of applying the attributes to the whole range at once, we need to apply them
     // line by line, to be able to disregard the "*" used as line marker. For more details,
     // see https://github.com/ether/etherpad-lite/issues/2772
@@ -86,12 +94,24 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
   },
 
   _findRowRange(row, start, end) {
+    if (row < start[0] || row > end[0]) throw new RangeError(`line ${row} not in selection`);
+    if (row >= this.rep.lines.length()) throw new RangeError(`selected line ${row} does not exist`);
+
     // Subtract 1 for the end-of-line '\n' (it is never selected).
     const lineLength =
         this.rep.lines.offsetOfIndex(row + 1) - this.rep.lines.offsetOfIndex(row) - 1;
     const markerWidth = this.lineHasMarker(row) ? 1 : 0;
+    if (lineLength - markerWidth < 0) throw new Error(`line ${row} has negative length`);
+
     const startCol = row === start[0] ? start[1] : markerWidth;
+    if (startCol - markerWidth < 0) throw new RangeError('selection starts before line start');
+    if (startCol > lineLength) throw new RangeError('selection starts after line end');
+
     const endCol = row === end[0] ? end[1] : lineLength;
+    if (endCol - markerWidth < 0) throw new RangeError('selection ends before line start');
+    if (endCol > lineLength) throw new RangeError('selection ends after line end');
+    if (startCol > endCol) throw new RangeError('selection ends before it starts');
+
     return [startCol, endCol];
   },
 
