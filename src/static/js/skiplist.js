@@ -22,23 +22,9 @@
  * limitations under the License.
  */
 
-const Ace2Common = require('./ace2_common');
 const _ = require('./underscore');
 
-const noop = Ace2Common.noop;
-
 function SkipList() {
-  let PROFILER = window.PROFILER;
-  if (!PROFILER) {
-    PROFILER = () => ({
-      start: noop,
-      mark: noop,
-      literal: noop,
-      end: noop,
-      cancel: noop,
-    });
-  }
-
   // if there are N elements in the skiplist, "start" is element -1 and "end" is element N
   const start = {
     key: null,
@@ -122,7 +108,6 @@ function SkipList() {
   const _entryWidth = (e) => (e && e.width) || 0;
 
   const _insertKeyAtPoint = (point, newKey, entry) => {
-    const p = PROFILER('insertKey', false); // eslint-disable-line new-cap
     const newNode = {
       key: newKey,
       levels: 0,
@@ -131,13 +116,11 @@ function SkipList() {
       downSkips: [],
       downSkipWidths: [],
     };
-    p.mark('donealloc');
     const pNodes = point.nodes;
     const pIdxs = point.idxs;
     const pLoc = point.loc;
     const widthLoc = point.widthSkips[0] + point.nodes[0].downSkipWidths[0];
     const newWidth = _entryWidth(entry);
-    p.mark('loop1');
 
     // The new node will have at least level 1
     // With a proability of 0.01^(n-1) the nodes level will be >= n
@@ -173,18 +156,14 @@ function SkipList() {
       up.downSkipWidths[lvl] = widthSkip1;
       me.downSkipWidths[lvl] = widthSkip2;
     }
-    p.mark('loop2');
-    p.literal(pNodes.length, 'PNL');
     for (let lvl = newNode.levels; lvl < pNodes.length; lvl++) {
       const up = pNodes[lvl];
       up.downSkips[lvl]++;
       up.downSkipWidths[lvl] += newWidth;
     }
-    p.mark('map');
     keyToNodeMap[`$KEY$${newKey}`] = newNode;
     numNodes++;
     totalWidth += newWidth;
-    p.end();
   };
 
   const _getNodeAtPoint = (point) => point.nodes[0].downPtrs[0];

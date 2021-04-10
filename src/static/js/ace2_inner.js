@@ -136,17 +136,6 @@ function Ace2Inner(editorInfo, cssManagers) {
     for (let i = 0; i < names.length; ++i) console[names[i]] = noop;
   }
 
-  let PROFILER = window.PROFILER;
-  if (!PROFILER) {
-    PROFILER = () => ({
-      start: noop,
-      mark: noop,
-      literal: noop,
-      end: noop,
-      cancel: noop,
-    });
-  }
-
   // "dmesg" is for displaying messages in the in-page output pane
   // visible when "?djs=1" is appended to the pad URL.  It generally
   // remains a no-op unless djs is enabled, but we make a habit of
@@ -938,17 +927,12 @@ function Ace2Inner(editorInfo, cssManagers) {
   clearObservedChanges();
 
   const getCleanNodeByKey = (key) => {
-    const p = PROFILER('getCleanNodeByKey', false); // eslint-disable-line new-cap
-    p.extra = 0;
     let n = doc.getElementById(key);
     // copying and pasting can lead to duplicate ids
     while (n && isNodeDirty(n)) {
-      p.extra++;
       n.id = '';
       n = doc.getElementById(key);
     }
-    p.literal(p.extra, 'extra');
-    p.end();
     return n;
   };
 
@@ -1014,9 +998,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     if (currentCallStack.observedSelection) return;
     currentCallStack.observedSelection = true;
 
-    const p = PROFILER('getSelection', false); // eslint-disable-line new-cap
     const selection = getSelection();
-    p.end();
 
     if (selection) {
       const node1 = topLevel(selection.startPoint.node);
@@ -1049,17 +1031,13 @@ function Ace2Inner(editorInfo, cssManagers) {
 
     if (DEBUG && window.DONT_INCORP || window.DEBUG_DONT_INCORP) return false;
 
-    const p = PROFILER('incorp', false); // eslint-disable-line new-cap
-
     // returns true if dom changes were made
     if (!root.firstChild) {
       root.innerHTML = '<div><!-- --></div>';
     }
 
-    p.mark('obs');
     observeChangesAroundSelection();
     observeSuspiciousNodes();
-    p.mark('dirty');
     let dirtyRanges = getDirtyRanges();
     let dirtyRangesCheckOut = true;
     let j = 0;
@@ -1089,7 +1067,6 @@ function Ace2Inner(editorInfo, cssManagers) {
 
     clearObservedChanges();
 
-    p.mark('getsel');
     const selection = getSelection();
 
     let selStart, selEnd; // each one, if truthy, has [line,char] needed to set selection
@@ -1097,8 +1074,6 @@ function Ace2Inner(editorInfo, cssManagers) {
     const splicesToDo = [];
     let netNumLinesChangeSoFar = 0;
     const toDeleteAtEnd = [];
-    p.mark('ranges');
-    p.literal(dirtyRanges.length, 'numdirt');
     const domInsertsNeeded = []; // each entry is [nodeToInsertAfter, [info1, info2, ...]]
     while (i < dirtyRanges.length) {
       const range = dirtyRanges[i];
@@ -1186,18 +1161,15 @@ function Ace2Inner(editorInfo, cssManagers) {
     const domChanges = (splicesToDo.length > 0);
 
     // update the representation
-    p.mark('splice');
     splicesToDo.forEach((splice) => {
       doIncorpLineSplice(splice[0], splice[1], splice[2], splice[3], splice[4]);
     });
 
     // do DOM inserts
-    p.mark('insert');
     domInsertsNeeded.forEach((ins) => {
       insertDomLines(ins[0], ins[1]);
     });
 
-    p.mark('del');
     // delete old dom nodes
     toDeleteAtEnd.forEach((n) => {
       // parent of n may not be "root" in IE due to non-tree-shaped DOM (wtf)
@@ -1209,7 +1181,6 @@ function Ace2Inner(editorInfo, cssManagers) {
       $('#innerdocbody').scrollLeft(0);
     }
 
-    p.mark('findsel');
     // if the nodes that define the selection weren't encountered during
     // content collection, figure out where those nodes are now.
     if (selection && !selStart) {
@@ -1250,14 +1221,12 @@ function Ace2Inner(editorInfo, cssManagers) {
       selEnd[1] = rep.lines.atIndex(selEnd[0]).text.length;
     }
 
-    p.mark('repsel');
     // update rep if we have a new selection
     // NOTE: IE loses the selection when you click stuff in e.g. the
     // editbar, so removing the selection when it's lost is not a good
     // idea.
     if (selection) repSelectionChange(selStart, selEnd, selection && selection.focusAtStart);
     // update browser selection
-    p.mark('browsel');
     if (selection && (domChanges || isCaret())) {
       // if no DOM changes (not this case), want to treat range selection delicately,
       // e.g. in IE not lose which end of the selection is the focus/anchor;
@@ -1267,11 +1236,7 @@ function Ace2Inner(editorInfo, cssManagers) {
 
     currentCallStack.domClean = true;
 
-    p.mark('fixview');
-
     fixView();
-
-    p.end('END');
 
     return domChanges;
   };
@@ -1295,11 +1260,9 @@ function Ace2Inner(editorInfo, cssManagers) {
     if (infoStructs.length < 1) return;
 
     infoStructs.forEach((info) => {
-      const p2 = PROFILER('insertLine', false); // eslint-disable-line new-cap
       const node = info.node;
       const key = uniqueId(node);
       let entry;
-      p2.mark('findEntry');
       if (lastEntry) {
         // optimization to avoid recalculation
         const next = rep.lines.next(lastEntry);
@@ -1309,16 +1272,13 @@ function Ace2Inner(editorInfo, cssManagers) {
         }
       }
       if (!entry) {
-        p2.literal(1, 'nonopt');
         entry = rep.lines.atKey(key);
         lineStartOffset = rep.lines.offsetOfKey(key);
-      } else { p2.literal(0, 'nonopt'); }
+      }
       lastEntry = entry;
-      p2.mark('spans');
       getSpansForLine(entry, (tokenText, tokenClass) => {
         info.appendSpan(tokenText, tokenClass);
       }, lineStartOffset);
-      p2.mark('addLine');
       info.prepareForAdd();
       entry.lineMarker = info.lineMarker;
       if (!nodeToAddAfter) {
@@ -1328,9 +1288,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       }
       nodeToAddAfter = node;
       info.notifyAdded();
-      p2.mark('markClean');
       markNodeClean(node);
-      p2.end();
     });
   };
 
@@ -2201,10 +2159,6 @@ function Ace2Inner(editorInfo, cssManagers) {
     // indicating inserted content.  for example, [0,0] means content was inserted
     // at the top of the document, while [3,4] means line 3 was deleted, modified,
     // or replaced with one or more new lines of content. ranges do not touch.
-    const p = PROFILER('getDirtyRanges', false); // eslint-disable-line new-cap
-    p.forIndices = 0;
-    p.consecutives = 0;
-    p.corrections = 0;
 
     const cleanNodeForIndexCache = {};
     const N = rep.lines.length(); // old number of lines
@@ -2215,7 +2169,6 @@ function Ace2Inner(editorInfo, cssManagers) {
       // in the document, return that node.
       // if (i) is out of bounds, return true. else return false.
       if (cleanNodeForIndexCache[i] === undefined) {
-        p.forIndices++;
         let result;
         if (i < 0 || i >= N) {
           result = true; // truthy, but no actual node
@@ -2231,7 +2184,6 @@ function Ace2Inner(editorInfo, cssManagers) {
 
     const isConsecutive = (i) => {
       if (isConsecutiveCache[i] === undefined) {
-        p.consecutives++;
         isConsecutiveCache[i] = (() => {
           // returns whether line (i) and line (i-1), assumed to be map to clean DOM nodes,
           // or document boundaries, are consecutive in the changed DOM
@@ -2293,7 +2245,6 @@ function Ace2Inner(editorInfo, cssManagers) {
 
     const correctlyAssignLine = (line) => {
       if (correctedLines[line]) return true;
-      p.corrections++;
       correctedLines[line] = true;
       // "line" is an index of a line in the un-updated rep.
       // returns whether line was already correctly assigned (i.e. correctly
@@ -2357,16 +2308,13 @@ function Ace2Inner(editorInfo, cssManagers) {
     };
 
     if (N === 0) {
-      p.cancel();
       if (!isConsecutive(0)) {
         splitRange(0, 0);
       }
     } else {
-      p.mark('topbot');
       detectChangesAroundLine(0, 1);
       detectChangesAroundLine(N - 1, 1);
 
-      p.mark('obs');
       for (const k in observedChanges.cleanNodesNearChanges) {
         if (observedChanges.cleanNodesNearChanges[k]) {
           const key = k.substring(1);
@@ -2376,18 +2324,12 @@ function Ace2Inner(editorInfo, cssManagers) {
           }
         }
       }
-      p.mark('stats&calc');
-      p.literal(p.forIndices, 'byidx');
-      p.literal(p.consecutives, 'cons');
-      p.literal(p.corrections, 'corr');
     }
 
     const dirtyRanges = [];
     for (let r = 0; r < cleanRanges.length - 1; r++) {
       dirtyRanges.push([cleanRanges[r][1], cleanRanges[r + 1][0]]);
     }
-
-    p.end();
 
     return dirtyRanges;
   };
@@ -2401,13 +2343,11 @@ function Ace2Inner(editorInfo, cssManagers) {
   };
 
   const isNodeDirty = (n) => {
-    const p = PROFILER('cleanCheck', false); // eslint-disable-line new-cap
     if (n.parentNode !== root) return true;
     const data = getAssoc(n, 'dirtiness');
     if (!data) return true;
     if (n.id !== data.nodeId) return true;
     if (n.innerHTML !== data.knownHTML) return true;
-    p.end();
     return false;
   };
 
