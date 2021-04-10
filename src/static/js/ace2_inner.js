@@ -301,12 +301,6 @@ function Ace2Inner(editorInfo, cssManagers) {
   const inCallStack = (type, action) => {
     if (disposed) return;
 
-    if (currentCallStack) {
-      // Do not uncomment this in production.  It will break Etherpad being provided in iFrames.
-      // I am leaving this in for testing usefulness.
-      // top.console.error(`Can't enter callstack ${type}, already in ${currentCallStack.type}`);
-    }
-
     const newEditEvent = (eventType) => ({
       eventType,
       backset: null,
@@ -388,11 +382,6 @@ function Ace2Inner(editorInfo, cssManagers) {
       if (cleanExit) {
         submitOldEvent(cs.editEvent);
         if (cs.domClean && cs.type !== 'setup') {
-          // if (cs.isUserChange)
-          // {
-          //  if (cs.repChanged) parenModule.notifyChange();
-          //  else parenModule.notifyTick();
-          // }
           if (cs.selectionAffected) {
             updateBrowserSelectionFromRep();
           }
@@ -753,7 +742,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     let printedTrace = false;
     const isTimeUp = () => {
       if (exceededAlready) {
-        if ((!printedTrace)) { // && now() - startTime - ms > 300) {
+        if ((!printedTrace)) {
           printedTrace = true;
         }
         return true;
@@ -1176,7 +1165,6 @@ function Ace2Inner(editorInfo, cssManagers) {
           entries.push(newEntry);
           lineNodeInfos[k] = newEntry.domInfo;
         }
-        // var fragment = magicdom.wrapDom(document.createDocumentFragment());
         domInsertsNeeded.push([nodeToAddAfter, lineNodeInfos]);
         dirtyNodes.forEach((n) => {
           toDeleteAtEnd.push(n);
@@ -1212,11 +1200,8 @@ function Ace2Inner(editorInfo, cssManagers) {
     p.mark('del');
     // delete old dom nodes
     toDeleteAtEnd.forEach((n) => {
-      // var id = n.uniqueId();
       // parent of n may not be "root" in IE due to non-tree-shaped DOM (wtf)
       if (n.parentNode) n.parentNode.removeChild(n);
-
-      // dmesg(htmlPrettyEscape(htmlForRemovedChild(n)));
     });
 
     // needed to stop chrome from breaking the ui when long strings without spaces are pasted
@@ -1228,7 +1213,6 @@ function Ace2Inner(editorInfo, cssManagers) {
     // if the nodes that define the selection weren't encountered during
     // content collection, figure out where those nodes are now.
     if (selection && !selStart) {
-      // if (domChanges) dmesg("selection not collected");
       const selStartFromHook = hooks.callAll('aceStartLineAndCharForPoint', {
         callstack: currentCallStack,
         editorInfo,
@@ -1398,9 +1382,6 @@ function Ace2Inner(editorInfo, cssManagers) {
   const getPointForLineAndChar = (lineAndChar) => {
     const line = lineAndChar[0];
     let charsLeft = lineAndChar[1];
-    // Do not uncomment this in production it will break iFrames.
-    // top.console.log("line: %d, key: %s, node: %o", line, rep.lines.atIndex(line).key,
-    // getCleanNodeByKey(rep.lines.atIndex(line).key));
     const lineEntry = rep.lines.atIndex(line);
     charsLeft -= lineEntry.lineMarker;
     if (charsLeft < 0) {
@@ -1574,7 +1555,6 @@ function Ace2Inner(editorInfo, cssManagers) {
       throw new Error(`doRepApplyChangeset length mismatch: ${errMsg}`);
     }
 
-    // (function doRecordUndoInformation(changes) {
     ((changes) => {
       const editEvent = currentCallStack.editEvent;
       if (editEvent.eventType === 'nonundoable') {
@@ -1597,7 +1577,6 @@ function Ace2Inner(editorInfo, cssManagers) {
       }
     })(changes);
 
-    // rep.alltext = Changeset.applyToText(changes, rep.alltext);
     Changeset.mutateAttributionLines(changes, rep.alines, rep.apool);
 
     if (changesetTracker.isTracking()) {
@@ -1994,7 +1973,6 @@ function Ace2Inner(editorInfo, cssManagers) {
         theChangeset = builder.toString();
       }
 
-      // dmesg(htmlPrettyEscape(theChangeset));
       doRepApplyChangeset(theChangeset);
     }
 
@@ -2170,13 +2148,8 @@ function Ace2Inner(editorInfo, cssManagers) {
       }
 
       return true;
-      // Do not uncomment this in production it will break iFrames.
-      // top.console.log("selStart: %o, selEnd: %o, focusAtStart: %s", rep.selStart, rep.selEnd,
-      // String(!!rep.selFocusAtStart));
     }
     return false;
-  // Do not uncomment this in production it will break iFrames.
-  // top.console.log("%o %o %s", rep.selStart, rep.selEnd, rep.selFocusAtStart);
   };
 
   const isPadLoading = (eventType) => (
@@ -2641,7 +2614,6 @@ function Ace2Inner(editorInfo, cssManagers) {
           const tabSize = THE_TAB.length;
           const toDelete = ((col2 - 1) % tabSize) + 1;
           performDocumentReplaceRange([lineNum, col - toDelete], [lineNum, col], '');
-          // scrollSelectionIntoView();
           handled = true;
         }
       }
@@ -2730,7 +2702,6 @@ function Ace2Inner(editorInfo, cssManagers) {
     const altKey = evt.altKey;
     const shiftKey = evt.shiftKey;
 
-    // dmesg("keyevent type: "+type+", which: "+which);
     // Don't take action based on modifier keys going up and down.
     // Modifier keys do not generate "keypress" events.
     // 224 is the command-key under Mac Firefox.
@@ -2930,7 +2901,6 @@ function Ace2Inner(editorInfo, cssManagers) {
           fastIncorp(4);
           evt.preventDefault();
           doReturnKey();
-          // scrollSelectionIntoView();
           scheduler.setTimeout(() => {
             outerWin.scrollBy(-100, 0);
           }, 0);
@@ -2979,7 +2949,6 @@ function Ace2Inner(editorInfo, cssManagers) {
           fastIncorp(5);
           evt.preventDefault();
           doTabKey(evt.shiftKey);
-          // scrollSelectionIntoView();
           specialHandled = true;
         }
         if ((!specialHandled) &&
@@ -3273,7 +3242,6 @@ function Ace2Inner(editorInfo, cssManagers) {
       if (isCollapsed) {
         const diveDeep = () => {
           while (p.node.childNodes.length > 0) {
-            // && (p.node == root || p.node.parentNode == root)) {
             if (p.index === 0) {
               p.node = p.node.firstChild;
               p.maxIndex = nodeMaxIndex(p.node);
@@ -3514,9 +3482,6 @@ function Ace2Inner(editorInfo, cssManagers) {
     $(document).on('click', handleClick);
     // dropdowns on edit bar need to be closed on clicks on both pad inner and pad outer
     $(outerWin.document).on('click', hideEditBarDropdowns);
-    // Disabled: https://github.com/ether/etherpad-lite/issues/2546
-    // Will break OL re-numbering: https://github.com/ether/etherpad-lite/pull/2533
-    // $(document).on("cut", handleCut);
 
     // If non-nullish, pasting on a link should be suppressed.
     let suppressPasteOnLink = null;
@@ -3715,7 +3680,6 @@ function Ace2Inner(editorInfo, cssManagers) {
 
     const mods = [];
     for (let n = firstLine; n <= lastLine; n++) {
-      // var t = '';
       let level = 0;
       let togglingOn = true;
       const listType = /([a-z]+)([0-9]+)/.exec(getLineListType(n));
@@ -3726,7 +3690,6 @@ function Ace2Inner(editorInfo, cssManagers) {
       }
 
       if (listType) {
-        // t = listType[1];
         level = Number(listType[2]);
       }
       const t = getLineListType(n);

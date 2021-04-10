@@ -356,7 +356,6 @@ that is a string.
       return self.indexOfEntry(self.atOffset(offset));
     },
     search: (entryFunc) => _search(entryFunc),
-    // debugToString: _debugToString,
     debugGetPoint: _getPoint,
     debugDepth: () => start.levels,
   });
