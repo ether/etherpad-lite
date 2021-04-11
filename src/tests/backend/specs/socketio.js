@@ -5,6 +5,7 @@ const common = require('../common');
 const io = require('socket.io-client');
 const padManager = require('../../../node/db/PadManager');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
+const readOnlyManager = require('../../../node/db/ReadOnlyManager');
 const setCookieParser = require('set-cookie-parser');
 const settings = require('../../../node/utils/Settings');
 
@@ -168,6 +169,33 @@ describe(__filename, function () {
       const clientVars = await handshake(socket, 'pad');
       assert.equal(clientVars.type, 'CLIENT_VARS');
     });
+
+    for (const authn of [false, true]) {
+      const desc = authn ? 'authn user' : '!authn anonymous';
+      it(`${desc} read-only /p/pad -> 200, ok`, async function () {
+        this.timeout(400);
+        const get = (ep) => {
+          let res = agent.get(ep);
+          if (authn) res = res.auth('user', 'user-password');
+          return res.expect(200);
+        };
+        settings.requireAuthentication = authn;
+        let res = await get('/p/pad');
+        socket = await connect(res);
+        let clientVars = await handshake(socket, 'pad');
+        assert.equal(clientVars.type, 'CLIENT_VARS');
+        assert.equal(clientVars.data.readonly, false);
+        const readOnlyId = clientVars.data.readOnlyId;
+        assert(readOnlyManager.isReadOnlyId(readOnlyId));
+        socket.close();
+        res = await get(`/p/${readOnlyId}`);
+        socket = await connect(res);
+        clientVars = await handshake(socket, readOnlyId);
+        assert.equal(clientVars.type, 'CLIENT_VARS');
+        assert.equal(clientVars.data.readonly, true);
+      });
+    }
+
     it('authz user /p/pad -> 200, ok', async function () {
       this.timeout(400);
       settings.requireAuthentication = true;

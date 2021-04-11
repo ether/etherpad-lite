@@ -109,22 +109,24 @@ describe(__filename, function () {
           .expect((res) => assert.equal(res.body.data.text, padText.toString()));
     });
 
-    it('gets read only pad Id and exports the html and text for this pad', async function () {
-      this.timeout(250);
-      const ro = await agent.get(`${endPoint('getReadOnlyID')}&padID=${testPadId}`)
-          .expect(200)
-          .expect((res) => assert.ok(JSON.parse(res.text).data.readOnlyID));
-      const readOnlyId = JSON.parse(ro.text).data.readOnlyID;
-
-      await agent.get(`/p/${readOnlyId}/export/html`)
-          .expect(200)
-          .expect((res) => assert(res.text.indexOf('This is the') !== -1));
-
-      await agent.get(`/p/${readOnlyId}/export/txt`)
-          .expect(200)
-          .expect((res) => assert(res.text.indexOf('This is the') !== -1));
-    });
-
+    for (const authn of [false, true]) {
+      it(`can export from read-only pad ID, authn ${authn}`, async function () {
+        this.timeout(250);
+        settings.requireAuthentication = authn;
+        const get = (ep) => {
+          let req = agent.get(ep);
+          if (authn) req = req.auth('user', 'user-password');
+          return req.expect(200);
+        };
+        const ro = await get(`${endPoint('getReadOnlyID')}&padID=${testPadId}`)
+            .expect((res) => assert.ok(JSON.parse(res.text).data.readOnlyID));
+        const readOnlyId = JSON.parse(ro.text).data.readOnlyID;
+        await get(`/p/${readOnlyId}/export/html`)
+            .expect((res) => assert(res.text.indexOf('This is the') !== -1));
+        await get(`/p/${readOnlyId}/export/txt`)
+            .expect((res) => assert(res.text.indexOf('This is the') !== -1));
+      });
+    }
 
     describe('Import/Export tests requiring AbiWord/LibreOffice', function () {
       this.timeout(10000);
