@@ -218,17 +218,9 @@ exports.handleMessage = async (socket, message) => {
     return;
   }
 
-  // check if pad is requested via readOnly
-  let padId = auth.padID;
-
-  if (padId.indexOf('r.') === 0) {
-    // Pad is readOnly, first get the real Pad ID
-    padId = await readOnlyManager.getPadId(padId);
-  }
-
   const {session: {user} = {}} = socket.client.request;
   const {accessStatus, authorID} =
-      await securityManager.checkAccess(padId, auth.sessionID, auth.token, user);
+      await securityManager.checkAccess(auth.padID, auth.sessionID, auth.token, user);
   if (accessStatus !== 'grant') {
     // Access denied. Send the reason to the user.
     socket.json.send({accessStatus});

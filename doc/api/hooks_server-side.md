@@ -156,11 +156,13 @@ Called from: src/node/db/SecurityManager.js
 
 Things in context:
 
-1. padID - the pad the user wants to access
+1. padID - the real ID (never the read-only ID) of the pad the user wants to
+   access
 2. token - the token of the author
 3. sessionCookie - the session the use has
 
-This hook gets called when the access to the concrete pad is being checked. Return `false` to deny access.
+This hook gets called when the access to the concrete pad is being checked.
+Return `false` to deny access.
 
 ## padCreate
 Called from: src/node/db/Pad.js
