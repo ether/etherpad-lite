@@ -23,7 +23,6 @@
  */
 
 const _entryWidth = (e) => (e && e.width) || 0;
-const _getNodeAtPoint = (point) => point.nodes[0].downPtrs[0];
 
 // A "point" object at index x allows modifications immediately after the first x elements of the
 // skiplist, such as multiple inserts or deletes. After an insert or delete using point P, the point
@@ -65,6 +64,94 @@ class Point {
 
   toString() {
     return `Point(${this.loc})`;
+  }
+
+  insert(entry) {
+    const newNode = {
+      key: entry.key,
+      entry,
+      levels: 0,
+      upPtrs: [],
+      downPtrs: [],
+      downSkips: [],
+      downSkipWidths: [],
+    };
+    const pNodes = this.nodes;
+    const pIdxs = this.idxs;
+    const pLoc = this.loc;
+    const widthLoc = this.widthSkips[0] + this.nodes[0].downSkipWidths[0];
+    const newWidth = _entryWidth(entry);
+
+    // The new node will have at least level 1
+    // With a proability of 0.01^(n-1) the nodes level will be >= n
+    while (newNode.levels === 0 || Math.random() < 0.01) {
+      const lvl = newNode.levels;
+      newNode.levels++;
+      if (lvl === pNodes.length) {
+        // assume we have just passed the end of this.nodes, and reached one level greater
+        // than the skiplist currently supports
+        pNodes[lvl] = this._skipList._start;
+        pIdxs[lvl] = -1;
+        this._skipList._start.levels++;
+        this._skipList._end.levels++;
+        this._skipList._start.downPtrs[lvl] = this._skipList._end;
+        this._skipList._end.upPtrs[lvl] = this._skipList._start;
+        this._skipList._start.downSkips[lvl] = this._skipList._numNodes + 1;
+        this._skipList._start.downSkipWidths[lvl] = this._skipList._totalWidth;
+        this.widthSkips[lvl] = 0;
+      }
+      const me = newNode;
+      const up = pNodes[lvl];
+      const down = up.downPtrs[lvl];
+      const skip1 = pLoc - pIdxs[lvl];
+      const skip2 = up.downSkips[lvl] + 1 - skip1;
+      up.downSkips[lvl] = skip1;
+      up.downPtrs[lvl] = me;
+      me.downSkips[lvl] = skip2;
+      me.upPtrs[lvl] = up;
+      me.downPtrs[lvl] = down;
+      down.upPtrs[lvl] = me;
+      const widthSkip1 = widthLoc - this.widthSkips[lvl];
+      const widthSkip2 = up.downSkipWidths[lvl] + newWidth - widthSkip1;
+      up.downSkipWidths[lvl] = widthSkip1;
+      me.downSkipWidths[lvl] = widthSkip2;
+    }
+    for (let lvl = newNode.levels; lvl < pNodes.length; lvl++) {
+      const up = pNodes[lvl];
+      up.downSkips[lvl]++;
+      up.downSkipWidths[lvl] += newWidth;
+    }
+    this._skipList._keyToNodeMap[`$KEY$${newNode.key}`] = newNode;
+    this._skipList._numNodes++;
+    this._skipList._totalWidth += newWidth;
+  }
+
+  delete() {
+    const elem = this.nodes[0].downPtrs[0];
+    const elemWidth = _entryWidth(elem.entry);
+    for (let i = 0; i < this.nodes.length; i++) {
+      if (i < elem.levels) {
+        const up = elem.upPtrs[i];
+        const down = elem.downPtrs[i];
+        const totalSkip = up.downSkips[i] + elem.downSkips[i] - 1;
+        up.downPtrs[i] = down;
+        down.upPtrs[i] = up;
+        up.downSkips[i] = totalSkip;
+        const totalWidthSkip = up.downSkipWidths[i] + elem.downSkipWidths[i] - elemWidth;
+        up.downSkipWidths[i] = totalWidthSkip;
+      } else {
+        const up = this.nodes[i];
+        up.downSkips[i]--;
+        up.downSkipWidths[i] -= elemWidth;
+      }
+    }
+    delete this._skipList._keyToNodeMap[`$KEY$${elem.key}`];
+    this._skipList._numNodes--;
+    this._skipList._totalWidth -= elemWidth;
+  }
+
+  getNode() {
+    return this.nodes[0].downPtrs[0];
   }
 }
 
@@ -114,90 +201,6 @@ class SkipList {
       return targetOffset === this._totalWidth ? (this._end.upPtrs[0] || null) : null;
     }
     return n;
-  }
-
-  _insertKeyAtPoint(point, entry) {
-    const newNode = {
-      key: entry.key,
-      entry,
-      levels: 0,
-      upPtrs: [],
-      downPtrs: [],
-      downSkips: [],
-      downSkipWidths: [],
-    };
-    const pNodes = point.nodes;
-    const pIdxs = point.idxs;
-    const pLoc = point.loc;
-    const widthLoc = point.widthSkips[0] + point.nodes[0].downSkipWidths[0];
-    const newWidth = _entryWidth(entry);
-
-    // The new node will have at least level 1
-    // With a proability of 0.01^(n-1) the nodes level will be >= n
-    while (newNode.levels === 0 || Math.random() < 0.01) {
-      const lvl = newNode.levels;
-      newNode.levels++;
-      if (lvl === pNodes.length) {
-        // assume we have just passed the end of point.nodes, and reached one level greater
-        // than the skiplist currently supports
-        pNodes[lvl] = this._start;
-        pIdxs[lvl] = -1;
-        this._start.levels++;
-        this._end.levels++;
-        this._start.downPtrs[lvl] = this._end;
-        this._end.upPtrs[lvl] = this._start;
-        this._start.downSkips[lvl] = this._numNodes + 1;
-        this._start.downSkipWidths[lvl] = this._totalWidth;
-        point.widthSkips[lvl] = 0;
-      }
-      const me = newNode;
-      const up = pNodes[lvl];
-      const down = up.downPtrs[lvl];
-      const skip1 = pLoc - pIdxs[lvl];
-      const skip2 = up.downSkips[lvl] + 1 - skip1;
-      up.downSkips[lvl] = skip1;
-      up.downPtrs[lvl] = me;
-      me.downSkips[lvl] = skip2;
-      me.upPtrs[lvl] = up;
-      me.downPtrs[lvl] = down;
-      down.upPtrs[lvl] = me;
-      const widthSkip1 = widthLoc - point.widthSkips[lvl];
-      const widthSkip2 = up.downSkipWidths[lvl] + newWidth - widthSkip1;
-      up.downSkipWidths[lvl] = widthSkip1;
-      me.downSkipWidths[lvl] = widthSkip2;
-    }
-    for (let lvl = newNode.levels; lvl < pNodes.length; lvl++) {
-      const up = pNodes[lvl];
-      up.downSkips[lvl]++;
-      up.downSkipWidths[lvl] += newWidth;
-    }
-    this._keyToNodeMap[`$KEY$${newNode.key}`] = newNode;
-    this._numNodes++;
-    this._totalWidth += newWidth;
-  }
-
-  _deleteKeyAtPoint(point) {
-    const elem = point.nodes[0].downPtrs[0];
-    const elemWidth = _entryWidth(elem.entry);
-    for (let i = 0; i < point.nodes.length; i++) {
-      if (i < elem.levels) {
-        const up = elem.upPtrs[i];
-        const down = elem.downPtrs[i];
-        const totalSkip = up.downSkips[i] + elem.downSkips[i] - 1;
-        up.downPtrs[i] = down;
-        down.upPtrs[i] = up;
-        up.downSkips[i] = totalSkip;
-        const totalWidthSkip = up.downSkipWidths[i] + elem.downSkipWidths[i] - elemWidth;
-        up.downSkipWidths[i] = totalWidthSkip;
-      } else {
-        const up = point.nodes[i];
-        up.downSkips[i]--;
-        up.downSkipWidths[i] -= elemWidth;
-      }
-    }
-    delete this._keyToNodeMap[`$KEY$${elem.key}`];
-    this._numNodes--;
-    this._totalWidth -= elemWidth;
   }
 
   _propagateWidthChange(node) {
@@ -261,7 +264,7 @@ class SkipList {
   atIndex(i) {
     if (i < 0) console.warn(`atIndex(${i})`);
     if (i >= this._numNodes) console.warn(`atIndex(${i}>=${this._numNodes})`);
-    return _getNodeAtPoint(new Point(this, i)).entry;
+    return (new Point(this, i)).getNode().entry;
   }
 
   // differs from Array.splice() in that new elements are in an array, not varargs
@@ -275,12 +278,10 @@ class SkipList {
 
     if (!newEntryArray) newEntryArray = [];
     const pt = new Point(this, start);
-    for (let i = 0; i < deleteCount; i++) {
-      this._deleteKeyAtPoint(pt);
-    }
+    for (let i = 0; i < deleteCount; i++) pt.delete();
     for (let i = (newEntryArray.length - 1); i >= 0; i--) {
       const entry = newEntryArray[i];
-      this._insertKeyAtPoint(pt, entry);
+      pt.insert(entry);
     }
   }
 
