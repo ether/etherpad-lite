@@ -34,6 +34,22 @@ class Node {
     this.downSkips = Array(levels).fill(downSkips);
     this.downSkipWidths = Array(levels).fill(downSkipWidths);
   }
+
+  propagateWidthChange() {
+    const oldWidth = this.downSkipWidths[0];
+    const newWidth = _entryWidth(this.entry);
+    const widthChange = newWidth - oldWidth;
+    let n = this;
+    let lvl = 0;
+    while (lvl < n.levels) {
+      n.downSkipWidths[lvl] += widthChange;
+      lvl++;
+      while (lvl >= n.levels && n.upPtrs[lvl - 1]) {
+        n = n.upPtrs[lvl - 1];
+      }
+    }
+    return widthChange;
+  }
 }
 
 // A "point" object at index x allows modifications immediately after the first x elements of the
@@ -193,22 +209,6 @@ class SkipList {
     return n;
   }
 
-  _propagateWidthChange(node) {
-    const oldWidth = node.downSkipWidths[0];
-    const newWidth = _entryWidth(node.entry);
-    const widthChange = newWidth - oldWidth;
-    let n = node;
-    let lvl = 0;
-    while (lvl < n.levels) {
-      n.downSkipWidths[lvl] += widthChange;
-      lvl++;
-      while (lvl >= n.levels && n.upPtrs[lvl - 1]) {
-        n = n.upPtrs[lvl - 1];
-      }
-    }
-    this._totalWidth += widthChange;
-  }
-
   _getNodeIndex(node, byWidth) {
     let dist = (byWidth ? 0 : -1);
     let n = node;
@@ -313,7 +313,7 @@ class SkipList {
   offsetOfEntry(entry) { return this.offsetOfKey(entry.key); }
   setEntryWidth(entry, width) {
     entry.width = width;
-    this._propagateWidthChange(this._getNodeByKey(entry.key));
+    this._totalWidth += this._keyToNodeMap.get(entry.key).propagateWidthChange();
   }
   totalWidth() { return this._totalWidth; }
   offsetOfIndex(i) {
