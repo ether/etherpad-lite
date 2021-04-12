@@ -121,7 +121,7 @@ class Point {
         this._skipList._end.levels++;
         this._skipList._start.downPtrs[lvl] = this._skipList._end;
         this._skipList._end.upPtrs[lvl] = this._skipList._start;
-        this._skipList._start.downSkips[lvl] = this._skipList._numNodes + 1;
+        this._skipList._start.downSkips[lvl] = this._skipList._keyToNodeMap.size + 1;
         this._skipList._start.downSkipWidths[lvl] = this._skipList._totalWidth;
         this.widthSkips[lvl] = 0;
       }
@@ -147,7 +147,6 @@ class Point {
       up.downSkipWidths[lvl] += newWidth;
     }
     this._skipList._keyToNodeMap.set(newNode.key, newNode);
-    this._skipList._numNodes++;
     this._skipList._totalWidth += newWidth;
   }
 
@@ -171,7 +170,6 @@ class Point {
       }
     }
     this._skipList._keyToNodeMap.delete(elem.key);
-    this._skipList._numNodes--;
     this._skipList._totalWidth -= elemWidth;
   }
 
@@ -189,7 +187,6 @@ class SkipList {
     // if there are N elements in the skiplist, "start" is element -1 and "end" is element N
     this._start = new Node(null, 1);
     this._end = new Node(null, 1, null, null);
-    this._numNodes = 0;
     this._totalWidth = 0;
     this._keyToNodeMap = new Map();
     this._start.downPtrs[0] = this._end;
@@ -252,20 +249,20 @@ class SkipList {
     return lowIndex + 1;
   }
 
-  length() { return this._numNodes; }
+  length() { return this._keyToNodeMap.size; }
 
   atIndex(i) {
     if (i < 0) console.warn(`atIndex(${i})`);
-    if (i >= this._numNodes) console.warn(`atIndex(${i}>=${this._numNodes})`);
+    if (i >= this._keyToNodeMap.size) console.warn(`atIndex(${i}>=${this._keyToNodeMap.size})`);
     return (new Point(this, i)).getNode().entry;
   }
 
   // differs from Array.splice() in that new elements are in an array, not varargs
   splice(start, deleteCount, newEntryArray) {
     if (start < 0) console.warn(`splice(${start}, ...)`);
-    if (start + deleteCount > this._numNodes) {
-      console.warn(`splice(${start}, ${deleteCount}, ...), N=${this._numNodes}`);
-      console.warn('%s %s %s', typeof start, typeof deleteCount, typeof this._numNodes);
+    if (start + deleteCount > this._keyToNodeMap.size) {
+      console.warn(`splice(${start}, ${deleteCount}, ...), N=${this._keyToNodeMap.size}`);
+      console.warn('%s %s %s', typeof start, typeof deleteCount, typeof this._keyToNodeMap.size);
       console.trace();
     }
 
@@ -280,21 +277,21 @@ class SkipList {
 
   next(entry) { return this._keyToNodeMap.get(entry.key).downPtrs[0].entry || null; }
   prev(entry) { return this._keyToNodeMap.get(entry.key).upPtrs[0].entry || null; }
-  push(entry) { this.splice(this._numNodes, 0, [entry]); }
+  push(entry) { this.splice(this._keyToNodeMap.size, 0, [entry]); }
 
   slice(start, end) {
     // act like Array.slice()
     if (start === undefined) start = 0;
-    else if (start < 0) start += this._numNodes;
-    if (end === undefined) end = this._numNodes;
-    else if (end < 0) end += this._numNodes;
+    else if (start < 0) start += this._keyToNodeMap.size;
+    if (end === undefined) end = this._keyToNodeMap.size;
+    else if (end < 0) end += this._keyToNodeMap.size;
 
     if (start < 0) start = 0;
-    if (start > this._numNodes) start = this._numNodes;
+    if (start > this._keyToNodeMap.size) start = this._keyToNodeMap.size;
     if (end < 0) end = 0;
-    if (end > this._numNodes) end = this._numNodes;
+    if (end > this._keyToNodeMap.size) end = this._keyToNodeMap.size;
 
-    window.dmesg(String([start, end, this._numNodes]));
+    window.dmesg(String([start, end, this._keyToNodeMap.size]));
     if (end <= start) return [];
     let n = this.atIndex(start);
     const array = [n];
@@ -321,12 +318,12 @@ class SkipList {
   totalWidth() { return this._totalWidth; }
   offsetOfIndex(i) {
     if (i < 0) return 0;
-    if (i >= this._numNodes) return this._totalWidth;
+    if (i >= this._keyToNodeMap.size) return this._totalWidth;
     return this.offsetOfEntry(this.atIndex(i));
   }
   indexOfOffset(offset) {
     if (offset <= 0) return 0;
-    if (offset >= this._totalWidth) return this._numNodes;
+    if (offset >= this._totalWidth) return this._keyToNodeMap.size;
     return this.indexOfEntry(this.atOffset(offset));
   }
 }
