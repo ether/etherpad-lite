@@ -50,14 +50,22 @@ exports.socketio = () => {
 };
 
 /**
- * A associative array that saves information about a session
- * key = sessionId
- * values = padId, readonlyPadId, readonly, author, rev
- *   padId = the real padId of the pad
- *   readonlyPadId = The readonly pad id of the pad
- *   readonly = Wether the client has only read access (true) or read/write access (false)
- *   rev = That last revision that was send to this client
- *   author = the author ID used for this session
+ * Contains information about socket.io connections:
+ *   - key: Socket.io socket ID.
+ *   - value: Object that is initially empty immediately after connect. Once the client's
+ *     CLIENT_READY message is processed, it has the following properties:
+ *       - auth: Object with the following properties copied from the client's CLIENT_READY message:
+ *           - padID: Pad ID requested by the user. Unlike the padId property described below, this
+ *             may be a read-only pad ID.
+ *           - sessionID: Copied from the client's sessionID cookie, which should be the value
+ *             returned from the createSession() HTTP API. This will be null/undefined if
+ *             createSession() isn't used or the portal doesn't set the sessionID cookie.
+ *           - token: User-supplied token.
+ *       - author: The user's author ID.
+ *       - padId: The real (not read-only) ID of the pad.
+ *       - readonlyPadId: The read-only ID of the pad.
+ *       - readonly: Whether the client has read-only access (true) or read/write access (false).
+ *       - rev: The last revision that was sent to the client.
  */
 const sessioninfos = {};
 exports.sessioninfos = sessioninfos;
