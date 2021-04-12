@@ -146,7 +146,7 @@ class Point {
       up.downSkips[lvl]++;
       up.downSkipWidths[lvl] += newWidth;
     }
-    this._skipList._keyToNodeMap[`$KEY$${newNode.key}`] = newNode;
+    this._skipList._keyToNodeMap.set(newNode.key, newNode);
     this._skipList._numNodes++;
     this._skipList._totalWidth += newWidth;
   }
@@ -170,7 +170,7 @@ class Point {
         up.downSkipWidths[i] -= elemWidth;
       }
     }
-    delete this._skipList._keyToNodeMap[`$KEY$${elem.key}`];
+    this._skipList._keyToNodeMap.delete(elem.key);
     this._skipList._numNodes--;
     this._skipList._totalWidth -= elemWidth;
   }
@@ -191,7 +191,7 @@ class SkipList {
     this._end = new Node(null, 1, null, null);
     this._numNodes = 0;
     this._totalWidth = 0;
-    this._keyToNodeMap = {};
+    this._keyToNodeMap = new Map();
     this._start.downPtrs[0] = this._end;
     this._end.upPtrs[0] = this._start;
   }
@@ -225,8 +225,6 @@ class SkipList {
     }
     return dist;
   }
-
-  _getNodeByKey(key) { return this._keyToNodeMap[`$KEY$${key}`]; }
 
   // Returns index of first entry such that entryFunc(entry) is truthy,
   // or length() if no such entry.  Assumes all falsy entries come before
@@ -280,8 +278,8 @@ class SkipList {
     }
   }
 
-  next(entry) { return this._getNodeByKey(entry.key).downPtrs[0].entry || null; }
-  prev(entry) { return this._getNodeByKey(entry.key).upPtrs[0].entry || null; }
+  next(entry) { return this._keyToNodeMap.get(entry.key).downPtrs[0].entry || null; }
+  prev(entry) { return this._keyToNodeMap.get(entry.key).upPtrs[0].entry || null; }
   push(entry) { this.splice(this._numNodes, 0, [entry]); }
 
   slice(start, end) {
@@ -307,14 +305,14 @@ class SkipList {
     return array;
   }
 
-  atKey(key) { return this._getNodeByKey(key).entry; }
-  indexOfKey(key) { return this._getNodeIndex(this._getNodeByKey(key)); }
+  atKey(key) { return this._keyToNodeMap.get(key).entry; }
+  indexOfKey(key) { return this._getNodeIndex(this._keyToNodeMap.get(key)); }
   indexOfEntry(entry) { return this.indexOfKey(entry.key); }
-  containsKey(key) { return !!this._getNodeByKey(key); }
+  containsKey(key) { return this._keyToNodeMap.has(key); }
   // gets the last entry starting at or before the offset
   atOffset(offset) { return this._getNodeAtOffset(offset).entry; }
   keyAtOffset(offset) { return this.atOffset(offset).key; }
-  offsetOfKey(key) { return this._getNodeIndex(this._getNodeByKey(key), true); }
+  offsetOfKey(key) { return this._getNodeIndex(this._keyToNodeMap.get(key), true); }
   offsetOfEntry(entry) { return this.offsetOfKey(entry.key); }
   setEntryWidth(entry, width) {
     entry.width = width;
