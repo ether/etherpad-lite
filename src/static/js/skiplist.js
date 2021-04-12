@@ -24,6 +24,18 @@
 
 const _entryWidth = (e) => (e && e.width) || 0;
 
+class Node {
+  constructor(entry, levels = 0, downSkips = 1, downSkipWidths = 0) {
+    this.key = entry != null ? entry.key : null;
+    this.entry = entry;
+    this.levels = levels;
+    this.upPtrs = Array(levels).fill(null);
+    this.downPtrs = Array(levels).fill(null);
+    this.downSkips = Array(levels).fill(downSkips);
+    this.downSkipWidths = Array(levels).fill(downSkipWidths);
+  }
+}
+
 // A "point" object at index x allows modifications immediately after the first x elements of the
 // skiplist, such as multiple inserts or deletes. After an insert or delete using point P, the point
 // is still valid and points to the same index in the skiplist. Other operations with other points
@@ -67,15 +79,7 @@ class Point {
   }
 
   insert(entry) {
-    const newNode = {
-      key: entry.key,
-      entry,
-      levels: 0,
-      upPtrs: [],
-      downPtrs: [],
-      downSkips: [],
-      downSkipWidths: [],
-    };
+    const newNode = new Node(entry);
     const pNodes = this.nodes;
     const pIdxs = this.idxs;
     const pLoc = this.loc;
@@ -162,22 +166,8 @@ class Point {
 class SkipList {
   constructor() {
     // if there are N elements in the skiplist, "start" is element -1 and "end" is element N
-    this._start = {
-      key: null,
-      levels: 1,
-      upPtrs: [null],
-      downPtrs: [null],
-      downSkips: [1],
-      downSkipWidths: [0],
-    };
-    this._end = {
-      key: null,
-      levels: 1,
-      upPtrs: [null],
-      downPtrs: [null],
-      downSkips: [null],
-      downSkipWidths: [null],
-    };
+    this._start = new Node(null, 1);
+    this._end = new Node(null, 1, null, null);
     this._numNodes = 0;
     this._totalWidth = 0;
     this._keyToNodeMap = {};
