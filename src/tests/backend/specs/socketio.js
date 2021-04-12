@@ -231,6 +231,24 @@ describe(__filename, function () {
       const message = await handshake(socket, 'pad');
       assert.equal(message.accessStatus, 'deny');
     });
+
+    it('authn anonymous read-only /p/pad -> 401, error', async function () {
+      this.timeout(400);
+      settings.requireAuthentication = true;
+      let res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+      socket = await connect(res);
+      const clientVars = await handshake(socket, 'pad');
+      assert.equal(clientVars.type, 'CLIENT_VARS');
+      const readOnlyId = clientVars.data.readOnlyId;
+      assert(readOnlyManager.isReadOnlyId(readOnlyId));
+      socket.close();
+      res = await agent.get(`/p/${readOnlyId}`).expect(401);
+      // Despite the 401, try to read the pad via a socket.io connection anyway.
+      socket = await connect(res);
+      const message = await handshake(socket, readOnlyId);
+      assert.equal(message.accessStatus, 'deny');
+    });
+
     it('authn !cookie -> error', async function () {
       this.timeout(400);
       settings.requireAuthentication = true;
