@@ -62,8 +62,15 @@ exports.socketio = () => {
 const sessioninfos = {};
 exports.sessioninfos = sessioninfos;
 
-// Measure total amount of users
 stats.gauge('totalUsers', () => Object.keys(socketio.sockets.sockets).length);
+stats.gauge('activePads', () => {
+  const padIds = new Set();
+  for (const {padId} of Object.values(sessioninfos)) {
+    if (!padId) continue;
+    padIds.add(padId);
+  }
+  return padIds.size;
+});
 
 /**
  * A changeset queue per pad that is processed by handleUserChanges()
@@ -94,18 +101,6 @@ exports.handleConnect = (socket) => {
 
   // Initialize sessioninfos for this new session
   sessioninfos[socket.id] = {};
-
-  stats.gauge('activePads', () => {
-    const padIds = [];
-    for (const session of Object.keys(sessioninfos)) {
-      if (sessioninfos[session].padId) {
-        if (padIds.indexOf(sessioninfos[session].padId) === -1) {
-          padIds.push(sessioninfos[session].padId);
-        }
-      }
-    }
-    return padIds.length;
-  });
 };
 
 /**
