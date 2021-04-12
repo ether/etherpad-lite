@@ -116,6 +116,7 @@ class SkipList {
   _insertKeyAtPoint(point, entry) {
     const newNode = {
       key: entry.key,
+      entry,
       levels: 0,
       upPtrs: [],
       downPtrs: [],
@@ -277,8 +278,6 @@ class SkipList {
     for (let i = (newEntryArray.length - 1); i >= 0; i--) {
       const entry = newEntryArray[i];
       this._insertKeyAtPoint(pt, entry);
-      const node = this._getNodeByKey(entry.key);
-      node.entry = entry;
     }
   }
 
