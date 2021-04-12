@@ -159,6 +159,11 @@ $(() => {
   // get the list of specs and filter it if requested
   const specs = specs_list.slice();
 
+  const absUrl = (url) => new URL(url, window.location.href).href;
+  require.setRootURI(absUrl('../../javascripts/src'));
+  require.setLibraryURI(absUrl('../../javascripts/lib'));
+  require.setGlobalKeyPath('require');
+
   // inject spec scripts into the dom
   const $body = $('body');
   $.each(specs, (i, spec) => {

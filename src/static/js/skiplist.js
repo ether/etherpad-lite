@@ -95,6 +95,11 @@ class Point {
   }
 
   insert(entry) {
+    if (entry.key == null) throw new Error('entry.key must not be null');
+    if (this._skipList.containsKey(entry.key)) {
+      throw new Error(`an entry with key ${entry.key} already exists`);
+    }
+
     const newNode = new Node(entry);
     const pNodes = this.nodes;
     const pIdxs = this.idxs;
