@@ -113,9 +113,9 @@ class SkipList {
     return n;
   }
 
-  _insertKeyAtPoint(point, newKey, entry) {
+  _insertKeyAtPoint(point, entry) {
     const newNode = {
-      key: newKey,
+      key: entry.key,
       levels: 0,
       upPtrs: [],
       downPtrs: [],
@@ -167,7 +167,7 @@ class SkipList {
       up.downSkips[lvl]++;
       up.downSkipWidths[lvl] += newWidth;
     }
-    this._keyToNodeMap[`$KEY$${newKey}`] = newNode;
+    this._keyToNodeMap[`$KEY$${newNode.key}`] = newNode;
     this._numNodes++;
     this._totalWidth += newWidth;
   }
@@ -276,7 +276,7 @@ class SkipList {
     }
     for (let i = (newEntryArray.length - 1); i >= 0; i--) {
       const entry = newEntryArray[i];
-      this._insertKeyAtPoint(pt, entry.key, entry);
+      this._insertKeyAtPoint(pt, entry);
       const node = this._getNodeByKey(entry.key);
       node.entry = entry;
     }
