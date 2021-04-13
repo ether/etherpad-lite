@@ -251,6 +251,11 @@ exports.automaticReconnectionTimeout = 0;
 exports.loadTest = false;
 
 /**
+ * Disable dump of objects preventing a clean exit
+ */
+exports.dumpOnUncleanExit = false;
+
+/**
  * Enable indentation on new lines
  */
 exports.indentationOnNewLine = true;
