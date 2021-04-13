@@ -468,6 +468,11 @@
    */
   "loadTest": false,
 
+  /**
+  * Disable dump of objects preventing a clean exit
+  */
+  "dumpOnUncleanExit": false,
+
   /*
    * Disable indentation on new line when previous line ends with some special
    * chars (':', '[', '(', '{')
