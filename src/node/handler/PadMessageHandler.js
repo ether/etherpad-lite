@@ -732,12 +732,11 @@ exports.updatePadClients = async (pad) => {
       const revChangeset = revision.changeset;
       const currentTime = revision.meta.timestamp;
 
-      // next if session has not been deleted
-      if (sessioninfos[sid] == null) {
-        continue;
-      }
+      // Re-check sessioninfos in case the client disconnected during the above await.
+      const sessioninfo = sessioninfos[sid];
+      if (sessioninfo == null) continue;
 
-      if (author === sessioninfos[sid].author) {
+      if (author === sessioninfo.author) {
         socket.json.send({type: 'COLLABROOM', data: {type: 'ACCEPT_COMMIT', newRev: r}});
       } else {
         const forWire = Changeset.prepareForWire(revChangeset, pad.pool);
@@ -748,15 +747,12 @@ exports.updatePadClients = async (pad) => {
             apool: forWire.pool,
             author,
             currentTime,
-            timeDelta: currentTime - sessioninfos[sid].time}};
+            timeDelta: currentTime - sessioninfo.time}};
 
         socket.json.send(wireMsg);
       }
-
-      if (sessioninfos[sid]) {
-        sessioninfos[sid].time = currentTime;
-        sessioninfos[sid].rev = r;
-      }
+      sessioninfo.time = currentTime;
+      sessioninfo.rev = r;
     }
   }
 };
