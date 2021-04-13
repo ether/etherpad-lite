@@ -715,13 +715,13 @@ exports.updatePadClients = async (pad) => {
   // but benefit of reusing cached revision object is HUGE
   const revCache = {};
 
-  // go through all sessions on this pad
-  for (const socket of roomSockets) {
-    const sid = socket.id;
+  socket: for (const socket of roomSockets) {
+    const sessioninfo = sessioninfos[socket.id];
+    // The user might have disconnected since _getRoomSockets() was called.
+    if (sessioninfo == null) continue;
 
-    // send them all new changesets
-    while (sessioninfos[sid] && sessioninfos[sid].rev < pad.getHeadRevisionNumber()) {
-      const r = sessioninfos[sid].rev + 1;
+    while (sessioninfo.rev < pad.getHeadRevisionNumber()) {
+      const r = sessioninfo.rev + 1;
       let revision = revCache[r];
       if (!revision) {
         revision = await pad.getRevision(r);
@@ -732,24 +732,29 @@ exports.updatePadClients = async (pad) => {
       const revChangeset = revision.changeset;
       const currentTime = revision.meta.timestamp;
 
-      // Re-check sessioninfos in case the client disconnected during the above await.
-      const sessioninfo = sessioninfos[sid];
-      if (sessioninfo == null) continue;
-
+      let msg;
       if (author === sessioninfo.author) {
-        socket.json.send({type: 'COLLABROOM', data: {type: 'ACCEPT_COMMIT', newRev: r}});
+        msg = {type: 'COLLABROOM', data: {type: 'ACCEPT_COMMIT', newRev: r}};
       } else {
         const forWire = Changeset.prepareForWire(revChangeset, pad.pool);
-        const wireMsg = {type: 'COLLABROOM',
-          data: {type: 'NEW_CHANGES',
+        msg = {
+          type: 'COLLABROOM',
+          data: {
+            type: 'NEW_CHANGES',
             newRev: r,
             changeset: forWire.translated,
             apool: forWire.pool,
             author,
             currentTime,
-            timeDelta: currentTime - sessioninfo.time}};
-
-        socket.json.send(wireMsg);
+            timeDelta: currentTime - sessioninfo.time,
+          },
+        };
+      }
+      try {
+        socket.json.send(msg);
+      } catch (err) {
+        messageLogger.error(`Failed to notify user of new revision: ${err.stack || err}`);
+        continue socket;
       }
       sessioninfo.time = currentTime;
       sessioninfo.rev = r;
