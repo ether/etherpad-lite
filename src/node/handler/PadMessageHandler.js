@@ -715,10 +715,10 @@ exports.updatePadClients = async (pad) => {
   // but benefit of reusing cached revision object is HUGE
   const revCache = {};
 
-  socket: for (const socket of roomSockets) {
+  await Promise.all(roomSockets.map(async (socket) => {
     const sessioninfo = sessioninfos[socket.id];
     // The user might have disconnected since _getRoomSockets() was called.
-    if (sessioninfo == null) continue;
+    if (sessioninfo == null) return;
 
     while (sessioninfo.rev < pad.getHeadRevisionNumber()) {
       const r = sessioninfo.rev + 1;
@@ -754,12 +754,12 @@ exports.updatePadClients = async (pad) => {
         socket.json.send(msg);
       } catch (err) {
         messageLogger.error(`Failed to notify user of new revision: ${err.stack || err}`);
-        continue socket;
+        return;
       }
       sessioninfo.time = currentTime;
       sessioninfo.rev = r;
     }
-  }
+  }));
 };
 
 /**
