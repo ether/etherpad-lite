@@ -67,13 +67,13 @@ exports.socketio = () => {
  *       - readonly: Whether the client has read-only access (true) or read/write access (false).
  *       - rev: The last revision that was sent to the client.
  */
-const sessioninfos = {};
+const sessioninfos = new Map();
 exports.sessioninfos = sessioninfos;
 
 stats.gauge('totalUsers', () => Object.keys(socketio.sockets.sockets).length);
 stats.gauge('activePads', () => {
   const padIds = new Set();
-  for (const {padId} of Object.values(sessioninfos)) {
+  for (const {padId} of sessioninfos.values()) {
     if (!padId) continue;
     padIds.add(padId);
   }
@@ -106,9 +106,7 @@ exports.setSocketIO = (socket_io) => {
  */
 exports.handleConnect = (socket) => {
   stats.meter('connects').mark();
-
-  // Initialize sessioninfos for this new session
-  sessioninfos[socket.id] = {};
+  sessioninfos.set(socket.id, {});
 };
 
 /**
@@ -130,9 +128,7 @@ exports.kickSessionsFromPad = (padID) => {
  */
 exports.handleDisconnect = async (socket) => {
   stats.meter('disconnects').mark();
-
-  // save the padname of this session
-  const session = sessioninfos[socket.id];
+  const session = sessioninfos.get(socket.id);
 
   // if this connection was already etablished with a handshake,
   // send a disconnect message to the others
@@ -166,9 +162,7 @@ exports.handleDisconnect = async (socket) => {
     // Allow plugins to hook into users leaving the pad
     hooks.callAll('userLeave', session);
   }
-
-  // Delete the sessioninfos entrys of this session
-  delete sessioninfos[socket.id];
+  sessioninfos.delete(socket.id);
 };
 
 /**
@@ -199,7 +193,7 @@ exports.handleMessage = async (socket, message) => {
     return;
   }
 
-  const thisSession = sessioninfos[socket.id];
+  const thisSession = sessioninfos.get(socket.id);
 
   if (!thisSession) {
     messageLogger.warn('Dropped message from an unknown connection.');
@@ -256,7 +250,7 @@ exports.handleMessage = async (socket, message) => {
   }
 
   // Drop the message if the client disconnected during the above processing.
-  if (sessioninfos[socket.id] !== thisSession) {
+  if (sessioninfos.get(socket.id) !== thisSession) {
     messageLogger.warn('Dropping message from a connection that has gone away.');
     return;
   }
@@ -301,7 +295,7 @@ exports.handleMessage = async (socket, message) => {
  * @param message the message from the client
  */
 const handleSaveRevisionMessage = async (socket, message) => {
-  const {padId, author: authorId} = sessioninfos[socket.id];
+  const {padId, author: authorId} = sessioninfos.get(socket.id);
   const pad = await padManager.getPad(padId);
   await pad.addSavedRevision(pad.head, authorId);
 };
@@ -351,7 +345,7 @@ exports.handleCustomMessage = (padID, msgString) => {
 const handleChatMessage = async (socket, message) => {
   const time = Date.now();
   const text = message.data.text;
-  const {padId, author: authorId} = sessioninfos[socket.id];
+  const {padId, author: authorId} = sessioninfos.get(socket.id);
   await exports.sendChatMessageToPadClients(time, authorId, text, padId);
 };
 
@@ -409,7 +403,7 @@ const handleGetChatMessages = async (socket, message) => {
     return;
   }
 
-  const padId = sessioninfos[socket.id].padId;
+  const {padId} = sessioninfos.get(socket.id);
   const pad = await padManager.getPad(padId);
 
   const chatMessages = await pad.getChatMessages(start, end);
@@ -442,11 +436,11 @@ const handleSuggestUserName = (socket, message) => {
     return;
   }
 
-  const padId = sessioninfos[socket.id].padId;
+  const {padId} = sessioninfos.get(socket.id);
 
   // search the author and send him this message
   _getRoomSockets(padId).forEach((socket) => {
-    const session = sessioninfos[socket.id];
+    const session = sessioninfos.get(socket.id);
     if (session && session.author === message.data.payload.unnamedId) {
       socket.json.send(message);
     }
@@ -472,7 +466,7 @@ const handleUserInfoUpdate = async (socket, message) => {
   }
 
   // Check that we have a valid session and author to update.
-  const session = sessioninfos[socket.id];
+  const session = sessioninfos.get(socket.id);
   if (!session || !session.author || !session.padId) {
     messageLogger.warn(`Dropped message, USERINFO_UPDATE Session not ready.${message.data}`);
     return;
@@ -554,7 +548,7 @@ const handleUserChanges = async (socket, message) => {
 
   // The client might disconnect between our callbacks. We should still
   // finish processing the changeset, so keep a reference to the session.
-  const thisSession = sessioninfos[socket.id];
+  const thisSession = sessioninfos.get(socket.id);
 
   // TODO: this might happen with other messages too => find one place to copy the session
   // and always use the copy. atm a message will be ignored if the session is gone even
@@ -716,7 +710,7 @@ exports.updatePadClients = async (pad) => {
   const revCache = {};
 
   await Promise.all(roomSockets.map(async (socket) => {
-    const sessioninfo = sessioninfos[socket.id];
+    const sessioninfo = sessioninfos.get(socket.id);
     // The user might have disconnected since _getRoomSockets() was called.
     if (sessioninfo == null) return;
 
@@ -811,7 +805,7 @@ const _correctMarkersInPad = (atext, apool) => {
 };
 
 const handleSwitchToPad = async (socket, message, _authorID) => {
-  const currentSessionInfo = sessioninfos[socket.id];
+  const currentSessionInfo = sessioninfos.get(socket.id);
   const padId = currentSessionInfo.padId;
 
   // Check permissions for the new pad.
@@ -830,20 +824,20 @@ const handleSwitchToPad = async (socket, message, _authorID) => {
   assert(authorID === currentSessionInfo.author);
 
   // Check if the connection dropped during the access check.
-  if (sessioninfos[socket.id] !== currentSessionInfo) return;
+  if (sessioninfos.get(socket.id) !== currentSessionInfo) return;
 
   // clear the session and leave the room
   _getRoomSockets(padId).forEach((socket) => {
-    const sinfo = sessioninfos[socket.id];
+    const sinfo = sessioninfos.get(socket.id);
     if (sinfo && sinfo.author === currentSessionInfo.author) {
       // fix user's counter, works on page refresh or if user closes browser window and then rejoins
-      sessioninfos[socket.id] = {};
+      sessioninfos.set(socket.id, {});
       socket.leave(padId);
     }
   });
 
   // start up the new pad
-  const newSessionInfo = sessioninfos[socket.id];
+  const newSessionInfo = sessioninfos.get(socket.id);
   createSessionInfoAuth(newSessionInfo, message);
   await handleClientReady(socket, message, authorID);
 };
@@ -927,17 +921,17 @@ const handleClientReady = async (socket, message, authorID) => {
   // glue the clientVars together, send them and tell the other clients that a new one is there
 
   // Check that the client is still here. It might have disconnected between callbacks.
-  const sessionInfo = sessioninfos[socket.id];
+  const sessionInfo = sessioninfos.get(socket.id);
   if (sessionInfo == null) return;
 
   // Check if this author is already on the pad, if yes, kick the other sessions!
   const roomSockets = _getRoomSockets(pad.id);
 
   for (const socket of roomSockets) {
-    const sinfo = sessioninfos[socket.id];
+    const sinfo = sessioninfos.get(socket.id);
     if (sinfo && sinfo.author === authorID) {
       // fix user's counter, works on page refresh or if user closes browser window and then rejoins
-      sessioninfos[socket.id] = {};
+      sessioninfos.set(socket.id, {});
       socket.leave(padIds.padId);
       socket.json.send({disconnect: 'userdup'});
     }
@@ -1151,7 +1145,7 @@ const handleClientReady = async (socket, message, authorID) => {
 
       // Since sessioninfos might change while being enumerated, check if the
       // sessionID is still assigned to a valid session
-      const sessionInfo = sessioninfos[roomSocket.id];
+      const sessionInfo = sessioninfos.get(roomSocket.id);
       if (sessionInfo == null) return;
 
       // get the authorname & colorId
@@ -1433,7 +1427,7 @@ exports.padUsers = async (padID) => {
 
   // iterate over all clients (in parallel)
   await Promise.all(_getRoomSockets(padID).map(async (roomSocket) => {
-    const s = sessioninfos[roomSocket.id];
+    const s = sessioninfos.get(roomSocket.id);
     if (s) {
       const author = await authorManager.getAuthor(s.author);
       // Fixes: https://github.com/ether/etherpad-lite/issues/4120
