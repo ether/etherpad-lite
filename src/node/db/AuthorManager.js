@@ -156,13 +156,13 @@ async function mapAuthorWithDBKey(mapperkey, mapper) {
 
   // return the author
   return {authorID: author};
-}
+};
 
 /**
  * Internal function that creates the database entry for an author
  * @param {String} name The name of the author
  */
-exports.createAuthor = (name) => {
+exports.createAuthor = async (name) => {
   // create the new author name
   const author = `a.${randomString(16)}`;
 
@@ -174,8 +174,7 @@ exports.createAuthor = (name) => {
   };
 
   // set the global author db entry
-  // NB: no await, since we're not waiting for the DB set to finish
-  db.set(`globalAuthor:${author}`, authorObj);
+  await db.set(`globalAuthor:${author}`, authorObj);
 
   return {authorID: author};
 };
