@@ -71,10 +71,12 @@
   "title": "Etherpad",
 
   /*
-   * favicon default name
-   * alternatively, set up a fully specified Url to your own favicon
+   * Pathname of the favicon you want to use. If null, the skin's favicon is
+   * used if one is provided by the skin, otherwise the default Etherpad favicon
+   * is used. If this is a relative path it is interpreted as relative to the
+   * Etherpad root directory.
    */
-  "favicon": "favicon.ico",
+  "favicon": null,
 
   /*
    * Skin name.

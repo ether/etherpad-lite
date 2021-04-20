@@ -1,3 +1,12 @@
+# Next release
+
+### Compatibility changes
+
+* The `favicon` setting is now interpreted as a pathname to a favicon file, not
+  a URL. Please see the documentation comment in `settings.json.template`.
+* The undocumented `faviconPad` and `faviconTimeslider` settings have been
+  removed.
+
 # 1.8.13
 
 ### Notable fixes

@@ -80,6 +80,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
   args.app.get('/favicon.ico', (req, res, next) => {
     (async () => {
       const fns = [
+        ...(settings.favicon ? [path.resolve(settings.root, settings.favicon)] : []),
         path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'favicon.ico'),
         path.join(settings.root, 'src', 'static', 'favicon.ico'),
       ];

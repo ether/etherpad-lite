@@ -50,11 +50,12 @@ console.log('All relative paths will be interpreted relative to the identified '
 exports.title = 'Etherpad';
 
 /**
- * The app favicon fully specified url, visible e.g. in the browser window
+ * Pathname of the favicon you want to use. If null, the skin's favicon is
+ * used if one is provided by the skin, otherwise the default Etherpad favicon
+ * is used. If this is a relative path it is interpreted as relative to the
+ * Etherpad root directory.
  */
-exports.favicon = 'favicon.ico';
-exports.faviconPad = `../${exports.favicon}`;
-exports.faviconTimeslider = `../../${exports.favicon}`;
+exports.favicon = null;
 
 /*
  * Skin name.
