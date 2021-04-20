@@ -1,4 +1,4 @@
-name: "In-place git pull from master"
+name: "Upgrade from latest release"
 
 # any branch is useful for testing before a PR is submitted
 on: [push, pull_request]
@@ -19,7 +19,7 @@ jobs:
         node: [10, 12, 14, 15]
 
     steps:
-    - name: Checkout master repository
+    - name: Check out latest release
       uses: actions/checkout@v2
       with:
         ref: master
@@ -60,10 +60,10 @@ jobs:
     - name: Run the backend tests
       run: cd src && npm test
 
-    - name: Git fetch
+    - name: Fetch the new Git commits
       run: git fetch
 
-    - name: Checkout this branch over master
+    - name: Upgrade to the new Git revision
       run: git checkout "${GITHUB_SHA}"
 
     - name: Install all dependencies and symlink for ep_etherpad-lite
