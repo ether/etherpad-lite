@@ -2,9 +2,12 @@
 
 const path = require('path');
 const eejs = require('../../eejs');
+const fs = require('fs');
+const fsp = fs.promises;
 const toolbar = require('../../utils/toolbar');
 const hooks = require('../../../static/js/pluginfw/hooks');
 const settings = require('../../utils/Settings');
+const util = require('util');
 const webaccess = require('./webaccess');
 
 exports.expressCreateServer = (hookName, args, cb) => {
@@ -74,23 +77,24 @@ exports.expressCreateServer = (hookName, args, cb) => {
     }));
   });
 
-  args.app.get('/favicon.ico', (req, res) => {
-    let filePath = path.join(
-        settings.root,
-        'src',
-        'static',
-        'skins',
-        settings.skinName,
-        'favicon.ico'
-    );
-    res.setHeader('Cache-Control', `public, max-age=${settings.maxAge}`);
-    res.sendFile(filePath, (err) => {
-      // there is no custom favicon, send the default favicon
-      if (err) {
-        filePath = path.join(settings.root, 'src', 'static', 'favicon.ico');
-        res.sendFile(filePath);
+  args.app.get('/favicon.ico', (req, res, next) => {
+    (async () => {
+      const fns = [
+        path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'favicon.ico'),
+        path.join(settings.root, 'src', 'static', 'favicon.ico'),
+      ];
+      for (const fn of fns) {
+        try {
+          await fsp.access(fn, fs.constants.R_OK);
+        } catch (err) {
+          continue;
+        }
+        res.setHeader('Cache-Control', `public, max-age=${settings.maxAge}`);
+        await util.promisify(res.sendFile.bind(res))(fn);
+        return;
       }
-    });
+      next();
+    })().catch((err) => next(err || new Error(err)));
   });
 
   return cb();
