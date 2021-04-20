@@ -6,6 +6,16 @@
   a URL. Please see the documentation comment in `settings.json.template`.
 * The undocumented `faviconPad` and `faviconTimeslider` settings have been
   removed.
+* MySQL/MariaDB now uses connection pooling, which means you will see up to 10
+  connections to the MySQL/MariaDB server (by default) instead of 1. This might
+  cause Etherpad to crash with a "ER_CON_COUNT_ERROR: Too many connections"
+  error if your server is configured with a low connection limit.
+
+### Notable enhancements
+
+* MySQL/MariaDB now uses connection pooling, which should improve stability and
+  reduce latency.
+* Bulk database writes are now retried individually on write failure.
 
 # 1.8.13
 
