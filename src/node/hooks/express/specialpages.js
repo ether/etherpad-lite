@@ -74,8 +74,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
     }));
   });
 
-  // serve favicon.ico from all path levels except as a pad name
-  args.app.get(/\/favicon.ico$/, (req, res) => {
+  args.app.get('/favicon.ico', (req, res) => {
     let filePath = path.join(
         settings.root,
         'src',
