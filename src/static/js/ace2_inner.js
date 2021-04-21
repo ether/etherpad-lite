@@ -56,8 +56,25 @@ function Ace2Inner(editorInfo, cssManagers) {
 
   let disposed = false;
 
-  const focus = () => {
+  const focus = (line = null) => {
     window.focus();
+    if (line == null) return;
+    const lines = $(document.body).children();
+    if (lines.length === 0) return;
+    if (line > lines.length - 1) line = lines.length - 1;
+    window.console.log(`scrolling to line ${line}`);
+    const node = lines[line];
+    window.console.log('node.offsetTop', node.offsetTop);
+    window.console.log('node.getBoundingClientRect().top', node.getBoundingClientRect().top);
+    window.console.log(rep);
+    //const scrollAmount = node.getBoundingClientRect().top + iframe
+    outerWin.document.documentElement.scrollTop = node.getBoundingClientRect().top;
+    window.console.log('document.body',
+        'scrollTop', document.body.scrollTop,
+        'clientHeight', document.body.clientHeight,
+        'scrollHeight', document.body.scrollHeight);
+    const point = {index: 0, focusAtStart: true, maxIndex: 1, node};
+    setSelection({startPoint: point, endPoint: point});
   };
 
   const outerWin = window.parent;

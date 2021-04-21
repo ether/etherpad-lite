@@ -19,6 +19,10 @@ function Scroll(outerWin) {
   this.rootDocument = parent.parent.document;
 }
 
+Scroll.prototype.scrollToLine = function (line) {
+
+};
+
 Scroll.prototype.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary =
   function (rep, isScrollableEvent, innerHeight) {
   // are we placing the caret on the line at the bottom of viewport?

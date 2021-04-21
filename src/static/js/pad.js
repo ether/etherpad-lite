@@ -491,9 +491,6 @@ const pad = {
       $('#chatloadmessagesbutton').css('display', 'none');
     }
 
-    setTimeout(() => {
-      padeditor.ace.focus();
-    }, 0);
     // if we have a cookie for always showing chat then show it
     if (padcookie.getPref('chatAlwaysVisible')) {
       chat.stickToScreen(true); // stick it to the screen
