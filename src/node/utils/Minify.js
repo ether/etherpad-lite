@@ -247,7 +247,7 @@ const statFile = async (filename, dirStatLimit) => {
     try {
       stats = await fs.stat(path.resolve(ROOT_DIR, filename));
     } catch (err) {
-      if (err.code === 'ENOENT') {
+      if (['ENOENT', 'ENOTDIR'].includes(err.code)) {
         // Stat the directory instead.
         const [date] = await statFile(path.dirname(filename), dirStatLimit - 1);
         return [date, false];
