@@ -48,7 +48,7 @@ const LIBRARY_WHITELIST = [
 
 // What follows is a terrible hack to avoid loop-back within the server.
 // TODO: Serve files from another service, or directly from the file system.
-const requestURI = async (url, method, headers) => await new Promise((resolve, reject) => {
+const requestURI = async (url, method, headers) => {
   const parsedUrl = new URL(url);
   let status = 500;
   const content = [];
@@ -58,31 +58,35 @@ const requestURI = async (url, method, headers) => await new Promise((resolve, r
     params: {filename: (parsedUrl.pathname + parsedUrl.search).replace(/^\/static\//, '')},
     headers,
   };
-  const mockResponse = {
-    writeHead: (_status, _headers) => {
-      status = _status;
-      for (const header in _headers) {
-        if (Object.prototype.hasOwnProperty.call(_headers, header)) {
-          headers[header] = _headers[header];
+  let mockResponse;
+  const p = new Promise((resolve) => {
+    mockResponse = {
+      writeHead: (_status, _headers) => {
+        status = _status;
+        for (const header in _headers) {
+          if (Object.prototype.hasOwnProperty.call(_headers, header)) {
+            headers[header] = _headers[header];
+          }
         }
-      }
-    },
-    setHeader: (header, value) => {
-      headers[header.toLowerCase()] = value.toString();
-    },
-    header: (header, value) => {
-      headers[header.toLowerCase()] = value.toString();
-    },
-    write: (_content) => {
-      _content && content.push(_content);
-    },
-    end: (_content) => {
-      _content && content.push(_content);
-      resolve([status, headers, content.join('')]);
-    },
-  };
-  minify(mockRequest, mockResponse).catch(reject);
-});
+      },
+      setHeader: (header, value) => {
+        headers[header.toLowerCase()] = value.toString();
+      },
+      header: (header, value) => {
+        headers[header.toLowerCase()] = value.toString();
+      },
+      write: (_content) => {
+        _content && content.push(_content);
+      },
+      end: (_content) => {
+        _content && content.push(_content);
+        resolve([status, headers, content.join('')]);
+      },
+    };
+  });
+  await minify(mockRequest, mockResponse);
+  return await p;
+};
 
 const requestURIs = (locations, method, headers, callback) => {
   Promise.all(locations.map((loc) => requestURI(loc, method, headers))).then((responses) => {
