@@ -89,7 +89,15 @@ const requestURI = async (url, method, headers) => {
 };
 
 const requestURIs = (locations, method, headers, callback) => {
-  Promise.all(locations.map((loc) => requestURI(loc, method, headers))).then((responses) => {
+  Promise.all(locations.map(async (loc) => {
+    try {
+      return await requestURI(loc, method, headers);
+    } catch (err) {
+      logger.debug(`requestURI(${JSON.stringify(loc)}, ${JSON.stringify(method)}, ` +
+                   `${JSON.stringify(headers)}) failed: ${err.stack || err}`);
+      return [500, headers, ''];
+    }
+  })).then((responses) => {
     const statuss = responses.map((x) => x[0]);
     const headerss = responses.map((x) => x[1]);
     const contentss = responses.map((x) => x[2]);
