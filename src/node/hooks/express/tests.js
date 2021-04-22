@@ -26,7 +26,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
 
     console.debug('Sent browser the following test specs:', files);
     res.setHeader('content-type', 'application/javascript');
-    res.end(`var frontendTestSpecs = ${JSON.stringify(files)};\n`);
+    res.end(`window.frontendTestSpecs = ${JSON.stringify(files)};\n`);
   });
 
   const rootTestFolder = path.join(settings.root, 'src/tests/frontend/');
