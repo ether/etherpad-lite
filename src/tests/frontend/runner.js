@@ -138,24 +138,15 @@ $(() => {
 
   const getURLParameter = (name) => (new URLSearchParams(location.search)).get(name);
 
-  // get the list of specs and filter it if requested
-  const specs = specs_list.slice();
-
   const absUrl = (url) => new URL(url, window.location.href).href;
   require.setRootURI(absUrl('../../javascripts/src'));
   require.setLibraryURI(absUrl('../../javascripts/lib'));
   require.setGlobalKeyPath('require');
 
-  // inject spec scripts into the dom
   const $body = $('body');
-  $.each(specs, (i, spec) => {
-    // if the spec isn't a plugin spec which means the spec file might be in a different subfolder
-    if (!spec.startsWith('/')) {
-      $body.append(`<script src="specs/${spec}"></script>`);
-    } else {
-      $body.append(`<script src="${spec}"></script>`);
-    }
-  });
+  for (const spec of specs_list.map((spec) => encodeURI(spec))) {
+    $body.append($('<script>').attr('src', spec.startsWith('/') ? spec : `specs/${spec}`));
+  }
 
   // initialize the test helper
   helper.init(() => {
