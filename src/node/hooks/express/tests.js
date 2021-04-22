@@ -7,7 +7,7 @@ const sanitizePathname = require('../../utils/sanitizePathname');
 const settings = require('../../utils/Settings');
 
 exports.expressCreateServer = (hookName, args, cb) => {
-  args.app.get('/tests/frontend/specs_list.js', async (req, res) => {
+  args.app.get('/tests/frontend/frontendTestSpecs.js', async (req, res) => {
     const [coreTests, pluginTests] = await Promise.all([
       exports.getCoreTests(),
       exports.getPluginTests(),
@@ -26,7 +26,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
 
     console.debug('Sent browser the following test specs:', files);
     res.setHeader('content-type', 'application/javascript');
-    res.end(`var specs_list = ${JSON.stringify(files)};\n`);
+    res.end(`var frontendTestSpecs = ${JSON.stringify(files)};\n`);
   });
 
   const rootTestFolder = path.join(settings.root, 'src/tests/frontend/');

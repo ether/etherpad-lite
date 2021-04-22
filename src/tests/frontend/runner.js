@@ -1,6 +1,6 @@
 'use strict';
 
-/* global specs_list */
+/* global frontendTestSpecs */
 
 $(() => {
   const stringifyException = (exception) => {
@@ -144,7 +144,7 @@ $(() => {
   require.setGlobalKeyPath('require');
 
   const $body = $('body');
-  for (const spec of specs_list.map((spec) => encodeURI(spec))) {
+  for (const spec of frontendTestSpecs.map((spec) => encodeURI(spec))) {
     $body.append($('<script>').attr('src', spec.startsWith('/') ? spec : `specs/${spec}`));
   }
 
