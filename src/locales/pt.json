@@ -13,6 +13,7 @@
 			"MuratTheTurkish",
 			"Ti4goc",
 			"Tuliouel",
+			"Unamane",
 			"Waldir",
 			"Waldyrious"
 		]
@@ -29,7 +30,7 @@
 	"admin_plugins.installed_fetching": "A obter plugins instalados...",
 	"admin_plugins.installed_nothing": "Não instalas-te nenhum plugin ainda.",
 	"admin_plugins.installed_uninstall.value": "Desinstalar",
-	"admin_plugins.last-update": "Ultima atualização",
+	"admin_plugins.last-update": "Última atualização",
 	"admin_plugins.name": "Nome",
 	"admin_plugins.page-title": "Gestor de plugins - Etherpad",
 	"admin_plugins.version": "Versão",
