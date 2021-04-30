@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Bhatakati aatma",
+			"Dsvyas",
 			"Harsh4101991",
 			"KartikMistry"
 		]
@@ -10,7 +11,7 @@
 	"pad.toolbar.bold.title": "બોલ્ડ",
 	"pad.toolbar.settings.title": "ગોઠવણીઓ",
 	"pad.colorpicker.save": "સાચવો",
-	"pad.colorpicker.cancel": "રદ્દ કરો",
+	"pad.colorpicker.cancel": "રદ કરો",
 	"pad.loading": "લાવે છે...",
 	"pad.noCookie": "કુકી મળી નહી. આપના બ્રાઉઝર સેટિંગમાં જઇ કુકી સક્રિય કરો!",
 	"pad.permissionDenied": "આ પેડના ઉપયોગની આપને પરવાનગી નથી",
