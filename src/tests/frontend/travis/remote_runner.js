@@ -30,7 +30,7 @@ const log = (msg, pfx = '') => {
 
 const finishedRegex = /FINISHED.*[0-9]+ tests passed, ([0-9]+) tests failed/;
 
-const sauceTestWorker = async.queue((testSettings, callback) => {
+const sauceTestWorker = async.queue(async (testSettings) => {
   const name = `${testSettings.browserName} ${testSettings.version}, ${testSettings.platform}`;
   const pfx = `[${name}] `;
   const fullName = [process.env.GIT_HASH].concat(process.env.SAUCE_NAME || [], name).join(' - ');
@@ -42,52 +42,33 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
   testSettings.extendedDebugging = true;
   testSettings.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
   const browser = wd.remote(config, 'promiseChain');
-  browser.init(testSettings).get('http://localhost:9001/tests/frontend/', (err) => {
-    if (err != null) return callback(err);
-    const url = `https://saucelabs.com/jobs/${browser.sessionID}`;
-    log(`Remote sauce test started! ${url}`, pfx);
-
-    // tear down the test excecution
-    const stopSauce = (testErr) => {
-      clearInterval(getStatusInterval);
-      clearTimeout(timeout);
-      browser.quit((err) => {
-        if (err) return callback(err);
-        if (testErr) {
-          log(`[red]FAILED[clear] ${testErr}`, pfx);
-          process.exitCode = 1;
-        }
-        log(`Remote sauce test finished! ${url}`, pfx);
-        callback();
-      });
-    };
-
-    /**
-       * timeout if a test hangs or the job exceeds 14.5 minutes
-       * It's necessary because if travis kills the saucelabs session due to inactivity,
-       * we don't get any output
-       * @todo this should be configured in testSettings, see
-       * https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-Timeouts
-       */
-    const timeout = setTimeout(() => {
-      stopSauce(new Error('allowed test duration exceeded'));
-    }, 14.5 * 60 * 1000); // Slightly less than overall test timeout.
-
-    // how many characters of the log have been sent to travis
-    let logIndex = 0;
-    const getStatusInterval = setInterval(() => {
-      browser.eval("$('#console').text()", (err, consoleText) => {
-        if (err != null) return stopSauce(err);
-        if (!consoleText) return;
-        consoleText.substring(logIndex).split('\\n').forEach((line) => log(line, pfx));
-        logIndex = consoleText.length;
-        const [finished, nFailedStr] = consoleText.match(finishedRegex) || [];
-        if (finished) {
-          stopSauce(nFailedStr === '0' ? null : new Error(`${nFailedStr} tests failed`));
-        }
-      });
-    }, 5000);
-  });
+  await browser.init(testSettings);
+  const url = `https://saucelabs.com/jobs/${browser.sessionID}`;
+  await browser.get('http://localhost:9001/tests/frontend/');
+  log(`Remote sauce test started! ${url}`, pfx);
+  // @TODO this should be configured in testSettings, see
+  // https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-Timeouts
+  const deadline = Date.now() + 14.5 * 60 * 1000; // Slightly less than overall test timeout.
+  // how many characters of the log have been sent to travis
+  let logIndex = 0;
+  while (true) {
+    const consoleText = await browser.eval("$('#console').text()") || '';
+    consoleText.substring(logIndex).split('\\n').forEach((line) => log(line, pfx));
+    logIndex = consoleText.length;
+    const [finished, nFailedStr] = consoleText.match(finishedRegex) || [];
+    if (finished) {
+      if (nFailedStr !== '0') process.exitCode = 1;
+      break;
+    }
+    if (Date.now() >= deadline) {
+      log('[red]FAILED[clear] allowed test duration exceeded');
+      process.exitCode = 1;
+      break;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+  }
+  log(`Remote sauce test finished! ${url}`, pfx);
+  await browser.quit();
 }, 6); // run 6 tests in parrallel
 
 Promise.all([
