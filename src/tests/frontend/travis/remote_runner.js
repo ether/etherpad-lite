@@ -28,6 +28,8 @@ const log = (msg, pfx = '') => {
   console.log(`${pfx}${msg.replace(colorRegex, (m, p1) => colorSubst[p1])}`);
 };
 
+const finishedRegex = /FINISHED.*[0-9]+ tests passed, ([0-9]+) tests failed/;
+
 const sauceTestWorker = async.queue((testSettings, callback) => {
   const name = `${testSettings.browserName} ${testSettings.version}, ${testSettings.platform}`;
   const pfx = `[${name}] `;
@@ -80,18 +82,8 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
         }
         consoleText.substring(logIndex).split('\\n').forEach((line) => log(line, pfx));
         logIndex = consoleText.length;
-        if (consoleText.indexOf('FINISHED') > 0) {
-          const match = consoleText.match(
-              /FINISHED.*([0-9]+) tests passed, ([0-9]+) tests failed/);
-          // finished without failures
-          if (match[2] && match[2] === '0') {
-            stopSauce(true);
-
-            // finished but some tests did not return or some tests failed
-          } else {
-            stopSauce(false);
-          }
-        }
+        const [finished, nFailedStr] = consoleText.match(finishedRegex) || [];
+        if (finished) stopSauce(nFailedStr === '0');
       });
     }, 5000);
   });
