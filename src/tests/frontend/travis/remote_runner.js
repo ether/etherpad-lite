@@ -1,5 +1,9 @@
 'use strict';
 
+// As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
+// unhandled rejection into an uncaught exception, which does cause Node.js to exit.
+process.on('unhandledRejection', (err) => { throw err; });
+
 const async = require('async');
 const wd = require('wd');
 
@@ -11,18 +15,6 @@ const config = {
 };
 
 const isAdminRunner = process.argv[2] === 'admin';
-
-let allTestsPassed = true;
-// overwrite the default exit code
-// in case not all worker can be run (due to saucelabs limits),
-// `queue.drain` below will not be called
-// and the script would silently exit with error code 0
-process.exitCode = 2;
-process.on('exit', (code) => {
-  if (code === 2) {
-    console.log('\x1B[31mFAILED\x1B[39m Not all saucelabs runner have been started.');
-  }
-});
 
 const sauceTestWorker = async.queue((testSettings, callback) => {
   const browser = wd.promiseChainRemote(
@@ -48,9 +40,7 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
       clearTimeout(timeout);
 
       browser.quit(() => {
-        if (!success) {
-          allTestsPassed = false;
-        }
+        if (!success) process.exitCode = 1;
 
         // if stopSauce is called via timeout
         // (in contrast to via getStatusInterval) than the log of up to the last
@@ -128,7 +118,7 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
   });
 }, 6); // run 6 tests in parrallel
 
-[
+Promise.all([
   {
     platform: 'OS X 10.15',
     browserName: 'safari',
@@ -157,8 +147,4 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
       version: '78.0',
     },
   ]),
-].forEach((task) => sauceTestWorker.push(task));
-
-sauceTestWorker.drain(() => {
-  process.exit(allTestsPassed ? 0 : 1);
-});
+].map(async (task) => await sauceTestWorker.push(task)));
