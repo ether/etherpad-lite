@@ -8,10 +8,10 @@ const async = require('async');
 const wd = require('wd');
 
 const config = {
-  host: 'ondemand.saucelabs.com',
+  hostname: 'ondemand.saucelabs.com',
   port: 80,
-  username: process.env.SAUCE_USER,
-  accessKey: process.env.SAUCE_ACCESS_KEY,
+  user: process.env.SAUCE_USER,
+  pwd: process.env.SAUCE_ACCESS_KEY,
 };
 
 const isAdminRunner = process.argv[2] === 'admin';
@@ -32,8 +32,6 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
   const name = `${testSettings.browserName} ${testSettings.version}, ${testSettings.platform}`;
   const pfx = `[${name}] `;
   const fullName = [process.env.GIT_HASH].concat(process.env.SAUCE_NAME || [], name).join(' - ');
-  const browser = wd.promiseChainRemote(
-      config.host, config.port, config.username, config.accessKey);
   testSettings.name = fullName;
   testSettings.public = true;
   testSettings.build = process.env.GIT_HASH;
@@ -41,7 +39,7 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
   // don't know how to print them into output of the tests
   testSettings.extendedDebugging = true;
   testSettings.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
-
+  const browser = wd.remote(config, 'promiseChain');
   browser.init(testSettings).get('http://localhost:9001/tests/frontend/', () => {
     const url = `https://saucelabs.com/jobs/${browser.sessionID}`;
     log(`Remote sauce test started! ${url}`, pfx);
