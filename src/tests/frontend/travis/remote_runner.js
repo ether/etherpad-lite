@@ -71,7 +71,7 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
        */
     const timeout = setTimeout(() => {
       stopSauce(new Error('allowed test duration exceeded'));
-    }, 870000); // travis timeout is 15 minutes, set this to a slightly lower value
+    }, 14.5 * 60 * 1000); // Slightly less than overall test timeout.
 
     // how many characters of the log have been sent to travis
     let logIndex = 0;
