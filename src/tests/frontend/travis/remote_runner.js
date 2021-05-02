@@ -16,13 +16,25 @@ const config = {
 
 const isAdminRunner = process.argv[2] === 'admin';
 
+const colorSubst = {
+  red: '\x1B[31m',
+  yellow: '\x1B[33m',
+  green: '\x1B[32m',
+  clear: '\x1B[39m',
+};
+const colorRegex = new RegExp(`\\[(${Object.keys(colorSubst).join('|')})\\]`, 'g');
+
+const log = (msg, pfx = '') => {
+  console.log(`${pfx}${msg.replace(colorRegex, (m, p1) => colorSubst[p1])}`);
+};
+
 const sauceTestWorker = async.queue((testSettings, callback) => {
+  const name = `${testSettings.browserName} ${testSettings.version}, ${testSettings.platform}`;
+  const pfx = `[${name}] `;
+  const fullName = [process.env.GIT_HASH].concat(process.env.SAUCE_NAME || [], name).join(' - ');
   const browser = wd.promiseChainRemote(
       config.host, config.port, config.username, config.accessKey);
-  const name = [process.env.GIT_HASH].concat(process.env.SAUCE_NAME || []).concat([
-    `${testSettings.browserName} ${testSettings.version}, ${testSettings.platform}`,
-  ]).join(' - ');
-  testSettings.name = name;
+  testSettings.name = fullName;
   testSettings.public = true;
   testSettings.build = process.env.GIT_HASH;
   // console.json can be downloaded via saucelabs,
@@ -32,7 +44,7 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
 
   browser.init(testSettings).get('http://localhost:9001/tests/frontend/', () => {
     const url = `https://saucelabs.com/jobs/${browser.sessionID}`;
-    console.log(`Remote sauce test '${name}' started! ${url}`);
+    log(`Remote sauce test started! ${url}`, pfx);
 
     // tear down the test excecution
     const stopSauce = (success, timesup) => {
@@ -48,11 +60,9 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
         printLog(logIndex);
 
         if (timesup) {
-          console.log(`[${testSettings.browserName} ${testSettings.platform}` +
-            `${testSettings.version === '' ? '' : (` ${testSettings.version}`)}]` +
-            ' \x1B[31mFAILED\x1B[39m allowed test duration exceeded');
+          log('[red]FAILED[clear] allowed test duration exceeded', pfx);
         }
-        console.log(`Remote sauce test '${name}' finished! ${url}`);
+        log(`Remote sauce test finished! ${url}`, pfx);
 
         callback();
       });
@@ -105,15 +115,7 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
        * @param {number} index offset from where to start
        */
     const printLog = (index) => {
-      let testResult = knownConsoleText.substring(index)
-          .replace(/\[red\]/g, '\x1B[31m').replace(/\[yellow\]/g, '\x1B[33m')
-          .replace(/\[green\]/g, '\x1B[32m').replace(/\[clear\]/g, '\x1B[39m');
-      testResult = testResult.split('\\n').map((line) => `[${testSettings.browserName} ` +
-        `${testSettings.platform}` +
-        `${testSettings.version === '' ? '' : (` ${testSettings.version}`)}]` +
-        `${line}`).join('\n');
-
-      console.log(testResult);
+      knownConsoleText.substring(index).split('\\n').forEach((line) => log(line, pfx));
     };
   });
 }, 6); // run 6 tests in parrallel
