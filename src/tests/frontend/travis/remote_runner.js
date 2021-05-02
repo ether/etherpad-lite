@@ -42,22 +42,22 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
   testSettings.extendedDebugging = true;
   testSettings.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
   const browser = wd.remote(config, 'promiseChain');
-  browser.init(testSettings).get('http://localhost:9001/tests/frontend/', () => {
+  browser.init(testSettings).get('http://localhost:9001/tests/frontend/', (err) => {
+    if (err != null) return callback(err);
     const url = `https://saucelabs.com/jobs/${browser.sessionID}`;
     log(`Remote sauce test started! ${url}`, pfx);
 
     // tear down the test excecution
-    const stopSauce = (err) => {
+    const stopSauce = (testErr) => {
       clearInterval(getStatusInterval);
       clearTimeout(timeout);
-
-      browser.quit(() => {
-        if (err) {
-          log(`[red]FAILED[clear] ${err}`, pfx);
+      browser.quit((err) => {
+        if (err) return callback(err);
+        if (testErr) {
+          log(`[red]FAILED[clear] ${testErr}`, pfx);
           process.exitCode = 1;
         }
         log(`Remote sauce test finished! ${url}`, pfx);
-
         callback();
       });
     };
@@ -77,9 +77,8 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
     let logIndex = 0;
     const getStatusInterval = setInterval(() => {
       browser.eval("$('#console').text()", (err, consoleText) => {
-        if (!consoleText || err) {
-          return;
-        }
+        if (err != null) return stopSauce(err);
+        if (!consoleText) return;
         consoleText.substring(logIndex).split('\\n').forEach((line) => log(line, pfx));
         logIndex = consoleText.length;
         const [finished, nFailedStr] = consoleText.match(finishedRegex) || [];
