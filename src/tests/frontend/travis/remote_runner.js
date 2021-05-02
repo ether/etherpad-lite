@@ -47,14 +47,14 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
     log(`Remote sauce test started! ${url}`, pfx);
 
     // tear down the test excecution
-    const stopSauce = (success, timesup) => {
+    const stopSauce = (err) => {
       clearInterval(getStatusInterval);
       clearTimeout(timeout);
 
       browser.quit(() => {
-        if (!success) process.exitCode = 1;
-        if (timesup) {
-          log('[red]FAILED[clear] allowed test duration exceeded', pfx);
+        if (err) {
+          log(`[red]FAILED[clear] ${err}`, pfx);
+          process.exitCode = 1;
         }
         log(`Remote sauce test finished! ${url}`, pfx);
 
@@ -70,7 +70,7 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
        * https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-Timeouts
        */
     const timeout = setTimeout(() => {
-      stopSauce(false, true);
+      stopSauce(new Error('allowed test duration exceeded'));
     }, 870000); // travis timeout is 15 minutes, set this to a slightly lower value
 
     // how many characters of the log have been sent to travis
@@ -83,7 +83,9 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
         consoleText.substring(logIndex).split('\\n').forEach((line) => log(line, pfx));
         logIndex = consoleText.length;
         const [finished, nFailedStr] = consoleText.match(finishedRegex) || [];
-        if (finished) stopSauce(nFailedStr === '0');
+        if (finished) {
+          stopSauce(nFailedStr === '0' ? null : new Error(`${nFailedStr} tests failed`));
+        }
       });
     }, 5000);
   });
