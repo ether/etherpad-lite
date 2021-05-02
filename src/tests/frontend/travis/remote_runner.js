@@ -128,40 +128,36 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
   });
 }, 6); // run 6 tests in parrallel
 
-if (!isAdminRunner) {
-  sauceTestWorker.push({
-    platform: 'Windows 10',
-    browserName: 'firefox',
-    version: '84.0',
-  });
-  sauceTestWorker.push({
-    platform: 'Windows 7',
-    browserName: 'chrome',
-    version: '55.0',
-    args: ['--use-fake-device-for-media-stream'],
-  });
-  sauceTestWorker.push({
+[
+  {
     platform: 'OS X 10.15',
     browserName: 'safari',
     version: '13.1',
-  });
-  sauceTestWorker.push({
-    platform: 'Windows 10',
-    browserName: 'microsoftedge',
-    version: '83.0',
-  });
-  sauceTestWorker.push({
-    platform: 'Windows 7',
-    browserName: 'firefox',
-    version: '78.0',
-  });
-} else {
-  sauceTestWorker.push({
-    platform: 'OS X 10.15',
-    browserName: 'safari',
-    version: '13.1',
-  });
-}
+  },
+  ...(isAdminRunner ? [] : [
+    {
+      platform: 'Windows 10',
+      browserName: 'firefox',
+      version: '84.0',
+    },
+    {
+      platform: 'Windows 7',
+      browserName: 'chrome',
+      version: '55.0',
+      args: ['--use-fake-device-for-media-stream'],
+    },
+    {
+      platform: 'Windows 10',
+      browserName: 'microsoftedge',
+      version: '83.0',
+    },
+    {
+      platform: 'Windows 7',
+      browserName: 'firefox',
+      version: '78.0',
+    },
+  ]),
+].forEach((task) => sauceTestWorker.push(task));
 
 sauceTestWorker.drain(() => {
   process.exit(allTestsPassed ? 0 : 1);
