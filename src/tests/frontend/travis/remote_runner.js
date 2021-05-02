@@ -51,12 +51,6 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
 
       browser.quit(() => {
         if (!success) process.exitCode = 1;
-
-        // if stopSauce is called via timeout
-        // (in contrast to via getStatusInterval) than the log of up to the last
-        // five seconds may not be available here. It's an error anyway, so don't care about it.
-        printLog();
-
         if (timesup) {
           log('[red]FAILED[clear] allowed test duration exceeded', pfx);
         }
@@ -77,7 +71,6 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
       stopSauce(false, true);
     }, 870000); // travis timeout is 15 minutes, set this to a slightly lower value
 
-    let knownConsoleText = '';
     // how many characters of the log have been sent to travis
     let logIndex = 0;
     const getStatusInterval = setInterval(() => {
@@ -85,10 +78,10 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
         if (!consoleText || err) {
           return;
         }
-        knownConsoleText = consoleText;
-
-        if (knownConsoleText.indexOf('FINISHED') > 0) {
-          const match = knownConsoleText.match(
+        consoleText.substring(logIndex).split('\\n').forEach((line) => log(line, pfx));
+        logIndex = consoleText.length;
+        if (consoleText.indexOf('FINISHED') > 0) {
+          const match = consoleText.match(
               /FINISHED.*([0-9]+) tests passed, ([0-9]+) tests failed/);
           // finished without failures
           if (match[2] && match[2] === '0') {
@@ -98,21 +91,9 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
           } else {
             stopSauce(false);
           }
-        } else {
-          // not finished yet
-          printLog();
         }
       });
     }, 5000);
-
-    /**
-       * Replaces color codes in the test runners log, appends
-       * browser name, platform etc. to every line and prints them.
-       */
-    const printLog = () => {
-      knownConsoleText.substring(logIndex).split('\\n').forEach((line) => log(line, pfx));
-      logIndex = knownConsoleText.length;
-    };
   });
 }, 6); // run 6 tests in parrallel
 
