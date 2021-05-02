@@ -55,7 +55,7 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
         // if stopSauce is called via timeout
         // (in contrast to via getStatusInterval) than the log of up to the last
         // five seconds may not be available here. It's an error anyway, so don't care about it.
-        printLog(logIndex);
+        printLog();
 
         if (timesup) {
           log('[red]FAILED[clear] allowed test duration exceeded', pfx);
@@ -100,8 +100,7 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
           }
         } else {
           // not finished yet
-          printLog(logIndex);
-          logIndex = knownConsoleText.length;
+          printLog();
         }
       });
     }, 5000);
@@ -109,11 +108,10 @@ const sauceTestWorker = async.queue((testSettings, callback) => {
     /**
        * Replaces color codes in the test runners log, appends
        * browser name, platform etc. to every line and prints them.
-       *
-       * @param {number} index offset from where to start
        */
-    const printLog = (index) => {
-      knownConsoleText.substring(index).split('\\n').forEach((line) => log(line, pfx));
+    const printLog = () => {
+      knownConsoleText.substring(logIndex).split('\\n').forEach((line) => log(line, pfx));
+      logIndex = knownConsoleText.length;
     };
   });
 }, 6); // run 6 tests in parrallel
