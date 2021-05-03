@@ -102,27 +102,13 @@ $(() => {
 
     const $console = $('#console');
     const append = (text) => {
-      const oldText = $console.text();
-
-      let space = '';
-      for (let i = 0; i < level * 2; i++) {
-        space += ' ';
-      }
-
-      let splitedText = '';
-      _(text.split('\n')).each((line) => {
-        while (line.length > 0) {
-          const split = line.substr(0, 100);
-          line = line.substr(100);
-          if (splitedText.length > 0) splitedText += '\n';
-          splitedText += split;
-        }
-      });
-
-      // indent all lines with the given amount of space
-      const newText = _(splitedText.split('\n')).map((line) => space + line).join('\\n');
-
-      $console.text(`${oldText + newText}\\n`);
+      const lines = text.split('\n')
+          // Break long lines into multiple lines:
+          .map((line) => line.match(/.{1,100}/g))
+          .reduce((soFar, next) => soFar.concat(next), [])
+          // Indent each line:
+          .map((line) => ' '.repeat(level * 2) + line);
+      $console.append(document.createTextNode(`${lines.join('\\n')}\\n`));
     };
 
     const total = runner.total;
