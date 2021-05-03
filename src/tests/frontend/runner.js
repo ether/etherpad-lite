@@ -104,7 +104,7 @@ $(() => {
     const append = (text) => {
       // Indent each line.
       const lines = text.split('\n').map((line) => ' '.repeat(level * 2) + line);
-      $console.append(document.createTextNode(`${lines.join('\\n')}\\n`));
+      $console.append(document.createTextNode(`${lines.join('\n')}\n`));
     };
 
     const total = runner.total;
