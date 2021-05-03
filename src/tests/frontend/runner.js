@@ -102,12 +102,8 @@ $(() => {
 
     const $console = $('#console');
     const append = (text) => {
-      const lines = text.split('\n')
-          // Break long lines into multiple lines:
-          .map((line) => line.match(/.{1,100}/g))
-          .reduce((soFar, next) => soFar.concat(next), [])
-          // Indent each line:
-          .map((line) => ' '.repeat(level * 2) + line);
+      // Indent each line.
+      const lines = text.split('\n').map((line) => ' '.repeat(level * 2) + line);
       $console.append(document.createTextNode(`${lines.join('\\n')}\\n`));
     };
 
