@@ -50,7 +50,8 @@ const sauceTestWorker = async.queue(async ({name, pfx, testSettings}) => {
   // how many characters of the log have been sent to travis
   let logIndex = 0;
   while (true) {
-    const consoleText = (await browser.eval("$('#console').text()") || '').substring(logIndex);
+    const remoteFn = ($, skipChars) => $('#console').text().substring(skipChars);
+    const consoleText = await browser.eval(`(${remoteFn})($, ${JSON.stringify(logIndex)})`);
     (consoleText ? consoleText.split('\n') : []).forEach((line) => log(line, pfx));
     logIndex += consoleText.length;
     const [finished, nFailedStr] = consoleText.match(finishedRegex) || [];
