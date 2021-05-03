@@ -42,32 +42,35 @@ const sauceTestWorker = async.queue(async ({name, pfx, testSettings}) => {
   const browser = wd.remote(config, 'promiseChain');
   await browser.init(testSettings);
   const url = `https://saucelabs.com/jobs/${browser.sessionID}`;
-  await browser.get('http://localhost:9001/tests/frontend/');
-  log(`Remote sauce test started! ${url}`, pfx);
-  // @TODO this should be configured in testSettings, see
-  // https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-Timeouts
-  const deadline = Date.now() + 14.5 * 60 * 1000; // Slightly less than overall test timeout.
-  // how many characters of the log have been sent to travis
-  let logIndex = 0;
-  while (true) {
-    const remoteFn = ($, skipChars) => $('#console').text().substring(skipChars);
-    const consoleText = await browser.eval(`(${remoteFn})($, ${JSON.stringify(logIndex)})`);
-    (consoleText ? consoleText.split('\n') : []).forEach((line) => log(line, pfx));
-    logIndex += consoleText.length;
-    const [finished, nFailedStr] = consoleText.match(finishedRegex) || [];
-    if (finished) {
-      if (nFailedStr !== '0') process.exitCode = 1;
-      break;
+  try {
+    await browser.get('http://localhost:9001/tests/frontend/');
+    log(`Remote sauce test started! ${url}`, pfx);
+    // @TODO this should be configured in testSettings, see
+    // https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-Timeouts
+    const deadline = Date.now() + 14.5 * 60 * 1000; // Slightly less than overall test timeout.
+    // how many characters of the log have been sent to travis
+    let logIndex = 0;
+    while (true) {
+      const remoteFn = ($, skipChars) => $('#console').text().substring(skipChars);
+      const consoleText = await browser.eval(`(${remoteFn})($, ${JSON.stringify(logIndex)})`);
+      (consoleText ? consoleText.split('\n') : []).forEach((line) => log(line, pfx));
+      logIndex += consoleText.length;
+      const [finished, nFailedStr] = consoleText.match(finishedRegex) || [];
+      if (finished) {
+        if (nFailedStr !== '0') process.exitCode = 1;
+        break;
+      }
+      if (Date.now() >= deadline) {
+        log('[red]FAILED[clear] allowed test duration exceeded');
+        process.exitCode = 1;
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 5000));
     }
-    if (Date.now() >= deadline) {
-      log('[red]FAILED[clear] allowed test duration exceeded');
-      process.exitCode = 1;
-      break;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+  } finally {
+    log(`Remote sauce test finished! ${url}`, pfx);
+    await browser.quit();
   }
-  log(`Remote sauce test finished! ${url}`, pfx);
-  await browser.quit();
 }, 6); // run 6 tests in parrallel
 
 Promise.all([
