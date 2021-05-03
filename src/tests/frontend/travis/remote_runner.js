@@ -51,7 +51,7 @@ const sauceTestWorker = async.queue(async ({name, pfx, testSettings}) => {
   let logIndex = 0;
   while (true) {
     const consoleText = (await browser.eval("$('#console').text()") || '').substring(logIndex);
-    consoleText.split('\n').forEach((line) => log(line, pfx));
+    (consoleText ? consoleText.split('\n') : []).forEach((line) => log(line, pfx));
     logIndex += consoleText.length;
     const [finished, nFailedStr] = consoleText.match(finishedRegex) || [];
     if (finished) {
