@@ -72,31 +72,32 @@ const sauceTestWorker = async.queue(async ({name, pfx, testSettings}) => {
 
 Promise.all([
   {
-    platform: 'OS X 10.15',
+    platform: 'macOS 11.00',
     browserName: 'safari',
-    version: '13.1',
+    version: 'latest',
   },
   ...(isAdminRunner ? [] : [
     {
       platform: 'Windows 10',
       browserName: 'firefox',
-      version: '84.0',
+      version: 'latest',
+    },
+    {
+      platform: 'Windows 10',
+      browserName: 'MicrosoftEdge',
+      version: 'latest',
+    },
+    {
+      platform: 'Windows 10',
+      browserName: 'chrome',
+      version: 'latest',
+      args: ['--use-fake-device-for-media-stream'],
     },
     {
       platform: 'Windows 7',
       browserName: 'chrome',
       version: '55.0',
       args: ['--use-fake-device-for-media-stream'],
-    },
-    {
-      platform: 'Windows 10',
-      browserName: 'microsoftedge',
-      version: '83.0',
-    },
-    {
-      platform: 'Windows 7',
-      browserName: 'firefox',
-      version: '78.0',
     },
   ]),
 ].map(async (testSettings) => {
