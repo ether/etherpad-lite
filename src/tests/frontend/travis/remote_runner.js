@@ -30,9 +30,7 @@ const log = (msg, pfx = '') => {
 
 const finishedRegex = /FINISHED.*[0-9]+ tests passed, ([0-9]+) tests failed/;
 
-const sauceTestWorker = async.queue(async (testSettings) => {
-  const name = `${testSettings.browserName} ${testSettings.version}, ${testSettings.platform}`;
-  const pfx = `[${name}] `;
+const sauceTestWorker = async.queue(async ({name, pfx, testSettings}) => {
   const fullName = [process.env.GIT_HASH].concat(process.env.SAUCE_NAME || [], name).join(' - ');
   testSettings.name = fullName;
   testSettings.public = true;
@@ -100,4 +98,13 @@ Promise.all([
       version: '78.0',
     },
   ]),
-].map(async (task) => await sauceTestWorker.push(task)));
+].map(async (testSettings) => {
+  const name = `${testSettings.browserName} ${testSettings.version}, ${testSettings.platform}`;
+  const pfx = `[${name}] `;
+  try {
+    await sauceTestWorker.push({name, pfx, testSettings});
+  } catch (err) {
+    log(`[red]FAILED[clear] ${err.stack || err}`, pfx);
+    process.exitCode = 1;
+  }
+}));
