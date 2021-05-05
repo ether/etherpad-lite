@@ -810,12 +810,15 @@ exports.createDiffHTML = async (padID, startRev, endRev) => {
 
 exports.getStats = async () => {
   const sessionInfos = padMessageHandler.sessioninfos;
-  const map = function* (it, fn) { for (const i of it) yield fn(i); };
-  const activePads = new Set(map(sessionInfos.values(), ({padId}) => padId));
+
+  const sessionKeys = Object.keys(sessionInfos);
+  const activePads = new Set(Object.entries(sessionInfos).map((k) => k[1].padId));
+
   const {padIDs} = await padManager.listAllPads();
+
   return {
     totalPads: padIDs.length,
-    totalSessions: sessionInfos.size,
+    totalSessions: sessionKeys.length,
     totalActivePads: activePads.size,
   };
 };
