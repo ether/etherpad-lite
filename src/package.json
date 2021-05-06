@@ -70,7 +70,7 @@
     "tiny-worker": "^2.3.0",
     "tinycon": "0.6.8",
     "ueberdb2": "^1.4.7",
-    "underscore": "1.13.0",
+    "underscore": "1.13.1",
     "unorm": "1.6.0",
     "wtfnode": "^0.8.4"
   },
