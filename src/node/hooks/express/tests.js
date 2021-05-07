@@ -1,8 +1,7 @@
 'use strict';
 
 const path = require('path');
-const fs = require('fs');
-const fsp = fs.promises;
+const fsp = require('fs').promises;
 const sanitizePathname = require('../../utils/sanitizePathname');
 const settings = require('../../utils/Settings');
 
@@ -58,10 +57,13 @@ const getPluginTests = async (callback) => {
   const specPath = 'static/tests/frontend/specs';
   const plugins = await fsp.readdir(moduleDir);
   const specLists = await Promise.all(plugins.map(async (plugin) => {
-    const specDir = path.join(moduleDir, plugin, specPath);
-    if (!fs.existsSync(specDir)) return [];
-    const specFiles = await fsp.readdir(specDir);
-    return specFiles.map((spec) => `/static/plugins/${plugin}/${specPath}/${spec}`);
+    try {
+      const specs = await fsp.readdir(path.join(moduleDir, plugin, specPath));
+      return specs.map((spec) => `/static/plugins/${plugin}/${specPath}/${spec}`);
+    } catch (err) {
+      if (['ENOENT', 'ENOTDIR'].includes(err.code)) return [];
+      throw err;
+    }
   }));
   return [].concat(...specLists);
 };
