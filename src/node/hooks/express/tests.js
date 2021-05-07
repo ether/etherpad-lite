@@ -8,10 +8,7 @@ const settings = require('../../utils/Settings');
 
 exports.expressCreateServer = (hookName, args, cb) => {
   args.app.get('/tests/frontend/frontendTestSpecs.js', async (req, res) => {
-    const [coreTests, pluginTests] = await Promise.all([
-      exports.getCoreTests(),
-      exports.getPluginTests(),
-    ]);
+    const [coreTests, pluginTests] = await Promise.all([getCoreTests(), getPluginTests()]);
 
     // merge the two sets of results
     let files = [].concat(coreTests, pluginTests).sort();
@@ -56,7 +53,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
   return cb();
 };
 
-exports.getPluginTests = async (callback) => {
+const getPluginTests = async (callback) => {
   const moduleDir = 'node_modules/';
   const specPath = '/static/tests/frontend/specs/';
   const staticDir = '/static/plugins/';
@@ -76,4 +73,4 @@ exports.getPluginTests = async (callback) => {
   return pluginSpecs;
 };
 
-exports.getCoreTests = async () => await fsp.readdir('src/tests/frontend/specs');
+const getCoreTests = async () => await fsp.readdir('src/tests/frontend/specs');
