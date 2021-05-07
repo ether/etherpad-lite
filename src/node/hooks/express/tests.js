@@ -2,6 +2,7 @@
 
 const path = require('path');
 const fsp = require('fs').promises;
+const plugins = require('../../../static/js/pluginfw/plugin_defs');
 const sanitizePathname = require('../../utils/sanitizePathname');
 const settings = require('../../utils/Settings');
 
@@ -53,12 +54,12 @@ exports.expressCreateServer = (hookName, args, cb) => {
 };
 
 const getPluginTests = async (callback) => {
-  const moduleDir = 'node_modules/';
   const specPath = 'static/tests/frontend/specs';
-  const plugins = await fsp.readdir(moduleDir);
-  const specLists = await Promise.all(plugins.map(async (plugin) => {
+  const specLists = await Promise.all(Object.entries(plugins.plugins).map(async ([plugin, def]) => {
+    if (plugin === 'ep_etherpad-lite') return [];
+    const {package: {path: pluginPath}} = def;
     try {
-      const specs = await fsp.readdir(path.join(moduleDir, plugin, specPath));
+      const specs = await fsp.readdir(path.join(pluginPath, specPath));
       return specs.map((spec) => `/static/plugins/${plugin}/${specPath}/${spec}`);
     } catch (err) {
       if (['ENOENT', 'ENOTDIR'].includes(err.code)) return [];
