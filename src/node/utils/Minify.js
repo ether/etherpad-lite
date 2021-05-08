@@ -21,7 +21,6 @@
  * limitations under the License.
  */
 
-const assert = require('assert').strict;
 const settings = require('./Settings');
 const fs = require('fs').promises;
 const path = require('path');
@@ -105,33 +104,23 @@ const requestURIs = (locations, method, headers, callback) => {
   });
 };
 
-const sanitizePathname = (p) => {
-  // Replace all backslashes with forward slashes to support Windows. This MUST be done BEFORE path
-  // normalization, otherwise an attacker will be able to read arbitrary files anywhere on the
-  // filesystem. See https://nvd.nist.gov/vuln/detail/CVE-2015-3297. Node.js treats both the
-  // backlash and the forward slash characters as pathname component separators on Windows so this
-  // does not change the meaning of the pathname.
-  p = p.replace(/\\/g, '/');
-  // The Node.js documentation says that path.join() normalizes, and the documentation for
-  // path.normalize() says that it resolves '..' and '.' components. The word "resolve" implies that
-  // it examines the filesystem to resolve symbolic links, so 'a/../b' might not be the same thing
-  // as 'b'. Most path normalization functions from other libraries (e.g. Python's
-  // os.path.normpath()) clearly state that they do not examine the filesystem -- they are simple
-  // string manipulations. Node.js's path.normalize() probably also does a simple string
-  // manipulation, but if not it must be given a real pathname. Join with ROOT_DIR here just in
-  // case. ROOT_DIR will be removed later.
-  p = path.join(ROOT_DIR, p);
-  // Prevent attempts to read outside of ROOT_DIR via extra '..' components. ROOT_DIR is assumed to
-  // be normalized.
-  assert(ROOT_DIR.endsWith(path.sep));
-  if (!p.startsWith(ROOT_DIR)) throw new Error(`attempt to read outside ROOT_DIR (${ROOT_DIR})`);
-  // Convert back to a relative pathname.
-  p = p.slice(ROOT_DIR.length);
-  // On Windows, path.normalize replaces forward slashes with backslashes. Convert back to forward
-  // slashes. THIS IS DANGEROUS UNLESS BACKSLASHES ARE REPLACED WITH FORWARD SLASHES BEFORE PATH
-  // NORMALIZATION, otherwise on POSIXish systems '..\\' in the input pathname would not be
-  // normalized away before being converted to '../'.
-  p = p.replace(/\\/g, '/');
+// Normalizes p and ensures that it is a relative path that does not reach outside. See
+// https://nvd.nist.gov/vuln/detail/CVE-2015-3297 for additional context.
+const sanitizePathname = (p, pathApi = path) => {
+  // The documentation for path.normalize() says that it resolves '..' and '.' segments. The word
+  // "resolve" implies that it examines the filesystem to resolve symbolic links, so 'a/../b' might
+  // not be the same thing as 'b'. Most path normalization functions from other libraries (e.g.,
+  // Python's os.path.normpath()) clearly state that they do not examine the filesystem. Here we
+  // assume Node.js's path.normalize() does the same; that it is only a simple string manipulation.
+  p = pathApi.normalize(p);
+  if (pathApi.isAbsolute(p)) throw new Error(`absolute paths are forbidden: ${p}`);
+  if (p.split(pathApi.sep)[0] === '..') throw new Error(`directory traversal: ${p}`);
+  // On Windows, path normalization replaces forwardslashes with backslashes. Convert them back to
+  // forwardslashes. Node.js treats both the backlash and the forwardslash characters as pathname
+  // component separators on Windows so this does not change the meaning of the pathname on Windows.
+  // THIS CONVERSION MUST ONLY BE DONE ON WINDOWS, otherwise on POSIXish systems '..\\' in the input
+  // pathname would not be normalized away before being converted to '../'.
+  if (pathApi.sep === '\\') p = p.replace(/\\/g, '/');
   return p;
 };
 
@@ -350,4 +339,8 @@ exports.requestURIs = requestURIs;
 
 exports.shutdown = async (hookName, context) => {
   await threadsPool.terminate();
+};
+
+exports.exportedForTestingOnly = {
+  sanitizePathname,
 };
