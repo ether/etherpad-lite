@@ -31,19 +31,29 @@ const findSpecs = async (specDir) => {
 
 exports.expressCreateServer = (hookName, args, cb) => {
   args.app.get('/tests/frontend/frontendTestSpecs.js', async (req, res) => {
-    const [coreTests, pluginTests] = await Promise.all([getCoreTests(), getPluginTests()]);
-
-    // merge the two sets of results
-    let files = [].concat(coreTests, pluginTests).sort();
-
-    // remove admin tests if the setting to enable them isn't in settings.json
-    if (!settings.enableAdminUITests) {
-      files = files.filter((file) => file.indexOf('admin') !== 0);
-    }
-
-    console.debug('Sent browser the following test specs:', files);
+    const modules = [];
+    await Promise.all(Object.entries(plugins.plugins).map(async ([plugin, def]) => {
+      let {package: {path: pluginPath}} = def;
+      if (!pluginPath.endsWith(path.sep)) pluginPath += path.sep;
+      const specDir = `${plugin === 'ep_etherpad-lite' ? '' : 'static/'}tests/frontend/specs`;
+      for (const spec of await findSpecs(path.join(pluginPath, specDir))) {
+        if (plugin === 'ep_etherpad-lite' && !settings.enableAdminUITests &&
+            spec.startsWith('admin')) continue;
+        modules.push(`${plugin}/${specDir}/${spec.replace(/\.js$/, '')}`);
+      }
+    }));
+    // Sort plugin tests before core tests.
+    modules.sort((a, b) => {
+      a = String(a);
+      b = String(b);
+      const aCore = a.startsWith('ep_etherpad-lite/');
+      const bCore = b.startsWith('ep_etherpad-lite/');
+      if (aCore === bCore) return a.localeCompare(b);
+      return aCore ? 1 : -1;
+    });
+    console.debug('Sent browser the following test spec modules:', modules);
     res.setHeader('content-type', 'application/javascript');
-    res.end(`window.frontendTestSpecs = ${JSON.stringify(files, null, 2)};\n`);
+    res.end(`window.frontendTestSpecs = ${JSON.stringify(modules, null, 2)};\n`);
   });
 
   const rootTestFolder = path.join(settings.root, 'src/tests/frontend/');
@@ -57,16 +67,9 @@ exports.expressCreateServer = (hookName, args, cb) => {
   // version used with Express v4.x) interprets '.' and '*' differently than regexp.
   args.app.get('/tests/frontend/:file([\\d\\D]{0,})', (req, res, next) => {
     (async () => {
-      let relFile = sanitizePathname(req.params.file);
-      if (['', '.', './'].includes(relFile)) relFile = 'index.html';
-      const file = path.join(rootTestFolder, relFile);
-      if (relFile.startsWith('specs/') && file.endsWith('.js')) {
-        const content = await fsp.readFile(file);
-        res.setHeader('content-type', 'application/javascript');
-        res.send(`describe(${JSON.stringify(path.basename(file))}, function () {\n${content}\n});`);
-      } else {
-        res.sendFile(file);
-      }
+      let file = sanitizePathname(req.params.file);
+      if (['', '.', './'].includes(file)) file = 'index.html';
+      res.sendFile(path.join(rootTestFolder, file));
     })().catch((err) => next(err || new Error(err)));
   });
 
@@ -76,16 +79,3 @@ exports.expressCreateServer = (hookName, args, cb) => {
 
   return cb();
 };
-
-const getPluginTests = async (callback) => {
-  const specPath = 'static/tests/frontend/specs';
-  const specLists = await Promise.all(Object.entries(plugins.plugins).map(async ([plugin, def]) => {
-    if (plugin === 'ep_etherpad-lite') return [];
-    const {package: {path: pluginPath}} = def;
-    const specs = await findSpecs(path.join(pluginPath, specPath));
-    return specs.map((spec) => `/static/plugins/${plugin}/${specPath}/${spec}`);
-  }));
-  return [].concat(...specLists);
-};
-
-const getCoreTests = async () => await findSpecs('src/tests/frontend/specs');

@@ -141,9 +141,17 @@ $(() => {
   require.setLibraryURI(absUrl('../../javascripts/lib'));
   require.setGlobalKeyPath('require');
 
-  const $body = $('body');
-  for (const spec of window.frontendTestSpecs.map((spec) => encodeURI(spec))) {
-    $body.append($('<script>').attr('src', spec.startsWith('/') ? spec : `specs/${spec}`));
+  // This loads the test specs serially. While it is technically possible to load them in parallel,
+  // the code would be very complex (it involves wrapping require.define(), configuring
+  // require-kernel to use the wrapped .define() via require.setGlobalKeyPath(), and using the
+  // asynchronous form of require()). In addition, the performance gains would be minimal because
+  // require-kernel only loads 2 at a time by default. (Increasing the default could cause problems
+  // because browsers like to limit the number of concurrent fetches.)
+  for (const spec of window.frontendTestSpecs) {
+    const desc = spec
+        .replace(/^ep_etherpad-lite\/tests\/frontend\/specs\//, '<core> ')
+        .replace(/^([^/ ]*)\/static\/tests\/frontend\/specs\//, '<$1> ');
+    describe(`${desc}.js`, function () { require(spec); });
   }
 
   // initialize the test helper
