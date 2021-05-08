@@ -30,15 +30,11 @@ exports.expressCreateServer = (hookName, args, cb) => {
 
   const rootTestFolder = path.join(settings.root, 'src/tests/frontend/');
 
-  const url2FilePath = (url) => {
-    let subPath = url.substr('/tests/frontend'.length);
+  const sanitizePath = (subPath) => {
     if (subPath === '') {
       subPath = 'index.html';
     }
-    subPath = subPath.split('?')[0];
-
     let filePath = path.join(rootTestFolder, subPath);
-
     // make sure we jail the paths to the test folder, otherwise serve index
     if (filePath.indexOf(rootTestFolder) !== 0) {
       filePath = path.join(rootTestFolder, 'index.html');
@@ -46,9 +42,12 @@ exports.expressCreateServer = (hookName, args, cb) => {
     return filePath;
   };
 
-  args.app.get('/tests/frontend/specs/*', (req, res, next) => {
+  // The regexp /[\d\D]{0,}/ is equivalent to the regexp /.*/. The Express route path used here
+  // uses the more verbose /[\d\D]{0,}/ pattern instead of /.*/ because path-to-regexp v0.1.7 (the
+  // version used with Express v4.x) interprets '.' and '*' differently than regexp.
+  args.app.get('/tests/frontend/specs/:file([\\d\\D]{0,})', (req, res, next) => {
     (async () => {
-      const specFilePath = url2FilePath(req.url);
+      const specFilePath = sanitizePath(`specs/${req.params.file}`);
       const specFileName = path.basename(specFilePath);
       let content = await fsp.readFile(specFilePath);
       content = `describe(${JSON.stringify(specFileName)}, function(){${content}});`;
@@ -59,8 +58,8 @@ exports.expressCreateServer = (hookName, args, cb) => {
     })().catch((err) => next(err || new Error(err)));
   });
 
-  args.app.get('/tests/frontend/*', (req, res) => {
-    const filePath = url2FilePath(req.url);
+  args.app.get('/tests/frontend/:file([\\d\\D]{0,})', (req, res) => {
+    const filePath = sanitizePath(req.params.file);
     res.sendFile(filePath);
   });
 
