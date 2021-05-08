@@ -1,10 +1,8 @@
 'use strict';
 
-const Minify = require('../../../node/utils/Minify');
 const assert = require('assert').strict;
 const path = require('path');
-
-const {sanitizePathname} = Minify.exportedForTestingOnly;
+const sanitizePathname = require('../../../node/utils/sanitizePathname');
 
 describe(__filename, function () {
   describe('absolute paths rejected', function () {
