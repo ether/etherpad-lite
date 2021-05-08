@@ -28,6 +28,10 @@ exports.expressCreateServer = (hookName, args, cb) => {
 
   const rootTestFolder = path.join(settings.root, 'src/tests/frontend/');
 
+  args.app.get('/tests/frontend/index.html', (req, res) => {
+    res.redirect(['./', ...req.url.split('?').slice(1)].join('?'));
+  });
+
   // The regexp /[\d\D]{0,}/ is equivalent to the regexp /.*/. The Express route path used here
   // uses the more verbose /[\d\D]{0,}/ pattern instead of /.*/ because path-to-regexp v0.1.7 (the
   // version used with Express v4.x) interprets '.' and '*' differently than regexp.
