@@ -6,15 +6,35 @@ const plugins = require('../../../static/js/pluginfw/plugin_defs');
 const sanitizePathname = require('../../utils/sanitizePathname');
 const settings = require('../../utils/Settings');
 
+// Returns all *.js files under specDir (recursively) as relative paths to specDir, using '/'
+// instead of path.sep to separate pathname components.
+const findSpecs = async (specDir) => {
+  let dirents;
+  try {
+    dirents = await fsp.readdir(specDir, {withFileTypes: true});
+  } catch (err) {
+    if (['ENOENT', 'ENOTDIR'].includes(err.code)) return [];
+    throw err;
+  }
+  const specs = [];
+  await Promise.all(dirents.map(async (dirent) => {
+    if (dirent.isDirectory()) {
+      const subdirSpecs = await findSpecs(path.join(specDir, dirent.name));
+      specs.push(...subdirSpecs.map((spec) => `${dirent.name}/${spec}`));
+      return;
+    }
+    if (!dirent.name.endsWith('.js')) return;
+    specs.push(dirent.name);
+  }));
+  return specs;
+};
+
 exports.expressCreateServer = (hookName, args, cb) => {
   args.app.get('/tests/frontend/frontendTestSpecs.js', async (req, res) => {
     const [coreTests, pluginTests] = await Promise.all([getCoreTests(), getPluginTests()]);
 
     // merge the two sets of results
     let files = [].concat(coreTests, pluginTests).sort();
-
-    // Keep only *.js files
-    files = files.filter((f) => f.endsWith('.js'));
 
     // remove admin tests if the setting to enable them isn't in settings.json
     if (!settings.enableAdminUITests) {
@@ -62,15 +82,10 @@ const getPluginTests = async (callback) => {
   const specLists = await Promise.all(Object.entries(plugins.plugins).map(async ([plugin, def]) => {
     if (plugin === 'ep_etherpad-lite') return [];
     const {package: {path: pluginPath}} = def;
-    try {
-      const specs = await fsp.readdir(path.join(pluginPath, specPath));
-      return specs.map((spec) => `/static/plugins/${plugin}/${specPath}/${spec}`);
-    } catch (err) {
-      if (['ENOENT', 'ENOTDIR'].includes(err.code)) return [];
-      throw err;
-    }
+    const specs = await findSpecs(path.join(pluginPath, specPath));
+    return specs.map((spec) => `/static/plugins/${plugin}/${specPath}/${spec}`);
   }));
   return [].concat(...specLists);
 };
 
-const getCoreTests = async () => await fsp.readdir('src/tests/frontend/specs');
+const getCoreTests = async () => await findSpecs('src/tests/frontend/specs');
