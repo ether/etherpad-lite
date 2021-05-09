@@ -57,19 +57,14 @@ const getPluginTests = async (callback) => {
   const moduleDir = 'node_modules/';
   const specPath = '/static/tests/frontend/specs/';
   const staticDir = '/static/plugins/';
-
-  const pluginSpecs = [];
-
   const plugins = await fsp.readdir(moduleDir);
-  await Promise.all(plugins.map(async (plugin) => {
+  const specLists = await Promise.all(plugins.map(async (plugin) => {
     const specDir = moduleDir + plugin + specPath;
-    if (!fs.existsSync(specDir)) return;
+    if (!fs.existsSync(specDir)) return [];
     const specFiles = await fsp.readdir(specDir);
-    for (const spec of specFiles) {
-      pluginSpecs.push(staticDir + plugin + specPath + spec);
-    }
+    return specFiles.map((spec) => staticDir + plugin + specPath + spec);
   }));
-  return pluginSpecs;
+  return [].concat(...specLists);
 };
 
 const getCoreTests = async () => await fsp.readdir('src/tests/frontend/specs');
