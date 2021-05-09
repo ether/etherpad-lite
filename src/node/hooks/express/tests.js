@@ -30,7 +30,7 @@ const findSpecs = async (specDir) => {
 };
 
 exports.expressCreateServer = (hookName, args, cb) => {
-  args.app.get('/tests/frontend/frontendTestSpecs.js', (req, res, next) => {
+  args.app.get('/tests/frontend/frontendTestSpecs.json', (req, res, next) => {
     (async () => {
       const modules = [];
       await Promise.all(Object.entries(plugins.plugins).map(async ([plugin, def]) => {
@@ -53,8 +53,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
         return aCore ? 1 : -1;
       });
       console.debug('Sent browser the following test spec modules:', modules);
-      res.setHeader('content-type', 'application/javascript');
-      res.end(`window.frontendTestSpecs = ${JSON.stringify(modules, null, 2)};\n`);
+      res.json(modules);
     })().catch((err) => next(err || new Error(err)));
   });
 

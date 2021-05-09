@@ -149,7 +149,7 @@ $(() => (async () => {
   // asynchronous form of require()). In addition, the performance gains would be minimal because
   // require-kernel only loads 2 at a time by default. (Increasing the default could cause problems
   // because browsers like to limit the number of concurrent fetches.)
-  for (const spec of window.frontendTestSpecs) {
+  for (const spec of await $.getJSON('frontendTestSpecs.json')) {
     const desc = spec
         .replace(/^ep_etherpad-lite\/tests\/frontend\/specs\//, '<core> ')
         .replace(/^([^/ ]*)\/static\/tests\/frontend\/specs\//, '<$1> ');
