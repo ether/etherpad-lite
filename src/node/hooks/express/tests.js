@@ -84,15 +84,16 @@ exports.getPluginTests = async (callback) => {
   const pluginSpecs = [];
 
   const plugins = await readdir(moduleDir);
-  const promises = plugins
+  await Promise.all(plugins
       .map((plugin) => [plugin, moduleDir + plugin + specPath])
       .filter(([plugin, specDir]) => fs.existsSync(specDir)) // check plugin exists
-      .map(async ([plugin, specDir]) => await readdir(specDir)
-          .then((specFiles) => specFiles.map((spec) => {
-            pluginSpecs.push(staticDir + plugin + specPath + spec);
-          })));
-
-  return await Promise.all(promises).then(() => pluginSpecs);
+      .map(async ([plugin, specDir]) => {
+        const specFiles = await readdir(specDir);
+        return specFiles.map((spec) => {
+          pluginSpecs.push(staticDir + plugin + specPath + spec);
+        });
+      }));
+  return pluginSpecs;
 };
 
 exports.getCoreTests = async () => await readdir('src/tests/frontend/specs');
