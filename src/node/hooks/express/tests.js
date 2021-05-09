@@ -46,20 +46,17 @@ exports.expressCreateServer = (hookName, args, cb) => {
     return filePath;
   };
 
-  args.app.get('/tests/frontend/specs/*', (req, res) => {
-    const specFilePath = url2FilePath(req.url);
-    const specFileName = path.basename(specFilePath);
-
-    fs.readFile(specFilePath, (err, content) => {
-      if (err) { return res.send(500); }
-
+  args.app.get('/tests/frontend/specs/*', (req, res, next) => {
+    (async () => {
+      const specFilePath = url2FilePath(req.url);
+      const specFileName = path.basename(specFilePath);
+      let content = await fsp.readFile(specFilePath);
       content = `describe(${JSON.stringify(specFileName)}, function(){${content}});`;
-
       if (!specFilePath.endsWith('index.html')) {
         res.setHeader('content-type', 'application/javascript');
       }
       res.send(content);
-    });
+    })().catch((err) => next(err || new Error(err)));
   });
 
   args.app.get('/tests/frontend/*', (req, res) => {
