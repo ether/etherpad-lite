@@ -55,13 +55,13 @@ exports.expressCreateServer = (hookName, args, cb) => {
 
 const getPluginTests = async (callback) => {
   const moduleDir = 'node_modules/';
-  const specPath = '/static/tests/frontend/specs/';
+  const specPath = 'static/tests/frontend/specs';
   const plugins = await fsp.readdir(moduleDir);
   const specLists = await Promise.all(plugins.map(async (plugin) => {
-    const specDir = moduleDir + plugin + specPath;
+    const specDir = path.join(moduleDir, plugin, specPath);
     if (!fs.existsSync(specDir)) return [];
     const specFiles = await fsp.readdir(specDir);
-    return specFiles.map((spec) => `/static/plugins/${plugin}${specPath}${spec}`);
+    return specFiles.map((spec) => `/static/plugins/${plugin}/${specPath}/${spec}`);
   }));
   return [].concat(...specLists);
 };
