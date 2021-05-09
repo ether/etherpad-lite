@@ -66,9 +66,9 @@ const getPluginTests = async (callback) => {
       .filter(([plugin, specDir]) => fs.existsSync(specDir)) // check plugin exists
       .map(async ([plugin, specDir]) => {
         const specFiles = await fsp.readdir(specDir);
-        return specFiles.map((spec) => {
+        for (const spec of specFiles) {
           pluginSpecs.push(staticDir + plugin + specPath + spec);
-        });
+        }
       }));
   return pluginSpecs;
 };
