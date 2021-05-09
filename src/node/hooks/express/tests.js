@@ -2,7 +2,7 @@
 
 const path = require('path');
 const fs = require('fs');
-const util = require('util');
+const fsp = fs.promises;
 const settings = require('../../utils/Settings');
 
 exports.expressCreateServer = (hookName, args, cb) => {
@@ -74,8 +74,6 @@ exports.expressCreateServer = (hookName, args, cb) => {
   return cb();
 };
 
-const readdir = util.promisify(fs.readdir);
-
 exports.getPluginTests = async (callback) => {
   const moduleDir = 'node_modules/';
   const specPath = '/static/tests/frontend/specs/';
@@ -83,12 +81,12 @@ exports.getPluginTests = async (callback) => {
 
   const pluginSpecs = [];
 
-  const plugins = await readdir(moduleDir);
+  const plugins = await fsp.readdir(moduleDir);
   await Promise.all(plugins
       .map((plugin) => [plugin, moduleDir + plugin + specPath])
       .filter(([plugin, specDir]) => fs.existsSync(specDir)) // check plugin exists
       .map(async ([plugin, specDir]) => {
-        const specFiles = await readdir(specDir);
+        const specFiles = await fsp.readdir(specDir);
         return specFiles.map((spec) => {
           pluginSpecs.push(staticDir + plugin + specPath + spec);
         });
@@ -96,4 +94,4 @@ exports.getPluginTests = async (callback) => {
   return pluginSpecs;
 };
 
-exports.getCoreTests = async () => await readdir('src/tests/frontend/specs');
+exports.getCoreTests = async () => await fsp.readdir('src/tests/frontend/specs');
