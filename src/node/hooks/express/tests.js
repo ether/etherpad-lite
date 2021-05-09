@@ -3,6 +3,7 @@
 const path = require('path');
 const fs = require('fs');
 const fsp = fs.promises;
+const sanitizePathname = require('../../utils/sanitizePathname');
 const settings = require('../../utils/Settings');
 
 exports.expressCreateServer = (hookName, args, cb) => {
@@ -30,25 +31,15 @@ exports.expressCreateServer = (hookName, args, cb) => {
 
   const rootTestFolder = path.join(settings.root, 'src/tests/frontend/');
 
-  const sanitizePath = (subPath) => {
-    if (subPath === '') {
-      subPath = 'index.html';
-    }
-    let filePath = path.join(rootTestFolder, subPath);
-    // make sure we jail the paths to the test folder, otherwise serve index
-    if (filePath.indexOf(rootTestFolder) !== 0) {
-      filePath = path.join(rootTestFolder, 'index.html');
-    }
-    return filePath;
-  };
-
   // The regexp /[\d\D]{0,}/ is equivalent to the regexp /.*/. The Express route path used here
   // uses the more verbose /[\d\D]{0,}/ pattern instead of /.*/ because path-to-regexp v0.1.7 (the
   // version used with Express v4.x) interprets '.' and '*' differently than regexp.
   args.app.get('/tests/frontend/:file([\\d\\D]{0,})', (req, res, next) => {
     (async () => {
-      const file = sanitizePath(req.params.file);
-      if (req.params.file.startsWith('specs/') && file.endsWith('.js')) {
+      let relFile = sanitizePathname(req.params.file);
+      if (['', '.', './'].includes(relFile)) relFile = 'index.html';
+      const file = path.join(rootTestFolder, relFile);
+      if (relFile.startsWith('specs/') && file.endsWith('.js')) {
         const content = await fsp.readFile(file);
         res.setHeader('content-type', 'application/javascript');
         res.send(`describe(${JSON.stringify(path.basename(file))}, function () {\n${content}\n});`);
