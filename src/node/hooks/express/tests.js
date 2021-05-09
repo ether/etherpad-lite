@@ -61,15 +61,14 @@ const getPluginTests = async (callback) => {
   const pluginSpecs = [];
 
   const plugins = await fsp.readdir(moduleDir);
-  await Promise.all(plugins
-      .map((plugin) => [plugin, moduleDir + plugin + specPath])
-      .filter(([plugin, specDir]) => fs.existsSync(specDir)) // check plugin exists
-      .map(async ([plugin, specDir]) => {
-        const specFiles = await fsp.readdir(specDir);
-        for (const spec of specFiles) {
-          pluginSpecs.push(staticDir + plugin + specPath + spec);
-        }
-      }));
+  await Promise.all(plugins.map(async (plugin) => {
+    const specDir = moduleDir + plugin + specPath;
+    if (!fs.existsSync(specDir)) return;
+    const specFiles = await fsp.readdir(specDir);
+    for (const spec of specFiles) {
+      pluginSpecs.push(staticDir + plugin + specPath + spec);
+    }
+  }));
   return pluginSpecs;
 };
 
