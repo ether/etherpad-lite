@@ -30,30 +30,32 @@ const findSpecs = async (specDir) => {
 };
 
 exports.expressCreateServer = (hookName, args, cb) => {
-  args.app.get('/tests/frontend/frontendTestSpecs.js', async (req, res) => {
-    const modules = [];
-    await Promise.all(Object.entries(plugins.plugins).map(async ([plugin, def]) => {
-      let {package: {path: pluginPath}} = def;
-      if (!pluginPath.endsWith(path.sep)) pluginPath += path.sep;
-      const specDir = `${plugin === 'ep_etherpad-lite' ? '' : 'static/'}tests/frontend/specs`;
-      for (const spec of await findSpecs(path.join(pluginPath, specDir))) {
-        if (plugin === 'ep_etherpad-lite' && !settings.enableAdminUITests &&
-            spec.startsWith('admin')) continue;
-        modules.push(`${plugin}/${specDir}/${spec.replace(/\.js$/, '')}`);
-      }
-    }));
-    // Sort plugin tests before core tests.
-    modules.sort((a, b) => {
-      a = String(a);
-      b = String(b);
-      const aCore = a.startsWith('ep_etherpad-lite/');
-      const bCore = b.startsWith('ep_etherpad-lite/');
-      if (aCore === bCore) return a.localeCompare(b);
-      return aCore ? 1 : -1;
-    });
-    console.debug('Sent browser the following test spec modules:', modules);
-    res.setHeader('content-type', 'application/javascript');
-    res.end(`window.frontendTestSpecs = ${JSON.stringify(modules, null, 2)};\n`);
+  args.app.get('/tests/frontend/frontendTestSpecs.js', (req, res, next) => {
+    (async () => {
+      const modules = [];
+      await Promise.all(Object.entries(plugins.plugins).map(async ([plugin, def]) => {
+        let {package: {path: pluginPath}} = def;
+        if (!pluginPath.endsWith(path.sep)) pluginPath += path.sep;
+        const specDir = `${plugin === 'ep_etherpad-lite' ? '' : 'static/'}tests/frontend/specs`;
+        for (const spec of await findSpecs(path.join(pluginPath, specDir))) {
+          if (plugin === 'ep_etherpad-lite' && !settings.enableAdminUITests &&
+              spec.startsWith('admin')) continue;
+          modules.push(`${plugin}/${specDir}/${spec.replace(/\.js$/, '')}`);
+        }
+      }));
+      // Sort plugin tests before core tests.
+      modules.sort((a, b) => {
+        a = String(a);
+        b = String(b);
+        const aCore = a.startsWith('ep_etherpad-lite/');
+        const bCore = b.startsWith('ep_etherpad-lite/');
+        if (aCore === bCore) return a.localeCompare(b);
+        return aCore ? 1 : -1;
+      });
+      console.debug('Sent browser the following test spec modules:', modules);
+      res.setHeader('content-type', 'application/javascript');
+      res.end(`window.frontendTestSpecs = ${JSON.stringify(modules, null, 2)};\n`);
+    })().catch((err) => next(err || new Error(err)));
   });
 
   const rootTestFolder = path.join(settings.root, 'src/tests/frontend/');
