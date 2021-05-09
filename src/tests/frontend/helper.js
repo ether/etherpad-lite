@@ -7,11 +7,11 @@ const helper = {};
   const jsLibraries = {};
 
   helper.init = (cb) => {
-    $.get('/static/js/vendors/jquery.js').done((code) => {
+    $.get('../../static/js/vendors/jquery.js').done((code) => {
       // make sure we don't override existing jquery
       jsLibraries.jquery = `if(typeof $ === 'undefined') {\n${code}\n}`;
 
-      $.get('/tests/frontend/lib/sendkeys.js').done((code) => {
+      $.get('lib/sendkeys.js').done((code) => {
         jsLibraries.sendkeys = code;
 
         cb();
