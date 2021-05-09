@@ -87,12 +87,12 @@ exports.getPluginTests = async (callback) => {
   const promises = plugins
       .map((plugin) => [plugin, moduleDir + plugin + specPath])
       .filter(([plugin, specDir]) => fs.existsSync(specDir)) // check plugin exists
-      .map(([plugin, specDir]) => readdir(specDir)
+      .map(async ([plugin, specDir]) => await readdir(specDir)
           .then((specFiles) => specFiles.map((spec) => {
             pluginSpecs.push(staticDir + plugin + specPath + spec);
           })));
 
-  return Promise.all(promises).then(() => pluginSpecs);
+  return await Promise.all(promises).then(() => pluginSpecs);
 };
 
-exports.getCoreTests = () => readdir('src/tests/frontend/specs');
+exports.getCoreTests = async () => await readdir('src/tests/frontend/specs');
