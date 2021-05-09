@@ -47,14 +47,14 @@ exports.expressCreateServer = (hookName, args, cb) => {
   // version used with Express v4.x) interprets '.' and '*' differently than regexp.
   args.app.get('/tests/frontend/specs/:file([\\d\\D]{0,})', (req, res, next) => {
     (async () => {
-      const specFilePath = sanitizePath(`specs/${req.params.file}`);
-      const specFileName = path.basename(specFilePath);
-      let content = await fsp.readFile(specFilePath);
-      content = `describe(${JSON.stringify(specFileName)}, function(){${content}});`;
-      if (!specFilePath.endsWith('index.html')) {
+      const file = sanitizePath(`specs/${req.params.file}`);
+      if (file.endsWith('.js')) {
+        const content = await fsp.readFile(file);
         res.setHeader('content-type', 'application/javascript');
+        res.send(`describe(${JSON.stringify(path.basename(file))}, function () {\n${content}\n});`);
+      } else {
+        res.sendFile(file);
       }
-      res.send(content);
     })().catch((err) => next(err || new Error(err)));
   });
 
