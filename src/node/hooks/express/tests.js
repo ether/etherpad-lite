@@ -45,10 +45,10 @@ exports.expressCreateServer = (hookName, args, cb) => {
   // The regexp /[\d\D]{0,}/ is equivalent to the regexp /.*/. The Express route path used here
   // uses the more verbose /[\d\D]{0,}/ pattern instead of /.*/ because path-to-regexp v0.1.7 (the
   // version used with Express v4.x) interprets '.' and '*' differently than regexp.
-  args.app.get('/tests/frontend/specs/:file([\\d\\D]{0,})', (req, res, next) => {
+  args.app.get('/tests/frontend/:file([\\d\\D]{0,})', (req, res, next) => {
     (async () => {
-      const file = sanitizePath(`specs/${req.params.file}`);
-      if (file.endsWith('.js')) {
+      const file = sanitizePath(req.params.file);
+      if (req.params.file.startsWith('specs/') && file.endsWith('.js')) {
         const content = await fsp.readFile(file);
         res.setHeader('content-type', 'application/javascript');
         res.send(`describe(${JSON.stringify(path.basename(file))}, function () {\n${content}\n});`);
@@ -56,11 +56,6 @@ exports.expressCreateServer = (hookName, args, cb) => {
         res.sendFile(file);
       }
     })().catch((err) => next(err || new Error(err)));
-  });
-
-  args.app.get('/tests/frontend/:file([\\d\\D]{0,})', (req, res) => {
-    const filePath = sanitizePath(req.params.file);
-    res.sendFile(filePath);
   });
 
   args.app.get('/tests/frontend', (req, res) => {
