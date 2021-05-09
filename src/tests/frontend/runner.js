@@ -1,6 +1,8 @@
 'use strict';
 
-$(() => {
+// $(handler), $().ready(handler), $.wait($.ready).then(handler), etc. don't work if handler is an
+// async function for some bizarre reason, so the async function is wrapped in a non-async function.
+$(() => (async () => {
   const stringifyException = (exception) => {
     let err = exception.stack || exception.toString();
 
@@ -154,15 +156,11 @@ $(() => {
     describe(`${desc}.js`, function () { require(spec); });
   }
 
-  // initialize the test helper
-  helper.init(() => {
-    // configure and start the test framework
-    const grep = getURLParameter('grep');
-    if (grep != null) {
-      mocha.grep(grep);
-    }
-
-    const runner = mocha.run();
-    customRunner(runner);
-  });
-});
+  await helper.init();
+  const grep = getURLParameter('grep');
+  if (grep != null) {
+    mocha.grep(grep);
+  }
+  const runner = mocha.run();
+  customRunner(runner);
+})());

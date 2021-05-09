@@ -6,17 +6,16 @@ const helper = {};
   let $iframe;
   const jsLibraries = {};
 
-  helper.init = (cb) => {
-    $.get('../../static/js/vendors/jquery.js').done((code) => {
-      // make sure we don't override existing jquery
-      jsLibraries.jquery = `if(typeof $ === 'undefined') {\n${code}\n}`;
-
-      $.get('lib/sendkeys.js').done((code) => {
-        jsLibraries.sendkeys = code;
-
-        cb();
-      });
-    });
+  helper.init = async () => {
+    [
+      jsLibraries.jquery,
+      jsLibraries.sendkeys,
+    ] = await Promise.all([
+      $.get('../../static/js/vendors/jquery.js'),
+      $.get('lib/sendkeys.js'),
+    ]);
+    // make sure we don't override existing jquery
+    jsLibraries.jquery = `if (typeof $ === 'undefined') {\n${jsLibraries.jquery}\n}`;
   };
 
   helper.randomString = (len) => {
