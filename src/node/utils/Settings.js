@@ -602,7 +602,7 @@ const lookupEnvironmentVariables = (obj) => {
     const defaultValue = match[3];
 
     if ((envVarValue === undefined) && (defaultValue === undefined)) {
-      console.warn(`Environment variable "${envVarName}" does not contain any value for `+
+      console.warn(`Environment variable "${envVarName}" does not contain any value for ` +
                    `configuration key "${key}", and no default was given. Returning null.`);
 
       /*

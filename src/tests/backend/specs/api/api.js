@@ -55,5 +55,4 @@ describe(__filename, function () {
           }
         });
   });
-
 });

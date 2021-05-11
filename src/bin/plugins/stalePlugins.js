@@ -5,7 +5,7 @@
 const superagent = require('superagent');
 const currentTime = new Date();
 
-(async() => {
+(async () => {
   const res = await superagent.get('https://static.etherpad.org/plugins.full.json');
   const plugins = JSON.parse(res.text);
   for (const plugin of Object.keys(plugins)) {
@@ -13,8 +13,8 @@ const currentTime = new Date();
     const date = new Date(plugins[plugin].time);
     const diffTime = Math.abs(currentTime - date);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    if (diffDays > (365*2)) {
-      console.log(`${name}, ${plugins[plugin].data.maintainers[0].email}`)
+    if (diffDays > (365 * 2)) {
+      console.log(`${name}, ${plugins[plugin].data.maintainers[0].email}`);
     }
   }
 })();
