@@ -831,7 +831,7 @@ exports.getStats = async () => {
 const isInt = (value) => (parseFloat(value) === parseInt(value, 10)) && !isNaN(value);
 
 // gets a pad safe
-async function getPadSafe(padID, shouldExist, text) {
+const getPadSafe = async (padID, shouldExist, text) => {
   // check if padID is a string
   if (typeof padID !== 'string') {
     throw new CustomError('padID is not a string', 'apierror');
@@ -857,7 +857,7 @@ async function getPadSafe(padID, shouldExist, text) {
 
   // pad exists, let's get it
   return padManager.getPad(padID, text);
-}
+};
 
 // checks if a rev is a legal number
 // pre-condition is that `rev` is not undefined

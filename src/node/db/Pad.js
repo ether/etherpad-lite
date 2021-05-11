@@ -32,7 +32,7 @@ exports.cleanText = (txt) => txt.replace(/\r\n/g, '\n')
     .replace(/\t/g, '        ')
     .replace(/\xa0/g, ' ');
 
-const Pad = function Pad(id) {
+const Pad = function (id) {
   this.atext = Changeset.makeAText('\n');
   this.pool = new AttributePool();
   this.head = -1;
@@ -44,32 +44,29 @@ const Pad = function Pad(id) {
 
 exports.Pad = Pad;
 
-Pad.prototype.apool = function apool() {
+Pad.prototype.apool = function () {
   return this.pool;
 };
 
-Pad.prototype.getHeadRevisionNumber = function getHeadRevisionNumber() {
+Pad.prototype.getHeadRevisionNumber = function () {
   return this.head;
 };
 
-Pad.prototype.getSavedRevisionsNumber = function getSavedRevisionsNumber() {
+Pad.prototype.getSavedRevisionsNumber = function () {
   return this.savedRevisions.length;
 };
 
-Pad.prototype.getSavedRevisionsList = function getSavedRevisionsList() {
-  const savedRev = [];
-  for (const rev in this.savedRevisions) {
-    savedRev.push(this.savedRevisions[rev].revNum);
-  }
+Pad.prototype.getSavedRevisionsList = function () {
+  const savedRev = this.savedRevisions.map((rev) => rev.revNum);
   savedRev.sort((a, b) => a - b);
   return savedRev;
 };
 
-Pad.prototype.getPublicStatus = function getPublicStatus() {
+Pad.prototype.getPublicStatus = function () {
   return this.publicStatus;
 };
 
-Pad.prototype.appendRevision = async function appendRevision(aChangeset, author) {
+Pad.prototype.appendRevision = async function (aChangeset, author) {
   if (!author) {
     author = '';
   }
@@ -115,7 +112,7 @@ Pad.prototype.appendRevision = async function appendRevision(aChangeset, author)
 };
 
 // save all attributes to the database
-Pad.prototype.saveToDatabase = async function saveToDatabase() {
+Pad.prototype.saveToDatabase = async function () {
   const dbObject = {};
 
   for (const attr in this) {
@@ -133,24 +130,24 @@ Pad.prototype.saveToDatabase = async function saveToDatabase() {
 };
 
 // get time of last edit (changeset application)
-Pad.prototype.getLastEdit = function getLastEdit() {
+Pad.prototype.getLastEdit = function () {
   const revNum = this.getHeadRevisionNumber();
   return db.getSub(`pad:${this.id}:revs:${revNum}`, ['meta', 'timestamp']);
 };
 
-Pad.prototype.getRevisionChangeset = function getRevisionChangeset(revNum) {
+Pad.prototype.getRevisionChangeset = function (revNum) {
   return db.getSub(`pad:${this.id}:revs:${revNum}`, ['changeset']);
 };
 
-Pad.prototype.getRevisionAuthor = function getRevisionAuthor(revNum) {
+Pad.prototype.getRevisionAuthor = function (revNum) {
   return db.getSub(`pad:${this.id}:revs:${revNum}`, ['meta', 'author']);
 };
 
-Pad.prototype.getRevisionDate = function getRevisionDate(revNum) {
+Pad.prototype.getRevisionDate = function (revNum) {
   return db.getSub(`pad:${this.id}:revs:${revNum}`, ['meta', 'timestamp']);
 };
 
-Pad.prototype.getAllAuthors = function getAllAuthors() {
+Pad.prototype.getAllAuthors = function () {
   const authors = [];
 
   for (const key in this.pool.numToAttrib) {
@@ -162,7 +159,7 @@ Pad.prototype.getAllAuthors = function getAllAuthors() {
   return authors;
 };
 
-Pad.prototype.getInternalRevisionAText = async function getInternalRevisionAText(targetRev) {
+Pad.prototype.getInternalRevisionAText = async function (targetRev) {
   const keyRev = this.getKeyRevisionNumber(targetRev);
 
   // find out which changesets are needed
@@ -197,11 +194,11 @@ Pad.prototype.getInternalRevisionAText = async function getInternalRevisionAText
   return atext;
 };
 
-Pad.prototype.getRevision = function getRevisionChangeset(revNum) {
+Pad.prototype.getRevision = function (revNum) {
   return db.get(`pad:${this.id}:revs:${revNum}`);
 };
 
-Pad.prototype.getAllAuthorColors = async function getAllAuthorColors() {
+Pad.prototype.getAllAuthorColors = async function () {
   const authors = this.getAllAuthors();
   const returnTable = {};
   const colorPalette = authorManager.getColorPalette();
@@ -215,7 +212,7 @@ Pad.prototype.getAllAuthorColors = async function getAllAuthorColors() {
   return returnTable;
 };
 
-Pad.prototype.getValidRevisionRange = function getValidRevisionRange(startRev, endRev) {
+Pad.prototype.getValidRevisionRange = function (startRev, endRev) {
   startRev = parseInt(startRev, 10);
   const head = this.getHeadRevisionNumber();
   endRev = endRev ? parseInt(endRev, 10) : head;
@@ -236,15 +233,15 @@ Pad.prototype.getValidRevisionRange = function getValidRevisionRange(startRev, e
   return null;
 };
 
-Pad.prototype.getKeyRevisionNumber = function getKeyRevisionNumber(revNum) {
+Pad.prototype.getKeyRevisionNumber = function (revNum) {
   return Math.floor(revNum / 100) * 100;
 };
 
-Pad.prototype.text = function text() {
+Pad.prototype.text = function () {
   return this.atext.text;
 };
 
-Pad.prototype.setText = async function setText(newText) {
+Pad.prototype.setText = async function (newText) {
   // clean the new text
   newText = exports.cleanText(newText);
 
@@ -264,7 +261,7 @@ Pad.prototype.setText = async function setText(newText) {
   await this.appendRevision(changeset);
 };
 
-Pad.prototype.appendText = async function appendText(newText) {
+Pad.prototype.appendText = async function (newText) {
   // clean the new text
   newText = exports.cleanText(newText);
 
@@ -277,7 +274,7 @@ Pad.prototype.appendText = async function appendText(newText) {
   await this.appendRevision(changeset);
 };
 
-Pad.prototype.appendChatMessage = async function appendChatMessage(text, userId, time) {
+Pad.prototype.appendChatMessage = async function (text, userId, time) {
   this.chatHead++;
   // save the chat entry in the database
   await Promise.all([
@@ -286,7 +283,7 @@ Pad.prototype.appendChatMessage = async function appendChatMessage(text, userId,
   ]);
 };
 
-Pad.prototype.getChatMessage = async function getChatMessage(entryNum) {
+Pad.prototype.getChatMessage = async function (entryNum) {
   // get the chat entry
   const entry = await db.get(`pad:${this.id}:chat:${entryNum}`);
 
@@ -298,7 +295,7 @@ Pad.prototype.getChatMessage = async function getChatMessage(entryNum) {
   return entry;
 };
 
-Pad.prototype.getChatMessages = async function getChatMessages(start, end) {
+Pad.prototype.getChatMessages = async function (start, end) {
   // collect the numbers of chat entries and in which order we need them
   const neededEntries = [];
   for (let order = 0, entryNum = start; entryNum <= end; ++order, ++entryNum) {
@@ -326,7 +323,7 @@ Pad.prototype.getChatMessages = async function getChatMessages(start, end) {
   return cleanedEntries;
 };
 
-Pad.prototype.init = async function init(text) {
+Pad.prototype.init = async function (text) {
   // replace text with default text if text isn't set
   if (text == null) {
     text = settings.defaultPadText;
@@ -355,8 +352,7 @@ Pad.prototype.init = async function init(text) {
   hooks.callAll('padLoad', {pad: this});
 };
 
-Pad.prototype.copy = async function copy(destinationID, force) {
-  let destGroupID;
+Pad.prototype.copy = async function (destinationID, force) {
   const sourceID = this.id;
 
   // Kick everyone from this pad.
@@ -367,16 +363,11 @@ Pad.prototype.copy = async function copy(destinationID, force) {
   // flush the source pad:
   await this.saveToDatabase();
 
+  // if it's a group pad, let's make sure the group exists.
+  const destGroupID = await this.checkIfGroupExistAndReturnIt(destinationID);
 
-  try {
-    // if it's a group pad, let's make sure the group exists.
-    destGroupID = await this.checkIfGroupExistAndReturnIt(destinationID);
-
-    // if force is true and already exists a Pad with the same id, remove that Pad
-    await this.removePadIfForceIsTrueAndAlreadyExist(destinationID, force);
-  } catch (err) {
-    throw err;
-  }
+  // if force is true and already exists a Pad with the same id, remove that Pad
+  await this.removePadIfForceIsTrueAndAlreadyExist(destinationID, force);
 
   // copy the 'pad' entry
   const pad = await db.get(`pad:${sourceID}`);
@@ -423,7 +414,7 @@ Pad.prototype.copy = async function copy(destinationID, force) {
   return {padID: destinationID};
 };
 
-Pad.prototype.checkIfGroupExistAndReturnIt = async function checkIfGroupExistAndReturnIt(destinationID) {
+Pad.prototype.checkIfGroupExistAndReturnIt = async function (destinationID) {
   let destGroupID = false;
 
   if (destinationID.indexOf('$') >= 0) {
@@ -438,7 +429,7 @@ Pad.prototype.checkIfGroupExistAndReturnIt = async function checkIfGroupExistAnd
   return destGroupID;
 };
 
-Pad.prototype.removePadIfForceIsTrueAndAlreadyExist = async function removePadIfForceIsTrueAndAlreadyExist(destinationID, force) {
+Pad.prototype.removePadIfForceIsTrueAndAlreadyExist = async function (destinationID, force) {
   // if the pad exists, we should abort, unless forced.
   const exists = await padManager.doesPadExist(destinationID);
 
@@ -461,29 +452,24 @@ Pad.prototype.removePadIfForceIsTrueAndAlreadyExist = async function removePadIf
   }
 };
 
-Pad.prototype.copyAuthorInfoToDestinationPad = function copyAuthorInfoToDestinationPad(destinationID) {
+Pad.prototype.copyAuthorInfoToDestinationPad = function (destinationID) {
   // add the new sourcePad to all authors who contributed to the old one
   this.getAllAuthors().forEach((authorID) => {
     authorManager.addPad(authorID, destinationID);
   });
 };
 
-Pad.prototype.copyPadWithoutHistory = async function copyPadWithoutHistory(destinationID, force) {
-  let destGroupID;
+Pad.prototype.copyPadWithoutHistory = async function (destinationID, force) {
   const sourceID = this.id;
 
   // flush the source pad
   this.saveToDatabase();
 
-  try {
-    // if it's a group pad, let's make sure the group exists.
-    destGroupID = await this.checkIfGroupExistAndReturnIt(destinationID);
+  // if it's a group pad, let's make sure the group exists.
+  const destGroupID = await this.checkIfGroupExistAndReturnIt(destinationID);
 
-    // if force is true and already exists a Pad with the same id, remove that Pad
-    await this.removePadIfForceIsTrueAndAlreadyExist(destinationID, force);
-  } catch (err) {
-    throw err;
-  }
+  // if force is true and already exists a Pad with the same id, remove that Pad
+  await this.removePadIfForceIsTrueAndAlreadyExist(destinationID, force);
 
   const sourcePad = await padManager.getPad(sourceID);
 
@@ -526,7 +512,7 @@ Pad.prototype.copyPadWithoutHistory = async function copyPadWithoutHistory(desti
 };
 
 
-Pad.prototype.remove = async function remove() {
+Pad.prototype.remove = async function () {
   const padID = this.id;
   const p = [];
 
@@ -579,12 +565,12 @@ Pad.prototype.remove = async function remove() {
 };
 
 // set in db
-Pad.prototype.setPublicStatus = async function setPublicStatus(publicStatus) {
+Pad.prototype.setPublicStatus = async function (publicStatus) {
   this.publicStatus = publicStatus;
   await this.saveToDatabase();
 };
 
-Pad.prototype.addSavedRevision = async function addSavedRevision(revNum, savedById, label) {
+Pad.prototype.addSavedRevision = async function (revNum, savedById, label) {
   // if this revision is already saved, return silently
   for (const i in this.savedRevisions) {
     if (this.savedRevisions[i] && this.savedRevisions[i].revNum === revNum) {
@@ -605,6 +591,6 @@ Pad.prototype.addSavedRevision = async function addSavedRevision(revNum, savedBy
   await this.saveToDatabase();
 };
 
-Pad.prototype.getSavedRevisions = function getSavedRevisions() {
+Pad.prototype.getSavedRevisions = function () {
   return this.savedRevisions;
 };
