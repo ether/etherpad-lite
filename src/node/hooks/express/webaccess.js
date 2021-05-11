@@ -23,7 +23,7 @@ const staticPathsRE = new RegExp(`^/(?:${[
   'robots.txt',
   'static/.*',
   'stats/?',
-  'tests/frontend(?:/.*)?'
+  'tests/frontend(?:/.*)?',
 ].join('|')})$`);
 
 exports.normalizeAuthzLevel = (level) => {

@@ -156,7 +156,7 @@ async function mapAuthorWithDBKey(mapperkey, mapper) {
 
   // return the author
   return {authorID: author};
-};
+}
 
 /**
  * Internal function that creates the database entry for an author
