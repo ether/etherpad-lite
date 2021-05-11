@@ -29,7 +29,7 @@ const util = require('util');
 
 // set database settings
 const db =
-    new ueberDB.database(settings.dbType, settings.dbSettings, null, log4js.getLogger('ueberDB'));
+    new ueberDB.Database(settings.dbType, settings.dbSettings, null, log4js.getLogger('ueberDB'));
 
 /**
  * The UeberDB Object that provides the database functions

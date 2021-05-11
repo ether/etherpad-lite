@@ -135,7 +135,7 @@ exports.createAuthorIfNotExistsFor = async (authorMapper, name) => {
  * @param {String} mapperkey The database key name for this mapper
  * @param {String} mapper The mapper
  */
-async function mapAuthorWithDBKey(mapperkey, mapper) {
+const mapAuthorWithDBKey = async (mapperkey, mapper) => {
   // try to map to an author
   const author = await db.get(`${mapperkey}:${mapper}`);
 
@@ -156,7 +156,7 @@ async function mapAuthorWithDBKey(mapperkey, mapper) {
 
   // return the author
   return {authorID: author};
-}
+};
 
 /**
  * Internal function that creates the database entry for an author

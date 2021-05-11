@@ -141,7 +141,7 @@ exports.padOptions = {
   alwaysShowChat: false,
   chatAndUsers: false,
   lang: 'en-gb',
-},
+};
 
 /**
  * Whether certain shortcut keys are enabled for a user in the pad
@@ -169,7 +169,7 @@ exports.padShortcutEnabled = {
   ctrlHome: true,
   pageUp: true,
   pageDown: true,
-},
+};
 
 /**
  * The toolbar buttons and order.
@@ -466,7 +466,7 @@ exports.getEpVersion = () => require('../../package.json').version;
  * both "settings.json" and "credentials.json".
  */
 const storeSettings = (settingsObj) => {
-  for (const i in settingsObj) {
+  for (const i of Object.keys(settingsObj || {})) {
     // test if the setting starts with a lowercase character
     if (i.charAt(0).search('[a-z]') !== 0) {
       console.warn(`Settings should start with a lowercase character: '${i}'`);
