@@ -311,6 +311,9 @@ padutils.setupGlobalExceptionHandler = () => {
       } else {
         throw new Error(`unknown event: ${e.toString()}`);
       }
+      if (err.name != null && msg !== err.name && !msg.startsWith(`${err.name}: `)) {
+        msg = `${err.name}: ${msg}`;
+      }
       const errorId = randomString(20);
 
       let msgAlreadyVisible = false;
