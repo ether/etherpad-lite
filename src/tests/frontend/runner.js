@@ -143,6 +143,14 @@ $(() => (async () => {
   require.setLibraryURI(absUrl('../../javascripts/lib'));
   require.setGlobalKeyPath('require');
 
+  const Split = require('split-grid/dist/split-grid.min');
+  new Split({
+    columnGutters: [{
+      track: 1,
+      element: document.getElementById('separator'),
+    }],
+  });
+
   // This loads the test specs serially. While it is technically possible to load them in parallel,
   // the code would be very complex (it involves wrapping require.define(), configuring
   // require-kernel to use the wrapped .define() via require.setGlobalKeyPath(), and using the

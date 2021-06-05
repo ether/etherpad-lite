@@ -41,6 +41,7 @@ const LIBRARY_WHITELIST = [
   'async',
   'js-cookie',
   'security',
+  'split-grid',
   'tinycon',
   'underscore',
   'unorm',
