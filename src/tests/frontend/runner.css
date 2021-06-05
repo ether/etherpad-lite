@@ -37,17 +37,6 @@ body {
   font-size:80%;
 }
 
-#mocha-report {
-  margin: 0;
-  padding: 0;
-  margin-top: 10px;
-}
-
-#mocha li {
-  margin: 0;
-  padding: 0;
-}
-
 #mocha ul {
   list-style: none;
 }
@@ -195,10 +184,6 @@ body {
   margin: 0;
   color: #888;
   text-align: right;
-}
-
-#mocha-stats {
-  height: 80px;
 }
 
 #mocha-stats .progress {
