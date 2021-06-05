@@ -17,14 +17,14 @@ body {
 
 #iframe-container {
   width: 80%;
-  min-width: 820px;
   height: 100%;
 }
 
 #iframe-container iframe {
   border: 0;
   height: 100%;
-  width:100%;
+  width: 100%;
+  min-width: 820px;
 }
 
 #mocha {
