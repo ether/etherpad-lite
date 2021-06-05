@@ -34,10 +34,9 @@ body {
   overflow: auto;
   width:20%;
   font-size:80%;
-  
 }
 
-#mocha #report {
+#mocha-report {
   margin: 0;
   padding: 0;
   margin-top: 10px;
@@ -170,26 +169,26 @@ body {
   -webkit-box-shadow: 0 1px 3px #eee;
 }
 
-#report ul {
+#mocha-report ul {
   padding: 0;
 }
 
-#report.pass .test.fail {
+#mocha-report.pass .test.fail {
   display: none;
 }
 
-#report.fail .test.pass {
+#mocha-report.fail .test.pass {
   display: none;
 }
 
-#error {
+#mocha-error {
   color: #c00;
   font-size: 1.5  em;
   font-weight: 100;
   letter-spacing: 1px;
 }
 
-#stats {
+#mocha-stats {
   padding: 10px;
   font-size: 12px;
   margin: 0;
@@ -207,20 +206,20 @@ body {
   margin-right:5px;
 }
 
-#stats em {
+#mocha-stats em {
   color: black;
 }
 
-#stats a {
+#mocha-stats a {
   text-decoration: none;
   color: inherit;
 }
 
-#stats a:hover {
+#mocha-stats a:hover {
   border-bottom: 1px solid #eee;
 }
 
-#stats li {
+#mocha-stats li {
   display: inline-block;
   margin: 0 5px;
   list-style: none;
