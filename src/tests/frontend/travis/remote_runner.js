@@ -5,14 +5,8 @@
 process.on('unhandledRejection', (err) => { throw err; });
 
 const async = require('async');
-const wd = require('wd');
-
-const config = {
-  hostname: 'ondemand.saucelabs.com',
-  port: 80,
-  user: process.env.SAUCE_USER,
-  pwd: process.env.SAUCE_ACCESS_KEY,
-};
+const swd = require('selenium-webdriver');
+const swdChrome = require('selenium-webdriver/chrome');
 
 const isAdminRunner = process.argv[2] === 'admin';
 
@@ -31,19 +25,28 @@ const log = (msg, pfx = '') => {
 const finishedRegex = /FINISHED.*[0-9]+ tests passed, ([0-9]+) tests failed/;
 
 const sauceTestWorker = async.queue(async ({name, pfx, testSettings}) => {
-  const fullName = [process.env.GIT_HASH].concat(process.env.SAUCE_NAME || [], name).join(' - ');
-  testSettings.name = fullName;
-  testSettings.public = true;
-  testSettings.build = process.env.GIT_HASH;
-  // console.json can be downloaded via saucelabs,
-  // don't know how to print them into output of the tests
-  testSettings.extendedDebugging = true;
-  testSettings.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
-  const browser = wd.remote(config, 'promiseChain');
-  await browser.init(testSettings);
-  const url = `https://saucelabs.com/jobs/${browser.sessionID}`;
+  const chromeOptions = new swdChrome.Options()
+      .addArguments('use-fake-device-for-media-stream');
+  const driver = await new swd.Builder()
+      .usingServer('https://ondemand.saucelabs.com/wd/hub')
+      .withCapabilities(Object.assign({
+        'sauce:options': {
+          username: process.env.SAUCE_USERNAME,
+          accessKey: process.env.SAUCE_ACCESS_KEY,
+          name: [process.env.GIT_HASH].concat(process.env.SAUCE_NAME || [], name).join(' - '),
+          public: true,
+          build: process.env.GIT_HASH,
+          // console.json can be downloaded via saucelabs,
+          // don't know how to print them into output of the tests
+          extendedDebugging: true,
+          tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
+        },
+      }, testSettings))
+      .setChromeOptions(chromeOptions)
+      .build();
+  const url = `https://saucelabs.com/jobs/${(await driver.getSession()).getId()}`;
   try {
-    await browser.get('http://localhost:9001/tests/frontend/');
+    await driver.get('http://localhost:9001/tests/frontend/');
     log(`Remote sauce test started! ${url}`, pfx);
     // @TODO this should be configured in testSettings, see
     // https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options#TestConfigurationOptions-Timeouts
@@ -60,7 +63,7 @@ const sauceTestWorker = async.queue(async ({name, pfx, testSettings}) => {
       return text.substring(skipChars);
     };
     while (true) {
-      const consoleText = await browser.eval(`(${remoteFn})(${JSON.stringify(logIndex)})`);
+      const consoleText = await driver.executeScript(remoteFn, logIndex);
       (consoleText ? consoleText.split('\n') : []).forEach((line) => log(line, pfx));
       logIndex += consoleText.length;
       const [finished, nFailedStr] = consoleText.match(finishedRegex) || [];
@@ -77,42 +80,41 @@ const sauceTestWorker = async.queue(async ({name, pfx, testSettings}) => {
     }
   } finally {
     log(`Remote sauce test finished! ${url}`, pfx);
-    await browser.quit();
+    await driver.quit();
   }
 }, 6); // run 6 tests in parrallel
 
 Promise.all([
   {
-    platform: 'macOS 11.00',
+    platformName: 'macOS 11.00',
     browserName: 'safari',
-    version: 'latest',
+    browserVersion: 'latest',
   },
   ...(isAdminRunner ? [] : [
     {
-      platform: 'Windows 10',
+      platformName: 'Windows 10',
       browserName: 'firefox',
-      version: 'latest',
+      browserVersion: 'latest',
     },
     {
-      platform: 'Windows 10',
+      platformName: 'Windows 10',
       browserName: 'MicrosoftEdge',
-      version: 'latest',
+      browserVersion: 'latest',
     },
     {
-      platform: 'Windows 10',
+      platformName: 'Windows 10',
       browserName: 'chrome',
-      version: 'latest',
-      args: ['--use-fake-device-for-media-stream'],
+      browserVersion: 'latest',
     },
     {
-      platform: 'Windows 7',
+      platformName: 'Windows 7',
       browserName: 'chrome',
-      version: '55.0',
-      args: ['--use-fake-device-for-media-stream'],
+      browserVersion: '55.0',
     },
   ]),
 ].map(async (testSettings) => {
-  const name = `${testSettings.browserName} ${testSettings.version}, ${testSettings.platform}`;
+  const name =
+      `${testSettings.browserName} ${testSettings.browserVersion}, ${testSettings.platformName}`;
   const pfx = `[${name}] `;
   try {
     await sauceTestWorker.push({name, pfx, testSettings});

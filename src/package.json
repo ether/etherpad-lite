@@ -91,12 +91,12 @@
     "mocha": "7.1.2",
     "mocha-froth": "^0.2.10",
     "openapi-schema-validation": "^0.4.2",
+    "selenium-webdriver": "^4.0.0-beta.3",
     "set-cookie-parser": "^2.4.6",
     "sinon": "^9.2.0",
     "split-grid": "^1.0.11",
     "superagent": "^3.8.3",
-    "supertest": "4.0.2",
-    "wd": "1.12.1"
+    "supertest": "4.0.2"
   },
   "eslintConfig": {
     "ignorePatterns": [
