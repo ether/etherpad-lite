@@ -26,7 +26,7 @@ const finishedRegex = /FINISHED.*[0-9]+ tests passed, ([0-9]+) tests failed/;
 
 const sauceTestWorker = async.queue(async ({name, pfx, testSettings}) => {
   const chromeOptions = new swdChrome.Options()
-      .addArguments('use-fake-device-for-media-stream');
+      .addArguments('use-fake-device-for-media-stream', 'use-fake-ui-for-media-stream');
   const driver = await new swd.Builder()
       .usingServer('https://ondemand.saucelabs.com/wd/hub')
       .withCapabilities(Object.assign({
