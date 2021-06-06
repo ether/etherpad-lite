@@ -599,7 +599,9 @@ const lookupEnvironmentVariables = (obj) => {
 
     if ((envVarValue === undefined) && (defaultValue === undefined)) {
       console.warn(`Environment variable "${envVarName}" does not contain any value for ` +
-                   `configuration key "${key}", and no default was given. Returning null.`);
+                   `configuration key "${key}", and no default was given. Using null. ` +
+                   'THIS BEHAVIOR MAY CHANGE IN A FUTURE VERSION OF ETHERPAD; you should ' +
+                   'explicitly use "null" as the default if you want to continue to use null.');
 
       /*
        * We have to return null, because if we just returned undefined, the

@@ -36,7 +36,9 @@
  *       - "${UNSET_VAR:undefined}" causes the setting to be removed (or be set
  *         to null, if used as a member of an array).
  *   - If the environment variable is unset and no default value is provided,
- *     the value becomes null.
+ *     the value becomes null. THIS BEHAVIOR MAY CHANGE IN A FUTURE VERSION OF
+ *     ETHERPAD; if you want the default value to be null, you should explicitly
+ *     specify "null" as the default value.
  *
  * EXAMPLE:
  *    "port":     "${PORT:9001}"

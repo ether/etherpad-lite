@@ -23,6 +23,9 @@
     `"${UNSET_VAR:undefined}"`), the setting is now removed instead of set to
     the string "undefined". It is no longer possible to produce the string
     "undefined" via environment variable substitution.
+  * Support for unset variables without a default value is now deprecated.
+    Please change all instances of `"${FOO}"` in your `settings.json` to
+    `${FOO:null}` to keep the current behavior.
 
 ### Notable enhancements
 
