@@ -108,7 +108,7 @@
    * is used. If this is a relative path it is interpreted as relative to the
    * Etherpad root directory.
    */
-  "favicon": "${FAVICON}",
+  "favicon": "${FAVICON:null}",
 
   /*
    * Skin name.
@@ -205,12 +205,12 @@
 
   "dbType": "${DB_TYPE:dirty}",
   "dbSettings": {
-    "host":     "${DB_HOST}",
-    "port":     "${DB_PORT}",
-    "database": "${DB_NAME}",
-    "user":     "${DB_USER}",
-    "password": "${DB_PASS}",
-    "charset":  "${DB_CHARSET}",
+    "host":     "${DB_HOST:null}",
+    "port":     "${DB_PORT:null}",
+    "database": "${DB_NAME:null}",
+    "user":     "${DB_USER:null}",
+    "password": "${DB_PASS:null}",
+    "charset":  "${DB_CHARSET:null}",
     "filename": "${DB_FILENAME:var/dirty.db}"
   },
 
@@ -308,7 +308,7 @@
    * it to null disables Abiword and will only allow plain text and HTML
    * import/exports.
    */
-  "abiword": "${ABIWORD}",
+  "abiword": "${ABIWORD:null}",
 
   /*
    * This is the absolute path to the soffice executable.
@@ -316,7 +316,7 @@
    * LibreOffice can be used in lieu of Abiword to export pads.
    * Setting it to null disables LibreOffice exporting.
    */
-  "soffice": "${SOFFICE}",
+  "soffice": "${SOFFICE:null}",
 
   /*
    * Path to the Tidy executable.
@@ -324,7 +324,7 @@
    * Tidy is used to improve the quality of exported pads.
    * Setting it to null disables Tidy.
    */
-  "tidyHtml": "${TIDY_HTML}",
+  "tidyHtml": "${TIDY_HTML:null}",
 
   /*
    * Allow import of file types other than the supported ones:
@@ -454,13 +454,13 @@
     "admin": {
       // 1) "password" can be replaced with "hash" if you install ep_hash_auth
       // 2) please note that if password is null, the user will not be created
-      "password": "${ADMIN_PASSWORD}",
+      "password": "${ADMIN_PASSWORD:null}",
       "is_admin": true
     },
     "user": {
       // 1) "password" can be replaced with "hash" if you install ep_hash_auth
       // 2) please note that if password is null, the user will not be created
-      "password": "${USER_PASSWORD}",
+      "password": "${USER_PASSWORD:null}",
       "is_admin": false
     }
   },
