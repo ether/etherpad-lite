@@ -207,12 +207,12 @@
 
   "dbType": "${DB_TYPE:dirty}",
   "dbSettings": {
-    "host":     "${DB_HOST:null}",
-    "port":     "${DB_PORT:null}",
-    "database": "${DB_NAME:null}",
-    "user":     "${DB_USER:null}",
-    "password": "${DB_PASS:null}",
-    "charset":  "${DB_CHARSET:null}",
+    "host":     "${DB_HOST:undefined}",
+    "port":     "${DB_PORT:undefined}",
+    "database": "${DB_NAME:undefined}",
+    "user":     "${DB_USER:undefined}",
+    "password": "${DB_PASS:undefined}",
+    "charset":  "${DB_CHARSET:undefined}",
     "filename": "${DB_FILENAME:var/dirty.db}"
   },
 

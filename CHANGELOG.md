@@ -26,6 +26,8 @@
   * Support for unset variables without a default value is now deprecated.
     Please change all instances of `"${FOO}"` in your `settings.json` to
     `${FOO:null}` to keep the current behavior.
+  * The `DB_*` variable substitutions in `settings.json.docker` that previously
+    defaulted to `null` now default to "undefined".
 
 ### Notable enhancements
 
