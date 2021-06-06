@@ -509,17 +509,13 @@ const coerceValue = (stringValue) => {
     return +stringValue;
   }
 
-  // the boolean literal case is easy.
-  if (stringValue === 'true') {
-    return true;
+  switch (stringValue) {
+    case 'true': return true;
+    case 'false': return false;
+    case 'undefined': return undefined;
+    case 'null': return null;
+    default: return stringValue;
   }
-
-  if (stringValue === 'false') {
-    return false;
-  }
-
-  // otherwise, return this value as-is
-  return stringValue;
 };
 
 /**
