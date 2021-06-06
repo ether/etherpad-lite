@@ -825,5 +825,9 @@ exports.reloadSettings = () => {
   console.log(`Random string used for versioning assets: ${exports.randomVersionString}`);
 };
 
+exports.exportedForTestingOnly = {
+  parseSettings,
+};
+
 // initially load settings
 exports.reloadSettings();
