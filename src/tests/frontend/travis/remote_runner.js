@@ -50,9 +50,17 @@ const sauceTestWorker = async.queue(async ({name, pfx, testSettings}) => {
     const deadline = Date.now() + 14.5 * 60 * 1000; // Slightly less than overall test timeout.
     // how many characters of the log have been sent to travis
     let logIndex = 0;
+    const remoteFn = (skipChars) => {
+      const console = document.getElementById('console'); // eslint-disable-line no-undef
+      if (console == null) return '';
+      let text = '';
+      for (const n of console.childNodes) {
+        if (n.nodeType === n.TEXT_NODE) text += n.data;
+      }
+      return text.substring(skipChars);
+    };
     while (true) {
-      const remoteFn = ($, skipChars) => $('#console').text().substring(skipChars);
-      const consoleText = await browser.eval(`(${remoteFn})($, ${JSON.stringify(logIndex)})`);
+      const consoleText = await browser.eval(`(${remoteFn})(${JSON.stringify(logIndex)})`);
       (consoleText ? consoleText.split('\n') : []).forEach((line) => log(line, pfx));
       logIndex += consoleText.length;
       const [finished, nFailedStr] = consoleText.match(finishedRegex) || [];
