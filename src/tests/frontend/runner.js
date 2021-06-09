@@ -188,12 +188,59 @@ $(() => (async () => {
   // asynchronous form of require()). In addition, the performance gains would be minimal because
   // require-kernel only loads 2 at a time by default. (Increasing the default could cause problems
   // because browsers like to limit the number of concurrent fetches.)
-  for (const spec of await $.getJSON('frontendTestSpecs.json')) {
-    const desc = spec
-        .replace(/^ep_etherpad-lite\/tests\/frontend\/specs\//, '<core> ')
-        .replace(/^([^/ ]*)\/static\/tests\/frontend\/specs\//, '<$1> ');
-    describe(`${desc}.js`, function () { require(spec); });
+
+  const $log = $('<div>');
+  const appendToLog = (msg) => {
+    if (typeof msg === 'string') msg = document.createTextNode(msg);
+    // Add some margin to cover rounding error and to make it easier to engage the auto-scroll.
+    const scrolledToBottom = $log[0].scrollHeight <= $log[0].scrollTop + $log[0].clientHeight + 5;
+    const $msg = $('<div>').css('white-space', 'nowrap').append(msg).appendTo($log);
+    if (scrolledToBottom) $log[0].scrollTop = $log[0].scrollHeight;
+    return $msg;
+  };
+  const $bar = $('<progress>');
+  let barLastUpdate = Date.now();
+  const incrementBar = async (amount = 1) => {
+    $bar.attr('value', Number.parseInt($bar.attr('value')) + 1);
+    // Give the browser an opportunity to draw the progress bar's new length. `await
+    // Promise.resolve()` isn't enough, so a timeout is used. Sleeping every increment (even 0ms)
+    // unnecessarily slows down spec loading so the sleep is occasional.
+    if (Date.now() - barLastUpdate > 100) {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      barLastUpdate = Date.now();
+    }
+  };
+  const $progressArea = $('<div>')
+      .css({'display': 'flex', 'flex-direction': 'column', 'height': '100%'})
+      .append($('<div>').css({flex: '1 0 0'}))
+      .append($('<div>')
+          .css({'flex': '0 1 auto', 'font-weight': 'bold'})
+          .text('Loading frontend test specs...'))
+      .append($log.css({flex: '0 1 auto', overflow: 'auto'}))
+      .append($bar.css({flex: '0 0 auto', width: '100%'}))
+      .appendTo('#mocha');
+  const specs = await $.getJSON('frontendTestSpecs.json');
+  if (specs.length > 0) {
+    $bar.attr({value: 0, max: specs.length});
+    await incrementBar(0);
   }
+  const makeDesc = (spec) => `${spec
+      .replace(/^ep_etherpad-lite\/tests\/frontend\/specs\//, '<core> ')
+      .replace(/^([^/ ]*)\/static\/tests\/frontend\/specs\//, '<$1> ')}.js`;
+  for (const spec of specs) {
+    const desc = makeDesc(spec);
+    const $msg = appendToLog(`Loading ${desc}...`);
+    try {
+      describe(desc, function () { require(spec); });
+    } catch (err) {
+      $msg.append($('<b>').css('color', 'red').text(' FAILED'));
+      appendToLog($('<pre>').text(`${err.stack || err}`));
+      throw err;
+    }
+    $msg.append(' done');
+    await incrementBar();
+  }
+  $progressArea.remove();
 
   await helper.init();
   const grep = getURLParameter('grep');
