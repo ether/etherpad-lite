@@ -29,13 +29,49 @@ $(() => (async () => {
 
     if (!runner) return;
 
+    // AUTO-SCROLLING:
+
+    // Mocha can start multiple suites before the first 'suite' event is emitted. This can break the
+    // logic used to determine if the div is already scrolled to the bottom. If this is false,
+    // auto-scrolling unconditionally scrolls to the bottom no matter how far up the div is
+    // currently scrolled. If true, auto-scrolling only happens if the div is scrolled close to the
+    // bottom.
+    let manuallyScrolled = false;
+    // The 'scroll' event is fired for manual scrolling as well as JavaScript-initiated scrolling.
+    // This is incremented while auto-scrolling and decremented when done auto-scrolling. This is
+    // used to ensure that auto-scrolling never sets manuallyScrolled to true.
+    let autoScrolling = 0;
+
+    // Auto-scroll the #mocha-report div to show the newly added test entry if it was previously
+    // scrolled to the bottom.
+    const autoscroll = (newElement) => {
+      const mr = $('#mocha-report')[0];
+      const scroll = !manuallyScrolled || (() => {
+        const offsetTopAbs = newElement.getBoundingClientRect().top;
+        const mrOffsetTopAbs = mr.getBoundingClientRect().top - mr.scrollTop;
+        const offsetTop = offsetTopAbs - mrOffsetTopAbs;
+        // Add some margin to cover rounding error and to make it easier to engage the auto-scroll.
+        return offsetTop <= mr.clientHeight + mr.scrollTop + 5;
+      })();
+      if (!scroll) return;
+      ++autoScrolling;
+      mr.scrollTop = mr.scrollHeight;
+      manuallyScrolled = false;
+    };
+
+    $('#mocha-report').on('scroll', () => {
+      if (!autoScrolling) manuallyScrolled = true;
+      else --autoScrolling;
+    });
+
     runner.on('start', () => {
       stats.start = new Date();
     });
 
     runner.on('suite', (suite) => {
-      suite.root || stats.suites++;
       if (suite.root) return;
+      autoscroll($('#mocha-report .suite').last()[0]);
+      stats.suites++;
       append(suite.title);
       level++;
     });
@@ -49,16 +85,11 @@ $(() => (async () => {
       }
     });
 
-    // Scroll down test display after each test
-    const mochaEl = $('#mocha-report')[0];
-    runner.on('test', () => {
-      mochaEl.scrollTop = mochaEl.scrollHeight;
-    });
-
     // max time a test is allowed to run
     // TODO this should be lowered once timeslider_revision.js is faster
     let killTimeout;
     runner.on('test end', () => {
+      autoscroll($('#mocha-report .test').last()[0]);
       stats.tests++;
     });
 

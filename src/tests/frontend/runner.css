@@ -57,7 +57,7 @@ body {
 }
 
 #mocha h1 {
-  margin-top: 15px;
+  padding-top: 15px; /* margin-top breaks autoscrolling */
   font-size: 1em;
   font-weight: 200;
 }
@@ -68,7 +68,7 @@ body {
 }
 
 #mocha .suite .suite h1 {
-  margin-top: 0;
+  padding-top: 0;
   font-size: .8em;
 }
 
