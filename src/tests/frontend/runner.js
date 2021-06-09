@@ -182,12 +182,51 @@ $(() => (async () => {
     }],
   });
 
-  // This loads the test specs serially. While it is technically possible to load them in parallel,
-  // the code would be very complex (it involves wrapping require.define(), configuring
-  // require-kernel to use the wrapped .define() via require.setGlobalKeyPath(), and using the
-  // asynchronous form of require()). In addition, the performance gains would be minimal because
-  // require-kernel only loads 2 at a time by default. (Increasing the default could cause problems
-  // because browsers like to limit the number of concurrent fetches.)
+  // Speed up tests by loading test definitions in parallel. Approach: Define a new global object
+  // that has a define() method, which is a wrapper around window.require.define(). The wrapper
+  // mutates the module definition function to temporarily replace Mocha's functions with
+  // placeholders. The placeholders make it possible to defer the actual Mocha function calls until
+  // after the modules are all loaded in parallel. require.setGlobalKeyPath() is used to coax
+  // require-kernel into using the wrapper define() method instead of require.define().
+
+  // Per-module log of attempted Mocha function calls. Key is module path, value is an array of
+  // [functionName, argsArray] arrays.
+  const mochaCalls = new Map();
+  const mochaFns =
+      ['describe', 'context', 'it', 'specify', 'before', 'after', 'beforeEach', 'afterEach'];
+  window.testRunnerRequire = {
+    define(...args) {
+      if (args.length === 2) args = [{[args[0]]: args[1]}];
+      if (args.length !== 1) throw new Error('unexpected args passed to testRunnerRequire.define');
+      const [origDefs] = args;
+      const defs = {};
+      for (const [path, origDef] of Object.entries(origDefs)) {
+        defs[path] = function (require, exports, module) {
+          const calls = [];
+          mochaCalls.set(module.id.replace(/\.js$/, ''), calls);
+          // Backup Mocha functions. Note that because modules can require other modules, these
+          // backups might be placeholders, not the actual Mocha functions.
+          const backups = {};
+          for (const fn of mochaFns) {
+            // Note: Test specs can require other modules, so window[fn] might be a placeholder
+            // function, not the actual Mocha function.
+            backups[fn] = window[fn];
+            window[fn] = (...args) => calls.push([fn, args]);
+          }
+          try {
+            return origDef.call(this, require, exports, module);
+          } finally {
+            Object.assign(window, backups);
+          }
+        };
+      }
+      return require.define(defs);
+    },
+  };
+  require.setGlobalKeyPath('testRunnerRequire');
+  // Increase fetch parallelism to speed up test spec loading. (Note: The browser might limit to a
+  // lower value -- this is just an upper limit.)
+  require.setRequestMaximum(20);
 
   const $log = $('<div>');
   const appendToLog = (msg) => {
@@ -221,17 +260,36 @@ $(() => (async () => {
       .appendTo('#mocha');
   const specs = await $.getJSON('frontendTestSpecs.json');
   if (specs.length > 0) {
-    $bar.attr({value: 0, max: specs.length});
+    $bar.attr({value: 0, max: specs.length * 2});
     await incrementBar(0);
   }
   const makeDesc = (spec) => `${spec
       .replace(/^ep_etherpad-lite\/tests\/frontend\/specs\//, '<core> ')
       .replace(/^([^/ ]*)\/static\/tests\/frontend\/specs\//, '<$1> ')}.js`;
+  await Promise.all(specs.map(async (spec) => {
+    const $msg = appendToLog(`Fetching ${makeDesc(spec)}...`);
+    try {
+      await new Promise((resolve, reject) => require(spec, (module) => {
+        if (module == null) return reject(new Error(`failed to load module ${spec}`));
+        resolve();
+      }));
+    } catch (err) {
+      $msg.append($('<b>').css('color', 'red').text(' FAILED'));
+      appendToLog($('<pre>').text(`${err.stack || err}`));
+      throw err;
+    }
+    $msg.append(' done');
+    await incrementBar();
+  }));
+  require.setGlobalKeyPath('require');
+  delete window.testRunnerRequire;
   for (const spec of specs) {
     const desc = makeDesc(spec);
-    const $msg = appendToLog(`Loading ${desc}...`);
+    const $msg = appendToLog(`Executing ${desc}...`);
     try {
-      describe(desc, function () { require(spec); });
+      describe(desc, function () {
+        for (const [fn, args] of mochaCalls.get(spec)) window[fn](...args);
+      });
     } catch (err) {
       $msg.append($('<b>').css('color', 'red').text(' FAILED'));
       appendToLog($('<pre>').text(`${err.stack || err}`));
