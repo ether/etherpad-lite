@@ -50,7 +50,7 @@ $(() => (async () => {
     });
 
     // Scroll down test display after each test
-    const mochaEl = $('#mocha')[0];
+    const mochaEl = $('#mocha-report')[0];
     runner.on('test', () => {
       mochaEl.scrollTop = mochaEl.scrollHeight;
     });

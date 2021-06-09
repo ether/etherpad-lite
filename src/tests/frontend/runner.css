@@ -42,8 +42,10 @@ body {
 #mocha {
   font: 20px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
   height: 100%;
-  overflow: auto;
+  min-height: 100%; /* https://css-tricks.com/preventing-a-grid-blowout/ */
   font-size:80%;
+  display: flex;
+  flex-direction: column;
 }
 
 #mocha ul {
@@ -168,6 +170,12 @@ body {
   -webkit-box-shadow: 0 1px 3px #eee;
 }
 
+#mocha-report {
+  flex: 0 1 auto;
+  overflow: auto;
+  margin: 0;
+}
+
 #mocha-report ul {
   padding: 0;
 }
@@ -188,6 +196,7 @@ body {
 }
 
 #mocha-stats {
+  flex: 0 0 auto;
   padding: 10px;
   font-size: 12px;
   margin: 0;
