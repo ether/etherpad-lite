@@ -253,7 +253,7 @@ $(() => (async () => {
       .css({'display': 'flex', 'flex-direction': 'column', 'height': '100%'})
       .append($('<div>').css({flex: '1 0 0'}))
       .append($('<div>')
-          .css({'flex': '0 1 auto', 'font-weight': 'bold'})
+          .css({'flex': '0 0 auto', 'font-weight': 'bold'})
           .text('Loading frontend test specs...'))
       .append($log.css({flex: '0 1 auto', overflow: 'auto'}))
       .append($bar.css({flex: '0 0 auto', width: '100%'}))
