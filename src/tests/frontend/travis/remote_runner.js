@@ -7,6 +7,7 @@ process.on('unhandledRejection', (err) => { throw err; });
 const async = require('async');
 const swd = require('selenium-webdriver');
 const swdChrome = require('selenium-webdriver/chrome');
+const swdEdge = require('selenium-webdriver/edge');
 const swdFirefox = require('selenium-webdriver/firefox');
 
 const isAdminRunner = process.argv[2] === 'admin';
@@ -28,6 +29,8 @@ const finishedRegex = /FINISHED.*[0-9]+ tests passed, ([0-9]+) tests failed/;
 const sauceTestWorker = async.queue(async ({name, pfx, testSettings}) => {
   const chromeOptions = new swdChrome.Options()
       .addArguments('use-fake-device-for-media-stream', 'use-fake-ui-for-media-stream');
+  const edgeOptions = new swdEdge.Options()
+      .addArguments('use-fake-device-for-media-stream', 'use-fake-ui-for-media-stream');
   const firefoxOptions = new swdFirefox.Options()
       .setPreference('media.navigator.permission.disabled', true)
       .setPreference('media.navigator.streams.fake', true);
@@ -47,6 +50,7 @@ const sauceTestWorker = async.queue(async ({name, pfx, testSettings}) => {
         },
       }, testSettings))
       .setChromeOptions(chromeOptions)
+      .setEdgeOptions(edgeOptions)
       .setFirefoxOptions(firefoxOptions)
       .build();
   const url = `https://saucelabs.com/jobs/${(await driver.getSession()).getId()}`;
