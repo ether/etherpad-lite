@@ -68,6 +68,7 @@ Portal submits content into new blog post
 The latest version is `1.2.14`
 
 The current version can be queried via /api.
+(curl "https://<YourEtherpad-Lite>/api")
 
 ### Request Format
 
@@ -135,6 +136,9 @@ Authentication works via a token that is sent with each request as a post parame
 All functions will also be available through a node module accessible from other node.js applications.
 
 ## API Methods
+
+The terms in the curved brackets are appended at the end of the request. The API method `deleteGroup(groupID)` in cURL it looks like:
+`curl "http:/pad.domain/api/<version>/deleteGroup?apikey=<API-key>&groupID=g.s8oes9dhwrvt0zif&"`
 
 ### Groups
 Pads can belong to a group. The padID of grouppads is starting with a groupID like g.asdfasdfasdfasdf$test
