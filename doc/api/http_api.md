@@ -137,7 +137,7 @@ All functions will also be available through a node module accessible from other
 
 ## API Methods
 
-The terms in the curved brackets have to be appended at the end of the request. The API method `deleteGroup(groupID)` in cURL it looks like:
+The terms in the curved brackets have to be appended at the end of the request. tz an '&'. The API method `deleteGroup(groupID)` in cURL looks like:
 
 	curl "http:/pad.domain/api/<version>/deleteGroup?apikey=<API-key>&groupID=<YourDesiredGroupID>"
 
