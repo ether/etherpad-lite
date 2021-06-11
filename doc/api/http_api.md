@@ -137,9 +137,9 @@ All functions will also be available through a node module accessible from other
 
 ## API Methods
 
-The terms in the curved brackets have to be appended at the end of the request. tz an '&'. The API method `deleteGroup(groupID)` in cURL looks like:
+The terms in the curved brackets have to be appended at the end of the request with a '&'. The API method `deleteGroup(groupID)` used with cURL looks like:
 
-	curl "http:/pad.domain/api/<version>/deleteGroup?apikey=<API-key>&groupID=<YourDesiredGroupID>"
+		curl "http:/pad.domain/api/<version>/deleteGroup?apikey=<API-key>&groupID=<YourDesiredGroupID>"
 
 ### Groups
 Pads can belong to a group. The padID of grouppads is starting with a groupID like g.asdfasdfasdfasdf$test
