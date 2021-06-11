@@ -241,7 +241,7 @@ Sessions can be created between a group and an author. This allows an author to 
 #### createSession(groupID, authorID, validUntil)
  * API >= 1
 
-creates a new session. validUntil is an unix timestamp in seconds
+creates a new session. validUntil is an [unix timestamp](https://www.unixtimestamp.com/) in seconds
 
 *Example returns:*
   * `{code: 0, message:"ok", data: {sessionID: "s.s8oes9dhwrvt0zif"}}`
