@@ -225,7 +225,7 @@ publish your plugin.
   "author": "USERNAME (REAL NAME) <MAIL@EXAMPLE.COM>",
   "contributors": [],
   "dependencies": {"MODULE": "0.3.20"},
-  "engines": { "node": "^10.17.0 || >=11.14.0"}
+  "engines": {"node": ">=12.13.0"}
 }
 ```
 
