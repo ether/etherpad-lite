@@ -192,8 +192,21 @@ $(() => (async () => {
   // Per-module log of attempted Mocha function calls. Key is module path, value is an array of
   // [functionName, argsArray] arrays.
   const mochaCalls = new Map();
-  const mochaFns =
-      ['describe', 'context', 'it', 'specify', 'before', 'after', 'beforeEach', 'afterEach'];
+  const mochaFns = [
+    'after',
+    'afterEach',
+    'before',
+    'beforeEach',
+    'context',
+    'describe',
+    'it',
+    'run',
+    'specify',
+    'xcontext', // Undocumented as of Mocha 7.1.2.
+    'xdescribe', // Undocumented as of Mocha 7.1.2.
+    'xit', // Undocumented as of Mocha 7.1.2.
+    'xspecify', // Undocumented as of Mocha 7.1.2.
+  ];
   window.testRunnerRequire = {
     define(...args) {
       if (args.length === 2) args = [{[args[0]]: args[1]}];
