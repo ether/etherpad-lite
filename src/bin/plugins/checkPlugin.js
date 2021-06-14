@@ -42,6 +42,23 @@ const writePackageJson = (obj) => {
   return fs.writeFileSync(`${pluginPath}/package.json`, s);
 };
 
+const checkEntries = (got, want) => {
+  let changed = false;
+  for (const [key, val] of Object.entries(want)) {
+    try {
+      assert.deepEqual(got[key], val);
+    } catch (err) {
+      console.warn(`${key} possibly outdated.`);
+      console.warn(err.message);
+      if (autoFix) {
+        got[key] = val;
+        changed = true;
+      }
+    }
+  }
+  return changed;
+};
+
 const updateDeps = (parsedPackageJson, key, wantDeps) => {
   const {[key]: deps = {}} = parsedPackageJson;
   let changed = false;
@@ -147,19 +164,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     const packageJSON =
         fs.readFileSync(`${pluginPath}/package.json`, {encoding: 'utf8', flag: 'r'});
     const parsedPackageJSON = JSON.parse(packageJSON);
-    if (autoFix) {
-      let updatedPackageJSON = false;
-      if (!parsedPackageJSON.funding) {
-        updatedPackageJSON = true;
-        parsedPackageJSON.funding = {
-          type: 'individual',
-          url: 'https://etherpad.org/',
-        };
-      }
-      if (updatedPackageJSON) {
-        writePackageJson(parsedPackageJSON);
-      }
-    }
 
     if (packageJSON.toLowerCase().indexOf('repository') === -1) {
       console.warn('No repository in package.json');
@@ -192,29 +196,24 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       node: '>=12.13.0',
     });
 
-    if (packageJSON.toLowerCase().indexOf('eslintconfig') === -1) {
-      console.warn('No esLintConfig in package.json');
-      if (autoFix) {
-        const eslintConfig = {
-          root: true,
-          extends: 'etherpad/plugin',
-        };
-        parsedPackageJSON.eslintConfig = eslintConfig;
-        writePackageJson(parsedPackageJSON);
-      }
-    }
+    if (parsedPackageJSON.eslintConfig == null) parsedPackageJSON.eslintConfig = {};
+    if (checkEntries(parsedPackageJSON.eslintConfig, {
+      root: true,
+      extends: 'etherpad/plugin',
+    })) await writePackageJson(parsedPackageJSON);
 
-    if (packageJSON.toLowerCase().indexOf('scripts') === -1) {
-      console.warn('No scripts in package.json');
-      if (autoFix) {
-        const scripts = {
-          'lint': 'eslint .',
-          'lint:fix': 'eslint --fix .',
-        };
-        parsedPackageJSON.scripts = scripts;
-        writePackageJson(parsedPackageJSON);
-      }
-    }
+    if (checkEntries(parsedPackageJSON, {
+      funding: {
+        type: 'individual',
+        url: 'https://etherpad.org/',
+      },
+    })) writePackageJson(parsedPackageJSON);
+
+    if (parsedPackageJSON.scripts == null) parsedPackageJSON.scripts = {};
+    if (checkEntries(parsedPackageJSON.scripts, {
+      'lint': 'eslint .',
+      'lint:fix': 'eslint --fix .',
+    })) writePackageJson(parsedPackageJSON);
   }
 
   if (files.indexOf('package-lock.json') === -1) {
