@@ -13,8 +13,10 @@
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
 process.on('unhandledRejection', (err) => { throw err; });
 
+const assert = require('assert').strict;
 const fs = require('fs');
 const childProcess = require('child_process');
+const path = require('path');
 
 // get plugin name & path from user input
 const pluginName = process.argv[2];
@@ -86,6 +88,28 @@ const prepareRepo = () => {
   }
 };
 
+const checkFile = (srcFn, dstFn) => {
+  const outFn = path.join(pluginPath, dstFn);
+  const verRegEx = /^##ETHERPAD_NPM_V=(\d+)$/;
+  const wantContents = fs.readFileSync(srcFn, {encoding: 'utf8'});
+  const [, wantVer] = verRegEx.exec(wantContents) || [];
+  let gotContents = null;
+  try {
+    gotContents = fs.readFileSync(outFn, {encoding: 'utf8'});
+  } catch (err) { /* treat as if the file doesn't exist */ }
+  const [, gotVer] = verRegEx.exec(gotContents || '') || [];
+  try {
+    assert.equal(gotVer, wantVer);
+  } catch (err) {
+    console.warn(`File ${dstFn} is out of date`);
+    console.warn(err.message);
+    if (autoFix) {
+      fs.mkdirSync(path.dirname(outFn), {recursive: true});
+      fs.writeFileSync(outFn, wantContents);
+    }
+  }
+};
+
 if (autoCommit) {
   console.warn('Auto commit is enabled, I hope you know what you are doing...');
 }
@@ -111,80 +135,8 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   if (files.indexOf('.git') === -1) throw new Error('No .git folder, aborting');
   prepareRepo();
 
-  try {
-    const path = `${pluginPath}/.github/workflows/npmpublish.yml`;
-    if (!fs.existsSync(path)) {
-      console.log('no .github/workflows/npmpublish.yml');
-      console.log('create one and set npm secret to auto publish to npm on commit');
-      if (autoFix) {
-        const npmpublish =
-            fs.readFileSync('src/bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
-        fs.mkdirSync(`${pluginPath}/.github/workflows`, {recursive: true});
-        fs.writeFileSync(path, npmpublish);
-        console.log("If you haven't already, setup autopublish for this plugin https://github.com/ether/etherpad-lite/wiki/Plugins:-Automatically-publishing-to-npm-on-commit-to-Github-Repo");
-      } else {
-        console.log('Setup autopublish for this plugin https://github.com/ether/etherpad-lite/wiki/Plugins:-Automatically-publishing-to-npm-on-commit-to-Github-Repo');
-      }
-    } else {
-      // autopublish exists, we should check the version..
-      // checkVersion takes two file paths and checks for a version string in them.
-      const currVersionFile = fs.readFileSync(path, {encoding: 'utf8', flag: 'r'});
-      const existingConfigLocation = currVersionFile.indexOf('##ETHERPAD_NPM_V=');
-      const existingValue = parseInt(
-          currVersionFile.substr(existingConfigLocation + 17, existingConfigLocation.length));
-
-      const reqVersionFile =
-          fs.readFileSync('src/bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
-      const reqConfigLocation = reqVersionFile.indexOf('##ETHERPAD_NPM_V=');
-      const reqValue =
-          parseInt(reqVersionFile.substr(reqConfigLocation + 17, reqConfigLocation.length));
-
-      if (!existingValue || (reqValue > existingValue)) {
-        const npmpublish =
-            fs.readFileSync('src/bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
-        fs.mkdirSync(`${pluginPath}/.github/workflows`, {recursive: true});
-        fs.writeFileSync(path, npmpublish);
-      }
-    }
-  } catch (err) {
-    console.error(err);
-  }
-
-
-  try {
-    const path = `${pluginPath}/.github/workflows/backend-tests.yml`;
-    if (!fs.existsSync(path)) {
-      console.log('no .github/workflows/backend-tests.yml');
-      console.log('create one and set npm secret to auto publish to npm on commit');
-      if (autoFix) {
-        const backendTests =
-            fs.readFileSync('src/bin/plugins/lib/backend-tests.yml', {encoding: 'utf8', flag: 'r'});
-        fs.mkdirSync(`${pluginPath}/.github/workflows`, {recursive: true});
-        fs.writeFileSync(path, backendTests);
-      }
-    } else {
-      // autopublish exists, we should check the version..
-      // checkVersion takes two file paths and checks for a version string in them.
-      const currVersionFile = fs.readFileSync(path, {encoding: 'utf8', flag: 'r'});
-      const existingConfigLocation = currVersionFile.indexOf('##ETHERPAD_NPM_V=');
-      const existingValue = parseInt(
-          currVersionFile.substr(existingConfigLocation + 17, existingConfigLocation.length));
-
-      const reqVersionFile =
-          fs.readFileSync('src/bin/plugins/lib/backend-tests.yml', {encoding: 'utf8', flag: 'r'});
-      const reqConfigLocation = reqVersionFile.indexOf('##ETHERPAD_NPM_V=');
-      const reqValue =
-          parseInt(reqVersionFile.substr(reqConfigLocation + 17, reqConfigLocation.length));
-
-      if (!existingValue || (reqValue > existingValue)) {
-        const backendTests =
-            fs.readFileSync('src/bin/plugins/lib/backend-tests.yml', {encoding: 'utf8', flag: 'r'});
-        fs.mkdirSync(`${pluginPath}/.github/workflows`, {recursive: true});
-        fs.writeFileSync(path, backendTests);
-      }
-    }
-  } catch (err) {
-    console.error(err);
+  for (const fn of ['backend-tests.yml', 'npmpublish.yml']) {
+    checkFile(`src/bin/plugins/lib/${fn}`, `.github/workflows/${fn}`);
   }
 
   if (files.indexOf('package.json') === -1) {
