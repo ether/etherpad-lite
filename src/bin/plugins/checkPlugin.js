@@ -107,16 +107,13 @@ const prepareRepo = () => {
 
 const checkFile = (srcFn, dstFn) => {
   const outFn = path.join(pluginPath, dstFn);
-  const verRegEx = /^##ETHERPAD_NPM_V=(\d+)$/;
   const wantContents = fs.readFileSync(srcFn, {encoding: 'utf8'});
-  const [, wantVer] = verRegEx.exec(wantContents) || [];
   let gotContents = null;
   try {
     gotContents = fs.readFileSync(outFn, {encoding: 'utf8'});
   } catch (err) { /* treat as if the file doesn't exist */ }
-  const [, gotVer] = verRegEx.exec(gotContents || '') || [];
   try {
-    assert.equal(gotVer, wantVer);
+    assert.equal(gotContents, wantContents);
   } catch (err) {
     console.warn(`File ${dstFn} is out of date`);
     console.warn(err.message);
