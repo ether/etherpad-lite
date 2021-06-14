@@ -221,6 +221,7 @@ $(() => (async () => {
           // backups might be placeholders, not the actual Mocha functions.
           const backups = {};
           for (const fn of mochaFns) {
+            if (typeof window[fn] !== 'function') continue;
             // Note: Test specs can require other modules, so window[fn] might be a placeholder
             // function, not the actual Mocha function.
             backups[fn] = window[fn];
