@@ -1,5 +1,5 @@
 # minimum required node version
-REQUIRED_NODE_MAJOR=10
+REQUIRED_NODE_MAJOR=12
 REQUIRED_NODE_MINOR=13
 
 # minimum required npm version
@@ -47,16 +47,6 @@ get_program_version() {
   esac
 
   echo $VERSION
-}
-
-
-compute_node_args() {
-  ARGS=""
-
-  NODE_MAJOR=$(get_program_version "node" "major")
-  [ "$NODE_MAJOR" -eq "10" ] && ARGS="$ARGS --experimental-worker"
-
-  echo $ARGS
 }
 
 
