@@ -188,6 +188,10 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       'ep_etherpad-lite': {ver: '>=1.8.6', overwrite: false},
     });
 
+    updateDeps(parsedPackageJSON, 'engines', {
+      node: '>=12.13.0',
+    });
+
     if (packageJSON.toLowerCase().indexOf('eslintconfig') === -1) {
       console.warn('No esLintConfig in package.json');
       if (autoFix) {
@@ -208,17 +212,6 @@ fs.readdir(pluginPath, (err, rootFiles) => {
           'lint:fix': 'eslint --fix .',
         };
         parsedPackageJSON.scripts = scripts;
-        writePackageJson(parsedPackageJSON);
-      }
-    }
-
-    if ((packageJSON.toLowerCase().indexOf('engines') === -1) || !parsedPackageJSON.engines.node) {
-      console.warn('No engines or node engine in package.json');
-      if (autoFix) {
-        const engines = {
-          node: '>=12.13.0',
-        };
-        parsedPackageJSON.engines = engines;
         writePackageJson(parsedPackageJSON);
       }
     }
