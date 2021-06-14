@@ -149,7 +149,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   if (files.indexOf('.git') === -1) throw new Error('No .git folder, aborting');
   prepareRepo();
 
-  for (const fn of ['backend-tests.yml', 'npmpublish.yml']) {
+  for (const fn of ['backend-tests.yml', 'frontend-tests.yml', 'npmpublish.yml']) {
     checkFile(`src/bin/plugins/lib/${fn}`, `.github/workflows/${fn}`);
   }
 
