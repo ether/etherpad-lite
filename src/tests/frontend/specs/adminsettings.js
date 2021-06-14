@@ -62,7 +62,7 @@ describe('Admin > Settings', function () {
           url: new URL('/stats', window.location.href),
           method: 'GET',
           dataType: 'json',
-          timeout: 450, // Slightly less than the waitForPromise() interval.
+          timeout: 650, // Slightly less than the waitForPromise() interval.
         });
         return httpStartTime;
       } catch (err) {
@@ -72,7 +72,7 @@ describe('Admin > Settings', function () {
     await helper.waitForPromise(async () => {
       const startTime = await getStartTime();
       return startTime != null && startTime > 0 && Date.now() > startTime;
-    }, 1000, 500);
+    }, 1700, 1500);
     const clickTime = Date.now();
     helper.admin$('#restartEtherpad').click();
     await helper.waitForPromise(async () => {
