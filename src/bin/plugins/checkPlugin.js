@@ -5,8 +5,9 @@
  *
  * Normal usage:                node src/bin/plugins/checkPlugin.js ep_whatever
  * Auto fix the things it can:  node src/bin/plugins/checkPlugin.js ep_whatever autofix
- * Auto commit, push and publish to npm (highly dangerous):
- *                              node src/bin/plugins/checkPlugin.js ep_whatever autocommit
+ * Auto fix and commit:         node src/bin/plugins/checkPlugin.js ep_whatever autocommit
+ * Auto fix, commit, push and publish to npm (highly dangerous):
+ *                              node src/bin/plugins/checkPlugin.js ep_whatever autopush
  */
 
 // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
@@ -28,7 +29,8 @@ const pluginPath = `node_modules/${pluginName}`;
 console.log(`Checking the plugin: ${pluginName}`);
 
 const optArgs = process.argv.slice(3);
-const autoCommit = optArgs.indexOf('autocommit') !== -1;
+const autoPush = optArgs.indexOf('autopush') !== -1;
+const autoCommit = autoPush || optArgs.indexOf('autocommit') !== -1;
 const autoFix = autoCommit || optArgs.indexOf('autofix') !== -1;
 
 const execSync = (cmd, opts = {}) => (childProcess.execSync(cmd, {
@@ -124,8 +126,8 @@ const checkFile = (srcFn, dstFn) => {
   }
 };
 
-if (autoCommit) {
-  console.warn('Auto commit is enabled, I hope you know what you are doing...');
+if (autoPush) {
+  console.warn('Auto push is enabled, I hope you know what you are doing...');
 }
 
 fs.readdir(pluginPath, (err, rootFiles) => {
@@ -379,17 +381,24 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       });
       fs.unlinkSync(`${pluginPath}/.git/checkPlugin.index`);
 
-      const cmd = [
+      const commitCmd = [
         'git add -A',
         'git commit -m "autofixes from Etherpad checkPlugin.js"',
-        'git push',
       ].join(' && ');
       if (autoCommit) {
-        console.log('Attempting autocommit and auto publish to npm');
-        execSync(cmd, {stdio: 'inherit'});
+        console.log('Committing changes...');
+        execSync(commitCmd, {stdio: 'inherit'});
       } else {
         console.log('Fixes applied. Check the above git diff then run the following command:');
-        console.log(`(cd node_modules/${pluginName} && ${cmd})`);
+        console.log(`(cd node_modules/${pluginName} && ${commitCmd})`);
+      }
+      const pushCmd = 'git push';
+      if (autoPush) {
+        console.log('Pushing new commit...');
+        execSync(pushCmd, {stdio: 'inherit'});
+      } else {
+        console.log('Changes committed. To push, run the following command:');
+        console.log(`(cd node_modules/${pluginName} && ${pushCmd})`);
       }
     } else {
       console.log('No changes.');

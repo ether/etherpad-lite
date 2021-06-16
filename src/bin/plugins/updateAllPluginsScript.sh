@@ -10,7 +10,7 @@ do
   # echo $0
   if [[ $dir == *"ep_"* ]]; then
     if [[ $dir != "ep_etherpad-lite" ]]; then
-      node src/bin/plugins/checkPlugin.js $dir autofix autocommit autoupdate
+      node src/bin/plugins/checkPlugin.js $dir autopush
     fi
   fi
   # echo $dir
