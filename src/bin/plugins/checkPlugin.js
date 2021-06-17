@@ -16,6 +16,7 @@ process.on('unhandledRejection', (err) => { throw err; });
 
 const assert = require('assert').strict;
 const fs = require('fs');
+const fsp = fs.promises;
 const childProcess = require('child_process');
 const path = require('path');
 
@@ -38,10 +39,10 @@ const execSync = (cmd, opts = {}) => (childProcess.execSync(cmd, {
   ...opts,
 }) || '').toString().replace(/\n+$/, '');
 
-const writePackageJson = (obj) => {
+const writePackageJson = async (obj) => {
   let s = JSON.stringify(obj, null, 2);
   if (s.length && s.slice(s.length - 1) !== '\n') s += '\n';
-  return fs.writeFileSync(`${pluginPath}/package.json`, s);
+  return await fsp.writeFile(`${pluginPath}/package.json`, s);
 };
 
 const checkEntries = (got, want) => {
@@ -61,7 +62,7 @@ const checkEntries = (got, want) => {
   return changed;
 };
 
-const updateDeps = (parsedPackageJson, key, wantDeps) => {
+const updateDeps = async (parsedPackageJson, key, wantDeps) => {
   const {[key]: deps = {}} = parsedPackageJson;
   let changed = false;
   for (const [pkg, verInfo] of Object.entries(wantDeps)) {
@@ -80,7 +81,7 @@ const updateDeps = (parsedPackageJson, key, wantDeps) => {
   }
   if (changed) {
     parsedPackageJson[key] = deps;
-    writePackageJson(parsedPackageJson);
+    await writePackageJson(parsedPackageJson);
   }
 };
 
@@ -107,12 +108,12 @@ const prepareRepo = () => {
   }
 };
 
-const checkFile = (srcFn, dstFn) => {
+const checkFile = async (srcFn, dstFn) => {
   const outFn = path.join(pluginPath, dstFn);
-  const wantContents = fs.readFileSync(srcFn, {encoding: 'utf8'});
+  const wantContents = await fsp.readFile(srcFn, {encoding: 'utf8'});
   let gotContents = null;
   try {
-    gotContents = fs.readFileSync(outFn, {encoding: 'utf8'});
+    gotContents = await fsp.readFile(outFn, {encoding: 'utf8'});
   } catch (err) { /* treat as if the file doesn't exist */ }
   try {
     assert.equal(gotContents, wantContents);
@@ -120,8 +121,8 @@ const checkFile = (srcFn, dstFn) => {
     console.warn(`File ${dstFn} is out of date`);
     console.warn(err.message);
     if (autoFix) {
-      fs.mkdirSync(path.dirname(outFn), {recursive: true});
-      fs.writeFileSync(outFn, wantContents);
+      await fsp.mkdir(path.dirname(outFn), {recursive: true});
+      await fsp.writeFile(outFn, wantContents);
     }
   }
 };
@@ -130,11 +131,8 @@ if (autoPush) {
   console.warn('Auto push is enabled, I hope you know what you are doing...');
 }
 
-fs.readdir(pluginPath, (err, rootFiles) => {
-  // handling error
-  if (err) {
-    return console.log(`Unable to scan directory: ${err}`);
-  }
+(async () => {
+  const rootFiles = await fsp.readdir(pluginPath);
 
   // some files we need to know the actual file name.  Not compulsory but might help in the future.
   let readMeFileName;
@@ -148,15 +146,16 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   if (!files.includes('.git')) throw new Error('No .git folder, aborting');
   prepareRepo();
 
-  for (const fn of ['backend-tests.yml', 'frontend-tests.yml', 'npmpublish.yml']) {
-    checkFile(`src/bin/plugins/lib/${fn}`, `.github/workflows/${fn}`);
-  }
+  const workflows = ['backend-tests.yml', 'frontend-tests.yml', 'npmpublish.yml'];
+  await Promise.all(workflows.map(async (fn) => {
+    await checkFile(`src/bin/plugins/lib/${fn}`, `.github/workflows/${fn}`);
+  }));
 
   if (!files.includes('package.json')) {
     console.warn('no package.json, please create');
   } else {
     const packageJSON =
-        fs.readFileSync(`${pluginPath}/package.json`, {encoding: 'utf8', flag: 'r'});
+        await fsp.readFile(`${pluginPath}/package.json`, {encoding: 'utf8', flag: 'r'});
     const parsedPackageJSON = JSON.parse(packageJSON);
 
     if (!packageJSON.toLowerCase().includes('repository')) {
@@ -169,7 +168,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       repository = parsedPackageJSON.repository.url;
     }
 
-    updateDeps(parsedPackageJSON, 'devDependencies', {
+    await updateDeps(parsedPackageJSON, 'devDependencies', {
       'eslint': '^7.28.0',
       'eslint-config-etherpad': '^2.0.0',
       'eslint-plugin-cypress': '^2.11.3',
@@ -181,12 +180,12 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       'eslint-plugin-you-dont-need-lodash-underscore': '^6.12.0',
     });
 
-    updateDeps(parsedPackageJSON, 'peerDependencies', {
+    await updateDeps(parsedPackageJSON, 'peerDependencies', {
       // Some plugins require a newer version of Etherpad so don't overwrite if already set.
       'ep_etherpad-lite': {ver: '>=1.8.6', overwrite: false},
     });
 
-    updateDeps(parsedPackageJSON, 'engines', {
+    await updateDeps(parsedPackageJSON, 'engines', {
       node: '>=12.13.0',
     });
 
@@ -201,13 +200,13 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         type: 'individual',
         url: 'https://etherpad.org/',
       },
-    })) writePackageJson(parsedPackageJSON);
+    })) await writePackageJson(parsedPackageJSON);
 
     if (parsedPackageJSON.scripts == null) parsedPackageJSON.scripts = {};
     if (checkEntries(parsedPackageJSON.scripts, {
       'lint': 'eslint .',
       'lint:fix': 'eslint --fix .',
-    })) writePackageJson(parsedPackageJSON);
+    })) await writePackageJson(parsedPackageJSON);
   }
 
   if (!files.includes('package-lock.json')) {
@@ -221,14 +220,15 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     if (autoFix) {
       console.log('Autofixing missing README.md file');
       console.log('please edit the README.md file further to include plugin specific details.');
-      let readme = fs.readFileSync('src/bin/plugins/lib/README.md', {encoding: 'utf8', flag: 'r'});
+      let readme =
+          await fsp.readFile('src/bin/plugins/lib/README.md', {encoding: 'utf8', flag: 'r'});
       readme = readme.replace(/\[plugin_name\]/g, pluginName);
       if (repository) {
         const org = repository.split('/')[3];
         const name = repository.split('/')[4];
         readme = readme.replace(/\[org_name\]/g, org);
         readme = readme.replace(/\[repo_url\]/g, name);
-        fs.writeFileSync(`${pluginPath}/README.md`, readme);
+        await fsp.writeFile(`${pluginPath}/README.md`, readme);
       } else {
         console.warn('Unable to find repository in package.json, aborting.');
       }
@@ -241,16 +241,16 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       console.log('Autofixing missing CONTRIBUTING.md file, please edit the CONTRIBUTING.md ' +
                   'file further to include plugin specific details.');
       let contributing =
-          fs.readFileSync('src/bin/plugins/lib/CONTRIBUTING.md', {encoding: 'utf8', flag: 'r'});
+          await fsp.readFile('src/bin/plugins/lib/CONTRIBUTING.md', {encoding: 'utf8', flag: 'r'});
       contributing = contributing.replace(/\[plugin_name\]/g, pluginName);
-      fs.writeFileSync(`${pluginPath}/CONTRIBUTING.md`, contributing);
+      await fsp.writeFile(`${pluginPath}/CONTRIBUTING.md`, contributing);
     }
   }
 
 
   if (readMeFileName) {
     let readme =
-        fs.readFileSync(`${pluginPath}/${readMeFileName}`, {encoding: 'utf8', flag: 'r'});
+        await fsp.readFile(`${pluginPath}/${readMeFileName}`, {encoding: 'utf8', flag: 'r'});
     if (!readme.toLowerCase().includes('license')) {
       console.warn('No license section in README');
       if (autoFix) {
@@ -269,7 +269,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       if (autoFix) {
         readme = `${publishBadge} ${testBadge}\n\n${readme}`;
         // write readme to file system
-        fs.writeFileSync(`${pluginPath}/${readMeFileName}`, readme);
+        await fsp.writeFile(`${pluginPath}/${readMeFileName}`, readme);
         console.log('Wrote Github workflow badges to README');
       }
     }
@@ -280,10 +280,10 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     if (autoFix) {
       console.log('Autofixing missing LICENSE.md file, including Apache 2 license.');
       let license =
-          fs.readFileSync('src/bin/plugins/lib/LICENSE.md', {encoding: 'utf8', flag: 'r'});
+          await fsp.readFile('src/bin/plugins/lib/LICENSE.md', {encoding: 'utf8', flag: 'r'});
       license = license.replace('[yyyy]', new Date().getFullYear());
       license = license.replace('[name of copyright owner]', execSync('git config user.name'));
-      fs.writeFileSync(`${pluginPath}/LICENSE.md`, license);
+      await fsp.writeFile(`${pluginPath}/LICENSE.md`, license);
     }
   }
 
@@ -293,17 +293,17 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     if (autoFix) {
       console.log('Autofixing missing .gitignore file');
       const gitignore =
-          fs.readFileSync('src/bin/plugins/lib/gitignore', {encoding: 'utf8', flag: 'r'});
-      fs.writeFileSync(`${pluginPath}/.gitignore`, gitignore);
+          await fsp.readFile('src/bin/plugins/lib/gitignore', {encoding: 'utf8', flag: 'r'});
+      await fsp.writeFile(`${pluginPath}/.gitignore`, gitignore);
     }
   } else {
     let gitignore =
-        fs.readFileSync(`${pluginPath}/.gitignore`, {encoding: 'utf8', flag: 'r'});
+        await fsp.readFile(`${pluginPath}/.gitignore`, {encoding: 'utf8', flag: 'r'});
     if (!gitignore.includes('node_modules/')) {
       console.warn('node_modules/ missing from .gitignore');
       if (autoFix) {
         gitignore += 'node_modules/';
-        fs.writeFileSync(`${pluginPath}/.gitignore`, gitignore);
+        await fsp.writeFile(`${pluginPath}/.gitignore`, gitignore);
       }
     }
   }
@@ -321,7 +321,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         'and should only exist once the plugin has been executed one time.');
     if (autoFix) {
       console.log('Autofixing incorrectly existing .ep_initialized file');
-      fs.unlinkSync(`${pluginPath}/.ep_initialized`);
+      await fsp.unlink(`${pluginPath}/.ep_initialized`);
     }
   }
 
@@ -330,16 +330,15 @@ fs.readdir(pluginPath, (err, rootFiles) => {
                  'your repository.');
     if (autoFix) {
       console.log('Autofixing incorrectly existing npm-debug.log file');
-      fs.unlinkSync(`${pluginPath}/npm-debug.log`);
+      await fsp.unlink(`${pluginPath}/npm-debug.log`);
     }
   }
 
   if (files.includes('static')) {
-    fs.readdir(`${pluginPath}/static`, (errRead, staticFiles) => {
-      if (!staticFiles.includes('tests')) {
-        console.warn('Test files not found, please create tests.  https://github.com/ether/etherpad-lite/wiki/Creating-a-plugin#writing-and-running-front-end-tests-for-your-plugin');
-      }
-    });
+    const staticFiles = await fsp.readdir(`${pluginPath}/static`);
+    if (!staticFiles.includes('tests')) {
+      console.warn('Test files not found, please create tests.  https://github.com/ether/etherpad-lite/wiki/Creating-a-plugin#writing-and-running-front-end-tests-for-your-plugin');
+    }
   } else {
     console.warn('Test files not found, please create tests.  https://github.com/ether/etherpad-lite/wiki/Creating-a-plugin#writing-and-running-front-end-tests-for-your-plugin');
   }
@@ -374,7 +373,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         env: {...process.env, GIT_INDEX_FILE: '.git/checkPlugin.index'},
         stdio: 'inherit',
       });
-      fs.unlinkSync(`${pluginPath}/.git/checkPlugin.index`);
+      await fsp.unlink(`${pluginPath}/.git/checkPlugin.index`);
 
       const commitCmd = [
         'git add -A',
@@ -401,4 +400,4 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   }
 
   console.log('Finished');
-});
+})();
