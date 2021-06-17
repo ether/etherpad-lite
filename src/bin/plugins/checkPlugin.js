@@ -132,16 +132,11 @@ if (autoPush) {
 }
 
 (async () => {
-  const rootFiles = await fsp.readdir(pluginPath);
+  const files = await fsp.readdir(pluginPath);
 
   // some files we need to know the actual file name.  Not compulsory but might help in the future.
-  let readMeFileName;
+  const readMeFileName = files.filter((f) => f === 'README' || f === 'README.md')[0];
   let repository;
-  const files = rootFiles.map((f) => {
-    const fl = f.toLowerCase();
-    if (fl === 'readme' || f === 'readme.md') readMeFileName = f;
-    return fl;
-  });
 
   if (!files.includes('.git')) throw new Error('No .git folder, aborting');
   prepareRepo();
@@ -235,7 +230,7 @@ if (autoPush) {
     }
   }
 
-  if (!files.includes('contributing') && !files.includes('contributing.md')) {
+  if (!files.includes('CONTRIBUTING') && !files.includes('CONTRIBUTING.md')) {
     console.warn('CONTRIBUTING.md file not found, please create');
     if (autoFix) {
       console.log('Autofixing missing CONTRIBUTING.md file, please edit the CONTRIBUTING.md ' +
@@ -275,7 +270,7 @@ if (autoPush) {
     }
   }
 
-  if (!files.includes('license') && !files.includes('license.md')) {
+  if (!files.includes('LICENSE') && !files.includes('LICENSE.md')) {
     console.warn('LICENSE.md file not found, please create');
     if (autoFix) {
       console.log('Autofixing missing LICENSE.md file, including Apache 2 license.');
