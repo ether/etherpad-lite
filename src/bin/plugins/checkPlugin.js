@@ -136,17 +136,14 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     return console.log(`Unable to scan directory: ${err}`);
   }
 
-  // rewriting files to lower case
-  const files = [];
-
   // some files we need to know the actual file name.  Not compulsory but might help in the future.
   let readMeFileName;
   let repository;
-
-  for (let i = 0; i < rootFiles.length; i++) {
-    if (rootFiles[i].toLowerCase().includes('readme')) readMeFileName = rootFiles[i];
-    files.push(rootFiles[i].toLowerCase());
-  }
+  const files = rootFiles.map((f) => {
+    const fl = f.toLowerCase();
+    if (fl.includes('readme')) readMeFileName = f;
+    return fl;
+  });
 
   if (!files.includes('.git')) throw new Error('No .git folder, aborting');
   prepareRepo();
