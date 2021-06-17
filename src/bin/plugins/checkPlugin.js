@@ -139,7 +139,7 @@ if (autoPush) {
   let repository;
   const files = rootFiles.map((f) => {
     const fl = f.toLowerCase();
-    if (fl.includes('readme')) readMeFileName = f;
+    if (fl === 'readme' || f === 'readme.md') readMeFileName = f;
     return fl;
   });
 
@@ -215,7 +215,7 @@ if (autoPush) {
       console.warn('Run npm install in the plugin folder and commit the package-lock.json file.');
     }
   }
-  if (!files.includes('readme') && !files.includes('readme.md')) {
+  if (!readMeFileName) {
     console.warn('README.md file not found, please create');
     if (autoFix) {
       console.log('Autofixing missing README.md file');
