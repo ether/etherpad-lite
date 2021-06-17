@@ -72,7 +72,7 @@ COPY --chown=etherpad:etherpad ./ ./
 RUN src/bin/installDeps.sh && \
 	rm -rf ~/.npm/_cacache
 
-RUN [ -z "${ETHERPAD_PLUGINS}" ] || npm install ${ETHERPAD_PLUGINS}
+RUN [ -z "${ETHERPAD_PLUGINS}" ] || npm install --no-save ${ETHERPAD_PLUGINS}
 
 # Copy the configuration file.
 COPY --chown=etherpad:etherpad ./settings.json.docker "${EP_DIR}"/settings.json
