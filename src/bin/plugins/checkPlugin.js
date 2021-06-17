@@ -29,9 +29,9 @@ const pluginPath = `node_modules/${pluginName}`;
 console.log(`Checking the plugin: ${pluginName}`);
 
 const optArgs = process.argv.slice(3);
-const autoPush = optArgs.indexOf('autopush') !== -1;
-const autoCommit = autoPush || optArgs.indexOf('autocommit') !== -1;
-const autoFix = autoCommit || optArgs.indexOf('autofix') !== -1;
+const autoPush = optArgs.includes('autopush');
+const autoCommit = autoPush || optArgs.includes('autocommit');
+const autoFix = autoCommit || optArgs.includes('autofix');
 
 const execSync = (cmd, opts = {}) => (childProcess.execSync(cmd, {
   cwd: `${pluginPath}/`,
@@ -144,27 +144,25 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   let repository;
 
   for (let i = 0; i < rootFiles.length; i++) {
-    if (rootFiles[i].toLowerCase().indexOf('readme') !== -1) readMeFileName = rootFiles[i];
+    if (rootFiles[i].toLowerCase().includes('readme')) readMeFileName = rootFiles[i];
     files.push(rootFiles[i].toLowerCase());
   }
 
-  if (files.indexOf('.git') === -1) throw new Error('No .git folder, aborting');
+  if (!files.includes('.git')) throw new Error('No .git folder, aborting');
   prepareRepo();
 
   for (const fn of ['backend-tests.yml', 'frontend-tests.yml', 'npmpublish.yml']) {
     checkFile(`src/bin/plugins/lib/${fn}`, `.github/workflows/${fn}`);
   }
 
-  if (files.indexOf('package.json') === -1) {
+  if (!files.includes('package.json')) {
     console.warn('no package.json, please create');
-  }
-
-  if (files.indexOf('package.json') !== -1) {
+  } else {
     const packageJSON =
         fs.readFileSync(`${pluginPath}/package.json`, {encoding: 'utf8', flag: 'r'});
     const parsedPackageJSON = JSON.parse(packageJSON);
 
-    if (packageJSON.toLowerCase().indexOf('repository') === -1) {
+    if (!packageJSON.toLowerCase().includes('repository')) {
       console.warn('No repository in package.json');
       if (autoFix) {
         console.warn('Repository not detected in package.json.  Add repository section.');
@@ -215,13 +213,13 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     })) writePackageJson(parsedPackageJSON);
   }
 
-  if (files.indexOf('package-lock.json') === -1) {
+  if (!files.includes('package-lock.json')) {
     console.warn('package-lock.json not found');
     if (!autoFix) {
       console.warn('Run npm install in the plugin folder and commit the package-lock.json file.');
     }
   }
-  if (files.indexOf('readme') === -1 && files.indexOf('readme.md') === -1) {
+  if (!files.includes('readme') && !files.includes('readme.md')) {
     console.warn('README.md file not found, please create');
     if (autoFix) {
       console.log('Autofixing missing README.md file');
@@ -240,7 +238,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     }
   }
 
-  if (files.indexOf('contributing') === -1 && files.indexOf('contributing.md') === -1) {
+  if (!files.includes('contributing') && !files.includes('contributing.md')) {
     console.warn('CONTRIBUTING.md file not found, please create');
     if (autoFix) {
       console.log('Autofixing missing CONTRIBUTING.md file, please edit the CONTRIBUTING.md ' +
@@ -256,7 +254,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   if (readMeFileName) {
     let readme =
         fs.readFileSync(`${pluginPath}/${readMeFileName}`, {encoding: 'utf8', flag: 'r'});
-    if (readme.toLowerCase().indexOf('license') === -1) {
+    if (!readme.toLowerCase().includes('license')) {
       console.warn('No license section in README');
       if (autoFix) {
         console.warn('Please add License section to README manually.');
@@ -266,10 +264,10 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     const publishBadge = `![Publish Status](https://github.com/ether/${pluginName}/workflows/Node.js%20Package/badge.svg)`;
     // eslint-disable-next-line max-len
     const testBadge = `![Backend Tests Status](https://github.com/ether/${pluginName}/workflows/Backend%20tests/badge.svg)`;
-    if (readme.toLowerCase().indexOf('travis') !== -1) {
+    if (readme.toLowerCase().includes('travis')) {
       console.warn('Remove Travis badges');
     }
-    if (readme.indexOf('workflows/Node.js%20Package/badge.svg') === -1) {
+    if (!readme.includes('workflows/Node.js%20Package/badge.svg')) {
       console.warn('No Github workflow badge detected');
       if (autoFix) {
         readme = `${publishBadge} ${testBadge}\n\n${readme}`;
@@ -280,7 +278,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     }
   }
 
-  if (files.indexOf('license') === -1 && files.indexOf('license.md') === -1) {
+  if (!files.includes('license') && !files.includes('license.md')) {
     console.warn('LICENSE.md file not found, please create');
     if (autoFix) {
       console.log('Autofixing missing LICENSE.md file, including Apache 2 license.');
@@ -292,7 +290,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     }
   }
 
-  if (files.indexOf('.gitignore') === -1) {
+  if (!files.includes('.gitignore')) {
     console.warn('.gitignore file not found, please create.  .gitignore files are useful to ' +
                  "ensure files aren't incorrectly commited to a repository.");
     if (autoFix) {
@@ -304,7 +302,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   } else {
     let gitignore =
         fs.readFileSync(`${pluginPath}/.gitignore`, {encoding: 'utf8', flag: 'r'});
-    if (gitignore.indexOf('node_modules/') === -1) {
+    if (!gitignore.includes('node_modules/')) {
       console.warn('node_modules/ missing from .gitignore');
       if (autoFix) {
         gitignore += 'node_modules/';
@@ -314,13 +312,13 @@ fs.readdir(pluginPath, (err, rootFiles) => {
   }
 
   // if we include templates but don't have translations...
-  if (files.indexOf('templates') !== -1 && files.indexOf('locales') === -1) {
+  if (files.includes('templates') && !files.includes('locales')) {
     console.warn('Translations not found, please create.  ' +
                  'Translation files help with Etherpad accessibility.');
   }
 
 
-  if (files.indexOf('.ep_initialized') !== -1) {
+  if (files.includes('.ep_initialized')) {
     console.warn(
         '.ep_initialized found, please remove.  .ep_initialized should never be commited to git ' +
         'and should only exist once the plugin has been executed one time.');
@@ -330,7 +328,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     }
   }
 
-  if (files.indexOf('npm-debug.log') !== -1) {
+  if (files.includes('npm-debug.log')) {
     console.warn('npm-debug.log found, please remove.  npm-debug.log should never be commited to ' +
                  'your repository.');
     if (autoFix) {
@@ -339,9 +337,9 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     }
   }
 
-  if (files.indexOf('static') !== -1) {
+  if (files.includes('static')) {
     fs.readdir(`${pluginPath}/static`, (errRead, staticFiles) => {
-      if (staticFiles.indexOf('tests') === -1) {
+      if (!staticFiles.includes('tests')) {
         console.warn('Test files not found, please create tests.  https://github.com/ether/etherpad-lite/wiki/Creating-a-plugin#writing-and-running-front-end-tests-for-your-plugin');
       }
     });
