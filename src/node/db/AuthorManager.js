@@ -94,7 +94,7 @@ exports.getColorPalette = () => [
  * Checks if the author exists
  */
 exports.doesAuthorExist = async (authorID) => {
-  const author = await db.get(`globalAuthor:${authorID}`);
+  const author = await exports.getAuthor(authorID);
 
   return author != null;
 };
@@ -225,7 +225,7 @@ exports.listPadsOfAuthor = async (authorID) => {
    */
 
   // get the globalAuthor
-  const author = await db.get(`globalAuthor:${authorID}`);
+  const author = await exports.getAuthor(authorID);
 
   if (author == null) {
     // author does not exist
@@ -245,7 +245,7 @@ exports.listPadsOfAuthor = async (authorID) => {
  */
 exports.addPad = async (authorID, padID) => {
   // get the entry
-  const author = await db.get(`globalAuthor:${authorID}`);
+  const author = await exports.getAuthor(authorID);
 
   if (author == null) return;
 
@@ -271,7 +271,7 @@ exports.addPad = async (authorID, padID) => {
  * @param {String} padID The id of the pad the author contributes to
  */
 exports.removePad = async (authorID, padID) => {
-  const author = await db.get(`globalAuthor:${authorID}`);
+  const author = await exports.getAuthor(authorID);
 
   if (author == null) return;
 
