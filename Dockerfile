@@ -59,12 +59,12 @@ RUN mkdir -p "${EP_DIR}" && chown etherpad:etherpad "${EP_DIR}"
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199
 RUN [ -n "${INSTALL_ABIWORD}${INSTALL_SOFFICE}" ] || exit 0; \
     mkdir -p /usr/share/man/man1 && \
-    apt update && \
-    apt -y install \
+    apt-get -qq update && \
+    apt-get -qq install \
         ${INSTALL_ABIWORD:+abiword} \
         ${INSTALL_SOFFICE:+libreoffice} \
         && \
-    apt clean && \
+    apt-get -qq clean && \
     rm -rf /var/lib/apt/lists/*
 
 USER etherpad
