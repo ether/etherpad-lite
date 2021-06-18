@@ -107,6 +107,10 @@ exports.doesAuthorExists = exports.doesAuthorExist;
  * @param {String} token The token
  */
 exports.getAuthor4Token = async (token) => {
+  // e.g. in case of an export of a public pad, a token is not needed
+  if (token == null) {
+    return;
+  }
   const author = await mapAuthorWithDBKey('token2author', token);
 
   // return only the sub value authorID
