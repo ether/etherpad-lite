@@ -61,7 +61,7 @@ RUN [ -n "${INSTALL_ABIWORD}${INSTALL_SOFFICE}" ] || exit 0; \
     export DEBIAN_FRONTEND=noninteractive; \
     mkdir -p /usr/share/man/man1 && \
     apt-get -qq update && \
-    apt-get -qq install \
+    apt-get -qq --no-install-recommends install \
         ${INSTALL_ABIWORD:+abiword} \
         ${INSTALL_SOFFICE:+libreoffice} \
         && \
