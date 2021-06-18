@@ -68,11 +68,10 @@ WORKDIR "${EP_DIR}"
 
 COPY --chown=etherpad:etherpad ./ ./
 
-# install node dependencies for Etherpad
 RUN src/bin/installDeps.sh && \
-	rm -rf ~/.npm/_cacache
-
-RUN [ -z "${ETHERPAD_PLUGINS}" ] || npm install --no-save ${ETHERPAD_PLUGINS}
+    { [ -z "${ETHERPAD_PLUGINS}" ] || \
+      npm install --no-save ${ETHERPAD_PLUGINS}; } && \
+    rm -rf ~/.npm
 
 # Copy the configuration file.
 COPY --chown=etherpad:etherpad ./settings.json.docker "${EP_DIR}"/settings.json
