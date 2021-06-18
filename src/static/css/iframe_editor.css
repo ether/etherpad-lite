@@ -58,11 +58,6 @@ html.outer-editor, html.inner-editor {
   color: inherit;
 }
 
-#innerdocbody.authorColors span {
-  padding-top: 3px;
-  padding-bottom: 4px;
-}
-
 option {
   text-transform: capitalize;
 }

@@ -226,18 +226,18 @@ function Ace2Inner(editorInfo, cssManagers) {
       if ((typeof info.fade) === 'number') {
         bgcolor = fadeColor(bgcolor, info.fade);
       }
-
-      const authorStyle = cssManagers.inner.selectorStyle(authorSelector);
-      const parentAuthorStyle = cssManagers.parent.selectorStyle(authorSelector);
-
-      // author color
-      authorStyle.backgroundColor = bgcolor;
-      parentAuthorStyle.backgroundColor = bgcolor;
-
       const textColor =
           colorutils.textColorFromBackgroundColor(bgcolor, parent.parent.clientVars.skinName);
-      authorStyle.color = textColor;
-      parentAuthorStyle.color = textColor;
+      const styles = [
+        cssManagers.inner.selectorStyle(authorSelector),
+        cssManagers.parent.selectorStyle(authorSelector),
+      ];
+      for (const style of styles) {
+        style.backgroundColor = bgcolor;
+        style.color = textColor;
+        style['padding-top'] = '3px';
+        style['padding-bottom'] = '4px';
+      }
     }
   };
 
