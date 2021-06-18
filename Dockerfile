@@ -55,12 +55,17 @@ RUN groupadd --system ${EP_GID:+--gid "${EP_GID}" --non-unique} etherpad && \
 ARG EP_DIR=/opt/etherpad-lite
 RUN mkdir -p "${EP_DIR}" && chown etherpad:etherpad "${EP_DIR}"
 
-# install abiword for DOC/PDF/ODT export
-RUN [ -z "${INSTALL_ABIWORD}" ] || (apt update && apt -y install abiword && apt clean && rm -rf /var/lib/apt/lists/*)
-
-# install libreoffice for DOC/PDF/ODT export
-# the mkdir is needed for configuration of openjdk-11-jre-headless, see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199
-RUN [ -z "${INSTALL_SOFFICE}" ] || (apt update && mkdir -p /usr/share/man/man1 && apt -y install libreoffice && apt clean && rm -rf /var/lib/apt/lists/*)
+# the mkdir is needed for configuration of openjdk-11-jre-headless, see
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199
+RUN [ -n "${INSTALL_ABIWORD}${INSTALL_SOFFICE}" ] || exit 0; \
+    mkdir -p /usr/share/man/man1 && \
+    apt update && \
+    apt -y install \
+        ${INSTALL_ABIWORD:+abiword} \
+        ${INSTALL_SOFFICE:+libreoffice} \
+        && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
 
 USER etherpad
 
