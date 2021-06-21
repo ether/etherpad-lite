@@ -2579,12 +2579,7 @@ function Ace2Inner(editorInfo, cssManagers) {
 
   const handleKeyEvent = (evt) => {
     if (!isEditable) return;
-    const type = evt.type;
-    const charCode = evt.charCode;
-    const keyCode = evt.keyCode;
-    const which = evt.which;
-    const altKey = evt.altKey;
-    const shiftKey = evt.shiftKey;
+    const {type, charCode, keyCode, which, altKey, shiftKey} = evt;
 
     // Don't take action based on modifier keys going up and down.
     // Modifier keys do not generate "keypress" events.
