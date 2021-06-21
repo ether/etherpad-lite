@@ -27,7 +27,7 @@
 	"pad.colorpicker.save": "Späicheren",
 	"pad.colorpicker.cancel": "Ofbriechen",
 	"pad.loading": "Lueden...",
-	"pad.noCookie": "Cookie gouf net fonnt. Erlaabt wgl. Cookien an Ärem Browser!",
+	"pad.noCookie": "Cookie gouf net fonnt. Erlaabt wgl. Cookien an Ärem Browser! Är Sessioun an Är Astellungen ginn net tëscht de Visitte gespäichert. Dëst kann doduerch bedéngt sinn datt Etherpad a verschiddene Browser an iFrameën agebaut ass. Vergewëssert Iech wgl. datt Etherpad am selwechten Subdomain/Domain ass wéi den iwwergeuerdneten iFrame",
 	"pad.permissionDenied": "Dir hutt net déi néideg Rechter fir dëse Pad opzemaachen",
 	"pad.settings.myView": "Méng Usiicht",
 	"pad.settings.linenocheck": "Zeilennummeren",
