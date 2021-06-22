@@ -3289,7 +3289,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     $(document).on('keyup', handleKeyEvent);
     $(document).on('click', handleClick);
     // dropdowns on edit bar need to be closed on clicks on both pad inner and pad outer
-    $(outerWin.document).on('click', hideEditBarDropdowns);
+    $(outerDoc).on('click', hideEditBarDropdowns);
 
     // If non-nullish, pasting on a link should be suppressed.
     let suppressPasteOnLink = null;
@@ -3414,11 +3414,7 @@ function Ace2Inner(editorInfo, cssManagers) {
   };
 
   const getInnerHeight = () => {
-    const win = outerWin;
-    const odoc = win.document;
-    let h;
-    if (browser.opera) h = win.innerHeight;
-    else h = odoc.documentElement.clientHeight;
+    const h = browser.opera ? outerWin.innerHeight : outerDoc.documentElement.clientHeight;
     if (h) return h;
 
     // deal with case where iframe is hidden, hope that
@@ -3426,20 +3422,15 @@ function Ace2Inner(editorInfo, cssManagers) {
     return Number(editorInfo.frame.parentNode.style.height.replace(/[^0-9]/g, '') || 0);
   };
 
-  const getInnerWidth = () => {
-    const win = outerWin;
-    const odoc = win.document;
-    return odoc.documentElement.clientWidth;
-  };
+  const getInnerWidth = () => outerDoc.documentElement.clientWidth;
 
   const scrollXHorizontallyIntoView = (pixelX) => {
-    const win = outerWin;
-    const distInsideLeft = pixelX - win.scrollX;
-    const distInsideRight = win.scrollX + getInnerWidth() - pixelX;
+    const distInsideLeft = pixelX - outerWin.scrollX;
+    const distInsideRight = outerWin.scrollX + getInnerWidth() - pixelX;
     if (distInsideLeft < 0) {
-      win.scrollBy(distInsideLeft, 0);
+      outerWin.scrollBy(distInsideLeft, 0);
     } else if (distInsideRight < 0) {
-      win.scrollBy(-distInsideRight + 1, 0);
+      outerWin.scrollBy(-distInsideRight + 1, 0);
     }
   };
 
@@ -3615,13 +3606,12 @@ function Ace2Inner(editorInfo, cssManagers) {
 
     if (newNumLines !== lineNumbersShown) {
       const container = sideDivInner;
-      const odoc = outerWin.document;
-      const fragment = odoc.createDocumentFragment();
+      const fragment = outerDoc.createDocumentFragment();
 
       // Create missing line and apply height
       while (lineNumbersShown < newNumLines) {
         lineNumbersShown++;
-        const div = odoc.createElement('DIV');
+        const div = outerDoc.createElement('DIV');
         if (lineOffsets[currentLine]) {
           div.style.height = `${lineOffsets[currentLine]}px`;
           div.style.lineHeight = `${lineHeights[currentLine]}px`;
