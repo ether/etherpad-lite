@@ -1125,19 +1125,9 @@ function Ace2Inner(editorInfo, cssManagers) {
 
     const domChanges = (splicesToDo.length > 0);
 
-    // update the representation
-    for (const splice of splicesToDo) {
-      doIncorpLineSplice(splice[0], splice[1], splice[2], splice[3], splice[4]);
-    }
-
-    // do DOM inserts
-    for (const ins of domInsertsNeeded) insertDomLines(ins[0], ins[1]);
-
-    // delete old dom nodes
-    for (const n of toDeleteAtEnd) {
-      // parent of n may not be "root" in IE due to non-tree-shaped DOM (wtf)
-      if (n.parentNode) n.parentNode.removeChild(n);
-    }
+    for (const splice of splicesToDo) doIncorpLineSplice(...splice);
+    for (const ins of domInsertsNeeded) insertDomLines(...ins);
+    for (const n of toDeleteAtEnd) n.remove();
 
     // needed to stop chrome from breaking the ui when long strings without spaces are pasted
     if (scrollToTheLeftNeeded) {
@@ -2269,10 +2259,7 @@ function Ace2Inner(editorInfo, cssManagers) {
 
   const markNodeClean = (n) => {
     // clean nodes have knownHTML that matches their innerHTML
-    const dirtiness = {};
-    dirtiness.nodeId = uniqueId(n);
-    dirtiness.knownHTML = n.innerHTML;
-    setAssoc(n, 'dirtiness', dirtiness);
+    setAssoc(n, 'dirtiness', {nodeId: uniqueId(n), knownHTML: n.innerHTML});
   };
 
   const isNodeDirty = (n) => {
