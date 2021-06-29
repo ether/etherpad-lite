@@ -1,5 +1,19 @@
 # Next Release
 
+### Security fixes
+
+* Fixed leak of the writable pad ID when exporting from the pad's read-only ID.
+  This only matters if you treat the writeable pad IDs as secret (e.g., you are
+  not using [ep_padlist2](https://www.npmjs.com/package/ep_padlist2)) and you
+  share the pad's read-only ID with untrusted users. Instead of treating
+  writeable pad IDs as secret, you are encouraged to take advantage of
+  Etherpad's authentication and authorization mechanisms (e.g., use
+  [ep_openid_connect](https://www.npmjs.com/package/ep_openid_connect) with
+  [ep_readonly_guest](https://www.npmjs.com/package/ep_readonly_guest), or write
+  your own
+  [authentication](https://etherpad.org/doc/v1.8.14/#index_authenticate) and
+  [authorization](https://etherpad.org/doc/v1.8.14/#index_authorize) plugins).
+
 ### Compatibility changes
 
 * For plugin authors:
