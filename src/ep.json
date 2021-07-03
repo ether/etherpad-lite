@@ -51,12 +51,6 @@
       }
     },
     {
-      "name": "padreadonly",
-      "hooks": {
-        "expressCreateServer": "ep_etherpad-lite/node/hooks/express/padreadonly"
-      }
-    },
-    {
       "name": "webaccess",
       "hooks": {
         "expressConfigure": "ep_etherpad-lite/node/hooks/express/webaccess"
