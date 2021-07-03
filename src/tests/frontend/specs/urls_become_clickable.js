@@ -28,7 +28,7 @@ describe('urls', function () {
   });
 
   describe('special characters inside URL', function () {
-    for (const char of '-:@_.,~%+/?=&#!;()$\'*') {
+    for (const char of '-:@_.,~%+/?=&#!;()[]$\'*') {
       const url = `https://etherpad.org/${char}foo`;
       it(url, async function () {
         await helper.edit(url);
@@ -41,26 +41,9 @@ describe('urls', function () {
   });
 
   describe('punctuation after URL is ignored', function () {
-    for (const char of ':.,;?!)\'*]') {
+    for (const char of ':.,;?!)]\'*') {
       const want = 'https://etherpad.org';
       const input = want + char;
-      it(input, async function () {
-        await helper.edit(input);
-        await helper.waitForPromise(() => txt().find('a').length === 1);
-        const link = txt().find('a');
-        expect(link.attr('href')).to.be(want);
-        expect(link.text()).to.be(want);
-      });
-    }
-  });
-
-  // Square brackets are in the RFC3986 reserved set so they can legally appear in URIs, but they
-  // are explicitly excluded from linkification because including them is usually not desired (e.g.,
-  // it can interfere with wiki/markdown link syntax).
-  describe('square brackets are excluded from linkified URLs', function () {
-    for (const char of '[]') {
-      const want = 'https://etherpad.org/';
-      const input = `${want}${char}foo`;
       it(input, async function () {
         await helper.edit(input);
         await helper.waitForPromise(() => txt().find('a').length === 1);

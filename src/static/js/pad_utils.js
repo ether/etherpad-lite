@@ -60,10 +60,10 @@ const wordCharRegex = new RegExp(`[${[
 const urlRegex = (() => {
   // TODO: wordCharRegex matches many characters that are not permitted in URIs. Are they included
   // here as an attempt to support IRIs? (See https://tools.ietf.org/html/rfc3987.)
-  const urlChar = `[-:@_.,~%+/?=&#!;()$'*${wordCharRegex.source.slice(1, -1)}]`;
+  const urlChar = `[-:@_.,~%+/?=&#!;()\\[\\]$'*${wordCharRegex.source.slice(1, -1)}]`;
   // Matches a single character that should not be considered part of the URL if it is the last
   // character that matches urlChar.
-  const postUrlPunct = '[:.,;?!)\'*]';
+  const postUrlPunct = '[:.,;?!)\\]\'*]';
   // Schemes that must be followed by ://
   const withAuth = `(?:${[
     '(?:x-)?man',
