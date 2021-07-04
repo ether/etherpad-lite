@@ -7,15 +7,11 @@ const helper = {};
   const jsLibraries = {};
 
   helper.init = async () => {
-    [
-      jsLibraries.jquery,
-      jsLibraries.sendkeys,
-    ] = await Promise.all([
-      $.get('../../static/js/vendors/jquery.js'),
-      $.get('lib/sendkeys.js'),
-    ]);
     // make sure we don't override existing jquery
-    jsLibraries.jquery = `if (typeof $ === 'undefined') {\n${jsLibraries.jquery}\n}`;
+    jsLibraries.jquery = `if (typeof $ === 'undefined') {\n
+      ${await $.get('../../static/js/vendors/jquery.js')}\n}`;
+
+    jsLibraries.sendkeys = await $.get('lib/sendkeys.js');
   };
 
   helper.randomString = (len) => {
