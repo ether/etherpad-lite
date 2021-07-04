@@ -1,14 +1,11 @@
 'use strict';
 
 describe('undo button', function () {
-  beforeEach(function (cb) {
-    helper.newPad(cb); // creates a new pad
-    this.timeout(60000);
+  beforeEach(async function () {
+    await helper.aNewPad();
   });
 
-  it('undo some typing by clicking undo button', function (done) {
-    this.timeout(100);
-    this.timeout(150);
+  it('undo some typing by clicking undo button', async function () {
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -25,15 +22,10 @@ describe('undo button', function () {
     // click the button
     $undoButton.click();
 
-    helper.waitFor(() => inner$('div span').first().text() === originalValue).done(() => {
-      const finalValue = inner$('div span').first().text();
-      expect(finalValue).to.be(originalValue); // expect the value to change
-      done();
-    });
+    await helper.waitForPromise(() => inner$('div span').first().text() === originalValue);
   });
 
-  it('undo some typing using a keypress', function (done) {
-    this.timeout(150);
+  it('undo some typing using a keypress', async function () {
     const inner$ = helper.padInner$;
 
     // get the first text element inside the editable space
@@ -49,10 +41,6 @@ describe('undo button', function () {
     e.which = 90; // z
     inner$('#innerdocbody').trigger(e);
 
-    helper.waitFor(() => inner$('div span').first().text() === originalValue).done(() => {
-      const finalValue = inner$('div span').first().text();
-      expect(finalValue).to.be(originalValue); // expect the value to change
-      done();
-    });
+    await helper.waitForPromise(() => inner$('div span').first().text() === originalValue);
   });
 });

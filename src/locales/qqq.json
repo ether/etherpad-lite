@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"BryanDavis",
 			"Liuxinyu970226",
 			"Mklehr",
 			"Nemo bis",
@@ -10,6 +11,12 @@
 			"Tim.krieger"
 		]
 	},
+	"admin_plugins.available_install.value": "{{Identical|Install}}",
+	"admin_plugins.description": "{{Identical|Description}}",
+	"admin_plugins.installed_uninstall.value": "{{Identical|Uninstall}}",
+	"admin_plugins.last-update": "{{Identical|Last update}}",
+	"admin_plugins.name": "{{Identical|Name}}",
+	"admin_plugins.version": "{{Identical|Version}}",
 	"admin_settings": "{{identical|Settings}}",
 	"index.newPad": "Used as button text.\nA pad, in the context of Etherpad, is a notepad, something to write on.",
 	"index.createOpenPad": "label for an input field that allows the user to choose a custom name for his new pad. In case the pad already exists the user will be redirected to its url.",
@@ -43,6 +50,7 @@
 	"pad.settings.fontType": "Used as label for the \"Font type\" select box which has the following options:\n* {{msg-etherpadlite|Pad.settings.fontType.normal}}\n* {{msg-etherpadlite|Pad.settings.fontType.monospaced}}",
 	"pad.settings.fontType.normal": "Used as an option in the \"Font type\" select box which is labeled {{msg-etherpadlite|Pad.settings.fontType}}.\n{{Identical|Normal}}",
 	"pad.settings.language": "This is a label for a select list of languages.\n{{Identical|Language}}",
+	"pad.settings.about": "{{Identical|About}}",
 	"pad.importExport.import_export": "Used as HTML <code><nowiki><h1></nowiki></code> heading of window.\n\nFollowed by the child heading {{msg-etherpadlite|Pad.importExport.import}}.",
 	"pad.importExport.import": "Used as HTML <code><nowiki><h2></nowiki></code> heading.\n\nPreceded by the parent heading {{msg-etherpadlite|Pad.importExport.import_export}}.",
 	"pad.importExport.importSuccessful": "Used as success message to indicate that the pad has been imported successfully.\n{{Identical|Successful}}",

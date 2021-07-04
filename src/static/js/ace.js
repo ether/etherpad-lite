@@ -141,7 +141,7 @@ const Ace2Editor = function () {
   this.getDebugProperty = (prop) => info.ace_getDebugProperty(prop);
 
   this.getInInternationalComposition =
-      () => loaded ? info.ace_getInInternationalComposition() : false;
+      () => loaded ? info.ace_getInInternationalComposition() : null;
 
   // prepareUserChangeset:
   // Returns null if no new changes or ACE not ready.  Otherwise, bundles up all user changes
@@ -278,9 +278,8 @@ const Ace2Editor = function () {
     innerDocument.head.appendChild(innerStyle);
     const headLines = [];
     hooks.callAll('aceInitInnerdocbodyHead', {iframeHTML: headLines});
-    const tmp = innerDocument.createElement('div');
-    tmp.innerHTML = headLines.join('\n');
-    while (tmp.firstChild) innerDocument.head.appendChild(tmp.firstChild);
+    innerDocument.head.appendChild(
+        innerDocument.createRange().createContextualFragment(headLines.join('\n')));
 
     // <body> tag
     innerDocument.body.id = 'innerdocbody';

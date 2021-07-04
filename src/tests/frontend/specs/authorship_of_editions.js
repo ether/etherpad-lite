@@ -6,71 +6,61 @@ describe('author of pad edition', function () {
   const LINE_WITH_UNORDERED_LIST = 2;
 
   // author 1 creates a new pad with some content (regular lines and lists)
-  before(function (done) {
-    const padId = helper.newPad(() => {
-      // make sure pad has at least 3 lines
-      const $firstLine = helper.padInner$('div').first();
-      const threeLines = ['regular line', 'line with ordered list', 'line with unordered list']
-          .join('<br>');
-      $firstLine.html(threeLines);
+  before(async function () {
+    const padId = await helper.aNewPad();
 
-      // wait for lines to be processed by Etherpad
-      helper.waitFor(() => {
-        const $lineWithUnorderedList = getLine(LINE_WITH_UNORDERED_LIST);
-        return $lineWithUnorderedList.text() === 'line with unordered list';
-      }).done(() => {
-        // create the unordered list
-        const $lineWithUnorderedList = getLine(LINE_WITH_UNORDERED_LIST);
-        $lineWithUnorderedList.sendkeys('{selectall}');
+    // make sure pad has at least 3 lines
+    const $firstLine = helper.padInner$('div').first();
+    const threeLines = ['regular line', 'line with ordered list', 'line with unordered list']
+        .join('<br>');
+    $firstLine.html(threeLines);
 
-        const $insertUnorderedListButton = helper.padChrome$('.buttonicon-insertunorderedlist');
-        $insertUnorderedListButton.click();
+    // wait for lines to be processed by Etherpad
+    await helper.waitForPromise(() => (
+      getLine(LINE_WITH_UNORDERED_LIST).text() === 'line with unordered list' &&
+      helper.commits.length === 1));
 
-        helper.waitFor(() => {
-          const $lineWithUnorderedList = getLine(LINE_WITH_UNORDERED_LIST);
-          return $lineWithUnorderedList.find('ul li').length === 1;
-        }).done(() => {
-          // create the ordered list
-          const $lineWithOrderedList = getLine(LINE_WITH_ORDERED_LIST);
-          $lineWithOrderedList.sendkeys('{selectall}');
+    // create the unordered list
+    const $lineWithUnorderedList = getLine(LINE_WITH_UNORDERED_LIST);
+    $lineWithUnorderedList.sendkeys('{selectall}');
 
-          const $insertOrderedListButton = helper.padChrome$('.buttonicon-insertorderedlist');
-          $insertOrderedListButton.click();
+    const $insertUnorderedListButton = helper.padChrome$('.buttonicon-insertunorderedlist');
+    $insertUnorderedListButton.click();
 
-          helper.waitFor(() => {
-            const $lineWithOrderedList = getLine(LINE_WITH_ORDERED_LIST);
-            return $lineWithOrderedList.find('ol li').length === 1;
-          }).done(() => {
-            // Reload pad, to make changes as a second user. Need a timeout here to make sure
-            // all changes were saved before reloading
-            setTimeout(() => {
-              // Expire cookie, so author is changed after reloading the pad.
-              // See https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie#Example_4_Reset_the_previous_cookie
-              helper.padChrome$.document.cookie =
-                  'token=foo;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    await helper.waitForPromise(() => (
+      getLine(LINE_WITH_UNORDERED_LIST).find('ul li').length === 1 &&
+      helper.commits.length === 2));
 
-              helper.newPad(done, padId);
-            }, 1000);
-          });
-        });
-      });
-    });
-    this.timeout(60000);
+    // create the ordered list
+    const $lineWithOrderedList = getLine(LINE_WITH_ORDERED_LIST);
+    $lineWithOrderedList.sendkeys('{selectall}');
+
+    const $insertOrderedListButton = helper.padChrome$('.buttonicon-insertorderedlist');
+    $insertOrderedListButton.click();
+
+    await helper.waitForPromise(() => (
+      getLine(LINE_WITH_ORDERED_LIST).find('ol li').length === 1 &&
+      helper.commits.length === 3));
+
+    // Expire cookie, so author is changed after reloading the pad.
+    const {Cookies} = helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad_utils');
+    Cookies.remove('token');
+
+    // Reload pad, to make changes as a second user.
+    await helper.aNewPad({id: padId});
   });
 
   // author 2 makes some changes on the pad
-  it('marks only the new content as changes of the second user on a regular line', function (done) {
-    changeLineAndCheckOnlyThatChangeIsFromThisAuthor(REGULAR_LINE, 'x', done);
+  it('regular line', async function () {
+    await changeLineAndCheckOnlyThatChangeIsFromThisAuthor(REGULAR_LINE, 'x');
   });
 
-  it('marks only the new content as changes of the second user on a ' +
-      'line with ordered list', function (done) {
-    changeLineAndCheckOnlyThatChangeIsFromThisAuthor(LINE_WITH_ORDERED_LIST, 'y', done);
+  it('line with ordered list', async function () {
+    await changeLineAndCheckOnlyThatChangeIsFromThisAuthor(LINE_WITH_ORDERED_LIST, 'y');
   });
 
-  it('marks only the new content as changes of the second user on ' +
-      'a line with unordered list', function (done) {
-    changeLineAndCheckOnlyThatChangeIsFromThisAuthor(LINE_WITH_UNORDERED_LIST, 'z', done);
+  it('line with unordered list', async function () {
+    await changeLineAndCheckOnlyThatChangeIsFromThisAuthor(LINE_WITH_UNORDERED_LIST, 'z');
   });
 
   /* ********************** Helper functions ************************ */
@@ -78,7 +68,7 @@ describe('author of pad edition', function () {
 
   const getAuthorFromClassList = (classes) => classes.find((cls) => cls.startsWith('author'));
 
-  const changeLineAndCheckOnlyThatChangeIsFromThisAuthor = (lineNumber, textChange, done) => {
+  const changeLineAndCheckOnlyThatChangeIsFromThisAuthor = async (lineNumber, textChange) => {
     // get original author class
     const classes = getLine(lineNumber).find('span').first().attr('class').split(' ');
     const originalAuthor = getAuthorFromClassList(classes);
@@ -90,18 +80,16 @@ describe('author of pad edition', function () {
 
     // wait for change to be processed by Etherpad
     let otherAuthorsOfLine;
-    helper.waitFor(() => {
+    await helper.waitForPromise(() => {
       const authorsOfLine = getLine(lineNumber).find('span').map(function () {
         return getAuthorFromClassList($(this).attr('class').split(' '));
       }).get();
       otherAuthorsOfLine = authorsOfLine.filter((author) => author !== originalAuthor);
       const lineHasChangeOfThisAuthor = otherAuthorsOfLine.length > 0;
       return lineHasChangeOfThisAuthor;
-    }).done(() => {
-      const thisAuthor = otherAuthorsOfLine[0];
-      const $changeOfThisAuthor = getLine(lineNumber).find(`span.${thisAuthor}`);
-      expect($changeOfThisAuthor.text()).to.be(textChange);
-      done();
     });
+    const thisAuthor = otherAuthorsOfLine[0];
+    const $changeOfThisAuthor = getLine(lineNumber).find(`span.${thisAuthor}`);
+    expect($changeOfThisAuthor.text()).to.be(textChange);
   };
 });

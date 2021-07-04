@@ -3,9 +3,8 @@
 describe('chat-load-messages', function () {
   let padName;
 
-  it('creates a pad', function (done) {
-    padName = helper.newPad(done);
-    this.timeout(60000);
+  it('creates a pad', async function () {
+    padName = await helper.aNewPad();
   });
 
   it('adds a lot of messages', async function () {
@@ -14,8 +13,6 @@ describe('chat-load-messages', function () {
     chatButton.click();
     const chatInput = chrome$('#chatinput');
     const chatText = chrome$('#chattext');
-
-    this.timeout(60000);
 
     const messages = 140;
     for (let i = 1; i <= messages; i++) {
@@ -26,7 +23,7 @@ describe('chat-load-messages', function () {
       chatInput.sendkeys('{enter}');
       await helper.waitForPromise(() => chatText.children('p').length === i);
     }
-    await new Promise((resolve) => helper.newPad(() => resolve(), padName));
+    await helper.aNewPad({id: padName});
   });
 
   it('checks initial message count', function (done) {

@@ -2,13 +2,11 @@
 
 describe('font select', function () {
   // create a new pad before each test run
-  beforeEach(function (cb) {
-    helper.newPad(cb);
-    this.timeout(60000);
+  beforeEach(async function () {
+    await helper.aNewPad();
   });
 
-  it('makes text RobotoMono', function (done) {
-    this.timeout(100);
+  it('makes text RobotoMono', async function () {
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -29,7 +27,5 @@ describe('font select', function () {
     const fontFamily = inner$('body').css('font-family').toLowerCase();
     const containsStr = fontFamily.indexOf('robotomono');
     expect(containsStr).to.not.be(-1);
-
-    done();
   });
 });

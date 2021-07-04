@@ -50,11 +50,12 @@ console.log('All relative paths will be interpreted relative to the identified '
 exports.title = 'Etherpad';
 
 /**
- * The app favicon fully specified url, visible e.g. in the browser window
+ * Pathname of the favicon you want to use. If null, the skin's favicon is
+ * used if one is provided by the skin, otherwise the default Etherpad favicon
+ * is used. If this is a relative path it is interpreted as relative to the
+ * Etherpad root directory.
  */
-exports.favicon = 'favicon.ico';
-exports.faviconPad = `../${exports.favicon}`;
-exports.faviconTimeslider = `../../${exports.favicon}`;
+exports.favicon = null;
 
 /*
  * Skin name.
@@ -140,7 +141,7 @@ exports.padOptions = {
   alwaysShowChat: false,
   chatAndUsers: false,
   lang: 'en-gb',
-},
+};
 
 /**
  * Whether certain shortcut keys are enabled for a user in the pad
@@ -168,7 +169,7 @@ exports.padShortcutEnabled = {
   ctrlHome: true,
   pageUp: true,
   pageDown: true,
-},
+};
 
 /**
  * The toolbar buttons and order.
@@ -249,6 +250,11 @@ exports.automaticReconnectionTimeout = 0;
  * Disable Load Testing
  */
 exports.loadTest = false;
+
+/**
+ * Disable dump of objects preventing a clean exit
+ */
+exports.dumpOnUncleanExit = false;
 
 /**
  * Enable indentation on new lines
@@ -460,7 +466,7 @@ exports.getEpVersion = () => require('../../package.json').version;
  * both "settings.json" and "credentials.json".
  */
 const storeSettings = (settingsObj) => {
-  for (const i in settingsObj) {
+  for (const i of Object.keys(settingsObj || {})) {
     // test if the setting starts with a lowercase character
     if (i.charAt(0).search('[a-z]') !== 0) {
       console.warn(`Settings should start with a lowercase character: '${i}'`);
@@ -503,17 +509,13 @@ const coerceValue = (stringValue) => {
     return +stringValue;
   }
 
-  // the boolean literal case is easy.
-  if (stringValue === 'true') {
-    return true;
+  switch (stringValue) {
+    case 'true': return true;
+    case 'false': return false;
+    case 'undefined': return undefined;
+    case 'null': return null;
+    default: return stringValue;
   }
-
-  if (stringValue === 'false') {
-    return false;
-  }
-
-  // otherwise, return this value as-is
-  return stringValue;
 };
 
 /**
@@ -596,8 +598,10 @@ const lookupEnvironmentVariables = (obj) => {
     const defaultValue = match[3];
 
     if ((envVarValue === undefined) && (defaultValue === undefined)) {
-      console.warn(`Environment variable "${envVarName}" does not contain any value for `+
-                   `configuration key "${key}", and no default was given. Returning null.`);
+      console.warn(`Environment variable "${envVarName}" does not contain any value for ` +
+                   `configuration key "${key}", and no default was given. Using null. ` +
+                   'THIS BEHAVIOR MAY CHANGE IN A FUTURE VERSION OF ETHERPAD; you should ' +
+                   'explicitly use "null" as the default if you want to continue to use null.');
 
       /*
        * We have to return null, because if we just returned undefined, the
@@ -819,6 +823,10 @@ exports.reloadSettings = () => {
    */
   exports.randomVersionString = randomString(4);
   console.log(`Random string used for versioning assets: ${exports.randomVersionString}`);
+};
+
+exports.exportedForTestingOnly = {
+  parseSettings,
 };
 
 // initially load settings

@@ -2,13 +2,11 @@
 
 describe('strikethrough button', function () {
   // create a new pad before each test run
-  beforeEach(function (cb) {
-    helper.newPad(cb);
-    this.timeout(60000);
+  beforeEach(async function () {
+    await helper.aNewPad();
   });
 
-  it('makes text strikethrough', function (done) {
-    this.timeout(100);
+  it('makes text strikethrough', async function () {
     const inner$ = helper.padInner$;
     const chrome$ = helper.padChrome$;
 
@@ -33,7 +31,5 @@ describe('strikethrough button', function () {
 
     // make sure the text hasn't changed
     expect($newFirstTextElement.text()).to.eql($firstTextElement.text());
-
-    done();
   });
 });

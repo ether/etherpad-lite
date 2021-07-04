@@ -220,14 +220,15 @@ fs.readdir(pluginPath, (err, rootFiles) => {
     }
 
     updateDeps(parsedPackageJSON, 'devDependencies', {
-      'eslint': '^7.20.0',
-      'eslint-config-etherpad': '^1.0.25',
+      'eslint': '^7.28.0',
+      'eslint-config-etherpad': '^2.0.0',
+      'eslint-plugin-cypress': '^2.11.3',
       'eslint-plugin-eslint-comments': '^3.2.0',
-      'eslint-plugin-mocha': '^8.0.0',
+      'eslint-plugin-mocha': '^9.0.0',
       'eslint-plugin-node': '^11.1.0',
       'eslint-plugin-prefer-arrow': '^1.2.3',
-      'eslint-plugin-promise': '^4.3.1',
-      'eslint-plugin-you-dont-need-lodash-underscore': '^6.11.0',
+      'eslint-plugin-promise': '^5.1.0',
+      'eslint-plugin-you-dont-need-lodash-underscore': '^6.12.0',
     });
 
     updateDeps(parsedPackageJSON, 'peerDependencies', {
@@ -263,7 +264,7 @@ fs.readdir(pluginPath, (err, rootFiles) => {
       console.warn('No engines or node engine in package.json');
       if (autoFix) {
         const engines = {
-          node: '^10.17.0 || >=11.14.0',
+          node: '>=12.13.0',
         };
         parsedPackageJSON.engines = engines;
         writePackageJson(parsedPackageJSON);

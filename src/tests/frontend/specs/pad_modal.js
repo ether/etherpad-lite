@@ -4,49 +4,38 @@ describe('Pad modal', function () {
   context('when modal is a "force reconnect" message', function () {
     const MODAL_SELECTOR = '#connectivity';
 
-    beforeEach(function (done) {
-      helper.newPad(() => {
-        // force a "slowcommit" error
-        helper.padChrome$.window.pad.handleChannelStateChange('DISCONNECTED', 'slowcommit');
+    beforeEach(async function () {
+      await helper.aNewPad();
 
-        // wait for modal to be displayed
-        const $modal = helper.padChrome$(MODAL_SELECTOR);
-        helper.waitFor(() => $modal.hasClass('popup-show'), 50000).done(done);
-      });
+      // force a "slowcommit" error
+      helper.padChrome$.window.pad.handleChannelStateChange('DISCONNECTED', 'slowcommit');
 
-      this.timeout(60000);
+      // wait for modal to be displayed
+      const $modal = helper.padChrome$(MODAL_SELECTOR);
+      await helper.waitForPromise(() => $modal.hasClass('popup-show'), 50000);
     });
 
-    it('disables editor', function (done) {
-      this.timeout(200);
+    it('disables editor', async function () {
       expect(isEditorDisabled()).to.be(true);
-
-      done();
     });
 
     context('and user clicks on editor', function () {
-      it('does not close the modal', function (done) {
-        this.timeout(200);
+      it('does not close the modal', async function () {
         clickOnPadInner();
         const $modal = helper.padChrome$(MODAL_SELECTOR);
         const modalIsVisible = $modal.hasClass('popup-show');
 
         expect(modalIsVisible).to.be(true);
-
-        done();
       });
     });
 
     context('and user clicks on pad outer', function () {
-      it('does not close the modal', function (done) {
-        this.timeout(200);
+      it('does not close the modal', async function () {
         clickOnPadOuter();
         const $modal = helper.padChrome$(MODAL_SELECTOR);
         const modalIsVisible = $modal.hasClass('popup-show');
 
         expect(modalIsVisible).to.be(true);
-
-        done();
       });
     });
   });
@@ -55,23 +44,18 @@ describe('Pad modal', function () {
   context('when modal is not an error message', function () {
     const MODAL_SELECTOR = '#settings';
 
-    beforeEach(function (done) {
-      helper.newPad(() => {
-        openSettingsAndWaitForModalToBeVisible(done);
-      });
+    beforeEach(async function () {
+      await helper.aNewPad();
+      await openSettingsAndWaitForModalToBeVisible();
+    });
 
-      this.timeout(60000);
-    });
     // This test breaks safari testing
-    /*
-    it('does not disable editor', function(done) {
+    xit('does not disable editor', async function () {
       expect(isEditorDisabled()).to.be(false);
-      done();
     });
-*/
+
     context('and user clicks on editor', function () {
       it('closes the modal', async function () {
-        this.timeout(200);
         clickOnPadInner();
         await helper.waitForPromise(() => isModalOpened(MODAL_SELECTOR) === false);
       });
@@ -79,7 +63,6 @@ describe('Pad modal', function () {
 
     context('and user clicks on pad outer', function () {
       it('closes the modal', async function () {
-        this.timeout(200);
         clickOnPadOuter();
         await helper.waitForPromise(() => isModalOpened(MODAL_SELECTOR) === false);
       });
@@ -96,12 +79,12 @@ describe('Pad modal', function () {
     $lineNumbersColumn.click();
   };
 
-  const openSettingsAndWaitForModalToBeVisible = (done) => {
+  const openSettingsAndWaitForModalToBeVisible = async () => {
     helper.padChrome$('.buttonicon-settings').click();
 
     // wait for modal to be displayed
     const modalSelector = '#settings';
-    helper.waitFor(() => isModalOpened(modalSelector), 10000).done(done);
+    await helper.waitForPromise(() => isModalOpened(modalSelector), 10000);
   };
 
   const isEditorDisabled = () => {

@@ -250,7 +250,7 @@ const listSessionsWithDBKey = async (dbkey) => {
   const sessions = sessionObject ? sessionObject.sessionIDs : null;
 
   // iterate through the sessions and get the sessioninfos
-  for (const sessionID in sessions) {
+  for (const sessionID of Object.keys(sessions || {})) {
     try {
       const sessionInfo = await exports.getSessionInfo(sessionID);
       sessions[sessionID] = sessionInfo;

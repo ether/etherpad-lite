@@ -23,7 +23,7 @@ const staticPathsRE = new RegExp(`^/(?:${[
   'robots.txt',
   'static/.*',
   'stats/?',
-  'tests/frontend(?:/.*)?'
+  'tests/frontend(?:/.*)?',
 ].join('|')})$`);
 
 exports.normalizeAuthzLevel = (level) => {
@@ -70,14 +70,19 @@ const checkAccess = async (req, res, next) => {
   // This helper is used in steps 2 and 4 below, so it may be called twice per access: once before
   // authentication is checked and once after (if settings.requireAuthorization is true).
   const authorize = async () => {
-    const grant = (level) => {
+    const grant = async (level) => {
       level = exports.normalizeAuthzLevel(level);
       if (!level) return false;
       const user = req.session.user;
       if (user == null) return true; // This will happen if authentication is not required.
       const encodedPadId = (req.path.match(/^\/p\/([^/]*)/) || [])[1];
       if (encodedPadId == null) return true;
-      const padId = decodeURIComponent(encodedPadId);
+      let padId = decodeURIComponent(encodedPadId);
+      if (readOnlyManager.isReadOnlyId(padId)) {
+        // pad is read-only, first get the real pad ID
+        padId = await readOnlyManager.getPadId(padId);
+        if (padId == null) return false;
+      }
       // The user was granted access to a pad. Remember the authorization level in the user's
       // settings so that SecurityManager can approve or deny specific actions.
       if (user.padAuthorizations == null) user.padAuthorizations = {};
@@ -85,13 +90,13 @@ const checkAccess = async (req, res, next) => {
       return true;
     };
     const isAuthenticated = req.session && req.session.user;
-    if (isAuthenticated && req.session.user.is_admin) return grant('create');
+    if (isAuthenticated && req.session.user.is_admin) return await grant('create');
     const requireAuthn = requireAdmin || settings.requireAuthentication;
-    if (!requireAuthn) return grant('create');
-    if (!isAuthenticated) return grant(false);
-    if (requireAdmin && !req.session.user.is_admin) return grant(false);
-    if (!settings.requireAuthorization) return grant('create');
-    return grant(await aCallFirst0('authorize', {req, res, next, resource: req.path}));
+    if (!requireAuthn) return await grant('create');
+    if (!isAuthenticated) return await grant(false);
+    if (requireAdmin && !req.session.user.is_admin) return await grant(false);
+    if (!settings.requireAuthorization) return await grant('create');
+    return await grant(await aCallFirst0('authorize', {req, res, next, resource: req.path}));
   };
 
   // ///////////////////////////////////////////////////////////////////////////////////////////////

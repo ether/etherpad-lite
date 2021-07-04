@@ -6,17 +6,16 @@ const helper = {};
   let $iframe;
   const jsLibraries = {};
 
-  helper.init = (cb) => {
-    $.get('/static/js/vendors/jquery.js').done((code) => {
-      // make sure we don't override existing jquery
-      jsLibraries.jquery = `if(typeof $ === 'undefined') {\n${code}\n}`;
-
-      $.get('/tests/frontend/lib/sendkeys.js').done((code) => {
-        jsLibraries.sendkeys = code;
-
-        cb();
-      });
-    });
+  helper.init = async () => {
+    [
+      jsLibraries.jquery,
+      jsLibraries.sendkeys,
+    ] = await Promise.all([
+      $.get('../../static/js/vendors/jquery.js'),
+      $.get('lib/sendkeys.js'),
+    ]);
+    // make sure we don't override existing jquery
+    jsLibraries.jquery = `if (typeof $ === 'undefined') {\n${jsLibraries.jquery}\n}`;
   };
 
   helper.randomString = (len) => {
@@ -51,26 +50,21 @@ const helper = {};
   };
 
   helper.clearSessionCookies = () => {
-    // Expire cookies, so author and language are changed after reloading the pad. See:
-    // https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie#example_4_reset_the_previous_cookie
-    window.document.cookie = 'token=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
-    window.document.cookie = 'language=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    window.Cookies.remove('token');
+    window.Cookies.remove('language');
   };
 
   // Can only happen when the iframe exists, so we're doing it separately from other cookies
   helper.clearPadPrefCookie = () => {
-    helper.padChrome$.document.cookie = 'prefsHttp=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    const {padcookie} = helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad_cookie');
+    padcookie.clear();
   };
 
-  // Overwrite all prefs in pad cookie. Assumes http, not https.
-  //
-  // `helper.padChrome$.document.cookie` (the iframe) and `window.document.cookie`
-  // seem to have independent cookies, UNLESS we put path=/ here (which we don't).
-  // I don't fully understand it, but this function seems to properly simulate
-  // padCookie.setPref in the client code
+  // Overwrite all prefs in pad cookie.
   helper.setPadPrefCookie = (prefs) => {
-    helper.padChrome$.document.cookie =
-        (`prefsHttp=${escape(JSON.stringify(prefs))};expires=Thu, 01 Jan 3000 00:00:00 GMT`);
+    const {padcookie} = helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad_cookie');
+    padcookie.clear();
+    for (const [key, value] of Object.entries(prefs)) padcookie.setPref(key, value);
   };
 
   // Functionality for knowing what key event type is required for tests
@@ -89,19 +83,22 @@ const helper = {};
   }
   helper.evtType = evtType;
 
-  // @todo needs fixing asap
-  // newPad occasionally timeouts, might be a problem with ready/onload code during page setup
-  // This ensures that tests run regardless of this problem
-  helper.retry = 0;
+  // Deprecated; use helper.aNewPad() instead.
+  helper.newPad = (opts, id) => {
+    if (!id) id = `FRONTEND_TEST_${helper.randomString(20)}`;
+    opts = Object.assign({id}, typeof opts === 'function' ? {cb: opts} : opts);
+    const {cb = (err) => { if (err != null) throw err; }} = opts;
+    delete opts.cb;
+    helper.aNewPad(opts).then((id) => cb(null, id), (err) => cb(err || new Error(err)));
+    return id;
+  };
 
-  helper.newPad = (cb, padName) => {
-    // build opts object
-    let opts = {clearCookies: true};
-    if (typeof cb === 'function') {
-      opts.cb = cb;
-    } else {
-      opts = _.defaults(cb, opts);
-    }
+  helper.aNewPad = async (opts = {}) => {
+    opts = Object.assign({
+      _retry: 0,
+      clearCookies: true,
+      id: `FRONTEND_TEST_${helper.randomString(20)}`,
+    }, opts);
 
     // if opts.params is set we manipulate the URL to include URL parameters IE ?foo=Bah.
     let encodedParams;
@@ -118,10 +115,7 @@ const helper = {};
       helper.clearSessionCookies();
     }
 
-    if (!padName) padName = `FRONTEND_TEST_${helper.randomString(20)}`;
-    $iframe = $(`<iframe src='/p/${padName}${hash || ''}${encodedParams || ''}'></iframe>`);
-    // needed for retry
-    const origPadName = padName;
+    $iframe = $(`<iframe src='/p/${opts.id}${hash || ''}${encodedParams || ''}'></iframe>`);
 
     // clean up inner iframe references
     helper.padChrome$ = helper.padOuter$ = helper.padInner$ = null;
@@ -130,55 +124,53 @@ const helper = {};
     $('#iframe-container iframe').remove();
     // set new iframe
     $('#iframe-container').append($iframe);
-    $iframe.one('load', () => {
-      helper.padChrome$ = getFrameJQuery($('#iframe-container iframe'));
-      if (opts.clearCookies) {
-        helper.clearPadPrefCookie();
-      }
-      if (opts.padPrefs) {
-        helper.setPadPrefCookie(opts.padPrefs);
-      }
-      helper.waitFor(() => !$iframe.contents().find('#editorloadingbox')
-          .is(':visible'), 10000).done(() => {
-        helper.padOuter$ = getFrameJQuery(helper.padChrome$('iframe[name="ace_outer"]'));
-        helper.padInner$ = getFrameJQuery(helper.padOuter$('iframe[name="ace_inner"]'));
+    await new Promise((resolve) => $iframe.one('load', resolve));
+    helper.padChrome$ = getFrameJQuery($('#iframe-container iframe'));
+    helper.padChrome$.padeditor =
+        helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad_editor').padeditor;
+    if (opts.clearCookies) {
+      helper.clearPadPrefCookie();
+    }
+    if (opts.padPrefs) {
+      helper.setPadPrefCookie(opts.padPrefs);
+    }
+    try {
+      await helper.waitForPromise(
+          () => !$iframe.contents().find('#editorloadingbox').is(':visible'), 10000);
+    } catch (err) {
+      if (opts._retry++ >= 4) throw new Error('Pad never loaded');
+      return await helper.aNewPad(opts);
+    }
+    helper.padOuter$ = getFrameJQuery(helper.padChrome$('iframe[name="ace_outer"]'));
+    helper.padInner$ = getFrameJQuery(helper.padOuter$('iframe[name="ace_inner"]'));
 
-        // disable all animations, this makes tests faster and easier
-        helper.padChrome$.fx.off = true;
-        helper.padOuter$.fx.off = true;
-        helper.padInner$.fx.off = true;
+    // disable all animations, this makes tests faster and easier
+    helper.padChrome$.fx.off = true;
+    helper.padOuter$.fx.off = true;
+    helper.padInner$.fx.off = true;
 
-        /*
-         * chat messages received
-         * @type {Array}
-         */
-        helper.chatMessages = [];
+    /*
+     * chat messages received
+     * @type {Array}
+     */
+    helper.chatMessages = [];
 
-        /*
-         * changeset commits from the server
-         * @type {Array}
-         */
-        helper.commits = [];
+    /*
+     * changeset commits from the server
+     * @type {Array}
+     */
+    helper.commits = [];
 
-        /*
-         * userInfo messages from the server
-         * @type {Array}
-         */
-        helper.userInfos = [];
+    /*
+     * userInfo messages from the server
+     * @type {Array}
+     */
+    helper.userInfos = [];
 
-        // listen for server messages
-        helper.spyOnSocketIO();
-        opts.cb();
-      }).fail(() => {
-        if (helper.retry > 3) {
-          throw new Error('Pad never loaded');
-        }
-        helper.retry++;
-        helper.newPad(cb, origPadName);
-      });
-    });
+    // listen for server messages
+    helper.spyOnSocketIO();
 
-    return padName;
+    return opts.id;
   };
 
   helper.newAdmin = async (page) => {
@@ -267,6 +259,22 @@ const helper = {};
 
     selection.removeAllRanges();
     selection.addRange(range);
+  };
+
+  // Temporarily reduces minimum time between commits and calls the provided function with a single
+  // argument: a function that immediately incorporates all pad edits (as opposed to waiting for the
+  // idle timer to fire).
+  helper.withFastCommit = async (fn) => {
+    const incorp = () => helper.padChrome$.padeditor.ace.callWithAce(
+        (ace) => ace.ace_inCallStackIfNecessary('helper.edit', () => ace.ace_fastIncorp()));
+    const cc = helper.padChrome$.window.pad.collabClient;
+    const {commitDelay} = cc;
+    cc.commitDelay = 0;
+    try {
+      return await fn(incorp);
+    } finally {
+      cc.commitDelay = commitDelay;
+    }
   };
 
   const getTextNodeAndOffsetOf = ($targetLine, targetOffsetAtLine) => {

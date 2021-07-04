@@ -3,20 +3,18 @@
 describe('ordered_list.js', function () {
   describe('assign ordered list', function () {
     // create a new pad before each test run
-    beforeEach(function (cb) {
-      helper.newPad(cb);
-      this.timeout(60000);
+    beforeEach(async function () {
+      await helper.aNewPad();
     });
 
-    it('inserts ordered list text', function (done) {
-      this.timeout(200);
+    it('inserts ordered list text', async function () {
       const inner$ = helper.padInner$;
       const chrome$ = helper.padChrome$;
 
       const $insertorderedlistButton = chrome$('.buttonicon-insertorderedlist');
       $insertorderedlistButton.click();
 
-      helper.waitFor(() => inner$('div').first().find('ol li').length === 1).done(done);
+      await helper.waitForPromise(() => inner$('div').first().find('ol li').length === 1);
     });
 
     context('when user presses Ctrl+Shift+N', function () {
@@ -28,10 +26,9 @@ describe('ordered_list.js', function () {
           await helper.waitForPromise(() => helper.padInner$('body').html() !== originalHTML);
         });
 
-        it('inserts unordered list', function (done) {
-          this.timeout(50);
-          helper.waitFor(() => helper.padInner$('div').first().find('ol li').length === 1)
-              .done(done);
+        it('inserts unordered list', async function () {
+          await helper.waitForPromise(
+              () => helper.padInner$('div').first().find('ol li').length === 1);
         });
       });
 
@@ -53,15 +50,15 @@ describe('ordered_list.js', function () {
           expect(helper.padInner$('body').html()).to.be(originalHTML);
         });
 
-        it('does not insert unordered list', function (done) {
+        it('does not insert unordered list', async function () {
           this.timeout(3000);
-          helper.waitFor(() => helper.padInner$('div').first().find('ol li').length === 1)
-              .done(() => {
-                expect().fail(() => 'Unordered list inserted, should ignore shortcut');
-              })
-              .fail(() => {
-                done();
-              });
+          try {
+            await helper.waitForPromise(
+                () => helper.padInner$('div').first().find('ol li').length === 1);
+          } catch (err) {
+            return;
+          }
+          expect().fail('Unordered list inserted, should ignore shortcut');
         });
       });
     });
@@ -75,10 +72,8 @@ describe('ordered_list.js', function () {
           await helper.waitForPromise(() => helper.padInner$('body').html() !== originalHTML);
         });
 
-        it('inserts unordered list', function (done) {
-          this.timeout(200);
-          helper.waitFor(() => helper.padInner$('div').first().find('ol li').length === 1)
-              .done(done);
+        it('inserts unordered list', async function () {
+          helper.waitForPromise(() => helper.padInner$('div').first().find('ol li').length === 1);
         });
       });
 
@@ -100,20 +95,20 @@ describe('ordered_list.js', function () {
           expect(helper.padInner$('body').html()).to.be(originalHTML);
         });
 
-        it('does not insert unordered list', function (done) {
+        it('does not insert unordered list', async function () {
           this.timeout(3000);
-          helper.waitFor(() => helper.padInner$('div').first().find('ol li').length === 1)
-              .done(() => {
-                expect().fail(() => 'Unordered list inserted, should ignore shortcut');
-              })
-              .fail(() => {
-                done();
-              });
+          try {
+            await helper.waitForPromise(
+                () => helper.padInner$('div').first().find('ol li').length === 1);
+          } catch (err) {
+            return;
+          }
+          expect().fail('Unordered list inserted, should ignore shortcut');
         });
       });
     });
 
-    it('issue #4748 keeps numbers increment on OL', function (done) {
+    it('issue #4748 keeps numbers increment on OL', async function () {
       this.timeout(5000);
       const inner$ = helper.padInner$;
       const chrome$ = helper.padChrome$;
@@ -125,10 +120,9 @@ describe('ordered_list.js', function () {
       $secondLine.sendkeys('{selectall}');
       $insertorderedlistButton.click();
       expect($secondLine.find('ol').attr('start') === 2);
-      done();
     });
 
-    xit('issue #1125 keeps the numbered list on enter for the new line', function (done) {
+    xit('issue #1125 keeps the numbered list on enter for the new line', async function () {
       // EMULATES PASTING INTO A PAD
       const inner$ = helper.padInner$;
       const chrome$ = helper.padChrome$;
@@ -143,16 +137,15 @@ describe('ordered_list.js', function () {
       $firstTextElement.sendkeys('line 2');
       $firstTextElement.sendkeys('{enter}');
 
-      helper.waitFor(() => inner$('div span').first().text().indexOf('line 2') === -1).done(() => {
-        const $newSecondLine = inner$('div').first().next();
-        const hasOLElement = $newSecondLine.find('ol li').length === 1;
-        expect(hasOLElement).to.be(true);
-        expect($newSecondLine.text()).to.be('line 2');
-        const hasLineNumber = $newSecondLine.find('ol').attr('start') === 2;
-        // This doesn't work because pasting in content doesn't work
-        expect(hasLineNumber).to.be(true);
-        done();
-      });
+      await helper.waitForPromise(() => inner$('div span').first().text().indexOf('line 2') === -1);
+
+      const $newSecondLine = inner$('div').first().next();
+      const hasOLElement = $newSecondLine.find('ol li').length === 1;
+      expect(hasOLElement).to.be(true);
+      expect($newSecondLine.text()).to.be('line 2');
+      const hasLineNumber = $newSecondLine.find('ol').attr('start') === 2;
+      // This doesn't work because pasting in content doesn't work
+      expect(hasLineNumber).to.be(true);
     });
 
     const triggerCtrlShiftShortcut = (shortcutChar) => {
@@ -174,13 +167,11 @@ describe('ordered_list.js', function () {
 
   describe('Pressing Tab in an OL increases and decreases indentation', function () {
     // create a new pad before each test run
-    beforeEach(function (cb) {
-      helper.newPad(cb);
-      this.timeout(60000);
+    beforeEach(async function () {
+      await helper.aNewPad();
     });
 
-    it('indent and de-indent list item with keypress', function (done) {
-      this.timeout(200);
+    it('indent and de-indent list item with keypress', async function () {
       const inner$ = helper.padInner$;
       const chrome$ = helper.padChrome$;
 
@@ -202,7 +193,7 @@ describe('ordered_list.js', function () {
       e.keyCode = 9; // tab
       inner$('#innerdocbody').trigger(e);
 
-      helper.waitFor(() => inner$('div').first().find('.list-number1').length === 1).done(done);
+      await helper.waitForPromise(() => inner$('div').first().find('.list-number1').length === 1);
     });
   });
 
@@ -210,12 +201,11 @@ describe('ordered_list.js', function () {
   describe('Pressing indent/outdent button in an OL increases and ' +
       'decreases indentation and bullet / ol formatting', function () {
     // create a new pad before each test run
-    beforeEach(function (cb) {
-      helper.newPad(cb);
-      this.timeout(60000);
+    beforeEach(async function () {
+      await helper.aNewPad();
     });
 
-    it('indent and de-indent list item with indent button', function (done) {
+    it('indent and de-indent list item with indent button', async function () {
       this.timeout(1000);
       const inner$ = helper.padInner$;
       const chrome$ = helper.padChrome$;
@@ -237,7 +227,7 @@ describe('ordered_list.js', function () {
       const $outdentButton = chrome$('.buttonicon-outdent');
       $outdentButton.click(); // make it deindented to 1
 
-      helper.waitFor(() => inner$('div').first().find('.list-number1').length === 1).done(done);
+      await helper.waitForPromise(() => inner$('div').first().find('.list-number1').length === 1);
     });
   });
 });

@@ -2,26 +2,25 @@
 
 describe('change user color', function () {
   // create a new pad before each test run
-  beforeEach(function (cb) {
-    helper.newPad(cb);
-    this.timeout(60000);
+  beforeEach(async function () {
+    await helper.aNewPad();
   });
 
   it('Color picker matches original color and remembers the user color' +
-      ' after a refresh', function (done) {
+      ' after a refresh', async function () {
     this.timeout(10000);
-    const chrome$ = helper.padChrome$;
+    let chrome$ = helper.padChrome$;
 
     // click on the settings button to make settings visible
-    const $userButton = chrome$('.buttonicon-showusers');
+    let $userButton = chrome$('.buttonicon-showusers');
     $userButton.click();
 
-    const $userSwatch = chrome$('#myswatch');
+    let $userSwatch = chrome$('#myswatch');
     $userSwatch.click();
 
     const fb = chrome$.farbtastic('#colorpicker');
     const $colorPickerSave = chrome$('#mycolorpickersave');
-    const $colorPickerPreview = chrome$('#mycolorpickerpreview');
+    let $colorPickerPreview = chrome$('#mycolorpickerpreview');
 
     // Same color represented in two different ways
     const testColorHash = '#abcdef';
@@ -38,28 +37,25 @@ describe('change user color', function () {
     $colorPickerSave.click();
     expect($userSwatch.css('background-color')).to.be(testColorRGB);
 
-    setTimeout(() => { // give it a second to save the color on the server side
-      helper.newPad({ // get a new pad, but don't clear the cookies
-        clearCookies: false,
-        cb() {
-          const chrome$ = helper.padChrome$;
+    // give it a second to save the color on the server side
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-          // click on the settings button to make settings visible
-          const $userButton = chrome$('.buttonicon-showusers');
-          $userButton.click();
+    // get a new pad, but don't clear the cookies
+    await helper.aNewPad({clearCookies: false});
 
-          const $userSwatch = chrome$('#myswatch');
-          $userSwatch.click();
+    chrome$ = helper.padChrome$;
 
-          const $colorPickerPreview = chrome$('#mycolorpickerpreview');
+    // click on the settings button to make settings visible
+    $userButton = chrome$('.buttonicon-showusers');
+    $userButton.click();
 
-          expect($colorPickerPreview.css('background-color')).to.be(testColorRGB);
-          expect($userSwatch.css('background-color')).to.be(testColorRGB);
+    $userSwatch = chrome$('#myswatch');
+    $userSwatch.click();
 
-          done();
-        },
-      });
-    }, 1000);
+    $colorPickerPreview = chrome$('#mycolorpickerpreview');
+
+    expect($colorPickerPreview.css('background-color')).to.be(testColorRGB);
+    expect($userSwatch.css('background-color')).to.be(testColorRGB);
   });
 
   it('Own user color is shown when you enter a chat', function (done) {

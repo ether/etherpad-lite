@@ -72,7 +72,7 @@
 	"pad.modals.unauth": "Nepooblaščen dostop",
 	"pad.modals.unauth.explanation": "Med ogledovanjem strani so se dovoljenja za ogled spremenila. Poskusite se znova povezati.",
 	"pad.modals.looping.explanation": "Zaznane so težave pri komunikaciji s strežnikom za usklajevanje.",
-	"pad.modals.looping.cause": "Morda ste se povezali preko neustrezno nastavljenega požarnega zidu ali posredniškega strežnika.",
+	"pad.modals.looping.cause": "Morda ste se povezali skozi neustrezno nastavljen požarni zid ali s posredniškim strežnikom.",
 	"pad.modals.initsocketfail": "Strežnik je nedosegljiv.",
 	"pad.modals.initsocketfail.explanation": "Povezava s strežnikom za usklajevanje ni mogoča.",
 	"pad.modals.initsocketfail.cause": "Najverjetneje gre za težavo z vašim brskalnikom, ali internetno povezavo.",

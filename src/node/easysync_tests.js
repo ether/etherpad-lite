@@ -42,7 +42,7 @@ const runTests = () => {
 
   const literal = (v) => {
     if ((typeof v) === 'string') {
-      return `"${v.replace(/[\\\"]/g, '\\$1').replace(/\n/g, '\\n')}"`;
+      return `"${v.replace(/[\\"]/g, '\\$1').replace(/\n/g, '\\n')}"`;
     } else { return JSON.stringify(v); }
   };
 

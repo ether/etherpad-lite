@@ -5,6 +5,7 @@ const common = require('../common');
 const io = require('socket.io-client');
 const padManager = require('../../../node/db/PadManager');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
+const readOnlyManager = require('../../../node/db/ReadOnlyManager');
 const setCookieParser = require('set-cookie-parser');
 const settings = require('../../../node/utils/Settings');
 
@@ -52,12 +53,16 @@ const connect = async (res) => {
       ([name, cookie]) => `${name}=${encodeURIComponent(cookie.value)}`).join('; ');
 
   logger.debug('socket.io connecting...');
+  let padId = null;
+  if (res) {
+    padId = res.req.path.split('/p/')[1];
+  }
   const socket = io(`${common.baseUrl}/`, {
     forceNew: true, // Different tests will have different query parameters.
     path: '/socket.io',
     // socketio.js-client on node.js doesn't support cookies (see https://git.io/JU8u9), so the
     // express_sid cookie must be passed as a query parameter.
-    query: {cookie: reqCookieHdr},
+    query: {cookie: reqCookieHdr, padId},
   });
   try {
     await getSocketEvent(socket, 'connect');
@@ -164,6 +169,33 @@ describe(__filename, function () {
       const clientVars = await handshake(socket, 'pad');
       assert.equal(clientVars.type, 'CLIENT_VARS');
     });
+
+    for (const authn of [false, true]) {
+      const desc = authn ? 'authn user' : '!authn anonymous';
+      it(`${desc} read-only /p/pad -> 200, ok`, async function () {
+        this.timeout(400);
+        const get = (ep) => {
+          let res = agent.get(ep);
+          if (authn) res = res.auth('user', 'user-password');
+          return res.expect(200);
+        };
+        settings.requireAuthentication = authn;
+        let res = await get('/p/pad');
+        socket = await connect(res);
+        let clientVars = await handshake(socket, 'pad');
+        assert.equal(clientVars.type, 'CLIENT_VARS');
+        assert.equal(clientVars.data.readonly, false);
+        const readOnlyId = clientVars.data.readOnlyId;
+        assert(readOnlyManager.isReadOnlyId(readOnlyId));
+        socket.close();
+        res = await get(`/p/${readOnlyId}`);
+        socket = await connect(res);
+        clientVars = await handshake(socket, readOnlyId);
+        assert.equal(clientVars.type, 'CLIENT_VARS');
+        assert.equal(clientVars.data.readonly, true);
+      });
+    }
+
     it('authz user /p/pad -> 200, ok', async function () {
       this.timeout(400);
       settings.requireAuthentication = true;
@@ -199,6 +231,24 @@ describe(__filename, function () {
       const message = await handshake(socket, 'pad');
       assert.equal(message.accessStatus, 'deny');
     });
+
+    it('authn anonymous read-only /p/pad -> 401, error', async function () {
+      this.timeout(400);
+      settings.requireAuthentication = true;
+      let res = await agent.get('/p/pad').auth('user', 'user-password').expect(200);
+      socket = await connect(res);
+      const clientVars = await handshake(socket, 'pad');
+      assert.equal(clientVars.type, 'CLIENT_VARS');
+      const readOnlyId = clientVars.data.readOnlyId;
+      assert(readOnlyManager.isReadOnlyId(readOnlyId));
+      socket.close();
+      res = await agent.get(`/p/${readOnlyId}`).expect(401);
+      // Despite the 401, try to read the pad via a socket.io connection anyway.
+      socket = await connect(res);
+      const message = await handshake(socket, readOnlyId);
+      assert.equal(message.accessStatus, 'deny');
+    });
+
     it('authn !cookie -> error', async function () {
       this.timeout(400);
       settings.requireAuthentication = true;

@@ -146,33 +146,20 @@ const buildToc = (lexed, filename, cb) => {
   lexed.forEach((tok) => {
     if (tok.type !== 'heading') return;
     if (tok.depth - depth > 1) {
-      return cb(new Error(`Inappropriate heading level\n${
-        JSON.stringify(tok)}`));
+      return cb(new Error(`Inappropriate heading level\n${JSON.stringify(tok)}`));
     }
 
     depth = tok.depth;
-    const id = getId(`${filename}_${tok.text.trim()}`);
-    toc.push(`${new Array((depth - 1) * 2 + 1).join(' ')
-    }* <a href="#${id}">${
-      tok.text}</a>`);
+
+    const slugger = new marked.Slugger();
+    const id = slugger.slug(`${filename}_${tok.text.trim()}`);
+
+    toc.push(`${new Array((depth - 1) * 2 + 1).join(' ')}* <a href="#${id}">${tok.text}</a>`);
+
     tok.text += `<span><a class="mark" href="#${id}" ` +
                 `id="${id}">#</a></span>`;
   });
 
   toc = marked.parse(toc.join('\n'));
   cb(null, toc);
-};
-
-const idCounters = {};
-const getId = (text) => {
-  text = text.toLowerCase();
-  text = text.replace(/[^a-z0-9]+/g, '_');
-  text = text.replace(/^_+|_+$/, '');
-  text = text.replace(/^([^a-z])/, '_$1');
-  if (Object.prototype.hasOwnProperty.call(idCounters, text)) {
-    text += `_${++idCounters[text]}`;
-  } else {
-    idCounters[text] = 0;
-  }
-  return text;
 };

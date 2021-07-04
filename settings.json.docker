@@ -24,6 +24,31 @@
  *
  * This is useful, for example, when running in a Docker container.
  *
+ * DETAILED RULES:
+ *   - If the environment variable is set to the string "true" or "false", the
+ *     value becomes Boolean true or false.
+ *   - If the environment variable is set to the string "null", the value
+ *     becomes null.
+ *   - If the environment variable is set to the string "undefined", the setting
+ *     is removed entirely, except when used as the member of an array in which
+ *     case it becomes null.
+ *   - If the environment variable is set to a string representation of a finite
+ *     number, the string is converted to that number.
+ *   - If the environment variable is set to any other string, including the
+ *     empty string, the value is that string.
+ *   - If the environment variable is unset and a default value is provided, the
+ *     value is as if the environment variable was set to the provided default:
+ *       - "${UNSET_VAR:}" becomes the empty string.
+ *       - "${UNSET_VAR:foo}" becomes the string "foo".
+ *       - "${UNSET_VAR:true}" and "${UNSET_VAR:false}" become true and false.
+ *       - "${UNSET_VAR:null}" becomes null.
+ *       - "${UNSET_VAR:undefined}" causes the setting to be removed (or be set
+ *         to null, if used as a member of an array).
+ *   - If the environment variable is unset and no default value is provided,
+ *     the value becomes null. THIS BEHAVIOR MAY CHANGE IN A FUTURE VERSION OF
+ *     ETHERPAD; if you want the default value to be null, you should explicitly
+ *     specify "null" as the default value.
+ *
  * EXAMPLE:
  *    "port":     "${PORT:9001}"
  *    "minify":   "${MINIFY}"
@@ -80,10 +105,12 @@
   "title": "${TITLE:Etherpad}",
 
   /*
-   * favicon default name
-   * alternatively, set up a fully specified Url to your own favicon
+   * Pathname of the favicon you want to use. If null, the skin's favicon is
+   * used if one is provided by the skin, otherwise the default Etherpad favicon
+   * is used. If this is a relative path it is interpreted as relative to the
+   * Etherpad root directory.
    */
-  "favicon": "${FAVICON:favicon.ico}",
+  "favicon": "${FAVICON:null}",
 
   /*
    * Skin name.
@@ -180,12 +207,12 @@
 
   "dbType": "${DB_TYPE:dirty}",
   "dbSettings": {
-    "host":     "${DB_HOST}",
-    "port":     "${DB_PORT}",
-    "database": "${DB_NAME}",
-    "user":     "${DB_USER}",
-    "password": "${DB_PASS}",
-    "charset":  "${DB_CHARSET}",
+    "host":     "${DB_HOST:undefined}",
+    "port":     "${DB_PORT:undefined}",
+    "database": "${DB_NAME:undefined}",
+    "user":     "${DB_USER:undefined}",
+    "password": "${DB_PASS:undefined}",
+    "charset":  "${DB_CHARSET:undefined}",
     "filename": "${DB_FILENAME:var/dirty.db}"
   },
 
@@ -283,7 +310,7 @@
    * it to null disables Abiword and will only allow plain text and HTML
    * import/exports.
    */
-  "abiword": "${ABIWORD}",
+  "abiword": "${ABIWORD:null}",
 
   /*
    * This is the absolute path to the soffice executable.
@@ -291,7 +318,7 @@
    * LibreOffice can be used in lieu of Abiword to export pads.
    * Setting it to null disables LibreOffice exporting.
    */
-  "soffice": "${SOFFICE}",
+  "soffice": "${SOFFICE:null}",
 
   /*
    * Path to the Tidy executable.
@@ -299,7 +326,7 @@
    * Tidy is used to improve the quality of exported pads.
    * Setting it to null disables Tidy.
    */
-  "tidyHtml": "${TIDY_HTML}",
+  "tidyHtml": "${TIDY_HTML:null}",
 
   /*
    * Allow import of file types other than the supported ones:
@@ -429,13 +456,13 @@
     "admin": {
       // 1) "password" can be replaced with "hash" if you install ep_hash_auth
       // 2) please note that if password is null, the user will not be created
-      "password": "${ADMIN_PASSWORD}",
+      "password": "${ADMIN_PASSWORD:null}",
       "is_admin": true
     },
     "user": {
       // 1) "password" can be replaced with "hash" if you install ep_hash_auth
       // 2) please note that if password is null, the user will not be created
-      "password": "${USER_PASSWORD}",
+      "password": "${USER_PASSWORD:null}",
       "is_admin": false
     }
   },
@@ -462,6 +489,11 @@
    * WARNING: this will disable security on the instance.
    */
   "loadTest": "${LOAD_TEST:false}",
+
+  /**
+  * Disable dump of objects preventing a clean exit
+  */
+  "dumpOnUncleanExit": false,
 
   /*
    * Disable indentation on new line when previous line ends with some special

@@ -63,15 +63,20 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     @param attribs: an array of attributes
   */
   setAttributesOnRange(start, end, attribs) {
+    if (start[0] < 0) throw new RangeError('selection start line number is negative');
+    if (start[1] < 0) throw new RangeError('selection start column number is negative');
+    if (end[0] < 0) throw new RangeError('selection end line number is negative');
+    if (end[1] < 0) throw new RangeError('selection end column number is negative');
+    if (start[0] > end[0] || (start[0] === end[0] && start[1] > end[1])) {
+      throw new RangeError('selection ends before it starts');
+    }
+
     // instead of applying the attributes to the whole range at once, we need to apply them
     // line by line, to be able to disregard the "*" used as line marker. For more details,
     // see https://github.com/ether/etherpad-lite/issues/2772
     let allChangesets;
     for (let row = start[0]; row <= end[0]; row++) {
-      const rowRange = this._findRowRange(row, start, end);
-      const startCol = rowRange[0];
-      const endCol = rowRange[1];
-
+      const [startCol, endCol] = this._findRowRange(row, start, end);
       const rowChangeset = this._setAttributesOnRangeByLine(row, startCol, endCol, attribs);
 
       // compose changesets of all rows into a single changeset
@@ -89,36 +94,34 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
   },
 
   _findRowRange(row, start, end) {
-    let startCol, endCol;
+    if (row < start[0] || row > end[0]) throw new RangeError(`line ${row} not in selection`);
+    if (row >= this.rep.lines.length()) throw new RangeError(`selected line ${row} does not exist`);
 
-    const startLineOffset = this.rep.lines.offsetOfIndex(row);
-    const endLineOffset = this.rep.lines.offsetOfIndex(row + 1);
-    const lineLength = endLineOffset - startLineOffset;
+    // Subtract 1 for the end-of-line '\n' (it is never selected).
+    const lineLength =
+        this.rep.lines.offsetOfIndex(row + 1) - this.rep.lines.offsetOfIndex(row) - 1;
+    const markerWidth = this.lineHasMarker(row) ? 1 : 0;
+    if (lineLength - markerWidth < 0) throw new Error(`line ${row} has negative length`);
 
-    // find column where range on this row starts
-    if (row === start[0]) { // are we on the first row of range?
-      startCol = start[1];
-    } else {
-      startCol = this.lineHasMarker(row) ? 1 : 0; // remove "*" used as line marker
-    }
+    const startCol = row === start[0] ? start[1] : markerWidth;
+    if (startCol - markerWidth < 0) throw new RangeError('selection starts before line start');
+    if (startCol > lineLength) throw new RangeError('selection starts after line end');
 
-    // find column where range on this row ends
-    if (row === end[0]) { // are we on the last row of range?
-      endCol = end[1]; // if so, get the end of range, not end of row
-    } else {
-      endCol = lineLength - 1; // remove "\n"
-    }
+    const endCol = row === end[0] ? end[1] : lineLength;
+    if (endCol - markerWidth < 0) throw new RangeError('selection ends before line start');
+    if (endCol > lineLength) throw new RangeError('selection ends after line end');
+    if (startCol > endCol) throw new RangeError('selection ends before it starts');
 
     return [startCol, endCol];
   },
 
-  /*
-    Sets attributes on a range, by line
-    @param row the row where range is
-    @param startCol column where range starts
-    @param endCol column where range ends
-    @param attribs: an array of attributes
-  */
+  /**
+   * Sets attributes on a range, by line
+   * @param row the row where range is
+   * @param startCol column where range starts
+   * @param endCol column where range ends (one past the last selected column)
+   * @param attribs an array of attributes
+   */
   _setAttributesOnRangeByLine(row, startCol, endCol, attribs) {
     const builder = Changeset.builder(this.rep.lines.totalWidth());
     ChangesetUtils.buildKeepToStartOfRange(this.rep, builder, [row, startCol]);

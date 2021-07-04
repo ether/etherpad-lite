@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Ajeje Brazorf",
 			"Beta16",
 			"Gianfranco",
 			"Jack",
@@ -10,6 +11,12 @@
 			"Vituzzu"
 		]
 	},
+	"admin_plugins.available_install.value": "Installa",
+	"admin_plugins.installed_uninstall.value": "Disinstalla",
+	"admin_plugins.last-update": "Ultimo aggiornamento",
+	"admin_plugins.name": "Nome",
+	"admin_plugins.version": "Versione",
+	"admin_settings": "Impostazioni",
 	"index.newPad": "Nuovo pad",
 	"index.createOpenPad": "o crea/apre un pad con il nome:",
 	"index.openPad": "apri un Pad esistente col nome:",

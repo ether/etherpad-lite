@@ -109,14 +109,6 @@ exports.chat = (() => {
       // correct the time
       msg.time += this._pad.clientTimeOffset;
 
-      // create the time string
-      let minutes = `${new Date(msg.time).getMinutes()}`;
-      let hours = `${new Date(msg.time).getHours()}`;
-      if (minutes.length === 1) minutes = `0${minutes}`;
-      if (hours.length === 1) hours = `0${hours}`;
-      const timeStr = `${hours}:${minutes}`;
-
-      // create the authorclass
       if (!msg.userId) {
         /*
          * If, for a bug or a database corruption, the message coming from the
@@ -129,24 +121,25 @@ exports.chat = (() => {
             'Replacing with "unknown". This may be a bug or a database corruption.');
       }
 
-      const authorClass = `author-${msg.userId.replace(/[^a-y0-9]/g, (c) => {
+      const authorClass = (authorId) => `author-${authorId.replace(/[^a-y0-9]/g, (c) => {
         if (c === '.') return '-';
         return `z${c.charCodeAt(0)}z`;
       })}`;
 
-      const text = padutils.escapeHtmlWithClickableLinks(msg.text, '_blank');
-
-      const authorName = msg.userName == null ? html10n.get('pad.userlist.unnamed')
-        : padutils.escapeHtml(msg.userName);
-
       // the hook args
       const ctx = {
-        authorName,
+        authorName: msg.userName != null ? msg.userName : html10n.get('pad.userlist.unnamed'),
         author: msg.userId,
-        text,
+        text: padutils.escapeHtmlWithClickableLinks(msg.text, '_blank'),
         sticky: false,
         timestamp: msg.time,
-        timeStr,
+        timeStr: (() => {
+          let minutes = `${new Date(msg.time).getMinutes()}`;
+          let hours = `${new Date(msg.time).getHours()}`;
+          if (minutes.length === 1) minutes = `0${minutes}`;
+          if (hours.length === 1) hours = `0${hours}`;
+          return `${hours}:${minutes}`;
+        })(),
         duration: 4000,
       };
 
@@ -159,7 +152,7 @@ exports.chat = (() => {
       // does this message contain this user's name? (is the curretn user mentioned?)
       const myName = $('#myusernameedit').val();
       const wasMentioned =
-          text.toLowerCase().indexOf(myName.toLowerCase()) !== -1 && myName !== 'undefined';
+          ctx.text.toLowerCase().indexOf(myName.toLowerCase()) !== -1 && myName !== 'undefined';
 
       // If the user was mentioned, make the message sticky
       if (wasMentioned && !alreadyFocused && !isHistoryAdd && !chatOpen) {
@@ -170,11 +163,23 @@ exports.chat = (() => {
 
       // Call chat message hook
       hooks.aCallAll('chatNewMessage', ctx, () => {
-        const html =
-            `<p data-authorId='${msg.userId}' class='${authorClass}'><b>${authorName}:</b>` +
-            `<span class='time ${authorClass}'>${ctx.timeStr}</span> ${ctx.text}</p>`;
-        if (isHistoryAdd) $(html).insertAfter('#chatloadmessagesbutton');
-        else $('#chattext').append(html);
+        const cls = authorClass(ctx.author);
+        const chatMsg = $('<p>')
+            .attr('data-authorId', ctx.author)
+            .addClass(cls)
+            .append($('<b>').text(`${ctx.authorName}:`))
+            .append($('<span>')
+                .addClass('time')
+                .addClass(cls)
+                // Hook functions are trusted to not introduce an XSS vulnerability by adding
+                // unescaped user input to ctx.timeStr.
+                .html(ctx.timeStr))
+            .append(' ')
+            // ctx.text was HTML-escaped before calling the hook. Hook functions are trusted to not
+            // introduce an XSS vulnerability by adding unescaped user input.
+            .append($('<div>').html(ctx.text).contents());
+        if (isHistoryAdd) chatMsg.insertAfter('#chatloadmessagesbutton');
+        else $('#chattext').append(chatMsg);
 
         // should we increment the counter??
         if (increment && !isHistoryAdd) {
@@ -185,10 +190,11 @@ exports.chat = (() => {
 
           if (!chatOpen && ctx.duration > 0) {
             $.gritter.add({
-              // Note: ctx.authorName and ctx.text are already HTML-escaped.
               text: $('<p>')
-                  .append($('<span>').addClass('author-name').html(ctx.authorName))
-                  .append(ctx.text),
+                  .append($('<span>').addClass('author-name').text(ctx.authorName))
+                  // ctx.text was HTML-escaped before calling the hook. Hook functions are trusted
+                  // to not introduce an XSS vulnerability by adding unescaped user input.
+                  .append($('<div>').html(ctx.text).contents()),
               sticky: ctx.sticky,
               time: 5000,
               position: 'bottom',

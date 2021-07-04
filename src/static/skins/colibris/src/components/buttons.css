@@ -23,9 +23,3 @@ button, .btn
   color: #485365;
   color: var(--text-color);
 }
-
-.buttonicon:before, [class^="buttonicon-"]:before, [class*=" buttonicon-"]:before {
-  line-height: 18px;
-}
-
-

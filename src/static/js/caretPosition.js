@@ -195,7 +195,7 @@ const getSelectionRange = () => {
     return;
   }
   const selection = window.getSelection();
-  if (selection.rangeCount > 0) {
+  if (selection && selection.type !== 'None' && selection.rangeCount > 0) {
     return selection.getRangeAt(0);
   } else {
     return null;

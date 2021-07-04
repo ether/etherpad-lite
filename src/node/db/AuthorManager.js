@@ -135,7 +135,7 @@ exports.createAuthorIfNotExistsFor = async (authorMapper, name) => {
  * @param {String} mapperkey The database key name for this mapper
  * @param {String} mapper The mapper
  */
-async function mapAuthorWithDBKey(mapperkey, mapper) {
+const mapAuthorWithDBKey = async (mapperkey, mapper) => {
   // try to map to an author
   const author = await db.get(`${mapperkey}:${mapper}`);
 
@@ -156,13 +156,13 @@ async function mapAuthorWithDBKey(mapperkey, mapper) {
 
   // return the author
   return {authorID: author};
-}
+};
 
 /**
  * Internal function that creates the database entry for an author
  * @param {String} name The name of the author
  */
-exports.createAuthor = (name) => {
+exports.createAuthor = async (name) => {
   // create the new author name
   const author = `a.${randomString(16)}`;
 
@@ -174,8 +174,7 @@ exports.createAuthor = (name) => {
   };
 
   // set the global author db entry
-  // NB: no await, since we're not waiting for the DB set to finish
-  db.set(`globalAuthor:${author}`, authorObj);
+  await db.set(`globalAuthor:${author}`, authorObj);
 
   return {authorID: author};
 };
@@ -184,34 +183,35 @@ exports.createAuthor = (name) => {
  * Returns the Author Obj of the author
  * @param {String} author The id of the author
  */
-exports.getAuthor = (author) => db.get(`globalAuthor:${author}`);
+exports.getAuthor = async (author) => await db.get(`globalAuthor:${author}`);
 
 /**
  * Returns the color Id of the author
  * @param {String} author The id of the author
  */
-exports.getAuthorColorId = (author) => db.getSub(`globalAuthor:${author}`, ['colorId']);
+exports.getAuthorColorId = async (author) => await db.getSub(`globalAuthor:${author}`, ['colorId']);
 
 /**
  * Sets the color Id of the author
  * @param {String} author The id of the author
  * @param {String} colorId The color id of the author
  */
-exports.setAuthorColorId = (author, colorId) => db.setSub(
+exports.setAuthorColorId = async (author, colorId) => await db.setSub(
     `globalAuthor:${author}`, ['colorId'], colorId);
 
 /**
  * Returns the name of the author
  * @param {String} author The id of the author
  */
-exports.getAuthorName = (author) => db.getSub(`globalAuthor:${author}`, ['name']);
+exports.getAuthorName = async (author) => await db.getSub(`globalAuthor:${author}`, ['name']);
 
 /**
  * Sets the name of the author
  * @param {String} author The id of the author
  * @param {String} name The name of the author
  */
-exports.setAuthorName = (author, name) => db.setSub(`globalAuthor:${author}`, ['name'], name);
+exports.setAuthorName = async (author, name) => await db.setSub(
+    `globalAuthor:${author}`, ['name'], name);
 
 /**
  * Returns an array of all pads this author contributed to
@@ -261,7 +261,7 @@ exports.addPad = async (authorID, padID) => {
   author.padIDs[padID] = 1; // anything, because value is not used
 
   // save the new element back
-  db.set(`globalAuthor:${authorID}`, author);
+  await db.set(`globalAuthor:${authorID}`, author);
 };
 
 /**

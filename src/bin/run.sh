@@ -32,4 +32,4 @@ src/bin/installDeps.sh "$@" || exit 1
 # Move to the node folder and start
 log "Starting Etherpad..."
 
-exec node $(compute_node_args) src/node/server.js "$@"
+exec node src/node/server.js "$@"

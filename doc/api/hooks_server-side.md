@@ -156,11 +156,13 @@ Called from: src/node/db/SecurityManager.js
 
 Things in context:
 
-1. padID - the pad the user wants to access
+1. padID - the real ID (never the read-only ID) of the pad the user wants to
+   access
 2. token - the token of the author
 3. sessionCookie - the session the use has
 
-This hook gets called when the access to the concrete pad is being checked. Return `false` to deny access.
+This hook gets called when the access to the concrete pad is being checked.
+Return `false` to deny access.
 
 ## padCreate
 Called from: src/node/db/Pad.js
@@ -615,14 +617,14 @@ is sent to the client. Plugins can use this hook to manipulate the
 configuration. (Example: Add a tracking ID for an external analytics tool that
 is used client-side.)
 
-The clientVars function must return a Promise that resolves to an object (or
-null/undefined) whose properties will be merged into `context.clientVars`.
-Returning `callback(value)` will return a Promise that is resolved to `value`.
-
-You can modify `context.clientVars` to change the values sent to the client, but
-beware: async functions from other clientVars plugins might also be reading or
-manipulating the same `context.clientVars` object. For this reason it is
-recommended you return an object rather than modify `context.clientVars`.
+You can manipulate `clientVars` in two different ways:
+* Return an object. The object will be merged into `clientVars` via
+  `Object.assign()`, so any keys that already exist in `clientVars` will be
+  overwritten by the values in the returned object.
+* Modify `context.clientVars`. Beware: Other plugins might also be reading or
+  manipulating the same `context.clientVars` object. To avoid race conditions,
+  you are encouraged to return an object rather than modify
+  `context.clientVars`.
 
 If needed, you can access the user's account information (if authenticated) via
 `context.socket.client.request.session.user`.
@@ -642,8 +644,6 @@ exports.clientVars = (hookName, context, callback) => {
   return callback({'accountUsername': user.username || '<unknown>'});
 };
 ```
-
-This can be accessed on the client-side using `clientVars.currentYear`.
 
 ## getLineHTMLForExport
 Called from: src/node/utils/ExportHtml.js

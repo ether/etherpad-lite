@@ -118,7 +118,7 @@
 	"pad.modals.disconnected.explanation": "Perdeuse a conexión co servidor",
 	"pad.modals.disconnected.cause": "O servidor non está dispoñible. Póñase en contacto co administrador do servizo se o problema continúa.",
 	"pad.share": "Compartir este documento",
-	"pad.share.readonly": "Lectura só",
+	"pad.share.readonly": "Só lectura",
 	"pad.share.link": "Ligazón",
 	"pad.share.emebdcode": "Incorporar o URL",
 	"pad.chat": "Chat",

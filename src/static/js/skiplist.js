@@ -22,66 +22,57 @@
  * limitations under the License.
  */
 
-const Ace2Common = require('./ace2_common');
-const _ = require('./underscore');
+const _entryWidth = (e) => (e && e.width) || 0;
 
-const noop = Ace2Common.noop;
-
-function SkipList() {
-  let PROFILER = window.PROFILER;
-  if (!PROFILER) {
-    PROFILER = () => ({
-      start: noop,
-      mark: noop,
-      literal: noop,
-      end: noop,
-      cancel: noop,
-    });
+class Node {
+  constructor(entry, levels = 0, downSkips = 1, downSkipWidths = 0) {
+    this.key = entry != null ? entry.key : null;
+    this.entry = entry;
+    this.levels = levels;
+    this.upPtrs = Array(levels).fill(null);
+    this.downPtrs = Array(levels).fill(null);
+    this.downSkips = Array(levels).fill(downSkips);
+    this.downSkipWidths = Array(levels).fill(downSkipWidths);
   }
 
-  // if there are N elements in the skiplist, "start" is element -1 and "end" is element N
-  const start = {
-    key: null,
-    levels: 1,
-    upPtrs: [null],
-    downPtrs: [null],
-    downSkips: [1],
-    downSkipWidths: [0],
-  };
-  const end = {
-    key: null,
-    levels: 1,
-    upPtrs: [null],
-    downPtrs: [null],
-    downSkips: [null],
-    downSkipWidths: [null],
-  };
-  let numNodes = 0;
-  let totalWidth = 0;
-  const keyToNodeMap = {};
-  start.downPtrs[0] = end;
-  end.upPtrs[0] = start;
-  // a "point" object at location x allows modifications immediately after the first
-  // x elements of the skiplist, such as multiple inserts or deletes.
-  // After an insert or delete using point P, the point is still valid and points
-  // to the same index in the skiplist.  Other operations with other points invalidate
-  // this point.
+  propagateWidthChange() {
+    const oldWidth = this.downSkipWidths[0];
+    const newWidth = _entryWidth(this.entry);
+    const widthChange = newWidth - oldWidth;
+    let n = this;
+    let lvl = 0;
+    while (lvl < n.levels) {
+      n.downSkipWidths[lvl] += widthChange;
+      lvl++;
+      while (lvl >= n.levels && n.upPtrs[lvl - 1]) {
+        n = n.upPtrs[lvl - 1];
+      }
+    }
+    return widthChange;
+  }
+}
 
-
-  const _getPoint = (targetLoc) => {
-    const numLevels = start.levels;
+// A "point" object at index x allows modifications immediately after the first x elements of the
+// skiplist, such as multiple inserts or deletes. After an insert or delete using point P, the point
+// is still valid and points to the same index in the skiplist. Other operations with other points
+// invalidate this point.
+class Point {
+  constructor(skipList, loc) {
+    this._skipList = skipList;
+    this.loc = loc;
+    const numLevels = this._skipList._start.levels;
     let lvl = numLevels - 1;
     let i = -1;
     let ws = 0;
     const nodes = new Array(numLevels);
     const idxs = new Array(numLevels);
     const widthSkips = new Array(numLevels);
-    nodes[lvl] = start;
+    nodes[lvl] = this._skipList._start;
     idxs[lvl] = -1;
     widthSkips[lvl] = 0;
     while (lvl >= 0) {
       let n = nodes[lvl];
-      while (n.downPtrs[lvl] && (i + n.downSkips[lvl] < targetLoc)) {
+      while (n.downPtrs[lvl] && (i + n.downSkips[lvl] < this.loc)) {
         i += n.downSkips[lvl];
         ws += n.downSkipWidths[lvl];
         n = n.downPtrs[lvl];
@@ -94,50 +85,27 @@ function SkipList() {
         nodes[lvl] = n;
       }
     }
-    return {
-      nodes,
-      idxs,
-      loc: targetLoc,
-      widthSkips,
-      toString: () => `getPoint(${targetLoc})`,
-    };
-  };
+    this.idxs = idxs;
+    this.nodes = nodes;
+    this.widthSkips = widthSkips;
+  }
 
-  const _getNodeAtOffset = (targetOffset) => {
-    let i = 0;
-    let n = start;
-    let lvl = start.levels - 1;
-    while (lvl >= 0 && n.downPtrs[lvl]) {
-      while (n.downPtrs[lvl] && (i + n.downSkipWidths[lvl] <= targetOffset)) {
-        i += n.downSkipWidths[lvl];
-        n = n.downPtrs[lvl];
-      }
-      lvl--;
+  toString() {
+    return `Point(${this.loc})`;
+  }
+
+  insert(entry) {
+    if (entry.key == null) throw new Error('entry.key must not be null');
+    if (this._skipList.containsKey(entry.key)) {
+      throw new Error(`an entry with key ${entry.key} already exists`);
     }
-    if (n === start) return (start.downPtrs[0] || null);
-    else if (n === end) return (targetOffset === totalWidth ? (end.upPtrs[0] || null) : null);
-    return n;
-  };
 
-  const _entryWidth = (e) => (e && e.width) || 0;
-
-  const _insertKeyAtPoint = (point, newKey, entry) => {
-    const p = PROFILER('insertKey', false); // eslint-disable-line new-cap
-    const newNode = {
-      key: newKey,
-      levels: 0,
-      upPtrs: [],
-      downPtrs: [],
-      downSkips: [],
-      downSkipWidths: [],
-    };
-    p.mark('donealloc');
-    const pNodes = point.nodes;
-    const pIdxs = point.idxs;
-    const pLoc = point.loc;
-    const widthLoc = point.widthSkips[0] + point.nodes[0].downSkipWidths[0];
+    const newNode = new Node(entry);
+    const pNodes = this.nodes;
+    const pIdxs = this.idxs;
+    const pLoc = this.loc;
+    const widthLoc = this.widthSkips[0] + this.nodes[0].downSkipWidths[0];
     const newWidth = _entryWidth(entry);
-    p.mark('loop1');
 
     // The new node will have at least level 1
     // With a proability of 0.01^(n-1) the nodes level will be >= n
@@ -145,17 +113,17 @@ function SkipList() {
       const lvl = newNode.levels;
       newNode.levels++;
       if (lvl === pNodes.length) {
-        // assume we have just passed the end of point.nodes, and reached one level greater
+        // assume we have just passed the end of this.nodes, and reached one level greater
         // than the skiplist currently supports
-        pNodes[lvl] = start;
+        pNodes[lvl] = this._skipList._start;
         pIdxs[lvl] = -1;
-        start.levels++;
-        end.levels++;
-        start.downPtrs[lvl] = end;
-        end.upPtrs[lvl] = start;
-        start.downSkips[lvl] = numNodes + 1;
-        start.downSkipWidths[lvl] = totalWidth;
-        point.widthSkips[lvl] = 0;
+        this._skipList._start.levels++;
+        this._skipList._end.levels++;
+        this._skipList._start.downPtrs[lvl] = this._skipList._end;
+        this._skipList._end.upPtrs[lvl] = this._skipList._start;
+        this._skipList._start.downSkips[lvl] = this._skipList._keyToNodeMap.size + 1;
+        this._skipList._start.downSkipWidths[lvl] = this._skipList._totalWidth;
+        this.widthSkips[lvl] = 0;
       }
       const me = newNode;
       const up = pNodes[lvl];
@@ -168,31 +136,24 @@ function SkipList() {
       me.upPtrs[lvl] = up;
       me.downPtrs[lvl] = down;
       down.upPtrs[lvl] = me;
-      const widthSkip1 = widthLoc - point.widthSkips[lvl];
+      const widthSkip1 = widthLoc - this.widthSkips[lvl];
       const widthSkip2 = up.downSkipWidths[lvl] + newWidth - widthSkip1;
       up.downSkipWidths[lvl] = widthSkip1;
       me.downSkipWidths[lvl] = widthSkip2;
     }
-    p.mark('loop2');
-    p.literal(pNodes.length, 'PNL');
     for (let lvl = newNode.levels; lvl < pNodes.length; lvl++) {
       const up = pNodes[lvl];
       up.downSkips[lvl]++;
       up.downSkipWidths[lvl] += newWidth;
     }
-    p.mark('map');
-    keyToNodeMap[`$KEY$${newKey}`] = newNode;
-    numNodes++;
-    totalWidth += newWidth;
-    p.end();
-  };
+    this._skipList._keyToNodeMap.set(newNode.key, newNode);
+    this._skipList._totalWidth += newWidth;
+  }
 
-  const _getNodeAtPoint = (point) => point.nodes[0].downPtrs[0];
-
-  const _deleteKeyAtPoint = (point) => {
-    const elem = point.nodes[0].downPtrs[0];
+  delete() {
+    const elem = this.nodes[0].downPtrs[0];
     const elemWidth = _entryWidth(elem.entry);
-    for (let i = 0; i < point.nodes.length; i++) {
+    for (let i = 0; i < this.nodes.length; i++) {
       if (i < elem.levels) {
         const up = elem.upPtrs[i];
         const down = elem.downPtrs[i];
@@ -203,59 +164,76 @@ function SkipList() {
         const totalWidthSkip = up.downSkipWidths[i] + elem.downSkipWidths[i] - elemWidth;
         up.downSkipWidths[i] = totalWidthSkip;
       } else {
-        const up = point.nodes[i];
+        const up = this.nodes[i];
         up.downSkips[i]--;
         up.downSkipWidths[i] -= elemWidth;
       }
     }
-    delete keyToNodeMap[`$KEY$${elem.key}`];
-    numNodes--;
-    totalWidth -= elemWidth;
-  };
+    this._skipList._keyToNodeMap.delete(elem.key);
+    this._skipList._totalWidth -= elemWidth;
+  }
 
-  const _propagateWidthChange = (node) => {
-    const oldWidth = node.downSkipWidths[0];
-    const newWidth = _entryWidth(node.entry);
-    const widthChange = newWidth - oldWidth;
-    let n = node;
-    let lvl = 0;
-    while (lvl < n.levels) {
-      n.downSkipWidths[lvl] += widthChange;
-      lvl++;
-      while (lvl >= n.levels && n.upPtrs[lvl - 1]) {
-        n = n.upPtrs[lvl - 1];
+  getNode() {
+    return this.nodes[0].downPtrs[0];
+  }
+}
+
+/**
+ * The skip-list contains "entries", JavaScript objects that each must have a unique "key"
+ * property that is a string.
+ */
+class SkipList {
+  constructor() {
+    // if there are N elements in the skiplist, "start" is element -1 and "end" is element N
+    this._start = new Node(null, 1);
+    this._end = new Node(null, 1, null, null);
+    this._totalWidth = 0;
+    this._keyToNodeMap = new Map();
+    this._start.downPtrs[0] = this._end;
+    this._end.upPtrs[0] = this._start;
+  }
+
+  _getNodeAtOffset(targetOffset) {
+    let i = 0;
+    let n = this._start;
+    let lvl = this._start.levels - 1;
+    while (lvl >= 0 && n.downPtrs[lvl]) {
+      while (n.downPtrs[lvl] && (i + n.downSkipWidths[lvl] <= targetOffset)) {
+        i += n.downSkipWidths[lvl];
+        n = n.downPtrs[lvl];
       }
+      lvl--;
     }
-    totalWidth += widthChange;
-  };
+    if (n === this._start) return (this._start.downPtrs[0] || null);
+    if (n === this._end) {
+      return targetOffset === this._totalWidth ? (this._end.upPtrs[0] || null) : null;
+    }
+    return n;
+  }
 
-  const _getNodeIndex = (node, byWidth) => {
+  _getNodeIndex(node, byWidth) {
     let dist = (byWidth ? 0 : -1);
     let n = node;
-    while (n !== start) {
+    while (n !== this._start) {
       const lvl = n.levels - 1;
       n = n.upPtrs[lvl];
       if (byWidth) dist += n.downSkipWidths[lvl];
       else dist += n.downSkips[lvl];
     }
     return dist;
-  };
-
-  const _getNodeByKey = (key) => keyToNodeMap[`$KEY$${key}`];
+  }
 
   // Returns index of first entry such that entryFunc(entry) is truthy,
   // or length() if no such entry.  Assumes all falsy entries come before
   // all truthy entries.
-
-
-  const _search = (entryFunc) => {
-    let low = start;
-    let lvl = start.levels - 1;
+  search(entryFunc) {
+    let low = this._start;
+    let lvl = this._start.levels - 1;
     let lowIndex = -1;
 
     const f = (node) => {
-      if (node === start) return false;
-      else if (node === end) return true;
+      if (node === this._start) return false;
+      else if (node === this._end) return true;
       else return entryFunc(node.entry);
     };
 
@@ -269,97 +247,85 @@ function SkipList() {
       lvl--;
     }
     return lowIndex + 1;
-  };
+  }
 
-  /*
-The skip-list contains "entries", JavaScript objects that each must have a unique "key" property
-that is a string.
-  */
-  const self = this;
-  _.extend(this, {
-    length: () => numNodes,
-    atIndex: (i) => {
-      if (i < 0) console.warn(`atIndex(${i})`);
-      if (i >= numNodes) console.warn(`atIndex(${i}>=${numNodes})`);
-      return _getNodeAtPoint(_getPoint(i)).entry;
-    },
-    // differs from Array.splice() in that new elements are in an array, not varargs
-    splice: (start, deleteCount, newEntryArray) => {
-      if (start < 0) console.warn(`splice(${start}, ...)`);
-      if (start + deleteCount > numNodes) {
-        console.warn(`splice(${start}, ${deleteCount}, ...), N=${numNodes}`);
-        console.warn('%s %s %s', typeof start, typeof deleteCount, typeof numNodes);
-        console.trace();
-      }
+  length() { return this._keyToNodeMap.size; }
 
-      if (!newEntryArray) newEntryArray = [];
-      const pt = _getPoint(start);
-      for (let i = 0; i < deleteCount; i++) {
-        _deleteKeyAtPoint(pt);
-      }
-      for (let i = (newEntryArray.length - 1); i >= 0; i--) {
-        const entry = newEntryArray[i];
-        _insertKeyAtPoint(pt, entry.key, entry);
-        const node = _getNodeByKey(entry.key);
-        node.entry = entry;
-      }
-    },
-    next: (entry) => _getNodeByKey(entry.key).downPtrs[0].entry || null,
-    prev: (entry) => _getNodeByKey(entry.key).upPtrs[0].entry || null,
-    push: (entry) => {
-      self.splice(numNodes, 0, [entry]);
-    },
-    slice: (start, end) => {
-      // act like Array.slice()
-      if (start === undefined) start = 0;
-      else if (start < 0) start += numNodes;
-      if (end === undefined) end = numNodes;
-      else if (end < 0) end += numNodes;
+  atIndex(i) {
+    if (i < 0) console.warn(`atIndex(${i})`);
+    if (i >= this._keyToNodeMap.size) console.warn(`atIndex(${i}>=${this._keyToNodeMap.size})`);
+    return (new Point(this, i)).getNode().entry;
+  }
 
-      if (start < 0) start = 0;
-      if (start > numNodes) start = numNodes;
-      if (end < 0) end = 0;
-      if (end > numNodes) end = numNodes;
+  // differs from Array.splice() in that new elements are in an array, not varargs
+  splice(start, deleteCount, newEntryArray) {
+    if (start < 0) console.warn(`splice(${start}, ...)`);
+    if (start + deleteCount > this._keyToNodeMap.size) {
+      console.warn(`splice(${start}, ${deleteCount}, ...), N=${this._keyToNodeMap.size}`);
+      console.warn('%s %s %s', typeof start, typeof deleteCount, typeof this._keyToNodeMap.size);
+      console.trace();
+    }
 
-      window.dmesg(String([start, end, numNodes]));
-      if (end <= start) return [];
-      let n = self.atIndex(start);
-      const array = [n];
-      for (let i = 1; i < (end - start); i++) {
-        n = self.next(n);
-        array.push(n);
-      }
-      return array;
-    },
-    atKey: (key) => _getNodeByKey(key).entry,
-    indexOfKey: (key) => _getNodeIndex(_getNodeByKey(key)),
-    indexOfEntry: (entry) => self.indexOfKey(entry.key),
-    containsKey: (key) => !!(_getNodeByKey(key)),
-    // gets the last entry starting at or before the offset
-    atOffset: (offset) => _getNodeAtOffset(offset).entry,
-    keyAtOffset: (offset) => self.atOffset(offset).key,
-    offsetOfKey: (key) => _getNodeIndex(_getNodeByKey(key), true),
-    offsetOfEntry: (entry) => self.offsetOfKey(entry.key),
-    setEntryWidth: (entry, width) => {
-      entry.width = width;
-      _propagateWidthChange(_getNodeByKey(entry.key));
-    },
-    totalWidth: () => totalWidth,
-    offsetOfIndex: (i) => {
-      if (i < 0) return 0;
-      if (i >= numNodes) return totalWidth;
-      return self.offsetOfEntry(self.atIndex(i));
-    },
-    indexOfOffset: (offset) => {
-      if (offset <= 0) return 0;
-      if (offset >= totalWidth) return numNodes;
-      return self.indexOfEntry(self.atOffset(offset));
-    },
-    search: (entryFunc) => _search(entryFunc),
-    // debugToString: _debugToString,
-    debugGetPoint: _getPoint,
-    debugDepth: () => start.levels,
-  });
+    if (!newEntryArray) newEntryArray = [];
+    const pt = new Point(this, start);
+    for (let i = 0; i < deleteCount; i++) pt.delete();
+    for (let i = (newEntryArray.length - 1); i >= 0; i--) {
+      const entry = newEntryArray[i];
+      pt.insert(entry);
+    }
+  }
+
+  next(entry) { return this._keyToNodeMap.get(entry.key).downPtrs[0].entry || null; }
+  prev(entry) { return this._keyToNodeMap.get(entry.key).upPtrs[0].entry || null; }
+  push(entry) { this.splice(this._keyToNodeMap.size, 0, [entry]); }
+
+  slice(start, end) {
+    // act like Array.slice()
+    if (start === undefined) start = 0;
+    else if (start < 0) start += this._keyToNodeMap.size;
+    if (end === undefined) end = this._keyToNodeMap.size;
+    else if (end < 0) end += this._keyToNodeMap.size;
+
+    if (start < 0) start = 0;
+    if (start > this._keyToNodeMap.size) start = this._keyToNodeMap.size;
+    if (end < 0) end = 0;
+    if (end > this._keyToNodeMap.size) end = this._keyToNodeMap.size;
+
+    window.dmesg(String([start, end, this._keyToNodeMap.size]));
+    if (end <= start) return [];
+    let n = this.atIndex(start);
+    const array = [n];
+    for (let i = 1; i < (end - start); i++) {
+      n = this.next(n);
+      array.push(n);
+    }
+    return array;
+  }
+
+  atKey(key) { return this._keyToNodeMap.get(key).entry; }
+  indexOfKey(key) { return this._getNodeIndex(this._keyToNodeMap.get(key)); }
+  indexOfEntry(entry) { return this.indexOfKey(entry.key); }
+  containsKey(key) { return this._keyToNodeMap.has(key); }
+  // gets the last entry starting at or before the offset
+  atOffset(offset) { return this._getNodeAtOffset(offset).entry; }
+  keyAtOffset(offset) { return this.atOffset(offset).key; }
+  offsetOfKey(key) { return this._getNodeIndex(this._keyToNodeMap.get(key), true); }
+  offsetOfEntry(entry) { return this.offsetOfKey(entry.key); }
+  setEntryWidth(entry, width) {
+    entry.width = width;
+    this._totalWidth += this._keyToNodeMap.get(entry.key).propagateWidthChange();
+  }
+  totalWidth() { return this._totalWidth; }
+  offsetOfIndex(i) {
+    if (i < 0) return 0;
+    if (i >= this._keyToNodeMap.size) return this._totalWidth;
+    return this.offsetOfEntry(this.atIndex(i));
+  }
+  indexOfOffset(offset) {
+    if (offset <= 0) return 0;
+    if (offset >= this._totalWidth) return this._keyToNodeMap.size;
+    return this.indexOfEntry(this.atOffset(offset));
+  }
 }
 
 module.exports = SkipList;

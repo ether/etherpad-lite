@@ -4,6 +4,8 @@
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
 process.on('unhandledRejection', (err) => { throw err; });
 
+const util = require('util');
+
 const startTime = Date.now();
 
 const log = (str) => {
@@ -46,6 +48,7 @@ const unescape = (val) => {
 (async () => {
   const fs = require('fs');
   const log4js = require('log4js');
+  const readline = require('readline');
   const settings = require('../node/utils/Settings');
   const ueberDB = require('ueberdb2');
 
@@ -69,14 +72,12 @@ const unescape = (val) => {
   await util.promisify(db.init.bind(db))();
   log('done');
 
-  log('open output file...');
-  const lines = fs.readFileSync(sqlFile, 'utf8').split('\n');
+  log(`Opening ${sqlFile}...`);
+  const stream = fs.createReadStream(sqlFile, {encoding: 'utf8'});
 
-  const count = lines.length;
+  log(`Reading ${sqlFile}...`);
   let keyNo = 0;
-
-  process.stdout.write(`Start importing ${count} keys...\n`);
-  lines.forEach((l) => {
+  for await (const l of readline.createInterface({input: stream, crlfDelay: Infinity})) {
     if (l.substr(0, 27) === 'REPLACE INTO store VALUES (') {
       const pos = l.indexOf("', '");
       const key = l.substr(28, pos - 28);
@@ -86,11 +87,9 @@ const unescape = (val) => {
       console.log(`unval: ${unescape(value)}`);
       db.set(key, unescape(value), null);
       keyNo++;
-      if (keyNo % 1000 === 0) {
-        process.stdout.write(` ${keyNo}/${count}\n`);
-      }
+      if (keyNo % 1000 === 0) log(` ${keyNo}`);
     }
-  });
+  }
   process.stdout.write('\n');
   process.stdout.write('done. waiting for db to finish transaction. ' +
                        'depended on dbms this may take some time..\n');

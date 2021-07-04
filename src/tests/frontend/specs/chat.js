@@ -2,8 +2,8 @@
 
 describe('Chat messages and UI', function () {
   // create a new pad before each test run
-  beforeEach(function (cb) {
-    helper.newPad(cb);
+  beforeEach(async function () {
+    await helper.aNewPad();
   });
 
   it('opens chat, sends a message, makes sure it exists ' +
@@ -86,34 +86,27 @@ describe('Chat messages and UI', function () {
   });
 
   xit('Checks showChat=false URL Parameter hides chat then' +
-      ' when removed it shows chat', function (done) {
-    this.timeout(60000);
+      ' when removed it shows chat', async function () {
+    // give it a second to save the username on the server side
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    setTimeout(() => { // give it a second to save the username on the server side
-      helper.newPad({ // get a new pad, but don't clear the cookies
-        clearCookies: false,
-        params: {
-          showChat: 'false',
-        }, cb() {
-          const chrome$ = helper.padChrome$;
-          const chaticon = chrome$('#chaticon');
-          // chat should be hidden.
-          expect(chaticon.is(':visible')).to.be(false);
+    // get a new pad, but don't clear the cookies
+    await helper.aNewPad({clearCookies: false, params: {showChat: 'false'}});
 
-          setTimeout(() => { // give it a second to save the username on the server side
-            helper.newPad({ // get a new pad, but don't clear the cookies
-              clearCookies: false,
-              cb() {
-                const chrome$ = helper.padChrome$;
-                const chaticon = chrome$('#chaticon');
-                // chat should be visible.
-                expect(chaticon.is(':visible')).to.be(true);
-                done();
-              },
-            });
-          }, 1000);
-        },
-      });
-    }, 3000);
+    let chrome$ = helper.padChrome$;
+    let chaticon = chrome$('#chaticon');
+    // chat should be hidden.
+    expect(chaticon.is(':visible')).to.be(false);
+
+    // give it a second to save the username on the server side
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // get a new pad, but don't clear the cookies
+    await helper.aNewPad({clearCookies: false});
+
+    chrome$ = helper.padChrome$;
+    chaticon = chrome$('#chaticon');
+    // chat should be visible.
+    expect(chaticon.is(':visible')).to.be(true);
   });
 });

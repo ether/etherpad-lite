@@ -294,6 +294,11 @@ Things in context:
 
 This hook is called on the client side whenever a chat message is received from
 the server. It can be used to create different notifications for chat messages.
+Hoook functions can modify the `author`, `authorName`, `duration`, `sticky`,
+`text`, and `timeStr` context properties to change how the message is processed.
+The `text` and `timeStr` properties may contain HTML, but plugins should be
+careful to sanitize any added user input to avoid introducing an XSS
+vulnerability.
 
 ## collectContentPre
 

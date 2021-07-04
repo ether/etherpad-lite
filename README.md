@@ -32,7 +32,7 @@ Etherpad is extremely flexible providing you the means to modify it to solve wha
 # Installation
 
 ## Requirements
-- `nodejs` >= **10.17.0**.
+- [Node.js](https://nodejs.org/) >= **12.13.0**.
 
 ## GNU/Linux and other UNIX-like systems
 
@@ -46,7 +46,8 @@ src/bin/run.sh
 ```
 
 ### Manual install
-You'll need git and [node.js](https://nodejs.org) installed (minimum required Node version: **10.17.0**).
+
+You'll need Git and [Node.js](https://nodejs.org/) installed.
 
 **As any user (we recommend creating a separate user called etherpad):**
 

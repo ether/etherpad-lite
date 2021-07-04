@@ -1,9 +1,68 @@
+# 1.8.14
+
+### Security fixes
+
+* Fixed a persistent XSS vulnerability in the Chat component. In case you can't
+  update to 1.8.14 directly, we strongly recommend to cherry-pick
+  a7968115581e20ef47a533e030f59f830486bdfa. Thanks to sonarsource for the
+  professional disclosure.
+
+### Compatibility changes
+
+* Node.js v12.13.0 or later is now required.
+* The `favicon` setting is now interpreted as a pathname to a favicon file, not
+  a URL. Please see the documentation comment in `settings.json.template`.
+* The undocumented `faviconPad` and `faviconTimeslider` settings have been
+  removed.
+* MySQL/MariaDB now uses connection pooling, which means you will see up to 10
+  connections to the MySQL/MariaDB server (by default) instead of 1. This might
+  cause Etherpad to crash with a "ER_CON_COUNT_ERROR: Too many connections"
+  error if your server is configured with a low connection limit.
+* Changes to environment variable substitution in `settings.json` (see the
+  documentation comments in `settings.json.template` for details):
+  * An environment variable set to the string "null" now becomes `null` instead
+    of the string "null". Similarly, if the environment variable is unset and
+    the default value is "null" (e.g., `"${UNSET_VAR:null}"`), the value now
+    becomes `null` instead of the string "null". It is no longer possible to
+    produce the string "null" via environment variable substitution.
+  * An environment variable set to the string "undefined" now causes the setting
+    to be removed instead of set to the string "undefined". Similarly, if the
+    environment variable is unset and the default value is "undefined" (e.g.,
+    `"${UNSET_VAR:undefined}"`), the setting is now removed instead of set to
+    the string "undefined". It is no longer possible to produce the string
+    "undefined" via environment variable substitution.
+  * Support for unset variables without a default value is now deprecated.
+    Please change all instances of `"${FOO}"` in your `settings.json` to
+    `${FOO:null}` to keep the current behavior.
+  * The `DB_*` variable substitutions in `settings.json.docker` that previously
+    defaulted to `null` now default to "undefined".
+* Calling `next` without argument when using `Changeset.opIterator` does always
+  return a new Op. See b9753dcc7156d8471a5aa5b6c9b85af47f630aa8 for details.
+
+### Notable enhancements and fixes
+
+* MySQL/MariaDB now uses connection pooling, which should improve stability and
+  reduce latency.
+* Bulk database writes are now retried individually on write failure.
+* Minify: Avoid crash due to unhandled Promise rejection if stat fails.
+* padIds are now included in /socket.io query string, e.g.
+  `https://video.etherpad.com/socket.io/?padId=AWESOME&EIO=3&transport=websocket&t=...&sid=...`.
+  This is useful for directing pads to separate socket.io nodes.
+* <script> elements added via aceInitInnerdocbodyHead hook are now executed.
+* Fix read only pad access with authentication.
+* Await more db writes.
+* Disabled wtfnode dump by default.
+* Send `USER_NEWINFO` messages on reconnect.
+* Fixed loading in a hidden iframe.
+* Fixed a race condition with composition. (Thanks @ingoncalves for an exceptionally
+  detailed analysis and @rhansen for the fix.)
+
 # 1.8.13
 
 ### Notable fixes
 
 * Fixed a bug in the safeRun.sh script (#4935)
-* Don't create sessions on some static resources (#4921)
+* Add more endpoints that do not need authentication/authorization (#4921)
 * Fixed issue with non-opening device keyboard on smartphones (#4929)
 * Add version string to iframe_editor.css to prevent stale cache entry (#4964)
 

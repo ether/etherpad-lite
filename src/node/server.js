@@ -27,17 +27,22 @@
 const log4js = require('log4js');
 log4js.replaceConsole();
 
-// wtfnode should be loaded after log4js.replaceConsole() so that it uses log4js for logging, and it
-// should be above everything else so that it can hook in before resources are used.
-const wtfnode = require('wtfnode');
+const settings = require('./utils/Settings');
+
+let wtfnode;
+if (settings.dumpOnUncleanExit) {
+  // wtfnode should be loaded after log4js.replaceConsole() so that it uses log4js for logging, and
+  // it should be above everything else so that it can hook in before resources are used.
+  wtfnode = require('wtfnode');
+}
 
 /*
  * early check for version compatibility before calling
  * any modules that require newer versions of NodeJS
  */
 const NodeVersion = require('./utils/NodeVersion');
-NodeVersion.enforceMinNodeVersion('10.17.0');
-NodeVersion.checkDeprecationStatus('10.17.0', '1.8.8');
+NodeVersion.enforceMinNodeVersion('12.13.0');
+NodeVersion.checkDeprecationStatus('12.13.0', '1.8.14');
 
 const UpdateCheck = require('./utils/UpdateCheck');
 const db = require('./db/DB');
@@ -45,7 +50,6 @@ const express = require('./hooks/express');
 const hooks = require('../static/js/pluginfw/hooks');
 const pluginDefs = require('../static/js/pluginfw/plugin_defs');
 const plugins = require('../static/js/pluginfw/plugins');
-const settings = require('./utils/Settings');
 const stats = require('./stats');
 
 const logger = log4js.getLogger('server');
@@ -248,16 +252,25 @@ exports.exit = async (err = null) => {
   exitGate = new Gate();
   state = State.EXITING;
   exitGate.resolve();
+
   // Node.js should exit on its own without further action. Add a timeout to force Node.js to exit
-  // just in case something failed to get cleaned up during the shutdown hook. unref() is called on
-  // the timeout so that the timeout itself does not prevent Node.js from exiting.
+  // just in case something failed to get cleaned up during the shutdown hook. unref() is called
+  // on the timeout so that the timeout itself does not prevent Node.js from exiting.
   setTimeout(() => {
     logger.error('Something that should have been cleaned up during the shutdown hook (such as ' +
-                 'a timer, worker thread, or open connection) is preventing Node.js from exiting');
-    wtfnode.dump();
+                'a timer, worker thread, or open connection) is preventing Node.js from exiting');
+
+    if (settings.dumpOnUncleanExit) {
+      wtfnode.dump();
+    } else {
+      logger.error('Enable `dumpOnUncleanExit` setting to get a dump of objects preventing a ' +
+                  'clean exit');
+    }
+
     logger.error('Forcing an unclean exit...');
     process.exit(1);
   }, 5000).unref();
+
   logger.info('Waiting for Node.js to exit...');
   state = State.WAITING_FOR_EXIT;
   /* eslint-enable no-process-exit */

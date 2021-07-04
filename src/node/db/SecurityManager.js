@@ -22,6 +22,7 @@
 const authorManager = require('./AuthorManager');
 const hooks = require('../../static/js/pluginfw/hooks.js');
 const padManager = require('./PadManager');
+const readOnlyManager = require('./ReadOnlyManager');
 const sessionManager = require('./SessionManager');
 const settings = require('../utils/Settings');
 const webaccess = require('../hooks/express/webaccess');
@@ -55,6 +56,15 @@ exports.checkAccess = async (padID, sessionCookie, token, userSettings) => {
   }
 
   let canCreate = !settings.editOnly;
+
+  if (readOnlyManager.isReadOnlyId(padID)) {
+    canCreate = false;
+    padID = await readOnlyManager.getPadId(padID);
+    if (padID == null) {
+      authLogger.debug('access denied: read-only pad ID for a pad that does not exist');
+      return DENY;
+    }
+  }
 
   // Authentication and authorization checks.
   if (settings.loadTest) {
