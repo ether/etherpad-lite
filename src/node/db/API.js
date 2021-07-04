@@ -139,11 +139,11 @@ exports.getRevisionChangeset = async (padID, rev) => {
     }
 
     // get the changeset for this revision
-    return pad.getRevisionChangeset(rev);
+    return await pad.getRevisionChangeset(rev);
   }
 
   // the client wants the latest changeset, lets return it to him
-  return pad.getRevisionChangeset(head);
+  return await pad.getRevisionChangeset(head);
 };
 
 /**

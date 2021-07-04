@@ -376,12 +376,12 @@ Pad.prototype.copy = async function (destinationID, force) {
   // if force is true and already exists a Pad with the same id, remove that Pad
   await this.removePadIfForceIsTrueAndAlreadyExist(destinationID, force);
 
-  // copy the 'pad' entry
-  const pad = await this._db.get(`pad:${this.id}`);
-  db.set(`pad:${destinationID}`, pad);
-
-  // copy all relations in parallel
-  const promises = [];
+  // copy all records in parallel
+  const promises = [
+    // Copy the 'pad' entry. This is wrapped in an IIFE so that this._db.get() can run in parallel
+    // with the other record copies done below.
+    (async () => await db.set(`pad:${destinationID}`, await this._db.get(`pad:${this.id}`)))(),
+  ];
 
   // copy all chat messages
   const chatHead = this.chatHead;
@@ -399,7 +399,7 @@ Pad.prototype.copy = async function (destinationID, force) {
     promises.push(p);
   }
 
-  this.copyAuthorInfoToDestinationPad(destinationID);
+  promises.push(this.copyAuthorInfoToDestinationPad(destinationID));
 
   // wait for the above to complete
   await Promise.all(promises);
@@ -409,11 +409,8 @@ Pad.prototype.copy = async function (destinationID, force) {
     await db.setSub(`group:${destGroupID}`, ['pads', destinationID], 1);
   }
 
-  // delay still necessary?
-  await new Promise((resolve) => setTimeout(resolve, 10));
-
   // Initialize the new pad (will update the listAllPads cache)
-  await padManager.getPad(destinationID, null); // this runs too early.
+  await padManager.getPad(destinationID, null);
 
   // let the plugins know the pad was copied
   await hooks.aCallAll('padCopy', {originalPad: this, destinationID});
@@ -459,11 +456,10 @@ Pad.prototype.removePadIfForceIsTrueAndAlreadyExist = async function (destinatio
   }
 };
 
-Pad.prototype.copyAuthorInfoToDestinationPad = function (destinationID) {
+Pad.prototype.copyAuthorInfoToDestinationPad = async function (destinationID) {
   // add the new sourcePad to all authors who contributed to the old one
-  this.getAllAuthors().forEach((authorID) => {
-    authorManager.addPad(authorID, destinationID);
-  });
+  await Promise.all(this.getAllAuthors().map(
+      (authorID) => authorManager.addPad(authorID, destinationID)));
 };
 
 Pad.prototype.copyPadWithoutHistory = async function (destinationID, force) {
@@ -481,7 +477,7 @@ Pad.prototype.copyPadWithoutHistory = async function (destinationID, force) {
   const sourcePad = await padManager.getPad(sourceID);
 
   // add the new sourcePad to all authors who contributed to the old one
-  this.copyAuthorInfoToDestinationPad(destinationID);
+  await this.copyAuthorInfoToDestinationPad(destinationID);
 
   // Group pad? Add it to the group's list
   if (destGroupID) {
