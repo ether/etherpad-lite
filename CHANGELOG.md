@@ -1,4 +1,11 @@
-# Next release
+# 1.8.14
+
+### Security fixes
+
+* Fixed a persistent XSS vulnerability in the Chat component. In case you can't
+  update to 1.8.14 directly, we strongly recommend to cherry-pick
+  a7968115581e20ef47a533e030f59f830486bdfa. Thanks to sonarsource for the
+  professional disclosure.
 
 ### Compatibility changes
 
@@ -29,12 +36,26 @@
     `${FOO:null}` to keep the current behavior.
   * The `DB_*` variable substitutions in `settings.json.docker` that previously
     defaulted to `null` now default to "undefined".
+* Calling `next` without argument when using `Changeset.opIterator` does always
+  return a new Op. See b9753dcc7156d8471a5aa5b6c9b85af47f630aa8 for details.
 
-### Notable enhancements
+### Notable enhancements and fixes
 
 * MySQL/MariaDB now uses connection pooling, which should improve stability and
   reduce latency.
 * Bulk database writes are now retried individually on write failure.
+* Minify: Avoid crash due to unhandled Promise rejection if stat fails.
+* padIds are now included in /socket.io query string, e.g.
+  `https://video.etherpad.com/socket.io/?padId=AWESOME&EIO=3&transport=websocket&t=...&sid=...`.
+  This is useful for directing pads to separate socket.io nodes.
+* <script> elements added via aceInitInnerdocbodyHead hook are now executed.
+* Fix read only pad access with authentication.
+* Await more db writes.
+* Disabled wtfnode dump by default.
+* Send `USER_NEWINFO` messages on reconnect.
+* Fixed loading in a hidden iframe.
+* Fixed a race condition with composition. (Thanks @ingoncalves for an exceptionally
+  detailed analysis and @rhansen for the fix.)
 
 # 1.8.13
 
