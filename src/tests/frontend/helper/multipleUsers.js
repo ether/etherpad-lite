@@ -34,18 +34,11 @@ helper.multipleUsers = {
   },
 
   async _loadJQueryForUser1Frame() {
-    const code = await $.get('/static/js/jquery.js');
-
-    // make sure we don't override existing jquery
-    const jQueryCode = `if(typeof $ === "undefined") {\n${code}\n}`;
-    const sendkeysCode = await $.get('/tests/frontend/lib/sendkeys.js');
-    const codesToLoad = [jQueryCode, sendkeysCode];
-
-    this._user1.padChrome$ = getFrameJQuery(codesToLoad, this._user1.$frame);
+    this._user1.padChrome$ = await getFrameJQuery(this._user1.$frame, true, true);
     this._user1.padOuter$ =
-        getFrameJQuery(codesToLoad, this._user1.padChrome$('iframe[name="ace_outer"]'));
+        await getFrameJQuery(this._user1.padChrome$('iframe[name="ace_outer"]'), true, false);
     this._user1.padInner$ =
-        getFrameJQuery(codesToLoad, this._user1.padOuter$('iframe[name="ace_inner"]'));
+        await getFrameJQuery(this._user1.padOuter$('iframe[name="ace_inner"]'), true, true);
 
     // update helper vars now that they are available
     helper.padChrome$ = this._user1.padChrome$;
@@ -86,14 +79,30 @@ helper.multipleUsers = {
   },
 };
 
-// adapted form helper.js on Etherpad code
-const getFrameJQuery = (codesToLoad, $iframe) => {
+// copied from helper.js
+const getFrameJQuery = async ($iframe, includeJquery = false, includeSendkeys = false) => {
   const win = $iframe[0].contentWindow;
   const doc = win.document;
 
-  for (let i = 0; i < codesToLoad.length; i++) {
-    win.eval(codesToLoad[i]);
-  }
+  const load = async (url) => {
+    const elem = doc.createElement('script');
+    elem.setAttribute('src', url);
+    const p = new Promise((resolve, reject) => {
+      const handler = (evt) => {
+        elem.removeEventListener('load', handler);
+        elem.removeEventListener('error', handler);
+        if (evt.type === 'error') return reject(new Error(`failed to load ${url}`));
+        resolve();
+      };
+      elem.addEventListener('load', handler);
+      elem.addEventListener('error', handler);
+    });
+    doc.head.appendChild(elem);
+    await p;
+  };
+
+  if (!win.$ && includeJquery) await load('../../static/js/vendors/jquery.js');
+  if (!win.bililiteRange && includeSendkeys) await load('../tests/frontend/lib/sendkeys.js');
 
   win.$.window = win;
   win.$.document = doc;
