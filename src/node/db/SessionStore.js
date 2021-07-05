@@ -17,18 +17,12 @@ const logger = log4js.getLogger('SessionStore');
 module.exports = class SessionStore extends Store {
   get(sid, fn) {
     logger.debug(`GET ${sid}`);
-    DB.db.get(`sessionstorage:${sid}`, (err, sess) => {
-      if (sess) {
-        sess.cookie.expires = ('string' === typeof sess.cookie.expires
-          ? new Date(sess.cookie.expires) : sess.cookie.expires);
-        if (!sess.cookie.expires || new Date() < sess.cookie.expires) {
-          fn(null, sess);
-        } else {
-          this.destroy(sid, fn);
-        }
-      } else {
-        fn();
-      }
+    DB.db.get(`sessionstorage:${sid}`, (err, s) => {
+      if (err != null) return fn(err);
+      if (!s) return fn(null);
+      if (typeof s.cookie.expires === 'string') s.cookie.expires = new Date(s.cookie.expires);
+      if (s.cookie.expires && new Date() >= s.cookie.expires) return this.destroy(sid, fn);
+      fn(null, s);
     });
   }
 
