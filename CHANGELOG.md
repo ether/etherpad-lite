@@ -15,6 +15,7 @@
   from the database when the group is deleted.
 * Fixed race conditions in the `setText`, `appendText`, and `restoreRevision`
   functions (HTTP API).
+* Fixed a crash if the database is busy enough to cause a query timeout.
 
 #### For plugin authors
 
