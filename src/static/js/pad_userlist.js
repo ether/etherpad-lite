@@ -325,21 +325,21 @@ const paduserlist = (() => {
   };
 
   const setUpEditable = (jqueryNode, valueGetter, valueSetter) => {
-    jqueryNode.bind('focus', (evt) => {
+    jqueryNode.on('focus', (evt) => {
       const oldValue = valueGetter();
       if (jqueryNode.val() !== oldValue) {
         jqueryNode.val(oldValue);
       }
       jqueryNode.addClass('editactive').removeClass('editempty');
     });
-    jqueryNode.bind('blur', (evt) => {
+    jqueryNode.on('blur', (evt) => {
       const newValue = jqueryNode.removeClass('editactive').val();
       valueSetter(newValue);
     });
     padutils.bindEnterAndEscape(jqueryNode, () => {
-      jqueryNode.blur();
+      jqueryNode.trigger('blur');
     }, () => {
-      jqueryNode.val(valueGetter()).blur();
+      jqueryNode.val(valueGetter()).trigger('blur');
     });
     jqueryNode.removeAttr('disabled').addClass('editable');
   };
@@ -369,15 +369,15 @@ const paduserlist = (() => {
       });
 
       // color picker
-      $('#myswatchbox').click(showColorPicker);
-      $('#mycolorpicker .pickerswatchouter').click(function () {
+      $('#myswatchbox').on('click', showColorPicker);
+      $('#mycolorpicker .pickerswatchouter').on('click', function () {
         $('#mycolorpicker .pickerswatchouter').removeClass('picked');
         $(this).addClass('picked');
       });
-      $('#mycolorpickersave').click(() => {
+      $('#mycolorpickersave').on('click', () => {
         closeColorPicker(true);
       });
-      $('#mycolorpickercancel').click(() => {
+      $('#mycolorpickercancel').on('click', () => {
         closeColorPicker(false);
       });
       //
@@ -587,7 +587,7 @@ const showColorPicker = () => {
 
         li.appendTo(colorsList);
 
-        li.bind('click', (event) => {
+        li.on('click', (event) => {
           $('#colorpickerswatches li').removeClass('picked');
           $(event.target).addClass('picked');
 

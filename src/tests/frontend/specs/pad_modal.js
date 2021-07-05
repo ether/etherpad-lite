@@ -71,16 +71,16 @@ describe('Pad modal', function () {
 
   const clickOnPadInner = () => {
     const $editor = helper.padInner$('#innerdocbody');
-    $editor.click();
+    $editor.trigger('click');
   };
 
   const clickOnPadOuter = () => {
     const $lineNumbersColumn = helper.padOuter$('#sidedivinner');
-    $lineNumbersColumn.click();
+    $lineNumbersColumn.trigger('click');
   };
 
   const openSettingsAndWaitForModalToBeVisible = async () => {
-    helper.padChrome$('.buttonicon-settings').click();
+    helper.padChrome$('.buttonicon-settings').trigger('click');
 
     // wait for modal to be displayed
     const modalSelector = '#settings';

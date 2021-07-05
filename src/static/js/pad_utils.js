@@ -205,7 +205,7 @@ const padutils = {
     // It is work on Windows (IE8, Chrome 6.0.472), CentOs (Firefox 3.0) and Mac OSX (Firefox
     // 3.6.10, Chrome 6.0.472, Safari 5.0).
     if (onEnter) {
-      node.keypress((evt) => {
+      node.on('keypress', (evt) => {
         if (evt.which === 13) {
           onEnter(evt);
         }
@@ -213,7 +213,7 @@ const padutils = {
     }
 
     if (onEscape) {
-      node.keydown((evt) => {
+      node.on('keydown', (evt) => {
         if (evt.which === 27) {
           onEscape(evt);
         }
@@ -280,7 +280,7 @@ const padutils = {
       }
       field.removeClass('editempty');
     });
-    field.blur(() => {
+    field.on('blur', () => {
       if (!field.val()) {
         clear();
       }
@@ -298,7 +298,7 @@ const padutils = {
     }
   },
   bindCheckboxChange: (node, func) => {
-    $(node).change(func);
+    $(node).on('change', func);
   },
   encodeUserId: (userId) => userId.replace(/[^a-y0-9]/g, (c) => {
     if (c === '.') return '-';

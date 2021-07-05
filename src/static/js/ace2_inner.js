@@ -2581,17 +2581,17 @@ function Ace2Inner(editorInfo, cssManagers) {
           const firstEditbarElement = parent.parent.$('#editbar')
               .children('ul').first().children().first()
               .children().first().children().first();
-          $(this).blur();
-          firstEditbarElement.focus();
+          $(this).trigger('blur');
+          firstEditbarElement.trigger('focus');
           evt.preventDefault();
         }
         if (!specialHandled && type === 'keydown' &&
             altKey && keyCode === 67 &&
             padShortcutEnabled.altC) {
           // Alt c focuses on the Chat window
-          $(this).blur();
+          $(this).trigger('blur');
           parent.parent.chat.show();
-          parent.parent.$('#chatinput').focus();
+          parent.parent.$('#chatinput').trigger('focus');
           evt.preventDefault();
         }
         if (!specialHandled && type === 'keydown' &&

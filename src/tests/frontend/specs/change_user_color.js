@@ -13,10 +13,10 @@ describe('change user color', function () {
 
     // click on the settings button to make settings visible
     let $userButton = chrome$('.buttonicon-showusers');
-    $userButton.click();
+    $userButton.trigger('click');
 
     let $userSwatch = chrome$('#myswatch');
-    $userSwatch.click();
+    $userSwatch.trigger('click');
 
     const fb = chrome$.farbtastic('#colorpicker');
     const $colorPickerSave = chrome$('#mycolorpickersave');
@@ -34,7 +34,7 @@ describe('change user color', function () {
     // The swatch updates as the test color is picked.
     fb.setColor(testColorHash);
     expect($colorPickerPreview.css('background-color')).to.be(testColorRGB);
-    $colorPickerSave.click();
+    $colorPickerSave.trigger('click');
     expect($userSwatch.css('background-color')).to.be(testColorRGB);
 
     // give it a second to save the color on the server side
@@ -47,10 +47,10 @@ describe('change user color', function () {
 
     // click on the settings button to make settings visible
     $userButton = chrome$('.buttonicon-showusers');
-    $userButton.click();
+    $userButton.trigger('click');
 
     $userSwatch = chrome$('#myswatch');
-    $userSwatch.click();
+    $userSwatch.trigger('click');
 
     $colorPickerPreview = chrome$('#mycolorpickerpreview');
 
@@ -64,15 +64,15 @@ describe('change user color', function () {
 
     const $colorOption = helper.padChrome$('#options-colorscheck');
     if (!$colorOption.is(':checked')) {
-      $colorOption.click();
+      $colorOption.trigger('click');
     }
 
     // click on the settings button to make settings visible
     const $userButton = chrome$('.buttonicon-showusers');
-    $userButton.click();
+    $userButton.trigger('click');
 
     const $userSwatch = chrome$('#myswatch');
-    $userSwatch.click();
+    $userSwatch.trigger('click');
 
     const fb = chrome$.farbtastic('#colorpicker');
     const $colorPickerSave = chrome$('#mycolorpickersave');
@@ -82,11 +82,11 @@ describe('change user color', function () {
     const testColorRGB = 'rgb(171, 205, 239)';
 
     fb.setColor(testColorHash);
-    $colorPickerSave.click();
+    $colorPickerSave.trigger('click');
 
     // click on the chat button to make chat visible
     const $chatButton = chrome$('#chaticon');
-    $chatButton.click();
+    $chatButton.trigger('click');
     const $chatInput = chrome$('#chatinput');
     $chatInput.sendkeys('O hi'); // simulate a keypress of typing user
     $chatInput.sendkeys('{enter}');
