@@ -82,7 +82,7 @@ const init = () => {
     // get all the export links
     exportLinks = $('#export > .exportlink');
 
-    $('button#forcereconnect').click(() => {
+    $('button#forcereconnect').on('click', () => {
       window.location.reload();
     });
 
@@ -159,7 +159,7 @@ const handleClientVars = (message) => {
   $('#rightstep').attr('title', html10n.get('timeslider.forwardRevision'));
 
   // font family change
-  $('#viewfontmenu').change(function () {
+  $('#viewfontmenu').on('change', function () {
     $('#innerdocbody').css('font-family', $(this).val() || '');
   });
 };

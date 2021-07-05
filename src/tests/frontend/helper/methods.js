@@ -94,7 +94,7 @@ helper.sendChatMessage = async (message) => {
  */
 helper.showSettings = async () => {
   if (helper.isSettingsShown()) return;
-  helper.settingsButton().click();
+  helper.settingsButton().trigger('click');
   await helper.waitForPromise(() => helper.isSettingsShown(), 2000);
 };
 
@@ -106,7 +106,7 @@ helper.showSettings = async () => {
  */
 helper.hideSettings = async () => {
   if (!helper.isSettingsShown()) return;
-  helper.settingsButton().click();
+  helper.settingsButton().trigger('click');
   await helper.waitForPromise(() => !helper.isSettingsShown(), 2000);
 };
 
@@ -119,7 +119,7 @@ helper.hideSettings = async () => {
 helper.enableStickyChatviaSettings = async () => {
   const stickyChat = helper.padChrome$('#options-stickychat');
   if (!helper.isSettingsShown() || stickyChat.is(':checked')) return;
-  stickyChat.click();
+  stickyChat.trigger('click');
   await helper.waitForPromise(() => helper.isChatboxSticky(), 2000);
 };
 
@@ -132,7 +132,7 @@ helper.enableStickyChatviaSettings = async () => {
 helper.disableStickyChatviaSettings = async () => {
   const stickyChat = helper.padChrome$('#options-stickychat');
   if (!helper.isSettingsShown() || !stickyChat.is(':checked')) return;
-  stickyChat.click();
+  stickyChat.trigger('click');
   await helper.waitForPromise(() => !helper.isChatboxSticky(), 2000);
 };
 
@@ -145,7 +145,7 @@ helper.disableStickyChatviaSettings = async () => {
 helper.enableStickyChatviaIcon = async () => {
   const stickyChat = helper.padChrome$('#titlesticky');
   if (!helper.isChatboxShown() || helper.isChatboxSticky()) return;
-  stickyChat.click();
+  stickyChat.trigger('click');
   await helper.waitForPromise(() => helper.isChatboxSticky(), 2000);
 };
 
@@ -157,7 +157,7 @@ helper.enableStickyChatviaIcon = async () => {
  */
 helper.disableStickyChatviaIcon = async () => {
   if (!helper.isChatboxShown() || !helper.isChatboxSticky()) return;
-  helper.titlecross().click();
+  helper.titlecross().trigger('click');
   await helper.waitForPromise(() => !helper.isChatboxSticky(), 2000);
 };
 

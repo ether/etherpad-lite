@@ -65,13 +65,13 @@ class ToolbarItem {
 
   bind(callback) {
     if (this.isButton()) {
-      this.$el.click((event) => {
-        $(':focus').blur();
+      this.$el.on('click', (event) => {
+        $(':focus').trigger('blur');
         callback(this.getCommand(), this);
         event.preventDefault();
       });
     } else if (this.isSelect()) {
-      this.$el.find('select').change(() => {
+      this.$el.find('select').on('change', () => {
         callback(this.getCommand(), this);
       });
     }
@@ -134,7 +134,7 @@ exports.padeditbar = new class {
     $('#editbar .editbarbutton').attr('unselectable', 'on'); // for IE
     this.enable();
     $('#editbar [data-key]').each((i, elt) => {
-      $(elt).unbind('click');
+      $(elt).off('click');
       new ToolbarItem($(elt)).bind((command, item) => {
         this.triggerCommand(command, item);
       });
@@ -144,11 +144,11 @@ exports.padeditbar = new class {
       this._bodyKeyEvent(evt);
     });
 
-    $('.show-more-icon-btn').click(() => {
+    $('.show-more-icon-btn').on('click', () => {
       $('.toolbar').toggleClass('full-icons');
     });
     this.checkAllIconsAreDisplayedInToolbar();
-    $(window).resize(_.debounce(() => this.checkAllIconsAreDisplayedInToolbar(), 100));
+    $(window).on('resize', _.debounce(() => this.checkAllIconsAreDisplayedInToolbar(), 100));
 
     this._registerDefaultCommands();
 
@@ -168,7 +168,7 @@ exports.padeditbar = new class {
     }
 
     // When editor is scrolled, we add a class to style the editbar differently
-    $('iframe[name="ace_outer"]').contents().scroll((ev) => {
+    $('iframe[name="ace_outer"]').contents().on('scroll', (ev) => {
       $('#editbar').toggleClass('editor-scrolled', $(ev.currentTarget).scrollTop() > 2);
     });
   }
@@ -305,12 +305,12 @@ exports.padeditbar = new class {
         // Close any dropdowns we have open..
         this.toggleDropDown('none');
         // Shift focus away from any drop downs
-        $(':focus').blur(); // required to do not try to remove!
+        $(':focus').trigger('blur'); // required to do not try to remove!
         // Check we're on a pad and not on the timeslider
         // Or some other window I haven't thought about!
         if (typeof pad === 'undefined') {
           // Timeslider probably..
-          $('#editorcontainerbox').focus(); // Focus back onto the pad
+          $('#editorcontainerbox').trigger('focus'); // Focus back onto the pad
         } else {
           padeditor.ace.focus(); // Sends focus back to pad
           // The above focus doesn't always work in FF, you have to hit enter afterwards
@@ -320,8 +320,8 @@ exports.padeditbar = new class {
         // Focus on the editbar :)
         const firstEditbarElement = parent.parent.$('#editbar button').first();
 
-        $(evt.currentTarget).blur();
-        firstEditbarElement.focus();
+        $(evt.currentTarget).trigger('blur');
+        firstEditbarElement.trigger('focus');
         evt.preventDefault();
       }
     }
@@ -341,7 +341,7 @@ exports.padeditbar = new class {
         this._editbarPosition--;
         // Allow focus to shift back to end of row and start of row
         if (this._editbarPosition === -1) this._editbarPosition = focusItems.length - 1;
-        $(focusItems[this._editbarPosition]).focus();
+        $(focusItems[this._editbarPosition]).trigger('focus');
       }
 
       // On right arrow move to next button in editbar
@@ -352,7 +352,7 @@ exports.padeditbar = new class {
         this._editbarPosition++;
         // Allow focus to shift back to end of row and start of row
         if (this._editbarPosition >= focusItems.length) this._editbarPosition = 0;
-        $(focusItems[this._editbarPosition]).focus();
+        $(focusItems[this._editbarPosition]).trigger('focus');
       }
     }
   }
@@ -366,7 +366,7 @@ exports.padeditbar = new class {
 
     this.registerCommand('settings', () => {
       this.toggleDropDown('settings');
-      $('#options-stickychat').focus();
+      $('#options-stickychat').trigger('focus');
     });
 
     this.registerCommand('import_export', () => {
@@ -374,22 +374,22 @@ exports.padeditbar = new class {
       // If Import file input exists then focus on it..
       if ($('#importfileinput').length !== 0) {
         setTimeout(() => {
-          $('#importfileinput').focus();
+          $('#importfileinput').trigger('focus');
         }, 100);
       } else {
-        $('.exportlink').first().focus();
+        $('.exportlink').first().trigger('focus');
       }
     });
 
     this.registerCommand('showusers', () => {
       this.toggleDropDown('users');
-      $('#myusernameedit').focus();
+      $('#myusernameedit').trigger('focus');
     });
 
     this.registerCommand('embed', () => {
       this.setEmbedLinks();
       this.toggleDropDown('embed');
-      $('#linkinput').focus().select();
+      $('#linkinput').trigger('focus').trigger('select');
     });
 
     this.registerCommand('savedRevision', () => {

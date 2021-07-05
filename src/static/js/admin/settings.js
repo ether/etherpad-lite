@@ -25,7 +25,7 @@ $(document).ready(() => {
     /* Check to make sure the JSON is clean before proceeding */
     if (isJSONClean(settings.results)) {
       $('.settings').append(settings.results);
-      $('.settings').focus();
+      $('.settings').trigger('focus');
       $('.settings').autosize();
     } else {
       alert('Invalid JSON');

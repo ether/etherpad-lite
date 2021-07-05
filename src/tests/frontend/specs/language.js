@@ -16,7 +16,7 @@ describe('Language select and change', function () {
 
     // click on the settings button to make settings visible
     const $settingsButton = chrome$('.buttonicon-settings');
-    $settingsButton.click();
+    $settingsButton.trigger('click');
 
     // click the language button
     const $language = chrome$('#languagemenu');
@@ -24,7 +24,7 @@ describe('Language select and change', function () {
 
     // select german
     $languageoption.attr('selected', 'selected');
-    $language.change();
+    $language.trigger('change');
 
     await helper.waitForPromise(
         () => chrome$('.buttonicon-bold').parent()[0].title === 'Fett (Strg-B)');
@@ -45,13 +45,13 @@ describe('Language select and change', function () {
 
     // click on the settings button to make settings visible
     const $settingsButton = chrome$('.buttonicon-settings');
-    $settingsButton.click();
+    $settingsButton.trigger('click');
 
     // click the language button
     const $language = chrome$('#languagemenu');
     // select english
     $language.val('en');
-    $language.change();
+    $language.trigger('change');
 
     // get the value of the bold button
     let $boldButton = chrome$('.buttonicon-bold').parent();
@@ -79,7 +79,7 @@ describe('Language select and change', function () {
 
     // click on the settings button to make settings visible
     const $settingsButton = chrome$('.buttonicon-settings');
-    $settingsButton.click();
+    $settingsButton.trigger('click');
 
     // click the language button
     const $language = chrome$('#languagemenu');
@@ -88,7 +88,7 @@ describe('Language select and change', function () {
     // select arabic
     // $languageoption.attr('selected','selected'); // Breaks the test..
     $language.val('ar');
-    $languageoption.change();
+    $languageoption.trigger('change');
 
     await helper.waitForPromise(() => chrome$('html')[0].dir !== 'ltr');
 
@@ -101,7 +101,7 @@ describe('Language select and change', function () {
 
     // click on the settings button to make settings visible
     const $settingsButton = chrome$('.buttonicon-settings');
-    $settingsButton.click();
+    $settingsButton.trigger('click');
 
     // click the language button
     const $language = chrome$('#languagemenu');
@@ -111,7 +111,7 @@ describe('Language select and change', function () {
     // select arabic
     $languageoption.attr('selected', 'selected');
     $language.val('en');
-    $languageoption.change();
+    $languageoption.trigger('change');
 
     await helper.waitForPromise(() => chrome$('html')[0].dir !== 'rtl');
 

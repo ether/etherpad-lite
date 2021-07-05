@@ -16,7 +16,7 @@ helper.contentWindow = () => $('#iframe-container iframe')[0].contentWindow;
 helper.showChat = async () => {
   const chaticon = helper.chatIcon();
   if (!chaticon.hasClass('visible')) return;
-  chaticon.click();
+  chaticon.trigger('click');
   await helper.waitForPromise(() => !chaticon.hasClass('visible'), 2000);
 };
 
@@ -27,7 +27,7 @@ helper.showChat = async () => {
  */
 helper.hideChat = async () => {
   if (!helper.isChatboxShown() || helper.isChatboxSticky()) return;
-  helper.titlecross().click();
+  helper.titlecross().trigger('click');
   await helper.waitForPromise(() => !helper.isChatboxShown(), 2000);
 };
 
@@ -80,7 +80,7 @@ helper.settingsButton =
 helper.toggleUserList = async () => {
   const isVisible = helper.userListShown();
   const button = helper.padChrome$("button[data-l10n-id='pad.toolbar.showusers.title']");
-  button.click();
+  button.trigger('click');
   await helper.waitForPromise(() => !isVisible);
 };
 
@@ -104,9 +104,9 @@ helper.userListShown = () => helper.padChrome$('div#users').hasClass('popup-show
  */
 helper.setUserName = async (name) => {
   const userElement = helper.usernameField();
-  userElement.click();
+  userElement.trigger('click');
   userElement.val(name);
-  userElement.blur();
+  userElement.trigger('blur');
   await helper.waitForPromise(() => !helper.usernameField().hasClass('editactive'));
 };
 

@@ -27,7 +27,7 @@ describe('Admin > Settings', function () {
         observer.observe(
             helper.admin$('#response')[0], {attributes: true, childList: false, subtree: false});
       });
-      helper.admin$('#saveSettings').click();
+      helper.admin$('#saveSettings').trigger('click');
       await p;
     };
 
@@ -81,7 +81,7 @@ describe('Admin > Settings', function () {
       oldStartTime = await getStartTime();
       return oldStartTime != null && oldStartTime > 0;
     }, 1000, 500);
-    helper.admin$('#restartEtherpad').click();
+    helper.admin$('#restartEtherpad').trigger('click');
     await helper.waitForPromise(async () => {
       const startTime = await getStartTime();
       return startTime != null && startTime > oldStartTime;
