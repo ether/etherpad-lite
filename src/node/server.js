@@ -113,7 +113,7 @@ exports.start = async () => {
     stats.gauge('memoryUsageHeap', () => process.memoryUsage().heapUsed);
 
     process.on('uncaughtException', (err) => {
-      logger.debug(`uncaught exception: ${err.stack || err}`);
+      logger.error(`uncaught exception: ${err.stack || err}`);
       exports.exit(err);
     });
     // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
