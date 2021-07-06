@@ -37,7 +37,7 @@ helper.edit = async (message, line) => {
   await helper.withFastCommit(async (incorp) => {
     helper.linesDiv()[line].sendkeys(message);
     incorp();
-    await helper.waitForPromise(() => editsNum + 1 === helper.commits.length);
+    await helper.waitForPromise(() => editsNum + 1 === helper.commits.length, 10000);
   });
 };
 
