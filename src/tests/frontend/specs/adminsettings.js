@@ -80,7 +80,7 @@ describe('Admin > Settings', function () {
     await helper.waitForPromise(async () => {
       oldStartTime = await getStartTime();
       return oldStartTime != null && oldStartTime > 0;
-    }, 1000, 500);
+    }, 2100, 500);
     helper.admin$('#restartEtherpad').trigger('click');
     await helper.waitForPromise(async () => {
       const startTime = await getStartTime();
