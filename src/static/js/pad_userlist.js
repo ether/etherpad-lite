@@ -341,7 +341,7 @@ const paduserlist = (() => {
     }, () => {
       jqueryNode.val(valueGetter()).trigger('blur');
     });
-    jqueryNode.removeAttr('disabled').addClass('editable');
+    jqueryNode.prop('disabled', false).addClass('editable');
   };
 
   let pad = undefined;

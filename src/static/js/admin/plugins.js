@@ -164,7 +164,7 @@ $(document).ready(() => {
     if (data.query.offset === 0) search.results = [];
     search.messages.hide('nothing-found');
     search.messages.hide('fetching');
-    $('#search-query').removeAttr('disabled');
+    $('#search-query').prop('disabled', false);
 
     console.log('got search results', data);
 
