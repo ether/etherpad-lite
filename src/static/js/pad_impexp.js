@@ -38,7 +38,7 @@ const padimpexp = (() => {
   const fileInputUpdated = () => {
     $('#importsubmitinput').addClass('throbbold');
     $('#importformfilediv').addClass('importformenabled');
-    $('#importsubmitinput').removeAttr('disabled');
+    $('#importsubmitinput').prop('disabled', false);
     $('#importmessagefail').fadeOut('fast');
   };
 
@@ -69,8 +69,8 @@ const padimpexp = (() => {
         $('#import_export').removeClass('popup-show');
         if (directDatabaseAccess) window.location.reload();
       }
-      $('#importsubmitinput').removeAttr('disabled').val(html10n.get('pad.impexp.importbutton'));
-      window.setTimeout(() => $('#importfileinput').removeAttr('disabled'), 0);
+      $('#importsubmitinput').prop('disabled', false).val(html10n.get('pad.impexp.importbutton'));
+      window.setTimeout(() => $('#importfileinput').prop('disabled', false), 0);
       $('#importstatusball').hide();
       addImportFrames();
     })();

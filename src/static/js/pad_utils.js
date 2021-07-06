@@ -294,7 +294,7 @@ const padutils = {
     if (value) {
       $(node).attr('checked', 'checked');
     } else {
-      $(node).removeAttr('checked');
+      $(node).prop('checked', false);
     }
   },
   bindCheckboxChange: (node, func) => {
