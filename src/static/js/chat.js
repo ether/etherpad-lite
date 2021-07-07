@@ -68,7 +68,7 @@ exports.chat = (() => {
         this.stickToScreen(true);
         $('#options-stickychat').prop('checked', true);
         $('#options-chatandusers').prop('checked', true);
-        $('#options-stickychat').prop('disabled', 'disabled');
+        $('#options-stickychat').prop('disabled', true);
         userAndChat = true;
       } else {
         $('#options-stickychat').prop('disabled', false);
