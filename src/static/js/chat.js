@@ -47,6 +47,9 @@ exports.chat = (() => {
     },
     // Make chat stick to right hand side of screen
     stickToScreen(fromInitialCall) {
+      if ($('#options-stickychat').prop('checked')) {
+        $('#options-stickychat').prop('checked', false);
+      }
       if (pad.settings.hideChat) {
         return;
       }
