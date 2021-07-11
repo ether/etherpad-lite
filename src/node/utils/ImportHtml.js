@@ -46,11 +46,9 @@ exports.setPadHTML = async (pad, html) => {
   try {
     // we use a try here because if the HTML is bad it will blow up
     cc.collectContent(document.body);
-  } catch (e) {
-    apiLogger.warn('HTML was not properly formed', e);
-
-    // don't process the HTML because it was bad
-    throw e;
+  } catch (err) {
+    apiLogger.warn(`Error processing HTML: ${err.stack || err}`);
+    throw err;
   }
 
   const result = cc.finish();
