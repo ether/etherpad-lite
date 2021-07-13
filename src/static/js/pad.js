@@ -338,7 +338,7 @@ const handshake = () => {
 
       // If the Monospacefont value is set to true then change it to monospace.
       if (settings.useMonospaceFontGlobal === true) {
-        pad.changeViewOption('padFontFamily', 'monospace');
+        pad.changeViewOption('padFontFamily', 'RobotoMono');
       }
       // if the globalUserName value is set we need to tell the server and
       // the client about the new authorname
