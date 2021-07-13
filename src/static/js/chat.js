@@ -238,7 +238,7 @@ exports.chat = (() => {
 
       $('#chatinput').keypress((evt) => {
         // if the user typed enter, fire the send
-        if (evt.which === 13 || evt.which === 10) {
+        if (evt.key === 'Enter') {
           evt.preventDefault();
           this.send();
         }
