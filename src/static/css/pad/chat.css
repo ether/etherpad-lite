@@ -109,6 +109,7 @@
 }
 #chatinputbox #chatinput {
   width: 100%;
+  resize: vertical;
 }
 
 
