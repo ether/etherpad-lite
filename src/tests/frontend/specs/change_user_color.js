@@ -89,7 +89,6 @@ describe('change user color', function () {
     $chatButton.click();
     const $chatInput = chrome$('#chatinput');
     $chatInput.sendkeys('O hi'); // simulate a keypress of typing user
-    // simulate a keypress of enter actually does evt.which = 10 not 13
     $chatInput.sendkeys('{enter}');
 
     // wait until the chat message shows up

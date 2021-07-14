@@ -426,8 +426,8 @@ $.fn.sendkeys.defaults = {
   '{enter}': function (rng){
     rng.insertEOL();
     rng.select();
-    var x = '\n'.charCodeAt(0);
-    $(rng._el).trigger({type: 'keypress', keyCode: x, which: x, charCode: x});
+    $(rng._el).trigger(
+        {type: 'keypress', keyCode: 13, which: 13, charCode: 13, code: 'Enter', key: 'Enter'});
   },
   '{backspace}': function (rng){
     var b = rng.bounds();
