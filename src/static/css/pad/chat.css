@@ -92,6 +92,7 @@
 #chattext p {
   padding: 3px;
   overflow-x: hidden;
+  white-space: pre-wrap;
   word-wrap: break-word;
 }
 #chattext .time {
