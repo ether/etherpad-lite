@@ -324,7 +324,7 @@ const padeditbar = (() => {
         // Focus on the editbar :)
         const firstEditbarElement = parent.parent.$('#editbar button').first();
 
-        $(this).blur();
+        $(evt.currentTarget).blur();
         firstEditbarElement.focus();
         evt.preventDefault();
       }
