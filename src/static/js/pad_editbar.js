@@ -211,7 +211,6 @@ exports.padeditbar = {
 
     // hide all modules and remove highlighting of all buttons
     if (moduleName === 'none') {
-      const returned = false;
       for (const thisModuleName of this.dropdowns) {
         // skip the userlist
         if (thisModuleName === 'users') continue;
@@ -227,7 +226,7 @@ exports.padeditbar = {
         }
       }
 
-      if (!returned && cb) return cb();
+      if (cb) return cb();
     } else {
       // hide all modules that are not selected and remove highlighting
       // respectively add highlighting to the corresponding button
