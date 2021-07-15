@@ -79,7 +79,7 @@ ToolbarItem.prototype.bind = function (callback) {
 
 
 const padeditbar = (() => {
-  const syncAnimationFn = () => {
+  const syncAnimation = (() => {
     const SYNCING = -100;
     const DONE = 100;
     let state = DONE;
@@ -122,8 +122,7 @@ const padeditbar = (() => {
         animator.scheduleAnimation();
       },
     };
-  };
-  const syncAnimation = syncAnimationFn();
+  })();
 
   return {
     _editbarPosition: 0,
