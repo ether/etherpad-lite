@@ -64,17 +64,15 @@ ToolbarItem.prototype.isButton = function () {
 };
 
 ToolbarItem.prototype.bind = function (callback) {
-  const self = this;
-
-  if (self.isButton()) {
-    self.$el.click((event) => {
+  if (this.isButton()) {
+    this.$el.click((event) => {
       $(':focus').blur();
-      callback(self.getCommand(), self);
+      callback(this.getCommand(), this);
       event.preventDefault();
     });
-  } else if (self.isSelect()) {
-    self.$el.find('select').change(() => {
-      callback(self.getCommand(), self);
+  } else if (this.isSelect()) {
+    this.$el.find('select').change(() => {
+      callback(this.getCommand(), this);
     });
   }
 };
@@ -129,15 +127,14 @@ const padeditbar = (function () {
 
   const self = {
     init() {
-      const self = this;
-      self.dropdowns = [];
+      this.dropdowns = [];
 
       $('#editbar .editbarbutton').attr('unselectable', 'on'); // for IE
       this.enable();
-      $('#editbar [data-key]').each(function () {
-        $(this).unbind('click');
-        (new ToolbarItem($(this))).bind((command, item) => {
-          self.triggerCommand(command, item);
+      $('#editbar [data-key]').each((i, elt) => {
+        $(elt).unbind('click');
+        new ToolbarItem($(elt)).bind((command, item) => {
+          this.triggerCommand(command, item);
         });
       });
 
@@ -148,13 +145,13 @@ const padeditbar = (function () {
       $('.show-more-icon-btn').click(() => {
         $('.toolbar').toggleClass('full-icons');
       });
-      self.checkAllIconsAreDisplayedInToolbar();
-      $(window).resize(_.debounce(self.checkAllIconsAreDisplayedInToolbar, 100));
+      this.checkAllIconsAreDisplayedInToolbar();
+      $(window).resize(_.debounce(() => this.checkAllIconsAreDisplayedInToolbar(), 100));
 
-      registerDefaultCommands(self);
+      registerDefaultCommands(this);
 
       hooks.callAll('postToolbarInit', {
-        toolbar: self,
+        toolbar: this,
         ace: padeditor.ace,
       });
 
@@ -187,9 +184,9 @@ const padeditbar = (function () {
     },
     registerDropdownCommand(cmd, dropdown) {
       dropdown = dropdown || cmd;
-      self.dropdowns.push(dropdown);
+      this.dropdowns.push(dropdown);
       this.registerCommand(cmd, () => {
-        self.toggleDropDown(dropdown);
+        this.toggleDropDown(dropdown);
       });
     },
     registerAceCommand(cmd, callback) {
@@ -200,12 +197,12 @@ const padeditbar = (function () {
       });
     },
     triggerCommand(cmd, item) {
-      if (self.isEnabled() && this.commands[cmd]) {
+      if (this.isEnabled() && this.commands[cmd]) {
         this.commands[cmd](cmd, padeditor.ace, item);
       }
       if (padeditor.ace) padeditor.ace.focus();
     },
-    toggleDropDown: (moduleName, cb) => {
+    toggleDropDown(moduleName, cb) {
       // do nothing if users are sticked
       if (moduleName === 'users' && $('#users').hasClass('stickyUsers')) {
         return;
@@ -217,8 +214,8 @@ const padeditbar = (function () {
       // hide all modules and remove highlighting of all buttons
       if (moduleName === 'none') {
         const returned = false;
-        for (let i = 0; i < self.dropdowns.length; i++) {
-          const thisModuleName = self.dropdowns[i];
+        for (let i = 0; i < this.dropdowns.length; i++) {
+          const thisModuleName = this.dropdowns[i];
 
           // skip the userlist
           if (thisModuleName === 'users') continue;
@@ -238,8 +235,8 @@ const padeditbar = (function () {
       } else {
         // hide all modules that are not selected and remove highlighting
         // respectively add highlighting to the corresponding button
-        for (let i = 0; i < self.dropdowns.length; i++) {
-          const thisModuleName = self.dropdowns[i];
+        for (let i = 0; i < this.dropdowns.length; i++) {
+          const thisModuleName = this.dropdowns[i];
           const module = $(`#${thisModuleName}`);
 
           if (module.hasClass('popup-show')) {
