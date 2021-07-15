@@ -200,7 +200,9 @@ exports.padeditbar = {
     }
     if (padeditor.ace) padeditor.ace.focus();
   },
-  toggleDropDown(moduleName, cb) {
+
+  // cb is deprecated (this function is synchronous so a callback is unnecessary).
+  toggleDropDown(moduleName, cb = null) {
     let cbErr = null;
     try {
       // do nothing if users are sticked
