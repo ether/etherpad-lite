@@ -201,46 +201,52 @@ exports.padeditbar = {
     if (padeditor.ace) padeditor.ace.focus();
   },
   toggleDropDown(moduleName, cb) {
-    // do nothing if users are sticked
-    if (moduleName === 'users' && $('#users').hasClass('stickyUsers')) {
-      return;
-    }
+    let cbErr = null;
+    try {
+      // do nothing if users are sticked
+      if (moduleName === 'users' && $('#users').hasClass('stickyUsers')) {
+        return;
+      }
 
-    $('.nice-select').removeClass('open');
-    $('.toolbar-popup').removeClass('popup-show');
+      $('.nice-select').removeClass('open');
+      $('.toolbar-popup').removeClass('popup-show');
 
-    // hide all modules and remove highlighting of all buttons
-    if (moduleName === 'none') {
-      for (const thisModuleName of this.dropdowns) {
-        // skip the userlist
-        if (thisModuleName === 'users') continue;
+      // hide all modules and remove highlighting of all buttons
+      if (moduleName === 'none') {
+        for (const thisModuleName of this.dropdowns) {
+          // skip the userlist
+          if (thisModuleName === 'users') continue;
 
-        const module = $(`#${thisModuleName}`);
+          const module = $(`#${thisModuleName}`);
 
-        // skip any "force reconnect" message
-        const isAForceReconnectMessage = module.find('button#forcereconnect:visible').length > 0;
-        if (isAForceReconnectMessage) continue;
-        if (module.hasClass('popup-show')) {
-          $(`li[data-key=${thisModuleName}] > a`).removeClass('selected');
-          module.removeClass('popup-show');
+          // skip any "force reconnect" message
+          const isAForceReconnectMessage = module.find('button#forcereconnect:visible').length > 0;
+          if (isAForceReconnectMessage) continue;
+          if (module.hasClass('popup-show')) {
+            $(`li[data-key=${thisModuleName}] > a`).removeClass('selected');
+            module.removeClass('popup-show');
+          }
+        }
+      } else {
+        // hide all modules that are not selected and remove highlighting
+        // respectively add highlighting to the corresponding button
+        for (const thisModuleName of this.dropdowns) {
+          const module = $(`#${thisModuleName}`);
+
+          if (module.hasClass('popup-show')) {
+            $(`li[data-key=${thisModuleName}] > a`).removeClass('selected');
+            module.removeClass('popup-show');
+          } else if (thisModuleName === moduleName) {
+            $(`li[data-key=${thisModuleName}] > a`).addClass('selected');
+            module.addClass('popup-show');
+          }
         }
       }
-    } else {
-      // hide all modules that are not selected and remove highlighting
-      // respectively add highlighting to the corresponding button
-      for (const thisModuleName of this.dropdowns) {
-        const module = $(`#${thisModuleName}`);
-
-        if (module.hasClass('popup-show')) {
-          $(`li[data-key=${thisModuleName}] > a`).removeClass('selected');
-          module.removeClass('popup-show');
-        } else if (thisModuleName === moduleName) {
-          $(`li[data-key=${thisModuleName}] > a`).addClass('selected');
-          module.addClass('popup-show');
-        }
-      }
+    } catch (err) {
+      cbErr = err || new Error(err);
+    } finally {
+      if (cb) cb(cbErr);
     }
-    if (cb) cb();
   },
   setSyncStatus: (status) => {
     if (status === 'syncing') {
