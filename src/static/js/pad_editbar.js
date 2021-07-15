@@ -78,7 +78,7 @@ ToolbarItem.prototype.bind = function (callback) {
 };
 
 
-const padeditbar = (function () {
+const padeditbar = (() => {
   const syncAnimationFn = () => {
     const SYNCING = -100;
     const DONE = 100;
@@ -166,8 +166,8 @@ const padeditbar = (function () {
       }
 
       // When editor is scrolled, we add a class to style the editbar differently
-      $('iframe[name="ace_outer"]').contents().scroll(function () {
-        $('#editbar').toggleClass('editor-scrolled', $(this).scrollTop() > 2);
+      $('iframe[name="ace_outer"]').contents().scroll((ev) => {
+        $('#editbar').toggleClass('editor-scrolled', $(ev.currentTarget).scrollTop() > 2);
       });
     },
     isEnabled: () => true,
@@ -489,6 +489,6 @@ const padeditbar = (function () {
   };
 
   return self;
-}());
+})();
 
 exports.padeditbar = padeditbar;
