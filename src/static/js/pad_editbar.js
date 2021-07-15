@@ -126,6 +126,8 @@ const padeditbar = (() => {
   const syncAnimation = syncAnimationFn();
 
   const self = {
+    _editbarPosition: 0,
+
     init() {
       this.dropdowns = [];
 
@@ -139,7 +141,7 @@ const padeditbar = (() => {
       });
 
       $('body:not(#editorcontainerbox)').on('keydown', (evt) => {
-        bodyKeyEvent(evt);
+        this._bodyKeyEvent(evt);
       });
 
       $('.show-more-icon-btn').click(() => {
@@ -294,71 +296,69 @@ const padeditbar = (() => {
         $('.toolbar').addClass('cropped');
       }
     },
-  };
 
-  let editbarPosition = 0;
-
-  const bodyKeyEvent = (evt) => {
-    // If the event is Alt F9 or Escape & we're already in the editbar menu
-    // Send the users focus back to the pad
-    if ((evt.keyCode === 120 && evt.altKey) || evt.keyCode === 27) {
-      if ($(':focus').parents('.toolbar').length === 1) {
-        // If we're in the editbar already..
-        // Close any dropdowns we have open..
-        padeditbar.toggleDropDown('none');
-        // Check we're on a pad and not on the timeslider
-        // Or some other window I haven't thought about!
-        if (typeof pad === 'undefined') {
-          // Timeslider probably..
-          // Shift focus away from any drop downs
-          $(':focus').blur(); // required to do not try to remove!
-          $('#editorcontainerbox').focus(); // Focus back onto the pad
+    _bodyKeyEvent(evt) {
+      // If the event is Alt F9 or Escape & we're already in the editbar menu
+      // Send the users focus back to the pad
+      if ((evt.keyCode === 120 && evt.altKey) || evt.keyCode === 27) {
+        if ($(':focus').parents('.toolbar').length === 1) {
+          // If we're in the editbar already..
+          // Close any dropdowns we have open..
+          this.toggleDropDown('none');
+          // Check we're on a pad and not on the timeslider
+          // Or some other window I haven't thought about!
+          if (typeof pad === 'undefined') {
+            // Timeslider probably..
+            // Shift focus away from any drop downs
+            $(':focus').blur(); // required to do not try to remove!
+            $('#editorcontainerbox').focus(); // Focus back onto the pad
+          } else {
+            // Shift focus away from any drop downs
+            $(':focus').blur(); // required to do not try to remove!
+            padeditor.ace.focus(); // Sends focus back to pad
+            // The above focus doesn't always work in FF, you have to hit enter afterwards
+            evt.preventDefault();
+          }
         } else {
-          // Shift focus away from any drop downs
-          $(':focus').blur(); // required to do not try to remove!
-          padeditor.ace.focus(); // Sends focus back to pad
-          // The above focus doesn't always work in FF, you have to hit enter afterwards
+          // Focus on the editbar :)
+          const firstEditbarElement = parent.parent.$('#editbar button').first();
+
+          $(evt.currentTarget).blur();
+          firstEditbarElement.focus();
           evt.preventDefault();
         }
-      } else {
-        // Focus on the editbar :)
-        const firstEditbarElement = parent.parent.$('#editbar button').first();
-
-        $(evt.currentTarget).blur();
-        firstEditbarElement.focus();
-        evt.preventDefault();
       }
-    }
-    // Are we in the toolbar??
-    if ($(':focus').parents('.toolbar').length === 1) {
-      // On arrow keys go to next/previous button item in editbar
-      if (evt.keyCode !== 39 && evt.keyCode !== 37) return;
+      // Are we in the toolbar??
+      if ($(':focus').parents('.toolbar').length === 1) {
+        // On arrow keys go to next/previous button item in editbar
+        if (evt.keyCode !== 39 && evt.keyCode !== 37) return;
 
-      // Get all the focusable items in the editbar
-      const focusItems = $('#editbar').find('button, select');
+        // Get all the focusable items in the editbar
+        const focusItems = $('#editbar').find('button, select');
 
-      // On left arrow move to next button in editbar
-      if (evt.keyCode === 37) {
-        // If a dropdown is visible or we're in an input don't move to the next button
-        if ($('.popup').is(':visible') || evt.target.localName === 'input') return;
+        // On left arrow move to next button in editbar
+        if (evt.keyCode === 37) {
+          // If a dropdown is visible or we're in an input don't move to the next button
+          if ($('.popup').is(':visible') || evt.target.localName === 'input') return;
 
-        editbarPosition--;
-        // Allow focus to shift back to end of row and start of row
-        if (editbarPosition === -1) editbarPosition = focusItems.length - 1;
-        $(focusItems[editbarPosition]).focus();
+          this._editbarPosition--;
+          // Allow focus to shift back to end of row and start of row
+          if (this._editbarPosition === -1) this._editbarPosition = focusItems.length - 1;
+          $(focusItems[this._editbarPosition]).focus();
+        }
+
+        // On right arrow move to next button in editbar
+        if (evt.keyCode === 39) {
+          // If a dropdown is visible or we're in an input don't move to the next button
+          if ($('.popup').is(':visible') || evt.target.localName === 'input') return;
+
+          this._editbarPosition++;
+          // Allow focus to shift back to end of row and start of row
+          if (this._editbarPosition >= focusItems.length) this._editbarPosition = 0;
+          $(focusItems[this._editbarPosition]).focus();
+        }
       }
-
-      // On right arrow move to next button in editbar
-      if (evt.keyCode === 39) {
-        // If a dropdown is visible or we're in an input don't move to the next button
-        if ($('.popup').is(':visible') || evt.target.localName === 'input') return;
-
-        editbarPosition++;
-        // Allow focus to shift back to end of row and start of row
-        if (editbarPosition >= focusItems.length) editbarPosition = 0;
-        $(focusItems[editbarPosition]).focus();
-      }
-    }
+    },
   };
 
   const aceAttributeCommand = (cmd, ace) => {
