@@ -124,6 +124,7 @@ const syncAnimation = (() => {
 
 exports.padeditbar = {
   _editbarPosition: 0,
+  commands: {},
   dropdowns: [],
 
   init() {
@@ -175,7 +176,6 @@ exports.padeditbar = {
   enable: () => {
     $('#editbar').addClass('enabledtoolbar').removeClass('disabledtoolbar');
   },
-  commands: {},
   registerCommand(cmd, callback) {
     this.commands[cmd] = callback;
     return this;
