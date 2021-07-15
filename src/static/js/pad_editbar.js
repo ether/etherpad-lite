@@ -125,7 +125,7 @@ const padeditbar = (() => {
   };
   const syncAnimation = syncAnimationFn();
 
-  const self = {
+  return {
     _editbarPosition: 0,
 
     init() {
@@ -150,7 +150,7 @@ const padeditbar = (() => {
       this.checkAllIconsAreDisplayedInToolbar();
       $(window).resize(_.debounce(() => this.checkAllIconsAreDisplayedInToolbar(), 100));
 
-      registerDefaultCommands(this);
+      this._registerDefaultCommands();
 
       hooks.callAll('postToolbarInit', {
         toolbar: this,
@@ -356,136 +356,133 @@ const padeditbar = (() => {
         }
       }
     },
-  };
 
-  const aceAttributeCommand = (cmd, ace) => {
-    ace.ace_toggleAttributeOnSelection(cmd);
-  };
+    _registerDefaultCommands() {
+      this.registerDropdownCommand('showusers', 'users');
+      this.registerDropdownCommand('settings');
+      this.registerDropdownCommand('connectivity');
+      this.registerDropdownCommand('import_export');
+      this.registerDropdownCommand('embed');
 
-  const registerDefaultCommands = (toolbar) => {
-    toolbar.registerDropdownCommand('showusers', 'users');
-    toolbar.registerDropdownCommand('settings');
-    toolbar.registerDropdownCommand('connectivity');
-    toolbar.registerDropdownCommand('import_export');
-    toolbar.registerDropdownCommand('embed');
-
-    toolbar.registerCommand('settings', () => {
-      toolbar.toggleDropDown('settings', () => {
-        $('#options-stickychat').focus();
+      this.registerCommand('settings', () => {
+        this.toggleDropDown('settings', () => {
+          $('#options-stickychat').focus();
+        });
       });
-    });
 
-    toolbar.registerCommand('import_export', () => {
-      toolbar.toggleDropDown('import_export', () => {
-        // If Import file input exists then focus on it..
-        if ($('#importfileinput').length !== 0) {
-          setTimeout(() => {
-            $('#importfileinput').focus();
-          }, 100);
-        } else {
-          $('.exportlink').first().focus();
-        }
+      this.registerCommand('import_export', () => {
+        this.toggleDropDown('import_export', () => {
+          // If Import file input exists then focus on it..
+          if ($('#importfileinput').length !== 0) {
+            setTimeout(() => {
+              $('#importfileinput').focus();
+            }, 100);
+          } else {
+            $('.exportlink').first().focus();
+          }
+        });
       });
-    });
 
-    toolbar.registerCommand('showusers', () => {
-      toolbar.toggleDropDown('users', () => {
-        $('#myusernameedit').focus();
+      this.registerCommand('showusers', () => {
+        this.toggleDropDown('users', () => {
+          $('#myusernameedit').focus();
+        });
       });
-    });
 
-    toolbar.registerCommand('embed', () => {
-      toolbar.setEmbedLinks();
-      toolbar.toggleDropDown('embed', () => {
-        $('#linkinput').focus().select();
+      this.registerCommand('embed', () => {
+        this.setEmbedLinks();
+        this.toggleDropDown('embed', () => {
+          $('#linkinput').focus().select();
+        });
       });
-    });
 
-    toolbar.registerCommand('savedRevision', () => {
-      padsavedrevs.saveNow();
-    });
+      this.registerCommand('savedRevision', () => {
+        padsavedrevs.saveNow();
+      });
 
-    toolbar.registerCommand('showTimeSlider', () => {
-      document.location = `${document.location.pathname}/timeslider`;
-    });
+      this.registerCommand('showTimeSlider', () => {
+        document.location = `${document.location.pathname}/timeslider`;
+      });
 
-    toolbar.registerAceCommand('bold', aceAttributeCommand);
-    toolbar.registerAceCommand('italic', aceAttributeCommand);
-    toolbar.registerAceCommand('underline', aceAttributeCommand);
-    toolbar.registerAceCommand('strikethrough', aceAttributeCommand);
+      const aceAttributeCommand = (cmd, ace) => {
+        ace.ace_toggleAttributeOnSelection(cmd);
+      };
+      this.registerAceCommand('bold', aceAttributeCommand);
+      this.registerAceCommand('italic', aceAttributeCommand);
+      this.registerAceCommand('underline', aceAttributeCommand);
+      this.registerAceCommand('strikethrough', aceAttributeCommand);
 
-    toolbar.registerAceCommand('undo', (cmd, ace) => {
-      ace.ace_doUndoRedo(cmd);
-    });
+      this.registerAceCommand('undo', (cmd, ace) => {
+        ace.ace_doUndoRedo(cmd);
+      });
 
-    toolbar.registerAceCommand('redo', (cmd, ace) => {
-      ace.ace_doUndoRedo(cmd);
-    });
+      this.registerAceCommand('redo', (cmd, ace) => {
+        ace.ace_doUndoRedo(cmd);
+      });
 
-    toolbar.registerAceCommand('insertunorderedlist', (cmd, ace) => {
-      ace.ace_doInsertUnorderedList();
-    });
-
-    toolbar.registerAceCommand('insertorderedlist', (cmd, ace) => {
-      ace.ace_doInsertOrderedList();
-    });
-
-    toolbar.registerAceCommand('indent', (cmd, ace) => {
-      if (!ace.ace_doIndentOutdent(false)) {
+      this.registerAceCommand('insertunorderedlist', (cmd, ace) => {
         ace.ace_doInsertUnorderedList();
-      }
-    });
+      });
 
-    toolbar.registerAceCommand('outdent', (cmd, ace) => {
-      ace.ace_doIndentOutdent(true);
-    });
+      this.registerAceCommand('insertorderedlist', (cmd, ace) => {
+        ace.ace_doInsertOrderedList();
+      });
 
-    toolbar.registerAceCommand('clearauthorship', (cmd, ace) => {
-      // If we have the whole document selected IE control A has been hit
-      const rep = ace.ace_getRep();
-      let doPrompt = false;
-      const lastChar = rep.lines.atIndex(rep.lines.length() - 1).width - 1;
-      const lastLineIndex = rep.lines.length() - 1;
-      if (rep.selStart[0] === 0 && rep.selStart[1] === 0) {
-        // nesting intentionally here to make things readable
-        if (rep.selEnd[0] === lastLineIndex && rep.selEnd[1] === lastChar) {
-          doPrompt = true;
+      this.registerAceCommand('indent', (cmd, ace) => {
+        if (!ace.ace_doIndentOutdent(false)) {
+          ace.ace_doInsertUnorderedList();
         }
-      }
-      /*
-      * NOTICE: This command isn't fired on Control Shift C.
-      * I intentionally didn't create duplicate code because if you are hitting
-      * Control Shift C we make the assumption you are a "power user"
-      * and as such we assume you don't need the prompt to bug you each time!
-      * This does make wonder if it's worth having a checkbox to avoid being
-      * prompted again but that's probably overkill for this contribution.
-      */
+      });
 
-      // if we don't have any text selected, we have a caret or we have already said to prompt
-      if ((!(rep.selStart && rep.selEnd)) || ace.ace_isCaret() || doPrompt) {
-        if (window.confirm(html10n.get('pad.editbar.clearcolors'))) {
-          ace.ace_performDocumentApplyAttributesToCharRange(0, ace.ace_getRep().alltext.length, [
-            ['author', ''],
-          ]);
+      this.registerAceCommand('outdent', (cmd, ace) => {
+        ace.ace_doIndentOutdent(true);
+      });
+
+      this.registerAceCommand('clearauthorship', (cmd, ace) => {
+        // If we have the whole document selected IE control A has been hit
+        const rep = ace.ace_getRep();
+        let doPrompt = false;
+        const lastChar = rep.lines.atIndex(rep.lines.length() - 1).width - 1;
+        const lastLineIndex = rep.lines.length() - 1;
+        if (rep.selStart[0] === 0 && rep.selStart[1] === 0) {
+          // nesting intentionally here to make things readable
+          if (rep.selEnd[0] === lastLineIndex && rep.selEnd[1] === lastChar) {
+            doPrompt = true;
+          }
         }
-      } else {
-        ace.ace_setAttributeOnSelection('author', '');
-      }
-    });
+        /*
+         * NOTICE: This command isn't fired on Control Shift C.
+         * I intentionally didn't create duplicate code because if you are hitting
+         * Control Shift C we make the assumption you are a "power user"
+         * and as such we assume you don't need the prompt to bug you each time!
+         * This does make wonder if it's worth having a checkbox to avoid being
+         * prompted again but that's probably overkill for this contribution.
+         */
 
-    toolbar.registerCommand('timeslider_returnToPad', (cmd) => {
-      if (document.referrer.length > 0 &&
+        // if we don't have any text selected, we have a caret or we have already said to prompt
+        if ((!(rep.selStart && rep.selEnd)) || ace.ace_isCaret() || doPrompt) {
+          if (window.confirm(html10n.get('pad.editbar.clearcolors'))) {
+            ace.ace_performDocumentApplyAttributesToCharRange(0, ace.ace_getRep().alltext.length, [
+              ['author', ''],
+            ]);
+          }
+        } else {
+          ace.ace_setAttributeOnSelection('author', '');
+        }
+      });
+
+      this.registerCommand('timeslider_returnToPad', (cmd) => {
+        if (document.referrer.length > 0 &&
             document.referrer.substring(document.referrer.lastIndexOf('/') - 1,
                 document.referrer.lastIndexOf('/')) === 'p') {
-        document.location = document.referrer;
-      } else {
-        document.location = document.location.href
-            .substring(0, document.location.href.lastIndexOf('/'));
-      }
-    });
+          document.location = document.referrer;
+        } else {
+          document.location = document.location.href
+              .substring(0, document.location.href.lastIndexOf('/'));
+        }
+      });
+    },
   };
-
-  return self;
 })();
 
 exports.padeditbar = padeditbar;
