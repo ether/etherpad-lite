@@ -245,7 +245,7 @@ exports.padeditbar = {
     } catch (err) {
       cbErr = err || new Error(err);
     } finally {
-      if (cb) cb(cbErr);
+      if (cb) Promise.resolve().then(() => cb(cbErr));
     }
   },
   setSyncStatus: (status) => {
