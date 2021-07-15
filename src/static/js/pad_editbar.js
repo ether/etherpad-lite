@@ -124,10 +124,9 @@ const syncAnimation = (() => {
 
 exports.padeditbar = {
   _editbarPosition: 0,
+  dropdowns: [],
 
   init() {
-    this.dropdowns = [];
-
     $('#editbar .editbarbutton').attr('unselectable', 'on'); // for IE
     this.enable();
     $('#editbar [data-key]').each((i, elt) => {
