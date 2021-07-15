@@ -225,8 +225,6 @@ exports.padeditbar = {
           module.removeClass('popup-show');
         }
       }
-
-      if (cb) return cb();
     } else {
       // hide all modules that are not selected and remove highlighting
       // respectively add highlighting to the corresponding button
@@ -239,12 +237,10 @@ exports.padeditbar = {
         } else if (thisModuleName === moduleName) {
           $(`li[data-key=${thisModuleName}] > a`).addClass('selected');
           module.addClass('popup-show');
-          if (cb) {
-            cb();
-          }
         }
       }
     }
+    if (cb) cb();
   },
   setSyncStatus: (status) => {
     if (status === 'syncing') {
