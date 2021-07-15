@@ -216,9 +216,7 @@ const padeditbar = (() => {
       // hide all modules and remove highlighting of all buttons
       if (moduleName === 'none') {
         const returned = false;
-        for (let i = 0; i < this.dropdowns.length; i++) {
-          const thisModuleName = this.dropdowns[i];
-
+        for (const thisModuleName of this.dropdowns) {
           // skip the userlist
           if (thisModuleName === 'users') continue;
 
@@ -237,8 +235,7 @@ const padeditbar = (() => {
       } else {
         // hide all modules that are not selected and remove highlighting
         // respectively add highlighting to the corresponding button
-        for (let i = 0; i < this.dropdowns.length; i++) {
-          const thisModuleName = this.dropdowns[i];
+        for (const thisModuleName of this.dropdowns) {
           const module = $(`#${thisModuleName}`);
 
           if (module.hasClass('popup-show')) {
