@@ -38,7 +38,8 @@ describe('Admin > Settings', function () {
     // reset it to the old value
     helper.newAdmin('settings');
     await helper.waitForPromise(
-        () => helper.admin$ && helper.admin$('.settings').val().length > 0, 20000);
+        () => helper.admin$ &&
+                helper.admin$('.settings').val().length === settingsLength + 11, 20000);
 
     // replace the test value with a line break
     helper.admin$('.settings').val((_, text) => text.replace('/* test */\n', ''));
@@ -50,12 +51,11 @@ describe('Admin > Settings', function () {
     // settings should have the old value
     helper.newAdmin('settings');
     await helper.waitForPromise(
-        () => helper.admin$ && helper.admin$('.settings').val().length > 0, 36000);
-    expect(settings).to.be(helper.admin$('.settings').val());
+        () => helper.admin$ && helper.admin$('.settings').val().length === settingsLength &&
+          settings === helper.admin$('.settings').val(), 20000);
   });
 
   it('restart works', async function () {
-    this.timeout(60000);
     const getStartTime = async () => {
       try {
         const {httpStartTime} = await $.ajax({
@@ -66,6 +66,8 @@ describe('Admin > Settings', function () {
         });
         return httpStartTime;
       } catch (err) {
+        document.getElementById('console').append(
+            `an error occurred: ${err.message} of type ${err.name}\n`);
         return null;
       }
     };
