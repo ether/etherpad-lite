@@ -125,7 +125,6 @@ abbr[title] {
  * Address style set to `bolder` in Firefox 4+, Safari, and Chrome.
  */
 
-b,
 strong {
   font-weight: bold;
 }
