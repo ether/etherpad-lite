@@ -69,15 +69,15 @@ describe('Admin > Settings', function () {
         return null;
       }
     };
+    let oldStartTime;
     await helper.waitForPromise(async () => {
-      const startTime = await getStartTime();
-      return startTime != null && startTime > 0 && Date.now() > startTime;
+      oldStartTime = await getStartTime();
+      return oldStartTime != null && oldStartTime > 0;
     }, 1000, 500);
-    const clickTime = Date.now();
     helper.admin$('#restartEtherpad').click();
     await helper.waitForPromise(async () => {
       const startTime = await getStartTime();
-      return startTime != null && startTime >= clickTime;
+      return startTime != null && startTime > oldStartTime;
     }, 60000, 500);
   });
 });
