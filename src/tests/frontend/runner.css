@@ -13,6 +13,10 @@ body {
   display: none;
 }
 
+#debuglogs {
+  display: none;
+}
+
 #split-view {
   width: 100%;
   height: 100%;
