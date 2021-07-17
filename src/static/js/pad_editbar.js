@@ -67,13 +67,13 @@ ToolbarItem.prototype.bind = function (callback) {
   const self = this;
 
   if (self.isButton()) {
-    self.$el.click((event) => {
-      $(':focus').blur();
+    self.$el.on('click', (event) => {
+      $(':focus').trigger('blur');
       callback(self.getCommand(), self);
       event.preventDefault();
     });
   } else if (self.isSelect()) {
-    self.$el.find('select').change(() => {
+    self.$el.find('select').on('change', () => {
       callback(self.getCommand(), self);
     });
   }
@@ -135,7 +135,7 @@ const padeditbar = (function () {
       $('#editbar .editbarbutton').attr('unselectable', 'on'); // for IE
       this.enable();
       $('#editbar [data-key]').each(function () {
-        $(this).unbind('click');
+        $(this).off('click');
         (new ToolbarItem($(this))).bind((command, item) => {
           self.triggerCommand(command, item);
         });
@@ -145,11 +145,11 @@ const padeditbar = (function () {
         bodyKeyEvent(evt);
       });
 
-      $('.show-more-icon-btn').click(() => {
+      $('.show-more-icon-btn').on('click', () => {
         $('.toolbar').toggleClass('full-icons');
       });
       self.checkAllIconsAreDisplayedInToolbar();
-      $(window).resize(_.debounce(self.checkAllIconsAreDisplayedInToolbar, 100));
+      $(window).on('resize', _.debounce(self.checkAllIconsAreDisplayedInToolbar, 100));
 
       registerDefaultCommands(self);
 
@@ -169,7 +169,7 @@ const padeditbar = (function () {
       }
 
       // When editor is scrolled, we add a class to style the editbar differently
-      $('iframe[name="ace_outer"]').contents().scroll(function () {
+      $('iframe[name="ace_outer"]').contents().trigger('scroll', function () {
         $('#editbar').toggleClass('editor-scrolled', $(this).scrollTop() > 2);
       });
     },
@@ -314,11 +314,11 @@ const padeditbar = (function () {
         if (typeof pad === 'undefined') {
           // Timeslider probably..
           // Shift focus away from any drop downs
-          $(':focus').blur(); // required to do not try to remove!
-          $('#editorcontainerbox').focus(); // Focus back onto the pad
+          $(':focus').trigger('blur'); // required to do not try to remove!
+          $('#editorcontainerbox').trigger('focus'); // Focus back onto the pad
         } else {
           // Shift focus away from any drop downs
-          $(':focus').blur(); // required to do not try to remove!
+          $(':focus').trigger('blur'); // required to do not try to remove!
           padeditor.ace.focus(); // Sends focus back to pad
           // The above focus doesn't always work in FF, you have to hit enter afterwards
           evt.preventDefault();
@@ -327,8 +327,8 @@ const padeditbar = (function () {
         // Focus on the editbar :)
         const firstEditbarElement = parent.parent.$('#editbar button').first();
 
-        $(this).blur();
-        firstEditbarElement.focus();
+        $(this).trigger('blur');
+        firstEditbarElement.trigger('focus');
         evt.preventDefault();
       }
     }
@@ -348,7 +348,7 @@ const padeditbar = (function () {
         editbarPosition--;
         // Allow focus to shift back to end of row and start of row
         if (editbarPosition === -1) editbarPosition = focusItems.length - 1;
-        $(focusItems[editbarPosition]).focus();
+        $(focusItems[editbarPosition]).trigger('focus');
       }
 
       // On right arrow move to next button in editbar
@@ -359,7 +359,7 @@ const padeditbar = (function () {
         editbarPosition++;
         // Allow focus to shift back to end of row and start of row
         if (editbarPosition >= focusItems.length) editbarPosition = 0;
-        $(focusItems[editbarPosition]).focus();
+        $(focusItems[editbarPosition]).trigger('focus');
       }
     }
   };
@@ -377,7 +377,7 @@ const padeditbar = (function () {
 
     toolbar.registerCommand('settings', () => {
       toolbar.toggleDropDown('settings', () => {
-        $('#options-stickychat').focus();
+        $('#options-stickychat').trigger('focus');
       });
     });
 
@@ -386,24 +386,24 @@ const padeditbar = (function () {
         // If Import file input exists then focus on it..
         if ($('#importfileinput').length !== 0) {
           setTimeout(() => {
-            $('#importfileinput').focus();
+            $('#importfileinput').trigger('focus');
           }, 100);
         } else {
-          $('.exportlink').first().focus();
+          $('.exportlink').first().trigger('focus');
         }
       });
     });
 
     toolbar.registerCommand('showusers', () => {
       toolbar.toggleDropDown('users', () => {
-        $('#myusernameedit').focus();
+        $('#myusernameedit').trigger('focus');
       });
     });
 
     toolbar.registerCommand('embed', () => {
       toolbar.setEmbedLinks();
       toolbar.toggleDropDown('embed', () => {
-        $('#linkinput').focus().select();
+        $('#linkinput').trigger('focus').trigger('select');
       });
     });
 

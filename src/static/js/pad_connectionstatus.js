@@ -31,7 +31,7 @@ const padconnectionstatus = (() => {
 
   const self = {
     init: () => {
-      $('button#forcereconnect').click(() => {
+      $('button#forcereconnect').on('click', () => {
         window.location.reload();
       });
     },

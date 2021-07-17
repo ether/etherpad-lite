@@ -79,7 +79,7 @@ const padeditor = (() => {
       });
 
       // font family change
-      $('#viewfontmenu').change(() => {
+      $('#viewfontmenu').on('change', () => {
         pad.changeViewOption('padFontFamily', $('#viewfontmenu').val());
       });
 
@@ -100,7 +100,7 @@ const padeditor = (() => {
         });
       });
       $('#languagemenu').val(html10n.getLanguage());
-      $('#languagemenu').change(() => {
+      $('#languagemenu').on('change', () => {
         Cookies.set('language', $('#languagemenu').val());
         window.html10n.localize([$('#languagemenu').val(), 'en']);
         if ($('select').niceSelect) {

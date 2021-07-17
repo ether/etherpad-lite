@@ -22,7 +22,7 @@ xdescribe('timeslider button takes you to the timeslider of a pad', function () 
     await helper.waitForPromise(() => modifiedValue !== originalValue);
 
     const $timesliderButton = chrome$('#timesliderlink');
-    $timesliderButton.click(); // So click the timeslider link
+    $timesliderButton.trigger('click'); // So click the timeslider link
 
     await helper.waitForPromise(() => {
       const iFrameURL = chrome$.window.location.href;

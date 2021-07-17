@@ -47,13 +47,13 @@ describe('the test helper', function () {
 
       // click on the settings button to make settings visible
       let $userButton = chrome$('.buttonicon-showusers');
-      $userButton.click();
+      $userButton.trigger('click');
 
       let $usernameInput = chrome$('#myusernameedit');
-      $usernameInput.click();
+      $usernameInput.trigger('click');
 
       $usernameInput.val('John McLear');
-      $usernameInput.blur();
+      $usernameInput.trigger('blur');
 
       // Before refreshing, make sure the name is there
       expect($usernameInput.val()).to.be('John McLear');
@@ -85,7 +85,7 @@ describe('the test helper', function () {
 
       // click on the settings button to make settings visible
       $userButton = chrome$('.buttonicon-showusers');
-      $userButton.click();
+      $userButton.trigger('click');
 
       // confirm that the session was actually cleared
       $usernameInput = chrome$('#myusernameedit');

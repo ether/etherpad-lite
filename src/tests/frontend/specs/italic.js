@@ -18,7 +18,7 @@ describe('italic some text', function () {
 
     // get the bold button and click it
     const $boldButton = chrome$('.buttonicon-italic');
-    $boldButton.click();
+    $boldButton.trigger('click');
 
     // ace creates a new dom element when you press a button, just get the first text element again
     const $newFirstTextElement = inner$('div').first();

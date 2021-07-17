@@ -66,7 +66,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
   if (browser.firefox) {
     // Prevent "escape" from taking effect and canceling a comet connection;
     // doesn't work if focus is on an iframe.
-    $(window).bind('keydown', (evt) => {
+    $(window).on('keydown', (evt) => {
       if (evt.which === 27) {
         evt.preventDefault();
       }

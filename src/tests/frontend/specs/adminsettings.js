@@ -31,7 +31,7 @@ describe('Admin > Settings', function () {
         () => settingsLength + 11 === helper.admin$('.settings').val().length, 5000);
 
     // saves
-    helper.admin$('#saveSettings').click();
+    helper.admin$('#saveSettings').trigger('click');
     await helper.waitForPromise(() => helper.admin$('#response').is(':visible'), 5000);
 
     // new value for settings.json should now be saved
@@ -44,7 +44,7 @@ describe('Admin > Settings', function () {
     helper.admin$('.settings').val((_, text) => text.replace('/* test */\n', ''));
     await helper.waitForPromise(() => settingsLength === helper.admin$('.settings').val().length);
 
-    helper.admin$('#saveSettings').click(); // saves
+    helper.admin$('#saveSettings').trigger('click'); // saves
     await helper.waitForPromise(() => helper.admin$('#response').is(':visible'));
 
     // settings should have the old value
@@ -72,9 +72,9 @@ describe('Admin > Settings', function () {
     await helper.waitForPromise(async () => {
       const startTime = await getStartTime();
       return startTime != null && startTime > 0 && Date.now() > startTime;
-    }, 1000, 500);
+    }, 2100, 500);
     const clickTime = Date.now();
-    helper.admin$('#restartEtherpad').click();
+    helper.admin$('#restartEtherpad').trigger('click');
     await helper.waitForPromise(async () => {
       const startTime = await getStartTime();
       return startTime != null && startTime >= clickTime;

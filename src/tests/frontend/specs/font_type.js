@@ -12,7 +12,7 @@ describe('font select', function () {
 
     // click on the settings button to make settings visible
     const $settingsButton = chrome$('.buttonicon-settings');
-    $settingsButton.click();
+    $settingsButton.trigger('click');
 
     // get the font menu and RobotoMono option
     const $viewfontmenu = chrome$('#viewfontmenu');
@@ -21,7 +21,7 @@ describe('font select', function () {
     // $RobotoMonooption.attr('selected','selected');
     // commenting out above will break safari test
     $viewfontmenu.val('RobotoMono');
-    $viewfontmenu.change();
+    $viewfontmenu.trigger('change');
 
     // check if font changed to RobotoMono
     const fontFamily = inner$('body').css('font-family').toLowerCase();

@@ -46,7 +46,7 @@ if (window.location.hash.toLowerCase() === '#skinvariantsbuilder') {
     $('#skin-variant-full-width').prop('checked', $('html').hasClass('full-width-editor'));
   };
 
-  $('.skin-variant').change(() => {
+  $('.skin-variant').on('change', () => {
     updateSkinVariantsClasses();
   });
 

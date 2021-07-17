@@ -13,7 +13,7 @@ describe('select formatting buttons when selection has style applied', function 
     const chrome$ = helper.padChrome$;
     selectLine(line);
     const $formattingButton = chrome$(`.buttonicon-${style}`);
-    $formattingButton.click();
+    $formattingButton.trigger('click');
   };
 
   const isButtonSelected = function (style) {
@@ -37,7 +37,7 @@ describe('select formatting buttons when selection has style applied', function 
   const undo = async function () {
     const originalHTML = helper.padInner$('body').html();
     const $undoButton = helper.padChrome$('.buttonicon-undo');
-    $undoButton.click();
+    $undoButton.trigger('click');
     await helper.waitForPromise(() => helper.padInner$('body').html() !== originalHTML);
   };
 

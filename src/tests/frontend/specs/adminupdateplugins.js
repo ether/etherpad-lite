@@ -56,7 +56,7 @@ describe('Plugins page', function () {
 
     await timeout(500); // HACK!  Please submit better fix..
     const $doUpdateButton = helper.admin$('.ep_align .do-update');
-    $doUpdateButton.click();
+    $doUpdateButton.trigger('click');
 
     // ensure its showing as Updating
     await helper.waitForPromise(
@@ -81,7 +81,7 @@ describe('Plugins page', function () {
     // skip if we already have ep_headings2 installed..
     if (helper.admin$('.ep_headings2 .do-install').is(':visible') === false) this.skip();
 
-    helper.admin$('.ep_headings2 .do-install').click();
+    helper.admin$('.ep_headings2 .do-install').trigger('click');
     // ensure install has attempted to be started
     await helper.waitForPromise(
         () => helper.admin$('.ep_headings2 .do-install').length !== 0, 120000);
@@ -98,7 +98,7 @@ describe('Plugins page', function () {
     await helper.waitForPromise(
         () => helper.admin$('.ep_headings2 .do-uninstall').length !== 0, 120000);
 
-    helper.admin$('.ep_headings2 .do-uninstall').click();
+    helper.admin$('.ep_headings2 .do-uninstall').trigger('click');
 
     // ensure its showing uninstalling
     await helper.waitForPromise(

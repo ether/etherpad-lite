@@ -467,6 +467,7 @@ const pad = {
       setTimeout(() => {
         padeditor.ace.focus();
       }, 0);
+      $('#options-stickychat').on('click', () => {chat.stickToScreen()});
       // if we have a cookie for always showing chat then show it
       if (padcookie.getPref('chatAlwaysVisible')) {
         chat.stickToScreen(true); // stick it to the screen
@@ -492,8 +493,8 @@ const pad = {
       // Prevent sticky chat or chat and users to be checked for mobiles
       const checkChatAndUsersVisibility = (x) => {
         if (x.matches) { // If media query matches
-          $('#options-chatandusers:checked').click();
-          $('#options-stickychat:checked').click();
+          $('#options-chatandusers:checked').trigger('click');
+          $('#options-stickychat:checked').trigger('click');
         }
       };
       const mobileMatch = window.matchMedia('(max-width: 800px)');
@@ -725,7 +726,7 @@ const pad = {
     $('form#reconnectform input.diagnosticInfo').val(JSON.stringify(pad.diagnosticInfo));
     $('form#reconnectform input.missedChanges')
         .val(JSON.stringify(pad.collabClient.getMissedChanges()));
-    $('form#reconnectform').submit();
+    $('form#reconnectform').trigger('submit');
   },
   callWhenNotCommitting: (f) => {
     pad.collabClient.callWhenNotCommitting(f);

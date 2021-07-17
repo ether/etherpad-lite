@@ -33,7 +33,7 @@ describe('author of pad edition', function () {
 
     // get the clear authorship colors button and click it
     const $clearauthorshipcolorsButton = chrome$('.buttonicon-clearauthorship');
-    $clearauthorshipcolorsButton.click();
+    $clearauthorshipcolorsButton.trigger('click');
 
     // does the first divs span include an author class?
     const hasAuthorClass = inner$('div span').first().attr('class').indexOf('author') !== -1;

@@ -27,7 +27,7 @@ $(document).ready(() => {
     /* Check to make sure the JSON is clean before proceeding */
     if (isJSONClean(settings.results)) {
       $('.settings').append(settings.results);
-      $('.settings').focus();
+      $('.settings').trigger('focus');
       $('.settings').autosize();
     } else {
       alert('YOUR JSON IS BAD AND YOU SHOULD FEEL BAD');
@@ -42,7 +42,7 @@ $(document).ready(() => {
       socket.emit('saveSettings', $('.settings').val());
     } else {
       alert('YOUR JSON IS BAD AND YOU SHOULD FEEL BAD');
-      $('.settings').focus();
+      $('.settings').trigger('focus');
     }
   });
 

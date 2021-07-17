@@ -25,7 +25,7 @@ describe('timeslider follow', function () {
 
     // set to follow contents as it arrives
     helper.contentWindow().$('#options-followContents').prop('checked', true);
-    helper.contentWindow().$('#playpause_button_icon').click();
+    helper.contentWindow().$('#playpause_button_icon').trigger('click');
 
     let newTop;
     await helper.waitForPromise(() => {
@@ -64,27 +64,27 @@ describe('timeslider follow', function () {
      */
 
     // line 40 changed
-    helper.contentWindow().$('#leftstep').click();
+    helper.contentWindow().$('#leftstep').trigger('click');
     await helper.waitForPromise(() => hasFollowedToLine(40));
 
     // line 1 is the first line that changed
-    helper.contentWindow().$('#leftstep').click();
+    helper.contentWindow().$('#leftstep').trigger('click');
     await helper.waitForPromise(() => hasFollowedToLine(1));
 
     // line 1 changed
-    helper.contentWindow().$('#leftstep').click();
+    helper.contentWindow().$('#leftstep').trigger('click');
     await helper.waitForPromise(() => hasFollowedToLine(1));
 
     // line 1 changed
-    helper.contentWindow().$('#rightstep').click();
+    helper.contentWindow().$('#rightstep').trigger('click');
     await helper.waitForPromise(() => hasFollowedToLine(1));
 
     // line 1 is the first line that changed
-    helper.contentWindow().$('#rightstep').click();
+    helper.contentWindow().$('#rightstep').trigger('click');
     await helper.waitForPromise(() => hasFollowedToLine(1));
 
     // line 40 changed
-    helper.contentWindow().$('#rightstep').click();
+    helper.contentWindow().$('#rightstep').trigger('click');
     helper.waitForPromise(() => hasFollowedToLine(40));
   });
 });

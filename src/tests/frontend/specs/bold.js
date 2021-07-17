@@ -18,7 +18,7 @@ describe('bold button', function () {
 
     // get the bold button and click it
     const $boldButton = chrome$('.buttonicon-bold');
-    $boldButton.click();
+    $boldButton.trigger('click');
 
     const $newFirstTextElement = inner$('div').first();
 

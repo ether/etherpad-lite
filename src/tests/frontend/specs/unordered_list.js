@@ -13,7 +13,7 @@ describe('unordered_list.js', function () {
       const originalText = inner$('div').first().text();
 
       const $insertunorderedlistButton = chrome$('.buttonicon-insertunorderedlist');
-      $insertunorderedlistButton.click();
+      $insertunorderedlistButton.trigger('click');
 
       await helper.waitForPromise(() => {
         const newText = inner$('div').first().text();
@@ -21,7 +21,7 @@ describe('unordered_list.js', function () {
       });
 
       // remove indentation by bullet and ensure text string remains the same
-      chrome$('.buttonicon-outdent').click();
+      chrome$('.buttonicon-outdent').trigger('click');
       await helper.waitForPromise(() => inner$('div').first().text() === originalText);
     });
   });
@@ -38,7 +38,7 @@ describe('unordered_list.js', function () {
       const originalText = inner$('div').first().text();
 
       const $insertunorderedlistButton = chrome$('.buttonicon-insertunorderedlist');
-      $insertunorderedlistButton.click();
+      $insertunorderedlistButton.trigger('click');
 
       await helper.waitForPromise(() => {
         const newText = inner$('div').first().text();
@@ -46,7 +46,7 @@ describe('unordered_list.js', function () {
       });
 
       // remove indentation by bullet and ensure text string remains the same
-      $insertunorderedlistButton.click();
+      $insertunorderedlistButton.trigger('click');
       await helper.waitForPromise(() => inner$('div').find('ul').length !== 1);
     });
   });
@@ -63,7 +63,7 @@ describe('unordered_list.js', function () {
       const chrome$ = helper.padChrome$;
 
       const $insertorderedlistButton = chrome$('.buttonicon-insertunorderedlist');
-      $insertorderedlistButton.click();
+      $insertorderedlistButton.trigger('click');
 
       // type a bit, make a line break and type again
       const $firstTextElement = inner$('div span').first();
@@ -98,7 +98,7 @@ describe('unordered_list.js', function () {
       $firstTextElement.sendkeys('{selectall}');
 
       const $insertorderedlistButton = chrome$('.buttonicon-insertunorderedlist');
-      $insertorderedlistButton.click();
+      $insertorderedlistButton.trigger('click');
 
       const e = new inner$.Event(helper.evtType);
       e.keyCode = 9; // tab
@@ -131,14 +131,14 @@ describe('unordered_list.js', function () {
       $firstTextElement.sendkeys('{selectall}');
 
       const $insertunorderedlistButton = chrome$('.buttonicon-insertunorderedlist');
-      $insertunorderedlistButton.click();
+      $insertunorderedlistButton.trigger('click');
 
       const $indentButton = chrome$('.buttonicon-indent');
-      $indentButton.click(); // make it indented twice
+      $indentButton.trigger('click'); // make it indented twice
 
       expect(inner$('div').first().find('.list-bullet2').length === 1).to.be(true);
       const $outdentButton = chrome$('.buttonicon-outdent');
-      $outdentButton.click(); // make it deindented to 1
+      $outdentButton.trigger('click'); // make it deindented to 1
 
       await helper.waitForPromise(() => inner$('div').first().find('.list-bullet1').length === 1);
     });

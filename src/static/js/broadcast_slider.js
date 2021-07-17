@@ -67,7 +67,7 @@ const loadBroadcastSliderJS = (fireWhenAllScriptsAreLoaded) => {
       newSavedRevision.css(
           'left', (position * ($('#ui-slider-bar').width() - 2) / (sliderLength * 1.0)) - 1);
       $('#ui-slider-bar').append(newSavedRevision);
-      newSavedRevision.mouseup((evt) => {
+      newSavedRevision.on('mouseup', (evt) => {
         BroadcastSlider.setSliderPosition(position);
       });
       savedRevisions.push(newSavedRevision);
@@ -209,21 +209,21 @@ const loadBroadcastSliderJS = (fireWhenAllScriptsAreLoaded) => {
 
     // assign event handlers to html UI elements after page load
     fireWhenAllScriptsAreLoaded.push(() => {
-      $(document).keyup((e) => {
+      $(document).on('keyup', (e) => {
         if (!e) e = window.event;
         const code = e.keyCode || e.which;
 
         if (code === 37) { // left
           if (e.shiftKey) {
-            $('#leftstar').click();
+            $('#leftstar').trigger('click');
           } else {
-            $('#leftstep').click();
+            $('#leftstep').trigger('click');
           }
         } else if (code === 39) { // right
           if (e.shiftKey) {
-            $('#rightstar').click();
+            $('#rightstar').trigger('click');
           } else {
-            $('#rightstep').click();
+            $('#rightstep').trigger('click');
           }
         } else if (code === 32) { // spacebar
           $('#playpause_button_icon').trigger('click');
@@ -231,22 +231,22 @@ const loadBroadcastSliderJS = (fireWhenAllScriptsAreLoaded) => {
       });
 
       // Resize
-      $(window).resize(() => {
+      $(window).on('resize', () => {
         updateSliderElements();
       });
 
       // Slider click
-      $('#ui-slider-bar').mousedown((evt) => {
+      $('#ui-slider-bar').on('mousedown', (evt) => {
         $('#ui-slider-handle').css('left', (evt.clientX - $('#ui-slider-bar').offset().left));
         $('#ui-slider-handle').trigger(evt);
       });
 
       // Slider dragging
-      $('#ui-slider-handle').mousedown(function (evt) {
+      $('#ui-slider-handle').on('mousedown', function (evt) {
         this.startLoc = evt.clientX;
         this.currentLoc = parseInt($(this).css('left'));
         sliderActive = true;
-        $(document).mousemove((evt2) => {
+        $(document).on('mousemove', (evt2) => {
           $(this).css('pointer', 'move');
           let newloc = this.currentLoc + (evt2.clientX - this.startLoc);
           if (newloc < 0) newloc = 0;
@@ -257,9 +257,9 @@ const loadBroadcastSliderJS = (fireWhenAllScriptsAreLoaded) => {
           $(this).css('left', newloc);
           if (getSliderPosition() !== version) _callSliderCallbacks(version);
         });
-        $(document).mouseup((evt2) => {
-          $(document).unbind('mousemove');
-          $(document).unbind('mouseup');
+        $(document).on('mouseup', (evt2) => {
+          $(document).off('mousemove');
+          $(document).off('mouseup');
           sliderActive = false;
           let newloc = this.currentLoc + (evt2.clientX - this.startLoc);
           if (newloc < 0) newloc = 0;
@@ -276,12 +276,12 @@ const loadBroadcastSliderJS = (fireWhenAllScriptsAreLoaded) => {
       });
 
       // play/pause toggling
-      $('#playpause_button_icon').click((evt) => {
+      $('#playpause_button_icon').on('click', (evt) => {
         BroadcastSlider.playpause();
       });
 
       // next/prev saved revision and changeset
-      $('.stepper').click(function (evt) {
+      $('.stepper').on('click', function (evt) {
         switch ($(this).attr('id')) {
           case 'leftstep':
             setSliderPosition(getSliderPosition() - 1);

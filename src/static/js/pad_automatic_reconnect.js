@@ -96,7 +96,7 @@ const whenConnectionIsRestablishedWithServer = (callback, pad) => {
 };
 
 const forceReconnection = ($modal) => {
-  $modal.find('#forcereconnect').click();
+  $modal.find('#forcereconnect').trigger('click');
 };
 
 const updateCountDownTimerMessage = ($modal, minutes, seconds) => {

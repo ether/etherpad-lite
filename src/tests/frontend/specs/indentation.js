@@ -27,7 +27,7 @@ describe('indentation button', function () {
     const chrome$ = helper.padChrome$;
 
     const $indentButton = chrome$('.buttonicon-indent');
-    $indentButton.click();
+    $indentButton.trigger('click');
 
     await helper.waitForPromise(() => inner$('div').first().find('ul li').length === 1);
   });
@@ -38,7 +38,7 @@ describe('indentation button', function () {
     const chrome$ = helper.padChrome$;
 
     const $indentButton = chrome$('.buttonicon-indent');
-    $indentButton.click();
+    $indentButton.trigger('click');
 
     // type a bit, make a line break and type again
     const $firstTextElement = inner$('div span').first();
@@ -147,19 +147,19 @@ describe('indentation button', function () {
     helper.selectLines($firstLine, $secondLine);
 
     const $indentButton = chrome$('.buttonicon-indent');
-    $indentButton.click();
+    $indentButton.trigger('click');
 
     await helper.waitForPromise(() => inner$('div').first().find('ul li').length === 1);
 
     // apply bold
     const $boldButton = chrome$('.buttonicon-bold');
-    $boldButton.click();
+    $boldButton.trigger('click');
 
     await helper.waitForPromise(() => inner$('div').first().find('b').length === 1);
 
     // outdent first 2 lines
     const $outdentButton = chrome$('.buttonicon-outdent');
-    $outdentButton.click();
+    $outdentButton.trigger('click');
     await helper.waitForPromise(() => inner$('div').first().find('ul li').length === 0);
 
     // check if '*' is displayed
@@ -179,7 +179,7 @@ describe('indentation button', function () {
 
     // get the indentation button and click it
     const $indentButton = helper.$getPadChrome().find('.buttonicon-indent');
-    $indentButton.click();
+    $indentButton.trigger('click');
 
     let newFirstTextElement = $inner.find('div').first();
 
@@ -196,7 +196,7 @@ describe('indentation button', function () {
     expect(isLI).to.be(true);
 
     // indent again
-    $indentButton.click();
+    $indentButton.trigger('click');
 
     newFirstTextElement = $inner.find('div').first();
 
@@ -215,8 +215,8 @@ describe('indentation button', function () {
 
     // get the unindentation button and click it twice
     const $outdentButton = helper.$getPadChrome().find('.buttonicon-outdent');
-    $outdentButton.click();
-    $outdentButton.click();
+    $outdentButton.trigger('click');
+    $outdentButton.trigger('click');
 
     newFirstTextElement = $inner.find('div').first();
 
@@ -242,8 +242,8 @@ describe('indentation button', function () {
     helper.selectText(firstTextElement[0], $inner);
 
     // indent twice
-    $indentButton.click();
-    $indentButton.click();
+    $indentButton.trigger('click');
+    $indentButton.trigger('click');
 
     // get the first text element out of the inner iframe
     firstTextElement = $inner.find('div').first();

@@ -32,7 +32,7 @@ describe('Automatic pad reload on Force Reconnect message', function () {
   context('and user clicks on Cancel', function () {
     beforeEach(async function () {
       const $errorMessageModal = helper.padChrome$('#connectivity .userdup');
-      $errorMessageModal.find('#cancelreconnect').click();
+      $errorMessageModal.find('#cancelreconnect').trigger('click');
       await helper.waitForPromise(
           () => helper.padChrome$('#connectivity .userdup').is(':visible') === true);
     });

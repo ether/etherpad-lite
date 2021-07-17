@@ -20,7 +20,7 @@ describe('undo button', function () {
     // get clear authorship button as a variable
     const $undoButton = chrome$('.buttonicon-undo');
     // click the button
-    $undoButton.click();
+    $undoButton.trigger('click');
 
     await helper.waitForPromise(() => inner$('div span').first().text() === originalValue);
   });
