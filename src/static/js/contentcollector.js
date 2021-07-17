@@ -31,30 +31,7 @@ const Changeset = require('./Changeset');
 const hooks = require('./pluginfw/hooks');
 
 const sanitizeUnicode = (s) => UNorm.nfc(s);
-
-// This file is used both in browsers and with cheerio in Node.js (for importing HTML). Cheerio's
-// Node-like objects are not 100% API compatible with the DOM specification; the following functions
-// abstract away the differences.
-
-// .nodeType works with DOM and cheerio 0.22.0, but cheerio 0.22.0 does not provide the Node.*_NODE
-// constants so they cannot be used here.
-const isElementNode = (n) => n.nodeType === 1; // Node.ELEMENT_NODE
-const isTextNode = (n) => n.nodeType === 3; // Node.TEXT_NODE
-// .tagName works with DOM and cheerio 0.22.0, but:
-//   * With DOM, .tagName is an uppercase string.
-//   * With cheerio 0.22.0, .tagName is a lowercase string.
-// For consistency, this function always returns a lowercase string.
 const tagName = (n) => n.tagName && n.tagName.toLowerCase();
-// .childNodes works with DOM and cheerio 0.22.0, except in cheerio the .childNodes property does
-// not exist on text nodes (and maybe other non-element nodes).
-const childNodes = (n) => n.childNodes || [];
-const getAttribute = (n, a) => {
-  // .getAttribute() works with DOM but not with cheerio 0.22.0.
-  if (n.getAttribute != null) return n.getAttribute(a);
-  // .attribs[] works with cheerio 0.22.0 but not with DOM.
-  if (n.attribs != null) return n.attribs[a];
-  return null;
-};
 // supportedElems are Supported natively within Etherpad and don't require a plugin
 const supportedElems = new Set([
   'author',
@@ -147,17 +124,13 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
   let selEnd = [-1, -1];
   const _isEmpty = (node, state) => {
     // consider clean blank lines pasted in IE to be empty
-    if (childNodes(node).length === 0) return true;
-    if (childNodes(node).length === 1 &&
+    if (node.childNodes.length === 0) return true;
+    if (node.childNodes.length === 1 &&
         getAssoc(node, 'shouldBeEmpty') &&
-        // Note: The .innerHTML property exists on DOM Element objects but not on cheerio's
-        // Element-like objects (cheerio v0.22.0) so this equality check will always be false.
-        // Cheerio's Element-like objects have no equivalent to .innerHTML. (Cheerio objects have an
-        // .html() method, but that isn't accessible here.)
         node.innerHTML === '&nbsp;' &&
         !getAssoc(node, 'unpasted')) {
       if (state) {
-        const child = childNodes(node)[0];
+        const child = node.childNodes[0];
         _reachPoint(child, 0, state);
         _reachPoint(child, 1, state);
       }
@@ -177,7 +150,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
   };
 
   const _reachBlockPoint = (nd, idx, state) => {
-    if (!isTextNode(nd)) _reachPoint(nd, idx, state);
+    if (nd.nodeType !== nd.TEXT_NODE) _reachPoint(nd, idx, state);
   };
 
   const _reachPoint = (nd, idx, state) => {
@@ -349,8 +322,8 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
     const startLine = lines.length() - 1;
     _reachBlockPoint(node, 0, state);
 
-    if (isTextNode(node)) {
-      const tname = getAttribute(node.parentNode, 'name');
+    if (node.nodeType === node.TEXT_NODE) {
+      const tname = node.parentNode.getAttribute('name');
       const context = {cc: this, state, tname, node, text: node.nodeValue};
       // Hook functions may either return a string (deprecated) or modify context.text. If any hook
       // function modifies context.text then all returned strings are ignored. If no hook functions
@@ -407,7 +380,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
           cc.startNewLine(state);
         }
       }
-    } else if (isElementNode(node)) {
+    } else if (node.nodeType === node.ELEMENT_NODE) {
       const tname = tagName(node) || '';
 
       if (tname === 'img') {
@@ -426,7 +399,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
 
       if (tname === 'br') {
         this.breakLine = true;
-        const tvalue = getAttribute(node, 'value');
+        const tvalue = node.getAttribute('value');
         const [startNewLine = true] = hooks.callAll('collectContentLineBreak', {
           cc: this,
           state,
@@ -441,8 +414,8 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
       } else if (tname === 'script' || tname === 'style') {
         // ignore
       } else if (!isEmpty) {
-        let styl = getAttribute(node, 'style');
-        let cls = getAttribute(node, 'class');
+        let styl = node.getAttribute('style');
+        let cls = node.getAttribute('class');
         let isPre = (tname === 'pre');
         if ((!isPre) && abrowser && abrowser.safari) {
           isPre = (styl && /\bwhite-space:\s*pre\b/i.exec(styl));
@@ -489,14 +462,14 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
             cc.doAttrib(state, 'strikethrough');
           }
           if (tname === 'ul' || tname === 'ol') {
-            let type = getAttribute(node, 'class');
+            let type = node.getAttribute('class');
             const rr = cls && /(?:^| )list-([a-z]+[0-9]+)\b/.exec(cls);
             // lists do not need to have a type, so before we make a wrong guess
             // check if we find a better hint within the node's children
             if (!rr && !type) {
-              for (const child of childNodes(node)) {
+              for (const child of node.childNodes) {
                 if (tagName(child) !== 'ul') continue;
-                type = getAttribute(child, 'class');
+                type = child.getAttribute('class');
                 if (type) break;
               }
             }
@@ -504,7 +477,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
               type = rr[1];
             } else {
               if (tname === 'ul') {
-                const cls = getAttribute(node, 'class');
+                const cls = node.getAttribute('class');
                 if ((type && type.match('indent')) || (cls && cls.match('indent'))) {
                   type = 'indent';
                 } else {
@@ -576,7 +549,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
           }
         }
 
-        for (const c of childNodes(node)) {
+        for (const c of node.childNodes) {
           cc.collectContent(c, state);
         }
 
