@@ -92,15 +92,11 @@ Pad.prototype.appendRevision = async function (aChangeset, author) {
     newRevData.meta.atext = this.atext;
   }
 
-  const p = [
-    db.set(`pad:${this.id}:revs:${newRev}`, newRevData),
-    this.saveToDatabase(),
-  ];
+  this.saveToDatabase();
+  const p_newRevData = db.set(`pad:${this.id}:revs:${newRev}`, newRevData);
 
   // set the author to pad
-  if (author) {
-    p.push(authorManager.addPad(author, this.id));
-  }
+  if (author) authorManager.addPad(author, this.id);
 
   if (this.head === 0) {
     hooks.callAll('padCreate', {pad: this, author});
@@ -108,7 +104,7 @@ Pad.prototype.appendRevision = async function (aChangeset, author) {
     hooks.callAll('padUpdate', {pad: this, author, revs: newRev, changeset: aChangeset});
   }
 
-  await Promise.all(p);
+  await p_newRevData;
 };
 
 // save all attributes to the database

@@ -94,7 +94,7 @@ exports.getColorPalette = () => [
  * Checks if the author exists
  */
 exports.doesAuthorExist = async (authorID) => {
-  const author = await db.get(`globalAuthor:${authorID}`);
+  const author = await exports.getAuthor(authorID);
 
   return author != null;
 };
@@ -107,6 +107,10 @@ exports.doesAuthorExists = exports.doesAuthorExist;
  * @param {String} token The token
  */
 exports.getAuthor4Token = async (token) => {
+  // e.g. in case of an export of a public pad, a token is not needed
+  if (token == null) {
+    return;
+  }
   const author = await mapAuthorWithDBKey('token2author', token);
 
   // return only the sub value authorID
@@ -181,41 +185,42 @@ exports.createAuthor = async (name) => {
 
 /**
  * Returns the Author Obj of the author
- * @param {String} author The id of the author
+ * @param {String} authorID The id of the author
  */
-exports.getAuthor = async (author) => await db.get(`globalAuthor:${author}`);
+exports.getAuthor = async (authorID) => await db.get(`globalAuthor:${authorID}`);
 
 /**
  * Returns the color Id of the author
- * @param {String} author The id of the author
+ * @param {String} authorID The id of the author
  */
-exports.getAuthorColorId = async (author) => await db.getSub(`globalAuthor:${author}`, ['colorId']);
+exports.getAuthorColorId = async (authorID) => await db.getSub(
+    `globalAuthor:${authorID}`, ['colorId']);
 
 /**
  * Sets the color Id of the author
- * @param {String} author The id of the author
+ * @param {String} authorID The id of the author
  * @param {String} colorId The color id of the author
  */
-exports.setAuthorColorId = async (author, colorId) => await db.setSub(
-    `globalAuthor:${author}`, ['colorId'], colorId);
+exports.setAuthorColorId = async (authorID, colorId) => await db.setSub(
+    `globalAuthor:${authorID}`, ['colorId'], colorId);
 
 /**
  * Returns the name of the author
- * @param {String} author The id of the author
+ * @param {String} authorID The id of the author
  */
-exports.getAuthorName = async (author) => await db.getSub(`globalAuthor:${author}`, ['name']);
+exports.getAuthorName = async (authorID) => await db.getSub(`globalAuthor:${authorID}`, ['name']);
 
 /**
  * Sets the name of the author
- * @param {String} author The id of the author
+ * @param {String} authorID The id of the author
  * @param {String} name The name of the author
  */
-exports.setAuthorName = async (author, name) => await db.setSub(
-    `globalAuthor:${author}`, ['name'], name);
+exports.setAuthorName = async (authorID, name) => await db.setSub(
+    `globalAuthor:${authorID}`, ['name'], name);
 
 /**
  * Returns an array of all pads this author contributed to
- * @param {String} author The id of the author
+ * @param {String} authorID The id of the author
  */
 exports.listPadsOfAuthor = async (authorID) => {
   /* There are two other places where this array is manipulated:
@@ -224,7 +229,7 @@ exports.listPadsOfAuthor = async (authorID) => {
    */
 
   // get the globalAuthor
-  const author = await db.get(`globalAuthor:${authorID}`);
+  const author = await exports.getAuthor(authorID);
 
   if (author == null) {
     // author does not exist
@@ -239,12 +244,12 @@ exports.listPadsOfAuthor = async (authorID) => {
 
 /**
  * Adds a new pad to the list of contributions
- * @param {String} author The id of the author
+ * @param {String} authorID The id of the author
  * @param {String} padID The id of the pad the author contributes to
  */
 exports.addPad = async (authorID, padID) => {
   // get the entry
-  const author = await db.get(`globalAuthor:${authorID}`);
+  const author = await exports.getAuthor(authorID);
 
   if (author == null) return;
 
@@ -266,11 +271,11 @@ exports.addPad = async (authorID, padID) => {
 
 /**
  * Removes a pad from the list of contributions
- * @param {String} author The id of the author
+ * @param {String} authorID The id of the author
  * @param {String} padID The id of the pad the author contributes to
  */
 exports.removePad = async (authorID, padID) => {
-  const author = await db.get(`globalAuthor:${authorID}`);
+  const author = await exports.getAuthor(authorID);
 
   if (author == null) return;
 
