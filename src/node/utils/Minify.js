@@ -181,6 +181,10 @@ const minify = async (req, res) => {
       res.setHeader('expires', expiresDate.toUTCString());
       res.setHeader('cache-control', `max-age=${settings.maxAge}`);
     }
+
+    if (/tests\/frontend\/specs\//.test(filename)) {
+      res.setHeader('cache-control', 'max-age=0');
+    }
   }
 
   if (!exists) {
