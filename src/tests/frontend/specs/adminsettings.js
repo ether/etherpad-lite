@@ -21,6 +21,16 @@ describe('Admin > Settings', function () {
   });
 
   it('Are Settings visible, populated, does save work', async function () {
+    const save = async () => {
+      const p = new Promise((resolve) => {
+        const observer = new MutationObserver(() => { resolve(); observer.disconnect(); });
+        observer.observe(
+            helper.admin$('#response')[0], {attributes: true, childList: false, subtree: false});
+      });
+      helper.admin$('#saveSettings').click();
+      await p;
+    };
+
     // save old value
     const settings = helper.admin$('.settings').val();
     const settingsLength = settings.length;
@@ -29,10 +39,7 @@ describe('Admin > Settings', function () {
     helper.admin$('.settings').val((_, text) => `/* test */\n${text}`);
     await helper.waitForPromise(
         () => settingsLength + 11 === helper.admin$('.settings').val().length, 5000);
-
-    // saves
-    helper.admin$('#saveSettings').click();
-    await helper.waitForPromise(() => helper.admin$('#response').is(':visible'), 5000);
+    await save();
 
     // new value for settings.json should now be saved
     // reset it to the old value
@@ -44,9 +51,7 @@ describe('Admin > Settings', function () {
     // replace the test value with a line break
     helper.admin$('.settings').val((_, text) => text.replace('/* test */\n', ''));
     await helper.waitForPromise(() => settingsLength === helper.admin$('.settings').val().length);
-
-    helper.admin$('#saveSettings').click(); // saves
-    await helper.waitForPromise(() => helper.admin$('#response').is(':visible'));
+    await save();
 
     // settings should have the old value
     helper.newAdmin('settings');
