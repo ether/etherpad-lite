@@ -3,6 +3,19 @@
 describe('Admin > Settings', function () {
   this.timeout(480000);
 
+  let savedProgressReceived;
+  let observer;
+  // observes the #response element' attributes for changes
+  const observerJob = () => {
+    savedProgressReceived = false;
+    const observerCallback = (mutations, observer) => {
+      savedProgressReceived = true;
+    };
+    observer = new MutationObserver(observerCallback);
+    observer.observe(helper.admin$('#response')[0],
+        {attributes: true, childList: false, subtree: false});
+  };
+
   before(async function () {
     let success = false;
     $.ajax({
@@ -20,6 +33,7 @@ describe('Admin > Settings', function () {
         () => helper.admin$ && helper.admin$('.settings').val().length > 0, 5000);
   });
 
+
   it('Are Settings visible, populated, does save work', async function () {
     // save old value
     const settings = helper.admin$('.settings').val();
@@ -30,9 +44,14 @@ describe('Admin > Settings', function () {
     await helper.waitForPromise(
         () => settingsLength + 11 === helper.admin$('.settings').val().length, 5000);
 
+    observerJob();
     // saves
     helper.admin$('#saveSettings').click();
-    await helper.waitForPromise(() => helper.admin$('#response').is(':visible'), 5000);
+    await helper.waitForPromise(() => savedProgressReceived, 5000);
+
+    // reset because we need to call it again later on
+    savedProgressReceived = false;
+    observer.disconnect();
 
     // new value for settings.json should now be saved
     // reset it to the old value
@@ -45,8 +64,10 @@ describe('Admin > Settings', function () {
     helper.admin$('.settings').val((_, text) => text.replace('/* test */\n', ''));
     await helper.waitForPromise(() => settingsLength === helper.admin$('.settings').val().length);
 
+    observerJob();
     helper.admin$('#saveSettings').click(); // saves
-    await helper.waitForPromise(() => helper.admin$('#response').is(':visible'));
+    await helper.waitForPromise(() => savedProgressReceived, 5000);
+    observer.disconnect();
 
     // settings should have the old value
     helper.newAdmin('settings');
