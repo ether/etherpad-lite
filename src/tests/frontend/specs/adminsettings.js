@@ -3,6 +3,19 @@
 describe('Admin > Settings', function () {
   this.timeout(480000);
 
+  let saveProgressReceived;
+  let observer;
+  // observes the #response element' attributes for changes
+  const observerJob = () => {
+    saveProgressReceived = false;
+    const observerCallback = (mutations, observer) => {
+      saveProgressReceived = true;
+    };
+    observer = new MutationObserver(observerCallback);
+    observer.observe(helper.admin$('#response')[0],
+        {attributes: true, childList: false, subtree: false});
+  };
+
   before(async function () {
     let success = false;
     $.ajax({
@@ -20,6 +33,7 @@ describe('Admin > Settings', function () {
         () => helper.admin$ && helper.admin$('.settings').val().length > 0, 5000);
   });
 
+
   it('Are Settings visible, populated, does save work', async function () {
     // save old value
     const settings = helper.admin$('.settings').val();
@@ -30,32 +44,39 @@ describe('Admin > Settings', function () {
     await helper.waitForPromise(
         () => settingsLength + 11 === helper.admin$('.settings').val().length, 5000);
 
+    observerJob();
     // saves
     helper.admin$('#saveSettings').click();
-    await helper.waitForPromise(() => helper.admin$('#response').is(':visible'), 5000);
+    await helper.waitForPromise(() => saveProgressReceived, 5000);
+
+    // reset because we need to call it again later on
+    saveProgressReceived = false;
+    observer.disconnect();
 
     // new value for settings.json should now be saved
     // reset it to the old value
     helper.newAdmin('settings');
     await helper.waitForPromise(
-        () => helper.admin$ && helper.admin$('.settings').val().length > 0, 20000);
+        () => helper.admin$ &&
+                helper.admin$('.settings').val().length === settingsLength + 11, 20000);
 
     // replace the test value with a line break
     helper.admin$('.settings').val((_, text) => text.replace('/* test */\n', ''));
     await helper.waitForPromise(() => settingsLength === helper.admin$('.settings').val().length);
 
+    observerJob();
     helper.admin$('#saveSettings').click(); // saves
-    await helper.waitForPromise(() => helper.admin$('#response').is(':visible'));
+    await helper.waitForPromise(() => saveProgressReceived, 5000);
+    observer.disconnect();
 
     // settings should have the old value
     helper.newAdmin('settings');
     await helper.waitForPromise(
-        () => helper.admin$ && helper.admin$('.settings').val().length > 0, 36000);
-    expect(settings).to.be(helper.admin$('.settings').val());
+        () => helper.admin$ && helper.admin$('.settings').val().length === settingsLength &&
+          settings === helper.admin$('.settings').val(), 20000);
   });
 
   it('restart works', async function () {
-    this.timeout(60000);
     const getStartTime = async () => {
       try {
         const {httpStartTime} = await $.ajax({
@@ -66,18 +87,15 @@ describe('Admin > Settings', function () {
         });
         return httpStartTime;
       } catch (err) {
+        helper.logDebugMsg(`an error occurred: ${err.message} of type ${err.name}`);
         return null;
       }
     };
-    await helper.waitForPromise(async () => {
-      const startTime = await getStartTime();
-      return startTime != null && startTime > 0 && Date.now() > startTime;
-    }, 1000, 500);
-    const clickTime = Date.now();
+    const oldStartTime = await getStartTime();
     helper.admin$('#restartEtherpad').click();
     await helper.waitForPromise(async () => {
       const startTime = await getStartTime();
-      return startTime != null && startTime >= clickTime;
+      return startTime != null && startTime >= oldStartTime;
     }, 60000, 500);
   });
 });
