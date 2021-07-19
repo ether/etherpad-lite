@@ -41,6 +41,7 @@ const {RateLimiterMemory} = require('rate-limiter-flexible');
 const webaccess = require('../hooks/express/webaccess');
 
 let rateLimiter;
+let socketio = null;
 
 exports.socketio = () => {
   // The rate limiter is created in this hook so that restarting the server resets the limiter. The
@@ -70,7 +71,7 @@ exports.socketio = () => {
 const sessioninfos = {};
 exports.sessioninfos = sessioninfos;
 
-stats.gauge('totalUsers', () => Object.keys(socketio.sockets.sockets).length);
+stats.gauge('totalUsers', () => socketio ? Object.keys(socketio.sockets.sockets).length : 0);
 stats.gauge('activePads', () => {
   const padIds = new Set();
   for (const {padId} of Object.values(sessioninfos)) {
@@ -86,11 +87,6 @@ stats.gauge('activePads', () => {
 const padChannels = new channels.channels(
     ({socket, message}, callback) => nodeify(handleUserChanges(socket, message), callback)
 );
-
-/**
- * Saves the Socket class we need to send and receive data from the client
- */
-let socketio;
 
 /**
  * This Method is called by server.js to tell the message handler on which socket it should send
