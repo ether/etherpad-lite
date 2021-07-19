@@ -11,7 +11,13 @@ exports.expressCreateServer = (hookName, args, cb) => {
       return;
     }
 
-    const sanitizedPadId = await padManager.sanitizePadId(padId);
+    let sanitizedPadId;
+    try {
+      sanitizedPadId = await padManager.sanitizePadId(padId);
+    } catch {
+      res.status(500).send('Query inactivity timeout');
+      return;
+    }
 
     if (sanitizedPadId === padId) {
       // the pad id was fine, so just render it

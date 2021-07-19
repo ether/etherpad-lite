@@ -27,7 +27,7 @@ module.exports = class SessionStore extends Store {
           this.destroy(sid, fn);
         }
       } else {
-        fn();
+        fn(err);
       }
     });
   }

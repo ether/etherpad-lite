@@ -371,7 +371,7 @@ Pad.prototype.copy = async function (destinationID, force) {
 
   // copy the 'pad' entry
   const pad = await db.get(`pad:${sourceID}`);
-  db.set(`pad:${destinationID}`, pad);
+  await db.set(`pad:${destinationID}`, pad);
 
   // copy all relations in parallel
   const promises = [];

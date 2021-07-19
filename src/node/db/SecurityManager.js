@@ -57,86 +57,96 @@ exports.checkAccess = async (padID, sessionCookie, token, userSettings) => {
 
   let canCreate = !settings.editOnly;
 
-  if (readOnlyManager.isReadOnlyId(padID)) {
-    canCreate = false;
-    padID = await readOnlyManager.getPadId(padID);
-    if (padID == null) {
-      authLogger.debug('access denied: read-only pad ID for a pad that does not exist');
+  try {
+    if (readOnlyManager.isReadOnlyId(padID)) {
+      canCreate = false;
+      padID = await readOnlyManager.getPadId(padID);
+      if (padID == null) {
+        authLogger.debug('access denied: read-only pad ID for a pad that does not exist');
+        return DENY;
+      }
+    }
+
+    // Authentication and authorization checks.
+    if (settings.loadTest) {
+      console.warn(
+          'bypassing socket.io authentication and authorization checks due to settings.loadTest');
+    } else if (settings.requireAuthentication) {
+      if (userSettings == null) {
+        authLogger.debug('access denied: authentication is required');
+        return DENY;
+      }
+      if (userSettings.canCreate != null && !userSettings.canCreate) canCreate = false;
+      if (userSettings.readOnly) canCreate = false;
+      // Note: userSettings.padAuthorizations should still be populated even if
+      // settings.requireAuthorization is false.
+      const padAuthzs = userSettings.padAuthorizations || {};
+      const level = webaccess.normalizeAuthzLevel(padAuthzs[padID]);
+      if (!level) {
+        authLogger.debug('access denied: unauthorized');
+        return DENY;
+      }
+      if (level !== 'create') canCreate = false;
+    }
+
+    // allow plugins to deny access
+    const isFalse = (x) => x === false;
+    if (hooks.callAll('onAccessCheck', {padID, token, sessionCookie}).some(isFalse)) {
+      authLogger.debug('access denied: an onAccessCheck hook function returned false');
       return DENY;
     }
-  }
 
-  // Authentication and authorization checks.
-  if (settings.loadTest) {
-    console.warn(
-        'bypassing socket.io authentication and authorization checks due to settings.loadTest');
-  } else if (settings.requireAuthentication) {
-    if (userSettings == null) {
-      authLogger.debug('access denied: authentication is required');
+    // start fetching the info we may need
+    const p_sessionAuthorID = sessionManager.findAuthorID(padID.split('$')[0], sessionCookie);
+    const p_tokenAuthorID = authorManager.getAuthor4Token(token);
+    const p_padExists = padManager.doesPadExist(padID);
+
+    const padExists = await p_padExists;
+    if (!padExists && !canCreate) {
+      authLogger.debug('access denied: user attempted to create a pad, which is prohibited');
       return DENY;
     }
-    if (userSettings.canCreate != null && !userSettings.canCreate) canCreate = false;
-    if (userSettings.readOnly) canCreate = false;
-    // Note: userSettings.padAuthorizations should still be populated even if
-    // settings.requireAuthorization is false.
-    const padAuthzs = userSettings.padAuthorizations || {};
-    const level = webaccess.normalizeAuthzLevel(padAuthzs[padID]);
-    if (!level) {
-      authLogger.debug('access denied: unauthorized');
+
+    const sessionAuthorID = await p_sessionAuthorID;
+    if (settings.requireSession && !sessionAuthorID) {
+      authLogger.debug('access denied: HTTP API session is required');
       return DENY;
     }
-    if (level !== 'create') canCreate = false;
-  }
 
-  // allow plugins to deny access
-  const isFalse = (x) => x === false;
-  if (hooks.callAll('onAccessCheck', {padID, token, sessionCookie}).some(isFalse)) {
-    authLogger.debug('access denied: an onAccessCheck hook function returned false');
-    return DENY;
-  }
+    const grant = {
+      accessStatus: 'grant',
+      authorID: (sessionAuthorID != null) ? sessionAuthorID : await p_tokenAuthorID,
+    };
 
-  // start fetching the info we may need
-  const p_sessionAuthorID = sessionManager.findAuthorID(padID.split('$')[0], sessionCookie);
-  const p_tokenAuthorID = authorManager.getAuthor4Token(token);
-  const p_padExists = padManager.doesPadExist(padID);
 
-  const padExists = await p_padExists;
-  if (!padExists && !canCreate) {
-    authLogger.debug('access denied: user attempted to create a pad, which is prohibited');
-    return DENY;
-  }
+    if (!padID.includes('$')) {
+      // Only group pads can be private, so there is nothing more to check for this non-group pad.
+      return grant;
+    }
 
-  const sessionAuthorID = await p_sessionAuthorID;
-  if (settings.requireSession && !sessionAuthorID) {
-    authLogger.debug('access denied: HTTP API session is required');
-    return DENY;
-  }
+    if (!padExists) {
+      if (sessionAuthorID == null) {
+        authLogger.debug('access denied: must have an HTTP API session to create a group pad');
+        return DENY;
+      }
+      // Creating a group pad, so there is no public status to check.
+      return grant;
+    }
 
-  const grant = {
-    accessStatus: 'grant',
-    authorID: (sessionAuthorID != null) ? sessionAuthorID : await p_tokenAuthorID,
-  };
+    const pad = await padManager.getPad(padID);
 
-  if (!padID.includes('$')) {
-    // Only group pads can be private, so there is nothing more to check for this non-group pad.
+    if (!pad.getPublicStatus() && sessionAuthorID == null) {
+      authLogger.debug('access denied: must have an HTTP API session to access private group pads');
+      return DENY;
+    }
+
     return grant;
-  }
-
-  if (!padExists) {
-    if (sessionAuthorID == null) {
-      authLogger.debug('access denied: must have an HTTP API session to create a group pad');
-      return DENY;
+  } catch (err) {
+    if (err.message === 'Query inactivity timeout') {
+      authLogger.debug('access denied: a necessary database query has timed out.');
+    } else {
+      authLogger.debug('access denied: an error occurred', err.message);
     }
-    // Creating a group pad, so there is no public status to check.
-    return grant;
-  }
-
-  const pad = await padManager.getPad(padID);
-
-  if (!pad.getPublicStatus() && sessionAuthorID == null) {
-    authLogger.debug('access denied: must have an HTTP API session to access private group pads');
     return DENY;
   }
-
-  return grant;
 };
