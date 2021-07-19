@@ -28,8 +28,8 @@ describe('Plugins page', function () {
 
   it('Searches for plugin', async function () {
     helper.admin$('#search-query').val('ep_font_color');
-    await helper.waitForPromise(() => helper.admin$('.results').children().length < 300, 5000);
-    await helper.waitForPromise(() => helper.admin$('.results').children().length > 0, 5000);
+    await helper.waitForPromise(() => helper.admin$('.results').children().length > 0, 10000);
+    await helper.waitForPromise(() => helper.admin$('.results').children().length < 300, 10000);
   });
 
   it('Attempt to Update a plugin', async function () {
