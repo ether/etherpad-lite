@@ -15,7 +15,7 @@ const helper = {};
     return randomstring;
   };
 
-  const getFrameJQuery = async ($iframe, includeJquery = false, includeSendkeys = false) => {
+  const getFrameJQuery = async ($iframe, includeSendkeys = false) => {
     const win = $iframe[0].contentWindow;
     const doc = win.document;
 
@@ -36,7 +36,7 @@ const helper = {};
       await p;
     };
 
-    if (!win.$ && includeJquery) await load('../../static/js/vendors/jquery.js');
+    if (!win.$) await load('../../static/js/vendors/jquery.js');
     if (!win.bililiteRange && includeSendkeys) await load('../tests/frontend/lib/sendkeys.js');
 
     win.$.window = win;
@@ -121,7 +121,7 @@ const helper = {};
     // set new iframe
     $('#iframe-container').append($iframe);
     await new Promise((resolve) => $iframe.one('load', resolve));
-    helper.padChrome$ = await getFrameJQuery($('#iframe-container iframe'), true, true);
+    helper.padChrome$ = await getFrameJQuery($('#iframe-container iframe'), true);
     helper.padChrome$.padeditor =
         helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad_editor').padeditor;
     if (opts.clearCookies) {
@@ -137,10 +137,8 @@ const helper = {};
       if (opts._retry++ >= 4) throw new Error('Pad never loaded');
       return await helper.aNewPad(opts);
     }
-    helper.padOuter$ = await getFrameJQuery(
-        helper.padChrome$('iframe[name="ace_outer"]'), true, false);
-    helper.padInner$ = await getFrameJQuery(
-        helper.padOuter$('iframe[name="ace_inner"]'), true, true);
+    helper.padOuter$ = await getFrameJQuery(helper.padChrome$('iframe[name="ace_outer"]'), false);
+    helper.padInner$ = await getFrameJQuery(helper.padOuter$('iframe[name="ace_inner"]'), true);
 
     // disable all animations, this makes tests faster and easier
     helper.padChrome$.fx.off = true;
@@ -183,7 +181,7 @@ const helper = {};
     // set new iframe
     $('#iframe-container').append($iframe);
     $iframe.one('load', async () => {
-      helper.admin$ = await getFrameJQuery($('#iframe-container iframe'), true, false);
+      helper.admin$ = await getFrameJQuery($('#iframe-container iframe'), false);
     });
   };
 
