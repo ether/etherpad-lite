@@ -15,7 +15,7 @@ const helper = {};
     return randomstring;
   };
 
-  const getFrameJQuery = async ($iframe, includeSendkeys = false) => {
+  helper.getFrameJQuery = async ($iframe, includeSendkeys = false) => {
     const win = $iframe[0].contentWindow;
     const doc = win.document;
 
@@ -123,7 +123,7 @@ const helper = {};
     // set new iframe
     $('#iframe-container').append($iframe);
     await new Promise((resolve) => $iframe.one('load', resolve));
-    helper.padChrome$ = await getFrameJQuery($('#iframe-container iframe'), true);
+    helper.padChrome$ = await helper.getFrameJQuery($('#iframe-container iframe'), true);
     helper.padChrome$.padeditor =
         helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad_editor').padeditor;
     if (opts.clearCookies) {
@@ -139,8 +139,10 @@ const helper = {};
       if (opts._retry++ >= 4) throw new Error('Pad never loaded');
       return await helper.aNewPad(opts);
     }
-    helper.padOuter$ = await getFrameJQuery(helper.padChrome$('iframe[name="ace_outer"]'), false);
-    helper.padInner$ = await getFrameJQuery(helper.padOuter$('iframe[name="ace_inner"]'), true);
+    helper.padOuter$ =
+        await helper.getFrameJQuery(helper.padChrome$('iframe[name="ace_outer"]'), false);
+    helper.padInner$ =
+        await helper.getFrameJQuery(helper.padOuter$('iframe[name="ace_inner"]'), true);
 
     // disable all animations, this makes tests faster and easier
     helper.padChrome$.fx.off = true;
@@ -183,7 +185,7 @@ const helper = {};
     // set new iframe
     $('#iframe-container').append($iframe);
     $iframe.one('load', async () => {
-      helper.admin$ = await getFrameJQuery($('#iframe-container iframe'), false);
+      helper.admin$ = await helper.getFrameJQuery($('#iframe-container iframe'), false);
     });
   };
 

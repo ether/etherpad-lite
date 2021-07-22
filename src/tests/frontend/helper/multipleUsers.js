@@ -34,11 +34,11 @@ helper.multipleUsers = {
   },
 
   async _loadJQueryForUser1Frame() {
-    this._user1.padChrome$ = await getFrameJQuery(this._user1.$frame, true);
+    this._user1.padChrome$ = await helper.getFrameJQuery(this._user1.$frame, true);
     this._user1.padOuter$ =
-        await getFrameJQuery(this._user1.padChrome$('iframe[name="ace_outer"]'), false);
+        await helper.getFrameJQuery(this._user1.padChrome$('iframe[name="ace_outer"]'), false);
     this._user1.padInner$ =
-        await getFrameJQuery(this._user1.padOuter$('iframe[name="ace_inner"]'), true);
+        await helper.getFrameJQuery(this._user1.padOuter$('iframe[name="ace_inner"]'), true);
 
     // update helper vars now that they are available
     helper.padChrome$ = this._user1.padChrome$;
@@ -77,37 +77,6 @@ helper.multipleUsers = {
       throw new Error('expected different token for user1');
     }
   },
-};
-
-// copied from helper.js
-const getFrameJQuery = async ($iframe, includeSendkeys = false) => {
-  const win = $iframe[0].contentWindow;
-  const doc = win.document;
-
-  const load = async (url) => {
-    const elem = doc.createElement('script');
-    elem.setAttribute('src', url);
-    const p = new Promise((resolve, reject) => {
-      const handler = (evt) => {
-        elem.removeEventListener('load', handler);
-        elem.removeEventListener('error', handler);
-        if (evt.type === 'error') return reject(new Error(`failed to load ${url}`));
-        resolve();
-      };
-      elem.addEventListener('load', handler);
-      elem.addEventListener('error', handler);
-    });
-    doc.head.appendChild(elem);
-    await p;
-  };
-
-  if (!win.$) await load('../../static/js/vendors/jquery.js');
-  if (!win.bililiteRange && includeSendkeys) await load('../tests/frontend/lib/sendkeys.js');
-
-  win.$.window = win;
-  win.$.document = doc;
-
-  return win.$;
 };
 
 const getCookies =
