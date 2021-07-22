@@ -1,5 +1,21 @@
 'use strict';
 
+const getCookies =
+    () => helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad_utils').Cookies;
+
+const setToken = (token) => getCookies().set('token', token);
+
+const getToken = () => getCookies().get('token');
+
+const startActingLike = (user) => {
+  helper.padChrome$ = user.padChrome$;
+  helper.padOuter$ = user.padOuter$;
+  helper.padInner$ = user.padInner$;
+  if (helper.padChrome$) setToken(user.token);
+};
+
+const clearToken = () => getCookies().remove('token');
+
 helper.multipleUsers = {
   _user0: null,
   _user1: null,
@@ -47,14 +63,11 @@ helper.multipleUsers = {
   },
 
   async _createUser1Frame() {
-    // create the iframe
-    const padUrl = this._user0.$frame.attr('src');
-    this._user1.$frame = $('<iframe>').attr('id', 'user1_pad').attr('src', padUrl);
-
-    // place one iframe (visually) below the other
-    this._user0.$frame.attr('style', 'height: 50%');
-    this._user1.$frame.attr('style', 'height: 50%; top: 50%');
-    this._user1.$frame.insertAfter(this._user0.$frame);
+    this._user0.$frame.css({height: '50%'});
+    this._user1.$frame = $('<iframe>')
+        .attr({id: 'user1_pad', src: this._user0.$frame.attr('src')})
+        .css({height: '50%', top: '50%'})
+        .insertAfter(this._user0.$frame);
 
     // wait for user1 pad to load
     await new Promise((resolve) => this._user1.$frame.one('load', resolve));
@@ -78,22 +91,3 @@ helper.multipleUsers = {
     }
   },
 };
-
-const getCookies =
-    () => helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad_utils').Cookies;
-
-const setToken = (token) => getCookies().set('token', token);
-
-const getToken = () => getCookies().get('token');
-
-const startActingLike = (user) => {
-  // update helper references, so other methods will act as if the main frame
-  // was the one we're using from now on
-  helper.padChrome$ = user.padChrome$;
-  helper.padOuter$ = user.padOuter$;
-  helper.padInner$ = user.padInner$;
-
-  if (helper.padChrome$) setToken(user.token);
-};
-
-const clearToken = () => getCookies().remove('token');
