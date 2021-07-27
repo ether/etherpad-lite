@@ -22,8 +22,6 @@
  * limitations under the License.
  */
 
-const Security = require('./security');
-
 const isNodeText = (node) => (node.nodeType === 3);
 
 const getAssoc = (obj, name) => obj[`_magicdom_${name}`];
@@ -60,8 +58,6 @@ const binarySearchInfinite = (expectedLength, func) => {
   return binarySearch(i, func);
 };
 
-const htmlPrettyEscape = (str) => Security.escapeHTML(str).replace(/\r?\n/g, '\\n');
-
 const noop = () => {};
 
 exports.isNodeText = isNodeText;
@@ -69,5 +65,4 @@ exports.getAssoc = getAssoc;
 exports.setAssoc = setAssoc;
 exports.binarySearch = binarySearch;
 exports.binarySearchInfinite = binarySearchInfinite;
-exports.htmlPrettyEscape = htmlPrettyEscape;
 exports.noop = noop;

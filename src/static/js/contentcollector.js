@@ -117,7 +117,6 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
       textOfLine: (i) => textArray[i],
       appendText: (txt, attrString) => {
         textArray[textArray.length - 1] += txt;
-        // dmesg(txt+" / "+attrString);
         op.attribs = attrString;
         op.chars = txt.length;
         attribsBuilder.append(op);

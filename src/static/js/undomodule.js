@@ -55,7 +55,6 @@ const undoModule = (() => {
       e.elementType = UNDOABLE_EVENT;
       stackElements.push(e);
       numUndoableEvents++;
-      // dmesg("pushEvent backset: "+event.backset);
     };
 
     const pushExternalChange = (cs) => {
@@ -207,7 +206,6 @@ const undoModule = (() => {
         const merge = _mergeChangesets(event.backset, topEvent.backset);
         if (merge) {
           topEvent.backset = merge;
-          // dmesg("reportEvent merge: "+merge);
           applySelectionToTop();
           merged = true;
         }

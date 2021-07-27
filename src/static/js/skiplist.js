@@ -291,7 +291,6 @@ class SkipList {
     if (end < 0) end = 0;
     if (end > this._keyToNodeMap.size) end = this._keyToNodeMap.size;
 
-    window.dmesg(String([start, end, this._keyToNodeMap.size]));
     if (end <= start) return [];
     let n = this.atIndex(start);
     const array = [n];

@@ -390,7 +390,6 @@ const pad = {
   getPadId: () => clientVars.padId,
   getClientIp: () => clientVars.clientIp,
   getColorPalette: () => clientVars.colorPalette,
-  getIsDebugEnabled: () => clientVars.debugEnabled,
   getPrivilege: (name) => clientVars.accountPrivs[name],
   getUserId: () => pad.myUserInfo.userId,
   getUserName: () => pad.myUserInfo.name,
@@ -608,16 +607,6 @@ const pad = {
     } else if (msg.type === 'padoptions') {
       const opts = msg.options;
       pad.handleOptionsChange(opts);
-    }
-  },
-  dmesg: (m) => {
-    if (pad.getIsDebugEnabled()) {
-      const djs = $('#djs').get(0);
-      const wasAtBottom = (djs.scrollTop - (djs.scrollHeight - $(djs).height()) >= -20);
-      $('#djs').append(`<p>${m}</p>`);
-      if (wasAtBottom) {
-        djs.scrollTop = djs.scrollHeight;
-      }
     }
   },
   handleChannelStateChange: (newState, message) => {
