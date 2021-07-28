@@ -224,7 +224,6 @@ domline.createDomLine = (nonEmpty, doesWrap, optBrowser, optDocument) => {
   };
   result.prepareForAdd = writeHTML;
   result.finishUpdate = writeHTML;
-  result.getInnerHTML = () => curHTML || '';
   return result;
 };
 

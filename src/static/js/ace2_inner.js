@@ -586,25 +586,6 @@ function Ace2Inner(editorInfo, cssManagers) {
     outsideNotifyDirty = handler;
   };
 
-  const getFormattedCode = () => {
-    if (currentCallStack && !currentCallStack.domClean) {
-      inCallStackIfNecessary('getFormattedCode', incorporateUserChanges);
-    }
-    const buf = [];
-    if (rep.lines.length() > 0) {
-      // should be the case, even for empty file
-      let entry = rep.lines.atIndex(0);
-      while (entry) {
-        const domInfo = entry.domInfo;
-        buf.push((domInfo && domInfo.getInnerHTML()) ||
-            domline.processSpaces(domline.escapeHTML(entry.text), doesWrap) ||
-            '&nbsp;' /* empty line*/);
-        entry = rep.lines.next(entry);
-      }
-    }
-    return `<div class="syntax"><div>${buf.join('</div>\n<div>')}</div></div>`;
-  };
-
   const CMDS = {
     clearauthorship: (prompt) => {
       if ((!(rep.selStart && rep.selEnd)) || isCaret()) {
@@ -3304,7 +3285,6 @@ function Ace2Inner(editorInfo, cssManagers) {
   editorInfo.ace_setOnKeyDown = setOnKeyDown;
   editorInfo.ace_setNotifyDirty = setNotifyDirty;
   editorInfo.ace_dispose = dispose;
-  editorInfo.ace_getFormattedCode = getFormattedCode;
   editorInfo.ace_setEditable = setEditable;
   editorInfo.ace_execCommand = execCommand;
   editorInfo.ace_replaceRange = replaceRange;

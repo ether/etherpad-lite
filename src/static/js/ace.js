@@ -110,7 +110,6 @@ const Ace2Editor = function () {
     'importAText',
     'focus',
     'setEditable',
-    'getFormattedCode',
     'setOnKeyPress',
     'setOnKeyDown',
     'setNotifyDirty',
