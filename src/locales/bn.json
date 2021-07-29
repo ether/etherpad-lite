@@ -18,7 +18,7 @@
 	"admin_plugins.available_not-found": "প্লাগিন পাওয়া যায়নি।",
 	"admin_plugins.available_fetching": "আনা হচ্ছে...",
 	"admin_plugins.available_install.value": "ইনস্টল করুন",
-	"admin_plugins.available_search.placeholder": "ইন্সটল করার জন্য প্লাগিন খুঁজো",
+	"admin_plugins.available_search.placeholder": "ইনস্টল করার জন্য প্লাগইন অনুসন্ধান করুন",
 	"admin_plugins.description": "বিবরণ",
 	"admin_plugins.installed": "ইন্সটল হওয়া প্লাগিনসমূহ",
 	"admin_plugins.installed_fetching": "ইন্সটলকৃত প্লাগিন আনা হচ্ছে",
