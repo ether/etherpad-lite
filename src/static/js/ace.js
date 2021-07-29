@@ -229,6 +229,10 @@ const Ace2Editor = function () {
     sideDiv.id = 'sidediv';
     sideDiv.classList.add('sidediv');
     outerDocument.body.appendChild(sideDiv);
+    const sideDivInner = outerDocument.createElement('div');
+    sideDivInner.id = 'sidedivinner';
+    sideDivInner.classList.add('sidedivinner');
+    sideDiv.appendChild(sideDivInner);
     const lineMetricsDiv = outerDocument.createElement('div');
     lineMetricsDiv.id = 'linemetricsdiv';
     lineMetricsDiv.appendChild(outerDocument.createTextNode('x'));
