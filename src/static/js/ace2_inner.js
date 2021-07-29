@@ -73,7 +73,6 @@ function Ace2Inner(editorInfo, cssManagers) {
     lineNumbersShown = 1;
     sideDiv.innerHTML = `${htmlOpen}${htmlClose}`;
     sideDivInner = outerWin.document.getElementById('sidedivinner');
-    $(sideDiv).addClass('sidediv');
   };
 
   initLineNumbers();
