@@ -65,17 +65,13 @@ function Ace2Inner(editorInfo, cssManagers) {
   const sideDiv = outerDoc.getElementById('sidediv');
   const lineMetricsDiv = outerDoc.getElementById('linemetricsdiv');
   let lineNumbersShown;
-  let sideDivInner;
-
-  const initLineNumbers = () => {
+  const sideDivInner = (() => {
     const htmlOpen = '<div id="sidedivinner" class="sidedivinner"><div><span class="line-number">1';
     const htmlClose = '</span></div></div>';
     lineNumbersShown = 1;
     sideDiv.innerHTML = `${htmlOpen}${htmlClose}`;
-    sideDivInner = outerWin.document.getElementById('sidedivinner');
-  };
-
-  initLineNumbers();
+    return outerDoc.getElementById('sidedivinner');
+  })();
 
   const scroll = Scroll.init(outerWin);
 
