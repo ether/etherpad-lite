@@ -64,11 +64,17 @@ function Ace2Inner(editorInfo, cssManagers) {
   const outerDoc = outerWin.document;
   const sideDiv = outerDoc.getElementById('sidediv');
   const lineMetricsDiv = outerDoc.getElementById('linemetricsdiv');
-  const sideDivInner = (() => {
-    const htmlOpen = '<div id="sidedivinner" class="sidedivinner"><div><span class="line-number">1';
-    const htmlClose = '</span></div></div>';
-    sideDiv.innerHTML = `${htmlOpen}${htmlClose}`;
-    return outerDoc.getElementById('sidedivinner');
+  const sideDivInner = outerDoc.createElement('div');
+  sideDivInner.id = 'sidedivinner';
+  sideDivInner.classList.add('sidedivinner');
+  sideDiv.appendChild(sideDivInner);
+  (() => {
+    const lineDiv = outerDoc.createElement('div');
+    sideDivInner.appendChild(lineDiv);
+    const lineSpan = outerDoc.createElement('span');
+    lineSpan.classList.add('line-number');
+    lineSpan.appendChild(outerDoc.createTextNode('1'));
+    lineDiv.appendChild(lineSpan);
   })();
   let lineNumbersShown = 1;
 
