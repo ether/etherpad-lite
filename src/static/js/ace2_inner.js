@@ -60,10 +60,10 @@ function Ace2Inner(editorInfo, cssManagers) {
     window.focus();
   };
 
-  const iframe = window.frameElement;
   const outerWin = window.parent;
-  const sideDiv = iframe.nextSibling;
-  const lineMetricsDiv = sideDiv.nextSibling;
+  const outerDoc = outerWin.document;
+  const sideDiv = outerDoc.getElementById('sidediv');
+  const lineMetricsDiv = outerDoc.getElementById('linemetricsdiv');
   let lineNumbersShown;
   let sideDivInner;
 
