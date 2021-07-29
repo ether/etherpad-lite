@@ -241,7 +241,6 @@ const Ace2Editor = function () {
     // The iframe MUST have a src or srcdoc property to avoid browser quirks. See the comment above
     // outerFrame.srcdoc.
     innerFrame.srcdoc = '<!DOCTYPE html>';
-    innerFrame.ace_outerWin = outerWindow;
     outerDocument.body.insertBefore(innerFrame, outerDocument.body.firstChild);
     const innerWindow = innerFrame.contentWindow;
 

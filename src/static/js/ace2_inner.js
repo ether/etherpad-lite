@@ -61,8 +61,7 @@ function Ace2Inner(editorInfo, cssManagers) {
   };
 
   const iframe = window.frameElement;
-  const outerWin = iframe.ace_outerWin;
-  iframe.ace_outerWin = null; // prevent IE 6 memory leak
+  const outerWin = window.parent;
   const sideDiv = iframe.nextSibling;
   const lineMetricsDiv = sideDiv.nextSibling;
   let lineNumbersShown;
