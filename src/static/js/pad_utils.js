@@ -296,6 +296,7 @@ const padutils = {
 let globalExceptionHandler = null;
 padutils.setupGlobalExceptionHandler = () => {
   if (globalExceptionHandler == null) {
+    require('./vendors/gritter');
     globalExceptionHandler = (e) => {
       let type;
       let err;
