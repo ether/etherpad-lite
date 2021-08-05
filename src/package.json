@@ -72,7 +72,7 @@
     "ueberdb2": "^1.4.13",
     "underscore": "1.13.1",
     "unorm": "1.6.0",
-    "wtfnode": "^0.9.0"
+    "wtfnode": "^0.9.1"
   },
   "bin": {
     "etherpad-lite": "node/server.js"
