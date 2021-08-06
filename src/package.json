@@ -54,7 +54,7 @@
     "measured-core": "1.51.1",
     "mime-types": "^2.1.27",
     "nodeify": "1.0.1",
-    "npm": "6.14.13",
+    "npm": "7.0.0",
     "openapi-backend": "^3.9.1",
     "proxy-addr": "^2.0.6",
     "rate-limiter-flexible": "^2.2.3",
