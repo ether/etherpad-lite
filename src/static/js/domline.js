@@ -61,6 +61,8 @@ domline.createDomLine = (nonEmpty, doesWrap, optBrowser, optDocument) => {
 
   if (document) {
     result.node = document.createElement('div');
+    // JAWS and NVDA screen reader compatibility. Only needed if in a real browser.
+    result.node.setAttribute('aria-live', 'assertive');
   } else {
     result.node = {
       innerHTML: '',

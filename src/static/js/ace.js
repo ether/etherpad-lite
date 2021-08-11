@@ -284,7 +284,6 @@ const Ace2Editor = function () {
     // <body> tag
     innerDocument.body.id = 'innerdocbody';
     innerDocument.body.classList.add('innerdocbody');
-    innerDocument.body.setAttribute('role', 'application');
     innerDocument.body.setAttribute('spellcheck', 'false');
     innerDocument.body.appendChild(innerDocument.createTextNode('\u00A0')); // &nbsp;
 
