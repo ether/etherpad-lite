@@ -441,78 +441,14 @@
 
   <% e.begin_block("scripts"); %>
 
-  <script type="text/javascript" src="../static/js/require-kernel.js?v=<%=settings.randomVersionString%>"></script>
   <script type="text/javascript" src="../socket.io/socket.io.js?v=<%=settings.randomVersionString%>"></script>
 
-  <!-- Include base packages manually (this help with debugging) -->
-  <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/pad.js?callback=require.define&v=<%=settings.randomVersionString%>"></script>
-  <script type="text/javascript" src="../javascripts/lib/ep_etherpad-lite/static/js/ace2_common.js?callback=require.define&v=<%=settings.randomVersionString%>"></script>
+  <script src="<%=entrypoint%>"></script>
 
   <% e.begin_block("customScripts"); %>
   <script type="text/javascript" src="../static/skins/<%=encodeURI(settings.skinName)%>/pad.js?v=<%=settings.randomVersionString%>"></script>
   <% e.end_block(); %>
 
-  <!-- Bootstrap page -->
-  <script type="text/javascript">
-    // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
-    (() => {
-      'use strict';
-      window.clientVars = {
-        // This is needed to fetch /pluginfw/plugin-definitions.json, which happens before the
-        // server sends the CLIENT_VARS message.
-        randomVersionString: <%-JSON.stringify(settings.randomVersionString)%>,
-      };
-      const pathComponents = location.pathname.split('/');
-
-      // Strip 'p' and the padname from the pathname and set as baseURL
-      const baseURL = `${pathComponents.slice(0, pathComponents.length - 2).join('/')}/`;
-
-      require.setRootURI(`${baseURL}javascripts/src`);
-      require.setLibraryURI(`${baseURL}javascripts/lib`);
-      require.setGlobalKeyPath('require');
-
-      // Expose jQuery #HACK
-      window.$ = window.jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery;
-      window.browser = require('ep_etherpad-lite/static/js/vendors/browser');
-
-      const plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
-      const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
-
-      plugins.baseURL = baseURL;
-      plugins.update(() => {
-        // Mechanism for tests to register hook functions (install fake plugins).
-        window._postPluginUpdateForTestingDone = false;
-        if (window._postPluginUpdateForTesting != null) window._postPluginUpdateForTesting();
-        window._postPluginUpdateForTestingDone = true;
-        $(() => hooks.aCallAll('documentReady'));
-
-        // TODO: Delete these global variables once plugins have been updated to not use them.
-        const globals = {
-          pad: require('ep_etherpad-lite/static/js/pad').pad,
-          chat: require('ep_etherpad-lite/static/js/chat').chat,
-          padeditbar: require('ep_etherpad-lite/static/js/pad_editbar').padeditbar,
-          padimpexp: require('ep_etherpad-lite/static/js/pad_impexp').padimpexp,
-        };
-        // Wrap each of the above globals in a Proxy object that triggers an unhandled Promise
-        // rejection if the global is used (but otherwise forwards the access so that everything
-        // continues to work, just with an ugly error popup).
-        const proxyOp = (op, ...args) => {
-          Promise.reject(new Error('deprecated global variable accessed'));
-          return op(...args);
-        };
-        const proxyHandler = Object.fromEntries(
-            ['get', 'set'].map((opName) => [opName, proxyOp.bind(null, Reflect[opName])]));
-        Object.assign(window, Object.fromEntries(
-            Object.entries(globals).map(([k, v]) => [k, new Proxy(v, proxyHandler)])));
-
-        require('ep_etherpad-lite/static/js/skin_variants');
-        const pad = require('ep_etherpad-lite/static/js/pad');
-        pad.baseURL = baseURL;
-        pad.init();
-      });
-    })();
-    // @license-end
-  </script>
   <div style="display:none"><a href="/javascript" data-jslicense="1">JavaScript license information</a></div>
   <% e.end_block(); %>
 </body>

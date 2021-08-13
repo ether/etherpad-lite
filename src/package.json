@@ -71,6 +71,7 @@
     "ueberdb2": "^2.0.1",
     "underscore": "1.13.1",
     "unorm": "1.6.0",
+    "webpack": "^5.64.2",
     "wtfnode": "^0.9.1"
   },
   "bin": {
@@ -131,6 +132,7 @@
       {
         "files": [
           "static/**/*",
+          "templates/**/*",
           "tests/frontend/helper.js",
           "tests/frontend/helper/**/*"
         ],
