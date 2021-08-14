@@ -47,7 +47,7 @@ exports.chat = (() => {
     },
     // Make chat stick to right hand side of screen
     stickToScreen(fromInitialCall) {
-      if (pad.settings.hideChat) {
+      if (this._pad.settings.hideChat) {
         return;
       }
       this.show();
