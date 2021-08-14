@@ -5,7 +5,8 @@
  * that are visible in tests
  */
 helper.spyOnSocketIO = () => {
-  helper.contentWindow().pad.socket.on('message', (msg) => {
+  const {pad} = helper.contentWindow().require('ep_etherpad-lite/static/js/pad');
+  pad.socket.on('message', (msg) => {
     if (msg.type !== 'COLLABROOM') return;
     if (msg.data.type === 'ACCEPT_COMMIT') {
       helper.commits.push(msg);

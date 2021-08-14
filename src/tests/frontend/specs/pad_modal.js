@@ -8,7 +8,8 @@ describe('Pad modal', function () {
       await helper.aNewPad();
 
       // force a "slowcommit" error
-      helper.padChrome$.window.pad.handleChannelStateChange('DISCONNECTED', 'slowcommit');
+      const {pad} = helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad');
+      pad.handleChannelStateChange('DISCONNECTED', 'slowcommit');
 
       // wait for modal to be displayed
       const $modal = helper.padChrome$(MODAL_SELECTOR);

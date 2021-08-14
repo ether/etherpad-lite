@@ -4,6 +4,8 @@ describe('Messages in the COLLABROOM', function () {
   const user1Text = 'text created by user 1';
   const user2Text = 'text created by user 2';
 
+  const getPadObj = () => helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad').pad;
+
   const triggerEvent = (eventName) => {
     const event = new helper.padInner$.Event(eventName);
     helper.padInner$('#innerdocbody').trigger(event);
@@ -36,7 +38,7 @@ describe('Messages in the COLLABROOM', function () {
     // User 1 starts sending a change to the server.
     let sendStarted;
     const finishSend = (() => {
-      const socketJsonObj = helper.padChrome$.window.pad.socket.json;
+      const socketJsonObj = getPadObj().socket.json;
       const sendBackup = socketJsonObj.send;
       let startSend;
       sendStarted = new Promise((resolve) => { startSend = resolve; });
@@ -60,7 +62,7 @@ describe('Messages in the COLLABROOM', function () {
     // User 1 receives a change from user 2. (User 1 will not incorporate the change until the
     // composition is completed.)
     const user2ChangeArrivedAtUser1 = new Promise((resolve) => {
-      const cc = helper.padChrome$.window.pad.collabClient;
+      const cc = getPadObj().collabClient;
       const origHM = cc.handleMessageFromServer;
       cc.handleMessageFromServer = (evt) => {
         if (evt.type === 'COLLABROOM' && evt.data.type === 'NEW_CHANGES') {

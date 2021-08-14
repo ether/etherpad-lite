@@ -278,7 +278,7 @@ const helper = {};
   helper.withFastCommit = async (fn) => {
     const incorp = () => helper.padChrome$.padeditor.ace.callWithAce(
         (ace) => ace.ace_inCallStackIfNecessary('helper.edit', () => ace.ace_fastIncorp()));
-    const cc = helper.padChrome$.window.pad.collabClient;
+    const cc = helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad').pad.collabClient;
     const {commitDelay} = cc;
     cc.commitDelay = 0;
     try {
