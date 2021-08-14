@@ -454,53 +454,51 @@
 
   <!-- Bootstrap page -->
   <script type="text/javascript">
-      // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
-      var clientVars = {
+    // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
+    (() => {
+      'use strict';
+      window.clientVars = {
         // This is needed to fetch /pluginfw/plugin-definitions.json, which happens before the
         // server sends the CLIENT_VARS message.
         randomVersionString: <%-JSON.stringify(settings.randomVersionString)%>,
       };
-      (function () {
-        var pathComponents = location.pathname.split('/');
+      const pathComponents = location.pathname.split('/');
 
-        // Strip 'p' and the padname from the pathname and set as baseURL
-        var baseURL = pathComponents.slice(0,pathComponents.length-2).join('/') + '/';
+      // Strip 'p' and the padname from the pathname and set as baseURL
+      const baseURL = `${pathComponents.slice(0, pathComponents.length - 2).join('/')}/`;
 
-        require.setRootURI(baseURL + "javascripts/src");
-        require.setLibraryURI(baseURL + "javascripts/lib");
-        require.setGlobalKeyPath("require");
+      require.setRootURI(`${baseURL}javascripts/src`);
+      require.setLibraryURI(`${baseURL}javascripts/lib`);
+      require.setGlobalKeyPath('require');
 
-        $ = jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery; // Expose jQuery #HACK
-        browser = require('ep_etherpad-lite/static/js/vendors/browser');
+      // Expose jQuery #HACK
+      window.$ = window.jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery;
+      window.browser = require('ep_etherpad-lite/static/js/vendors/browser');
 
-        var plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
-        var hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
+      const plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
+      const hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks');
 
-        plugins.baseURL = baseURL;
-        plugins.update(function () {
-          // Mechanism for tests to register hook functions (install fake plugins).
-          window._postPluginUpdateForTestingDone = false;
-          if (window._postPluginUpdateForTesting != null) window._postPluginUpdateForTesting();
-          window._postPluginUpdateForTestingDone = true;
-          // Call documentReady hook
-          $(function() {
-            hooks.aCallAll('documentReady');
-          });
+      plugins.baseURL = baseURL;
+      plugins.update(() => {
+        // Mechanism for tests to register hook functions (install fake plugins).
+        window._postPluginUpdateForTestingDone = false;
+        if (window._postPluginUpdateForTesting != null) window._postPluginUpdateForTesting();
+        window._postPluginUpdateForTestingDone = true;
+        $(() => hooks.aCallAll('documentReady'));
+        const pad = require('ep_etherpad-lite/static/js/pad');
+        pad.baseURL = baseURL;
+        pad.init();
+      });
 
-          var pad = require('ep_etherpad-lite/static/js/pad');
-          pad.baseURL = baseURL;
-          pad.init();
-        });
+      // TODO: These globals shouldn't exist.
+      window.pad = require('ep_etherpad-lite/static/js/pad').pad;
+      window.chat = require('ep_etherpad-lite/static/js/chat').chat;
+      window.padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
+      window.padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
 
-        /* TODO: These globals shouldn't exist. */
-        pad = require('ep_etherpad-lite/static/js/pad').pad;
-        chat = require('ep_etherpad-lite/static/js/chat').chat;
-        padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
-        padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
-        require('ep_etherpad-lite/static/js/skin_variants');
-
-      }());
-      // @license-end
+      require('ep_etherpad-lite/static/js/skin_variants');
+    })();
+    // @license-end
   </script>
   <div style="display:none"><a href="/javascript" data-jslicense="1">JavaScript license information</a></div>
   <% e.end_block(); %>
