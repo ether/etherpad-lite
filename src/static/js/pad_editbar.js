@@ -301,16 +301,14 @@ exports.padeditbar = {
         // If we're in the editbar already..
         // Close any dropdowns we have open..
         this.toggleDropDown('none');
+        // Shift focus away from any drop downs
+        $(':focus').blur(); // required to do not try to remove!
         // Check we're on a pad and not on the timeslider
         // Or some other window I haven't thought about!
         if (typeof pad === 'undefined') {
           // Timeslider probably..
-          // Shift focus away from any drop downs
-          $(':focus').blur(); // required to do not try to remove!
           $('#editorcontainerbox').focus(); // Focus back onto the pad
         } else {
-          // Shift focus away from any drop downs
-          $(':focus').blur(); // required to do not try to remove!
           padeditor.ace.focus(); // Sends focus back to pad
           // The above focus doesn't always work in FF, you have to hit enter afterwards
           evt.preventDefault();
