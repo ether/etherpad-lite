@@ -563,9 +563,6 @@ const closeColorPicker = (accept) => {
     myUserInfo.colorId = newColor;
     pad.notifyChangeColor(newColor);
     paduserlist.renderMyUserInfo();
-  } else {
-    // pad.notifyChangeColor(previousColorId);
-    // paduserlist.renderMyUserInfo();
   }
 
   colorPickerOpen = false;

@@ -47,7 +47,6 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
   let commitDelay = 500;
 
   const userId = initialUserInfo.userId;
-  // var socket;
   const userSet = {}; // userId -> userInfo
   userSet[userId] = initialUserInfo;
 
