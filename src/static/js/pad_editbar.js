@@ -30,52 +30,53 @@ const padsavedrevs = require('./pad_savedrevs');
 const _ = require('underscore');
 require('./vendors/nice-select');
 
-const ToolbarItem = function (element) {
-  this.$el = element;
-};
-
-ToolbarItem.prototype.getCommand = function () {
-  return this.$el.attr('data-key');
-};
-
-ToolbarItem.prototype.getValue = function () {
-  if (this.isSelect()) {
-    return this.$el.find('select').val();
+class ToolbarItem {
+  constructor(element) {
+    this.$el = element;
   }
-};
 
-ToolbarItem.prototype.setValue = function (val) {
-  if (this.isSelect()) {
-    return this.$el.find('select').val(val);
+  getCommand() {
+    return this.$el.attr('data-key');
   }
-};
 
-
-ToolbarItem.prototype.getType = function () {
-  return this.$el.attr('data-type');
-};
-
-ToolbarItem.prototype.isSelect = function () {
-  return this.getType() === 'select';
-};
-
-ToolbarItem.prototype.isButton = function () {
-  return this.getType() === 'button';
-};
-
-ToolbarItem.prototype.bind = function (callback) {
-  if (this.isButton()) {
-    this.$el.click((event) => {
-      $(':focus').blur();
-      callback(this.getCommand(), this);
-      event.preventDefault();
-    });
-  } else if (this.isSelect()) {
-    this.$el.find('select').change(() => {
-      callback(this.getCommand(), this);
-    });
+  getValue() {
+    if (this.isSelect()) {
+      return this.$el.find('select').val();
+    }
   }
-};
+
+  setValue(val) {
+    if (this.isSelect()) {
+      return this.$el.find('select').val(val);
+    }
+  }
+
+  getType() {
+    return this.$el.attr('data-type');
+  }
+
+  isSelect() {
+    return this.getType() === 'select';
+  }
+
+  isButton() {
+    return this.getType() === 'button';
+  }
+
+  bind(callback) {
+    if (this.isButton()) {
+      this.$el.click((event) => {
+        $(':focus').blur();
+        callback(this.getCommand(), this);
+        event.preventDefault();
+      });
+    } else if (this.isSelect()) {
+      this.$el.find('select').change(() => {
+        callback(this.getCommand(), this);
+      });
+    }
+  }
+}
 
 const syncAnimation = (() => {
   const SYNCING = -100;
@@ -122,10 +123,12 @@ const syncAnimation = (() => {
   };
 })();
 
-exports.padeditbar = {
-  _editbarPosition: 0,
-  commands: {},
-  dropdowns: [],
+exports.padeditbar = new class {
+  constructor() {
+    this._editbarPosition = 0;
+    this.commands = {};
+    this.dropdowns = [];
+  }
 
   init() {
     $('#editbar .editbarbutton').attr('unselectable', 'on'); // for IE
@@ -168,38 +171,38 @@ exports.padeditbar = {
     $('iframe[name="ace_outer"]').contents().scroll((ev) => {
       $('#editbar').toggleClass('editor-scrolled', $(ev.currentTarget).scrollTop() > 2);
     });
-  },
-  isEnabled: () => true,
-  disable: () => {
+  }
+  isEnabled() { return true; }
+  disable() {
     $('#editbar').addClass('disabledtoolbar').removeClass('enabledtoolbar');
-  },
-  enable: () => {
+  }
+  enable() {
     $('#editbar').addClass('enabledtoolbar').removeClass('disabledtoolbar');
-  },
+  }
   registerCommand(cmd, callback) {
     this.commands[cmd] = callback;
     return this;
-  },
+  }
   registerDropdownCommand(cmd, dropdown) {
     dropdown = dropdown || cmd;
     this.dropdowns.push(dropdown);
     this.registerCommand(cmd, () => {
       this.toggleDropDown(dropdown);
     });
-  },
+  }
   registerAceCommand(cmd, callback) {
     this.registerCommand(cmd, (cmd, ace, item) => {
       ace.callWithAce((ace) => {
         callback(cmd, ace, item);
       }, cmd, true);
     });
-  },
+  }
   triggerCommand(cmd, item) {
     if (this.isEnabled() && this.commands[cmd]) {
       this.commands[cmd](cmd, padeditor.ace, item);
     }
     if (padeditor.ace) padeditor.ace.focus();
-  },
+  }
 
   // cb is deprecated (this function is synchronous so a callback is unnecessary).
   toggleDropDown(moduleName, cb = null) {
@@ -249,15 +252,15 @@ exports.padeditbar = {
     } finally {
       if (cb) Promise.resolve().then(() => cb(cbErr));
     }
-  },
-  setSyncStatus: (status) => {
+  }
+  setSyncStatus(status) {
     if (status === 'syncing') {
       syncAnimation.syncing();
     } else if (status === 'done') {
       syncAnimation.done();
     }
-  },
-  setEmbedLinks: () => {
+  }
+  setEmbedLinks() {
     const padUrl = window.location.href.split('?')[0];
     const params = '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false';
     const props = 'width="100%" height="600" frameborder="0"';
@@ -274,8 +277,8 @@ exports.padeditbar = {
           .val(`<iframe name="embed_readwrite" src="${padUrl}${params}" ${props}></iframe>`);
       $('#linkinput').val(padUrl);
     }
-  },
-  checkAllIconsAreDisplayedInToolbar: () => {
+  }
+  checkAllIconsAreDisplayedInToolbar() {
     // reset style
     $('.toolbar').removeClass('cropped');
     $('body').removeClass('mobile-layout');
@@ -291,7 +294,7 @@ exports.padeditbar = {
     if (menu_left && menu_left.scrollWidth > $('.toolbar').width()) {
       $('.toolbar').addClass('cropped');
     }
-  },
+  }
 
   _bodyKeyEvent(evt) {
     // If the event is Alt F9 or Escape & we're already in the editbar menu
@@ -352,7 +355,7 @@ exports.padeditbar = {
         $(focusItems[this._editbarPosition]).focus();
       }
     }
-  },
+  }
 
   _registerDefaultCommands() {
     this.registerDropdownCommand('showusers', 'users');
@@ -474,5 +477,5 @@ exports.padeditbar = {
             .substring(0, document.location.href.lastIndexOf('/'));
       }
     });
-  },
-};
+  }
+}();
