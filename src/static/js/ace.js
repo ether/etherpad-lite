@@ -119,6 +119,7 @@ const Ace2Editor = function () {
     'applyChangesToBase',
     'applyPreparedChangesetToBase',
     'setUserChangeNotificationCallback',
+    'setAuthorId',
     'setAuthorInfo',
     'callWithAce',
     'execCommand',

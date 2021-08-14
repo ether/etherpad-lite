@@ -64,6 +64,10 @@ const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
 
   let self;
   return self = {
+    _authorId: null,
+    setAuthorId(authorId) {
+      this._authorId = authorId;
+    },
     isTracking: () => tracking,
     setBaseText: (text) => {
       self.setBaseAttributedText(Changeset.makeAText(text), null);
@@ -128,7 +132,7 @@ const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
         }
       });
     },
-    prepareUserChangeset: () => {
+    prepareUserChangeset() {
       // If there are user changes to submit, 'changeset' will be the
       // changeset, else it will be null.
       let toSubmit;
@@ -137,8 +141,7 @@ const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
         // that includes old submittedChangeset
         toSubmit = Changeset.compose(submittedChangeset, userChangeset, apool);
       } else {
-        // Get my authorID
-        const authorId = parent.parent.pad.myUserInfo.userId;
+        if (!this._authorId) throw new Error('setAuthorId() not yet called');
 
         // Sanitize authorship: Replace all author attributes with this user's author ID in case the
         // text was copied from another author.
@@ -149,8 +152,8 @@ const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
           if (op.opcode === '+') {
             const attribs = AttributeMap.fromString(op.attribs, apool);
             const oldAuthorId = attribs.get('author');
-            if (oldAuthorId != null && oldAuthorId !== authorId) {
-              attribs.set('author', authorId);
+            if (oldAuthorId != null && oldAuthorId !== this._authorId) {
+              attribs.set('author', this._authorId);
               op.attribs = attribs.toString();
             }
           }

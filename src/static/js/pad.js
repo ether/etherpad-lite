@@ -408,6 +408,7 @@ const pad = {
     };
 
     const postAceInit = () => {
+      padeditor.ace.setAuthorId(clientVars.userId);
       padeditbar.init();
       setTimeout(() => {
         padeditor.ace.focus();

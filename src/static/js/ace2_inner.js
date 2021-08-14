@@ -684,6 +684,7 @@ function Ace2Inner(editorInfo, cssManagers) {
   editorInfo.ace_setUserChangeNotificationCallback = (f) => {
     changesetTracker.setUserChangeNotificationCallback(f);
   };
+  editorInfo.ace_setAuthorId = (authorId) => changesetTracker.setAuthorId(authorId);
   editorInfo.ace_setAuthorInfo = (author, info) => {
     setAuthorInfo(author, info);
   };
