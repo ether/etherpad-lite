@@ -122,11 +122,11 @@
           <% e.begin_block("mySettings"); %>
           <h2 data-l10n-id="pad.settings.myView"></h2>
           <p class="hide-for-mobile">
-              <input type="checkbox" id="options-stickychat" onClick="chat.stickToScreen();">
+              <input type="checkbox" id="options-stickychat">
               <label for="options-stickychat" data-l10n-id="pad.settings.stickychat"></label>
           </p>
           <p class="hide-for-mobile">
-              <input type="checkbox" id="options-chatandusers" onClick="chat.chatAndUsers();">
+              <input type="checkbox" id="options-chatandusers">
               <label for="options-chatandusers" data-l10n-id="pad.settings.chatandusers"></label>
           </p>
           <p>
@@ -368,7 +368,7 @@
         <!----------- CHAT ------------>
         <!----------------------------->
 
-        <div id="chaticon" class="visible" onclick="chat.show();return false;" title="Chat (Alt C)">
+        <div id="chaticon" class="visible" title="Chat (Alt C)">
             <span id="chatlabel" data-l10n-id="pad.chat"></span>
             <span class="buttonicon buttonicon-chat"></span>
             <span id="chatcounter">0</span>
@@ -378,8 +378,8 @@
           <div class="chat-content">
             <div id="titlebar">
               <h1 id ="titlelabel" data-l10n-id="pad.chat"></h1>
-              <a id="titlecross" class="hide-reduce-btn" onClick="chat.hide();return false;">-&nbsp;</a>
-              <a id="titlesticky" class="stick-to-screen-btn" onClick="chat.stickToScreen(true);return false;" data-l10n-id="pad.chat.stick.title">█&nbsp;&nbsp;</a>
+              <a id="titlecross" class="hide-reduce-btn">-&nbsp;</a>
+              <a id="titlesticky" class="stick-to-screen-btn" data-l10n-id="pad.chat.stick.title">█&nbsp;&nbsp;</a>
             </div>
             <div id="chattext" class="thin-scrollbar" aria-live="polite" aria-relevant="additions removals text" role="log" aria-atomic="false">
                 <div alt="loading.." id="chatloadmessagesball" class="chatloadmessages loadingAnimation" align="top"></div>

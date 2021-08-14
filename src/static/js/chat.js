@@ -218,6 +218,11 @@ exports.chat = (() => {
     },
     init(pad) {
       this._pad = pad;
+      $('#options-stickychat').on('click', () => this.stickToScreen());
+      $('#options-chatandusers').on('click', () => this.chatAndUsers());
+      $('#chaticon').on('click', (e) => { e.preventDefault(); this.show(); });
+      $('#titlecross').on('click', (e) => { e.preventDefault(); this.hide(); });
+      $('#titlesticky').on('click', (e) => { e.preventDefault(); this.stickToScreen(true); });
       $('#chatinput').on('keydown', (evt) => {
         // If the event is Alt C or Escape & we're already in the chat menu
         // Send the users focus back to the pad
