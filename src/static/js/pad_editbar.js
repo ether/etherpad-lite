@@ -360,35 +360,31 @@ exports.padeditbar = {
     this.registerDropdownCommand('embed');
 
     this.registerCommand('settings', () => {
-      this.toggleDropDown('settings', () => {
-        $('#options-stickychat').focus();
-      });
+      this.toggleDropDown('settings');
+      $('#options-stickychat').focus();
     });
 
     this.registerCommand('import_export', () => {
-      this.toggleDropDown('import_export', () => {
-        // If Import file input exists then focus on it..
-        if ($('#importfileinput').length !== 0) {
-          setTimeout(() => {
-            $('#importfileinput').focus();
-          }, 100);
-        } else {
-          $('.exportlink').first().focus();
-        }
-      });
+      this.toggleDropDown('import_export');
+      // If Import file input exists then focus on it..
+      if ($('#importfileinput').length !== 0) {
+        setTimeout(() => {
+          $('#importfileinput').focus();
+        }, 100);
+      } else {
+        $('.exportlink').first().focus();
+      }
     });
 
     this.registerCommand('showusers', () => {
-      this.toggleDropDown('users', () => {
-        $('#myusernameedit').focus();
-      });
+      this.toggleDropDown('users');
+      $('#myusernameedit').focus();
     });
 
     this.registerCommand('embed', () => {
       this.setEmbedLinks();
-      this.toggleDropDown('embed', () => {
-        $('#linkinput').focus().select();
-      });
+      this.toggleDropDown('embed');
+      $('#linkinput').focus().select();
     });
 
     this.registerCommand('savedRevision', () => {
