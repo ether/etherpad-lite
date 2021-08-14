@@ -6,6 +6,13 @@
     // sends the CLIENT_VARS message.
     randomVersionString: <%-JSON.stringify(settings.randomVersionString)%>,
   };
+
+  // Allow other frames to access this frame's modules.
+  window.require = __webpack_require__;
+  window.require.resolve = __webpack_require__.resolve;
+  window.require.cache = __webpack_module_cache__;
+  window.require.resolveTmp = require.resolve('ep_etherpad-lite/static/js/pad_cookie');
+
   const basePath = new URL('..', window.location.href).pathname;
   window.$ = window.jQuery = require('../../src/static/js/rjquery').jQuery;
   window.browser = require('../../src/static/js/vendors/browser');

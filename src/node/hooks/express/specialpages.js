@@ -110,6 +110,11 @@ exports.expressCreateServer = async (hookName, args) => {
       path: path.join(settings.root, 'var/js'),
       filename: '[name]-[contenthash].js',
     },
+    resolve: {
+      alias: {
+        'ep_etherpad-lite': path.join(settings.root, 'src'),
+      },
+    },
   });
   const stats = await util.promisify(compiler.run.bind(compiler))();
   console.log(`webpack stats:\n${stats}`);
