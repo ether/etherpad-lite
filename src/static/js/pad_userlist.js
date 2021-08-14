@@ -369,18 +369,13 @@ const paduserlist = (() => {
       });
 
       // color picker
-      $('#myswatchbox').click(showColorPicker);
+      $('#myswatchbox').click(() => self.showColorPicker());
       $('#mycolorpicker .pickerswatchouter').click(function () {
         $('#mycolorpicker .pickerswatchouter').removeClass('picked');
         $(this).addClass('picked');
       });
-      $('#mycolorpickersave').click(() => {
-        closeColorPicker(true);
-      });
-      $('#mycolorpickercancel').click(() => {
-        closeColorPicker(false);
-      });
-      //
+      $('#mycolorpickersave').click(() => self.closeColorPicker(true));
+      $('#mycolorpickercancel').click(() => self.closeColorPicker(false));
     },
     usersOnline: () => {
       // Returns an object of users who are currently online on this pad
@@ -541,67 +536,67 @@ const paduserlist = (() => {
       $('#myswatch').css({'background-color': myUserInfo.colorId});
       $('li[data-key=showusers] > a').css({'box-shadow': `inset 0 0 30px ${myUserInfo.colorId}`});
     },
+
+    closeColorPicker: (accept) => {
+      if (accept) {
+        let newColor = $('#mycolorpickerpreview').css('background-color');
+        const parts = newColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+        // parts now should be ["rgb(0, 70, 255", "0", "70", "255"]
+        if (parts) {
+          delete (parts[0]);
+          for (let i = 1; i <= 3; ++i) {
+            parts[i] = parseInt(parts[i]).toString(16);
+            if (parts[i].length === 1) parts[i] = `0${parts[i]}`;
+          }
+          newColor = `#${parts.join('')}`; // "0070ff"
+        }
+        myUserInfo.colorId = newColor;
+        pad.notifyChangeColor(newColor);
+        paduserlist.renderMyUserInfo();
+      }
+
+      colorPickerOpen = false;
+      $('#mycolorpicker').removeClass('popup-show');
+    },
+
+    showColorPicker: () => {
+      $.farbtastic('#colorpicker').setColor(myUserInfo.colorId);
+
+      if (!colorPickerOpen) {
+        const palette = pad.getColorPalette();
+
+        if (!colorPickerSetup) {
+          const colorsList = $('#colorpickerswatches');
+          for (let i = 0; i < palette.length; i++) {
+            const li = $('<li>', {
+              style: `background: ${palette[i]};`,
+            });
+
+            li.appendTo(colorsList);
+
+            li.bind('click', (event) => {
+              $('#colorpickerswatches li').removeClass('picked');
+              $(event.target).addClass('picked');
+
+              const newColorId = getColorPickerSwatchIndex($('#colorpickerswatches .picked'));
+              pad.notifyChangeColor(newColorId);
+            });
+          }
+
+          colorPickerSetup = true;
+        }
+
+        $('#mycolorpicker').addClass('popup-show');
+        colorPickerOpen = true;
+
+        $('#colorpickerswatches li').removeClass('picked');
+        $($('#colorpickerswatches li')[myUserInfo.colorId]).addClass('picked'); // seems weird
+      }
+    },
+
+    getColorPickerSwatchIndex: (jnode) => $('#colorpickerswatches li').index(jnode),
   };
   return self;
 })();
-
-const getColorPickerSwatchIndex = (jnode) => $('#colorpickerswatches li').index(jnode);
-
-const closeColorPicker = (accept) => {
-  if (accept) {
-    let newColor = $('#mycolorpickerpreview').css('background-color');
-    const parts = newColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-    // parts now should be ["rgb(0, 70, 255", "0", "70", "255"]
-    if (parts) {
-      delete (parts[0]);
-      for (let i = 1; i <= 3; ++i) {
-        parts[i] = parseInt(parts[i]).toString(16);
-        if (parts[i].length === 1) parts[i] = `0${parts[i]}`;
-      }
-      newColor = `#${parts.join('')}`; // "0070ff"
-    }
-    myUserInfo.colorId = newColor;
-    pad.notifyChangeColor(newColor);
-    paduserlist.renderMyUserInfo();
-  }
-
-  colorPickerOpen = false;
-  $('#mycolorpicker').removeClass('popup-show');
-};
-
-const showColorPicker = () => {
-  $.farbtastic('#colorpicker').setColor(myUserInfo.colorId);
-
-  if (!colorPickerOpen) {
-    const palette = pad.getColorPalette();
-
-    if (!colorPickerSetup) {
-      const colorsList = $('#colorpickerswatches');
-      for (let i = 0; i < palette.length; i++) {
-        const li = $('<li>', {
-          style: `background: ${palette[i]};`,
-        });
-
-        li.appendTo(colorsList);
-
-        li.bind('click', (event) => {
-          $('#colorpickerswatches li').removeClass('picked');
-          $(event.target).addClass('picked');
-
-          const newColorId = getColorPickerSwatchIndex($('#colorpickerswatches .picked'));
-          pad.notifyChangeColor(newColorId);
-        });
-      }
-
-      colorPickerSetup = true;
-    }
-
-    $('#mycolorpicker').addClass('popup-show');
-    colorPickerOpen = true;
-
-    $('#colorpickerswatches li').removeClass('picked');
-    $($('#colorpickerswatches li')[myUserInfo.colorId]).addClass('picked'); // seems weird
-  }
-};
 
 exports.paduserlist = paduserlist;
