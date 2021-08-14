@@ -293,16 +293,9 @@ const Ace2Editor = function () {
     require.setLibraryURI(absUrl('../javascripts/lib'));
     require.setGlobalKeyPath('require');
 
-    // intentially moved before requiring client_plugins to save a 307
     innerWindow.Ace2Inner = require('ep_etherpad-lite/static/js/ace2_inner');
-    innerWindow.plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
-    innerWindow.plugins.adoptPluginsFromAncestorsOf(innerWindow);
-
     innerWindow.$ = innerWindow.jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery;
 
-    debugLog('Ace2Editor.init() waiting for plugins');
-    await new Promise((resolve, reject) => innerWindow.plugins.ensure(
-        (err) => err != null ? reject(err) : resolve()));
     debugLog('Ace2Editor.init() waiting for Ace2Inner.init()');
     await innerWindow.Ace2Inner.init(info, {
       inner: makeCSSManager(innerStyle.sheet),
