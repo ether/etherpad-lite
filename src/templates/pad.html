@@ -485,18 +485,18 @@
         if (window._postPluginUpdateForTesting != null) window._postPluginUpdateForTesting();
         window._postPluginUpdateForTestingDone = true;
         $(() => hooks.aCallAll('documentReady'));
+
+        // TODO: These globals shouldn't exist.
+        window.pad = require('ep_etherpad-lite/static/js/pad').pad;
+        window.chat = require('ep_etherpad-lite/static/js/chat').chat;
+        window.padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
+        window.padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
+
+        require('ep_etherpad-lite/static/js/skin_variants');
         const pad = require('ep_etherpad-lite/static/js/pad');
         pad.baseURL = baseURL;
         pad.init();
       });
-
-      // TODO: These globals shouldn't exist.
-      window.pad = require('ep_etherpad-lite/static/js/pad').pad;
-      window.chat = require('ep_etherpad-lite/static/js/chat').chat;
-      window.padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
-      window.padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
-
-      require('ep_etherpad-lite/static/js/skin_variants');
     })();
     // @license-end
   </script>
