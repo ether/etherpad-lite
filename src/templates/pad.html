@@ -486,11 +486,24 @@
         window._postPluginUpdateForTestingDone = true;
         $(() => hooks.aCallAll('documentReady'));
 
-        // TODO: These globals shouldn't exist.
-        window.pad = require('ep_etherpad-lite/static/js/pad').pad;
-        window.chat = require('ep_etherpad-lite/static/js/chat').chat;
-        window.padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
-        window.padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
+        // TODO: Delete these global variables once plugins have been updated to not use them.
+        const globals = {
+          pad: require('ep_etherpad-lite/static/js/pad').pad,
+          chat: require('ep_etherpad-lite/static/js/chat').chat,
+          padeditbar: require('ep_etherpad-lite/static/js/pad_editbar').padeditbar,
+          padimpexp: require('ep_etherpad-lite/static/js/pad_impexp').padimpexp,
+        };
+        // Wrap each of the above globals in a Proxy object that triggers an unhandled Promise
+        // rejection if the global is used (but otherwise forwards the access so that everything
+        // continues to work, just with an ugly error popup).
+        const proxyOp = (op, ...args) => {
+          Promise.reject(new Error('deprecated global variable accessed'));
+          return op(...args);
+        };
+        const proxyHandler = Object.fromEntries(
+            ['get', 'set'].map((opName) => [opName, proxyOp.bind(null, Reflect[opName])]));
+        Object.assign(window, Object.fromEntries(
+            Object.entries(globals).map(([k, v]) => [k, new Proxy(v, proxyHandler)])));
 
         require('ep_etherpad-lite/static/js/skin_variants');
         const pad = require('ep_etherpad-lite/static/js/pad');
