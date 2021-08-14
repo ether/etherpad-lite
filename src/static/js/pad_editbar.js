@@ -282,16 +282,16 @@ exports.padeditbar = new class {
     // reset style
     $('.toolbar').removeClass('cropped');
     $('body').removeClass('mobile-layout');
-    const menu_left = $('.toolbar .menu_left')[0];
+    const menuLeft = $('.toolbar .menu_left')[0];
 
     // this is approximate, we cannot measure it because on mobile
     // Layout it takes the full width on the bottom of the page
     const menuRightWidth = 280;
-    if (menu_left && menu_left.scrollWidth > $('.toolbar').width() - menuRightWidth ||
+    if (menuLeft && menuLeft.scrollWidth > $('.toolbar').width() - menuRightWidth ||
         $('.toolbar').width() < 1000) {
       $('body').addClass('mobile-layout');
     }
-    if (menu_left && menu_left.scrollWidth > $('.toolbar').width()) {
+    if (menuLeft && menuLeft.scrollWidth > $('.toolbar').width()) {
       $('.toolbar').addClass('cropped');
     }
   }
