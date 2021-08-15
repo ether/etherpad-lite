@@ -2162,16 +2162,13 @@ function Ace2Inner(editorInfo, cssManagers) {
       [-1, N + 1],
     ];
 
+    // returns index of cleanRange containing i, or -1 if none
     const rangeForLine = (i) => {
-      // returns index of cleanRange containing i, or -1 if none
-      let answer = -1;
-      cleanRanges.forEach((r, idx) => {
-        if (i >= r[1]) return false; // keep looking
-        if (i < r[0]) return true; // not found, stop looking
-        answer = idx;
-        return true; // found, stop looking
-      });
-      return answer;
+      for (const [idx, r] of cleanRanges.entries()) {
+        if (i < r[0]) return -1;
+        if (i < r[1]) return idx;
+      }
+      return -1;
     };
 
     const removeLineFromRange = (rng, line) => {
