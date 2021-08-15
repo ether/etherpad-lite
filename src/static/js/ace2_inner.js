@@ -137,7 +137,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       'profileEnd',
     ];
     console = {};
-    for (let i = 0; i < names.length; ++i) console[names[i]] = noop;
+    for (const name of names) console[name] = noop;
   }
 
   const scheduler = parent; // hack for opera required
@@ -275,9 +275,9 @@ function Ace2Inner(editorInfo, cssManagers) {
     applyChangesToBase: 1,
   };
 
-  hooks.callAll('aceRegisterNonScrollableEditEvents').forEach((eventType) => {
+  for (const eventType of hooks.callAll('aceRegisterNonScrollableEditEvents')) {
     _nonScrollableEditEvents[eventType] = 1;
-  });
+  }
 
   const isScrollableEditEvent = (eventType) => !_nonScrollableEditEvents[eventType];
 
@@ -987,9 +987,9 @@ function Ace2Inner(editorInfo, cssManagers) {
     // inspired by Firefox bug #473255, where pasting formatted text
     // causes the cursor to jump away, making the new HTML never found.
     if (document.body.getElementsByTagName) {
-      const nds = document.body.getElementsByTagName('style');
-      for (let i = 0; i < nds.length; i++) {
-        const n = topLevel(nds[i]);
+      const elts = document.body.getElementsByTagName('style');
+      for (const elt of elts) {
+        const n = topLevel(elt);
         if (n && n.parentNode === document.body) {
           observeChangesAroundNode(n);
         }
@@ -1028,9 +1028,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       j++;
     }
     if (!dirtyRangesCheckOut) {
-      const numBodyNodes = document.body.childNodes.length;
-      for (let k = 0; k < numBodyNodes; k++) {
-        const bodyNode = document.body.childNodes.item(k);
+      for (const bodyNode of document.body.childNodes) {
         if ((bodyNode.tagName) && ((!bodyNode.id) || (!rep.lines.containsKey(bodyNode.id)))) {
           observeChangesAroundNode(bodyNode);
         }
@@ -1106,17 +1104,14 @@ function Ace2Inner(editorInfo, cssManagers) {
 
         const entries = [];
         const nodeToAddAfter = lastDirtyNode;
-        const lineNodeInfos = new Array(lines.length);
-        for (let k = 0; k < lines.length; k++) {
-          const lineString = lines[k];
+        const lineNodeInfos = [];
+        for (const lineString of lines) {
           const newEntry = createDomLineEntry(lineString);
           entries.push(newEntry);
-          lineNodeInfos[k] = newEntry.domInfo;
+          lineNodeInfos.push(newEntry.domInfo);
         }
         domInsertsNeeded.push([nodeToAddAfter, lineNodeInfos]);
-        dirtyNodes.forEach((n) => {
-          toDeleteAtEnd.push(n);
-        });
+        for (const n of dirtyNodes) toDeleteAtEnd.push(n);
         const spliceHints = {};
         if (selStart) spliceHints.selStart = selStart;
         if (selEnd) spliceHints.selEnd = selEnd;
@@ -1131,20 +1126,18 @@ function Ace2Inner(editorInfo, cssManagers) {
     const domChanges = (splicesToDo.length > 0);
 
     // update the representation
-    splicesToDo.forEach((splice) => {
+    for (const splice of splicesToDo) {
       doIncorpLineSplice(splice[0], splice[1], splice[2], splice[3], splice[4]);
-    });
+    }
 
     // do DOM inserts
-    domInsertsNeeded.forEach((ins) => {
-      insertDomLines(ins[0], ins[1]);
-    });
+    for (const ins of domInsertsNeeded) insertDomLines(ins[0], ins[1]);
 
     // delete old dom nodes
-    toDeleteAtEnd.forEach((n) => {
+    for (const n of toDeleteAtEnd) {
       // parent of n may not be "root" in IE due to non-tree-shaped DOM (wtf)
       if (n.parentNode) n.parentNode.removeChild(n);
-    });
+    }
 
     // needed to stop chrome from breaking the ui when long strings without spaces are pasted
     if (scrollToTheLeftNeeded) {
@@ -1227,9 +1220,7 @@ function Ace2Inner(editorInfo, cssManagers) {
   const insertDomLines = (nodeToAddAfter, infoStructs) => {
     let lastEntry;
     let lineStartOffset;
-    if (infoStructs.length < 1) return;
-
-    infoStructs.forEach((info) => {
+    for (const info of infoStructs) {
       const node = info.node;
       const key = uniqueId(node);
       let entry;
@@ -1259,7 +1250,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       nodeToAddAfter = node;
       info.notifyAdded();
       markNodeClean(node);
-    });
+    }
   };
 
   const isCaret = () => (rep.selStart && rep.selEnd &&
@@ -1422,10 +1413,10 @@ function Ace2Inner(editorInfo, cssManagers) {
 
       insertDomLines(nodeToAddAfter, lineEntries.map((entry) => entry.domInfo));
 
-      keysToDelete.forEach((k) => {
+      for (const k of keysToDelete) {
         const n = document.getElementById(k);
         n.parentNode.removeChild(n);
-      });
+      }
 
       if (
         (rep.selStart &&
@@ -1696,9 +1687,7 @@ function Ace2Inner(editorInfo, cssManagers) {
   // Change the abstract representation of the document to have a different set of lines.
   // Must be called after rep.alltext is set.
   const doRepLineSplice = (startLine, deleteCount, newLineEntries) => {
-    newLineEntries.forEach((entry) => {
-      entry.width = entry.text.length + 1;
-    });
+    for (const entry of newLineEntries) entry.width = entry.text.length + 1;
 
     const startOldChar = rep.lines.offsetOfIndex(startLine);
     const endOldChar = rep.lines.offsetOfIndex(startLine + deleteCount);
@@ -2074,11 +2063,11 @@ function Ace2Inner(editorInfo, cssManagers) {
   const attribIsFormattingStyle = (attribName) => FORMATTING_STYLES.indexOf(attribName) !== -1;
 
   const selectFormattingButtonIfLineHasStyleApplied = (rep) => {
-    FORMATTING_STYLES.forEach((style) => {
+    for (const style of FORMATTING_STYLES) {
       const hasStyleOnRepSelection =
           documentAttributeManager.hasAttributeOnSelectionOrCaretPosition(style);
       updateStyleButtonState(style, hasStyleOnRepSelection);
-    });
+    }
   };
 
   const doCreateDomLine =
@@ -2096,9 +2085,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     ul: 1,
   };
 
-  hooks.callAll('aceRegisterBlockElements').forEach((element) => {
-    _blockElems[element] = 1;
-  });
+  for (const element of hooks.callAll('aceRegisterBlockElements')) _blockElems[element] = 1;
 
   const isBlockElement = (n) => !!_blockElems[(n.tagName || '').toLowerCase()];
   editorInfo.ace_isBlockElement = isBlockElement;
@@ -2469,9 +2456,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       }
     }
 
-    mods.forEach((mod) => {
-      setLineListType(mod[0], mod[1]);
-    });
+    for (const mod of mods) setLineListType(mod[0], mod[1]);
     return true;
   };
   editorInfo.ace_doIndentOutdent = doIndentOutdent;
@@ -2689,8 +2674,8 @@ function Ace2Inner(editorInfo, cssManagers) {
             // Known authors info, both current and historical
             const padAuthors = parent.parent.pad.userList();
             let authorObj = {};
-            authors.forEach((authorId) => {
-              padAuthors.forEach((padAuthor) => {
+            for (const authorId of authors) {
+              for (const padAuthor of padAuthors) {
                 // If the person doing the lookup is the author..
                 if (padAuthor.userId === authorId) {
                   if (parent.parent.clientVars.userId === authorId) {
@@ -2701,15 +2686,15 @@ function Ace2Inner(editorInfo, cssManagers) {
                     authorObj = padAuthor;
                   }
                 }
-              });
+              }
               if (!authorObj) {
                 author = 'Unknown';
-                return;
+                continue;
               }
               author = authorObj.name;
               if (!author) author = 'Unknown';
               authorNames.push(author);
-            });
+            }
           }
           if (authors.length === 1) {
             authorString = `The author of this line is ${authorNames[0]}`;
@@ -3271,7 +3256,7 @@ function Ace2Inner(editorInfo, cssManagers) {
 
   const _teardownActions = [];
 
-  const teardown = () => _teardownActions.forEach((a) => a());
+  const teardown = () => { for (const a of _teardownActions) a(); };
 
   let inInternationalComposition = null;
   editorInfo.ace_getInInternationalComposition = () => inInternationalComposition;
@@ -3501,9 +3486,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       }
     }
 
-    mods.forEach((mod) => {
-      setLineListType(mod[0], mod[1]);
-    });
+    for (const mod of mods) setLineListType(mod[0], mod[1]);
   };
 
   const doInsertUnorderedList = () => {
@@ -3537,10 +3520,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     const innerdocbodyStyles = getComputedStyle(document.body);
     const defaultLineHeight = parseInt(innerdocbodyStyles['line-height']);
 
-    let docLine = document.body.firstElementChild;
-
-    // First loop to calculate the heights from doc body
-    while (docLine) {
+    for (const docLine of document.body.children) {
       let h;
       const nextDocLine = docLine.nextElementSibling;
       if (nextDocLine) {
@@ -3575,7 +3555,6 @@ function Ace2Inner(editorInfo, cssManagers) {
       } else {
         lineHeights.push(defaultLineHeight);
       }
-      docLine = nextDocLine;
     }
 
     let newNumLines = rep.lines.length();
