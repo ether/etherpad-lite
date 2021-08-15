@@ -73,7 +73,6 @@ function Ace2Inner(editorInfo, cssManagers) {
     lineSpan.appendChild(outerDoc.createTextNode('1'));
     lineDiv.appendChild(lineSpan);
   })();
-  let lineNumbersShown = 1;
 
   const scroll = Scroll.init(outerWin);
 
@@ -3594,7 +3593,7 @@ function Ace2Inner(editorInfo, cssManagers) {
 
     // Apply height to existing sidediv lines
     currentLine = 0;
-    while (sidebarLine && currentLine <= lineNumbersShown) {
+    while (sidebarLine && currentLine <= sideDivInner.children.length) {
       if (lineOffsets[currentLine] != null) {
         sidebarLine.style.height = `${lineOffsets[currentLine]}px`;
         sidebarLine.style.lineHeight = `${lineHeights[currentLine]}px`;
@@ -3603,24 +3602,22 @@ function Ace2Inner(editorInfo, cssManagers) {
       currentLine++;
     }
 
-    if (newNumLines !== lineNumbersShown) {
+    if (newNumLines !== sideDivInner.children.length) {
       // Create missing line and apply height
-      while (lineNumbersShown < newNumLines) {
-        lineNumbersShown++;
+      while (sideDivInner.children.length < newNumLines) {
         const div = outerDoc.createElement('DIV');
+        sideDivInner.appendChild(div);
         if (lineOffsets[currentLine]) {
           div.style.height = `${lineOffsets[currentLine]}px`;
           div.style.lineHeight = `${lineHeights[currentLine]}px`;
         }
-        $(div).append($(`<span class='line-number'>${String(lineNumbersShown)}</span>`));
-        sideDivInner.appendChild(div);
+        $(div).append($(`<span class='line-number'>${sideDivInner.children.length}</span>`));
         currentLine++;
       }
 
       // Remove extra lines
-      while (lineNumbersShown > newNumLines) {
+      while (sideDivInner.children.length > newNumLines) {
         sideDivInner.removeChild(sideDivInner.lastChild);
-        lineNumbersShown--;
       }
     }
   };
