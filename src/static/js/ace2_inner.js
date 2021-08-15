@@ -2330,9 +2330,7 @@ function Ace2Inner(editorInfo, cssManagers) {
   };
 
   const hideEditBarDropdowns = () => {
-    if (window.parent.parent.padeditbar) { // required in case its in an iframe should probably use parent..  See Issue 327 https://github.com/ether/etherpad-lite/issues/327
-      window.parent.parent.padeditbar.toggleDropDown('none');
-    }
+    window.parent.parent.padeditbar.toggleDropDown('none');
   };
 
   const renumberList = (lineNum) => {
@@ -3525,8 +3523,6 @@ function Ace2Inner(editorInfo, cssManagers) {
 
   // We apply the height of a line in the doc body, to the corresponding sidediv line number
   const updateLineNumbers = () => {
-    if (!currentCallStack || !currentCallStack.domClean) return;
-
     // Refs #4228, to avoid layout trashing, we need to first calculate all the heights,
     // and then apply at once all new height to div elements
     const lineOffsets = [];
@@ -3591,14 +3587,9 @@ function Ace2Inner(editorInfo, cssManagers) {
 
     let newNumLines = rep.lines.length();
     if (newNumLines < 1) newNumLines = 1;
-
-    if (newNumLines !== sideDivInner.children.length) {
-      while (sideDivInner.children.length < newNumLines) appendNewSideDivLine();
-      while (sideDivInner.children.length > newNumLines) sideDivInner.lastElementChild.remove();
-    }
-
+    while (sideDivInner.children.length < newNumLines) appendNewSideDivLine();
+    while (sideDivInner.children.length > newNumLines) sideDivInner.lastElementChild.remove();
     for (const [i, sideDivLine] of Array.prototype.entries.call(sideDivInner.children)) {
-      if (lineOffsets[i] == null) continue;
       sideDivLine.style.height = `${lineOffsets[i]}px`;
       sideDivLine.style.lineHeight = `${lineHeights[i]}px`;
     }
