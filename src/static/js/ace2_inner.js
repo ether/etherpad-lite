@@ -2263,13 +2263,11 @@ function Ace2Inner(editorInfo, cssManagers) {
       detectChangesAroundLine(0, 1);
       detectChangesAroundLine(N - 1, 1);
 
-      for (const k in observedChanges.cleanNodesNearChanges) {
-        if (observedChanges.cleanNodesNearChanges[k]) {
-          const key = k.substring(1);
-          if (rep.lines.containsKey(key)) {
-            const line = rep.lines.indexOfKey(key);
-            detectChangesAroundLine(line, 2);
-          }
+      for (const k of Object.keys(observedChanges.cleanNodesNearChanges)) {
+        const key = k.substring(1);
+        if (rep.lines.containsKey(key)) {
+          const line = rep.lines.indexOfKey(key);
+          detectChangesAroundLine(line, 2);
         }
       }
     }
