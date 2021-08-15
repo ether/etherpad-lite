@@ -528,9 +528,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     performDocumentApplyChangeset(changeset);
 
     performSelectionChange(
-        [0, rep.lines.atIndex(0).lineMarker],
-        [0, rep.lines.atIndex(0).lineMarker]
-    );
+        [0, rep.lines.atIndex(0).lineMarker], [0, rep.lines.atIndex(0).lineMarker]);
 
     idleWorkTimer.atMost(100);
 
@@ -1129,10 +1127,7 @@ function Ace2Inner(editorInfo, cssManagers) {
         splicesToDo.push([a + netNumLinesChangeSoFar, b - a, entries, lineAttribs, spliceHints]);
         netNumLinesChangeSoFar += (lines.length - (b - a));
       } else if (b > a) {
-        splicesToDo.push([a + netNumLinesChangeSoFar,
-          b - a,
-          [],
-          []]);
+        splicesToDo.push([a + netNumLinesChangeSoFar, b - a, [], []]);
       }
       i++;
     }
@@ -1271,12 +1266,8 @@ function Ace2Inner(editorInfo, cssManagers) {
     });
   };
 
-  const isCaret = () => (
-    rep.selStart &&
-    rep.selEnd &&
-    rep.selStart[0] === rep.selEnd[0] &&
-    rep.selStart[1] === rep.selEnd[1]
-  );
+  const isCaret = () => (rep.selStart && rep.selEnd &&
+                         rep.selStart[0] === rep.selEnd[0] && rep.selStart[1] === rep.selEnd[1]);
   editorInfo.ace_isCaret = isCaret;
 
   // prereq: isCaret()
@@ -1473,12 +1464,9 @@ function Ace2Inner(editorInfo, cssManagers) {
 
     if (requiredSelectionSetting) {
       performSelectionChange(
-          lineAndColumnFromChar(
-              requiredSelectionSetting[0]
-          ),
+          lineAndColumnFromChar(requiredSelectionSetting[0]),
           lineAndColumnFromChar(requiredSelectionSetting[1]),
-          requiredSelectionSetting[2]
-      );
+          requiredSelectionSetting[2]);
     }
   };
 
@@ -1553,8 +1541,8 @@ function Ace2Inner(editorInfo, cssManagers) {
         newText = newText.substring(0, newText.length - 1);
       }
     }
-    performDocumentReplaceRange(lineAndColumnFromChar(startChar),
-        lineAndColumnFromChar(endChar), newText);
+    performDocumentReplaceRange(
+        lineAndColumnFromChar(startChar), lineAndColumnFromChar(endChar), newText);
   };
 
   const performDocumentApplyAttributesToCharRange = (start, end, attribs) => {
@@ -1697,10 +1685,7 @@ function Ace2Inner(editorInfo, cssManagers) {
 
     const attributeValue = selectionAllHasIt ? '' : 'true';
     documentAttributeManager.setAttributesOnRange(
-        rep.selStart,
-        rep.selEnd,
-        [[attributeName, attributeValue]]
-    );
+        rep.selStart, rep.selEnd, [[attributeName, attributeValue]]);
     if (attribIsFormattingStyle(attributeName)) {
       updateStyleButtonState(attributeName, !selectionAllHasIt); // italic, bold, ...
     }
@@ -1750,9 +1735,8 @@ function Ace2Inner(editorInfo, cssManagers) {
     const oldText = rep.alltext.substring(startOldChar, endOldChar);
     const oldAttribs = rep.alines.slice(startLine, startLine + deleteCount).join('');
     const newAttribs = `${lineAttribs.join('|1+1')}|1+1`; // not valid in a changeset
-    const analysis = analyzeChange(
-        oldText, newText, oldAttribs, newAttribs, selStartHintChar, selEndHintChar
-    );
+    const analysis =
+        analyzeChange(oldText, newText, oldAttribs, newAttribs, selStartHintChar, selEndHintChar);
     const commonStart = analysis[0];
     let commonEnd = analysis[1];
     let shortOldText = oldText.substring(commonStart, oldText.length - commonEnd);
@@ -1837,9 +1821,7 @@ function Ace2Inner(editorInfo, cssManagers) {
                 return rep.apool.putAttrib([k, '']);
               }
               return false;
-            }
-            )
-        );
+            }));
 
         const builder1 = startBuilder();
         if (shiftFinalNewlineToBeforeNewText) {
@@ -2078,8 +2060,7 @@ function Ace2Inner(editorInfo, cssManagers) {
             isScrollableEditEvent(currentCallStack.type);
         const innerHeight = getInnerHeight();
         scroll.scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary(
-            rep, isScrollableEvent, innerHeight * 2
-        );
+            rep, isScrollableEvent, innerHeight * 2);
       }
 
       return true;
@@ -2087,11 +2068,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     return false;
   };
 
-  const isPadLoading = (eventType) => (
-    eventType === 'setup') ||
-    (eventType === 'setBaseText') ||
-    (eventType === 'importText'
-    );
+  const isPadLoading = (t) => t === 'setup' || t === 'setBaseText' || t === 'importText';
 
   const updateStyleButtonState = (attribName, hasStyleOnRepSelection) => {
     const $formattingButton = parent.parent.$(`[data-key="${attribName}"]`).find('a');
@@ -2475,11 +2452,10 @@ function Ace2Inner(editorInfo, cssManagers) {
 
   const doIndentOutdent = (isOut) => {
     if (!((rep.selStart && rep.selEnd) ||
-        ((rep.selStart[0] === rep.selEnd[0]) &&
-        (rep.selStart[1] === rep.selEnd[1]) &&
-        rep.selEnd[1] > 1)) &&
-        (isOut !== true)
-    ) {
+          (rep.selStart[0] === rep.selEnd[0] &&
+           rep.selStart[1] === rep.selEnd[1] &&
+           rep.selEnd[1] > 1)) &&
+        isOut !== true) {
       return false;
     }
 
@@ -2553,9 +2529,7 @@ function Ace2Inner(editorInfo, cssManagers) {
               if (prevLineBlank && !prevLineListType) {
                 // previous line is blank, remove it
                 performDocumentReplaceRange(
-                    [theLine - 1, prevLineEntry.text.length],
-                    [theLine, 0], ''
-                );
+                    [theLine - 1, prevLineEntry.text.length], [theLine, 0], '');
               } else {
                 // delistify
                 performDocumentReplaceRange([theLine, 0], [theLine, lineEntry.lineMarker], '');
@@ -2563,15 +2537,11 @@ function Ace2Inner(editorInfo, cssManagers) {
             } else if (thisLineHasMarker && prevLineEntry) {
               // If the line has any attributes assigned, remove them by removing the marker '*'
               performDocumentReplaceRange(
-                  [theLine - 1, prevLineEntry.text.length],
-                  [theLine, lineEntry.lineMarker], ''
-              );
+                  [theLine - 1, prevLineEntry.text.length], [theLine, lineEntry.lineMarker], '');
             } else if (theLine > 0) {
               // remove newline
               performDocumentReplaceRange(
-                  [theLine - 1, prevLineEntry.text.length],
-                  [theLine, 0], ''
-              );
+                  [theLine - 1, prevLineEntry.text.length], [theLine, 0], '');
             }
           } else {
             const docChar = caretDocChar();
@@ -2624,29 +2594,24 @@ function Ace2Inner(editorInfo, cssManagers) {
     // 224 is the command-key under Mac Firefox.
     // 91 is the Windows key in IE; it is ASCII for open-bracket but isn't the keycode for that key
     // 20 is capslock in IE.
-    const isModKey = ((!charCode) &&
-    ((type === 'keyup') || (type === 'keydown')) &&
-    (
-      keyCode === 16 || keyCode === 17 || keyCode === 18 ||
-      keyCode === 20 || keyCode === 224 || keyCode === 91
-    ));
+    const isModKey = !charCode && (type === 'keyup' || type === 'keydown') &&
+        (keyCode === 16 || keyCode === 17 || keyCode === 18 ||
+         keyCode === 20 || keyCode === 224 || keyCode === 91);
     if (isModKey) return;
 
     // If the key is a keypress and the browser is opera and the key is enter,
     // do nothign at all as this fires twice.
-    if (keyCode === 13 && browser.opera && (type === 'keypress')) {
+    if (keyCode === 13 && browser.opera && type === 'keypress') {
       // This stops double enters in Opera but double Tabs still show on single
       // tab keypress, adding keyCode == 9 to this doesn't help as the event is fired twice
       return;
     }
     let specialHandled = false;
 
-    const isTypeForSpecialKey = ((browser.safari ||
-      browser.chrome ||
-      browser.firefox) ? (type === 'keydown') : (type === 'keypress'));
-    const isTypeForCmdKey = ((browser.safari ||
-      browser.chrome ||
-      browser.firefox) ? (type === 'keydown') : (type === 'keypress'));
+    const isTypeForSpecialKey = browser.safari || browser.chrome || browser.firefox
+      ? type === 'keydown' : type === 'keypress';
+    const isTypeForCmdKey = browser.safari || browser.chrome || browser.firefox
+      ? type === 'keydown' : type === 'keypress';
 
     let stopped = false;
 
@@ -2679,13 +2644,9 @@ function Ace2Inner(editorInfo, cssManagers) {
         }
 
         const padShortcutEnabled = parent.parent.clientVars.padShortcutEnabled;
-        if (
-          (!specialHandled) &&
-          altKey &&
-          isTypeForSpecialKey &&
-          keyCode === 120 &&
-          padShortcutEnabled.altF9
-        ) {
+        if (!specialHandled && isTypeForSpecialKey &&
+            altKey && keyCode === 120 &&
+            padShortcutEnabled.altF9) {
           // Alt F9 focuses on the File Menu and/or editbar.
           // Note that while most editors use Alt F10 this is not desirable
           // As ubuntu cannot use Alt F10....
@@ -2698,26 +2659,18 @@ function Ace2Inner(editorInfo, cssManagers) {
           firstEditbarElement.focus();
           evt.preventDefault();
         }
-        if (
-          (!specialHandled) &&
-          altKey && keyCode === 67 &&
-          type === 'keydown' &&
-          padShortcutEnabled.altC
-        ) {
+        if (!specialHandled && type === 'keydown' &&
+            altKey && keyCode === 67 &&
+            padShortcutEnabled.altC) {
           // Alt c focuses on the Chat window
           $(this).blur();
           parent.parent.chat.show();
           parent.parent.$('#chatinput').focus();
           evt.preventDefault();
         }
-        if (
-          (!specialHandled) &&
-          evt.ctrlKey &&
-          shiftKey &&
-          keyCode === 50 &&
-          type === 'keydown' &&
-          padShortcutEnabled.cmdShift2
-        ) {
+        if (!specialHandled && type === 'keydown' &&
+            evt.ctrlKey && shiftKey && keyCode === 50 &&
+            padShortcutEnabled.cmdShift2) {
           // Control-Shift-2 shows a gritter popup showing a line author
           const lineNumber = rep.selEnd[0];
           const alineAttrs = rep.alines[lineNumber];
@@ -2791,11 +2744,9 @@ function Ace2Inner(editorInfo, cssManagers) {
             time: '4000',
           });
         }
-        if ((!specialHandled) &&
-          isTypeForSpecialKey &&
-          keyCode === 8 &&
-          padShortcutEnabled.delete
-        ) {
+        if (!specialHandled && isTypeForSpecialKey &&
+            keyCode === 8 &&
+            padShortcutEnabled.delete) {
           // "delete" key; in mozilla, if we're at the beginning of a line, normalize now,
           // or else deleting a blank line can take two delete presses.
           // --
@@ -2808,11 +2759,9 @@ function Ace2Inner(editorInfo, cssManagers) {
           doDeleteKey(evt);
           specialHandled = true;
         }
-        if ((!specialHandled) &&
-          isTypeForSpecialKey &&
-          keyCode === 13 &&
-          padShortcutEnabled.return
-        ) {
+        if (!specialHandled && isTypeForSpecialKey &&
+            keyCode === 13 &&
+            padShortcutEnabled.return) {
           // return key, handle specially;
           // note that in mozilla we need to do an incorporation for proper return behavior anyway.
           fastIncorp(4);
@@ -2823,11 +2772,9 @@ function Ace2Inner(editorInfo, cssManagers) {
           }, 0);
           specialHandled = true;
         }
-        if ((!specialHandled) &&
-          isTypeForSpecialKey &&
-          keyCode === 27 &&
-          padShortcutEnabled.esc
-        ) {
+        if (!specialHandled && isTypeForSpecialKey &&
+            keyCode === 27 &&
+            padShortcutEnabled.esc) {
           // prevent esc key;
           // in mozilla versions 14-19 avoid reconnecting pad.
 
@@ -2838,15 +2785,11 @@ function Ace2Inner(editorInfo, cssManagers) {
           // close all gritters when the user hits escape key
           parent.parent.$.gritter.removeAll();
         }
-        if (
-          (!specialHandled) &&
-          /* Do a saved revision on ctrl S */
-          isTypeForCmdKey &&
-          String.fromCharCode(which).toLowerCase() === 's' &&
-          (evt.metaKey || evt.ctrlKey) &&
-          !evt.altKey &&
-          padShortcutEnabled.cmdS
-        ) {
+        if (!specialHandled && isTypeForCmdKey &&
+            /* Do a saved revision on ctrl S */
+            (evt.metaKey || evt.ctrlKey) && String.fromCharCode(which).toLowerCase() === 's' &&
+            !evt.altKey &&
+            padShortcutEnabled.cmdS) {
           evt.preventDefault();
           const originalBackground = parent.parent.$('#revisionlink').css('background');
           parent.parent.$('#revisionlink').css({background: 'lightyellow'});
@@ -2857,25 +2800,21 @@ function Ace2Inner(editorInfo, cssManagers) {
           parent.parent.pad.collabClient.sendMessage({type: 'SAVE_REVISION'});
           specialHandled = true;
         }
-        if ((!specialHandled) &&
-          // tab
-          isTypeForSpecialKey &&
-          keyCode === 9 &&
-          !(evt.metaKey || evt.ctrlKey) &&
-          padShortcutEnabled.tab) {
+        if (!specialHandled && isTypeForSpecialKey &&
+            // tab
+            keyCode === 9 &&
+            !(evt.metaKey || evt.ctrlKey) &&
+            padShortcutEnabled.tab) {
           fastIncorp(5);
           evt.preventDefault();
           doTabKey(evt.shiftKey);
           specialHandled = true;
         }
-        if ((!specialHandled) &&
-          // cmd-Z (undo)
-          isTypeForCmdKey &&
-          String.fromCharCode(which).toLowerCase() === 'z' &&
-          (evt.metaKey || evt.ctrlKey) &&
-          !evt.altKey &&
-          padShortcutEnabled.cmdZ
-        ) {
+        if (!specialHandled && isTypeForCmdKey &&
+            // cmd-Z (undo)
+            (evt.metaKey || evt.ctrlKey) && String.fromCharCode(which).toLowerCase() === 'z' &&
+            !evt.altKey &&
+            padShortcutEnabled.cmdZ) {
           fastIncorp(6);
           evt.preventDefault();
           if (evt.shiftKey) {
@@ -2885,120 +2824,93 @@ function Ace2Inner(editorInfo, cssManagers) {
           }
           specialHandled = true;
         }
-        if ((!specialHandled) &&
-        // cmd-Y (redo)
-          isTypeForCmdKey &&
-          String.fromCharCode(which).toLowerCase() === 'y' &&
-          (evt.metaKey || evt.ctrlKey) &&
-          padShortcutEnabled.cmdY
-        ) {
+        if (!specialHandled && isTypeForCmdKey &&
+            // cmd-Y (redo)
+            (evt.metaKey || evt.ctrlKey) && String.fromCharCode(which).toLowerCase() === 'y' &&
+            padShortcutEnabled.cmdY) {
           fastIncorp(10);
           evt.preventDefault();
           doUndoRedo('redo');
           specialHandled = true;
         }
-        if ((!specialHandled) &&
-          // cmd-B (bold)
-          isTypeForCmdKey &&
-          String.fromCharCode(which).toLowerCase() === 'b' &&
-          (evt.metaKey || evt.ctrlKey) &&
-          padShortcutEnabled.cmdB) {
+        if (!specialHandled && isTypeForCmdKey &&
+            // cmd-B (bold)
+            (evt.metaKey || evt.ctrlKey) && String.fromCharCode(which).toLowerCase() === 'b' &&
+            padShortcutEnabled.cmdB) {
           fastIncorp(13);
           evt.preventDefault();
           toggleAttributeOnSelection('bold');
           specialHandled = true;
         }
-        if ((!specialHandled) &&
-          // cmd-I (italic)
-          isTypeForCmdKey &&
-          String.fromCharCode(which).toLowerCase() === 'i' &&
-          (evt.metaKey || evt.ctrlKey) &&
-          padShortcutEnabled.cmdI
-        ) {
+        if (!specialHandled && isTypeForCmdKey &&
+            // cmd-I (italic)
+            (evt.metaKey || evt.ctrlKey) && String.fromCharCode(which).toLowerCase() === 'i' &&
+            padShortcutEnabled.cmdI) {
           fastIncorp(14);
           evt.preventDefault();
           toggleAttributeOnSelection('italic');
           specialHandled = true;
         }
-        if ((!specialHandled) &&
-          isTypeForCmdKey &&
-          String.fromCharCode(which).toLowerCase() === 'u' &&
-          (evt.metaKey || evt.ctrlKey) &&
-          padShortcutEnabled.cmdU
-        ) {
-          // cmd-U (underline)
+        if (!specialHandled && isTypeForCmdKey &&
+            // cmd-U (underline)
+            (evt.metaKey || evt.ctrlKey) && String.fromCharCode(which).toLowerCase() === 'u' &&
+            padShortcutEnabled.cmdU) {
           fastIncorp(15);
           evt.preventDefault();
           toggleAttributeOnSelection('underline');
           specialHandled = true;
         }
-        if ((!specialHandled) &&
-          // cmd-5 (strikethrough)
-          isTypeForCmdKey &&
-          String.fromCharCode(which).toLowerCase() === '5' &&
-          (evt.metaKey || evt.ctrlKey) &&
-          evt.altKey !== true &&
-          padShortcutEnabled.cmd5
-        ) {
+        if (!specialHandled && isTypeForCmdKey &&
+            // cmd-5 (strikethrough)
+            (evt.metaKey || evt.ctrlKey) && String.fromCharCode(which).toLowerCase() === '5' &&
+            evt.altKey !== true &&
+            padShortcutEnabled.cmd5) {
           fastIncorp(13);
           evt.preventDefault();
           toggleAttributeOnSelection('strikethrough');
           specialHandled = true;
         }
-        if ((!specialHandled) &&
-          // cmd-shift-L (unorderedlist)
-          isTypeForCmdKey &&
-          String.fromCharCode(which).toLowerCase() === 'l' &&
-          (evt.metaKey || evt.ctrlKey) &&
-          evt.shiftKey &&
-          padShortcutEnabled.cmdShiftL
-        ) {
+        if (!specialHandled && isTypeForCmdKey &&
+            // cmd-shift-L (unorderedlist)
+            (evt.metaKey || evt.ctrlKey) && String.fromCharCode(which).toLowerCase() === 'l' &&
+            evt.shiftKey &&
+            padShortcutEnabled.cmdShiftL) {
           fastIncorp(9);
           evt.preventDefault();
           doInsertUnorderedList();
           specialHandled = true;
         }
-        if ((!specialHandled) &&
-          // cmd-shift-N and cmd-shift-1 (orderedlist)
-          isTypeForCmdKey &&
-          (
-            (String.fromCharCode(which).toLowerCase() === 'n' &&
-              padShortcutEnabled.cmdShiftN) || (String.fromCharCode(which) === '1' &&
-              padShortcutEnabled.cmdShift1)
-          ) && (evt.metaKey || evt.ctrlKey) &&
-            evt.shiftKey
-        ) {
+        if (!specialHandled && isTypeForCmdKey &&
+            // cmd-shift-N and cmd-shift-1 (orderedlist)
+            (evt.metaKey || evt.ctrlKey) && evt.shiftKey &&
+            ((String.fromCharCode(which).toLowerCase() === 'n' && padShortcutEnabled.cmdShiftN) ||
+             (String.fromCharCode(which) === '1' && padShortcutEnabled.cmdShift1))) {
           fastIncorp(9);
           evt.preventDefault();
           doInsertOrderedList();
           specialHandled = true;
         }
-        if ((!specialHandled) &&
-          // cmd-shift-C (clearauthorship)
-          isTypeForCmdKey &&
-          String.fromCharCode(which).toLowerCase() === 'c' &&
-          (evt.metaKey || evt.ctrlKey) &&
-          evt.shiftKey && padShortcutEnabled.cmdShiftC
-        ) {
+        if (!specialHandled && isTypeForCmdKey &&
+            // cmd-shift-C (clearauthorship)
+            (evt.metaKey || evt.ctrlKey) && evt.shiftKey &&
+            String.fromCharCode(which).toLowerCase() === 'c' &&
+            padShortcutEnabled.cmdShiftC) {
           fastIncorp(9);
           evt.preventDefault();
           CMDS.clearauthorship();
         }
-        if ((!specialHandled) &&
-          // cmd-H (backspace)
-          isTypeForCmdKey &&
-          String.fromCharCode(which).toLowerCase() === 'h' &&
-          (evt.ctrlKey) &&
-          padShortcutEnabled.cmdH
-        ) {
+        if (!specialHandled && isTypeForCmdKey &&
+            // cmd-H (backspace)
+            (evt.ctrlKey) && String.fromCharCode(which).toLowerCase() === 'h' &&
+            padShortcutEnabled.cmdH) {
           fastIncorp(20);
           evt.preventDefault();
           doDeleteKey();
           specialHandled = true;
         }
-        if ((evt.which === 36 && evt.ctrlKey === true) &&
-        // Control Home send to Y = 0
-        padShortcutEnabled.ctrlHome) {
+        if (evt.ctrlKey === true && evt.which === 36 &&
+            // Control Home send to Y = 0
+            padShortcutEnabled.ctrlHome) {
           scroll.setScrollY(0);
         }
         if ((evt.which === 33 || evt.which === 34) && type === 'keydown' && !evt.ctrlKey) {
@@ -3099,10 +3011,9 @@ function Ace2Inner(editorInfo, cssManagers) {
         thisKeyDoesntTriggerNormalize = true;
       }
 
-      if ((!specialHandled) && (!thisKeyDoesntTriggerNormalize) && (!inInternationalComposition)) {
-        if (type !== 'keyup') {
-          observeChangesAroundSelection();
-        }
+      if (!specialHandled && !thisKeyDoesntTriggerNormalize && !inInternationalComposition &&
+          type !== 'keyup') {
+        observeChangesAroundSelection();
       }
 
       if (type === 'keyup') {
@@ -3128,12 +3039,9 @@ function Ace2Inner(editorInfo, cssManagers) {
           }
           if (selectionInfo) {
             performSelectionChange(
-                lineAndColumnFromChar(
-                    selectionInfo.selStart
-                ),
+                lineAndColumnFromChar(selectionInfo.selStart),
                 lineAndColumnFromChar(selectionInfo.selEnd),
-                selectionInfo.selFocusAtStart
-            );
+                selectionInfo.selFocusAtStart);
           }
           const oldEvent = currentCallStack.startNewEvent(oldEventType, true);
           return oldEvent;
@@ -3173,15 +3081,13 @@ function Ace2Inner(editorInfo, cssManagers) {
         // with background doesn't seem to show up...
         if (isNodeText(p.node) && p.index === p.maxIndex) {
           let n = p.node;
-          while ((!n.nextSibling) && (n !== root) && (n.parentNode !== root)) {
+          while (!n.nextSibling && n !== root && n.parentNode !== root) {
             n = n.parentNode;
           }
-          if (
-            n.nextSibling &&
-            (!((typeof n.nextSibling.tagName) === 'string' &&
-              n.nextSibling.tagName.toLowerCase() === 'br')) &&
-              (n !== p.node) && (n !== root) && (n.parentNode !== root)
-          ) {
+          if (n.nextSibling &&
+              !(typeof n.nextSibling.tagName === 'string' &&
+                n.nextSibling.tagName.toLowerCase() === 'br') &&
+              n !== p.node && n !== root && n.parentNode !== root) {
             // found a parent, go to next node and dive in
             p.node = n.nextSibling;
             p.maxIndex = nodeMaxIndex(p.node);
@@ -3212,19 +3118,13 @@ function Ace2Inner(editorInfo, cssManagers) {
     if (browserSelection) {
       browserSelection.removeAllRanges();
       if (selection) {
-        isCollapsed = (
-          selection.startPoint.node === selection.endPoint.node &&
-          selection.startPoint.index === selection.endPoint.index
-        );
+        isCollapsed = (selection.startPoint.node === selection.endPoint.node &&
+                       selection.startPoint.index === selection.endPoint.index);
         const start = pointToRangeBound(selection.startPoint);
         const end = pointToRangeBound(selection.endPoint);
 
-        if (
-          (!isCollapsed) &&
-          selection.focusAtStart &&
-          browserSelection.collapse &&
-          browserSelection.extend
-        ) {
+        if (!isCollapsed && selection.focusAtStart &&
+            browserSelection.collapse && browserSelection.extend) {
           // can handle "backwards"-oriented selection, shift-arrow-keys move start
           // of selection
           browserSelection.collapse(end.container, end.offset);
@@ -3509,8 +3409,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       let charsToLeft = index;
       let charsToRight = node.nodeValue.length - index;
       let n;
-      for (n = node.previousSibling; n &&
-          isNodeText(n); n = n.previousSibling) {
+      for (n = node.previousSibling; n && isNodeText(n); n = n.previousSibling) {
         charsToLeft += n.nodeValue;
       }
       const leftEdge = (n ? rightOf(n) : leftOf(node.parentNode));
@@ -3560,9 +3459,8 @@ function Ace2Inner(editorInfo, cssManagers) {
     if (!doesWrap) {
       const browserSelection = getSelection();
       if (browserSelection) {
-        const focusPoint = (
-          browserSelection.focusAtStart ? browserSelection.startPoint : browserSelection.endPoint
-        );
+        const focusPoint =
+            browserSelection.focusAtStart ? browserSelection.startPoint : browserSelection.endPoint;
         const selectionPointX = getSelectionPointX(focusPoint);
         scrollXHorizontallyIntoView(selectionPointX);
         fixView();
@@ -3681,8 +3579,7 @@ function Ace2Inner(editorInfo, cssManagers) {
           // extra margins/padding, but plugins might.
           h = docLine.nextSibling.offsetTop - parseInt(
               window.getComputedStyle(doc.body)
-                  .getPropertyValue('padding-top').split('px')[0]
-          );
+                  .getPropertyValue('padding-top').split('px')[0]);
         } else {
           h = docLine.nextSibling.offsetTop - docLine.offsetTop;
         }
