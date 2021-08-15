@@ -3543,14 +3543,13 @@ function Ace2Inner(editorInfo, cssManagers) {
     const defaultLineHeight = parseInt(innerdocbodyStyles['line-height']);
 
     let docLine = document.body.firstElementChild;
-    let currentLine = 0;
     let h = null;
 
     // First loop to calculate the heights from doc body
     while (docLine) {
       const nextDocLine = docLine.nextElementSibling;
       if (nextDocLine) {
-        if (currentLine === 0) {
+        if (lineOffsets.length === 0) {
           // It's the first line. For line number alignment purposes, its
           // height is taken to be the top offset of the next line. If we
           // didn't do this special case, we would miss out on any top margin
@@ -3582,7 +3581,6 @@ function Ace2Inner(editorInfo, cssManagers) {
         lineHeights.push(defaultLineHeight);
       }
       docLine = nextDocLine;
-      currentLine++;
     }
 
     let newNumLines = rep.lines.length();
