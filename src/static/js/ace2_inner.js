@@ -3589,9 +3589,21 @@ function Ace2Inner(editorInfo, cssManagers) {
 
     let newNumLines = rep.lines.length();
     if (newNumLines < 1) newNumLines = 1;
-    let sidebarLine = sideDivInner.firstChild;
 
-    // Apply height to existing sidediv lines
+    if (newNumLines !== sideDivInner.children.length) {
+      while (sideDivInner.children.length < newNumLines) {
+        const div = outerDoc.createElement('DIV');
+        sideDivInner.appendChild(div);
+        $(div).append($(`<span class='line-number'>${sideDivInner.children.length}</span>`));
+      }
+
+      // Remove extra lines
+      while (sideDivInner.children.length > newNumLines) {
+        sideDivInner.removeChild(sideDivInner.lastChild);
+      }
+    }
+
+    let sidebarLine = sideDivInner.firstChild;
     currentLine = 0;
     while (sidebarLine && currentLine <= sideDivInner.children.length) {
       if (lineOffsets[currentLine] != null) {
@@ -3600,25 +3612,6 @@ function Ace2Inner(editorInfo, cssManagers) {
       }
       sidebarLine = sidebarLine.nextSibling;
       currentLine++;
-    }
-
-    if (newNumLines !== sideDivInner.children.length) {
-      // Create missing line and apply height
-      while (sideDivInner.children.length < newNumLines) {
-        const div = outerDoc.createElement('DIV');
-        sideDivInner.appendChild(div);
-        if (lineOffsets[currentLine]) {
-          div.style.height = `${lineOffsets[currentLine]}px`;
-          div.style.lineHeight = `${lineHeights[currentLine]}px`;
-        }
-        $(div).append($(`<span class='line-number'>${sideDivInner.children.length}</span>`));
-        currentLine++;
-      }
-
-      // Remove extra lines
-      while (sideDivInner.children.length > newNumLines) {
-        sideDivInner.removeChild(sideDivInner.lastChild);
-      }
     }
   };
 
