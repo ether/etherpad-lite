@@ -2596,7 +2596,6 @@ function Ace2Inner(editorInfo, cssManagers) {
       // tab keypress, adding keyCode == 9 to this doesn't help as the event is fired twice
       return;
     }
-    let specialHandled = false;
 
     const isTypeForSpecialKey = browser.safari || browser.chrome || browser.firefox
       ? type === 'keydown' : type === 'keypress';
@@ -2619,6 +2618,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       } else if (type === 'keydown') {
         outsideKeyDown(evt);
       }
+      let specialHandled = false;
       if (!stopped) {
         const specialHandledInHook = hooks.callAll('aceKeyEvent', {
           callstack: currentCallStack,
@@ -3543,10 +3543,10 @@ function Ace2Inner(editorInfo, cssManagers) {
     const defaultLineHeight = parseInt(innerdocbodyStyles['line-height']);
 
     let docLine = document.body.firstElementChild;
-    let h = null;
 
     // First loop to calculate the heights from doc body
     while (docLine) {
+      let h;
       const nextDocLine = docLine.nextElementSibling;
       if (nextDocLine) {
         if (lineOffsets.length === 0) {
