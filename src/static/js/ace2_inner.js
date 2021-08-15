@@ -3546,24 +3546,25 @@ function Ace2Inner(editorInfo, cssManagers) {
     const innerdocbodyStyles = getComputedStyle(document.body);
     const defaultLineHeight = parseInt(innerdocbodyStyles['line-height']);
 
-    let docLine = document.body.firstChild;
+    let docLine = document.body.firstElementChild;
     let currentLine = 0;
     let h = null;
 
     // First loop to calculate the heights from doc body
     while (docLine) {
-      if (docLine.nextSibling) {
+      const nextDocLine = docLine.nextElementSibling;
+      if (nextDocLine) {
         if (currentLine === 0) {
           // It's the first line. For line number alignment purposes, its
           // height is taken to be the top offset of the next line. If we
           // didn't do this special case, we would miss out on any top margin
           // included on the first line. The default stylesheet doesn't add
           // extra margins/padding, but plugins might.
-          h = docLine.nextSibling.offsetTop - parseInt(
+          h = nextDocLine.offsetTop - parseInt(
               window.getComputedStyle(document.body)
                   .getPropertyValue('padding-top').split('px')[0]);
         } else {
-          h = docLine.nextSibling.offsetTop - docLine.offsetTop;
+          h = nextDocLine.offsetTop - docLine.offsetTop;
         }
       } else {
         // last line
@@ -3584,7 +3585,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       } else {
         lineHeights.push(defaultLineHeight);
       }
-      docLine = docLine.nextSibling;
+      docLine = nextDocLine;
       currentLine++;
     }
 
@@ -3593,10 +3594,7 @@ function Ace2Inner(editorInfo, cssManagers) {
 
     if (newNumLines !== sideDivInner.children.length) {
       while (sideDivInner.children.length < newNumLines) appendNewSideDivLine();
-      // Remove extra lines
-      while (sideDivInner.children.length > newNumLines) {
-        sideDivInner.removeChild(sideDivInner.lastChild);
-      }
+      while (sideDivInner.children.length > newNumLines) sideDivInner.lastElementChild.remove();
     }
 
     for (const [i, sideDivLine] of Array.prototype.entries.call(sideDivInner.children)) {
