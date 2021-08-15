@@ -3603,15 +3603,10 @@ function Ace2Inner(editorInfo, cssManagers) {
       }
     }
 
-    let sidebarLine = sideDivInner.firstChild;
-    currentLine = 0;
-    while (sidebarLine && currentLine <= sideDivInner.children.length) {
-      if (lineOffsets[currentLine] != null) {
-        sidebarLine.style.height = `${lineOffsets[currentLine]}px`;
-        sidebarLine.style.lineHeight = `${lineHeights[currentLine]}px`;
-      }
-      sidebarLine = sidebarLine.nextSibling;
-      currentLine++;
+    for (const [i, sideDivLine] of Array.prototype.entries.call(sideDivInner.children)) {
+      if (lineOffsets[i] == null) continue;
+      sideDivLine.style.height = `${lineOffsets[i]}px`;
+      sideDivLine.style.lineHeight = `${lineHeights[i]}px`;
     }
   };
 
