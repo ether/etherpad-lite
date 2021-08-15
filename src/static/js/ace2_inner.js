@@ -3604,8 +3604,6 @@ function Ace2Inner(editorInfo, cssManagers) {
     }
 
     if (newNumLines !== lineNumbersShown) {
-      const fragment = outerDoc.createDocumentFragment();
-
       // Create missing line and apply height
       while (lineNumbersShown < newNumLines) {
         lineNumbersShown++;
@@ -3615,10 +3613,9 @@ function Ace2Inner(editorInfo, cssManagers) {
           div.style.lineHeight = `${lineHeights[currentLine]}px`;
         }
         $(div).append($(`<span class='line-number'>${String(lineNumbersShown)}</span>`));
-        fragment.appendChild(div);
+        sideDivInner.appendChild(div);
         currentLine++;
       }
-      sideDivInner.appendChild(fragment);
 
       // Remove extra lines
       while (lineNumbersShown > newNumLines) {
