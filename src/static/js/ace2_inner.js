@@ -65,14 +65,15 @@ function Ace2Inner(editorInfo, cssManagers) {
   const sideDiv = outerDoc.getElementById('sidediv');
   const lineMetricsDiv = outerDoc.getElementById('linemetricsdiv');
   const sideDivInner = outerDoc.getElementById('sidedivinner');
-  (() => {
+  const appendNewSideDivLine = () => {
     const lineDiv = outerDoc.createElement('div');
     sideDivInner.appendChild(lineDiv);
     const lineSpan = outerDoc.createElement('span');
     lineSpan.classList.add('line-number');
-    lineSpan.appendChild(outerDoc.createTextNode('1'));
+    lineSpan.appendChild(outerDoc.createTextNode(sideDivInner.children.length));
     lineDiv.appendChild(lineSpan);
-  })();
+  };
+  appendNewSideDivLine();
 
   const scroll = Scroll.init(outerWin);
 
@@ -3591,12 +3592,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     if (newNumLines < 1) newNumLines = 1;
 
     if (newNumLines !== sideDivInner.children.length) {
-      while (sideDivInner.children.length < newNumLines) {
-        const div = outerDoc.createElement('DIV');
-        sideDivInner.appendChild(div);
-        $(div).append($(`<span class='line-number'>${sideDivInner.children.length}</span>`));
-      }
-
+      while (sideDivInner.children.length < newNumLines) appendNewSideDivLine();
       // Remove extra lines
       while (sideDivInner.children.length > newNumLines) {
         sideDivInner.removeChild(sideDivInner.lastChild);
