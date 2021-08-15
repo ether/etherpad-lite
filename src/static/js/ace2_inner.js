@@ -3543,8 +3543,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     // but as it's non-text type the line-height/margins might not be present and it
     // could be that this breaks a theme that has a different default line height..
     // So instead of using an integer here we get the value from the Editor CSS.
-    const innerdocbody = document.body;
-    const innerdocbodyStyles = getComputedStyle(innerdocbody);
+    const innerdocbodyStyles = getComputedStyle(document.body);
     const defaultLineHeight = parseInt(innerdocbodyStyles['line-height']);
 
     let docLine = document.body.firstChild;
