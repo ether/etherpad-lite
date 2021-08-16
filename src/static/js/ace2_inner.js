@@ -2637,67 +2637,27 @@ function Ace2Inner(editorInfo, cssManagers) {
           // TODO: Still work when authorship colors have been cleared
           // TODO: i18n
           // TODO: There appears to be a race condition or so.
-          const authors = [];
-          let author = null;
+          const authorIds = new Set();
           if (alineAttrs) {
             const opIter = Changeset.opIterator(alineAttrs);
-
             while (opIter.hasNext()) {
               const op = opIter.next();
               const authorId = Changeset.opAttributeValue(op, 'author', apool);
-
-              // Only push unique authors and ones with values
-              if (authors.indexOf(authorId) === -1 && authorId !== '') {
-                authors.push(authorId);
-              }
+              if (authorId !== '') authorIds.add(authorId);
             }
           }
-
-          let authorString;
-          const authorNames = [];
-          if (authors.length === 0) {
-            authorString = 'No author information is available';
-          } else {
-            // Known authors info, both current and historical
-            const padAuthors = parent.parent.pad.userList();
-            let authorObj = {};
-            for (const authorId of authors) {
-              for (const padAuthor of padAuthors) {
-                // If the person doing the lookup is the author..
-                if (padAuthor.userId === authorId) {
-                  if (parent.parent.clientVars.userId === authorId) {
-                    authorObj = {
-                      name: 'Me',
-                    };
-                  } else {
-                    authorObj = padAuthor;
-                  }
-                }
-              }
-              if (!authorObj) {
-                author = 'Unknown';
-                continue;
-              }
-              author = authorObj.name;
-              if (!author) author = 'Unknown';
-              authorNames.push(author);
-            }
-          }
-          if (authors.length === 1) {
-            authorString = `The author of this line is ${authorNames[0]}`;
-          }
-          if (authors.length > 1) {
-            authorString = `The authors of this line are ${authorNames.join(' & ')}`;
-          }
+          const idToName = new Map(parent.parent.pad.userList().map((a) => [a.userId, a.name]));
+          const myId = parent.parent.clientVars.userId;
+          const authors =
+              [...authorIds].map((id) => id === myId ? 'me' : idToName.get(id) || 'unknown');
 
           parent.parent.$.gritter.add({
-            // (string | mandatory) the heading of the notification
             title: 'Line Authors',
-            // (string | mandatory) the text inside the notification
-            text: authorString,
-            // (bool | optional) if you want it to fade out on its own or just sit there
+            text:
+                authors.length === 0 ? 'No author information is available'
+                : authors.length === 1 ? `The author of this line is ${authors[0]}`
+                : `The authors of this line are ${authors.join(' & ')}`,
             sticky: false,
-            // (int | optional) the time you want it to be alive for before fading out
             time: '4000',
           });
         }
