@@ -75,12 +75,6 @@
       }
     },
     {
-      "name": "errorhandling",
-      "hooks": {
-        "expressCreateServer": "ep_etherpad-lite/node/hooks/express/errorhandling"
-      }
-    },
-    {
       "name": "socketio",
       "hooks": {
         "expressCloseServer": "ep_etherpad-lite/node/hooks/express/socketio",
