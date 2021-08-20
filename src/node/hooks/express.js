@@ -112,6 +112,13 @@ exports.restartServer = async () => {
     exports.server = http.createServer(app);
   }
 
+  // This error-handling middleware is installed first to ensure that no other middleware can
+  // prevent the stats from being updated.
+  app.use((err, req, res, next) => {
+    stats.meter('http500').mark();
+    next(err);
+  });
+
   app.use((req, res, next) => {
     // res.header("X-Frame-Options", "deny"); // breaks embedded pads
     if (settings.ssl) {
