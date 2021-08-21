@@ -1,7 +1,7 @@
 // Cross-broswer implementation of text ranges and selections
 // documentation: http://bililite.com/blog/2011/01/17/cross-browser-text-ranges-and-selections/
-// Version: 1.5
-// Copyright (c) 2010 Daniel Wachsstock
+// Version: 2.0
+// Copyright (c) 2013 Daniel Wachsstock
 // MIT license:
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
@@ -49,11 +49,22 @@ bililiteRange = function(el, debug){
 	ret._win = 'defaultView' in ret._doc ? ret._doc.defaultView : ret._doc.parentWindow;
 	ret._textProp = textProp(el);
 	ret._bounds = [0, ret.length()];
+	if (!('oninput' in el)){
+		// give IE8 a chance
+		var inputhack = function() {ret.dispatch({type: 'input'}) };
+		ret.listen('keyup', inputhack);
+		ret.listen('cut', inputhack);
+		ret.listen('paste', inputhack);
+		ret.listen('drop', inputhack);
+		el.oninput = 'patched';
+	}
 	return ret;
 }
 
 function textProp(el){
 	// returns the property that contains the text of the element
+	// note that for <body> elements the text attribute represents the obsolete text color, not the textContent.
+	// we document that these routines do not work for <body> elements so that should not be relevant
 	if (typeof el.value != 'undefined') return 'value';
 	if (typeof el.text != 'undefined') return 'text';
 	if (typeof el.textContent != 'undefined') return 'textContent';
@@ -90,21 +101,24 @@ Range.prototype = {
 	},
 	select: function(){
 		this._nativeSelect(this._nativeRange(this.bounds()));
+		this.dispatch({type: 'select'});
 		return this; // allow for chaining
 	},
 	text: function(text, select){
 		if (arguments.length){
-			this._nativeSetText(text, this._nativeRange(this.bounds()));
-			try { // signal the text change (IE < 9 doesn't support this, so we live with it)
-				this._el.dispatchEvent(new CustomEvent('input', {detail: {text: text, bounds: this.bounds()}}));
-			}catch(e){ /* ignore */ }
+			var bounds = this.bounds(), el = this._el;
+			// signal the input per DOM 3 input events, http://www.w3.org/TR/DOM-Level-3-Events/#h4_events-inputevents
+			// we add another field, bounds, which are the bounds of the original text before being changed.
+			this.dispatch({type: 'beforeinput', data: text, bounds: bounds});
+			this._nativeSetText(text, this._nativeRange(bounds));
 			if (select == 'start'){
-				this.bounds ([this._bounds[0], this._bounds[0]]);
+				this.bounds ([bounds[0], bounds[0]]);
 			}else if (select == 'end'){
-				this.bounds ([this._bounds[0]+text.length, this._bounds[0]+text.length]);
+				this.bounds ([bounds[0]+text.length, bounds[0]+text.length]);
 			}else if (select == 'all'){
-				this.bounds ([this._bounds[0], this._bounds[0]+text.length]);
+				this.bounds ([bounds[0], bounds[0]+text.length]);
 			}
+			this.dispatch({type: 'input', data: text, bounds: bounds});
 			return this; // allow for chaining
 		}else{
 			return this._nativeGetText(this._nativeRange(this.bounds()));
@@ -117,6 +131,88 @@ Range.prototype = {
 	},
 	scrollIntoView: function(){
 		this._nativeScrollIntoView(this._nativeRange(this.bounds()));
+		return this;
+	},
+	wrap: function (n){
+		this._nativeWrap(n, this._nativeRange(this.bounds()));
+		return this;
+	},
+	selection: function(text){
+		if (arguments.length){
+			return this.bounds('selection').text(text, 'end').select();
+		}else{
+			return this.bounds('selection').text();
+		}
+	},
+	clone: function(){
+		return bililiteRange(this._el).bounds(this.bounds());
+	},
+	all: function(text){
+		if (arguments.length){
+			this.dispatch ({type: 'beforeinput', data: text});
+			this._el[this._textProp] = text;
+			this.dispatch ({type: 'input', data: text});
+			return this;
+		}else{
+			return this._el[this._textProp].replace(/\r/g, ''); // need to correct for IE's CrLf weirdness;
+		}
+	},
+	element: function() { return this._el },
+	// includes a quickie polyfill for CustomEvent for IE that isn't perfect but works for me
+	// IE10 allows custom events but not "new CustomEvent"; have to do it the old-fashioned way
+	dispatch: function(opts){
+		opts = opts || {};
+		var event = document.createEvent ? document.createEvent('CustomEvent') : this._doc.createEventObject();
+		event.initCustomEvent && event.initCustomEvent(opts.type, !!opts.bubbles, !!opts.cancelable, opts.detail);
+
+		for (var key in opts) event[key] = opts[key];
+		// dispatch event asynchronously (in the sense of on the next turn of the event loop; still should be fired in order of dispatch
+		var el = this._el;
+		setTimeout(function(){
+			try {
+				el.dispatchEvent ? el.dispatchEvent(event) : el.fireEvent("on" + opts.type, document.createEventObject());
+				}catch(e){
+					// IE8 will not let me fire custom events at all. Call them directly
+					if (jQuery) {
+						jQuery(el).trigger(event);
+					}else{
+						var listeners = el['listen'+opts.type];
+						if (listeners) for (var i = 0; i < listeners.length; ++i){
+							listeners[i].call(el, event);
+						}
+					}
+				}
+		}, 0);
+		return this;
+	},
+	listen: function (type, func){
+		var el = this._el;
+		if (el.addEventListener){
+			el.addEventListener(type, func);
+		}else if (jQuery){
+			jQuery(el).on(type, func);
+		}else{
+			el.attachEvent("on" + type, func);
+			// IE8 can't even handle custom events created with createEventObject  (though it permits attachEvent), so we have to make our own
+			var listeners = el['listen'+type] = el['listen'+type] || [];
+			listeners.push(func);
+		}
+		return this;
+	},
+	dontlisten: function (type, func){
+		var el = this._el;
+		if (el.removeEventListener){
+			el.removeEventListener(type, func);
+		}else if (jQuery){
+			jQuery(el).off(type, func);
+		}else try{
+			el.detachEvent("on" + type, func);
+		}catch(e){
+			var listeners = el['listen'+type];
+			if (listeners) for (var i = 0; i < listeners.length; ++i){
+				if (listeners[i] === func) listeners[i] = function(){}; // replace with a noop
+			}
+		}
 		return this;
 	}
 };
@@ -155,9 +251,10 @@ IERange.prototype._nativeSelect = function (rng){
 };
 IERange.prototype._nativeSelection = function (){
 	// returns [start, end] for the selection constrained to be in element
+	// this fails for an empty selection! selection.createRange() if in a text area does not create a text selection, so I can't compare it.
 	var rng = this._nativeRange(); // range of the element to constrain to
 	var len = this.length();
-	if (this._doc.selection.type != 'Text') return [len, len]; // append to the end
+	// this._el.focus(); This solves the problem of text areas not having a real selection , but sucks the focus from everything else, so I can't use it
 	var sel = this._doc.selection.createRange();
 	try{
 		return [
@@ -176,15 +273,24 @@ IERange.prototype._nativeSetText = function (text, rng){
 	rng.text = text;
 };
 IERange.prototype._nativeEOL = function(){
-	if (typeof this._el.value != 'undefined'){
+	if ('value' in this._el){
 		this.text('\n'); // for input and textarea, insert it straight
 	}else{
-		this._nativeRange(this.bounds()).pasteHTML('<br/>');
+		this._nativeRange(this.bounds()).pasteHTML('\n<br/>');
 	}
 };
 IERange.prototype._nativeScrollIntoView = function(rng){
 	rng.scrollIntoView();
 }
+IERange.prototype._nativeWrap = function(n, rng) {
+	// hacky to use string manipulation but I don't see another way to do it.
+	var div = document.createElement('div');
+	div.appendChild(n);
+	// insert the existing range HTML after the first tag
+	var html = div.innerHTML.replace('><', '>'+rng.htmlText+'<');
+	rng.pasteHTML(html);
+};
+
 // IE internals
 function iestart(rng, constraint){
 	// returns the position (in character) of the start of rng within constraint. If it's not in constraint, returns 0 if it's before, length if it's after
@@ -227,19 +333,17 @@ InputRange.prototype._nativeEOL = function(){
 };
 InputRange.prototype._nativeScrollIntoView = function(rng){
 	// I can't remember where I found this clever hack to find the location of text in a text area
-	var style = getComputedStyle(this._el);
-	var oldheight = style.height;
-	var oldval = this._el.value;
-	var oldselection = this._nativeSelection();
-	this._el.style.height = '1px';
-	this._el.value = oldval.slice(0, rng[0]);
-	var top = this._el.scrollHeight;
+	var clone = this._el.cloneNode(true);
+	clone.style.visibility = 'hidden';
+	clone.style.position = 'absolute';
+	this._el.parentNode.insertBefore(clone, this._el);
+	clone.style.height = '1px';
+	clone.value = this._el.value.slice(0, rng[0]);
+	var top = clone.scrollHeight;
 	// this gives the bottom of the text, so we have to subtract the height of a single line
-	this._el.value = 'X';
-	top -= 2*this._el.scrollHeight; // show at least a line above
-	this._el.style.height = oldheight;
-	this._el.value = oldval;
-	this._nativeSelect(oldselection);
+	clone.value = 'X';
+	top -= 2*clone.scrollHeight; // show at least a line above
+	clone.parentNode.removeChild(clone);
 	// scroll into position if necessary
 	if (this._el.scrollTop > top || this._el.scrollTop+this._el.clientHeight < top){
 		this._el.scrollTop = top;
@@ -248,7 +352,7 @@ InputRange.prototype._nativeScrollIntoView = function(rng){
 	var rect = this._el.getBoundingClientRect();
 	rect.top += this._win.pageYOffset - this._doc.documentElement.clientTop;
 	rect.left += this._win.pageXOffset - this._doc.documentElement.clientLeft;
-	// create an element to scroll to
+	// create an element to scroll to (can't just use the clone above, since scrollIntoView wants a visible element)
 	var div = this._doc.createElement('div');
 	div.style.position = 'absolute';
 	div.style.top = (rect.top+top-this._el.scrollTop)+'px'; // adjust for how far in the range is; it may not have scrolled all the way to the top
@@ -258,6 +362,7 @@ InputRange.prototype._nativeScrollIntoView = function(rng){
 	div.scrollIntoViewIfNeeded ? div.scrollIntoViewIfNeeded() : div.scrollIntoView();
 	div.parentNode.removeChild(div);
 }
+InputRange.prototype._nativeWrap = function() {throw new Error("Cannot wrap in a text element")};
 
 function W3CRange(){}
 W3CRange.prototype = new Range();
@@ -309,6 +414,10 @@ W3CRange.prototype._nativeScrollIntoView = function(rng){
 	span.scrollIntoViewIfNeeded ? span.scrollIntoViewIfNeeded() : span.scrollIntoView();
 	span.parentNode.removeChild(span);
 }
+W3CRange.prototype._nativeWrap = function(n, rng) {
+	rng.surroundContents(n);
+};
+
 // W3C internals
 function nextnode (node, root){
 	//  in-order traversal
@@ -402,5 +511,6 @@ NothingRange.prototype._nativeEOL = function(){
 NothingRange.prototype._nativeScrollIntoView = function(){
 	this._el.scrollIntoView();
 };
+NothingRange.prototype._nativeWrap = function() {throw new Error("Wrapping not implemented")};
 
 })();
