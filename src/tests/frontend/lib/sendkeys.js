@@ -1,6 +1,6 @@
 // Cross-broswer implementation of text ranges and selections
-// documentation: http://bililite.com/blog/2011/01/11/cross-browser-.and-selections/
-// Version: 1.1
+// documentation: http://bililite.com/blog/2011/01/17/cross-browser-text-ranges-and-selections/
+// Version: 1.5
 // Copyright (c) 2010 Daniel Wachsstock
 // MIT license:
 // Permission is hereby granted, free of charge, to any person
@@ -44,6 +44,7 @@ bililiteRange = function(el, debug){
 		ret = new NothingRange();
 	}
 	ret._el = el;
+	// determine parent document, as implemented by John McLear <john@mclear.co.uk>
 	ret._doc = el.ownerDocument;
 	ret._win = 'defaultView' in ret._doc ? ret._doc.defaultView : ret._doc.parentWindow;
 	ret._textProp = textProp(el);
@@ -76,12 +77,13 @@ Range.prototype = {
 			this.bounds ('all'); // first select the whole thing for constraining
 			this._bounds = this._nativeSelection();
 		}else if (s){
-			this._bounds = s; // don't error check now; the element may change at any moment, so constrain it when we need it.
+			this._bounds = s; // don't do error checking now; things may change at a moment's notice
 		}else{
 			var b = [
 				Math.max(0, Math.min (this.length(), this._bounds[0])),
 				Math.max(0, Math.min (this.length(), this._bounds[1]))
 			];
+			b[1] = Math.max(b[0], b[1]);
 			return b; // need to constrain it to fit
 		}
 		return this; // allow for chaining
@@ -93,15 +95,15 @@ Range.prototype = {
 	text: function(text, select){
 		if (arguments.length){
 			this._nativeSetText(text, this._nativeRange(this.bounds()));
+			try { // signal the text change (IE < 9 doesn't support this, so we live with it)
+				this._el.dispatchEvent(new CustomEvent('input', {detail: {text: text, bounds: this.bounds()}}));
+			}catch(e){ /* ignore */ }
 			if (select == 'start'){
 				this.bounds ([this._bounds[0], this._bounds[0]]);
-				this.select();
 			}else if (select == 'end'){
 				this.bounds ([this._bounds[0]+text.length, this._bounds[0]+text.length]);
-				this.select();
 			}else if (select == 'all'){
 				this.bounds ([this._bounds[0], this._bounds[0]+text.length]);
-				this.select();
 			}
 			return this; // allow for chaining
 		}else{
@@ -112,9 +114,18 @@ Range.prototype = {
 		this._nativeEOL();
 		this._bounds = [this._bounds[0]+1, this._bounds[0]+1]; // move past the EOL marker
 		return this;
+	},
+	scrollIntoView: function(){
+		this._nativeScrollIntoView(this._nativeRange(this.bounds()));
+		return this;
 	}
 };
 
+// allow extensions ala jQuery
+bililiteRange.fn = Range.prototype; // to allow monkey patching
+bililiteRange.extend = function(fns){
+	for (fn in fns) Range.prototype[fn] = fns[fn];
+};
 
 function IERange(){}
 IERange.prototype = new Range();
@@ -171,6 +182,9 @@ IERange.prototype._nativeEOL = function(){
 		this._nativeRange(this.bounds()).pasteHTML('<br/>');
 	}
 };
+IERange.prototype._nativeScrollIntoView = function(rng){
+	rng.scrollIntoView();
+}
 // IE internals
 function iestart(rng, constraint){
 	// returns the position (in character) of the start of rng within constraint. If it's not in constraint, returns 0 if it's before, length if it's after
@@ -211,6 +225,39 @@ InputRange.prototype._nativeSetText = function(text, rng){
 InputRange.prototype._nativeEOL = function(){
 	this.text('\n');
 };
+InputRange.prototype._nativeScrollIntoView = function(rng){
+	// I can't remember where I found this clever hack to find the location of text in a text area
+	var style = getComputedStyle(this._el);
+	var oldheight = style.height;
+	var oldval = this._el.value;
+	var oldselection = this._nativeSelection();
+	this._el.style.height = '1px';
+	this._el.value = oldval.slice(0, rng[0]);
+	var top = this._el.scrollHeight;
+	// this gives the bottom of the text, so we have to subtract the height of a single line
+	this._el.value = 'X';
+	top -= 2*this._el.scrollHeight; // show at least a line above
+	this._el.style.height = oldheight;
+	this._el.value = oldval;
+	this._nativeSelect(oldselection);
+	// scroll into position if necessary
+	if (this._el.scrollTop > top || this._el.scrollTop+this._el.clientHeight < top){
+		this._el.scrollTop = top;
+	}
+	// now scroll the element into view; get its position as in jQuery.offset
+	var rect = this._el.getBoundingClientRect();
+	rect.top += this._win.pageYOffset - this._doc.documentElement.clientTop;
+	rect.left += this._win.pageXOffset - this._doc.documentElement.clientLeft;
+	// create an element to scroll to
+	var div = this._doc.createElement('div');
+	div.style.position = 'absolute';
+	div.style.top = (rect.top+top-this._el.scrollTop)+'px'; // adjust for how far in the range is; it may not have scrolled all the way to the top
+	div.style.left = rect.left+'px';
+	div.innerHTML = '&nbsp;';
+	this._doc.body.appendChild(div);
+	div.scrollIntoViewIfNeeded ? div.scrollIntoViewIfNeeded() : div.scrollIntoView();
+	div.parentNode.removeChild(div);
+}
 
 function W3CRange(){}
 W3CRange.prototype = new Range();
@@ -255,6 +302,13 @@ W3CRange.prototype._nativeEOL = function(){
 	rng.insertNode (this._doc.createTextNode('\n'));
 	rng.collapse (false);
 };
+W3CRange.prototype._nativeScrollIntoView = function(rng){
+	// can't scroll to a range; have to scroll to an element instead
+	var span = this._doc.createElement('span');
+	rng.insertNode(span);
+	span.scrollIntoViewIfNeeded ? span.scrollIntoViewIfNeeded() : span.scrollIntoView();
+	span.parentNode.removeChild(span);
+}
 // W3C internals
 function nextnode (node, root){
 	//  in-order traversal
@@ -345,14 +399,17 @@ NothingRange.prototype._nativeSetText = function (text, rng){
 NothingRange.prototype._nativeEOL = function(){
 	this.text('\n');
 };
+NothingRange.prototype._nativeScrollIntoView = function(){
+	this._el.scrollIntoView();
+};
 
 })();
 
 // insert characters in a textarea or text input field
 // special characters are enclosed in {}; use {{} for the { character itself
 // documentation: http://bililite.com/blog/2008/08/20/the-fnsendkeys-plugin/
-// Version: 2.0
-// Copyright (c) 2010 Daniel Wachsstock
+// Version: 2.1
+// Copyright (c) 2013 Daniel Wachsstock
 // MIT license:
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
@@ -413,15 +470,14 @@ $.fn.sendkeys = function (x, opts){
 // add the functions publicly so they can be overridden
 $.fn.sendkeys.defaults = {
 	simplechar: function (rng, s){
+		// deal with unknown {key}s
+		if (/^{.*}$/.test(s)) s = s.slice(1,-1);
 		rng.text(s, 'end');
 		for (var i =0; i < s.length; ++i){
 			var x = s.charCodeAt(i);
 			// a bit of cheating: rng._el is the element associated with rng.
 			$(rng._el).trigger({type: 'keypress', keyCode: x, which: x, charCode: x});
 		}
-	},
-	'{{}': function (rng){
-		$.fn.sendkeys.defaults.simplechar (rng, '{')
 	},
 	'{enter}': function (rng){
 		rng.insertEOL();
