@@ -438,29 +438,19 @@ function w3cmoveBoundary (rng, n, bStart, el){
 	// if the start is moved after the end, then an exception is raised
 	if (n <= 0) return;
 	var node = rng[bStart ? 'startContainer' : 'endContainer'];
-	if (node.nodeType == 3){
+	if (node.nodeType === Node.TEXT_NODE) {
 	  // we may be starting somewhere into the text
 	  n += rng[bStart ? 'startOffset' : 'endOffset'];
 	}
-	while (node){
-		if (node.nodeType == 3){
-			if (n <= node.nodeValue.length){
+	for (; node; node = nextnode(node, el)) {
+		if (node.nodeType === Node.TEXT_NODE) {
+			if (n < node.nodeValue.length) {
 				rng[bStart ? 'setStart' : 'setEnd'](node, n);
-				// special case: if we end next to a <br>, include that node.
-				if (n == node.nodeValue.length){
-					// skip past zero-length text nodes
-					for (var next = nextnode (node, el); next && next.nodeType==3 && next.nodeValue.length == 0; next = nextnode(next, el)){
-						rng[bStart ? 'setStartAfter' : 'setEndAfter'](next);
-					}
-					if (next && next.nodeType == 1 && next.nodeName == "BR") rng[bStart ? 'setStartAfter' : 'setEndAfter'](next);
-				}
 				return;
-			}else{
-				rng[bStart ? 'setStartAfter' : 'setEndAfter'](node); // skip past this one
-				n -= node.nodeValue.length; // and eat these characters
 			}
+			n -= node.nodeValue.length;
 		}
-		node = nextnode (node, el);
+		if (!node.firstChild) rng[bStart ? 'setStartAfter' : 'setEndAfter'](node);
 	}
 }
 var     START_TO_START                 = 0; // from the w3c definitions
