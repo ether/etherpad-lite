@@ -35,7 +35,8 @@ $.fn.sendkeys = function (x, opts){
 		$(this).trigger({type: 'beforesendkeys', which: x});
 		this.focus();
 		$.data(this, 'sendkeys.originalText', rng.text());
-		x.replace(/([^{])\n/g, '$1{enter}'). // turn line feeds into explicit break insertions, but not if escaped
+		// turn line feeds into explicit break insertions, but not if escaped
+		x.replace(/{[^}]*}|[^{]+/g, (s) => s.startsWith('{') ? s : s.replace(/\n/g, '{enter}')).
 		  replace(/{[^}]*}|[^{]+/g, function(s){
 				(localkeys[s] || $.fn.sendkeys.defaults[s] || $.fn.sendkeys.defaults.simplechar)(rng, s);
 				rng.select();
