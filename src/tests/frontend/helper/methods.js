@@ -49,7 +49,8 @@ helper.edit = async (message, line) => {
  *
  * @returns {Array.<HTMLElement>} array of divs
  */
-helper.linesDiv = () => helper.padInner$('.ace-line').map(function () { return $(this); }).get();
+helper.linesDiv =
+    () => helper.padInner$('.ace-line').map(function () { return helper.padInner$(this); }).get();
 
 /**
  * The pad text as an array of lines
