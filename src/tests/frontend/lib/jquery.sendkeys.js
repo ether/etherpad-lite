@@ -158,7 +158,7 @@ $.fn.focus = function(){
 		this[0].focus();
 		this.selectionTracker();
 	}
-	focus.apply(this, arguments);
+	return focus.apply(this, arguments);
 }
 
 })(jQuery)
