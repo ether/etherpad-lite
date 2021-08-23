@@ -162,7 +162,7 @@
 	"timeslider.month.december": "Грудень",
 	"timeslider.unnamedauthors": "{{num}} {[plural(num) one: безіменний автор, few: безіменні автори, many: безіменних авторів, other: безіменних авторів]}",
 	"pad.savedrevs.marked": "Цю версію помічено збереженою версією",
-	"pad.savedrevs.timeslider": "Ви можете побачити збережені ревізії, відвідавши \"Слайдер Змін Ревізій\"",
+	"pad.savedrevs.timeslider": "Ви можете побачити збережені ревізії, відвідавши «Слайдер Змін Ревізій»",
 	"pad.userlist.entername": "Введіть ваше ім'я",
 	"pad.userlist.unnamed": "безіменний",
 	"pad.editbar.clearcolors": "Очистити кольори у всьому документі? Це не можна буде відкотити",
