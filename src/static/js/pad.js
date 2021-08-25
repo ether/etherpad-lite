@@ -501,7 +501,7 @@ const pad = {
 
       $('#editorcontainer').addClass('initialized');
 
-      hooks.aCallAll('postAceInit', {ace: padeditor.ace, pad});
+      hooks.aCallAll('postAceInit', {ace: padeditor.ace, clientVars, pad});
     };
 
     // order of inits is important here:

@@ -229,7 +229,10 @@ Called from: src/static/js/pad.js
 Things in context:
 
 1. ace - the ace object that is applied to this editor.
-2. pad - the pad object of the current pad.
+2. clientVars - Object containing client-side configuration such as author ID
+   and plugin settings. Your plugin can manipulate this object via the
+   `clientVars` server-side hook.
+3. pad - the pad object of the current pad.
 
 ## postToolbarInit
 

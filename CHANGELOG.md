@@ -17,6 +17,12 @@
       [citizenos/ep_image_upload#49](https://github.com/citizenos/ep_image_upload/pull/49)
       for an example fix.
 
+### Notable enhancements
+
+* For plugin authors:
+  * `clientVars` was added to the context for the `postAceInit` client-side
+    hook. Plugins should use this instead of the `clientVars` global variable.
+
 # 1.8.14
 
 ### Security fixes
