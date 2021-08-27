@@ -30,7 +30,7 @@
     }
   ],
   "dependencies": {
-    "async": "^3.2.0",
+    "async": "^3.2.1",
     "async-stacktrace": "0.0.2",
     "channels": "0.0.4",
     "clean-css": "4.2.3",
