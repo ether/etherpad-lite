@@ -78,7 +78,7 @@
     "etherpad-lite": "node/server.js"
   },
   "devDependencies": {
-    "eslint": "^7.28.0",
+    "eslint": "^7.32.0",
     "eslint-config-etherpad": "^2.0.0",
     "eslint-plugin-cypress": "^2.11.3",
     "eslint-plugin-eslint-comments": "^3.2.0",
