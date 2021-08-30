@@ -96,7 +96,7 @@
     "sinon": "^11.1.2",
     "split-grid": "^1.0.11",
     "superagent": "^6.1.0",
-    "supertest": "4.0.2"
+    "supertest": "^6.1.6"
   },
   "eslintConfig": {
     "ignorePatterns": [
