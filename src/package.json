@@ -55,7 +55,7 @@
     "mime-types": "^2.1.32",
     "nodeify": "1.0.1",
     "npm": "6.14.13",
-    "openapi-backend": "^3.9.1",
+    "openapi-backend": "^4.2.0",
     "proxy-addr": "^2.0.6",
     "rate-limiter-flexible": "^2.2.4",
     "rehype": "^11.0.0",
