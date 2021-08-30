@@ -88,7 +88,7 @@
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-you-dont-need-lodash-underscore": "^6.12.0",
     "etherpad-cli-client": "^0.1.12",
-    "mocha": "7.1.2",
+    "mocha": "^9.1.1",
     "mocha-froth": "^0.2.10",
     "openapi-schema-validation": "^0.4.2",
     "selenium-webdriver": "^4.0.0-beta.3",
