@@ -39,7 +39,6 @@ describe(__filename, function () {
   */
 
   describe('createPad', function () {
-    this.timeout(400);
     it('creates a new Pad', function (done) {
       agent.get(`${endPoint('createPad')}&padID=${padID}`)
           .expect((res) => {
@@ -51,7 +50,6 @@ describe(__filename, function () {
   });
 
   describe('createAuthor', function () {
-    this.timeout(100);
     it('Creates an author with a name set', function (done) {
       agent.get(endPoint('createAuthor'))
           .expect((res) => {
@@ -66,7 +64,6 @@ describe(__filename, function () {
   });
 
   describe('appendChatMessage', function () {
-    this.timeout(100);
     it('Adds a chat message to the pad', function (done) {
       agent.get(`${endPoint('appendChatMessage')}&padID=${padID}&text=blalblalbha` +
                 `&authorID=${authorID}&time=${timestamp}`)
@@ -80,7 +77,6 @@ describe(__filename, function () {
 
 
   describe('getChatHead', function () {
-    this.timeout(100);
     it('Gets the head of chat', function (done) {
       agent.get(`${endPoint('getChatHead')}&padID=${padID}`)
           .expect((res) => {
@@ -94,7 +90,6 @@ describe(__filename, function () {
   });
 
   describe('getChatHistory', function () {
-    this.timeout(40);
     it('Gets Chat History of a Pad', function (done) {
       agent.get(`${endPoint('getChatHistory')}&padID=${padID}`)
           .expect((res) => {

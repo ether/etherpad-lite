@@ -31,7 +31,6 @@ describe(__filename, function () {
 
   describe('Connectivity', function () {
     it('can connect', async function () {
-      this.timeout(250);
       await agent.get('/api/')
           .expect(200)
           .expect('Content-Type', /json/);
@@ -40,7 +39,6 @@ describe(__filename, function () {
 
   describe('API Versioning', function () {
     it('finds the version tag', async function () {
-      this.timeout(250);
       await agent.get('/api/')
           .expect(200)
           .expect((res) => assert(res.body.currentVersion));
@@ -96,7 +94,6 @@ describe(__filename, function () {
     });
 
     it('creates a new Pad, imports content to it, checks that content', async function () {
-      this.timeout(500);
       await agent.get(`${endPoint('createPad')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -111,7 +108,6 @@ describe(__filename, function () {
 
     for (const authn of [false, true]) {
       it(`can export from read-only pad ID, authn ${authn}`, async function () {
-        this.timeout(250);
         settings.requireAuthentication = authn;
         const get = (ep) => {
           let req = agent.get(ep);
@@ -129,8 +125,6 @@ describe(__filename, function () {
     }
 
     describe('Import/Export tests requiring AbiWord/LibreOffice', function () {
-      this.timeout(10000);
-
       before(async function () {
         if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
             (!settings.soffice || settings.soffice.indexOf('/') === -1)) {
