@@ -31,7 +31,6 @@
   ],
   "dependencies": {
     "async": "^3.2.1",
-    "async-stacktrace": "0.0.2",
     "channels": "0.0.4",
     "clean-css": "^5.1.5",
     "cookie-parser": "1.4.5",
