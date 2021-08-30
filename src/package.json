@@ -51,7 +51,7 @@
     "languages4translatewiki": "0.1.3",
     "lodash.clonedeep": "4.5.0",
     "log4js": "0.6.38",
-    "measured-core": "1.51.1",
+    "measured-core": "^2.0.0",
     "mime-types": "^2.1.32",
     "nodeify": "1.0.1",
     "npm": "6.14.13",
