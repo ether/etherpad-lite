@@ -15,10 +15,12 @@ is_cmd node || fatal "Please install node.js ( https://nodejs.org )"
 is_cmd npm || fatal "Please install npm ( https://npmjs.org )"
 
 # Check npm version
-require_minimal_version "npm" $(get_program_version "npm") "$REQUIRED_NPM_MAJOR" "$REQUIRED_NPM_MINOR"
+require_minimal_version "npm" $(get_program_version "npm") \
+    "$REQUIRED_NPM_MAJOR" "$REQUIRED_NPM_MINOR"
 
 # Check node version
-require_minimal_version "nodejs" $(get_program_version "node") "$REQUIRED_NODE_MAJOR" "$REQUIRED_NODE_MINOR"
+require_minimal_version "nodejs" $(get_program_version "node") \
+    "$REQUIRED_NODE_MAJOR" "$REQUIRED_NODE_MINOR"
 
 # Get the name of the settings file
 settings="settings.json"
