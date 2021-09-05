@@ -38,10 +38,10 @@ fi
 
 log "Installing dependencies..."
 (
-  mkdir -p node_modules
-  cd node_modules
-  [ -d ep_etherpad-lite ] || ln -sf ../src ep_etherpad-lite
-  cd ep_etherpad-lite
+  mkdir -p node_modules &&
+  cd node_modules &&
+  { [ -d ep_etherpad-lite ] || ln -sf ../src ep_etherpad-lite; } &&
+  cd ep_etherpad-lite &&
   npm ci --no-optional
 ) || {
   rm -rf src/node_modules
