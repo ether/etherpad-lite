@@ -43,10 +43,7 @@ log "Installing dependencies..."
   { [ -d ep_etherpad-lite ] || ln -sf ../src ep_etherpad-lite; } &&
   cd ep_etherpad-lite &&
   npm ci --no-optional
-) || {
-  rm -rf src/node_modules
-  exit 1
-}
+) || exit 1
 
 # Remove all minified data to force node creating it new
 log "Clearing minified cache..."
