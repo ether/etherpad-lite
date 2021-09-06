@@ -481,23 +481,34 @@ describe(__filename, function () {
       assert.deepEqual(await got, want);
     });
 
-    it('handleMessage (error)', async function () {
-      let receive;
-      const received = new Promise((resolve) => receive = resolve);
+    const tx = async (socket, message = {}) => await new Promise((resolve, reject) => {
+      message = Object.assign({protocolVersion: 2}, message);
+      const AckErr = class extends Error {
+        constructor(name, ...args) { super(...args); this.name = name; }
+      };
+      socket.send(message,
+          (errj, val) => errj != null ? reject(new AckErr(errj.name, errj.message)) : resolve(val));
+    });
+
+    it('handleMessage with ack (success)', async function () {
+      const want = 'value';
       socketIoRouter.addComponent(this.test.fullTitle(), new class extends Module {
-        handleMessage(socket, message) {
-          if (message.throw) throw new Error('injected');
-          receive();
-        }
+        handleMessage(socket, msg) { return want; }
       }());
       socket = await connect();
-      const tx = (msg = {}) => {
-        msg = Object.assign({component: this.test.fullTitle(), protocolVersion: 2}, msg);
-        socket.send(msg);
+      const got = await tx(socket, {component: this.test.fullTitle()});
+      assert.equal(got, want);
+    });
+
+    it('handleMessage with ack (error)', async function () {
+      const InjectedError = class extends Error {
+        constructor() { super('injected test error'); this.name = 'InjectedError'; }
       };
-      tx({throw: true});
-      tx();
-      await received;
+      socketIoRouter.addComponent(this.test.fullTitle(), new class extends Module {
+        handleMessage(socket, msg) { throw new InjectedError(); }
+      }());
+      socket = await connect();
+      await assert.rejects(tx(socket, {component: this.test.fullTitle()}), new InjectedError());
     });
   });
 });

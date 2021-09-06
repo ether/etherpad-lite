@@ -68,7 +68,7 @@ exports.setSocketIO = (_io) => {
       components[i].handleConnect(socket);
     }
 
-    socket.on('message', async (message) => {
+    socket.on('message', (message, ack = () => {}) => {
       if (message.protocolVersion && message.protocolVersion !== 2) {
         logger.warn(`Protocolversion header is not correct: ${JSON.stringify(message)}`);
         return;
@@ -78,11 +78,12 @@ exports.setSocketIO = (_io) => {
         return;
       }
       logger.debug(`from ${socket.id}: ${JSON.stringify(message)}`);
-      try {
-        await components[message.component].handleMessage(socket, message);
-      } catch (err) {
-        logger.error(`Error while handling message from ${socket.id}: ${err.stack || err}`);
-      }
+      (async () => await components[message.component].handleMessage(socket, message))().then(
+          (val) => ack(null, val),
+          (err) => {
+            logger.error(`Error while handling message from ${socket.id}: ${err.stack || err}`);
+            ack({name: err.name, message: err.message});
+          });
     });
 
     socket.on('disconnect', (reason) => {
