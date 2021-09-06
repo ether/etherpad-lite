@@ -8,6 +8,7 @@ const plugins = require('../../../static/js/pluginfw/plugin_defs');
 const readOnlyManager = require('../../../node/db/ReadOnlyManager');
 const setCookieParser = require('set-cookie-parser');
 const settings = require('../../../node/utils/Settings');
+const socketIoRouter = require('../../../node/handler/SocketIORouter');
 
 const logger = common.logger;
 
@@ -401,6 +402,83 @@ describe(__filename, function () {
       socket = await connect(res);
       const message = await handshake(socket, 'pad');
       assert.equal(message.accessStatus, 'deny');
+    });
+  });
+
+  describe('SocketIORouter.js', function () {
+    const Module = class {
+      setSocketIO(io) {}
+      handleConnect(socket) {}
+      handleDisconnect(socket) {}
+      handleMessage(socket, message) {}
+    };
+
+    afterEach(async function () {
+      socketIoRouter.deleteComponent(this.test.fullTitle());
+      socketIoRouter.deleteComponent(`${this.test.fullTitle()} #2`);
+    });
+
+    it('setSocketIO', async function () {
+      let ioServer;
+      socketIoRouter.addComponent(this.test.fullTitle(), new class extends Module {
+        setSocketIO(io) { ioServer = io; }
+      }());
+      assert(ioServer != null);
+    });
+
+    it('handleConnect', async function () {
+      let serverSocket;
+      socketIoRouter.addComponent(this.test.fullTitle(), new class extends Module {
+        handleConnect(socket) { serverSocket = socket; }
+      }());
+      socket = await connect();
+      assert(serverSocket != null);
+    });
+
+    it('handleDisconnect', async function () {
+      let resolveConnected;
+      const connected = new Promise((resolve) => resolveConnected = resolve);
+      let resolveDisconnected;
+      const disconnected = new Promise((resolve) => resolveDisconnected = resolve);
+      socketIoRouter.addComponent(this.test.fullTitle(), new class extends Module {
+        handleConnect(socket) {
+          this._socket = socket;
+          resolveConnected();
+        }
+        handleDisconnect(socket) {
+          assert(socket != null);
+          // There might be lingering disconnect events from sockets created by other tests.
+          if (this._socket == null || socket.id !== this._socket.id) return;
+          assert.equal(socket, this._socket);
+          resolveDisconnected();
+        }
+      }());
+      socket = await connect();
+      await connected;
+      socket.close();
+      socket = null;
+      await disconnected;
+    });
+
+    it('handleMessage', async function () {
+      let serverSocket;
+      const want = {
+        component: this.test.fullTitle(),
+        protocolVersion: 2,
+        foo: {bar: 'asdf'},
+      };
+      let rx;
+      const got = new Promise((resolve) => { rx = resolve; });
+      socketIoRouter.addComponent(this.test.fullTitle(), new class extends Module {
+        handleConnect(socket) { serverSocket = socket; }
+        handleMessage(socket, message) { assert.equal(socket, serverSocket); rx(message); }
+      }());
+      socketIoRouter.addComponent(`${this.test.fullTitle()} #2`, new class extends Module {
+        handleMessage(socket, message) { assert.fail('wrong handler called'); }
+      }());
+      socket = await connect();
+      socket.send(want);
+      assert.deepEqual(await got, want);
     });
   });
 });
