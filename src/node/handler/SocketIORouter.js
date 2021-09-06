@@ -21,9 +21,10 @@
  */
 
 const log4js = require('log4js');
+const settings = require('../utils/Settings');
 const stats = require('../stats');
 
-const logger = log4js.getLogger('message');
+const logger = log4js.getLogger('socket.io');
 
 /**
  * Saves all components
@@ -50,6 +51,9 @@ exports.setSocketIO = (_io) => {
   io = _io;
 
   io.sockets.on('connection', (socket) => {
+    const ip = settings.disableIPlogging ? 'ANONYMOUS' : socket.request.ip;
+    logger.debug(`${socket.id} connected from IP ${ip}`);
+
     // wrap the original send function to log the messages
     socket._send = socket.send;
     socket.send = (message) => {
@@ -75,7 +79,8 @@ exports.setSocketIO = (_io) => {
       await components[message.component].handleMessage(socket, message);
     });
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', (reason) => {
+      logger.debug(`${socket.id} disconnected: ${reason}`);
       // store the lastDisconnect as a timestamp, this is useful if you want to know
       // when the last user disconnected.  If your activePads is 0 and totalUsers is 0
       // you can say, if there has been no active pads or active users for 10 minutes
