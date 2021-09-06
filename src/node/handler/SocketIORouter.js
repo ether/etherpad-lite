@@ -39,10 +39,12 @@ let io;
  * adds a component
  */
 exports.addComponent = (moduleName, module) => {
-  // save the component
+  if (module == null) return exports.deleteComponent(moduleName);
   components[moduleName] = module;
   module.setSocketIO(io);
 };
+
+exports.deleteComponent = (moduleName) => { delete components[moduleName]; };
 
 /**
  * sets the socket.io and adds event functions for routing
