@@ -78,7 +78,11 @@ exports.setSocketIO = (_io) => {
         return;
       }
       logger.debug(`from ${socket.id}: ${JSON.stringify(message)}`);
-      await components[message.component].handleMessage(socket, message);
+      try {
+        await components[message.component].handleMessage(socket, message);
+      } catch (err) {
+        logger.error(`Error while handling message from ${socket.id}: ${err.stack || err}`);
+      }
     });
 
     socket.on('disconnect', (reason) => {

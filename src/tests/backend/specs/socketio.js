@@ -460,7 +460,7 @@ describe(__filename, function () {
       await disconnected;
     });
 
-    it('handleMessage', async function () {
+    it('handleMessage (success)', async function () {
       let serverSocket;
       const want = {
         component: this.test.fullTitle(),
@@ -479,6 +479,25 @@ describe(__filename, function () {
       socket = await connect();
       socket.send(want);
       assert.deepEqual(await got, want);
+    });
+
+    it('handleMessage (error)', async function () {
+      let receive;
+      const received = new Promise((resolve) => receive = resolve);
+      socketIoRouter.addComponent(this.test.fullTitle(), new class extends Module {
+        handleMessage(socket, message) {
+          if (message.throw) throw new Error('injected');
+          receive();
+        }
+      }());
+      socket = await connect();
+      const tx = (msg = {}) => {
+        msg = Object.assign({component: this.test.fullTitle(), protocolVersion: 2}, msg);
+        socket.send(msg);
+      };
+      tx({throw: true});
+      tx();
+      await received;
     });
   });
 });
