@@ -21,8 +21,9 @@
  */
 
 const log4js = require('log4js');
-const messageLogger = log4js.getLogger('message');
 const stats = require('../stats');
+
+const logger = log4js.getLogger('message');
 
 /**
  * Saves all components
@@ -31,7 +32,7 @@ const stats = require('../stats');
  */
 const components = {};
 
-let socket;
+let io;
 
 /**
  * adds a component
@@ -39,45 +40,42 @@ let socket;
 exports.addComponent = (moduleName, module) => {
   // save the component
   components[moduleName] = module;
-
-  // give the module the socket
-  module.setSocketIO(socket);
+  module.setSocketIO(io);
 };
 
 /**
  * sets the socket.io and adds event functions for routing
  */
-exports.setSocketIO = (_socket) => {
-  // save this socket internaly
-  socket = _socket;
+exports.setSocketIO = (_io) => {
+  io = _io;
 
-  socket.sockets.on('connection', (client) => {
+  io.sockets.on('connection', (socket) => {
     // wrap the original send function to log the messages
-    client._send = client.send;
-    client.send = (message) => {
-      messageLogger.debug(`to ${client.id}: ${JSON.stringify(message)}`);
-      client._send(message);
+    socket._send = socket.send;
+    socket.send = (message) => {
+      logger.debug(`to ${socket.id}: ${JSON.stringify(message)}`);
+      socket._send(message);
     };
 
     // tell all components about this connect
     for (const i of Object.keys(components)) {
-      components[i].handleConnect(client);
+      components[i].handleConnect(socket);
     }
 
-    client.on('message', async (message) => {
+    socket.on('message', async (message) => {
       if (message.protocolVersion && message.protocolVersion !== 2) {
-        messageLogger.warn(`Protocolversion header is not correct: ${JSON.stringify(message)}`);
+        logger.warn(`Protocolversion header is not correct: ${JSON.stringify(message)}`);
         return;
       }
       if (!message.component || !components[message.component]) {
-        messageLogger.error(`Can't route the message: ${JSON.stringify(message)}`);
+        logger.error(`Can't route the message: ${JSON.stringify(message)}`);
         return;
       }
-      messageLogger.debug(`from ${client.id}: ${JSON.stringify(message)}`);
-      await components[message.component].handleMessage(client, message);
+      logger.debug(`from ${socket.id}: ${JSON.stringify(message)}`);
+      await components[message.component].handleMessage(socket, message);
     });
 
-    client.on('disconnect', () => {
+    socket.on('disconnect', () => {
       // store the lastDisconnect as a timestamp, this is useful if you want to know
       // when the last user disconnected.  If your activePads is 0 and totalUsers is 0
       // you can say, if there has been no active pads or active users for 10 minutes
@@ -85,7 +83,7 @@ exports.setSocketIO = (_socket) => {
       stats.gauge('lastDisconnect', () => Date.now());
       // tell all components about this disconnect
       for (const i of Object.keys(components)) {
-        components[i].handleDisconnect(client);
+        components[i].handleDisconnect(socket);
       }
     });
   });
