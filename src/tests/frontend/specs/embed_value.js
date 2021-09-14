@@ -35,6 +35,7 @@ describe('embed links', function () {
       showChat: 'true',
       showLineNumbers: 'true',
       useMonospaceFont: 'false',
+      focusOnEditor: 'false',
     };
 
     // check the url

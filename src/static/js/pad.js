@@ -49,6 +49,7 @@ const socketio = require('./socketio');
 const hooks = require('./pluginfw/hooks');
 
 let receivedClientVars = false;
+let focusOnEditor = true;
 
 // This array represents all GET-parameters which can be used to change a setting.
 //   name:     the parameter-name, eg  `?noColors=true`  =>  `noColors`
@@ -146,13 +147,17 @@ const getParameters = [
       Cookies.set('language', val);
     },
   },
+  {
+    name: 'focusOnEditor',
+    callback: (val) => focusOnEditor = val !== 'false',
+  },
 ];
 
 const getParams = () => {
   // Tries server enforced options first..
   for (const setting of getParameters) {
     const value = clientVars.padOptions[setting.name];
-    if (value.toString() === setting.checkVal) {
+    if (value != null && value.toString() === setting.checkVal) {
       setting.callback(value);
     }
   }
@@ -463,9 +468,7 @@ const pad = {
 
     const postAceInit = () => {
       padeditbar.init();
-      setTimeout(() => {
-        padeditor.ace.focus();
-      }, 0);
+      if (focusOnEditor) setTimeout(() => padeditor.ace.focus(), 0);
       // if we have a cookie for always showing chat then show it
       if (padcookie.getPref('chatAlwaysVisible')) {
         chat.stickToScreen(true); // stick it to the screen

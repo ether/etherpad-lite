@@ -262,7 +262,7 @@ exports.padeditbar = new class {
   }
   setEmbedLinks() {
     const padUrl = window.location.href.split('?')[0];
-    const params = '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false';
+    const params = '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false&focusOnEditor=false';
     const props = 'width="100%" height="600" frameborder="0"';
 
     if ($('#readonlyinput').is(':checked')) {
