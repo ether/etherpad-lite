@@ -147,6 +147,10 @@ describe(__filename, function () {
               it('export OK', async function () {
                 assert.match(text, /This is the/);
               });
+
+              it('writable pad ID is not leaked', async function () {
+                assert(!text.includes(testPadId));
+              });
             });
           }
         });
