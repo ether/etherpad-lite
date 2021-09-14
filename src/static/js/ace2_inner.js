@@ -2539,6 +2539,67 @@ function Ace2Inner(editorInfo, cssManagers) {
     }
   };
 
+  const doFnDeleteKey = (optEvt) => {
+    const evt = optEvt || {};
+    if (rep.selStart) {
+      if (isCaret()) {
+        const theLine = caretLine();
+        const theCol = caretColumn();
+        const lineEntry = rep.lines.atIndex(theLine);
+        const lineText = lineEntry.text;
+        const lastColOfLine = lineText.length;
+        const lastLineNum = rep.lines.length() - 1;
+
+        if (theCol === lastColOfLine) {
+          // caret is at the end of line
+          const nextLineEntry = (theLine < lastLineNum && rep.lines.atIndex(theLine + 1));
+          const nextLineMarker = nextLineEntry && nextLineEntry.lineMarker;
+          if (nextLineEntry) {
+            // if it is not the last line
+            performDocumentReplaceRange(
+                [theLine, lastColOfLine], [theLine + 1, nextLineMarker], '');
+          }
+        } else {
+          const docChar = caretDocChar();
+
+          if (evt.metaKey || evt.ctrlKey || evt.altKey) {
+            let deleteForwardTo = docChar;
+            let char = rep.alltext.charAt(deleteForwardTo);
+            if (isWordChar(char)) {
+              // fnDelete as many unicode "letters or digits" in a row as possible;
+              while (isWordChar(char)) {
+                deleteForwardTo++;
+                char = rep.alltext.charAt(deleteForwardTo);
+              }
+            } else if (char === ' ') {
+              // fnDelete as many spaces in a row as possible;
+              while (char === ' ') {
+                deleteForwardTo++;
+                char = rep.alltext.charAt(deleteForwardTo);
+              }
+            }
+
+            performDocumentReplaceCharRange(docChar, deleteForwardTo, '');
+          } else {
+            // normal fnDelete
+            performDocumentReplaceCharRange(docChar, docChar + 1, '');
+          }
+        }
+      } else {
+        // if the user is selecting text
+        performDocumentReplaceSelection('');
+      }
+    }
+    // if the list has been removed, it is necessary to renumber
+    // starting from the *next* line because the list may have been
+    // separated. If it returns null, it means that the list was not cut, try
+    // from the current one.
+    const line = caretLine();
+    if (line !== -1 && renumberList(line + 1) == null) {
+      renumberList(line);
+    }
+  };
+
   const isWordChar = (c) => padutils.wordCharRegex.test(c);
   editorInfo.ace_isWordChar = isWordChar;
 
@@ -2674,6 +2735,15 @@ function Ace2Inner(editorInfo, cssManagers) {
           fastIncorp(3);
           evt.preventDefault();
           doDeleteKey(evt);
+          specialHandled = true;
+        }
+        if ((!specialHandled) && isTypeForSpecialKey &&
+             keyCode === 46 &&
+             padShortcutEnabled.fnDelete) {
+          // eliminates quirks in forward delete
+          fastIncorp(3);
+          evt.preventDefault();
+          doFnDeleteKey(evt);
           specialHandled = true;
         }
         if (!specialHandled && isTypeForSpecialKey &&

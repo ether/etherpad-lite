@@ -150,6 +150,7 @@ exports.padShortcutEnabled = {
   altF9: true,
   altC: true,
   delete: true,
+  fnDelete: true,
   cmdShift2: true,
   return: true,
   esc: true,
