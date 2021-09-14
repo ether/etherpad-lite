@@ -143,4 +143,48 @@ describe('unordered_list.js', function () {
       await helper.waitForPromise(() => inner$('div').first().find('.list-bullet1').length === 1);
     });
   });
+
+  describe('Two ULs then Two OLs have proper number incrementation', function () {
+    // create a new pad before each test run
+    beforeEach(async function () {
+      await helper.aNewPad();
+    });
+
+    it('Has lines numbers 1 then 2 for ordered numbered list after unordered', async function () {
+      const inner$ = helper.padInner$;
+      const chrome$ = helper.padChrome$;
+
+      const $insertunorderedlistButton = chrome$('.buttonicon-insertunorderedlist');
+      const $insertorderedlistButton = chrome$('.buttonicon-insertorderedlist');
+
+      // type a bit, make a line break and type again
+      const $firstTextElement = inner$('div').first();
+      // inner$('div').sendKeys()
+      $firstTextElement.sendkeys('line 1');
+      $firstTextElement.sendkeys('{enter}');
+      $firstTextElement.sendkeys('line 2');
+      $firstTextElement.sendkeys('{enter}');
+      $firstTextElement.sendkeys('line 3');
+      $firstTextElement.sendkeys('{enter}');
+      $firstTextElement.sendkeys('line 4');
+      $firstTextElement.sendkeys('{enter}');
+      await helper.waitForPromise(() => inner$('div span').first().text().indexOf('line 2 ') === -1);
+
+      // 1st line
+      inner$('div').first().sendkeys('{selectall}');
+      $insertunorderedlistButton.click();
+      // 2nd line
+      inner$('div').first().next().sendkeys('{selectall}');
+      $insertunorderedlistButton.click();
+      // 3rd line
+      inner$('div').first().next().next().sendkeys('{selectall}');
+      $insertorderedlistButton.click();
+      // 4th line
+      inner$('div').first().next().next().next().sendkeys('{selectall}');
+      $insertorderedlistButton.click();
+
+      const $fourthLine = inner$('div').first().next().next().next().children().first();
+      expect($fourthLine.hasClass('list-number2')).to.be(true);
+    });
+  });
 });
