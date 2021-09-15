@@ -90,7 +90,7 @@
     "mocha": "^9.1.1",
     "mocha-froth": "^0.2.10",
     "openapi-schema-validation": "^0.4.2",
-    "selenium-webdriver": "^4.0.0-beta.4",
+    "selenium-webdriver": "^4.0.0-rc-1",
     "set-cookie-parser": "^2.4.8",
     "sinon": "^11.1.2",
     "split-grid": "^1.0.11",
