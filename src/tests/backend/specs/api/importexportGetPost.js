@@ -151,6 +151,28 @@ describe(__filename, function () {
               it('writable pad ID is not leaked', async function () {
                 assert(!text.includes(testPadId));
               });
+
+              it('re-import to read-only pad ID gives 403 forbidden', async function () {
+                let req = agent.post(`/p/${readOnlyId}/import`)
+                    .attach('file', Buffer.from(text), {
+                      filename: `/test.${exportType}`,
+                      contentType: 'text/plain',
+                    });
+                if (authn) req = req.auth('user', 'user-password');
+                await req.expect(403);
+              });
+
+              it('re-import to read-write pad ID gives 200 OK', async function () {
+                // The new pad ID must differ from testPadId because Etherpad refuses to import
+                // .etherpad files on top of a pad that already has edits.
+                let req = agent.post(`/p/${testPadId}_import/import`)
+                    .attach('file', Buffer.from(text), {
+                      filename: `/test.${exportType}`,
+                      contentType: 'text/plain',
+                    });
+                if (authn) req = req.auth('user', 'user-password');
+                await req.expect(200);
+              });
             });
           }
         });
