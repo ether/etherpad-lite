@@ -482,7 +482,7 @@
      * value to work properly, but increasing the value increases susceptibility
      * to denial of service attacks (malicious clients can exhaust memory).
      */
-    "maxHttpBufferSize": 10000
+    "maxHttpBufferSize": "${SOCKETIO_MAX_HTTP_BUFFER_SIZE:10000}"
   },
 
   /*
@@ -495,7 +495,7 @@
   /**
   * Disable dump of objects preventing a clean exit
   */
-  "dumpOnUncleanExit": false,
+  "dumpOnUncleanExit": "${DUMP_ON_UNCLEAN_EXIT:false}",
 
   /*
    * Disable indentation on new line when previous line ends with some special
