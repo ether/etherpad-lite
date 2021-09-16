@@ -16,6 +16,7 @@
 
 ### Compatibility changes
 
+* The `logconfig` setting is deprecated.
 * For plugin authors:
   * Etherpad now uses [jsdom](https://github.com/jsdom/jsdom) instead of
     [cheerio](https://cheerio.js.org/) for processing HTML imports. There are

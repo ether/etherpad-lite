@@ -28,6 +28,7 @@
  */
 
 const absolutePaths = require('./AbsolutePaths');
+const deepEqual = require('fast-deep-equal/es6');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -47,9 +48,13 @@ const defaultLogConfig = () => ({appenders: [{type: 'console'}]});
 const defaultLogLevel = 'INFO';
 
 const initLogging = (logLevel, config) => {
+  // log4js.configure() modifies exports.logconfig so check for equality first.
+  const logConfigIsDefault = deepEqual(config, defaultLogConfig());
   log4js.configure(config);
   log4js.setGlobalLogLevel(logLevel);
   log4js.replaceConsole();
+  // Log the warning after configuring log4js to increase the chances the user will see it.
+  if (!logConfigIsDefault) logger.warn('The logconfig setting is deprecated.');
 };
 
 // Initialize logging as early as possible with reasonable defaults. Logging will be re-initialized
