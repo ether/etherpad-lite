@@ -376,38 +376,18 @@ Pad.prototype.copy = async function (destinationID, force) {
   // if force is true and already exists a Pad with the same id, remove that Pad
   await this.removePadIfForceIsTrueAndAlreadyExist(destinationID, force);
 
-  // copy all records in parallel
-  const promises = [
-    // Copy the 'pad' entry. This is wrapped in an IIFE so that this._db.get() can run in parallel
-    // with the other record copies done below.
-    (async () => await db.set(`pad:${destinationID}`, await this._db.get(`pad:${this.id}`)))(),
-  ];
+  const copyRecord = async (keySuffix) => {
+    const val = await this._db.get(`pad:${this.id}${keySuffix}`);
+    await db.set(`pad:${destinationID}${keySuffix}`, val);
+  };
 
-  // copy all chat messages
-  const chatHead = this.chatHead;
-  for (let i = 0; i <= chatHead; ++i) {
-    const p = this._db.get(`pad:${this.id}:chat:${i}`)
-        .then((chat) => db.set(`pad:${destinationID}:chat:${i}`, chat));
-    promises.push(p);
-  }
-
-  // copy all revisions
-  const revHead = this.head;
-  for (let i = 0; i <= revHead; ++i) {
-    const p = this._db.get(`pad:${this.id}:revs:${i}`)
-        .then((rev) => db.set(`pad:${destinationID}:revs:${i}`, rev));
-    promises.push(p);
-  }
-
-  promises.push(this.copyAuthorInfoToDestinationPad(destinationID));
-
-  // wait for the above to complete
-  await Promise.all(promises);
-
-  // Group pad? Add it to the group's list
-  if (destGroupID) {
-    await db.setSub(`group:${destGroupID}`, ['pads', destinationID], 1);
-  }
+  await Promise.all((function* () {
+    yield copyRecord('');
+    for (let i = 0; i <= this.head; ++i) yield copyRecord(`:revs:${i}`);
+    for (let i = 0; i <= this.chatHead; ++i) yield copyRecord(`:chat:${i}`);
+    yield this.copyAuthorInfoToDestinationPad(destinationID);
+    if (destGroupID) yield db.setSub(`group:${destGroupID}`, ['pads', destinationID], 1);
+  }).call(this));
 
   // Initialize the new pad (will update the listAllPads cache)
   await padManager.getPad(destinationID, null);
