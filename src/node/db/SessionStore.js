@@ -1,38 +1,40 @@
 'use strict';
-/*
- * Stores session data in the database
- * Source; https://github.com/edy-b/SciFlowWriter/blob/develop/available_plugins/ep_sciflowwriter/db/DirtyStore.js
- * This is not used for authors that are created via the API at current
- *
- * RPB: this module was not migrated to Promises, because it is only used via
- *      express-session, which can't actually use promises anyway.
- */
 
 const DB = require('./DB');
 const Store = require('express-session').Store;
 const log4js = require('log4js');
+const util = require('util');
 
 const logger = log4js.getLogger('SessionStore');
 
-module.exports = class SessionStore extends Store {
-  get(sid, fn) {
+class SessionStore extends Store {
+  async _get(sid) {
     logger.debug(`GET ${sid}`);
-    DB.db.get(`sessionstorage:${sid}`, (err, s) => {
-      if (err != null) return fn(err);
-      if (!s) return fn(null);
-      if (typeof s.cookie.expires === 'string') s.cookie.expires = new Date(s.cookie.expires);
-      if (s.cookie.expires && new Date() >= s.cookie.expires) return this.destroy(sid, fn);
-      fn(null, s);
-    });
+    const s = await DB.get(`sessionstorage:${sid}`);
+    if (!s) return;
+    if (typeof s.cookie.expires === 'string') s.cookie.expires = new Date(s.cookie.expires);
+    if (s.cookie.expires && new Date() >= s.cookie.expires) {
+      await this._destroy(sid);
+      return;
+    }
+    return s;
   }
 
-  set(sid, sess, fn) {
+  async _set(sid, sess) {
     logger.debug(`SET ${sid}`);
-    DB.db.set(`sessionstorage:${sid}`, sess, fn);
+    await DB.set(`sessionstorage:${sid}`, sess);
   }
 
-  destroy(sid, fn) {
+  async _destroy(sid) {
     logger.debug(`DESTROY ${sid}`);
-    DB.db.remove(`sessionstorage:${sid}`, fn);
+    await DB.remove(`sessionstorage:${sid}`);
   }
-};
+}
+
+// express-session doesn't support Promise-based methods. This is where the callbackified versions
+// used by express-session are defined.
+for (const m of ['get', 'set', 'destroy']) {
+  SessionStore.prototype[m] = util.callbackify(SessionStore.prototype[`_${m}`]);
+}
+
+module.exports = SessionStore;
