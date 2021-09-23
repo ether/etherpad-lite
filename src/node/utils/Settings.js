@@ -41,6 +41,21 @@ const _ = require('underscore');
 
 const logger = log4js.getLogger('settings');
 
+// This is a function to make it easy to create a new instance. It is important to not reuse a
+// config object after passing it to log4js.configure() because that method mutates the object. :(
+const defaultLogConfig = () => ({appenders: [{type: 'console'}]});
+const defaultLogLevel = 'INFO';
+
+const initLogging = (logLevel, config) => {
+  log4js.configure(config);
+  log4js.setGlobalLogLevel(logLevel);
+  log4js.replaceConsole();
+};
+
+// Initialize logging as early as possible with reasonable defaults. Logging will be re-initialized
+// with the user's chosen log level and logger config after the settings have been loaded.
+initLogging(defaultLogLevel, defaultLogConfig());
+
 /* Root path of the installation */
 exports.root = absolutePaths.findEtherpadRoot();
 logger.info('All relative paths will be interpreted relative to the identified ' +
@@ -236,7 +251,7 @@ exports.allowUnknownFileEnds = true;
 /**
  * The log level of log4js
  */
-exports.loglevel = 'INFO';
+exports.loglevel = defaultLogLevel;
 
 /**
  * Disable IP logging
@@ -266,7 +281,7 @@ exports.indentationOnNewLine = true;
 /*
  * log4js appender configuration
  */
-exports.logconfig = {appenders: [{type: 'console'}]};
+exports.logconfig = defaultLogConfig();
 
 /*
  * Session Key, do not sure this.
@@ -703,9 +718,7 @@ exports.reloadSettings = () => {
   storeSettings(settings);
   storeSettings(credentials);
 
-  log4js.configure(exports.logconfig);// Configure the logging appenders
-  log4js.setGlobalLogLevel(exports.loglevel);// set loglevel
-  log4js.replaceConsole();
+  initLogging(exports.loglevel, exports.logconfig);
 
   if (!exports.skinName) {
     logger.warn('No "skinName" parameter found. Please check out settings.json.template and ' +
