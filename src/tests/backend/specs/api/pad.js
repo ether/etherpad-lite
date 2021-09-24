@@ -114,10 +114,13 @@ describe(__filename, function () {
                                 -> getLastEdited(padID) -- Should not be 0
                                 -> appendText(padID, "hello")
                                 -> getText(padID) -- Should be "hello worldhello"
+                                -> getText(padID, rev) -- Should be "hello world
                                  -> setHTML(padID) -- Should fail on invalid HTML
                                   -> setHTML(padID) *3 -- Should fail on invalid HTML
                                    -> getHTML(padID) -- Should return HTML close to posted HTML
                                     -> createPad -- Tries to create pads with bad url characters
+
+
 
   */
 
@@ -586,6 +589,31 @@ describe(__filename, function () {
     });
   });
 
+  describe('appendText', function () {
+    it('Append text to a pad Id', function (done) {
+      agent.get(`${endPoint('appendText', '1.2.13')}&padID=${testPadId}&text=hello`)
+          .expect((res) => {
+            if (res.body.code !== 0) throw new Error('Pad Append Text failed');
+          })
+          .expect('Content-Type', /json/)
+          .expect(200, done);
+    });
+  });
+
+
+  describe('getText', function () {
+    it('Gets text on a pad Id at a given revision', function (done) {
+      agent.get(`${endPoint('getText')}&padID=${testPadId}&rev=3`)
+          .expect((res) => {
+            if (res.body.code !== 0) throw new Error('Pad Get Text failed');
+            if (res.body.data.text !== `${text}hello\n`) {
+              throw new Error('getText Revision not returning correct contents');
+            }
+          })
+          .expect('Content-Type', /json/)
+          .expect(200, done);
+    });
+  });
 
   describe('setHTML', function () {
     it('Sets the HTML of a Pad attempting to pass ugly HTML', function (done) {
