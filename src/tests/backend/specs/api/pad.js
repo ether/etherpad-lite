@@ -102,6 +102,7 @@ describe(__filename, function () {
                                 -> getLastEdited(padID) -- Should not be 0
                                 -> appendText(padID, "hello")
                                 -> getText(padID) -- Should be "hello worldhello"
+                                -> getText(padID, rev=2) - should return "hello world"
                                  -> setHTML(padID) -- Should fail on invalid HTML
                                   -> setHTML(padID) *3 -- Should fail on invalid HTML
                                    -> getHTML(padID) -- Should return HTML close to posted HTML
@@ -399,6 +400,22 @@ describe(__filename, function () {
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
       assert.equal(res.body.data.text, `${text}hello\n`);
+    });
+
+    it('getText of old revision', async function () {
+      let res = await agent.get(`${endPoint('getRevisionsCount')}&padID=${testPadId}`)
+          .expect(200)
+          .expect('Content-Type', /json/);
+      assert.equal(res.body.code, 0);
+      const rev = res.body.data.revisions;
+      assert(rev != null);
+      assert(Number.isInteger(rev));
+      assert(rev > 0);
+      res = await agent.get(`${endPoint('getText')}&padID=${testPadId}&rev=${rev - 1}`)
+          .expect(200)
+          .expect('Content-Type', /json/);
+      assert.equal(res.body.code, 0);
+      assert.equal(res.body.data.text, `${text}\n`);
     });
 
     it('Sets the HTML of a Pad attempting to pass ugly HTML', async function () {

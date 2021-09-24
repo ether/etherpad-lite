@@ -8,6 +8,8 @@
   * `padOptions.showChat`
   * `padOptions.userColor`
   * `padOptions.userName`
+* Fixed the return value of the `getText` HTTP API when called with a specific
+  revision.
 * Fixed a potential attribute pool corruption bug with `copyPadWithoutHistory`.
 * Mappings created by the `createGroupIfNotExistsFor` HTTP API are now removed
   from the database when the group is deleted.

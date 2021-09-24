@@ -172,7 +172,9 @@ exports.getText = async (padID, rev) => {
     }
 
     // get the text of this revision
-    const text = await pad.getInternalRevisionAText(rev);
+    // getInternalRevisionAText() returns an atext object but we only want the .text inside it.
+    // Details at https://github.com/ether/etherpad-lite/issues/5073
+    const {text} = await pad.getInternalRevisionAText(rev);
     return {text};
   }
 
