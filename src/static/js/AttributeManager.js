@@ -103,12 +103,12 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     const markerWidth = this.lineHasMarker(row) ? 1 : 0;
     if (lineLength - markerWidth < 0) throw new Error(`line ${row} has negative length`);
 
-    const startCol = row === start[0] ? start[1] : markerWidth;
-    if (startCol - markerWidth < 0) throw new RangeError('selection starts before line start');
+    if (start[1] < 0) throw new RangeError('selection starts at negative column');
+    const startCol = Math.max(markerWidth, row === start[0] ? start[1] : 0);
     if (startCol > lineLength) throw new RangeError('selection starts after line end');
 
-    const endCol = row === end[0] ? end[1] : lineLength;
-    if (endCol - markerWidth < 0) throw new RangeError('selection ends before line start');
+    if (end[1] < 0) throw new RangeError('selection ends at negative column');
+    const endCol = Math.max(markerWidth, row === end[0] ? end[1] : lineLength);
     if (endCol > lineLength) throw new RangeError('selection ends after line end');
     if (startCol > endCol) throw new RangeError('selection ends before it starts');
 
