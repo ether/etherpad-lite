@@ -114,13 +114,12 @@ describe(__filename, function () {
                                 -> getLastEdited(padID) -- Should not be 0
                                 -> appendText(padID, "hello")
                                 -> getText(padID) -- Should be "hello worldhello"
-                                -> getText(padID, rev) -- Should be "hello world
+                                -> appendText(padID, "hello")
+                                -> getText(padID, rev) - should return "hello worldhello"
                                  -> setHTML(padID) -- Should fail on invalid HTML
                                   -> setHTML(padID) *3 -- Should fail on invalid HTML
                                    -> getHTML(padID) -- Should return HTML close to posted HTML
                                     -> createPad -- Tries to create pads with bad url characters
-
-
 
   */
 
