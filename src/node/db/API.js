@@ -171,8 +171,12 @@ exports.getText = async (padID, rev) => {
     }
 
     // get the text of this revision
+    // getInternalRevisionAText method returns a text.text and attribs so we ensure we only
+    // return the text - details at https://github.com/ether/etherpad-lite/issues/5073
     const text = await pad.getInternalRevisionAText(rev);
-    return {text};
+    return {
+      text: text.text
+    };
   }
 
   // the client wants the latest text, lets return it to him
