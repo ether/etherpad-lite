@@ -589,13 +589,11 @@ describe(__filename, function () {
   });
 
   describe('appendText', function () {
-    it('Append text to a pad Id', function (done) {
-      agent.get(`${endPoint('appendText', '1.2.13')}&padID=${testPadId}&text=hello`)
-          .expect((res) => {
-            if (res.body.code !== 0) throw new Error('Pad Append Text failed');
-          })
-          .expect('Content-Type', /json/)
-          .expect(200, done);
+    it('Append text to a pad Id', async function () {
+      const res = await agent.get(`${endPoint('appendText', '1.2.13')}&padID=${testPadId}&text=hello`)
+          .expect(200)
+          .expect('Content-Type', /json/);
+      assert.equal(res.body.code, 0);
     });
   });
 
