@@ -599,16 +599,12 @@ describe(__filename, function () {
 
 
   describe('getText', function () {
-    it('Gets text on a pad Id at a given revision', function (done) {
-      agent.get(`${endPoint('getText')}&padID=${testPadId}&rev=3`)
-          .expect((res) => {
-            if (res.body.code !== 0) throw new Error('Pad Get Text failed');
-            if (res.body.data.text !== `${text}hello\n`) {
-              throw new Error('getText Revision not returning correct contents');
-            }
-          })
-          .expect('Content-Type', /json/)
-          .expect(200, done);
+    it('Gets text on a pad Id at a given revision', async function () {
+      const res = await agent.get(`${endPoint('getText')}&padID=${testPadId}&rev=3`)
+          .expect(200)
+          .expect('Content-Type', /json/);
+      assert.equal(res.body.code, 0);
+      assert.equal(res.body.data.text, `${text}hello\n`);
     });
   });
 
