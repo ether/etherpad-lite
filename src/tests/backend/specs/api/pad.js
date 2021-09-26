@@ -588,7 +588,7 @@ describe(__filename, function () {
     });
   });
 
-  describe('appendText', function () {
+  describe('appendText again', function () {
     it('Append text to a pad Id', async function () {
       const res = await agent.get(`${endPoint('appendText', '1.2.13')}&padID=${testPadId}&text=hello`)
           .expect(200)
