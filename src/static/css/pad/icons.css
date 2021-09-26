@@ -55,9 +55,6 @@
 }
 .buttonicon-clearauthorship:before {
   content: "\e843";
-  left: -9px;
-  position: absolute;
-  top: -9px;
 }
 .buttonicon-settings:before {
   content: "\e851";
@@ -87,7 +84,7 @@
 .ep_font_color .buttonicon:before { content: '\e84e' !important; border-bottom: solid 2px #e42a2a;  }
 
 .buttonicon-underline:before {
-  top: -8px;
+  top: -9px;
   left: -8px;
   position: absolute;
 }
