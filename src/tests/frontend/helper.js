@@ -132,9 +132,11 @@ const helper = {};
     if (opts.padPrefs) {
       helper.setPadPrefCookie(opts.padPrefs);
     }
+    const $loading = helper.padChrome$('#editorloadingbox');
+    const $container = helper.padChrome$('#editorcontainer');
     try {
       await helper.waitForPromise(
-          () => !$iframe.contents().find('#editorloadingbox').is(':visible'), 10000);
+          () => !$loading.is(':visible') && $container.hasClass('initialized'), 10000);
     } catch (err) {
       if (opts._retry++ >= 4) throw new Error('Pad never loaded');
       return await helper.aNewPad(opts);
