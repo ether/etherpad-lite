@@ -598,7 +598,7 @@ describe(__filename, function () {
   });
 
 
-  describe('getText', function () {
+  describe('getText of old revision', function () {
     it('Gets text on a pad Id at a given revision', async function () {
       const res = await agent.get(`${endPoint('getText')}&padID=${testPadId}&rev=3`)
           .expect(200)
