@@ -986,9 +986,7 @@ exports.textLinesMutator = (lines) => {
  * Apply operations to other operations.
  *
  * @param {string} in1 - first Op string
- * @param {number} idx1 - integer where 1st iterator should start
  * @param {string} in2 - second Op string
- * @param {number} idx2 - integer where 2nd iterator should start
  * @param {Function} func - Callback that applies an operation to another operation. Will be called
  *     multiple times depending on the number of operations in `in1` and `in2`. `func` has signature
  *     `f(op1, op2, opOut)`:
@@ -1005,9 +1003,9 @@ exports.textLinesMutator = (lines) => {
  *         other out), `opOut.opcode` MUST be set to the empty string.
  * @returns {string} the integrated changeset
  */
-exports.applyZip = (in1, idx1, in2, idx2, func) => {
-  const iter1 = exports.opIterator(in1, idx1);
-  const iter2 = exports.opIterator(in2, idx2);
+exports.applyZip = (in1, in2, func) => {
+  const iter1 = exports.opIterator(in1);
+  const iter2 = exports.opIterator(in2);
   const assem = exports.smartOpAssembler();
   const op1 = exports.newOp();
   const op2 = exports.newOp();
@@ -1315,7 +1313,7 @@ exports._slicerZipperFunc = (attOp, csOp, opOut, pool) => {
 exports.applyToAttribution = (cs, astr, pool) => {
   const unpacked = exports.unpack(cs);
 
-  return exports.applyZip(astr, 0, unpacked.ops, 0,
+  return exports.applyZip(astr, unpacked.ops,
       (op1, op2, opOut) => exports._slicerZipperFunc(op1, op2, opOut, pool));
 };
 
@@ -1486,7 +1484,7 @@ exports.compose = (cs1, cs2, pool) => {
   const bankIter2 = exports.stringIterator(unpacked2.charBank);
   const bankAssem = exports.stringAssembler();
 
-  const newOps = exports.applyZip(unpacked1.ops, 0, unpacked2.ops, 0, (op1, op2, opOut) => {
+  const newOps = exports.applyZip(unpacked1.ops, unpacked2.ops, (op1, op2, opOut) => {
     const op1code = op1.opcode;
     const op2code = op2.opcode;
     if (op1code === '+' && op2code === '-') {
@@ -2265,7 +2263,7 @@ exports.follow = (cs1, cs2, reverseInsertOrder, pool) => {
 
   const hasInsertFirst = exports.attributeTester(['insertorder', 'first'], pool);
 
-  const newOps = exports.applyZip(unpacked1.ops, 0, unpacked2.ops, 0, (op1, op2, opOut) => {
+  const newOps = exports.applyZip(unpacked1.ops, unpacked2.ops, (op1, op2, opOut) => {
     if (op1.opcode === '+' || op2.opcode === '+') {
       let whichToDo;
       if (op2.opcode !== '+') {
@@ -2437,7 +2435,7 @@ exports.composeWithDeletions = (cs1, cs2, pool) => {
   const bankIter2 = exports.stringIterator(unpacked2.charBank);
   const bankAssem = exports.stringAssembler();
 
-  const newOps = exports.applyZip(unpacked1.ops, 0, unpacked2.ops, 0, (op1, op2, opOut) => {
+  const newOps = exports.applyZip(unpacked1.ops, unpacked2.ops, (op1, op2, opOut) => {
     const op1code = op1.opcode;
     const op2code = op2.opcode;
     if (op1code === '+' && op2code === '-') {
