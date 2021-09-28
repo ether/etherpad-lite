@@ -15,7 +15,6 @@
 
 html {
   font-size: 15px;
-  line-height: 20px;
   color: #3e3e3e;
 }
 
@@ -72,6 +71,9 @@ input {
   .hide-for-mobile { display: none; }
 }
 
-#importmessagepermission {
-  display: none;
+.etherpadBrand{
+  width:20%;
+  max-width:100px;
+  margin-left:auto;
+  margin-right:auto;
 }

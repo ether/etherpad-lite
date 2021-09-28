@@ -42,9 +42,7 @@
 	"pad.colorpicker.cancel": "取消",
 	"pad.loading": "载入中……",
 	"pad.noCookie": "无法找到Cookie。请在您的浏览器中允许Cookie！您的会话和设置不会在访问时保存。这可能是由于Etherpad包含在某些浏览器中的iFrame中。请确保Etherpad与父iFrame位于同一子域/域上",
-	"pad.passwordRequired": "您需要密码才能访问这个记事本",
 	"pad.permissionDenied": "您没有访问这个记事本的权限",
-	"pad.wrongPassword": "您的密码错了",
 	"pad.settings.padSettings": "记事本设置",
 	"pad.settings.myView": "我的视窗",
 	"pad.settings.stickychat": "总是显示聊天屏幕",
@@ -135,9 +133,6 @@
 	"pad.savedrevs.timeslider": "您可以使用时间滑块查阅已保存的版本",
 	"pad.userlist.entername": "输入您的姓名",
 	"pad.userlist.unnamed": "匿名",
-	"pad.userlist.guest": "访客",
-	"pad.userlist.deny": "拒绝",
-	"pad.userlist.approve": "批准",
 	"pad.editbar.clearcolors": "清除整个文档的作者颜色吗？此操作无法撤消",
 	"pad.impexp.importbutton": "现在导入",
 	"pad.impexp.importing": "正在导入...",
@@ -148,6 +143,5 @@
 	"pad.impexp.importfailed": "导入失败",
 	"pad.impexp.copypaste": "请复制粘贴",
 	"pad.impexp.exportdisabled": "{{type}} 格式的导出被禁用。有关详情，请与您的系统管理员联系。",
-	"pad.impexp.maxFileSize": "文件太大。 请与您的站点管理员联系以增加允许导入的文件大小",
-	"pad.impexp.permission": "因为你从未为在此记事本做出任何贡献，导入已被禁用。在导入之前，请至少贡献一次"
+	"pad.impexp.maxFileSize": "文件太大。 请与您的站点管理员联系以增加允许导入的文件大小"
 }

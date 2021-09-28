@@ -24,6 +24,31 @@
  *
  * This is useful, for example, when running in a Docker container.
  *
+ * DETAILED RULES:
+ *   - If the environment variable is set to the string "true" or "false", the
+ *     value becomes Boolean true or false.
+ *   - If the environment variable is set to the string "null", the value
+ *     becomes null.
+ *   - If the environment variable is set to the string "undefined", the setting
+ *     is removed entirely, except when used as the member of an array in which
+ *     case it becomes null.
+ *   - If the environment variable is set to a string representation of a finite
+ *     number, the string is converted to that number.
+ *   - If the environment variable is set to any other string, including the
+ *     empty string, the value is that string.
+ *   - If the environment variable is unset and a default value is provided, the
+ *     value is as if the environment variable was set to the provided default:
+ *       - "${UNSET_VAR:}" becomes the empty string.
+ *       - "${UNSET_VAR:foo}" becomes the string "foo".
+ *       - "${UNSET_VAR:true}" and "${UNSET_VAR:false}" become true and false.
+ *       - "${UNSET_VAR:null}" becomes null.
+ *       - "${UNSET_VAR:undefined}" causes the setting to be removed (or be set
+ *         to null, if used as a member of an array).
+ *   - If the environment variable is unset and no default value is provided,
+ *     the value becomes null. THIS BEHAVIOR MAY CHANGE IN A FUTURE VERSION OF
+ *     ETHERPAD; if you want the default value to be null, you should explicitly
+ *     specify "null" as the default value.
+ *
  * EXAMPLE:
  *    "port":     "${PORT:9001}"
  *    "minify":   "${MINIFY}"
@@ -80,10 +105,12 @@
   "title": "${TITLE:Etherpad}",
 
   /*
-   * favicon default name
-   * alternatively, set up a fully specified Url to your own favicon
+   * Pathname of the favicon you want to use. If null, the skin's favicon is
+   * used if one is provided by the skin, otherwise the default Etherpad favicon
+   * is used. If this is a relative path it is interpreted as relative to the
+   * Etherpad root directory.
    */
-  "favicon": "${FAVICON:favicon.ico}",
+  "favicon": "${FAVICON:null}",
 
   /*
    * Skin name.
@@ -171,7 +198,7 @@
    *
    *
    * Database specific settings are dependent on dbType, and go in dbSettings.
-   * Remember that since Etherpad 1.6.0 you can also store these informations in
+   * Remember that since Etherpad 1.6.0 you can also store this information in
    * credentials.json.
    *
    * For a complete list of the supported drivers, please refer to:
@@ -180,12 +207,12 @@
 
   "dbType": "${DB_TYPE:dirty}",
   "dbSettings": {
-    "host":     "${DB_HOST}",
-    "port":     "${DB_PORT}",
-    "database": "${DB_NAME}",
-    "user":     "${DB_USER}",
-    "password": "${DB_PASS}",
-    "charset":  "${DB_CHARSET}",
+    "host":     "${DB_HOST:undefined}",
+    "port":     "${DB_PORT:undefined}",
+    "database": "${DB_NAME:undefined}",
+    "user":     "${DB_USER:undefined}",
+    "password": "${DB_PASS:undefined}",
+    "charset":  "${DB_CHARSET:undefined}",
     "filename": "${DB_FILENAME:var/dirty.db}"
   },
 
@@ -261,12 +288,6 @@
   "editOnly": "${EDIT_ONLY:false}",
 
   /*
-   * If set to true, those users who have a valid session will automatically be
-   * granted access to password protected pads.
-   */
-  "sessionNoPassword": "${SESSION_NO_PASSWORD:false}",
-
-  /*
    * If true, all css & js will be minified before sending to the client.
    *
    * This will improve the loading performance massively, but makes it difficult
@@ -289,7 +310,7 @@
    * it to null disables Abiword and will only allow plain text and HTML
    * import/exports.
    */
-  "abiword": "${ABIWORD}",
+  "abiword": "${ABIWORD:null}",
 
   /*
    * This is the absolute path to the soffice executable.
@@ -297,7 +318,7 @@
    * LibreOffice can be used in lieu of Abiword to export pads.
    * Setting it to null disables LibreOffice exporting.
    */
-  "soffice": "${SOFFICE}",
+  "soffice": "${SOFFICE:null}",
 
   /*
    * Path to the Tidy executable.
@@ -305,7 +326,7 @@
    * Tidy is used to improve the quality of exported pads.
    * Setting it to null disables Tidy.
    */
-  "tidyHtml": "${TIDY_HTML}",
+  "tidyHtml": "${TIDY_HTML:null}",
 
   /*
    * Allow import of file types other than the supported ones:
@@ -335,6 +356,24 @@
    * instead of the reverse proxy's IP.
    */
   "trustProxy": "${TRUST_PROXY:false}",
+
+  /*
+   * Settings controlling the session cookie issued by Etherpad.
+   */
+  "cookie": {
+    /*
+     * Value of the SameSite cookie property. "Lax" is recommended unless
+     * Etherpad will be embedded in an iframe from another site, in which case
+     * this must be set to "None". Note: "None" will not work (the browser will
+     * not send the cookie to Etherpad) unless https is used to access Etherpad
+     * (either directly or via a reverse proxy with "trustProxy" set to true).
+     *
+     * "Strict" is not recommended because it has few security benefits but
+     * significant usability drawbacks vs. "Lax". See
+     * https://stackoverflow.com/q/41841880 for discussion.
+     */
+    "sameSite": "${COOKIE_SAME_SITE:Lax}"
+  },
 
   /*
    * Privacy: disable IP logging
@@ -391,10 +430,22 @@
   },
 
   /*
-   * Users for basic authentication.
+   * User accounts. These accounts are used by:
+   *   - default HTTP basic authentication if no plugin handles authentication
+   *   - some but not all authentication plugins
+   *   - some but not all authorization plugins
    *
-   * is_admin = true gives access to /admin.
-   * If you do not uncomment this, /admin will not be available!
+   * User properties:
+   *   - password: The user's password. Some authentication plugins will ignore
+   *     this.
+   *   - is_admin: true gives access to /admin. Defaults to false. If you do not
+   *     uncomment this, /admin will not be available!
+   *   - readOnly: If true, this user will not be able to create new pads or
+   *     modify existing pads. Defaults to false.
+   *   - canCreate: If this is true and readOnly is false, this user can create
+   *     new pads. Defaults to true.
+   *
+   * Authentication and authorization plugins may define additional properties.
    *
    * WARNING: passwords should not be stored in plaintext in this file.
    *          If you want to mitigate this, please install ep_hash_auth and
@@ -405,13 +456,13 @@
     "admin": {
       // 1) "password" can be replaced with "hash" if you install ep_hash_auth
       // 2) please note that if password is null, the user will not be created
-      "password": "${ADMIN_PASSWORD}",
+      "password": "${ADMIN_PASSWORD:null}",
       "is_admin": true
     },
     "user": {
       // 1) "password" can be replaced with "hash" if you install ep_hash_auth
       // 2) please note that if password is null, the user will not be created
-      "password": "${USER_PASSWORD}",
+      "password": "${USER_PASSWORD:null}",
       "is_admin": false
     }
   },
@@ -421,12 +472,28 @@
    */
   "socketTransportProtocols" : ["xhr-polling", "jsonp-polling", "htmlfile"],
 
+  "socketIo": {
+    /*
+     * Maximum permitted client message size (in bytes). All messages from
+     * clients that are larger than this will be rejected. Large values make it
+     * possible to paste large amounts of text, and plugins may require a larger
+     * value to work properly, but increasing the value increases susceptibility
+     * to denial of service attacks (malicious clients can exhaust memory).
+     */
+    "maxHttpBufferSize": 10000
+  },
+
   /*
    * Allow Load Testing tools to hit the Etherpad Instance.
    *
    * WARNING: this will disable security on the instance.
    */
   "loadTest": "${LOAD_TEST:false}",
+
+  /**
+  * Disable dump of objects preventing a clean exit
+  */
+  "dumpOnUncleanExit": false,
 
   /*
    * Disable indentation on new line when previous line ends with some special
@@ -461,6 +528,22 @@
    * File size is specified in bytes. Default is 50 MB.
    */
   "importMaxFileSize": "${IMPORT_MAX_FILE_SIZE:52428800}", // 50 * 1024 * 1024
+
+  /*
+   * From Etherpad 1.8.5 onwards, when Etherpad is in production mode commits from individual users are rate limited
+   *
+   * The default is to allow at most 10 changes per IP in a 1 second window.
+   * After that the change is rejected.
+   *
+   * See https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#websocket-single-connection-prevent-flooding for more options
+   */
+  "commitRateLimiting": {
+    // duration of the rate limit window (seconds)
+    "duration": "${COMMIT_RATE_LIMIT_DURATION:1}",
+
+    // maximum number of changes per IP to allow during the rate limit window
+    "points": "${COMMIT_RATE_LIMIT_POINTS:10}"
+  },
 
   /*
    * Toolbar buttons configuration.

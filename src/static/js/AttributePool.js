@@ -1,3 +1,4 @@
+'use strict';
 /**
  * This code represents the Attribute Pool Object of the original Etherpad.
  * 90% of the code is still like in the original Etherpad
@@ -28,28 +29,28 @@
   used to reference Attributes in Changesets.
 */
 
-var AttributePool = function () {
+const AttributePool = function () {
   this.numToAttrib = {}; // e.g. {0: ['foo','bar']}
   this.attribToNum = {}; // e.g. {'foo,bar': 0}
   this.nextNum = 0;
 };
 
 AttributePool.prototype.putAttrib = function (attrib, dontAddIfAbsent) {
-  var str = String(attrib);
+  const str = String(attrib);
   if (str in this.attribToNum) {
     return this.attribToNum[str];
   }
   if (dontAddIfAbsent) {
     return -1;
   }
-  var num = this.nextNum++;
+  const num = this.nextNum++;
   this.attribToNum[str] = num;
   this.numToAttrib[num] = [String(attrib[0] || ''), String(attrib[1] || '')];
   return num;
 };
 
 AttributePool.prototype.getAttrib = function (num) {
-  var pair = this.numToAttrib[num];
+  const pair = this.numToAttrib[num];
   if (!pair) {
     return pair;
   }
@@ -57,20 +58,20 @@ AttributePool.prototype.getAttrib = function (num) {
 };
 
 AttributePool.prototype.getAttribKey = function (num) {
-  var pair = this.numToAttrib[num];
+  const pair = this.numToAttrib[num];
   if (!pair) return '';
   return pair[0];
 };
 
 AttributePool.prototype.getAttribValue = function (num) {
-  var pair = this.numToAttrib[num];
+  const pair = this.numToAttrib[num];
   if (!pair) return '';
   return pair[1];
 };
 
 AttributePool.prototype.eachAttrib = function (func) {
-  for (var n in this.numToAttrib) {
-    var pair = this.numToAttrib[n];
+  for (const n of Object.keys(this.numToAttrib)) {
+    const pair = this.numToAttrib[n];
     func(pair[0], pair[1]);
   }
 };
@@ -78,7 +79,7 @@ AttributePool.prototype.eachAttrib = function (func) {
 AttributePool.prototype.toJsonable = function () {
   return {
     numToAttrib: this.numToAttrib,
-    nextNum: this.nextNum
+    nextNum: this.nextNum,
   };
 };
 
@@ -86,7 +87,7 @@ AttributePool.prototype.fromJsonable = function (obj) {
   this.numToAttrib = obj.numToAttrib;
   this.nextNum = obj.nextNum;
   this.attribToNum = {};
-  for (var n in this.numToAttrib) {
+  for (const n of Object.keys(this.numToAttrib)) {
     this.attribToNum[String(this.numToAttrib[n])] = Number(n);
   }
   return this;

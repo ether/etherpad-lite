@@ -1,3 +1,4 @@
+'use strict';
 /**
  * The Pad Manager is a Factory for pad Objects
  */
@@ -18,9 +19,9 @@
  * limitations under the License.
  */
 
-var customError = require("../utils/customError");
-var Pad = require("../db/Pad").Pad;
-var db = require("./DB");
+const CustomError = require('../utils/customError');
+const Pad = require('../db/Pad').Pad;
+const db = require('./DB');
 
 /**
  * A cache of all loaded Pads.
@@ -33,14 +34,14 @@ var db = require("./DB");
  * If this is needed in other places, it would be wise to make this a prototype
  * that's defined somewhere more sensible.
  */
-var globalPads = {
-    get: function(name) { return this[':'+name]; },
-    set: function(name, value) {
-      this[':'+name] = value;
-    },
-    remove: function(name) {
-      delete this[':'+name];
-    }
+const globalPads = {
+  get(name) { return this[`:${name}`]; },
+  set(name, value) {
+    this[`:${name}`] = value;
+  },
+  remove(name) {
+    delete this[`:${name}`];
+  },
 };
 
 /**
@@ -48,24 +49,24 @@ var globalPads = {
  *
  * Updated without db access as new pads are created/old ones removed.
  */
-let padList = {
+const padList = {
   list: new Set(),
   cachedList: undefined,
   initiated: false,
-  init: async function() {
-    let dbData = await db.findKeys("pad:*", "*:*:*");
+  async init() {
+    const dbData = await db.findKeys('pad:*', '*:*:*');
 
     if (dbData != null) {
       this.initiated = true;
 
-      for (let val of dbData) {
-        this.addPad(val.replace(/^pad:/,""), false);
+      for (const val of dbData) {
+        this.addPad(val.replace(/^pad:/, ''), false);
       }
     }
 
     return this;
   },
-  load: async function() {
+  async load() {
     if (!this.initiated) {
       return this.init();
     }
@@ -75,7 +76,7 @@ let padList = {
   /**
    * Returns all pads in alphabetical order as array.
    */
-  getPads: async function() {
+  async getPads() {
     await this.load();
 
     if (!this.cachedList) {
@@ -84,7 +85,7 @@ let padList = {
 
     return this.cachedList;
   },
-  addPad: function(name) {
+  addPad(name) {
     if (!this.initiated) return;
 
     if (!this.list.has(name)) {
@@ -92,14 +93,14 @@ let padList = {
       this.cachedList = undefined;
     }
   },
-  removePad: function(name) {
+  removePad(name) {
     if (!this.initiated) return;
 
     if (this.list.has(name)) {
       this.list.delete(name);
       this.cachedList = undefined;
     }
-  }
+  },
 };
 
 // initialises the all-knowing data structure
@@ -109,23 +110,22 @@ let padList = {
  * @param id A String with the id of the pad
  * @param {Function} callback
  */
-exports.getPad = async function(id, text)
-{
+exports.getPad = async (id, text) => {
   // check if this is a valid padId
   if (!exports.isValidPadId(id)) {
-    throw new customError(id + " is not a valid padId", "apierror");
+    throw new CustomError(`${id} is not a valid padId`, 'apierror');
   }
 
   // check if this is a valid text
   if (text != null) {
     // check if text is a string
-    if (typeof text != "string") {
-      throw new customError("text is not a string", "apierror");
+    if (typeof text !== 'string') {
+      throw new CustomError('text is not a string', 'apierror');
     }
 
     // check if text is less than 100k chars
     if (text.length > 100000) {
-      throw new customError("text must be less than 100k chars", "apierror");
+      throw new CustomError('text must be less than 100k chars', 'apierror');
     }
   }
 
@@ -139,28 +139,26 @@ exports.getPad = async function(id, text)
   // try to load pad
   pad = new Pad(id);
 
-  // initalize the pad
+  // initialize the pad
   await pad.init(text);
   globalPads.set(id, pad);
   padList.addPad(id);
 
   return pad;
-}
+};
 
-exports.listAllPads = async function()
-{
-  let padIDs = await padList.getPads();
+exports.listAllPads = async () => {
+  const padIDs = await padList.getPads();
 
-  return { padIDs };
-}
+  return {padIDs};
+};
 
 // checks if a pad exists
-exports.doesPadExist = async function(padId)
-{
-  let value = await db.get("pad:" + padId);
+exports.doesPadExist = async (padId) => {
+  const value = await db.get(`pad:${padId}`);
 
   return (value != null && value.atext);
-}
+};
 
 // alias for backwards compatibility
 exports.doesPadExists = exports.doesPadExist;
@@ -171,43 +169,40 @@ exports.doesPadExists = exports.doesPadExist;
  */
 const padIdTransforms = [
   [/\s+/g, '_'],
-  [/:+/g, '_']
+  [/:+/g, '_'],
 ];
 
 // returns a sanitized padId, respecting legacy pad id formats
-exports.sanitizePadId = async function sanitizePadId(padId) {
+exports.sanitizePadId = async (padId) => {
   for (let i = 0, n = padIdTransforms.length; i < n; ++i) {
-    let exists = await exports.doesPadExist(padId);
+    const exists = await exports.doesPadExist(padId);
 
     if (exists) {
       return padId;
     }
 
-    let [from, to] = padIdTransforms[i];
+    const [from, to] = padIdTransforms[i];
 
     padId = padId.replace(from, to);
   }
 
   // we're out of possible transformations, so just return it
   return padId;
-}
+};
 
-exports.isValidPadId = function(padId)
-{
-  return /^(g.[a-zA-Z0-9]{16}\$)?[^$]{1,50}$/.test(padId);
-}
+exports.isValidPadId = (padId) => /^(g.[a-zA-Z0-9]{16}\$)?[^$]{1,50}$/.test(padId);
 
 /**
  * Removes the pad from database and unloads it.
  */
-exports.removePad = function(padId) {
-  db.remove("pad:" + padId);
+exports.removePad = async (padId) => {
+  const p = db.remove(`pad:${padId}`);
   exports.unloadPad(padId);
   padList.removePad(padId);
-}
+  await p;
+};
 
 // removes a pad from the cache
-exports.unloadPad = function(padId)
-{
+exports.unloadPad = (padId) => {
   globalPads.remove(padId);
-}
+};

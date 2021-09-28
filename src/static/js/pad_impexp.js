@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -20,262 +22,162 @@
  * limitations under the License.
  */
 
-var padimpexp = (function()
-{
+const padimpexp = (() => {
+  let pad;
 
-  ///// import
-  var currentImportTimer = null;
-
-  function addImportFrames()
-  {
-    $("#import .importframe").remove();
-    var iframe = $('<iframe style="display: none;" name="importiframe" class="importframe"></iframe>');
+  // /// import
+  const addImportFrames = () => {
+    $('#import .importframe').remove();
+    const iframe = $('<iframe>')
+        .css('display', 'none')
+        .attr('name', 'importiframe')
+        .addClass('importframe');
     $('#import').append(iframe);
-  }
+  };
 
-  function fileInputUpdated()
-  {
+  const fileInputUpdated = () => {
     $('#importsubmitinput').addClass('throbbold');
     $('#importformfilediv').addClass('importformenabled');
     $('#importsubmitinput').removeAttr('disabled');
     $('#importmessagefail').fadeOut('fast');
-  }
+  };
 
-  function fileInputSubmit()
-  {
-    $('#importmessagefail').fadeOut("fast");
-    var ret = window.confirm(html10n.get("pad.impexp.confirmimport"));
-    if (ret)
-    {
-      currentImportTimer = window.setTimeout(function()
-      {
-        if (!currentImportTimer)
-        {
-          return;
-        }
-        currentImportTimer = null;
-        importFailed("Request timed out.");
-        importDone();
-      }, 25000); // time out after some number of seconds
-      $('#importsubmitinput').attr(
-      {
-        disabled: true
-      }).val(html10n.get("pad.impexp.importing"));
-
-      window.setTimeout(function()
-      {
-        $('#importfileinput').attr(
-        {
-          disabled: true
-        });
-      }, 0);
-      $('#importarrow').stop(true, true).hide();
-      $('#importstatusball').show();
-    }
-    return ret;
-  }
-
-  function importFailed(msg)
-  {
-    importErrorMessage(msg);
-  }
-
-  function importDone()
-  {
-    $('#importsubmitinput').removeAttr('disabled').val(html10n.get("pad.impexp.importbutton"));
-    window.setTimeout(function()
-    {
-      $('#importfileinput').removeAttr('disabled');
-    }, 0);
-    $('#importstatusball').hide();
-    importClearTimeout();
-    addImportFrames();
-  }
-
-  function importClearTimeout()
-  {
-    if (currentImportTimer)
-    {
-      window.clearTimeout(currentImportTimer);
-      currentImportTimer = null;
-    }
-  }
-
-  function importErrorMessage(status)
-  {
-    var msg="";
-
-    if(status === "convertFailed"){
-      msg = html10n.get("pad.impexp.convertFailed");
-    } else if(status === "uploadFailed"){
-      msg = html10n.get("pad.impexp.uploadFailed");
-    } else if(status === "padHasData"){
-      msg = html10n.get("pad.impexp.padHasData");
-    } else if(status === "maxFileSize"){
-      msg = html10n.get("pad.impexp.maxFileSize");
-    } else if(status === "permission"){
-      msg = html10n.get("pad.impexp.permission");
-    }
-
-    function showError(fade)
-    {
-      $('#importmessagefail').html('<strong style="color: red">'+html10n.get('pad.impexp.importfailed')+':</strong> ' + (msg || html10n.get('pad.impexp.copypaste','')))[(fade ? "fadeIn" : "show")]();
-    }
-
-    if ($('#importexport .importmessage').is(':visible'))
-    {
-      $('#importmessagesuccess').fadeOut("fast");
-      $('#importmessagefail').fadeOut("fast", function()
-      {
-        showError(true);
+  const fileInputSubmit = function (e) {
+    e.preventDefault();
+    $('#importmessagefail').fadeOut('fast');
+    if (!window.confirm(html10n.get('pad.impexp.confirmimport'))) return;
+    $('#importsubmitinput').attr({disabled: true}).val(html10n.get('pad.impexp.importing'));
+    window.setTimeout(() => $('#importfileinput').attr({disabled: true}), 0);
+    $('#importarrow').stop(true, true).hide();
+    $('#importstatusball').show();
+    (async () => {
+      const {code, message, data: {directDatabaseAccess} = {}} = await $.ajax({
+        url: `${window.location.href.split('?')[0].split('#')[0]}/import`,
+        method: 'POST',
+        data: new FormData(this),
+        processData: false,
+        contentType: false,
+        dataType: 'json',
+        timeout: 25000,
+      }).catch((err) => {
+        if (err.responseJSON) return err.responseJSON;
+        return {code: 2, message: 'Unknown import error'};
       });
-    }
-    else
-    {
+      if (code !== 0) {
+        importErrorMessage(message);
+      } else {
+        $('#import_export').removeClass('popup-show');
+        if (directDatabaseAccess) pad.switchToPad(clientVars.padId);
+      }
+      $('#importsubmitinput').removeAttr('disabled').val(html10n.get('pad.impexp.importbutton'));
+      window.setTimeout(() => $('#importfileinput').removeAttr('disabled'), 0);
+      $('#importstatusball').hide();
+      addImportFrames();
+    })();
+  };
+
+  const importErrorMessage = (status) => {
+    const known = [
+      'convertFailed',
+      'uploadFailed',
+      'padHasData',
+      'maxFileSize',
+      'permission',
+    ];
+    const msg = html10n.get(`pad.impexp.${known.indexOf(status) !== -1 ? status : 'copypaste'}`);
+
+    const showError = (fade) => {
+      const popup = $('#importmessagefail').empty()
+          .append($('<strong>')
+              .css('color', 'red')
+              .text(`${html10n.get('pad.impexp.importfailed')}: `))
+          .append(document.createTextNode(msg));
+      popup[(fade ? 'fadeIn' : 'show')]();
+    };
+
+    if ($('#importexport .importmessage').is(':visible')) {
+      $('#importmessagesuccess').fadeOut('fast');
+      $('#importmessagefail').fadeOut('fast', () => showError(true));
+    } else {
       showError();
     }
-  }
+  };
 
-  function importSuccessful(token)
-  {
-    $.ajax(
-    {
-      type: 'post',
-      url: '/ep/pad/impexp/import2',
-      data: {
-        token: token,
-        padId: pad.getPadId()
-      },
-      success: importApplicationSuccessful,
-      error: importApplicationFailed,
-      timeout: 25000
-    });
-    addImportFrames();
-  }
+  // /// export
 
-  function importApplicationFailed(xhr, textStatus, errorThrown)
-  {
-    importErrorMessage("Error during conversion.");
-    importDone();
-  }
-
-  ///// export
-
-  function cantExport()
-  {
-    var type = $(this);
-    if (type.hasClass("exporthrefpdf"))
-    {
-      type = "PDF";
+  function cantExport() {
+    let type = $(this);
+    if (type.hasClass('exporthrefpdf')) {
+      type = 'PDF';
+    } else if (type.hasClass('exporthrefdoc')) {
+      type = 'Microsoft Word';
+    } else if (type.hasClass('exporthrefodt')) {
+      type = 'OpenDocument';
+    } else {
+      type = 'this file';
     }
-    else if (type.hasClass("exporthrefdoc"))
-    {
-      type = "Microsoft Word";
-    }
-    else if (type.hasClass("exporthrefodt"))
-    {
-      type = "OpenDocument";
-    }
-    else
-    {
-      type = "this file";
-    }
-    alert(html10n.get("pad.impexp.exportdisabled", {type:type}));
+    alert(html10n.get('pad.impexp.exportdisabled', {type}));
     return false;
   }
 
-  /////
-  var pad = undefined;
-  var self = {
-    init: function(_pad)
-    {
+  // ///
+  const self = {
+    init: (_pad) => {
       pad = _pad;
 
-      //get /p/padname
+      // get /p/padname
       // if /p/ isn't available due to a rewrite we use the clientVars padId
-      var pad_root_path = new RegExp(/.*\/p\/[^\/]+/).exec(document.location.pathname) || clientVars.padId;
-      //get http://example.com/p/padname without Params
-      var pad_root_url = document.location.protocol + '//' + document.location.host + document.location.pathname;
+      const padRootPath = /.*\/p\/[^/]+/.exec(document.location.pathname) || clientVars.padId;
 
-      //i10l buttom import
-      $('#importsubmitinput').val(html10n.get("pad.impexp.importbutton"));
-      html10n.bind('localized', function() {
-        $('#importsubmitinput').val(html10n.get("pad.impexp.importbutton"));
-      })
+      // i10l buttom import
+      $('#importsubmitinput').val(html10n.get('pad.impexp.importbutton'));
+      html10n.bind('localized', () => {
+        $('#importsubmitinput').val(html10n.get('pad.impexp.importbutton'));
+      });
 
       // build the export links
-      $("#exporthtmla").attr("href", pad_root_path + "/export/html");
-      $("#exportetherpada").attr("href", pad_root_path + "/export/etherpad");
-      $("#exportplaina").attr("href", pad_root_path + "/export/txt");
+      $('#exporthtmla').attr('href', `${padRootPath}/export/html`);
+      $('#exportetherpada').attr('href', `${padRootPath}/export/etherpad`);
+      $('#exportplaina').attr('href', `${padRootPath}/export/txt`);
 
-      // activate action to import in the form
-      $("#importform").attr('action', pad_root_url + "/import");
+      // hide stuff thats not avaible if abiword/soffice is disabled
+      if (clientVars.exportAvailable === 'no') {
+        $('#exportworda').remove();
+        $('#exportpdfa').remove();
+        $('#exportopena').remove();
 
-      //hide stuff thats not avaible if abiword/soffice is disabled
-      if(clientVars.exportAvailable == "no")
-      {
-        $("#exportworda").remove();
-        $("#exportpdfa").remove();
-        $("#exportopena").remove();
+        $('#importmessageabiword').show();
+      } else if (clientVars.exportAvailable === 'withoutPDF') {
+        $('#exportpdfa').remove();
 
-        $("#importmessageabiword").show();
-      }
-      else if(clientVars.exportAvailable == "withoutPDF")
-      {
-        $("#exportpdfa").remove();
+        $('#exportworda').attr('href', `${padRootPath}/export/doc`);
+        $('#exportopena').attr('href', `${padRootPath}/export/odt`);
 
-        $("#exportworda").attr("href", pad_root_path + "/export/doc");
-        $("#exportopena").attr("href", pad_root_path + "/export/odt");
-
-        $("#importexport").css({"height":"142px"});
-        $("#importexportline").css({"height":"142px"});
-      }
-      else
-      {
-        $("#exportworda").attr("href", pad_root_path + "/export/doc");
-        $("#exportpdfa").attr("href", pad_root_path + "/export/pdf");
-        $("#exportopena").attr("href", pad_root_path + "/export/odt");
+        $('#importexport').css({height: '142px'});
+        $('#importexportline').css({height: '142px'});
+      } else {
+        $('#exportworda').attr('href', `${padRootPath}/export/doc`);
+        $('#exportpdfa').attr('href', `${padRootPath}/export/pdf`);
+        $('#exportopena').attr('href', `${padRootPath}/export/odt`);
       }
 
       addImportFrames();
-      $("#importfileinput").change(fileInputUpdated);
-      $('#importform').unbind("submit").submit(fileInputSubmit);
+      $('#importfileinput').change(fileInputUpdated);
+      $('#importform').unbind('submit').submit(fileInputSubmit);
       $('.disabledexport').click(cantExport);
     },
-    handleFrameCall: function(directDatabaseAccess, status)
-    {
-      if(directDatabaseAccess === "undefined") directDatabaseAccess = false;
-      if (status !== "ok")
-      {
-        importFailed(status);
-      }
-      else
-      {
-        $('#import_export').removeClass('popup-show');
-      }
-
-      if (directDatabaseAccess) {
-        // Switch to the pad without redrawing the page
-        pad.switchToPad(clientVars.padId);
-        $('#import_export').removeClass('popup-show');
-      }
-
-      importDone();
+    disable: () => {
+      $('#impexp-disabled-clickcatcher').show();
+      $('#import').css('opacity', 0.5);
+      $('#impexp-export').css('opacity', 0.5);
     },
-    disable: function()
-    {
-      $("#impexp-disabled-clickcatcher").show();
-      $("#import").css('opacity', 0.5);
-      $("#impexp-export").css('opacity', 0.5);
+    enable: () => {
+      $('#impexp-disabled-clickcatcher').hide();
+      $('#import').css('opacity', 1);
+      $('#impexp-export').css('opacity', 1);
     },
-    enable: function()
-    {
-      $("#impexp-disabled-clickcatcher").hide();
-      $("#import").css('opacity', 1);
-      $("#impexp-export").css('opacity', 1);
-    }
   };
   return self;
-}());
+})();
 
 exports.padimpexp = padimpexp;

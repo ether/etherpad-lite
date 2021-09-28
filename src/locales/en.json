@@ -1,4 +1,38 @@
 {
+  "admin.page-title": "Admin Dashboard - Etherpad",
+  "admin_plugins": "Plugin manager",
+  "admin_plugins.available": "Available plugins",
+  "admin_plugins.available_not-found": "No plugins found.",
+  "admin_plugins.available_fetching": "Fetching…",
+  "admin_plugins.available_install.value": "Install",
+  "admin_plugins.available_search.placeholder": "Search for plugins to install",
+  "admin_plugins.description": "Description",
+  "admin_plugins.installed": "Installed plugins",
+  "admin_plugins.installed_fetching": "Fetching installed plugins…",
+  "admin_plugins.installed_nothing": "You haven't installed any plugins yet.",
+  "admin_plugins.installed_uninstall.value": "Uninstall",
+  "admin_plugins.last-update": "Last update",
+  "admin_plugins.name": "Name",
+  "admin_plugins.page-title": "Plugin manager - Etherpad",
+  "admin_plugins.version": "Version",
+  "admin_plugins_info": "Troubleshooting information",
+  "admin_plugins_info.hooks": "Installed hooks",
+  "admin_plugins_info.hooks_client": "Client-side hooks",
+  "admin_plugins_info.hooks_server": "Server-side hooks",
+  "admin_plugins_info.parts": "Installed parts",
+  "admin_plugins_info.plugins": "Installed plugins",
+  "admin_plugins_info.page-title": "Plugin information - Etherpad",
+  "admin_plugins_info.version": "Etherpad version",
+  "admin_plugins_info.version_latest": "Latest available version",
+  "admin_plugins_info.version_number": "Version number",
+  "admin_settings": "Settings",
+  "admin_settings.current": "Current configuration",
+  "admin_settings.current_example-devel": "Example development settings template",
+  "admin_settings.current_example-prod": "Example production settings template",
+  "admin_settings.current_restart.value": "Restart Etherpad",
+  "admin_settings.current_save.value": "Save Settings",
+  "admin_settings.page-title": "Settings - Etherpad",
+
   "index.newPad": "New Pad",
   "index.createOpenPad": "or create/open a Pad with the name:",
   "index.openPad": "open an existing Pad with the name:",
@@ -26,9 +60,7 @@
 
   "pad.loading": "Loading...",
   "pad.noCookie": "Cookie could not be found. Please allow cookies in your browser!  Your session and settings will not be saved between visits.  This may be due to Etherpad being included in an iFrame in some Browsers.  Please ensure Etherpad is on the same subdomain/domain as the parent iFrame",
-  "pad.passwordRequired": "You need a password to access this pad",
   "pad.permissionDenied": "You do not have permission to access this pad",
-  "pad.wrongPassword": "Your password was wrong",
 
   "pad.settings.padSettings": "Pad Settings",
   "pad.settings.myView": "My View",
@@ -56,9 +88,9 @@
   "pad.importExport.abiword.innerHTML": "You only can import from plain text or HTML formats. For more advanced import features please <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">install AbiWord or LibreOffice</a>.",
 
   "pad.modals.connected": "Connected.",
-  "pad.modals.reconnecting": "Reconnecting to your pad..",
+  "pad.modals.reconnecting": "Reconnecting to your pad…",
   "pad.modals.forcereconnect": "Force reconnect",
-  "pad.modals.reconnecttimer": "Trying to reconnect in ",
+  "pad.modals.reconnecttimer": "Trying to reconnect in",
   "pad.modals.cancel": "Cancel",
 
   "pad.modals.userdup": "Opened in another window",
@@ -89,6 +121,9 @@
 
   "pad.modals.rateLimited": "Rate Limited.",
   "pad.modals.rateLimited.explanation": "You sent too many messages to this pad so it disconnected you.",
+
+  "pad.modals.rejected.explanation": "The server rejected a message that was sent by your browser.",
+  "pad.modals.rejected.cause": "The server may have been updated while you were viewing the pad, or maybe there is a bug in Etherpad. Try reloading the page.",
 
   "pad.modals.disconnected": "You have been disconnected.",
   "pad.modals.disconnected.explanation": "The connection to the server was lost",
@@ -137,9 +172,6 @@
   "pad.savedrevs.timeslider": "You can see saved revisions by visiting the timeslider",
   "pad.userlist.entername": "Enter your name",
   "pad.userlist.unnamed": "unnamed",
-  "pad.userlist.guest": "Guest",
-  "pad.userlist.deny": "Deny",
-  "pad.userlist.approve": "Approve",
   "pad.editbar.clearcolors": "Clear authorship colors on entire document? This cannot be undone",
 
   "pad.impexp.importbutton": "Import Now",
@@ -151,6 +183,5 @@
   "pad.impexp.importfailed": "Import failed",
   "pad.impexp.copypaste": "Please copy paste",
   "pad.impexp.exportdisabled": "Exporting as {{type}} format is disabled. Please contact your system administrator for details.",
-  "pad.impexp.maxFileSize": "File too big. Contact your site administrator to increase the allowed file size for import",
-  "pad.impexp.permission": "Import is disabled because you never contributed to this pad. Please contribute at least once before importing"
+  "pad.impexp.maxFileSize": "File too big. Contact your site administrator to increase the allowed file size for import"
 }

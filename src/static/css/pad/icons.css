@@ -24,6 +24,9 @@
   font-style: normal;
   font-variant: normal;
   text-rendering: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .buttonicon:before, [class^="buttonicon-"]:before, [class*=" buttonicon-"]:before {
@@ -34,9 +37,6 @@
   font-size: 15px;
   display: inline-block;
   text-decoration: inherit;
-  width: 1em;
-  margin: 0;
-  text-align: center;
 
   /* For safety - reset parent styles, that can break glyph codes*/
   font-variant: normal;
@@ -130,7 +130,6 @@
 .buttonicon-microphone-alt-slash:before { content: '\e83e'; } /* '' */
 .buttonicon-compress:before { content: '\e83f'; } /* '' */
 .buttonicon-expand:before { content: '\e840'; } /* '' */
-.buttonicon-spin5:before { content: '\e841'; } /* '' */
 .buttonicon-eye-slash:before { content: '\e843'; } /* '' */
 .buttonicon-list-ol:before { content: '\e844'; } /* '' */
 .buttonicon-bold:before { content: '\e845'; } /* '' */

@@ -34,9 +34,7 @@
 	"pad.colorpicker.cancel": "Anulează",
 	"pad.loading": "Se încarcă...",
 	"pad.noCookie": "Cookie-ul nu a putut fi găsit. Vă rugăm să permiteți cookie-urile în browser! Sesiunea și setările nu vor fi salvate între vizite. Aceasta se poate datora faptului că Etherpad este inclus într-un iFrame în unele browsere. Vă rugăm să vă asigurați că Etherpad este pe același subdomeniu/domeniu ca iFrame părinte",
-	"pad.passwordRequired": "Ai nevoie de o parolă pentru a accesa acest pad",
 	"pad.permissionDenied": "Nu ai permisiunea să accesezi acest pad",
-	"pad.wrongPassword": "Parola ta este greșită",
 	"pad.settings.padSettings": "Setări pentru Pad",
 	"pad.settings.myView": "Perspectiva mea",
 	"pad.settings.stickychat": "Chat-ul întotdeauna pe ecran",
@@ -122,9 +120,6 @@
 	"pad.savedrevs.timeslider": "Puteți vedea reviziile salvate accesând cursorul de timp",
 	"pad.userlist.entername": "Introduceți numele dumneavoastră",
 	"pad.userlist.unnamed": "fără nume",
-	"pad.userlist.guest": "Oaspete",
-	"pad.userlist.deny": "Respinge",
-	"pad.userlist.approve": "Aprobă",
 	"pad.editbar.clearcolors": "Ștergeți culorile de autor pe întreg documentul? Acest lucru nu poate fi anulat",
 	"pad.impexp.importbutton": "Importă acum",
 	"pad.impexp.importing": "Importare...",
@@ -135,6 +130,5 @@
 	"pad.impexp.importfailed": "Import eșuat",
 	"pad.impexp.copypaste": "Vă rugăm să copiați și să lipiți",
 	"pad.impexp.exportdisabled": "Exportul ca format {{type}} este dezactivat. Vă rugăm să contactați administratorul de sistem pentru detalii.",
-	"pad.impexp.maxFileSize": "Fișier prea mare. Contactați administratorul site-ului pentru a crește dimensiunea permisă a fișierului pentru import",
-	"pad.impexp.permission": "Importul este dezactivat deoarece nu ați contribuit niciodată la această placă. Vă rugăm să contribuiți cel puțin o dată înainte de import"
+	"pad.impexp.maxFileSize": "Fișier prea mare. Contactați administratorul site-ului pentru a crește dimensiunea permisă a fișierului pentru import"
 }

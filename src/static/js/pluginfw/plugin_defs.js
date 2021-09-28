@@ -1,3 +1,5 @@
+'use strict';
+
 // This module contains processed plugin definitions. The data structures in this file are set by
 // plugins.js (server) or client_plugins.js (client).
 
@@ -19,6 +21,8 @@ exports.parts = [];
 //   * parts: Each part from the ep.json object is augmented with the following properties:
 //       - plugin: The name of the plugin.
 //       - full_name: Equal to <plugin>/<name>.
-//   * package (server-side only): Object containing details about the plugin package (version,
-//     path).
+//   * package (server-side only): Object containing details about the plugin package:
+//       - version
+//       - path
+//       - realPath
 exports.plugins = {};
