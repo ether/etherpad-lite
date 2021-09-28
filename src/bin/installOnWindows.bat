@@ -1,7 +1,7 @@
 @echo off
 
 :: Change directory to etherpad-lite root
-cd /D "%~dp0\.."
+cd /D "%~dp0\..\.."
 
 :: Is node installed?
 cmd /C node -e "" || ( echo "Please install node.js ( https://nodejs.org )" && exit /B 1 )
@@ -16,7 +16,7 @@ mklink /D "ep_etherpad-lite" "..\src"
 cd /D "ep_etherpad-lite"
 cmd /C npm ci || exit /B 1
 
-cd /D "%~dp0\.."
+cd /D "%~dp0\..\.."
 
 echo _
 echo Clearing cache...
