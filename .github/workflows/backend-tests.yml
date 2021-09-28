@@ -116,9 +116,7 @@ jobs:
         node-version: 12
 
     - name: Install all dependencies and symlink for ep_etherpad-lite
-      run: |
-            cd src
-            npm ci --no-optional
+      run: src/bin/installOnWindows.bat
 
     - name:  Fix up the settings.json
       run: |
@@ -172,9 +170,7 @@ jobs:
     # if npm correctly hoists the dependencies, the hoisting seems to confuse
     # tools such as `npm outdated`, `npm update`, and some ESLint rules.
     - name: Install all dependencies and symlink for ep_etherpad-lite
-      run: |
-            cd src
-            npm ci --no-optional
+      run: src/bin/installOnWindows.bat
 
     - name:  Fix up the settings.json
       run: |
