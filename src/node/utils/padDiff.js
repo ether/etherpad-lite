@@ -286,7 +286,7 @@ PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
       curLineOpIterLine = curLine;
       let indexIntoLine = 0;
       let done = false;
-      while (!done) {
+      while (!done && curLineOpIter.hasNext()) {
         curLineNextOp = curLineOpIter.next();
         if (indexIntoLine + curLineNextOp.chars >= curChar) {
           curLineNextOp.chars -= (curChar - indexIntoLine);
@@ -307,7 +307,7 @@ PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
       }
 
       if (!curLineNextOp.chars) {
-        curLineNextOp = curLineOpIter.next();
+        curLineNextOp = curLineOpIter.hasNext() ? curLineOpIter.next() : Changeset.newOp();
       }
 
       const charsToUse = Math.min(numChars, curLineNextOp.chars);

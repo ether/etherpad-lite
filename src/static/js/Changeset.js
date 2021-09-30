@@ -2072,7 +2072,9 @@ exports.inverse = (cs, lines, alines, pool) => {
         curLineNextOp.chars = 0;
         curLineOpIter = exports.opIterator(alinesGet(curLine));
       }
-      if (!curLineNextOp.chars) curLineNextOp = curLineOpIter.next();
+      if (!curLineNextOp.chars) {
+        curLineNextOp = curLineOpIter.hasNext() ? curLineOpIter.next() : exports.newOp();
+      }
       const charsToUse = Math.min(numChars, curLineNextOp.chars);
       func(charsToUse, curLineNextOp.attribs, charsToUse === curLineNextOp.chars &&
           curLineNextOp.lines > 0);
