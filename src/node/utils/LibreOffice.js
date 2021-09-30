@@ -44,10 +44,11 @@ const doConvertTask = async (task) => {
     '--outdir',
     tmpDir,
   ]);
+  soffice.stdin.end();
   // Soffice/libreoffice is buggy and often hangs.
   // To remedy this we kill the spawned process after a while.
+  // TODO: Use the timeout option once support for Node.js < v15.13.0 is dropped.
   const hangTimeout = setTimeout(() => {
-    soffice.stdin.pause(); // required to kill hanging threads
     soffice.kill();
   }, 120000);
   let stdoutBuffer = '';
