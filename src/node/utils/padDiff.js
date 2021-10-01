@@ -9,11 +9,7 @@ function PadDiff(pad, fromRev, toRev) {
   }
 
   const range = pad.getValidRevisionRange(fromRev, toRev);
-  if (!range) {
-    throw new Error(`${'Invalid revision range.' +
-      ' startRev: '}${fromRev
-    } endRev: ${toRev}`);
-  }
+  if (!range) throw new Error(`Invalid revision range. startRev: ${fromRev} endRev: ${toRev}`);
 
   this._pad = pad;
   this._fromRev = range.startRev;
