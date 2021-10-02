@@ -173,7 +173,7 @@ const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       const goToLineNumber = (lineNumber) => {
         // Sets the Y scrolling of the browser to go to this line
         const line = $('#innerdocbody').find(`div:nth-child(${lineNumber + 1})`);
-        if (line) {
+        if (line && $(line)[0]) {
           const newY = $(line)[0].offsetTop;
           const ecb = document.getElementById('editorcontainerbox');
           // Chrome 55 - 59 bugfix
