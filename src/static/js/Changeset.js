@@ -1179,6 +1179,7 @@ exports.composeAttributes = (att1, att2, resultIsMutation, pool) => {
  * @param {AttributePool} pool - Can be null if definitely not needed.
  */
 const slicerZipperFunc = (attOp, csOp, opOut, pool) => {
+  clearOp(opOut);
   if (attOp.opcode === '-') {
     copyOp(attOp, opOut);
     attOp.opcode = '';
@@ -2221,6 +2222,7 @@ exports.follow = (cs1, cs2, reverseInsertOrder, pool) => {
   const hasInsertFirst = exports.attributeTester(['insertorder', 'first'], pool);
 
   const newOps = applyZip(unpacked1.ops, unpacked2.ops, (op1, op2, opOut) => {
+    clearOp(opOut);
     if (op1.opcode === '+' || op2.opcode === '+') {
       let whichToDo;
       if (op2.opcode !== '+') {
