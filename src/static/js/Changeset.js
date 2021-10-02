@@ -205,14 +205,10 @@ exports.newOp = (optOpcode) => ({
  * Copies op1 to op2
  *
  * @param {Op} op1 - src Op
- * @param {Op} op2 - dest Op
+ * @param {Op} [op2] - dest Op. If not given, a new Op is used.
+ * @returns {Op} `op2`
  */
-const copyOp = (op1, op2) => {
-  op2.opcode = op1.opcode;
-  op2.chars = op1.chars;
-  op2.lines = op1.lines;
-  op2.attribs = op1.attribs;
-};
+const copyOp = (op1, op2 = exports.newOp()) => Object.assign(op2, op1);
 
 /**
  * Serializes a sequence of Ops.
