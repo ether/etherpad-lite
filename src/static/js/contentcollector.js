@@ -92,7 +92,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
         attribsBuilder = Changeset.smartOpAssembler();
       },
       textOfLine: (i) => textArray[i],
-      appendText: (txt, attrString) => {
+      appendText: (txt, attrString = '') => {
         textArray[textArray.length - 1] += txt;
         op.attribs = attrString;
         op.chars = txt.length;

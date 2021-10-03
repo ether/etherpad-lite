@@ -488,9 +488,11 @@ exports.opAssembler = () => {
    * @param {Op} op - Operation to add. Ownership remains with the caller.
    */
   const append = (op) => {
-    if (op.attribs != null) serialized += op.attribs;
+    if (!op.opcode) throw new TypeError('null op');
+    if (typeof op.attribs !== 'string') throw new TypeError('attribs must be a string');
+    serialized += op.attribs;
     if (op.lines) serialized += `|${exports.numToString(op.lines)}`;
-    if (op.opcode != null) serialized += op.opcode;
+    serialized += op.opcode;
     serialized += exports.numToString(op.chars);
   };
 
