@@ -14,7 +14,6 @@ Etherpad is extremely flexible providing you the means to modify it to solve wha
 * [Images](https://image.etherpad.com) - Plugins to improve provide Image support within a pad.
 * [Video Chat](https://video.etherpad.com) - Plugins to enable Video and Audio chat in a pad.
 * [Collaboration++](https://collab.etherpad.com) - Plugins to improve the really-real time collaboration experience, suitable for busy pads.
-* [Document Analysis](https://analysis.etherpad.com) - Plugins to improve author and document analysis during and post creation.
 * [Scale](https://shard.etherpad.com) - Etherpad running at scale with pad sharding which allows Etherpad to scale to ∞ number of Active Pads with up to ~20,000 edits per second, per pad.
 
 # Project Status
