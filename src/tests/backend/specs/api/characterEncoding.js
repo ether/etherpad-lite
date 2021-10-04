@@ -20,24 +20,20 @@ const endPoint = (point, version) => `/api/${version || apiVersion}/${point}?api
 describe(__filename, function () {
   before(async function () { agent = await common.init(); });
 
-  describe('Connectivity For Character Encoding', function () {
+  describe('Sanity checks', function () {
     it('can connect', async function () {
       await agent.get('/api/')
           .expect(200)
           .expect('Content-Type', /json/);
     });
-  });
 
-  describe('API Versioning', function () {
     it('finds the version tag', async function () {
       const res = await agent.get('/api/')
           .expect(200);
       apiVersion = res.body.currentVersion;
       if (!res.body.currentVersion) throw new Error('No version set in API');
     });
-  });
 
-  describe('Permission', function () {
     it('errors with invalid APIKey', async function () {
       // This is broken because Etherpad doesn't handle HTTP codes properly see #2343
       // If your APIKey is password you deserve to fail all tests anyway
@@ -46,16 +42,14 @@ describe(__filename, function () {
     });
   });
 
-  describe('createPad', function () {
+  describe('Tests', function () {
     it('creates a new Pad', async function () {
       const res = await agent.get(`${endPoint('createPad')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.code !== 0) throw new Error('Unable to create new Pad');
     });
-  });
 
-  describe('setHTML', function () {
     it('Sets the HTML of a Pad attempting to weird utf8 encoded content', async function () {
       const res = await agent.post(endPoint('setHTML'))
           .send({
@@ -66,9 +60,7 @@ describe(__filename, function () {
           .expect('Content-Type', /json/);
       if (res.body.code !== 0) throw new Error("Can't set HTML properly");
     });
-  });
 
-  describe('getHTML', function () {
     it('get the HTML of Pad with emojis', async function () {
       const res = await agent.get(`${endPoint('getHTML')}&padID=${testPadId}`)
           .expect(200)

@@ -14,6 +14,8 @@ let agent;
 const apiKey = common.apiKey;
 let apiVersion = 1;
 const testPadId = makeid();
+const newPadId = makeid();
+const copiedPadId = makeid();
 let lastEdited = '';
 const text = generateLongText();
 
@@ -48,24 +50,20 @@ const expectedSpaceHtml = '<!doctype html><html><body><ul class="bullet"><li>one
 describe(__filename, function () {
   before(async function () { agent = await common.init(); });
 
-  describe('Connectivity', function () {
+  describe('Sanity checks', function () {
     it('can connect', async function () {
       await agent.get('/api/')
           .expect(200)
           .expect('Content-Type', /json/);
     });
-  });
 
-  describe('API Versioning', function () {
     it('finds the version tag', async function () {
       const res = await agent.get('/api/')
           .expect(200);
       apiVersion = res.body.currentVersion;
       if (!apiVersion) throw new Error('No version set in API');
     });
-  });
 
-  describe('Permission', function () {
     it('errors with invalid APIKey', async function () {
       // This is broken because Etherpad doesn't handle HTTP codes properly see #2343
       // If your APIKey is password you deserve to fail all tests anyway
@@ -116,24 +114,20 @@ describe(__filename, function () {
 
   */
 
-  describe('deletePad', function () {
-    it('deletes a Pad', async function () {
+  describe('Tests', function () {
+    it('deletes a Pad that does not exist', async function () {
       await agent.get(`${endPoint('deletePad')}&padID=${testPadId}`)
           .expect(200) // @TODO: we shouldn't expect 200 here since the pad may not exist
           .expect('Content-Type', /json/);
     });
-  });
 
-  describe('createPad', function () {
     it('creates a new Pad', async function () {
       const res = await agent.get(`${endPoint('createPad')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.code !== 0) throw new Error('Unable to create new Pad');
     });
-  });
 
-  describe('getRevisionsCount', function () {
     it('gets revision count of Pad', async function () {
       const res = await agent.get(`${endPoint('getRevisionsCount')}&padID=${testPadId}`)
           .expect(200)
@@ -141,9 +135,7 @@ describe(__filename, function () {
       if (res.body.code !== 0) throw new Error('Unable to get Revision Count');
       if (res.body.data.revisions !== 0) throw new Error('Incorrect Revision Count');
     });
-  });
 
-  describe('getSavedRevisionsCount', function () {
     it('gets saved revisions count of Pad', async function () {
       const res = await agent.get(`${endPoint('getSavedRevisionsCount')}&padID=${testPadId}`)
           .expect(200)
@@ -151,9 +143,7 @@ describe(__filename, function () {
       if (res.body.code !== 0) throw new Error('Unable to get Saved Revisions Count');
       if (res.body.data.savedRevisions !== 0) throw new Error('Incorrect Saved Revisions Count');
     });
-  });
 
-  describe('listSavedRevisions', function () {
     it('gets saved revision list of Pad', async function () {
       const res = await agent.get(`${endPoint('listSavedRevisions')}&padID=${testPadId}`)
           .expect(200)
@@ -161,18 +151,14 @@ describe(__filename, function () {
       if (res.body.code !== 0) throw new Error('Unable to get Saved Revisions List');
       assert.deepEqual(res.body.data.savedRevisions, []);
     });
-  });
 
-  describe('getHTML', function () {
     it('get the HTML of Pad', async function () {
       const res = await agent.get(`${endPoint('getHTML')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.data.html.length <= 1) throw new Error('Unable to get the HTML');
     });
-  });
 
-  describe('listAllPads', function () {
     it('list all pads', async function () {
       const res = await agent.get(endPoint('listAllPads'))
           .expect(200)
@@ -181,19 +167,15 @@ describe(__filename, function () {
         throw new Error('Unable to find pad in pad list');
       }
     });
-  });
 
-  describe('deletePad', function () {
-    it('deletes a Pad', async function () {
+    it('deletes the Pad', async function () {
       const res = await agent.get(`${endPoint('deletePad')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.code !== 0) throw new Error('Pad Deletion failed');
     });
-  });
 
-  describe('listAllPads', function () {
-    it('list all pads', async function () {
+    it('list all pads again', async function () {
       const res = await agent.get(endPoint('listAllPads'))
           .expect(200)
           .expect('Content-Type', /json/);
@@ -201,37 +183,29 @@ describe(__filename, function () {
         throw new Error('Test pad should not be in pads list');
       }
     });
-  });
 
-  describe('getHTML', function () {
     it('get the HTML of a Pad -- Should return a failure', async function () {
       const res = await agent.get(`${endPoint('getHTML')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.code !== 1) throw new Error('Pad deletion failed');
     });
-  });
 
-  describe('createPad', function () {
     it('creates a new Pad with text', async function () {
       const res = await agent.get(`${endPoint('createPad')}&padID=${testPadId}&text=testText`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.code !== 0) throw new Error('Pad Creation failed');
     });
-  });
 
-  describe('getText', function () {
-    it('gets the Pad text and expect it to be testText with \n which is a line break', async function () {
+    it('gets the Pad text and expect it to be testText with trailing \\n', async function () {
       const res = await agent.get(`${endPoint('getText')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.data.text !== 'testText\n') throw new Error('Pad Creation with text');
     });
-  });
 
-  describe('setText', function () {
-    it('creates a new Pad with text', async function () {
+    it('set text', async function () {
       const res = await agent.post(endPoint('setText'))
           .send({
             padID: testPadId,
@@ -241,37 +215,29 @@ describe(__filename, function () {
           .expect('Content-Type', /json/);
       if (res.body.code !== 0) throw new Error('Pad setting text failed');
     });
-  });
 
-  describe('getText', function () {
     it('gets the Pad text', async function () {
       const res = await agent.get(`${endPoint('getText')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.data.text !== 'testTextTwo\n') throw new Error('Setting Text');
     });
-  });
 
-  describe('getRevisionsCount', function () {
     it('gets Revision Count of a Pad', async function () {
       const res = await agent.get(`${endPoint('getRevisionsCount')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.data.revisions !== 1) throw new Error('Unable to get text revision count');
     });
-  });
 
-  describe('saveRevision', function () {
     it('saves Revision', async function () {
       const res = await agent.get(`${endPoint('saveRevision')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.code !== 0) throw new Error('Unable to save Revision');
     });
-  });
 
-  describe('getSavedRevisionsCount', function () {
-    it('gets saved revisions count of Pad', async function () {
+    it('gets saved revisions count of Pad again', async function () {
       const res = await agent.get(`${endPoint('getSavedRevisionsCount')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
@@ -280,37 +246,29 @@ describe(__filename, function () {
         throw new Error('Incorrect Saved Revisions Count');
       }
     });
-  });
 
-  describe('listSavedRevisions', function () {
-    it('gets saved revision list of Pad', async function () {
+    it('gets saved revision list of Pad again', async function () {
       const res = await agent.get(`${endPoint('listSavedRevisions')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.code !== 0) throw new Error('Unable to get Saved Revisions List');
       assert.deepEqual(res.body.data.savedRevisions, [1]);
     });
-  });
 
-  describe('padUsersCount', function () {
     it('gets User Count of a Pad', async function () {
       const res = await agent.get(`${endPoint('padUsersCount')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.data.padUsersCount !== 0) throw new Error('Incorrect Pad User count');
     });
-  });
 
-  describe('getReadOnlyID', function () {
     it('Gets the Read Only ID of a Pad', async function () {
       const res = await agent.get(`${endPoint('getReadOnlyID')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (!res.body.data.readOnlyID) throw new Error('No Read Only ID for Pad');
     });
-  });
 
-  describe('listAuthorsOfPad', function () {
     it('Get Authors of the Pad', async function () {
       const res = await agent.get(`${endPoint('listAuthorsOfPad')}&padID=${testPadId}`)
           .expect(200)
@@ -319,9 +277,7 @@ describe(__filename, function () {
         throw new Error('# of Authors of pad is not 0');
       }
     });
-  });
 
-  describe('getLastEdited', function () {
     it('Get When Pad was left Edited', async function () {
       const res = await agent.get(`${endPoint('getLastEdited')}&padID=${testPadId}`)
           .expect(200)
@@ -332,10 +288,8 @@ describe(__filename, function () {
         lastEdited = res.body.data.lastEdited;
       }
     });
-  });
 
-  describe('setText', function () {
-    it('creates a new Pad with text', async function () {
+    it('set text again', async function () {
       const res = await agent.post(endPoint('setText'))
           .send({
             padID: testPadId,
@@ -345,10 +299,8 @@ describe(__filename, function () {
           .expect('Content-Type', /json/);
       if (res.body.code !== 0) throw new Error('Pad setting text failed');
     });
-  });
 
-  describe('getLastEdited', function () {
-    it('Get When Pad was left Edited', async function () {
+    it('Get When Pad was left Edited again', async function () {
       const res = await agent.get(`${endPoint('getLastEdited')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
@@ -356,39 +308,28 @@ describe(__filename, function () {
         throw new Error('Editing A Pad is not updating when it was last edited');
       }
     });
-  });
 
-  describe('padUsers', function () {
-    it('gets User Count of a Pad', async function () {
+    it('gets User Count of a Pad again', async function () {
       const res = await agent.get(`${endPoint('padUsers')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.data.padUsers.length !== 0) throw new Error('Incorrect Pad Users');
     });
-  });
 
-  describe('deletePad', function () {
     it('deletes a Pad', async function () {
       const res = await agent.get(`${endPoint('deletePad')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.code !== 0) throw new Error('Pad Deletion failed');
     });
-  });
 
-  const newPadId = makeid();
-  const copiedPadId = makeid();
-
-  describe('createPad', function () {
-    it('creates a new Pad with text', async function () {
+    it('creates the Pad again', async function () {
       const res = await agent.get(`${endPoint('createPad')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.code !== 0) throw new Error('Pad Creation failed');
     });
-  });
 
-  describe('setText', function () {
     it('Sets text on a pad Id', async function () {
       const res = await agent.post(`${endPoint('setText')}&padID=${testPadId}`)
           .field({text})
@@ -396,9 +337,7 @@ describe(__filename, function () {
           .expect('Content-Type', /json/);
       if (res.body.code !== 0) throw new Error('Pad Set Text failed');
     });
-  });
 
-  describe('getText', function () {
     it('Gets text on a pad Id', async function () {
       const res = await agent.get(`${endPoint('getText')}&padID=${testPadId}`)
           .expect(200)
@@ -406,9 +345,7 @@ describe(__filename, function () {
       if (res.body.code !== 0) throw new Error('Pad Get Text failed');
       if (res.body.data.text !== `${text}\n`) throw new Error('Pad Text not set properly');
     });
-  });
 
-  describe('setText', function () {
     it('Sets text on a pad Id including an explicit newline', async function () {
       const res = await agent.post(`${endPoint('setText')}&padID=${testPadId}`)
           .field({text: `${text}\n`})
@@ -416,9 +353,7 @@ describe(__filename, function () {
           .expect('Content-Type', /json/);
       if (res.body.code !== 0) throw new Error('Pad Set Text failed');
     });
-  });
 
-  describe('getText', function () {
     it("Gets text on a pad Id and doesn't have an excess newline", async function () {
       const res = await agent.get(`${endPoint('getText')}&padID=${testPadId}`)
           .expect(200)
@@ -426,18 +361,14 @@ describe(__filename, function () {
       if (res.body.code !== 0) throw new Error('Pad Get Text failed');
       if (res.body.data.text !== `${text}\n`) throw new Error('Pad Text not set properly');
     });
-  });
 
-  describe('getLastEdited', function () {
     it('Gets when pad was last edited', async function () {
       const res = await agent.get(`${endPoint('getLastEdited')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.lastEdited === 0) throw new Error('Get Last Edited Failed');
     });
-  });
 
-  describe('movePad', function () {
     it('Move a Pad to a different Pad ID', async function () {
       const res = await agent.get(
           `${endPoint('movePad')}&sourceID=${testPadId}&destinationID=${newPadId}&force=true`)
@@ -445,58 +376,43 @@ describe(__filename, function () {
           .expect('Content-Type', /json/);
       if (res.body.code !== 0) throw new Error('Moving Pad Failed');
     });
-  });
 
-  describe('getText', function () {
-    it('Gets text on a pad Id', async function () {
+    it('Gets text from new pad', async function () {
       const res = await agent.get(`${endPoint('getText')}&padID=${newPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.data.text !== `${text}\n`) throw new Error('Pad Get Text failed');
     });
-  });
 
-  describe('movePad', function () {
-    it('Move a Pad to a different Pad ID', async function () {
+    it('Move pad back to original ID', async function () {
       const res = await agent.get(
           `${endPoint('movePad')}&sourceID=${newPadId}&destinationID=${testPadId}&force=false`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.code !== 0) throw new Error('Moving Pad Failed');
     });
-  });
 
-  describe('getText', function () {
-    it('Gets text on a pad Id', async function () {
+    it('Get text using original ID', async function () {
       const res = await agent.get(`${endPoint('getText')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.data.text !== `${text}\n`) throw new Error('Pad Get Text failed');
     });
-  });
 
-  describe('getLastEdited', function () {
-    it('Gets when pad was last edited', async function () {
+    it('Get last edit of original ID', async function () {
       const res = await agent.get(`${endPoint('getLastEdited')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.lastEdited === 0) throw new Error('Get Last Edited Failed');
     });
-  });
 
-  describe('appendText', function () {
     it('Append text to a pad Id', async function () {
-      const res = await agent.get(
+      let res = await agent.get(
           `${endPoint('appendText', '1.2.13')}&padID=${testPadId}&text=hello`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.code !== 0) throw new Error('Pad Append Text failed');
-    });
-  });
-
-  describe('getText', function () {
-    it('Gets text on a pad Id', async function () {
-      const res = await agent.get(`${endPoint('getText')}&padID=${testPadId}`)
+      res = await agent.get(`${endPoint('getText')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.code !== 0) throw new Error('Pad Get Text failed');
@@ -504,9 +420,7 @@ describe(__filename, function () {
         throw new Error('Pad Text not set properly');
       }
     });
-  });
 
-  describe('setHTML', function () {
     it('Sets the HTML of a Pad attempting to pass ugly HTML', async function () {
       const html = '<div><b>Hello HTML</title></head></div>';
       const res = await agent.post(endPoint('setHTML'))
@@ -520,11 +434,9 @@ describe(__filename, function () {
         throw new Error("Crappy HTML Can't be Imported[we weren't able to sanitize it']");
       }
     });
-  });
 
-  describe('setHTML', function () {
-    it('Sets the HTML of a Pad with complex nested lists of different types', async function () {
-      const res = await agent.post(endPoint('setHTML'))
+    it('Pad with complex nested lists of different types', async function () {
+      let res = await agent.post(endPoint('setHTML'))
           .send({
             padID: testPadId,
             html: ulHtml,
@@ -532,12 +444,7 @@ describe(__filename, function () {
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.code !== 0) throw new Error('List HTML cant be imported');
-    });
-  });
-
-  describe('getHTML', function () {
-    it('Gets back the HTML of a Pad with complex nested lists of different types', async function () {
-      const res = await agent.get(`${endPoint('getHTML')}&padID=${testPadId}`)
+      res = await agent.get(`${endPoint('getHTML')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
       const receivedHtml = res.body.data.html.replace('<br></body>', '</body>').toLowerCase();
@@ -553,20 +460,13 @@ describe(__filename, function () {
            ${ulHtml}`);
       }
     });
-  });
 
-  describe('setHTML', function () {
-    it('Sets the HTML of a Pad with white space between list items', async function () {
-      const res = await agent.get(`${endPoint('setHTML')}&padID=${testPadId}&html=${ulSpaceHtml}`)
+    it('Pad with white space between list items', async function () {
+      let res = await agent.get(`${endPoint('setHTML')}&padID=${testPadId}&html=${ulSpaceHtml}`)
           .expect(200)
           .expect('Content-Type', /json/);
       if (res.body.code !== 0) throw new Error('List HTML cant be imported');
-    });
-  });
-
-  describe('getHTML', function () {
-    it('Gets back the HTML of a Pad with complex nested lists of different types', async function () {
-      const res = await agent.get(`${endPoint('getHTML')}&padID=${testPadId}`)
+      res = await agent.get(`${endPoint('getHTML')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
       const receivedHtml = res.body.data.html.replace('<br></body>', '</body>').toLowerCase();
@@ -582,9 +482,7 @@ describe(__filename, function () {
            ${ulSpaceHtml}`);
       }
     });
-  });
 
-  describe('createPad', function () {
     it('errors if pad can be created', async function () {
       await Promise.all(['/', '%23', '%3F', '%26'].map(async (badUrlChar) => {
         const res = await agent.get(`${endPoint('createPad')}&padID=${badUrlChar}`)
@@ -592,9 +490,7 @@ describe(__filename, function () {
         if (res.body.code !== 1) throw new Error('Pad with bad characters was created');
       }));
     });
-  });
 
-  describe('copyPad', function () {
     it('copies the content of a existent pad', async function () {
       const res = await agent.get(
           `${endPoint('copyPad')}&sourceID=${testPadId}&destinationID=${copiedPadId}&force=true`)
@@ -645,7 +541,7 @@ describe(__filename, function () {
       }
     });
 
-    context('when try copy a pad with a group that does not exist', function () {
+    describe('when try copy a pad with a group that does not exist', function () {
       const padId = makeid();
       const padWithNonExistentGroup = `notExistentGroup$${padId}`;
       it('throws an error', async function () {
@@ -658,35 +554,29 @@ describe(__filename, function () {
       });
     });
 
-    context('when try copy a pad and destination pad already exist', function () {
+    describe('when try copy a pad and destination pad already exist', function () {
       const padIdExistent = makeid();
 
       before(async function () {
         await createNewPadWithHtml(padIdExistent, ulHtml);
       });
 
-      context('and force is false', function () {
-        it('throws an error', async function () {
-          const res = await agent.get(`${endPoint('copyPadWithoutHistory')}` +
-                                      `&sourceID=${sourcePadId}` +
-                                      `&destinationID=${padIdExistent}&force=false`)
-              .expect(200);
-          // code 1, it means an error has happened
-          if (res.body.code !== 1) throw new Error('It should report an error');
-        });
+      it('force=false throws an error', async function () {
+        const res = await agent.get(`${endPoint('copyPadWithoutHistory')}` +
+                                    `&sourceID=${sourcePadId}` +
+                                    `&destinationID=${padIdExistent}&force=false`)
+            .expect(200);
+        // code 1, it means an error has happened
+        if (res.body.code !== 1) throw new Error('It should report an error');
       });
 
-      context('and force is true', function () {
-        it('returns a successful response', async function () {
-          const res = await agent.get(`${endPoint('copyPadWithoutHistory')}` +
-                                      `&sourceID=${sourcePadId}` +
-                                      `&destinationID=${padIdExistent}&force=true`)
-              .expect(200);
-          // code 1, it means an error has happened
-          if (res.body.code !== 0) {
-            throw new Error('Copy pad without history with force true failed');
-          }
-        });
+      it('force=true returns a successful response', async function () {
+        const res = await agent.get(`${endPoint('copyPadWithoutHistory')}` +
+                                    `&sourceID=${sourcePadId}` +
+                                    `&destinationID=${padIdExistent}&force=true`)
+            .expect(200);
+        // code 1, it means an error has happened
+        if (res.body.code !== 0) throw new Error('Copy pad without history with force true failed');
       });
     });
   });
