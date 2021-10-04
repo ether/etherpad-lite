@@ -6,6 +6,7 @@
  * TODO: maybe unify those two files and merge in a single one.
  */
 
+const assert = require('assert').strict;
 const common = require('../../common');
 const fs = require('fs');
 const fsp = fs.promises;
@@ -31,7 +32,7 @@ describe(__filename, function () {
       const res = await agent.get('/api/')
           .expect(200);
       apiVersion = res.body.currentVersion;
-      if (!res.body.currentVersion) throw new Error('No version set in API');
+      assert(apiVersion);
     });
 
     it('errors with invalid APIKey', async function () {
@@ -47,7 +48,7 @@ describe(__filename, function () {
       const res = await agent.get(`${endPoint('createPad')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
-      if (res.body.code !== 0) throw new Error('Unable to create new Pad');
+      assert.equal(res.body.code, 0);
     });
 
     it('Sets the HTML of a Pad attempting to weird utf8 encoded content', async function () {
@@ -58,14 +59,14 @@ describe(__filename, function () {
           })
           .expect(200)
           .expect('Content-Type', /json/);
-      if (res.body.code !== 0) throw new Error("Can't set HTML properly");
+      assert.equal(res.body.code, 0);
     });
 
     it('get the HTML of Pad with emojis', async function () {
       const res = await agent.get(`${endPoint('getHTML')}&padID=${testPadId}`)
           .expect(200)
           .expect('Content-Type', /json/);
-      if (res.body.data.html.indexOf('&#127484') === -1) throw new Error('Unable to get the HTML');
+      assert.match(res.body.data.html, /&#127484/);
     });
   });
 });
