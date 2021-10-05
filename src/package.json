@@ -65,7 +65,7 @@
     "security": "1.0.0",
     "semver": "^7.3.5",
     "socket.io": "^2.4.1",
-    "terser": "^5.7.2",
+    "terser": "^5.8.0",
     "threads": "^1.6.5",
     "tiny-worker": "^2.3.0",
     "tinycon": "0.6.8",
