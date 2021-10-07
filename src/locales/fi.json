@@ -5,6 +5,7 @@
 			"Espeox",
 			"Jl",
 			"Lliehu",
+			"MITO",
 			"Maantietäjä",
 			"Macofe",
 			"MrTapsa",
@@ -18,7 +19,10 @@
 			"VezonThunder"
 		]
 	},
+	"admin.page-title": "Ylläpitäjän kojelauta - Etherpad",
+	"admin_plugins": "Lisäosien hallinta",
 	"admin_plugins.available": "Saatavilla olevat liitännäiset",
+	"admin_plugins.available_not-found": "Lisäosia ei löytynyt.",
 	"admin_plugins.available_install.value": "Lataa",
 	"admin_plugins.available_search.placeholder": "Etsi asennettavia laajennuksia",
 	"admin_plugins.description": "Kuvaus",
