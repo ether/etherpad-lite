@@ -29,7 +29,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
       clientLogger.warn(`${data.msg} --`, {
         [util.inspect.custom]: (depth, options) => {
           // Depth is forced to infinity to ensure that all of the provided data is logged.
-          options = Object.assign({}, options, {depth: Infinity});
+          options = Object.assign({}, options, {depth: Infinity, colors: true});
           return util.inspect(data, options);
         },
       });
