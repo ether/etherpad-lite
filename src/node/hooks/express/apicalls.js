@@ -16,6 +16,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
 
   const parseJserrorForm = async (req) => await new Promise((resolve, reject) => {
     const form = new formidable.IncomingForm();
+    form.maxFileSize = 1; // Files are not expected. Not sure if 0 means unlimited, so 1 is used.
     form.on('error', (err) => reject(err));
     form.parse(req, (err, fields) => err != null ? reject(err) : resolve(fields.errorInfo));
   });
