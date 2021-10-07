@@ -4,6 +4,7 @@ const log4js = require('log4js');
 const clientLogger = log4js.getLogger('client');
 const formidable = require('formidable');
 const apiHandler = require('../../handler/APIHandler');
+const util = require('util');
 
 exports.expressCreateServer = (hookName, args, cb) => {
   // The Etherpad client side sends information about how a disconnect happened
@@ -25,7 +26,13 @@ exports.expressCreateServer = (hookName, args, cb) => {
   args.app.post('/jserror', (req, res, next) => {
     (async () => {
       const data = JSON.parse(await parseJserrorForm(req));
-      clientLogger.warn(`${data.msg} --`, data);
+      clientLogger.warn(`${data.msg} --`, {
+        [util.inspect.custom]: (depth, options) => {
+          // Depth is forced to infinity to ensure that all of the provided data is logged.
+          options = Object.assign({}, options, {depth: Infinity});
+          return util.inspect(data, options);
+        },
+      });
       res.end('OK');
     })().catch((err) => next(err || new Error(err)));
   });
