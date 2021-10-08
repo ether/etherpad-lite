@@ -93,13 +93,11 @@ describe(__filename, function () {
 
     describe('basic behavior', function () {
       it('passes hook name', async function () {
-        this.timeout(30);
         hook.hook_fn = (hn) => { assert.equal(hn, hookName); };
         callHookFnSync(hook);
       });
 
       it('passes context', async function () {
-        this.timeout(30);
         for (const val of ['value', null, undefined]) {
           hook.hook_fn = (hn, ctx) => { assert.equal(ctx, val); };
           callHookFnSync(hook, val);
@@ -107,7 +105,6 @@ describe(__filename, function () {
       });
 
       it('returns the value provided to the callback', async function () {
-        this.timeout(30);
         for (const val of ['value', null, undefined]) {
           hook.hook_fn = (hn, ctx, cb) => { cb(ctx); };
           assert.equal(callHookFnSync(hook, val), val);
@@ -115,7 +112,6 @@ describe(__filename, function () {
       });
 
       it('returns the value returned by the hook function', async function () {
-        this.timeout(30);
         for (const val of ['value', null, undefined]) {
           // Must not have the cb parameter otherwise returning undefined will error.
           hook.hook_fn = (hn, ctx) => ctx;
@@ -124,19 +120,16 @@ describe(__filename, function () {
       });
 
       it('does not catch exceptions', async function () {
-        this.timeout(30);
         hook.hook_fn = () => { throw new Error('test exception'); };
         assert.throws(() => callHookFnSync(hook), {message: 'test exception'});
       });
 
       it('callback returns undefined', async function () {
-        this.timeout(30);
         hook.hook_fn = (hn, ctx, cb) => { assert.equal(cb('foo'), undefined); };
         callHookFnSync(hook);
       });
 
       it('checks for deprecation', async function () {
-        this.timeout(30);
         sinon.stub(console, 'warn');
         hooks.deprecationNotices[hookName] = 'test deprecation';
         callHookFnSync(hook);
@@ -149,7 +142,6 @@ describe(__filename, function () {
     describe('supported hook function styles', function () {
       for (const tc of supportedSyncHookFunctions) {
         it(tc.name, async function () {
-          this.timeout(30);
           sinon.stub(console, 'warn');
           sinon.stub(console, 'error');
           hook.hook_fn = tc.fn;
@@ -194,7 +186,6 @@ describe(__filename, function () {
 
       for (const tc of testCases) {
         it(tc.name, async function () {
-          this.timeout(30);
           sinon.stub(console, 'error');
           hook.hook_fn = tc.fn;
           assert.equal(callHookFnSync(hook), tc.wantVal);
@@ -246,7 +237,6 @@ describe(__filename, function () {
           if (step1.async && step2.async) continue;
 
           it(`${step1.name} then ${step2.name} (diff. outcomes) -> log+throw`, async function () {
-            this.timeout(30);
             hook.hook_fn = (hn, ctx, cb) => {
               step1.fn(cb, new Error(ctx.ret1), ctx.ret1);
               return step2.fn(cb, new Error(ctx.ret2), ctx.ret2);
@@ -310,7 +300,6 @@ describe(__filename, function () {
           if (step1.rejects !== step2.rejects) continue;
 
           it(`${step1.name} then ${step2.name} (same outcome) -> only log`, async function () {
-            this.timeout(30);
             const err = new Error('val');
             hook.hook_fn = (hn, ctx, cb) => {
               step1.fn(cb, err, 'val');
@@ -336,32 +325,27 @@ describe(__filename, function () {
   describe('hooks.callAll', function () {
     describe('basic behavior', function () {
       it('calls all in order', async function () {
-        this.timeout(30);
         testHooks.length = 0;
         testHooks.push(makeHook(1), makeHook(2), makeHook(3));
         assert.deepEqual(hooks.callAll(hookName), [1, 2, 3]);
       });
 
       it('passes hook name', async function () {
-        this.timeout(30);
         hook.hook_fn = (hn) => { assert.equal(hn, hookName); };
         hooks.callAll(hookName);
       });
 
       it('undefined context -> {}', async function () {
-        this.timeout(30);
         hook.hook_fn = (hn, ctx) => { assert.deepEqual(ctx, {}); };
         hooks.callAll(hookName);
       });
 
       it('null context -> {}', async function () {
-        this.timeout(30);
         hook.hook_fn = (hn, ctx) => { assert.deepEqual(ctx, {}); };
         hooks.callAll(hookName, null);
       });
 
       it('context unmodified', async function () {
-        this.timeout(30);
         const wantContext = {};
         hook.hook_fn = (hn, ctx) => { assert.equal(ctx, wantContext); };
         hooks.callAll(hookName, wantContext);
@@ -370,40 +354,34 @@ describe(__filename, function () {
 
     describe('result processing', function () {
       it('no registered hooks (undefined) -> []', async function () {
-        this.timeout(30);
         delete plugins.hooks.testHook;
         assert.deepEqual(hooks.callAll(hookName), []);
       });
 
       it('no registered hooks (empty list) -> []', async function () {
-        this.timeout(30);
         testHooks.length = 0;
         assert.deepEqual(hooks.callAll(hookName), []);
       });
 
       it('flattens one level', async function () {
-        this.timeout(30);
         testHooks.length = 0;
         testHooks.push(makeHook(1), makeHook([2]), makeHook([[3]]));
         assert.deepEqual(hooks.callAll(hookName), [1, 2, [3]]);
       });
 
       it('filters out undefined', async function () {
-        this.timeout(30);
         testHooks.length = 0;
         testHooks.push(makeHook(), makeHook([2]), makeHook([[3]]));
         assert.deepEqual(hooks.callAll(hookName), [2, [3]]);
       });
 
       it('preserves null', async function () {
-        this.timeout(30);
         testHooks.length = 0;
         testHooks.push(makeHook(null), makeHook([2]), makeHook([[3]]));
         assert.deepEqual(hooks.callAll(hookName), [null, 2, [3]]);
       });
 
       it('all undefined -> []', async function () {
-        this.timeout(30);
         testHooks.length = 0;
         testHooks.push(makeHook(), makeHook());
         assert.deepEqual(hooks.callAll(hookName), []);
@@ -413,44 +391,37 @@ describe(__filename, function () {
 
   describe('hooks.callFirst', function () {
     it('no registered hooks (undefined) -> []', async function () {
-      this.timeout(30);
       delete plugins.hooks.testHook;
       assert.deepEqual(hooks.callFirst(hookName), []);
     });
 
     it('no registered hooks (empty list) -> []', async function () {
-      this.timeout(30);
       testHooks.length = 0;
       assert.deepEqual(hooks.callFirst(hookName), []);
     });
 
     it('passes hook name => {}', async function () {
-      this.timeout(30);
       hook.hook_fn = (hn) => { assert.equal(hn, hookName); };
       hooks.callFirst(hookName);
     });
 
     it('undefined context => {}', async function () {
-      this.timeout(30);
       hook.hook_fn = (hn, ctx) => { assert.deepEqual(ctx, {}); };
       hooks.callFirst(hookName);
     });
 
     it('null context => {}', async function () {
-      this.timeout(30);
       hook.hook_fn = (hn, ctx) => { assert.deepEqual(ctx, {}); };
       hooks.callFirst(hookName, null);
     });
 
     it('context unmodified', async function () {
-      this.timeout(30);
       const wantContext = {};
       hook.hook_fn = (hn, ctx) => { assert.equal(ctx, wantContext); };
       hooks.callFirst(hookName, wantContext);
     });
 
     it('predicate never satisfied -> calls all in order', async function () {
-      this.timeout(30);
       const gotCalls = [];
       testHooks.length = 0;
       for (let i = 0; i < 3; i++) {
@@ -463,35 +434,30 @@ describe(__filename, function () {
     });
 
     it('stops when predicate is satisfied', async function () {
-      this.timeout(30);
       testHooks.length = 0;
       testHooks.push(makeHook(), makeHook('val1'), makeHook('val2'));
       assert.deepEqual(hooks.callFirst(hookName), ['val1']);
     });
 
     it('skips values that do not satisfy predicate (undefined)', async function () {
-      this.timeout(30);
       testHooks.length = 0;
       testHooks.push(makeHook(), makeHook('val1'));
       assert.deepEqual(hooks.callFirst(hookName), ['val1']);
     });
 
     it('skips values that do not satisfy predicate (empty list)', async function () {
-      this.timeout(30);
       testHooks.length = 0;
       testHooks.push(makeHook([]), makeHook('val1'));
       assert.deepEqual(hooks.callFirst(hookName), ['val1']);
     });
 
     it('null satisifes the predicate', async function () {
-      this.timeout(30);
       testHooks.length = 0;
       testHooks.push(makeHook(null), makeHook('val1'));
       assert.deepEqual(hooks.callFirst(hookName), [null]);
     });
 
     it('non-empty arrays are returned unmodified', async function () {
-      this.timeout(30);
       const want = ['val1'];
       testHooks.length = 0;
       testHooks.push(makeHook(want), makeHook(['val2']));
@@ -499,7 +465,6 @@ describe(__filename, function () {
     });
 
     it('value can be passed via callback', async function () {
-      this.timeout(30);
       const want = {};
       hook.hook_fn = (hn, ctx, cb) => { cb(want); };
       const got = hooks.callFirst(hookName);
@@ -513,13 +478,11 @@ describe(__filename, function () {
 
     describe('basic behavior', function () {
       it('passes hook name', async function () {
-        this.timeout(30);
         hook.hook_fn = (hn) => { assert.equal(hn, hookName); };
         await callHookFnAsync(hook);
       });
 
       it('passes context', async function () {
-        this.timeout(30);
         for (const val of ['value', null, undefined]) {
           hook.hook_fn = (hn, ctx) => { assert.equal(ctx, val); };
           await callHookFnAsync(hook, val);
@@ -527,7 +490,6 @@ describe(__filename, function () {
       });
 
       it('returns the value provided to the callback', async function () {
-        this.timeout(30);
         for (const val of ['value', null, undefined]) {
           hook.hook_fn = (hn, ctx, cb) => { cb(ctx); };
           assert.equal(await callHookFnAsync(hook, val), val);
@@ -536,7 +498,6 @@ describe(__filename, function () {
       });
 
       it('returns the value returned by the hook function', async function () {
-        this.timeout(30);
         for (const val of ['value', null, undefined]) {
           // Must not have the cb parameter otherwise returning undefined will never resolve.
           hook.hook_fn = (hn, ctx) => ctx;
@@ -546,31 +507,26 @@ describe(__filename, function () {
       });
 
       it('rejects if it throws an exception', async function () {
-        this.timeout(30);
         hook.hook_fn = () => { throw new Error('test exception'); };
         await assert.rejects(callHookFnAsync(hook), {message: 'test exception'});
       });
 
       it('rejects if rejected Promise passed to callback', async function () {
-        this.timeout(30);
         hook.hook_fn = (hn, ctx, cb) => cb(Promise.reject(new Error('test exception')));
         await assert.rejects(callHookFnAsync(hook), {message: 'test exception'});
       });
 
       it('rejects if rejected Promise returned', async function () {
-        this.timeout(30);
         hook.hook_fn = (hn, ctx, cb) => Promise.reject(new Error('test exception'));
         await assert.rejects(callHookFnAsync(hook), {message: 'test exception'});
       });
 
       it('callback returns undefined', async function () {
-        this.timeout(30);
         hook.hook_fn = (hn, ctx, cb) => { assert.equal(cb('foo'), undefined); };
         await callHookFnAsync(hook);
       });
 
       it('checks for deprecation', async function () {
-        this.timeout(30);
         sinon.stub(console, 'warn');
         hooks.deprecationNotices[hookName] = 'test deprecation';
         await callHookFnAsync(hook);
@@ -663,7 +619,6 @@ describe(__filename, function () {
 
       for (const tc of supportedSyncHookFunctions.concat(supportedHookFunctions)) {
         it(tc.name, async function () {
-          this.timeout(30);
           sinon.stub(console, 'warn');
           sinon.stub(console, 'error');
           hook.hook_fn = tc.fn;
@@ -811,7 +766,6 @@ describe(__filename, function () {
         if (step1.name.startsWith('return ') || step1.name === 'throw') continue;
         for (const step2 of behaviors) {
           it(`${step1.name} then ${step2.name} (diff. outcomes) -> log+throw`, async function () {
-            this.timeout(30);
             hook.hook_fn = (hn, ctx, cb) => {
               step1.fn(cb, new Error(ctx.ret1), ctx.ret1);
               return step2.fn(cb, new Error(ctx.ret2), ctx.ret2);
@@ -865,7 +819,6 @@ describe(__filename, function () {
           if (step1.rejects !== step2.rejects) continue;
 
           it(`${step1.name} then ${step2.name} (same outcome) -> only log`, async function () {
-            this.timeout(30);
             const err = new Error('val');
             hook.hook_fn = (hn, ctx, cb) => {
               step1.fn(cb, err, 'val');
@@ -891,7 +844,6 @@ describe(__filename, function () {
   describe('hooks.aCallAll', function () {
     describe('basic behavior', function () {
       it('calls all asynchronously, returns values in order', async function () {
-        this.timeout(30);
         testHooks.length = 0; // Delete the boilerplate hook -- this test doesn't use it.
         let nextIndex = 0;
         const hookPromises = [];
@@ -926,25 +878,21 @@ describe(__filename, function () {
       });
 
       it('passes hook name', async function () {
-        this.timeout(30);
         hook.hook_fn = async (hn) => { assert.equal(hn, hookName); };
         await hooks.aCallAll(hookName);
       });
 
       it('undefined context -> {}', async function () {
-        this.timeout(30);
         hook.hook_fn = async (hn, ctx) => { assert.deepEqual(ctx, {}); };
         await hooks.aCallAll(hookName);
       });
 
       it('null context -> {}', async function () {
-        this.timeout(30);
         hook.hook_fn = async (hn, ctx) => { assert.deepEqual(ctx, {}); };
         await hooks.aCallAll(hookName, null);
       });
 
       it('context unmodified', async function () {
-        this.timeout(30);
         const wantContext = {};
         hook.hook_fn = async (hn, ctx) => { assert.equal(ctx, wantContext); };
         await hooks.aCallAll(hookName, wantContext);
@@ -953,13 +901,11 @@ describe(__filename, function () {
 
     describe('aCallAll callback', function () {
       it('exception in callback rejects', async function () {
-        this.timeout(30);
         const p = hooks.aCallAll(hookName, {}, () => { throw new Error('test exception'); });
         await assert.rejects(p, {message: 'test exception'});
       });
 
       it('propagates error on exception', async function () {
-        this.timeout(30);
         hook.hook_fn = () => { throw new Error('test exception'); };
         await hooks.aCallAll(hookName, {}, (err) => {
           assert(err instanceof Error);
@@ -968,14 +914,12 @@ describe(__filename, function () {
       });
 
       it('propagages null error on success', async function () {
-        this.timeout(30);
         await hooks.aCallAll(hookName, {}, (err) => {
           assert(err == null, `got non-null error: ${err}`);
         });
       });
 
       it('propagages results on success', async function () {
-        this.timeout(30);
         hook.hook_fn = () => 'val';
         await hooks.aCallAll(hookName, {}, (err, results) => {
           assert.deepEqual(results, ['val']);
@@ -983,47 +927,40 @@ describe(__filename, function () {
       });
 
       it('returns callback return value', async function () {
-        this.timeout(30);
         assert.equal(await hooks.aCallAll(hookName, {}, () => 'val'), 'val');
       });
     });
 
     describe('result processing', function () {
       it('no registered hooks (undefined) -> []', async function () {
-        this.timeout(30);
         delete plugins.hooks[hookName];
         assert.deepEqual(await hooks.aCallAll(hookName), []);
       });
 
       it('no registered hooks (empty list) -> []', async function () {
-        this.timeout(30);
         testHooks.length = 0;
         assert.deepEqual(await hooks.aCallAll(hookName), []);
       });
 
       it('flattens one level', async function () {
-        this.timeout(30);
         testHooks.length = 0;
         testHooks.push(makeHook(1), makeHook([2]), makeHook([[3]]));
         assert.deepEqual(await hooks.aCallAll(hookName), [1, 2, [3]]);
       });
 
       it('filters out undefined', async function () {
-        this.timeout(30);
         testHooks.length = 0;
         testHooks.push(makeHook(), makeHook([2]), makeHook([[3]]), makeHook(Promise.resolve()));
         assert.deepEqual(await hooks.aCallAll(hookName), [2, [3]]);
       });
 
       it('preserves null', async function () {
-        this.timeout(30);
         testHooks.length = 0;
         testHooks.push(makeHook(null), makeHook([2]), makeHook(Promise.resolve(null)));
         assert.deepEqual(await hooks.aCallAll(hookName), [null, 2, null]);
       });
 
       it('all undefined -> []', async function () {
-        this.timeout(30);
         testHooks.length = 0;
         testHooks.push(makeHook(), makeHook(Promise.resolve()));
         assert.deepEqual(await hooks.aCallAll(hookName), []);
@@ -1034,7 +971,6 @@ describe(__filename, function () {
   describe('hooks.callAllSerial', function () {
     describe('basic behavior', function () {
       it('calls all asynchronously, serially, in order', async function () {
-        this.timeout(30);
         const gotCalls = [];
         testHooks.length = 0;
         for (let i = 0; i < 3; i++) {
@@ -1057,25 +993,21 @@ describe(__filename, function () {
       });
 
       it('passes hook name', async function () {
-        this.timeout(30);
         hook.hook_fn = async (hn) => { assert.equal(hn, hookName); };
         await hooks.callAllSerial(hookName);
       });
 
       it('undefined context -> {}', async function () {
-        this.timeout(30);
         hook.hook_fn = async (hn, ctx) => { assert.deepEqual(ctx, {}); };
         await hooks.callAllSerial(hookName);
       });
 
       it('null context -> {}', async function () {
-        this.timeout(30);
         hook.hook_fn = async (hn, ctx) => { assert.deepEqual(ctx, {}); };
         await hooks.callAllSerial(hookName, null);
       });
 
       it('context unmodified', async function () {
-        this.timeout(30);
         const wantContext = {};
         hook.hook_fn = async (hn, ctx) => { assert.equal(ctx, wantContext); };
         await hooks.callAllSerial(hookName, wantContext);
@@ -1084,40 +1016,34 @@ describe(__filename, function () {
 
     describe('result processing', function () {
       it('no registered hooks (undefined) -> []', async function () {
-        this.timeout(30);
         delete plugins.hooks[hookName];
         assert.deepEqual(await hooks.callAllSerial(hookName), []);
       });
 
       it('no registered hooks (empty list) -> []', async function () {
-        this.timeout(30);
         testHooks.length = 0;
         assert.deepEqual(await hooks.callAllSerial(hookName), []);
       });
 
       it('flattens one level', async function () {
-        this.timeout(30);
         testHooks.length = 0;
         testHooks.push(makeHook(1), makeHook([2]), makeHook([[3]]));
         assert.deepEqual(await hooks.callAllSerial(hookName), [1, 2, [3]]);
       });
 
       it('filters out undefined', async function () {
-        this.timeout(30);
         testHooks.length = 0;
         testHooks.push(makeHook(), makeHook([2]), makeHook([[3]]), makeHook(Promise.resolve()));
         assert.deepEqual(await hooks.callAllSerial(hookName), [2, [3]]);
       });
 
       it('preserves null', async function () {
-        this.timeout(30);
         testHooks.length = 0;
         testHooks.push(makeHook(null), makeHook([2]), makeHook(Promise.resolve(null)));
         assert.deepEqual(await hooks.callAllSerial(hookName), [null, 2, null]);
       });
 
       it('all undefined -> []', async function () {
-        this.timeout(30);
         testHooks.length = 0;
         testHooks.push(makeHook(), makeHook(Promise.resolve()));
         assert.deepEqual(await hooks.callAllSerial(hookName), []);
@@ -1127,44 +1053,37 @@ describe(__filename, function () {
 
   describe('hooks.aCallFirst', function () {
     it('no registered hooks (undefined) -> []', async function () {
-      this.timeout(30);
       delete plugins.hooks.testHook;
       assert.deepEqual(await hooks.aCallFirst(hookName), []);
     });
 
     it('no registered hooks (empty list) -> []', async function () {
-      this.timeout(30);
       testHooks.length = 0;
       assert.deepEqual(await hooks.aCallFirst(hookName), []);
     });
 
     it('passes hook name => {}', async function () {
-      this.timeout(30);
       hook.hook_fn = (hn) => { assert.equal(hn, hookName); };
       await hooks.aCallFirst(hookName);
     });
 
     it('undefined context => {}', async function () {
-      this.timeout(30);
       hook.hook_fn = (hn, ctx) => { assert.deepEqual(ctx, {}); };
       await hooks.aCallFirst(hookName);
     });
 
     it('null context => {}', async function () {
-      this.timeout(30);
       hook.hook_fn = (hn, ctx) => { assert.deepEqual(ctx, {}); };
       await hooks.aCallFirst(hookName, null);
     });
 
     it('context unmodified', async function () {
-      this.timeout(30);
       const wantContext = {};
       hook.hook_fn = (hn, ctx) => { assert.equal(ctx, wantContext); };
       await hooks.aCallFirst(hookName, wantContext);
     });
 
     it('default predicate: predicate never satisfied -> calls all in order', async function () {
-      this.timeout(30);
       const gotCalls = [];
       testHooks.length = 0;
       for (let i = 0; i < 3; i++) {
@@ -1177,7 +1096,6 @@ describe(__filename, function () {
     });
 
     it('calls hook functions serially', async function () {
-      this.timeout(30);
       const gotCalls = [];
       testHooks.length = 0;
       for (let i = 0; i < 3; i++) {
@@ -1200,35 +1118,30 @@ describe(__filename, function () {
     });
 
     it('default predicate: stops when satisfied', async function () {
-      this.timeout(30);
       testHooks.length = 0;
       testHooks.push(makeHook(), makeHook('val1'), makeHook('val2'));
       assert.deepEqual(await hooks.aCallFirst(hookName), ['val1']);
     });
 
     it('default predicate: skips values that do not satisfy (undefined)', async function () {
-      this.timeout(30);
       testHooks.length = 0;
       testHooks.push(makeHook(), makeHook('val1'));
       assert.deepEqual(await hooks.aCallFirst(hookName), ['val1']);
     });
 
     it('default predicate: skips values that do not satisfy (empty list)', async function () {
-      this.timeout(30);
       testHooks.length = 0;
       testHooks.push(makeHook([]), makeHook('val1'));
       assert.deepEqual(await hooks.aCallFirst(hookName), ['val1']);
     });
 
     it('default predicate: null satisifes', async function () {
-      this.timeout(30);
       testHooks.length = 0;
       testHooks.push(makeHook(null), makeHook('val1'));
       assert.deepEqual(await hooks.aCallFirst(hookName), [null]);
     });
 
     it('custom predicate: called for each hook function', async function () {
-      this.timeout(30);
       testHooks.length = 0;
       testHooks.push(makeHook(0), makeHook(1), makeHook(2));
       let got = 0;
@@ -1237,7 +1150,6 @@ describe(__filename, function () {
     });
 
     it('custom predicate: boolean false/true continues/stops iteration', async function () {
-      this.timeout(30);
       testHooks.length = 0;
       testHooks.push(makeHook(1), makeHook(2), makeHook(3));
       let nCall = 0;
@@ -1250,7 +1162,6 @@ describe(__filename, function () {
     });
 
     it('custom predicate: non-boolean falsy/truthy continues/stops iteration', async function () {
-      this.timeout(30);
       testHooks.length = 0;
       testHooks.push(makeHook(1), makeHook(2), makeHook(3));
       let nCall = 0;
@@ -1263,7 +1174,6 @@ describe(__filename, function () {
     });
 
     it('custom predicate: array value passed unmodified to predicate', async function () {
-      this.timeout(30);
       const want = [0];
       hook.hook_fn = () => want;
       const predicate = (got) => { assert.equal(got, want); }; // Note: *NOT* deepEqual!
@@ -1271,20 +1181,17 @@ describe(__filename, function () {
     });
 
     it('custom predicate: normalized value passed to predicate (undefined)', async function () {
-      this.timeout(30);
       const predicate = (got) => { assert.deepEqual(got, []); };
       await hooks.aCallFirst(hookName, null, null, predicate);
     });
 
     it('custom predicate: normalized value passed to predicate (null)', async function () {
-      this.timeout(30);
       hook.hook_fn = () => null;
       const predicate = (got) => { assert.deepEqual(got, [null]); };
       await hooks.aCallFirst(hookName, null, null, predicate);
     });
 
     it('non-empty arrays are returned unmodified', async function () {
-      this.timeout(30);
       const want = ['val1'];
       testHooks.length = 0;
       testHooks.push(makeHook(want), makeHook(['val2']));
@@ -1292,7 +1199,6 @@ describe(__filename, function () {
     });
 
     it('value can be passed via callback', async function () {
-      this.timeout(30);
       const want = {};
       hook.hook_fn = (hn, ctx, cb) => { cb(want); };
       const got = await hooks.aCallFirst(hookName);
