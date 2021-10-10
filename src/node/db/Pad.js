@@ -499,7 +499,6 @@ Pad.prototype.copyPadWithoutHistory = async function (destinationID, force) {
 
   // based on Changeset.makeSplice
   const assem = Changeset.smartOpAssembler();
-  assem.appendOpWithText('=', '');
   Changeset.appendATextToAssembler(oldAText, assem);
   assem.endDocument();
 
