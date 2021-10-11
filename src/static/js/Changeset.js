@@ -1146,9 +1146,9 @@ exports.composeAttributes = (att1, att2, resultIsMutation, pool) => {
   });
   atts.sort();
   const buf = exports.stringAssembler();
-  for (let i = 0; i < atts.length; i++) {
+  for (const att of atts) {
     buf.append('*');
-    buf.append(exports.numToString(pool.putAttrib(atts[i])));
+    buf.append(exports.numToString(pool.putAttrib(att)));
   }
   return buf.toString();
 };
@@ -1306,8 +1306,7 @@ exports.mutateAttributionLines = (cs, lines, pool) => {
  */
 exports.joinAttributionLines = (theAlines) => {
   const assem = exports.mergingOpAssembler();
-  for (let i = 0; i < theAlines.length; i++) {
-    const aline = theAlines[i];
+  for (const aline of theAlines) {
     const iter = exports.opIterator(aline);
     while (iter.hasNext()) {
       assem.append(iter.next());
@@ -1507,10 +1506,8 @@ const toSplices = (cs) => {
 exports.characterRangeFollow = (cs, startChar, endChar, insertionsAfter) => {
   let newStartChar = startChar;
   let newEndChar = endChar;
-  const splices = toSplices(cs);
   let lengthChangeSoFar = 0;
-  for (let i = 0; i < splices.length; i++) {
-    const splice = splices[i];
+  for (const splice of toSplices(cs)) {
     const spliceStart = splice[0] + lengthChangeSoFar;
     const spliceEnd = splice[1] + lengthChangeSoFar;
     const newTextLength = splice[2].length;
@@ -1906,8 +1903,7 @@ exports.makeAttribsString = (opcode, attribs, pool) => {
       attribs.sort();
     }
     const result = [];
-    for (let i = 0; i < attribs.length; i++) {
-      const pair = attribs[i];
+    for (const pair of attribs) {
       if (opcode === '=' || (opcode === '+' && pair[1])) {
         result.push(`*${exports.numToString(pool.putAttrib(pair))}`);
       }
@@ -2072,23 +2068,15 @@ exports.inverse = (cs, lines, alines, pool) => {
     };
   };
 
-  const attribKeys = [];
-  const attribValues = [];
   while (csIter.hasNext()) {
     const csOp = csIter.next();
     if (csOp.opcode === '=') {
       if (csOp.attribs) {
-        attribKeys.length = 0;
-        attribValues.length = 0;
-        exports.eachAttribNumber(csOp.attribs, (n) => {
-          attribKeys.push(pool.getAttribKey(n));
-          attribValues.push(pool.getAttribValue(n));
-        });
+        const csAttribs = [];
+        exports.eachAttribNumber(csOp.attribs, (n) => csAttribs.push(pool.getAttrib(n)));
         const undoBackToAttribs = cachedStrFunc((attribs) => {
           const backAttribs = [];
-          for (let i = 0; i < attribKeys.length; i++) {
-            const appliedKey = attribKeys[i];
-            const appliedValue = attribValues[i];
+          for (const [appliedKey, appliedValue] of csAttribs) {
             const oldValue = exports.attribsAttributeValue(attribs, appliedKey, pool);
             if (appliedValue !== oldValue) {
               backAttribs.push([appliedKey, oldValue]);
@@ -2289,9 +2277,9 @@ const followAttributes = (att1, att2, pool) => {
   });
   // we've only removed attributes, so they're already sorted
   const buf = exports.stringAssembler();
-  for (let i = 0; i < atts.length; i++) {
+  for (const att of atts) {
     buf.append('*');
-    buf.append(exports.numToString(pool.putAttrib(atts[i])));
+    buf.append(exports.numToString(pool.putAttrib(att)));
   }
   return buf.toString();
 };
