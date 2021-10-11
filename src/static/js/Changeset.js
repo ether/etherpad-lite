@@ -482,24 +482,22 @@ exports.mergingOpAssembler = () => {
  * @returns {OpAssembler}
  */
 exports.opAssembler = () => {
-  const pieces = [];
+  let serialized = '';
 
   /**
    * @param {Op} op - Operation to add. Ownership remains with the caller.
    */
   const append = (op) => {
-    pieces.push(op.attribs);
-    if (op.lines) {
-      pieces.push('|', exports.numToString(op.lines));
-    }
-    pieces.push(op.opcode);
-    pieces.push(exports.numToString(op.chars));
+    if (op.attribs != null) serialized += op.attribs;
+    if (op.lines) serialized += `|${exports.numToString(op.lines)}`;
+    if (op.opcode != null) serialized += op.opcode;
+    serialized += exports.numToString(op.chars);
   };
 
-  const toString = () => pieces.join('');
+  const toString = () => serialized;
 
   const clear = () => {
-    pieces.length = 0;
+    serialized = '';
   };
   return {
     append,
@@ -573,22 +571,14 @@ exports.stringIterator = (str) => {
 /**
  * @returns {StringAssembler}
  */
-exports.stringAssembler = () => {
-  const pieces = [];
-
+exports.stringAssembler = () => ({
+  _str: '',
   /**
    * @param {string} x -
    */
-  const append = (x) => {
-    pieces.push(String(x));
-  };
-
-  const toString = () => pieces.join('');
-  return {
-    append,
-    toString,
-  };
-};
+  append(x) { this._str += String(x); },
+  toString() { return this._str; },
+});
 
 /**
  * @typedef {object} StringArrayLike
