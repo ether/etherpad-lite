@@ -421,6 +421,63 @@ class MergingOpAssembler {
 }
 
 /**
+ * Canonicalizes a sequence of operations. Specifically:
+ *   - Skips no-op changes.
+ *   - Reorders consecutive '-' and '+' operations.
+ *   - Combines consecutive operations when possible.
+ *
+ * @param {Iterable<Op>} ops - Iterable of operations to combine.
+ * @param {boolean} finalize - If truthy, omits the final op if it is an attributeless keep op.
+ * @yields {Op} The canonicalized operations.
+ * @returns {Generator<Op, number>} The done value indicates how much the sequence of operations
+ *     changes the length of the document (in characters).
+ */
+const canonicalizeOps = function* (ops, finalize) {
+  let minusOps = [];
+  let plusOps = [];
+  let keepOps = [];
+  let prevOpcode = '';
+  let lengthChange = 0;
+
+  const flushPlusMinus = function* () {
+    yield* exports.squashOps(minusOps, false);
+    minusOps = [];
+    yield* exports.squashOps(plusOps, false);
+    plusOps = [];
+  };
+
+  const flushKeeps = function* (finalize) {
+    yield* exports.squashOps(keepOps, finalize);
+    keepOps = [];
+  };
+
+  for (const op of ops) {
+    if (!op.opcode || !op.chars) continue;
+    switch (op.opcode) {
+      case '-':
+        if (prevOpcode === '=') yield* flushKeeps(false);
+        minusOps.push(op);
+        lengthChange -= op.chars;
+        break;
+      case '+':
+        if (prevOpcode === '=') yield* flushKeeps(false);
+        plusOps.push(op);
+        lengthChange += op.chars;
+        break;
+      case '=':
+        if (prevOpcode !== '=') yield* flushPlusMinus();
+        keepOps.push(op);
+        break;
+    }
+    prevOpcode = op.opcode;
+  }
+
+  yield* flushPlusMinus();
+  yield* flushKeeps(finalize);
+  return lengthChange;
+};
+
+/**
  * Generates operations from the given text and attributes.
  *
  * @param {('-'|'+'|'=')} opcode - The operator to use.
@@ -465,54 +522,25 @@ const opsFromText = function* (opcode, text, attribs = '', pool = null) {
  */
 class SmartOpAssembler {
   constructor() {
-    this._assem = exports.stringAssembler();
     this.clear();
   }
 
   clear() {
-    this._minusAssem = [];
-    this._plusAssem = [];
-    this._keepAssem = [];
-    this._assem.clear();
-    this._lastOpcode = '';
-    this._lengthChange = 0;
+    this._ops = [];
+    this._serialized = null;
+    this._lengthChange = null;
   }
 
-  _flushKeeps(finalize) {
-    this._assem.append(exports.serializeOps(exports.squashOps(this._keepAssem, finalize)));
-    this._keepAssem = [];
-  }
-
-  _flushPlusMinus() {
-    this._assem.append(exports.serializeOps(exports.squashOps(this._minusAssem, false)));
-    this._minusAssem = [];
-    this._assem.append(exports.serializeOps(exports.squashOps(this._plusAssem, false)));
-    this._plusAssem = [];
+  _serialize(finalize) {
+    this._serialized = exports.serializeOps((function* () {
+      this._lengthChange = yield* canonicalizeOps(this._ops, finalize);
+    }).call(this));
   }
 
   append(op) {
-    if (!op.opcode) return;
-    if (!op.chars) return;
-
-    if (op.opcode === '-') {
-      if (this._lastOpcode === '=') {
-        this._flushKeeps(false);
-      }
-      this._minusAssem.push(copyOp(op));
-      this._lengthChange -= op.chars;
-    } else if (op.opcode === '+') {
-      if (this._lastOpcode === '=') {
-        this._flushKeeps(false);
-      }
-      this._plusAssem.push(copyOp(op));
-      this._lengthChange += op.chars;
-    } else if (op.opcode === '=') {
-      if (this._lastOpcode !== '=') {
-        this._flushPlusMinus();
-      }
-      this._keepAssem.push(copyOp(op));
-    }
-    this._lastOpcode = op.opcode;
+    this._serialized = null;
+    this._lengthChange = null;
+    this._ops.push(copyOp(op));
   }
 
   /**
@@ -533,17 +561,16 @@ class SmartOpAssembler {
   }
 
   toString() {
-    this._flushPlusMinus();
-    this._flushKeeps(false);
-    return this._assem.toString();
+    if (this._serialized == null) this._serialize(false);
+    return this._serialized;
   }
 
   endDocument() {
-    this._flushPlusMinus();
-    this._flushKeeps(true);
+    this._serialize(true);
   }
 
   getLengthChange() {
+    if (this._lengthChange == null) this._serialize(false);
     return this._lengthChange;
   }
 }
