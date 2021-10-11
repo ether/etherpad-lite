@@ -870,14 +870,14 @@ const textLinesMutator = (lines) => {
         curLine++;
         newLines.splice(0, 1);
         // insert the remaining new lines
-        Array.prototype.push.apply(curSplice, newLines);
+        curSplice.push(...newLines);
         curLine += newLines.length;
         // insert the remaining chars from the "old" line (e.g. the line we were in
         // when we started to insert new lines)
         curSplice.push(theLine.substring(lineCol));
         curCol = 0; // TODO(doc) why is this not set to the length of last line?
       } else {
-        Array.prototype.push.apply(curSplice, newLines);
+        curSplice.push(...newLines);
         curLine += newLines.length;
       }
     } else {
