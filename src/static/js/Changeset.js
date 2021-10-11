@@ -331,6 +331,63 @@ class OpAssembler {
 }
 
 /**
+ * Combines consecutive operations when possible. Also skips no-op changes.
+ *
+ * @param {Iterable<Op>} ops - Iterable of operations to combine.
+ * @param {boolean} finalize - If truthy, omits the final op if it is an attributeless keep op.
+ * @yields {Op} The squashed operations.
+ * @returns {Generator<Op>}
+ */
+const squashOps = function* (ops, finalize) {
+  let prevOp = new Op();
+  // If we get, for example, insertions [xxx\n,yyy], those don't merge, but if we get
+  // [xxx\n,yyy,zzz\n], that merges to [xxx\nyyyzzz\n]. This variable stores the length of yyy and
+  // any other newline-less ops immediately after it.
+  let prevOpAdditionalCharsAfterNewline = 0;
+
+  const flush = function* (finalize) {
+    if (!prevOp.opcode) return;
+    if (finalize && prevOp.opcode === '=' && !prevOp.attribs) {
+      // final merged keep, leave it implicit
+    } else {
+      yield prevOp;
+      if (prevOpAdditionalCharsAfterNewline) {
+        const op = new Op(prevOp.opcode);
+        op.chars = prevOpAdditionalCharsAfterNewline;
+        op.lines = 0;
+        op.attribs = prevOp.attribs;
+        yield op;
+        prevOpAdditionalCharsAfterNewline = 0;
+      }
+    }
+    prevOp = new Op();
+  };
+
+  for (const op of ops) {
+    if (!op.opcode || op.chars <= 0) continue;
+    if (prevOp.opcode === op.opcode && prevOp.attribs === op.attribs) {
+      if (op.lines > 0) {
+        // bufOp and additional chars are all mergeable into a multi-line op
+        prevOp.chars += prevOpAdditionalCharsAfterNewline + op.chars;
+        prevOp.lines += op.lines;
+        prevOpAdditionalCharsAfterNewline = 0;
+      } else if (prevOp.lines === 0) {
+        // both prevOp and op are in-line
+        prevOp.chars += op.chars;
+      } else {
+        // append in-line text to multi-line prevOp
+        prevOpAdditionalCharsAfterNewline += op.chars;
+      }
+    } else {
+      yield* flush(false);
+      prevOp = copyOp(op); // prevOp is mutated, so make a copy to protect op.
+    }
+  }
+
+  yield* flush(finalize);
+};
+
+/**
  * Efficiently merges consecutive operations that are mergeable, ignores no-ops, and drops final
  * pure "keeps". It does not re-order operations.
  */
@@ -340,58 +397,26 @@ class MergingOpAssembler {
   }
 
   clear() {
-    this._assem = [];
-    this._bufOp = new Op();
-    // If we get, for example, insertions [xxx\n,yyy], those don't merge, but if we get
-    // [xxx\n,yyy,zzz\n], that merges to [xxx\nyyyzzz\n]. This variable stores the length of yyy and
-    // any other newline-less ops immediately after it.
-    this._bufOpAdditionalCharsAfterNewline = 0;
+    this._ops = [];
+    this._serialized = null;
   }
 
-  _flush(isEndDocument) {
-    if (!this._bufOp.opcode) return;
-    if (isEndDocument && this._bufOp.opcode === '=' && !this._bufOp.attribs) {
-      // final merged keep, leave it implicit
-    } else {
-      this._assem.push(copyOp(this._bufOp));
-      if (this._bufOpAdditionalCharsAfterNewline) {
-        this._bufOp.chars = this._bufOpAdditionalCharsAfterNewline;
-        this._bufOp.lines = 0;
-        this._assem.push(copyOp(this._bufOp));
-        this._bufOpAdditionalCharsAfterNewline = 0;
-      }
-    }
-    this._bufOp.opcode = '';
+  _serialize(finalize) {
+    this._serialized = exports.serializeOps(squashOps(this._ops, finalize));
   }
 
   append(op) {
-    if (op.chars <= 0) return;
-    if (this._bufOp.opcode === op.opcode && this._bufOp.attribs === op.attribs) {
-      if (op.lines > 0) {
-        // this._bufOp and additional chars are all mergeable into a multi-line op
-        this._bufOp.chars += this._bufOpAdditionalCharsAfterNewline + op.chars;
-        this._bufOp.lines += op.lines;
-        this._bufOpAdditionalCharsAfterNewline = 0;
-      } else if (this._bufOp.lines === 0) {
-        // both this._bufOp and op are in-line
-        this._bufOp.chars += op.chars;
-      } else {
-        // append in-line text to multi-line this._bufOp
-        this._bufOpAdditionalCharsAfterNewline += op.chars;
-      }
-    } else {
-      this._flush();
-      copyOp(op, this._bufOp);
-    }
+    this._serialized = null;
+    this._ops.push(copyOp(op));
   }
 
   endDocument() {
-    this._flush(true);
+    this._serialize(true);
   }
 
   toString() {
-    this._flush();
-    return exports.serializeOps(this._assem);
+    if (this._serialized == null) this._serialize(false);
+    return this._serialized;
   }
 }
 
