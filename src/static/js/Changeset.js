@@ -1090,6 +1090,15 @@ exports.mutateTextLines = (cs, lines) => {
 };
 
 /**
+ * Sorts an array of attributes by key.
+ *
+ * @param {Attribute[]} attribs - The array of attributes to sort in place.
+ * @returns {Attribute[]} The `attribs` array.
+ */
+const sortAttribs =
+    (attribs) => attribs.sort((a, b) => (a[0] > b[0] ? 1 : 0) - (a[0] < b[0] ? 1 : 0));
+
+/**
  * Composes two attribute strings (see below) into one.
  *
  * @param {string} att1 - first attribute string
@@ -1144,9 +1153,8 @@ exports.composeAttributes = (att1, att2, resultIsMutation, pool) => {
     }
     return '';
   });
-  atts.sort();
   const buf = exports.stringAssembler();
-  for (const att of atts) {
+  for (const att of sortAttribs(atts)) {
     buf.append('*');
     buf.append(exports.numToString(pool.putAttrib(att)));
   }
@@ -1900,7 +1908,7 @@ exports.makeAttribsString = (opcode, attribs, pool) => {
   } else if (pool && attribs.length) {
     if (attribs.length > 1) {
       attribs = attribs.slice();
-      attribs.sort();
+      sortAttribs(attribs);
     }
     const result = [];
     for (const pair of attribs) {
