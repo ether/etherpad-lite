@@ -1129,32 +1129,23 @@ exports.composeAttributes = (att1, att2, resultIsMutation, pool) => {
     return att2;
   }
   if (!att2) return att1;
-  const atts = [];
+  const atts = new Map();
   att1.replace(/\*([0-9a-z]+)/g, (_, a) => {
-    atts.push(pool.getAttrib(exports.parseNum(a)));
+    const [key, val] = pool.getAttrib(exports.parseNum(a));
+    atts.set(key, val);
     return '';
   });
   att2.replace(/\*([0-9a-z]+)/g, (_, a) => {
-    const pair = pool.getAttrib(exports.parseNum(a));
-    let found = false;
-    for (let i = 0; i < atts.length; i++) {
-      const oldPair = atts[i];
-      if (oldPair[0] !== pair[0]) continue;
-      if (pair[1] || resultIsMutation) {
-        oldPair[1] = pair[1];
-      } else {
-        atts.splice(i, 1);
-      }
-      found = true;
-      break;
-    }
-    if ((!found) && (pair[1] || resultIsMutation)) {
-      atts.push(pair);
+    const [key, val] = pool.getAttrib(exports.parseNum(a));
+    if (val || resultIsMutation) {
+      atts.set(key, val);
+    } else {
+      atts.delete(key);
     }
     return '';
   });
   const buf = exports.stringAssembler();
-  for (const att of sortAttribs(atts)) {
+  for (const att of sortAttribs([...atts])) {
     buf.append('*');
     buf.append(exports.numToString(pool.putAttrib(att)));
   }
@@ -2265,22 +2256,15 @@ const followAttributes = (att1, att2, pool) => {
   // to produce the merged set.
   if ((!att2) || (!pool)) return '';
   if (!att1) return att2;
-  const atts = [];
+  const atts = new Map();
   att2.replace(/\*([0-9a-z]+)/g, (_, a) => {
-    atts.push(pool.getAttrib(exports.parseNum(a)));
+    const [key, val] = pool.getAttrib(exports.parseNum(a));
+    atts.set(key, val);
     return '';
   });
   att1.replace(/\*([0-9a-z]+)/g, (_, a) => {
-    const pair1 = pool.getAttrib(exports.parseNum(a));
-    for (let i = 0; i < atts.length; i++) {
-      const pair2 = atts[i];
-      if (pair1[0] !== pair2[0]) continue;
-      if (pair1[1] <= pair2[1]) {
-        // winner of merge is pair1, delete this attribute
-        atts.splice(i, 1);
-      }
-      break;
-    }
+    const [key, val] = pool.getAttrib(exports.parseNum(a));
+    if (atts.has(key) && val <= atts.get(key)) atts.delete(key);
     return '';
   });
   // we've only removed attributes, so they're already sorted
