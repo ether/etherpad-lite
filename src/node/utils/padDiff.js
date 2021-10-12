@@ -206,28 +206,26 @@ PadDiff.prototype._extendChangesetWithAuthor = (changeset, author, apool) => {
   // unpack
   const unpacked = Changeset.unpack(changeset);
 
-  const assem = Changeset.opAssembler();
-
   // create deleted attribs
   const authorAttrib = apool.putAttrib(['author', author || '']);
   const deletedAttrib = apool.putAttrib(['removed', true]);
   const attribs = `*${Changeset.numToString(authorAttrib)}*${Changeset.numToString(deletedAttrib)}`;
 
-  for (const operator of Changeset.deserializeOps(unpacked.ops)) {
-    if (operator.opcode === '-') {
-      // this is a delete operator, extend it with the author
-      operator.attribs = attribs;
-    } else if (operator.opcode === '=' && operator.attribs) {
-      // this is operator changes only attributes, let's mark which author did that
-      operator.attribs += `*${Changeset.numToString(authorAttrib)}`;
+  const serializedOps = Changeset.serializeOps((function* () {
+    for (const operator of Changeset.deserializeOps(unpacked.ops)) {
+      if (operator.opcode === '-') {
+        // this is a delete operator, extend it with the author
+        operator.attribs = attribs;
+      } else if (operator.opcode === '=' && operator.attribs) {
+        // this is operator changes only attributes, let's mark which author did that
+        operator.attribs += `*${Changeset.numToString(authorAttrib)}`;
+      }
+      yield operator;
     }
-
-    // append the new operator to our assembler
-    assem.append(operator);
-  }
+  })());
 
   // return the modified changeset
-  return Changeset.pack(unpacked.oldLen, unpacked.newLen, assem.toString(), unpacked.charBank);
+  return Changeset.pack(unpacked.oldLen, unpacked.newLen, serializedOps, unpacked.charBank);
 };
 
 // this method is 80% like Changeset.inverse. I just changed so instead of reverting,

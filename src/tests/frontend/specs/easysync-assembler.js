@@ -3,11 +3,9 @@
 const Changeset = require('../../../static/js/Changeset');
 
 describe('easysync-assembler', function () {
-  it('opAssembler', async function () {
+  it('deserialize and serialize', async function () {
     const x = '-c*3*4+6|3=az*asdf0*1*2*3+1=1-1+1*0+1=1-1+1|c=c-1';
-    const assem = Changeset.opAssembler();
-    for (const op of Changeset.deserializeOps(x)) assem.append(op);
-    expect(assem.toString()).to.equal(x);
+    expect(Changeset.serializeOps(Changeset.deserializeOps(x))).to.equal(x);
   });
 
   it('smartOpAssembler', async function () {

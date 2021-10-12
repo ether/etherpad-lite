@@ -36,6 +36,7 @@
     * `opAttributeValue()`
   * `opIterator()`: Deprecated in favor of the new `deserializeOps()` generator
     function.
+  * `opAssembler()`: Deprecated in favor of the new `serializeOps()` function.
   * `appendATextToAssembler()`: Deprecated in favor of the new `opsFromAText()`
     generator function.
   * `newOp()`: Deprecated in favor of the new `Op` class.

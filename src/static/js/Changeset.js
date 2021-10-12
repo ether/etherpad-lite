@@ -297,7 +297,7 @@ const copyOp = (op1, op2 = new Op()) => Object.assign(op2, op1);
  * @param {Iterable<Op>} ops - Iterable of operations to serialize.
  * @returns {string} A string containing the encoded op data (example: '|5=2p=v*4*5+1').
  */
-const serializeOps = (ops) => {
+exports.serializeOps = (ops) => {
   let res = '';
   for (const op of ops) res += op.toString();
   return res;
@@ -305,6 +305,8 @@ const serializeOps = (ops) => {
 
 /**
  * Serializes a sequence of Ops.
+ *
+ * @deprecated Use `serializeOps` instead.
  */
 class OpAssembler {
   constructor() {
@@ -324,7 +326,7 @@ class OpAssembler {
   }
 
   toString() {
-    return serializeOps(this._ops);
+    return exports.serializeOps(this._ops);
   }
 }
 
@@ -334,12 +336,11 @@ class OpAssembler {
  */
 class MergingOpAssembler {
   constructor() {
-    this._assem = new OpAssembler();
     this.clear();
   }
 
   clear() {
-    this._assem.clear();
+    this._assem = [];
     this._bufOp = new Op();
     // If we get, for example, insertions [xxx\n,yyy], those don't merge, but if we get
     // [xxx\n,yyy,zzz\n], that merges to [xxx\nyyyzzz\n]. This variable stores the length of yyy and
@@ -352,11 +353,11 @@ class MergingOpAssembler {
     if (isEndDocument && this._bufOp.opcode === '=' && !this._bufOp.attribs) {
       // final merged keep, leave it implicit
     } else {
-      this._assem.append(this._bufOp);
+      this._assem.push(copyOp(this._bufOp));
       if (this._bufOpAdditionalCharsAfterNewline) {
         this._bufOp.chars = this._bufOpAdditionalCharsAfterNewline;
         this._bufOp.lines = 0;
-        this._assem.append(this._bufOp);
+        this._assem.push(copyOp(this._bufOp));
         this._bufOpAdditionalCharsAfterNewline = 0;
       }
     }
@@ -390,7 +391,7 @@ class MergingOpAssembler {
 
   toString() {
     this._flush();
-    return this._assem.toString();
+    return exports.serializeOps(this._assem);
   }
 }
 
@@ -590,9 +591,14 @@ exports.smartOpAssembler = () => new SmartOpAssembler();
 exports.mergingOpAssembler = () => new MergingOpAssembler();
 
 /**
+ * @deprecated Use `serializeOps` instead.
  * @returns {OpAssembler}
  */
-exports.opAssembler = () => new OpAssembler();
+exports.opAssembler = () => {
+  padutils.warnDeprecated(
+      'Changeset.opAssembler() is deprecated; use Changeset.serializeOps() instead');
+  return new OpAssembler();
+};
 
 /**
  * A custom made String Iterator
