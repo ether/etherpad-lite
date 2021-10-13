@@ -43,6 +43,9 @@
   * Changes to the `src/static/js/Changeset.js` library:
     * `opIterator()`: The unused start index parameter has been removed, as has
       the unused `lastIndex()` method on the returned object.
+    * `smartOpAssembler()`: The returned object's `appendOpWithText()` method is
+      deprecated without a replacement available to plugins (if you need one,
+      let us know and we can make the private `opsFromText()` function public).
     * Several functions that should have never been public are no longer
       exported: `applyZip()`, `assert()`, `clearOp()`, `cloneOp()`, `copyOp()`,
       `error()`, `followAttributes()`, `opString()`, `stringOp()`,
