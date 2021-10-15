@@ -26,7 +26,7 @@
 const Changeset = require('../../../static/js/Changeset');
 const AttributePool = require('../../../static/js/AttributePool');
 
-function random() {
+function Random() {
   this.nextInt = (maxValue) => Math.floor(Math.random() * maxValue);
   this.nextDouble = (maxValue) => Math.random();
 }
@@ -87,7 +87,7 @@ const runTests = () => {
 
   const applyMutations = (mu, arrayOfArrays) => {
     arrayOfArrays.forEach((a) => {
-      const result = mu[a[0]].apply(mu, a.slice(1));
+      const result = mu[a[0]](...a.slice(1));
       if (a[0] === 'remove' && a[3]) {
         assertEqualStrings(a[3], result);
       }
@@ -290,8 +290,7 @@ const runTests = () => {
     print(`> runMutateAttributionTest#${testId}`);
     const p = poolOrArray(attribs);
     const alines2 = Array.prototype.slice.call(alines);
-    const result = Changeset.mutateAttributionLines(
-        Changeset.checkRep(cs), alines2, p);
+    Changeset.mutateAttributionLines(Changeset.checkRep(cs), alines2, p);
     assertEqualArrays(outCorrect, alines2);
 
     print(`> runMutateAttributionTest#${testId}.applyToAttribution`);
@@ -336,7 +335,23 @@ const runTests = () => {
 
   // based on runMutationTest#1
   runMutateAttributionTest(5, testPoolWithChars,
-      'Z:11>7-2*t+1*u+1|2=b|2+a=2*b+1*o+1*t+1*0|1+1*b+1*u+1=3|1-3-6$' + 'tucream\npie\nbot\nbu', ['*a+1*p+2*l+1*e+1*0|1+1', '*b+1*a+1*n+1*a+1*n+1*a+1*0|1+1', '*c+1*a+1*b+2*a+1*g+1*e+1*0|1+1', '*d+1*u+1*f+2*l+1*e+1*0|1+1', '*e+1*g+2*p+1*l+1*a+1*n+1*t+1*0|1+1'], ['*t+1*u+1*p+1*l+1*e+1*0|1+1', '*b+1*a+1*n+1*a+1*n+1*a+1*0|1+1', '|1+6', '|1+4', '*c+1*a+1*b+1*o+1*t+1*0|1+1', '*b+1*u+1*b+2*a+1*0|1+1', '*e+1*g+2*p+1*l+1*a+1*n+1*t+1*0|1+1']);
+      'Z:11>7-2*t+1*u+1|2=b|2+a=2*b+1*o+1*t+1*0|1+1*b+1*u+1=3|1-3-6$tucream\npie\nbot\nbu',
+      [
+        '*a+1*p+2*l+1*e+1*0|1+1',
+        '*b+1*a+1*n+1*a+1*n+1*a+1*0|1+1',
+        '*c+1*a+1*b+2*a+1*g+1*e+1*0|1+1',
+        '*d+1*u+1*f+2*l+1*e+1*0|1+1',
+        '*e+1*g+2*p+1*l+1*a+1*n+1*t+1*0|1+1',
+      ],
+      [
+        '*t+1*u+1*p+1*l+1*e+1*0|1+1',
+        '*b+1*a+1*n+1*a+1*n+1*a+1*0|1+1',
+        '|1+6',
+        '|1+4',
+        '*c+1*a+1*b+1*o+1*t+1*0|1+1',
+        '*b+1*u+1*b+2*a+1*0|1+1',
+        '*e+1*g+2*p+1*l+1*a+1*n+1*t+1*0|1+1',
+      ]);
 
   // based on runMutationTest#3
   runMutateAttributionTest(6, testPoolWithChars,
@@ -512,7 +527,7 @@ const runTests = () => {
     // assumes attrib pool like ['apple,','apple,true','banana,','banana,true']
     if (opcode === '-' || rand.nextInt(3)) {
       return '';
-    } else if (rand.nextInt(3)) {
+    } else if (rand.nextInt(3)) { // eslint-disable-line no-dupe-else-if
       if (opcode === '+' || rand.nextInt(2)) {
         return `*${Changeset.numToString(rand.nextInt(2) * 2 + 1)}`;
       } else {
@@ -582,7 +597,7 @@ const runTests = () => {
   };
 
   const testCompose = (randomSeed) => {
-    const rand = new random();
+    const rand = new Random();
     print(`> testCompose#${randomSeed}`);
 
     const p = new AttributePool();
@@ -614,7 +629,7 @@ const runTests = () => {
 
   for (let i = 0; i < 30; i++) testCompose(i);
 
-  (function simpleComposeAttributesTest() {
+  (() => {
     print('> simpleComposeAttributesTest');
     const p = new AttributePool();
     p.putAttrib(['bold', '']);
@@ -625,7 +640,7 @@ const runTests = () => {
     assertEqualStrings('Z:2>1+1*0|1=2$x', cs12);
   })();
 
-  (function followAttributesTest() {
+  (() => {
     const p = new AttributePool();
     p.putAttrib(['x', '']);
     p.putAttrib(['x', 'abc']);
@@ -652,7 +667,7 @@ const runTests = () => {
   })();
 
   const testFollow = (randomSeed) => {
-    const rand = new random();
+    const rand = new Random();
     print(`> testFollow#${randomSeed}`);
 
     const p = new AttributePool();
@@ -674,7 +689,7 @@ const runTests = () => {
   for (let i = 0; i < 30; i++) testFollow(i);
 
   const testSplitJoinAttributionLines = (randomSeed) => {
-    const rand = new random();
+    const rand = new Random();
     print(`> testSplitJoinAttributionLines#${randomSeed}`);
 
     const doc = `${randomMultiline(10, 20, rand)}\n`;
@@ -701,7 +716,7 @@ const runTests = () => {
 
   for (let i = 0; i < 10; i++) testSplitJoinAttributionLines(i);
 
-  (function testMoveOpsToNewPool() {
+  (() => {
     print('> testMoveOpsToNewPool');
 
     const pool1 = new AttributePool();
@@ -719,7 +734,7 @@ const runTests = () => {
   })();
 
 
-  (function testMakeSplice() {
+  (() => {
     print('> testMakeSplice');
 
     const t = 'a\nb\nc\n';
@@ -727,7 +742,7 @@ const runTests = () => {
     assertEqualStrings('a\nb\ncdef\n', t2);
   })();
 
-  (function testToSplices() {
+  (() => {
     print('> testToSplices');
 
     const cs = Changeset.checkRep('Z:z>9*0=1=4-3+9=1|1-4-4+1*0+a$123456789abcdefghijk');
@@ -758,7 +773,7 @@ const runTests = () => {
   testCharacterRangeFollow(10, 'Z:2>1+1$a', [0, 0], false, [1, 1]);
   testCharacterRangeFollow(11, 'Z:2>1+1$a', [0, 0], true, [0, 0]);
 
-  (function testOpAttributeValue() {
+  (() => {
     print('> testOpAttributeValue');
 
     const p = new AttributePool();
@@ -935,7 +950,7 @@ const runTests = () => {
   testMutateTextLines(2, 'Z:4>0|1-2-1|2+3$\nc\n', ['a\n', 'b\n'], ['\n', 'c\n', '\n']);
 
   const testInverseRandom = (randomSeed) => {
-    const rand = new random();
+    const rand = new Random();
     print(`> testInverseRandom#${randomSeed}`);
 
     const p = poolOrArray(['apple,', 'apple,true', 'banana,', 'banana,true']);
