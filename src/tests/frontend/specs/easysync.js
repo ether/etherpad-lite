@@ -26,10 +26,7 @@
 const Changeset = require('../../../static/js/Changeset');
 const AttributePool = require('../../../static/js/AttributePool');
 
-function Random() {
-  this.nextInt = (maxValue) => Math.floor(Math.random() * maxValue);
-  this.nextDouble = (maxValue) => Math.random();
-}
+const randInt = (maxValue) => Math.floor(Math.random() * maxValue);
 
 const runTests = () => {
   const print = (str) => {
@@ -396,22 +393,22 @@ const runTests = () => {
         '|1+1',
       ]);
 
-  const randomInlineString = (len, rand) => {
+  const randomInlineString = (len) => {
     const assem = Changeset.stringAssembler();
     for (let i = 0; i < len; i++) {
-      assem.append(String.fromCharCode(rand.nextInt(26) + 97));
+      assem.append(String.fromCharCode(randInt(26) + 97));
     }
     return assem.toString();
   };
 
-  const randomMultiline = (approxMaxLines, approxMaxCols, rand) => {
-    const numParts = rand.nextInt(approxMaxLines * 2) + 1;
+  const randomMultiline = (approxMaxLines, approxMaxCols) => {
+    const numParts = randInt(approxMaxLines * 2) + 1;
     const txt = Changeset.stringAssembler();
-    txt.append(rand.nextInt(2) ? '\n' : '');
+    txt.append(randInt(2) ? '\n' : '');
     for (let i = 0; i < numParts; i++) {
       if ((i % 2) === 0) {
-        if (rand.nextInt(10)) {
-          txt.append(randomInlineString(rand.nextInt(approxMaxCols) + 1, rand));
+        if (randInt(10)) {
+          txt.append(randomInlineString(randInt(approxMaxCols) + 1));
         } else {
           txt.append('\n');
         }
@@ -422,14 +419,14 @@ const runTests = () => {
     return txt.toString();
   };
 
-  const randomStringOperation = (numCharsLeft, rand) => {
+  const randomStringOperation = (numCharsLeft) => {
     let result;
-    switch (rand.nextInt(9)) {
+    switch (randInt(9)) {
       case 0:
       {
         // insert char
         result = {
-          insert: randomInlineString(1, rand),
+          insert: randomInlineString(1),
         };
         break;
       }
@@ -453,7 +450,7 @@ const runTests = () => {
       {
         // insert small
         result = {
-          insert: randomInlineString(rand.nextInt(4) + 1, rand),
+          insert: randomInlineString(randInt(4) + 1),
         };
         break;
       }
@@ -461,7 +458,7 @@ const runTests = () => {
       {
         // delete small
         result = {
-          remove: rand.nextInt(4) + 1,
+          remove: randInt(4) + 1,
         };
         break;
       }
@@ -469,7 +466,7 @@ const runTests = () => {
       {
         // skip small
         result = {
-          skip: rand.nextInt(4) + 1,
+          skip: randInt(4) + 1,
         };
         break;
       }
@@ -477,7 +474,7 @@ const runTests = () => {
       {
         // insert multiline;
         result = {
-          insert: randomMultiline(5, 20, rand),
+          insert: randomMultiline(5, 20),
         };
         break;
       }
@@ -485,7 +482,7 @@ const runTests = () => {
       {
         // delete multiline
         result = {
-          remove: Math.round(numCharsLeft * rand.nextDouble() * rand.nextDouble()),
+          remove: Math.round(numCharsLeft * Math.random() * Math.random()),
         };
         break;
       }
@@ -493,7 +490,7 @@ const runTests = () => {
       {
         // skip multiline
         result = {
-          skip: Math.round(numCharsLeft * rand.nextDouble() * rand.nextDouble()),
+          skip: Math.round(numCharsLeft * Math.random() * Math.random()),
         };
         break;
       }
@@ -523,24 +520,24 @@ const runTests = () => {
     return result;
   };
 
-  const randomTwoPropAttribs = (opcode, rand) => {
+  const randomTwoPropAttribs = (opcode) => {
     // assumes attrib pool like ['apple,','apple,true','banana,','banana,true']
-    if (opcode === '-' || rand.nextInt(3)) {
+    if (opcode === '-' || randInt(3)) {
       return '';
-    } else if (rand.nextInt(3)) { // eslint-disable-line no-dupe-else-if
-      if (opcode === '+' || rand.nextInt(2)) {
-        return `*${Changeset.numToString(rand.nextInt(2) * 2 + 1)}`;
+    } else if (randInt(3)) { // eslint-disable-line no-dupe-else-if
+      if (opcode === '+' || randInt(2)) {
+        return `*${Changeset.numToString(randInt(2) * 2 + 1)}`;
       } else {
-        return `*${Changeset.numToString(rand.nextInt(2) * 2)}`;
+        return `*${Changeset.numToString(randInt(2) * 2)}`;
       }
-    } else if (opcode === '+' || rand.nextInt(4) === 0) {
+    } else if (opcode === '+' || randInt(4) === 0) {
       return '*1*3';
     } else {
-      return ['*0*2', '*0*3', '*1*2'][rand.nextInt(3)];
+      return ['*0*2', '*0*3', '*1*2'][randInt(3)];
     }
   };
 
-  const randomTestChangeset = (origText, rand, withAttribs) => {
+  const randomTestChangeset = (origText, withAttribs) => {
     const charBank = Changeset.stringAssembler();
     let textLeft = origText; // always keep final newline
     const outTextAssem = Changeset.stringAssembler();
@@ -552,7 +549,7 @@ const runTests = () => {
     const appendMultilineOp = (opcode, txt) => {
       nextOp.opcode = opcode;
       if (withAttribs) {
-        nextOp.attribs = randomTwoPropAttribs(opcode, rand);
+        nextOp.attribs = randomTwoPropAttribs(opcode);
       }
       txt.replace(/\n|[^\n]+/g, (t) => {
         if (t === '\n') {
@@ -569,7 +566,7 @@ const runTests = () => {
     };
 
     const doOp = () => {
-      const o = randomStringOperation(textLeft.length, rand);
+      const o = randomStringOperation(textLeft.length);
       if (o.insert) {
         const txt = o.insert;
         charBank.append(txt);
@@ -597,22 +594,21 @@ const runTests = () => {
   };
 
   const testCompose = (randomSeed) => {
-    const rand = new Random();
     print(`> testCompose#${randomSeed}`);
 
     const p = new AttributePool();
 
-    const startText = `${randomMultiline(10, 20, rand)}\n`;
+    const startText = `${randomMultiline(10, 20)}\n`;
 
-    const x1 = randomTestChangeset(startText, rand);
+    const x1 = randomTestChangeset(startText);
     const change1 = x1[0];
     const text1 = x1[1];
 
-    const x2 = randomTestChangeset(text1, rand);
+    const x2 = randomTestChangeset(text1);
     const change2 = x2[0];
     const text2 = x2[1];
 
-    const x3 = randomTestChangeset(text2, rand);
+    const x3 = randomTestChangeset(text2);
     const change3 = x3[0];
     const text3 = x3[1];
 
@@ -667,15 +663,14 @@ const runTests = () => {
   })();
 
   const testFollow = (randomSeed) => {
-    const rand = new Random();
     print(`> testFollow#${randomSeed}`);
 
     const p = new AttributePool();
 
-    const startText = `${randomMultiline(10, 20, rand)}\n`;
+    const startText = `${randomMultiline(10, 20)}\n`;
 
-    const cs1 = randomTestChangeset(startText, rand)[0];
-    const cs2 = randomTestChangeset(startText, rand)[0];
+    const cs1 = randomTestChangeset(startText)[0];
+    const cs2 = randomTestChangeset(startText)[0];
 
     const afb = Changeset.checkRep(Changeset.follow(cs1, cs2, false, p));
     const bfa = Changeset.checkRep(Changeset.follow(cs2, cs1, true, p));
@@ -689,10 +684,9 @@ const runTests = () => {
   for (let i = 0; i < 30; i++) testFollow(i);
 
   const testSplitJoinAttributionLines = (randomSeed) => {
-    const rand = new Random();
     print(`> testSplitJoinAttributionLines#${randomSeed}`);
 
-    const doc = `${randomMultiline(10, 20, rand)}\n`;
+    const doc = `${randomMultiline(10, 20)}\n`;
 
     const stringToOps = (str) => {
       const assem = Changeset.mergingOpAssembler();
@@ -950,21 +944,20 @@ const runTests = () => {
   testMutateTextLines(2, 'Z:4>0|1-2-1|2+3$\nc\n', ['a\n', 'b\n'], ['\n', 'c\n', '\n']);
 
   const testInverseRandom = (randomSeed) => {
-    const rand = new Random();
     print(`> testInverseRandom#${randomSeed}`);
 
     const p = poolOrArray(['apple,', 'apple,true', 'banana,', 'banana,true']);
 
-    const startText = `${randomMultiline(10, 20, rand)}\n`;
+    const startText = `${randomMultiline(10, 20)}\n`;
     const alines = Changeset.splitAttributionLines(Changeset.makeAttribution(startText), startText);
     const lines = startText.slice(0, -1).split('\n').map((s) => `${s}\n`);
 
-    const stylifier = randomTestChangeset(startText, rand, true)[0];
+    const stylifier = randomTestChangeset(startText, true)[0];
 
     Changeset.mutateAttributionLines(stylifier, alines, p);
     Changeset.mutateTextLines(stylifier, lines);
 
-    const changeset = randomTestChangeset(lines.join(''), rand, true)[0];
+    const changeset = randomTestChangeset(lines.join(''), true)[0];
     const inverseChangeset = Changeset.inverse(changeset, lines, alines, p);
 
     const origLines = lines.slice();
