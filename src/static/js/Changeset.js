@@ -1221,7 +1221,10 @@ const slicerZipperFunc = (attOp, csOp, opOut, pool) => {
             opOut.opcode = '-';
             opOut.chars = csOp.chars;
             opOut.lines = csOp.lines;
-            opOut.attribs = '';
+            // csOp is a remove op and remove ops normally never have any attributes, so this should
+            // normally be the empty string. However, padDiff.js adds attributes to remove ops and
+            // needs them preserved so they are copied here.
+            opOut.attribs = csOp.attribs;
           }
           attOp.chars -= csOp.chars;
           attOp.lines -= csOp.lines;
@@ -1235,7 +1238,10 @@ const slicerZipperFunc = (attOp, csOp, opOut, pool) => {
             opOut.opcode = '-';
             opOut.chars = attOp.chars;
             opOut.lines = attOp.lines;
-            opOut.attribs = '';
+            // csOp is a remove op and remove ops normally never have any attributes, so this should
+            // normally be the empty string. However, padDiff.js adds attributes to remove ops and
+            // needs them preserved so they are copied here.
+            opOut.attribs = csOp.attribs;
           }
           csOp.chars -= attOp.chars;
           csOp.lines -= attOp.lines;
@@ -2410,127 +2416,6 @@ const followAttributes = (att1, att2, pool) => {
     buf.append(exports.numToString(pool.putAttrib(atts[i])));
   }
   return buf.toString();
-};
-
-exports.composeWithDeletions = (cs1, cs2, pool) => {
-  const unpacked1 = exports.unpack(cs1);
-  const unpacked2 = exports.unpack(cs2);
-  const len1 = unpacked1.oldLen;
-  const len2 = unpacked1.newLen;
-  assert(len2 === unpacked2.oldLen, 'mismatched composition of two changesets');
-  const len3 = unpacked2.newLen;
-  const bankIter1 = exports.stringIterator(unpacked1.charBank);
-  const bankIter2 = exports.stringIterator(unpacked2.charBank);
-  const bankAssem = exports.stringAssembler();
-
-  const newOps = applyZip(unpacked1.ops, unpacked2.ops, (op1, op2, opOut) => {
-    const op1code = op1.opcode;
-    const op2code = op2.opcode;
-    if (op1code === '+' && op2code === '-') {
-      bankIter1.skip(Math.min(op1.chars, op2.chars));
-    }
-    slicerZipperFuncWithDeletions(op1, op2, opOut, pool);
-    if (opOut.opcode === '+') {
-      if (op2code === '+') {
-        bankAssem.append(bankIter2.take(opOut.chars));
-      } else {
-        bankAssem.append(bankIter1.take(opOut.chars));
-      }
-    }
-  });
-
-  return exports.pack(len1, len3, newOps, bankAssem.toString());
-};
-
-// This function is 95% like slicerZipperFunc, we just changed two lines to
-// ensure it merges the attribs of deletions properly.
-// This is necassary for correct paddiff. But to ensure these changes doesn't
-// affect anything else, we've created a seperate function only used for paddiffs
-const slicerZipperFuncWithDeletions = (attOp, csOp, opOut, pool) => {
-  // attOp is the op from the sequence that is being operated on, either an
-  // attribution string or the earlier of two exportss being composed.
-  // pool can be null if definitely not needed.
-  if (attOp.opcode === '-') {
-    copyOp(attOp, opOut);
-    attOp.opcode = '';
-  } else if (!attOp.opcode) {
-    copyOp(csOp, opOut);
-    csOp.opcode = '';
-  } else {
-    switch (csOp.opcode) {
-      case '-':
-      {
-        if (csOp.chars <= attOp.chars) {
-          // delete or delete part
-          if (attOp.opcode === '=') {
-            opOut.opcode = '-';
-            opOut.chars = csOp.chars;
-            opOut.lines = csOp.lines;
-            opOut.attribs = csOp.attribs; // changed by yammer
-          }
-          attOp.chars -= csOp.chars;
-          attOp.lines -= csOp.lines;
-          csOp.opcode = '';
-          if (!attOp.chars) {
-            attOp.opcode = '';
-          }
-        } else {
-          // delete and keep going
-          if (attOp.opcode === '=') {
-            opOut.opcode = '-';
-            opOut.chars = attOp.chars;
-            opOut.lines = attOp.lines;
-            opOut.attribs = csOp.attribs; // changed by yammer
-          }
-          csOp.chars -= attOp.chars;
-          csOp.lines -= attOp.lines;
-          attOp.opcode = '';
-        }
-        break;
-      }
-      case '+':
-      {
-        // insert
-        copyOp(csOp, opOut);
-        csOp.opcode = '';
-        break;
-      }
-      case '=':
-      {
-        if (csOp.chars <= attOp.chars) {
-          // keep or keep part
-          opOut.opcode = attOp.opcode;
-          opOut.chars = csOp.chars;
-          opOut.lines = csOp.lines;
-          opOut.attribs = exports.composeAttributes(
-              attOp.attribs, csOp.attribs, attOp.opcode === '=', pool);
-          csOp.opcode = '';
-          attOp.chars -= csOp.chars;
-          attOp.lines -= csOp.lines;
-          if (!attOp.chars) {
-            attOp.opcode = '';
-          }
-        } else {
-          // keep and keep going
-          opOut.opcode = attOp.opcode;
-          opOut.chars = attOp.chars;
-          opOut.lines = attOp.lines;
-          opOut.attribs = exports.composeAttributes(
-              attOp.attribs, csOp.attribs, attOp.opcode === '=', pool);
-          attOp.opcode = '';
-          csOp.chars -= attOp.chars;
-          csOp.lines -= attOp.lines;
-        }
-        break;
-      }
-      case '':
-      {
-        copyOp(attOp, opOut);
-        attOp.opcode = '';
-        break;
-      }
-    }
-  }
 };
 
 exports.exportedForTestingOnly = {

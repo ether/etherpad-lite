@@ -160,7 +160,7 @@ PadDiff.prototype._createDiffAtext = async function () {
       if (superChangeset == null) {
         superChangeset = changeset;
       } else {
-        superChangeset = Changeset.composeWithDeletions(superChangeset, changeset, this._pad.pool);
+        superChangeset = Changeset.compose(superChangeset, changeset, this._pad.pool);
       }
     }
 
