@@ -28,11 +28,7 @@ const AttributePool = require('../../../static/js/AttributePool');
 
 const randInt = (maxValue) => Math.floor(Math.random() * maxValue);
 
-const runTests = () => {
-  const print = (str) => {
-    console.log(str);
-  };
-
+describe('easysync', function () {
   const assert = (code, optMsg) => {
     if (!eval(code)) throw new Error(`FALSE: ${optMsg || code}`); /* eslint-disable-line no-eval */
   };
@@ -70,17 +66,15 @@ const runTests = () => {
     return assem.toString();
   };
 
-  (() => {
-    print('> throughIterator');
+  it('throughIterator', async function () {
     const x = '-c*3*4+6|3=az*asdf0*1*2*3+1=1-1+1*0+1=1-1+1|c=c-1';
     assert(`throughIterator(${literal(x)}) == ${literal(x)}`);
-  })();
+  });
 
-  (() => {
-    print('> throughSmartAssembler');
+  it('throughSmartAssembler', async function () {
     const x = '-c*3*4+6|3=az*asdf0*1*2*3+1=1-1+1*0+1=1-1+1|c=c-1';
     assert(`throughSmartAssembler(${literal(x)}) == ${literal(x)}`);
-  })();
+  });
 
   const applyMutations = (mu, arrayOfArrays) => {
     arrayOfArrays.forEach((a) => {
@@ -126,22 +120,23 @@ const runTests = () => {
   };
 
   const runMutationTest = (testId, origLines, muts, correct) => {
-    print(`> runMutationTest#${testId}`);
-    let lines = origLines.slice();
-    const mu = Changeset.textLinesMutator(lines);
-    applyMutations(mu, muts);
-    mu.close();
-    assertEqualArrays(correct, lines);
+    it(`runMutationTest#${testId}`, async function () {
+      let lines = origLines.slice();
+      const mu = Changeset.textLinesMutator(lines);
+      applyMutations(mu, muts);
+      mu.close();
+      assertEqualArrays(correct, lines);
 
-    const inText = origLines.join('');
-    const cs = mutationsToChangeset(inText.length, muts);
-    lines = origLines.slice();
-    Changeset.mutateTextLines(cs, lines);
-    assertEqualArrays(correct, lines);
+      const inText = origLines.join('');
+      const cs = mutationsToChangeset(inText.length, muts);
+      lines = origLines.slice();
+      Changeset.mutateTextLines(cs, lines);
+      assertEqualArrays(correct, lines);
 
-    const correctText = correct.join('');
-    const outText = Changeset.applyToText(cs, inText);
-    assertEqualStrings(correctText, outText);
+      const correctText = correct.join('');
+      const outText = Changeset.applyToText(cs, inText);
+      assertEqualStrings(correctText, outText);
+    });
   };
 
   runMutationTest(1, ['apple\n', 'banana\n', 'cabbage\n', 'duffle\n', 'eggplant\n'], [
@@ -227,11 +222,11 @@ const runTests = () => {
   };
 
   const runApplyToAttributionTest = (testId, attribs, cs, inAttr, outCorrect) => {
-    print(`> applyToAttribution#${testId}`);
-    const p = poolOrArray(attribs);
-    const result = Changeset.applyToAttribution(
-        Changeset.checkRep(cs), inAttr, p);
-    assertEqualStrings(outCorrect, result);
+    it(`applyToAttribution#${testId}`, async function () {
+      const p = poolOrArray(attribs);
+      const result = Changeset.applyToAttribution(Changeset.checkRep(cs), inAttr, p);
+      assertEqualStrings(outCorrect, result);
+    });
   };
 
   // turn c<b>a</b>ctus\n into a<b>c</b>tusabcd\n
@@ -242,8 +237,7 @@ const runTests = () => {
   runApplyToAttributionTest(2,
       ['bold,', 'bold,true'], 'Z:g<4*1|1=6*1=5-4$', '|2+g', '*1|1+6*1+5|1+1');
 
-  (() => {
-    print('> mutatorHasMore');
+  it('mutatorHasMore', async function () {
     const lines = ['1\n', '2\n', '3\n', '4\n'];
     let mu;
 
@@ -281,22 +275,21 @@ const runTests = () => {
     assert(`${mu.hasMore()} == false`);
     mu.close();
     assert(`${mu.hasMore()} == false`);
-  })();
+  });
 
   const runMutateAttributionTest = (testId, attribs, cs, alines, outCorrect) => {
-    print(`> runMutateAttributionTest#${testId}`);
-    const p = poolOrArray(attribs);
-    const alines2 = Array.prototype.slice.call(alines);
-    Changeset.mutateAttributionLines(Changeset.checkRep(cs), alines2, p);
-    assertEqualArrays(outCorrect, alines2);
+    it(`runMutateAttributionTest#${testId}`, async function () {
+      const p = poolOrArray(attribs);
+      const alines2 = Array.prototype.slice.call(alines);
+      Changeset.mutateAttributionLines(Changeset.checkRep(cs), alines2, p);
+      assertEqualArrays(outCorrect, alines2);
 
-    print(`> runMutateAttributionTest#${testId}.applyToAttribution`);
-
-    const removeQuestionMarks = (a) => a.replace(/\?/g, '');
-    const inMerged = Changeset.joinAttributionLines(alines.map(removeQuestionMarks));
-    const correctMerged = Changeset.joinAttributionLines(outCorrect.map(removeQuestionMarks));
-    const mergedResult = Changeset.applyToAttribution(cs, inMerged, p);
-    assertEqualStrings(correctMerged, mergedResult);
+      const removeQuestionMarks = (a) => a.replace(/\?/g, '');
+      const inMerged = Changeset.joinAttributionLines(alines.map(removeQuestionMarks));
+      const correctMerged = Changeset.joinAttributionLines(outCorrect.map(removeQuestionMarks));
+      const mergedResult = Changeset.applyToAttribution(cs, inMerged, p);
+      assertEqualStrings(correctMerged, mergedResult);
+    });
   };
 
   // turn 123\n 456\n 789\n into 123\n 4<b>5</b>6\n 789\n
@@ -594,39 +587,38 @@ const runTests = () => {
   };
 
   const testCompose = (randomSeed) => {
-    print(`> testCompose#${randomSeed}`);
+    it(`testCompose#${randomSeed}`, async function () {
+      const p = new AttributePool();
 
-    const p = new AttributePool();
+      const startText = `${randomMultiline(10, 20)}\n`;
 
-    const startText = `${randomMultiline(10, 20)}\n`;
+      const x1 = randomTestChangeset(startText);
+      const change1 = x1[0];
+      const text1 = x1[1];
 
-    const x1 = randomTestChangeset(startText);
-    const change1 = x1[0];
-    const text1 = x1[1];
+      const x2 = randomTestChangeset(text1);
+      const change2 = x2[0];
+      const text2 = x2[1];
 
-    const x2 = randomTestChangeset(text1);
-    const change2 = x2[0];
-    const text2 = x2[1];
+      const x3 = randomTestChangeset(text2);
+      const change3 = x3[0];
+      const text3 = x3[1];
 
-    const x3 = randomTestChangeset(text2);
-    const change3 = x3[0];
-    const text3 = x3[1];
+      const change12 = Changeset.checkRep(Changeset.compose(change1, change2, p));
+      const change23 = Changeset.checkRep(Changeset.compose(change2, change3, p));
+      const change123 = Changeset.checkRep(Changeset.compose(change12, change3, p));
+      const change123a = Changeset.checkRep(Changeset.compose(change1, change23, p));
+      assertEqualStrings(change123, change123a);
 
-    const change12 = Changeset.checkRep(Changeset.compose(change1, change2, p));
-    const change23 = Changeset.checkRep(Changeset.compose(change2, change3, p));
-    const change123 = Changeset.checkRep(Changeset.compose(change12, change3, p));
-    const change123a = Changeset.checkRep(Changeset.compose(change1, change23, p));
-    assertEqualStrings(change123, change123a);
-
-    assertEqualStrings(text2, Changeset.applyToText(change12, startText));
-    assertEqualStrings(text3, Changeset.applyToText(change23, text1));
-    assertEqualStrings(text3, Changeset.applyToText(change123, startText));
+      assertEqualStrings(text2, Changeset.applyToText(change12, startText));
+      assertEqualStrings(text3, Changeset.applyToText(change23, text1));
+      assertEqualStrings(text3, Changeset.applyToText(change123, startText));
+    });
   };
 
   for (let i = 0; i < 30; i++) testCompose(i);
 
-  (() => {
-    print('> simpleComposeAttributesTest');
+  it('simpleComposeAttributesTest', async function () {
     const p = new AttributePool();
     p.putAttrib(['bold', '']);
     p.putAttrib(['bold', 'true']);
@@ -634,7 +626,7 @@ const runTests = () => {
     const cs2 = Changeset.checkRep('Z:3>0*0|1=3$');
     const cs12 = Changeset.checkRep(Changeset.compose(cs1, cs2, p));
     assertEqualStrings('Z:2>1+1*0|1=2$x', cs12);
-  })();
+  });
 
   (() => {
     const p = new AttributePool();
@@ -644,12 +636,15 @@ const runTests = () => {
     p.putAttrib(['y', '']);
     p.putAttrib(['y', 'abc']);
     p.putAttrib(['y', 'def']);
+    let n = 0;
 
     const testFollow = (a, b, afb, bfa, merge) => {
-      assertEqualStrings(afb, Changeset.followAttributes(a, b, p));
-      assertEqualStrings(bfa, Changeset.followAttributes(b, a, p));
-      assertEqualStrings(merge, Changeset.composeAttributes(a, afb, true, p));
-      assertEqualStrings(merge, Changeset.composeAttributes(b, bfa, true, p));
+      it(`testFollow manual #${++n}`, async function () {
+        assertEqualStrings(afb, Changeset.followAttributes(a, b, p));
+        assertEqualStrings(bfa, Changeset.followAttributes(b, a, p));
+        assertEqualStrings(merge, Changeset.composeAttributes(a, afb, true, p));
+        assertEqualStrings(merge, Changeset.composeAttributes(b, bfa, true, p));
+      });
     };
 
     testFollow('', '', '', '', '');
@@ -663,31 +658,27 @@ const runTests = () => {
   })();
 
   const testFollow = (randomSeed) => {
-    print(`> testFollow#${randomSeed}`);
+    it(`testFollow#${randomSeed}`, async function () {
+      const p = new AttributePool();
 
-    const p = new AttributePool();
+      const startText = `${randomMultiline(10, 20)}\n`;
 
-    const startText = `${randomMultiline(10, 20)}\n`;
+      const cs1 = randomTestChangeset(startText)[0];
+      const cs2 = randomTestChangeset(startText)[0];
 
-    const cs1 = randomTestChangeset(startText)[0];
-    const cs2 = randomTestChangeset(startText)[0];
+      const afb = Changeset.checkRep(Changeset.follow(cs1, cs2, false, p));
+      const bfa = Changeset.checkRep(Changeset.follow(cs2, cs1, true, p));
 
-    const afb = Changeset.checkRep(Changeset.follow(cs1, cs2, false, p));
-    const bfa = Changeset.checkRep(Changeset.follow(cs2, cs1, true, p));
+      const merge1 = Changeset.checkRep(Changeset.compose(cs1, afb));
+      const merge2 = Changeset.checkRep(Changeset.compose(cs2, bfa));
 
-    const merge1 = Changeset.checkRep(Changeset.compose(cs1, afb));
-    const merge2 = Changeset.checkRep(Changeset.compose(cs2, bfa));
-
-    assertEqualStrings(merge1, merge2);
+      assertEqualStrings(merge1, merge2);
+    });
   };
 
   for (let i = 0; i < 30; i++) testFollow(i);
 
   const testSplitJoinAttributionLines = (randomSeed) => {
-    print(`> testSplitJoinAttributionLines#${randomSeed}`);
-
-    const doc = `${randomMultiline(10, 20)}\n`;
-
     const stringToOps = (str) => {
       const assem = Changeset.mergingOpAssembler();
       const o = Changeset.newOp('+');
@@ -701,18 +692,20 @@ const runTests = () => {
       return assem.toString();
     };
 
-    const theJoined = stringToOps(doc);
-    const theSplit = doc.match(/[^\n]*\n/g).map(stringToOps);
+    it(`testSplitJoinAttributionLines#${randomSeed}`, async function () {
+      const doc = `${randomMultiline(10, 20)}\n`;
 
-    assertEqualArrays(theSplit, Changeset.splitAttributionLines(theJoined, doc));
-    assertEqualStrings(theJoined, Changeset.joinAttributionLines(theSplit));
+      const theJoined = stringToOps(doc);
+      const theSplit = doc.match(/[^\n]*\n/g).map(stringToOps);
+
+      assertEqualArrays(theSplit, Changeset.splitAttributionLines(theJoined, doc));
+      assertEqualStrings(theJoined, Changeset.joinAttributionLines(theSplit));
+    });
   };
 
   for (let i = 0; i < 10; i++) testSplitJoinAttributionLines(i);
 
-  (() => {
-    print('> testMoveOpsToNewPool');
-
+  it('testMoveOpsToNewPool', async function () {
     const pool1 = new AttributePool();
     const pool2 = new AttributePool();
 
@@ -725,33 +718,29 @@ const runTests = () => {
         Changeset.moveOpsToNewPool('Z:1>2*1+1*0+1$ab', pool1, pool2), 'Z:1>2*0+1*1+1$ab');
     assertEqualStrings(
         Changeset.moveOpsToNewPool('*1+1*0+1', pool1, pool2), '*0+1*1+1');
-  })();
+  });
 
-
-  (() => {
-    print('> testMakeSplice');
-
+  it('testMakeSplice', async function () {
     const t = 'a\nb\nc\n';
     const t2 = Changeset.applyToText(Changeset.makeSplice(t, 5, 0, 'def'), t);
     assertEqualStrings('a\nb\ncdef\n', t2);
-  })();
+  });
 
-  (() => {
-    print('> testToSplices');
-
+  it('testToSplices', async function () {
     const cs = Changeset.checkRep('Z:z>9*0=1=4-3+9=1|1-4-4+1*0+a$123456789abcdefghijk');
     const correctSplices = [
       [5, 8, '123456789'],
       [9, 17, 'abcdefghijk'],
     ];
     assertEqualArrays(correctSplices, Changeset.toSplices(cs));
-  })();
+  });
 
   const testCharacterRangeFollow = (testId, cs, oldRange, insertionsAfter, correctNewRange) => {
-    print(`> testCharacterRangeFollow#${testId}`);
-    cs = Changeset.checkRep(cs);
-    assertEqualArrays(correctNewRange, Changeset.characterRangeFollow(
-        cs, oldRange[0], oldRange[1], insertionsAfter));
+    it(`testCharacterRangeFollow#${testId}`, async function () {
+      cs = Changeset.checkRep(cs);
+      assertEqualArrays(correctNewRange, Changeset.characterRangeFollow(
+          cs, oldRange[0], oldRange[1], insertionsAfter));
+    });
   };
 
   testCharacterRangeFollow(1, 'Z:z>9*0=1=4-3+9=1|1-4-4+1*0+a$123456789abcdefghijk',
@@ -767,9 +756,7 @@ const runTests = () => {
   testCharacterRangeFollow(10, 'Z:2>1+1$a', [0, 0], false, [1, 1]);
   testCharacterRangeFollow(11, 'Z:2>1+1$a', [0, 0], true, [0, 0]);
 
-  (() => {
-    print('> testOpAttributeValue');
-
+  it('testOpAttributeValue', async function () {
     const p = new AttributePool();
     p.putAttrib(['name', 'david']);
     p.putAttrib(['color', 'green']);
@@ -792,14 +779,14 @@ const runTests = () => {
         Changeset.opAttributeValue(stringOp('*0+1'), 'color', p));
     assertEqualStrings('',
         Changeset.opAttributeValue(stringOp('+1'), 'color', p));
-  })();
+  });
 
   const testAppendATextToAssembler = (testId, atext, correctOps) => {
-    print(`> testAppendATextToAssembler#${testId}`);
-
-    const assem = Changeset.smartOpAssembler();
-    Changeset.appendATextToAssembler(atext, assem);
-    assertEqualStrings(correctOps, assem.toString());
+    it(`testAppendATextToAssembler#${testId}`, async function () {
+      const assem = Changeset.smartOpAssembler();
+      Changeset.appendATextToAssembler(atext, assem);
+      assertEqualStrings(correctOps, assem.toString());
+    });
   };
 
   testAppendATextToAssembler(1, {
@@ -836,11 +823,11 @@ const runTests = () => {
   }, '|2+2*x|1+1*x+3');
 
   const testMakeAttribsString = (testId, pool, opcode, attribs, correctString) => {
-    print(`> testMakeAttribsString#${testId}`);
-
-    const p = poolOrArray(pool);
-    const str = Changeset.makeAttribsString(opcode, attribs, p);
-    assertEqualStrings(correctString, str);
+    it(`testMakeAttribsString#${testId}`, async function () {
+      const p = poolOrArray(pool);
+      const str = Changeset.makeAttribsString(opcode, attribs, p);
+      assertEqualStrings(correctString, str);
+    });
   };
 
   testMakeAttribsString(1, ['bold,'], '+', [
@@ -859,10 +846,10 @@ const runTests = () => {
   ], '*0*1');
 
   const testSubattribution = (testId, astr, start, end, correctOutput) => {
-    print(`> testSubattribution#${testId}`);
-
-    const str = Changeset.subattribution(astr, start, end);
-    assertEqualStrings(correctOutput, str);
+    it(`testSubattribution#${testId}`, async function () {
+      const str = Changeset.subattribution(astr, start, end);
+      assertEqualStrings(correctOutput, str);
+    });
   };
 
   testSubattribution(1, '+1', 0, 0, '');
@@ -909,10 +896,10 @@ const runTests = () => {
   testSubattribution(42, '*0+2+1*1+3', 2, 6, '+1*1+3');
 
   const testFilterAttribNumbers = (testId, cs, filter, correctOutput) => {
-    print(`> testFilterAttribNumbers#${testId}`);
-
-    const str = Changeset.filterAttribNumbers(cs, filter);
-    assertEqualStrings(correctOutput, str);
+    it(`testFilterAttribNumbers#${testId}`, async function () {
+      const str = Changeset.filterAttribNumbers(cs, filter);
+      assertEqualStrings(correctOutput, str);
+    });
   };
 
   testFilterAttribNumbers(1, '*0*1+1+2+3*1+4*2+5*0*2*1*b*c+6',
@@ -921,11 +908,11 @@ const runTests = () => {
       (n) => (n % 2) === 1, '*1+1+2+3*1+4+5*1*b+6');
 
   const testInverse = (testId, cs, lines, alines, pool, correctOutput) => {
-    print(`> testInverse#${testId}`);
-
-    pool = poolOrArray(pool);
-    const str = Changeset.inverse(Changeset.checkRep(cs), lines, alines, pool);
-    assertEqualStrings(correctOutput, str);
+    it(`testInverse#${testId}`, async function () {
+      pool = poolOrArray(pool);
+      const str = Changeset.inverse(Changeset.checkRep(cs), lines, alines, pool);
+      assertEqualStrings(correctOutput, str);
+    });
   };
 
   // take "FFFFTTTTT" and apply "-FT--FFTT", the inverse of which is "--F--TT--"
@@ -933,49 +920,44 @@ const runTests = () => {
       ['+4*1+5'], ['bold,', 'bold,true'], 'Z:9>0=2*0=1=2*1=2$');
 
   const testMutateTextLines = (testId, cs, lines, correctLines) => {
-    print(`> testMutateTextLines#${testId}`);
-
-    const a = lines.slice();
-    Changeset.mutateTextLines(cs, a);
-    assertEqualArrays(correctLines, a);
+    it(`testMutateTextLines#${testId}`, async function () {
+      const a = lines.slice();
+      Changeset.mutateTextLines(cs, a);
+      assertEqualArrays(correctLines, a);
+    });
   };
 
   testMutateTextLines(1, 'Z:4<1|1-2-1|1+1+1$\nc', ['a\n', 'b\n'], ['\n', 'c\n']);
   testMutateTextLines(2, 'Z:4>0|1-2-1|2+3$\nc\n', ['a\n', 'b\n'], ['\n', 'c\n', '\n']);
 
   const testInverseRandom = (randomSeed) => {
-    print(`> testInverseRandom#${randomSeed}`);
+    it(`testInverseRandom#${randomSeed}`, async function () {
+      const p = poolOrArray(['apple,', 'apple,true', 'banana,', 'banana,true']);
 
-    const p = poolOrArray(['apple,', 'apple,true', 'banana,', 'banana,true']);
+      const startText = `${randomMultiline(10, 20)}\n`;
+      const alines =
+          Changeset.splitAttributionLines(Changeset.makeAttribution(startText), startText);
+      const lines = startText.slice(0, -1).split('\n').map((s) => `${s}\n`);
 
-    const startText = `${randomMultiline(10, 20)}\n`;
-    const alines = Changeset.splitAttributionLines(Changeset.makeAttribution(startText), startText);
-    const lines = startText.slice(0, -1).split('\n').map((s) => `${s}\n`);
+      const stylifier = randomTestChangeset(startText, true)[0];
 
-    const stylifier = randomTestChangeset(startText, true)[0];
+      Changeset.mutateAttributionLines(stylifier, alines, p);
+      Changeset.mutateTextLines(stylifier, lines);
 
-    Changeset.mutateAttributionLines(stylifier, alines, p);
-    Changeset.mutateTextLines(stylifier, lines);
+      const changeset = randomTestChangeset(lines.join(''), true)[0];
+      const inverseChangeset = Changeset.inverse(changeset, lines, alines, p);
 
-    const changeset = randomTestChangeset(lines.join(''), true)[0];
-    const inverseChangeset = Changeset.inverse(changeset, lines, alines, p);
+      const origLines = lines.slice();
+      const origALines = alines.slice();
 
-    const origLines = lines.slice();
-    const origALines = alines.slice();
-
-    Changeset.mutateTextLines(changeset, lines);
-    Changeset.mutateAttributionLines(changeset, alines, p);
-    Changeset.mutateTextLines(inverseChangeset, lines);
-    Changeset.mutateAttributionLines(inverseChangeset, alines, p);
-    assertEqualArrays(origLines, lines);
-    assertEqualArrays(origALines, alines);
+      Changeset.mutateTextLines(changeset, lines);
+      Changeset.mutateAttributionLines(changeset, alines, p);
+      Changeset.mutateTextLines(inverseChangeset, lines);
+      Changeset.mutateAttributionLines(inverseChangeset, alines, p);
+      assertEqualArrays(origLines, lines);
+      assertEqualArrays(origALines, alines);
+    });
   };
 
   for (let i = 0; i < 30; i++) testInverseRandom(i);
-};
-
-describe('easysync', function () {
-  it('tests', async function () {
-    runTests();
-  });
 });
