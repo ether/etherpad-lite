@@ -29,24 +29,6 @@ const AttributePool = require('../../../static/js/AttributePool');
 const randInt = (maxValue) => Math.floor(Math.random() * maxValue);
 
 describe('easysync', function () {
-  const assert = (code, optMsg) => {
-    if (!eval(code)) throw new Error(`FALSE: ${optMsg || code}`); /* eslint-disable-line no-eval */
-  };
-
-  const literal = (v) => {
-    if ((typeof v) === 'string') {
-      return `"${v.replace(/[\\"]/g, '\\$1').replace(/\n/g, '\\n')}"`;
-    } else { return JSON.stringify(v); }
-  };
-
-  const assertEqualArrays = (a, b) => {
-    assert(`JSON.stringify(${literal(a)}) == JSON.stringify(${literal(b)})`);
-  };
-
-  const assertEqualStrings = (a, b) => {
-    assert(`${literal(a)} == ${literal(b)}`);
-  };
-
   const throughIterator = (opsStr) => {
     const iter = Changeset.opIterator(opsStr);
     const assem = Changeset.opAssembler();
@@ -68,19 +50,19 @@ describe('easysync', function () {
 
   it('throughIterator', async function () {
     const x = '-c*3*4+6|3=az*asdf0*1*2*3+1=1-1+1*0+1=1-1+1|c=c-1';
-    assert(`throughIterator(${literal(x)}) == ${literal(x)}`);
+    expect(throughIterator(x)).to.equal(x);
   });
 
   it('throughSmartAssembler', async function () {
     const x = '-c*3*4+6|3=az*asdf0*1*2*3+1=1-1+1*0+1=1-1+1|c=c-1';
-    assert(`throughSmartAssembler(${literal(x)}) == ${literal(x)}`);
+    expect(throughSmartAssembler(x)).to.equal(x);
   });
 
   const applyMutations = (mu, arrayOfArrays) => {
     arrayOfArrays.forEach((a) => {
       const result = mu[a[0]](...a.slice(1));
       if (a[0] === 'remove' && a[3]) {
-        assertEqualStrings(a[3], result);
+        expect(result).to.equal(a[3]);
       }
     });
   };
@@ -125,17 +107,17 @@ describe('easysync', function () {
       const mu = Changeset.textLinesMutator(lines);
       applyMutations(mu, muts);
       mu.close();
-      assertEqualArrays(correct, lines);
+      expect(lines).to.eql(correct);
 
       const inText = origLines.join('');
       const cs = mutationsToChangeset(inText.length, muts);
       lines = origLines.slice();
       Changeset.mutateTextLines(cs, lines);
-      assertEqualArrays(correct, lines);
+      expect(lines).to.eql(correct);
 
       const correctText = correct.join('');
       const outText = Changeset.applyToText(cs, inText);
-      assertEqualStrings(correctText, outText);
+      expect(outText).to.equal(correctText);
     });
   };
 
@@ -225,7 +207,7 @@ describe('easysync', function () {
     it(`applyToAttribution#${testId}`, async function () {
       const p = poolOrArray(attribs);
       const result = Changeset.applyToAttribution(Changeset.checkRep(cs), inAttr, p);
-      assertEqualStrings(outCorrect, result);
+      expect(result).to.equal(outCorrect);
     });
   };
 
@@ -242,39 +224,39 @@ describe('easysync', function () {
     let mu;
 
     mu = Changeset.textLinesMutator(lines);
-    assert(`${mu.hasMore()} == true`);
+    expect(mu.hasMore()).to.be(true);
     mu.skip(8, 4);
-    assert(`${mu.hasMore()} == false`);
+    expect(mu.hasMore()).to.be(false);
     mu.close();
-    assert(`${mu.hasMore()} == false`);
+    expect(mu.hasMore()).to.be(false);
 
     // still 1,2,3,4
     mu = Changeset.textLinesMutator(lines);
-    assert(`${mu.hasMore()} == true`);
+    expect(mu.hasMore()).to.be(true);
     mu.remove(2, 1);
-    assert(`${mu.hasMore()} == true`);
+    expect(mu.hasMore()).to.be(true);
     mu.skip(2, 1);
-    assert(`${mu.hasMore()} == true`);
+    expect(mu.hasMore()).to.be(true);
     mu.skip(2, 1);
-    assert(`${mu.hasMore()} == true`);
+    expect(mu.hasMore()).to.be(true);
     mu.skip(2, 1);
-    assert(`${mu.hasMore()} == false`);
+    expect(mu.hasMore()).to.be(false);
     mu.insert('5\n', 1);
-    assert(`${mu.hasMore()} == false`);
+    expect(mu.hasMore()).to.be(false);
     mu.close();
-    assert(`${mu.hasMore()} == false`);
+    expect(mu.hasMore()).to.be(false);
 
     // 2,3,4,5 now
     mu = Changeset.textLinesMutator(lines);
-    assert(`${mu.hasMore()} == true`);
+    expect(mu.hasMore()).to.be(true);
     mu.remove(6, 3);
-    assert(`${mu.hasMore()} == true`);
+    expect(mu.hasMore()).to.be(true);
     mu.remove(2, 1);
-    assert(`${mu.hasMore()} == false`);
+    expect(mu.hasMore()).to.be(false);
     mu.insert('hello\n', 1);
-    assert(`${mu.hasMore()} == false`);
+    expect(mu.hasMore()).to.be(false);
     mu.close();
-    assert(`${mu.hasMore()} == false`);
+    expect(mu.hasMore()).to.be(false);
   });
 
   const runMutateAttributionTest = (testId, attribs, cs, alines, outCorrect) => {
@@ -282,13 +264,13 @@ describe('easysync', function () {
       const p = poolOrArray(attribs);
       const alines2 = Array.prototype.slice.call(alines);
       Changeset.mutateAttributionLines(Changeset.checkRep(cs), alines2, p);
-      assertEqualArrays(outCorrect, alines2);
+      expect(alines2).to.eql(outCorrect);
 
       const removeQuestionMarks = (a) => a.replace(/\?/g, '');
       const inMerged = Changeset.joinAttributionLines(alines.map(removeQuestionMarks));
       const correctMerged = Changeset.joinAttributionLines(outCorrect.map(removeQuestionMarks));
       const mergedResult = Changeset.applyToAttribution(cs, inMerged, p);
-      assertEqualStrings(correctMerged, mergedResult);
+      expect(mergedResult).to.equal(correctMerged);
     });
   };
 
@@ -608,11 +590,11 @@ describe('easysync', function () {
       const change23 = Changeset.checkRep(Changeset.compose(change2, change3, p));
       const change123 = Changeset.checkRep(Changeset.compose(change12, change3, p));
       const change123a = Changeset.checkRep(Changeset.compose(change1, change23, p));
-      assertEqualStrings(change123, change123a);
+      expect(change123a).to.equal(change123);
 
-      assertEqualStrings(text2, Changeset.applyToText(change12, startText));
-      assertEqualStrings(text3, Changeset.applyToText(change23, text1));
-      assertEqualStrings(text3, Changeset.applyToText(change123, startText));
+      expect(Changeset.applyToText(change12, startText)).to.equal(text2);
+      expect(Changeset.applyToText(change23, text1)).to.equal(text3);
+      expect(Changeset.applyToText(change123, startText)).to.equal(text3);
     });
   };
 
@@ -625,7 +607,7 @@ describe('easysync', function () {
     const cs1 = Changeset.checkRep('Z:2>1*1+1*1=1$x');
     const cs2 = Changeset.checkRep('Z:3>0*0|1=3$');
     const cs12 = Changeset.checkRep(Changeset.compose(cs1, cs2, p));
-    assertEqualStrings('Z:2>1+1*0|1=2$x', cs12);
+    expect(cs12).to.equal('Z:2>1+1*0|1=2$x');
   });
 
   (() => {
@@ -640,10 +622,10 @@ describe('easysync', function () {
 
     const testFollow = (a, b, afb, bfa, merge) => {
       it(`testFollow manual #${++n}`, async function () {
-        assertEqualStrings(afb, Changeset.followAttributes(a, b, p));
-        assertEqualStrings(bfa, Changeset.followAttributes(b, a, p));
-        assertEqualStrings(merge, Changeset.composeAttributes(a, afb, true, p));
-        assertEqualStrings(merge, Changeset.composeAttributes(b, bfa, true, p));
+        expect(Changeset.followAttributes(a, b, p)).to.equal(afb);
+        expect(Changeset.followAttributes(b, a, p)).to.equal(bfa);
+        expect(Changeset.composeAttributes(a, afb, true, p)).to.equal(merge);
+        expect(Changeset.composeAttributes(b, bfa, true, p)).to.equal(merge);
       });
     };
 
@@ -672,7 +654,7 @@ describe('easysync', function () {
       const merge1 = Changeset.checkRep(Changeset.compose(cs1, afb));
       const merge2 = Changeset.checkRep(Changeset.compose(cs2, bfa));
 
-      assertEqualStrings(merge1, merge2);
+      expect(merge2).to.equal(merge1);
     });
   };
 
@@ -698,8 +680,8 @@ describe('easysync', function () {
       const theJoined = stringToOps(doc);
       const theSplit = doc.match(/[^\n]*\n/g).map(stringToOps);
 
-      assertEqualArrays(theSplit, Changeset.splitAttributionLines(theJoined, doc));
-      assertEqualStrings(theJoined, Changeset.joinAttributionLines(theSplit));
+      expect(Changeset.splitAttributionLines(theJoined, doc)).to.eql(theSplit);
+      expect(Changeset.joinAttributionLines(theSplit)).to.equal(theJoined);
     });
   };
 
@@ -714,16 +696,15 @@ describe('easysync', function () {
 
     pool2.putAttrib(['foo', 'bar']);
 
-    assertEqualStrings(
-        Changeset.moveOpsToNewPool('Z:1>2*1+1*0+1$ab', pool1, pool2), 'Z:1>2*0+1*1+1$ab');
-    assertEqualStrings(
-        Changeset.moveOpsToNewPool('*1+1*0+1', pool1, pool2), '*0+1*1+1');
+    expect(Changeset.moveOpsToNewPool('Z:1>2*1+1*0+1$ab', pool1, pool2))
+        .to.equal('Z:1>2*0+1*1+1$ab');
+    expect(Changeset.moveOpsToNewPool('*1+1*0+1', pool1, pool2)).to.equal('*0+1*1+1');
   });
 
   it('testMakeSplice', async function () {
     const t = 'a\nb\nc\n';
     const t2 = Changeset.applyToText(Changeset.makeSplice(t, 5, 0, 'def'), t);
-    assertEqualStrings('a\nb\ncdef\n', t2);
+    expect(t2).to.equal('a\nb\ncdef\n');
   });
 
   it('testToSplices', async function () {
@@ -732,14 +713,14 @@ describe('easysync', function () {
       [5, 8, '123456789'],
       [9, 17, 'abcdefghijk'],
     ];
-    assertEqualArrays(correctSplices, Changeset.toSplices(cs));
+    expect(Changeset.toSplices(cs)).to.eql(correctSplices);
   });
 
   const testCharacterRangeFollow = (testId, cs, oldRange, insertionsAfter, correctNewRange) => {
     it(`testCharacterRangeFollow#${testId}`, async function () {
       cs = Changeset.checkRep(cs);
-      assertEqualArrays(correctNewRange, Changeset.characterRangeFollow(
-          cs, oldRange[0], oldRange[1], insertionsAfter));
+      expect(Changeset.characterRangeFollow(cs, oldRange[0], oldRange[1], insertionsAfter))
+          .to.eql(correctNewRange);
     });
   };
 
@@ -763,29 +744,21 @@ describe('easysync', function () {
 
     const stringOp = (str) => Changeset.opIterator(str).next();
 
-    assertEqualStrings('david',
-        Changeset.opAttributeValue(stringOp('*0*1+1'), 'name', p));
-    assertEqualStrings('david',
-        Changeset.opAttributeValue(stringOp('*0+1'), 'name', p));
-    assertEqualStrings('',
-        Changeset.opAttributeValue(stringOp('*1+1'), 'name', p));
-    assertEqualStrings('',
-        Changeset.opAttributeValue(stringOp('+1'), 'name', p));
-    assertEqualStrings('green',
-        Changeset.opAttributeValue(stringOp('*0*1+1'), 'color', p));
-    assertEqualStrings('green',
-        Changeset.opAttributeValue(stringOp('*1+1'), 'color', p));
-    assertEqualStrings('',
-        Changeset.opAttributeValue(stringOp('*0+1'), 'color', p));
-    assertEqualStrings('',
-        Changeset.opAttributeValue(stringOp('+1'), 'color', p));
+    expect(Changeset.opAttributeValue(stringOp('*0*1+1'), 'name', p)).to.equal('david');
+    expect(Changeset.opAttributeValue(stringOp('*0+1'), 'name', p)).to.equal('david');
+    expect(Changeset.opAttributeValue(stringOp('*1+1'), 'name', p)).to.equal('');
+    expect(Changeset.opAttributeValue(stringOp('+1'), 'name', p)).to.equal('');
+    expect(Changeset.opAttributeValue(stringOp('*0*1+1'), 'color', p)).to.equal('green');
+    expect(Changeset.opAttributeValue(stringOp('*1+1'), 'color', p)).to.equal('green');
+    expect(Changeset.opAttributeValue(stringOp('*0+1'), 'color', p)).to.equal('');
+    expect(Changeset.opAttributeValue(stringOp('+1'), 'color', p)).to.equal('');
   });
 
   const testAppendATextToAssembler = (testId, atext, correctOps) => {
     it(`testAppendATextToAssembler#${testId}`, async function () {
       const assem = Changeset.smartOpAssembler();
       Changeset.appendATextToAssembler(atext, assem);
-      assertEqualStrings(correctOps, assem.toString());
+      expect(assem.toString()).to.equal(correctOps);
     });
   };
 
@@ -826,7 +799,7 @@ describe('easysync', function () {
     it(`testMakeAttribsString#${testId}`, async function () {
       const p = poolOrArray(pool);
       const str = Changeset.makeAttribsString(opcode, attribs, p);
-      assertEqualStrings(correctString, str);
+      expect(str).to.equal(correctString);
     });
   };
 
@@ -848,7 +821,7 @@ describe('easysync', function () {
   const testSubattribution = (testId, astr, start, end, correctOutput) => {
     it(`testSubattribution#${testId}`, async function () {
       const str = Changeset.subattribution(astr, start, end);
-      assertEqualStrings(correctOutput, str);
+      expect(str).to.equal(correctOutput);
     });
   };
 
@@ -898,7 +871,7 @@ describe('easysync', function () {
   const testFilterAttribNumbers = (testId, cs, filter, correctOutput) => {
     it(`testFilterAttribNumbers#${testId}`, async function () {
       const str = Changeset.filterAttribNumbers(cs, filter);
-      assertEqualStrings(correctOutput, str);
+      expect(str).to.equal(correctOutput);
     });
   };
 
@@ -911,7 +884,7 @@ describe('easysync', function () {
     it(`testInverse#${testId}`, async function () {
       pool = poolOrArray(pool);
       const str = Changeset.inverse(Changeset.checkRep(cs), lines, alines, pool);
-      assertEqualStrings(correctOutput, str);
+      expect(str).to.equal(correctOutput);
     });
   };
 
@@ -923,7 +896,7 @@ describe('easysync', function () {
     it(`testMutateTextLines#${testId}`, async function () {
       const a = lines.slice();
       Changeset.mutateTextLines(cs, a);
-      assertEqualArrays(correctLines, a);
+      expect(a).to.eql(correctLines);
     });
   };
 
@@ -954,8 +927,8 @@ describe('easysync', function () {
       Changeset.mutateAttributionLines(changeset, alines, p);
       Changeset.mutateTextLines(inverseChangeset, lines);
       Changeset.mutateAttributionLines(inverseChangeset, alines, p);
-      assertEqualArrays(origLines, lines);
-      assertEqualArrays(origALines, alines);
+      expect(lines).to.eql(origLines);
+      expect(alines).to.eql(origALines);
     });
   };
 
