@@ -23,8 +23,8 @@
  */
 
 
-const Changeset = require('../static/js/Changeset');
-const AttributePool = require('../static/js/AttributePool');
+const Changeset = require('../../../static/js/Changeset');
+const AttributePool = require('../../../static/js/AttributePool');
 
 function random() {
   this.nextInt = (maxValue) => Math.floor(Math.random() * maxValue);
@@ -992,4 +992,8 @@ const runTests = () => {
   for (let i = 0; i < 30; i++) testInverseRandom(i);
 };
 
-runTests();
+describe('easysync', function () {
+  it('tests', async function () {
+    runTests();
+  });
+});
