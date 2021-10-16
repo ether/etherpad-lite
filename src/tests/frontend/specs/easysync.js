@@ -31,18 +31,6 @@ function random() {
   this.nextDouble = (maxValue) => Math.random();
 }
 
-/**
- * Converts stuff before $ to base 10
- * @param cs {string} the string
- * @return integer
- */
-const toBaseTen = (cs) => {
-  const dollarIndex = cs.indexOf('$');
-  const beforeDollar = cs.substring(0, dollarIndex);
-  const fromDollar = cs.substring(dollarIndex);
-  return beforeDollar.replace(/[0-9a-z]+/g, (s) => String(Changeset.parseNum(s))) + fromDollar;
-};
-
 const runTests = () => {
   const print = (str) => {
     console.log(str);
@@ -155,7 +143,6 @@ const runTests = () => {
     assertEqualArrays(correct, lines);
 
     const correctText = correct.join('');
-    // print(literal(cs));
     const outText = Changeset.applyToText(cs, inText);
     assertEqualStrings(correctText, outText);
   };
@@ -614,9 +601,6 @@ const runTests = () => {
     const change3 = x3[0];
     const text3 = x3[1];
 
-    // print(literal(toBaseTen(startText)));
-    // print(literal(toBaseTen(change1)));
-    // print(literal(toBaseTen(change2)));
     const change12 = Changeset.checkRep(Changeset.compose(change1, change2, p));
     const change23 = Changeset.checkRep(Changeset.compose(change2, change3, p));
     const change123 = Changeset.checkRep(Changeset.compose(change12, change3, p));
@@ -962,10 +946,7 @@ const runTests = () => {
 
     const stylifier = randomTestChangeset(startText, rand, true)[0];
 
-    // print(alines.join('\n'));
     Changeset.mutateAttributionLines(stylifier, alines, p);
-    // print(stylifier);
-    // print(alines.join('\n'));
     Changeset.mutateTextLines(stylifier, lines);
 
     const changeset = randomTestChangeset(lines.join(''), rand, true)[0];
@@ -976,15 +957,8 @@ const runTests = () => {
 
     Changeset.mutateTextLines(changeset, lines);
     Changeset.mutateAttributionLines(changeset, alines, p);
-    // print(origALines.join('\n'));
-    // print(changeset);
-    // print(inverseChangeset);
-    // print(origLines.map(function(s) { return '1: '+s.slice(0,-1); }).join('\n'));
-    // print(lines.map(function(s) { return '2: '+s.slice(0,-1); }).join('\n'));
-    // print(alines.join('\n'));
     Changeset.mutateTextLines(inverseChangeset, lines);
     Changeset.mutateAttributionLines(inverseChangeset, alines, p);
-    // print(lines.map(function(s) { return '3: '+s.slice(0,-1); }).join('\n'));
     assertEqualArrays(origLines, lines);
     assertEqualArrays(origALines, alines);
   };
