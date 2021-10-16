@@ -29,33 +29,21 @@ const AttributePool = require('../../../static/js/AttributePool');
 const randInt = (maxValue) => Math.floor(Math.random() * maxValue);
 
 describe('easysync', function () {
-  const throughIterator = (opsStr) => {
-    const iter = Changeset.opIterator(opsStr);
-    const assem = Changeset.opAssembler();
-    while (iter.hasNext()) {
-      assem.append(iter.next());
-    }
-    return assem.toString();
-  };
-
-  const throughSmartAssembler = (opsStr) => {
-    const iter = Changeset.opIterator(opsStr);
-    const assem = Changeset.smartOpAssembler();
-    while (iter.hasNext()) {
-      assem.append(iter.next());
-    }
-    assem.endDocument();
-    return assem.toString();
-  };
-
   it('throughIterator', async function () {
     const x = '-c*3*4+6|3=az*asdf0*1*2*3+1=1-1+1*0+1=1-1+1|c=c-1';
-    expect(throughIterator(x)).to.equal(x);
+    const iter = Changeset.opIterator(x);
+    const assem = Changeset.opAssembler();
+    while (iter.hasNext()) assem.append(iter.next());
+    expect(assem.toString()).to.equal(x);
   });
 
   it('throughSmartAssembler', async function () {
     const x = '-c*3*4+6|3=az*asdf0*1*2*3+1=1-1+1*0+1=1-1+1|c=c-1';
-    expect(throughSmartAssembler(x)).to.equal(x);
+    const iter = Changeset.opIterator(x);
+    const assem = Changeset.smartOpAssembler();
+    while (iter.hasNext()) assem.append(iter.next());
+    assem.endDocument();
+    expect(assem.toString()).to.equal(x);
   });
 
   const applyMutations = (mu, arrayOfArrays) => {
