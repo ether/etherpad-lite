@@ -596,7 +596,7 @@ describe('easysync', function () {
     expect(cs12).to.equal('Z:2>1+1*0|1=2$x');
   });
 
-  (() => {
+  describe('followAttributes & composeAttributes', function () {
     const p = new AttributePool();
     p.putAttrib(['x', '']);
     p.putAttrib(['x', 'abc']);
@@ -623,7 +623,7 @@ describe('easysync', function () {
     testFollow('*0*1', '', '', '*0*1', '*0*1');
     testFollow('*0*4', '*2*3', '*3', '*0', '*0*3');
     testFollow('*0*4', '*2', '', '*0*4', '*0*4');
-  })();
+  });
 
   const testFollow = (randomSeed) => {
     it(`testFollow#${randomSeed}`, async function () {
