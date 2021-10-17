@@ -241,7 +241,7 @@ const randomTestChangeset = (origText, withAttribs) => {
   return [cs, outText];
 };
 
-describe('easysync', function () {
+describe('easysync-assembler', function () {
   it('opAssembler', async function () {
     const x = '-c*3*4+6|3=az*asdf0*1*2*3+1=1-1+1*0+1=1-1+1|c=c-1';
     const assem = Changeset.opAssembler();
@@ -257,6 +257,225 @@ describe('easysync', function () {
     expect(assem.toString()).to.equal(x);
   });
 
+  describe('append atext to assembler', function () {
+    const testAppendATextToAssembler = (testId, atext, correctOps) => {
+      it(`testAppendATextToAssembler#${testId}`, async function () {
+        const assem = Changeset.smartOpAssembler();
+        for (const op of Changeset.opsFromAText(atext)) assem.append(op);
+        expect(assem.toString()).to.equal(correctOps);
+      });
+    };
+
+    testAppendATextToAssembler(1, {
+      text: '\n',
+      attribs: '|1+1',
+    }, '');
+    testAppendATextToAssembler(2, {
+      text: '\n\n',
+      attribs: '|2+2',
+    }, '|1+1');
+    testAppendATextToAssembler(3, {
+      text: '\n\n',
+      attribs: '*x|2+2',
+    }, '*x|1+1');
+    testAppendATextToAssembler(4, {
+      text: '\n\n',
+      attribs: '*x|1+1|1+1',
+    }, '*x|1+1');
+    testAppendATextToAssembler(5, {
+      text: 'foo\n',
+      attribs: '|1+4',
+    }, '+3');
+    testAppendATextToAssembler(6, {
+      text: '\nfoo\n',
+      attribs: '|2+5',
+    }, '|1+1+3');
+    testAppendATextToAssembler(7, {
+      text: '\nfoo\n',
+      attribs: '*x|2+5',
+    }, '*x|1+1*x+3');
+    testAppendATextToAssembler(8, {
+      text: '\n\n\nfoo\n',
+      attribs: '|2+2*x|2+5',
+    }, '|2+2*x|1+1*x+3');
+  });
+});
+
+describe('easysync-compose', function () {
+  describe('compose', function () {
+    const testCompose = (randomSeed) => {
+      it(`testCompose#${randomSeed}`, async function () {
+        const p = new AttributePool();
+
+        const startText = `${randomMultiline(10, 20)}\n`;
+
+        const x1 = randomTestChangeset(startText);
+        const change1 = x1[0];
+        const text1 = x1[1];
+
+        const x2 = randomTestChangeset(text1);
+        const change2 = x2[0];
+        const text2 = x2[1];
+
+        const x3 = randomTestChangeset(text2);
+        const change3 = x3[0];
+        const text3 = x3[1];
+
+        const change12 = Changeset.checkRep(Changeset.compose(change1, change2, p));
+        const change23 = Changeset.checkRep(Changeset.compose(change2, change3, p));
+        const change123 = Changeset.checkRep(Changeset.compose(change12, change3, p));
+        const change123a = Changeset.checkRep(Changeset.compose(change1, change23, p));
+        expect(change123a).to.equal(change123);
+
+        expect(Changeset.applyToText(change12, startText)).to.equal(text2);
+        expect(Changeset.applyToText(change23, text1)).to.equal(text3);
+        expect(Changeset.applyToText(change123, startText)).to.equal(text3);
+      });
+    };
+
+    for (let i = 0; i < 30; i++) testCompose(i);
+  });
+
+  describe('compose attributes', function () {
+    it('simpleComposeAttributesTest', async function () {
+      const p = new AttributePool();
+      p.putAttrib(['bold', '']);
+      p.putAttrib(['bold', 'true']);
+      const cs1 = Changeset.checkRep('Z:2>1*1+1*1=1$x');
+      const cs2 = Changeset.checkRep('Z:3>0*0|1=3$');
+      const cs12 = Changeset.checkRep(Changeset.compose(cs1, cs2, p));
+      expect(cs12).to.equal('Z:2>1+1*0|1=2$x');
+    });
+  });
+});
+
+describe('easysync-follow', function () {
+  describe('follow & compose', function () {
+    const testFollow = (randomSeed) => {
+      it(`testFollow#${randomSeed}`, async function () {
+        const p = new AttributePool();
+
+        const startText = `${randomMultiline(10, 20)}\n`;
+
+        const cs1 = randomTestChangeset(startText)[0];
+        const cs2 = randomTestChangeset(startText)[0];
+
+        const afb = Changeset.checkRep(Changeset.follow(cs1, cs2, false, p));
+        const bfa = Changeset.checkRep(Changeset.follow(cs2, cs1, true, p));
+
+        const merge1 = Changeset.checkRep(Changeset.compose(cs1, afb));
+        const merge2 = Changeset.checkRep(Changeset.compose(cs2, bfa));
+
+        expect(merge2).to.equal(merge1);
+      });
+    };
+
+    for (let i = 0; i < 30; i++) testFollow(i);
+  });
+
+  describe('followAttributes & composeAttributes', function () {
+    const p = new AttributePool();
+    p.putAttrib(['x', '']);
+    p.putAttrib(['x', 'abc']);
+    p.putAttrib(['x', 'def']);
+    p.putAttrib(['y', '']);
+    p.putAttrib(['y', 'abc']);
+    p.putAttrib(['y', 'def']);
+    let n = 0;
+
+    const testFollow = (a, b, afb, bfa, merge) => {
+      it(`manual #${++n}`, async function () {
+        expect(Changeset.exportedForTestingOnly.followAttributes(a, b, p)).to.equal(afb);
+        expect(Changeset.exportedForTestingOnly.followAttributes(b, a, p)).to.equal(bfa);
+        expect(Changeset.composeAttributes(a, afb, true, p)).to.equal(merge);
+        expect(Changeset.composeAttributes(b, bfa, true, p)).to.equal(merge);
+      });
+    };
+
+    testFollow('', '', '', '', '');
+    testFollow('*0', '', '', '*0', '*0');
+    testFollow('*0', '*0', '', '', '*0');
+    testFollow('*0', '*1', '', '*0', '*0');
+    testFollow('*1', '*2', '', '*1', '*1');
+    testFollow('*0*1', '', '', '*0*1', '*0*1');
+    testFollow('*0*4', '*2*3', '*3', '*0', '*0*3');
+    testFollow('*0*4', '*2', '', '*0*4', '*0*4');
+  });
+
+  describe('chracterRangeFollow', function () {
+    const testCharacterRangeFollow = (testId, cs, oldRange, insertionsAfter, correctNewRange) => {
+      it(`testCharacterRangeFollow#${testId}`, async function () {
+        cs = Changeset.checkRep(cs);
+        expect(Changeset.characterRangeFollow(cs, oldRange[0], oldRange[1], insertionsAfter))
+            .to.eql(correctNewRange);
+      });
+    };
+
+    testCharacterRangeFollow(1, 'Z:z>9*0=1=4-3+9=1|1-4-4+1*0+a$123456789abcdefghijk',
+        [7, 10], false, [14, 15]);
+    testCharacterRangeFollow(2, 'Z:bc<6|x=b4|2-6$', [400, 407], false, [400, 401]);
+    testCharacterRangeFollow(3, 'Z:4>0-3+3$abc', [0, 3], false, [3, 3]);
+    testCharacterRangeFollow(4, 'Z:4>0-3+3$abc', [0, 3], true, [0, 0]);
+    testCharacterRangeFollow(5, 'Z:5>1+1=1-3+3$abcd', [1, 4], false, [5, 5]);
+    testCharacterRangeFollow(6, 'Z:5>1+1=1-3+3$abcd', [1, 4], true, [2, 2]);
+    testCharacterRangeFollow(7, 'Z:5>1+1=1-3+3$abcd', [0, 6], false, [1, 7]);
+    testCharacterRangeFollow(8, 'Z:5>1+1=1-3+3$abcd', [0, 3], false, [1, 2]);
+    testCharacterRangeFollow(9, 'Z:5>1+1=1-3+3$abcd', [2, 5], false, [5, 6]);
+    testCharacterRangeFollow(10, 'Z:2>1+1$a', [0, 0], false, [1, 1]);
+    testCharacterRangeFollow(11, 'Z:2>1+1$a', [0, 0], true, [0, 0]);
+  });
+});
+
+describe('easysync-inverseRandom', function () {
+  describe('inverse random', function () {
+    const testInverseRandom = (randomSeed) => {
+      it(`testInverseRandom#${randomSeed}`, async function () {
+        const p = poolOrArray(['apple,', 'apple,true', 'banana,', 'banana,true']);
+
+        const startText = `${randomMultiline(10, 20)}\n`;
+        const alines =
+            Changeset.splitAttributionLines(Changeset.makeAttribution(startText), startText);
+        const lines = startText.slice(0, -1).split('\n').map((s) => `${s}\n`);
+
+        const stylifier = randomTestChangeset(startText, true)[0];
+
+        Changeset.mutateAttributionLines(stylifier, alines, p);
+        Changeset.mutateTextLines(stylifier, lines);
+
+        const changeset = randomTestChangeset(lines.join(''), true)[0];
+        const inverseChangeset = Changeset.inverse(changeset, lines, alines, p);
+
+        const origLines = lines.slice();
+        const origALines = alines.slice();
+
+        Changeset.mutateTextLines(changeset, lines);
+        Changeset.mutateAttributionLines(changeset, alines, p);
+        Changeset.mutateTextLines(inverseChangeset, lines);
+        Changeset.mutateAttributionLines(inverseChangeset, alines, p);
+        expect(lines).to.eql(origLines);
+        expect(alines).to.eql(origALines);
+      });
+    };
+
+    for (let i = 0; i < 30; i++) testInverseRandom(i);
+  });
+
+  describe('inverse', function () {
+    const testInverse = (testId, cs, lines, alines, pool, correctOutput) => {
+      it(`testInverse#${testId}`, async function () {
+        pool = poolOrArray(pool);
+        const str = Changeset.inverse(Changeset.checkRep(cs), lines, alines, pool);
+        expect(str).to.equal(correctOutput);
+      });
+    };
+
+    // take "FFFFTTTTT" and apply "-FT--FFTT", the inverse of which is "--F--TT--"
+    testInverse(1, 'Z:9>0=1*0=1*1=1=2*0=2*1|1=2$', null,
+        ['+4*1+5'], ['bold,', 'bold,true'], 'Z:9>0=2*0=1=2*1=2$');
+  });
+});
+
+describe('easysync-mutations', function () {
   const applyMutations = (mu, arrayOfArrays) => {
     arrayOfArrays.forEach((a) => {
       const result = mu[a[0]](...a.slice(1));
@@ -389,22 +608,6 @@ describe('easysync', function () {
     ['skip', 1, 1, true],
   ], ['banana\n', 'cabbage\n', 'duffle\n']);
 
-  const runApplyToAttributionTest = (testId, attribs, cs, inAttr, outCorrect) => {
-    it(`applyToAttribution#${testId}`, async function () {
-      const p = poolOrArray(attribs);
-      const result = Changeset.applyToAttribution(Changeset.checkRep(cs), inAttr, p);
-      expect(result).to.equal(outCorrect);
-    });
-  };
-
-  // turn c<b>a</b>ctus\n into a<b>c</b>tusabcd\n
-  runApplyToAttributionTest(1,
-      ['bold,', 'bold,true'], 'Z:7>3-1*0=1*1=1=3+4$abcd', '+1*1+1|1+5', '+1*1+1|1+8');
-
-  // turn "david\ngreenspan\n" into "<b>david\ngreen</b>\n"
-  runApplyToAttributionTest(2,
-      ['bold,', 'bold,true'], 'Z:g<4*1|1=6*1=5-4$', '|2+g', '*1|1+6*1+5|1+1');
-
   it('mutatorHasMore', async function () {
     const lines = ['1\n', '2\n', '3\n', '4\n'];
     let mu;
@@ -445,365 +648,268 @@ describe('easysync', function () {
     expect(mu.hasMore()).to.be(false);
   });
 
-  const runMutateAttributionTest = (testId, attribs, cs, alines, outCorrect) => {
-    it(`runMutateAttributionTest#${testId}`, async function () {
-      const p = poolOrArray(attribs);
-      const alines2 = Array.prototype.slice.call(alines);
-      Changeset.mutateAttributionLines(Changeset.checkRep(cs), alines2, p);
-      expect(alines2).to.eql(outCorrect);
-
-      const removeQuestionMarks = (a) => a.replace(/\?/g, '');
-      const inMerged = Changeset.joinAttributionLines(alines.map(removeQuestionMarks));
-      const correctMerged = Changeset.joinAttributionLines(outCorrect.map(removeQuestionMarks));
-      const mergedResult = Changeset.applyToAttribution(cs, inMerged, p);
-      expect(mergedResult).to.equal(correctMerged);
-    });
-  };
-
-  // turn 123\n 456\n 789\n into 123\n 4<b>5</b>6\n 789\n
-  runMutateAttributionTest(1,
-      ['bold,true'], 'Z:c>0|1=4=1*0=1$', ['|1+4', '|1+4', '|1+4'], ['|1+4', '+1*0+1|1+2', '|1+4']);
-
-  // make a document bold
-  runMutateAttributionTest(2,
-      ['bold,true'], 'Z:c>0*0|3=c$', ['|1+4', '|1+4', '|1+4'], ['*0|1+4', '*0|1+4', '*0|1+4']);
-
-  // clear bold on document
-  runMutateAttributionTest(3,
-      ['bold,', 'bold,true'], 'Z:c>0*0|3=c$',
-      ['*1+1+1*1+1|1+1', '+1*1+1|1+2', '*1+1+1*1+1|1+1'], ['|1+4', '|1+4', '|1+4']);
-
-  // add a character on line 3 of a document with 5 blank lines, and make sure
-  // the optimization that skips purely-kept lines is working; if any attribution string
-  // with a '?' is parsed it will cause an error.
-  runMutateAttributionTest(4,
-      ['foo,bar', 'line,1', 'line,2', 'line,3', 'line,4', 'line,5'],
-      'Z:5>1|2=2+1$x', ['?*1|1+1', '?*2|1+1', '*3|1+1', '?*4|1+1', '?*5|1+1'],
-      ['?*1|1+1', '?*2|1+1', '+1*3|1+1', '?*4|1+1', '?*5|1+1']);
-
-  const testPoolWithChars = (() => {
-    const p = new AttributePool();
-    p.putAttrib(['char', 'newline']);
-    for (let i = 1; i < 36; i++) {
-      p.putAttrib(['char', Changeset.numToString(i)]);
-    }
-    p.putAttrib(['char', '']);
-    return p;
-  })();
-
-  // based on runMutationTest#1
-  runMutateAttributionTest(5, testPoolWithChars,
-      'Z:11>7-2*t+1*u+1|2=b|2+a=2*b+1*o+1*t+1*0|1+1*b+1*u+1=3|1-3-6$tucream\npie\nbot\nbu',
-      [
-        '*a+1*p+2*l+1*e+1*0|1+1',
-        '*b+1*a+1*n+1*a+1*n+1*a+1*0|1+1',
-        '*c+1*a+1*b+2*a+1*g+1*e+1*0|1+1',
-        '*d+1*u+1*f+2*l+1*e+1*0|1+1',
-        '*e+1*g+2*p+1*l+1*a+1*n+1*t+1*0|1+1',
-      ],
-      [
-        '*t+1*u+1*p+1*l+1*e+1*0|1+1',
-        '*b+1*a+1*n+1*a+1*n+1*a+1*0|1+1',
-        '|1+6',
-        '|1+4',
-        '*c+1*a+1*b+1*o+1*t+1*0|1+1',
-        '*b+1*u+1*b+2*a+1*0|1+1',
-        '*e+1*g+2*p+1*l+1*a+1*n+1*t+1*0|1+1',
-      ]);
-
-  // based on runMutationTest#3
-  runMutateAttributionTest(6, testPoolWithChars,
-      'Z:11<f|1-6|2=f=6|1-1-8$', ['*a|1+6', '*b|1+7', '*c|1+8', '*d|1+7', '*e|1+9'],
-      ['*b|1+7', '*c|1+8', '*d+6*e|1+1']);
-
-  // based on runMutationTest#4
-  runMutateAttributionTest(7, testPoolWithChars, 'Z:3>7=1|4+7$\n2\n3\n4\n',
-      ['*1+1*5|1+2'], ['*1+1|1+1', '|1+2', '|1+2', '|1+2', '*5|1+2']);
-
-  // based on runMutationTest#5
-  runMutateAttributionTest(8, testPoolWithChars, 'Z:a<7=1|4-7$',
-      ['*1|1+2', '*2|1+2', '*3|1+2', '*4|1+2', '*5|1+2'], ['*1+1*5|1+2']);
-
-  // based on runMutationTest#6
-  runMutateAttributionTest(9, testPoolWithChars, 'Z:k<7*0+1*10|2=8|2-8$0',
-      [
-        '*1+1*2+1*3+1|1+1',
-        '*a+1*b+1*c+1|1+1',
-        '*d+1*e+1*f+1|1+1',
-        '*g+1*h+1*i+1|1+1',
-        '?*x+1*y+1*z+1|1+1',
-      ],
-      ['*0+1|1+4', '|1+4', '?*x+1*y+1*z+1|1+1']);
-
-  runMutateAttributionTest(10, testPoolWithChars, 'Z:6>4=1+1=1+1|1=1+1=1*0+1$abcd',
-      ['|1+3', '|1+3'], ['|1+5', '+2*0+1|1+2']);
-
-
-  runMutateAttributionTest(11, testPoolWithChars, 'Z:s>1|1=4=6|1+1$\n',
-      ['*0|1+4', '*0|1+8', '*0+5|1+1', '*0|1+1', '*0|1+5', '*0|1+1', '*0|1+1', '*0|1+1', '|1+1'],
-      [
-        '*0|1+4',
-        '*0+6|1+1',
-        '*0|1+2',
-        '*0+5|1+1',
-        '*0|1+1',
-        '*0|1+5',
-        '*0|1+1',
-        '*0|1+1',
-        '*0|1+1',
-        '|1+1',
-      ]);
-
-  const testCompose = (randomSeed) => {
-    it(`testCompose#${randomSeed}`, async function () {
-      const p = new AttributePool();
-
-      const startText = `${randomMultiline(10, 20)}\n`;
-
-      const x1 = randomTestChangeset(startText);
-      const change1 = x1[0];
-      const text1 = x1[1];
-
-      const x2 = randomTestChangeset(text1);
-      const change2 = x2[0];
-      const text2 = x2[1];
-
-      const x3 = randomTestChangeset(text2);
-      const change3 = x3[0];
-      const text3 = x3[1];
-
-      const change12 = Changeset.checkRep(Changeset.compose(change1, change2, p));
-      const change23 = Changeset.checkRep(Changeset.compose(change2, change3, p));
-      const change123 = Changeset.checkRep(Changeset.compose(change12, change3, p));
-      const change123a = Changeset.checkRep(Changeset.compose(change1, change23, p));
-      expect(change123a).to.equal(change123);
-
-      expect(Changeset.applyToText(change12, startText)).to.equal(text2);
-      expect(Changeset.applyToText(change23, text1)).to.equal(text3);
-      expect(Changeset.applyToText(change123, startText)).to.equal(text3);
-    });
-  };
-
-  for (let i = 0; i < 30; i++) testCompose(i);
-
-  it('simpleComposeAttributesTest', async function () {
-    const p = new AttributePool();
-    p.putAttrib(['bold', '']);
-    p.putAttrib(['bold', 'true']);
-    const cs1 = Changeset.checkRep('Z:2>1*1+1*1=1$x');
-    const cs2 = Changeset.checkRep('Z:3>0*0|1=3$');
-    const cs12 = Changeset.checkRep(Changeset.compose(cs1, cs2, p));
-    expect(cs12).to.equal('Z:2>1+1*0|1=2$x');
-  });
-
-  describe('followAttributes & composeAttributes', function () {
-    const p = new AttributePool();
-    p.putAttrib(['x', '']);
-    p.putAttrib(['x', 'abc']);
-    p.putAttrib(['x', 'def']);
-    p.putAttrib(['y', '']);
-    p.putAttrib(['y', 'abc']);
-    p.putAttrib(['y', 'def']);
-    let n = 0;
-
-    const testFollow = (a, b, afb, bfa, merge) => {
-      it(`manual #${++n}`, async function () {
-        expect(Changeset.exportedForTestingOnly.followAttributes(a, b, p)).to.equal(afb);
-        expect(Changeset.exportedForTestingOnly.followAttributes(b, a, p)).to.equal(bfa);
-        expect(Changeset.composeAttributes(a, afb, true, p)).to.equal(merge);
-        expect(Changeset.composeAttributes(b, bfa, true, p)).to.equal(merge);
+  describe('mutateTextLines', function () {
+    const testMutateTextLines = (testId, cs, lines, correctLines) => {
+      it(`testMutateTextLines#${testId}`, async function () {
+        const a = lines.slice();
+        Changeset.mutateTextLines(cs, a);
+        expect(a).to.eql(correctLines);
       });
     };
 
-    testFollow('', '', '', '', '');
-    testFollow('*0', '', '', '*0', '*0');
-    testFollow('*0', '*0', '', '', '*0');
-    testFollow('*0', '*1', '', '*0', '*0');
-    testFollow('*1', '*2', '', '*1', '*1');
-    testFollow('*0*1', '', '', '*0*1', '*0*1');
-    testFollow('*0*4', '*2*3', '*3', '*0', '*0*3');
-    testFollow('*0*4', '*2', '', '*0*4', '*0*4');
+    testMutateTextLines(1, 'Z:4<1|1-2-1|1+1+1$\nc', ['a\n', 'b\n'], ['\n', 'c\n']);
+    testMutateTextLines(2, 'Z:4>0|1-2-1|2+3$\nc\n', ['a\n', 'b\n'], ['\n', 'c\n', '\n']);
   });
 
-  const testFollow = (randomSeed) => {
-    it(`testFollow#${randomSeed}`, async function () {
+  describe('mutate attributions', function () {
+    const testPoolWithChars = (() => {
       const p = new AttributePool();
-
-      const startText = `${randomMultiline(10, 20)}\n`;
-
-      const cs1 = randomTestChangeset(startText)[0];
-      const cs2 = randomTestChangeset(startText)[0];
-
-      const afb = Changeset.checkRep(Changeset.follow(cs1, cs2, false, p));
-      const bfa = Changeset.checkRep(Changeset.follow(cs2, cs1, true, p));
-
-      const merge1 = Changeset.checkRep(Changeset.compose(cs1, afb));
-      const merge2 = Changeset.checkRep(Changeset.compose(cs2, bfa));
-
-      expect(merge2).to.equal(merge1);
-    });
-  };
-
-  for (let i = 0; i < 30; i++) testFollow(i);
-
-  const testSplitJoinAttributionLines = (randomSeed) => {
-    const stringToOps = (str) => {
-      const assem = Changeset.mergingOpAssembler();
-      const o = new Changeset.Op('+');
-      o.chars = 1;
-      for (let i = 0; i < str.length; i++) {
-        const c = str.charAt(i);
-        o.lines = (c === '\n' ? 1 : 0);
-        o.attribs = (c === 'a' || c === 'b' ? `*${c}` : '');
-        assem.append(o);
+      p.putAttrib(['char', 'newline']);
+      for (let i = 1; i < 36; i++) {
+        p.putAttrib(['char', Changeset.numToString(i)]);
       }
-      return assem.toString();
+      p.putAttrib(['char', '']);
+      return p;
+    })();
+
+    const runMutateAttributionTest = (testId, attribs, cs, alines, outCorrect) => {
+      it(`runMutateAttributionTest#${testId}`, async function () {
+        const p = poolOrArray(attribs);
+        const alines2 = Array.prototype.slice.call(alines);
+        Changeset.mutateAttributionLines(Changeset.checkRep(cs), alines2, p);
+        expect(alines2).to.eql(outCorrect);
+
+        const removeQuestionMarks = (a) => a.replace(/\?/g, '');
+        const inMerged = Changeset.joinAttributionLines(alines.map(removeQuestionMarks));
+        const correctMerged = Changeset.joinAttributionLines(outCorrect.map(removeQuestionMarks));
+        const mergedResult = Changeset.applyToAttribution(cs, inMerged, p);
+        expect(mergedResult).to.equal(correctMerged);
+      });
     };
 
-    it(`testSplitJoinAttributionLines#${randomSeed}`, async function () {
-      const doc = `${randomMultiline(10, 20)}\n`;
+    // turn 123\n 456\n 789\n into 123\n 4<b>5</b>6\n 789\n
+    runMutateAttributionTest(1,
+        ['bold,true'], 'Z:c>0|1=4=1*0=1$', ['|1+4', '|1+4', '|1+4'], ['|1+4', '+1*0+1|1+2', '|1+4']
+    );
 
-      const theJoined = stringToOps(doc);
-      const theSplit = doc.match(/[^\n]*\n/g).map(stringToOps);
+    // make a document bold
+    runMutateAttributionTest(2,
+        ['bold,true'], 'Z:c>0*0|3=c$', ['|1+4', '|1+4', '|1+4'], ['*0|1+4', '*0|1+4', '*0|1+4']);
 
-      expect(Changeset.splitAttributionLines(theJoined, doc)).to.eql(theSplit);
-      expect(Changeset.joinAttributionLines(theSplit)).to.equal(theJoined);
-    });
-  };
+    // clear bold on document
+    runMutateAttributionTest(3,
+        ['bold,', 'bold,true'], 'Z:c>0*0|3=c$',
+        ['*1+1+1*1+1|1+1', '+1*1+1|1+2', '*1+1+1*1+1|1+1'], ['|1+4', '|1+4', '|1+4']);
 
-  for (let i = 0; i < 10; i++) testSplitJoinAttributionLines(i);
+    // add a character on line 3 of a document with 5 blank lines, and make sure
+    // the optimization that skips purely-kept lines is working; if any attribution string
+    // with a '?' is parsed it will cause an error.
+    runMutateAttributionTest(4,
+        ['foo,bar', 'line,1', 'line,2', 'line,3', 'line,4', 'line,5'],
+        'Z:5>1|2=2+1$x', ['?*1|1+1', '?*2|1+1', '*3|1+1', '?*4|1+1', '?*5|1+1'],
+        ['?*1|1+1', '?*2|1+1', '+1*3|1+1', '?*4|1+1', '?*5|1+1']);
 
-  it('testMoveOpsToNewPool', async function () {
-    const pool1 = new AttributePool();
-    const pool2 = new AttributePool();
+    // based on runMutationTest#1
+    runMutateAttributionTest(5, testPoolWithChars,
+        'Z:11>7-2*t+1*u+1|2=b|2+a=2*b+1*o+1*t+1*0|1+1*b+1*u+1=3|1-3-6$tucream\npie\nbot\nbu',
+        [
+          '*a+1*p+2*l+1*e+1*0|1+1',
+          '*b+1*a+1*n+1*a+1*n+1*a+1*0|1+1',
+          '*c+1*a+1*b+2*a+1*g+1*e+1*0|1+1',
+          '*d+1*u+1*f+2*l+1*e+1*0|1+1',
+          '*e+1*g+2*p+1*l+1*a+1*n+1*t+1*0|1+1',
+        ],
+        [
+          '*t+1*u+1*p+1*l+1*e+1*0|1+1',
+          '*b+1*a+1*n+1*a+1*n+1*a+1*0|1+1',
+          '|1+6',
+          '|1+4',
+          '*c+1*a+1*b+1*o+1*t+1*0|1+1',
+          '*b+1*u+1*b+2*a+1*0|1+1',
+          '*e+1*g+2*p+1*l+1*a+1*n+1*t+1*0|1+1',
+        ]);
 
-    pool1.putAttrib(['baz', 'qux']);
-    pool1.putAttrib(['foo', 'bar']);
+    // based on runMutationTest#3
+    runMutateAttributionTest(6, testPoolWithChars,
+        'Z:11<f|1-6|2=f=6|1-1-8$', ['*a|1+6', '*b|1+7', '*c|1+8', '*d|1+7', '*e|1+9'],
+        ['*b|1+7', '*c|1+8', '*d+6*e|1+1']);
 
-    pool2.putAttrib(['foo', 'bar']);
+    // based on runMutationTest#4
+    runMutateAttributionTest(7, testPoolWithChars, 'Z:3>7=1|4+7$\n2\n3\n4\n',
+        ['*1+1*5|1+2'], ['*1+1|1+1', '|1+2', '|1+2', '|1+2', '*5|1+2']);
 
-    expect(Changeset.moveOpsToNewPool('Z:1>2*1+1*0+1$ab', pool1, pool2))
-        .to.equal('Z:1>2*0+1*1+1$ab');
-    expect(Changeset.moveOpsToNewPool('*1+1*0+1', pool1, pool2)).to.equal('*0+1*1+1');
+    // based on runMutationTest#5
+    runMutateAttributionTest(8, testPoolWithChars, 'Z:a<7=1|4-7$',
+        ['*1|1+2', '*2|1+2', '*3|1+2', '*4|1+2', '*5|1+2'], ['*1+1*5|1+2']);
+
+    // based on runMutationTest#6
+    runMutateAttributionTest(9, testPoolWithChars, 'Z:k<7*0+1*10|2=8|2-8$0',
+        [
+          '*1+1*2+1*3+1|1+1',
+          '*a+1*b+1*c+1|1+1',
+          '*d+1*e+1*f+1|1+1',
+          '*g+1*h+1*i+1|1+1',
+          '?*x+1*y+1*z+1|1+1',
+        ],
+        ['*0+1|1+4', '|1+4', '?*x+1*y+1*z+1|1+1']);
+
+    runMutateAttributionTest(10, testPoolWithChars, 'Z:6>4=1+1=1+1|1=1+1=1*0+1$abcd',
+        ['|1+3', '|1+3'], ['|1+5', '+2*0+1|1+2']);
+
+    runMutateAttributionTest(11, testPoolWithChars, 'Z:s>1|1=4=6|1+1$\n',
+        ['*0|1+4', '*0|1+8', '*0+5|1+1', '*0|1+1', '*0|1+5', '*0|1+1', '*0|1+1', '*0|1+1', '|1+1'],
+        [
+          '*0|1+4',
+          '*0+6|1+1',
+          '*0|1+2',
+          '*0+5|1+1',
+          '*0|1+1',
+          '*0|1+5',
+          '*0|1+1',
+          '*0|1+1',
+          '*0|1+1',
+          '|1+1',
+        ]);
+  });
+});
+
+describe('easysync-other', function () {
+  describe('filter attribute numbers', function () {
+    const testFilterAttribNumbers = (testId, cs, filter, correctOutput) => {
+      it(`testFilterAttribNumbers#${testId}`, async function () {
+        const str = Changeset.filterAttribNumbers(cs, filter);
+        expect(str).to.equal(correctOutput);
+      });
+    };
+
+    testFilterAttribNumbers(1, '*0*1+1+2+3*1+4*2+5*0*2*1*b*c+6',
+        (n) => (n % 2) === 0, '*0+1+2+3+4*2+5*0*2*c+6');
+    testFilterAttribNumbers(2, '*0*1+1+2+3*1+4*2+5*0*2*1*b*c+6',
+        (n) => (n % 2) === 1, '*1+1+2+3*1+4+5*1*b+6');
   });
 
-  it('testMakeSplice', async function () {
-    const t = 'a\nb\nc\n';
-    const t2 = Changeset.applyToText(Changeset.makeSplice(t, 5, 0, 'def'), t);
-    expect(t2).to.equal('a\nb\ncdef\n');
+  describe('make attribs string', function () {
+    const testMakeAttribsString = (testId, pool, opcode, attribs, correctString) => {
+      it(`testMakeAttribsString#${testId}`, async function () {
+        const p = poolOrArray(pool);
+        const str = Changeset.makeAttribsString(opcode, attribs, p);
+        expect(str).to.equal(correctString);
+      });
+    };
+
+    testMakeAttribsString(1, ['bold,'], '+', [
+      ['bold', ''],
+    ], '');
+    testMakeAttribsString(2, ['abc,def', 'bold,'], '=', [
+      ['bold', ''],
+    ], '*1');
+    testMakeAttribsString(3, ['abc,def', 'bold,true'], '+', [
+      ['abc', 'def'],
+      ['bold', 'true'],
+    ], '*0*1');
+    testMakeAttribsString(4, ['abc,def', 'bold,true'], '+', [
+      ['bold', 'true'],
+      ['abc', 'def'],
+    ], '*0*1');
   });
 
-  it('testToSplices', async function () {
-    const cs = Changeset.checkRep('Z:z>9*0=1=4-3+9=1|1-4-4+1*0+a$123456789abcdefghijk');
-    const correctSplices = [
-      [5, 8, '123456789'],
-      [9, 17, 'abcdefghijk'],
-    ];
-    expect(Changeset.exportedForTestingOnly.toSplices(cs)).to.eql(correctSplices);
+  describe('other', function () {
+    it('testMoveOpsToNewPool', async function () {
+      const pool1 = new AttributePool();
+      const pool2 = new AttributePool();
+
+      pool1.putAttrib(['baz', 'qux']);
+      pool1.putAttrib(['foo', 'bar']);
+
+      pool2.putAttrib(['foo', 'bar']);
+
+      expect(Changeset.moveOpsToNewPool('Z:1>2*1+1*0+1$ab', pool1, pool2))
+          .to.equal('Z:1>2*0+1*1+1$ab');
+      expect(Changeset.moveOpsToNewPool('*1+1*0+1', pool1, pool2)).to.equal('*0+1*1+1');
+    });
+
+    it('testMakeSplice', async function () {
+      const t = 'a\nb\nc\n';
+      const t2 = Changeset.applyToText(Changeset.makeSplice(t, 5, 0, 'def'), t);
+      expect(t2).to.equal('a\nb\ncdef\n');
+    });
+
+    it('testToSplices', async function () {
+      const cs = Changeset.checkRep('Z:z>9*0=1=4-3+9=1|1-4-4+1*0+a$123456789abcdefghijk');
+      const correctSplices = [
+        [5, 8, '123456789'],
+        [9, 17, 'abcdefghijk'],
+      ];
+      expect(Changeset.exportedForTestingOnly.toSplices(cs)).to.eql(correctSplices);
+    });
+
+    it('opAttributeValue', async function () {
+      const p = new AttributePool();
+      p.putAttrib(['name', 'david']);
+      p.putAttrib(['color', 'green']);
+
+      const stringOp = (str) => Changeset.deserializeOps(str).next().value;
+
+      expect(Changeset.opAttributeValue(stringOp('*0*1+1'), 'name', p)).to.equal('david');
+      expect(Changeset.opAttributeValue(stringOp('*0+1'), 'name', p)).to.equal('david');
+      expect(Changeset.opAttributeValue(stringOp('*1+1'), 'name', p)).to.equal('');
+      expect(Changeset.opAttributeValue(stringOp('+1'), 'name', p)).to.equal('');
+      expect(Changeset.opAttributeValue(stringOp('*0*1+1'), 'color', p)).to.equal('green');
+      expect(Changeset.opAttributeValue(stringOp('*1+1'), 'color', p)).to.equal('green');
+      expect(Changeset.opAttributeValue(stringOp('*0+1'), 'color', p)).to.equal('');
+      expect(Changeset.opAttributeValue(stringOp('+1'), 'color', p)).to.equal('');
+    });
+
+    describe('applyToAttribution', function () {
+      const runApplyToAttributionTest = (testId, attribs, cs, inAttr, outCorrect) => {
+        it(`applyToAttribution#${testId}`, async function () {
+          const p = poolOrArray(attribs);
+          const result = Changeset.applyToAttribution(Changeset.checkRep(cs), inAttr, p);
+          expect(result).to.equal(outCorrect);
+        });
+      };
+
+      // turn c<b>a</b>ctus\n into a<b>c</b>tusabcd\n
+      runApplyToAttributionTest(1,
+          ['bold,', 'bold,true'], 'Z:7>3-1*0=1*1=1=3+4$abcd', '+1*1+1|1+5', '+1*1+1|1+8');
+
+      // turn "david\ngreenspan\n" into "<b>david\ngreen</b>\n"
+      runApplyToAttributionTest(2,
+          ['bold,', 'bold,true'], 'Z:g<4*1|1=6*1=5-4$', '|2+g', '*1|1+6*1+5|1+1');
+    });
+
+    describe('split/join attribution lines', function () {
+      const testSplitJoinAttributionLines = (randomSeed) => {
+        const stringToOps = (str) => {
+          const assem = Changeset.mergingOpAssembler();
+          const o = new Changeset.Op('+');
+          o.chars = 1;
+          for (let i = 0; i < str.length; i++) {
+            const c = str.charAt(i);
+            o.lines = (c === '\n' ? 1 : 0);
+            o.attribs = (c === 'a' || c === 'b' ? `*${c}` : '');
+            assem.append(o);
+          }
+          return assem.toString();
+        };
+
+        it(`testSplitJoinAttributionLines#${randomSeed}`, async function () {
+          const doc = `${randomMultiline(10, 20)}\n`;
+
+          const theJoined = stringToOps(doc);
+          const theSplit = doc.match(/[^\n]*\n/g).map(stringToOps);
+
+          expect(Changeset.splitAttributionLines(theJoined, doc)).to.eql(theSplit);
+          expect(Changeset.joinAttributionLines(theSplit)).to.equal(theJoined);
+        });
+      };
+
+      for (let i = 0; i < 10; i++) testSplitJoinAttributionLines(i);
+    });
   });
+});
 
-  const testCharacterRangeFollow = (testId, cs, oldRange, insertionsAfter, correctNewRange) => {
-    it(`testCharacterRangeFollow#${testId}`, async function () {
-      cs = Changeset.checkRep(cs);
-      expect(Changeset.characterRangeFollow(cs, oldRange[0], oldRange[1], insertionsAfter))
-          .to.eql(correctNewRange);
-    });
-  };
-
-  testCharacterRangeFollow(1, 'Z:z>9*0=1=4-3+9=1|1-4-4+1*0+a$123456789abcdefghijk',
-      [7, 10], false, [14, 15]);
-  testCharacterRangeFollow(2, 'Z:bc<6|x=b4|2-6$', [400, 407], false, [400, 401]);
-  testCharacterRangeFollow(3, 'Z:4>0-3+3$abc', [0, 3], false, [3, 3]);
-  testCharacterRangeFollow(4, 'Z:4>0-3+3$abc', [0, 3], true, [0, 0]);
-  testCharacterRangeFollow(5, 'Z:5>1+1=1-3+3$abcd', [1, 4], false, [5, 5]);
-  testCharacterRangeFollow(6, 'Z:5>1+1=1-3+3$abcd', [1, 4], true, [2, 2]);
-  testCharacterRangeFollow(7, 'Z:5>1+1=1-3+3$abcd', [0, 6], false, [1, 7]);
-  testCharacterRangeFollow(8, 'Z:5>1+1=1-3+3$abcd', [0, 3], false, [1, 2]);
-  testCharacterRangeFollow(9, 'Z:5>1+1=1-3+3$abcd', [2, 5], false, [5, 6]);
-  testCharacterRangeFollow(10, 'Z:2>1+1$a', [0, 0], false, [1, 1]);
-  testCharacterRangeFollow(11, 'Z:2>1+1$a', [0, 0], true, [0, 0]);
-
-  it('opAttributeValue', async function () {
-    const p = new AttributePool();
-    p.putAttrib(['name', 'david']);
-    p.putAttrib(['color', 'green']);
-
-    const stringOp = (str) => Changeset.deserializeOps(str).next().value;
-
-    expect(Changeset.opAttributeValue(stringOp('*0*1+1'), 'name', p)).to.equal('david');
-    expect(Changeset.opAttributeValue(stringOp('*0+1'), 'name', p)).to.equal('david');
-    expect(Changeset.opAttributeValue(stringOp('*1+1'), 'name', p)).to.equal('');
-    expect(Changeset.opAttributeValue(stringOp('+1'), 'name', p)).to.equal('');
-    expect(Changeset.opAttributeValue(stringOp('*0*1+1'), 'color', p)).to.equal('green');
-    expect(Changeset.opAttributeValue(stringOp('*1+1'), 'color', p)).to.equal('green');
-    expect(Changeset.opAttributeValue(stringOp('*0+1'), 'color', p)).to.equal('');
-    expect(Changeset.opAttributeValue(stringOp('+1'), 'color', p)).to.equal('');
-  });
-
-  const testAppendATextToAssembler = (testId, atext, correctOps) => {
-    it(`testAppendATextToAssembler#${testId}`, async function () {
-      const assem = Changeset.smartOpAssembler();
-      for (const op of Changeset.opsFromAText(atext)) assem.append(op);
-      expect(assem.toString()).to.equal(correctOps);
-    });
-  };
-
-  testAppendATextToAssembler(1, {
-    text: '\n',
-    attribs: '|1+1',
-  }, '');
-  testAppendATextToAssembler(2, {
-    text: '\n\n',
-    attribs: '|2+2',
-  }, '|1+1');
-  testAppendATextToAssembler(3, {
-    text: '\n\n',
-    attribs: '*x|2+2',
-  }, '*x|1+1');
-  testAppendATextToAssembler(4, {
-    text: '\n\n',
-    attribs: '*x|1+1|1+1',
-  }, '*x|1+1');
-  testAppendATextToAssembler(5, {
-    text: 'foo\n',
-    attribs: '|1+4',
-  }, '+3');
-  testAppendATextToAssembler(6, {
-    text: '\nfoo\n',
-    attribs: '|2+5',
-  }, '|1+1+3');
-  testAppendATextToAssembler(7, {
-    text: '\nfoo\n',
-    attribs: '*x|2+5',
-  }, '*x|1+1*x+3');
-  testAppendATextToAssembler(8, {
-    text: '\n\n\nfoo\n',
-    attribs: '|2+2*x|2+5',
-  }, '|2+2*x|1+1*x+3');
-
-  const testMakeAttribsString = (testId, pool, opcode, attribs, correctString) => {
-    it(`testMakeAttribsString#${testId}`, async function () {
-      const p = poolOrArray(pool);
-      const str = Changeset.makeAttribsString(opcode, attribs, p);
-      expect(str).to.equal(correctString);
-    });
-  };
-
-  testMakeAttribsString(1, ['bold,'], '+', [
-    ['bold', ''],
-  ], '');
-  testMakeAttribsString(2, ['abc,def', 'bold,'], '=', [
-    ['bold', ''],
-  ], '*1');
-  testMakeAttribsString(3, ['abc,def', 'bold,true'], '+', [
-    ['abc', 'def'],
-    ['bold', 'true'],
-  ], '*0*1');
-  testMakeAttribsString(4, ['abc,def', 'bold,true'], '+', [
-    ['bold', 'true'],
-    ['abc', 'def'],
-  ], '*0*1');
-
+describe('easysync-subAttribution', function () {
   const testSubattribution = (testId, astr, start, end, correctOutput) => {
     it(`subattribution#${testId}`, async function () {
       const str = Changeset.subattribution(astr, start, end);
@@ -853,70 +959,4 @@ describe('easysync', function () {
   testSubattribution(40, '*0+2+1*1|1+3', 1, 5, '*0+1+1*1+2');
   testSubattribution(41, '*0+2+1*1|1+3', 2, 6, '+1*1|1+3');
   testSubattribution(42, '*0+2+1*1+3', 2, 6, '+1*1+3');
-
-  const testFilterAttribNumbers = (testId, cs, filter, correctOutput) => {
-    it(`testFilterAttribNumbers#${testId}`, async function () {
-      const str = Changeset.filterAttribNumbers(cs, filter);
-      expect(str).to.equal(correctOutput);
-    });
-  };
-
-  testFilterAttribNumbers(1, '*0*1+1+2+3*1+4*2+5*0*2*1*b*c+6',
-      (n) => (n % 2) === 0, '*0+1+2+3+4*2+5*0*2*c+6');
-  testFilterAttribNumbers(2, '*0*1+1+2+3*1+4*2+5*0*2*1*b*c+6',
-      (n) => (n % 2) === 1, '*1+1+2+3*1+4+5*1*b+6');
-
-  const testInverse = (testId, cs, lines, alines, pool, correctOutput) => {
-    it(`testInverse#${testId}`, async function () {
-      pool = poolOrArray(pool);
-      const str = Changeset.inverse(Changeset.checkRep(cs), lines, alines, pool);
-      expect(str).to.equal(correctOutput);
-    });
-  };
-
-  // take "FFFFTTTTT" and apply "-FT--FFTT", the inverse of which is "--F--TT--"
-  testInverse(1, 'Z:9>0=1*0=1*1=1=2*0=2*1|1=2$', null,
-      ['+4*1+5'], ['bold,', 'bold,true'], 'Z:9>0=2*0=1=2*1=2$');
-
-  const testMutateTextLines = (testId, cs, lines, correctLines) => {
-    it(`testMutateTextLines#${testId}`, async function () {
-      const a = lines.slice();
-      Changeset.mutateTextLines(cs, a);
-      expect(a).to.eql(correctLines);
-    });
-  };
-
-  testMutateTextLines(1, 'Z:4<1|1-2-1|1+1+1$\nc', ['a\n', 'b\n'], ['\n', 'c\n']);
-  testMutateTextLines(2, 'Z:4>0|1-2-1|2+3$\nc\n', ['a\n', 'b\n'], ['\n', 'c\n', '\n']);
-
-  const testInverseRandom = (randomSeed) => {
-    it(`testInverseRandom#${randomSeed}`, async function () {
-      const p = poolOrArray(['apple,', 'apple,true', 'banana,', 'banana,true']);
-
-      const startText = `${randomMultiline(10, 20)}\n`;
-      const alines =
-          Changeset.splitAttributionLines(Changeset.makeAttribution(startText), startText);
-      const lines = startText.slice(0, -1).split('\n').map((s) => `${s}\n`);
-
-      const stylifier = randomTestChangeset(startText, true)[0];
-
-      Changeset.mutateAttributionLines(stylifier, alines, p);
-      Changeset.mutateTextLines(stylifier, lines);
-
-      const changeset = randomTestChangeset(lines.join(''), true)[0];
-      const inverseChangeset = Changeset.inverse(changeset, lines, alines, p);
-
-      const origLines = lines.slice();
-      const origALines = alines.slice();
-
-      Changeset.mutateTextLines(changeset, lines);
-      Changeset.mutateAttributionLines(changeset, alines, p);
-      Changeset.mutateTextLines(inverseChangeset, lines);
-      Changeset.mutateAttributionLines(inverseChangeset, alines, p);
-      expect(lines).to.eql(origLines);
-      expect(alines).to.eql(origALines);
-    });
-  };
-
-  for (let i = 0; i < 30; i++) testInverseRandom(i);
 });
