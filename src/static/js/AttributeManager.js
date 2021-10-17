@@ -125,7 +125,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
    * @param attribs an array of attributes
    */
   _setAttributesOnRangeByLine(row, startCol, endCol, attribs) {
-    const builder = Changeset.builder(this.rep.lines.totalWidth());
+    const builder = new Changeset.Builder(this.rep.lines.totalWidth());
     ChangesetUtils.buildKeepToStartOfRange(this.rep, builder, [row, startCol]);
     ChangesetUtils.buildKeepRange(
         this.rep, builder, [row, startCol], [row, endCol], attribs, this.rep.apool);
@@ -285,7 +285,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
   */
   setAttributeOnLine(lineNum, attributeName, attributeValue) {
     let loc = [0, 0];
-    const builder = Changeset.builder(this.rep.lines.totalWidth());
+    const builder = new Changeset.Builder(this.rep.lines.totalWidth());
     const hasMarker = this.lineHasMarker(lineNum);
 
     ChangesetUtils.buildKeepRange(this.rep, builder, loc, (loc = [lineNum, 0]));
@@ -314,7 +314,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
    *  @param attributeValue if given only attributes with equal value will be removed
    */
   removeAttributeOnLine(lineNum, attributeName, attributeValue) {
-    const builder = Changeset.builder(this.rep.lines.totalWidth());
+    const builder = new Changeset.Builder(this.rep.lines.totalWidth());
     const hasMarker = this.lineHasMarker(lineNum);
     let found = false;
 

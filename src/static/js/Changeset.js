@@ -1915,98 +1915,100 @@ exports.attribsAttributeValue = (attribs, key, pool) => {
 
 /**
  * Incrementally builds a Changeset.
- *
- * @typedef {object} Builder
- * @property {Function} insert -
- * @property {Function} keep -
- * @property {Function} keepText -
- * @property {Function} remove -
- * @property {Function} toString -
  */
+class Builder {
+  /**
+   * @param {number} oldLen - Old length
+   */
+  constructor(oldLen) {
+    this._oldLen = oldLen;
+    this._ops = [];
+    this._charBank = exports.stringAssembler();
+  }
+
+  /**
+   * @param {number} N - Number of characters to keep.
+   * @param {number} L - Number of newlines among the `N` characters. If positive, the last
+   *     character must be a newline.
+   * @param {(string|Attribute[])} attribs - Either [[key1,value1],[key2,value2],...] or '*0*1...'
+   *     (no pool needed in latter case).
+   * @param {?AttributePool} pool - Attribute pool, only required if `attribs` is a list of
+   *     attribute key, value pairs.
+   * @returns {Builder} this
+   */
+  keep(N, L, attribs, pool) {
+    const o = new Op('=');
+    o.attribs = typeof attribs === 'string'
+      ? attribs : new AttributeMap(pool).update(attribs || []).toString();
+    o.chars = N;
+    o.lines = (L || 0);
+    this._ops.push(o);
+    return this;
+  }
+
+  /**
+   * @param {string} text - Text to keep.
+   * @param {(string|Attribute[])} attribs - Either [[key1,value1],[key2,value2],...] or '*0*1...'
+   *     (no pool needed in latter case).
+   * @param {?AttributePool} pool - Attribute pool, only required if `attribs` is a list of
+   *     attribute key, value pairs.
+   * @returns {Builder} this
+   */
+  keepText(text, attribs, pool) {
+    this._ops.push(...opsFromText('=', text, attribs, pool));
+    return this;
+  }
+
+  /**
+   * @param {string} text - Text to insert.
+   * @param {(string|Attribute[])} attribs - Either [[key1,value1],[key2,value2],...] or '*0*1...'
+   *     (no pool needed in latter case).
+   * @param {?AttributePool} pool - Attribute pool, only required if `attribs` is a list of
+   *     attribute key, value pairs.
+   * @returns {Builder} this
+   */
+  insert(text, attribs, pool) {
+    this._ops.push(...opsFromText('+', text, attribs, pool));
+    this._charBank.append(text);
+    return this;
+  }
+
+  /**
+   * @param {number} N - Number of characters to remove.
+   * @param {number} L - Number of newlines among the `N` characters. If positive, the last
+   *     character must be a newline.
+   * @returns {Builder} this
+   */
+  remove(N, L) {
+    const o = new Op('-');
+    o.attribs = '';
+    o.chars = N;
+    o.lines = (L || 0);
+    this._ops.push(o);
+    return this;
+  }
+
+  toString() {
+    /** @type {number} */
+    let lengthChange;
+    const serializedOps = exports.serializeOps((function* () {
+      lengthChange = yield* exports.canonicalizeOps(this._ops, true);
+    }).call(this));
+    const newLen = this._oldLen + lengthChange;
+    return exports.pack(this._oldLen, newLen, serializedOps, this._charBank.toString());
+  }
+}
+exports.Builder = Builder;
 
 /**
+ * @deprecated Use the `Builder` class instead.
  * @param {number} oldLen - Old length
  * @returns {Builder}
  */
 exports.builder = (oldLen) => {
-  const ops = [];
-  const charBank = exports.stringAssembler();
-
-  const self = {
-    /**
-     * @param {number} N - Number of characters to keep.
-     * @param {number} L - Number of newlines among the `N` characters. If positive, the last
-     *     character must be a newline.
-     * @param {(string|Attribute[])} attribs - Either [[key1,value1],[key2,value2],...] or '*0*1...'
-     *     (no pool needed in latter case).
-     * @param {?AttributePool} pool - Attribute pool, only required if `attribs` is a list of
-     *     attribute key, value pairs.
-     * @returns {Builder} this
-     */
-    keep: (N, L, attribs, pool) => {
-      const o = new Op('=');
-      o.attribs = typeof attribs === 'string'
-        ? attribs : new AttributeMap(pool).update(attribs || []).toString();
-      o.chars = N;
-      o.lines = (L || 0);
-      ops.push(o);
-      return self;
-    },
-
-    /**
-     * @param {string} text - Text to keep.
-     * @param {(string|Attribute[])} attribs - Either [[key1,value1],[key2,value2],...] or '*0*1...'
-     *     (no pool needed in latter case).
-     * @param {?AttributePool} pool - Attribute pool, only required if `attribs` is a list of
-     *     attribute key, value pairs.
-     * @returns {Builder} this
-     */
-    keepText: (text, attribs, pool) => {
-      ops.push(...opsFromText('=', text, attribs, pool));
-      return self;
-    },
-
-    /**
-     * @param {string} text - Text to insert.
-     * @param {(string|Attribute[])} attribs - Either [[key1,value1],[key2,value2],...] or '*0*1...'
-     *     (no pool needed in latter case).
-     * @param {?AttributePool} pool - Attribute pool, only required if `attribs` is a list of
-     *     attribute key, value pairs.
-     * @returns {Builder} this
-     */
-    insert: (text, attribs, pool) => {
-      ops.push(...opsFromText('+', text, attribs, pool));
-      charBank.append(text);
-      return self;
-    },
-
-    /**
-     * @param {number} N - Number of characters to remove.
-     * @param {number} L - Number of newlines among the `N` characters. If positive, the last
-     *     character must be a newline.
-     * @returns {Builder} this
-     */
-    remove: (N, L) => {
-      const o = new Op('-');
-      o.attribs = '';
-      o.chars = N;
-      o.lines = (L || 0);
-      ops.push(o);
-      return self;
-    },
-
-    toString: () => {
-      /** @type {number} */
-      let lengthChange;
-      const serializedOps = exports.serializeOps((function* () {
-        lengthChange = yield* exports.canonicalizeOps(ops, true);
-      })());
-      const newLen = oldLen + lengthChange;
-      return exports.pack(oldLen, newLen, serializedOps, charBank.toString());
-    },
-  };
-
-  return self;
+  padutils.warnDeprecated(
+      'Changeset.builder() is deprecated; use the Changeset.Builder class instead');
+  return new Builder(oldLen);
 };
 
 /**
@@ -2107,7 +2109,7 @@ exports.inverse = (cs, lines, alines, pool) => {
   let curLineNextOp = new Op('+');
 
   const unpacked = exports.unpack(cs);
-  const builder = exports.builder(unpacked.newLen);
+  const builder = new Builder(unpacked.newLen);
 
   const consumeAttribRuns = (numChars, func /* (len, attribs, endsLine)*/) => {
     if (!curLineOps || curLineOpsLine !== curLine) {

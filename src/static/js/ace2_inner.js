@@ -170,7 +170,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     //           CCCCCCCCCCCCCCCCCCCC\n
     //           CCCC\n
     // end[0]:   <CCC end[1] CCC>-------\n
-    const builder = Changeset.builder(rep.lines.totalWidth());
+    const builder = new Changeset.Builder(rep.lines.totalWidth());
     ChangesetUtils.buildKeepToStartOfRange(rep, builder, start);
     ChangesetUtils.buildRemoveRange(rep, builder, start, end);
     builder.insert(newText, [
@@ -1272,7 +1272,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       if (shouldIndent && /[[(:{]\s*$/.exec(prevLineText)) {
         theIndent += THE_TAB;
       }
-      const cs = Changeset.builder(rep.lines.totalWidth()).keep(
+      const cs = new Changeset.Builder(rep.lines.totalWidth()).keep(
           rep.lines.offsetOfIndex(lineNum), lineNum).insert(
           theIndent, [
             ['author', thisAuthor],
@@ -1746,7 +1746,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       const spliceStartLineStart = rep.lines.offsetOfIndex(spliceStartLine);
 
       const startBuilder = () => {
-        const builder = Changeset.builder(oldLen);
+        const builder = new Changeset.Builder(oldLen);
         builder.keep(spliceStartLineStart, spliceStartLine);
         builder.keep(spliceStart - spliceStartLineStart);
         return builder;
@@ -2297,7 +2297,7 @@ function Ace2Inner(editorInfo, cssManagers) {
 
     // 3-renumber every list item of the same level from the beginning, level 1
     // IMPORTANT: never skip a level because there imbrication may be arbitrary
-    const builder = Changeset.builder(rep.lines.totalWidth());
+    const builder = new Changeset.Builder(rep.lines.totalWidth());
     let loc = [0, 0];
     const applyNumberList = (line, level) => {
       // init

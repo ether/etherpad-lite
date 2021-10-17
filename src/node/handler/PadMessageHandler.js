@@ -759,7 +759,7 @@ const _correctMarkersInPad = (atext, apool) => {
   // create changeset that removes these bad markers
   offset = 0;
 
-  const builder = Changeset.builder(text.length);
+  const builder = new Changeset.Builder(text.length);
 
   badMarkers.forEach((pos) => {
     builder.keepText(text.substring(offset, pos));

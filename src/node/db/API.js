@@ -538,7 +538,7 @@ exports.restoreRevision = async (padID, rev) => {
   };
 
   // create a new changeset with a helper builder object
-  const builder = Changeset.builder(oldText.length);
+  const builder = new Changeset.Builder(oldText.length);
 
   // assemble each line into the builder
   eachAttribRun(atext.attribs, (start, end, attribs) => {

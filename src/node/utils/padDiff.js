@@ -69,7 +69,7 @@ PadDiff.prototype._createClearAuthorship = async function (rev) {
   const atext = await this._pad.getInternalRevisionAText(rev);
 
   // build clearAuthorship changeset
-  const builder = Changeset.builder(atext.text.length);
+  const builder = new Changeset.Builder(atext.text.length);
   builder.keepText(atext.text, [['author', '']], this._pad.pool);
   const changeset = builder.toString();
 
@@ -262,7 +262,7 @@ PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
   let curLineNextOp = new Changeset.Op('+');
 
   const unpacked = Changeset.unpack(cs);
-  const builder = Changeset.builder(unpacked.newLen);
+  const builder = new Changeset.Builder(unpacked.newLen);
 
   const consumeAttribRuns = (numChars, func /* (len, attribs, endsLine)*/) => {
     if (!curLineOps || curLineOpsLine !== curLine) {

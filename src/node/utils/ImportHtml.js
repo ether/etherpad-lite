@@ -64,7 +64,7 @@ exports.setPadHTML = async (pad, html) => {
   const newAttribs = `${result.lineAttribs.join('|1+1')}|1+1`;
 
   // create a new changeset with a helper builder object
-  const builder = Changeset.builder(1);
+  const builder = new Changeset.Builder(1);
 
   // assemble each line into the builder
   let textIndex = 0;
