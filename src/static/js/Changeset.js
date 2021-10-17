@@ -717,24 +717,21 @@ exports.stringIterator = (str) => {
 
 /**
  * A custom made StringBuffer
- *
- * @typedef {object} StringAssembler
- * @property {Function} append -
- * @property {Function} toString -
  */
+class StringAssembler {
+  constructor() { this.clear(); }
+  clear() { this._str = ''; }
+  /**
+   * @param {string} x -
+   */
+  append(x) { this._str += String(x); }
+  toString() { return this._str; }
+}
 
 /**
  * @returns {StringAssembler}
  */
-exports.stringAssembler = () => ({
-  _str: '',
-  clear() { this._str = ''; },
-  /**
-   * @param {string} x -
-   */
-  append(x) { this._str += String(x); },
-  toString() { return this._str; },
-});
+exports.stringAssembler = () => new StringAssembler();
 
 /**
  * @typedef {object} StringArrayLike
@@ -1161,7 +1158,7 @@ exports.applyToText = (cs, str) => {
   assert(str.length === unpacked.oldLen, `mismatched apply: ${str.length} / ${unpacked.oldLen}`);
   const bankIter = exports.stringIterator(unpacked.charBank);
   const strIter = exports.stringIterator(str);
-  const assem = exports.stringAssembler();
+  const assem = new StringAssembler();
   for (const op of exports.deserializeOps(unpacked.ops)) {
     switch (op.opcode) {
       case '+':
@@ -1480,7 +1477,7 @@ exports.compose = (cs1, cs2, pool) => {
   const len3 = unpacked2.newLen;
   const bankIter1 = exports.stringIterator(unpacked1.charBank);
   const bankIter2 = exports.stringIterator(unpacked2.charBank);
-  const bankAssem = exports.stringAssembler();
+  const bankAssem = new StringAssembler();
 
   const newOps = applyZip(unpacked1.ops, unpacked2.ops, (op1, op2) => {
     const op1code = op1.opcode;
@@ -1923,7 +1920,7 @@ class Builder {
   constructor(oldLen) {
     this._oldLen = oldLen;
     this._ops = [];
-    this._charBank = exports.stringAssembler();
+    this._charBank = new StringAssembler();
   }
 
   /**
@@ -2184,7 +2181,7 @@ exports.inverse = (cs, lines, alines, pool) => {
 
   const nextText = (numChars) => {
     let len = 0;
-    const assem = exports.stringAssembler();
+    const assem = new StringAssembler();
     const firstString = linesGet(curLine).substring(curChar);
     len += firstString.length;
     assem.append(firstString);
@@ -2410,7 +2407,7 @@ const followAttributes = (att1, att2, pool) => {
     return '';
   });
   // we've only removed attributes, so they're already sorted
-  const buf = exports.stringAssembler();
+  const buf = new StringAssembler();
   for (const att of atts) {
     buf.append('*');
     buf.append(exports.numToString(pool.putAttrib(att)));
