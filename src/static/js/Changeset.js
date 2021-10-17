@@ -663,57 +663,52 @@ exports.opAssembler = () => {
 
 /**
  * A custom made String Iterator
- *
- * @typedef {object} StringIterator
- * @property {Function} newlines -
- * @property {Function} peek -
- * @property {Function} remaining -
- * @property {Function} skip -
- * @property {Function} take -
  */
+class StringIterator {
+  constructor(str) {
+    this._str = str;
+    this._curIndex = 0;
+    // this._newLines is the number of \n between this._curIndex and this._str.length
+    this._newLines = this._str.split('\n').length - 1;
+  }
+
+  newlines() {
+    return this._newLines;
+  }
+
+  _assertRemaining(n) {
+    assert(n <= this.remaining(), `!(${n} <= ${this.remaining()})`);
+  }
+
+  take(n) {
+    this._assertRemaining(n);
+    const s = this._str.substr(this._curIndex, n);
+    this._newLines -= s.split('\n').length - 1;
+    this._curIndex += n;
+    return s;
+  }
+
+  peek(n) {
+    this._assertRemaining(n);
+    const s = this._str.substr(this._curIndex, n);
+    return s;
+  }
+
+  skip(n) {
+    this._assertRemaining(n);
+    this._curIndex += n;
+  }
+
+  remaining() {
+    return this._str.length - this._curIndex;
+  }
+}
 
 /**
  * @param {string} str - String to iterate over
  * @returns {StringIterator}
  */
-exports.stringIterator = (str) => {
-  let curIndex = 0;
-  // newLines is the number of \n between curIndex and str.length
-  let newLines = str.split('\n').length - 1;
-  const getnewLines = () => newLines;
-
-  const assertRemaining = (n) => {
-    assert(n <= remaining(), `!(${n} <= ${remaining()})`);
-  };
-
-  const take = (n) => {
-    assertRemaining(n);
-    const s = str.substr(curIndex, n);
-    newLines -= s.split('\n').length - 1;
-    curIndex += n;
-    return s;
-  };
-
-  const peek = (n) => {
-    assertRemaining(n);
-    const s = str.substr(curIndex, n);
-    return s;
-  };
-
-  const skip = (n) => {
-    assertRemaining(n);
-    curIndex += n;
-  };
-
-  const remaining = () => str.length - curIndex;
-  return {
-    take,
-    skip,
-    remaining,
-    peek,
-    newlines: getnewLines,
-  };
-};
+exports.stringIterator = (str) => new StringIterator(str);
 
 /**
  * A custom made StringBuffer
@@ -1160,8 +1155,8 @@ exports.pack = (oldLen, newLen, opsStr, bank) => {
 exports.applyToText = (cs, str) => {
   const unpacked = exports.unpack(cs);
   assert(str.length === unpacked.oldLen, `mismatched apply: ${str.length} / ${unpacked.oldLen}`);
-  const bankIter = exports.stringIterator(unpacked.charBank);
-  const strIter = exports.stringIterator(str);
+  const bankIter = new StringIterator(unpacked.charBank);
+  const strIter = new StringIterator(str);
   let assem = '';
   for (const op of exports.deserializeOps(unpacked.ops)) {
     switch (op.opcode) {
@@ -1203,7 +1198,7 @@ exports.applyToText = (cs, str) => {
  */
 exports.mutateTextLines = (cs, lines) => {
   const unpacked = exports.unpack(cs);
-  const bankIter = exports.stringIterator(unpacked.charBank);
+  const bankIter = new StringIterator(unpacked.charBank);
   const mut = new TextLinesMutator(lines);
   for (const op of exports.deserializeOps(unpacked.ops)) {
     switch (op.opcode) {
@@ -1479,8 +1474,8 @@ exports.compose = (cs1, cs2, pool) => {
   const len2 = unpacked1.newLen;
   assert(len2 === unpacked2.oldLen, 'mismatched composition of two changesets');
   const len3 = unpacked2.newLen;
-  const bankIter1 = exports.stringIterator(unpacked1.charBank);
-  const bankIter2 = exports.stringIterator(unpacked2.charBank);
+  const bankIter1 = new StringIterator(unpacked1.charBank);
+  const bankIter2 = new StringIterator(unpacked2.charBank);
   let bankAssem = '';
 
   const newOps = applyZip(unpacked1.ops, unpacked2.ops, (op1, op2) => {
@@ -1565,7 +1560,7 @@ const toSplices = (cs) => {
   const splices = [];
 
   let oldPos = 0;
-  const charIter = exports.stringIterator(unpacked.charBank);
+  const charIter = new StringIterator(unpacked.charBank);
   let inSplice = false;
   for (const op of exports.deserializeOps(unpacked.ops)) {
     if (op.opcode === '=') {
@@ -2251,8 +2246,8 @@ exports.follow = (cs1, cs2, reverseInsertOrder, pool) => {
   const len1 = unpacked1.oldLen;
   const len2 = unpacked2.oldLen;
   assert(len1 === len2, 'mismatched follow - cannot transform cs1 on top of cs2');
-  const chars1 = exports.stringIterator(unpacked1.charBank);
-  const chars2 = exports.stringIterator(unpacked2.charBank);
+  const chars1 = new StringIterator(unpacked1.charBank);
+  const chars2 = new StringIterator(unpacked2.charBank);
 
   const oldLen = unpacked1.newLen;
   let oldPos = 0;
