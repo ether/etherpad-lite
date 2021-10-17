@@ -242,14 +242,14 @@ const randomTestChangeset = (origText, withAttribs) => {
 };
 
 describe('easysync', function () {
-  it('throughIterator', async function () {
+  it('opAssembler', async function () {
     const x = '-c*3*4+6|3=az*asdf0*1*2*3+1=1-1+1*0+1=1-1+1|c=c-1';
     const assem = Changeset.opAssembler();
     for (const op of Changeset.deserializeOps(x)) assem.append(op);
     expect(assem.toString()).to.equal(x);
   });
 
-  it('throughSmartAssembler', async function () {
+  it('smartOpAssembler', async function () {
     const x = '-c*3*4+6|3=az*asdf0*1*2*3+1=1-1+1*0+1=1-1+1|c=c-1';
     const assem = Changeset.smartOpAssembler();
     for (const op of Changeset.deserializeOps(x)) assem.append(op);
@@ -607,7 +607,7 @@ describe('easysync', function () {
     let n = 0;
 
     const testFollow = (a, b, afb, bfa, merge) => {
-      it(`testFollow manual #${++n}`, async function () {
+      it(`manual #${++n}`, async function () {
         expect(Changeset.exportedForTestingOnly.followAttributes(a, b, p)).to.equal(afb);
         expect(Changeset.exportedForTestingOnly.followAttributes(b, a, p)).to.equal(bfa);
         expect(Changeset.composeAttributes(a, afb, true, p)).to.equal(merge);
@@ -723,7 +723,7 @@ describe('easysync', function () {
   testCharacterRangeFollow(10, 'Z:2>1+1$a', [0, 0], false, [1, 1]);
   testCharacterRangeFollow(11, 'Z:2>1+1$a', [0, 0], true, [0, 0]);
 
-  it('testOpAttributeValue', async function () {
+  it('opAttributeValue', async function () {
     const p = new AttributePool();
     p.putAttrib(['name', 'david']);
     p.putAttrib(['color', 'green']);
@@ -805,7 +805,7 @@ describe('easysync', function () {
   ], '*0*1');
 
   const testSubattribution = (testId, astr, start, end, correctOutput) => {
-    it(`testSubattribution#${testId}`, async function () {
+    it(`subattribution#${testId}`, async function () {
       const str = Changeset.subattribution(astr, start, end);
       expect(str).to.equal(correctOutput);
     });
