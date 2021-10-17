@@ -424,15 +424,93 @@ const opsFromText = function* (opcode, text, attribs = '', pool = null) {
  *   - strips final "="
  *   - ignores 0-length changes
  *   - reorders consecutive + and - (which MergingOpAssembler doesn't do)
- *
- * @typedef {object} SmartOpAssembler
- * @property {Function} append -
- * @property {Function} appendOpWithText -
- * @property {Function} clear -
- * @property {Function} endDocument -
- * @property {Function} getLengthChange -
- * @property {Function} toString -
  */
+class SmartOpAssembler {
+  constructor() {
+    this._minusAssem = new MergingOpAssembler();
+    this._plusAssem = new MergingOpAssembler();
+    this._keepAssem = new MergingOpAssembler();
+    this._assem = exports.stringAssembler();
+    this._lastOpcode = '';
+    this._lengthChange = 0;
+  }
+
+  clear() {
+    this._minusAssem.clear();
+    this._plusAssem.clear();
+    this._keepAssem.clear();
+    this._assem.clear();
+    this._lengthChange = 0;
+  }
+
+  _flushKeeps() {
+    this._assem.append(this._keepAssem.toString());
+    this._keepAssem.clear();
+  }
+
+  _flushPlusMinus() {
+    this._assem.append(this._minusAssem.toString());
+    this._minusAssem.clear();
+    this._assem.append(this._plusAssem.toString());
+    this._plusAssem.clear();
+  }
+
+  append(op) {
+    if (!op.opcode) return;
+    if (!op.chars) return;
+
+    if (op.opcode === '-') {
+      if (this._lastOpcode === '=') {
+        this._flushKeeps();
+      }
+      this._minusAssem.append(op);
+      this._lengthChange -= op.chars;
+    } else if (op.opcode === '+') {
+      if (this._lastOpcode === '=') {
+        this._flushKeeps();
+      }
+      this._plusAssem.append(op);
+      this._lengthChange += op.chars;
+    } else if (op.opcode === '=') {
+      if (this._lastOpcode !== '=') {
+        this._flushPlusMinus();
+      }
+      this._keepAssem.append(op);
+    }
+    this._lastOpcode = op.opcode;
+  }
+
+  /**
+   * Generates operations from the given text and attributes.
+   *
+   * @deprecated Use `opsFromText` instead.
+   * @param {('-'|'+'|'=')} opcode - The operator to use.
+   * @param {string} text - The text to remove/add/keep.
+   * @param {(string|Iterable<Attribute>)} attribs - The attributes to apply to the operations.
+   * @param {?AttributePool} pool - Attribute pool. Only required if `attribs` is an iterable of
+   *     attribute key, value pairs.
+   */
+  appendOpWithText(opcode, text, attribs, pool) {
+    padutils.warnDeprecated(
+        'Changeset.SmartOpAssembler.prototype.appendOpWithText() is deprecated; ' +
+        'use opsFromText() instead.');
+    for (const op of opsFromText(opcode, text, attribs, pool)) this.append(op);
+  }
+
+  toString() {
+    this._flushPlusMinus();
+    this._flushKeeps();
+    return this._assem.toString();
+  }
+
+  endDocument() {
+    this._keepAssem.endDocument();
+  }
+
+  getLengthChange() {
+    return this._lengthChange;
+  }
+}
 
 /**
  * Used to check if a Changeset is valid. This function does not check things that require access to
@@ -448,7 +526,7 @@ exports.checkRep = (cs) => {
   const ops = unpacked.ops;
   let charBank = unpacked.charBank;
 
-  const assem = exports.smartOpAssembler();
+  const assem = new SmartOpAssembler();
   let oldPos = 0;
   let calcNewLen = 0;
   for (const o of exports.deserializeOps(ops)) {
@@ -492,96 +570,7 @@ exports.checkRep = (cs) => {
 /**
  * @returns {SmartOpAssembler}
  */
-exports.smartOpAssembler = () => {
-  const minusAssem = new MergingOpAssembler();
-  const plusAssem = new MergingOpAssembler();
-  const keepAssem = new MergingOpAssembler();
-  const assem = exports.stringAssembler();
-  let lastOpcode = '';
-  let lengthChange = 0;
-
-  const flushKeeps = () => {
-    assem.append(keepAssem.toString());
-    keepAssem.clear();
-  };
-
-  const flushPlusMinus = () => {
-    assem.append(minusAssem.toString());
-    minusAssem.clear();
-    assem.append(plusAssem.toString());
-    plusAssem.clear();
-  };
-
-  const append = (op) => {
-    if (!op.opcode) return;
-    if (!op.chars) return;
-
-    if (op.opcode === '-') {
-      if (lastOpcode === '=') {
-        flushKeeps();
-      }
-      minusAssem.append(op);
-      lengthChange -= op.chars;
-    } else if (op.opcode === '+') {
-      if (lastOpcode === '=') {
-        flushKeeps();
-      }
-      plusAssem.append(op);
-      lengthChange += op.chars;
-    } else if (op.opcode === '=') {
-      if (lastOpcode !== '=') {
-        flushPlusMinus();
-      }
-      keepAssem.append(op);
-    }
-    lastOpcode = op.opcode;
-  };
-
-  /**
-   * Generates operations from the given text and attributes.
-   *
-   * @deprecated Use `opsFromText` instead.
-   * @param {('-'|'+'|'=')} opcode - The operator to use.
-   * @param {string} text - The text to remove/add/keep.
-   * @param {(string|Iterable<Attribute>)} attribs - The attributes to apply to the operations.
-   * @param {?AttributePool} pool - Attribute pool. Only required if `attribs` is an iterable of
-   *     attribute key, value pairs.
-   */
-  const appendOpWithText = (opcode, text, attribs, pool) => {
-    padutils.warnDeprecated('Changeset.smartOpAssembler().appendOpWithText() is deprecated; ' +
-                            'use opsFromText() instead.');
-    for (const op of opsFromText(opcode, text, attribs, pool)) append(op);
-  };
-
-  const toString = () => {
-    flushPlusMinus();
-    flushKeeps();
-    return assem.toString();
-  };
-
-  const clear = () => {
-    minusAssem.clear();
-    plusAssem.clear();
-    keepAssem.clear();
-    assem.clear();
-    lengthChange = 0;
-  };
-
-  const endDocument = () => {
-    keepAssem.endDocument();
-  };
-
-  const getLengthChange = () => lengthChange;
-
-  return {
-    append,
-    toString,
-    clear,
-    endDocument,
-    appendOpWithText,
-    getLengthChange,
-  };
-};
+exports.smartOpAssembler = () => new SmartOpAssembler();
 
 /**
  * @returns {MergingOpAssembler}
@@ -1023,7 +1012,7 @@ const applyZip = (in1, in2, func) => {
   const ops2 = exports.deserializeOps(in2);
   let next1 = ops1.next();
   let next2 = ops2.next();
-  const assem = exports.smartOpAssembler();
+  const assem = new SmartOpAssembler();
   while (!next1.done || !next2.done) {
     if (!next1.done && !next1.value.opcode) next1 = ops1.next();
     if (!next2.done && !next2.value.opcode) next2 = ops2.next();
@@ -1478,7 +1467,7 @@ exports.makeSplice = (orig, start, ndel, ins, attribs, pool) => {
   if (start > orig.length) start = orig.length;
   if (ndel > orig.length - start) ndel = orig.length - start;
   const deleted = orig.substring(start, start + ndel);
-  const assem = exports.smartOpAssembler();
+  const assem = new SmartOpAssembler();
   const ops = (function* () {
     yield* opsFromText('=', orig.substring(0, start));
     yield* opsFromText('-', deleted);
@@ -1609,7 +1598,7 @@ exports.moveOpsToNewPool = (cs, oldPool, newPool) => {
  * @returns {string}
  */
 exports.makeAttribution = (text) => {
-  const assem = exports.smartOpAssembler();
+  const assem = new SmartOpAssembler();
   for (const op of opsFromText('+', text)) assem.append(op);
   return assem.toString();
 };
@@ -1866,7 +1855,7 @@ exports.attribsAttributeValue = (attribs, key, pool) => {
  * @returns {Builder}
  */
 exports.builder = (oldLen) => {
-  const assem = exports.smartOpAssembler();
+  const assem = new SmartOpAssembler();
   const o = new Op();
   const charBank = exports.stringAssembler();
 
@@ -1971,7 +1960,7 @@ exports.makeAttribsString = (opcode, attribs, pool) => {
 exports.subattribution = (astr, start, optEnd) => {
   const attOps = exports.deserializeOps(astr);
   let attOpsNext = attOps.next();
-  const assem = exports.smartOpAssembler();
+  const assem = new SmartOpAssembler();
   let attOp = new Op();
   const csOp = new Op();
 
