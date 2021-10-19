@@ -1988,14 +1988,26 @@ class Builder {
     return this;
   }
 
-  toString() {
+  /**
+   * @returns {Changeset}
+   */
+  build() {
     /** @type {number} */
     let lengthChange;
     const serializedOps = exports.serializeOps((function* () {
       lengthChange = yield* exports.canonicalizeOps(this._ops, true);
     }).call(this));
-    const newLen = this._oldLen + lengthChange;
-    return exports.pack(this._oldLen, newLen, serializedOps, this._charBank.toString());
+    return {
+      oldLen: this._oldLen,
+      newLen: this._oldLen + lengthChange,
+      ops: serializedOps,
+      charBank: this._charBank.toString(),
+    };
+  }
+
+  toString() {
+    const {oldLen, newLen, ops, charBank} = this.build();
+    return exports.pack(oldLen, newLen, ops, charBank);
   }
 }
 exports.Builder = Builder;
