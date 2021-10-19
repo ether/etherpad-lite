@@ -1447,11 +1447,10 @@ function Ace2Inner(editorInfo, cssManagers) {
   };
 
   const doRepApplyChangeset = (changes, insertsAfterSelection) => {
-    Changeset.unpack(changes).validate();
+    const cs = Changeset.unpack(changes).validate();
 
-    if (Changeset.oldLen(changes) !== rep.alltext.length) {
-      const errMsg = `${Changeset.oldLen(changes)}/${rep.alltext.length}`;
-      throw new Error(`doRepApplyChangeset length mismatch: ${errMsg}`);
+    if (cs.oldLen !== rep.alltext.length) {
+      throw new Error(`doRepApplyChangeset length mismatch: ${cs.oldLen}/${rep.alltext.length}`);
     }
 
     const editEvent = currentCallStack.editEvent;

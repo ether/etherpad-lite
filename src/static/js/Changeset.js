@@ -286,18 +286,28 @@ class Changeset {
 /**
  * Returns the required length of the text before changeset can be applied.
  *
+ * @deprecated Use `Changeset.unpack(cs).oldLen` instead.
  * @param {string} cs - String representation of the Changeset
  * @returns {number} oldLen property
  */
-exports.oldLen = (cs) => Changeset.unpack(cs).oldLen;
+exports.oldLen = (cs) => {
+  padutils.warnDeprecated(
+      'Changeset.oldLen(cs) is deprecated; use Changeset.unpack(cs).oldLen instead');
+  return Changeset.unpack(cs).oldLen;
+};
 
 /**
  * Returns the length of the text after changeset is applied.
  *
+ * @deprecated Use `Changeset.unpack(cs).newLen` instead.
  * @param {string} cs - String representation of the Changeset
  * @returns {number} newLen property
  */
-exports.newLen = (cs) => Changeset.unpack(cs).newLen;
+exports.newLen = (cs) => {
+  padutils.warnDeprecated(
+      'Changeset.newLen(cs) is deprecated; use Changeset.unpack(cs).newLen instead');
+  return Changeset.unpack(cs).newLen;
+};
 
 /**
  * Parses a string of serialized changeset operations.

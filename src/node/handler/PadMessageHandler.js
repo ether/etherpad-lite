@@ -628,10 +628,10 @@ const handleUserChanges = async (socket, message) => {
 
     const prevText = pad.text();
 
-    if (Changeset.oldLen(rebasedChangeset) !== prevText.length) {
+    if (Changeset.unpack(rebasedChangeset).oldLen !== prevText.length) {
       throw new Error(
           `Can't apply changeset ${rebasedChangeset} with oldLen ` +
-          `${Changeset.oldLen(rebasedChangeset)} to document of length ${prevText.length}`);
+          `${Changeset.unpack(rebasedChangeset).oldLen} to document of length ${prevText.length}`);
     }
 
     const newRev = await pad.appendRevision(rebasedChangeset, thisSession.author);

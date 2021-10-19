@@ -167,7 +167,7 @@ const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
       let cs = null;
       if (toSubmit) {
         submittedChangeset = toSubmit;
-        userChangeset = Changeset.identity(Changeset.newLen(toSubmit));
+        userChangeset = Changeset.identity(Changeset.unpack(toSubmit).newLen);
 
         cs = toSubmit;
       }
