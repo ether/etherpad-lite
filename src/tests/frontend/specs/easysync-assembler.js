@@ -92,6 +92,40 @@ describe('easysync-assembler', function () {
     expect(assem.toString()).to.equal('-k');
   });
 
+  it('smartOpAssembler append - op with text', async function () {
+    const assem = Changeset.smartOpAssembler();
+    const pool = poolOrArray([
+      'attr1,1',
+      'attr2,2',
+      'attr3,3',
+      'attr4,4',
+      'attr5,5',
+    ]);
+
+    assem.appendOpWithText('-', 'test', '*3*4*5', pool);
+    assem.appendOpWithText('-', 'test', '*3*4*5', pool);
+    assem.appendOpWithText('-', 'test', '*1*4*5', pool);
+    assem.endDocument();
+    expect(assem.toString()).to.equal('*3*4*5-8*1*4*5-4');
+  });
+
+  it('smartOpAssembler append - op with multiline text', async function () {
+    const assem = Changeset.smartOpAssembler();
+    const pool = poolOrArray([
+      'attr1,1',
+      'attr2,2',
+      'attr3,3',
+      'attr4,4',
+      'attr5,5',
+    ]);
+
+    assem.appendOpWithText('-', 'test\ntest', '*3*4*5', pool);
+    assem.appendOpWithText('-', '\ntest\n', '*3*4*5', pool);
+    assem.appendOpWithText('-', '\ntest', '*1*4*5', pool);
+    assem.endDocument();
+    expect(assem.toString()).to.equal('*3*4*5|3-f*1*4*5|1-1*1*4*5-4');
+  });
+
   it('smartOpAssembler append + op with text', async function () {
     const assem = Changeset.smartOpAssembler();
     const pool = poolOrArray([
