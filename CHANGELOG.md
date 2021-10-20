@@ -39,7 +39,8 @@
     * `readonly`: Deprecated; use the new `readOnly` property instead.
     * `rev`: Deprecated.
   * Changes to the `src/static/js/Changeset.js` library:
-    * `opIterator()`: The unused start index parameter has been removed.
+    * `opIterator()`: The unused start index parameter has been removed, as has
+      the unused `lastIndex()` method on the returned object.
 
 ### Notable enhancements
 

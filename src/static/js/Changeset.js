@@ -134,7 +134,6 @@ exports.newLen = (cs) => exports.unpack(cs).newLen;
  *
  * @typedef {object} OpIter
  * @property {Function} hasNext -
- * @property {Function} lastIndex -
  * @property {Function} next -
  */
 
@@ -146,14 +145,9 @@ exports.newLen = (cs) => exports.unpack(cs).newLen;
  */
 exports.opIterator = (opsStr) => {
   const regex = /((?:\*[0-9a-z]+)*)(?:\|([0-9a-z]+))?([-+=])([0-9a-z]+)|\?|/g;
-  let curIndex = 0;
-  let prevIndex = curIndex;
 
   const nextRegexMatch = () => {
-    prevIndex = curIndex;
-    regex.lastIndex = curIndex;
     const result = regex.exec(opsStr);
-    curIndex = regex.lastIndex;
     if (result[0] === '?') {
       exports.error('Hit error opcode in op stream');
     }
@@ -178,12 +172,9 @@ exports.opIterator = (opsStr) => {
 
   const hasNext = () => !!(regexResult[0]);
 
-  const lastIndex = () => prevIndex;
-
   return {
     next,
     hasNext,
-    lastIndex,
   };
 };
 
