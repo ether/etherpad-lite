@@ -525,6 +525,9 @@ exports.mergingOpAssembler = () => {
   // ops immediately after it.
   let bufOpAdditionalCharsAfterNewline = 0;
 
+  /**
+   * @param {boolean} [isEndDocument]
+   */
   const flush = (isEndDocument) => {
     if (!bufOp.opcode) return;
     if (isEndDocument && bufOp.opcode === '=' && !bufOp.attribs) {
@@ -803,7 +806,7 @@ class TextLinesMutator {
 
   /**
    * Indicates if curLine is already in the splice. This is necessary because the last element in
-   * curSplice is curLine when this line is currently worked on (e.g. when skipping are inserting).
+   * curSplice is curLine when this line is currently worked on (e.g. when skipping or inserting).
    *
    * TODO(doc) why aren't removals considered?
    *
@@ -831,7 +834,7 @@ class TextLinesMutator {
    * It will skip some newlines by putting them into the splice.
    *
    * @param {number} L -
-   * @param {boolean} includeInSplice - indicates if attributes are present
+   * @param {boolean} includeInSplice - Indicates that attributes are present.
    */
   skipLines(L, includeInSplice) {
     if (!L) return;
@@ -960,7 +963,7 @@ class TextLinesMutator {
         /** @type {string} */
         const theLine = this._curSplice[sline];
         const lineCol = this._curCol;
-        // insert the first new line
+        // Insert the chars up to `curCol` and the first new line.
         this._curSplice[sline] = theLine.substring(0, lineCol) + newLines[0];
         this._curLine++;
         newLines.splice(0, 1);
@@ -976,9 +979,8 @@ class TextLinesMutator {
         this._curLine += newLines.length;
       }
     } else {
-      // there are no additional lines
-      // although the line is put into splice, curLine is not increased, because
-      // there may be more chars in the line (newline is not reached)
+      // There are no additional lines. Although the line is put into splice, curLine is not
+      // increased because there may be more chars in the line (newline is not reached).
       const sline = this._putCurLineInSplice();
       if (!this._curSplice[sline]) {
         const err = new Error(
@@ -1277,6 +1279,13 @@ exports.applyToAttribution = (cs, astr, pool) => {
   return applyZip(astr, unpacked.ops, (op1, op2) => slicerZipperFunc(op1, op2, pool));
 };
 
+/**
+ * Applies a changeset to an array of attribute lines.
+ *
+ * @param {string} cs - The encoded changeset.
+ * @param {Array<string>} lines - Attribute lines. Modified in place.
+ * @param {AttributePool} pool - Attribute pool.
+ */
 exports.mutateAttributionLines = (cs, lines, pool) => {
   const unpacked = exports.unpack(cs);
   const csOps = exports.deserializeOps(unpacked.ops);
@@ -1286,26 +1295,47 @@ exports.mutateAttributionLines = (cs, lines, pool) => {
   // treat the attribution lines as text lines, mutating a line at a time
   const mut = new TextLinesMutator(lines);
 
-  /** @type {?Generator<Op>} */
+  /**
+   * The Ops in the current line from `lines`.
+   *
+   * @type {?Generator<Op>}
+   */
   let lineOps = null;
   let lineOpsNext = null;
 
   const lineOpsHasNext = () => lineOpsNext && !lineOpsNext.done;
+  /**
+   * Returns false if we are on the last attribute line in `lines` and there is no additional op in
+   * that line.
+   *
+   * @returns {boolean} True if there are more ops to go through.
+   */
   const isNextMutOp = () => lineOpsHasNext() || mut.hasMore();
 
+  /**
+   * @returns {Op} The next Op from `lineIter`. If there are no more Ops, `lineIter` is reset to
+   *     iterate over the next line, which is consumed from `mut`. If there are no more lines,
+   *     returns a null Op.
+   */
   const nextMutOp = () => {
     if (!lineOpsHasNext() && mut.hasMore()) {
+      // There are more attribute lines in `lines` to do AND either we just started so `lineIter` is
+      // still null or there are no more ops in current `lineIter`.
       const line = mut.removeLines(1);
       lineOps = exports.deserializeOps(line);
       lineOpsNext = lineOps.next();
     }
-    if (!lineOpsHasNext()) return new Op();
+    if (!lineOpsHasNext()) return new Op(); // No more ops and no more lines.
     const op = lineOpsNext.value;
     lineOpsNext = lineOps.next();
     return op;
   };
   let lineAssem = null;
 
+  /**
+   * Appends an op to `lineAssem`. In case `lineAssem` includes one single newline, adds it to the
+   * `lines` mutator.
+   */
   const outputMutOp = (op) => {
     if (!lineAssem) {
       lineAssem = exports.mergingOpAssembler();
@@ -1322,6 +1352,7 @@ exports.mutateAttributionLines = (cs, lines, pool) => {
   let attOp = new Op();
   while (csOp.opcode || !csOpsNext.done || attOp.opcode || isNextMutOp()) {
     if (!csOp.opcode && !csOpsNext.done) {
+      // coOp done, but more ops in cs.
       csOp = csOpsNext.value;
       csOpsNext = csOps.next();
     }
@@ -1329,18 +1360,21 @@ exports.mutateAttributionLines = (cs, lines, pool) => {
       break; // done
     } else if (csOp.opcode === '=' && csOp.lines > 0 && !csOp.attribs && !attOp.opcode &&
                !lineAssem && !lineOpsHasNext()) {
-      // skip multiple lines; this is what makes small changes not order of the document size
+      // Skip multiple lines without attributes; this is what makes small changes not order of the
+      // document size.
       mut.skipLines(csOp.lines);
       csOp.opcode = '';
     } else if (csOp.opcode === '+') {
       const opOut = copyOp(csOp);
       if (csOp.lines > 1) {
+        // Copy the first line from `csOp` to `opOut`.
         const firstLineLen = csBank.indexOf('\n', csBankIndex) + 1 - csBankIndex;
         csOp.chars -= firstLineLen;
         csOp.lines--;
         opOut.lines = 1;
         opOut.chars = firstLineLen;
       } else {
+        // Either one or no newlines in '+' `csOp`, copy to `opOut` and reset `csOp`.
         csOp.opcode = '';
       }
       outputMutOp(opOut);
@@ -1764,7 +1798,7 @@ exports.copyAText = (atext1, atext2) => {
 };
 
 /**
- * Convert AText to a series of operations.
+ * Convert AText to a series of operations. Strips final newline.
  *
  * @param {AText} atext - The AText to convert.
  * @yields {Op}
