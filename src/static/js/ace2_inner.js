@@ -2482,7 +2482,11 @@ function Ace2Inner(editorInfo, cssManagers) {
         const lineEntry = rep.lines.atIndex(lineNum);
         const lineText = lineEntry.text;
         const lineMarker = lineEntry.lineMarker;
-        if (/^ +$/.exec(lineText.substring(lineMarker, col))) {
+        if (evt.metaKey && col > lineMarker) {
+          // cmd-backspace deletes to start of line (if not already at start)
+          performDocumentReplaceRange([lineNum, lineMarker], [lineNum, col], '');
+          handled = true;
+        } else if (/^ +$/.exec(lineText.substring(lineMarker, col))) {
           const col2 = col - lineMarker;
           const tabSize = THE_TAB.length;
           const toDelete = ((col2 - 1) % tabSize) + 1;
