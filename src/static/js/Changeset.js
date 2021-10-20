@@ -142,13 +142,11 @@ exports.newLen = (cs) => exports.unpack(cs).newLen;
  * Creates an iterator which decodes string changeset operations.
  *
  * @param {string} opsStr - String encoding of the change operations to perform.
- * @param {number} [optStartIndex=0] - From where in the string should the iterator start.
  * @returns {OpIter} Operator iterator object.
  */
-exports.opIterator = (opsStr, optStartIndex) => {
+exports.opIterator = (opsStr) => {
   const regex = /((?:\*[0-9a-z]+)*)(?:\|([0-9a-z]+))?([-+=])([0-9a-z]+)|\?|/g;
-  const startIndex = (optStartIndex || 0);
-  let curIndex = startIndex;
+  let curIndex = 0;
   let prevIndex = curIndex;
 
   const nextRegexMatch = () => {
@@ -2037,7 +2035,7 @@ exports.makeAttribsString = (opcode, attribs, pool) => {
  * Like "substring" but on a single-line attribution string.
  */
 exports.subattribution = (astr, start, optEnd) => {
-  const iter = exports.opIterator(astr, 0);
+  const iter = exports.opIterator(astr);
   const assem = exports.smartOpAssembler();
   const attOp = exports.newOp();
   const csOp = exports.newOp();

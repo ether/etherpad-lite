@@ -38,6 +38,8 @@
     * `author`: Deprecated; use the new `authorId` property instead.
     * `readonly`: Deprecated; use the new `readOnly` property instead.
     * `rev`: Deprecated.
+  * Changes to the `src/static/js/Changeset.js` library:
+    * `opIterator()`: The unused start index parameter has been removed.
 
 ### Notable enhancements
 
