@@ -676,6 +676,7 @@ exports.stringIterator = (str) => {
  */
 exports.stringAssembler = () => ({
   _str: '',
+  clear() { this._str = ''; },
   /**
    * @param {string} x -
    */
