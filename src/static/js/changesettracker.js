@@ -143,21 +143,21 @@ const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
         // Sanitize authorship: Replace all author attributes with this user's author ID in case the
         // text was copied from another author.
         const cs = Changeset.unpack(userChangeset);
-        const assem = Changeset.mergingOpAssembler();
-
-        for (const op of Changeset.deserializeOps(cs.ops)) {
-          if (op.opcode === '+') {
-            const attribs = AttributeMap.fromString(op.attribs, apool);
-            const oldAuthorId = attribs.get('author');
-            if (oldAuthorId != null && oldAuthorId !== authorId) {
-              attribs.set('author', authorId);
-              op.attribs = attribs.toString();
+        const ops = (function* () {
+          for (const op of Changeset.deserializeOps(cs.ops)) {
+            if (op.opcode === '+') {
+              const attribs = AttributeMap.fromString(op.attribs, apool);
+              const oldAuthorId = attribs.get('author');
+              if (oldAuthorId != null && oldAuthorId !== authorId) {
+                attribs.set('author', authorId);
+                op.attribs = attribs.toString();
+              }
             }
+            yield op;
           }
-          assem.append(op);
-        }
-        assem.endDocument();
-        userChangeset = Changeset.pack(cs.oldLen, cs.newLen, assem.toString(), cs.charBank);
+        })();
+        const serializedOps = Changeset.serializeOps(Changeset.squashOps(ops, true));
+        userChangeset = Changeset.pack(cs.oldLen, cs.newLen, serializedOps, cs.charBank);
         Changeset.checkRep(userChangeset);
 
         if (Changeset.isIdentity(userChangeset)) toSubmit = null;

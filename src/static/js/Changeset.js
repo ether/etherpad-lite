@@ -338,7 +338,7 @@ class OpAssembler {
  * @yields {Op} The squashed operations.
  * @returns {Generator<Op>}
  */
-const squashOps = function* (ops, finalize) {
+exports.squashOps = function* (ops, finalize) {
   let prevOp = new Op();
   // If we get, for example, insertions [xxx\n,yyy], those don't merge, but if we get
   // [xxx\n,yyy,zzz\n], that merges to [xxx\nyyyzzz\n]. This variable stores the length of yyy and
@@ -402,7 +402,7 @@ class MergingOpAssembler {
   }
 
   _serialize(finalize) {
-    this._serialized = exports.serializeOps(squashOps(this._ops, finalize));
+    this._serialized = exports.serializeOps(exports.squashOps(this._ops, finalize));
   }
 
   append(op) {
@@ -465,32 +465,29 @@ const opsFromText = function* (opcode, text, attribs = '', pool = null) {
  */
 class SmartOpAssembler {
   constructor() {
-    this._minusAssem = new MergingOpAssembler();
-    this._plusAssem = new MergingOpAssembler();
-    this._keepAssem = new MergingOpAssembler();
     this._assem = exports.stringAssembler();
     this.clear();
   }
 
   clear() {
-    this._minusAssem.clear();
-    this._plusAssem.clear();
-    this._keepAssem.clear();
+    this._minusAssem = [];
+    this._plusAssem = [];
+    this._keepAssem = [];
     this._assem.clear();
     this._lastOpcode = '';
     this._lengthChange = 0;
   }
 
-  _flushKeeps() {
-    this._assem.append(this._keepAssem.toString());
-    this._keepAssem.clear();
+  _flushKeeps(finalize) {
+    this._assem.append(exports.serializeOps(exports.squashOps(this._keepAssem, finalize)));
+    this._keepAssem = [];
   }
 
   _flushPlusMinus() {
-    this._assem.append(this._minusAssem.toString());
-    this._minusAssem.clear();
-    this._assem.append(this._plusAssem.toString());
-    this._plusAssem.clear();
+    this._assem.append(exports.serializeOps(exports.squashOps(this._minusAssem, false)));
+    this._minusAssem = [];
+    this._assem.append(exports.serializeOps(exports.squashOps(this._plusAssem, false)));
+    this._plusAssem = [];
   }
 
   append(op) {
@@ -499,21 +496,21 @@ class SmartOpAssembler {
 
     if (op.opcode === '-') {
       if (this._lastOpcode === '=') {
-        this._flushKeeps();
+        this._flushKeeps(false);
       }
-      this._minusAssem.append(op);
+      this._minusAssem.push(copyOp(op));
       this._lengthChange -= op.chars;
     } else if (op.opcode === '+') {
       if (this._lastOpcode === '=') {
-        this._flushKeeps();
+        this._flushKeeps(false);
       }
-      this._plusAssem.append(op);
+      this._plusAssem.push(copyOp(op));
       this._lengthChange += op.chars;
     } else if (op.opcode === '=') {
       if (this._lastOpcode !== '=') {
         this._flushPlusMinus();
       }
-      this._keepAssem.append(op);
+      this._keepAssem.push(copyOp(op));
     }
     this._lastOpcode = op.opcode;
   }
@@ -537,12 +534,13 @@ class SmartOpAssembler {
 
   toString() {
     this._flushPlusMinus();
-    this._flushKeeps();
+    this._flushKeeps(false);
     return this._assem.toString();
   }
 
   endDocument() {
-    this._keepAssem.endDocument();
+    this._flushPlusMinus();
+    this._flushKeeps(true);
   }
 
   getLengthChange() {
@@ -611,9 +609,14 @@ exports.checkRep = (cs) => {
 exports.smartOpAssembler = () => new SmartOpAssembler();
 
 /**
+ * @deprecated Use `squashOps` with `serializeOps` instead.
  * @returns {MergingOpAssembler}
  */
-exports.mergingOpAssembler = () => new MergingOpAssembler();
+exports.mergingOpAssembler = () => {
+  padutils.warnDeprecated(
+      'Changeset.mergingOpAssembler() is deprecated; use Changeset.squashOps() instead');
+  return new MergingOpAssembler();
+};
 
 /**
  * @deprecated Use `serializeOps` instead.
@@ -1323,12 +1326,12 @@ exports.mutateAttributionLines = (cs, lines, pool) => {
   let lineAssem = null;
 
   const outputMutOp = (op) => {
-    if (!lineAssem) lineAssem = new MergingOpAssembler();
-    lineAssem.append(op);
+    if (!lineAssem) lineAssem = [];
+    lineAssem.push(op);
     if (op.lines <= 0) return;
     assert(op.lines === 1, `Can't have op.lines of ${op.lines} in attribution lines`);
     // ship it to the mut
-    mut.insert(lineAssem.toString(), 1);
+    mut.insert(exports.serializeOps(exports.squashOps(lineAssem, false)), 1);
     lineAssem = null;
   };
 
@@ -1377,23 +1380,22 @@ exports.mutateAttributionLines = (cs, lines, pool) => {
  * @returns {string} joined Attribution lines
  */
 exports.joinAttributionLines = (theAlines) => {
-  const assem = new MergingOpAssembler();
-  for (const aline of theAlines) {
-    for (const op of exports.deserializeOps(aline)) assem.append(op);
-  }
-  return assem.toString();
+  const ops = (function* () {
+    for (const aline of theAlines) yield* exports.deserializeOps(aline);
+  })();
+  return exports.serializeOps(exports.squashOps(ops, false));
 };
 
 exports.splitAttributionLines = (attrOps, text) => {
-  const assem = new MergingOpAssembler();
+  let ops = [];
   const lines = [];
   let pos = 0;
 
   const appendOp = (op) => {
-    assem.append(op);
+    ops.push(op);
     if (op.lines > 0) {
-      lines.push(assem.toString());
-      assem.clear();
+      lines.push(exports.serializeOps(exports.squashOps(ops, false)));
+      ops = [];
     }
     pos += op.chars;
   };

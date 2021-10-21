@@ -129,16 +129,17 @@ describe('easysync-other', function () {
     describe('split/join attribution lines', function () {
       const testSplitJoinAttributionLines = (randomSeed) => {
         const stringToOps = (str) => {
-          const assem = Changeset.mergingOpAssembler();
-          const o = new Changeset.Op('+');
-          o.chars = 1;
-          for (let i = 0; i < str.length; i++) {
-            const c = str.charAt(i);
-            o.lines = (c === '\n' ? 1 : 0);
-            o.attribs = (c === 'a' || c === 'b' ? `*${c}` : '');
-            assem.append(o);
-          }
-          return assem.toString();
+          const ops = (function* () {
+            for (let i = 0; i < str.length; i++) {
+              const c = str.charAt(i);
+              const o = new Changeset.Op('+');
+              o.chars = 1;
+              o.lines = (c === '\n' ? 1 : 0);
+              o.attribs = (c === 'a' || c === 'b' ? `*${c}` : '');
+              yield o;
+            }
+          })();
+          return Changeset.serializeOps(Changeset.squashOps(ops, false));
         };
 
         it(`testSplitJoinAttributionLines#${randomSeed}`, async function () {
