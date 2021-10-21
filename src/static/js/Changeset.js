@@ -197,20 +197,21 @@ exports.newLen = (cs) => exports.unpack(cs).newLen;
  * @returns {OpIter} Operator iterator object.
  */
 exports.opIterator = (opsStr) => {
-  const regex = /((?:\*[0-9a-z]+)*)(?:\|([0-9a-z]+))?([-+=])([0-9a-z]+)|\?|/g;
+  const regex = /((?:\*[0-9a-z]+)*)(?:\|([0-9a-z]+))?([-+=])([0-9a-z]+)|(.)/g;
 
   const nextRegexMatch = () => {
     const result = regex.exec(opsStr);
-    if (result[0] === '?') {
-      error('Hit error opcode in op stream');
-    }
-
+    if (!result) return null;
+    if (result[5] === '$') return null; // Start of the insert operation character bank.
+    if (result[5] != null) error(`invalid operation: ${opsStr.slice(regex.lastIndex - 1)}`);
     return result;
   };
   let regexResult = nextRegexMatch();
 
+  const hasNext = () => regexResult && !!regexResult[0];
+
   const next = (op = new Op()) => {
-    if (regexResult[0]) {
+    if (hasNext()) {
       op.attribs = regexResult[1];
       op.lines = exports.parseNum(regexResult[2] || '0');
       op.opcode = regexResult[3];
@@ -221,8 +222,6 @@ exports.opIterator = (opsStr) => {
     }
     return op;
   };
-
-  const hasNext = () => !!(regexResult[0]);
 
   return {
     next,
