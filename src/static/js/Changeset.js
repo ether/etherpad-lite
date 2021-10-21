@@ -158,7 +158,7 @@ exports.opIterator = (opsStr) => {
     const op = optOp || exports.newOp();
     if (regexResult[0]) {
       op.attribs = regexResult[1];
-      op.lines = exports.parseNum(regexResult[2] || 0);
+      op.lines = exports.parseNum(regexResult[2] || '0');
       op.opcode = regexResult[3];
       op.chars = exports.parseNum(regexResult[4]);
       regexResult = nextRegexMatch();
