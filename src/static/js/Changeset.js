@@ -181,6 +181,28 @@ exports.oldLen = (cs) => exports.unpack(cs).oldLen;
 exports.newLen = (cs) => exports.unpack(cs).newLen;
 
 /**
+ * Parses a string of serialized changeset operations.
+ *
+ * @param {string} ops - Serialized changeset operations.
+ * @yields {Op}
+ * @returns {Generator<Op>}
+ */
+const deserializeOps = function* (ops) {
+  // TODO: Migrate to String.prototype.matchAll() once there is enough browser support.
+  const regex = /((?:\*[0-9a-z]+)*)(?:\|([0-9a-z]+))?([-+=])([0-9a-z]+)|(.)/g;
+  let match;
+  while ((match = regex.exec(ops)) != null) {
+    if (match[5] === '$') return; // Start of the insert operation character bank.
+    if (match[5] != null) error(`invalid operation: ${ops.slice(regex.lastIndex - 1)}`);
+    const op = new Op(match[3]);
+    op.lines = exports.parseNum(match[2] || '0');
+    op.chars = exports.parseNum(match[4]);
+    op.attribs = match[1];
+    yield op;
+  }
+};
+
+/**
  * Iterator over a changeset's operations.
  *
  * Note: This class does NOT implement the ECMAScript iterable or iterator protocols.
@@ -190,24 +212,15 @@ class OpIter {
    * @param {string} ops - String encoding the change operations to iterate over.
    */
   constructor(ops) {
-    this._ops = ops;
-    this._regex = /((?:\*[0-9a-z]+)*)(?:\|([0-9a-z]+))?([-+=])([0-9a-z]+)|(.)/g;
-    this._nextMatch = this._nextRegexMatch();
-  }
-
-  _nextRegexMatch() {
-    const match = this._regex.exec(this._ops);
-    if (!match) return null;
-    if (match[5] === '$') return null; // Start of the insert operation character bank.
-    if (match[5] != null) error(`invalid operation: ${this._ops.slice(this._regex.lastIndex - 1)}`);
-    return match;
+    this._gen = deserializeOps(ops);
+    this._next = this._gen.next();
   }
 
   /**
    * @returns {boolean} Whether there are any remaining operations.
    */
   hasNext() {
-    return this._nextMatch && !!this._nextMatch[0];
+    return !this._next.done;
   }
 
   /**
@@ -221,11 +234,8 @@ class OpIter {
    */
   next(opOut = new Op()) {
     if (this.hasNext()) {
-      opOut.attribs = this._nextMatch[1];
-      opOut.lines = exports.parseNum(this._nextMatch[2] || '0');
-      opOut.opcode = this._nextMatch[3];
-      opOut.chars = exports.parseNum(this._nextMatch[4]);
-      this._nextMatch = this._nextRegexMatch();
+      copyOp(this._next.value, opOut);
+      this._next = this._gen.next();
     } else {
       clearOp(opOut);
     }
