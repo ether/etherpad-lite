@@ -32,7 +32,7 @@
   "dependencies": {
     "async": "^3.2.1",
     "channels": "0.0.4",
-    "clean-css": "^5.2.0",
+    "clean-css": "^5.2.1",
     "cookie-parser": "1.4.5",
     "cross-spawn": "^7.0.3",
     "ejs": "^3.1.6",
