@@ -29,69 +29,70 @@
   used to reference Attributes in Changesets.
 */
 
-const AttributePool = function () {
-  this.numToAttrib = {}; // e.g. {0: ['foo','bar']}
-  this.attribToNum = {}; // e.g. {'foo,bar': 0}
-  this.nextNum = 0;
-};
-
-AttributePool.prototype.putAttrib = function (attrib, dontAddIfAbsent) {
-  const str = String(attrib);
-  if (str in this.attribToNum) {
-    return this.attribToNum[str];
+class AttributePool {
+  constructor() {
+    this.numToAttrib = {}; // e.g. {0: ['foo','bar']}
+    this.attribToNum = {}; // e.g. {'foo,bar': 0}
+    this.nextNum = 0;
   }
-  if (dontAddIfAbsent) {
-    return -1;
+
+  putAttrib(attrib, dontAddIfAbsent = false) {
+    const str = String(attrib);
+    if (str in this.attribToNum) {
+      return this.attribToNum[str];
+    }
+    if (dontAddIfAbsent) {
+      return -1;
+    }
+    const num = this.nextNum++;
+    this.attribToNum[str] = num;
+    this.numToAttrib[num] = [String(attrib[0] || ''), String(attrib[1] || '')];
+    return num;
   }
-  const num = this.nextNum++;
-  this.attribToNum[str] = num;
-  this.numToAttrib[num] = [String(attrib[0] || ''), String(attrib[1] || '')];
-  return num;
-};
 
-AttributePool.prototype.getAttrib = function (num) {
-  const pair = this.numToAttrib[num];
-  if (!pair) {
-    return pair;
+  getAttrib(num) {
+    const pair = this.numToAttrib[num];
+    if (!pair) {
+      return pair;
+    }
+    return [pair[0], pair[1]]; // return a mutable copy
   }
-  return [pair[0], pair[1]]; // return a mutable copy
-};
 
-AttributePool.prototype.getAttribKey = function (num) {
-  const pair = this.numToAttrib[num];
-  if (!pair) return '';
-  return pair[0];
-};
-
-AttributePool.prototype.getAttribValue = function (num) {
-  const pair = this.numToAttrib[num];
-  if (!pair) return '';
-  return pair[1];
-};
-
-AttributePool.prototype.eachAttrib = function (func) {
-  for (const n of Object.keys(this.numToAttrib)) {
-    const pair = this.numToAttrib[n];
-    func(pair[0], pair[1]);
+  getAttribKey(num) {
+    const pair = this.numToAttrib[num];
+    if (!pair) return '';
+    return pair[0];
   }
-};
 
-AttributePool.prototype.toJsonable = function () {
-  return {
-    numToAttrib: this.numToAttrib,
-    nextNum: this.nextNum,
-  };
-};
-
-AttributePool.prototype.fromJsonable = function (obj) {
-  this.numToAttrib = obj.numToAttrib;
-  this.nextNum = obj.nextNum;
-  this.attribToNum = {};
-  for (const n of Object.keys(this.numToAttrib)) {
-    this.attribToNum[String(this.numToAttrib[n])] = Number(n);
+  getAttribValue(num) {
+    const pair = this.numToAttrib[num];
+    if (!pair) return '';
+    return pair[1];
   }
-  return this;
-};
 
+  eachAttrib(func) {
+    for (const n of Object.keys(this.numToAttrib)) {
+      const pair = this.numToAttrib[n];
+      func(pair[0], pair[1]);
+    }
+  }
+
+  toJsonable() {
+    return {
+      numToAttrib: this.numToAttrib,
+      nextNum: this.nextNum,
+    };
+  }
+
+  fromJsonable(obj) {
+    this.numToAttrib = obj.numToAttrib;
+    this.nextNum = obj.nextNum;
+    this.attribToNum = {};
+    for (const n of Object.keys(this.numToAttrib)) {
+      this.attribToNum[String(this.numToAttrib[n])] = Number(n);
+    }
+    return this;
+  }
+}
 
 module.exports = AttributePool;
