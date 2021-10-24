@@ -23,19 +23,83 @@
  * limitations under the License.
  */
 
-/*
-  An AttributePool maintains a mapping from [key,value] Pairs called
-  Attributes to Numbers (unsigened integers) and vice versa. These numbers are
-  used to reference Attributes in Changesets.
-*/
+/**
+ * A `[key, value]` pair of strings describing a text attribute.
+ *
+ * @typedef {[string, string]} Attribute
+ */
 
+/**
+ * Maps an attribute's identifier to the attribute.
+ *
+ * @typedef {Object.<number, Attribute>} NumToAttrib
+ */
+
+/**
+ * An intermediate representation of the contents of an attribute pool, suitable for serialization
+ * via `JSON.stringify` and transmission to another user.
+ *
+ * @typedef {Object} Jsonable
+ * @property {NumToAttrib} numToAttrib - The pool's attributes and their identifiers.
+ * @property {number} nextNum - The attribute ID to assign to the next new attribute.
+ */
+
+/**
+ * Represents an attribute pool, which is a collection of attributes (pairs of key and value
+ * strings) along with their identifiers (non-negative integers).
+ *
+ * The attribute pool enables attribute interning: rather than including the key and value strings
+ * in changesets, changesets reference attributes by their identifiers.
+ *
+ * There is one attribute pool per pad, and it includes every current and historical attribute used
+ * in the pad.
+ */
 class AttributePool {
   constructor() {
+    /**
+     * Maps an attribute identifier to the attribute's `[key, value]` string pair.
+     *
+     * TODO: Rename to `_numToAttrib` once all users have been migrated to call `getAttrib` instead
+     * of accessing this directly.
+     * @private
+     * TODO: Convert to an array.
+     * @type {NumToAttrib}
+     */
     this.numToAttrib = {}; // e.g. {0: ['foo','bar']}
+
+    /**
+     * Maps the string representation of an attribute (`String([key, value])`) to its non-negative
+     * identifier.
+     *
+     * TODO: Rename to `_attribToNum` once all users have been migrated to use `putAttrib` instead
+     * of accessing this directly.
+     * @private
+     * TODO: Convert to a `Map` object.
+     * @type {Object.<string, number>}
+     */
     this.attribToNum = {}; // e.g. {'foo,bar': 0}
+
+    /**
+     * The attribute ID to assign to the next new attribute.
+     *
+     * TODO: This property will not be necessary once `numToAttrib` is converted to an array (just
+     * push onto the array).
+     *
+     * @private
+     * @type {number}
+     */
     this.nextNum = 0;
   }
 
+  /**
+   * Add an attribute to the attribute set, or query for an existing attribute identifier.
+   *
+   * @param {Attribute} attrib - The attribute's `[key, value]` pair of strings.
+   * @param {boolean} [dontAddIfAbsent=false] - If true, do not insert the attribute into the pool
+   *     if the attribute does not already exist in the pool. This can be used to test for
+   *     membership in the pool without mutating the pool.
+   * @returns {number} The attribute's identifier, or -1 if the attribute is not in the pool.
+   */
   putAttrib(attrib, dontAddIfAbsent = false) {
     const str = String(attrib);
     if (str in this.attribToNum) {
@@ -50,6 +114,11 @@ class AttributePool {
     return num;
   }
 
+  /**
+   * @param {number} num - The identifier of the attribute to fetch.
+   * @returns {Attribute} The attribute with the given identifier, or nullish if there is no such
+   *     attribute.
+   */
   getAttrib(num) {
     const pair = this.numToAttrib[num];
     if (!pair) {
@@ -58,18 +127,34 @@ class AttributePool {
     return [pair[0], pair[1]]; // return a mutable copy
   }
 
+  /**
+   * @param {number} num - The identifier of the attribute to fetch.
+   * @returns {string} Eqivalent to `getAttrib(num)[0]` if the attribute exists, otherwise the empty
+   *     string.
+   */
   getAttribKey(num) {
     const pair = this.numToAttrib[num];
     if (!pair) return '';
     return pair[0];
   }
 
+  /**
+   * @param {number} num - The identifier of the attribute to fetch.
+   * @returns {string} Eqivalent to `getAttrib(num)[1]` if the attribute exists, otherwise the empty
+   *     string.
+   */
   getAttribValue(num) {
     const pair = this.numToAttrib[num];
     if (!pair) return '';
     return pair[1];
   }
 
+  /**
+   * Executes a callback for each attribute in the pool.
+   *
+   * @param {Function} func - Callback to call with two arguments: key and value. Its return value
+   *     is ignored.
+   */
   eachAttrib(func) {
     for (const n of Object.keys(this.numToAttrib)) {
       const pair = this.numToAttrib[n];
@@ -77,6 +162,10 @@ class AttributePool {
     }
   }
 
+  /**
+   * @returns {Jsonable} An object that can be passed to `fromJsonable` to reconstruct this
+   * attribute pool. The returned object can be converted to JSON.
+   */
   toJsonable() {
     return {
       numToAttrib: this.numToAttrib,
@@ -84,6 +173,12 @@ class AttributePool {
     };
   }
 
+  /**
+   * Replace the contents of this attribute pool with values from a previous call to `toJsonable`.
+   *
+   * @param {Jsonable} obj - Object returned by `toJsonable` containing the attributes and their
+   *     identifiers.
+   */
   fromJsonable(obj) {
     this.numToAttrib = obj.numToAttrib;
     this.nextNum = obj.nextNum;
