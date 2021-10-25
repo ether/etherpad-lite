@@ -202,8 +202,8 @@ exports.chat = (() => {
             });
           }
         }
+        if (!isHistoryAdd) this.scrollDown();
       });
-      if (!isHistoryAdd) this.scrollDown();
     },
     init(pad) {
       this._pad = pad;
