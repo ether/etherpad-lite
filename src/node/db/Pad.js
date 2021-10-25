@@ -499,7 +499,7 @@ Pad.prototype.copyPadWithoutHistory = async function (destinationID, force) {
 
   // based on Changeset.makeSplice
   const assem = Changeset.smartOpAssembler();
-  Changeset.appendATextToAssembler(oldAText, assem);
+  for (const op of Changeset.opsFromAText(oldAText)) assem.append(op);
   assem.endDocument();
 
   // although we have instantiated the newPad with '\n', an additional '\n' is

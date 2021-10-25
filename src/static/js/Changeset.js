@@ -1718,17 +1718,18 @@ exports.copyAText = (atext1, atext2) => {
 };
 
 /**
- * Append the set of operations from atext to an assembler.
+ * Convert AText to a series of operations.
  *
- * @param {AText} atext -
- * @param assem - Assembler like SmartOpAssembler TODO add desc
+ * @param {AText} atext - The AText to convert.
+ * @yields {Op}
+ * @returns {Generator<Op>}
  */
-exports.appendATextToAssembler = (atext, assem) => {
+exports.opsFromAText = function* (atext) {
   // intentionally skips last newline char of atext
   const iter = exports.opIterator(atext.attribs);
   let lastOp = null;
   while (iter.hasNext()) {
-    if (lastOp != null) assem.append(lastOp);
+    if (lastOp != null) yield lastOp;
     lastOp = iter.next();
   }
   if (lastOp == null) return;
@@ -1741,11 +1742,24 @@ exports.appendATextToAssembler = (atext, assem) => {
     const lastLineLength = atext.text.length - nextToLastNewlineEnd - 1;
     lastOp.lines--;
     lastOp.chars -= (lastLineLength + 1);
-    assem.append(lastOp);
+    yield copyOp(lastOp);
     lastOp.lines = 0;
     lastOp.chars = lastLineLength;
   }
-  if (lastOp.chars) assem.append(lastOp);
+  if (lastOp.chars) yield lastOp;
+};
+
+/**
+ * Append the set of operations from atext to an assembler.
+ *
+ * @deprecated Use `opsFromAText` instead.
+ * @param {AText} atext -
+ * @param assem - Assembler like SmartOpAssembler TODO add desc
+ */
+exports.appendATextToAssembler = (atext, assem) => {
+  padutils.warnWithStack(
+      'Changeset.appendATextToAssembler() is deprecated; use Changeset.opsFromAText() instead');
+  for (const op of exports.opsFromAText(atext)) assem.append(op);
 };
 
 /**

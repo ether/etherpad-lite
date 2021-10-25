@@ -530,7 +530,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     o.chars = lastLineLength;
     o.lines = 0;
     assem.append(o);
-    Changeset.appendATextToAssembler(atext, assem);
+    for (const op of Changeset.opsFromAText(atext)) assem.append(op);
     const newLen = oldLen + assem.getLengthChange();
     const changeset = Changeset.checkRep(
         Changeset.pack(oldLen, newLen, assem.toString(), atext.text.slice(0, -1)));
