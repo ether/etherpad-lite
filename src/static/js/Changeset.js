@@ -1563,18 +1563,10 @@ exports.moveOpsToNewPool = (cs, oldPool, newPool) => {
   // order of attribs stays the same
   return upToDollar.replace(/\*([0-9a-z]+)/g, (_, a) => {
     const oldNum = exports.parseNum(a);
-    let pair = oldPool.getAttrib(oldNum);
-
-    /*
-     * Setting an empty pair. Required for when delete pad contents / attributes
-     * while another user has the timeslider open.
-     *
-     * Fixes https://github.com/ether/etherpad-lite/issues/3932
-     */
-    if (!pair) {
-      pair = [];
-    }
-
+    const pair = oldPool.getAttrib(oldNum);
+    // The attribute might not be in the old pool if the user is viewing the current revision in the
+    // timeslider and text is deleted. See: https://github.com/ether/etherpad-lite/issues/3932
+    if (!pair) return '';
     const newNum = newPool.putAttrib(pair);
     return `*${exports.numToString(newNum)}`;
   }) + fromDollar;
