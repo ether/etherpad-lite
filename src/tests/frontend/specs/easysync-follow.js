@@ -15,11 +15,15 @@ describe('easysync-follow', function () {
         const cs1 = randomTestChangeset(startText)[0];
         const cs2 = randomTestChangeset(startText)[0];
 
-        const afb = Changeset.checkRep(Changeset.follow(cs1, cs2, false, p));
-        const bfa = Changeset.checkRep(Changeset.follow(cs2, cs1, true, p));
+        const afb = Changeset.follow(cs1, cs2, false, p);
+        Changeset.unpack(afb).validate();
+        const bfa = Changeset.follow(cs2, cs1, true, p);
+        Changeset.unpack(bfa).validate();
 
-        const merge1 = Changeset.checkRep(Changeset.compose(cs1, afb));
-        const merge2 = Changeset.checkRep(Changeset.compose(cs2, bfa));
+        const merge1 = Changeset.compose(cs1, afb);
+        Changeset.unpack(merge1).validate();
+        const merge2 = Changeset.compose(cs2, bfa);
+        Changeset.unpack(merge2).validate();
 
         expect(merge2).to.equal(merge1);
       });
@@ -60,7 +64,7 @@ describe('easysync-follow', function () {
   describe('chracterRangeFollow', function () {
     const testCharacterRangeFollow = (testId, cs, oldRange, insertionsAfter, correctNewRange) => {
       it(`testCharacterRangeFollow#${testId}`, async function () {
-        cs = Changeset.checkRep(cs);
+        Changeset.unpack(cs).validate();
         expect(Changeset.characterRangeFollow(cs, oldRange[0], oldRange[1], insertionsAfter))
             .to.eql(correctNewRange);
       });

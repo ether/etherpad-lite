@@ -155,14 +155,133 @@ exports.Op = Op;
 /**
  * Describes changes to apply to a document. Does not include the attribute pool or the original
  * document.
- *
- * @typedef {object} Changeset
- * @property {number} oldLen - The length of the base document.
- * @property {number} newLen - The length of the document after applying the changeset.
- * @property {string} ops - Serialized sequence of operations. Use `deserializeOps` to parse this
- *     string.
- * @property {string} charBank - Characters inserted by insert operations.
  */
+class Changeset {
+  /**
+   * Parses an encoded changeset.
+   *
+   * @param {string} cs - Encoded changeset.
+   * @returns {Changeset}
+   */
+  static unpack(cs) {
+    const headerRegex = /Z:([0-9a-z]+)([><])([0-9a-z]+)|/;
+    const headerMatch = headerRegex.exec(cs);
+    if ((!headerMatch) || (!headerMatch[0])) error(`Not a changeset: ${cs}`);
+    const oldLen = exports.parseNum(headerMatch[1]);
+    const changeSign = (headerMatch[2] === '>') ? 1 : -1;
+    const changeMag = exports.parseNum(headerMatch[3]);
+    const newLen = oldLen + changeSign * changeMag;
+    const opsStart = headerMatch[0].length;
+    let opsEnd = cs.indexOf('$');
+    if (opsEnd < 0) opsEnd = cs.length;
+    return new Changeset(oldLen, newLen, cs.substring(opsStart, opsEnd), cs.substring(opsEnd + 1));
+  }
+
+  /**
+   * @param {number} oldLen - Initial value of the `oldLen` property.
+   * @param {number} newLen - Initial value of the `newLen` property.
+   * @param {string} ops - Initial value of the `ops` property.
+   * @param {string} charBank - Initial value of the `charBank` property.
+   */
+  constructor(oldLen, newLen, ops, charBank) {
+    /**
+     * The length of the base document.
+     *
+     * @type {number}
+     * @public
+     */
+    this.oldLen = oldLen;
+
+    /**
+     * The length of the document after applying the changeset.
+     *
+     * @type {number}
+     * @public
+     */
+    this.newLen = newLen;
+
+    /**
+     * Serialized sequence of operations. Use `deserializeOps` to parse this string.
+     *
+     * @type {string}
+     * @public
+     */
+    this.ops = ops;
+
+    /**
+     * Characters inserted by insert operations.
+     *
+     * @type {string}
+     * @public
+     */
+    this.charBank = charBank;
+  }
+
+  /**
+   * @returns {string} The encoded changeset.
+   */
+  toString() {
+    const lenDiff = this.newLen - this.oldLen;
+    const lenDiffStr = lenDiff >= 0
+      ? `>${exports.numToString(lenDiff)}`
+      : `<${exports.numToString(-lenDiff)}`;
+    const a = [];
+    a.push('Z:', exports.numToString(this.oldLen), lenDiffStr, this.ops, '$', this.charBank);
+    return a.join('');
+  }
+
+  /**
+   * Check that this Changeset is valid. This method does not check things that require access to
+   * the attribute pool (e.g., attribute order) or original text (e.g., newline positions).
+   *
+   * @returns {Changeset} this (for chaining)
+   */
+  validate() {
+    let charBank = this.charBank;
+    let oldPos = 0;
+    let calcNewLen = 0;
+    const cs = this.toString();
+    const ops = (function* () {
+      for (const o of exports.deserializeOps(this.ops)) {
+        switch (o.opcode) {
+          case '=':
+            oldPos += o.chars;
+            calcNewLen += o.chars;
+            break;
+          case '-':
+            oldPos += o.chars;
+            assert(oldPos <= this.oldLen, `${oldPos} > ${this.oldLen} in ${cs}`);
+            break;
+          case '+': {
+            assert(charBank.length >= o.chars, 'Invalid changeset: not enough chars in charBank');
+            const chars = charBank.slice(0, o.chars);
+            const nlines = (chars.match(/\n/g) || []).length;
+            assert(nlines === o.lines,
+                'Invalid changeset: number of newlines in insert op does not match the charBank');
+            assert(o.lines === 0 || chars.endsWith('\n'),
+                'Invalid changeset: multiline insert op does not end with a newline');
+            charBank = charBank.slice(o.chars);
+            calcNewLen += o.chars;
+            assert(calcNewLen <= this.newLen, `${calcNewLen} > ${this.newLen} in ${cs}`);
+            break;
+          }
+          default:
+            assert(false, `Invalid changeset: Unknown opcode: ${JSON.stringify(o.opcode)}`);
+        }
+        yield o;
+      }
+    }).call(this);
+    const serializedOps = exports.serializeOps(exports.canonicalizeOps(ops, true));
+    calcNewLen += this.oldLen - oldPos;
+    assert(calcNewLen === this.newLen,
+        'Invalid changeset: claimed length does not match actual length');
+    assert(charBank === '', 'Invalid changeset: excess characters in the charBank');
+    const normalized =
+        new Changeset(this.oldLen, calcNewLen, serializedOps, this.charBank).toString();
+    assert(normalized === cs, 'Invalid changeset: not in canonical form');
+    return this;
+  }
+}
 
 /**
  * Returns the required length of the text before changeset can be applied.
@@ -170,7 +289,7 @@ exports.Op = Op;
  * @param {string} cs - String representation of the Changeset
  * @returns {number} oldLen property
  */
-exports.oldLen = (cs) => exports.unpack(cs).oldLen;
+exports.oldLen = (cs) => Changeset.unpack(cs).oldLen;
 
 /**
  * Returns the length of the text after changeset is applied.
@@ -178,7 +297,7 @@ exports.oldLen = (cs) => exports.unpack(cs).oldLen;
  * @param {string} cs - String representation of the Changeset
  * @returns {number} newLen property
  */
-exports.newLen = (cs) => exports.unpack(cs).newLen;
+exports.newLen = (cs) => Changeset.unpack(cs).newLen;
 
 /**
  * Parses a string of serialized changeset operations.
@@ -581,53 +700,14 @@ class SmartOpAssembler {
  * Used to check if a Changeset is valid. This function does not check things that require access to
  * the attribute pool (e.g., attribute order) or original text (e.g., newline positions).
  *
+ * @deprecated Use `Changeset.unpack(cs).validate()` instead.
  * @param {string} cs - Changeset to check
  * @returns {string} the checked Changeset
  */
 exports.checkRep = (cs) => {
-  const unpacked = exports.unpack(cs);
-  const oldLen = unpacked.oldLen;
-  const newLen = unpacked.newLen;
-  let charBank = unpacked.charBank;
-
-  let oldPos = 0;
-  let calcNewLen = 0;
-  const ops = (function* () {
-    for (const o of exports.deserializeOps(unpacked.ops)) {
-      switch (o.opcode) {
-        case '=':
-          oldPos += o.chars;
-          calcNewLen += o.chars;
-          break;
-        case '-':
-          oldPos += o.chars;
-          assert(oldPos <= oldLen, `${oldPos} > ${oldLen} in ${cs}`);
-          break;
-        case '+': {
-          assert(charBank.length >= o.chars, 'Invalid changeset: not enough chars in charBank');
-          const chars = charBank.slice(0, o.chars);
-          const nlines = (chars.match(/\n/g) || []).length;
-          assert(nlines === o.lines,
-              'Invalid changeset: number of newlines in insert op does not match the charBank');
-          assert(o.lines === 0 || chars.endsWith('\n'),
-              'Invalid changeset: multiline insert op does not end with a newline');
-          charBank = charBank.slice(o.chars);
-          calcNewLen += o.chars;
-          assert(calcNewLen <= newLen, `${calcNewLen} > ${newLen} in ${cs}`);
-          break;
-        }
-        default:
-          assert(false, `Invalid changeset: Unknown opcode: ${JSON.stringify(o.opcode)}`);
-      }
-      yield o;
-    }
-  })();
-  const serializedOps = exports.serializeOps(exports.canonicalizeOps(ops, true));
-  calcNewLen += oldLen - oldPos;
-  assert(calcNewLen === newLen, 'Invalid changeset: claimed length does not match actual length');
-  assert(charBank === '', 'Invalid changeset: excess characters in the charBank');
-  const normalized = exports.pack(oldLen, calcNewLen, serializedOps, unpacked.charBank);
-  assert(normalized === cs, 'Invalid changeset: not in canonical form');
+  padutils.warnDeprecated(
+      'Changeset.checkRep(cs) is deprecated; use Changeset.unpack(cs).validate() instead.');
+  Changeset.unpack(cs).validate();
   return cs;
 };
 
@@ -1108,24 +1188,7 @@ const applyZip = (in1, in2, func) => {
  * @param {string} cs - The encoded changeset.
  * @returns {Changeset}
  */
-exports.unpack = (cs) => {
-  const headerRegex = /Z:([0-9a-z]+)([><])([0-9a-z]+)|/;
-  const headerMatch = headerRegex.exec(cs);
-  if ((!headerMatch) || (!headerMatch[0])) error(`Not a changeset: ${cs}`);
-  const oldLen = exports.parseNum(headerMatch[1]);
-  const changeSign = (headerMatch[2] === '>') ? 1 : -1;
-  const changeMag = exports.parseNum(headerMatch[3]);
-  const newLen = oldLen + changeSign * changeMag;
-  const opsStart = headerMatch[0].length;
-  let opsEnd = cs.indexOf('$');
-  if (opsEnd < 0) opsEnd = cs.length;
-  return {
-    oldLen,
-    newLen,
-    ops: cs.substring(opsStart, opsEnd),
-    charBank: cs.substring(opsEnd + 1),
-  };
-};
+exports.unpack = (cs) => Changeset.unpack(cs);
 
 /**
  * Creates an encoded changeset.
@@ -1136,14 +1199,8 @@ exports.unpack = (cs) => {
  * @param {string} bank - Characters for insert operations.
  * @returns {string} The encoded changeset.
  */
-exports.pack = (oldLen, newLen, opsStr, bank) => {
-  const lenDiff = newLen - oldLen;
-  const lenDiffStr = (lenDiff >= 0 ? `>${exports.numToString(lenDiff)}`
-    : `<${exports.numToString(-lenDiff)}`);
-  const a = [];
-  a.push('Z:', exports.numToString(oldLen), lenDiffStr, opsStr, '$', bank);
-  return a.join('');
-};
+exports.pack =
+    (oldLen, newLen, opsStr, bank) => new Changeset(oldLen, newLen, opsStr, bank).toString();
 
 /**
  * Applies a Changeset to a string.
@@ -1153,7 +1210,7 @@ exports.pack = (oldLen, newLen, opsStr, bank) => {
  * @returns {string}
  */
 exports.applyToText = (cs, str) => {
-  const unpacked = exports.unpack(cs);
+  const unpacked = Changeset.unpack(cs);
   assert(str.length === unpacked.oldLen, `mismatched apply: ${str.length} / ${unpacked.oldLen}`);
   const bankIter = new StringIterator(unpacked.charBank);
   const strIter = new StringIterator(str);
@@ -1197,7 +1254,7 @@ exports.applyToText = (cs, str) => {
  * @param {string[]} lines - The lines to which the changeset needs to be applied
  */
 exports.mutateTextLines = (cs, lines) => {
-  const unpacked = exports.unpack(cs);
+  const unpacked = Changeset.unpack(cs);
   const bankIter = new StringIterator(unpacked.charBank);
   const mut = new TextLinesMutator(lines);
   for (const op of exports.deserializeOps(unpacked.ops)) {
@@ -1321,12 +1378,12 @@ const slicerZipperFunc = (attOp, csOp, pool) => {
  * @returns {string}
  */
 exports.applyToAttribution = (cs, astr, pool) => {
-  const unpacked = exports.unpack(cs);
+  const unpacked = Changeset.unpack(cs);
   return applyZip(astr, unpacked.ops, (op1, op2) => slicerZipperFunc(op1, op2, pool));
 };
 
 exports.mutateAttributionLines = (cs, lines, pool) => {
-  const unpacked = exports.unpack(cs);
+  const unpacked = Changeset.unpack(cs);
   const csOps = exports.deserializeOps(unpacked.ops);
   let csOpsNext = csOps.next();
   const csBank = unpacked.charBank;
@@ -1468,8 +1525,8 @@ exports.splitTextLines = (text) => text.match(/[^\n]*(?:\n|[^\n]$)/g);
  * @returns {string}
  */
 exports.compose = (cs1, cs2, pool) => {
-  const unpacked1 = exports.unpack(cs1);
-  const unpacked2 = exports.unpack(cs2);
+  const unpacked1 = Changeset.unpack(cs1);
+  const unpacked2 = Changeset.unpack(cs2);
   const len1 = unpacked1.oldLen;
   const len2 = unpacked1.newLen;
   assert(len2 === unpacked2.oldLen, 'mismatched composition of two changesets');
@@ -1491,7 +1548,7 @@ exports.compose = (cs1, cs2, pool) => {
     return opOut;
   });
 
-  return exports.pack(len1, len3, newOps, bankAssem);
+  return new Changeset(len1, len3, newOps, bankAssem).toString();
 };
 
 /**
@@ -1517,7 +1574,7 @@ exports.attributeTester = (attribPair, pool) => {
  * @param {number} N - length of the identity changeset
  * @returns {string}
  */
-exports.identity = (N) => exports.pack(N, N, '', '');
+exports.identity = (N) => new Changeset(N, N, '', '').toString();
 
 /**
  * Creates a Changeset which works on oldFullText and removes text from spliceStart to
@@ -1544,7 +1601,7 @@ exports.makeSplice = (orig, start, ndel, ins, attribs, pool) => {
     yield* opsFromText('+', ins, attribs, pool);
   })();
   const serializedOps = exports.serializeOps(exports.canonicalizeOps(ops, true));
-  return exports.pack(orig.length, orig.length + ins.length - ndel, serializedOps, ins);
+  return new Changeset(orig.length, orig.length + ins.length - ndel, serializedOps, ins).toString();
 };
 
 /**
@@ -1555,7 +1612,7 @@ exports.makeSplice = (orig, start, ndel, ins, attribs, pool) => {
  * @returns {[number, number, string][]}
  */
 const toSplices = (cs) => {
-  const unpacked = exports.unpack(cs);
+  const unpacked = Changeset.unpack(cs);
   /** @type {[number, number, string][]} */
   const splices = [];
 
@@ -1860,7 +1917,7 @@ exports.prepareForWire = (cs, pool) => {
  * @returns {boolean}
  */
 exports.isIdentity = (cs) => {
-  const unpacked = exports.unpack(cs);
+  const unpacked = Changeset.unpack(cs);
   return unpacked.ops === '' && unpacked.oldLen === unpacked.newLen;
 };
 
@@ -1989,17 +2046,12 @@ class Builder {
     const serializedOps = exports.serializeOps((function* () {
       lengthChange = yield* exports.canonicalizeOps(this._ops, true);
     }).call(this));
-    return {
-      oldLen: this._oldLen,
-      newLen: this._oldLen + lengthChange,
-      ops: serializedOps,
-      charBank: this._charBank,
-    };
+    const newLen = this._oldLen + lengthChange;
+    return new Changeset(this._oldLen, newLen, serializedOps, this._charBank);
   }
 
   toString() {
-    const {oldLen, newLen, ops, charBank} = this.build();
-    return exports.pack(oldLen, newLen, ops, charBank);
+    return this.build().toString();
   }
 }
 exports.Builder = Builder;
@@ -2112,7 +2164,7 @@ exports.inverse = (cs, lines, alines, pool) => {
   let curLineOpsLine;
   let curLineNextOp = new Op('+');
 
-  const unpacked = exports.unpack(cs);
+  const unpacked = Changeset.unpack(cs);
   const builder = new Builder(unpacked.newLen);
 
   const consumeAttribRuns = (numChars, func /* (len, attribs, endsLine)*/) => {
@@ -2236,13 +2288,13 @@ exports.inverse = (cs, lines, alines, pool) => {
     }
   }
 
-  return exports.checkRep(builder.toString());
+  return builder.build().validate().toString();
 };
 
 // %CLIENT FILE ENDS HERE%
 exports.follow = (cs1, cs2, reverseInsertOrder, pool) => {
-  const unpacked1 = exports.unpack(cs1);
-  const unpacked2 = exports.unpack(cs2);
+  const unpacked1 = Changeset.unpack(cs1);
+  const unpacked2 = Changeset.unpack(cs2);
   const len1 = unpacked1.oldLen;
   const len2 = unpacked2.oldLen;
   assert(len1 === len2, 'mismatched follow - cannot transform cs1 on top of cs2');
@@ -2378,7 +2430,7 @@ exports.follow = (cs1, cs2, reverseInsertOrder, pool) => {
   });
   newLen += oldLen - oldPos;
 
-  return exports.pack(oldLen, newLen, newOps, unpacked2.charBank);
+  return new Changeset(oldLen, newLen, newOps, unpacked2.charBank).toString();
 };
 
 const followAttributes = (att1, att2, pool) => {

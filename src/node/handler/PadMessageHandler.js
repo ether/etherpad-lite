@@ -582,11 +582,10 @@ const handleUserChanges = async (socket, message) => {
     const wireApool = (new AttributePool()).fromJsonable(apool);
     const pad = await padManager.getPad(thisSession.padId);
 
-    // Verify that the changeset has valid syntax and is in canonical form
-    Changeset.checkRep(changeset);
+    const cs = Changeset.unpack(changeset).validate();
 
     // Validate all added 'author' attribs to be the same value as the current user
-    for (const op of Changeset.deserializeOps(Changeset.unpack(changeset).ops)) {
+    for (const op of Changeset.deserializeOps(cs.ops)) {
       // + can add text with attribs
       // = can change or add attribs
       // - can have attribs, but they are discarded and don't show up in the attribs -

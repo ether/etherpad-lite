@@ -204,7 +204,8 @@ describe('easysync-mutations', function () {
       it(`runMutateAttributionTest#${testId}`, async function () {
         const p = poolOrArray(attribs);
         const alines2 = Array.prototype.slice.call(alines);
-        Changeset.mutateAttributionLines(Changeset.checkRep(cs), alines2, p);
+        Changeset.unpack(cs).validate();
+        Changeset.mutateAttributionLines(cs, alines2, p);
         expect(alines2).to.eql(outCorrect);
 
         const removeQuestionMarks = (a) => a.replace(/\?/g, '');

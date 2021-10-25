@@ -78,7 +78,8 @@ describe('easysync-other', function () {
     });
 
     it('testToSplices', async function () {
-      const cs = Changeset.checkRep('Z:z>9*0=1=4-3+9=1|1-4-4+1*0+a$123456789abcdefghijk');
+      const cs = 'Z:z>9*0=1=4-3+9=1|1-4-4+1*0+a$123456789abcdefghijk';
+      Changeset.unpack(cs).validate();
       const correctSplices = [
         [5, 8, '123456789'],
         [9, 17, 'abcdefghijk'],
@@ -112,7 +113,8 @@ describe('easysync-other', function () {
       const runApplyToAttributionTest = (testId, attribs, cs, inAttr, outCorrect) => {
         it(`applyToAttribution#${testId}`, async function () {
           const p = poolOrArray(attribs);
-          const result = Changeset.applyToAttribution(Changeset.checkRep(cs), inAttr, p);
+          Changeset.unpack(cs).validate();
+          const result = Changeset.applyToAttribution(cs, inAttr, p);
           expect(result).to.equal(outCorrect);
         });
       };

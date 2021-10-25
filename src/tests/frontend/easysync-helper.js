@@ -202,7 +202,7 @@ const randomTestChangeset = (origText, withAttribs) => {
   const outText = `${outTextAssem}\n`;
   const serializedOps = Changeset.serializeOps(Changeset.canonicalizeOps(ops, true));
   const cs = Changeset.pack(oldLen, outText.length, serializedOps, charBank);
-  Changeset.checkRep(cs);
+  Changeset.unpack(cs).validate();
   return [cs, outText];
 };
 exports.randomTestChangeset = randomTestChangeset;

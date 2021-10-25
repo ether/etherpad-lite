@@ -24,10 +24,14 @@ describe('easysync-compose', function () {
         const change3 = x3[0];
         const text3 = x3[1];
 
-        const change12 = Changeset.checkRep(Changeset.compose(change1, change2, p));
-        const change23 = Changeset.checkRep(Changeset.compose(change2, change3, p));
-        const change123 = Changeset.checkRep(Changeset.compose(change12, change3, p));
-        const change123a = Changeset.checkRep(Changeset.compose(change1, change23, p));
+        const change12 = Changeset.compose(change1, change2, p);
+        Changeset.unpack(change12).validate();
+        const change23 = Changeset.compose(change2, change3, p);
+        Changeset.unpack(change23).validate();
+        const change123 = Changeset.compose(change12, change3, p);
+        Changeset.unpack(change123).validate();
+        const change123a = Changeset.compose(change1, change23, p);
+        Changeset.unpack(change123a).validate();
         expect(change123a).to.equal(change123);
 
         expect(Changeset.applyToText(change12, startText)).to.equal(text2);
@@ -44,9 +48,12 @@ describe('easysync-compose', function () {
       const p = new AttributePool();
       p.putAttrib(['bold', '']);
       p.putAttrib(['bold', 'true']);
-      const cs1 = Changeset.checkRep('Z:2>1*1+1*1=1$x');
-      const cs2 = Changeset.checkRep('Z:3>0*0|1=3$');
-      const cs12 = Changeset.checkRep(Changeset.compose(cs1, cs2, p));
+      const cs1 = 'Z:2>1*1+1*1=1$x';
+      Changeset.unpack(cs1).validate();
+      const cs2 = 'Z:3>0*0|1=3$';
+      Changeset.unpack(cs2).validate();
+      const cs12 = Changeset.compose(cs1, cs2, p);
+      Changeset.unpack(cs12).validate();
       expect(cs12).to.equal('Z:2>1+1*0|1=2$x');
     });
   });

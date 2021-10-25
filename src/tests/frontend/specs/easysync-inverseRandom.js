@@ -41,7 +41,8 @@ describe('easysync-inverseRandom', function () {
     const testInverse = (testId, cs, lines, alines, pool, correctOutput) => {
       it(`testInverse#${testId}`, async function () {
         pool = poolOrArray(pool);
-        const str = Changeset.inverse(Changeset.checkRep(cs), lines, alines, pool);
+        Changeset.unpack(cs).validate();
+        const str = Changeset.inverse(cs, lines, alines, pool);
         expect(str).to.equal(correctOutput);
       });
     };
