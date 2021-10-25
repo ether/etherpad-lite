@@ -21,6 +21,7 @@
     * `opAttributeValue()`
   * `appendATextToAssembler()`: Deprecated in favor of the new `opsFromAText()`
     generator function.
+  * `newOp()`: Deprecated in favor of the new `Op` class.
 
 # 1.8.15
 

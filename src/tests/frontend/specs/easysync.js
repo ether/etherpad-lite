@@ -57,7 +57,7 @@ describe('easysync', function () {
 
   const mutationsToChangeset = (oldLen, arrayOfArrays) => {
     const assem = Changeset.smartOpAssembler();
-    const op = Changeset.newOp();
+    const op = new Changeset.Op();
     const bank = Changeset.stringAssembler();
     let oldPos = 0;
     let newLen = 0;
@@ -507,7 +507,7 @@ describe('easysync', function () {
     const opAssem = Changeset.smartOpAssembler();
     const oldLen = origText.length;
 
-    const nextOp = Changeset.newOp();
+    const nextOp = new Changeset.Op();
 
     const appendMultilineOp = (opcode, txt) => {
       nextOp.opcode = opcode;
@@ -651,7 +651,7 @@ describe('easysync', function () {
   const testSplitJoinAttributionLines = (randomSeed) => {
     const stringToOps = (str) => {
       const assem = Changeset.mergingOpAssembler();
-      const o = Changeset.newOp('+');
+      const o = new Changeset.Op('+');
       o.chars = 1;
       for (let i = 0; i < str.length; i++) {
         const c = str.charAt(i);
