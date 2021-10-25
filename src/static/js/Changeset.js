@@ -25,6 +25,12 @@
 const AttributePool = require('./AttributePool');
 
 /**
+ * A `[key, value]` pair of strings describing a text attribute.
+ *
+ * @typedef {[string, string]} Attribute
+ */
+
+/**
  * This method is called whenever there is an error in the sync process.
  *
  * @param {string} msg - Just some message
@@ -40,7 +46,8 @@ exports.error = (msg) => {
  * throw an exception.
  *
  * @param {boolean} b - assertion condition
- * @param {...string} msgParts - error message to include in the exception
+ * @param {...any} msgParts - error message to include in the exception
+ * @type {(b: boolean, ...msgParts: any[]) => asserts b}
  */
 exports.assert = (b, ...msgParts) => {
   if (!b) {
@@ -83,9 +90,9 @@ exports.numToString = (num) => num.toString(36).toLowerCase();
  * @property {string} attribs - Identifiers of attributes to apply to the text, represented as a
  *     repeated (zero or more) sequence of asterisk followed by a non-negative base-36 (lower-case)
  *     integer. For example, '*2*1o' indicates that attributes 2 and 60 apply to the text affected
- *     by the operation. The identifiers come from the document's attribution pool. This is the
- *     empty string for remove ('-') operations. For keep ('=') operations, the attributes are
- *     merged with the base text's existing attributes:
+ *     by the operation. The identifiers come from the document's attribute pool. This is the empty
+ *     string for remove ('-') operations. For keep ('=') operations, the attributes are merged with
+ *     the base text's existing attributes:
  *       - A keep op attribute with a non-empty value replaces an existing base text attribute that
  *         has the same key.
  *       - A keep op attribute with an empty value is interpreted as an instruction to remove an
@@ -360,6 +367,15 @@ exports.smartOpAssembler = () => {
     lastOpcode = op.opcode;
   };
 
+  /**
+   * Generates operations from the given text and attributes.
+   *
+   * @param {('-'|'+'|'=')} opcode - The operator to use.
+   * @param {string} text - The text to remove/add/keep.
+   * @param {(string|Attribute[])} attribs - The attributes to apply to the operations. See
+   *     `makeAttribsString`.
+   * @param {?AttributePool} pool - See `makeAttribsString`.
+   */
   const appendOpWithText = (opcode, text, attribs, pool) => {
     const op = exports.newOp(opcode);
     op.attribs = exports.makeAttribsString(opcode, attribs, pool);
@@ -594,6 +610,18 @@ exports.stringAssembler = () => {
 };
 
 /**
+ * @typedef {object} StringArrayLike
+ * @property {(i: number) => string} get - Returns the line at index `i`.
+ * @property {(number|(() => number))} length - The number of lines, or a method that returns the
+ *     number of lines.
+ * @property {(((start?: number, end?: number) => string[])|undefined)} slice - Like
+ *     `Array.prototype.slice()`. Optional if the return value of the `removeLines` method is not
+ *     needed.
+ * @property {(i: number, d?: number, ...l: string[]) => any} splice - Like
+ *     `Array.prototype.splice()`.
+ */
+
+/**
  * Class to iterate and modify texts which have several lines. It is used for applying Changesets on
  * arrays of lines.
  *
@@ -615,13 +643,7 @@ exports.stringAssembler = () => {
  */
 
 /**
- * @param {string[]} lines - Lines to mutate (in place). This does not need to be an array as long
- *     as it supports certain methods/properties:
- *       - `get(i)`: Returns the line at index `i`.
- *       - `length`: Number like `Array.prototype.length`, or a method that returns the length.
- *       - `slice(...)`: Like `Array.prototype.slice(...)`. Optional if the return value of the
- *         `removeLines` method is not needed.
- *       - `splice(...)`: Like `Array.prototype.splice(...)`.
+ * @param {(string[]|StringArrayLike)} lines - Lines to mutate (in place).
  * @returns {TextLinesMutator}
  */
 exports.textLinesMutator = (lines) => {
@@ -1487,7 +1509,7 @@ exports.compose = (cs1, cs2, pool) => {
  * Returns a function that tests if a string of attributes (e.g. '*3*4') contains a given attribute
  * key,value that is already present in the pool.
  *
- * @param {[string, string]} attribPair - Array of attribute pairs.
+ * @param {Attribute} attribPair - `[key, value]` pair of strings.
  * @param {AttributePool} pool - Attribute pool
  * @returns {Function}
  */
@@ -1921,8 +1943,14 @@ exports.builder = (oldLen) => {
 
   const self = {
     /**
-     * @param attribs - Either [[key1,value1],[key2,value2],...] or '*0*1...' (no pool needed in
-     *     latter case).
+     * @param {number} N - Number of characters to keep.
+     * @param {number} L - Number of newlines among the `N` characters. If positive, the last
+     *     character must be a newline.
+     * @param {(string|Attribute[])} attribs - Either [[key1,value1],[key2,value2],...] or '*0*1...'
+     *     (no pool needed in latter case).
+     * @param {?AttributePool} pool - Attribute pool, only required if `attribs` is a list of
+     *     attribute key, value pairs.
+     * @returns {Builder} this
      */
     keep: (N, L, attribs, pool) => {
       o.opcode = '=';
@@ -1932,15 +1960,40 @@ exports.builder = (oldLen) => {
       assem.append(o);
       return self;
     },
+
+    /**
+     * @param {string} text - Text to keep.
+     * @param {(string|Attribute[])} attribs - Either [[key1,value1],[key2,value2],...] or '*0*1...'
+     *     (no pool needed in latter case).
+     * @param {?AttributePool} pool - Attribute pool, only required if `attribs` is a list of
+     *     attribute key, value pairs.
+     * @returns {Builder} this
+     */
     keepText: (text, attribs, pool) => {
       assem.appendOpWithText('=', text, attribs, pool);
       return self;
     },
+
+    /**
+     * @param {string} text - Text to insert.
+     * @param {(string|Attribute[])} attribs - Either [[key1,value1],[key2,value2],...] or '*0*1...'
+     *     (no pool needed in latter case).
+     * @param {?AttributePool} pool - Attribute pool, only required if `attribs` is a list of
+     *     attribute key, value pairs.
+     * @returns {Builder} this
+     */
     insert: (text, attribs, pool) => {
       assem.appendOpWithText('+', text, attribs, pool);
       charBank.append(text);
       return self;
     },
+
+    /**
+     * @param {number} N - Number of characters to remove.
+     * @param {number} L - Number of newlines among the `N` characters. If positive, the last
+     *     character must be a newline.
+     * @returns {Builder} this
+     */
     remove: (N, L) => {
       o.opcode = '-';
       o.attribs = '';
@@ -1949,6 +2002,7 @@ exports.builder = (oldLen) => {
       assem.append(o);
       return self;
     },
+
     toString: () => {
       assem.endDocument();
       const newLen = oldLen + assem.getLengthChange();
