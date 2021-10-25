@@ -203,12 +203,6 @@ exports.chat = (() => {
           }
         }
       });
-
-      // Clear the chat mentions when the user clicks on the chat input box
-      $('#chatinput').click(() => {
-        chatMentions = 0;
-        Tinycon.setBubble(0);
-      });
       if (!isHistoryAdd) this.scrollDown();
     },
     init(pad) {
@@ -223,6 +217,11 @@ exports.chat = (() => {
           evt.preventDefault();
           return false;
         }
+      });
+      // Clear the chat mentions when the user clicks on the chat input box
+      $('#chatinput').click(() => {
+        chatMentions = 0;
+        Tinycon.setBubble(0);
       });
 
       const self = this;
