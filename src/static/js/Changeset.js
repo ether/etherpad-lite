@@ -1930,13 +1930,13 @@ class Builder {
    * @param {number} N - Number of characters to keep.
    * @param {number} L - Number of newlines among the `N` characters. If positive, the last
    *     character must be a newline.
-   * @param {(string|Attribute[])} attribs - Either [[key1,value1],[key2,value2],...] or '*0*1...'
+   * @param {(string|Attribute[])} [attribs] - Either [[key1,value1],[key2,value2],...] or '*0*1...'
    *     (no pool needed in latter case).
-   * @param {?AttributePool} pool - Attribute pool, only required if `attribs` is a list of
+   * @param {?AttributePool} [pool] - Attribute pool, only required if `attribs` is a list of
    *     attribute key, value pairs.
    * @returns {Builder} this
    */
-  keep(N, L, attribs, pool) {
+  keep(N, L, attribs = '', pool = null) {
     const o = new Op('=');
     o.attribs = typeof attribs === 'string'
       ? attribs : new AttributeMap(pool).update(attribs || []).toString();
@@ -1948,26 +1948,26 @@ class Builder {
 
   /**
    * @param {string} text - Text to keep.
-   * @param {(string|Attribute[])} attribs - Either [[key1,value1],[key2,value2],...] or '*0*1...'
+   * @param {(string|Attribute[])} [attribs] - Either [[key1,value1],[key2,value2],...] or '*0*1...'
    *     (no pool needed in latter case).
-   * @param {?AttributePool} pool - Attribute pool, only required if `attribs` is a list of
+   * @param {?AttributePool} [pool] - Attribute pool, only required if `attribs` is a list of
    *     attribute key, value pairs.
    * @returns {Builder} this
    */
-  keepText(text, attribs, pool) {
+  keepText(text, attribs = '', pool = null) {
     this._ops.push(...opsFromText('=', text, attribs, pool));
     return this;
   }
 
   /**
    * @param {string} text - Text to insert.
-   * @param {(string|Attribute[])} attribs - Either [[key1,value1],[key2,value2],...] or '*0*1...'
+   * @param {(string|Attribute[])} [attribs] - Either [[key1,value1],[key2,value2],...] or '*0*1...'
    *     (no pool needed in latter case).
-   * @param {?AttributePool} pool - Attribute pool, only required if `attribs` is a list of
+   * @param {?AttributePool} [pool] - Attribute pool, only required if `attribs` is a list of
    *     attribute key, value pairs.
    * @returns {Builder} this
    */
-  insert(text, attribs, pool) {
+  insert(text, attribs = '', pool = null) {
     this._ops.push(...opsFromText('+', text, attribs, pool));
     this._charBank.append(text);
     return this;
