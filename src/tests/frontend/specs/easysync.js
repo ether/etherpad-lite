@@ -745,7 +745,7 @@ describe('easysync', function () {
   const testAppendATextToAssembler = (testId, atext, correctOps) => {
     it(`testAppendATextToAssembler#${testId}`, async function () {
       const assem = Changeset.smartOpAssembler();
-      Changeset.appendATextToAssembler(atext, assem);
+      for (const op of Changeset.opsFromAText(atext)) assem.append(op);
       expect(assem.toString()).to.equal(correctOps);
     });
   };

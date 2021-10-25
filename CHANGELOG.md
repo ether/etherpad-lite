@@ -19,6 +19,8 @@
     * `eachAttribNumber()`
     * `makeAttribsString()`
     * `opAttributeValue()`
+  * `appendATextToAssembler()`: Deprecated in favor of the new `opsFromAText()`
+    generator function.
 
 # 1.8.15
 
