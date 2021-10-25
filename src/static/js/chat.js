@@ -105,7 +105,7 @@ exports.chat = (() => {
       this._pad.collabClient.sendMessage({type: 'CHAT_MESSAGE', text});
       $('#chatinput').val('');
     },
-    addMessage(msg, increment, isHistoryAdd) {
+    async addMessage(msg, increment, isHistoryAdd) {
       // correct the time
       msg.time += this._pad.clientTimeOffset;
 
@@ -161,49 +161,47 @@ exports.chat = (() => {
         ctx.sticky = true;
       }
 
-      // Call chat message hook
-      hooks.aCallAll('chatNewMessage', ctx, () => {
-        const cls = authorClass(ctx.author);
-        const chatMsg = $('<p>')
-            .attr('data-authorId', ctx.author)
-            .addClass(cls)
-            .append($('<b>').text(`${ctx.authorName}:`))
-            .append($('<span>')
-                .addClass('time')
-                .addClass(cls)
-                // Hook functions are trusted to not introduce an XSS vulnerability by adding
-                // unescaped user input to ctx.timeStr.
-                .html(ctx.timeStr))
-            .append(' ')
-            // ctx.text was HTML-escaped before calling the hook. Hook functions are trusted to not
-            // introduce an XSS vulnerability by adding unescaped user input.
-            .append($('<div>').html(ctx.text).contents());
-        if (isHistoryAdd) chatMsg.insertAfter('#chatloadmessagesbutton');
-        else $('#chattext').append(chatMsg);
+      await hooks.aCallAll('chatNewMessage', ctx);
+      const cls = authorClass(ctx.author);
+      const chatMsg = $('<p>')
+          .attr('data-authorId', ctx.author)
+          .addClass(cls)
+          .append($('<b>').text(`${ctx.authorName}:`))
+          .append($('<span>')
+              .addClass('time')
+              .addClass(cls)
+              // Hook functions are trusted to not introduce an XSS vulnerability by adding
+              // unescaped user input to ctx.timeStr.
+              .html(ctx.timeStr))
+          .append(' ')
+          // ctx.text was HTML-escaped before calling the hook. Hook functions are trusted to not
+          // introduce an XSS vulnerability by adding unescaped user input.
+          .append($('<div>').html(ctx.text).contents());
+      if (isHistoryAdd) chatMsg.insertAfter('#chatloadmessagesbutton');
+      else $('#chattext').append(chatMsg);
 
-        // should we increment the counter??
-        if (increment && !isHistoryAdd) {
-          // Update the counter of unread messages
-          let count = Number($('#chatcounter').text());
-          count++;
-          $('#chatcounter').text(count);
+      // should we increment the counter??
+      if (increment && !isHistoryAdd) {
+        // Update the counter of unread messages
+        let count = Number($('#chatcounter').text());
+        count++;
+        $('#chatcounter').text(count);
 
-          if (!chatOpen && ctx.duration > 0) {
-            $.gritter.add({
-              text: $('<p>')
-                  .append($('<span>').addClass('author-name').text(ctx.authorName))
-                  // ctx.text was HTML-escaped before calling the hook. Hook functions are trusted
-                  // to not introduce an XSS vulnerability by adding unescaped user input.
-                  .append($('<div>').html(ctx.text).contents()),
-              sticky: ctx.sticky,
-              time: 5000,
-              position: 'bottom',
-              class_name: 'chat-gritter-msg',
-            });
-          }
+        if (!chatOpen && ctx.duration > 0) {
+          $.gritter.add({
+            text: $('<p>')
+                .append($('<span>').addClass('author-name').text(ctx.authorName))
+                // ctx.text was HTML-escaped before calling the hook. Hook functions are trusted
+                // to not introduce an XSS vulnerability by adding unescaped user input.
+                .append($('<div>').html(ctx.text).contents()),
+            sticky: ctx.sticky,
+            time: 5000,
+            position: 'bottom',
+            class_name: 'chat-gritter-msg',
+          });
         }
-        if (!isHistoryAdd) this.scrollDown();
-      });
+      }
+      if (!isHistoryAdd) this.scrollDown();
     },
     init(pad) {
       this._pad = pad;
