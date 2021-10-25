@@ -150,9 +150,9 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     // get  `attributeName` attribute of first char of line
     const aline = this.rep.alines[lineNum];
     if (!aline) return '';
-    const opIter = Changeset.opIterator(aline);
-    if (!opIter.hasNext()) return '';
-    return AttributeMap.fromString(opIter.next().attribs, this.rep.apool).get(attributeName) || '';
+    const [op] = Changeset.deserializeOps(aline);
+    if (op == null) return '';
+    return AttributeMap.fromString(op.attribs, this.rep.apool).get(attributeName) || '';
   },
 
   /*
@@ -163,9 +163,8 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     // get attributes of first char of line
     const aline = this.rep.alines[lineNum];
     if (!aline) return [];
-    const opIter = Changeset.opIterator(aline);
-    if (!opIter.hasNext()) return [];
-    const op = opIter.next();
+    const [op] = Changeset.deserializeOps(aline);
+    if (op == null) return [];
     return [...attributes.attribsFromString(op.attribs, this.rep.apool)];
   },
 
@@ -221,13 +220,8 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
       const end = selEnd[1];
       let hasAttrib = true;
 
-      // Iterate over attribs on this line
-
-      const opIter = Changeset.opIterator(rep.alines[lineNum]);
       let indexIntoLine = 0;
-
-      while (opIter.hasNext()) {
-        const op = opIter.next();
+      for (const op of Changeset.deserializeOps(rep.alines[lineNum])) {
         const opStartInLine = indexIntoLine;
         const opEndInLine = opStartInLine + op.chars;
         if (!hasIt(op.attribs)) {
@@ -260,15 +254,11 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     if (!aline) {
       return [];
     }
-    // iterate through all operations of a line
-    const opIter = Changeset.opIterator(aline);
 
     // we need to sum up how much characters each operations take until the wanted position
     let currentPointer = 0;
-    let currentOperation;
 
-    while (opIter.hasNext()) {
-      currentOperation = opIter.next();
+    for (const currentOperation of Changeset.deserializeOps(aline)) {
       currentPointer += currentOperation.chars;
       if (currentPointer <= column) continue;
       return [...attributes.attribsFromString(currentOperation.attribs, this.rep.apool)];

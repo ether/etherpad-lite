@@ -35,16 +35,10 @@ PadDiff.prototype._isClearAuthorship = function (changeset) {
     return false;
   }
 
-  // lets iterator over the operators
-  const iterator = Changeset.opIterator(unpacked.ops);
-
-  // get the first operator, this should be a clear operator
-  const clearOperator = iterator.next();
+  const [clearOperator, anotherOp] = Changeset.deserializeOps(unpacked.ops);
 
   // check if there is only one operator
-  if (iterator.hasNext() === true) {
-    return false;
-  }
+  if (anotherOp != null) return false;
 
   // check if this operator doesn't change text
   if (clearOperator.opcode !== '=') {
@@ -212,7 +206,6 @@ PadDiff.prototype._extendChangesetWithAuthor = (changeset, author, apool) => {
   // unpack
   const unpacked = Changeset.unpack(changeset);
 
-  const iterator = Changeset.opIterator(unpacked.ops);
   const assem = Changeset.opAssembler();
 
   // create deleted attribs
@@ -220,10 +213,7 @@ PadDiff.prototype._extendChangesetWithAuthor = (changeset, author, apool) => {
   const deletedAttrib = apool.putAttrib(['removed', true]);
   const attribs = `*${Changeset.numToString(authorAttrib)}*${Changeset.numToString(deletedAttrib)}`;
 
-  // iteratore over the operators of the changeset
-  while (iterator.hasNext()) {
-    const operator = iterator.next();
-
+  for (const operator of Changeset.deserializeOps(unpacked.ops)) {
     if (operator.opcode === '-') {
       // this is a delete operator, extend it with the author
       operator.attribs = attribs;
@@ -268,22 +258,23 @@ PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
 
   let curLine = 0;
   let curChar = 0;
-  let curLineOpIter = null;
-  let curLineOpIterLine;
+  let curLineOps = null;
+  let curLineOpsNext = null;
+  let curLineOpsLine;
   let curLineNextOp = new Changeset.Op('+');
 
   const unpacked = Changeset.unpack(cs);
-  const csIter = Changeset.opIterator(unpacked.ops);
   const builder = Changeset.builder(unpacked.newLen);
 
   const consumeAttribRuns = (numChars, func /* (len, attribs, endsLine)*/) => {
-    if ((!curLineOpIter) || (curLineOpIterLine !== curLine)) {
-      // create curLineOpIter and advance it to curChar
-      curLineOpIter = Changeset.opIterator(aLinesGet(curLine));
-      curLineOpIterLine = curLine;
+    if (!curLineOps || curLineOpsLine !== curLine) {
+      curLineOps = Changeset.deserializeOps(aLinesGet(curLine));
+      curLineOpsNext = curLineOps.next();
+      curLineOpsLine = curLine;
       let indexIntoLine = 0;
-      while (curLineOpIter.hasNext()) {
-        curLineNextOp = curLineOpIter.next();
+      while (!curLineOpsNext.done) {
+        curLineNextOp = curLineOpsNext.value;
+        curLineOpsNext = curLineOps.next();
         if (indexIntoLine + curLineNextOp.chars >= curChar) {
           curLineNextOp.chars -= (curChar - indexIntoLine);
           break;
@@ -293,16 +284,22 @@ PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
     }
 
     while (numChars > 0) {
-      if ((!curLineNextOp.chars) && (!curLineOpIter.hasNext())) {
+      if (!curLineNextOp.chars && curLineOpsNext.done) {
         curLine++;
         curChar = 0;
-        curLineOpIterLine = curLine;
+        curLineOpsLine = curLine;
         curLineNextOp.chars = 0;
-        curLineOpIter = Changeset.opIterator(aLinesGet(curLine));
+        curLineOps = Changeset.deserializeOps(aLinesGet(curLine));
+        curLineOpsNext = curLineOps.next();
       }
 
       if (!curLineNextOp.chars) {
-        curLineNextOp = curLineOpIter.hasNext() ? curLineOpIter.next() : new Changeset.Op();
+        if (curLineOpsNext.done) {
+          curLineNextOp = new Changeset.Op();
+        } else {
+          curLineNextOp = curLineOpsNext.value;
+          curLineOpsNext = curLineOps.next();
+        }
       }
 
       const charsToUse = Math.min(numChars, curLineNextOp.chars);
@@ -314,7 +311,7 @@ PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
       curChar += charsToUse;
     }
 
-    if ((!curLineNextOp.chars) && (!curLineOpIter.hasNext())) {
+    if (!curLineNextOp.chars && curLineOpsNext.done) {
       curLine++;
       curChar = 0;
     }
@@ -324,7 +321,7 @@ PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
     if (L) {
       curLine += L;
       curChar = 0;
-    } else if (curLineOpIter && curLineOpIterLine === curLine) {
+    } else if (curLineOps && curLineOpsLine === curLine) {
       consumeAttribRuns(N, () => {});
     } else {
       curChar += N;
@@ -361,10 +358,7 @@ PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
     };
   };
 
-  // iterate over all operators of this changeset
-  while (csIter.hasNext()) {
-    const csOp = csIter.next();
-
+  for (const csOp of Changeset.deserializeOps(unpacked.ops)) {
     if (csOp.opcode === '=') {
       const textBank = nextText(csOp.chars);
 

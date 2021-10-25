@@ -67,12 +67,10 @@ exports.setPadHTML = async (pad, html) => {
   const builder = Changeset.builder(1);
 
   // assemble each line into the builder
-  const attribsIter = Changeset.opIterator(newAttribs);
   let textIndex = 0;
   const newTextStart = 0;
   const newTextEnd = newText.length;
-  while (attribsIter.hasNext()) {
-    const op = attribsIter.next();
+  for (const op of Changeset.deserializeOps(newAttribs)) {
     const nextIndex = textIndex + op.chars;
     if (!(nextIndex <= newTextStart || textIndex >= newTextEnd)) {
       const start = Math.max(newTextStart, textIndex);

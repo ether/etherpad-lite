@@ -143,12 +143,9 @@ const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
         // Sanitize authorship: Replace all author attributes with this user's author ID in case the
         // text was copied from another author.
         const cs = Changeset.unpack(userChangeset);
-        const iterator = Changeset.opIterator(cs.ops);
-        let op;
         const assem = Changeset.mergingOpAssembler();
 
-        while (iterator.hasNext()) {
-          op = iterator.next();
+        for (const op of Changeset.deserializeOps(cs.ops)) {
           if (op.opcode === '+') {
             const attribs = AttributeMap.fromString(op.attribs, apool);
             const oldAuthorId = attribs.get('author');

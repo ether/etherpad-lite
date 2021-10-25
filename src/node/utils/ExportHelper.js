@@ -52,9 +52,8 @@ exports._analyzeLine = (text, aline, apool) => {
   let lineMarker = 0;
   line.listLevel = 0;
   if (aline) {
-    const opIter = Changeset.opIterator(aline);
-    if (opIter.hasNext()) {
-      const op = opIter.next();
+    const [op] = Changeset.deserializeOps(aline);
+    if (op != null) {
       const attribs = AttributeMap.fromString(op.attribs, apool);
       let listType = attribs.get('list');
       if (listType) {

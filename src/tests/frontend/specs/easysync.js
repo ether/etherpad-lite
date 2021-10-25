@@ -31,17 +31,15 @@ const randInt = (maxValue) => Math.floor(Math.random() * maxValue);
 describe('easysync', function () {
   it('throughIterator', async function () {
     const x = '-c*3*4+6|3=az*asdf0*1*2*3+1=1-1+1*0+1=1-1+1|c=c-1';
-    const iter = Changeset.opIterator(x);
     const assem = Changeset.opAssembler();
-    while (iter.hasNext()) assem.append(iter.next());
+    for (const op of Changeset.deserializeOps(x)) assem.append(op);
     expect(assem.toString()).to.equal(x);
   });
 
   it('throughSmartAssembler', async function () {
     const x = '-c*3*4+6|3=az*asdf0*1*2*3+1=1-1+1*0+1=1-1+1|c=c-1';
-    const iter = Changeset.opIterator(x);
     const assem = Changeset.smartOpAssembler();
-    while (iter.hasNext()) assem.append(iter.next());
+    for (const op of Changeset.deserializeOps(x)) assem.append(op);
     assem.endDocument();
     expect(assem.toString()).to.equal(x);
   });
@@ -730,7 +728,7 @@ describe('easysync', function () {
     p.putAttrib(['name', 'david']);
     p.putAttrib(['color', 'green']);
 
-    const stringOp = (str) => Changeset.opIterator(str).next();
+    const stringOp = (str) => Changeset.deserializeOps(str).next().value;
 
     expect(Changeset.opAttributeValue(stringOp('*0*1+1'), 'name', p)).to.equal('david');
     expect(Changeset.opAttributeValue(stringOp('*0+1'), 'name', p)).to.equal('david');

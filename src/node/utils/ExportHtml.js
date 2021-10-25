@@ -197,13 +197,12 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
         return;
       }
 
-      const iter = Changeset.opIterator(Changeset.subattribution(attribs, idx, idx + numChars));
+      const ops = Changeset.deserializeOps(Changeset.subattribution(attribs, idx, idx + numChars));
       idx += numChars;
 
       // this iterates over every op string and decides which tags to open or to close
       // based on the attribs used
-      while (iter.hasNext()) {
-        const o = iter.next();
+      for (const o of ops) {
         const usedAttribs = [];
 
         // mark all attribs as used

@@ -98,11 +98,13 @@ linestylefilter.getLineStyleFilter = (lineLength, aline, textAndClassFunc, apool
       return classes.substring(1);
     };
 
-    const attributionIter = Changeset.opIterator(aline);
+    const attrOps = Changeset.deserializeOps(aline);
+    let attrOpsNext = attrOps.next();
     let nextOp, nextOpClasses;
 
     const goNextOp = () => {
-      nextOp = attributionIter.hasNext() ? attributionIter.next() : new Changeset.Op();
+      nextOp = attrOpsNext.done ? new Changeset.Op() : attrOpsNext.value;
+      if (!attrOpsNext.done) attrOpsNext = attrOps.next();
       nextOpClasses = (nextOp.opcode && attribsToClasses(nextOp.attribs));
     };
     goNextOp();

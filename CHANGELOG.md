@@ -21,6 +21,8 @@
     * `eachAttribNumber()`
     * `makeAttribsString()`
     * `opAttributeValue()`
+  * `opIterator()`: Deprecated in favor of the new `deserializeOps()` generator
+    function.
   * `appendATextToAssembler()`: Deprecated in favor of the new `opsFromAText()`
     generator function.
   * `newOp()`: Deprecated in favor of the new `Op` class.

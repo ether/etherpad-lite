@@ -670,9 +670,8 @@ const Changeset = require('ep_etherpad-lite/static/js/Changeset');
 
 exports.getLineHTMLForExport = async (hookName, context) => {
   if (!context.attribLine) return;
-  const opIter = Changeset.opIterator(context.attribLine);
-  if (!opIter.hasNext()) return;
-  const op = opIter.next();
+  const [op] = Changeset.deserializeOps(context.attribLine);
+  if (op == null) return;
   const heading = AttributeMap.fromString(op.attribs, context.apool).get('heading');
   if (!heading) return;
   context.lineContent = `<${heading}>${context.lineContent}</${heading}>`;

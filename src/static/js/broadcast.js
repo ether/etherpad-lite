@@ -162,13 +162,8 @@ const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       // some chars are replaced (no attributes change and no length change)
       // test if there are keep ops at the start of the cs
       if (lineChanged === undefined) {
-        lineChanged = 0;
-        const opIter = Changeset.opIterator(Changeset.unpack(changeset).ops);
-
-        if (opIter.hasNext()) {
-          const op = opIter.next();
-          if (op.opcode === '=') lineChanged += op.lines;
-        }
+        const [op] = Changeset.deserializeOps(Changeset.unpack(changeset).ops);
+        lineChanged = op != null && op.opcode === '=' ? op.lines : 0;
       }
 
       const goToLineNumber = (lineNumber) => {
