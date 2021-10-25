@@ -89,6 +89,25 @@ const urlRegex = (() => {
 })();
 
 const padutils = {
+  /**
+   * Prints a warning message followed by a stack trace (to make it easier to figure out what code
+   * is using the deprecated function).
+   *
+   * Most browsers include UI widget to examine the stack at the time of the warning, but this
+   * includes the stack in the log message for a couple of reasons:
+   *   - This makes it possible to see the stack if the code runs in Node.js.
+   *   - Users are more likely to paste the stack in bug reports they might file.
+   *
+   * @param {...*} args - Passed to `console.warn`, with a stack trace appended.
+   */
+  warnWithStack: (...args) => {
+    const err = new Error();
+    if (Error.captureStackTrace) Error.captureStackTrace(err, padutils.warnWithStack);
+    err.name = '';
+    if (err.stack) args.push(err.stack);
+    console.warn(...args);
+  },
+
   escapeHtml: (x) => Security.escapeHTML(String(x)),
   uniqueId: () => {
     const pad = require('./pad').pad; // Sidestep circular dependency
