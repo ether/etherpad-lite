@@ -523,7 +523,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     const upToLastLine = rep.lines.offsetOfIndex(numLines - 1);
     const lastLineLength = rep.lines.atIndex(numLines - 1).text.length;
     const assem = Changeset.smartOpAssembler();
-    const o = Changeset.newOp('-');
+    const o = new Changeset.Op('-');
     o.chars = upToLastLine;
     o.lines = numLines - 1;
     assem.append(o);

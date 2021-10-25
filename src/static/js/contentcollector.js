@@ -83,7 +83,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
     const textArray = [];
     const attribsArray = [];
     let attribsBuilder = null;
-    const op = Changeset.newOp('+');
+    const op = new Changeset.Op('+');
     const self = {
       length: () => textArray.length,
       atColumnZero: () => textArray[textArray.length - 1] === '',

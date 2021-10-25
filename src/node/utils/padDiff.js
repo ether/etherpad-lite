@@ -270,7 +270,7 @@ PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
   let curChar = 0;
   let curLineOpIter = null;
   let curLineOpIterLine;
-  let curLineNextOp = Changeset.newOp('+');
+  let curLineNextOp = new Changeset.Op('+');
 
   const unpacked = Changeset.unpack(cs);
   const csIter = Changeset.opIterator(unpacked.ops);
@@ -302,7 +302,7 @@ PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
       }
 
       if (!curLineNextOp.chars) {
-        curLineNextOp = curLineOpIter.hasNext() ? curLineOpIter.next() : Changeset.newOp();
+        curLineNextOp = curLineOpIter.hasNext() ? curLineOpIter.next() : new Changeset.Op();
       }
 
       const charsToUse = Math.min(numChars, curLineNextOp.chars);
