@@ -295,32 +295,27 @@ Pad.prototype.getChatMessage = async function (entryNum) {
   return entry;
 };
 
+/**
+ * @param {number} start - ID of the first desired chat message.
+ * @param {number} end - ID of the last desired chat message.
+ * @returns {object[]} Any existing messages with IDs between `start` (inclusive) and `end`
+ *     (inclusive), in order. Note: `start` and `end` form a closed interval, not a half-open
+ *     interval as is typical in code.
+ */
 Pad.prototype.getChatMessages = async function (start, end) {
-  // collect the numbers of chat entries and in which order we need them
-  const neededEntries = [];
-  for (let order = 0, entryNum = start; entryNum <= end; ++order, ++entryNum) {
-    neededEntries.push({entryNum, order});
-  }
-
-  // get all entries out of the database
-  const entries = [];
-  await Promise.all(
-      neededEntries.map((entryObject) => this.getChatMessage(entryObject.entryNum).then((entry) => {
-        entries[entryObject.order] = entry;
-      })));
+  const entries = await Promise.all(
+      [...Array(end + 1 - start).keys()].map((i) => this.getChatMessage(start + i)));
 
   // sort out broken chat entries
   // it looks like in happened in the past that the chat head was
   // incremented, but the chat message wasn't added
-  const cleanedEntries = entries.filter((entry) => {
+  return entries.filter((entry) => {
     const pass = (entry != null);
     if (!pass) {
       console.warn(`WARNING: Found broken chat entry in pad ${this.id}`);
     }
     return pass;
   });
-
-  return cleanedEntries;
 };
 
 Pad.prototype.init = async function (text) {
