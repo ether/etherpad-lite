@@ -345,7 +345,7 @@ const handleChatMessage = async (socket, message) => {
   const {padId, author: authorId} = sessioninfos[socket.id];
   // Don't trust the user-supplied values.
   chatMessage.time = Date.now();
-  chatMessage.userId = authorId;
+  chatMessage.authorId = authorId;
   await exports.sendChatMessageToPadClients(chatMessage, padId);
 };
 
@@ -364,10 +364,10 @@ exports.sendChatMessageToPadClients = async (mt, puId, text = null, padId = null
   const message = mt instanceof ChatMessage ? mt : new ChatMessage(text, puId, mt);
   padId = mt instanceof ChatMessage ? puId : padId;
   const pad = await padManager.getPad(padId);
-  // pad.appendChatMessage() ignores the userName property so we don't need to wait for
+  // pad.appendChatMessage() ignores the displayName property so we don't need to wait for
   // authorManager.getAuthorName() to resolve before saving the message to the database.
   const promise = pad.appendChatMessage(message);
-  message.userName = await authorManager.getAuthorName(message.userId);
+  message.displayName = await authorManager.getAuthorName(message.userId);
   socketio.sockets.in(padId).json.send({
     type: 'COLLABROOM',
     data: {type: 'CHAT_MESSAGE', message},

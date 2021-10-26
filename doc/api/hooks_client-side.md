@@ -299,7 +299,7 @@ Context properties:
   href="url">url</a>`. (Note that `message.text` is not sanitized or processed
   in any way.)
 * `message`: The raw message object as received from the server, except with
-  time correction and a default `userId` property if missing. Plugins must not
+  time correction and a default `authorId` property if missing. Plugins must not
   modify this object. Warning: Unlike `text`, `message.text` is not
   pre-sanitized or processed in any way.
 * `rendered` - Used to override the default message rendering. Initially set to

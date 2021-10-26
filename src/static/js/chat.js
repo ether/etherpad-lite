@@ -111,15 +111,15 @@ exports.chat = (() => {
       // correct the time
       msg.time += this._pad.clientTimeOffset;
 
-      if (!msg.userId) {
+      if (!msg.authorId) {
         /*
          * If, for a bug or a database corruption, the message coming from the
-         * server does not contain the userId field (see for example #3731),
+         * server does not contain the authorId field (see for example #3731),
          * let's be defensive and replace it with "unknown".
          */
-        msg.userId = 'unknown';
+        msg.authorId = 'unknown';
         console.warn(
-            'The "userId" field of a chat message coming from the server was not present. ' +
+            'The "authorId" field of a chat message coming from the server was not present. ' +
             'Replacing with "unknown". This may be a bug or a database corruption.');
       }
 
@@ -130,8 +130,8 @@ exports.chat = (() => {
 
       // the hook args
       const ctx = {
-        authorName: msg.userName != null ? msg.userName : html10n.get('pad.userlist.unnamed'),
-        author: msg.userId,
+        authorName: msg.displayName != null ? msg.displayName : html10n.get('pad.userlist.unnamed'),
+        author: msg.authorId,
         text: padutils.escapeHtmlWithClickableLinks(msg.text, '_blank'),
         message: msg,
         rendered: null,

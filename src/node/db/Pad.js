@@ -280,19 +280,19 @@ Pad.prototype.appendText = async function (newText) {
  *
  * @param {(ChatMessage|string)} msgOrText - Either a chat message object (recommended) or a string
  *     containing the raw text of the user's chat message (deprecated).
- * @param {?string} [userId] - The user's author ID. Deprecated; use `msgOrText.userId` instead.
+ * @param {?string} [authorId] - The user's author ID. Deprecated; use `msgOrText.authorId` instead.
  * @param {?number} [time] - Message timestamp (milliseconds since epoch). Deprecated; use
  *     `msgOrText.time` instead.
  */
-Pad.prototype.appendChatMessage = async function (msgOrText, userId = null, time = null) {
+Pad.prototype.appendChatMessage = async function (msgOrText, authorId = null, time = null) {
   const msg =
-      msgOrText instanceof ChatMessage ? msgOrText : new ChatMessage(msgOrText, userId, time);
+      msgOrText instanceof ChatMessage ? msgOrText : new ChatMessage(msgOrText, authorId, time);
   this.chatHead++;
   await Promise.all([
     // Don't save the display name in the database because the user can change it at any time. The
-    // `userName` property will be populated with the current value when the message is read from
+    // `displayName` property will be populated with the current value when the message is read from
     // the database.
-    db.set(`pad:${this.id}:chat:${this.chatHead}`, {...msg, userName: undefined}),
+    db.set(`pad:${this.id}:chat:${this.chatHead}`, {...msg, displayName: undefined}),
     this.saveToDatabase(),
   ]);
 };
@@ -305,7 +305,7 @@ Pad.prototype.getChatMessage = async function (entryNum) {
   const entry = await db.get(`pad:${this.id}:chat:${entryNum}`);
   if (entry == null) return null;
   const message = ChatMessage.fromObject(entry);
-  message.userName = await authorManager.getAuthorName(message.userId);
+  message.displayName = await authorManager.getAuthorName(message.authorId);
   return message;
 };
 
