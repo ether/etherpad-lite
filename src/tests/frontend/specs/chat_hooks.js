@@ -1,11 +1,13 @@
 'use strict';
 
 describe('chat hooks', function () {
+  let ChatMessage;
   let hooks;
   const hooksBackup = {};
 
   const loadPad = async (opts = {}) => {
     await helper.aNewPad(opts);
+    ChatMessage = helper.padChrome$.window.require('ep_etherpad-lite/static/js/ChatMessage');
     ({hooks} = helper.padChrome$.window.require('ep_etherpad-lite/static/js/pluginfw/plugin_defs'));
     for (const [name, defs] of Object.entries(hooks)) {
       hooksBackup[name] = defs;
@@ -61,10 +63,10 @@ describe('chat hooks', function () {
       });
     }
 
-    it('message is an object', async function () {
+    it('message is a ChatMessage object', async function () {
       await Promise.all([
         checkHook('chatNewMessage', ({message}) => {
-          expect(message).to.be.an('object');
+          expect(message).to.be.a(ChatMessage);
         }),
         helper.sendChatMessage(`${this.test.title}{enter}`),
       ]);

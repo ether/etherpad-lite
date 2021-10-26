@@ -272,7 +272,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     } else if (msg.type === 'CLIENT_MESSAGE') {
       callbacks.onClientMessage(msg.payload);
     } else if (msg.type === 'CHAT_MESSAGE') {
-      chat.addMessage(msg, true, false);
+      chat.addMessage(msg.message, true, false);
     } else if (msg.type === 'CHAT_MESSAGES') {
       for (let i = msg.messages.length - 1; i >= 0; i--) {
         chat.addMessage(msg.messages[i], true, true);

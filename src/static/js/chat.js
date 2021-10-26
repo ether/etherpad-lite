@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+const ChatMessage = require('./ChatMessage');
 const padutils = require('./pad_utils').padutils;
 const padcookie = require('./pad_cookie').padcookie;
 const Tinycon = require('tinycon/tinycon');
@@ -102,10 +103,11 @@ exports.chat = (() => {
     send() {
       const text = $('#chatinput').val();
       if (text.replace(/\s+/, '').length === 0) return;
-      this._pad.collabClient.sendMessage({type: 'CHAT_MESSAGE', text});
+      this._pad.collabClient.sendMessage({type: 'CHAT_MESSAGE', message: new ChatMessage(text)});
       $('#chatinput').val('');
     },
     async addMessage(msg, increment, isHistoryAdd) {
+      msg = ChatMessage.fromObject(msg);
       // correct the time
       msg.time += this._pad.clientTimeOffset;
 

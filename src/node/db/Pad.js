@@ -5,6 +5,7 @@
 
 
 const Changeset = require('../../static/js/Changeset');
+const ChatMessage = require('../../static/js/ChatMessage');
 const AttributePool = require('../../static/js/AttributePool');
 const db = require('./DB');
 const settings = require('../utils/Settings');
@@ -274,31 +275,44 @@ Pad.prototype.appendText = async function (newText) {
   await this.appendRevision(changeset);
 };
 
-Pad.prototype.appendChatMessage = async function (text, userId, time) {
+/**
+ * Adds a chat message to the pad, including saving it to the database.
+ *
+ * @param {(ChatMessage|string)} msgOrText - Either a chat message object (recommended) or a string
+ *     containing the raw text of the user's chat message (deprecated).
+ * @param {?string} [userId] - The user's author ID. Deprecated; use `msgOrText.userId` instead.
+ * @param {?number} [time] - Message timestamp (milliseconds since epoch). Deprecated; use
+ *     `msgOrText.time` instead.
+ */
+Pad.prototype.appendChatMessage = async function (msgOrText, userId = null, time = null) {
+  const msg =
+      msgOrText instanceof ChatMessage ? msgOrText : new ChatMessage(msgOrText, userId, time);
   this.chatHead++;
-  // save the chat entry in the database
   await Promise.all([
-    db.set(`pad:${this.id}:chat:${this.chatHead}`, {text, userId, time}),
+    // Don't save the display name in the database because the user can change it at any time. The
+    // `userName` property will be populated with the current value when the message is read from
+    // the database.
+    db.set(`pad:${this.id}:chat:${this.chatHead}`, {...msg, userName: undefined}),
     this.saveToDatabase(),
   ]);
 };
 
+/**
+ * @param {number} entryNum - ID of the desired chat message.
+ * @returns {?ChatMessage}
+ */
 Pad.prototype.getChatMessage = async function (entryNum) {
-  // get the chat entry
   const entry = await db.get(`pad:${this.id}:chat:${entryNum}`);
-
-  // get the authorName if the entry exists
-  if (entry != null) {
-    entry.userName = await authorManager.getAuthorName(entry.userId);
-  }
-
-  return entry;
+  if (entry == null) return null;
+  const message = ChatMessage.fromObject(entry);
+  message.userName = await authorManager.getAuthorName(message.userId);
+  return message;
 };
 
 /**
  * @param {number} start - ID of the first desired chat message.
  * @param {number} end - ID of the last desired chat message.
- * @returns {object[]} Any existing messages with IDs between `start` (inclusive) and `end`
+ * @returns {ChatMessage[]} Any existing messages with IDs between `start` (inclusive) and `end`
  *     (inclusive), in order. Note: `start` and `end` form a closed interval, not a half-open
  *     interval as is typical in code.
  */

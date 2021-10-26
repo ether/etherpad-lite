@@ -19,6 +19,7 @@
   , "pad_impexp.js"
   , "pad_savedrevs.js"
   , "pad_connectionstatus.js"
+  , "ChatMessage.js"
   , "chat.js"
   , "vendors/gritter.js"
   , "$js-cookie/dist/js.cookie.js"

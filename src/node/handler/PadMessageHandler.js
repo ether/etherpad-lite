@@ -21,6 +21,7 @@
 
 const padManager = require('../db/PadManager');
 const Changeset = require('../../static/js/Changeset');
+const ChatMessage = require('../../static/js/ChatMessage');
 const AttributePool = require('../../static/js/AttributePool');
 const AttributeManager = require('../../static/js/AttributeManager');
 const authorManager = require('../db/AuthorManager');
@@ -340,37 +341,37 @@ exports.handleCustomMessage = (padID, msgString) => {
  * @param message the message from the client
  */
 const handleChatMessage = async (socket, message) => {
-  const time = Date.now();
-  const text = message.data.text;
+  const chatMessage = ChatMessage.fromObject(message.data.message);
   const {padId, author: authorId} = sessioninfos[socket.id];
-  await exports.sendChatMessageToPadClients(time, authorId, text, padId);
+  // Don't trust the user-supplied values.
+  chatMessage.time = Date.now();
+  chatMessage.userId = authorId;
+  await exports.sendChatMessageToPadClients(chatMessage, padId);
 };
 
 /**
- * Sends a chat message to all clients of this pad
- * @param time the timestamp of the chat message
- * @param userId the author id of the chat message
- * @param text the text of the chat message
- * @param padId the padId to send the chat message to
+ * Adds a new chat message to a pad and sends it to connected clients.
+ *
+ * @param {(ChatMessage|number)} mt - Either a chat message object (recommended) or the timestamp of
+ *     the chat message in ms since epoch (deprecated).
+ * @param {string} puId - If `mt` is a chat message object, this is the destination pad ID.
+ *     Otherwise, this is the user's author ID (deprecated).
+ * @param {string} [text] - The text of the chat message. Deprecated; use `mt.text` instead.
+ * @param {string} [padId] - The destination pad ID. Deprecated; pass a chat message
+ *     object as the first argument and the destination pad ID as the second argument instead.
  */
-exports.sendChatMessageToPadClients = async (time, userId, text, padId) => {
-  // get the pad
+exports.sendChatMessageToPadClients = async (mt, puId, text = null, padId = null) => {
+  const message = mt instanceof ChatMessage ? mt : new ChatMessage(text, puId, mt);
+  padId = mt instanceof ChatMessage ? puId : padId;
   const pad = await padManager.getPad(padId);
-
-  // get the author
-  const userName = await authorManager.getAuthorName(userId);
-
-  // save the chat message
-  const promise = pad.appendChatMessage(text, userId, time);
-
-  const msg = {
+  // pad.appendChatMessage() ignores the userName property so we don't need to wait for
+  // authorManager.getAuthorName() to resolve before saving the message to the database.
+  const promise = pad.appendChatMessage(message);
+  message.userName = await authorManager.getAuthorName(message.userId);
+  socketio.sockets.in(padId).json.send({
     type: 'COLLABROOM',
-    data: {type: 'CHAT_MESSAGE', userId, userName, time, text},
-  };
-
-  // broadcast the chat message to everyone on the pad
-  socketio.sockets.in(padId).json.send(msg);
-
+    data: {type: 'CHAT_MESSAGE', message},
+  });
   await promise;
 };
 
