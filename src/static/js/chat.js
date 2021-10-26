@@ -132,6 +132,7 @@ exports.chat = (() => {
         author: msg.userId,
         text: padutils.escapeHtmlWithClickableLinks(msg.text, '_blank'),
         message: msg,
+        rendered: null,
         sticky: false,
         timestamp: msg.time,
         timeStr: (() => {
@@ -164,7 +165,7 @@ exports.chat = (() => {
 
       await hooks.aCallAll('chatNewMessage', ctx);
       const cls = authorClass(ctx.author);
-      const chatMsg = $('<p>')
+      const chatMsg = ctx.rendered != null ? $(ctx.rendered) : $('<p>')
           .attr('data-authorId', ctx.author)
           .addClass(cls)
           .append($('<b>').text(`${ctx.authorName}:`))

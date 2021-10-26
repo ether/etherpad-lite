@@ -54,6 +54,8 @@
     * The `chatNewMessage` client-side hook context has new properties:
       * `message`: Provides access to the raw message object so that plugins can
         see the original unprocessed message text and any added metadata.
+      * `rendered`: Allows plugins to completely override how the message is
+        rendered in the UI.
 
 # 1.8.14
 

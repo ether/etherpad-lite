@@ -79,5 +79,18 @@ describe('chat hooks', function () {
         helper.sendChatMessage(`${msg}{enter}`),
       ]);
     });
+
+    it('`rendered` overrides default rendering', async function () {
+      let rendered;
+      await Promise.all([
+        checkHook('chatNewMessage', (context) => {
+          expect(context.rendered == null).to.be.ok();
+          rendered = context.rendered = helper.padChrome$.document.createElement('p');
+          rendered.append('message rendering overridden');
+        }),
+        helper.sendChatMessage(`${this.test.title}{enter}`),
+      ]);
+      expect(helper.chatTextParagraphs().last()[0]).to.be(rendered);
+    });
   });
 });

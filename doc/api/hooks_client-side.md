@@ -285,11 +285,11 @@ Called from: `src/static/js/chat.js`
 
 This hook runs on the client side whenever a chat message is received from the
 server. It can be used to create different notifications for chat messages. Hook
-functions can modify the `author`, `authorName`, `duration`, `sticky`, `text`,
-and `timeStr` context properties to change how the message is processed. The
-`text` and `timeStr` properties may contain HTML and come pre-sanitized; plugins
-should be careful to sanitize any added user input to avoid introducing an XSS
-vulnerability.
+functions can modify the `author`, `authorName`, `duration`, `rendered`,
+`sticky`, `text`, and `timeStr` context properties to change how the message is
+processed. The `text` and `timeStr` properties may contain HTML and come
+pre-sanitized; plugins should be careful to sanitize any added user input to
+avoid introducing an XSS vulnerability.
 
 Context properties:
 
@@ -302,6 +302,11 @@ Context properties:
   time correction and a default `userId` property if missing. Plugins must not
   modify this object. Warning: Unlike `text`, `message.text` is not
   pre-sanitized or processed in any way.
+* `rendered` - Used to override the default message rendering. Initially set to
+  `null`. If the hook function sets this to a DOM element object or a jQuery
+  object, then that object will be used as the rendered message UI. Otherwise,
+  if this is set to `null`, then Etherpad will render a default UI for the
+  message using the other context properties.
 * `sticky` (boolean): Whether the gritter notification should fade out on its
   own or just sit there until manually closed.
 * `timestamp`: When the chat message was sent (milliseconds since epoch),
