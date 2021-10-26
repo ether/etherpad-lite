@@ -4,9 +4,10 @@ describe('chat hooks', function () {
   let ChatMessage;
   let hooks;
   const hooksBackup = {};
+  let padId;
 
   const loadPad = async (opts = {}) => {
-    await helper.aNewPad(opts);
+    padId = await helper.aNewPad(opts);
     ChatMessage = helper.padChrome$.window.require('ep_etherpad-lite/static/js/ChatMessage');
     ({hooks} = helper.padChrome$.window.require('ep_etherpad-lite/static/js/pluginfw/plugin_defs'));
     for (const [name, defs] of Object.entries(hooks)) {
@@ -93,6 +94,56 @@ describe('chat hooks', function () {
         helper.sendChatMessage(`${this.test.title}{enter}`),
       ]);
       expect(helper.chatTextParagraphs().last()[0]).to.be(rendered);
+    });
+  });
+
+  describe('chatSendMessage', function () {
+    it('message is a ChatMessage object', async function () {
+      await Promise.all([
+        checkHook('chatSendMessage', ({message}) => {
+          expect(message).to.be.a(ChatMessage);
+        }),
+        helper.sendChatMessage(`${this.test.title}{enter}`),
+      ]);
+    });
+
+    it('message metadata propagates end-to-end', async function () {
+      const metadata = {foo: this.test.title};
+      await Promise.all([
+        checkHook('chatSendMessage', ({message}) => {
+          message.customMetadata = metadata;
+        }),
+        checkHook('chatNewMessage', ({message: {customMetadata}}) => {
+          expect(JSON.stringify(customMetadata)).to.equal(JSON.stringify(metadata));
+        }),
+        helper.sendChatMessage(`${this.test.title}{enter}`),
+      ]);
+    });
+
+    it('message metadata is saved in the database', async function () {
+      const msg = this.test.title;
+      const metadata = {foo: this.test.title};
+      await Promise.all([
+        checkHook('chatSendMessage', ({message}) => {
+          message.customMetadata = metadata;
+        }),
+        helper.sendChatMessage(`${msg}{enter}`),
+      ]);
+      let gotMessage;
+      const messageP = new Promise((resolve) => gotMessage = resolve);
+      await loadPad({
+        id: padId,
+        hookFns: {
+          chatNewMessage: [
+            (hookName, {message}) => {
+              if (message.text === `${msg}\n`) gotMessage(message);
+            },
+          ],
+        },
+      });
+      const message = await messageP;
+      expect(message).to.be.a(ChatMessage);
+      expect(JSON.stringify(message.customMetadata)).to.equal(JSON.stringify(metadata));
     });
   });
 });

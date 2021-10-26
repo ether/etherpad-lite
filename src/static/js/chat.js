@@ -100,10 +100,12 @@ exports.chat = (() => {
         }
       }
     },
-    send() {
+    async send() {
       const text = $('#chatinput').val();
       if (text.replace(/\s+/, '').length === 0) return;
-      this._pad.collabClient.sendMessage({type: 'CHAT_MESSAGE', message: new ChatMessage(text)});
+      const message = new ChatMessage(text);
+      await hooks.aCallAll('chatSendMessage', Object.freeze({message}));
+      this._pad.collabClient.sendMessage({type: 'CHAT_MESSAGE', message});
       $('#chatinput').val('');
     },
     async addMessage(msg, increment, isHistoryAdd) {

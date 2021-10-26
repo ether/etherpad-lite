@@ -56,6 +56,9 @@
         see the original unprocessed message text and any added metadata.
       * `rendered`: Allows plugins to completely override how the message is
         rendered in the UI.
+    * New `chatSendMessage` client-side hook that enables plugins to process the
+      text before sending it to the server or augment the message object with
+      custom metadata.
 
 # 1.8.14
 

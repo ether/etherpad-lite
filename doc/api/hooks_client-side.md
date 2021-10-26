@@ -315,6 +315,18 @@ Context properties:
 * `duration`: How long (in milliseconds) to display the gritter notification (0
   to disable).
 
+## `chatSendMessage`
+
+Called from: `src/static/js/chat.js`
+
+This hook runs on the client side whenever the user sends a new chat message.
+Plugins can mutate the message object to change the message text or add metadata
+to control how the message will be rendered by the `chatNewMessage` hook.
+
+Context properties:
+
+* `message`: The message object that will be sent to the Etherpad server.
+
 ## collectContentPre
 
 Called from: src/static/js/contentcollector.js
