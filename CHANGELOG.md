@@ -50,6 +50,10 @@
   * The `helper.aNewPad()` function (accessible to client-side tests) now
     accepts hook functions to inject when opening a pad. This can be used to
     test any new client-side hooks your plugin provides.
+  * Chat improvements:
+    * The `chatNewMessage` client-side hook context has new properties:
+      * `message`: Provides access to the raw message object so that plugins can
+        see the original unprocessed message text and any added metadata.
 
 # 1.8.14
 

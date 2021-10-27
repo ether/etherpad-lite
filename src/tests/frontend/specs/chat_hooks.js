@@ -60,5 +60,24 @@ describe('chat hooks', function () {
         ]);
       });
     }
+
+    it('message is an object', async function () {
+      await Promise.all([
+        checkHook('chatNewMessage', ({message}) => {
+          expect(message).to.be.an('object');
+        }),
+        helper.sendChatMessage(`${this.test.title}{enter}`),
+      ]);
+    });
+
+    it('message.text is not processed', async function () {
+      const msg = '<script>alert("foo");</script> https://etherpad.org';
+      await Promise.all([
+        checkHook('chatNewMessage', ({message: {text}}) => {
+          expect(text).to.equal(`${msg}\n`);
+        }),
+        helper.sendChatMessage(`${msg}{enter}`),
+      ]);
+    });
   });
 });

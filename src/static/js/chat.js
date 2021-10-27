@@ -131,6 +131,7 @@ exports.chat = (() => {
         authorName: msg.userName != null ? msg.userName : html10n.get('pad.userlist.unnamed'),
         author: msg.userId,
         text: padutils.escapeHtmlWithClickableLinks(msg.text, '_blank'),
+        message: msg,
         sticky: false,
         timestamp: msg.time,
         timeStr: (() => {

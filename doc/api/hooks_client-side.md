@@ -296,7 +296,12 @@ Context properties:
 * `authorName`: The display name of the user that wrote the message.
 * `author`: The author ID of the user that wrote the message.
 * `text`: Sanitized message HTML, with URLs wrapped like `<a
-  href="url">url</a>`.
+  href="url">url</a>`. (Note that `message.text` is not sanitized or processed
+  in any way.)
+* `message`: The raw message object as received from the server, except with
+  time correction and a default `userId` property if missing. Plugins must not
+  modify this object. Warning: Unlike `text`, `message.text` is not
+  pre-sanitized or processed in any way.
 * `sticky` (boolean): Whether the gritter notification should fade out on its
   own or just sit there until manually closed.
 * `timestamp`: When the chat message was sent (milliseconds since epoch),
