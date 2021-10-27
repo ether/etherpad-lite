@@ -214,7 +214,7 @@ $(() => (async () => {
       const [origDefs] = args;
       const defs = {};
       for (const [path, origDef] of Object.entries(origDefs)) {
-        defs[path] = function (require, exports, module) {
+        defs[path] = origDef == null ? origDef : function (require, exports, module) {
           const calls = [];
           mochaCalls.set(module.id.replace(/\.js$/, ''), calls);
           // Backup Mocha functions. Note that because modules can require other modules, these
