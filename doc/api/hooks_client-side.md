@@ -279,29 +279,31 @@ Things in context:
 This hook is called on the client side whenever a user joins or changes. This
 can be used to create notifications or an alternate user list.
 
-## chatNewMessage
+## `chatNewMessage`
 
-Called from: src/static/js/chat.js
+Called from: `src/static/js/chat.js`
 
-Things in context:
-
-1. authorName - The user that wrote this message
-2. author - The authorID of the user that wrote the message
-3. text - the message text
-4. sticky (boolean) - if you want the gritter notification bubble to fade out on
-   its own or just sit there
-5. timestamp - the timestamp of the chat message
-6. timeStr - the timestamp as a formatted string
-7. duration - for how long in milliseconds should the gritter notification
-   appear (0 to disable)
-
-This hook is called on the client side whenever a chat message is received from
-the server. It can be used to create different notifications for chat messages.
-Hoook functions can modify the `author`, `authorName`, `duration`, `sticky`,
-`text`, and `timeStr` context properties to change how the message is processed.
-The `text` and `timeStr` properties may contain HTML, but plugins should be
-careful to sanitize any added user input to avoid introducing an XSS
+This hook runs on the client side whenever a chat message is received from the
+server. It can be used to create different notifications for chat messages. Hook
+functions can modify the `author`, `authorName`, `duration`, `sticky`, `text`,
+and `timeStr` context properties to change how the message is processed. The
+`text` and `timeStr` properties may contain HTML and come pre-sanitized; plugins
+should be careful to sanitize any added user input to avoid introducing an XSS
 vulnerability.
+
+Context properties:
+
+* `authorName`: The display name of the user that wrote the message.
+* `author`: The author ID of the user that wrote the message.
+* `text`: Sanitized message HTML, with URLs wrapped like `<a
+  href="url">url</a>`.
+* `sticky` (boolean): Whether the gritter notification should fade out on its
+  own or just sit there until manually closed.
+* `timestamp`: When the chat message was sent (milliseconds since epoch),
+  corrected using the difference between the local clock and the server's clock.
+* `timeStr`: The message timestamp as a formatted string.
+* `duration`: How long (in milliseconds) to display the gritter notification (0
+  to disable).
 
 ## collectContentPre
 
