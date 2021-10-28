@@ -434,8 +434,7 @@ const pad = {
     padutils.setupGlobalExceptionHandler();
 
     $(document).ready(() => {
-      // start the custom js
-      if (typeof customStart === 'function') customStart(); // eslint-disable-line no-undef
+      if (window.customStart != null) window.customStart();
       handshake();
 
       // To use etherpad you have to allow cookies.
