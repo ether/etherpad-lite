@@ -366,12 +366,6 @@ const handshake = () => {
       pad.collabClient.handleMessageFromServer(obj);
     }
   });
-  // Bind the colorpicker
-  $('#colorpicker').farbtastic({callback: '#mycolorpickerpreview', width: 220});
-  // Bind the read only button
-  $('#readonlyinput').on('click', () => {
-    padeditbar.setEmbedLinks();
-  });
 };
 
 const pad = {
@@ -401,6 +395,9 @@ const pad = {
 
     $(document).ready(() => {
       if (window.customStart != null) window.customStart();
+      $('#colorpicker').farbtastic({callback: '#mycolorpickerpreview', width: 220});
+      $('#readonlyinput').on('click', () => { padeditbar.setEmbedLinks(); });
+
       handshake();
 
       // To use etherpad you have to allow cookies.
