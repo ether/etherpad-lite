@@ -397,13 +397,8 @@ const pad = {
       if (window.customStart != null) window.customStart();
       $('#colorpicker').farbtastic({callback: '#mycolorpickerpreview', width: 220});
       $('#readonlyinput').on('click', () => { padeditbar.setEmbedLinks(); });
-
-      handshake();
-
-      // To use etherpad you have to allow cookies.
-      // This will check if the prefs-cookie is set.
-      // Otherwise it shows up a message to the user.
       padcookie.init();
+      handshake();
     });
   },
   _afterHandshake() {
