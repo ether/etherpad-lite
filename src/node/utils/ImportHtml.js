@@ -94,8 +94,6 @@ exports.setPadHTML = async (pad, html) => {
   const theChangeset = builder.toString();
 
   apiLogger.debug(`The changeset: ${theChangeset}`);
-  await Promise.all([
-    pad.setText('\n'),
-    pad.appendRevision(theChangeset),
-  ]);
+  await pad.setText('\n');
+  await pad.appendRevision(theChangeset);
 };
