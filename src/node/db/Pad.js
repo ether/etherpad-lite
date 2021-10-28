@@ -258,7 +258,7 @@ Pad.prototype.setText = async function (newText) {
   }
 
   // append the changeset
-  await this.appendRevision(changeset);
+  if (newText !== oldText) await this.appendRevision(changeset);
 };
 
 Pad.prototype.appendText = async function (newText) {
