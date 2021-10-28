@@ -461,6 +461,35 @@ describe(__filename, function () {
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
     });
+
+    it('does not add an useless revision', async function () {
+      let res = await agent.post(`${endPoint('setText')}&padID=${testPadId}`)
+          .field({text: 'identical text\n'})
+          .expect(200)
+          .expect('Content-Type', /json/);
+      assert.equal(res.body.code, 0);
+
+      res = await agent.get(`${endPoint('getText')}&padID=${testPadId}`)
+          .expect(200)
+          .expect('Content-Type', /json/);
+      assert.equal(res.body.data.text, 'identical text\n');
+
+      res = await agent.get(`${endPoint('getRevisionsCount')}&padID=${testPadId}`)
+          .expect(200)
+          .expect('Content-Type', /json/);
+      const revCount = res.body.data.revisions;
+
+      res = await agent.post(`${endPoint('setText')}&padID=${testPadId}`)
+          .field({text: 'identical text\n'})
+          .expect(200)
+          .expect('Content-Type', /json/);
+      assert.equal(res.body.code, 0);
+
+      res = await agent.get(`${endPoint('getRevisionsCount')}&padID=${testPadId}`)
+          .expect(200)
+          .expect('Content-Type', /json/);
+      assert.equal(res.body.data.revisions, revCount);
+    });
   });
 
   describe('copyPadWithoutHistory', function () {
