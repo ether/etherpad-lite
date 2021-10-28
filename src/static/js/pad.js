@@ -311,14 +311,21 @@ const handshake = async () => {
     }
   });
 
-  await new Promise((resolve) => {
-    const h = (obj) => {
-      if (obj.accessStatus || obj.type !== 'CLIENT_VARS') return;
-      socket.off('message', h);
-      resolve();
-    };
-    socket.on('message', h);
-  });
+  await Promise.all([
+    new Promise((resolve) => {
+      const h = (obj) => {
+        if (obj.accessStatus || obj.type !== 'CLIENT_VARS') return;
+        socket.off('message', h);
+        resolve();
+      };
+      socket.on('message', h);
+    }),
+    // This hook is only intended to be used by test code. If a plugin would like to use this hook,
+    // the hook must first be promoted to officially supported by deleting the leading underscore
+    // from the name, adding documentation to `doc/api/hooks_client-side.md`, and deleting this
+    // comment.
+    hooks.aCallAll('_socketCreated', {socket}),
+  ]);
 };
 
 /** Defers message handling until setCollabClient() is called with a non-null value. */

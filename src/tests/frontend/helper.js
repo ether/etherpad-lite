@@ -99,6 +99,16 @@ const helper = {};
       hookFns: {},
     }, opts);
 
+    // Set up socket.io spying as early as possible.
+    /** chat messages received */
+    helper.chatMessages = [];
+    /** changeset commits from the server */
+    helper.commits = [];
+    /** userInfo messages from the server */
+    helper.userInfos = [];
+    if (opts.hookFns._socketCreated == null) opts.hookFns._socketCreated = [];
+    opts.hookFns._socketCreated.unshift(() => helper.spyOnSocketIO());
+
     // if opts.params is set we manipulate the URL to include URL parameters IE ?foo=Bah.
     let encodedParams;
     if (opts.params) {
@@ -170,27 +180,6 @@ const helper = {};
     helper.padChrome$.fx.off = true;
     helper.padOuter$.fx.off = true;
     helper.padInner$.fx.off = true;
-
-    /*
-     * chat messages received
-     * @type {Array}
-     */
-    helper.chatMessages = [];
-
-    /*
-     * changeset commits from the server
-     * @type {Array}
-     */
-    helper.commits = [];
-
-    /*
-     * userInfo messages from the server
-     * @type {Array}
-     */
-    helper.userInfos = [];
-
-    // listen for server messages
-    helper.spyOnSocketIO();
 
     return opts.id;
   };
