@@ -478,6 +478,10 @@
 
         plugins.baseURL = baseURL;
         plugins.update(function () {
+          // Mechanism for tests to register hook functions (install fake plugins).
+          window._postPluginUpdateForTestingDone = false;
+          if (window._postPluginUpdateForTesting != null) window._postPluginUpdateForTesting();
+          window._postPluginUpdateForTestingDone = true;
           // Call documentReady hook
           $(function() {
             hooks.aCallAll('documentReady');

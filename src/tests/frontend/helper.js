@@ -96,6 +96,7 @@ const helper = {};
       _retry: 0,
       clearCookies: true,
       id: `FRONTEND_TEST_${helper.randomString(20)}`,
+      hookFns: {},
     }, opts);
 
     // if opts.params is set we manipulate the URL to include URL parameters IE ?foo=Bah.
@@ -122,7 +123,26 @@ const helper = {};
     $('#iframe-container iframe').remove();
     // set new iframe
     $('#iframe-container').append($iframe);
-    await new Promise((resolve) => $iframe.one('load', resolve));
+    await Promise.all([
+      new Promise((resolve) => $iframe.one('load', resolve)),
+      // Install the hook functions as early as possible because some of them fire right away.
+      new Promise((resolve, reject) => {
+        if ($iframe[0].contentWindow._postPluginUpdateForTestingDone) {
+          return reject(new Error(
+              'failed to set _postPluginUpdateForTesting before it would have been called'));
+        }
+        $iframe[0].contentWindow._postPluginUpdateForTesting = () => {
+          const {hooks} =
+                $iframe[0].contentWindow.require('ep_etherpad-lite/static/js/pluginfw/plugin_defs');
+          for (const [hookName, hookFns] of Object.entries(opts.hookFns)) {
+            if (hooks[hookName] == null) hooks[hookName] = [];
+            hooks[hookName].push(
+                ...hookFns.map((hookFn) => ({hook_name: hookName, hook_fn: hookFn})));
+          }
+          resolve();
+        };
+      }),
+    ]);
     helper.padChrome$ = await helper.getFrameJQuery($('#iframe-container iframe'), true);
     helper.padChrome$.padeditor =
         helper.padChrome$.window.require('ep_etherpad-lite/static/js/pad_editor').padeditor;

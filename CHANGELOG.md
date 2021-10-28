@@ -47,6 +47,9 @@
     hook. Plugins should use this instead of the `clientVars` global variable.
   * New `userJoin` server-side hook.
   * The `userLeave` server-side hook has a new `socket` context property.
+  * The `helper.aNewPad()` function (accessible to client-side tests) now
+    accepts hook functions to inject when opening a pad. This can be used to
+    test any new client-side hooks your plugin provides.
 
 # 1.8.14
 
