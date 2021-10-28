@@ -214,7 +214,7 @@ const sendClientReady = (isReconnect) => {
   socket.json.send(msg);
 };
 
-const handshake = () => {
+const handshake = async () => {
   let receivedClientVars = false;
   let padId = document.location.pathname.substring(document.location.pathname.lastIndexOf('/') + 1);
   // unescape neccesary due to Safari and Opera interpretation of spaces
@@ -295,14 +295,8 @@ const handshake = () => {
         }
       }
     } else if (!receivedClientVars && obj.type === 'CLIENT_VARS') {
-      // if we haven't recieved the clientVars yet, then this message should it be
       receivedClientVars = true;
-
-      // set some client vars
       window.clientVars = obj.data;
-
-      // initialize the pad
-      pad._afterHandshake();
     } else if (obj.disconnect) {
       padconnectionstatus.disconnected(obj.disconnect);
       socket.disconnect();
@@ -316,6 +310,15 @@ const handshake = () => {
     } else {
       pad._messageQ.enqueue(obj);
     }
+  });
+
+  await new Promise((resolve) => {
+    const h = (obj) => {
+      if (obj.accessStatus || obj.type !== 'CLIENT_VARS') return;
+      socket.off('message', h);
+      resolve();
+    };
+    socket.on('message', h);
   });
 };
 
@@ -364,16 +367,20 @@ const pad = {
     pad.collabClient.sendClientMessage(msg);
   },
 
-  init: () => {
+  init() {
     padutils.setupGlobalExceptionHandler();
 
-    $(document).ready(() => {
+    // $(handler), $().ready(handler), $.wait($.ready).then(handler), etc. don't work if handler is
+    // an async function for some bizarre reason, so the async function is wrapped in a non-async
+    // function.
+    $(() => (async () => {
       if (window.customStart != null) window.customStart();
       $('#colorpicker').farbtastic({callback: '#mycolorpickerpreview', width: 220});
       $('#readonlyinput').on('click', () => { padeditbar.setEmbedLinks(); });
       padcookie.init();
-      handshake();
-    });
+      await handshake();
+      this._afterHandshake();
+    })());
   },
   _afterHandshake() {
     pad.clientTimeOffset = Date.now() - clientVars.serverTimestamp;
