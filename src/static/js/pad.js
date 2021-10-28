@@ -303,55 +303,6 @@ const handshake = () => {
 
       // initialize the pad
       pad._afterHandshake();
-
-      if (clientVars.readonly) {
-        chat.hide();
-        $('#myusernameedit').attr('disabled', true);
-        $('#chatinput').attr('disabled', true);
-        $('#chaticon').hide();
-        $('#options-chatandusers').parent().hide();
-        $('#options-stickychat').parent().hide();
-      } else if (!settings.hideChat) { $('#chaticon').show(); }
-
-      $('body').addClass(clientVars.readonly ? 'readonly' : 'readwrite');
-
-      padeditor.ace.callWithAce((ace) => {
-        ace.ace_setEditable(!clientVars.readonly);
-      });
-
-      // If the LineNumbersDisabled value is set to true then we need to hide the Line Numbers
-      if (settings.LineNumbersDisabled === true) {
-        pad.changeViewOption('showLineNumbers', false);
-      }
-
-      // If the noColors value is set to true then we need to
-      // hide the background colors on the ace spans
-      if (settings.noColors === true) {
-        pad.changeViewOption('noColors', true);
-      }
-
-      if (settings.rtlIsTrue === true) {
-        pad.changeViewOption('rtlIsTrue', true);
-      }
-
-      // If the Monospacefont value is set to true then change it to monospace.
-      if (settings.useMonospaceFontGlobal === true) {
-        pad.changeViewOption('padFontFamily', 'RobotoMono');
-      }
-      // if the globalUserName value is set we need to tell the server and
-      // the client about the new authorname
-      if (settings.globalUserName !== false) {
-        pad.notifyChangeName(settings.globalUserName); // Notifies the server
-        pad.myUserInfo.name = settings.globalUserName;
-        $('#myusernameedit').val(settings.globalUserName); // Updates the current users UI
-      }
-      if (settings.globalUserColor !== false && colorutils.isCssHex(settings.globalUserColor)) {
-        // Add a 'globalUserColor' property to myUserInfo,
-        // so collabClient knows we have a query parameter.
-        pad.myUserInfo.globalUserColor = settings.globalUserColor;
-        pad.notifyChangeColor(settings.globalUserColor); // Updates pad.myUserInfo.colorId
-        paduserlist.setMyUserInfo(pad.myUserInfo);
-      }
     } else if (obj.disconnect) {
       padconnectionstatus.disconnected(obj.disconnect);
       socket.disconnect();
@@ -488,7 +439,57 @@ const pad = {
       // there are no messages
       $('#chatloadmessagesbutton').css('display', 'none');
     }
+
+    if (window.clientVars.readonly) {
+      chat.hide();
+      $('#myusernameedit').attr('disabled', true);
+      $('#chatinput').attr('disabled', true);
+      $('#chaticon').hide();
+      $('#options-chatandusers').parent().hide();
+      $('#options-stickychat').parent().hide();
+    } else if (!settings.hideChat) { $('#chaticon').show(); }
+
+    $('body').addClass(window.clientVars.readonly ? 'readonly' : 'readwrite');
+
+    padeditor.ace.callWithAce((ace) => {
+      ace.ace_setEditable(!window.clientVars.readonly);
+    });
+
+    // If the LineNumbersDisabled value is set to true then we need to hide the Line Numbers
+    if (settings.LineNumbersDisabled === true) {
+      this.changeViewOption('showLineNumbers', false);
+    }
+
+    // If the noColors value is set to true then we need to
+    // hide the background colors on the ace spans
+    if (settings.noColors === true) {
+      this.changeViewOption('noColors', true);
+    }
+
+    if (settings.rtlIsTrue === true) {
+      this.changeViewOption('rtlIsTrue', true);
+    }
+
+    // If the Monospacefont value is set to true then change it to monospace.
+    if (settings.useMonospaceFontGlobal === true) {
+      this.changeViewOption('padFontFamily', 'RobotoMono');
+    }
+    // if the globalUserName value is set we need to tell the server and
+    // the client about the new authorname
+    if (settings.globalUserName !== false) {
+      this.notifyChangeName(settings.globalUserName); // Notifies the server
+      this.myUserInfo.name = settings.globalUserName;
+      $('#myusernameedit').val(settings.globalUserName); // Updates the current users UI
+    }
+    if (settings.globalUserColor !== false && colorutils.isCssHex(settings.globalUserColor)) {
+      // Add a 'globalUserColor' property to myUserInfo,
+      // so collabClient knows we have a query parameter.
+      this.myUserInfo.globalUserColor = settings.globalUserColor;
+      this.notifyChangeColor(settings.globalUserColor); // Updates this.myUserInfo.colorId
+      paduserlist.setMyUserInfo(this.myUserInfo);
+    }
   },
+
   dispose: () => {
     padeditor.dispose();
   },
