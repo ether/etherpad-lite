@@ -715,6 +715,5 @@ exports.settings = settings;
 exports.randomString = randomString;
 exports.getParams = getParams;
 exports.getUrlVars = getUrlVars;
-exports.handshake = handshake;
 exports.pad = pad;
 exports.init = init;
