@@ -235,8 +235,8 @@ const doImport = async (req, res, padId) => {
   pad = await padManager.getPad(padId);
   padManager.unloadPad(padId);
 
-  // direct Database Access means a pad user should perform a switchToPad
-  // and not attempt to receive updated pad data
+  // Direct database access means a pad user should reload the pad and not attempt to receive
+  // updated pad data.
   if (directDatabaseAccess) return true;
 
   // tell clients to update

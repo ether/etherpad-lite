@@ -579,9 +579,9 @@ Things in context:
 This hook allows plugins to grant temporary write access to a pad. It is called
 for each incoming message from a client. If write access is granted, it applies
 to the current message and all future messages from the same socket.io
-connection until the next `CLIENT_READY` or `SWITCH_TO_PAD` message. Read-only
-access is reset **after** each `CLIENT_READY` or `SWITCH_TO_PAD` message, so
-granting write access has no effect for those message types.
+connection until the next `CLIENT_READY` message. Read-only access is reset
+**after** each `CLIENT_READY` message, so granting write access has no effect
+for those message types.
 
 The handleMessageSecurity function must return a Promise. If the Promise
 resolves to `true`, write access is granted as described above. Returning

@@ -283,8 +283,6 @@ exports.handleMessage = async (socket, message) => {
     } else {
       messageLogger.warn(`Dropped message, unknown COLLABROOM Data  Type ${message.data.type}`);
     }
-  } else if (message.type === 'SWITCH_TO_PAD') {
-    await handleSwitchToPad(socket, message, authorID);
   } else {
     messageLogger.warn(`Dropped message, unknown Message Type ${message.type}`);
   }
@@ -804,44 +802,6 @@ const _correctMarkersInPad = (atext, apool) => {
   });
 
   return builder.toString();
-};
-
-const handleSwitchToPad = async (socket, message, _authorID) => {
-  const currentSessionInfo = sessioninfos[socket.id];
-  const padId = currentSessionInfo.padId;
-
-  // Check permissions for the new pad.
-  const newPadIds = await readOnlyManager.getIds(message.padId);
-  const {session: {user} = {}} = socket.client.request;
-  const {accessStatus, authorID} = await securityManager.checkAccess(
-      newPadIds.padId, message.sessionID, message.token, user);
-  if (accessStatus !== 'grant') {
-    // Access denied. Send the reason to the user.
-    socket.json.send({accessStatus});
-    return;
-  }
-  // The same token and session ID were passed to checkAccess in handleMessage, so this second call
-  // to checkAccess should return the same author ID.
-  assert(authorID === _authorID);
-  assert(authorID === currentSessionInfo.author);
-
-  // Check if the connection dropped during the access check.
-  if (sessioninfos[socket.id] !== currentSessionInfo) return;
-
-  // clear the session and leave the room
-  _getRoomSockets(padId).forEach((socket) => {
-    const sinfo = sessioninfos[socket.id];
-    if (sinfo && sinfo.author === currentSessionInfo.author) {
-      // fix user's counter, works on page refresh or if user closes browser window and then rejoins
-      sessioninfos[socket.id] = {};
-      socket.leave(padId);
-    }
-  });
-
-  // start up the new pad
-  const newSessionInfo = sessioninfos[socket.id];
-  createSessionInfoAuth(newSessionInfo, message);
-  await handleClientReady(socket, message, authorID);
 };
 
 // Creates/replaces the auth object in the given session info.

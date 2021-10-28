@@ -48,8 +48,6 @@ const socketio = require('./socketio');
 
 const hooks = require('./pluginfw/hooks');
 
-let receivedClientVars = false;
-
 // This array represents all GET-parameters which can be used to change a setting.
 //   name:     the parameter-name, eg  `?noColors=true`  =>  `noColors`
 //   checkVal: the callback is only executed when
@@ -181,8 +179,7 @@ const getUrlVars = () => {
   return vars;
 };
 
-const sendClientReady = (isReconnect, messageType) => {
-  messageType = typeof messageType !== 'undefined' ? messageType : 'CLIENT_READY';
+const sendClientReady = (isReconnect) => {
   let padId = document.location.pathname.substring(document.location.pathname.lastIndexOf('/') + 1);
   // unescape neccesary due to Safari and Opera interpretation of spaces
   padId = decodeURIComponent(padId);
@@ -201,7 +198,7 @@ const sendClientReady = (isReconnect, messageType) => {
 
   const msg = {
     component: 'pad',
-    type: messageType,
+    type: 'CLIENT_READY',
     padId,
     sessionID: Cookies.get('sessionID'),
     token,
@@ -218,6 +215,7 @@ const sendClientReady = (isReconnect, messageType) => {
 };
 
 const handshake = () => {
+  let receivedClientVars = false;
   let padId = document.location.pathname.substring(document.location.pathname.lastIndexOf('/') + 1);
   // unescape neccesary due to Safari and Opera interpretation of spaces
   padId = decodeURIComponent(padId);
@@ -394,38 +392,6 @@ const pad = {
   getUserId: () => pad.myUserInfo.userId,
   getUserName: () => pad.myUserInfo.name,
   userList: () => paduserlist.users(),
-  switchToPad: (padId) => {
-    let newHref = new RegExp(/.*\/p\/[^/]+/).exec(document.location.pathname) || clientVars.padId;
-    newHref = newHref[0];
-
-    const options = clientVars.padOptions;
-    if (typeof options !== 'undefined' && options != null) {
-      const optionArr = [];
-      $.each(options, (k, v) => {
-        const str = `${k}=${v}`;
-        optionArr.push(str);
-      });
-      const optionStr = optionArr.join('&');
-
-      newHref = `${newHref}?${optionStr}`;
-    }
-
-    // destroy old pad from DOM
-    // See https://github.com/ether/etherpad-lite/pull/3915
-    // TODO: Check if Destroying is enough and doesn't leave negative stuff
-    // See ace.js "editor.destroy" for a reference of how it was done before
-    $('#editorcontainer').find('iframe')[0].remove();
-
-    if (window.history && window.history.pushState) {
-      $('#chattext p').remove(); // clear the chat messages
-      window.history.pushState('', '', newHref);
-      receivedClientVars = false;
-      sendClientReady(false, 'SWITCH_TO_PAD');
-    } else {
-      // fallback
-      window.location.href = newHref;
-    }
-  },
   sendClientMessage: (msg) => {
     pad.collabClient.sendClientMessage(msg);
   },

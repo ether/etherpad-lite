@@ -34,6 +34,7 @@
 
 ### Notable enhancements
 
+* Simplified pad reload after importing an `.etherpad` file.
 * For plugin authors:
   * `clientVars` was added to the context for the `postAceInit` client-side
     hook. Plugins should use this instead of the `clientVars` global variable.
