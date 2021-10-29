@@ -314,10 +314,32 @@ const handshake = () => {
 
       return;
     } else {
-      pad.collabClient.handleMessageFromServer(obj);
+      pad._messageQ.enqueue(obj);
     }
   });
 };
+
+/** Defers message handling until setCollabClient() is called with a non-null value. */
+class MessageQueue {
+  constructor() {
+    this._q = [];
+    this._cc = null;
+  }
+
+  setCollabClient(cc) {
+    this._cc = cc;
+    this.enqueue(); // Flush.
+  }
+
+  enqueue(...msgs) {
+    if (this._cc == null) {
+      this._q.push(...msgs);
+    } else {
+      while (this._q.length > 0) this._cc.handleMessageFromServer(this._q.shift());
+      for (const msg of msgs) this._cc.handleMessageFromServer(msg);
+    }
+  }
+}
 
 const pad = {
   // don't access these directly from outside this file, except
@@ -328,6 +350,7 @@ const pad = {
   initTime: 0,
   clientTimeOffset: null,
   padOptions: {},
+  _messageQ: new MessageQueue(),
 
   // these don't require init; clientVars should all go through here
   getPadId: () => clientVars.padId,
@@ -423,6 +446,7 @@ const pad = {
     pad.collabClient = getCollabClient(
         padeditor.ace, clientVars.collab_client_vars, pad.myUserInfo,
         {colorPalette: pad.getColorPalette()}, pad);
+    this._messageQ.setCollabClient(this.collabClient);
     pad.collabClient.setOnUserJoin(pad.handleUserJoin);
     pad.collabClient.setOnUpdateUserInfo(pad.handleUserUpdate);
     pad.collabClient.setOnUserLeave(pad.handleUserLeave);
