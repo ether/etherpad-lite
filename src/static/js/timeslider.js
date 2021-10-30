@@ -102,7 +102,6 @@ const sendSocketMsg = (type, data) => {
     padId,
     token,
     sessionID: Cookies.get('sessionID'),
-    protocolVersion: 2,
   });
 };
 

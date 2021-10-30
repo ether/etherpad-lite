@@ -86,7 +86,6 @@ const handshake = async (socket, padID) => {
     padId: padID,
     sessionID: null,
     token: 't.12345',
-    protocolVersion: 2,
   });
   logger.debug('waiting for CLIENT_VARS response...');
   const msg = await getSocketEvent(socket, 'message');
@@ -464,7 +463,6 @@ describe(__filename, function () {
       let serverSocket;
       const want = {
         component: this.test.fullTitle(),
-        protocolVersion: 2,
         foo: {bar: 'asdf'},
       };
       let rx;
@@ -482,7 +480,6 @@ describe(__filename, function () {
     });
 
     const tx = async (socket, message = {}) => await new Promise((resolve, reject) => {
-      message = Object.assign({protocolVersion: 2}, message);
       const AckErr = class extends Error {
         constructor(name, ...args) { super(...args); this.name = name; }
       };

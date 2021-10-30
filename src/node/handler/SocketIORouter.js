@@ -69,10 +69,6 @@ exports.setSocketIO = (_io) => {
     }
 
     socket.on('message', (message, ack = () => {}) => {
-      if (message.protocolVersion && message.protocolVersion !== 2) {
-        logger.warn(`Protocolversion header is not correct: ${JSON.stringify(message)}`);
-        return;
-      }
       if (!message.component || !components[message.component]) {
         logger.error(`Can't route the message: ${JSON.stringify(message)}`);
         return;

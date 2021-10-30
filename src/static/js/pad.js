@@ -202,7 +202,6 @@ const sendClientReady = (isReconnect) => {
     padId,
     sessionID: Cookies.get('sessionID'),
     token,
-    protocolVersion: 2,
   };
 
   // this is a reconnect, lets tell the server our revisionnumber

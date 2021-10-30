@@ -813,17 +813,6 @@ const handleClientReady = async (socket, message, authorID) => {
     return;
   }
 
-  if (!message.protocolVersion) {
-    messageLogger.warn('Dropped message, CLIENT_READY Message has no protocolVersion!');
-    return;
-  }
-
-  if (message.protocolVersion !== 2) {
-    messageLogger.warn('Dropped message, CLIENT_READY Message has a unknown protocolVersion ' +
-                       `'${message.protocolVersion}'!`);
-    return;
-  }
-
   await hooks.aCallAll('clientReady', message);
 
   // Get ro/rw id:s
