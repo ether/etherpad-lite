@@ -853,3 +853,20 @@ exports.userLeave = async (hookName, {author, padId}) => {
   console.log(`${author} left pad ${padId}`);
 };
 ```
+
+## `chatNewMessage`
+
+Called from: `src/node/handler/PadMessageHandler.js`
+
+Called when a user (or plugin) generates a new chat message, just before it is
+saved to the pad and relayed to all connected users.
+
+Context properties:
+
+* `message`: The chat message object. Plugins can mutate this object to change
+  the message text or add custom metadata to control how the message will be
+  rendered by the `chatNewMessage` client-side hook. The message's `authorId`
+  property can be trusted (the server overwrites any client-provided author ID
+  value with the user's actual author ID before this hook runs).
+* `padId`: The pad's real (not read-only) identifier.
+* `pad`: The pad's Pad object.

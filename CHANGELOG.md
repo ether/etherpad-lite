@@ -59,6 +59,8 @@
     * New `chatSendMessage` client-side hook that enables plugins to process the
       text before sending it to the server or augment the message object with
       custom metadata.
+    * New `chatNewMessage` server-side hook to process new chat messages before
+      they are saved to the database and relayed to users.
 
 # 1.8.14
 

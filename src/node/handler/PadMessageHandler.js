@@ -364,6 +364,7 @@ exports.sendChatMessageToPadClients = async (mt, puId, text = null, padId = null
   const message = mt instanceof ChatMessage ? mt : new ChatMessage(text, puId, mt);
   padId = mt instanceof ChatMessage ? puId : padId;
   const pad = await padManager.getPad(padId);
+  await hooks.aCallAll('chatNewMessage', {message, pad, padId});
   // pad.appendChatMessage() ignores the displayName property so we don't need to wait for
   // authorManager.getAuthorName() to resolve before saving the message to the database.
   const promise = pad.appendChatMessage(message);
