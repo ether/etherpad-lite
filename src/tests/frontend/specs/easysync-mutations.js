@@ -160,6 +160,25 @@ describe('easysync-mutations', function () {
     ['insert', 'z'],
   ], ['fuz']);
 
+  // #2836, #5214, #3560 regressions
+  runMutationTest(11, ['\n'], [
+    ['remove', 1, 1, '\n'],
+    ['insert', 'c', 0],
+  ], ['c']);
+
+  runMutationTest(12, ['\n'], [
+    ['remove', 1, 1, '\n'],
+    ['insert', 'a\n', 1],
+    ['insert', 'c'],
+  ], ['a\n', 'c']);
+
+  runMutationTest(13, ['\n', 'fun\n', '\n'], [
+    ['remove', 1, 1, '\n'],
+    ['skip', 4, 1, false],
+    ['remove', 1, 1, '\n'],
+    ['insert', 'c'],
+  ], ['fun\n', 'c']);
+
   it('mutatorHasMore', async function () {
     const lines = ['1\n', '2\n', '3\n', '4\n'];
     let mu;
