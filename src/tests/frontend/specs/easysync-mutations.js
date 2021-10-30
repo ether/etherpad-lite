@@ -188,6 +188,15 @@ describe('easysync-mutations', function () {
 
     testMutateTextLines(1, 'Z:4<1|1-2-1|1+1+1$\nc', ['a\n', 'b\n'], ['\n', 'c\n']);
     testMutateTextLines(2, 'Z:4>0|1-2-1|2+3$\nc\n', ['a\n', 'b\n'], ['\n', 'c\n', '\n']);
+
+    it('mutate keep only lines', async function () {
+      const lines = ['1\n', '2\n', '3\n', '4\n'];
+      const result = lines.slice();
+      const cs = 'Z:8>0*0|1=2|2=2';
+
+      Changeset.mutateTextLines(cs, lines);
+      expect(result).to.eql(lines);
+    });
   });
 
   describe('mutate attributions', function () {
