@@ -64,7 +64,7 @@ exports.socketio = () => {
  *           - token: User-supplied token.
  *       - author: The user's author ID.
  *       - padId: The real (not read-only) ID of the pad.
- *       - readonlyPadId: The read-only ID of the pad.
+ *       - readOnlyPadId: The read-only ID of the pad.
  *       - readonly: Whether the client has read-only access (true) or read/write access (false).
  *       - rev: The last revision that was sent to the client.
  */
@@ -249,7 +249,7 @@ exports.handleMessage = async (socket, message) => {
 
   // Check what type of message we get and delegate to the other methods
   if (message.type === 'CLIENT_READY') {
-    await handleClientReady(socket, message, authorID);
+    await handleClientReady(socket, message);
   } else if (message.type === 'CHANGESET_REQ') {
     await handleChangesetRequest(socket, message);
   } else if (message.type === 'COLLABROOM') {
@@ -801,15 +801,20 @@ const _correctMarkersInPad = (atext, apool) => {
  * @param socket the socket.io Socket object for the client
  * @param message the message from the client
  */
-const handleClientReady = async (socket, message, authorID) => {
+const handleClientReady = async (socket, message) => {
+  const sessionInfo = sessioninfos[socket.id];
+  // Check if the user has already disconnected.
+  if (sessionInfo == null) return;
+
   await hooks.aCallAll('clientReady', message);
 
   // Get ro/rw id:s
-  const padIds = await readOnlyManager.getIds(message.padId);
+  const padIds = await readOnlyManager.getIds(sessionInfo.auth.padID);
 
   // get all authordata of this new user
-  assert(authorID);
-  const {colorId: authorColorId, name: authorName} = await authorManager.getAuthor(authorID);
+  assert(sessionInfo.author);
+  const {colorId: authorColorId, name: authorName} =
+      await authorManager.getAuthor(sessionInfo.author);
 
   // load the pad-object from the database
   const pad = await padManager.getPad(padIds.padId);
@@ -844,7 +849,7 @@ const handleClientReady = async (socket, message, authorID) => {
 
   for (const socket of roomSockets) {
     const sinfo = sessioninfos[socket.id];
-    if (sinfo && sinfo.author === authorID) {
+    if (sinfo && sinfo.author === sessionInfo.author) {
       // fix user's counter, works on page refresh or if user closes browser window and then rejoins
       sessioninfos[socket.id] = {};
       socket.leave(padIds.padId);
@@ -856,22 +861,22 @@ const handleClientReady = async (socket, message, authorID) => {
   sessionInfo.padId = padIds.padId;
   sessionInfo.readOnlyPadId = padIds.readOnlyPadId;
   sessionInfo.readonly =
-      padIds.readonly || !webaccess.userCanModify(message.padId, socket.client.request);
+      padIds.readonly || !webaccess.userCanModify(sessionInfo.auth.padID, socket.client.request);
 
   const {session: {user} = {}} = socket.client.request;
   /* eslint-disable prefer-template -- it doesn't support breaking across multiple lines */
   accessLogger.info(`[${pad.head > 0 ? 'ENTER' : 'CREATE'}]` +
-                    ` pad:${padIds.padId}` +
+                    ` pad:${sessionInfo.padId}` +
                     ` socket:${socket.id}` +
                     ` IP:${settings.disableIPlogging ? 'ANONYMOUS' : socket.request.ip}` +
-                    ` authorID:${authorID}` +
+                    ` authorID:${sessionInfo.author}` +
                     (user && user.username ? ` username:${user.username}` : ''));
   /* eslint-enable prefer-template */
 
   if (message.reconnect) {
     // If this is a reconnect, we don't have to send the client the ClientVars again
     // Join the pad and start receiving updates
-    socket.join(padIds.padId);
+    socket.join(sessionInfo.padId);
 
     // Save the revision in sessioninfos, we take the revision from the info the client send to us
     sessionInfo.rev = message.client_rev;
@@ -948,9 +953,8 @@ const handleClientReady = async (socket, message, authorID) => {
       return;
     }
 
-    // Warning: never ever send padIds.padId to the client. If the
-    // client is read only you would open a security hole 1 swedish
-    // mile wide...
+    // Warning: never ever send sessionInfo.padId to the client. If the client is read only you
+    // would open a security hole 1 swedish mile wide...
     const clientVars = {
       skinName: settings.skinName,
       skinVariants: settings.skinVariants,
@@ -965,7 +969,7 @@ const handleClientReady = async (socket, message, authorID) => {
       collab_client_vars: {
         initialAttributedText: atext,
         clientIp: '127.0.0.1',
-        padId: message.padId,
+        padId: sessionInfo.auth.padID,
         historicalAuthorData,
         apool,
         rev: pad.getHeadRevisionNumber(),
@@ -974,19 +978,19 @@ const handleClientReady = async (socket, message, authorID) => {
       colorPalette: authorManager.getColorPalette(),
       clientIp: '127.0.0.1',
       userColor: authorColorId,
-      padId: message.padId,
+      padId: sessionInfo.auth.padID,
       padOptions: settings.padOptions,
       padShortcutEnabled: settings.padShortcutEnabled,
-      initialTitle: `Pad: ${message.padId}`,
+      initialTitle: `Pad: ${sessionInfo.auth.padID}`,
       opts: {},
       // tell the client the number of the latest chat-message, which will be
       // used to request the latest 100 chat-messages later (GET_CHAT_MESSAGES)
       chatHead: pad.chatHead,
       numConnectedUsers: roomSockets.length,
-      readOnlyId: padIds.readOnlyPadId,
+      readOnlyId: sessionInfo.readOnlyPadId,
       readonly: sessionInfo.readonly,
       serverTimestamp: Date.now(),
-      userId: authorID,
+      userId: sessionInfo.author,
       abiwordAvailable: settings.abiwordAvailable(),
       sofficeAvailable: settings.sofficeAvailable(),
       exportAvailable: settings.exportAvailable(),
@@ -1025,7 +1029,7 @@ const handleClientReady = async (socket, message, authorID) => {
     }
 
     // Join the pad and start receiving updates
-    socket.join(padIds.padId);
+    socket.join(sessionInfo.padId);
 
     // Send the clientVars to the Client
     socket.json.send({type: 'CLIENT_VARS', data: clientVars});
@@ -1035,14 +1039,14 @@ const handleClientReady = async (socket, message, authorID) => {
   }
 
   // Notify other users about this new user.
-  socket.broadcast.to(padIds.padId).json.send({
+  socket.broadcast.to(sessionInfo.padId).json.send({
     type: 'COLLABROOM',
     data: {
       type: 'USER_NEWINFO',
       userInfo: {
         colorId: authorColorId,
         name: authorName,
-        userId: authorID,
+        userId: sessionInfo.author,
       },
     },
   });
