@@ -33,6 +33,11 @@
       for an example fix.
   * The `clientReady` server-side hook is deprecated; use the new `userJoin`
     hook instead.
+  * The `userLeave` server-side hook's context properties have changed:
+    * `auth`: Deprecated.
+    * `author`: Deprecated; use the new `authorId` property instead.
+    * `readonly`: Deprecated; use the new `readOnly` property instead.
+    * `rev`: Deprecated.
 
 ### Notable enhancements
 
@@ -41,6 +46,7 @@
   * `clientVars` was added to the context for the `postAceInit` client-side
     hook. Plugins should use this instead of the `clientVars` global variable.
   * New `userJoin` server-side hook.
+  * The `userLeave` server-side hook has a new `socket` context property.
 
 # 1.8.14
 

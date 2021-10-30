@@ -150,7 +150,12 @@ exports.handleDisconnect = async (socket) => {
       },
     },
   });
-  await hooks.aCallAll('userLeave', session);
+  await hooks.aCallAll('userLeave', {
+    ...session, // For backwards compatibility.
+    authorId: session.author,
+    readOnly: session.readonly,
+    socket,
+  });
 };
 
 /**

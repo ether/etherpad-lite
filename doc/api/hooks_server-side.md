@@ -840,20 +840,11 @@ certain actions after a pad has been edited.
 
 Context properties:
 
-* `auth`: Object containing information used for authentication, provided by the
-  user. Properties:
-  * `padID`: Pad identifier requested by the user. Unlike the `padId` property
-    described below, this might be a read-only pad ID.
-  * `sessionID`: Copied from the client's `sessionID` cookie, which should be
-    the value returned from the `createSession()` HTTP API. This will be nullish
-    if `createSession()` isn't used or the portal doesn't set the `sessionID`
-    cookie.
-  * `token`: User-supplied token.
-* `author`: The user's author ID.
+* `authorId`: The user's author ID.
 * `padId`: The pad's real (not read-only) identifier.
+* `readOnly`: If truthy, the user only has read-only access.
 * `readOnlyPadId`: The pad's read-only identifier.
-* `readonly`: If truthy, the user only has read-only access.
-* `rev`: The last revision that was sent to the client.
+* `socket`: The socket.io Socket object.
 
 Example:
 
