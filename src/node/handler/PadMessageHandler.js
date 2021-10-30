@@ -832,7 +832,7 @@ const handleClientReady = async (socket, message, authorID) => {
     return;
   }
 
-  hooks.callAll('clientReady', message);
+  await hooks.aCallAll('clientReady', message);
 
   // Get ro/rw id:s
   const padIds = await readOnlyManager.getIds(message.padId);

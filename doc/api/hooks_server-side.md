@@ -851,7 +851,7 @@ The context is the raw message received from the user.
 Example:
 
 ```javascript
-exports.clientReady = (hookName, {padId}) => {
+exports.clientReady = async (hookName, {padId}) => {
   console.log(`Client has joined pad ${padId});
 };
 ```
