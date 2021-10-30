@@ -905,15 +905,14 @@ const handleClientReady = async (socket, message) => {
       changesets[r] = {};
     }
 
-    // get changesets, author and timestamp needed for pending revisions (in parallel)
-    const promises = [];
-    for (const revNum of revisionsNeeded) {
+    await Promise.all(revisionsNeeded.map(async (revNum) => {
       const cs = changesets[revNum];
-      promises.push(pad.getRevisionChangeset(revNum).then((result) => cs.changeset = result));
-      promises.push(pad.getRevisionAuthor(revNum).then((result) => cs.author = result));
-      promises.push(pad.getRevisionDate(revNum).then((result) => cs.timestamp = result));
-    }
-    await Promise.all(promises);
+      [cs.changeset, cs.author, cs.timestamp] = await Promise.all([
+        pad.getRevisionChangeset(revNum),
+        pad.getRevisionAuthor(revNum),
+        pad.getRevisionDate(revNum),
+      ]);
+    }));
 
     // return pending changesets
     for (const r of revisionsNeeded) {
