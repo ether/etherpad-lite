@@ -806,10 +806,13 @@ const handleClientReady = async (socket, message) => {
   // Check if the user has already disconnected.
   if (sessionInfo == null) return;
 
-  await hooks.aCallAll('clientReady', message);
-
-  // Get ro/rw id:s
   const padIds = await readOnlyManager.getIds(sessionInfo.auth.padID);
+  sessionInfo.padId = padIds.padId;
+  sessionInfo.readOnlyPadId = padIds.readOnlyPadId;
+  sessionInfo.readonly =
+      padIds.readonly || !webaccess.userCanModify(sessionInfo.auth.padID, socket.client.request);
+
+  await hooks.aCallAll('clientReady', message);
 
   // get all authordata of this new user
   assert(sessionInfo.author);
@@ -817,7 +820,7 @@ const handleClientReady = async (socket, message) => {
       await authorManager.getAuthor(sessionInfo.author);
 
   // load the pad-object from the database
-  const pad = await padManager.getPad(padIds.padId);
+  const pad = await padManager.getPad(sessionInfo.padId);
 
   // these db requests all need the pad object (timestamp of latest revision, author data)
   const authors = pad.getAllAuthors();
@@ -840,9 +843,8 @@ const handleClientReady = async (socket, message) => {
 
   // glue the clientVars together, send them and tell the other clients that a new one is there
 
-  // Check that the client is still here. It might have disconnected between callbacks.
-  const sessionInfo = sessioninfos[socket.id];
-  if (sessionInfo == null) return;
+  // Check if the user has disconnected during any of the above awaits.
+  if (sessionInfo !== sessioninfos[socket.id]) return;
 
   // Check if this author is already on the pad, if yes, kick the other sessions!
   const roomSockets = _getRoomSockets(pad.id);
@@ -854,16 +856,10 @@ const handleClientReady = async (socket, message) => {
     if (sinfo && sinfo.author === sessionInfo.author) {
       // fix user's counter, works on page refresh or if user closes browser window and then rejoins
       sessioninfos[otherSocket.id] = {};
-      otherSocket.leave(padIds.padId);
+      otherSocket.leave(sessionInfo.padId);
       otherSocket.json.send({disconnect: 'userdup'});
     }
   }
-
-  // Save in sessioninfos that this session belonges to this pad
-  sessionInfo.padId = padIds.padId;
-  sessionInfo.readOnlyPadId = padIds.readOnlyPadId;
-  sessionInfo.readonly =
-      padIds.readonly || !webaccess.userCanModify(sessionInfo.auth.padID, socket.client.request);
 
   const {session: {user} = {}} = socket.client.request;
   /* eslint-disable prefer-template -- it doesn't support breaking across multiple lines */
