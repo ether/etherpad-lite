@@ -126,47 +126,39 @@ exports.kickSessionsFromPad = (padID) => {
  */
 exports.handleDisconnect = async (socket) => {
   stats.meter('disconnects').mark();
-
-  // save the padname of this session
   const session = sessioninfos[socket.id];
-
-  // if this connection was already etablished with a handshake,
-  // send a disconnect message to the others
-  if (session && session.author) {
-    const {session: {user} = {}} = socket.client.request;
-    /* eslint-disable prefer-template -- it doesn't support breaking across multiple lines */
-    accessLogger.info('[LEAVE]' +
-                      ` pad:${session.padId}` +
-                      ` socket:${socket.id}` +
-                      ` IP:${settings.disableIPlogging ? 'ANONYMOUS' : socket.request.ip}` +
-                      ` authorID:${session.author}` +
-                      (user && user.username ? ` username:${user.username}` : ''));
-    /* eslint-enable prefer-template */
-
-    // get the author color out of the db
-    const color = await authorManager.getAuthorColorId(session.author);
-
-    // prepare the notification for the other users on the pad, that this user left
-    const messageToTheOtherUsers = {
-      type: 'COLLABROOM',
-      data: {
-        type: 'USER_LEAVE',
-        userInfo: {
-          colorId: color,
-          userId: session.author,
-        },
-      },
-    };
-
-    // Go through all user that are still on the pad, and send them the USER_LEAVE message
-    socket.broadcast.to(session.padId).json.send(messageToTheOtherUsers);
-
-    // Allow plugins to hook into users leaving the pad
-    hooks.callAll('userLeave', session);
-  }
-
-  // Delete the sessioninfos entrys of this session
   delete sessioninfos[socket.id];
+  if (!session || !session.author) return;
+  const {session: {user} = {}} = socket.client.request;
+  /* eslint-disable prefer-template -- it doesn't support breaking across multiple lines */
+  accessLogger.info('[LEAVE]' +
+                    ` pad:${session.padId}` +
+                    ` socket:${socket.id}` +
+                    ` IP:${settings.disableIPlogging ? 'ANONYMOUS' : socket.request.ip}` +
+                    ` authorID:${session.author}` +
+                    (user && user.username ? ` username:${user.username}` : ''));
+  /* eslint-enable prefer-template */
+
+  // get the author color out of the db
+  const color = await authorManager.getAuthorColorId(session.author);
+
+  // prepare the notification for the other users on the pad, that this user left
+  const messageToTheOtherUsers = {
+    type: 'COLLABROOM',
+    data: {
+      type: 'USER_LEAVE',
+      userInfo: {
+        colorId: color,
+        userId: session.author,
+      },
+    },
+  };
+
+  // Go through all user that are still on the pad, and send them the USER_LEAVE message
+  socket.broadcast.to(session.padId).json.send(messageToTheOtherUsers);
+
+  // Allow plugins to hook into users leaving the pad
+  hooks.callAll('userLeave', session);
 };
 
 /**
