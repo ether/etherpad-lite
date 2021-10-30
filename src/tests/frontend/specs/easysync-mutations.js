@@ -137,6 +137,29 @@ describe('easysync-mutations', function () {
     ['skip', 1, 1, true],
   ], ['banana\n', 'cabbage\n', 'duffle\n']);
 
+  runMutationTest(8, ['\n', 'fun\n', '\n'], [
+    ['remove', 1, 1, '\n'],
+    ['skip', 3, 0, false],
+    ['remove', 2, 2, '\n\n'],
+    ['insert', 'c'],
+  ], ['func']);
+
+  runMutationTest(9, ['\n', 'fun\n', '\n'], [
+    ['remove', 1, 1, '\n'],
+    ['skip', 3, 0, false],
+    ['remove', 2, 2, '\n\n'],
+    ['insert', 'c'],
+    ['insert', 'a\n', 1],
+    ['insert', 'c'],
+  ], ['funca\n', 'c']);
+
+  runMutationTest(10, ['\n', 'fun\n', '\n'], [
+    ['remove', 1, 1, '\n'],
+    ['skip', 2, 0, false],
+    ['remove', 3, 2, 'n\n\n'],
+    ['insert', 'z'],
+  ], ['fuz']);
+
   it('mutatorHasMore', async function () {
     const lines = ['1\n', '2\n', '3\n', '4\n'];
     let mu;

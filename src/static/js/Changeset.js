@@ -908,8 +908,10 @@ class TextLinesMutator {
     let removed = '';
     if (this._isCurLineInSplice()) {
       if (this._curCol === 0) {
+        // First line to be removed is in splice.
         removed = this._curSplice[this._curSplice.length - 1];
         this._curSplice.length--;
+        // Next lines to be removed are not in splice.
         removed += nextKLinesText(L - 1);
         this._curSplice[1] += L - 1;
       } else {
@@ -917,11 +919,13 @@ class TextLinesMutator {
         this._curSplice[1] += L - 1;
         const sline = this._curSplice.length - 1;
         removed = this._curSplice[sline].substring(this._curCol) + removed;
-        this._curSplice[sline] = this._curSplice[sline].substring(0, this._curCol) +
-            this._linesGet(this._curSplice[0] + this._curSplice[1]);
-        this._curSplice[1] += 1;
+        // Is there a line left?
+        const remaining = this._linesGet(this._curSplice[0] + this._curSplice[1]) || '';
+        this._curSplice[sline] = this._curSplice[sline].substring(0, this._curCol) + remaining;
+        this._curSplice[1] += remaining ? 1 : 0;
       }
     } else {
+      // Nothing that is removed is in splice. Implies curCol === 0.
       removed = nextKLinesText(L);
       this._curSplice[1] += L;
     }
