@@ -138,26 +138,16 @@ exports.handleDisconnect = async (socket) => {
                     ` authorID:${session.author}` +
                     (user && user.username ? ` username:${user.username}` : ''));
   /* eslint-enable prefer-template */
-
-  // get the author color out of the db
-  const color = await authorManager.getAuthorColorId(session.author);
-
-  // prepare the notification for the other users on the pad, that this user left
-  const messageToTheOtherUsers = {
+  socket.broadcast.to(session.padId).json.send({
     type: 'COLLABROOM',
     data: {
       type: 'USER_LEAVE',
       userInfo: {
-        colorId: color,
+        colorId: await authorManager.getAuthorColorId(session.author),
         userId: session.author,
       },
     },
-  };
-
-  // Go through all user that are still on the pad, and send them the USER_LEAVE message
-  socket.broadcast.to(session.padId).json.send(messageToTheOtherUsers);
-
-  // Allow plugins to hook into users leaving the pad
+  });
   hooks.callAll('userLeave', session);
 };
 
@@ -849,9 +839,7 @@ const handleClientReady = async (socket, message, authorID) => {
 
   // get all authordata of this new user
   assert(authorID);
-  const value = await authorManager.getAuthor(authorID);
-  const authorColorId = value.colorId;
-  const authorName = value.name;
+  const {colorId: authorColorId, name: authorName} = await authorManager.getAuthor(authorID);
 
   // load the pad-object from the database
   const pad = await padManager.getPad(padIds.padId);
