@@ -807,36 +807,51 @@ Example:
 exports.exportEtherpadAdditionalContent = () => ['comments'];
 ```
 
-## userLeave
-Called from src/node/handler/PadMessageHandler.js
+## `userLeave`
 
-This in context:
+Called from: `src/node/handler/PadMessageHandler.js`
 
-1. session (including the pad id and author id)
+Called when a user disconnects from a pad. This is useful if you want to perform
+certain actions after a pad has been edited.
 
-This hook gets called when an author leaves a pad. This is useful if you want to perform certain actions after a pad has been edited
+Context properties:
+
+* `auth`: Object containing information used for authentication, provided by the
+  user. Properties:
+  * `padID`: Pad identifier requested by the user. Unlike the `padId` property
+    described below, this might be a read-only pad ID.
+  * `sessionID`: Copied from the client's `sessionID` cookie, which should be
+    the value returned from the `createSession()` HTTP API. This will be nullish
+    if `createSession()` isn't used or the portal doesn't set the `sessionID`
+    cookie.
+  * `token`: User-supplied token.
+* `author`: The user's author ID.
+* `padId`: The pad's real (not read-only) identifier.
+* `readOnlyPadId`: The pad's read-only identifier.
+* `readonly`: If truthy, the user only has read-only access.
+* `rev`: The last revision that was sent to the client.
 
 Example:
 
-```
-exports.userLeave = function(hook, session, callback) {
-  console.log('%s left pad %s', session.author, session.padId);
+```javascript
+exports.userLeave = (hookName, {author, padId}) => {
+  console.log(`${author} left pad ${padId}`);
 };
 ```
 
-### clientReady
-Called from src/node/handler/PadMessageHandler.js
+## `clientReady`
 
-This in context:
+Called from: `src/node/handler/PadMessageHandler.js`
 
-1. message
+Called when a `CLIENT_READY` message is received, which is the first message a
+newly connected client sends.
 
-This hook gets called when handling a CLIENT_READY which is the first message from the client to the server.
+The context is the raw message received from the user.
 
 Example:
 
-```
-exports.clientReady = function(hook, message) {
-  console.log('Client has entered the pad' + message.padId);
+```javascript
+exports.clientReady = (hookName, {padId}) => {
+  console.log(`Client has joined pad ${padId});
 };
 ```
