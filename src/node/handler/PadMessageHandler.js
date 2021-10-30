@@ -187,8 +187,14 @@ exports.handleMessage = async (socket, message) => {
   }
 
   if (message.type === 'CLIENT_READY') {
-    // client tried to auth for the first time (first msg from the client)
-    createSessionInfoAuth(thisSession, message);
+    // Remember this information since we won't have the cookie in further socket.io messages. This
+    // information will be used to check if the sessionId of this connection is still valid since it
+    // could have been deleted by the API.
+    thisSession.auth = {
+      sessionID: message.sessionID,
+      padID: message.padId,
+      token: message.token,
+    };
   }
 
   const auth = thisSession.auth;
@@ -786,20 +792,6 @@ const _correctMarkersInPad = (atext, apool) => {
   });
 
   return builder.toString();
-};
-
-// Creates/replaces the auth object in the given session info.
-const createSessionInfoAuth = (sessionInfo, message) => {
-  // Remember this information since we won't
-  // have the cookie in further socket.io messages.
-  // This information will be used to check if
-  // the sessionId of this connection is still valid
-  // since it could have been deleted by the API.
-  sessionInfo.auth = {
-    sessionID: message.sessionID,
-    padID: message.padId,
-    token: message.token,
-  };
 };
 
 /**
