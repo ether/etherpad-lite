@@ -833,7 +833,8 @@ const handleClientReady = async (socket, message, authorID) => {
 
   // get all author data out of the database (in parallel)
   const historicalAuthorData = {};
-  await Promise.all(authors.map((authorId) => authorManager.getAuthor(authorId).then((author) => {
+  await Promise.all(authors.map(async (authorId) => {
+    const author = await authorManager.getAuthor(authorId);
     if (!author) {
       messageLogger.error(`There is no author for authorId: ${authorId}. ` +
           'This is possibly related to https://github.com/ether/etherpad-lite/issues/2802');
@@ -841,7 +842,7 @@ const handleClientReady = async (socket, message, authorID) => {
       // Filter author attribs (e.g. don't send author's pads to all clients)
       historicalAuthorData[authorId] = {name: author.name, colorId: author.colorId};
     }
-  })));
+  }));
 
   // glue the clientVars together, send them and tell the other clients that a new one is there
 
