@@ -802,17 +802,6 @@ const _correctMarkersInPad = (atext, apool) => {
  * @param message the message from the client
  */
 const handleClientReady = async (socket, message, authorID) => {
-  // check if all ok
-  if (!message.token) {
-    messageLogger.warn('Dropped message, CLIENT_READY Message has no token!');
-    return;
-  }
-
-  if (!message.padId) {
-    messageLogger.warn('Dropped message, CLIENT_READY Message has no padId!');
-    return;
-  }
-
   await hooks.aCallAll('clientReady', message);
 
   // Get ro/rw id:s
