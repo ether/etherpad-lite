@@ -148,7 +148,7 @@ exports.handleDisconnect = async (socket) => {
       },
     },
   });
-  hooks.callAll('userLeave', session);
+  await hooks.aCallAll('userLeave', session);
 };
 
 /**

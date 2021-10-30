@@ -834,7 +834,7 @@ Context properties:
 Example:
 
 ```javascript
-exports.userLeave = (hookName, {author, padId}) => {
+exports.userLeave = async (hookName, {author, padId}) => {
   console.log(`${author} left pad ${padId}`);
 };
 ```
