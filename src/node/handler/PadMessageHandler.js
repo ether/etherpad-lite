@@ -134,12 +134,14 @@ exports.handleDisconnect = async (socket) => {
   // send a disconnect message to the others
   if (session && session.author) {
     const {session: {user} = {}} = socket.client.request;
-    accessLogger.info(`${'[LEAVE]' +
+    /* eslint-disable prefer-template -- it doesn't support breaking across multiple lines */
+    accessLogger.info('[LEAVE]' +
                       ` pad:${session.padId}` +
                       ` socket:${socket.id}` +
                       ` IP:${settings.disableIPlogging ? 'ANONYMOUS' : socket.request.ip}` +
-                      ` authorID:${session.author}`}${
-      (user && user.username) ? ` username:${user.username}` : ''}`);
+                      ` authorID:${session.author}` +
+                      (user && user.username ? ` username:${user.username}` : ''));
+    /* eslint-enable prefer-template */
 
     // get the author color out of the db
     const color = await authorManager.getAuthorColorId(session.author);
@@ -906,12 +908,14 @@ const handleClientReady = async (socket, message, authorID) => {
       padIds.readonly || !webaccess.userCanModify(message.padId, socket.client.request);
 
   const {session: {user} = {}} = socket.client.request;
-  accessLogger.info(`${`[${pad.head > 0 ? 'ENTER' : 'CREATE'}]` +
+  /* eslint-disable prefer-template -- it doesn't support breaking across multiple lines */
+  accessLogger.info(`[${pad.head > 0 ? 'ENTER' : 'CREATE'}]` +
                     ` pad:${padIds.padId}` +
                     ` socket:${socket.id}` +
                     ` IP:${settings.disableIPlogging ? 'ANONYMOUS' : socket.request.ip}` +
-                    ` authorID:${authorID}`}${
-    (user && user.username) ? ` username:${user.username}` : ''}`);
+                    ` authorID:${authorID}` +
+                    (user && user.username ? ` username:${user.username}` : ''));
+  /* eslint-enable prefer-template */
 
   if (message.reconnect) {
     // If this is a reconnect, we don't have to send the client the ClientVars again
