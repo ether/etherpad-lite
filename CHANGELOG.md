@@ -31,6 +31,8 @@
       different. See
       [citizenos/ep_image_upload#49](https://github.com/citizenos/ep_image_upload/pull/49)
       for an example fix.
+  * The `clientReady` server-side hook is deprecated; use the new `userJoin`
+    hook instead.
 
 ### Notable enhancements
 
@@ -38,6 +40,7 @@
 * For plugin authors:
   * `clientVars` was added to the context for the `postAceInit` client-side
     hook. Plugins should use this instead of the `clientVars` global variable.
+  * New `userJoin` server-side hook.
 
 # 1.8.14
 

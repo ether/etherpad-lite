@@ -807,6 +807,30 @@ Example:
 exports.exportEtherpadAdditionalContent = () => ['comments'];
 ```
 
+## `userJoin`
+
+Called from: `src/node/handler/PadMessageHandler.js`
+
+Called after users have been notified that a new user has joined the pad.
+
+Context properties:
+
+* `authorId`: The user's author identifier.
+* `displayName`: The user's display name.
+* `padId`: The real (not read-only) identifier of the pad the user joined. This
+  MUST NOT be shared with any users that are connected with read-only access.
+* `readOnly`: Whether the user only has read-only access.
+* `readOnlyPadId`: The read-only identifier of the pad the user joined.
+* `socket`: The socket.io Socket object.
+
+Example:
+
+```javascript
+exports.userJoin = async (hookName, {authorId, displayName, padId}) => {
+  console.log(`${authorId} (${displayName}) joined pad ${padId});
+};
+```
+
 ## `userLeave`
 
 Called from: `src/node/handler/PadMessageHandler.js`
@@ -836,22 +860,5 @@ Example:
 ```javascript
 exports.userLeave = async (hookName, {author, padId}) => {
   console.log(`${author} left pad ${padId}`);
-};
-```
-
-## `clientReady`
-
-Called from: `src/node/handler/PadMessageHandler.js`
-
-Called when a `CLIENT_READY` message is received, which is the first message a
-newly connected client sends.
-
-The context is the raw message received from the user.
-
-Example:
-
-```javascript
-exports.clientReady = async (hookName, {padId}) => {
-  console.log(`Client has joined pad ${padId});
 };
 ```

@@ -43,6 +43,8 @@ const webaccess = require('../hooks/express/webaccess');
 let rateLimiter;
 let socketio = null;
 
+hooks.deprecationNotices.clientReady = 'use the userJoin hook instead';
+
 exports.socketio = () => {
   // The rate limiter is created in this hook so that restarting the server resets the limiter. The
   // settings.commitRateLimiting object is passed directly to the rate limiter so that the limits
@@ -812,7 +814,7 @@ const handleClientReady = async (socket, message) => {
   sessionInfo.readonly =
       padIds.readonly || !webaccess.userCanModify(sessionInfo.auth.padID, socket.client.request);
 
-  await hooks.aCallAll('clientReady', message);
+  await hooks.aCallAll('clientReady', message); // Deprecated due to awkward context.
 
   // get all authordata of this new user
   assert(sessionInfo.author);
@@ -1088,6 +1090,15 @@ const handleClientReady = async (socket, message) => {
 
     socket.json.send(msg);
   }));
+
+  await hooks.aCallAll('userJoin', {
+    authorId: sessionInfo.author,
+    displayName: authorName,
+    padId: sessionInfo.padId,
+    readOnly: sessionInfo.readonly,
+    readOnlyPadId: sessionInfo.readOnlyPadId,
+    socket,
+  });
 };
 
 /**
