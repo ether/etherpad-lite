@@ -79,7 +79,7 @@ exports.init = async function () {
  * @param {string} event - The socket.io Socket event to listen for.
  * @returns The argument(s) passed to the event handler.
  */
-exports.getSocketEvent = async (socket, event) => {
+exports.waitForSocketEvent = async (socket, event) => {
   const errorEvents = [
     'error',
     'connect_error',
@@ -137,7 +137,7 @@ exports.connect = async (res = null) => {
     query: {cookie: reqCookieHdr, padId},
   });
   try {
-    await exports.getSocketEvent(socket, 'connect');
+    await exports.waitForSocketEvent(socket, 'connect');
   } catch (e) {
     socket.close();
     throw e;
@@ -164,7 +164,7 @@ exports.handshake = async (socket, padId) => {
     token: 't.12345',
   });
   logger.debug('waiting for CLIENT_VARS response...');
-  const msg = await exports.getSocketEvent(socket, 'message');
+  const msg = await exports.waitForSocketEvent(socket, 'message');
   logger.debug('received CLIENT_VARS message');
   return msg;
 };
