@@ -1,9 +1,11 @@
 'use strict';
 
 const apiHandler = require('../../node/handler/APIHandler');
+const io = require('socket.io-client');
 const log4js = require('log4js');
 const process = require('process');
 const server = require('../../node/server');
+const setCookieParser = require('set-cookie-parser');
 const settings = require('../../node/utils/Settings');
 const supertest = require('supertest');
 const webaccess = require('../../node/hooks/express/webaccess');
@@ -67,4 +69,102 @@ exports.init = async function () {
 
   agentResolve(exports.agent);
   return exports.agent;
+};
+
+/**
+ * Waits for the next named socket.io event. Rejects if there is an error event while waiting
+ * (unless waiting for that error event).
+ *
+ * @param {io.Socket} socket - The socket.io Socket object to listen on.
+ * @param {string} event - The socket.io Socket event to listen for.
+ * @returns The argument(s) passed to the event handler.
+ */
+exports.getSocketEvent = async (socket, event) => {
+  const errorEvents = [
+    'error',
+    'connect_error',
+    'connect_timeout',
+    'reconnect_error',
+    'reconnect_failed',
+  ];
+  const handlers = {};
+  let timeoutId;
+  return new Promise((resolve, reject) => {
+    timeoutId = setTimeout(() => reject(new Error(`timed out waiting for ${event} event`)), 1000);
+    for (const event of errorEvents) {
+      handlers[event] = (errorString) => {
+        logger.debug(`socket.io ${event} event: ${errorString}`);
+        reject(new Error(errorString));
+      };
+    }
+    // This will overwrite one of the above handlers if the user is waiting for an error event.
+    handlers[event] = (...args) => {
+      logger.debug(`socket.io ${event} event`);
+      if (args.length > 1) return resolve(args);
+      resolve(args[0]);
+    };
+    Object.entries(handlers).forEach(([event, handler]) => socket.on(event, handler));
+  }).finally(() => {
+    clearTimeout(timeoutId);
+    Object.entries(handlers).forEach(([event, handler]) => socket.off(event, handler));
+  });
+};
+
+/**
+ * Establishes a new socket.io connection.
+ *
+ * @param {object} [res] - Optional HTTP response object. The cookies from this response's
+ *     `set-cookie` header(s) are passed to the server when opening the socket.io connection. If
+ *     nullish, no cookies are passed to the server.
+ * @returns {io.Socket} A socket.io client Socket object.
+ */
+exports.connect = async (res = null) => {
+  // Convert the `set-cookie` header(s) into a `cookie` header.
+  const resCookies = (res == null) ? {} : setCookieParser.parse(res, {map: true});
+  const reqCookieHdr = Object.entries(resCookies).map(
+      ([name, cookie]) => `${name}=${encodeURIComponent(cookie.value)}`).join('; ');
+
+  logger.debug('socket.io connecting...');
+  let padId = null;
+  if (res) {
+    padId = res.req.path.split('/p/')[1];
+  }
+  const socket = io(`${exports.baseUrl}/`, {
+    forceNew: true, // Different tests will have different query parameters.
+    path: '/socket.io',
+    // socketio.js-client on node.js doesn't support cookies (see https://git.io/JU8u9), so the
+    // express_sid cookie must be passed as a query parameter.
+    query: {cookie: reqCookieHdr, padId},
+  });
+  try {
+    await exports.getSocketEvent(socket, 'connect');
+  } catch (e) {
+    socket.close();
+    throw e;
+  }
+  logger.debug('socket.io connected');
+
+  return socket;
+};
+
+/**
+ * Helper function to exchange CLIENT_READY+CLIENT_VARS messages for the named pad.
+ *
+ * @param {io.Socket} socket - Connected socket.io Socket object.
+ * @param {string} padId - Which pad to join.
+ * @returns The CLIENT_VARS message from the server.
+ */
+exports.handshake = async (socket, padId) => {
+  logger.debug('sending CLIENT_READY...');
+  socket.send({
+    component: 'pad',
+    type: 'CLIENT_READY',
+    padId,
+    sessionID: null,
+    token: 't.12345',
+  });
+  logger.debug('waiting for CLIENT_VARS response...');
+  const msg = await exports.getSocketEvent(socket, 'message');
+  logger.debug('received CLIENT_VARS message');
+  return msg;
 };
