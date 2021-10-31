@@ -87,27 +87,43 @@ exports.waitForSocketEvent = async (socket, event) => {
     'reconnect_error',
     'reconnect_failed',
   ];
-  const handlers = {};
-  let timeoutId;
-  return new Promise((resolve, reject) => {
-    timeoutId = setTimeout(() => reject(new Error(`timed out waiting for ${event} event`)), 1000);
-    for (const event of errorEvents) {
-      handlers[event] = (errorString) => {
+  const handlers = new Map();
+  let cancelTimeout;
+  try {
+    const timeoutP = new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error(`timed out waiting for ${event} event`));
+        cancelTimeout = () => {};
+      }, 1000);
+      cancelTimeout = () => {
+        clearTimeout(timeout);
+        resolve();
+        cancelTimeout = () => {};
+      };
+    });
+    const errorEventP = Promise.race(errorEvents.map((event) => new Promise((resolve, reject) => {
+      handlers.set(event, (errorString) => {
         logger.debug(`socket.io ${event} event: ${errorString}`);
         reject(new Error(errorString));
-      };
-    }
-    // This will overwrite one of the above handlers if the user is waiting for an error event.
-    handlers[event] = (...args) => {
-      logger.debug(`socket.io ${event} event`);
-      if (args.length > 1) return resolve(args);
-      resolve(args[0]);
-    };
-    Object.entries(handlers).forEach(([event, handler]) => socket.on(event, handler));
-  }).finally(() => {
-    clearTimeout(timeoutId);
-    Object.entries(handlers).forEach(([event, handler]) => socket.off(event, handler));
-  });
+      });
+    })));
+    const eventP = new Promise((resolve) => {
+      // This will overwrite one of the above handlers if the user is waiting for an error event.
+      handlers.set(event, (...args) => {
+        logger.debug(`socket.io ${event} event`);
+        if (args.length > 1) return resolve(args);
+        resolve(args[0]);
+      });
+    });
+    for (const [event, handler] of handlers) socket.on(event, handler);
+    // timeoutP and errorEventP are guaranteed to never resolve here (they can only reject), so the
+    // Promise returned by Promise.race() is guaranteed to resolve to the eventP value (if
+    // the event arrives).
+    return await Promise.race([timeoutP, errorEventP, eventP]);
+  } finally {
+    cancelTimeout();
+    for (const [event, handler] of handlers) socket.off(event, handler);
+  }
 };
 
 /**
