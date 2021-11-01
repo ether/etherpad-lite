@@ -189,6 +189,7 @@ exports.chat = (() => {
           .append($('<div>').html(ctx.text).contents());
       if (isHistoryAdd) chatMsg.insertAfter('#chatloadmessagesbutton');
       else $('#chattext').append(chatMsg);
+      chatMsg.each((i, e) => html10n.translateElement(html10n.translations, e));
 
       // should we increment the counter??
       if (increment && !isHistoryAdd) {
@@ -198,12 +199,14 @@ exports.chat = (() => {
         $('#chatcounter').text(count);
 
         if (!chatOpen && ctx.duration > 0) {
+          const text = $('<p>')
+              .append($('<span>').addClass('author-name').text(ctx.authorName))
+              // ctx.text was HTML-escaped before calling the hook. Hook functions are trusted
+              // to not introduce an XSS vulnerability by adding unescaped user input.
+              .append($('<div>').html(ctx.text).contents());
+          text.each((i, e) => html10n.translateElement(html10n.translations, e));
           $.gritter.add({
-            text: $('<p>')
-                .append($('<span>').addClass('author-name').text(ctx.authorName))
-                // ctx.text was HTML-escaped before calling the hook. Hook functions are trusted
-                // to not introduce an XSS vulnerability by adding unescaped user input.
-                .append($('<div>').html(ctx.text).contents()),
+            text,
             sticky: ctx.sticky,
             time: ctx.duration,
             position: 'bottom',
