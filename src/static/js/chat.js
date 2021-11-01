@@ -22,6 +22,9 @@ const Tinycon = require('tinycon/tinycon');
 const hooks = require('./pluginfw/hooks');
 const padeditor = require('./pad_editor').padeditor;
 
+// Removes diacritics and lower-cases letters. https://stackoverflow.com/a/37511463
+const normalize = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
 exports.chat = (() => {
   let isStuck = false;
   let userAndChat = false;
@@ -155,10 +158,11 @@ exports.chat = (() => {
       // does the user already have the chatbox open?
       const chatOpen = $('#chatbox').hasClass('visible');
 
-      // does this message contain this user's name? (is the curretn user mentioned?)
-      const myName = $('#myusernameedit').val();
+      // does this message contain this user's name? (is the current user mentioned?)
       const wasMentioned =
-          ctx.text.toLowerCase().indexOf(myName.toLowerCase()) !== -1 && myName !== 'undefined';
+          msg.authorId !== window.clientVars.userId &&
+          ctx.authorName !== html10n.get('pad.userlist.unnamed') &&
+          normalize(ctx.text).includes(normalize(ctx.authorName));
 
       // If the user was mentioned, make the message sticky
       if (wasMentioned && !alreadyFocused && !isHistoryAdd && !chatOpen) {
