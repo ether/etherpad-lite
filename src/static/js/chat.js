@@ -205,7 +205,7 @@ exports.chat = (() => {
                 // to not introduce an XSS vulnerability by adding unescaped user input.
                 .append($('<div>').html(ctx.text).contents()),
             sticky: ctx.sticky,
-            time: 5000,
+            time: ctx.duration,
             position: 'bottom',
             class_name: 'chat-gritter-msg',
           });
