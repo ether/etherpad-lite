@@ -157,27 +157,15 @@ const getParams = () => {
 
   // Then URL applied stuff
   const params = getUrlVars();
-
   for (const setting of getParameters) {
-    const value = params[setting.name];
-
+    const value = params.get(setting.name);
     if (value && (value === setting.checkVal || setting.checkVal == null)) {
       setting.callback(value);
     }
   }
 };
 
-const getUrlVars = () => {
-  const vars = [];
-  let hash;
-  const hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-  for (let i = 0; i < hashes.length; i++) {
-    hash = hashes[i].split('=');
-    vars.push(hash[0]);
-    vars[hash[0]] = hash[1];
-  }
-  return vars;
-};
+const getUrlVars = () => new URL(window.location.href).searchParams;
 
 const sendClientReady = (isReconnect) => {
   let padId = document.location.pathname.substring(document.location.pathname.lastIndexOf('/') + 1);
@@ -744,6 +732,5 @@ exports.baseURL = '';
 exports.settings = settings;
 exports.randomString = randomString;
 exports.getParams = getParams;
-exports.getUrlVars = getUrlVars;
 exports.pad = pad;
 exports.init = init;
