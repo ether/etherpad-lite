@@ -245,14 +245,6 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     } else if (msg.type === 'USER_NEWINFO') {
       const userInfo = msg.userInfo;
       const id = userInfo.userId;
-
-      // Avoid a race condition when setting colors.  If our color was set by a
-      // query param, ignore our own "new user" message's color value.
-      if (id === initialUserInfo.userId && initialUserInfo.globalUserColor) {
-        msg.userInfo.colorId = initialUserInfo.globalUserColor;
-      }
-
-
       if (userSet[id]) {
         userSet[id] = userInfo;
         callbacks.onUpdateUserInfo(userInfo);

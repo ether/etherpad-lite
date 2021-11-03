@@ -814,6 +814,7 @@ const handleClientReady = async (socket, message) => {
   const sessionInfo = sessioninfos[socket.id];
   // Check if the user has already disconnected.
   if (sessionInfo == null) return;
+  assert(sessionInfo.author);
 
   const padIds = await readOnlyManager.getIds(sessionInfo.auth.padID);
   sessionInfo.padId = padIds.padId;
@@ -823,10 +824,16 @@ const handleClientReady = async (socket, message) => {
 
   await hooks.aCallAll('clientReady', message); // Deprecated due to awkward context.
 
-  // get all authordata of this new user
-  assert(sessionInfo.author);
-  const {colorId: authorColorId, name: authorName} =
-      await authorManager.getAuthor(sessionInfo.author);
+  let {colorId: authorColorId, name: authorName} = message.userInfo || {};
+  if (authorColorId && !/^#(?:[0-9A-F]{3}){1,2}$/i.test(authorColorId)) {
+    messageLogger.warn(`Ignoring invalid colorId in CLIENT_READY message: ${authorColorId}`);
+    authorColorId = null;
+  }
+  await Promise.all([
+    authorName && authorManager.setAuthorName(sessionInfo.author, authorName),
+    authorColorId && authorManager.setAuthorColorId(sessionInfo.author, authorColorId),
+  ]);
+  ({colorId: authorColorId, name: authorName} = await authorManager.getAuthor(sessionInfo.author));
 
   // load the pad-object from the database
   const pad = await padManager.getPad(sessionInfo.padId);

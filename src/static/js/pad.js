@@ -184,12 +184,23 @@ const sendClientReady = (isReconnect) => {
     Cookies.set('token', token, {expires: 60});
   }
 
+  // If known, propagate the display name and color to the server in the CLIENT_READY message. This
+  // allows the server to include the values in its reply CLIENT_VARS message (which avoids
+  // initialization race conditions) and in the USER_NEWINFO messages sent to the other users on the
+  // pad (which enables them to display a user join notification with the correct name).
+  const params = getUrlVars();
+  const userInfo = {
+    colorId: params.get('userColor'),
+    name: params.get('userName'),
+  };
+
   const msg = {
     component: 'pad',
     type: 'CLIENT_READY',
     padId,
     sessionID: Cookies.get('sessionID'),
     token,
+    userInfo,
   };
 
   // this is a reconnect, lets tell the server our revisionnumber
