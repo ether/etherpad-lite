@@ -120,7 +120,6 @@ const Ace2Editor = function () {
     'applyPreparedChangesetToBase',
     'setUserChangeNotificationCallback',
     'setAuthorInfo',
-    'setAuthorSelectionRange',
     'callWithAce',
     'execCommand',
     'replaceRange',
@@ -137,8 +136,6 @@ const Ace2Editor = function () {
 
   this.exportText = () => loaded ? info.ace_exportText() : '(awaiting init)\n';
 
-  this.getDebugProperty = (prop) => info.ace_getDebugProperty(prop);
-
   this.getInInternationalComposition =
       () => loaded ? info.ace_getInInternationalComposition() : null;
 
@@ -151,9 +148,6 @@ const Ace2Editor = function () {
   // prepareUserChangeset will return an updated changeset that takes into account the latest user
   // changes, and modify the changeset to be applied by applyPreparedChangesetToBase accordingly.
   this.prepareUserChangeset = () => loaded ? info.ace_prepareUserChangeset() : null;
-
-  // returns array of {error: <browser Error object>, time: +new Date()}
-  this.getUnhandledErrors = () => loaded ? info.ace_getUnhandledErrors() : [];
 
   const addStyleTagsFor = (doc, files) => {
     for (const file of files) {

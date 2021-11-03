@@ -50,8 +50,6 @@ function Ace2Inner(editorInfo, cssManagers) {
   const FORMATTING_STYLES = ['bold', 'italic', 'underline', 'strikethrough'];
   const SELECT_BUTTON_CLASS = 'selected';
 
-  const caughtErrors = [];
-
   let thisAuthor = '';
 
   let disposed = false;
@@ -375,13 +373,6 @@ function Ace2Inner(editorInfo, cssManagers) {
       });
 
       cleanExit = true;
-    } catch (e) {
-      caughtErrors.push(
-          {
-            error: e,
-            time: +new Date(),
-          });
-      throw e;
     } finally {
       const cs = currentCallStack;
       if (cleanExit) {
@@ -695,27 +686,8 @@ function Ace2Inner(editorInfo, cssManagers) {
   editorInfo.ace_setAuthorInfo = (author, info) => {
     setAuthorInfo(author, info);
   };
-  editorInfo.ace_setAuthorSelectionRange = (author, start, end) => {
-    changesetTracker.setAuthorSelectionRange(author, start, end);
-  };
-
-  editorInfo.ace_getUnhandledErrors = () => caughtErrors.slice();
 
   editorInfo.ace_getDocument = () => document;
-
-  editorInfo.ace_getDebugProperty = (prop) => {
-    if (prop === 'debugger') {
-      // obfuscate "eval" so as not to scare yuicompressor
-      window['ev' + 'al']('debugger');
-    } else if (prop === 'rep') {
-      return rep;
-    } else if (prop === 'window') {
-      return window;
-    } else if (prop === 'document') {
-      return document;
-    }
-    return undefined;
-  };
 
   const now = () => Date.now();
 
