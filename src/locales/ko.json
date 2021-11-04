@@ -9,6 +9,7 @@
 			"Revi",
 			"SeoJeongHo",
 			"Ykhwong",
+			"그냥기여자",
 			"아라"
 		]
 	},
@@ -132,6 +133,7 @@
 	"pad.chat.loadmessages": "더 많은 메시지 불러오기",
 	"pad.chat.stick.title": "채팅을 화면에 고정",
 	"pad.chat.writeMessage.placeholder": "여기에 메시지를 적으십시오",
+	"timeslider.followContents": "패드 콘텐츠의 갱신 주시하기",
 	"timeslider.pageTitle": "{{appTitle}} 시간슬라이더",
 	"timeslider.toolbar.returnbutton": "패드로 돌아가기",
 	"timeslider.toolbar.authors": "저자:",
