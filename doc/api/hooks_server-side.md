@@ -807,6 +807,20 @@ Example:
 exports.exportEtherpadAdditionalContent = () => ['comments'];
 ```
 
+## `import`
+
+Called from: `src/node/handler/ImportHandler.js`
+
+Called when a user submits a document for import, before the document is
+converted to HTML. The hook function should return `undefined` (or an empty
+list) if it did NOT convert convert the document to HTML.
+
+Context properties:
+
+* `destFile`: The destination HTML filename.
+* `fileEnding`: The lower-cased filename extension from `srcFile`.
+* `srcFile`: The document to convert.
+
 ## `userJoin`
 
 Called from: `src/node/handler/PadMessageHandler.js`
