@@ -812,8 +812,8 @@ exports.exportEtherpadAdditionalContent = () => ['comments'];
 Called from: `src/node/handler/ImportHandler.js`
 
 Called when a user submits a document for import, before the document is
-converted to HTML. The hook function should return `undefined` (or an empty
-list) if it did NOT convert convert the document to HTML.
+converted to HTML. The hook function should return a truthy value if the hook
+function elected to convert the document to HTML.
 
 Context properties:
 
