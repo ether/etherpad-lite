@@ -819,6 +819,7 @@ Context properties:
 
 * `destFile`: The destination HTML filename.
 * `fileEnding`: The lower-cased filename extension from `srcFile`.
+* `padId`: The identifier of the destination pad.
 * `srcFile`: The document to convert.
 
 ## `userJoin`
