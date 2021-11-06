@@ -818,7 +818,8 @@ function elected to convert the document to HTML.
 Context properties:
 
 * `destFile`: The destination HTML filename.
-* `fileEnding`: The lower-cased filename extension from `srcFile`.
+* `fileEnding`: The lower-cased filename extension from `srcFile` **with leading
+  period** (examples: `'.docx'`, `'.html'`, `'.etherpad'`).
 * `padId`: The identifier of the destination pad.
 * `srcFile`: The document to convert.
 
