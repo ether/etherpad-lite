@@ -131,7 +131,8 @@ exports.handleDisconnect = async (socket) => {
   stats.meter('disconnects').mark();
   const session = sessioninfos[socket.id];
   delete sessioninfos[socket.id];
-  if (!session || !session.author) return;
+  // session.padId can be nullish if the user disconnects before sending CLIENT_READY.
+  if (!session || !session.author || !session.padId) return;
   const {session: {user} = {}} = socket.client.request;
   /* eslint-disable prefer-template -- it doesn't support breaking across multiple lines */
   accessLogger.info('[LEAVE]' +
