@@ -4,7 +4,7 @@
 #
 # Author: muxator
 
-FROM node:14-buster-slim
+FROM node:lts-slim
 LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 
 # plugins to install while building the container. By default no plugins are
@@ -85,7 +85,7 @@ COPY --chown=etherpad:etherpad ./ ./
 # seems to confuse tools such as `npm outdated`, `npm update`, and some ESLint
 # rules.
 RUN { [ -z "${ETHERPAD_PLUGINS}" ] || \
-      npm install --no-save ${ETHERPAD_PLUGINS}; } && \
+      npm install --no-save --legacy-peer-deps ${ETHERPAD_PLUGINS}; } && \
     src/bin/installDeps.sh && \
     rm -rf ~/.npm
 
