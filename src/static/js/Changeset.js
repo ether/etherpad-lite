@@ -2052,15 +2052,13 @@ exports.inverse = (cs, lines, alines, pool) => {
       curLineOpIter = exports.opIterator(alinesGet(curLine));
       curLineOpIterLine = curLine;
       let indexIntoLine = 0;
-      let done = false;
-      while (!done && curLineOpIter.hasNext()) {
+      while (curLineOpIter.hasNext()) {
         curLineNextOp = curLineOpIter.next();
         if (indexIntoLine + curLineNextOp.chars >= curChar) {
           curLineNextOp.chars -= (curChar - indexIntoLine);
-          done = true;
-        } else {
-          indexIntoLine += curLineNextOp.chars;
+          break;
         }
+        indexIntoLine += curLineNextOp.chars;
       }
     }
 
