@@ -42,6 +42,12 @@ const _ = require('underscore');
 
 const logger = log4js.getLogger('settings');
 
+// Exported values that settings.json and credentials.json cannot override.
+const nonSettings = [
+  'credentialsFilename',
+  'settingsFilename',
+];
+
 // This is a function to make it easy to create a new instance. It is important to not reuse a
 // config object after passing it to log4js.configure() because that method mutates the object. :(
 const defaultLogConfig = () => ({appenders: [{type: 'console'}]});
@@ -65,6 +71,8 @@ initLogging(defaultLogLevel, defaultLogConfig());
 exports.root = absolutePaths.findEtherpadRoot();
 logger.info('All relative paths will be interpreted relative to the identified ' +
             `Etherpad base dir: ${exports.root}`);
+exports.settingsFilename = absolutePaths.makeAbsolute(argv.settings || 'settings.json');
+exports.credentialsFilename = absolutePaths.makeAbsolute(argv.credentials || 'credentials.json');
 
 /**
  * The app title, visible e.g. in the browser window
@@ -489,6 +497,11 @@ exports.getEpVersion = () => require('../../package.json').version;
  */
 const storeSettings = (settingsObj) => {
   for (const i of Object.keys(settingsObj || {})) {
+    if (nonSettings.includes(i)) {
+      logger.warn(`Ignoring setting: '${i}'`);
+      continue;
+    }
+
     // test if the setting starts with a lowercase character
     if (i.charAt(0).search('[a-z]') !== 0) {
       logger.warn(`Settings should start with a lowercase character: '${i}'`);
@@ -708,18 +721,8 @@ const parseSettings = (settingsFilename, isSettings) => {
 };
 
 exports.reloadSettings = () => {
-  // Discover where the settings file lives
-  const settingsFilename = absolutePaths.makeAbsolute(argv.settings || 'settings.json');
-
-  // Discover if a credential file exists
-  const credentialsFilename = absolutePaths.makeAbsolute(argv.credentials || 'credentials.json');
-
-  // try to parse the settings
-  const settings = parseSettings(settingsFilename, true);
-
-  // try to parse the credentials
-  const credentials = parseSettings(credentialsFilename, false);
-
+  const settings = parseSettings(exports.settingsFilename, true);
+  const credentials = parseSettings(exports.credentialsFilename, false);
   storeSettings(settings);
   storeSettings(credentials);
 

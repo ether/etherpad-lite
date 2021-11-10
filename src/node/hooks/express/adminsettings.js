@@ -24,7 +24,7 @@ exports.socketio = (hookName, {io}) => {
     socket.on('load', async (query) => {
       let data;
       try {
-        data = await fsp.readFile('settings.json', 'utf8');
+        data = await fsp.readFile(settings.settingsFilename, 'utf8');
       } catch (err) {
         return console.log(err);
       }
@@ -36,8 +36,8 @@ exports.socketio = (hookName, {io}) => {
       }
     });
 
-    socket.on('saveSettings', async (settings) => {
-      await fsp.writeFile('settings.json', settings);
+    socket.on('saveSettings', async (newSettings) => {
+      await fsp.writeFile(settings.settingsFilename, newSettings);
       socket.emit('saveprogress', 'saved');
     });
 
