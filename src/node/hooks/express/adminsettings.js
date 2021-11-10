@@ -6,8 +6,8 @@ const hooks = require('../../../static/js/pluginfw/hooks');
 const plugins = require('../../../static/js/pluginfw/plugins');
 const settings = require('../../utils/Settings');
 
-exports.expressCreateServer = (hookName, args, cb) => {
-  args.app.get('/admin/settings', (req, res) => {
+exports.expressCreateServer = (hookName, {app}, cb) => {
+  app.get('/admin/settings', (req, res) => {
     res.send(eejs.require('ep_etherpad-lite/templates/admin/settings.html', {
       req,
       settings: '',
@@ -17,9 +17,8 @@ exports.expressCreateServer = (hookName, args, cb) => {
   return cb();
 };
 
-exports.socketio = (hookName, args, cb) => {
-  const io = args.io.of('/settings');
-  io.on('connection', (socket) => {
+exports.socketio = (hookName, {io}, cb) => {
+  io.of('/settings').on('connection', (socket) => {
     const {session: {user: {is_admin: isAdmin} = {}} = {}} = socket.conn.request;
     if (!isAdmin) return;
 
