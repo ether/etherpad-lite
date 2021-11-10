@@ -50,12 +50,13 @@ Things in context:
 
 If this hook returns an error, the callback to the install function gets an error, too. This seems useful for adding in features when a particular plugin is installed.
 
-## init_`<plugin name>`
-Called from: src/static/js/pluginfw/plugins.js
+## `init_<plugin name>`
 
-Things in context: None
+Called from: `src/static/js/pluginfw/plugins.js`
 
-This function is called after a specific plugin is initialized. This would probably be more useful than the previous two functions if you only wanted to add in features to one specific plugin.
+Run during startup after the named plugin is initialized.
+
+Context properties: None
 
 ## expressConfigure
 Called from: src/node/hooks/express.js

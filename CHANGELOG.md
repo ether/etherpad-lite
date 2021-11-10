@@ -33,6 +33,8 @@
       for an example fix.
   * The `clientReady` server-side hook is deprecated; use the new `userJoin`
     hook instead.
+  * The `init_<pluginName>` server-side hooks are now run every time Etherpad
+    starts up, not just the first time after the named plugin is installed.
   * The `userLeave` server-side hook's context properties have changed:
     * `auth`: Deprecated.
     * `author`: Deprecated; use the new `authorId` property instead.
