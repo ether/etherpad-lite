@@ -204,9 +204,6 @@ exports.deleteSession = async (sessionID) => {
   const group2sessions = await db.get(`group2sessions:${groupID}`);
   const author2sessions = await db.get(`author2sessions:${authorID}`);
 
-  // remove the session
-  await db.remove(`session:${sessionID}`);
-
   // remove session from group2sessions
   if (group2sessions != null) { // Maybe the group was already deleted
     delete group2sessions.sessionIDs[sessionID];
@@ -218,6 +215,9 @@ exports.deleteSession = async (sessionID) => {
     delete author2sessions.sessionIDs[sessionID];
     await db.set(`author2sessions:${authorID}`, author2sessions);
   }
+
+  // remove the session
+  await db.remove(`session:${sessionID}`);
 };
 
 exports.listSessionsOfGroup = async (groupID) => {
