@@ -55,9 +55,8 @@ exports.deleteGroup = async (groupID) => {
   // loop through all sessions and delete them (in parallel)
   await Promise.all(Object.keys(sessions).map((session) => sessionManager.deleteSession(session)));
 
-  // remove group and group2sessions entry
+  // remove group2sessions entry
   await db.remove(`group2sessions:${groupID}`);
-  await db.remove(`group:${groupID}`);
 
   // unlist the group
   let groups = await exports.listAllGroups();
@@ -65,19 +64,18 @@ exports.deleteGroup = async (groupID) => {
 
   const index = groups.indexOf(groupID);
 
-  if (index === -1) {
-    // it's not listed
+  if (index !== -1) {
+    // remove from the list
+    groups.splice(index, 1);
 
-    return;
+    // regenerate group list
+    const newGroups = {};
+    groups.forEach((group) => newGroups[group] = 1);
+    await db.set('groups', newGroups);
   }
 
-  // remove from the list
-  groups.splice(index, 1);
-
-  // regenerate group list
-  const newGroups = {};
-  groups.forEach((group) => newGroups[group] = 1);
-  await db.set('groups', newGroups);
+  // remove group entry
+  await db.remove(`group:${groupID}`);
 };
 
 exports.doesGroupExist = async (groupID) => {
