@@ -43,38 +43,27 @@ exports.deleteGroup = async (groupID) => {
   }
 
   // iterate through all pads of this group and delete them (in parallel)
-  await Promise.all(Object.keys(group.pads)
-      .map((padID) => padManager.getPad(padID)
-          .then((pad) => pad.remove())
-      ));
+  await Promise.all(Object.keys(group.pads).map(async (padId) => {
+    const pad = await padManager.getPad(padId);
+    await pad.remove();
+  }));
 
-  // iterate through group2sessions and delete all sessions
-  const group2sessions = await db.get(`group2sessions:${groupID}`);
-  const sessions = group2sessions ? group2sessions.sessionIDs : {};
+  // Delete associated sessions in parallel. This should be done before deleting the group2sessions
+  // record because deleting a session updates the group2sessions record.
+  const {sessionIDs = {}} = await db.get(`group2sessions:${groupID}`) || {};
+  await Promise.all(Object.keys(sessionIDs).map(async (sessionId) => {
+    await sessionManager.deleteSession(sessionId);
+  }));
 
-  // loop through all sessions and delete them (in parallel)
-  await Promise.all(Object.keys(sessions).map((session) => sessionManager.deleteSession(session)));
+  await Promise.all([
+    db.remove(`group2sessions:${groupID}`),
+    // UeberDB's setSub() method atomically reads the record, updates the appropriate property, and
+    // writes the result. Setting a property to `undefined` deletes that property (JSON.stringify()
+    // ignores such properties).
+    db.setSub('groups', [groupID], undefined),
+  ]);
 
-  // remove group2sessions entry
-  await db.remove(`group2sessions:${groupID}`);
-
-  // unlist the group
-  let groups = await exports.listAllGroups();
-  groups = groups ? groups.groupIDs : [];
-
-  const index = groups.indexOf(groupID);
-
-  if (index !== -1) {
-    // remove from the list
-    groups.splice(index, 1);
-
-    // regenerate group list
-    const newGroups = {};
-    groups.forEach((group) => newGroups[group] = 1);
-    await db.set('groups', newGroups);
-  }
-
-  // remove group entry
+  // Remove the group record after updating the `groups` record so that the state is consistent.
   await db.remove(`group:${groupID}`);
 };
 
@@ -86,22 +75,12 @@ exports.doesGroupExist = async (groupID) => {
 };
 
 exports.createGroup = async () => {
-  // search for non existing groupID
   const groupID = `g.${randomString(16)}`;
-
-  // create the group
   await db.set(`group:${groupID}`, {pads: {}});
-
-  // list the group
-  let groups = await exports.listAllGroups();
-  groups = groups ? groups.groupIDs : [];
-  groups.push(groupID);
-
-  // regenerate group list
-  const newGroups = {};
-  groups.forEach((group) => newGroups[group] = 1);
-  await db.set('groups', newGroups);
-
+  // Add the group to the `groups` record after the group's individual record is created so that
+  // the state is consistent. Note: UeberDB's setSub() method atomically reads the record, updates
+  // the appropriate property, and writes the result.
+  await db.setSub('groups', [groupID], 1);
   return {groupID};
 };
 
