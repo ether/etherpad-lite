@@ -1,3 +1,5 @@
+'use strict';
+
 const common = require('../common');
 const settings = require('../../../node/utils/Settings');
 
