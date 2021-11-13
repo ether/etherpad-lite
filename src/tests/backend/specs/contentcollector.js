@@ -285,7 +285,6 @@ describe(__filename, function () {
       }
 
       it(testObj.description, async function () {
-        this.timeout(250);
         const {window: {document}} = new jsdom.JSDOM(testObj.html);
         // Create an empty attribute pool
         const apool = new AttributePool();
