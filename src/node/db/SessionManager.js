@@ -134,41 +134,14 @@ exports.createSession = async (groupID, authorID, validUntil) => {
   // set the session into the database
   await db.set(`session:${sessionID}`, {groupID, authorID, validUntil});
 
-  // get the entry
-  let group2sessions = await db.get(`group2sessions:${groupID}`);
-
-  /*
-   * In some cases, the db layer could return "undefined" as well as "null".
-   * Thus, it is not possible to perform strict null checks on group2sessions.
-   * In a previous version of this code, a strict check broke session
-   * management.
-   *
-   * See: https://github.com/ether/etherpad-lite/issues/3567#issuecomment-468613960
-   */
-  if (!group2sessions || !group2sessions.sessionIDs) {
-    // the entry doesn't exist so far, let's create it
-    group2sessions = {sessionIDs: {}};
-  }
-
-  // add the entry for this session
-  group2sessions.sessionIDs[sessionID] = 1;
-
-  // save the new element back
-  await db.set(`group2sessions:${groupID}`, group2sessions);
-
-  // get the author2sessions entry
-  let author2sessions = await db.get(`author2sessions:${authorID}`);
-
-  if (author2sessions == null || author2sessions.sessionIDs == null) {
-    // the entry doesn't exist so far, let's create it
-    author2sessions = {sessionIDs: {}};
-  }
-
-  // add the entry for this session
-  author2sessions.sessionIDs[sessionID] = 1;
-
-  // save the new element back
-  await db.set(`author2sessions:${authorID}`, author2sessions);
+  // Add the session ID to the group2sessions and author2sessions records after creating the session
+  // so that the state is consistent.
+  await Promise.all([
+    // UeberDB's setSub() method atomically reads the record, updates the appropriate (sub)object
+    // property, and writes the result.
+    db.setSub(`group2sessions:${groupID}`, ['sessionIDs', sessionID], 1),
+    db.setSub(`author2sessions:${authorID}`, ['sessionIDs', sessionID], 1),
+  ]);
 
   return {sessionID};
 };
@@ -200,23 +173,16 @@ exports.deleteSession = async (sessionID) => {
   const groupID = session.groupID;
   const authorID = session.authorID;
 
-  // get the group2sessions and author2sessions entries
-  const group2sessions = await db.get(`group2sessions:${groupID}`);
-  const author2sessions = await db.get(`author2sessions:${authorID}`);
+  await Promise.all([
+    // UeberDB's setSub() method atomically reads the record, updates the appropriate (sub)object
+    // property, and writes the result. Setting a property to `undefined` deletes that property
+    // (JSON.stringify() ignores such properties).
+    db.setSub(`group2sessions:${groupID}`, ['sessionIDs', sessionID], undefined),
+    db.setSub(`author2sessions:${authorID}`, ['sessionIDs', sessionID], undefined),
+  ]);
 
-  // remove session from group2sessions
-  if (group2sessions != null) { // Maybe the group was already deleted
-    delete group2sessions.sessionIDs[sessionID];
-    await db.set(`group2sessions:${groupID}`, group2sessions);
-  }
-
-  // remove session from author2sessions
-  if (author2sessions != null) { // Maybe the author was already deleted
-    delete author2sessions.sessionIDs[sessionID];
-    await db.set(`author2sessions:${authorID}`, author2sessions);
-  }
-
-  // remove the session
+  // Delete the session record after updating group2sessions and author2sessions so that the state
+  // is consistent.
   await db.remove(`session:${sessionID}`);
 };
 
