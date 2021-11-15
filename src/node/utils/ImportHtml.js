@@ -22,9 +22,9 @@ const jsdom = require('jsdom');
 const rehype = require('rehype');
 const minifyWhitespace = require('rehype-minify-whitespace');
 
-exports.setPadHTML = async (pad, html) => {
-  const apiLogger = log4js.getLogger('ImportHtml');
+const apiLogger = log4js.getLogger('ImportHtml');
 
+exports.setPadHTML = async (pad, html) => {
   rehype()
       .use(minifyWhitespace, {newlines: false})
       .process(html, (err, output) => {
