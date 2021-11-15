@@ -23,13 +23,12 @@ const rehype = require('rehype');
 const minifyWhitespace = require('rehype-minify-whitespace');
 
 const apiLogger = log4js.getLogger('ImportHtml');
+const processor = rehype().use(minifyWhitespace, {newlines: false});
 
 exports.setPadHTML = async (pad, html) => {
-  rehype()
-      .use(minifyWhitespace, {newlines: false})
-      .process(html, (err, output) => {
-        html = String(output);
-      });
+  processor.process(html, (err, output) => {
+    html = String(output);
+  });
 
   const {window: {document}} = new jsdom.JSDOM(html);
 
