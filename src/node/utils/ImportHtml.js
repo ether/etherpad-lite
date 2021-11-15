@@ -26,10 +26,7 @@ const apiLogger = log4js.getLogger('ImportHtml');
 const processor = rehype().use(minifyWhitespace, {newlines: false});
 
 exports.setPadHTML = async (pad, html) => {
-  processor.process(html, (err, output) => {
-    html = String(output);
-  });
-
+  html = String(await processor.process(html));
   const {window: {document}} = new jsdom.JSDOM(html);
 
   // Appends a line break, used by Etherpad to ensure a caret is available
