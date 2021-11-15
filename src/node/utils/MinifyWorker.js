@@ -10,25 +10,21 @@ const Threads = require('threads');
 
 const compressJS = (content) => Terser.minify(content);
 
-const compressCSS = (filename, ROOT_DIR) => new Promise((res, rej) => {
+const compressCSS = async (filename, ROOT_DIR) => {
   try {
     const absPath = path.resolve(ROOT_DIR, filename);
     const basePath = path.dirname(absPath);
-
-    new CleanCSS({
+    const output = await new CleanCSS({
       rebase: true,
       rebaseTo: basePath,
-    }).minify([absPath], (errors, minified) => {
-      if (errors) return rej(errors);
-
-      return res(minified.styles);
-    });
+    }).minify([absPath]);
+    return output.styles;
   } catch (error) {
     // on error, just yield the un-minified original, but write a log message
     console.error(`Unexpected error minifying ${filename} (${absPath}): ${error}`);
     callback(null, content);
   }
-});
+};
 
 Threads.expose({
   compressJS,
