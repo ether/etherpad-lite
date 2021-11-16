@@ -560,24 +560,6 @@ const handleUserChanges = async (socket, message) => {
   // This one's no longer pending, as we're gonna process it now
   stats.counter('pendingEdits').dec();
 
-  const {data: {baseRev, apool, changeset}} = message;
-
-  // Make sure all required fields are present
-  if (baseRev == null) {
-    messageLogger.warn('Dropped message, USER_CHANGES Message has no baseRev!');
-    return;
-  }
-
-  if (apool == null) {
-    messageLogger.warn('Dropped message, USER_CHANGES Message has no apool!');
-    return;
-  }
-
-  if (changeset == null) {
-    messageLogger.warn('Dropped message, USER_CHANGES Message has no changeset!');
-    return;
-  }
-
   // The client might disconnect between our callbacks. We should still
   // finish processing the changeset, so keep a reference to the session.
   const thisSession = sessioninfos[socket.id];
@@ -590,16 +572,16 @@ const handleUserChanges = async (socket, message) => {
     return;
   }
 
-  const wireApool = (new AttributePool()).fromJsonable(apool);
-
   // Measure time to process edit
   const stopWatch = stats.timer('edits').start();
-
-  // get the pad
-  const pad = await padManager.getPad(thisSession.padId);
-
-  // create the changeset
   try {
+    const {data: {baseRev, apool, changeset}} = message;
+    if (baseRev == null) throw new Error('missing baseRev');
+    if (apool == null) throw new Error('missing apool');
+    if (changeset == null) throw new Error('missing changeset');
+    const wireApool = (new AttributePool()).fromJsonable(apool);
+    const pad = await padManager.getPad(thisSession.padId);
+
     // Verify that the changeset has valid syntax and is in canonical form
     Changeset.checkRep(changeset);
 
