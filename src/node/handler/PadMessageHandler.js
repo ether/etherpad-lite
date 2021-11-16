@@ -560,18 +560,20 @@ const handleUserChanges = async (socket, message) => {
   // This one's no longer pending, as we're gonna process it now
   stats.counter('pendingEdits').dec();
 
+  const {data: {baseRev, apool, changeset}} = message;
+
   // Make sure all required fields are present
-  if (message.data.baseRev == null) {
+  if (baseRev == null) {
     messageLogger.warn('Dropped message, USER_CHANGES Message has no baseRev!');
     return;
   }
 
-  if (message.data.apool == null) {
+  if (apool == null) {
     messageLogger.warn('Dropped message, USER_CHANGES Message has no apool!');
     return;
   }
 
-  if (message.data.changeset == null) {
+  if (changeset == null) {
     messageLogger.warn('Dropped message, USER_CHANGES Message has no changeset!');
     return;
   }
@@ -588,10 +590,7 @@ const handleUserChanges = async (socket, message) => {
     return;
   }
 
-  // get all Vars we need
-  const baseRev = message.data.baseRev;
-  const wireApool = (new AttributePool()).fromJsonable(message.data.apool);
-  let changeset = message.data.changeset;
+  const wireApool = (new AttributePool()).fromJsonable(apool);
 
   // Measure time to process edit
   const stopWatch = stats.timer('edits').start();
@@ -642,10 +641,9 @@ const handleUserChanges = async (socket, message) => {
     // ex. adoptChangesetAttribs
 
     // Afaik, it copies the new attributes from the changeset, to the global Attribute Pool
-    changeset = Changeset.moveOpsToNewPool(changeset, wireApool, pad.pool);
+    let rebasedChangeset = Changeset.moveOpsToNewPool(changeset, wireApool, pad.pool);
 
     // ex. applyUserChanges
-    const apool = pad.pool;
     let r = baseRev;
 
     // The client's changeset might not be based on the latest revision,
@@ -666,17 +664,18 @@ const handleUserChanges = async (socket, message) => {
       // of that revision
       if (baseRev + 1 === r && c === changeset) throw new Error('Changeset already accepted');
 
-      changeset = Changeset.follow(c, changeset, false, apool);
+      rebasedChangeset = Changeset.follow(c, rebasedChangeset, false, pad.pool);
     }
 
     const prevText = pad.text();
 
-    if (Changeset.oldLen(changeset) !== prevText.length) {
-      throw new Error(`Can't apply changeset ${changeset} with oldLen ` +
-                      `${Changeset.oldLen(changeset)} to document of length ${prevText.length}`);
+    if (Changeset.oldLen(rebasedChangeset) !== prevText.length) {
+      throw new Error(
+          `Can't apply changeset ${rebasedChangeset} with oldLen ` +
+          `${Changeset.oldLen(rebasedChangeset)} to document of length ${prevText.length}`);
     }
 
-    await pad.appendRevision(changeset, thisSession.author);
+    await pad.appendRevision(rebasedChangeset, thisSession.author);
 
     const correctionChangeset = _correctMarkersInPad(pad.atext, pad.pool);
     if (correctionChangeset) {
