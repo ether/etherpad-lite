@@ -202,8 +202,8 @@ exports.handleMessage = async (socket, message) => {
     try {
       await rateLimiter.consume(socket.request.ip); // consume 1 point per event from IP
     } catch (e) {
-      console.warn(`Rate limited: ${socket.request.ip} to reduce the amount of rate limiting ` +
-                   'that happens edit the rateLimit values in settings.json');
+      messageLogger.warn(`Rate limited IP ${socket.request.ip}. To reduce the amount of rate ` +
+                         'limiting that happens edit the rateLimit values in settings.json');
       stats.meter('rateLimited').mark();
       socket.json.send({disconnect: 'rateLimited'});
       return;
@@ -584,7 +584,7 @@ const handleUserChanges = async (socket, message) => {
   // and always use the copy. atm a message will be ignored if the session is gone even
   // if the session was valid when the message arrived in the first place
   if (!thisSession) {
-    messageLogger.warn('Dropped message, disconnect happened in the mean time');
+    messageLogger.warn('Ignoring USER_CHANGES from disconnected user');
     return;
   }
 
@@ -693,8 +693,8 @@ const handleUserChanges = async (socket, message) => {
   } catch (err) {
     socket.json.send({disconnect: 'badChangeset'});
     stats.meter('failedChangesets').mark();
-    console.warn(`Failed to apply USER_CHANGES from author ${thisSession.author} ` +
-                 `(socket ${socket.id}) on pad ${thisSession.padId}: ${err.stack || err}`);
+    messageLogger.warn(`Failed to apply USER_CHANGES from author ${thisSession.author} ` +
+                       `(socket ${socket.id}) on pad ${thisSession.padId}: ${err.stack || err}`);
   }
 
   stopWatch.end();
@@ -969,7 +969,7 @@ const handleClientReady = async (socket, message) => {
       apool = attribsForWire.pool.toJsonable();
       atext.attribs = attribsForWire.translated;
     } catch (e) {
-      console.error(e.stack || e);
+      messageLogger.error(e.stack || e);
       socket.json.send({disconnect: 'corruptPad'}); // pull the brakes
 
       return;
@@ -1172,8 +1172,8 @@ const handleChangesetRequest = async (socket, message) => {
     data.requestID = message.data.requestID;
     socket.json.send({type: 'CHANGESET_REQ', data});
   } catch (err) {
-    console.error(`Error while handling a changeset request for ${padIds.padId}`,
-        err.toString(), message.data);
+    messageLogger.error(`Error while handling a changeset request ${message.data} ` +
+                        `for ${padIds.padId}: ${err.stack || err}`);
   }
 };
 
@@ -1316,7 +1316,8 @@ const composePadChangesets = async (padId, startNum, endNum) => {
     return changeset;
   } catch (e) {
     // r-1 indicates the rev that was build starting with startNum, applying startNum+1, +2, +3
-    console.warn('failed to compose cs in pad:', padId, ' startrev:', startNum, ' current rev:', r);
+    messageLogger.warn(
+        `failed to compose cs in pad: ${padId} startrev: ${startNum} current rev: ${r}`);
     throw e;
   }
 };
