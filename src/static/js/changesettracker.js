@@ -139,18 +139,9 @@ const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
         // Get my authorID
         const authorId = parent.parent.pad.myUserInfo.userId;
 
-        // Sanitize authorship
-        // We need to replace all author attribs with thisSession.author,
-        // in case they copy/pasted or otherwise inserted other peoples changes
-        let authorAttr;
-        for (const attr in apool.numToAttrib) {
-          if (apool.numToAttrib[attr][0] === 'author' &&
-              apool.numToAttrib[attr][1] === authorId) {
-            authorAttr = Number(attr).toString(36);
-          }
-        }
-
-        // Replace all added 'author' attribs with the value of the current user
+        // Sanitize authorship: Replace all author attributes with this user's author ID in case the
+        // text was copied from another author.
+        const authorAttr = Changeset.numToString(apool.putAttrib(['author', authorId]));
         const cs = Changeset.unpack(userChangeset);
         const iterator = Changeset.opIterator(cs.ops);
         let op;
