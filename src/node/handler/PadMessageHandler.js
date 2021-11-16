@@ -676,9 +676,9 @@ const handleUserChanges = async (socket, message) => {
     stats.meter('failedChangesets').mark();
     messageLogger.warn(`Failed to apply USER_CHANGES from author ${thisSession.author} ` +
                        `(socket ${socket.id}) on pad ${thisSession.padId}: ${err.stack || err}`);
+  } finally {
+    stopWatch.end();
   }
-
-  stopWatch.end();
 };
 
 exports.updatePadClients = async (pad) => {
