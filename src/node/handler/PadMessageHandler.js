@@ -608,7 +608,7 @@ const handleUserChanges = async (socket, message) => {
       op.attribs.split('*').forEach((attr) => {
         if (!attr) return;
 
-        attr = wireApool.getAttrib(attr);
+        attr = wireApool.getAttrib(Changeset.parseNum(attr));
         if (!attr) return;
 
         // the empty author is used in the clearAuthorship functionality so this
