@@ -37,8 +37,8 @@ const hooks = require('../../static/js/pluginfw/hooks.js');
 const channels = require('channels');
 const stats = require('../stats');
 const assert = require('assert').strict;
-const nodeify = require('nodeify');
 const {RateLimiterMemory} = require('rate-limiter-flexible');
+const util = require('util');
 const webaccess = require('../hooks/express/webaccess');
 
 let rateLimiter;
@@ -87,9 +87,8 @@ stats.gauge('activePads', () => {
 /**
  * A changeset queue per pad that is processed by handleUserChanges()
  */
-const padChannels = new channels.channels(
-    ({socket, message}, callback) => nodeify(handleUserChanges(socket, message), callback)
-);
+const padChannels =
+    new channels.channels(({socket, message}, cb) => handleUserChangesCb(socket, message, cb));
 
 /**
  * This Method is called by server.js to tell the message handler on which socket it should send
@@ -691,6 +690,7 @@ const handleUserChanges = async (socket, message) => {
 
   stopWatch.end();
 };
+const handleUserChangesCb = util.callbackify(handleUserChanges);
 
 exports.updatePadClients = async (pad) => {
   // skip this if no-one is on this pad
