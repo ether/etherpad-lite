@@ -645,9 +645,6 @@ const handleUserChanges = async (socket, message) => {
       // Afaik, it copies the new attributes from the changeset, to the global Attribute Pool
       changeset = Changeset.moveOpsToNewPool(changeset, wireApool, pad.pool);
     } catch (e) {
-      // There is an error in this changeset, so just refuse it
-      socket.json.send({disconnect: 'badChangeset'});
-      stats.meter('failedChangesets').mark();
       throw new Error(`Can't apply USER_CHANGES from Socket ${socket.id} because: ${e.message}`);
     }
 
@@ -673,15 +670,11 @@ const handleUserChanges = async (socket, message) => {
         // prevent eplite from accepting it TODO: better send the client a NEW_CHANGES
         // of that revision
         if (baseRev + 1 === r && c === changeset) {
-          socket.json.send({disconnect: 'badChangeset'});
-          stats.meter('failedChangesets').mark();
           throw new Error("Won't apply USER_CHANGES, as it contains an already accepted changeset");
         }
 
         changeset = Changeset.follow(c, changeset, false, apool);
       } catch (e) {
-        socket.json.send({disconnect: 'badChangeset'});
-        stats.meter('failedChangesets').mark();
         throw new Error(`Can't apply USER_CHANGES, because ${e.message}`);
       }
     }
@@ -689,19 +682,11 @@ const handleUserChanges = async (socket, message) => {
     const prevText = pad.text();
 
     if (Changeset.oldLen(changeset) !== prevText.length) {
-      socket.json.send({disconnect: 'badChangeset'});
-      stats.meter('failedChangesets').mark();
       throw new Error(`Can't apply USER_CHANGES ${changeset} with oldLen ` +
                       `${Changeset.oldLen(changeset)} to document of length ${prevText.length}`);
     }
 
-    try {
-      await pad.appendRevision(changeset, thisSession.author);
-    } catch (e) {
-      socket.json.send({disconnect: 'badChangeset'});
-      stats.meter('failedChangesets').mark();
-      throw e;
-    }
+    await pad.appendRevision(changeset, thisSession.author);
 
     const correctionChangeset = _correctMarkersInPad(pad.atext, pad.pool);
     if (correctionChangeset) {
@@ -716,6 +701,8 @@ const handleUserChanges = async (socket, message) => {
 
     await exports.updatePadClients(pad);
   } catch (err) {
+    socket.json.send({disconnect: 'badChangeset'});
+    stats.meter('failedChangesets').mark();
     console.warn(err.stack || err);
   }
 
