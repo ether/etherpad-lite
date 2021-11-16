@@ -601,52 +601,48 @@ const handleUserChanges = async (socket, message) => {
 
   // create the changeset
   try {
-    try {
-      // Verify that the changeset has valid syntax and is in canonical form
-      Changeset.checkRep(changeset);
+    // Verify that the changeset has valid syntax and is in canonical form
+    Changeset.checkRep(changeset);
 
-      // Verify that the attribute indexes used in the changeset are all
-      // defined in the accompanying attribute pool.
-      Changeset.eachAttribNumber(changeset, (n) => {
-        if (!wireApool.getAttrib(n)) {
-          throw new Error(`Attribute pool is missing attribute ${n} for changeset ${changeset}`);
+    // Verify that the attribute indexes used in the changeset are all
+    // defined in the accompanying attribute pool.
+    Changeset.eachAttribNumber(changeset, (n) => {
+      if (!wireApool.getAttrib(n)) {
+        throw new Error(`Attribute pool is missing attribute ${n} for changeset ${changeset}`);
+      }
+    });
+
+    // Validate all added 'author' attribs to be the same value as the current user
+    const iterator = Changeset.opIterator(Changeset.unpack(changeset).ops);
+    let op;
+
+    while (iterator.hasNext()) {
+      op = iterator.next();
+
+      // + can add text with attribs
+      // = can change or add attribs
+      // - can have attribs, but they are discarded and don't show up in the attribs -
+      // but do show up in the pool
+
+      op.attribs.split('*').forEach((attr) => {
+        if (!attr) return;
+
+        attr = wireApool.getAttrib(attr);
+        if (!attr) return;
+
+        // the empty author is used in the clearAuthorship functionality so this
+        // should be the only exception
+        if ('author' === attr[0] && (attr[1] !== thisSession.author && attr[1] !== '')) {
+          throw new Error(`Author ${thisSession.author} tried to submit changes as author ` +
+                          `${attr[1]} in changeset ${changeset}`);
         }
       });
-
-      // Validate all added 'author' attribs to be the same value as the current user
-      const iterator = Changeset.opIterator(Changeset.unpack(changeset).ops);
-      let op;
-
-      while (iterator.hasNext()) {
-        op = iterator.next();
-
-        // + can add text with attribs
-        // = can change or add attribs
-        // - can have attribs, but they are discarded and don't show up in the attribs -
-        // but do show up in the  pool
-
-        op.attribs.split('*').forEach((attr) => {
-          if (!attr) return;
-
-          attr = wireApool.getAttrib(attr);
-          if (!attr) return;
-
-          // the empty author is used in the clearAuthorship functionality so this
-          // should be the only exception
-          if ('author' === attr[0] && (attr[1] !== thisSession.author && attr[1] !== '')) {
-            throw new Error(`Author ${thisSession.author} tried to submit changes as author ` +
-                            `${attr[1]} in changeset ${changeset}`);
-          }
-        });
-      }
-
-      // ex. adoptChangesetAttribs
-
-      // Afaik, it copies the new attributes from the changeset, to the global Attribute Pool
-      changeset = Changeset.moveOpsToNewPool(changeset, wireApool, pad.pool);
-    } catch (e) {
-      throw new Error(`Can't apply USER_CHANGES from Socket ${socket.id} because: ${e.message}`);
     }
+
+    // ex. adoptChangesetAttribs
+
+    // Afaik, it copies the new attributes from the changeset, to the global Attribute Pool
+    changeset = Changeset.moveOpsToNewPool(changeset, wireApool, pad.pool);
 
     // ex. applyUserChanges
     const apool = pad.pool;
@@ -665,24 +661,18 @@ const handleUserChanges = async (socket, message) => {
       // rebases "changeset" so that it is relative to revision r
       // and can be applied after "c".
 
-      try {
-        // a changeset can be based on an old revision with the same changes in it
-        // prevent eplite from accepting it TODO: better send the client a NEW_CHANGES
-        // of that revision
-        if (baseRev + 1 === r && c === changeset) {
-          throw new Error("Won't apply USER_CHANGES, as it contains an already accepted changeset");
-        }
+      // a changeset can be based on an old revision with the same changes in it
+      // prevent eplite from accepting it TODO: better send the client a NEW_CHANGES
+      // of that revision
+      if (baseRev + 1 === r && c === changeset) throw new Error('Changeset already accepted');
 
-        changeset = Changeset.follow(c, changeset, false, apool);
-      } catch (e) {
-        throw new Error(`Can't apply USER_CHANGES, because ${e.message}`);
-      }
+      changeset = Changeset.follow(c, changeset, false, apool);
     }
 
     const prevText = pad.text();
 
     if (Changeset.oldLen(changeset) !== prevText.length) {
-      throw new Error(`Can't apply USER_CHANGES ${changeset} with oldLen ` +
+      throw new Error(`Can't apply changeset ${changeset} with oldLen ` +
                       `${Changeset.oldLen(changeset)} to document of length ${prevText.length}`);
     }
 
@@ -703,7 +693,8 @@ const handleUserChanges = async (socket, message) => {
   } catch (err) {
     socket.json.send({disconnect: 'badChangeset'});
     stats.meter('failedChangesets').mark();
-    console.warn(err.stack || err);
+    console.warn(`Failed to apply USER_CHANGES from author ${thisSession.author} ` +
+                 `(socket ${socket.id}) on pad ${thisSession.padId}: ${err.stack || err}`);
   }
 
   stopWatch.end();
