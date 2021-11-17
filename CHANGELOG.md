@@ -1,3 +1,13 @@
+# 1.9.0 (not yet released)
+
+### Notable enhancements
+
+#### For plugin authors
+
+* New APIs for processing attributes: `ep_etherpad-lite/static/js/attributes`
+  (low-level API) and `ep_etherpad-lite/static/js/AttributeMap` (high-level
+  API).
+
 # 1.8.15
 
 ### Security fixes
