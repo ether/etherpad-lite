@@ -119,15 +119,11 @@ const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       const alines = this.alines;
       for (let i = 0; i < alines.length; i++) {
         Changeset.eachAttribNumber(alines[i], (n) => {
-          if (!seenNums[n]) {
-            seenNums[n] = true;
-            if (this.apool.getAttribKey(n) === 'author') {
-              const a = this.apool.getAttribValue(n);
-              if (a) {
-                authors.push(a);
-              }
-            }
-          }
+          if (seenNums[n]) return;
+          seenNums[n] = true;
+          if (this.apool.getAttribKey(n) !== 'author') return;
+          const a = this.apool.getAttribValue(n);
+          if (a) authors.push(a);
         });
       }
       authors.sort();

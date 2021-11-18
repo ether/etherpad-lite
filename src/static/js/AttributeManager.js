@@ -147,13 +147,10 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
   getAttributeOnLine(lineNum, attributeName) {
     // get  `attributeName` attribute of first char of line
     const aline = this.rep.alines[lineNum];
-    if (aline) {
-      const opIter = Changeset.opIterator(aline);
-      if (opIter.hasNext()) {
-        return Changeset.opAttributeValue(opIter.next(), attributeName, this.rep.apool) || '';
-      }
-    }
-    return '';
+    if (!aline) return '';
+    const opIter = Changeset.opIterator(aline);
+    if (!opIter.hasNext()) return '';
+    return Changeset.opAttributeValue(opIter.next(), attributeName, this.rep.apool) || '';
   },
 
   /*
@@ -163,21 +160,16 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
   getAttributesOnLine(lineNum) {
     // get attributes of first char of line
     const aline = this.rep.alines[lineNum];
+    if (!aline) return [];
+    const opIter = Changeset.opIterator(aline);
+    if (!opIter.hasNext()) return [];
+    const op = opIter.next();
+    if (!op.attribs) return [];
     const attributes = [];
-    if (aline) {
-      const opIter = Changeset.opIterator(aline);
-      let op;
-      if (opIter.hasNext()) {
-        op = opIter.next();
-        if (!op.attribs) return [];
-
-        Changeset.eachAttribNumber(op.attribs, (n) => {
-          attributes.push([this.rep.apool.getAttribKey(n), this.rep.apool.getAttribValue(n)]);
-        });
-        return attributes;
-      }
-    }
-    return [];
+    Changeset.eachAttribNumber(op.attribs, (n) => {
+      attributes.push([this.rep.apool.getAttribKey(n), this.rep.apool.getAttribValue(n)]);
+    });
+    return attributes;
   },
 
   /*
@@ -278,27 +270,22 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
 
     // we need to sum up how much characters each operations take until the wanted position
     let currentPointer = 0;
-    const attributes = [];
     let currentOperation;
 
     while (opIter.hasNext()) {
       currentOperation = opIter.next();
       currentPointer += currentOperation.chars;
-
-      if (currentPointer > column) {
-        // we got the operation of the wanted position, now collect all its attributes
-        Changeset.eachAttribNumber(currentOperation.attribs, (n) => {
-          attributes.push([
-            this.rep.apool.getAttribKey(n),
-            this.rep.apool.getAttribValue(n),
-          ]);
-        });
-
-        // skip the loop
-        return attributes;
-      }
+      if (currentPointer <= column) continue;
+      const attributes = [];
+      Changeset.eachAttribNumber(currentOperation.attribs, (n) => {
+        attributes.push([
+          this.rep.apool.getAttribKey(n),
+          this.rep.apool.getAttribValue(n),
+        ]);
+      });
+      return attributes;
     }
-    return attributes;
+    return [];
   },
 
   /*

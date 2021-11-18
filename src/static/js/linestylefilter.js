@@ -77,26 +77,24 @@ linestylefilter.getLineStyleFilter = (lineLength, aline, textAndClassFunc, apool
       Changeset.eachAttribNumber(attribs, (n) => {
         // Give us this attributes key
         const key = apool.getAttribKey(n);
-        if (key) {
-          const value = apool.getAttribValue(n);
-          if (value) {
-            if (!isLineAttribMarker && AttributeManager.lineAttributes.indexOf(key) >= 0) {
-              isLineAttribMarker = true;
-            }
-            if (key === 'author') {
-              classes += ` ${linestylefilter.getAuthorClassName(value)}`;
-            } else if (key === 'list') {
-              classes += ` list:${value}`;
-            } else if (key === 'start') {
-              // Needed to introduce the correct Ordered list item start number on import
-              classes += ` start:${value}`;
-            } else if (linestylefilter.ATTRIB_CLASSES[key]) {
-              classes += ` ${linestylefilter.ATTRIB_CLASSES[key]}`;
-            } else {
-              const results = hooks.callAll('aceAttribsToClasses', {linestylefilter, key, value});
-              classes += ` ${results.join(' ')}`;
-            }
-          }
+        if (!key) return;
+        const value = apool.getAttribValue(n);
+        if (!value) return;
+        if (!isLineAttribMarker && AttributeManager.lineAttributes.indexOf(key) >= 0) {
+          isLineAttribMarker = true;
+        }
+        if (key === 'author') {
+          classes += ` ${linestylefilter.getAuthorClassName(value)}`;
+        } else if (key === 'list') {
+          classes += ` list:${value}`;
+        } else if (key === 'start') {
+          // Needed to introduce the correct Ordered list item start number on import
+          classes += ` start:${value}`;
+        } else if (linestylefilter.ATTRIB_CLASSES[key]) {
+          classes += ` ${linestylefilter.ATTRIB_CLASSES[key]}`;
+        } else {
+          const results = hooks.callAll('aceAttribsToClasses', {linestylefilter, key, value});
+          classes += ` ${results.join(' ')}`;
         }
       });
 
