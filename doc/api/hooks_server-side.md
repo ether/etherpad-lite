@@ -646,39 +646,36 @@ exports.clientVars = (hookName, context, callback) => {
 };
 ```
 
-## getLineHTMLForExport
-Called from: src/node/utils/ExportHtml.js
+## `getLineHTMLForExport`
 
-Things in context:
+Called from: `src/node/utils/ExportHtml.js`
 
-1. apool - pool object
-2. attribLine - line attributes
-3. text - line text
+This hook will allow a plug-in developer to re-write each line when exporting to
+HTML.
 
-This hook will allow a plug-in developer to re-write each line when exporting to HTML.
+Context properties:
+
+* `apool`: Pool object.
+* `attribLine`: Line attributes.
+* `line`:
+* `lineContent`:
+* `text`: Line text.
+* `padId`: Writable (not read-only) pad identifier.
 
 Example:
-```
-var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 
-exports.getLineHTMLForExport = function (hook, context) {
-  var header = _analyzeLine(context.attribLine, context.apool);
-  if (header) {
-    return "<" + header + ">" + context.lineContent + "</" + header + ">";
-  }
-}
+```javascript
+const Changeset = require('ep_etherpad-lite/static/js/Changeset');
 
-function _analyzeLine(alineAttrs, apool) {
-  var header = null;
-  if (alineAttrs) {
-    var opIter = Changeset.opIterator(alineAttrs);
-    if (opIter.hasNext()) {
-      var op = opIter.next();
-      header = Changeset.opAttributeValue(op, 'heading', apool);
-    }
-  }
-  return header;
-}
+exports.getLineHTMLForExport = async (hookName, context) => {
+  if (!context.attribLine) return;
+  const opIter = Changeset.opIterator(context.attribLine);
+  if (!opIter.hasNext()) return;
+  const op = opIter.next();
+  const heading = Changeset.opAttributeValue(op, 'heading', apool);
+  if (!heading) return;
+  context.lineContent = `<${heading}>${context.lineContent}</${heading}>`;
+};
 ```
 
 ## exportHTMLAdditionalContent
