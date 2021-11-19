@@ -22,6 +22,7 @@
  * limitations under the License.
  */
 
+const AttributeMap = require('./AttributeMap');
 const AttributePool = require('./AttributePool');
 const Changeset = require('./Changeset');
 
@@ -141,7 +142,6 @@ const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
 
         // Sanitize authorship: Replace all author attributes with this user's author ID in case the
         // text was copied from another author.
-        const authorAttr = Changeset.numToString(apool.putAttrib(['author', authorId]));
         const cs = Changeset.unpack(userChangeset);
         const iterator = Changeset.opIterator(cs.ops);
         let op;
@@ -150,18 +150,12 @@ const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
         while (iterator.hasNext()) {
           op = iterator.next();
           if (op.opcode === '+') {
-            let newAttrs = '';
-
-            op.attribs.split('*').forEach((attrNum) => {
-              if (!attrNum) return;
-              const attr = apool.getAttrib(parseInt(attrNum, 36));
-              if (!attr) return;
-              if ('author' === attr[0]) {
-                // replace that author with the current one
-                newAttrs += `*${authorAttr}`;
-              } else { newAttrs += `*${attrNum}`; } // overtake all other attribs as is
-            });
-            op.attribs = newAttrs;
+            const attribs = AttributeMap.fromString(op.attribs, apool);
+            const oldAuthorId = attribs.get('author');
+            if (oldAuthorId != null && oldAuthorId !== authorId) {
+              attribs.set('author', authorId);
+              op.attribs = attribs.toString();
+            }
           }
           assem.append(op);
         }

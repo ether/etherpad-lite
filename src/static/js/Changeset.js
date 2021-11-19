@@ -22,13 +22,24 @@
  * https://github.com/ether/pad/blob/master/infrastructure/ace/www/easysync2.js
  */
 
+const AttributeMap = require('./AttributeMap');
 const AttributePool = require('./AttributePool');
+const attributes = require('./attributes');
 const {padutils} = require('./pad_utils');
 
 /**
  * A `[key, value]` pair of strings describing a text attribute.
  *
  * @typedef {[string, string]} Attribute
+ */
+
+/**
+ * A concatenated sequence of zero or more attribute identifiers, each one represented by an
+ * asterisk followed by a base-36 encoded attribute number.
+ *
+ * Examples: '', '*0', '*3*j*z*1q'
+ *
+ * @typedef {string} AttributeString
  */
 
 /**
@@ -236,15 +247,19 @@ const copyOp = (op1, op2 = exports.newOp()) => Object.assign(op2, op1);
  *
  * @param {('-'|'+'|'=')} opcode - The operator to use.
  * @param {string} text - The text to remove/add/keep.
- * @param {(string|Attribute[])} [attribs] - The attributes to apply to the operations. See
- *     `makeAttribsString`.
- * @param {?AttributePool} [pool] - See `makeAttribsString`.
+ * @param {(Iterable<Attribute>|AttributeString)} [attribs] - The attributes to insert into the pool
+ *     (if necessary) and encode. If an attribute string, no checking is performed to ensure that
+ *     the attributes exist in the pool, are in the canonical order, and contain no duplicate keys.
+ *     If this is an iterable of attributes, `pool` must be non-null.
+ * @param {?AttributePool} pool - Attribute pool. Required if `attribs` is an iterable of
+ *     attributes, ignored if `attribs` is an attribute string.
  * @yields {Op} One or two ops (depending on the presense of newlines) that cover the given text.
  * @returns {Generator<Op>}
  */
 const opsFromText = function* (opcode, text, attribs = '', pool = null) {
   const op = exports.newOp(opcode);
-  op.attribs = exports.makeAttribsString(opcode, attribs, pool);
+  op.attribs = typeof attribs === 'string'
+    ? attribs : new AttributeMap(pool).update(attribs || [], opcode === '+').toString();
   const lastNewlinePos = text.lastIndexOf('\n');
   if (lastNewlinePos < 0) {
     op.chars = text.length;
@@ -387,9 +402,9 @@ exports.smartOpAssembler = () => {
    * @deprecated Use `opsFromText` instead.
    * @param {('-'|'+'|'=')} opcode - The operator to use.
    * @param {string} text - The text to remove/add/keep.
-   * @param {(string|Attribute[])} attribs - The attributes to apply to the operations. See
-   *     `makeAttribsString`.
-   * @param {?AttributePool} pool - See `makeAttribsString`.
+   * @param {(string|Iterable<Attribute>)} attribs - The attributes to apply to the operations.
+   * @param {?AttributePool} pool - Attribute pool. Only required if `attribs` is an iterable of
+   *     attribute key, value pairs.
    */
   const appendOpWithText = (opcode, text, attribs, pool) => {
     padutils.warnWithStack('Changeset.smartOpAssembler().appendOpWithText() is deprecated; ' +
@@ -1110,19 +1125,10 @@ exports.mutateTextLines = (cs, lines) => {
 };
 
 /**
- * Sorts an array of attributes by key.
- *
- * @param {Attribute[]} attribs - The array of attributes to sort in place.
- * @returns {Attribute[]} The `attribs` array.
- */
-const sortAttribs =
-    (attribs) => attribs.sort((a, b) => (a[0] > b[0] ? 1 : 0) - (a[0] < b[0] ? 1 : 0));
-
-/**
  * Composes two attribute strings (see below) into one.
  *
- * @param {string} att1 - first attribute string
- * @param {string} att2 - second attribue string
+ * @param {AttributeString} att1 - first attribute string
+ * @param {AttributeString} att2 - second attribue string
  * @param {boolean} resultIsMutation -
  * @param {AttributePool} pool - attribute pool
  * @returns {string}
@@ -1149,27 +1155,7 @@ exports.composeAttributes = (att1, att2, resultIsMutation, pool) => {
     return att2;
   }
   if (!att2) return att1;
-  const atts = new Map();
-  att1.replace(/\*([0-9a-z]+)/g, (_, a) => {
-    const [key, val] = pool.getAttrib(exports.parseNum(a));
-    atts.set(key, val);
-    return '';
-  });
-  att2.replace(/\*([0-9a-z]+)/g, (_, a) => {
-    const [key, val] = pool.getAttrib(exports.parseNum(a));
-    if (val || resultIsMutation) {
-      atts.set(key, val);
-    } else {
-      atts.delete(key);
-    }
-    return '';
-  });
-  const buf = exports.stringAssembler();
-  for (const att of sortAttribs([...atts])) {
-    buf.append('*');
-    buf.append(exports.numToString(pool.putAttrib(att)));
-  }
-  return buf.toString();
+  return AttributeMap.fromString(att1, pool).updateFromString(att2, !resultIsMutation).toString();
 };
 
 /**
@@ -1611,16 +1597,21 @@ exports.makeAttribution = (text) => {
  * Iterates over attributes in exports, attribution string, or attribs property of an op and runs
  * function func on them.
  *
+ * @deprecated Use `attributes.decodeAttribString()` instead.
  * @param {string} cs - changeset
  * @param {Function} func - function to call
  */
 exports.eachAttribNumber = (cs, func) => {
+  padutils.warnWithStack('Changeset.eachAttribNumber() is deprecated; ' +
+                         'use attributes.decodeAttribString() instead');
   let dollarPos = cs.indexOf('$');
   if (dollarPos < 0) {
     dollarPos = cs.length;
   }
   const upToDollar = cs.substring(0, dollarPos);
 
+  // WARNING: The following cannot be replaced with a call to `attributes.decodeAttribString()`
+  // because that function only works on attribute strings, not serialized operations or changesets.
   upToDollar.replace(/\*([0-9a-z]+)/g, (_, a) => {
     func(exports.parseNum(a));
     return '';
@@ -1785,32 +1776,43 @@ exports.isIdentity = (cs) => {
 };
 
 /**
+ * @deprecated Use an AttributeMap instead.
+ */
+const attribsAttributeValue = (attribs, key, pool) => {
+  if (!attribs) return '';
+  for (const [k, v] of attributes.attribsFromString(attribs, pool)) {
+    if (k === key) return v;
+  }
+  return '';
+};
+
+/**
  * Returns all the values of attributes with a certain key in an Op attribs string.
  *
+ * @deprecated Use an AttributeMap instead.
  * @param {Op} op - Op
  * @param {string} key - string to search for
  * @param {AttributePool} pool - attribute pool
  * @returns {string}
  */
-exports.opAttributeValue = (op, key, pool) => exports.attribsAttributeValue(op.attribs, key, pool);
+exports.opAttributeValue = (op, key, pool) => {
+  padutils.warnWithStack('Changeset.opAttributeValue() is deprecated; use an AttributeMap instead');
+  return attribsAttributeValue(op.attribs, key, pool);
+};
 
 /**
  * Returns all the values of attributes with a certain key in an attribs string.
  *
- * @param {string} attribs - Attribute string
+ * @deprecated Use an AttributeMap instead.
+ * @param {AttributeString} attribs - Attribute string
  * @param {string} key - string to search for
  * @param {AttributePool} pool - attribute pool
  * @returns {string}
  */
 exports.attribsAttributeValue = (attribs, key, pool) => {
-  if (!attribs) return '';
-  let value = '';
-  exports.eachAttribNumber(attribs, (n) => {
-    if (pool.getAttribKey(n) === key) {
-      value = pool.getAttribValue(n);
-    }
-  });
-  return value;
+  padutils.warnWithStack('Changeset.attribsAttributeValue() is deprecated; ' +
+                         'use an AttributeMap instead');
+  return attribsAttributeValue(attribs, key, pool);
 };
 
 /**
@@ -1846,7 +1848,8 @@ exports.builder = (oldLen) => {
      */
     keep: (N, L, attribs, pool) => {
       o.opcode = '=';
-      o.attribs = (attribs && exports.makeAttribsString('=', attribs, pool)) || '';
+      o.attribs = typeof attribs === 'string'
+        ? attribs : new AttributeMap(pool).update(attribs || []).toString();
       o.chars = N;
       o.lines = (L || 0);
       assem.append(o);
@@ -1908,8 +1911,9 @@ exports.builder = (oldLen) => {
 /**
  * Constructs an attribute string from a sequence of attributes.
  *
+ * @deprecated Use `AttributeMap.prototype.toString()` or `attributes.attribsToString()` instead.
  * @param {string} opcode - The opcode for the Op that will get the resulting attribute string.
- * @param {?(Attribute[]|AttributeString)} attribs - The attributes to insert into the pool
+ * @param {?(Iterable<Attribute>|AttributeString)} attribs - The attributes to insert into the pool
  *     (if necessary) and encode. If an attribute string, no checking is performed to ensure that
  *     the attributes exist in the pool, are in the canonical order, and contain no duplicate keys.
  *     If this is an iterable of attributes, `pool` must be non-null.
@@ -1918,11 +1922,12 @@ exports.builder = (oldLen) => {
  * @returns {AttributeString}
  */
 exports.makeAttribsString = (opcode, attribs, pool) => {
+  padutils.warnWithStack(
+      'Changeset.makeAttribsString() is deprecated; ' +
+      'use AttributeMap.prototype.toString() or attributes.attribsToString() instead');
   if (!attribs || !['=', '+'].includes(opcode)) return '';
   if (typeof attribs === 'string') return attribs;
-  return sortAttribs(attribs.filter(([k, v]) => v || opcode === '='))
-      .map((a) => `*${exports.numToString(pool.putAttrib(a))}`)
-      .join('');
+  return new AttributeMap(pool).update(attribs, opcode === '+').toString();
 };
 
 /**
@@ -2085,17 +2090,15 @@ exports.inverse = (cs, lines, alines, pool) => {
     const csOp = csIter.next();
     if (csOp.opcode === '=') {
       if (csOp.attribs) {
-        const csAttribs = [];
-        exports.eachAttribNumber(csOp.attribs, (n) => csAttribs.push(pool.getAttrib(n)));
-        const undoBackToAttribs = cachedStrFunc((attribs) => {
-          const backAttribs = [];
-          for (const [appliedKey, appliedValue] of csAttribs) {
-            const oldValue = exports.attribsAttributeValue(attribs, appliedKey, pool);
-            if (appliedValue !== oldValue) {
-              backAttribs.push([appliedKey, oldValue]);
-            }
+        const attribs = AttributeMap.fromString(csOp.attribs, pool);
+        const undoBackToAttribs = cachedStrFunc((oldAttribsStr) => {
+          const oldAttribs = AttributeMap.fromString(oldAttribsStr, pool);
+          const backAttribs = new AttributeMap(pool);
+          for (const [key, value] of attribs) {
+            const oldValue = oldAttribs.get(key) || '';
+            if (oldValue !== value) backAttribs.set(key, oldValue);
           }
-          return exports.makeAttribsString('=', backAttribs, pool);
+          return backAttribs.toString();
         });
         consumeAttribRuns(csOp.chars, (len, attribs, endsLine) => {
           builder.keep(len, endsLine ? 1 : 0, undoBackToAttribs(attribs));

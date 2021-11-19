@@ -1,7 +1,9 @@
 'use strict';
 
+const AttributeMap = require('./AttributeMap');
 const Changeset = require('./Changeset');
 const ChangesetUtils = require('./ChangesetUtils');
+const attributes = require('./attributes');
 const _ = require('./underscore');
 
 const lineMarkerAttribute = 'lmkr';
@@ -150,7 +152,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     if (!aline) return '';
     const opIter = Changeset.opIterator(aline);
     if (!opIter.hasNext()) return '';
-    return Changeset.opAttributeValue(opIter.next(), attributeName, this.rep.apool) || '';
+    return AttributeMap.fromString(opIter.next().attribs, this.rep.apool).get(attributeName) || '';
   },
 
   /*
@@ -164,10 +166,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     const opIter = Changeset.opIterator(aline);
     if (!opIter.hasNext()) return [];
     const op = opIter.next();
-    if (!op.attribs) return [];
-    const attributes = [];
-    Changeset.eachAttribNumber(op.attribs, (n) => attributes.push(this.rep.apool.getAttrib(n)));
-    return attributes;
+    return [...attributes.attribsFromString(op.attribs, this.rep.apool)];
   },
 
   /*
@@ -191,9 +190,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
       }
     }
 
-    const withIt = Changeset.makeAttribsString('+', [
-      [attributeName, 'true'],
-    ], rep.apool);
+    const withIt = new AttributeMap(rep.apool).set(attributeName, 'true').toString();
     const withItRegex = new RegExp(`${withIt.replace(/\*/g, '\\*')}(\\*|$)`);
     const hasIt = (attribs) => withItRegex.test(attribs);
 
@@ -274,10 +271,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
       currentOperation = opIter.next();
       currentPointer += currentOperation.chars;
       if (currentPointer <= column) continue;
-      const attributes = [];
-      Changeset.eachAttribNumber(
-          currentOperation.attribs, (n) => attributes.push(this.rep.apool.getAttrib(n)));
-      return attributes;
+      return [...attributes.attribsFromString(currentOperation.attribs, this.rep.apool)];
     }
     return [];
   },

@@ -12,6 +12,7 @@
 const AttributePool = require('../../../static/js/AttributePool');
 const Changeset = require('../../../static/js/Changeset');
 const assert = require('assert').strict;
+const attributes = require('../../../static/js/attributes');
 const contentcollector = require('../../../static/js/contentcollector');
 const jsdom = require('jsdom');
 
@@ -348,7 +349,9 @@ describe(__filename, function () {
           const opIter = Changeset.opIterator(aline);
           while (opIter.hasNext()) {
             const op = opIter.next();
-            Changeset.eachAttribNumber(op.attribs, (n) => assert(n < knownAttribs.length));
+            for (const n of attributes.decodeAttribString(op.attribs)) {
+              assert(n < knownAttribs.length);
+            }
           }
         }
         const cc = contentcollector.makeContentCollector(true, null, apool);
@@ -375,16 +378,9 @@ describe(__filename, function () {
           const opIter = Changeset.opIterator(aline);
           while (opIter.hasNext()) {
             const op = opIter.next();
-            const gotOpAttribs = [];
+            const gotOpAttribs = [...attributes.attribsFromString(op.attribs, apool)];
             gotAlineAttribs.push(gotOpAttribs);
-            const wantOpAttribs = [];
-            wantAlineAttribs.push(wantOpAttribs);
-            Changeset.eachAttribNumber(op.attribs, (n) => {
-              const attrib = apool.getAttrib(n);
-              gotOpAttribs.push(attrib);
-              wantOpAttribs.push(attrib);
-            });
-            wantOpAttribs.sort(([keyA], [keyB]) => (keyA > keyB ? 1 : 0) - (keyA < keyB ? 1 : 0));
+            wantAlineAttribs.push(attributes.sort([...gotOpAttribs]));
           }
         }
         assert.deepEqual(gotAttribs, wantAttribs);

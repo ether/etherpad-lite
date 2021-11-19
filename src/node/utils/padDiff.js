@@ -1,5 +1,8 @@
 'use strict';
+
+const AttributeMap = require('../../static/js/AttributeMap');
 const Changeset = require('../../static/js/Changeset');
+const attributes = require('../../static/js/attributes');
 const exportHtml = require('./ExportHtml');
 
 function PadDiff(pad, fromRev, toRev) {
@@ -54,17 +57,11 @@ PadDiff.prototype._isClearAuthorship = function (changeset) {
     return false;
   }
 
-  const attributes = [];
-  Changeset.eachAttribNumber(changeset, (attrNum) => {
-    attributes.push(attrNum);
-  });
+  const [appliedAttribute, anotherAttribute] =
+      attributes.attribsFromString(clearOperator.attribs, this._pad.pool);
 
-  // check that this changeset uses only one attribute
-  if (attributes.length !== 1) {
-    return false;
-  }
-
-  const appliedAttribute = this._pad.pool.getAttrib(attributes[0]);
+  // Check that the operation has exactly one attribute.
+  if (appliedAttribute == null || anotherAttribute != null) return false;
 
   // check if the applied attribute is an anonymous author attribute
   if (appliedAttribute[0] !== 'author' || appliedAttribute[1] !== '') {
@@ -376,26 +373,18 @@ PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
       // If the text this operator applies to is only a star,
       // than this is a false positive and should be ignored
       if (csOp.attribs && textBank !== '*') {
-        const deletedAttrib = apool.putAttrib(['removed', true]);
-        let authorAttrib = apool.putAttrib(['author', '']);
-        const attribs = [];
-        Changeset.eachAttribNumber(csOp.attribs, (n) => {
-          const attrib = apool.getAttrib(n);
-          attribs.push(attrib);
-          if (attrib[0] === 'author') authorAttrib = n;
-        });
+        const attribs = AttributeMap.fromString(csOp.attribs, apool);
         const undoBackToAttribs = cachedStrFunc((oldAttribsStr) => {
-          const backAttribs = [];
+          const oldAttribs = AttributeMap.fromString(oldAttribsStr, apool);
+          const backAttribs = new AttributeMap(apool)
+              .set('author', '')
+              .set('removed', 'true');
           for (const [key, value] of attribs) {
-            const oldValue = Changeset.attribsAttributeValue(oldAttribsStr, key, apool);
-            if (oldValue !== value) backAttribs.push([key, oldValue])
+            const oldValue = oldAttribs.get(key);
+            if (oldValue !== value) backAttribs.set(key, oldValue);
           }
-
-          return Changeset.makeAttribsString('=', backAttribs, apool);
+          return backAttribs.toString();
         });
-
-        const oldAttribsAddition =
-            `*${Changeset.numToString(deletedAttrib)}*${Changeset.numToString(authorAttrib)}`;
 
         let textLeftToProcess = textBank;
 
@@ -429,7 +418,7 @@ PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
             let textBankIndex = 0;
             consumeAttribRuns(lengthToProcess, (len, attribs, endsLine) => {
               // get the old attributes back
-              const oldAttribs = (undoBackToAttribs(attribs) || '') + oldAttribsAddition;
+              const oldAttribs = undoBackToAttribs(attribs);
 
               builder.insert(processText.substr(textBankIndex, len), oldAttribs);
               textBankIndex += len;

@@ -8,6 +8,18 @@
   (low-level API) and `ep_etherpad-lite/static/js/AttributeMap` (high-level
   API).
 
+### Compatibility changes
+
+#### For plugin authors
+
+* Changes to the `src/static/js/Changeset.js` library:
+  * The following attribute processing functions are deprecated (use the new
+    attribute APIs instead):
+    * `attribsAttributeValue()`
+    * `eachAttribNumber()`
+    * `makeAttribsString()`
+    * `opAttributeValue()`
+
 # 1.8.15
 
 ### Security fixes

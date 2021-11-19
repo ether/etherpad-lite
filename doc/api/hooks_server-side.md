@@ -665,6 +665,7 @@ Context properties:
 Example:
 
 ```javascript
+const AttributeMap = require('ep_etherpad-lite/static/js/AttributeMap');
 const Changeset = require('ep_etherpad-lite/static/js/Changeset');
 
 exports.getLineHTMLForExport = async (hookName, context) => {
@@ -672,7 +673,7 @@ exports.getLineHTMLForExport = async (hookName, context) => {
   const opIter = Changeset.opIterator(context.attribLine);
   if (!opIter.hasNext()) return;
   const op = opIter.next();
-  const heading = Changeset.opAttributeValue(op, 'heading', apool);
+  const heading = AttributeMap.fromString(op.attribs, context.apool).get('heading');
   if (!heading) return;
   context.lineContent = `<${heading}>${context.lineContent}</${heading}>`;
 };

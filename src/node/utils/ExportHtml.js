@@ -16,6 +16,7 @@
  */
 
 const Changeset = require('../../static/js/Changeset');
+const attributes = require('../../static/js/attributes');
 const padManager = require('../db/PadManager');
 const _ = require('underscore');
 const Security = require('../../static/js/security');
@@ -206,11 +207,11 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
         const usedAttribs = [];
 
         // mark all attribs as used
-        Changeset.eachAttribNumber(o.attribs, (a) => {
+        for (const a of attributes.decodeAttribString(o.attribs)) {
           if (a in anumMap) {
             usedAttribs.push(anumMap[a]); // i = 0 => bold, etc.
           }
-        });
+        }
         let outermostTag = -1;
         // find the outer most open tag that is no longer used
         for (let i = openTags.length - 1; i >= 0; i--) {

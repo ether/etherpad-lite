@@ -19,6 +19,7 @@
  * limitations under the License.
  */
 
+const AttributeMap = require('../../static/js/AttributeMap');
 const padManager = require('../db/PadManager');
 const Changeset = require('../../static/js/Changeset');
 const ChatMessage = require('../../static/js/ChatMessage');
@@ -32,7 +33,6 @@ const plugins = require('../../static/js/pluginfw/plugin_defs.js');
 const log4js = require('log4js');
 const messageLogger = log4js.getLogger('message');
 const accessLogger = log4js.getLogger('access');
-const _ = require('underscore');
 const hooks = require('../../static/js/pluginfw/hooks.js');
 const stats = require('../stats');
 const assert = require('assert').strict;
@@ -585,14 +585,6 @@ const handleUserChanges = async (socket, message) => {
     // Verify that the changeset has valid syntax and is in canonical form
     Changeset.checkRep(changeset);
 
-    // Verify that the attribute indexes used in the changeset are all
-    // defined in the accompanying attribute pool.
-    Changeset.eachAttribNumber(changeset, (n) => {
-      if (!wireApool.getAttrib(n)) {
-        throw new Error(`Attribute pool is missing attribute ${n} for changeset ${changeset}`);
-      }
-    });
-
     // Validate all added 'author' attribs to be the same value as the current user
     const iterator = Changeset.opIterator(Changeset.unpack(changeset).ops);
     let op;
@@ -605,19 +597,14 @@ const handleUserChanges = async (socket, message) => {
       // - can have attribs, but they are discarded and don't show up in the attribs -
       // but do show up in the pool
 
-      op.attribs.split('*').forEach((attr) => {
-        if (!attr) return;
-
-        attr = wireApool.getAttrib(Changeset.parseNum(attr));
-        if (!attr) return;
-
-        // the empty author is used in the clearAuthorship functionality so this
-        // should be the only exception
-        if ('author' === attr[0] && (attr[1] !== thisSession.author && attr[1] !== '')) {
-          throw new Error(`Author ${thisSession.author} tried to submit changes as author ` +
-                          `${attr[1]} in changeset ${changeset}`);
-        }
-      });
+      // Besides verifying the author attribute, this serves a second purpose:
+      // AttributeMap.fromString() ensures that all attribute numbers are valid (it will throw if
+      // an attribute number isn't in the pool).
+      const opAuthorId = AttributeMap.fromString(op.attribs, wireApool).get('author');
+      if (opAuthorId && opAuthorId !== thisSession.author) {
+        throw new Error(`Author ${thisSession.author} tried to submit changes as author ` +
+                        `${opAuthorId} in changeset ${changeset}`);
+      }
     }
 
     // ex. adoptChangesetAttribs
@@ -758,11 +745,8 @@ const _correctMarkersInPad = (atext, apool) => {
   let offset = 0;
   while (iter.hasNext()) {
     const op = iter.next();
-
-    const hasMarker = _.find(
-        AttributeManager.lineAttributes,
-        (attribute) => Changeset.opAttributeValue(op, attribute, apool)) !== undefined;
-
+    const attribs = AttributeMap.fromString(op.attribs, apool);
+    const hasMarker = AttributeManager.lineAttributes.some((a) => attribs.has(a));
     if (hasMarker) {
       for (let i = 0; i < op.chars; i++) {
         if (offset > 0 && text.charAt(offset - 1) !== '\n') {

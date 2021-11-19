@@ -31,6 +31,7 @@
 // requires: undefined
 
 const Changeset = require('./Changeset');
+const attributes = require('./attributes');
 const hooks = require('./pluginfw/hooks');
 const linestylefilter = {};
 const AttributeManager = require('./AttributeManager');
@@ -73,10 +74,8 @@ linestylefilter.getLineStyleFilter = (lineLength, aline, textAndClassFunc, apool
       let classes = '';
       let isLineAttribMarker = false;
 
-      // For each attribute number
-      Changeset.eachAttribNumber(attribs, (n) => {
-        const [key, value] = apool.getAttrib(n);
-        if (!key || !value) return;
+      for (const [key, value] of attributes.attribsFromString(attribs, apool)) {
+        if (!key || !value) continue;
         if (!isLineAttribMarker && AttributeManager.lineAttributes.indexOf(key) >= 0) {
           isLineAttribMarker = true;
         }
@@ -93,7 +92,7 @@ linestylefilter.getLineStyleFilter = (lineLength, aline, textAndClassFunc, apool
           const results = hooks.callAll('aceAttribsToClasses', {linestylefilter, key, value});
           classes += ` ${results.join(' ')}`;
         }
-      });
+      }
 
       if (isLineAttribMarker) classes += ` ${lineAttributeMarker}`;
       return classes.substring(1);

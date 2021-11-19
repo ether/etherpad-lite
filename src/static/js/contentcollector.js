@@ -26,6 +26,7 @@
 
 const _MAX_LIST_LEVEL = 16;
 
+const AttributeMap = require('./AttributeMap');
 const UNorm = require('unorm');
 const Changeset = require('./Changeset');
 const hooks = require('./pluginfw/hooks');
@@ -227,7 +228,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
   };
 
   const _recalcAttribString = (state) => {
-    const lst = [];
+    const attribs = new AttributeMap(apool);
     for (const [a, count] of Object.entries(state.attribs)) {
       if (!count) continue;
       // The following splitting of the attribute name is a workaround
@@ -241,32 +242,31 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
       if (attributeSplits.length > 1) {
         // the attribute name follows the convention key::value
         // so save it as a key value attribute
-        lst.push([attributeSplits[0], attributeSplits[1]]);
+        const [k, v] = attributeSplits;
+        if (v) attribs.set(k, v);
       } else {
         // the "normal" case, the attribute is just a switch
         // so set it true
-        lst.push([a, 'true']);
+        attribs.set(a, 'true');
       }
     }
     if (state.authorLevel > 0) {
-      const authorAttrib = ['author', state.author];
-      if (apool.putAttrib(authorAttrib, true) >= 0) {
+      if (apool.putAttrib(['author', state.author], true) >= 0) {
         // require that author already be in pool
         // (don't add authors from other documents, etc.)
-        lst.push(authorAttrib);
+        if (state.author) attribs.set('author', state.author);
       }
     }
-    state.attribString = Changeset.makeAttribsString('+', lst, apool);
+    state.attribString = attribs.toString();
   };
 
   const _produceLineAttributesMarker = (state) => {
     // TODO: This has to go to AttributeManager.
-    const attributes = [
-      ['lmkr', '1'],
-      ['insertorder', 'first'],
-      ...Object.entries(state.lineAttributes),
-    ];
-    lines.appendText('*', Changeset.makeAttribsString('+', attributes, apool));
+    const attribs = new AttributeMap(apool)
+        .set('lmkr', '1')
+        .set('insertorder', 'first')
+        .update(Object.entries(state.lineAttributes).map(([k, v]) => [k, v || '']), true);
+    lines.appendText('*', attribs.toString());
   };
   cc.startNewLine = (state) => {
     if (state) {

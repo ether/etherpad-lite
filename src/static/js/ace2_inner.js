@@ -18,6 +18,7 @@
  */
 let documentAttributeManager;
 
+const AttributeMap = require('./AttributeMap');
 const browser = require('./vendors/browser');
 const padutils = require('./pad_utils').padutils;
 const Ace2Common = require('./ace2_common');
@@ -1542,9 +1543,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       }
     }
 
-    const withIt = Changeset.makeAttribsString('+', [
-      [attributeName, 'true'],
-    ], rep.apool);
+    const withIt = new AttributeMap(rep.apool).set(attributeName, 'true').toString();
     const withItRegex = new RegExp(`${withIt.replace(/\*/g, '\\*')}(\\*|$)`);
     const hasIt = (attribs) => withItRegex.test(attribs);
 
@@ -1608,9 +1607,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     if (!(rep.selStart && rep.selEnd)) return;
 
     let selectionAllHasIt = true;
-    const withIt = Changeset.makeAttribsString('+', [
-      [attributeName, 'true'],
-    ], rep.apool);
+    const withIt = new AttributeMap(rep.apool).set(attributeName, 'true').toString();
     const withItRegex = new RegExp(`${withIt.replace(/\*/g, '\\*')}(\\*|$)`);
 
     const hasIt = (attribs) => withItRegex.test(attribs);
@@ -1820,22 +1817,15 @@ function Ace2Inner(editorInfo, cssManagers) {
         }
 
         let isNewTextMultiauthor = false;
-        const authorAtt = Changeset.makeAttribsString('+', (thisAuthor ? [
-          ['author', thisAuthor],
-        ] : []), rep.apool);
         const authorizer = cachedStrFunc((oldAtts) => {
-          if (isNewTextMultiauthor) {
-            // prefer colors from DOM
-            return Changeset.composeAttributes(authorAtt, oldAtts, true, rep.apool);
-          } else {
-            // use this author's color
-            return Changeset.composeAttributes(oldAtts, authorAtt, true, rep.apool);
-          }
+          const attribs = AttributeMap.fromString(oldAtts, rep.apool);
+          if (!isNewTextMultiauthor || !attribs.has('author')) attribs.set('author', thisAuthor);
+          return attribs.toString();
         });
 
         let foundDomAuthor = '';
         eachAttribRun(newAttribs, (start, end, attribs) => {
-          const a = Changeset.attribsAttributeValue(attribs, 'author', rep.apool);
+          const a = AttributeMap.fromString(attribs, rep.apool).get('author');
           if (a && a !== foundDomAuthor) {
             if (!foundDomAuthor) {
               foundDomAuthor = a;
@@ -2632,8 +2622,8 @@ function Ace2Inner(editorInfo, cssManagers) {
             const opIter = Changeset.opIterator(alineAttrs);
             while (opIter.hasNext()) {
               const op = opIter.next();
-              const authorId = Changeset.opAttributeValue(op, 'author', apool);
-              if (authorId !== '') authorIds.add(authorId);
+              const authorId = AttributeMap.fromString(op.attribs, apool).get('author');
+              if (authorId) authorIds.add(authorId);
             }
           }
           const idToName = new Map(parent.parent.pad.userList().map((a) => [a.userId, a.name]));
