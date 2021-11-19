@@ -383,6 +383,8 @@ PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
             const oldValue = oldAttribs.get(key);
             if (oldValue !== value) backAttribs.set(key, oldValue);
           }
+          // TODO: backAttribs does not restore removed attributes (it is missing attributes that
+          // are in oldAttribs but not in attribs). I don't know if that is intentional.
           return backAttribs.toString();
         });
 

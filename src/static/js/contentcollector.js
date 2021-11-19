@@ -235,6 +235,9 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
       // to enable the content collector to store key-value attributes
       // see https://github.com/ether/etherpad-lite/issues/2567 for more information
       // in long term the contentcollector should be refactored to get rid of this workaround
+      //
+      // TODO: This approach doesn't support changing existing values: if both 'foo::bar' and
+      // 'foo::baz' are in state.attribs then the last one encountered while iterating will win.
       const ATTRIBUTE_SPLIT_STRING = '::';
 
       // see if attributeString is splittable
@@ -265,6 +268,9 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
     const attribs = new AttributeMap(apool)
         .set('lmkr', '1')
         .set('insertorder', 'first')
+        // TODO: Converting all falsy values in state.lineAttributes into removals is awkward.
+        // Better would be to never add 0, false, null, or undefined to state.lineAttributes in the
+        // first place (I'm looking at you, state.lineAttributes.start).
         .update(Object.entries(state.lineAttributes).map(([k, v]) => [k, v || '']), true);
     lines.appendText('*', attribs.toString());
   };
