@@ -75,11 +75,8 @@ linestylefilter.getLineStyleFilter = (lineLength, aline, textAndClassFunc, apool
 
       // For each attribute number
       Changeset.eachAttribNumber(attribs, (n) => {
-        // Give us this attributes key
-        const key = apool.getAttribKey(n);
-        if (!key) return;
-        const value = apool.getAttribValue(n);
-        if (!value) return;
+        const [key, value] = apool.getAttrib(n);
+        if (!key || !value) return;
         if (!isLineAttribMarker && AttributeManager.lineAttributes.indexOf(key) >= 0) {
           isLineAttribMarker = true;
         }

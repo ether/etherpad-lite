@@ -166,9 +166,7 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
     const op = opIter.next();
     if (!op.attribs) return [];
     const attributes = [];
-    Changeset.eachAttribNumber(op.attribs, (n) => {
-      attributes.push([this.rep.apool.getAttribKey(n), this.rep.apool.getAttribValue(n)]);
-    });
+    Changeset.eachAttribNumber(op.attribs, (n) => attributes.push(this.rep.apool.getAttrib(n)));
     return attributes;
   },
 
@@ -277,12 +275,8 @@ AttributeManager.prototype = _(AttributeManager.prototype).extend({
       currentPointer += currentOperation.chars;
       if (currentPointer <= column) continue;
       const attributes = [];
-      Changeset.eachAttribNumber(currentOperation.attribs, (n) => {
-        attributes.push([
-          this.rep.apool.getAttribKey(n),
-          this.rep.apool.getAttribValue(n),
-        ]);
-      });
+      Changeset.eachAttribNumber(
+          currentOperation.attribs, (n) => attributes.push(this.rep.apool.getAttrib(n)));
       return attributes;
     }
     return [];

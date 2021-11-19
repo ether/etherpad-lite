@@ -364,9 +364,6 @@ PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
     };
   };
 
-  const attribKeys = [];
-  const attribValues = [];
-
   // iterate over all operators of this changeset
   while (csIter.hasNext()) {
     const csOp = csIter.next();
@@ -381,28 +378,17 @@ PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
       if (csOp.attribs && textBank !== '*') {
         const deletedAttrib = apool.putAttrib(['removed', true]);
         let authorAttrib = apool.putAttrib(['author', '']);
-
-        attribKeys.length = 0;
-        attribValues.length = 0;
+        const attribs = [];
         Changeset.eachAttribNumber(csOp.attribs, (n) => {
-          attribKeys.push(apool.getAttribKey(n));
-          attribValues.push(apool.getAttribValue(n));
-
-          if (apool.getAttribKey(n) === 'author') {
-            authorAttrib = n;
-          }
+          const attrib = apool.getAttrib(n);
+          attribs.push(attrib);
+          if (attrib[0] === 'author') authorAttrib = n;
         });
-
-        const undoBackToAttribs = cachedStrFunc((attribs) => {
+        const undoBackToAttribs = cachedStrFunc((oldAttribsStr) => {
           const backAttribs = [];
-          for (let i = 0; i < attribKeys.length; i++) {
-            const appliedKey = attribKeys[i];
-            const appliedValue = attribValues[i];
-            const oldValue = Changeset.attribsAttributeValue(attribs, appliedKey, apool);
-
-            if (appliedValue !== oldValue) {
-              backAttribs.push([appliedKey, oldValue]);
-            }
+          for (const [key, value] of attribs) {
+            const oldValue = Changeset.attribsAttributeValue(oldAttribsStr, key, apool);
+            if (oldValue !== value) backAttribs.push([key, oldValue])
           }
 
           return Changeset.makeAttribsString('=', backAttribs, apool);
