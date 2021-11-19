@@ -1905,25 +1905,24 @@ exports.builder = (oldLen) => {
   return self;
 };
 
+/**
+ * Constructs an attribute string from a sequence of attributes.
+ *
+ * @param {string} opcode - The opcode for the Op that will get the resulting attribute string.
+ * @param {?(Attribute[]|AttributeString)} attribs - The attributes to insert into the pool
+ *     (if necessary) and encode. If an attribute string, no checking is performed to ensure that
+ *     the attributes exist in the pool, are in the canonical order, and contain no duplicate keys.
+ *     If this is an iterable of attributes, `pool` must be non-null.
+ * @param {AttributePool} pool - Attribute pool. Required if `attribs` is an iterable of attributes,
+ *     ignored if `attribs` is an attribute string.
+ * @returns {AttributeString}
+ */
 exports.makeAttribsString = (opcode, attribs, pool) => {
-  // makeAttribsString(opcode, '*3') or makeAttribsString(opcode, [['foo','bar']], myPool) work
-  if (!attribs) {
-    return '';
-  } else if ((typeof attribs) === 'string') {
-    return attribs;
-  } else if (pool && attribs.length) {
-    if (attribs.length > 1) {
-      attribs = attribs.slice();
-      sortAttribs(attribs);
-    }
-    const result = [];
-    for (const pair of attribs) {
-      if (opcode === '=' || (opcode === '+' && pair[1])) {
-        result.push(`*${exports.numToString(pool.putAttrib(pair))}`);
-      }
-    }
-    return result.join('');
-  }
+  if (!attribs || !['=', '+'].includes(opcode)) return '';
+  if (typeof attribs === 'string') return attribs;
+  return sortAttribs(attribs.filter(([k, v]) => v || opcode === '='))
+      .map((a) => `*${exports.numToString(pool.putAttrib(a))}`)
+      .join('');
 };
 
 /**
