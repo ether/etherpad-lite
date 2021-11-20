@@ -1,9 +1,7 @@
 'use strict';
 
-/* global socketio */
-
 $(document).ready(() => {
-  const socket = socketio.connect('..', '/settings');
+  const socket = window.socketio.connect('..', '/settings');
 
   socket.on('connect', () => {
     socket.emit('load');

@@ -15,10 +15,12 @@ is_cmd node || fatal "Please install node.js ( https://nodejs.org )"
 is_cmd npm || fatal "Please install npm ( https://npmjs.org )"
 
 # Check npm version
-require_minimal_version "npm" $(get_program_version "npm") "$REQUIRED_NPM_MAJOR" "$REQUIRED_NPM_MINOR"
+require_minimal_version "npm" "$(get_program_version "npm")" \
+    "$REQUIRED_NPM_MAJOR" "$REQUIRED_NPM_MINOR"
 
 # Check node version
-require_minimal_version "nodejs" $(get_program_version "node") "$REQUIRED_NODE_MAJOR" "$REQUIRED_NODE_MINOR"
+require_minimal_version "nodejs" "$(get_program_version "node")" \
+    "$REQUIRED_NODE_MAJOR" "$REQUIRED_NODE_MINOR"
 
 # Get the name of the settings file
 settings="settings.json"
@@ -34,17 +36,14 @@ if [ ! -f "$settings" ]; then
   cp settings.json.template "$settings" || exit 1
 fi
 
-log "Ensure that all dependencies are up to date...  If this is the first time you have run Etherpad please be patient."
+log "Installing dependencies..."
 (
-  mkdir -p node_modules
-  cd node_modules
-  [ -e ep_etherpad-lite ] || ln -s ../src ep_etherpad-lite
-  cd ep_etherpad-lite
+  mkdir -p node_modules &&
+  cd node_modules &&
+  { [ -d ep_etherpad-lite ] || ln -sf ../src ep_etherpad-lite; } &&
+  cd ep_etherpad-lite &&
   npm ci --no-optional
-) || {
-  rm -rf src/node_modules
-  exit 1
-}
+) || exit 1
 
 # Remove all minified data to force node creating it new
 log "Clearing minified cache..."

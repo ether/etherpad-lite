@@ -30,182 +30,184 @@ const padsavedrevs = require('./pad_savedrevs');
 const _ = require('underscore');
 require('./vendors/nice-select');
 
-const ToolbarItem = function (element) {
-  this.$el = element;
-};
-
-ToolbarItem.prototype.getCommand = function () {
-  return this.$el.attr('data-key');
-};
-
-ToolbarItem.prototype.getValue = function () {
-  if (this.isSelect()) {
-    return this.$el.find('select').val();
+class ToolbarItem {
+  constructor(element) {
+    this.$el = element;
   }
-};
 
-ToolbarItem.prototype.setValue = function (val) {
-  if (this.isSelect()) {
-    return this.$el.find('select').val(val);
+  getCommand() {
+    return this.$el.attr('data-key');
   }
-};
 
-
-ToolbarItem.prototype.getType = function () {
-  return this.$el.attr('data-type');
-};
-
-ToolbarItem.prototype.isSelect = function () {
-  return this.getType() === 'select';
-};
-
-ToolbarItem.prototype.isButton = function () {
-  return this.getType() === 'button';
-};
-
-ToolbarItem.prototype.bind = function (callback) {
-  const self = this;
-
-  if (self.isButton()) {
-    self.$el.click((event) => {
-      $(':focus').blur();
-      callback(self.getCommand(), self);
-      event.preventDefault();
-    });
-  } else if (self.isSelect()) {
-    self.$el.find('select').change(() => {
-      callback(self.getCommand(), self);
-    });
+  getValue() {
+    if (this.isSelect()) {
+      return this.$el.find('select').val();
+    }
   }
-};
 
+  setValue(val) {
+    if (this.isSelect()) {
+      return this.$el.find('select').val(val);
+    }
+  }
 
-const padeditbar = (function () {
-  const syncAnimationFn = () => {
-    const SYNCING = -100;
-    const DONE = 100;
-    let state = DONE;
-    const fps = 25;
-    const step = 1 / fps;
-    const T_START = -0.5;
-    const T_FADE = 1.0;
-    const T_GONE = 1.5;
-    const animator = padutils.makeAnimationScheduler(() => {
-      if (state === SYNCING || state === DONE) {
-        return false;
-      } else if (state >= T_GONE) {
-        state = DONE;
+  getType() {
+    return this.$el.attr('data-type');
+  }
+
+  isSelect() {
+    return this.getType() === 'select';
+  }
+
+  isButton() {
+    return this.getType() === 'button';
+  }
+
+  bind(callback) {
+    if (this.isButton()) {
+      this.$el.click((event) => {
+        $(':focus').blur();
+        callback(this.getCommand(), this);
+        event.preventDefault();
+      });
+    } else if (this.isSelect()) {
+      this.$el.find('select').change(() => {
+        callback(this.getCommand(), this);
+      });
+    }
+  }
+}
+
+const syncAnimation = (() => {
+  const SYNCING = -100;
+  const DONE = 100;
+  let state = DONE;
+  const fps = 25;
+  const step = 1 / fps;
+  const T_START = -0.5;
+  const T_FADE = 1.0;
+  const T_GONE = 1.5;
+  const animator = padutils.makeAnimationScheduler(() => {
+    if (state === SYNCING || state === DONE) {
+      return false;
+    } else if (state >= T_GONE) {
+      state = DONE;
+      $('#syncstatussyncing').css('display', 'none');
+      $('#syncstatusdone').css('display', 'none');
+      return false;
+    } else if (state < 0) {
+      state += step;
+      if (state >= 0) {
         $('#syncstatussyncing').css('display', 'none');
-        $('#syncstatusdone').css('display', 'none');
-        return false;
-      } else if (state < 0) {
-        state += step;
-        if (state >= 0) {
-          $('#syncstatussyncing').css('display', 'none');
-          $('#syncstatusdone').css('display', 'block').css('opacity', 1);
-        }
-        return true;
-      } else {
-        state += step;
-        if (state >= T_FADE) {
-          $('#syncstatusdone').css('opacity', (T_GONE - state) / (T_GONE - T_FADE));
-        }
-        return true;
+        $('#syncstatusdone').css('display', 'block').css('opacity', 1);
       }
-    }, step * 1000);
-    return {
-      syncing: () => {
-        state = SYNCING;
-        $('#syncstatussyncing').css('display', 'block');
-        $('#syncstatusdone').css('display', 'none');
-      },
-      done: () => {
-        state = T_START;
-        animator.scheduleAnimation();
-      },
-    };
+      return true;
+    } else {
+      state += step;
+      if (state >= T_FADE) {
+        $('#syncstatusdone').css('opacity', (T_GONE - state) / (T_GONE - T_FADE));
+      }
+      return true;
+    }
+  }, step * 1000);
+  return {
+    syncing: () => {
+      state = SYNCING;
+      $('#syncstatussyncing').css('display', 'block');
+      $('#syncstatusdone').css('display', 'none');
+    },
+    done: () => {
+      state = T_START;
+      animator.scheduleAnimation();
+    },
   };
-  const syncAnimation = syncAnimationFn();
+})();
 
-  const self = {
-    init() {
-      const self = this;
-      self.dropdowns = [];
+exports.padeditbar = new class {
+  constructor() {
+    this._editbarPosition = 0;
+    this.commands = {};
+    this.dropdowns = [];
+  }
 
-      $('#editbar .editbarbutton').attr('unselectable', 'on'); // for IE
-      this.enable();
-      $('#editbar [data-key]').each(function () {
-        $(this).unbind('click');
-        (new ToolbarItem($(this))).bind((command, item) => {
-          self.triggerCommand(command, item);
-        });
+  init() {
+    $('#editbar .editbarbutton').attr('unselectable', 'on'); // for IE
+    this.enable();
+    $('#editbar [data-key]').each((i, elt) => {
+      $(elt).unbind('click');
+      new ToolbarItem($(elt)).bind((command, item) => {
+        this.triggerCommand(command, item);
       });
+    });
 
-      $('body:not(#editorcontainerbox)').on('keydown', (evt) => {
-        bodyKeyEvent(evt);
-      });
+    $('body:not(#editorcontainerbox)').on('keydown', (evt) => {
+      this._bodyKeyEvent(evt);
+    });
 
-      $('.show-more-icon-btn').click(() => {
-        $('.toolbar').toggleClass('full-icons');
-      });
-      self.checkAllIconsAreDisplayedInToolbar();
-      $(window).resize(_.debounce(self.checkAllIconsAreDisplayedInToolbar, 100));
+    $('.show-more-icon-btn').click(() => {
+      $('.toolbar').toggleClass('full-icons');
+    });
+    this.checkAllIconsAreDisplayedInToolbar();
+    $(window).resize(_.debounce(() => this.checkAllIconsAreDisplayedInToolbar(), 100));
 
-      registerDefaultCommands(self);
+    this._registerDefaultCommands();
 
-      hooks.callAll('postToolbarInit', {
-        toolbar: self,
-        ace: padeditor.ace,
-      });
+    hooks.callAll('postToolbarInit', {
+      toolbar: this,
+      ace: padeditor.ace,
+    });
 
-      /*
-       * On safari, the dropdown in the toolbar gets hidden because of toolbar
-       * overflow:hidden property. This is a bug from Safari: any children with
-       * position:fixed (like the dropdown) should be displayed no matter
-       * overflow:hidden on parent
-       */
-      if (!browser.safari) {
-        $('select').niceSelect();
-      }
+    /*
+     * On safari, the dropdown in the toolbar gets hidden because of toolbar
+     * overflow:hidden property. This is a bug from Safari: any children with
+     * position:fixed (like the dropdown) should be displayed no matter
+     * overflow:hidden on parent
+     */
+    if (!browser.safari) {
+      $('select').niceSelect();
+    }
 
-      // When editor is scrolled, we add a class to style the editbar differently
-      $('iframe[name="ace_outer"]').contents().scroll(function () {
-        $('#editbar').toggleClass('editor-scrolled', $(this).scrollTop() > 2);
-      });
-    },
-    isEnabled: () => true,
-    disable: () => {
-      $('#editbar').addClass('disabledtoolbar').removeClass('enabledtoolbar');
-    },
-    enable: () => {
-      $('#editbar').addClass('enabledtoolbar').removeClass('disabledtoolbar');
-    },
-    commands: {},
-    registerCommand(cmd, callback) {
-      this.commands[cmd] = callback;
-      return this;
-    },
-    registerDropdownCommand(cmd, dropdown) {
-      dropdown = dropdown || cmd;
-      self.dropdowns.push(dropdown);
-      this.registerCommand(cmd, () => {
-        self.toggleDropDown(dropdown);
-      });
-    },
-    registerAceCommand(cmd, callback) {
-      this.registerCommand(cmd, (cmd, ace, item) => {
-        ace.callWithAce((ace) => {
-          callback(cmd, ace, item);
-        }, cmd, true);
-      });
-    },
-    triggerCommand(cmd, item) {
-      if (self.isEnabled() && this.commands[cmd]) {
-        this.commands[cmd](cmd, padeditor.ace, item);
-      }
-      if (padeditor.ace) padeditor.ace.focus();
-    },
-    toggleDropDown: (moduleName, cb) => {
+    // When editor is scrolled, we add a class to style the editbar differently
+    $('iframe[name="ace_outer"]').contents().scroll((ev) => {
+      $('#editbar').toggleClass('editor-scrolled', $(ev.currentTarget).scrollTop() > 2);
+    });
+  }
+  isEnabled() { return true; }
+  disable() {
+    $('#editbar').addClass('disabledtoolbar').removeClass('enabledtoolbar');
+  }
+  enable() {
+    $('#editbar').addClass('enabledtoolbar').removeClass('disabledtoolbar');
+  }
+  registerCommand(cmd, callback) {
+    this.commands[cmd] = callback;
+    return this;
+  }
+  registerDropdownCommand(cmd, dropdown) {
+    dropdown = dropdown || cmd;
+    this.dropdowns.push(dropdown);
+    this.registerCommand(cmd, () => {
+      this.toggleDropDown(dropdown);
+    });
+  }
+  registerAceCommand(cmd, callback) {
+    this.registerCommand(cmd, (cmd, ace, item) => {
+      ace.callWithAce((ace) => {
+        callback(cmd, ace, item);
+      }, cmd, true);
+    });
+  }
+  triggerCommand(cmd, item) {
+    if (this.isEnabled() && this.commands[cmd]) {
+      this.commands[cmd](cmd, padeditor.ace, item);
+    }
+    if (padeditor.ace) padeditor.ace.focus();
+  }
+
+  // cb is deprecated (this function is synchronous so a callback is unnecessary).
+  toggleDropDown(moduleName, cb = null) {
+    let cbErr = null;
+    try {
       // do nothing if users are sticked
       if (moduleName === 'users' && $('#users').hasClass('stickyUsers')) {
         return;
@@ -216,10 +218,7 @@ const padeditbar = (function () {
 
       // hide all modules and remove highlighting of all buttons
       if (moduleName === 'none') {
-        const returned = false;
-        for (let i = 0; i < self.dropdowns.length; i++) {
-          const thisModuleName = self.dropdowns[i];
-
+        for (const thisModuleName of this.dropdowns) {
           // skip the userlist
           if (thisModuleName === 'users') continue;
 
@@ -233,13 +232,10 @@ const padeditbar = (function () {
             module.removeClass('popup-show');
           }
         }
-
-        if (!returned && cb) return cb();
       } else {
         // hide all modules that are not selected and remove highlighting
         // respectively add highlighting to the corresponding button
-        for (let i = 0; i < self.dropdowns.length; i++) {
-          const thisModuleName = self.dropdowns[i];
+        for (const thisModuleName of this.dropdowns) {
           const module = $(`#${thisModuleName}`);
 
           if (module.hasClass('popup-show')) {
@@ -248,77 +244,74 @@ const padeditbar = (function () {
           } else if (thisModuleName === moduleName) {
             $(`li[data-key=${thisModuleName}] > a`).addClass('selected');
             module.addClass('popup-show');
-            if (cb) {
-              cb();
-            }
           }
         }
       }
-    },
-    setSyncStatus: (status) => {
-      if (status === 'syncing') {
-        syncAnimation.syncing();
-      } else if (status === 'done') {
-        syncAnimation.done();
-      }
-    },
-    setEmbedLinks: () => {
-      const padUrl = window.location.href.split('?')[0];
-      const params = '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false';
-      const props = 'width="100%" height="600" frameborder="0"';
+    } catch (err) {
+      cbErr = err || new Error(err);
+    } finally {
+      if (cb) Promise.resolve().then(() => cb(cbErr));
+    }
+  }
+  setSyncStatus(status) {
+    if (status === 'syncing') {
+      syncAnimation.syncing();
+    } else if (status === 'done') {
+      syncAnimation.done();
+    }
+  }
+  setEmbedLinks() {
+    const padUrl = window.location.href.split('?')[0];
+    const params = '?showControls=true&showChat=true&showLineNumbers=true&useMonospaceFont=false';
+    const props = 'width="100%" height="600" frameborder="0"';
 
-      if ($('#readonlyinput').is(':checked')) {
-        const urlParts = padUrl.split('/');
-        urlParts.pop();
-        const readonlyLink = `${urlParts.join('/')}/${clientVars.readOnlyId}`;
-        $('#embedinput')
-            .val(`<iframe name="embed_readonly" src="${readonlyLink}${params}" ${props}></iframe>`);
-        $('#linkinput').val(readonlyLink);
-      } else {
-        $('#embedinput')
-            .val(`<iframe name="embed_readwrite" src="${padUrl}${params}" ${props}></iframe>`);
-        $('#linkinput').val(padUrl);
-      }
-    },
-    checkAllIconsAreDisplayedInToolbar: () => {
-      // reset style
-      $('.toolbar').removeClass('cropped');
-      $('body').removeClass('mobile-layout');
-      const menu_left = $('.toolbar .menu_left')[0];
+    if ($('#readonlyinput').is(':checked')) {
+      const urlParts = padUrl.split('/');
+      urlParts.pop();
+      const readonlyLink = `${urlParts.join('/')}/${clientVars.readOnlyId}`;
+      $('#embedinput')
+          .val(`<iframe name="embed_readonly" src="${readonlyLink}${params}" ${props}></iframe>`);
+      $('#linkinput').val(readonlyLink);
+    } else {
+      $('#embedinput')
+          .val(`<iframe name="embed_readwrite" src="${padUrl}${params}" ${props}></iframe>`);
+      $('#linkinput').val(padUrl);
+    }
+  }
+  checkAllIconsAreDisplayedInToolbar() {
+    // reset style
+    $('.toolbar').removeClass('cropped');
+    $('body').removeClass('mobile-layout');
+    const menuLeft = $('.toolbar .menu_left')[0];
 
-      // this is approximate, we cannot measure it because on mobile
-      // Layout it takes the full width on the bottom of the page
-      const menuRightWidth = 280;
-      if (menu_left && menu_left.scrollWidth > $('.toolbar').width() - menuRightWidth ||
-          $('.toolbar').width() < 1000) {
-        $('body').addClass('mobile-layout');
-      }
-      if (menu_left && menu_left.scrollWidth > $('.toolbar').width()) {
-        $('.toolbar').addClass('cropped');
-      }
-    },
-  };
+    // this is approximate, we cannot measure it because on mobile
+    // Layout it takes the full width on the bottom of the page
+    const menuRightWidth = 280;
+    if (menuLeft && menuLeft.scrollWidth > $('.toolbar').width() - menuRightWidth ||
+        $('.toolbar').width() < 1000) {
+      $('body').addClass('mobile-layout');
+    }
+    if (menuLeft && menuLeft.scrollWidth > $('.toolbar').width()) {
+      $('.toolbar').addClass('cropped');
+    }
+  }
 
-  let editbarPosition = 0;
-
-  const bodyKeyEvent = (evt) => {
+  _bodyKeyEvent(evt) {
     // If the event is Alt F9 or Escape & we're already in the editbar menu
     // Send the users focus back to the pad
     if ((evt.keyCode === 120 && evt.altKey) || evt.keyCode === 27) {
       if ($(':focus').parents('.toolbar').length === 1) {
         // If we're in the editbar already..
         // Close any dropdowns we have open..
-        padeditbar.toggleDropDown('none');
+        this.toggleDropDown('none');
+        // Shift focus away from any drop downs
+        $(':focus').blur(); // required to do not try to remove!
         // Check we're on a pad and not on the timeslider
         // Or some other window I haven't thought about!
         if (typeof pad === 'undefined') {
           // Timeslider probably..
-          // Shift focus away from any drop downs
-          $(':focus').blur(); // required to do not try to remove!
           $('#editorcontainerbox').focus(); // Focus back onto the pad
         } else {
-          // Shift focus away from any drop downs
-          $(':focus').blur(); // required to do not try to remove!
           padeditor.ace.focus(); // Sends focus back to pad
           // The above focus doesn't always work in FF, you have to hit enter afterwards
           evt.preventDefault();
@@ -327,7 +320,7 @@ const padeditbar = (function () {
         // Focus on the editbar :)
         const firstEditbarElement = parent.parent.$('#editbar button').first();
 
-        $(this).blur();
+        $(evt.currentTarget).blur();
         firstEditbarElement.focus();
         evt.preventDefault();
       }
@@ -345,10 +338,10 @@ const padeditbar = (function () {
         // If a dropdown is visible or we're in an input don't move to the next button
         if ($('.popup').is(':visible') || evt.target.localName === 'input') return;
 
-        editbarPosition--;
+        this._editbarPosition--;
         // Allow focus to shift back to end of row and start of row
-        if (editbarPosition === -1) editbarPosition = focusItems.length - 1;
-        $(focusItems[editbarPosition]).focus();
+        if (this._editbarPosition === -1) this._editbarPosition = focusItems.length - 1;
+        $(focusItems[this._editbarPosition]).focus();
       }
 
       // On right arrow move to next button in editbar
@@ -356,97 +349,92 @@ const padeditbar = (function () {
         // If a dropdown is visible or we're in an input don't move to the next button
         if ($('.popup').is(':visible') || evt.target.localName === 'input') return;
 
-        editbarPosition++;
+        this._editbarPosition++;
         // Allow focus to shift back to end of row and start of row
-        if (editbarPosition >= focusItems.length) editbarPosition = 0;
-        $(focusItems[editbarPosition]).focus();
+        if (this._editbarPosition >= focusItems.length) this._editbarPosition = 0;
+        $(focusItems[this._editbarPosition]).focus();
       }
     }
-  };
+  }
 
-  const aceAttributeCommand = (cmd, ace) => {
-    ace.ace_toggleAttributeOnSelection(cmd);
-  };
+  _registerDefaultCommands() {
+    this.registerDropdownCommand('showusers', 'users');
+    this.registerDropdownCommand('settings');
+    this.registerDropdownCommand('connectivity');
+    this.registerDropdownCommand('import_export');
+    this.registerDropdownCommand('embed');
 
-  const registerDefaultCommands = (toolbar) => {
-    toolbar.registerDropdownCommand('showusers', 'users');
-    toolbar.registerDropdownCommand('settings');
-    toolbar.registerDropdownCommand('connectivity');
-    toolbar.registerDropdownCommand('import_export');
-    toolbar.registerDropdownCommand('embed');
-
-    toolbar.registerCommand('settings', () => {
-      toolbar.toggleDropDown('settings', () => {
-        $('#options-stickychat').focus();
-      });
+    this.registerCommand('settings', () => {
+      this.toggleDropDown('settings');
+      $('#options-stickychat').focus();
     });
 
-    toolbar.registerCommand('import_export', () => {
-      toolbar.toggleDropDown('import_export', () => {
-        // If Import file input exists then focus on it..
-        if ($('#importfileinput').length !== 0) {
-          setTimeout(() => {
-            $('#importfileinput').focus();
-          }, 100);
-        } else {
-          $('.exportlink').first().focus();
-        }
-      });
+    this.registerCommand('import_export', () => {
+      this.toggleDropDown('import_export');
+      // If Import file input exists then focus on it..
+      if ($('#importfileinput').length !== 0) {
+        setTimeout(() => {
+          $('#importfileinput').focus();
+        }, 100);
+      } else {
+        $('.exportlink').first().focus();
+      }
     });
 
-    toolbar.registerCommand('showusers', () => {
-      toolbar.toggleDropDown('users', () => {
-        $('#myusernameedit').focus();
-      });
+    this.registerCommand('showusers', () => {
+      this.toggleDropDown('users');
+      $('#myusernameedit').focus();
     });
 
-    toolbar.registerCommand('embed', () => {
-      toolbar.setEmbedLinks();
-      toolbar.toggleDropDown('embed', () => {
-        $('#linkinput').focus().select();
-      });
+    this.registerCommand('embed', () => {
+      this.setEmbedLinks();
+      this.toggleDropDown('embed');
+      $('#linkinput').focus().select();
     });
 
-    toolbar.registerCommand('savedRevision', () => {
+    this.registerCommand('savedRevision', () => {
       padsavedrevs.saveNow();
     });
 
-    toolbar.registerCommand('showTimeSlider', () => {
+    this.registerCommand('showTimeSlider', () => {
       document.location = `${document.location.pathname}/timeslider`;
     });
 
-    toolbar.registerAceCommand('bold', aceAttributeCommand);
-    toolbar.registerAceCommand('italic', aceAttributeCommand);
-    toolbar.registerAceCommand('underline', aceAttributeCommand);
-    toolbar.registerAceCommand('strikethrough', aceAttributeCommand);
+    const aceAttributeCommand = (cmd, ace) => {
+      ace.ace_toggleAttributeOnSelection(cmd);
+    };
+    this.registerAceCommand('bold', aceAttributeCommand);
+    this.registerAceCommand('italic', aceAttributeCommand);
+    this.registerAceCommand('underline', aceAttributeCommand);
+    this.registerAceCommand('strikethrough', aceAttributeCommand);
 
-    toolbar.registerAceCommand('undo', (cmd, ace) => {
+    this.registerAceCommand('undo', (cmd, ace) => {
       ace.ace_doUndoRedo(cmd);
     });
 
-    toolbar.registerAceCommand('redo', (cmd, ace) => {
+    this.registerAceCommand('redo', (cmd, ace) => {
       ace.ace_doUndoRedo(cmd);
     });
 
-    toolbar.registerAceCommand('insertunorderedlist', (cmd, ace) => {
+    this.registerAceCommand('insertunorderedlist', (cmd, ace) => {
       ace.ace_doInsertUnorderedList();
     });
 
-    toolbar.registerAceCommand('insertorderedlist', (cmd, ace) => {
+    this.registerAceCommand('insertorderedlist', (cmd, ace) => {
       ace.ace_doInsertOrderedList();
     });
 
-    toolbar.registerAceCommand('indent', (cmd, ace) => {
+    this.registerAceCommand('indent', (cmd, ace) => {
       if (!ace.ace_doIndentOutdent(false)) {
         ace.ace_doInsertUnorderedList();
       }
     });
 
-    toolbar.registerAceCommand('outdent', (cmd, ace) => {
+    this.registerAceCommand('outdent', (cmd, ace) => {
       ace.ace_doIndentOutdent(true);
     });
 
-    toolbar.registerAceCommand('clearauthorship', (cmd, ace) => {
+    this.registerAceCommand('clearauthorship', (cmd, ace) => {
       // If we have the whole document selected IE control A has been hit
       const rep = ace.ace_getRep();
       let doPrompt = false;
@@ -459,13 +447,13 @@ const padeditbar = (function () {
         }
       }
       /*
-      * NOTICE: This command isn't fired on Control Shift C.
-      * I intentionally didn't create duplicate code because if you are hitting
-      * Control Shift C we make the assumption you are a "power user"
-      * and as such we assume you don't need the prompt to bug you each time!
-      * This does make wonder if it's worth having a checkbox to avoid being
-      * prompted again but that's probably overkill for this contribution.
-      */
+       * NOTICE: This command isn't fired on Control Shift C.
+       * I intentionally didn't create duplicate code because if you are hitting
+       * Control Shift C we make the assumption you are a "power user"
+       * and as such we assume you don't need the prompt to bug you each time!
+       * This does make wonder if it's worth having a checkbox to avoid being
+       * prompted again but that's probably overkill for this contribution.
+       */
 
       // if we don't have any text selected, we have a caret or we have already said to prompt
       if ((!(rep.selStart && rep.selEnd)) || ace.ace_isCaret() || doPrompt) {
@@ -479,19 +467,15 @@ const padeditbar = (function () {
       }
     });
 
-    toolbar.registerCommand('timeslider_returnToPad', (cmd) => {
+    this.registerCommand('timeslider_returnToPad', (cmd) => {
       if (document.referrer.length > 0 &&
-            document.referrer.substring(document.referrer.lastIndexOf('/') - 1,
-                document.referrer.lastIndexOf('/')) === 'p') {
+          document.referrer.substring(document.referrer.lastIndexOf('/') - 1,
+              document.referrer.lastIndexOf('/')) === 'p') {
         document.location = document.referrer;
       } else {
         document.location = document.location.href
             .substring(0, document.location.href.lastIndexOf('/'));
       }
     });
-  };
-
-  return self;
-}());
-
-exports.padeditbar = padeditbar;
+  }
+}();

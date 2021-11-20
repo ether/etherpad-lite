@@ -18,26 +18,21 @@
 const log4js = require('log4js');
 const Changeset = require('../../static/js/Changeset');
 const contentcollector = require('../../static/js/contentcollector');
-const cheerio = require('cheerio');
+const jsdom = require('jsdom');
 const rehype = require('rehype');
 const minifyWhitespace = require('rehype-minify-whitespace');
 
+const apiLogger = log4js.getLogger('ImportHtml');
+const processor = rehype().use(minifyWhitespace, {newlines: false});
+
 exports.setPadHTML = async (pad, html) => {
-  const apiLogger = log4js.getLogger('ImportHtml');
-
-  rehype()
-      .use(minifyWhitespace, {newlines: false})
-      .process(html, (err, output) => {
-        html = String(output);
-      });
-
-  const $ = cheerio.load(html);
+  html = String(await processor.process(html));
+  const {window: {document}} = new jsdom.JSDOM(html);
 
   // Appends a line break, used by Etherpad to ensure a caret is available
   // below the last line of an import
-  $('body').append('<p></p>');
+  document.body.appendChild(document.createElement('p'));
 
-  const doc = $('body')[0];
   apiLogger.debug('html:');
   apiLogger.debug(html);
 
@@ -46,12 +41,10 @@ exports.setPadHTML = async (pad, html) => {
   const cc = contentcollector.makeContentCollector(true, null, pad.pool);
   try {
     // we use a try here because if the HTML is bad it will blow up
-    cc.collectContent(doc);
-  } catch (e) {
-    apiLogger.warn('HTML was not properly formed', e);
-
-    // don't process the HTML because it was bad
-    throw e;
+    cc.collectContent(document.body);
+  } catch (err) {
+    apiLogger.warn(`Error processing HTML: ${err.stack || err}`);
+    throw err;
   }
 
   const result = cc.finish();
@@ -70,35 +63,29 @@ exports.setPadHTML = async (pad, html) => {
   apiLogger.debug(newText);
   const newAttribs = `${result.lineAttribs.join('|1+1')}|1+1`;
 
-  const eachAttribRun = (attribs, func /* (startInNewText, endInNewText, attribs)*/) => {
-    const attribsIter = Changeset.opIterator(attribs);
-    let textIndex = 0;
-    const newTextStart = 0;
-    const newTextEnd = newText.length;
-    while (attribsIter.hasNext()) {
-      const op = attribsIter.next();
-      const nextIndex = textIndex + op.chars;
-      if (!(nextIndex <= newTextStart || textIndex >= newTextEnd)) {
-        func(Math.max(newTextStart, textIndex), Math.min(newTextEnd, nextIndex), op.attribs);
-      }
-      textIndex = nextIndex;
-    }
-  };
-
   // create a new changeset with a helper builder object
   const builder = Changeset.builder(1);
 
   // assemble each line into the builder
-  eachAttribRun(newAttribs, (start, end, attribs) => {
-    builder.insert(newText.substring(start, end), attribs);
-  });
+  const attribsIter = Changeset.opIterator(newAttribs);
+  let textIndex = 0;
+  const newTextStart = 0;
+  const newTextEnd = newText.length;
+  while (attribsIter.hasNext()) {
+    const op = attribsIter.next();
+    const nextIndex = textIndex + op.chars;
+    if (!(nextIndex <= newTextStart || textIndex >= newTextEnd)) {
+      const start = Math.max(newTextStart, textIndex);
+      const end = Math.min(newTextEnd, nextIndex);
+      builder.insert(newText.substring(start, end), op.attribs);
+    }
+    textIndex = nextIndex;
+  }
 
   // the changeset is ready!
   const theChangeset = builder.toString();
 
   apiLogger.debug(`The changeset: ${theChangeset}`);
-  await Promise.all([
-    pad.setText('\n'),
-    pad.appendRevision(theChangeset),
-  ]);
+  await pad.setText('\n');
+  if (!Changeset.isIdentity(theChangeset)) await pad.appendRevision(theChangeset);
 };

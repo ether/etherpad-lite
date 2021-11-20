@@ -15,11 +15,15 @@
  * limitations under the License.
  */
 
+const ChatMessage = require('./ChatMessage');
 const padutils = require('./pad_utils').padutils;
 const padcookie = require('./pad_cookie').padcookie;
 const Tinycon = require('tinycon/tinycon');
 const hooks = require('./pluginfw/hooks');
 const padeditor = require('./pad_editor').padeditor;
+
+// Removes diacritics and lower-cases letters. https://stackoverflow.com/a/37511463
+const normalize = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
 exports.chat = (() => {
   let isStuck = false;
@@ -99,25 +103,28 @@ exports.chat = (() => {
         }
       }
     },
-    send() {
+    async send() {
       const text = $('#chatinput').val();
       if (text.replace(/\s+/, '').length === 0) return;
-      this._pad.collabClient.sendMessage({type: 'CHAT_MESSAGE', text});
+      const message = new ChatMessage(text);
+      await hooks.aCallAll('chatSendMessage', Object.freeze({message}));
+      this._pad.collabClient.sendMessage({type: 'CHAT_MESSAGE', message});
       $('#chatinput').val('');
     },
-    addMessage(msg, increment, isHistoryAdd) {
+    async addMessage(msg, increment, isHistoryAdd) {
+      msg = ChatMessage.fromObject(msg);
       // correct the time
       msg.time += this._pad.clientTimeOffset;
 
-      if (!msg.userId) {
+      if (!msg.authorId) {
         /*
          * If, for a bug or a database corruption, the message coming from the
-         * server does not contain the userId field (see for example #3731),
+         * server does not contain the authorId field (see for example #3731),
          * let's be defensive and replace it with "unknown".
          */
-        msg.userId = 'unknown';
+        msg.authorId = 'unknown';
         console.warn(
-            'The "userId" field of a chat message coming from the server was not present. ' +
+            'The "authorId" field of a chat message coming from the server was not present. ' +
             'Replacing with "unknown". This may be a bug or a database corruption.');
       }
 
@@ -128,9 +135,11 @@ exports.chat = (() => {
 
       // the hook args
       const ctx = {
-        authorName: msg.userName != null ? msg.userName : html10n.get('pad.userlist.unnamed'),
-        author: msg.userId,
+        authorName: msg.displayName != null ? msg.displayName : html10n.get('pad.userlist.unnamed'),
+        author: msg.authorId,
         text: padutils.escapeHtmlWithClickableLinks(msg.text, '_blank'),
+        message: msg,
+        rendered: null,
         sticky: false,
         timestamp: msg.time,
         timeStr: (() => {
@@ -149,10 +158,11 @@ exports.chat = (() => {
       // does the user already have the chatbox open?
       const chatOpen = $('#chatbox').hasClass('visible');
 
-      // does this message contain this user's name? (is the curretn user mentioned?)
-      const myName = $('#myusernameedit').val();
+      // does this message contain this user's name? (is the current user mentioned?)
       const wasMentioned =
-          ctx.text.toLowerCase().indexOf(myName.toLowerCase()) !== -1 && myName !== 'undefined';
+          msg.authorId !== window.clientVars.userId &&
+          ctx.authorName !== html10n.get('pad.userlist.unnamed') &&
+          normalize(ctx.text).includes(normalize(ctx.authorName));
 
       // If the user was mentioned, make the message sticky
       if (wasMentioned && !alreadyFocused && !isHistoryAdd && !chatOpen) {
@@ -161,54 +171,49 @@ exports.chat = (() => {
         ctx.sticky = true;
       }
 
-      // Call chat message hook
-      hooks.aCallAll('chatNewMessage', ctx, () => {
-        const cls = authorClass(ctx.author);
-        const chatMsg = $('<p>')
-            .attr('data-authorId', ctx.author)
-            .addClass(cls)
-            .append($('<b>').text(`${ctx.authorName}:`))
-            .append($('<span>')
-                .addClass('time')
-                .addClass(cls)
-                // Hook functions are trusted to not introduce an XSS vulnerability by adding
-                // unescaped user input to ctx.timeStr.
-                .html(ctx.timeStr))
-            .append(' ')
-            // ctx.text was HTML-escaped before calling the hook. Hook functions are trusted to not
-            // introduce an XSS vulnerability by adding unescaped user input.
-            .append($('<div>').html(ctx.text).contents());
-        if (isHistoryAdd) chatMsg.insertAfter('#chatloadmessagesbutton');
-        else $('#chattext').append(chatMsg);
+      await hooks.aCallAll('chatNewMessage', ctx);
+      const cls = authorClass(ctx.author);
+      const chatMsg = ctx.rendered != null ? $(ctx.rendered) : $('<p>')
+          .attr('data-authorId', ctx.author)
+          .addClass(cls)
+          .append($('<b>').text(`${ctx.authorName}:`))
+          .append($('<span>')
+              .addClass('time')
+              .addClass(cls)
+              // Hook functions are trusted to not introduce an XSS vulnerability by adding
+              // unescaped user input to ctx.timeStr.
+              .html(ctx.timeStr))
+          .append(' ')
+          // ctx.text was HTML-escaped before calling the hook. Hook functions are trusted to not
+          // introduce an XSS vulnerability by adding unescaped user input.
+          .append($('<div>').html(ctx.text).contents());
+      if (isHistoryAdd) chatMsg.insertAfter('#chatloadmessagesbutton');
+      else $('#chattext').append(chatMsg);
+      chatMsg.each((i, e) => html10n.translateElement(html10n.translations, e));
 
-        // should we increment the counter??
-        if (increment && !isHistoryAdd) {
-          // Update the counter of unread messages
-          let count = Number($('#chatcounter').text());
-          count++;
-          $('#chatcounter').text(count);
+      // should we increment the counter??
+      if (increment && !isHistoryAdd) {
+        // Update the counter of unread messages
+        let count = Number($('#chatcounter').text());
+        count++;
+        $('#chatcounter').text(count);
 
-          if (!chatOpen && ctx.duration > 0) {
-            $.gritter.add({
-              text: $('<p>')
-                  .append($('<span>').addClass('author-name').text(ctx.authorName))
-                  // ctx.text was HTML-escaped before calling the hook. Hook functions are trusted
-                  // to not introduce an XSS vulnerability by adding unescaped user input.
-                  .append($('<div>').html(ctx.text).contents()),
-              sticky: ctx.sticky,
-              time: 5000,
-              position: 'bottom',
-              class_name: 'chat-gritter-msg',
-            });
-          }
+        if (!chatOpen && ctx.duration > 0) {
+          const text = $('<p>')
+              .append($('<span>').addClass('author-name').text(ctx.authorName))
+              // ctx.text was HTML-escaped before calling the hook. Hook functions are trusted
+              // to not introduce an XSS vulnerability by adding unescaped user input.
+              .append($('<div>').html(ctx.text).contents());
+          text.each((i, e) => html10n.translateElement(html10n.translations, e));
+          $.gritter.add({
+            text,
+            sticky: ctx.sticky,
+            time: ctx.duration,
+            position: 'bottom',
+            class_name: 'chat-gritter-msg',
+          });
         }
-      });
-
-      // Clear the chat mentions when the user clicks on the chat input box
-      $('#chatinput').click(() => {
-        chatMentions = 0;
-        Tinycon.setBubble(0);
-      });
+      }
       if (!isHistoryAdd) this.scrollDown();
     },
     init(pad) {
@@ -224,6 +229,11 @@ exports.chat = (() => {
           return false;
         }
       });
+      // Clear the chat mentions when the user clicks on the chat input box
+      $('#chatinput').click(() => {
+        chatMentions = 0;
+        Tinycon.setBubble(0);
+      });
 
       const self = this;
       $('body:not(#chatinput)').on('keypress', function (evt) {
@@ -238,7 +248,7 @@ exports.chat = (() => {
 
       $('#chatinput').keypress((evt) => {
         // if the user typed enter, fire the send
-        if (evt.which === 13 || evt.which === 10) {
+        if (evt.key === 'Enter' && !evt.shiftKey) {
           evt.preventDefault();
           this.send();
         }

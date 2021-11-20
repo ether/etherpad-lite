@@ -1,3 +1,5 @@
+'use strict';
+
 const common = require('../common');
 const settings = require('../../../node/utils/Settings');
 
@@ -20,7 +22,6 @@ describe(__filename, function () {
 
   describe('/javascript', function () {
     it('/javascript -> 200', async function () {
-      this.timeout(200);
       await agent.get('/javascript').expect(200);
     });
   });

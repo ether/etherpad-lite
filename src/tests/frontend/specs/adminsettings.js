@@ -21,6 +21,16 @@ describe('Admin > Settings', function () {
   });
 
   it('Are Settings visible, populated, does save work', async function () {
+    const save = async () => {
+      const p = new Promise((resolve) => {
+        const observer = new MutationObserver(() => { resolve(); observer.disconnect(); });
+        observer.observe(
+            helper.admin$('#response')[0], {attributes: true, childList: false, subtree: false});
+      });
+      helper.admin$('#saveSettings').click();
+      await p;
+    };
+
     // save old value
     const settings = helper.admin$('.settings').val();
     const settingsLength = settings.length;
@@ -29,33 +39,28 @@ describe('Admin > Settings', function () {
     helper.admin$('.settings').val((_, text) => `/* test */\n${text}`);
     await helper.waitForPromise(
         () => settingsLength + 11 === helper.admin$('.settings').val().length, 5000);
-
-    // saves
-    helper.admin$('#saveSettings').click();
-    await helper.waitForPromise(() => helper.admin$('#response').is(':visible'), 5000);
+    await save();
 
     // new value for settings.json should now be saved
     // reset it to the old value
     helper.newAdmin('settings');
     await helper.waitForPromise(
-        () => helper.admin$ && helper.admin$('.settings').val().length > 0, 20000);
+        () => helper.admin$ &&
+                helper.admin$('.settings').val().length === settingsLength + 11, 20000);
 
     // replace the test value with a line break
     helper.admin$('.settings').val((_, text) => text.replace('/* test */\n', ''));
     await helper.waitForPromise(() => settingsLength === helper.admin$('.settings').val().length);
-
-    helper.admin$('#saveSettings').click(); // saves
-    await helper.waitForPromise(() => helper.admin$('#response').is(':visible'));
+    await save();
 
     // settings should have the old value
     helper.newAdmin('settings');
     await helper.waitForPromise(
-        () => helper.admin$ && helper.admin$('.settings').val().length > 0, 36000);
-    expect(settings).to.be(helper.admin$('.settings').val());
+        () => helper.admin$ && helper.admin$('.settings').val().length === settingsLength &&
+          settings === helper.admin$('.settings').val(), 20000);
   });
 
   it('restart works', async function () {
-    this.timeout(60000);
     const getStartTime = async () => {
       try {
         const {httpStartTime} = await $.ajax({
@@ -66,18 +71,20 @@ describe('Admin > Settings', function () {
         });
         return httpStartTime;
       } catch (err) {
+        document.getElementById('console').append(
+            `an error occurred: ${err.message} of type ${err.name}\n`);
         return null;
       }
     };
+    let oldStartTime;
     await helper.waitForPromise(async () => {
-      const startTime = await getStartTime();
-      return startTime != null && startTime > 0 && Date.now() > startTime;
+      oldStartTime = await getStartTime();
+      return oldStartTime != null && oldStartTime > 0;
     }, 1000, 500);
-    const clickTime = Date.now();
     helper.admin$('#restartEtherpad').click();
     await helper.waitForPromise(async () => {
       const startTime = await getStartTime();
-      return startTime != null && startTime >= clickTime;
+      return startTime != null && startTime > oldStartTime;
     }, 60000, 500);
   });
 });

@@ -43,67 +43,56 @@ describe(__filename, function () {
 
   describe('webaccess: without plugins', function () {
     it('!authn !authz anonymous / -> 200', async function () {
-      this.timeout(150);
       settings.requireAuthentication = false;
       settings.requireAuthorization = false;
       await agent.get('/').expect(200);
     });
     it('!authn !authz anonymous /admin/ -> 401', async function () {
-      this.timeout(100);
       settings.requireAuthentication = false;
       settings.requireAuthorization = false;
       await agent.get('/admin/').expect(401);
     });
     it('authn !authz anonymous / -> 401', async function () {
-      this.timeout(100);
       settings.requireAuthentication = true;
       settings.requireAuthorization = false;
       await agent.get('/').expect(401);
     });
     it('authn !authz user / -> 200', async function () {
-      this.timeout(100);
       settings.requireAuthentication = true;
       settings.requireAuthorization = false;
       await agent.get('/').auth('user', 'user-password').expect(200);
     });
     it('authn !authz user /admin/ -> 403', async function () {
-      this.timeout(100);
       settings.requireAuthentication = true;
       settings.requireAuthorization = false;
       await agent.get('/admin/').auth('user', 'user-password').expect(403);
     });
     it('authn !authz admin / -> 200', async function () {
-      this.timeout(100);
       settings.requireAuthentication = true;
       settings.requireAuthorization = false;
       await agent.get('/').auth('admin', 'admin-password').expect(200);
     });
     it('authn !authz admin /admin/ -> 200', async function () {
-      this.timeout(100);
       settings.requireAuthentication = true;
       settings.requireAuthorization = false;
       await agent.get('/admin/').auth('admin', 'admin-password').expect(200);
     });
     it('authn authz user / -> 403', async function () {
-      this.timeout(100);
       settings.requireAuthentication = true;
       settings.requireAuthorization = true;
       await agent.get('/').auth('user', 'user-password').expect(403);
     });
     it('authn authz user /admin/ -> 403', async function () {
-      this.timeout(100);
       settings.requireAuthentication = true;
       settings.requireAuthorization = true;
       await agent.get('/admin/').auth('user', 'user-password').expect(403);
     });
     it('authn authz admin / -> 200', async function () {
-      this.timeout(100);
       settings.requireAuthentication = true;
       settings.requireAuthorization = true;
       await agent.get('/').auth('admin', 'admin-password').expect(200);
     });
     it('authn authz admin /admin/ -> 200', async function () {
-      this.timeout(100);
       settings.requireAuthentication = true;
       settings.requireAuthorization = true;
       await agent.get('/admin/').auth('admin', 'admin-password').expect(200);
@@ -117,7 +106,6 @@ describe(__filename, function () {
         // parsing, resulting in successful comparisons against a null or undefined password.
         for (const creds of ['admin', 'admin:']) {
           it(`admin password: ${adminPassword} credentials: ${creds}`, async function () {
-            this.timeout(100);
             settings.users.admin.password = adminPassword;
             const encCreds = Buffer.from(creds).toString('base64');
             await agent.get('/admin/').set('Authorization', `Basic ${encCreds}`).expect(401);
@@ -173,13 +161,11 @@ describe(__filename, function () {
       });
 
       it('defers if it returns []', async function () {
-        this.timeout(100);
         await agent.get('/').expect(200);
         // Note: The preAuthorize hook always runs even if requireAuthorization is false.
         assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1']);
       });
       it('bypasses authenticate and authorize hooks when true is returned', async function () {
-        this.timeout(100);
         settings.requireAuthentication = true;
         settings.requireAuthorization = true;
         handlers.preAuthorize[0].innerHandle = () => [true];
@@ -187,7 +173,6 @@ describe(__filename, function () {
         assert.deepEqual(callOrder, ['preAuthorize_0']);
       });
       it('bypasses authenticate and authorize hooks when false is returned', async function () {
-        this.timeout(100);
         settings.requireAuthentication = true;
         settings.requireAuthorization = true;
         handlers.preAuthorize[0].innerHandle = () => [false];
@@ -195,14 +180,12 @@ describe(__filename, function () {
         assert.deepEqual(callOrder, ['preAuthorize_0']);
       });
       it('bypasses authenticate and authorize hooks for static content, defers', async function () {
-        this.timeout(100);
         settings.requireAuthentication = true;
         settings.requireAuthorization = true;
         await agent.get('/static/robots.txt').expect(200);
         assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1']);
       });
       it('cannot grant access to /admin', async function () {
-        this.timeout(100);
         handlers.preAuthorize[0].innerHandle = () => [true];
         await agent.get('/admin/').expect(401);
         // Notes:
@@ -216,13 +199,11 @@ describe(__filename, function () {
           'authenticate_1']);
       });
       it('can deny access to /admin', async function () {
-        this.timeout(100);
         handlers.preAuthorize[0].innerHandle = () => [false];
         await agent.get('/admin/').auth('admin', 'admin-password').expect(403);
         assert.deepEqual(callOrder, ['preAuthorize_0']);
       });
       it('runs preAuthzFailure hook when access is denied', async function () {
-        this.timeout(100);
         handlers.preAuthorize[0].innerHandle = () => [false];
         let called = false;
         plugins.hooks.preAuthzFailure = [makeHook('preAuthzFailure', (hookName, {req, res}, cb) => {
@@ -238,7 +219,6 @@ describe(__filename, function () {
         assert(called);
       });
       it('returns 500 if an exception is thrown', async function () {
-        this.timeout(100);
         handlers.preAuthorize[0].innerHandle = () => { throw new Error('exception test'); };
         await agent.get('/').expect(500);
       });
@@ -251,13 +231,11 @@ describe(__filename, function () {
       });
 
       it('is not called if !requireAuthentication and not /admin/*', async function () {
-        this.timeout(100);
         settings.requireAuthentication = false;
         await agent.get('/').expect(200);
         assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1']);
       });
       it('is called if !requireAuthentication and /admin/*', async function () {
-        this.timeout(100);
         settings.requireAuthentication = false;
         await agent.get('/admin/').expect(401);
         assert.deepEqual(callOrder, ['preAuthorize_0',
@@ -266,7 +244,6 @@ describe(__filename, function () {
           'authenticate_1']);
       });
       it('defers if empty list returned', async function () {
-        this.timeout(100);
         await agent.get('/').expect(401);
         assert.deepEqual(callOrder, ['preAuthorize_0',
           'preAuthorize_1',
@@ -274,21 +251,18 @@ describe(__filename, function () {
           'authenticate_1']);
       });
       it('does not defer if return [true], 200', async function () {
-        this.timeout(100);
         handlers.authenticate[0].innerHandle = (req) => { req.session.user = {}; return [true]; };
         await agent.get('/').expect(200);
         // Note: authenticate_1 was not called because authenticate_0 handled it.
         assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1', 'authenticate_0']);
       });
       it('does not defer if return [false], 401', async function () {
-        this.timeout(100);
         handlers.authenticate[0].innerHandle = (req) => [false];
         await agent.get('/').expect(401);
         // Note: authenticate_1 was not called because authenticate_0 handled it.
         assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1', 'authenticate_0']);
       });
       it('falls back to HTTP basic auth', async function () {
-        this.timeout(100);
         await agent.get('/').auth('user', 'user-password').expect(200);
         assert.deepEqual(callOrder, ['preAuthorize_0',
           'preAuthorize_1',
@@ -296,7 +270,6 @@ describe(__filename, function () {
           'authenticate_1']);
       });
       it('passes settings.users in context', async function () {
-        this.timeout(100);
         handlers.authenticate[0].checkContext = ({users}) => {
           assert.equal(users, settings.users);
         };
@@ -307,7 +280,6 @@ describe(__filename, function () {
           'authenticate_1']);
       });
       it('passes user, password in context if provided', async function () {
-        this.timeout(100);
         handlers.authenticate[0].checkContext = ({username, password}) => {
           assert.equal(username, 'user');
           assert.equal(password, 'user-password');
@@ -319,7 +291,6 @@ describe(__filename, function () {
           'authenticate_1']);
       });
       it('does not pass user, password in context if not provided', async function () {
-        this.timeout(100);
         handlers.authenticate[0].checkContext = ({username, password}) => {
           assert(username == null);
           assert(password == null);
@@ -331,13 +302,11 @@ describe(__filename, function () {
           'authenticate_1']);
       });
       it('errors if req.session.user is not created', async function () {
-        this.timeout(100);
         handlers.authenticate[0].innerHandle = () => [true];
         await agent.get('/').expect(500);
         assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1', 'authenticate_0']);
       });
       it('returns 500 if an exception is thrown', async function () {
-        this.timeout(100);
         handlers.authenticate[0].innerHandle = () => { throw new Error('exception test'); };
         await agent.get('/').expect(500);
         assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1', 'authenticate_0']);
@@ -351,7 +320,6 @@ describe(__filename, function () {
       });
 
       it('is not called if !requireAuthorization (non-/admin)', async function () {
-        this.timeout(100);
         settings.requireAuthorization = false;
         await agent.get('/').auth('user', 'user-password').expect(200);
         assert.deepEqual(callOrder, ['preAuthorize_0',
@@ -360,7 +328,6 @@ describe(__filename, function () {
           'authenticate_1']);
       });
       it('is not called if !requireAuthorization (/admin)', async function () {
-        this.timeout(100);
         settings.requireAuthorization = false;
         await agent.get('/admin/').auth('admin', 'admin-password').expect(200);
         assert.deepEqual(callOrder, ['preAuthorize_0',
@@ -369,7 +336,6 @@ describe(__filename, function () {
           'authenticate_1']);
       });
       it('defers if empty list returned', async function () {
-        this.timeout(100);
         await agent.get('/').auth('user', 'user-password').expect(403);
         assert.deepEqual(callOrder, ['preAuthorize_0',
           'preAuthorize_1',
@@ -379,7 +345,6 @@ describe(__filename, function () {
           'authorize_1']);
       });
       it('does not defer if return [true], 200', async function () {
-        this.timeout(100);
         handlers.authorize[0].innerHandle = () => [true];
         await agent.get('/').auth('user', 'user-password').expect(200);
         // Note: authorize_1 was not called because authorize_0 handled it.
@@ -390,7 +355,6 @@ describe(__filename, function () {
           'authorize_0']);
       });
       it('does not defer if return [false], 403', async function () {
-        this.timeout(100);
         handlers.authorize[0].innerHandle = (req) => [false];
         await agent.get('/').auth('user', 'user-password').expect(403);
         // Note: authorize_1 was not called because authorize_0 handled it.
@@ -401,7 +365,6 @@ describe(__filename, function () {
           'authorize_0']);
       });
       it('passes req.path in context', async function () {
-        this.timeout(100);
         handlers.authorize[0].checkContext = ({resource}) => {
           assert.equal(resource, '/');
         };
@@ -414,7 +377,6 @@ describe(__filename, function () {
           'authorize_1']);
       });
       it('returns 500 if an exception is thrown', async function () {
-        this.timeout(100);
         handlers.authorize[0].innerHandle = () => { throw new Error('exception test'); };
         await agent.get('/').auth('user', 'user-password').expect(500);
         assert.deepEqual(callOrder, ['preAuthorize_0',
@@ -461,14 +423,12 @@ describe(__filename, function () {
 
     // authn failure tests
     it('authn fail, no hooks handle -> 401', async function () {
-      this.timeout(100);
       await agent.get('/').expect(401);
       assert(handlers.authnFailure.called);
       assert(!handlers.authzFailure.called);
       assert(handlers.authFailure.called);
     });
     it('authn fail, authnFailure handles', async function () {
-      this.timeout(100);
       handlers.authnFailure.shouldHandle = true;
       await agent.get('/').expect(200, 'authnFailure');
       assert(handlers.authnFailure.called);
@@ -476,7 +436,6 @@ describe(__filename, function () {
       assert(!handlers.authFailure.called);
     });
     it('authn fail, authFailure handles', async function () {
-      this.timeout(100);
       handlers.authFailure.shouldHandle = true;
       await agent.get('/').expect(200, 'authFailure');
       assert(handlers.authnFailure.called);
@@ -484,7 +443,6 @@ describe(__filename, function () {
       assert(handlers.authFailure.called);
     });
     it('authnFailure trumps authFailure', async function () {
-      this.timeout(100);
       handlers.authnFailure.shouldHandle = true;
       handlers.authFailure.shouldHandle = true;
       await agent.get('/').expect(200, 'authnFailure');
@@ -494,14 +452,12 @@ describe(__filename, function () {
 
     // authz failure tests
     it('authz fail, no hooks handle -> 403', async function () {
-      this.timeout(100);
       await agent.get('/').auth('user', 'user-password').expect(403);
       assert(!handlers.authnFailure.called);
       assert(handlers.authzFailure.called);
       assert(handlers.authFailure.called);
     });
     it('authz fail, authzFailure handles', async function () {
-      this.timeout(100);
       handlers.authzFailure.shouldHandle = true;
       await agent.get('/').auth('user', 'user-password').expect(200, 'authzFailure');
       assert(!handlers.authnFailure.called);
@@ -509,7 +465,6 @@ describe(__filename, function () {
       assert(!handlers.authFailure.called);
     });
     it('authz fail, authFailure handles', async function () {
-      this.timeout(100);
       handlers.authFailure.shouldHandle = true;
       await agent.get('/').auth('user', 'user-password').expect(200, 'authFailure');
       assert(!handlers.authnFailure.called);
@@ -517,7 +472,6 @@ describe(__filename, function () {
       assert(handlers.authFailure.called);
     });
     it('authzFailure trumps authFailure', async function () {
-      this.timeout(100);
       handlers.authzFailure.shouldHandle = true;
       handlers.authFailure.shouldHandle = true;
       await agent.get('/').auth('user', 'user-password').expect(200, 'authzFailure');

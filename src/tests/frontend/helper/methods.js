@@ -12,7 +12,9 @@ helper.spyOnSocketIO = () => {
     } else if (msg.data.type === 'USER_NEWINFO') {
       helper.userInfos.push(msg);
     } else if (msg.data.type === 'CHAT_MESSAGE') {
-      helper.chatMessages.push(msg);
+      helper.chatMessages.push(msg.data.message);
+    } else if (msg.data.type === 'CHAT_MESSAGES') {
+      helper.chatMessages.push(...msg.data.messages);
     }
   });
 };

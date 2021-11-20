@@ -5,6 +5,7 @@
 
 
 const Changeset = require('../../static/js/Changeset');
+const ChatMessage = require('../../static/js/ChatMessage');
 const AttributePool = require('../../static/js/AttributePool');
 const db = require('./DB');
 const settings = require('../utils/Settings');
@@ -258,7 +259,7 @@ Pad.prototype.setText = async function (newText) {
   }
 
   // append the changeset
-  await this.appendRevision(changeset);
+  if (newText !== oldText) await this.appendRevision(changeset);
 };
 
 Pad.prototype.appendText = async function (newText) {
@@ -274,53 +275,61 @@ Pad.prototype.appendText = async function (newText) {
   await this.appendRevision(changeset);
 };
 
-Pad.prototype.appendChatMessage = async function (text, userId, time) {
+/**
+ * Adds a chat message to the pad, including saving it to the database.
+ *
+ * @param {(ChatMessage|string)} msgOrText - Either a chat message object (recommended) or a string
+ *     containing the raw text of the user's chat message (deprecated).
+ * @param {?string} [authorId] - The user's author ID. Deprecated; use `msgOrText.authorId` instead.
+ * @param {?number} [time] - Message timestamp (milliseconds since epoch). Deprecated; use
+ *     `msgOrText.time` instead.
+ */
+Pad.prototype.appendChatMessage = async function (msgOrText, authorId = null, time = null) {
+  const msg =
+      msgOrText instanceof ChatMessage ? msgOrText : new ChatMessage(msgOrText, authorId, time);
   this.chatHead++;
-  // save the chat entry in the database
   await Promise.all([
-    db.set(`pad:${this.id}:chat:${this.chatHead}`, {text, userId, time}),
+    // Don't save the display name in the database because the user can change it at any time. The
+    // `displayName` property will be populated with the current value when the message is read from
+    // the database.
+    db.set(`pad:${this.id}:chat:${this.chatHead}`, {...msg, displayName: undefined}),
     this.saveToDatabase(),
   ]);
 };
 
+/**
+ * @param {number} entryNum - ID of the desired chat message.
+ * @returns {?ChatMessage}
+ */
 Pad.prototype.getChatMessage = async function (entryNum) {
-  // get the chat entry
   const entry = await db.get(`pad:${this.id}:chat:${entryNum}`);
-
-  // get the authorName if the entry exists
-  if (entry != null) {
-    entry.userName = await authorManager.getAuthorName(entry.userId);
-  }
-
-  return entry;
+  if (entry == null) return null;
+  const message = ChatMessage.fromObject(entry);
+  message.displayName = await authorManager.getAuthorName(message.authorId);
+  return message;
 };
 
+/**
+ * @param {number} start - ID of the first desired chat message.
+ * @param {number} end - ID of the last desired chat message.
+ * @returns {ChatMessage[]} Any existing messages with IDs between `start` (inclusive) and `end`
+ *     (inclusive), in order. Note: `start` and `end` form a closed interval, not a half-open
+ *     interval as is typical in code.
+ */
 Pad.prototype.getChatMessages = async function (start, end) {
-  // collect the numbers of chat entries and in which order we need them
-  const neededEntries = [];
-  for (let order = 0, entryNum = start; entryNum <= end; ++order, ++entryNum) {
-    neededEntries.push({entryNum, order});
-  }
-
-  // get all entries out of the database
-  const entries = [];
-  await Promise.all(
-      neededEntries.map((entryObject) => this.getChatMessage(entryObject.entryNum).then((entry) => {
-        entries[entryObject.order] = entry;
-      })));
+  const entries = await Promise.all(
+      [...Array(end + 1 - start).keys()].map((i) => this.getChatMessage(start + i)));
 
   // sort out broken chat entries
   // it looks like in happened in the past that the chat head was
   // incremented, but the chat message wasn't added
-  const cleanedEntries = entries.filter((entry) => {
+  return entries.filter((entry) => {
     const pass = (entry != null);
     if (!pass) {
       console.warn(`WARNING: Found broken chat entry in pad ${this.id}`);
     }
     return pass;
   });
-
-  return cleanedEntries;
 };
 
 Pad.prototype.init = async function (text) {
@@ -490,7 +499,6 @@ Pad.prototype.copyPadWithoutHistory = async function (destinationID, force) {
 
   // based on Changeset.makeSplice
   const assem = Changeset.smartOpAssembler();
-  assem.appendOpWithText('=', '');
   Changeset.appendATextToAssembler(oldAText, assem);
   assem.endDocument();
 

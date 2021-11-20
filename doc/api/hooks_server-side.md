@@ -50,12 +50,13 @@ Things in context:
 
 If this hook returns an error, the callback to the install function gets an error, too. This seems useful for adding in features when a particular plugin is installed.
 
-## init_`<plugin name>`
-Called from: src/static/js/pluginfw/plugins.js
+## `init_<plugin name>`
 
-Things in context: None
+Called from: `src/static/js/pluginfw/plugins.js`
 
-This function is called after a specific plugin is initialized. This would probably be more useful than the previous two functions if you only wanted to add in features to one specific plugin.
+Run during startup after the named plugin is initialized.
+
+Context properties: None
 
 ## expressConfigure
 Called from: src/node/hooks/express.js
@@ -579,9 +580,9 @@ Things in context:
 This hook allows plugins to grant temporary write access to a pad. It is called
 for each incoming message from a client. If write access is granted, it applies
 to the current message and all future messages from the same socket.io
-connection until the next `CLIENT_READY` or `SWITCH_TO_PAD` message. Read-only
-access is reset **after** each `CLIENT_READY` or `SWITCH_TO_PAD` message, so
-granting write access has no effect for those message types.
+connection until the next `CLIENT_READY` message. Read-only access is reset
+**after** each `CLIENT_READY` message, so granting write access has no effect
+for those message types.
 
 The handleMessageSecurity function must return a Promise. If the Promise
 resolves to `true`, write access is granted as described above. Returning
@@ -807,36 +808,82 @@ Example:
 exports.exportEtherpadAdditionalContent = () => ['comments'];
 ```
 
-## userLeave
-Called from src/node/handler/PadMessageHandler.js
+## `import`
 
-This in context:
+Called from: `src/node/handler/ImportHandler.js`
 
-1. session (including the pad id and author id)
+Called when a user submits a document for import, before the document is
+converted to HTML. The hook function should return a truthy value if the hook
+function elected to convert the document to HTML.
 
-This hook gets called when an author leaves a pad. This is useful if you want to perform certain actions after a pad has been edited
+Context properties:
+
+* `destFile`: The destination HTML filename.
+* `fileEnding`: The lower-cased filename extension from `srcFile` **with leading
+  period** (examples: `'.docx'`, `'.html'`, `'.etherpad'`).
+* `padId`: The identifier of the destination pad.
+* `srcFile`: The document to convert.
+
+## `userJoin`
+
+Called from: `src/node/handler/PadMessageHandler.js`
+
+Called after users have been notified that a new user has joined the pad.
+
+Context properties:
+
+* `authorId`: The user's author identifier.
+* `displayName`: The user's display name.
+* `padId`: The real (not read-only) identifier of the pad the user joined. This
+  MUST NOT be shared with any users that are connected with read-only access.
+* `readOnly`: Whether the user only has read-only access.
+* `readOnlyPadId`: The read-only identifier of the pad the user joined.
+* `socket`: The socket.io Socket object.
 
 Example:
 
-```
-exports.userLeave = function(hook, session, callback) {
-  console.log('%s left pad %s', session.author, session.padId);
+```javascript
+exports.userJoin = async (hookName, {authorId, displayName, padId}) => {
+  console.log(`${authorId} (${displayName}) joined pad ${padId});
 };
 ```
 
-### clientReady
-Called from src/node/handler/PadMessageHandler.js
+## `userLeave`
 
-This in context:
+Called from: `src/node/handler/PadMessageHandler.js`
 
-1. message
+Called when a user disconnects from a pad. This is useful if you want to perform
+certain actions after a pad has been edited.
 
-This hook gets called when handling a CLIENT_READY which is the first message from the client to the server.
+Context properties:
+
+* `authorId`: The user's author ID.
+* `padId`: The pad's real (not read-only) identifier.
+* `readOnly`: If truthy, the user only has read-only access.
+* `readOnlyPadId`: The pad's read-only identifier.
+* `socket`: The socket.io Socket object.
 
 Example:
 
-```
-exports.clientReady = function(hook, message) {
-  console.log('Client has entered the pad' + message.padId);
+```javascript
+exports.userLeave = async (hookName, {author, padId}) => {
+  console.log(`${author} left pad ${padId}`);
 };
 ```
+
+## `chatNewMessage`
+
+Called from: `src/node/handler/PadMessageHandler.js`
+
+Called when a user (or plugin) generates a new chat message, just before it is
+saved to the pad and relayed to all connected users.
+
+Context properties:
+
+* `message`: The chat message object. Plugins can mutate this object to change
+  the message text or add custom metadata to control how the message will be
+  rendered by the `chatNewMessage` client-side hook. The message's `authorId`
+  property can be trusted (the server overwrites any client-provided author ID
+  value with the user's actual author ID before this hook runs).
+* `padId`: The pad's real (not read-only) identifier.
+* `pad`: The pad's Pad object.

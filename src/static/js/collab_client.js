@@ -245,14 +245,6 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     } else if (msg.type === 'USER_NEWINFO') {
       const userInfo = msg.userInfo;
       const id = userInfo.userId;
-
-      // Avoid a race condition when setting colors.  If our color was set by a
-      // query param, ignore our own "new user" message's color value.
-      if (id === initialUserInfo.userId && initialUserInfo.globalUserColor) {
-        msg.userInfo.colorId = initialUserInfo.globalUserColor;
-      }
-
-
       if (userSet[id]) {
         userSet[id] = userInfo;
         callbacks.onUpdateUserInfo(userInfo);
@@ -272,7 +264,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     } else if (msg.type === 'CLIENT_MESSAGE') {
       callbacks.onClientMessage(msg.payload);
     } else if (msg.type === 'CHAT_MESSAGE') {
-      chat.addMessage(msg, true, false);
+      chat.addMessage(msg.message, true, false);
     } else if (msg.type === 'CHAT_MESSAGES') {
       for (let i = msg.messages.length - 1; i >= 0; i--) {
         chat.addMessage(msg.messages[i], true, true);

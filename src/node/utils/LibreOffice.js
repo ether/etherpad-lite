@@ -22,17 +22,15 @@ const fs = require('fs').promises;
 const log4js = require('log4js');
 const os = require('os');
 const path = require('path');
+const runCmd = require('./run_cmd');
 const settings = require('./Settings');
-const spawn = require('child_process').spawn;
 
-const libreOfficeLogger = log4js.getLogger('LibreOffice');
+const logger = log4js.getLogger('LibreOffice');
 
 const doConvertTask = async (task) => {
   const tmpDir = os.tmpdir();
-
-  libreOfficeLogger.debug(
-      `Converting ${task.srcFile} to format ${task.type}. The result will be put in ${tmpDir}`);
-  const soffice = spawn(settings.soffice, [
+  const p = runCmd([
+    settings.soffice,
     '--headless',
     '--invisible',
     '--nologo',
@@ -43,33 +41,32 @@ const doConvertTask = async (task) => {
     task.srcFile,
     '--outdir',
     tmpDir,
-  ]);
+  ], {stdio: [
+    null,
+    (line) => logger.info(`[${p.child.pid}] stdout: ${line}`),
+    (line) => logger.error(`[${p.child.pid}] stderr: ${line}`),
+  ]});
+  logger.info(`[${p.child.pid}] Converting ${task.srcFile} to ${task.type} in ${tmpDir}`);
   // Soffice/libreoffice is buggy and often hangs.
   // To remedy this we kill the spawned process after a while.
+  // TODO: Use the timeout option once support for Node.js < v15.13.0 is dropped.
   const hangTimeout = setTimeout(() => {
-    soffice.stdin.pause(); // required to kill hanging threads
-    soffice.kill();
+    logger.error(`[${p.child.pid}] Conversion timed out; killing LibreOffice...`);
+    p.child.kill();
   }, 120000);
-  let stdoutBuffer = '';
-  soffice.stdout.on('data', (data) => { stdoutBuffer += data.toString(); });
-  soffice.stderr.on('data', (data) => { stdoutBuffer += data.toString(); });
-  await new Promise((resolve, reject) => {
-    soffice.on('exit', (code) => {
-      clearTimeout(hangTimeout);
-      if (code !== 0) {
-        const err =
-            new Error(`LibreOffice died with exit code ${code} and message: ${stdoutBuffer}`);
-        libreOfficeLogger.error(err.stack);
-        return reject(err);
-      }
-      resolve();
-    });
-  });
-
+  try {
+    await p;
+  } catch (err) {
+    logger.error(`[${p.child.pid}] Conversion failed: ${err.stack || err}`);
+    throw err;
+  } finally {
+    clearTimeout(hangTimeout);
+  }
+  logger.info(`[${p.child.pid}] Conversion done.`);
   const filename = path.basename(task.srcFile);
   const sourceFile = `${filename.substr(0, filename.lastIndexOf('.'))}.${task.fileExtension}`;
   const sourcePath = path.join(tmpDir, sourceFile);
-  libreOfficeLogger.debug(`Renaming ${sourcePath} to ${task.destFile}`);
+  logger.debug(`Renaming ${sourcePath} to ${task.destFile}`);
   await fs.rename(sourcePath, task.destFile);
 };
 

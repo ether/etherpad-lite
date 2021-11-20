@@ -67,7 +67,7 @@ const padimpexp = (() => {
         importErrorMessage(message);
       } else {
         $('#import_export').removeClass('popup-show');
-        if (directDatabaseAccess) pad.switchToPad(clientVars.padId);
+        if (directDatabaseAccess) window.location.reload();
       }
       $('#importsubmitinput').removeAttr('disabled').val(html10n.get('pad.impexp.importbutton'));
       window.setTimeout(() => $('#importfileinput').removeAttr('disabled'), 0);

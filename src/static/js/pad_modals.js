@@ -32,15 +32,14 @@ const padmodals = (() => {
       pad = _pad;
     },
     showModal: (messageId) => {
-      padeditbar.toggleDropDown('none', () => {
-        $('#connectivity .visible').removeClass('visible');
-        $(`#connectivity .${messageId}`).addClass('visible');
+      padeditbar.toggleDropDown('none');
+      $('#connectivity .visible').removeClass('visible');
+      $(`#connectivity .${messageId}`).addClass('visible');
 
-        const $modal = $(`#connectivity .${messageId}`);
-        automaticReconnect.showCountDownTimerToReconnectOnModal($modal, pad);
+      const $modal = $(`#connectivity .${messageId}`);
+      automaticReconnect.showCountDownTimerToReconnectOnModal($modal, pad);
 
-        padeditbar.toggleDropDown('connectivity');
-      });
+      padeditbar.toggleDropDown('connectivity');
     },
     showOverlay: () => {
       // Prevent the user to interact with the toolbar. Useful when user is disconnected for example

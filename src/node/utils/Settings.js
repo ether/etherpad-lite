@@ -28,6 +28,7 @@
  */
 
 const absolutePaths = require('./AbsolutePaths');
+const deepEqual = require('fast-deep-equal/es6');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -39,10 +40,39 @@ const suppressDisableMsg = ' -- To suppress these warning messages change ' +
     'suppressErrorsInPadText to true in your settings.json\n';
 const _ = require('underscore');
 
+const logger = log4js.getLogger('settings');
+
+// Exported values that settings.json and credentials.json cannot override.
+const nonSettings = [
+  'credentialsFilename',
+  'settingsFilename',
+];
+
+// This is a function to make it easy to create a new instance. It is important to not reuse a
+// config object after passing it to log4js.configure() because that method mutates the object. :(
+const defaultLogConfig = () => ({appenders: [{type: 'console'}]});
+const defaultLogLevel = 'INFO';
+
+const initLogging = (logLevel, config) => {
+  // log4js.configure() modifies exports.logconfig so check for equality first.
+  const logConfigIsDefault = deepEqual(config, defaultLogConfig());
+  log4js.configure(config);
+  log4js.setGlobalLogLevel(logLevel);
+  log4js.replaceConsole();
+  // Log the warning after configuring log4js to increase the chances the user will see it.
+  if (!logConfigIsDefault) logger.warn('The logconfig setting is deprecated.');
+};
+
+// Initialize logging as early as possible with reasonable defaults. Logging will be re-initialized
+// with the user's chosen log level and logger config after the settings have been loaded.
+initLogging(defaultLogLevel, defaultLogConfig());
+
 /* Root path of the installation */
 exports.root = absolutePaths.findEtherpadRoot();
-console.log('All relative paths will be interpreted relative to the identified ' +
+logger.info('All relative paths will be interpreted relative to the identified ' +
             `Etherpad base dir: ${exports.root}`);
+exports.settingsFilename = absolutePaths.makeAbsolute(argv.settings || 'settings.json');
+exports.credentialsFilename = absolutePaths.makeAbsolute(argv.credentials || 'credentials.json');
 
 /**
  * The app title, visible e.g. in the browser window
@@ -234,7 +264,7 @@ exports.allowUnknownFileEnds = true;
 /**
  * The log level of log4js
  */
-exports.loglevel = 'INFO';
+exports.loglevel = defaultLogLevel;
 
 /**
  * Disable IP logging
@@ -264,7 +294,7 @@ exports.indentationOnNewLine = true;
 /*
  * log4js appender configuration
  */
-exports.logconfig = {appenders: [{type: 'console'}]};
+exports.logconfig = defaultLogConfig();
 
 /*
  * Session Key, do not sure this.
@@ -450,7 +480,7 @@ exports.getGitCommit = () => {
     }
     version = version.substring(0, 7);
   } catch (e) {
-    console.warn(`Can't get git version for server header\n${e.message}`);
+    logger.warn(`Can't get git version for server header\n${e.message}`);
   }
   return version;
 };
@@ -467,9 +497,14 @@ exports.getEpVersion = () => require('../../package.json').version;
  */
 const storeSettings = (settingsObj) => {
   for (const i of Object.keys(settingsObj || {})) {
+    if (nonSettings.includes(i)) {
+      logger.warn(`Ignoring setting: '${i}'`);
+      continue;
+    }
+
     // test if the setting starts with a lowercase character
     if (i.charAt(0).search('[a-z]') !== 0) {
-      console.warn(`Settings should start with a lowercase character: '${i}'`);
+      logger.warn(`Settings should start with a lowercase character: '${i}'`);
     }
 
     // we know this setting, so we overwrite it
@@ -482,7 +517,7 @@ const storeSettings = (settingsObj) => {
       }
     } else {
       // this setting is unknown, output a warning and throw it away
-      console.warn(`Unknown Setting: '${i}'. This setting doesn't exist or it was removed`);
+      logger.warn(`Unknown Setting: '${i}'. This setting doesn't exist or it was removed`);
     }
   }
 };
@@ -598,10 +633,10 @@ const lookupEnvironmentVariables = (obj) => {
     const defaultValue = match[3];
 
     if ((envVarValue === undefined) && (defaultValue === undefined)) {
-      console.warn(`Environment variable "${envVarName}" does not contain any value for ` +
-                   `configuration key "${key}", and no default was given. Using null. ` +
-                   'THIS BEHAVIOR MAY CHANGE IN A FUTURE VERSION OF ETHERPAD; you should ' +
-                   'explicitly use "null" as the default if you want to continue to use null.');
+      logger.warn(`Environment variable "${envVarName}" does not contain any value for ` +
+                  `configuration key "${key}", and no default was given. Using null. ` +
+                  'THIS BEHAVIOR MAY CHANGE IN A FUTURE VERSION OF ETHERPAD; you should ' +
+                  'explicitly use "null" as the default if you want to continue to use null.');
 
       /*
        * We have to return null, because if we just returned undefined, the
@@ -611,8 +646,8 @@ const lookupEnvironmentVariables = (obj) => {
     }
 
     if ((envVarValue === undefined) && (defaultValue !== undefined)) {
-      console.debug(`Environment variable "${envVarName}" not found for ` +
-                    `configuration key "${key}". Falling back to default value.`);
+      logger.debug(`Environment variable "${envVarName}" not found for ` +
+                   `configuration key "${key}". Falling back to default value.`);
 
       return coerceValue(defaultValue);
     }
@@ -623,7 +658,7 @@ const lookupEnvironmentVariables = (obj) => {
      * For numeric and boolean strings let's convert it to proper types before
      * returning it, in order to maintain backward compatibility.
      */
-    console.debug(
+    logger.debug(
         `Configuration key "${key}" will be read from environment variable "${envVarName}"`);
 
     return coerceValue(envVarValue);
@@ -650,11 +685,11 @@ const parseSettings = (settingsFilename, isSettings) => {
   if (isSettings) {
     settingsType = 'settings';
     notFoundMessage = 'Continuing using defaults!';
-    notFoundFunction = console.warn;
+    notFoundFunction = logger.warn.bind(logger);
   } else {
     settingsType = 'credentials';
     notFoundMessage = 'Ignoring.';
-    notFoundFunction = console.info;
+    notFoundFunction = logger.info.bind(logger);
   }
 
   try {
@@ -672,42 +707,30 @@ const parseSettings = (settingsFilename, isSettings) => {
 
     const settings = JSON.parse(settingsStr);
 
-    console.info(`${settingsType} loaded from: ${settingsFilename}`);
+    logger.info(`${settingsType} loaded from: ${settingsFilename}`);
 
     const replacedSettings = lookupEnvironmentVariables(settings);
 
     return replacedSettings;
   } catch (e) {
-    console.error(`There was an error processing your ${settingsType} ` +
-                  `file from ${settingsFilename}: ${e.message}`);
+    logger.error(`There was an error processing your ${settingsType} ` +
+                 `file from ${settingsFilename}: ${e.message}`);
 
     process.exit(1);
   }
 };
 
 exports.reloadSettings = () => {
-  // Discover where the settings file lives
-  const settingsFilename = absolutePaths.makeAbsolute(argv.settings || 'settings.json');
-
-  // Discover if a credential file exists
-  const credentialsFilename = absolutePaths.makeAbsolute(argv.credentials || 'credentials.json');
-
-  // try to parse the settings
-  const settings = parseSettings(settingsFilename, true);
-
-  // try to parse the credentials
-  const credentials = parseSettings(credentialsFilename, false);
-
+  const settings = parseSettings(exports.settingsFilename, true);
+  const credentials = parseSettings(exports.credentialsFilename, false);
   storeSettings(settings);
   storeSettings(credentials);
 
-  log4js.configure(exports.logconfig);// Configure the logging appenders
-  log4js.setGlobalLogLevel(exports.loglevel);// set loglevel
-  log4js.replaceConsole();
+  initLogging(exports.loglevel, exports.logconfig);
 
   if (!exports.skinName) {
-    console.warn('No "skinName" parameter found. Please check out settings.json.template and ' +
-                 'update your settings.json. Falling back to the default "colibris".');
+    logger.warn('No "skinName" parameter found. Please check out settings.json.template and ' +
+                'update your settings.json. Falling back to the default "colibris".');
     exports.skinName = 'colibris';
   }
 
@@ -717,8 +740,8 @@ exports.reloadSettings = () => {
     const countPieces = exports.skinName.split(path.sep).length;
 
     if (countPieces !== 1) {
-      console.error(`skinName must be the name of a directory under "${skinBasePath}". This is ` +
-                    `not valid: "${exports.skinName}". Falling back to the default "colibris".`);
+      logger.error(`skinName must be the name of a directory under "${skinBasePath}". This is ` +
+                   `not valid: "${exports.skinName}". Falling back to the default "colibris".`);
 
       exports.skinName = 'colibris';
     }
@@ -728,21 +751,20 @@ exports.reloadSettings = () => {
 
     // what if someone sets skinName == ".." or "."? We catch him!
     if (absolutePaths.isSubdir(skinBasePath, skinPath) === false) {
-      console.error(`Skin path ${skinPath} must be a subdirectory of ${skinBasePath}. ` +
-                    'Falling back to the default "colibris".');
+      logger.error(`Skin path ${skinPath} must be a subdirectory of ${skinBasePath}. ` +
+                   'Falling back to the default "colibris".');
 
       exports.skinName = 'colibris';
       skinPath = path.join(skinBasePath, exports.skinName);
     }
 
     if (fs.existsSync(skinPath) === false) {
-      console.error(
-          `Skin path ${skinPath} does not exist. Falling back to the default "colibris".`);
+      logger.error(`Skin path ${skinPath} does not exist. Falling back to the default "colibris".`);
       exports.skinName = 'colibris';
       skinPath = path.join(skinBasePath, exports.skinName);
     }
 
-    console.info(`Using skin "${exports.skinName}" in dir: ${skinPath}`);
+    logger.info(`Using skin "${exports.skinName}" in dir: ${skinPath}`);
   }
 
   if (exports.abiword) {
@@ -754,7 +776,7 @@ exports.reloadSettings = () => {
           if (!exports.suppressErrorsInPadText) {
             exports.defaultPadText += `\nError: ${abiwordError}${suppressDisableMsg}`;
           }
-          console.error(`${abiwordError} File location: ${exports.abiword}`);
+          logger.error(`${abiwordError} File location: ${exports.abiword}`);
           exports.abiword = null;
         }
       });
@@ -770,7 +792,7 @@ exports.reloadSettings = () => {
         if (!exports.suppressErrorsInPadText) {
           exports.defaultPadText += `\nError: ${sofficeError}${suppressDisableMsg}`;
         }
-        console.error(`${sofficeError} File location: ${exports.soffice}`);
+        logger.error(`${sofficeError} File location: ${exports.soffice}`);
         exports.soffice = null;
       }
     });
@@ -780,18 +802,18 @@ exports.reloadSettings = () => {
     const sessionkeyFilename = absolutePaths.makeAbsolute(argv.sessionkey || './SESSIONKEY.txt');
     try {
       exports.sessionKey = fs.readFileSync(sessionkeyFilename, 'utf8');
-      console.info(`Session key loaded from: ${sessionkeyFilename}`);
+      logger.info(`Session key loaded from: ${sessionkeyFilename}`);
     } catch (e) {
-      console.info(
+      logger.info(
           `Session key file "${sessionkeyFilename}" not found. Creating with random contents.`);
       exports.sessionKey = randomString(32);
       fs.writeFileSync(sessionkeyFilename, exports.sessionKey, 'utf8');
     }
   } else {
-    console.warn('Declaring the sessionKey in the settings.json is deprecated. ' +
-                 'This value is auto-generated now. Please remove the setting from the file. -- ' +
-                 'If you are seeing this error after restarting using the Admin User ' +
-                 'Interface then you can ignore this message.');
+    logger.warn('Declaring the sessionKey in the settings.json is deprecated. ' +
+                'This value is auto-generated now. Please remove the setting from the file. -- ' +
+                'If you are seeing this error after restarting using the Admin User ' +
+                'Interface then you can ignore this message.');
   }
 
   if (exports.dbType === 'dirty') {
@@ -801,13 +823,13 @@ exports.reloadSettings = () => {
     }
 
     exports.dbSettings.filename = absolutePaths.makeAbsolute(exports.dbSettings.filename);
-    console.warn(`${dirtyWarning} File location: ${exports.dbSettings.filename}`);
+    logger.warn(`${dirtyWarning} File location: ${exports.dbSettings.filename}`);
   }
 
   if (exports.ip === '') {
     // using Unix socket for connectivity
-    console.warn('The settings file contains an empty string ("") for the "ip" parameter. The ' +
-                 '"port" parameter will be interpreted as the path to a Unix socket to bind at.');
+    logger.warn('The settings file contains an empty string ("") for the "ip" parameter. The ' +
+                '"port" parameter will be interpreted as the path to a Unix socket to bind at.');
   }
 
   /*
@@ -822,7 +844,7 @@ exports.reloadSettings = () => {
    * TODO: remove the "?v=randomstring" parameter, and replace with hashed filenames instead
    */
   exports.randomVersionString = randomString(4);
-  console.log(`Random string used for versioning assets: ${exports.randomVersionString}`);
+  logger.info(`Random string used for versioning assets: ${exports.randomVersionString}`);
 };
 
 exports.exportedForTestingOnly = {

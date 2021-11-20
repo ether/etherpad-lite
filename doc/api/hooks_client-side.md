@@ -229,7 +229,10 @@ Called from: src/static/js/pad.js
 Things in context:
 
 1. ace - the ace object that is applied to this editor.
-2. pad - the pad object of the current pad.
+2. clientVars - Object containing client-side configuration such as author ID
+   and plugin settings. Your plugin can manipulate this object via the
+   `clientVars` server-side hook.
+3. pad - the pad object of the current pad.
 
 ## postToolbarInit
 
@@ -276,29 +279,53 @@ Things in context:
 This hook is called on the client side whenever a user joins or changes. This
 can be used to create notifications or an alternate user list.
 
-## chatNewMessage
+## `chatNewMessage`
 
-Called from: src/static/js/chat.js
+Called from: `src/static/js/chat.js`
 
-Things in context:
+This hook runs on the client side whenever a chat message is received from the
+server. It can be used to create different notifications for chat messages. Hook
+functions can modify the `author`, `authorName`, `duration`, `rendered`,
+`sticky`, `text`, and `timeStr` context properties to change how the message is
+processed. The `text` and `timeStr` properties may contain HTML and come
+pre-sanitized; plugins should be careful to sanitize any added user input to
+avoid introducing an XSS vulnerability.
 
-1. authorName - The user that wrote this message
-2. author - The authorID of the user that wrote the message
-3. text - the message text
-4. sticky (boolean) - if you want the gritter notification bubble to fade out on
-   its own or just sit there
-5. timestamp - the timestamp of the chat message
-6. timeStr - the timestamp as a formatted string
-7. duration - for how long in milliseconds should the gritter notification
-   appear (0 to disable)
+Context properties:
 
-This hook is called on the client side whenever a chat message is received from
-the server. It can be used to create different notifications for chat messages.
-Hoook functions can modify the `author`, `authorName`, `duration`, `sticky`,
-`text`, and `timeStr` context properties to change how the message is processed.
-The `text` and `timeStr` properties may contain HTML, but plugins should be
-careful to sanitize any added user input to avoid introducing an XSS
-vulnerability.
+* `authorName`: The display name of the user that wrote the message.
+* `author`: The author ID of the user that wrote the message.
+* `text`: Sanitized message HTML, with URLs wrapped like `<a
+  href="url">url</a>`. (Note that `message.text` is not sanitized or processed
+  in any way.)
+* `message`: The raw message object as received from the server, except with
+  time correction and a default `authorId` property if missing. Plugins must not
+  modify this object. Warning: Unlike `text`, `message.text` is not
+  pre-sanitized or processed in any way.
+* `rendered` - Used to override the default message rendering. Initially set to
+  `null`. If the hook function sets this to a DOM element object or a jQuery
+  object, then that object will be used as the rendered message UI. Otherwise,
+  if this is set to `null`, then Etherpad will render a default UI for the
+  message using the other context properties.
+* `sticky` (boolean): Whether the gritter notification should fade out on its
+  own or just sit there until manually closed.
+* `timestamp`: When the chat message was sent (milliseconds since epoch),
+  corrected using the difference between the local clock and the server's clock.
+* `timeStr`: The message timestamp as a formatted string.
+* `duration`: How long (in milliseconds) to display the gritter notification (0
+  to disable).
+
+## `chatSendMessage`
+
+Called from: `src/static/js/chat.js`
+
+This hook runs on the client side whenever the user sends a new chat message.
+Plugins can mutate the message object to change the message text or add metadata
+to control how the message will be rendered by the `chatNewMessage` hook.
+
+Context properties:
+
+* `message`: The message object that will be sent to the Etherpad server.
 
 ## collectContentPre
 

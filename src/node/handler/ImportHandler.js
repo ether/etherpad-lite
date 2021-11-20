@@ -142,11 +142,8 @@ const doImport = async (req, res, padId) => {
   }
 
   const destFile = path.join(tmpDirectory, `etherpad_import_${randNum}.${exportExtension}`);
-
-  // Logic for allowing external Import Plugins
-  const result = await hooks.aCallAll('import', {srcFile, destFile, fileEnding});
-  const importHandledByPlugin = (result.length > 0); // This feels hacky and wrong..
-
+  const importHandledByPlugin =
+      (await hooks.aCallAll('import', {srcFile, destFile, fileEnding, padId})).some((x) => x);
   const fileIsEtherpad = (fileEnding === '.etherpad');
   const fileIsHTML = (fileEnding === '.html' || fileEnding === '.htm');
   const fileIsTXT = (fileEnding === '.txt');
@@ -235,8 +232,8 @@ const doImport = async (req, res, padId) => {
   pad = await padManager.getPad(padId);
   padManager.unloadPad(padId);
 
-  // direct Database Access means a pad user should perform a switchToPad
-  // and not attempt to receive updated pad data
+  // Direct database access means a pad user should reload the pad and not attempt to receive
+  // updated pad data.
   if (directDatabaseAccess) return true;
 
   // tell clients to update

@@ -108,7 +108,7 @@ linestylefilter.getLineStyleFilter = (lineLength, aline, textAndClassFunc, apool
     let nextOp, nextOpClasses;
 
     const goNextOp = () => {
-      nextOp = attributionIter.next();
+      nextOp = attributionIter.hasNext() ? attributionIter.next() : Changeset.newOp();
       nextOpClasses = (nextOp.opcode && attribsToClasses(nextOp.attribs));
     };
     goNextOp();
@@ -131,7 +131,7 @@ linestylefilter.getLineStyleFilter = (lineLength, aline, textAndClassFunc, apool
         linestylefilter,
         text: txt,
         class: cls,
-      }, ' ', ' ', '');
+      });
       const disableAuthors = (disableAuthColorForThisLine == null ||
         disableAuthColorForThisLine.length === 0) ? false : disableAuthColorForThisLine[0];
       while (txt.length > 0) {

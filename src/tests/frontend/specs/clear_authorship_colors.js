@@ -1,9 +1,11 @@
 'use strict';
 
 describe('clear authorship colors button', function () {
+  let padId;
+
   // create a new pad before each test run
   beforeEach(async function () {
-    await helper.aNewPad();
+    padId = await helper.aNewPad();
   });
 
   it('makes text clear authorship colors', async function () {
@@ -97,5 +99,27 @@ describe('clear authorship colors button', function () {
 
     await helper.waitForPromise(
         () => chrome$('div.disconnected').attr('class').indexOf('visible') === -1);
+  });
+
+  // Test for https://github.com/ether/etherpad-lite/issues/5128
+  it('clears authorship when first line has line attributes', async function () {
+    // override the confirm dialogue function
+    helper.padChrome$.window.confirm = () => true;
+
+    // Make sure there is text with author info. The first line must have a line attribute.
+    await helper.clearPad();
+    await helper.edit('Hello');
+    helper.padChrome$('.buttonicon-insertunorderedlist').click();
+    await helper.waitForPromise(() => helper.padInner$('[class*="author-"]').length > 0);
+
+    const nCommits = helper.commits.length;
+    helper.padChrome$('.buttonicon-clearauthorship').click();
+    await helper.waitForPromise(() => helper.padInner$('[class*="author-"]').length === 0);
+
+    // Make sure the change was actually accepted by reloading the pad and looking for authorship.
+    // Before the pad can be reloaded the server might need some time to accept the change.
+    await helper.waitForPromise(() => helper.commits.length > nCommits);
+    await helper.aNewPad({id: padId});
+    expect(helper.padInner$('[class*="author-"]').length).to.be(0);
   });
 });

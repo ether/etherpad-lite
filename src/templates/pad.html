@@ -5,11 +5,10 @@
     ;
 %>
 <!doctype html>
-
-<% e.begin_block("htmlHead"); %>
 <html class="pad <%=pluginUtils.clientPluginNames().join(' '); %> <%=settings.skinVariants%>">
-<% e.end_block(); %>
-
+<head>
+  <% e.begin_block("htmlHead"); %>
+  <% e.end_block(); %>
   <title><%=settings.title%></title>
   <script>
     /*
@@ -34,6 +33,7 @@
     for the JavaScript code in this page.|
     */
   </script>
+  <script src="../static/js/basic_error_handler.js?v=<%=settings.randomVersionString%>"></script>
 
   <meta charset="utf-8">
   <meta name="robots" content="noindex, nofollow">
@@ -54,9 +54,8 @@
   <link rel="localizations" type="application/l10n+json" href="../locales.json" />
   <script type="text/javascript" src="../static/js/vendors/html10n.js?v=<%=settings.randomVersionString%>"></script>
   <script type="text/javascript" src="../static/js/l10n.js?v=<%=settings.randomVersionString%>"></script>
-
-  <!-- head and body had been removed intentionally -->
-
+</head>
+<body>
   <% e.begin_block("body"); %>
 
   <!----------------------------->
@@ -388,7 +387,7 @@
             </div>
             <div id="chatinputbox">
                 <form>
-                    <input id="chatinput" type="text" maxlength="999" data-l10n-id="pad.chat.writeMessage.placeholder">
+                    <textarea id="chatinput" maxlength="999" data-l10n-id="pad.chat.writeMessage.placeholder"></textarea>
                 </form>
             </div>
           </div>
@@ -443,27 +442,6 @@
   <% e.begin_block("scripts"); %>
 
   <script type="text/javascript" src="../static/js/require-kernel.js?v=<%=settings.randomVersionString%>"></script>
-
-  <script type="text/javascript">
-      // @license magnet:?xt=urn:btih:8e4f440f4c65981c5bf93c76d35135ba5064d8b7&dn=apache-2.0.txt
-      (function() {
-        // Display errors on page load to the user
-        // (Gets overridden by padutils.setupGlobalExceptionHandler)
-        const originalHandler = window.onerror;
-        window.onerror = function(msg, url, line) {
-          const box   = document.getElementById('editorloadingbox');
-          const cleanMessage = msg.replace(/[^0-9a-zA-Z=\.?&:\/]+/,'');
-          const cleanSource = url.replace(/[^0-9a-zA-Z=\.?&:\/]+/,'');
-          const cleanLine = parseInt(line);
-          box.innerText = `An error occurred while loading the pad\n${cleanMessage} in
-            ${cleanSource} at line ${cleanLine}`
-          // call original error handler
-          if(typeof(originalHandler) == 'function') originalHandler.call(null, arguments);
-        };
-      })();
-      // @license-end
-  </script>
-
   <script type="text/javascript" src="../socket.io/socket.io.js?v=<%=settings.randomVersionString%>"></script>
 
   <!-- Include base packages manually (this help with debugging) -->
@@ -500,6 +478,10 @@
 
         plugins.baseURL = baseURL;
         plugins.update(function () {
+          // Mechanism for tests to register hook functions (install fake plugins).
+          window._postPluginUpdateForTestingDone = false;
+          if (window._postPluginUpdateForTesting != null) window._postPluginUpdateForTesting();
+          window._postPluginUpdateForTestingDone = true;
           // Call documentReady hook
           $(function() {
             hooks.aCallAll('documentReady');
@@ -522,4 +504,5 @@
   </script>
   <div style="display:none"><a href="/javascript" data-jslicense="1">JavaScript license information</a></div>
   <% e.end_block(); %>
+</body>
 </html>

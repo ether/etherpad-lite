@@ -53,7 +53,8 @@ exports._analyzeLine = (text, aline, apool) => {
   if (aline) {
     const opIter = Changeset.opIterator(aline);
     if (opIter.hasNext()) {
-      let listType = Changeset.opAttributeValue(opIter.next(), 'list', apool);
+      const op = opIter.next();
+      let listType = Changeset.opAttributeValue(op, 'list', apool);
       if (listType) {
         lineMarker = 1;
         listType = /([a-z]+)([0-9]+)/.exec(listType);
@@ -62,10 +63,7 @@ exports._analyzeLine = (text, aline, apool) => {
           line.listLevel = Number(listType[2]);
         }
       }
-    }
-    const opIter2 = Changeset.opIterator(aline);
-    if (opIter2.hasNext()) {
-      const start = Changeset.opAttributeValue(opIter2.next(), 'start', apool);
+      const start = Changeset.opAttributeValue(op, 'start', apool);
       if (start) {
         line.start = start;
       }

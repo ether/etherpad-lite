@@ -15,9 +15,17 @@
   number of the issue that is being fixed, in the form: Fixes #someIssueNumber
   ```
 * if the PR is a **bug fix**:
-  * the first commit in the series must be a test that shows the failure
-  * subsequent commits will fix the bug and make the test pass
-  * the final commit message should include the text `Fixes: #xxx` to link it to its bug report
+  * The commit that fixes the bug should **include a regression test** that
+    would fail if the bug fix was reverted. Adding the regression test in the
+    same commit as the bug fix makes it easier for a reviewer to verify that the
+    test is appropriate for the bug fix.
+  * If there is a bug report, **the pull request description should include the
+    text "`Fixes #xxx`"** so that the bug report is auto-closed when the PR is
+    merged. It is less useful to say the same thing in a commit message because
+    GitHub will spam the bug report every time the commit is rebased, and
+    because a bug number alone becomes meaningless in forks. (A full URL would
+    be better, but ideally each commit is readable on its own without the need
+    to examine an external reference to understand motivation or context.)
 * think about stability: code has to be backwards compatible as much as possible. Always **assume your code will be run with an older version of the DB/config file**
 * if you want to remove a feature, **deprecate it instead**:
   * write an issue with your deprecation plan

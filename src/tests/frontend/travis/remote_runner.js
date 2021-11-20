@@ -26,7 +26,7 @@ const log = (msg, pfx = '') => {
 
 const finishedRegex = /FINISHED.*[0-9]+ tests passed, ([0-9]+) tests failed/;
 
-const sauceTestWorker = async.queue(async ({name, pfx, testSettings}) => {
+const sauceTestWorker = async.queue(async ({name, pfx, browser, version, platform}) => {
   const chromeOptions = new swdChrome.Options()
       .addArguments('use-fake-device-for-media-stream', 'use-fake-ui-for-media-stream');
   const edgeOptions = new swdEdge.Options()
@@ -34,25 +34,24 @@ const sauceTestWorker = async.queue(async ({name, pfx, testSettings}) => {
   const firefoxOptions = new swdFirefox.Options()
       .setPreference('media.navigator.permission.disabled', true)
       .setPreference('media.navigator.streams.fake', true);
-  const driver = await new swd.Builder()
+  const builder = new swd.Builder()
       .usingServer('https://ondemand.saucelabs.com/wd/hub')
-      .withCapabilities(Object.assign({
-        'sauce:options': {
-          username: process.env.SAUCE_USERNAME,
-          accessKey: process.env.SAUCE_ACCESS_KEY,
-          name: [process.env.GIT_HASH].concat(process.env.SAUCE_NAME || [], name).join(' - '),
-          public: true,
-          build: process.env.GIT_HASH,
-          // console.json can be downloaded via saucelabs,
-          // don't know how to print them into output of the tests
-          extendedDebugging: true,
-          tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
-        },
-      }, testSettings))
+      .forBrowser(browser, version, platform)
       .setChromeOptions(chromeOptions)
       .setEdgeOptions(edgeOptions)
-      .setFirefoxOptions(firefoxOptions)
-      .build();
+      .setFirefoxOptions(firefoxOptions);
+  builder.getCapabilities().set('sauce:options', {
+    username: process.env.SAUCE_USERNAME,
+    accessKey: process.env.SAUCE_ACCESS_KEY,
+    name: [process.env.GIT_HASH].concat(process.env.SAUCE_NAME || [], name).join(' - '),
+    public: true,
+    build: process.env.GIT_HASH,
+    // console.json can be downloaded via saucelabs,
+    // don't know how to print them into output of the tests
+    extendedDebugging: true,
+    tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
+  });
+  const driver = await builder.build();
   const url = `https://saucelabs.com/jobs/${(await driver.getSession()).getId()}`;
   try {
     await driver.get('http://localhost:9001/tests/frontend/');
@@ -94,39 +93,18 @@ const sauceTestWorker = async.queue(async ({name, pfx, testSettings}) => {
 }, 6); // run 6 tests in parrallel
 
 Promise.all([
-  {
-    platformName: 'macOS 11.00',
-    browserName: 'safari',
-    browserVersion: 'latest',
-  },
+  {browser: 'safari', version: 'latest', platform: 'macOS 11.00'},
   ...(isAdminRunner ? [] : [
-    {
-      platformName: 'Windows 10',
-      browserName: 'firefox',
-      browserVersion: 'latest',
-    },
-    {
-      platformName: 'Windows 10',
-      browserName: 'MicrosoftEdge',
-      browserVersion: 'latest',
-    },
-    {
-      platformName: 'Windows 10',
-      browserName: 'chrome',
-      browserVersion: 'latest',
-    },
-    {
-      platformName: 'Windows 7',
-      browserName: 'chrome',
-      browserVersion: '55.0',
-    },
+    {browser: 'firefox', version: 'latest', platform: 'Windows 10'},
+    {browser: 'MicrosoftEdge', version: 'latest', platform: 'Windows 10'},
+    {browser: 'chrome', version: 'latest', platform: 'Windows 10'},
+    {browser: 'chrome', version: '55.0', platform: 'Windows 7'},
   ]),
-].map(async (testSettings) => {
-  const name =
-      `${testSettings.browserName} ${testSettings.browserVersion}, ${testSettings.platformName}`;
+].map(async ({browser, version, platform}) => {
+  const name = `${browser} ${version}, ${platform}`;
   const pfx = `[${name}] `;
   try {
-    await sauceTestWorker.push({name, pfx, testSettings});
+    await sauceTestWorker.push({name, pfx, browser, version, platform});
   } catch (err) {
     log(`[red]FAILED[clear] ${err.stack || err}`, pfx);
     process.exitCode = 1;

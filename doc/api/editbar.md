@@ -5,7 +5,7 @@ src/static/js/pad_editbar.js
 
 ## disable()
 
-## toggleDropDown(dropdown, callback)
+## toggleDropDown(dropdown)
 Shows the dropdown `div.popup` whose `id` equals `dropdown`.
 
 ## registerCommand(cmd, callback)

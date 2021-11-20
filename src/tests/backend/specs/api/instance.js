@@ -18,7 +18,6 @@ describe(__filename, function () {
 
   describe('Connectivity for instance-level API tests', function () {
     it('can connect', function (done) {
-      this.timeout(150);
       agent.get('/api/')
           .expect('Content-Type', /json/)
           .expect(200, done);
@@ -27,7 +26,6 @@ describe(__filename, function () {
 
   describe('getStats', function () {
     it('Gets the stats of a running instance', function (done) {
-      this.timeout(100);
       agent.get(endPoint('getStats'))
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('getStats() failed');

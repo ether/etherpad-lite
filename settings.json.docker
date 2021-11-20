@@ -213,7 +213,9 @@
     "user":     "${DB_USER:undefined}",
     "password": "${DB_PASS:undefined}",
     "charset":  "${DB_CHARSET:undefined}",
-    "filename": "${DB_FILENAME:var/dirty.db}"
+    "filename": "${DB_FILENAME:var/dirty.db}",
+    "collection": "${DB_COLLECTION:undefined}",
+    "url":      "${DB_URL:undefined}"
   },
 
   /*
@@ -480,7 +482,7 @@
      * value to work properly, but increasing the value increases susceptibility
      * to denial of service attacks (malicious clients can exhaust memory).
      */
-    "maxHttpBufferSize": 10000
+    "maxHttpBufferSize": "${SOCKETIO_MAX_HTTP_BUFFER_SIZE:10000}"
   },
 
   /*
@@ -493,7 +495,7 @@
   /**
   * Disable dump of objects preventing a clean exit
   */
-  "dumpOnUncleanExit": false,
+  "dumpOnUncleanExit": "${DUMP_ON_UNCLEAN_EXIT:false}",
 
   /*
    * Disable indentation on new line when previous line ends with some special
@@ -583,58 +585,6 @@
    * Valid values: DEBUG, INFO, WARN, ERROR
    */
   "loglevel": "${LOGLEVEL:INFO}",
-
-  /*
-   * Logging configuration. See log4js documentation for further information:
-   * https://github.com/nomiddlename/log4js-node
-   *
-   * You can add as many appenders as you want here.
-   */
-  "logconfig" :
-    { "appenders": [
-        { "type": "console"
-        //, "category": "access"// only logs pad access
-        }
-
-      /*
-      , { "type": "file"
-      , "filename": "your-log-file-here.log"
-      , "maxLogSize": 1024
-      , "backups": 3 // how many log files there're gonna be at max
-      //, "category": "test" // only log a specific category
-        }
-      */
-
-      /*
-      , { "type": "logLevelFilter"
-        , "level": "warn" // filters out all log messages that have a lower level than "error"
-        , "appender":
-          {  Use whatever appender you want here  }
-        }
-      */
-
-      /*
-      , { "type": "logLevelFilter"
-        , "level": "error" // filters out all log messages that have a lower level than "error"
-        , "appender":
-          { "type": "smtp"
-          , "subject": "An error occurred in your EPL instance!"
-          , "recipients": "bar@blurdybloop.com, baz@blurdybloop.com"
-          , "sendInterval": 300 // 60 * 5 = 5 minutes -- will buffer log messages; set to 0 to send a mail for every message
-          , "transport": "SMTP", "SMTP": { // see https://github.com/andris9/Nodemailer#possible-transport-methods
-              "host": "smtp.example.com", "port": 465,
-              "secureConnection": true,
-              "auth": {
-                  "user": "foo@example.com",
-                  "pass": "bar_foo"
-              }
-            }
-          }
-        }
-      */
-
-      ]
-    }, // logconfig
 
   /* Override any strings found in locale directories */
   "customLocaleStrings": {}

@@ -48,8 +48,6 @@ const socketio = require('./socketio');
 
 const hooks = require('./pluginfw/hooks');
 
-let receivedClientVars = false;
-
 // This array represents all GET-parameters which can be used to change a setting.
 //   name:     the parameter-name, eg  `?noColors=true`  =>  `noColors`
 //   checkVal: the callback is only executed when
@@ -159,30 +157,17 @@ const getParams = () => {
 
   // Then URL applied stuff
   const params = getUrlVars();
-
   for (const setting of getParameters) {
-    const value = params[setting.name];
-
+    const value = params.get(setting.name);
     if (value && (value === setting.checkVal || setting.checkVal == null)) {
       setting.callback(value);
     }
   }
 };
 
-const getUrlVars = () => {
-  const vars = [];
-  let hash;
-  const hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-  for (let i = 0; i < hashes.length; i++) {
-    hash = hashes[i].split('=');
-    vars.push(hash[0]);
-    vars[hash[0]] = hash[1];
-  }
-  return vars;
-};
+const getUrlVars = () => new URL(window.location.href).searchParams;
 
-const sendClientReady = (isReconnect, messageType) => {
-  messageType = typeof messageType !== 'undefined' ? messageType : 'CLIENT_READY';
+const sendClientReady = (isReconnect) => {
   let padId = document.location.pathname.substring(document.location.pathname.lastIndexOf('/') + 1);
   // unescape neccesary due to Safari and Opera interpretation of spaces
   padId = decodeURIComponent(padId);
@@ -199,13 +184,23 @@ const sendClientReady = (isReconnect, messageType) => {
     Cookies.set('token', token, {expires: 60});
   }
 
+  // If known, propagate the display name and color to the server in the CLIENT_READY message. This
+  // allows the server to include the values in its reply CLIENT_VARS message (which avoids
+  // initialization race conditions) and in the USER_NEWINFO messages sent to the other users on the
+  // pad (which enables them to display a user join notification with the correct name).
+  const params = getUrlVars();
+  const userInfo = {
+    colorId: params.get('userColor'),
+    name: params.get('userName'),
+  };
+
   const msg = {
     component: 'pad',
-    type: messageType,
+    type: 'CLIENT_READY',
     padId,
     sessionID: Cookies.get('sessionID'),
     token,
-    protocolVersion: 2,
+    userInfo,
   };
 
   // this is a reconnect, lets tell the server our revisionnumber
@@ -217,7 +212,8 @@ const sendClientReady = (isReconnect, messageType) => {
   socket.json.send(msg);
 };
 
-const handshake = () => {
+const handshake = async () => {
+  let receivedClientVars = false;
   let padId = document.location.pathname.substring(document.location.pathname.lastIndexOf('/') + 1);
   // unescape neccesary due to Safari and Opera interpretation of spaces
   padId = decodeURIComponent(padId);
@@ -297,63 +293,8 @@ const handshake = () => {
         }
       }
     } else if (!receivedClientVars && obj.type === 'CLIENT_VARS') {
-      // if we haven't recieved the clientVars yet, then this message should it be
       receivedClientVars = true;
-
-      // set some client vars
       window.clientVars = obj.data;
-
-      // initialize the pad
-      pad._afterHandshake();
-
-      if (clientVars.readonly) {
-        chat.hide();
-        $('#myusernameedit').attr('disabled', true);
-        $('#chatinput').attr('disabled', true);
-        $('#chaticon').hide();
-        $('#options-chatandusers').parent().hide();
-        $('#options-stickychat').parent().hide();
-      } else if (!settings.hideChat) { $('#chaticon').show(); }
-
-      $('body').addClass(clientVars.readonly ? 'readonly' : 'readwrite');
-
-      padeditor.ace.callWithAce((ace) => {
-        ace.ace_setEditable(!clientVars.readonly);
-      });
-
-      // If the LineNumbersDisabled value is set to true then we need to hide the Line Numbers
-      if (settings.LineNumbersDisabled === true) {
-        pad.changeViewOption('showLineNumbers', false);
-      }
-
-      // If the noColors value is set to true then we need to
-      // hide the background colors on the ace spans
-      if (settings.noColors === true) {
-        pad.changeViewOption('noColors', true);
-      }
-
-      if (settings.rtlIsTrue === true) {
-        pad.changeViewOption('rtlIsTrue', true);
-      }
-
-      // If the Monospacefont value is set to true then change it to monospace.
-      if (settings.useMonospaceFontGlobal === true) {
-        pad.changeViewOption('padFontFamily', 'monospace');
-      }
-      // if the globalUserName value is set we need to tell the server and
-      // the client about the new authorname
-      if (settings.globalUserName !== false) {
-        pad.notifyChangeName(settings.globalUserName); // Notifies the server
-        pad.myUserInfo.name = settings.globalUserName;
-        $('#myusernameedit').val(settings.globalUserName); // Updates the current users UI
-      }
-      if (settings.globalUserColor !== false && colorutils.isCssHex(settings.globalUserColor)) {
-        // Add a 'globalUserColor' property to myUserInfo,
-        // so collabClient knows we have a query parameter.
-        pad.myUserInfo.globalUserColor = settings.globalUserColor;
-        pad.notifyChangeColor(settings.globalUserColor); // Updates pad.myUserInfo.colorId
-        paduserlist.setMyUserInfo(pad.myUserInfo);
-      }
     } else if (obj.disconnect) {
       padconnectionstatus.disconnected(obj.disconnect);
       socket.disconnect();
@@ -365,16 +306,48 @@ const handshake = () => {
 
       return;
     } else {
-      pad.collabClient.handleMessageFromServer(obj);
+      pad._messageQ.enqueue(obj);
     }
   });
-  // Bind the colorpicker
-  $('#colorpicker').farbtastic({callback: '#mycolorpickerpreview', width: 220});
-  // Bind the read only button
-  $('#readonlyinput').on('click', () => {
-    padeditbar.setEmbedLinks();
-  });
+
+  await Promise.all([
+    new Promise((resolve) => {
+      const h = (obj) => {
+        if (obj.accessStatus || obj.type !== 'CLIENT_VARS') return;
+        socket.off('message', h);
+        resolve();
+      };
+      socket.on('message', h);
+    }),
+    // This hook is only intended to be used by test code. If a plugin would like to use this hook,
+    // the hook must first be promoted to officially supported by deleting the leading underscore
+    // from the name, adding documentation to `doc/api/hooks_client-side.md`, and deleting this
+    // comment.
+    hooks.aCallAll('_socketCreated', {socket}),
+  ]);
 };
+
+/** Defers message handling until setCollabClient() is called with a non-null value. */
+class MessageQueue {
+  constructor() {
+    this._q = [];
+    this._cc = null;
+  }
+
+  setCollabClient(cc) {
+    this._cc = cc;
+    this.enqueue(); // Flush.
+  }
+
+  enqueue(...msgs) {
+    if (this._cc == null) {
+      this._q.push(...msgs);
+    } else {
+      while (this._q.length > 0) this._cc.handleMessageFromServer(this._q.shift());
+      for (const msg of msgs) this._cc.handleMessageFromServer(msg);
+    }
+  }
+}
 
 const pad = {
   // don't access these directly from outside this file, except
@@ -385,65 +358,34 @@ const pad = {
   initTime: 0,
   clientTimeOffset: null,
   padOptions: {},
+  _messageQ: new MessageQueue(),
 
   // these don't require init; clientVars should all go through here
   getPadId: () => clientVars.padId,
   getClientIp: () => clientVars.clientIp,
   getColorPalette: () => clientVars.colorPalette,
-  getIsDebugEnabled: () => clientVars.debugEnabled,
   getPrivilege: (name) => clientVars.accountPrivs[name],
   getUserId: () => pad.myUserInfo.userId,
   getUserName: () => pad.myUserInfo.name,
   userList: () => paduserlist.users(),
-  switchToPad: (padId) => {
-    let newHref = new RegExp(/.*\/p\/[^/]+/).exec(document.location.pathname) || clientVars.padId;
-    newHref = newHref[0];
-
-    const options = clientVars.padOptions;
-    if (typeof options !== 'undefined' && options != null) {
-      const optionArr = [];
-      $.each(options, (k, v) => {
-        const str = `${k}=${v}`;
-        optionArr.push(str);
-      });
-      const optionStr = optionArr.join('&');
-
-      newHref = `${newHref}?${optionStr}`;
-    }
-
-    // destroy old pad from DOM
-    // See https://github.com/ether/etherpad-lite/pull/3915
-    // TODO: Check if Destroying is enough and doesn't leave negative stuff
-    // See ace.js "editor.destroy" for a reference of how it was done before
-    $('#editorcontainer').find('iframe')[0].remove();
-
-    if (window.history && window.history.pushState) {
-      $('#chattext p').remove(); // clear the chat messages
-      window.history.pushState('', '', newHref);
-      receivedClientVars = false;
-      sendClientReady(false, 'SWITCH_TO_PAD');
-    } else {
-      // fallback
-      window.location.href = newHref;
-    }
-  },
   sendClientMessage: (msg) => {
     pad.collabClient.sendClientMessage(msg);
   },
 
-  init: () => {
+  init() {
     padutils.setupGlobalExceptionHandler();
 
-    $(document).ready(() => {
-      // start the custom js
-      if (typeof customStart === 'function') customStart(); // eslint-disable-line no-undef
-      handshake();
-
-      // To use etherpad you have to allow cookies.
-      // This will check if the prefs-cookie is set.
-      // Otherwise it shows up a message to the user.
+    // $(handler), $().ready(handler), $.wait($.ready).then(handler), etc. don't work if handler is
+    // an async function for some bizarre reason, so the async function is wrapped in a non-async
+    // function.
+    $(() => (async () => {
+      if (window.customStart != null) window.customStart();
+      $('#colorpicker').farbtastic({callback: '#mycolorpickerpreview', width: 220});
+      $('#readonlyinput').on('click', () => { padeditbar.setEmbedLinks(); });
       padcookie.init();
-    });
+      await handshake();
+      this._afterHandshake();
+    })());
   },
   _afterHandshake() {
     pad.clientTimeOffset = Date.now() - clientVars.serverTimestamp;
@@ -502,7 +444,7 @@ const pad = {
 
       $('#editorcontainer').addClass('initialized');
 
-      hooks.aCallAll('postAceInit', {ace: padeditor.ace, pad});
+      hooks.aCallAll('postAceInit', {ace: padeditor.ace, clientVars, pad});
     };
 
     // order of inits is important here:
@@ -516,6 +458,7 @@ const pad = {
     pad.collabClient = getCollabClient(
         padeditor.ace, clientVars.collab_client_vars, pad.myUserInfo,
         {colorPalette: pad.getColorPalette()}, pad);
+    this._messageQ.setCollabClient(this.collabClient);
     pad.collabClient.setOnUserJoin(pad.handleUserJoin);
     pad.collabClient.setOnUpdateUserInfo(pad.handleUserUpdate);
     pad.collabClient.setOnUserLeave(pad.handleUserLeave);
@@ -532,7 +475,57 @@ const pad = {
       // there are no messages
       $('#chatloadmessagesbutton').css('display', 'none');
     }
+
+    if (window.clientVars.readonly) {
+      chat.hide();
+      $('#myusernameedit').attr('disabled', true);
+      $('#chatinput').attr('disabled', true);
+      $('#chaticon').hide();
+      $('#options-chatandusers').parent().hide();
+      $('#options-stickychat').parent().hide();
+    } else if (!settings.hideChat) { $('#chaticon').show(); }
+
+    $('body').addClass(window.clientVars.readonly ? 'readonly' : 'readwrite');
+
+    padeditor.ace.callWithAce((ace) => {
+      ace.ace_setEditable(!window.clientVars.readonly);
+    });
+
+    // If the LineNumbersDisabled value is set to true then we need to hide the Line Numbers
+    if (settings.LineNumbersDisabled === true) {
+      this.changeViewOption('showLineNumbers', false);
+    }
+
+    // If the noColors value is set to true then we need to
+    // hide the background colors on the ace spans
+    if (settings.noColors === true) {
+      this.changeViewOption('noColors', true);
+    }
+
+    if (settings.rtlIsTrue === true) {
+      this.changeViewOption('rtlIsTrue', true);
+    }
+
+    // If the Monospacefont value is set to true then change it to monospace.
+    if (settings.useMonospaceFontGlobal === true) {
+      this.changeViewOption('padFontFamily', 'RobotoMono');
+    }
+    // if the globalUserName value is set we need to tell the server and
+    // the client about the new authorname
+    if (settings.globalUserName !== false) {
+      this.notifyChangeName(settings.globalUserName); // Notifies the server
+      this.myUserInfo.name = settings.globalUserName;
+      $('#myusernameedit').val(settings.globalUserName); // Updates the current users UI
+    }
+    if (settings.globalUserColor !== false && colorutils.isCssHex(settings.globalUserColor)) {
+      // Add a 'globalUserColor' property to myUserInfo,
+      // so collabClient knows we have a query parameter.
+      this.myUserInfo.globalUserColor = settings.globalUserColor;
+      this.notifyChangeColor(settings.globalUserColor); // Updates this.myUserInfo.colorId
+      paduserlist.setMyUserInfo(this.myUserInfo);
+    }
   },
+
   dispose: () => {
     padeditor.dispose();
   },
@@ -608,16 +601,6 @@ const pad = {
     } else if (msg.type === 'padoptions') {
       const opts = msg.options;
       pad.handleOptionsChange(opts);
-    }
-  },
-  dmesg: (m) => {
-    if (pad.getIsDebugEnabled()) {
-      const djs = $('#djs').get(0);
-      const wasAtBottom = (djs.scrollTop - (djs.scrollHeight - $(djs).height()) >= -20);
-      $('#djs').append(`<p>${m}</p>`);
-      if (wasAtBottom) {
-        djs.scrollTop = djs.scrollHeight;
-      }
     }
   },
   handleChannelStateChange: (newState, message) => {
@@ -760,7 +743,5 @@ exports.baseURL = '';
 exports.settings = settings;
 exports.randomString = randomString;
 exports.getParams = getParams;
-exports.getUrlVars = getUrlVars;
-exports.handshake = handshake;
 exports.pad = pad;
 exports.init = init;

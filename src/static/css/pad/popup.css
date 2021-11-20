@@ -45,9 +45,6 @@
 .popup input[type=text], #users input[type=text] {
   outline: none;
 }
-.popup a {
-  text-decoration: none
-}
 .popup h1 {
   font-size: 1.8rem;
   margin-bottom: 10px;

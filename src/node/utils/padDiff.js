@@ -9,11 +9,7 @@ function PadDiff(pad, fromRev, toRev) {
   }
 
   const range = pad.getValidRevisionRange(fromRev, toRev);
-  if (!range) {
-    throw new Error(`${'Invalid revision range.' +
-      ' startRev: '}${fromRev
-    } endRev: ${toRev}`);
-  }
+  if (!range) throw new Error(`Invalid revision range. startRev: ${fromRev} endRev: ${toRev}`);
 
   this._pad = pad;
   this._fromRev = range.startRev;
@@ -164,7 +160,7 @@ PadDiff.prototype._createDiffAtext = async function () {
       if (superChangeset == null) {
         superChangeset = changeset;
       } else {
-        superChangeset = Changeset.composeWithDeletions(superChangeset, changeset, this._pad.pool);
+        superChangeset = Changeset.compose(superChangeset, changeset, this._pad.pool);
       }
     }
 
@@ -277,7 +273,7 @@ PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
   let curChar = 0;
   let curLineOpIter = null;
   let curLineOpIterLine;
-  const curLineNextOp = Changeset.newOp('+');
+  let curLineNextOp = Changeset.newOp('+');
 
   const unpacked = Changeset.unpack(cs);
   const csIter = Changeset.opIterator(unpacked.ops);
@@ -289,15 +285,13 @@ PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
       curLineOpIter = Changeset.opIterator(aLinesGet(curLine));
       curLineOpIterLine = curLine;
       let indexIntoLine = 0;
-      let done = false;
-      while (!done) {
-        curLineOpIter.next(curLineNextOp);
+      while (curLineOpIter.hasNext()) {
+        curLineNextOp = curLineOpIter.next();
         if (indexIntoLine + curLineNextOp.chars >= curChar) {
           curLineNextOp.chars -= (curChar - indexIntoLine);
-          done = true;
-        } else {
-          indexIntoLine += curLineNextOp.chars;
+          break;
         }
+        indexIntoLine += curLineNextOp.chars;
       }
     }
 
@@ -311,7 +305,7 @@ PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
       }
 
       if (!curLineNextOp.chars) {
-        curLineOpIter.next(curLineNextOp);
+        curLineNextOp = curLineOpIter.hasNext() ? curLineOpIter.next() : Changeset.newOp();
       }
 
       const charsToUse = Math.min(numChars, curLineNextOp.chars);

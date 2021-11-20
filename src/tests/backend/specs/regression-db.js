@@ -24,7 +24,6 @@ describe(__filename, function () {
   });
 
   it('regression test for missing await in createAuthor (#5000)', async function () {
-    this.timeout(700);
     const {authorID} = await AuthorManager.createAuthor(); // Should block until db.set() finishes.
     assert(await AuthorManager.doesAuthorExist(authorID));
   });

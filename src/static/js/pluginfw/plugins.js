@@ -72,19 +72,6 @@ exports.formatHooks = (hookSetName, html) => {
   return lines.join('\n');
 };
 
-const callInit = async () => {
-  await Promise.all(Object.keys(defs.plugins).map(async (pluginName) => {
-    const plugin = defs.plugins[pluginName];
-    const epInit = path.join(plugin.package.path, '.ep_initialized');
-    try {
-      await fs.stat(epInit);
-    } catch (err) {
-      await fs.writeFile(epInit, 'done');
-      await hooks.aCallAll(`init_${pluginName}`, {});
-    }
-  }));
-};
-
 exports.pathNormalization = (part, hookFnName, hookName) => {
   const tmp = hookFnName.split(':'); // hookFnName might be something like 'C:\\foo.js:myFunc'.
   // If there is a single colon assume it's 'filename:funcname' not 'C:\\filename'.
@@ -111,7 +98,7 @@ exports.update = async () => {
   defs.parts = sortParts(parts);
   defs.hooks = pluginUtils.extractHooks(defs.parts, 'hooks', exports.pathNormalization);
   defs.loaded = true;
-  await callInit();
+  await Promise.all(Object.keys(defs.plugins).map((p) => hooks.aCallAll(`init_${p}`, {})));
 };
 
 exports.getPackages = async () => {

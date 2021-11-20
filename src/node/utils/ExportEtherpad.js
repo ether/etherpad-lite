@@ -19,23 +19,18 @@
 const db = require('../db/DB');
 const hooks = require('../../static/js/pluginfw/hooks');
 
-exports.getPadRaw = async (padId) => {
-  const padKey = `pad:${padId}`;
-  const padcontent = await db.get(padKey);
+exports.getPadRaw = async (padId, readOnlyId) => {
+  const keyPrefixRead = `pad:${padId}`;
+  const keyPrefixWrite = readOnlyId ? `pad:${readOnlyId}` : keyPrefixRead;
+  const padcontent = await db.get(keyPrefixRead);
 
-  const records = [padKey];
-  for (let i = 0; i <= padcontent.head; i++) {
-    records.push(`${padKey}:revs:${i}`);
-  }
-
-  for (let i = 0; i <= padcontent.chatHead; i++) {
-    records.push(`${padKey}:chat:${i}`);
-  }
+  const keySuffixes = [''];
+  for (let i = 0; i <= padcontent.head; i++) keySuffixes.push(`:revs:${i}`);
+  for (let i = 0; i <= padcontent.chatHead; i++) keySuffixes.push(`:chat:${i}`);
 
   const data = {};
-  for (const key of records) {
-    // For each piece of info about a pad.
-    const entry = data[key] = await db.get(key);
+  for (const keySuffix of keySuffixes) {
+    const entry = data[keyPrefixWrite + keySuffix] = await db.get(keyPrefixRead + keySuffix);
 
     // Get the Pad Authors
     if (entry.pool && entry.pool.numToAttrib) {
@@ -50,7 +45,7 @@ exports.getPadRaw = async (padId) => {
           if (authorEntry) {
             data[`globalAuthor:${authorId}`] = authorEntry;
             if (authorEntry.padIDs) {
-              authorEntry.padIDs = padId;
+              authorEntry.padIDs = readOnlyId || padId;
             }
           }
         }
@@ -63,7 +58,8 @@ exports.getPadRaw = async (padId) => {
   const prefixes = await hooks.aCallAll('exportEtherpadAdditionalContent');
   await Promise.all(prefixes.map(async (prefix) => {
     const key = `${prefix}:${padId}`;
-    data[key] = await db.get(key);
+    const writeKey = readOnlyId ? `${prefix}:${readOnlyId}` : key;
+    data[writeKey] = await db.get(key);
   }));
 
   return data;
