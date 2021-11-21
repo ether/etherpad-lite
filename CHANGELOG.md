@@ -17,62 +17,64 @@
 ### Compatibility changes
 
 * The `logconfig` setting is deprecated.
-* For plugin authors:
-  * Etherpad now uses [jsdom](https://github.com/jsdom/jsdom) instead of
-    [cheerio](https://cheerio.js.org/) for processing HTML imports. There are
-    two consequences of this change:
-    * `require('ep_etherpad-lite/node_modules/cheerio')` no longer works. To
-      fix, your plugin should directly depend on `cheerio` and do
-      `require('cheerio')`.
-    * The `node` context argument passed to the `collectContentImage` hook is
-      now an
-      [`HTMLImageElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement)
-      object rather than a Cheerio Node-like object, so the API is slightly
-      different. See
-      [citizenos/ep_image_upload#49](https://github.com/citizenos/ep_image_upload/pull/49)
-      for an example fix.
-  * The `clientReady` server-side hook is deprecated; use the new `userJoin`
-    hook instead.
-  * The `init_<pluginName>` server-side hooks are now run every time Etherpad
-    starts up, not just the first time after the named plugin is installed.
-  * The `userLeave` server-side hook's context properties have changed:
-    * `auth`: Deprecated.
-    * `author`: Deprecated; use the new `authorId` property instead.
-    * `readonly`: Deprecated; use the new `readOnly` property instead.
-    * `rev`: Deprecated.
-  * Changes to the `src/static/js/Changeset.js` library:
-    * `opIterator()`: The unused start index parameter has been removed, as has
-      the unused `lastIndex()` method on the returned object.
-    * `smartOpAssembler()`: The returned object's `appendOpWithText()` method is
-      deprecated without a replacement available to plugins (if you need one,
-      let us know and we can make the private `opsFromText()` function public).
-    * Several functions that should have never been public are no longer
-      exported: `applyZip()`, `assert()`, `clearOp()`, `cloneOp()`, `copyOp()`,
-      `error()`, `followAttributes()`, `opString()`, `stringOp()`,
-      `textLinesMutator()`, `toBaseTen()`, `toSplices()`.
+
+#### For plugin authors
+
+* Etherpad now uses [jsdom](https://github.com/jsdom/jsdom) instead of
+  [cheerio](https://cheerio.js.org/) for processing HTML imports. There are two
+  consequences of this change:
+  * `require('ep_etherpad-lite/node_modules/cheerio')` no longer works. To fix,
+    your plugin should directly depend on `cheerio` and do `require('cheerio')`.
+  * The `collectContentImage` hook's `node` context property is now an
+    [`HTMLImageElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement)
+    object rather than a Cheerio Node-like object, so the API is slightly
+    different. See
+    [citizenos/ep_image_upload#49](https://github.com/citizenos/ep_image_upload/pull/49)
+    for an example fix.
+* The `clientReady` server-side hook is deprecated; use the new `userJoin` hook
+  instead.
+* The `init_<pluginName>` server-side hooks are now run every time Etherpad
+  starts up, not just the first time after the named plugin is installed.
+* The `userLeave` server-side hook's context properties have changed:
+  * `auth`: Deprecated.
+  * `author`: Deprecated; use the new `authorId` property instead.
+  * `readonly`: Deprecated; use the new `readOnly` property instead.
+  * `rev`: Deprecated.
+* Changes to the `src/static/js/Changeset.js` library:
+  * `opIterator()`: The unused start index parameter has been removed, as has
+    the unused `lastIndex()` method on the returned object.
+  * `smartOpAssembler()`: The returned object's `appendOpWithText()` method is
+    deprecated without a replacement available to plugins (if you need one, let
+    us know and we can make the private `opsFromText()` function public).
+  * Several functions that should have never been public are no longer exported:
+    `applyZip()`, `assert()`, `clearOp()`, `cloneOp()`, `copyOp()`, `error()`,
+    `followAttributes()`, `opString()`, `stringOp()`, `textLinesMutator()`,
+    `toBaseTen()`, `toSplices()`.
 
 ### Notable enhancements
 
 * Simplified pad reload after importing an `.etherpad` file.
-* For plugin authors:
-  * `clientVars` was added to the context for the `postAceInit` client-side
-    hook. Plugins should use this instead of the `clientVars` global variable.
-  * New `userJoin` server-side hook.
-  * The `userLeave` server-side hook has a new `socket` context property.
-  * The `helper.aNewPad()` function (accessible to client-side tests) now
-    accepts hook functions to inject when opening a pad. This can be used to
-    test any new client-side hooks your plugin provides.
-  * Chat improvements:
-    * The `chatNewMessage` client-side hook context has new properties:
-      * `message`: Provides access to the raw message object so that plugins can
-        see the original unprocessed message text and any added metadata.
-      * `rendered`: Allows plugins to completely override how the message is
-        rendered in the UI.
-    * New `chatSendMessage` client-side hook that enables plugins to process the
-      text before sending it to the server or augment the message object with
-      custom metadata.
-    * New `chatNewMessage` server-side hook to process new chat messages before
-      they are saved to the database and relayed to users.
+
+#### For plugin authors
+
+* `clientVars` was added to the context for the `postAceInit` client-side hook.
+  Plugins should use this instead of the `clientVars` global variable.
+* New `userJoin` server-side hook.
+* The `userLeave` server-side hook has a new `socket` context property.
+* The `helper.aNewPad()` function (accessible to client-side tests) now
+  accepts hook functions to inject when opening a pad. This can be used to
+  test any new client-side hooks your plugin provides.
+* Chat improvements:
+  * The `chatNewMessage` client-side hook context has new properties:
+    * `message`: Provides access to the raw message object so that plugins can
+      see the original unprocessed message text and any added metadata.
+    * `rendered`: Allows plugins to completely override how the message is
+      rendered in the UI.
+  * New `chatSendMessage` client-side hook that enables plugins to process the
+    text before sending it to the server or augment the message object with
+    custom metadata.
+  * New `chatNewMessage` server-side hook to process new chat messages before
+    they are saved to the database and relayed to users.
 
 # 1.8.14
 
@@ -130,8 +132,8 @@
 * Disabled wtfnode dump by default.
 * Send `USER_NEWINFO` messages on reconnect.
 * Fixed loading in a hidden iframe.
-* Fixed a race condition with composition. (Thanks @ingoncalves for an exceptionally
-  detailed analysis and @rhansen for the fix.)
+* Fixed a race condition with composition. (Thanks @ingoncalves for an
+  exceptionally detailed analysis and @rhansen for the fix.)
 
 # 1.8.13
 
@@ -158,11 +160,13 @@
 
 # 1.8.12
 
-Special mention: Thanks to Sauce Labs for additional testing tunnels to help us grow! :)
+Special mention: Thanks to Sauce Labs for additional testing tunnels to help us
+grow! :)
 
 ### Security patches
 
-* Fixed a regression in v1.8.11 which caused some pad names to cause Etherpad to restart.
+* Fixed a regression in v1.8.11 which caused some pad names to cause Etherpad to
+  restart.
 
 ### Notable fixes
 
@@ -171,8 +175,8 @@ Special mention: Thanks to Sauce Labs for additional testing tunnels to help us 
 * Fixed a regression in v1.8.8 that caused "Uncaught TypeError: Cannot read
   property '0' of undefined" with some plugins (#4885)
 * Less warnings in server console for supported element types on import.
-* Support Azure and other network share installations by using a 
-  more truthful relative path.
+* Support Azure and other network share installations by using a more truthful
+  relative path.
 
 ### Notable enhancements
 
