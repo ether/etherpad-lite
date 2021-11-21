@@ -13,6 +13,7 @@
   your own
   [authentication](https://etherpad.org/doc/v1.8.14/#index_authenticate) and
   [authorization](https://etherpad.org/doc/v1.8.14/#index_authorize) plugins).
+* Updated dependencies.
 
 ### Compatibility changes
 
@@ -51,8 +52,42 @@
     `followAttributes()`, `opString()`, `stringOp()`, `textLinesMutator()`,
     `toBaseTen()`, `toSplices()`.
 
-### Notable enhancements
+### Notable enhancements and fixes
 
+* Accessibility fix for JAWS screen readers.
+* Fixed "clear authorship" error (see issue #5128).
+* Etherpad now considers square brackets to be valid URL characters.
+* The server no longer crashes if an exception is thrown while processing a
+  message from a client.
+* The `useMonospaceFontGlobal` setting now works (thanks @Lastpixl!).
+* Chat improvements:
+  * The message input field is now a text area, allowing multi-line messages
+    (use shift-enter to insert a newline).
+  * Whitespace in chat messages is now preserved.
+* Docker improvements:
+  * New `HEALTHCHECK` instruction (thanks @Gared!).
+  * New `settings.json` variables: `DB_COLLECTION`, `DB_URL`,
+    `SOCKETIO_MAX_HTTP_BUFFER_SIZE`, `DUMP_ON_UNCLEAN_EXIT` (thanks
+    @JustAnotherArchivist!).
+  * `.ep_initialized` files are no longer created.
+* Worked around a [Firefox Content Security Policy
+  bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1721296) that caused CSP
+  failures when `'self'` was in the CSP header. See issue #4975 for details.
+* UeberDB upgraded from v1.4.10 to v1.4.18. For details, see the [ueberDB
+  changelog](https://github.com/ether/ueberDB/blob/master/CHANGELOG.md).
+  Highlights:
+  * The `postgrespool` driver was renamed to `postgres`, replacing the old
+    driver of that name. If you used the old `postgres` driver, you may see an
+    increase in the number of database connections.
+  * For `postgres`, you can now set the `dbSettings` value in `settings.json` to
+    a connection string (e.g., `"postgres://user:password@host/dbname"`) instead
+    of an object.
+  * For `mongodb`, the `dbName` setting was renamed to `database` (but `dbName`
+    still works for backwards compatibility) and is now optional (if unset, the
+    database name in `url` is used).
+* `/admin/settings` now honors the `--settings` command-line argument.
+* Fixed "Author *X* tried to submit changes as author *Y*" detection.
+* Error message display improvements.
 * Simplified pad reload after importing an `.etherpad` file.
 
 #### For plugin authors
@@ -75,6 +110,8 @@
     custom metadata.
   * New `chatNewMessage` server-side hook to process new chat messages before
     they are saved to the database and relayed to users.
+* Readability improvements to browser-side error stack traces.
+* Added support for socket.io message acknowledgments.
 
 # 1.8.14
 
