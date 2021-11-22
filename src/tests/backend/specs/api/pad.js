@@ -48,22 +48,16 @@ const ulSpaceHtml = '<!doctype html><html><body><ul class="bullet"> <li>one</li>
 const expectedSpaceHtml = '<!doctype html><html><body><ul class="bullet"><li>one</ul></body></html>';
 
 describe(__filename, function () {
-  before(async function () { agent = await common.init(); });
+  before(async function () {
+    agent = await common.init();
+    const res = await agent.get('/api/')
+        .expect(200)
+        .expect('Content-Type', /json/);
+    apiVersion = res.body.currentVersion;
+    assert(apiVersion);
+  });
 
   describe('Sanity checks', function () {
-    it('can connect', async function () {
-      await agent.get('/api/')
-          .expect(200)
-          .expect('Content-Type', /json/);
-    });
-
-    it('finds the version tag', async function () {
-      const res = await agent.get('/api/')
-          .expect(200);
-      apiVersion = res.body.currentVersion;
-      assert(apiVersion);
-    });
-
     it('errors with invalid APIKey', async function () {
       // This is broken because Etherpad doesn't handle HTTP codes properly see #2343
       // If your APIKey is password you deserve to fail all tests anyway
@@ -523,37 +517,32 @@ describe(__filename, function () {
       assert.equal(receivedHtml, expectedHtml);
     });
 
-    describe('when try copy a pad with a group that does not exist', function () {
-      const padId = makeid();
-      const padWithNonExistentGroup = `notExistentGroup$${padId}`;
-      it('throws an error', async function () {
-        const res = await agent.get(`${endPoint('copyPadWithoutHistory')}` +
-                                    `&sourceID=${sourcePadId}` +
-                                    `&destinationID=${padWithNonExistentGroup}&force=true`)
-            .expect(200);
-        assert.equal(res.body.code, 1);
-      });
+    it('copying to a non-existent group throws an error', async function () {
+      const padWithNonExistentGroup = `notExistentGroup$${newPad}`;
+      const res = await agent.get(`${endPoint('copyPadWithoutHistory')}` +
+                                  `&sourceID=${sourcePadId}` +
+                                  `&destinationID=${padWithNonExistentGroup}&force=true`)
+          .expect(200);
+      assert.equal(res.body.code, 1);
     });
 
-    describe('when try copy a pad and destination pad already exist', function () {
-      const padIdExistent = makeid();
-
-      before(async function () {
-        await createNewPadWithHtml(padIdExistent, ulHtml);
+    describe('copying to an existing pad', function () {
+      beforeEach(async function () {
+        await createNewPadWithHtml(newPad, ulHtml);
       });
 
-      it('force=false throws an error', async function () {
+      it('force=false fails', async function () {
         const res = await agent.get(`${endPoint('copyPadWithoutHistory')}` +
                                     `&sourceID=${sourcePadId}` +
-                                    `&destinationID=${padIdExistent}&force=false`)
+                                    `&destinationID=${newPad}&force=false`)
             .expect(200);
         assert.equal(res.body.code, 1);
       });
 
-      it('force=true returns a successful response', async function () {
+      it('force=true succeeds', async function () {
         const res = await agent.get(`${endPoint('copyPadWithoutHistory')}` +
                                     `&sourceID=${sourcePadId}` +
-                                    `&destinationID=${padIdExistent}&force=true`)
+                                    `&destinationID=${newPad}&force=true`)
             .expect(200);
         assert.equal(res.body.code, 0);
       });
