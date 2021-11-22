@@ -492,10 +492,9 @@ Pad.prototype.copyPadWithoutHistory = async function (destinationID, force) {
 
   // initialize the pad with a new line to avoid getting the defaultText
   const newPad = await padManager.getPad(destinationID, '\n');
+  newPad.pool = sourcePad.pool.clone();
 
   const oldAText = this.atext;
-  const newPool = newPad.pool;
-  newPool.fromJsonable(sourcePad.pool.toJsonable()); // copy that sourceId pool to the new pad
 
   // based on Changeset.makeSplice
   const assem = Changeset.smartOpAssembler();

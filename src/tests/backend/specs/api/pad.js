@@ -9,6 +9,7 @@
 
 const assert = require('assert').strict;
 const common = require('../../common');
+const padManager = require('../../../../node/db/PadManager');
 
 let agent;
 const apiKey = common.apiKey;
@@ -546,6 +547,78 @@ describe(__filename, function () {
             .expect(200);
         assert.equal(res.body.code, 0);
       });
+    });
+
+    // Regression test for https://github.com/ether/etherpad-lite/issues/5296
+    it('source and destination attribute pools are independent', async function () {
+      // Strategy for this test:
+      //   1. Create a new pad without bold or italic text
+      //   2. Use copyPadWithoutHistory to copy the pad.
+      //   3. Add some bold text (but no italic text!) to the source pad. This should add a bold
+      //      attribute to the source pad's pool but not to the destination pad's pool.
+      //   4. Add some italic text (but no bold text!) to the destination pad. This should add an
+      //      italic attribute to the destination pad's pool with the same number as the newly added
+      //      bold attribute in the source pad's pool.
+      //   5. Add some more text (bold or plain) to the source pad. This will save the source pad to
+      //      the database after the destination pad has had an opportunity to corrupt the source
+      //      pad.
+      //   6. Export the source and destination pads. Make sure that <em> doesn't appear in the
+      //      source pad's HTML, and that <strong> doesn't appear int he destination pad's HTML.
+      //   7. Force the server to re-init the pads from the database.
+      //   8. Repeat step 6.
+      // If <em> appears in the source pad, or <strong> appears in the destination pad, then shared
+      // state between the two attribute pools caused corruption.
+
+      const getHtml = async (padId) => {
+        const res = await agent.get(`${endPoint('getHTML')}&padID=${padId}`)
+            .expect(200)
+            .expect('Content-Type', /json/);
+        assert.equal(res.body.code, 0);
+        return res.body.data.html;
+      };
+
+      const setBody = async (padId, bodyHtml) => {
+        await agent.post(endPoint('setHTML'))
+            .send({padID: padId, html: `<!DOCTYPE HTML><html><body>${bodyHtml}</body></html>`})
+            .expect(200)
+            .expect('Content-Type', /json/)
+            .expect((res) => assert.equal(res.body.code, 0));
+      };
+
+      const origHtml = await getHtml(sourcePadId);
+      assert.doesNotMatch(origHtml, /<strong>/);
+      assert.doesNotMatch(origHtml, /<em>/);
+      await agent.get(`${endPoint('copyPadWithoutHistory')}&sourceID=${sourcePadId}` +
+                      `&destinationID=${newPad}&force=false`)
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect((res) => assert.equal(res.body.code, 0));
+
+      const newBodySrc = '<strong>bold</strong>';
+      const newBodyDst = '<em>italic</em>';
+      await setBody(sourcePadId, newBodySrc);
+      await setBody(newPad, newBodyDst);
+      await setBody(sourcePadId, `${newBodySrc} foo`);
+
+      let [srcHtml, dstHtml] = await Promise.all([getHtml(sourcePadId), getHtml(newPad)]);
+      assert.match(srcHtml, new RegExp(newBodySrc));
+      assert.match(dstHtml, new RegExp(newBodyDst));
+
+      // Force the server to re-read the pads from the database. This rebuilds the attribute pool
+      // objects from scratch, ensuring that an internally inconsistent attribute pool object did
+      // not cause the above tests to accidentally pass.
+      const reInitPad = async (padId) => {
+        const pad = await padManager.getPad(padId);
+        await pad.init();
+      };
+      await Promise.all([
+        reInitPad(sourcePadId),
+        reInitPad(newPad),
+      ]);
+
+      [srcHtml, dstHtml] = await Promise.all([getHtml(sourcePadId), getHtml(newPad)]);
+      assert.match(srcHtml, new RegExp(newBodySrc));
+      assert.match(dstHtml, new RegExp(newBodyDst));
     });
   });
 });
