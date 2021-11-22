@@ -1,6 +1,8 @@
 # 1.9.0 (not yet released)
 
-### Notable enhancements
+### Notable enhancements and fixes
+
+* Fixed a potential attribute pool corruption bug with `copyPadWithoutHistory`.
 
 #### For plugin authors
 
