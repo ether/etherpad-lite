@@ -1,5 +1,3 @@
-IMPORTANT: Please disable plugins prior to posting a bug report.  If you have a problem with a plugin please post on the plugin repository.  Thanks!
-
 ---
 name: Bug report
 about: Create a report to help us improve
@@ -8,6 +6,8 @@ labels: ''
 assignees: ''
 
 ---
+
+<!-- IMPORTANT: Please disable plugins prior to posting a bug report.  If you have a problem with a plugin please post on the plugin repository.  Thanks! -->
 
 **Describe the bug**
 A clear and concise description of what the bug is.
