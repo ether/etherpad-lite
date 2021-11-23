@@ -23,7 +23,7 @@ const supportedElems = require('../../static/js/contentcollector').supportedElem
 
 const logger = log4js.getLogger('ImportEtherpad');
 
-exports.setPadRaw = (padId, r) => {
+exports.setPadRaw = async (padId, r) => {
   const records = JSON.parse(r);
 
   // get supported block Elements from plugins, we will use this later.
@@ -33,9 +33,7 @@ exports.setPadRaw = (padId, r) => {
 
   const unsupportedElements = new Set();
 
-  Object.keys(records).forEach(async (key) => {
-    let value = records[key];
-
+  await Promise.all(Object.entries(records).map(async ([key, value]) => {
     if (!value) {
       return;
     }
@@ -93,7 +91,7 @@ exports.setPadRaw = (padId, r) => {
 
     // Write the value to the server
     await db.set(newKey, value);
-  });
+  }));
 
   if (unsupportedElements.size) {
     logger.warn('Ignoring unsupported elements (you might want to install a plugin): ' +
