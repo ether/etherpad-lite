@@ -292,6 +292,18 @@ exports.newOp = (optOpcode) => {
 const copyOp = (op1, op2 = new Op()) => Object.assign(op2, op1);
 
 /**
+ * Converts an iterable of operation objects to wire format.
+ *
+ * @param {Iterable<Op>} ops - Iterable of operations to serialize.
+ * @returns {string} A string containing the encoded op data (example: '|5=2p=v*4*5+1').
+ */
+const serializeOps = (ops) => {
+  let res = '';
+  for (const op of ops) res += op.toString();
+  return res;
+};
+
+/**
  * Serializes a sequence of Ops.
  */
 class OpAssembler {
@@ -300,7 +312,7 @@ class OpAssembler {
   }
 
   clear() {
-    this._serialized = '';
+    this._ops = [];
   }
 
   /**
@@ -308,11 +320,11 @@ class OpAssembler {
    */
   append(op) {
     assert(op instanceof Op, 'argument must be an instance of Op');
-    this._serialized += op.toString();
+    this._ops.push(copyOp(op));
   }
 
   toString() {
-    return this._serialized;
+    return serializeOps(this._ops);
   }
 }
 
