@@ -21,10 +21,6 @@ const hooks = require('../../static/js/pluginfw/hooks');
 const {padutils: {warnDeprecated}} = require('../../static/js/pad_utils');
 const promises = require('../utils/promises');
 
-// serialization/deserialization attributes
-const attributeBlackList = ['db', 'id'];
-const jsonableList = ['pool'];
-
 /**
  * Copied from the Etherpad source code. It converts Windows line breaks to Unix
  * line breaks and convert Tabs to spaces
@@ -131,22 +127,16 @@ class Pad {
     return newRev;
   }
 
+  toJSON() {
+    const o = {...this, pool: this.pool.toJsonable()};
+    delete o.db;
+    delete o.id;
+    return o;
+  }
+
   // save all attributes to the database
   async saveToDatabase() {
-    const dbObject = {};
-
-    for (const attr in this) {
-      if (typeof this[attr] === 'function') continue;
-      if (attributeBlackList.indexOf(attr) !== -1) continue;
-
-      dbObject[attr] = this[attr];
-
-      if (jsonableList.indexOf(attr) !== -1) {
-        dbObject[attr] = dbObject[attr].toJsonable();
-      }
-    }
-
-    await this.db.set(`pad:${this.id}`, dbObject);
+    await this.db.set(`pad:${this.id}`, this);
   }
 
   // get time of last edit (changeset application)
@@ -379,14 +369,8 @@ class Pad {
 
     // if this pad exists, load it
     if (value != null) {
-      // copy all attr. To a transfrom via fromJsonable if necassary
-      for (const attr in value) {
-        if (jsonableList.indexOf(attr) !== -1) {
-          this[attr] = this[attr].fromJsonable(value[attr]);
-        } else {
-          this[attr] = value[attr];
-        }
-      }
+      Object.assign(this, value);
+      if ('pool' in value) this.pool = new AttributePool().fromJsonable(value.pool);
     } else {
       if (text == null) {
         const context = {pad: this, authorId, type: 'text', content: settings.defaultPadText};
