@@ -323,16 +323,16 @@ class OpAssembler {
 class MergingOpAssembler {
   constructor() {
     this._assem = new OpAssembler();
+    this.clear();
+  }
+
+  clear() {
+    this._assem.clear();
     this._bufOp = new Op();
     // If we get, for example, insertions [xxx\n,yyy], those don't merge, but if we get
     // [xxx\n,yyy,zzz\n], that merges to [xxx\nyyyzzz\n]. This variable stores the length of yyy and
     // any other newline-less ops immediately after it.
     this._bufOpAdditionalCharsAfterNewline = 0;
-  }
-
-  clear() {
-    this._assem.clear();
-    clearOp(this._bufOp);
   }
 
   _flush(isEndDocument) {
@@ -431,8 +431,7 @@ class SmartOpAssembler {
     this._plusAssem = new MergingOpAssembler();
     this._keepAssem = new MergingOpAssembler();
     this._assem = exports.stringAssembler();
-    this._lastOpcode = '';
-    this._lengthChange = 0;
+    this.clear();
   }
 
   clear() {
@@ -440,6 +439,7 @@ class SmartOpAssembler {
     this._plusAssem.clear();
     this._keepAssem.clear();
     this._assem.clear();
+    this._lastOpcode = '';
     this._lengthChange = 0;
   }
 
