@@ -166,8 +166,8 @@ const minify = async (req, res) => {
       filename = path.join('../node_modules/', library, libraryPath);
     }
   }
-  const [, spec] = /^plugins\/ep_etherpad-lite\/(tests\/frontend\/specs\/.*)/.exec(filename) || [];
-  if (spec != null) filename = `../${spec}`;
+  const [, testf] = /^plugins\/ep_etherpad-lite\/(tests\/frontend\/.*)/.exec(filename) || [];
+  if (testf != null) filename = `../${testf}`;
 
   const contentType = mime.lookup(filename);
 
