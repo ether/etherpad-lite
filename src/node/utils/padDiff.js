@@ -328,21 +328,21 @@ PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
 
   const nextText = (numChars) => {
     let len = 0;
-    const assem = Changeset.stringAssembler();
+    let assem = '';
     const firstString = linesGet(curLine).substring(curChar);
     len += firstString.length;
-    assem.append(firstString);
+    assem += firstString;
 
     let lineNum = curLine + 1;
 
     while (len < numChars) {
       const nextString = linesGet(lineNum);
       len += nextString.length;
-      assem.append(nextString);
+      assem += nextString;
       lineNum++;
     }
 
-    return assem.toString().substring(0, numChars);
+    return assem.substring(0, numChars);
   };
 
   const cachedStrFunc = (func) => {

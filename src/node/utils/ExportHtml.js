@@ -125,7 +125,7 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
     // becomes
     // <b>Just bold <i>Bold and italics</i></b> <i>Just italics</i>
     const taker = Changeset.stringIterator(text);
-    const assem = Changeset.stringAssembler();
+    let assem = '';
     const openTags = [];
 
     const getSpanClassFor = (i) => {
@@ -161,16 +161,7 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
     const emitOpenTag = (i) => {
       openTags.unshift(i);
       const spanClass = getSpanClassFor(i);
-
-      if (spanClass) {
-        assem.append('<span class="');
-        assem.append(spanClass);
-        assem.append('">');
-      } else {
-        assem.append('<');
-        assem.append(tags[i]);
-        assem.append('>');
-      }
+      assem += spanClass ? `<span class="${spanClass}">` : `<${tags[i]}>`;
     };
 
     // this closes an open tag and removes its reference from openTags
@@ -178,14 +169,7 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
       openTags.shift();
       const spanClass = getSpanClassFor(i);
       const spanWithData = isSpanWithData(i);
-
-      if (spanClass || spanWithData) {
-        assem.append('</span>');
-      } else {
-        assem.append('</');
-        assem.append(tags[i]);
-        assem.append('>');
-      }
+      assem += spanClass || spanWithData ? '</span>' : `</${tags[i]}>`;
     };
 
     const urls = padutils.findURLs(text);
@@ -246,7 +230,7 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
         // from but they break the abiword parser and are completly useless
         s = s.replace(String.fromCharCode(12), '');
 
-        assem.append(_encodeWhitespace(Security.escapeHTML(s)));
+        assem += _encodeWhitespace(Security.escapeHTML(s));
       } // end iteration over spans in line
 
       // close all the tags that are open after the last op
@@ -269,14 +253,14 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
         // https://html.spec.whatwg.org/multipage/links.html#link-type-noopener
         // https://mathiasbynens.github.io/rel-noopener/
         // https://github.com/ether/etherpad-lite/pull/3636
-        assem.append(`<a href="${Security.escapeHTMLAttribute(url)}" rel="noreferrer noopener">`);
+        assem += `<a href="${Security.escapeHTMLAttribute(url)}" rel="noreferrer noopener">`;
         processNextChars(urlLength);
-        assem.append('</a>');
+        assem += '</a>';
       });
     }
     processNextChars(text.length - idx);
 
-    return _processSpaces(assem.toString());
+    return _processSpaces(assem);
   };
   // end getLineHTML
   const pieces = [css];

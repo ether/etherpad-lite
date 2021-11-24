@@ -15,7 +15,7 @@ describe('easysync-mutations', function () {
   };
 
   const mutationsToChangeset = (oldLen, arrayOfArrays) => {
-    const bank = Changeset.stringAssembler();
+    let bank = '';
     let oldPos = 0;
     let newLen = 0;
     const ops = (function* () {
@@ -34,7 +34,7 @@ describe('easysync-mutations', function () {
           oldPos += op.chars;
         } else if (a[0] === 'insert') {
           op.opcode = '+';
-          bank.append(a[1]);
+          bank += a[1];
           op.chars = a[1].length;
           op.lines = (a[2] || 0);
           newLen += op.chars;
@@ -44,7 +44,7 @@ describe('easysync-mutations', function () {
     })();
     const serializedOps = Changeset.serializeOps(Changeset.canonicalizeOps(ops, true));
     newLen += oldLen - oldPos;
-    return Changeset.pack(oldLen, newLen, serializedOps, bank.toString());
+    return Changeset.pack(oldLen, newLen, serializedOps, bank);
   };
 
   const runMutationTest = (testId, origLines, muts, correct) => {

@@ -20,29 +20,19 @@ const poolOrArray = (attribs) => {
 exports.poolOrArray = poolOrArray;
 
 const randomInlineString = (len) => {
-  const assem = Changeset.stringAssembler();
-  for (let i = 0; i < len; i++) {
-    assem.append(String.fromCharCode(randInt(26) + 97));
-  }
-  return assem.toString();
+  let assem = '';
+  for (let i = 0; i < len; i++) assem += String.fromCharCode(randInt(26) + 97);
+  return assem;
 };
 
 const randomMultiline = (approxMaxLines, approxMaxCols) => {
   const numParts = randInt(approxMaxLines * 2) + 1;
-  const txt = Changeset.stringAssembler();
-  txt.append(randInt(2) ? '\n' : '');
+  let txt = '';
+  txt += randInt(2) ? '\n' : '';
   for (let i = 0; i < numParts; i++) {
-    if ((i % 2) === 0) {
-      if (randInt(10)) {
-        txt.append(randomInlineString(randInt(approxMaxCols) + 1));
-      } else {
-        txt.append('\n');
-      }
-    } else {
-      txt.append('\n');
-    }
+    txt += i % 2 === 0 && randInt(10) ? randomInlineString(randInt(approxMaxCols) + 1) : '\n';
   }
-  return txt.toString();
+  return txt;
 };
 exports.randomMultiline = randomMultiline;
 
@@ -165,9 +155,9 @@ const randomTwoPropAttribs = (opcode) => {
 };
 
 const randomTestChangeset = (origText, withAttribs) => {
-  const charBank = Changeset.stringAssembler();
+  let charBank = '';
   let textLeft = origText; // always keep final newline
-  const outTextAssem = Changeset.stringAssembler();
+  let outTextAssem = '';
   const ops = [];
   const oldLen = origText.length;
 
@@ -192,13 +182,13 @@ const randomTestChangeset = (origText, withAttribs) => {
     const o = randomStringOperation(textLeft.length);
     if (o.insert) {
       const txt = o.insert;
-      charBank.append(txt);
-      outTextAssem.append(txt);
+      charBank += txt;
+      outTextAssem += txt;
       appendMultilineOp('+', txt);
     } else if (o.skip) {
       const txt = textLeft.substring(0, o.skip);
       textLeft = textLeft.substring(o.skip);
-      outTextAssem.append(txt);
+      outTextAssem += txt;
       appendMultilineOp('=', txt);
     } else if (o.remove) {
       const txt = textLeft.substring(0, o.remove);
@@ -209,9 +199,9 @@ const randomTestChangeset = (origText, withAttribs) => {
 
   while (textLeft.length > 1) doOp();
   for (let i = 0; i < 5; i++) doOp(); // do some more (only insertions will happen)
-  const outText = `${outTextAssem.toString()}\n`;
+  const outText = `${outTextAssem}\n`;
   const serializedOps = Changeset.serializeOps(Changeset.canonicalizeOps(ops, true));
-  const cs = Changeset.pack(oldLen, outText.length, serializedOps, charBank.toString());
+  const cs = Changeset.pack(oldLen, outText.length, serializedOps, charBank);
   Changeset.checkRep(cs);
   return [cs, outText];
 };

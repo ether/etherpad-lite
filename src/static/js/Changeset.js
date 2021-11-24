@@ -731,7 +731,11 @@ class StringAssembler {
 /**
  * @returns {StringAssembler}
  */
-exports.stringAssembler = () => new StringAssembler();
+exports.stringAssembler = () => {
+  padutils.warnDeprecated(
+      'Changeset.stringAssembler() is deprecated; build a string manually instead');
+  return new StringAssembler();
+};
 
 /**
  * @typedef {object} StringArrayLike
@@ -1158,7 +1162,7 @@ exports.applyToText = (cs, str) => {
   assert(str.length === unpacked.oldLen, `mismatched apply: ${str.length} / ${unpacked.oldLen}`);
   const bankIter = exports.stringIterator(unpacked.charBank);
   const strIter = exports.stringIterator(str);
-  const assem = new StringAssembler();
+  let assem = '';
   for (const op of exports.deserializeOps(unpacked.ops)) {
     switch (op.opcode) {
       case '+':
@@ -1167,7 +1171,7 @@ exports.applyToText = (cs, str) => {
         if (op.lines !== bankIter.peek(op.chars).split('\n').length - 1) {
           throw new Error(`newline count is wrong in op +; cs:${cs} and text:${str}`);
         }
-        assem.append(bankIter.take(op.chars));
+        assem += bankIter.take(op.chars);
         break;
       case '-':
       // op is - and op.lines 0: no newlines must be in the deleted string
@@ -1183,12 +1187,12 @@ exports.applyToText = (cs, str) => {
         if (op.lines !== strIter.peek(op.chars).split('\n').length - 1) {
           throw new Error(`newline count is wrong in op =; cs:${cs} and text:${str}`);
         }
-        assem.append(strIter.take(op.chars));
+        assem += strIter.take(op.chars);
         break;
     }
   }
-  assem.append(strIter.take(strIter.remaining()));
-  return assem.toString();
+  assem += strIter.take(strIter.remaining());
+  return assem;
 };
 
 /**
@@ -1477,7 +1481,7 @@ exports.compose = (cs1, cs2, pool) => {
   const len3 = unpacked2.newLen;
   const bankIter1 = exports.stringIterator(unpacked1.charBank);
   const bankIter2 = exports.stringIterator(unpacked2.charBank);
-  const bankAssem = new StringAssembler();
+  let bankAssem = '';
 
   const newOps = applyZip(unpacked1.ops, unpacked2.ops, (op1, op2) => {
     const op1code = op1.opcode;
@@ -1487,16 +1491,12 @@ exports.compose = (cs1, cs2, pool) => {
     }
     const opOut = slicerZipperFunc(op1, op2, pool);
     if (opOut.opcode === '+') {
-      if (op2code === '+') {
-        bankAssem.append(bankIter2.take(opOut.chars));
-      } else {
-        bankAssem.append(bankIter1.take(opOut.chars));
-      }
+      bankAssem += (op2code === '+' ? bankIter2 : bankIter1).take(opOut.chars);
     }
     return opOut;
   });
 
-  return exports.pack(len1, len3, newOps, bankAssem.toString());
+  return exports.pack(len1, len3, newOps, bankAssem);
 };
 
 /**
@@ -1920,7 +1920,7 @@ class Builder {
   constructor(oldLen) {
     this._oldLen = oldLen;
     this._ops = [];
-    this._charBank = new StringAssembler();
+    this._charBank = '';
   }
 
   /**
@@ -1966,7 +1966,7 @@ class Builder {
    */
   insert(text, attribs = '', pool = null) {
     this._ops.push(...opsFromText('+', text, attribs, pool));
-    this._charBank.append(text);
+    this._charBank += text;
     return this;
   }
 
@@ -1998,7 +1998,7 @@ class Builder {
       oldLen: this._oldLen,
       newLen: this._oldLen + lengthChange,
       ops: serializedOps,
-      charBank: this._charBank.toString(),
+      charBank: this._charBank,
     };
   }
 
@@ -2181,20 +2181,20 @@ exports.inverse = (cs, lines, alines, pool) => {
 
   const nextText = (numChars) => {
     let len = 0;
-    const assem = new StringAssembler();
+    let assem = '';
     const firstString = linesGet(curLine).substring(curChar);
     len += firstString.length;
-    assem.append(firstString);
+    assem += firstString;
 
     let lineNum = curLine + 1;
     while (len < numChars) {
       const nextString = linesGet(lineNum);
       len += nextString.length;
-      assem.append(nextString);
+      assem += nextString;
       lineNum++;
     }
 
-    return assem.toString().substring(0, numChars);
+    return assem.substring(0, numChars);
   };
 
   const cachedStrFunc = (func) => {
@@ -2407,12 +2407,9 @@ const followAttributes = (att1, att2, pool) => {
     return '';
   });
   // we've only removed attributes, so they're already sorted
-  const buf = new StringAssembler();
-  for (const att of atts) {
-    buf.append('*');
-    buf.append(exports.numToString(pool.putAttrib(att)));
-  }
-  return buf.toString();
+  let buf = '';
+  for (const att of atts) buf += `*${exports.numToString(pool.putAttrib(att))}`;
+  return buf;
 };
 
 exports.exportedForTestingOnly = {
