@@ -522,18 +522,24 @@ function Ace2Inner(editorInfo, cssManagers) {
     const numLines = rep.lines.length();
     const upToLastLine = rep.lines.offsetOfIndex(numLines - 1);
     const lastLineLength = rep.lines.atIndex(numLines - 1).text.length;
-    const assem = Changeset.smartOpAssembler();
-    const o = new Changeset.Op('-');
-    o.chars = upToLastLine;
-    o.lines = numLines - 1;
-    assem.append(o);
-    o.chars = lastLineLength;
-    o.lines = 0;
-    assem.append(o);
-    for (const op of Changeset.opsFromAText(atext)) assem.append(op);
-    const newLen = oldLen + assem.getLengthChange();
-    const changeset = Changeset.checkRep(
-        Changeset.pack(oldLen, newLen, assem.toString(), atext.text.slice(0, -1)));
+    const ops = (function* () {
+      const op1 = new Changeset.Op('-');
+      op1.chars = upToLastLine;
+      op1.lines = numLines - 1;
+      yield op1;
+      const op2 = new Changeset.Op('-');
+      op2.chars = lastLineLength;
+      op2.lines = 0;
+      yield op2;
+      yield* Changeset.opsFromAText(atext);
+    })();
+    let lengthChange;
+    const serializedOps = Changeset.serializeOps((function* () {
+      lengthChange = yield* Changeset.canonicalizeOps(ops, false);
+    })());
+    const newLen = oldLen + lengthChange;
+    const changeset =
+        Changeset.checkRep(Changeset.pack(oldLen, newLen, serializedOps, atext.text.slice(0, -1)));
     performDocumentApplyChangeset(changeset);
 
     performSelectionChange(

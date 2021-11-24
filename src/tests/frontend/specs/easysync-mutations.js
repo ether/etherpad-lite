@@ -15,37 +15,36 @@ describe('easysync-mutations', function () {
   };
 
   const mutationsToChangeset = (oldLen, arrayOfArrays) => {
-    const assem = Changeset.smartOpAssembler();
-    const op = new Changeset.Op();
     const bank = Changeset.stringAssembler();
     let oldPos = 0;
     let newLen = 0;
-    arrayOfArrays.forEach((a) => {
-      if (a[0] === 'skip') {
-        op.opcode = '=';
-        op.chars = a[1];
-        op.lines = (a[2] || 0);
-        assem.append(op);
-        oldPos += op.chars;
-        newLen += op.chars;
-      } else if (a[0] === 'remove') {
-        op.opcode = '-';
-        op.chars = a[1];
-        op.lines = (a[2] || 0);
-        assem.append(op);
-        oldPos += op.chars;
-      } else if (a[0] === 'insert') {
-        op.opcode = '+';
-        bank.append(a[1]);
-        op.chars = a[1].length;
-        op.lines = (a[2] || 0);
-        assem.append(op);
-        newLen += op.chars;
+    const ops = (function* () {
+      for (const a of arrayOfArrays) {
+        const op = new Changeset.Op();
+        if (a[0] === 'skip') {
+          op.opcode = '=';
+          op.chars = a[1];
+          op.lines = (a[2] || 0);
+          oldPos += op.chars;
+          newLen += op.chars;
+        } else if (a[0] === 'remove') {
+          op.opcode = '-';
+          op.chars = a[1];
+          op.lines = (a[2] || 0);
+          oldPos += op.chars;
+        } else if (a[0] === 'insert') {
+          op.opcode = '+';
+          bank.append(a[1]);
+          op.chars = a[1].length;
+          op.lines = (a[2] || 0);
+          newLen += op.chars;
+        }
+        yield op;
       }
-    });
+    })();
+    const serializedOps = Changeset.serializeOps(Changeset.canonicalizeOps(ops, true));
     newLen += oldLen - oldPos;
-    assem.endDocument();
-    return Changeset.pack(oldLen, newLen, assem.toString(), bank.toString());
+    return Changeset.pack(oldLen, newLen, serializedOps, bank.toString());
   };
 
   const runMutationTest = (testId, origLines, muts, correct) => {

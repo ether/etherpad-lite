@@ -494,21 +494,20 @@ Pad.prototype.copyPadWithoutHistory = async function (destinationID, force) {
 
   const oldAText = this.atext;
 
-  // based on Changeset.makeSplice
-  const assem = Changeset.smartOpAssembler();
-  for (const op of Changeset.opsFromAText(oldAText)) assem.append(op);
-  assem.endDocument();
+  let newLength;
+  const serializedOps = Changeset.serializeOps((function* () {
+    newLength = yield* Changeset.canonicalizeOps(Changeset.opsFromAText(oldAText), true);
+  })());
 
   // although we have instantiated the newPad with '\n', an additional '\n' is
   // added internally, so the pad text on the revision 0 is "\n\n"
   const oldLength = 2;
 
-  const newLength = assem.getLengthChange();
   const newText = oldAText.text;
 
   // create a changeset that removes the previous text and add the newText with
   // all atributes present on the source pad
-  const changeset = Changeset.pack(oldLength, newLength, assem.toString(), newText);
+  const changeset = Changeset.pack(oldLength, newLength, serializedOps, newText);
   newPad.appendRevision(changeset);
 
   await hooks.aCallAll('padCopy', {originalPad: this, destinationID});

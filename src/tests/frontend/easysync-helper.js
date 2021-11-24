@@ -168,26 +168,22 @@ const randomTestChangeset = (origText, withAttribs) => {
   const charBank = Changeset.stringAssembler();
   let textLeft = origText; // always keep final newline
   const outTextAssem = Changeset.stringAssembler();
-  const opAssem = Changeset.smartOpAssembler();
+  const ops = [];
   const oldLen = origText.length;
 
-  const nextOp = new Changeset.Op();
-
   const appendMultilineOp = (opcode, txt) => {
-    nextOp.opcode = opcode;
-    if (withAttribs) {
-      nextOp.attribs = randomTwoPropAttribs(opcode);
-    }
+    const attribs = withAttribs ? randomTwoPropAttribs(opcode) : '';
     txt.replace(/\n|[^\n]+/g, (t) => {
+      const nextOp = new Changeset.Op(opcode);
+      nextOp.attribs = attribs;
       if (t === '\n') {
         nextOp.chars = 1;
         nextOp.lines = 1;
-        opAssem.append(nextOp);
       } else {
         nextOp.chars = t.length;
         nextOp.lines = 0;
-        opAssem.append(nextOp);
       }
+      ops.push(nextOp);
       return '';
     });
   };
@@ -214,8 +210,8 @@ const randomTestChangeset = (origText, withAttribs) => {
   while (textLeft.length > 1) doOp();
   for (let i = 0; i < 5; i++) doOp(); // do some more (only insertions will happen)
   const outText = `${outTextAssem.toString()}\n`;
-  opAssem.endDocument();
-  const cs = Changeset.pack(oldLen, outText.length, opAssem.toString(), charBank.toString());
+  const serializedOps = Changeset.serializeOps(Changeset.canonicalizeOps(ops, true));
+  const cs = Changeset.pack(oldLen, outText.length, serializedOps, charBank.toString());
   Changeset.checkRep(cs);
   return [cs, outText];
 };

@@ -82,31 +82,30 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
   const lines = (() => {
     const textArray = [];
     const attribsArray = [];
-    let attribsBuilder = null;
-    const op = new Changeset.Op('+');
+    let ops = null;
     const self = {
       length: () => textArray.length,
       atColumnZero: () => textArray[textArray.length - 1] === '',
       startNew: () => {
         textArray.push('');
         self.flush(true);
-        attribsBuilder = Changeset.smartOpAssembler();
+        ops = [];
       },
       textOfLine: (i) => textArray[i],
       appendText: (txt, attrString = '') => {
         textArray[textArray.length - 1] += txt;
+        const op = new Changeset.Op('+');
         op.attribs = attrString;
         op.chars = txt.length;
-        attribsBuilder.append(op);
+        ops.push(op);
       },
       textLines: () => textArray.slice(),
       attribLines: () => attribsArray,
       // call flush only when you're done
       flush: (withNewline) => {
-        if (attribsBuilder) {
-          attribsArray.push(attribsBuilder.toString());
-          attribsBuilder = null;
-        }
+        if (ops == null) return;
+        attribsArray.push(Changeset.serializeOps(Changeset.canonicalizeOps(ops, false)));
+        ops = null;
       },
     };
     self.startNew();

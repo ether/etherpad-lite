@@ -8,20 +8,18 @@ describe('easysync-assembler', function () {
     expect(Changeset.serializeOps(Changeset.deserializeOps(x))).to.equal(x);
   });
 
-  it('smartOpAssembler', async function () {
+  it('canonicalizeOps', async function () {
     const x = '-c*3*4+6|3=az*asdf0*1*2*3+1=1-1+1*0+1=1-1+1|c=c-1';
-    const assem = Changeset.smartOpAssembler();
-    for (const op of Changeset.deserializeOps(x)) assem.append(op);
-    assem.endDocument();
-    expect(assem.toString()).to.equal(x);
+    expect(Changeset.serializeOps(Changeset.canonicalizeOps(Changeset.deserializeOps(x), true)))
+        .to.equal(x);
   });
 
   describe('append atext to assembler', function () {
     const testAppendATextToAssembler = (testId, atext, correctOps) => {
       it(`testAppendATextToAssembler#${testId}`, async function () {
-        const assem = Changeset.smartOpAssembler();
-        for (const op of Changeset.opsFromAText(atext)) assem.append(op);
-        expect(assem.toString()).to.equal(correctOps);
+        const serializedOps =
+            Changeset.serializeOps(Changeset.canonicalizeOps(Changeset.opsFromAText(atext), false));
+        expect(serializedOps).to.equal(correctOps);
       });
     };
 

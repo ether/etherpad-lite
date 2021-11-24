@@ -39,6 +39,8 @@
   * `opAssembler()`: Deprecated in favor of the new `serializeOps()` function.
   * `mergingOpAssembler()`: Deprecated in favor of the new `squashOps()`
     generator function (combined with `serializeOps()`).
+  * `smartOpAssembler()`: Deprecated in favor of the new `canonicalizeOps()`
+    generator function (combined with `serializeOps()`).
   * `appendATextToAssembler()`: Deprecated in favor of the new `opsFromAText()`
     generator function.
   * `newOp()`: Deprecated in favor of the new `Op` class.
