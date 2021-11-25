@@ -2,6 +2,7 @@
 
 const assert = require('assert').strict;
 const authorManager = require('../../../node/db/AuthorManager');
+const db = require('../../../node/db/DB');
 const importEtherpad = require('../../../node/utils/ImportEtherpad');
 const padManager = require('../../../node/db/PadManager');
 const {randomString} = require('../../../static/js/pad_utils');
@@ -50,6 +51,15 @@ describe(__filename, function () {
   beforeEach(async function () {
     padId = randomString(10);
     assert(!await padManager.doesPadExist(padId));
+  });
+
+  it('unknown db records are ignored', async function () {
+    const badKey = `maliciousDbKey${randomString(10)}`;
+    await importEtherpad.setPadRaw(padId, JSON.stringify({
+      [badKey]: 'value',
+      ...makeExport(makeAuthorId()),
+    }));
+    assert(await db.get(badKey) == null);
   });
 
   describe('author pad IDs', function () {

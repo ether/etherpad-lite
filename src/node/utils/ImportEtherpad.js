@@ -53,17 +53,18 @@ exports.setPadRaw = async (padId, r) => {
         return;
       }
       value.padIDs = {[padId]: 1};
-    } else {
+    } else if (padKeyPrefixes.includes(prefix)) {
       if (prefix === 'pad' && keyParts.length === 2 && value.pool) {
         for (const attrib of Object.keys(value.pool.numToAttrib)) {
           const attribName = value.pool.numToAttrib[attrib][0];
           if (!supportedElems.has(attribName)) unsupportedElements.add(attribName);
         }
       }
-      if (padKeyPrefixes.includes(prefix)) {
-        keyParts[1] = padId;
-        key = keyParts.join(':');
-      }
+      keyParts[1] = padId;
+      key = keyParts.join(':');
+    } else {
+      logger.warn(`(pad ${padId}) Ignoring record with unsupported key: ${key}`);
+      return;
     }
     await db.set(key, value);
   }));
