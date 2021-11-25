@@ -1,5 +1,5 @@
-// 'use strict';
-// Uncommenting above breaks tests.
+'use strict';
+
 /**
  * 2014 John McLear (Etherpad Foundation / McLear Ltd)
  *
@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+const authorManager = require('../db/AuthorManager');
 const db = require('../db/DB');
 const hooks = require('../../static/js/pluginfw/hooks');
 const log4js = require('log4js');
@@ -37,25 +38,14 @@ exports.setPadRaw = async (padId, r) => {
     if (!value) {
       return;
     }
-
-    if (value.padIDs) {
-      // Author data - rewrite author pad ids
-      value.padIDs[padId] = 1;
-
-      // Does this author already exist?
-      const author = await db.get(key);
-
-      if (author) {
-        // Yes, add the padID to the author
-        if (Object.prototype.toString.call(author) === '[object Array]') {
-          author.padIDs.push(padId);
-        }
-
-        value = author;
-      } else {
-        // No, create a new array with the author info in
-        value.padIDs = [padId];
+    const keyParts = key.split(':');
+    const [prefix, id] = keyParts;
+    if (prefix === 'globalAuthor' && keyParts.length === 2) {
+      if (await authorManager.doesAuthorExist(id)) {
+        await authorManager.addPad(id, padId);
+        return;
       }
+      value.padIDs = {[padId]: 1};
     } else {
       // Not author data, probably pad data
       // we can split it to look to see if it's pad data
