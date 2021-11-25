@@ -119,4 +119,42 @@ describe(__filename, function () {
       assert.deepEqual((await authorManager.listPadsOfAuthor(newAuthorId)).padIDs, [padId]);
     });
   });
+
+  describe('enforces consistent pad ID', function () {
+    it('pad record has different pad ID', async function () {
+      const data = makeExport(makeAuthorId());
+      data['pad:differentPadId'] = data['pad:testing'];
+      delete data['pad:testing'];
+      assert.rejects(importEtherpad.setPadRaw(padId, JSON.stringify(data)), /unexpected pad ID/);
+    });
+
+    it('globalAuthor record has different pad ID', async function () {
+      const authorId = makeAuthorId();
+      const data = makeExport(authorId);
+      data[`globalAuthor:${authorId}`].padIDs = 'differentPadId';
+      assert.rejects(importEtherpad.setPadRaw(padId, JSON.stringify(data)), /unexpected pad ID/);
+    });
+
+    it('pad rev record has different pad ID', async function () {
+      const data = makeExport(makeAuthorId());
+      data['pad:differentPadId:revs:0'] = data['pad:testing:revs:0'];
+      delete data['pad:testing:revs:0'];
+      assert.rejects(importEtherpad.setPadRaw(padId, JSON.stringify(data)), /unexpected pad ID/);
+    });
+  });
+
+  describe('order of records does not matter', function () {
+    for (const perm of [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]]) {
+      it(JSON.stringify(perm), async function () {
+        const authorId = makeAuthorId();
+        const records = Object.entries(makeExport(authorId));
+        assert.equal(records.length, 3);
+        await importEtherpad.setPadRaw(
+            padId, JSON.stringify(Object.fromEntries(perm.map((i) => records[i]))));
+        assert.deepEqual((await authorManager.listPadsOfAuthor(authorId)).padIDs, [padId]);
+        const pad = await padManager.getPad(padId);
+        assert.equal(pad.text(), 'foo\n');
+      });
+    }
+  });
 });

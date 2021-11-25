@@ -41,6 +41,12 @@ exports.setPadRaw = async (padId, r) => {
     'pad',
   ];
 
+  let originalPadId = null;
+  const checkOriginalPadId = (padId) => {
+    if (originalPadId == null) originalPadId = padId;
+    if (originalPadId !== padId) throw new Error('unexpected pad ID in record');
+  };
+
   await Promise.all(Object.entries(records).map(async ([key, value]) => {
     if (!value) {
       return;
@@ -48,12 +54,20 @@ exports.setPadRaw = async (padId, r) => {
     const keyParts = key.split(':');
     const [prefix, id] = keyParts;
     if (prefix === 'globalAuthor' && keyParts.length === 2) {
+      // In the database, the padIDs subkey is an object (which is used as a set) that records every
+      // pad the author has worked on. When exported, that object becomes a single string containing
+      // the exported pad's ID.
+      if (typeof value.padIDs !== 'string') {
+        throw new TypeError('globalAuthor padIDs subkey is not a string');
+      }
+      checkOriginalPadId(value.padIDs);
       if (await authorManager.doesAuthorExist(id)) {
         await authorManager.addPad(id, padId);
         return;
       }
       value.padIDs = {[padId]: 1};
     } else if (padKeyPrefixes.includes(prefix)) {
+      checkOriginalPadId(id);
       if (prefix === 'pad' && keyParts.length === 2 && value.pool) {
         for (const [k] of Object.values(value.pool.numToAttrib)) {
           if (!supportedElems.has(k)) unsupportedElements.add(k);
