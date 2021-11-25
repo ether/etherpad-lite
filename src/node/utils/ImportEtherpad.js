@@ -34,6 +34,13 @@ exports.setPadRaw = async (padId, r) => {
 
   const unsupportedElements = new Set();
 
+  // DB key prefixes for pad records. Each key is expected to have the form `${prefix}:${padId}` or
+  // `${prefix}:${padId}:${otherstuff}`.
+  const padKeyPrefixes = [
+    ...await hooks.aCallAll('exportEtherpadAdditionalContent'),
+    'pad',
+  ];
+
   await Promise.all(Object.entries(records).map(async ([key, value]) => {
     if (!value) {
       return;
@@ -47,9 +54,6 @@ exports.setPadRaw = async (padId, r) => {
       }
       value.padIDs = {[padId]: 1};
     } else {
-      // Not author data, probably pad data
-      // we can split it to look to see if it's pad data
-
       // is this an attribute we support or not?  If not, tell the admin
       if (value.pool) {
         for (const attrib of Object.keys(value.pool.numToAttrib)) {
@@ -57,20 +61,9 @@ exports.setPadRaw = async (padId, r) => {
           if (!supportedElems.has(attribName)) unsupportedElements.add(attribName);
         }
       }
-      const oldPadId = key.split(':');
-
-      // we know it's pad data
-      if (oldPadId[0] === 'pad') {
-        // so set the new pad id for the author
-        oldPadId[1] = padId;
-        key = oldPadId.join(':');
-      }
-
-      // is this a key that is supported through a plugin?
-      // get content that has a different prefix IE comments:padId:foo
-      // a plugin would return something likle ['comments', 'cakes']
-      for (const prefix of await hooks.aCallAll('exportEtherpadAdditionalContent')) {
-        if (prefix === oldPadId[0]) key = `${prefix}:${padId}`;
+      if (padKeyPrefixes.includes(prefix)) {
+        keyParts[1] = padId;
+        key = keyParts.join(':');
       }
     }
     await db.set(key, value);
