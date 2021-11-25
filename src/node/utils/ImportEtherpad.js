@@ -54,8 +54,7 @@ exports.setPadRaw = async (padId, r) => {
       }
       value.padIDs = {[padId]: 1};
     } else {
-      // is this an attribute we support or not?  If not, tell the admin
-      if (value.pool) {
+      if (prefix === 'pad' && keyParts.length === 2 && value.pool) {
         for (const attrib of Object.keys(value.pool.numToAttrib)) {
           const attribName = value.pool.numToAttrib[attrib][0];
           if (!supportedElems.has(attribName)) unsupportedElements.add(attribName);
