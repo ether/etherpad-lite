@@ -38,12 +38,9 @@ exports.setPadRaw = async (padId, r) => {
       return;
     }
 
-    let newKey;
-
     if (value.padIDs) {
       // Author data - rewrite author pad ids
       value.padIDs[padId] = 1;
-      newKey = key;
 
       // Does this author already exist?
       const author = await db.get(key);
@@ -76,21 +73,17 @@ exports.setPadRaw = async (padId, r) => {
       if (oldPadId[0] === 'pad') {
         // so set the new pad id for the author
         oldPadId[1] = padId;
-
-        // and create the value
-        newKey = oldPadId.join(':'); // create the new key
+        key = oldPadId.join(':');
       }
 
       // is this a key that is supported through a plugin?
       // get content that has a different prefix IE comments:padId:foo
       // a plugin would return something likle ['comments', 'cakes']
       for (const prefix of await hooks.aCallAll('exportEtherpadAdditionalContent')) {
-        if (prefix === oldPadId[0]) newKey = `${prefix}:${padId}`;
+        if (prefix === oldPadId[0]) key = `${prefix}:${padId}`;
       }
     }
-
-    // Write the value to the server
-    await db.set(newKey, value);
+    await db.set(key, value);
   }));
 
   if (unsupportedElements.size) {
