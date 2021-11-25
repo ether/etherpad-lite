@@ -55,9 +55,8 @@ exports.setPadRaw = async (padId, r) => {
       value.padIDs = {[padId]: 1};
     } else if (padKeyPrefixes.includes(prefix)) {
       if (prefix === 'pad' && keyParts.length === 2 && value.pool) {
-        for (const attrib of Object.keys(value.pool.numToAttrib)) {
-          const attribName = value.pool.numToAttrib[attrib][0];
-          if (!supportedElems.has(attribName)) unsupportedElements.add(attribName);
+        for (const [k] of Object.values(value.pool.numToAttrib)) {
+          if (!supportedElems.has(k)) unsupportedElements.add(k);
         }
       }
       keyParts[1] = padId;
