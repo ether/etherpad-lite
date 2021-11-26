@@ -62,6 +62,16 @@ describe(__filename, function () {
     assert(await db.get(badKey) == null);
   });
 
+  it('changes are all or nothing', async function () {
+    const authorId = makeAuthorId();
+    const data = makeExport(authorId);
+    data['pad:differentPadId:revs:0'] = data['pad:testing:revs:0'];
+    delete data['pad:testing:revs:0'];
+    assert.rejects(importEtherpad.setPadRaw(padId, JSON.stringify(data)), /unexpected pad ID/);
+    assert(!await authorManager.doesAuthorExist(authorId));
+    assert(!await padManager.doesPadExist(padId));
+  });
+
   describe('author pad IDs', function () {
     let existingAuthorId;
     let newAuthorId;

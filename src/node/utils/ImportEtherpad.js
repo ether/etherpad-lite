@@ -47,6 +47,11 @@ exports.setPadRaw = async (padId, r) => {
     if (originalPadId !== padId) throw new Error('unexpected pad ID in record');
   };
 
+  // First validate and transform values. Do not commit any records to the database yet in case
+  // there is a problem with the data.
+
+  const dbRecords = new Map();
+  const existingAuthors = new Set();
   await Promise.all(Object.entries(records).map(async ([key, value]) => {
     if (!value) {
       return;
@@ -62,7 +67,7 @@ exports.setPadRaw = async (padId, r) => {
       }
       checkOriginalPadId(value.padIDs);
       if (await authorManager.doesAuthorExist(id)) {
-        await authorManager.addPad(id, padId);
+        existingAuthors.add(id);
         return;
       }
       value.padIDs = {[padId]: 1};
@@ -79,11 +84,16 @@ exports.setPadRaw = async (padId, r) => {
       logger.warn(`(pad ${padId}) Ignoring record with unsupported key: ${key}`);
       return;
     }
-    await db.set(key, value);
+    dbRecords.set(key, value);
   }));
 
   if (unsupportedElements.size) {
     logger.warn('Ignoring unsupported elements (you might want to install a plugin): ' +
                 `${[...unsupportedElements].join(', ')}`);
   }
+
+  await Promise.all([
+    ...[...dbRecords].map(async ([k, v]) => await db.set(k, v)),
+    ...[...existingAuthors].map(async (authorId) => await authorManager.addPad(authorId, padId)),
+  ]);
 };
