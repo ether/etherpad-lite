@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+const {Pad} = require('../db/Pad');
 const authorManager = require('../db/AuthorManager');
 const db = require('../db/DB');
 const hooks = require('../../static/js/pluginfw/hooks');
@@ -89,6 +90,21 @@ exports.setPadRaw = async (padId, r) => {
     }
     dbRecords.set(key, value);
   }));
+
+  const pad = new Pad(padId, {
+    // Only fetchers are needed to check the pad's integrity.
+    get: async (k) => dbRecords.get(k),
+    getSub: async (k, sub) => {
+      let v = dbRecords.get(k);
+      for (const sk of sub) {
+        if (v == null) return null;
+        v = v[sk];
+      }
+      return v;
+    },
+  });
+  await pad.init();
+  await pad.check();
 
   await Promise.all([
     ...[...dbRecords].map(async ([k, v]) => await db.set(k, v)),

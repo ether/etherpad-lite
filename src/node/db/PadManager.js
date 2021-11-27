@@ -20,7 +20,7 @@
  */
 
 const CustomError = require('../utils/customError');
-const Pad = require('../db/Pad').Pad;
+const Pad = require('../db/Pad');
 const db = require('./DB');
 const hooks = require('../../static/js/pluginfw/hooks');
 
@@ -138,7 +138,7 @@ exports.getPad = async (id, text) => {
   }
 
   // try to load pad
-  pad = new Pad(id);
+  pad = new Pad.Pad(id);
 
   // initialize the pad
   await pad.init(text);
