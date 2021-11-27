@@ -21,7 +21,7 @@ const hooks = require('../../static/js/pluginfw/hooks');
 const promises = require('../utils/promises');
 
 // serialization/deserialization attributes
-const attributeBlackList = ['id'];
+const attributeBlackList = ['_db', 'id'];
 const jsonableList = ['pool'];
 
 /**
@@ -34,7 +34,15 @@ exports.cleanText = (txt) => txt.replace(/\r\n/g, '\n')
     .replace(/\t/g, '        ')
     .replace(/\xa0/g, ' ');
 
-const Pad = function (id) {
+/**
+ * @param [database] - Database object to access this pad's records (and only this pad's records --
+ *     the shared global Etherpad database object is still used for all other pad accesses, such as
+ *     copying the pad). Defaults to the shared global Etherpad database object. This parameter can
+ *     be used to shard pad storage across multiple database backends, to put each pad in its own
+ *     database table, or to validate imported pad data before it is written to the database.
+ */
+const Pad = function (id, database = db) {
+  this._db = database;
   this.atext = Changeset.makeAText('\n');
   this.pool = new AttributePool();
   this.head = -1;
@@ -95,7 +103,7 @@ Pad.prototype.appendRevision = async function (aChangeset, author) {
   }
 
   const p = [
-    db.set(`pad:${this.id}:revs:${newRev}`, newRevData),
+    this._db.set(`pad:${this.id}:revs:${newRev}`, newRevData),
     this.saveToDatabase(),
   ];
 
@@ -128,25 +136,25 @@ Pad.prototype.saveToDatabase = async function () {
     }
   }
 
-  await db.set(`pad:${this.id}`, dbObject);
+  await this._db.set(`pad:${this.id}`, dbObject);
 };
 
 // get time of last edit (changeset application)
-Pad.prototype.getLastEdit = function () {
+Pad.prototype.getLastEdit = async function () {
   const revNum = this.getHeadRevisionNumber();
-  return db.getSub(`pad:${this.id}:revs:${revNum}`, ['meta', 'timestamp']);
+  return await this._db.getSub(`pad:${this.id}:revs:${revNum}`, ['meta', 'timestamp']);
 };
 
-Pad.prototype.getRevisionChangeset = function (revNum) {
-  return db.getSub(`pad:${this.id}:revs:${revNum}`, ['changeset']);
+Pad.prototype.getRevisionChangeset = async function (revNum) {
+  return await this._db.getSub(`pad:${this.id}:revs:${revNum}`, ['changeset']);
 };
 
-Pad.prototype.getRevisionAuthor = function (revNum) {
-  return db.getSub(`pad:${this.id}:revs:${revNum}`, ['meta', 'author']);
+Pad.prototype.getRevisionAuthor = async function (revNum) {
+  return await this._db.getSub(`pad:${this.id}:revs:${revNum}`, ['meta', 'author']);
 };
 
-Pad.prototype.getRevisionDate = function (revNum) {
-  return db.getSub(`pad:${this.id}:revs:${revNum}`, ['meta', 'timestamp']);
+Pad.prototype.getRevisionDate = async function (revNum) {
+  return await this._db.getSub(`pad:${this.id}:revs:${revNum}`, ['meta', 'timestamp']);
 };
 
 Pad.prototype.getAllAuthors = function () {
@@ -173,7 +181,7 @@ Pad.prototype.getInternalRevisionAText = async function (targetRev) {
   // get all needed data out of the database
 
   // start to get the atext of the key revision
-  const p_atext = db.getSub(`pad:${this.id}:revs:${keyRev}`, ['meta', 'atext']);
+  const p_atext = this._db.getSub(`pad:${this.id}:revs:${keyRev}`, ['meta', 'atext']);
 
   // get all needed changesets
   const changesets = [];
@@ -196,8 +204,8 @@ Pad.prototype.getInternalRevisionAText = async function (targetRev) {
   return atext;
 };
 
-Pad.prototype.getRevision = function (revNum) {
-  return db.get(`pad:${this.id}:revs:${revNum}`);
+Pad.prototype.getRevision = async function (revNum) {
+  return await this._db.get(`pad:${this.id}:revs:${revNum}`);
 };
 
 Pad.prototype.getAllAuthorColors = async function () {
@@ -293,7 +301,7 @@ Pad.prototype.appendChatMessage = async function (msgOrText, authorId = null, ti
     // Don't save the display name in the database because the user can change it at any time. The
     // `displayName` property will be populated with the current value when the message is read from
     // the database.
-    db.set(`pad:${this.id}:chat:${this.chatHead}`, {...msg, displayName: undefined}),
+    this._db.set(`pad:${this.id}:chat:${this.chatHead}`, {...msg, displayName: undefined}),
     this.saveToDatabase(),
   ]);
 };
@@ -303,7 +311,7 @@ Pad.prototype.appendChatMessage = async function (msgOrText, authorId = null, ti
  * @returns {?ChatMessage}
  */
 Pad.prototype.getChatMessage = async function (entryNum) {
-  const entry = await db.get(`pad:${this.id}:chat:${entryNum}`);
+  const entry = await this._db.get(`pad:${this.id}:chat:${entryNum}`);
   if (entry == null) return null;
   const message = ChatMessage.fromObject(entry);
   message.displayName = await authorManager.getAuthorName(message.authorId);
@@ -340,7 +348,7 @@ Pad.prototype.init = async function (text) {
   }
 
   // try to load the pad
-  const value = await db.get(`pad:${this.id}`);
+  const value = await this._db.get(`pad:${this.id}`);
 
   // if this pad exists, load it
   if (value != null) {
@@ -363,8 +371,6 @@ Pad.prototype.init = async function (text) {
 };
 
 Pad.prototype.copy = async function (destinationID, force) {
-  const sourceID = this.id;
-
   // Kick everyone from this pad.
   // This was commented due to https://github.com/ether/etherpad-lite/issues/3183.
   // Do we really need to kick everyone out?
@@ -380,7 +386,7 @@ Pad.prototype.copy = async function (destinationID, force) {
   await this.removePadIfForceIsTrueAndAlreadyExist(destinationID, force);
 
   // copy the 'pad' entry
-  const pad = await db.get(`pad:${sourceID}`);
+  const pad = await this._db.get(`pad:${this.id}`);
   db.set(`pad:${destinationID}`, pad);
 
   // copy all relations in parallel
@@ -389,7 +395,7 @@ Pad.prototype.copy = async function (destinationID, force) {
   // copy all chat messages
   const chatHead = this.chatHead;
   for (let i = 0; i <= chatHead; ++i) {
-    const p = db.get(`pad:${sourceID}:chat:${i}`)
+    const p = this._db.get(`pad:${this.id}:chat:${i}`)
         .then((chat) => db.set(`pad:${destinationID}:chat:${i}`, chat));
     promises.push(p);
   }
@@ -397,7 +403,7 @@ Pad.prototype.copy = async function (destinationID, force) {
   // copy all revisions
   const revHead = this.head;
   for (let i = 0; i <= revHead; ++i) {
-    const p = db.get(`pad:${sourceID}:revs:${i}`)
+    const p = this._db.get(`pad:${this.id}:revs:${i}`)
         .then((rev) => db.set(`pad:${destinationID}:revs:${i}`, rev));
     promises.push(p);
   }
@@ -554,12 +560,12 @@ Pad.prototype.remove = async function () {
 
   // delete all chat messages
   p.push(promises.timesLimit(this.chatHead + 1, 500, async (i) => {
-    await db.remove(`pad:${padID}:chat:${i}`, null);
+    await this._db.remove(`pad:${this.id}:chat:${i}`, null);
   }));
 
   // delete all revisions
   p.push(promises.timesLimit(this.head + 1, 500, async (i) => {
-    await db.remove(`pad:${padID}:revs:${i}`, null);
+    await this._db.remove(`pad:${this.id}:revs:${i}`, null);
   }));
 
   // remove pad from all authors who contributed
