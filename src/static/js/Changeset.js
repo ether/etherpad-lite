@@ -296,7 +296,6 @@ exports.checkRep = (cs) => {
   const assem = exports.smartOpAssembler();
   let oldPos = 0;
   let calcNewLen = 0;
-  let numInserted = 0;
   const iter = exports.opIterator(ops);
   while (iter.hasNext()) {
     const o = iter.next();
@@ -311,25 +310,29 @@ exports.checkRep = (cs) => {
         break;
       case '+':
       {
+        assert(charBank.length >= o.chars, 'Invalid changeset: not enough chars in charBank');
+        const chars = charBank.slice(0, o.chars);
+        const nlines = (chars.match(/\n/g) || []).length;
+        assert(nlines === o.lines,
+            'Invalid changeset: number of newlines in insert op does not match the charBank');
+        assert(o.lines === 0 || chars.endsWith('\n'),
+            'Invalid changeset: multiline insert op does not end with a newline');
+        charBank = charBank.slice(o.chars);
         calcNewLen += o.chars;
-        numInserted += o.chars;
         assert(calcNewLen <= newLen, `${calcNewLen} > ${newLen} in ${cs}`);
         break;
       }
+      default:
+        assert(false, `Invalid changeset: Unknown opcode: ${JSON.stringify(o.opcode)}`);
     }
     assem.append(o);
   }
-
   calcNewLen += oldLen - oldPos;
-  charBank = charBank.substring(0, numInserted);
-  while (charBank.length < numInserted) {
-    charBank += '?';
-  }
-
+  assert(calcNewLen === newLen, 'Invalid changeset: claimed length does not match actual length');
+  assert(charBank === '', 'Invalid changeset: excess characters in the charBank');
   assem.endDocument();
-  const normalized = exports.pack(oldLen, calcNewLen, assem.toString(), charBank);
-  assert(normalized === cs, 'Invalid changeset (checkRep failed)');
-
+  const normalized = exports.pack(oldLen, calcNewLen, assem.toString(), unpacked.charBank);
+  assert(normalized === cs, 'Invalid changeset: not in canonical form');
   return cs;
 };
 
@@ -998,9 +1001,7 @@ const applyZip = (in1, in2, func) => {
 exports.unpack = (cs) => {
   const headerRegex = /Z:([0-9a-z]+)([><])([0-9a-z]+)|/;
   const headerMatch = headerRegex.exec(cs);
-  if ((!headerMatch) || (!headerMatch[0])) {
-    error(`Not a exports: ${cs}`);
-  }
+  if ((!headerMatch) || (!headerMatch[0])) error(`Not a changeset: ${cs}`);
   const oldLen = exports.parseNum(headerMatch[1]);
   const changeSign = (headerMatch[2] === '>') ? 1 : -1;
   const changeMag = exports.parseNum(headerMatch[3]);
