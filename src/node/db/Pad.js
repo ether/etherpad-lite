@@ -81,27 +81,24 @@ class Pad {
 
     const newRev = ++this.head;
 
-    const newRevData = {};
-    newRevData.changeset = aChangeset;
-    newRevData.meta = {};
-    newRevData.meta.author = authorId;
-    newRevData.meta.timestamp = Date.now();
-
     // ex. getNumForAuthor
     if (authorId !== '') this.pool.putAttrib(['author', authorId]);
 
-    if (newRev === this.getKeyRevisionNumber(newRev)) {
-      newRevData.meta.pool = this.pool;
-      newRevData.meta.atext = this.atext;
-    }
-
-    const p = [
-      this.db.set(`pad:${this.id}:revs:${newRev}`, newRevData),
+    const p = Promise.all([
+      this.db.set(`pad:${this.id}:revs:${newRev}`, {
+        changeset: aChangeset,
+        meta: {
+          author: authorId,
+          timestamp: Date.now(),
+          ...newRev === this.getKeyRevisionNumber(newRev) ? {
+            pool: this.pool,
+            atext: this.atext,
+          } : {},
+        },
+      }),
       this.saveToDatabase(),
-    ];
-
-    // set the author to pad
-    if (authorId) p.push(authorManager.addPad(authorId, this.id));
+      authorId && authorManager.addPad(authorId, this.id),
+    ]);
 
     let hook = 'padCreate';
     const context = {
@@ -123,7 +120,7 @@ class Pad {
     }
     hooks.callAll(hook, context);
 
-    await Promise.all(p);
+    await p;
     return newRev;
   }
 
