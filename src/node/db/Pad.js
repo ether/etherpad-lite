@@ -7,6 +7,7 @@
 const Changeset = require('../../static/js/Changeset');
 const ChatMessage = require('../../static/js/ChatMessage');
 const AttributePool = require('../../static/js/AttributePool');
+const assert = require('assert').strict;
 const db = require('./DB');
 const settings = require('../utils/Settings');
 const authorManager = require('./AuthorManager');
@@ -601,4 +602,128 @@ Pad.prototype.addSavedRevision = async function (revNum, savedById, label) {
 
 Pad.prototype.getSavedRevisions = function () {
   return this.savedRevisions;
+};
+
+/**
+ * Asserts that all pad data is consistent. Throws if inconsistent.
+ */
+Pad.prototype.check = async function () {
+  assert(this.id != null);
+  assert.equal(typeof this.id, 'string');
+
+  const head = this.getHeadRevisionNumber();
+  assert(Number.isInteger(head));
+  assert(head >= -1);
+
+  const savedRevisionsList = this.getSavedRevisionsList();
+  assert(Array.isArray(savedRevisionsList));
+  assert.equal(this.getSavedRevisionsNumber(), savedRevisionsList.length);
+  let prevSavedRev = null;
+  for (const rev of savedRevisionsList) {
+    assert(Number.isInteger(rev));
+    assert(rev >= 0);
+    assert(rev <= head);
+    assert(prevSavedRev == null || rev > prevSavedRev);
+    prevSavedRev = rev;
+  }
+  const savedRevisions = this.getSavedRevisions();
+  assert(Array.isArray(savedRevisions));
+  assert.equal(savedRevisions.length, savedRevisionsList.length);
+  const savedRevisionsIds = new Set();
+  for (const savedRev of savedRevisions) {
+    assert(savedRev != null);
+    assert.equal(typeof savedRev, 'object');
+    assert(savedRevisionsList.includes(savedRev.revNum));
+    assert(savedRev.id != null);
+    assert.equal(typeof savedRev.id, 'string');
+    assert(!savedRevisionsIds.has(savedRev.id));
+    savedRevisionsIds.add(savedRev.id);
+  }
+
+  const pool = this.apool();
+  assert(pool instanceof AttributePool);
+  await pool.check();
+
+  const decodeAttribString = function* (str) {
+    const re = /\*([0-9a-z]+)|./gy;
+    let match;
+    while ((match = re.exec(str)) != null) {
+      const [m, n] = match;
+      if (n == null) throw new Error(`invalid character in attribute string: ${m}`);
+      yield Number.parseInt(n, 36);
+    }
+  };
+
+  const authors = new Set();
+  pool.eachAttrib((k, v) => {
+    if (k === 'author' && v) authors.add(v);
+  });
+  let atext = Changeset.makeAText('\n');
+  let r;
+  try {
+    for (r = 0; r <= head; ++r) {
+      const [changeset, author, timestamp] = await Promise.all([
+        this.getRevisionChangeset(r),
+        this.getRevisionAuthor(r),
+        this.getRevisionDate(r),
+      ]);
+      assert(author != null);
+      assert.equal(typeof author, 'string');
+      if (author) authors.add(author);
+      assert(timestamp != null);
+      assert.equal(typeof timestamp, 'number');
+      assert(timestamp > 0);
+      assert(changeset != null);
+      assert.equal(typeof changeset, 'string');
+      Changeset.checkRep(changeset);
+      const unpacked = Changeset.unpack(changeset);
+      let text = atext.text;
+      const iter = Changeset.opIterator(unpacked.ops);
+      while (iter.hasNext()) {
+        const op = iter.next();
+        if (['=', '-'].includes(op.opcode)) {
+          assert(text.length >= op.chars);
+          const consumed = text.slice(0, op.chars);
+          const nlines = (consumed.match(/\n/g) || []).length;
+          assert.equal(op.lines, nlines);
+          if (op.lines > 0) assert(consumed.endsWith('\n'));
+          text = text.slice(op.chars);
+        }
+        let prevK = null;
+        for (const n of decodeAttribString(op.attribs)) {
+          const attrib = pool.getAttrib(n);
+          assert(attrib != null);
+          const [k] = attrib;
+          assert(prevK == null || prevK < k);
+          prevK = k;
+        }
+      }
+      atext = Changeset.applyToAText(changeset, atext, pool);
+      assert.deepEqual(await this.getInternalRevisionAText(r), atext);
+    }
+  } catch (err) {
+    const pfx = `(pad ${this.id} revision ${r}) `;
+    if (err.stack) err.stack = pfx + err.stack;
+    err.message = pfx + err.message;
+    throw err;
+  }
+  assert.equal(this.text(), atext.text);
+  assert.deepEqual(this.atext, atext);
+  assert.deepEqual(this.getAllAuthors().sort(), [...authors].sort());
+
+  assert(Number.isInteger(this.chatHead));
+  assert(this.chatHead >= -1);
+  let c;
+  try {
+    for (c = 0; c <= this.chatHead; ++c) {
+      const msg = await this.getChatMessage(c);
+      assert(msg != null);
+      assert(msg instanceof ChatMessage);
+    }
+  } catch (err) {
+    const pfx = `(pad ${this.id} chat message ${c}) `;
+    if (err.stack) err.stack = pfx + err.stack;
+    err.message = pfx + err.message;
+    throw err;
+  }
 };
