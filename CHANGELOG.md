@@ -75,13 +75,13 @@
     * The `destinationID` context property is deprecated; use `dstPad.id`
       instead.
   * `padCreate`: The `author` context property is deprecated; use the new
-    `authorId` context property instead.
+    `authorId` context property instead. Also, the hook now runs asynchronously.
   * `padLoad`: Now runs when a temporary Pad object is created during import.
     Also, it now runs asynchronously.
   * `padRemove`: The `padID` context property is deprecated; use `pad.id`
     instead.
   * `padUpdate`: The `author` context property is deprecated; use the new
-    `authorId` context property instead.
+    `authorId` context property instead. Also, the hook now runs asynchronously.
 * Returning `true` from a `handleMessageSecurity` hook function is deprecated;
   return `'permitOnce'` instead.
 * Changes to the `src/static/js/Changeset.js` library:

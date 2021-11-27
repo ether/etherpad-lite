@@ -84,7 +84,8 @@ class Pad {
     // ex. getNumForAuthor
     if (authorId !== '') this.pool.putAttrib(['author', authorId]);
 
-    const p = Promise.all([
+    const hook = this.head === 0 ? 'padCreate' : 'padUpdate';
+    await Promise.all([
       this.db.set(`pad:${this.id}:revs:${newRev}`, {
         changeset: aChangeset,
         meta: {
@@ -98,29 +99,23 @@ class Pad {
       }),
       this.saveToDatabase(),
       authorId && authorManager.addPad(authorId, this.id),
+      hooks.aCallAll(hook, {
+        pad: this,
+        authorId,
+        get author() {
+          warnDeprecated(`${hook} hook author context is deprecated; use authorId instead`);
+          return this.authorId;
+        },
+        set author(authorId) {
+          warnDeprecated(`${hook} hook author context is deprecated; use authorId instead`);
+          this.authorId = authorId;
+        },
+        ...this.head === 0 ? {} : {
+          revs: newRev,
+          changeset: aChangeset,
+        },
+      }),
     ]);
-
-    let hook = 'padCreate';
-    const context = {
-      pad: this,
-      authorId,
-      get author() {
-        warnDeprecated(`${hook} hook author context is deprecated; use authorId instead`);
-        return this.authorId;
-      },
-      set author(authorId) {
-        warnDeprecated(`${hook} hook author context is deprecated; use authorId instead`);
-        this.authorId = authorId;
-      },
-    };
-    if (this.head !== 0) {
-      hook = 'padUpdate';
-      context.revs = newRev;
-      context.changeset = aChangeset;
-    }
-    hooks.callAll(hook, context);
-
-    await p;
     return newRev;
   }
 
