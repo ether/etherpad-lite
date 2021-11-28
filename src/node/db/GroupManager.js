@@ -61,6 +61,7 @@ exports.deleteGroup = async (groupID) => {
     // writes the result. Setting a property to `undefined` deletes that property (JSON.stringify()
     // ignores such properties).
     db.setSub('groups', [groupID], undefined),
+    ...Object.keys(group.mappings || {}).map(async (m) => await db.remove(`mapper2group:${m}`)),
   ]);
 
   // Remove the group record after updating the `groups` record so that the state is consistent.
@@ -76,7 +77,7 @@ exports.doesGroupExist = async (groupID) => {
 
 exports.createGroup = async () => {
   const groupID = `g.${randomString(16)}`;
-  await db.set(`group:${groupID}`, {pads: {}});
+  await db.set(`group:${groupID}`, {pads: {}, mappings: {}});
   // Add the group to the `groups` record after the group's individual record is created so that
   // the state is consistent. Note: UeberDB's setSub() method atomically reads the record, updates
   // the appropriate property, and writes the result.
@@ -85,27 +86,20 @@ exports.createGroup = async () => {
 };
 
 exports.createGroupIfNotExistsFor = async (groupMapper) => {
-  // ensure mapper is optional
   if (typeof groupMapper !== 'string') {
     throw new CustomError('groupMapper is not a string', 'apierror');
   }
-
-  // try to get a group for this mapper
   const groupID = await db.get(`mapper2group:${groupMapper}`);
-
-  if (groupID) {
-    // there is a group for this mapper
-    const exists = await exports.doesGroupExist(groupID);
-
-    if (exists) return {groupID};
-  }
-
-  // hah, the returned group doesn't exist, let's create one
+  if (groupID && await exports.doesGroupExist(groupID)) return {groupID};
   const result = await exports.createGroup();
-
-  // create the mapper entry for this group
-  await db.set(`mapper2group:${groupMapper}`, result.groupID);
-
+  await Promise.all([
+    db.set(`mapper2group:${groupMapper}`, result.groupID),
+    // Remember the mapping in the group record so that it can be cleaned up when the group is
+    // deleted. Although the core Etherpad API does not support multiple mappings for the same
+    // group, the database record does support multiple mappings in case a plugin decides to extend
+    // the core Etherpad functionality. (It's also easy to implement it this way.)
+    db.setSub(`group:${result.groupID}`, ['mappings', groupMapper], 1),
+  ]);
   return result;
 };
 

@@ -3,6 +3,8 @@
 ### Notable enhancements and fixes
 
 * Fixed a potential attribute pool corruption bug with `copyPadWithoutHistory`.
+* Mappings created by the `createGroupIfNotExistsFor` HTTP API are now removed
+  from the database when the group is deleted.
 
 #### For plugin authors
 
