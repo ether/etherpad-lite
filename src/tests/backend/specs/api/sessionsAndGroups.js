@@ -2,6 +2,7 @@
 
 const assert = require('assert').strict;
 const common = require('../../common');
+const db = require('../../../../node/db/DB');
 
 let agent;
 const apiKey = common.apiKey;
@@ -89,13 +90,33 @@ describe(__filename, function () {
     });
 
     it('createGroupIfNotExistsFor', async function () {
-      await agent.get(`${endPoint('createGroupIfNotExistsFor')}&groupMapper=management`)
+      const mapper = makeid();
+      let groupId;
+      await agent.get(`${endPoint('createGroupIfNotExistsFor')}&groupMapper=${mapper}`)
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res) => {
             assert.equal(res.body.code, 0);
-            assert(res.body.data.groupID);
+            groupId = res.body.data.groupID;
+            assert(groupId);
           });
+      // Passing the same mapper should return the same group ID.
+      await agent.get(`${endPoint('createGroupIfNotExistsFor')}&groupMapper=${mapper}`)
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect((res) => {
+            assert.equal(res.body.code, 0);
+            assert.equal(res.body.data.groupID, groupId);
+          });
+      // Deleting the group should clean up the mapping.
+      assert.equal(await db.get(`mapper2group:${mapper}`), groupId);
+      await agent.get(`${endPoint('deleteGroup')}&groupID=${groupId}`)
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect((res) => {
+            assert.equal(res.body.code, 0);
+          });
+      assert(await db.get(`mapper2group:${mapper}`) == null);
     });
 
     // Test coverage for https://github.com/ether/etherpad-lite/issues/4227
