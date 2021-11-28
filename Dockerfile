@@ -60,6 +60,7 @@ RUN mkdir -p "${EP_DIR}" && chown etherpad:etherpad "${EP_DIR}"
 RUN export DEBIAN_FRONTEND=noninteractive; \
     mkdir -p /usr/share/man/man1 && \
     apt-get -qq update && \
+    apt-get -qq dist-upgrade && \
     apt-get -qq --no-install-recommends install \
         ca-certificates \
         git \
