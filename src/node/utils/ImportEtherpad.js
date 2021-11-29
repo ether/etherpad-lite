@@ -1,5 +1,5 @@
-// 'use strict';
-// Uncommenting above breaks tests.
+'use strict';
+
 /**
  * 2014 John McLear (Etherpad Foundation / McLear Ltd)
  *
@@ -16,6 +16,10 @@
  * limitations under the License.
  */
 
+const AttributePool = require('../../static/js/AttributePool');
+const {Pad} = require('../db/Pad');
+const async = require('async');
+const authorManager = require('../db/AuthorManager');
 const db = require('../db/DB');
 const hooks = require('../../static/js/pluginfw/hooks');
 const log4js = require('log4js');
@@ -23,7 +27,7 @@ const supportedElems = require('../../static/js/contentcollector').supportedElem
 
 const logger = log4js.getLogger('ImportEtherpad');
 
-exports.setPadRaw = (padId, r) => {
+exports.setPadRaw = async (padId, r) => {
   const records = JSON.parse(r);
 
   // get supported block Elements from plugins, we will use this later.
@@ -31,72 +35,86 @@ exports.setPadRaw = (padId, r) => {
     supportedElems.add(element);
   });
 
-  const unsupportedElements = new Set();
+  // DB key prefixes for pad records. Each key is expected to have the form `${prefix}:${padId}` or
+  // `${prefix}:${padId}:${otherstuff}`.
+  const padKeyPrefixes = [
+    ...await hooks.aCallAll('exportEtherpadAdditionalContent'),
+    'pad',
+  ];
 
-  Object.keys(records).forEach(async (key) => {
-    let value = records[key];
+  let originalPadId = null;
+  const checkOriginalPadId = (padId) => {
+    if (originalPadId == null) originalPadId = padId;
+    if (originalPadId !== padId) throw new Error('unexpected pad ID in record');
+  };
 
+  // Limit the number of in-flight database queries so that the queries do not time out when
+  // importing really large files.
+  const q = async.queue(async (task) => await task(), 100);
+
+  // First validate and transform values. Do not commit any records to the database yet in case
+  // there is a problem with the data.
+
+  const dbRecords = new Map();
+  const existingAuthors = new Set();
+  await Promise.all(Object.entries(records).map(([key, value]) => q.pushAsync(async () => {
     if (!value) {
       return;
     }
-
-    let newKey;
-
-    if (value.padIDs) {
-      // Author data - rewrite author pad ids
-      value.padIDs[padId] = 1;
-      newKey = key;
-
-      // Does this author already exist?
-      const author = await db.get(key);
-
-      if (author) {
-        // Yes, add the padID to the author
-        if (Object.prototype.toString.call(author) === '[object Array]') {
-          author.padIDs.push(padId);
-        }
-
-        value = author;
-      } else {
-        // No, create a new array with the author info in
-        value.padIDs = [padId];
+    const keyParts = key.split(':');
+    const [prefix, id] = keyParts;
+    if (prefix === 'globalAuthor' && keyParts.length === 2) {
+      // In the database, the padIDs subkey is an object (which is used as a set) that records every
+      // pad the author has worked on. When exported, that object becomes a single string containing
+      // the exported pad's ID.
+      if (typeof value.padIDs !== 'string') {
+        throw new TypeError('globalAuthor padIDs subkey is not a string');
       }
+      checkOriginalPadId(value.padIDs);
+      if (await authorManager.doesAuthorExist(id)) {
+        existingAuthors.add(id);
+        return;
+      }
+      value.padIDs = {[padId]: 1};
+    } else if (padKeyPrefixes.includes(prefix)) {
+      checkOriginalPadId(id);
+      if (prefix === 'pad' && keyParts.length === 2) {
+        const pool = new AttributePool().fromJsonable(value.pool);
+        const unsupportedElements = new Set();
+        pool.eachAttrib((k, v) => {
+          if (!supportedElems.has(k)) unsupportedElements.add(k);
+        });
+        if (unsupportedElements.size) {
+          logger.warn(`(pad ${padId}) unsupported attributes (try installing a plugin): ` +
+                      `${[...unsupportedElements].join(', ')}`);
+        }
+      }
+      keyParts[1] = padId;
+      key = keyParts.join(':');
     } else {
-      // Not author data, probably pad data
-      // we can split it to look to see if it's pad data
-
-      // is this an attribute we support or not?  If not, tell the admin
-      if (value.pool) {
-        for (const attrib of Object.keys(value.pool.numToAttrib)) {
-          const attribName = value.pool.numToAttrib[attrib][0];
-          if (!supportedElems.has(attribName)) unsupportedElements.add(attribName);
-        }
-      }
-      const oldPadId = key.split(':');
-
-      // we know it's pad data
-      if (oldPadId[0] === 'pad') {
-        // so set the new pad id for the author
-        oldPadId[1] = padId;
-
-        // and create the value
-        newKey = oldPadId.join(':'); // create the new key
-      }
-
-      // is this a key that is supported through a plugin?
-      // get content that has a different prefix IE comments:padId:foo
-      // a plugin would return something likle ['comments', 'cakes']
-      for (const prefix of await hooks.aCallAll('exportEtherpadAdditionalContent')) {
-        if (prefix === oldPadId[0]) newKey = `${prefix}:${padId}`;
-      }
+      logger.warn(`(pad ${padId}) Ignoring record with unsupported key: ${key}`);
+      return;
     }
+    dbRecords.set(key, value);
+  })));
 
-    // Write the value to the server
-    await db.set(newKey, value);
+  const pad = new Pad(padId, {
+    // Only fetchers are needed to check the pad's integrity.
+    get: async (k) => dbRecords.get(k),
+    getSub: async (k, sub) => {
+      let v = dbRecords.get(k);
+      for (const sk of sub) {
+        if (v == null) return null;
+        v = v[sk];
+      }
+      return v;
+    },
   });
+  await pad.init();
+  await pad.check();
 
-  if (unsupportedElements.size) {
-    logger.warn('Ignoring unsupported elements (you might want to install a plugin): ' +
-                `${[...unsupportedElements].join(', ')}`);
-  }
+  await Promise.all([
+    ...[...dbRecords].map(([k, v]) => q.pushAsync(() => db.set(k, v))),
+    ...[...existingAuthors].map((a) => q.pushAsync(() => authorManager.addPad(a, padId))),
+  ]);
 };

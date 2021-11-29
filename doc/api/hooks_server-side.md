@@ -175,14 +175,15 @@ Things in context:
 
 This hook gets called when a new pad was created.
 
-## padLoad
-Called from: src/node/db/Pad.js
+## `padLoad`
 
-Things in context:
+Called from: `src/node/db/PadManager.js`
 
-1. pad - the pad instance
+Called when a pad is loaded, including after new pad creation.
 
-This hook gets called when a pad was loaded. If a new pad was created and loaded this event will be emitted too.
+Context properties:
+
+* `pad`: The Pad object.
 
 ## padUpdate
 Called from: src/node/db/Pad.js

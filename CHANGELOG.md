@@ -29,6 +29,28 @@
     generator function.
   * `newOp()`: Deprecated in favor of the new `Op` class.
 
+# 1.8.16
+
+### Security fixes
+
+If you cannot upgrade to v1.8.16 for some reason, you are encouraged to try
+cherry-picking the fixes to the version you are running:
+
+```shell
+git cherry-pick b7065eb9a0ec..77bcb507b30e
+```
+
+* Maliciously crafted `.etherpad` files can no longer overwrite arbitrary
+  non-pad database records when imported.
+* Imported `.etherpad` files are now subject to numerous consistency checks
+  before any records are written to the database. This should help avoid
+  denial-of-service attacks via imports of malformed `.etherpad` files.
+
+### Notable enhancements and fixes
+
+* Fixed several `.etherpad` import bugs.
+* Improved support for large `.etherpad` imports.
+
 # 1.8.15
 
 ### Security fixes
