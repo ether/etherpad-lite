@@ -3,7 +3,7 @@
  * The pad object, defined with joose
  */
 
-
+const AttributeMap = require('../../static/js/AttributeMap');
 const Changeset = require('../../static/js/Changeset');
 const ChatMessage = require('../../static/js/ChatMessage');
 const AttributePool = require('../../static/js/AttributePool');
@@ -647,16 +647,6 @@ Pad.prototype.check = async function () {
   assert(pool instanceof AttributePool);
   await pool.check();
 
-  const decodeAttribString = function* (str) {
-    const re = /\*([0-9a-z]+)|./gy;
-    let match;
-    while ((match = re.exec(str)) != null) {
-      const [m, n] = match;
-      if (n == null) throw new Error(`invalid character in attribute string: ${m}`);
-      yield Number.parseInt(n, 36);
-    }
-  };
-
   const authors = new Set();
   pool.eachAttrib((k, v) => {
     if (k === 'author' && v) authors.add(v);
@@ -681,9 +671,7 @@ Pad.prototype.check = async function () {
       Changeset.checkRep(changeset);
       const unpacked = Changeset.unpack(changeset);
       let text = atext.text;
-      const iter = Changeset.opIterator(unpacked.ops);
-      while (iter.hasNext()) {
-        const op = iter.next();
+      for (const op of Changeset.deserializeOps(unpacked.ops)) {
         if (['=', '-'].includes(op.opcode)) {
           assert(text.length >= op.chars);
           const consumed = text.slice(0, op.chars);
@@ -692,14 +680,7 @@ Pad.prototype.check = async function () {
           if (op.lines > 0) assert(consumed.endsWith('\n'));
           text = text.slice(op.chars);
         }
-        let prevK = null;
-        for (const n of decodeAttribString(op.attribs)) {
-          const attrib = pool.getAttrib(n);
-          assert(attrib != null);
-          const [k] = attrib;
-          assert(prevK == null || prevK < k);
-          prevK = k;
-        }
+        assert.equal(op.attribs, AttributeMap.fromString(op.attribs, pool).toString());
       }
       atext = Changeset.applyToAText(changeset, atext, pool);
       assert.deepEqual(await this.getInternalRevisionAText(r), atext);

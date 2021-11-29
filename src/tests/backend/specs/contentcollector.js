@@ -346,9 +346,7 @@ describe(__filename, function () {
         // numbers do not change if the attribute processing code changes.)
         for (const attrib of knownAttribs) apool.putAttrib(attrib);
         for (const aline of tc.wantAlines) {
-          const opIter = Changeset.opIterator(aline);
-          while (opIter.hasNext()) {
-            const op = opIter.next();
+          for (const op of Changeset.deserializeOps(aline)) {
             for (const n of attributes.decodeAttribString(op.attribs)) {
               assert(n < knownAttribs.length);
             }
@@ -375,9 +373,7 @@ describe(__filename, function () {
           gotAttribs.push(gotAlineAttribs);
           const wantAlineAttribs = [];
           wantAttribs.push(wantAlineAttribs);
-          const opIter = Changeset.opIterator(aline);
-          while (opIter.hasNext()) {
-            const op = opIter.next();
+          for (const op of Changeset.deserializeOps(aline)) {
             const gotOpAttribs = [...attributes.attribsFromString(op.attribs, apool)];
             gotAlineAttribs.push(gotOpAttribs);
             wantAlineAttribs.push(attributes.sort([...gotOpAttribs]));

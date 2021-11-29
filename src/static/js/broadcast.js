@@ -117,9 +117,7 @@ const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
     getActiveAuthors() {
       const authorIds = new Set();
       for (const aline of this.alines) {
-        const opIter = Changeset.opIterator(aline);
-        while (opIter.hasNext()) {
-          const op = opIter.next();
+        for (const op of Changeset.deserializeOps(aline)) {
           for (const [k, v] of attributes.attribsFromString(op.attribs, this.apool)) {
             if (k !== 'author') continue;
             if (v) authorIds.add(v);
