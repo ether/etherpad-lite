@@ -102,9 +102,14 @@ describe('easysync-assembler', function () {
       'attr5,5',
     ]);
 
-    assem.appendOpWithText('-', 'test', '*3*4*5', pool);
-    assem.appendOpWithText('-', 'test', '*3*4*5', pool);
-    assem.appendOpWithText('-', 'test', '*1*4*5', pool);
+    padutils.warnDeprecated.disabledForTestingOnly = true;
+    try {
+      assem.appendOpWithText('-', 'test', '*3*4*5', pool);
+      assem.appendOpWithText('-', 'test', '*3*4*5', pool);
+      assem.appendOpWithText('-', 'test', '*1*4*5', pool);
+    } finally {
+      delete padutils.warnDeprecated.disabledForTestingOnly;
+    }
     assem.endDocument();
     expect(assem.toString()).to.equal('*3*4*5-8*1*4*5-4');
   });
@@ -119,9 +124,14 @@ describe('easysync-assembler', function () {
       'attr5,5',
     ]);
 
-    assem.appendOpWithText('-', 'test\ntest', '*3*4*5', pool);
-    assem.appendOpWithText('-', '\ntest\n', '*3*4*5', pool);
-    assem.appendOpWithText('-', '\ntest', '*1*4*5', pool);
+    padutils.warnDeprecated.disabledForTestingOnly = true;
+    try {
+      assem.appendOpWithText('-', 'test\ntest', '*3*4*5', pool);
+      assem.appendOpWithText('-', '\ntest\n', '*3*4*5', pool);
+      assem.appendOpWithText('-', '\ntest', '*1*4*5', pool);
+    } finally {
+      delete padutils.warnDeprecated.disabledForTestingOnly;
+    }
     assem.endDocument();
     expect(assem.toString()).to.equal('*3*4*5|3-f*1*4*5|1-1*1*4*5-4');
   });
