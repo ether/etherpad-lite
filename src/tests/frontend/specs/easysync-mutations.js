@@ -184,6 +184,7 @@ describe('easysync-mutations', function () {
     ['insert', 'a'],
     ['insert', 'c\n', 1],
   ], ['ac\n']);
+
   it('mutatorHasMore', async function () {
     const lines = ['1\n', '2\n', '3\n', '4\n'];
     let mu;
