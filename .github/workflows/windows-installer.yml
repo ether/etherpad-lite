@@ -47,7 +47,7 @@ jobs:
       run: git clone https://github.com/ether/etherpad_nsis.git
 
     - name: Create installer
-      uses: joncloud/makensis-action@v3.4
+      uses: joncloud/makensis-action@v3.6
       with:
         script-file: 'etherpad_nsis/etherpad.nsi'
 
