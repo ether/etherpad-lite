@@ -808,11 +808,12 @@ class TextLinesMutator {
    * Indicates if curLine is already in the splice. This is necessary because the last element in
    * curSplice is curLine when this line is currently worked on (e.g. when skipping or inserting).
    *
-   * TODO(doc) why aren't removals considered?
-   *
    * @returns {boolean} true if curLine is in splice
    */
   _isCurLineInSplice() {
+    // The value of `this._curSplice[1]` does not matter when determining the return value because
+    // `this._curLine` refers to the line number *after* the splice is applied (so after those lines
+    // are deleted).
     return this._curLine - this._curSplice[0] < this._curSplice.length - 2;
   }
 
