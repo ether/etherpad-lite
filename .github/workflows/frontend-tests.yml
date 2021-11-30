@@ -36,7 +36,7 @@ jobs:
       run: |
         sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 0/' -i settings.json
 
-    - uses: saucelabs/sauce-connect-action@v1
+    - uses: saucelabs/sauce-connect-action@v2.0.0
       with:
         username: ${{ secrets.SAUCE_USERNAME }}
         accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
@@ -116,7 +116,7 @@ jobs:
     - name: Remove standard frontend test files, so only plugin tests are run
       run: rm src/tests/frontend/specs/*
 
-    - uses: saucelabs/sauce-connect-action@v1
+    - uses: saucelabs/sauce-connect-action@v2.0.0
       with:
         username: ${{ secrets.SAUCE_USERNAME }}
         accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
