@@ -649,9 +649,8 @@ class Pad {
       if (k === 'author' && v) authorIds.add(v);
     });
     let atext = Changeset.makeAText('\n');
-    let r;
-    try {
-      for (r = 0; r <= head; ++r) {
+    for (let r = 0; r <= head; ++r) {
+      try {
         const [changeset, authorId, timestamp] = await Promise.all([
           this.getRevisionChangeset(r),
           this.getRevisionAuthor(r),
@@ -683,12 +682,10 @@ class Pad {
         if (r === this.getKeyRevisionNumber(r)) {
           assert.deepEqual(await this._getKeyRevisionAText(r), atext);
         }
+      } catch (err) {
+        err.message = `(pad ${this.id} revision ${r}) ${err.message}`;
+        throw err;
       }
-    } catch (err) {
-      const pfx = `(pad ${this.id} revision ${r}) `;
-      if (err.stack) err.stack = pfx + err.stack;
-      err.message = pfx + err.message;
-      throw err;
     }
     assert.equal(this.text(), atext.text);
     assert.deepEqual(this.atext, atext);
@@ -697,18 +694,15 @@ class Pad {
     assert(this.chatHead != null);
     assert(Number.isInteger(this.chatHead));
     assert(this.chatHead >= -1);
-    let c;
-    try {
-      for (c = 0; c <= this.chatHead; ++c) {
+    for (c = 0; c <= this.chatHead; ++c) {
+      try {
         const msg = await this.getChatMessage(c);
         assert(msg != null);
         assert(msg instanceof ChatMessage);
+      } catch (err) {
+        err.message = `(pad ${this.id} chat message ${c}) ${err.message}`;
+        throw err;
       }
-    } catch (err) {
-      const pfx = `(pad ${this.id} chat message ${c}) `;
-      if (err.stack) err.stack = pfx + err.stack;
-      err.message = pfx + err.message;
-      throw err;
     }
 
     await hooks.aCallAll('padCheck', {pad: this});
