@@ -90,7 +90,7 @@ class Pad {
     // ex. getNumForAuthor
     if (authorId !== '') this.pool.putAttrib(['author', authorId]);
 
-    if (newRev % 100 === 0) {
+    if (newRev === this.getKeyRevisionNumber(newRev)) {
       newRevData.meta.pool = this.pool;
       newRevData.meta.atext = this.atext;
     }
