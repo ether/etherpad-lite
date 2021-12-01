@@ -3,6 +3,7 @@
 const Changeset = require('../../../static/js/Changeset');
 const AttributePool = require('../../../static/js/AttributePool');
 const {randomMultiline, poolOrArray} = require('../easysync-helper.js');
+const {padutils} = require('../../../static/js/pad_utils');
 
 describe('easysync-other', function () {
   describe('filter attribute numbers', function () {
@@ -23,8 +24,12 @@ describe('easysync-other', function () {
     const testMakeAttribsString = (testId, pool, opcode, attribs, correctString) => {
       it(`testMakeAttribsString#${testId}`, async function () {
         const p = poolOrArray(pool);
-        const str = Changeset.makeAttribsString(opcode, attribs, p);
-        expect(str).to.equal(correctString);
+        padutils.warnDeprecated.disabledForTestingOnly = true;
+        try {
+          expect(Changeset.makeAttribsString(opcode, attribs, p)).to.equal(correctString);
+        } finally {
+          delete padutils.warnDeprecated.disabledForTestingOnly;
+        }
       });
     };
 
@@ -81,14 +86,19 @@ describe('easysync-other', function () {
 
       const stringOp = (str) => Changeset.deserializeOps(str).next().value;
 
-      expect(Changeset.opAttributeValue(stringOp('*0*1+1'), 'name', p)).to.equal('david');
-      expect(Changeset.opAttributeValue(stringOp('*0+1'), 'name', p)).to.equal('david');
-      expect(Changeset.opAttributeValue(stringOp('*1+1'), 'name', p)).to.equal('');
-      expect(Changeset.opAttributeValue(stringOp('+1'), 'name', p)).to.equal('');
-      expect(Changeset.opAttributeValue(stringOp('*0*1+1'), 'color', p)).to.equal('green');
-      expect(Changeset.opAttributeValue(stringOp('*1+1'), 'color', p)).to.equal('green');
-      expect(Changeset.opAttributeValue(stringOp('*0+1'), 'color', p)).to.equal('');
-      expect(Changeset.opAttributeValue(stringOp('+1'), 'color', p)).to.equal('');
+      padutils.warnDeprecated.disabledForTestingOnly = true;
+      try {
+        expect(Changeset.opAttributeValue(stringOp('*0*1+1'), 'name', p)).to.equal('david');
+        expect(Changeset.opAttributeValue(stringOp('*0+1'), 'name', p)).to.equal('david');
+        expect(Changeset.opAttributeValue(stringOp('*1+1'), 'name', p)).to.equal('');
+        expect(Changeset.opAttributeValue(stringOp('+1'), 'name', p)).to.equal('');
+        expect(Changeset.opAttributeValue(stringOp('*0*1+1'), 'color', p)).to.equal('green');
+        expect(Changeset.opAttributeValue(stringOp('*1+1'), 'color', p)).to.equal('green');
+        expect(Changeset.opAttributeValue(stringOp('*0+1'), 'color', p)).to.equal('');
+        expect(Changeset.opAttributeValue(stringOp('+1'), 'color', p)).to.equal('');
+      } finally {
+        delete padutils.warnDeprecated.disabledForTestingOnly;
+      }
     });
 
     describe('applyToAttribution', function () {
