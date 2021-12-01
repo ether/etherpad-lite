@@ -678,7 +678,9 @@ class Pad {
           assert.equal(op.attribs, AttributeMap.fromString(op.attribs, pool).toString());
         }
         atext = Changeset.applyToAText(changeset, atext, pool);
-        assert.deepEqual(await this.getInternalRevisionAText(r), atext);
+        if (r === this.getKeyRevisionNumber(r)) {
+          assert.deepEqual(await this._getKeyRevisionAText(r), atext);
+        }
       }
     } catch (err) {
       const pfx = `(pad ${this.id} revision ${r}) `;
