@@ -610,6 +610,7 @@ class Pad {
     assert.equal(typeof this.id, 'string');
 
     const head = this.getHeadRevisionNumber();
+    assert(head != null);
     assert(Number.isInteger(head));
     assert(head >= -1);
 
@@ -618,6 +619,7 @@ class Pad {
     assert.equal(this.getSavedRevisionsNumber(), savedRevisionsList.length);
     let prevSavedRev = null;
     for (const rev of savedRevisionsList) {
+      assert(rev != null);
       assert(Number.isInteger(rev));
       assert(rev >= 0);
       assert(rev <= head);
@@ -692,6 +694,7 @@ class Pad {
     assert.deepEqual(this.atext, atext);
     assert.deepEqual(this.getAllAuthors().sort(), [...authorIds].sort());
 
+    assert(this.chatHead != null);
     assert(Number.isInteger(this.chatHead));
     assert(this.chatHead >= -1);
     let c;
