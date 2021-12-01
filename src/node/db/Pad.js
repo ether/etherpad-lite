@@ -7,6 +7,7 @@ const AttributeMap = require('../../static/js/AttributeMap');
 const Changeset = require('../../static/js/Changeset');
 const ChatMessage = require('../../static/js/ChatMessage');
 const AttributePool = require('../../static/js/AttributePool');
+const Stream = require('../utils/Stream');
 const assert = require('assert').strict;
 const db = require('./DB');
 const settings = require('../utils/Settings');
@@ -163,36 +164,14 @@ class Pad {
 
   async getInternalRevisionAText(targetRev) {
     const keyRev = this.getKeyRevisionNumber(targetRev);
-
-    // find out which changesets are needed
-    const neededChangesets = [];
-    for (let curRev = keyRev; curRev < targetRev;) {
-      neededChangesets.push(++curRev);
-    }
-
-    // get all needed data out of the database
-
-    // start to get the atext of the key revision
-    const atextp = this.db.getSub(`pad:${this.id}:revs:${keyRev}`, ['meta', 'atext']);
-
-    // get all needed changesets
-    const changesets = [];
-    await Promise.all(
-        neededChangesets.map((item) => this.getRevisionChangeset(item).then((changeset) => {
-          changesets[item] = changeset;
-        })));
-
-    // we should have the atext by now
-    let atext = await atextp;
-    atext = Changeset.cloneAText(atext);
-
-    // apply all changesets to the key changeset
+    const [keyAText, changesets] = await Promise.all([
+      this.db.getSub(`pad:${this.id}:revs:${keyRev}`, ['meta', 'atext']),
+      Promise.all(
+          Stream.range(keyRev + 1, targetRev + 1).map(this.getRevisionChangeset.bind(this))),
+    ]);
     const apool = this.apool();
-    for (let curRev = keyRev; curRev < targetRev;) {
-      const cs = changesets[++curRev];
-      atext = Changeset.applyToAText(cs, atext, apool);
-    }
-
+    let atext = keyAText;
+    for (const cs of changesets) atext = Changeset.applyToAText(cs, atext, apool);
     return atext;
   }
 
