@@ -335,6 +335,7 @@ describe(__filename, function () {
             },
             nextNum: 1,
           },
+          chatHead: 0,
           head: 0,
           savedRevisions: [],
         },
@@ -358,6 +359,11 @@ describe(__filename, function () {
               attribs: '|1+4',
             },
           },
+        },
+        'pad:testing:chat:0': {
+          text: 'this is a test',
+          authorId: 'a.foo',
+          time: 1637966993265,
         },
       });
 
@@ -431,6 +437,12 @@ describe(__filename, function () {
       it('pad atext does not match', async function () {
         const records = makeGoodExport();
         records['pad:testing'].atext.attribs = `*0${records['pad:testing'].atext.attribs}`;
+        await importEtherpad(records).expect(500);
+      });
+
+      it('missing chat message', async function () {
+        const records = makeGoodExport();
+        delete records['pad:testing:chat:0'];
         await importEtherpad(records).expect(500);
       });
     });
