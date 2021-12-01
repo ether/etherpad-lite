@@ -253,7 +253,7 @@ class OpIter {
  * @returns {OpIter} Operator iterator object.
  */
 exports.opIterator = (opsStr) => {
-  padutils.warnWithStack(
+  padutils.warnDeprecated(
       'Changeset.opIterator() is deprecated; use Changeset.deserializeOps() instead');
   return new OpIter(opsStr);
 };
@@ -278,7 +278,7 @@ const clearOp = (op) => {
  * @returns {Op}
  */
 exports.newOp = (optOpcode) => {
-  padutils.warnWithStack('Changeset.newOp() is deprecated; use the Changeset.Op class instead');
+  padutils.warnDeprecated('Changeset.newOp() is deprecated; use the Changeset.Op class instead');
   return new Op(optOpcode);
 };
 
@@ -477,8 +477,8 @@ exports.smartOpAssembler = () => {
    *     attribute key, value pairs.
    */
   const appendOpWithText = (opcode, text, attribs, pool) => {
-    padutils.warnWithStack('Changeset.smartOpAssembler().appendOpWithText() is deprecated; ' +
-                           'use opsFromText() instead.');
+    padutils.warnDeprecated('Changeset.smartOpAssembler().appendOpWithText() is deprecated; ' +
+                            'use opsFromText() instead.');
     for (const op of opsFromText(opcode, text, attribs, pool)) append(op);
   };
 
@@ -1647,8 +1647,8 @@ exports.makeAttribution = (text) => {
  * @param {Function} func - function to call
  */
 exports.eachAttribNumber = (cs, func) => {
-  padutils.warnWithStack('Changeset.eachAttribNumber() is deprecated; ' +
-                         'use attributes.decodeAttribString() instead');
+  padutils.warnDeprecated(
+      'Changeset.eachAttribNumber() is deprecated; use attributes.decodeAttribString() instead');
   let dollarPos = cs.indexOf('$');
   if (dollarPos < 0) {
     dollarPos = cs.length;
@@ -1801,7 +1801,7 @@ exports.opsFromAText = function* (atext) {
  * @param assem - Assembler like SmartOpAssembler TODO add desc
  */
 exports.appendATextToAssembler = (atext, assem) => {
-  padutils.warnWithStack(
+  padutils.warnDeprecated(
       'Changeset.appendATextToAssembler() is deprecated; use Changeset.opsFromAText() instead');
   for (const op of exports.opsFromAText(atext)) assem.append(op);
 };
@@ -1854,7 +1854,8 @@ const attribsAttributeValue = (attribs, key, pool) => {
  * @returns {string}
  */
 exports.opAttributeValue = (op, key, pool) => {
-  padutils.warnWithStack('Changeset.opAttributeValue() is deprecated; use an AttributeMap instead');
+  padutils.warnDeprecated(
+      'Changeset.opAttributeValue() is deprecated; use an AttributeMap instead');
   return attribsAttributeValue(op.attribs, key, pool);
 };
 
@@ -1868,8 +1869,8 @@ exports.opAttributeValue = (op, key, pool) => {
  * @returns {string}
  */
 exports.attribsAttributeValue = (attribs, key, pool) => {
-  padutils.warnWithStack('Changeset.attribsAttributeValue() is deprecated; ' +
-                         'use an AttributeMap instead');
+  padutils.warnDeprecated(
+      'Changeset.attribsAttributeValue() is deprecated; use an AttributeMap instead');
   return attribsAttributeValue(attribs, key, pool);
 };
 
@@ -1980,7 +1981,7 @@ exports.builder = (oldLen) => {
  * @returns {AttributeString}
  */
 exports.makeAttribsString = (opcode, attribs, pool) => {
-  padutils.warnWithStack(
+  padutils.warnDeprecated(
       'Changeset.makeAttribsString() is deprecated; ' +
       'use AttributeMap.prototype.toString() or attributes.attribsToString() instead');
   if (!attribs || !['=', '+'].includes(opcode)) return '';
