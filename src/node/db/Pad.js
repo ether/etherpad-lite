@@ -150,6 +150,14 @@ class Pad {
     return await this.db.getSub(`pad:${this.id}:revs:${revNum}`, ['meta', 'timestamp']);
   }
 
+  /**
+   * @param {number} revNum - Must be a key revision number (see `getKeyRevisionNumber`).
+   * @returns The attribute text stored at `revNum`.
+   */
+  async _getKeyRevisionAText(revNum) {
+    return await this.db.getSub(`pad:${this.id}:revs:${revNum}`, ['meta', 'atext']);
+  }
+
   getAllAuthors() {
     const authorIds = [];
 
@@ -165,7 +173,7 @@ class Pad {
   async getInternalRevisionAText(targetRev) {
     const keyRev = this.getKeyRevisionNumber(targetRev);
     const [keyAText, changesets] = await Promise.all([
-      this.db.getSub(`pad:${this.id}:revs:${keyRev}`, ['meta', 'atext']),
+      this._getKeyRevisionAText(keyRev),
       Promise.all(
           Stream.range(keyRev + 1, targetRev + 1).map(this.getRevisionChangeset.bind(this))),
     ]);
