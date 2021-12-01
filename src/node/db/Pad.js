@@ -649,14 +649,27 @@ class Pad {
     pool.eachAttrib((k, v) => {
       if (k === 'author' && v) authorIds.add(v);
     });
+    const revs = Stream.range(0, head + 1)
+        .map(async (r) => {
+          const isKeyRev = r === this.getKeyRevisionNumber(r);
+          try {
+            return await Promise.all([
+              r,
+              this.getRevisionChangeset(r),
+              this.getRevisionAuthor(r),
+              this.getRevisionDate(r),
+              isKeyRev,
+              isKeyRev ? this._getKeyRevisionAText(r) : null,
+            ]);
+          } catch (err) {
+            err.message = `(pad ${this.id} revision ${r}) ${err.message}`;
+            throw err;
+          }
+        })
+        .batch(100).buffer(99);
     let atext = Changeset.makeAText('\n');
-    for (let r = 0; r <= head; ++r) {
+    for await (const [r, changeset, authorId, timestamp, isKeyRev, keyAText] of revs) {
       try {
-        const [changeset, authorId, timestamp] = await Promise.all([
-          this.getRevisionChangeset(r),
-          this.getRevisionAuthor(r),
-          this.getRevisionDate(r),
-        ]);
         assert(authorId != null);
         assert.equal(typeof authorId, 'string');
         if (authorId) authorIds.add(authorId);
@@ -680,9 +693,7 @@ class Pad {
           assert.equal(op.attribs, AttributeMap.fromString(op.attribs, pool).toString());
         }
         atext = Changeset.applyToAText(changeset, atext, pool);
-        if (r === this.getKeyRevisionNumber(r)) {
-          assert.deepEqual(await this._getKeyRevisionAText(r), atext);
-        }
+        if (isKeyRev) assert.deepEqual(keyAText, atext);
       } catch (err) {
         err.message = `(pad ${this.id} revision ${r}) ${err.message}`;
         throw err;
@@ -695,16 +706,19 @@ class Pad {
     assert(this.chatHead != null);
     assert(Number.isInteger(this.chatHead));
     assert(this.chatHead >= -1);
-    for (c = 0; c <= this.chatHead; ++c) {
-      try {
-        const msg = await this.getChatMessage(c);
-        assert(msg != null);
-        assert(msg instanceof ChatMessage);
-      } catch (err) {
-        err.message = `(pad ${this.id} chat message ${c}) ${err.message}`;
-        throw err;
-      }
-    }
+    const chats = Stream.range(0, this.chatHead + 1)
+        .map(async (c) => {
+          try {
+            const msg = await this.getChatMessage(c);
+            assert(msg != null);
+            assert(msg instanceof ChatMessage);
+          } catch (err) {
+            err.message = `(pad ${this.id} chat message ${c}) ${err.message}`;
+            throw err;
+          }
+        })
+        .batch(100).buffer(99);
+    for (const p of chats) await p;
 
     await hooks.aCallAll('padCheck', {pad: this});
   }
