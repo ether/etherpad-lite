@@ -192,7 +192,7 @@ Pad.prototype.getInternalRevisionAText = async function (targetRev) {
   // get all needed data out of the database
 
   // start to get the atext of the key revision
-  const p_atext = this.db.getSub(`pad:${this.id}:revs:${keyRev}`, ['meta', 'atext']);
+  const atextp = this.db.getSub(`pad:${this.id}:revs:${keyRev}`, ['meta', 'atext']);
 
   // get all needed changesets
   const changesets = [];
@@ -202,7 +202,7 @@ Pad.prototype.getInternalRevisionAText = async function (targetRev) {
       })));
 
   // we should have the atext by now
-  let atext = await p_atext;
+  let atext = await atextp;
   atext = Changeset.cloneAText(atext);
 
   // apply all changesets to the key changeset
