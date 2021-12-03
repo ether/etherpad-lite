@@ -42,7 +42,7 @@ const LIBRARY_WHITELIST = [
   'js-cookie',
   'security',
   'split-grid',
-  'tinycon',
+  ...settings.integratedChat ? ['tinycon'] : [],
   'underscore',
   'unorm',
 ];

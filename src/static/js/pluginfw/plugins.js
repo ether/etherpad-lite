@@ -5,6 +5,7 @@ const hooks = require('./hooks');
 const log4js = require('log4js');
 const path = require('path');
 const runCmd = require('../../../node/utils/run_cmd');
+const settings = require('../../../node/utils/Settings');
 const tsort = require('./tsort');
 const pluginUtils = require('./shared');
 const defs = require('./plugin_defs');
@@ -136,6 +137,9 @@ const loadPlugin = async (packages, pluginName, plugins, parts) => {
     const data = await fs.readFile(pluginPath);
     try {
       const plugin = JSON.parse(data);
+      if (pluginName === 'ep_etherpad-lite' && !settings.integratedChat) {
+        plugin.parts = plugin.parts.filter((part) => part.name !== 'chat');
+      }
       plugin.package = packages[pluginName];
       plugins[pluginName] = plugin;
       for (const part of plugin.parts) {

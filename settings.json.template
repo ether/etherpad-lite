@@ -225,6 +225,13 @@
   "defaultPadText" : "Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at https:\/\/etherpad.org\n",
 
   /*
+   * Whether to enable the built-in chat feature. Set this to false if you
+   * prefer to use a plugin to provide chat functionality or simply do not want
+   * the feature.
+   */
+  "integratedChat": true,
+
+  /*
    * Default Pad behavior.
    *
    * Change them if you want to override.
@@ -232,6 +239,7 @@
   "padOptions": {
     "noColors":         false,
     "showControls":     true,
+    // To completely disable chat, set integratedChat to false.
     "showChat":         true,
     "showLineNumbers":  true,
     "useMonospaceFont": false,

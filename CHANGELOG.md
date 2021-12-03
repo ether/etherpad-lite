@@ -2,6 +2,8 @@
 
 ### Notable enhancements and fixes
 
+* New `integratedChat` setting makes it possible to completely disable the
+  built-in chat feature (not just hide it).
 * Improvements to login session management:
   * `express_sid` cookies and `sessionstorage:*` database records are no longer
     created unless `requireAuthentication` is `true` (or a plugin causes them to

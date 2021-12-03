@@ -10,10 +10,14 @@ const hooks = require('../static/js/pluginfw/hooks.js');
 const pad = require('./db/Pad');
 const padManager = require('./db/PadManager');
 const padMessageHandler = require('./handler/PadMessageHandler');
+const settings = require('./utils/Settings');
 
 let socketio;
 
 const appendChatMessage = async (pad, msg) => {
+  if (!settings.integratedChat) {
+    throw new Error('integrated chat is disabled (see integratedChat in settings.json)');
+  }
   pad.chatHead++;
   await Promise.all([
     // Don't save the display name in the database because the user can change it at any time. The
@@ -25,6 +29,9 @@ const appendChatMessage = async (pad, msg) => {
 };
 
 const getChatMessage = async (pad, entryNum) => {
+  if (!settings.integratedChat) {
+    throw new Error('integrated chat is disabled (see integratedChat in settings.json)');
+  }
   const entry = await pad.db.get(`pad:${pad.id}:chat:${entryNum}`);
   if (entry == null) return null;
   const message = ChatMessage.fromObject(entry);
@@ -33,6 +40,9 @@ const getChatMessage = async (pad, entryNum) => {
 };
 
 const getChatMessages = async (pad, start, end) => {
+  if (!settings.integratedChat) {
+    throw new Error('integrated chat is disabled (see integratedChat in settings.json)');
+  }
   const entries = await Promise.all(
       [...Array(end + 1 - start).keys()].map((i) => getChatMessage(pad, start + i)));
 
@@ -49,6 +59,9 @@ const getChatMessages = async (pad, start, end) => {
 };
 
 const sendChatMessageToPadClients = async (message, padId) => {
+  if (!settings.integratedChat) {
+    throw new Error('integrated chat is disabled (see integratedChat in settings.json)');
+  }
   const pad = await padManager.getPad(padId, null, message.authorId);
   await hooks.aCallAll('chatNewMessage', {message, pad, padId});
   // appendChatMessage() ignores the displayName property so we don't need to wait for
@@ -65,6 +78,7 @@ const sendChatMessageToPadClients = async (message, padId) => {
 exports.clientVars = (hookName, {pad: {chatHead}}) => ({chatHead});
 
 exports.eejsBlock_mySettings = (hookName, context) => {
+  if (!settings.integratedChat) return;
   context.content += `
     <p class="hide-for-mobile">
       <input type="checkbox" id="options-stickychat">
@@ -78,6 +92,7 @@ exports.eejsBlock_mySettings = (hookName, context) => {
 };
 
 exports.eejsBlock_stickyContainer = (hookName, context) => {
+  if (!settings.integratedChat) return;
   /* eslint-disable max-len */
   context.content += `
     <div id="chaticon" class="visible" title="Chat (Alt C)">
@@ -123,6 +138,7 @@ exports.exportEtherpad = async (hookName, {pad, data, dstPadId}) => {
 };
 
 exports.handleMessage = async (hookName, {message, sessionInfo, socket}) => {
+  if (!settings.integratedChat) return;
   const {authorId, padId, readOnly} = sessionInfo;
   if (message.type !== 'COLLABROOM' || readOnly) return;
   switch (message.data.type) {
@@ -233,6 +249,9 @@ api.registerChatHandlers({
    * {code: 1, message:"padID does not exist", data: null}
    */
   appendChatMessage: async (padId, text, authorId, time) => {
+    if (!settings.integratedChat) {
+      throw new Error('integrated chat is disabled (see integratedChat in settings.json)');
+    }
     if (typeof text !== 'string') throw new CustomError('text is not a string', 'apierror');
     if (time === undefined || !Number.isInteger(Number.parseFloat(time))) time = Date.now();
     await sendChatMessageToPadClients(new ChatMessage(text, authorId, time), padId);
@@ -247,6 +266,9 @@ api.registerChatHandlers({
    * {code: 1, message:"padID does not exist", data: null}
    */
   getChatHead: async (padId) => {
+    if (!settings.integratedChat) {
+      throw new Error('integrated chat is disabled (see integratedChat in settings.json)');
+    }
     const pad = await getPadSafe(padId);
     const {chatHead = -1} = pad;
     return {chatHead};
@@ -267,6 +289,9 @@ api.registerChatHandlers({
    * {code: 1, message:"padID does not exist", data: null}
    */
   getChatHistory: async (padId, start, end) => {
+    if (!settings.integratedChat) {
+      throw new Error('integrated chat is disabled (see integratedChat in settings.json)');
+    }
     if (start && end) {
       if (start < 0) throw new CustomError('start is below zero', 'apierror');
       if (end < 0) throw new CustomError('end is below zero', 'apierror');
