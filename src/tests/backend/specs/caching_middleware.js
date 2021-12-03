@@ -1,9 +1,8 @@
 'use strict';
 
 /**
- * caching_middleware is responsible for serving everything under path `/javascripts/`
- * That includes packages as defined in `src/node/utils/tar.json` and probably also plugin code
- *
+ * caching_middleware is responsible for serving everything under path `/javascripts/`. That
+ * includes packages as defined in `src/node/hooks/express/static.js` and probably also plugin code.
  */
 
 const common = require('../common');
