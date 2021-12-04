@@ -57,46 +57,4 @@ describe('change user color', function () {
     expect($colorPickerPreview.css('background-color')).to.be(testColorRGB);
     expect($userSwatch.css('background-color')).to.be(testColorRGB);
   });
-
-  it('Own user color is shown when you enter a chat', function (done) {
-    this.timeout(1000);
-    const chrome$ = helper.padChrome$;
-
-    const $colorOption = helper.padChrome$('#options-colorscheck');
-    if (!$colorOption.is(':checked')) {
-      $colorOption.click();
-    }
-
-    // click on the settings button to make settings visible
-    const $userButton = chrome$('.buttonicon-showusers');
-    $userButton.click();
-
-    const $userSwatch = chrome$('#myswatch');
-    $userSwatch.click();
-
-    const fb = chrome$.farbtastic('#colorpicker');
-    const $colorPickerSave = chrome$('#mycolorpickersave');
-
-    // Same color represented in two different ways
-    const testColorHash = '#abcdef';
-    const testColorRGB = 'rgb(171, 205, 239)';
-
-    fb.setColor(testColorHash);
-    $colorPickerSave.click();
-
-    // click on the chat button to make chat visible
-    const $chatButton = chrome$('#chaticon');
-    $chatButton.click();
-    const $chatInput = chrome$('#chatinput');
-    $chatInput.sendkeys('O hi'); // simulate a keypress of typing user
-    $chatInput.sendkeys('{enter}');
-
-    // wait until the chat message shows up
-    helper.waitFor(() => chrome$('#chattext').children('p').length !== 0).done(() => {
-      const $firstChatMessage = chrome$('#chattext').children('p');
-      // expect the first chat message to be of the user's color
-      expect($firstChatMessage.css('background-color')).to.be(testColorRGB);
-      done();
-    });
-  });
 });
