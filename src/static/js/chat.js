@@ -292,6 +292,18 @@ exports.chat = (() => {
         pad.collabClient.sendMessage({type: 'GET_CHAT_MESSAGES', start, end});
         this.historyPointer = start;
       });
+
+      const {searchParams} = new URL(window.location.href);
+      const {showChat = true, alwaysShowChat = false, chatAndUsers = false} = clientVars.padOptions;
+      const settings = this._pad.settings;
+      settings.hideChat = showChat.toString() === 'false';
+      if (settings.hideChat) this.hide();
+      if (alwaysShowChat.toString() === 'true' && !settings.hideChat) this.stickToScreen();
+      if (chatAndUsers.toString() === 'true') this.chatAndUsers();
+      settings.hideChat = searchParams.get('showChat') === 'false';
+      if (settings.hideChat) this.hide();
+      if (searchParams.get('alwaysShowChat') === 'true' && !settings.hideChat) this.stickToScreen();
+      if (searchParams.get('chatAndUsers') === 'true') this.chatAndUsers();
     },
   };
 })();

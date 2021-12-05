@@ -71,16 +71,6 @@ const getParameters = [
     },
   },
   {
-    name: 'showChat',
-    checkVal: null,
-    callback: (val) => {
-      if (val === 'false') {
-        settings.hideChat = true;
-        chat.hide();
-      }
-    },
-  },
-  {
     name: 'showLineNumbers',
     checkVal: 'false',
     callback: (val) => {
@@ -115,20 +105,6 @@ const getParameters = [
     checkVal: 'true',
     callback: (val) => {
       settings.rtlIsTrue = true;
-    },
-  },
-  {
-    name: 'alwaysShowChat',
-    checkVal: 'true',
-    callback: (val) => {
-      if (!settings.hideChat) chat.stickToScreen();
-    },
-  },
-  {
-    name: 'chatAndUsers',
-    checkVal: 'true',
-    callback: (val) => {
-      chat.chatAndUsers();
     },
   },
   {
