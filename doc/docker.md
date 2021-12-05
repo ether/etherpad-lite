@@ -121,7 +121,7 @@ If your database needs additional settings, you will have to use a personalized 
 | `PAD_OPTIONS_RTL`                |             | `false` |
 | `PAD_OPTIONS_ALWAYS_SHOW_CHAT`   |             | `false` |
 | `PAD_OPTIONS_CHAT_AND_USERS`     |             | `false` |
-| `PAD_OPTIONS_LANG`               |             | `en-gb` |
+| `PAD_OPTIONS_LANG`               |             | `null`  |
 
 
 ### Shortcuts
