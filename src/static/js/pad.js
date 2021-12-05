@@ -148,7 +148,7 @@ const getParams = () => {
     let value = clientVars.padOptions[setting.name];
     if (value == null) continue;
     value = value.toString();
-    if (value === setting.checkVal) {
+    if (value === setting.checkVal || setting.checkVal == null) {
       setting.callback(value);
     }
   }

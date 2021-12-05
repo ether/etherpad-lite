@@ -2,6 +2,12 @@
 
 ### Notable enhancements and fixes
 
+* The following settings from `settings.json` are now applied as expected (they
+  were unintentionally ignored before):
+  * `padOptions.lang`
+  * `padOptions.showChat`
+  * `padOptions.userColor`
+  * `padOptions.userName`
 * Fixed a potential attribute pool corruption bug with `copyPadWithoutHistory`.
 * Mappings created by the `createGroupIfNotExistsFor` HTTP API are now removed
   from the database when the group is deleted.
