@@ -146,6 +146,7 @@ const getParams = () => {
   // Tries server enforced options first..
   for (const setting of getParameters) {
     const value = clientVars.padOptions[setting.name];
+    if (value == null) continue;
     if (value.toString() === setting.checkVal) {
       setting.callback(value);
     }
