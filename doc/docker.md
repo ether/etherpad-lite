@@ -116,8 +116,8 @@ If your database needs additional settings, you will have to use a personalized 
 | `PAD_OPTIONS_SHOW_CHAT`          |             | `true`  |
 | `PAD_OPTIONS_SHOW_LINE_NUMBERS`  |             | `true`  |
 | `PAD_OPTIONS_USE_MONOSPACE_FONT` |             | `false` |
-| `PAD_OPTIONS_USER_NAME`          |             | `false` |
-| `PAD_OPTIONS_USER_COLOR`         |             | `false` |
+| `PAD_OPTIONS_USER_NAME`          |             | `null`  |
+| `PAD_OPTIONS_USER_COLOR`         |             | `null`  |
 | `PAD_OPTIONS_RTL`                |             | `false` |
 | `PAD_OPTIONS_ALWAYS_SHOW_CHAT`   |             | `false` |
 | `PAD_OPTIONS_CHAT_AND_USERS`     |             | `false` |
