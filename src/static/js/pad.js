@@ -95,24 +95,20 @@ const getParameters = [
       settings.useMonospaceFontGlobal = true;
     },
   },
-  // If the username is set as a parameter we should set a global value that we can call once we
-  // have initiated the pad.
   {
     name: 'userName',
     checkVal: null,
     callback: (val) => {
-      settings.globalUserName = decodeURIComponent(val);
-      clientVars.userName = decodeURIComponent(val);
+      settings.globalUserName = val;
+      clientVars.userName = val;
     },
   },
-  // If the userColor is set as a parameter, set a global value to use once we have initiated the
-  // pad.
   {
     name: 'userColor',
     checkVal: null,
     callback: (val) => {
-      settings.globalUserColor = decodeURIComponent(val);
-      clientVars.userColor = decodeURIComponent(val);
+      settings.globalUserColor = val;
+      clientVars.userColor = val;
     },
   },
   {
