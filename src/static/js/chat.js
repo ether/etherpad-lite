@@ -86,6 +86,16 @@ exports.chat = (() => {
         $('#options-stickychat').prop('checked', false);
       } else {
         $('#chatcounter').text('0');
+        // It usually is not necessary to call .show() because .hide() is only normally called when
+        // the pad is loaded and showChat=false. When showChat=false, there are no chat UI elements
+        // so there's nothing to click on to get the chatbox to display. However, there are other
+        // ways to get the chatbox to display:
+        //   * A plugin might call `chat.show()`.
+        //   * The user can hit Alt-C (assuming the shortcut is enabled).
+        //   * The user can run `chat.show()` in the developer console.
+        // In all cases, reducing the shown chatbox should cause it to minimize to an icon, not
+        // vanish completely.
+        $('#chaticon').show();
         $('#chaticon').addClass('visible');
         $('#chatbox').removeClass('visible');
       }
