@@ -332,3 +332,43 @@ exports.handleClientMessage_CHAT_MESSAGES = (hookName, {msg}) => {
     $('#chatloadmessagesbutton').css('display', 'block');
   }
 };
+
+exports.postAceInit = async (hookName, {clientVars, pad}) => {
+  exports.chat.init(pad);
+
+  if (padcookie.getPref('chatAlwaysVisible')) {
+    exports.chat.stickToScreen(true);
+    $('#options-stickychat').prop('checked', true);
+  }
+  if (padcookie.getPref('chatAndUsers')) {
+    exports.chat.chatAndUsers(true);
+    $('#options-chatandusers').prop('checked', true);
+  }
+
+  // Prevent sticky chat or chat and users to be checked for mobiles
+  const checkChatAndUsersVisibility = (x) => {
+    if (!x.matches) return;
+    $('#options-chatandusers:checked').click();
+    $('#options-stickychat:checked').click();
+  };
+  const mobileMatch = window.matchMedia('(max-width: 800px)');
+  mobileMatch.addListener(checkChatAndUsersVisibility);
+  setTimeout(() => { checkChatAndUsersVisibility(mobileMatch); }, 0);
+
+  if (clientVars.chatHead !== -1) {
+    const chatHead = clientVars.chatHead;
+    const start = Math.max(chatHead - 100, 0);
+    pad.collabClient.sendMessage({type: 'GET_CHAT_MESSAGES', start, end: chatHead});
+  } else {
+    $('#chatloadmessagesbutton').css('display', 'none');
+  }
+
+  if (clientVars.readonly) {
+    exports.chat.hide();
+    $('#chatinput').attr('disabled', true);
+    $('#options-chatandusers').parent().hide();
+    $('#options-stickychat').parent().hide();
+  } else if (!pad.settings.hideChat) {
+    $('#chaticon').show();
+  }
+};
