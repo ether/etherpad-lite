@@ -31,7 +31,6 @@ require('./vendors/farbtastic');
 require('./vendors/gritter');
 
 const Cookies = require('./pad_utils').Cookies;
-const chat = require('./chat').chat;
 const getCollabClient = require('./collab_client').getCollabClient;
 const padconnectionstatus = require('./pad_connectionstatus').padconnectionstatus;
 const padcookie = require('./pad_cookie').padcookie;
@@ -585,30 +584,10 @@ const pad = {
     }
   },
   handleIsFullyConnected: (isConnected, isInitialConnect) => {
-    pad.determineChatVisibility(isConnected && !isInitialConnect);
-    pad.determineChatAndUsersVisibility(isConnected && !isInitialConnect);
     pad.determineAuthorshipColorsVisibility();
     setTimeout(() => {
       padeditbar.toggleDropDown('none');
     }, 1000);
-  },
-  determineChatVisibility: (asNowConnectedFeedback) => {
-    const chatVisCookie = padcookie.getPref('chatAlwaysVisible');
-    if (chatVisCookie) { // if the cookie is set for chat always visible
-      chat.stickToScreen(true); // stick it to the screen
-      $('#options-stickychat').prop('checked', true); // set the checkbox to on
-    } else {
-      $('#options-stickychat').prop('checked', false); // set the checkbox for off
-    }
-  },
-  determineChatAndUsersVisibility: (asNowConnectedFeedback) => {
-    const chatAUVisCookie = padcookie.getPref('chatAndUsersVisible');
-    if (chatAUVisCookie) { // if the cookie is set for chat always visible
-      chat.chatAndUsers(true); // stick it to the screen
-      $('#options-chatandusers').prop('checked', true); // set the checkbox to on
-    } else {
-      $('#options-chatandusers').prop('checked', false); // set the checkbox for off
-    }
   },
   determineAuthorshipColorsVisibility: () => {
     const authColCookie = padcookie.getPref('showAuthorshipColors');

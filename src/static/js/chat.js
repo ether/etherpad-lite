@@ -293,6 +293,14 @@ exports.chat = (() => {
       if (settings.hideChat) this.hide();
       if (searchParams.get('alwaysShowChat') === 'true' && !settings.hideChat) this.stickToScreen();
       if (searchParams.get('chatAndUsers') === 'true') this.chatAndUsers();
+
+      const chatVisCookie = !!padcookie.getPref('chatAlwaysVisible');
+      if (chatVisCookie) this.stickToScreen(true);
+      $('#options-stickychat').prop('checked', chatVisCookie);
+
+      const chatAUVisCookie = !!padcookie.getPref('chatAndUsersVisible');
+      if (chatAUVisCookie) this.chatAndUsers(true);
+      $('#options-chatandusers').prop('checked', chatAUVisCookie);
     },
   };
 })();
