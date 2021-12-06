@@ -112,23 +112,15 @@
       </noscript>
     </div>
 
-    <!------------------------------------------------------------->
-    <!-- SETTINGS POPUP (change font, language, chat parameters) -->
-    <!------------------------------------------------------------->
+    <!-------------------------------------------->
+    <!-- SETTINGS POPUP (change font, language) -->
+    <!-------------------------------------------->
 
     <div id="settings" class="popup">
       <div class="popup-content">
         <h1 data-l10n-id="pad.settings.padSettings"></h1>
         <% e.begin_block("mySettings"); %>
         <h2 data-l10n-id="pad.settings.myView"></h2>
-        <p class="hide-for-mobile">
-          <input type="checkbox" id="options-stickychat">
-          <label for="options-stickychat" data-l10n-id="pad.settings.stickychat"></label>
-        </p>
-        <p class="hide-for-mobile">
-          <input type="checkbox" id="options-chatandusers">
-          <label for="options-chatandusers" data-l10n-id="pad.settings.chatandusers"></label>
-        </p>
         <p>
           <input type="checkbox" id="options-colorscheck">
           <label for="options-colorscheck" data-l10n-id="pad.settings.colorcheck"></label>
@@ -336,6 +328,7 @@
     </div>
 
     <div class="sticky-container">
+      <% e.begin_block("stickyContainer"); %>
 
       <!---------------------------------------------------------------------->
       <!-- USERS POPUP (set username, color, see other users names & color) -->
@@ -370,35 +363,7 @@
           <% e.end_block(); %>
         </div>
       </div>
-
-      <!----------------------------->
-      <!----------- CHAT ------------>
-      <!----------------------------->
-
-      <div id="chaticon" class="visible" title="Chat (Alt C)">
-        <span id="chatlabel" data-l10n-id="pad.chat"></span>
-        <span class="buttonicon buttonicon-chat"></span>
-        <span id="chatcounter">0</span>
-      </div>
-
-      <div id="chatbox">
-        <div class="chat-content">
-          <div id="titlebar">
-            <h1 id ="titlelabel" data-l10n-id="pad.chat"></h1>
-            <a id="titlecross" class="hide-reduce-btn">-&nbsp;</a>
-            <a id="titlesticky" class="stick-to-screen-btn" data-l10n-id="pad.chat.stick.title">█&nbsp;&nbsp;</a>
-          </div>
-          <div id="chattext" class="thin-scrollbar" aria-live="polite" aria-relevant="additions removals text" role="log" aria-atomic="false">
-            <div alt="loading.." id="chatloadmessagesball" class="chatloadmessages loadingAnimation" align="top"></div>
-            <button id="chatloadmessagesbutton" class="chatloadmessages" data-l10n-id="pad.chat.loadmessages"></button>
-          </div>
-          <div id="chatinputbox">
-            <form>
-              <textarea id="chatinput" maxlength="999" data-l10n-id="pad.chat.writeMessage.placeholder"></textarea>
-            </form>
-          </div>
-        </div>
-      </div>
+      <% e.end_block(); %><!-- end stickyContainer -->
     </div>
 
     <!------------------------------------------------------------------>

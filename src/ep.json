@@ -19,6 +19,10 @@
         "handleClientMessage_CHAT_MESSAGE": "ep_etherpad-lite/static/js/chat",
         "handleClientMessage_CHAT_MESSAGES": "ep_etherpad-lite/static/js/chat",
         "postAceInit": "ep_etherpad-lite/static/js/chat"
+      },
+      "hooks": {
+        "eejsBlock_mySettings": "ep_etherpad-lite/node/chat",
+        "eejsBlock_stickyContainer": "ep_etherpad-lite/node/chat"
       }
     },
     {
