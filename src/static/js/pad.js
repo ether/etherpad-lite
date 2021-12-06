@@ -76,8 +76,7 @@ const getParameters = [
     callback: (val) => {
       if (val === 'false') {
         settings.hideChat = true;
-        chat.reduce();
-        $('#chaticon').hide();
+        chat.hide();
       }
     },
   },
@@ -480,10 +479,9 @@ const pad = {
     }
 
     if (window.clientVars.readonly) {
-      chat.reduce();
+      chat.hide();
       $('#myusernameedit').attr('disabled', true);
       $('#chatinput').attr('disabled', true);
-      $('#chaticon').hide();
       $('#options-chatandusers').parent().hide();
       $('#options-stickychat').parent().hide();
     } else if (!settings.hideChat) { $('#chaticon').show(); }

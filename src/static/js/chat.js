@@ -100,6 +100,14 @@ exports.chat = (() => {
         $('#chatbox').removeClass('visible');
       }
     },
+    minimize() {
+      if ($('#options-stickychat').prop('checked')) this.reduce();
+      this.reduce();
+    },
+    hide() {
+      this.minimize();
+      $('#chaticon').hide();
+    },
     scrollDown(force) {
       if ($('#chatbox').hasClass('visible')) {
         if (force || !this.lastMessage || !this.lastMessage.position() ||
