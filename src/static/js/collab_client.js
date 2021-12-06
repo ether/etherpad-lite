@@ -22,7 +22,6 @@
  * limitations under the License.
  */
 
-const chat = require('./chat').chat;
 const hooks = require('./pluginfw/hooks');
 const browser = require('./vendors/browser');
 
@@ -266,28 +265,6 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
       }
     } else if (msg.type === 'CLIENT_MESSAGE') {
       callbacks.onClientMessage(msg.payload);
-    } else if (msg.type === 'CHAT_MESSAGE') {
-      chat.addMessage(msg.message, true, false);
-    } else if (msg.type === 'CHAT_MESSAGES') {
-      for (let i = msg.messages.length - 1; i >= 0; i--) {
-        chat.addMessage(msg.messages[i], true, true);
-      }
-      if (!chat.gotInitalMessages) {
-        chat.scrollDown();
-        chat.gotInitalMessages = true;
-        chat.historyPointer = clientVars.chatHead - msg.messages.length;
-      }
-
-      // messages are loaded, so hide the loading-ball
-      $('#chatloadmessagesball').css('display', 'none');
-
-      // there are less than 100 messages or we reached the top
-      if (chat.historyPointer <= 0) {
-        $('#chatloadmessagesbutton').css('display', 'none');
-      } else {
-        // there are still more messages, re-show the load-button
-        $('#chatloadmessagesbutton').css('display', 'block');
-      }
     }
 
     // HACKISH: User messages do not have "payload" but "userInfo", so that all

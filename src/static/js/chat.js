@@ -306,3 +306,29 @@ exports.aceKeyEvent = (hookName, {evt}) => {
   evt.preventDefault();
   return true;
 };
+
+exports.handleClientMessage_CHAT_MESSAGE = (hookName, {msg}) => {
+  exports.chat.addMessage(msg.message, true, false);
+};
+
+exports.handleClientMessage_CHAT_MESSAGES = (hookName, {msg}) => {
+  for (let i = msg.messages.length - 1; i >= 0; i--) {
+    exports.chat.addMessage(msg.messages[i], true, true);
+  }
+  if (!exports.chat.gotInitalMessages) {
+    exports.chat.scrollDown();
+    exports.chat.gotInitalMessages = true;
+    exports.chat.historyPointer = clientVars.chatHead - msg.messages.length;
+  }
+
+  // messages are loaded, so hide the loading-ball
+  $('#chatloadmessagesball').css('display', 'none');
+
+  // there are less than 100 messages or we reached the top
+  if (exports.chat.historyPointer <= 0) {
+    $('#chatloadmessagesbutton').css('display', 'none');
+  } else {
+    // there are still more messages, re-show the load-button
+    $('#chatloadmessagesbutton').css('display', 'block');
+  }
+};

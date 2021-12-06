@@ -15,7 +15,9 @@
     {
       "name": "chat",
       "client_hooks": {
-        "aceKeyEvent": "ep_etherpad-lite/static/js/chat"
+        "aceKeyEvent": "ep_etherpad-lite/static/js/chat",
+        "handleClientMessage_CHAT_MESSAGE": "ep_etherpad-lite/static/js/chat",
+        "handleClientMessage_CHAT_MESSAGES": "ep_etherpad-lite/static/js/chat"
       }
     },
     {
