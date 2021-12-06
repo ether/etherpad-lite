@@ -2589,9 +2589,9 @@ function Ace2Inner(editorInfo, cssManagers) {
             altKey && keyCode === 67 &&
             padShortcutEnabled.altC) {
           // Alt c focuses on the Chat window
-          $(this).blur();
+          evt.target.blur();
           parent.parent.chat.show();
-          parent.parent.$('#chatinput').focus();
+          parent.parent.chat.focus();
           evt.preventDefault();
         }
         if (!specialHandled && type === 'keydown' &&
