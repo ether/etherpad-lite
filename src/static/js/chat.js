@@ -258,17 +258,6 @@ exports.chat = (() => {
         Tinycon.setBubble(0);
       });
 
-      const self = this;
-      $('body:not(#chatinput)').on('keypress', function (evt) {
-        if (evt.altKey && evt.which === 67) {
-          // Alt c focuses on the Chat window
-          $(this).blur();
-          self.show();
-          $('#chatinput').focus();
-          evt.preventDefault();
-        }
-      });
-
       $('#chatinput').keypress((evt) => {
         // if the user typed enter, fire the send
         if (evt.key === 'Enter' && !evt.shiftKey) {
