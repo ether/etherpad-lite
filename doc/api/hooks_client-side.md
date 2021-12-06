@@ -393,14 +393,9 @@ This hook is called after the content of a node is collected by the usual
 methods. The cc object can be used to do a bunch of things that modify the
 content of the pad. See, for example, the heading1 plugin for etherpad original.
 
-## handleClientMessage_`name`
+## `handleClientMessage_${name}`
 
 Called from: `src/static/js/collab_client.js`
-
-Things in context:
-
-1. payload - the data that got sent with the message (use it for custom message
-   content)
 
 This hook gets called every time the client receives a message of type `name`.
 This can most notably be used with the new HTTP API call, "sendClientsMessage",
@@ -409,6 +404,12 @@ also use this to handle existing types.
 
 `collab_client.js` has a pretty extensive list of message types, if you want to
 take a look.
+
+Context properties:
+
+  * `msg`: The raw message object.
+  * `payload`: The data that got sent with the message. Usually this is
+    `msg.payload`.
 
 ## aceStartLineAndCharForPoint-aceEndLineAndCharForPoint
 

@@ -300,7 +300,7 @@ const getCollabClient = (ace2editor, serverVars, initialUserInfo, options, _pad)
     // Similar for NEW_CHANGES
     if (msg.type === 'NEW_CHANGES') msg.payload = msg;
 
-    hooks.callAll(`handleClientMessage_${msg.type}`, {payload: msg.payload});
+    hooks.callAll(`handleClientMessage_${msg.type}`, {msg, payload: msg.payload});
   };
 
   const updateUserInfo = (userInfo) => {
