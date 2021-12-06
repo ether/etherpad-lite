@@ -296,3 +296,13 @@ exports.chat = (() => {
     },
   };
 })();
+
+exports.aceKeyEvent = (hookName, {evt}) => {
+  const {altC} = window.clientVars.padShortcutEnabled;
+  if (evt.type !== 'keydown' || !evt.altKey || evt.keyCode !== 67 || !altC) return;
+  evt.target.blur();
+  exports.chat.show();
+  exports.chat.focus();
+  evt.preventDefault();
+  return true;
+};

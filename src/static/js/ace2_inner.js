@@ -2586,15 +2586,6 @@ function Ace2Inner(editorInfo, cssManagers) {
           evt.preventDefault();
         }
         if (!specialHandled && type === 'keydown' &&
-            altKey && keyCode === 67 &&
-            padShortcutEnabled.altC) {
-          // Alt c focuses on the Chat window
-          evt.target.blur();
-          parent.parent.chat.show();
-          parent.parent.chat.focus();
-          evt.preventDefault();
-        }
-        if (!specialHandled && type === 'keydown' &&
             evt.ctrlKey && shiftKey && keyCode === 50 &&
             padShortcutEnabled.cmdShift2) {
           // Control-Shift-2 shows a gritter popup showing a line author
