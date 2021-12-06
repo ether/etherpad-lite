@@ -79,7 +79,7 @@ exports.chat = (() => {
           .toggleClass('chatAndUsers popup-show stickyUsers', userAndChat);
       $('#chatbox').toggleClass('chatAndUsersChat', userAndChat);
     },
-    hide() {
+    reduce() {
       // decide on hide logic based on chat window being maximized or not
       if ($('#options-stickychat').prop('checked')) {
         this.stickToScreen();
@@ -221,7 +221,7 @@ exports.chat = (() => {
       $('#options-stickychat').on('click', () => this.stickToScreen());
       $('#options-chatandusers').on('click', () => this.chatAndUsers());
       $('#chaticon').on('click', () => { this.show(); return false; });
-      $('#titlecross').on('click', () => { this.hide(); return false; });
+      $('#titlecross').on('click', () => { this.reduce(); return false; });
       $('#titlesticky').on('click', () => { this.stickToScreen(true); return false; });
       $('#chatinput').on('keydown', (evt) => {
         // If the event is Alt C or Escape & we're already in the chat menu

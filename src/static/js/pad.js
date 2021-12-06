@@ -76,7 +76,7 @@ const getParameters = [
     callback: (val) => {
       if (val === 'false') {
         settings.hideChat = true;
-        chat.hide();
+        chat.reduce();
         $('#chaticon').hide();
       }
     },
@@ -480,7 +480,7 @@ const pad = {
     }
 
     if (window.clientVars.readonly) {
-      chat.hide();
+      chat.reduce();
       $('#myusernameedit').attr('disabled', true);
       $('#chatinput').attr('disabled', true);
       $('#chaticon').hide();
