@@ -585,6 +585,12 @@ then the message will not be subject to further processing.
 Context properties:
 
 * `message`: The message being handled.
+* `sessionInfo`: Object describing the socket.io session with the following
+  properties:
+  * `authorId`: The user's author ID.
+  * `padId`: The real (not read-only) ID of the pad.
+  * `readOnly`: Whether the client has read-only access (true) or read/write
+    access (false).
 * `socket`: The socket.io Socket object.
 * `client`: (**Deprecated**; use `socket` instead.) Synonym of `socket`.
 
@@ -620,13 +626,21 @@ Supported return values:
 Context properties:
 
 * `message`: The message being handled.
+* `sessionInfo`: Object describing the socket.io connection with the following
+  properties:
+  * `authorId`: The user's author ID.
+  * `padId`: The real (not read-only) ID of the pad.
+  * `readOnly`: Whether the client has read-only access (true) or read/write
+    access (false).
 * `socket`: The socket.io Socket object.
 * `client`: (**Deprecated**; use `socket` instead.) Synonym of `socket`.
 
 Example:
 
 ```javascript
-exports.handleMessageSecurity = async (hookName, {message, socket}) => {
+exports.handleMessageSecurity = async (hookName, context) => {
+  const {message, sessionInfo: {readOnly}, socket} = context;
+  if (!readOnly || message.type !== 'COLLABROOM') return;
   if (shouldGrantWriteAccess(message, socket)) return true;
 };
 ```
