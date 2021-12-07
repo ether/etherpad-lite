@@ -36,12 +36,10 @@ exports.userCanModify = (padId, req) => {
   if (readOnlyManager.isReadOnlyId(padId)) return false;
   if (!settings.requireAuthentication) return true;
   const {session: {user} = {}} = req;
-  assert(user); // If authn required and user == null, the request should have already been denied.
-  if (user.readOnly) return false;
+  if (!user || user.readOnly) return false;
   assert(user.padAuthorizations); // This is populated even if !settings.requireAuthorization.
   const level = exports.normalizeAuthzLevel(user.padAuthorizations[padId]);
-  assert(level); // If !level, the request should have already been denied.
-  return level !== 'readOnly';
+  return level && level !== 'readOnly';
 };
 
 // Exported so that tests can set this to 0 to avoid unnecessary test slowness.

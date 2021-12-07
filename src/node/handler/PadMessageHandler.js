@@ -235,6 +235,11 @@ exports.handleMessage = async (socket, message) => {
       padID: message.padId,
       token: message.token,
     };
+    const padIds = await readOnlyManager.getIds(thisSession.auth.padID);
+    thisSession.padId = padIds.padId;
+    thisSession.readOnlyPadId = padIds.readOnlyPadId;
+    thisSession.readonly =
+        padIds.readonly || !webaccess.userCanModify(thisSession.auth.padID, socket.client.request);
   }
 
   const auth = thisSession.auth;
@@ -273,6 +278,11 @@ exports.handleMessage = async (socket, message) => {
   // Allow plugins to bypass the readonly message blocker
   const context = {
     message,
+    sessionInfo: {
+      authorId: thisSession.author,
+      padId: thisSession.padId,
+      readOnly: thisSession.readonly,
+    },
     socket,
     get client() {
       padutils.warnDeprecated(
@@ -792,12 +802,6 @@ const handleClientReady = async (socket, message) => {
   // Check if the user has already disconnected.
   if (sessionInfo == null) return;
   assert(sessionInfo.author);
-
-  const padIds = await readOnlyManager.getIds(sessionInfo.auth.padID);
-  sessionInfo.padId = padIds.padId;
-  sessionInfo.readOnlyPadId = padIds.readOnlyPadId;
-  sessionInfo.readonly =
-      padIds.readonly || !webaccess.userCanModify(sessionInfo.auth.padID, socket.client.request);
 
   await hooks.aCallAll('clientReady', message); // Deprecated due to awkward context.
 
