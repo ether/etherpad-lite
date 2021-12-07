@@ -466,18 +466,13 @@ const handleGetChatMessages = async (socket, {data: {start, end}}) => {
   if (count < 0 || count > 100) throw new Error(`invalid number of messages: ${count}`);
   const {padId, author: authorId} = sessioninfos[socket.id];
   const pad = await padManager.getPad(padId, null, authorId);
-
-  const chatMessages = await pad.getChatMessages(start, end);
-  const infoMsg = {
+  socket.json.send({
     type: 'COLLABROOM',
     data: {
       type: 'CHAT_MESSAGES',
-      messages: chatMessages,
+      messages: await pad.getChatMessages(start, end),
     },
-  };
-
-  // send the messages back to the client
-  socket.json.send(infoMsg);
+  });
 };
 
 /**
