@@ -40,6 +40,7 @@ const assert = require('assert').strict;
 const {RateLimiterMemory} = require('rate-limiter-flexible');
 const webaccess = require('../hooks/express/webaccess');
 
+let chat = null;
 let rateLimiter;
 let socketio = null;
 
@@ -53,6 +54,8 @@ const addContextToError = (err, pfx) => {
   err.message = `${pfx}${err.message}`;
   return err;
 };
+
+exports.registerLegacyChatHandlers = (handlers) => chat = handlers;
 
 exports.socketio = () => {
   // The rate limiter is created in this hook so that restarting the server resets the limiter. The
@@ -335,8 +338,6 @@ exports.handleMessage = async (socket, message) => {
               await padChannels.enqueue(thisSession.padId, {socket, message});
               break;
             case 'USERINFO_UPDATE': await handleUserInfoUpdate(socket, message); break;
-            case 'CHAT_MESSAGE': await handleChatMessage(socket, message); break;
-            case 'GET_CHAT_MESSAGES': await handleGetChatMessages(socket, message); break;
             case 'SAVE_REVISION': await handleSaveRevisionMessage(socket, message); break;
             case 'CLIENT_MESSAGE': {
               const {type} = message.data.payload;
@@ -414,22 +415,9 @@ exports.handleCustomMessage = (padID, msgString) => {
 };
 
 /**
- * Handles a Chat Message
- * @param socket the socket.io Socket object for the client
- * @param message the message from the client
- */
-const handleChatMessage = async (socket, message) => {
-  const chatMessage = ChatMessage.fromObject(message.data.message);
-  const {padId, author: authorId} = sessioninfos[socket.id];
-  // Don't trust the user-supplied values.
-  chatMessage.time = Date.now();
-  chatMessage.authorId = authorId;
-  await exports.sendChatMessageToPadClients(chatMessage, padId);
-};
-
-/**
  * Adds a new chat message to a pad and sends it to connected clients.
  *
+ * @deprecated Use chat.sendChatMessageToPadClients() instead.
  * @param {(ChatMessage|number)} mt - Either a chat message object (recommended) or the timestamp of
  *     the chat message in ms since epoch (deprecated).
  * @param {string} puId - If `mt` is a chat message object, this is the destination pad ID.
@@ -439,40 +427,11 @@ const handleChatMessage = async (socket, message) => {
  *     object as the first argument and the destination pad ID as the second argument instead.
  */
 exports.sendChatMessageToPadClients = async (mt, puId, text = null, padId = null) => {
+  padutils.warnDeprecated('PadMessageHandler.sendChatMessageToPadClients() is deprecated; ' +
+                          'use chat.sendChatMessageToPadClients() instead');
   const message = mt instanceof ChatMessage ? mt : new ChatMessage(text, puId, mt);
   padId = mt instanceof ChatMessage ? puId : padId;
-  const pad = await padManager.getPad(padId, null, message.authorId);
-  await hooks.aCallAll('chatNewMessage', {message, pad, padId});
-  // pad.appendChatMessage() ignores the displayName property so we don't need to wait for
-  // authorManager.getAuthorName() to resolve before saving the message to the database.
-  const promise = pad.appendChatMessage(message);
-  message.displayName = await authorManager.getAuthorName(message.authorId);
-  socketio.sockets.in(padId).json.send({
-    type: 'COLLABROOM',
-    data: {type: 'CHAT_MESSAGE', message},
-  });
-  await promise;
-};
-
-/**
- * Handles the clients request for more chat-messages
- * @param socket the socket.io Socket object for the client
- * @param message the message from the client
- */
-const handleGetChatMessages = async (socket, {data: {start, end}}) => {
-  if (!Number.isInteger(start)) throw new Error(`missing or invalid start: ${start}`);
-  if (!Number.isInteger(end)) throw new Error(`missing or invalid end: ${end}`);
-  const count = end - start;
-  if (count < 0 || count > 100) throw new Error(`invalid number of messages: ${count}`);
-  const {padId, author: authorId} = sessioninfos[socket.id];
-  const pad = await padManager.getPad(padId, null, authorId);
-  socket.json.send({
-    type: 'COLLABROOM',
-    data: {
-      type: 'CHAT_MESSAGES',
-      messages: await pad.getChatMessages(start, end),
-    },
-  });
+  await chat.sendChatMessageToPadClients(message, padId);
 };
 
 /**

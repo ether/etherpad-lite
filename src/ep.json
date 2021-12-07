@@ -22,7 +22,9 @@
       },
       "hooks": {
         "eejsBlock_mySettings": "ep_etherpad-lite/node/chat",
-        "eejsBlock_stickyContainer": "ep_etherpad-lite/node/chat"
+        "eejsBlock_stickyContainer": "ep_etherpad-lite/node/chat",
+        "handleMessage": "ep_etherpad-lite/node/chat",
+        "socketio": "ep_etherpad-lite/node/chat"
       }
     },
     {

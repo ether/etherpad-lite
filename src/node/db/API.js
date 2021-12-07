@@ -289,6 +289,9 @@ exports.setHTML = async (padID, html, authorId = '') => {
  * CHAT FUNCTIONS *
  **************** */
 
+let chat = null;
+exports.registerChatHandlers = (handlers) => chat = handlers;
+
 /**
 getChatHistory(padId, start, end), returns a part of or the whole chat-history of this pad
 
@@ -363,7 +366,7 @@ exports.appendChatMessage = async (padID, text, authorID, time) => {
   // @TODO - missing getPadSafe() call ?
 
   // save chat message to database and send message to all connected clients
-  await padMessageHandler.sendChatMessageToPadClients(new ChatMessage(text, authorID, time), padID);
+  await chat.sendChatMessageToPadClients(new ChatMessage(text, authorID, time), padID);
 };
 
 /* ***************

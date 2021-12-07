@@ -92,6 +92,9 @@
   * `padUpdate`: The `author` context property is deprecated; use the new
     `authorId` context property instead. Also, the hook now runs asynchronously.
 * Chat API deprecations and removals (no replacements planned):
+  * Server-side:
+    * The `sendChatMessageToPadClients()` function in
+      `src/node/handler/PadMessageHandler.js` is deprecated.
   * Client-side:
     * The `pad.determineChatVisibility()` method was removed.
     * The `pad.determineChatAndUsersVisibility()` method was removed.
