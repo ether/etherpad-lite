@@ -86,25 +86,27 @@ const updateDeps = async (parsedPackageJson, key, wantDeps) => {
 };
 
 const prepareRepo = () => {
-  let branch = execSync('git symbolic-ref HEAD');
-  if (branch !== 'refs/heads/master' && branch !== 'refs/heads/main') {
-    throw new Error('master/main must be checked out');
-  }
-  branch = branch.replace(/^refs\/heads\//, '');
-  execSync('git rev-parse --verify -q HEAD^0 || ' +
-           `{ echo "Error: no commits on ${branch}" >&2; exit 1; }`);
-  execSync('git rev-parse --verify @{u}'); // Make sure there's a remote tracking branch.
   const modified = execSync('git diff-files --name-status');
   if (modified !== '') throw new Error(`working directory has modifications:\n${modified}`);
   const untracked = execSync('git ls-files -o --exclude-standard');
   if (untracked !== '') throw new Error(`working directory has untracked files:\n${untracked}`);
   const indexStatus = execSync('git diff-index --cached --name-status HEAD');
   if (indexStatus !== '') throw new Error(`uncommitted staged changes to files:\n${indexStatus}`);
-  execSync('git pull --ff-only', {stdio: 'inherit'});
-  if (execSync('git rev-list @{u}...') !== '') throw new Error('repo contains unpushed commits');
+  let br;
   if (autoCommit) {
+    br = execSync('git symbolic-ref HEAD');
+    if (!br.startsWith('refs/heads/')) throw new Error('detached HEAD');
+    br = br.replace(/^refs\/heads\//, '');
+    execSync('git rev-parse --verify -q HEAD^0 || ' +
+             `{ echo "Error: no commits on ${br}" >&2; exit 1; }`);
     execSync('git config --get user.name');
     execSync('git config --get user.email');
+  }
+  if (autoPush) {
+    if (!['master', 'main'].includes(br)) throw new Error('master/main not checked out');
+    execSync('git rev-parse --verify @{u}');
+    execSync('git pull --ff-only', {stdio: 'inherit'});
+    if (execSync('git rev-list @{u}...') !== '') throw new Error('repo contains unpushed commits');
   }
 };
 
