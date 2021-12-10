@@ -138,7 +138,6 @@ if (autoPush) {
 
   // some files we need to know the actual file name.  Not compulsory but might help in the future.
   const readMeFileName = files.filter((f) => f === 'README' || f === 'README.md')[0];
-  let repository;
 
   if (!files.includes('.git')) throw new Error('No .git folder, aborting');
   prepareRepo();
@@ -154,16 +153,6 @@ if (autoPush) {
     const packageJSON =
         await fsp.readFile(`${pluginPath}/package.json`, {encoding: 'utf8', flag: 'r'});
     const parsedPackageJSON = JSON.parse(packageJSON);
-
-    if (!packageJSON.toLowerCase().includes('repository')) {
-      console.warn('No repository in package.json');
-      if (autoFix) {
-        console.warn('Repository not detected in package.json.  Add repository section.');
-      }
-    } else {
-      // useful for creating README later.
-      repository = parsedPackageJSON.repository.url;
-    }
 
     await updateDeps(parsedPackageJSON, 'devDependencies', {
       'eslint': '^7.32.0',
@@ -220,15 +209,7 @@ if (autoPush) {
       let readme =
           await fsp.readFile('src/bin/plugins/lib/README.md', {encoding: 'utf8', flag: 'r'});
       readme = readme.replace(/\[plugin_name\]/g, pluginName);
-      if (repository) {
-        const org = repository.split('/')[3];
-        const name = repository.split('/')[4];
-        readme = readme.replace(/\[org_name\]/g, org);
-        readme = readme.replace(/\[repo_url\]/g, name);
-        await fsp.writeFile(`${pluginPath}/README.md`, readme);
-      } else {
-        console.warn('Unable to find repository in package.json, aborting.');
-      }
+      await fsp.writeFile(`${pluginPath}/README.md`, readme);
     }
   }
 
