@@ -19,6 +19,7 @@
 * New APIs for processing attributes: `ep_etherpad-lite/static/js/attributes`
   (low-level API) and `ep_etherpad-lite/static/js/AttributeMap` (high-level
   API).
+* The `import` server-side hook has a new `ImportError` context property.
 
 ### Compatibility changes
 

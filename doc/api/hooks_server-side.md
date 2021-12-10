@@ -821,6 +821,19 @@ Context properties:
   period** (examples: `'.docx'`, `'.html'`, `'.etherpad'`).
 * `padId`: The identifier of the destination pad.
 * `srcFile`: The document to convert.
+* `ImportError`: Subclass of Error that can be thrown to provide a specific
+  error message to the user. The constructor's first argument must be a string
+  matching one of the [known error
+  identifiers](https://github.com/ether/etherpad-lite/blob/1.8.16/src/static/js/pad_impexp.js#L80-L86).
+
+Example:
+
+```javascript
+exports.import = async (hookName, {fileEnding, ImportError}) => {
+  // Reject all *.etherpad imports with a permission denied message.
+  if (fileEnding === '.etherpad') throw new ImportError('permission');
+};
+```
 
 ## `userJoin`
 
