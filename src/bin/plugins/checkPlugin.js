@@ -201,15 +201,21 @@ if (autoPush) {
       console.warn('Run npm install in the plugin folder and commit the package-lock.json file.');
     }
   }
+
+  const fillTemplate = async (templateFilename, outputFilename) => {
+    const contents = (await fsp.readFile(templateFilename, 'utf8'))
+        .replace(/\[name of copyright owner\]/g, execSync('git config user.name'))
+        .replace(/\[plugin_name\]/g, pluginName)
+        .replace(/\[yyyy\]/g, new Date().getFullYear());
+    await fsp.writeFile(outputFilename, contents);
+  };
+
   if (!readMeFileName) {
     console.warn('README.md file not found, please create');
     if (autoFix) {
       console.log('Autofixing missing README.md file');
       console.log('please edit the README.md file further to include plugin specific details.');
-      let readme =
-          await fsp.readFile('src/bin/plugins/lib/README.md', {encoding: 'utf8', flag: 'r'});
-      readme = readme.replace(/\[plugin_name\]/g, pluginName);
-      await fsp.writeFile(`${pluginPath}/README.md`, readme);
+      await fillTemplate('src/bin/plugins/lib/README.md', `${pluginPath}/README.md`);
     }
   }
 
@@ -218,10 +224,7 @@ if (autoPush) {
     if (autoFix) {
       console.log('Autofixing missing CONTRIBUTING.md file, please edit the CONTRIBUTING.md ' +
                   'file further to include plugin specific details.');
-      let contributing =
-          await fsp.readFile('src/bin/plugins/lib/CONTRIBUTING.md', {encoding: 'utf8', flag: 'r'});
-      contributing = contributing.replace(/\[plugin_name\]/g, pluginName);
-      await fsp.writeFile(`${pluginPath}/CONTRIBUTING.md`, contributing);
+      await fillTemplate('src/bin/plugins/lib/CONTRIBUTING.md', `${pluginPath}/CONTRIBUTING.md`);
     }
   }
 
@@ -254,14 +257,10 @@ if (autoPush) {
   }
 
   if (!files.includes('LICENSE') && !files.includes('LICENSE.md')) {
-    console.warn('LICENSE.md file not found, please create');
+    console.warn('LICENSE file not found, please create');
     if (autoFix) {
-      console.log('Autofixing missing LICENSE.md file, including Apache 2 license.');
-      let license =
-          await fsp.readFile('src/bin/plugins/lib/LICENSE.md', {encoding: 'utf8', flag: 'r'});
-      license = license.replace('[yyyy]', new Date().getFullYear());
-      license = license.replace('[name of copyright owner]', execSync('git config user.name'));
-      await fsp.writeFile(`${pluginPath}/LICENSE.md`, license);
+      console.log('Autofixing missing LICENSE file (Apache 2.0).');
+      await fsp.copyFile('src/bin/plugins/lib/LICENSE', `${pluginPath}/LICENSE`);
     }
   }
 
