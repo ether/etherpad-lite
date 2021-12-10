@@ -251,17 +251,48 @@ Pad.prototype.getKeyRevisionNumber = function (revNum) {
   return Math.floor(revNum / 100) * 100;
 };
 
+/**
+ * @returns {string} The pad's text.
+ */
 Pad.prototype.text = function () {
   return this.atext.text;
 };
 
-Pad.prototype.setText = async function (newText) {
-  newText = exports.cleanText(newText);
-  if (!newText.endsWith('\n')) newText += '\n';
+/**
+ * Splices text into the pad. If the result of the splice does not end with a newline, one will be
+ * automatically appended.
+ *
+ * @param {number} start - Location in pad text to start removing and inserting characters. Must be
+ *     a non-negative integer less than or equal to `this.text().length`.
+ * @param {number} ndel - Number of characters to remove starting at `start`. Must be a non-negative
+ *     integer less than or equal to `this.text().length - start`.
+ * @param {string} ins - New text to insert at `start` (after the `ndel` characters are deleted).
+ */
+Pad.prototype.spliceText = async function (start, ndel, ins) {
+  if (start < 0) throw new RangeError(`start index must be non-negative (is ${start})`);
+  if (ndel < 0) throw new RangeError(`characters to delete must be non-negative (is ${ndel})`);
   const orig = this.text();
-  if (newText === orig) return;
-  const changeset = Changeset.makeSplice(orig, 0, orig.length, newText);
+  assert(orig.endsWith('\n'));
+  if (start + ndel > orig.length) throw new RangeError('start/delete past the end of the text');
+  ins = exports.cleanText(ins);
+  const willEndWithNewline =
+      start + ndel < orig.length || // Keeping last char (which is guaranteed to be a newline).
+      ins.endsWith('\n') ||
+      (!ins && start > 0 && orig[start - 1] === '\n');
+  if (!willEndWithNewline) ins += '\n';
+  if (ndel === 0 && ins.length === 0) return;
+  const changeset = Changeset.makeSplice(orig, start, ndel, ins);
   await this.appendRevision(changeset);
+};
+
+/**
+ * Replaces the pad's text with new text.
+ *
+ * @param {string} newText - The pad's new text. If this string does not end with a newline, one
+ *     will be automatically appended.
+ */
+Pad.prototype.setText = async function (newText) {
+  await this.spliceText(0, this.text().length, newText);
 };
 
 /**
@@ -270,11 +301,7 @@ Pad.prototype.setText = async function (newText) {
  * @param {string} newText - Text to insert just BEFORE the pad's existing terminating newline.
  */
 Pad.prototype.appendText = async function (newText) {
-  newText = exports.cleanText(newText);
-  const orig = this.text();
-  assert(orig.endsWith('\n'));
-  const changeset = Changeset.makeSplice(orig, orig.length - 1, 0, newText);
-  await this.appendRevision(changeset);
+  await this.spliceText(this.text().length - 1, 0, newText);
 };
 
 /**
