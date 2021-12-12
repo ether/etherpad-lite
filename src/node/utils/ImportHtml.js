@@ -85,5 +85,5 @@ exports.setPadHTML = async (pad, html) => {
 
   apiLogger.debug(`The changeset: ${theChangeset}`);
   await pad.setText('\n');
-  if (!Changeset.isIdentity(theChangeset)) await pad.appendRevision(theChangeset);
+  await pad.appendRevision(theChangeset);
 };

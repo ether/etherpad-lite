@@ -278,7 +278,7 @@ describe(__filename, function () {
       const res = await agent.post(endPoint('setText'))
           .send({
             padID: testPadId,
-            text: 'testTextTwo',
+            text: 'testTextThree',
           })
           .expect(200)
           .expect('Content-Type', /json/);
