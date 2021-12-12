@@ -615,19 +615,15 @@ const handleUserChanges = async (socket, message) => {
     // Update the changeset so that it can be applied to the latest revision.
     while (r < pad.getHeadRevisionNumber()) {
       r++;
-
-      const c = await pad.getRevisionChangeset(r);
-
+      const {changeset: c, meta: {author: authorId}} = await pad.getRevision(r);
+      if (changeset === c && thisSession.author === authorId) {
+        // Assume this is a retransmission of an already applied changeset.
+        rebasedChangeset = Changeset.identity(Changeset.unpack(changeset).oldLen);
+      }
       // At this point, both "c" (from the pad) and "changeset" (from the
       // client) are relative to revision r - 1. The follow function
       // rebases "changeset" so that it is relative to revision r
       // and can be applied after "c".
-
-      // a changeset can be based on an old revision with the same changes in it
-      // prevent eplite from accepting it TODO: better send the client a NEW_CHANGES
-      // of that revision
-      if (baseRev + 1 === r && c === changeset) throw new Error('Changeset already accepted');
-
       rebasedChangeset = Changeset.follow(c, rebasedChangeset, false, pad.pool);
     }
 
