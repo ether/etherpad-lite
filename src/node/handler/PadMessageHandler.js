@@ -639,8 +639,8 @@ const handleUserChanges = async (socket, message) => {
           `${Changeset.oldLen(rebasedChangeset)} to document of length ${prevText.length}`);
     }
 
-    await pad.appendRevision(rebasedChangeset, thisSession.author);
-    assert.equal(pad.getHeadRevisionNumber(), r + 1);
+    const newRev = await pad.appendRevision(rebasedChangeset, thisSession.author);
+    assert.equal(newRev, r + 1);
 
     const correctionChangeset = _correctMarkersInPad(pad.atext, pad.pool);
     if (correctionChangeset) {
@@ -656,14 +656,9 @@ const handleUserChanges = async (socket, message) => {
     // The client assumes that ACCEPT_COMMIT and NEW_CHANGES messages arrive in order. Make sure we
     // have already sent any previous ACCEPT_COMMIT and NEW_CHANGES messages.
     assert.equal(thisSession.rev, r);
-    socket.json.send({
-      type: 'COLLABROOM',
-      data: {
-        type: 'ACCEPT_COMMIT',
-        newRev: ++thisSession.rev,
-      },
-    });
-    thisSession.time = await pad.getRevisionDate(thisSession.rev);
+    socket.json.send({type: 'COLLABROOM', data: {type: 'ACCEPT_COMMIT', newRev}});
+    thisSession.rev = newRev;
+    thisSession.time = await pad.getRevisionDate(newRev);
     await exports.updatePadClients(pad);
   } catch (err) {
     socket.json.send({disconnect: 'badChangeset'});

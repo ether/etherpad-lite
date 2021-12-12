@@ -119,6 +119,7 @@ Pad.prototype.appendRevision = async function (aChangeset, author) {
   }
 
   await Promise.all(p);
+  return newRev;
 };
 
 // save all attributes to the database
