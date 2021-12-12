@@ -640,7 +640,9 @@ const handleUserChanges = async (socket, message) => {
     }
 
     const newRev = await pad.appendRevision(rebasedChangeset, thisSession.author);
-    assert.equal(newRev, r + 1);
+    // The head revision will either stay the same or increase by 1 depending on whether the
+    // changeset has a net effect.
+    assert([r, r + 1].includes(newRev));
 
     const correctionChangeset = _correctMarkersInPad(pad.atext, pad.pool);
     if (correctionChangeset) {
@@ -658,7 +660,7 @@ const handleUserChanges = async (socket, message) => {
     assert.equal(thisSession.rev, r);
     socket.json.send({type: 'COLLABROOM', data: {type: 'ACCEPT_COMMIT', newRev}});
     thisSession.rev = newRev;
-    thisSession.time = await pad.getRevisionDate(newRev);
+    if (newRev !== r) thisSession.time = await pad.getRevisionDate(newRev);
     await exports.updatePadClients(pad);
   } catch (err) {
     socket.json.send({disconnect: 'badChangeset'});

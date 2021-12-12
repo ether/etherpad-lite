@@ -82,6 +82,9 @@ Pad.prototype.appendRevision = async function (aChangeset, author) {
   }
 
   const newAText = Changeset.applyToAText(aChangeset, this.atext, this.pool);
+  if (newAText.text === this.atext.text && newAText.attribs === this.atext.attribs) {
+    return this.head;
+  }
   Changeset.copyAText(newAText, this.atext);
 
   const newRev = ++this.head;
@@ -268,8 +271,7 @@ Pad.prototype.setText = async function (newText) {
     changeset = Changeset.makeSplice(oldText, 0, oldText.length - 1, newText);
   }
 
-  // append the changeset
-  if (newText !== oldText) await this.appendRevision(changeset);
+  await this.appendRevision(changeset);
 };
 
 Pad.prototype.appendText = async function (newText) {

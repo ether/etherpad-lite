@@ -84,19 +84,19 @@ describe(__filename, function () {
       assert.equal(pad.text(), 'hello\n');
     });
 
-    it('identity changeset is accepted', async function () {
+    it('identity changeset is accepted, has no effect', async function () {
       sendUserChanges('Z:1>5+5$hello');
       await assertAccepted(rev + 1);
       sendUserChanges('Z:6>0$');
-      await assertAccepted(rev + 1);
+      await assertAccepted(rev);
       assert.equal(pad.text(), 'hello\n');
     });
 
-    it('non-identity changeset with no net change is accepted', async function () {
+    it('non-identity changeset with no net change is accepted, has no effect', async function () {
       sendUserChanges('Z:1>5+5$hello');
       await assertAccepted(rev + 1);
       sendUserChanges('Z:6>0-5+5$hello');
-      await assertAccepted(rev + 1);
+      await assertAccepted(rev);
       assert.equal(pad.text(), 'hello\n');
     });
   });
