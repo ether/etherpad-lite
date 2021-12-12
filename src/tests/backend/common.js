@@ -184,3 +184,18 @@ exports.handshake = async (socket, padId) => {
   logger.debug('received CLIENT_VARS message');
   return msg;
 };
+
+const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+
+/**
+ * Generates a random string.
+ *
+ * @param {number} [len] - The desired length of the generated string.
+ * @param {string} [charset] - Characters to pick from.
+ * @returns {string}
+ */
+exports.randomString = (len = 10, charset = `${alphabet}${alphabet.toUpperCase()}0123456789`) => {
+  let ret = '';
+  while (ret.length < len) ret += charset[Math.floor(Math.random() * charset.length)];
+  return ret;
+};
