@@ -640,6 +640,7 @@ const handleUserChanges = async (socket, message) => {
     }
 
     await pad.appendRevision(rebasedChangeset, thisSession.author);
+    assert.equal(pad.getHeadRevisionNumber(), r + 1);
 
     const correctionChangeset = _correctMarkersInPad(pad.atext, pad.pool);
     if (correctionChangeset) {
@@ -652,6 +653,17 @@ const handleUserChanges = async (socket, message) => {
       await pad.appendRevision(nlChangeset);
     }
 
+    // The client assumes that ACCEPT_COMMIT and NEW_CHANGES messages arrive in order. Make sure we
+    // have already sent any previous ACCEPT_COMMIT and NEW_CHANGES messages.
+    assert.equal(thisSession.rev, r);
+    socket.json.send({
+      type: 'COLLABROOM',
+      data: {
+        type: 'ACCEPT_COMMIT',
+        newRev: ++thisSession.rev,
+      },
+    });
+    thisSession.time = await pad.getRevisionDate(thisSession.rev);
     await exports.updatePadClients(pad);
   } catch (err) {
     socket.json.send({disconnect: 'badChangeset'});
@@ -697,24 +709,19 @@ exports.updatePadClients = async (pad) => {
       const revChangeset = revision.changeset;
       const currentTime = revision.meta.timestamp;
 
-      let msg;
-      if (author === sessioninfo.author) {
-        msg = {type: 'COLLABROOM', data: {type: 'ACCEPT_COMMIT', newRev: r}};
-      } else {
-        const forWire = Changeset.prepareForWire(revChangeset, pad.pool);
-        msg = {
-          type: 'COLLABROOM',
-          data: {
-            type: 'NEW_CHANGES',
-            newRev: r,
-            changeset: forWire.translated,
-            apool: forWire.pool,
-            author,
-            currentTime,
-            timeDelta: currentTime - sessioninfo.time,
-          },
-        };
-      }
+      const forWire = Changeset.prepareForWire(revChangeset, pad.pool);
+      const msg = {
+        type: 'COLLABROOM',
+        data: {
+          type: 'NEW_CHANGES',
+          newRev: r,
+          changeset: forWire.translated,
+          apool: forWire.pool,
+          author,
+          currentTime,
+          timeDelta: currentTime - sessioninfo.time,
+        },
+      };
       try {
         socket.json.send(msg);
       } catch (err) {
