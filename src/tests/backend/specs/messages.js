@@ -75,12 +75,12 @@ describe(__filename, function () {
       await assertRejected();
     });
 
-    it('retransmission is rejected', async function () {
+    it('retransmission is accepted, has no effect', async function () {
       sendUserChanges('Z:1>5+5$hello');
       await assertAccepted(rev + 1);
       --rev;
       sendUserChanges('Z:1>5+5$hello');
-      await assertRejected();
+      await assertAccepted(rev + 1);
       assert.equal(pad.text(), 'hello\n');
     });
 
