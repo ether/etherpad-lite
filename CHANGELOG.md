@@ -13,6 +13,8 @@
 * Fixed a potential attribute pool corruption bug with `copyPadWithoutHistory`.
 * Mappings created by the `createGroupIfNotExistsFor` HTTP API are now removed
   from the database when the group is deleted.
+* Fixed race conditions in the `setText`, `appendText`, and `restoreRevision`
+  functions (HTTP API).
 
 #### For plugin authors
 

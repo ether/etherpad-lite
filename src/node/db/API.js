@@ -201,10 +201,8 @@ exports.setText = async (padID, text) => {
   // get the pad
   const pad = await getPadSafe(padID, true);
 
-  await Promise.all([
-    pad.setText(text),
-    padMessageHandler.updatePadClients(pad),
-  ]);
+  await pad.setText(text);
+  await padMessageHandler.updatePadClients(pad);
 };
 
 /**
@@ -223,10 +221,8 @@ exports.appendText = async (padID, text) => {
   }
 
   const pad = await getPadSafe(padID, true);
-  await Promise.all([
-    pad.appendText(text),
-    padMessageHandler.updatePadClients(pad),
-  ]);
+  await pad.appendText(text);
+  await padMessageHandler.updatePadClients(pad);
 };
 
 /**
@@ -559,10 +555,8 @@ exports.restoreRevision = async (padID, rev) => {
 
   const changeset = builder.toString();
 
-  await Promise.all([
-    pad.appendRevision(changeset),
-    padMessageHandler.updatePadClients(pad),
-  ]);
+  await pad.appendRevision(changeset);
+  await padMessageHandler.updatePadClients(pad);
 };
 
 /**
