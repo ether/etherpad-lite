@@ -1493,7 +1493,7 @@ exports.identity = (N) => exports.pack(N, N, '', '');
 exports.makeSplice = (orig, start, ndel, ins, attribs, pool) => {
   if (start < 0) throw new RangeError(`start index must be non-negative (is ${start})`);
   if (ndel < 0) throw new RangeError(`characters to delete must be non-negative (is ${ndel})`);
-  if (start >= orig.length) start = orig.length - 1;
+  if (start > orig.length) start = orig.length;
   if (ndel > orig.length - start) ndel = orig.length - start;
   const deleted = orig.substring(start, start + ndel);
   const assem = exports.smartOpAssembler();
