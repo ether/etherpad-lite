@@ -1491,6 +1491,8 @@ exports.identity = (N) => exports.pack(N, N, '', '');
  * @returns {string}
  */
 exports.makeSplice = (orig, start, ndel, ins, attribs, pool) => {
+  if (start < 0) throw new RangeError(`start index must be non-negative (is ${start})`);
+  if (ndel < 0) throw new RangeError(`characters to delete must be non-negative (is ${ndel})`);
   if (start >= orig.length) start = orig.length - 1;
   if (ndel > orig.length - start) ndel = orig.length - start;
   const deleted = orig.substring(start, start + ndel);
