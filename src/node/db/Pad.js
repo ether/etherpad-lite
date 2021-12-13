@@ -256,21 +256,11 @@ Pad.prototype.text = function () {
 };
 
 Pad.prototype.setText = async function (newText) {
-  // clean the new text
   newText = exports.cleanText(newText);
-
-  const oldText = this.text();
-
-  // create the changeset
-  // We want to ensure the pad still ends with a \n, but otherwise keep
-  // getText() and setText() consistent.
-  let changeset;
-  if (newText[newText.length - 1] === '\n') {
-    changeset = Changeset.makeSplice(oldText, 0, oldText.length, newText);
-  } else {
-    changeset = Changeset.makeSplice(oldText, 0, oldText.length - 1, newText);
-  }
-
+  if (!newText.endsWith('\n')) newText += '\n';
+  const orig = this.text();
+  if (newText === orig) return;
+  const changeset = Changeset.makeSplice(orig, 0, orig.length, newText);
   await this.appendRevision(changeset);
 };
 
