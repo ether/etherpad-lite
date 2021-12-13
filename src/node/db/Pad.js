@@ -264,16 +264,16 @@ Pad.prototype.setText = async function (newText) {
   await this.appendRevision(changeset);
 };
 
+/**
+ * Appends text to the pad.
+ *
+ * @param {string} newText - Text to insert just BEFORE the pad's existing terminating newline.
+ */
 Pad.prototype.appendText = async function (newText) {
-  // clean the new text
   newText = exports.cleanText(newText);
-
-  const oldText = this.text();
-
-  // create the changeset
-  const changeset = Changeset.makeSplice(oldText, oldText.length, 0, newText);
-
-  // append the changeset
+  const orig = this.text();
+  assert(orig.endsWith('\n'));
+  const changeset = Changeset.makeSplice(orig, orig.length - 1, 0, newText);
   await this.appendRevision(changeset);
 };
 
