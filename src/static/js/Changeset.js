@@ -1482,35 +1482,27 @@ exports.identity = (N) => exports.pack(N, N, '', '');
  * spliceStart+numRemoved and inserts newText instead. Also gives possibility to add attributes
  * optNewTextAPairs for the new text.
  *
- * @param {string} oldFullText - old text
- * @param {number} spliceStart - where splicing starts
- * @param {number} numRemoved - number of characters to remove
- * @param {string} newText - string to insert
- * @param {string} optNewTextAPairs - new pairs to insert
- * @param {AttributePool} pool - Attribute pool
+ * @param {string} orig - Original text.
+ * @param {number} start - Index into `orig` where characters should be removed and inserted.
+ * @param {number} ndel - Number of characters to delete at `start`.
+ * @param {string} ins - Text to insert at `start` (after deleting `ndel` characters).
+ * @param {string} [attribs] - Optional attributes to apply to the inserted text.
+ * @param {AttributePool} [pool] - Attribute pool.
  * @returns {string}
  */
-exports.makeSplice = (oldFullText, spliceStart, numRemoved, newText, optNewTextAPairs, pool) => {
-  const oldLen = oldFullText.length;
-
-  if (spliceStart >= oldLen) {
-    spliceStart = oldLen - 1;
-  }
-  if (numRemoved > oldFullText.length - spliceStart) {
-    numRemoved = oldFullText.length - spliceStart;
-  }
-  const oldText = oldFullText.substring(spliceStart, spliceStart + numRemoved);
-  const newLen = oldLen + newText.length - oldText.length;
-
+exports.makeSplice = (orig, start, ndel, ins, attribs, pool) => {
+  if (start >= orig.length) start = orig.length - 1;
+  if (ndel > orig.length - start) ndel = orig.length - start;
+  const deleted = orig.substring(start, start + ndel);
   const assem = exports.smartOpAssembler();
   const ops = (function* () {
-    yield* opsFromText('=', oldFullText.substring(0, spliceStart));
-    yield* opsFromText('-', oldText);
-    yield* opsFromText('+', newText, optNewTextAPairs, pool);
+    yield* opsFromText('=', orig.substring(0, start));
+    yield* opsFromText('-', deleted);
+    yield* opsFromText('+', ins, attribs, pool);
   })();
   for (const op of ops) assem.append(op);
   assem.endDocument();
-  return exports.pack(oldLen, newLen, assem.toString(), newText);
+  return exports.pack(orig.length, orig.length + ins.length - ndel, assem.toString(), ins);
 };
 
 /**
