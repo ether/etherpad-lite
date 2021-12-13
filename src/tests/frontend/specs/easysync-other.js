@@ -70,6 +70,13 @@ describe('easysync-other', function () {
       expect(t2).to.equal('a\nb\ncdef\n');
     });
 
+    it('makeSplice at the end', async function () {
+      const orig = '123';
+      const ins = '456';
+      expect(Changeset.applyToText(Changeset.makeSplice(orig, orig.length, 0, ins), orig))
+          .to.equal(`${orig}${ins}`);
+    });
+
     it('testToSplices', async function () {
       const cs = Changeset.checkRep('Z:z>9*0=1=4-3+9=1|1-4-4+1*0+a$123456789abcdefghijk');
       const correctSplices = [
