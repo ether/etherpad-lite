@@ -204,6 +204,10 @@ exports.restartServer = async () => {
 
   // If webaccess.preAuthorize explicitly grants access, webaccess.checkAccess will skip all checks.
   app.use(webaccess.preAuthorize);
+  // Give plugins an opportunity to install handlers/middleware after the preAuthorize middleware
+  // but before the express-session middleware. This allows plugins to avoid creating an
+  // express-session record in the database when it is not needed (e.g., public static content).
+  await hooks.aCallAll('expressPreSession', {app});
   app.use(exports.sessionMiddleware);
   app.use(cookieParser(settings.sessionKey, {}));
   app.use(webaccess.checkAccess);

@@ -58,6 +58,35 @@ Run during startup after the named plugin is initialized.
 
 Context properties: None
 
+## `expressPreSession`
+
+Called from: `src/node/hooks/express.js`
+
+Called during server startup just before the
+[`express-session`](https://www.npmjs.com/package/express-session) middleware is
+added to the Express Application object. Use this hook to add route handlers or
+middleware that executes before `express-session` state is created and
+authentication is performed. This is useful for creating public endpoints that
+don't spam the database with new `express-session` records or trigger
+authentication.
+
+**WARNING:** All handlers registered during this hook run before the built-in
+authentication checks, so any handled endpoints will be public unless the
+handler itself authenticates the user.
+
+Context properties:
+
+* `app`: The Express [Application](https://expressjs.com/en/4x/api.html#app)
+  object.
+
+Example:
+
+```javascript
+exports.expressPreSession = async (hookName, {app}) => {
+  app.get('/hello-world', (req, res) => res.send('hello world'));
+};
+```
+
 ## `expressConfigure`
 
 Called from: `src/node/hooks/express.js`
