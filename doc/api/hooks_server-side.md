@@ -58,24 +58,34 @@ Run during startup after the named plugin is initialized.
 
 Context properties: None
 
-## expressConfigure
-Called from: src/node/hooks/express.js
+## `expressConfigure`
 
-Things in context:
+Called from: `src/node/hooks/express.js`
 
-1. app - the main application object
+Called during server startup just after the
+[`express-session`](https://www.npmjs.com/package/express-session) middleware is
+added to the Express Application object. Use this hook to add route handlers or
+middleware that executes after `express-session` state is created and
+authentication is performed.
 
-This is a helpful hook for changing the behavior and configuration of the application. It's called right after the application gets configured.
+Context properties:
 
-## expressCreateServer
-Called from: src/node/hooks/express.js
+* `app`: The Express [Application](https://expressjs.com/en/4x/api.html#app)
+  object.
 
-Things in context:
+## `expressCreateServer`
 
-1. app - the main express application object (helpful for adding new paths and such)
-2. server - the http server object
+Called from: `src/node/hooks/express.js`
 
-This hook gets called after the application object has been created, but before it starts listening. This is similar to the expressConfigure hook, but it's not guaranteed that the application object will have all relevant configuration variables.
+Identical to the `expressConfigure` hook (the two run in parallel with each
+other) except this hook's context includes the HTTP Server object.
+
+Context properties:
+
+* `app`: The Express [Application](https://expressjs.com/en/4x/api.html#app)
+  object.
+* `server`: The [http.Server](https://nodejs.org/api/http.html#class-httpserver)
+  or [https.Server](https://nodejs.org/api/https.html#class-httpsserver) object.
 
 ## expressCloseServer
 
@@ -235,47 +245,52 @@ Things in context:
 
 I have no idea what this is useful for, someone else will have to add this description.
 
-## preAuthorize
-Called from: src/node/hooks/express/webaccess.js
+## `preAuthorize`
 
-Things in context:
+Called from: `src/node/hooks/express/webaccess.js`
 
-1. req - the request object
-2. res - the response object
-3. next - bypass callback. If this is called instead of the normal callback then
-   all remaining access checks are skipped.
+Called for each HTTP request before any authentication checks are performed. The
+registered `preAuthorize` hook functions are called one at a time until one
+explicitly grants or denies the request by returning `true` or `false`,
+respectively. If none of the hook functions return anything, the access decision
+is deferred to the normal authentication and authorization checks.
 
-This hook is called for each HTTP request before any authentication checks are
-performed. Example uses:
+Example uses:
 
 * Always grant access to static content.
 * Process an OAuth callback.
 * Drop requests from IP addresses that have failed N authentication checks
   within the past X minutes.
 
-A preAuthorize function is always called for each request unless a preAuthorize
-function from another plugin (if any) has already explicitly granted or denied
-the request.
+Return values:
 
-You can pass the following values to the provided callback:
+* `undefined` (or `[]`) defers the access decision to the next registered
+  `preAuthorize` hook function, or to the normal authentication and
+  authorization checks if no more `preAuthorize` hook functions remain.
+* `true` (or `[true]`) immediately grants access to the requested resource,
+  unless the request is for an `/admin` page in which case it is treated the
+  same as returning `undefined`. (This prevents buggy plugins from accidentally
+  granting admin access to the general public.)
+* `false` (or `[false]`) immediately denies the request. The `preAuthnFailure`
+  hook will be called to handle the failure.
 
-* `[]` defers the access decision to the normal authentication and authorization
-  checks (or to a preAuthorize function from another plugin, if one exists).
-* `[true]` immediately grants access to the requested resource, unless the
-  request is for an `/admin` page in which case it is treated the same as `[]`.
-  (This prevents buggy plugins from accidentally granting admin access to the
-  general public.)
-* `[false]` immediately denies the request. The preAuthnFailure hook will be
-  called to handle the failure.
+Context properties:
+
+* `req`: The Express [Request](https://expressjs.com/en/4x/api.html#req) object.
+* `res`: The Express [Response](https://expressjs.com/en/4x/api.html#res)
+  object.
+* `next`: Callback to immediately hand off handling to the next Express
+  middleware/handler, or to the next matching route if `'route'` is passed as
+  the first argument. Do not call this unless you understand the consequences.
 
 Example:
 
-```
-exports.preAuthorize = (hookName, context, cb) => {
-  if (ipAddressIsFirewalled(context.req)) return cb([false]);
-  if (requestIsForStaticContent(context.req)) return cb([true]);
-  if (requestIsForOAuthCallback(context.req)) return cb([true]);
-  return cb([]);
+```javascript
+exports.preAuthorize = async (hookName, {req}) => {
+  if (await ipAddressIsFirewalled(req)) return false;
+  if (requestIsForStaticContent(req)) return true;
+  if (requestIsForOAuthCallback(req)) return true;
+  // Defer the decision to the next step by returning undefined.
 };
 ```
 
