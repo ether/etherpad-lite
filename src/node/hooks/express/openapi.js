@@ -540,9 +540,7 @@ const generateDefinitionForVersion = (version, style = APIPathStyle.FLAT) => {
   return definition;
 };
 
-exports.expressCreateServer = (hookName, args, cb) => {
-  const {app} = args;
-
+exports.expressPreSession = async (hookName, {app}) => {
   // create openapi-backend handlers for each api version under /api/{version}/*
   for (const version of Object.keys(apiHandler.version)) {
     // we support two different styles of api: flat + rest
@@ -690,7 +688,6 @@ exports.expressCreateServer = (hookName, args, cb) => {
       });
     }
   }
-  return cb();
 };
 
 // helper to get api root

@@ -77,6 +77,11 @@ describe(__filename, function () {
       settings.requireAuthorization = false;
       await agent.get('/admin/').auth('admin', 'admin-password').expect(200);
     });
+    it('authn authz anonymous /robots.txt -> 200', async function () {
+      settings.requireAuthentication = true;
+      settings.requireAuthorization = true;
+      await agent.get('/robots.txt').expect(200);
+    });
     it('authn authz user / -> 403', async function () {
       settings.requireAuthentication = true;
       settings.requireAuthorization = true;

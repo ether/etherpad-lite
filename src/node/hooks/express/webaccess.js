@@ -9,23 +9,6 @@ const readOnlyManager = require('../../db/ReadOnlyManager');
 
 hooks.deprecationNotices.authFailure = 'use the authnFailure and authzFailure hooks instead';
 
-const staticPathsRE = new RegExp(`^/(?:${[
-  'api(?:/.*)?',
-  'favicon\\.ico',
-  'ep/pad/connection-diagnostic-info',
-  'javascript',
-  'javascripts/.*',
-  'jserror/?',
-  'locales\\.json',
-  'locales/.*',
-  'rest/.*',
-  'pluginfw/.*',
-  'robots.txt',
-  'static/.*',
-  'stats/?',
-  'tests/frontend(?:/.*)?',
-].join('|')})$`);
-
 // Promisified wrapper around hooks.aCallFirst.
 const aCallFirst = (hookName, context, pred = null) => new Promise((resolve, reject) => {
   hooks.aCallFirst(hookName, context, (err, r) => err != null ? reject(err) : resolve(r), pred);
@@ -90,7 +73,6 @@ const preAuthorize = async (req, res, next) => {
     return;
   }
   if (locals.skip) return;
-  if (staticPathsRE.test(req.path)) results.push(true);
   if (requireAdmin) {
     // Filter out all 'true' entries to prevent plugin authors from accidentally granting admin
     // privileges to the general public.

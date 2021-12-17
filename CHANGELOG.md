@@ -8,6 +8,9 @@
   * `padOptions.showChat`
   * `padOptions.userColor`
   * `padOptions.userName`
+* Requests for static content (e.g., `/robots.txt`) and special pages (e.g., the
+  HTTP API, `/stats`) no longer cause the server to generate database records
+  intended to manage browser sessions (`sessionstorage:*`).
 * Fixed the return value of the `getText` HTTP API when called with a specific
   revision.
 * Fixed a potential attribute pool corruption bug with `copyPadWithoutHistory`.
