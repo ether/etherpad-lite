@@ -26,6 +26,14 @@ const staticPathsRE = new RegExp(`^/(?:${[
   'tests/frontend(?:/.*)?',
 ].join('|')})$`);
 
+// Promisified wrapper around hooks.aCallFirst.
+const aCallFirst = (hookName, context, pred = null) => new Promise((resolve, reject) => {
+  hooks.aCallFirst(hookName, context, (err, r) => err != null ? reject(err) : resolve(r), pred);
+});
+
+const aCallFirst0 =
+    async (hookName, context, pred = null) => (await aCallFirst(hookName, context, pred))[0];
+
 exports.normalizeAuthzLevel = (level) => {
   if (!level) return false;
   switch (level) {
@@ -56,16 +64,56 @@ exports.userCanModify = (padId, req) => {
 // Exported so that tests can set this to 0 to avoid unnecessary test slowness.
 exports.authnFailureDelayMs = 1000;
 
+const preAuthorize = async (req, res, next) => {
+  const requireAdmin = req.path.toLowerCase().startsWith('/admin');
+  const locals = res.locals._webaccess = {requireAdmin, skip: false};
+
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
+  // Step 1: Check the preAuthorize hook for early permit/deny (permit is only allowed for non-admin
+  // pages). If any plugin explicitly grants or denies access, skip the remaining steps. Plugins can
+  // use the preAuthzFailure hook to override the default 403 error.
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
+
+  let results;
+  const preAuthorizeNext = (...args) => { locals.skip = true; next(...args); };
+  try {
+    results = await aCallFirst('preAuthorize', {req, res, next: preAuthorizeNext},
+        // This predicate will cause aCallFirst to call the hook functions one at a time until one
+        // of them returns a non-empty list, with an exception: If the request is for an /admin
+        // page, truthy entries are filtered out before checking to see whether the list is empty.
+        // This prevents plugin authors from accidentally granting admin privileges to the general
+        // public.
+        (r) => (locals.skip || (r != null && r.filter((x) => (!requireAdmin || !x)).length > 0)));
+  } catch (err) {
+    httpLogger.error(`Error in preAuthorize hook: ${err.stack || err.toString()}`);
+    if (!locals.skip) res.status(500).send('Internal Server Error');
+    return;
+  }
+  if (locals.skip) return;
+  if (staticPathsRE.test(req.path)) results.push(true);
+  if (requireAdmin) {
+    // Filter out all 'true' entries to prevent plugin authors from accidentally granting admin
+    // privileges to the general public.
+    results = results.filter((x) => !x);
+  }
+  if (results.length > 0) {
+    // Access was explicitly granted or denied. If any value is false then access is denied.
+    if (!results.every((x) => x)) {
+      // Access explicitly denied.
+      if (await aCallFirst0('preAuthzFailure', {req, res})) return;
+      // No plugin handled the pre-authentication authorization failure.
+      return res.status(403).send('Forbidden');
+    }
+    // Access explicitly granted.
+    locals.skip = true;
+    return next('route');
+  }
+  next();
+};
+
 const checkAccess = async (req, res, next) => {
-  // Promisified wrapper around hooks.aCallFirst.
-  const aCallFirst = (hookName, context, pred = null) => new Promise((resolve, reject) => {
-    hooks.aCallFirst(hookName, context, (err, r) => err != null ? reject(err) : resolve(r), pred);
-  });
-
-  const aCallFirst0 =
-      async (hookName, context, pred = null) => (await aCallFirst(hookName, context, pred))[0];
-
-  const requireAdmin = req.path.toLowerCase().indexOf('/admin') === 0;
+  const {locals: {_webaccess: {requireAdmin, skip}}} = res;
+  if (skip) return next('route');
 
   // This helper is used in steps 2 and 4 below, so it may be called twice per access: once before
   // authentication is checked and once after (if settings.requireAuthorization is true).
@@ -98,43 +146,6 @@ const checkAccess = async (req, res, next) => {
     if (!settings.requireAuthorization) return await grant('create');
     return await grant(await aCallFirst0('authorize', {req, res, next, resource: req.path}));
   };
-
-  // ///////////////////////////////////////////////////////////////////////////////////////////////
-  // Step 1: Check the preAuthorize hook for early permit/deny (permit is only allowed for non-admin
-  // pages). If any plugin explicitly grants or denies access, skip the remaining steps. Plugins can
-  // use the preAuthzFailure hook to override the default 403 error.
-  // ///////////////////////////////////////////////////////////////////////////////////////////////
-
-  let results;
-  let skip = false;
-  const preAuthorizeNext = (...args) => { skip = true; next(...args); };
-  try {
-    results = await aCallFirst('preAuthorize', {req, res, next: preAuthorizeNext},
-        // This predicate will cause aCallFirst to call the hook functions one at a time until one
-        // of them returns a non-empty list, with an exception: If the request is for an /admin
-        // page, truthy entries are filtered out before checking to see whether the list is empty.
-        // This prevents plugin authors from accidentally granting admin privileges to the general
-        // public.
-        (r) => (skip || (r != null && r.filter((x) => (!requireAdmin || !x)).length > 0)));
-  } catch (err) {
-    httpLogger.error(`Error in preAuthorize hook: ${err.stack || err.toString()}`);
-    if (!skip) res.status(500).send('Internal Server Error');
-    return;
-  }
-  if (skip) return;
-  if (staticPathsRE.test(req.path)) results.push(true);
-  if (requireAdmin) {
-    // Filter out all 'true' entries to prevent plugin authors from accidentally granting admin
-    // privileges to the general public.
-    results = results.filter((x) => !x);
-  }
-  if (results.length > 0) {
-    // Access was explicitly granted or denied. If any value is false then access is denied.
-    if (results.every((x) => x)) return next();
-    if (await aCallFirst0('preAuthzFailure', {req, res})) return;
-    // No plugin handled the pre-authentication authorization failure.
-    return res.status(403).send('Forbidden');
-  }
 
   // ///////////////////////////////////////////////////////////////////////////////////////////////
   // Step 2: Try to just access the thing. If access fails (perhaps authentication has not yet
@@ -204,8 +215,19 @@ const checkAccess = async (req, res, next) => {
 };
 
 /**
+ * Express middleware that allows plugins to explicitly grant/deny access via the `preAuthorize`
+ * hook before `checkAccess` is run. If access is explicitly granted:
+ *   - `next('route')` will be called, which can be used to bypass later checks
+ *   - `checkAccess` will simply call `next('route')`
+ */
+exports.preAuthorize = (req, res, next) => {
+  preAuthorize(req, res, next).catch((err) => next(err || new Error(err)));
+};
+
+/**
  * Express middleware to authenticate the user and check authorization. Must be installed after the
- * express-session middleware.
+ * express-session middleware. If the request is pre-authorized, this middleware simply calls
+ * `next('route')`.
  */
 exports.checkAccess = (req, res, next) => {
   checkAccess(req, res, next).catch((err) => next(err || new Error(err)));

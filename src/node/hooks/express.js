@@ -204,6 +204,8 @@ exports.restartServer = async () => {
   app.use(exports.sessionMiddleware);
 
   app.use(cookieParser(settings.sessionKey, {}));
+  // If webaccess.preAuthorize explicitly grants access, webaccess.checkAccess will skip all checks.
+  app.use(webaccess.preAuthorize);
   app.use(webaccess.checkAccess);
 
   await Promise.all([
