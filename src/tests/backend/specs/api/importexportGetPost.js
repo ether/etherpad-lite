@@ -25,6 +25,13 @@ const apiVersion = 1;
 const testPadId = makeid();
 const testPadIdEnc = encodeURIComponent(testPadId);
 
+const deleteTestPad = async () => {
+  if (await padManager.doesPadExist(testPadId)) {
+    const pad = await padManager.getPad(testPadId);
+    await pad.remove();
+  }
+};
+
 describe(__filename, function () {
   this.timeout(45000);
   before(async function () { agent = await common.init(); });
@@ -364,6 +371,7 @@ describe(__filename, function () {
         // makeGoodExport() is assumed to produce good .etherpad records. Verify that assumption so
         // that a buggy makeGoodExport() doesn't cause checks to accidentally pass.
         const records = makeGoodExport();
+        await deleteTestPad();
         await importEtherpad(records)
             .expect(200)
             .expect('Content-Type', /json/)
@@ -429,13 +437,6 @@ describe(__filename, function () {
 
     describe('Import authorization checks', function () {
       let authorize;
-
-      const deleteTestPad = async () => {
-        if (await padManager.doesPadExist(testPadId)) {
-          const pad = await padManager.getPad(testPadId);
-          await pad.remove();
-        }
-      };
 
       const createTestPad = async (text) => {
         const pad = await padManager.getPad(testPadId);
