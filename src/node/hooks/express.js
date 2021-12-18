@@ -181,7 +181,7 @@ exports.restartServer = async () => {
     secret: settings.sessionKey,
     store: sessionStore,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     // Set the cookie name to a javascript identifier compatible string. Makes code handling it
     // cleaner :)
     name: 'express_sid',

@@ -3,6 +3,9 @@
 ### Notable enhancements and fixes
 
 * Improvements to login session management:
+  * `express_sid` cookies and `sessionstorage:*` database records are no longer
+    created unless `requireAuthentication` is `true` (or a plugin causes them to
+    be created).
   * `sessionstorage:*` database records are automatically deleted when the login
     session expires (with some exceptions that will be fixed in the future).
   * Requests for static content (e.g., `/robots.txt`) and special pages (e.g.,
