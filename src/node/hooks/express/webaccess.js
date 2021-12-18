@@ -106,18 +106,22 @@ const checkAccess = async (req, res, next) => {
   // ///////////////////////////////////////////////////////////////////////////////////////////////
 
   let results;
+  let skip = false;
+  const preAuthorizeNext = (...args) => { skip = true; next(...args); };
   try {
-    results = await aCallFirst('preAuthorize', {req, res, next},
+    results = await aCallFirst('preAuthorize', {req, res, next: preAuthorizeNext},
         // This predicate will cause aCallFirst to call the hook functions one at a time until one
         // of them returns a non-empty list, with an exception: If the request is for an /admin
         // page, truthy entries are filtered out before checking to see whether the list is empty.
         // This prevents plugin authors from accidentally granting admin privileges to the general
         // public.
-        (r) => (r != null && r.filter((x) => (!requireAdmin || !x)).length > 0));
+        (r) => (skip || (r != null && r.filter((x) => (!requireAdmin || !x)).length > 0)));
   } catch (err) {
     httpLogger.error(`Error in preAuthorize hook: ${err.stack || err.toString()}`);
-    return res.status(500).send('Internal Server Error');
+    if (!skip) res.status(500).send('Internal Server Error');
+    return;
   }
+  if (skip) return;
   if (staticPathsRE.test(req.path)) results.push(true);
   if (requireAdmin) {
     // Filter out all 'true' entries to prevent plugin authors from accidentally granting admin
