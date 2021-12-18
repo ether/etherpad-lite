@@ -12,6 +12,7 @@ const SessionStore = require('../db/SessionStore');
 const settings = require('../utils/Settings');
 const stats = require('../stats');
 const util = require('util');
+const webaccess = require('./express/webaccess');
 
 const logger = log4js.getLogger('http');
 let serverName;
@@ -203,6 +204,7 @@ exports.restartServer = async () => {
   app.use(exports.sessionMiddleware);
 
   app.use(cookieParser(settings.sessionKey, {}));
+  app.use(webaccess.checkAccess);
 
   await Promise.all([
     hooks.aCallAll('expressConfigure', {app}),

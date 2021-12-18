@@ -203,7 +203,10 @@ const checkAccess = async (req, res, next) => {
   res.status(403).send('Forbidden');
 };
 
-exports.expressConfigure = (hookName, args, cb) => {
-  args.app.use((req, res, next) => { checkAccess(req, res, next).catch(next); });
-  return cb();
+/**
+ * Express middleware to authenticate the user and check authorization. Must be installed after the
+ * express-session middleware.
+ */
+exports.checkAccess = (req, res, next) => {
+  checkAccess(req, res, next).catch((err) => next(err || new Error(err)));
 };

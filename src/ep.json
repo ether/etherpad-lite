@@ -51,12 +51,6 @@
       }
     },
     {
-      "name": "webaccess",
-      "hooks": {
-        "expressConfigure": "ep_etherpad-lite/node/hooks/express/webaccess"
-      }
-    },
-    {
       "name": "apicalls",
       "hooks": {
         "expressCreateServer": "ep_etherpad-lite/node/hooks/express/apicalls"
