@@ -200,10 +200,20 @@ const checkAccess = async (req, res, next) => {
  * Express middleware that allows plugins to explicitly grant/deny access via the `preAuthorize`
  * hook before `checkAccess` is run. If access is explicitly granted:
  *   - `next('route')` will be called, which can be used to bypass later checks
+ *   - `nextRouteIfPreAuthorized` will simply call `next('route')`
  *   - `checkAccess` will simply call `next('route')`
  */
 exports.preAuthorize = (req, res, next) => {
   preAuthorize(req, res, next).catch((err) => next(err || new Error(err)));
+};
+
+/**
+ * Express middleware that simply calls `next('route')` if the request has been explicitly granted
+ * access by `preAuthorize` (otherwise it calls `next()`). This can be used to bypass later checks.
+ */
+exports.nextRouteIfPreAuthorized = (req, res, next) => {
+  if (res.locals._webaccess.skip) return next('route');
+  next();
 };
 
 /**
