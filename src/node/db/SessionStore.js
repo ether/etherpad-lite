@@ -11,12 +11,8 @@ class SessionStore extends Store {
   async _get(sid) {
     logger.debug(`GET ${sid}`);
     const s = await DB.get(`sessionstorage:${sid}`);
-    if (!s) return;
-    if (typeof s.cookie.expires === 'string') s.cookie.expires = new Date(s.cookie.expires);
-    if (s.cookie.expires && new Date() >= s.cookie.expires) {
-      await this._destroy(sid);
-      return;
-    }
+    const {cookie: {expires} = {}} = s || {};
+    if (expires && new Date() >= new Date(expires)) return await this._destroy(sid);
     return s;
   }
 

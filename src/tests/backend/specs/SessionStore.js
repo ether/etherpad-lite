@@ -36,7 +36,7 @@ describe(__filename, function () {
     });
 
     it('set of non-expiring session', async function () {
-      const sess = {foo: 'bar', baz: {asdf: 'jkl;'}, cookie: {}};
+      const sess = {foo: 'bar', baz: {asdf: 'jkl;'}};
       await set(sess);
       assert.equal(JSON.stringify(await db.get(`sessionstorage:${sid}`)), JSON.stringify(sess));
     });
@@ -54,13 +54,13 @@ describe(__filename, function () {
     });
 
     it('set+get round trip', async function () {
-      const sess = {foo: 'bar', baz: {asdf: 'jkl;'}, cookie: {}};
+      const sess = {foo: 'bar', baz: {asdf: 'jkl;'}};
       await set(sess);
       assert.equal(JSON.stringify(await get()), JSON.stringify(sess));
     });
 
     it('get of record from previous run (no expiration)', async function () {
-      const sess = {foo: 'bar', baz: {asdf: 'jkl;'}, cookie: {}};
+      const sess = {foo: 'bar', baz: {asdf: 'jkl;'}};
       await db.set(`sessionstorage:${sid}`, sess);
       assert.equal(JSON.stringify(await get()), JSON.stringify(sess));
     });
