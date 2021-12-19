@@ -36,27 +36,10 @@ describe(__filename, function () {
   });
 
   describe('USER_CHANGES', function () {
-    const sendUserChanges = (changeset, apool = new AttributePool()) => {
-      socket.json.send({
-        type: 'COLLABROOM',
-        component: 'pad',
-        data: {
-          type: 'USER_CHANGES',
-          baseRev: rev,
-          changeset,
-          apool: new AttributePool(),
-        },
-      });
-    };
+    const sendUserChanges =
+        async (changeset) => await common.sendUserChanges(socket, {baseRev: rev, changeset});
     const assertAccepted = async (wantRev) => {
-      const msg = await common.waitForSocketEvent(socket, 'message');
-      assert.deepEqual(msg, {
-        type: 'COLLABROOM',
-        data: {
-          type: 'ACCEPT_COMMIT',
-          newRev: wantRev,
-        },
-      });
+      await common.waitForAcceptCommit(socket, wantRev);
       rev = wantRev;
     };
     const assertRejected = async () => {
@@ -65,38 +48,55 @@ describe(__filename, function () {
     };
 
     it('changes are applied', async function () {
-      sendUserChanges('Z:1>5+5$hello');
-      await assertAccepted(rev + 1);
+      await Promise.all([
+        assertAccepted(rev + 1),
+        sendUserChanges('Z:1>5+5$hello'),
+      ]);
       assert.equal(pad.text(), 'hello\n');
     });
 
     it('bad changeset is rejected', async function () {
-      sendUserChanges('this is not a valid changeset');
-      await assertRejected();
+      await Promise.all([
+        assertRejected(),
+        sendUserChanges('this is not a valid changeset'),
+      ]);
     });
 
     it('retransmission is accepted, has no effect', async function () {
-      sendUserChanges('Z:1>5+5$hello');
-      await assertAccepted(rev + 1);
+      const cs = 'Z:1>5+5$hello';
+      await Promise.all([
+        assertAccepted(rev + 1),
+        sendUserChanges(cs),
+      ]);
       --rev;
-      sendUserChanges('Z:1>5+5$hello');
-      await assertAccepted(rev + 1);
+      await Promise.all([
+        assertAccepted(rev + 1),
+        sendUserChanges(cs),
+      ]);
       assert.equal(pad.text(), 'hello\n');
     });
 
     it('identity changeset is accepted, has no effect', async function () {
-      sendUserChanges('Z:1>5+5$hello');
-      await assertAccepted(rev + 1);
-      sendUserChanges('Z:6>0$');
-      await assertAccepted(rev);
+      await Promise.all([
+        assertAccepted(rev + 1),
+        sendUserChanges('Z:1>5+5$hello'),
+      ]);
+      await Promise.all([
+        assertAccepted(rev),
+        sendUserChanges('Z:6>0$'),
+      ]);
       assert.equal(pad.text(), 'hello\n');
     });
 
     it('non-identity changeset with no net change is accepted, has no effect', async function () {
-      sendUserChanges('Z:1>5+5$hello');
-      await assertAccepted(rev + 1);
-      sendUserChanges('Z:6>0-5+5$hello');
-      await assertAccepted(rev);
+      await Promise.all([
+        assertAccepted(rev + 1),
+        sendUserChanges('Z:1>5+5$hello'),
+      ]);
+      await Promise.all([
+        assertAccepted(rev),
+        sendUserChanges('Z:6>0-5+5$hello'),
+      ]);
       assert.equal(pad.text(), 'hello\n');
     });
   });
