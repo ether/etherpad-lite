@@ -172,14 +172,14 @@ exports.connect = async (res = null) => {
  * @param {string} padId - Which pad to join.
  * @returns The CLIENT_VARS message from the server.
  */
-exports.handshake = async (socket, padId) => {
+exports.handshake = async (socket, padId, token = 't.12345') => {
   logger.debug('sending CLIENT_READY...');
   socket.send({
     component: 'pad',
     type: 'CLIENT_READY',
     padId,
     sessionID: null,
-    token: 't.12345',
+    token,
   });
   logger.debug('waiting for CLIENT_VARS response...');
   const msg = await exports.waitForSocketEvent(socket, 'message');

@@ -276,6 +276,7 @@ exports.handleMessage = async (socket, message) => {
   thisSession.author = authorID;
 
   // Allow plugins to bypass the readonly message blocker
+  let readOnly = thisSession.readonly;
   const context = {
     message,
     sessionInfo: {
@@ -291,8 +292,21 @@ exports.handleMessage = async (socket, message) => {
       return this.socket;
     },
   };
-  if ((await hooks.aCallAll('handleMessageSecurity', context)).some((w) => w === true)) {
-    thisSession.readonly = false;
+  for (const res of await hooks.aCallAll('handleMessageSecurity', context)) {
+    switch (res) {
+      case true:
+        padutils.warnDeprecated(
+            'returning `true` from a `handleMessageSecurity` hook function is deprecated; ' +
+            'return "permitOnce" instead');
+        thisSession.readonly = false;
+        // Fall through:
+      case 'permitOnce':
+        readOnly = false;
+        break;
+      default:
+        messageLogger.warn(
+            'Ignoring unsupported return value from handleMessageSecurity hook function:', res);
+    }
   }
 
   // Call handleMessage hook. If a plugin returns null, the message will be dropped.
@@ -312,7 +326,7 @@ exports.handleMessage = async (socket, message) => {
   } else if (message.type === 'CHANGESET_REQ') {
     await handleChangesetRequest(socket, message);
   } else if (message.type === 'COLLABROOM') {
-    if (thisSession.readonly) {
+    if (readOnly) {
       messageLogger.warn('Dropped message, COLLABROOM for readonly pad');
     } else if (message.data.type === 'USER_CHANGES') {
       stats.counter('pendingEdits').inc();
