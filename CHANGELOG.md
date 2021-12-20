@@ -30,6 +30,8 @@
 * The `handleMessageSecurity` and `handleMessage` server-side hooks have a new
   `sessionInfo` context property that includes the user's author ID, the pad ID,
   and whether the user only has read-only access.
+* The `handleMessageSecurity` server-side hook can now be used to grant write
+  access for the current message only.
 
 ### Compatibility changes
 
@@ -38,6 +40,8 @@
 * The `client` context property for the `handleMessageSecurity` and
   `handleMessage` server-side hooks is deprecated; use the `socket` context
   property instead.
+* Returning `true` from a `handleMessageSecurity` hook function is deprecated;
+  return `'permitOnce'` instead.
 * Changes to the `src/static/js/Changeset.js` library:
   * The following attribute processing functions are deprecated (use the new
     attribute APIs instead):

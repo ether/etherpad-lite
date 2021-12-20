@@ -616,12 +616,15 @@ temporary write access to a pad.
 Supported return values:
 
 * `undefined`: No change in access status.
-* `true`: Override the user's read-only access for all `COLLABROOM` messages
-  from the same socket.io connection (including the current message, if
-  applicable) until the client's next `CLIENT_READY` message. Has no effect if
-  the user already has write access to the pad. Read-only access is reset
-  **after** each `CLIENT_READY` message, so returning `true` has no effect for
-  `CLIENT_READY` messages.
+* `'permitOnce'`: Override the user's read-only access for the current
+  `COLLABROOM` message only. Has no effect if the current message is not a
+  `COLLABROOM` message, or if the user already has write access to the pad.
+* `true`: (**Deprecated**; return `'permitOnce'` instead.) Override the user's
+  read-only access for all `COLLABROOM` messages from the same socket.io
+  connection (including the current message, if applicable) until the client's
+  next `CLIENT_READY` message. Has no effect if the user already has write
+  access to the pad. Read-only access is reset **after** each `CLIENT_READY`
+  message, so returning `true` has no effect for `CLIENT_READY` messages.
 
 Context properties:
 
@@ -639,9 +642,9 @@ Example:
 
 ```javascript
 exports.handleMessageSecurity = async (hookName, context) => {
-  const {message, sessionInfo: {readOnly}, socket} = context;
+  const {message, sessionInfo: {readOnly}} = context;
   if (!readOnly || message.type !== 'COLLABROOM') return;
-  if (shouldGrantWriteAccess(message, socket)) return true;
+  if (await messageIsBenign(message)) return 'permitOnce';
 };
 ```
 
