@@ -574,26 +574,23 @@ exports.authzFailure = (hookName, context, cb) => {
 };
 ```
 
-## handleMessage
-Called from: src/node/handler/PadMessageHandler.js
+## `handleMessage`
 
-Things in context:
-
-1. message - the message being handled
-2. socket - the socket.io Socket object
-3. client - **deprecated** synonym of socket
+Called from: `src/node/handler/PadMessageHandler.js`
 
 This hook allows plugins to drop or modify incoming socket.io messages from
-clients, before Etherpad processes them.
+clients, before Etherpad processes them. If any hook function returns `null`
+then the message will not be subject to further processing.
 
-The handleMessage function must return a Promise. If the Promise resolves to
-`null`, the message is dropped. Returning `callback(value)` will return a
-Promise that is resolved to `value`.
+Context properties:
 
-Examples:
+* `message`: The message being handled.
+* `socket`: The socket.io Socket object.
+* `client`: (**Deprecated**; use `socket` instead.) Synonym of `socket`.
 
-```
-// Using an async function:
+Example:
+
+```javascript
 exports.handleMessage = async (hookName, {message, socket}) => {
   if (message.type === 'USERINFO_UPDATE') {
     // Force the display name to the name associated with the account.
@@ -601,51 +598,36 @@ exports.handleMessage = async (hookName, {message, socket}) => {
     if (user.name) message.data.userInfo.name = user.name;
   }
 };
-
-// Using a regular function:
-exports.handleMessage = (hookName, {message, socket}, callback) => {
-  if (message.type === 'USERINFO_UPDATE') {
-    // Force the display name to the name associated with the account.
-    const user = socket.client.request.session.user || {};
-    if (user.name) message.data.userInfo.name = user.name;
-  }
-  return callback();
-};
 ```
 
-## handleMessageSecurity
-Called from: src/node/handler/PadMessageHandler.js
+## `handleMessageSecurity`
 
-Things in context:
+Called from: `src/node/handler/PadMessageHandler.js`
 
-1. message - the message being handled
-2. socket - the socket.io Socket object
-3. client - **deprecated** synonym of socket
+Called for each incoming message from a client. Allows plugins to grant
+temporary write access to a pad.
 
-This hook allows plugins to grant temporary write access to a pad. It is called
-for each incoming message from a client. If write access is granted, it applies
-to the current message and all future messages from the same socket.io
-connection until the next `CLIENT_READY` message. Read-only access is reset
-**after** each `CLIENT_READY` message, so granting write access has no effect
-for those message types.
+Supported return values:
 
-The handleMessageSecurity function must return a Promise. If the Promise
-resolves to `true`, write access is granted as described above. Returning
-`callback(value)` will return a Promise that is resolved to `value`.
+* `undefined`: No change in access status.
+* `true`: Override the user's read-only access for all `COLLABROOM` messages
+  from the same socket.io connection (including the current message, if
+  applicable) until the client's next `CLIENT_READY` message. Has no effect if
+  the user already has write access to the pad. Read-only access is reset
+  **after** each `CLIENT_READY` message, so returning `true` has no effect for
+  `CLIENT_READY` messages.
 
-Examples:
+Context properties:
 
-```
-// Using an async function:
+* `message`: The message being handled.
+* `socket`: The socket.io Socket object.
+* `client`: (**Deprecated**; use `socket` instead.) Synonym of `socket`.
+
+Example:
+
+```javascript
 exports.handleMessageSecurity = async (hookName, {message, socket}) => {
   if (shouldGrantWriteAccess(message, socket)) return true;
-  return;
-};
-
-// Using a regular function:
-exports.handleMessageSecurity = (hookName, {message, socket}, callback) => {
-  if (shouldGrantWriteAccess(message, socket)) return callback(true);
-  return callback();
 };
 ```
 
