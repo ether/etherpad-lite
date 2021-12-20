@@ -26,6 +26,7 @@ const ChatMessage = require('../../static/js/ChatMessage');
 const AttributePool = require('../../static/js/AttributePool');
 const AttributeManager = require('../../static/js/AttributeManager');
 const authorManager = require('../db/AuthorManager');
+const {padutils} = require('../../static/js/pad_utils');
 const readOnlyManager = require('../db/ReadOnlyManager');
 const settings = require('../utils/Settings');
 const securityManager = require('../db/SecurityManager');
@@ -270,7 +271,16 @@ exports.handleMessage = async (socket, message) => {
   thisSession.author = authorID;
 
   // Allow plugins to bypass the readonly message blocker
-  const context = {message, socket, client: socket}; // `client` for backwards compatibility.
+  const context = {
+    message,
+    socket,
+    get client() {
+      padutils.warnDeprecated(
+          'the `client` context property for the handleMessageSecurity and handleMessage hooks ' +
+          'is deprecated; use the `socket` property instead');
+      return this.socket;
+    },
+  };
   if ((await hooks.aCallAll('handleMessageSecurity', context)).some((w) => w === true)) {
     thisSession.readonly = false;
   }

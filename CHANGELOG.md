@@ -37,6 +37,9 @@
 
 #### For plugin authors
 
+* The `client` context property for the `handleMessageSecurity` and
+  `handleMessage` server-side hooks is deprecated; use the `socket` context
+  property instead.
 * Changes to the `src/static/js/Changeset.js` library:
   * The following attribute processing functions are deprecated (use the new
     attribute APIs instead):
