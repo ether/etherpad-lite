@@ -19,6 +19,8 @@
 * Fixed race conditions in the `setText`, `appendText`, and `restoreRevision`
   functions (HTTP API).
 * Fixed a crash if the database is busy enough to cause a query timeout.
+* New `/health` endpoint for getting information about Etherpad's health (see
+  [draft-inadarei-api-health-check-06](https://www.ietf.org/archive/id/draft-inadarei-api-health-check-06.html)).
 
 #### For plugin authors
 

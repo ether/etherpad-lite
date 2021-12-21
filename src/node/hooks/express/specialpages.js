@@ -11,6 +11,16 @@ const util = require('util');
 const webaccess = require('./webaccess');
 
 exports.expressPreSession = async (hookName, {app}) => {
+  // This endpoint is intended to conform to:
+  // https://www.ietf.org/archive/id/draft-inadarei-api-health-check-06.html
+  app.get('/health', (req, res) => {
+    res.set('Content-Type', 'application/health+json');
+    res.json({
+      status: 'pass',
+      releaseId: settings.getEpVersion(),
+    });
+  });
+
   app.get('/stats', (req, res) => {
     res.json(require('../../stats').toJSON());
   });
