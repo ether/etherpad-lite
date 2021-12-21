@@ -73,6 +73,7 @@
     "wtfnode": "^0.9.1"
   },
   "bin": {
+    "etherpad": "node/server.js",
     "etherpad-lite": "node/server.js"
   },
   "devDependencies": {
