@@ -96,7 +96,11 @@ COPY --chown=etherpad:etherpad ./settings.json.docker "${EP_DIR}"/settings.json
 # Fix group permissions
 RUN chmod -R g=u .
 
+USER root
+RUN cd src && npm link
+USER etherpad
+
 HEALTHCHECK --interval=20s --timeout=3s CMD curl -f http://localhost:9001 || exit 1
 
 EXPOSE 9001
-CMD ["node", "src/node/server.js"]
+CMD ["etherpad"]
