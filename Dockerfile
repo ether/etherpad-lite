@@ -64,7 +64,6 @@ RUN export DEBIAN_FRONTEND=noninteractive; \
     apt-get -qq --no-install-recommends install \
         ca-certificates \
         git \
-        curl \
         ${INSTALL_ABIWORD:+abiword} \
         ${INSTALL_SOFFICE:+libreoffice} \
         && \
@@ -100,7 +99,7 @@ USER root
 RUN cd src && npm link
 USER etherpad
 
-HEALTHCHECK --interval=20s --timeout=3s CMD curl -f http://localhost:9001 || exit 1
+HEALTHCHECK --interval=20s --timeout=3s CMD ["etherpad-healthcheck"]
 
 EXPOSE 9001
 CMD ["etherpad"]

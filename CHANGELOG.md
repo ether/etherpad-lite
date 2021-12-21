@@ -21,6 +21,9 @@
 * Fixed a crash if the database is busy enough to cause a query timeout.
 * New `/health` endpoint for getting information about Etherpad's health (see
   [draft-inadarei-api-health-check-06](https://www.ietf.org/archive/id/draft-inadarei-api-health-check-06.html)).
+* Docker now uses the new `/health` endpoint for health checks, which avoids
+  issues when authentication is enabled. It also avoids the unnecessary creation
+  of database records for managing browser sessions.
 
 #### For plugin authors
 
