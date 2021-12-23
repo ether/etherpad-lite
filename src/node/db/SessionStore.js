@@ -8,33 +8,89 @@ const util = require('util');
 const logger = log4js.getLogger('SessionStore');
 
 class SessionStore extends Store {
-  async _checkExpiration(sid, sess) {
+  /**
+   * @param {?number} [refresh] - How often (in milliseconds) `touch()` will update a session's
+   *     database record with the cookie's latest expiration time. If the difference between the
+   *     value saved in the database and the actual value is greater than this amount, the database
+   *     record will be updated to reflect the actual value. Use this to avoid continual database
+   *     writes caused by express-session's rolling=true feature (see
+   *     https://github.com/expressjs/session#rolling). A good value is high enough to keep query
+   *     rate low but low enough to avoid annoying premature logouts (session invalidation) if
+   *     Etherpad is restarted. Use `null` to prevent `touch()` from ever updating the record.
+   *     Ignored if the cookie does not expire.
+   */
+  constructor(refresh = null) {
+    super();
+    this._refresh = refresh;
+    // Maps session ID to an object with the following properties:
+    //   - `db`: Session expiration as recorded in the database (ms since epoch, not a Date).
+    //   - `real`: Actual session expiration (ms since epoch, not a Date). Always greater than or
+    //     equal to `db`.
+    this._expirations = new Map();
+  }
+
+  async _updateExpirations(sid, sess, updateDbExp = true) {
+    const exp = this._expirations.get(sid) || {};
     const {cookie: {expires} = {}} = sess || {};
-    if (expires && new Date() >= new Date(expires)) return await this._destroy(sid);
+    if (expires) {
+      const sessExp = new Date(expires).getTime();
+      if (updateDbExp) exp.db = sessExp;
+      exp.real = Math.max(exp.real || 0, exp.db || 0, sessExp);
+      const now = Date.now();
+      if (exp.real <= now) return await this._destroy(sid);
+      // If reading from the database, update the expiration with the latest value from touch() so
+      // that touch() appears to write to the database every time even though it doesn't.
+      if (typeof expires === 'string') sess.cookie.expires = new Date(exp.real).toJSON();
+      this._expirations.set(sid, exp);
+    } else {
+      this._expirations.delete(sid);
+    }
     return sess;
+  }
+
+  async _write(sid, sess) {
+    await DB.set(`sessionstorage:${sid}`, sess);
   }
 
   async _get(sid) {
     logger.debug(`GET ${sid}`);
     const s = await DB.get(`sessionstorage:${sid}`);
-    return await this._checkExpiration(sid, s);
+    return await this._updateExpirations(sid, s);
   }
 
   async _set(sid, sess) {
     logger.debug(`SET ${sid}`);
-    sess = await this._checkExpiration(sid, sess);
-    if (sess != null) await DB.set(`sessionstorage:${sid}`, sess);
+    sess = await this._updateExpirations(sid, sess);
+    if (sess != null) await this._write(sid, sess);
   }
 
   async _destroy(sid) {
     logger.debug(`DESTROY ${sid}`);
+    this._expirations.delete(sid);
     await DB.remove(`sessionstorage:${sid}`);
+  }
+
+  // Note: express-session might call touch() before it calls set() for the first time. Ideally this
+  // would behave like set() in that case but it's OK if it doesn't -- express-session will call
+  // set() soon enough.
+  async _touch(sid, sess) {
+    logger.debug(`TOUCH ${sid}`);
+    sess = await this._updateExpirations(sid, sess, false);
+    if (sess == null) return; // Already expired.
+    const exp = this._expirations.get(sid);
+    // If the session doesn't expire, don't do anything. Ideally we would write the session to the
+    // database if it didn't already exist, but we have no way of knowing that without querying the
+    // database. The query overhead is not worth it because set() should be called soon anyway.
+    if (exp == null) return;
+    if (exp.db != null && (this._refresh == null || exp.real < exp.db + this._refresh)) return;
+    await this._write(sid, sess);
+    exp.db = new Date(sess.cookie.expires).getTime();
   }
 }
 
 // express-session doesn't support Promise-based methods. This is where the callbackified versions
 // used by express-session are defined.
-for (const m of ['get', 'set', 'destroy']) {
+for (const m of ['get', 'set', 'destroy', 'touch']) {
   SessionStore.prototype[m] = util.callbackify(SessionStore.prototype[`_${m}`]);
 }
 

@@ -13,6 +13,7 @@ describe(__filename, function () {
   const set = async (sess) => await util.promisify(ss.set).call(ss, sid, sess);
   const get = async () => await util.promisify(ss.get).call(ss, sid);
   const destroy = async () => await util.promisify(ss.destroy).call(ss, sid);
+  const touch = async (sess) => await util.promisify(ss.touch).call(ss, sid, sess);
 
   before(async function () {
     await common.init();
@@ -117,6 +118,82 @@ describe(__filename, function () {
 
     it('destroy session that does not exist', async function () {
       await destroy();
+    });
+  });
+
+  describe('touch without refresh', function () {
+    it('touch before set is equivalent to set if session expires', async function () {
+      const sess = {cookie: {expires: new Date(Date.now() + 1000)}};
+      await touch(sess);
+      assert.equal(JSON.stringify(await get()), JSON.stringify(sess));
+    });
+
+    it('touch updates observed expiration but not database', async function () {
+      const start = Date.now();
+      const sess = {cookie: {expires: new Date(start + 200)}};
+      await set(sess);
+      const sess2 = {cookie: {expires: new Date(start + 12000)}};
+      await touch(sess2);
+      assert.equal(JSON.stringify(await db.get(`sessionstorage:${sid}`)), JSON.stringify(sess));
+      assert.equal(JSON.stringify(await get()), JSON.stringify(sess2));
+    });
+  });
+
+  describe('touch with refresh', function () {
+    beforeEach(async function () {
+      ss = new SessionStore(200);
+    });
+
+    it('touch before set is equivalent to set if session expires', async function () {
+      const sess = {cookie: {expires: new Date(Date.now() + 1000)}};
+      await touch(sess);
+      assert.equal(JSON.stringify(await get()), JSON.stringify(sess));
+    });
+
+    it('touch before eligible for refresh updates expiration but not DB', async function () {
+      const now = Date.now();
+      const sess = {foo: 'bar', cookie: {expires: new Date(now + 1000)}};
+      await set(sess);
+      const sess2 = {foo: 'bar', cookie: {expires: new Date(now + 1001)}};
+      await touch(sess2);
+      assert.equal(JSON.stringify(await db.get(`sessionstorage:${sid}`)), JSON.stringify(sess));
+      assert.equal(JSON.stringify(await get()), JSON.stringify(sess2));
+    });
+
+    it('touch before eligible for refresh updates timeout', async function () {
+      const start = Date.now();
+      const sess = {foo: 'bar', cookie: {expires: new Date(start + 200)}};
+      await set(sess);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      const sess2 = {foo: 'bar', cookie: {expires: new Date(start + 399)}};
+      await touch(sess2);
+      await new Promise((resolve) => setTimeout(resolve, 110));
+      assert.equal(JSON.stringify(await db.get(`sessionstorage:${sid}`)), JSON.stringify(sess));
+      assert.equal(JSON.stringify(await get()), JSON.stringify(sess2));
+    });
+
+    it('touch after eligible for refresh updates db', async function () {
+      const start = Date.now();
+      const sess = {foo: 'bar', cookie: {expires: new Date(start + 200)}};
+      await set(sess);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      const sess2 = {foo: 'bar', cookie: {expires: new Date(start + 400)}};
+      await touch(sess2);
+      await new Promise((resolve) => setTimeout(resolve, 110));
+      assert.equal(JSON.stringify(await db.get(`sessionstorage:${sid}`)), JSON.stringify(sess2));
+      assert.equal(JSON.stringify(await get()), JSON.stringify(sess2));
+    });
+
+    it('refresh=0 updates db every time', async function () {
+      ss = new SessionStore(0);
+      const sess = {foo: 'bar', cookie: {expires: new Date(Date.now() + 1000)}};
+      await set(sess);
+      await db.remove(`sessionstorage:${sid}`);
+      await touch(sess); // No change in expiration time.
+      assert.equal(JSON.stringify(await db.get(`sessionstorage:${sid}`)), JSON.stringify(sess));
+      await db.remove(`sessionstorage:${sid}`);
+      await touch(sess); // No change in expiration time.
+      assert.equal(JSON.stringify(await db.get(`sessionstorage:${sid}`)), JSON.stringify(sess));
     });
   });
 });
