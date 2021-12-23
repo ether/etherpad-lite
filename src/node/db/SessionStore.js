@@ -26,11 +26,17 @@ class SessionStore extends Store {
     //   - `db`: Session expiration as recorded in the database (ms since epoch, not a Date).
     //   - `real`: Actual session expiration (ms since epoch, not a Date). Always greater than or
     //     equal to `db`.
+    //   - `timeout`: Timeout ID for a timeout that will clean up the database record.
     this._expirations = new Map();
+  }
+
+  shutdown() {
+    for (const {timeout} of this._expirations.values()) clearTimeout(timeout);
   }
 
   async _updateExpirations(sid, sess, updateDbExp = true) {
     const exp = this._expirations.get(sid) || {};
+    clearTimeout(exp.timeout);
     const {cookie: {expires} = {}} = sess || {};
     if (expires) {
       const sessExp = new Date(expires).getTime();
@@ -41,6 +47,15 @@ class SessionStore extends Store {
       // If reading from the database, update the expiration with the latest value from touch() so
       // that touch() appears to write to the database every time even though it doesn't.
       if (typeof expires === 'string') sess.cookie.expires = new Date(exp.real).toJSON();
+      // Use this._get(), not this._destroy(), to destroy the DB record for the expired session.
+      // This is done in case multiple Etherpad instances are sharing the same database and users
+      // are bouncing between the instances. By using this._get(), this instance will query the DB
+      // for the latest expiration time written by any of the instances, ensuring that the record
+      // isn't prematurely deleted if the expiration time was updated by a different Etherpad
+      // instance. (Important caveat: Client-side database caching, which ueberdb does by default,
+      // could still cause the record to be prematurely deleted because this instance might get a
+      // stale expiration time from cache.)
+      exp.timeout = setTimeout(() => this._get(sid), exp.real - now);
       this._expirations.set(sid, exp);
     } else {
       this._expirations.delete(sid);
@@ -66,6 +81,7 @@ class SessionStore extends Store {
 
   async _destroy(sid) {
     logger.debug(`DESTROY ${sid}`);
+    clearTimeout((this._expirations.get(sid) || {}).timeout);
     this._expirations.delete(sid);
     await DB.remove(`sessionstorage:${sid}`);
   }
