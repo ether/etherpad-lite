@@ -6,6 +6,7 @@
   * `express_sid` cookies and `sessionstorage:*` database records are no longer
     created unless `requireAuthentication` is `true` (or a plugin causes them to
     be created).
+  * Login sessions now have a finite lifetime by default (10 days).
   * `sessionstorage:*` database records are automatically deleted when the login
     session expires (with some exceptions that will be fixed in the future).
   * Requests for static content (e.g., `/robots.txt`) and special pages (e.g.,
@@ -44,6 +45,9 @@
   access for the current message only.
 
 ### Compatibility changes
+
+* The default login session expiration (applicable if `requireAuthentication` is
+  `true`) changed from never to 10 days.
 
 #### For plugin authors
 

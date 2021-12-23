@@ -322,6 +322,7 @@ exports.cookie = {
    * https://stackoverflow.com/q/41841880 for discussion.
    */
   sameSite: 'Lax',
+  sessionLifetime: 10 * 24 * 60 * 60 * 1000,
 };
 
 /*

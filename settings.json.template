@@ -375,7 +375,27 @@
      * significant usability drawbacks vs. "Lax". See
      * https://stackoverflow.com/q/41841880 for discussion.
      */
-    "sameSite": "Lax"
+    "sameSite": "Lax",
+
+    /*
+     * How long (in milliseconds) a session lasts before the user is required to
+     * log in again. (The express_sid cookie is set to expire at time now +
+     * sessionLifetime when first created.) If requireAuthentication is false
+     * then this value does not really matter.
+     *
+     * The "best" value depends on your users' usage patterns and the amount of
+     * convenience you desire. A long lifetime is more convenient (users won't
+     * have to log back in as often) but has some drawbacks:
+     *   - It increases the amount of state kept in the database.
+     *   - It might weaken security somewhat: Once a user has accessed a pad,
+     *     the user can continue to use the pad until the session expires.
+     *
+     * Session lifetime can be set to infinity (not recommended) by setting this
+     * to null or 0. Note that if the session does not expire, most browsers
+     * will delete the cookie when the browser exits, but a session record is
+     * kept in the database forever.
+     */
+    "sessionLifetime": 864000000 // = 10d * 24h/d * 60m/h * 60s/m * 1000ms/s
   },
 
   /*

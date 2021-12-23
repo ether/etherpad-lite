@@ -186,6 +186,7 @@ exports.restartServer = async () => {
     // cleaner :)
     name: 'express_sid',
     cookie: {
+      maxAge: settings.cookie.sessionLifetime || null, // Convert 0 to null.
       sameSite: settings.cookie.sameSite,
 
       // The automatic express-session mechanism for determining if the application is being served
