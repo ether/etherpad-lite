@@ -106,5 +106,12 @@ exports.expressCreateServer = (hookName, args, cb) => {
     }));
   });
 
+  // The client occasionally polls this endpoint to get an updated expiration for the express_sid
+  // cookie. This handler must be installed after the express-session middleware.
+  args.app.put('/_extendExpressSessionLifetime', (req, res) => {
+    // express-session automatically calls req.session.touch() so we don't need to do it here.
+    res.json({status: 'ok'});
+  });
+
   return cb();
 };

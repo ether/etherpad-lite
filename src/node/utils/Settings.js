@@ -323,6 +323,7 @@ exports.cookie = {
    */
   sameSite: 'Lax',
   sessionLifetime: 10 * 24 * 60 * 60 * 1000,
+  sessionRefreshInterval: 1 * 24 * 60 * 60 * 1000,
 };
 
 /*

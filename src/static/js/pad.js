@@ -293,6 +293,11 @@ const handshake = async () => {
     } else if (!receivedClientVars && obj.type === 'CLIENT_VARS') {
       receivedClientVars = true;
       window.clientVars = obj.data;
+      if (window.clientVars.sessionRefreshInterval) {
+        const ping =
+            () => $.ajax('../_extendExpressSessionLifetime', {method: 'PUT'}).catch(() => {});
+        setInterval(ping, window.clientVars.sessionRefreshInterval);
+      }
     } else if (obj.disconnect) {
       padconnectionstatus.disconnected(obj.disconnect);
       socket.disconnect();

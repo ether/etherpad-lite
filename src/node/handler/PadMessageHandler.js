@@ -998,6 +998,7 @@ const handleClientReady = async (socket, message) => {
       readOnlyId: sessionInfo.readOnlyPadId,
       readonly: sessionInfo.readonly,
       serverTimestamp: Date.now(),
+      sessionRefreshInterval: settings.cookie.sessionRefreshInterval,
       userId: sessionInfo.author,
       abiwordAvailable: settings.abiwordAvailable(),
       sofficeAvailable: settings.sofficeAvailable(),

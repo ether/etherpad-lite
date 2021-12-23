@@ -111,6 +111,12 @@ const handleClientVars = (message) => {
   // save the client Vars
   window.clientVars = message.data;
 
+  if (window.clientVars.sessionRefreshInterval) {
+    const ping =
+        () => $.ajax('../../_extendExpressSessionLifetime', {method: 'PUT'}).catch(() => {});
+    setInterval(ping, window.clientVars.sessionRefreshInterval);
+  }
+
   // load all script that doesn't work without the clientVars
   BroadcastSlider = require('./broadcast_slider')
       .loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded);

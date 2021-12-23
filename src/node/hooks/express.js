@@ -176,8 +176,10 @@ exports.restartServer = async () => {
 
   app.use(cookieParser(settings.sessionKey, {}));
 
-  sessionStore = new SessionStore();
+  sessionStore = new SessionStore(settings.cookie.sessionRefreshInterval);
   exports.sessionMiddleware = expressSession({
+    propagateTouch: true,
+    rolling: true,
     secret: settings.sessionKey,
     store: sessionStore,
     resave: false,
