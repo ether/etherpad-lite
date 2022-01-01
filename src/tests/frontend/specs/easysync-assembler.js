@@ -21,81 +21,72 @@ describe('easysync-assembler', function () {
 
   it('smartOpAssembler ignore additional pure keeps (no attributes)', async function () {
     const x = '-c*3*4+6|1+1=5';
-    const iter = Changeset.opIterator(x);
     const assem = Changeset.smartOpAssembler();
-    while (iter.hasNext()) assem.append(iter.next());
+    for (const op of Changeset.deserializeOps(x)) assem.append(op);
     assem.endDocument();
     expect(assem.toString()).to.equal('-c*3*4+6|1+1');
   });
 
   it('smartOpAssembler merge consecutive + ops without multiline', async function () {
     const x = '-c*3*4+6*3*4+1*3*4+9=5';
-    const iter = Changeset.opIterator(x);
     const assem = Changeset.smartOpAssembler();
-    while (iter.hasNext()) assem.append(iter.next());
+    for (const op of Changeset.deserializeOps(x)) assem.append(op);
     assem.endDocument();
     expect(assem.toString()).to.equal('-c*3*4+g');
   });
 
   it('smartOpAssembler merge consecutive + ops with multiline', async function () {
     const x = '-c*3*4+6*3*4|1+1*3*4|9+f*3*4+k=5';
-    const iter = Changeset.opIterator(x);
     const assem = Changeset.smartOpAssembler();
-    while (iter.hasNext()) assem.append(iter.next());
+    for (const op of Changeset.deserializeOps(x)) assem.append(op);
     assem.endDocument();
     expect(assem.toString()).to.equal('-c*3*4|a+m*3*4+k');
   });
 
   it('smartOpAssembler merge consecutive - ops without multiline', async function () {
     const x = '-c-6-1-9=5';
-    const iter = Changeset.opIterator(x);
     const assem = Changeset.smartOpAssembler();
-    while (iter.hasNext()) assem.append(iter.next());
+    for (const op of Changeset.deserializeOps(x)) assem.append(op);
     assem.endDocument();
     expect(assem.toString()).to.equal('-s');
   });
 
   it('smartOpAssembler merge consecutive - ops with multiline', async function () {
     const x = '-c-6|1-1|9-f-k=5';
-    const iter = Changeset.opIterator(x);
     const assem = Changeset.smartOpAssembler();
-    while (iter.hasNext()) assem.append(iter.next());
+    for (const op of Changeset.deserializeOps(x)) assem.append(op);
     assem.endDocument();
     expect(assem.toString()).to.equal('|a-y-k');
   });
 
   it('smartOpAssembler merge consecutive = ops without multiline', async function () {
     const x = '-c*3*4=6*2*4=1*3*4=f*3*4=2*3*4=a=k=5';
-    const iter = Changeset.opIterator(x);
     const assem = Changeset.smartOpAssembler();
-    while (iter.hasNext()) assem.append(iter.next());
+    for (const op of Changeset.deserializeOps(x)) assem.append(op);
     assem.endDocument();
     expect(assem.toString()).to.equal('-c*3*4=6*2*4=1*3*4=r');
   });
 
   it('smartOpAssembler merge consecutive = ops with multiline', async function () {
     const x = '-c*3*4=6*2*4|1=1*3*4|9=f*3*4|2=2*3*4=a*3*4=1=k=5';
-    const iter = Changeset.opIterator(x);
     const assem = Changeset.smartOpAssembler();
-    while (iter.hasNext()) assem.append(iter.next());
+    for (const op of Changeset.deserializeOps(x)) assem.append(op);
     assem.endDocument();
     expect(assem.toString()).to.equal('-c*3*4=6*2*4|1=1*3*4|b=h*3*4=b');
   });
 
   it('smartOpAssembler ignore + ops with ops.chars === 0', async function () {
     const x = '-c*3*4+6*3*4+0*3*4+1+0*3*4+1';
-    const iter = Changeset.opIterator(x);
     const assem = Changeset.smartOpAssembler();
-    while (iter.hasNext()) assem.append(iter.next());
+    for (const op of Changeset.deserializeOps(x)) assem.append(op);
     assem.endDocument();
     expect(assem.toString()).to.equal('-c*3*4+8');
   });
 
   it('smartOpAssembler ignore - ops with ops.chars === 0', async function () {
     const x = '-c-6-0-1-0-1';
-    const iter = Changeset.opIterator(x);
     const assem = Changeset.smartOpAssembler();
-    while (iter.hasNext()) assem.append(iter.next());
+    for (const op of Changeset.deserializeOps(x)) assem.append(op);
     assem.endDocument();
     expect(assem.toString()).to.equal('-k');
   });
@@ -136,7 +127,12 @@ describe('easysync-assembler', function () {
 
   it('smartOpAssembler clear should empty internal assemblers', async function () {
     const x = '-c*3*4+6|3=az*asdf0*1*2*3+1=1-1+1*0+1=1-1+1|c=c-1';
-    const iter = Changeset.opIterator(x);
+    const ops = Changeset.deserializeOps(x);
+    const iter = {
+      _n: ops.next(),
+      hasNext() { return !this._n.done; },
+      next() { const v = this._n.value; this._n = ops.next(); return v; },
+    };
     const assem = Changeset.smartOpAssembler();
     assem.append(iter.next());
     assem.append(iter.next());
