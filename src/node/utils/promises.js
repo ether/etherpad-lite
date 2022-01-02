@@ -54,3 +54,15 @@ exports.timesLimit = async (total, concurrency, promiseCreator) => {
   }
   await Promise.all(promises);
 };
+
+/**
+ * An ordinary Promise except the `resolve` executor function is exposed as a property.
+ */
+class Gate extends Promise {
+  constructor(executor = null) {
+    let res;
+    super((resolve, reject) => { res = resolve; if (executor != null) executor(resolve, reject); });
+    this.resolve = res;
+  }
+}
+exports.Gate = Gate;

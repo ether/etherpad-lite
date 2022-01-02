@@ -50,6 +50,7 @@ const express = require('./hooks/express');
 const hooks = require('../static/js/pluginfw/hooks');
 const pluginDefs = require('../static/js/pluginfw/plugin_defs');
 const plugins = require('../static/js/pluginfw/plugins');
+const {Gate} = require('./utils/promises');
 const stats = require('./stats');
 
 const logger = log4js.getLogger('server');
@@ -66,14 +67,6 @@ const State = {
 };
 
 let state = State.INITIAL;
-
-class Gate extends Promise {
-  constructor(executor = null) {
-    let res;
-    super((resolve, reject) => { res = resolve; if (executor != null) executor(resolve, reject); });
-    this.resolve = res;
-  }
-}
 
 const removeSignalListener = (signal, listener) => {
   logger.debug(`Removing ${signal} listener because it might interfere with shutdown tasks. ` +
