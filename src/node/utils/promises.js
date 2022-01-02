@@ -65,6 +65,9 @@ class Gate extends Promise {
   static get [Symbol.species]() { return Promise; }
 
   constructor() {
+    // `this` is assigned when `super()` returns, not when it is called, so it is not acceptable to
+    // do the following because it will throw a ReferenceError when it dereferences `this`:
+    //     super((resolve, reject) => Object.assign(this, {resolve, reject}));
     let props;
     super((resolve, reject) => props = {resolve, reject});
     Object.assign(this, props);
