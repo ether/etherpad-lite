@@ -59,9 +59,13 @@ exports.timesLimit = async (total, concurrency, promiseCreator) => {
  * An ordinary Promise except the `resolve` executor function is exposed as a property.
  */
 class Gate extends Promise {
-  constructor(executor = null) {
+  // Coax `.then()` into returning an ordinary Promise, not a Gate. See
+  // https://stackoverflow.com/a/65669070 for the rationale.
+  static get [Symbol.species]() { return Promise; }
+
+  constructor() {
     let res;
-    super((resolve, reject) => { res = resolve; if (executor != null) executor(resolve, reject); });
+    super((resolve, reject) => res = resolve);
     this.resolve = res;
   }
 }
