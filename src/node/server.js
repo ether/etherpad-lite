@@ -165,7 +165,7 @@ exports.start = async () => {
   return express.server;
 };
 
-let stopDoneGate;
+const stopDoneGate = new Gate();
 exports.stop = async () => {
   switch (state) {
     case State.STARTING:
@@ -187,7 +187,6 @@ exports.stop = async () => {
       throw new Error(`unknown State: ${state.toString()}`);
   }
   logger.info('Stopping Etherpad...');
-  const stopDoneGate = new Gate();
   state = State.STOPPING;
   try {
     let timeout = null;
