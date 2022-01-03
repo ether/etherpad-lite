@@ -50,59 +50,41 @@ const globalPads = {
  *
  * Updated without db access as new pads are created/old ones removed.
  */
-const padList = {
-  list: new Set(),
-  cachedList: undefined,
-  initiated: false,
-  async init() {
-    const dbData = await db.findKeys('pad:*', '*:*:*');
+const padList = new class {
+  constructor() {
+    this._cachedList = null;
+    this._list = new Set();
+    this._loaded = null;
+  }
 
-    if (dbData != null) {
-      this.initiated = true;
-
-      for (const val of dbData) {
-        this.addPad(val.replace(/^pad:/, ''), false);
-      }
-    }
-
-    return this;
-  },
-  async load() {
-    if (!this.initiated) {
-      return this.init();
-    }
-
-    return this;
-  },
   /**
    * Returns all pads in alphabetical order as array.
    */
   async getPads() {
-    await this.load();
-
-    if (!this.cachedList) {
-      this.cachedList = Array.from(this.list).sort();
+    if (!this._loaded) {
+      this._loaded = (async () => {
+        const dbData = await db.findKeys('pad:*', '*:*:*');
+        if (dbData == null) return;
+        for (const val of dbData) this.addPad(val.replace(/^pad:/, ''));
+      })();
     }
+    await this._loaded;
+    if (!this._cachedList) this._cachedList = [...this._list].sort();
+    return this._cachedList;
+  }
 
-    return this.cachedList;
-  },
   addPad(name) {
-    if (!this.initiated) return;
+    if (this._list.has(name)) return;
+    this._list.add(name);
+    this._cachedList = null;
+  }
 
-    if (!this.list.has(name)) {
-      this.list.add(name);
-      this.cachedList = undefined;
-    }
-  },
   removePad(name) {
-    if (!this.initiated) return;
-
-    if (this.list.has(name)) {
-      this.list.delete(name);
-      this.cachedList = undefined;
-    }
-  },
-};
+    if (!this._list.has(name)) return;
+    this._list.delete(name);
+    this._cachedList = null;
+  }
+}();
 
 // initialises the all-knowing data structure
 
