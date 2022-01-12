@@ -191,11 +191,11 @@ describe(__filename, function () {
         await agent.get('/').expect(200);
         assert.deepEqual(callOrder, ['preAuthorize_0']);
       });
-      it('bypasses authenticate and authorize hooks for static content, defers', async function () {
+      it('static content (expressPreSession) bypasses all auth checks', async function () {
         settings.requireAuthentication = true;
         settings.requireAuthorization = true;
         await agent.get('/static/robots.txt').expect(200);
-        assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1']);
+        assert.deepEqual(callOrder, []);
       });
       it('cannot grant access to /admin', async function () {
         handlers.preAuthorize[0].innerHandle = () => [true];

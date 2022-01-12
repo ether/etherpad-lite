@@ -204,18 +204,13 @@ exports.restartServer = async () => {
     },
   });
 
-  app.use(webaccess.preAuthorize);
-  // Give plugins an opportunity to install handlers/middleware after the preAuthorize middleware
-  // but before the express-session middleware. This allows plugins to avoid creating an
-  // express-session record in the database when it is not needed (e.g., public static content).
+  // Give plugins an opportunity to install handlers/middleware before the express-session
+  // middleware. This allows plugins to avoid creating an express-session record in the database
+  // when it is not needed (e.g., public static content).
   await hooks.aCallAll('expressPreSession', {app});
-  app.use([
-    // If webaccess.preAuthorize explicitly granted access, webaccess.nextRouteIfPreAuthorized will
-    // call `next('route')` which will skip the remaining middlewares in this list.
-    webaccess.nextRouteIfPreAuthorized,
-    exports.sessionMiddleware,
-    webaccess.checkAccess,
-  ]);
+  app.use(exports.sessionMiddleware);
+
+  app.use(webaccess.checkAccess);
 
   await Promise.all([
     hooks.aCallAll('expressConfigure', {app}),
