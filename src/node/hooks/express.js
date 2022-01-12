@@ -170,6 +170,8 @@ exports.restartServer = async () => {
     }));
   }
 
+  app.use(cookieParser(settings.sessionKey, {}));
+
   exports.sessionMiddleware = expressSession({
     secret: settings.sessionKey,
     store: new SessionStore(),
@@ -212,7 +214,6 @@ exports.restartServer = async () => {
     // call `next('route')` which will skip the remaining middlewares in this list.
     webaccess.nextRouteIfPreAuthorized,
     exports.sessionMiddleware,
-    cookieParser(settings.sessionKey, {}),
     webaccess.checkAccess,
   ]);
 
