@@ -151,12 +151,16 @@ const checkAccess = async (req, res, next) => {
     const userpass =
         Buffer.from(req.headers.authorization.split(' ')[1], 'base64').toString().split(':');
     ctx.username = userpass.shift();
+    // Prevent prototype pollution vulnerabilities in plugins. This also silences a prototype
+    // pollution warning below (when setting settings.users[ctx.username]) that isn't actually a
+    // problem unless the attacker can also set Object.prototype.password.
+    if (ctx.username === '__proto__') ctx.username = null;
     ctx.password = userpass.join(':');
   }
   if (!(await aCallFirst0('authenticate', ctx))) {
     // Fall back to HTTP basic auth.
     const {[ctx.username]: {password} = {}} = settings.users;
-    if (!httpBasicAuth || password == null || password !== ctx.password) {
+    if (!httpBasicAuth || !ctx.username || password == null || password !== ctx.password) {
       httpLogger.info(`Failed authentication from IP ${req.ip}`);
       if (await aCallFirst0('authnFailure', {req, res})) return;
       if (await aCallFirst0('authFailure', {req, res, next})) return;
