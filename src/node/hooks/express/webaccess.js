@@ -146,8 +146,7 @@ const checkAccess = async (req, res, next) => {
   const ctx = {req, res, users: settings.users, next};
   // If the HTTP basic auth header is present, extract the username and password so it can be given
   // to authn plugins.
-  const httpBasicAuth =
-      req.headers.authorization && req.headers.authorization.search('Basic ') === 0;
+  const httpBasicAuth = req.headers.authorization && req.headers.authorization.startsWith('Basic ');
   if (httpBasicAuth) {
     const userpass =
         Buffer.from(req.headers.authorization.split(' ')[1], 'base64').toString().split(':');
