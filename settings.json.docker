@@ -206,7 +206,7 @@
    */
 
   "dbType": "${DB_TYPE:dirty}",
-  "dbUseSSL": "${DB_TYPE:false}",
+  "dbUseSSL": "${DB_USE_SSL:false}",
   "dbSettings": {
     "host":     "${DB_HOST:undefined}",
     "port":     "${DB_PORT:undefined}",
