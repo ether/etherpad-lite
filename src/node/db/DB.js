@@ -26,10 +26,19 @@ const settings = require('../utils/Settings');
 const log4js = require('log4js');
 const stats = require('../stats');
 const util = require('util');
+const tls = require("tls");
+var realSettings = Object.assign(
+	{ ssl: { ca: tls.rootCertificates } },
+	settings.dbSettings
+);
 
 // set database settings
-const db =
-    new ueberDB.Database(settings.dbType, settings.dbSettings, null, log4js.getLogger('ueberDB'));
+const db = new ueberDB.Database(
+	settings.dbType,
+	realSettings,
+	null,
+	log4js.getLogger("ueberDB")
+);
 
 /**
  * The UeberDB Object that provides the database functions
