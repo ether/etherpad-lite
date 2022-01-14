@@ -28,7 +28,9 @@ const stats = require('../stats');
 const util = require('util');
 const tls = require("tls");
 var realSettings = Object.assign(
-	{ ssl: { ca: tls.rootCertificates } },
+	settings.dbUseSSL === true || settings.dbUseSSL === "true"
+		? { ssl: { ca: tls.rootCertificates } }
+		: {},
 	settings.dbSettings
 );
 

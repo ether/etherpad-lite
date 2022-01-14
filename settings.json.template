@@ -197,6 +197,7 @@
    */
 
   "dbType": "dirty",
+  "dbUseSSL": false,
   "dbSettings": {
     "filename": "var/dirty.db"
   },
