@@ -8,17 +8,22 @@ const util = require('util');
 const logger = log4js.getLogger('SessionStore');
 
 class SessionStore extends Store {
+  async _checkExpiration(sid, sess) {
+    const {cookie: {expires} = {}} = sess || {};
+    if (expires && new Date() >= new Date(expires)) return await this._destroy(sid);
+    return sess;
+  }
+
   async _get(sid) {
     logger.debug(`GET ${sid}`);
     const s = await DB.get(`sessionstorage:${sid}`);
-    const {cookie: {expires} = {}} = s || {};
-    if (expires && new Date() >= new Date(expires)) return await this._destroy(sid);
-    return s;
+    return await this._checkExpiration(sid, s);
   }
 
   async _set(sid, sess) {
     logger.debug(`SET ${sid}`);
-    await DB.set(`sessionstorage:${sid}`, sess);
+    sess = await this._checkExpiration(sid, sess);
+    if (sess != null) await DB.set(`sessionstorage:${sid}`, sess);
   }
 
   async _destroy(sid) {

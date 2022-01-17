@@ -46,6 +46,13 @@ describe(__filename, function () {
       await set(sess);
       assert.equal(JSON.stringify(await db.get(`sessionstorage:${sid}`)), JSON.stringify(sess));
     });
+
+    it('set of already expired session', async function () {
+      const sess = {foo: 'bar', cookie: {expires: new Date(1)}};
+      await set(sess);
+      // No record should have been created.
+      assert(await db.get(`sessionstorage:${sid}`) == null);
+    });
   });
 
   describe('get', function () {
