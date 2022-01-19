@@ -398,7 +398,8 @@
      * will delete the cookie when the browser exits, but a session record is
      * kept in the database forever.
      */
-    "sessionLifetime": 864000000, // = 10d * 24h/d * 60m/h * 60s/m * 1000ms/s
+    // 864000000 = 10d * 24h/d * 60m/h * 60s/m * 1000ms/s
+    "sessionLifetime": "${COOKIE_SESSION_LIFETIME:864000000}",
 
     /*
      * How long (in milliseconds) before the expiration time of an active user's
@@ -416,7 +417,8 @@
      * Automatic session refreshes can be disabled (not recommended) by setting
      * this to null.
      */
-    "sessionRefreshInterval": 86400000 // = 1d * 24h/d * 60m/h * 60s/m * 1000ms/s
+    // 86400000 = 1d * 24h/d * 60m/h * 60s/m * 1000ms/s
+    "sessionRefreshInterval": "${COOKIE_SESSION_REFRESH_INTERVAL:86400000}"
   },
 
   /*
