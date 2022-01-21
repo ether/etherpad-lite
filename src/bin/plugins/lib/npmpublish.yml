@@ -85,3 +85,7 @@ jobs:
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - name: Add package to etherpad organization
+        run: npm access grant read-write etherpad:developers
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
