@@ -8,9 +8,14 @@
 			"Macofe",
 			"Muxator",
 			"Nivit",
+			"VamosErik88",
 			"Vituzzu"
 		]
 	},
+	"admin.page-title": "Pannello amministrativo - Etherpad",
+	"admin_plugins": "Gestione plugin",
+	"admin_plugins.available": "Plugin disponibili",
+	"admin_plugins.available_not-found": "Nessun plugin trovato.",
 	"admin_plugins.available_install.value": "Installa",
 	"admin_plugins.installed_uninstall.value": "Disinstalla",
 	"admin_plugins.last-update": "Ultimo aggiornamento",
