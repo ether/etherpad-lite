@@ -25,11 +25,17 @@ jobs:
           context: .
           load: true
           tags: ${{ env.TEST_TAG }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       -
         name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: 'lts/*'
+          cache: 'npm'
+          cache-dependency-path: |
+            src/package-lock.json
+            src/bin/doc/package-lock.json
       -
         name: Test
         run: |

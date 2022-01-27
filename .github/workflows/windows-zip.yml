@@ -26,6 +26,10 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: 12
+        cache: 'npm'
+        cache-dependency-path: |
+          src/package-lock.json
+          src/bin/doc/package-lock.json
 
     - name: Install all dependencies and symlink for ep_etherpad-lite
       shell: msys2 {0}
@@ -64,6 +68,14 @@ jobs:
 
     - name: Extract Etherpad
       run: 7z x etherpad-lite-win.zip -oetherpad
+
+    - uses: actions/setup-node@v2
+      with:
+        node-version: 12
+        cache: 'npm'
+        cache-dependency-path: |
+          etherpad/src/package-lock.json
+          etherpad/src/bin/doc/package-lock.json
 
     - name: Install Cypress
       run: npm install cypress -g

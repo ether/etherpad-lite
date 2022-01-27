@@ -14,10 +14,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/setup-node@v2
-      with:
-        node-version: 12
-
     - name: Install libreoffice
       run: |
         sudo add-apt-repository -y ppa:libreoffice/ppa
@@ -46,6 +42,15 @@ jobs:
         mv ./node_modules/__tmp ./node_modules/"${PLUGIN_NAME}"
       env:
         PLUGIN_NAME: ${{ steps.plugin_name.outputs.plugin_name }}
+
+    - uses: actions/setup-node@v2
+      with:
+        node-version: 12
+        cache: 'npm'
+        cache-dependency-path: |
+          src/package-lock.json
+          src/bin/doc/package-lock.json
+          node_modules/${{ steps.plugin_name.outputs.plugin_name }}/package-lock.json
 
     - name: Install plugin dependencies
       run: |

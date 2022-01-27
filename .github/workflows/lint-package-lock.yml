@@ -20,6 +20,10 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: 12
+        cache: 'npm'
+        cache-dependency-path: |
+          src/package-lock.json
+          src/bin/doc/package-lock.json
 
     - name: Install lockfile-lint
       run: npm install --no-save lockfile-lint

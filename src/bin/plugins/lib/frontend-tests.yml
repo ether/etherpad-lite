@@ -15,14 +15,18 @@ jobs:
         printf %s\\n '::set-output name=name::${{github.event.repository.name}} ${{ github.workflow }} - ${{ github.job }}'
         printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
 
-    - uses: actions/setup-node@v2
-      with:
-        node-version: 12
-
     - name: Check out Etherpad core
       uses: actions/checkout@v2
       with:
         repository: ether/etherpad-lite
+
+    - uses: actions/setup-node@v2
+      with:
+        node-version: 12
+        cache: 'npm'
+        cache-dependency-path: |
+          src/package-lock.json
+          src/bin/doc/package-lock.json
 
     - name: Check out the plugin
       uses: actions/checkout@v2

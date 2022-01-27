@@ -25,6 +25,10 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node }}
+        cache: 'npm'
+        cache-dependency-path: |
+          src/package-lock.json
+          src/bin/doc/package-lock.json
 
     - name: Install libreoffice
       run: |
@@ -59,6 +63,10 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node }}
+        cache: 'npm'
+        cache-dependency-path: |
+          src/package-lock.json
+          src/bin/doc/package-lock.json
 
     - name: Install libreoffice
       run: |
@@ -114,6 +122,10 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: 12
+        cache: 'npm'
+        cache-dependency-path: |
+          src/package-lock.json
+          src/bin/doc/package-lock.json
 
     - name: Install all dependencies and symlink for ep_etherpad-lite
       run: src/bin/installOnWindows.bat
@@ -142,6 +154,10 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: 12
+        cache: 'npm'
+        cache-dependency-path: |
+          src/package-lock.json
+          src/bin/doc/package-lock.json
 
     - name: Install Etherpad plugins
       # The --legacy-peer-deps flag is required to work around a bug in npm v7:

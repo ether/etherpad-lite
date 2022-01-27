@@ -20,6 +20,10 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: 12
+        cache: 'npm'
+        cache-dependency-path: |
+          src/package-lock.json
+          src/bin/doc/package-lock.json
 
     - name: Install all dependencies and symlink for ep_etherpad-lite
       run: src/bin/installDeps.sh
@@ -46,6 +50,10 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: 12
+        cache: 'npm'
+        cache-dependency-path: |
+          src/package-lock.json
+          src/bin/doc/package-lock.json
 
     - name: Install etherpad-load-test
       run: sudo npm install -g etherpad-load-test
@@ -98,6 +106,10 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: 12
+        cache: 'npm'
+        cache-dependency-path: |
+          src/package-lock.json
+          src/bin/doc/package-lock.json
 
     - name: Install all dependencies and symlink for ep_etherpad-lite
       run: src/bin/installDeps.sh

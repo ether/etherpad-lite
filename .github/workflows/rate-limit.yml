@@ -19,6 +19,10 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: 12
+        cache: 'npm'
+        cache-dependency-path: |
+          src/package-lock.json
+          src/bin/doc/package-lock.json
 
     - name: docker network
       run: docker network create --subnet=172.23.42.0/16 ep_net
