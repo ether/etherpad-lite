@@ -25,4 +25,10 @@ jobs:
       run: npm install --no-save lockfile-lint
 
     - name: Run lockfile-lint on package-lock.json
-      run: npx lockfile-lint --path src/package-lock.json --validate-https --allowed-hosts npm
+      run: >
+        npx lockfile-lint
+        --path src/package-lock.json
+        --allowed-hosts npm
+        --allowed-schemes https:
+        --allowed-schemes github:
+        --allowed-urls github:mapbox/node-sqlite3#593c9d498be2510d286349134537e3bf89401c4a
