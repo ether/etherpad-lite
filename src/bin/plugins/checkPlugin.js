@@ -172,7 +172,7 @@ if (autoPush) {
     });
 
     await updateDeps(parsedPackageJSON, 'engines', {
-      node: '>=12.13.0',
+      node: '>=12.17.0',
     });
 
     if (parsedPackageJSON.eslintConfig == null) parsedPackageJSON.eslintConfig = {};

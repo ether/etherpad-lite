@@ -32,7 +32,7 @@ Etherpad is extremely flexible providing you the means to modify it to solve wha
 # Installation
 
 ## Requirements
-- [Node.js](https://nodejs.org/) >= **12.13.0**.
+- [Node.js](https://nodejs.org/) >= **12.17.0**.
 
 ## GNU/Linux and other UNIX-like systems
 
