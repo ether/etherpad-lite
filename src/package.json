@@ -49,7 +49,7 @@
     "jsonminify": "0.4.1",
     "languages4translatewiki": "0.1.3",
     "lodash.clonedeep": "4.5.0",
-    "log4js": "0.6.38",
+    "log4js": "6.4.0",
     "measured-core": "^2.0.0",
     "mime-types": "^2.1.34",
     "npm": "^6.14.15",
