@@ -74,7 +74,7 @@ jobs:
     - name: Remove standard frontend test files
       run: rm -rf src/tests/frontend/specs
 
-    - uses: saucelabs/sauce-connect-action@v1
+    - uses: saucelabs/sauce-connect-action@v2.1.1
       with:
         username: ${{ secrets.SAUCE_USERNAME }}
         accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
