@@ -21,21 +21,26 @@ jobs:
       # cloned to etherpad-lite then moved to ../etherpad-lite. To avoid
       # conflicts with this plugin's clone, etherpad-lite must be cloned and
       # moved out before this plugin's repo is cloned to $GITHUB_WORKSPACE.
-      - uses: actions/checkout@v2
+      -
+        uses: actions/checkout@v2
         with:
           repository: ether/etherpad-lite
           path: etherpad-lite
-      - run: mv etherpad-lite ..
+      -
+        run: mv etherpad-lite ..
       # etherpad-lite has been moved outside of $GITHUB_WORKSPACE, so it is now
       # safe to clone this plugin's repo to $GITHUB_WORKSPACE.
-      - uses: actions/checkout@v2
+      -
+        uses: actions/checkout@v2
       # This is necessary for actions/setup-node because '..' can't be used in
       # cache-dependency-path.
-      - name: Create ep_etherpad-lite symlink
+      -
+        name: Create ep_etherpad-lite symlink
         run: |
           mkdir -p node_modules
           ln -s ../../etherpad-lite/src node_modules/ep_etherpad-lite
-      - uses: actions/setup-node@v2
+      -
+        uses: actions/setup-node@v2
         with:
           node-version: 12
           cache: 'npm'
@@ -49,32 +54,40 @@ jobs:
       # Etherpad plugins from piggybacking off of ep_etherpad-lite's
       # devDependencies. If we had that, we could change this line to only
       # install production dependencies.
-      - run: cd ../etherpad-lite/src && npm ci
-      - run: npm ci
+      -
+        run: cd ../etherpad-lite/src && npm ci
+      -
+        run: npm ci
       # This runs some sanity checks and creates a symlink at
       # node_modules/ep_etherpad-lite that points to ../../etherpad-lite/src.
       # This step must be done after `npm ci` installs the plugin's dependencies
       # because npm "helpfully" cleans up such symlinks. :( Installing
       # ep_etherpad-lite in the plugin's node_modules prevents lint errors and
       # unit test failures if the plugin does `require('ep_etherpad-lite/foo')`.
-      - run: npm install --no-save ep_etherpad-lite@file:../etherpad-lite/src
-      - run: npm test
-      - run: npm run lint
+      -
+        run: npm install --no-save ep_etherpad-lite@file:../etherpad-lite/src
+      -
+        run: npm test
+      -
+        run: npm run lint
 
   publish-npm:
     if: github.event_name == 'push'
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      -
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v2
+      -
+        uses: actions/setup-node@v2
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/
           cache: 'npm'
-      - name: Bump version (patch)
+      -
+        name: Bump version (patch)
         run: |
           LATEST_TAG=$(git describe --tags --abbrev=0) || exit 1
           NEW_COMMITS=$(git rev-list --count "${LATEST_TAG}"..) || exit 1
@@ -94,10 +107,12 @@ jobs:
       # already-used version number. By running `npm publish` after `git push`,
       # back-to-back merges will cause the first merge's workflow to fail but
       # the second's will succeed.
-      - run: npm publish
+      -
+        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - name: Add package to etherpad organization
+      -
+        name: Add package to etherpad organization
         run: npm access grant read-write etherpad:developers
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
