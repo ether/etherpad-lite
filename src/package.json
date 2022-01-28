@@ -31,7 +31,7 @@
   ],
   "dependencies": {
     "async": "^3.2.2",
-    "clean-css": "^5.2.2",
+    "clean-css": "^5.2.3",
     "cookie-parser": "^1.4.6",
     "cross-spawn": "^7.0.3",
     "ejs": "^3.1.6",
@@ -85,7 +85,7 @@
     "eslint-plugin-mocha": "^9.0.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "eslint-plugin-promise": "^5.1.1",
+    "eslint-plugin-promise": "^5.2.0",
     "eslint-plugin-you-dont-need-lodash-underscore": "^6.12.0",
     "etherpad-cli-client": "^0.1.12",
     "mocha": "^9.1.3",
