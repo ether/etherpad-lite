@@ -156,7 +156,7 @@ if (autoPush) {
 
     await updateDeps(parsedPackageJSON, 'devDependencies', {
       'eslint': '^7.32.0',
-      'eslint-config-etherpad': '^2.0.2',
+      'eslint-config-etherpad': '^2.0.3',
       'eslint-plugin-cypress': '^2.12.1',
       'eslint-plugin-eslint-comments': '^3.2.0',
       'eslint-plugin-mocha': '^9.0.0',
