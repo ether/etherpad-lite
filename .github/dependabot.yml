@@ -13,7 +13,9 @@ updates:
     directory: "/src"
     schedule:
       interval: "daily"
+    versioning-strategy: "increase"
   - package-ecosystem: "npm"
     directory: "/src/bin/doc"
     schedule:
       interval: "daily"
+    versioning-strategy: "increase"
