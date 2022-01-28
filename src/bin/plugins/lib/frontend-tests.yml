@@ -10,6 +10,17 @@ jobs:
 
     steps:
       -
+        name: Fail if Dependabot
+        if: github.actor == "dependabot[bot]"
+        run: |
+          cat <<EOF >&2
+          Frontend tests skipped because Dependabot can't access secrets.
+          Manually re-run the jobs to run the frontend tests.
+          For more information, see:
+          https://github.blog/changelog/2021-02-19-github-actions-workflows-triggered-by-dependabot-prs-will-run-with-read-only-permissions/
+          EOF
+          exit 1
+      -
         name: Generate Sauce Labs strings
         id: sauce_strings
         run: |
