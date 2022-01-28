@@ -30,9 +30,6 @@ jobs:
       with:
         repository: ether/etherpad-lite
 
-    - name: Install all dependencies and symlink for ep_etherpad-lite
-      run: src/bin/installDeps.sh
-
     - name: Checkout plugin repository
       uses: actions/checkout@v2
       with:
@@ -56,6 +53,16 @@ jobs:
         npm ci
       env:
         PLUGIN_NAME: ${{ steps.plugin_name.outputs.plugin_name }}
+
+    # This must be run after setting up the plugin, otherwise npm will try to
+    # hoist common dependencies by removing them from src/node_modules and
+    # installing them in the top-level node_modules. As of v6.14.10, npm's hoist
+    # logic appears to be buggy, because it sometimes removes dependencies from
+    # src/node_modules but fails to add them to the top-level node_modules. Even
+    # if npm correctly hoists the dependencies, the hoisting seems to confuse
+    # tools such as `npm outdated`, `npm update`, and some ESLint rules.
+    - name: Install Etherpad core dependencies
+      run: src/bin/installDeps.sh
 
     - name: Run the backend tests
       run: cd src && npm test
