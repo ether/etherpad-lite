@@ -146,6 +146,7 @@ if (autoPush) {
   await Promise.all(workflows.map(async (fn) => {
     await checkFile(`src/bin/plugins/lib/${fn}`, `.github/workflows/${fn}`);
   }));
+  await checkFile('src/bin/plugins/lib/dependabot.yml', '.github/dependabot.yml');
 
   if (!files.includes('package.json')) {
     console.warn('no package.json, please create');
