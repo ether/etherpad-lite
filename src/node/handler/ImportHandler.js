@@ -26,7 +26,7 @@ const padMessageHandler = require('./PadMessageHandler');
 const fs = require('fs').promises;
 const path = require('path');
 const settings = require('../utils/Settings');
-const formidable = require('formidable');
+const {Formidable} = require('formidable');
 const os = require('os');
 const importHtml = require('../utils/ImportHtml');
 const importEtherpad = require('../utils/ImportEtherpad');
@@ -83,22 +83,11 @@ const doImport = async (req, res, padId) => {
   // setting flag for whether to use converter or not
   let useConverter = (converter != null);
 
-  const form = new formidable.IncomingForm();
-  form.keepExtensions = true;
-  form.uploadDir = tmpDirectory;
-  form.maxFileSize = settings.importMaxFileSize;
-
-  // Ref: https://github.com/node-formidable/formidable/issues/469
-  // Crash in Etherpad was Uploading Error: Error: Request aborted
-  // [ERR_STREAM_DESTROYED]: Cannot call write after a stream was destroyed
-  form.onPart = (part) => {
-    form.handlePart(part);
-    if (part.filename !== undefined) {
-      form.openedFiles[form.openedFiles.length - 1]._writeStream.on('error', (err) => {
-        form.emit('error', err);
-      });
-    }
-  };
+  const form = new Formidable({
+    keepExtensions: true,
+    uploadDir: tmpDirectory,
+    maxFileSize: settings.importMaxFileSize,
+  });
 
   // locally wrapped Promise, since form.parse requires a callback
   let srcFile = await new Promise((resolve, reject) => {
@@ -115,7 +104,7 @@ const doImport = async (req, res, padId) => {
         logger.warn('Import failed because form had no file');
         return reject(new ImportError('uploadFailed'));
       }
-      resolve(files.file.path);
+      resolve(files.file.filepath);
     });
   });
 
