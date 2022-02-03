@@ -84,7 +84,7 @@
 	"pad.toolbar.showusers.title": "Afficher les utilisateurs du bloc-notes",
 	"pad.colorpicker.save": "Enregistrer",
 	"pad.colorpicker.cancel": "Annuler",
-	"pad.loading": "Chargement...",
+	"pad.loading": "Chargement en cours...",
 	"pad.noCookie": "Un fichier témoin (ou ''cookie'') n’a pas pu être trouvé. Veuillez autoriser les fichiers témoins dans votre navigateur ! Votre session et vos paramètres ne seront pas enregistrés entre les visites. Cela peut être dû au fait qu’Etherpad est inclus dans un ''iFrame'' dans certains navigateurs. Veuillez vous assurer qu’Etherpad est dans le même sous-domaine/domaine que son ''iFrame'' parent.",
 	"pad.permissionDenied": "Vous n’êtes pas autorisé à accéder à ce bloc-notes",
 	"pad.settings.padSettings": "Paramètres du bloc-notes",
