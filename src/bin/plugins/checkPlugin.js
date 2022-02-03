@@ -156,8 +156,8 @@ if (autoPush) {
     const parsedPackageJSON = JSON.parse(packageJSON);
 
     await updateDeps(parsedPackageJSON, 'devDependencies', {
-      'eslint': '^8.7.0',
-      'eslint-config-etherpad': '^2.0.6',
+      'eslint': '^8.8.0',
+      'eslint-config-etherpad': '^2.0.7',
       'eslint-plugin-cypress': '^2.12.1',
       'eslint-plugin-eslint-comments': '^3.2.0',
       'eslint-plugin-mocha': '^10.0.3',
