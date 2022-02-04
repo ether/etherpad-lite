@@ -37,7 +37,7 @@
     "ejs": "^3.1.6",
     "etherpad-require-kernel": "^1.0.15",
     "etherpad-yajsml": "0.0.12",
-    "express": "4.17.1",
+    "express": "4.17.2",
     "express-rate-limit": "^5.5.1",
     "express-session": "npm:@etherpad/express-session@^1.18.1",
     "fast-deep-equal": "^3.1.3",
