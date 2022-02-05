@@ -180,8 +180,8 @@ returns all pads of this group
 creates a new pad in this group
 
 *Example returns:*
-  * `{code: 0, message:"ok", data: null}`
-  * `{code: 1, message:"pad does already exist", data: null}`
+  * `{code: 0, message:"ok", data: {padID: "g.s8oes9dhwrvt0zif$test"}`
+  * `{code: 1, message:"padName does already exist", data: null}`
   * `{code: 1, message:"groupID does not exist", data: null}`
 
 #### listAllGroups()
