@@ -37,6 +37,11 @@
     session expires (with some exceptions that will be fixed in the future).
   * Requests for static content (e.g., `/robots.txt`) and special pages (e.g.,
     the HTTP API, `/stats`) no longer create login session state.
+  * The secret used to sign the `express_sid` cookie is now automatically
+    regenerated every day (called *key rotation*) by default. If key rotation is
+    enabled, the now-deprecated `SESSIONKEY.txt` file can be safely deleted
+    after Etherpad starts up (its content is read and saved to the database and
+    used to validate signatures from old cookies until they expire).
 * The following settings from `settings.json` are now applied as expected (they
   were unintentionally ignored before):
   * `padOptions.lang`
