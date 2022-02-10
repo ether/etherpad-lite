@@ -559,11 +559,12 @@ returns the id of a pad which is assigned to the readOnlyID
 #### setPublicStatus(padID, publicStatus)
  * API >= 1
 
-sets a boolean for the public status of a pad
+sets a boolean for the public status of a group pad
 
 *Example returns:*
   * `{code: 0, message:"ok", data: null}`
   * `{code: 1, message:"padID does not exist", data: null}`
+  * `{code: 1, message:"You can only get/set the publicStatus of pads that belong to a group", data: null}`
 
 #### getPublicStatus(padID)
  * API >= 1
@@ -573,6 +574,7 @@ return true of false
 *Example returns:*
   * `{code: 0, message:"ok", data: {publicStatus: true}}`
   * `{code: 1, message:"padID does not exist", data: null}`
+  * `{code: 1, message:"You can only get/set the publicStatus of pads that belong to a group", data: null}`
 
 #### listAuthorsOfPad(padID)
  * API >= 1
