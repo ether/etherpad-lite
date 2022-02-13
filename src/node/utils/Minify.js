@@ -35,7 +35,8 @@ const logger = log4js.getLogger('Minify');
 
 const ROOT_DIR = path.join(settings.root, 'src/static/');
 
-const threadsPool = new Threads.Pool(() => Threads.spawn(new Threads.Worker('./MinifyWorker')), 2);
+const threadWorker = new Threads.Worker('./MinifyWorker');
+const threadsPool = new Threads.Pool(() => Threads.spawn(threadWorker), 2);
 
 const LIBRARY_WHITELIST = [
   'async',
