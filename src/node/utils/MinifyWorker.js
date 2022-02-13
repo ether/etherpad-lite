@@ -18,6 +18,7 @@ const compressCSS = async (filename, ROOT_DIR) => {
     const output = await new CleanCSS({
       rebase: true,
       rebaseTo: basePath,
+      returnPromise: true,
     }).minify([absPath]);
     return output.styles;
   } catch (error) {
