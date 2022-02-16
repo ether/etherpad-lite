@@ -216,6 +216,31 @@ Context properties:
 * `authorId`: The ID of the author who created the pad.
 * `author` (**deprecated**): Synonym of `authorId`.
 
+## `padDefaultContent`
+
+Called from `src/node/db/Pad.js`
+
+Called to obtain a pad's initial content, unless the pad is being created with
+specific content. The return value is ignored; to change the content, modify the
+`content` context property.
+
+This hook is run asynchronously. All registered hook functions are run
+concurrently (via `Promise.all()`), so be careful to avoid race conditions when
+reading and modifying the context properties.
+
+Context properties:
+
+* `pad`: The newly created Pad object.
+* `authorId`: The author ID of the user that is creating the pad.
+* `type`: String identifying the content type. Currently this is `'text'` and
+  must not be changed. Future versions of Etherpad may add support for HTML,
+  jsdom objects, or other formats, so plugins must assert that this matches a
+  supported content type before reading `content`.
+* `content`: The pad's initial content. Change this property to change the pad's
+  initial content. If the content type is changed, the `type` property must also
+  be updated to match. Plugins must check the value of the `type` property
+  before reading this value.
+
 ## `padLoad`
 
 Called from: `src/node/db/PadManager.js`

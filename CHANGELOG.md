@@ -39,6 +39,7 @@
 #### For plugin authors
 
 * New `expressPreSession` server-side hook.
+* New `padDefaultContent` server-side hook.
 * New APIs for processing attributes: `ep_etherpad-lite/static/js/attributes`
   (low-level API) and `ep_etherpad-lite/static/js/AttributeMap` (high-level
   API).

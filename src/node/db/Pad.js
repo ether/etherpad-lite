@@ -372,11 +372,6 @@ Pad.prototype.getChatMessages = async function (start, end) {
 };
 
 Pad.prototype.init = async function (text, authorId = '') {
-  // replace text with default text if text isn't set
-  if (text == null) {
-    text = settings.defaultPadText;
-  }
-
   // try to load the pad
   const value = await this._db.get(`pad:${this.id}`);
 
@@ -391,9 +386,18 @@ Pad.prototype.init = async function (text, authorId = '') {
       }
     }
   } else {
-    // this pad doesn't exist, so create it
-    const firstChangeset = Changeset.makeSplice('\n', 0, 0, exports.cleanText(text));
-
+    if (text == null) {
+      const context = {
+        pad: this,
+        authorId,
+        type: 'text',
+        content: exports.cleanText(settings.defaultPadText),
+      };
+      await hooks.aCallAll('padDefaultContent', context);
+      if (context.type !== 'text') throw new Error(`unsupported content type: ${context.type}`);
+      text = context.content;
+    }
+    const firstChangeset = Changeset.makeSplice('\n', 0, 0, text);
     await this.appendRevision(firstChangeset, authorId);
   }
 };
