@@ -76,10 +76,8 @@ Pad.prototype.getPublicStatus = function () {
   return this.publicStatus;
 };
 
-Pad.prototype.appendRevision = async function (aChangeset, author) {
-  if (!author) {
-    author = '';
-  }
+Pad.prototype.appendRevision = async function (aChangeset, authorId) {
+  if (!authorId) authorId = '';
 
   const newAText = Changeset.applyToAText(aChangeset, this.atext, this.pool);
   if (newAText.text === this.atext.text && newAText.attribs === this.atext.attribs) {
@@ -92,13 +90,11 @@ Pad.prototype.appendRevision = async function (aChangeset, author) {
   const newRevData = {};
   newRevData.changeset = aChangeset;
   newRevData.meta = {};
-  newRevData.meta.author = author;
+  newRevData.meta.author = authorId;
   newRevData.meta.timestamp = Date.now();
 
   // ex. getNumForAuthor
-  if (author !== '') {
-    this.pool.putAttrib(['author', author]);
-  }
+  if (authorId !== '') this.pool.putAttrib(['author', authorId]);
 
   if (newRev % 100 === 0) {
     newRevData.meta.pool = this.pool;
@@ -111,14 +107,12 @@ Pad.prototype.appendRevision = async function (aChangeset, author) {
   ];
 
   // set the author to pad
-  if (author) {
-    p.push(authorManager.addPad(author, this.id));
-  }
+  if (authorId) p.push(authorManager.addPad(authorId, this.id));
 
   if (this.head === 0) {
-    hooks.callAll('padCreate', {pad: this, author});
+    hooks.callAll('padCreate', {pad: this, author: authorId});
   } else {
-    hooks.callAll('padUpdate', {pad: this, author, revs: newRev, changeset: aChangeset});
+    hooks.callAll('padUpdate', {pad: this, author: authorId, revs: newRev, changeset: aChangeset});
   }
 
   await Promise.all(p);
@@ -162,15 +156,15 @@ Pad.prototype.getRevisionDate = async function (revNum) {
 };
 
 Pad.prototype.getAllAuthors = function () {
-  const authors = [];
+  const authorIds = [];
 
   for (const key in this.pool.numToAttrib) {
     if (this.pool.numToAttrib[key][0] === 'author' && this.pool.numToAttrib[key][1] !== '') {
-      authors.push(this.pool.numToAttrib[key][1]);
+      authorIds.push(this.pool.numToAttrib[key][1]);
     }
   }
 
-  return authors;
+  return authorIds;
 };
 
 Pad.prototype.getInternalRevisionAText = async function (targetRev) {
@@ -213,14 +207,14 @@ Pad.prototype.getRevision = async function (revNum) {
 };
 
 Pad.prototype.getAllAuthorColors = async function () {
-  const authors = this.getAllAuthors();
+  const authorIds = this.getAllAuthors();
   const returnTable = {};
   const colorPalette = authorManager.getColorPalette();
 
   await Promise.all(
-      authors.map((author) => authorManager.getAuthorColorId(author).then((colorId) => {
+      authorIds.map((authorId) => authorManager.getAuthorColorId(authorId).then((colorId) => {
         // colorId might be a hex color or an number out of the palette
-        returnTable[author] = colorPalette[colorId] || colorId;
+        returnTable[authorId] = colorPalette[colorId] || colorId;
       })));
 
   return returnTable;
@@ -562,8 +556,8 @@ Pad.prototype.remove = async function () {
   }));
 
   // remove pad from all authors who contributed
-  this.getAllAuthors().forEach((authorID) => {
-    p.push(authorManager.removePad(authorID, padID));
+  this.getAllAuthors().forEach((authorId) => {
+    p.push(authorManager.removePad(authorId, padID));
   });
 
   // delete the pad entry and delete pad from padManager
@@ -643,22 +637,22 @@ Pad.prototype.check = async function () {
   assert(pool instanceof AttributePool);
   await pool.check();
 
-  const authors = new Set();
+  const authorIds = new Set();
   pool.eachAttrib((k, v) => {
-    if (k === 'author' && v) authors.add(v);
+    if (k === 'author' && v) authorIds.add(v);
   });
   let atext = Changeset.makeAText('\n');
   let r;
   try {
     for (r = 0; r <= head; ++r) {
-      const [changeset, author, timestamp] = await Promise.all([
+      const [changeset, authorId, timestamp] = await Promise.all([
         this.getRevisionChangeset(r),
         this.getRevisionAuthor(r),
         this.getRevisionDate(r),
       ]);
-      assert(author != null);
-      assert.equal(typeof author, 'string');
-      if (author) authors.add(author);
+      assert(authorId != null);
+      assert.equal(typeof authorId, 'string');
+      if (authorId) authorIds.add(authorId);
       assert(timestamp != null);
       assert.equal(typeof timestamp, 'number');
       assert(timestamp > 0);
@@ -689,7 +683,7 @@ Pad.prototype.check = async function () {
   }
   assert.equal(this.text(), atext.text);
   assert.deepEqual(this.atext, atext);
-  assert.deepEqual(this.getAllAuthors().sort(), [...authors].sort());
+  assert.deepEqual(this.getAllAuthors().sort(), [...authorIds].sort());
 
   assert(Number.isInteger(this.chatHead));
   assert(this.chatHead >= -1);
