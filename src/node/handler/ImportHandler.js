@@ -139,18 +139,15 @@ const doImport = async (req, res, padId) => {
 
   let directDatabaseAccess = false;
   if (fileIsEtherpad) {
-    // we do this here so we can see if the pad has quite a few edits
-    const _pad = await padManager.getPad(padId);
-    const headCount = _pad.head;
-
+    const pad = await padManager.getPad(padId);
+    const headCount = pad.head;
     if (headCount >= 10) {
       logger.warn('Aborting direct database import attempt of a pad that already has content');
       throw new ImportError('padHasData');
     }
-
-    const _text = await fs.readFile(srcFile, 'utf8');
+    const text = await fs.readFile(srcFile, 'utf8');
     directDatabaseAccess = true;
-    await importEtherpad.setPadRaw(padId, _text);
+    await importEtherpad.setPadRaw(padId, text);
   }
 
   // convert file to html if necessary
