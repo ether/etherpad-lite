@@ -91,9 +91,11 @@ const padList = new class {
 /**
  * Returns a Pad Object with the callback
  * @param id A String with the id of the pad
- * @param {Function} callback
+ * @param {string} [text] - Optional initial pad text if creating a new pad.
+ * @param {string} [authorId] - Optional author ID of the user that initiated the pad creation (if
+ *     applicable).
  */
-exports.getPad = async (id, text) => {
+exports.getPad = async (id, text, authorId = '') => {
   // check if this is a valid padId
   if (!exports.isValidPadId(id)) {
     throw new CustomError(`${id} is not a valid padId`, 'apierror');
@@ -123,7 +125,7 @@ exports.getPad = async (id, text) => {
   pad = new Pad.Pad(id);
 
   // initialize the pad
-  await pad.init(text);
+  await pad.init(text, authorId);
   hooks.callAll('padLoad', {pad});
   globalPads.set(id, pad);
   padList.addPad(id);

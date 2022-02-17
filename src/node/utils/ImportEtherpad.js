@@ -27,7 +27,7 @@ const supportedElems = require('../../static/js/contentcollector').supportedElem
 
 const logger = log4js.getLogger('ImportEtherpad');
 
-exports.setPadRaw = async (padId, r) => {
+exports.setPadRaw = async (padId, r, authorId = '') => {
   const records = JSON.parse(r);
 
   // get supported block Elements from plugins, we will use this later.
@@ -110,7 +110,7 @@ exports.setPadRaw = async (padId, r) => {
       return v;
     },
   });
-  await pad.init();
+  await pad.init(null, authorId);
   await pad.check();
 
   await Promise.all([

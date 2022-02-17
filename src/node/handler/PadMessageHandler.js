@@ -676,13 +676,13 @@ const handleUserChanges = async (socket, message) => {
 
     const correctionChangeset = _correctMarkersInPad(pad.atext, pad.pool);
     if (correctionChangeset) {
-      await pad.appendRevision(correctionChangeset);
+      await pad.appendRevision(correctionChangeset, thisSession.author);
     }
 
     // Make sure the pad always ends with an empty line.
     if (pad.text().lastIndexOf('\n') !== pad.text().length - 1) {
       const nlChangeset = Changeset.makeSplice(pad.text(), pad.text().length - 1, 0, '\n');
-      await pad.appendRevision(nlChangeset);
+      await pad.appendRevision(nlChangeset, thisSession.author);
     }
 
     // The client assumes that ACCEPT_COMMIT and NEW_CHANGES messages arrive in order. Make sure we

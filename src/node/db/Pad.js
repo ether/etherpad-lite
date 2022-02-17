@@ -274,8 +274,9 @@ Pad.prototype.text = function () {
  * @param {number} ndel - Number of characters to remove starting at `start`. Must be a non-negative
  *     integer less than or equal to `this.text().length - start`.
  * @param {string} ins - New text to insert at `start` (after the `ndel` characters are deleted).
+ * @param {string} [authorId] - Author ID of the user making the change (if applicable).
  */
-Pad.prototype.spliceText = async function (start, ndel, ins) {
+Pad.prototype.spliceText = async function (start, ndel, ins, authorId = '') {
   if (start < 0) throw new RangeError(`start index must be non-negative (is ${start})`);
   if (ndel < 0) throw new RangeError(`characters to delete must be non-negative (is ${ndel})`);
   const orig = this.text();
@@ -289,7 +290,7 @@ Pad.prototype.spliceText = async function (start, ndel, ins) {
   if (!willEndWithNewline) ins += '\n';
   if (ndel === 0 && ins.length === 0) return;
   const changeset = Changeset.makeSplice(orig, start, ndel, ins);
-  await this.appendRevision(changeset);
+  await this.appendRevision(changeset, authorId);
 };
 
 /**
@@ -297,18 +298,20 @@ Pad.prototype.spliceText = async function (start, ndel, ins) {
  *
  * @param {string} newText - The pad's new text. If this string does not end with a newline, one
  *     will be automatically appended.
+ * @param {string} [authorId] - The author ID of the user that initiated the change, if applicable.
  */
-Pad.prototype.setText = async function (newText) {
-  await this.spliceText(0, this.text().length, newText);
+Pad.prototype.setText = async function (newText, authorId = '') {
+  await this.spliceText(0, this.text().length, newText, authorId);
 };
 
 /**
  * Appends text to the pad.
  *
  * @param {string} newText - Text to insert just BEFORE the pad's existing terminating newline.
+ * @param {string} [authorId] - The author ID of the user that initiated the change, if applicable.
  */
-Pad.prototype.appendText = async function (newText) {
-  await this.spliceText(this.text().length - 1, 0, newText);
+Pad.prototype.appendText = async function (newText, authorId = '') {
+  await this.spliceText(this.text().length - 1, 0, newText, authorId);
 };
 
 /**
@@ -368,7 +371,7 @@ Pad.prototype.getChatMessages = async function (start, end) {
   });
 };
 
-Pad.prototype.init = async function (text) {
+Pad.prototype.init = async function (text, authorId = '') {
   // replace text with default text if text isn't set
   if (text == null) {
     text = settings.defaultPadText;
@@ -391,7 +394,7 @@ Pad.prototype.init = async function (text) {
     // this pad doesn't exist, so create it
     const firstChangeset = Changeset.makeSplice('\n', 0, 0, exports.cleanText(text));
 
-    await this.appendRevision(firstChangeset, '');
+    await this.appendRevision(firstChangeset, authorId);
   }
 };
 
@@ -476,7 +479,7 @@ Pad.prototype.copyAuthorInfoToDestinationPad = async function (destinationID) {
       (authorID) => authorManager.addPad(authorID, destinationID)));
 };
 
-Pad.prototype.copyPadWithoutHistory = async function (destinationID, force) {
+Pad.prototype.copyPadWithoutHistory = async function (destinationID, force, authorId = '') {
   // flush the source pad
   this.saveToDatabase();
 
@@ -494,7 +497,7 @@ Pad.prototype.copyPadWithoutHistory = async function (destinationID, force) {
   }
 
   // initialize the pad with a new line to avoid getting the defaultText
-  const newPad = await padManager.getPad(destinationID, '\n');
+  const newPad = await padManager.getPad(destinationID, '\n', authorId);
   newPad.pool = this.pool.clone();
 
   const oldAText = this.atext;
@@ -514,7 +517,7 @@ Pad.prototype.copyPadWithoutHistory = async function (destinationID, force) {
   // create a changeset that removes the previous text and add the newText with
   // all atributes present on the source pad
   const changeset = Changeset.pack(oldLength, newLength, assem.toString(), newText);
-  newPad.appendRevision(changeset);
+  newPad.appendRevision(changeset, authorId);
 
   await hooks.aCallAll('padCopy', {originalPad: this, destinationID});
 

@@ -23,7 +23,7 @@ const jsdom = require('jsdom');
 const apiLogger = log4js.getLogger('ImportHtml');
 let processor;
 
-exports.setPadHTML = async (pad, html) => {
+exports.setPadHTML = async (pad, html, authorId = '') => {
   if (processor == null) {
     const [{rehype}, {default: minifyWhitespace}] =
         await Promise.all([import('rehype'), import('rehype-minify-whitespace')]);
@@ -88,6 +88,6 @@ exports.setPadHTML = async (pad, html) => {
   const theChangeset = builder.toString();
 
   apiLogger.debug(`The changeset: ${theChangeset}`);
-  await pad.setText('\n');
-  await pad.appendRevision(theChangeset);
+  await pad.setText('\n', authorId);
+  await pad.appendRevision(theChangeset, authorId);
 };
