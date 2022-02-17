@@ -18,6 +18,7 @@ const CustomError = require('../utils/customError');
 const readOnlyManager = require('./ReadOnlyManager');
 const randomString = require('../utils/randomstring');
 const hooks = require('../../static/js/pluginfw/hooks');
+const {padutils: {warnDeprecated}} = require('../../static/js/pad_utils');
 const promises = require('../utils/promises');
 
 // serialization/deserialization attributes
@@ -109,11 +110,25 @@ Pad.prototype.appendRevision = async function (aChangeset, authorId) {
   // set the author to pad
   if (authorId) p.push(authorManager.addPad(authorId, this.id));
 
-  if (this.head === 0) {
-    hooks.callAll('padCreate', {pad: this, author: authorId});
-  } else {
-    hooks.callAll('padUpdate', {pad: this, author: authorId, revs: newRev, changeset: aChangeset});
+  let hook = 'padCreate';
+  const context = {
+    pad: this,
+    authorId,
+    get author() {
+      warnDeprecated(`${hook} hook author context is deprecated; use authorId instead`);
+      return this.authorId;
+    },
+    set author(authorId) {
+      warnDeprecated(`${hook} hook author context is deprecated; use authorId instead`);
+      this.authorId = authorId;
+    },
+  };
+  if (this.head !== 0) {
+    hook = 'padUpdate';
+    context.revs = newRev;
+    context.changeset = aChangeset;
   }
+  hooks.callAll(hook, context);
 
   await Promise.all(p);
   return newRev;

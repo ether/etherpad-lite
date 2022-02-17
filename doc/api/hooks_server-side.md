@@ -213,7 +213,8 @@ Called when a new pad is created.
 Context properties:
 
 * `pad`: The Pad object.
-* `author`: The ID of the author who created the pad.
+* `authorId`: The ID of the author who created the pad.
+* `author` (**deprecated**): Synonym of `authorId`.
 
 ## `padLoad`
 
@@ -234,7 +235,8 @@ Called when an existing pad is updated.
 Context properties:
 
 * `pad`: The Pad object.
-* `author`: The ID of the author who updated the pad.
+* `authorId`: The ID of the author who updated the pad.
+* `author` (**deprecated**): Synonym of `authorId`.
 * `revs`: The index of the new revision.
 * `changeset`: The changeset of this revision (see [Changeset
   Library](#index_changeset_library)).

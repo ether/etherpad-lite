@@ -57,6 +57,8 @@
 * The `client` context property for the `handleMessageSecurity` and
   `handleMessage` server-side hooks is deprecated; use the `socket` context
   property instead.
+* The `author` context property for the `padCreate` and `padUpdate` server-side
+  hooks is deprecated; use the new `authorId` context property instead.
 * Returning `true` from a `handleMessageSecurity` hook function is deprecated;
   return `'permitOnce'` instead.
 * Changes to the `src/static/js/Changeset.js` library:
