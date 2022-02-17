@@ -477,8 +477,6 @@ Pad.prototype.copyAuthorInfoToDestinationPad = async function (destinationID) {
 };
 
 Pad.prototype.copyPadWithoutHistory = async function (destinationID, force) {
-  const sourceID = this.id;
-
   // flush the source pad
   this.saveToDatabase();
 
@@ -488,9 +486,6 @@ Pad.prototype.copyPadWithoutHistory = async function (destinationID, force) {
   // if force is true and already exists a Pad with the same id, remove that Pad
   await this.removePadIfForceIsTrueAndAlreadyExist(destinationID, force);
 
-  const sourcePad = await padManager.getPad(sourceID);
-
-  // add the new sourcePad to all authors who contributed to the old one
   await this.copyAuthorInfoToDestinationPad(destinationID);
 
   // Group pad? Add it to the group's list
@@ -500,7 +495,7 @@ Pad.prototype.copyPadWithoutHistory = async function (destinationID, force) {
 
   // initialize the pad with a new line to avoid getting the defaultText
   const newPad = await padManager.getPad(destinationID, '\n');
-  newPad.pool = sourcePad.pool.clone();
+  newPad.pool = this.pool.clone();
 
   const oldAText = this.atext;
 
