@@ -139,7 +139,8 @@ const doImport = async (req, res, padId) => {
 
   let directDatabaseAccess = false;
   if (fileIsEtherpad) {
-    const pad = await padManager.getPad(padId);
+    // Use '\n' to avoid the default pad text if the pad doesn't yet exist.
+    const pad = await padManager.getPad(padId, '\n');
     const headCount = pad.head;
     if (headCount >= 10) {
       logger.warn('Aborting direct database import attempt of a pad that already has content');
