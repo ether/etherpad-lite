@@ -77,9 +77,7 @@ Pad.prototype.getPublicStatus = function () {
   return this.publicStatus;
 };
 
-Pad.prototype.appendRevision = async function (aChangeset, authorId) {
-  if (!authorId) authorId = '';
-
+Pad.prototype.appendRevision = async function (aChangeset, authorId = '') {
   const newAText = Changeset.applyToAText(aChangeset, this.atext, this.pool);
   if (newAText.text === this.atext.text && newAText.attribs === this.atext.attribs) {
     return this.head;
