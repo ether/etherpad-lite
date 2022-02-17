@@ -134,8 +134,19 @@ version['1.2.15'] = Object.assign({}, version['1.2.14'],
     {copyPadWithoutHistory: ['sourceID', 'destinationID', 'force']}
 );
 
+version['1.3.0'] = {
+  ...version['1.2.15'],
+  appendText: ['padID', 'text', 'authorId'],
+  copyPadWithoutHistory: ['sourceID', 'destinationID', 'force', 'authorId'],
+  createGroupPad: ['groupID', 'padName', 'text', 'authorId'],
+  createPad: ['padID', 'text', 'authorId'],
+  restoreRevision: ['padID', 'rev', 'authorId'],
+  setHTML: ['padID', 'html', 'authorId'],
+  setText: ['padID', 'text', 'authorId'],
+};
+
 // set the latest available API version here
-exports.latestApiVersion = '1.2.15';
+exports.latestApiVersion = '1.3.0';
 
 // exports the versions so it can be used by the new Swagger endpoint
 exports.version = version;

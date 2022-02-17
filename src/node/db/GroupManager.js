@@ -103,7 +103,7 @@ exports.createGroupIfNotExistsFor = async (groupMapper) => {
   return result;
 };
 
-exports.createGroupPad = async (groupID, padName, text) => {
+exports.createGroupPad = async (groupID, padName, text, authorId = '') => {
   // create the padID
   const padID = `${groupID}$${padName}`;
 
@@ -123,7 +123,7 @@ exports.createGroupPad = async (groupID, padName, text) => {
   }
 
   // create the pad
-  await padManager.getPad(padID, text);
+  await padManager.getPad(padID, text, authorId);
 
   // create an entry in the group for this pad
   await db.setSub(`group:${groupID}`, ['pads', padID], 1);

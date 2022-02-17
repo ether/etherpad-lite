@@ -173,8 +173,9 @@ returns all pads of this group
   * `{code: 0, message:"ok", data: {padIDs : ["g.s8oes9dhwrvt0zif$test", "g.s8oes9dhwrvt0zif$test2"]}`
   * `{code: 1, message:"groupID does not exist", data: null}`
 
-#### createGroupPad(groupID, padName [, text])
+#### createGroupPad(groupID, padName, [text], [authorId])
  * API >= 1
+ * `authorId` in API >= 1.3.0
 
 creates a new pad in this group
 
@@ -293,8 +294,9 @@ returns the text of a pad
   * `{code: 0, message:"ok", data: {text:"Welcome Text"}}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
-#### setText(padID, text)
+#### setText(padID, text, [authorId])
  * API >= 1
+ * `authorId` in API >= 1.3.0
 
 Sets the text of a pad.
 
@@ -305,8 +307,9 @@ If your text is long (>8 KB), please invoke via POST and include `text` paramete
   * `{code: 1, message:"padID does not exist", data: null}`
   * `{code: 1, message:"text too long", data: null}`
 
-#### appendText(padID, text)
+#### appendText(padID, text, [authorId])
  * API >= 1.2.13
+ * `authorId` in API >= 1.3.0
 
 Appends text to a pad.
 
@@ -326,8 +329,9 @@ returns the text of a pad formatted as HTML
   * `{code: 0, message:"ok", data: {html:"Welcome Text<br>More Text"}}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
-#### setHTML(padID, html)
+#### setHTML(padID, html, [authorId])
  * API >= 1
+ * `authorId` in API >= 1.3.0
 
 sets the text of a pad based on HTML, HTML must be well-formed. Malformed HTML will send a warning to the API log.
 
@@ -387,8 +391,9 @@ returns an object of diffs from 2 points in a pad
   * `{"code":0,"message":"ok","data":{"html":"<style>\n.authora_HKIv23mEbachFYfH {background-color: #a979d9}\n.authora_n4gEeMLsv1GivNeh {background-color: #a9b5d9}\n.removed {text-decoration: line-through; -ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)'; filter: alpha(opacity=80); opacity: 0.8; }\n</style>Welcome to Etherpad!<br><br>This pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!<br><br>Get involved with Etherpad at <a href=\"http&#x3a;&#x2F;&#x2F;etherpad&#x2e;org\">http:&#x2F;&#x2F;etherpad.org</a><br><span class=\"authora_HKIv23mEbachFYfH\">aw</span><br><br>","authors":["a.HKIv23mEbachFYfH",""]}}`
   * `{"code":4,"message":"no or wrong API Key","data":null}`
 
-#### restoreRevision(padId, rev)
+#### restoreRevision(padId, rev, [authorId])
  * API >= 1.2.11
+ * `authorId` in API >= 1.3.0
 
 Restores revision from past as new changeset
 
@@ -437,8 +442,9 @@ creates a chat message, saves it to the database and sends it to all connected c
 ### Pad
 Group pads are normal pads, but with the name schema GROUPID$PADNAME. A security manager controls access of them and it's forbidden for normal pads to include a $ in the name.
 
-#### createPad(padID [, text])
+#### createPad(padID, [text], [authorId])
  * API >= 1
+ * `authorId` in API >= 1.3.0
 
 creates a new (non-group) pad.  Note that if you need to create a group Pad, you should call **createGroupPad**.
 You get an error message if you use one of the following characters in the padID: "/", "?", "&" or "#".
@@ -519,8 +525,9 @@ copies a pad with full history and chat. If force is true and the destination pa
   * `{code: 0, message:"ok", data: null}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
-#### copyPadWithoutHistory(sourceID, destinationID[, force=false])
+#### copyPadWithoutHistory(sourceID, destinationID, [force=false], [authorId])
 * API >= 1.2.15
+ * `authorId` in API >= 1.3.0
 
 copies a pad without copying the history and chat. If force is true and the destination pad exists, it will be overwritten.
 Note that all the revisions will be lost! In most of the cases one should use `copyPad` API instead.
