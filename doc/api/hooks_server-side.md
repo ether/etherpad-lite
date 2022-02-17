@@ -204,15 +204,16 @@ Things in context:
 This hook gets called when the access to the concrete pad is being checked.
 Return `false` to deny access.
 
-## padCreate
-Called from: src/node/db/Pad.js
+## `padCreate`
 
-Things in context:
+Called from: `src/node/db/Pad.js`
 
-1. pad - the pad instance
-2. author - the id of the author who created the pad
+Called when a new pad is created.
 
-This hook gets called when a new pad was created.
+Context properties:
+
+* `pad`: The Pad object.
+* `author`: The ID of the author who created the pad.
 
 ## `padLoad`
 
@@ -224,17 +225,19 @@ Context properties:
 
 * `pad`: The Pad object.
 
-## padUpdate
-Called from: src/node/db/Pad.js
+## `padUpdate`
 
-Things in context:
+Called from: `src/node/db/Pad.js`
 
-1. pad - the pad instance
-2. author - the id of the author who updated the pad
-3. revs - the index of the new revision
-4. changeset - the changeset of this revision (see [Changeset Library](#index_changeset_library))
+Called when an existing pad is updated.
 
-This hook gets called when an existing pad was updated.
+Context properties:
+
+* `pad`: The Pad object.
+* `author`: The ID of the author who updated the pad.
+* `revs`: The index of the new revision.
+* `changeset`: The changeset of this revision (see [Changeset
+  Library](#index_changeset_library)).
 
 ## padCopy
 Called from: src/node/db/Pad.js
