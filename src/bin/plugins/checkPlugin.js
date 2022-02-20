@@ -171,15 +171,21 @@ const logger = log4js.getLogger('checkPlugin');
     const parsedPackageJSON = JSON.parse(packageJSON);
 
     await updateDeps(parsedPackageJSON, 'devDependencies', {
-      'eslint': '^8.8.0',
-      'eslint-config-etherpad': '^2.0.7',
-      'eslint-plugin-cypress': '^2.12.1',
-      'eslint-plugin-eslint-comments': '^3.2.0',
-      'eslint-plugin-mocha': '^10.0.3',
-      'eslint-plugin-node': '^11.1.0',
-      'eslint-plugin-prefer-arrow': '^1.2.3',
-      'eslint-plugin-promise': '^6.0.0',
-      'eslint-plugin-you-dont-need-lodash-underscore': '^6.12.0',
+      'eslint': '^8.9.0',
+      'eslint-config-etherpad': '^3.0.1',
+      'typescript': {ver: '^4.5.5', overwrite: false},
+      // These were moved to eslint-config-etherpad's dependencies so they can be removed:
+      '@typescript-eslint/eslint-plugin': null,
+      '@typescript-eslint/parser': null,
+      'eslint-import-resolver-typescript': null,
+      'eslint-plugin-cypress': null,
+      'eslint-plugin-eslint-comments': null,
+      'eslint-plugin-import': null,
+      'eslint-plugin-mocha': null,
+      'eslint-plugin-node': null,
+      'eslint-plugin-prefer-arrow': null,
+      'eslint-plugin-promise': null,
+      'eslint-plugin-you-dont-need-lodash-underscore': null,
     });
 
     await updateDeps(parsedPackageJSON, 'peerDependencies', {
