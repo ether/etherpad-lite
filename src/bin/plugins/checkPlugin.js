@@ -10,6 +10,8 @@
  *                              node src/bin/plugins/checkPlugin.js ep_whatever autopush
  */
 
+const process = require('process');
+
 // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
 process.on('unhandledRejection', (err) => { throw err; });
@@ -29,6 +31,10 @@ const path = require('path');
   const pluginPath = `node_modules/${pluginName}`;
 
   console.log(`Checking the plugin: ${pluginName}`);
+
+  const epRootDir = await fsp.realpath(path.join(await fsp.realpath(__dirname), '../../..'));
+  console.log(`Etherpad root directory: ${epRootDir}`);
+  process.chdir(epRootDir);
 
   const optArgs = process.argv.slice(3);
   const autoPush = optArgs.includes('autopush');
