@@ -34,6 +34,7 @@ const path = require('path');
   process.chdir(epRootDir);
   const pluginPath = await fsp.realpath(`node_modules/${pluginName}`);
   console.log(`Plugin directory: ${pluginPath}`);
+  const epSrcDir = await fsp.realpath(path.join(epRootDir, 'src'));
 
   const optArgs = process.argv.slice(3);
   const autoPush = optArgs.includes('autopush');
@@ -330,10 +331,14 @@ const path = require('path');
   // if autoFix is enabled.
   const npmInstall = `npm install${autoFix ? '' : ' --no-package-lock'}`;
   execSync(npmInstall, {stdio: 'inherit'});
-  // The ep_etherpad-lite peer dep must be installed last otherwise `npm install` will nuke it. An
-  // absolute path to etherpad-lite/src is used here so that pluginPath can be a symlink.
-  execSync(
-      `${npmInstall} --no-save ep_etherpad-lite@file:${__dirname}/../../`, {stdio: 'inherit'});
+  // Create the ep_etherpad-lite symlink if necessary. This must be done after running `npm install`
+  // because that command nukes the symlink.
+  try {
+    const d = await fsp.realpath(path.join(pluginPath, 'node_modules/ep_etherpad-lite'));
+    assert.equal(d, epSrcDir);
+  } catch (err) {
+    execSync(`${npmInstall} --no-save ep_etherpad-lite@file:${epSrcDir}`, {stdio: 'inherit'});
+  }
   // linting begins
   try {
     console.log('Linting...');
