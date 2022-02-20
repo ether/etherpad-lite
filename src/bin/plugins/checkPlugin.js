@@ -27,14 +27,13 @@ const path = require('path');
   const pluginName = process.argv[2];
 
   if (!pluginName) throw new Error('no plugin name specified');
-
-  const pluginPath = `node_modules/${pluginName}`;
-
   console.log(`Checking the plugin: ${pluginName}`);
 
   const epRootDir = await fsp.realpath(path.join(await fsp.realpath(__dirname), '../../..'));
   console.log(`Etherpad root directory: ${epRootDir}`);
   process.chdir(epRootDir);
+  const pluginPath = await fsp.realpath(`node_modules/${pluginName}`);
+  console.log(`Plugin directory: ${pluginPath}`);
 
   const optArgs = process.argv.slice(3);
   const autoPush = optArgs.includes('autopush');
