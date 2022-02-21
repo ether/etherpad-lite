@@ -98,7 +98,10 @@ exports.update = async () => {
   defs.parts = sortParts(parts);
   defs.hooks = pluginUtils.extractHooks(defs.parts, 'hooks', exports.pathNormalization);
   defs.loaded = true;
-  await Promise.all(Object.keys(defs.plugins).map((p) => hooks.aCallAll(`init_${p}`, {})));
+  await Promise.all(Object.keys(defs.plugins).map(async (p) => {
+    const logger = log4js.getLogger(`plugin:${p}`);
+    await hooks.aCallAll(`init_${p}`, {logger});
+  }));
 };
 
 exports.getPackages = async () => {
