@@ -103,8 +103,8 @@ _.extend(Button.prototype, {
             tag('button', {
               'class': ` ${this.attributes.class}`,
               'data-l10n-id': this.attributes.localizationId,
-            })
-        )
+            }),
+        ),
     );
   },
 });
@@ -145,7 +145,7 @@ _.extend(SelectButton.prototype, Button.prototype, {
       'data-type': 'select',
     };
     return tag('li', attributes,
-        this.select({id: this.attributes.selectId})
+        this.select({id: this.attributes.selectId}),
     );
   },
 });

@@ -1855,7 +1855,7 @@ function Ace2Inner(editorInfo, cssManagers) {
   };
 
   const analyzeChange = (
-      oldText, newText, oldAttribs, newAttribs, optSelStartHint, optSelEndHint) => {
+    oldText, newText, oldAttribs, newAttribs, optSelStartHint, optSelEndHint) => {
     // we need to take into account both the styles attributes & attributes defined by
     // the plugins, so basically we can ignore only the default line attribs used by
     // Etherpad

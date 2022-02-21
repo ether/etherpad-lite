@@ -36,7 +36,7 @@ exports.expressPreSession = async (hookName, {app}) => {
         'static',
         'skins',
         settings.skinName,
-        'robots.txt'
+        'robots.txt',
     );
     res.sendFile(filePath, (err) => {
       // there is no custom robots.txt, send the default robots.txt which dissallows all

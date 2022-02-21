@@ -316,7 +316,7 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
       if ((!prevLine || prevLine.listLevel !== line.listLevel) ||
           (line.listTypeName !== prevLine.listTypeName)) {
         const exists = _.find(openLists, (item) => (
-          item.level === line.listLevel && item.type === line.listTypeName)
+          item.level === line.listLevel && item.type === line.listTypeName),
         );
         if (!exists) {
           let prevLevel = 0;

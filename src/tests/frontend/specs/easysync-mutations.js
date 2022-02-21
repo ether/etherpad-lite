@@ -227,7 +227,7 @@ describe('easysync-mutations', function () {
 
     // turn 123\n 456\n 789\n into 123\n 4<b>5</b>6\n 789\n
     runMutateAttributionTest(1,
-        ['bold,true'], 'Z:c>0|1=4=1*0=1$', ['|1+4', '|1+4', '|1+4'], ['|1+4', '+1*0+1|1+2', '|1+4']
+        ['bold,true'], 'Z:c>0|1=4=1*0=1$', ['|1+4', '|1+4', '|1+4'], ['|1+4', '+1*0+1|1+2', '|1+4'],
     );
 
     // make a document bold
