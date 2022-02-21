@@ -30,14 +30,8 @@ exports.expressPreSession = async (hookName, {app}) => {
   });
 
   app.get('/robots.txt', (req, res) => {
-    let filePath = path.join(
-        settings.root,
-        'src',
-        'static',
-        'skins',
-        settings.skinName,
-        'robots.txt',
-    );
+    let filePath =
+        path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'robots.txt');
     res.sendFile(filePath, (err) => {
       // there is no custom robots.txt, send the default robots.txt which dissallows all
       if (err) {

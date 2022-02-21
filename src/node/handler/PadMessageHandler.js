@@ -1287,8 +1287,7 @@ const composePadChangesets = async (padId, startNum, endNum) => {
   const changesets = {};
   await Promise.all(changesetsNeeded.map(
       (revNum) => pad.getRevisionChangeset(revNum)
-          .then((changeset) => changesets[revNum] = changeset),
-  ));
+          .then((changeset) => changesets[revNum] = changeset)));
 
   // compose Changesets
   let r;
