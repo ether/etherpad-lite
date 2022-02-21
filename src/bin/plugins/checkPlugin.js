@@ -73,8 +73,9 @@ const path = require('path');
     const {[key]: deps = {}} = parsedPackageJson;
     let changed = false;
     for (const [pkg, verInfo] of Object.entries(wantDeps)) {
-      const {ver, overwrite = true} = typeof verInfo === 'string' ? {ver: verInfo} : verInfo;
-      if (deps[pkg] === ver) continue;
+      const {ver, overwrite = true} =
+          typeof verInfo === 'string' || verInfo == null ? {ver: verInfo} : verInfo;
+      if (deps[pkg] === ver || (deps[pkg] == null && ver == null)) continue;
       if (deps[pkg] == null) {
         console.warn(`Missing dependency in ${key}: '${pkg}': '${ver}'`);
       } else {
@@ -82,7 +83,8 @@ const path = require('path');
         console.warn(`Dependency mismatch in ${key}: '${pkg}': '${ver}' (current: ${deps[pkg]})`);
       }
       if (autoFix) {
-        deps[pkg] = ver;
+        if (ver == null) delete deps[pkg];
+        else deps[pkg] = ver;
         changed = true;
       }
     }
