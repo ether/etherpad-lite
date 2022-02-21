@@ -49,6 +49,8 @@
   and whether the user only has read-only access.
 * The `handleMessageSecurity` server-side hook can now be used to grant write
   access for the current message only.
+* The `init_<pluginName>` server-side hooks have a new `logger` context
+  property that plugins can use to log messages.
 
 ### Compatibility changes
 

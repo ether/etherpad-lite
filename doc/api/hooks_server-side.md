@@ -56,7 +56,10 @@ Called from: `src/static/js/pluginfw/plugins.js`
 
 Run during startup after the named plugin is initialized.
 
-Context properties: None
+Context properties:
+
+  * `logger`: An object with the following `console`-like methods: `debug`,
+    `info`, `log`, `warn`, `error`.
 
 ## `expressPreSession`
 
