@@ -117,7 +117,7 @@ const path = require('path');
     }
   };
 
-  const checkFile = async (srcFn, dstFn) => {
+  const checkFile = async (srcFn, dstFn, overwrite = true) => {
     const outFn = path.join(pluginPath, dstFn);
     const wantContents = await fsp.readFile(srcFn, {encoding: 'utf8'});
     let gotContents = null;
@@ -127,8 +127,12 @@ const path = require('path');
     try {
       assert.equal(gotContents, wantContents);
     } catch (err) {
-      console.warn(`File ${dstFn} is out of date`);
+      console.warn(`File ${dstFn} does not match the default`);
       console.warn(err.message);
+      if (!overwrite && gotContents != null) {
+        console.warn('Leaving existing contents alone.');
+        return;
+      }
       if (autoFix) {
         await fsp.mkdir(path.dirname(outFn), {recursive: true});
         await fsp.writeFile(outFn, wantContents);
@@ -182,11 +186,24 @@ const path = require('path');
       node: '>=12.17.0',
     });
 
-    if (parsedPackageJSON.eslintConfig == null) parsedPackageJSON.eslintConfig = {};
-    if (checkEntries(parsedPackageJSON.eslintConfig, {
-      root: true,
-      extends: 'etherpad/plugin',
-    })) await writePackageJson(parsedPackageJSON);
+    if (parsedPackageJSON.eslintConfig != null && autoFix) {
+      delete parsedPackageJSON.eslintConfig;
+      await writePackageJson(parsedPackageJSON);
+    }
+    if (files.includes('.eslintrc.js')) {
+      const [from, to] = [`${pluginPath}/.eslintrc.js`, `${pluginPath}/.eslintrc.cjs`];
+      if (!files.includes('.eslintrc.cjs')) {
+        if (autoFix) {
+          await fsp.rename(from, to);
+        } else {
+          console.warn(`please rename ${from} to ${to}`);
+        }
+      } else {
+        console.error(`both ${from} and ${to} exist; delete ${from}`);
+      }
+    } else {
+      checkFile('src/bin/plugins/lib/eslintrc.cjs', '.eslintrc.cjs', false);
+    }
 
     if (checkEntries(parsedPackageJSON, {
       funding: {
