@@ -20,20 +20,23 @@ const assert = require('assert').strict;
 const fs = require('fs');
 const fsp = fs.promises;
 const childProcess = require('child_process');
+const log4js = require('log4js');
 const path = require('path');
+
+const logger = log4js.getLogger('checkPlugin');
 
 (async () => {
   // get plugin name & path from user input
   const pluginName = process.argv[2];
 
   if (!pluginName) throw new Error('no plugin name specified');
-  console.log(`Checking the plugin: ${pluginName}`);
+  logger.info(`Checking the plugin: ${pluginName}`);
 
   const epRootDir = await fsp.realpath(path.join(await fsp.realpath(__dirname), '../../..'));
-  console.log(`Etherpad root directory: ${epRootDir}`);
+  logger.info(`Etherpad root directory: ${epRootDir}`);
   process.chdir(epRootDir);
   const pluginPath = await fsp.realpath(`node_modules/${pluginName}`);
-  console.log(`Plugin directory: ${pluginPath}`);
+  logger.info(`Plugin directory: ${pluginPath}`);
   const epSrcDir = await fsp.realpath(path.join(epRootDir, 'src'));
 
   const optArgs = process.argv.slice(3);
@@ -58,8 +61,8 @@ const path = require('path');
       try {
         assert.deepEqual(got[key], val);
       } catch (err) {
-        console.warn(`${key} possibly outdated.`);
-        console.warn(err.message);
+        logger.warn(`${key} possibly outdated.`);
+        logger.warn(err.message);
         if (autoFix) {
           got[key] = val;
           changed = true;
@@ -77,10 +80,10 @@ const path = require('path');
           typeof verInfo === 'string' || verInfo == null ? {ver: verInfo} : verInfo;
       if (deps[pkg] === ver || (deps[pkg] == null && ver == null)) continue;
       if (deps[pkg] == null) {
-        console.warn(`Missing dependency in ${key}: '${pkg}': '${ver}'`);
+        logger.warn(`Missing dependency in ${key}: '${pkg}': '${ver}'`);
       } else {
         if (!overwrite) continue;
-        console.warn(`Dependency mismatch in ${key}: '${pkg}': '${ver}' (current: ${deps[pkg]})`);
+        logger.warn(`Dependency mismatch in ${key}: '${pkg}': '${ver}' (current: ${deps[pkg]})`);
       }
       if (autoFix) {
         if (ver == null) delete deps[pkg];
@@ -129,10 +132,10 @@ const path = require('path');
     try {
       assert.equal(gotContents, wantContents);
     } catch (err) {
-      console.warn(`File ${dstFn} does not match the default`);
-      console.warn(err.message);
+      logger.warn(`File ${dstFn} does not match the default`);
+      logger.warn(err.message);
       if (!overwrite && gotContents != null) {
-        console.warn('Leaving existing contents alone.');
+        logger.warn('Leaving existing contents alone.');
         return;
       }
       if (autoFix) {
@@ -143,7 +146,7 @@ const path = require('path');
   };
 
   if (autoPush) {
-    console.warn('Auto push is enabled, I hope you know what you are doing...');
+    logger.warn('Auto push is enabled, I hope you know what you are doing...');
   }
 
   const files = await fsp.readdir(pluginPath);
@@ -161,7 +164,7 @@ const path = require('path');
   await checkFile('src/bin/plugins/lib/dependabot.yml', '.github/dependabot.yml');
 
   if (!files.includes('package.json')) {
-    console.warn('no package.json, please create');
+    logger.warn('no package.json, please create');
   } else {
     const packageJSON =
         await fsp.readFile(`${pluginPath}/package.json`, {encoding: 'utf8', flag: 'r'});
@@ -198,10 +201,10 @@ const path = require('path');
         if (autoFix) {
           await fsp.rename(from, to);
         } else {
-          console.warn(`please rename ${from} to ${to}`);
+          logger.warn(`please rename ${from} to ${to}`);
         }
       } else {
-        console.error(`both ${from} and ${to} exist; delete ${from}`);
+        logger.error(`both ${from} and ${to} exist; delete ${from}`);
       }
     } else {
       checkFile('src/bin/plugins/lib/eslintrc.cjs', '.eslintrc.cjs', false);
@@ -222,9 +225,9 @@ const path = require('path');
   }
 
   if (!files.includes('package-lock.json')) {
-    console.warn('package-lock.json not found');
+    logger.warn('package-lock.json not found');
     if (!autoFix) {
-      console.warn('Run npm install in the plugin folder and commit the package-lock.json file.');
+      logger.warn('Run npm install in the plugin folder and commit the package-lock.json file.');
     }
   }
 
@@ -237,18 +240,18 @@ const path = require('path');
   };
 
   if (!readMeFileName) {
-    console.warn('README.md file not found, please create');
+    logger.warn('README.md file not found, please create');
     if (autoFix) {
-      console.log('Autofixing missing README.md file');
-      console.log('please edit the README.md file further to include plugin specific details.');
+      logger.info('Autofixing missing README.md file');
+      logger.info('please edit the README.md file further to include plugin specific details.');
       await fillTemplate('src/bin/plugins/lib/README.md', `${pluginPath}/README.md`);
     }
   }
 
   if (!files.includes('CONTRIBUTING') && !files.includes('CONTRIBUTING.md')) {
-    console.warn('CONTRIBUTING.md file not found, please create');
+    logger.warn('CONTRIBUTING.md file not found, please create');
     if (autoFix) {
-      console.log('Autofixing missing CONTRIBUTING.md file, please edit the CONTRIBUTING.md ' +
+      logger.info('Autofixing missing CONTRIBUTING.md file, please edit the CONTRIBUTING.md ' +
                   'file further to include plugin specific details.');
       await fillTemplate('src/bin/plugins/lib/CONTRIBUTING.md', `${pluginPath}/CONTRIBUTING.md`);
     }
@@ -259,9 +262,9 @@ const path = require('path');
     let readme =
         await fsp.readFile(`${pluginPath}/${readMeFileName}`, {encoding: 'utf8', flag: 'r'});
     if (!readme.toLowerCase().includes('license')) {
-      console.warn('No license section in README');
+      logger.warn('No license section in README');
       if (autoFix) {
-        console.warn('Please add License section to README manually.');
+        logger.warn('Please add License section to README manually.');
       }
     }
     // eslint-disable-next-line max-len
@@ -269,32 +272,32 @@ const path = require('path');
     // eslint-disable-next-line max-len
     const testBadge = `![Backend Tests Status](https://github.com/ether/${pluginName}/workflows/Backend%20tests/badge.svg)`;
     if (readme.toLowerCase().includes('travis')) {
-      console.warn('Remove Travis badges');
+      logger.warn('Remove Travis badges');
     }
     if (!readme.includes('workflows/Node.js%20Package/badge.svg')) {
-      console.warn('No Github workflow badge detected');
+      logger.warn('No Github workflow badge detected');
       if (autoFix) {
         readme = `${publishBadge} ${testBadge}\n\n${readme}`;
         // write readme to file system
         await fsp.writeFile(`${pluginPath}/${readMeFileName}`, readme);
-        console.log('Wrote Github workflow badges to README');
+        logger.info('Wrote Github workflow badges to README');
       }
     }
   }
 
   if (!files.includes('LICENSE') && !files.includes('LICENSE.md')) {
-    console.warn('LICENSE file not found, please create');
+    logger.warn('LICENSE file not found, please create');
     if (autoFix) {
-      console.log('Autofixing missing LICENSE file (Apache 2.0).');
+      logger.info('Autofixing missing LICENSE file (Apache 2.0).');
       await fsp.copyFile('src/bin/plugins/lib/LICENSE', `${pluginPath}/LICENSE`);
     }
   }
 
   if (!files.includes('.gitignore')) {
-    console.warn('.gitignore file not found, please create.  .gitignore files are useful to ' +
+    logger.warn('.gitignore file not found, please create.  .gitignore files are useful to ' +
                  "ensure files aren't incorrectly commited to a repository.");
     if (autoFix) {
-      console.log('Autofixing missing .gitignore file');
+      logger.info('Autofixing missing .gitignore file');
       const gitignore =
           await fsp.readFile('src/bin/plugins/lib/gitignore', {encoding: 'utf8', flag: 'r'});
       await fsp.writeFile(`${pluginPath}/.gitignore`, gitignore);
@@ -303,7 +306,7 @@ const path = require('path');
     let gitignore =
         await fsp.readFile(`${pluginPath}/.gitignore`, {encoding: 'utf8', flag: 'r'});
     if (!gitignore.includes('node_modules/')) {
-      console.warn('node_modules/ missing from .gitignore');
+      logger.warn('node_modules/ missing from .gitignore');
       if (autoFix) {
         gitignore += 'node_modules/';
         await fsp.writeFile(`${pluginPath}/.gitignore`, gitignore);
@@ -313,26 +316,26 @@ const path = require('path');
 
   // if we include templates but don't have translations...
   if (files.includes('templates') && !files.includes('locales')) {
-    console.warn('Translations not found, please create.  ' +
+    logger.warn('Translations not found, please create.  ' +
                  'Translation files help with Etherpad accessibility.');
   }
 
 
   if (files.includes('.ep_initialized')) {
-    console.warn(
+    logger.warn(
         '.ep_initialized found, please remove.  .ep_initialized should never be commited to git ' +
         'and should only exist once the plugin has been executed one time.');
     if (autoFix) {
-      console.log('Autofixing incorrectly existing .ep_initialized file');
+      logger.info('Autofixing incorrectly existing .ep_initialized file');
       await fsp.unlink(`${pluginPath}/.ep_initialized`);
     }
   }
 
   if (files.includes('npm-debug.log')) {
-    console.warn('npm-debug.log found, please remove.  npm-debug.log should never be commited to ' +
+    logger.warn('npm-debug.log found, please remove.  npm-debug.log should never be commited to ' +
                  'your repository.');
     if (autoFix) {
-      console.log('Autofixing incorrectly existing npm-debug.log file');
+      logger.info('Autofixing incorrectly existing npm-debug.log file');
       await fsp.unlink(`${pluginPath}/npm-debug.log`);
     }
   }
@@ -340,10 +343,10 @@ const path = require('path');
   if (files.includes('static')) {
     const staticFiles = await fsp.readdir(`${pluginPath}/static`);
     if (!staticFiles.includes('tests')) {
-      console.warn('Test files not found, please create tests.  https://github.com/ether/etherpad-lite/wiki/Creating-a-plugin#writing-and-running-front-end-tests-for-your-plugin');
+      logger.warn('Test files not found, please create tests.  https://github.com/ether/etherpad-lite/wiki/Creating-a-plugin#writing-and-running-front-end-tests-for-your-plugin');
     }
   } else {
-    console.warn('Test files not found, please create tests.  https://github.com/ether/etherpad-lite/wiki/Creating-a-plugin#writing-and-running-front-end-tests-for-your-plugin');
+    logger.warn('Test files not found, please create tests.  https://github.com/ether/etherpad-lite/wiki/Creating-a-plugin#writing-and-running-front-end-tests-for-your-plugin');
   }
 
   // Install dependencies so we can run ESLint. This should also create or update package-lock.json
@@ -360,12 +363,12 @@ const path = require('path');
   }
   // linting begins
   try {
-    console.log('Linting...');
+    logger.info('Linting...');
     const lintCmd = autoFix ? 'npx eslint --fix .' : 'npx eslint';
     execSync(lintCmd, {stdio: 'inherit'});
   } catch (e) {
     // it is gonna throw an error anyway
-    console.log('Manual linting probably required, check with: npm run lint');
+    logger.info('Manual linting probably required, check with: npm run lint');
   }
   // linting ends.
 
@@ -387,24 +390,24 @@ const path = require('path');
         'git commit -m "autofixes from Etherpad checkPlugin.js"',
       ].join(' && ');
       if (autoCommit) {
-        console.log('Committing changes...');
+        logger.info('Committing changes...');
         execSync(commitCmd, {stdio: 'inherit'});
       } else {
-        console.log('Fixes applied. Check the above git diff then run the following command:');
-        console.log(`(cd node_modules/${pluginName} && ${commitCmd})`);
+        logger.info('Fixes applied. Check the above git diff then run the following command:');
+        logger.info(`(cd node_modules/${pluginName} && ${commitCmd})`);
       }
       const pushCmd = 'git push';
       if (autoPush) {
-        console.log('Pushing new commit...');
+        logger.info('Pushing new commit...');
         execSync(pushCmd, {stdio: 'inherit'});
       } else {
-        console.log('Changes committed. To push, run the following command:');
-        console.log(`(cd node_modules/${pluginName} && ${pushCmd})`);
+        logger.info('Changes committed. To push, run the following command:');
+        logger.info(`(cd node_modules/${pluginName} && ${pushCmd})`);
       }
     } else {
-      console.log('No changes.');
+      logger.info('No changes.');
     }
   }
 
-  console.log('Finished');
+  logger.info('Finished');
 })();
