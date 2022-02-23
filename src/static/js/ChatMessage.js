@@ -1,5 +1,7 @@
 'use strict';
 
+const {padutils: {warnDeprecated}} = require('./pad_utils');
+
 /**
  * Represents a chat message stored in the database and transmitted among users. Plugins can extend
  * the object with additional properties.
@@ -52,8 +54,14 @@ class ChatMessage {
    * @deprecated Use `authorId` instead.
    * @type {string}
    */
-  get userId() { return this.authorId; }
-  set userId(val) { this.authorId = val; }
+  get userId() {
+    warnDeprecated('ChatMessage.userId property is deprecated; use .authorId instead');
+    return this.authorId;
+  }
+  set userId(val) {
+    warnDeprecated('ChatMessage.userId property is deprecated; use .authorId instead');
+    this.authorId = val;
+  }
 
   /**
    * Alias of `displayName`, for compatibility with old plugins.
@@ -61,8 +69,14 @@ class ChatMessage {
    * @deprecated Use `displayName` instead.
    * @type {string}
    */
-  get userName() { return this.displayName; }
-  set userName(val) { this.displayName = val; }
+  get userName() {
+    warnDeprecated('ChatMessage.userName property is deprecated; use .displayName instead');
+    return this.displayName;
+  }
+  set userName(val) {
+    warnDeprecated('ChatMessage.userName property is deprecated; use .displayName instead');
+    this.displayName = val;
+  }
 
   // TODO: Delete this method once users are unlikely to roll back to a version of Etherpad that
   // doesn't support authorId and displayName.

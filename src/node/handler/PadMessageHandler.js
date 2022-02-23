@@ -446,7 +446,7 @@ exports.sendChatMessageToPadClients = async (mt, puId, text = null, padId = null
   // pad.appendChatMessage() ignores the displayName property so we don't need to wait for
   // authorManager.getAuthorName() to resolve before saving the message to the database.
   const promise = pad.appendChatMessage(message);
-  message.displayName = await authorManager.getAuthorName(message.userId);
+  message.displayName = await authorManager.getAuthorName(message.authorId);
   socketio.sockets.in(padId).json.send({
     type: 'COLLABROOM',
     data: {type: 'CHAT_MESSAGE', message},
