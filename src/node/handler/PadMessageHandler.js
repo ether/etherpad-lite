@@ -250,6 +250,12 @@ exports.handleMessage = async (socket, message) => {
     throw new Error('message.padId must not be accessed (for security reasons)');
   }});
 
+  if (message.data) {
+    Object.defineProperty(message.data, 'padId', {get: () => {
+      throw new Error('message.data.padId must not be accessed (for security reasons)');
+    }});
+  }
+
   const auth = thisSession.auth;
   if (!auth) {
     const ip = settings.disableIPlogging ? 'ANONYMOUS' : (socket.request.ip || '<unknown>');
