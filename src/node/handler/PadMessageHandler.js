@@ -329,33 +329,37 @@ exports.handleMessage = async (socket, message) => {
   }
 
   // Check what type of message we get and delegate to the other methods
-  if (message.type === 'CLIENT_READY') {
-    await handleClientReady(socket, message);
-  } else if (message.type === 'CHANGESET_REQ') {
-    await handleChangesetRequest(socket, message);
-  } else if (message.type === 'COLLABROOM') {
-    if (readOnly) {
-      messageLogger.warn('Dropped message, COLLABROOM for readonly pad');
-    } else if (message.data.type === 'USER_CHANGES') {
-      stats.counter('pendingEdits').inc();
-      await padChannels.enqueue(thisSession.padId, {socket, message});
-    } else if (message.data.type === 'USERINFO_UPDATE') {
-      await handleUserInfoUpdate(socket, message);
-    } else if (message.data.type === 'CHAT_MESSAGE') {
-      await handleChatMessage(socket, message);
-    } else if (message.data.type === 'GET_CHAT_MESSAGES') {
-      await handleGetChatMessages(socket, message);
-    } else if (message.data.type === 'SAVE_REVISION') {
-      await handleSaveRevisionMessage(socket, message);
-    } else if (message.data.type === 'CLIENT_MESSAGE' &&
-               message.data.payload != null &&
-               message.data.payload.type === 'suggestUserName') {
-      handleSuggestUserName(socket, message);
-    } else {
-      messageLogger.warn(`Dropped message, unknown COLLABROOM Data  Type ${message.data.type}`);
-    }
-  } else {
-    messageLogger.warn(`Dropped message, unknown Message Type ${message.type}`);
+  switch (message.type) {
+    case 'CLIENT_READY': await handleClientReady(socket, message); break;
+    case 'CHANGESET_REQ': await handleChangesetRequest(socket, message); break;
+    case 'COLLABROOM':
+      if (readOnly) {
+        messageLogger.warn('Dropped message, COLLABROOM for readonly pad');
+        break;
+      }
+      switch (message.data.type) {
+        case 'USER_CHANGES':
+          stats.counter('pendingEdits').inc();
+          await padChannels.enqueue(thisSession.padId, {socket, message});
+          break;
+        case 'USERINFO_UPDATE': await handleUserInfoUpdate(socket, message); break;
+        case 'CHAT_MESSAGE': await handleChatMessage(socket, message); break;
+        case 'GET_CHAT_MESSAGES': await handleGetChatMessages(socket, message); break;
+        case 'SAVE_REVISION': await handleSaveRevisionMessage(socket, message); break;
+        case 'CLIENT_MESSAGE': {
+          const {type} = message.data.payload || {};
+          switch (type) {
+            case 'suggestUserName': handleSuggestUserName(socket, message); break;
+            default: messageLogger.warn(
+                `Dropped message, unknown COLLABROOM CLIENT_MESSAGE type: ${type}`);
+          }
+          break;
+        }
+        default:
+          messageLogger.warn(`Dropped message, unknown COLLABROOM Data  Type ${message.data.type}`);
+      }
+      break;
+    default: messageLogger.warn(`Dropped message, unknown Message Type ${message.type}`);
   }
 };
 
