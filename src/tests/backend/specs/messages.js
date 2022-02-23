@@ -146,8 +146,9 @@ describe(__filename, function () {
 
     it('handleMessageSecurity can grant one-time write access', async function () {
       const cs = 'Z:1>5+5$hello';
+      const errRegEx = /write attempt on read-only pad/;
       // First try to send a change and verify that it was dropped.
-      await sendUserChanges(roSocket, cs);
+      await assert.rejects(sendUserChanges(roSocket, cs), errRegEx);
       // sendUserChanges() waits for message ack, so if the message was accepted then head should
       // have already incremented by the time we get here.
       assert.equal(pad.head, rev); // Not incremented.
@@ -162,7 +163,7 @@ describe(__filename, function () {
 
       // The next change should be dropped.
       plugins.hooks.handleMessageSecurity = [];
-      await sendUserChanges(roSocket, 'Z:6>6=5+6$ world');
+      await assert.rejects(sendUserChanges(roSocket, 'Z:6>6=5+6$ world'), errRegEx);
       assert.equal(pad.head, rev); // Not incremented.
       assert.equal(pad.text(), 'hello\n');
     });
