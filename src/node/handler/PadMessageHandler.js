@@ -296,7 +296,7 @@ exports.handleMessage = async (socket, message) => {
       messageLogger.warn('Dropped message, COLLABROOM for readonly pad');
     } else if (message.data.type === 'USER_CHANGES') {
       stats.counter('pendingEdits').inc();
-      await padChannels.enqueue(message.padId, {socket, message});
+      await padChannels.enqueue(thisSession.padId, {socket, message});
     } else if (message.data.type === 'USERINFO_UPDATE') {
       await handleUserInfoUpdate(socket, message);
     } else if (message.data.type === 'CHAT_MESSAGE') {

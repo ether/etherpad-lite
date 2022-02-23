@@ -2,6 +2,13 @@
 
 (not yet released)
 
+### Notable enhancements and fixes
+
+* Fixed a bug that caused all pad edit messages received at the server to go
+  through a single queue. Now there is a separate queue per pad as intended,
+  which should reduce message processing latency when many pads are active at
+  the same time.
+
 # 1.8.16
 
 ### Security fixes
