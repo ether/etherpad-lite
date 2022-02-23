@@ -25,7 +25,7 @@ describe(__filename, function () {
     plugins.hooks.handleMessageSecurity = [];
     padId = common.randomString();
     assert(!await padManager.doesPadExist(padId));
-    pad = await padManager.getPad(padId, 'dummy text');
+    pad = await padManager.getPad(padId, 'dummy text\n');
     await pad.setText('\n'); // Make sure the pad is created.
     assert.equal(pad.text(), '\n');
     let res = await agent.get(`/p/${padId}`).expect(200);
@@ -48,6 +48,35 @@ describe(__filename, function () {
     roSocket = null;
     if (pad != null) await pad.remove();
     pad = null;
+  });
+
+  describe('CHANGESET_REQ', function () {
+    it('users are unable to read changesets from other pads', async function () {
+      const otherPadId = `${padId}other`;
+      assert(!await padManager.doesPadExist(otherPadId));
+      const otherPad = await padManager.getPad(otherPadId, 'other text\n');
+      try {
+        await otherPad.setText('other text\n');
+        const resP = common.waitForSocketEvent(roSocket, 'message');
+        await common.sendMessage(roSocket, {
+          component: 'pad',
+          padId: otherPadId, // The server should ignore this.
+          type: 'CHANGESET_REQ',
+          data: {
+            granularity: 1,
+            start: 0,
+            requestID: 'requestId',
+          },
+        });
+        const res = await resP;
+        assert.equal(res.type, 'CHANGESET_REQ');
+        assert.equal(res.data.requestID, 'requestId');
+        // Should match padId's text, not otherPadId's text.
+        assert.match(res.data.forwardsChangesets[0], /^[^$]*\$dummy text\n/);
+      } finally {
+        await otherPad.remove();
+      }
+    });
   });
 
   describe('USER_CHANGES', function () {

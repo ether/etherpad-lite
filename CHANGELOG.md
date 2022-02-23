@@ -80,6 +80,22 @@
     generator function.
   * `newOp()`: Deprecated in favor of the new `Op` class.
 
+# 1.8.17
+
+Released: 2022-02-23
+
+### Security fixes
+
+* Fixed a vunlerability in the `CHANGESET_REQ` message handler that allowed a
+  user with any access to read any pad if the pad ID is known.
+
+### Notable enhancements and fixes
+
+* Fixed a bug that caused all pad edit messages received at the server to go
+  through a single queue. Now there is a separate queue per pad as intended,
+  which should reduce message processing latency when many pads are active at
+  the same time.
+
 # 1.8.16
 
 ### Security fixes
