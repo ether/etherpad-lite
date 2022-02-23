@@ -1,6 +1,6 @@
 # 1.8.17
 
-(not yet released)
+Released: 2022-02-23
 
 ### Security fixes
 
