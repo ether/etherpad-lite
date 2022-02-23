@@ -185,8 +185,8 @@ const doImport = async (req, res, padId, authorId) => {
     }
   }
 
-  // get the pad object
-  let pad = await padManager.getPad(padId);
+  // Use '\n' to avoid the default pad text if the pad doesn't yet exist.
+  let pad = await padManager.getPad(padId, '\n', authorId);
 
   // read the text
   let text;
@@ -216,7 +216,7 @@ const doImport = async (req, res, padId, authorId) => {
 
   // Load the Pad into memory then broadcast updates to all clients
   padManager.unloadPad(padId);
-  pad = await padManager.getPad(padId);
+  pad = await padManager.getPad(padId, '\n', authorId);
   padManager.unloadPad(padId);
 
   // Direct database access means a pad user should reload the pad and not attempt to receive

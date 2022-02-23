@@ -372,7 +372,7 @@ exports.handleMessage = async (socket, message) => {
  */
 const handleSaveRevisionMessage = async (socket, message) => {
   const {padId, author: authorId} = sessioninfos[socket.id];
-  const pad = await padManager.getPad(padId);
+  const pad = await padManager.getPad(padId, null, authorId);
   await pad.addSavedRevision(pad.head, authorId);
 };
 
@@ -441,7 +441,7 @@ const handleChatMessage = async (socket, message) => {
 exports.sendChatMessageToPadClients = async (mt, puId, text = null, padId = null) => {
   const message = mt instanceof ChatMessage ? mt : new ChatMessage(text, puId, mt);
   padId = mt instanceof ChatMessage ? puId : padId;
-  const pad = await padManager.getPad(padId);
+  const pad = await padManager.getPad(padId, null, message.authorId);
   await hooks.aCallAll('chatNewMessage', {message, pad, padId});
   // pad.appendChatMessage() ignores the displayName property so we don't need to wait for
   // authorManager.getAuthorName() to resolve before saving the message to the database.
@@ -464,8 +464,8 @@ const handleGetChatMessages = async (socket, {data: {start, end}}) => {
   if (!Number.isInteger(end)) throw new Error(`missing or invalid end: ${end}`);
   const count = end - start;
   if (count < 0 || count > 100) throw new Error(`invalid number of messages: ${count}`);
-  const padId = sessioninfos[socket.id].padId;
-  const pad = await padManager.getPad(padId);
+  const {padId, author: authorId} = sessioninfos[socket.id];
+  const pad = await padManager.getPad(padId, null, authorId);
 
   const chatMessages = await pad.getChatMessages(start, end);
   const infoMsg = {
@@ -574,7 +574,7 @@ const handleUserChanges = async (socket, message) => {
     if (apool == null) throw new Error('missing apool');
     if (changeset == null) throw new Error('missing changeset');
     const wireApool = (new AttributePool()).fromJsonable(apool);
-    const pad = await padManager.getPad(thisSession.padId);
+    const pad = await padManager.getPad(thisSession.padId, null, thisSession.author);
 
     // Verify that the changeset has valid syntax and is in canonical form
     Changeset.checkRep(changeset);
@@ -790,7 +790,7 @@ const handleClientReady = async (socket, message) => {
   ({colorId: authorColorId, name: authorName} = await authorManager.getAuthor(sessionInfo.author));
 
   // load the pad-object from the database
-  const pad = await padManager.getPad(sessionInfo.padId);
+  const pad = await padManager.getPad(sessionInfo.padId, null, sessionInfo.author);
 
   // these db requests all need the pad object (timestamp of latest revision, author data)
   const authors = pad.getAllAuthors();
@@ -1078,8 +1078,8 @@ const handleChangesetRequest = async (socket, {data: {granularity, start, reques
   if (start == null) throw new Error('missing start');
   if (requestID == null) throw new Error('mising requestID');
   const end = start + (100 * granularity);
-  const {padId} = sessioninfos[socket.id];
-  const pad = await padManager.getPad(padId);
+  const {padId, author: authorId} = sessioninfos[socket.id];
+  const pad = await padManager.getPad(padId, null, authorId);
   const data = await getChangesetInfo(pad, start, end, granularity);
   data.requestID = requestID;
   socket.json.send({type: 'CHANGESET_REQ', data});
