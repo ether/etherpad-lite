@@ -246,6 +246,6 @@
     "test": "mocha --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
     "test-container": "mocha --timeout 5000 tests/container/specs/api"
   },
-  "version": "1.8.16",
+  "version": "1.8.17",
   "license": "Apache-2.0"
 }
