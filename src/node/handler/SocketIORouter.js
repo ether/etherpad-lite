@@ -68,19 +68,19 @@ exports.setSocketIO = (_io) => {
       components[i].handleConnect(socket);
     }
 
-    socket.on('message', (message, ack = () => {}) => {
+    socket.on('message', (message, ack = () => {}) => (async () => {
       if (!message.component || !components[message.component]) {
-        logger.error(`Can't route the message: ${JSON.stringify(message)}`);
-        return;
+        throw new Error(`unknown message component: ${message.component}`);
       }
-      logger.debug(`from ${socket.id}: ${JSON.stringify(message)}`);
-      (async () => await components[message.component].handleMessage(socket, message))().then(
-          (val) => ack(null, val),
-          (err) => {
-            logger.error(`Error while handling message from ${socket.id}: ${err.stack || err}`);
-            ack({name: err.name, message: err.message});
-          });
-    });
+      logger.debug(`from ${socket.id}:`, message);
+      return await components[message.component].handleMessage(socket, message);
+    })().then(
+        (val) => ack(null, val),
+        (err) => {
+          logger.error(
+              `Error handling ${message.component} message from ${socket.id}: ${err.stack || err}`);
+          ack({name: err.name, message: err.message}); // socket.io can't handle Error objects.
+        }));
 
     socket.on('disconnect', (reason) => {
       logger.debug(`${socket.id} disconnected: ${reason}`);
