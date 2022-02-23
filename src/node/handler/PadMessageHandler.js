@@ -45,6 +45,15 @@ let socketio = null;
 
 hooks.deprecationNotices.clientReady = 'use the userJoin hook instead';
 
+const addContextToError = (err, pfx) => {
+  const newErr = new Error(`${pfx}${err.message}`, {cause: err});
+  if (Error.captureStackTrace) Error.captureStackTrace(newErr, addContextToError);
+  // Check for https://github.com/tc39/proposal-error-cause support, available in Node.js >= v16.10.
+  if (newErr.cause === err) return newErr;
+  err.message = `${pfx}${err.message}`;
+  return err;
+};
+
 exports.socketio = () => {
   // The rate limiter is created in this hook so that restarting the server resets the limiter. The
   // settings.commitRateLimiting object is passed directly to the rate limiter so that the limits
@@ -202,29 +211,20 @@ exports.handleMessage = async (socket, message) => {
   if (env === 'production') {
     try {
       await rateLimiter.consume(socket.request.ip); // consume 1 point per event from IP
-    } catch (e) {
+    } catch (err) {
       messageLogger.warn(`Rate limited IP ${socket.request.ip}. To reduce the amount of rate ` +
                          'limiting that happens edit the rateLimit values in settings.json');
       stats.meter('rateLimited').mark();
       socket.json.send({disconnect: 'rateLimited'});
-      return;
+      throw err;
     }
   }
 
-  if (message == null) {
-    return;
-  }
-
-  if (!message.type) {
-    return;
-  }
+  if (message == null) throw new Error('message is null');
+  if (!message.type) throw new Error('message type missing');
 
   const thisSession = sessioninfos[socket.id];
-
-  if (!thisSession) {
-    messageLogger.warn('Dropped message from an unknown connection.');
-    return;
-  }
+  if (!thisSession) throw new Error('message from an unknown connection');
 
   if (message.type === 'CLIENT_READY') {
     // Remember this information since we won't have the cookie in further socket.io messages. This
@@ -254,32 +254,27 @@ exports.handleMessage = async (socket, message) => {
   if (!auth) {
     const ip = settings.disableIPlogging ? 'ANONYMOUS' : (socket.request.ip || '<unknown>');
     const msg = JSON.stringify(message, null, 2);
-    messageLogger.error(`Dropping pre-CLIENT_READY message from IP ${ip}: ${msg}`);
-    messageLogger.debug(
-        'If you are using the stress-test tool then restart Etherpad and the Stress test tool.');
-    return;
+    throw new Error(`pre-CLIENT_READY message from IP ${ip}: ${msg}`);
   }
 
   const {session: {user} = {}} = socket.client.request;
   const {accessStatus, authorID} =
       await securityManager.checkAccess(auth.padID, auth.sessionID, auth.token, user);
   if (accessStatus !== 'grant') {
-    // Access denied. Send the reason to the user.
     socket.json.send({accessStatus});
-    return;
+    throw new Error('access denied');
   }
   if (thisSession.author != null && thisSession.author !== authorID) {
-    messageLogger.warn(
-        `${'Rejecting message from client because the author ID changed mid-session.' +
-        ' Bad or missing token or sessionID?' +
-        ` socket:${socket.id}` +
-        ` IP:${settings.disableIPlogging ? 'ANONYMOUS' : socket.request.ip}` +
-        ` originalAuthorID:${thisSession.author}` +
-        ` newAuthorID:${authorID}`}${
-          (user && user.username) ? ` username:${user.username}` : ''
-        } message:${message}`);
     socket.json.send({disconnect: 'rejected'});
-    return;
+    throw new Error([
+      'Author ID changed mid-session. Bad or missing token or sessionID?',
+      `socket:${socket.id}`,
+      `IP:${settings.disableIPlogging ? 'ANONYMOUS' : socket.request.ip}`,
+      `originalAuthorID:${thisSession.author}`,
+      `newAuthorID:${authorID}`,
+      ...(user && user.username) ? [`username:${user.username}`] : [],
+      `message:${message}`,
+    ].join(' '));
   }
   thisSession.author = authorID;
 
@@ -323,43 +318,49 @@ exports.handleMessage = async (socket, message) => {
   }
 
   // Drop the message if the client disconnected during the above processing.
-  if (sessioninfos[socket.id] !== thisSession) {
-    messageLogger.warn('Dropping message from a connection that has gone away.');
-    return;
-  }
+  if (sessioninfos[socket.id] !== thisSession) throw new Error('client disconnected');
 
-  // Check what type of message we get and delegate to the other methods
-  switch (message.type) {
-    case 'CLIENT_READY': await handleClientReady(socket, message); break;
-    case 'CHANGESET_REQ': await handleChangesetRequest(socket, message); break;
-    case 'COLLABROOM':
-      if (readOnly) {
-        messageLogger.warn('Dropped message, COLLABROOM for readonly pad');
+  const {type} = message;
+  try {
+    switch (type) {
+      case 'CLIENT_READY': await handleClientReady(socket, message); break;
+      case 'CHANGESET_REQ': await handleChangesetRequest(socket, message); break;
+      case 'COLLABROOM': {
+        if (readOnly) throw new Error('write attempt on read-only pad');
+        const {type} = message.data;
+        try {
+          switch (type) {
+            case 'USER_CHANGES':
+              stats.counter('pendingEdits').inc();
+              await padChannels.enqueue(thisSession.padId, {socket, message});
+              break;
+            case 'USERINFO_UPDATE': await handleUserInfoUpdate(socket, message); break;
+            case 'CHAT_MESSAGE': await handleChatMessage(socket, message); break;
+            case 'GET_CHAT_MESSAGES': await handleGetChatMessages(socket, message); break;
+            case 'SAVE_REVISION': await handleSaveRevisionMessage(socket, message); break;
+            case 'CLIENT_MESSAGE': {
+              const {type} = message.data.payload;
+              try {
+                switch (type) {
+                  case 'suggestUserName': handleSuggestUserName(socket, message); break;
+                  default: throw new Error('unknown message type');
+                }
+              } catch (err) {
+                throw addContextToError(err, `${type}: `);
+              }
+              break;
+            }
+            default: throw new Error('unknown message type');
+          }
+        } catch (err) {
+          throw addContextToError(err, `${type}: `);
+        }
         break;
       }
-      switch (message.data.type) {
-        case 'USER_CHANGES':
-          stats.counter('pendingEdits').inc();
-          await padChannels.enqueue(thisSession.padId, {socket, message});
-          break;
-        case 'USERINFO_UPDATE': await handleUserInfoUpdate(socket, message); break;
-        case 'CHAT_MESSAGE': await handleChatMessage(socket, message); break;
-        case 'GET_CHAT_MESSAGES': await handleGetChatMessages(socket, message); break;
-        case 'SAVE_REVISION': await handleSaveRevisionMessage(socket, message); break;
-        case 'CLIENT_MESSAGE': {
-          const {type} = message.data.payload || {};
-          switch (type) {
-            case 'suggestUserName': handleSuggestUserName(socket, message); break;
-            default: messageLogger.warn(
-                `Dropped message, unknown COLLABROOM CLIENT_MESSAGE type: ${type}`);
-          }
-          break;
-        }
-        default:
-          messageLogger.warn(`Dropped message, unknown COLLABROOM Data  Type ${message.data.type}`);
-      }
-      break;
-    default: messageLogger.warn(`Dropped message, unknown Message Type ${message.type}`);
+      default: throw new Error('unknown message type');
+    }
+  } catch (err) {
+    throw addContextToError(err, `${type}: `);
   }
 };
 
@@ -458,27 +459,11 @@ exports.sendChatMessageToPadClients = async (mt, puId, text = null, padId = null
  * @param socket the socket.io Socket object for the client
  * @param message the message from the client
  */
-const handleGetChatMessages = async (socket, message) => {
-  if (message.data.start == null) {
-    messageLogger.warn('Dropped message, GetChatMessages Message has no start!');
-    return;
-  }
-
-  if (message.data.end == null) {
-    messageLogger.warn('Dropped message, GetChatMessages Message has no start!');
-    return;
-  }
-
-  const start = message.data.start;
-  const end = message.data.end;
+const handleGetChatMessages = async (socket, {data: {start, end}}) => {
+  if (!Number.isInteger(start)) throw new Error(`missing or invalid start: ${start}`);
+  if (!Number.isInteger(end)) throw new Error(`missing or invalid end: ${end}`);
   const count = end - start;
-
-  if (count < 0 || count > 100) {
-    messageLogger.warn(
-        'Dropped message, GetChatMessages Message, client requested invalid amount of messages!');
-    return;
-  }
-
+  if (count < 0 || count > 100) throw new Error(`invalid number of messages: ${count}`);
   const padId = sessioninfos[socket.id].padId;
   const pad = await padManager.getPad(padId);
 
@@ -501,23 +486,14 @@ const handleGetChatMessages = async (socket, message) => {
  * @param message the message from the client
  */
 const handleSuggestUserName = (socket, message) => {
-  // check if all ok
-  if (message.data.payload.newName == null) {
-    messageLogger.warn('Dropped message, suggestUserName Message has no newName!');
-    return;
-  }
-
-  if (message.data.payload.unnamedId == null) {
-    messageLogger.warn('Dropped message, suggestUserName Message has no unnamedId!');
-    return;
-  }
-
+  const {newName, unnamedId} = message.data.payload;
+  if (newName == null) throw new Error('missing newName');
+  if (unnamedId == null) throw new Error('missing unnamedId');
   const padId = sessioninfos[socket.id].padId;
-
   // search the author and send him this message
   _getRoomSockets(padId).forEach((socket) => {
     const session = sessioninfos[socket.id];
-    if (session && session.author === message.data.payload.unnamedId) {
+    if (session && session.author === unnamedId) {
       socket.json.send(message);
     }
   });
@@ -529,40 +505,20 @@ const handleSuggestUserName = (socket, message) => {
  * @param socket the socket.io Socket object for the client
  * @param message the message from the client
  */
-const handleUserInfoUpdate = async (socket, message) => {
-  // check if all ok
-  if (message.data.userInfo == null) {
-    messageLogger.warn('Dropped message, USERINFO_UPDATE Message has no userInfo!');
-    return;
-  }
-
-  if (message.data.userInfo.colorId == null) {
-    messageLogger.warn('Dropped message, USERINFO_UPDATE Message has no colorId!');
-    return;
-  }
-
-  // Check that we have a valid session and author to update.
+const handleUserInfoUpdate = async (socket, {data: {userInfo: {name, colorId}}}) => {
+  if (colorId == null) throw new Error('missing colorId');
+  if (!name) name = null;
   const session = sessioninfos[socket.id];
-  if (!session || !session.author || !session.padId) {
-    messageLogger.warn(`Dropped message, USERINFO_UPDATE Session not ready.${message.data}`);
-    return;
-  }
-
-  // Find out the author name of this session
+  if (!session || !session.author || !session.padId) throw new Error('session not ready');
   const author = session.author;
-
-  // Check colorId is a Hex color
-  // for #f00 (Thanks Smamatti)
-  const isColor = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(message.data.userInfo.colorId);
-  if (!isColor) {
-    messageLogger.warn(`Dropped message, USERINFO_UPDATE Color is malformed.${message.data}`);
-    return;
+  if (!/(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(colorId)) {
+    throw new Error(`malformed color: ${colorId}`);
   }
 
   // Tell the authorManager about the new attributes
   const p = Promise.all([
-    authorManager.setAuthorColorId(author, message.data.userInfo.colorId),
-    authorManager.setAuthorName(author, message.data.userInfo.name),
+    authorManager.setAuthorColorId(author, colorId),
+    authorManager.setAuthorName(author, name),
   ]);
 
   const padId = session.padId;
@@ -572,12 +528,7 @@ const handleUserInfoUpdate = async (socket, message) => {
     data: {
       // The Client doesn't know about USERINFO_UPDATE, use USER_NEWINFO
       type: 'USER_NEWINFO',
-      userInfo: {
-        userId: author,
-        // set a null name, when there is no name set. cause the client wants it null
-        name: message.data.userInfo.name || null,
-        colorId: message.data.userInfo.colorId,
-      },
+      userInfo: {userId: author, name, colorId},
     },
   };
 
@@ -613,10 +564,7 @@ const handleUserChanges = async (socket, message) => {
   // TODO: this might happen with other messages too => find one place to copy the session
   // and always use the copy. atm a message will be ignored if the session is gone even
   // if the session was valid when the message arrived in the first place
-  if (!thisSession) {
-    messageLogger.warn('Ignoring USER_CHANGES from disconnected user');
-    return;
-  }
+  if (!thisSession) throw new Error('client disconnected');
 
   // Measure time to process edit
   const stopWatch = stats.timer('edits').start();
@@ -825,8 +773,7 @@ const _correctMarkersInPad = (atext, apool) => {
  */
 const handleClientReady = async (socket, message) => {
   const sessionInfo = sessioninfos[socket.id];
-  // Check if the user has already disconnected.
-  if (sessionInfo == null) return;
+  if (sessionInfo == null) throw new Error('client disconnected');
   assert(sessionInfo.author);
 
   await hooks.aCallAll('clientReady', message); // Deprecated due to awkward context.
@@ -867,7 +814,7 @@ const handleClientReady = async (socket, message) => {
   // glue the clientVars together, send them and tell the other clients that a new one is there
 
   // Check if the user has disconnected during any of the above awaits.
-  if (sessionInfo !== sessioninfos[socket.id]) return;
+  if (sessionInfo !== sessioninfos[socket.id]) throw new Error('client disconnected');
 
   // Check if this author is already on the pad, if yes, kick the other sessions!
   const roomSockets = _getRoomSockets(pad.id);
@@ -969,8 +916,7 @@ const handleClientReady = async (socket, message) => {
     } catch (e) {
       messageLogger.error(e.stack || e);
       socket.json.send({disconnect: 'corruptPad'}); // pull the brakes
-
-      return;
+      throw new Error('corrupt pad');
     }
 
     // Warning: never ever send sessionInfo.padId to the client. If the client is read only you
@@ -1126,49 +1072,16 @@ const handleClientReady = async (socket, message) => {
 /**
  * Handles a request for a rough changeset, the timeslider client needs it
  */
-const handleChangesetRequest = async (socket, message) => {
-  // check if all ok
-  if (message.data == null) {
-    messageLogger.warn('Dropped message, changeset request has no data!');
-    return;
-  }
-
-  if (message.data.granularity == null) {
-    messageLogger.warn('Dropped message, changeset request has no granularity!');
-    return;
-  }
-
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger#Polyfill
-  if (Math.floor(message.data.granularity) !== message.data.granularity) {
-    messageLogger.warn('Dropped message, changeset request granularity is not an integer!');
-    return;
-  }
-
-  if (message.data.start == null) {
-    messageLogger.warn('Dropped message, changeset request has no start!');
-    return;
-  }
-
-  if (message.data.requestID == null) {
-    messageLogger.warn('Dropped message, changeset request has no requestID!');
-    return;
-  }
-
-  const granularity = message.data.granularity;
-  const start = message.data.start;
+const handleChangesetRequest = async (socket, {data: {granularity, start, requestID}}) => {
+  if (granularity == null) throw new Error('missing granularity');
+  if (!Number.isInteger(granularity)) throw new Error('granularity is not an integer');
+  if (start == null) throw new Error('missing start');
+  if (requestID == null) throw new Error('mising requestID');
   const end = start + (100 * granularity);
-
   const {padId} = sessioninfos[socket.id];
-
-  // build the requested rough changesets and send them back
-  try {
-    const data = await getChangesetInfo(padId, start, end, granularity);
-    data.requestID = message.data.requestID;
-    socket.json.send({type: 'CHANGESET_REQ', data});
-  } catch (err) {
-    messageLogger.error(`Error while handling a changeset request ${message.data} ` +
-                        `for ${padId}: ${err.stack || err}`);
-  }
+  const data = await getChangesetInfo(padId, start, end, granularity);
+  data.requestID = requestID;
+  socket.json.send({type: 'CHANGESET_REQ', data});
 };
 
 /**
