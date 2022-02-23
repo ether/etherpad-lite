@@ -184,3 +184,34 @@ exports.handshake = async (socket, padId) => {
   logger.debug('received CLIENT_VARS message');
   return msg;
 };
+
+/**
+ * Convenience wrapper around `socket.send()` that waits for acknowledgement.
+ */
+exports.sendMessage = async (socket, message) => await new Promise((resolve, reject) => {
+  socket.send(message, (errInfo) => {
+    if (errInfo != null) {
+      const {name, message} = errInfo;
+      const err = new Error(message);
+      err.name = name;
+      reject(err);
+      return;
+    }
+    resolve();
+  });
+});
+
+const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+
+/**
+ * Generates a random string.
+ *
+ * @param {number} [len] - The desired length of the generated string.
+ * @param {string} [charset] - Characters to pick from.
+ * @returns {string}
+ */
+exports.randomString = (len = 10, charset = `${alphabet}${alphabet.toUpperCase()}0123456789`) => {
+  let ret = '';
+  while (ret.length < len) ret += charset[Math.floor(Math.random() * charset.length)];
+  return ret;
+};

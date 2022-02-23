@@ -235,6 +235,14 @@ exports.handleMessage = async (socket, message) => {
       token: message.token,
     };
   }
+  // Outside of the checks done by this function, message.padId must not be accessed because it is
+  // too easy to introduce a security vulnerability that allows malicious users to read or modify
+  // pads that they should not be able to access. Code should instead use
+  // sessioninfos[socket.id].padId if the real pad ID is needed or
+  // sessioninfos[socket.id].auth.padID if the original user-supplied pad ID is needed.
+  Object.defineProperty(message, 'padId', {get: () => {
+    throw new Error('message.padId must not be accessed (for security reasons)');
+  }});
 
   const auth = thisSession.auth;
   if (!auth) {
@@ -1115,11 +1123,6 @@ const handleChangesetRequest = async (socket, message) => {
     return;
   }
 
-  if (message.padId == null) {
-    messageLogger.warn('Dropped message, changeset request has no padId!');
-    return;
-  }
-
   if (message.data.granularity == null) {
     messageLogger.warn('Dropped message, changeset request has no granularity!');
     return;
@@ -1145,16 +1148,16 @@ const handleChangesetRequest = async (socket, message) => {
   const start = message.data.start;
   const end = start + (100 * granularity);
 
-  const padIds = await readOnlyManager.getIds(message.padId);
+  const {padId} = sessioninfos[socket.id];
 
   // build the requested rough changesets and send them back
   try {
-    const data = await getChangesetInfo(padIds.padId, start, end, granularity);
+    const data = await getChangesetInfo(padId, start, end, granularity);
     data.requestID = message.data.requestID;
     socket.json.send({type: 'CHANGESET_REQ', data});
   } catch (err) {
     messageLogger.error(`Error while handling a changeset request ${message.data} ` +
-                        `for ${padIds.padId}: ${err.stack || err}`);
+                        `for ${padId}: ${err.stack || err}`);
   }
 };
 
