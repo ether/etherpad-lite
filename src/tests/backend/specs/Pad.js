@@ -118,5 +118,17 @@ describe(__filename, function () {
       pad = await padManager.getPad(padId);
       assert.equal(pad.text(), `${want}\n`);
     });
+
+    it('cleans provided content', async function () {
+      const input = 'foo\r\nbar\r\tbaz';
+      const want = 'foo\nbar\n        baz';
+      assert.notEqual(want, settings.defaultPadText);
+      plugins.hooks.padDefaultContent.push({hook_fn: async (hookName, ctx) => {
+        ctx.type = 'text';
+        ctx.content = input;
+      }});
+      pad = await padManager.getPad(padId);
+      assert.equal(pad.text(), `${want}\n`);
+    });
   });
 });

@@ -387,15 +387,10 @@ Pad.prototype.init = async function (text, authorId = '') {
     }
   } else {
     if (text == null) {
-      const context = {
-        pad: this,
-        authorId,
-        type: 'text',
-        content: exports.cleanText(settings.defaultPadText),
-      };
+      const context = {pad: this, authorId, type: 'text', content: settings.defaultPadText};
       await hooks.aCallAll('padDefaultContent', context);
       if (context.type !== 'text') throw new Error(`unsupported content type: ${context.type}`);
-      text = context.content;
+      text = exports.cleanText(context.content);
     }
     const firstChangeset = Changeset.makeSplice('\n', 0, 0, text);
     await this.appendRevision(firstChangeset, authorId);
