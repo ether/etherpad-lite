@@ -97,6 +97,10 @@ jobs:
           npm ci
           npm version patch
           git push --follow-tags
+      # This is required if the package has a prepare script that uses something
+      # in dependencies or devDependencies.
+      -
+        run: npm ci
       # `npm publish` must come after `git push` otherwise there is a race
       # condition: If two PRs are merged back-to-back then master/main will be
       # updated with the commits from the second PR before the first PR's
