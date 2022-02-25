@@ -23,7 +23,7 @@ jobs:
         with:
           ref: master
       -
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
           cache: 'npm'
