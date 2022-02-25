@@ -1,0 +1,69 @@
+.pageBreak{
+  page-break-after: always;
+  -webkit-region-break-inside: avoid;
+  border-bottom: 1px dotted #AAA;
+  width:850px;
+  height:40px;
+  margin-left:-102px;
+  border-top: 1px dotted #aaa;
+  background-color:#f7f7f7;
+  margin-top:100px;
+  margin-bottom:100px;
+  cursor: default;
+}
+
+
+.pageBreakComputed{
+  page-break-after: always;
+  -webkit-region-break-inside: avoid;
+  border-bottom: 1px dotted #AAA;
+  margin-left:-102px !important;
+  width:850px;
+  height:40px;
+  border-top: 1px dotted #aaa;
+  background-color:#f7f7f7;
+  margin-top:100px;
+  margin-bottom:100px;
+  cursor: default;
+}
+
+.outerPV{
+  left:0px !important;
+  width:850px !important;
+  margin:auto;
+}
+
+.outerBackground{
+  background-color:#f7f7f7 !important;
+  margin:none;
+  border:none;
+}
+.innerPV{
+  background-color:#fff;
+  border-radius: 5px 5px 0 0;
+  border: 1px solid #ccc;
+  border-width: 1px 1px 0 1px;
+  position: relative;
+  box-shadow: 10px 20px 40px 20px #ddd;
+  padding-right:0px !important;
+  padding-top:100px !important;
+}
+
+.innerPVDiv{
+  margin-left:100px;
+  margin-right:100px;
+}
+
+#innerdocbody {
+  min-height:1500px;
+}
+
+#innerdocbody > div{
+  margin-left:100px;
+  margin-right:100px;
+}
+
+.pageBreakFullScreen{
+  width:100%;
+  height:1px;
+}

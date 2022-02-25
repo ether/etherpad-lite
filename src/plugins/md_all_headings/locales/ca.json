@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Mguix"
+		]
+	},
+	"ep_headings.style": "Estil",
+	"ep_headings.normal": "Normal",
+	"ep_headings.h1": "Encapçalament 1",
+	"ep_headings.h2": "Encapçalament 2",
+	"ep_headings.h3": "Encapçalament 3",
+	"ep_headings.h4": "Encapçalament 4",
+	"ep_headings.code": "Codi"
+}

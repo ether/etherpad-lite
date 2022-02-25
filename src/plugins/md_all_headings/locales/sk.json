@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Yardom78"
+		]
+	},
+	"ep_headings.style": "Štýl",
+	"ep_headings.normal": "Normálne",
+	"ep_headings.h1": "Nadpis 1",
+	"ep_headings.h2": "Nadpis 2",
+	"ep_headings.h3": "Nadpis 3",
+	"ep_headings.h4": "Nadpis 4",
+	"ep_headings.code": "Kód"
+}

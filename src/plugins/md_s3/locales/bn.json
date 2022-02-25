@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Yahya"
+		]
+	},
+	"ep_s3.toolbar.image_upload.title": "চিত্র আপলোড",
+	"ep_s3.error.fileSize": "ফাইল খুবই বড়",
+	"ep_s3.error.fileType": "অকার্যকর ফাইল টাইপ"
+}

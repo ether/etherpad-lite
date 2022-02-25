@@ -1,0 +1,28 @@
+#stats{
+  display:none;
+  position:fixed;
+  bottom:0;
+  right:20px;
+  width:300px;
+  background-color: var(--bg-color);
+  color:#000;
+  padding:20px;
+  overflow:auto;
+}
+.stats{
+  font-size:14px;
+  display:contents;
+}
+#stats > div > div{
+  line-height:20px;
+  padding:5px;
+}
+#stats > div > div > h2{
+  display:contents;
+}
+#stats > div > div:nth-child(even) {background: var(--bg-soft-color)}
+#stats > div > div:nth-child(odd) {background: var(--bg-color)}
+
+.statsAuthorColor{
+  width:4px;
+}

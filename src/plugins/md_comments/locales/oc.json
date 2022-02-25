@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Quentí"
+		]
+	},
+	"ep_comments.comment": "Comentari",
+	"ep_comments.comments": "Comentaris",
+	"ep_comments.add_comment.title": "Apondre un comentari novèl sus la seleccion",
+	"ep_comments.comments_template.accept_change.value": "Acceptar la modificacion",
+	"ep_comments.comments_template.cancel.value": "Anullar",
+	"ep_comments.comments_template.reply.value": "Respondre",
+	"ep_comments.comments_template.edit_comment.save": "enregistrar",
+	"ep_comments.comments_template.edit_comment.cancel": "anullar"
+}

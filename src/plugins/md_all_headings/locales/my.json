@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Andibecker"
+		]
+	},
+	"ep_headings.style": "ပုံစံ",
+	"ep_headings.normal": "ပုံမှန်ပါပဲ",
+	"ep_headings.h1": "ခေါင်းစဉ် ၁",
+	"ep_headings.h2": "ခေါင်းစီး ၂",
+	"ep_headings.h3": "ခေါင်းစဉ် ၃",
+	"ep_headings.h4": "ခေါင်းစဉ် ၄",
+	"ep_headings.code": "ကုဒ်"
+}

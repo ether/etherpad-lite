@@ -1,0 +1,67 @@
+{
+  "_from": "ep_wordcount",
+  "_id": "ep_wordcount@0.0.1",
+  "_inBundle": false,
+  "_integrity": "sha512-POutkyg/Xxnih83VUXnp6OhjNOsm22Drjcc0y0lCPVfPzeI0MXoRCjDxeMgjA3FECi99rFXjJrWVLeWxX+4/tQ==",
+  "_location": "/ep_wordcount",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "ep_wordcount",
+    "name": "ep_wordcount",
+    "escapedName": "ep_wordcount",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/ep_wordcount/-/ep_wordcount-0.0.1.tgz",
+  "_shasum": "87ab6febb3bfa57fc0a84a872242fc51ac632efe",
+  "_spec": "ep_wordcount",
+  "_where": "/Users/dev/Github/Edumatica/MuDocs/src",
+  "author": {
+    "name": "Akhil Naidu",
+    "email": "kaparpau.akhilnaidu@gmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/akhil-naidu/ep_wordcount/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "See pad Stats in Mu Doc",
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-etherpad": "^2.0.2",
+    "eslint-plugin-cypress": "^2.12.1",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-mocha": "^9.0.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "eslint-plugin-promise": "^5.1.1",
+    "eslint-plugin-you-dont-need-lodash-underscore": "^6.12.0"
+  },
+  "engines": {
+    "node": ">=12.13.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": "etherpad/plugin"
+  },
+  "homepage": "https://github.com/akhil-naidu/ep_wordcount#readme",
+  "name": "ep_wordcount",
+  "peerDependencies": {
+    "ep_etherpad-lite": ">=0.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akhil-naidu/ep_wordcount.git"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
+  },
+  "version": "0.0.1"
+}

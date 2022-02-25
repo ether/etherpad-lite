@@ -1,0 +1,36 @@
+{
+  "parts": [
+    {
+      "name":"main",
+      "pre": ["ep_etherpad-lite/webaccess", "ep_page_view/page_view"],
+      "post": ["ep_etherpad-lite/static"],
+      "client_hooks": {
+        "postToolbarInit": "ep_comments/static/js/index",
+        "postAceInit": "ep_comments/static/js/index",
+        "collectContentPre": "ep_comments/static/js/shared",
+        "aceAttribsToClasses": "ep_comments/static/js/index",
+        "aceEditorCSS": "ep_comments/static/js/index",
+        "aceEditEvent": "ep_comments/static/js/index",
+        "aceInitialized": "ep_comments/static/js/index"
+      },
+      "hooks": {
+        "padInitToolbar": "ep_comments/index",
+        "padRemove": "ep_comments/index",
+        "padCopy": "ep_comments/index",
+        "socketio": "ep_comments/index",
+        "expressCreateServer": "ep_comments/index",
+        "collectContentPre": "ep_comments/static/js/shared",
+        "eejsBlock_editbarMenuLeft": "ep_comments/index",
+        "eejsBlock_scripts": "ep_comments/index",
+        "eejsBlock_mySettings": "ep_comments/index",
+        "eejsBlock_styles": "ep_comments/index",
+        "clientVars": "ep_comments/index",
+        "exportHtmlAdditionalTagsWithData": "ep_comments/exportHTML",
+        "getLineHTMLForExport": "ep_comments/exportHTML",
+        "exportMuDocAdditionalContent": "ep_comments/index",
+        "exportHTMLAdditionalContent": "ep_comments/exportHTML",
+        "handleMessageSecurity": "ep_comments/index"
+      }
+    }
+  ]
+}

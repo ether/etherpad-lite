@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"YaronSh"
+		]
+	},
+	"ep_s3.toolbar.image_upload.title": "העלאת תמונה",
+	"ep_s3.error.title": "שגיאה",
+	"ep_s3.error.fileSize": "הקובץ גדול מדי! הגודל המרבי המותר הוא {{maxallowed}} מ״ב",
+	"ep_s3.error.fileType": "סוג הקובץ בלתי־תקין!"
+}

@@ -1,0 +1,15 @@
+{
+  "ep_wordcount.stats_entry.show_pad_and_author_stats" : "แสดงสถิติของแพดและผู้เขียน",
+  "ep_wordcount.stats_template.characters_no_whitespace" : "อักขระ (ไม่มีช่องว่าง):",
+  "ep_wordcount.stats_template.characters_with_whitespace" : "ตัวละคร (มีช่องว่าง):",
+  "ep_wordcount.stats_template.lines_as_only_contribution" : "เรียงแถวแบบโซโล Contributor:",
+  "ep_wordcount.stats_template.number_of_authors" : "จำนวนผู้เขียน:",
+  "ep_wordcount.stats_template.number_of_characters_exc_whitespace" : "จำนวนอักขระ (เว้นวรรค):",
+  "ep_wordcount.stats_template.number_of_characters_ind_whitespace" : "จำนวนอักขระ (Inc ช่องว่าง):",
+  "ep_wordcount.stats_template.number_of_lines_contributed_to" : "จำนวนบรรทัดที่สนับสนุน:",
+  "ep_wordcount.stats_template.number_of_words_contributed_to" : "จำนวนคำที่มีส่วนร่วมใน:",
+  "ep_wordcount.stats_template.pad_stats" : "สถิติแพด",
+  "ep_wordcount.stats_template.revision_count" : "จำนวนการแก้ไข:",
+  "ep_wordcount.stats_template.saved_revision_count" : "จำนวนการแก้ไขที่บันทึกไว้:",
+  "ep_wordcount.stats_template.word_count" : "จำนวนคำ:"
+}

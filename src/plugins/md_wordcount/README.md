@@ -1,0 +1,1 @@
+wordcount mudoc plugin

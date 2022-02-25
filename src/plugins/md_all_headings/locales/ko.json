@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ykhwong",
+			"그냥기여자"
+		]
+	},
+	"ep_headings.style": "스타일",
+	"ep_headings.normal": "표준",
+	"ep_headings.h1": "제목 1",
+	"ep_headings.h2": "제목 2",
+	"ep_headings.h3": "제목 3",
+	"ep_headings.h4": "제목 4",
+	"ep_headings.code": "코드"
+}

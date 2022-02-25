@@ -1,0 +1,6 @@
+{
+    "ep_s3.toolbar.image_upload.title": "Upload image",
+    "ep_s3.error.title": "Error",
+    "ep_s3.error.fileSize": "File is too large! Maximum allowed size is {{maxallowed}} MB.",
+    "ep_s3.error.fileType": "Invalid file type!"
+}

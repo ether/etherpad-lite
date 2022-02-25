@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Beta16"
+		]
+	},
+	"ep_headings.style": "Stile",
+	"ep_headings.normal": "Normale",
+	"ep_headings.h1": "Titolo 1",
+	"ep_headings.h2": "Titolo 2",
+	"ep_headings.h3": "Titolo 3",
+	"ep_headings.h4": "Titolo 4",
+	"ep_headings.code": "Codice"
+}

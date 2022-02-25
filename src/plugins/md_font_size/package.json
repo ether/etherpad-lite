@@ -1,0 +1,50 @@
+{
+  "author": {
+    "name": "Akhil Naidu",
+    "email": "kaparapu.akhilnaidu@gmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/akhil-naidu/ep_font_size/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {},
+  "deprecated": false,
+  "description": "Apply sizes to fonts",
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-etherpad": "^2.0.2",
+    "eslint-plugin-cypress": "^2.12.1",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-mocha": "^9.0.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "eslint-plugin-promise": "^5.1.1",
+    "eslint-plugin-you-dont-need-lodash-underscore": "^6.12.0"
+  },
+  "engines": {
+    "node": ">=12.13.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": "etherpad/plugin"
+  },
+  "homepage": "https://github.com/akhil-naidu/ep_font_size#readme",
+  "keywords": [
+    "mudoc",
+    "plugin"
+  ],
+  "license": "Apache-2.0",
+  "name": "ep_font_size",
+  "peerDependencies": {
+    "ep_etherpad-lite": ">=0.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akhil-naidu/ep_font_size.git"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
+  },
+  "version": "0.0.3"
+}

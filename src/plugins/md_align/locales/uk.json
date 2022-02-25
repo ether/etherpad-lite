@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"DDPAT"
+		]
+	},
+	"ep_align.align": "Вирівняти",
+	"ep_align.toolbar.left.title": "Ліворуч",
+	"ep_align.toolbar.center.title": "По центру",
+	"ep_align.toolbar.right.title": "Праворуч",
+	"ep_align.toolbar.justify.title": "Обґрунтуйте"
+}

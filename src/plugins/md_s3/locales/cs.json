@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Georg101"
+		]
+	},
+	"ep_s3.toolbar.image_upload.title": "Nahrát obrázek",
+	"ep_s3.error.fileSize": "Soubor je příliš velký",
+	"ep_s3.error.fileType": "Neplatný typ souboru"
+}

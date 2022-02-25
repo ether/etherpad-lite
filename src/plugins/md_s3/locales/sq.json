@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Besnik b",
+			"Eraldkerciku"
+		]
+	},
+	"ep_s3.toolbar.image_upload.title": "Ngarko figurë",
+	"ep_s3.error.fileSize": "Kartela është shumë e madhe",
+	"ep_s3.error.fileType": "Lloj i pavlefshëm kartele"
+}

@@ -1,0 +1,15 @@
+{
+  "ep_wordcount.stats_entry.show_pad_and_author_stats" : "Pad နှင့်စာရေးသူစာရင်းဇယားများကိုပြပါ",
+  "ep_wordcount.stats_template.characters_no_whitespace" : "စာလုံးများ (နေရာလွတ်မရှိ):",
+  "ep_wordcount.stats_template.characters_with_whitespace" : "အက္ခရာများ (နေရာလွတ်) နှင့်:",
+  "ep_wordcount.stats_template.lines_as_only_contribution" : "တစ်ကိုယ်တော်ပံ့ပိုးကူညီသူများအဖြစ်လိုင်းမျာ",
+  "ep_wordcount.stats_template.number_of_authors" : "စာရေးသူအရေအတွက်:",
+  "ep_wordcount.stats_template.number_of_characters_exc_whitespace" : "အက္ခရာအရေအတွက် (အထူးနေရာလွတ်)",
+  "ep_wordcount.stats_template.number_of_characters_ind_whitespace" : "အက္ခရာအရေအတွက် (Inc Whitespace):",
+  "ep_wordcount.stats_template.number_of_lines_contributed_to" : "ပံ့ပိုးပေးသောလိုင်းအရေအတွက်:",
+  "ep_wordcount.stats_template.number_of_words_contributed_to" : "ပံ့ပိုးပေးသောစာလုံးအရေအတွက်:",
+  "ep_wordcount.stats_template.pad_stats" : "Pad စာရင်းအင်းများ",
+  "ep_wordcount.stats_template.revision_count" : "တည်းဖြတ်မှုအရေအတွက်:",
+  "ep_wordcount.stats_template.saved_revision_count" : "သိမ်းဆည်းထားသောပြန်လည်တည်းဖြတ်မှုအရေအတွက်:",
+  "ep_wordcount.stats_template.word_count" : "စာလုံးအရေအတွက်:"
+}

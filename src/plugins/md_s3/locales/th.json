@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Andibecker"
+		]
+	},
+	"ep_s3.toolbar.image_upload.title": "อัพโหลดภาพ",
+	"ep_s3.error.fileSize": "ไฟล์ใหญ่เกินไป",
+	"ep_s3.error.fileType": "ประเภทไฟล์ไม่ถูกต้อง"
+}

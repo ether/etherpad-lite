@@ -1,0 +1,30 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ykhwong",
+			"그냥기여자"
+		]
+	},
+	"ep_comments.comment": "의견",
+	"ep_comments.comments": "의견",
+	"ep_comments.add_comment.title": "선택 영역에 새 댓글 추가",
+	"ep_comments.add_comment": "선택 영역에 새 댓글 추가",
+	"ep_comments.add_comment.hint": "먼저 의견을 전달할 대상 텍스트를 선택해 주십시오",
+	"ep_comments.delete_comment.title": "이 의견 삭제",
+	"ep_comments.edit_comment.title": "이 의견 편집하기",
+	"ep_comments.show_comments": "의견 표시",
+	"ep_comments.comments_template.suggested_change": "제안된 변경 사항",
+	"ep_comments.comments_template.accept_change.value": "변경 수락",
+	"ep_comments.comments_template.revert_change.value": "변경사항 되돌리기",
+	"ep_comments.comments_template.suggested_change_from": "\"{{changeFrom}}\"에서 \"{{changeTo}}\"(으)로 변경 제안됨",
+	"ep_comments.comments_template.suggest_change_from": "\"{{changeFrom}}\"에서 다음으로 변경할 것으로 제안:",
+	"ep_comments.comments_template.include_suggestion": "제안된 변경사항 포함",
+	"ep_comments.comments_template.comment.value": "의견",
+	"ep_comments.comments_template.cancel.value": "취소",
+	"ep_comments.comments_template.reply.value": "답변",
+	"ep_comments.comments_template.reply.placeholder": "답변",
+	"ep_comments.comments_template.edit_comment.save": "저장",
+	"ep_comments.comments_template.edit_comment.cancel": "취소",
+	"ep_comments.error.edit_unauth": "다른 사용자의 의견을 편집할 수 없습니다!",
+	"ep_comments.error.delete_unauth": "다른 사용자의 의견을 삭제할 수 없습니다!"
+}

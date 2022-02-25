@@ -1,0 +1,7 @@
+{
+  "ep_align.align" : "Align",
+  "ep_align.toolbar.left.title" : "Left",
+  "ep_align.toolbar.center.title" : "Center",
+  "ep_align.toolbar.right.title" : "Right",
+  "ep_align.toolbar.justify.title" : "Justify"
+}

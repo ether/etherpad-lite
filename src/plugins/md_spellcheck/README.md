@@ -1,0 +1,1 @@
+spellcheck plugin for mudoc

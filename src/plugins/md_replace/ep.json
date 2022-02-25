@@ -1,0 +1,13 @@
+{
+  "parts": [
+    {
+      "name": "replace",
+      "client_hooks": {
+        "postAceInit" : "ep_replace/static/js/replace"
+      },
+      "hooks": {
+        "eejsBlock_styles" : "ep_replace/replace"
+      }
+    }
+  ]
+}

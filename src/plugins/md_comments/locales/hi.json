@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Abijeet Patro"
+		]
+	},
+	"ep_comments.comment": "टिप्पणी",
+	"ep_comments.comments": "टिप्पणियाँ",
+	"ep_comments.comments_template.cancel.value": "रद्द करें",
+	"ep_comments.comments_template.reply.value": "जवाब दें",
+	"ep_comments.comments_template.reply.placeholder": "जवाब दें",
+	"ep_comments.comments_template.edit_comment.save": "सहेजें",
+	"ep_comments.comments_template.edit_comment.cancel": "रद्द करें"
+}

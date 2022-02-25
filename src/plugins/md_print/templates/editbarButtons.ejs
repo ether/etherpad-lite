@@ -1,0 +1,12 @@
+<li id="printButton" class="acl-write">
+  <a class="grouped-left ep_print" title="Print" onClick='printPad()'>
+    <span class="buttonicon"></span>
+  </a>
+</li>
+<li class="separator acl-write"></li>
+<script>
+const printPad = () => {
+  let pad = $('iframe[name="ace_outer"]').contents().find('iframe[name="ace_inner"]')[0]; 
+  pad.contentWindow.print();
+}
+</script>

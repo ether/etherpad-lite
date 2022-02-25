@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"ep_s3.toolbar.image_upload.title": "Lae pilt üles",
+	"ep_s3.error.fileSize": "Pilt on liiga suur",
+	"ep_s3.error.fileType": "Vale pilditüüp"
+}

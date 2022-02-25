@@ -1,0 +1,15 @@
+{
+  "ep_wordcount.stats_entry.show_pad_and_author_stats" : "Afficher les statistiques du Pad et de l'Auteur",
+  "ep_wordcount.stats_template.characters_no_whitespace" : "Caractères (pas d'espaces):",
+  "ep_wordcount.stats_template.characters_with_whitespace" : "Caractères (avec espace):",
+  "ep_wordcount.stats_template.lines_as_only_contribution" : "Lignes en tant que contributeur solo :",
+  "ep_wordcount.stats_template.number_of_authors" : "Nombre d'auteurs :",
+  "ep_wordcount.stats_template.number_of_characters_exc_whitespace" : "Nombre de caractères (sauf espace blanc):",
+  "ep_wordcount.stats_template.number_of_characters_ind_whitespace" : "Nombre de caractères (Inc Whitespace):",
+  "ep_wordcount.stats_template.number_of_lines_contributed_to" : "Nombre de lignes contribuées à :",
+  "ep_wordcount.stats_template.number_of_words_contributed_to" : "Nombre de mots contribués à :",
+  "ep_wordcount.stats_template.pad_stats" : "Statistiques du pad",
+  "ep_wordcount.stats_template.revision_count" : "Nombre de révisions :",
+  "ep_wordcount.stats_template.saved_revision_count" : "Nombre de révisions enregistrées :",
+  "ep_wordcount.stats_template.word_count" : "Nombre de mots :"
+}

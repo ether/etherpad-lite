@@ -1,0 +1,1 @@
+Checklist plugin for MuDoc

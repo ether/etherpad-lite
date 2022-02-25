@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kly"
+		]
+	},
+	"ep_align.align": "校準",
+	"ep_align.toolbar.left.title": "左",
+	"ep_align.toolbar.center.title": "中",
+	"ep_align.toolbar.right.title": "右",
+	"ep_align.toolbar.justify.title": "左右對齊"
+}

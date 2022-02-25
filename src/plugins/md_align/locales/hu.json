@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Hanna Tardos"
+		]
+	},
+	"ep_align.align": "Illesztés",
+	"ep_align.toolbar.left.title": "Balra igazítás",
+	"ep_align.toolbar.right.title": "Jobbra igazítás",
+	"ep_align.toolbar.justify.title": "Sorkizárt"
+}

@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ghose"
+		]
+	},
+	"ep_headings.style": "Estilo",
+	"ep_headings.normal": "Normal",
+	"ep_headings.h1": "Cabeceira 1",
+	"ep_headings.h2": "Cabeceira 2",
+	"ep_headings.h3": "Cabeceira 3",
+	"ep_headings.h4": "Cabeceira 4",
+	"ep_headings.code": "Código"
+}

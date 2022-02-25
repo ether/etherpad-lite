@@ -1,0 +1,71 @@
+{
+  "_from": "ep_all_headings",
+  "_id": "ep_all_headings@0.0.1",
+  "_inBundle": false,
+  "_integrity": "sha512-wi4NepzLTh4NhafeMPvEZsH9D73UQ8S+I5cK7Lup4UDuRMW4KRSm5UMu+g03uXDEBSLUPFQOK3HX0gzf4oTbLw==",
+  "_location": "/ep_all_headings",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "ep_all_headings",
+    "name": "ep_all_headings",
+    "escapedName": "ep_all_headings",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/ep_all_headings/-/ep_all_headings-0.0.1.tgz",
+  "_shasum": "3581983c07bfd2f74bc98b79dab53e4427a81237",
+  "_spec": "ep_all_headings",
+  "_where": "/Users/dev/Github/Edumatica/MuDocs/src",
+  "author": {
+    "name": "Akhil Naidu",
+    "email": "kaparapu.akhilnaidu@gmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/ether/ep_all_headings/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "Adds heading support to Mu Doc Lite.",
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-etherpad": "^2.0.2",
+    "eslint-plugin-cypress": "^2.12.1",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-mocha": "^9.0.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "eslint-plugin-promise": "^5.1.1",
+    "eslint-plugin-you-dont-need-lodash-underscore": "^6.12.0"
+  },
+  "engines": {
+    "node": ">=12.13.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": "etherpad/plugin"
+  },
+  "homepage": "https://github.com/akhil-naidu/ep_all_headings#readme",
+  "keywords": [
+    "mudoc",
+    "plugin"
+  ],
+  "name": "ep_all_headings",
+  "peerDependencies": {
+    "ep_etherpad-lite": ">=0.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akhil-nadiu/ep_all_headings.git"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
+  },
+  "version": "0.0.1"
+}

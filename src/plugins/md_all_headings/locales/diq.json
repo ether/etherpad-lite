@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"1917 Ekim Devrimi"
+		]
+	},
+	"ep_headings.style": "Style",
+	"ep_headings.normal": "Normal",
+	"ep_headings.h1": "Sername 1",
+	"ep_headings.h2": "Sername 2",
+	"ep_headings.h3": "Sername 3",
+	"ep_headings.h4": "Sername 4",
+	"ep_headings.code": "Kod"
+}

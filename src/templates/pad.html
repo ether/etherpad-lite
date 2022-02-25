@@ -308,6 +308,40 @@
           <% e.end_block(); %>
       </div></div>
 
+      <!---------------------------------------------------------------------->
+      <!------------------------- Replace popup ------------------------------>
+      <!---------------------------------------------------------------------->
+        
+        <div id="replace" class="popup" style="top: 0;
+        margin-left: 70%;
+        height: 67%;
+        width: fit-content;
+        min-width: 28%;">
+          <div class="popup-content" style="width: 100%;">
+            <h1>Find and Replace</h1>
+            <form >
+              <div style="display: block;">
+                <div style="display: flex; align-items: center;">
+                  <label for="find" >Find</label> 
+                  <br />
+                  <input type="text" name="find" id="id-find" style="margin: 0 0 0 42px;"/>
+                </div>
+                <br />
+                <div style="display: flex; align-items: center;">                
+                  <label for="replace" >Replace</label>
+                  <br />
+                  <input type="text" name="replace" id="id-replace" style="margin: 0 0 0 15px;"/>
+                </div>
+              </div>
+              <br />
+              <div style="display: flex; justify-content: flex-end;">
+                <button id="replace-submit" class="button" style="background-color: #4c8bf5; color: white; margin-right: 5px;"> Replace </button>
+                <button id="replace-close" class="button" style="background-color: red; color: white; margin-left: 5px;"> Close </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
 
       <!-------------------------------->
       <!-- EMBED POPUP (Share, embed) -->

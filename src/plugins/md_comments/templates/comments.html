@@ -1,0 +1,142 @@
+<script src="../static/plugins/ep_comments/static/js/jquery.tmpl.min.js"></script>
+
+<!-- Popup displayed so that we can create a comment -->
+<script id="newCommentTemplate" type="text/html">
+    <div id="newComment" class="popup toolbar-popup new-comment-popup">
+        <div class="popup-content">
+            <h1 data-l10n-id="ep_comments.comment">Comment</h1>
+
+            {{tmpl "#new-comment-form"}}
+        </div>
+    </div>
+</script>
+
+<!-- Subtemplate to create a comment -->
+<script id="new-comment-form" type="text/html">
+    <form class="new-comment">
+
+        {{if reply}}
+            <input type="text" class='comment-content' data-l10n-id="ep_comments.comments_template.reply.placeholder">
+        {{else}}
+            <textarea class="comment-content" autofocus></textarea>
+        {{/if}}
+
+        <div class="form-more">
+            <p class="comment-suggest">
+                <input type="checkbox" id="suggestion-checkbox-${commentId}" name="suggestion-checkbox-${commentId}" class="suggestion-checkbox">
+                <label for="suggestion-checkbox-${commentId}" class="label-suggestion-checkbox" data-l10n-id="ep_comments.comments_template.include_suggestion">Include suggested change</label>
+            </p>
+            <div class="suggestion suggestion-create">
+                <span class="from-label" data-l10n-id="ep_comments.comments_template.suggest_change_from"  data-l10n-args='{"changeFrom": "${changeFrom}"}'>Suggest Change From</span>
+                <span class="hidden from-value">${changeFrom}</span>
+                <textarea class="to-value"></textarea>
+            </div>
+
+            <div class="comment-buttons">
+                <input type="submit" id="comment-create-btn" class="btn btn-primary" value="Comment" data-l10n-id="ep_comments.comments_template.{{if reply}}reply{{else}}comment{{/if}}.value" />
+                <input type="reset" id="comment-reset" class="btn btn-default btn-cancel-reply" value="Cancel" data-l10n-id="ep_comments.comments_template.cancel.value" />
+            </div>
+        </div>
+    </form>
+</script>
+
+<!-- Display the comment on the right side of the page -->
+<script id="commentsTemplate" type="text/html">
+    <div id="${commentId}" data-commentid="${commentId}"
+         class="sidebar-comment comment-container {{if changeAccepted}}change-accepted{{/if}}" >
+
+        <div class="compact-display-content">
+            <span class="comment-author-name">${name}</span>
+            {{tmpl "#comment-text"}}
+        </div>
+
+        <div class="full-display-content">
+            <div class="comment-title-wrapper">
+                <span class="comment-author-name">${name}</span>
+                <span class="comment-created-at" datetime="${formattedDate}">${date}</span>
+
+                <span class="comment-actions-wrapper">
+                    {{if text.length > 0}}
+                        <span class="comment-edit buttonicon buttonicon-pencil" data-l10n-id="ep_comments.edit_comment.title"></span>
+                    {{/if}}
+                    <span class="comment-delete buttonicon buttonicon-trash" data-l10n-id="ep_comments.delete_comment.title"></span>
+                </span>
+
+                {{tmpl "#comment-text"}}
+
+                {{tmpl "#display-suggestion"}}
+            </div>
+
+            <!-- Form to create a reply -->
+            <div class='comment-reply'>
+
+                <!-- Previous replies inserted here dynamically -->
+                <div class="comment-replies-container"></div>
+
+                {{tmpl "#new-comment-form"}}
+
+                <!-- for test purposes only -->
+                <input type="submit" style="display:none">
+            </div>
+        </div>
+    </div>
+</script>
+
+<!-- SubTemplate to display the comment text -->
+<script id="comment-text" type="text/html">
+    {{if text.length > 0}}
+        <span class="comment-text">${text}</span>
+    {{else}}
+        <span class="comment-text default-text" data-l10n-id="ep_comments.comments_template.suggested_change">Suggested Change</span>
+    {{/if}}
+</script>
+
+<!-- SubTemplate to dislay a suggestion -->
+<script id="display-suggestion" type="text/html">
+    <!-- When comment contains a suggestion, we display it with an approval button -->
+    {{if changeTo}}
+    <form class="comment-changeTo-form suggestion-display">
+        <div>
+          <!-- TODO: Fix below line to properly handle escaped characters -->
+          <!-- Using escape() is a temp fix designed to handle suggestions to "foo" -->
+          <!-- which historically would break a pad :( -->
+            <span class="from-label" data-l10n-id="ep_comments.comments_template.suggested_change_from" data-l10n-args='{"changeFrom": "${changeFrom}", "changeTo": "${escape(changeTo)}"}'>Suggested Change From</span>
+            <span class="hidden from-value">${changeFrom}</span>
+            <span class="hidden to-value">${changeTo}</span>
+        </div>
+        <!-- Approve/revert button -->
+        <input type="Submit" class="btn btn-primary approve-suggestion-btn acl-write" value="Accept Change" data-l10n-id="ep_comments.comments_template.accept_change.value">
+        <input type="Submit" class="btn btn-default revert-suggestion-btn acl-write" value="Revert Change" data-l10n-id="ep_comments.comments_template.revert_change.value">
+
+    </form>
+    {{/if}}
+</script>
+
+<!-- Each comment can have multiple replies. Each reply is created from this template -->
+<script id="replyTemplate" type="text/html">
+    <div id="${replyId}" data-commentid="${replyId}"
+         class="sidebar-comment-reply comment-container {{if changeAccepted}}change-accepted{{/if}}">
+        <span class="comment-author-name">${name}</span>
+        <span class="comment-created-at" datetime="${formattedDate}">${date}</span>
+        {{if text && text.length > 0}}
+            <div class="comment-reply-value-wrapper">
+                <span class="comment-text">${text}</span>
+                <span class="comment-edit buttonicon buttonicon-pencil" data-l10n-id="ep_comments.edit_comment.title"></span>
+            </div>
+        {{/if}}
+
+        <!-- A reply can also include a suggestion -->
+        {{tmpl "#display-suggestion"}}
+    </div>
+</script>
+
+<!-- When click Edit on a comment, we insert this template just next to the comment so we can edit it -->
+<script id="editCommentTemplate" type="text/html">
+  <div class="comment-edit-form">
+    <textarea class="comment-edit-text">${text}</textarea>
+    <p>
+      <button class="btn btn-primary comment-edit-submit" data-l10n-id="ep_comments.comments_template.edit_comment.save">Save</button>
+      <button class="btn btn-default comment-edit-cancel" data-l10n-id="ep_comments.comments_template.edit_comment.cancel">Cancel</button>
+    </p>
+  </div>
+</script>

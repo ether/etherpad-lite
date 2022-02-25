@@ -1,0 +1,20 @@
+{
+  "parts":[
+    {
+      "name": "stats",
+      "hooks":{
+        "expressCreateServer": "ep_wordcount/express",
+        "eejsBlock_exportColumn": "ep_wordcount/index",
+        "eejsBlock_scripts": "ep_wordcount/index",
+        "eejsBlock_mySettings": "ep_wordcount/index",
+        "eejsBlock_styles":"ep_wordcount/index",
+        "eejsBlock_body":"ep_wordcount/index",
+        "eejsBlock_dd_view":"ep_wordcount/index"
+      },
+      "client_hooks": {
+        "postAceInit": "ep_wordcount/static/js/stats",
+        "aceEditEvent": "ep_wordcount/static/js/stats"
+      }
+    }
+  ]
+}

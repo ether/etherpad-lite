@@ -1,0 +1,74 @@
+{
+  "_from": "ep_s3",
+  "_id": "ep_s3@0.0.2",
+  "_inBundle": false,
+  "_integrity": "sha512-S1hpcSgtRMsCnLH7zmSEmNkX2cSdMEg0DOwzl0OwE6XnC1XeabhL2fdMS2qMFKESzvCWeqjxgQ7bJuNVTEUmKg==",
+  "_location": "/ep_s3",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "ep_s3",
+    "name": "ep_s3",
+    "escapedName": "ep_s3",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/ep_s3/-/ep_s3-0.0.2.tgz",
+  "_shasum": "0e439f2c0b95c5b27c2ab0e35d13ee26409fd3c0",
+  "_spec": "ep_s3",
+  "_where": "/Users/dev/Github/Edumatica/MuDocs/src",
+  "author": {
+    "name": "Akhil Naidu",
+    "email": "kaparapu.akhilnaidu@gmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/akhil-naidu/ep_s3/issues"
+  },
+  "bundleDependencies": false,
+  "contributors": [],
+  "dependencies": {
+    "busboy": "0.3.1",
+    "lodash": "4.17.21",
+    "mime-db": "1.49.0",
+    "stream_upload": "0.0.6",
+    "uuid": "8.3.2"
+  },
+  "deprecated": false,
+  "description": "Uploading images to s3",
+  "devDependencies": {
+    "eslint": "7.32.0",
+    "eslint-config-etherpad": "2.0.0",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-mocha": "9.0.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "eslint-plugin-promise": "5.1.0",
+    "eslint-plugin-you-dont-need-lodash-underscore": "^6.12.0"
+  },
+  "directories": {},
+  "engines": {
+    "node": "^10.17.0 || >=11.14.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": "etherpad/plugin"
+  },
+  "homepage": "https://github.com/akhil-naidu/ep_s3",
+  "name": "ep_s3",
+  "peerDependencies": {
+    "ep_etherpad-lite": ">=0.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akhil-naidu/ep_s3.git"
+  },
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "version": "0.0.2"
+}

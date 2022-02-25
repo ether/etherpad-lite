@@ -1,0 +1,47 @@
+{
+  "_from": "ep_checklist",
+  "_id": "ep_checklist@0.0.5",
+  "_inBundle": false,
+  "_integrity": "sha512-HBHNgbYwR9Sy+/RtQ8h/umW1J26aUunHSpMQGwfOq2otypDKWFoU9O7fy2kKEEpG7itX/PfiM8GRHZlRulPV/Q==",
+  "_location": "/ep_checklist",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "ep_checklist",
+    "name": "ep_checklist",
+    "escapedName": "ep_checklist",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/ep_checklist/-/ep_checklist-0.0.5.tgz",
+  "_shasum": "3662e3284b7ca3231906fe69564910e35a1b66b3",
+  "_spec": "ep_checklist",
+  "_where": "/Users/dev/Github/Edumatica/MuDocs/src",
+  "author": {
+    "name": "Aman",
+    "email": "sherawataman05@gmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/akhil-naidu/ep_checklist/issues"
+  },
+  "bundleDependencies": false,
+  "contributors": [],
+  "dependencies": {},
+  "deprecated": false,
+  "description": "Checklist  Plugin for Mudoc",
+  "engines": {
+    "node": "*"
+  },
+  "homepage": "https://github.com/akhil-naidu/ep_checklist#readme",
+  "name": "ep_checklist",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akhil-naidu/ep_checklist.git"
+  },
+  "version": "0.0.5"
+}

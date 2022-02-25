@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Avengium",
+			"Jakeukalane"
+		]
+	},
+	"ep_comments.comment": "Comentario",
+	"ep_comments.comments": "Comentarios",
+	"ep_comments.add_comment.hint": "Primero selecciona el texto para comentar",
+	"ep_comments.edit_comment.title": "Editar este comentario",
+	"ep_comments.comments_template.accept_change.value": "Aceptar cambio",
+	"ep_comments.comments_template.revert_change.value": "Revertir cambio",
+	"ep_comments.comments_template.suggested_change_from": "Cambio sugerido de \"{{changeFrom}}\" a \"{{changeTo}}\"",
+	"ep_comments.comments_template.suggest_change_from": "Sugerir cambio de \"{{changeFrom}}\" a",
+	"ep_comments.comments_template.include_suggestion": "Incluir cambio sugerido",
+	"ep_comments.comments_template.comment.value": "Comentario",
+	"ep_comments.comments_template.cancel.value": "Cancelar",
+	"ep_comments.comments_template.reply.value": "Responder",
+	"ep_comments.comments_template.edit_comment.save": "Guardar",
+	"ep_comments.comments_template.edit_comment.cancel": "cancelar",
+	"ep_comments.error.edit_unauth": "¡No puedes editar los comentarios de otros usuarios!",
+	"ep_comments.error.delete_unauth": "¡No puedes eliminar los comentarios de otros usuarios!"
+}

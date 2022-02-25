@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Quentí"
+		]
+	},
+	"ep_headings.style": "Estil",
+	"ep_headings.normal": "Normal",
+	"ep_headings.h1": "Títol 1",
+	"ep_headings.h2": "Títol 2",
+	"ep_headings.h3": "Títol 3",
+	"ep_headings.h4": "Títol 4",
+	"ep_headings.code": "Còdi"
+}

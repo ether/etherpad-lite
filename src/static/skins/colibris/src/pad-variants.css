@@ -1,12 +1,54 @@
 /* =========================== */
 /* === Super Light Toolbar === */
 /* =========================== */
-.super-light-toolbar .toolbar, .super-light-toolbar .popup-content, .super-light-toolbar #pad_title  {
+.super-light-toolbar .toolbar,.super-light-toolbar #pad_title  {
   --text-color: var(--super-dark-color);
   --text-soft-color: var(--dark-color);
   --border-color: #e4e6e9;
   --bg-soft-color: var(--light-color);
   --bg-color: var(--super-light-color);
+    background-color: #f2f3f4;    
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#editbar.editor-scrolled {
+  border-bottom: 0px solid #d2d2d2;
+}
+
+.toolbar ul.menu_left {
+  padding-left: 10px;
+  padding-right: 10px;
+  background-color: white;
+  border-radius: 8px;
+}
+
+.toolbar ul.menu_right {
+  flex-shrink: 0;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  border-top: 0 solid #ccc;
+  background-color: white;
+  padding: 0 5px 5px 5px;
+}
+
+.super-light-toolbar .popup-content{
+  --text-color: var(--super-dark-color);
+  --text-soft-color: var(--dark-color);
+  --border-color: #e4e6e9;
+  --bg-soft-color: var(--light-color);
+  --bg-color: var(--super-light-color);
+
+}
+.popup {
+  position: absolute;
+  bottom: 10px;
+  left: 30px;
+  visibility: hidden;
+  z-index: 500;
 }
 /* ===================== */
 /* === Light Toolbar === */
@@ -42,11 +84,6 @@
   --bg-soft-color: var(--super-dark-color);
   --bg-color: var(--dark-color);
 }
-
-
-
-
-
 /* ============================ */
 /* == Super Light Background == */
 /* ============================ */
@@ -57,6 +94,7 @@
   --border-color: #e4e6e9;
   --bg-soft-color: var(--light-color);
   --bg-color: var(--super-light-color);
+  
 }
 .super-light-background  body, .full-width-editor.super-light-editor body:not(.comments-active) {
   --scrollbar-bg: var(--super-light-color);
@@ -69,18 +107,60 @@
 /* ====================== */
 /* == Light Background == */
 /* ====================== */
-.light-background #editorcontainerbox, .light-background #sidediv,
-.light-background #chatbox, .light-background #outerdocbody, .light-background {
+#editorcontainerbox {
   --text-color: var(--super-dark-color);
   --text-soft-color: var(--dark-color);
   --border-color: var(--middle-color);
   --bg-soft-color: var(--super-light-color);
   --bg-color: var(--light-color);
+  margin-bottom: 48px;
+  margin-top: 0px;
+  padding-top: 0px;
+  position: relative;
 }
+
+#outerdocbody{
+  padding-top: 0;
+}
+
+#editorcontainerbox iframe {
+  width: 100%;
+  max-height: 99%;
+  height: 99%;
+}
+
+.chat-content {
+  border: 1px solid #f2f3f4;
+  border-radius: 8px;
+}
+
+.popup#users.chatAndUsers > .popup-content {
+  border: none;
+  border-bottom: 0px solid #ccc;
+  border-left: 0px solid #ccc;
+  border-right: 0;
+  border-radius: 0;
+  box-shadow: none;
+  height: 200px;
+  min-width: 0;
+  padding: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+}
+
+.light-background #chatbox{
+  margin-bottom: 10px;
+  border-radius: 8px;
+  margin-right: 10px;
+  overflow: hidden;
+}
+
 .light-background  body, .full-width-editor.light-editor body:not(.comments-active) {
   --scrollbar-bg: var(--light-color);
   --scrollbar-track: var(--super-light-color);
   --scrollbar-thumb: var(--dark-color);
+  background-color: #f2f3f4;
 }
 .light-background .compact-display-content {
   background-color: var(--light-color);
@@ -142,6 +222,7 @@
 /* ======================== */
 .super-light-editor #outerdocbody iframe, .super-light-editor #outerdocbody > #innerdocbody {
   --bg-color: var(--super-light-color);
+  border-radius: 8px;
 }
 .super-light-editor #innerdocbody {
   --text-color: var(--super-dark-color);
@@ -225,4 +306,9 @@
 .full-width-editor ::-webkit-scrollbar-track,
 .full-width-editor ::-webkit-scrollbar-thumb {
   border-radius: 0px;
+}
+
+.mobile-layout #users.popup {
+  right: 0rem;
+  left: auto;
 }

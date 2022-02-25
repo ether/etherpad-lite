@@ -1,0 +1,15 @@
+#imageUploadModalError, #imageUploadModalLoader {
+    position: absolute;
+    top: 150px;
+    right: 0;
+    left: 0;
+    margin-left: auto;
+    margin-right: auto;
+    z-index: 1;
+    max-height: 600px;
+}
+
+#imageUploadModalError .error {
+    color: #900;
+    text-align: center;
+}

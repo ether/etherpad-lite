@@ -1,0 +1,15 @@
+.commenticon {
+  background-repeat: no-repeat;
+  display: inline-block;
+  height: 16px;
+  vertical-align: middle;
+  width: 16px;
+}
+.commenticon:before{
+  font-family: "fontawesome-etherpad";
+  content: "\e828";
+  color:#666;
+  font-size:14px;
+  padding-top:2px;
+  line-height:17px;
+}

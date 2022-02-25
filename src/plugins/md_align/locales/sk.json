@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Yardom78"
+		]
+	},
+	"ep_align.align": "Zarovnať",
+	"ep_align.toolbar.left.title": "Vľavo",
+	"ep_align.toolbar.center.title": "Na stred",
+	"ep_align.toolbar.right.title": "Vpravo",
+	"ep_align.toolbar.justify.title": "Zarovnať"
+}

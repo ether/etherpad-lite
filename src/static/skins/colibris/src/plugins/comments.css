@@ -8,6 +8,13 @@
   background-color: #576273;
   background-color: var(--text-soft-color);
 }
+
+.full-display-content .comment-title-wrapper,
+.full-display-content .comment-reply {
+  padding: 10px;
+  background-color: #ffffff;
+}
+
 .sidebar-comment .suggestion-create {
   margin-top: 10px;
 }
@@ -29,6 +36,12 @@
 .comment-actions-wrapper .comment-edit {
   margin-right: 5px;
 }
+
+.comment-actions-wrapper {
+  float: right;
+  display: flex;
+}
+
 [type="checkbox"] + label.label-suggestion-checkbox {
   margin-left: 5px;
   padding-left: 2.4rem;
@@ -38,8 +51,8 @@
   box-shadow: none;
   background-color: #f2f3f4;
   background-color: var(--bg-soft-color);
-  border: 1px solid #ffffff;
-  border: 1px solid var(--bg-color);
+  border: 1px solid #f2f3f4;
+  /* border: 1px solid var(--bg-color); */
 }
 .comment-reply {
   border-top: 1px solid #ffffff;
@@ -47,9 +60,15 @@
   background-color: inherit;
 }
 .comment-reply textarea, .comment-reply input[type="text"] {
-  background-color: #ffffff;
+  background-color: #f2f3f4;
   background-color: var(--bg-color);
 }
+
+.comment-reply input[type=text], .comment-reply textarea {
+  background-color: #f2f3f4;
+  /* background-color: var(--bg-color); */
+}
+
 .btn.revert-suggestion-btn {
   padding-left: 0;
 }
@@ -79,6 +98,7 @@
 .comment-modal .full-display-content .comment-title-wrapper,
 .comment-modal .full-display-content .comment-reply {
   padding: 15px;
+  background-color: #ffffff;
 }
 
 
@@ -105,6 +125,7 @@
   }
   .sidebar-comment .full-display-content {
     margin-left: 10px;
+    border: 1px
   }
   .compact-display-content {
     padding-left: 20px;

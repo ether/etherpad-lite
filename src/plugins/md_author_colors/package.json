@@ -1,0 +1,72 @@
+{
+  "_from": "ep_author_colors",
+  "_id": "ep_author_colors@0.0.1",
+  "_inBundle": false,
+  "_integrity": "sha512-MX9iInCMKENgvi9dLzhAO/AnShx1a2lmhkBLPz5Az0saA0veUIyEAkzpFrxeag33Uonytb4OOAuIe1sucE24zQ==",
+  "_location": "/ep_author_colors",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "ep_author_colors",
+    "name": "ep_author_colors",
+    "escapedName": "ep_author_colors",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/ep_author_colors/-/ep_author_colors-0.0.1.tgz",
+  "_shasum": "a39958ae24104b269ce76db4ad2c379b737450fd",
+  "_spec": "ep_author_colors",
+  "_where": "/Users/dev/Github/Edumatica/MuDocs/src",
+  "bugs": {
+    "url": "https://github.com/ether/ep_author_colors/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "Mudoc plugin that uses colored underlines instead of colored backgrounds to indicate authorship.",
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-etherpad": "^2.0.2",
+    "eslint-plugin-cypress": "^2.12.1",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-mocha": "^9.0.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "eslint-plugin-promise": "^5.1.1",
+    "eslint-plugin-you-dont-need-lodash-underscore": "^6.12.0"
+  },
+  "engines": {
+    "node": ">=12.13.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": "etherpad/plugin"
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://edumatica.io/"
+  },
+  "homepage": "https://github.com/akhil-naidu/ep_author_colors#readme",
+  "keywords": [
+    "mudoc",
+    "plugin"
+  ],
+  "license": "MIT",
+  "name": "ep_author_colors",
+  "peerDependencies": {
+    "ep_etherpad-lite": ">=0.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akhil-naidu/ep_author_colors.git"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
+  },
+  "version": "0.0.1"
+}

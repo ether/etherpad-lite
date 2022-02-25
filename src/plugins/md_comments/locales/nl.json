@@ -1,0 +1,31 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"ep_comments.comment": "Opmerking",
+	"ep_comments.comments": "Opmerkingen",
+	"ep_comments.add_comment.title": "Voeg opmerking toe aan selectie",
+	"ep_comments.add_comment": "Voeg opmerking toe aan selectie",
+	"ep_comments.add_comment.hint": "Selecteer eerst een stuk tekst om een opmerking aan toe te voegen",
+	"ep_comments.delete_comment.title": "Verwijder deze opmerking",
+	"ep_comments.edit_comment.title": "Bewerk deze opmerking",
+	"ep_comments.show_comments": "Toon opmerkingen",
+	"ep_comments.comments_template.suggested_change": "Voorgestelde wijziging",
+	"ep_comments.comments_template.from": "Van",
+	"ep_comments.comments_template.accept_change.value": "Accepteer wijziging",
+	"ep_comments.comments_template.revert_change.value": "Draai wijziging terug",
+	"ep_comments.comments_template.suggested_change_from": "Voorgestelde wijziging van \"{{changeFrom}}\" in \"{{changeTo}}\"",
+	"ep_comments.comments_template.suggest_change_from": "Voorgestelde wijziging van \"{{changeFrom}}\" in",
+	"ep_comments.comments_template.to": "Naar",
+	"ep_comments.comments_template.include_suggestion": "Voeg voorgestelde wijziging toe",
+	"ep_comments.comments_template.comment.value": "Opmerking",
+	"ep_comments.comments_template.cancel.value": "Annuleer",
+	"ep_comments.comments_template.reply.value": "Antwoord",
+	"ep_comments.comments_template.reply.placeholder": "Antwoord",
+	"ep_comments.comments_template.edit_comment.save": "bewaar",
+	"ep_comments.comments_template.edit_comment.cancel": "annuleer",
+	"ep_comments.error.edit_unauth": "You cannot edit other users comments!",
+	"ep_comments.error.delete_unauth": "You cannot delete other users comments!"
+}

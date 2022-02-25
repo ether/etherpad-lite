@@ -1,0 +1,13 @@
+{
+  "parts": [
+    {
+      "name": "ep_print",
+      "client_hooks": {
+      },
+      "hooks":{
+        "eejsBlock_styles": "ep_print/eejs",
+        "eejsBlock_editbarMenuRight": "ep_print/eejs"
+      }
+    }
+  ]
+}

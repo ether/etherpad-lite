@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ghose"
+		]
+	},
+	"ep_align.align": "Aliñar",
+	"ep_align.toolbar.left.title": "Esquerda",
+	"ep_align.toolbar.center.title": "Centro",
+	"ep_align.toolbar.right.title": "Dereita",
+	"ep_align.toolbar.justify.title": "Xustificar"
+}

@@ -1,0 +1,29 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"ep_comments.comment": "Megjegyzés",
+	"ep_comments.comments": "Megjegyzések",
+	"ep_comments.add_comment.title": "Új megjegyzés hozzáadása a kijelöléshez",
+	"ep_comments.add_comment": "Új megjegyzés hozzáadása a kijelöléshez",
+	"ep_comments.add_comment.hint": "Először jelölje meg a szöveget a megjegyzéshez",
+	"ep_comments.delete_comment.title": "Megjegyzés törlése",
+	"ep_comments.edit_comment.title": "Megjegyzés szerkesztése",
+	"ep_comments.show_comments": "Megjegyzések megjelenítése",
+	"ep_comments.comments_template.suggested_change": "Javasolt változtatás",
+	"ep_comments.comments_template.from": "Feladó",
+	"ep_comments.comments_template.accept_change.value": "Változtatás elfogadása",
+	"ep_comments.comments_template.revert_change.value": "Változtatás visszavonása",
+	"ep_comments.comments_template.suggested_change_from": "Változtatás javasolta:",
+	"ep_comments.comments_template.suggest_change_from": "Változtatás javasolta:",
+	"ep_comments.comments_template.to": "Címzett:",
+	"ep_comments.comments_template.include_suggestion": "Javasolt változtatás tartalmazása",
+	"ep_comments.comments_template.comment.value": "Megjegyzés",
+	"ep_comments.comments_template.cancel.value": "Mégsem",
+	"ep_comments.comments_template.reply.value": "Válasz",
+	"ep_comments.comments_template.reply.placeholder": "Válasz",
+	"ep_comments.comments_template.edit_comment.save": "mentés",
+	"ep_comments.comments_template.edit_comment.cancel": "mégsem",
+	"ep_comments.error.edit_unauth": "You cannot edit other users comments!",
+	"ep_comments.error.delete_unauth": "You cannot delete other users comments!"
+}

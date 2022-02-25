@@ -1,0 +1,94 @@
+{
+  "_from": "ep_comments",
+  "_id": "ep_comments@0.0.5",
+  "_inBundle": false,
+  "_integrity": "sha512-jp9U4cCkgSl9ryCnALYUH3fM80j7j3FQThpCcsmka7tjXBdpbXI9BMcIEio217OdII/MGqjUcDn08d3KbJlcqw==",
+  "_location": "/ep_comments",
+  "_phantomChildren": {
+    "boolbase": "1.0.0",
+    "inherits": "2.0.3",
+    "lodash.assignin": "4.2.0",
+    "lodash.bind": "4.2.1",
+    "lodash.defaults": "4.2.0",
+    "lodash.filter": "4.6.0",
+    "lodash.flatten": "4.4.0",
+    "lodash.foreach": "4.5.0",
+    "lodash.map": "4.6.0",
+    "lodash.merge": "4.6.2",
+    "lodash.pick": "4.4.0",
+    "lodash.reduce": "4.6.0",
+    "lodash.reject": "4.6.0",
+    "lodash.some": "4.6.0",
+    "util-deprecate": "1.0.2"
+  },
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "ep_comments",
+    "name": "ep_comments",
+    "escapedName": "ep_comments",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/ep_comments/-/ep_comments-0.0.5.tgz",
+  "_shasum": "79245f5ccc5e196d98c4ce160f9494cb8a7a6434",
+  "_spec": "ep_comments",
+  "_where": "/Users/dev/Github/Edumatica/MuDocs/src",
+  "author": {
+    "name": "Akhil Naidu",
+    "email": "kaparapu.akhilnaidu@gmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/akhil-naidu/ep_comments/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "cheerio": "^0.22.0",
+    "formidable": "^1.2.2",
+    "underscore": "^1.13.1"
+  },
+  "deprecated": false,
+  "description": "Adds comments on sidebar and link it to the text",
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-etherpad": "^2.0.2",
+    "eslint-plugin-cypress": "^2.12.1",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-mocha": "^9.0.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "eslint-plugin-promise": "^5.1.1",
+    "eslint-plugin-you-dont-need-lodash-underscore": "^6.12.0",
+    "socket.io-client": "^2.3.0",
+    "superagent": "^6.1.0"
+  },
+  "engines": {
+    "node": ">=12.13.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": "etherpad/plugin",
+    "ignorePatterns": [
+      "/static/js/jquery.tmpl.min.js",
+      "/static/js/moment-with-locales.min.js"
+    ]
+  },
+  "homepage": "https://github.com/akhil-naidu/ep_comments#readme",
+  "name": "ep_comments",
+  "peerDependencies": {
+    "ep_etherpad-lite": ">=0.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akhil-naidu/ep_comments.git"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
+  },
+  "version": "0.0.5"
+}

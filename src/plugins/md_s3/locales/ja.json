@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"A2y4",
+			"MathXplore"
+		]
+	},
+	"ep_s3.toolbar.image_upload.title": "画像をアップロード",
+	"ep_s3.error.title": "エラー",
+	"ep_s3.error.fileSize": "ファイルが大きすぎます",
+	"ep_s3.error.fileType": "ファイル形式が無効です"
+}

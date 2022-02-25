@@ -1,0 +1,32 @@
+{
+	"@metadata": {
+		"authors": [
+			"Prame Tan",
+			"Thas Tayapongsak"
+		]
+	},
+	"ep_comments.comment": "ความคิดเห็น",
+	"ep_comments.comments": "ความเห็น",
+	"ep_comments.add_comment.title": "เพิ่มความเห็นสำหรับส่วนที่เลือก",
+	"ep_comments.add_comment": "เพิ่มความเห็นสำหรับส่วนที่เลือก",
+	"ep_comments.add_comment.hint": "กรุณาเลือกข้อความที่จะแสดงความเห็น",
+	"ep_comments.delete_comment.title": "ลบความเห็น",
+	"ep_comments.edit_comment.title": "แก้ไขความคิดเห็น",
+	"ep_comments.show_comments": "แสดงความเห็น",
+	"ep_comments.comments_template.suggested_change": "การเปลี่ยนแปลงที่เสนอ",
+	"ep_comments.comments_template.from": "จาก",
+	"ep_comments.comments_template.accept_change.value": "ยอมรับการเปลี่ยนแปลง",
+	"ep_comments.comments_template.revert_change.value": "ย้อนคืนการเปลี่ยนแปลง",
+	"ep_comments.comments_template.suggested_change_from": "เสนอให้เปลี่ยน \"{{changeFrom}}\" ไปเป็น \"{{changeTo}}\"",
+	"ep_comments.comments_template.suggest_change_from": "เสนอให้เปลี่ยนจาก \"{{changeFrom}}\" ไปเป็น",
+	"ep_comments.comments_template.to": "ถึง",
+	"ep_comments.comments_template.include_suggestion": "เพิ่มการเปลี่ยนแปลงที่เสนอ",
+	"ep_comments.comments_template.comment.value": "ความเห็น",
+	"ep_comments.comments_template.cancel.value": "ยกเลิก",
+	"ep_comments.comments_template.reply.value": "ตอบกลับ",
+	"ep_comments.comments_template.reply.placeholder": "ตอบกลับ",
+	"ep_comments.comments_template.edit_comment.save": "บันทึก",
+	"ep_comments.comments_template.edit_comment.cancel": "ยกเลิก",
+	"ep_comments.error.edit_unauth": "คุณไม่สามารถแก้ไขความเห็นของผู้ใช้อื่นได้",
+	"ep_comments.error.delete_unauth": "คุณไม่สามารถลบความเห็นของผู้ใช้อื่นได้"
+}

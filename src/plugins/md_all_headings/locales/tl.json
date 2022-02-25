@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Mrkczr"
+		]
+	},
+	"ep_headings.style": "Istilo",
+	"ep_headings.normal": "Karaniwan",
+	"ep_headings.h1": "Pamuhatan 1",
+	"ep_headings.h2": "Pamuhatan 2",
+	"ep_headings.h3": "Pamuhatan 3",
+	"ep_headings.h4": "Pamuhatan 4",
+	"ep_headings.code": "Kodigo"
+}

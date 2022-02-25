@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Florian COLLIN",
+			"Gomoko",
+			"Verdy p"
+		]
+	},
+	"ep_align.align": "Alignement",
+	"ep_align.toolbar.left.title": "À gauche",
+	"ep_align.toolbar.center.title": "Centré",
+	"ep_align.toolbar.right.title": "À droite",
+	"ep_align.toolbar.justify.title": "Justifié"
+}

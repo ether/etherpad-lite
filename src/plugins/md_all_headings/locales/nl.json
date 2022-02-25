@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Aranka",
+			"woeterman_94"
+		]
+	},
+	"ep_headings.style": "Stijl",
+	"ep_headings.normal": "Normaal",
+	"ep_headings.h1": "Kop 1",
+	"ep_headings.h2": "Kop 2",
+	"ep_headings.h3": "Kop 3",
+	"ep_headings.h4": "Kop 4",
+	"ep_headings.code": "Code"
+}

@@ -1,0 +1,73 @@
+{
+  "_from": "ep_spellcheck",
+  "_id": "ep_spellcheck@0.0.1",
+  "_inBundle": false,
+  "_integrity": "sha512-kXXFGrTMcIcKsFqyYSfhm+JaCUaDALSnky3OrivmT+8hmVfW/RolybBNxusSVb7EiD9k0sgoDoD5CSjRtpwxhw==",
+  "_location": "/ep_spellcheck",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "ep_spellcheck",
+    "name": "ep_spellcheck",
+    "escapedName": "ep_spellcheck",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/ep_spellcheck/-/ep_spellcheck-0.0.1.tgz",
+  "_shasum": "0f7f0d57f4886eebd69ea47bb67eca24985fa503",
+  "_spec": "ep_spellcheck",
+  "_where": "/Users/dev/Github/Edumatica/MuDocs/src",
+  "author": {
+    "name": "Akhil Naidu",
+    "email": "kaparapu.akhilnaidu@gmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/akhil-naidu/ep_spellcheck/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "Add support to do 'Spell checking', with a toggle on/off option in Settings",
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-etherpad": "^2.0.2",
+    "eslint-plugin-cypress": "^2.12.1",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-mocha": "^9.0.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "eslint-plugin-promise": "^5.1.1",
+    "eslint-plugin-you-dont-need-lodash-underscore": "^6.12.0"
+  },
+  "engines": {
+    "node": ">=12.13.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": "etherpad/plugin"
+  },
+  "homepage": "https://github.com/akhil-naidu/ep_spellcheck#readme",
+  "keywords": [
+    "spell",
+    "check",
+    "spelling",
+    "spellcheck"
+  ],
+  "name": "ep_spellcheck",
+  "peerDependencies": {
+    "ep_etherpad-lite": ">=0.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/akhil-naidu/ep_spellcheck.git"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
+  },
+  "version": "0.0.1"
+}

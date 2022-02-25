@@ -1,0 +1,31 @@
+{
+	"@metadata": {
+		"authors": [
+			"DDPAT"
+		]
+	},
+	"ep_comments.comment": "Примечание",
+	"ep_comments.comments": "Примечания",
+	"ep_comments.add_comment.title": "Добавьте примечание к выделенному тексту",
+	"ep_comments.add_comment": "Добавьте примечание к выделенному тексту",
+	"ep_comments.add_comment.hint": "Выделите текст чтобы создать примечание",
+	"ep_comments.delete_comment.title": "Удалить примечание",
+	"ep_comments.edit_comment.title": "Отредактировать примечание",
+	"ep_comments.show_comments": "Показывать примечания",
+	"ep_comments.comments_template.suggested_change": "Предлагаемое изменение",
+	"ep_comments.comments_template.from": "Заменить",
+	"ep_comments.comments_template.accept_change.value": "Принять изменение",
+	"ep_comments.comments_template.revert_change.value": "Отменить изменение",
+	"ep_comments.comments_template.suggested_change_from": "Предлагаемое изменение с «{{changeFrom}}» на «{{changeTo}}»",
+	"ep_comments.comments_template.suggest_change_from": "Предложить изменение с «{{changeFrom}}» на",
+	"ep_comments.comments_template.to": "на",
+	"ep_comments.comments_template.include_suggestion": "Предложить правку",
+	"ep_comments.comments_template.comment.value": "Отправить",
+	"ep_comments.comments_template.cancel.value": "Отменить",
+	"ep_comments.comments_template.reply.value": "Ответить",
+	"ep_comments.comments_template.reply.placeholder": "Ответить",
+	"ep_comments.comments_template.edit_comment.save": "сохранить",
+	"ep_comments.comments_template.edit_comment.cancel": "отменить",
+	"ep_comments.error.edit_unauth": "You cannot edit other users comments!",
+	"ep_comments.error.delete_unauth": "You cannot delete other users comments!"
+}

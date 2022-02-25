@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Quentí"
+		]
+	},
+	"ep_s3.toolbar.image_upload.title": "Enviar imatge",
+	"ep_s3.error.fileSize": "Lo fichièr es tròp grand.",
+	"ep_s3.error.fileType": "Tipe de fichièr pas valid"
+}

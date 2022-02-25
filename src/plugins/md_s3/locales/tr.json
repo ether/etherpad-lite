@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Joseph"
+		]
+	},
+	"ep_s3.toolbar.image_upload.title": "Resim yükle",
+	"ep_s3.error.fileSize": "Dosya çok büyük",
+	"ep_s3.error.fileType": "Geçersiz dosya türü"
+}

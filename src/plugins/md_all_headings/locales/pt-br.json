@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eduardo Addad de Oliveira",
+			"Eduardoaddad"
+		]
+	},
+	"ep_headings.style": "Estilo",
+	"ep_headings.normal": "Normal",
+	"ep_headings.h1": "Nível 1",
+	"ep_headings.h2": "Nível 2",
+	"ep_headings.h3": "Nível 3",
+	"ep_headings.h4": "Nível 4",
+	"ep_headings.code": "Código"
+}

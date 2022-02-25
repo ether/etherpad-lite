@@ -1,0 +1,31 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kly"
+		]
+	},
+	"ep_comments.comment": "意見",
+	"ep_comments.comments": "意見",
+	"ep_comments.add_comment.title": "在所選添加新的意見",
+	"ep_comments.add_comment": "在所選添加新的意見",
+	"ep_comments.add_comment.hint": "請先選擇意見內容的文字",
+	"ep_comments.delete_comment.title": "刪除此意見",
+	"ep_comments.edit_comment.title": "編輯此意見",
+	"ep_comments.show_comments": "顯示意見",
+	"ep_comments.comments_template.suggested_change": "建議更改",
+	"ep_comments.comments_template.from": "來自",
+	"ep_comments.comments_template.accept_change.value": "接受更改",
+	"ep_comments.comments_template.revert_change.value": "回復更改",
+	"ep_comments.comments_template.suggested_change_from": "將「{{changeFrom}}」改成「{{changeTo}}」的建議更改",
+	"ep_comments.comments_template.suggest_change_from": "建議更改，將「{{changeFrom}}」改成",
+	"ep_comments.comments_template.to": "至",
+	"ep_comments.comments_template.include_suggestion": "包含建議更改",
+	"ep_comments.comments_template.comment.value": "意見",
+	"ep_comments.comments_template.cancel.value": "取消",
+	"ep_comments.comments_template.reply.value": "回覆",
+	"ep_comments.comments_template.reply.placeholder": "回覆",
+	"ep_comments.comments_template.edit_comment.save": "儲存",
+	"ep_comments.comments_template.edit_comment.cancel": "取消",
+	"ep_comments.error.edit_unauth": "您不能編輯其他使用者的意見！",
+	"ep_comments.error.delete_unauth": "您不能刪除其他使用者的意見！"
+}

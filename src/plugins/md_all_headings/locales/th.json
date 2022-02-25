@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Andibecker"
+		]
+	},
+	"ep_headings.style": "สไตล์",
+	"ep_headings.normal": "ปกติ",
+	"ep_headings.h1": "หัวเรื่อง 1",
+	"ep_headings.h2": "หัวเรื่อง 2",
+	"ep_headings.h3": "หัวเรื่อง 3",
+	"ep_headings.h4": "หัวเรื่อง 4",
+	"ep_headings.code": "รหัส"
+}

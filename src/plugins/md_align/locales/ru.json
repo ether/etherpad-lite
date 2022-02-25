@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Okras"
+		]
+	},
+	"ep_align.align": "Выравнивание",
+	"ep_align.toolbar.left.title": "Слева",
+	"ep_align.toolbar.center.title": "По центру",
+	"ep_align.toolbar.right.title": "Справа",
+	"ep_align.toolbar.justify.title": "Выровнять"
+}

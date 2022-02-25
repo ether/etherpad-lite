@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Joetaras"
+		]
+	},
+	"ep_headings.style": "Stile",
+	"ep_headings.normal": "Normale",
+	"ep_headings.h1": "Testate 1",
+	"ep_headings.h2": "Testate 2",
+	"ep_headings.h3": "Testate 3",
+	"ep_headings.h4": "Testate 4",
+	"ep_headings.code": "Codece"
+}

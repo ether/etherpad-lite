@@ -1,0 +1,15 @@
+{
+  "ep_wordcount.stats_entry.show_pad_and_author_stats" : "Onyesha takwimu na Mwandishi",
+  "ep_wordcount.stats_template.characters_no_whitespace" : "Wahusika (hakuna nafasi nyeupe):",
+  "ep_wordcount.stats_template.characters_with_whitespace" : "Wahusika (wenye nafasi nyeupe):",
+  "ep_wordcount.stats_template.lines_as_only_contribution" : "Mistari kama Mchangiaji wa peke yake:",
+  "ep_wordcount.stats_template.number_of_authors" : "Idadi ya Waandishi:",
+  "ep_wordcount.stats_template.number_of_characters_exc_whitespace" : "Idadi ya Wahusika (Exc Whitespace):",
+  "ep_wordcount.stats_template.number_of_characters_ind_whitespace" : "Idadi ya Wahusika (Inc Whitespace):",
+  "ep_wordcount.stats_template.number_of_lines_contributed_to" : "Idadi ya Mistari Iliyochangiwa kwa:",
+  "ep_wordcount.stats_template.number_of_words_contributed_to" : "Idadi ya Maneno Iliyotolewa kwa:",
+  "ep_wordcount.stats_template.pad_stats" : "Pad Stats",
+  "ep_wordcount.stats_template.revision_count" : "Hesabu ya Marekebisho:",
+  "ep_wordcount.stats_template.saved_revision_count" : "Hesabu ya Marekebisho Iliyohifadhiwa:",
+  "ep_wordcount.stats_template.word_count" : "Hesabu ya Neno:"
+}

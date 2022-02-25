@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Izendegi"
+		]
+	},
+	"ep_align.align": "Lerrokatu",
+	"ep_align.toolbar.left.title": "Ezkerrera",
+	"ep_align.toolbar.center.title": "Erdian",
+	"ep_align.toolbar.right.title": "Eskuinera",
+	"ep_align.toolbar.justify.title": "Justifikatu"
+}

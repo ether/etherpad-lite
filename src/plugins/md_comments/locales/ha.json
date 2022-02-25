@@ -1,0 +1,31 @@
+{
+	"@metadata": {
+		"authors": [
+			"Abbaty",
+			"Omar Ali",
+			"Salihu aliyu"
+		]
+	},
+	"ep_comments.comment": "Ra'ayi",
+	"ep_comments.comments": "sharhi",
+	"ep_comments.add_comment.title": "Kara sabon ra'ayi akan zaben",
+	"ep_comments.add_comment": "saka sabon bayani a bangaren",
+	"ep_comments.add_comment.hint": "zaba farkon sakon sharhi",
+	"ep_comments.delete_comment.title": "goge wannan sharhin",
+	"ep_comments.edit_comment.title": "ghera wannan sharhin",
+	"ep_comments.show_comments": "nuna sharhi",
+	"ep_comments.comments_template.suggested_change": "chanza shawara",
+	"ep_comments.comments_template.from": "daga",
+	"ep_comments.comments_template.accept_change.value": "karban chanji",
+	"ep_comments.comments_template.revert_change.value": "dawo da chanji",
+	"ep_comments.comments_template.to": "zuwa",
+	"ep_comments.comments_template.include_suggestion": "sanya damar sauyi",
+	"ep_comments.comments_template.comment.value": "Ra'ayi",
+	"ep_comments.comments_template.cancel.value": "sokewa",
+	"ep_comments.comments_template.reply.value": "Maidawa",
+	"ep_comments.comments_template.reply.placeholder": "maidawa",
+	"ep_comments.comments_template.edit_comment.save": "adanawa",
+	"ep_comments.comments_template.edit_comment.cancel": "Soke",
+	"ep_comments.error.edit_unauth": "bazaka iya gheran sharhin wani bah",
+	"ep_comments.error.delete_unauth": "bazaka iya goge sharhin wani bah"
+}

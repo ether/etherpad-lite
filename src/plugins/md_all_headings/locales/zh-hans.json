@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"列维劳德"
+		]
+	},
+	"ep_headings.style": "样式",
+	"ep_headings.normal": "正常",
+	"ep_headings.h1": "标题 1",
+	"ep_headings.h2": "标题 2",
+	"ep_headings.h3": "标题 3",
+	"ep_headings.h4": "标题 4",
+	"ep_headings.code": "代码"
+}

@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Guilha"
+		]
+	},
+	"ep_align.align": "Alinhar",
+	"ep_align.toolbar.left.title": "Esquerda",
+	"ep_align.toolbar.center.title": "Centro",
+	"ep_align.toolbar.right.title": "Direita",
+	"ep_align.toolbar.justify.title": "Justificado"
+}

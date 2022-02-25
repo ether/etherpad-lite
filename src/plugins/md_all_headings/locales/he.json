@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"YaronSh"
+		]
+	},
+	"ep_headings.style": "סגנון",
+	"ep_headings.normal": "רגיל",
+	"ep_headings.h1": "כותרת רמה 1",
+	"ep_headings.h2": "כותרת רמה 2",
+	"ep_headings.h3": "כותרת רמה 3",
+	"ep_headings.h4": "כותרת רמה 4",
+	"ep_headings.code": "קוד"
+}

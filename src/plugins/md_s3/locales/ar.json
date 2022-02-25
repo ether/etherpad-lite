@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"محمد أحمد عبد الفتاح"
+		]
+	},
+	"ep_s3.toolbar.image_upload.title": "ارفع صورة",
+	"ep_s3.error.fileSize": "الملف ضخم جدًّا"
+}

@@ -1,0 +1,21 @@
+{
+  "parts":[
+    {
+      "name": "checklist",
+      "client_hooks": {
+        "aceEditorCSS": "ep_checklist/static/js/checklist",
+        "aceDomLineProcessLineAttributes": "ep_checklist/static/js/checklist",
+        "postAceInit": "ep_checklist/static/js/checklist",
+        "aceInitialized": "ep_checklist/static/js/checklist",
+        "collectContentPre": "ep_checklist/static/js/shared",
+        "aceAttribsToClasses": "ep_checklist/static/js/checklist"
+      },
+      "hooks": {
+        "eejsBlock_scripts": "ep_checklist/checklist",
+        "eejsBlock_styles": "ep_checklist/checklist",
+        "collectContentPre": "ep_checklist/static/js/shared",
+        "collectContentPost": "ep_checklist/static/js/shared"
+      }
+    }
+  ]
+}

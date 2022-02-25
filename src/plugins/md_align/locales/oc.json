@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Quentí"
+		]
+	},
+	"ep_align.align": "Alinhament",
+	"ep_align.toolbar.left.title": "Esquèrra",
+	"ep_align.toolbar.center.title": "Centre",
+	"ep_align.toolbar.right.title": "Drecha",
+	"ep_align.toolbar.justify.title": "Justifica"
+}

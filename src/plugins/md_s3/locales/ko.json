@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ykhwong",
+			"그냥기여자"
+		]
+	},
+	"ep_s3.toolbar.image_upload.title": "이미지 업로드",
+	"ep_s3.error.title": "오류",
+	"ep_s3.error.fileSize": "파일이 너무 큽니다! 최대 파일 크기는 {{maxallowed}}MB입니다.",
+	"ep_s3.error.fileType": "파일 유형이 유효하지 않습니다!"
+}

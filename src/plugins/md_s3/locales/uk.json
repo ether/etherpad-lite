@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"DDPAT"
+		]
+	},
+	"ep_s3.toolbar.image_upload.title": "Завантажити зображення",
+	"ep_s3.error.title": "Помилка",
+	"ep_s3.error.fileSize": "Файл завеликий! Максимально дозволений розмір – {{maxallowed}} МБ.",
+	"ep_s3.error.fileType": "Недійсний тип файлу!"
+}

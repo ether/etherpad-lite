@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Guilha"
+		]
+	},
+	"ep_headings.style": "Estilo",
+	"ep_headings.normal": "Normal",
+	"ep_headings.h1": "Título 1",
+	"ep_headings.h2": "Título 2",
+	"ep_headings.h3": "Título 3",
+	"ep_headings.h4": "Título 4",
+	"ep_headings.code": "Código"
+}

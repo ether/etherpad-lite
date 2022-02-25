@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bjankuloski06"
+		]
+	},
+	"ep_headings.style": "Стил",
+	"ep_headings.normal": "Нормален",
+	"ep_headings.h1": "Наслов 1",
+	"ep_headings.h2": "Наслов 2",
+	"ep_headings.h3": "Наслов 3",
+	"ep_headings.h4": "Наслов 4",
+	"ep_headings.code": "Код"
+}

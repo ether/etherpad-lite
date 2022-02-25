@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"YaronSh"
+		]
+	},
+	"ep_align.align": "יישור",
+	"ep_align.toolbar.left.title": "שמאל",
+	"ep_align.toolbar.center.title": "מרכז",
+	"ep_align.toolbar.right.title": "ימין",
+	"ep_align.toolbar.justify.title": "פיזור שוויוני"
+}

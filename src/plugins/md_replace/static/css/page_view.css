@@ -1,0 +1,17 @@
+@media (min-width: 1060px) {
+  
+#editorcontainer.page_view {
+  overflow: hidden;
+  background-color: #f7f7f7;
+  text-align: center;
+  top:17px;
+}
+
+#editorcontainerbox{
+  background-color:#f7f7f7;
+}
+
+#editorloadingbox{
+  margin-top:100px;
+}
+}

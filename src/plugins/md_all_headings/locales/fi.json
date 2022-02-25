@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Maantietäjä"
+		]
+	},
+	"ep_headings.style": "Tyyli",
+	"ep_headings.normal": "Normaali",
+	"ep_headings.h1": "Otsikko 1",
+	"ep_headings.h2": "Otsikko 2",
+	"ep_headings.h3": "Otsikko 3",
+	"ep_headings.h4": "Otsikko 4",
+	"ep_headings.code": "Koodi"
+}

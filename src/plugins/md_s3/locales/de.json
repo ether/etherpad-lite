@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"FF-11",
+			"FF11"
+		]
+	},
+	"ep_s3.toolbar.image_upload.title": "Bild hochladen",
+	"ep_s3.error.fileSize": "Datei ist zu groß",
+	"ep_s3.error.fileType": "Ungültiger Dateityp"
+}

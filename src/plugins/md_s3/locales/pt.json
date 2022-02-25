@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Unamane"
+		]
+	},
+	"ep_s3.toolbar.image_upload.title": "Enviar imagem",
+	"ep_s3.error.fileSize": "O ficheiro é demasiado grande",
+	"ep_s3.error.fileType": "O tipo de ficheiro não é válido"
+}

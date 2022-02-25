@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"ep_headings.style": "Stil",
+	"ep_headings.normal": "Normal",
+	"ep_headings.h1": "Rubrik 1",
+	"ep_headings.h2": "Rubrik 2",
+	"ep_headings.h3": "Rubrik 3",
+	"ep_headings.h4": "Rubrik 4",
+	"ep_headings.code": "Kod"
+}

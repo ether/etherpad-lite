@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bjankuloski06"
+		]
+	},
+	"ep_align.align": "Порамни",
+	"ep_align.toolbar.left.title": "Лево",
+	"ep_align.toolbar.center.title": "По средина",
+	"ep_align.toolbar.right.title": "Десно",
+	"ep_align.toolbar.justify.title": "Порамни пасус"
+}

@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kareyac",
+			"Okras",
+			"Pacha Tchernof"
+		]
+	},
+	"ep_s3.toolbar.image_upload.title": "Загрузить изображение",
+	"ep_s3.error.title": "Ошибка",
+	"ep_s3.error.fileSize": "Файл слишком большой! Максимально допустимый размер составляет {{maxallowed}} МБ.",
+	"ep_s3.error.fileType": "Недействительный тип файла!"
+}

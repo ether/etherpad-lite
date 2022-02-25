@@ -1,0 +1,14 @@
+{
+  "parts": [
+    {
+      "name": "ep_spellcheck",
+      "client_hooks": {
+        "postAceInit": "ep_spellcheck/static/js/spellcheck:postAceInit"
+      },
+      "hooks": {
+        "eejsBlock_mySettings": "ep_spellcheck/spellcheck",
+        "eejsBlock_dd_view": "ep_spellcheck/spellcheck"
+      }
+    }
+  ]
+}

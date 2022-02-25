@@ -1,0 +1,29 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"ep_comments.comment": "Komentarz",
+	"ep_comments.comments": "Komentarze",
+	"ep_comments.add_comment.title": "Dodaj nowy komentarz do sekcji",
+	"ep_comments.add_comment": "Dodaj nowy komentarz do sekcji",
+	"ep_comments.add_comment.hint": "Najpierw wybierz tekst do skomentowania",
+	"ep_comments.delete_comment.title": "Usuń komentarz",
+	"ep_comments.edit_comment.title": "Edit this comment",
+	"ep_comments.show_comments": "Pokaż komentarze",
+	"ep_comments.comments_template.suggested_change": "Sugerowane zmiany",
+	"ep_comments.comments_template.from": "Od",
+	"ep_comments.comments_template.accept_change.value": "Zaakceptuj zmiany",
+	"ep_comments.comments_template.revert_change.value": "Przywróc zmiany",
+	"ep_comments.comments_template.suggested_change_from": "Sugerowana zmiana z",
+	"ep_comments.comments_template.suggest_change_from": "Zaproponuj zmiane z",
+	"ep_comments.comments_template.to": "Do",
+	"ep_comments.comments_template.include_suggestion": "Dołącz sugestie",
+	"ep_comments.comments_template.comment.value": "Komentarz",
+	"ep_comments.comments_template.cancel.value": "Anuluj",
+	"ep_comments.comments_template.reply.value": "Odpowiedź",
+	"ep_comments.comments_template.reply.placeholder": "Odpowiedź",
+	"ep_comments.comments_template.edit_comment.save": "save",
+	"ep_comments.comments_template.edit_comment.cancel": "cancel",
+	"ep_comments.error.edit_unauth": "You cannot edit other users comments!",
+	"ep_comments.error.delete_unauth": "You cannot delete other users comments!"
+}

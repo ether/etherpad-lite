@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"ep_headings.style": "Stiilid",
+	"ep_headings.normal": "Tavaline tekst",
+	"ep_headings.h1": "Pealkiri 1",
+	"ep_headings.h2": "Pealkiri 2",
+	"ep_headings.h3": "Pealkiri 3",
+	"ep_headings.h4": "Pealkiri 4",
+	"ep_headings.code": "Kood"
+}

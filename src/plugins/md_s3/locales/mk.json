@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bjankuloski06"
+		]
+	},
+	"ep_s3.toolbar.image_upload.title": "Подигни слика",
+	"ep_s3.error.title": "Грешка",
+	"ep_s3.error.fileSize": "Податотеката е преголема! Дозволено е највеќе {{maxallowed}} МБ.",
+	"ep_s3.error.fileType": "Неважечки податотечен тип!"
+}

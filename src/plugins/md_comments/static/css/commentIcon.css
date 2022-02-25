@@ -1,0 +1,40 @@
+#commentIcons {
+  display: block;
+  z-index: 1;
+  margin-left: 15px;
+  width: 50px;
+  position: relative;
+}
+#commentIcons:not(.active) {
+  display: none;
+}
+
+.comment-icon-line {
+  position: absolute;
+  margin-top: 2px;
+}
+.comment-icon {
+  background-repeat: no-repeat;
+  display: inline-block;
+  height: 16px;
+  vertical-align: middle;
+  width: 16px;
+  margin-right: 5px;
+  cursor: pointer;
+}
+.comment-icon:before {
+  font-family: "fontawesome-etherpad";
+  content: "\E850";
+  color:#666;
+  font-size:14px;
+  padding-top:2px;
+  line-height:17px;
+}
+
+.comment-icon.with-reply:before {
+  content: "\E82D";
+}
+
+.comment-icon.active:before {
+  color:orange;
+}

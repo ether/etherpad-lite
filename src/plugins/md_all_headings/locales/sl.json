@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"HairyFotr"
+		]
+	},
+	"ep_headings.style": "Slog",
+	"ep_headings.h1": "Naslov 1",
+	"ep_headings.h2": "Naslov 2",
+	"ep_headings.h3": "Naslov 3",
+	"ep_headings.h4": "Naslov 4"
+}

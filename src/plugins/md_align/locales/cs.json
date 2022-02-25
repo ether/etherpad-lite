@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Spotter"
+		]
+	},
+	"ep_align.align": "Zarovnání",
+	"ep_align.toolbar.left.title": "Vlevo",
+	"ep_align.toolbar.center.title": "Střed",
+	"ep_align.toolbar.right.title": "Vpravo",
+	"ep_align.toolbar.justify.title": "Do bloku"
+}

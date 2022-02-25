@@ -1,0 +1,33 @@
+{
+  "parts": [
+    {
+      "name": "ep_s3",
+      "client_hooks": {
+        "postToolbarInit": "ep_s3/static/js/toolbar",
+        "aceAttribsToClasses" : "ep_s3/static/js/clientHooks",
+        "aceDomLineProcessLineAttributes" : "ep_s3/static/js/clientHooks",
+        "aceInitialized": "ep_s3/static/js/clientHooks",
+        "aceRegisterBlockElements": "ep_s3/static/js/clientHooks",
+        "aceEditorCSS": "ep_s3/static/js/clientHooks",
+        "collectContentImage": "ep_s3/static/js/contentCollection",
+        "collectContentPre": "ep_s3/static/js/contentCollection",
+        "ccRegisterBlockElements": "ep_s3/static/js/contentCollection",
+        "collectContentPost": "ep_s3/static/js/contentCollection"
+      },
+      "hooks":{
+        "clientVars": "ep_s3/index",
+        "eejsBlock_body": "ep_s3/index",
+        "collectContentImage": "ep_s3/static/js/contentCollection",
+        "getLineHTMLForExport": "ep_s3/exportHTML",
+        "stylesForExport": "ep_s3/exportHTML",
+        "expressConfigure": "ep_s3/index",
+        "eejsBlock_editbarMenuLeft": "ep_s3/editbar",
+        "collectContentPre": "ep_s3/static/js/contentCollection",
+        "collectContentPost": "ep_s3/static/js/contentCollection",
+        "ccRegisterBlockElements": "ep_s3/static/js/contentCollection",
+        "loadSettings": "ep_s3/settings",
+        "padRemove": "ep_s3/index"
+      }
+    }
+  ]
+}

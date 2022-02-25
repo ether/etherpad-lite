@@ -1,0 +1,77 @@
+{
+  "_from": "ep_replace",
+  "_id": "ep_replace@0.0.4",
+  "_inBundle": false,
+  "_integrity": "sha512-KKn4tRMLHsSPehL4cTT0OGdq9vK/PboUAhNnptxN6a7bfqBMH/fNPlwrDmcFvfULXm5osxt3pDQWvsNHwSNUUA==",
+  "_location": "/ep_replace",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "ep_replace",
+    "name": "ep_replace",
+    "escapedName": "ep_replace",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/ep_replace/-/ep_replace-0.0.4.tgz",
+  "_shasum": "74206e95b9d7ec3a46be4f6685763fe3e5a567f6",
+  "_spec": "ep_replace",
+  "_where": "/Users/dev/Github/Edumatica/MuDocs/src",
+  "bugs": {
+    "url": "https://github.com/akhil-naidu/ep_replace/issues"
+  },
+  "bundleDependencies": false,
+  "contributors": [
+    {
+      "name": "Ankur",
+      "email": "ankursidhu7@gmail.com"
+    },
+    {
+      "name": "Sandeep",
+      "email": "srathore0420@gmail.com"
+    }
+  ],
+  "dependencies": {},
+  "deprecated": false,
+  "description": "MuDoc find and replace functionality",
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-etherpad": "^2.0.2",
+    "eslint-plugin-cypress": "^2.12.1",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-mocha": "^9.0.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "eslint-plugin-promise": "^5.1.1",
+    "eslint-plugin-you-dont-need-lodash-underscore": "^6.12.0"
+  },
+  "engines": {
+    "node": ">=12.13.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": "etherpad/plugin"
+  },
+  "homepage": "https://github.com/akhil-naidu/ep_replace#readme",
+  "keywords": [
+    "replace"
+  ],
+  "name": "ep_replace",
+  "peerDependencies": {
+    "ep_etherpad-lite": ">=0.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/akhil-naidu/ep_replace.git"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
+  },
+  "version": "0.0.4"
+}

@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"ep_headings.style": "Stílus",
+	"ep_headings.normal": "Normál",
+	"ep_headings.h1": "Címsor 1",
+	"ep_headings.h2": "Címsor 2",
+	"ep_headings.h3": "Címsor 3",
+	"ep_headings.h4": "Címsor 4",
+	"ep_headings.code": "Kód"
+}

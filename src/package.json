@@ -31,6 +31,8 @@
   ],
   "dependencies": {
     "async": "^3.2.2",
+    "busboy": "^1.4.0",
+    "cheerio": "^1.0.0-rc.10",
     "clean-css": "^5.2.4",
     "cookie-parser": "^1.4.6",
     "cross-spawn": "^7.0.3",
@@ -63,6 +65,7 @@
     "security": "1.0.0",
     "semver": "^7.3.5",
     "socket.io": "^2.4.1",
+    "stream_upload": "^0.1.5",
     "superagent": "^6.1.0",
     "terser": "^5.10.0",
     "threads": "^1.7.0",

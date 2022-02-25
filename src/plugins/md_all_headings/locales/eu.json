@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Izendegi"
+		]
+	},
+	"ep_headings.style": "Estiloa",
+	"ep_headings.normal": "Normala",
+	"ep_headings.h1": "Goiburua 1",
+	"ep_headings.h2": "Goiburua 2",
+	"ep_headings.h3": "Goiburua 3",
+	"ep_headings.h4": "Goiburua 4",
+	"ep_headings.code": "Kodea"
+}

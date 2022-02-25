@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"AOla333"
+		]
+	},
+	"ep_s3.error.title": "Błąd",
+	"ep_s3.error.fileSize": "Plik jest za duży! Maksymalny dozwolony rozmiar jest {{maxallowed}} MB.",
+	"ep_s3.error.fileType": "Nieprawidłowy typ pliku!"
+}

@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ajeje Brazorf"
+		]
+	},
+	"ep_headings.style": "Stili",
+	"ep_headings.normal": "Nurmali",
+	"ep_headings.h1": "Tìtulu 1",
+	"ep_headings.h2": "Tìtulu 2",
+	"ep_headings.h3": "Tìtulu 3",
+	"ep_headings.h4": "Tìtulu 4",
+	"ep_headings.code": "Còdici"
+}

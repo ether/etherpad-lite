@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kly"
+		]
+	},
+	"ep_headings.style": "樣式",
+	"ep_headings.normal": "一般",
+	"ep_headings.h1": "標題 1",
+	"ep_headings.h2": "標題 2",
+	"ep_headings.h3": "標題 3",
+	"ep_headings.h4": "標題 4",
+	"ep_headings.code": "代碼"
+}

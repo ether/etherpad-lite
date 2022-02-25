@@ -1,0 +1,1 @@
+Visually pleasing looks in Mu Doc

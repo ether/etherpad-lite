@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"GuoPC",
+			"Zhang8569"
+		]
+	},
+	"ep_s3.toolbar.image_upload.title": "上传图片",
+	"ep_s3.error.fileSize": "文件过大！最大允许大小为 {{maxallowed}} MB。",
+	"ep_s3.error.fileType": "无效的文件格式！"
+}

@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Besnik b"
+		]
+	},
+	"ep_align.align": "Drejtim",
+	"ep_align.toolbar.left.title": "Majtas",
+	"ep_align.toolbar.center.title": "Në qendër",
+	"ep_align.toolbar.right.title": "Djathtas",
+	"ep_align.toolbar.justify.title": "Përligje"
+}

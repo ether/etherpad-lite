@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"ep_s3.toolbar.image_upload.title": "Kép feltöltése",
+	"ep_s3.error.fileSize": "Túl nagy a fájl",
+	"ep_s3.error.fileType": "Érvénytelen fájltípus"
+}

@@ -1,0 +1,33 @@
+fontarial{
+  font-family: arial;
+}
+fontavant-garde{
+  font-family: Avant Garde,Avantgarde,Century Gothic,CenturyGothic,AppleGothic,sans-serif;
+}
+fontbookman{
+  font-family: bookman, Bookman Old Style;
+}
+fontcalibri{
+  font-family: Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif;
+}
+fontcourier{
+  font-family: courier;
+}
+fontgaramond{
+  font-family: Garamond,Baskerville,Baskerville Old Face,Hoefler Text,Times New Roman,serif;
+}
+fonthelvetica{
+  font-family: helvetica;
+}
+fontmonospace{
+  font-family: monospace;
+}
+fontpalatino{
+  font-family: palatino;
+}
+fonttimes-new-roman{
+  font-family: times new roman;
+}
+*{
+  font-family:inherit
+}

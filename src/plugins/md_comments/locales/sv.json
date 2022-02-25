@@ -1,0 +1,31 @@
+{
+	"@metadata": {
+		"authors": [
+			"Sabelöga"
+		]
+	},
+	"ep_comments.comment": "Kommentar",
+	"ep_comments.comments": "Kommentarer",
+	"ep_comments.add_comment.title": "Lägg till ny kommentar till markering",
+	"ep_comments.add_comment": "Lägg till ny kommentar till markering",
+	"ep_comments.add_comment.hint": "Markera först den text du vill kommentera",
+	"ep_comments.delete_comment.title": "Radera den här kommentaren",
+	"ep_comments.edit_comment.title": "Redigera den här kommentaren",
+	"ep_comments.show_comments": "Visa kommentarer",
+	"ep_comments.comments_template.suggested_change": "Föreslagen ändring",
+	"ep_comments.comments_template.from": "Från",
+	"ep_comments.comments_template.accept_change.value": "Godkänn ändring",
+	"ep_comments.comments_template.revert_change.value": "Ångra ändring",
+	"ep_comments.comments_template.suggested_change_from": "Föreslagen ändring från \"{{changeFrom}}\" till \"{{changeTo}}\"",
+	"ep_comments.comments_template.suggest_change_from": "Föreslå ändring från \"{{changeFrom}}\" till",
+	"ep_comments.comments_template.to": "Till",
+	"ep_comments.comments_template.include_suggestion": "Bifoga ändringsförslag",
+	"ep_comments.comments_template.comment.value": "Kommentera",
+	"ep_comments.comments_template.cancel.value": "Avbryt",
+	"ep_comments.comments_template.reply.value": "Svara",
+	"ep_comments.comments_template.reply.placeholder": "Svar",
+	"ep_comments.comments_template.edit_comment.save": "spara",
+	"ep_comments.comments_template.edit_comment.cancel": "avbryt",
+	"ep_comments.error.edit_unauth": "Du kan inte redigera andra användares kommentarer!",
+	"ep_comments.error.delete_unauth": "Du kan inte radera andra användares kommentarer!"
+}

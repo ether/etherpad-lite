@@ -1,0 +1,210 @@
+/* Text commented inside editor */
+#innerdocbody .ace-line .comment {
+  background-color: #fff382;
+  color: #222;
+}
+#innerdocbody .ace-line .comment[data-open="true"]{
+  color: orange !important;
+}
+
+
+/* Comment right side container */
+#comments {
+  width: 250px;
+  order: 3;
+  position: relative;
+}
+#comments:not(.active) {
+  display: none;
+}
+@media (max-width: 900px) {
+  #commentIcons, #comments {
+    display: none !important;
+  }
+}
+
+.sidebar-comment {
+  position: absolute;
+  width: 100%;
+}
+
+/* WITH ICONS */
+#comments.with-icons {
+  display: none;
+}
+
+/* NEW COMMENT FORM (included both in popup and reply) */
+.new-comment .comment-content {
+  width: 100%;
+}
+.comment-reply .new-comment:not(.editing) .form-more {
+  display: none;
+}
+input.error, textarea.error {
+  border-color: red;
+}
+
+/* COMMENT GENERAL STYLE */
+.comment-author-name {
+  font-weight: bold;
+}
+.comment-created-at {
+  font-size: .8em;
+  opacity: .7;
+  margin-left: 5px;
+}
+.comment-actions-wrapper {
+  float: right;
+}
+
+/* COMMENT COMPACTED (Visible on right side) */
+.sidebar-comment:not(.full-display) .full-display-content {
+  display: none;
+}
+.compact-display-content {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 0 10px;
+  background-color: #eeeeed;
+}
+
+/* COMMENT FULL (when mouse hover) */
+.sidebar-comment.full-display {
+  z-index: 2;
+}
+.sidebar-comment.full-display .full-display-content {
+  display: block;
+  margin-top: -10px;
+}
+.sidebar-comment.full-display .compact-display-content {
+  display: none;
+}
+.full-display-content {
+  background-color: white;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px #ddd;
+  z-index: 99;
+}
+.full-display-content .comment-title-wrapper,
+.full-display-content .comment-reply {
+  padding: 10px;
+}
+.full-display-content .comment-title-wrapper .comment-text {
+  display: block;
+  margin-top: 10px;
+  white-space: normal;
+}
+.full-display-content .comment-title-wrapper .comment-text.default-text {
+  display: none;
+}
+
+/* SUGGESTION */
+.suggestion, .reply-suggestion {
+  display: none;
+}
+.suggestion-display {
+  margin-top: 5px;
+  white-space: normal;
+}
+.suggestion-display .from-label,
+.suggestion-display .to-label {
+  margin-right: 2px;
+}
+.suggestion-display .from-value,
+.suggestion-display .to-value {
+  opacity: .8;
+  font-style: italic;
+}
+.suggestion-display .from-value:after, .suggestion-display .from-value:before,
+.suggestion-display .to-value:after, .suggestion-display .to-value:before {
+  content: '"';
+}
+.suggestion-create .from-label,
+.suggestion-create .to-label {
+  display: block;
+  font-weight: bold;
+  margin: 5px 0;
+}
+.approve-suggestion-btn, .revert-suggestion-btn {
+  display: block;
+  margin-bottom: 10px;
+}
+.suggestion-create textarea.to-value {
+  width: 100%;
+}
+.comment-container .revert-suggestion-btn { display: none; }
+.comment-container.change-accepted .revert-suggestion-btn { display: block; }
+.comment-container.change-accepted .approve-suggestion-btn { display: none; }
+
+.comment-container.change-accepted .comment-replies-container .revert-suggestion-btn { display: none; }
+.comment-container.change-accepted .comment-replies-container .approve-suggestion-btn { display: block; }
+.comment-container.change-accepted .comment-replies-container .comment-container.change-accepted .revert-suggestion-btn { display: block; }
+.comment-container.change-accepted .comment-replies-container .comment-container.change-accepted .approve-suggestion-btn { display: none; }
+/* REPLIES */
+.comment-reply {
+  background-color: #f9f9f9;
+  border-top: 1px solid #eee;
+}
+/* One previous reply */
+.sidebar-comment-reply {
+  margin-bottom: 10px;
+}
+.sidebar-comment-reply .comment-text {
+  display: inline;
+  margin-top: 5px;
+  white-space: normal;
+}
+.sidebar-comment-reply .comment-edit {
+  display: none;
+  margin-left: 5px;
+  font-size: 1em;
+  opacity: .7;
+  transition: opacity .2s;
+}
+.sidebar-comment-reply:hover:not(.editing) .comment-edit {
+  display: inline;
+}
+.sidebar-comment-reply:hover:not(.editing) .comment-edit:hover {
+  opacity: 1;
+}
+.reply-comment-suggest, .comment-suggest {
+  margin-top: 10px;
+}
+
+/* EDITING COMMENT */
+.comment-edit-text {
+  width: 100%;
+}
+.comment-edit-form + .comment-text {
+  display: none !important;
+}
+
+/* MODAL FOR MOBILES */
+.comment-modal {
+  bottom: auto !important;
+  right: auto !important;
+}
+.comment-modal-comment {
+  padding: 0;
+}
+.comment-modal-comment .sidebar-comment {
+  position: relative;
+  top: 0;
+}
+.comment-modal-comment .compact-display-content {
+  display: none;
+}
+.comment-modal-comment .full-display-content {
+  display: block !important;
+  margin: 0;
+}
+.comment-modal-comment .comment-content {
+  margin-top: 0 !important;
+}
+
+/* OTHER */
+.hidden {
+  display: none;
+}

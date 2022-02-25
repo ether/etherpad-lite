@@ -1,0 +1,20 @@
+li.checklist-not-done, li.checklist-done{
+  list-style: none;
+  background-repeat: no-repeat;
+  padding-left: 1.5em;
+  cursor: pointer;
+}
+
+.checklist-not-done{
+  background-image: url('../img/checklist.png');
+  background-position:2px 5px;
+ 
+  
+}
+
+.checklist-done{
+  opacity: .6;
+  background-image: url('../img/checklist-done.png');
+  background-position:2px 5px;
+  
+}

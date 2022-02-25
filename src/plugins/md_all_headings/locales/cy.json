@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Robin Owain"
+		]
+	},
+	"ep_headings.style": "Math",
+	"ep_headings.normal": "Normal",
+	"ep_headings.h1": "Pennawd 1",
+	"ep_headings.h2": "Pennawd 2",
+	"ep_headings.h3": "Pennawd 3",
+	"ep_headings.h4": "Pennawd 4",
+	"ep_headings.code": "Cod"
+}

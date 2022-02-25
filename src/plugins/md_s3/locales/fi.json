@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"MITO"
+		]
+	},
+	"ep_s3.toolbar.image_upload.title": "Tallenna kuva",
+	"ep_s3.error.fileSize": "Tiedosto on liian suuri"
+}

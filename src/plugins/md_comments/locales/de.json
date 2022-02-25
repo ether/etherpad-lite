@@ -1,0 +1,29 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"ep_comments.comment": "Kommentar",
+	"ep_comments.comments": "Kommentare",
+	"ep_comments.add_comment.title": "Kommentar zur Auswahl hinzufügen",
+	"ep_comments.add_comment": "Kommentar zur Auswahl hinzufügen",
+	"ep_comments.add_comment.hint": "Bitte wählen Sie zuerst den zu kommentierenden Text aus",
+	"ep_comments.delete_comment.title": "Diesen Kommentar löschen",
+	"ep_comments.edit_comment.title": "Edit this comment",
+	"ep_comments.show_comments": "Kommentare anzeigen",
+	"ep_comments.comments_template.suggested_change": "Vorgeschlagene Änderung",
+	"ep_comments.comments_template.from": "von",
+	"ep_comments.comments_template.accept_change.value": "Änderung akzeptieren",
+	"ep_comments.comments_template.revert_change.value": "Änderung zurücknehmen",
+	"ep_comments.comments_template.suggested_change_from": "Vorgeschlagene Änderung von",
+	"ep_comments.comments_template.suggest_change_from": "von",
+	"ep_comments.comments_template.to": "zu",
+	"ep_comments.comments_template.include_suggestion": "Änderung vorschlagen",
+	"ep_comments.comments_template.comment.value": "Kommentar",
+	"ep_comments.comments_template.cancel.value": "Abbrechen",
+	"ep_comments.comments_template.reply.value": "Antworten",
+	"ep_comments.comments_template.reply.placeholder": "Antworten",
+	"ep_comments.comments_template.edit_comment.save": "save",
+	"ep_comments.comments_template.edit_comment.cancel": "cancel",
+	"ep_comments.error.edit_unauth": "You cannot edit other users comments!",
+	"ep_comments.error.delete_unauth": "You cannot delete other users comments!"
+}

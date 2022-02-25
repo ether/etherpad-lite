@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Joetaras"
+		]
+	},
+	"ep_align.align": "Allineamende",
+	"ep_align.toolbar.left.title": "Sinistre",
+	"ep_align.toolbar.center.title": "Cendre",
+	"ep_align.toolbar.right.title": "Destre",
+	"ep_align.toolbar.justify.title": "Giustificate"
+}

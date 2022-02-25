@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Andibecker"
+		]
+	},
+	"ep_align.align": "จัดตำแหน่ง",
+	"ep_align.toolbar.left.title": "ซ้าย",
+	"ep_align.toolbar.center.title": "ศูนย์กลาง",
+	"ep_align.toolbar.right.title": "ขวา",
+	"ep_align.toolbar.justify.title": "เหตุผล"
+}

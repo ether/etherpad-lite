@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Subarupan"
+		]
+	},
+	"ep_s3.toolbar.image_upload.title": "上传图片",
+	"ep_s3.error.fileSize": "文件忒大",
+	"ep_s3.error.fileType": "呒效个文件格式"
+}

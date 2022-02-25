@@ -1,0 +1,29 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"ep_comments.comment": "Annotation",
+	"ep_comments.comments": "Annotations",
+	"ep_comments.add_comment.title": "Annoter la sélection",
+	"ep_comments.add_comment": "Annoter la sélection",
+	"ep_comments.add_comment.hint": "Vous devez d'abord sélectionner un texte à annoter",
+	"ep_comments.delete_comment.title": "Supprimer cette annotation",
+	"ep_comments.edit_comment.title": "Modifier ce commentaire",
+	"ep_comments.show_comments": "Afficher les annotations",
+	"ep_comments.comments_template.suggested_change": "Modification proposée",
+	"ep_comments.comments_template.from": "Remplacer",
+	"ep_comments.comments_template.accept_change.value": "Appliquer la proposition",
+	"ep_comments.comments_template.revert_change.value": "Annuler la proposition",
+	"ep_comments.comments_template.suggested_change_from": "Propose de remplacer \"{{changeFrom}}\" par \"{{changeTo}}\"",
+	"ep_comments.comments_template.suggest_change_from": "Remplacer \"{{changeFrom}}\" par",
+	"ep_comments.comments_template.to": "Par",
+	"ep_comments.comments_template.include_suggestion": "Proposer une modification",
+	"ep_comments.comments_template.comment.value": "Annotation",
+	"ep_comments.comments_template.cancel.value": "Annuler",
+	"ep_comments.comments_template.reply.value": "Répondre",
+	"ep_comments.comments_template.reply.placeholder": "Répondre",
+	"ep_comments.comments_template.edit_comment.save": "Enregistrer",
+	"ep_comments.comments_template.edit_comment.cancel": "Annuler",
+	"ep_comments.error.edit_unauth": "Vous ne pouvez pas modifier les commentaires des autres utilisatrices et utilisateurs !",
+	"ep_comments.error.delete_unauth": "Vous ne pouvez pas supprimer les commentaires des autres utilisatrices et utilisateurs !"
+}

@@ -23,6 +23,7 @@
   color: #485365;
   color: var(--text-color);
   right: 30px;
+  position: fixed;
 }
 
 #chatbox.stickyChat .chat-content {

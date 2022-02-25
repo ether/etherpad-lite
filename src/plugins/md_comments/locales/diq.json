@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Mirzali"
+		]
+	},
+	"ep_comments.comment": "Mışewre",
+	"ep_comments.comments_template.comment.value": "Mışewre",
+	"ep_comments.comments_template.cancel.value": "Bıtexelne",
+	"ep_comments.comments_template.reply.value": "Cewab bıde",
+	"ep_comments.comments_template.reply.placeholder": "Cewab bıde",
+	"ep_comments.comments_template.edit_comment.save": "qeyd ke",
+	"ep_comments.comments_template.edit_comment.cancel": "bıtexelne"
+}

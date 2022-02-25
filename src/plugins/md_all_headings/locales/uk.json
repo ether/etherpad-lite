@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"DDPAT"
+		]
+	},
+	"ep_headings.style": "Стиль",
+	"ep_headings.normal": "Нормальний",
+	"ep_headings.h1": "Заголовок 1",
+	"ep_headings.h2": "Заголовок 2",
+	"ep_headings.h3": "Заголовок 3",
+	"ep_headings.h4": "Заголовок 4",
+	"ep_headings.code": "Код"
+}

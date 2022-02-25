@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"ep_headings.style": "Styl",
+	"ep_headings.normal": "Normalny",
+	"ep_headings.h1": "Nagłówek 1",
+	"ep_headings.h2": "Nagłówek 2",
+	"ep_headings.h3": "Nagłówek 3",
+	"ep_headings.h4": "Nagłówek 4",
+	"ep_headings.code": "Kod"
+}
