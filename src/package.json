@@ -63,7 +63,7 @@
     "security": "1.0.0",
     "semver": "^7.3.5",
     "socket.io": "^2.4.1",
-    "superagent": "^6.1.0",
+    "superagent": "^7.1.1",
     "terser": "^5.11.0",
     "threads": "^1.7.0",
     "tinycon": "0.6.8",
