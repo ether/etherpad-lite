@@ -23,7 +23,7 @@ jobs:
         name: Checkout repository
         uses: actions/checkout@v2
       -
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 12
           cache: 'npm'
@@ -68,7 +68,7 @@ jobs:
         name: Extract Etherpad
         run: 7z x etherpad-lite-win.zip -oetherpad
       -
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 12
           cache: 'npm'
