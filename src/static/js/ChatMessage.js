@@ -10,6 +10,13 @@ const {padutils: {warnDeprecated}} = require('./pad_utils');
  */
 class ChatMessage {
   static fromObject(obj) {
+    // The userId property was renamed to authorId, and userName was renamed to displayName. Accept
+    // the old names in case the db record was written by an older version of Etherpad.
+    obj = Object.assign({}, obj); // Don't mutate the caller's object.
+    if ('userId' in obj && !('authorId' in obj)) obj.authorId = obj.userId;
+    delete obj.userId;
+    if ('userName' in obj && !('displayName' in obj)) obj.displayName = obj.userName;
+    delete obj.userName;
     return Object.assign(new ChatMessage(), obj);
   }
 
