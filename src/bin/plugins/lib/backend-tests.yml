@@ -43,7 +43,7 @@ jobs:
         env:
           PLUGIN_NAME: ${{ steps.plugin_name.outputs.plugin_name }}
       -
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 12
           cache: 'npm'

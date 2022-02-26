@@ -40,7 +40,7 @@ jobs:
           mkdir -p node_modules
           ln -s ../../etherpad-lite/src node_modules/ep_etherpad-lite
       -
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 12
           cache: 'npm'
@@ -81,7 +81,7 @@ jobs:
         with:
           fetch-depth: 0
       -
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/
