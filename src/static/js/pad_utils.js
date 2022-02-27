@@ -98,7 +98,8 @@ const padutils = {
    *   - This makes it possible to see the stack if the code runs in Node.js.
    *   - Users are more likely to paste the stack in bug reports they might file.
    *
-   * @param {...*} args - Passed to `console.warn`, with a stack trace appended.
+   * @param {...*} args - Passed to `padutils.warnDeprecated.logger.warn` (or `console.warn` if no
+   *     logger is set), with a stack trace appended if available.
    */
   warnDeprecated: (...args) => {
     if (padutils.warnDeprecated.disabledForTestingOnly) return;
@@ -106,7 +107,7 @@ const padutils = {
     if (Error.captureStackTrace) Error.captureStackTrace(err, padutils.warnDeprecated);
     err.name = '';
     if (err.stack) args.push(err.stack);
-    console.warn(...args);
+    (padutils.warnDeprecated.logger || console).warn(...args);
   },
 
   escapeHtml: (x) => Security.escapeHTML(String(x)),
