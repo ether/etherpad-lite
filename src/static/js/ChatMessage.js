@@ -88,13 +88,10 @@ class ChatMessage {
   // TODO: Delete this method once users are unlikely to roll back to a version of Etherpad that
   // doesn't support authorId and displayName.
   toJSON() {
-    return {
-      ...this,
-      authorId: undefined,
-      displayName: undefined,
-      userId: this.authorId,
-      userName: this.displayName,
-    };
+    const {authorId, displayName, ...obj} = this;
+    obj.userId = authorId;
+    obj.userName = displayName;
+    return obj;
   }
 }
 
