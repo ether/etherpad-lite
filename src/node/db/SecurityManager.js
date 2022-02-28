@@ -95,18 +95,13 @@ exports.checkAccess = async (padID, sessionCookie, token, userSettings) => {
     return DENY;
   }
 
-  // start fetching the info we may need
-  const p_sessionAuthorID = sessionManager.findAuthorID(padID.split('$')[0], sessionCookie);
-  const p_tokenAuthorID = authorManager.getAuthor4Token(token);
-  const p_padExists = padManager.doesPadExist(padID);
-
-  const padExists = await p_padExists;
+  const padExists = await padManager.doesPadExist(padID);
   if (!padExists && !canCreate) {
     authLogger.debug('access denied: user attempted to create a pad, which is prohibited');
     return DENY;
   }
 
-  const sessionAuthorID = await p_sessionAuthorID;
+  const sessionAuthorID = await sessionManager.findAuthorID(padID.split('$')[0], sessionCookie);
   if (settings.requireSession && !sessionAuthorID) {
     authLogger.debug('access denied: HTTP API session is required');
     return DENY;
@@ -114,7 +109,7 @@ exports.checkAccess = async (padID, sessionCookie, token, userSettings) => {
 
   const grant = {
     accessStatus: 'grant',
-    authorID: (sessionAuthorID != null) ? sessionAuthorID : await p_tokenAuthorID,
+    authorID: sessionAuthorID || await authorManager.getAuthor4Token(token),
   };
 
   if (!padID.includes('$')) {
