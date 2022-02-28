@@ -78,7 +78,7 @@
     "etherpad-lite": "node/server.js"
   },
   "devDependencies": {
-    "eslint": "^8.9.0",
+    "eslint": "^8.10.0",
     "eslint-config-etherpad": "^3.0.1",
     "etherpad-cli-client": "^0.1.12",
     "mocha": "^9.1.3",
