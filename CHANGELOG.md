@@ -40,6 +40,7 @@
 
 * New `expressPreSession` server-side hook.
 * New `padDefaultContent` server-side hook.
+* New `getAuthorId` server-side hook.
 * New APIs for processing attributes: `ep_etherpad-lite/static/js/attributes`
   (low-level API) and `ep_etherpad-lite/static/js/AttributeMap` (high-level
   API).
@@ -79,6 +80,8 @@
   * `appendATextToAssembler()`: Deprecated in favor of the new `opsFromAText()`
     generator function.
   * `newOp()`: Deprecated in favor of the new `Op` class.
+* The `AuthorManager.getAuthor4Token()` function is deprecated; use the new
+  `AuthorManager.getAuthorId()` function instead.
 
 # 1.8.17
 

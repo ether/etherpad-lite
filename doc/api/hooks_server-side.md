@@ -207,6 +207,62 @@ Things in context:
 This hook gets called when the access to the concrete pad is being checked.
 Return `false` to deny access.
 
+## `getAuthorId`
+
+Called from `src/node/db/AuthorManager.js`
+
+Called when looking up (or creating) the author ID for a user, except for author
+IDs obtained via the HTTP API. Registered hook functions are called until one
+returns a non-`undefined` value. If a truthy value is returned by a hook
+function, it is used as the user's author ID. Otherwise, the value of the
+`dbKey` context property is used to look up the author ID. If there is no such
+author ID at that key, a new author ID is generated and associated with that
+key.
+
+Context properties:
+
+* `dbKey`: Database key to use when looking up the user's author ID if no hook
+  function returns an author ID. This is initialized to the user-supplied token
+  value (see the `token` context property), but hook functions can modify this
+  to control how author IDs are allocated to users. If no author ID is
+  associated with this database key, a new author ID will be randomly generated
+  and associated with the key. For security reasons, if this is modified it
+  should be modified to not look like a valid token (see the `token` context
+  property) unless the plugin intentionally wants the user to be able to
+  impersonate another user.
+* `token`: The user-supplied token, or nullish for an anonymous user. Tokens are
+  secret values that must not be disclosed to others. If non-null, the token is
+  guaranteed to be a string with the form `t.<base64url>` where `<base64url>` is
+  any valid non-empty base64url string (RFC 4648 section 5 with padding).
+  Example: `t.twim3X2_KGiRj8cJ-3602g==`.
+* `user`: If the user has authenticated, this is an object from `settings.users`
+  (or similar from an authentication plugin). Etherpad core and all good
+  authentication plugins set the `username` property of this object to a string
+  that uniquely identifies the authenticated user. This object is nullish if the
+  user has not authenticated.
+
+Example:
+
+```javascript
+exports.getAuthorId = async (hookName, context) => {
+  const {username} = context.user || {};
+  // If the user has not authenticated, or has "authenticated" as the guest
+  // user, do the default behavior (try another plugin if any, falling through
+  // to using the token as the database key).
+  if (!username || username === 'guest') return;
+  // The user is authenticated and has a username. Give the user a stable author
+  // ID so that they appear to be the same author even after clearing cookies or
+  // accessing the pad from another device. Note that this string is guaranteed
+  // to never have the form of a valid token; without that guarantee an
+  // unauthenticated user might be able to impersonate an authenticated user.
+  context.dbKey = `username=${username}`;
+  // Return a falsy but non-undefined value to stop Etherpad from calling any
+  // more getAuthorId hook functions and look up the author ID using the
+  // username-derived database key.
+  return '';
+};
+```
+
 ## `padCreate`
 
 Called from: `src/node/db/Pad.js`

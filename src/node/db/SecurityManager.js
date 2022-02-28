@@ -115,7 +115,7 @@ exports.checkAccess = async (padID, sessionCookie, token, userSettings) => {
 
   const grant = {
     accessStatus: 'grant',
-    authorID: sessionAuthorID || await authorManager.getAuthor4Token(token),
+    authorID: sessionAuthorID || await authorManager.getAuthorId(token, userSettings),
   };
 
   if (!padID.includes('$')) {
