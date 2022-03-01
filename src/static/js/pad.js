@@ -177,7 +177,7 @@ const sendClientReady = (isReconnect) => {
   }
 
   let token = Cookies.get('token');
-  if (token == null) {
+  if (token == null || !padutils.isValidAuthorToken(token)) {
     token = padutils.generateAuthorToken();
     Cookies.set('token', token, {expires: 60});
   }

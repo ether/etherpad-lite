@@ -28,6 +28,7 @@ const settings = require('../utils/Settings');
 const webaccess = require('../hooks/express/webaccess');
 const log4js = require('log4js');
 const authLogger = log4js.getLogger('auth');
+const {padutils} = require('../../static/js/pad_utils');
 
 const DENY = Object.freeze({accessStatus: 'deny'});
 
@@ -104,6 +105,11 @@ exports.checkAccess = async (padID, sessionCookie, token, userSettings) => {
   const sessionAuthorID = await sessionManager.findAuthorID(padID.split('$')[0], sessionCookie);
   if (settings.requireSession && !sessionAuthorID) {
     authLogger.debug('access denied: HTTP API session is required');
+    return DENY;
+  }
+  if (!sessionAuthorID && token != null && !padutils.isValidAuthorToken(token)) {
+    // The author token should be kept secret, so do not log it.
+    authLogger.debug('access denied: invalid author token');
     return DENY;
   }
 
