@@ -5,6 +5,7 @@ const apiHandler = require('../../node/handler/APIHandler');
 const assert = require('assert').strict;
 const io = require('socket.io-client');
 const log4js = require('log4js');
+const {padutils} = require('../../static/js/pad_utils');
 const process = require('process');
 const server = require('../../node/server');
 const setCookieParser = require('set-cookie-parser');
@@ -172,7 +173,7 @@ exports.connect = async (res = null) => {
  * @param {string} padId - Which pad to join.
  * @returns The CLIENT_VARS message from the server.
  */
-exports.handshake = async (socket, padId, token = 't.12345') => {
+exports.handshake = async (socket, padId, token = padutils.generateAuthorToken()) => {
   logger.debug('sending CLIENT_READY...');
   socket.send({
     component: 'pad',

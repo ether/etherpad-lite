@@ -37,7 +37,7 @@ describe(__filename, function () {
     roPadId = await readOnlyManager.getReadOnlyId(padId);
     res = await agent.get(`/p/${roPadId}`).expect(200);
     roSocket = await common.connect(res);
-    await common.handshake(roSocket, roPadId, `t.${common.randomString(8)}`);
+    await common.handshake(roSocket, roPadId);
   });
 
   afterEach(async function () {

@@ -327,6 +327,12 @@ const padutils = {
       return cc;
     }
   }),
+
+  /**
+   * Returns a string that can be used in the `token` cookie as a secret that authenticates a
+   * particular author.
+   */
+  generateAuthorToken: () => `t.${randomString()}`,
 };
 
 let globalExceptionHandler = null;
