@@ -22,7 +22,7 @@ jobs:
       # conflicts with this plugin's clone, etherpad-lite must be cloned and
       # moved out before this plugin's repo is cloned to $GITHUB_WORKSPACE.
       -
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ether/etherpad-lite
           path: etherpad-lite
@@ -31,7 +31,7 @@ jobs:
       # etherpad-lite has been moved outside of $GITHUB_WORKSPACE, so it is now
       # safe to clone this plugin's repo to $GITHUB_WORKSPACE.
       -
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       # This is necessary for actions/setup-node because '..' can't be used in
       # cache-dependency-path.
       -
@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       -

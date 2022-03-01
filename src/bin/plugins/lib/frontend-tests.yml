@@ -28,7 +28,7 @@ jobs:
           printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
       -
         name: Check out Etherpad core
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ether/etherpad-lite
       -
@@ -41,7 +41,7 @@ jobs:
             src/bin/doc/package-lock.json
       -
         name: Check out the plugin
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: ./node_modules/__tmp
       -
