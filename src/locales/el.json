@@ -6,9 +6,16 @@
 			"Glavkos",
 			"Monopatis",
 			"Norhorn",
+			"Papspyr",
 			"Protnet"
 		]
 	},
+	"admin_plugins": "Διαχειριστής πρόσθετων",
+	"admin_plugins.available": "Διαθέσιμα πρόσθετα",
+	"admin_plugins.available_not-found": "Δεν βρέθηκαν πρόσθετα.",
+	"admin_plugins.description": "Περιγραφή",
+	"admin_plugins.installed": "Εγκατεστημένα πρόσθετα",
+	"admin_plugins.installed_uninstall.value": "Απεγκατάσταση",
 	"index.newPad": "Νέο Pad",
 	"index.createOpenPad": "ή δημιουργία/άνοιγμα ενός Pad με όνομα:",
 	"index.openPad": "άνοιγμα υπάρχων Pad με όνομα:",
