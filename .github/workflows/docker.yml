@@ -39,9 +39,17 @@ jobs:
       -
         name: Test
         run: |
-          docker run --rm -d -p 9001:9001 ${{ env.TEST_TAG }}
+          docker run --rm -d -p 9001:9001 --name test ${{ env.TEST_TAG }}
           ./src/bin/installDeps.sh
-          sleep 3
+          while true; do
+            echo "Waiting for Docker container to start..."
+            status=$(docker container inspect -f '{{.State.Health.Status}}' test) || exit 1
+            case ${status} in
+              healthy) break;;
+              starting) sleep 2;;
+              *) printf %s\\n "unexpected status: ${status}" >&2; exit 1;;
+            esac
+          done
           (cd src && npm run test-container)
           git clean -dxf .
       -
