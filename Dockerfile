@@ -7,6 +7,13 @@
 FROM node:lts-slim
 LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 
+ARG TIMEZONE=
+RUN \
+  [ -z "${TIMEZONE}" ] || { \
+    ln -sf /usr/share/zoneinfo/"${TIMEZONE#/usr/share/zoneinfo/}" /etc/localtime; \
+    dpkg-reconfigure -f noninteractive tzdata; \
+  }
+
 # plugins to install while building the container. By default no plugins are
 # installed.
 # If given a value, it has to be a space-separated, quoted list of plugin names.
