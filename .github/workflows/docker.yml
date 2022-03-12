@@ -40,6 +40,7 @@ jobs:
         name: Test
         run: |
           docker run --rm -d -p 9001:9001 --name test ${{ env.TEST_TAG }}
+          docker logs -f test &
           ./src/bin/installDeps.sh
           while true; do
             echo "Waiting for Docker container to start..."
