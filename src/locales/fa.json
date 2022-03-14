@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"BMRG14",
+			"Beginneruser",
 			"Dalba",
 			"Ebraminio",
 			"FarsiNevis",
@@ -133,7 +134,7 @@
 	"timeslider.toolbar.returnbutton": "بازگشت به دفترچه یادداشت",
 	"timeslider.toolbar.authors": "نویسندگان:",
 	"timeslider.toolbar.authorsList": "بدون نویسنده",
-	"timeslider.toolbar.exportlink.title": "برون‌ریزی",
+	"timeslider.toolbar.exportlink.title": "برون‌بری",
 	"timeslider.exportCurrent": "برون‌ریزی نگارش کنونی به عنوان:",
 	"timeslider.version": "نگارش {{version}}",
 	"timeslider.saved": "{{month}} {{day}}، {{year}} ذخیره شد",
