@@ -67,7 +67,7 @@
     "terser": "^5.12.0",
     "threads": "^1.7.0",
     "tinycon": "0.6.8",
-    "ueberdb2": "^2.0.2",
+    "ueberdb2": "^2.0.4",
     "underscore": "1.13.2",
     "unorm": "1.6.0",
     "wtfnode": "^0.9.1"
