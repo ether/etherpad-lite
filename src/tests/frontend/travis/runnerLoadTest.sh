@@ -33,7 +33,7 @@ can_connect() {
 }
 now() { date +%s; }
 start=$(now)
-while [ $(($(now) - $start)) -le 15 ] && ! can_connect; do
+while [ $(($(now) - $start)) -le 60 ] && ! can_connect; do
     sleep 1
 done
 [ "$connected" = true ] \
