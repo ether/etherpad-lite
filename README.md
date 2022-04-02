@@ -139,6 +139,66 @@ following:
 
 Find [here](doc/docker.md) information on running Etherpad in a container.
 
+## Plugins
+
+Etherpad is very customizable through plugins.
+
+![Basic install](doc/images/etherpad_basic.png "Basic Installation")
+
+![Full Features](doc/images/etherpad_full_features.png "You can add a lot of plugins !")
+
+### Available Plugins
+
+For a list of available plugins, see the [plugins
+site](https://static.etherpad.org).
+
+### Plugin Installation
+
+You can install plugins from the admin web interface (e.g.,
+http://127.0.0.1:9001/admin/plugins).
+
+Alternatively, you can install plugins from the command line:
+
+```sh
+cd /path/to/etherpad-lite
+# The `--no-save` and `--legacy-peer-deps` arguments are necessary to work
+# around npm quirks.
+npm install --no-save --legacy-peer-deps ep_${plugin_name}
+```
+
+Also see [the plugin wiki
+article](https://github.com/ether/etherpad-lite/wiki/Available-Plugins).
+
+### Suggested Plugins
+
+Run the following command in your Etherpad folder to get all of the features
+visible in the above demo gif:
+
+```sh
+npm install --no-save --legacy-peer-deps \
+  ep_align \
+  ep_comments_page \
+  ep_embedded_hyperlinks2 \
+  ep_font_color \
+  ep_headings2 \
+  ep_markdown \
+  ep_webrtc
+```
+
+For user authentication, you are encouraged to run an [OpenID
+Connect](https://openid.net/connect/) identity provider (OP) and install the
+following plugins:
+
+  * [ep_openid_connect](https://github.com/ether/ep_openid_connect#readme) to
+    authenticate against your OP.
+  * [ep_guest](https://github.com/ether/ep_guest#readme) to create a
+    "guest" account that has limited access (e.g., read-only access).
+  * [ep_user_displayname](https://github.com/ether/ep_user_displayname#readme)
+    to automatically populate each user's displayed name from your OP.
+  * [ep_stable_authorid](https://github.com/ether/ep_stable_authorid#readme) so
+    that each user's chosen color, display name, comment ownership, etc. is
+    strongly linked to their account.
+
 ## Next Steps
 
 ### Tweak the settings
@@ -169,25 +229,6 @@ Please install [ep_hash_auth plugin](https://www.npmjs.com/package/ep_hash_auth)
 and configure it. If you prefer, `ep_hash_auth` also gives you the option of
 storing the users in a custom directory in the file system, without having to
 edit `settings.json` and restart Etherpad each time.
-
-### Customize functionalities with plugins
-
-![Basic install](doc/images/etherpad_basic.png "Basic Installation")
-
-![Full Features](doc/images/etherpad_full_features.png "You can add a lot of plugins !")
-
-Etherpad is very customizable through plugins. Instructions for installing
-themes and plugins can be found in [the plugin wiki
-article](https://github.com/ether/etherpad-lite/wiki/Available-Plugins).
-
-### Getting the full features
-
-Run the following command in your Etherpad folder to get all of the features
-visible in the demo gif:
-
-```
-npm install --no-save --legacy-peer-deps ep_headings2 ep_markdown ep_comments_page ep_align ep_font_color ep_webrtc ep_embedded_hyperlinks2
-```
 
 ### Customize the style with skin variants
 
