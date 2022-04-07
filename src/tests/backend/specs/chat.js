@@ -31,15 +31,10 @@ const checkHook = async (hookName, checkFn) => {
   });
 };
 
-const sendMessage = (socket, data) => {
-  socket.send({
-    type: 'COLLABROOM',
-    component: 'pad',
-    data,
-  });
-};
-
-const sendChat = (socket, message) => sendMessage(socket, {type: 'CHAT_MESSAGE', message});
+const sendMessage = async (socket, data) => (
+  await common.sendMessage(socket, {type: 'COLLABROOM', component: 'pad', data}));
+const sendChat = async (socket, message) => (
+  await sendMessage(socket, {type: 'CHAT_MESSAGE', message}));
 
 describe(__filename, function () {
   const padId = 'testChatPad';
