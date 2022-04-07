@@ -26,20 +26,8 @@ describe(__filename, function () {
     });
   });
 
-  // BEGIN GROUP AND AUTHOR TESTS
-  // ///////////////////////////////////
-  // ///////////////////////////////////
-
-  /* Tests performed
-  -> createPad(padID)
-   -> createAuthor([name]) -- should return an authorID
-    -> appendChatMessage(padID, text, authorID, time)
-     -> getChatHead(padID)
-      -> getChatHistory(padID)
-  */
-
-  describe('createPad', function () {
-    it('creates a new Pad', async function () {
+  describe('message sequence', function () {
+    it('createPad', async function () {
       await agent.get(`${endPoint('createPad')}&padID=${padID}`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -47,10 +35,8 @@ describe(__filename, function () {
             assert.equal(res.body.code, 0);
           });
     });
-  });
 
-  describe('createAuthor', function () {
-    it('Creates an author with a name set', async function () {
+    it('createAuthor', async function () {
       await agent.get(endPoint('createAuthor'))
           .expect(200)
           .expect('Content-Type', /json/)
@@ -60,10 +46,8 @@ describe(__filename, function () {
             authorID = res.body.data.authorID; // we will be this author for the rest of the tests
           });
     });
-  });
 
-  describe('appendChatMessage', function () {
-    it('Adds a chat message to the pad', async function () {
+    it('appendChatMessage', async function () {
       await agent.get(`${endPoint('appendChatMessage')}&padID=${padID}&text=blalblalbha` +
                 `&authorID=${authorID}&time=${timestamp}`)
           .expect(200)
@@ -72,11 +56,8 @@ describe(__filename, function () {
             assert.equal(res.body.code, 0);
           });
     });
-  });
 
-
-  describe('getChatHead', function () {
-    it('Gets the head of chat', async function () {
+    it('getChatHead', async function () {
       await agent.get(`${endPoint('getChatHead')}&padID=${padID}`)
           .expect(200)
           .expect('Content-Type', /json/)
@@ -85,10 +66,8 @@ describe(__filename, function () {
             assert.equal(res.body.data.chatHead, 0);
           });
     });
-  });
 
-  describe('getChatHistory', function () {
-    it('Gets Chat History of a Pad', async function () {
+    it('getChatHistory', async function () {
       await agent.get(`${endPoint('getChatHistory')}&padID=${padID}`)
           .expect(200)
           .expect('Content-Type', /json/)
