@@ -15,14 +15,14 @@ describe(__filename, function () {
   before(async function () { agent = await common.init(); });
 
   describe('API Versioning', function () {
-    it('errors if can not connect', function (done) {
-      agent.get('/api/')
+    it('errors if can not connect', async function () {
+      await agent.get('/api/')
           .expect((res) => {
             apiVersion = res.body.currentVersion;
             if (!res.body.currentVersion) throw new Error('No version set in API');
             return;
           })
-          .expect(200, done);
+          .expect(200);
     });
   });
 
@@ -39,19 +39,19 @@ describe(__filename, function () {
   */
 
   describe('createPad', function () {
-    it('creates a new Pad', function (done) {
-      agent.get(`${endPoint('createPad')}&padID=${padID}`)
+    it('creates a new Pad', async function () {
+      await agent.get(`${endPoint('createPad')}&padID=${padID}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Unable to create new Pad');
           })
           .expect('Content-Type', /json/)
-          .expect(200, done);
+          .expect(200);
     });
   });
 
   describe('createAuthor', function () {
-    it('Creates an author with a name set', function (done) {
-      agent.get(endPoint('createAuthor'))
+    it('Creates an author with a name set', async function () {
+      await agent.get(endPoint('createAuthor'))
           .expect((res) => {
             if (res.body.code !== 0 || !res.body.data.authorID) {
               throw new Error('Unable to create author');
@@ -59,39 +59,39 @@ describe(__filename, function () {
             authorID = res.body.data.authorID; // we will be this author for the rest of the tests
           })
           .expect('Content-Type', /json/)
-          .expect(200, done);
+          .expect(200);
     });
   });
 
   describe('appendChatMessage', function () {
-    it('Adds a chat message to the pad', function (done) {
-      agent.get(`${endPoint('appendChatMessage')}&padID=${padID}&text=blalblalbha` +
+    it('Adds a chat message to the pad', async function () {
+      await agent.get(`${endPoint('appendChatMessage')}&padID=${padID}&text=blalblalbha` +
                 `&authorID=${authorID}&time=${timestamp}`)
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('Unable to create chat message');
           })
           .expect('Content-Type', /json/)
-          .expect(200, done);
+          .expect(200);
     });
   });
 
 
   describe('getChatHead', function () {
-    it('Gets the head of chat', function (done) {
-      agent.get(`${endPoint('getChatHead')}&padID=${padID}`)
+    it('Gets the head of chat', async function () {
+      await agent.get(`${endPoint('getChatHead')}&padID=${padID}`)
           .expect((res) => {
             if (res.body.data.chatHead !== 0) throw new Error('Chat Head Length is wrong');
 
             if (res.body.code !== 0) throw new Error('Unable to get chat head');
           })
           .expect('Content-Type', /json/)
-          .expect(200, done);
+          .expect(200);
     });
   });
 
   describe('getChatHistory', function () {
-    it('Gets Chat History of a Pad', function (done) {
-      agent.get(`${endPoint('getChatHistory')}&padID=${padID}`)
+    it('Gets Chat History of a Pad', async function () {
+      await agent.get(`${endPoint('getChatHistory')}&padID=${padID}`)
           .expect((res) => {
             if (res.body.data.messages.length !== 1) {
               throw new Error('Chat History Length is wrong');
@@ -99,7 +99,7 @@ describe(__filename, function () {
             if (res.body.code !== 0) throw new Error('Unable to get chat history');
           })
           .expect('Content-Type', /json/)
-          .expect(200, done);
+          .expect(200);
     });
   });
 });
