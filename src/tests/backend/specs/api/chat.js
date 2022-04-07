@@ -18,11 +18,11 @@ describe(__filename, function () {
   describe('API Versioning', function () {
     it('errors if can not connect', async function () {
       await agent.get('/api/')
+          .expect(200)
           .expect((res) => {
-            apiVersion = res.body.currentVersion;
             assert(res.body.currentVersion);
-          })
-          .expect(200);
+            apiVersion = res.body.currentVersion;
+          });
     });
   });
 
@@ -41,24 +41,24 @@ describe(__filename, function () {
   describe('createPad', function () {
     it('creates a new Pad', async function () {
       await agent.get(`${endPoint('createPad')}&padID=${padID}`)
+          .expect(200)
+          .expect('Content-Type', /json/)
           .expect((res) => {
             assert.equal(res.body.code, 0);
-          })
-          .expect('Content-Type', /json/)
-          .expect(200);
+          });
     });
   });
 
   describe('createAuthor', function () {
     it('Creates an author with a name set', async function () {
       await agent.get(endPoint('createAuthor'))
+          .expect(200)
+          .expect('Content-Type', /json/)
           .expect((res) => {
             assert.equal(res.body.code, 0);
             assert(res.body.data.authorID);
             authorID = res.body.data.authorID; // we will be this author for the rest of the tests
-          })
-          .expect('Content-Type', /json/)
-          .expect(200);
+          });
     });
   });
 
@@ -66,11 +66,11 @@ describe(__filename, function () {
     it('Adds a chat message to the pad', async function () {
       await agent.get(`${endPoint('appendChatMessage')}&padID=${padID}&text=blalblalbha` +
                 `&authorID=${authorID}&time=${timestamp}`)
+          .expect(200)
+          .expect('Content-Type', /json/)
           .expect((res) => {
             assert.equal(res.body.code, 0);
-          })
-          .expect('Content-Type', /json/)
-          .expect(200);
+          });
     });
   });
 
@@ -78,24 +78,24 @@ describe(__filename, function () {
   describe('getChatHead', function () {
     it('Gets the head of chat', async function () {
       await agent.get(`${endPoint('getChatHead')}&padID=${padID}`)
-          .expect((res) => {
-            assert.equal(res.body.data.chatHead, 0);
-            assert.equal(res.body.code, 0);
-          })
+          .expect(200)
           .expect('Content-Type', /json/)
-          .expect(200);
+          .expect((res) => {
+            assert.equal(res.body.code, 0);
+            assert.equal(res.body.data.chatHead, 0);
+          });
     });
   });
 
   describe('getChatHistory', function () {
     it('Gets Chat History of a Pad', async function () {
       await agent.get(`${endPoint('getChatHistory')}&padID=${padID}`)
-          .expect((res) => {
-            assert.equal(res.body.data.messages.length, 1);
-            assert.equal(res.body.code, 0);
-          })
+          .expect(200)
           .expect('Content-Type', /json/)
-          .expect(200);
+          .expect((res) => {
+            assert.equal(res.body.code, 0);
+            assert.equal(res.body.data.messages.length, 1);
+          });
     });
   });
 });
