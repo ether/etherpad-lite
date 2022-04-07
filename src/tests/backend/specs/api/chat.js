@@ -13,40 +13,31 @@ const timestamp = Date.now();
 const endPoint = (point) => `/api/${apiVersion}/${point}?apikey=${apiKey}`;
 
 describe(__filename, function () {
-  before(async function () { agent = await common.init(); });
-
-  describe('API Versioning', function () {
-    it('errors if can not connect', async function () {
-      await agent.get('/api/')
-          .expect(200)
-          .expect((res) => {
-            assert(res.body.currentVersion);
-            apiVersion = res.body.currentVersion;
-          });
-    });
+  before(async function () {
+    agent = await common.init();
+    await agent.get('/api/')
+        .expect(200)
+        .expect((res) => {
+          assert(res.body.currentVersion);
+          apiVersion = res.body.currentVersion;
+        });
+    await agent.get(`${endPoint('createPad')}&padID=${padID}`)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+        });
+    await agent.get(endPoint('createAuthor'))
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+          assert(res.body.data.authorID);
+          authorID = res.body.data.authorID; // we will be this author for the rest of the tests
+        });
   });
 
   describe('message sequence', function () {
-    it('createPad', async function () {
-      await agent.get(`${endPoint('createPad')}&padID=${padID}`)
-          .expect(200)
-          .expect('Content-Type', /json/)
-          .expect((res) => {
-            assert.equal(res.body.code, 0);
-          });
-    });
-
-    it('createAuthor', async function () {
-      await agent.get(endPoint('createAuthor'))
-          .expect(200)
-          .expect('Content-Type', /json/)
-          .expect((res) => {
-            assert.equal(res.body.code, 0);
-            assert(res.body.data.authorID);
-            authorID = res.body.data.authorID; // we will be this author for the rest of the tests
-          });
-    });
-
     it('appendChatMessage', async function () {
       await agent.get(`${endPoint('appendChatMessage')}&padID=${padID}&text=blalblalbha` +
                 `&authorID=${authorID}&time=${timestamp}`)
