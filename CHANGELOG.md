@@ -97,6 +97,7 @@
       `src/node/handler/PadMessageHandler.js` is deprecated.
   * Client-side:
     * The `chat` global variable is deprecated.
+    * The `chat` export in `src/static/js/chat.js` is deprecated.
     * The `pad.determineChatVisibility()` method was removed.
     * The `pad.determineChatAndUsersVisibility()` method was removed.
 * Returning `true` from a `handleMessageSecurity` hook function is deprecated;

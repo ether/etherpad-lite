@@ -25,7 +25,7 @@ const padeditor = require('./pad_editor').padeditor;
 // Removes diacritics and lower-cases letters. https://stackoverflow.com/a/37511463
 const normalize = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
-exports.chat = (() => {
+const chat = (() => {
   let isStuck = false;
   let userAndChat = false;
   let chatMentions = 0;
@@ -305,35 +305,43 @@ exports.chat = (() => {
   };
 })();
 
+Object.defineProperty(exports, 'chat', {
+  get: () => {
+    padutils.warnDeprecated(
+        'chat.chat is deprecated and will be removed in a future version of Etherpad');
+    return chat;
+  },
+});
+
 exports.aceKeyEvent = (hookName, {evt}) => {
   const {altC} = window.clientVars.padShortcutEnabled;
   if (evt.type !== 'keydown' || !evt.altKey || evt.keyCode !== 67 || !altC) return;
   evt.target.blur();
-  exports.chat.show();
-  exports.chat.focus();
+  chat.show();
+  chat.focus();
   evt.preventDefault();
   return true;
 };
 
 exports.handleClientMessage_CHAT_MESSAGE = (hookName, {msg}) => {
-  exports.chat.addMessage(msg.message, true, false);
+  chat.addMessage(msg.message, true, false);
 };
 
 exports.handleClientMessage_CHAT_MESSAGES = (hookName, {msg}) => {
   for (let i = msg.messages.length - 1; i >= 0; i--) {
-    exports.chat.addMessage(msg.messages[i], true, true);
+    chat.addMessage(msg.messages[i], true, true);
   }
-  if (!exports.chat.gotInitalMessages) {
-    exports.chat.scrollDown();
-    exports.chat.gotInitalMessages = true;
-    exports.chat.historyPointer = clientVars.chatHead - msg.messages.length;
+  if (!chat.gotInitalMessages) {
+    chat.scrollDown();
+    chat.gotInitalMessages = true;
+    chat.historyPointer = clientVars.chatHead - msg.messages.length;
   }
 
   // messages are loaded, so hide the loading-ball
   $('#chatloadmessagesball').css('display', 'none');
 
   // there are less than 100 messages or we reached the top
-  if (exports.chat.historyPointer <= 0) {
+  if (chat.historyPointer <= 0) {
     $('#chatloadmessagesbutton').css('display', 'none');
   } else {
     // there are still more messages, re-show the load-button
@@ -342,14 +350,14 @@ exports.handleClientMessage_CHAT_MESSAGES = (hookName, {msg}) => {
 };
 
 exports.postAceInit = async (hookName, {clientVars, pad}) => {
-  exports.chat.init(pad);
+  chat.init(pad);
 
   if (padcookie.getPref('chatAlwaysVisible')) {
-    exports.chat.stickToScreen(true);
+    chat.stickToScreen(true);
     $('#options-stickychat').prop('checked', true);
   }
   if (padcookie.getPref('chatAndUsers')) {
-    exports.chat.chatAndUsers(true);
+    chat.chatAndUsers(true);
     $('#options-chatandusers').prop('checked', true);
   }
 
@@ -372,7 +380,7 @@ exports.postAceInit = async (hookName, {clientVars, pad}) => {
   }
 
   if (clientVars.readonly) {
-    exports.chat.hide();
+    chat.hide();
     $('#chatinput').attr('disabled', true);
     $('#options-chatandusers').parent().hide();
     $('#options-stickychat').parent().hide();
