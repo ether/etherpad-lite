@@ -4,17 +4,53 @@ const ChatMessage = require('../static/js/ChatMessage');
 const api = require('./db/API');
 const authorManager = require('./db/AuthorManager');
 const hooks = require('../static/js/pluginfw/hooks.js');
+const pad = require('./db/Pad');
 const padManager = require('./db/PadManager');
 const padMessageHandler = require('./handler/PadMessageHandler');
 
 let socketio;
 
+const appendChatMessage = async (pad, msg) => {
+  pad.chatHead++;
+  await Promise.all([
+    // Don't save the display name in the database because the user can change it at any time. The
+    // `displayName` property will be populated with the current value when the message is read from
+    // the database.
+    pad.db.set(`pad:${pad.id}:chat:${pad.chatHead}`, {...msg, displayName: undefined}),
+    pad.saveToDatabase(),
+  ]);
+};
+
+const getChatMessage = async (pad, entryNum) => {
+  const entry = await pad.db.get(`pad:${pad.id}:chat:${entryNum}`);
+  if (entry == null) return null;
+  const message = ChatMessage.fromObject(entry);
+  message.displayName = await authorManager.getAuthorName(message.authorId);
+  return message;
+};
+
+const getChatMessages = async (pad, start, end) => {
+  const entries = await Promise.all(
+      [...Array(end + 1 - start).keys()].map((i) => getChatMessage(pad, start + i)));
+
+  // sort out broken chat entries
+  // it looks like in happened in the past that the chat head was
+  // incremented, but the chat message wasn't added
+  return entries.filter((entry) => {
+    const pass = (entry != null);
+    if (!pass) {
+      console.warn(`WARNING: Found broken chat entry in pad ${pad.id}`);
+    }
+    return pass;
+  });
+};
+
 const sendChatMessageToPadClients = async (message, padId) => {
   const pad = await padManager.getPad(padId, null, message.authorId);
   await hooks.aCallAll('chatNewMessage', {message, pad, padId});
-  // pad.appendChatMessage() ignores the displayName property so we don't need to wait for
+  // appendChatMessage() ignores the displayName property so we don't need to wait for
   // authorManager.getAuthorName() to resolve before saving the message to the database.
-  const promise = pad.appendChatMessage(message);
+  const promise = appendChatMessage(pad, message);
   message.displayName = await authorManager.getAuthorName(message.authorId);
   socketio.sockets.in(padId).json.send({
     type: 'COLLABROOM',
@@ -91,7 +127,7 @@ exports.handleMessage = async (hookName, {message, sessionInfo, socket}) => {
         type: 'COLLABROOM',
         data: {
           type: 'CHAT_MESSAGES',
-          messages: await pad.getChatMessages(start, end),
+          messages: await getChatMessages(pad, start, end),
         },
       });
       break;
@@ -107,7 +143,14 @@ exports.socketio = (hookName, {io}) => {
 };
 
 api.registerChatHandlers({
+  getChatMessages,
   sendChatMessageToPadClients,
+});
+
+pad.registerLegacyChatMethodHandlers({
+  appendChatMessage,
+  getChatMessage,
+  getChatMessages,
 });
 
 padMessageHandler.registerLegacyChatHandlers({

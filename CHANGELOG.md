@@ -93,6 +93,9 @@
     `authorId` context property instead. Also, the hook now runs asynchronously.
 * Chat API deprecations and removals (no replacements planned):
   * Server-side:
+    * The `Pad.appendChatMessage()` method is deprecated.
+    * The `Pad.getChatMessage()` method is deprecated.
+    * The `Pad.getChatMessages()` method is deprecated.
     * The `sendChatMessageToPadClients()` function in
       `src/node/handler/PadMessageHandler.js` is deprecated.
   * Client-side:
