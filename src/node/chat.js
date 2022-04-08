@@ -173,6 +173,14 @@ exports.padLoad = async (hookName, {pad}) => {
   if (!('chatHead' in pad)) pad.chatHead = -1;
 };
 
+exports.padRemove = async (hookName, {pad}) => {
+  const ops = (function* () {
+    const {chatHead = -1} = pad;
+    for (let i = 0; i <= chatHead; ++i) yield pad.db.remove(`pad:${pad.id}:chat:${i}`);
+  })();
+  for (const op of new Stream(ops).batch(100).buffer(99)) await op;
+};
+
 exports.socketio = (hookName, {io}) => {
   socketio = io;
 };

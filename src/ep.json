@@ -28,6 +28,7 @@
         "padCheck": "ep_etherpad-lite/node/chat",
         "padCopy": "ep_etherpad-lite/node/chat",
         "padLoad": "ep_etherpad-lite/node/chat",
+        "padRemove": "ep_etherpad-lite/node/chat",
         "socketio": "ep_etherpad-lite/node/chat"
       }
     },
