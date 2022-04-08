@@ -851,7 +851,7 @@ const getPadSafe = async (padID, shouldExist, text, authorId = '') => {
   }
 
   // pad exists, let's get it
-  return padManager.getPad(padID, text, authorId);
+  return await padManager.getPad(padID, text, authorId);
 };
 
 // checks if a rev is a legal number
