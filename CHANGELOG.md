@@ -40,6 +40,7 @@
 
 * New `expressPreSession` server-side hook.
 * Pad server-side hook changes:
+  * `padCheck`: New hook.
   * `padCopy`: New `srcPad` and `dstPad` context properties.
   * `padDefaultContent`: New hook.
   * `padRemove`: New `pad` context property.

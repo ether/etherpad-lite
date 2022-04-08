@@ -366,6 +366,18 @@ Usage examples:
 
   * https://github.com/ether/ep_comments_page
 
+## `padCheck`
+
+Called from: `src/node/db/Pad.js`
+
+Called when a consistency check is run on a pad, after the core checks have
+completed successfully. An exception should be thrown if the pad is faulty in
+some way.
+
+Context properties:
+
+  * `pad`: The Pad object that is being checked.
+
 ## socketio
 Called from: src/node/hooks/express/socketio.js
 

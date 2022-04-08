@@ -738,4 +738,6 @@ Pad.prototype.check = async function () {
     err.message = pfx + err.message;
     throw err;
   }
+
+  await hooks.aCallAll('padCheck', {pad: this});
 };
