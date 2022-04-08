@@ -156,10 +156,22 @@ exports.expressPreSession = async (hookName, {app}) => {
   // not very static, but served here so that client can do
   // require("pluginfw/static/js/plugin-definitions.js");
   app.get('/pluginfw/plugin-definitions.json', (req, res, next) => {
-    const clientParts = plugins.parts.filter((part) => part.client_hooks != null);
+    // No need to tell clients about server-side hooks.
+    const stripServerSideHooks = (parts) => parts.reduce((parts, part) => {
+      if (part.client_hooks != null) {
+        if (part.hooks) part = {...part, hooks: undefined};
+        parts.push(part);
+      }
+      return parts;
+    }, []);
+    const clientParts = stripServerSideHooks(plugins.parts);
     const clientPlugins = {};
     for (const name of new Set(clientParts.map((part) => part.plugin))) {
-      clientPlugins[name] = {...plugins.plugins[name]};
+      const plugin = plugins.plugins[name];
+      clientPlugins[name] = {
+        ...plugin,
+        parts: stripServerSideHooks(plugin.parts),
+      };
       delete clientPlugins[name].package;
     }
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
