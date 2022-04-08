@@ -22,6 +22,7 @@
 const CustomError = require('../utils/customError');
 const Pad = require('../db/Pad');
 const db = require('./DB');
+const settings = require('../utils/Settings');
 
 /**
  * A cache of all loaded Pads.
@@ -169,6 +170,8 @@ exports.sanitizePadId = async (padId) => {
 
     padId = padId.replace(from, to);
   }
+
+  if (settings.enforceLowerCasePadIds) padId = padId.toLowerCase();
 
   // we're out of possible transformations, so just return it
   return padId;

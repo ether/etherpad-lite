@@ -634,5 +634,10 @@
   "customLocaleStrings": {},
 
   /* Disable Admin UI tests */
-  "enableAdminUITests": false
+  "enableAdminUITests": false,
+
+  /*
+   * Enable/Disable case-insensitive pad names.
+   */
+  "enforceLowerCasePadIds": "${ENFORCE_LOWER_CASE_PAD_IDS:false}"
 }
