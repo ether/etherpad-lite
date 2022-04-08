@@ -372,7 +372,6 @@ class Pad {
     const promises = (function* () {
       yield copyRecord('');
       yield* Stream.range(0, this.head + 1).map((i) => copyRecord(`:revs:${i}`));
-      yield* Stream.range(0, this.chatHead + 1).map((i) => copyRecord(`:chat:${i}`));
       yield this.copyAuthorInfoToDestinationPad(destinationID);
       if (destGroupID) yield db.setSub(`group:${destGroupID}`, ['pads', destinationID], 1);
     }).call(this);

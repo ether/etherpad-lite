@@ -156,6 +156,19 @@ exports.padCheck = async (hookName, {pad}) => {
   for (const p of chats.batch(100).buffer(99)) await p;
 };
 
+exports.padCopy = async (hookName, {srcPad, dstPad}) => {
+  const {chatHead = -1} = srcPad;
+  dstPad.chatHead = chatHead;
+  const copyChat = async (i) => {
+    const val = await srcPad.db.get(`pad:${srcPad.id}:chat:${i}`);
+    await dstPad.db.set(`pad:${dstPad.id}:chat:${i}`, val);
+  };
+  const ops = (function* () {
+    for (let i = 0; i <= chatHead; ++i) yield copyChat(i);
+  })();
+  for (const op of new Stream(ops).batch(100).buffer(99)) await op;
+};
+
 exports.padLoad = async (hookName, {pad}) => {
   if (!('chatHead' in pad)) pad.chatHead = -1;
 };
