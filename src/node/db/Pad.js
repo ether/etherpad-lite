@@ -690,23 +690,6 @@ class Pad {
     assert.deepEqual(this.atext, atext);
     assert.deepEqual(this.getAllAuthors().sort(), [...authorIds].sort());
 
-    assert(this.chatHead != null);
-    assert(Number.isInteger(this.chatHead));
-    assert(this.chatHead >= -1);
-    const chats = Stream.range(0, this.chatHead + 1)
-        .map(async (c) => {
-          try {
-            const msg = await chat.getChatMessage(this, c);
-            assert(msg != null);
-            assert(msg instanceof ChatMessage);
-          } catch (err) {
-            err.message = `(pad ${this.id} chat message ${c}) ${err.message}`;
-            throw err;
-          }
-        })
-        .batch(100).buffer(99);
-    for (const p of chats) await p;
-
     await hooks.aCallAll('padCheck', {pad: this});
   }
 }

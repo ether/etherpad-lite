@@ -2,6 +2,7 @@
 
 const ChatMessage = require('../static/js/ChatMessage');
 const api = require('./db/API');
+const assert = require('assert').strict;
 const authorManager = require('./db/AuthorManager');
 const hooks = require('../static/js/pluginfw/hooks.js');
 const pad = require('./db/Pad');
@@ -136,6 +137,23 @@ exports.handleMessage = async (hookName, {message, sessionInfo, socket}) => {
       return;
   }
   return null; // Important! Returning null (not undefined!) stops further processing.
+};
+
+exports.padCheck = async (hookName, {pad}) => {
+  assert(pad.chatHead != null);
+  assert(Number.isInteger(pad.chatHead));
+  assert(pad.chatHead >= -1);
+  const chats = Stream.range(0, pad.chatHead).map(async (c) => {
+    try {
+      const msg = await getChatMessage(pad, c);
+      assert(msg != null);
+      assert(msg instanceof ChatMessage);
+    } catch (err) {
+      err.message = `(pad ${pad.id} chat message ${c}) ${err.message}`;
+      throw err;
+    }
+  });
+  for (const p of chats.batch(100).buffer(99)) await p;
 };
 
 exports.socketio = (hookName, {io}) => {
