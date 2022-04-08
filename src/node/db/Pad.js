@@ -426,7 +426,7 @@ Pad.prototype.copy = async function (destinationID, force) {
   }).call(this));
 
   // Initialize the new pad (will update the listAllPads cache)
-  await padManager.getPad(destinationID, null);
+  const dstPad = await padManager.getPad(destinationID, null);
 
   // let the plugins know the pad was copied
   await hooks.aCallAll('padCopy', {
@@ -434,8 +434,12 @@ Pad.prototype.copy = async function (destinationID, force) {
       warnDeprecated('padCopy originalPad context property is deprecated; use srcPad instead');
       return this.srcPad;
     },
+    get destinationID() {
+      warnDeprecated('padCopy destinationID context property is deprecated; use dstPad.id instead');
+      return this.dstPad.id;
+    },
     srcPad: this,
-    destinationID,
+    dstPad,
   });
 
   return {padID: destinationID};
@@ -503,8 +507,8 @@ Pad.prototype.copyPadWithoutHistory = async function (destinationID, force, auth
   }
 
   // initialize the pad with a new line to avoid getting the defaultText
-  const newPad = await padManager.getPad(destinationID, '\n', authorId);
-  newPad.pool = this.pool.clone();
+  const dstPad = await padManager.getPad(destinationID, '\n', authorId);
+  dstPad.pool = this.pool.clone();
 
   const oldAText = this.atext;
 
@@ -513,7 +517,7 @@ Pad.prototype.copyPadWithoutHistory = async function (destinationID, force, auth
   for (const op of Changeset.opsFromAText(oldAText)) assem.append(op);
   assem.endDocument();
 
-  // although we have instantiated the newPad with '\n', an additional '\n' is
+  // although we have instantiated the dstPad with '\n', an additional '\n' is
   // added internally, so the pad text on the revision 0 is "\n\n"
   const oldLength = 2;
 
@@ -523,15 +527,19 @@ Pad.prototype.copyPadWithoutHistory = async function (destinationID, force, auth
   // create a changeset that removes the previous text and add the newText with
   // all atributes present on the source pad
   const changeset = Changeset.pack(oldLength, newLength, assem.toString(), newText);
-  newPad.appendRevision(changeset, authorId);
+  dstPad.appendRevision(changeset, authorId);
 
   await hooks.aCallAll('padCopy', {
     get originalPad() {
       warnDeprecated('padCopy originalPad context property is deprecated; use srcPad instead');
       return this.srcPad;
     },
+    get destinationID() {
+      warnDeprecated('padCopy destinationID context property is deprecated; use dstPad.id instead');
+      return this.dstPad.id;
+    },
     srcPad: this,
-    destinationID,
+    dstPad,
   });
 
   return {padID: destinationID};
