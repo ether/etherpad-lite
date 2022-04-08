@@ -395,6 +395,7 @@ Pad.prototype.init = async function (text, authorId = '') {
     const firstChangeset = Changeset.makeSplice('\n', 0, 0, text);
     await this.appendRevision(firstChangeset, authorId);
   }
+  hooks.callAll('padLoad', {pad: this});
 };
 
 Pad.prototype.copy = async function (destinationID, force) {

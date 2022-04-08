@@ -76,6 +76,7 @@
       instead.
   * `padCreate`: The `author` context property is deprecated; use the new
     `authorId` context property instead.
+  * `padLoad`: Now runs when a temporary Pad object is created during import.
   * `padRemove`: The `padID` context property is deprecated; use `pad.id`
     instead.
   * `padUpdate`: The `author` context property is deprecated; use the new
