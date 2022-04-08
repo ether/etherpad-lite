@@ -325,19 +325,31 @@ Context properties:
 * `changeset`: The changeset of this revision (see [Changeset
   Library](#index_changeset_library)).
 
-## padCopy
-Called from: src/node/db/Pad.js
+## `padCopy`
 
-Things in context:
+Called from: `src/node/db/Pad.js`
 
-1. originalPad - the source pad instance
-2. destinationID - the id of the pad copied from originalPad
+Called when a pad is copied so that plugins can copy plugin-specific database
+records or perform some other plugin-specific initialization.
 
-This hook gets called when an existing pad was copied.
+Order of events when a pad is copied:
+
+  1. Destination pad is deleted if it exists and overwrite is permitted. This
+     causes the `padRemove` hook to run.
+  2. Pad-specific database records are copied in the database, except for
+     records with plugin-specific database keys.
+  3. A new Pad object is created for the destination pad. This causes the
+     `padLoad` hook to run.
+  4. This hook runs.
+
+Context properties:
+
+  * `originalPad`: The source Pad object.
+  * `destinationID`: The ID of the pad copied from `originalPad`.
 
 Usage examples:
 
-* https://github.com/ether/ep_comments
+  * https://github.com/ether/ep_comments_page
 
 ## padRemove
 Called from: src/node/db/Pad.js
