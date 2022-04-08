@@ -351,18 +351,20 @@ Usage examples:
 
   * https://github.com/ether/ep_comments_page
 
-## padRemove
-Called from: src/node/db/Pad.js
+## `padRemove`
 
-Things in context:
+Called from: `src/node/db/Pad.js`
 
-1. padID
+Called when an existing pad is removed/deleted. Plugins should use this to clean
+up any plugin-specific pad records from the database.
 
-This hook gets called when an existing pad was removed/deleted.
+Context properties:
+
+  * `padID`: ID of the pad that is being deleted.
 
 Usage examples:
 
-* https://github.com/ether/ep_comments
+  * https://github.com/ether/ep_comments_page
 
 ## socketio
 Called from: src/node/hooks/express/socketio.js
