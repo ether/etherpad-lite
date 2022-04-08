@@ -58,7 +58,7 @@ jobs:
         run: ls etherpad_nsis
       -
         name: Archive production artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: etherpad-server-windows.exe
           path: etherpad_nsis/etherpad-server-windows.exe
