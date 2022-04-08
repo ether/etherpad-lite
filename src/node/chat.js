@@ -156,6 +156,10 @@ exports.padCheck = async (hookName, {pad}) => {
   for (const p of chats.batch(100).buffer(99)) await p;
 };
 
+exports.padLoad = async (hookName, {pad}) => {
+  if (!('chatHead' in pad)) pad.chatHead = -1;
+};
+
 exports.socketio = (hookName, {io}) => {
   socketio = io;
 };

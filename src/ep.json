@@ -26,6 +26,7 @@
         "eejsBlock_stickyContainer": "ep_etherpad-lite/node/chat",
         "handleMessage": "ep_etherpad-lite/node/chat",
         "padCheck": "ep_etherpad-lite/node/chat",
+        "padLoad": "ep_etherpad-lite/node/chat",
         "socketio": "ep_etherpad-lite/node/chat"
       }
     },
