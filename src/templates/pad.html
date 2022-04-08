@@ -467,9 +467,18 @@
 
       /* TODO: These globals shouldn't exist. */
       pad = require('ep_etherpad-lite/static/js/pad').pad;
-      chat = require('ep_etherpad-lite/static/js/chat').chat;
       padeditbar = require('ep_etherpad-lite/static/js/pad_editbar').padeditbar;
       padimpexp = require('ep_etherpad-lite/static/js/pad_impexp').padimpexp;
+
+      Object.defineProperty(window, 'chat', {
+        get: () => {
+          const {padutils: {warnDeprecated}} = require('ep_etherpad-lite/static/js/pad_utils');
+          warnDeprecated(
+              'window.chat is deprecated and will be removed in a future version of Etherpad');
+          return require('ep_etherpad-lite/static/js/chat').chat;
+        },
+      });
+
       require('ep_etherpad-lite/static/js/skin_variants');
 
     }());

@@ -903,9 +903,6 @@ const handleClientReady = async (socket, message) => {
       padShortcutEnabled: settings.padShortcutEnabled,
       initialTitle: `Pad: ${sessionInfo.auth.padID}`,
       opts: {},
-      // tell the client the number of the latest chat-message, which will be
-      // used to request the latest 100 chat-messages later (GET_CHAT_MESSAGES)
-      chatHead: pad.chatHead,
       numConnectedUsers: roomSockets.length,
       readOnlyId: sessionInfo.readOnlyPadId,
       readonly: sessionInfo.readonly,

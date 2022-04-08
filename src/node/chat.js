@@ -23,6 +23,8 @@ const sendChatMessageToPadClients = async (message, padId) => {
   await promise;
 };
 
+exports.clientVars = (hookName, {pad: {chatHead}}) => ({chatHead});
+
 exports.eejsBlock_mySettings = (hookName, context) => {
   context.content += `
     <p class="hide-for-mobile">
