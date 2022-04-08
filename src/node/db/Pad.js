@@ -22,7 +22,7 @@ const {padutils: {warnDeprecated}} = require('../../static/js/pad_utils');
 const promises = require('../utils/promises');
 
 // serialization/deserialization attributes
-const attributeBlackList = ['_db', 'id'];
+const attributeBlackList = ['db', 'id'];
 const jsonableList = ['pool'];
 
 /**
@@ -43,7 +43,7 @@ exports.cleanText = (txt) => txt.replace(/\r\n/g, '\n')
  *     database table, or to validate imported pad data before it is written to the database.
  */
 const Pad = function (id, database = db) {
-  this._db = database;
+  this.db = database;
   this.atext = Changeset.makeAText('\n');
   this.pool = new AttributePool();
   this.head = -1;
@@ -101,7 +101,7 @@ Pad.prototype.appendRevision = async function (aChangeset, authorId = '') {
   }
 
   const p = [
-    this._db.set(`pad:${this.id}:revs:${newRev}`, newRevData),
+    this.db.set(`pad:${this.id}:revs:${newRev}`, newRevData),
     this.saveToDatabase(),
   ];
 
@@ -147,25 +147,25 @@ Pad.prototype.saveToDatabase = async function () {
     }
   }
 
-  await this._db.set(`pad:${this.id}`, dbObject);
+  await this.db.set(`pad:${this.id}`, dbObject);
 };
 
 // get time of last edit (changeset application)
 Pad.prototype.getLastEdit = async function () {
   const revNum = this.getHeadRevisionNumber();
-  return await this._db.getSub(`pad:${this.id}:revs:${revNum}`, ['meta', 'timestamp']);
+  return await this.db.getSub(`pad:${this.id}:revs:${revNum}`, ['meta', 'timestamp']);
 };
 
 Pad.prototype.getRevisionChangeset = async function (revNum) {
-  return await this._db.getSub(`pad:${this.id}:revs:${revNum}`, ['changeset']);
+  return await this.db.getSub(`pad:${this.id}:revs:${revNum}`, ['changeset']);
 };
 
 Pad.prototype.getRevisionAuthor = async function (revNum) {
-  return await this._db.getSub(`pad:${this.id}:revs:${revNum}`, ['meta', 'author']);
+  return await this.db.getSub(`pad:${this.id}:revs:${revNum}`, ['meta', 'author']);
 };
 
 Pad.prototype.getRevisionDate = async function (revNum) {
-  return await this._db.getSub(`pad:${this.id}:revs:${revNum}`, ['meta', 'timestamp']);
+  return await this.db.getSub(`pad:${this.id}:revs:${revNum}`, ['meta', 'timestamp']);
 };
 
 Pad.prototype.getAllAuthors = function () {
@@ -192,7 +192,7 @@ Pad.prototype.getInternalRevisionAText = async function (targetRev) {
   // get all needed data out of the database
 
   // start to get the atext of the key revision
-  const p_atext = this._db.getSub(`pad:${this.id}:revs:${keyRev}`, ['meta', 'atext']);
+  const p_atext = this.db.getSub(`pad:${this.id}:revs:${keyRev}`, ['meta', 'atext']);
 
   // get all needed changesets
   const changesets = [];
@@ -216,7 +216,7 @@ Pad.prototype.getInternalRevisionAText = async function (targetRev) {
 };
 
 Pad.prototype.getRevision = async function (revNum) {
-  return await this._db.get(`pad:${this.id}:revs:${revNum}`);
+  return await this.db.get(`pad:${this.id}:revs:${revNum}`);
 };
 
 Pad.prototype.getAllAuthorColors = async function () {
@@ -331,7 +331,7 @@ Pad.prototype.appendChatMessage = async function (msgOrText, authorId = null, ti
     // Don't save the display name in the database because the user can change it at any time. The
     // `displayName` property will be populated with the current value when the message is read from
     // the database.
-    this._db.set(`pad:${this.id}:chat:${this.chatHead}`, {...msg, displayName: undefined}),
+    this.db.set(`pad:${this.id}:chat:${this.chatHead}`, {...msg, displayName: undefined}),
     this.saveToDatabase(),
   ]);
 };
@@ -341,7 +341,7 @@ Pad.prototype.appendChatMessage = async function (msgOrText, authorId = null, ti
  * @returns {?ChatMessage}
  */
 Pad.prototype.getChatMessage = async function (entryNum) {
-  const entry = await this._db.get(`pad:${this.id}:chat:${entryNum}`);
+  const entry = await this.db.get(`pad:${this.id}:chat:${entryNum}`);
   if (entry == null) return null;
   const message = ChatMessage.fromObject(entry);
   message.displayName = await authorManager.getAuthorName(message.authorId);
@@ -373,7 +373,7 @@ Pad.prototype.getChatMessages = async function (start, end) {
 
 Pad.prototype.init = async function (text, authorId = '') {
   // try to load the pad
-  const value = await this._db.get(`pad:${this.id}`);
+  const value = await this.db.get(`pad:${this.id}`);
 
   // if this pad exists, load it
   if (value != null) {
@@ -413,7 +413,7 @@ Pad.prototype.copy = async function (destinationID, force) {
   await this.removePadIfForceIsTrueAndAlreadyExist(destinationID, force);
 
   const copyRecord = async (keySuffix) => {
-    const val = await this._db.get(`pad:${this.id}${keySuffix}`);
+    const val = await this.db.get(`pad:${this.id}${keySuffix}`);
     await db.set(`pad:${destinationID}${keySuffix}`, val);
   };
 
@@ -557,12 +557,12 @@ Pad.prototype.remove = async function () {
 
   // delete all chat messages
   p.push(promises.timesLimit(this.chatHead + 1, 500, async (i) => {
-    await this._db.remove(`pad:${this.id}:chat:${i}`, null);
+    await this.db.remove(`pad:${this.id}:chat:${i}`, null);
   }));
 
   // delete all revisions
   p.push(promises.timesLimit(this.head + 1, 500, async (i) => {
-    await this._db.remove(`pad:${this.id}:revs:${i}`, null);
+    await this.db.remove(`pad:${this.id}:revs:${i}`, null);
   }));
 
   // remove pad from all authors who contributed
