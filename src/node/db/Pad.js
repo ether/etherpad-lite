@@ -594,7 +594,13 @@ Pad.prototype.remove = async function () {
 
   // delete the pad entry and delete pad from padManager
   p.push(padManager.removePad(padID));
-  p.push(hooks.aCallAll('padRemove', {padID}));
+  p.push(hooks.aCallAll('padRemove', {
+    get padID() {
+      warnDeprecated('padRemove padID context property is deprecated; use pad.id instead');
+      return this.pad.id;
+    },
+    pad: this,
+  }));
   await Promise.all(p);
 };
 

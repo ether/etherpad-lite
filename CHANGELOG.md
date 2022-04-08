@@ -42,6 +42,7 @@
 * Pad server-side hook changes:
   * `padCopy`: New `srcPad` and `dstPad` context properties.
   * `padDefaultContent`: New hook.
+  * `padRemove`: New `pad` context property.
 * The `db` property on Pad objects is now public.
 * New `getAuthorId` server-side hook.
 * New APIs for processing attributes: `ep_etherpad-lite/static/js/attributes`
@@ -74,6 +75,8 @@
       instead.
   * `padCreate`: The `author` context property is deprecated; use the new
     `authorId` context property instead.
+  * `padRemove`: The `padID` context property is deprecated; use `pad.id`
+    instead.
   * `padUpdate`: The `author` context property is deprecated; use the new
     `authorId` context property instead.
 * Returning `true` from a `handleMessageSecurity` hook function is deprecated;

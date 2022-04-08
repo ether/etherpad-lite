@@ -360,7 +360,7 @@ up any plugin-specific pad records from the database.
 
 Context properties:
 
-  * `padID`: ID of the pad that is being deleted.
+  * `pad`: Pad object for the pad that is being deleted.
 
 Usage examples:
 
