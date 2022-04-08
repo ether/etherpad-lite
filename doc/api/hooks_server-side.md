@@ -344,7 +344,7 @@ Order of events when a pad is copied:
 
 Context properties:
 
-  * `originalPad`: The source Pad object.
+  * `srcPad`: The source Pad object.
   * `destinationID`: The ID of the pad copied from `originalPad`.
 
 Usage examples:

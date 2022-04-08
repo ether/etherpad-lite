@@ -39,7 +39,9 @@
 #### For plugin authors
 
 * New `expressPreSession` server-side hook.
-* New `padDefaultContent` server-side hook.
+* Pad server-side hook changes:
+  * `padCopy`: New `srcPad` context property.
+  * `padDefaultContent`: New hook.
 * The `db` property on Pad objects is now public.
 * New `getAuthorId` server-side hook.
 * New APIs for processing attributes: `ep_etherpad-lite/static/js/attributes`
@@ -65,8 +67,13 @@
 * The `client` context property for the `handleMessageSecurity` and
   `handleMessage` server-side hooks is deprecated; use the `socket` context
   property instead.
-* The `author` context property for the `padCreate` and `padUpdate` server-side
-  hooks is deprecated; use the new `authorId` context property instead.
+* Pad server-side hook changes:
+  * `padCopy`: The `originalPad` context property is deprecated; use `srcPad`
+    instead.
+  * `padCreate`: The `author` context property is deprecated; use the new
+    `authorId` context property instead.
+  * `padUpdate`: The `author` context property is deprecated; use the new
+    `authorId` context property instead.
 * Returning `true` from a `handleMessageSecurity` hook function is deprecated;
   return `'permitOnce'` instead.
 * Changes to the `src/static/js/Changeset.js` library:

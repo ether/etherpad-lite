@@ -429,7 +429,14 @@ Pad.prototype.copy = async function (destinationID, force) {
   await padManager.getPad(destinationID, null);
 
   // let the plugins know the pad was copied
-  await hooks.aCallAll('padCopy', {originalPad: this, destinationID});
+  await hooks.aCallAll('padCopy', {
+    get originalPad() {
+      warnDeprecated('padCopy originalPad context property is deprecated; use srcPad instead');
+      return this.srcPad;
+    },
+    srcPad: this,
+    destinationID,
+  });
 
   return {padID: destinationID};
 };
@@ -518,7 +525,14 @@ Pad.prototype.copyPadWithoutHistory = async function (destinationID, force, auth
   const changeset = Changeset.pack(oldLength, newLength, assem.toString(), newText);
   newPad.appendRevision(changeset, authorId);
 
-  await hooks.aCallAll('padCopy', {originalPad: this, destinationID});
+  await hooks.aCallAll('padCopy', {
+    get originalPad() {
+      warnDeprecated('padCopy originalPad context property is deprecated; use srcPad instead');
+      return this.srcPad;
+    },
+    srcPad: this,
+    destinationID,
+  });
 
   return {padID: destinationID};
 };
