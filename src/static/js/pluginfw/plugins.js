@@ -102,6 +102,13 @@ exports.update = async () => {
     const logger = log4js.getLogger(`plugin:${p}`);
     await hooks.aCallAll(`init_${p}`, {logger});
   }));
+  const installedPlugins = Object.values(defs.plugins)
+      .filter((plugin) => plugin.package.name !== 'ep_etherpad-lite')
+      .map((plugin) => `${plugin.package.name}@${plugin.package.version}`)
+      .join(', ');
+  logger.info(`Installed plugins: ${installedPlugins}`);
+  logger.debug(`Installed parts:\n${exports.formatParts()}`);
+  logger.debug(`Installed server-side hooks:\n${exports.formatHooks('hooks', false)}`);
 };
 
 exports.getPackages = async () => {

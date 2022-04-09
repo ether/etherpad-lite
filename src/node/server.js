@@ -48,7 +48,6 @@ const UpdateCheck = require('./utils/UpdateCheck');
 const db = require('./db/DB');
 const express = require('./hooks/express');
 const hooks = require('../static/js/pluginfw/hooks');
-const pluginDefs = require('../static/js/pluginfw/plugin_defs');
 const plugins = require('../static/js/pluginfw/plugins');
 const {Gate} = require('./utils/promises');
 const stats = require('./stats');
@@ -134,13 +133,6 @@ exports.start = async () => {
 
     await db.init();
     await plugins.update();
-    const installedPlugins = Object.values(pluginDefs.plugins)
-        .filter((plugin) => plugin.package.name !== 'ep_etherpad-lite')
-        .map((plugin) => `${plugin.package.name}@${plugin.package.version}`)
-        .join(', ');
-    logger.info(`Installed plugins: ${installedPlugins}`);
-    logger.debug(`Installed parts:\n${plugins.formatParts()}`);
-    logger.debug(`Installed server-side hooks:\n${plugins.formatHooks('hooks', false)}`);
     await hooks.aCallAll('loadSettings', {settings});
     await hooks.aCallAll('createServer');
   } catch (err) {
