@@ -22,24 +22,20 @@ const hooks = require('../../static/js/pluginfw/hooks');
 exports.getPadRaw = async (padId, readOnlyId) => {
   const keyPrefixRead = `pad:${padId}`;
   const keyPrefixWrite = readOnlyId ? `pad:${readOnlyId}` : keyPrefixRead;
-  const padcontent = await db.get(keyPrefixRead);
-
-  const keySuffixes = [''];
-  for (let i = 0; i <= padcontent.head; i++) keySuffixes.push(`:revs:${i}`);
-  for (let i = 0; i <= padcontent.chatHead; i++) keySuffixes.push(`:chat:${i}`);
-
-  const data = {};
+  const data = {[keyPrefixWrite]: await db.get(keyPrefixRead)};
+  for (const [k, v] of Object.values(data[keyPrefixWrite].pool.numToAttrib)) {
+    if (k !== 'author') continue;
+    const authorEntry = await db.get(`globalAuthor:${v}`);
+    if (!authorEntry) continue;
+    data[`globalAuthor:${v}`] = authorEntry;
+    if (!authorEntry.padIDs) continue;
+    authorEntry.padIDs = readOnlyId || padId;
+  }
+  const keySuffixes = [];
+  for (let i = 0; i <= data[keyPrefixWrite].head; i++) keySuffixes.push(`:revs:${i}`);
+  for (let i = 0; i <= data[keyPrefixWrite].chatHead; i++) keySuffixes.push(`:chat:${i}`);
   for (const keySuffix of keySuffixes) {
-    const entry = data[keyPrefixWrite + keySuffix] = await db.get(keyPrefixRead + keySuffix);
-    if (!entry.pool || !entry.pool.numToAttrib) continue;
-    for (const [k, v] of Object.values(entry.pool.numToAttrib)) {
-      if (k !== 'author') continue;
-      const authorEntry = await db.get(`globalAuthor:${v}`);
-      if (!authorEntry) continue;
-      data[`globalAuthor:${v}`] = authorEntry;
-      if (!authorEntry.padIDs) continue;
-      authorEntry.padIDs = readOnlyId || padId;
-    }
+    data[keyPrefixWrite + keySuffix] = await db.get(keyPrefixRead + keySuffix);
   }
 
   // get content that has a different prefix IE comments:padId:foo
