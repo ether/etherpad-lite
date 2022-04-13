@@ -32,13 +32,11 @@ exports.getPadRaw = async (padId, readOnlyId) => {
   for (const keySuffix of keySuffixes) {
     const entry = data[keyPrefixWrite + keySuffix] = await db.get(keyPrefixRead + keySuffix);
     if (!entry.pool || !entry.pool.numToAttrib) continue;
-    const authors = entry.pool.numToAttrib;
-    for (const k of Object.keys(authors)) {
-      if (authors[k][0] !== 'author') continue;
-      const authorId = authors[k][1];
-      const authorEntry = await db.get(`globalAuthor:${authorId}`);
+    for (const [k, v] of Object.values(entry.pool.numToAttrib)) {
+      if (k !== 'author') continue;
+      const authorEntry = await db.get(`globalAuthor:${v}`);
       if (!authorEntry) continue;
-      data[`globalAuthor:${authorId}`] = authorEntry;
+      data[`globalAuthor:${v}`] = authorEntry;
       if (!authorEntry.padIDs) continue;
       authorEntry.padIDs = readOnlyId || padId;
     }
