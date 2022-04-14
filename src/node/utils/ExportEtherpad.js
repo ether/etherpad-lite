@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+const assert = require('assert').strict;
 const authorManager = require('../db/AuthorManager');
 const hooks = require('../../static/js/pluginfw/hooks');
 const padManager = require('../db/PadManager');
@@ -34,7 +35,14 @@ exports.getPadRaw = async (padId, readOnlyId) => {
   for (let i = 0; i <= pad.chatHead; ++i) data[`${pfx}:chat:${i}`] = await pad.getChatMessage(i);
   const prefixes = await hooks.aCallAll('exportEtherpadAdditionalContent');
   await Promise.all(prefixes.map(async (prefix) => {
-    data[`${prefix}:${readOnlyId || padId}`] = await pad.db.get(`${prefix}:${padId}`);
+    const srcPfx = `${prefix}:${padId}`;
+    const dstPfx = `${prefix}:${readOnlyId || padId}`;
+    data[dstPfx] = await pad.db.get(srcPfx);
+    assert(!srcPfx.includes('*'));
+    for (const k of await pad.db.findKeys(`${srcPfx}:*`, null)) {
+      assert(k.startsWith(`${srcPfx}:`));
+      data[`${dstPfx}:${k.slice(srcPfx.length + 1)}`] = await pad.db.get(k);
+    }
   }));
   return data;
 };

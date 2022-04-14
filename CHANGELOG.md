@@ -100,6 +100,9 @@
   * `newOp()`: Deprecated in favor of the new `Op` class.
 * The `AuthorManager.getAuthor4Token()` function is deprecated; use the new
   `AuthorManager.getAuthorId()` function instead.
+* The exported database records covered by the `exportEtherpadAdditionalContent`
+  server-side hook now include keys like `${customPrefix}:${padId}:*`, not just
+  `${customPrefix}:${padId}`.
 
 # 1.8.18
 
