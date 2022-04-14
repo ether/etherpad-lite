@@ -945,17 +945,19 @@ exports.exportHtmlAdditionalTagsWithData = function(hook, pad, cb){
 };
 ```
 
-## exportEtherpadAdditionalContent
-Called from src/node/utils/ExportEtherpad.js and
-src/node/utils/ImportEtherpad.js
+## `exportEtherpadAdditionalContent`
 
-Things in context: Nothing
+Called from `src/node/utils/ExportEtherpad.js` and
+`src/node/utils/ImportEtherpad.js`.
 
-Useful for exporting and importing pad metadata that is stored in the database
-but not in the pad's content or attributes. For example, in ep_comments_page the
-comments are stored as `comments:padId:uniqueIdOfComment` so a complete export
-of all pad data to an `.etherpad` file must include the `comments:padId:*`
-records.
+Called when exporting to an `.etherpad` file or when importing from an
+`.etherpad` file. The hook function should return prefixes for pad-specific
+records that should be included in the export/import. On export, each
+`${prefix}:${padId}` record (but not `${prefix}:${padId}:*` records) are
+included in the generated `.etherpad` file. On import, all `${prefix}:${padId}`
+and `${prefix}:${padId}:*` records are loaded into the database.
+
+Context properties: None.
 
 Example:
 

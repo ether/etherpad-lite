@@ -32,8 +32,6 @@ exports.getPadRaw = async (padId, readOnlyId) => {
   }
   for (let i = 0; i <= pad.head; ++i) data[`${pfx}:revs:${i}`] = await pad.getRevision(i);
   for (let i = 0; i <= pad.chatHead; ++i) data[`${pfx}:chat:${i}`] = await pad.getChatMessage(i);
-  // get content that has a different prefix IE comments:padId:foo
-  // a plugin would return something likle ['comments', 'cakes']
   const prefixes = await hooks.aCallAll('exportEtherpadAdditionalContent');
   await Promise.all(prefixes.map(async (prefix) => {
     data[`${prefix}:${readOnlyId || padId}`] = await pad.db.get(`${prefix}:${padId}`);
