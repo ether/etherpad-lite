@@ -35,6 +35,8 @@
 * Docker now uses the new `/health` endpoint for health checks, which avoids
   issues when authentication is enabled. It also avoids the unnecessary creation
   of database records for managing browser sessions.
+* When copying a pad, the pad's records are copied in batches to avoid database
+  timeouts with large pads.
 
 #### For plugin authors
 

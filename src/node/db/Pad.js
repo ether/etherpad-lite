@@ -383,13 +383,14 @@ class Pad {
       await db.set(`pad:${destinationID}${keySuffix}`, val);
     };
 
-    await Promise.all((function* () {
+    const promises = (function* () {
       yield copyRecord('');
       yield* Stream.range(0, this.head + 1).map((i) => copyRecord(`:revs:${i}`));
       yield* Stream.range(0, this.chatHead + 1).map((i) => copyRecord(`:chat:${i}`));
       yield this.copyAuthorInfoToDestinationPad(destinationID);
       if (destGroupID) yield db.setSub(`group:${destGroupID}`, ['pads', destinationID], 1);
-    }).call(this));
+    }).call(this);
+    for (const p of new Stream(promises).batch(100).buffer(99)) await p;
 
     // Initialize the new pad (will update the listAllPads cache)
     const dstPad = await padManager.getPad(destinationID, null);
