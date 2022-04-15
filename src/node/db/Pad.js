@@ -327,8 +327,8 @@ class Pad {
    *     interval as is typical in code.
    */
   async getChatMessages(start, end) {
-    const entries = await Promise.all(
-        [...Array(end + 1 - start).keys()].map((i) => this.getChatMessage(start + i)));
+    const entries =
+        await Promise.all(Stream.range(start, end + 1).map(this.getChatMessage.bind(this)));
 
     // sort out broken chat entries
     // it looks like in happened in the past that the chat head was
@@ -385,8 +385,8 @@ class Pad {
 
     await Promise.all((function* () {
       yield copyRecord('');
-      for (let i = 0; i <= this.head; ++i) yield copyRecord(`:revs:${i}`);
-      for (let i = 0; i <= this.chatHead; ++i) yield copyRecord(`:chat:${i}`);
+      yield* Stream.range(0, this.head + 1).map((i) => copyRecord(`:revs:${i}`));
+      yield* Stream.range(0, this.chatHead + 1).map((i) => copyRecord(`:chat:${i}`));
       yield this.copyAuthorInfoToDestinationPad(destinationID);
       if (destGroupID) yield db.setSub(`group:${destGroupID}`, ['pads', destinationID], 1);
     }).call(this));
