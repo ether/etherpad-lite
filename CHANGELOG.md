@@ -37,6 +37,8 @@
   of database records for managing browser sessions.
 * When copying a pad, the pad's records are copied in batches to avoid database
   timeouts with large pads.
+* Exporting a large pad to `.etherpad` format should be faster thanks to bulk
+  database record fetches.
 
 #### For plugin authors
 
