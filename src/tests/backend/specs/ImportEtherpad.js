@@ -5,6 +5,7 @@ const authorManager = require('../../../node/db/AuthorManager');
 const db = require('../../../node/db/DB');
 const importEtherpad = require('../../../node/utils/ImportEtherpad');
 const padManager = require('../../../node/db/PadManager');
+const plugins = require('../../../static/js/pluginfw/plugin_defs');
 const {randomString} = require('../../../static/js/pad_utils');
 
 describe(__filename, function () {
@@ -166,5 +167,42 @@ describe(__filename, function () {
         assert.equal(pad.text(), 'foo\n');
       });
     }
+  });
+
+  describe('exportEtherpadAdditionalContent', function () {
+    let hookBackup;
+
+    before(async function () {
+      hookBackup = plugins.hooks.exportEtherpadAdditionalContent || [];
+      plugins.hooks.exportEtherpadAdditionalContent = [{hook_fn: () => ['custom']}];
+    });
+
+    after(async function () {
+      plugins.hooks.exportEtherpadAdditionalContent = hookBackup;
+    });
+
+    it('imports from custom prefix', async function () {
+      await importEtherpad.setPadRaw(padId, JSON.stringify({
+        ...makeExport(makeAuthorId()),
+        'custom:testing': 'a',
+        'custom:testing:foo': 'b',
+      }));
+      const pad = await padManager.getPad(padId);
+      assert.equal(await pad.db.get(`custom:${padId}`), 'a');
+      assert.equal(await pad.db.get(`custom:${padId}:foo`), 'b');
+    });
+
+    it('rejects records for pad with similar ID', async function () {
+      await assert.rejects(importEtherpad.setPadRaw(padId, JSON.stringify({
+        ...makeExport(makeAuthorId()),
+        'custom:testingx': 'x',
+      })), /unexpected pad ID/);
+      assert(await db.get(`custom:${padId}x`) == null);
+      await assert.rejects(importEtherpad.setPadRaw(padId, JSON.stringify({
+        ...makeExport(makeAuthorId()),
+        'custom:testingx:foo': 'x',
+      })), /unexpected pad ID/);
+      assert(await db.get(`custom:${padId}x:foo`) == null);
+    });
   });
 });
