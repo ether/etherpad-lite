@@ -966,6 +966,48 @@ Example:
 exports.exportEtherpadAdditionalContent = () => ['comments'];
 ```
 
+## `exportEtherpad`
+
+Called from `src/node/utils/ExportEtherpad.js`.
+
+Called when exporting to an `.etherpad` file.
+
+Context properties:
+
+  * `pad`: The exported pad's Pad object.
+  * `data`: JSONable output object. This is pre-populated with records from core
+    Etherpad as well as pad-specific records with prefixes from the
+    `exportEtherpadAdditionalContent` hook. Registered hook functions can modify
+    this object (but not replace the object) to perform any desired
+    transformations to the exported data (such as the inclusion of
+    plugin-specific records). All registered hook functions are executed
+    concurrently, so care should be taken to avoid race conditions with other
+    plugins.
+  * `dstPadId`: The pad ID that should be used when writing pad-specific records
+    to `data` (instead of `pad.id`). This avoids leaking the writable pad ID
+    when a user exports a read-only pad. This might be a dummy value; plugins
+    should not assume that it is either the pad's real writable ID or its
+    read-only ID.
+
+## `importEtherpad`
+
+Called from `src/node/utils/ImportEtherpad.js`.
+
+Called when importing from an `.etherpad` file.
+
+Context properties:
+
+  * `pad`: Temporary Pad object containing the pad's data read from the imported
+    `.etherpad` file. The `pad.db` object is a temporary in-memory database
+    whose records will be copied to the real database after they are validated
+    (see the `padCheck` hook). Registered hook functions MUST NOT use the real
+    database to access (read or write) pad-specific records; they MUST instead
+    use `pad.db`. All registered hook functions are executed concurrently, so
+    care should be taken to avoid race conditions with other plugins.
+  * `data`: Raw JSONable object from the `.etherpad` file. This data must not be
+    modified.
+  * `srcPadId`: The pad ID used for the pad-specific information in `data`.
+
 ## `import`
 
 Called from: `src/node/handler/ImportHandler.js`

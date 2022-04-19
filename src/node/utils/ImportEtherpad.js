@@ -90,7 +90,8 @@ exports.setPadRaw = async (padId, r, authorId = '') => {
         keyParts[1] = padId;
         key = keyParts.join(':');
       } else {
-        logger.warn(`(pad ${padId}) Ignoring record with unsupported key: ${key}`);
+        logger.debug(`(pad ${padId}) The record with the following key will be ignored unless an ` +
+                     `importEtherpad hook function processes it: ${key}`);
         return;
       }
       await padDb.set(key, value);
@@ -100,6 +101,13 @@ exports.setPadRaw = async (padId, r, authorId = '') => {
 
     const pad = new Pad(padId, padDb);
     await pad.init(null, authorId);
+    await hooks.aCallAll('importEtherpad', {
+      pad,
+      // Shallow freeze meant to prevent accidental bugs. It would be better to deep freeze, but
+      // it's not worth the added complexity.
+      data: Object.freeze(records),
+      srcPadId: originalPadId,
+    });
     await pad.check();
   } finally {
     await padDb.close();
