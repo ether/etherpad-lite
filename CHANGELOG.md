@@ -39,6 +39,8 @@
   timeouts with large pads.
 * Exporting a large pad to `.etherpad` format should be faster thanks to bulk
   database record fetches.
+* When importing an `.etherpad` file, records are now saved to the database in
+  batches to avoid database timeouts with large pads.
 
 #### For plugin authors
 

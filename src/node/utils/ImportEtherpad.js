@@ -105,8 +105,9 @@ exports.setPadRaw = async (padId, r, authorId = '') => {
     await padDb.close();
   }
 
-  await Promise.all([
-    ...[...data].map(([k, v]) => q.pushAsync(() => db.set(k, v))),
-    ...[...existingAuthors].map((a) => q.pushAsync(() => authorManager.addPad(a, padId))),
-  ]);
+  const writeOps = (function* () {
+    for (const [k, v] of data) yield db.set(k, v);
+    for (const a of existingAuthors) yield authorManager.addPad(a, padId);
+  })();
+  for (const op of new Stream(writeOps).batch(100).buffer(99)) await op;
 };
