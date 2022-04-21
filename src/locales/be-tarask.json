@@ -34,6 +34,7 @@
 	"admin_plugins_info.version_latest": "Апошняя даступная вэрсія",
 	"admin_plugins_info.version_number": "Нумар вэрсіі",
 	"admin_settings": "Налады",
+	"admin_settings.current": "Цяперашняя канфігурацыя",
 	"admin_settings.page-title": "Налады — Etherpad",
 	"index.newPad": "Стварыць",
 	"index.createOpenPad": "ці тварыць/адкрыць дакумэнт з назвай:",
