@@ -175,9 +175,8 @@ helper.disableStickyChatviaIcon = async () => {
  */
 helper.gotoTimeslider = async (revision) => {
   revision = Number.isInteger(revision) ? `#${revision}` : '';
-  const iframe = $('#iframe-container iframe');
-  iframe.attr('src', `${iframe.attr('src')}/timeslider${revision}`);
-
+  helper.padChrome$.window.location.href =
+      `${helper.padChrome$.window.location.pathname}/timeslider${revision}`;
   await helper.waitForPromise(() => helper.timesliderTimerTime() &&
       !Number.isNaN(new Date(helper.timesliderTimerTime()).getTime()), 10000);
 };
