@@ -181,7 +181,9 @@ const helper = {};
     helper.padOuter$.fx.off = true;
     helper.padInner$.fx.off = true;
 
-    return opts.id;
+    // Don't return opts.id -- the server might have redirected the browser to a transformed version
+    // of the requested pad ID.
+    return helper.padChrome$.window.clientVars.padId;
   };
 
   helper.newAdmin = async (page) => {
