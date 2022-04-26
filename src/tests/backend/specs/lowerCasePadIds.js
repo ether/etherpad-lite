@@ -16,35 +16,39 @@ describe(__filename, function () {
       }
     }));
   };
+  let backup;
 
-  before(async function () { agent = await common.init(); });
+  before(async function () {
+    backup = settings.lowerCasePadIds;
+    agent = await common.init();
+  });
   beforeEach(async function () {
     await cleanUpPads();
   });
   afterEach(async function () {
     await cleanUpPads();
   });
+  after(async function () {
+    settings.lowerCasePadIds = backup;
+  });
 
   describe('not activated', function () {
-    Object.assign(settings, {
-      lowerCasePadIds: false,
-    });
-    it('- do nothing', async function () {
-      const res = await agent.get('/p/UPPERCASEpad');
-      assert.equal(res.status, 200);
+    beforeEach(async function () {
+      settings.lowerCasePadIds = false;
     });
 
-    it('- do nothingg', async function () {
+
+    it('- do nothing', async function () {
       await agent.get('/p/UPPERCASEpad')
           .expect(200);
     });
   });
 
   describe('activated', function () {
+    beforeEach(async function () {
+      settings.lowerCasePadIds = true;
+    });
     it('- lowercase pad ids', async function () {
-      Object.assign(settings, {
-        lowerCasePadIds: true,
-      });
       await agent.get('/p/UPPERCASEpad')
           .expect(302)
           .expect('location', 'uppercasepad');
