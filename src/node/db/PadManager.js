@@ -171,7 +171,7 @@ exports.sanitizePadId = async (padId) => {
     padId = padId.replace(from, to);
   }
 
-  if (settings.enforceLowerCasePadIds) padId = padId.toLowerCase();
+  if (settings.lowerCasePadIds) padId = padId.toLowerCase();
 
   // we're out of possible transformations, so just return it
   return padId;

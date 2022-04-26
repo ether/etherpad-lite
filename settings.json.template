@@ -640,5 +640,5 @@
   /*
    * Enable/Disable case-insensitive pad names.
    */
-  "enforceLowerCasePadIds": false
+  "lowerCasePadIds": false
 }

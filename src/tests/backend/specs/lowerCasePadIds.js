@@ -27,7 +27,7 @@ describe(__filename, function () {
 
   describe('not activated', function () {
     Object.assign(settings, {
-      enforceLowerCasePadIds: false,
+      lowerCasePadIds: false,
     });
     it('- do nothing', async function () {
       const res = await agent.get('/p/UPPERCASEpad');
@@ -43,7 +43,7 @@ describe(__filename, function () {
   describe('activated', function () {
     it('- lowercase pad ids', async function () {
       Object.assign(settings, {
-        enforceLowerCasePadIds: true,
+        lowerCasePadIds: true,
       });
       await agent.get('/p/UPPERCASEpad')
           .expect(302)
@@ -52,13 +52,13 @@ describe(__filename, function () {
 
     it('- keeps old pads accessible', async function () {
       Object.assign(settings, {
-        enforceLowerCasePadIds: false,
+        lowerCasePadIds: false,
       });
       const pad = await padManager.getPad('ALREADYexistingPad', 'alreadyexistingpad');
       await padManager.getPad('ALREADYexistingPad', 'bla');
       assert.equal(pad.text(), 'alreadyexistingpad\n');
       Object.assign(settings, {
-        enforceLowerCasePadIds: true,
+        lowerCasePadIds: true,
       });
 
       const newpad = await padManager.getPad('alreadyexistingpad', 'testcontent');

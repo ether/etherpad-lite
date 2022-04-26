@@ -639,5 +639,5 @@
   /*
    * Enable/Disable case-insensitive pad names.
    */
-  "enforceLowerCasePadIds": "${ENFORCE_LOWER_CASE_PAD_IDS:false}"
+  "lowerCasePadIds": "${LOWER_CASE_PAD_IDS:false}"
 }
