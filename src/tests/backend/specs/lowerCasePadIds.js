@@ -38,7 +38,7 @@ describe(__filename, function () {
     });
 
 
-    it('- do nothing', async function () {
+    it('do nothing', async function () {
       await agent.get('/p/UPPERCASEpad')
           .expect(200);
     });
@@ -48,25 +48,43 @@ describe(__filename, function () {
     beforeEach(async function () {
       settings.lowerCasePadIds = true;
     });
-    it('- lowercase pad ids', async function () {
+    it('lowercase pad ids', async function () {
       await agent.get('/p/UPPERCASEpad')
           .expect(302)
           .expect('location', 'uppercasepad');
     });
 
-    it('- keeps old pads accessible', async function () {
+    it('keeps old pads accessible', async function () {
       Object.assign(settings, {
         lowerCasePadIds: false,
       });
-      const pad = await padManager.getPad('ALREADYexistingPad', 'alreadyexistingpad');
-      await padManager.getPad('ALREADYexistingPad', 'bla');
-      assert.equal(pad.text(), 'alreadyexistingpad\n');
+      await padManager.getPad('ALREADYexistingPad', 'oldpad');
+      await padManager.getPad('alreadyexistingpad', 'newpad');
       Object.assign(settings, {
         lowerCasePadIds: true,
       });
 
-      const newpad = await padManager.getPad('alreadyexistingpad', 'testcontent');
-      assert.equal(newpad.text(), 'testcontent\n');
+      const oldPad = await agent.get('/p/ALREADYexistingPad').expect(200);
+      const oldPadSocket = await common.connect(oldPad);
+      const oldPadHandshake = await common.handshake(oldPadSocket, 'ALREADYexistingPad');
+      assert.equal(oldPadHandshake.data.padId, 'ALREADYexistingPad');
+      assert.equal(oldPadHandshake.data.collab_client_vars.initialAttributedText.text, 'oldpad\n');
+
+      const newPad = await agent.get('/p/alreadyexistingpad').expect(200);
+      const newPadSocket = await common.connect(newPad);
+      const newPadHandshake = await common.handshake(newPadSocket, 'alreadyexistingpad');
+      assert.equal(newPadHandshake.data.padId, 'alreadyexistingpad');
+      assert.equal(newPadHandshake.data.collab_client_vars.initialAttributedText.text, 'newpad\n');
     });
+
+    // it('disallow socket connection', async function () {
+    //   debugger;
+    //   const res = await agent.get('/p/pad').expect(200);
+    //   const socket = await common.connect(res);
+    //   const deny = await common.handshake(socket, 'Pad');
+    //   assert.equal(deny.accessStatus, 'deny');
+    //   const ok = await common.handshake(socket, 'pad');
+    //   assert.equal(ok.type, 'CLIENT_VARS');
+    // });
   });
 });
