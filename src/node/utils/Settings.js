@@ -432,7 +432,7 @@ exports.enableAdminUITests = false;
 
 /*
  * Enable auto conversion of pad Ids to lowercase.
- * e.g. /p/EtHeRpAd to /p/ehtherpad
+ * e.g. /p/EtHeRpAd to /p/etherpad
  */
 exports.enforceLowerCasePadIds = false;
 
