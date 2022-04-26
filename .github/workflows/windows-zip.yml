@@ -3,6 +3,9 @@ name: "Windows Zip"
 # any branch is useful for testing before a PR is submitted
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
 jobs:
   build:
     # run on pushes to any branch
@@ -52,6 +55,8 @@ jobs:
   deploy:
     # run on pushes to any branch
     # run on PRs from external forks
+    permissions:
+      contents: none
     if: |
       (github.event_name != 'pull_request')
       || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)

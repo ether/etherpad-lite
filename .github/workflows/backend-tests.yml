@@ -3,6 +3,9 @@ name: "Backend tests"
 # any branch is useful for testing before a PR is submitted
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
 jobs:
   withoutpluginsLinux:
     # run on pushes to any branch
