@@ -6,7 +6,6 @@ const padManager = require('../../../node/db/PadManager');
 const settings = require('../../../node/utils/Settings');
 
 describe(__filename, function () {
-  this.timeout(30000);
   let agent;
   const cleanUpPads = async () => {
     const padIds = ['UPPERCASEpad', 'uppercasepad', 'ALREADYexistingPad', 'alreadyexistingpad'];
