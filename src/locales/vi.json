@@ -4,6 +4,7 @@
 			"Baonguyen21022003",
 			"Max20091",
 			"Minh Nguyen",
+			"NguoiDungKhongDinhDanh",
 			"Tuankiet65"
 		]
 	},
@@ -32,7 +33,7 @@
 	"pad.permissionDenied": "Bạn không có quyền truy cập pad này.",
 	"pad.settings.padSettings": "Tùy chọn Pad",
 	"pad.settings.myView": "Chỉ có tôi",
-	"pad.settings.stickychat": "Luân hiện cửa sổ trò chuyện trên màn hình",
+	"pad.settings.stickychat": "Luôn hiện cửa sổ trò chuyện trên màn hình",
 	"pad.settings.colorcheck": "Màu chỉ tác giả",
 	"pad.settings.linenocheck": "Số dòng",
 	"pad.settings.rtlcheck": "Đọc nội dung từ phải sang trái?",
