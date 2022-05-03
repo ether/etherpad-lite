@@ -171,10 +171,10 @@ const logger = log4js.getLogger('checkPlugin');
     const parsedPackageJSON = JSON.parse(packageJSON);
 
     await updateDeps(parsedPackageJSON, 'devDependencies', {
-      'eslint': '^8.11.0',
-      'eslint-config-etherpad': '^3.0.9',
+      'eslint': '^8.14.0',
+      'eslint-config-etherpad': '^3.0.13',
       // Changing the TypeScript version can break plugin code, so leave it alone if present.
-      'typescript': {ver: '^4.6.2', overwrite: false},
+      'typescript': {ver: '^4.6.4', overwrite: false},
       // These were moved to eslint-config-etherpad's dependencies so they can be removed:
       '@typescript-eslint/eslint-plugin': null,
       '@typescript-eslint/parser': null,

@@ -78,8 +78,8 @@
     "etherpad-lite": "node/server.js"
   },
   "devDependencies": {
-    "eslint": "^8.11.0",
-    "eslint-config-etherpad": "^3.0.9",
+    "eslint": "^8.14.0",
+    "eslint-config-etherpad": "^3.0.13",
     "etherpad-cli-client": "^2.0.1",
     "mocha": "^9.2.2",
     "mocha-froth": "^0.2.10",
@@ -90,7 +90,7 @@
     "sinon": "^13.0.2",
     "split-grid": "^1.0.11",
     "supertest": "^6.1.6",
-    "typescript": "^4.6.3"
+    "typescript": "^4.6.4"
   },
   "engines": {
     "node": ">=12.17.0",
