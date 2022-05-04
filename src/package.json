@@ -34,7 +34,7 @@
     "clean-css": "^5.3.0",
     "cookie-parser": "^1.4.6",
     "cross-spawn": "^7.0.3",
-    "ejs": "^3.1.6",
+    "ejs": "^3.1.7",
     "etherpad-require-kernel": "^1.0.15",
     "etherpad-yajsml": "0.0.12",
     "express": "4.17.3",
@@ -67,7 +67,7 @@
     "terser": "^5.12.1",
     "threads": "^1.7.0",
     "tinycon": "0.6.8",
-    "ueberdb2": "^2.1.0",
+    "ueberdb2": "^4.0.0",
     "underscore": "1.13.3",
     "unorm": "1.6.0",
     "wtfnode": "^0.9.1"
