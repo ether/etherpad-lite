@@ -25,11 +25,8 @@ const ueberDB = require('ueberdb2');
 const settings = require('../utils/Settings');
 const log4js = require('log4js');
 const stats = require('../stats');
-const util = require('util');
 
-// set database settings
-const db =
-    new ueberDB.Database(settings.dbType, settings.dbSettings, null, log4js.getLogger('ueberDB'));
+const logger = log4js.getLogger('ueberDB');
 
 /**
  * The UeberDB Object that provides the database functions
@@ -38,49 +35,26 @@ exports.db = null;
 
 /**
  * Initializes the database with the settings provided by the settings module
- * @param {Function} callback
  */
-exports.init = async () => await new Promise((resolve, reject) => {
-  db.init((err) => {
-    if (err) {
-      // there was an error while initializing the database, output it and stop
-      console.error('ERROR: Problem while initalizing the database');
-      console.error(err.stack ? err.stack : err);
-      process.exit(1);
+exports.init = async () => {
+  exports.db = new ueberDB.Database(settings.dbType, settings.dbSettings, null, logger);
+  await exports.db.init();
+  if (exports.db.metrics != null) {
+    for (const [metric, value] of Object.entries(exports.db.metrics)) {
+      if (typeof value !== 'number') continue;
+      stats.gauge(`ueberdb_${metric}`, () => exports.db.metrics[metric]);
     }
-
-    if (db.metrics != null) {
-      for (const [metric, value] of Object.entries(db.metrics)) {
-        if (typeof value !== 'number') continue;
-        stats.gauge(`ueberdb_${metric}`, () => db.metrics[metric]);
-      }
-    }
-
-    // everything ok, set up Promise-based methods
-    ['get', 'set', 'findKeys', 'getSub', 'setSub', 'remove'].forEach((fn) => {
-      exports[fn] = util.promisify(db[fn].bind(db));
-    });
-
-    // set up wrappers for get and getSub that can't return "undefined"
-    const get = exports.get;
-    exports.get = async (key) => {
-      const result = await get(key);
-      return (result === undefined) ? null : result;
-    };
-
-    const getSub = exports.getSub;
-    exports.getSub = async (key, sub) => {
-      const result = await getSub(key, sub);
-      return (result === undefined) ? null : result;
-    };
-
-    // exposed for those callers that need the underlying raw API
-    exports.db = db;
-    resolve();
-  });
-});
+  }
+  for (const fn of ['get', 'set', 'findKeys', 'getSub', 'setSub', 'remove']) {
+    const f = exports.db[fn];
+    exports[fn] = async (...args) => await f.call(exports.db, ...args);
+    Object.setPrototypeOf(exports[fn], Object.getPrototypeOf(f));
+    Object.defineProperties(exports[fn], Object.getOwnPropertyDescriptors(f));
+  }
+};
 
 exports.shutdown = async (hookName, context) => {
-  await util.promisify(db.close.bind(db))();
-  console.log('Database closed');
+  if (exports.db != null) await exports.db.close();
+  exports.db = null;
+  logger.log('Database closed');
 };

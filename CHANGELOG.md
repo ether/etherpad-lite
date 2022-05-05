@@ -101,6 +101,14 @@
 * The `AuthorManager.getAuthor4Token()` function is deprecated; use the new
   `AuthorManager.getAuthorId()` function instead.
 
+# 1.8.18
+
+Released: 2022-05-05
+
+### Notable enhancements and fixes
+
+  * Upgraded ueberDB to fix a regression with CouchDB.
+
 # 1.8.17
 
 Released: 2022-02-23
