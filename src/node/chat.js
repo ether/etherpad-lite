@@ -2,6 +2,7 @@
 
 const ChatMessage = require('../static/js/ChatMessage');
 const CustomError = require('./utils/customError');
+const Stream = require('./utils/Stream');
 const api = require('./db/API');
 const assert = require('assert').strict;
 const authorManager = require('./db/AuthorManager');
@@ -106,6 +107,21 @@ exports.eejsBlock_stickyContainer = (hookName, context) => {
   /* eslint-enable max-len */
 };
 
+exports.exportEtherpad = async (hookName, {pad, data, dstPadId}) => {
+  const ops = (function* () {
+    const {chatHead = -1} = pad;
+    data[`pad:${dstPadId}`].chatHead = chatHead;
+    for (let i = 0; i <= chatHead; ++i) {
+      yield (async () => {
+        const v = await pad.db.get(`pad:${pad.id}:chat:${i}`);
+        if (v == null) return;
+        data[`pad:${dstPadId}:chat:${i}`] = v;
+      })();
+    }
+  })();
+  for (const op of new Stream(ops).batch(100).buffer(99)) await op;
+};
+
 exports.handleMessage = async (hookName, {message, sessionInfo, socket}) => {
   const {authorId, padId, readOnly} = sessionInfo;
   if (message.type !== 'COLLABROOM' || readOnly) return;
@@ -138,6 +154,19 @@ exports.handleMessage = async (hookName, {message, sessionInfo, socket}) => {
       return;
   }
   return null; // Important! Returning null (not undefined!) stops further processing.
+};
+
+exports.importEtherpad = async (hookName, {pad, data, srcPadId}) => {
+  const ops = (function* () {
+    const {chatHead = -1} = data[`pad:${srcPadId}`];
+    pad.chatHead = chatHead;
+    for (let i = 0; i <= chatHead; ++i) {
+      const v = data[`pad:${srcPadId}:chat:${i}`];
+      if (v == null) continue;
+      yield pad.db.set(`pad:${pad.id}:chat:${i}`, v);
+    }
+  })();
+  for (const op of new Stream(ops).batch(100).buffer(99)) await op;
 };
 
 exports.padCheck = async (hookName, {pad}) => {

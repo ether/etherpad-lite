@@ -74,7 +74,9 @@ exports.setPadRaw = async (padId, r, authorId = '') => {
           return;
         }
         value.padIDs = {[padId]: 1};
-      } else if (padKeyPrefixes.includes(prefix)) {
+      } else if (padKeyPrefixes.includes(prefix) &&
+                 // Chat message handling was moved to the importEtherpad hook.
+                 (keyParts[0] !== 'pad' || keyParts[2] !== 'chat')) {
         checkOriginalPadId(id);
         if (prefix === 'pad' && keyParts.length === 2) {
           const pool = new AttributePool().fromJsonable(value.pool);
