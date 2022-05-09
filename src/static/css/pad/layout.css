@@ -46,7 +46,7 @@ body {
   max-width: 40%;
   flex-shrink: 0;
 }
-#editorcontainerbox .sticky-container:not(.stikyUsers):not(.stickyChat) {
+#editorcontainerbox .sticky-container:not(.stickyUsers):not(.stickyChat) {
   width: 0; /* hide when the container is empty */
 }
 

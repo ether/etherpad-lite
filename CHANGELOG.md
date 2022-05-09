@@ -2,6 +2,8 @@
 
 ### Notable enhancements and fixes
 
+* New `integratedChat` setting makes it possible to completely disable the
+  built-in chat feature (not just hide it).
 * Improvements to login session management:
   * `express_sid` cookies and `sessionstorage:*` database records are no longer
     created unless `requireAuthentication` is `true` (or a plugin causes them to
@@ -55,6 +57,8 @@
 * New APIs for processing attributes: `ep_etherpad-lite/static/js/attributes`
   (low-level API) and `ep_etherpad-lite/static/js/AttributeMap` (high-level
   API).
+* The `handleClientMessage_${name}` client-side hooks are now passed the raw
+  message object in the new `msg` context property.
 * The `import` server-side hook has a new `ImportError` context property.
 * New `exportEtherpad` and `importEtherpad` server-side hooks.
 * The `handleMessageSecurity` and `handleMessage` server-side hooks have a new
@@ -89,6 +93,18 @@
     instead.
   * `padUpdate`: The `author` context property is deprecated; use the new
     `authorId` context property instead. Also, the hook now runs asynchronously.
+* Chat API deprecations and removals (no replacements planned):
+  * Server-side:
+    * The `Pad.appendChatMessage()` method is deprecated.
+    * The `Pad.getChatMessage()` method is deprecated.
+    * The `Pad.getChatMessages()` method is deprecated.
+    * The `sendChatMessageToPadClients()` function in
+      `src/node/handler/PadMessageHandler.js` is deprecated.
+  * Client-side:
+    * The `chat` global variable is deprecated.
+    * The `chat` export in `src/static/js/chat.js` is deprecated.
+    * The `pad.determineChatVisibility()` method was removed.
+    * The `pad.determineChatAndUsersVisibility()` method was removed.
 * Returning `true` from a `handleMessageSecurity` hook function is deprecated;
   return `'permitOnce'` instead.
 * Changes to the `src/static/js/Changeset.js` library:

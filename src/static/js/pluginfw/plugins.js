@@ -5,6 +5,7 @@ const hooks = require('./hooks');
 const log4js = require('log4js');
 const path = require('path');
 const runCmd = require('../../../node/utils/run_cmd');
+const settings = require('../../../node/utils/Settings');
 const tsort = require('./tsort');
 const pluginUtils = require('./shared');
 const defs = require('./plugin_defs');
@@ -102,6 +103,13 @@ exports.update = async () => {
     const logger = log4js.getLogger(`plugin:${p}`);
     await hooks.aCallAll(`init_${p}`, {logger});
   }));
+  const installedPlugins = Object.values(defs.plugins)
+      .filter((plugin) => plugin.package.name !== 'ep_etherpad-lite')
+      .map((plugin) => `${plugin.package.name}@${plugin.package.version}`)
+      .join(', ');
+  logger.info(`Installed plugins: ${installedPlugins}`);
+  logger.debug(`Installed parts:\n${exports.formatParts()}`);
+  logger.debug(`Installed server-side hooks:\n${exports.formatHooks('hooks', false)}`);
 };
 
 exports.getPackages = async () => {
@@ -129,6 +137,9 @@ const loadPlugin = async (packages, pluginName, plugins, parts) => {
     const data = await fs.readFile(pluginPath);
     try {
       const plugin = JSON.parse(data);
+      if (pluginName === 'ep_etherpad-lite' && !settings.integratedChat) {
+        plugin.parts = plugin.parts.filter((part) => part.name !== 'chat');
+      }
       plugin.package = packages[pluginName];
       plugins[pluginName] = plugin;
       for (const part of plugin.parts) {

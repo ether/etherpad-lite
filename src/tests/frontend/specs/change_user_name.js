@@ -17,19 +17,4 @@ describe('change username value', function () {
     await helper.toggleUserList();
     await helper.waitForPromise(() => helper.usernameField().val() === '😃');
   });
-
-  it('Own user name is shown when you enter a chat', async function () {
-    this.timeout(10000);
-    await helper.toggleUserList();
-    await helper.setUserName('😃');
-
-    await helper.showChat();
-    await helper.sendChatMessage('O hi{enter}');
-
-    await helper.waitForPromise(() => {
-      // username:hours:minutes text
-      const chatText = helper.chatTextParagraphs().text();
-      return chatText.indexOf('😃') === 0;
-    });
-  });
 });

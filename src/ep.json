@@ -13,6 +13,33 @@
       }
     },
     {
+      "name": "chat",
+      "client_hooks": {
+        "aceKeyEvent": "ep_etherpad-lite/static/js/chat",
+        "handleClientMessage_CHAT_MESSAGE": "ep_etherpad-lite/static/js/chat",
+        "handleClientMessage_CHAT_MESSAGES": "ep_etherpad-lite/static/js/chat",
+        "postAceInit": "ep_etherpad-lite/static/js/chat"
+      },
+      "hooks": {
+        "clientVars": "ep_etherpad-lite/node/chat",
+        "eejsBlock_mySettings": "ep_etherpad-lite/node/chat",
+        "eejsBlock_stickyContainer": "ep_etherpad-lite/node/chat",
+        "exportEtherpad": "ep_etherpad-lite/node/chat",
+        "handleMessage": "ep_etherpad-lite/node/chat",
+        "importEtherpad": "ep_etherpad-lite/node/chat",
+        "padCheck": "ep_etherpad-lite/node/chat",
+        "padCopy": "ep_etherpad-lite/node/chat",
+        "padLoad": "ep_etherpad-lite/node/chat",
+        "padRemove": "ep_etherpad-lite/node/chat"
+      }
+    },
+    {
+      "name": "chatAlwaysLoaded",
+      "hooks": {
+        "socketio": "ep_etherpad-lite/node/chat"
+      }
+    },
+    {
       "name": "express",
       "hooks": {
         "createServer": "ep_etherpad-lite/node/hooks/express",

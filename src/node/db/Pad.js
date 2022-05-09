@@ -22,6 +22,10 @@ const hooks = require('../../static/js/pluginfw/hooks');
 const {padutils: {warnDeprecated}} = require('../../static/js/pad_utils');
 const promises = require('../utils/promises');
 
+let chat = null;
+
+exports.registerLegacyChatMethodHandlers = (handlers) => chat = handlers;
+
 /**
  * Copied from the Etherpad source code. It converts Windows line breaks to Unix
  * line breaks and convert Tabs to spaces
@@ -45,7 +49,6 @@ class Pad {
     this.atext = Changeset.makeAText('\n');
     this.pool = new AttributePool();
     this.head = -1;
-    this.chatHead = -1;
     this.publicStatus = false;
     this.id = id;
     this.savedRevisions = [];
@@ -287,6 +290,7 @@ class Pad {
   /**
    * Adds a chat message to the pad, including saving it to the database.
    *
+   * @deprecated
    * @param {(ChatMessage|string)} msgOrText - Either a chat message object (recommended) or a
    *     string containing the raw text of the user's chat message (deprecated).
    * @param {?string} [authorId] - The user's author ID. Deprecated; use `msgOrText.authorId`
@@ -295,31 +299,24 @@ class Pad {
    *     `msgOrText.time` instead.
    */
   async appendChatMessage(msgOrText, authorId = null, time = null) {
+    warnDeprecated('Pad.appendChatMessage() is deprecated');
     const msg =
           msgOrText instanceof ChatMessage ? msgOrText : new ChatMessage(msgOrText, authorId, time);
-    this.chatHead++;
-    await Promise.all([
-      // Don't save the display name in the database because the user can change it at any time. The
-      // `displayName` property will be populated with the current value when the message is read
-      // from the database.
-      this.db.set(`pad:${this.id}:chat:${this.chatHead}`, {...msg, displayName: undefined}),
-      this.saveToDatabase(),
-    ]);
+    await chat.appendChatMessage(this, msg);
   }
 
   /**
+   * @deprecated
    * @param {number} entryNum - ID of the desired chat message.
    * @returns {?ChatMessage}
    */
   async getChatMessage(entryNum) {
-    const entry = await this.db.get(`pad:${this.id}:chat:${entryNum}`);
-    if (entry == null) return null;
-    const message = ChatMessage.fromObject(entry);
-    message.displayName = await authorManager.getAuthorName(message.authorId);
-    return message;
+    warnDeprecated('Pad.getChatMessage() is deprecated');
+    return await chat.getChatMessage(this, entryNum);
   }
 
   /**
+   * @deprecated
    * @param {number} start - ID of the first desired chat message.
    * @param {number} end - ID of the last desired chat message.
    * @returns {ChatMessage[]} Any existing messages with IDs between `start` (inclusive) and `end`
@@ -327,19 +324,8 @@ class Pad {
    *     interval as is typical in code.
    */
   async getChatMessages(start, end) {
-    const entries =
-        await Promise.all(Stream.range(start, end + 1).map(this.getChatMessage.bind(this)));
-
-    // sort out broken chat entries
-    // it looks like in happened in the past that the chat head was
-    // incremented, but the chat message wasn't added
-    return entries.filter((entry) => {
-      const pass = (entry != null);
-      if (!pass) {
-        console.warn(`WARNING: Found broken chat entry in pad ${this.id}`);
-      }
-      return pass;
-    });
+    warnDeprecated('Pad.getChatMessages() is deprecated');
+    return await chat.getChatMessages(this, start, end);
   }
 
   async init(text, authorId = '') {
@@ -386,7 +372,6 @@ class Pad {
     const promises = (function* () {
       yield copyRecord('');
       yield* Stream.range(0, this.head + 1).map((i) => copyRecord(`:revs:${i}`));
-      yield* Stream.range(0, this.chatHead + 1).map((i) => copyRecord(`:chat:${i}`));
       yield this.copyAuthorInfoToDestinationPad(destinationID);
       if (destGroupID) yield db.setSub(`group:${destGroupID}`, ['pads', destinationID], 1);
     }).call(this);
@@ -545,11 +530,6 @@ class Pad {
     }));
     p.push(db.remove(`pad2readonly:${padID}`));
 
-    // delete all chat messages
-    p.push(promises.timesLimit(this.chatHead + 1, 500, async (i) => {
-      await this.db.remove(`pad:${this.id}:chat:${i}`, null);
-    }));
-
     // delete all revisions
     p.push(promises.timesLimit(this.head + 1, 500, async (i) => {
       await this.db.remove(`pad:${this.id}:revs:${i}`, null);
@@ -702,23 +682,6 @@ class Pad {
     assert.equal(this.text(), atext.text);
     assert.deepEqual(this.atext, atext);
     assert.deepEqual(this.getAllAuthors().sort(), [...authorIds].sort());
-
-    assert(this.chatHead != null);
-    assert(Number.isInteger(this.chatHead));
-    assert(this.chatHead >= -1);
-    const chats = Stream.range(0, this.chatHead + 1)
-        .map(async (c) => {
-          try {
-            const msg = await this.getChatMessage(c);
-            assert(msg != null);
-            assert(msg instanceof ChatMessage);
-          } catch (err) {
-            err.message = `(pad ${this.id} chat message ${c}) ${err.message}`;
-            throw err;
-          }
-        })
-        .batch(100).buffer(99);
-    for (const p of chats) await p;
 
     await hooks.aCallAll('padCheck', {pad: this});
   }

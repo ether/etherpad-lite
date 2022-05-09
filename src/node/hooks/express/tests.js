@@ -38,8 +38,10 @@ exports.expressPreSession = async (hookName, {app}) => {
         if (!pluginPath.endsWith(path.sep)) pluginPath += path.sep;
         const specDir = `${plugin === 'ep_etherpad-lite' ? '' : 'static/'}tests/frontend/specs`;
         for (const spec of await findSpecs(path.join(pluginPath, specDir))) {
-          if (plugin === 'ep_etherpad-lite' && !settings.enableAdminUITests &&
-              spec.startsWith('admin')) continue;
+          if (plugin === 'ep_etherpad-lite') {
+            if (!settings.enableAdminUITests && spec.startsWith('admin')) continue;
+            if (!settings.integratedChat && spec.startsWith('chat')) continue;
+          }
           modules.push(`${plugin}/${specDir}/${spec.replace(/\.js$/, '')}`);
         }
       }));

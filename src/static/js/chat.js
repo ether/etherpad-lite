@@ -25,7 +25,7 @@ const padeditor = require('./pad_editor').padeditor;
 // Removes diacritics and lower-cases letters. https://stackoverflow.com/a/37511463
 const normalize = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
-exports.chat = (() => {
+const chat = (() => {
   let isStuck = false;
   let userAndChat = false;
   let chatMentions = 0;
@@ -79,16 +79,34 @@ exports.chat = (() => {
           .toggleClass('chatAndUsers popup-show stickyUsers', userAndChat);
       $('#chatbox').toggleClass('chatAndUsersChat', userAndChat);
     },
-    hide() {
+    reduce() {
       // decide on hide logic based on chat window being maximized or not
       if ($('#options-stickychat').prop('checked')) {
         this.stickToScreen();
         $('#options-stickychat').prop('checked', false);
       } else {
         $('#chatcounter').text('0');
+        // It usually is not necessary to call .show() because .hide() is only normally called when
+        // the pad is loaded and showChat=false. When showChat=false, there are no chat UI elements
+        // so there's nothing to click on to get the chatbox to display. However, there are other
+        // ways to get the chatbox to display:
+        //   * A plugin might call `chat.show()`.
+        //   * The user can hit Alt-C (assuming the shortcut is enabled).
+        //   * The user can run `chat.show()` in the developer console.
+        // In all cases, reducing the shown chatbox should cause it to minimize to an icon, not
+        // vanish completely.
+        $('#chaticon').show();
         $('#chaticon').addClass('visible');
         $('#chatbox').removeClass('visible');
       }
+    },
+    minimize() {
+      if ($('#options-stickychat').prop('checked')) this.reduce();
+      this.reduce();
+    },
+    hide() {
+      this.minimize();
+      $('#chaticon').hide();
     },
     scrollDown(force) {
       if ($('#chatbox').hasClass('visible')) {
@@ -218,6 +236,11 @@ exports.chat = (() => {
     },
     init(pad) {
       this._pad = pad;
+      $('#options-stickychat').on('click', () => this.stickToScreen());
+      $('#options-chatandusers').on('click', () => this.chatAndUsers());
+      $('#chaticon').on('click', () => { this.show(); return false; });
+      $('#titlecross').on('click', () => { this.reduce(); return false; });
+      $('#titlesticky').on('click', () => { this.stickToScreen(true); return false; });
       $('#chatinput').on('keydown', (evt) => {
         // If the event is Alt C or Escape & we're already in the chat menu
         // Send the users focus back to the pad
@@ -233,17 +256,6 @@ exports.chat = (() => {
       $('#chatinput').click(() => {
         chatMentions = 0;
         Tinycon.setBubble(0);
-      });
-
-      const self = this;
-      $('body:not(#chatinput)').on('keypress', function (evt) {
-        if (evt.altKey && evt.which === 67) {
-          // Alt c focuses on the Chat window
-          $(this).blur();
-          self.show();
-          $('#chatinput').focus();
-          evt.preventDefault();
-        }
       });
 
       $('#chatinput').keypress((evt) => {
@@ -269,6 +281,110 @@ exports.chat = (() => {
         pad.collabClient.sendMessage({type: 'GET_CHAT_MESSAGES', start, end});
         this.historyPointer = start;
       });
+
+      const {searchParams} = new URL(window.location.href);
+      const {showChat = true, alwaysShowChat = false, chatAndUsers = false} = clientVars.padOptions;
+      const settings = this._pad.settings;
+      settings.hideChat = showChat.toString() === 'false';
+      if (settings.hideChat) this.hide();
+      if (alwaysShowChat.toString() === 'true' && !settings.hideChat) this.stickToScreen();
+      if (chatAndUsers.toString() === 'true') this.chatAndUsers();
+      settings.hideChat = searchParams.get('showChat') === 'false';
+      if (settings.hideChat) this.hide();
+      if (searchParams.get('alwaysShowChat') === 'true' && !settings.hideChat) this.stickToScreen();
+      if (searchParams.get('chatAndUsers') === 'true') this.chatAndUsers();
+
+      const chatVisCookie = !!padcookie.getPref('chatAlwaysVisible');
+      if (chatVisCookie) this.stickToScreen(true);
+      $('#options-stickychat').prop('checked', chatVisCookie);
+
+      const chatAUVisCookie = !!padcookie.getPref('chatAndUsersVisible');
+      if (chatAUVisCookie) this.chatAndUsers(true);
+      $('#options-chatandusers').prop('checked', chatAUVisCookie);
     },
   };
 })();
+
+Object.defineProperty(exports, 'chat', {
+  get: () => {
+    padutils.warnDeprecated(
+        'chat.chat is deprecated and will be removed in a future version of Etherpad');
+    return chat;
+  },
+});
+
+exports.aceKeyEvent = (hookName, {evt}) => {
+  const {altC} = window.clientVars.padShortcutEnabled;
+  if (evt.type !== 'keydown' || !evt.altKey || evt.keyCode !== 67 || !altC) return;
+  evt.target.blur();
+  chat.show();
+  chat.focus();
+  evt.preventDefault();
+  return true;
+};
+
+exports.handleClientMessage_CHAT_MESSAGE = (hookName, {msg}) => {
+  chat.addMessage(msg.message, true, false);
+};
+
+exports.handleClientMessage_CHAT_MESSAGES = (hookName, {msg}) => {
+  for (let i = msg.messages.length - 1; i >= 0; i--) {
+    chat.addMessage(msg.messages[i], true, true);
+  }
+  if (!chat.gotInitalMessages) {
+    chat.scrollDown();
+    chat.gotInitalMessages = true;
+    chat.historyPointer = clientVars.chatHead - msg.messages.length;
+  }
+
+  // messages are loaded, so hide the loading-ball
+  $('#chatloadmessagesball').css('display', 'none');
+
+  // there are less than 100 messages or we reached the top
+  if (chat.historyPointer <= 0) {
+    $('#chatloadmessagesbutton').css('display', 'none');
+  } else {
+    // there are still more messages, re-show the load-button
+    $('#chatloadmessagesbutton').css('display', 'block');
+  }
+};
+
+exports.postAceInit = async (hookName, {clientVars, pad}) => {
+  chat.init(pad);
+
+  if (padcookie.getPref('chatAlwaysVisible')) {
+    chat.stickToScreen(true);
+    $('#options-stickychat').prop('checked', true);
+  }
+  if (padcookie.getPref('chatAndUsers')) {
+    chat.chatAndUsers(true);
+    $('#options-chatandusers').prop('checked', true);
+  }
+
+  // Prevent sticky chat or chat and users to be checked for mobiles
+  const checkChatAndUsersVisibility = (x) => {
+    if (!x.matches) return;
+    $('#options-chatandusers:checked').click();
+    $('#options-stickychat:checked').click();
+  };
+  const mobileMatch = window.matchMedia('(max-width: 800px)');
+  mobileMatch.addListener(checkChatAndUsersVisibility);
+  setTimeout(() => { checkChatAndUsersVisibility(mobileMatch); }, 0);
+
+  if (clientVars.chatHead !== -1) {
+    const chatHead = clientVars.chatHead;
+    const start = Math.max(chatHead - 100, 0);
+    pad.collabClient.sendMessage({type: 'GET_CHAT_MESSAGES', start, end: chatHead});
+  } else {
+    $('#chatloadmessagesbutton').css('display', 'none');
+  }
+
+  if (clientVars.readonly) {
+    chat.hide();
+    $('#chatinput').attr('disabled', true);
+    $('#options-chatandusers').parent().hide();
+    $('#options-stickychat').parent().hide();
+  } else if (!pad.settings.hideChat) {
+    $('#chaticon').show();
+  }
+};

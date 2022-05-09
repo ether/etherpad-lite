@@ -31,7 +31,6 @@ require('./vendors/farbtastic');
 require('./vendors/gritter');
 
 const Cookies = require('./pad_utils').Cookies;
-const chat = require('./chat').chat;
 const getCollabClient = require('./collab_client').getCollabClient;
 const padconnectionstatus = require('./pad_connectionstatus').padconnectionstatus;
 const padcookie = require('./pad_cookie').padcookie;
@@ -71,17 +70,6 @@ const getParameters = [
     },
   },
   {
-    name: 'showChat',
-    checkVal: null,
-    callback: (val) => {
-      if (val === 'false') {
-        settings.hideChat = true;
-        chat.hide();
-        $('#chaticon').hide();
-      }
-    },
-  },
-  {
     name: 'showLineNumbers',
     checkVal: 'false',
     callback: (val) => {
@@ -116,20 +104,6 @@ const getParameters = [
     checkVal: 'true',
     callback: (val) => {
       settings.rtlIsTrue = true;
-    },
-  },
-  {
-    name: 'alwaysShowChat',
-    checkVal: 'true',
-    callback: (val) => {
-      if (!settings.hideChat) chat.stickToScreen();
-    },
-  },
-  {
-    name: 'chatAndUsers',
-    checkVal: 'true',
-    callback: (val) => {
-      chat.chatAndUsers();
     },
   },
   {
@@ -392,8 +366,6 @@ const pad = {
   },
   _afterHandshake() {
     pad.clientTimeOffset = Date.now() - clientVars.serverTimestamp;
-    // initialize the chat
-    chat.init(this);
     getParams();
 
     padcookie.init(); // initialize the cookies
@@ -412,16 +384,6 @@ const pad = {
       setTimeout(() => {
         padeditor.ace.focus();
       }, 0);
-      // if we have a cookie for always showing chat then show it
-      if (padcookie.getPref('chatAlwaysVisible')) {
-        chat.stickToScreen(true); // stick it to the screen
-        $('#options-stickychat').prop('checked', true); // set the checkbox to on
-      }
-      // if we have a cookie for always showing chat then show it
-      if (padcookie.getPref('chatAndUsers')) {
-        chat.chatAndUsers(true); // stick it to the screen
-        $('#options-chatandusers').prop('checked', true); // set the checkbox to on
-      }
       if (padcookie.getPref('showAuthorshipColors') === false) {
         pad.changeViewOption('showAuthorColors', false);
       }
@@ -433,17 +395,6 @@ const pad = {
       }
       pad.changeViewOption('padFontFamily', padcookie.getPref('padFontFamily'));
       $('#viewfontmenu').val(padcookie.getPref('padFontFamily')).niceSelect('update');
-
-      // Prevent sticky chat or chat and users to be checked for mobiles
-      const checkChatAndUsersVisibility = (x) => {
-        if (x.matches) { // If media query matches
-          $('#options-chatandusers:checked').click();
-          $('#options-stickychat:checked').click();
-        }
-      };
-      const mobileMatch = window.matchMedia('(max-width: 800px)');
-      mobileMatch.addListener(checkChatAndUsersVisibility); // check if window resized
-      setTimeout(() => { checkChatAndUsersVisibility(mobileMatch); }, 0); // check now after load
 
       $('#editorcontainer').addClass('initialized');
 
@@ -469,24 +420,7 @@ const pad = {
     pad.collabClient.setOnChannelStateChange(pad.handleChannelStateChange);
     pad.collabClient.setOnInternalAction(pad.handleCollabAction);
 
-    // load initial chat-messages
-    if (clientVars.chatHead !== -1) {
-      const chatHead = clientVars.chatHead;
-      const start = Math.max(chatHead - 100, 0);
-      pad.collabClient.sendMessage({type: 'GET_CHAT_MESSAGES', start, end: chatHead});
-    } else {
-      // there are no messages
-      $('#chatloadmessagesbutton').css('display', 'none');
-    }
-
-    if (window.clientVars.readonly) {
-      chat.hide();
-      $('#myusernameedit').attr('disabled', true);
-      $('#chatinput').attr('disabled', true);
-      $('#chaticon').hide();
-      $('#options-chatandusers').parent().hide();
-      $('#options-stickychat').parent().hide();
-    } else if (!settings.hideChat) { $('#chaticon').show(); }
+    if (window.clientVars.readonly) $('#myusernameedit').attr('disabled', true);
 
     $('body').addClass(window.clientVars.readonly ? 'readonly' : 'readwrite');
 
@@ -650,30 +584,10 @@ const pad = {
     }
   },
   handleIsFullyConnected: (isConnected, isInitialConnect) => {
-    pad.determineChatVisibility(isConnected && !isInitialConnect);
-    pad.determineChatAndUsersVisibility(isConnected && !isInitialConnect);
     pad.determineAuthorshipColorsVisibility();
     setTimeout(() => {
       padeditbar.toggleDropDown('none');
     }, 1000);
-  },
-  determineChatVisibility: (asNowConnectedFeedback) => {
-    const chatVisCookie = padcookie.getPref('chatAlwaysVisible');
-    if (chatVisCookie) { // if the cookie is set for chat always visible
-      chat.stickToScreen(true); // stick it to the screen
-      $('#options-stickychat').prop('checked', true); // set the checkbox to on
-    } else {
-      $('#options-stickychat').prop('checked', false); // set the checkbox for off
-    }
-  },
-  determineChatAndUsersVisibility: (asNowConnectedFeedback) => {
-    const chatAUVisCookie = padcookie.getPref('chatAndUsersVisible');
-    if (chatAUVisCookie) { // if the cookie is set for chat always visible
-      chat.chatAndUsers(true); // stick it to the screen
-      $('#options-chatandusers').prop('checked', true); // set the checkbox to on
-    } else {
-      $('#options-chatandusers').prop('checked', false); // set the checkbox for off
-    }
   },
   determineAuthorshipColorsVisibility: () => {
     const authColCookie = padcookie.getPref('showAuthorshipColors');

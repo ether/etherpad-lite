@@ -157,6 +157,12 @@ exports.defaultPadText = [
 ].join('\n');
 
 /**
+ * Whether to enable the built-in chat feature. Set this to false if you prefer to use a plugin to
+ * provide chat functionality or simply do not want the feature.
+ */
+exports.integratedChat = true;
+
+/**
  * The default Pad Settings for a user (Can be overridden by changing the setting
  */
 exports.padOptions = {

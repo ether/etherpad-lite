@@ -1,6 +1,9 @@
 'use strict';
 
+const assert = require('assert').strict;
 const common = require('../../common');
+const plugins = require('../../../../static/js/pluginfw/plugins');
+const settings = require('../../../../node/utils/Settings');
 
 let agent;
 const apiKey = common.apiKey;
@@ -12,94 +15,107 @@ const timestamp = Date.now();
 const endPoint = (point) => `/api/${apiVersion}/${point}?apikey=${apiKey}`;
 
 describe(__filename, function () {
-  before(async function () { agent = await common.init(); });
+  const backups = {settings: {}};
 
-  describe('API Versioning', function () {
-    it('errors if can not connect', function (done) {
-      agent.get('/api/')
-          .expect((res) => {
-            apiVersion = res.body.currentVersion;
-            if (!res.body.currentVersion) throw new Error('No version set in API');
-            return;
-          })
-          .expect(200, done);
-    });
+  before(async function () {
+    backups.settings.integratedChat = settings.integratedChat;
+    settings.integratedChat = true;
+    await plugins.update();
+    agent = await common.init();
+    await agent.get('/api/')
+        .expect(200)
+        .expect((res) => {
+          assert(res.body.currentVersion);
+          apiVersion = res.body.currentVersion;
+        });
+    await agent.get(`${endPoint('createPad')}&padID=${padID}`)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+        });
+    await agent.get(endPoint('createAuthor'))
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect((res) => {
+          assert.equal(res.body.code, 0);
+          assert(res.body.data.authorID);
+          authorID = res.body.data.authorID; // we will be this author for the rest of the tests
+        });
   });
 
-  // BEGIN GROUP AND AUTHOR TESTS
-  // ///////////////////////////////////
-  // ///////////////////////////////////
-
-  /* Tests performed
-  -> createPad(padID)
-   -> createAuthor([name]) -- should return an authorID
-    -> appendChatMessage(padID, text, authorID, time)
-     -> getChatHead(padID)
-      -> getChatHistory(padID)
-  */
-
-  describe('createPad', function () {
-    it('creates a new Pad', function (done) {
-      agent.get(`${endPoint('createPad')}&padID=${padID}`)
-          .expect((res) => {
-            if (res.body.code !== 0) throw new Error('Unable to create new Pad');
-          })
-          .expect('Content-Type', /json/)
-          .expect(200, done);
-    });
+  after(async function () {
+    Object.assign(settings, backups.settings);
+    await plugins.update();
   });
 
-  describe('createAuthor', function () {
-    it('Creates an author with a name set', function (done) {
-      agent.get(endPoint('createAuthor'))
-          .expect((res) => {
-            if (res.body.code !== 0 || !res.body.data.authorID) {
-              throw new Error('Unable to create author');
-            }
-            authorID = res.body.data.authorID; // we will be this author for the rest of the tests
-          })
-          .expect('Content-Type', /json/)
-          .expect(200, done);
+  describe('settings.integratedChat = true', function () {
+    beforeEach(async function () {
+      settings.integratedChat = true;
     });
-  });
 
-  describe('appendChatMessage', function () {
-    it('Adds a chat message to the pad', function (done) {
-      agent.get(`${endPoint('appendChatMessage')}&padID=${padID}&text=blalblalbha` +
+    it('appendChatMessage', async function () {
+      await agent.get(`${endPoint('appendChatMessage')}&padID=${padID}&text=blalblalbha` +
                 `&authorID=${authorID}&time=${timestamp}`)
-          .expect((res) => {
-            if (res.body.code !== 0) throw new Error('Unable to create chat message');
-          })
+          .expect(200)
           .expect('Content-Type', /json/)
-          .expect(200, done);
+          .expect((res) => {
+            assert.equal(res.body.code, 0);
+          });
+    });
+
+    it('getChatHead', async function () {
+      await agent.get(`${endPoint('getChatHead')}&padID=${padID}`)
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect((res) => {
+            assert.equal(res.body.code, 0);
+            assert.equal(res.body.data.chatHead, 0);
+          });
+    });
+
+    it('getChatHistory', async function () {
+      await agent.get(`${endPoint('getChatHistory')}&padID=${padID}`)
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect((res) => {
+            assert.equal(res.body.code, 0);
+            assert.equal(res.body.data.messages.length, 1);
+          });
     });
   });
 
-
-  describe('getChatHead', function () {
-    it('Gets the head of chat', function (done) {
-      agent.get(`${endPoint('getChatHead')}&padID=${padID}`)
-          .expect((res) => {
-            if (res.body.data.chatHead !== 0) throw new Error('Chat Head Length is wrong');
-
-            if (res.body.code !== 0) throw new Error('Unable to get chat head');
-          })
-          .expect('Content-Type', /json/)
-          .expect(200, done);
+  describe('settings.integratedChat = false', function () {
+    beforeEach(async function () {
+      settings.integratedChat = false;
     });
-  });
 
-  describe('getChatHistory', function () {
-    it('Gets Chat History of a Pad', function (done) {
-      agent.get(`${endPoint('getChatHistory')}&padID=${padID}`)
-          .expect((res) => {
-            if (res.body.data.messages.length !== 1) {
-              throw new Error('Chat History Length is wrong');
-            }
-            if (res.body.code !== 0) throw new Error('Unable to get chat history');
-          })
+    it('appendChatMessage returns an error', async function () {
+      await agent.get(`${endPoint('appendChatMessage')}&padID=${padID}&text=blalblalbha` +
+                `&authorID=${authorID}&time=${timestamp}`)
+          .expect(500)
           .expect('Content-Type', /json/)
-          .expect(200, done);
+          .expect((res) => {
+            assert.equal(res.body.code, 2);
+          });
+    });
+
+    it('getChatHead returns an error', async function () {
+      await agent.get(`${endPoint('getChatHead')}&padID=${padID}`)
+          .expect(500)
+          .expect('Content-Type', /json/)
+          .expect((res) => {
+            assert.equal(res.body.code, 2);
+          });
+    });
+
+    it('getChatHistory returns an error', async function () {
+      await agent.get(`${endPoint('getChatHistory')}&padID=${padID}`)
+          .expect(500)
+          .expect('Content-Type', /json/)
+          .expect((res) => {
+            assert.equal(res.body.code, 2);
+          });
     });
   });
 });

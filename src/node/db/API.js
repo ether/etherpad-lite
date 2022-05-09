@@ -20,7 +20,6 @@
  */
 
 const Changeset = require('../../static/js/Changeset');
-const ChatMessage = require('../../static/js/ChatMessage');
 const CustomError = require('../utils/customError');
 const padManager = require('./PadManager');
 const padMessageHandler = require('../handler/PadMessageHandler');
@@ -289,82 +288,7 @@ exports.setHTML = async (padID, html, authorId = '') => {
  * CHAT FUNCTIONS *
  **************** */
 
-/**
-getChatHistory(padId, start, end), returns a part of or the whole chat-history of this pad
-
-Example returns:
-
-{"code":0,"message":"ok","data":{"messages":[
-  {"text":"foo","authorID":"a.foo","time":1359199533759,"userName":"test"},
-  {"text":"bar","authorID":"a.foo","time":1359199534622,"userName":"test"}
-]}}
-
-{code: 1, message:"start is higher or equal to the current chatHead", data: null}
-
-{code: 1, message:"padID does not exist", data: null}
-*/
-exports.getChatHistory = async (padID, start, end) => {
-  if (start && end) {
-    if (start < 0) {
-      throw new CustomError('start is below zero', 'apierror');
-    }
-    if (end < 0) {
-      throw new CustomError('end is below zero', 'apierror');
-    }
-    if (start > end) {
-      throw new CustomError('start is higher than end', 'apierror');
-    }
-  }
-
-  // get the pad
-  const pad = await getPadSafe(padID, true);
-
-  const chatHead = pad.chatHead;
-
-  // fall back to getting the whole chat-history if a parameter is missing
-  if (!start || !end) {
-    start = 0;
-    end = pad.chatHead;
-  }
-
-  if (start > chatHead) {
-    throw new CustomError('start is higher than the current chatHead', 'apierror');
-  }
-  if (end > chatHead) {
-    throw new CustomError('end is higher than the current chatHead', 'apierror');
-  }
-
-  // the the whole message-log and return it to the client
-  const messages = await pad.getChatMessages(start, end);
-
-  return {messages};
-};
-
-/**
-appendChatMessage(padID, text, authorID, time), creates a chat message for the pad id,
-time is a timestamp
-
-Example returns:
-
-{code: 0, message:"ok", data: null}
-{code: 1, message:"padID does not exist", data: null}
-*/
-exports.appendChatMessage = async (padID, text, authorID, time) => {
-  // text is required
-  if (typeof text !== 'string') {
-    throw new CustomError('text is not a string', 'apierror');
-  }
-
-  // if time is not an integer value set time to current timestamp
-  if (time === undefined || !isInt(time)) {
-    time = Date.now();
-  }
-
-  // @TODO - missing getPadSafe() call ?
-
-  // save chat message to database and send message to all connected clients
-  await padMessageHandler.sendChatMessageToPadClients(new ChatMessage(text, authorID, time), padID);
-};
+exports.registerChatHandlers = (handlers) => Object.assign(exports, handlers);
 
 /* ***************
  * PAD FUNCTIONS *
@@ -733,20 +657,6 @@ exports.checkToken = async () => {
 };
 
 /**
-getChatHead(padID) returns the chatHead (last number of the last chat-message) of the pad
-
-Example returns:
-
-{code: 0, message:"ok", data: {chatHead: 42}}
-{code: 1, message:"padID does not exist", data: null}
-*/
-exports.getChatHead = async (padID) => {
-  // get the pad
-  const pad = await getPadSafe(padID, true);
-  return {chatHead: pad.chatHead};
-};
-
-/**
 createDiffHTML(padID, startRev, endRev) returns an object of diffs from 2 points in a pad
 
 Example returns:
@@ -851,7 +761,7 @@ const getPadSafe = async (padID, shouldExist, text, authorId = '') => {
   }
 
   // pad exists, let's get it
-  return padManager.getPad(padID, text, authorId);
+  return await padManager.getPad(padID, text, authorId);
 };
 
 // checks if a rev is a legal number

@@ -50,7 +50,6 @@ exports.getPadRaw = async (padId, readOnlyId) => {
       })()];
     }
     for (let i = 0; i <= pad.head; ++i) yield [`${dstPfx}:revs:${i}`, pad.getRevision(i)];
-    for (let i = 0; i <= pad.chatHead; ++i) yield [`${dstPfx}:chat:${i}`, pad.getChatMessage(i)];
     for (const gen of pluginRecords) yield* gen;
   })();
   const data = {[dstPfx]: pad};
