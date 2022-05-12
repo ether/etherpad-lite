@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 pecho() { printf %s\\n "$*"; }
 log() { pecho "$@"; }
 error() { log "ERROR: $@" >&2; }
