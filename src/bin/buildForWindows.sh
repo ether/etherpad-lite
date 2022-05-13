@@ -52,10 +52,6 @@ try wget "https://nodejs.org/dist/latest-erbium/win-x86/node.exe" -O node.exe
 log "remove git history to reduce folder size"
 try rm -rf .git/objects
 
-log "remove windows jsdom-nocontextify/test folder"
-try rm -rf "$TMP_FOLDER"/src/node_modules/wd/node_modules/request/node_modules/form-data/node_modules/combined-stream/test
-try rm -rf "$TMP_FOLDER"/src/node_modules/nodemailer/node_modules/mailcomposer/node_modules/mimelib/node_modules/encoding/node_modules/iconv-lite/encodings/tables
-
 log "create the zip..."
 try cd "$TMP_FOLDER"
 try zip -9 -r "${OUTPUT}" ./* -x var
