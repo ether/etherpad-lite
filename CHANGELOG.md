@@ -2,6 +2,8 @@
 
 ### Notable enhancements and fixes
 
+* Windows build:
+  * The bundled `node.exe` was upgraded from v12 to v16.
 * Improvements to login session management:
   * `express_sid` cookies and `sessionstorage:*` database records are no longer
     created unless `requireAuthentication` is `true` (or a plugin causes them to

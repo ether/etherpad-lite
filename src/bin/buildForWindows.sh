@@ -49,7 +49,7 @@ try rm -rf node_modules
 try mv node_modules_resolved node_modules
 
 log "download windows node..."
-try wget "https://nodejs.org/dist/latest-erbium/win-x86/node.exe" -O node.exe
+try wget "https://nodejs.org/dist/latest-v16.x/win-x86/node.exe" -O node.exe
 
 log "create the zip..."
 try zip -9 -r "${OUTPUT}" ./*
