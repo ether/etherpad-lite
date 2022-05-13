@@ -9,15 +9,16 @@ fatal() { error "$@"; exit 1; }
 try() { "$@" || fatal "'$@' failed"; }
 is_cmd() { command -v "$@" >/dev/null 2>&1; }
 
-for x in unzip wget zip; do
+for x in git unzip wget zip; do
   is_cmd "${x}" || fatal "Please install ${x}"
 done
 
-# Move to the folder where ep-lite is installed
-mydir=$(try cd "${0%/*}" && try pwd -P) || exit 1
-try cd "${mydir}/../.."
+# Move to the folder where Etherpad is checked out
+try cd "${0%/*}"
+START_FOLDER=$(try git rev-parse --show-toplevel) || exit 1
+try cd "${START_FOLDER}"
+[ -f src/package.json ] || fatal "failed to cd to etherpad root directory"
 
-START_FOLDER=$(try pwd) || exit 1
 TMP_FOLDER=$(try mktemp -d) || exit 1
 
 log "create a clean environment in $TMP_FOLDER..."
