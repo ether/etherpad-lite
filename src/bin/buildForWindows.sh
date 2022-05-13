@@ -52,7 +52,6 @@ log "download windows node..."
 try wget "https://nodejs.org/dist/latest-erbium/win-x86/node.exe" -O node.exe
 
 log "create the zip..."
-try cd "$TMP_FOLDER"
 try zip -9 -r "${OUTPUT}" ./* -x var
 
 log "Finished. You can find the zip at ${OUTPUT}"
