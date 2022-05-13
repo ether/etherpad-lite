@@ -44,7 +44,7 @@ jobs:
         run: src/bin/buildForWindows.sh
       -
         name: Extract the .zip into folder
-        run: 7z x etherpad-lite-win.zip -oetherpad-lite-new
+        run: 7z x etherpad-win.zip -oetherpad-lite-new
       -
         name: Grab nsis config
         run: git clone https://github.com/ether/etherpad_nsis.git

@@ -19,7 +19,7 @@ workdir=$(try git rev-parse --show-toplevel) || exit 1
 try cd "${workdir}"
 [ -f src/package.json ] || fatal "failed to cd to etherpad root directory"
 
-OUTPUT=${workdir}/etherpad-lite-win.zip
+OUTPUT=${workdir}/etherpad-win.zip
 
 TMP_FOLDER=$(try mktemp -d) || exit 1
 
@@ -27,7 +27,7 @@ log "create a clean environment in $TMP_FOLDER..."
 try cp -ar . "$TMP_FOLDER"
 try cd "$TMP_FOLDER"
 try rm -rf node_modules
-try rm -f etherpad-lite-win.zip
+try rm -f etherpad-win.zip
 
 # setting NODE_ENV=production ensures that dev dependencies are not installed,
 # making the windows package smaller

@@ -49,8 +49,8 @@ jobs:
         name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: etherpad-lite-win.zip
-          path: etherpad-lite-win.zip
+          name: etherpad-win.zip
+          path: etherpad-win.zip
 
   deploy:
     # run on pushes to any branch
@@ -68,10 +68,10 @@ jobs:
         name: Download zip
         uses: actions/download-artifact@v3
         with:
-          name: etherpad-lite-win.zip
+          name: etherpad-win.zip
       -
         name: Extract Etherpad
-        run: 7z x etherpad-lite-win.zip -oetherpad
+        run: 7z x etherpad-win.zip -oetherpad
       -
         uses: actions/setup-node@v3
         with:
