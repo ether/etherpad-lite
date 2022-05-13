@@ -15,7 +15,7 @@ Page directory
 Page instfiles
 
 ; The default installation directory
-InstallDir "$LocalAppData\Programs\Etherpad Foundation\Etherpad Server"
+InstallDir "$PROGRAMFILES\Etherpad Foundation\Etherpad Server"
 
 Section
   SectionIn RO
