@@ -26,10 +26,12 @@ trap 'exit 1' HUP INT TERM
 trap 'log "cleaning up..."; try cd / && try rm -rf "${TMP_FOLDER}"' EXIT
 
 log "create a clean environment in $TMP_FOLDER..."
-try cp -ar . "$TMP_FOLDER"
-try cd "$TMP_FOLDER"
-try rm -rf node_modules
-try rm -f etherpad-win.zip
+try git archive --format=tar HEAD | (try cd "${TMP_FOLDER}" && try tar xf -) \
+    || fatal "failed to copy etherpad to temporary folder"
+try mkdir "${TMP_FOLDER}"/.git
+try git rev-parse HEAD >${TMP_FOLDER}/.git/HEAD
+try cd "${TMP_FOLDER}"
+[ -f src/package.json ] || fatal "failed to copy etherpad to temporary folder"
 
 # setting NODE_ENV=production ensures that dev dependencies are not installed,
 # making the windows package smaller
@@ -48,9 +50,6 @@ try mv node_modules_resolved node_modules
 
 log "download windows node..."
 try wget "https://nodejs.org/dist/latest-erbium/win-x86/node.exe" -O node.exe
-
-log "remove git history to reduce folder size"
-try rm -rf .git/objects
 
 log "create the zip..."
 try cd "$TMP_FOLDER"
