@@ -4,6 +4,8 @@
 
 * Windows build:
   * The bundled `node.exe` was upgraded from v12 to v16.
+  * The bundled `node.exe` is now a 64-bit executable. If you need the 32-bit
+    version you must download and install Node.js yourself.
 * Improvements to login session management:
   * `express_sid` cookies and `sessionstorage:*` database records are no longer
     created unless `requireAuthentication` is `true` (or a plugin causes them to

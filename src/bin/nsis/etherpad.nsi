@@ -1,5 +1,6 @@
 ;Include Modern UI
 !include "MUI2.nsh"
+!include x64.nsh
 
 ;--------------------------------
 ;Styling
@@ -15,10 +16,16 @@ Page directory
 Page instfiles
 
 ; The default installation directory
-InstallDir "$PROGRAMFILES\Etherpad Foundation\Etherpad Server"
+InstallDir "$PROGRAMFILES64\Etherpad Foundation\Etherpad Server"
 
 Section
   SectionIn RO
+
+  ${If} ${RunningX64}
+    DetailPrint "Installer running on x64 host"
+  ${Else}
+    Abort "Unsupported CPU architecture (only x64 is supported)"
+  ${Endif}
 
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
