@@ -1,4 +1,4 @@
-name: "Windows Zip"
+name: "Windows Build"
 
 # any branch is useful for testing before a PR is submitted
 on: [push, pull_request]
@@ -7,13 +7,13 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  build-zip:
     # run on pushes to any branch
     # run on PRs from external forks
     if: |
       (github.event_name != 'pull_request')
       || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
-    name: Build
+    name: Build .zip
     runs-on: windows-latest
     steps:
       -
@@ -52,7 +52,40 @@ jobs:
           name: etherpad-win.zip
           path: etherpad-win.zip
 
-  deploy:
+  build-exe:
+    if: |
+      (github.event_name != 'pull_request')
+      || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
+    name: Build .exe
+    needs: build-zip
+    runs-on: windows-latest
+    steps:
+      -
+        name: Checkout repository
+        uses: actions/checkout@v3
+      -
+        name: Download .zip
+        uses: actions/download-artifact@v3
+        with:
+          name: etherpad-win.zip
+          path: ..
+      -
+        name: Extract .zip
+        working-directory: ..
+        run: 7z x etherpad-win.zip -oetherpad-zip
+      -
+        name: Create installer
+        uses: joncloud/makensis-action@v3.6
+        with:
+          script-file: 'src/bin/nsis/etherpad.nsi'
+      -
+        name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: etherpad-win.exe
+          path: etherpad-win.exe
+
+  deploy-zip:
     # run on pushes to any branch
     # run on PRs from external forks
     permissions:
@@ -61,7 +94,7 @@ jobs:
       (github.event_name != 'pull_request')
       || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
     name: Deploy
-    needs: build
+    needs: build-zip
     runs-on: windows-latest
     steps:
       -
