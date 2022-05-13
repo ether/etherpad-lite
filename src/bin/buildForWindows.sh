@@ -9,18 +9,13 @@ fatal() { error "$@"; exit 1; }
 try() { "$@" || fatal "'$@' failed"; }
 is_cmd() { command -v "$@" >/dev/null 2>&1; }
 
+for x in unzip wget zip; do
+  is_cmd "${x}" || fatal "Please install ${x}"
+done
+
 # Move to the folder where ep-lite is installed
 mydir=$(try cd "${0%/*}" && try pwd -P) || exit 1
 try cd "${mydir}/../.."
-
-# Is wget installed?
-is_cmd wget || fatal "Please install wget"
-
-# Is zip installed?
-is_cmd zip || fatal "Please install zip"
-
-# Is zip installed?
-is_cmd unzip || fatal "Please install unzip"
 
 START_FOLDER=$(try pwd) || exit 1
 TMP_FOLDER=$(try mktemp -d) || exit 1
