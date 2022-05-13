@@ -7,7 +7,7 @@
 Icon "brand.ico"
 BrandingText "Etherpad Foundation"
 Name "Etherpad Server"
-OutFile "..\..\..\etherpad-server-windows.exe"
+OutFile "..\..\..\etherpad-win.exe"
 
 !insertmacro MUI_LANGUAGE "English"
 

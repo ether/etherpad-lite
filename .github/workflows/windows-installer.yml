@@ -54,5 +54,5 @@ jobs:
         name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: etherpad-server-windows.exe
-          path: etherpad-server-windows.exe
+          name: etherpad-win.exe
+          path: etherpad-win.exe

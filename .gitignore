@@ -1,4 +1,4 @@
-/etherpad-server-windows.exe
+/etherpad-win.exe
 /etherpad-win.zip
 node_modules
 /settings.json
