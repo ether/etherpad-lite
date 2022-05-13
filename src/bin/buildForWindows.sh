@@ -15,9 +15,11 @@ done
 
 # Move to the folder where Etherpad is checked out
 try cd "${0%/*}"
-START_FOLDER=$(try git rev-parse --show-toplevel) || exit 1
-try cd "${START_FOLDER}"
+workdir=$(try git rev-parse --show-toplevel) || exit 1
+try cd "${workdir}"
 [ -f src/package.json ] || fatal "failed to cd to etherpad root directory"
+
+OUTPUT=${workdir}/etherpad-lite-win.zip
 
 TMP_FOLDER=$(try mktemp -d) || exit 1
 
@@ -54,9 +56,9 @@ try rm -rf "$TMP_FOLDER"/src/node_modules/nodemailer/node_modules/mailcomposer/n
 
 log "create the zip..."
 try cd "$TMP_FOLDER"
-try zip -9 -r "$START_FOLDER"/etherpad-lite-win.zip ./* -x var
+try zip -9 -r "${OUTPUT}" ./* -x var
 
 log "clean up..."
 try rm -rf "$TMP_FOLDER"
 
-log "Finished. You can find the zip in the Etherpad root folder, it's called etherpad-lite-win.zip"
+log "Finished. You can find the zip at ${OUTPUT}"
