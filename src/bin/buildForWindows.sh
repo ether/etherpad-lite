@@ -22,6 +22,8 @@ try cd "${workdir}"
 OUTPUT=${workdir}/etherpad-win.zip
 
 TMP_FOLDER=$(try mktemp -d) || exit 1
+trap 'exit 1' HUP INT TERM
+trap 'log "cleaning up..."; try cd / && try rm -rf "${TMP_FOLDER}"' EXIT
 
 log "create a clean environment in $TMP_FOLDER..."
 try cp -ar . "$TMP_FOLDER"
@@ -57,8 +59,5 @@ try rm -rf "$TMP_FOLDER"/src/node_modules/nodemailer/node_modules/mailcomposer/n
 log "create the zip..."
 try cd "$TMP_FOLDER"
 try zip -9 -r "${OUTPUT}" ./* -x var
-
-log "clean up..."
-try rm -rf "$TMP_FOLDER"
 
 log "Finished. You can find the zip at ${OUTPUT}"
