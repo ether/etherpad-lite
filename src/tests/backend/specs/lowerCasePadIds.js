@@ -8,8 +8,8 @@ const settings = require('../../../node/utils/Settings');
 describe(__filename, function () {
   let agent;
   const cleanUpPads = async () => {
-    const padIds = ['UPPERCASEpad', 'uppercasepad', 'ALREADYexistingPad', 'alreadyexistingpad'];
-    await Promise.all(padIds.map(async (padId) => {
+    const {padIDs} = await padManager.listAllPads();
+    await Promise.all(padIDs.map(async (padId) => {
       if (await padManager.doesPadExist(padId)) {
         const pad = await padManager.getPad(padId);
         await pad.remove();
@@ -77,14 +77,14 @@ describe(__filename, function () {
       assert.equal(newPadHandshake.data.collab_client_vars.initialAttributedText.text, 'newpad\n');
     });
 
-    // it('disallow socket connection', async function () {
-    //   debugger;
-    //   const res = await agent.get('/p/pad').expect(200);
-    //   const socket = await common.connect(res);
-    //   const deny = await common.handshake(socket, 'Pad');
-    //   assert.equal(deny.accessStatus, 'deny');
-    //   const ok = await common.handshake(socket, 'pad');
-    //   assert.equal(ok.type, 'CLIENT_VARS');
-    // });
+    it('disallow creation of different case pad-name via socket connection', async function () {
+      await padManager.getPad('maliciousattempt', 'attempt');
+
+      const newPad = await agent.get('/p/maliciousattempt').expect(200);
+      const newPadSocket = await common.connect(newPad);
+      const newPadHandshake = await common.handshake(newPadSocket, 'MaliciousAttempt');
+
+      assert.equal(newPadHandshake.data.collab_client_vars.initialAttributedText.text, 'attempt\n');
+    });
   });
 });
