@@ -54,7 +54,7 @@
   }
 }
 
-@media (max-width: 800px) {
+@media (max-width: 992px) {  
   .popup-content {
     padding: 1rem;
     box-shadow: 0 0 0 1px rgba(99, 114, 130, 0.16), -1px 1px 16px 3px rgba(27, 39, 51, 0.12);

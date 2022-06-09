@@ -4,8 +4,12 @@ form {
   border: none
 }
 
+form {
+  display: none;
+}
+
 body {
-  background: url(images/fond.jpg) center center no-repeat fixed #fff;
+  background: #ffffff;
   font-family: Quicksand, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   font-size: 16px;
   line-height: 1.42857143;
@@ -19,7 +23,7 @@ body {
 #wrapper {
   border-top: none;
   margin-top: 0;
-  padding: 0;
+  padding: 10px;
   background: 0 0;
   box-shadow: none
 }
@@ -31,17 +35,19 @@ input {
 #inner {
   background: transparent;
   padding-top: 0;
-  width: 350px;
-  max-width: 350px;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 50px;
   text-align: center;
   color:#FFF;
 }
 
 #label {
   text-shadow: none;
-  color: #FFF;
+  color: #333;
   font-weight: normal;
   text-align: center;
+  display: none;
 }
 
 #button {
@@ -51,8 +57,8 @@ input {
   text-shadow: none;
   font-size: 23px;
   line-height: 1.8;
-  color: #64d29b;
-  background: #586a69;
+  color: #fff;
+  background: #00a3d3;
   border-radius: 3px;
   box-shadow: none;
   height: 53px;
@@ -64,9 +70,8 @@ input {
 button[type=submit] {
   border-top-right-radius: 3px;
   border-bottom-right-radius: 3px;
-  left: 305px;
-  color: #64d29b;
-  background: #586a69;
+  color: #fff;
+  background: #00a3d3;
   border: none;
   top: 0;
   opacity: 1;
@@ -76,13 +81,35 @@ button[type=submit] {
 #button:hover,
 button[type=submit]:hover {
   cursor: pointer;
-  background: #4a5d5c;
-  color: #64d29b;
+  background: #0082a8;
+  color: #fff;
 }
 
 #padname {
   height: 38px;
-  max-width: 350px;
+  width: calc(100% - 45px);
   padding: 0 12px;
   position: relative;
+}
+
+svg#kits_logo {
+    width: 250px;
+    height: auto;
+    margin-bottom: 50px;
+    max-width: 100%;
+}
+
+#kits_welcome_wrapper{
+    padding-bottom: 30px;
+}
+            
+#kits_welcome_text {
+    color:black !important;
+    text-align: center;
+}
+
+@media only screen and (max-width: 420px) {
+  svg#kits_logo {
+      margin-top: 30px;
+  }
 }

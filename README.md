@@ -183,3 +183,7 @@ Visit the **[FAQ](https://github.com/ether/etherpad-lite/wiki/FAQ)**.
 
 # License
 [Apache License v2](http://www.apache.org/licenses/LICENSE-2.0.html)
+
+# Additonal licence
+
+The etherpad-lite [logo](https://thenounproject.com/icon/16723/) in this repo – created by [Parallel Digital Studio](https://thenounproject.com/Parallel) – is licenced under [CC BY 3.0 Unported](https://creativecommons.org/licenses/by/3.0/).
