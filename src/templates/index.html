@@ -17,9 +17,6 @@
         <script src="static/js/index.js"></script>
 
         <style>
-            html, body {
-              height: 100%;
-            }
             body {
               margin: 0;
               color: #333;
@@ -30,6 +27,7 @@
               background: -ms-radial-gradient(circle,#aaa,#eee 60%) center fixed;
               background: -o-radial-gradient(circle,#aaa,#eee 60%) center fixed;
               border-top: 8px solid rgba(51,51,51,.8);
+              min-height: 100vh;
             }
             #wrapper {
               border-top: 1px solid #999;
@@ -45,7 +43,7 @@
             #inner {
               position:relative;
               max-width: 300px;
-              margin: 0 auto;
+              margin: 20px auto 5px;
             }
             #button {
               margin: 0 auto;
@@ -72,9 +70,8 @@
               background: -ms-linear-gradient(#707070,#666666 50%,#5B5B5B 51%,#474747);
               background: -o-linear-gradient(#707070,#666666 50%,#5B5B5B 51%,#474747);
             }
-            #button:active {
-              box-shadow: inset 0 1px 12px rgba(0,0,0,0.9);
-              background: #444;
+            #button:focus, button[type=submit]:focus {
+              outline: 0;
             }
             #label {
               text-align: left;
@@ -84,7 +81,6 @@
             }
             #padname{
               height:38px;
-              max-width:280px;
             }
             form {
               height: 38px;
@@ -92,13 +88,17 @@
               border: 1px solid #bbb;
               border-radius: 3px;
               position: relative;
+              text-align: left;
             }
             button, input {
               font-weight: bold;
               font-size: 15px;
             }
             input[type="text"] {
-              border-radius: 3px;
+              -webkit-appearance: none;
+              -moz-appearance: none;
+              appearance: none;
+              border-radius: 3px 0 0 3px;
               box-sizing: border-box;
               -moz-box-sizing: border-box;
               line-height:36px; /* IE8 hack */
@@ -107,12 +107,14 @@
               width: 100%;
               height: 100%;
               outline: none;
-              border: none;
+              background-color: rgba(0, 0, 0, 0.01);
+              border: 1px solid rgba(0, 0, 0, 0.1);
+              border-right: none;
               position: absolute;
             }
             button[type="submit"] {
               position: absolute;
-              left:253px;
+              right: 0px;
               width: 45px;
               height: 38px;
             }
@@ -141,7 +143,71 @@
         <div id="wrapper">
         <% e.begin_block("indexWrapper"); %>
             <div id="inner">
-                <% if (!settings.requireSession) { %>
+              <!-- kits text and info start -->
+              <svg version="1.1" id="kits_logo" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                 width="369.292px" height="92.093px" viewBox="0 0 369.292 92.093" enable-background="new 0 0 369.292 92.093"
+                 xml:space="preserve">
+              <g>
+                <g id="g10" transform="matrix(1.0787049,0,0,1.0787049,-4.232838,-13.107343)">
+                  <path id="path2" fill="#00A3D3" d="M104.53,43.314L86.451,61.395l-0.517,0.23L63.038,71.906l10.518-23.41L78.1,43.95
+                    l15.144-15.144c0.426,0.393,0.851,0.797,1.267,1.21L79.378,45.143l6.273-0.523l-2.615,6.632l-0.427,1.086l0.789-0.313l6.923-2.731
+                    l-0.52,6.274l13.837-13.836C103.947,42.25,104.243,42.778,104.53,43.314z M87.888,57.481l0.459-5.528l-4.278,1.686l-4.56,1.801
+                    l2.451-6.221l1.037-2.621l-2.588,0.214l-2.942,0.246l-2.447,2.445l-4.373,9.729l5.065,5.064l9.728-4.369l0.245-0.246
+                    L87.888,57.481z"/>
+                  <path id="path4" fill="#00A3D3" d="M86.073,64.373c0,0.062,0,0.131,0,0.196c0,16.918-13.719,30.638-30.638,30.638
+                    c-16.922,0-30.638-13.717-30.638-30.638v-0.067l27.859,12.511L39.179,47.015l-4.751-4.751c2.657-2.504,5.756-4.534,9.183-5.967
+                    v9.974l11.678,30.743l11.686-30.743V36.178c3.467,1.413,6.622,3.442,9.32,5.948l-4.887,4.889L57.931,77.014L86.073,64.373z"/>
+                  <path id="path6" fill="#00A3D3" d="M64.415,14.725v31.077l-9.126,23.989l-9.114-23.989v-31.03c0.575-0.098,1.16-0.186,1.75-0.262
+                    v24.805l4.065-4.807l3.299,7.605l3.308-7.605l4.066,4.809V14.469C63.251,14.546,63.832,14.63,64.415,14.725z M62.661,45.481V42.02
+                    l-3.586-4.234L55.289,46.5l-3.784-8.714l-3.58,4.234v3.461l3.785,9.967h7.162L62.661,45.481z"/>
+                  <path id="path8" fill="#00A3D3" d="M37.028,48.496l10.519,23.41L24.923,61.743l-0.788-0.347L6.242,43.498
+                    c0.284-0.532,0.578-1.064,0.884-1.589l13.662,13.659l-0.526-6.274l7.167,2.829l0.549,0.215l-0.295-0.758l-2.75-6.958l6.279,0.522
+                    L16.216,30.151c0.415-0.407,0.834-0.814,1.26-1.214l15.163,15.161L37.028,48.496z M39.933,59.235l-4.364-9.731l-2.446-2.444
+                    l-2.678-0.225l-2.849-0.237l1.145,2.914l2.342,5.928l-4.317-1.701l-4.524-1.786l0.459,5.529l2.443,2.446l9.734,4.37L39.933,59.235
+                    z"/>
+                </g>
+                <g enable-background="new    ">
+                  <path d="M287.751,42.307c0,12.74-9.273,17.981-21.529,17.981h-7.016v20.4h-7.66V25.132h14.594
+                    C279.525,25.132,287.751,30.615,287.751,42.307z M279.607,42.388c0-8.306-5.322-11.289-13.547-11.289h-6.854V54.24h6.691
+                    C274.125,54.24,279.607,51.821,279.607,42.388z"/>
+                  <path d="M326.433,76.495l-1.693,5.16c-4.273-0.483-7.016-2.177-8.307-6.369c-2.982,4.435-7.498,6.369-12.658,6.369
+                    c-8.467,0-13.547-5.24-13.547-12.82c0-9.111,6.854-14.029,18.707-14.029h6.531V51.66c0-6.128-2.984-8.386-8.869-8.386
+                    c-3.145,0-7.096,0.807-11.449,2.257l-1.855-5.402c5.242-1.935,9.918-2.902,14.676-2.902c10.24,0,14.916,5.241,14.916,14.111
+                    v19.433C322.884,74.479,324.255,75.688,326.433,76.495z M315.466,69.479v-9.756h-5.564c-7.82,0-11.771,2.902-11.771,8.709
+                    c0,4.998,2.5,7.66,7.338,7.66C309.822,76.093,313.048,73.915,315.466,69.479z"/>
+                  <path d="M366.792,21.1v59.588h-6.531l-0.727-5.887c-2.74,4.273-7.016,6.854-12.256,6.854c-10.32,0-16.045-8.789-16.045-22.012
+                    c0-12.982,6.289-22.417,16.689-22.417c5,0,8.629,2.257,11.451,5.241V20.213L366.792,21.1z M359.375,69.479V48.677
+                    c-2.662-3.387-5.645-5.563-9.838-5.563c-6.371,0-10.322,5.322-10.322,16.368c0,11.209,3.549,16.288,9.678,16.288
+                    C353.65,75.77,356.552,73.431,359.375,69.479z"/>
+                </g>
+                <g id="flowRoot15" transform="matrix(0.26458333,0,0,0.26458333,108.88172,85.529972)">
+                  <path id="path841" d="M82.772-18.299h-28.04v-225.237l28.04-3.355V-18.299z M115.994-107.907l65.832,89.609h-33.525l-63.7-87.786
+                    l59.127-72.839h31.392L115.994-107.907z"/>
+                  <path id="path843" d="M223.814-256.034c5.891,0,10.669,1.829,14.326,5.483c3.654,3.66,5.485,8.233,5.485,13.719
+                    c0,5.487-1.831,10.058-5.485,13.714c-3.658,3.455-8.436,5.182-14.326,5.182c-5.688,0-10.361-1.729-14.02-5.182
+                    c-3.658-3.656-5.485-8.227-5.485-13.714c0-5.487,1.827-10.058,5.485-13.719C213.454-254.204,218.126-256.034,223.814-256.034z
+                     M238.14-18.299h-28.042v-160.623h28.042V-18.299z"/>
+                  <path id="path845" d="M376.021-25.614c-10.571,7.315-22.552,10.973-35.965,10.973c-13.612,0-24.279-3.864-31.999-11.582
+                    c-7.518-7.924-11.28-19.3-11.28-34.13v-96.928H268.74v-21.64h28.038v-36.269l28.042-3.353v39.622h38.098l-3.049,21.64h-35.049
+                    v95.703c0,8.33,1.425,14.424,4.267,18.285c3.049,3.654,8.032,5.488,14.934,5.488c6.304,0,13.406-2.13,21.334-6.404L376.021-25.614
+                    z"/>
+                  <path id="path847" d="M448.652-182.579c10.977,0,20.832,1.524,29.572,4.571c8.733,3.047,17.06,7.62,24.995,13.717l-11.892,17.674
+                    c-7.315-4.667-14.328-8.127-21.031-10.359c-6.503-2.237-13.406-3.355-20.728-3.355c-9.139,0-16.351,1.929-21.636,5.789
+                    c-5.285,3.66-7.921,8.735-7.921,15.244c0,6.5,2.436,11.579,7.315,15.238c5.079,3.654,14.114,7.208,27.121,10.667
+                    c17.879,4.47,31.196,10.567,39.921,18.285c8.947,7.721,13.413,18.285,13.413,31.698c0,15.849-6.193,27.94-18.595,36.267
+                    c-12.188,8.33-27.121,12.498-44.801,12.498c-24.375,0-44.594-7.009-60.65-21.031l14.934-17.067
+                    c13.612,10.364,28.649,15.546,45.111,15.546c10.564,0,18.898-2.137,24.988-6.4c6.304-4.466,9.449-10.468,9.449-17.982
+                    c0-5.492-1.115-9.855-3.351-13.11c-2.237-3.451-6.097-6.396-11.582-8.836c-5.485-2.643-13.509-5.381-24.08-8.231
+                    c-17.06-4.473-29.461-10.464-37.183-17.982c-7.515-7.515-11.272-17.067-11.272-28.651c0-8.332,2.436-15.849,7.308-22.554
+                    c5.086-6.909,11.996-12.191,20.728-15.851C427.732-180.649,437.682-182.579,448.652-182.579L448.652-182.579z"/>
+                </g>
+              </g>
+              </svg>
+              <div id="kits_welcome_wrapper">
+                 <span id="kits_welcome_text">Mit unserem kitsPad kannst du kollaborativ Texte in Echtzeit erarbeiten, kommentieren und die Ergebnisse exportieren. Änderungen sind dabei immer transparent.</span>
+              </div> 
+              <!-- kits text and info end -->
+               <% if (!settings.requireSession) { %>
                     <% if (settings.editOnly) { %>
                         <label id="label" for="padname" data-l10n-id="index.openPad"></label>
                     <% } else {%>
@@ -155,6 +221,119 @@
                 <% } %>
             </div>
         <% e.end_block(); %>
+            <!-- kits footer start -->
+            <style>
+            .kits_footer {
+                font-family: Arial, Helvetica, sans-serif;
+                background: #ffffff;
+                border-radius: 4px;
+                width: 250px;
+                max-width: 100%;
+                margin: 130px auto 30px auto;
+                padding: 20px;
+                border-left: 4px solid #00a3d3;
+                box-sizing: border-box;
+                box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,.1);
+            }
+
+            .kits_footer #kits_footer_logo {
+                position: relative;
+                left: calc(50% + 10px);
+                transform: translateX(-50%);
+                width: 90px;
+                height: auto;
+                margin-bottom: 5px;
+            }
+            .kits_footer_links {
+                padding: 0;
+                text-align: center;
+                margin: 0;
+            }
+            .kits_footer_links li {
+                display: inline-block;
+                padding: 5px;
+            }
+            .kits_footer_links a {
+                color: #000;
+                font-size: 12px;
+                text-decoration: none;
+            }
+            .kits_footer_links a:hover {
+                text-decoration: underline;
+            }
+            .github_link {
+                text-align: center;
+                font-size: 12px;
+                margin-top: 5px;
+            }
+            #kits_github_link {
+                display: inline-block;
+                width: auto;
+                height: 20px;
+                position: relative;
+                top: 5px;
+                margin-right: 3px;
+                color: #999;
+            }
+            .github_link a {
+                color: #999;
+                text-decoration: none;
+                transition: color .3s ease;
+            }
+            .github_link a:hover {
+                color: #555;
+            }
+            </style>
+            <div class="kits_footer">
+                <a href="https://kits.blog/tools/" target="_blank" title="Zurück zur Tools-Seite">
+                    <svg version="1.1" id="kits_footer_logo" inkscape:version="0.92.3 (2405546, 2018-03-11)" sodipodi:docname="kits_logo.svg" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="234.107px" height="122.289px" viewBox="0 0 234.107 122.289" enable-background="new 0 0 234.107 122.289" xml:space="preserve">
+                        <sodipodi:namedview id="base" inkscape:guide-bbox="true" inkscape:window-y="-8" inkscape:window-x="-8" inkscape:window-height="1027" inkscape:window-width="1920" inkscape:current-layer="g35" inkscape:document-units="mm" inkscape:pageshadow="2" inkscape:pageopacity="0.0" inkscape:cy="115.46779" showguides="true" inkscape:cx="291.13637" inkscape:zoom="9.7896959" borderopacity="1.0" bordercolor="#666666" showgrid="false" pagecolor="#000000" inkscape:window-maximized="1">
+                            <sodipodi:guide id="guide1435" inkscape:locked="false" orientation="1,0" position="67.207347,4.2239254"></sodipodi:guide>
+                        </sodipodi:namedview>
+                        <g id="layer2" transform="translate(17.987022,2.4044625)" inkscape:groupmode="layer" inkscape:label="Ebene 2">
+                            <g id="g35" transform="matrix(4.0529229,0,0,4.0529229,-223.55328,-470.63108)">
+                                <g id="flowRoot15" transform="matrix(0.26458333,0,0,0.26458333,108.88172,85.529972)">
+                                    <path id="path841" fill="#000000" d="M-204.456,223.278h-9.91v-79.603l9.91-1.185V223.278z M-192.715,191.609l23.267,31.669
+                                        h-11.849l-22.513-31.024l20.897-25.744h11.094L-192.715,191.609z"></path>
+                                    <path id="path843" fill="#000000" d="M-154.609,139.258c2.082,0,3.77,0.646,5.063,1.938c1.292,1.293,1.939,2.909,1.939,4.848
+                                        s-0.647,3.554-1.939,4.847c-1.293,1.221-2.981,1.831-5.063,1.831c-2.011,0-3.662-0.611-4.955-1.831
+                                        c-1.293-1.293-1.939-2.908-1.939-4.847s0.646-3.554,1.939-4.848C-158.271,139.905-156.62,139.258-154.609,139.258z
+                                         M-149.546,223.278h-9.91v-56.767h9.91V223.278z"></path>
+                                    <path id="path845" fill="#000000" d="M-100.815,220.693c-3.735,2.585-7.972,3.878-12.711,3.878c-4.811,0-8.581-1.365-11.31-4.094
+                                        c-2.657-2.799-3.986-6.821-3.986-12.063v-34.255h-9.91v-7.648h9.91v-12.818l9.91-1.185v14.003h13.465l-1.077,7.648h-12.387
+                                        v33.824c0,2.943,0.503,5.098,1.508,6.462c1.077,1.292,2.837,1.939,5.278,1.939c2.227,0,4.738-0.753,7.54-2.262L-100.815,220.693z
+                                        "></path>
+                                    <path id="path847" fill="#000000" d="M-75.145,165.218c3.879,0,7.361,0.539,10.449,1.616c3.088,1.077,6.032,2.693,8.834,4.848
+                                        l-4.202,6.246c-2.585-1.65-5.063-2.872-7.433-3.661c-2.298-0.79-4.739-1.185-7.325-1.185c-3.231,0-5.781,0.681-7.648,2.046
+                                        c-1.867,1.293-2.799,3.087-2.799,5.386c0,2.298,0.862,4.093,2.585,5.386c1.794,1.292,4.99,2.548,9.586,3.77
+                                        c6.319,1.58,11.024,3.734,14.11,6.462c3.161,2.729,4.74,6.463,4.74,11.202c0,5.602-2.189,9.875-6.571,12.819
+                                        c-4.308,2.944-9.587,4.417-15.834,4.417c-8.617,0-15.763-2.478-21.436-7.434l5.278-6.031c4.811,3.663,10.126,5.494,15.942,5.494
+                                        c3.735,0,6.679-0.755,8.833-2.262c2.227-1.579,3.339-3.698,3.339-6.355c0-1.94-0.394-3.483-1.185-4.633
+                                        c-0.79-1.22-2.155-2.261-4.094-3.123c-1.939-0.934-4.775-1.903-8.509-2.909c-6.031-1.58-10.412-3.698-13.141-6.356
+                                        c-2.657-2.657-3.986-6.031-3.986-10.126c0-2.944,0.862-5.601,2.585-7.97c1.796-2.442,4.237-4.309,7.325-5.602
+                                        C-82.541,165.9-79.023,165.218-75.145,165.218L-75.145,165.218z"></path>
+                                </g>
+                                <polygon id="polygon2" fill="#00A3D3" points="96.983,116.306 99.402,118.724 101.92,121.242 106.856,116.306      "></polygon>
+                                <polygon id="polygon4" fill="#00A3D3" points="107.02,116.47 102.083,121.406 104.61,123.932 107.02,126.342       "></polygon>
+                                <rect id="rect6" x="100.191" y="122.286" transform="matrix(0.7071 -0.7071 0.7071 0.7071 -57.8396 108.3909)" fill="#00A3D3" width="3.457" height="3.457"></rect>
+                                <polygon id="polygon8" fill="#00A3D3" points="106.856,126.506 104.528,124.178 102.199,126.506       "></polygon>
+                                <polygon id="polygon10" fill="#00A3D3" points="101.64,126.506 99.23,124.096 96.819,121.686 96.819,126.506       "></polygon>
+                                <polygon id="polygon12" fill="#00A3D3" points="96.819,121.358 99.204,123.742 99.204,118.854 96.819,116.47       "></polygon>
+                                <polygon id="polygon8-6" fill="#00A3D3" points="96.819,130.044 100.112,126.752 96.819,126.752       "></polygon>
+                            </g>
+                        </g>
+                    </svg>
+                </a>
+                <ul class="kits_footer_links">
+                    <li><a href="https://kits.blog/impressum/" target="_blank">Impressum</a></li>
+                    <li><a href="https://kits.blog/datenschutzerklaerung/" target="_blank">Datenschutz</a></li>
+                </ul>
+                <div class="github_link">
+                    <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="github" class="svg-inline--fa fa-github fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" id="kits_github_link"><path fill="currentColor" d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"></path></svg>
+                    <a href="https://github.com/ether/etherpad-lite" target="_blank">etherpad-lite</a>
+                </div>
+            </div>
+            <!-- kits footer end -->
         </div>
 
         <% e.begin_block("indexCustomScripts"); %>
