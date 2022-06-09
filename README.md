@@ -187,3 +187,5 @@ Visit the **[FAQ](https://github.com/ether/etherpad-lite/wiki/FAQ)**.
 # Additonal licence
 
 The etherpad-lite [logo](https://thenounproject.com/icon/16723/) in this repo – created by [Parallel Digital Studio](https://thenounproject.com/Parallel) – is licenced under [CC BY 3.0 Unported](https://creativecommons.org/licenses/by/3.0/).
+
+Our QR code feature is based on this [repo](https://github.com/jeromeetienne/jquery-qrcode/) (MIT).
