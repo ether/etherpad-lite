@@ -13,6 +13,7 @@ jobs:
         with:
           close-issue-label: wontfix
           close-pr-label: wontfix
+          days-before-close: -1
           exempt-issue-labels:
             - pinned
             - security
@@ -33,11 +34,3 @@ jobs:
             - Special case Bug
             - Upstream bug
             - Feature Request
-          stale-issue-message: >
-            This issue has been automatically marked as stale because it has not
-            had recent activity. It will be closed if no further activity
-            occurs. Thank you for your contributions.
-          stale-pr-message: >
-            This pull request has been automatically marked as stale because it
-            has not had recent activity. It will be closed if no further
-            activity occurs. Thank you for your contributions.
