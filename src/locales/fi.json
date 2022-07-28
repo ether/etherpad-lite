@@ -17,7 +17,8 @@
 			"Stryn",
 			"Tomi Toivio",
 			"Veikk0.ma",
-			"VezonThunder"
+			"VezonThunder",
+			"Yupik"
 		]
 	},
 	"admin.page-title": "Ylläpitäjän kojelauta - Etherpad",
@@ -166,7 +167,7 @@
 	"pad.impexp.importing": "Tuodaan...",
 	"pad.impexp.confirmimport": "Tiedoston tuonti korvaa kaiken muistiossa olevan tekstin. Haluatko varmasti jatkaa?",
 	"pad.impexp.convertFailed": "TIedoston tuonti epäonnistui. Käytä eri tiedostomuotoa tai kopioi ja liitä käsin.",
-	"pad.impexp.padHasData": "Tiedostoa ei voitu lisätä lehtiöön, koska lehtiötä on jo muokattu – ole hyvä ja lisää tiedosto uuteen lehtiöön",
+	"pad.impexp.padHasData": "Tiedostoa ei voitu lisätä muistioon, koska muistiota on jo muokattu – ole hyvä ja lisää tiedosto uuteen muistioon",
 	"pad.impexp.uploadFailed": "Lähetys epäonnistui. Yritä uudelleen.",
 	"pad.impexp.importfailed": "Tuonti epäonnistui",
 	"pad.impexp.copypaste": "Kopioi ja liitä",
