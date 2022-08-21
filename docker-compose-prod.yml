@@ -22,7 +22,7 @@ services:
     image: mariadb
     # Pass config parameters to the postgres server.
     # Find more information below when you need to generate the ssl-relevant file your self
-    # command: -c ssl=on -c ssl_cert_file=/var/lib/postgresql/server.crt -c ssl_key_file=/var/lib/postgresql/server.key
+    command: --ssl_cert=/var/lib/mysql/server.crt --ssl_key=/var/lib/mysql/server.key
     environment:
       MARIADB_DATABASE: ${DOCKER_COMPOSE_MARIADB_PROD_ENV_MARIADB_DATABASE:?}
       MARIADB_PASSWORD: ${DOCKER_COMPOSE_MARIADB_PROD_ENV_MARIADB_PASSWORD:?}
@@ -41,8 +41,8 @@ services:
       #   ```
       # 
       # Afterwards, the ssl_cert_file and ssl_key_file are mounted into the docker container, see below
-      # - ./ca/server.crt:/var/lib/postgresql/server.crt
-      # - ./ca/server.key:/var/lib/postgresql/server.key
+      - ./ca/server.crt:/var/lib/mysql/server.crt
+      - ./ca/server.key:/var/lib/mysql/server.key
       - mariadb_prod_data:/var/lib/postgresql/data/pgdata
 
   # # If you do not have another postgres database service in this docker-compose, you can add this postgres service.
