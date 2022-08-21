@@ -8,13 +8,35 @@ services:
   app_prod:
     build:
       context: .
+      args:
+        ETHERPAD_PLUGINS: >-
+          ep_comments_page
+          ep_image_upload
+          kitsteam/ep_push2delete
+          ep_embedded_hyperlinks2
+          ep_headings2
+          ep_align
+          ep_font_color
+          ep_delete_empty_pads
+          ep_delete_after_delay
+          ep_helmet
+          ep_font_size
+          ep_disable_imports
+        INSTALL_SOFFICE: true
+    depends_on:
+      - mariadb_prod
     environment:
+      DB_CHARSET: ${DOCKER_COMPOSE_APP_PROD_ENV_DB_CHARSET:-utf8mb4_bin}
       DB_HOST: mariadb_prod
       DB_NAME: ${DOCKER_COMPOSE_MARIADB_PROD_ENV_MARIADB_DATABASE:?}
       DB_PASS: ${DOCKER_COMPOSE_MARIADB_PROD_ENV_MARIADB_PASSWORD:?}
       DB_PORT: ${DOCKER_COMPOSE_MARIADB_PROD_ENV_MARIADB_PORT:-3306}
       DB_TYPE: "mysql"
       DB_USER: ${DOCKER_COMPOSE_MARIADB_PROD_ENV_MARIADB_USER:?}
+      DEFAULT_PAD_TEXT: ${DOCKER_COMPOSE_APP_PROD_ENV_DEFAULT_PAD_TEXT}
+      DISABLE_IP_LOGGING: ${DOCKER_COMPOSE_APP_PROD_ENV_DISABLE_IP_LOGGING:-true}
+      SOFFICE: ${DOCKER_COMPOSE_APP_PROD_ENV_SOFFICE:-/usr/bin/soffice}
+      TRUST_PROXY: ${DOCKER_COMPOSE_APP_PROD_ENV_TRUST_PROXY:-true}
     ports:
       - "${DOCKER_COMPOSE_APP_PROD_PORT_PUBLISHED:-9001}:${DOCKER_COMPOSE_APP_PROD_PORT_TARGET:-9001}"
 
@@ -22,7 +44,11 @@ services:
     image: mariadb
     # Pass config parameters to the postgres server.
     # Find more information below when you need to generate the ssl-relevant file your self
-    command: --ssl_cert=/var/lib/mysql/server.crt --ssl_key=/var/lib/mysql/server.key
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_bin
+      - --ssl_cert=/var/lib/mysql/server.crt
+      - --ssl_key=/var/lib/mysql/server.key
     environment:
       MARIADB_DATABASE: ${DOCKER_COMPOSE_MARIADB_PROD_ENV_MARIADB_DATABASE:?}
       MARIADB_PASSWORD: ${DOCKER_COMPOSE_MARIADB_PROD_ENV_MARIADB_PASSWORD:?}
@@ -45,34 +71,5 @@ services:
       - ./ca/server.key:/var/lib/mysql/server.key
       - mariadb_prod_data:/var/lib/postgresql/data/pgdata
 
-  # # If you do not have another postgres database service in this docker-compose, you can add this postgres service.
-  # # Note: Please use other credentials when using this in production.
-  # postgres_prod:
-  #   image: postgres:12-alpine
-  #   # Pass config parameters to the postgres server.
-  #   # Find more information below when you need to generate the ssl-relevant file your self
-  #   command: -c ssl=on -c ssl_cert_file=/var/lib/postgresql/server.crt -c ssl_key_file=/var/lib/postgresql/server.key
-  #   environment:
-  #     PGDATA: /var/lib/postgresql/data/pgdata
-  #     POSTGRES_DB: ${DOCKER_COMPOSE_POSTGRES_PROD_DB:?}
-  #     POSTGRES_PASSWORD: ${DOCKER_COMPOSE_POSTGRES_PROD_PASSWORD:?}
-  #     POSTGRES_PORT: ${DOCKER_COMPOSE_POSTGRES_PROD_PORT:-5432}
-  #     POSTGRES_USER: ${DOCKER_COMPOSE_POSTGRES_PROD_USER:?}
-  #   volumes:
-  #     # To setup an ssl-enabled postgres server locally, you need to generate a self-signed ssl certificate.
-  #     #   ```bash
-  #     #   mkdir -p ./ca
-  #     #   openssl req -new -text -passout pass:abcd -subj /CN=localhost -out ./ca/server.req -keyout ./ca/privkey.pem
-  #     #   openssl rsa -in ./ca/privkey.pem -passin pass:abcd -out ./ca/server.key
-  #     #   openssl req -x509 -in ./ca/server.req -text -key ./ca/server.key -out ./ca/server.crt
-  #     #   chmod 600 ./ca/server.key
-  #     #   test $(uname -s) = Linux && chown 70 ./ca/server.key
-  #     #   ```
-  #     # 
-  #     # Afterwards, the ssl_cert_file and ssl_key_file are mounted into the docker container, see below
-  #     - ./ca/server.crt:/var/lib/postgresql/server.crt
-  #     - ./ca/server.key:/var/lib/postgresql/server.key
-  #     - postgres_prod_data:/var/lib/postgresql/data/pgdata
-      
 volumes:
   mariadb_prod_data:
