@@ -42,7 +42,7 @@ services:
 
   mariadb_prod:
     image: mariadb
-    # Pass config parameters to the postgres server.
+    # Pass config parameters to the mysql server.
     # Find more information below when you need to generate the ssl-relevant file your self
     command:
       - --character-set-server=utf8mb4
@@ -56,20 +56,21 @@ services:
       MARIADB_RANDOM_ROOT_PASSWORD: 'yes'
       MARIADB_USER: ${DOCKER_COMPOSE_MARIADB_PROD_ENV_MARIADB_USER:?}
     volumes:
-      # To setup an ssl-enabled postgres server locally, you need to generate a self-signed ssl certificate.
-      #   ```bash
-      #   mkdir -p ./ca
-      #   openssl req -new -text -passout pass:abcd -subj /CN=localhost -out ./ca/server.req -keyout ./ca/privkey.pem
-      #   openssl rsa -in ./ca/privkey.pem -passin pass:abcd -out ./ca/server.key
-      #   openssl req -x509 -in ./ca/server.req -text -key ./ca/server.key -out ./ca/server.crt
-      #   chmod 600 ./ca/server.key
-      #   test $(uname -s) = Linux && chown 70 ./ca/server.key
-      #   ```
+      # To setup an ssl-enabled mysql server locally, you need to generate a self-signed ssl certificate.
+      # 
+      # ```bash
+      # mkdir -p ./ca
+      # openssl req -new -text -passout pass:abcd -subj /CN=localhost -out ./ca/server.req -keyout ./ca/privkey.pem
+      # openssl rsa -in ./ca/privkey.pem -passin pass:abcd -out ./ca/server.key
+      # openssl req -x509 -in ./ca/server.req -text -key ./ca/server.key -out ./ca/server.crt
+      # chmod 600 ./ca/server.key
+      # test $(uname -s) = Linux && chown 70 ./ca/server.key
+      # ```
       # 
       # Afterwards, the ssl_cert_file and ssl_key_file are mounted into the docker container, see below
       - ./ca/server.crt:/var/lib/mysql/server.crt
       - ./ca/server.key:/var/lib/mysql/server.key
-      - mariadb_prod_data:/var/lib/postgresql/data/pgdata
+      - mariadb_prod_data:/var/lib/mysql
 
 volumes:
   mariadb_prod_data:
