@@ -4,6 +4,7 @@
 			"Fohanno",
 			"Fulup",
 			"Gwenn-Ael",
+			"Huñvreüs",
 			"Y-M D"
 		]
 	},
@@ -86,7 +87,7 @@
 	"pad.chat.title": "Digeriñ ar flap kevelet gant ar pad-mañ.",
 	"pad.chat.loadmessages": "Kargañ muioc'h a gemennadennoù",
 	"pad.chat.stick.title": "Gwriziennañ an diviz war ar skramm",
-	"pad.chat.writeMessage.placeholder": "Skrivañ ho kemenadenn amañ",
+	"pad.chat.writeMessage.placeholder": "Skrivañ ho kemennadenn amañ",
 	"timeslider.pageTitle": "Istor dinamek eus {{appTitle}}",
 	"timeslider.toolbar.returnbutton": "Distreiñ d'ar pad-mañ.",
 	"timeslider.toolbar.authors": "Aozerien :",

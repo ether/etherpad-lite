@@ -3,9 +3,18 @@
 		"authors": [
 			"Bennylin",
 			"IvanLanin",
-			"Marwan Mohamad"
+			"Marwan Mohamad",
+			"Veracious"
 		]
 	},
+	"admin.page-title": "Dasbor Pengurus - Etherpad",
+	"admin_plugins": "Manajer plugin",
+	"admin_plugins.available": "Plugin yang tersedia",
+	"admin_plugins.available_install.value": "Instal",
+	"admin_plugins.version": "Versi",
+	"admin_settings": "Pengaturan",
+	"admin_settings.current_save.value": "Simpan pengaturan",
+	"admin_settings.page-title": "Pengaturan - Etherpad",
 	"index.newPad": "Pad baru",
 	"index.createOpenPad": "atau buat/buka Pad dengan nama:",
 	"pad.toolbar.bold.title": "Tebal (Ctrl-B)",
@@ -39,6 +48,7 @@
 	"pad.settings.rtlcheck": "Membaca dari kanan ke kiri?",
 	"pad.settings.fontType": "Jenis fonta:",
 	"pad.settings.language": "Bahasa:",
+	"pad.settings.about": "Tentang",
 	"pad.importExport.import_export": "Impor/Ekspor",
 	"pad.importExport.import": "Unggah setiap berkas teks atau dokumen",
 	"pad.importExport.importSuccessful": "Berhasil!",
