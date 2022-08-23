@@ -26,7 +26,7 @@ services:
     depends_on:
       - mariadb_prod
     environment:
-      DB_CHARSET: ${DOCKER_COMPOSE_APP_PROD_ENV_DB_CHARSET:-utf8mb4_bin}
+      DB_CHARSET: ${DOCKER_COMPOSE_APP_PROD_ENV_DB_CHARSET:-utf8mb4}
       DB_HOST: mariadb_prod
       DB_NAME: ${DOCKER_COMPOSE_MARIADB_PROD_ENV_MARIADB_DATABASE:?}
       DB_PASS: ${DOCKER_COMPOSE_MARIADB_PROD_ENV_MARIADB_PASSWORD:?}
