@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Bada Kaji",
 			"Nirajan pant",
 			"Nirjal stha",
 			"राम प्रसाद जोशी",
@@ -27,7 +28,7 @@
 	"pad.toolbar.embed.title": "यस प्याडलाई बाड्ने या इम्बेड गर्ने",
 	"pad.toolbar.showusers.title": "यस प्याडमा रहेका प्रयोगकर्ता देखाउने",
 	"pad.colorpicker.save": "सङ्ग्रह गर्ने",
-	"pad.colorpicker.cancel": "रद्द",
+	"pad.colorpicker.cancel": "रद्द गर्नुहोस्",
 	"pad.loading": "खुल्दै छ…",
 	"pad.permissionDenied": "तपाईंलाई यो प्याड खोल्न अनुमति छैन",
 	"pad.settings.padSettings": "प्याड सेटिङ्गहरू",
@@ -78,7 +79,7 @@
 	"timeslider.exportCurrent": "हालको संस्करण निम्म रुपमा निर्यात गर्ने :",
 	"timeslider.version": "संस्करण {{version}}",
 	"timeslider.saved": "सङ्ग्रह गरिएको {{month}} {{day}}, {{year}}",
-	"timeslider.playPause": "प्याडको सामग्रीहरूलाई चालु/बन्द गर्नुहोस",
+	"timeslider.playPause": "प्याडको सामग्रीहरूलाई चालु / बन्द गर्नुहोस्",
 	"timeslider.backRevision": "यो प्याडको एक संस्करण पहिले जानुहोस्",
 	"timeslider.forwardRevision": "यो प्याडको एक संस्करण पछि जानुहोस्",
 	"timeslider.dateformat": "{{month}}/{{day}}/{{year}} {{hours}}:{{minutes}}:{{seconds}}",
