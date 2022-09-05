@@ -32,6 +32,7 @@
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
 	"pad.modals.cancel": "Jõõsk",
+	"pad.modals.slowcommit.explanation": "Server ij vaʹstted.",
 	"pad.modals.deleted": "Jaukkuum.",
 	"pad.modals.deleted.explanation": "Tät mošttʼtõspõʹmmai lij jaukkuum.",
 	"pad.share": "Jueʼjj mošttʼtõspõʹmmai",
