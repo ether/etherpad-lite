@@ -10,7 +10,7 @@ services:
       context: .
       args:
         ETHERPAD_PLUGINS: >-
-          ep_comments_page
+          kitsteam/ep_comments_page
           ep_image_upload
           kitsteam/ep_push2delete
           ep_embedded_hyperlinks2
