@@ -72,7 +72,7 @@ RUN export DEBIAN_FRONTEND=noninteractive; \
         ca-certificates \
         git \
         ${INSTALL_ABIWORD:+abiword} \
-        ${INSTALL_SOFFICE:+libreoffice} \
+        ${INSTALL_SOFFICE:+libreoffice default-jre libreoffice-java-common} \
         && \
     apt-get -qq clean && \
     rm -rf /var/lib/apt/lists/*
