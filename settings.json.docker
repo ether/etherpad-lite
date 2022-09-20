@@ -633,6 +633,29 @@
   /* Override any strings found in locale directories */
   "customLocaleStrings": {},
 
-  /* Disable Admin UI tests */
-  "enableAdminUITests": false
+  /*
+   * Allow only some file formats
+   */
+  "ep_disable_imports": {
+    "allow": ["etherpad", "docx", "odt", "txt", "rtf", "pdf"]
+  },
+
+  /*
+   * Delete pads after delay
+   */
+  "ep_delete_after_delay": {
+    "delay": 2592000, // thirty days, in seconds
+    "loop": true,
+    "loopDelay": 3600, // one hour, in seconds
+    "deleteAtStart": true,
+    "text": "The content of this pad has been deleted since it was older than the configured delay."
+  },
+
+  /*
+   * Configure image upload
+   */
+  "ep_image_upload": {
+    "fileTypes": ["jpeg", "jpg", "bmp", "gif", "png"],
+    "maxFileSize": 2000000
+  }
 }

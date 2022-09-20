@@ -21,3 +21,16 @@ out/
 /src/bin/convertSettings.json
 /src/bin/etherpad-1.deb
 /src/bin/node.exe
+
+# Ignoring the dorectory that sortes the local ssl certificates
+ca
+
+# Extending gitignore to include also all .env files, e.g. .env.development.local, .env.test, etc.
+.env*
+!.env.default
+!.env.prod.default
+
+# Avoiding accidentally adding local docker-compose*.override file to version control that might contain secrets
+docker-compose-prod.override.yml
+docker-compose.override.yml
+docker-compose*.override.yml

@@ -3,6 +3,12 @@
 .hg
 Dockerfile
 
+# Ignoring all docker compose files as they are not needed
+docker-compose*.yml
+
+# Ignoring all env files from the host machine to avoid unexpected side effects
+.env*
+
 # Remove the git objects, logs, etc. to make final image smaller.
 # Some files still need to be in the .git directory, because Etherpad at
 # startup uses them to discover its version number.
