@@ -3,6 +3,9 @@ name: "Frontend admin tests powered by Sauce Labs"
 
 on: [push]
 
+permissions:
+  contents: read # to fetch code (actions/checkout)
+
 jobs:
   withplugins:
     name: with plugins
