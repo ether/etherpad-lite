@@ -71,7 +71,7 @@
 
 ### Compatibility changes
 
-* Node.js v12.17.0 or later is now required.
+* Node.js v14.15.0 or later is now required.
 * The default login session expiration (applicable if `requireAuthentication` is
   `true`) changed from never to 10 days after the user leaves.
 
