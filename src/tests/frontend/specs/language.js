@@ -69,7 +69,12 @@ describe('Language select and change', function () {
   });
 
   it('changes direction when picking an rtl lang', async function () {
-    this.timeout(1000);
+    // TODO: flaky
+    if (window.bowser.safari) {
+      this.timeout(5000);
+    } else {
+      this.timeout(1000);
+    }
     const chrome$ = helper.padChrome$;
 
     // click on the settings button to make settings visible
