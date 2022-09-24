@@ -78,8 +78,10 @@ jobs:
         name: Install Etherpad plugins
         # The --legacy-peer-deps flag is required to work around a bug in npm v7:
         # https://github.com/npm/cli/issues/2199
+        # npm v8: --omit=dev
+        # npm v6: --only=prod # can be dropped when support for v12/v14 is no longer needed
         run: >
-          npm install --no-save --legacy-peer-deps
+          npm install --no-save --legacy-peer-deps --only=prod --omit=dev
           ep_align
           ep_author_hover
           ep_cursortrace
@@ -166,8 +168,10 @@ jobs:
         name: Install Etherpad plugins
         # The --legacy-peer-deps flag is required to work around a bug in npm
         # v7: https://github.com/npm/cli/issues/2199
+        # npm v8: --omit=dev
+        # npm v6: --only=prod # can be dropped when support for v12/v14 is no longer needed
         run: >
-          npm install --no-save --legacy-peer-deps
+          npm install --no-save --legacy-peer-deps --only=prod --omit=dev
           ep_align
           ep_author_hover
           ep_cursortrace

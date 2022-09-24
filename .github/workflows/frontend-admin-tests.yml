@@ -47,7 +47,9 @@ jobs:
         # We intentionally install an old ep_align version to test upgrades to
         # the minor version number. The --legacy-peer-deps flag is required to
         # work around a bug in npm v7: https://github.com/npm/cli/issues/2199
-        run: npm install --no-save --legacy-peer-deps ep_align@0.2.27
+        # npm v8: --omit=dev
+        # npm v6: --only=prod # can be dropped when support for v12/v14 is no longer needed
+        run: npm install --no-save --legacy-peer-deps ep_align@0.2.27 --omit=dev --only=prod
       # Etherpad core dependencies must be installed after installing the
       # plugin's dependencies, otherwise npm will try to hoist common
       # dependencies by removing them from src/node_modules and installing them
