@@ -93,8 +93,8 @@
     "typescript": "^4.6.4"
   },
   "engines": {
-    "node": ">=12.17.0",
-    "npm": ">=5.5.1"
+    "node": ">=14.15.0",
+    "npm": ">=6.14.0"
   },
   "repository": {
     "type": "git",
