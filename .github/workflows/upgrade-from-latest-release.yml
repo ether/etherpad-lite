@@ -90,11 +90,10 @@ jobs:
         run: cd src && npm test
       -
         name: Install Cypress
-        run: npm install cypress -g
+        run: cd src && npm install cypress
       -
         name: Run Etherpad & Test Frontend
         run: |
           node src/node/server.js &
           curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
-          cd src/tests/frontend
-          cypress run --spec cypress/integration/test.js --config-file cypress/cypress.json
+          ./src/node_modules/cypress/bin/cypress run --config-file src/tests/frontend/cypress/cypress.config.js
