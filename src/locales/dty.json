@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Nirajan pant",
+			"बडा काजी",
 			"रमेश सिंह बोहरा",
 			"राम प्रसाद जोशी"
 		]
@@ -78,7 +79,7 @@
 	"pad.modals.disconnected.cause": "सर्भर अनुपलब्ध होइसकन्छ। यदि यो हुनोइ रयाबर कृपया सेवा व्यवस्थापकलाई सूचित अरऽ।",
 	"pad.share": "यस प्याडलाई बाड्न्या",
 	"pad.share.readonly": "पड्‍ड्या मात्तरै",
-	"pad.share.link": "लिङ्क",
+	"pad.share.link": "कडी",
 	"pad.share.emebdcode": "URL थप्प्या",
 	"pad.chat": "कुरणिकानी",
 	"pad.chat.title": "येइ प्याड खिलाइ गफ खोलऽ",
