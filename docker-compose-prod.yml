@@ -37,6 +37,7 @@ services:
       DISABLE_IP_LOGGING: ${DOCKER_COMPOSE_APP_PROD_ENV_DISABLE_IP_LOGGING:-true}
       SOFFICE: ${DOCKER_COMPOSE_APP_PROD_ENV_SOFFICE:-/usr/bin/soffice}
       TRUST_PROXY: ${DOCKER_COMPOSE_APP_PROD_ENV_TRUST_PROXY:-true}
+    restart: always
     ports:
       - "${DOCKER_COMPOSE_APP_PROD_PORT_PUBLISHED:-9001}:${DOCKER_COMPOSE_APP_PROD_PORT_TARGET:-9001}"
 
@@ -55,6 +56,7 @@ services:
       MARIADB_PORT: ${DOCKER_COMPOSE_MARIADB_PROD_ENV_MARIADB_PORT:-3306}
       MARIADB_RANDOM_ROOT_PASSWORD: 'yes'
       MARIADB_USER: ${DOCKER_COMPOSE_MARIADB_PROD_ENV_MARIADB_USER:?}
+    restart: always
     volumes:
       # To setup an ssl-enabled mysql server locally, you need to generate a self-signed ssl certificate.
       # 
