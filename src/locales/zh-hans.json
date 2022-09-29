@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"94rain",
+			"Cosing",
 			"Dimension",
 			"GuoPC",
 			"Hydra",
@@ -168,7 +169,7 @@
 	"timeslider.month.december": "12月",
 	"timeslider.unnamedauthors": "{{num}}个匿名作者",
 	"pad.savedrevs.marked": "这一修订现在被标记为已保存的修订版本",
-	"pad.savedrevs.timeslider": "您可以使用时间滑块查阅已保存的版本",
+	"pad.savedrevs.timeslider": "您可以使用时间轴查阅已保存的版本",
 	"pad.userlist.entername": "输入您的姓名",
 	"pad.userlist.unnamed": "匿名",
 	"pad.editbar.clearcolors": "清除整个文档的作者颜色吗？此操作无法撤消",
