@@ -34,3 +34,6 @@ ca
 docker-compose-prod.override.yml
 docker-compose.override.yml
 docker-compose*.override.yml
+
+# Ignoring local vscode settings file
+.vscode/settings.json
