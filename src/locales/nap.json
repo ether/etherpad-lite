@@ -3,9 +3,11 @@
 		"authors": [
 			"C.R.",
 			"Chelin",
+			"Finizio",
 			"Ruthven"
 		]
 	},
+	"admin_plugins.name": "Nomme",
 	"index.newPad": "Nuovo Pad",
 	"index.createOpenPad": "o crià o arape nu Pad cu 'o nomme:",
 	"pad.toolbar.bold.title": "Grassetto (Ctrl-B)",

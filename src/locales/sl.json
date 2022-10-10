@@ -51,7 +51,7 @@
 	"pad.settings.language": "Jezik:",
 	"pad.settings.poweredBy": "Omogoča",
 	"pad.importExport.import_export": "Uvoz/Izvoz",
-	"pad.importExport.import": "Naloži katerokoli besedilno datoteko ali dokument.",
+	"pad.importExport.import": "Naloži katero koli besedilno datoteko ali dokument.",
 	"pad.importExport.importSuccessful": "Opravilo je uspešno končano!",
 	"pad.importExport.export": "Izvozi trenutni dokument kot:",
 	"pad.importExport.exportetherpad": "Etherpad",
