@@ -177,7 +177,7 @@
 	"timeslider.unnamedauthors": "{{num}} {[plural(num) one: auteur anonyme, other: auteurs anonymes ]}",
 	"pad.savedrevs.marked": "Cette révision est maintenant marquée comme révision enregistrée",
 	"pad.savedrevs.timeslider": "Vous pouvez voir les révisions enregistrées en ouvrant l’historique",
-	"pad.userlist.entername": "Entrez votre nom",
+	"pad.userlist.entername": "Saisissez votre nom",
 	"pad.userlist.unnamed": "anonyme",
 	"pad.editbar.clearcolors": "Effacer le surlignage par auteur dans tout le document ? Cette action ne peut être annulée.",
 	"pad.impexp.importbutton": "Importer maintenant",
