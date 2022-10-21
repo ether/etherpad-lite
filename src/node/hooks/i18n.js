@@ -41,6 +41,8 @@ const getAllLocales = () => {
 
   // add plugins languages (if any)
   for (const {package: {path: pluginPath}} of Object.values(pluginDefs.plugins)) {
+    // plugin locales should overwrite etherpad's core locales
+    if (pluginPath.endsWith('/ep_etherpad-lite') === true) continue;
     extractLangs(path.join(pluginPath, 'locales'));
   }
 
