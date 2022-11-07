@@ -4,6 +4,9 @@
 			"Saraiki"
 		]
 	},
+	"admin_plugins.available_install.value": "انسٹال",
+	"admin_plugins.description": "تفصیل",
+	"admin_settings": "ترتیباں",
 	"index.newPad": "نواں پیڈ",
 	"pad.toolbar.bold.title": "بولڈ(Ctrl+B)",
 	"pad.toolbar.italic.title": "ترچھے (Ctrl+I)",
