@@ -162,7 +162,7 @@
 	"pad.editbar.clearcolors": "Ali naj se počistijo barve avtorstva v vsem dokumentu? Tega ni mogoče razveljaviti.",
 	"pad.impexp.importbutton": "Uvozi takoj",
 	"pad.impexp.importing": "Poteka uvažanje ...",
-	"pad.impexp.confirmimport": "Uvoz datoteke bo prepisal obstoječe besedilo blokca. Ali ste prepričani, da želite nadaljevati?",
+	"pad.impexp.confirmimport": "Uvoz datoteke bo prepisal obstoječe besedilo blokca. Ali res želite nadaljevati?",
 	"pad.impexp.convertFailed": "Datoteke ni bilo mogoče uvoziti. Prosimo, uporabite drug format dokumenta ali pa vsebino kopirajte in prilepite ročno.",
 	"pad.impexp.padHasData": "Datoteke ni bilo mogoče uvoziti, ker blokec že vsebuje spremembe. Prosimo, uvozite datoteko v nov blokec.",
 	"pad.impexp.uploadFailed": "Nalaganje je spodletelo, prosimo poskusite znova",
