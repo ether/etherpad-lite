@@ -3,6 +3,7 @@
 		"authors": [
 			"Bjarncraft",
 			"Dom",
+			"Justman10000",
 			"Killarnee",
 			"Metalhead64",
 			"Mklehr",
@@ -44,6 +45,7 @@
 	"admin_settings": "Einstellungen",
 	"admin_settings.current": "Derzeitige Konfiguration",
 	"admin_settings.current_example-devel": "Beispielhafte Entwicklungseinstellungs-Templates",
+	"admin_settings.current_example-prod": "Beispiel einer Vorlage für Produktionseinstellungen",
 	"admin_settings.current_restart.value": "Etherpad neustarten",
 	"admin_settings.current_save.value": "Einstellungen speichern",
 	"admin_settings.page-title": "Einstellungen - Etherpad",
@@ -121,6 +123,7 @@
 	"pad.modals.rateLimited": "Begrenzte Rate.",
 	"pad.modals.rateLimited.explanation": "Sie haben zu viele Nachrichten an dieses Pad gesendet, so dass die Verbindung unterbrochen wurde.",
 	"pad.modals.rejected.explanation": "Der Server hat eine Nachricht abgelehnt, die von deinem Browser gesendet wurde.",
+	"pad.modals.rejected.cause": "Möglicherweise wurde der Server aktualisiert, während du das Pad angesehen hast, oder es existiert ein Fehler in Etherpad. Versuche, die Seite neu zu laden.",
 	"pad.modals.disconnected": "Ihre Verbindung wurde getrennt.",
 	"pad.modals.disconnected.explanation": "Die Verbindung zum Server wurde unterbrochen.",
 	"pad.modals.disconnected.cause": "Möglicherweise ist der Server nicht erreichbar. Bitte benachrichtige den Dienstadministrator, falls dies weiterhin passiert.",
