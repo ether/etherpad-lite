@@ -181,7 +181,7 @@
 	"pad.userlist.unnamed": "anonyme",
 	"pad.editbar.clearcolors": "Effacer le surlignage par auteur dans tout le document ? Cette action ne peut être annulée.",
 	"pad.impexp.importbutton": "Importer maintenant",
-	"pad.impexp.importing": "Import en cours...",
+	"pad.impexp.importing": "Importation en cours...",
 	"pad.impexp.confirmimport": "Importer un fichier écrasera le contenu actuel du bloc-notes. Êtes-vous sûr de vouloir le faire ?",
 	"pad.impexp.convertFailed": "Nous ne pouvons pas importer ce fichier. Veuillez utiliser un autre format de document ou faire manuellement un copier/coller du texte brut",
 	"pad.impexp.padHasData": "Nous n’avons pas pu importer ce fichier parce que ce bloc-notes a déjà été modifié ; veuillez l’importer vers un nouveau bloc-notes.",
