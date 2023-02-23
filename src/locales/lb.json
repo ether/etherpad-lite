@@ -3,12 +3,20 @@
 		"authors": [
 			"Gromper",
 			"Robby",
-			"Soued031"
+			"Soued031",
+			"Volvox"
 		]
 	},
-	"admin_plugins_info.version": "Etherpad Versioun",
+	"admin_plugins.available_install.value": "Installéieren",
+	"admin_plugins.description": "Beschreiwung",
+	"admin_plugins.installed_uninstall.value": "Desinstalléieren",
+	"admin_plugins.name": "Numm",
+	"admin_plugins.version": "Versioun",
+	"admin_plugins_info.version": "Etherpad-Versioun",
 	"admin_plugins_info.version_latest": "Lescht disponibel Versioun",
+	"admin_plugins_info.version_number": "Versiounsnummer",
 	"admin_settings": "Astellungen",
+	"admin_settings.current_save.value": "Astellunge späicheren",
 	"index.newPad": "Neie Pad",
 	"index.createOpenPad": "oder maacht ee Pad mat dësem Numm op:",
 	"pad.toolbar.bold.title": "Fett (Strg-B)",
