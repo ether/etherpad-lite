@@ -39,7 +39,7 @@
 	"pad.share": "Jueʼjj mošttʼtõspõʹmmai",
 	"pad.share.link": "Liŋkk",
 	"pad.chat": "Čäʹtt",
-	"pad.chat.writeMessage.placeholder": "Ǩeeʹrjet tuu saaǥǥ täzz",
+	"pad.chat.writeMessage.placeholder": "Ǩeeʹrjet jiijjad saaǥǥ täzz",
 	"timeslider.toolbar.returnbutton": "Määʹcc mošttʼtõspõʹmma",
 	"timeslider.version": "Versio {{version}}",
 	"timeslider.saved": "Ruõkkum {{month}} {{day}}. peeiʹv {{year}}",
@@ -56,5 +56,5 @@
 	"timeslider.month.october": "kålggmannu",
 	"timeslider.month.november": "skamm-mannu",
 	"timeslider.month.december": "rosttovmannu",
-	"pad.userlist.entername": "Ǩeeʹrjet tuu nõõm"
+	"pad.userlist.entername": "Ǩeeʹrjet jiijjad nõõm"
 }
