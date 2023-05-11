@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Bugoslav",
-			"Hmxhmx"
+			"Hmxhmx",
+			"Ponor"
 		]
 	},
 	"index.newPad": "Novi blokić",
@@ -89,7 +90,7 @@
 	"pad.chat.title": "Otvori čavrljanje uz ovaj blokić.",
 	"pad.chat.loadmessages": "Učitaj više poruka",
 	"pad.chat.stick.title": "Prilijepi razgovor na zaslon",
-	"pad.chat.writeMessage.placeholder": "Napišite Vašu poruku ovdje",
+	"pad.chat.writeMessage.placeholder": "Ovdje napišite svoju poruku",
 	"timeslider.followContents": "Prati ažuriranja sadržaja blokića",
 	"timeslider.pageTitle": "{{appTitle}} Vremenska lenta",
 	"timeslider.toolbar.returnbutton": "Vrati se natrag na blokić",
