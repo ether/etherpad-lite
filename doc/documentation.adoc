@@ -1,6 +1,4 @@
-# About this Documentation
-
-<!-- type=misc -->
+== About this Documentation
 
 The goal of this documentation is to comprehensively explain Etherpad,
 both from a reference as well as a conceptual point of view.
