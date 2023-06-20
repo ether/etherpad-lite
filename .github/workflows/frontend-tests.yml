@@ -3,6 +3,9 @@ name: "Frontend tests powered by Sauce Labs"
 
 on: [push]
 
+permissions:
+  contents: read # to fetch code (actions/checkout)
+
 jobs:
   withoutplugins:
     name: without plugins
