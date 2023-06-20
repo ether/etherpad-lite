@@ -75,7 +75,7 @@ jobs:
         run: 7z x etherpad-win.zip -oetherpad-zip
       -
         name: Create installer
-        uses: joncloud/makensis-action@v3.6
+        uses: joncloud/makensis-action@v3.7
         with:
           script-file: 'src/bin/nsis/etherpad.nsi'
       -
