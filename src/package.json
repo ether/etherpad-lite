@@ -89,7 +89,7 @@
     "set-cookie-parser": "^2.4.8",
     "sinon": "^13.0.2",
     "split-grid": "^1.0.11",
-    "supertest": "^6.2.4",
+    "supertest": "^6.3.3",
     "typescript": "^4.6.4"
   },
   "engines": {
