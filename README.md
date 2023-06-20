@@ -36,6 +36,8 @@ removed after 24 hours.
 
 ## Project Status
 
+We're looking for maintainers and have some funding available.  Please contact John McLear if you can help.
+
 ### Code Quality
 
 [![Code Quality](https://github.com/ether/etherpad-lite/actions/workflows/codeql-analysis.yml/badge.svg?color=%2344b492)](https://github.com/ether/etherpad-lite/actions/workflows/codeql-analysis.yml)
