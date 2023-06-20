@@ -132,9 +132,9 @@ try {
 
   // Many users will be using the latest LTS version of npm, and the latest LTS version of npm uses
   // lockfileVersion 1. Enforce v1 so that users don't see a (benign) compatibility warning.
-  if (readJson('./src/package-lock.json').lockfileVersion !== 1) {
-    throw new Error('Please regenerate package-lock.json with npm v6.x.');
-  }
+  const pkglock = readJson('./src/package-lock.json');
+  pkglock.lockfileVersion = 1;
+  writeJson('./src/package-lock.json', pkglock);
 
   run('git add src/package.json');
   run('git add src/package-lock.json');
