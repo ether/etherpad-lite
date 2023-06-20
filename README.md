@@ -12,27 +12,7 @@ capabilities, and runs on _your_ server, under _your_ control.
 
 ## Try it out
 
-Etherpad is extremely flexible providing you the means to modify it to solve
-whatever problem your community has. We provide some demo instances for you try
-different experiences available within Etherpad. Pad content is automatically
-removed after 24 hours.
-
-  * [Rich Editing](https://rich.etherpad.com) - A full rich text WYSIWYG editor.
-  * [Minimalist editor](https://minimalist.etherpad.com) - A minimalist editor
-    that can be embedded within your tool.
-  * [Dark Mode](https://dark.etherpad.com) - Theme settings to have Etherpad
-    start in dark mode, ideal for using Etherpad at night or for long durations.
-  * [Images](https://image.etherpad.com) - Plugins to improve provide Image
-    support within a pad.
-  * [Video Chat](https://video.etherpad.com) - Plugins to enable Video and Audio
-    chat in a pad.
-  * [Collaboration++](https://collab.etherpad.com) - Plugins to improve the
-    really-real time collaboration experience, suitable for busy pads.
-  * [Document Analysis](https://analysis.etherpad.com) - Plugins to improve
-    author and document analysis during and post creation.
-  * [Scale](https://shard.etherpad.com) - Etherpad running at scale with pad
-    sharding which allows Etherpad to scale to ∞ number of Active Pads with up
-    to ~20,000 edits per second, per pad.
+Wikimedia provide a [public Etherpad instance for you to Try Etherpad out.](https://etherpad.wikimedia.org) or [use another public Etherpad instance to see other features](https://github.com/ether/etherpad-lite/wiki/Sites-That-Run-Etherpad#sites-that-run-etherpad)
 
 ## Project Status
 
