@@ -1,4 +1,4 @@
-# 1.9.0 (not yet released)
+# 1.9.0
 
 ### Notable enhancements and fixes
 
@@ -68,6 +68,9 @@
   access for the current message only.
 * The `init_<pluginName>` server-side hooks have a new `logger` context
   property that plugins can use to log messages.
+* Prevent infinite loop when exiting the server
+* Bump dependencies
+
 
 ### Compatibility changes
 
@@ -112,6 +115,8 @@
 * The exported database records covered by the `exportEtherpadAdditionalContent`
   server-side hook now include keys like `${customPrefix}:${padId}:*`, not just
   `${customPrefix}:${padId}`.
+* Plugin locales should overwrite core's locales Stale
+* Plugin locales overwrite core locales
 
 # 1.8.18
 
