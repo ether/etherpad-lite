@@ -66,7 +66,7 @@ We're looking for maintainers and have some funding available.  Please contact J
 
 ### Requirements
 
-[Node.js](https://nodejs.org/) >= **12.17.0**.
+[Node.js](https://nodejs.org/) >= **14.0.0**.
 
 ### GNU/Linux and other UNIX-like systems
 
