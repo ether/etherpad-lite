@@ -88,24 +88,44 @@ const urlRegex = (() => {
       `(?:${withAuth}|${withoutAuth}|www\\.)${urlChar}*(?!${postUrlPunct})${urlChar}`, 'g');
 })();
 
+// https://stackoverflow.com/a/68957976
+const base64url = /^(?=(?:.{4})*$)[A-Za-z0-9_-]*(?:[AQgw]==|[AEIMQUYcgkosw048]=)?$/;
+
 const padutils = {
   /**
    * Prints a warning message followed by a stack trace (to make it easier to figure out what code
    * is using the deprecated function).
+   *
+   * Identical deprecation warnings (as determined by the stack trace, if available) are rate
+   * limited to avoid log spam.
    *
    * Most browsers include UI widget to examine the stack at the time of the warning, but this
    * includes the stack in the log message for a couple of reasons:
    *   - This makes it possible to see the stack if the code runs in Node.js.
    *   - Users are more likely to paste the stack in bug reports they might file.
    *
-   * @param {...*} args - Passed to `console.warn`, with a stack trace appended.
+   * @param {...*} args - Passed to `padutils.warnDeprecated.logger.warn` (or `console.warn` if no
+   *     logger is set), with a stack trace appended if available.
    */
-  warnWithStack: (...args) => {
+  warnDeprecated: (...args) => {
+    if (padutils.warnDeprecated.disabledForTestingOnly) return;
     const err = new Error();
-    if (Error.captureStackTrace) Error.captureStackTrace(err, padutils.warnWithStack);
+    if (Error.captureStackTrace) Error.captureStackTrace(err, padutils.warnDeprecated);
     err.name = '';
+    // Rate limit identical deprecation warnings (as determined by the stack) to avoid log spam.
+    if (typeof err.stack === 'string') {
+      if (padutils.warnDeprecated._rl == null) {
+        padutils.warnDeprecated._rl =
+            {prevs: new Map(), now: () => Date.now(), period: 10 * 60 * 1000};
+      }
+      const rl = padutils.warnDeprecated._rl;
+      const now = rl.now();
+      const prev = rl.prevs.get(err.stack);
+      if (prev != null && now - prev < rl.period) return;
+      rl.prevs.set(err.stack, now);
+    }
     if (err.stack) args.push(err.stack);
-    console.warn(...args);
+    (padutils.warnDeprecated.logger || console).warn(...args);
   },
 
   escapeHtml: (x) => Security.escapeHTML(String(x)),
@@ -310,6 +330,27 @@ const padutils = {
       return cc;
     }
   }),
+
+  /**
+   * Returns whether a string has the expected format to be used as a secret token identifying an
+   * author. The format is defined as: 't.' followed by a non-empty base64url string (RFC 4648
+   * section 5 with padding).
+   *
+   * Being strict about what constitutes a valid token enables unambiguous extensibility (e.g.,
+   * conditional transformation of a token to a database key in a way that does not allow a
+   * malicious user to impersonate another user).
+   */
+  isValidAuthorToken: (t) => {
+    if (typeof t !== 'string' || !t.startsWith('t.')) return false;
+    const v = t.slice(2);
+    return v.length > 0 && base64url.test(v);
+  },
+
+  /**
+   * Returns a string that can be used in the `token` cookie as a secret that authenticates a
+   * particular author.
+   */
+  generateAuthorToken: () => `t.${randomString()}`,
 };
 
 let globalExceptionHandler = null;

@@ -20,6 +20,7 @@
  */
 
 const Changeset = require('../../static/js/Changeset');
+const attributes = require('../../static/js/attributes');
 const padManager = require('../db/PadManager');
 const _analyzeLine = require('./ExportHelper')._analyzeLine;
 
@@ -75,14 +76,13 @@ const getTXTFromAtext = (pad, atext, authorColors) => {
         return;
       }
 
-      const iter = Changeset.opIterator(Changeset.subattribution(attribs, idx, idx + numChars));
+      const ops = Changeset.deserializeOps(Changeset.subattribution(attribs, idx, idx + numChars));
       idx += numChars;
 
-      while (iter.hasNext()) {
-        const o = iter.next();
+      for (const o of ops) {
         let propChanged = false;
 
-        Changeset.eachAttribNumber(o.attribs, (a) => {
+        for (const a of attributes.decodeAttribString(o.attribs)) {
           if (a in anumMap) {
             const i = anumMap[a]; // i = 0 => bold, etc.
 
@@ -93,7 +93,7 @@ const getTXTFromAtext = (pad, atext, authorColors) => {
               propVals[i] = STAY;
             }
           }
-        });
+        }
 
         for (let i = 0; i < propVals.length; i++) {
           if (propVals[i] === true) {

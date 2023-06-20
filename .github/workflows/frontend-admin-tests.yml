@@ -3,6 +3,9 @@ name: "Frontend admin tests powered by Sauce Labs"
 
 on: [push]
 
+permissions:
+  contents: read # to fetch code (actions/checkout)
+
 jobs:
   withplugins:
     name: with plugins
@@ -11,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [12, 14, 16]
+        node: [14, 16, 18]
 
     steps:
       -
@@ -33,7 +36,7 @@ jobs:
           printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}-node${{ matrix.node }}'
       -
         name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       -
         uses: actions/setup-node@v3
         with:

@@ -31,6 +31,7 @@
 // requires: undefined
 
 const Changeset = require('./Changeset');
+const attributes = require('./attributes');
 const hooks = require('./pluginfw/hooks');
 const linestylefilter = {};
 const AttributeManager = require('./AttributeManager');
@@ -73,42 +74,37 @@ linestylefilter.getLineStyleFilter = (lineLength, aline, textAndClassFunc, apool
       let classes = '';
       let isLineAttribMarker = false;
 
-      // For each attribute number
-      Changeset.eachAttribNumber(attribs, (n) => {
-        // Give us this attributes key
-        const key = apool.getAttribKey(n);
-        if (key) {
-          const value = apool.getAttribValue(n);
-          if (value) {
-            if (!isLineAttribMarker && AttributeManager.lineAttributes.indexOf(key) >= 0) {
-              isLineAttribMarker = true;
-            }
-            if (key === 'author') {
-              classes += ` ${linestylefilter.getAuthorClassName(value)}`;
-            } else if (key === 'list') {
-              classes += ` list:${value}`;
-            } else if (key === 'start') {
-              // Needed to introduce the correct Ordered list item start number on import
-              classes += ` start:${value}`;
-            } else if (linestylefilter.ATTRIB_CLASSES[key]) {
-              classes += ` ${linestylefilter.ATTRIB_CLASSES[key]}`;
-            } else {
-              const results = hooks.callAll('aceAttribsToClasses', {linestylefilter, key, value});
-              classes += ` ${results.join(' ')}`;
-            }
-          }
+      for (const [key, value] of attributes.attribsFromString(attribs, apool)) {
+        if (!key || !value) continue;
+        if (!isLineAttribMarker && AttributeManager.lineAttributes.indexOf(key) >= 0) {
+          isLineAttribMarker = true;
         }
-      });
+        if (key === 'author') {
+          classes += ` ${linestylefilter.getAuthorClassName(value)}`;
+        } else if (key === 'list') {
+          classes += ` list:${value}`;
+        } else if (key === 'start') {
+          // Needed to introduce the correct Ordered list item start number on import
+          classes += ` start:${value}`;
+        } else if (linestylefilter.ATTRIB_CLASSES[key]) {
+          classes += ` ${linestylefilter.ATTRIB_CLASSES[key]}`;
+        } else {
+          const results = hooks.callAll('aceAttribsToClasses', {linestylefilter, key, value});
+          classes += ` ${results.join(' ')}`;
+        }
+      }
 
       if (isLineAttribMarker) classes += ` ${lineAttributeMarker}`;
       return classes.substring(1);
     };
 
-    const attributionIter = Changeset.opIterator(aline);
+    const attrOps = Changeset.deserializeOps(aline);
+    let attrOpsNext = attrOps.next();
     let nextOp, nextOpClasses;
 
     const goNextOp = () => {
-      nextOp = attributionIter.hasNext() ? attributionIter.next() : Changeset.newOp();
+      nextOp = attrOpsNext.done ? new Changeset.Op() : attrOpsNext.value;
+      if (!attrOpsNext.done) attrOpsNext = attrOps.next();
       nextOpClasses = (nextOp.opcode && attribsToClasses(nextOp.attribs));
     };
     goNextOp();

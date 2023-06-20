@@ -5,423 +5,377 @@
  *
  * Normal usage:                node src/bin/plugins/checkPlugin.js ep_whatever
  * Auto fix the things it can:  node src/bin/plugins/checkPlugin.js ep_whatever autofix
- * Auto commit, push and publish to npm (highly dangerous):
- *                              node src/bin/plugins/checkPlugin.js ep_whatever autocommit
+ * Auto fix and commit:         node src/bin/plugins/checkPlugin.js ep_whatever autocommit
+ * Auto fix, commit, push and publish to npm (highly dangerous):
+ *                              node src/bin/plugins/checkPlugin.js ep_whatever autopush
  */
+
+const process = require('process');
 
 // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
 process.on('unhandledRejection', (err) => { throw err; });
 
+const assert = require('assert').strict;
 const fs = require('fs');
+const fsp = fs.promises;
 const childProcess = require('child_process');
+const log4js = require('log4js');
+const path = require('path');
 
-// get plugin name & path from user input
-const pluginName = process.argv[2];
+const logger = log4js.getLogger('checkPlugin');
 
-if (!pluginName) throw new Error('no plugin name specified');
+(async () => {
+  // get plugin name & path from user input
+  const pluginName = process.argv[2];
 
-const pluginPath = `node_modules/${pluginName}`;
+  if (!pluginName) throw new Error('no plugin name specified');
+  logger.info(`Checking the plugin: ${pluginName}`);
 
-console.log(`Checking the plugin: ${pluginName}`);
+  const epRootDir = await fsp.realpath(path.join(await fsp.realpath(__dirname), '../../..'));
+  logger.info(`Etherpad root directory: ${epRootDir}`);
+  process.chdir(epRootDir);
+  const pluginPath = await fsp.realpath(`node_modules/${pluginName}`);
+  logger.info(`Plugin directory: ${pluginPath}`);
+  const epSrcDir = await fsp.realpath(path.join(epRootDir, 'src'));
 
-const optArgs = process.argv.slice(3);
-const autoCommit = optArgs.indexOf('autocommit') !== -1;
-const autoFix = autoCommit || optArgs.indexOf('autofix') !== -1;
+  const optArgs = process.argv.slice(3);
+  const autoPush = optArgs.includes('autopush');
+  const autoCommit = autoPush || optArgs.includes('autocommit');
+  const autoFix = autoCommit || optArgs.includes('autofix');
 
-const execSync = (cmd, opts = {}) => (childProcess.execSync(cmd, {
-  cwd: `${pluginPath}/`,
-  ...opts,
-}) || '').toString().replace(/\n+$/, '');
+  const execSync = (cmd, opts = {}) => (childProcess.execSync(cmd, {
+    cwd: `${pluginPath}/`,
+    ...opts,
+  }) || '').toString().replace(/\n+$/, '');
 
-const writePackageJson = (obj) => {
-  let s = JSON.stringify(obj, null, 2);
-  if (s.length && s.slice(s.length - 1) !== '\n') s += '\n';
-  return fs.writeFileSync(`${pluginPath}/package.json`, s);
-};
+  const writePackageJson = async (obj) => {
+    let s = JSON.stringify(obj, null, 2);
+    if (s.length && s.slice(s.length - 1) !== '\n') s += '\n';
+    return await fsp.writeFile(`${pluginPath}/package.json`, s);
+  };
 
-const updateDeps = (parsedPackageJson, key, wantDeps) => {
-  const {[key]: deps = {}} = parsedPackageJson;
-  let changed = false;
-  for (const [pkg, verInfo] of Object.entries(wantDeps)) {
-    const {ver, overwrite = true} = typeof verInfo === 'string' ? {ver: verInfo} : verInfo;
-    if (deps[pkg] === ver) continue;
-    if (deps[pkg] == null) {
-      console.warn(`Missing dependency in ${key}: '${pkg}': '${ver}'`);
-    } else {
-      if (!overwrite) continue;
-      console.warn(`Dependency mismatch in ${key}: '${pkg}': '${ver}' (current: ${deps[pkg]})`);
+  const checkEntries = (got, want) => {
+    let changed = false;
+    for (const [key, val] of Object.entries(want)) {
+      try {
+        assert.deepEqual(got[key], val);
+      } catch (err) {
+        logger.warn(`${key} possibly outdated.`);
+        logger.warn(err.message);
+        if (autoFix) {
+          got[key] = val;
+          changed = true;
+        }
+      }
     }
-    if (autoFix) {
-      deps[pkg] = ver;
-      changed = true;
+    return changed;
+  };
+
+  const updateDeps = async (parsedPackageJson, key, wantDeps) => {
+    const {[key]: deps = {}} = parsedPackageJson;
+    let changed = false;
+    for (const [pkg, verInfo] of Object.entries(wantDeps)) {
+      const {ver, overwrite = true} =
+          typeof verInfo === 'string' || verInfo == null ? {ver: verInfo} : verInfo;
+      if (deps[pkg] === ver || (deps[pkg] == null && ver == null)) continue;
+      if (deps[pkg] == null) {
+        logger.warn(`Missing dependency in ${key}: '${pkg}': '${ver}'`);
+      } else {
+        if (!overwrite) continue;
+        logger.warn(`Dependency mismatch in ${key}: '${pkg}': '${ver}' (current: ${deps[pkg]})`);
+      }
+      if (autoFix) {
+        if (ver == null) delete deps[pkg];
+        else deps[pkg] = ver;
+        changed = true;
+      }
     }
-  }
-  if (changed) {
-    parsedPackageJson[key] = deps;
-    writePackageJson(parsedPackageJson);
-  }
-};
+    if (changed) {
+      parsedPackageJson[key] = deps;
+      await writePackageJson(parsedPackageJson);
+    }
+  };
 
-const prepareRepo = () => {
-  let branch = execSync('git symbolic-ref HEAD');
-  if (branch !== 'refs/heads/master' && branch !== 'refs/heads/main') {
-    throw new Error('master/main must be checked out');
-  }
-  branch = branch.replace(/^refs\/heads\//, '');
-  execSync('git rev-parse --verify -q HEAD^0 || ' +
-           `{ echo "Error: no commits on ${branch}" >&2; exit 1; }`);
-  execSync('git rev-parse --verify @{u}'); // Make sure there's a remote tracking branch.
-  const modified = execSync('git diff-files --name-status');
-  if (modified !== '') throw new Error(`working directory has modifications:\n${modified}`);
-  const untracked = execSync('git ls-files -o --exclude-standard');
-  if (untracked !== '') throw new Error(`working directory has untracked files:\n${untracked}`);
-  const indexStatus = execSync('git diff-index --cached --name-status HEAD');
-  if (indexStatus !== '') throw new Error(`uncommitted staged changes to files:\n${indexStatus}`);
-  execSync('git pull --ff-only', {stdio: 'inherit'});
-  if (execSync('git rev-list @{u}...') !== '') throw new Error('repo contains unpushed commits');
-  if (autoCommit) {
-    execSync('git config --get user.name');
-    execSync('git config --get user.email');
-  }
-};
+  const prepareRepo = () => {
+    const modified = execSync('git diff-files --name-status');
+    if (modified !== '') throw new Error(`working directory has modifications:\n${modified}`);
+    const untracked = execSync('git ls-files -o --exclude-standard');
+    if (untracked !== '') throw new Error(`working directory has untracked files:\n${untracked}`);
+    const indexStatus = execSync('git diff-index --cached --name-status HEAD');
+    if (indexStatus !== '') throw new Error(`uncommitted staged changes to files:\n${indexStatus}`);
+    let br;
+    if (autoCommit) {
+      br = execSync('git symbolic-ref HEAD');
+      if (!br.startsWith('refs/heads/')) throw new Error('detached HEAD');
+      br = br.replace(/^refs\/heads\//, '');
+      execSync('git rev-parse --verify -q HEAD^0 || ' +
+               `{ echo "Error: no commits on ${br}" >&2; exit 1; }`);
+      execSync('git config --get user.name');
+      execSync('git config --get user.email');
+    }
+    if (autoPush) {
+      if (!['master', 'main'].includes(br)) throw new Error('master/main not checked out');
+      execSync('git rev-parse --verify @{u}');
+      execSync('git pull --ff-only', {stdio: 'inherit'});
+      if (execSync('git rev-list @{u}...') !== '') throw new Error('repo contains unpushed commits');
+    }
+  };
 
-if (autoCommit) {
-  console.warn('Auto commit is enabled, I hope you know what you are doing...');
-}
+  const checkFile = async (srcFn, dstFn, overwrite = true) => {
+    const outFn = path.join(pluginPath, dstFn);
+    const wantContents = await fsp.readFile(srcFn, {encoding: 'utf8'});
+    let gotContents = null;
+    try {
+      gotContents = await fsp.readFile(outFn, {encoding: 'utf8'});
+    } catch (err) { /* treat as if the file doesn't exist */ }
+    try {
+      assert.equal(gotContents, wantContents);
+    } catch (err) {
+      logger.warn(`File ${dstFn} does not match the default`);
+      logger.warn(err.message);
+      if (!overwrite && gotContents != null) {
+        logger.warn('Leaving existing contents alone.');
+        return;
+      }
+      if (autoFix) {
+        await fsp.mkdir(path.dirname(outFn), {recursive: true});
+        await fsp.writeFile(outFn, wantContents);
+      }
+    }
+  };
 
-fs.readdir(pluginPath, (err, rootFiles) => {
-  // handling error
-  if (err) {
-    return console.log(`Unable to scan directory: ${err}`);
+  if (autoPush) {
+    logger.warn('Auto push is enabled, I hope you know what you are doing...');
   }
 
-  // rewriting files to lower case
-  const files = [];
+  const files = await fsp.readdir(pluginPath);
 
   // some files we need to know the actual file name.  Not compulsory but might help in the future.
-  let readMeFileName;
-  let repository;
+  const readMeFileName = files.filter((f) => f === 'README' || f === 'README.md')[0];
 
-  for (let i = 0; i < rootFiles.length; i++) {
-    if (rootFiles[i].toLowerCase().indexOf('readme') !== -1) readMeFileName = rootFiles[i];
-    files.push(rootFiles[i].toLowerCase());
-  }
-
-  if (files.indexOf('.git') === -1) throw new Error('No .git folder, aborting');
+  if (!files.includes('.git')) throw new Error('No .git folder, aborting');
   prepareRepo();
 
-  try {
-    const path = `${pluginPath}/.github/workflows/npmpublish.yml`;
-    if (!fs.existsSync(path)) {
-      console.log('no .github/workflows/npmpublish.yml');
-      console.log('create one and set npm secret to auto publish to npm on commit');
-      if (autoFix) {
-        const npmpublish =
-            fs.readFileSync('src/bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
-        fs.mkdirSync(`${pluginPath}/.github/workflows`, {recursive: true});
-        fs.writeFileSync(path, npmpublish);
-        console.log("If you haven't already, setup autopublish for this plugin https://github.com/ether/etherpad-lite/wiki/Plugins:-Automatically-publishing-to-npm-on-commit-to-Github-Repo");
-      } else {
-        console.log('Setup autopublish for this plugin https://github.com/ether/etherpad-lite/wiki/Plugins:-Automatically-publishing-to-npm-on-commit-to-Github-Repo');
-      }
-    } else {
-      // autopublish exists, we should check the version..
-      // checkVersion takes two file paths and checks for a version string in them.
-      const currVersionFile = fs.readFileSync(path, {encoding: 'utf8', flag: 'r'});
-      const existingConfigLocation = currVersionFile.indexOf('##ETHERPAD_NPM_V=');
-      const existingValue = parseInt(
-          currVersionFile.substr(existingConfigLocation + 17, existingConfigLocation.length));
+  const workflows = ['backend-tests.yml', 'frontend-tests.yml', 'npmpublish.yml'];
+  await Promise.all(workflows.map(async (fn) => {
+    await checkFile(`src/bin/plugins/lib/${fn}`, `.github/workflows/${fn}`);
+  }));
+  await checkFile('src/bin/plugins/lib/dependabot.yml', '.github/dependabot.yml');
 
-      const reqVersionFile =
-          fs.readFileSync('src/bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
-      const reqConfigLocation = reqVersionFile.indexOf('##ETHERPAD_NPM_V=');
-      const reqValue =
-          parseInt(reqVersionFile.substr(reqConfigLocation + 17, reqConfigLocation.length));
-
-      if (!existingValue || (reqValue > existingValue)) {
-        const npmpublish =
-            fs.readFileSync('src/bin/plugins/lib/npmpublish.yml', {encoding: 'utf8', flag: 'r'});
-        fs.mkdirSync(`${pluginPath}/.github/workflows`, {recursive: true});
-        fs.writeFileSync(path, npmpublish);
-      }
-    }
-  } catch (err) {
-    console.error(err);
-  }
-
-
-  try {
-    const path = `${pluginPath}/.github/workflows/backend-tests.yml`;
-    if (!fs.existsSync(path)) {
-      console.log('no .github/workflows/backend-tests.yml');
-      console.log('create one and set npm secret to auto publish to npm on commit');
-      if (autoFix) {
-        const backendTests =
-            fs.readFileSync('src/bin/plugins/lib/backend-tests.yml', {encoding: 'utf8', flag: 'r'});
-        fs.mkdirSync(`${pluginPath}/.github/workflows`, {recursive: true});
-        fs.writeFileSync(path, backendTests);
-      }
-    } else {
-      // autopublish exists, we should check the version..
-      // checkVersion takes two file paths and checks for a version string in them.
-      const currVersionFile = fs.readFileSync(path, {encoding: 'utf8', flag: 'r'});
-      const existingConfigLocation = currVersionFile.indexOf('##ETHERPAD_NPM_V=');
-      const existingValue = parseInt(
-          currVersionFile.substr(existingConfigLocation + 17, existingConfigLocation.length));
-
-      const reqVersionFile =
-          fs.readFileSync('src/bin/plugins/lib/backend-tests.yml', {encoding: 'utf8', flag: 'r'});
-      const reqConfigLocation = reqVersionFile.indexOf('##ETHERPAD_NPM_V=');
-      const reqValue =
-          parseInt(reqVersionFile.substr(reqConfigLocation + 17, reqConfigLocation.length));
-
-      if (!existingValue || (reqValue > existingValue)) {
-        const backendTests =
-            fs.readFileSync('src/bin/plugins/lib/backend-tests.yml', {encoding: 'utf8', flag: 'r'});
-        fs.mkdirSync(`${pluginPath}/.github/workflows`, {recursive: true});
-        fs.writeFileSync(path, backendTests);
-      }
-    }
-  } catch (err) {
-    console.error(err);
-  }
-
-  if (files.indexOf('package.json') === -1) {
-    console.warn('no package.json, please create');
-  }
-
-  if (files.indexOf('package.json') !== -1) {
+  if (!files.includes('package.json')) {
+    logger.warn('no package.json, please create');
+  } else {
     const packageJSON =
-        fs.readFileSync(`${pluginPath}/package.json`, {encoding: 'utf8', flag: 'r'});
+        await fsp.readFile(`${pluginPath}/package.json`, {encoding: 'utf8', flag: 'r'});
     const parsedPackageJSON = JSON.parse(packageJSON);
-    if (autoFix) {
-      let updatedPackageJSON = false;
-      if (!parsedPackageJSON.funding) {
-        updatedPackageJSON = true;
-        parsedPackageJSON.funding = {
-          type: 'individual',
-          url: 'https://etherpad.org/',
-        };
-      }
-      if (updatedPackageJSON) {
-        writePackageJson(parsedPackageJSON);
-      }
-    }
 
-    if (packageJSON.toLowerCase().indexOf('repository') === -1) {
-      console.warn('No repository in package.json');
-      if (autoFix) {
-        console.warn('Repository not detected in package.json.  Add repository section.');
-      }
-    } else {
-      // useful for creating README later.
-      repository = parsedPackageJSON.repository.url;
-    }
-
-    updateDeps(parsedPackageJSON, 'devDependencies', {
-      'eslint': '^7.28.0',
-      'eslint-config-etherpad': '^2.0.0',
-      'eslint-plugin-cypress': '^2.11.3',
-      'eslint-plugin-eslint-comments': '^3.2.0',
-      'eslint-plugin-mocha': '^9.0.0',
-      'eslint-plugin-node': '^11.1.0',
-      'eslint-plugin-prefer-arrow': '^1.2.3',
-      'eslint-plugin-promise': '^5.1.0',
-      'eslint-plugin-you-dont-need-lodash-underscore': '^6.12.0',
+    await updateDeps(parsedPackageJSON, 'devDependencies', {
+      'eslint': '^8.14.0',
+      'eslint-config-etherpad': '^3.0.13',
+      // Changing the TypeScript version can break plugin code, so leave it alone if present.
+      'typescript': {ver: '^4.6.4', overwrite: false},
+      // These were moved to eslint-config-etherpad's dependencies so they can be removed:
+      '@typescript-eslint/eslint-plugin': null,
+      '@typescript-eslint/parser': null,
+      'eslint-import-resolver-typescript': null,
+      'eslint-plugin-cypress': null,
+      'eslint-plugin-eslint-comments': null,
+      'eslint-plugin-import': null,
+      'eslint-plugin-mocha': null,
+      'eslint-plugin-node': null,
+      'eslint-plugin-prefer-arrow': null,
+      'eslint-plugin-promise': null,
+      'eslint-plugin-you-dont-need-lodash-underscore': null,
     });
 
-    updateDeps(parsedPackageJSON, 'peerDependencies', {
+    await updateDeps(parsedPackageJSON, 'peerDependencies', {
       // Some plugins require a newer version of Etherpad so don't overwrite if already set.
       'ep_etherpad-lite': {ver: '>=1.8.6', overwrite: false},
     });
 
-    if (packageJSON.toLowerCase().indexOf('eslintconfig') === -1) {
-      console.warn('No esLintConfig in package.json');
-      if (autoFix) {
-        const eslintConfig = {
-          root: true,
-          extends: 'etherpad/plugin',
-        };
-        parsedPackageJSON.eslintConfig = eslintConfig;
-        writePackageJson(parsedPackageJSON);
-      }
-    }
+    await updateDeps(parsedPackageJSON, 'engines', {
+      node: '>=12.17.0',
+    });
 
-    if (packageJSON.toLowerCase().indexOf('scripts') === -1) {
-      console.warn('No scripts in package.json');
-      if (autoFix) {
-        const scripts = {
-          'lint': 'eslint .',
-          'lint:fix': 'eslint --fix .',
-        };
-        parsedPackageJSON.scripts = scripts;
-        writePackageJson(parsedPackageJSON);
-      }
+    if (parsedPackageJSON.eslintConfig != null && autoFix) {
+      delete parsedPackageJSON.eslintConfig;
+      await writePackageJson(parsedPackageJSON);
     }
-
-    if ((packageJSON.toLowerCase().indexOf('engines') === -1) || !parsedPackageJSON.engines.node) {
-      console.warn('No engines or node engine in package.json');
-      if (autoFix) {
-        const engines = {
-          node: '>=12.13.0',
-        };
-        parsedPackageJSON.engines = engines;
-        writePackageJson(parsedPackageJSON);
-      }
-    }
-  }
-
-  if (files.indexOf('package-lock.json') === -1) {
-    console.warn('package-lock.json not found');
-    if (!autoFix) {
-      console.warn('Run npm install in the plugin folder and commit the package-lock.json file.');
-    }
-  }
-  if (files.indexOf('readme') === -1 && files.indexOf('readme.md') === -1) {
-    console.warn('README.md file not found, please create');
-    if (autoFix) {
-      console.log('Autofixing missing README.md file');
-      console.log('please edit the README.md file further to include plugin specific details.');
-      let readme = fs.readFileSync('src/bin/plugins/lib/README.md', {encoding: 'utf8', flag: 'r'});
-      readme = readme.replace(/\[plugin_name\]/g, pluginName);
-      if (repository) {
-        const org = repository.split('/')[3];
-        const name = repository.split('/')[4];
-        readme = readme.replace(/\[org_name\]/g, org);
-        readme = readme.replace(/\[repo_url\]/g, name);
-        fs.writeFileSync(`${pluginPath}/README.md`, readme);
+    if (files.includes('.eslintrc.js')) {
+      const [from, to] = [`${pluginPath}/.eslintrc.js`, `${pluginPath}/.eslintrc.cjs`];
+      if (!files.includes('.eslintrc.cjs')) {
+        if (autoFix) {
+          await fsp.rename(from, to);
+        } else {
+          logger.warn(`please rename ${from} to ${to}`);
+        }
       } else {
-        console.warn('Unable to find repository in package.json, aborting.');
+        logger.error(`both ${from} and ${to} exist; delete ${from}`);
       }
+    } else {
+      checkFile('src/bin/plugins/lib/eslintrc.cjs', '.eslintrc.cjs', false);
+    }
+
+    if (checkEntries(parsedPackageJSON, {
+      funding: {
+        type: 'individual',
+        url: 'https://etherpad.org/',
+      },
+    })) await writePackageJson(parsedPackageJSON);
+
+    if (parsedPackageJSON.scripts == null) parsedPackageJSON.scripts = {};
+    if (checkEntries(parsedPackageJSON.scripts, {
+      'lint': 'eslint .',
+      'lint:fix': 'eslint --fix .',
+    })) await writePackageJson(parsedPackageJSON);
+  }
+
+  if (!files.includes('package-lock.json')) {
+    logger.warn('package-lock.json not found');
+    if (!autoFix) {
+      logger.warn('Run npm install in the plugin folder and commit the package-lock.json file.');
     }
   }
 
-  if (files.indexOf('contributing') === -1 && files.indexOf('contributing.md') === -1) {
-    console.warn('CONTRIBUTING.md file not found, please create');
+  const fillTemplate = async (templateFilename, outputFilename) => {
+    const contents = (await fsp.readFile(templateFilename, 'utf8'))
+        .replace(/\[name of copyright owner\]/g, execSync('git config user.name'))
+        .replace(/\[plugin_name\]/g, pluginName)
+        .replace(/\[yyyy\]/g, new Date().getFullYear());
+    await fsp.writeFile(outputFilename, contents);
+  };
+
+  if (!readMeFileName) {
+    logger.warn('README.md file not found, please create');
     if (autoFix) {
-      console.log('Autofixing missing CONTRIBUTING.md file, please edit the CONTRIBUTING.md ' +
+      logger.info('Autofixing missing README.md file');
+      logger.info('please edit the README.md file further to include plugin specific details.');
+      await fillTemplate('src/bin/plugins/lib/README.md', `${pluginPath}/README.md`);
+    }
+  }
+
+  if (!files.includes('CONTRIBUTING') && !files.includes('CONTRIBUTING.md')) {
+    logger.warn('CONTRIBUTING.md file not found, please create');
+    if (autoFix) {
+      logger.info('Autofixing missing CONTRIBUTING.md file, please edit the CONTRIBUTING.md ' +
                   'file further to include plugin specific details.');
-      let contributing =
-          fs.readFileSync('src/bin/plugins/lib/CONTRIBUTING.md', {encoding: 'utf8', flag: 'r'});
-      contributing = contributing.replace(/\[plugin_name\]/g, pluginName);
-      fs.writeFileSync(`${pluginPath}/CONTRIBUTING.md`, contributing);
+      await fillTemplate('src/bin/plugins/lib/CONTRIBUTING.md', `${pluginPath}/CONTRIBUTING.md`);
     }
   }
 
 
   if (readMeFileName) {
     let readme =
-        fs.readFileSync(`${pluginPath}/${readMeFileName}`, {encoding: 'utf8', flag: 'r'});
-    if (readme.toLowerCase().indexOf('license') === -1) {
-      console.warn('No license section in README');
+        await fsp.readFile(`${pluginPath}/${readMeFileName}`, {encoding: 'utf8', flag: 'r'});
+    if (!readme.toLowerCase().includes('license')) {
+      logger.warn('No license section in README');
       if (autoFix) {
-        console.warn('Please add License section to README manually.');
+        logger.warn('Please add License section to README manually.');
       }
     }
     // eslint-disable-next-line max-len
     const publishBadge = `![Publish Status](https://github.com/ether/${pluginName}/workflows/Node.js%20Package/badge.svg)`;
     // eslint-disable-next-line max-len
     const testBadge = `![Backend Tests Status](https://github.com/ether/${pluginName}/workflows/Backend%20tests/badge.svg)`;
-    if (readme.toLowerCase().indexOf('travis') !== -1) {
-      console.warn('Remove Travis badges');
+    if (readme.toLowerCase().includes('travis')) {
+      logger.warn('Remove Travis badges');
     }
-    if (readme.indexOf('workflows/Node.js%20Package/badge.svg') === -1) {
-      console.warn('No Github workflow badge detected');
+    if (!readme.includes('workflows/Node.js%20Package/badge.svg')) {
+      logger.warn('No Github workflow badge detected');
       if (autoFix) {
         readme = `${publishBadge} ${testBadge}\n\n${readme}`;
         // write readme to file system
-        fs.writeFileSync(`${pluginPath}/${readMeFileName}`, readme);
-        console.log('Wrote Github workflow badges to README');
+        await fsp.writeFile(`${pluginPath}/${readMeFileName}`, readme);
+        logger.info('Wrote Github workflow badges to README');
       }
     }
   }
 
-  if (files.indexOf('license') === -1 && files.indexOf('license.md') === -1) {
-    console.warn('LICENSE.md file not found, please create');
+  if (!files.includes('LICENSE') && !files.includes('LICENSE.md')) {
+    logger.warn('LICENSE file not found, please create');
     if (autoFix) {
-      console.log('Autofixing missing LICENSE.md file, including Apache 2 license.');
-      let license =
-          fs.readFileSync('src/bin/plugins/lib/LICENSE.md', {encoding: 'utf8', flag: 'r'});
-      license = license.replace('[yyyy]', new Date().getFullYear());
-      license = license.replace('[name of copyright owner]', execSync('git config user.name'));
-      fs.writeFileSync(`${pluginPath}/LICENSE.md`, license);
+      logger.info('Autofixing missing LICENSE file (Apache 2.0).');
+      await fsp.copyFile('src/bin/plugins/lib/LICENSE', `${pluginPath}/LICENSE`);
     }
   }
 
-  if (files.indexOf('.gitignore') === -1) {
-    console.warn('.gitignore file not found, please create.  .gitignore files are useful to ' +
+  if (!files.includes('.gitignore')) {
+    logger.warn('.gitignore file not found, please create.  .gitignore files are useful to ' +
                  "ensure files aren't incorrectly commited to a repository.");
     if (autoFix) {
-      console.log('Autofixing missing .gitignore file');
+      logger.info('Autofixing missing .gitignore file');
       const gitignore =
-          fs.readFileSync('src/bin/plugins/lib/gitignore', {encoding: 'utf8', flag: 'r'});
-      fs.writeFileSync(`${pluginPath}/.gitignore`, gitignore);
+          await fsp.readFile('src/bin/plugins/lib/gitignore', {encoding: 'utf8', flag: 'r'});
+      await fsp.writeFile(`${pluginPath}/.gitignore`, gitignore);
     }
   } else {
     let gitignore =
-        fs.readFileSync(`${pluginPath}/.gitignore`, {encoding: 'utf8', flag: 'r'});
-    if (gitignore.indexOf('node_modules/') === -1) {
-      console.warn('node_modules/ missing from .gitignore');
+        await fsp.readFile(`${pluginPath}/.gitignore`, {encoding: 'utf8', flag: 'r'});
+    if (!gitignore.includes('node_modules/')) {
+      logger.warn('node_modules/ missing from .gitignore');
       if (autoFix) {
         gitignore += 'node_modules/';
-        fs.writeFileSync(`${pluginPath}/.gitignore`, gitignore);
+        await fsp.writeFile(`${pluginPath}/.gitignore`, gitignore);
       }
     }
   }
 
   // if we include templates but don't have translations...
-  if (files.indexOf('templates') !== -1 && files.indexOf('locales') === -1) {
-    console.warn('Translations not found, please create.  ' +
+  if (files.includes('templates') && !files.includes('locales')) {
+    logger.warn('Translations not found, please create.  ' +
                  'Translation files help with Etherpad accessibility.');
   }
 
 
-  if (files.indexOf('.ep_initialized') !== -1) {
-    console.warn(
+  if (files.includes('.ep_initialized')) {
+    logger.warn(
         '.ep_initialized found, please remove.  .ep_initialized should never be commited to git ' +
         'and should only exist once the plugin has been executed one time.');
     if (autoFix) {
-      console.log('Autofixing incorrectly existing .ep_initialized file');
-      fs.unlinkSync(`${pluginPath}/.ep_initialized`);
+      logger.info('Autofixing incorrectly existing .ep_initialized file');
+      await fsp.unlink(`${pluginPath}/.ep_initialized`);
     }
   }
 
-  if (files.indexOf('npm-debug.log') !== -1) {
-    console.warn('npm-debug.log found, please remove.  npm-debug.log should never be commited to ' +
+  if (files.includes('npm-debug.log')) {
+    logger.warn('npm-debug.log found, please remove.  npm-debug.log should never be commited to ' +
                  'your repository.');
     if (autoFix) {
-      console.log('Autofixing incorrectly existing npm-debug.log file');
-      fs.unlinkSync(`${pluginPath}/npm-debug.log`);
+      logger.info('Autofixing incorrectly existing npm-debug.log file');
+      await fsp.unlink(`${pluginPath}/npm-debug.log`);
     }
   }
 
-  if (files.indexOf('static') !== -1) {
-    fs.readdir(`${pluginPath}/static`, (errRead, staticFiles) => {
-      if (staticFiles.indexOf('tests') === -1) {
-        console.warn('Test files not found, please create tests.  https://github.com/ether/etherpad-lite/wiki/Creating-a-plugin#writing-and-running-front-end-tests-for-your-plugin');
-      }
-    });
+  if (files.includes('static')) {
+    const staticFiles = await fsp.readdir(`${pluginPath}/static`);
+    if (!staticFiles.includes('tests')) {
+      logger.warn('Test files not found, please create tests.  https://github.com/ether/etherpad-lite/wiki/Creating-a-plugin#writing-and-running-front-end-tests-for-your-plugin');
+    }
   } else {
-    console.warn('Test files not found, please create tests.  https://github.com/ether/etherpad-lite/wiki/Creating-a-plugin#writing-and-running-front-end-tests-for-your-plugin');
+    logger.warn('Test files not found, please create tests.  https://github.com/ether/etherpad-lite/wiki/Creating-a-plugin#writing-and-running-front-end-tests-for-your-plugin');
   }
 
   // Install dependencies so we can run ESLint. This should also create or update package-lock.json
   // if autoFix is enabled.
   const npmInstall = `npm install${autoFix ? '' : ' --no-package-lock'}`;
   execSync(npmInstall, {stdio: 'inherit'});
-  // The ep_etherpad-lite peer dep must be installed last otherwise `npm install` will nuke it. An
-  // absolute path to etherpad-lite/src is used here so that pluginPath can be a symlink.
-  execSync(
-      `${npmInstall} --no-save ep_etherpad-lite@file:${__dirname}/../../`, {stdio: 'inherit'});
+  // Create the ep_etherpad-lite symlink if necessary. This must be done after running `npm install`
+  // because that command nukes the symlink.
+  try {
+    const d = await fsp.realpath(path.join(pluginPath, 'node_modules/ep_etherpad-lite'));
+    assert.equal(d, epSrcDir);
+  } catch (err) {
+    execSync(`${npmInstall} --no-save ep_etherpad-lite@file:${epSrcDir}`, {stdio: 'inherit'});
+  }
   // linting begins
   try {
-    console.log('Linting...');
+    logger.info('Linting...');
     const lintCmd = autoFix ? 'npx eslint --fix .' : 'npx eslint';
     execSync(lintCmd, {stdio: 'inherit'});
   } catch (e) {
     // it is gonna throw an error anyway
-    console.log('Manual linting probably required, check with: npm run lint');
+    logger.info('Manual linting probably required, check with: npm run lint');
   }
   // linting ends.
 
@@ -436,24 +390,31 @@ fs.readdir(pluginPath, (err, rootFiles) => {
         env: {...process.env, GIT_INDEX_FILE: '.git/checkPlugin.index'},
         stdio: 'inherit',
       });
-      fs.unlinkSync(`${pluginPath}/.git/checkPlugin.index`);
+      await fsp.unlink(`${pluginPath}/.git/checkPlugin.index`);
 
-      const cmd = [
+      const commitCmd = [
         'git add -A',
         'git commit -m "autofixes from Etherpad checkPlugin.js"',
-        'git push',
       ].join(' && ');
       if (autoCommit) {
-        console.log('Attempting autocommit and auto publish to npm');
-        execSync(cmd, {stdio: 'inherit'});
+        logger.info('Committing changes...');
+        execSync(commitCmd, {stdio: 'inherit'});
       } else {
-        console.log('Fixes applied. Check the above git diff then run the following command:');
-        console.log(`(cd node_modules/${pluginName} && ${cmd})`);
+        logger.info('Fixes applied. Check the above git diff then run the following command:');
+        logger.info(`(cd node_modules/${pluginName} && ${commitCmd})`);
+      }
+      const pushCmd = 'git push';
+      if (autoPush) {
+        logger.info('Pushing new commit...');
+        execSync(pushCmd, {stdio: 'inherit'});
+      } else {
+        logger.info('Changes committed. To push, run the following command:');
+        logger.info(`(cd node_modules/${pluginName} && ${pushCmd})`);
       }
     } else {
-      console.log('No changes.');
+      logger.info('No changes.');
     }
   }
 
-  console.log('Finished');
-});
+  logger.info('Finished');
+})();

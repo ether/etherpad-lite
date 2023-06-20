@@ -19,6 +19,7 @@
  * limitations under the License.
  */
 
+const AttributeMap = require('../../static/js/AttributeMap');
 const Changeset = require('../../static/js/Changeset');
 
 exports.getPadPlainText = (pad, revNum) => {
@@ -51,10 +52,10 @@ exports._analyzeLine = (text, aline, apool) => {
   let lineMarker = 0;
   line.listLevel = 0;
   if (aline) {
-    const opIter = Changeset.opIterator(aline);
-    if (opIter.hasNext()) {
-      const op = opIter.next();
-      let listType = Changeset.opAttributeValue(op, 'list', apool);
+    const [op] = Changeset.deserializeOps(aline);
+    if (op != null) {
+      const attribs = AttributeMap.fromString(op.attribs, apool);
+      let listType = attribs.get('list');
       if (listType) {
         lineMarker = 1;
         listType = /([a-z]+)([0-9]+)/.exec(listType);
@@ -63,7 +64,7 @@ exports._analyzeLine = (text, aline, apool) => {
           line.listLevel = Number(listType[2]);
         }
       }
-      const start = Changeset.opAttributeValue(op, 'start', apool);
+      const start = attribs.get('start');
       if (start) {
         line.start = start;
       }

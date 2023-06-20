@@ -1,16 +1,19 @@
-name: "Windows Zip"
+name: "Windows Build"
 
 # any branch is useful for testing before a PR is submitted
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
 jobs:
-  build:
+  build-zip:
     # run on pushes to any branch
     # run on PRs from external forks
     if: |
       (github.event_name != 'pull_request')
       || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
-    name: Build
+    name: Build .zip
     runs-on: windows-latest
     steps:
       -
@@ -21,11 +24,11 @@ jobs:
             zip
       -
         name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       -
         uses: actions/setup-node@v3
         with:
-          node-version: 12
+          node-version: 14
           cache: 'npm'
           cache-dependency-path: |
             src/package-lock.json
@@ -44,45 +47,79 @@ jobs:
         run: src/bin/buildForWindows.sh
       -
         name: Archive production artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          name: etherpad-lite-win.zip
-          path: etherpad-lite-win.zip
+          name: etherpad-win.zip
+          path: etherpad-win.zip
 
-  deploy:
+  build-exe:
+    if: |
+      (github.event_name != 'pull_request')
+      || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
+    name: Build .exe
+    needs: build-zip
+    runs-on: windows-latest
+    steps:
+      -
+        name: Checkout repository
+        uses: actions/checkout@v3
+      -
+        name: Download .zip
+        uses: actions/download-artifact@v3
+        with:
+          name: etherpad-win.zip
+          path: ..
+      -
+        name: Extract .zip
+        working-directory: ..
+        run: 7z x etherpad-win.zip -oetherpad-zip
+      -
+        name: Create installer
+        uses: joncloud/makensis-action@v3.6
+        with:
+          script-file: 'src/bin/nsis/etherpad.nsi'
+      -
+        name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: etherpad-win.exe
+          path: etherpad-win.exe
+
+  deploy-zip:
     # run on pushes to any branch
     # run on PRs from external forks
+    permissions:
+      contents: none
     if: |
       (github.event_name != 'pull_request')
       || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
     name: Deploy
-    needs: build
+    needs: build-zip
     runs-on: windows-latest
     steps:
       -
         name: Download zip
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
-          name: etherpad-lite-win.zip
+          name: etherpad-win.zip
       -
         name: Extract Etherpad
-        run: 7z x etherpad-lite-win.zip -oetherpad
+        run: 7z x etherpad-win.zip -oetherpad
       -
         uses: actions/setup-node@v3
         with:
-          node-version: 12
+          node-version: 14
           cache: 'npm'
           cache-dependency-path: |
             etherpad/src/package-lock.json
             etherpad/src/bin/doc/package-lock.json
       -
         name: Install Cypress
-        run: npm install cypress -g
+        run: cd src && npm install cypress
       -
         name: Run Etherpad
         run: |
           cd etherpad
           node node_modules\ep_etherpad-lite\node\server.js &
           curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
-          cd src\tests\frontend
-          cypress run --spec cypress\integration\test.js --config-file cypress\cypress.json
+          src\node_modules\cypress\bin\cypress run --config-file src\tests\frontendcypress\cypress.config.js

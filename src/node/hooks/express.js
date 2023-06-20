@@ -12,9 +12,11 @@ const SessionStore = require('../db/SessionStore');
 const settings = require('../utils/Settings');
 const stats = require('../stats');
 const util = require('util');
+const webaccess = require('./express/webaccess');
 
 const logger = log4js.getLogger('http');
 let serverName;
+let sessionStore;
 const sockets = new Set();
 const socketsEvents = new events.EventEmitter();
 const startTime = stats.settableGauge('httpStartTime');
@@ -22,32 +24,35 @@ const startTime = stats.settableGauge('httpStartTime');
 exports.server = null;
 
 const closeServer = async () => {
-  if (exports.server == null) return;
-  logger.info('Closing HTTP server...');
-  // Call exports.server.close() to reject new connections but don't await just yet because the
-  // Promise won't resolve until all preexisting connections are closed.
-  const p = util.promisify(exports.server.close.bind(exports.server))();
-  await hooks.aCallAll('expressCloseServer');
-  // Give existing connections some time to close on their own before forcibly terminating. The time
-  // should be long enough to avoid interrupting most preexisting transmissions but short enough to
-  // avoid a noticeable outage.
-  const timeout = setTimeout(async () => {
-    logger.info(`Forcibly terminating remaining ${sockets.size} HTTP connections...`);
-    for (const socket of sockets) socket.destroy(new Error('HTTP server is closing'));
-  }, 5000);
-  let lastLogged = 0;
-  while (sockets.size > 0) {
-    if (Date.now() - lastLogged > 1000) { // Rate limit to avoid filling logs.
-      logger.info(`Waiting for ${sockets.size} HTTP clients to disconnect...`);
-      lastLogged = Date.now();
+  if (exports.server != null) {
+    logger.info('Closing HTTP server...');
+    // Call exports.server.close() to reject new connections but don't await just yet because the
+    // Promise won't resolve until all preexisting connections are closed.
+    const p = util.promisify(exports.server.close.bind(exports.server))();
+    await hooks.aCallAll('expressCloseServer');
+    // Give existing connections some time to close on their own before forcibly terminating. The
+    // time should be long enough to avoid interrupting most preexisting transmissions but short
+    // enough to avoid a noticeable outage.
+    const timeout = setTimeout(async () => {
+      logger.info(`Forcibly terminating remaining ${sockets.size} HTTP connections...`);
+      for (const socket of sockets) socket.destroy(new Error('HTTP server is closing'));
+    }, 5000);
+    let lastLogged = 0;
+    while (sockets.size > 0) {
+      if (Date.now() - lastLogged > 1000) { // Rate limit to avoid filling logs.
+        logger.info(`Waiting for ${sockets.size} HTTP clients to disconnect...`);
+        lastLogged = Date.now();
+      }
+      await events.once(socketsEvents, 'updated');
     }
-    await events.once(socketsEvents, 'updated');
+    await p;
+    clearTimeout(timeout);
+    exports.server = null;
+    startTime.setValue(0);
+    logger.info('HTTP server closed');
   }
-  await p;
-  clearTimeout(timeout);
-  exports.server = null;
-  startTime.setValue(0);
-  logger.info('HTTP server closed');
+  if (sessionStore) sessionStore.shutdown();
+  sessionStore = null;
 };
 
 exports.createServer = async () => {
@@ -169,16 +174,21 @@ exports.restartServer = async () => {
     }));
   }
 
+  app.use(cookieParser(settings.sessionKey, {}));
+
+  sessionStore = new SessionStore(settings.cookie.sessionRefreshInterval);
   exports.sessionMiddleware = expressSession({
+    propagateTouch: true,
+    rolling: true,
     secret: settings.sessionKey,
-    store: new SessionStore(),
+    store: sessionStore,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     // Set the cookie name to a javascript identifier compatible string. Makes code handling it
     // cleaner :)
     name: 'express_sid',
-    proxy: true,
     cookie: {
+      maxAge: settings.cookie.sessionLifetime || null, // Convert 0 to null.
       sameSite: settings.cookie.sameSite,
 
       // The automatic express-session mechanism for determining if the application is being served
@@ -200,9 +210,14 @@ exports.restartServer = async () => {
       secure: 'auto',
     },
   });
+
+  // Give plugins an opportunity to install handlers/middleware before the express-session
+  // middleware. This allows plugins to avoid creating an express-session record in the database
+  // when it is not needed (e.g., public static content).
+  await hooks.aCallAll('expressPreSession', {app});
   app.use(exports.sessionMiddleware);
 
-  app.use(cookieParser(settings.sessionKey, {}));
+  app.use(webaccess.checkAccess);
 
   await Promise.all([
     hooks.aCallAll('expressConfigure', {app}),

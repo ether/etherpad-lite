@@ -3,6 +3,9 @@ name: "Backend tests"
 # any branch is useful for testing before a PR is submitted
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
 jobs:
   withoutpluginsLinux:
     # run on pushes to any branch
@@ -15,11 +18,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [12, 14, 16]
+        node: [14, 16, 18]
     steps:
       -
         name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       -
         uses: actions/setup-node@v3
         with:
@@ -52,11 +55,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [12, 14, 16]
+        node: [14, 16, 18]
     steps:
       -
         name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       -
         uses: actions/setup-node@v3
         with:
@@ -117,11 +120,11 @@ jobs:
     steps:
       -
         name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       -
         uses: actions/setup-node@v3
         with:
-          node-version: 12
+          node-version: 14
           cache: 'npm'
           cache-dependency-path: |
             src/package-lock.json
@@ -150,11 +153,11 @@ jobs:
     steps:
       -
         name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       -
         uses: actions/setup-node@v3
         with:
-          node-version: 12
+          node-version: 14
           cache: 'npm'
           cache-dependency-path: |
             src/package-lock.json

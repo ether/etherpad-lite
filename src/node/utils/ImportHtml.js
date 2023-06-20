@@ -19,13 +19,17 @@ const log4js = require('log4js');
 const Changeset = require('../../static/js/Changeset');
 const contentcollector = require('../../static/js/contentcollector');
 const jsdom = require('jsdom');
-const rehype = require('rehype');
-const minifyWhitespace = require('rehype-minify-whitespace');
 
 const apiLogger = log4js.getLogger('ImportHtml');
-const processor = rehype().use(minifyWhitespace, {newlines: false});
+let processor;
 
-exports.setPadHTML = async (pad, html) => {
+exports.setPadHTML = async (pad, html, authorId = '') => {
+  if (processor == null) {
+    const [{rehype}, {default: minifyWhitespace}] =
+        await Promise.all([import('rehype'), import('rehype-minify-whitespace')]);
+    processor = rehype().use(minifyWhitespace, {newlines: false});
+  }
+
   html = String(await processor.process(html));
   const {window: {document}} = new jsdom.JSDOM(html);
 
@@ -67,12 +71,10 @@ exports.setPadHTML = async (pad, html) => {
   const builder = Changeset.builder(1);
 
   // assemble each line into the builder
-  const attribsIter = Changeset.opIterator(newAttribs);
   let textIndex = 0;
   const newTextStart = 0;
   const newTextEnd = newText.length;
-  while (attribsIter.hasNext()) {
-    const op = attribsIter.next();
+  for (const op of Changeset.deserializeOps(newAttribs)) {
     const nextIndex = textIndex + op.chars;
     if (!(nextIndex <= newTextStart || textIndex >= newTextEnd)) {
       const start = Math.max(newTextStart, textIndex);
@@ -86,6 +88,6 @@ exports.setPadHTML = async (pad, html) => {
   const theChangeset = builder.toString();
 
   apiLogger.debug(`The changeset: ${theChangeset}`);
-  await pad.setText('\n');
-  if (!Changeset.isIdentity(theChangeset)) await pad.appendRevision(theChangeset);
+  await pad.setText('\n', authorId);
+  await pad.appendRevision(theChangeset, authorId);
 };

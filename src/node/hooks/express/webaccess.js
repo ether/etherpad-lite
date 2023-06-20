@@ -9,22 +9,13 @@ const readOnlyManager = require('../../db/ReadOnlyManager');
 
 hooks.deprecationNotices.authFailure = 'use the authnFailure and authzFailure hooks instead';
 
-const staticPathsRE = new RegExp(`^/(?:${[
-  'api(?:/.*)?',
-  'favicon\\.ico',
-  'ep/pad/connection-diagnostic-info',
-  'javascript',
-  'javascripts/.*',
-  'jserror/?',
-  'locales\\.json',
-  'locales/.*',
-  'rest/.*',
-  'pluginfw/.*',
-  'robots.txt',
-  'static/.*',
-  'stats/?',
-  'tests/frontend(?:/.*)?',
-].join('|')})$`);
+// Promisified wrapper around hooks.aCallFirst.
+const aCallFirst = (hookName, context, pred = null) => new Promise((resolve, reject) => {
+  hooks.aCallFirst(hookName, context, (err, r) => err != null ? reject(err) : resolve(r), pred);
+});
+
+const aCallFirst0 =
+    async (hookName, context, pred = null) => (await aCallFirst(hookName, context, pred))[0];
 
 exports.normalizeAuthzLevel = (level) => {
   if (!level) return false;
@@ -45,27 +36,53 @@ exports.userCanModify = (padId, req) => {
   if (readOnlyManager.isReadOnlyId(padId)) return false;
   if (!settings.requireAuthentication) return true;
   const {session: {user} = {}} = req;
-  assert(user); // If authn required and user == null, the request should have already been denied.
-  if (user.readOnly) return false;
+  if (!user || user.readOnly) return false;
   assert(user.padAuthorizations); // This is populated even if !settings.requireAuthorization.
   const level = exports.normalizeAuthzLevel(user.padAuthorizations[padId]);
-  assert(level); // If !level, the request should have already been denied.
-  return level !== 'readOnly';
+  return level && level !== 'readOnly';
 };
 
 // Exported so that tests can set this to 0 to avoid unnecessary test slowness.
 exports.authnFailureDelayMs = 1000;
 
 const checkAccess = async (req, res, next) => {
-  // Promisified wrapper around hooks.aCallFirst.
-  const aCallFirst = (hookName, context, pred = null) => new Promise((resolve, reject) => {
-    hooks.aCallFirst(hookName, context, (err, r) => err != null ? reject(err) : resolve(r), pred);
-  });
+  const requireAdmin = req.path.toLowerCase().startsWith('/admin');
 
-  const aCallFirst0 =
-      async (hookName, context, pred = null) => (await aCallFirst(hookName, context, pred))[0];
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
+  // Step 1: Check the preAuthorize hook for early permit/deny (permit is only allowed for non-admin
+  // pages). If any plugin explicitly grants or denies access, skip the remaining steps. Plugins can
+  // use the preAuthzFailure hook to override the default 403 error.
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
 
-  const requireAdmin = req.path.toLowerCase().indexOf('/admin') === 0;
+  let results;
+  let skip = false;
+  const preAuthorizeNext = (...args) => { skip = true; next(...args); };
+  try {
+    results = await aCallFirst('preAuthorize', {req, res, next: preAuthorizeNext},
+        // This predicate will cause aCallFirst to call the hook functions one at a time until one
+        // of them returns a non-empty list, with an exception: If the request is for an /admin
+        // page, truthy entries are filtered out before checking to see whether the list is empty.
+        // This prevents plugin authors from accidentally granting admin privileges to the general
+        // public.
+        (r) => (skip || (r != null && r.filter((x) => (!requireAdmin || !x)).length > 0)));
+  } catch (err) {
+    httpLogger.error(`Error in preAuthorize hook: ${err.stack || err.toString()}`);
+    if (!skip) res.status(500).send('Internal Server Error');
+    return;
+  }
+  if (skip) return;
+  if (requireAdmin) {
+    // Filter out all 'true' entries to prevent plugin authors from accidentally granting admin
+    // privileges to the general public.
+    results = results.filter((x) => !x);
+  }
+  if (results.length > 0) {
+    // Access was explicitly granted or denied. If any value is false then access is denied.
+    if (results.every((x) => x)) return next();
+    if (await aCallFirst0('preAuthzFailure', {req, res})) return;
+    // No plugin handled the pre-authentication authorization failure.
+    return res.status(403).send('Forbidden');
+  }
 
   // This helper is used in steps 2 and 4 below, so it may be called twice per access: once before
   // authentication is checked and once after (if settings.requireAuthorization is true).
@@ -100,39 +117,6 @@ const checkAccess = async (req, res, next) => {
   };
 
   // ///////////////////////////////////////////////////////////////////////////////////////////////
-  // Step 1: Check the preAuthorize hook for early permit/deny (permit is only allowed for non-admin
-  // pages). If any plugin explicitly grants or denies access, skip the remaining steps. Plugins can
-  // use the preAuthzFailure hook to override the default 403 error.
-  // ///////////////////////////////////////////////////////////////////////////////////////////////
-
-  let results;
-  try {
-    results = await aCallFirst('preAuthorize', {req, res, next},
-        // This predicate will cause aCallFirst to call the hook functions one at a time until one
-        // of them returns a non-empty list, with an exception: If the request is for an /admin
-        // page, truthy entries are filtered out before checking to see whether the list is empty.
-        // This prevents plugin authors from accidentally granting admin privileges to the general
-        // public.
-        (r) => (r != null && r.filter((x) => (!requireAdmin || !x)).length > 0));
-  } catch (err) {
-    httpLogger.error(`Error in preAuthorize hook: ${err.stack || err.toString()}`);
-    return res.status(500).send('Internal Server Error');
-  }
-  if (staticPathsRE.test(req.path)) results.push(true);
-  if (requireAdmin) {
-    // Filter out all 'true' entries to prevent plugin authors from accidentally granting admin
-    // privileges to the general public.
-    results = results.filter((x) => !x);
-  }
-  if (results.length > 0) {
-    // Access was explicitly granted or denied. If any value is false then access is denied.
-    if (results.every((x) => x)) return next();
-    if (await aCallFirst0('preAuthzFailure', {req, res})) return;
-    // No plugin handled the pre-authentication authorization failure.
-    return res.status(403).send('Forbidden');
-  }
-
-  // ///////////////////////////////////////////////////////////////////////////////////////////////
   // Step 2: Try to just access the thing. If access fails (perhaps authentication has not yet
   // completed, or maybe different credentials are required), go to the next step.
   // ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -151,18 +135,21 @@ const checkAccess = async (req, res, next) => {
   const ctx = {req, res, users: settings.users, next};
   // If the HTTP basic auth header is present, extract the username and password so it can be given
   // to authn plugins.
-  const httpBasicAuth =
-      req.headers.authorization && req.headers.authorization.search('Basic ') === 0;
+  const httpBasicAuth = req.headers.authorization && req.headers.authorization.startsWith('Basic ');
   if (httpBasicAuth) {
     const userpass =
         Buffer.from(req.headers.authorization.split(' ')[1], 'base64').toString().split(':');
     ctx.username = userpass.shift();
+    // Prevent prototype pollution vulnerabilities in plugins. This also silences a prototype
+    // pollution warning below (when setting settings.users[ctx.username]) that isn't actually a
+    // problem unless the attacker can also set Object.prototype.password.
+    if (ctx.username === '__proto__') ctx.username = null;
     ctx.password = userpass.join(':');
   }
   if (!(await aCallFirst0('authenticate', ctx))) {
     // Fall back to HTTP basic auth.
     const {[ctx.username]: {password} = {}} = settings.users;
-    if (!httpBasicAuth || password == null || password !== ctx.password) {
+    if (!httpBasicAuth || !ctx.username || password == null || password !== ctx.password) {
       httpLogger.info(`Failed authentication from IP ${req.ip}`);
       if (await aCallFirst0('authnFailure', {req, res})) return;
       if (await aCallFirst0('authFailure', {req, res, next})) return;
@@ -199,7 +186,10 @@ const checkAccess = async (req, res, next) => {
   res.status(403).send('Forbidden');
 };
 
-exports.expressConfigure = (hookName, args, cb) => {
-  args.app.use((req, res, next) => { checkAccess(req, res, next).catch(next); });
-  return cb();
+/**
+ * Express middleware to authenticate the user and check authorization. Must be installed after the
+ * express-session middleware.
+ */
+exports.checkAccess = (req, res, next) => {
+  checkAccess(req, res, next).catch((err) => next(err || new Error(err)));
 };

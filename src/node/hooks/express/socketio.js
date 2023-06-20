@@ -105,6 +105,19 @@ exports.expressCreateServer = (hookName, args, cb) => {
     express.sessionMiddleware(req, {}, next);
   });
 
+  io.use((socket, next) => {
+    socket.conn.on('packet', (packet) => {
+      // Tell express-session that the session is still active. The session store can use these
+      // touch events to defer automatic session cleanup, and if express-session is configured with
+      // rolling=true the cookie's expiration time will be renewed. (Note that WebSockets does not
+      // have a standard mechanism for periodically updating the browser's cookies, so the browser
+      // will not see the new cookie expiration time unless it makes a new HTTP request or the new
+      // cookie value is sent to the client in a custom socket.io message.)
+      if (socket.request.session != null) socket.request.session.touch();
+    });
+    next();
+  });
+
   // var socketIOLogger = log4js.getLogger("socket.io");
   // Debug logging now has to be set at an environment level, this is stupid.
   // https://github.com/Automattic/socket.io/wiki/Migrating-to-1.0

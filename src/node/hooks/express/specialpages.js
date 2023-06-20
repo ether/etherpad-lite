@@ -10,33 +10,28 @@ const settings = require('../../utils/Settings');
 const util = require('util');
 const webaccess = require('./webaccess');
 
-exports.expressCreateServer = (hookName, args, cb) => {
-  // expose current stats
-  args.app.get('/stats', (req, res) => {
+exports.expressPreSession = async (hookName, {app}) => {
+  // This endpoint is intended to conform to:
+  // https://www.ietf.org/archive/id/draft-inadarei-api-health-check-06.html
+  app.get('/health', (req, res) => {
+    res.set('Content-Type', 'application/health+json');
+    res.json({
+      status: 'pass',
+      releaseId: settings.getEpVersion(),
+    });
+  });
+
+  app.get('/stats', (req, res) => {
     res.json(require('../../stats').toJSON());
   });
 
-  // serve index.html under /
-  args.app.get('/', (req, res) => {
-    res.send(eejs.require('ep_etherpad-lite/templates/index.html', {req}));
-  });
-
-  // serve javascript.html
-  args.app.get('/javascript', (req, res) => {
+  app.get('/javascript', (req, res) => {
     res.send(eejs.require('ep_etherpad-lite/templates/javascript.html', {req}));
   });
 
-
-  // serve robots.txt
-  args.app.get('/robots.txt', (req, res) => {
-    let filePath = path.join(
-        settings.root,
-        'src',
-        'static',
-        'skins',
-        settings.skinName,
-        'robots.txt'
-    );
+  app.get('/robots.txt', (req, res) => {
+    let filePath =
+        path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'robots.txt');
     res.sendFile(filePath, (err) => {
       // there is no custom robots.txt, send the default robots.txt which dissallows all
       if (err) {
@@ -44,6 +39,34 @@ exports.expressCreateServer = (hookName, args, cb) => {
         res.sendFile(filePath);
       }
     });
+  });
+
+  app.get('/favicon.ico', (req, res, next) => {
+    (async () => {
+      const fns = [
+        ...(settings.favicon ? [path.resolve(settings.root, settings.favicon)] : []),
+        path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'favicon.ico'),
+        path.join(settings.root, 'src', 'static', 'favicon.ico'),
+      ];
+      for (const fn of fns) {
+        try {
+          await fsp.access(fn, fs.constants.R_OK);
+        } catch (err) {
+          continue;
+        }
+        res.setHeader('Cache-Control', `public, max-age=${settings.maxAge}`);
+        await util.promisify(res.sendFile.bind(res))(fn);
+        return;
+      }
+      next();
+    })().catch((err) => next(err || new Error(err)));
+  });
+};
+
+exports.expressCreateServer = (hookName, args, cb) => {
+  // serve index.html under /
+  args.app.get('/', (req, res) => {
+    res.send(eejs.require('ep_etherpad-lite/templates/index.html', {req}));
   });
 
   // serve pad.html under /p
@@ -77,25 +100,11 @@ exports.expressCreateServer = (hookName, args, cb) => {
     }));
   });
 
-  args.app.get('/favicon.ico', (req, res, next) => {
-    (async () => {
-      const fns = [
-        ...(settings.favicon ? [path.resolve(settings.root, settings.favicon)] : []),
-        path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'favicon.ico'),
-        path.join(settings.root, 'src', 'static', 'favicon.ico'),
-      ];
-      for (const fn of fns) {
-        try {
-          await fsp.access(fn, fs.constants.R_OK);
-        } catch (err) {
-          continue;
-        }
-        res.setHeader('Cache-Control', `public, max-age=${settings.maxAge}`);
-        await util.promisify(res.sendFile.bind(res))(fn);
-        return;
-      }
-      next();
-    })().catch((err) => next(err || new Error(err)));
+  // The client occasionally polls this endpoint to get an updated expiration for the express_sid
+  // cookie. This handler must be installed after the express-session middleware.
+  args.app.put('/_extendExpressSessionLifetime', (req, res) => {
+    // express-session automatically calls req.session.touch() so we don't need to do it here.
+    res.json({status: 'ok'});
   });
 
   return cb();

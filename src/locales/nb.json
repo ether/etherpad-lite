@@ -3,12 +3,17 @@
 		"authors": [
 			"Chameleon222",
 			"Cocu",
+			"EdoAug",
 			"Jon Harald Søby",
 			"Laaknor",
 			"Orjanmen",
 			"SuperPotato"
 		]
 	},
+	"admin_plugins.available_install.value": "Installer",
+	"admin_plugins.version": "Versjon",
+	"admin_settings": "Innstillinger",
+	"admin_settings.current_save.value": "Lagre innstillinger",
 	"index.newPad": "Ny pad",
 	"index.createOpenPad": "eller opprett/åpne en pad med dette navnet:",
 	"index.openPad": "åpne en eksisterende Pad med følgende navn:",

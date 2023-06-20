@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"BMRG14",
+			"Beginneruser",
 			"Dalba",
 			"Ebraminio",
 			"FarsiNevis",
@@ -12,7 +13,7 @@
 			"الناز"
 		]
 	},
-	"admin.page-title": "داشبورد مدیر - اترپد",
+	"admin.page-title": "پیش‌خوان مدیر - اترپد",
 	"admin_plugins": "مدیریت افزونه",
 	"admin_plugins.available": "افزونه‌های موجود",
 	"admin_plugins.available_not-found": "هیچ افزونه‌ای یافت نشد.",
@@ -59,7 +60,7 @@
 	"pad.toolbar.undo.title": "باطل‌کردن (Ctrl-Z)",
 	"pad.toolbar.redo.title": "از نو (Ctrl-Y)",
 	"pad.toolbar.clearAuthorship.title": "پاک‌کردن رنگ‌های نویسندگی (Ctrl+Shift+C)",
-	"pad.toolbar.import_export.title": "درون‌ریزی/برون‌ریزی از/به قالب‌های مختلف",
+	"pad.toolbar.import_export.title": "درون‌ریزی/برون‌بری از/به قالب‌های مختلف پرونده",
 	"pad.toolbar.timeslider.title": "لغزندهٔ زمان",
 	"pad.toolbar.savedRevision.title": "ذخیره‌سازی نسخه",
 	"pad.toolbar.settings.title": "تنظیمات",
@@ -82,10 +83,10 @@
 	"pad.settings.language": "زبان:",
 	"pad.settings.about": "درباره",
 	"pad.settings.poweredBy": "قدرست‌گرفته از",
-	"pad.importExport.import_export": "درون‌ریزی/برون‌ریزی",
+	"pad.importExport.import_export": "درون‌ریزی/برون‌بری",
 	"pad.importExport.import": "بارگذاری پرونده‌ی متنی یا سند",
 	"pad.importExport.importSuccessful": "موفقیت آمیز بود!",
-	"pad.importExport.export": "برون‌ریزی این دفترچه یادداشت با قالب:",
+	"pad.importExport.export": "برون‌بری این دفترچه یادداشت با قالب:",
 	"pad.importExport.exportetherpad": "اترپد",
 	"pad.importExport.exporthtml": "HTML",
 	"pad.importExport.exportplain": "متن ساده",
@@ -133,7 +134,7 @@
 	"timeslider.toolbar.returnbutton": "بازگشت به دفترچه یادداشت",
 	"timeslider.toolbar.authors": "نویسندگان:",
 	"timeslider.toolbar.authorsList": "بدون نویسنده",
-	"timeslider.toolbar.exportlink.title": "برون‌ریزی",
+	"timeslider.toolbar.exportlink.title": "برون‌بری",
 	"timeslider.exportCurrent": "برون‌ریزی نگارش کنونی به عنوان:",
 	"timeslider.version": "نگارش {{version}}",
 	"timeslider.saved": "{{month}} {{day}}، {{year}} ذخیره شد",
@@ -163,9 +164,9 @@
 	"pad.impexp.importing": "در حال درون‌ریزی...",
 	"pad.impexp.confirmimport": "با درون‌ریزی یک پرونده نوشتهٔ کنونی دفترچه پاک می‌شود. آیا می‌خواهید ادامه دهید؟",
 	"pad.impexp.convertFailed": "ما نمی‌توانیم این پرونده را درون‌ریزی کنیم. خواهشمندیم قالب دیگری برای سندتان انتخاب کرده یا بصورت دستی آنرا کپی کنید",
-	"pad.impexp.padHasData": "امکان درون‌ریز این پرونده نیست زیرا این پد تغییر کرده‌است. لطفاً در پد جدید درون‌ریزی کنید.",
+	"pad.impexp.padHasData": "امکان درون‌ریزی این پرونده نیست زیرا این پد تغییر کرده‌است. لطفاً در پد جدید درون‌ریزی کنید.",
 	"pad.impexp.uploadFailed": "آپلود انجام نشد، دوباره تلاش کنید",
 	"pad.impexp.importfailed": "درون‌ریزی انجام نشد",
 	"pad.impexp.copypaste": "کپی پیست کنید",
-	"pad.impexp.exportdisabled": "برون‌ریزی با قالب {{type}} از کار افتاده است. برای جزئیات بیشتر با مدیر سیستمتان تماس بگیرید."
+	"pad.impexp.exportdisabled": "برون‌ریزی با قالب {{type}} از کار افتاده است. برای جزئیات بیشتر با مدیر سامانه خودتان تماس بگیرید."
 }

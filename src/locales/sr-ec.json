@@ -9,6 +9,7 @@
 			"Obsuser",
 			"Srdjan m",
 			"Srđan",
+			"Zenfiric",
 			"Милан Јелисавчић"
 		]
 	},
@@ -34,7 +35,6 @@
 	"pad.colorpicker.save": "Сачувај",
 	"pad.colorpicker.cancel": "Откажи",
 	"pad.loading": "Учитавам…",
-	"pad.noCookie": "Колачић није пронађен. Молимо да укључите колачиће у вашем прегледавачу!",
 	"pad.permissionDenied": "Немате дозволу да приступите овом паду",
 	"pad.settings.padSettings": "Подешавања пада",
 	"pad.settings.myView": "Мој приказ",

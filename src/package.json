@@ -30,212 +30,71 @@
     }
   ],
   "dependencies": {
-    "async": "^3.2.1",
-    "clean-css": "^5.2.1",
-    "cookie-parser": "1.4.5",
+    "async": "^3.2.2",
+    "clean-css": "^5.3.0",
+    "cookie-parser": "^1.4.6",
     "cross-spawn": "^7.0.3",
-    "ejs": "^3.1.6",
+    "ejs": "^3.1.7",
     "etherpad-require-kernel": "^1.0.15",
     "etherpad-yajsml": "0.0.12",
-    "express": "4.17.1",
-    "express-rate-limit": "5.5.0",
-    "express-session": "1.17.2",
+    "express": "4.18.2",
+    "express-rate-limit": "^6.4.0",
+    "express-session": "npm:@etherpad/express-session@^1.18.1",
     "fast-deep-equal": "^3.1.3",
     "find-root": "1.1.0",
-    "formidable": "1.2.2",
-    "http-errors": "1.8.0",
+    "formidable": "^2.1.2",
+    "http-errors": "^2.0.0",
     "js-cookie": "^3.0.1",
-    "jsdom": "^17.0.0",
-    "jsonminify": "0.4.1",
+    "jsdom": "^19.0.0",
+    "jsonminify": "0.4.2",
     "languages4translatewiki": "0.1.3",
     "lodash.clonedeep": "4.5.0",
     "log4js": "0.6.38",
     "measured-core": "^2.0.0",
-    "mime-types": "^2.1.33",
+    "mime-types": "^2.1.35",
     "npm": "^6.14.15",
-    "openapi-backend": "^4.2.0",
+    "openapi-backend": "^5.3.0",
     "proxy-addr": "^2.0.7",
-    "rate-limiter-flexible": "^2.3.1",
-    "rehype": "^11.0.0",
-    "rehype-minify-whitespace": "^4.0.5",
+    "rate-limiter-flexible": "^2.4.1",
+    "rehype": "^12.0.1",
+    "rehype-minify-whitespace": "^5.0.1",
     "request": "2.88.2",
-    "resolve": "1.20.0",
+    "resolve": "1.22.0",
     "security": "1.0.0",
-    "semver": "^7.3.5",
+    "semver": "^7.3.7",
     "socket.io": "^2.4.1",
-    "terser": "^5.9.0",
+    "superagent": "^8.0.9",
+    "terser": "^5.16.5",
     "threads": "^1.7.0",
-    "tiny-worker": "^2.3.0",
     "tinycon": "0.6.8",
     "ueberdb2": "^2.2.4",
-    "underscore": "1.13.1",
+    "underscore": "1.13.3",
     "unorm": "1.6.0",
     "wtfnode": "^0.9.1"
   },
   "bin": {
+    "etherpad": "node/server.js",
+    "etherpad-healthcheck": "bin/etherpad-healthcheck",
     "etherpad-lite": "node/server.js"
   },
   "devDependencies": {
-    "eslint": "^7.32.0",
-    "eslint-config-etherpad": "^2.0.0",
-    "eslint-plugin-cypress": "^2.11.3",
-    "eslint-plugin-eslint-comments": "^3.2.0",
-    "eslint-plugin-mocha": "^9.0.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prefer-arrow": "^1.2.3",
-    "eslint-plugin-promise": "^5.1.0",
-    "eslint-plugin-you-dont-need-lodash-underscore": "^6.12.0",
-    "etherpad-cli-client": "^0.1.12",
-    "mocha": "^9.1.1",
+    "eslint": "^8.14.0",
+    "eslint-config-etherpad": "^3.0.13",
+    "etherpad-cli-client": "^2.0.1",
+    "mocha": "^9.2.2",
     "mocha-froth": "^0.2.10",
     "nodeify": "^1.0.1",
     "openapi-schema-validation": "^0.4.2",
-    "selenium-webdriver": "^4.0.0-rc-1",
+    "selenium-webdriver": "^4.1.1",
     "set-cookie-parser": "^2.4.8",
-    "sinon": "^11.1.2",
+    "sinon": "^13.0.2",
     "split-grid": "^1.0.11",
-    "superagent": "^6.1.0",
-    "supertest": "^6.1.6"
-  },
-  "eslintConfig": {
-    "ignorePatterns": [
-      "/static/js/admin/jquery.autosize.js",
-      "/static/js/admin/minify.json.js",
-      "/static/js/vendors/browser.js",
-      "/static/js/vendors/farbtastic.js",
-      "/static/js/vendors/gritter.js",
-      "/static/js/vendors/html10n.js",
-      "/static/js/vendors/jquery.js",
-      "/static/js/vendors/nice-select.js",
-      "/tests/frontend/lib/"
-    ],
-    "overrides": [
-      {
-        "files": [
-          "**/.eslintrc.js"
-        ],
-        "extends": "etherpad/node"
-      },
-      {
-        "files": [
-          "**/*"
-        ],
-        "excludedFiles": [
-          "**/.eslintrc.js",
-          "tests/frontend/**/*"
-        ],
-        "extends": "etherpad/node"
-      },
-      {
-        "files": [
-          "static/**/*",
-          "tests/frontend/helper.js",
-          "tests/frontend/helper/**/*"
-        ],
-        "excludedFiles": [
-          "**/.eslintrc.js"
-        ],
-        "extends": "etherpad/browser",
-        "env": {
-          "shared-node-browser": true
-        },
-        "overrides": [
-          {
-            "files": [
-              "tests/frontend/helper/**/*"
-            ],
-            "globals": {
-              "helper": "readonly"
-            }
-          }
-        ]
-      },
-      {
-        "files": [
-          "tests/**/*"
-        ],
-        "excludedFiles": [
-          "**/.eslintrc.js",
-          "tests/frontend/cypress/**/*",
-          "tests/frontend/helper.js",
-          "tests/frontend/helper/**/*",
-          "tests/frontend/travis/**/*",
-          "tests/ratelimit/**/*"
-        ],
-        "extends": "etherpad/tests",
-        "rules": {
-          "mocha/no-exports": "off",
-          "mocha/no-top-level-hooks": "off"
-        }
-      },
-      {
-        "files": [
-          "tests/backend/**/*"
-        ],
-        "excludedFiles": [
-          "**/.eslintrc.js"
-        ],
-        "extends": "etherpad/tests/backend",
-        "overrides": [
-          {
-            "files": [
-              "tests/backend/**/*"
-            ],
-            "excludedFiles": [
-              "tests/backend/specs/**/*"
-            ],
-            "rules": {
-              "mocha/no-exports": "off",
-              "mocha/no-top-level-hooks": "off"
-            }
-          }
-        ]
-      },
-      {
-        "files": [
-          "tests/frontend/**/*"
-        ],
-        "excludedFiles": [
-          "**/.eslintrc.js",
-          "tests/frontend/cypress/**/*",
-          "tests/frontend/helper.js",
-          "tests/frontend/helper/**/*",
-          "tests/frontend/travis/**/*"
-        ],
-        "extends": "etherpad/tests/frontend",
-        "overrides": [
-          {
-            "files": [
-              "tests/frontend/**/*"
-            ],
-            "excludedFiles": [
-              "tests/frontend/specs/**/*"
-            ],
-            "rules": {
-              "mocha/no-exports": "off",
-              "mocha/no-top-level-hooks": "off"
-            }
-          }
-        ]
-      },
-      {
-        "files": [
-          "tests/frontend/cypress/**/*"
-        ],
-        "extends": "etherpad/tests/cypress"
-      },
-      {
-        "files": [
-          "tests/frontend/travis/**/*"
-        ],
-        "extends": "etherpad/node"
-      }
-    ],
-    "root": true
+    "supertest": "^6.2.4",
+    "typescript": "^4.6.4"
   },
   "engines": {
-    "node": ">=12.13.0",
-    "npm": ">=5.5.1"
+    "node": ">=14.15.0",
+    "npm": ">=6.14.0"
   },
   "repository": {
     "type": "git",
@@ -246,6 +105,6 @@
     "test": "mocha --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
     "test-container": "mocha --timeout 5000 tests/container/specs/api"
   },
-  "version": "1.8.18",
+  "version": "1.9.0",
   "license": "Apache-2.0"
 }

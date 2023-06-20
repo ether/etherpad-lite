@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Jose1711",
 			"Kusavica",
 			"Lexected",
 			"Mark",
@@ -39,7 +40,7 @@
 	"admin_settings.current": "Aktuálne nastavenia",
 	"admin_settings.current_example-devel": "Príklad šablóny vývojárskeho nastavenia",
 	"admin_settings.current_example-prod": "Príklad šablóny výrobného nastavenia",
-	"admin_settings.current_restart.value": "Reštartovať Ehterpad",
+	"admin_settings.current_restart.value": "Reštartovať Etherpad",
 	"admin_settings.current_save.value": "Uložiť nastavenia",
 	"admin_settings.page-title": "Nastavenia - Etherpad",
 	"index.newPad": "Nový poznámkový blok",
@@ -154,7 +155,7 @@
 	"timeslider.month.october": "októbra",
 	"timeslider.month.november": "novembra",
 	"timeslider.month.december": "decembra",
-	"timeslider.unnamedauthors": "{[plural(num) one:Počet nemenovaných autorov:, other: Počet nemenovaných autorov:]} {{num}}",
+	"timeslider.unnamedauthors": "{{num}} {[plural(num) one: nemenovaný autor, few: nemenovaní autori, other: nemenovaných autorov ]}",
 	"pad.savedrevs.marked": "Táto revízia bola označená ako uložená",
 	"pad.savedrevs.timeslider": "Návštevou časovej osi môžete zobraziť uložené revízie",
 	"pad.userlist.entername": "Zadajte svoje meno",

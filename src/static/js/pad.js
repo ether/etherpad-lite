@@ -95,24 +95,20 @@ const getParameters = [
       settings.useMonospaceFontGlobal = true;
     },
   },
-  // If the username is set as a parameter we should set a global value that we can call once we
-  // have initiated the pad.
   {
     name: 'userName',
     checkVal: null,
     callback: (val) => {
-      settings.globalUserName = decodeURIComponent(val);
-      clientVars.userName = decodeURIComponent(val);
+      settings.globalUserName = val;
+      clientVars.userName = val;
     },
   },
-  // If the userColor is set as a parameter, set a global value to use once we have initiated the
-  // pad.
   {
     name: 'userColor',
     checkVal: null,
     callback: (val) => {
-      settings.globalUserColor = decodeURIComponent(val);
-      clientVars.userColor = decodeURIComponent(val);
+      settings.globalUserColor = val;
+      clientVars.userColor = val;
     },
   },
   {
@@ -149,8 +145,10 @@ const getParameters = [
 const getParams = () => {
   // Tries server enforced options first..
   for (const setting of getParameters) {
-    const value = clientVars.padOptions[setting.name];
-    if (value.toString() === setting.checkVal) {
+    let value = clientVars.padOptions[setting.name];
+    if (value == null) continue;
+    value = value.toString();
+    if (value === setting.checkVal || setting.checkVal == null) {
       setting.callback(value);
     }
   }
@@ -179,8 +177,8 @@ const sendClientReady = (isReconnect) => {
   }
 
   let token = Cookies.get('token');
-  if (token == null) {
-    token = `t.${randomString()}`;
+  if (token == null || !padutils.isValidAuthorToken(token)) {
+    token = padutils.generateAuthorToken();
     Cookies.set('token', token, {expires: 60});
   }
 
@@ -295,6 +293,11 @@ const handshake = async () => {
     } else if (!receivedClientVars && obj.type === 'CLIENT_VARS') {
       receivedClientVars = true;
       window.clientVars = obj.data;
+      if (window.clientVars.sessionRefreshInterval) {
+        const ping =
+            () => $.ajax('../_extendExpressSessionLifetime', {method: 'PUT'}).catch(() => {});
+        setInterval(ping, window.clientVars.sessionRefreshInterval);
+      }
     } else if (obj.disconnect) {
       padconnectionstatus.disconnected(obj.disconnect);
       socket.disconnect();

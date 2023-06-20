@@ -54,3 +54,23 @@ exports.timesLimit = async (total, concurrency, promiseCreator) => {
   }
   await Promise.all(promises);
 };
+
+/**
+ * An ordinary Promise except the `resolve` and `reject` executor functions are exposed as
+ * properties.
+ */
+class Gate extends Promise {
+  // Coax `.then()` into returning an ordinary Promise, not a Gate. See
+  // https://stackoverflow.com/a/65669070 for the rationale.
+  static get [Symbol.species]() { return Promise; }
+
+  constructor() {
+    // `this` is assigned when `super()` returns, not when it is called, so it is not acceptable to
+    // do the following because it will throw a ReferenceError when it dereferences `this`:
+    //     super((resolve, reject) => Object.assign(this, {resolve, reject}));
+    let props;
+    super((resolve, reject) => props = {resolve, reject});
+    Object.assign(this, props);
+  }
+}
+exports.Gate = Gate;

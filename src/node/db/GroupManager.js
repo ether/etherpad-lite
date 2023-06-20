@@ -43,41 +43,29 @@ exports.deleteGroup = async (groupID) => {
   }
 
   // iterate through all pads of this group and delete them (in parallel)
-  await Promise.all(Object.keys(group.pads)
-      .map((padID) => padManager.getPad(padID)
-          .then((pad) => pad.remove())
-      ));
+  await Promise.all(Object.keys(group.pads).map(async (padId) => {
+    const pad = await padManager.getPad(padId);
+    await pad.remove();
+  }));
 
-  // iterate through group2sessions and delete all sessions
-  const group2sessions = await db.get(`group2sessions:${groupID}`);
-  const sessions = group2sessions ? group2sessions.sessionIDs : {};
+  // Delete associated sessions in parallel. This should be done before deleting the group2sessions
+  // record because deleting a session updates the group2sessions record.
+  const {sessionIDs = {}} = await db.get(`group2sessions:${groupID}`) || {};
+  await Promise.all(Object.keys(sessionIDs).map(async (sessionId) => {
+    await sessionManager.deleteSession(sessionId);
+  }));
 
-  // loop through all sessions and delete them (in parallel)
-  await Promise.all(Object.keys(sessions).map((session) => sessionManager.deleteSession(session)));
+  await Promise.all([
+    db.remove(`group2sessions:${groupID}`),
+    // UeberDB's setSub() method atomically reads the record, updates the appropriate property, and
+    // writes the result. Setting a property to `undefined` deletes that property (JSON.stringify()
+    // ignores such properties).
+    db.setSub('groups', [groupID], undefined),
+    ...Object.keys(group.mappings || {}).map(async (m) => await db.remove(`mapper2group:${m}`)),
+  ]);
 
-  // remove group and group2sessions entry
-  await db.remove(`group2sessions:${groupID}`);
+  // Remove the group record after updating the `groups` record so that the state is consistent.
   await db.remove(`group:${groupID}`);
-
-  // unlist the group
-  let groups = await exports.listAllGroups();
-  groups = groups ? groups.groupIDs : [];
-
-  const index = groups.indexOf(groupID);
-
-  if (index === -1) {
-    // it's not listed
-
-    return;
-  }
-
-  // remove from the list
-  groups.splice(index, 1);
-
-  // regenerate group list
-  const newGroups = {};
-  groups.forEach((group) => newGroups[group] = 1);
-  await db.set('groups', newGroups);
 };
 
 exports.doesGroupExist = async (groupID) => {
@@ -88,51 +76,34 @@ exports.doesGroupExist = async (groupID) => {
 };
 
 exports.createGroup = async () => {
-  // search for non existing groupID
   const groupID = `g.${randomString(16)}`;
-
-  // create the group
-  await db.set(`group:${groupID}`, {pads: {}});
-
-  // list the group
-  let groups = await exports.listAllGroups();
-  groups = groups ? groups.groupIDs : [];
-  groups.push(groupID);
-
-  // regenerate group list
-  const newGroups = {};
-  groups.forEach((group) => newGroups[group] = 1);
-  await db.set('groups', newGroups);
-
+  await db.set(`group:${groupID}`, {pads: {}, mappings: {}});
+  // Add the group to the `groups` record after the group's individual record is created so that
+  // the state is consistent. Note: UeberDB's setSub() method atomically reads the record, updates
+  // the appropriate property, and writes the result.
+  await db.setSub('groups', [groupID], 1);
   return {groupID};
 };
 
 exports.createGroupIfNotExistsFor = async (groupMapper) => {
-  // ensure mapper is optional
   if (typeof groupMapper !== 'string') {
     throw new CustomError('groupMapper is not a string', 'apierror');
   }
-
-  // try to get a group for this mapper
   const groupID = await db.get(`mapper2group:${groupMapper}`);
-
-  if (groupID) {
-    // there is a group for this mapper
-    const exists = await exports.doesGroupExist(groupID);
-
-    if (exists) return {groupID};
-  }
-
-  // hah, the returned group doesn't exist, let's create one
+  if (groupID && await exports.doesGroupExist(groupID)) return {groupID};
   const result = await exports.createGroup();
-
-  // create the mapper entry for this group
-  await db.set(`mapper2group:${groupMapper}`, result.groupID);
-
+  await Promise.all([
+    db.set(`mapper2group:${groupMapper}`, result.groupID),
+    // Remember the mapping in the group record so that it can be cleaned up when the group is
+    // deleted. Although the core Etherpad API does not support multiple mappings for the same
+    // group, the database record does support multiple mappings in case a plugin decides to extend
+    // the core Etherpad functionality. (It's also easy to implement it this way.)
+    db.setSub(`group:${result.groupID}`, ['mappings', groupMapper], 1),
+  ]);
   return result;
 };
 
-exports.createGroupPad = async (groupID, padName, text) => {
+exports.createGroupPad = async (groupID, padName, text, authorId = '') => {
   // create the padID
   const padID = `${groupID}$${padName}`;
 
@@ -152,7 +123,7 @@ exports.createGroupPad = async (groupID, padName, text) => {
   }
 
   // create the pad
-  await padManager.getPad(padID, text);
+  await padManager.getPad(padID, text, authorId);
 
   // create an entry in the group for this pad
   await db.setSub(`group:${groupID}`, ['pads', padID], 1);

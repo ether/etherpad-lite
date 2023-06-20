@@ -22,7 +22,6 @@
 const CustomError = require('../utils/customError');
 const Pad = require('../db/Pad');
 const db = require('./DB');
-const hooks = require('../../static/js/pluginfw/hooks');
 
 /**
  * A cache of all loaded Pads.
@@ -50,68 +49,52 @@ const globalPads = {
  *
  * Updated without db access as new pads are created/old ones removed.
  */
-const padList = {
-  list: new Set(),
-  cachedList: undefined,
-  initiated: false,
-  async init() {
-    const dbData = await db.findKeys('pad:*', '*:*:*');
+const padList = new class {
+  constructor() {
+    this._cachedList = null;
+    this._list = new Set();
+    this._loaded = null;
+  }
 
-    if (dbData != null) {
-      this.initiated = true;
-
-      for (const val of dbData) {
-        this.addPad(val.replace(/^pad:/, ''), false);
-      }
-    }
-
-    return this;
-  },
-  async load() {
-    if (!this.initiated) {
-      return this.init();
-    }
-
-    return this;
-  },
   /**
    * Returns all pads in alphabetical order as array.
    */
   async getPads() {
-    await this.load();
-
-    if (!this.cachedList) {
-      this.cachedList = Array.from(this.list).sort();
+    if (!this._loaded) {
+      this._loaded = (async () => {
+        const dbData = await db.findKeys('pad:*', '*:*:*');
+        if (dbData == null) return;
+        for (const val of dbData) this.addPad(val.replace(/^pad:/, ''));
+      })();
     }
+    await this._loaded;
+    if (!this._cachedList) this._cachedList = [...this._list].sort();
+    return this._cachedList;
+  }
 
-    return this.cachedList;
-  },
   addPad(name) {
-    if (!this.initiated) return;
+    if (this._list.has(name)) return;
+    this._list.add(name);
+    this._cachedList = null;
+  }
 
-    if (!this.list.has(name)) {
-      this.list.add(name);
-      this.cachedList = undefined;
-    }
-  },
   removePad(name) {
-    if (!this.initiated) return;
-
-    if (this.list.has(name)) {
-      this.list.delete(name);
-      this.cachedList = undefined;
-    }
-  },
-};
+    if (!this._list.has(name)) return;
+    this._list.delete(name);
+    this._cachedList = null;
+  }
+}();
 
 // initialises the all-knowing data structure
 
 /**
  * Returns a Pad Object with the callback
  * @param id A String with the id of the pad
- * @param {Function} callback
+ * @param {string} [text] - Optional initial pad text if creating a new pad.
+ * @param {string} [authorId] - Optional author ID of the user that initiated the pad creation (if
+ *     applicable).
  */
-exports.getPad = async (id, text) => {
+exports.getPad = async (id, text, authorId = '') => {
   // check if this is a valid padId
   if (!exports.isValidPadId(id)) {
     throw new CustomError(`${id} is not a valid padId`, 'apierror');
@@ -141,8 +124,7 @@ exports.getPad = async (id, text) => {
   pad = new Pad.Pad(id);
 
   // initialize the pad
-  await pad.init(text);
-  hooks.callAll('padLoad', {pad});
+  await pad.init(text, authorId);
   globalPads.set(id, pad);
   padList.addPad(id);
 

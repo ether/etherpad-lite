@@ -41,8 +41,8 @@ if (settings.dumpOnUncleanExit) {
  * any modules that require newer versions of NodeJS
  */
 const NodeVersion = require('./utils/NodeVersion');
-NodeVersion.enforceMinNodeVersion('12.13.0');
-NodeVersion.checkDeprecationStatus('12.13.0', '1.8.14');
+NodeVersion.enforceMinNodeVersion('12.17.0');
+NodeVersion.checkDeprecationStatus('12.17.0', '1.9.0');
 
 const UpdateCheck = require('./utils/UpdateCheck');
 const db = require('./db/DB');
@@ -50,6 +50,7 @@ const express = require('./hooks/express');
 const hooks = require('../static/js/pluginfw/hooks');
 const pluginDefs = require('../static/js/pluginfw/plugin_defs');
 const plugins = require('../static/js/pluginfw/plugins');
+const {Gate} = require('./utils/promises');
 const stats = require('./stats');
 
 const logger = log4js.getLogger('server');
@@ -66,14 +67,6 @@ const State = {
 };
 
 let state = State.INITIAL;
-
-class Gate extends Promise {
-  constructor(executor = null) {
-    let res;
-    super((resolve, reject) => { res = resolve; if (executor != null) executor(resolve, reject); });
-    this.resolve = res;
-  }
-}
 
 const removeSignalListener = (signal, listener) => {
   logger.debug(`Removing ${signal} listener because it might interfere with shutdown tasks. ` +
@@ -114,7 +107,14 @@ exports.start = async () => {
 
     process.on('uncaughtException', (err) => {
       logger.debug(`uncaught exception: ${err.stack || err}`);
-      exports.exit(err);
+
+      // eslint-disable-next-line promise/no-promise-in-callback
+      exports.exit(err)
+          .catch((err) => {
+            logger.error('Error in process exit', err);
+            // eslint-disable-next-line n/no-process-exit
+            process.exit(1);
+          });
     });
     // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
     // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
@@ -165,7 +165,7 @@ exports.start = async () => {
   return express.server;
 };
 
-let stopDoneGate;
+const stopDoneGate = new Gate();
 exports.stop = async () => {
   switch (state) {
     case State.STARTING:
@@ -187,7 +187,6 @@ exports.stop = async () => {
       throw new Error(`unknown State: ${state.toString()}`);
   }
   logger.info('Stopping Etherpad...');
-  const stopDoneGate = new Gate();
   state = State.STOPPING;
   try {
     let timeout = null;

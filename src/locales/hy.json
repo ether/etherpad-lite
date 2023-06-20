@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Armenoid",
 			"Kareyac"
 		]
 	},
@@ -26,7 +27,7 @@
 	"pad.settings.fontType": "Տառատեսակի տեսակը",
 	"pad.settings.language": "Լեզու",
 	"pad.importExport.import_export": "Ներմուծում/արտահանում",
-	"pad.importExport.import": "Բեռնել ցանկացած տեքստային ֆայլը կամ փաստաթուղթ",
+	"pad.importExport.import": "Վերբեռնել ցանկացած տեքստային նիշք կամ փաստաթուղթ",
 	"pad.importExport.importSuccessful": "Հաջողություն",
 	"pad.importExport.export": "Արտահանել ընթացիկ փաստաթուղթ է որպես",
 	"pad.importExport.exportplain": "Պարզ տեքստ",

@@ -16,6 +16,7 @@
  */
 
 const Changeset = require('../../static/js/Changeset');
+const attributes = require('../../static/js/attributes');
 const padManager = require('../db/PadManager');
 const _ = require('underscore');
 const Security = require('../../static/js/security');
@@ -196,21 +197,20 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
         return;
       }
 
-      const iter = Changeset.opIterator(Changeset.subattribution(attribs, idx, idx + numChars));
+      const ops = Changeset.deserializeOps(Changeset.subattribution(attribs, idx, idx + numChars));
       idx += numChars;
 
       // this iterates over every op string and decides which tags to open or to close
       // based on the attribs used
-      while (iter.hasNext()) {
-        const o = iter.next();
+      for (const o of ops) {
         const usedAttribs = [];
 
         // mark all attribs as used
-        Changeset.eachAttribNumber(o.attribs, (a) => {
+        for (const a of attributes.decodeAttribString(o.attribs)) {
           if (a in anumMap) {
             usedAttribs.push(anumMap[a]); // i = 0 => bold, etc.
           }
-        });
+        }
         let outermostTag = -1;
         // find the outer most open tag that is no longer used
         for (let i = openTags.length - 1; i >= 0; i--) {
@@ -316,8 +316,7 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
       if ((!prevLine || prevLine.listLevel !== line.listLevel) ||
           (line.listTypeName !== prevLine.listTypeName)) {
         const exists = _.find(openLists, (item) => (
-          item.level === line.listLevel && item.type === line.listTypeName)
-        );
+          item.level === line.listLevel && item.type === line.listTypeName));
         if (!exists) {
           let prevLevel = 0;
           if (prevLine && prevLine.listLevel) {

@@ -4,8 +4,15 @@
 #
 # Author: muxator
 
-FROM node:14-buster-slim
+FROM node:lts-slim
 LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
+
+ARG TIMEZONE=
+RUN \
+  [ -z "${TIMEZONE}" ] || { \
+    ln -sf /usr/share/zoneinfo/"${TIMEZONE#/usr/share/zoneinfo/}" /etc/localtime; \
+    dpkg-reconfigure -f noninteractive tzdata; \
+  }
 
 # plugins to install while building the container. By default no plugins are
 # installed.
@@ -60,12 +67,12 @@ RUN mkdir -p "${EP_DIR}" && chown etherpad:etherpad "${EP_DIR}"
 RUN export DEBIAN_FRONTEND=noninteractive; \
     mkdir -p /usr/share/man/man1 && \
     apt-get -qq update && \
+    apt-get -qq dist-upgrade && \
     apt-get -qq --no-install-recommends install \
         ca-certificates \
         git \
-        curl \
         ${INSTALL_ABIWORD:+abiword} \
-        ${INSTALL_SOFFICE:+libreoffice} \
+        ${INSTALL_SOFFICE:+libreoffice default-jre libreoffice-java-common} \
         && \
     apt-get -qq clean && \
     rm -rf /var/lib/apt/lists/*
@@ -85,7 +92,7 @@ COPY --chown=etherpad:etherpad ./ ./
 # seems to confuse tools such as `npm outdated`, `npm update`, and some ESLint
 # rules.
 RUN { [ -z "${ETHERPAD_PLUGINS}" ] || \
-      npm install --no-save ${ETHERPAD_PLUGINS}; } && \
+      npm install --no-save --legacy-peer-deps ${ETHERPAD_PLUGINS}; } && \
     src/bin/installDeps.sh && \
     rm -rf ~/.npm
 
@@ -95,7 +102,11 @@ COPY --chown=etherpad:etherpad ./settings.json.docker "${EP_DIR}"/settings.json
 # Fix group permissions
 RUN chmod -R g=u .
 
-HEALTHCHECK --interval=20s --timeout=3s CMD curl -f http://localhost:9001 || exit 1
+USER root
+RUN cd src && npm link
+USER etherpad
+
+HEALTHCHECK --interval=20s --timeout=3s CMD ["etherpad-healthcheck"]
 
 EXPOSE 9001
-CMD ["node", "src/node/server.js"]
+CMD ["etherpad"]

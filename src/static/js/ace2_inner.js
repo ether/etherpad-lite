@@ -18,6 +18,7 @@
  */
 let documentAttributeManager;
 
+const AttributeMap = require('./AttributeMap');
 const browser = require('./vendors/browser');
 const padutils = require('./pad_utils').padutils;
 const Ace2Common = require('./ace2_common');
@@ -522,14 +523,14 @@ function Ace2Inner(editorInfo, cssManagers) {
     const upToLastLine = rep.lines.offsetOfIndex(numLines - 1);
     const lastLineLength = rep.lines.atIndex(numLines - 1).text.length;
     const assem = Changeset.smartOpAssembler();
-    const o = Changeset.newOp('-');
+    const o = new Changeset.Op('-');
     o.chars = upToLastLine;
     o.lines = numLines - 1;
     assem.append(o);
     o.chars = lastLineLength;
     o.lines = 0;
     assem.append(o);
-    Changeset.appendATextToAssembler(atext, assem);
+    for (const op of Changeset.opsFromAText(atext)) assem.append(op);
     const newLen = oldLen + assem.getLengthChange();
     const changeset = Changeset.checkRep(
         Changeset.pack(oldLen, newLen, assem.toString(), atext.text.slice(0, -1)));
@@ -1542,9 +1543,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       }
     }
 
-    const withIt = Changeset.makeAttribsString('+', [
-      [attributeName, 'true'],
-    ], rep.apool);
+    const withIt = new AttributeMap(rep.apool).set(attributeName, 'true').toString();
     const withItRegex = new RegExp(`${withIt.replace(/\*/g, '\\*')}(\\*|$)`);
     const hasIt = (attribs) => withItRegex.test(attribs);
 
@@ -1577,13 +1576,8 @@ function Ace2Inner(editorInfo, cssManagers) {
       const end = selEnd[1];
       let hasAttrib = true;
 
-      // Iterate over attribs on this line
-
-      const opIter = Changeset.opIterator(rep.alines[lineNum]);
       let indexIntoLine = 0;
-
-      while (opIter.hasNext()) {
-        const op = opIter.next();
+      for (const op of Changeset.deserializeOps(rep.alines[lineNum])) {
         const opStartInLine = indexIntoLine;
         const opEndInLine = opStartInLine + op.chars;
         if (!hasIt(op.attribs)) {
@@ -1608,9 +1602,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     if (!(rep.selStart && rep.selEnd)) return;
 
     let selectionAllHasIt = true;
-    const withIt = Changeset.makeAttribsString('+', [
-      [attributeName, 'true'],
-    ], rep.apool);
+    const withIt = new AttributeMap(rep.apool).set(attributeName, 'true').toString();
     const withItRegex = new RegExp(`${withIt.replace(/\*/g, '\\*')}(\\*|$)`);
 
     const hasIt = (attribs) => withItRegex.test(attribs);
@@ -1618,7 +1610,6 @@ function Ace2Inner(editorInfo, cssManagers) {
     const selStartLine = rep.selStart[0];
     const selEndLine = rep.selEnd[0];
     for (let n = selStartLine; n <= selEndLine; n++) {
-      const opIter = Changeset.opIterator(rep.alines[n]);
       let indexIntoLine = 0;
       let selectionStartInLine = 0;
       if (documentAttributeManager.lineHasMarker(n)) {
@@ -1631,8 +1622,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       if (n === selEndLine) {
         selectionEndInLine = rep.selEnd[1];
       }
-      while (opIter.hasNext()) {
-        const op = opIter.next();
+      for (const op of Changeset.deserializeOps(rep.alines[n])) {
         const opStartInLine = indexIntoLine;
         const opEndInLine = opStartInLine + op.chars;
         if (!hasIt(op.attribs)) {
@@ -1757,12 +1747,10 @@ function Ace2Inner(editorInfo, cssManagers) {
       };
 
       const eachAttribRun = (attribs, func /* (startInNewText, endInNewText, attribs)*/) => {
-        const attribsIter = Changeset.opIterator(attribs);
         let textIndex = 0;
         const newTextStart = commonStart;
         const newTextEnd = newText.length - commonEnd - (shiftFinalNewlineToBeforeNewText ? 1 : 0);
-        while (attribsIter.hasNext()) {
-          const op = attribsIter.next();
+        for (const op of Changeset.deserializeOps(attribs)) {
           const nextIndex = textIndex + op.chars;
           if (!(nextIndex <= newTextStart || textIndex >= newTextEnd)) {
             func(Math.max(newTextStart, textIndex), Math.min(newTextEnd, nextIndex), op.attribs);
@@ -1820,22 +1808,15 @@ function Ace2Inner(editorInfo, cssManagers) {
         }
 
         let isNewTextMultiauthor = false;
-        const authorAtt = Changeset.makeAttribsString('+', (thisAuthor ? [
-          ['author', thisAuthor],
-        ] : []), rep.apool);
         const authorizer = cachedStrFunc((oldAtts) => {
-          if (isNewTextMultiauthor) {
-            // prefer colors from DOM
-            return Changeset.composeAttributes(authorAtt, oldAtts, true, rep.apool);
-          } else {
-            // use this author's color
-            return Changeset.composeAttributes(oldAtts, authorAtt, true, rep.apool);
-          }
+          const attribs = AttributeMap.fromString(oldAtts, rep.apool);
+          if (!isNewTextMultiauthor || !attribs.has('author')) attribs.set('author', thisAuthor);
+          return attribs.toString();
         });
 
         let foundDomAuthor = '';
         eachAttribRun(newAttribs, (start, end, attribs) => {
-          const a = Changeset.attribsAttributeValue(attribs, 'author', rep.apool);
+          const a = AttributeMap.fromString(attribs, rep.apool).get('author');
           if (a && a !== foundDomAuthor) {
             if (!foundDomAuthor) {
               foundDomAuthor = a;
@@ -1874,7 +1855,7 @@ function Ace2Inner(editorInfo, cssManagers) {
   };
 
   const analyzeChange = (
-      oldText, newText, oldAttribs, newAttribs, optSelStartHint, optSelEndHint) => {
+    oldText, newText, oldAttribs, newAttribs, optSelStartHint, optSelEndHint) => {
     // we need to take into account both the styles attributes & attributes defined by
     // the plugins, so basically we can ignore only the default line attribs used by
     // Etherpad
@@ -1883,9 +1864,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     const attribRuns = (attribs) => {
       const lengs = [];
       const atts = [];
-      const iter = Changeset.opIterator(attribs);
-      while (iter.hasNext()) {
-        const op = iter.next();
+      for (const op of Changeset.deserializeOps(attribs)) {
         lengs.push(op.chars);
         atts.push(op.attribs);
       }
@@ -2629,11 +2608,9 @@ function Ace2Inner(editorInfo, cssManagers) {
           // TODO: There appears to be a race condition or so.
           const authorIds = new Set();
           if (alineAttrs) {
-            const opIter = Changeset.opIterator(alineAttrs);
-            while (opIter.hasNext()) {
-              const op = opIter.next();
-              const authorId = Changeset.opAttributeValue(op, 'author', apool);
-              if (authorId !== '') authorIds.add(authorId);
+            for (const op of Changeset.deserializeOps(alineAttrs)) {
+              const authorId = AttributeMap.fromString(op.attribs, apool).get('author');
+              if (authorId) authorIds.add(authorId);
             }
           }
           const idToName = new Map(parent.parent.pad.userList().map((a) => [a.userId, a.name]));

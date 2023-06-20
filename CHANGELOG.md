@@ -1,3 +1,123 @@
+# 1.9.0
+
+### Notable enhancements and fixes
+
+* Windows build:
+  * The bundled `node.exe` was upgraded from v12 to v16.
+  * The bundled `node.exe` is now a 64-bit executable. If you need the 32-bit
+    version you must download and install Node.js yourself.
+* Improvements to login session management:
+  * `express_sid` cookies and `sessionstorage:*` database records are no longer
+    created unless `requireAuthentication` is `true` (or a plugin causes them to
+    be created).
+  * Login sessions now have a finite lifetime by default (10 days after
+    leaving).
+  * `sessionstorage:*` database records are automatically deleted when the login
+    session expires (with some exceptions that will be fixed in the future).
+  * Requests for static content (e.g., `/robots.txt`) and special pages (e.g.,
+    the HTTP API, `/stats`) no longer create login session state.
+* The following settings from `settings.json` are now applied as expected (they
+  were unintentionally ignored before):
+  * `padOptions.lang`
+  * `padOptions.showChat`
+  * `padOptions.userColor`
+  * `padOptions.userName`
+* HTTP API:
+  * Fixed the return value of `getText` when called with a specific revision.
+  * Fixed a potential attribute pool corruption bug with
+    `copyPadWithoutHistory`.
+  * Mappings created by `createGroupIfNotExistsFor` are now removed from the
+    database when the group is deleted.
+  * Fixed race conditions in the `setText`, `appendText`, and `restoreRevision`
+    functions.
+  * Added an optional `authorId` parameter to `appendText`,
+    `copyPadWithoutHistory`, `createGroupPad`, `createPad`, `restoreRevision`,
+    `setHTML`, and `setText`, and bumped the latest API version to 1.3.0.
+* Fixed a crash if the database is busy enough to cause a query timeout.
+* New `/health` endpoint for getting information about Etherpad's health (see
+  [draft-inadarei-api-health-check-06](https://www.ietf.org/archive/id/draft-inadarei-api-health-check-06.html)).
+* Docker now uses the new `/health` endpoint for health checks, which avoids
+  issues when authentication is enabled. It also avoids the unnecessary creation
+  of database records for managing browser sessions.
+* When copying a pad, the pad's records are copied in batches to avoid database
+  timeouts with large pads.
+* Exporting a large pad to `.etherpad` format should be faster thanks to bulk
+  database record fetches.
+* When importing an `.etherpad` file, records are now saved to the database in
+  batches to avoid database timeouts with large pads.
+
+#### For plugin authors
+
+* New `expressPreSession` server-side hook.
+* Pad server-side hook changes:
+  * `padCheck`: New hook.
+  * `padCopy`: New `srcPad` and `dstPad` context properties.
+  * `padDefaultContent`: New hook.
+  * `padRemove`: New `pad` context property.
+* The `db` property on Pad objects is now public.
+* New `getAuthorId` server-side hook.
+* New APIs for processing attributes: `ep_etherpad-lite/static/js/attributes`
+  (low-level API) and `ep_etherpad-lite/static/js/AttributeMap` (high-level
+  API).
+* The `import` server-side hook has a new `ImportError` context property.
+* New `exportEtherpad` and `importEtherpad` server-side hooks.
+* The `handleMessageSecurity` and `handleMessage` server-side hooks have a new
+  `sessionInfo` context property that includes the user's author ID, the pad ID,
+  and whether the user only has read-only access.
+* The `handleMessageSecurity` server-side hook can now be used to grant write
+  access for the current message only.
+* The `init_<pluginName>` server-side hooks have a new `logger` context
+  property that plugins can use to log messages.
+* Prevent infinite loop when exiting the server
+* Bump dependencies
+
+
+### Compatibility changes
+
+* Node.js v14.15.0 or later is now required.
+* The default login session expiration (applicable if `requireAuthentication` is
+  `true`) changed from never to 10 days after the user leaves.
+
+#### For plugin authors
+
+* The `client` context property for the `handleMessageSecurity` and
+  `handleMessage` server-side hooks is deprecated; use the `socket` context
+  property instead.
+* Pad server-side hook changes:
+  * `padCopy`:
+    * The `originalPad` context property is deprecated; use `srcPad` instead.
+    * The `destinationID` context property is deprecated; use `dstPad.id`
+      instead.
+  * `padCreate`: The `author` context property is deprecated; use the new
+    `authorId` context property instead. Also, the hook now runs asynchronously.
+  * `padLoad`: Now runs when a temporary Pad object is created during import.
+    Also, it now runs asynchronously.
+  * `padRemove`: The `padID` context property is deprecated; use `pad.id`
+    instead.
+  * `padUpdate`: The `author` context property is deprecated; use the new
+    `authorId` context property instead. Also, the hook now runs asynchronously.
+* Returning `true` from a `handleMessageSecurity` hook function is deprecated;
+  return `'permitOnce'` instead.
+* Changes to the `src/static/js/Changeset.js` library:
+  * The following attribute processing functions are deprecated (use the new
+    attribute APIs instead):
+    * `attribsAttributeValue()`
+    * `eachAttribNumber()`
+    * `makeAttribsString()`
+    * `opAttributeValue()`
+  * `opIterator()`: Deprecated in favor of the new `deserializeOps()` generator
+    function.
+  * `appendATextToAssembler()`: Deprecated in favor of the new `opsFromAText()`
+    generator function.
+  * `newOp()`: Deprecated in favor of the new `Op` class.
+* The `AuthorManager.getAuthor4Token()` function is deprecated; use the new
+  `AuthorManager.getAuthorId()` function instead.
+* The exported database records covered by the `exportEtherpadAdditionalContent`
+  server-side hook now include keys like `${customPrefix}:${padId}:*`, not just
+  `${customPrefix}:${padId}`.
+* Plugin locales should overwrite core's locales Stale
+* Plugin locales overwrite core locales
+
 # 1.8.18
 
 Released: 2022-05-05

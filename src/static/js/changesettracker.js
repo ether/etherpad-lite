@@ -22,6 +22,7 @@
  * limitations under the License.
  */
 
+const AttributeMap = require('./AttributeMap');
 const AttributePool = require('./AttributePool');
 const Changeset = require('./Changeset');
 
@@ -139,46 +140,26 @@ const makeChangesetTracker = (scheduler, apool, aceCallbacksProvider) => {
         // Get my authorID
         const authorId = parent.parent.pad.myUserInfo.userId;
 
-        // Sanitize authorship
-        // We need to replace all author attribs with thisSession.author,
-        // in case they copy/pasted or otherwise inserted other peoples changes
-        if (apool.numToAttrib) {
-          let authorAttr;
-          for (const attr in apool.numToAttrib) {
-            if (apool.numToAttrib[attr][0] === 'author' &&
-                apool.numToAttrib[attr][1] === authorId) {
-              authorAttr = Number(attr).toString(36);
+        // Sanitize authorship: Replace all author attributes with this user's author ID in case the
+        // text was copied from another author.
+        const cs = Changeset.unpack(userChangeset);
+        const assem = Changeset.mergingOpAssembler();
+
+        for (const op of Changeset.deserializeOps(cs.ops)) {
+          if (op.opcode === '+') {
+            const attribs = AttributeMap.fromString(op.attribs, apool);
+            const oldAuthorId = attribs.get('author');
+            if (oldAuthorId != null && oldAuthorId !== authorId) {
+              attribs.set('author', authorId);
+              op.attribs = attribs.toString();
             }
           }
-
-          // Replace all added 'author' attribs with the value of the current user
-          const cs = Changeset.unpack(userChangeset);
-          const iterator = Changeset.opIterator(cs.ops);
-          let op;
-          const assem = Changeset.mergingOpAssembler();
-
-          while (iterator.hasNext()) {
-            op = iterator.next();
-            if (op.opcode === '+') {
-              let newAttrs = '';
-
-              op.attribs.split('*').forEach((attrNum) => {
-                if (!attrNum) return;
-                const attr = apool.getAttrib(parseInt(attrNum, 36));
-                if (!attr) return;
-                if ('author' === attr[0]) {
-                  // replace that author with the current one
-                  newAttrs += `*${authorAttr}`;
-                } else { newAttrs += `*${attrNum}`; } // overtake all other attribs as is
-              });
-              op.attribs = newAttrs;
-            }
-            assem.append(op);
-          }
-          assem.endDocument();
-          userChangeset = Changeset.pack(cs.oldLen, cs.newLen, assem.toString(), cs.charBank);
-          Changeset.checkRep(userChangeset);
+          assem.append(op);
         }
+        assem.endDocument();
+        userChangeset = Changeset.pack(cs.oldLen, cs.newLen, assem.toString(), cs.charBank);
+        Changeset.checkRep(userChangeset);
+
         if (Changeset.isIdentity(userChangeset)) toSubmit = null;
         else toSubmit = userChangeset;
       }

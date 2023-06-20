@@ -54,6 +54,8 @@
   , "broadcast_revisions.js"
   , "socketio.js"
   , "AttributeManager.js"
+  , "AttributeMap.js"
+  , "attributes.js"
   , "ChangesetUtils.js"
   ]
 , "ace2_inner.js": [
@@ -71,6 +73,8 @@
   , "linestylefilter.js"
   , "domline.js"
   , "AttributeManager.js"
+  , "AttributeMap.js"
+  , "attributes.js"
   , "scroll.js"
   , "caretPosition.js"
   , "pad_utils.js"

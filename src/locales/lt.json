@@ -5,10 +5,17 @@
 			"I-svetaines",
 			"Mantak111",
 			"Naktis",
+			"Nokeoo",
 			"Vogone",
 			"Zygimantus"
 		]
 	},
+	"admin.page-title": "Administratoriaus prietaisų skydelis – Etherpad",
+	"admin_plugins": "Įskiepių tvarkyklė",
+	"admin_plugins.available": "Galimi įskiepiai",
+	"admin_plugins.available_not-found": "Įskiepių nerasta.",
+	"admin_plugins.available_fetching": "Gaunama…",
+	"admin_plugins.available_install.value": "Įdiegti",
 	"index.newPad": "Naujas bloknotas",
 	"index.createOpenPad": "arba sukurkite/atidarykite Bloknotą su pavadinimu:",
 	"pad.toolbar.bold.title": "Paryškintasis (Ctrl-B)",

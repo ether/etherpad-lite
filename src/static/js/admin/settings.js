@@ -28,7 +28,7 @@ $(document).ready(() => {
       $('.settings').focus();
       $('.settings').autosize();
     } else {
-      alert('YOUR JSON IS BAD AND YOU SHOULD FEEL BAD');
+      alert('Invalid JSON');
     }
   });
 
@@ -39,7 +39,7 @@ $(document).ready(() => {
       // JSON is clean so emit it to the server
       socket.emit('saveSettings', $('.settings').val());
     } else {
-      alert('YOUR JSON IS BAD AND YOU SHOULD FEEL BAD');
+      alert('Invalid JSON');
       $('.settings').focus();
     }
   });

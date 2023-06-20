@@ -4,10 +4,10 @@
   "description": "Internal tool for generating Node.js API docs",
   "version": "0.0.0",
   "engines": {
-    "node": ">=12.13.0"
+    "node": ">=12.17.0"
   },
   "dependencies": {
-    "marked": "^2.0.0"
+    "marked": "^4.2.12"
   },
   "devDependencies": {},
   "optionalDependencies": {},

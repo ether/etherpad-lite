@@ -19,6 +19,7 @@ Dockerfile
 .git/ORIG_HEAD
 .git/packed-refs
 .git/refs/remotes/
+.git/rr-cache/
 .gitignore
 
 settings.json

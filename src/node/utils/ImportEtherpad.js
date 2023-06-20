@@ -18,16 +18,17 @@
 
 const AttributePool = require('../../static/js/AttributePool');
 const {Pad} = require('../db/Pad');
-const async = require('async');
+const Stream = require('./Stream');
 const authorManager = require('../db/AuthorManager');
 const db = require('../db/DB');
 const hooks = require('../../static/js/pluginfw/hooks');
 const log4js = require('log4js');
 const supportedElems = require('../../static/js/contentcollector').supportedElems;
+const ueberdb = require('ueberdb2');
 
 const logger = log4js.getLogger('ImportEtherpad');
 
-exports.setPadRaw = async (padId, r) => {
+exports.setPadRaw = async (padId, r, authorId = '') => {
   const records = JSON.parse(r);
 
   // get supported block Elements from plugins, we will use this later.
@@ -48,73 +49,73 @@ exports.setPadRaw = async (padId, r) => {
     if (originalPadId !== padId) throw new Error('unexpected pad ID in record');
   };
 
-  // Limit the number of in-flight database queries so that the queries do not time out when
-  // importing really large files.
-  const q = async.queue(async (task) => await task(), 100);
-
   // First validate and transform values. Do not commit any records to the database yet in case
   // there is a problem with the data.
 
-  const dbRecords = new Map();
+  const data = new Map();
   const existingAuthors = new Set();
-  await Promise.all(Object.entries(records).map(([key, value]) => q.pushAsync(async () => {
-    if (!value) {
-      return;
-    }
-    const keyParts = key.split(':');
-    const [prefix, id] = keyParts;
-    if (prefix === 'globalAuthor' && keyParts.length === 2) {
-      // In the database, the padIDs subkey is an object (which is used as a set) that records every
-      // pad the author has worked on. When exported, that object becomes a single string containing
-      // the exported pad's ID.
-      if (typeof value.padIDs !== 'string') {
-        throw new TypeError('globalAuthor padIDs subkey is not a string');
-      }
-      checkOriginalPadId(value.padIDs);
-      if (await authorManager.doesAuthorExist(id)) {
-        existingAuthors.add(id);
+  const padDb = new ueberdb.Database('memory', {data});
+  await padDb.init();
+  try {
+    const processRecord = async (key, value) => {
+      if (!value) return;
+      const keyParts = key.split(':');
+      const [prefix, id] = keyParts;
+      if (prefix === 'globalAuthor' && keyParts.length === 2) {
+        // In the database, the padIDs subkey is an object (which is used as a set) that records
+        // every pad the author has worked on. When exported, that object becomes a single string
+        // containing the exported pad's ID.
+        if (typeof value.padIDs !== 'string') {
+          throw new TypeError('globalAuthor padIDs subkey is not a string');
+        }
+        checkOriginalPadId(value.padIDs);
+        if (await authorManager.doesAuthorExist(id)) {
+          existingAuthors.add(id);
+          return;
+        }
+        value.padIDs = {[padId]: 1};
+      } else if (padKeyPrefixes.includes(prefix)) {
+        checkOriginalPadId(id);
+        if (prefix === 'pad' && keyParts.length === 2) {
+          const pool = new AttributePool().fromJsonable(value.pool);
+          const unsupportedElements = new Set();
+          pool.eachAttrib((k, v) => {
+            if (!supportedElems.has(k)) unsupportedElements.add(k);
+          });
+          if (unsupportedElements.size) {
+            logger.warn(`(pad ${padId}) unsupported attributes (try installing a plugin): ` +
+                        `${[...unsupportedElements].join(', ')}`);
+          }
+        }
+        keyParts[1] = padId;
+        key = keyParts.join(':');
+      } else {
+        logger.debug(`(pad ${padId}) The record with the following key will be ignored unless an ` +
+                     `importEtherpad hook function processes it: ${key}`);
         return;
       }
-      value.padIDs = {[padId]: 1};
-    } else if (padKeyPrefixes.includes(prefix)) {
-      checkOriginalPadId(id);
-      if (prefix === 'pad' && keyParts.length === 2) {
-        const pool = new AttributePool().fromJsonable(value.pool);
-        const unsupportedElements = new Set();
-        pool.eachAttrib((k, v) => {
-          if (!supportedElems.has(k)) unsupportedElements.add(k);
-        });
-        if (unsupportedElements.size) {
-          logger.warn(`(pad ${padId}) unsupported attributes (try installing a plugin): ` +
-                      `${[...unsupportedElements].join(', ')}`);
-        }
-      }
-      keyParts[1] = padId;
-      key = keyParts.join(':');
-    } else {
-      logger.warn(`(pad ${padId}) Ignoring record with unsupported key: ${key}`);
-      return;
-    }
-    dbRecords.set(key, value);
-  })));
+      await padDb.set(key, value);
+    };
+    const readOps = new Stream(Object.entries(records)).map(([k, v]) => processRecord(k, v));
+    for (const op of readOps.batch(100).buffer(99)) await op;
 
-  const pad = new Pad(padId, {
-    // Only fetchers are needed to check the pad's integrity.
-    get: async (k) => dbRecords.get(k),
-    getSub: async (k, sub) => {
-      let v = dbRecords.get(k);
-      for (const sk of sub) {
-        if (v == null) return null;
-        v = v[sk];
-      }
-      return v;
-    },
-  });
-  await pad.init();
-  await pad.check();
+    const pad = new Pad(padId, padDb);
+    await pad.init(null, authorId);
+    await hooks.aCallAll('importEtherpad', {
+      pad,
+      // Shallow freeze meant to prevent accidental bugs. It would be better to deep freeze, but
+      // it's not worth the added complexity.
+      data: Object.freeze(records),
+      srcPadId: originalPadId,
+    });
+    await pad.check();
+  } finally {
+    await padDb.close();
+  }
 
-  await Promise.all([
-    ...[...dbRecords].map(([k, v]) => q.pushAsync(() => db.set(k, v))),
-    ...[...existingAuthors].map((a) => q.pushAsync(() => authorManager.addPad(a, padId))),
-  ]);
+  const writeOps = (function* () {
+    for (const [k, v] of data) yield db.set(k, v);
+    for (const a of existingAuthors) yield authorManager.addPad(a, padId);
+  })();
+  for (const op of new Stream(writeOps).batch(100).buffer(99)) await op;
 };

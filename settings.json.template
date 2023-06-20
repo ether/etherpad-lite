@@ -235,12 +235,12 @@
     "showChat":         true,
     "showLineNumbers":  true,
     "useMonospaceFont": false,
-    "userName":         false,
-    "userColor":        false,
+    "userName":         null,
+    "userColor":        null,
     "rtl":              false,
     "alwaysShowChat":   false,
     "chatAndUsers":     false,
-    "lang":             "en-gb"
+    "lang":             null
   },
 
   /*
@@ -375,7 +375,49 @@
      * significant usability drawbacks vs. "Lax". See
      * https://stackoverflow.com/q/41841880 for discussion.
      */
-    "sameSite": "Lax"
+    "sameSite": "Lax",
+
+    /*
+     * How long (in milliseconds) after navigating away from Etherpad before the
+     * user is required to log in again. (The express_sid cookie is set to
+     * expire at time now + sessionLifetime when first created, and its
+     * expiration time is periodically refreshed to a new now + sessionLifetime
+     * value.) If requireAuthentication is false then this value does not really
+     * matter.
+     *
+     * The "best" value depends on your users' usage patterns and the amount of
+     * convenience you desire. A long lifetime is more convenient (users won't
+     * have to log back in as often) but has some drawbacks:
+     *   - It increases the amount of state kept in the database.
+     *   - It might weaken security somewhat: The cookie expiration is refreshed
+     *     indefinitely without consulting authentication or authorization
+     *     hooks, so once a user has accessed a pad, the user can continue to
+     *     use the pad until the user leaves for longer than sessionLifetime.
+     *
+     * Session lifetime can be set to infinity (not recommended) by setting this
+     * to null or 0. Note that if the session does not expire, most browsers
+     * will delete the cookie when the browser exits, but a session record is
+     * kept in the database forever.
+     */
+    "sessionLifetime": 864000000, // = 10d * 24h/d * 60m/h * 60s/m * 1000ms/s
+
+    /*
+     * How long (in milliseconds) before the expiration time of an active user's
+     * session is refreshed (to now + sessionLifetime). This setting affects the
+     * following:
+     *   - How often a new session expiration time will be written to the
+     *     database.
+     *   - How often each user's browser will ping the Etherpad server to
+     *     refresh the expiration time of the session cookie.
+     *
+     * High values reduce the load on the database and the load from browsers,
+     * but can shorten the effective session lifetime if Etherpad is restarted
+     * or the user navigates away.
+     *
+     * Automatic session refreshes can be disabled (not recommended) by setting
+     * this to null.
+     */
+    "sessionRefreshInterval": 86400000 // = 1d * 24h/d * 60m/h * 60s/m * 1000ms/s
   },
 
   /*
@@ -549,7 +591,6 @@
     // maximum number of changes per IP to allow during the rate limit window
     "points": 10
   },
-
 
   /*
    * Toolbar buttons configuration.

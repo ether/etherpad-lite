@@ -26,7 +26,7 @@ const padMessageHandler = require('./PadMessageHandler');
 const fs = require('fs').promises;
 const path = require('path');
 const settings = require('../utils/Settings');
-const formidable = require('formidable');
+const {Formidable} = require('formidable');
 const os = require('os');
 const importHtml = require('../utils/ImportHtml');
 const importEtherpad = require('../utils/ImportEtherpad');
@@ -74,7 +74,7 @@ const tmpDirectory = os.tmpdir();
 /**
  * do a requested import
  */
-const doImport = async (req, res, padId) => {
+const doImport = async (req, res, padId, authorId) => {
   // pipe to a file
   // convert file to html via abiword or soffice
   // set html in the pad
@@ -83,22 +83,11 @@ const doImport = async (req, res, padId) => {
   // setting flag for whether to use converter or not
   let useConverter = (converter != null);
 
-  const form = new formidable.IncomingForm();
-  form.keepExtensions = true;
-  form.uploadDir = tmpDirectory;
-  form.maxFileSize = settings.importMaxFileSize;
-
-  // Ref: https://github.com/node-formidable/formidable/issues/469
-  // Crash in Etherpad was Uploading Error: Error: Request aborted
-  // [ERR_STREAM_DESTROYED]: Cannot call write after a stream was destroyed
-  form.onPart = (part) => {
-    form.handlePart(part);
-    if (part.filename !== undefined) {
-      form.openedFiles[form.openedFiles.length - 1]._writeStream.on('error', (err) => {
-        form.emit('error', err);
-      });
-    }
-  };
+  const form = new Formidable({
+    keepExtensions: true,
+    uploadDir: tmpDirectory,
+    maxFileSize: settings.importMaxFileSize,
+  });
 
   // locally wrapped Promise, since form.parse requires a callback
   let srcFile = await new Promise((resolve, reject) => {
@@ -115,7 +104,7 @@ const doImport = async (req, res, padId) => {
         logger.warn('Import failed because form had no file');
         return reject(new ImportError('uploadFailed'));
       }
-      resolve(files.file.path);
+      resolve(files.file.filepath);
     });
   });
 
@@ -142,26 +131,24 @@ const doImport = async (req, res, padId) => {
   }
 
   const destFile = path.join(tmpDirectory, `etherpad_import_${randNum}.${exportExtension}`);
-  const importHandledByPlugin =
-      (await hooks.aCallAll('import', {srcFile, destFile, fileEnding, padId})).some((x) => x);
+  const context = {srcFile, destFile, fileEnding, padId, ImportError};
+  const importHandledByPlugin = (await hooks.aCallAll('import', context)).some((x) => x);
   const fileIsEtherpad = (fileEnding === '.etherpad');
   const fileIsHTML = (fileEnding === '.html' || fileEnding === '.htm');
   const fileIsTXT = (fileEnding === '.txt');
 
   let directDatabaseAccess = false;
   if (fileIsEtherpad) {
-    // we do this here so we can see if the pad has quite a few edits
-    const _pad = await padManager.getPad(padId);
-    const headCount = _pad.head;
-
+    // Use '\n' to avoid the default pad text if the pad doesn't yet exist.
+    const pad = await padManager.getPad(padId, '\n', authorId);
+    const headCount = pad.head;
     if (headCount >= 10) {
       logger.warn('Aborting direct database import attempt of a pad that already has content');
       throw new ImportError('padHasData');
     }
-
-    const _text = await fs.readFile(srcFile, 'utf8');
+    const text = await fs.readFile(srcFile, 'utf8');
     directDatabaseAccess = true;
-    await importEtherpad.setPadRaw(padId, _text);
+    await importEtherpad.setPadRaw(padId, text, authorId);
   }
 
   // convert file to html if necessary
@@ -198,8 +185,8 @@ const doImport = async (req, res, padId) => {
     }
   }
 
-  // get the pad object
-  let pad = await padManager.getPad(padId);
+  // Use '\n' to avoid the default pad text if the pad doesn't yet exist.
+  let pad = await padManager.getPad(padId, '\n', authorId);
 
   // read the text
   let text;
@@ -218,18 +205,18 @@ const doImport = async (req, res, padId) => {
   if (!directDatabaseAccess) {
     if (importHandledByPlugin || useConverter || fileIsHTML) {
       try {
-        await importHtml.setPadHTML(pad, text);
+        await importHtml.setPadHTML(pad, text, authorId);
       } catch (err) {
         logger.warn(`Error importing, possibly caused by malformed HTML: ${err.stack || err}`);
       }
     } else {
-      await pad.setText(text);
+      await pad.setText(text, authorId);
     }
   }
 
   // Load the Pad into memory then broadcast updates to all clients
   padManager.unloadPad(padId);
-  pad = await padManager.getPad(padId);
+  pad = await padManager.getPad(padId, '\n', authorId);
   padManager.unloadPad(padId);
 
   // Direct database access means a pad user should reload the pad and not attempt to receive
@@ -246,13 +233,13 @@ const doImport = async (req, res, padId) => {
   return false;
 };
 
-exports.doImport = async (req, res, padId) => {
+exports.doImport = async (req, res, padId, authorId = '') => {
   let httpStatus = 200;
   let code = 0;
   let message = 'ok';
   let directDatabaseAccess;
   try {
-    directDatabaseAccess = await doImport(req, res, padId);
+    directDatabaseAccess = await doImport(req, res, padId, authorId);
   } catch (err) {
     const known = err instanceof ImportError && err.status;
     if (!known) logger.error(`Internal error during import: ${err.stack || err}`);

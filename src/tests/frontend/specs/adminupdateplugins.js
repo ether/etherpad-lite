@@ -64,9 +64,7 @@ describe('Plugins page', function () {
 
     // Ensure it's a higher minor version IE 0.3.x as 0.2.x was installed
     // Coverage for https://github.com/ether/etherpad-lite/issues/4536
-    await helper.waitForPromise(() => parseInt(helper.admin$(
-        '.ep_align .version'
-    )
+    await helper.waitForPromise(() => parseInt(helper.admin$('.ep_align .version')
         .text()
         .split('.')[1]) > minorVersionBefore, 60000, 1000);
     // allow 50 seconds, check every 1 second.

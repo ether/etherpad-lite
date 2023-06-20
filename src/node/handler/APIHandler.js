@@ -47,95 +47,118 @@ try {
 // a list of all functions
 const version = {};
 
-version['1'] = Object.assign({},
-    {createGroup: [],
-      createGroupIfNotExistsFor: ['groupMapper'],
-      deleteGroup: ['groupID'],
-      listPads: ['groupID'],
-      createPad: ['padID', 'text'],
-      createGroupPad: ['groupID', 'padName', 'text'],
-      createAuthor: ['name'],
-      createAuthorIfNotExistsFor: ['authorMapper', 'name'],
-      listPadsOfAuthor: ['authorID'],
-      createSession: ['groupID', 'authorID', 'validUntil'],
-      deleteSession: ['sessionID'],
-      getSessionInfo: ['sessionID'],
-      listSessionsOfGroup: ['groupID'],
-      listSessionsOfAuthor: ['authorID'],
-      getText: ['padID', 'rev'],
-      setText: ['padID', 'text'],
-      getHTML: ['padID', 'rev'],
-      setHTML: ['padID', 'html'],
-      getRevisionsCount: ['padID'],
-      getLastEdited: ['padID'],
-      deletePad: ['padID'],
-      getReadOnlyID: ['padID'],
-      setPublicStatus: ['padID', 'publicStatus'],
-      getPublicStatus: ['padID'],
-      listAuthorsOfPad: ['padID'],
-      padUsersCount: ['padID']}
-);
+version['1'] = {
+  createGroup: [],
+  createGroupIfNotExistsFor: ['groupMapper'],
+  deleteGroup: ['groupID'],
+  listPads: ['groupID'],
+  createPad: ['padID', 'text'],
+  createGroupPad: ['groupID', 'padName', 'text'],
+  createAuthor: ['name'],
+  createAuthorIfNotExistsFor: ['authorMapper', 'name'],
+  listPadsOfAuthor: ['authorID'],
+  createSession: ['groupID', 'authorID', 'validUntil'],
+  deleteSession: ['sessionID'],
+  getSessionInfo: ['sessionID'],
+  listSessionsOfGroup: ['groupID'],
+  listSessionsOfAuthor: ['authorID'],
+  getText: ['padID', 'rev'],
+  setText: ['padID', 'text'],
+  getHTML: ['padID', 'rev'],
+  setHTML: ['padID', 'html'],
+  getRevisionsCount: ['padID'],
+  getLastEdited: ['padID'],
+  deletePad: ['padID'],
+  getReadOnlyID: ['padID'],
+  setPublicStatus: ['padID', 'publicStatus'],
+  getPublicStatus: ['padID'],
+  listAuthorsOfPad: ['padID'],
+  padUsersCount: ['padID'],
+};
 
-version['1.1'] = Object.assign({}, version['1'],
-    {getAuthorName: ['authorID'],
-      padUsers: ['padID'],
-      sendClientsMessage: ['padID', 'msg'],
-      listAllGroups: []}
-);
+version['1.1'] = {
+  ...version['1'],
+  getAuthorName: ['authorID'],
+  padUsers: ['padID'],
+  sendClientsMessage: ['padID', 'msg'],
+  listAllGroups: [],
+};
 
-version['1.2'] = Object.assign({}, version['1.1'],
-    {checkToken: []}
-);
+version['1.2'] = {
+  ...version['1.1'],
+  checkToken: [],
+};
 
-version['1.2.1'] = Object.assign({}, version['1.2'],
-    {listAllPads: []}
-);
+version['1.2.1'] = {
+  ...version['1.2'],
+  listAllPads: [],
+};
 
-version['1.2.7'] = Object.assign({}, version['1.2.1'],
-    {createDiffHTML: ['padID', 'startRev', 'endRev'],
-      getChatHistory: ['padID', 'start', 'end'],
-      getChatHead: ['padID']}
-);
+version['1.2.7'] = {
+  ...version['1.2.1'],
+  createDiffHTML: ['padID', 'startRev', 'endRev'],
+  getChatHistory: ['padID', 'start', 'end'],
+  getChatHead: ['padID'],
+};
 
-version['1.2.8'] = Object.assign({}, version['1.2.7'],
-    {getAttributePool: ['padID'],
-      getRevisionChangeset: ['padID', 'rev']}
-);
+version['1.2.8'] = {
+  ...version['1.2.7'],
+  getAttributePool: ['padID'],
+  getRevisionChangeset: ['padID', 'rev'],
+};
 
-version['1.2.9'] = Object.assign({}, version['1.2.8'],
-    {copyPad: ['sourceID', 'destinationID', 'force'],
-      movePad: ['sourceID', 'destinationID', 'force']}
-);
+version['1.2.9'] = {
+  ...version['1.2.8'],
+  copyPad: ['sourceID', 'destinationID', 'force'],
+  movePad: ['sourceID', 'destinationID', 'force'],
+};
 
-version['1.2.10'] = Object.assign({}, version['1.2.9'],
-    {getPadID: ['roID']}
-);
+version['1.2.10'] = {
+  ...version['1.2.9'],
+  getPadID: ['roID'],
+};
 
-version['1.2.11'] = Object.assign({}, version['1.2.10'],
-    {getSavedRevisionsCount: ['padID'],
-      listSavedRevisions: ['padID'],
-      saveRevision: ['padID', 'rev'],
-      restoreRevision: ['padID', 'rev']}
-);
+version['1.2.11'] = {
+  ...version['1.2.10'],
+  getSavedRevisionsCount: ['padID'],
+  listSavedRevisions: ['padID'],
+  saveRevision: ['padID', 'rev'],
+  restoreRevision: ['padID', 'rev'],
+};
 
-version['1.2.12'] = Object.assign({}, version['1.2.11'],
-    {appendChatMessage: ['padID', 'text', 'authorID', 'time']}
-);
+version['1.2.12'] = {
+  ...version['1.2.11'],
+  appendChatMessage: ['padID', 'text', 'authorID', 'time'],
+};
 
-version['1.2.13'] = Object.assign({}, version['1.2.12'],
-    {appendText: ['padID', 'text']}
-);
+version['1.2.13'] = {
+  ...version['1.2.12'],
+  appendText: ['padID', 'text'],
+};
 
-version['1.2.14'] = Object.assign({}, version['1.2.13'],
-    {getStats: []}
-);
+version['1.2.14'] = {
+  ...version['1.2.13'],
+  getStats: [],
+};
 
-version['1.2.15'] = Object.assign({}, version['1.2.14'],
-    {copyPadWithoutHistory: ['sourceID', 'destinationID', 'force']}
-);
+version['1.2.15'] = {
+  ...version['1.2.14'],
+  copyPadWithoutHistory: ['sourceID', 'destinationID', 'force'],
+};
+
+version['1.3.0'] = {
+  ...version['1.2.15'],
+  appendText: ['padID', 'text', 'authorId'],
+  copyPadWithoutHistory: ['sourceID', 'destinationID', 'force', 'authorId'],
+  createGroupPad: ['groupID', 'padName', 'text', 'authorId'],
+  createPad: ['padID', 'text', 'authorId'],
+  restoreRevision: ['padID', 'rev', 'authorId'],
+  setHTML: ['padID', 'html', 'authorId'],
+  setText: ['padID', 'text', 'authorId'],
+};
 
 // set the latest available API version here
-exports.latestApiVersion = '1.2.15';
+exports.latestApiVersion = '1.3.0';
 
 // exports the versions so it can be used by the new Swagger endpoint
 exports.version = version;

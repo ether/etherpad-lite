@@ -7,7 +7,7 @@
 			"Liridon"
 		]
 	},
-	"admin.page-title": "Paneli i Administratorit - Etherpad",
+	"admin.page-title": "Pult Përgjegjësi - Etherpad",
 	"admin_plugins": "Përgjegjës shtojcash",
 	"admin_plugins.available": "Shtojca të gatshme",
 	"admin_plugins.available_not-found": "S’u gjetën shtojca.",
@@ -63,7 +63,7 @@
 	"pad.colorpicker.save": "Ruaje",
 	"pad.colorpicker.cancel": "Anuloje",
 	"pad.loading": "Po ngarkohet…",
-	"pad.noCookie": "S’u gjet dot cookie. Ju lutemi, lejoni cookie-t te shfletuesi juaj! Sesioni dhe rregullimet tuaja s’do të ruhen nga një sesion në tjetër. Kjo mund të vijë ngaqë Etherpad përfshihet brenda një iFrame në disa shfletues. Ju lutemi, sigurohuni që Etherpad-i të jetë në të njëjtën nënpërkatësi/përkatësi si iFrame-i mëmë.",
+	"pad.noCookie": "S’u gjet dot cookie. Ju lutemi, lejoni cookie-t te shfletuesi juaj! Sesioni dhe rregullimet tuaja s’do të ruhen nga një sesion në tjetër. Kjo mund të vijë ngaqë, në disa shfletues, Etherpad përfshihet brenda një iFrame. Ju lutemi, sigurohuni që Etherpad-i të jetë në të njëjtën nënpërkatësi/përkatësi si iFrame-i mëmë.",
 	"pad.permissionDenied": "S’keni leje të hyni në këtë bllok",
 	"pad.settings.padSettings": "Rregullime Blloku",
 	"pad.settings.myView": "Pamja Ime",
@@ -78,7 +78,7 @@
 	"pad.settings.about": "Mbi",
 	"pad.settings.poweredBy": "Bazuar në",
 	"pad.importExport.import_export": "Import/Eksport",
-	"pad.importExport.import": "Ngarkoni cilëndo kartelë teksti ose dokument",
+	"pad.importExport.import": "Ngarkoni cilëndo kartelë tekst ose dokument",
 	"pad.importExport.importSuccessful": "Me sukses!",
 	"pad.importExport.export": "Eksportojeni bllokun e tanishëm si:",
 	"pad.importExport.exportetherpad": "Etherpad",

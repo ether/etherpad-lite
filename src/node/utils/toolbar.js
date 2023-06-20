@@ -103,9 +103,7 @@ _.extend(Button.prototype, {
             tag('button', {
               'class': ` ${this.attributes.class}`,
               'data-l10n-id': this.attributes.localizationId,
-            })
-        )
-    );
+            })));
   },
 });
 
@@ -144,9 +142,7 @@ _.extend(SelectButton.prototype, Button.prototype, {
       'data-key': this.attributes.command,
       'data-type': 'select',
     };
-    return tag('li', attributes,
-        this.select({id: this.attributes.selectId})
-    );
+    return tag('li', attributes, this.select({id: this.attributes.selectId}));
   },
 });
 

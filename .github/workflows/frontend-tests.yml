@@ -3,6 +3,9 @@ name: "Frontend tests powered by Sauce Labs"
 
 on: [push]
 
+permissions:
+  contents: read # to fetch code (actions/checkout)
+
 jobs:
   withoutplugins:
     name: without plugins
@@ -27,11 +30,11 @@ jobs:
           printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
       -
         name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       -
         uses: actions/setup-node@v3
         with:
-          node-version: 12
+          node-version: 14
           cache: 'npm'
           cache-dependency-path: |
             src/package-lock.json
@@ -91,11 +94,11 @@ jobs:
           printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
       -
         name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       -
         uses: actions/setup-node@v3
         with:
-          node-version: 12
+          node-version: 14
           cache: 'npm'
           cache-dependency-path: |
             src/package-lock.json

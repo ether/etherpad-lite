@@ -26,6 +26,7 @@
 
 const _MAX_LIST_LEVEL = 16;
 
+const AttributeMap = require('./AttributeMap');
 const UNorm = require('unorm');
 const Changeset = require('./Changeset');
 const hooks = require('./pluginfw/hooks');
@@ -82,7 +83,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
     const textArray = [];
     const attribsArray = [];
     let attribsBuilder = null;
-    const op = Changeset.newOp('+');
+    const op = new Changeset.Op('+');
     const self = {
       length: () => textArray.length,
       atColumnZero: () => textArray[textArray.length - 1] === '',
@@ -227,13 +228,16 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
   };
 
   const _recalcAttribString = (state) => {
-    const lst = [];
+    const attribs = new AttributeMap(apool);
     for (const [a, count] of Object.entries(state.attribs)) {
       if (!count) continue;
       // The following splitting of the attribute name is a workaround
       // to enable the content collector to store key-value attributes
       // see https://github.com/ether/etherpad-lite/issues/2567 for more information
       // in long term the contentcollector should be refactored to get rid of this workaround
+      //
+      // TODO: This approach doesn't support changing existing values: if both 'foo::bar' and
+      // 'foo::baz' are in state.attribs then the last one encountered while iterating will win.
       const ATTRIBUTE_SPLIT_STRING = '::';
 
       // see if attributeString is splittable
@@ -241,32 +245,34 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
       if (attributeSplits.length > 1) {
         // the attribute name follows the convention key::value
         // so save it as a key value attribute
-        lst.push([attributeSplits[0], attributeSplits[1]]);
+        const [k, v] = attributeSplits;
+        if (v) attribs.set(k, v);
       } else {
         // the "normal" case, the attribute is just a switch
         // so set it true
-        lst.push([a, 'true']);
+        attribs.set(a, 'true');
       }
     }
     if (state.authorLevel > 0) {
-      const authorAttrib = ['author', state.author];
-      if (apool.putAttrib(authorAttrib, true) >= 0) {
+      if (apool.putAttrib(['author', state.author], true) >= 0) {
         // require that author already be in pool
         // (don't add authors from other documents, etc.)
-        lst.push(authorAttrib);
+        if (state.author) attribs.set('author', state.author);
       }
     }
-    state.attribString = Changeset.makeAttribsString('+', lst, apool);
+    state.attribString = attribs.toString();
   };
 
   const _produceLineAttributesMarker = (state) => {
     // TODO: This has to go to AttributeManager.
-    const attributes = [
-      ['lmkr', '1'],
-      ['insertorder', 'first'],
-      ...Object.entries(state.lineAttributes),
-    ];
-    lines.appendText('*', Changeset.makeAttribsString('+', attributes, apool));
+    const attribs = new AttributeMap(apool)
+        .set('lmkr', '1')
+        .set('insertorder', 'first')
+        // TODO: Converting all falsy values in state.lineAttributes into removals is awkward.
+        // Better would be to never add 0, false, null, or undefined to state.lineAttributes in the
+        // first place (I'm looking at you, state.lineAttributes.start).
+        .update(Object.entries(state.lineAttributes).map(([k, v]) => [k, v || '']), true);
+    lines.appendText('*', attribs.toString());
   };
   cc.startNewLine = (state) => {
     if (state) {

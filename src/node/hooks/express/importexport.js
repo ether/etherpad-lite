@@ -70,12 +70,12 @@ exports.expressCreateServer = (hookName, args, cb) => {
   args.app.post('/p/:pad/import', (req, res, next) => {
     (async () => {
       const {session: {user} = {}} = req;
-      const {accessStatus} = await securityManager.checkAccess(
+      const {accessStatus, authorID: authorId} = await securityManager.checkAccess(
           req.params.pad, req.cookies.sessionID, req.cookies.token, user);
       if (accessStatus !== 'grant' || !webaccess.userCanModify(req.params.pad, req)) {
         return res.status(403).send('Forbidden');
       }
-      await importHandler.doImport(req, res, req.params.pad);
+      await importHandler.doImport(req, res, req.params.pad, authorId);
     })().catch((err) => next(err || new Error(err)));
   });
 

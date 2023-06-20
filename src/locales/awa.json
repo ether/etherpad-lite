@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"1AnuraagPandey"
+			"1AnuraagPandey",
+			"बडा काजी"
 		]
 	},
 	"index.newPad": "नयाँ प्याड",
@@ -35,7 +36,7 @@
 	"pad.modals.unauth": "अनाधिकृत",
 	"pad.modals.initsocketfail": "सर्भरमा पहुँच से बहरे है ।",
 	"pad.share.readonly": "पढय वाला खाली",
-	"pad.share.link": "लिङ्क",
+	"pad.share.link": "कडी",
 	"pad.share.emebdcode": "URL जोडा जाय",
 	"pad.chat": "बातचीत",
 	"timeslider.pageTitle": "{{appTitle}} समय रेखा",
