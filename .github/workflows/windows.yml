@@ -43,7 +43,7 @@ jobs:
         run: cd src && npm test
       -
         name: Build the .zip
-        shell: msys2 {0}
+        shell: bash
         run: src/bin/buildForWindows.sh
       -
         name: Archive production artifacts
