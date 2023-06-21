@@ -19,6 +19,9 @@ workdir=$(try git rev-parse --show-toplevel) || exit 1
 try cd "${workdir}"
 [ -f src/package.json ] || fatal "failed to cd to etherpad root directory"
 
+# See https://github.com/msys2/MSYS2-packages/issues/1216
+export MSYS=winsymlinks:lnk
+
 OUTPUT=${workdir}/etherpad-win.zip
 
 TMP_FOLDER=$(try mktemp -d) || exit 1
