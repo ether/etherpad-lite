@@ -9,6 +9,7 @@ const childProcess = require('child_process');
 const log4js = require('log4js');
 const path = require('path');
 const semver = require('semver');
+const {exec} = require("child_process");
 
 log4js.replaceConsole();
 
@@ -75,6 +76,15 @@ const assertUpstreamOk = (branch, opts = {}) => {
     throw new Error(`${branch} is ahead of origin/${branch}; do you need to push?`);
   }
 };
+
+// Check if asciidoctor is installed
+exec('asciidoctor -v', (err,stdout)=>{
+  if (err){
+    console.log('Please install asciidoctor')
+    console.log('https://asciidoctor.org/docs/install-toolchain/')
+    process.exit(1)
+  }
+});
 
 const dirExists = (dir) => {
   try {
@@ -168,7 +178,7 @@ try {
 
 try {
   console.log('Building documentation...');
-  run('make docs');
+  run('node ./make_docs.js');
   console.log('Updating ether.github.com master branch...');
   run('git pull --ff-only', {cwd: '../ether.github.com/'});
   console.log('Committing documentation...');

@@ -1,4 +1,4 @@
-# Skins
+== Skins
 You can customize Etherpad appearance using skins.
 A skin is a directory located under `static/skins/<skin_name>`, with the following contents:
 

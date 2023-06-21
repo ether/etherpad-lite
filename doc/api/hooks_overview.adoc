@@ -1,4 +1,4 @@
-# Hooks
+== Hooks
 
 A hook function is registered with a hook via the plugin's `ep.json` file. See
 the Plugins section for details. A hook may have many registered functions from
@@ -8,12 +8,12 @@ Some hooks call their registered functions one at a time until one of them
 returns a value. Others always call all of their registered functions and
 combine the results (if applicable).
 
-## Registered hook functions
+=== Registered hook functions
 
 Note: The documentation in this section applies to every hook unless the
 hook-specific documentation says otherwise.
 
-### Arguments
+==== Arguments
 
 Hook functions are called with three arguments:
 
@@ -26,7 +26,7 @@ Hook functions are called with three arguments:
    section for general information that applies to most hooks). This callback
    always returns `undefined`.
 
-### Expected behavior
+==== Expected behavior
 
 The presence of a callback parameter suggests that every hook function can run
 asynchronously. While that is the eventual goal, there are some legacy hooks
@@ -54,15 +54,13 @@ Note that the acceptable behaviors for asynchronous hook functions is a superset
 of the acceptable behaviors for synchronous hook functions.
 
 WARNING: The number of parameters is determined by examining
-[Function.length](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length),
-which does not count [default
-parameters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Default_parameters)
-or ["rest"
-parameters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/rest_parameters).
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length[Function.length],
+which does not count https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Default_parameters[default parameters]
+or https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/rest_parameters["rest" parameters].
 To avoid problems, do not use default or rest parameters when defining hook
 functions.
 
-### Return values
+==== Return values
 
 A hook function can provide a value to Etherpad in one of the following ways:
 
@@ -77,7 +75,8 @@ A hook function can provide a value to Etherpad in one of the following ways:
 
 Examples:
 
-```javascript
+[source,javascript]
+----
 exports.exampleOne = (hookName, context, callback) => {
   return 'valueOne';
 };
@@ -104,7 +103,7 @@ exports.exampleFive = async (hookName, context) => {
   // is resolved to 'valueFive'.
   return 'valueFive';
 };
-```
+----
 
 Etherpad collects the values provided by the hook functions into an array,
 filters out all `undefined` values, then flattens the array one level.
