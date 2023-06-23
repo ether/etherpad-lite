@@ -4,7 +4,7 @@
  */
 
 import AttributeMap from '../../static/js/AttributeMap';
-import {applyToAText, makeAText} from '../../static/js/Changeset';
+import {applyToAText, copyAText, makeAText} from '../../static/js/Changeset';
 import ChatMessage from '../../static/js/ChatMessage';
 import {AttributePool} from '../../static/js/AttributePool';
 import {Stream} from '../utils/Stream';

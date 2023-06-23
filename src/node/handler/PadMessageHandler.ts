@@ -21,7 +21,7 @@
 
 import AttributeMap from '../../static/js/AttributeMap';
 import {getPad} from '../db/PadManager';
-import Changeset from '../../static/js/Changeset';
+import {} from '../../static/js/Changeset';
 import ChatMessage from '../../static/js/ChatMessage';
 import {AttributePool} from '../../static/js/AttributePool';
 import AttributeManager from '../../static/js/AttributeManager';
@@ -797,6 +797,7 @@ const _correctMarkersInPad = (atext, apool) => {
   return builder.toString();
 };
 
+export let clientVars:any
 /**
  * Handles a CLIENT_READY. A CLIENT_READY is the first message from the client
  * to the server. The Client sends his token
@@ -954,7 +955,7 @@ const handleClientReady = async (socket, message) => {
 
     // Warning: never ever send sessionInfo.padId to the client. If the client is read only you
     // would open a security hole 1 swedish mile wide...
-    const clientVars = {
+    clientVars = {
       skinName: skinName,
       skinVariants: skinVariants,
       randomVersionString: randomString(4),
