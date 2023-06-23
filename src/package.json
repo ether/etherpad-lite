@@ -81,7 +81,7 @@
     "eslint": "^8.43.0",
     "eslint-config-etherpad": "^3.0.13",
     "etherpad-cli-client": "^2.0.1",
-    "mocha": "^9.2.2",
+    "mocha": "^10.0.0",
     "mocha-froth": "^0.2.10",
     "nodeify": "^1.0.1",
     "openapi-schema-validation": "^0.4.2",
