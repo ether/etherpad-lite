@@ -31,32 +31,32 @@ const logger = log4js.getLogger('ueberDB');
 /**
  * The UeberDB Object that provides the database functions
  */
-const db = null;
+let db = null;
 
 /**
  * Initializes the database with the settings provided by the settings module
  */
 const init = async () => {
-  exports.db = new ueberDB.Database(dbType, dbSettings, null, logger);
-  await exports.db.init();
-  if (exports.db.metrics != null) {
-    for (const [metric, value] of Object.entries(exports.db.metrics)) {
+  db = new ueberDB.Database(dbType, dbSettings, null, logger);
+  await db.init();
+  if (db.metrics != null) {
+    for (const [metric, value] of Object.entries(db.metrics)) {
       if (typeof value !== 'number') continue;
       // FIXME find a better replacement for measure-core
-      createCollection.gauge(`ueberdb_${metric}`, () => exports.db.metrics[metric]);
+      createCollection.gauge(`ueberdb_${metric}`, () => db.metrics[metric]);
     }
   }
   for (const fn of ['get', 'set', 'findKeys', 'getSub', 'setSub', 'remove']) {
-    const f = exports.db[fn];
-    exports[fn] = async (...args) => await f.call(exports.db, ...args);
+    const f = db[fn];
+    exports[fn] = async (...args) => await f.call(db, ...args);
     Object.setPrototypeOf(exports[fn], Object.getPrototypeOf(f));
     Object.defineProperties(exports[fn], Object.getOwnPropertyDescriptors(f));
   }
 };
 
 const shutdown = async (hookName, context) => {
-  if (exports.db != null) await exports.db.close();
-  exports.db = null;
+  if (db != null) await db.close();
+  db = null;
   logger.log('Database closed');
 };
 

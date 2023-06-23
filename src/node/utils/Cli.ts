@@ -21,32 +21,35 @@
  */
 
 // An object containing the parsed command-line options
-export const argv =  process.argv.slice(2);
+import {CMDArgv} from "../models/CMDArgv";
 
-let arg, prevArg;
+const argvcmd =  process.argv.slice(2);
 
+let arg, prevArg
+
+export const argv:CMDArgv|undefined = {};
 // Loop through args
-for (let i = 0; i < argv.length; i++) {
+for (let i = 0; i < argvcmd.length; i++) {
   arg = argv[i];
 
   // Override location of settings.json file
   if (prevArg === '--settings' || prevArg === '-s') {
-    exports.argv.settings = arg;
+    argv.settings = arg;
   }
 
   // Override location of credentials.json file
   if (prevArg === '--credentials') {
-    exports.argv.credentials = arg;
+    argv.credentials = arg;
   }
 
   // Override location of settings.json file
   if (prevArg === '--sessionkey') {
-    exports.argv.sessionkey = arg;
+    argv.sessionkey = arg;
   }
 
   // Override location of settings.json file
   if (prevArg === '--apikey') {
-    exports.argv.apikey = arg;
+    argv.apikey = arg;
   }
 
   prevArg = arg;

@@ -10,7 +10,7 @@ import rateLimit from 'express-rate-limit';
 import {checkAccess} from '../../db/SecurityManager';
 import {userCanModify} from './webaccess';
 
-exports.expressCreateServer = (hookName, args, cb) => {
+export const expressCreateServer = (hookName, args, cb) => {
   importExportRateLimiting.onLimitReached = (req, res, options) => {
     // when the rate limiter triggers, write a warning in the logs
     console.warn('Import/Export rate limiter triggered on ' +

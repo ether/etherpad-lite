@@ -3,11 +3,11 @@
 import {required} from '../../eejs';
 import {getEpVersion, getGitCommit} from "../../utils/Settings";
 
-import installer from "../../../static/js/pluginfw/installer";
+import {getAvailablePlugins, install, search, uninstall} from "../../../static/js/pluginfw/installer";
 
-import pluginDefs from "../../../static/js/pluginfw/plugin_defs";
+import {plugins} from "../../../static/js/pluginfw/plugin_defs";
 
-import plugins from "../../../static/js/pluginfw/plugins";
+import {formatHooks, formatParts, formatPlugins} from "../../../static/js/pluginfw/plugins";
 
 import semver from "semver";
 
@@ -16,7 +16,7 @@ import UpdateCheck from "../../utils/UpdateCheck";
 export const expressCreateServer = (hookName, args, cb) => {
   args.app.get('/admin/plugins', (req, res) => {
     res.send(required('ep_etherpad-lite/templates/admin/plugins.html', {
-      plugins: pluginDefs.plugins,
+      plugins: plugins,
       req,
       errors: [],
     }));
@@ -29,10 +29,10 @@ export const expressCreateServer = (hookName, args, cb) => {
     res.send(required('ep_etherpad-lite/templates/admin/plugins-info.html', {
       gitCommit,
       epVersion,
-      installedPlugins: `<pre>${plugins.formatPlugins().replace(/, /g, '\n')}</pre>`,
-      installedParts: `<pre>${plugins.formatParts()}</pre>`,
-      installedServerHooks: `<div>${plugins.formatHooks('hooks', true)}</div>`,
-      installedClientHooks: `<div>${plugins.formatHooks('client_hooks', true)}</div>`,
+      installedPlugins: `<pre>${formatPlugins().replace(/, /g, '\n')}</pre>`,
+      installedParts: `<pre>${formatParts()}</pre>`,
+      installedServerHooks: `<div>${formatHooks('hooks', true)}</div>`,
+      installedClientHooks: `<div>${formatHooks('client_hooks', true)}</div>`,
       latestVersion: UpdateCheck.getLatestVersion(),
       req,
     }));
@@ -50,7 +50,7 @@ export const socketio = (hookName, args, cb) => {
     socket.on('getInstalled', (query) => {
       // send currently installed plugins
       const installed =
-          Object.keys(pluginDefs.plugins).map((plugin) => pluginDefs.plugins[plugin].package);
+          Object.keys(plugins).map((plugin) => plugins[plugin].package);
 
       socket.emit('results:installed', {installed});
     });
@@ -58,13 +58,13 @@ export const socketio = (hookName, args, cb) => {
     socket.on('checkUpdates', async () => {
       // Check plugins for updates
       try {
-        const results = await installer.getAvailablePlugins(/* maxCacheAge:*/ 60 * 10);
+        const results = await getAvailablePlugins(/* maxCacheAge:*/ 60 * 10);
 
-        const updatable = Object.keys(pluginDefs.plugins).filter((plugin) => {
+        const updatable = Object.keys(plugins).filter((plugin) => {
           if (!results[plugin]) return false;
 
           const latestVersion = results[plugin].version;
-          const currentVersion = pluginDefs.plugins[plugin].package.version;
+          const currentVersion = plugins[plugin].package.version;
 
           return semver.gt(latestVersion, currentVersion);
         });
@@ -79,7 +79,7 @@ export const socketio = (hookName, args, cb) => {
 
     socket.on('getAvailable', async (query) => {
       try {
-        const results = await installer.getAvailablePlugins(/* maxCacheAge:*/ false);
+        const results = await getAvailablePlugins(/* maxCacheAge:*/ false);
         socket.emit('results:available', results);
       } catch (er) {
         console.error(er);
@@ -89,10 +89,10 @@ export const socketio = (hookName, args, cb) => {
 
     socket.on('search', async (query) => {
       try {
-        const results = await installer.search(query.searchTerm, /* maxCacheAge:*/ 60 * 10);
+        const results = await search(query.searchTerm, /* maxCacheAge:*/ 60 * 10);
         let res = Object.keys(results)
             .map((pluginName) => results[pluginName])
-            .filter((plugin) => !pluginDefs.plugins[plugin.name]);
+            .filter((plugin) => !plugins[plugin.name]);
         res = sortPluginList(res, query.sortBy, query.sortDir)
             .slice(query.offset, query.offset + query.limit);
         socket.emit('results:search', {results: res, query});
@@ -104,7 +104,7 @@ export const socketio = (hookName, args, cb) => {
     });
 
     socket.on('install', (pluginName) => {
-      installer.install(pluginName, (err) => {
+      install(pluginName, (err) => {
         if (err) console.warn(err.stack || err.toString());
 
         socket.emit('finished:install', {
@@ -116,7 +116,7 @@ export const socketio = (hookName, args, cb) => {
     });
 
     socket.on('uninstall', (pluginName) => {
-      installer.uninstall(pluginName, (err) => {
+      uninstall(pluginName, (err) => {
         if (err) console.warn(err.stack || err.toString());
 
         socket.emit('finished:uninstall', {plugin: pluginName, error: err ? err.message : null});

@@ -20,7 +20,7 @@ import {strict as assert} from "assert";
 
 import {getAuthor} from "../db/AuthorManager";
 
-import hooks from "../../static/js/pluginfw/hooks";
+import {aCallAll} from "../../static/js/pluginfw/hooks";
 
 import {getPad} from "../db/PadManager";
 
@@ -28,7 +28,7 @@ export const getPadRaw = async (padId, readOnlyId) => {
   const dstPfx = `pad:${readOnlyId || padId}`;
   const [pad, customPrefixes] = await Promise.all([
     getPad(padId),
-    hooks.aCallAll('exportEtherpadAdditionalContent'),
+    aCallAll('exportEtherpadAdditionalContent'),
   ]);
   const pluginRecords = await Promise.all(customPrefixes.map(async (customPrefix) => {
     const srcPfx = `${customPrefix}:${padId}`;
@@ -58,7 +58,7 @@ export const getPadRaw = async (padId, readOnlyId) => {
   })();
   const data = {[dstPfx]: pad};
   for (const [dstKey, p] of new Stream(records).batch(100).buffer(99)) data[dstKey] = await p;
-  await hooks.aCallAll('exportEtherpad', {
+  await aCallAll('exportEtherpad', {
     pad,
     data,
     dstPadId: readOnlyId || padId,

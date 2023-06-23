@@ -45,15 +45,14 @@ import {
   indentationOnNewLine,
   padOptions,
   padShortcutEnabled,
-  randomVersionString,
   scrollWhenFocusLineIsOutOfViewport,
   skinName,
   skinVariants,
   sofficeAvailable
 } from '../utils/Settings';
-import plugins from '../../static/js/pluginfw/plugin_defs.js';
+import {parts, plugins} from '../../static/js/pluginfw/plugin_defs.js';
 import log4js from "log4js";
-import hooks from '../../static/js/pluginfw/hooks.js';
+import {aCallAll, deprecationNotices} from '../../static/js/pluginfw/hooks.js';
 import {createCollection} from '../stats';
 import {strict as assert} from "assert";
 
@@ -62,6 +61,7 @@ import {userCanModify} from '../hooks/express/webaccess';
 import {ErrorCaused} from "../models/ErrorCaused";
 import {Pad} from "../db/Pad";
 import {SessionInfo} from "../models/SessionInfo";
+import {randomString} from "../utils/randomstring";
 
 const securityManager = require('../db/SecurityManager');
 
@@ -71,7 +71,7 @@ const accessLogger = log4js.getLogger('access');
 let rateLimiter;
 let socketio = null;
 
-hooks.deprecationNotices.clientReady = 'use the userJoin hook instead';
+deprecationNotices.clientReady = 'use the userJoin hook instead';
 
 const addContextToError = (err: Error, pfx) => {
   const newErr = new ErrorCaused(`${pfx}${err.message}`, err);
@@ -225,7 +225,7 @@ export const handleDisconnect = async (socket) => {
       },
     },
   });
-  await hooks.aCallAll('userLeave', {
+  await aCallAll('userLeave', {
     ...session, // For backwards compatibility.
     authorId: session.author,
     readOnly: session.readonly,
@@ -328,7 +328,7 @@ export const handleMessage = async (socket, message) => {
       return this.socket;
     },
   };
-  for (const res of await hooks.aCallAll('handleMessageSecurity', context)) {
+  for (const res of await aCallAll('handleMessageSecurity', context)) {
     switch (res) {
       case true:
         padutils.warnDeprecated(
@@ -346,7 +346,7 @@ export const handleMessage = async (socket, message) => {
   }
 
   // Call handleMessage hook. If a plugin returns null, the message will be dropped.
-  if ((await hooks.aCallAll('handleMessage', context)).some((m) => m == null)) {
+  if ((await aCallAll('handleMessage', context)).some((m) => m == null)) {
     return;
   }
 
@@ -475,7 +475,7 @@ export const sendChatMessageToPadClients = async (mt, puId, text = null, padId =
   const message = mt instanceof ChatMessage ? mt : new ChatMessage(text, puId, mt);
   padId = mt instanceof ChatMessage ? puId : padId;
   const pad = await getPad(padId, null, message.authorId);
-  await hooks.aCallAll('chatNewMessage', {message, pad, padId});
+  await aCallAll('chatNewMessage', {message, pad, padId});
   // pad.appendChatMessage() ignores the displayName property so we don't need to wait for
   // authorManager.getAuthorName() to resolve before saving the message to the database.
   const promise = pad.appendChatMessage(message);
@@ -809,7 +809,7 @@ const handleClientReady = async (socket, message) => {
   if (sessionInfo == null) throw new Error('client disconnected');
   assert(sessionInfo.author);
 
-  await hooks.aCallAll('clientReady', message); // Deprecated due to awkward context.
+  await aCallAll('clientReady', message); // Deprecated due to awkward context.
 
   let {colorId: authorColorId, name: authorName} = message.userInfo || {};
   if (authorColorId && !/^#(?:[0-9A-F]{3}){1,2}$/i.test(authorColorId)) {
@@ -957,7 +957,7 @@ const handleClientReady = async (socket, message) => {
     const clientVars = {
       skinName: skinName,
       skinVariants: skinVariants,
-      randomVersionString: randomVersionString,
+      randomVersionString: randomString(4),
       accountPrivs: {
         maxRevisions: 100,
       },
@@ -995,8 +995,8 @@ const handleClientReady = async (socket, message) => {
       sofficeAvailable: sofficeAvailable(),
       exportAvailable: exportAvailable(),
       plugins: {
-        plugins: plugins.plugins,
-        parts: plugins.parts,
+        plugins: plugins,
+        parts: parts,
       },
       indentationOnNewLine: indentationOnNewLine,
       scrollWhenFocusLineIsOutOfViewport: {
@@ -1022,7 +1022,7 @@ const handleClientReady = async (socket, message) => {
     }
 
     // call the clientVars-hook so plugins can modify them before they get sent to the client
-    const messages = await hooks.aCallAll('clientVars', {clientVars, pad, socket});
+    const messages = await aCallAll('clientVars', {clientVars, pad, socket});
 
     // combine our old object with the new attributes from the hook
     for (const msg of messages) {
@@ -1093,7 +1093,7 @@ const handleClientReady = async (socket, message) => {
     socket.json.send(msg);
   }));
 
-  await hooks.aCallAll('userJoin', {
+  await aCallAll('userJoin', {
     authorId: sessionInfo.author,
     displayName: authorName,
     padId: sessionInfo.padId,

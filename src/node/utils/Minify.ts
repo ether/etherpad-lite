@@ -26,7 +26,7 @@ import {promises as fs} from "fs";
 
 import path from "path";
 
-import plugins from "../../static/js/pluginfw/plugin_defs";
+import {plugins} from "../../static/js/pluginfw/plugin_defs";
 
 import RequireKernel from "etherpad-require-kernel";
 
@@ -155,8 +155,8 @@ const minify = async (req, res) => {
     const library = match[1];
     const libraryPath = match[2] || '';
 
-    if (plugins.plugins[library] && match[3]) {
-      const plugin = plugins.plugins[library];
+    if (plugins[library] && match[3]) {
+      const plugin = plugins[library];
       const pluginPath = plugin.package.realPath;
       filename = path.join(pluginPath, libraryPath);
       // On Windows, path.relative converts forward slashes to backslashes. Convert them back

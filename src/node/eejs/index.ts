@@ -23,7 +23,7 @@
 import ejs from 'ejs';
 import fs from "fs";
 
-import hooks from "../../static/js/pluginfw/hooks.js";
+import {callAll} from "../../static/js/pluginfw/hooks.js";
 
 import path from "path";
 
@@ -64,7 +64,7 @@ export const end_block = () => {
   const content = info.__output.get();
   info.__output.set(info.__output_stack.pop());
   const args = {content, renderContext};
-  hooks.callAll(`eejsBlock_${name}`, args);
+  callAll(`eejsBlock_${name}`, args);
   info.__output.set(info.__output.get().concat(args.content));
 };
 

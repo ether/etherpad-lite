@@ -10,6 +10,7 @@
 export class CustomError extends Error {
   code: any;
   signal: any;
+  easysync: boolean
   /**
    * Creates an instance of CustomError.
    * @param {*} message

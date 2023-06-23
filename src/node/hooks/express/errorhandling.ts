@@ -2,8 +2,9 @@
 
 import {createCollection} from '../../stats';
 
-exports.expressCreateServer = (hook_name, args, cb) => {
-  exports.app = args.app;
+export let app:any;
+export const expressCreateServer = (hook_name, args, cb) => {
+  app = args.app;
 
   // Handle errors
   args.app.use((err, req, res, next) => {

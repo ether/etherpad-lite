@@ -25,10 +25,12 @@ import async from 'async';
 import {abiword} from './Settings';
 import os from 'os';
 
+export let convertFile;
+
 // on windows we have to spawn a process for each convertion,
 // cause the plugin abicommand doesn't exist on this platform
 if (os.type().indexOf('Windows') > -1) {
-  exports.convertFile = async (srcFile, destFile, type) => {
+  convertFile = async (srcFile, destFile, type) => {
     const abiword2 = spawn(abiword, [`--to=${destFile}`, srcFile]);
     let stdoutBuffer = '';
     abiword2.stdout.on('data', (data) => { stdoutBuffer += data.toString(); });
@@ -85,7 +87,7 @@ if (os.type().indexOf('Windows') > -1) {
     };
   }, 1);
 
-  exports.convertFile = async (srcFile, destFile, type) => {
+  convertFile = async (srcFile, destFile, type) => {
     await queue.pushAsync({srcFile, destFile, type});
   };
 }

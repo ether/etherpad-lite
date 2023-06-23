@@ -2,7 +2,7 @@
 
 import {isValidPadId, sanitizePadId} from '../../db/PadManager';
 
-exports.expressCreateServer = (hookName, args, cb) => {
+export const expressCreateServer = (hookName, args, cb) => {
   // redirects browser to the pad's sanitized url if needed. otherwise, renders the html
   args.app.param('pad', (req, res, next, padId) => {
     (async () => {

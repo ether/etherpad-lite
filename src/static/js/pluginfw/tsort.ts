@@ -4,14 +4,14 @@
  * general topological sort
  * from https://gist.github.com/1232505
  * @author SHIN Suzuki (shinout310@gmail.com)
- * @param Array<Array> edges : list of edges. each edge forms Array<ID,ID> e.g. [12 , 3]
+ * @param edges Array<Array> edges : list of edges. each edge forms Array<ID,ID> e.g. [12 , 3]
  *
  * @returns Array : topological sorted list of IDs
  **/
 
-const tsort = (edges) => {
+export const tsort = (edges: (string|number)[][]) => {
   const nodes = {}; // hash: stringified id of the node => { id: id, afters: lisf of ids }
-  const sorted = []; // sorted list of IDs ( returned value )
+  const sorted: (string|number)[][]= []; // sorted list of IDs ( returned value )
   const visited = {}; // hash: id of already visited node => true
 
   const Node = function (id) {
@@ -62,7 +62,7 @@ const tsort = (edges) => {
  **/
 const tsortTest = () => {
   // example 1: success
-  let edges = [
+  let edges:(string|number)[][] = [
     [1, 2],
     [1, 3],
     [2, 4],

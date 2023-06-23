@@ -8,13 +8,13 @@
 //   * hook_fn: Plugin-supplied hook function.
 //   * hook_fn_name: Name of the hook function, with the form <filename>:<functionName>.
 //   * part: The ep.json part object that declared the hook. See exports.plugins.
-exports.hooks = {};
+export const hooks = {};
 
 // Whether the plugins have been loaded.
-exports.loaded = false;
+export let loaded = false;
 
 // Topologically sorted list of parts from exports.plugins.
-exports.parts = [];
+export const parts = [];
 
 // Maps the name of a plugin to the plugin's definition provided in ep.json. The ep.json object is
 // augmented with additional metadata:
@@ -25,4 +25,20 @@ exports.parts = [];
 //       - version
 //       - path
 //       - realPath
-exports.plugins = {};
+export const plugins = {};
+
+export const setPlugins = (newPlugins) => {
+    Object.assign(plugins, newPlugins);
+}
+
+export const setParts = (newParts) => {
+    Object.assign(parts, newParts);
+}
+
+export const setHooks = (newHooks) => {
+    Object.assign(hooks, newHooks);
+}
+
+export const setLoaded = (newLoaded) => {
+    loaded = newLoaded;
+}

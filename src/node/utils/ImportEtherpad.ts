@@ -21,7 +21,7 @@ import {Pad} from '../db/Pad';
 import {Stream} from './Stream';
 import {addPad, doesAuthorExist} from '../db/AuthorManager';
 import {db} from '../db/DB';
-import hooks from '../../static/js/pluginfw/hooks';
+import {aCallAll, callAll} from '../../static/js/pluginfw/hooks';
 import log4js from "log4js";
 
 import {supportedElems} from "../../static/js/contentcollector";
@@ -34,14 +34,14 @@ export const setPadRaw = async (padId, r, authorId = '') => {
   const records = JSON.parse(r);
 
   // get supported block Elements from plugins, we will use this later.
-  hooks.callAll('ccRegisterBlockElements').forEach((element) => {
+  callAll('ccRegisterBlockElements').forEach((element) => {
     supportedElems.add(element);
   });
 
   // DB key prefixes for pad records. Each key is expected to have the form `${prefix}:${padId}` or
   // `${prefix}:${padId}:${otherstuff}`.
   const padKeyPrefixes = [
-    ...await hooks.aCallAll('exportEtherpadAdditionalContent'),
+    ...await aCallAll('exportEtherpadAdditionalContent'),
     'pad',
   ];
 
@@ -103,7 +103,7 @@ export const setPadRaw = async (padId, r, authorId = '') => {
 
     const pad = new Pad(padId, padDb);
     await pad.init(null, authorId);
-    await hooks.aCallAll('importEtherpad', {
+    await aCallAll('importEtherpad', {
       pad,
       // Shallow freeze meant to prevent accidental bugs. It would be better to deep freeze, but
       // it's not worth the added complexity.

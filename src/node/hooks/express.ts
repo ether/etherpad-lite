@@ -10,7 +10,7 @@ import fs from "fs";
 
 import expressSession from "express-session";
 
-import hooks from "../../static/js/pluginfw/hooks";
+import {aCallAll} from "../../static/js/pluginfw/hooks";
 
 import log4js from "log4js";
 
@@ -52,7 +52,7 @@ const closeServer = async () => {
     // Call exports.server.close() to reject new connections but don't await just yet because the
     // Promise won't resolve until all preexisting connections are closed.
     const p = util.promisify(server.close.bind(server))();
-    await hooks.aCallAll('expressCloseServer');
+    await aCallAll('expressCloseServer');
     // Give existing connections some time to close on their own before forcibly terminating. The
     // time should be long enough to avoid interrupting most preexisting transmissions but short
     // enough to avoid a noticeable outage.
@@ -240,14 +240,14 @@ sessionMiddleware = expressSession({
   // Give plugins an opportunity to install handlers/middleware before the express-session
   // middleware. This allows plugins to avoid creating an express-session record in the database
   // when it is not needed (e.g., public static content).
-  await hooks.aCallAll('expressPreSession', {app});
+  await aCallAll('expressPreSession', {app});
   app.use(sessionMiddleware);
 
   app.use(checkAccess2);
 
   await Promise.all([
-    hooks.aCallAll('expressConfigure', {app}),
-    hooks.aCallAll('expressCreateServer', {app, server: server}),
+    aCallAll('expressConfigure', {app}),
+    aCallAll('expressCreateServer', {app, server: server}),
   ]);
   server.on('connection', (socket) => {
     sockets.add(socket);

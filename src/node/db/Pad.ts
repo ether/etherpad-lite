@@ -4,7 +4,7 @@
  */
 
 import AttributeMap from '../../static/js/AttributeMap';
-import Changeset from '../../static/js/Changeset';
+import {applyToAText, makeAText} from '../../static/js/Changeset';
 import ChatMessage from '../../static/js/ChatMessage';
 import {AttributePool} from '../../static/js/AttributePool';
 import {Stream} from '../utils/Stream';
@@ -19,7 +19,7 @@ import {doesGroupExist} from './GroupManager';
 import {CustomError} from '../utils/customError';
 import {getReadOnlyId} from './ReadOnlyManager';
 import {randomString} from '../utils/randomstring';
-import hooks from '../../static/js/pluginfw/hooks';
+import {aCallAll} from '../../static/js/pluginfw/hooks';
 import {timesLimit} from '../utils/promises';
 import {padutils} from '../../static/js/pad_utils';
 /**
@@ -27,7 +27,7 @@ import {padutils} from '../../static/js/pad_utils';
  * line breaks and convert Tabs to spaces
  * @param txt
  */
-exports.cleanText = (txt) => txt.replace(/\r\n/g, '\n')
+export const cleanText = (txt) => txt.replace(/\r\n/g, '\n')
     .replace(/\r/g, '\n')
     .replace(/\t/g, '        ')
     .replace(/\xa0/g, ' ');
@@ -51,7 +51,7 @@ export class Pad {
    */
   constructor(id: string, database = db) {
     this.db = database;
-    this.atext = Changeset.makeAText('\n');
+    this.atext = makeAText('\n');
     this.pool = new AttributePool();
     this.head = -1;
     this.chatHead = -1;
@@ -83,11 +83,11 @@ export class Pad {
   }
 
   async appendRevision(aChangeset, authorId = '') {
-    const newAText = Changeset.applyToAText(aChangeset, this.atext, this.pool);
+    const newAText = applyToAText(aChangeset, this.atext, this.pool);
     if (newAText.text === this.atext.text && newAText.attribs === this.atext.attribs) {
       return this.head;
     }
-    Changeset.copyAText(newAText, this.atext);
+    copyAText(newAText, this.atext);
 
     const newRev = ++this.head;
 
@@ -109,7 +109,7 @@ export class Pad {
       }),
       this.saveToDatabase(),
       authorId && addPad(authorId, this.id),
-      hooks.aCallAll(hook, {
+      aCallAll(hook, {
         pad: this,
         authorId,
         get author() {
@@ -188,7 +188,7 @@ export class Pad {
     ]);
     const apool = this.apool();
     let atext = keyAText;
-    for (const cs of changesets) atext = Changeset.applyToAText(cs, atext, apool);
+    for (const cs of changesets) atext = applyToAText(cs, atext, apool);
     return atext;
   }
 
@@ -259,7 +259,7 @@ export class Pad {
     const orig = this.text();
     assert(orig.endsWith('\n'));
     if (start + ndel > orig.length) throw new RangeError('start/delete past the end of the text');
-    ins = exports.cleanText(ins);
+    ins = cleanText(ins);
     const willEndWithNewline =
         start + ndel < orig.length || // Keeping last char (which is guaranteed to be a newline).
         ins.endsWith('\n') ||
@@ -362,14 +362,14 @@ export class Pad {
     } else {
       if (text == null) {
         const context = {pad: this, authorId, type: 'text', content: defaultPadText};
-        await hooks.aCallAll('padDefaultContent', context);
+        await aCallAll('padDefaultContent', context);
         if (context.type !== 'text') throw new Error(`unsupported content type: ${context.type}`);
-        text = exports.cleanText(context.content);
+        text = cleanText(context.content);
       }
       const firstChangeset = Changeset.makeSplice('\n', 0, 0, text);
       await this.appendRevision(firstChangeset, authorId);
     }
-    await hooks.aCallAll('padLoad', {pad: this});
+    await aCallAll('padLoad', {pad: this});
   }
 
   async copy(destinationID, force) {
@@ -405,7 +405,7 @@ export class Pad {
     const dstPad = await getPad(destinationID, null);
 
     // let the plugins know the pad was copied
-    await hooks.aCallAll('padCopy', {
+    await aCallAll('padCopy', {
       get originalPad() {
         padutils.warnDeprecated('padCopy originalPad context property is deprecated; use srcPad instead');
         return this.srcPad;
@@ -506,7 +506,7 @@ export class Pad {
     const changeset = Changeset.pack(oldLength, newLength, assem.toString(), newText);
     dstPad.appendRevision(changeset, authorId);
 
-    await hooks.aCallAll('padCopy', {
+    await aCallAll('padCopy', {
       get originalPad() {
         padutils.warnDeprecated('padCopy originalPad context property is deprecated; use srcPad instead');
         return this.srcPad;
@@ -571,7 +571,7 @@ export class Pad {
 
     // delete the pad entry and delete pad from padManager
     p.push(removePad(padID));
-    p.push(hooks.aCallAll('padRemove', {
+    p.push(aCallAll('padRemove', {
       get padID() {
         padutils.warnDeprecated('padRemove padID context property is deprecated; use pad.id instead');
         return this.pad.id;
@@ -730,7 +730,6 @@ export class Pad {
         .batch(100).buffer(99);
     for (const p of chats) await p;
 
-    await hooks.aCallAll('padCheck', {pad: this});
+    await aCallAll('padCheck', {pad: this});
   }
 }
-exports.Pad = Pad;

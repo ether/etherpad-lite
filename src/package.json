@@ -31,6 +31,7 @@
   ],
   "dependencies": {
     "async": "^3.2.2",
+    "cjstoesm": "^2.1.2",
     "clean-css": "^5.3.2",
     "cookie-parser": "^1.4.6",
     "cross-spawn": "^7.0.3",
@@ -113,6 +114,5 @@
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/server.js\""
   },
   "version": "1.9.0",
-  "license": "Apache-2.0",
-  "type": "module"
+  "license": "Apache-2.0"
 }

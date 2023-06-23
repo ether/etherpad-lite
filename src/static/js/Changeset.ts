@@ -22,6 +22,8 @@
  * https://github.com/ether/pad/blob/master/infrastructure/ace/www/easysync2.js
  */
 
+import {CustomError} from "../../node/utils/customError";
+
 const AttributeMap = require('./AttributeMap');
 const AttributePool = require('./AttributePool');
 const attributes = require('./attributes');
@@ -47,8 +49,8 @@ const {padutils} = require('./pad_utils');
  *
  * @param {string} msg - Just some message
  */
-const error = (msg) => {
-  const e = new Error(msg);
+export const error = (msg) => {
+  const e = new CustomError(msg);
   e.easysync = true;
   throw e;
 };
@@ -71,7 +73,7 @@ const assert = (b, msg) => {
  * @param {string} str - string of the number in base 36
  * @returns {number} number
  */
-exports.parseNum = (str) => parseInt(str, 36);
+export const parseNum = (str) => parseInt(str, 36);
 
 /**
  * Writes a number in base 36 and puts it in a string.
@@ -79,12 +81,16 @@ exports.parseNum = (str) => parseInt(str, 36);
  * @param {number} num - number
  * @returns {string} string
  */
-exports.numToString = (num) => num.toString(36).toLowerCase();
+export const numToString = (num) => num.toString(36).toLowerCase();
 
 /**
  * An operation to apply to a shared document.
  */
 class Op {
+  opcode: string;
+  chars: number;
+  lines: number;
+  attribs: string;
   /**
    * @param {(''|'='|'+'|'-')} [opcode=''] - Initial value of the `opcode` property.
    */
@@ -146,11 +152,11 @@ class Op {
   toString() {
     if (!this.opcode) throw new TypeError('null op');
     if (typeof this.attribs !== 'string') throw new TypeError('attribs must be a string');
-    const l = this.lines ? `|${exports.numToString(this.lines)}` : '';
-    return this.attribs + l + this.opcode + exports.numToString(this.chars);
+    const l = this.lines ? `|${numToString(this.lines)}` : '';
+    return this.attribs + l + this.opcode + numToString(this.chars);
   }
 }
-exports.Op = Op;
+export const Op = Op;
 
 /**
  * Describes changes to apply to a document. Does not include the attribute pool or the original
@@ -170,7 +176,7 @@ exports.Op = Op;
  * @param {string} cs - String representation of the Changeset
  * @returns {number} oldLen property
  */
-exports.oldLen = (cs) => exports.unpack(cs).oldLen;
+export const oldLen = (cs) => exports.unpack(cs).oldLen;
 
 /**
  * Returns the length of the text after changeset is applied.
@@ -178,7 +184,7 @@ exports.oldLen = (cs) => exports.unpack(cs).oldLen;
  * @param {string} cs - String representation of the Changeset
  * @returns {number} newLen property
  */
-exports.newLen = (cs) => exports.unpack(cs).newLen;
+export const newLen = (cs) => exports.unpack(cs).newLen;
 
 /**
  * Parses a string of serialized changeset operations.
@@ -187,7 +193,7 @@ exports.newLen = (cs) => exports.unpack(cs).newLen;
  * @yields {Op}
  * @returns {Generator<Op>}
  */
-exports.deserializeOps = function* (ops) {
+export const deserializeOps = function* (ops) {
   // TODO: Migrate to String.prototype.matchAll() once there is enough browser support.
   const regex = /((?:\*[0-9a-z]+)*)(?:\|([0-9a-z]+))?([-+=])([0-9a-z]+)|(.)/g;
   let match;
@@ -195,8 +201,8 @@ exports.deserializeOps = function* (ops) {
     if (match[5] === '$') return; // Start of the insert operation character bank.
     if (match[5] != null) error(`invalid operation: ${ops.slice(regex.lastIndex - 1)}`);
     const op = new Op(match[3]);
-    op.lines = exports.parseNum(match[2] || '0');
-    op.chars = exports.parseNum(match[4]);
+    op.lines = parseNum(match[2] || '0');
+    op.chars = parseNum(match[4]);
     op.attribs = match[1];
     yield op;
   }
@@ -210,11 +216,18 @@ exports.deserializeOps = function* (ops) {
  * @deprecated Use `deserializeOps` instead.
  */
 class OpIter {
+  private _next: {
+    value: any;
+    done: boolean,
+
+
+  };
+  private _gen: any;
   /**
    * @param {string} ops - String encoding the change operations to iterate over.
    */
   constructor(ops) {
-    this._gen = exports.deserializeOps(ops);
+    this._gen = deserializeOps(ops);
     this._next = this._gen.next();
   }
 
@@ -252,7 +265,7 @@ class OpIter {
  * @param {string} opsStr - String encoding of the change operations to perform.
  * @returns {OpIter} Operator iterator object.
  */
-exports.opIterator = (opsStr) => {
+export const opIterator = (opsStr) => {
   padutils.warnDeprecated(
       'Changeset.opIterator() is deprecated; use Changeset.deserializeOps() instead');
   return new OpIter(opsStr);
@@ -277,7 +290,7 @@ const clearOp = (op) => {
  * @param {('+'|'-'|'='|'')} [optOpcode=''] - The operation's operator.
  * @returns {Op}
  */
-exports.newOp = (optOpcode) => {
+export const newOp = (optOpcode) => {
   padutils.warnDeprecated('Changeset.newOp() is deprecated; use the Changeset.Op class instead');
   return new Op(optOpcode);
 };
@@ -370,17 +383,17 @@ const opsFromText = function* (opcode, text, attribs = '', pool = null) {
  * @param {string} cs - Changeset to check
  * @returns {string} the checked Changeset
  */
-exports.checkRep = (cs) => {
-  const unpacked = exports.unpack(cs);
+export const checkRep = (cs) => {
+  const unpacked = unpack(cs);
   const oldLen = unpacked.oldLen;
   const newLen = unpacked.newLen;
   const ops = unpacked.ops;
   let charBank = unpacked.charBank;
 
-  const assem = exports.smartOpAssembler();
+  const assem = smartOpAssembler();
   let oldPos = 0;
   let calcNewLen = 0;
-  for (const o of exports.deserializeOps(ops)) {
+  for (const o of deserializeOps(ops)) {
     switch (o.opcode) {
       case '=':
         oldPos += o.chars;
@@ -413,7 +426,7 @@ exports.checkRep = (cs) => {
   assert(calcNewLen === newLen, 'Invalid changeset: claimed length does not match actual length');
   assert(charBank === '', 'Invalid changeset: excess characters in the charBank');
   assem.endDocument();
-  const normalized = exports.pack(oldLen, calcNewLen, assem.toString(), unpacked.charBank);
+  const normalized = pack(oldLen, calcNewLen, assem.toString(), unpacked.charBank);
   assert(normalized === cs, 'Invalid changeset: not in canonical form');
   return cs;
 };
@@ -421,11 +434,11 @@ exports.checkRep = (cs) => {
 /**
  * @returns {SmartOpAssembler}
  */
-exports.smartOpAssembler = () => {
-  const minusAssem = exports.mergingOpAssembler();
-  const plusAssem = exports.mergingOpAssembler();
-  const keepAssem = exports.mergingOpAssembler();
-  const assem = exports.stringAssembler();
+export const smartOpAssembler = () => {
+  const minusAssem = mergingOpAssembler();
+  const plusAssem = mergingOpAssembler();
+  const keepAssem = mergingOpAssembler();
+  const assem = stringAssembler();
   let lastOpcode = '';
   let lengthChange = 0;
 
@@ -515,8 +528,8 @@ exports.smartOpAssembler = () => {
 /**
  * @returns {MergingOpAssembler}
  */
-exports.mergingOpAssembler = () => {
-  const assem = exports.opAssembler();
+export const mergingOpAssembler = () => {
+  const assem = opAssembler();
   const bufOp = new Op();
 
   // If we get, for example, insertions [xxx\n,yyy], those don't merge,
@@ -528,7 +541,7 @@ exports.mergingOpAssembler = () => {
   /**
    * @param {boolean} [isEndDocument]
    */
-  const flush = (isEndDocument) => {
+  const flush = (isEndDocument?: boolean) => {
     if (!bufOp.opcode) return;
     if (isEndDocument && bufOp.opcode === '=' && !bufOp.attribs) {
       // final merged keep, leave it implicit
@@ -589,7 +602,7 @@ exports.mergingOpAssembler = () => {
 /**
  * @returns {OpAssembler}
  */
-exports.opAssembler = () => {
+export const opAssembler = () => {
   let serialized = '';
 
   /**
@@ -627,7 +640,7 @@ exports.opAssembler = () => {
  * @param {string} str - String to iterate over
  * @returns {StringIterator}
  */
-exports.stringIterator = (str) => {
+export const stringIterator = (str) => {
   let curIndex = 0;
   // newLines is the number of \n between curIndex and str.length
   let newLines = str.split('\n').length - 1;
@@ -677,7 +690,7 @@ exports.stringIterator = (str) => {
 /**
  * @returns {StringAssembler}
  */
-exports.stringAssembler = () => ({
+export const stringAssembler = () => ({
   _str: '',
   clear() { this._str = ''; },
   /**
@@ -711,6 +724,11 @@ exports.stringAssembler = () => ({
  * with no newlines.
  */
 class TextLinesMutator {
+  private _lines: any;
+  private _curSplice: number[]|{[key: string]:any};
+  private _inSplice: boolean;
+  private _curLine: number;
+  private _curCol: number;
   /**
    * @param {(string[]|StringArrayLike)} lines - Lines to mutate (in place).
    */
@@ -798,10 +816,12 @@ class TextLinesMutator {
    * close or TODO(doc).
    */
   _leaveSplice() {
-    this._lines.splice(...this._curSplice);
-    this._curSplice.length = 2;
-    this._curSplice[0] = this._curSplice[1] = 0;
-    this._inSplice = false;
+    if(this._curSplice instanceof Array) {
+      this._lines.splice(...this._curSplice);
+      this._curSplice.length = 2;
+      this._curSplice[0] = this._curSplice[1] = 0;
+      this._inSplice = false;
+    }
   }
 
   /**
@@ -837,7 +857,7 @@ class TextLinesMutator {
    * @param {number} L -
    * @param {boolean} includeInSplice - Indicates that attributes are present.
    */
-  skipLines(L, includeInSplice) {
+  skipLines(L, includeInSplice?:boolean) {
     if (!L) return;
     if (includeInSplice) {
       if (!this._inSplice) this._enterSplice();
@@ -905,7 +925,7 @@ class TextLinesMutator {
       return this._linesSlice(m, m + k).join('');
     };
 
-    let removed = '';
+    let removed:string|number = '';
     if (this._isCurLineInSplice()) {
       if (this._curCol === 0) {
         removed = this._curSplice[this._curSplice.length - 1];
@@ -958,7 +978,7 @@ class TextLinesMutator {
     if (!text) return;
     if (!this._inSplice) this._enterSplice();
     if (L) {
-      const newLines = exports.splitTextLines(text);
+      const newLines = splitTextLines(text);
       if (this._isCurLineInSplice()) {
         const sline = this._curSplice.length - 1;
         /** @type {string} */
@@ -1039,11 +1059,11 @@ class TextLinesMutator {
  * @returns {string} the integrated changeset
  */
 const applyZip = (in1, in2, func) => {
-  const ops1 = exports.deserializeOps(in1);
-  const ops2 = exports.deserializeOps(in2);
+  const ops1 = deserializeOps(in1);
+  const ops2 = deserializeOps(in2);
   let next1 = ops1.next();
   let next2 = ops2.next();
-  const assem = exports.smartOpAssembler();
+  const assem = smartOpAssembler();
   while (!next1.done || !next2.done) {
     if (!next1.done && !next1.value.opcode) next1 = ops1.next();
     if (!next2.done && !next2.value.opcode) next2 = ops2.next();
@@ -1063,13 +1083,13 @@ const applyZip = (in1, in2, func) => {
  * @param {string} cs - The encoded changeset.
  * @returns {Changeset}
  */
-exports.unpack = (cs) => {
+export const unpack = (cs) => {
   const headerRegex = /Z:([0-9a-z]+)([><])([0-9a-z]+)|/;
   const headerMatch = headerRegex.exec(cs);
   if ((!headerMatch) || (!headerMatch[0])) error(`Not a changeset: ${cs}`);
-  const oldLen = exports.parseNum(headerMatch[1]);
+  const oldLen = parseNum(headerMatch[1]);
   const changeSign = (headerMatch[2] === '>') ? 1 : -1;
-  const changeMag = exports.parseNum(headerMatch[3]);
+  const changeMag = parseNum(headerMatch[3]);
   const newLen = oldLen + changeSign * changeMag;
   const opsStart = headerMatch[0].length;
   let opsEnd = cs.indexOf('$');
@@ -1091,12 +1111,12 @@ exports.unpack = (cs) => {
  * @param {string} bank - Characters for insert operations.
  * @returns {string} The encoded changeset.
  */
-exports.pack = (oldLen, newLen, opsStr, bank) => {
+export const pack = (oldLen, newLen, opsStr, bank) => {
   const lenDiff = newLen - oldLen;
-  const lenDiffStr = (lenDiff >= 0 ? `>${exports.numToString(lenDiff)}`
-    : `<${exports.numToString(-lenDiff)}`);
+  const lenDiffStr = (lenDiff >= 0 ? `>${numToString(lenDiff)}`
+    : `<${numToString(-lenDiff)}`);
   const a = [];
-  a.push('Z:', exports.numToString(oldLen), lenDiffStr, opsStr, '$', bank);
+  a.push('Z:', numToString(oldLen), lenDiffStr, opsStr, '$', bank);
   return a.join('');
 };
 
@@ -1107,13 +1127,13 @@ exports.pack = (oldLen, newLen, opsStr, bank) => {
  * @param {string} str - String to which a Changeset should be applied
  * @returns {string}
  */
-exports.applyToText = (cs, str) => {
-  const unpacked = exports.unpack(cs);
+export const applyToText = (cs, str) => {
+  const unpacked = unpack(cs);
   assert(str.length === unpacked.oldLen, `mismatched apply: ${str.length} / ${unpacked.oldLen}`);
-  const bankIter = exports.stringIterator(unpacked.charBank);
-  const strIter = exports.stringIterator(str);
-  const assem = exports.stringAssembler();
-  for (const op of exports.deserializeOps(unpacked.ops)) {
+  const bankIter = stringIterator(unpacked.charBank);
+  const strIter = stringIterator(str);
+  const assem = stringAssembler();
+  for (const op of deserializeOps(unpacked.ops)) {
     switch (op.opcode) {
       case '+':
       // op is + and op.lines 0: no newlines must be in op.chars
@@ -1151,11 +1171,11 @@ exports.applyToText = (cs, str) => {
  * @param {string} cs - the changeset to apply
  * @param {string[]} lines - The lines to which the changeset needs to be applied
  */
-exports.mutateTextLines = (cs, lines) => {
-  const unpacked = exports.unpack(cs);
-  const bankIter = exports.stringIterator(unpacked.charBank);
+export const mutateTextLines = (cs, lines) => {
+  const unpacked = unpack(cs);
+  const bankIter = stringIterator(unpacked.charBank);
   const mut = new TextLinesMutator(lines);
-  for (const op of exports.deserializeOps(unpacked.ops)) {
+  for (const op of deserializeOps(unpacked.ops)) {
     switch (op.opcode) {
       case '+':
         mut.insert(bankIter.take(op.chars), op.lines);
@@ -1180,7 +1200,7 @@ exports.mutateTextLines = (cs, lines) => {
  * @param {AttributePool} pool - attribute pool
  * @returns {string}
  */
-exports.composeAttributes = (att1, att2, resultIsMutation, pool) => {
+export const composeAttributes = (att1, att2, resultIsMutation, pool) => {
   // att1 and att2 are strings like "*3*f*1c", asMutation is a boolean.
   // Sometimes attribute (key,value) pairs are treated as attribute presence
   // information, while other times they are treated as operations that
@@ -1258,7 +1278,7 @@ const slicerZipperFunc = (attOp, csOp, pool) => {
       // normally be the empty string. However, padDiff.js adds attributes to remove ops and needs
       // them preserved so they are copied here.
       ? csOp.attribs
-      : exports.composeAttributes(attOp.attribs, csOp.attribs, attOp.opcode === '=', pool);
+      : composeAttributes(attOp.attribs, csOp.attribs, attOp.opcode === '=', pool);
     partiallyConsumedOp.chars -= fullyConsumedOp.chars;
     partiallyConsumedOp.lines -= fullyConsumedOp.lines;
     if (!partiallyConsumedOp.chars) partiallyConsumedOp.opcode = '';
@@ -1275,8 +1295,8 @@ const slicerZipperFunc = (attOp, csOp, pool) => {
  * @param {AttributePool} pool - the attibutes pool
  * @returns {string}
  */
-exports.applyToAttribution = (cs, astr, pool) => {
-  const unpacked = exports.unpack(cs);
+export const applyToAttribution = (cs, astr, pool) => {
+  const unpacked = unpack(cs);
   return applyZip(astr, unpacked.ops, (op1, op2) => slicerZipperFunc(op1, op2, pool));
 };
 
@@ -1749,7 +1769,7 @@ exports.mapAttribNumbers = (cs, func) => {
  *     attributes
  * @returns {AText}
  */
-exports.makeAText = (text, attribs) => ({
+export const makeAText = (text, attribs) => ({
   text,
   attribs: (attribs || exports.makeAttribution(text)),
 });
@@ -1762,7 +1782,7 @@ exports.makeAText = (text, attribs) => ({
  * @param {AttributePool} pool - Attribute Pool to add to
  * @returns {AText}
  */
-exports.applyToAText = (cs, atext, pool) => ({
+export const applyToAText = (cs, atext, pool) => ({
   text: exports.applyToText(cs, atext.text),
   attribs: exports.applyToAttribution(cs, atext.attribs, pool),
 });
@@ -1787,7 +1807,7 @@ exports.cloneAText = (atext) => {
  * @param {AText} atext1 -
  * @param {AText} atext2 -
  */
-exports.copyAText = (atext1, atext2) => {
+export const copyAText = (atext1, atext2) => {
   atext2.text = atext1.text;
   atext2.attribs = atext1.attribs;
 };
@@ -1799,10 +1819,10 @@ exports.copyAText = (atext1, atext2) => {
  * @yields {Op}
  * @returns {Generator<Op>}
  */
-exports.opsFromAText = function* (atext) {
+export const opsFromAText = function* (atext) {
   // intentionally skips last newline char of atext
   let lastOp = null;
-  for (const op of exports.deserializeOps(atext.attribs)) {
+  for (const op of deserializeOps(atext.attribs)) {
     if (lastOp != null) yield lastOp;
     lastOp = op;
   }

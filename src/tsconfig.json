@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "allowJs": true,
     "typeRoots": ["node_modules/@types"],
     "types": ["node", "jquery"],
     "module": "commonjs",
@@ -7,7 +8,7 @@
     "target": "es6",
     "moduleResolution": "node",
     "sourceMap": true,
-    "outDir": "dist"
+    "outDir": "../dist"
   },
   "lib": ["es2015"]
 }

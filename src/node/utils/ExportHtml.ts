@@ -23,7 +23,7 @@ import {getPad} from "../db/PadManager";
 import _ from "underscore";
 
 import Security from '../../static/js/security';
-import hooks from '../../static/js/pluginfw/hooks';
+import {aCallAll} from '../../static/js/pluginfw/hooks';
 import {required} from '../eejs';
 import {_analyzeLine, _encodeWhitespace} from "./ExportHelper";
 
@@ -51,7 +51,7 @@ export const getHTMLFromAtext = async (pad, atext, authorColors?) => {
 
   await Promise.all([
     // prepare tags stored as ['tag', true] to be exported
-    hooks.aCallAll('exportHtmlAdditionalTags', pad).then((newProps) => {
+    aCallAll('exportHtmlAdditionalTags', pad).then((newProps) => {
       newProps.forEach((prop) => {
         tags.push(prop);
         props.push(prop);
@@ -59,7 +59,7 @@ export const getHTMLFromAtext = async (pad, atext, authorColors?) => {
     }),
     // prepare tags stored as ['tag', 'value'] to be exported. This will generate HTML with tags
     // like <span data-tag="value">
-    hooks.aCallAll('exportHtmlAdditionalTagsWithData', pad).then((newProps) => {
+    aCallAll('exportHtmlAdditionalTagsWithData', pad).then((newProps) => {
       newProps.forEach((prop) => {
         tags.push(`span data-${prop[0]}="${prop[1]}"`);
         props.push(prop);
@@ -314,7 +314,7 @@ export const getHTMLFromAtext = async (pad, atext, authorColors?) => {
       if (i < textLines.length) {
         nextLine = _analyzeLine(textLines[i + 1], attribLines[i + 1], apool);
       }
-      await hooks.aCallAll('getLineHTMLForExport', context);
+      await aCallAll('getLineHTMLForExport', context);
       // To create list parent elements
       if ((!prevLine || prevLine.listLevel !== line.listLevel) ||
           (line.listTypeName !== prevLine.listTypeName)) {
@@ -451,7 +451,7 @@ export const getHTMLFromAtext = async (pad, atext, authorColors?) => {
         padId: pad.id,
       };
 
-      await hooks.aCallAll('getLineHTMLForExport', context);
+      await aCallAll('getLineHTMLForExport', context);
       pieces.push(context.lineContent, '<br>');
     }
   }
@@ -464,14 +464,14 @@ export const getPadHTMLDocument = async (padId, revNum, readOnlyId?) => {
 
   // Include some Styles into the Head for Export
   let stylesForExportCSS = '';
-  const stylesForExport = await hooks.aCallAll('stylesForExport', padId);
+  const stylesForExport = await aCallAll('stylesForExport', padId);
   stylesForExport.forEach((css) => {
     stylesForExportCSS += css;
   });
 
   let html = await getPadHTML(pad, revNum);
 
-  for (const hookHtml of await hooks.aCallAll('exportHTMLAdditionalContent', {padId})) {
+  for (const hookHtml of await aCallAll('exportHTMLAdditionalContent', {padId})) {
     html += hookHtml;
   }
 

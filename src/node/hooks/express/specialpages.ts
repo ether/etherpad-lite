@@ -5,12 +5,12 @@ import {required} from '../../eejs';
 import fs from 'fs';
 const fsp = fs.promises;
 import {} from '../../utils/toolbar';
-import hooks from '../../../static/js/pluginfw/hooks';
+import {callAll} from '../../../static/js/pluginfw/hooks';
 import {favicon, getEpVersion, maxAge, root, skinName} from '../../utils/Settings';
 import util from 'util';
 import {userCanModify} from './webaccess';
 
-exports.expressPreSession = async (hookName, {app}) => {
+export const expressPreSession = async (hookName, {app}) => {
   // This endpoint is intended to conform to:
   // https://www.ietf.org/archive/id/draft-inadarei-api-health-check-06.html
   app.get('/health', (req, res) => {
@@ -63,7 +63,7 @@ exports.expressPreSession = async (hookName, {app}) => {
   });
 };
 
-exports.expressCreateServer = (hookName, args, cb) => {
+export const expressCreateServer = (hookName, args, cb) => {
   // serve index.html under /
   args.app.get('/', (req, res) => {
     res.send(required('ep_etherpad-lite/templates/index.html', {req}));
@@ -74,7 +74,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
     // The below might break for pads being rewritten
     const isReadOnly = !userCanModify(req.params.pad, req);
 
-    hooks.callAll('padInitToolbar', {
+    callAll('padInitToolbar', {
       toolbar,
       isReadOnly,
     });
@@ -90,7 +90,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
 
   // serve timeslider.html under /p/$padname/timeslider
   args.app.get('/p/:pad/timeslider', (req, res, next) => {
-    hooks.callAll('padInitToolbar', {
+    callAll('padInitToolbar', {
       toolbar,
     });
 

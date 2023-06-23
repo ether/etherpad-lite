@@ -50,41 +50,18 @@ import {getPadHTMLDocument} from "../utils/ExportHtml";
  * GROUP FUNCTIONS ****
  ******************** */
 
-/*
-exports.listAllGroups = listAllGroups;
-exports.createGroup = createGroup;
-exports.createGroupIfNotExistsFor = createGroupIfNotExistsFor;
-exports.deleteGroup = deleteGroup;
-exports.listPads = listPads;
-exports.createGroupPad = createGroupPad;
-*/
 /* ********************
  * PADLIST FUNCTION ***
  ******************** */
-/*
-exports.listAllPads = padManager.listAllPads;
-*/
+
 /* ********************
  * AUTHOR FUNCTIONS ***
  ******************** */
-/*
-exports.createAuthor = createAuthor;
-exports.createAuthorIfNotExistsFor = createAuthorIfNotExistsFor;
-exports.getAuthorName = getAuthorName;
-exports.listPadsOfAuthor = listPadsOfAuthor;
-exports.padUsers = padMessageHandler.padUsers;
-exports.padUsersCount = padMessageHandler.padUsersCount;
-*/
+
 /* ********************
  * SESSION FUNCTIONS **
  ******************** */
-/*
-exports.createSession = sessionManager.createSession;
-exports.deleteSession = sessionManager.deleteSession;
-exports.getSessionInfo = sessionManager.getSessionInfo;
-exports.listSessionsOfGroup = sessionManager.listSessionsOfGroup;
-exports.listSessionsOfAuthor = sessionManager.listSessionsOfAuthor;
-*/
+
 /* ***********************
  * PAD CONTENT FUNCTIONS *
  *********************** */
@@ -742,7 +719,7 @@ Example returns:
 {"code":0,"message":"ok","data":null}
 {"code":4,"message":"no or wrong API Key","data":null}
 */
-exports.checkToken = async () => {
+export const checkToken = async () => {
 };
 
 /**

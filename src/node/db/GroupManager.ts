@@ -90,8 +90,8 @@ export const createGroupIfNotExistsFor = async (groupMapper) => {
     throw new CustomError('groupMapper is not a string', 'apierror');
   }
   const groupID = await db.get(`mapper2group:${groupMapper}`);
-  if (groupID && await exports.doesGroupExist(groupID)) return {groupID};
-  const result = await exports.createGroup();
+  if (groupID && await doesGroupExist(groupID)) return {groupID};
+  const result = await createGroup();
   await Promise.all([
     db.set(`mapper2group:${groupMapper}`, result.groupID),
     // Remember the mapping in the group record so that it can be cleaned up when the group is
@@ -132,7 +132,7 @@ export const createGroupPad = async (groupID, padName, text, authorId = '') => {
 };
 
 export const listPads = async (groupID) => {
-  const exists = await exports.doesGroupExist(groupID);
+  const exists = await doesGroupExist(groupID);
 
   // ensure the group exists
   if (!exists) {

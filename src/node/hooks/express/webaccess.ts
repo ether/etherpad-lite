@@ -6,17 +6,18 @@ import log4js from "log4js";
 
 import {requireAuthentication, requireAuthorization, setUsers, users} from "../../utils/Settings";
 
-import hooks from "../../../static/js/pluginfw/hooks";
+import {deprecationNotices} from "../../../static/js/pluginfw/hooks";
 
 import {getPadId, isReadOnlyId} from "../../db/ReadOnlyManager";
 import {UserIndexedModel} from "../../models/UserIndexedModel";
 
 const httpLogger = log4js.getLogger('http');
-hooks.deprecationNotices.authFailure = 'use the authnFailure and authzFailure hooks instead';
+deprecationNotices.authFailure = 'use the authnFailure and authzFailure hooks instead';
 
 // Promisified wrapper around hooks.aCallFirst.
 const aCallFirst = (hookName, context, pred = null) => new Promise((resolve, reject) => {
-  hooks.aCallFirst(hookName, context, (err, r) => err != null ? reject(err) : resolve(r), pred);
+  // FIXME Why are there 4 arguments but only 3 parameters?
+  aCallFirst(hookName, context, (err, r) => err != null ? reject(err) : resolve(r));
 });
 
 const aCallFirst0 =

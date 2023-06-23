@@ -69,7 +69,7 @@ const logLines = (readable, logLineFn) => {
  *   - `stderr`: Similar to `stdout` but for stderr.
  *   - `child`: The ChildProcess object.
  */
-export const exportCMD: (args: string[], opts:CMDOptions)=>void = async (args, opts = {
+export const exportCMD: (args: string[], opts?:CMDOptions)=>void = async (args, opts = {
   cwd: undefined,
   stdio: undefined,
   env: undefined

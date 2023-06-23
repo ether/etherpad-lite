@@ -7,7 +7,7 @@ import proxyaddr from 'proxy-addr';
 import {socketIo, socketTransportProtocols, trustProxy} from '../../utils/Settings';
 import socketio from 'socket.io';
 import {addComponent, setSocketIO} from '../../handler/SocketIORouter';
-import hooks from '../../../static/js/pluginfw/hooks';
+import {callAll} from '../../../static/js/pluginfw/hooks';
 import * as padMessageHandler from '../../handler/PadMessageHandler';
 
 let io;
@@ -15,7 +15,7 @@ const logger = log4js.getLogger('socket.io');
 const sockets = new Set();
 const socketsEvents = new events.EventEmitter();
 
-exports.expressCloseServer = async () => {
+export const expressCloseServer = async () => {
   if (io == null) return;
   logger.info('Closing socket.io engine...');
   // Close the socket.io engine to disconnect existing clients and reject new clients. Don't call
@@ -46,7 +46,7 @@ exports.expressCloseServer = async () => {
   logger.info('All socket.io clients have disconnected');
 };
 
-exports.expressCreateServer = (hookName, args, cb) => {
+export const expressCreateServer = (hookName, args, cb) => {
   // init socket.io and redirect all requests to the MessageHandler
   // there shouldn't be a browser that isn't compatible to all
   // transports in this list at once
@@ -133,7 +133,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
   setSocketIO(io);
   addComponent('pad', padMessageHandler);
 
-  hooks.callAll('socketio', {app: args.app, io, server: args.server});
+  callAll('socketio', {app: args.app, io, server: args.server});
 
   return cb();
 };

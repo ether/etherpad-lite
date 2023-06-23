@@ -8,7 +8,7 @@ import {tidyHtml} from "./Settings";
 
 import {spawn} from "child_process";
 
-exports.tidy = (srcFile) => {
+export const tidy = (srcFile) => {
   const logger = log4js.getLogger('TidyHtml');
 
   return new Promise((resolve, reject) => {

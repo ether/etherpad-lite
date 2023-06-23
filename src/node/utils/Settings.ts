@@ -29,19 +29,20 @@
 
 import exp from "constants";
 
-const absolutePaths = require('./AbsolutePaths');
-const deepEqual = require('fast-deep-equal/es6');
+import {findEtherpadRoot, makeAbsolute, isSubdir} from './AbsolutePaths';
+import deepEqual from 'fast-deep-equal/es6';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-const argv = require('./Cli').argv;
 import jsonminify from 'jsonminify';
 import log4js from 'log4js';
 import {LogLevel} from "../models/LogLevel";
-const randomString = require('./randomstring');
+import {argv} from "./Cli";
+
+import {randomString} from './randomstring';
 const suppressDisableMsg = ' -- To suppress these warning messages change ' +
     'suppressErrorsInPadText to true in your settings.json\n';
-const _ = require('underscore');
+import _ from 'underscore';
 
 const logger = log4js.getLogger('settings');
 
@@ -53,7 +54,10 @@ const nonSettings = [
 
 // This is a function to make it easy to create a new instance. It is important to not reuse a
 // config object after passing it to log4js.configure() because that method mutates the object. :(
-const defaultLogConfig = () => ({appenders: [{type: 'console'}]});
+const defaultLogConfig = () => ({appenders: {  console: { type: 'console' } },
+categories:{
+    default: { appenders: ['console'], level: 'info'}
+}});
 const defaultLogLevel = 'INFO';
 
 const initLogging = (logLevel, config) => {
@@ -71,11 +75,11 @@ const initLogging = (logLevel, config) => {
 initLogging(defaultLogLevel, defaultLogConfig());
 
 /* Root path of the installation */
-export const root = absolutePaths.findEtherpadRoot();
+export const root = findEtherpadRoot();
 logger.info('All relative paths will be interpreted relative to the identified ' +
     `Etherpad base dir: ${root}`);
-export const settingsFilename = absolutePaths.makeAbsolute(argv.settings || 'settings.json');
-export const credentialsFilename = absolutePaths.makeAbsolute(argv.credentials || 'credentials.json');
+export const settingsFilename = makeAbsolute(argv.settings || 'settings.json');
+export const credentialsFilename = makeAbsolute(argv.credentials || 'credentials.json');
 
 /**
  * The app title, visible e.g. in the browser window
@@ -737,9 +741,7 @@ const parseSettings = (settingsFilename: string, isSettings:boolean) => {
 
     process.exit(1);
   }
-};
-
-export const randomVersionString = randomString(4);
+}
 
 
 export const reloadSettings = () => {
@@ -772,7 +774,7 @@ export const reloadSettings = () => {
     let skinPath = path.join(skinBasePath, skinName);
 
     // what if someone sets skinName == ".." or "."? We catch him!
-    if (absolutePaths.isSubdir(skinBasePath, skinPath) === false) {
+    if (isSubdir(skinBasePath, skinPath) === false) {
       logger.error(`Skin path ${skinPath} must be a subdirectory of ${skinBasePath}. ` +
           'Falling back to the default "colibris".');
 
@@ -821,7 +823,7 @@ export const reloadSettings = () => {
   }
 
   if (!sessionKey) {
-    const sessionkeyFilename = absolutePaths.makeAbsolute(argv.sessionkey || './SESSIONKEY.txt');
+    const sessionkeyFilename = makeAbsolute(argv.sessionkey || './SESSIONKEY.txt');
     try {
       sessionKey = fs.readFileSync(sessionkeyFilename, 'utf8');
       logger.info(`Session key loaded from: ${sessionkeyFilename}`);
@@ -846,7 +848,7 @@ export const reloadSettings = () => {
       defaultPadText += `\nWarning: ${dirtyWarning}${suppressDisableMsg}`;
     }
 
-    dbSettings.filename = absolutePaths.makeAbsolute(dbSettings.filename);
+    dbSettings.filename = makeAbsolute(dbSettings.filename);
     logger.warn(`${dirtyWarning} File location: ${dbSettings.filename}`);
   }
 
@@ -867,10 +869,12 @@ export const reloadSettings = () => {
    * ACHTUNG: this may prevent caching HTTP proxies to work
    * TODO: remove the "?v=randomstring" parameter, and replace with hashed filenames instead
    */
-  logger.info(`Random string used for versioning assets: ${randomVersionString}`);
+  const randomVersionStringWith4Chars = randomString(4);
+  logger.info(`Random string used for versioning assets: ${randomVersionStringWith4Chars}`);
+  return settings
 };
 
-exports.exportedForTestingOnly = {
+export const exportedForTestingOnly = {
   parseSettings,
 };
 

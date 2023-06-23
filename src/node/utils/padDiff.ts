@@ -254,7 +254,7 @@ PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
   // They include final newlines on lines.
 
   const linesGet = (idx) => {
-    if (lines.get) {
+    if ("get" in lines && lines.get instanceof Function) {
       return lines.get(idx);
     } else {
       return lines[idx];
@@ -262,7 +262,7 @@ PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
   };
 
   const aLinesGet = (idx) => {
-    if (alines.get) {
+    if ("get" in alines && alines.get instanceof Function) {
       return alines.get(idx);
     } else {
       return alines[idx];

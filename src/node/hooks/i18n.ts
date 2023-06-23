@@ -4,7 +4,7 @@ import languages from 'languages4translatewiki';
 import fs from 'fs';
 import path from 'path';
 import _ from 'underscore';
-import pluginDefs from '../../static/js/pluginfw/plugin_defs.js';
+import {plugins} from '../../static/js/pluginfw/plugin_defs.js';
 import {check} from '../utils/path_exists';
 import {customLocaleStrings, maxAge, root} from '../utils/Settings';
 import {Presession} from "../models/Presession";
@@ -41,7 +41,7 @@ const getAllLocales = () => {
   extractLangs(path.join(root, 'src/locales'));
 
   // add plugins languages (if any)
-  for (const val of Object.values(pluginDefs.plugins)) {
+  for (const val of Object.values(plugins)) {
     const pluginPath:Presession = val as Presession
     // plugin locales should overwrite etherpad's core locales
     if (pluginPath.package.path.endsWith('/ep_etherpad-lite') === true) continue;
@@ -86,7 +86,7 @@ const getAllLocales = () => {
 
 // returns a hash of all available languages availables with nativeName and direction
 // e.g. { es: {nativeName: "español", direction: "ltr"}, ... }
-const getAvailableLangs = (locales) => {
+export const getAvailableLangs = (locales) => {
   const result = {};
   for (const langcode of Object.keys(locales)) {
     result[langcode] = languages.getLanguageInfo(langcode);
@@ -104,16 +104,16 @@ const generateLocaleIndex = (locales) => {
 };
 
 
-exports.expressPreSession = async (hookName, {app}) => {
+export const expressPreSession = async (hookName, {app}) => {
   // regenerate locales on server restart
   const locales = getAllLocales();
   const localeIndex = generateLocaleIndex(locales);
-  exports.availableLangs = getAvailableLangs(locales);
+  let availableLangs = getAvailableLangs(locales);
 
   app.get('/locales/:locale', (req, res) => {
     // works with /locale/en and /locale/en.json requests
     const locale = req.params.locale.split('.')[0];
-    if (Object.prototype.hasOwnProperty.call(exports.availableLangs, locale)) {
+    if (Object.prototype.hasOwnProperty.call(availableLangs, locale)) {
       res.setHeader('Cache-Control', `public, max-age=${maxAge}`);
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
       res.send(`{"${locale}":${JSON.stringify(locales[locale])}}`);

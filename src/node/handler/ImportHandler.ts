@@ -32,7 +32,7 @@ import os from 'os';
 import {setPadHTML} from '../utils/ImportHtml';
 import {setPadRaw} from '../utils/ImportEtherpad';
 import log4js from 'log4js';
-import hooks from '../../static/js/pluginfw/hooks.js';
+import {aCallAll} from '../../static/js/pluginfw/hooks.js';
 
 const logger = log4js.getLogger('ImportHandler');
 
@@ -134,7 +134,7 @@ const doImport = async (req, res, padId, authorId) => {
 
   const destFile = path.join(tmpDirectory, `etherpad_import_${randNum}.${exportExtension}`);
   const context = {srcFile, destFile, fileEnding, padId, ImportError};
-  const importHandledByPlugin = (await hooks.aCallAll('import', context)).some((x) => x);
+  const importHandledByPlugin = (await aCallAll('import', context)).some((x) => x);
   const fileIsEtherpad = (fileEnding === '.etherpad');
   const fileIsHTML = (fileEnding === '.html' || fileEnding === '.htm');
   const fileIsTXT = (fileEnding === '.txt');

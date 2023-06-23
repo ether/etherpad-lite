@@ -3,14 +3,14 @@
 import {required} from '../../eejs';
 import {promises as fsp} from "fs";
 
-import hooks from "../../../static/js/pluginfw/hooks";
+import {aCallAll} from "../../../static/js/pluginfw/hooks";
 
-import plugins from "../../../static/js/pluginfw/plugins";
+import {update} from "../../../static/js/pluginfw/plugins";
 
 import {reloadSettings, settingsFilename, showSettingsInAdminPage} from "../../utils/Settings";
 import * as settings from "../../utils/Settings";
 
-exports.expressCreateServer = (hookName, {app}) => {
+export const expressCreateServer = (hookName, {app}) => {
   app.get('/admin/settings', (req, res) => {
     res.send(required('ep_etherpad-lite/templates/admin/settings.html', {
       req,
@@ -20,7 +20,7 @@ exports.expressCreateServer = (hookName, {app}) => {
   });
 };
 
-exports.socketio = (hookName, {io}) => {
+export const socketio = (hookName, {io}) => {
   io.of('/settings').on('connection', (socket) => {
     const {session: {user: {is_admin: isAdmin} = {}} = {}}:SessionSocketModel = socket.conn.request;
     if (!isAdmin) return;
@@ -50,9 +50,9 @@ exports.socketio = (hookName, {io}) => {
     socket.on('restartServer', async () => {
       console.log('Admin request to restart server through a socket on /admin/settings');
       reloadSettings();
-      await plugins.update();
-      await hooks.aCallAll('loadSettings', {});
-      await hooks.aCallAll('restartServer');
+      await update();
+      await aCallAll('loadSettings', {});
+      await aCallAll('restartServer');
     });
   });
 };

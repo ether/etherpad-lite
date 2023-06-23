@@ -3,7 +3,7 @@
 import path from 'path';
 import {promises as fsp} from "fs";
 
-import plugins from "../../../static/js/pluginfw/plugin_defs";
+import {plugins} from "../../../static/js/pluginfw/plugin_defs";
 
 import sanitizePathname from "../../utils/sanitizePathname";
 
@@ -36,7 +36,7 @@ export const expressPreSession = async (hookName, {app}) => {
   app.get('/tests/frontend/frontendTestSpecs.json', (req, res, next) => {
     (async () => {
       const modules = [];
-      await Promise.all(Object.entries(plugins.plugins).map(async ([plugin, def]) => {
+      await Promise.all(Object.entries(plugins).map(async ([plugin, def]) => {
         const mappedDef = def as Presession;
         let {package: {path: pluginPath}} = mappedDef;
         if (!pluginPath.endsWith(path.sep)) pluginPath += path.sep;

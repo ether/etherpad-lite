@@ -61,11 +61,11 @@ export const getPadId = async (readOnlyId) => await db.get(`readonly2pad:${readO
  * @param {String} id padIdOrReadonlyPadId read only id or real pad id
  */
 export const getIds = async (id: string) => {
-  const readonly = exports.isReadOnlyId(id);
+  const readonly = isReadOnlyId(id);
 
   // Might be null, if this is an unknown read-only id
-  const readOnlyPadId = readonly ? id : await exports.getReadOnlyId(id);
-  const padId = readonly ? await exports.getPadId(id) : id;
+  const readOnlyPadId = readonly ? id : await getReadOnlyId(id);
+  const padId = readonly ? await getPadId(id) : id;
 
   return {readOnlyPadId, padId, readonly};
 };

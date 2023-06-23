@@ -21,7 +21,7 @@
 
 import {getAuthorId} from "./AuthorManager";
 
-import hooks from "../../static/js/pluginfw/hooks.js";
+import {callAll} from "../../static/js/pluginfw/hooks.js";
 
 import {doesPadExist, getPad} from "./PadManager";
 
@@ -102,7 +102,7 @@ export const checkAccess = async (padID, sessionCookie, token, userSettings) => 
 
   // allow plugins to deny access
   const isFalse = (x) => x === false;
-  if (hooks.callAll('onAccessCheck', {padID, token, sessionCookie}).some(isFalse)) {
+  if (callAll('onAccessCheck', {padID, token, sessionCookie}).some(isFalse)) {
     authLogger.debug('access denied: an onAccessCheck hook function returned false');
     return DENY;
   }

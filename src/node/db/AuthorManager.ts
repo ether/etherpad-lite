@@ -21,7 +21,7 @@
 
 import {db} from './DB';
 import {CustomError} from '../utils/customError';
-import hooks from '../../static/js/pluginfw/hooks.js';
+import {aCallFirst} from '../../static/js/pluginfw/hooks.js';
 
 const {randomString, padutils: {warnDeprecated}} = require('../../static/js/pad_utils');
 
@@ -110,7 +110,7 @@ const getAuthor4Token2 = async (token: string) => {
 
 export const getAuthorId = async (token, user) => {
   const context = {dbKey: token, token, user};
-  let [authorId] = await hooks.aCallFirst('getAuthorId', context);
+  let [authorId] = await aCallFirst('getAuthorId', context);
   if (!authorId) authorId = await getAuthor4Token2(context.dbKey);
   return authorId;
 };
@@ -137,7 +137,7 @@ export const createAuthorIfNotExistsFor = async (authorMapper, name: string) => 
 
   if (name) {
     // set the name of this author
-    await exports.setAuthorName(author.authorID, name);
+    await setAuthorName(author.authorID, name);
   }
 
   return author;
@@ -155,7 +155,7 @@ export const mapAuthorWithDBKey = async (mapperkey: string, mapper) => {
 
   if (author == null) {
     // there is no author with this mapper, so create one
-    const author = await exports.createAuthor(null);
+    const author = await createAuthor(null);
 
     // create the token2author relation
     await db.set(`${mapperkey}:${mapper}`, author.authorID);
@@ -182,7 +182,7 @@ export const createAuthor = async (name) => {
 
   // create the globalAuthors db entry
   const authorObj = {
-    colorId: Math.floor(Math.random() * (exports.getColorPalette().length)),
+    colorId: Math.floor(Math.random() * (getColorPalette().length)),
     name,
     timestamp: Date.now(),
   };

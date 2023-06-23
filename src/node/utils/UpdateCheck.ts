@@ -28,7 +28,7 @@ const loadEtherpadInformations = () => new Promise<InfoModel>((resolve, reject) 
 });
 
 const getLatestVersion = () => {
-  exports.needsUpdate();
+  needsUpdate();
   if(infos === undefined){
     throw new Error("Could not retrieve latest version")
   }
@@ -36,7 +36,7 @@ const getLatestVersion = () => {
   return infos.latestVersion;
 }
 
-exports.needsUpdate = (cb?:(arg0: boolean)=>void) => {
+export const needsUpdate = (cb?:(arg0: boolean)=>void) => {
   loadEtherpadInformations().then((info) => {
     if (semver.gt(info.latestVersion, getEpVersion())) {
       if (cb) return cb(true);
