@@ -8,7 +8,7 @@ import {doesPadExist} from '../../db/PadManager';
 import {getPadId, isReadOnlyId} from '../../db/ReadOnlyManager';
 import rateLimit from 'express-rate-limit';
 import {checkAccess} from '../../db/SecurityManager';
-import webaccess from './webaccess';
+import {userCanModify} from './webaccess';
 
 exports.expressCreateServer = (hookName, args, cb) => {
   importExportRateLimiting.onLimitReached = (req, res, options) => {
@@ -72,7 +72,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
       const {session: {user} = {}}:SessionSocketModel = req;
       const {accessStatus, authorID: authorId} = await checkAccess(
           req.params.pad, req.cookies.sessionID, req.cookies.token, user);
-      if (accessStatus !== 'grant' || !webaccess.userCanModify(req.params.pad, req)) {
+      if (accessStatus !== 'grant' || !userCanModify(req.params.pad, req)) {
         return res.status(403).send('Forbidden');
       }
       await doImport2(req, res, req.params.pad, authorId);

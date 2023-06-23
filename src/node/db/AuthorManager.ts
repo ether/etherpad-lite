@@ -20,7 +20,7 @@
  */
 
 import {db} from './DB';
-import CustomError from '../utils/customError';
+import {CustomError} from '../utils/customError';
 import hooks from '../../static/js/pluginfw/hooks.js';
 
 const {randomString, padutils: {warnDeprecated}} = require('../../static/js/pad_utils');
@@ -283,7 +283,7 @@ export const addPad = async (authorID: string, padID: string) => {
  * @param {String} authorID The id of the author
  * @param {String} padID The id of the pad the author contributes to
  */
-export const removePad = async (authorID: string, padID: string) => {
+export const removePad = async (authorID: string, padID?: string) => {
   const author = await db.get(`globalAuthor:${authorID}`);
 
   if (author == null) return;

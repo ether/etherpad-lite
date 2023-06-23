@@ -58,7 +58,7 @@ import {createCollection} from '../stats';
 import {strict as assert} from "assert";
 
 import {RateLimiterMemory} from 'rate-limiter-flexible';
-import webaccess from '../hooks/express/webaccess';
+import {userCanModify} from '../hooks/express/webaccess';
 import {ErrorCaused} from "../models/ErrorCaused";
 import {Pad} from "../db/Pad";
 import {SessionInfo} from "../models/SessionInfo";
@@ -164,7 +164,7 @@ const padChannels = new Channels((ch, {socket, message}) => handleUserChanges(so
  * This Method is called by server.js to tell the message handler on which socket it should send
  * @param socket_io The Socket
  */
-exports.setSocketIO = (socket_io) => {
+export const setSocketIO = (socket_io) => {
   socketio = socket_io;
 };
 
@@ -172,7 +172,7 @@ exports.setSocketIO = (socket_io) => {
  * Handles the connection of a new user
  * @param socket the socket.io Socket object for the new connection from the client
  */
-exports.handleConnect = (socket) => {
+export const handleConnect = (socket) => {
   createCollection.meter('connects').mark();
 
   // Initialize sessioninfos for this new session
@@ -186,7 +186,7 @@ exports.handleConnect = (socket) => {
 /**
  * Kicks all sessions from a pad
  */
-exports.kickSessionsFromPad = (padID) => {
+export const kickSessionsFromPad = (padID) => {
   if (typeof socketio.sockets.clients !== 'function') return;
 
   // skip if there is nobody on this pad
@@ -200,7 +200,7 @@ exports.kickSessionsFromPad = (padID) => {
  * Handles the disconnection of a user
  * @param socket the socket.io Socket object for the client
  */
-exports.handleDisconnect = async (socket) => {
+export const handleDisconnect = async (socket) => {
   createCollection.meter('disconnects').mark();
   const session = sessioninfos[socket.id];
   delete sessioninfos[socket.id];
@@ -238,7 +238,7 @@ exports.handleDisconnect = async (socket) => {
  * @param socket the socket.io Socket object for the client
  * @param message the message from the client
  */
-exports.handleMessage = async (socket, message) => {
+export const handleMessage = async (socket, message) => {
   const env = process.env.NODE_ENV || 'development';
 
   if (env === 'production') {
@@ -272,7 +272,7 @@ exports.handleMessage = async (socket, message) => {
     thisSession.padId = padIds.padId;
     thisSession.readOnlyPadId = padIds.readOnlyPadId;
     thisSession.readonly =
-        padIds.readonly || !webaccess.userCanModify(thisSession.auth.padID, socket.client.request);
+        padIds.readonly || !userCanModify(thisSession.auth.padID, socket.client.request);
   }
   // Outside of the checks done by this function, message.padId must not be accessed because it is
   // too easy to introduce a security vulnerability that allows malicious users to read or modify
@@ -416,7 +416,7 @@ const handleSaveRevisionMessage = async (socket, message) => {
  * @param msg {Object} the message we're sending
  * @param sessionID {string} the socketIO session to which we're sending this message
  */
-exports.handleCustomObjectMessage = (msg, sessionID) => {
+export const handleCustomObjectMessage = (msg, sessionID) => {
   if (msg.data.type === 'CUSTOM') {
     if (sessionID) {
       // a sessionID is targeted: directly to this sessionID
@@ -684,7 +684,7 @@ const handleUserChanges = async (socket, message) => {
     socket.json.send({type: 'COLLABROOM', data: {type: 'ACCEPT_COMMIT', newRev}});
     thisSession.rev = newRev;
     if (newRev !== r) thisSession.time = await pad.getRevisionDate(newRev);
-    await exports.updatePadClients(pad);
+    await updatePadClients(pad);
   } catch (err) {
     socket.json.send({disconnect: 'badChangeset'});
     createCollection.meter('failedChangesets').mark();

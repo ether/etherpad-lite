@@ -19,12 +19,12 @@
  * limitations under the License.
  */
 
-import absolutePaths from '../utils/AbsolutePaths';
+import {makeAbsolute} from '../utils/AbsolutePaths';
 import fs from 'fs';
 import * as api from '../db/API';
 import log4js from 'log4js';
 import {sanitizePadId} from '../db/PadManager';
-import randomString from '../utils/randomstring';
+import {randomString} from '../utils/randomstring';
 const argv = require('../utils/Cli').argv;
 const createHTTPError = require('http-errors');
 
@@ -32,7 +32,7 @@ const apiHandlerLogger = log4js.getLogger('APIHandler');
 
 // ensure we have an apikey
 let apikey = null;
-const apikeyFilename = absolutePaths.makeAbsolute(argv.apikey || './APIKEY.txt');
+const apikeyFilename = makeAbsolute(argv.apikey || './APIKEY.txt');
 
 try {
   apikey = fs.readFileSync(apikeyFilename, 'utf8');

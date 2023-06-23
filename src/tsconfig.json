@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "typeRoots": ["node_modules/@types"],
+    "types": ["node", "jquery"],
     "module": "commonjs",
     "esModuleInterop": true,
     "target": "es6",

@@ -31,7 +31,7 @@ import {findAuthorID} from "./SessionManager";
 
 import {editOnly, loadTest, requireAuthentication, requireSession} from "../utils/Settings";
 
-import webaccess from "../hooks/express/webaccess";
+import {normalizeAuthzLevel} from "../hooks/express/webaccess";
 
 import log4js from "log4js";
 
@@ -92,7 +92,7 @@ export const checkAccess = async (padID, sessionCookie, token, userSettings) => 
     // Note: userSettings.padAuthorizations should still be populated even if
     // settings.requireAuthorization is false.
     const padAuthzs = userSettings.padAuthorizations || {};
-    const level = webaccess.normalizeAuthzLevel(padAuthzs[padID]);
+    const level = normalizeAuthzLevel(padAuthzs[padID]);
     if (!level) {
       authLogger.debug('access denied: unauthorized');
       return DENY;

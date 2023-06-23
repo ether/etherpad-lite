@@ -29,8 +29,8 @@ import {promises as fs} from "fs";
 import {abiword, allowUnknownFileEnds, importMaxFileSize, soffice} from '../utils/Settings';
 import {Formidable} from 'formidable';
 import os from 'os';
-import importHtml from '../utils/ImportHtml';
-import importEtherpad from '../utils/ImportEtherpad';
+import {setPadHTML} from '../utils/ImportHtml';
+import {setPadRaw} from '../utils/ImportEtherpad';
 import log4js from 'log4js';
 import hooks from '../../static/js/pluginfw/hooks.js';
 
@@ -150,7 +150,7 @@ const doImport = async (req, res, padId, authorId) => {
     }
     const text = await fs.readFile(srcFile, 'utf8');
     directDatabaseAccess = true;
-    await importEtherpad.setPadRaw(padId, text, authorId);
+    await setPadRaw(padId, text, authorId);
   }
 
   // convert file to html if necessary
@@ -207,7 +207,7 @@ const doImport = async (req, res, padId, authorId) => {
   if (!directDatabaseAccess) {
     if (importHandledByPlugin || useConverter || fileIsHTML) {
       try {
-        await importHtml.setPadHTML(pad, text, authorId);
+        await setPadHTML(pad, text, authorId);
       } catch (err) {
         logger.warn(`Error importing, possibly caused by malformed HTML: ${err.stack || err}`);
       }

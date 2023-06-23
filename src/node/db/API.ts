@@ -21,7 +21,7 @@
 
 import Changeset from '../../static/js/Changeset';
 import ChatMessage from '../../static/js/ChatMessage';
-import CustomError from '../utils/customError';
+import {CustomError} from '../utils/customError';
 import {doesPadExist, getPad, isValidPadId, listAllPads} from './PadManager';
 import {
   handleCustomMessage,
@@ -40,11 +40,11 @@ import {
 } from './GroupManager';
 import {createAuthor, createAuthorIfNotExistsFor, getAuthorName, listPadsOfAuthor} from './AuthorManager';
 import {} from './SessionManager';
-import exportHtml from '../utils/ExportHtml';
-import exportTxt from '../utils/ExportTxt';
-import importHtml from '../utils/ImportHtml';
+import {getTXTFromAtext} from '../utils/ExportTxt';
+import {setPadHTML} from '../utils/ImportHtml';
 const cleanText = require('./Pad').cleanText;
-import PadDiff from '../utils/padDiff';
+import {PadDiff} from '../utils/padDiff';
+import {getPadHTMLDocument} from "../utils/ExportHtml";
 
 /* ********************
  * GROUP FUNCTIONS ****
@@ -192,7 +192,7 @@ export const getText = async (padID, rev) => {
   }
 
   // the client wants the latest text, lets return it to him
-  const text = exportTxt.getTXTFromAtext(pad, pad.atext);
+  const text = getTXTFromAtext(pad, pad.atext);
   return {text};
 };
 
@@ -263,7 +263,7 @@ export const getHTML = async (padID, rev) => {
   }
 
   // get the html of this revision
-  let html = await exportHtml.getPadHTML(pad, rev);
+  let html = await getPadHTMLDocument(pad, rev);
 
   // wrap the HTML
   html = `<!DOCTYPE HTML><html><body>${html}</body></html>`;
@@ -289,7 +289,7 @@ export const setHTML = async (padID, html, authorId = '') => {
 
   // add a new changeset with the new html to the pad
   try {
-    await importHtml.setPadHTML(pad, cleanText(html), authorId);
+    await setPadHTML(pad, cleanText(html), authorId);
   } catch (e) {
     throw new CustomError('HTML is malformed', 'apierror');
   }

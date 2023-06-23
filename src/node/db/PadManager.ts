@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-import CustomError from '../utils/customError';
+import {CustomError} from '../utils/customError';
 import {Pad} from './Pad';
 import {db} from './DB';
 

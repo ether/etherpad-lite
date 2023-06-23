@@ -27,6 +27,8 @@
  * limitations under the License.
  */
 
+import exp from "constants";
+
 const absolutePaths = require('./AbsolutePaths');
 const deepEqual = require('fast-deep-equal/es6');
 import fs from 'fs';
@@ -35,6 +37,7 @@ import path from 'path';
 const argv = require('./Cli').argv;
 import jsonminify from 'jsonminify';
 import log4js from 'log4js';
+import {LogLevel} from "../models/LogLevel";
 const randomString = require('./randomstring');
 const suppressDisableMsg = ' -- To suppress these warning messages change ' +
     'suppressErrorsInPadText to true in your settings.json\n';
@@ -70,7 +73,7 @@ initLogging(defaultLogLevel, defaultLogConfig());
 /* Root path of the installation */
 export const root = absolutePaths.findEtherpadRoot();
 logger.info('All relative paths will be interpreted relative to the identified ' +
-    `Etherpad base dir: ${exports.root}`);
+    `Etherpad base dir: ${root}`);
 export const settingsFilename = absolutePaths.makeAbsolute(argv.settings || 'settings.json');
 export const credentialsFilename = absolutePaths.makeAbsolute(argv.credentials || 'credentials.json');
 
@@ -93,14 +96,14 @@ export const favicon = null;
  * Initialized to null, so we can spot an old configuration file and invite the
  * user to update it before falling back to the default.
  */
-export const skinName = null;
+export let skinName = null;
 
 export const skinVariants = 'super-light-toolbar super-light-editor light-background';
 
 /**
  * The IP ep-lite should listen to
  */
-export const ip = '0.0.0.0';
+export const ip:String = '0.0.0.0';
 
 /**
  * The Port ep-lite should listen to
@@ -117,6 +120,12 @@ export const suppressErrorsInPadText = false;
  * default case: ep-lite does *not* use SSL. A signed server key is not required in this case.
  */
 export const ssl = false;
+
+export const sslKeys = {
+  cert: undefined,
+  key: undefined,
+  ca: undefined,
+}
 
 /**
  * socket.io transport methods
@@ -142,12 +151,12 @@ export const dbType = 'dirty';
 /**
  * This setting is passed with dbType to ueberDB to set up the database
  */
-export const dbSettings = {filename: path.join(exports.root, 'var/dirty.db')};
+export const dbSettings = {filename: path.join(root, 'var/dirty.db')};
 
 /**
  * The default Text of a new pad
  */
-export const defaultPadText = [
+export let defaultPadText = [
   'Welcome to Etherpad!',
   '',
   'This pad text is synchronized as you type, so that everyone viewing this page sees the same ' +
@@ -244,12 +253,12 @@ export const minify = true;
 /**
  * The path of the abiword executable
  */
-export const abiword = null;
+export let abiword = null;
 
 /**
  * The path of the libreoffice executable
  */
-export const soffice = null;
+export let soffice = null;
 
 /**
  * The path of the tidy executable
@@ -264,7 +273,7 @@ export const allowUnknownFileEnds = true;
 /**
  * The log level of log4js
  */
-export const loglevel = defaultLogLevel;
+export const loglevel:LogLevel = defaultLogLevel;
 
 /**
  * Disable IP logging
@@ -299,7 +308,7 @@ export const logconfig = defaultLogConfig();
 /*
  * Session Key, do not sure this.
  */
-export const sessionKey = false;
+export let sessionKey: string|boolean = false;
 
 /*
  * Trust Proxy, whether or not trust the x-forwarded-for header.
@@ -333,7 +342,7 @@ export const cookie = {
  */
 export const requireAuthentication = false;
 export const requireAuthorization = false;
-export const users = {};
+export let users = {};
 
 /*
  * Show settings in admin page, by default it is true
@@ -383,6 +392,10 @@ export const exposeVersion = false;
  * Override any strings found in locale directories
  */
 export const customLocaleStrings = {};
+
+export const setUsers = (newUsers:any) => {
+    users = newUsers;
+}
 
 /*
  * From Etherpad 1.8.3 onwards, import and export of pads is always rate
@@ -434,7 +447,7 @@ export const enableAdminUITests = false;
 
 // checks if abiword is avaiable
 export const abiwordAvailable = () => {
-  if (exports.abiword != null) {
+  if (abiword != null) {
     return os.type().indexOf('Windows') !== -1 ? 'withoutPDF' : 'yes';
   } else {
     return 'no';
@@ -442,7 +455,7 @@ export const abiwordAvailable = () => {
 };
 
 export const sofficeAvailable = () => {
-  if (exports.soffice != null) {
+  if (soffice != null) {
     return os.type().indexOf('Windows') !== -1 ? 'withoutPDF' : 'yes';
   } else {
     return 'no';
@@ -450,7 +463,7 @@ export const sofficeAvailable = () => {
 };
 
 export const exportAvailable = () => {
-  const abiword = exports.abiwordAvailable();
+  const abiword = abiwordAvailable();
   const soffice = sofficeAvailable();
 
   if (abiword === 'no' && soffice === 'no') {
@@ -467,7 +480,7 @@ export const exportAvailable = () => {
 export const getGitCommit = () => {
   let version = '';
   try {
-    let rootPath = exports.root;
+    let rootPath = root;
     if (fs.lstatSync(`${rootPath}/.git`).isFile()) {
       rootPath = fs.readFileSync(`${rootPath}/.git`, 'utf8');
       rootPath = rootPath.split(' ').pop().trim();
@@ -735,88 +748,90 @@ export const reloadSettings = () => {
   storeSettings(settings);
   storeSettings(credentials);
 
-  initLogging(exports.loglevel, exports.logconfig);
+  initLogging(loglevel, logconfig);
 
-  if (!exports.skinName) {
+  if (!skinName) {
     logger.warn('No "skinName" parameter found. Please check out settings.json.template and ' +
         'update your settings.json. Falling back to the default "colibris".');
-    exports.skinName = 'colibris';
+    skinName = 'colibris';
   }
 
   // checks if skinName has an acceptable value, otherwise falls back to "colibris"
-  if (exports.skinName) {
-    const skinBasePath = path.join(exports.root, 'src', 'static', 'skins');
-    const countPieces = exports.skinName.split(path.sep).length;
+  if (skinName) {
+    const skinBasePath = path.join(root, 'src', 'static', 'skins');
+    const countPieces = skinName.split(path.sep).length;
 
     if (countPieces !== 1) {
       logger.error(`skinName must be the name of a directory under "${skinBasePath}". This is ` +
-          `not valid: "${exports.skinName}". Falling back to the default "colibris".`);
+          `not valid: "${skinName}". Falling back to the default "colibris".`);
 
-      exports.skinName = 'colibris';
+      skinName = 'colibris';
     }
 
     // informative variable, just for the log messages
-    let skinPath = path.join(skinBasePath, exports.skinName);
+    let skinPath = path.join(skinBasePath, skinName);
 
     // what if someone sets skinName == ".." or "."? We catch him!
     if (absolutePaths.isSubdir(skinBasePath, skinPath) === false) {
       logger.error(`Skin path ${skinPath} must be a subdirectory of ${skinBasePath}. ` +
           'Falling back to the default "colibris".');
 
-      exports.skinName = 'colibris';
-      skinPath = path.join(skinBasePath, exports.skinName);
+      skinName = 'colibris';
+      skinPath = path.join(skinBasePath, skinName);
     }
 
     if (fs.existsSync(skinPath) === false) {
       logger.error(`Skin path ${skinPath} does not exist. Falling back to the default "colibris".`);
-      exports.skinName = 'colibris';
-      skinPath = path.join(skinBasePath, exports.skinName);
+      skinName = 'colibris';
+      skinPath = path.join(skinBasePath, skinName);
     }
 
-    logger.info(`Using skin "${exports.skinName}" in dir: ${skinPath}`);
+    logger.info(`Using skin "${skinName}" in dir: ${skinPath}`);
   }
 
-  if (exports.abiword) {
+  if (abiword) {
     // Check abiword actually exists
-    if (exports.abiword != null) {
-      fs.exists(exports.abiword, (exists: boolean) => {
+    if (abiword != null) {
+      fs.exists(abiword, (exists: boolean) => {
         if (!exists) {
           const abiwordError = 'Abiword does not exist at this path, check your settings file.';
-          if (!exports.suppressErrorsInPadText) {
-            exports.defaultPadText += `\nError: ${abiwordError}${suppressDisableMsg}`;
+          if (!suppressErrorsInPadText) {
+            defaultPadText += `\nError: ${abiwordError}${suppressDisableMsg}`;
           }
-          logger.error(`${abiwordError} File location: ${exports.abiword}`);
-          exports.abiword = null;
+          logger.error(`${abiwordError} File location: ${abiword}`);
+          abiword = null;
         }
       });
     }
   }
 
-  if (exports.soffice) {
-    fs.exists(exports.soffice, (exists: boolean) => {
+  if (soffice) {
+    fs.exists(soffice, (exists: boolean) => {
       if (!exists) {
         const sofficeError =
             'soffice (libreoffice) does not exist at this path, check your settings file.';
 
-        if (!exports.suppressErrorsInPadText) {
-          exports.defaultPadText += `\nError: ${sofficeError}${suppressDisableMsg}`;
+        if (!suppressErrorsInPadText) {
+          defaultPadText += `\nError: ${sofficeError}${suppressDisableMsg}`;
         }
-        logger.error(`${sofficeError} File location: ${exports.soffice}`);
-        exports.soffice = null;
+        logger.error(`${sofficeError} File location: ${soffice}`);
+        soffice = null;
       }
     });
   }
 
-  if (!exports.sessionKey) {
+  if (!sessionKey) {
     const sessionkeyFilename = absolutePaths.makeAbsolute(argv.sessionkey || './SESSIONKEY.txt');
     try {
-      exports.sessionKey = fs.readFileSync(sessionkeyFilename, 'utf8');
+      sessionKey = fs.readFileSync(sessionkeyFilename, 'utf8');
       logger.info(`Session key loaded from: ${sessionkeyFilename}`);
     } catch (e) {
       logger.info(
           `Session key file "${sessionkeyFilename}" not found. Creating with random contents.`);
-      exports.sessionKey = randomString(32);
-      fs.writeFileSync(sessionkeyFilename, exports.sessionKey, 'utf8');
+      sessionKey = randomString(32);
+      // FIXME Check out why this can be string boolean or Array
+      // @ts-ignore
+      fs.writeFileSync(sessionkeyFilename, sessionKey, 'utf8');
     }
   } else {
     logger.warn('Declaring the sessionKey in the settings.json is deprecated. ' +
@@ -825,17 +840,17 @@ export const reloadSettings = () => {
         'Interface then you can ignore this message.');
   }
 
-  if (exports.dbType === 'dirty') {
+  if (dbType === 'dirty') {
     const dirtyWarning = 'DirtyDB is used. This is not recommended for production.';
-    if (!exports.suppressErrorsInPadText) {
-      exports.defaultPadText += `\nWarning: ${dirtyWarning}${suppressDisableMsg}`;
+    if (!suppressErrorsInPadText) {
+      defaultPadText += `\nWarning: ${dirtyWarning}${suppressDisableMsg}`;
     }
 
-    exports.dbSettings.filename = absolutePaths.makeAbsolute(exports.dbSettings.filename);
-    logger.warn(`${dirtyWarning} File location: ${exports.dbSettings.filename}`);
+    dbSettings.filename = absolutePaths.makeAbsolute(dbSettings.filename);
+    logger.warn(`${dirtyWarning} File location: ${dbSettings.filename}`);
   }
 
-  if (exports.ip === '') {
+  if (ip === '') {
     // using Unix socket for connectivity
     logger.warn('The settings file contains an empty string ("") for the "ip" parameter. The ' +
         '"port" parameter will be interpreted as the path to a Unix socket to bind at.');
@@ -852,7 +867,7 @@ export const reloadSettings = () => {
    * ACHTUNG: this may prevent caching HTTP proxies to work
    * TODO: remove the "?v=randomstring" parameter, and replace with hashed filenames instead
    */
-  logger.info(`Random string used for versioning assets: ${exports.randomVersionString}`);
+  logger.info(`Random string used for versioning assets: ${randomVersionString}`);
 };
 
 exports.exportedForTestingOnly = {
@@ -860,6 +875,6 @@ exports.exportedForTestingOnly = {
 };
 
 // initially load settings
-exports.reloadSettings();
+reloadSettings();
 
 

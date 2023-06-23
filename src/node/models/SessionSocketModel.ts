@@ -3,6 +3,8 @@ type SessionSocketModel = {
         user?: {
             username?: string,
             is_admin?: boolean
+            readOnly?: boolean,
+            padAuthorizations?: any
         }
     }
 }

@@ -7,22 +7,21 @@ import AttributeMap from '../../static/js/AttributeMap';
 import Changeset from '../../static/js/Changeset';
 import ChatMessage from '../../static/js/ChatMessage';
 import {AttributePool} from '../../static/js/AttributePool';
-import Stream from '../utils/Stream';
+import {Stream} from '../utils/Stream';
 import assert, {strict} from 'assert'
 import {db} from './DB';
 import {defaultPadText} from '../utils/Settings';
 import {addPad, getAuthorColorId, getAuthorName, getColorPalette, removePad} from './AuthorManager';
 import {Revision} from "../models/Revision";
-const padManager = require('./PadManager');
-const padMessageHandler = require('../handler/PadMessageHandler');
-const groupManager = require('./GroupManager');
-const CustomError = require('../utils/customError');
-const readOnlyManager = require('./ReadOnlyManager');
-const randomString = require('../utils/randomstring');
-const hooks = require('../../static/js/pluginfw/hooks');
-const {padutils: {warnDeprecated}} = require('../../static/js/pad_utils');
-const promises = require('../utils/promises');
-
+import {doesPadExist, getPad} from './PadManager';
+import {kickSessionsFromPad} from '../handler/PadMessageHandler';
+import {doesGroupExist} from './GroupManager';
+import {CustomError} from '../utils/customError';
+import {getReadOnlyId} from './ReadOnlyManager';
+import {randomString} from '../utils/randomstring';
+import hooks from '../../static/js/pluginfw/hooks';
+import {timesLimit} from '../utils/promises';
+import {padutils} from '../../static/js/pad_utils';
 /**
  * Copied from the Etherpad source code. It converts Windows line breaks to Unix
  * line breaks and convert Tabs to spaces
@@ -114,11 +113,11 @@ export class Pad {
         pad: this,
         authorId,
         get author() {
-          warnDeprecated(`${hook} hook author context is deprecated; use authorId instead`);
+          padutils.warnDeprecated(`${hook} hook author context is deprecated; use authorId instead`);
           return this.authorId;
         },
         set author(authorId) {
-          warnDeprecated(`${hook} hook author context is deprecated; use authorId instead`);
+          padutils.warnDeprecated(`${hook} hook author context is deprecated; use authorId instead`);
           this.authorId = authorId;
         },
         ...this.head === 0 ? {} : {
@@ -403,16 +402,16 @@ export class Pad {
     for (const p of new Stream(promises).batch(100).buffer(99)) await p;
 
     // Initialize the new pad (will update the listAllPads cache)
-    const dstPad = await padManager.getPad(destinationID, null);
+    const dstPad = await getPad(destinationID, null);
 
     // let the plugins know the pad was copied
     await hooks.aCallAll('padCopy', {
       get originalPad() {
-        warnDeprecated('padCopy originalPad context property is deprecated; use srcPad instead');
+        padutils.warnDeprecated('padCopy originalPad context property is deprecated; use srcPad instead');
         return this.srcPad;
       },
       get destinationID() {
-        warnDeprecated(
+        padutils.warnDeprecated(
             'padCopy destinationID context property is deprecated; use dstPad.id instead');
         return this.dstPad.id;
       },
@@ -428,7 +427,7 @@ export class Pad {
 
     if (destinationID.indexOf('$') >= 0) {
       destGroupID = destinationID.split('$')[0];
-      const groupExists = await groupManager.doesGroupExist(destGroupID);
+      const groupExists = await doesGroupExist(destGroupID);
 
       // group does not exist
       if (!groupExists) {
@@ -440,7 +439,7 @@ export class Pad {
 
   async removePadIfForceIsTrueAndAlreadyExist(destinationID, force) {
     // if the pad exists, we should abort, unless forced.
-    const exists = await padManager.doesPadExist(destinationID);
+    const exists = await doesPadExist(destinationID);
 
     // allow force to be a string
     if (typeof force === 'string') {
@@ -456,7 +455,7 @@ export class Pad {
       }
 
       // exists and forcing
-      const pad = await padManager.getPad(destinationID);
+      const pad = await getPad(destinationID);
       await pad.remove();
     }
   }
@@ -485,7 +484,7 @@ export class Pad {
     }
 
     // initialize the pad with a new line to avoid getting the defaultText
-    const dstPad = await padManager.getPad(destinationID, '\n', authorId);
+    const dstPad = await getPad(destinationID, '\n', authorId);
     dstPad.pool = this.pool.clone();
 
     const oldAText = this.atext;
@@ -509,11 +508,11 @@ export class Pad {
 
     await hooks.aCallAll('padCopy', {
       get originalPad() {
-        warnDeprecated('padCopy originalPad context property is deprecated; use srcPad instead');
+        padutils.warnDeprecated('padCopy originalPad context property is deprecated; use srcPad instead');
         return this.srcPad;
       },
       get destinationID() {
-        warnDeprecated(
+        padutils.warnDeprecated(
             'padCopy destinationID context property is deprecated; use dstPad.id instead');
         return this.dstPad.id;
       },
@@ -529,7 +528,7 @@ export class Pad {
     const p = [];
 
     // kick everyone from this pad
-    padMessageHandler.kickSessionsFromPad(padID);
+    kickSessionsFromPad(padID);
 
     // delete all relations - the original code used async.parallel but
     // none of the operations except getting the group depended on callbacks
@@ -550,18 +549,18 @@ export class Pad {
     }
 
     // remove the readonly entries
-    p.push(readOnlyManager.getReadOnlyId(padID).then(async (readonlyID) => {
+    p.push(getReadOnlyId(padID).then(async (readonlyID) => {
       await db.remove(`readonly2pad:${readonlyID}`);
     }));
     p.push(db.remove(`pad2readonly:${padID}`));
 
     // delete all chat messages
-    p.push(promises.timesLimit(this.chatHead + 1, 500, async (i) => {
+    p.push(timesLimit(this.chatHead + 1, 500, async (i) => {
       await this.db.remove(`pad:${this.id}:chat:${i}`, null);
     }));
 
     // delete all revisions
-    p.push(promises.timesLimit(this.head + 1, 500, async (i) => {
+    p.push(timesLimit(this.head + 1, 500, async (i) => {
       await this.db.remove(`pad:${this.id}:revs:${i}`, null);
     }));
 
@@ -571,10 +570,10 @@ export class Pad {
     });
 
     // delete the pad entry and delete pad from padManager
-    p.push(padManager.removePad(padID));
+    p.push(removePad(padID));
     p.push(hooks.aCallAll('padRemove', {
       get padID() {
-        warnDeprecated('padRemove padID context property is deprecated; use pad.id instead');
+        padutils.warnDeprecated('padRemove padID context property is deprecated; use pad.id instead');
         return this.pad.id;
       },
       pad: this,

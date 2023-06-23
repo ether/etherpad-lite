@@ -39,18 +39,18 @@ let io;
 /**
  * adds a component
  */
-exports.addComponent = (moduleName, module) => {
-  if (module == null) return exports.deleteComponent(moduleName);
+export const addComponent = (moduleName, module) => {
+  if (module == null) return deleteComponent(moduleName);
   components[moduleName] = module;
   module.setSocketIO(io);
 };
 
-exports.deleteComponent = (moduleName) => { delete components[moduleName]; };
+export const deleteComponent = (moduleName) => { delete components[moduleName]; };
 
 /**
  * sets the socket.io and adds event functions for routing
  */
-exports.setSocketIO = (_io) => {
+export const setSocketIO = (_io) => {
   io = _io;
 
   io.sockets.on('connection', (socket) => {

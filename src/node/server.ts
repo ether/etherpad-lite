@@ -203,11 +203,13 @@ export const stop = async () => {
   } catch (err) {
     logger.error('Error occurred while stopping Etherpad');
     state = State.STATE_TRANSITION_FAILED;
+    // @ts-ignore
     stopDoneGate.resolve();
     return await exit(err);
   }
   logger.info('Etherpad stopped');
   state = State.STOPPED;
+  // @ts-ignore
   stopDoneGate.resolve();
 };
 

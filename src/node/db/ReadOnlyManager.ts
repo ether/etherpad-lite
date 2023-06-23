@@ -21,7 +21,7 @@
 
 
 import {db} from './DB';
-import randomString from '../utils/randomstring';
+import {randomString} from '../utils/randomstring';
 
 
 /**

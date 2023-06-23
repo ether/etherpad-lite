@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-import CustomError from '../utils/customError';
+import {CustomError} from '../utils/customError';
 const randomString = require('../../static/js/pad_utils').randomString;
 import {db} from './DB';
 import {doesPadExist, getPad} from './PadManager';
