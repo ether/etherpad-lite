@@ -1,5 +1,4 @@
 'use strict';
-
 /**
  * Copyright 2012 Peter 'Pita' Martischka
  *
@@ -15,24 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 let pad;
-
-exports.saveNow = () => {
-  pad.collabClient.sendMessage({type: 'SAVE_REVISION'});
-  $.gritter.add({
-    // (string | mandatory) the heading of the notification
-    title: html10n.get('pad.savedrevs.marked'),
-    // (string | mandatory) the text inside the notification
-    text: html10n.get('pad.savedrevs.timeslider') ||
-        'You can view saved revisions in the timeslider',
-    // (bool | optional) if you want it to fade out on its own or just sit there
-    sticky: false,
-    time: 3000,
-    class_name: 'saved-revision',
-  });
+export const saveNow = () => {
+    pad.collabClient.sendMessage({ type: 'SAVE_REVISION' });
+    $.gritter.add({
+        // (string | mandatory) the heading of the notification
+        title: html10n.get('pad.savedrevs.marked'),
+        // (string | mandatory) the text inside the notification
+        text: html10n.get('pad.savedrevs.timeslider') ||
+            'You can view saved revisions in the timeslider',
+        // (bool | optional) if you want it to fade out on its own or just sit there
+        sticky: false,
+        time: 3000,
+        class_name: 'saved-revision',
+    });
 };
-
-exports.init = (_pad) => {
-  pad = _pad;
+export const init = (_pad) => {
+    pad = _pad;
 };

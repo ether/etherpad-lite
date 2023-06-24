@@ -4,7 +4,15 @@
  */
 
 import AttributeMap from '../../static/js/AttributeMap';
-import {applyToAText, copyAText, makeAText} from '../../static/js/Changeset';
+import {
+  applyToAText, checkRep,
+  copyAText, deserializeOps,
+  makeAText,
+  makeSplice,
+  opsFromAText,
+  pack,
+  smartOpAssembler, unpack
+} from '../../static/js/Changeset';
 import ChatMessage from '../../static/js/ChatMessage';
 import {AttributePool} from '../../static/js/AttributePool';
 import {Stream} from '../utils/Stream';
@@ -266,7 +274,7 @@ export class Pad {
         (!ins && start > 0 && orig[start - 1] === '\n');
     if (!willEndWithNewline) ins += '\n';
     if (ndel === 0 && ins.length === 0) return;
-    const changeset = Changeset.makeSplice(orig, start, ndel, ins);
+    const changeset = makeSplice(orig, start, ndel, ins);
     await this.appendRevision(changeset, authorId);
   }
 
@@ -366,7 +374,7 @@ export class Pad {
         if (context.type !== 'text') throw new Error(`unsupported content type: ${context.type}`);
         text = cleanText(context.content);
       }
-      const firstChangeset = Changeset.makeSplice('\n', 0, 0, text);
+      const firstChangeset = makeSplice('\n', 0, 0, text);
       await this.appendRevision(firstChangeset, authorId);
     }
     await aCallAll('padLoad', {pad: this});
@@ -490,8 +498,8 @@ export class Pad {
     const oldAText = this.atext;
 
     // based on Changeset.makeSplice
-    const assem = Changeset.smartOpAssembler();
-    for (const op of Changeset.opsFromAText(oldAText)) assem.append(op);
+    const assem = smartOpAssembler();
+    for (const op of opsFromAText(oldAText)) assem.append(op);
     assem.endDocument();
 
     // although we have instantiated the dstPad with '\n', an additional '\n' is
@@ -503,7 +511,7 @@ export class Pad {
 
     // create a changeset that removes the previous text and add the newText with
     // all atributes present on the source pad
-    const changeset = Changeset.pack(oldLength, newLength, assem.toString(), newText);
+    const changeset = pack(oldLength, newLength, assem.toString(), newText);
     dstPad.appendRevision(changeset, authorId);
 
     await aCallAll('padCopy', {
@@ -677,7 +685,7 @@ export class Pad {
           }
         })
         .batch(100).buffer(99);
-    let atext = Changeset.makeAText('\n');
+    let atext = makeAText('\n');
     for await (const [r, changeset, authorId, timestamp, isKeyRev, keyAText] of revs) {
       try {
         assert(authorId != null);
@@ -688,10 +696,10 @@ export class Pad {
         assert(timestamp > 0);
         assert(changeset != null);
         assert.equal(typeof changeset, 'string');
-        Changeset.checkRep(changeset);
-        const unpacked = Changeset.unpack(changeset);
+        checkRep(changeset);
+        const unpacked = unpack(changeset);
         let text = atext.text;
-        for (const op of Changeset.deserializeOps(unpacked.ops)) {
+        for (const op of deserializeOps(unpacked.ops)) {
           if (['=', '-'].includes(op.opcode)) {
             assert(text.length >= op.chars);
             const consumed = text.slice(0, op.chars);
@@ -702,7 +710,7 @@ export class Pad {
           }
           assert.equal(op.attribs, AttributeMap.fromString(op.attribs, pool).toString());
         }
-        atext = Changeset.applyToAText(changeset, atext, pool);
+        atext = applyToAText(changeset, atext, pool);
         if (isKeyRev) assert.deepEqual(keyAText, atext);
       } catch (err) {
         err.message = `(pad ${this.id} revision ${r}) ${err.message}`;

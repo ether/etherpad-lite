@@ -1,11 +1,11 @@
+import { padeditbar as padeditbar$0 } from "./pad_editbar.js";
+import * as automaticReconnect from "./pad_automatic_reconnect.js";
 'use strict';
-
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
-
 /**
  * Copyright 2009 Google Inc.
  *
@@ -21,35 +21,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-const padeditbar = require('./pad_editbar').padeditbar;
-const automaticReconnect = require('./pad_automatic_reconnect');
-
+const padeditbar = { padeditbar: padeditbar$0 }.padeditbar;
 const padmodals = (() => {
-  let pad = undefined;
-  const self = {
-    init: (_pad) => {
-      pad = _pad;
-    },
-    showModal: (messageId) => {
-      padeditbar.toggleDropDown('none');
-      $('#connectivity .visible').removeClass('visible');
-      $(`#connectivity .${messageId}`).addClass('visible');
-
-      const $modal = $(`#connectivity .${messageId}`);
-      automaticReconnect.showCountDownTimerToReconnectOnModal($modal, pad);
-
-      padeditbar.toggleDropDown('connectivity');
-    },
-    showOverlay: () => {
-      // Prevent the user to interact with the toolbar. Useful when user is disconnected for example
-      $('#toolbar-overlay').show();
-    },
-    hideOverlay: () => {
-      $('#toolbar-overlay').hide();
-    },
-  };
-  return self;
+    let pad = undefined;
+    const self = {
+        init: (_pad) => {
+            pad = _pad;
+        },
+        showModal: (messageId) => {
+            padeditbar.toggleDropDown('none');
+            $('#connectivity .visible').removeClass('visible');
+            $(`#connectivity .${messageId}`).addClass('visible');
+            const $modal = $(`#connectivity .${messageId}`);
+            automaticReconnect.showCountDownTimerToReconnectOnModal($modal, pad);
+            padeditbar.toggleDropDown('connectivity');
+        },
+        showOverlay: () => {
+            // Prevent the user to interact with the toolbar. Useful when user is disconnected for example
+            $('#toolbar-overlay').show();
+        },
+        hideOverlay: () => {
+            $('#toolbar-overlay').hide();
+        },
+    };
+    return self;
 })();
-
-exports.padmodals = padmodals;
+export { padmodals };

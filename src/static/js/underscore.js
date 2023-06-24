@@ -1,3 +1,2 @@
 'use strict';
-
-module.exports = require('underscore');
+export { default } from "underscore";
