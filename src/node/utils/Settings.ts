@@ -28,7 +28,7 @@
  */
 
 import exp from "constants";
-
+import packageJSON from '../../../package.json'
 import {findEtherpadRoot, makeAbsolute, isSubdir} from './AbsolutePaths';
 import deepEqual from 'fast-deep-equal/es6';
 import fs from 'fs';
@@ -507,7 +507,7 @@ export const getGitCommit = () => {
 };
 
 // Return etherpad version from package.json
-export const getEpVersion = () => require('../../package.json').version;
+export const getEpVersion = () => packageJSON.version;
 
 /**
  * Receives a settingsObj and, if the property name is a valid configuration

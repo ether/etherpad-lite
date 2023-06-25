@@ -15,14 +15,22 @@
  * limitations under the License.
  */
 
-import Changeset from '../../static/js/Changeset';
-import attributes from "../../static/js/attributes";
+import {
+  deserializeOps,
+  splitAttributionLines,
+  stringAssembler,
+  stringIterator,
+  subattribution
+} from '../../static/js/Changeset';
+import {decodeAttribString} from "../../static/js/attributes";
 
 import {getPad} from "../db/PadManager";
 
 import _ from "underscore";
 
-import Security from '../../static/js/security';
+// FIXME this is a hack to get around the fact that we don't have a good way
+// @ts-ignore
+import {escapeHTML,escapeHTMLAttribute} from '../../static/js/security';
 import {aCallAll} from '../../static/js/pluginfw/hooks';
 import {required} from '../eejs';
 import {_analyzeLine, _encodeWhitespace} from "./ExportHelper";
@@ -44,7 +52,7 @@ const getPadHTML = async (pad, revNum) => {
 export const getHTMLFromAtext = async (pad, atext, authorColors?) => {
   const apool = pad.apool();
   const textLines = atext.text.slice(0, -1).split('\n');
-  const attribLines = Changeset.splitAttributionLines(atext.attribs, atext.text);
+  const attribLines = splitAttributionLines(atext.attribs, atext.text);
 
   const tags = ['h1', 'h2', 'strong', 'em', 'u', 's'];
   const props = ['heading1', 'heading2', 'bold', 'italic', 'underline', 'strikethrough'];
@@ -127,8 +135,8 @@ export const getHTMLFromAtext = async (pad, atext, authorColors?) => {
     // <b>Just bold<b> <b><i>Bold and italics</i></b> <i>Just italics</i>
     // becomes
     // <b>Just bold <i>Bold and italics</i></b> <i>Just italics</i>
-    const taker = Changeset.stringIterator(text);
-    const assem = Changeset.stringAssembler();
+    const taker = stringIterator(text);
+    const assem = stringAssembler();
     const openTags = [];
 
     const getSpanClassFor = (i) => {
@@ -200,7 +208,7 @@ export const getHTMLFromAtext = async (pad, atext, authorColors?) => {
         return;
       }
 
-      const ops = Changeset.deserializeOps(Changeset.subattribution(attribs, idx, idx + numChars));
+      const ops = deserializeOps(subattribution(attribs, idx, idx + numChars));
       idx += numChars;
 
       // this iterates over every op string and decides which tags to open or to close
@@ -209,7 +217,7 @@ export const getHTMLFromAtext = async (pad, atext, authorColors?) => {
         const usedAttribs = [];
 
         // mark all attribs as used
-        for (const a of attributes.decodeAttribString(o.attribs)) {
+        for (const a of decodeAttribString(o.attribs)) {
           if (a in anumMap) {
             usedAttribs.push(anumMap[a]); // i = 0 => bold, etc.
           }
@@ -249,7 +257,7 @@ export const getHTMLFromAtext = async (pad, atext, authorColors?) => {
         // from but they break the abiword parser and are completly useless
         s = s.replace(String.fromCharCode(12), '');
 
-        assem.append(_encodeWhitespace(Security.escapeHTML(s)));
+        assem.append(_encodeWhitespace(escapeHTML(s)));
       } // end iteration over spans in line
 
       // close all the tags that are open after the last op
@@ -272,7 +280,7 @@ export const getHTMLFromAtext = async (pad, atext, authorColors?) => {
         // https://html.spec.whatwg.org/multipage/links.html#link-type-noopener
         // https://mathiasbynens.github.io/rel-noopener/
         // https://github.com/ether/etherpad-lite/pull/3636
-        assem.append(`<a href="${Security.escapeHTMLAttribute(url)}" rel="noreferrer noopener">`);
+        assem.append(`<a href="${escapeHTMLAttribute(url)}" rel="noreferrer noopener">`);
         processNextChars(urlLength);
         assem.append('</a>');
       });
@@ -477,7 +485,7 @@ export const getPadHTMLDocument = async (padId, revNum, readOnlyId?) => {
 
   return required('ep_etherpad-lite/templates/export_html.html', {
     body: html,
-    padId: Security.escapeHTML(readOnlyId || padId),
+    padId: escapeHTML(readOnlyId || padId),
     extraCSS: stylesForExportCSS,
   });
 };

@@ -16,8 +16,8 @@
  */
 
 import log4js from 'log4js';
-import Changeset from '../../static/js/Changeset';
-import contentcollector from '../../static/js/contentcollector';
+import {builder, deserializeOps} from '../../static/js/Changeset';
+import {makeContentCollector} from '../../static/js/contentcollector';
 import jsdom from 'jsdom';
 
 const apiLogger = log4js.getLogger('ImportHtml');
@@ -42,7 +42,7 @@ export const setPadHTML = async (pad, html, authorId = '') => {
 
   // Convert a dom tree into a list of lines and attribute liens
   // using the content collector object
-  const cc = contentcollector.makeContentCollector(true, null, pad.pool);
+  const cc = makeContentCollector(true, null, pad.pool);
   try {
     // we use a try here because if the HTML is bad it will blow up
     cc.collectContent(document.body);
@@ -68,24 +68,24 @@ export const setPadHTML = async (pad, html, authorId = '') => {
   const newAttribs = `${result.lineAttribs.join('|1+1')}|1+1`;
 
   // create a new changeset with a helper builder object
-  const builder = Changeset.builder(1);
+  const builder2 = builder(1);
 
   // assemble each line into the builder
   let textIndex = 0;
   const newTextStart = 0;
   const newTextEnd = newText.length;
-  for (const op of Changeset.deserializeOps(newAttribs)) {
+  for (const op of deserializeOps(newAttribs)) {
     const nextIndex = textIndex + op.chars;
     if (!(nextIndex <= newTextStart || textIndex >= newTextEnd)) {
       const start = Math.max(newTextStart, textIndex);
       const end = Math.min(newTextEnd, nextIndex);
-      builder.insert(newText.substring(start, end), op.attribs);
+      builder2.insert(newText.substring(start, end), op.attribs);
     }
     textIndex = nextIndex;
   }
 
   // the changeset is ready!
-  const theChangeset = builder.toString();
+  const theChangeset = builder2.toString();
 
   apiLogger.debug(`The changeset: ${theChangeset}`);
   await pad.setText('\n', authorId);

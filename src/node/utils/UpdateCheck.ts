@@ -48,12 +48,11 @@ export const needsUpdate = (cb?:(arg0: boolean)=>void) => {
 }
 
 const check = () => {
-  const needsUpdate =  ((needsUpdate: boolean) => {
-    if (needsUpdate && infos) {
-      console.warn(`Update available: Download the latest version ${infos.latestVersion}`);
+  needsUpdate((needsUpdate)=>{
+    if (needsUpdate) {
+      console.warn(`Update available: Download the actual version ${infos.latestVersion}`);
     }
   })
-  needsUpdate(infos.latestVersion > getEpVersion());
 }
 
 export default {check, getLatestVersion}

@@ -1,3 +1,6 @@
+
+
+
 'use strict';
 
 /**
@@ -22,7 +25,9 @@
  * limitations under the License.
  */
 
-import Security from './security';
+//FIXME Security does not have a typescript file
+// @ts-ignore
+import {escapeHTML,escapeHTMLAttribute} from './security';
 
 /**
  * Generates a random String with the given length. Is needed to generate the Author, Group,
@@ -137,7 +142,7 @@ export const padutils = {
     }
   },
 
-  escapeHtml: (x) => Security.escapeHTML(String(x)),
+  escapeHtml: (x) => escapeHTML(String(x)),
   uniqueId: () => {
     const pad = require('./pad').pad; // Sidestep circular dependency
     // returns string that is exactly 'width' chars, padding with zeros and taking rightmost digits
@@ -198,7 +203,7 @@ export const padutils = {
 
     const advanceTo = (i) => {
       if (i > idx) {
-        pieces.push(Security.escapeHTML(text.substring(idx, i)));
+        pieces.push(escapeHTML(text.substring(idx, i)));
         idx = i;
       }
     };
@@ -216,9 +221,9 @@ export const padutils = {
         // https://github.com/ether/etherpad-lite/pull/3636
         pieces.push(
             '<a ',
-            (target ? `target="${Security.escapeHTMLAttribute(target)}" ` : ''),
+            (target ? `target="${escapeHTMLAttribute(target)}" ` : ''),
             'href="',
-            Security.escapeHTMLAttribute(href),
+            escapeHTMLAttribute(href),
             '" rel="noreferrer noopener">');
         advanceTo(startIndex + href.length);
         pieces.push('</a>');

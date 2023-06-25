@@ -50,7 +50,7 @@ const getAllLocales = () => {
 
   // Build a locale index (merge all locale data other than user-supplied overrides)
   const locales = {};
-  _.each(locales2paths, (files, langcode) => {
+  _.each(locales2paths, (files:[], langcode) => {
     locales[langcode] = {};
 
     files.forEach((file) => {

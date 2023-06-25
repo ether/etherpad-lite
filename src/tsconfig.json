@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
+    "resolveJsonModule": true,
     "allowJs": true,
     "typeRoots": ["node_modules/@types"],
     "types": ["node", "jquery"],
     "module": "commonjs",
     "esModuleInterop": true,
-    "target": "es6",
     "moduleResolution": "node",
     "sourceMap": true,
+    "target": "ES2015",
     "outDir": "dist"
   },
   "lib": ["es2015"]

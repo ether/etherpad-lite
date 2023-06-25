@@ -21,7 +21,16 @@
 
 import AttributeMap from '../../static/js/AttributeMap';
 import {getPad} from '../db/PadManager';
-import {} from '../../static/js/Changeset';
+import {
+  builder,
+  checkRep, cloneAText, compose,
+  deserializeOps,
+  follow, inverse, makeAText,
+  makeSplice,
+  moveOpsToNewPool, mutateAttributionLines, mutateTextLines,
+  oldLen, prepareForWire, splitAttributionLines, splitTextLines,
+  unpack
+} from '../../static/js/Changeset';
 import ChatMessage from '../../static/js/ChatMessage';
 import {AttributePool} from '../../static/js/AttributePool';
 import AttributeManager from '../../static/js/AttributeManager';
@@ -62,6 +71,7 @@ import {ErrorCaused} from "../models/ErrorCaused";
 import {Pad} from "../db/Pad";
 import {SessionInfo} from "../models/SessionInfo";
 import {randomString} from "../utils/randomstring";
+import {identity} from "lodash";
 
 const securityManager = require('../db/SecurityManager');
 
@@ -610,10 +620,10 @@ const handleUserChanges = async (socket, message) => {
     const pad = await getPad(thisSession.padId, null, thisSession.author);
 
     // Verify that the changeset has valid syntax and is in canonical form
-    Changeset.checkRep(changeset);
+    checkRep(changeset);
 
     // Validate all added 'author' attribs to be the same value as the current user
-    for (const op of Changeset.deserializeOps(Changeset.unpack(changeset).ops)) {
+    for (const op of deserializeOps(unpack(changeset).ops)) {
       // + can add text with attribs
       // = can change or add attribs
       // - can have attribs, but they are discarded and don't show up in the attribs -
@@ -632,7 +642,7 @@ const handleUserChanges = async (socket, message) => {
     // ex. adoptChangesetAttribs
 
     // Afaik, it copies the new attributes from the changeset, to the global Attribute Pool
-    let rebasedChangeset = Changeset.moveOpsToNewPool(changeset, wireApool, pad.pool);
+    let rebasedChangeset = moveOpsToNewPool(changeset, wireApool, pad.pool);
 
     // ex. applyUserChanges
     let r = baseRev;
@@ -645,21 +655,21 @@ const handleUserChanges = async (socket, message) => {
       const {changeset: c, meta: {author: authorId}} = await pad.getRevision(r);
       if (changeset === c && thisSession.author === authorId) {
         // Assume this is a retransmission of an already applied changeset.
-        rebasedChangeset = Changeset.identity(Changeset.unpack(changeset).oldLen);
+        rebasedChangeset = identity(unpack(changeset).oldLen);
       }
       // At this point, both "c" (from the pad) and "changeset" (from the
       // client) are relative to revision r - 1. The follow function
       // rebases "changeset" so that it is relative to revision r
       // and can be applied after "c".
-      rebasedChangeset = Changeset.follow(c, rebasedChangeset, false, pad.pool);
+      rebasedChangeset = follow(c, rebasedChangeset, false, pad.pool);
     }
 
     const prevText = pad.text();
 
-    if (Changeset.oldLen(rebasedChangeset) !== prevText.length) {
+    if (oldLen(rebasedChangeset) !== prevText.length) {
       throw new Error(
           `Can't apply changeset ${rebasedChangeset} with oldLen ` +
-          `${Changeset.oldLen(rebasedChangeset)} to document of length ${prevText.length}`);
+          `${oldLen(rebasedChangeset)} to document of length ${prevText.length}`);
     }
 
     const newRev = await pad.appendRevision(rebasedChangeset, thisSession.author);
@@ -674,7 +684,7 @@ const handleUserChanges = async (socket, message) => {
 
     // Make sure the pad always ends with an empty line.
     if (pad.text().lastIndexOf('\n') !== pad.text().length - 1) {
-      const nlChangeset = Changeset.makeSplice(pad.text(), pad.text().length - 1, 0, '\n');
+      const nlChangeset = makeSplice(pad.text(), pad.text().length - 1, 0, '\n');
       await pad.appendRevision(nlChangeset, thisSession.author);
     }
 
@@ -729,7 +739,7 @@ export const updatePadClients = async (pad) => {
       const revChangeset = revision.changeset;
       const currentTime = revision.meta.timestamp;
 
-      const forWire = Changeset.prepareForWire(revChangeset, pad.pool);
+      const forWire = prepareForWire(revChangeset, pad.pool);
       const msg = {
         type: 'COLLABROOM',
         data: {
@@ -764,7 +774,7 @@ const _correctMarkersInPad = (atext, apool) => {
   // that aren't at the start of a line
   const badMarkers = [];
   let offset = 0;
-  for (const op of Changeset.deserializeOps(atext.attribs)) {
+  for (const op of deserializeOps(atext.attribs)) {
     const attribs = AttributeMap.fromString(op.attribs, apool);
     const hasMarker = AttributeManager.lineAttributes.some((a) => attribs.has(a));
     if (hasMarker) {
@@ -786,15 +796,15 @@ const _correctMarkersInPad = (atext, apool) => {
   // create changeset that removes these bad markers
   offset = 0;
 
-  const builder = Changeset.builder(text.length);
+  const builder2 = builder(text.length);
 
   badMarkers.forEach((pos) => {
-    builder.keepText(text.substring(offset, pos));
-    builder.remove(1);
+    builder2.keepText(text.substring(offset, pos));
+    builder2.remove(1);
     offset = pos + 1;
   });
 
-  return builder.toString();
+  return builder2.toString();
 };
 
 export let clientVars:any
@@ -918,7 +928,7 @@ const handleClientReady = async (socket, message) => {
 
     // return pending changesets
     for (const r of revisionsNeeded) {
-      const forWire = Changeset.prepareForWire(changesets[r].changeset, pad.pool);
+      const forWire = prepareForWire(changesets[r].changeset, pad.pool);
       const wireMsg = {type: 'COLLABROOM',
         data: {type: 'CLIENT_RECONNECT',
           headRev: pad.getHeadRevisionNumber(),
@@ -943,8 +953,8 @@ const handleClientReady = async (socket, message) => {
     let apool;
     // prepare all values for the wire, there's a chance that this throws, if the pad is corrupted
     try {
-      atext = Changeset.cloneAText(pad.atext);
-      const attribsForWire = Changeset.prepareForWire(atext.attribs, pad.pool);
+      atext = cloneAText(pad.atext);
+      const attribsForWire = prepareForWire(atext.attribs, pad.pool);
       apool = attribsForWire.pool.toJsonable();
       atext.attribs = attribsForWire.translated;
     } catch (e) {
@@ -1175,13 +1185,13 @@ const getChangesetInfo = async (pad: Pad, startNum: number, endNum: number, gran
     if (compositeEnd > endNum || compositeEnd > headRevision + 1) break;
 
     const forwards = composedChangesets[`${compositeStart}/${compositeEnd}`];
-    const backwards = Changeset.inverse(forwards, lines.textlines, lines.alines, pad.apool());
+    const backwards = inverse(forwards, lines.textlines, lines.alines, pad.apool());
 
-    Changeset.mutateAttributionLines(forwards, lines.alines, pad.apool());
-    Changeset.mutateTextLines(forwards, lines.textlines);
+    mutateAttributionLines(forwards, lines.alines, pad.apool());
+    mutateTextLines(forwards, lines.textlines);
 
-    const forwards2 = Changeset.moveOpsToNewPool(forwards, pad.apool(), apool);
-    const backwards2 = Changeset.moveOpsToNewPool(backwards, pad.apool(), apool);
+    const forwards2 = moveOpsToNewPool(forwards, pad.apool(), apool);
+    const backwards2 = moveOpsToNewPool(backwards, pad.apool(), apool);
 
     const t1 = (compositeStart === 0) ? revisionDate[0] : revisionDate[compositeStart - 1];
     const t2 = revisionDate[compositeEnd - 1];
@@ -1209,12 +1219,12 @@ const getPadLines = async (pad, revNum) => {
   if (revNum >= 0) {
     atext = await pad.getInternalRevisionAText(revNum);
   } else {
-    atext = Changeset.makeAText('\n');
+    atext = makeAText('\n');
   }
 
   return {
-    textlines: Changeset.splitTextLines(atext.text),
-    alines: Changeset.splitAttributionLines(atext.attribs, atext.text),
+    textlines: splitTextLines(atext.text),
+    alines: splitAttributionLines(atext.attribs, atext.text),
   };
 };
 
@@ -1249,7 +1259,7 @@ const composePadChangesets = async (pad, startNum, endNum) => {
 
     for (r = startNum + 1; r < endNum; r++) {
       const cs = changesets[r];
-      changeset = Changeset.compose(changeset, cs, pool);
+      changeset = compose(changeset, cs, pool);
     }
     return changeset;
   } catch (e) {

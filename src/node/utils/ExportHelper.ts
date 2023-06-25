@@ -20,12 +20,12 @@
  */
 
 import AttributeMap from '../../static/js/AttributeMap';
-import Changeset from '../../static/js/Changeset';
+import {deserializeOps, splitAttributionLines, subattribution} from '../../static/js/Changeset';
 
 export const getPadPlainText = (pad, revNum) => {
   const atext = ((revNum !== undefined) ? pad.getInternalRevisionAText(revNum) : pad.atext);
   const textLines = atext.text.slice(0, -1).split('\n');
-  const attribLines = Changeset.splitAttributionLines(atext.attribs, atext.text);
+  const attribLines = splitAttributionLines(atext.attribs, atext.text);
   const apool = pad.pool;
 
   const pieces = [];
@@ -57,7 +57,7 @@ export const _analyzeLine = (text, aline, apool) => {
   let lineMarker = 0;
   line.listLevel = 0;
   if (aline) {
-    const [op] = Changeset.deserializeOps(aline);
+    const [op] = deserializeOps(aline);
     if (op != null) {
       const attribs = AttributeMap.fromString(op.attribs, apool);
       let listType = attribs.get('list');
@@ -77,7 +77,7 @@ export const _analyzeLine = (text, aline, apool) => {
   }
   if (lineMarker) {
     line.text = text.substring(1);
-    line.aline = Changeset.subattribution(aline, 1);
+    line.aline = subattribution(aline, 1);
   } else {
     line.text = text;
     line.aline = aline;

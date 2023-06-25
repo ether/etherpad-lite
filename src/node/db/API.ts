@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-import Changeset from '../../static/js/Changeset';
+import {builder, deserializeOps} from '../../static/js/Changeset';
 import ChatMessage from '../../static/js/ChatMessage';
 import {CustomError} from '../utils/customError';
 import {doesPadExist, getPad, isValidPadId, listAllPads} from './PadManager';
@@ -518,7 +518,7 @@ export const restoreRevision = async (padID, rev, authorId = '') => {
     let textIndex = 0;
     const newTextStart = 0;
     const newTextEnd = atext.text.length;
-    for (const op of Changeset.deserializeOps(attribs)) {
+    for (const op of deserializeOps(attribs)) {
       const nextIndex = textIndex + op.chars;
       if (!(nextIndex <= newTextStart || textIndex >= newTextEnd)) {
         func(Math.max(newTextStart, textIndex), Math.min(newTextEnd, nextIndex), op.attribs);
@@ -528,19 +528,19 @@ export const restoreRevision = async (padID, rev, authorId = '') => {
   };
 
   // create a new changeset with a helper builder object
-  const builder = Changeset.builder(oldText.length);
+  const builder2 = builder(oldText.length);
 
   // assemble each line into the builder
   eachAttribRun(atext.attribs, (start, end, attribs) => {
-    builder.insert(atext.text.substring(start, end), attribs);
+    builder2.insert(atext.text.substring(start, end), attribs);
   });
 
   const lastNewlinePos = oldText.lastIndexOf('\n');
   if (lastNewlinePos < 0) {
-    builder.remove(oldText.length - 1, 0);
+    builder2.remove(oldText.length - 1, 0);
   } else {
-    builder.remove(lastNewlinePos, oldText.match(/\n/g).length - 1);
-    builder.remove(oldText.length - lastNewlinePos - 1, 0);
+    builder2.remove(lastNewlinePos, oldText.match(/\n/g).length - 1);
+    builder2.remove(oldText.length - lastNewlinePos - 1, 0);
   }
 
   const changeset = builder.toString();

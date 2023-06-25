@@ -94,7 +94,7 @@ export const pathNormalization = (part, hookFnName, hookName) => {
 };
 
 export const update = async () => {
-  const packages = await exports.getPackages();
+  const packages = await getPackages();
   let parts:{[keys: string]:any} = {}; // Key is full name. sortParts converts this into a topologically sorted array.
   let plugins = {};
 
@@ -107,7 +107,7 @@ export const update = async () => {
 
   setPlugins(plugins);
   setParts(sortParts(parts))
-  setHooks(extractHooks(parts, 'hooks', exports.pathNormalization));
+  setHooks(extractHooks(parts, 'hooks', pathNormalization));
   setLoaded(true)
   await Promise.all(Object.keys(plugins).map(async (p) => {
     const logger = log4js.getLogger(`plugin:${p}`);
@@ -115,7 +115,7 @@ export const update = async () => {
   }));
 };
 
-exports.getPackages = async () => {
+const getPackages = async () => {
   logger.info('Running npm to get a list of installed plugins...');
   // Notes:
   //   * Do not pass `--prod` otherwise `npm ls` will fail if there is no `package.json`.
@@ -125,7 +125,7 @@ exports.getPackages = async () => {
   const cmd = ['npm', 'ls', '--long', '--json', '--depth=0', '--no-production'];
   const {dependencies = {}} = JSON.parse(await exportCMD(cmd, {stdio: [null, 'string']}) as unknown as string);
   await Promise.all(Object.entries(dependencies).map(async ([pkg, info]) => {
-    if (!pkg.startsWith(exports.prefix)) {
+    if (!pkg.startsWith(prefix)) {
       delete dependencies[pkg];
       return;
     }

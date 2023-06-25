@@ -3,7 +3,8 @@ import { makeCSSManager as makeCSSManager$0 } from "./cssmanager.js";
 import * as pluginUtils from "./pluginfw/shared.js";
 import {Ace2EditorInfo, AceDocType} from "../module/Ace2EditorInfo";
 import {clientVars} from "../../node/handler/PadMessageHandler";
-import {CustomWindow} from "../module/CustomWindow";
+import {CustomElementWithSheet, CustomWindow} from "../module/CustomWindow";
+import {required} from "../../node/eejs";
 'use strict';
 const makeCSSManager = { makeCSSManager: makeCSSManager$0 }.makeCSSManager;
 
@@ -244,17 +245,17 @@ const Ace2Editor = function () {
     require.setLibraryURI(absUrl('../javascripts/lib'));
     require.setGlobalKeyPath('require');
     // intentially moved before requiring client_plugins to save a 307
-    innerWindow.Ace2Inner = require('ep_etherpad-lite/static/js/ace2_inner');
-    innerWindow.plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
+    innerWindow.Ace2Inner = required('ep_etherpad-lite/static/js/ace2_inner');
+    innerWindow.plugins = required('ep_etherpad-lite/static/js/pluginfw/client_plugins');
     innerWindow.plugins.adoptPluginsFromAncestorsOf(innerWindow);
-    innerWindow.$ = innerWindow.jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery;
+    innerWindow.$ = innerWindow.jQuery = required('ep_etherpad-lite/static/js/rjquery').jQuery;
     debugLog('Ace2Editor.init() waiting for plugins');
-    await new Promise((resolve, reject) => innerWindow.plugins.ensure((err) => err != null ? reject(err) : resolve()));
+    await new Promise<void>((resolve, reject) => innerWindow.plugins.ensure((err) => err != null ? reject(err) : resolve()));
     debugLog('Ace2Editor.init() waiting for Ace2Inner.init()');
     await innerWindow.Ace2Inner.init(info, {
       inner: makeCSSManager(innerStyle.sheet),
       outer: makeCSSManager(outerStyle.sheet),
-      parent: makeCSSManager(document.querySelector('style[title="dynamicsyntax"]').sheet),
+      parent: makeCSSManager((document.querySelector('style[title="dynamicsyntax"]') as unknown as CustomElementWithSheet).sheet),
     });
     debugLog('Ace2Editor.init() Ace2Inner.init() returned');
     loaded = true;
