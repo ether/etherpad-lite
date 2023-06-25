@@ -133,6 +133,33 @@ describe(__filename, function () {
         await otherPad.remove();
       }
     });
+
+    it('CHANGESET_REQ: revNum 2 is converted to head rev 1 (regression)', async function () {
+      const otherPadId = `${padId}other`;
+      assert(!await padManager.doesPadExist(otherPadId));
+      const otherPad = await padManager.getPad(otherPadId, 'other text\n');
+      try {
+        await otherPad.setText('other text\n');
+        const resP = common.waitForSocketEvent(roSocket, 'message');
+        await common.sendMessage(roSocket, {
+          component: 'pad',
+          padId: otherPadId, // The server should ignore this.
+          type: 'CHANGESET_REQ',
+          data: {
+            granularity: 1,
+            start: '2',
+            requestID: 'requestId',
+          },
+        });
+        const res = await resP;
+        assert.equal(res.type, 'CHANGESET_REQ');
+        assert.equal(res.data.requestID, 'requestId');
+        assert.equal(res.data.start, 1);
+      }
+      finally {
+        await otherPad.remove();
+      }
+    });
   });
 
   describe('USER_CHANGES', function () {

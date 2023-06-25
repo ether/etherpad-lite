@@ -1082,6 +1082,9 @@ const handleChangesetRequest = async (socket, {data: {granularity, start, reques
   const end = start + (100 * granularity);
   const {padId, author: authorId} = sessioninfos[socket.id];
   const pad = await padManager.getPad(padId, null, authorId);
+  const headRev = pad.getHeadRevisionNumber();
+  if (start > headRev)
+    start = headRev;
   const data = await getChangesetInfo(pad, start, end, granularity);
   data.requestID = requestID;
   socket.json.send({type: 'CHANGESET_REQ', data});
