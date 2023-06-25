@@ -778,6 +778,13 @@ exports.createDiffHTML = async (padID, startRev, endRev) => {
 
   // get the pad
   const pad = await getPadSafe(padID, true);
+  const headRev = pad.getHeadRevisionNumber();
+  if (startRev > headRev)
+    startRev = headRev;
+
+  if (endRev > headRev)
+    endRev = headRev;
+
   let padDiff;
   try {
     padDiff = new PadDiff(pad, startRev, endRev);
