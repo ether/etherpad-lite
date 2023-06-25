@@ -1,6 +1,7 @@
 'use strict';
 
 import {parts} from './plugin_defs';
+import {getLogger} from "log4js";
 
 const disabledHookReasons = {
   hooks: {
@@ -35,6 +36,7 @@ export const loadFn = (path, hookName) => {
 
 export const extractHooks = (parts: any[], hookSetName, normalizer) => {
   const hooks = {};
+  const logger = getLogger('pluginfw:shared')
   for (const part of parts) {
     for (const [hookName, regHookFnName] of Object.entries(part[hookSetName] || {})) {
       /* On the server side, you can't just
@@ -45,10 +47,10 @@ export const extractHooks = (parts: any[], hookSetName, normalizer) => {
 
       const disabledReason = (disabledHookReasons[hookSetName] || {})[hookName];
       if (disabledReason) {
-        console.error(`Hook ${hookSetName}/${hookName} is disabled. Reason: ${disabledReason}`);
-        console.error(`The hook function ${hookFnName} from plugin ${part.plugin} ` +
+        logger.error(`Hook ${hookSetName}/${hookName} is disabled. Reason: ${disabledReason}`);
+        logger.error(`The hook function ${hookFnName} from plugin ${part.plugin} ` +
                       'will never be called, which may cause the plugin to fail');
-        console.error(`Please update the ${part.plugin} plugin to not use the ${hookName} hook`);
+        logger.error(`Please update the ${part.plugin} plugin to not use the ${hookName} hook`);
         return;
       }
       let hookFn;
@@ -56,7 +58,7 @@ export const extractHooks = (parts: any[], hookSetName, normalizer) => {
         hookFn = loadFn(hookFnName, hookName);
         if (!hookFn) throw new Error('Not a function');
       } catch (err) {
-        console.error(`Failed to load hook function "${hookFnName}" for plugin "${part.plugin}" ` +
+        logger.error(`Failed to load hook function "${hookFnName}" for plugin "${part.plugin}" ` +
                       `part "${part.name}" hook set "${hookSetName}" hook "${hookName}": ` +
                       `${err.stack || err}`);
       }

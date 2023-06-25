@@ -78,18 +78,22 @@
     "etherpad-lite": "node/server.js"
   },
   "devDependencies": {
+    "@babel/cli": "^7.22.5",
+    "@babel/core": "^7.22.5",
+    "@babel/preset-env": "^7.22.5",
+    "@babel/register": "^7.22.5",
     "@types/cross-spawn": "^6.0.2",
     "@types/express": "4.17.17",
     "@types/jquery": "^3.5.16",
     "@types/js-cookie": "^3.0.3",
-    "i18next": "^23.2.3",
-    "i18next-fs-backend": "^2.1.5",
     "@types/node": "^20.3.1",
     "@types/underscore": "^1.11.5",
     "concurrently": "^8.2.0",
     "eslint": "^8.14.0",
     "eslint-config-etherpad": "^3.0.13",
     "etherpad-cli-client": "^2.0.1",
+    "i18next": "^23.2.3",
+    "i18next-fs-backend": "^2.1.5",
     "mocha": "^9.2.2",
     "mocha-froth": "^0.2.10",
     "nodeify": "^1.0.1",
@@ -112,7 +116,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "mocha --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
+    "test": "mocha --require @babel/register --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
     "test-container": "mocha --timeout 5000 tests/container/specs/api",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/server.js\""
   },

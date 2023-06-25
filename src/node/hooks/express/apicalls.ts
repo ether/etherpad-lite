@@ -44,5 +44,5 @@ export const expressPreSession = async (hookName, {app}) => {
   // Provide a possibility to query the latest available API version
   app.get('/api', (req, res) => {
     res.json({currentVersion: latestApiVersion});
-  });
-};
+  })
+}

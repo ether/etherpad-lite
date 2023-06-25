@@ -109,11 +109,15 @@ export const createServer = async () => {
                  'variable to production by using: export NODE_ENV=production');
   }
 };
+export const app = express();
+
+import http from 'http'
+import https from 'https'
 
 export const restartServer = async () => {
   await closeServer();
 
-  const app = express(); // New syntax for express v3
+   // New syntax for express v3
 
   if (ssl) {
     console.log('SSL -- enabled');
@@ -133,11 +137,8 @@ export const restartServer = async () => {
         options.ca.push(fs.readFileSync(caFileName));
       }
     }
-
-    const https = require('https');
     server = https.createServer(options, app);
   } else {
-    const http = require('http');
     server = http.createServer(app);
   }
 

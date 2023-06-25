@@ -1,6 +1,7 @@
 'use strict';
 
 import {hooks} from './plugin_defs';
+import {getLogger} from "log4js";
 
 // Maps the name of a server-side hook to a string explaining the deprecation
 // (e.g., 'use the foo hook instead').
@@ -347,10 +348,15 @@ const callHookFnAsync = async (hook, context) => {
 //   If cb is non-null, this function resolves to the value returned by cb.
 export const aCallAll = async (hookName, context?, cb = null) => {
   if (cb != null) return await attachCallback(aCallAll(hookName, context), cb);
-  if (context == null) context = {};
+  if (context == null) {
+    context = {};
+  }
   const hooksResult = hooks[hookName] || [];
   const results = await Promise.all(
-      hooksResult.map(async (hook) => normalizeValue(await callHookFnAsync(hook, context))));
+      hooksResult.map(async (hook) => {
+        getLogger().info(`Calling hook ${hook.hook_name} asynchronously`);
+        return normalizeValue(await callHookFnAsync(hook, context))
+      }));
   return flatten1(results);
 };
 

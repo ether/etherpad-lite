@@ -51,9 +51,7 @@ import {createServer, server} from './hooks/express';
 import hooks = require('../static/js/pluginfw/hooks');
 import pluginDefs = require('../static/js/pluginfw/plugin_defs');
 import plugins = require('../static/js/pluginfw/plugins');
-import stats = require('./stats');
 import {createCollection} from "./stats";
-
 const logger = log4js.getLogger('server');
 console.log = logger.info.bind(logger); // do the same for others - console.debug, etc.
 
@@ -152,7 +150,7 @@ export const start = async () => {
     logger.debug(`Installed parts:\n${plugins.formatParts()}`);
     logger.debug(`Installed server-side hooks:\n${plugins.formatHooks('hooks', false)}`);
     await hooks.aCallAll('loadSettings', {settings});
-    await hooks.aCallAll(createServer())
+    await hooks.aCallAll(createServer());
   } catch (err) {
     logger.error('Error occurred while starting Etherpad');
     state = State.STATE_TRANSITION_FAILED;

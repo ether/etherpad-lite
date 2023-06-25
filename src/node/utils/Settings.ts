@@ -109,12 +109,12 @@ export const skinVariants = 'super-light-toolbar super-light-editor light-backgr
 /**
  * The IP ep-lite should listen to
  */
-export const ip:String = '0.0.0.0';
+export let ip:String = '0.0.0.0';
 
 /**
  * The Port ep-lite should listen to
  */
-export const port = process.env.PORT || 9001;
+export let port = process.env.PORT || 9001;
 
 /**
  * Should we suppress Error messages from being in Pad Contents
@@ -125,7 +125,7 @@ export const suppressErrorsInPadText = false;
  * The SSL signed server key and the Certificate Authority's own certificate
  * default case: ep-lite does *not* use SSL. A signed server key is not required in this case.
  */
-export const ssl = false;
+export let ssl = false;
 
 export const sslKeys = {
   cert: undefined,
@@ -319,7 +319,7 @@ export let sessionKey: string|boolean = false;
 /*
  * Trust Proxy, whether or not trust the x-forwarded-for header.
  */
-export const trustProxy = false;
+export let trustProxy = false;
 
 /*
  * Settings controlling the session cookie issued by Etherpad.
@@ -412,7 +412,7 @@ export const setUsers = (newUsers:any) => {
  *
  * See https://github.com/nfriedly/express-rate-limit for more options
  */
-export const importExportRateLimiting = {
+export let importExportRateLimiting = {
   // duration of the rate limit window (milliseconds)
   windowMs: 90000,
 
@@ -429,7 +429,7 @@ export const importExportRateLimiting = {
  *
  * See https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#websocket-single-connection-prevent-flooding for more options
  */
-export const commitRateLimiting = {
+export let commitRateLimiting = {
   // duration of the rate limit window (seconds)
   duration: 1,
 
@@ -884,3 +884,27 @@ export const exportedForTestingOnly = {
 reloadSettings();
 
 
+// Setters
+export const setPort = (value: number) => {
+    port = value;
+}
+
+export const setIp = (value: string) => {
+    ip = value;
+}
+
+export const setTrustProxy = (value: boolean) => {
+    trustProxy = value;
+}
+
+export const setSsl = (value: boolean) => {
+    ssl = value;
+}
+
+export const setimportExportRateLimiting = (value: any) => {
+    importExportRateLimiting = value;
+}
+
+export const setCommitRateLimiting = (value: any) => {
+    commitRateLimiting = value;
+}

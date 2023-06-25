@@ -51,7 +51,7 @@ export const userCanModify = (padId, req) => {
 };
 
 // Exported so that tests can set this to 0 to avoid unnecessary test slowness.
-export const authnFailureDelayMs = 1000;
+export let authnFailureDelayMs = 1000;
 
 export const checkAccess = async (req, res, next) => {
   const requireAdmin = req.path.toLowerCase().startsWith('/admin');
@@ -204,3 +204,8 @@ export const checkAccess = async (req, res, next) => {
 export const checkAccess2 = (req, res, next) => {
   checkAccess(req, res, next).catch((err) => next(err || new Error(err)));
 };
+
+// Setters
+export const setauthnFailureDelayMs = (value) => {
+    authnFailureDelayMs = value;
+}

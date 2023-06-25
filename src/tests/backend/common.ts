@@ -1,22 +1,28 @@
 'use strict';
 
-const AttributePool = require('../../static/js/AttributePool');
-const apiHandler = require('../../node/handler/APIHandler');
-const assert = require('assert').strict;
-const io = require('socket.io-client');
-const log4js = require('log4js');
-const {padutils} = require('../../static/js/pad_utils');
-const process = require('process');
-const server = require('../../node/server');
-const setCookieParser = require('set-cookie-parser');
-const settings = require('../../node/utils/Settings');
-const supertest = require('supertest');
-const webaccess = require('../../node/hooks/express/webaccess');
+import {AttributePool} from '../../static/js/AttributePool';
+import {exportedForTestingOnly as aExportedForTestingOnly} from '../../node/handler/APIHandler';
+import assert, {strict} from 'assert'
+import io from 'socket.io-client';
+import log4js from 'log4js';
+import {padutils} from '../../static/js/pad_utils';
+import processA from 'process';
+import {} from '../../node/server';
+import setCookieParser from 'set-cookie-parser';
+import {setCommitRateLimiting, setimportExportRateLimiting, setIp, setPort} from '../../node/utils/Settings';
+import supertest from 'supertest';
+import {authnFailureDelayMs, setauthnFailureDelayMs} from '../../node/hooks/express/webaccess';
+import { before,after } from 'mocha';
+import * as settings from '../../node/utils/Settings';
+import {server} from "../../node/hooks/express";
 
-const backups = {};
+const backups:{
+  settings?:any,
+  authnFailureDelayMs?:any
+} = {};
 let agentPromise = null;
 
-exports.apiKey = apiHandler.exportedForTestingOnly.apiKey;
+exports.apiKey = aExportedForTestingOnly.apiKey;
 exports.agent = null;
 exports.baseUrl = null;
 exports.httpServer = null;
@@ -27,7 +33,7 @@ const logLevel = logger.level;
 
 // Mocha doesn't monitor unhandled Promise rejections, so convert them to uncaught exceptions.
 // https://github.com/mochajs/mocha/issues/2640
-process.on('unhandledRejection', (reason, promise) => { throw reason; });
+processA.on('unhandledRejection', (reason, promise) => { throw reason; });
 
 before(async function () {
   this.timeout(60000);
@@ -42,31 +48,29 @@ exports.init = async function () {
   if (!logLevel.isLessThanOrEqualTo(log4js.levels.DEBUG)) {
     logger.warn('Disabling non-test logging for the duration of the test. ' +
                 'To enable non-test logging, change the loglevel setting to DEBUG.');
-    log4js.setGlobalLogLevel(log4js.levels.OFF);
     logger.setLevel(logLevel);
   }
 
   // Note: This is only a shallow backup.
   backups.settings = Object.assign({}, settings);
   // Start the Etherpad server on a random unused port.
-  settings.port = 0;
-  settings.ip = 'localhost';
-  settings.importExportRateLimiting = {max: 0};
-  settings.commitRateLimiting = {duration: 0.001, points: 1e6};
+  setPort(0)
+  setIp('localhost')
+  setimportExportRateLimiting({max: 0})
+  setCommitRateLimiting({duration: 0.001, points: 1e6});
   exports.httpServer = await server.start();
   exports.baseUrl = `http://localhost:${exports.httpServer.address().port}`;
   logger.debug(`HTTP server at ${exports.baseUrl}`);
   // Create a supertest user agent for the HTTP server.
   exports.agent = supertest(exports.baseUrl);
   // Speed up authn tests.
-  backups.authnFailureDelayMs = webaccess.authnFailureDelayMs;
-  webaccess.authnFailureDelayMs = 0;
+  backups.authnFailureDelayMs = authnFailureDelayMs;
+  setauthnFailureDelayMs(0)
 
   after(async function () {
-    webaccess.authnFailureDelayMs = backups.authnFailureDelayMs;
+    setauthnFailureDelayMs(backups.authnFailureDelayMs);
     // Note: This does not unset settings that were added.
     Object.assign(settings, backups.settings);
-    log4js.setGlobalLogLevel(logLevel);
     await server.exit();
   });
 
@@ -93,7 +97,7 @@ exports.waitForSocketEvent = async (socket, event) => {
   const handlers = new Map();
   let cancelTimeout;
   try {
-    const timeoutP = new Promise((resolve, reject) => {
+    const timeoutP = new Promise<void>((resolve, reject) => {
       const timeout = setTimeout(() => {
         reject(new Error(`timed out waiting for ${event} event`));
         cancelTimeout = () => {};
@@ -139,9 +143,11 @@ exports.waitForSocketEvent = async (socket, event) => {
  */
 exports.connect = async (res = null) => {
   // Convert the `set-cookie` header(s) into a `cookie` header.
-  const resCookies = (res == null) ? {} : setCookieParser.parse(res, {map: true});
-  const reqCookieHdr = Object.entries(resCookies).map(
-      ([name, cookie]) => `${name}=${encodeURIComponent(cookie.value)}`).join('; ');
+  const resCookies:{
+    [key:string]:{value:string}
+  } = (res == null) ? {} : setCookieParser.parse(res, {map: true});
+  const reqCookieHdr = Object.entries(resCookies)
+      .map(([name, cookie]) => `${name}=${encodeURIComponent(cookie.value)}`).join('; ');
 
   logger.debug('socket.io connecting...');
   let padId = null;
@@ -191,7 +197,7 @@ exports.handshake = async (socket, padId, token = padutils.generateAuthorToken()
 /**
  * Convenience wrapper around `socket.send()` that waits for acknowledgement.
  */
-exports.sendMessage = async (socket, message) => await new Promise((resolve, reject) => {
+exports.sendMessage = async (socket, message) => await new Promise<void>((resolve, reject) => {
   socket.send(message, (errInfo) => {
     if (errInfo != null) {
       const {name, message} = errInfo;

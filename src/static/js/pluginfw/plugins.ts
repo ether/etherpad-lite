@@ -105,7 +105,6 @@ export const update = async () => {
   }));
   logger.info(`Loaded ${Object.keys(packages).length} plugins`);
 
-  logger.info(parts)
   setPlugins(plugins);
   setParts(sortParts(parts))
   setHooks(extractHooks(parts, 'hooks', pathNormalization));
@@ -129,12 +128,13 @@ const getPackages = async () => {
   logger.info("After exportCMD")
   const {dependencies = {}} = JSON.parse(cmdReturn as string);
   await Promise.all(Object.entries(dependencies).map(async ([pkg, info]) => {
+    logger.info(`Found plugin ${pkg}`)
     if (!pkg.startsWith(prefix)) {
       delete dependencies[pkg];
       return;
     }
     const mappedInfo = info as PluginInfo
-
+    logger.info(`Found plugin ${pkg} at ${mappedInfo.path}`)
     mappedInfo.realPath = await fs.realpath(mappedInfo.path);
   }));
   return dependencies;
