@@ -115,7 +115,7 @@ jobs:
             etherpad/src/bin/doc/package-lock.json
       -
         name: Install Cypress
-        run: cd etherpad && cd src && npm install cypress
+        run: cd etherpad && cd src && npm install cypress --legacy-peer-deps
       -
         name: Run Etherpad
         run: |
