@@ -33,6 +33,7 @@ const exportTxt = require('../utils/ExportTxt');
 const importHtml = require('../utils/ImportHtml');
 const cleanText = require('./Pad').cleanText;
 const PadDiff = require('../utils/padDiff');
+const { checkValidRev, isInt } = require('../utils/checkValidRev');
 
 /* ********************
  * GROUP FUNCTIONS ****
@@ -822,9 +823,6 @@ exports.getStats = async () => {
  ** INTERNAL HELPER FUNCTIONS *
  **************************** */
 
-// checks if a number is an int
-const isInt = (value) => (parseFloat(value) === parseInt(value, 10)) && !isNaN(value);
-
 // gets a pad safe
 const getPadSafe = async (padID, shouldExist, text, authorId = '') => {
   // check if padID is a string
@@ -852,31 +850,6 @@ const getPadSafe = async (padID, shouldExist, text, authorId = '') => {
 
   // pad exists, let's get it
   return padManager.getPad(padID, text, authorId);
-};
-
-// checks if a rev is a legal number
-// pre-condition is that `rev` is not undefined
-const checkValidRev = (rev) => {
-  if (typeof rev !== 'number') {
-    rev = parseInt(rev, 10);
-  }
-
-  // check if rev is a number
-  if (isNaN(rev)) {
-    throw new CustomError('rev is not a number', 'apierror');
-  }
-
-  // ensure this is not a negative number
-  if (rev < 0) {
-    throw new CustomError('rev is not a negative number', 'apierror');
-  }
-
-  // ensure this is not a float value
-  if (!isInt(rev)) {
-    throw new CustomError('rev is a float value', 'apierror');
-  }
-
-  return rev;
 };
 
 // checks if a padID is part of a group
