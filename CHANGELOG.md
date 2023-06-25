@@ -1,3 +1,11 @@
+# Next release
+
+### Notable enhancements and fixes
+
+* Bugfixes
+  * revisions in `CHANGESET_REQ` (timeslider) and export (txt, html, custom)
+    are now checked to be numbers.
+
 # 1.9.0
 
 ### Notable enhancements and fixes
