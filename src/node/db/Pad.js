@@ -172,6 +172,9 @@ class Pad {
 
   async getInternalRevisionAText(targetRev) {
     const keyRev = this.getKeyRevisionNumber(targetRev);
+    const headRev = this.getHeadRevisionNumber();
+    if (targetRev > headRev)
+      targetRev = headRev;
     const [keyAText, changesets] = await Promise.all([
       this._getKeyRevisionAText(keyRev),
       Promise.all(
