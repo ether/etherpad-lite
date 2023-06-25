@@ -33,7 +33,7 @@ export const loadFn = (path, hookName) => {
   return fn;
 };
 
-export const extractHooks = (parts, hookSetName, normalizer) => {
+export const extractHooks = (parts: any[], hookSetName, normalizer) => {
   const hooks = {};
   for (const part of parts) {
     for (const [hookName, regHookFnName] of Object.entries(part[hookSetName] || {})) {

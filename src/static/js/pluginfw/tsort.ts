@@ -55,7 +55,7 @@ export const tsort = (edges: (string|number)[][]) => {
   Object.keys(nodes).forEach(visit);
 
   return sorted;
-};
+}
 
 /**
  * TEST
@@ -111,3 +111,5 @@ if (typeof exports === 'object' && exports === this) {
   module.exports = tsort;
   if (process.argv[1] === __filename) tsortTest();
 }
+
+export default tsort;

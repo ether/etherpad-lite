@@ -25,7 +25,7 @@ export let parts = [];
 //       - version
 //       - path
 //       - realPath
-export const plugins = {};
+export let plugins = {};
 
 export const setPlugins = (newPlugins) => {
     Object.assign(plugins, newPlugins);

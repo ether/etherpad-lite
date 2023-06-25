@@ -79,32 +79,32 @@ const closeServer = async () => {
 };
 
 export const createServer = async () => {
-  console.log('Report bugs at https://github.com/ether/etherpad-lite/issues');
+  logger.info('Report bugs at https://github.com/ether/etherpad-lite/issues');
 
   serverName = `Etherpad ${getGitCommit()} (https://etherpad.org)`;
 
-  console.log(`Your Etherpad version is ${getEpVersion()} (${getGitCommit()})`);
+  logger.info(`Your Etherpad version is ${getEpVersion()} (${getGitCommit()})`);
 
   await restartServer();
 
   if (ip.length===0) {
     // using Unix socket for connectivity
-    console.log(`You can access your Etherpad instance using the Unix socket at ${port}`);
+    logger.info(`You can access your Etherpad instance using the Unix socket at ${port}`);
   } else {
-    console.log(`You can access your Etherpad instance at http://${ip}:${port}/`);
+    logger.info(`You can access your Etherpad instance at http://${ip}:${port}/`);
   }
 
   if (!_.isEmpty(users)) {
-    console.log(`The plugin admin page is at http://${ip}:${port}/admin/plugins`);
+    logger.info(`The plugin admin page is at http://${ip}:${port}/admin/plugins`);
   } else {
-    console.warn('Admin username and password not set in settings.json. ' +
+    logger.info('Admin username and password not set in settings.json. ' +
                  'To access admin please uncomment and edit "users" in settings.json');
   }
 
   const env = process.env.NODE_ENV || 'development';
 
   if (env !== 'production') {
-    console.warn('Etherpad is running in Development mode. This mode is slower for users and ' +
+    logger.warn('Etherpad is running in Development mode. This mode is slower for users and ' +
                  'less secure than production mode. You should set the NODE_ENV environment ' +
                  'variable to production by using: export NODE_ENV=production');
   }

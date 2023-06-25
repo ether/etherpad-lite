@@ -24,7 +24,7 @@ import {promises as fs} from "fs";
 import os from 'os';
 import path from "path";
 
-import {exportCMD} from "./run_cmd";
+import exportCMD from "./run_cmd";
 
 import {soffice} from "./Settings";
 

@@ -1,6 +1,7 @@
 // @ts-nocheck
 import * as pluginUtils from "./shared.js";
 import * as defs from "./plugin_defs.js";
+import {getLogger} from "log4js";
 'use strict';
 
 const adoptPluginsFromAncestorsOf = (frame) => {
@@ -37,9 +38,12 @@ export const update = (cb) => {
     // of execution on Firefox. This schedules the response in the run-loop,
     // which appears to fix the issue.
     const callback = () => setTimeout(cb, 0);
-    jQuery.getJSON(`${exports.baseURL}pluginfw/plugin-definitions.json?v=${clientVars.randomVersionString}`).done((data) => {
+    jQuery.getJSON(`${exports.baseURL}pluginfw/plugin-definitions.json?v=${clientVars.randomVersionString}`)
+        .done((data) => {
         defs.plugins = data.plugins;
         defs.parts = data.parts;
+        const logger = getLogger("client_plugins")
+        logger.info(data.parts)
         defs.hooks = pluginUtils.extractHooks(defs.parts, 'client_hooks');
         defs.loaded = true;
         callback();

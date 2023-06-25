@@ -1,12 +1,22 @@
+
 'use strict';
 
 import spawn from 'cross-spawn';
 import log4js from 'log4js';
 import path from 'path';
-import {root} from "./Settings";
-import {CMDOptions, CMDPromise} from '../models/CMDOptions'
+import {root} from './Settings';
+import {CustomError} from "./customError";
+
 const logger = log4js.getLogger('runCmd');
-import {CustomError} from './customError'
+
+type CMDPromise = {
+  stdout: Promise<string>,
+  stderr: Promise<string>,
+  status: Promise<number>,
+  signal: Promise<string>,
+}
+
+
 const logLines = (readable, logLineFn) => {
   readable.setEncoding('utf8');
   // The process won't necessarily write full lines every time -- it might write a part of a line
@@ -69,14 +79,23 @@ const logLines = (readable, logLineFn) => {
  *   - `stderr`: Similar to `stdout` but for stderr.
  *   - `child`: The ChildProcess object.
  */
-export const exportCMD: (args: string[], opts?:CMDOptions)=>void = async (args, opts = {
-  cwd: undefined,
-  stdio: undefined,
-  env: undefined
+
+type RunOpts = {
+    cwd?: string;
+    env?: any;
+    stdio?: any;
+    detached?: boolean;
+    uid?: number
+}
+
+
+const run_cmd = (args, opts:RunOpts = {
+  stdio: undefined
 }) => {
-  logger.debug(`Executing command: ${args.join(' ')}`);
+  logger.info(`Executing command: ${args.join(' ')}`);
+
   opts = {cwd: root, ...opts};
-  logger.debug(`cwd: ${opts.cwd}`);
+  logger.info(`cwd: ${opts.cwd}`);
 
   // Log stdout and stderr by default.
   const stdio =
@@ -85,24 +104,20 @@ export const exportCMD: (args: string[], opts?:CMDOptions)=>void = async (args, 
               : opts.stdio === 'string' ? [null, 'string', 'string']
                   : Array(3).fill(opts.stdio);
   const cmdLogger = log4js.getLogger(`runCmd|${args[0]}`);
-  if (stdio[1] == null && stdio instanceof Array) stdio[1] = (line) => cmdLogger.info(line);
-  if (stdio[2] == null && stdio instanceof Array) stdio[2] = (line) => cmdLogger.error(line);
+  if (stdio[1] == null) stdio[1] = (line) => cmdLogger.info(line);
+  if (stdio[2] == null) stdio[2] = (line) => cmdLogger.error(line);
   const stdioLoggers = [];
   const stdioSaveString = [];
   for (const fd of [1, 2]) {
     if (typeof stdio[fd] === 'function') {
       stdioLoggers[fd] = stdio[fd];
-      if (stdio instanceof Array)
-        stdio[fd] = 'pipe';
+      stdio[fd] = 'pipe';
     } else if (stdio[fd] === 'string') {
       stdioSaveString[fd] = true;
-      if (stdio instanceof Array)
-        stdio[fd] = 'pipe';
+      stdio[fd] = 'pipe';
     }
   }
-  if (opts.stdio instanceof Array) {
-    opts.stdio = stdio;
-  }
+  opts.stdio = stdio;
 
   // On Windows the PATH environment var might be spelled "Path".
   const pathVarName =
@@ -123,15 +138,13 @@ export const exportCMD: (args: string[], opts?:CMDOptions)=>void = async (args, 
 
   // Create an error object to use in case the process fails. This is done here rather than in the
   // process's `exit` handler so that we get a useful stack trace.
-  const procFailedErr:CustomError = new CustomError({});
+  const procFailedErr = new CustomError({});
 
   const proc = spawn(args[0], args.slice(1), opts);
   const streams = [undefined, proc.stdout, proc.stderr];
 
   let px;
-  const p = await new Promise<CMDPromise>((resolve, reject) => {
-    px = {resolve, reject};
-  });
+  const p = new Promise<string>((resolve, reject) => { px = {resolve, reject}; });
   [, p.stdout, p.stderr] = streams;
   p.child = proc;
 
@@ -141,7 +154,6 @@ export const exportCMD: (args: string[], opts?:CMDOptions)=>void = async (args, 
     if (stdioLoggers[fd] != null) {
       logLines(streams[fd], stdioLoggers[fd]);
     } else if (stdioSaveString[fd]) {
-      //FIXME How to solve this?
       // @ts-ignore
       p[[null, 'stdout', 'stderr'][fd]] = stdioStringPromises[fd] = (async () => {
         const chunks = [];
@@ -166,3 +178,4 @@ export const exportCMD: (args: string[], opts?:CMDOptions)=>void = async (args, 
   });
   return p;
 };
+export default run_cmd;

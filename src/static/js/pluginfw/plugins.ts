@@ -8,13 +8,13 @@ import log4js from "log4js";
 
 import path from "path";
 
-import {exportCMD} from "../../../node/utils/run_cmd";
+import exportCMD from "../../../node/utils/run_cmd";
 
-import {tsort} from "./tsort";
+import tsort from "./tsort";
 
 import {extractHooks} from "./shared";
 
-import {loaded, parts, plugins, setHooks, setLoaded, setParts, setPlugins} from "./plugin_defs";
+import {parts, plugins, setHooks, setLoaded, setParts, setPlugins} from "./plugin_defs";
 import {PluginInfo} from "../../module/PluginInfo";
 
 const logger = log4js.getLogger('plugins');
@@ -95,8 +95,8 @@ export const pathNormalization = (part, hookFnName, hookName) => {
 
 export const update = async () => {
   const packages = await getPackages();
-  let parts:{[keys: string]:any} = {}; // Key is full name. sortParts converts this into a topologically sorted array.
-  let plugins = {};
+  let parts = []; // Key is full name. sortParts converts this into a topologically sorted array.
+  let plugins = {}
 
   // Load plugin metadata ep.json
   await Promise.all(Object.keys(packages).map(async (pluginName) => {
@@ -105,6 +105,7 @@ export const update = async () => {
   }));
   logger.info(`Loaded ${Object.keys(packages).length} plugins`);
 
+  logger.info(parts)
   setPlugins(plugins);
   setParts(sortParts(parts))
   setHooks(extractHooks(parts, 'hooks', pathNormalization));
@@ -123,7 +124,10 @@ const getPackages = async () => {
   //     unset or set to `development`) because otherwise `npm ls` will not mention any packages
   //     that are not included in `package.json` (which is expected to not exist).
   const cmd = ['npm', 'ls', '--long', '--json', '--depth=0', '--no-production'];
-  const {dependencies = {}} = JSON.parse(await exportCMD(cmd, {stdio: [null, 'string']}) as unknown as string);
+  logger.info("Before exportCMD")
+  const cmdReturn = await exportCMD(cmd, {stdio: [null, 'string']})
+  logger.info("After exportCMD")
+  const {dependencies = {}} = JSON.parse(cmdReturn as string);
   await Promise.all(Object.entries(dependencies).map(async ([pkg, info]) => {
     if (!pkg.startsWith(prefix)) {
       delete dependencies[pkg];

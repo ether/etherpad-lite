@@ -47,7 +47,7 @@ checkDeprecationStatus('12.17.0', '1.9.0');
 
 import db = require('./db/DB');
 import {} from './db/DB'
-import express = require('./hooks/express');
+import {createServer, server} from './hooks/express';
 import hooks = require('../static/js/pluginfw/hooks');
 import pluginDefs = require('../static/js/pluginfw/plugin_defs');
 import plugins = require('../static/js/pluginfw/plugins');
@@ -87,7 +87,7 @@ export const start = async () => {
       // Retry. Don't fall through because it might have transitioned to STATE_TRANSITION_FAILED.
       return await start();
     case State.RUNNING:
-      return express.server;
+      return server;
     case State.STOPPING:
     case State.STOPPED:
     case State.EXITING:
@@ -152,7 +152,7 @@ export const start = async () => {
     logger.debug(`Installed parts:\n${plugins.formatParts()}`);
     logger.debug(`Installed server-side hooks:\n${plugins.formatHooks('hooks', false)}`);
     await hooks.aCallAll('loadSettings', {settings});
-    await hooks.aCallAll('createServer');
+    await hooks.aCallAll(createServer())
   } catch (err) {
     logger.error('Error occurred while starting Etherpad');
     state = State.STATE_TRANSITION_FAILED;
@@ -163,9 +163,8 @@ export const start = async () => {
   logger.info('Etherpad is running');
   state = State.RUNNING;
   startDoneGate.resolve();
-
   // Return the HTTP server to make it easier to write tests.
-  return express.server;
+  return server;
 };
 
 const stopDoneGate = new Gate();
@@ -277,7 +276,7 @@ export const exit = async (err = null) => {
 
   logger.info('Waiting for Node.js to exit...');
   state = State.WAITING_FOR_EXIT;
-  /* eslint-enable no-process-exit */
 };
 
-if (require.main === module) start();
+start()
+    .then(c=>logger.info("Server started"));

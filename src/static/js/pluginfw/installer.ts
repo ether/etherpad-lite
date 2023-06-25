@@ -7,7 +7,7 @@ import {aCallAll} from "./hooks";
 
 import request from "request";
 
-import {exportCMD} from "../../../node/utils/run_cmd";
+import exportCMD from "../../../node/utils/run_cmd";
 
 import {reloadSettings} from "../../../node/utils/Settings";
 import {InstallerModel} from "../../module/InstallerModel";

@@ -12,12 +12,14 @@ import {getPadId, isReadOnlyId} from "../../db/ReadOnlyManager";
 import {UserIndexedModel} from "../../models/UserIndexedModel";
 
 const httpLogger = log4js.getLogger('http');
+
+import {aCallFirst as hookCall} from "../../../static/js/pluginfw/hooks";
+
 deprecationNotices.authFailure = 'use the authnFailure and authzFailure hooks instead';
 
 // Promisified wrapper around hooks.aCallFirst.
 const aCallFirst = (hookName, context, pred = null) => new Promise((resolve, reject) => {
-  // FIXME Why are there 4 arguments but only 3 parameters?
-  aCallFirst(hookName, context, (err, r) => err != null ? reject(err) : resolve(r));
+  hookCall(hookName, context, (err, r) => err != null ? reject(err) : resolve(r));
 });
 
 const aCallFirst0 =
