@@ -21,10 +21,14 @@
 
 const AttributeMap = require('../../static/js/AttributeMap');
 const Changeset = require('../../static/js/Changeset');
+const { checkValidRev } = require('./checkValidRev');
 
+/*
+ * This method seems unused in core and no plugins depend on it
+ */
 exports.getPadPlainText = (pad, revNum) => {
   const _analyzeLine = exports._analyzeLine;
-  const atext = ((revNum !== undefined) ? pad.getInternalRevisionAText(revNum) : pad.atext);
+  const atext = ((revNum !== undefined) ? pad.getInternalRevisionAText(checkValidRev(revNum)) : pad.atext);
   const textLines = atext.text.slice(0, -1).split('\n');
   const attribLines = Changeset.splitAttributionLines(atext.attribs, atext.text);
   const apool = pad.pool;
