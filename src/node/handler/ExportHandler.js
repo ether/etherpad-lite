@@ -29,6 +29,7 @@ const os = require('os');
 const hooks = require('../../static/js/pluginfw/hooks');
 const TidyHtml = require('../utils/TidyHtml');
 const util = require('util');
+const { checkValidRev } = require('../utils/checkValidRev');
 
 const fsp_writeFile = util.promisify(fs.writeFile);
 const fsp_unlink = util.promisify(fs.unlink);
@@ -52,6 +53,12 @@ exports.doExport = async (req, res, padId, readOnlyId, type) => {
 
   // tell the browser that this is a downloadable file
   res.attachment(`${fileName}.${type}`);
+
+  if (req.params.rev !== undefined) {
+    // ensure revision is a number
+    // modify req, as we use it in a later call to exportConvert
+    req.params.rev = checkValidRev(req.params.rev);
+  }
 
   // if this is a plain text export, we can do this directly
   // We have to over engineer this because tabs are stored as attributes and not plain text
