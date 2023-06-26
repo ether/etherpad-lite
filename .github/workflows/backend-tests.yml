@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [14, 16, 18]
+        node: [16, 18, 20]
     steps:
       -
         name: Checkout repository
@@ -55,7 +55,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [14, 16, 18]
+        node: [16, 18, 20]
     steps:
       -
         name: Checkout repository
@@ -124,7 +124,7 @@ jobs:
       -
         uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 20
           cache: 'npm'
           cache-dependency-path: |
             src/package-lock.json
@@ -157,7 +157,7 @@ jobs:
       -
         uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 20
           cache: 'npm'
           cache-dependency-path: |
             src/package-lock.json
