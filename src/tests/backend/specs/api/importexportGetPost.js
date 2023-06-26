@@ -447,6 +447,175 @@ describe(__filename, function () {
       });
     });
 
+    describe('revisions are supported in txt and html export', function () {
+      const makeGoodExport = () => ({
+        'pad:testing': {
+          atext: {
+            text: 'oofoo\n',
+            attribs: '|1+6',
+          },
+          pool: {
+            numToAttrib: {
+              0: ['author', 'a.foo'],
+            },
+            nextNum: 1,
+          },
+          head: 2,
+          savedRevisions: [],
+        },
+        'globalAuthor:a.foo': {
+          colorId: '#000000',
+          name: 'author foo',
+          timestamp: 1598747784631,
+          padIDs: 'testing',
+        },
+        'pad:testing:revs:0': {
+          changeset: 'Z:1>3+3$foo',
+          meta: {
+            author: 'a.foo',
+            timestamp: 1597632398288,
+            pool: {
+              nextNum: 1,
+              numToAttrib: {
+                0: ['author', 'a.foo'],
+              },
+            },
+            atext: {
+              text: 'foo\n',
+              attribs: '|1+4',
+            },
+          },
+        },
+        'pad:testing:revs:1': {
+          changeset: 'Z:4>1+1$o',
+          meta: {
+            author: 'a.foo',
+            timestamp: 1597632398288,
+            pool: {
+              nextNum: 1,
+              numToAttrib: {
+                0: ['author', 'a.foo'],
+              },
+            },
+            atext: {
+              text: 'fooo\n',
+              attribs: '*0|1+5',
+            },
+          },
+        },
+        'pad:testing:revs:2': {
+          changeset: 'Z:5>1+1$o',
+          meta: {
+            author: 'a.foo',
+            timestamp: 1597632398288,
+            pool: {
+              numToAttrib: {},
+              nextNum: 0,
+            },
+            atext: {
+              text: 'foooo\n',
+              attribs: '*0|1+6',
+            },
+          },
+        },
+      });
+
+      const importEtherpad = (records) => agent.post(`/p/${testPadId}/import`)
+          .attach('file', Buffer.from(JSON.stringify(records), 'utf8'), {
+            filename: '/test.etherpad',
+            contentType: 'application/etherpad',
+          });
+
+      before(async function () {
+        // makeGoodExport() is assumed to produce good .etherpad records. Verify that assumption so
+        // that a buggy makeGoodExport() doesn't cause checks to accidentally pass.
+        const records = makeGoodExport();
+        await deleteTestPad();
+        await importEtherpad(records)
+            .expect(200)
+            .expect('Content-Type', /json/)
+            .expect((res) => assert.deepEqual(res.body, {
+              code: 0,
+              message: 'ok',
+              data: {directDatabaseAccess: true},
+            }));
+        await agent.get(`/p/${testPadId}/export/txt`)
+            .expect(200)
+            .buffer(true).parse(superagent.parse.text)
+            .expect((res) => assert.equal(res.text, 'oofoo\n'));
+      });
+
+      it('txt request rev 1', async function () {
+        await agent.get(`/p/${testPadId}/1/export/txt`)
+            .expect(200)
+            .buffer(true).parse(superagent.parse.text)
+            .expect((res) => assert.equal(res.text, 'ofoo\n'));
+      });
+
+      it('txt request rev 2', async function () {
+        await agent.get(`/p/${testPadId}/2/export/txt`)
+            .expect(200)
+            .buffer(true).parse(superagent.parse.text)
+            .expect((res) => assert.equal(res.text, 'oofoo\n'));
+      });
+
+      it('txt request rev 1test returns rev 1', async function () {
+        await agent.get(`/p/${testPadId}/1test/export/txt`)
+            .expect(200)
+            .buffer(true).parse(superagent.parse.text)
+            .expect((res) => assert.equal(res.text, 'ofoo\n'));
+      });
+
+      it('txt request rev test1 is 403', async function () {
+        await agent.get(`/p/${testPadId}/test1/export/txt`)
+            .expect(500)
+            .buffer(true).parse(superagent.parse.text)
+            .expect((res) => assert.match(res.text, /rev is not a number/));
+      });
+
+      it('txt request rev 5 returns head rev', async function () {
+        await agent.get(`/p/${testPadId}/5/export/txt`)
+            .expect(200)
+            .buffer(true).parse(superagent.parse.text)
+            .expect((res) => assert.equal(res.text, 'oofoo\n'));
+      });
+
+      it('html request rev 1', async function () {
+        await agent.get(`/p/${testPadId}/1/export/html`)
+            .expect(200)
+            .buffer(true).parse(superagent.parse.text)
+            .expect((res) => assert.match(res.text, /ofoo<br>/));
+      });
+
+      it('html request rev 2', async function () {
+        await agent.get(`/p/${testPadId}/2/export/html`)
+            .expect(200)
+            .buffer(true).parse(superagent.parse.text)
+            .expect((res) => assert.match(res.text, /oofoo<br>/));
+      });
+
+      it('html request rev 1test returns rev 1', async function () {
+        await agent.get(`/p/${testPadId}/1test/export/html`)
+            .expect(200)
+            .buffer(true).parse(superagent.parse.text)
+            .expect((res) => assert.match(res.text, /ofoo<br>/));
+      });
+
+      it('html request rev test1 results in 500 response', async function () {
+        await agent.get(`/p/${testPadId}/test1/export/html`)
+            .expect(500)
+            .buffer(true).parse(superagent.parse.text)
+            .expect((res) => assert.match(res.text, /rev is not a number/));
+      });
+
+      it('html request rev 5 returns head rev', async function () {
+        await agent.get(`/p/${testPadId}/5/export/html`)
+            .expect(200)
+            .buffer(true).parse(superagent.parse.text)
+            .expect((res) => assert.match(res.text, /oofoo<br>/));
+      });
+    });
+
     describe('Import authorization checks', function () {
       let authorize;
 

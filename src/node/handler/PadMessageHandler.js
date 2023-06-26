@@ -39,6 +39,7 @@ const stats = require('../stats');
 const assert = require('assert').strict;
 const {RateLimiterMemory} = require('rate-limiter-flexible');
 const webaccess = require('../hooks/express/webaccess');
+const { checkValidRev } = require('../utils/checkValidRev');
 
 let rateLimiter;
 let socketio = null;
@@ -1076,10 +1077,14 @@ const handleChangesetRequest = async (socket, {data: {granularity, start, reques
   if (granularity == null) throw new Error('missing granularity');
   if (!Number.isInteger(granularity)) throw new Error('granularity is not an integer');
   if (start == null) throw new Error('missing start');
+  start = checkValidRev(start);
   if (requestID == null) throw new Error('mising requestID');
   const end = start + (100 * granularity);
   const {padId, author: authorId} = sessioninfos[socket.id];
   const pad = await padManager.getPad(padId, null, authorId);
+  const headRev = pad.getHeadRevisionNumber();
+  if (start > headRev)
+    start = headRev;
   const data = await getChangesetInfo(pad, start, end, granularity);
   data.requestID = requestID;
   socket.json.send({type: 'CHANGESET_REQ', data});

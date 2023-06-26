@@ -1,3 +1,24 @@
+# 1.9.1
+
+### Notable enhancements and fixes
+
+* Security
+  * Limit requested revisions in timeslider and export to head revision. (affects v1.9.0)
+  
+* Bugfixes
+  * revisions in `CHANGESET_REQ` (timeslider) and export (txt, html, custom)
+    are now checked to be numbers.
+  * bump sql for audit fix
+* Enhancements
+  * Add keybinding meta-backspace to delete to beginning of line
+  * Fix automatic Windows build via GitHub Actions
+  * Enable docs to be build cross platform thanks to asciidoctor
+
+### Compatibility changes
+* tests: drop windows 7 test coverage & use chrome latest for admin tests
+* Require Node 16 for Etherpad and target Node 20 for testing
+
+    
 # 1.9.0
 
 ### Notable enhancements and fixes

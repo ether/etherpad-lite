@@ -28,7 +28,7 @@ jobs:
       -
         uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 20
           cache: 'npm'
           cache-dependency-path: |
             src/package-lock.json
@@ -75,7 +75,7 @@ jobs:
         run: 7z x etherpad-win.zip -oetherpad-zip
       -
         name: Create installer
-        uses: joncloud/makensis-action@v3.6
+        uses: joncloud/makensis-action@v3.7
         with:
           script-file: 'src/bin/nsis/etherpad.nsi'
       -
@@ -108,14 +108,14 @@ jobs:
       -
         uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 20
           cache: 'npm'
           cache-dependency-path: |
             etherpad/src/package-lock.json
             etherpad/src/bin/doc/package-lock.json
       -
         name: Install Cypress
-        run: cd src && npm install cypress
+        run: cd etherpad && cd src && npm install cypress
       -
         name: Run Etherpad
         run: |

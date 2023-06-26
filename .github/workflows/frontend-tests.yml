@@ -34,7 +34,7 @@ jobs:
       -
         uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 20
           cache: 'npm'
           cache-dependency-path: |
             src/package-lock.json
@@ -54,7 +54,7 @@ jobs:
         run: |
           sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 0/' -i settings.json
       -
-        uses: saucelabs/sauce-connect-action@v2.1.1
+        uses: saucelabs/sauce-connect-action@v2.3.4
         with:
           username: ${{ secrets.SAUCE_USERNAME }}
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
@@ -98,7 +98,7 @@ jobs:
       -
         uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 20
           cache: 'npm'
           cache-dependency-path: |
             src/package-lock.json
@@ -126,7 +126,7 @@ jobs:
       # Etherpad core dependencies must be installed after installing the
       # plugin's dependencies, otherwise npm will try to hoist common
       # dependencies by removing them from src/node_modules and installing them
-      # in the top-level node_modules. As of v6.14.10, npm's hoist logic appears
+      # in the top-level node_modules. As of v6.20.10, npm's hoist logic appears
       # to be buggy, because it sometimes removes dependencies from
       # src/node_modules but fails to add them to the top-level node_modules.
       # Even if npm correctly hoists the dependencies, the hoisting seems to
@@ -151,7 +151,7 @@ jobs:
         name: Remove standard frontend test files, so only plugin tests are run
         run: rm src/tests/frontend/specs/*
       -
-        uses: saucelabs/sauce-connect-action@v2.1.1
+        uses: saucelabs/sauce-connect-action@v2.3.4
         with:
           username: ${{ secrets.SAUCE_USERNAME }}
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
