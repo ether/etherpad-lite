@@ -79,16 +79,9 @@ exports.getAvailablePlugins = (maxCacheAge) => {
 
       await axios.get('https://static.etherpad.org/plugins.json')
           .then(pluginsLoaded => {
-              let plugins;
-              try {
-                  plugins = JSON.parse(pluginsLoaded.data);
-              } catch (err) {
-                  logger.error(`error parsing plugins.json: ${err.stack || err}`);
-                  plugins = [];
-              }
-              exports.availablePlugins = plugins;
+              exports.availablePlugins = pluginsLoaded.data;
               cacheTimestamp = nowTimestamp;
-              resolve(plugins);
+              resolve(exports.availablePlugins);
           })
   })
 }
