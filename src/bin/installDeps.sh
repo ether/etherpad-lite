@@ -42,7 +42,7 @@ log "Installing dependencies..."
   cd node_modules &&
   { [ -d ep_etherpad-lite ] || ln -sf ../src ep_etherpad-lite; } &&
   cd ep_etherpad-lite &&
-  npm ci --no-optional
+  npm ci --no-optional --omit=dev --lockfile-version 1
 ) || exit 1
 
 # Remove all minified data to force node creating it new
