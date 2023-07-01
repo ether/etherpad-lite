@@ -39,17 +39,17 @@ fi
 
 log "Installing dependencies..."
 (mkdir -p node_modules &&
-cd node_modules && ls -lisa &&
+cd node_modules &&
 { [ -d ep_etherpad-lite ] || ln -sf ../src ep_etherpad-lite; } &&
 cd ep_etherpad-lite)
 
-if [[ -z NODE_ENV ]]; then
+cd src
+
+if [[ -z "${NODE_ENV}" ]]; then
   log "Installing dev dependencies"
-  cd src
   npm ci --no-optional --omit=optional --include=dev --lockfile-version 1 || exit 1
 else
   log "Installing production dependencies"
-  cd src
   npm ci --no-optional --omit=optional --omit=dev --lockfile-version 1 --production || exit 1
 fi
 
