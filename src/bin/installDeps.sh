@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 
 # Move to the Etherpad base directory.
