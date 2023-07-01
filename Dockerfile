@@ -47,7 +47,7 @@ ARG INSTALL_SOFFICE=
 ENV NODE_ENV=production
 ENV ETHERPAD_PRODUCTION=true
 # Install dependencies required for modifying access.
-RUN apk add shadow
+RUN apk add shadow bash
 # Follow the principle of least privilege: run as unprivileged user.
 #
 # Running as non-root enables running this image in platforms like OpenShift
