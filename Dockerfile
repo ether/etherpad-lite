@@ -45,7 +45,7 @@ ARG INSTALL_SOFFICE=
 # leaner (development dependencies are not installed) and runs faster (among
 # other things, assets are minified & compressed).
 ENV NODE_ENV=production
-
+ENV ETHERPAD_PRODUCTION=true
 # Install dependencies required for modifying access.
 RUN apk add shadow
 # Follow the principle of least privilege: run as unprivileged user.
@@ -60,6 +60,7 @@ ARG EP_UID=5001
 ARG EP_GID=0
 ARG EP_SHELL=
 
+ENV NODE_ENV=production
 
 RUN groupadd --system ${EP_GID:+--gid "${EP_GID}" --non-unique} etherpad && \
     useradd --system ${EP_UID:+--uid "${EP_UID}" --non-unique} --gid etherpad \
