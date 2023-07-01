@@ -45,9 +45,9 @@ cd ep_etherpad-lite)
 
 cd src
 
-if [[ -z "${NODE_ENV}" ]]; then
+if [[ -z "${ETHERPAD_PRODUCTION}" ]]; then
   log "Installing dev dependencies"
-  npm ci --no-optional --omit=optional --include=dev --lockfile-version 1 || exit 1
+ npm ci --no-optional --omit=optional --include=dev --lockfile-version 1 || exit 1
 else
   log "Installing production dependencies"
   npm ci --no-optional --omit=optional --omit=dev --lockfile-version 1 --production || exit 1

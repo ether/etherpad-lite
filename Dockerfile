@@ -45,7 +45,7 @@ ARG INSTALL_SOFFICE=
 # leaner (development dependencies are not installed) and runs faster (among
 # other things, assets are minified & compressed).
 ENV NODE_ENV=production
-
+ENV ETHERPAD_PRODUCTION=true
 # Install dependencies required for modifying access.
 RUN apk add shadow
 # Follow the principle of least privilege: run as unprivileged user.
