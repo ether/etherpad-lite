@@ -67,7 +67,7 @@
     "terser": "^5.18.2",
     "threads": "^1.7.0",
     "tinycon": "0.6.8",
-    "ueberdb2": "^4.1.1",
+    "ueberdb2": "^4.1.4",
     "underscore": "1.13.6",
     "unorm": "1.6.0",
     "wtfnode": "^0.9.1"
@@ -103,7 +103,8 @@
   "scripts": {
     "lint": "eslint .",
     "test": "mocha --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
-    "test-container": "mocha --timeout 5000 tests/container/specs/api"
+    "test-container": "mocha --timeout 5000 tests/container/specs/api",
+    "dev": "bash ./bin/run.sh"
   },
   "version": "1.9.1",
   "license": "Apache-2.0"
