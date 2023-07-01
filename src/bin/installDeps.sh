@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 
 # Move to the Etherpad base directory.
 MY_DIR=$(cd "${0%/*}" && pwd -P) || exit 1
@@ -45,7 +46,7 @@ cd ep_etherpad-lite)
 
 cd src
 
-if [[ -z "${ETHERPAD_PRODUCTION}" ]]; then
+if [ -z "${ETHERPAD_PRODUCTION}" ]; then
   log "Installing dev dependencies"
  npm ci --no-optional --omit=optional --include=dev --lockfile-version 1 || exit 1
 else
