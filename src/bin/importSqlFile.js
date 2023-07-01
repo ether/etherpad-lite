@@ -50,7 +50,7 @@ const unescape = (val) => {
   const log4js = require('log4js');
   const readline = require('readline');
   const settings = require('../node/utils/Settings');
-  const ueberDB = require('ueberdb2');
+  const ueberDB = require('ueberdb2-ts');
 
   const dbWrapperSettings = {
     cache: 0,

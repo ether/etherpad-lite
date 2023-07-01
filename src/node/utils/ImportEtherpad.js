@@ -24,7 +24,7 @@ const db = require('../db/DB');
 const hooks = require('../../static/js/pluginfw/hooks');
 const log4js = require('log4js');
 const supportedElems = require('../../static/js/contentcollector').supportedElems;
-const ueberdb = require('ueberdb2');
+const ueberdb = require('ueberdb2-ts');
 
 const logger = log4js.getLogger('ImportEtherpad');
 

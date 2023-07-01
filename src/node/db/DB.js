@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-const ueberDB = require('ueberdb2');
+const ueberDB = require('ueberdb2-ts');
 const settings = require('../utils/Settings');
 const log4js = require('log4js');
 const stats = require('../stats');

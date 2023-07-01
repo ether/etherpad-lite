@@ -15,7 +15,7 @@ process.on('unhandledRejection', (err) => { throw err; });
   const dirtyDb = require('dirty');
   const log4js = require('log4js');
   const settings = require('../node/utils/Settings');
-  const ueberDB = require('ueberdb2');
+  const ueberDB = require('ueberdb2-ts');
   const util = require('util');
 
   const dbWrapperSettings = {
