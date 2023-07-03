@@ -430,6 +430,11 @@ exports.importMaxFileSize = 50 * 1024 * 1024;
  */
 exports.enableAdminUITests = false;
 
+/*
+ * Enable auto conversion of pad Ids to lowercase.
+ * e.g. /p/EtHeRpAd to /p/etherpad
+ */
+exports.lowerCasePadIds = false;
 
 // checks if abiword is avaiable
 exports.abiwordAvailable = () => {
