@@ -1,7 +1,7 @@
 'use strict';
 
 const _ = require('underscore');
-const SecretRotator = require('../utils/SecretRotator');
+const SecretRotator = require('../security/SecretRotator');
 const cookieParser = require('cookie-parser');
 const events = require('events');
 const express = require('express');

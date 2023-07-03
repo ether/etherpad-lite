@@ -1,9 +1,9 @@
 'use strict';
 
-const SecretRotator = require('../../../node/utils/SecretRotator');
+const SecretRotator = require('../../../node/security/SecretRotator');
 const assert = require('assert').strict;
 const common = require('../common');
-const crypto = require('../../../node/utils/crypto');
+const crypto = require('../../../node/security/crypto');
 const db = require('../../../node/db/DB');
 
 const logger = common.logger;
