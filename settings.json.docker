@@ -364,6 +364,23 @@
    */
   "cookie": {
     /*
+     * How often (in milliseconds) the key used to sign the express_sid cookie
+     * should be rotated. Long rotation intervals reduce signature verification
+     * overhead (because there are fewer historical keys to check) and database
+     * load (fewer historical keys to store, and less frequent queries to
+     * get/update the keys). Short rotation intervals are slightly more secure.
+     *
+     * Multiple Etherpad processes sharing the same database (table) is
+     * supported as long as the clock sync error is significantly less than this
+     * value.
+     *
+     * Key rotation can be disabled (not recommended) by setting this to 0 or
+     * null, or by disabling session expiration (see sessionLifetime).
+     */
+    // 86400000 = 1d * 24h/d * 60m/h * 60s/m * 1000ms/s
+    "keyRotationInterval": "${COOKIE_KEY_ROTATION_INTERVAL:86400000}",
+
+    /*
      * Value of the SameSite cookie property. "Lax" is recommended unless
      * Etherpad will be embedded in an iframe from another site, in which case
      * this must be set to "None". Note: "None" will not work (the browser will
@@ -392,6 +409,8 @@
      *     indefinitely without consulting authentication or authorization
      *     hooks, so once a user has accessed a pad, the user can continue to
      *     use the pad until the user leaves for longer than sessionLifetime.
+     *   - More historical keys (sessionLifetime / keyRotationInterval) must be
+     *     checked when verifying signatures.
      *
      * Session lifetime can be set to infinity (not recommended) by setting this
      * to null or 0. Note that if the session does not expire, most browsers

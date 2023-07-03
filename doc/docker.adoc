@@ -370,6 +370,10 @@ For the editor container, you can also make it full width by adding `full-width-
 | Description
 | Default
 
+|`COOKIE_KEY_ROTATION_INTERVAL`
+|How often (ms) to rotate in a new secret for signing cookies
+|`86400000` (1 day)
+
 | `COOKIE_SAME_SITE`
 | Value of the SameSite cookie property.
 | `"Lax"`

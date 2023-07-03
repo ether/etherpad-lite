@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('underscore');
+const SecretRotator = require('../security/SecretRotator');
 const cookieParser = require('cookie-parser');
 const events = require('events');
 const express = require('express');
@@ -14,6 +15,7 @@ const stats = require('../stats');
 const util = require('util');
 const webaccess = require('./express/webaccess');
 
+let secretRotator = null;
 const logger = log4js.getLogger('http');
 let serverName;
 let sessionStore;
@@ -53,6 +55,8 @@ const closeServer = async () => {
   }
   if (sessionStore) sessionStore.shutdown();
   sessionStore = null;
+  if (secretRotator) secretRotator.stop();
+  secretRotator = null;
 };
 
 exports.createServer = async () => {
@@ -174,13 +178,23 @@ exports.restartServer = async () => {
     }));
   }
 
-  app.use(cookieParser(settings.sessionKey, {}));
+  const {keyRotationInterval, sessionLifetime} = settings.cookie;
+  let secret = settings.sessionKey;
+  if (keyRotationInterval && sessionLifetime) {
+    secretRotator = new SecretRotator(
+        'expressSessionSecrets', keyRotationInterval, sessionLifetime, settings.sessionKey);
+    await secretRotator.start();
+    secret = secretRotator.secrets;
+  }
+  if (!secret) throw new Error('missing cookie signing secret');
+
+  app.use(cookieParser(secret, {}));
 
   sessionStore = new SessionStore(settings.cookie.sessionRefreshInterval);
   exports.sessionMiddleware = expressSession({
     propagateTouch: true,
     rolling: true,
-    secret: settings.sessionKey,
+    secret,
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
@@ -188,7 +202,7 @@ exports.restartServer = async () => {
     // cleaner :)
     name: 'express_sid',
     cookie: {
-      maxAge: settings.cookie.sessionLifetime || null, // Convert 0 to null.
+      maxAge: sessionLifetime || null, // Convert 0 to null.
       sameSite: settings.cookie.sameSite,
 
       // The automatic express-session mechanism for determining if the application is being served

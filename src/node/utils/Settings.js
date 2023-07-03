@@ -297,9 +297,9 @@ exports.indentationOnNewLine = true;
 exports.logconfig = defaultLogConfig();
 
 /*
- * Session Key, do not sure this.
+ * Deprecated cookie signing key.
  */
-exports.sessionKey = false;
+exports.sessionKey = null;
 
 /*
  * Trust Proxy, whether or not trust the x-forwarded-for header.
@@ -310,6 +310,7 @@ exports.trustProxy = false;
  * Settings controlling the session cookie issued by Etherpad.
  */
 exports.cookie = {
+  keyRotationInterval: 1 * 24 * 60 * 60 * 1000,
   /*
    * Value of the SameSite cookie property. "Lax" is recommended unless
    * Etherpad will be embedded in an iframe from another site, in which case
@@ -805,12 +806,14 @@ exports.reloadSettings = () => {
     });
   }
 
+  const sessionkeyFilename = absolutePaths.makeAbsolute(argv.sessionkey || './SESSIONKEY.txt');
   if (!exports.sessionKey) {
-    const sessionkeyFilename = absolutePaths.makeAbsolute(argv.sessionkey || './SESSIONKEY.txt');
     try {
       exports.sessionKey = fs.readFileSync(sessionkeyFilename, 'utf8');
       logger.info(`Session key loaded from: ${sessionkeyFilename}`);
-    } catch (e) {
+    } catch (err) { /* ignored */ }
+    const keyRotationEnabled = exports.cookie.keyRotationInterval && exports.cookie.sessionLifetime;
+    if (!exports.sessionKey && !keyRotationEnabled) {
       logger.info(
           `Session key file "${sessionkeyFilename}" not found. Creating with random contents.`);
       exports.sessionKey = randomString(32);
@@ -821,6 +824,10 @@ exports.reloadSettings = () => {
                 'This value is auto-generated now. Please remove the setting from the file. -- ' +
                 'If you are seeing this error after restarting using the Admin User ' +
                 'Interface then you can ignore this message.');
+  }
+  if (exports.sessionKey) {
+    logger.warn(`The sessionKey setting and ${sessionkeyFilename} file are deprecated; ` +
+        'use automatic key rotation instead (see the cookie.keyRotationInterval setting).');
   }
 
   if (exports.dbType === 'dirty') {
