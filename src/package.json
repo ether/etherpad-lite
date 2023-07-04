@@ -30,6 +30,7 @@
     }
   ],
   "dependencies": {
+    "@rollup/plugin-json": "^6.0.0",
     "async": "^3.2.4",
     "axios": "^1.4.0",
     "clean-css": "^5.3.2",
@@ -78,6 +79,7 @@
     "etherpad-lite": "node/server.js"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.2",
     "eslint": "^8.43.0",
     "eslint-config-etherpad": "^3.0.15",
     "etherpad-cli-client": "^2.0.2",
@@ -85,6 +87,7 @@
     "mocha-froth": "^0.2.10",
     "nodeify": "^1.0.1",
     "openapi-schema-validation": "^0.4.2",
+    "rollup": "^3.26.0",
     "selenium-webdriver": "^4.10.0",
     "set-cookie-parser": "^2.6.0",
     "sinon": "^15.2.0",
