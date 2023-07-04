@@ -2,8 +2,11 @@ const typescript = require('rollup-plugin-typescript2');
 const copy = require('rollup-plugin-copy');
 const glob = require('glob');
 const json = require('@rollup/plugin-json')
+const commonJS = require('@rollup/plugin-commonjs')
+
+
 module.exports = {
-    input: glob.sync('./node/**/*.ts'), // Matches all TypeScript files in the 'src' directory and its subdirectories
+    input: './node/server.ts', // Matches all TypeScript files in the 'src' directory and its subdirectories
     output: {
         preserveModules: true,
         dir: './dist',
@@ -14,6 +17,7 @@ module.exports = {
         typescript({
             tsconfig: 'tsconfig.json',
         }),
+        commonJS(),
         copy({
             targets: [
                 {src:'./package.json', dest:'./dist'},
