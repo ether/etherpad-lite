@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-import ueberDB from 'ueberdb2';
+import {Database} from 'ueberdb2';
 import {dbSettings, dbType} from '../utils/Settings';
 import log4js from 'log4js';
 import {shutdown as statsShutdown,createCollection} from '../stats';
@@ -37,7 +37,7 @@ let db = null;
  * Initializes the database with the settings provided by the settings module
  */
 const init = async () => {
-  db = new ueberDB.Database(dbType, dbSettings, null, logger);
+  db = new Database(dbType, dbSettings, null, logger);
   await db.init();
   if (db.metrics != null) {
     for (const [metric, value] of Object.entries(db.metrics)) {

@@ -4,12 +4,13 @@
     "allowJs": true,
     "typeRoots": ["node_modules/@types"],
     "types": ["node", "jquery"],
-    "module": "commonjs",
+    "module": "esnext",
     "esModuleInterop": true,
     "moduleResolution": "node",
     "sourceMap": true,
     "target": "ES2015",
     "outDir": "dist"
   },
+  "exclude": ["node_modules"],
   "lib": ["es2015"]
 }

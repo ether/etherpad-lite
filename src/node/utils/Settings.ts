@@ -30,7 +30,7 @@
 import exp from "constants";
 // FIXME Is there a better way to enter dynamic package.json path
 // @ts-ignore
-import packageJSON from '../../../package.json'
+import packageJSON from '../../package.json'
 import {findEtherpadRoot, makeAbsolute, isSubdir} from './AbsolutePaths';
 import deepEqual from 'fast-deep-equal/es6';
 import fs from 'fs';

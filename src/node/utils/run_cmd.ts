@@ -145,7 +145,9 @@ const run_cmd = (args, opts:RunOpts = {
 
   let px;
   const p = new Promise<string>((resolve, reject) => { px = {resolve, reject}; });
+  // @ts-ignore
   [, p.stdout, p.stderr] = streams;
+  // @ts-ignore
   p.child = proc;
 
   const stdioStringPromises = [undefined, Promise.resolve(), Promise.resolve()];

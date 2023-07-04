@@ -34,6 +34,12 @@ import {checkDeprecationStatus, enforceMinNodeVersion} from './utils/NodeVersion
 import {Gate} from './utils/promises';
 import * as UpdateCheck from "./utils/UpdateCheck";
 import {Plugin} from "./models/Plugin";
+import {db} from './db/DB'
+import {createServer, server} from './hooks/express';
+import {aCallAll} from '../static/js/pluginfw/hooks'
+import * as pluginDefs from '../static/js/pluginfw/plugin_defs'
+import * as plugins from "../static/js/pluginfw/plugins";
+import {createCollection} from "./stats";
 
 let wtfnode;
 if (settings.dumpOnUncleanExit) {
@@ -45,13 +51,6 @@ if (settings.dumpOnUncleanExit) {
 enforceMinNodeVersion('12.17.0');
 checkDeprecationStatus('12.17.0', '1.9.0');
 
-import db = require('./db/DB');
-import {} from './db/DB'
-import {createServer, server} from './hooks/express';
-import hooks = require('../static/js/pluginfw/hooks');
-import pluginDefs = require('../static/js/pluginfw/plugin_defs');
-import plugins = require('../static/js/pluginfw/plugins');
-import {createCollection} from "./stats";
 const logger = log4js.getLogger('server');
 console.log = logger.info.bind(logger); // do the same for others - console.debug, etc.
 
@@ -149,8 +148,8 @@ export const start = async () => {
     logger.info(`Installed plugins: ${installedPlugins}`);
     logger.debug(`Installed parts:\n${plugins.formatParts()}`);
     logger.debug(`Installed server-side hooks:\n${plugins.formatHooks('hooks', false)}`);
-    await hooks.aCallAll('loadSettings', {settings});
-    await hooks.aCallAll(createServer());
+    await aCallAll('loadSettings', {settings});
+    await aCallAll(createServer());
   } catch (err) {
     logger.error('Error occurred while starting Etherpad');
     state = State.STATE_TRANSITION_FAILED;
@@ -191,7 +190,7 @@ export const stop = async () => {
   try {
     let timeout = null;
     await Promise.race([
-      hooks.aCallAll('shutdown'),
+      aCallAll('shutdown'),
       new Promise((resolve, reject) => {
         timeout = setTimeout(() => reject(new Error('Timed out waiting for shutdown tasks')), 3000);
       }),
