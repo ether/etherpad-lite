@@ -163,7 +163,7 @@ const minify = async (req, res) => {
       // Go straight into node_modules
       // Avoid `require.resolve()`, since 'mustache' and 'mustache/index.js'
       // would end up resolving to logically distinct resources.
-      filename = path.join('../node_modules/', library, libraryPath);
+      filename = path.join('../../node_modules/', library, libraryPath);
     }
   }
   const [, testf] = /^plugins\/ep_etherpad-lite\/(tests\/frontend\/.*)/.exec(filename) || [];

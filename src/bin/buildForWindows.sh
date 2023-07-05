@@ -48,6 +48,9 @@ try ./src/bin/installDeps.sh
 log "copy the windows settings template..."
 try cp settings.json.template settings.json
 
+log "Because this is a production build, we delete supertest"
+try rm src/node_modules/supertest
+
 log "resolve symbolic links..."
 try cp -rL node_modules node_modules_resolved
 try rm -rf node_modules

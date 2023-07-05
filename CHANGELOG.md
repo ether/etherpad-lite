@@ -1,3 +1,34 @@
+# Next release
+
+#### Note for admins
+Etherpad does no longer store it's dependencies in ./src/node_modules by default. Also, Etherpad now
+stores installed plugins in a package.json file in the root directory and no longer requires quirks
+like `--legacy-peer-deps` or `--no-save` when invoking npm during plugin installation.
+
+When you're updating, it's best to use the `./src/bin/installDeps.sh` script. It will `npm link` the
+src directory, using the package.json file in ./src. This will create the well-known symlink ep_etherpad-lite
+in ./node_modules, that we've been using for years. However, this will also add a dependency in ./package.json.
+
+`./src/bin/installDeps.sh` will fail, if you have no ./package.json or ./package-lock.json and your
+./node_modules directory is not empty, as this is an indicator of installed plugins. You need to remove
+./node_modules and install all your plugins in the next step.
+
+`./src/bin/installDeps.sh` will remove any existing directories in `./src/node_modules`.
+
+After running `./src/bin/installDeps.sh`, install your plugins with `npm i ep_plugin1 ep_plugin2...` or via
+`/admin/plugins`.
+
+
+#### Note for plugin authors
+You can no longer depend on core's dependencies via `require('ep_etherpad-lite/node_modules/$dep')`.
+Please run `src/bin/checkPlugins.sh` or manually change to `require('$dep')`. We don't recommend
+that you rely on Etherpad to include specific dependencies in the future. So it's best if you add
+the dependency in your package.json.
+For convenience we have added symlinks in ./src/node_modules for the following dependencies:
+async, cheerio, express, formidable, log4js and supertest.
+Please note that those symlinks will be removed in a future version, so we strongly recommend that
+you adapt your require statements.
+
 # 1.9.3
 
 ### Compability changes

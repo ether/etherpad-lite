@@ -140,9 +140,7 @@ Alternatively, you can install plugins from the command line:
 
 ```sh
 cd /path/to/etherpad-lite
-# The `--no-save` and `--legacy-peer-deps` arguments are necessary to work
-# around npm quirks.
-npm install --no-save --legacy-peer-deps ep_${plugin_name}
+npm install ep_${plugin_name}
 ```
 
 Also see [the plugin wiki
@@ -154,7 +152,7 @@ Run the following command in your Etherpad folder to get all of the features
 visible in the above demo gif:
 
 ```sh
-npm install --no-save --legacy-peer-deps \
+npm install \
   ep_align \
   ep_comments_page \
   ep_embedded_hyperlinks2 \

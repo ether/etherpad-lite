@@ -356,18 +356,17 @@ const logger = log4js.getLogger('checkPlugin');
     logger.warn('Test files not found, please create tests.  https://github.com/ether/etherpad-lite/wiki/Creating-a-plugin#writing-and-running-front-end-tests-for-your-plugin');
   }
 
-  // Install dependencies so we can run ESLint. This should also create or update package-lock.json
-  // if autoFix is enabled.
-  const npmInstall = `npm install${autoFix ? '' : ' --no-package-lock'}`;
-  execSync(npmInstall, {stdio: 'inherit'});
-  // Create the ep_etherpad-lite symlink if necessary. This must be done after running `npm install`
-  // because that command nukes the symlink.
   try {
     const d = await fsp.realpath(path.join(pluginPath, 'node_modules/ep_etherpad-lite'));
     assert.equal(d, epSrcDir);
   } catch (err) {
-    execSync(`${npmInstall} --no-save ep_etherpad-lite@file:${epSrcDir}`, {stdio: 'inherit'});
+    execSync('./src/bin/installDeps.sh', {stdio: 'inherit'});
   }
+
+  // Install dependencies so we can run ESLint. This should also create or update package-lock.json
+  // if autoFix is enabled.
+  const npmInstall = `npm install${autoFix ? '' : ' --no-package-lock'}`;
+  execSync(npmInstall, {stdio: 'inherit'});
   // linting begins
   try {
     logger.info('Linting...');
