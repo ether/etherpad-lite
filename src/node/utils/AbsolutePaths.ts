@@ -91,7 +91,7 @@ export const findEtherpadRoot = () => {
    *
    *   <BASE_DIR>\src
    */
-  let maybeEtherpadRoot = popIfEndsWith(splitFoundRoot, ['src']);
+  let maybeEtherpadRoot = popIfEndsWith(splitFoundRoot, ['dist']);
 
   if ((maybeEtherpadRoot === false) && (process.platform === 'win32')) {
     /*
