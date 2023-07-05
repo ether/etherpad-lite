@@ -28,10 +28,8 @@ _install_libreoffice: &install_libreoffice >-
   sudo apt-get update &&
   sudo apt-get -y install libreoffice libreoffice-pdfimport
 
-# The --legacy-peer-deps flag is required to work around a bug in npm v7:
-# https://github.com/npm/cli/issues/2199
 _install_plugins: &install_plugins >-
-  npm install --no-save --legacy-peer-deps
+  npm install
   ep_align
   ep_author_hover
   ep_cursortrace
@@ -64,12 +62,11 @@ jobs:
         - *install_libreoffice
         - *set_loglevel_warn
         - "src/bin/installDeps.sh"
-        - "cd src && npm install && cd -"
       script:
         - "cd src && npm test"
     - name: "Test the Dockerfile"
       install:
-        - "cd src && npm install && cd -"
+        - "src/bin/installDeps.sh"
       script:
         - "docker build -t etherpad:test ."
         - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
@@ -78,7 +75,6 @@ jobs:
       install:
         - *set_loglevel_warn
         - "src/bin/installDeps.sh"
-        - "cd src && npm install && cd -"
         - "npm install -g etherpad-load-test"
       script:
         - "src/tests/frontend/travis/runnerLoadTest.sh"
@@ -112,7 +108,7 @@ jobs:
         - "cd src && npm test"
     - name: "Test the Dockerfile"
       install:
-        - "cd src && npm install && cd -"
+        - "src/bin/installDeps.sh"
       script:
         - "docker build -t etherpad:test ."
         - "docker run -d -p 9001:9001 etherpad:test && sleep 3"

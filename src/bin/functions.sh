@@ -1,10 +1,10 @@
 # minimum required node version
-REQUIRED_NODE_MAJOR=12
-REQUIRED_NODE_MINOR=13
+REQUIRED_NODE_MAJOR=16
+REQUIRED_NODE_MINOR=0
 
 # minimum required npm version
-REQUIRED_NPM_MAJOR=5
-REQUIRED_NPM_MINOR=5
+REQUIRED_NPM_MAJOR=8
+REQUIRED_NPM_MINOR=19
 
 pecho() { printf %s\\n "$*"; }
 log() { pecho "$@"; }

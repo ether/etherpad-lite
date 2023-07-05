@@ -38,4 +38,6 @@ jobs:
           --allowed-hosts npm
           --allowed-schemes https:
           --allowed-schemes github:
-          --allowed-urls github:mapbox/node-sqlite3#593c9d498be2510d286349134537e3bf89401c4a
+          --allowed-schemes git+ssh:
+          --allowed-schemes file:
+          --allowed-urls git+ssh://git@github.com/mapbox/node-sqlite3.git#593c9d498be2510d286349134537e3bf89401c4a
