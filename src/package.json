@@ -53,7 +53,6 @@
     "log4js": "0.6.38",
     "measured-core": "^2.0.0",
     "mime-types": "^2.1.35",
-    "npm": "^6.14.18",
     "openapi-backend": "^5.9.2",
     "proxy-addr": "^2.0.7",
     "rate-limiter-flexible": "^2.4.1",
@@ -94,16 +93,17 @@
   },
   "engines": {
     "node": ">=16.20.1",
-    "npm": ">=6.14.0"
+    "npm": ">=8.19.4"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/ether/etherpad-lite.git"
   },
   "scripts": {
-    "lint": "eslint .",
-    "test": "mocha --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
-    "test-container": "mocha --timeout 5000 tests/container/specs/api",
+    "lint": "../node_modules/eslint/bin/eslint.js .",
+    "test": "../node_modules/mocha/bin/_mocha --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
+    "test-on-windows": "mocha --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
+    "test-container": "../node_modules/mocha/bin/_mocha --timeout 5000 tests/container/specs/api",
     "dev": "bash ./bin/run.sh"
   },
   "version": "1.9.1",

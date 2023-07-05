@@ -8,4 +8,4 @@ OUTDATED=$(npm outdated --depth=0 | awk '{print $1}' | grep '^ep_') || {
 }
 set -- ${OUTDATED}
 echo "Updating plugins: $*"
-exec npm install --no-save "$@"
+exec npm install "$@"

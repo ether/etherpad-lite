@@ -34,13 +34,16 @@ jobs:
             src/package-lock.json
             src/bin/doc/package-lock.json
       -
-        name: Install all dependencies and symlink for ep_etherpad-lite
+        name: Install the ep_etherpad-lite package from ./src
         shell: msys2 {0}
         run: src/bin/installDeps.sh
       -
+        name: Run npm i once to make bin files available - why is this needed at all?
+        run: npm i
+      -
         name: Run the backend tests
         shell: msys2 {0}
-        run: cd src && npm test
+        run: cd src && npm run test-on-windows
       -
         name: Build the .zip
         shell: msys2 {0}
@@ -115,11 +118,11 @@ jobs:
             etherpad/src/bin/doc/package-lock.json
       -
         name: Install Cypress
-        run: cd etherpad && cd src && npm install cypress
+        run: cd etherpad && npm install cypress
       -
         name: Run Etherpad
         run: |
           cd etherpad
           node node_modules\ep_etherpad-lite\node\server.js &
           curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
-          src\node_modules\cypress\bin\cypress run --config-file src\tests\frontendcypress\cypress.config.js
+          node_modules\cypress\bin\cypress run --config-file src\tests\frontendcypress\cypress.config.js

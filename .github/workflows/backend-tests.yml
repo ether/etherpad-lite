@@ -38,7 +38,7 @@ jobs:
           sudo apt update
           sudo apt install -y --no-install-recommends libreoffice libreoffice-pdfimport
       -
-        name: Install all dependencies and symlink for ep_etherpad-lite
+        name: Install the ep_etherpad-lite package from ./src
         run: src/bin/installDeps.sh
       -
         name: Run the backend tests
@@ -75,11 +75,12 @@ jobs:
           sudo apt update
           sudo apt install -y --no-install-recommends libreoffice libreoffice-pdfimport
       -
+        name: Install the ep_etherpad-lite package from ./src
+        run: src/bin/installDeps.sh
+      -
         name: Install Etherpad plugins
-        # The --legacy-peer-deps flag is required to work around a bug in npm v7:
-        # https://github.com/npm/cli/issues/2199
         run: >
-          npm install --no-save --legacy-peer-deps
+          npm install
           ep_align
           ep_author_hover
           ep_cursortrace
@@ -93,18 +94,6 @@ jobs:
           ep_spellcheck
           ep_subscript_and_superscript
           ep_table_of_contents
-      # Etherpad core dependencies must be installed after installing the
-      # plugin's dependencies, otherwise npm will try to hoist common
-      # dependencies by removing them from src/node_modules and installing them
-      # in the top-level node_modules. As of v6.14.10, npm's hoist logic appears
-      # to be buggy, because it sometimes removes dependencies from
-      # src/node_modules but fails to add them to the top-level node_modules.
-      # Even if npm correctly hoists the dependencies, the hoisting seems to
-      # confuse tools such as `npm outdated`, `npm update`, and some ESLint
-      # rules.
-      -
-        name: Install all dependencies and symlink for ep_etherpad-lite
-        run: src/bin/installDeps.sh
       -
         name: Run the backend tests
         run: cd src && npm test
@@ -130,8 +119,11 @@ jobs:
             src/package-lock.json
             src/bin/doc/package-lock.json
       -
-        name: Install all dependencies and symlink for ep_etherpad-lite
+        name: Install the ep_etherpad-lite package from ./src
         run: src/bin/installOnWindows.bat
+      -
+        name: Run npm i once to make bin files available - why is this needed at all?
+        run: npm i
       -
         name:  Fix up the settings.json
         run: |
@@ -139,7 +131,7 @@ jobs:
           powershell -Command "(gc settings.json.holder) -replace '\"points\": 10', '\"points\": 1000' | Out-File -encoding ASCII settings.json"
       -
         name: Run the backend tests
-        run: cd src && npm test
+        run: cd src && npm run test-on-windows
 
   withpluginsWindows:
     # run on pushes to any branch
@@ -163,11 +155,15 @@ jobs:
             src/package-lock.json
             src/bin/doc/package-lock.json
       -
+        name: Install the ep_etherpad-lite package from ./src
+        run: src/bin/installOnWindows.bat
+      -
+        name: Run npm i once to make bin files available - why is this needed at all?
+        run: npm i
+      -
         name: Install Etherpad plugins
-        # The --legacy-peer-deps flag is required to work around a bug in npm
-        # v7: https://github.com/npm/cli/issues/2199
         run: >
-          npm install --no-save --legacy-peer-deps
+          npm install
           ep_align
           ep_author_hover
           ep_cursortrace
@@ -181,18 +177,6 @@ jobs:
           ep_spellcheck
           ep_subscript_and_superscript
           ep_table_of_contents
-      # Etherpad core dependencies must be installed after installing the
-      # plugin's dependencies, otherwise npm will try to hoist common
-      # dependencies by removing them from src/node_modules and installing them
-      # in the top-level node_modules. As of v6.14.10, npm's hoist logic appears
-      # to be buggy, because it sometimes removes dependencies from
-      # src/node_modules but fails to add them to the top-level node_modules.
-      # Even if npm correctly hoists the dependencies, the hoisting seems to
-      # confuse tools such as `npm outdated`, `npm update`, and some ESLint
-      # rules.
-      -
-        name: Install all dependencies and symlink for ep_etherpad-lite
-        run: src/bin/installOnWindows.bat
       -
         name:  Fix up the settings.json
         run: |
@@ -200,4 +184,4 @@ jobs:
           powershell -Command "(gc settings.json.holder) -replace '\"points\": 10', '\"points\": 1000' | Out-File -encoding ASCII settings.json"
       -
         name: Run the backend tests
-        run: cd src && npm test
+        run: cd src && npm run test-on-windows

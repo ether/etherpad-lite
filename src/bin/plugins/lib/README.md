@@ -11,7 +11,7 @@ TODO: Describe the plugin.
 From the Etherpad working directory, run:
 
 ```shell
-npm install --no-save --legacy-peer-deps [plugin_name]
+npm install [plugin_name]
 ```
 
 Or, install from Etherpad's `/admin/plugins` page.
