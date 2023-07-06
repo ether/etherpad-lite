@@ -88,7 +88,6 @@ fi
 log "Adding symlinks for plugin backwards compatibility"
 mkdir src/node_modules -p
 ln -s ../../node_modules/async src/node_modules/async
-ln -s ../../node_modules/cheerio src/node_modules/cheerio
 ln -s ../../node_modules/express src/node_modules/express
 ln -s ../../node_modules/formidable src/node_modules/formidable
 ln -s ../../node_modules/log4js src/node_modules/log4js
