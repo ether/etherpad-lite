@@ -31,7 +31,6 @@ echo Adding symlinks for plugin backwards compatibility
 mkdir src\node_modules
 cd /D src\node_modules
 mklink /D "async" "..\..\node_modules\async"
-mklink /D "cheerio" "..\..\node_modules\cheerio"
 mklink /D "express" "..\..\node_modules\express"
 mklink /D "formidable" "..\..\node_modules\formidable"
 mklink /D "log4js" "..\..\node_modules\log4js"
