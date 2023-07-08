@@ -43,17 +43,17 @@ exports.uninstall = async (pluginName, cb = null) => {
   cb(null);
 };
 
-exports.install = async (pluginName, cb = null) => {
+exports.install = async (pluginName, version, cb = null) => {
   cb = wrapTaskCb(cb);
-  logger.info(`Installing plugin ${pluginName}...`);
+  logger.info(`Installing plugin ${pluginName}@${version}...`);
   try {
-    await runCmd(['npm', 'install', pluginName]);
+    await runCmd(['npm', 'install', `${pluginName}@${version}`]);
   } catch (err) {
-    logger.error(`Failed to install plugin ${pluginName}`);
+    logger.error(`Failed to install plugin ${pluginName}@${version}`);
     cb(err || new Error(err));
     throw err;
   }
-  logger.info(`Successfully installed plugin ${pluginName}`);
+  logger.info(`Successfully installed plugin ${pluginName}@${version}`);
   await hooks.aCallAll('pluginInstall', {pluginName});
   await plugins.update();
   cb(null);
