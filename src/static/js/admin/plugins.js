@@ -123,13 +123,17 @@ $(document).ready(() => {
     $('.do-install, .do-update').unbind('click').click(function (e) {
       const $row = $(e.target).closest('tr');
       const plugin = $row.data('plugin');
+      const update = $row.find('input.do-update');
+      // TODO dont store it here in DOM
+      // version after update or after installing a new package
+      const version = update.length !== 0 ? update.attr('version') : $row.find('.version').text();
       if ($(this).hasClass('do-install')) {
         $row.remove().appendTo('#installed-plugins');
         installed.progress.show(plugin, 'Installing');
       } else {
         installed.progress.show(plugin, 'Updating');
       }
-      socket.emit('install', plugin);
+      socket.emit('install', plugin, version);
       installed.messages.hide('nothing-installed');
     });
 
@@ -217,11 +221,13 @@ $(document).ready(() => {
   });
 
   socket.on('results:updatable', (data) => {
-    data.updatable.forEach((pluginName) => {
-      const actions = $(`#installed-plugins > tr.${pluginName} .actions`);
+    data.updatable.forEach((plugin) => {
+      const {name, version} = plugin;
+      const actions = $(`#installed-plugins > tr.${name} .actions`);
       actions.find('.do-update').remove();
+      // TODO dont store version here in DOM
       actions.append(
-          $('<input>').addClass('do-update').attr('type', 'button').attr('value', 'Update'));
+          $('<input>').addClass('do-update').attr('type', 'button').attr('version', version).attr('value', 'Update'));
     });
     updateHandlers();
   });
