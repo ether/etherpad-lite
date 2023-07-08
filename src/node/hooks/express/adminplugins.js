@@ -62,7 +62,7 @@ exports.socketio = (hookName, args, cb) => {
           const currentVersion = pluginDefs.plugins[plugin].package.version;
 
           return semver.gt(latestVersion, currentVersion);
-        });
+        }).map((plugin) => ({name: plugin, version: results[plugin].version}));
 
         socket.emit('results:updatable', {updatable});
       } catch (err) {
@@ -98,8 +98,8 @@ exports.socketio = (hookName, args, cb) => {
       }
     });
 
-    socket.on('install', (pluginName) => {
-      installer.install(pluginName, (err) => {
+    socket.on('install', (pluginName, version) => {
+      installer.install(pluginName, version, (err) => {
         if (err) console.warn(err.stack || err.toString());
 
         socket.emit('finished:install', {
