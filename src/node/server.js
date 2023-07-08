@@ -111,7 +111,7 @@ exports.start = async () => {
       // eslint-disable-next-line promise/no-promise-in-callback
       exports.exit(err)
           .catch((err) => {
-            logger.error('Error in process exit', err);
+            logger.error('Error in process exit', JSON.stringify(err));
             // eslint-disable-next-line n/no-process-exit
             process.exit(1);
           });
