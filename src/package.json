@@ -93,7 +93,7 @@
   },
   "engines": {
     "node": ">=16.20.1",
-    "npm": ">=8.19.4"
+    "npm": ">=9.8.0"
   },
   "repository": {
     "type": "git",
