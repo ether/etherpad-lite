@@ -19,14 +19,14 @@
  * limitations under the License.
  */
 
-const semver = require('semver');
+import semver from 'semver';
 
 /**
  * Quits if Etherpad is not running on a given minimum Node version
  *
  * @param  {String}     minNodeVersion   Minimum required Node version
  */
-exports.enforceMinNodeVersion = (minNodeVersion) => {
+export const enforceMinNodeVersion = (minNodeVersion) => {
   const currentNodeVersion = process.version;
 
   // we cannot use template literals, since we still do not know if we are
@@ -34,6 +34,7 @@ exports.enforceMinNodeVersion = (minNodeVersion) => {
   if (semver.lt(currentNodeVersion, minNodeVersion)) {
     console.error(`Running Etherpad on Node ${currentNodeVersion} is not supported. ` +
                   `Please upgrade at least to Node ${minNodeVersion}`);
+    // eslint-disable-next-line n/no-process-exit
     process.exit(1);
   }
 
@@ -49,7 +50,7 @@ exports.enforceMinNodeVersion = (minNodeVersion) => {
  * @param {Function} epRemovalVersion Etherpad version that will remove support for deprecated
  *     Node releases
  */
-exports.checkDeprecationStatus = (lowestNonDeprecatedNodeVersion, epRemovalVersion) => {
+export const checkDeprecationStatus = (lowestNonDeprecatedNodeVersion, epRemovalVersion) => {
   const currentNodeVersion = process.version;
 
   if (semver.lt(currentNodeVersion, lowestNonDeprecatedNodeVersion)) {

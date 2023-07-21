@@ -1,6 +1,6 @@
 'use strict';
 
-const defs = require('./plugin_defs');
+import {parts} from './plugin_defs.js'
 
 const disabledHookReasons = {
   hooks: {
@@ -33,7 +33,7 @@ const loadFn = (path, hookName) => {
   return fn;
 };
 
-const extractHooks = (parts, hookSetName, normalizer) => {
+export const extractHooks = (parts, hookSetName, normalizer) => {
   const hooks = {};
   for (const part of parts) {
     for (const [hookName, regHookFnName] of Object.entries(part[hookSetName] || {})) {
@@ -74,7 +74,6 @@ const extractHooks = (parts, hookSetName, normalizer) => {
   return hooks;
 };
 
-exports.extractHooks = extractHooks;
 
 /*
  * Returns an array containing the names of the installed client-side plugins
@@ -88,8 +87,8 @@ exports.extractHooks = extractHooks;
  *   No plugins:   []
  *   Some plugins: [ 'ep_adminpads', 'ep_add_buttons', 'ep_activepads' ]
  */
-exports.clientPluginNames = () => {
-  const clientPluginNames = defs.parts
+export const clientPluginNames = () => {
+  const clientPluginNames = parts
       .filter((part) => Object.prototype.hasOwnProperty.call(part, 'client_hooks'))
       .map((part) => `plugin-${part.plugin}`);
   return [...new Set(clientPluginNames)];

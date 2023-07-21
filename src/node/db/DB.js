@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * The DB Module provides a database initialized with the settings
  * provided by the settings module
@@ -21,40 +19,45 @@
  * limitations under the License.
  */
 
-const ueberDB = require('ueberdb2');
-const settings = require('../utils/Settings');
-const log4js = require('log4js');
-const stats = require('../stats');
+import ueberDB from 'ueberdb2';
+
+import {dbSettings, dbType} from '../utils/Settings.js';
+
+import log4js from 'log4js';
+
+import stats from '../stats.js';
 
 const logger = log4js.getLogger('ueberDB');
 
 /**
  * The UeberDB Object that provides the database functions
  */
-exports.db = null;
+export let db = null;
 
 /**
  * Initializes the database with the settings provided by the settings module
  */
-exports.init = async () => {
-  exports.db = new ueberDB.Database(settings.dbType, settings.dbSettings, null, logger);
-  await exports.db.init();
-  if (exports.db.metrics != null) {
-    for (const [metric, value] of Object.entries(exports.db.metrics)) {
+export const init = async () => {
+  db = new ueberDB.Database(dbType, dbSettings, null, logger);
+  await db.init();
+  if (db.metrics != null) {
+    for (const [metric, value] of Object.entries(db.metrics)) {
       if (typeof value !== 'number') continue;
-      stats.gauge(`ueberdb_${metric}`, () => exports.db.metrics[metric]);
+      stats.gauge(`ueberdb_${metric}`, () => db.metrics[metric]);
     }
   }
   for (const fn of ['get', 'set', 'findKeys', 'getSub', 'setSub', 'remove']) {
-    const f = exports.db[fn];
-    exports[fn] = async (...args) => await f.call(exports.db, ...args);
-    Object.setPrototypeOf(exports[fn], Object.getPrototypeOf(f));
-    Object.defineProperties(exports[fn], Object.getOwnPropertyDescriptors(f));
+    const f = db[fn];
+    global[fn] = async (...args) => await f.call(db, ...args);
+    Object.setPrototypeOf(global[fn], Object.getPrototypeOf(f));
+    Object.defineProperties(global[fn], Object.getOwnPropertyDescriptors(f));
   }
 };
 
-exports.shutdown = async (hookName, context) => {
-  if (exports.db != null) await exports.db.close();
-  exports.db = null;
+export const shutdown = async (hookName, context) => {
+  if (db != null) await db.close();
+  db = null;
   logger.log('Database closed');
 };
+
+export default db;

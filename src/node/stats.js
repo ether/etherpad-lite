@@ -1,9 +1,9 @@
-'use strict';
+import measured from 'measured-core';
 
-const measured = require('measured-core');
+export default measured.createCollection();
 
-module.exports = measured.createCollection();
-
-module.exports.shutdown = async (hookName, context) => {
-  module.exports.end();
+export const shutdown = async (hookName, context) => {
+  // FIXME Is this correcT?
+  // eslint-disable-next-line n/no-process-exit
+  process.exit(0);
 };

@@ -1,9 +1,10 @@
-'use strict';
+import {Buffer} from 'buffer';
 
-const {Buffer} = require('buffer');
-const crypto = require('./crypto');
-const db = require('../db/DB');
-const log4js = require('log4js');
+import {hkdf,randomBytes} from './crypto.js';
+
+import * as db from '../db/DB.js';
+
+import log4js from 'log4js';
 
 class Kdf {
   async generateParams() { throw new Error('not implemented'); }
@@ -23,15 +24,15 @@ class Hkdf extends Kdf {
 
   async generateParams() {
     const [secret, salt] = (await Promise.all([
-      crypto.randomBytes(this._keyLen),
-      crypto.randomBytes(this._keyLen),
+      randomBytes(this._keyLen),
+      randomBytes(this._keyLen),
     ])).map((b) => b.toString('hex'));
     return {digest: this._digest, keyLen: this._keyLen, salt, secret};
   }
 
   async derive(p, info) {
     return Buffer.from(
-        await crypto.hkdf(p.digest, p.secret, p.salt, info, p.keyLen)).toString('hex');
+        await hkdf(p.digest, p.secret, p.salt, info, p.keyLen)).toString('hex');
   }
 }
 
@@ -58,7 +59,7 @@ const intervalStart = (t, interval) => t - mod(t, interval);
  * The secrets are generated using a key derivation function (KDF) with input keying material coming
  * from a long-lived secret stored in the database (generated if missing).
  */
-class SecretRotator {
+export default class SecretRotator {
   /**
    * @param {string} dbPrefix - Database key prefix to use for tracking secret metadata.
    * @param {number} interval - How often to rotate in a new secret.
@@ -97,7 +98,7 @@ class SecretRotator {
   async _publish(params, id = null) {
     // Params are published to the db with a randomly generated key to avoid race conditions with
     // other instances.
-    if (id == null) id = `${this._dbPrefix}:${(await crypto.randomBytes(32)).toString('hex')}`;
+    if (id == null) id = `${this._dbPrefix}:${(await randomBytes(32)).toString('hex')}`;
     await db.set(id, params);
     return id;
   }
@@ -247,5 +248,3 @@ class SecretRotator {
         this._t.setTimeout(async () => await this._update(), next - this._t.now());
   }
 }
-
-module.exports = SecretRotator;

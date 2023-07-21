@@ -2,6 +2,7 @@
   "name": "ep_etherpad-lite",
   "description": "A free and open source realtime collaborative editor",
   "homepage": "https://etherpad.org",
+  "type": "module",
   "keywords": [
     "etherpad",
     "realtime",

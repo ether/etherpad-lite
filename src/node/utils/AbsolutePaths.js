@@ -1,4 +1,3 @@
-'use strict';
 /**
  * Library for deterministic relative filename expansion for Etherpad.
  */
@@ -19,12 +18,20 @@
  * limitations under the License.
  */
 
-const log4js = require('log4js');
-const path = require('path');
-const _ = require('underscore');
+import log4js from 'log4js';
+
+import path from 'path';
+
+import _ from 'underscore';
+
+import findRoot from 'find-root';
+import {fileURLToPath} from 'url';
 
 const absPathLogger = log4js.getLogger('AbsolutePaths');
 
+const __filename = fileURLToPath(import.meta.url);
+
+const __dirname = path.dirname(__filename);
 /*
  * findEtherpadRoot() computes its value only on first invocation.
  * Subsequent invocations are served from this variable.
@@ -49,6 +56,7 @@ const popIfEndsWith = (stringArray, lastDesiredElements) => {
     return false;
   }
 
+  // eslint-disable-next-line you-dont-need-lodash-underscore/last
   const lastElementsFound = _.last(stringArray, lastDesiredElements.length);
 
   if (_.isEqual(lastElementsFound, lastDesiredElements)) {
@@ -75,12 +83,10 @@ const popIfEndsWith = (stringArray, lastDesiredElements) => {
  * @return {string} The identified absolute base path. If such path cannot be
  *                  identified, prints a log and exits the application.
  */
-exports.findEtherpadRoot = () => {
+export const findEtherpadRoot = () => {
   if (etherpadRoot != null) {
     return etherpadRoot;
   }
-
-  const findRoot = require('find-root');
   const foundRoot = findRoot(__dirname);
   const splitFoundRoot = foundRoot.split(path.sep);
 
@@ -106,6 +112,7 @@ exports.findEtherpadRoot = () => {
   if (maybeEtherpadRoot === false) {
     absPathLogger.error('Could not identity Etherpad base path in this ' +
                         `${process.platform} installation in "${foundRoot}"`);
+    // eslint-disable-next-line n/no-process-exit
     process.exit(1);
   }
 
@@ -118,6 +125,7 @@ exports.findEtherpadRoot = () => {
 
   absPathLogger.error(
       `To run, Etherpad has to identify an absolute base path. This is not: "${etherpadRoot}"`);
+  // eslint-disable-next-line n/no-process-exit
   process.exit(1);
 };
 
@@ -131,12 +139,12 @@ exports.findEtherpadRoot = () => {
  *                  it is returned unchanged. Otherwise it is interpreted
  *                  relative to exports.root.
  */
-exports.makeAbsolute = (somePath) => {
+export const makeAbsolute = (somePath) => {
   if (path.isAbsolute(somePath)) {
     return somePath;
   }
 
-  const rewrittenPath = path.join(exports.findEtherpadRoot(), somePath);
+  const rewrittenPath = path.join(findEtherpadRoot(), somePath);
 
   absPathLogger.debug(`Relative path "${somePath}" can be rewritten to "${rewrittenPath}"`);
   return rewrittenPath;
@@ -150,7 +158,7 @@ exports.makeAbsolute = (somePath) => {
  *                                 a subdirectory of the base one
  * @return {boolean}
  */
-exports.isSubdir = (parent, arbitraryDir) => {
+export const isSubdir = (parent, arbitraryDir) => {
   // modified from: https://stackoverflow.com/questions/37521893/determine-if-a-path-is-subdirectory-of-another-in-node-js#45242825
   const relative = path.relative(parent, arbitraryDir);
   const isSubdir = !!relative && !relative.startsWith('..') && !path.isAbsolute(relative);

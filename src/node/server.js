@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-'use strict';
 
 /**
  * This module is started with src/bin/run.sh. It sets up a Express HTTP and a Socket.IO Server.
@@ -24,35 +23,47 @@
  * limitations under the License.
  */
 
-const log4js = require('log4js');
+
+import log4js from 'log4js';
+
 log4js.replaceConsole();
+import * as settings from './utils/Settings.js';
+import {dumpOnUncleanExit} from './utils/Settings.js';
 
-const settings = require('./utils/Settings');
 
-let wtfnode;
-if (settings.dumpOnUncleanExit) {
-  // wtfnode should be loaded after log4js.replaceConsole() so that it uses log4js for logging, and
-  // it should be above everything else so that it can hook in before resources are used.
-  wtfnode = require('wtfnode');
-}
+import wtfnode0 from 'wtfnode';
+
+import {check} from './utils/UpdateCheck.js';
+
+import * as db from './db/DB.js';
+
+import * as express from './hooks/express.js';
+
+import * as hooks from '../static/js/pluginfw/hooks.js';
+
+import {plugins as pluginDefs} from '../static/js/pluginfw/plugin_defs.js';
+
+import * as plugins from '../static/js/pluginfw/plugins.js';
+
+import {Gate} from './utils/promises.js';
+
+import stats from './stats.js';
+
 
 /*
  * early check for version compatibility before calling
  * any modules that require newer versions of NodeJS
  */
-const NodeVersion = require('./utils/NodeVersion');
-NodeVersion.enforceMinNodeVersion('12.17.0');
-NodeVersion.checkDeprecationStatus('12.17.0', '1.9.0');
+import {enforceMinNodeVersion, checkDeprecationStatus} from './utils/NodeVersion.js';
 
-const UpdateCheck = require('./utils/UpdateCheck');
-const db = require('./db/DB');
-const express = require('./hooks/express');
-const hooks = require('../static/js/pluginfw/hooks');
-const pluginDefs = require('../static/js/pluginfw/plugin_defs');
-const plugins = require('../static/js/pluginfw/plugins');
-const {Gate} = require('./utils/promises');
-const stats = require('./stats');
-
+let wtfnode;
+if (dumpOnUncleanExit) {
+  // wtfnode should be loaded after log4js.replaceConsole() so that it uses log4js for logging, and
+  // it should be above everything else so that it can hook in before resources are used.
+  wtfnode = wtfnode0;
+}
+enforceMinNodeVersion('12.17.0');
+checkDeprecationStatus('12.17.0', '1.9.0');
 const logger = log4js.getLogger('server');
 
 const State = {
@@ -76,14 +87,14 @@ const removeSignalListener = (signal, listener) => {
 };
 
 let startDoneGate;
-exports.start = async () => {
+export const start = async () => {
   switch (state) {
     case State.INITIAL:
       break;
     case State.STARTING:
       await startDoneGate;
       // Retry. Don't fall through because it might have transitioned to STATE_TRANSITION_FAILED.
-      return await exports.start();
+      return await start();
     case State.RUNNING:
       return express.server;
     case State.STOPPING:
@@ -100,7 +111,7 @@ exports.start = async () => {
   state = State.STARTING;
   try {
     // Check if Etherpad version is up-to-date
-    UpdateCheck.check();
+    check();
 
     stats.gauge('memoryUsage', () => process.memoryUsage().rss);
     stats.gauge('memoryUsageHeap', () => process.memoryUsage().heapUsed);
@@ -109,7 +120,7 @@ exports.start = async () => {
       logger.debug(`uncaught exception: ${err.stack || err}`);
 
       // eslint-disable-next-line promise/no-promise-in-callback
-      exports.exit(err)
+      exit(err)
           .catch((err) => {
             logger.error('Error in process exit', JSON.stringify(err));
             // eslint-disable-next-line n/no-process-exit
@@ -131,7 +142,7 @@ exports.start = async () => {
       for (const listener of process.listeners(signal)) {
         removeSignalListener(signal, listener);
       }
-      process.on(signal, exports.exit);
+      process.on(signal, exit);
       // Prevent signal listeners from being added in the future.
       process.on('newListener', (event, listener) => {
         if (event !== signal) return;
@@ -141,7 +152,7 @@ exports.start = async () => {
 
     await db.init();
     await plugins.update();
-    const installedPlugins = Object.values(pluginDefs.plugins)
+    const installedPlugins = Object.values(pluginDefs)
         .filter((plugin) => plugin.package.name !== 'ep_etherpad-lite')
         .map((plugin) => `${plugin.package.name}@${plugin.package.version}`)
         .join(', ');
@@ -154,7 +165,7 @@ exports.start = async () => {
     logger.error('Error occurred while starting Etherpad');
     state = State.STATE_TRANSITION_FAILED;
     startDoneGate.resolve();
-    return await exports.exit(err);
+    return await exit(err);
   }
 
   logger.info('Etherpad is running');
@@ -166,12 +177,12 @@ exports.start = async () => {
 };
 
 const stopDoneGate = new Gate();
-exports.stop = async () => {
+export const stop = async () => {
   switch (state) {
     case State.STARTING:
-      await exports.start();
+      await start();
       // Don't fall through to State.RUNNING in case another caller is also waiting for startup.
-      return await exports.stop();
+      return await stop();
     case State.RUNNING:
       break;
     case State.STOPPING:
@@ -201,7 +212,7 @@ exports.stop = async () => {
     logger.error('Error occurred while stopping Etherpad');
     state = State.STATE_TRANSITION_FAILED;
     stopDoneGate.resolve();
-    return await exports.exit(err);
+    return await exit(err);
   }
   logger.info('Etherpad stopped');
   state = State.STOPPED;
@@ -210,7 +221,7 @@ exports.stop = async () => {
 
 let exitGate;
 let exitCalled = false;
-exports.exit = async (err = null) => {
+export const exit = async (err = null) => {
   /* eslint-disable no-process-exit */
   if (err === 'SIGTERM') {
     // Termination from SIGTERM is not treated as an abnormal termination.
@@ -222,6 +233,7 @@ exports.exit = async (err = null) => {
     process.exitCode = 1;
     if (exitCalled) {
       logger.error('Error occurred while waiting to exit. Forcing an immediate unclean exit...');
+      // eslint-disable-next-line n/no-process-exit
       process.exit(1);
     }
   }
@@ -231,11 +243,11 @@ exports.exit = async (err = null) => {
     case State.STARTING:
     case State.RUNNING:
     case State.STOPPING:
-      await exports.stop();
+      await stop();
       // Don't fall through to State.STOPPED in case another caller is also waiting for stop().
       // Don't pass err to exports.exit() because this err has already been processed. (If err is
       // passed again to exit() then exit() will think that a second error occurred while exiting.)
-      return await exports.exit();
+      return await exit();
     case State.INITIAL:
     case State.STOPPED:
     case State.STATE_TRANSITION_FAILED:
@@ -267,6 +279,7 @@ exports.exit = async (err = null) => {
     }
 
     logger.error('Forcing an unclean exit...');
+    // eslint-disable-next-line n/no-process-exit
     process.exit(1);
   }, 5000).unref();
 
@@ -275,4 +288,4 @@ exports.exit = async (err = null) => {
   /* eslint-enable no-process-exit */
 };
 
-if (require.main === module) exports.start();
+start();

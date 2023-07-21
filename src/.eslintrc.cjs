@@ -4,6 +4,9 @@
 require('eslint-config-etherpad/patch/modern-module-resolution');
 
 module.exports = {
+  "parserOptions": {
+    "sourceType": "module",
+  },
   ignorePatterns: [
     '/static/js/admin/jquery.autosize.js',
     '/static/js/admin/minify.json.js',

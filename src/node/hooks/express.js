@@ -1,19 +1,34 @@
-'use strict';
+import _ from 'underscore';
 
-const _ = require('underscore');
-const SecretRotator = require('../security/SecretRotator');
-const cookieParser = require('cookie-parser');
-const events = require('events');
-const express = require('express');
-const expressSession = require('express-session');
-const fs = require('fs');
-const hooks = require('../../static/js/pluginfw/hooks');
-const log4js = require('log4js');
-const SessionStore = require('../db/SessionStore');
-const settings = require('../utils/Settings');
-const stats = require('../stats');
-const util = require('util');
-const webaccess = require('./express/webaccess');
+import * as SecretRotator from '../security/SecretRotator.js';
+
+import cookieParser from 'cookie-parser';
+
+import events from 'events';
+
+import express from 'express';
+
+import expressSession from 'express-session';
+
+import fs from 'fs';
+
+import * as hooks from '../../static/js/pluginfw/hooks.js';
+
+import log4js from 'log4js';
+
+import * as SessionStore from '../db/SessionStore.js';
+
+import * as settings from '../utils/Settings.js';
+
+import stats from '../stats.js';
+
+import util from 'util';
+
+import * as webaccess from './express/webaccess.js';
+
+import https from 'https';
+
+import http from 'http';
 
 let secretRotator = null;
 const logger = log4js.getLogger('http');
@@ -23,14 +38,14 @@ const sockets = new Set();
 const socketsEvents = new events.EventEmitter();
 const startTime = stats.settableGauge('httpStartTime');
 
-exports.server = null;
-
+export let server = null;
+export let sessionMiddleware;
 const closeServer = async () => {
-  if (exports.server != null) {
+  if (server != null) {
     logger.info('Closing HTTP server...');
     // Call exports.server.close() to reject new connections but don't await just yet because the
     // Promise won't resolve until all preexisting connections are closed.
-    const p = util.promisify(exports.server.close.bind(exports.server))();
+    const p = util.promisify(server.close.bind(server))();
     await hooks.aCallAll('expressCloseServer');
     // Give existing connections some time to close on their own before forcibly terminating. The
     // time should be long enough to avoid interrupting most preexisting transmissions but short
@@ -49,7 +64,7 @@ const closeServer = async () => {
     }
     await p;
     clearTimeout(timeout);
-    exports.server = null;
+    server = null;
     startTime.setValue(0);
     logger.info('HTTP server closed');
   }
@@ -59,14 +74,14 @@ const closeServer = async () => {
   secretRotator = null;
 };
 
-exports.createServer = async () => {
+export const createServer = async () => {
   console.log('Report bugs at https://github.com/ether/etherpad-lite/issues');
 
   serverName = `Etherpad ${settings.getGitCommit()} (https://etherpad.org)`;
 
   console.log(`Your Etherpad version is ${settings.getEpVersion()} (${settings.getGitCommit()})`);
 
-  await exports.restartServer();
+  await restartServer();
 
   if (settings.ip === '') {
     // using Unix socket for connectivity
@@ -91,7 +106,7 @@ exports.createServer = async () => {
   }
 };
 
-exports.restartServer = async () => {
+export const restartServer = async () => {
   await closeServer();
 
   const app = express(); // New syntax for express v3
@@ -113,12 +128,9 @@ exports.restartServer = async () => {
         options.ca.push(fs.readFileSync(caFileName));
       }
     }
-
-    const https = require('https');
-    exports.server = https.createServer(options, app);
+    server = https.createServer(options, app);
   } else {
-    const http = require('http');
-    exports.server = http.createServer(app);
+    server = http.createServer(app);
   }
 
   app.use((req, res, next) => {
@@ -191,7 +203,7 @@ exports.restartServer = async () => {
   app.use(cookieParser(secret, {}));
 
   sessionStore = new SessionStore(settings.cookie.sessionRefreshInterval);
-  exports.sessionMiddleware = expressSession({
+  sessionMiddleware = expressSession({
     propagateTouch: true,
     rolling: true,
     secret,
@@ -229,15 +241,15 @@ exports.restartServer = async () => {
   // middleware. This allows plugins to avoid creating an express-session record in the database
   // when it is not needed (e.g., public static content).
   await hooks.aCallAll('expressPreSession', {app});
-  app.use(exports.sessionMiddleware);
+  app.use(sessionMiddleware);
 
   app.use(webaccess.checkAccess);
 
   await Promise.all([
     hooks.aCallAll('expressConfigure', {app}),
-    hooks.aCallAll('expressCreateServer', {app, server: exports.server}),
+    hooks.aCallAll('expressCreateServer', {app, server}),
   ]);
-  exports.server.on('connection', (socket) => {
+  server.on('connection', (socket) => {
     sockets.add(socket);
     socketsEvents.emit('updated');
     socket.on('close', () => {
@@ -245,11 +257,11 @@ exports.restartServer = async () => {
       socketsEvents.emit('updated');
     });
   });
-  await util.promisify(exports.server.listen).bind(exports.server)(settings.port, settings.ip);
+  await util.promisify(server.listen).bind(server)(settings.port, settings.ip);
   startTime.setValue(Date.now());
   logger.info('HTTP server listening for connections');
 };
 
-exports.shutdown = async (hookName, context) => {
+export const shutdown = async (hookName, context) => {
   await closeServer();
 };

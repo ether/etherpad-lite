@@ -1,9 +1,10 @@
-'use strict';
+import spawn from 'cross-spawn';
 
-const spawn = require('cross-spawn');
-const log4js = require('log4js');
-const path = require('path');
-const settings = require('./Settings');
+import log4js from 'log4js';
+
+import path from 'path';
+
+import * as settings from './Settings.js';
 
 const logger = log4js.getLogger('runCmd');
 
@@ -69,7 +70,7 @@ const logLines = (readable, logLineFn) => {
  *   - `stderr`: Similar to `stdout` but for stderr.
  *   - `child`: The ChildProcess object.
  */
-module.exports = exports = (args, opts = {}) => {
+export default (args, opts = {}) => {
   logger.debug(`Executing command: ${args.join(' ')}`);
 
   opts = {cwd: settings.root, ...opts};

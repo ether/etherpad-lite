@@ -1,4 +1,4 @@
-'use strict';
+
 /**
  * Helpers to manipulate promises (like async but for promises).
  */
@@ -7,7 +7,7 @@
 // `predicate`. Resolves to `undefined` if none of the Promises satisfy `predicate`, or if
 // `promises` is empty. If `predicate` is nullish, the truthiness of the resolved value is used as
 // the predicate.
-exports.firstSatisfies = (promises, predicate) => {
+export const firstSatisfies = (promises, predicate) => {
   if (predicate == null) predicate = (x) => x;
 
   // Transform each original Promise into a Promise that never resolves if the original resolved
@@ -42,7 +42,7 @@ exports.firstSatisfies = (promises, predicate) => {
 // `total` is greater than `concurrency`, then `concurrency` Promises will be created right away,
 // and each remaining Promise will be created once one of the earlier Promises resolves.) This async
 // function resolves once all `total` Promises have resolved.
-exports.timesLimit = async (total, concurrency, promiseCreator) => {
+export const timesLimit = async (total, concurrency, promiseCreator) => {
   if (total > 0 && concurrency <= 0) throw new RangeError('concurrency must be positive');
   let next = 0;
   const addAnother = () => promiseCreator(next++).finally(() => {
@@ -59,7 +59,7 @@ exports.timesLimit = async (total, concurrency, promiseCreator) => {
  * An ordinary Promise except the `resolve` and `reject` executor functions are exposed as
  * properties.
  */
-class Gate extends Promise {
+export class Gate extends Promise {
   // Coax `.then()` into returning an ordinary Promise, not a Gate. See
   // https://stackoverflow.com/a/65669070 for the rationale.
   static get [Symbol.species]() { return Promise; }
@@ -73,4 +73,3 @@ class Gate extends Promise {
     Object.assign(this, props);
   }
 }
-exports.Gate = Gate;

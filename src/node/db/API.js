@@ -19,19 +19,19 @@
  * limitations under the License.
  */
 
-const Changeset = require('../../static/js/Changeset');
-const ChatMessage = require('../../static/js/ChatMessage');
-const CustomError = require('../utils/customError');
-const padManager = require('./PadManager');
-const padMessageHandler = require('../handler/PadMessageHandler');
-const readOnlyManager = require('./ReadOnlyManager');
-const groupManager = require('./GroupManager');
-const authorManager = require('./AuthorManager');
-const sessionManager = require('./SessionManager');
-const exportHtml = require('../utils/ExportHtml');
-const exportTxt = require('../utils/ExportTxt');
-const importHtml = require('../utils/ImportHtml');
-const cleanText = require('./Pad').cleanText;
+import Changeset from '../../static/js/Changeset'
+import ChatMessage from '../../static/js/ChatMessage'
+import CustomError from '../utils/customError'
+import padManager from './PadManager'
+import padMessageHandler from '../handler/PadMessageHandler'
+import readOnlyManager from './ReadOnlyManager'
+import groupManager from './GroupManager'
+import authorManager from './AuthorManager'
+import sessionManager from './SessionManager'
+import exportHtml from '../utils/ExportHtml'
+import exportTxt from '../utils/ExportTxt'
+import {setPadHTML} from '../utils/ImportHtml'
+import {cleanText} from './Pad'
 const PadDiff = require('../utils/padDiff');
 const { checkValidRev, isInt } = require('../utils/checkValidRev');
 
@@ -39,39 +39,39 @@ const { checkValidRev, isInt } = require('../utils/checkValidRev');
  * GROUP FUNCTIONS ****
  ******************** */
 
-exports.listAllGroups = groupManager.listAllGroups;
-exports.createGroup = groupManager.createGroup;
-exports.createGroupIfNotExistsFor = groupManager.createGroupIfNotExistsFor;
-exports.deleteGroup = groupManager.deleteGroup;
-exports.listPads = groupManager.listPads;
-exports.createGroupPad = groupManager.createGroupPad;
+export const listAllGroups = groupManager.listAllGroups;
+export const createGroup = groupManager.createGroup;
+export const createGroupIfNotExistsFor = groupManager.createGroupIfNotExistsFor;
+export const deleteGroup = groupManager.deleteGroup;
+export const listPads = groupManager.listPads;
+export const createGroupPad = groupManager.createGroupPad;
 
 /* ********************
  * PADLIST FUNCTION ***
  ******************** */
 
-exports.listAllPads = padManager.listAllPads;
+export const listAllPads = padManager.listAllPads;
 
 /* ********************
  * AUTHOR FUNCTIONS ***
  ******************** */
 
-exports.createAuthor = authorManager.createAuthor;
-exports.createAuthorIfNotExistsFor = authorManager.createAuthorIfNotExistsFor;
-exports.getAuthorName = authorManager.getAuthorName;
-exports.listPadsOfAuthor = authorManager.listPadsOfAuthor;
-exports.padUsers = padMessageHandler.padUsers;
-exports.padUsersCount = padMessageHandler.padUsersCount;
+export const createAuthor = authorManager.createAuthor;
+export const createAuthorIfNotExistsFor = authorManager.createAuthorIfNotExistsFor;
+export const getAuthorName = authorManager.getAuthorName;
+export const listPadsOfAuthor = authorManager.listPadsOfAuthor;
+export const padUsers = padMessageHandler.padUsers;
+export const padUsersCount = padMessageHandler.padUsersCount;
 
 /* ********************
  * SESSION FUNCTIONS **
  ******************** */
 
-exports.createSession = sessionManager.createSession;
-exports.deleteSession = sessionManager.deleteSession;
-exports.getSessionInfo = sessionManager.getSessionInfo;
-exports.listSessionsOfGroup = sessionManager.listSessionsOfGroup;
-exports.listSessionsOfAuthor = sessionManager.listSessionsOfAuthor;
+export const createSession = sessionManager.createSession;
+export const deleteSession = sessionManager.deleteSession;
+export const getSessionInfo = sessionManager.getSessionInfo;
+export const listSessionsOfGroup = sessionManager.listSessionsOfGroup;
+export const listSessionsOfAuthor = sessionManager.listSessionsOfAuthor;
 
 /* ***********************
  * PAD CONTENT FUNCTIONS *
@@ -277,7 +277,7 @@ exports.setHTML = async (padID, html, authorId = '') => {
 
   // add a new changeset with the new html to the pad
   try {
-    await importHtml.setPadHTML(pad, cleanText(html), authorId);
+    await setPadHTML(pad, cleanText(html), authorId);
   } catch (e) {
     throw new CustomError('HTML is malformed', 'apierror');
   }

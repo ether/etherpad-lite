@@ -1,13 +1,14 @@
-'use strict';
+import DB from './DB.js';
 
-const DB = require('./DB');
-const Store = require('express-session').Store;
-const log4js = require('log4js');
-const util = require('util');
+import {Store} from 'express-session';
+
+import log4js from 'log4js';
+
+import util from 'util';
 
 const logger = log4js.getLogger('SessionStore');
 
-class SessionStore extends Store {
+export default class SessionStore extends Store {
   /**
    * @param {?number} [refresh] - How often (in milliseconds) `touch()` will update a session's
    *     database record with the cookie's latest expiration time. If the difference between the
@@ -110,4 +111,3 @@ for (const m of ['get', 'set', 'destroy', 'touch']) {
   SessionStore.prototype[m] = util.callbackify(SessionStore.prototype[`_${m}`]);
 }
 
-module.exports = SessionStore;

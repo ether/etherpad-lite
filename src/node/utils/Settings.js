@@ -1,4 +1,3 @@
-'use strict';
 /**
  * The Settings module reads the settings out of settings.json and provides
  * this information to the other modules
@@ -27,19 +26,32 @@
  * limitations under the License.
  */
 
-const absolutePaths = require('./AbsolutePaths');
-const deepEqual = require('fast-deep-equal/es6');
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-const argv = require('./Cli').argv;
-const jsonminify = require('jsonminify');
-const log4js = require('log4js');
-const randomString = require('./randomstring');
+import {findEtherpadRoot, isSubdir, makeAbsolute} from './AbsolutePaths.js';
+
+import deepEqual from 'fast-deep-equal/es6/index.js';
+
+// eslint-disable-next-line n/no-deprecated-api
+import {readFileSync, lstatSync, writeFileSync, exists, existsSync} from 'fs';
+
+import os from 'os';
+
+import path from 'path';
+
+import {argv} from './Cli.js';
+
+import jsonminify from 'jsonminify';
+
+import log4js from 'log4js';
+
+import randomString from './randomstring.js';
+
+import _ from 'underscore';
+
+import packageFile from '../../package.json' assert {type: 'json'};
+
+
 const suppressDisableMsg = ' -- To suppress these warning messages change ' +
     'suppressErrorsInPadText to true in your settings.json\n';
-const _ = require('underscore');
-
 const logger = log4js.getLogger('settings');
 
 // Exported values that settings.json and credentials.json cannot override.
@@ -68,16 +80,17 @@ const initLogging = (logLevel, config) => {
 initLogging(defaultLogLevel, defaultLogConfig());
 
 /* Root path of the installation */
-exports.root = absolutePaths.findEtherpadRoot();
+export const root = findEtherpadRoot();
 logger.info('All relative paths will be interpreted relative to the identified ' +
-            `Etherpad base dir: ${exports.root}`);
-exports.settingsFilename = absolutePaths.makeAbsolute(argv.settings || 'settings.json');
-exports.credentialsFilename = absolutePaths.makeAbsolute(argv.credentials || 'credentials.json');
+            `Etherpad base dir: ${root}`);
+export const settingsFilename = makeAbsolute(argv.settings || 'settings.json');
+export const credentialsFilename = makeAbsolute(argv.credentials ||
+    'credentials.json');
 
 /**
  * The app title, visible e.g. in the browser window
  */
-exports.title = 'Etherpad';
+export const title = 'Etherpad';
 
 /**
  * Pathname of the favicon you want to use. If null, the skin's favicon is
@@ -85,7 +98,7 @@ exports.title = 'Etherpad';
  * is used. If this is a relative path it is interpreted as relative to the
  * Etherpad root directory.
  */
-exports.favicon = null;
+export const favicon = null;
 
 /*
  * Skin name.
@@ -93,37 +106,37 @@ exports.favicon = null;
  * Initialized to null, so we can spot an old configuration file and invite the
  * user to update it before falling back to the default.
  */
-exports.skinName = null;
+export let skinName = null;
 
-exports.skinVariants = 'super-light-toolbar super-light-editor light-background';
+export const skinVariants = 'super-light-toolbar super-light-editor light-background';
 
 /**
  * The IP ep-lite should listen to
  */
-exports.ip = '0.0.0.0';
+export const ip = '0.0.0.0';
 
 /**
  * The Port ep-lite should listen to
  */
-exports.port = process.env.PORT || 9001;
+export const port = process.env.PORT || 9001;
 
 /**
  * Should we suppress Error messages from being in Pad Contents
  */
-exports.suppressErrorsInPadText = false;
+export const suppressErrorsInPadText = false;
 
 /**
  * The SSL signed server key and the Certificate Authority's own certificate
  * default case: ep-lite does *not* use SSL. A signed server key is not required in this case.
  */
-exports.ssl = false;
+export const ssl = false;
 
 /**
  * socket.io transport methods
  **/
-exports.socketTransportProtocols = ['xhr-polling', 'jsonp-polling', 'htmlfile'];
+export const socketTransportProtocols = ['xhr-polling', 'jsonp-polling', 'htmlfile'];
 
-exports.socketIo = {
+export const socketIo = {
   /**
    * Maximum permitted client message size (in bytes).
    *
@@ -138,16 +151,16 @@ exports.socketIo = {
 /*
  * The Type of the database
  */
-exports.dbType = 'dirty';
+export const dbType = 'dirty';
 /**
  * This setting is passed with dbType to ueberDB to set up the database
  */
-exports.dbSettings = {filename: path.join(exports.root, 'var/dirty.db')};
+export const dbSettings = {filename: path.join(root, 'var/dirty.db')};
 
 /**
  * The default Text of a new pad
  */
-exports.defaultPadText = [
+export let defaultPadText = [
   'Welcome to Etherpad!',
   '',
   'This pad text is synchronized as you type, so that everyone viewing this page sees the same ' +
@@ -159,7 +172,7 @@ exports.defaultPadText = [
 /**
  * The default Pad Settings for a user (Can be overridden by changing the setting
  */
-exports.padOptions = {
+export const padOptions = {
   noColors: false,
   showControls: true,
   showChat: true,
@@ -176,7 +189,7 @@ exports.padOptions = {
 /**
  * Whether certain shortcut keys are enabled for a user in the pad
  */
-exports.padShortcutEnabled = {
+export const padShortcutEnabled = {
   altF9: true,
   altC: true,
   delete: true,
@@ -204,7 +217,7 @@ exports.padShortcutEnabled = {
 /**
  * The toolbar buttons and order.
  */
-exports.toolbar = {
+export const toolbar = {
   left: [
     ['bold', 'italic', 'underline', 'strikethrough'],
     ['orderedlist', 'unorderedlist', 'indent', 'outdent'],
@@ -224,92 +237,92 @@ exports.toolbar = {
 /**
  * A flag that requires any user to have a valid session (via the api) before accessing a pad
  */
-exports.requireSession = false;
+export const requireSession = false;
 
 /**
  * A flag that prevents users from creating new pads
  */
-exports.editOnly = false;
+export const editOnly = false;
 
 /**
  * Max age that responses will have (affects caching layer).
  */
-exports.maxAge = 1000 * 60 * 60 * 6; // 6 hours
+export const maxAge = 1000 * 60 * 60 * 6; // 6 hours
 
 /**
  * A flag that shows if minification is enabled or not
  */
-exports.minify = true;
+export const minify = true;
 
 /**
  * The path of the abiword executable
  */
-exports.abiword = null;
+export let abiword = null;
 
 /**
  * The path of the libreoffice executable
  */
-exports.soffice = null;
+export let soffice = null;
 
 /**
  * The path of the tidy executable
  */
-exports.tidyHtml = null;
+export const tidyHtml = null;
 
 /**
  * Should we support none natively supported file types on import?
  */
-exports.allowUnknownFileEnds = true;
+export const allowUnknownFileEnds = true;
 
 /**
  * The log level of log4js
  */
-exports.loglevel = defaultLogLevel;
+export const loglevel = defaultLogLevel;
 
 /**
  * Disable IP logging
  */
-exports.disableIPlogging = false;
+export const disableIPlogging = false;
 
 /**
  * Number of seconds to automatically reconnect pad
  */
-exports.automaticReconnectionTimeout = 0;
+export const automaticReconnectionTimeout = 0;
 
 /**
  * Disable Load Testing
  */
-exports.loadTest = false;
+export const loadTest = false;
 
 /**
  * Disable dump of objects preventing a clean exit
  */
-exports.dumpOnUncleanExit = false;
+export const dumpOnUncleanExit = false;
 
 /**
  * Enable indentation on new lines
  */
-exports.indentationOnNewLine = true;
+export const indentationOnNewLine = true;
 
 /*
  * log4js appender configuration
  */
-exports.logconfig = defaultLogConfig();
+export const logconfig = defaultLogConfig();
 
 /*
  * Deprecated cookie signing key.
  */
-exports.sessionKey = null;
+export let sessionKey = null;
 
 /*
  * Trust Proxy, whether or not trust the x-forwarded-for header.
  */
-exports.trustProxy = false;
+export const trustProxy = false;
 
 /*
  * Settings controlling the session cookie issued by Etherpad.
  */
-exports.cookie = {
+export const cookie = {
   keyRotationInterval: 1 * 24 * 60 * 60 * 1000,
   /*
    * Value of the SameSite cookie property. "Lax" is recommended unless
@@ -332,20 +345,20 @@ exports.cookie = {
  * authorization. Note: /admin always requires authentication, and
  * either authorization by a module, or a user with is_admin set
  */
-exports.requireAuthentication = false;
-exports.requireAuthorization = false;
-exports.users = {};
+export const requireAuthentication = false;
+export const requireAuthorization = false;
+export let users = {};
 
 /*
  * Show settings in admin page, by default it is true
  */
-exports.showSettingsInAdminPage = true;
+export const showSettingsInAdminPage = true;
 
 /*
  * By default, when caret is moved out of viewport, it scrolls the minimum
  * height needed to make this line visible.
  */
-exports.scrollWhenFocusLineIsOutOfViewport = {
+export const scrollWhenFocusLineIsOutOfViewport = {
   /*
    * Percentage of viewport height to be additionally scrolled.
    */
@@ -378,12 +391,12 @@ exports.scrollWhenFocusLineIsOutOfViewport = {
  *
  * Do not enable on production machines.
  */
-exports.exposeVersion = false;
+export const exposeVersion = false;
 
 /*
  * Override any strings found in locale directories
  */
-exports.customLocaleStrings = {};
+export const customLocaleStrings = {};
 
 /*
  * From Etherpad 1.8.3 onwards, import and export of pads is always rate
@@ -394,7 +407,7 @@ exports.customLocaleStrings = {};
  *
  * See https://github.com/nfriedly/express-rate-limit for more options
  */
-exports.importExportRateLimiting = {
+export const importExportRateLimiting = {
   // duration of the rate limit window (milliseconds)
   windowMs: 90000,
 
@@ -410,7 +423,7 @@ exports.importExportRateLimiting = {
  *
  * See https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#websocket-single-connection-prevent-flooding for more options
  */
-exports.commitRateLimiting = {
+export const commitRateLimiting = {
   // duration of the rate limit window (seconds)
   duration: 1,
 
@@ -424,39 +437,39 @@ exports.commitRateLimiting = {
  *
  * File size is specified in bytes. Default is 50 MB.
  */
-exports.importMaxFileSize = 50 * 1024 * 1024;
+export const importMaxFileSize = 50 * 1024 * 1024;
 
 /*
  * Disable Admin UI tests
  */
-exports.enableAdminUITests = false;
+export const enableAdminUITests = false;
 
 /*
  * Enable auto conversion of pad Ids to lowercase.
  * e.g. /p/EtHeRpAd to /p/etherpad
  */
-exports.lowerCasePadIds = false;
+export const lowerCasePadIds = false;
 
 // checks if abiword is avaiable
-exports.abiwordAvailable = () => {
-  if (exports.abiword != null) {
+export const abiwordAvailable = () => {
+  if (abiword != null) {
     return os.type().indexOf('Windows') !== -1 ? 'withoutPDF' : 'yes';
   } else {
     return 'no';
   }
 };
 
-exports.sofficeAvailable = () => {
-  if (exports.soffice != null) {
+export const sofficeAvailable = () => {
+  if (soffice != null) {
     return os.type().indexOf('Windows') !== -1 ? 'withoutPDF' : 'yes';
   } else {
     return 'no';
   }
 };
 
-exports.exportAvailable = () => {
-  const abiword = exports.abiwordAvailable();
-  const soffice = exports.sofficeAvailable();
+export const exportAvailable = () => {
+  const abiword = abiwordAvailable();
+  const soffice = sofficeAvailable();
 
   if (abiword === 'no' && soffice === 'no') {
     return 'no';
@@ -469,20 +482,20 @@ exports.exportAvailable = () => {
 };
 
 // Provide git version if available
-exports.getGitCommit = () => {
+export const getGitCommit = () => {
   let version = '';
   try {
-    let rootPath = exports.root;
-    if (fs.lstatSync(`${rootPath}/.git`).isFile()) {
-      rootPath = fs.readFileSync(`${rootPath}/.git`, 'utf8');
+    let rootPath = root;
+    if (lstatSync(`${rootPath}/.git`).isFile()) {
+      rootPath = readFileSync(`${rootPath}/.git`, 'utf8');
       rootPath = rootPath.split(' ').pop().trim();
     } else {
       rootPath += '/.git';
     }
-    const ref = fs.readFileSync(`${rootPath}/HEAD`, 'utf-8');
+    const ref = readFileSync(`${rootPath}/HEAD`, 'utf-8');
     if (ref.startsWith('ref: ')) {
       const refPath = `${rootPath}/${ref.substring(5, ref.indexOf('\n'))}`;
-      version = fs.readFileSync(refPath, 'utf-8');
+      version = readFileSync(refPath, 'utf-8');
     } else {
       version = ref;
     }
@@ -494,7 +507,7 @@ exports.getGitCommit = () => {
 };
 
 // Return etherpad version from package.json
-exports.getEpVersion = () => require('../../package.json').version;
+export const getEpVersion = () => packageFile.version;
 
 /**
  * Receives a settingsObj and, if the property name is a valid configuration
@@ -517,11 +530,13 @@ const storeSettings = (settingsObj) => {
 
     // we know this setting, so we overwrite it
     // or it's a settings hash, specific to a plugin
-    if (exports[i] !== undefined || i.indexOf('ep_') === 0) {
+    // eslint-disable-next-line no-eval
+    let variable = eval(i);
+    if (variable !== undefined || i.indexOf('ep_') === 0) {
       if (_.isObject(settingsObj[i]) && !Array.isArray(settingsObj[i])) {
-        exports[i] = _.defaults(settingsObj[i], exports[i]);
+        variable = _.defaults(settingsObj[i], variable);
       } else {
-        exports[i] = settingsObj[i];
+        variable = settingsObj[i];
       }
     } else {
       // this setting is unknown, output a warning and throw it away
@@ -702,7 +717,7 @@ const parseSettings = (settingsFilename, isSettings) => {
 
   try {
     // read the settings file
-    settingsStr = fs.readFileSync(settingsFilename).toString();
+    settingsStr = readFileSync(settingsFilename).toString();
   } catch (e) {
     notFoundFunction(`No ${settingsType} file found in ${settingsFilename}. ${notFoundMessage}`);
 
@@ -717,107 +732,106 @@ const parseSettings = (settingsFilename, isSettings) => {
 
     logger.info(`${settingsType} loaded from: ${settingsFilename}`);
 
-    const replacedSettings = lookupEnvironmentVariables(settings);
-
-    return replacedSettings;
+    return lookupEnvironmentVariables(settings);
   } catch (e) {
     logger.error(`There was an error processing your ${settingsType} ` +
                  `file from ${settingsFilename}: ${e.message}`);
 
+    // eslint-disable-next-line n/no-process-exit
     process.exit(1);
   }
 };
 
-exports.reloadSettings = () => {
-  const settings = parseSettings(exports.settingsFilename, true);
-  const credentials = parseSettings(exports.credentialsFilename, false);
+export const reloadSettings = () => {
+  const settings = parseSettings(settingsFilename, true);
+  const credentials = parseSettings(credentialsFilename, false);
   storeSettings(settings);
   storeSettings(credentials);
 
-  initLogging(exports.loglevel, exports.logconfig);
+  initLogging(loglevel, logconfig);
 
-  if (!exports.skinName) {
+  if (!skinName) {
     logger.warn('No "skinName" parameter found. Please check out settings.json.template and ' +
                 'update your settings.json. Falling back to the default "colibris".');
-    exports.skinName = 'colibris';
+    skinName = 'colibris';
   }
 
   // checks if skinName has an acceptable value, otherwise falls back to "colibris"
-  if (exports.skinName) {
-    const skinBasePath = path.join(exports.root, 'src', 'static', 'skins');
-    const countPieces = exports.skinName.split(path.sep).length;
+  if (skinName) {
+    const skinBasePath = path.join(root, 'src', 'static', 'skins');
+    const countPieces = skinName.split(path.sep).length;
 
     if (countPieces !== 1) {
       logger.error(`skinName must be the name of a directory under "${skinBasePath}". This is ` +
-                   `not valid: "${exports.skinName}". Falling back to the default "colibris".`);
+                   `not valid: "${skinName}". Falling back to the default "colibris".`);
 
-      exports.skinName = 'colibris';
+      skinName = 'colibris';
     }
 
     // informative variable, just for the log messages
-    let skinPath = path.join(skinBasePath, exports.skinName);
+    let skinPath = path.join(skinBasePath, skinName);
 
     // what if someone sets skinName == ".." or "."? We catch him!
-    if (absolutePaths.isSubdir(skinBasePath, skinPath) === false) {
+    if (isSubdir(skinBasePath, skinPath) === false) {
       logger.error(`Skin path ${skinPath} must be a subdirectory of ${skinBasePath}. ` +
                    'Falling back to the default "colibris".');
 
-      exports.skinName = 'colibris';
-      skinPath = path.join(skinBasePath, exports.skinName);
+      skinName = 'colibris';
+      skinPath = path.join(skinBasePath, skinName);
     }
 
-    if (fs.existsSync(skinPath) === false) {
+    if (existsSync(skinPath) === false) {
       logger.error(`Skin path ${skinPath} does not exist. Falling back to the default "colibris".`);
-      exports.skinName = 'colibris';
-      skinPath = path.join(skinBasePath, exports.skinName);
+      skinName = 'colibris';
+      skinPath = path.join(skinBasePath, skinName);
     }
 
-    logger.info(`Using skin "${exports.skinName}" in dir: ${skinPath}`);
+    logger.info(`Using skin "${skinName}" in dir: ${skinPath}`);
   }
 
-  if (exports.abiword) {
+  if (abiword) {
     // Check abiword actually exists
-    if (exports.abiword != null) {
-      fs.exists(exports.abiword, (exists) => {
+    if (abiword != null) {
+      exists(abiword, (exists) => {
         if (!exists) {
           const abiwordError = 'Abiword does not exist at this path, check your settings file.';
-          if (!exports.suppressErrorsInPadText) {
-            exports.defaultPadText += `\nError: ${abiwordError}${suppressDisableMsg}`;
+          if (!suppressErrorsInPadText) {
+            defaultPadText += `\nError: ${abiwordError}${suppressDisableMsg}`;
           }
-          logger.error(`${abiwordError} File location: ${exports.abiword}`);
-          exports.abiword = null;
+          logger.error(`${abiwordError} File location: ${abiword}`);
+          abiword = null;
         }
       });
     }
   }
 
-  if (exports.soffice) {
-    fs.exists(exports.soffice, (exists) => {
+  if (soffice) {
+    exists(soffice, (exists) => {
       if (!exists) {
         const sofficeError =
             'soffice (libreoffice) does not exist at this path, check your settings file.';
 
-        if (!exports.suppressErrorsInPadText) {
-          exports.defaultPadText += `\nError: ${sofficeError}${suppressDisableMsg}`;
+        if (!suppressErrorsInPadText) {
+          defaultPadText += `\nError: ${sofficeError}${suppressDisableMsg}`;
         }
-        logger.error(`${sofficeError} File location: ${exports.soffice}`);
-        exports.soffice = null;
+        logger.error(`${sofficeError} File location: ${soffice}`);
+        soffice = null;
       }
     });
   }
 
-  const sessionkeyFilename = absolutePaths.makeAbsolute(argv.sessionkey || './SESSIONKEY.txt');
-  if (!exports.sessionKey) {
+  const sessionkeyFilename = makeAbsolute(argv.sessionkey || './SESSIONKEY.txt');
+  if (!sessionKey) {
     try {
-      exports.sessionKey = fs.readFileSync(sessionkeyFilename, 'utf8');
+      sessionKey = readFileSync(sessionkeyFilename, 'utf8');
       logger.info(`Session key loaded from: ${sessionkeyFilename}`);
     } catch (err) { /* ignored */ }
-    const keyRotationEnabled = exports.cookie.keyRotationInterval && exports.cookie.sessionLifetime;
-    if (!exports.sessionKey && !keyRotationEnabled) {
+    const keyRotationEnabled = cookie.keyRotationInterval && cookie.sessionLifetime;
+    if (!sessionKey && !keyRotationEnabled) {
       logger.info(
           `Session key file "${sessionkeyFilename}" not found. Creating with random contents.`);
-      exports.sessionKey = randomString(32);
-      fs.writeFileSync(sessionkeyFilename, exports.sessionKey, 'utf8');
+      sessionKey = randomString(32);
+      writeFileSync(sessionkeyFilename, sessionKey, 'utf8');
     }
   } else {
     logger.warn('Declaring the sessionKey in the settings.json is deprecated. ' +
@@ -825,22 +839,22 @@ exports.reloadSettings = () => {
                 'If you are seeing this error after restarting using the Admin User ' +
                 'Interface then you can ignore this message.');
   }
-  if (exports.sessionKey) {
+  if (sessionKey) {
     logger.warn(`The sessionKey setting and ${sessionkeyFilename} file are deprecated; ` +
         'use automatic key rotation instead (see the cookie.keyRotationInterval setting).');
   }
 
-  if (exports.dbType === 'dirty') {
+  if (dbType === 'dirty') {
     const dirtyWarning = 'DirtyDB is used. This is not recommended for production.';
-    if (!exports.suppressErrorsInPadText) {
-      exports.defaultPadText += `\nWarning: ${dirtyWarning}${suppressDisableMsg}`;
+    if (!suppressErrorsInPadText) {
+      defaultPadText += `\nWarning: ${dirtyWarning}${suppressDisableMsg}`;
     }
 
-    exports.dbSettings.filename = absolutePaths.makeAbsolute(exports.dbSettings.filename);
-    logger.warn(`${dirtyWarning} File location: ${exports.dbSettings.filename}`);
+    dbSettings.filename = makeAbsolute(dbSettings.filename);
+    logger.warn(`${dirtyWarning} File location: ${dbSettings.filename}`);
   }
 
-  if (exports.ip === '') {
+  if (ip === '') {
     // using Unix socket for connectivity
     logger.warn('The settings file contains an empty string ("") for the "ip" parameter. The ' +
                 '"port" parameter will be interpreted as the path to a Unix socket to bind at.');
@@ -857,13 +871,13 @@ exports.reloadSettings = () => {
    * ACHTUNG: this may prevent caching HTTP proxies to work
    * TODO: remove the "?v=randomstring" parameter, and replace with hashed filenames instead
    */
-  exports.randomVersionString = randomString(4);
-  logger.info(`Random string used for versioning assets: ${exports.randomVersionString}`);
+  const randomVersionString = randomString(4);
+  logger.info(`Random string used for versioning assets: ${randomVersionString}`);
 };
 
-exports.exportedForTestingOnly = {
+export const exportedForTestingOnly = {
   parseSettings,
 };
 
 // initially load settings
-exports.reloadSettings();
+reloadSettings();
