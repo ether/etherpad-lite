@@ -90,7 +90,7 @@ export const update = async () => {
   // Load plugin metadata ep.json
   await Promise.all(Object.keys(packagesNew).map(async (pluginName) => {
     logger.info(`Loading plugin ${pluginName}...`);
-    await loadPlugin(packagesNew, pluginName, pluginsNew, parts);
+    await loadPlugin(packagesNew, pluginName, pluginsNew, partsNew);
   }));
   logger.info(`Loaded ${Object.keys(packagesNew).length} plugins`);
 
