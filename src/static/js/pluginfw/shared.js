@@ -9,7 +9,7 @@ const disabledHookReasons = {
   },
 };
 
-const loadFn = (path, hookName) => {
+const loadFn = async (path, hookName) => {
   let functionName;
   const parts = path.split(':');
 
@@ -24,7 +24,9 @@ const loadFn = (path, hookName) => {
     functionName = parts[1];
   }
 
-  let fn = require(path);
+  console.log(path)
+
+  let fn = await import(path);
   functionName = functionName ? functionName : hookName;
 
   for (const name of functionName.split('.')) {
@@ -33,7 +35,7 @@ const loadFn = (path, hookName) => {
   return fn;
 };
 
-export const extractHooks = (parts, hookSetName, normalizer) => {
+export const extractHooks = async (parts, hookSetName, normalizer) => {
   const hooks = {};
   for (const part of parts) {
     for (const [hookName, regHookFnName] of Object.entries(part[hookSetName] || {})) {
@@ -53,7 +55,7 @@ export const extractHooks = (parts, hookSetName, normalizer) => {
       }
       let hookFn;
       try {
-        hookFn = loadFn(hookFnName, hookName);
+        hookFn = await loadFn(hookFnName, hookName);
         if (!hookFn) throw new Error('Not a function');
       } catch (err) {
         console.error(`Failed to load hook function "${hookFnName}" for plugin "${part.plugin}" ` +
