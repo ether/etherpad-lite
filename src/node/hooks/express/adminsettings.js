@@ -1,12 +1,14 @@
-'use strict';
+import * as eejs from '../../eejs/index.js';
 
-const eejs = require('../../eejs');
-const fsp = require('fs').promises;
-const hooks = require('../../../static/js/pluginfw/hooks');
-const plugins = require('../../../static/js/pluginfw/plugins');
-const settings = require('../../utils/Settings');
+import {promises as fsp} from 'fs';
 
-exports.expressCreateServer = (hookName, {app}) => {
+import * as hooks from '../../../static/js/pluginfw/hooks.js';
+
+import * as plugins from '../../../static/js/pluginfw/plugins.js';
+
+import * as settings from '../../utils/Settings.js';
+
+export const expressCreateServer = (hookName, {app}) => {
   app.get('/admin/settings', (req, res) => {
     res.send(eejs.require('ep_etherpad-lite/templates/admin/settings.html', {
       req,
@@ -16,7 +18,7 @@ exports.expressCreateServer = (hookName, {app}) => {
   });
 };
 
-exports.socketio = (hookName, {io}) => {
+export const socketio = (hookName, {io}) => {
   io.of('/settings').on('connection', (socket) => {
     const {session: {user: {is_admin: isAdmin} = {}} = {}} = socket.conn.request;
     if (!isAdmin) return;

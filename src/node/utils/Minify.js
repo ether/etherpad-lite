@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * This Module manages all /minified/* requests. It controls the
  * minification && compression of Javascript and CSS.
@@ -21,15 +19,23 @@
  * limitations under the License.
  */
 
-const settings = require('./Settings');
-const fs = require('fs').promises;
-const path = require('path');
-const plugins = require('../../static/js/pluginfw/plugin_defs');
-const RequireKernel = require('etherpad-require-kernel');
-const mime = require('mime-types');
-const Threads = require('threads');
-const log4js = require('log4js');
-const sanitizePathname = require('./sanitizePathname');
+import * as settings from './Settings.js';
+
+import {promises as fs} from 'fs';
+
+import path from 'path';
+
+import {plugins} from '../../static/js/pluginfw/plugin_defs.js';
+
+import RequireKernel from 'etherpad-require-kernel';
+
+import mime from 'mime-types';
+
+import * as Threads from 'threads';
+
+import log4js from 'log4js';
+
+import sanitizePathname from './sanitizePathname.js';
 
 const logger = log4js.getLogger('Minify');
 
@@ -89,7 +95,7 @@ const requestURI = async (url, method, headers) => {
   return await p;
 };
 
-const requestURIs = (locations, method, headers, callback) => {
+export const requestURIs = (locations, method, headers, callback) => {
   Promise.all(locations.map(async (loc) => {
     try {
       return await requestURI(loc, method, headers);
@@ -120,7 +126,7 @@ const compatPaths = {
  * @param req the Express request
  * @param res the Express response
  */
-const minify = async (req, res) => {
+const minifyInternal = async (req, res) => {
   let filename = req.params.filename;
   try {
     filename = sanitizePathname(filename);
@@ -317,10 +323,9 @@ const getFile = async (filename) => {
   return await fs.readFile(path.resolve(ROOT_DIR, filename));
 };
 
-exports.minify = (req, res, next) => minify(req, res).catch((err) => next(err || new Error(err)));
+export const minify = (req, res, next) => minifyInternal(req, res)
+    .catch((err) => next(err || new Error(err)));
 
-exports.requestURIs = requestURIs;
-
-exports.shutdown = async (hookName, context) => {
+export const shutdown = async (hookName, context) => {
   await threadsPool.terminate();
 };

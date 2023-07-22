@@ -19,14 +19,21 @@
  * limitations under the License.
  */
 
-const absolutePaths = require('../utils/AbsolutePaths');
-const fs = require('fs');
-const api = require('../db/API');
-const log4js = require('log4js');
-const padManager = require('../db/PadManager');
-const randomString = require('../utils/randomstring');
-const argv = require('../utils/Cli').argv;
-const createHTTPError = require('http-errors');
+import * as absolutePaths from "../utils/AbsolutePaths.js";
+
+import fs from "fs";
+
+import  * as api from "../db/API.js";
+
+import log4js from "log4js";
+
+import padManager from "../db/PadManager.js";
+
+import randomString from "../utils/randomstring.js";
+
+import {argv} from "../utils/Cli.js";
+
+import createHTTPError from "http-errors";
 
 const apiHandlerLogger = log4js.getLogger('APIHandler');
 

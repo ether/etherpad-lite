@@ -1,13 +1,16 @@
-'use strict';
+import languages from 'languages4translatewiki';
 
-const languages = require('languages4translatewiki');
-const fs = require('fs');
-const path = require('path');
-const _ = require('underscore');
-const pluginDefs = require('../../static/js/pluginfw/plugin_defs.js');
-const existsSync = require('../utils/path_exists');
-const settings = require('../utils/Settings');
+import fs from 'fs';
 
+import path from 'path';
+
+import _ from 'underscore';
+
+import * as pluginDefs from '../../static/js/pluginfw/plugin_defs.js';
+
+import existsSync from '../utils/path_exists.js';
+
+import * as settings from '../utils/Settings.js';
 // returns all existing messages merged together and grouped by langcode
 // {es: {"foo": "string"}, en:...}
 const getAllLocales = () => {
@@ -101,12 +104,12 @@ const generateLocaleIndex = (locales) => {
   return JSON.stringify(result);
 };
 
-
-exports.expressPreSession = async (hookName, {app}) => {
+export let availableLangs;
+export const expressPreSession = async (hookName, {app}) => {
   // regenerate locales on server restart
   const locales = getAllLocales();
   const localeIndex = generateLocaleIndex(locales);
-  exports.availableLangs = getAvailableLangs(locales);
+  availableLangs = getAvailableLangs(locales);
 
   app.get('/locales/:locale', (req, res) => {
     // works with /locale/en and /locale/en.json requests

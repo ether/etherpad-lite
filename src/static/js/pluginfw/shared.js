@@ -26,6 +26,9 @@ const loadFn = async (path, hookName) => {
 
   console.log(path)
 
+  path = path.replace("node_modules/ep_etherpad-lite", "src")
+  path +=".js"
+
   let fn = await import(path);
   functionName = functionName ? functionName : hookName;
 

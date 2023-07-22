@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * node/hooks/express/openapi.js
  *
@@ -13,17 +11,21 @@
  * - /api/{version}/openapi.json
  * - /rest/{version}/openapi.json
  */
+import OpenAPIBackend from 'openapi-backend';
 
-const OpenAPIBackend = require('openapi-backend').default;
-const formidable = require('formidable');
-const {promisify} = require('util');
-const cloneDeep = require('lodash.clonedeep');
-const createHTTPError = require('http-errors');
+import formidable from 'formidable';
 
-const apiHandler = require('../../handler/APIHandler');
-const settings = require('../../utils/Settings');
+import {promisify} from 'util';
 
-const log4js = require('log4js');
+import createHTTPError from 'http-errors';
+
+import cloneDeep from 'lodash.clonedeep';
+import * as apiHandler from '../../handler/APIHandler.js';
+
+import * as settings from '../../utils/Settings.js';
+
+import log4js from 'log4js';
+
 const logger = log4js.getLogger('API');
 
 // https://github.com/OAI/OpenAPI-Specification/tree/master/schemas/v3.0

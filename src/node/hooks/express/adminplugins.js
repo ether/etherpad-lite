@@ -1,14 +1,20 @@
 'use strict';
 
-const eejs = require('../../eejs');
-const settings = require('../../utils/Settings');
-const installer = require('../../../static/js/pluginfw/installer');
-const pluginDefs = require('../../../static/js/pluginfw/plugin_defs');
-const plugins = require('../../../static/js/pluginfw/plugins');
-const semver = require('semver');
-const UpdateCheck = require('../../utils/UpdateCheck');
+import eejs from "../../eejs";
 
-exports.expressCreateServer = (hookName, args, cb) => {
+import settings from "../../utils/Settings";
+
+import installer from "../../../static/js/pluginfw/installer";
+
+import * as pluginDefs from "../../../static/js/pluginfw/plugin_defs";
+
+import * as plugins from "../../../static/js/pluginfw/plugins";
+
+import semver from "semver";
+
+import * as UpdateCheck from "../../utils/UpdateCheck";
+
+export const expressCreateServer = (hookName, args, cb) => {
   args.app.get('/admin/plugins', (req, res) => {
     res.send(eejs.require('ep_etherpad-lite/templates/admin/plugins.html', {
       plugins: pluginDefs.plugins,
@@ -36,7 +42,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
   return cb();
 };
 
-exports.socketio = (hookName, args, cb) => {
+export const socketio = (hookName, args, cb) => {
   const io = args.io.of('/pluginfw/installer');
   io.on('connection', (socket) => {
     const {session: {user: {is_admin: isAdmin} = {}} = {}} = socket.conn.request;

@@ -1,13 +1,16 @@
-'use strict';
+import {promises as fs} from 'fs';
 
-const fs = require('fs').promises;
-const minify = require('../../utils/Minify');
-const path = require('path');
-const plugins = require('../../../static/js/pluginfw/plugin_defs');
-const settings = require('../../utils/Settings');
-const CachingMiddleware = require('../../utils/caching_middleware');
-const Yajsml = require('etherpad-yajsml');
+import {minify} from '../../utils/Minify.js';
 
+import path from 'path';
+
+import {plugins} from '../../../static/js/pluginfw/plugin_defs.js';
+
+import * as settings from '../../utils/Settings.js';
+
+import CachingMiddleware from '../../utils/caching_middleware.js';
+
+import Yajsml from 'etherpad-yajsml';
 // Rewrite tar to include modules with no extensions and proper rooted paths.
 const getTar = async () => {
   const prefixLocalLibraryPath = (path) => {
@@ -28,7 +31,7 @@ const getTar = async () => {
   return tar;
 };
 
-exports.expressPreSession = async (hookName, {app}) => {
+export const expressPreSession = async (hookName, {app}) => {
   // Cache both minified and static.
   const assetCache = new CachingMiddleware();
   app.all(/\/javascripts\/(.*)/, assetCache.handle.bind(assetCache));

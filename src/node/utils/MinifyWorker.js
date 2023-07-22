@@ -1,13 +1,15 @@
-'use strict';
 /**
  * Worker thread to minify JS & CSS files out of the main NodeJS thread
  */
+import CleanCSS from 'clean-css';
 
-const CleanCSS = require('clean-css');
-const Terser = require('terser');
-const fsp = require('fs').promises;
-const path = require('path');
-const Threads = require('threads');
+import * as Terser from 'terser';
+
+import {promises as fsp} from 'fs';
+
+import path from 'path';
+
+import * as Threads from 'threads';
 
 const compressJS = (content) => Terser.minify(content);
 

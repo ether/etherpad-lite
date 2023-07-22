@@ -1,16 +1,24 @@
-'use strict';
+import path from 'path';
 
-const path = require('path');
-const eejs = require('../../eejs');
-const fs = require('fs');
+import * as eejs from '../../eejs/index.js';
+
+import fs from 'fs';
+
+import toolbar from '../../utils/toolbar.js';
+
+import * as hooks from '../../../static/js/pluginfw/hooks.js';
+
+import * as settings from '../../utils/Settings.js';
+
+import util from 'util';
+
+import * as webaccess from './webaccess.js';
+
+import json from '../../stats.js';
+
+
 const fsp = fs.promises;
-const toolbar = require('../../utils/toolbar');
-const hooks = require('../../../static/js/pluginfw/hooks');
-const settings = require('../../utils/Settings');
-const util = require('util');
-const webaccess = require('./webaccess');
-
-exports.expressPreSession = async (hookName, {app}) => {
+export const expressPreSession = async (hookName, {app}) => {
   // This endpoint is intended to conform to:
   // https://www.ietf.org/archive/id/draft-inadarei-api-health-check-06.html
   app.get('/health', (req, res) => {
@@ -22,7 +30,7 @@ exports.expressPreSession = async (hookName, {app}) => {
   });
 
   app.get('/stats', (req, res) => {
-    res.json(require('../../stats').toJSON());
+    res.json(json.toJSON());
   });
 
   app.get('/javascript', (req, res) => {
@@ -63,7 +71,7 @@ exports.expressPreSession = async (hookName, {app}) => {
   });
 };
 
-exports.expressCreateServer = (hookName, args, cb) => {
+export const expressCreateServer = (hookName, args, cb) => {
   // serve index.html under /
   args.app.get('/', (req, res) => {
     res.send(eejs.require('ep_etherpad-lite/templates/index.html', {req}));

@@ -1,5 +1,3 @@
-'use strict';
-
 /*
  * 2011 Peter 'Pita' Martischka (Primary Technology Ltd)
  *
@@ -16,15 +14,21 @@
  * limitations under the License.
  */
 
-const Buffer = require('buffer').Buffer;
-const fs = require('fs');
-const fsp = fs.promises;
-const path = require('path');
-const zlib = require('zlib');
-const settings = require('./Settings');
-const existsSync = require('./path_exists');
-const util = require('util');
+import * as Buffer from 'buffer';
 
+import fs from 'fs';
+
+import path from 'path';
+
+import zlib from 'zlib';
+
+import * as settings from './Settings.js';
+
+import existsSync from './path_exists.js';
+
+import util from 'util';
+
+const fsp = fs.promises;
 /*
  * The crypto module can be absent on reduced node installations.
  *
@@ -37,13 +41,9 @@ const util = require('util');
  */
 
 // MIMIC https://github.com/microsoft/TypeScript/commit/9677b0641cc5ba7d8b701b4f892ed7e54ceaee9a - START
-let _crypto;
 
-try {
-  _crypto = require('crypto');
-} catch {
-  _crypto = undefined;
-}
+import _crypto from 'crypto';
+
 
 let CACHE_DIR = path.join(settings.root, 'var/');
 CACHE_DIR = existsSync(CACHE_DIR) ? CACHE_DIR : undefined;
@@ -78,7 +78,7 @@ if (_crypto) {
   should replace this.
 */
 
-module.exports = class CachingMiddleware {
+export default class CachingMiddleware {
   handle(req, res, next) {
     this._handle(req, res, next).catch((err) => next(err || new Error(err)));
   }
