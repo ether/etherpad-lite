@@ -1,5 +1,5 @@
 'use strict';
-const eejs = require('../../eejs');
+const eejs = require('../../eejs/index');
 
 exports.expressCreateServer = (hookName, args, cb) => {
   args.app.get('/admin', (req, res) => {

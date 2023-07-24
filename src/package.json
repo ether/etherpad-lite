@@ -2,6 +2,7 @@
   "name": "ep_etherpad-lite",
   "description": "A free and open source realtime collaborative editor",
   "homepage": "https://etherpad.org",
+  "type": "module",
   "keywords": [
     "etherpad",
     "realtime",
@@ -30,6 +31,8 @@
     }
   ],
   "dependencies": {
+    "@rollup/plugin-commonjs": "^25.0.3",
+    "@rollup/plugin-json": "^6.0.0",
     "async": "^3.2.4",
     "axios": "^1.4.0",
     "clean-css": "^5.3.2",
@@ -60,6 +63,9 @@
     "rehype": "^12.0.1",
     "rehype-minify-whitespace": "^5.0.1",
     "resolve": "1.22.2",
+    "rollup": "^3.26.3",
+    "rollup-plugin-copy": "^3.4.0",
+    "rollup-plugin-shell": "^1.0.9",
     "security": "1.0.0",
     "semver": "^7.5.4",
     "socket.io": "^2.5.0",
@@ -78,6 +84,7 @@
     "etherpad-lite": "node/server.js"
   },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^11.1.2",
     "eslint": "^8.45.0",
     "eslint-config-etherpad": "^3.0.17",
     "etherpad-cli-client": "^2.0.2",

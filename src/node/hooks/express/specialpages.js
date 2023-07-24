@@ -1,7 +1,7 @@
 'use strict';
 
 const path = require('path');
-const eejs = require('../../eejs');
+const eejs = require('../../eejs/index');
 const fs = require('fs');
 const fsp = fs.promises;
 const toolbar = require('../../utils/toolbar');

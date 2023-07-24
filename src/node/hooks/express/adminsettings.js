@@ -1,6 +1,6 @@
 'use strict';
 
-const eejs = require('../../eejs');
+const eejs = require('../../eejs/index');
 const fsp = require('fs').promises;
 const hooks = require('../../../static/js/pluginfw/hooks');
 const plugins = require('../../../static/js/pluginfw/plugins');
