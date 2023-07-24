@@ -51,8 +51,8 @@ exports.expressCreateServer = (hookName, args, cb) => {
   // there shouldn't be a browser that isn't compatible to all
   // transports in this list at once
   // e.g. XHR is disabled in IE by default, so in IE it should use jsonp-polling
-  io = socketio({
-    transports: settings.socketTransportProtocols,
+  io = new socketio.Server({
+    transports: settings.socketTransportProtocols
   }).listen(args.server, {
     /*
      * Do not set the "io" cookie.
@@ -106,14 +106,14 @@ exports.expressCreateServer = (hookName, args, cb) => {
   });
 
   io.use((socket, next) => {
-    socket.conn.on('packet', (packet) => {
+    socket.conn.on('package', (packet) => {
       // Tell express-session that the session is still active. The session store can use these
       // touch events to defer automatic session cleanup, and if express-session is configured with
       // rolling=true the cookie's expiration time will be renewed. (Note that WebSockets does not
       // have a standard mechanism for periodically updating the browser's cookies, so the browser
       // will not see the new cookie expiration time unless it makes a new HTTP request or the new
       // cookie value is sent to the client in a custom socket.io message.)
-      if (socket.request.session != null) socket.request.session.touch();
+      if (packet.request.session != null) packet.request.session.touch();
     });
     next();
   });

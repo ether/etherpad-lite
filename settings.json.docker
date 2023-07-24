@@ -527,7 +527,7 @@
   /*
    * Restrict socket.io transport methods
    */
-  "socketTransportProtocols" : ["xhr-polling", "jsonp-polling", "htmlfile"],
+  "socketTransportProtocols" : ["polling", "websocket"],
 
   "socketIo": {
     /*

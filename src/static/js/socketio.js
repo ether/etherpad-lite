@@ -19,7 +19,7 @@ const connect = (etherpadBaseUrl, namespace = '/', options = {}) => {
   const baseUrl = new URL(etherpadBaseUrl, window.location);
   const socketioUrl = new URL('socket.io', baseUrl);
   const namespaceUrl = new URL(namespace, new URL('/', baseUrl));
-  return io(namespaceUrl.href, Object.assign({path: socketioUrl.pathname}, options));
+  return new io.Socket(namespaceUrl.href, Object.assign({path: socketioUrl.pathname}, options));
 };
 
 if (typeof exports === 'object') {
