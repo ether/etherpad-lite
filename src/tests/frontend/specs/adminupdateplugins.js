@@ -18,9 +18,19 @@ describe('Plugins page', function () {
   // create a new pad before each test run
   beforeEach(async function () {
     helper.newAdmin('plugins');
-    // menu is plugins, settings, help - so at least three entries atm
-    await helper.waitForPromise(
-        () => helper.admin$ && helper.admin$('.menu').find('li').length >= 3, 30000);
+    // retry if helper.newAdmin is called, while the server is not available (e.g. after restart)
+    let maxRetries = 3;
+    try {
+      // menu is plugins, settings, help - so at least three entries atm
+      await helper.waitForPromise(
+          () => helper.admin$ && helper.admin$('.menu').find('li').length >= 3, 10000);
+    } catch (err) {
+      maxRetries -= 1;
+      if (maxRetries < 0) {
+        throw err;
+      }
+      helper.newAdmin('plugins');
+    }
   });
 
   it('Lists some plugins assuming more than 50 available plugins', async function () {
