@@ -46,6 +46,9 @@ jobs:
         name: install dependencies and create symlink for ep_etherpad-lite
         run: src/bin/installDeps.sh
       -
+        name: Install etherpad-cli-client
+        run: npm i etherpad-cli-client
+      -
         name: run rate limit test
         run: |
           cd src/tests/ratelimit
