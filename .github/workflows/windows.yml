@@ -37,9 +37,9 @@ jobs:
         name: Install the ep_etherpad-lite package from ./src
         shell: msys2 {0}
         run: src/bin/installDeps.sh
-      -
-        name: Run npm i once to make bin files available - why is this needed at all?
-        run: npm i
+#      -
+#        name: Run npm i once to make bin files available - why is this needed at all?
+#        run: npm i
       -
         name: Run the backend tests
         shell: msys2 {0}
