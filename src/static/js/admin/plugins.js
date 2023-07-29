@@ -5,6 +5,7 @@
 $(document).ready(() => {
   const socket = socketio.connect('..', '/pluginfw/installer');
   socket.on('disconnect', (reason) => {
+    window.console.log('socket disconnect', new Date());
     // The socket.io client will automatically try to reconnect for all reasons other than "io
     // server disconnect".
     if (reason === 'io server disconnect') socket.connect();
@@ -133,6 +134,7 @@ $(document).ready(() => {
       } else {
         installed.progress.show(plugin, 'Updating');
       }
+      window.console.log('before emit install', new Date())
       socket.emit('install', plugin, version);
       installed.messages.hide('nothing-installed');
     });
@@ -141,6 +143,7 @@ $(document).ready(() => {
     $('.do-uninstall').off('click').on('click', (e) => {
       const $row = $(e.target).closest('tr');
       const pluginName = $row.data('plugin');
+      window.console.log('before emit uninstall', new Date())
       socket.emit('uninstall', pluginName);
       installed.progress.show(pluginName, 'Uninstalling');
       installed.list = installed.list.filter((plugin) => plugin.name !== pluginName);
@@ -170,7 +173,7 @@ $(document).ready(() => {
     search.messages.hide('fetching');
     $('#search-query').prop('disabled', false);
 
-    console.log('got search results', data);
+    window.console.log('got search results', data);
 
     // add to results
     search.results = search.results.concat(data.results);
@@ -198,6 +201,7 @@ $(document).ready(() => {
   });
 
   socket.on('results:installed', (data) => {
+    window.console.log('socket results:installed', new Date());
     installed.messages.hide('fetching');
     installed.messages.hide('nothing-installed');
 
@@ -214,6 +218,7 @@ $(document).ready(() => {
 
     if (installed.list.length > 0) {
       displayPluginList(installed.list, $('#installed-plugins'), $('#installed-plugin-template'));
+      window.console.log('before emit checkUpdates', new Date())
       socket.emit('checkUpdates');
     } else {
       installed.messages.show('nothing-installed');
@@ -221,6 +226,7 @@ $(document).ready(() => {
   });
 
   socket.on('results:updatable', (data) => {
+    window.console.log('socket results:updatable', new Date());
     data.updatable.forEach((plugin) => {
       const {name, version} = plugin;
       const actions = $(`#installed-plugins > tr.${name} .actions`);
@@ -233,6 +239,7 @@ $(document).ready(() => {
   });
 
   socket.on('finished:install', (data) => {
+    window.console.log('socket finished:install', new Date());
     if (data.error) {
       if (data.code === 'EPEERINVALID') {
         alert("This plugin requires that you update Etherpad so it can operate in it's true glory");
@@ -241,6 +248,7 @@ $(document).ready(() => {
       $(`#installed-plugins .${data.plugin}`).remove();
     }
 
+    window.console.log('before emit getInstalled', new Date())
     socket.emit('getInstalled');
 
     // update search results
@@ -250,6 +258,7 @@ $(document).ready(() => {
   });
 
   socket.on('finished:uninstall', (data) => {
+    window.console.log('socket finished:uninstall', new Date());
     if (data.error) {
       alert(`An error occurred while uninstalling the ${data.plugin} \n${data.error}`);
     }
@@ -257,6 +266,7 @@ $(document).ready(() => {
     // remove plugin from installed list
     $(`#installed-plugins .${data.plugin}`).remove();
 
+    window.console.log('before emit getInstalled', new Date())
     socket.emit('getInstalled');
 
     // update search results
@@ -266,7 +276,9 @@ $(document).ready(() => {
   });
 
   socket.on('connect', () => {
+    window.console.log('socket connect', new Date());
     updateHandlers();
+    window.console.log('before emit getInstalled', new Date())
     socket.emit('getInstalled');
     search.searchTerm = null;
     search($('#search-query').val());

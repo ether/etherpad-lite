@@ -39,10 +39,12 @@ exports.expressCreateServer = (hookName, args, cb) => {
 exports.socketio = (hookName, args, cb) => {
   const io = args.io.of('/pluginfw/installer');
   io.on('connection', (socket) => {
+    console.log('event connection', new Date())
     const {session: {user: {is_admin: isAdmin} = {}} = {}} = socket.conn.request;
     if (!isAdmin) return;
 
     socket.on('getInstalled', (query) => {
+      console.log('message getInstalled', new Date())
       // send currently installed plugins
       const installed =
           Object.keys(pluginDefs.plugins).map((plugin) => pluginDefs.plugins[plugin].package);
@@ -51,6 +53,7 @@ exports.socketio = (hookName, args, cb) => {
     });
 
     socket.on('checkUpdates', async () => {
+      console.log('message checkUpdates', new Date())
       // Check plugins for updates
       try {
         const results = await installer.getAvailablePlugins(/* maxCacheAge:*/ 60 * 10);
@@ -64,25 +67,31 @@ exports.socketio = (hookName, args, cb) => {
           return semver.gt(latestVersion, currentVersion);
         }).map((plugin) => ({name: plugin, version: results[plugin].version}));
 
+        console.log('emit results:updatable', new Date())
         socket.emit('results:updatable', {updatable});
       } catch (err) {
         console.warn(err.stack || err.toString());
 
+        console.log('emit results:updatable', new Date())
         socket.emit('results:updatable', {updatable: {}});
       }
     });
 
     socket.on('getAvailable', async (query) => {
+      console.log('message getAvailable', new Date())
       try {
         const results = await installer.getAvailablePlugins(/* maxCacheAge:*/ false);
+        console.log('emit results:available', new Date())
         socket.emit('results:available', results);
       } catch (er) {
         console.error(er);
+        console.log('emit results:available', new Date())
         socket.emit('results:available', {});
       }
     });
 
     socket.on('search', async (query) => {
+      console.log('message search', new Date())
       try {
         const results = await installer.search(query.searchTerm, /* maxCacheAge:*/ 60 * 10);
         let res = Object.keys(results)
@@ -90,18 +99,22 @@ exports.socketio = (hookName, args, cb) => {
             .filter((plugin) => !pluginDefs.plugins[plugin.name]);
         res = sortPluginList(res, query.sortBy, query.sortDir)
             .slice(query.offset, query.offset + query.limit);
+        console.log('emit results:search', new Date())
         socket.emit('results:search', {results: res, query});
       } catch (er) {
         console.error(er);
 
+        console.log('emit results:search', new Date())
         socket.emit('results:search', {results: {}, query});
       }
     });
 
     socket.on('install', (pluginName, version) => {
+      console.log('message install', new Date())
       installer.install(pluginName, version, (err) => {
         if (err) console.warn(err.stack || err.toString());
 
+        console.log('emit finished:install', new Date())
         socket.emit('finished:install', {
           plugin: pluginName,
           code: err ? err.code : null,
@@ -111,9 +124,11 @@ exports.socketio = (hookName, args, cb) => {
     });
 
     socket.on('uninstall', (pluginName) => {
+      console.log('message uninstall', new Date())
       installer.uninstall(pluginName, (err) => {
         if (err) console.warn(err.stack || err.toString());
 
+        console.log('emit finished:uninstall', new Date())
         socket.emit('finished:uninstall', {plugin: pluginName, error: err ? err.message : null});
       });
     });
