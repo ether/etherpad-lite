@@ -37,4 +37,7 @@ exit_code=$?
 
 kill "$ep_pid" && wait "$ep_pid"
 log "Done."
+try cd "${MY_DIR}/../../../.."
+try ls node_modules
+
 exit "$exit_code"
