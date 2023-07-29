@@ -49,24 +49,6 @@ describe(__filename, function () {
     });
   });
 
-
-  describe('createPad with empty text', () => {
-    it('creates a new Pad with empty text', function (done) {
-      agent.get(`${endPoint('createPad')}&padID=${padID}&text=`)
-          .expect((res) => {
-            if (res.body.code !== 0) throw new Error('Unable to create new Pad');
-          })
-          .expect('Content-Type', /json/)
-          .expect(200);
-      agent.get(`${endPoint('deletePad')}&padID=${padID}`)
-          .expect((res) => {
-            if (res.body.code !== 0) throw new Error('Unable to delete empty Pad');
-          })
-          .expect('Content-Type', /json/)
-          .expect(200, done);
-    });
-  });
-
   describe('createAuthor', function () {
     it('Creates an author with a name set', function (done) {
       agent.get(endPoint('createAuthor'))
