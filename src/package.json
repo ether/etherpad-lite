@@ -101,7 +101,7 @@
   "scripts": {
     "lint": "../node_modules/eslint/bin/eslint.js .",
     "test": "../node_modules/mocha/bin/_mocha --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
-    "test-on-windows": "mocha --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
+    "test-on-windows": "..\\node_modules\\.bin\\mocha --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
     "test-container": "../node_modules/mocha/bin/_mocha --timeout 5000 tests/container/specs/api",
     "dev": "bash ./bin/run.sh"
   },
