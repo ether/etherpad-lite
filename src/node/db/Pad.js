@@ -75,7 +75,7 @@ class Pad {
 
   async appendRevision(aChangeset, authorId = '') {
     const newAText = Changeset.applyToAText(aChangeset, this.atext, this.pool);
-    if (newAText.text === this.atext.text && newAText.attribs === this.atext.attribs) {
+    if (newAText.text === this.atext.text && newAText.attribs === this.atext.attribs && this.head !== -1) {
       return this.head;
     }
     Changeset.copyAText(newAText, this.atext);
