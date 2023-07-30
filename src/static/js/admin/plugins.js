@@ -263,9 +263,6 @@ $(document).ready(() => {
       alert(`An error occurred while uninstalling the ${data.plugin} \n${data.error}`);
     }
 
-    // remove plugin from installed list
-    $(`#installed-plugins .${data.plugin}`).remove();
-
     window.console.log('before emit getInstalled', new Date())
     socket.emit('getInstalled');
 
