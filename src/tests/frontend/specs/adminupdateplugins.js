@@ -144,6 +144,11 @@ describe('Plugins page', function () {
     // ensure its gone
     await helper.waitForPromise(() => helper.admin$('#installed-plugins .ep_headings2').length === 0, 200000);
 
+    // delay the search query
+    let delayed = false;
+    setTimeout(() => {delayed = true;}, 5000);
+    await helper.waitForPromise(() => delayed === true, 6000);
+
     // ensure search still works
     helper.admin$('#search-query').val('ep_font');
     await helper.waitForPromise(() => helper.admin$('.results').children().length < 50, 240000);
