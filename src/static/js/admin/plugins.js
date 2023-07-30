@@ -211,9 +211,24 @@ $(document).ready(() => {
     // filter out epl
     installed.list = installed.list.filter((plugin) => plugin.name !== 'ep_etherpad-lite');
 
-    // remove all installed plugins (leave plugins that are still being installed)
+    // Remove plugins from the list - they will be added later.
+    // Installed.list contains a list of plugins the server has successfully installed
+    // At this point plugins are ignored if:
+    // - they are being installed (as installed.list does not contain them yet)
+    // - they have been uninstalled (as installed.list does not contain them anymore)
     installed.list.forEach((plugin) => {
       $(`#installed-plugins .${plugin.name}`).remove();
+    });
+
+    // Remove outdated entries
+    const installedItems = $('#installed-plugins tr');
+    installedItems.each(function () {
+      const pluginName = $(this).attr('class');
+      const message = $(this).find('.progress .message').text();
+      // In case the finished:uninstall msg was missed, remove the plugin from the list
+      if (message === 'Uninstalling') {
+        $(`#installed-plugins .${pluginName}`).remove();
+      }
     });
 
     if (installed.list.length > 0) {
