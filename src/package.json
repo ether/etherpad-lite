@@ -85,7 +85,7 @@
     "mocha-froth": "^0.2.10",
     "nodeify": "^1.0.1",
     "openapi-schema-validation": "^0.4.2",
-    "selenium-webdriver": "^4.10.0",
+    "selenium-webdriver": "^4.11.1",
     "set-cookie-parser": "^2.6.0",
     "sinon": "^15.2.0",
     "split-grid": "^1.0.11",
