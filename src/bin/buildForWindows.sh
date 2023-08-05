@@ -28,6 +28,9 @@ TMP_FOLDER=$(try mktemp -d) || exit 1
 trap 'exit 1' HUP INT TERM
 trap 'log "cleaning up..."; try cd / && try rm -rf "${TMP_FOLDER}"' EXIT
 
+try mkdir "${TMP_FOLDER}"/tests
+try mkdir "${TMP_FOLDER}"/node_modules
+
 log "create a clean environment in $TMP_FOLDER..."
 try git archive --format=tar HEAD | (try cd "${TMP_FOLDER}" && ls -lisa && try tar xf -) \
     || fatal "failed to copy etherpad to temporary folder"
