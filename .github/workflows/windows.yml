@@ -41,6 +41,7 @@ jobs:
         run: src/bin/installDeps.sh
       - name: Install tar
         run: pacman -S tar
+        shell: msys2 {0}
       - name: Build the .zip
         shell: msys2 {0}
         run: src/bin/buildForWindows.sh
