@@ -39,6 +39,8 @@ jobs:
       - name: Install all dependencies and symlink for ep_etherpad-lite
         shell: msys2 {0}
         run: src/bin/installDeps.sh
+      - name: Install tar
+        run: pacman -S tar
       - name: Build the .zip
         shell: msys2 {0}
         run: src/bin/buildForWindows.sh
