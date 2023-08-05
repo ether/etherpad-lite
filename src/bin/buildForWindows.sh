@@ -18,7 +18,8 @@ try cd "${0%/*}"
 workdir=$(try git rev-parse --show-toplevel) || exit 1
 try cd "${workdir}"
 [ -f src/package.json ] || fatal "failed to cd to etherpad root directory"
-
+ls -lisa src/bin
+ls bin
 # See https://github.com/msys2/MSYS2-packages/issues/1216
 export MSYSTEM=winsymlinks:lnk
 
