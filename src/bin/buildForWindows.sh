@@ -18,7 +18,7 @@ try cd "${0%/*}"
 workdir=$(try git rev-parse --show-toplevel) || exit 1
 try cd "${workdir}"
 [ -f src/package.json ] || fatal "failed to cd to etherpad root directory"
-
+ls -lisa
 # See https://github.com/msys2/MSYS2-packages/issues/1216
 export MSYS=winsymlinks:lnk
 
@@ -27,9 +27,6 @@ OUTPUT=${workdir}/etherpad-win.zip
 TMP_FOLDER=$(try mktemp -d) || exit 1
 trap 'exit 1' HUP INT TERM
 trap 'log "cleaning up..."; try cd / && try rm -rf "${TMP_FOLDER}"' EXIT
-
-try mkdir "${TMP_FOLDER}"/tests
-try mkdir "${TMP_FOLDER}"/node_modules
 
 log "create a clean environment in $TMP_FOLDER..."
 try git archive --format=tar HEAD | (try cd "${TMP_FOLDER}" && ls -lisa && try tar xf -) \
