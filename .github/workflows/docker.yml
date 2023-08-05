@@ -1,11 +1,6 @@
 name: Docker
-on:
-  pull_request:
-  push:
-    branches:
-      - 'develop'
-    tags:
-      - 'v?[0-9]+.[0-9]+.[0-9]+'
+on: workflow_dispatch
+
 env:
   TEST_TAG: etherpad/etherpad:test
 permissions:

@@ -1,7 +1,7 @@
 # Leave the powered by Sauce Labs bit in as this means we get additional concurrency
 name: "Frontend tests powered by Sauce Labs"
 
-on: [push]
+on: workflow_dispatch
 
 permissions:
   contents: read # to fetch code (actions/checkout)

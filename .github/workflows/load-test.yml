@@ -1,7 +1,8 @@
 name: "Loadtest"
 
 # any branch is useful for testing before a PR is submitted
-on: [push, pull_request]
+on: workflow_dispatch
+]
 
 permissions:
   contents: read
