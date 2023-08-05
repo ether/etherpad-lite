@@ -20,7 +20,7 @@ try cd "${workdir}"
 [ -f src/package.json ] || fatal "failed to cd to etherpad root directory"
 ls -lisa
 # See https://github.com/msys2/MSYS2-packages/issues/1216
-export MSYS=winsymlinks:native
+export MSYS=winsymlinks:nativestrict
 
 OUTPUT=${workdir}/etherpad-win.zip
 
