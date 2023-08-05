@@ -40,7 +40,7 @@ jobs:
         shell: msys2 {0}
         run: src/bin/installDeps.sh
       - name: Install tar
-        run: pacman -S tar
+        run: pacman -S --noconfirm tar
         shell: msys2 {0}
       - name: Build the .zip
         shell: msys2 {0}
