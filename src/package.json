@@ -79,7 +79,7 @@
   },
   "devDependencies": {
     "eslint": "^8.46.0",
-    "eslint-config-etherpad": "^3.0.17",
+    "eslint-config-etherpad": "^3.0.21",
     "etherpad-cli-client": "^2.0.2",
     "mocha": "^10.0.0",
     "mocha-froth": "^0.2.10",
