@@ -21,7 +21,7 @@ try cd "${workdir}"
 ls -lisa src/bin
 ls bin
 # See https://github.com/msys2/MSYS2-packages/issues/1216
-export MSYSTEM=winsymlinks:native
+export MSYSTEM=winsymlinks:lnk
 
 OUTPUT=${workdir}/etherpad-win.zip
 
