@@ -8,20 +8,19 @@ const util = require('util');
 
 exports.expressPreSession = async (hookName, {app}) => {
   // The Etherpad client side sends information about how a disconnect happened
-  app.post('/ep/pad/connection-diagnostic-info', (req, res) => {
-    new Formidable().parse(req, (err, fields, files) => {
-      clientLogger.info(`DIAGNOSTIC-INFO: ${fields.diagnosticInfo}`);
-      res.end('OK');
-    });
+  app.post('/ep/pad/connection-diagnostic-info', async (req, res) => {
+    const [fields, files] = await (new Formidable({})).parse(req);
+    clientLogger.info(`DIAGNOSTIC-INFO: ${fields.diagnosticInfo}`);
+    res.end('OK');
   });
 
-  const parseJserrorForm = async (req) => await new Promise((resolve, reject) => {
+  const parseJserrorForm = async (req) => {
     const form = new Formidable({
       maxFileSize: 1, // Files are not expected. Not sure if 0 means unlimited, so 1 is used.
     });
-    form.on('error', (err) => reject(err));
-    form.parse(req, (err, fields) => err != null ? reject(err) : resolve(fields.errorInfo));
-  });
+    const [fields, files] = await form.parse(req);
+    return fields.errorInfo;
+  };
 
   // The Etherpad client side sends information about client side javscript errors
   app.post('/jserror', (req, res, next) => {
