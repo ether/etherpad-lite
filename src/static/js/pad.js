@@ -410,7 +410,7 @@ const pad = {
     const postAceInit = () => {
       padeditbar.init();
       setTimeout(() => {
-        padeditor.ace.focus();
+        padeditor.ace.trigger('focus');
       }, 0);
       $('#options-stickychat').on('click', () => { chat.stickToScreen(); });
       // if we have a cookie for always showing chat then show it

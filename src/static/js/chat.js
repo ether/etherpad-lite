@@ -227,7 +227,7 @@ exports.chat = (() => {
         if ((evt.altKey === true && evt.which === 67) || evt.which === 27) {
           // If we're in chat already..
           $(':focus').trigger('blur'); // required to do not try to remove!
-          padeditor.ace.focus(); // Sends focus back to pad
+          padeditor.ace.trigger('focus'); // Sends focus back to pad
           evt.preventDefault();
           return false;
         }
