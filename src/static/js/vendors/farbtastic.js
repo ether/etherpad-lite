@@ -33,7 +33,7 @@ $._farbtastic = function (container, options) {
   fb.linkTo = function (callback) {
     // Unbind previous nodes
     if (typeof fb.callback == 'object') {
-      $(fb.callback).off('keyup').on('keyup').on('keyup', fb.updateValue);
+      $(fb.callback).off('keyup').on('keyup', fb.updateValue);
     }
 
     // Reset color
