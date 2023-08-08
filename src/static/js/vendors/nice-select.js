@@ -123,7 +123,7 @@
         $dropdown.find('.list').css('max-height', $maxListHeight + 'px');
 
       } else {
-        $dropdown.focus();
+        $dropdown.trigger('focus');
       }
     });
 

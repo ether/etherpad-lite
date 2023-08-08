@@ -25,7 +25,7 @@ $(document).ready(() => {
     /* Check to make sure the JSON is clean before proceeding */
     if (isJSONClean(settings.results)) {
       $('.settings').append(settings.results);
-      $('.settings').focus();
+      $('.settings').trigger('focus');
       $('.settings').autosize();
     } else {
       alert('Invalid JSON');
@@ -40,7 +40,7 @@ $(document).ready(() => {
       socket.emit('saveSettings', $('.settings').val());
     } else {
       alert('Invalid JSON');
-      $('.settings').focus();
+      $('.settings').trigger('focus');
     }
   });
 
@@ -62,7 +62,7 @@ const isJSONClean = (data) => {
   // this is a bit naive. In theory some key/value might contain the sequences ',]' or ',}'
   cleanSettings = cleanSettings.replace(',]', ']').replace(',}', '}');
   try {
-    return typeof jQuery.parseJSON(cleanSettings) === 'object';
+    return typeof JSON.parseJSON(cleanSettings) === 'object';
   } catch (e) {
     return false; // the JSON failed to be parsed
   }

@@ -59,7 +59,7 @@ describe('embed links', function () {
         const chrome$ = helper.padChrome$;
 
         // open share dropdown
-        chrome$('.buttonicon-embed').click();
+        chrome$('.buttonicon-embed').trigger('click');
 
         // get the link of the share field + the actual pad url and compare them
         const shareLink = chrome$('#linkinput').val();
@@ -73,7 +73,7 @@ describe('embed links', function () {
         const chrome$ = helper.padChrome$;
 
         // open share dropdown
-        chrome$('.buttonicon-embed').click();
+        chrome$('.buttonicon-embed').trigger('click');
 
         // get the link of the share field + the actual pad url and compare them
         const embedCode = chrome$('#embedinput').val();
@@ -93,8 +93,8 @@ describe('embed links', function () {
         const chrome$ = helper.padChrome$;
 
         // open share dropdown
-        chrome$('.buttonicon-embed').click();
-        chrome$('#readonlyinput').click();
+        chrome$('.buttonicon-embed').trigger('click');
+        chrome$('#readonlyinput').trigger('click');
         chrome$('#readonlyinput:checkbox:not(:checked)').attr('checked', 'checked');
 
         // get the link of the share field + the actual pad url and compare them
@@ -109,9 +109,9 @@ describe('embed links', function () {
         const chrome$ = helper.padChrome$;
 
         // open share dropdown
-        chrome$('.buttonicon-embed').click();
+        chrome$('.buttonicon-embed').trigger('click');
         // check read only checkbox, a bit hacky
-        chrome$('#readonlyinput').click();
+        chrome$('#readonlyinput').trigger('click');
         chrome$('#readonlyinput:checkbox:not(:checked)').attr('checked', 'checked');
 
 

@@ -10,7 +10,7 @@ describe('chat-load-messages', function () {
   it('adds a lot of messages', async function () {
     const chrome$ = helper.padChrome$;
     const chatButton = chrome$('#chaticon');
-    chatButton.click();
+    chatButton.trigger('click');
     const chatInput = chrome$('#chatinput');
     const chatText = chrome$('#chattext');
 
@@ -33,7 +33,7 @@ describe('chat-load-messages', function () {
     const chrome$ = helper.padChrome$;
     helper.waitFor(() => {
       const chatButton = chrome$('#chaticon');
-      chatButton.click();
+      chatButton.trigger('click');
       chatText = chrome$('#chattext');
       return chatText.children('p').length === expectedCount;
     }).always(() => {
@@ -47,11 +47,11 @@ describe('chat-load-messages', function () {
     const expectedCount = 122;
     const chrome$ = helper.padChrome$;
     const chatButton = chrome$('#chaticon');
-    chatButton.click();
+    chatButton.trigger('click');
     const chatText = chrome$('#chattext');
     const loadMsgBtn = chrome$('#chatloadmessagesbutton');
 
-    loadMsgBtn.click();
+    loadMsgBtn.trigger('click');
     helper.waitFor(() => chatText.children('p').length === expectedCount).always(() => {
       expect(chatText.children('p').length).to.be(expectedCount);
       done();
@@ -63,11 +63,11 @@ describe('chat-load-messages', function () {
     const expectedDisplay = 'none';
     const chrome$ = helper.padChrome$;
     const chatButton = chrome$('#chaticon');
-    chatButton.click();
+    chatButton.trigger('click');
     const loadMsgBtn = chrome$('#chatloadmessagesbutton');
     const loadMsgBall = chrome$('#chatloadmessagesball');
 
-    loadMsgBtn.click();
+    loadMsgBtn.trigger('click');
     helper.waitFor(() => loadMsgBtn.css('display') === expectedDisplay &&
              loadMsgBall.css('display') === expectedDisplay).always(() => {
       expect(loadMsgBtn.css('display')).to.be(expectedDisplay);

@@ -164,7 +164,7 @@
 				$(window).resize(adjust);
 
 				// Allow for manual triggering if needed.
-				$ta.bind('autosize', adjust);
+				$ta.on('autosize', adjust);
 
 				// Call adjust in case the textarea already contains text.
 				adjust();

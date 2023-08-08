@@ -25,7 +25,7 @@ describe('author of pad edition', function () {
     $lineWithUnorderedList.sendkeys('{selectall}');
 
     const $insertUnorderedListButton = helper.padChrome$('.buttonicon-insertunorderedlist');
-    $insertUnorderedListButton.click();
+    $insertUnorderedListButton.trigger('click');
 
     await helper.waitForPromise(() => (
       getLine(LINE_WITH_UNORDERED_LIST).find('ul li').length === 1 &&
@@ -36,7 +36,7 @@ describe('author of pad edition', function () {
     $lineWithOrderedList.sendkeys('{selectall}');
 
     const $insertOrderedListButton = helper.padChrome$('.buttonicon-insertorderedlist');
-    $insertOrderedListButton.click();
+    $insertOrderedListButton.trigger('click');
 
     await helper.waitForPromise(() => (
       getLine(LINE_WITH_ORDERED_LIST).find('ol li').length === 1 &&
