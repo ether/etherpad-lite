@@ -27,6 +27,7 @@ jobs:
           path-type: inherit
           install: >-
             zip
+            rsync
       -
         name: Checkout repository
         uses: actions/checkout@v3
