@@ -62,7 +62,7 @@ const isJSONClean = (data) => {
   // this is a bit naive. In theory some key/value might contain the sequences ',]' or ',}'
   cleanSettings = cleanSettings.replace(',]', ']').replace(',}', '}');
   try {
-    return typeof JSON.parseJSON(cleanSettings) === 'object';
+    return typeof JSON.parse(cleanSettings) === 'object';
   } catch (e) {
     return false; // the JSON failed to be parsed
   }
