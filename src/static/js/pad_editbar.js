@@ -201,7 +201,7 @@ exports.padeditbar = new class {
     if (this.isEnabled() && this.commands[cmd]) {
       this.commands[cmd](cmd, padeditor.ace, item);
     }
-    if (padeditor.ace) padeditor.ace.trigger('focus');
+    if (padeditor.ace) padeditor.ace.focus();
   }
 
   // cb is deprecated (this function is synchronous so a callback is unnecessary).
@@ -312,7 +312,7 @@ exports.padeditbar = new class {
           // Timeslider probably..
           $('#editorcontainerbox').trigger('focus'); // Focus back onto the pad
         } else {
-          padeditor.ace.trigger('focus'); // Sends focus back to pad
+          padeditor.ace.focus(); // Sends focus back to pad
           // The above focus doesn't always work in FF, you have to hit enter afterwards
           evt.preventDefault();
         }

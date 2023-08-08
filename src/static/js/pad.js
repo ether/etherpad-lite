@@ -410,13 +410,14 @@ const pad = {
     const postAceInit = () => {
       padeditbar.init();
       setTimeout(() => {
-        padeditor.ace.trigger('focus');
+        padeditor.ace.focus();
       }, 0);
-      $('#options-stickychat').on('click', () => { chat.stickToScreen(); });
+      const optionsStickyChat = $('#options-stickychat');
+      optionsStickyChat.on('click', () => { chat.stickToScreen(); });
       // if we have a cookie for always showing chat then show it
       if (padcookie.getPref('chatAlwaysVisible')) {
         chat.stickToScreen(true); // stick it to the screen
-        $('#options-stickychat').prop('checked', true); // set the checkbox to on
+        optionsStickyChat.prop('checked', true); // set the checkbox to on
       }
       // if we have a cookie for always showing chat then show it
       if (padcookie.getPref('chatAndUsers')) {
