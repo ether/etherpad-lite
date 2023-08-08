@@ -20,7 +20,7 @@ try cd "${workdir}"
 [ -f src/package.json ] || fatal "failed to cd to etherpad root directory"
 
 # See https://github.com/msys2/MSYS2-packages/issues/1216
-export MSYS=winsymlinks:lnk
+export MSYSTEM=winsymlinks:lnk
 
 OUTPUT=${workdir}/etherpad-win.zip
 
@@ -29,10 +29,12 @@ trap 'exit 1' HUP INT TERM
 trap 'log "cleaning up..."; try cd / && try rm -rf "${TMP_FOLDER}"' EXIT
 
 log "create a clean environment in $TMP_FOLDER..."
-try git archive --format=tar HEAD | (try cd "${TMP_FOLDER}" && try tar xf -) \
+try export GIT_WORK_TREE=${TMP_FOLDER}; git checkout HEAD -f \
     || fatal "failed to copy etherpad to temporary folder"
 try mkdir "${TMP_FOLDER}"/.git
 try git rev-parse HEAD >${TMP_FOLDER}/.git/HEAD
+try cp -r ./src/node_modules "${TMP_FOLDER}"/src/node_modules
+
 try cd "${TMP_FOLDER}"
 [ -f src/package.json ] || fatal "failed to copy etherpad to temporary folder"
 
