@@ -29,7 +29,7 @@ trap 'exit 1' HUP INT TERM
 trap 'log "cleaning up..."; try cd / && try rm -rf "${TMP_FOLDER}"' EXIT
 
 log "create a clean environment in $TMP_FOLDER..."
-try git archive --format=zip HEAD | (try cd "${TMP_FOLDER}" && try tar xf -P -) \
+try export GIT_WORK_TREE=${TMP_FOLDER}; git checkout HEAD -f \
     || fatal "failed to copy etherpad to temporary folder"
 try mkdir "${TMP_FOLDER}"/.git
 try git rev-parse HEAD >${TMP_FOLDER}/.git/HEAD
