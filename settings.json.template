@@ -101,7 +101,7 @@
    * is used. If this is a relative path it is interpreted as relative to the
    * Etherpad root directory.
    */
-  "favicon": null,
+  "favicon": "tests/backend/specs/favicon-test-custom.png",
 
   /*
    * Skin name.
