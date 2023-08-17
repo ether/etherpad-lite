@@ -429,8 +429,8 @@ $._farbtastic = function (container, options) {
    */
   fb.mouseup = function () {
     // Uncapture mouse
-    $(document).off('mousemove').on('mousemove',fb.mousemove);
-    $(document).off('mouseup').on('mouseup', fb.mouseup);
+    $(document).off('mousemove', fb.mousemove);
+    $(document).off('mouseup',  fb.mouseup);
     $._farbtastic.dragging = false;
   }
 
