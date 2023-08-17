@@ -1,3 +1,26 @@
+# 1.9.2
+
+### Notable enhancements and fixes
+
+* Security
+  * Enable session key rotation: This setting can be enabled in the settings.json. It changes the signing key for the cookie authentication in a fixed interval.
+
+* Bugfixes
+  * Fix appendRevision when creating a new pad via the API without a text. 
+
+
+* Enhancements
+  * Bump JQuery to version 3.7
+  * Update elasticsearch connector to version 8
+
+### Compatibility changes
+
+* No compability changes as JQuery maintains excellent backwards compatibility. 
+
+#### For plugin authors
+
+* Please update to JQuery 3.7. There is an excellent deprecation guide over [here](https://api.jquery.com/category/deprecated/). Version 3.1 to 3.7 are relevant for the upgrade. 
+
 # 1.9.1
 
 ### Notable enhancements and fixes
