@@ -18,7 +18,7 @@ describe('strikethrough button', function () {
 
     // get the strikethrough button and click it
     const $strikethroughButton = chrome$('.buttonicon-strikethrough');
-    $strikethroughButton.click();
+    $strikethroughButton.trigger('click');
 
     // ace creates a new dom element when you press a button, just get the first text element again
     const $newFirstTextElement = inner$('div').first();

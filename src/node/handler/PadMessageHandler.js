@@ -236,6 +236,11 @@ exports.handleMessage = async (socket, message) => {
       padID: message.padId,
       token: message.token,
     };
+
+    // Pad does not exist, so we need to sanitize the id
+    if (!(await padManager.doesPadExist(thisSession.auth.padID))) {
+      thisSession.auth.padID = await padManager.sanitizePadId(thisSession.auth.padID);
+    }
     const padIds = await readOnlyManager.getIds(thisSession.auth.padID);
     thisSession.padId = padIds.padId;
     thisSession.readOnlyPadId = padIds.readOnlyPadId;

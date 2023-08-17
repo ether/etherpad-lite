@@ -17,6 +17,7 @@ let apiVersion = 1;
 const testPadId = makeid();
 const newPadId = makeid();
 const copiedPadId = makeid();
+const anotherPadId = makeid();
 let lastEdited = '';
 const text = generateLongText();
 
@@ -501,6 +502,31 @@ describe(__filename, function () {
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.data.revisions, revCount);
+    });
+
+    it('creates a new Pad with empty text', async function () {
+      await agent.get(`${endPoint('createPad')}&padID=${anotherPadId}&text=`)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .expect((res) => {
+            assert.equal(res.body.code, 0, 'Unable to create new Pad');
+          });
+      await agent.get(`${endPoint('getText')}&padID=${anotherPadId}`)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .expect((res) => {
+            assert.equal(res.body.code, 0, 'Unable to get pad text');
+            assert.equal(res.body.data.text, '\n', 'Pad text is not empty');
+          });
+    });
+
+    it('deletes with empty text', async function () {
+      await agent.get(`${endPoint('deletePad')}&padID=${anotherPadId}`)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .expect((res) => {
+            assert.equal(res.body.code, 0, 'Unable to delete empty Pad');
+          });
     });
   });
 

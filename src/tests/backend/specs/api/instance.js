@@ -17,16 +17,16 @@ describe(__filename, function () {
   before(async function () { agent = await common.init(); });
 
   describe('Connectivity for instance-level API tests', function () {
-    it('can connect', function (done) {
-      agent.get('/api/')
+    it('can connect', async function () {
+      await agent.get('/api/')
           .expect('Content-Type', /json/)
-          .expect(200, done);
+          .expect(200);
     });
   });
 
   describe('getStats', function () {
-    it('Gets the stats of a running instance', function (done) {
-      agent.get(endPoint('getStats'))
+    it('Gets the stats of a running instance', async function () {
+      await agent.get(endPoint('getStats'))
           .expect((res) => {
             if (res.body.code !== 0) throw new Error('getStats() failed');
 
@@ -48,7 +48,7 @@ describe(__filename, function () {
             }
           })
           .expect('Content-Type', /json/)
-          .expect(200, done);
+          .expect(200);
     });
   });
 });

@@ -15,13 +15,19 @@ jobs:
       || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
     name: Build .zip
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
     steps:
       -
         uses: msys2/setup-msys2@v2
         with:
+          release: false
+          update: false
           path-type: inherit
           install: >-
             zip
+            rsync
       -
         name: Checkout repository
         uses: actions/checkout@v3
@@ -35,16 +41,17 @@ jobs:
             src/bin/doc/package-lock.json
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        shell: msys2 {0}
-        run: src/bin/installDeps.sh
+        run: |
+          set MSYSTEM=winsymlinks:lnk
+          src/bin/installDeps.sh
       -
         name: Run the backend tests
-        shell: msys2 {0}
         run: cd src && npm test
       -
         name: Build the .zip
-        shell: msys2 {0}
-        run: src/bin/buildForWindows.sh
+        run: |
+          set MSYSTEM=winsymlinks:lnk
+          src/bin/buildForWindows.sh
       -
         name: Archive production artifacts
         uses: actions/upload-artifact@v3

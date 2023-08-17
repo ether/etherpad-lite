@@ -527,7 +527,7 @@ describe('importexport.js', function () {
     const isVisible = () => popup.hasClass('popup-show');
     if (isVisible()) return;
     const button = helper.padChrome$('button[data-l10n-id="pad.toolbar.import_export.title"]');
-    button.click();
+    button.trigger('click');
     await helper.waitForPromise(isVisible);
   });
 
@@ -558,7 +558,7 @@ describe('importexport.js', function () {
         dt.items.add(new File([contents], `file.${ext}`, {type: 'text/plain'}));
         const form = helper.padChrome$('#importform');
         form.find('input[type=file]')[0].files = dt.files;
-        form.find('#importsubmitinput').submit();
+        form.find('#importsubmitinput').trigger('submit');
         try {
           await helper.waitForPromise(() => {
             const got = helper.linesDiv();

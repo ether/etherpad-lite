@@ -149,7 +149,10 @@ const checkAccess = async (req, res, next) => {
   if (!(await aCallFirst0('authenticate', ctx))) {
     // Fall back to HTTP basic auth.
     const {[ctx.username]: {password} = {}} = settings.users;
-    if (!httpBasicAuth || !ctx.username || password == null || password !== ctx.password) {
+
+    if (!httpBasicAuth ||
+        !ctx.username ||
+        password == null || password.toString() !== ctx.password) {
       httpLogger.info(`Failed authentication from IP ${req.ip}`);
       if (await aCallFirst0('authnFailure', {req, res})) return;
       if (await aCallFirst0('authFailure', {req, res, next})) return;

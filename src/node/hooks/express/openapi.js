@@ -15,8 +15,7 @@
  */
 
 const OpenAPIBackend = require('openapi-backend').default;
-const formidable = require('formidable');
-const {promisify} = require('util');
+const IncomingForm = require('formidable').IncomingForm;
 const cloneDeep = require('lodash.clonedeep');
 const createHTTPError = require('http-errors');
 
@@ -596,9 +595,13 @@ exports.expressPreSession = async (hookName, {app}) => {
           // read form data if method was POST
           let formData = {};
           if (c.request.method === 'post') {
-            const form = new formidable.IncomingForm();
-            const parseForm = promisify(form.parse).bind(form);
-            formData = await parseForm(req);
+            const form = new IncomingForm();
+            formData = (await form.parse(req))[0];
+            for (const k of Object.keys(formData)) {
+              if (formData[k] instanceof Array) {
+                formData[k] = formData[k][0];
+              }
+            }
           }
 
           const fields = Object.assign({}, header, params, query, formData);

@@ -89,24 +89,24 @@ const doImport = async (req, res, padId, authorId) => {
     maxFileSize: settings.importMaxFileSize,
   });
 
-  // locally wrapped Promise, since form.parse requires a callback
-  let srcFile = await new Promise((resolve, reject) => {
-    form.parse(req, (err, fields, files) => {
-      if (err != null) {
-        logger.warn(`Import failed due to form error: ${err.stack || err}`);
-        // I hate doing indexOf here but I can't see anything to use...
-        if (err && err.stack && err.stack.indexOf('maxFileSize') !== -1) {
-          return reject(new ImportError('maxFileSize'));
-        }
-        return reject(new ImportError('uploadFailed'));
-      }
-      if (!files.file) {
-        logger.warn('Import failed because form had no file');
-        return reject(new ImportError('uploadFailed'));
-      }
-      resolve(files.file.filepath);
-    });
-  });
+  let srcFile;
+  let files;
+  let fields;
+  try {
+    [fields, files] = await form.parse(req);
+  } catch (err) {
+    logger.warn(`Import failed due to form error: ${err.stack || err}`);
+    if (err.code === Formidable.formidableErrors.biggerThanMaxFileSize) {
+      throw new ImportError('maxFileSize');
+    }
+    throw new ImportError('uploadFailed');
+  }
+  if (!files.file) {
+    logger.warn('Import failed because form had no file');
+    throw new ImportError('uploadFailed');
+  } else {
+    srcFile = files.file[0].filepath;
+  }
 
   // ensure this is a file ending we know, else we change the file ending to .txt
   // this allows us to accept source code files like .c or .java

@@ -22,8 +22,8 @@ describe('undo button then redo button', function () {
     const $undoButton = chrome$('.buttonicon-undo');
     const $redoButton = chrome$('.buttonicon-redo');
     // click the buttons
-    $undoButton.click(); // removes foo
-    $redoButton.click(); // resends foo
+    $undoButton.trigger('click'); // removes foo
+    $redoButton.trigger('click'); // resends foo
 
     await helper.waitForPromise(() => inner$('div span').first().text() === newString);
     const finalValue = inner$('div').first().text();
