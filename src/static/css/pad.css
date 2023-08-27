@@ -28,6 +28,8 @@ html,
 }
 a {
   color: inherit;
+  overflow-x: auto;
+  white-space: nowrap;
 }
 a img {
   border: 0
