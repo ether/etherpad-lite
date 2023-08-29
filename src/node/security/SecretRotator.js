@@ -160,7 +160,7 @@ class SecretRotator {
     // TODO: This is racy. If two instances start up at the same time and there are no existing
     // matching publications, each will generate and publish their own paramters. In practice this
     // is unlikely to happen, and if it does it can be fixed by restarting both Etherpad instances.
-    const dbKeys = await db.findKeys(`${this._dbPrefix}:*`, null);
+    const dbKeys = await db.findKeys(`${this._dbPrefix}:*`, null) || [];
     let currentParams = null;
     let currentId = null;
     const dbWrites = [];
