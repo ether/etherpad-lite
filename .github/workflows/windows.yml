@@ -1,4 +1,4 @@
-name: "Backend tests"
+name: "Windows Build"
 
 # any branch is useful for testing before a PR is submitted
 on: [push, pull_request]
@@ -7,117 +7,21 @@ permissions:
   contents: read
 
 jobs:
-  withoutpluginsLinux:
+  build-zip:
     # run on pushes to any branch
     # run on PRs from external forks
     if: |
       (github.event_name != 'pull_request')
       || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
-    name: Linux without plugins
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        node: [16, 18, 20]
-    steps:
-      -
-        name: Checkout repository
-        uses: actions/checkout@v3
-      -
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node }}
-          cache: 'npm'
-          cache-dependency-path: |
-            src/package-lock.json
-            src/bin/doc/package-lock.json
-      -
-        name: Install libreoffice
-        run: |
-          sudo add-apt-repository -y ppa:libreoffice/ppa
-          sudo apt update
-          sudo apt install -y --no-install-recommends libreoffice libreoffice-pdfimport
-      -
-        name: Install all dependencies and symlink for ep_etherpad-lite
-        run: src/bin/installDeps.sh
-      -
-        name: Run the backend tests
-        run: cd src && npm test
-
-  withpluginsLinux:
-    # run on pushes to any branch
-    # run on PRs from external forks
-    if: |
-      (github.event_name != 'pull_request')
-      || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
-    name: Linux with Plugins
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        node: [16, 18, 20]
-    steps:
-      -
-        name: Checkout repository
-        uses: actions/checkout@v3
-      -
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node }}
-          cache: 'npm'
-          cache-dependency-path: |
-            src/package-lock.json
-            src/bin/doc/package-lock.json
-      -
-        name: Install libreoffice
-        run: |
-          sudo add-apt-repository -y ppa:libreoffice/ppa
-          sudo apt update
-          sudo apt install -y --no-install-recommends libreoffice libreoffice-pdfimport
-      -
-        name: Install Etherpad plugins
-        # The --legacy-peer-deps flag is required to work around a bug in npm v7:
-        # https://github.com/npm/cli/issues/2199
-        run: >
-          npm install --no-save --legacy-peer-deps
-          ep_align
-          ep_author_hover
-          ep_cursortrace
-          ep_font_size
-          ep_hash_auth
-          ep_headings2
-          ep_image_upload
-          ep_markdown
-          ep_readonly_guest
-          ep_set_title_on_pad
-          ep_spellcheck
-          ep_subscript_and_superscript
-          ep_table_of_contents
-      # Etherpad core dependencies must be installed after installing the
-      # plugin's dependencies, otherwise npm will try to hoist common
-      # dependencies by removing them from src/node_modules and installing them
-      # in the top-level node_modules. As of v6.14.10, npm's hoist logic appears
-      # to be buggy, because it sometimes removes dependencies from
-      # src/node_modules but fails to add them to the top-level node_modules.
-      # Even if npm correctly hoists the dependencies, the hoisting seems to
-      # confuse tools such as `npm outdated`, `npm update`, and some ESLint
-      # rules.
-      -
-        name: Install all dependencies and symlink for ep_etherpad-lite
-        run: src/bin/installDeps.sh
-      -
-        name: Run the backend tests
-        run: cd src && npm test
-
-  withoutpluginsWindows:
-    # run on pushes to any branch
-    # run on PRs from external forks
-    if: |
-      (github.event_name != 'pull_request')
-      || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
-    name: Windows without plugins
+    name: Build .zip
     runs-on: windows-latest
     steps:
+      -
+        uses: msys2/setup-msys2@v2
+        with:
+          path-type: inherit
+          install: >-
+            zip
       -
         name: Checkout repository
         uses: actions/checkout@v3
@@ -131,73 +35,91 @@ jobs:
             src/bin/doc/package-lock.json
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        run: src/bin/installOnWindows.bat
-      -
-        name:  Fix up the settings.json
-        run: |
-          powershell -Command "(gc settings.json.template) -replace '\"max\": 10', '\"max\": 10000' | Out-File -encoding ASCII settings.json.holder"
-          powershell -Command "(gc settings.json.holder) -replace '\"points\": 10', '\"points\": 1000' | Out-File -encoding ASCII settings.json"
+        shell: msys2 {0}
+        run: src/bin/installDeps.sh
       -
         name: Run the backend tests
+        shell: msys2 {0}
         run: cd src && npm test
+      -
+        name: Build the .zip
+        shell: msys2 {0}
+        run: src/bin/buildForWindows.sh
+      -
+        name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: etherpad-win.zip
+          path: etherpad-win.zip
 
-  withpluginsWindows:
-    # run on pushes to any branch
-    # run on PRs from external forks
+  build-exe:
     if: |
       (github.event_name != 'pull_request')
       || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
-    name: Windows with Plugins
+    name: Build .exe
+    needs: build-zip
     runs-on: windows-latest
-
     steps:
       -
         name: Checkout repository
         uses: actions/checkout@v3
+      -
+        name: Download .zip
+        uses: actions/download-artifact@v3
+        with:
+          name: etherpad-win.zip
+          path: ..
+      -
+        name: Extract .zip
+        working-directory: ..
+        run: 7z x etherpad-win.zip -oetherpad-zip
+      -
+        name: Create installer
+        uses: joncloud/makensis-action@v3.7
+        with:
+          script-file: 'src/bin/nsis/etherpad.nsi'
+      -
+        name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: etherpad-win.exe
+          path: etherpad-win.exe
+
+  deploy-zip:
+    # run on pushes to any branch
+    # run on PRs from external forks
+    permissions:
+      contents: none
+    if: |
+      (github.event_name != 'pull_request')
+      || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
+    name: Deploy
+    needs: build-zip
+    runs-on: windows-latest
+    steps:
+      -
+        name: Download zip
+        uses: actions/download-artifact@v3
+        with:
+          name: etherpad-win.zip
+      -
+        name: Extract Etherpad
+        run: 7z x etherpad-win.zip -oetherpad
       -
         uses: actions/setup-node@v3
         with:
           node-version: 20
           cache: 'npm'
           cache-dependency-path: |
-            src/package-lock.json
-            src/bin/doc/package-lock.json
+            etherpad/src/package-lock.json
+            etherpad/src/bin/doc/package-lock.json
       -
-        name: Install Etherpad plugins
-        # The --legacy-peer-deps flag is required to work around a bug in npm
-        # v7: https://github.com/npm/cli/issues/2199
-        run: >
-          npm install --no-save --legacy-peer-deps
-          ep_align
-          ep_author_hover
-          ep_cursortrace
-          ep_font_size
-          ep_hash_auth
-          ep_headings2
-          ep_image_upload
-          ep_markdown
-          ep_readonly_guest
-          ep_set_title_on_pad
-          ep_spellcheck
-          ep_subscript_and_superscript
-          ep_table_of_contents
-      # Etherpad core dependencies must be installed after installing the
-      # plugin's dependencies, otherwise npm will try to hoist common
-      # dependencies by removing them from src/node_modules and installing them
-      # in the top-level node_modules. As of v6.14.10, npm's hoist logic appears
-      # to be buggy, because it sometimes removes dependencies from
-      # src/node_modules but fails to add them to the top-level node_modules.
-      # Even if npm correctly hoists the dependencies, the hoisting seems to
-      # confuse tools such as `npm outdated`, `npm update`, and some ESLint
-      # rules.
+        name: Install Cypress
+        run: cd etherpad && cd src && npm install cypress
       -
-        name: Install all dependencies and symlink for ep_etherpad-lite
-        run: src/bin/installOnWindows.bat
-      -
-        name:  Fix up the settings.json
+        name: Run Etherpad
         run: |
-          powershell -Command "(gc settings.json.template) -replace '\"max\": 10', '\"max\": 10000' | Out-File -encoding ASCII settings.json.holder"
-          powershell -Command "(gc settings.json.holder) -replace '\"points\": 10', '\"points\": 1000' | Out-File -encoding ASCII settings.json"
-      -
-        name: Run the backend tests
-        run: cd src && npm test
+          cd etherpad
+          node node_modules\ep_etherpad-lite\node\server.js &
+          curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
+          src\node_modules\cypress\bin\cypress run --config-file src\tests\frontendcypress\cypress.config.js
