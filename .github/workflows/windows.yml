@@ -123,7 +123,7 @@ jobs:
           node node_modules\ep_etherpad-lite\node\server.js &
           curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
           src\node_modules\cypress\bin\cypress run --config-file src\tests\frontendcypress\cypress.config.js
-      # On release, upload windows zip to GitHub
+      # On release, upload windows zip to GitHub release tab
       - name: upload binaries to release
         uses: softprops/action-gh-release@v1
         if: ${{startsWith(github.ref, 'refs/tags/') }}
