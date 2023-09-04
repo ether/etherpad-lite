@@ -182,8 +182,8 @@ try {
   console.log('Updating ether.github.com master branch...');
   run('git pull --ff-only', {cwd: '../ether.github.com/'});
   console.log('Committing documentation...');
-  run(`cp -R out/doc/ ../ether.github.com/doc/v'${newVersion}'`);
-  run(`rm -f latest && ln -s 'v${newVersion}' latest`, {cwd: '../ether.github.com/doc/'});
+  run(`cp -R out/doc/ ../ether.github.com/public/doc/v'${newVersion}'`);
+  run(`npm version ${newVersion}`, {cwd:'../ether.github.com'})
   run('git add .', {cwd: '../ether.github.com/'});
   run(`git commit -m '${newVersion} docs'`, {cwd: '../ether.github.com/'});
 } catch (err) {
@@ -203,12 +203,9 @@ console.log('  (cd ../ether.github.com && git show)');
 console.log('If everything looks good then push:');
 console.log(`  git push origin master develop '${newVersion}'`);
 console.log('  (cd ../ether.github.com && git push)');
-console.log('Create a Windows build:');
-console.log('  bin/buildForWindows.sh');
+console.log('Creating a Windows build is not necessary anymore and will be created by GitHub action');
 console.log('Visit https://github.com/ether/etherpad-lite/releases/new and create a new release ' +
-            `with 'master' as the target and the version is ${newVersion}.  Include the windows ` +
-            'zip as an asset');
-console.log('Once the new docs are uploaded then modify the download links (replace ' +
-            `${currentVersion} with ${newVersion} on etherpad.org and then pull master onto ` +
-            'develop)');
+            `with 'master' as the target and the version is ${newVersion}. `);
+console.log('The docs are updated automatically with the new version. While the windows build' +
+    ' is generated people can still download the older versions.');
 console.log('Finally go public with an announcement via our comms channels :)');
