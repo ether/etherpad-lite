@@ -78,7 +78,7 @@ RUN  \
     apk add  \
         ca-certificates \
         git \
-        ${INSTALL_ABIWORD:+abiword} \
+        ${INSTALL_ABIWORD:+abiword abiword-plugin-command} \
         ${INSTALL_SOFFICE:+libreoffice openjdk8-jre libreoffice-common}
 
 USER etherpad
