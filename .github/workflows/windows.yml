@@ -49,7 +49,7 @@ jobs:
         name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: etherpad-win.zip
+          name: etherpad-lite-win.zip
           path: etherpad-win.zip
 
   build-exe:
@@ -67,12 +67,12 @@ jobs:
         name: Download .zip
         uses: actions/download-artifact@v3
         with:
-          name: etherpad-win.zip
+          name: etherpad-lite-win.zip
           path: ..
       -
         name: Extract .zip
         working-directory: ..
-        run: 7z x etherpad-win.zip -oetherpad-zip
+        run: 7z x etherpad-lite-win.zip  -oetherpad-zip
       -
         name: Create installer
         uses: joncloud/makensis-action@v3.7
@@ -82,7 +82,7 @@ jobs:
         name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: etherpad-win.exe
+          name: etherpad-lite-win.exe
           path: etherpad-win.exe
 
   deploy-zip:
@@ -101,10 +101,10 @@ jobs:
         name: Download zip
         uses: actions/download-artifact@v3
         with:
-          name: etherpad-win.zip
+          name: etherpad-lite-win.zip
       -
         name: Extract Etherpad
-        run: 7z x etherpad-win.zip -oetherpad
+        run: 7z x etherpad-lite-win.zip  -oetherpad
       -
         uses: actions/setup-node@v3
         with:
@@ -128,4 +128,4 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: ${{startsWith(github.ref, 'refs/tags/') }}
         with:
-            files: etherpad-win.zip
+            files: etherpad-lite-win.zip
