@@ -43,7 +43,7 @@ jobs:
       -
         name: Disable import/export rate limiting
         run: |
-          sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 0/' -i settings.json
+          sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 100000000/' -i settings.json
       -
         uses: saucelabs/sauce-connect-action@v2.3.4
         with:
