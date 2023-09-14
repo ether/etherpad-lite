@@ -71,9 +71,6 @@ jobs:
         run: |
           sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 1000000/' -i settings.json
       -
-        name: Increase express-rate-limit
-        run:
-      -
         name: Remove standard frontend test files, so only admin tests are run
         run: mv src/tests/frontend/specs/* /tmp && mv /tmp/admin*.js src/tests/frontend/specs
       -
