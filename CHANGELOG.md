@@ -1,3 +1,11 @@
+# 1.9.3
+
+### Compability changes
+
+* express-rate-limit has been bumped to 7.0.0: This involves the breaking change that "max: 0"
+in the importExportRateLimiting is set to always trigger. So set it to your desired value.
+If you haven't changed that value in the settings.json you are all set. 
+
 # 1.9.2
 
 ### Notable enhancements and fixes
