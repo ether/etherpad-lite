@@ -87,7 +87,7 @@
     "openapi-schema-validation": "^0.4.2",
     "selenium-webdriver": "^4.12.0",
     "set-cookie-parser": "^2.6.0",
-    "sinon": "^15.2.0",
+    "sinon": "^16.0.0",
     "split-grid": "^1.0.11",
     "supertest": "^6.3.3",
     "typescript": "^4.9.5"
