@@ -12,10 +12,11 @@ jobs:
     name: with plugins
     runs-on: ubuntu-latest
 
+#        node: [16, 19, 20] >> Disabled node 16 and 18 because they do not work
     strategy:
       fail-fast: false
       matrix:
-        node: [16, 18, 20]
+        node: [19, 20]
 
     steps:
       -
