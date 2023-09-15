@@ -43,7 +43,7 @@ describe('Admin > Settings', function () {
 
     // new value for settings.json should now be saved
     // reset it to the old value
-    await helper.newAdmin('settings');
+    helper.newAdmin('settings');
     await helper.waitForPromise(
         () => helper.admin$ &&
                 helper.admin$('.settings').val().length === settingsLength + 11, 20000);
@@ -54,7 +54,7 @@ describe('Admin > Settings', function () {
     await save();
 
     // settings should have the old value
-    await helper.newAdmin('settings');
+    helper.newAdmin('settings');
     await helper.waitForPromise(
         () => helper.admin$ && helper.admin$('.settings').val().length === settingsLength &&
           settings === helper.admin$('.settings').val(), 20000);
