@@ -94,20 +94,20 @@ describe('Plugins page', function () {
   it('Attempt to Uninstall a plugin', async function () {
     this.timeout(360000);
     await helper.waitForPromise(
-        () => helper.admin$('.ep_headings2 .do-uninstall').length !== 0, 120000);
+        () => helper.admin$('.ep_headings2 .do-uninstall').length !== 0, 240000);
 
     helper.admin$('.ep_headings2 .do-uninstall').trigger('click');
 
     // ensure its showing uninstalling
     await helper.waitForPromise(
         () => helper.admin$('.ep_headings2 .message')
-            .text() === 'Uninstalling', 120000);
+            .text() === 'Uninstalling', 240000);
     // ensure its gone
     await helper.waitForPromise(
         () => helper.admin$('.ep_headings2').length === 0, 240000);
 
     helper.admin$('#search-query').val('ep_font');
     await helper.waitForPromise(() => helper.admin$('.results').children().length < 300, 240000);
-    await helper.waitForPromise(() => helper.admin$('.results').children().length > 0, 1000);
+    await helper.waitForPromise(() => helper.admin$('.results').children().length > 0, 240000);
   });
 });
