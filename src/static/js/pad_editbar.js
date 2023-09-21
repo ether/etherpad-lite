@@ -318,7 +318,7 @@ exports.padeditbar = new class {
         }
       } else {
         // Focus on the editbar :)
-        const firstEditbarElement = parent.parent.$('#editbar button').first();
+        const firstEditbarElement = $('#editbar button').first();
 
         $(evt.currentTarget).trigger('blur');
         firstEditbarElement.trigger('focus');
