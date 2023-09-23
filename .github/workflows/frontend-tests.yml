@@ -21,7 +21,7 @@ jobs:
           printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
       -
         name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       -
         uses: actions/setup-node@v3
         with:
@@ -43,7 +43,7 @@ jobs:
       -
         name: Disable import/export rate limiting
         run: |
-          sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 0/' -i settings.json
+          sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 100000000/' -i settings.json
       -
         uses: saucelabs/sauce-connect-action@v2.3.4
         with:
@@ -76,7 +76,7 @@ jobs:
           printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
       -
         name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       -
         uses: actions/setup-node@v3
         with:
@@ -127,7 +127,7 @@ jobs:
       -
         name: Disable import/export rate limiting
         run: |
-          sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 0/' -i settings.json
+          sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 1000000/' -i settings.json
       # XXX we should probably run all tests, because plugins could effect their results
       -
         name: Remove standard frontend test files, so only plugin tests are run

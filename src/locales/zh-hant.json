@@ -9,7 +9,8 @@
 			"Shangkuanlc",
 			"Shirayuki",
 			"Simon Shek",
-			"Wehwei"
+			"Wehwei",
+			"Winston Sung"
 		]
 	},
 	"admin.page-title": "管理員面板 - Etherpad",
@@ -134,7 +135,7 @@
 	"pad.chat.writeMessage.placeholder": "在此編寫您的訊息",
 	"timeslider.followContents": "關注記事本內容更新",
 	"timeslider.pageTitle": "{{appTitle}}時間軸",
-	"timeslider.toolbar.returnbutton": "返回到記事本",
+	"timeslider.toolbar.returnbutton": "返回記事本",
 	"timeslider.toolbar.authors": "協作者：",
 	"timeslider.toolbar.authorsList": "無協作者",
 	"timeslider.toolbar.exportlink.title": "匯出",
