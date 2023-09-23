@@ -17,6 +17,9 @@ RUN \
   }
 ENV TIMEZONE=${TIMEZONE}
 
+# Control the configuration file to be copied into the container.
+ARG SETTINGS=./settings.json.docker
+
 # plugins to install while building the container. By default no plugins are
 # installed.
 # If given a value, it has to be a space-separated, quoted list of plugin names.
@@ -101,7 +104,7 @@ RUN { [ -z "${ETHERPAD_PLUGINS}" ] || \
     rm -rf ~/.npm
 
 # Copy the configuration file.
-COPY --chown=etherpad:etherpad ./settings.json.docker "${EP_DIR}"/settings.json
+COPY --chown=etherpad:etherpad ${SETTINGS} "${EP_DIR}"/settings.json
 
 # Fix group permissions
 RUN chmod -R g=u .
