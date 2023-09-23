@@ -15,6 +15,8 @@ try() { "$@" || fatal "'$@' failed"; }
 MY_DIR=$(try cd "${0%/*}" && try pwd -P) || exit 1
 try cd "${MY_DIR}/../../../.."
 
+sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 100000000/' -i settings.json.template
+
 try sed -e '
 s!"loadTest":[^,]*!"loadTest": true!
 # Reduce rate limit aggressiveness

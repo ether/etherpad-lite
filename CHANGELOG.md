@@ -1,3 +1,20 @@
+# 1.9.3
+
+### Compability changes
+
+* express-rate-limit has been bumped to 7.0.0: This involves the breaking change that "max: 0"
+in the importExportRateLimiting is set to always trigger. So set it to your desired value.
+If you haven't changed that value in the settings.json you are all set. 
+
+### Notable enhancements and fixes
+
+* Bugfixes
+  * Fix etherpad crashing with mongodb database
+
+* Enhancements
+  * Add surrealdb database support. You can find out more about this database [here](https://surrealdb.com).
+  * Make sqlite faster: The sqlite library has been switched to better-sqlite3. This should lead to better performance.
+
 # 1.9.2
 
 ### Notable enhancements and fixes

@@ -22,7 +22,7 @@ jobs:
     steps:
       -
         name: Check out latest release
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: master
       -
@@ -67,7 +67,7 @@ jobs:
       -
         name: Run the backend tests
         run: cd src && npm test
-      # Because actions/checkout@v3 is called with "ref: master" and without
+      # Because actions/checkout@v4 is called with "ref: master" and without
       # "fetch-depth: 0", the local clone does not have the ${GITHUB_SHA}
       # commit. Fetch ${GITHUB_REF} to get the ${GITHUB_SHA} commit. Note that a
       # plain "git fetch" only fetches "normal" references (refs/heads/* and

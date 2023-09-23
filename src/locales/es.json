@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Armando-Martin",
+			"Atzerritik",
 			"DDPAT",
 			"Dgstranz",
 			"Fitoschido",
@@ -74,7 +75,7 @@
 	"pad.colorpicker.save": "Guardar",
 	"pad.colorpicker.cancel": "Cancelar",
 	"pad.loading": "Cargando...",
-	"pad.noCookie": "No se pudo encontrar la «cookie». Permite la utilización de «cookies» en el navegador.",
+	"pad.noCookie": "No se pudo encontrar la galleta. ¡Por favor, permita las cookies en su navegador! Su sesión y configuración no se guardarán entre las visitas. Esto puede deberse a que Etherpad está incluido en un iFrame en algunos navegadores. Por favor asegúrese de que Etherpad está en el mismo subdominio/dominio que el iFrame padre",
 	"pad.permissionDenied": "No tienes permiso para acceder a este pad",
 	"pad.settings.padSettings": "Configuración del pad",
 	"pad.settings.myView": "Preferencias personales",
@@ -98,7 +99,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "Solo es posible importar texto sin formato o en HTML. Para obtener funciones de importación más avanzadas es necesario <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">instalar AbiWord</a>.",
+	"pad.importExport.abiword.innerHTML": "Solo se puede importar desde texto plano o formatos HTML. Para obtener funciones de importación más avanzadas, <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-with-AbiWord\">instale AbiWord o LibreOffice</a>.",
 	"pad.modals.connected": "Conectado.",
 	"pad.modals.reconnecting": "Reconectando a tu pad...",
 	"pad.modals.forcereconnect": "Forzar reconexión",

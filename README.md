@@ -116,7 +116,7 @@ following:
 
 ### Docker container
 
-Find [here](doc/docker.md) information on running Etherpad in a container.
+Find [here](doc/docker.adoc) information on running Etherpad in a container.
 
 ## Plugins
 
