@@ -106,6 +106,6 @@
     "test-container": "mocha --timeout 5000 tests/container/specs/api",
     "dev": "bash ./bin/run.sh"
   },
-  "version": "1.9.3",
+  "version": "1.9.2",
   "license": "Apache-2.0"
 }
