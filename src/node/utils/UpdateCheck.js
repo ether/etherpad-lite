@@ -17,25 +17,24 @@ const loadEtherpadInformations = () => {
 
   return axios.get('https://static.etherpad.org/info.json', {headers: headers})
   .then(async resp => {
-    try {
-      infos = await resp.data;
-      if (infos === undefined || infos === null) {
-        await Promise.reject("Could not retrieve current version")
-        return
-      }
-
-      lastLoadingTime = Date.now();
-      return await Promise.resolve(infos);
-    } catch (err) {
-      return await Promise.reject(err);
+    infos = await resp.data;
+    if (infos === undefined || infos === null) {
+      await Promise.reject("Could not retrieve current version")
+      return
     }
+
+    lastLoadingTime = Date.now();
+    return await Promise.resolve(infos);
   })
+  .catch(async err => {
+    return await Promise.reject(err);
+  });
 }
 
 
 exports.getLatestVersion = () => {
-  exports.needsUpdate();
-  return infos.latestVersion;
+  exports.needsUpdate().catch();
+  return infos?.latestVersion;
 };
 
 exports.needsUpdate = async (cb) => {
