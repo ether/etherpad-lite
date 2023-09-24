@@ -3,7 +3,7 @@ const semver = require('semver');
 const settings = require('./Settings');
 const axios = require('axios');
 const headers = {
-  'User-Agent': 'Etherpad ' + settings.getEpVersion(),
+  'User-Agent': 'Etherpad/' + settings.getEpVersion(),
 }
 
 const updateInterval = 60 * 60 * 1000; // 1 hour
