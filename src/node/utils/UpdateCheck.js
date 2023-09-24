@@ -5,10 +5,17 @@ const axios = require('axios');
 const headers = {
   'User-Agent': 'Etherpad ' + settings.getEpVersion(),
 }
-let infos;
 
-const loadEtherpadInformations = () =>
-  axios.get('https://static.etherpad.org/info.json', {headers: headers})
+const updateInterval = 60 * 60 * 1000; // 1 hour
+let infos;
+let lastLoadingTime = null;
+
+const loadEtherpadInformations = () => {
+  if (lastLoadingTime !== null && Date.now() - lastLoadingTime < updateInterval) {
+    return Promise.resolve(infos);
+  }
+
+  return axios.get('https://static.etherpad.org/info.json', {headers: headers})
   .then(async resp => {
     try {
       infos = await resp.data;
@@ -16,11 +23,14 @@ const loadEtherpadInformations = () =>
         await Promise.reject("Could not retrieve current version")
         return
       }
+
+      lastLoadingTime = Date.now();
       return await Promise.resolve(infos);
     } catch (err) {
       return await Promise.reject(err);
     }
   })
+}
 
 
 exports.getLatestVersion = () => {
