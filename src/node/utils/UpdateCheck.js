@@ -2,23 +2,25 @@
 const semver = require('semver');
 const settings = require('./Settings');
 const axios = require('axios');
+const headers = {
+  'User-Agent': 'Etherpad ' + settings.getEpVersion(),
+}
 let infos;
 
 const loadEtherpadInformations = () =>
-    axios.get('https://static.etherpad.org/info.json')
-        .then(async resp => {
-          try {
-            infos = await resp.data;
-            if (infos === undefined || infos === null) {
-              await Promise.reject("Could not retrieve current version")
-              return
-            }
-            return await Promise.resolve(infos);
-          }
-          catch (err) {
-            return   await Promise.reject(err);
-          }
-        })
+  axios.get('https://static.etherpad.org/info.json', {headers: headers})
+  .then(async resp => {
+    try {
+      infos = await resp.data;
+      if (infos === undefined || infos === null) {
+        await Promise.reject("Could not retrieve current version")
+        return
+      }
+      return await Promise.resolve(infos);
+    } catch (err) {
+      return await Promise.reject(err);
+    }
+  })
 
 
 exports.getLatestVersion = () => {
