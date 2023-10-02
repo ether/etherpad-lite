@@ -35,14 +35,9 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
       -
-        name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: oven-sh/setup-bun@v1
         with:
-          node-version: 'lts/*'
-          cache: 'npm'
-          cache-dependency-path: |
-            src/package-lock.json
-            src/bin/doc/package-lock.json
+          bun-version: latest
       -
         name: Test
         run: |
@@ -58,7 +53,7 @@ jobs:
               *) printf %s\\n "unexpected status: ${status}" >&2; exit 1;;
             esac
           done
-          (cd src && npm run test-container)
+          (cd src && bun run test-container)
           git clean -dxf .
       -
         name: Docker meta

@@ -29,19 +29,15 @@ jobs:
         name: Checkout repository
         uses: actions/checkout@v4
       -
-        uses: actions/setup-node@v3
+        uses: oven-sh/setup-bun@v1
         with:
-          node-version: ${{ matrix.node }}
-          cache: 'npm'
-          cache-dependency-path: |
-            src/package-lock.json
-            src/bin/doc/package-lock.json
+          bun-version: latest
       -
         name: Install etherpad plugins
         # We intentionally install an old ep_align version to test upgrades to
         # the minor version number. The --legacy-peer-deps flag is required to
         # work around a bug in npm v7: https://github.com/npm/cli/issues/2199
-        run: npm install --no-save --legacy-peer-deps ep_align@0.2.27
+        run: bun install ep_align@0.2.27
       # Etherpad core dependencies must be installed after installing the
       # plugin's dependencies, otherwise npm will try to hoist common
       # dependencies by removing them from src/node_modules and installing them

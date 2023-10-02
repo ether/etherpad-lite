@@ -20,13 +20,9 @@ jobs:
         name: Checkout repository
         uses: actions/checkout@v4
       -
-        uses: actions/setup-node@v3
+        uses: oven-sh/setup-bun@v1
         with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: |
-            src/package-lock.json
-            src/bin/doc/package-lock.json
+          bun-version: latest
       -
         name: docker network
         run: docker network create --subnet=172.23.42.0/16 ep_net

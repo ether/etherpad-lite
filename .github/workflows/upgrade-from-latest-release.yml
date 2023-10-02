@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [16, 18, 20]
+        node: [1.0.3, canary]
     steps:
       -
         name: Check out latest release
@@ -26,19 +26,15 @@ jobs:
         with:
           ref: master
       -
-        uses: actions/setup-node@v3
+        uses: oven-sh/setup-bun@v1
         with:
-          node-version: ${{ matrix.node }}
-          cache: 'npm'
-          cache-dependency-path: |
-            src/package-lock.json
-            src/bin/doc/package-lock.json
+          bun-version: ${{ matrix.node }}
       -
         name: Install Etherpad plugins
         # The --legacy-peer-deps flag is required to work around a bug in npm
         # v7: https://github.com/npm/cli/issues/2199
         run: >
-          npm install --no-save --legacy-peer-deps
+          bun install
           ep_align
           ep_author_hover
           ep_cursortrace
@@ -66,7 +62,7 @@ jobs:
         run: src/bin/installDeps.sh
       -
         name: Run the backend tests
-        run: cd src && npm test
+        run: cd src && bun run test
       # Because actions/checkout@v4 is called with "ref: master" and without
       # "fetch-depth: 0", the local clone does not have the ${GITHUB_SHA}
       # commit. Fetch ${GITHUB_REF} to get the ${GITHUB_SHA} commit. Note that a
@@ -87,10 +83,10 @@ jobs:
         run: src/bin/installDeps.sh
       -
         name: Run the backend tests
-        run: cd src && npm test
+        run: cd src && bun run test
       -
         name: Install Cypress
-        run: cd src && npm install cypress
+        run: cd src && bun install cypress
       -
         name: Run Etherpad & Test Frontend
         run: |

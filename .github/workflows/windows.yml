@@ -26,13 +26,9 @@ jobs:
         name: Checkout repository
         uses: actions/checkout@v4
       -
-        uses: actions/setup-node@v3
+        uses: oven-sh/setup-bun@v1
         with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: |
-            src/package-lock.json
-            src/bin/doc/package-lock.json
+          bun-version: latest
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
         shell: msys2 {0}
@@ -40,7 +36,7 @@ jobs:
       -
         name: Run the backend tests
         shell: msys2 {0}
-        run: cd src && npm test
+        run: cd src && bun run test
       -
         name: Build the .zip
         shell: msys2 {0}
@@ -106,16 +102,12 @@ jobs:
         name: Extract Etherpad
         run: 7z x etherpad-win.zip -oetherpad
       -
-        uses: actions/setup-node@v3
+        uses: oven-sh/setup-bun@v1
         with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: |
-            etherpad/src/package-lock.json
-            etherpad/src/bin/doc/package-lock.json
+          bun-version: latest
       -
         name: Install Cypress
-        run: cd etherpad && cd src && npm install cypress
+        run: cd etherpad && cd src && bun install cypress
       -
         name: Run Etherpad
         run: |

@@ -4,7 +4,7 @@
 #
 # Author: muxator
 
-FROM node:lts-alpine
+FROM oven/bun:latest
 LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 
 ARG TIMEZONE=
@@ -99,7 +99,7 @@ COPY --chown=etherpad:etherpad ./ ./
 # seems to confuse tools such as `npm outdated`, `npm update`, and some ESLint
 # rules.
 RUN { [ -z "${ETHERPAD_PLUGINS}" ] || \
-      npm install --no-save --legacy-peer-deps ${ETHERPAD_PLUGINS}; } && \
+      bun install ${ETHERPAD_PLUGINS}; } && \
     src/bin/installDeps.sh && \
     rm -rf ~/.npm
 
@@ -110,7 +110,7 @@ COPY --chown=etherpad:etherpad ${SETTINGS} "${EP_DIR}"/settings.json
 RUN chmod -R g=u .
 
 USER root
-RUN cd src && npm link
+RUN cd src && bun link
 USER etherpad
 
 HEALTHCHECK --interval=20s --timeout=3s CMD ["etherpad-healthcheck"]
