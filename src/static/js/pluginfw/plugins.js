@@ -111,7 +111,7 @@ exports.getPackages = async () => {
   //   * The `--no-production` flag is required (or the `NODE_ENV` environment variable must be
   //     unset or set to `development`) because otherwise `npm ls` will not mention any packages
   //     that are not included in `package.json` (which is expected to not exist).
-  const cmd = ['bun', 'ls', '--long', '--json', '--depth=0', '--no-production'];
+  const cmd = ['npm', 'ls', '--long', '--json', '--depth=0', '--no-production'];
   const {dependencies = {}} = JSON.parse(await runCmd(cmd, {stdio: [null, 'string']}));
   await Promise.all(Object.entries(dependencies).map(async ([pkg, info]) => {
     if (!pkg.startsWith(exports.prefix)) {
