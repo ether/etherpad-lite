@@ -28,7 +28,7 @@ jobs:
         run: src/bin/installDeps.sh
       -
         name: Install etherpad-load-test
-        run: sudo bun install -g etherpad-load-test
+        run: bun install -g etherpad-load-test
       -
         name: Run load test
         run: src/tests/frontend/travis/runnerLoadTest.sh 25 50
@@ -51,7 +51,7 @@ jobs:
           bun-version: latest
       -
         name: Install etherpad-load-test
-        run: sudo bun install -g etherpad-load-test
+        run: bun install -g etherpad-load-test
       -
         name: Install etherpad plugins
         # The --legacy-peer-deps flag is required to work around a bug in npm v7:
@@ -107,7 +107,7 @@ jobs:
         run: src/bin/installDeps.sh
       -
         name: Install etherpad-load-test
-        run: sudo bun install -g etherpad-load-test
+        run: bun install -g etherpad-load-test
       -
         name: Run load test
         run: src/tests/frontend/travis/runnerLoadTest.sh 5000 5
