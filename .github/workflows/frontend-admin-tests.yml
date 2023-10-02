@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [19, 20]
+        node: [1.0.3, canary]
 
     steps:
       -
@@ -31,7 +31,7 @@ jobs:
       -
         uses: oven-sh/setup-bun@v1
         with:
-          bun-version: latest
+          bun-version: ${{ matrix.node }}
       -
         name: Install etherpad plugins
         # We intentionally install an old ep_align version to test upgrades to

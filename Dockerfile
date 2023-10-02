@@ -4,7 +4,7 @@
 #
 # Author: muxator
 
-FROM oven/bun:latest
+FROM oven/bun:alpine
 LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 
 ARG TIMEZONE=
