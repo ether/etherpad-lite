@@ -21,3 +21,5 @@ out/
 /src/bin/convertSettings.json
 /src/bin/etherpad-1.deb
 /src/bin/node.exe
+
+*.lockb binary diff=lockb

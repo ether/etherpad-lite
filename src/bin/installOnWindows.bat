@@ -14,7 +14,7 @@ cd /D node_modules
 mklink /D "ep_etherpad-lite" "..\src"
 
 cd /D "ep_etherpad-lite"
-cmd /C npm ci || exit /B 1
+cmd /C bun install --frozen-lockfile || exit /B 1
 
 cd /D "%~dp0\..\.."
 
