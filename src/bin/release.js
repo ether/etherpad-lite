@@ -137,7 +137,7 @@ try {
   writeJson('./src/package.json', pkg);
 
   // run npm version `release` where release is patch, minor or major
-  run('npm install --package-lock-only', {cwd: 'src/'});
+  run('bun install --package-lock-only', {cwd: 'src/'});
   // run npm install --package-lock-only <-- required???
 
   // Many users will be using the latest LTS version of npm, and the latest LTS version of npm uses

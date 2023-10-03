@@ -33,6 +33,7 @@
     "async": "^3.2.4",
     "axios": "^1.5.1",
     "clean-css": "^5.3.2",
+    "command-exists": "^1.2.9",
     "cookie-parser": "^1.4.6",
     "cross-spawn": "^7.0.3",
     "ejs": "^3.1.9",

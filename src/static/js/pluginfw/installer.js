@@ -34,7 +34,7 @@ exports.uninstall = async (pluginName, cb = null) => {
     // The --no-save flag prevents npm from creating package.json or package-lock.json.
     // The --legacy-peer-deps flag is required to work around a bug in npm v7:
     // https://github.com/npm/cli/issues/2199
-    await runCmd(['npm', 'uninstall', '--no-save', '--legacy-peer-deps', pluginName]);
+    await runCmd(['bun', 'uninstall', '--no-save', '--legacy-peer-deps', pluginName]);
   } catch (err) {
     logger.error(`Failed to uninstall plugin ${pluginName}`);
     cb(err || new Error(err));
@@ -53,7 +53,7 @@ exports.install = async (pluginName, cb = null) => {
     // The --no-save flag prevents npm from creating package.json or package-lock.json.
     // The --legacy-peer-deps flag is required to work around a bug in npm v7:
     // https://github.com/npm/cli/issues/2199
-    await runCmd(['npm', 'install', '--no-save', '--legacy-peer-deps', pluginName]);
+    await runCmd(['bun', 'install', '--no-save', '--legacy-peer-deps', pluginName]);
   } catch (err) {
     logger.error(`Failed to install plugin ${pluginName}`);
     cb(err || new Error(err));
@@ -72,19 +72,19 @@ exports.getAvailablePlugins = (maxCacheAge) => {
   const nowTimestamp = Math.round(Date.now() / 1000);
 
   return new Promise(async (resolve, reject) => {
-      // check cache age before making any request
-      if (exports.availablePlugins && maxCacheAge && (nowTimestamp - cacheTimestamp) <= maxCacheAge) {
-          return resolve(exports.availablePlugins);
-      }
+    // check cache age before making any request
+    if (exports.availablePlugins && maxCacheAge && (nowTimestamp - cacheTimestamp) <= maxCacheAge) {
+      return resolve(exports.availablePlugins);
+    }
 
-      await axios.get('https://static.etherpad.org/plugins.json')
-          .then(pluginsLoaded => {
-              exports.availablePlugins = pluginsLoaded.data;
-              cacheTimestamp = nowTimestamp;
-              resolve(exports.availablePlugins);
-          })
-  })
-}
+    await axios.get('https://static.etherpad.org/plugins.json')
+        .then((pluginsLoaded) => {
+          exports.availablePlugins = pluginsLoaded.data;
+          cacheTimestamp = nowTimestamp;
+          resolve(exports.availablePlugins);
+        });
+  });
+};
 
 
 exports.search = (searchTerm, maxCacheAge) => exports.getAvailablePlugins(maxCacheAge).then(
