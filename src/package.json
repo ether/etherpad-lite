@@ -54,7 +54,7 @@
     "measured-core": "^2.0.0",
     "mime-types": "^2.1.35",
     "npm": "^6.14.18",
-    "openapi-backend": "^5.9.2",
+    "openapi-backend": "^5.10.0",
     "proxy-addr": "^2.0.7",
     "rate-limiter-flexible": "^3.0.0",
     "rehype": "^13.0.1",
