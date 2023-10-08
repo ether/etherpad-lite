@@ -8,6 +8,7 @@ const runCmd = require('../../../node/utils/run_cmd');
 const tsort = require('./tsort');
 const pluginUtils = require('./shared');
 const defs = require('./plugin_defs');
+const {manager} = require('./installer');
 
 const logger = log4js.getLogger('plugins');
 
@@ -124,6 +125,7 @@ exports.getPackages = async () => {
 };
 
 const loadPlugin = async (packages, pluginName, plugins, parts) => {
+  console.log('Plugins', manager.list());
   const pluginPath = path.resolve(packages[pluginName].path, 'ep.json');
   try {
     const data = await fs.readFile(pluginPath);

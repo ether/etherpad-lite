@@ -21,3 +21,4 @@ out/
 /src/bin/convertSettings.json
 /src/bin/etherpad-1.deb
 /src/bin/node.exe
+plugin_packages
