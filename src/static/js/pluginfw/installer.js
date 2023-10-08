@@ -6,8 +6,11 @@ const hooks = require('./hooks');
 const runCmd = require('../../../node/utils/run_cmd');
 const settings = require('../../../node/utils/Settings');
 const axios = require('axios');
-
+const {PluginManager} = require('live-plugin-manager');
 const logger = log4js.getLogger('plugins');
+
+exports.manager = new PluginManager();
+
 
 const onAllTasksFinished = async () => {
   settings.reloadSettings();
@@ -66,19 +69,19 @@ exports.getAvailablePlugins = (maxCacheAge) => {
   const nowTimestamp = Math.round(Date.now() / 1000);
 
   return new Promise(async (resolve, reject) => {
-      // check cache age before making any request
-      if (exports.availablePlugins && maxCacheAge && (nowTimestamp - cacheTimestamp) <= maxCacheAge) {
-          return resolve(exports.availablePlugins);
-      }
+    // check cache age before making any request
+    if (exports.availablePlugins && maxCacheAge && (nowTimestamp - cacheTimestamp) <= maxCacheAge) {
+      return resolve(exports.availablePlugins);
+    }
 
-      await axios.get('https://static.etherpad.org/plugins.json')
-          .then(pluginsLoaded => {
-              exports.availablePlugins = pluginsLoaded.data;
-              cacheTimestamp = nowTimestamp;
-              resolve(exports.availablePlugins);
-          })
-  })
-}
+    await axios.get('https://static.etherpad.org/plugins.json')
+        .then((pluginsLoaded) => {
+          exports.availablePlugins = pluginsLoaded.data;
+          cacheTimestamp = nowTimestamp;
+          resolve(exports.availablePlugins);
+        });
+  });
+};
 
 
 exports.search = (searchTerm, maxCacheAge) => exports.getAvailablePlugins(maxCacheAge).then(
