@@ -20,7 +20,7 @@ html {
 
 html,
 #sidedivinner > div:before {
-  font-family: Roboto;
+  font-family: Roboto, sans-serif;
 }
 
 .clear {

@@ -21,7 +21,6 @@
   cursor: pointer;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
-  font-style: normal;
   font-variant: normal;
   text-rendering: auto;
   display: flex;
@@ -30,7 +29,7 @@
 }
 
 .buttonicon:before, [class^="buttonicon-"]:before, [class*=" buttonicon-"]:before {
-  font-family: "fontawesome-etherpad";
+  font-family: "fontawesome-etherpad", sans-serif;
   font-style: normal;
   font-weight: normal;
   speak: none;
@@ -160,7 +159,7 @@
 .icon-spin:before {
   -webkit-animation: spinAnimation 2s infinite linear;
   animation: spinAnimation 2s infinite linear;
-  font-family: "fontawesome-etherpad";
+  font-family: "fontawesome-etherpad", sans-serif;
   font-size: 22px;
   z-index: 150;
   width: 22px;
