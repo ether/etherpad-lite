@@ -13,7 +13,7 @@
 
 #sidedivinner>div .line-number {
   line-height: inherit;
-  font-family: RobotoMono;
+  font-family: RobotoMono, sans-serif;
   display: inline-block;
   color: #576273;
   color: var(--text-soft-color);

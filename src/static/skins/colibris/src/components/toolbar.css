@@ -5,7 +5,6 @@
   background-color: var(--bg-color);
   color: #576273;
   color: var(--text-soft-color);
-  border-bottom: none;
 }
 
 #editbar.editor-scrolled {

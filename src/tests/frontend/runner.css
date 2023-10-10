@@ -92,13 +92,13 @@ body {
   right: -10px;
   content: '(view source)';
   font-size: 12px;
-  font-family: arial;
+  font-family: arial, sans-serif;
   color: #888;
 }
 
 #mocha .test.pending:hover h2::after {
   content: '(pending)';
-  font-family: arial;
+  font-family: arial, sans-serif;
 }
 
 #mocha .test.pass.medium .duration {
