@@ -121,6 +121,13 @@ exports.socketio = (hookName, args, cb) => {
   return cb();
 };
 
+/**
+ * Sorts  a list of plugins by a property
+ * @param {Object} plugins The plugins to sort
+ * @param {Object} property The property to sort by
+ * @param  {String} dir The directory of the plugin
+ * @return {Object[]}
+ */
 const sortPluginList = (plugins, property, /* ASC?*/dir) => plugins.sort((a, b) => {
   if (a[property] < b[property]) {
     return dir ? -1 : 1;

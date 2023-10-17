@@ -38,6 +38,11 @@ const tempDirectory = os.tmpdir();
 
 /**
  * do a requested export
+ * @param {Object} req the request object
+ * @param {Object} res the response object
+ * @param {String} padId the pad id to export
+ * @param {String} readOnlyId the read only id of the pad to export
+ * @param {String} type the type to export
  */
 exports.doExport = async (req, res, padId, readOnlyId, type) => {
   // avoid naming the read-only file as the original pad's id

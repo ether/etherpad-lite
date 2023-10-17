@@ -696,10 +696,20 @@ exports.expressPreSession = async (hookName, {app}) => {
   }
 };
 
-// helper to get api root
+/**
+ * Helper to get the current root path for an API version
+ * @param {String} version The API version
+ * @param {APIPathStyle} style The style of the API path
+ * @return {String} The root path for the API version
+ */
 const getApiRootForVersion = (version, style = APIPathStyle.FLAT) => `/${style}/${version}`;
 
-// helper to generate an OpenAPI server object when serving definitions
+/**
+ * Helper to generate an OpenAPI server object when serving definitions
+ * @param {String} apiRoot The root path for the API version
+ * @param {Request} req The express request object
+ * @return {url: String} The server object for the OpenAPI definition location
+ */
 const generateServerForApiVersion = (apiRoot, req) => ({
   url: `${settings.ssl ? 'https' : 'http'}://${req.headers.host}${apiRoot}`,
 });
