@@ -59,6 +59,7 @@ const padList = new class {
 
   /**
    * Returns all pads in alphabetical order as array.
+   * @returns {Promise<string[]>} A promise that resolves to an array of pad IDs.
    */
   async getPads() {
     if (!this._loaded) {

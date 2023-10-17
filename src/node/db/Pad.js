@@ -25,7 +25,8 @@ const promises = require('../utils/promises');
 /**
  * Copied from the Etherpad source code. It converts Windows line breaks to Unix
  * line breaks and convert Tabs to spaces
- * @param txt
+ * @param {String} txt The text to clean
+ * @returns {String} The cleaned text
  */
 exports.cleanText = (txt) => txt.replace(/\r\n/g, '\n')
     .replace(/\r/g, '\n')
@@ -73,9 +74,16 @@ class Pad {
     return this.publicStatus;
   }
 
+  /**
+   * Appends a new revision
+   * @param {Object} aChangeset The changeset to append to the pad
+   * @param {String} authorId The id of the author
+   * @return {Promise<number|string>}
+   */
   async appendRevision(aChangeset, authorId = '') {
     const newAText = Changeset.applyToAText(aChangeset, this.atext, this.pool);
-    if (newAText.text === this.atext.text && newAText.attribs === this.atext.attribs && this.head !== -1) {
+    if (newAText.text === this.atext.text && newAText.attribs === this.atext.attribs &&
+        this.head !== -1) {
       return this.head;
     }
     Changeset.copyAText(newAText, this.atext);
@@ -158,6 +166,10 @@ class Pad {
     return await this.db.getSub(`pad:${this.id}:revs:${revNum}`, ['meta', 'atext']);
   }
 
+  /**
+   * Returns all authors that worked on this pad
+   * @return {[String]} The id of authors who contributed to this pad
+   */
   getAllAuthors() {
     const authorIds = [];
 
@@ -173,8 +185,7 @@ class Pad {
   async getInternalRevisionAText(targetRev) {
     const keyRev = this.getKeyRevisionNumber(targetRev);
     const headRev = this.getHeadRevisionNumber();
-    if (targetRev > headRev)
-      targetRev = headRev;
+    if (targetRev > headRev) targetRev = headRev;
     const [keyAText, changesets] = await Promise.all([
       this._getKeyRevisionAText(keyRev),
       Promise.all(

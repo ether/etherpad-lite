@@ -73,6 +73,10 @@ const tmpDirectory = os.tmpdir();
 
 /**
  * do a requested import
+ * @param {Object} req the request object
+ * @param {Object} res the response object
+ * @param {String} padId the pad id to export
+ * @param {String} authorId the author id to use for the import
  */
 const doImport = async (req, res, padId, authorId) => {
   // pipe to a file
@@ -233,6 +237,14 @@ const doImport = async (req, res, padId, authorId) => {
   return false;
 };
 
+/**
+ * Handles the request to import a file
+ * @param {Request} req the request object
+ * @param {Response} res the response object
+ * @param {String} padId the pad id to export
+ * @param {String} authorId the author id to use for the import
+ * @return {Promise<void>} a promise
+ */
 exports.doImport = async (req, res, padId, authorId = '') => {
   let httpStatus = 200;
   let code = 0;

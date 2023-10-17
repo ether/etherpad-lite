@@ -165,12 +165,13 @@ exports.version = version;
 
 /**
  * Handles a HTTP API call
- * @param functionName the name of the called function
+ * @param {String} apiVersion the version of the api
+ * @param {String} functionName the name of the called function
  * @param fields the params of the called function
  * @req express request object
  * @res express response object
  */
-exports.handle = async function (apiVersion, functionName, fields, req, res) {
+exports.handle = async function (apiVersion, functionName, fields) {
   // say goodbye if this is an unknown API version
   if (!(apiVersion in version)) {
     throw new createHTTPError.NotFound('no such api version');
