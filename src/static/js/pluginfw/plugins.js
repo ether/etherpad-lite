@@ -113,20 +113,17 @@ exports.getPackages = async () => {
   //     unset or set to `development`) because otherwise `npm ls` will not mention any packages
   //     that are not included in `package.json` (which is expected to not exist).
   const commandExists = require('command-exists').sync;
-  if (commandExists('bun')) {
-    const file = Bun.readFile('package.json');
-
-    const text = await file.text();
-    const parsedJSON = JSON.parse(text);
-    const dependencies = parsedJSON.dependencies;
-    await Promise.all(Object.entries(dependencies).map(async (pkg) => {
-      const info = Object();
+  if (commandExists('npm')) {
+    const cmd = ['npm', 'ls', '--long', '--json', '--depth=0', '--no-production'];
+    const {dependencies = {}} = JSON.parse(await runCmd(cmd, {stdio: [null, 'string']}));
+    await Promise.all(Object.entries(dependencies).map(async ([pkg, info]) => {
       if (!pkg.startsWith(exports.prefix)) {
         delete dependencies[pkg];
         return;
       }
-      info.realPath = `${cwd}/node_modules/${pkg}`;
+      info.realPath = await fs.realpath(info.path);
     }));
+    return dependencies;
   } else {
     const cmd = ['npm', 'ls', '--long', '--json', '--depth=0', '--no-production'];
     const {dependencies = {}} = JSON.parse(await runCmd(cmd, {stdio: [null, 'string']}));
