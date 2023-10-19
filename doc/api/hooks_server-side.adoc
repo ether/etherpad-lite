@@ -51,7 +51,7 @@ Things in context:
 
 If this hook returns an error, the callback to the install function gets an error, too. This seems useful for adding in features when a particular plugin is installed.
 
-=== `init_<plugin name>`
+=== init_<plugin name>
 
 Called from: `src/static/js/pluginfw/plugins.js`
 
@@ -62,7 +62,7 @@ Context properties:
   * `logger`: An object with the following `console`-like methods: `debug`,
     `info`, `log`, `warn`, `error`.
 
-=== `expressPreSession`
+=== expressPreSession
 
 Called from: `src/node/hooks/express.js`
 
@@ -92,7 +92,7 @@ exports.expressPreSession = async (hookName, {app}) => {
 };
 ----
 
-=== `expressConfigure`
+=== expressConfigure
 
 Called from: `src/node/hooks/express.js`
 
@@ -107,7 +107,7 @@ Context properties:
 * `app`: The Express https://expressjs.com/en/4x/api.html==app[Application]
   object.
 
-=== `expressCreateServer`
+=== expressCreateServer
 
 Called from: `src/node/hooks/express.js`
 
@@ -210,7 +210,7 @@ Things in context:
 This hook gets called when the access to the concrete pad is being checked.
 Return `false` to deny access.
 
-=== `getAuthorId`
+=== getAuthorId
 
 Called from `src/node/db/AuthorManager.js`
 
@@ -267,7 +267,7 @@ exports.getAuthorId = async (hookName, context) => {
 };
 ----
 
-=== `padCreate`
+=== padCreate
 
 Called from: `src/node/db/Pad.js`
 
@@ -279,7 +279,7 @@ Context properties:
 * `authorId`: The ID of the author who created the pad.
 * `author` (**deprecated**): Synonym of `authorId`.
 
-=== `padDefaultContent`
+=== padDefaultContent
 
 Called from `src/node/db/Pad.js`
 
@@ -304,7 +304,7 @@ Context properties:
   be updated to match. Plugins must check the value of the `type` property
   before reading this value.
 
-=== `padLoad`
+=== padLoad
 
 Called from: `src/node/db/PadManager.js`
 
@@ -315,7 +315,7 @@ Context properties:
 * `pad`: The Pad object.
 
 [#_padupdate]
-=== `padUpdate`
+=== padUpdate
 
 Called from: `src/node/db/Pad.js`
 
@@ -329,7 +329,7 @@ Context properties:
 * `revs`: The index of the new revision.
 * `changeset`: The changeset of this revision (see <<_padupdate>>).
 
-=== `padCopy`
+=== padCopy
 
 Called from: `src/node/db/Pad.js`
 
@@ -355,7 +355,7 @@ Usage examples:
 
   * https://github.com/ether/ep_comments_page
 
-=== `padRemove`
+=== padRemove
 
 Called from: `src/node/db/Pad.js`
 
@@ -370,7 +370,7 @@ Usage examples:
 
   * https://github.com/ether/ep_comments_page
 
-=== `padCheck`
+=== padCheck
 
 Called from: `src/node/db/Pad.js`
 
@@ -393,7 +393,7 @@ Things in context:
 
 I have no idea what this is useful for, someone else will have to add this description.
 
-=== `preAuthorize`
+=== preAuthorize
 
 Called from: `src/node/hooks/express/webaccess.js`
 
@@ -700,7 +700,7 @@ exports.authzFailure = (hookName, context, cb) => {
 };
 ----
 
-=== `handleMessage`
+=== handleMessage
 
 Called from: `src/node/handler/PadMessageHandler.js`
 
@@ -733,7 +733,7 @@ exports.handleMessage = async (hookName, {message, socket}) => {
 };
 ----
 
-=== `handleMessageSecurity`
+=== handleMessageSecurity
 
 Called from: `src/node/handler/PadMessageHandler.js`
 
@@ -819,7 +819,7 @@ exports.clientVars = (hookName, context, callback) => {
 };
 ----
 
-=== `getLineHTMLForExport`
+=== getLineHTMLForExport
 
 Called from: `src/node/utils/ExportHtml.js`
 
@@ -968,7 +968,7 @@ exports.exportHtmlAdditionalTagsWithData = function(hook, pad, cb){
 };
 ----
 
-=== `exportEtherpadAdditionalContent`
+=== exportEtherpadAdditionalContent
 
 Called from `src/node/utils/ExportEtherpad.js` and
 `src/node/utils/ImportEtherpad.js`.
@@ -990,7 +990,7 @@ Example:
 exports.exportEtherpadAdditionalContent = () => ['comments'];
 ----
 
-=== `exportEtherpad`
+=== exportEtherpad
 
 Called from `src/node/utils/ExportEtherpad.js`.
 
@@ -1013,7 +1013,7 @@ Context properties:
     should not assume that it is either the pad's real writable ID or its
     read-only ID.
 
-=== `importEtherpad`
+=== importEtherpad
 
 Called from `src/node/utils/ImportEtherpad.js`.
 
@@ -1032,7 +1032,7 @@ Context properties:
     modified.
   * `srcPadId`: The pad ID used for the pad-specific information in `data`.
 
-=== `import`
+=== import
 
 Called from: `src/node/handler/ImportHandler.js`
 
@@ -1062,7 +1062,7 @@ exports.import = async (hookName, {fileEnding, ImportError}) => {
 };
 ----
 
-=== `userJoin`
+=== userJoin
 
 Called from: `src/node/handler/PadMessageHandler.js`
 
@@ -1086,7 +1086,7 @@ exports.userJoin = async (hookName, {authorId, displayName, padId}) => {
 };
 ```
 
-=== `userLeave`
+=== userLeave
 
 Called from: `src/node/handler/PadMessageHandler.js`
 
@@ -1110,7 +1110,7 @@ exports.userLeave = async (hookName, {author, padId}) => {
 };
 ----
 
-=== `chatNewMessage`
+=== chatNewMessage
 
 Called from: `src/node/handler/PadMessageHandler.js`
 
