@@ -72,7 +72,7 @@ alert(window._('pad.chat'));
 ----
 ==== 2. Create translate files in the locales directory of your plugin
 
-* The name of the file must be the language code of the language it contains translations for (see https://joker-x.github.com/languages4translatewiki/test/[supported lang codes]; e.g. en ? English, es ? Spanish...)
+* The name of the file must be the language code of the language it contains translations for (see https://joker-x.github.io/languages4translatewiki/test/[supported lang codes]; e.g. en ? English, es ? Spanish...)
 * The extension of the file must be `.json`
 * The default language is English, so your plugin should always provide `en.json`
 * In order to avoid naming conflicts, your message keys should start with the name of your plugin followed by a dot (see below)
