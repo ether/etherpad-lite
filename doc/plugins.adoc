@@ -64,7 +64,7 @@ translations into `locales/`, though, in order to have them integrated. (See
 Your plugin definition goes into `ep.json`. In this file you register your hook
 functions, indicate the parts of your plugin and the order of execution. (A
 documentation of all available events to hook into can be found in chapter
-[hooks](#all_hooks).)
+<<Server-side hooks>>.)
 
 [source,json]
 ----
@@ -88,7 +88,7 @@ A hook function registration maps a hook name to a hook function specification.
 The hook function specification looks like `ep_example/file.js:functionName`. It
 consists of two parts separated by a colon: a module name to `require()` and the
 name of a function exported by the named module. See
-[`module.exports`](https://nodejs.org/docs/latest/api/modules.html#modules_module_exports)
+https://nodejs.org/docs/latest/api/modules.html#modules_module_exports[`module.exports`]
 for how to export a function.
 
 For the module name you can omit the `.js` suffix, and if the file is `index.js`
