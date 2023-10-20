@@ -78,7 +78,7 @@ jobs:
         name: Remove standard frontend test files, so only admin tests are run
         run: mv src/tests/frontend/specs/* /tmp && mv /tmp/admin*.js src/tests/frontend/specs
       -
-        uses: saucelabs/sauce-connect-action@v2.3.4
+        uses: saucelabs/sauce-connect-action@v2.3.5
         with:
           username: ${{ secrets.SAUCE_USERNAME }}
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
