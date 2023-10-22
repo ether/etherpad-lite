@@ -50,9 +50,9 @@ const nonSettings = [
 
 // This is a function to make it easy to create a new instance. It is important to not reuse a
 // config object after passing it to log4js.configure() because that method mutates the object. :(
-const defaultLogConfig = () => ({appenders: {  console: { type: 'console' } },
-  categories:{
-    default: { appenders: ['console'], level: 'info'}
+const defaultLogConfig = () => ({appenders: {console: {type: 'console'}},
+  categories: {
+    default: {appenders: ['console'], level: 'info'},
   }});
 const defaultLogLevel = 'INFO';
 
@@ -60,8 +60,14 @@ const initLogging = (logLevel, config) => {
   // log4js.configure() modifies exports.logconfig so check for equality first.
   const logConfigIsDefault = deepEqual(config, defaultLogConfig());
   log4js.configure(config);
-  log4js.getLogger("console");
-  console.log = logger.info.bind(logger)
+  log4js.getLogger('console');
+
+  // Overwrites for console output methods
+  console.debug = logger.debug.bind(logger);
+  console.log = logger.info.bind(logger);
+  console.warn = logger.warn.bind(logger);
+  console.error = logger.error.bind(logger);
+
   // Log the warning after configuring log4js to increase the chances the user will see it.
   if (!logConfigIsDefault) logger.warn('The logconfig setting is deprecated.');
 };
