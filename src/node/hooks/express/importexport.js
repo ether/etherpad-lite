@@ -11,13 +11,16 @@ const securityManager = require('../../db/SecurityManager');
 const webaccess = require('./webaccess');
 
 exports.expressCreateServer = (hookName, args, cb) => {
-  settings.importExportRateLimiting.onLimitReached = (req, res, options) => {
-    // when the rate limiter triggers, write a warning in the logs
-    console.warn('Import/Export rate limiter triggered on ' +
-                 `"${req.originalUrl}" for IP address ${req.ip}`);
-  };
-  // The rate limiter is created in this hook so that restarting the server resets the limiter.
-  const limiter = rateLimit(settings.importExportRateLimiting);
+  const limiter = rateLimit({
+    ...settings.importExportRateLimiting,
+    handler: (request, response, next, options) => {
+      if (request.rateLimit.current === request.rateLimit.limit + 1) {
+        // when the rate limiter triggers, write a warning in the logs
+        console.warn('Import/Export rate limiter triggered on ' +
+            `"${request.originalUrl}" for IP address ${request.ip}`);
+      }
+    },
+  });
 
   // handle export requests
   args.app.use('/p/:pad/:rev?/export/:type', limiter);

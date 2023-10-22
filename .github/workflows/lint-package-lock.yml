@@ -29,7 +29,7 @@ jobs:
             src/bin/doc/package-lock.json
       -
         name: Install lockfile-lint
-        run: npm install --no-save lockfile-lint
+        run: npm install --no-save lockfile-lint --legacy-peer-deps
       -
         name: Run lockfile-lint on package-lock.json
         run: >

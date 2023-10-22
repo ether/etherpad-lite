@@ -90,7 +90,7 @@ jobs:
         run: cd src && npm test
       -
         name: Install Cypress
-        run: cd src && npm install cypress
+        run: cd src && npm install cypress --legacy-peer-deps
       -
         name: Run Etherpad & Test Frontend
         run: |
