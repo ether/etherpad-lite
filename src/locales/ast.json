@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Xuacu"
+			"Xuacu",
+			"YoaR"
 		]
 	},
 	"index.newPad": "Nuevu bloc",
@@ -25,7 +26,7 @@
 	"pad.toolbar.embed.title": "Compartir ya incrustar esti bloc",
 	"pad.toolbar.showusers.title": "Amosar los usuarios d'esti bloc",
 	"pad.colorpicker.save": "Guardar",
-	"pad.colorpicker.cancel": "Encaboxar",
+	"pad.colorpicker.cancel": "Zarrar",
 	"pad.loading": "Cargando...",
 	"pad.noCookie": "Nun pudo alcontrase la cookie. ¡Por favor, permite les cookies nel navegador! La sesión y preferencies  nun se guarden ente visites. Esto pué debese a qu'Etherpad inclúyese nun iFrame en dalgunos restoladores. Asegúrate de qu'Etherpad tea nel mesmu subdominiu/dominiu que la iFrame padre",
 	"pad.permissionDenied": "Nun tienes permisu pa entrar a esti bloc",
@@ -56,7 +57,7 @@
 	"pad.modals.reconnecting": "Reconeutando col to bloc...",
 	"pad.modals.forcereconnect": "Forzar la reconexón",
 	"pad.modals.reconnecttimer": "Tentando reconeutar en",
-	"pad.modals.cancel": "Encaboxar",
+	"pad.modals.cancel": "Zarrar",
 	"pad.modals.userdup": "Abiertu n'otra ventana",
 	"pad.modals.userdup.explanation": "Esti bloc paez que ta abiertu en más d'una ventana del navegador d'esti ordenador.",
 	"pad.modals.userdup.advice": "Reconeutar pa usar esta ventana.",
