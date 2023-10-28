@@ -1,3 +1,14 @@
+# 1.9.4
+
+### Compability changes
+
+* Log4js has been updated to the latest version. As it involved a bump of 6 major version. 
+  A lot has changed since then. Most notably the console appender has been deprecated. You can find out more about it [here](https://github.com/log4js-node/log4js-node)
+
+### Notable enhancements and fixes
+
+* Fix for MySQL: The logger calls were incorrectly configured leading to a crash when e.g. somebody uses a different encoding than standard MySQL encoding. 
+
 # 1.9.3
 
 ### Compability changes
