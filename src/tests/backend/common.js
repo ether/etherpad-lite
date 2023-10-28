@@ -42,8 +42,6 @@ exports.init = async function () {
   if (!logLevel.isLessThanOrEqualTo(log4js.levels.DEBUG)) {
     logger.warn('Disabling non-test logging for the duration of the test. ' +
                 'To enable non-test logging, change the loglevel setting to DEBUG.');
-    log4js.setGlobalLogLevel(log4js.levels.OFF);
-    logger.setLevel(logLevel);
   }
 
   // Note: This is only a shallow backup.
@@ -66,7 +64,6 @@ exports.init = async function () {
     webaccess.authnFailureDelayMs = backups.authnFailureDelayMs;
     // Note: This does not unset settings that were added.
     Object.assign(settings, backups.settings);
-    log4js.setGlobalLogLevel(logLevel);
     await server.exit();
   });
 

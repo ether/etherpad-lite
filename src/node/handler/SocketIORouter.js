@@ -35,8 +35,9 @@ const components = {};
 
 let io;
 
-/**
- * adds a component
+/** adds a component
+ * @param {string} moduleName
+ * @param {Module} module
  */
 exports.addComponent = (moduleName, module) => {
   if (module == null) return exports.deleteComponent(moduleName);
@@ -44,10 +45,15 @@ exports.addComponent = (moduleName, module) => {
   module.setSocketIO(io);
 };
 
+/**
+ * removes a component
+ * @param {Module} moduleName
+ */
 exports.deleteComponent = (moduleName) => { delete components[moduleName]; };
 
 /**
  * sets the socket.io and adds event functions for routing
+ * @param {Object} _io the socket.io instance
  */
 exports.setSocketIO = (_io) => {
   io = _io;

@@ -49,6 +49,11 @@ const DENY = Object.freeze({accessStatus: 'deny'});
  *
  * WARNING: Tokens and session IDs MUST be kept secret, otherwise users will be able to impersonate
  * each other (which might allow them to gain privileges).
+ * @param {String} padID
+ * @param {String} sessionCookie
+ * @param {String} token
+ * @param {Object} userSettings
+ * @return {DENY|{accessStatus: String, authorID: String}}
  */
 exports.checkAccess = async (padID, sessionCookie, token, userSettings) => {
   if (!padID) {

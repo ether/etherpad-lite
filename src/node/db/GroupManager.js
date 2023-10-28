@@ -25,6 +25,10 @@ const db = require('./DB');
 const padManager = require('./PadManager');
 const sessionManager = require('./SessionManager');
 
+/**
+ * Lists all groups
+ * @return {Promise<{groupIDs: string[]}>} The ids of all groups
+ */
 exports.listAllGroups = async () => {
   let groups = await db.get('groups');
   groups = groups || {};
@@ -33,6 +37,11 @@ exports.listAllGroups = async () => {
   return {groupIDs};
 };
 
+/**
+ * Deletes a group and all associated pads
+ * @param {String} groupID The id of the group
+ * @return {Promise<void>} Resolves when the group is deleted
+ */
 exports.deleteGroup = async (groupID) => {
   const group = await db.get(`group:${groupID}`);
 
@@ -68,6 +77,11 @@ exports.deleteGroup = async (groupID) => {
   await db.remove(`group:${groupID}`);
 };
 
+/**
+ * Checks if a group exists
+ * @param {String} groupID the id of the group to delete
+ * @return {Promise<boolean>} Resolves to true if the group exists
+ */
 exports.doesGroupExist = async (groupID) => {
   // try to get the group entry
   const group = await db.get(`group:${groupID}`);
@@ -75,6 +89,10 @@ exports.doesGroupExist = async (groupID) => {
   return (group != null);
 };
 
+/**
+ * Creates a new group
+ * @return {Promise<{groupID: string}>} the id of the new group
+ */
 exports.createGroup = async () => {
   const groupID = `g.${randomString(16)}`;
   await db.set(`group:${groupID}`, {pads: {}, mappings: {}});
@@ -85,6 +103,11 @@ exports.createGroup = async () => {
   return {groupID};
 };
 
+/**
+ * Creates a new group if it does not exist already and returns the group ID
+ * @param groupMapper the mapper of the group
+ * @return {Promise<{groupID: string}|{groupID: *}>} a promise that resolves to the group ID
+ */
 exports.createGroupIfNotExistsFor = async (groupMapper) => {
   if (typeof groupMapper !== 'string') {
     throw new CustomError('groupMapper is not a string', 'apierror');
@@ -103,6 +126,14 @@ exports.createGroupIfNotExistsFor = async (groupMapper) => {
   return result;
 };
 
+/**
+ * Creates a group pad
+ * @param {String} groupID The id of the group
+ * @param {String} padName The name of the pad
+ * @param {String} text The text of the pad
+ * @param {String} authorId The id of the author
+ * @return {Promise<{padID: string}>} a promise that resolves to the id of the new pad
+ */
 exports.createGroupPad = async (groupID, padName, text, authorId = '') => {
   // create the padID
   const padID = `${groupID}$${padName}`;
@@ -131,6 +162,11 @@ exports.createGroupPad = async (groupID, padName, text, authorId = '') => {
   return {padID};
 };
 
+/**
+ * Lists all pads of a group
+ * @param {String} groupID The id of the group
+ * @return {Promise<{padIDs: string[]}>} a promise that resolves to the ids of all pads of the group
+ */
 exports.listPads = async (groupID) => {
   const exists = await exports.doesGroupExist(groupID);
 

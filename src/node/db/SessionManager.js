@@ -81,6 +81,11 @@ exports.findAuthorID = async (groupID, sessionCookie) => {
   return sessionInfo.authorID;
 };
 
+/**
+ * Checks if a session exists
+ * @param {String} sessionID The id of the session
+ * @return {Promise<boolean>} Resolves to true if the session exists
+ */
 exports.doesSessionExist = async (sessionID) => {
   // check if the database entry of this session exists
   const session = await db.get(`session:${sessionID}`);
@@ -89,6 +94,10 @@ exports.doesSessionExist = async (sessionID) => {
 
 /**
  * Creates a new session between an author and a group
+ * @param {String} groupID The id of the group
+ * @param {String} authorID The id of the author
+ * @param {Number} validUntil The unix timestamp when the session should expire
+ * @return {Promise<{sessionID: string}>} the id of the new session
  */
 exports.createSession = async (groupID, authorID, validUntil) => {
   // check if the group exists
@@ -146,6 +155,11 @@ exports.createSession = async (groupID, authorID, validUntil) => {
   return {sessionID};
 };
 
+/**
+ * Returns the sessioninfos for a session
+ * @param {String} sessionID The id of the session
+ * @return {Promise<Object>} the sessioninfos
+ */
 exports.getSessionInfo = async (sessionID) => {
   // check if the database entry of this session exists
   const session = await db.get(`session:${sessionID}`);
@@ -161,6 +175,8 @@ exports.getSessionInfo = async (sessionID) => {
 
 /**
  * Deletes a session
+ * @param {String} sessionID The id of the session
+ * @return {Promise<void>} Resolves when the session is deleted
  */
 exports.deleteSession = async (sessionID) => {
   // ensure that the session exists
@@ -186,6 +202,11 @@ exports.deleteSession = async (sessionID) => {
   await db.remove(`session:${sessionID}`);
 };
 
+/**
+ * Returns an array of all sessions of a group
+ * @param {String} groupID The id of the group
+ * @return {Promise<Object>} The sessioninfos of all sessions of this group
+ */
 exports.listSessionsOfGroup = async (groupID) => {
   // check that the group exists
   const exists = await groupManager.doesGroupExist(groupID);
@@ -197,6 +218,11 @@ exports.listSessionsOfGroup = async (groupID) => {
   return sessions;
 };
 
+/**
+ * Returns an array of all sessions of an author
+ * @param {String} authorID The id of the author
+ * @return {Promise<Object>} The sessioninfos of all sessions of this author
+ */
 exports.listSessionsOfAuthor = async (authorID) => {
   // check that the author exists
   const exists = await authorManager.doesAuthorExist(authorID);
@@ -204,12 +230,16 @@ exports.listSessionsOfAuthor = async (authorID) => {
     throw new CustomError('authorID does not exist', 'apierror');
   }
 
-  const sessions = await listSessionsWithDBKey(`author2sessions:${authorID}`);
-  return sessions;
+  return await listSessionsWithDBKey(`author2sessions:${authorID}`);
 };
 
 // this function is basically the code listSessionsOfAuthor and listSessionsOfGroup has in common
 // required to return null rather than an empty object if there are none
+/**
+ * Returns an array of all sessions of a group
+ * @param {String} dbkey The db key to use to get the sessions
+ * @return {Promise<*>}
+ */
 const listSessionsWithDBKey = async (dbkey) => {
   // get the group2sessions entry
   const sessionObject = await db.get(dbkey);
@@ -218,8 +248,7 @@ const listSessionsWithDBKey = async (dbkey) => {
   // iterate through the sessions and get the sessioninfos
   for (const sessionID of Object.keys(sessions || {})) {
     try {
-      const sessionInfo = await exports.getSessionInfo(sessionID);
-      sessions[sessionID] = sessionInfo;
+      sessions[sessionID] = await exports.getSessionInfo(sessionID);
     } catch (err) {
       if (err.name === 'apierror') {
         console.warn(`Found bad session ${sessionID} in ${dbkey}`);
@@ -233,5 +262,9 @@ const listSessionsWithDBKey = async (dbkey) => {
   return sessions;
 };
 
-// checks if a number is an int
+/**
+ * checks if a number is an int
+ * @param {number|string} value
+ * @return {boolean} If the value is an integer
+ */
 const isInt = (value) => (parseFloat(value) === parseInt(value)) && !isNaN(value);

@@ -1,9 +1,9 @@
 body {
   border-top: solid #44b492 5pt;
-  line-height:150%;
-  font-family: 'Quicksand',sans-serif;
+  line-height: 150%;
+  font-family: "Quicksand", sans-serif;
   color: #313b4a;
-  max-width:800px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -12,24 +12,25 @@ a {
   color: #555;
 }
 
-h1,h2 {
+h1,
+h2 {
   color: #44b492;
-  line-height:100%;
+  line-height: 100%;
 }
 
 h2 {
-  font-size: 48px ;
+  font-size: 48px;
 }
 
 h3 {
   font-size: 1.8rem;
 }
 
-h4{
+h4 {
   font-size: 1.5rem;
 }
 
-h5{
+h5 {
   font-size: 1.2rem;
 }
 
@@ -39,7 +40,7 @@ a:hover {
 
 pre {
   background-color: #e0e0e0;
-  padding:20px;
+  padding: 20px;
 }
 
 code {
@@ -50,7 +51,9 @@ img {
   max-width: 100%;
 }
 
-table, th, td {
+table,
+th,
+td {
   text-align: left;
   border: 1px solid gray;
   border-collapse: collapse;
@@ -58,7 +61,7 @@ table, th, td {
 
 th {
   padding: 0.5em;
-  background: #EEE;
+  background: #eee;
 }
 
 td {

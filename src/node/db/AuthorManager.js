@@ -93,6 +93,7 @@ exports.getColorPalette = () => [
 
 /**
  * Checks if the author exists
+ * @param {String} authorID The id of the author
  */
 exports.doesAuthorExist = async (authorID) => {
   const author = await db.get(`globalAuthor:${authorID}`);
@@ -100,50 +101,12 @@ exports.doesAuthorExist = async (authorID) => {
   return author != null;
 };
 
-/* exported for backwards compatibility */
+/**
+ exported for backwards compatibility
+ @param {String} authorID The id of the author
+  */
 exports.doesAuthorExists = exports.doesAuthorExist;
 
-const getAuthor4Token = async (token) => {
-  const author = await mapAuthorWithDBKey('token2author', token);
-
-  // return only the sub value authorID
-  return author ? author.authorID : author;
-};
-
-exports.getAuthorId = async (token, user) => {
-  const context = {dbKey: token, token, user};
-  let [authorId] = await hooks.aCallFirst('getAuthorId', context);
-  if (!authorId) authorId = await getAuthor4Token(context.dbKey);
-  return authorId;
-};
-
-/**
- * Returns the AuthorID for a token.
- *
- * @deprecated Use `getAuthorId` instead.
- * @param {String} token The token
- */
-exports.getAuthor4Token = async (token) => {
-  warnDeprecated(
-      'AuthorManager.getAuthor4Token() is deprecated; use AuthorManager.getAuthorId() instead');
-  return await getAuthor4Token(token);
-};
-
-/**
- * Returns the AuthorID for a mapper.
- * @param {String} token The mapper
- * @param {String} name The name of the author (optional)
- */
-exports.createAuthorIfNotExistsFor = async (authorMapper, name) => {
-  const author = await mapAuthorWithDBKey('mapper2author', authorMapper);
-
-  if (name) {
-    // set the name of this author
-    await exports.setAuthorName(author.authorID, name);
-  }
-
-  return author;
-};
 
 /**
  * Returns the AuthorID for a mapper. We can map using a mapperkey,
@@ -173,6 +136,60 @@ const mapAuthorWithDBKey = async (mapperkey, mapper) => {
   // return the author
   return {authorID: author};
 };
+
+/**
+ * Returns the AuthorID for a token.
+ * @param {String} token The token of the author
+ * @return {Promise<string|*|{authorID: string}|{authorID: *}>}
+ */
+const getAuthor4Token = async (token) => {
+  const author = await mapAuthorWithDBKey('token2author', token);
+
+  // return only the sub value authorID
+  return author ? author.authorID : author;
+};
+
+/**
+ * Returns the AuthorID for a token.
+ * @param {String} token
+ * @param {Object} user
+ * @return {Promise<*>}
+ */
+exports.getAuthorId = async (token, user) => {
+  const context = {dbKey: token, token, user};
+  let [authorId] = await hooks.aCallFirst('getAuthorId', context);
+  if (!authorId) authorId = await getAuthor4Token(context.dbKey);
+  return authorId;
+};
+
+/**
+ * Returns the AuthorID for a token.
+ *
+ * @deprecated Use `getAuthorId` instead.
+ * @param {String} token The token
+ */
+exports.getAuthor4Token = async (token) => {
+  warnDeprecated(
+      'AuthorManager.getAuthor4Token() is deprecated; use AuthorManager.getAuthorId() instead');
+  return await getAuthor4Token(token);
+};
+
+/**
+ * Returns the AuthorID for a mapper.
+ * @param {String} authorMapper The mapper
+ * @param {String} name The name of the author (optional)
+ */
+exports.createAuthorIfNotExistsFor = async (authorMapper, name) => {
+  const author = await mapAuthorWithDBKey('mapper2author', authorMapper);
+
+  if (name) {
+    // set the name of this author
+    await exports.setAuthorName(author.authorID, name);
+  }
+
+  return author;
+};
+
 
 /**
  * Internal function that creates the database entry for an author
@@ -231,7 +248,7 @@ exports.setAuthorName = async (author, name) => await db.setSub(
 
 /**
  * Returns an array of all pads this author contributed to
- * @param {String} author The id of the author
+ * @param {String} authorID The id of the author
  */
 exports.listPadsOfAuthor = async (authorID) => {
   /* There are two other places where this array is manipulated:
@@ -255,7 +272,7 @@ exports.listPadsOfAuthor = async (authorID) => {
 
 /**
  * Adds a new pad to the list of contributions
- * @param {String} author The id of the author
+ * @param {String} authorID The id of the author
  * @param {String} padID The id of the pad the author contributes to
  */
 exports.addPad = async (authorID, padID) => {
@@ -282,7 +299,7 @@ exports.addPad = async (authorID, padID) => {
 
 /**
  * Removes a pad from the list of contributions
- * @param {String} author The id of the author
+ * @param {String} authorID The id of the author
  * @param {String} padID The id of the pad the author contributes to
  */
 exports.removePad = async (authorID, padID) => {

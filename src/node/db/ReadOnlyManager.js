@@ -26,13 +26,15 @@ const randomString = require('../utils/randomstring');
 
 /**
  * checks if the id pattern matches a read-only pad id
- * @param {String} the pad's id
+ * @param {String} id the pad's id
+ * @return {Boolean} true if the id is readonly
  */
 exports.isReadOnlyId = (id) => id.startsWith('r.');
 
 /**
  * returns a read only id for a pad
  * @param {String} padId the id of the pad
+ * @return {String} the read only id
  */
 exports.getReadOnlyId = async (padId) => {
   // check if there is a pad2readonly entry
@@ -53,12 +55,14 @@ exports.getReadOnlyId = async (padId) => {
 /**
  * returns the padId for a read only id
  * @param {String} readOnlyId read only id
+ * @return {String} the padId
  */
 exports.getPadId = async (readOnlyId) => await db.get(`readonly2pad:${readOnlyId}`);
 
 /**
  * returns the padId and readonlyPadId in an object for any id
- * @param {String} padIdOrReadonlyPadId read only id or real pad id
+ * @param {String} id read only id or real pad id
+ * @return {Object} an object with the padId and readonlyPadId
  */
 exports.getIds = async (id) => {
   const readonly = exports.isReadOnlyId(id);

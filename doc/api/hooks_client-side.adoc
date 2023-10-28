@@ -283,7 +283,7 @@ Things in context:
 This hook is called on the client side whenever a user joins or changes. This
 can be used to create notifications or an alternate user list.
 
-=== `chatNewMessage`
+=== chatNewMessage
 
 Called from: `src/static/js/chat.js`
 
@@ -319,7 +319,7 @@ Context properties:
 * `duration`: How long (in milliseconds) to display the gritter notification (0
   to disable).
 
-=== `chatSendMessage`
+=== chatSendMessage
 
 Called from: `src/static/js/chat.js`
 

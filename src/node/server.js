@@ -25,7 +25,6 @@
  */
 
 const log4js = require('log4js');
-log4js.replaceConsole();
 
 const settings = require('./utils/Settings');
 

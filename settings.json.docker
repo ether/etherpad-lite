@@ -207,15 +207,15 @@
 
   "dbType": "${DB_TYPE:dirty}",
   "dbSettings": {
-    "host":     "${DB_HOST:undefined}",
-    "port":     "${DB_PORT:undefined}",
-    "database": "${DB_NAME:undefined}",
-    "user":     "${DB_USER:undefined}",
-    "password": "${DB_PASS:undefined}",
-    "charset":  "${DB_CHARSET:undefined}",
-    "filename": "${DB_FILENAME:var/dirty.db}",
+    "host":       "${DB_HOST:undefined}",
+    "port":       "${DB_PORT:undefined}",
+    "database":   "${DB_NAME:undefined}",
+    "user":       "${DB_USER:undefined}",
+    "password":   "${DB_PASS:undefined}",
+    "charset":    "${DB_CHARSET:undefined}",
+    "filename":   "${DB_FILENAME:var/dirty.db}",
     "collection": "${DB_COLLECTION:undefined}",
-    "url":      "${DB_URL:undefined}"
+    "url":        "${DB_URL:undefined}"
   },
 
   /*
