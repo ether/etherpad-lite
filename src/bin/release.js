@@ -9,9 +9,12 @@ const childProcess = require('child_process');
 const log4js = require('log4js');
 const path = require('path');
 const semver = require('semver');
-const {exec} = require("child_process");
+const {exec} = require('child_process');
 
-log4js.replaceConsole();
+log4js.configure({appenders: {console: {type: 'console'}},
+  categories: {
+    default: {appenders: ['console'], level: 'info'},
+  }});
 
 /*
 
@@ -78,11 +81,11 @@ const assertUpstreamOk = (branch, opts = {}) => {
 };
 
 // Check if asciidoctor is installed
-exec('asciidoctor -v', (err,stdout)=>{
-  if (err){
-    console.log('Please install asciidoctor')
-    console.log('https://asciidoctor.org/docs/install-toolchain/')
-    process.exit(1)
+exec('asciidoctor -v', (err, stdout) => {
+  if (err) {
+    console.log('Please install asciidoctor');
+    console.log('https://asciidoctor.org/docs/install-toolchain/');
+    process.exit(1);
   }
 });
 
@@ -183,7 +186,7 @@ try {
   run('git pull --ff-only', {cwd: '../ether.github.com/'});
   console.log('Committing documentation...');
   run(`cp -R out/doc/ ../ether.github.com/public/doc/v'${newVersion}'`);
-  run(`npm version ${newVersion}`, {cwd:'../ether.github.com'})
+  run(`npm version ${newVersion}`, {cwd: '../ether.github.com'});
   run('git add .', {cwd: '../ether.github.com/'});
   run(`git commit -m '${newVersion} docs'`, {cwd: '../ether.github.com/'});
 } catch (err) {
