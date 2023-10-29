@@ -45,7 +45,7 @@ for (let i = 0; i < argv.length; i++) {
     exports.argv.sessionkey = arg;
   }
 
-  // Override location of settings.json file
+  // Override location of APIKEY.txt file
   if (prevArg === '--apikey') {
     exports.argv.apikey = arg;
   }
