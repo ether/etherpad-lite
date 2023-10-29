@@ -37,16 +37,7 @@ const wrapTaskCb = (cb) => {
 exports.uninstall = async (pluginName, cb = null) => {
   cb = wrapTaskCb(cb);
   logger.info(`Uninstalling plugin ${pluginName}...`);
-  try {
-    // The --no-save flag prevents npm from creating package.json or package-lock.json.
-    // The --legacy-peer-deps flag is required to work around a bug in npm v7:
-    // https://github.com/npm/cli/issues/2199
-    await runCmd(['npm', 'uninstall', '--no-save', '--legacy-peer-deps', pluginName]);
-  } catch (err) {
-    logger.error(`Failed to uninstall plugin ${pluginName}`);
-    cb(err || new Error(err));
-    throw err;
-  }
+  await exports.manager.uninstall(pluginName);
   logger.info(`Successfully uninstalled plugin ${pluginName}`);
   await hooks.aCallAll('pluginUninstall', {pluginName});
   await plugins.update();
@@ -56,16 +47,7 @@ exports.uninstall = async (pluginName, cb = null) => {
 exports.install = async (pluginName, cb = null) => {
   cb = wrapTaskCb(cb);
   logger.info(`Installing plugin ${pluginName}...`);
-  try {
-    // The --no-save flag prevents npm from creating package.json or package-lock.json.
-    // The --legacy-peer-deps flag is required to work around a bug in npm v7:
-    // https://github.com/npm/cli/issues/2199
-    await runCmd(['npm', 'install', '--no-save', '--legacy-peer-deps', pluginName]);
-  } catch (err) {
-    logger.error(`Failed to install plugin ${pluginName}`);
-    cb(err || new Error(err));
-    throw err;
-  }
+  await exports.manager.install(pluginName);
   logger.info(`Successfully installed plugin ${pluginName}`);
   await hooks.aCallAll('pluginInstall', {pluginName});
   await plugins.update();

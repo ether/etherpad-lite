@@ -84,6 +84,8 @@ exports.pathNormalization = (part, hookFnName, hookName) => {
 };
 
 exports.update = async () => {
+  await manager.install('ep_bookmark')
+  await manager.install('ep_align')
   const packages = await exports.getPackages();
   const parts = {}; // Key is full name. sortParts converts this into a topologically sorted array.
   const plugins = {};
@@ -107,6 +109,13 @@ exports.update = async () => {
 
 exports.getPackages = async () => {
   logger.info('Running npm to get a list of installed plugins...');
+  let plugins = manager.list()
+  let newDependencies = {}
+  for (const plugin of plugins) {
+    plugin.realPath = await fs.realpath(plugin.location);
+    plugin.path = plugin.realPath;
+    newDependencies[plugin.name] = plugin
+  }
   // Notes:
   //   * Do not pass `--prod` otherwise `npm ls` will fail if there is no `package.json`.
   //   * The `--no-production` flag is required (or the `NODE_ENV` environment variable must be
@@ -121,11 +130,12 @@ exports.getPackages = async () => {
     }
     info.realPath = await fs.realpath(info.path);
   }));
-  return dependencies;
+  let newList = Object.assign({}, dependencies, newDependencies)
+  console.log('blub', newList)
+  return newList;
 };
 
 const loadPlugin = async (packages, pluginName, plugins, parts) => {
-  console.log('Plugins', manager.list());
   const pluginPath = path.resolve(packages[pluginName].path, 'ep.json');
   try {
     const data = await fs.readFile(pluginPath);

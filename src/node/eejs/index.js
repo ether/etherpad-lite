@@ -76,6 +76,7 @@ exports.require = (name, args, mod) => {
     basedir = path.dirname(mod.filename);
     paths = mod.paths;
   }
+  paths.push(settings.root + '/plugin_packages')
 
   const ejspath = resolve.sync(name, {paths, basedir, extensions: ['.html', '.ejs']});
 
