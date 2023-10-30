@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"AmaryllisGardener",
+			"CiphriusKane",
 			"John Reid",
 			"Nintendofan885"
 		]
@@ -50,7 +51,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "Ye can yinly import fae plain tex or HTML formats. Fer mair advanced import features please <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">install abiword</a>.",
+	"pad.importExport.abiword.innerHTML": "Ye can anely import fae plain tex or HTML formats. Fur mair advanced import features please <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">install abiword</a>.",
 	"pad.modals.connected": "Connected.",
 	"pad.modals.reconnecting": "Reconnectin til yer pad..",
 	"pad.modals.forcereconnect": "Force reconnect",
@@ -76,7 +77,7 @@
 	"pad.modals.disconnected.explanation": "The connection til the server wis loast",
 	"pad.modals.disconnected.cause": "The server micht be onavailable. Please notify the service admeenistrater gif this continues tae happen.",
 	"pad.share": "Share this pad",
-	"pad.share.readonly": "Read yinly",
+	"pad.share.readonly": "Read anely",
 	"pad.share.link": "Airtin",
 	"pad.share.emebdcode": "Embed URL",
 	"pad.chat": "Chait",
