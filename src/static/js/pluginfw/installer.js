@@ -69,7 +69,9 @@ exports.checkForMigration = async () => {
   const installedPlugins = JSON.parse(fileContent.toString());
 
   for (const plugin of installedPlugins.plugins) {
-    await exports.manager.install(plugin)
+    if (plugin.startsWith(plugins.prefix) && plugin !== 'ep_etherpad-lite') {
+      await exports.manager.install(plugin)
+    }
   }
 };
 
