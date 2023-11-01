@@ -46,6 +46,7 @@ const migratePluginsFromNodeModules = async () => {
   //     that are not included in `package.json` (which is expected to not exist).
   const cmd = ['npm', 'ls', '--long', '--json', '--depth=0', '--no-production'];
   const {dependencies = {}} = JSON.parse(await runCmd(cmd, {stdio: [null, 'string']}));
+  await persistInstalledPlugins();
   await Promise.all(Object.entries(dependencies).map(async ([pkg, info]) => {
     if (pkg.startsWith(plugins.prefix) && pkg !== 'ep_etherpad-lite') {
       await exports.install(pkg)
