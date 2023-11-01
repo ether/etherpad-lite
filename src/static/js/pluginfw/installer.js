@@ -16,6 +16,8 @@ exports.manager = new PluginManager();
 const installedPluginsPath = path.join(settings.root, 'var/installed_plugins.json');
 
 const onAllTasksFinished = async () => {
+  await plugins.update();
+  await persistInstalledPlugins();
   settings.reloadSettings();
   await hooks.aCallAll('loadSettings', {settings});
   await hooks.aCallAll('restartServer');
@@ -86,8 +88,6 @@ exports.uninstall = async (pluginName, cb = null) => {
   await exports.manager.uninstall(pluginName);
   logger.info(`Successfully uninstalled plugin ${pluginName}`);
   await hooks.aCallAll('pluginUninstall', {pluginName});
-  await plugins.update();
-  await persistInstalledPlugins();
   cb(null);
 };
 
@@ -97,8 +97,6 @@ exports.install = async (pluginName, cb = null) => {
   await exports.manager.install(pluginName);
   logger.info(`Successfully installed plugin ${pluginName}`);
   await hooks.aCallAll('pluginInstall', {pluginName});
-  await plugins.update();
-  await persistInstalledPlugins();
   cb(null);
 };
 
