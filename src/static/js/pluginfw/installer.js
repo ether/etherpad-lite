@@ -6,11 +6,14 @@ const hooks = require('./hooks');
 const runCmd = require('../../../node/utils/run_cmd');
 const settings = require('../../../node/utils/Settings');
 const axios = require('axios');
-const {PluginManager} = require('live-plugin-manager');
+const {PluginManager} = require("live-plugin-manager");
+const {promises: fs} = require("fs");
+const path = require("path");
 const logger = log4js.getLogger('plugins');
 
 exports.manager = new PluginManager();
 
+const installedPluginsPath = path.join(settings.root, 'var/installed_plugins.json');
 
 const onAllTasksFinished = async () => {
   settings.reloadSettings();
@@ -34,6 +37,48 @@ const wrapTaskCb = (cb) => {
   };
 };
 
+const migratePluginsFromNodeModules = async () => {
+  logger.info('start migration of plugins in node_modules')
+  // Notes:
+  //   * Do not pass `--prod` otherwise `npm ls` will fail if there is no `package.json`.
+  //   * The `--no-production` flag is required (or the `NODE_ENV` environment variable must be
+  //     unset or set to `development`) because otherwise `npm ls` will not mention any packages
+  //     that are not included in `package.json` (which is expected to not exist).
+  const cmd = ['npm', 'ls', '--long', '--json', '--depth=0', '--no-production'];
+  const {dependencies = {}} = JSON.parse(await runCmd(cmd, {stdio: [null, 'string']}));
+  await Promise.all(Object.entries(dependencies).map(async ([pkg, info]) => {
+    if (pkg.startsWith(plugins.prefix) && pkg !== 'ep_etherpad-lite') {
+      await exports.install(pkg)
+    }
+  }));
+}
+
+exports.checkForMigration = async () => {
+  logger.info('check installed plugins for migration')
+
+  try {
+    await fs.access(installedPluginsPath, fs.constants.F_OK)
+  } catch (err) {
+    await migratePluginsFromNodeModules();
+  }
+
+  const fileContent = await fs.readFile(installedPluginsPath);
+  const installedPlugins = JSON.parse(fileContent.toString());
+
+  for (const plugin of installedPlugins.plugins) {
+    await exports.manager.install(plugin)
+  }
+};
+
+const persistInstalledPlugins = async () => {
+  let installedPlugins = { plugins: []};
+  for (const pkg of Object.keys(await plugins.getPackages())) {
+    installedPlugins.plugins.push(pkg)
+  }
+  installedPlugins.plugins = [...new Set(installedPlugins.plugins)];
+  await fs.writeFile(installedPluginsPath, JSON.stringify(installedPlugins));
+}
+
 exports.uninstall = async (pluginName, cb = null) => {
   cb = wrapTaskCb(cb);
   logger.info(`Uninstalling plugin ${pluginName}...`);
@@ -41,6 +86,7 @@ exports.uninstall = async (pluginName, cb = null) => {
   logger.info(`Successfully uninstalled plugin ${pluginName}`);
   await hooks.aCallAll('pluginUninstall', {pluginName});
   await plugins.update();
+  await persistInstalledPlugins();
   cb(null);
 };
 
@@ -51,6 +97,7 @@ exports.install = async (pluginName, cb = null) => {
   logger.info(`Successfully installed plugin ${pluginName}`);
   await hooks.aCallAll('pluginInstall', {pluginName});
   await plugins.update();
+  await persistInstalledPlugins();
   cb(null);
 };
 

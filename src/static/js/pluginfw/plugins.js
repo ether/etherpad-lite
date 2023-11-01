@@ -9,6 +9,7 @@ const tsort = require('./tsort');
 const pluginUtils = require('./shared');
 const defs = require('./plugin_defs');
 const {manager} = require('./installer');
+const settings = require("../../../node/utils/Settings");
 
 const logger = log4js.getLogger('plugins');
 
@@ -84,8 +85,6 @@ exports.pathNormalization = (part, hookFnName, hookName) => {
 };
 
 exports.update = async () => {
-  await manager.install('ep_bookmark')
-  await manager.install('ep_align')
   const packages = await exports.getPackages();
   const parts = {}; // Key is full name. sortParts converts this into a topologically sorted array.
   const plugins = {};
@@ -108,31 +107,26 @@ exports.update = async () => {
 };
 
 exports.getPackages = async () => {
-  logger.info('Running npm to get a list of installed plugins...');
   let plugins = manager.list()
   let newDependencies = {}
+
   for (const plugin of plugins) {
+    if (!plugin.name.startsWith(exports.prefix)) {
+      continue;
+    }
     plugin.realPath = await fs.realpath(plugin.location);
     plugin.path = plugin.realPath;
     newDependencies[plugin.name] = plugin
   }
-  // Notes:
-  //   * Do not pass `--prod` otherwise `npm ls` will fail if there is no `package.json`.
-  //   * The `--no-production` flag is required (or the `NODE_ENV` environment variable must be
-  //     unset or set to `development`) because otherwise `npm ls` will not mention any packages
-  //     that are not included in `package.json` (which is expected to not exist).
-  const cmd = ['npm', 'ls', '--long', '--json', '--depth=0', '--no-production'];
-  const {dependencies = {}} = JSON.parse(await runCmd(cmd, {stdio: [null, 'string']}));
-  await Promise.all(Object.entries(dependencies).map(async ([pkg, info]) => {
-    if (!pkg.startsWith(exports.prefix)) {
-      delete dependencies[pkg];
-      return;
-    }
-    info.realPath = await fs.realpath(info.path);
-  }));
-  let newList = Object.assign({}, dependencies, newDependencies)
-  console.log('blub', newList)
-  return newList;
+
+  newDependencies['ep_etherpad-lite'] = {
+    name: 'ep_etherpad-lite',
+    version: settings.getEpVersion(),
+    path: path.join(settings.root, 'node_modules/ep_etherpad-lite'),
+    realPath: path.join(settings.root, 'src'),
+  }
+
+  return newDependencies;
 };
 
 const loadPlugin = async (packages, pluginName, plugins, parts) => {

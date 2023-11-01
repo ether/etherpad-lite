@@ -49,6 +49,7 @@ const express = require('./hooks/express');
 const hooks = require('../static/js/pluginfw/hooks');
 const pluginDefs = require('../static/js/pluginfw/plugin_defs');
 const plugins = require('../static/js/pluginfw/plugins');
+const installer = require('../static/js/pluginfw/installer');
 const {Gate} = require('./utils/promises');
 const stats = require('./stats');
 
@@ -139,6 +140,7 @@ exports.start = async () => {
     }
 
     await db.init();
+    await installer.checkForMigration();
     await plugins.update();
     const installedPlugins = Object.values(pluginDefs.plugins)
         .filter((plugin) => plugin.package.name !== 'ep_etherpad-lite')
