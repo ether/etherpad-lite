@@ -71,7 +71,7 @@
 	"pad.modals.badChangeset.cause": "This coud be cause o ae wrang server confeeguration or some ither onexpected behavior. Please contact the service admeenistrator, gif ye feel that this is ae mistak. Try tae reconnect in order tae continue editing.",
 	"pad.modals.corruptPad.explanation": "The pad ye'r trying te access is mingin.",
 	"pad.modals.corruptPad.cause": "This micht be cause o ae wrang server confeeguration or some ither onexpected behavior. Please contact the service admeenistrater.",
-	"pad.modals.deleted": "Delytit.",
+	"pad.modals.deleted": "Deletit.",
 	"pad.modals.deleted.explanation": "This pad has been hif't.",
 	"pad.modals.disconnected": "Ye'v been disconnected.",
 	"pad.modals.disconnected.explanation": "The connection til the server wis loast",
