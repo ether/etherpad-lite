@@ -27,7 +27,6 @@ const fs = require('fs');
 const settings = require('../utils/Settings');
 const os = require('os');
 const hooks = require('../../static/js/pluginfw/hooks');
-const TidyHtml = require('../utils/TidyHtml');
 const util = require('util');
 const { checkValidRev } = require('../utils/checkValidRev');
 
@@ -93,10 +92,8 @@ exports.doExport = async (req, res, padId, readOnlyId, type) => {
     const srcFile = `${tempDirectory}/etherpad_export_${randNum}.html`;
     await fsp_writeFile(srcFile, html);
 
-    // Tidy up the exported HTML
     // ensure html can be collected by the garbage collector
     html = null;
-    await TidyHtml.tidy(srcFile);
 
     // send the convert job to the converter (abiword, libreoffice, ..)
     const destFile = `${tempDirectory}/etherpad_export_${randNum}.${type}`;
