@@ -441,10 +441,6 @@ For the editor container, you can also make it full width by adding `full-width-
 | This is the absolute path to the soffice executable. LibreOffice can be used in lieu of Abiword to export pads. Setting it to null disables LibreOffice exporting.
 | `null`
 
-| `TIDY_HTML`
-| Path to the Tidy executable. Tidy is used to improve the quality of exported pads. Setting it to null disables Tidy.
-| `null`
-
 | `ALLOW_UNKNOWN_FILE_ENDS`
 | Allow import of file types other than the supported ones: txt, doc, docx, rtf, odt, html & htm
 | `true`

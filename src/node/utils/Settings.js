@@ -261,11 +261,6 @@ exports.abiword = null;
 exports.soffice = null;
 
 /**
- * The path of the tidy executable
- */
-exports.tidyHtml = null;
-
-/**
  * Should we support none natively supported file types on import?
  */
 exports.allowUnknownFileEnds = true;
