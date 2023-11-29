@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [16, 18, 20]
+        node: [18, 20, 21]
     steps:
       -
         name: Check out latest release
