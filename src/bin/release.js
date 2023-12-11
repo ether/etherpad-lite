@@ -177,6 +177,8 @@ try {
   console.warn(`Deleting ${newVersion} tag...`);
   run(`git rev-parse -q --verify refs/tags/'${newVersion}' >/dev/null || exit 0; ` +
       `git tag -d '${newVersion}'`);
+  run(`git rev-parse -q --verify refs/tags/'v${newVersion}' >/dev/null || exit 0; ` +
+      `git tag -d 'v${newVersion}'`);
   throw err;
 }
 
