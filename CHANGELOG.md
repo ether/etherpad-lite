@@ -1,3 +1,15 @@
+# 1.9.5
+
+### Compability changes
+
+* This version deprecates NodeJS16 as it reached its end of life and won't receive any updates. So to get started with Etherpad v1.9.5 you need NodeJS 18 and above.
+* The bundled windows NodeJS version has been bumped to the current LTS version 20.
+
+### Notable enhancements and fixes
+
+* The support for the tidy program to tidy up HTML files has been removed. This decision was made because it hasn't been updated for years and also caused an incompability when exporting a pad with Abiword. 
+
+
 # 1.9.4
 
 ### Compability changes

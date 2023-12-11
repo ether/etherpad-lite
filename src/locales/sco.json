@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"AmaryllisGardener",
+			"CiphriusKane",
 			"John Reid",
 			"Nintendofan885"
 		]
@@ -50,7 +51,7 @@
 	"pad.importExport.exportword": "Microsoft Word",
 	"pad.importExport.exportpdf": "PDF",
 	"pad.importExport.exportopen": "ODF (Open Document Format)",
-	"pad.importExport.abiword.innerHTML": "Ye can yinly import fae plain tex or HTML formats. Fer mair advanced import features please <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">install abiword</a>.",
+	"pad.importExport.abiword.innerHTML": "Ye can anely import fae plain tex or HTML formats. Fur mair advanced import features please <a href=\"https://github.com/ether/etherpad-lite/wiki/How-to-enable-importing-and-exporting-different-file-formats-in-Ubuntu-or-OpenSuse-or-SLES-with-AbiWord\">install abiword</a>.",
 	"pad.modals.connected": "Connected.",
 	"pad.modals.reconnecting": "Reconnectin til yer pad..",
 	"pad.modals.forcereconnect": "Force reconnect",
@@ -70,13 +71,13 @@
 	"pad.modals.badChangeset.cause": "This coud be cause o ae wrang server confeeguration or some ither onexpected behavior. Please contact the service admeenistrator, gif ye feel that this is ae mistak. Try tae reconnect in order tae continue editing.",
 	"pad.modals.corruptPad.explanation": "The pad ye'r trying te access is mingin.",
 	"pad.modals.corruptPad.cause": "This micht be cause o ae wrang server confeeguration or some ither onexpected behavior. Please contact the service admeenistrater.",
-	"pad.modals.deleted": "Delytit.",
+	"pad.modals.deleted": "Deletit.",
 	"pad.modals.deleted.explanation": "This pad has been hif't.",
 	"pad.modals.disconnected": "Ye'v been disconnected.",
 	"pad.modals.disconnected.explanation": "The connection til the server wis loast",
 	"pad.modals.disconnected.cause": "The server micht be onavailable. Please notify the service admeenistrater gif this continues tae happen.",
 	"pad.share": "Share this pad",
-	"pad.share.readonly": "Read yinly",
+	"pad.share.readonly": "Read anely",
 	"pad.share.link": "Airtin",
 	"pad.share.emebdcode": "Embed URL",
 	"pad.chat": "Chait",
@@ -91,8 +92,8 @@
 	"timeslider.version": "Version {{version}}",
 	"timeslider.saved": "Saved {{day}} {{month}}, {{year}}",
 	"timeslider.playPause": "Playback / Pause Pad Contents",
-	"timeslider.backRevision": "Gae back a reveesion in this Pad",
-	"timeslider.forwardRevision": "Gae forwart a reveesion in this Pad",
+	"timeslider.backRevision": "Gang back ae revision in this Pad",
+	"timeslider.forwardRevision": "Gang forrit ae revision in this pad",
 	"timeslider.dateformat": "{{day}}/{{month}}/{{year}} {{hours}}:{{minutes}}:{{seconds}}",
 	"timeslider.month.january": "Januair",
 	"timeslider.month.february": "Febuair",

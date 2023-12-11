@@ -28,7 +28,7 @@
 	"pad.colorpicker.save": "Guardar",
 	"pad.colorpicker.cancel": "Zarrar",
 	"pad.loading": "Cargando...",
-	"pad.noCookie": "Nun pudo alcontrase la cookie. ¡Por favor, permite les cookies nel navegador! La sesión y preferencies  nun se guarden ente visites. Esto pué debese a qu'Etherpad inclúyese nun iFrame en dalgunos restoladores. Asegúrate de qu'Etherpad tea nel mesmu subdominiu/dominiu que la iFrame padre",
+	"pad.noCookie": "Nun pudo alcontrase la cookie. ¡Por favor, permite les cookies nel navegador! La sesión y preferencies  nun se guarden ente visites. Esto pue debese a qu'Etherpad inclúyese nun iFrame en dalgunos restoladores. Asegúrate de qu'Etherpad tea nel mesmu subdominiu/dominiu que l'iFrame padre",
 	"pad.permissionDenied": "Nun tienes permisu pa entrar a esti bloc",
 	"pad.settings.padSettings": "Configuración del bloc",
 	"pad.settings.myView": "la mio vista",

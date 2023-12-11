@@ -1,9 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Aue Nai"
+			"Aue Nai",
+			"咽頭べさ"
 		]
 	},
+	"admin_plugins.description": "တၚ်ထမံက်ထ္ၜး",
 	"index.newPad": "တၞးတၟိ",
 	"pad.toolbar.bold.title": "လ္စံက် (Ctrl+B)",
 	"pad.toolbar.italic.title": "ဒစေၚ် (Ctrl+I)",

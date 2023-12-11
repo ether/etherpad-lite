@@ -160,6 +160,7 @@ try {
   run('git merge --no-ff --no-edit develop');
   console.log(`Creating ${newVersion} tag...`);
   run(`git tag -s '${newVersion}' -m '${newVersion}'`);
+  run(`git tag -s 'v${newVersion}' -m 'v${newVersion}'`);
   console.log('Switching back to develop...');
   run('git checkout develop');
   console.log('Merging master into develop...');
@@ -176,6 +177,8 @@ try {
   console.warn(`Deleting ${newVersion} tag...`);
   run(`git rev-parse -q --verify refs/tags/'${newVersion}' >/dev/null || exit 0; ` +
       `git tag -d '${newVersion}'`);
+  run(`git rev-parse -q --verify refs/tags/'v${newVersion}' >/dev/null || exit 0; ` +
+      `git tag -d 'v${newVersion}'`);
   throw err;
 }
 
