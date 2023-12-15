@@ -100,6 +100,7 @@ COPY --chown=etherpad:etherpad ./ ./
 # rules.
 RUN { [ -z "${ETHERPAD_PLUGINS}" ] || \
       npm install --no-save --legacy-peer-deps ${ETHERPAD_PLUGINS}; } && \
+    npm install npm@6 -g \
     src/bin/installDeps.sh && \
     rm -rf ~/.npm
 
