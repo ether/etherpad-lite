@@ -77,6 +77,7 @@ RUN mkdir -p "${EP_DIR}" && chown etherpad:etherpad "${EP_DIR}"
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199
 RUN  \
     mkdir -p /usr/share/man/man1 && \
+    npm install npm@6 -g  && \
     apk update && apk upgrade && \
     apk add  \
         ca-certificates \
