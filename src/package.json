@@ -102,7 +102,7 @@
     "lint": "../node_modules/eslint/bin/eslint.js .",
     "test": "../node_modules/mocha/bin/_mocha --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
     "test-on-windows": "npx mocha --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
-    "test-container": "npx mocha --timeout 5000 tests/container/specs/api",
+    "test-container": "export NODE_ENV=development && npx mocha --timeout 5000 tests/container/specs/api",
     "dev": "bash ./bin/run.sh"
   },
   "version": "1.9.5",
