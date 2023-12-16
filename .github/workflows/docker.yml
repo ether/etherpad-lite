@@ -46,8 +46,7 @@ jobs:
       -
         name: Test
         run: |
-          export NODE_ENV=development
-          docker run --rm -d -p 9001:9001 --name test ${{ env.TEST_TAG }}
+          docker run -e NODE_ENV=development  --rm -d -p 9001:9001 --name test ${{ env.TEST_TAG }}
           docker logs -f test &
           ./src/bin/installDeps.sh
           while true; do
