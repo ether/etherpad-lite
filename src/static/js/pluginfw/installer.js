@@ -15,6 +15,10 @@ const onAllTasksFinished = async () => {
   await hooks.aCallAll('restartServer');
 };
 
+const headers = {
+  'User-Agent': 'Etherpad/' + settings.getEpVersion(),
+}
+
 let tasks = 0;
 
 const wrapTaskCb = (cb) => {
@@ -77,12 +81,15 @@ exports.getAvailablePlugins = (maxCacheAge) => {
           return resolve(exports.availablePlugins);
       }
 
-      await axios.get('https://static.etherpad.org/plugins.json')
-          .then(pluginsLoaded => {
-              exports.availablePlugins = pluginsLoaded.data;
-              cacheTimestamp = nowTimestamp;
-              resolve(exports.availablePlugins);
-          })
+      await axios.get('https://static.etherpad.org/plugins.json', {headers: headers})
+        .then(pluginsLoaded => {
+            exports.availablePlugins = pluginsLoaded.data;
+            cacheTimestamp = nowTimestamp;
+            resolve(exports.availablePlugins);
+        })
+        .catch(async err => {
+          return reject(err);
+        });
   })
 }
 
