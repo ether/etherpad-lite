@@ -119,7 +119,7 @@ jobs:
             src/package-lock.json
             src/bin/doc/package-lock.json
       - name: Install dependencies
-        run: cd src && npm i
+        run: cd src && npm i --legacy-peer-deps
       -
         name: Install the ep_etherpad-lite package from ./src
         run: cd src && ./bin/installOnWindows.bat
