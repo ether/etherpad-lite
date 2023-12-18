@@ -118,9 +118,11 @@ jobs:
           cache-dependency-path: |
             src/package-lock.json
             src/bin/doc/package-lock.json
+      - name: Install dependencies
+        run: cd src && npm i
       -
         name: Install the ep_etherpad-lite package from ./src
-        run: src/bin/installOnWindows.bat
+        run: cd src && ./bin/installOnWindows.bat
           #      -
           #        name: Run npm i once to make bin files available - why is this needed at all?
           #        run: npm i
