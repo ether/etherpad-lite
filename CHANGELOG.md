@@ -1,3 +1,12 @@
+# 1.9.6
+
+### Notable enhancements and fixes
+
+* Prevent etherpad crash when update server is not reachable
+* Use npm@6 in Docker build
+* Fix setting the log level in settings.json
+
+
 # 1.9.5
 
 ### Compability changes
