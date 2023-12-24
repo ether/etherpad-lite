@@ -52,9 +52,8 @@ We're looking for maintainers and have some funding available.  Please contact J
 
 #### Quick install on Debian/Ubuntu
 
+Install the latest Node.js LTS per [official install instructions](https://github.com/nodesource/distributions#installation-instructions), then:
 ```sh
-curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
-sudo apt install -y nodejs
 git clone --branch master https://github.com/ether/etherpad-lite.git &&
 cd etherpad-lite &&
 src/bin/run.sh
