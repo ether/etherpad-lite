@@ -91,7 +91,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
       - name: Update repo description
         uses: peter-evans/dockerhub-description@v3
-        #if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master'
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
