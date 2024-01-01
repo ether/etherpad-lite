@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"DeRudySoulStorm",
+			"Iketsi",
 			"Kareyac",
 			"Macofe",
 			"Mateon1",
@@ -15,8 +16,19 @@
 			"Woytecr"
 		]
 	},
+	"admin.page-title": "Panel administracyjny – Etherpad",
+	"admin_plugins": "Menedżer wtyczek",
+	"admin_plugins.available": "Dostępne wtyczki",
+	"admin_plugins.available_not-found": "Nie znaleziono żadnych wtyczek.",
+	"admin_plugins.available_install.value": "Instaluj",
 	"admin_plugins.description": "Opis",
+	"admin_plugins.installed": "Zainstalowane wtyczki",
+	"admin_plugins.installed_uninstall.value": "Odinstaluj",
+	"admin_plugins.last-update": "Ostatnia aktualizacja",
+	"admin_plugins.name": "Nazwa",
+	"admin_plugins.page-title": "Menedżer wtyczek - Etherpad",
 	"admin_plugins.version": "Wersja",
+	"admin_plugins_info.version": "Wersja Etherpada",
 	"admin_settings": "Ustawienia",
 	"index.newPad": "Nowy dokument",
 	"index.createOpenPad": "lub stwórz/otwórz dokument o nazwie:",
