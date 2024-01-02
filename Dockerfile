@@ -91,8 +91,18 @@ WORKDIR "${EP_DIR}"
 
 COPY --chown=etherpad:etherpad ./ ./
 
-RUN { [ -z "${ETHERPAD_PLUGINS}" ] || /bin/bash -c 'ARR_PLUGINS=($ETHERPAD_PLUGINS) && jq -n "{plugins: \$ARGS.positional}" --args ${ARR_PLUGINS[@]}'; } > var/installed_plugins.json && \
-    src/bin/installDeps.sh &&
+# Plugins must be installed before installing Etherpad's dependencies, otherwise
+# npm will try to hoist common dependencies by removing them from
+# src/node_modules and installing them in the top-level node_modules. As of
+# v6.14.10, npm's hoist logic appears to be buggy, because it sometimes removes
+# dependencies from src/node_modules but fails to add them to the top-level
+# node_modules. Even if npm correctly hoists the dependencies, the hoisting
+# seems to confuse tools such as `npm outdated`, `npm update`, and some ESLint
+# rules.
+RUN { [ -z "${ETHERPAD_PLUGINS}" ] || \
+      npm install --no-save --legacy-peer-deps ${ETHERPAD_PLUGINS}; } && \
+    src/bin/installDeps.sh && \
+    rm -rf ~/.npm
 
 # Copy the configuration file.
 COPY --chown=etherpad:etherpad ${SETTINGS} "${EP_DIR}"/settings.json
