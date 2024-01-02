@@ -69,16 +69,19 @@ exports.checkForMigration = async () => {
   const installedPlugins = JSON.parse(fileContent.toString());
 
   for (const plugin of installedPlugins.plugins) {
-    if (plugin.startsWith(plugins.prefix) && plugin !== 'ep_etherpad-lite') {
-      await exports.manager.install(plugin)
+    if (plugin.name.startsWith(plugins.prefix) && plugin.name !== 'ep_etherpad-lite') {
+      await exports.manager.install(plugin.name, plugin.version)
     }
   }
 };
 
 const persistInstalledPlugins = async () => {
   let installedPlugins = { plugins: []};
-  for (const pkg of Object.keys(await plugins.getPackages())) {
-    installedPlugins.plugins.push(pkg)
+  for (const pkg of Object.values(await plugins.getPackages())) {
+    installedPlugins.plugins.push({
+      name: pkg.name,
+      version: pkg.version,
+    })
   }
   installedPlugins.plugins = [...new Set(installedPlugins.plugins)];
   await fs.writeFile(installedPluginsPath, JSON.stringify(installedPlugins));
