@@ -91,7 +91,7 @@ WORKDIR "${EP_DIR}"
 
 COPY --chown=etherpad:etherpad ./ ./
 
-RUN { [ -z "${ETHERPAD_PLUGINS}" ] || /bin/bash -c 'ARR_PLUGINS=($ETHERPAD_PLUGINS) && jq -n "{plugins: \$ARGS.positional}" --args ${ARR_PLUGINS[@]} > var/installed_plugins.json'; } && \
+RUN { [ -z "${ETHERPAD_PLUGINS}" ] || /bin/bash -c 'ARR_PLUGINS=($ETHERPAD_PLUGINS) && jq -n "{plugins: \$ARGS.positional}" --args ${ARR_PLUGINS[@]}'; } > var/installed_plugins.json && \
     src/bin/installDeps.sh &&
 
 # Copy the configuration file.
