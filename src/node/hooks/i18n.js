@@ -74,6 +74,24 @@ const getAllLocales = () => {
       if (typeof overrides !== 'object') throw wrongFormatErr;
       _.each(overrides, (localeString, key) => {
         if (typeof localeString !== 'string') throw wrongFormatErr;
+        const locale = locales[langcode];
+
+        // Handles the error if an unknown language code is entered
+        if (locale === undefined) {
+          const possibleMatches = [];
+          let strippedLangcode = '';
+          if (langcode.includes('-')) {
+            strippedLangcode = langcode.split('-')[0];
+          }
+          for (const localeInEtherPad of Object.keys(locales)) {
+            if (localeInEtherPad.includes(strippedLangcode)) {
+              possibleMatches.push(localeInEtherPad);
+            }
+          }
+          throw new Error(`Language code ${langcode} is unknown. ` +
+              `Maybe you meant: ${possibleMatches}`);
+        }
+
         locales[langcode][key] = localeString;
       });
     });
