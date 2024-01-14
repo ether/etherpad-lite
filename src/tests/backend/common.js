@@ -145,7 +145,7 @@ exports.connect = async (res = null) => {
   if (res) {
     padId = res.req.path.split('/p/')[1];
   }
-  const socket = new io.Socket(`${exports.baseUrl}/`, {
+  const socket =  io(`${exports.baseUrl}/`, {
     forceNew: true, // Different tests will have different query parameters.
     path: '/socket.io',
     // socketio.js-client on node.js doesn't support cookies (see https://git.io/JU8u9), so the
