@@ -6,10 +6,18 @@ const hooks = require('./hooks');
 const runCmd = require('../../../node/utils/run_cmd');
 const settings = require('../../../node/utils/Settings');
 const axios = require('axios');
-
+const {PluginManager} = require("live-plugin-manager");
+const {promises: fs} = require("fs");
+const path = require("path");
 const logger = log4js.getLogger('plugins');
 
+exports.manager = new PluginManager();
+
+const installedPluginsPath = path.join(settings.root, 'var/installed_plugins.json');
+
 const onAllTasksFinished = async () => {
+  await plugins.update();
+  await persistInstalledPlugins();
   settings.reloadSettings();
   await hooks.aCallAll('loadSettings', {settings});
   await hooks.aCallAll('restartServer');
@@ -31,41 +39,69 @@ const wrapTaskCb = (cb) => {
   };
 };
 
+const migratePluginsFromNodeModules = async () => {
+  logger.info('start migration of plugins in node_modules')
+  // Notes:
+  //   * Do not pass `--prod` otherwise `npm ls` will fail if there is no `package.json`.
+  //   * The `--no-production` flag is required (or the `NODE_ENV` environment variable must be
+  //     unset or set to `development`) because otherwise `npm ls` will not mention any packages
+  //     that are not included in `package.json` (which is expected to not exist).
+  const cmd = ['npm', 'ls', '--long', '--json', '--depth=0', '--no-production'];
+  const {dependencies = {}} = JSON.parse(await runCmd(cmd, {stdio: [null, 'string']}));
+  await Promise.all(Object.entries(dependencies).map(async ([pkg, info]) => {
+    if (pkg.startsWith(plugins.prefix) && pkg !== 'ep_etherpad-lite') {
+      await exports.manager.install(pkg)
+    }
+  }));
+  await persistInstalledPlugins();
+}
+
+exports.checkForMigration = async () => {
+  logger.info('check installed plugins for migration')
+
+  try {
+    await fs.access(installedPluginsPath, fs.constants.F_OK)
+  } catch (err) {
+    await migratePluginsFromNodeModules();
+  }
+
+  const fileContent = await fs.readFile(installedPluginsPath);
+  const installedPlugins = JSON.parse(fileContent.toString());
+
+  for (const plugin of installedPlugins.plugins) {
+    if (plugin.name.startsWith(plugins.prefix) && plugin.name !== 'ep_etherpad-lite') {
+      await exports.manager.install(plugin.name, plugin.version)
+    }
+  }
+};
+
+const persistInstalledPlugins = async () => {
+  let installedPlugins = { plugins: []};
+  for (const pkg of Object.values(await plugins.getPackages())) {
+    installedPlugins.plugins.push({
+      name: pkg.name,
+      version: pkg.version,
+    })
+  }
+  installedPlugins.plugins = [...new Set(installedPlugins.plugins)];
+  await fs.writeFile(installedPluginsPath, JSON.stringify(installedPlugins));
+}
+
 exports.uninstall = async (pluginName, cb = null) => {
   cb = wrapTaskCb(cb);
   logger.info(`Uninstalling plugin ${pluginName}...`);
-  try {
-    // The --no-save flag prevents npm from creating package.json or package-lock.json.
-    // The --legacy-peer-deps flag is required to work around a bug in npm v7:
-    // https://github.com/npm/cli/issues/2199
-    await runCmd(['npm', 'uninstall', '--no-save', '--legacy-peer-deps', pluginName]);
-  } catch (err) {
-    logger.error(`Failed to uninstall plugin ${pluginName}`);
-    cb(err || new Error(err));
-    throw err;
-  }
+  await exports.manager.uninstall(pluginName);
   logger.info(`Successfully uninstalled plugin ${pluginName}`);
   await hooks.aCallAll('pluginUninstall', {pluginName});
-  await plugins.update();
   cb(null);
 };
 
 exports.install = async (pluginName, cb = null) => {
   cb = wrapTaskCb(cb);
   logger.info(`Installing plugin ${pluginName}...`);
-  try {
-    // The --no-save flag prevents npm from creating package.json or package-lock.json.
-    // The --legacy-peer-deps flag is required to work around a bug in npm v7:
-    // https://github.com/npm/cli/issues/2199
-    await runCmd(['npm', 'install', '--no-save', '--legacy-peer-deps', pluginName]);
-  } catch (err) {
-    logger.error(`Failed to install plugin ${pluginName}`);
-    cb(err || new Error(err));
-    throw err;
-  }
+  await exports.manager.install(pluginName);
   logger.info(`Successfully installed plugin ${pluginName}`);
   await hooks.aCallAll('pluginInstall', {pluginName});
-  await plugins.update();
   cb(null);
 };
 
@@ -76,22 +112,21 @@ exports.getAvailablePlugins = (maxCacheAge) => {
   const nowTimestamp = Math.round(Date.now() / 1000);
 
   return new Promise(async (resolve, reject) => {
-      // check cache age before making any request
-      if (exports.availablePlugins && maxCacheAge && (nowTimestamp - cacheTimestamp) <= maxCacheAge) {
-          return resolve(exports.availablePlugins);
-      }
+    // check cache age before making any request
+    if (exports.availablePlugins && maxCacheAge && (nowTimestamp - cacheTimestamp) <= maxCacheAge) {
+      return resolve(exports.availablePlugins);
+    }
 
-      await axios.get('https://static.etherpad.org/plugins.json', {headers: headers})
-        .then(pluginsLoaded => {
-            exports.availablePlugins = pluginsLoaded.data;
-            cacheTimestamp = nowTimestamp;
-            resolve(exports.availablePlugins);
-        })
+    await axios.get('https://static.etherpad.org/plugins.json', {headers: headers})
+        .then((pluginsLoaded) => {
+          exports.availablePlugins = pluginsLoaded.data;
+          cacheTimestamp = nowTimestamp;
+          resolve(exports.availablePlugins);})
         .catch(async err => {
           return reject(err);
         });
-  })
-}
+  });
+};
 
 
 exports.search = (searchTerm, maxCacheAge) => exports.getAvailablePlugins(maxCacheAge).then(
