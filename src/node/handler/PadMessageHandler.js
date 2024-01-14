@@ -39,7 +39,7 @@ const stats = require('../stats');
 const assert = require('assert').strict;
 const {RateLimiterMemory} = require('rate-limiter-flexible');
 const webaccess = require('../hooks/express/webaccess');
-const { checkValidRev } = require('../utils/checkValidRev');
+const {checkValidRev} = require('../utils/checkValidRev');
 
 let rateLimiter;
 let socketio = null;
@@ -83,7 +83,7 @@ exports.socketio = () => {
 const sessioninfos = {};
 exports.sessioninfos = sessioninfos;
 
-stats.gauge('totalUsers', () => socketio ? Object.keys(socketio.sockets.sockets).length : 0);
+stats.gauge('totalUsers', () => socketio.sockets.size);
 stats.gauge('activePads', () => {
   const padIds = new Set();
   for (const {padId} of Object.values(sessioninfos)) {
@@ -155,13 +155,13 @@ exports.handleConnect = (socket) => {
  * Kicks all sessions from a pad
  */
 exports.kickSessionsFromPad = (padID) => {
-  if (typeof socketio.sockets.clients !== 'function') return;
+  if (typeof socketio.sockets !== 'object') return;
 
   // skip if there is nobody on this pad
   if (_getRoomSockets(padID).length === 0) return;
 
   // disconnect everyone from this pad
-  socketio.sockets.in(padID).json.send({disconnect: 'deleted'});
+  socketio.in(padID).emit('message', {disconnect: 'deleted'});
 };
 
 /**
@@ -177,13 +177,13 @@ exports.handleDisconnect = async (socket) => {
   const {session: {user} = {}} = socket.client.request;
   /* eslint-disable prefer-template -- it doesn't support breaking across multiple lines */
   accessLogger.info('[LEAVE]' +
-                    ` pad:${session.padId}` +
-                    ` socket:${socket.id}` +
-                    ` IP:${settings.disableIPlogging ? 'ANONYMOUS' : socket.request.ip}` +
-                    ` authorID:${session.author}` +
-                    (user && user.username ? ` username:${user.username}` : ''));
+        ` pad:${session.padId}` +
+        ` socket:${socket.id}` +
+        ` IP:${settings.disableIPlogging ? 'ANONYMOUS' : socket.request.ip}` +
+        ` authorID:${session.author}` +
+        (user && user.username ? ` username:${user.username}` : ''));
   /* eslint-enable prefer-template */
-  socket.broadcast.to(session.padId).json.send({
+  socket.broadcast.to(session.padId).emit('message', {
     type: 'COLLABROOM',
     data: {
       type: 'USER_LEAVE',
@@ -216,8 +216,8 @@ exports.handleMessage = async (socket, message) => {
       messageLogger.warn(`Rate limited IP ${socket.request.ip}. To reduce the amount of rate ` +
                          'limiting that happens edit the rateLimit values in settings.json');
       stats.meter('rateLimited').mark();
-      socket.json.send({disconnect: 'rateLimited'});
-      throw err;
+      socket.emit('message', {disconnect: 'rateLimited'});
+      return;
     }
   }
 
@@ -267,11 +267,12 @@ exports.handleMessage = async (socket, message) => {
   const {accessStatus, authorID} =
       await securityManager.checkAccess(auth.padID, auth.sessionID, auth.token, user);
   if (accessStatus !== 'grant') {
-    socket.json.send({accessStatus});
+    // Access denied. Send the reason to the user.
+    socket.emit('message', {accessStatus});
     throw new Error('access denied');
   }
   if (thisSession.author != null && thisSession.author !== authorID) {
-    socket.json.send({disconnect: 'rejected'});
+    socket.emit('message', {disconnect: 'rejected'});
     throw new Error([
       'Author ID changed mid-session. Bad or missing token or sessionID?',
       `socket:${socket.id}`,
@@ -393,10 +394,10 @@ exports.handleCustomObjectMessage = (msg, sessionID) => {
   if (msg.data.type === 'CUSTOM') {
     if (sessionID) {
       // a sessionID is targeted: directly to this sessionID
-      socketio.sockets.socket(sessionID).json.send(msg);
+      socketio.to(sessionID).emit('message', msg);
     } else {
       // broadcast to all clients on this pad
-      socketio.sockets.in(msg.data.payload.padId).json.send(msg);
+      socketio.to(msg.data.payload.padId).emit('message', msg);
     }
   }
 };
@@ -416,7 +417,7 @@ exports.handleCustomMessage = (padID, msgString) => {
       time,
     },
   };
-  socketio.sockets.in(padID).json.send(msg);
+  socketio.in(padID).emit('message', msg);
 };
 
 /**
@@ -453,7 +454,7 @@ exports.sendChatMessageToPadClients = async (mt, puId, text = null, padId = null
   // authorManager.getAuthorName() to resolve before saving the message to the database.
   const promise = pad.appendChatMessage(message);
   message.displayName = await authorManager.getAuthorName(message.authorId);
-  socketio.sockets.in(padId).json.send({
+  socketio.sockets.in(padId).emit('message', {
     type: 'COLLABROOM',
     data: {type: 'CHAT_MESSAGE', message},
   });
@@ -483,7 +484,7 @@ const handleGetChatMessages = async (socket, {data: {start, end}}) => {
   };
 
   // send the messages back to the client
-  socket.json.send(infoMsg);
+  socket.emit('message', infoMsg);
 };
 
 /**
@@ -500,7 +501,7 @@ const handleSuggestUserName = (socket, message) => {
   _getRoomSockets(padId).forEach((socket) => {
     const session = sessioninfos[socket.id];
     if (session && session.author === unnamedId) {
-      socket.json.send(message);
+      socket.emit('message', message);
     }
   });
 };
@@ -539,7 +540,7 @@ const handleUserInfoUpdate = async (socket, {data: {userInfo: {name, colorId}}})
   };
 
   // Send the other clients on the pad the update message
-  socket.broadcast.to(padId).json.send(infoMsg);
+  socket.to(padId).emit('message', infoMsg);
 
   // Block until the authorManager has stored the new attributes.
   await p;
@@ -654,12 +655,12 @@ const handleUserChanges = async (socket, message) => {
     // The client assumes that ACCEPT_COMMIT and NEW_CHANGES messages arrive in order. Make sure we
     // have already sent any previous ACCEPT_COMMIT and NEW_CHANGES messages.
     assert.equal(thisSession.rev, r);
-    socket.json.send({type: 'COLLABROOM', data: {type: 'ACCEPT_COMMIT', newRev}});
+    socket.emit('message', {type: 'COLLABROOM', data: {type: 'ACCEPT_COMMIT', newRev}});
     thisSession.rev = newRev;
     if (newRev !== r) thisSession.time = await pad.getRevisionDate(newRev);
     await exports.updatePadClients(pad);
   } catch (err) {
-    socket.json.send({disconnect: 'badChangeset'});
+    socket.emit('message', {disconnect: 'badChangeset'});
     stats.meter('failedChangesets').mark();
     messageLogger.warn(`Failed to apply USER_CHANGES from author ${thisSession.author} ` +
                        `(socket ${socket.id}) on pad ${thisSession.padId}: ${err.stack || err}`);
@@ -716,7 +717,7 @@ exports.updatePadClients = async (pad) => {
         },
       };
       try {
-        socket.json.send(msg);
+        socket.emit('message', msg);
       } catch (err) {
         messageLogger.error(`Failed to notify user of new revision: ${err.stack || err}`);
         return;
@@ -833,7 +834,7 @@ const handleClientReady = async (socket, message) => {
       // fix user's counter, works on page refresh or if user closes browser window and then rejoins
       sessioninfos[otherSocket.id] = {};
       otherSocket.leave(sessionInfo.padId);
-      otherSocket.json.send({disconnect: 'userdup'});
+      otherSocket.emit('message', {disconnect: 'userdup'});
     }
   }
 
@@ -899,7 +900,7 @@ const handleClientReady = async (socket, message) => {
           apool: forWire.pool,
           author: changesets[r].author,
           currentTime: changesets[r].timestamp}};
-      socket.json.send(wireMsg);
+      socket.emit('message', wireMsg);
     }
 
     if (startNum === endNum) {
@@ -907,7 +908,7 @@ const handleClientReady = async (socket, message) => {
         data: {type: 'CLIENT_RECONNECT',
           noChanges: true,
           newRev: pad.getHeadRevisionNumber()}};
-      socket.json.send(Msg);
+      socket.emit('message', Msg);
     }
   } else {
     // This is a normal first connect
@@ -921,7 +922,7 @@ const handleClientReady = async (socket, message) => {
       atext.attribs = attribsForWire.translated;
     } catch (e) {
       messageLogger.error(e.stack || e);
-      socket.json.send({disconnect: 'corruptPad'}); // pull the brakes
+      socket.emit('message', {disconnect: 'corruptPad'}); // pull the brakes
       throw new Error('corrupt pad');
     }
 
@@ -1005,14 +1006,14 @@ const handleClientReady = async (socket, message) => {
     socket.join(sessionInfo.padId);
 
     // Send the clientVars to the Client
-    socket.json.send({type: 'CLIENT_VARS', data: clientVars});
+    socket.emit('message', {type: 'CLIENT_VARS', data: clientVars});
 
     // Save the current revision in sessioninfos, should be the same as in clientVars
     sessionInfo.rev = pad.getHeadRevisionNumber();
   }
 
   // Notify other users about this new user.
-  socket.broadcast.to(sessionInfo.padId).json.send({
+  socket.broadcast.to(sessionInfo.padId).emit('message', {
     type: 'COLLABROOM',
     data: {
       type: 'USER_NEWINFO',
@@ -1062,7 +1063,7 @@ const handleClientReady = async (socket, message) => {
       },
     };
 
-    socket.json.send(msg);
+    socket.emit('message', msg);
   }));
 
   await hooks.aCallAll('userJoin', {
@@ -1088,11 +1089,10 @@ const handleChangesetRequest = async (socket, {data: {granularity, start, reques
   const {padId, author: authorId} = sessioninfos[socket.id];
   const pad = await padManager.getPad(padId, null, authorId);
   const headRev = pad.getHeadRevisionNumber();
-  if (start > headRev)
-    start = headRev;
+  if (start > headRev) start = headRev;
   const data = await getChangesetInfo(pad, start, end, granularity);
   data.requestID = requestID;
-  socket.json.send({type: 'CHANGESET_REQ', data});
+  socket.emit('message', {type: 'CHANGESET_REQ', data});
 };
 
 /**
@@ -1235,14 +1235,9 @@ const composePadChangesets = async (pad, startNum, endNum) => {
 };
 
 const _getRoomSockets = (padID) => {
-  const ns = socketio.sockets; // Default namespace.
-  const adapter = ns.adapter;
-  // We could call adapter.clients(), but that method is unnecessarily asynchronous. Replicate what
-  // it does here, but synchronously to avoid a race condition. This code will have to change when
-  // we update to socket.io v3.
-  const room = adapter.rooms[padID];
-  if (!room) return [];
-  return Object.keys(room.sockets).map((id) => ns.connected[id]).filter((s) => s);
+  if (!socketio.in(padID).engine.clientsCount === 0) return [];
+  const data = Object.keys(socketio.in(padID).engine.clients).map((socketId) => socketio.in(padID).engine.clients[socketId]);
+  return data;
 };
 
 /**

@@ -24,7 +24,7 @@ describe(__filename, function () {
   };
   let socket;
 
-  before(async function () { agent = await common.init(); });
+  before(async function () {agent = await common.init(); });
   beforeEach(async function () {
     backups.hooks = {};
     for (const hookName of ['preAuthorize', 'authenticate', 'authorize']) {
