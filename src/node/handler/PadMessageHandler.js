@@ -397,7 +397,7 @@ exports.handleCustomObjectMessage = (msg, sessionID) => {
       socketio.to(sessionID).emit('message', msg);
     } else {
       // broadcast to all clients on this pad
-      socketio.broadcast.to(msg.data.payload.padId).emit('message', msg);
+      socketio.to(msg.data.payload.padId).emit('message', msg);
     }
   }
 };
