@@ -397,7 +397,7 @@ exports.handleCustomObjectMessage = (msg, sessionID) => {
       socketio.to(sessionID).emit('message', msg);
     } else {
       // broadcast to all clients on this pad
-      socketio.to(msg.data.payload.padId).emit('message', msg);
+      socketio.broadcast.to(msg.data.payload.padId).emit('message', msg);
     }
   }
 };
@@ -540,7 +540,7 @@ const handleUserInfoUpdate = async (socket, {data: {userInfo: {name, colorId}}})
   };
 
   // Send the other clients on the pad the update message
-  socket.to(padId).emit('message', infoMsg);
+  socket.broadcast.to(padId).emit('message', infoMsg);
 
   // Block until the authorManager has stored the new attributes.
   await p;
@@ -1235,9 +1235,15 @@ const composePadChangesets = async (pad, startNum, endNum) => {
 };
 
 const _getRoomSockets = (padID) => {
-  if (!socketio.in(padID).engine.clientsCount === 0) return [];
-  const data = Object.keys(socketio.in(padID).engine.clients).map((socketId) => socketio.in(padID).engine.clients[socketId]);
-  return data;
+  const ns = socketio.sockets;
+  const adapter = ns.adapter.rooms;
+  const room = adapter.get(padID);
+  const result = []
+  if (!room) return []
+  room.forEach(sID=>{
+    if (ns.sockets.has(sID)) result.push(ns.sockets.get(sID))
+  })
+  return result
 };
 
 /**
