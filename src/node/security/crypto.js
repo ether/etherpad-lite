@@ -2,7 +2,13 @@
 
 const crypto = require('crypto');
 
-const newMethod = async (...args) => new Promise((resolve) => crypto.hkdf(...args, resolve));
+const newMethod = async (...args) => new Promise((resolve, reject) => crypto.hkdf(...args, (err, result)=>{
+    if(err){
+        return reject(err)
+    } else {
+        return resolve(result)
+    }
+}));
 
 /**
  * Promisified version of Node.js's crypto.hkdf.

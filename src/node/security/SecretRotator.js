@@ -1,7 +1,8 @@
 'use strict';
 
 const {Buffer} = require('buffer');
-const crypto = require('./crypto');
+const crypto = require('node:crypto')
+const cryptoHelper = require('./crypto')
 const db = require('../db/DB');
 const log4js = require('log4js');
 
@@ -30,8 +31,7 @@ class Hkdf extends Kdf {
   }
 
   async derive(p, info) {
-    return Buffer.from(
-        await crypto.hkdf(p.digest, p.secret, p.salt, info, p.keyLen)).toString('hex');
+    return Buffer.from(await cryptoHelper.hkdf(p.digest, p.secret, p.salt, info, p.keyLen)).toString('hex');
   }
 }
 
