@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [1.0.3, canary]
+        node: [1.0.23, canary]
     steps:
       -
         name: Checkout repository
@@ -51,7 +51,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [1.0.3, canary]
+        node: [1.0.23, canary]
     steps:
       -
         name: Checkout repository

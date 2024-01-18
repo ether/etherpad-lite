@@ -25,11 +25,11 @@ const settings = require('./Settings');
 const fs = require('fs').promises;
 const path = require('path');
 const plugins = require('../../static/js/pluginfw/plugin_defs');
-const RequireKernel = require('etherpad-require-kernel');
 const mime = require('mime-types');
 const Threads = require('threads');
 const log4js = require('log4js');
 const sanitizePathname = require('./sanitizePathname');
+const pathutil = require("path");
 
 const logger = log4js.getLogger('Minify');
 
@@ -267,7 +267,16 @@ const lastModifiedDateOfEverything = async () => {
 // This should be provided by the module, but until then, just use startup
 // time.
 const _requireLastModified = new Date();
-const requireDefinition = () => `var require = ${RequireKernel.kernelSource};\n`;
+const requireDefinition = () => {
+  const pathutil = require('path');
+  const kernelPath = pathutil.join(__dirname, 'kernel.js');
+  const fs = require('fs');
+
+  const kernel = fs.readFileSync(kernelPath, 'utf8');
+  const instruction = `var require = ${kernel};\n`;
+  console.log(instruction)
+  return instruction
+}
 
 const getFileCompressed = async (filename, contentType) => {
   let content = await getFile(filename);
