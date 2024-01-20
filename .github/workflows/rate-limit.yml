@@ -33,7 +33,7 @@ jobs:
       -
         name: build docker image
         run: |
-          docker build -f Dockerfile -t epl-debian-slim .
+          docker build -f Dockerfile -t epl-debian-slim --env NODE_ENV=develop .
           docker build -f src/tests/ratelimit/Dockerfile.nginx -t nginx-latest .
           docker build -f src/tests/ratelimit/Dockerfile.anotherip -t anotherip .
       -
