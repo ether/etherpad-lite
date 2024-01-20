@@ -99,4 +99,4 @@ jobs:
         run: |
           npm run dev &
           curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
-          ./node_modules/cypress/bin/cypress run --config-file src/tests/frontend/cypress/cypress.config.js
+          ./node_modules/cypress/bin/cypress run --config-file tests/frontend/cypress/cypress.config.js
