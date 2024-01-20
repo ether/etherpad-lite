@@ -118,4 +118,4 @@ USER etherpad
 HEALTHCHECK --interval=20s --timeout=3s CMD ["etherpad-healthcheck"]
 
 EXPOSE 9001
-CMD ["etherpad"]
+CMD ["npm", "run", "prod", "--prefix", "./src"]

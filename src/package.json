@@ -31,7 +31,7 @@
   ],
   "dependencies": {
     "async": "^3.2.5",
-    "axios": "^1.6.7",
+    "axios": "^1.6.5",
     "clean-css": "^5.3.3",
     "cookie-parser": "^1.4.6",
     "cross-spawn": "^7.0.3",
@@ -46,7 +46,7 @@
     "formidable": "^3.5.1",
     "http-errors": "^2.0.0",
     "js-cookie": "^3.0.5",
-    "jsdom": "^24.0.0",
+    "jsdom": "^23.2.0",
     "jsonminify": "0.4.2",
     "languages4translatewiki": "0.1.3",
     "live-plugin-manager": "^0.18.1",
@@ -55,9 +55,9 @@
     "measured-core": "^2.0.0",
     "mime-types": "^2.1.35",
     "npm": "^6.14.18",
-    "openapi-backend": "^5.10.6",
+    "openapi-backend": "^5.10.5",
     "proxy-addr": "^2.0.7",
-    "rate-limiter-flexible": "^4.0.1",
+    "rate-limiter-flexible": "^4.0.0",
     "rehype": "^13.0.1",
     "rehype-minify-whitespace": "^6.0.0",
     "resolve": "1.22.8",
@@ -68,18 +68,18 @@
     "terser": "^5.27.0",
     "threads": "^1.7.0",
     "tinycon": "0.6.8",
-    "ueberdb2": "^4.2.50",
+    "ueberdb2": "^4.2.48",
     "underscore": "1.13.6",
     "unorm": "1.6.0",
-    "wtfnode": "^0.9.1"
+    "wtfnode": "^0.9.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
   },
   "bin": {
-    "etherpad": "node/server.ts",
     "etherpad-healthcheck": "bin/etherpad-healthcheck",
     "etherpad-lite": "node/server.ts"
   },
   "devDependencies": {
-    "ts-node": "^10.9.2",
     "@types/node": "^20.11.5",
     "eslint": "^8.56.0",
     "eslint-config-etherpad": "^3.0.22",
@@ -88,13 +88,11 @@
     "mocha-froth": "^0.2.10",
     "nodeify": "^1.0.1",
     "openapi-schema-validation": "^0.4.2",
-    "selenium-webdriver": "^4.17.0",
+    "selenium-webdriver": "^4.16.0",
     "set-cookie-parser": "^2.6.0",
     "sinon": "^17.0.1",
     "split-grid": "^1.0.11",
-    "supertest": "^6.3.4",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "supertest": "^6.3.4"
   },
   "engines": {
     "node": ">=18.18.2",
@@ -107,9 +105,10 @@
   "scripts": {
     "lint": "eslint .",
     "test": "mocha --require ts-node/register --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
-    "test-container": "mocha --timeout 5000 tests/container/specs/api",
-    "dev": "ts-node node/server.ts"
+    "test-container": "mocha --require ts-node/register --timeout 5000 tests/container/specs/api",
+    "dev": "ts-node node/server.ts",
+    "prod": "ts-node --compiler-options '{\"module\": \"CommonJS\"}' --transpile-only  node/server.ts"
   },
-  "version": "1.9.7",
+  "version": "1.9.6",
   "license": "Apache-2.0"
 }
