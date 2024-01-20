@@ -119,10 +119,10 @@ jobs:
       -
         name: Run Etherpad
         run: |
-          cd etherpad && cd src
-          npm run prod &
+          cd etherpad
+          npm run prod --prefix ./src
           curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
-          \node_modules\cypress\bin\cypress run --config-file src\tests\frontendcypress\cypress.config.js
+          src\node_modules\cypress\bin\cypress run --config-file src\tests\frontendcypress\cypress.config.js
       # On release, upload windows zip to GitHub release tab
       -
         name: Rename to etherpad-lite-win.zip
