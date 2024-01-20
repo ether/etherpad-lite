@@ -108,7 +108,7 @@ Update to the latest version with `git pull origin`, then run
 If cloning to a subdirectory within another project, you may need to do the
 following:
 
-  1. Start the server manually (e.g. `node src/node/server.js`)
+  1. Start the server manually (e.g. `node src/node/server.ts`)
   2. Edit the db `filename` in `settings.json` to the relative directory with
      the file (e.g. `application/lib/etherpad-lite/var/dirty.db`)
   3. Add auto-generated files to the main project `.gitignore`

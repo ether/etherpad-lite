@@ -74,11 +74,12 @@
     "wtfnode": "^0.9.1"
   },
   "bin": {
-    "etherpad": "node/server.js",
+    "etherpad": "node/server.ts",
     "etherpad-healthcheck": "bin/etherpad-healthcheck",
-    "etherpad-lite": "node/server.js"
+    "etherpad-lite": "node/server.ts"
   },
   "devDependencies": {
+    "@types/node": "^20.11.5",
     "eslint": "^8.56.0",
     "eslint-config-etherpad": "^3.0.22",
     "etherpad-cli-client": "^2.0.2",
@@ -91,6 +92,7 @@
     "sinon": "^17.0.1",
     "split-grid": "^1.0.11",
     "supertest": "^6.3.4",
+    "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },
   "engines": {
@@ -104,7 +106,8 @@
   "scripts": {
     "lint": "eslint .",
     "test": "mocha --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
-    "test-container": "mocha --timeout 5000 tests/container/specs/api"
+    "test-container": "mocha --timeout 5000 tests/container/specs/api",
+    "dev": "ts-node node/server.ts"
   },
   "version": "1.9.7",
   "license": "Apache-2.0"

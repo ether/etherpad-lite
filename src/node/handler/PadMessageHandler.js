@@ -133,7 +133,7 @@ class Channels {
 const padChannels = new Channels((ch, {socket, message}) => handleUserChanges(socket, message));
 
 /**
- * This Method is called by server.js to tell the message handler on which socket it should send
+ * This Method is called by server.ts to tell the message handler on which socket it should send
  * @param socket_io The Socket
  */
 exports.setSocketIO = (socket_io) => {

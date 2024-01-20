@@ -24,11 +24,15 @@
  * limitations under the License.
  */
 
+import {PluginType} from "./models/Plugin";
+import {ErrorCaused} from "./models/ErrorCaused";
+import {PromiseHooks} from "node:v8";
+
 const log4js = require('log4js');
 
 const settings = require('./utils/Settings');
 
-let wtfnode;
+let wtfnode: any;
 if (settings.dumpOnUncleanExit) {
   // wtfnode should be loaded after log4js.replaceConsole() so that it uses log4js for logging, and
   // it should be above everything else so that it can hook in before resources are used.
@@ -68,14 +72,15 @@ const State = {
 
 let state = State.INITIAL;
 
-const removeSignalListener = (signal, listener) => {
+const removeSignalListener = (signal: NodeJS.Signals, listener: NodeJS.SignalsListener) => {
   logger.debug(`Removing ${signal} listener because it might interfere with shutdown tasks. ` +
                `Function code:\n${listener.toString()}\n` +
-               `Current stack:\n${(new Error()).stack.split('\n').slice(1).join('\n')}`);
+               `Current stack:\n${new Error()!.stack!.split('\n').slice(1).join('\n')}`);
   process.off(signal, listener);
 };
 
-let startDoneGate;
+
+let startDoneGate: { resolve: () => void; }
 exports.start = async () => {
   switch (state) {
     case State.INITIAL:
@@ -105,12 +110,12 @@ exports.start = async () => {
     stats.gauge('memoryUsage', () => process.memoryUsage().rss);
     stats.gauge('memoryUsageHeap', () => process.memoryUsage().heapUsed);
 
-    process.on('uncaughtException', (err) => {
+    process.on('uncaughtException', (err: ErrorCaused) => {
       logger.debug(`uncaught exception: ${err.stack || err}`);
 
       // eslint-disable-next-line promise/no-promise-in-callback
       exports.exit(err)
-          .catch((err) => {
+          .catch((err: ErrorCaused) => {
             logger.error('Error in process exit', err);
             // eslint-disable-next-line n/no-process-exit
             process.exit(1);
@@ -118,12 +123,12 @@ exports.start = async () => {
     });
     // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
     // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
-    process.on('unhandledRejection', (err) => {
+    process.on('unhandledRejection', (err: ErrorCaused) => {
       logger.debug(`unhandled rejection: ${err.stack || err}`);
       throw err;
     });
 
-    for (const signal of ['SIGINT', 'SIGTERM']) {
+    for (const signal of ['SIGINT', 'SIGTERM'] as NodeJS.Signals[]) {
       // Forcibly remove other signal listeners to prevent them from terminating node before we are
       // done cleaning up. See https://github.com/andywer/threads.js/pull/329 for an example of a
       // problematic listener. This means that exports.exit is solely responsible for performing all
@@ -142,7 +147,7 @@ exports.start = async () => {
     await db.init();
     await installer.checkForMigration();
     await plugins.update();
-    const installedPlugins = Object.values(pluginDefs.plugins)
+    const installedPlugins = (Object.values(pluginDefs.plugins) as PluginType[])
         .filter((plugin) => plugin.package.name !== 'ep_etherpad-lite')
         .map((plugin) => `${plugin.package.name}@${plugin.package.version}`)
         .join(', ');
@@ -190,7 +195,7 @@ exports.stop = async () => {
   logger.info('Stopping Etherpad...');
   state = State.STOPPING;
   try {
-    let timeout = null;
+    let timeout: NodeJS.Timeout = null as unknown as NodeJS.Timeout;
     await Promise.race([
       hooks.aCallAll('shutdown'),
       new Promise((resolve, reject) => {
@@ -209,15 +214,15 @@ exports.stop = async () => {
   stopDoneGate.resolve();
 };
 
-let exitGate;
+let exitGate: any;
 let exitCalled = false;
-exports.exit = async (err = null) => {
+exports.exit = async (err: ErrorCaused|string|null = null) => {
   /* eslint-disable no-process-exit */
   if (err === 'SIGTERM') {
     // Termination from SIGTERM is not treated as an abnormal termination.
     logger.info('Received SIGTERM signal');
     err = null;
-  } else if (err != null) {
+  } else if (typeof err == "object" && err != null) {
     logger.error(`Metrics at time of fatal error:\n${JSON.stringify(stats.toJSON(), null, 2)}`);
     logger.error(err.stack || err.toString());
     process.exitCode = 1;
@@ -277,4 +282,6 @@ exports.exit = async (err = null) => {
 };
 
 if (require.main === module) exports.start();
+
+// @ts-ignore
 if (typeof(PhusionPassenger) !== 'undefined') exports.start();

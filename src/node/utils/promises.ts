@@ -7,14 +7,16 @@
 // `predicate`. Resolves to `undefined` if none of the Promises satisfy `predicate`, or if
 // `promises` is empty. If `predicate` is nullish, the truthiness of the resolved value is used as
 // the predicate.
-exports.firstSatisfies = (promises, predicate) => {
-  if (predicate == null) predicate = (x) => x;
+exports.firstSatisfies = <T>(promises: Promise<T>[], predicate: null|Function) => {
+  if (predicate == null) {
+    predicate = (x: any) => x;
+  }
 
   // Transform each original Promise into a Promise that never resolves if the original resolved
   // value does not satisfy `predicate`. These transformed Promises will be passed to Promise.race,
   // yielding the first resolved value that satisfies `predicate`.
-  const newPromises = promises.map(
-      (p) => new Promise((resolve, reject) => p.then((v) => predicate(v) && resolve(v), reject)));
+  const newPromises = promises.map((p) =>
+      new Promise((resolve, reject) => p.then((v) => predicate!(v) && resolve(v), reject)));
 
   // If `promises` is an empty array or if none of them resolve to a value that satisfies
   // `predicate`, then `Promise.race(newPromises)` will never resolve. To handle that, add another
@@ -42,7 +44,7 @@ exports.firstSatisfies = (promises, predicate) => {
 // `total` is greater than `concurrency`, then `concurrency` Promises will be created right away,
 // and each remaining Promise will be created once one of the earlier Promises resolves.) This async
 // function resolves once all `total` Promises have resolved.
-exports.timesLimit = async (total, concurrency, promiseCreator) => {
+exports.timesLimit = async (total: number, concurrency: number, promiseCreator: Function) => {
   if (total > 0 && concurrency <= 0) throw new RangeError('concurrency must be positive');
   let next = 0;
   const addAnother = () => promiseCreator(next++).finally(() => {
@@ -59,7 +61,7 @@ exports.timesLimit = async (total, concurrency, promiseCreator) => {
  * An ordinary Promise except the `resolve` and `reject` executor functions are exposed as
  * properties.
  */
-class Gate extends Promise {
+class Gate<T> extends Promise<T> {
   // Coax `.then()` into returning an ordinary Promise, not a Gate. See
   // https://stackoverflow.com/a/65669070 for the rationale.
   static get [Symbol.species]() { return Promise; }
@@ -68,7 +70,7 @@ class Gate extends Promise {
     // `this` is assigned when `super()` returns, not when it is called, so it is not acceptable to
     // do the following because it will throw a ReferenceError when it dereferences `this`:
     //     super((resolve, reject) => Object.assign(this, {resolve, reject}));
-    let props;
+    let props: any;
     super((resolve, reject) => props = {resolve, reject});
     Object.assign(this, props);
   }
