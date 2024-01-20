@@ -46,7 +46,7 @@ exports.expressPreSession = async (hookName, {app}) => {
       /*
         If this is a url we simply redirect to that one.
        */
-      if (settings.favicon.startsWith('http')) {
+      if (settings.favicon && settings.favicon.startsWith('http')) {
         res.redirect(settings.favicon);
         res.send();
         return;
