@@ -79,6 +79,7 @@
     "etherpad-lite": "node/server.ts"
   },
   "devDependencies": {
+    "ts-node": "^10.9.2",
     "@types/node": "^20.11.5",
     "eslint": "^8.56.0",
     "eslint-config-etherpad": "^3.0.22",
