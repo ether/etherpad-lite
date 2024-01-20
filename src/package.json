@@ -106,7 +106,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "mocha --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
+    "test": "mocha --require ts-node/register --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
     "test-container": "mocha --timeout 5000 tests/container/specs/api",
     "dev": "ts-node node/server.ts"
   },
