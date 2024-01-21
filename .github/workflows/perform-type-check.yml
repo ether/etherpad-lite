@@ -1,0 +1,31 @@
+name: "Perform type cehcks"
+
+# any branch is useful for testing before a PR is submitted
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+
+jobs:
+  performTypeCheck:
+    if: |
+      (github.event_name != 'pull_request')
+      || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
+    name: perform type check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: |
+            src/package-lock.json
+            src/bin/doc/package-lock.json
+      -
+        name: Install all dependencies and symlink for ep_etherpad-lite
+        run: src/bin/installDeps.sh
+      - name: Perform type check
+        run: npx tsc --noEmit
