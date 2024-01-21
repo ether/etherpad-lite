@@ -28,4 +28,5 @@ jobs:
         name: Install all dependencies and symlink for ep_etherpad-lite
         run: src/bin/installDeps.sh
       - name: Perform type check
+        working-directory: ./src
         run: npx tsc --noEmit
