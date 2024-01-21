@@ -18,7 +18,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 const log4js = require('log4js');
 const path = require('path');
 const _ = require('underscore');
@@ -29,7 +28,7 @@ const absPathLogger = log4js.getLogger('AbsolutePaths');
  * findEtherpadRoot() computes its value only on first invocation.
  * Subsequent invocations are served from this variable.
  */
-let etherpadRoot = null;
+let etherpadRoot: string|null = null;
 
 /**
  * If stringArray's last elements are exactly equal to lastDesiredElements,
@@ -41,7 +40,7 @@ let etherpadRoot = null;
  * @return {string[]|boolean} The shortened array, or false if there was no
  *                            overlap.
  */
-const popIfEndsWith = (stringArray, lastDesiredElements) => {
+const popIfEndsWith = (stringArray: string[], lastDesiredElements: string[]): string[] | false => {
   if (stringArray.length <= lastDesiredElements.length) {
     absPathLogger.debug(`In order to pop "${lastDesiredElements.join(path.sep)}" ` +
                         `from "${stringArray.join(path.sep)}", it should contain at least ` +
@@ -131,7 +130,7 @@ exports.findEtherpadRoot = () => {
  *                  it is returned unchanged. Otherwise it is interpreted
  *                  relative to exports.root.
  */
-exports.makeAbsolute = (somePath) => {
+exports.makeAbsolute = (somePath: string) => {
   if (path.isAbsolute(somePath)) {
     return somePath;
   }
@@ -150,10 +149,8 @@ exports.makeAbsolute = (somePath) => {
  *                                 a subdirectory of the base one
  * @return {boolean}
  */
-exports.isSubdir = (parent, arbitraryDir) => {
+exports.isSubdir = (parent: string, arbitraryDir: string): boolean => {
   // modified from: https://stackoverflow.com/questions/37521893/determine-if-a-path-is-subdirectory-of-another-in-node-js#45242825
   const relative = path.relative(parent, arbitraryDir);
-  const isSubdir = !!relative && !relative.startsWith('..') && !path.isAbsolute(relative);
-
-  return isSubdir;
+  return !!relative && !relative.startsWith('..') && !path.isAbsolute(relative);
 };

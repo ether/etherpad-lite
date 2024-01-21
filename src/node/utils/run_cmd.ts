@@ -1,5 +1,10 @@
 'use strict';
 
+import {ErrorExtended, RunCMDOptions, RunCMDPromise} from "../models/RunCMDOptions";
+import {ChildProcess} from "node:child_process";
+import {PromiseWithStd} from "../models/PromiseWithStd";
+import {Readable} from "node:stream";
+
 const spawn = require('cross-spawn');
 const log4js = require('log4js');
 const path = require('path');
@@ -7,12 +12,12 @@ const settings = require('./Settings');
 
 const logger = log4js.getLogger('runCmd');
 
-const logLines = (readable, logLineFn) => {
-  readable.setEncoding('utf8');
+const logLines = (readable: undefined | Readable | null, logLineFn: (arg0: (string | undefined)) => void) => {
+  readable!.setEncoding('utf8');
   // The process won't necessarily write full lines every time -- it might write a part of a line
   // then write the rest of the line later.
-  let leftovers = '';
-  readable.on('data', (chunk) => {
+  let leftovers: string| undefined = '';
+  readable!.on('data', (chunk) => {
     const lines = chunk.split('\n');
     if (lines.length === 0) return;
     lines[0] = leftovers + lines[0];
@@ -21,7 +26,7 @@ const logLines = (readable, logLineFn) => {
       logLineFn(line);
     }
   });
-  readable.on('end', () => {
+  readable!.on('end', () => {
     if (leftovers !== '') logLineFn(leftovers);
     leftovers = '';
   });
@@ -69,7 +74,7 @@ const logLines = (readable, logLineFn) => {
  *   - `stderr`: Similar to `stdout` but for stderr.
  *   - `child`: The ChildProcess object.
  */
-module.exports = exports = (args, opts = {}) => {
+module.exports = exports = (args: string[], opts:RunCMDOptions = {}) => {
   logger.debug(`Executing command: ${args.join(' ')}`);
 
   opts = {cwd: settings.root, ...opts};
@@ -82,8 +87,8 @@ module.exports = exports = (args, opts = {}) => {
       : opts.stdio === 'string' ? [null, 'string', 'string']
       : Array(3).fill(opts.stdio);
   const cmdLogger = log4js.getLogger(`runCmd|${args[0]}`);
-  if (stdio[1] == null) stdio[1] = (line) => cmdLogger.info(line);
-  if (stdio[2] == null) stdio[2] = (line) => cmdLogger.error(line);
+  if (stdio[1] == null) stdio[1] = (line: string) => cmdLogger.info(line);
+  if (stdio[2] == null) stdio[2] = (line: string) => cmdLogger.error(line);
   const stdioLoggers = [];
   const stdioSaveString = [];
   for (const fd of [1, 2]) {
@@ -116,13 +121,13 @@ module.exports = exports = (args, opts = {}) => {
 
   // Create an error object to use in case the process fails. This is done here rather than in the
   // process's `exit` handler so that we get a useful stack trace.
-  const procFailedErr = new Error();
+  const procFailedErr: Error & ErrorExtended = new Error();
 
-  const proc = spawn(args[0], args.slice(1), opts);
-  const streams = [undefined, proc.stdout, proc.stderr];
+  const proc: ChildProcess = spawn(args[0], args.slice(1), opts);
+  const streams:[undefined, Readable|null, Readable|null] = [undefined, proc.stdout, proc.stderr];
 
-  let px;
-  const p = new Promise((resolve, reject) => { px = {resolve, reject}; });
+  let px: { reject: any; resolve: any; };
+  const p:PromiseWithStd = new Promise<string>((resolve, reject) => { px = {resolve, reject}; });
   [, p.stdout, p.stderr] = streams;
   p.child = proc;
 
@@ -132,9 +137,10 @@ module.exports = exports = (args, opts = {}) => {
     if (stdioLoggers[fd] != null) {
       logLines(streams[fd], stdioLoggers[fd]);
     } else if (stdioSaveString[fd]) {
+      // @ts-ignore
       p[[null, 'stdout', 'stderr'][fd]] = stdioStringPromises[fd] = (async () => {
         const chunks = [];
-        for await (const chunk of streams[fd]) chunks.push(chunk);
+        for await (const chunk of streams[fd]!) chunks.push(chunk);
         return Buffer.concat(chunks).toString().replace(/\n+$/g, '');
       })();
     }

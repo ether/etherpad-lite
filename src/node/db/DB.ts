@@ -47,13 +47,13 @@ exports.init = async () => {
   }
   for (const fn of ['get', 'set', 'findKeys', 'getSub', 'setSub', 'remove']) {
     const f = exports.db[fn];
-    exports[fn] = async (...args) => await f.call(exports.db, ...args);
+    exports[fn] = async (...args:string[]) => await f.call(exports.db, ...args);
     Object.setPrototypeOf(exports[fn], Object.getPrototypeOf(f));
     Object.defineProperties(exports[fn], Object.getOwnPropertyDescriptors(f));
   }
 };
 
-exports.shutdown = async (hookName, context) => {
+exports.shutdown = async (hookName: string, context:any) => {
   if (exports.db != null) await exports.db.close();
   exports.db = null;
   logger.log('Database closed');

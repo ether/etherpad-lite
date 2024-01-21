@@ -34,9 +34,10 @@ class SessionStore extends Store {
     for (const {timeout} of this._expirations.values()) clearTimeout(timeout);
   }
 
-  async _updateExpirations(sid, sess, updateDbExp = true) {
+  async _updateExpirations(sid: string, sess: any, updateDbExp = true) {
     const exp = this._expirations.get(sid) || {};
     clearTimeout(exp.timeout);
+    // @ts-ignore
     const {cookie: {expires} = {}} = sess || {};
     if (expires) {
       const sessExp = new Date(expires).getTime();
@@ -63,23 +64,23 @@ class SessionStore extends Store {
     return sess;
   }
 
-  async _write(sid, sess) {
+  async _write(sid: string, sess: any) {
     await DB.set(`sessionstorage:${sid}`, sess);
   }
 
-  async _get(sid) {
+  async _get(sid: string) {
     logger.debug(`GET ${sid}`);
     const s = await DB.get(`sessionstorage:${sid}`);
     return await this._updateExpirations(sid, s);
   }
 
-  async _set(sid, sess) {
+  async _set(sid: string, sess:any) {
     logger.debug(`SET ${sid}`);
     sess = await this._updateExpirations(sid, sess);
     if (sess != null) await this._write(sid, sess);
   }
 
-  async _destroy(sid) {
+  async _destroy(sid:string) {
     logger.debug(`DESTROY ${sid}`);
     clearTimeout((this._expirations.get(sid) || {}).timeout);
     this._expirations.delete(sid);
@@ -89,7 +90,7 @@ class SessionStore extends Store {
   // Note: express-session might call touch() before it calls set() for the first time. Ideally this
   // would behave like set() in that case but it's OK if it doesn't -- express-session will call
   // set() soon enough.
-  async _touch(sid, sess) {
+  async _touch(sid: string, sess:any) {
     logger.debug(`TOUCH ${sid}`);
     sess = await this._updateExpirations(sid, sess, false);
     if (sess == null) return; // Already expired.
