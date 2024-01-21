@@ -72,8 +72,7 @@
     "underscore": "1.13.6",
     "unorm": "1.6.0",
     "wtfnode": "^0.9.1",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "tsx": "^4.7.0"
   },
   "bin": {
     "etherpad-healthcheck": "bin/etherpad-healthcheck",
@@ -104,10 +103,10 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "mocha --require ts-node/register --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
-    "test-container": "mocha --require ts-node/register --timeout 5000 tests/container/specs/api",
-    "dev": "ts-node node/server.ts",
-    "prod": "ts-node --compiler-options '{\"module\": \"CommonJS\"}' --transpile-only  node/server.ts"
+    "test": "mocha --import=tsx --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
+    "test-container": "mocha --import=tsx --timeout 5000 tests/container/specs/api",
+    "dev": "node --import tsx node/server.ts",
+    "prod": "node --import tsx node/server.ts"
   },
   "version": "1.9.6",
   "license": "Apache-2.0"
