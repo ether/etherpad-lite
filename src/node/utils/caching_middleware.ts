@@ -36,32 +36,38 @@ const util = require('util');
  *
  */
 
-// MIMIC https://github.com/microsoft/TypeScript/commit/9677b0641cc5ba7d8b701b4f892ed7e54ceaee9a - START
-let _crypto;
 
-try {
-  _crypto = require('crypto');
-} catch {
-  _crypto = undefined;
-}
+const  _crypto = require('crypto');
+
 
 let CACHE_DIR = path.join(settings.root, 'var/');
 CACHE_DIR = existsSync(CACHE_DIR) ? CACHE_DIR : undefined;
 
-const responseCache = {};
+type Headers = {
+  [id: string]: string
+}
 
-const djb2Hash = (data) => {
+type ResponseCache = {
+  [id: string]: {
+    statusCode: number
+    headers: Headers
+  }
+}
+
+const responseCache: ResponseCache = {};
+
+const djb2Hash = (data: string) => {
   const chars = data.split('').map((str) => str.charCodeAt(0));
   return `${chars.reduce((prev, curr) => ((prev << 5) + prev) + curr, 5381)}`;
 };
 
 const generateCacheKeyWithSha256 =
-    (path) => _crypto.createHash('sha256').update(path).digest('hex');
+    (path: string) => _crypto.createHash('sha256').update(path).digest('hex');
 
 const generateCacheKeyWithDjb2 =
-    (path) => Buffer.from(djb2Hash(path)).toString('hex');
+    (path: string) => Buffer.from(djb2Hash(path)).toString('hex');
 
-let generateCacheKey;
+let generateCacheKey: (path: string)=>string;
 
 if (_crypto) {
   generateCacheKey = generateCacheKeyWithSha256;
@@ -79,17 +85,17 @@ if (_crypto) {
 */
 
 module.exports = class CachingMiddleware {
-  handle(req, res, next) {
+  handle(req: any, res: any, next: any) {
     this._handle(req, res, next).catch((err) => next(err || new Error(err)));
   }
 
-  async _handle(req, res, next) {
+  async _handle(req: any, res: any, next: any) {
     if (!(req.method === 'GET' || req.method === 'HEAD') || !CACHE_DIR) {
       return next(undefined, req, res);
     }
 
-    const oldReq = {};
-    const oldRes = {};
+    const oldReq:ResponseCache = {};
+    const oldRes:ResponseCache = {};
 
     const supportsGzip =
         (req.get('Accept-Encoding') || '').indexOf('gzip') !== -1;
@@ -119,7 +125,7 @@ module.exports = class CachingMiddleware {
       res.write = oldRes.write || res.write;
       res.end = oldRes.end || res.end;
 
-      const headers = {};
+      const headers: Headers = {};
       Object.assign(headers, (responseCache[cacheKey].headers || {}));
       const statusCode = responseCache[cacheKey].statusCode;
 
@@ -150,18 +156,19 @@ module.exports = class CachingMiddleware {
       return respond();
     }
 
-    const _headers = {};
+    const _headers:Headers = {};
     oldRes.setHeader = res.setHeader;
-    res.setHeader = (key, value) => {
+    res.setHeader = (key: string, value: string) => {
       // Don't set cookies, see issue #707
       if (key.toLowerCase() === 'set-cookie') return;
 
       _headers[key.toLowerCase()] = value;
+      // @ts-ignore
       oldRes.setHeader.call(res, key, value);
     };
 
     oldRes.writeHead = res.writeHead;
-    res.writeHead = (status, headers) => {
+    res.writeHead = (status: number, headers: Headers) => {
       res.writeHead = oldRes.writeHead;
       if (status === 200) {
         // Update cache
@@ -174,14 +181,14 @@ module.exports = class CachingMiddleware {
 
         oldRes.write = res.write;
         oldRes.end = res.end;
-        res.write = (data, encoding) => {
+        res.write = (data: number, encoding: number) => {
           buffer += data.toString(encoding);
         };
-        res.end = async (data, encoding) => {
+        res.end = async (data: number, encoding: number) => {
           await Promise.all([
             fsp.writeFile(`${CACHE_DIR}minified_${cacheKey}`, buffer).catch(() => {}),
             util.promisify(zlib.gzip)(buffer)
-                .then((content) => fsp.writeFile(`${CACHE_DIR}minified_${cacheKey}.gz`, content))
+                .then((content: string) => fsp.writeFile(`${CACHE_DIR}minified_${cacheKey}.gz`, content))
                 .catch(() => {}),
           ]);
           responseCache[cacheKey] = {statusCode: status, headers};
@@ -191,8 +198,8 @@ module.exports = class CachingMiddleware {
         // Nothing new changed from the cached version.
         oldRes.write = res.write;
         oldRes.end = res.end;
-        res.write = (data, encoding) => {};
-        res.end = (data, encoding) => { respond(); };
+        res.write = (data: number, encoding: number) => {};
+        res.end = (data: number, encoding: number) => { respond(); };
       } else {
         res.writeHead(status, headers);
       }
