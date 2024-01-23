@@ -5,17 +5,19 @@
  * objects lack.
  */
 class Stream {
+  private _iter
+  private _next: any
   /**
    * @returns {Stream} A Stream that yields values in the half-open range [start, end).
    */
-  static range(start, end) {
+  static range(start: number, end: number) {
     return new Stream((function* () { for (let i = start; i < end; ++i) yield i; })());
   }
 
   /**
    * @param {Iterable<any>} values - Any iterable of values.
    */
-  constructor(values) {
+  constructor(values: Iterable<any>) {
     this._iter = values[Symbol.iterator]();
     this._next = null;
   }
@@ -52,10 +54,11 @@ class Stream {
    * @param {number} size - The number of values to read at a time.
    * @returns {Stream} A new Stream that gets its values from this Stream.
    */
-  batch(size) {
+  batch(size: number) {
     return new Stream((function* () {
       const b = [];
       try {
+        // @ts-ignore
         for (const v of this) {
           Promise.resolve(v).catch(() => {}); // Suppress unhandled rejection errors.
           b.push(v);
@@ -100,10 +103,11 @@ class Stream {
    * @param {number} capacity - The number of values to keep buffered.
    * @returns {Stream} A new Stream that gets its values from this Stream.
    */
-  buffer(capacity) {
+  buffer(capacity: number) {
     return new Stream((function* () {
       const b = [];
       try {
+        // @ts-ignore
         for (const v of this) {
           Promise.resolve(v).catch(() => {}); // Suppress unhandled rejection errors.
           // Note: V8 has good Array push+shift optimization.
@@ -123,7 +127,8 @@ class Stream {
    * @param {(v: any) => any} fn - Value transformation function.
    * @returns {Stream} A new Stream that yields this Stream's values, transformed by `fn`.
    */
-  map(fn) { return new Stream((function* () { for (const v of this) yield fn(v); }).call(this)); }
+  map(fn:Function) { return new Stream((function* () { // @ts-ignore
+    for (const v of this) yield fn(v); }).call(this)); }
 
   /**
    * Implements the JavaScript iterable protocol.

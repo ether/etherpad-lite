@@ -6,9 +6,14 @@ const headers = {
   'User-Agent': 'Etherpad/' + settings.getEpVersion(),
 }
 
+type Infos = {
+  latestVersion: string
+}
+
+
 const updateInterval = 60 * 60 * 1000; // 1 hour
-let infos;
-let lastLoadingTime = null;
+let infos: Infos;
+let lastLoadingTime: number | null = null;
 
 const loadEtherpadInformations = () => {
   if (lastLoadingTime !== null && Date.now() - lastLoadingTime < updateInterval) {
@@ -16,7 +21,7 @@ const loadEtherpadInformations = () => {
   }
 
   return axios.get('https://static.etherpad.org/info.json', {headers: headers})
-  .then(async resp => {
+  .then(async (resp: any) => {
     infos = await resp.data;
     if (infos === undefined || infos === null) {
       await Promise.reject("Could not retrieve current version")
@@ -26,7 +31,7 @@ const loadEtherpadInformations = () => {
     lastLoadingTime = Date.now();
     return await Promise.resolve(infos);
   })
-  .catch(async err => {
+  .catch(async (err: Error) => {
     return await Promise.reject(err);
   });
 }
@@ -37,20 +42,20 @@ exports.getLatestVersion = () => {
   return infos?.latestVersion;
 };
 
-exports.needsUpdate = async (cb) => {
+exports.needsUpdate = async (cb: Function) => {
   await loadEtherpadInformations()
-      .then((info) => {
+      .then((info:Infos) => {
     if (semver.gt(info.latestVersion, settings.getEpVersion())) {
       if (cb) return cb(true);
     }
-  }).catch((err) => {
+  }).catch((err: Error) => {
     console.error(`Can not perform Etherpad update check: ${err}`);
     if (cb) return cb(false);
   });
 };
 
 exports.check = () => {
-  exports.needsUpdate((needsUpdate) => {
+  exports.needsUpdate((needsUpdate: boolean) => {
     if (needsUpdate) {
       console.warn(`Update available: Download the actual version ${infos.latestVersion}`);
     }

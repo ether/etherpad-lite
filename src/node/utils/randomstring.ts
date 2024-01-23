@@ -5,6 +5,6 @@
  */
 const cryptoMod = require('crypto');
 
-const randomString = (len: string) => cryptoMod.randomBytes(len).toString('hex');
+const randomString = (len: number) => cryptoMod.randomBytes(len).toString('hex');
 
 module.exports = randomString;
