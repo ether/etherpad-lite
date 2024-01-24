@@ -1,5 +1,8 @@
 'use strict';
 
+import {MapArrayType, MapType} from "../types/MapType";
+import {I18nPluginDefs} from "../types/I18nPluginDefs";
+
 const languages = require('languages4translatewiki');
 const fs = require('fs');
 const path = require('path');
@@ -11,17 +14,17 @@ const settings = require('../utils/Settings');
 // returns all existing messages merged together and grouped by langcode
 // {es: {"foo": "string"}, en:...}
 const getAllLocales = () => {
-  const locales2paths = {};
+  const locales2paths:MapArrayType<string[]> = {};
 
   // Puts the paths of all locale files contained in a given directory
   // into `locales2paths` (files from various dirs are grouped by lang code)
   // (only json files with valid language code as name)
-  const extractLangs = (dir) => {
+  const extractLangs = (dir: string) => {
     if (!existsSync(dir)) return;
     let stat = fs.lstatSync(dir);
     if (!stat.isDirectory() || stat.isSymbolicLink()) return;
 
-    fs.readdirSync(dir).forEach((file) => {
+    fs.readdirSync(dir).forEach((file:string) => {
       file = path.resolve(dir, file);
       stat = fs.lstatSync(file);
       if (stat.isDirectory() || stat.isSymbolicLink()) return;
@@ -40,15 +43,15 @@ const getAllLocales = () => {
   extractLangs(path.join(settings.root, 'src/locales'));
 
   // add plugins languages (if any)
-  for (const {package: {path: pluginPath}} of Object.values(pluginDefs.plugins)) {
+  for (const {package: {path: pluginPath}} of Object.values<I18nPluginDefs>(pluginDefs.plugins)) {
     // plugin locales should overwrite etherpad's core locales
-    if (pluginPath.endsWith('/ep_etherpad-lite') === true) continue;
+    if (pluginPath.endsWith('/ep_etherpad-lite')) continue;
     extractLangs(path.join(pluginPath, 'locales'));
   }
 
   // Build a locale index (merge all locale data other than user-supplied overrides)
-  const locales = {};
-  _.each(locales2paths, (files, langcode) => {
+  const locales:MapArrayType<any> = {};
+  _.each(locales2paths, (files: string[], langcode: string) => {
     locales[langcode] = {};
 
     files.forEach((file) => {
@@ -70,9 +73,9 @@ const getAllLocales = () => {
     'for Customization for Administrators, under Localization.');
   if (settings.customLocaleStrings) {
     if (typeof settings.customLocaleStrings !== 'object') throw wrongFormatErr;
-    _.each(settings.customLocaleStrings, (overrides, langcode) => {
+    _.each(settings.customLocaleStrings, (overrides:MapArrayType<string> , langcode:string) => {
       if (typeof overrides !== 'object') throw wrongFormatErr;
-      _.each(overrides, (localeString, key) => {
+      _.each(overrides, (localeString:string|object, key:string) => {
         if (typeof localeString !== 'string') throw wrongFormatErr;
         const locale = locales[langcode];
 
@@ -102,8 +105,8 @@ const getAllLocales = () => {
 
 // returns a hash of all available languages availables with nativeName and direction
 // e.g. { es: {nativeName: "español", direction: "ltr"}, ... }
-const getAvailableLangs = (locales) => {
-  const result = {};
+const getAvailableLangs = (locales:MapArrayType<any>) => {
+  const result:MapArrayType<string> = {};
   for (const langcode of Object.keys(locales)) {
     result[langcode] = languages.getLanguageInfo(langcode);
   }
@@ -111,7 +114,7 @@ const getAvailableLangs = (locales) => {
 };
 
 // returns locale index that will be served in /locales.json
-const generateLocaleIndex = (locales) => {
+const generateLocaleIndex = (locales:MapArrayType<string>) => {
   const result = _.clone(locales); // keep English strings
   for (const langcode of Object.keys(locales)) {
     if (langcode !== 'en') result[langcode] = `locales/${langcode}.json`;
@@ -120,13 +123,13 @@ const generateLocaleIndex = (locales) => {
 };
 
 
-exports.expressPreSession = async (hookName, {app}) => {
+exports.expressPreSession = async (hookName:string, {app}:any) => {
   // regenerate locales on server restart
   const locales = getAllLocales();
   const localeIndex = generateLocaleIndex(locales);
   exports.availableLangs = getAvailableLangs(locales);
 
-  app.get('/locales/:locale', (req, res) => {
+  app.get('/locales/:locale', (req:any, res:any) => {
     // works with /locale/en and /locale/en.json requests
     const locale = req.params.locale.split('.')[0];
     if (Object.prototype.hasOwnProperty.call(exports.availableLangs, locale)) {
@@ -138,7 +141,7 @@ exports.expressPreSession = async (hookName, {app}) => {
     }
   });
 
-  app.get('/locales.json', (req, res) => {
+  app.get('/locales.json', (req: any, res:any) => {
     res.setHeader('Cache-Control', `public, max-age=${settings.maxAge}`);
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.send(localeIndex);
