@@ -113,12 +113,11 @@ jobs:
           cache-dependency-path: |
             etherpad/src/package-lock.json
             etherpad/src/bin/doc/package-lock.json
+      - name: Install npm@6
+        run: npm install npm@6 -g
       -
         name: Install Cypress
         run: cd etherpad && cd src && npm install cypress --legacy-peer-deps
-      - 
-        name: Install npm@6
-        run: npm install npm@6 -g
       -
         name: Run Etherpad
         run: |
