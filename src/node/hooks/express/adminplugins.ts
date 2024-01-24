@@ -1,5 +1,11 @@
 'use strict';
 
+import {ArgsExpressType} from "../../types/ArgsExpressType";
+import {Socket} from "node:net";
+import {ErrorCaused} from "../../types/ErrorCaused";
+import {QueryType} from "../../types/QueryType";
+import {PluginType} from "../../types/Plugin";
+
 const eejs = require('../../eejs');
 const settings = require('../../utils/Settings');
 const installer = require('../../../static/js/pluginfw/installer');
@@ -8,8 +14,8 @@ const plugins = require('../../../static/js/pluginfw/plugins');
 const semver = require('semver');
 const UpdateCheck = require('../../utils/UpdateCheck');
 
-exports.expressCreateServer = (hookName, args, cb) => {
-  args.app.get('/admin/plugins', (req, res) => {
+exports.expressCreateServer = (hookName:string, args: ArgsExpressType, cb:Function) => {
+  args.app.get('/admin/plugins', (req:any, res:any) => {
     res.send(eejs.require('ep_etherpad-lite/templates/admin/plugins.html', {
       plugins: pluginDefs.plugins,
       req,
@@ -17,7 +23,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
     }));
   });
 
-  args.app.get('/admin/plugins/info', (req, res) => {
+  args.app.get('/admin/plugins/info', (req:any, res:any) => {
     const gitCommit = settings.getGitCommit();
     const epVersion = settings.getEpVersion();
 
@@ -36,13 +42,14 @@ exports.expressCreateServer = (hookName, args, cb) => {
   return cb();
 };
 
-exports.socketio = (hookName, args, cb) => {
+exports.socketio = (hookName:string, args:ArgsExpressType, cb:Function) => {
   const io = args.io.of('/pluginfw/installer');
-  io.on('connection', (socket) => {
+  io.on('connection', (socket:any) => {
+    // @ts-ignore
     const {session: {user: {is_admin: isAdmin} = {}} = {}} = socket.conn.request;
     if (!isAdmin) return;
 
-    socket.on('getInstalled', (query) => {
+    socket.on('getInstalled', (query:string) => {
       // send currently installed plugins
       const installed =
           Object.keys(pluginDefs.plugins).map((plugin) => pluginDefs.plugins[plugin].package);
@@ -66,13 +73,14 @@ exports.socketio = (hookName, args, cb) => {
 
         socket.emit('results:updatable', {updatable});
       } catch (err) {
-        console.warn(err.stack || err.toString());
+        const errc = err as ErrorCaused
+        console.warn(errc.stack || errc.toString());
 
         socket.emit('results:updatable', {updatable: {}});
       }
     });
 
-    socket.on('getAvailable', async (query) => {
+    socket.on('getAvailable', async (query:string) => {
       try {
         const results = await installer.getAvailablePlugins(/* maxCacheAge:*/ false);
         socket.emit('results:available', results);
@@ -82,7 +90,7 @@ exports.socketio = (hookName, args, cb) => {
       }
     });
 
-    socket.on('search', async (query) => {
+    socket.on('search', async (query: QueryType) => {
       try {
         const results = await installer.search(query.searchTerm, /* maxCacheAge:*/ 60 * 10);
         let res = Object.keys(results)
@@ -98,8 +106,8 @@ exports.socketio = (hookName, args, cb) => {
       }
     });
 
-    socket.on('install', (pluginName) => {
-      installer.install(pluginName, (err) => {
+    socket.on('install', (pluginName: string) => {
+      installer.install(pluginName, (err: ErrorCaused) => {
         if (err) console.warn(err.stack || err.toString());
 
         socket.emit('finished:install', {
@@ -110,8 +118,8 @@ exports.socketio = (hookName, args, cb) => {
       });
     });
 
-    socket.on('uninstall', (pluginName) => {
-      installer.uninstall(pluginName, (err) => {
+    socket.on('uninstall', (pluginName:string) => {
+      installer.uninstall(pluginName, (err:ErrorCaused) => {
         if (err) console.warn(err.stack || err.toString());
 
         socket.emit('finished:uninstall', {plugin: pluginName, error: err ? err.message : null});
@@ -128,11 +136,13 @@ exports.socketio = (hookName, args, cb) => {
  * @param  {String} dir The directory of the plugin
  * @return {Object[]}
  */
-const sortPluginList = (plugins, property, /* ASC?*/dir) => plugins.sort((a, b) => {
+const sortPluginList = (plugins:PluginType[], property:string, /* ASC?*/dir:string): object[] => plugins.sort((a, b) => {
+  // @ts-ignore
   if (a[property] < b[property]) {
     return dir ? -1 : 1;
   }
 
+  // @ts-ignore
   if (a[property] > b[property]) {
     return dir ? 1 : -1;
   }

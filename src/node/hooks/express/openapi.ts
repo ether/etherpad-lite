@@ -1,5 +1,9 @@
 'use strict';
 
+import {OpenAPIOperations, OpenAPISuccessResponse, SwaggerUIResource} from "../../types/SwaggerUIResource";
+import {MapArrayType} from "../../types/MapType";
+import {ErrorCaused} from "../../types/ErrorCaused";
+
 /**
  * node/hooks/express/openapi.js
  *
@@ -52,8 +56,9 @@ const APIPathStyle = {
   REST: 'rest', // restful paths e.g. /rest/group/create
 };
 
+
 // API resources - describe your API endpoints here
-const resources = {
+const resources:SwaggerUIResource = {
   // Group
   group: {
     create: {
@@ -372,7 +377,7 @@ const defaultResponses = {
   },
 };
 
-const defaultResponseRefs = {
+const defaultResponseRefs:OpenAPISuccessResponse = {
   200: {
     $ref: '#/components/responses/Success',
   },
@@ -388,16 +393,16 @@ const defaultResponseRefs = {
 };
 
 // convert to a dictionary of operation objects
-const operations = {};
+const operations: OpenAPIOperations = {};
 for (const [resource, actions] of Object.entries(resources)) {
   for (const [action, spec] of Object.entries(actions)) {
-    const {operationId, responseSchema, ...operation} = spec;
+    const {operationId,responseSchema, ...operation} = spec;
 
     // add response objects
-    const responses = {...defaultResponseRefs};
+    const responses:OpenAPISuccessResponse = {...defaultResponseRefs};
     if (responseSchema) {
       responses[200] = cloneDeep(defaultResponses.Success);
-      responses[200].content['application/json'].schema.properties.data = {
+      responses[200].content!['application/json'].schema.properties.data = {
         type: 'object',
         properties: responseSchema,
       };
@@ -414,7 +419,7 @@ for (const [resource, actions] of Object.entries(resources)) {
   }
 }
 
-const generateDefinitionForVersion = (version, style = APIPathStyle.FLAT) => {
+const generateDefinitionForVersion = (version:string, style = APIPathStyle.FLAT) => {
   const definition = {
     openapi: OPENAPI_VERSION,
     info,
@@ -490,7 +495,7 @@ const generateDefinitionForVersion = (version, style = APIPathStyle.FLAT) => {
 
   // build operations
   for (const funcName of Object.keys(apiHandler.version[version])) {
-    let operation = {};
+    let operation:OpenAPIOperations = {};
     if (operations[funcName]) {
       operation = {...operations[funcName]};
     } else {
@@ -505,7 +510,9 @@ const generateDefinitionForVersion = (version, style = APIPathStyle.FLAT) => {
     operation.parameters = operation.parameters || [];
     for (const paramName of apiHandler.version[version][funcName]) {
       operation.parameters.push({$ref: `#/components/parameters/${paramName}`});
+      // @ts-ignore
       if (!definition.components.parameters[paramName]) {
+        // @ts-ignore
         definition.components.parameters[paramName] = {
           name: paramName,
           in: 'query',
@@ -525,6 +532,7 @@ const generateDefinitionForVersion = (version, style = APIPathStyle.FLAT) => {
 
     // add to definition
     // NOTE: It may be confusing that every operation can be called with both GET and POST
+    // @ts-ignore
     definition.paths[path] = {
       get: {
         ...operation,
@@ -539,7 +547,7 @@ const generateDefinitionForVersion = (version, style = APIPathStyle.FLAT) => {
   return definition;
 };
 
-exports.expressPreSession = async (hookName, {app}) => {
+exports.expressPreSession = async (hookName:string, {app}:any) => {
   // create openapi-backend handlers for each api version under /api/{version}/*
   for (const version of Object.keys(apiHandler.version)) {
     // we support two different styles of api: flat + rest
@@ -552,7 +560,7 @@ exports.expressPreSession = async (hookName, {app}) => {
       const definition = generateDefinitionForVersion(version, style);
 
       // serve version specific openapi definition
-      app.get(`${apiRoot}/openapi.json`, (req, res) => {
+      app.get(`${apiRoot}/openapi.json`, (req:any, res:any) => {
         // For openapi definitions, wide CORS is probably fine
         res.header('Access-Control-Allow-Origin', '*');
         res.json({...definition, servers: [generateServerForApiVersion(apiRoot, req)]});
@@ -561,7 +569,7 @@ exports.expressPreSession = async (hookName, {app}) => {
       // serve latest openapi definition file under /api/openapi.json
       const isLatestAPIVersion = version === apiHandler.latestApiVersion;
       if (isLatestAPIVersion) {
-        app.get(`/${style}/openapi.json`, (req, res) => {
+        app.get(`/${style}/openapi.json`, (req:any, res:any) => {
           res.header('Access-Control-Allow-Origin', '*');
           res.json({...definition, servers: [generateServerForApiVersion(apiRoot, req)]});
         });
@@ -588,12 +596,12 @@ exports.expressPreSession = async (hookName, {app}) => {
 
       // register operation handlers
       for (const funcName of Object.keys(apiHandler.version[version])) {
-        const handler = async (c, req, res) => {
+        const handler = async (c: any, req:any, res:any) => {
           // parse fields from request
           const {header, params, query} = c.request;
 
           // read form data if method was POST
-          let formData = {};
+          let formData:MapArrayType<any> = {};
           if (c.request.method === 'post') {
             const form = new IncomingForm();
             formData = (await form.parse(req))[0];
@@ -615,18 +623,19 @@ exports.expressPreSession = async (hookName, {app}) => {
           try {
             data = await apiHandler.handle(version, funcName, fields, req, res);
           } catch (err) {
+            const errCaused = err as ErrorCaused
             // convert all errors to http errors
             if (createHTTPError.isHttpError(err)) {
               // pass http errors thrown by handler forward
               throw err;
-            } else if (err.name === 'apierror') {
+            } else if (errCaused.name === 'apierror') {
               // parameters were wrong and the api stopped execution, pass the error
               // convert to http error
-              throw new createHTTPError.BadRequest(err.message);
+              throw new createHTTPError.BadRequest(errCaused.message);
             } else {
               // an unknown error happened
               // log it and throw internal error
-              logger.error(err.stack || err.toString());
+              logger.error(errCaused.stack || errCaused.toString());
               throw new createHTTPError.InternalError('internal error');
             }
           }
@@ -649,7 +658,7 @@ exports.expressPreSession = async (hookName, {app}) => {
 
       // start and bind to express
       api.init();
-      app.use(apiRoot, async (req, res) => {
+      app.use(apiRoot, async (req:any, res:any) => {
         let response = null;
         try {
           if (style === APIPathStyle.REST) {
@@ -660,31 +669,33 @@ exports.expressPreSession = async (hookName, {app}) => {
           // pass to openapi-backend handler
           response = await api.handleRequest(req, req, res);
         } catch (err) {
+          const errCaused = err as ErrorCaused
           // handle http errors
-          res.statusCode = err.statusCode || 500;
+          // @ts-ignore
+          res.statusCode = errCaused.statusCode || 500;
 
           // convert to our json response format
           // https://github.com/ether/etherpad-lite/tree/master/doc/api/http_api.md#response-format
           switch (res.statusCode) {
             case 403: // forbidden
-              response = {code: 4, message: err.message, data: null};
+              response = {code: 4, message: errCaused.message, data: null};
               break;
             case 401: // unauthorized (no or wrong api key)
-              response = {code: 4, message: err.message, data: null};
+              response = {code: 4, message: errCaused.message, data: null};
               break;
             case 404: // not found (no such function)
-              response = {code: 3, message: err.message, data: null};
+              response = {code: 3, message: errCaused.message, data: null};
               break;
             case 500: // server error (internal error)
-              response = {code: 2, message: err.message, data: null};
+              response = {code: 2, message: errCaused.message, data: null};
               break;
             case 400: // bad request (wrong parameters)
               // respond with 200 OK to keep old behavior and pass tests
               res.statusCode = 200; // @TODO: this is bad api design
-              response = {code: 1, message: err.message, data: null};
+              response = {code: 1, message: errCaused.message, data: null};
               break;
             default:
-              response = {code: 1, message: err.message, data: null};
+              response = {code: 1, message: errCaused.message, data: null};
               break;
           }
         }
@@ -702,7 +713,7 @@ exports.expressPreSession = async (hookName, {app}) => {
  * @param {APIPathStyle} style The style of the API path
  * @return {String} The root path for the API version
  */
-const getApiRootForVersion = (version, style = APIPathStyle.FLAT) => `/${style}/${version}`;
+const getApiRootForVersion = (version:string, style:any = APIPathStyle.FLAT): string => `/${style}/${version}`;
 
 /**
  * Helper to generate an OpenAPI server object when serving definitions
@@ -710,6 +721,8 @@ const getApiRootForVersion = (version, style = APIPathStyle.FLAT) => `/${style}/
  * @param {Request} req The express request object
  * @return {url: String} The server object for the OpenAPI definition location
  */
-const generateServerForApiVersion = (apiRoot, req) => ({
+const generateServerForApiVersion = (apiRoot:string, req:any): {
+  url:string
+} => ({
   url: `${settings.ssl ? 'https' : 'http'}://${req.headers.host}${apiRoot}`,
 });

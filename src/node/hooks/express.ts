@@ -1,7 +1,9 @@
 'use strict';
 
+import {Socket} from "node:net";
+import {MapArrayType} from "../types/MapType";
+
 const _ = require('underscore');
-const SecretRotator = require('../security/SecretRotator');
 const cookieParser = require('cookie-parser');
 const events = require('events');
 const express = require('express');
@@ -15,11 +17,14 @@ const stats = require('../stats');
 const util = require('util');
 const webaccess = require('./express/webaccess');
 
-let secretRotator = null;
+const SecretRotator = require('../security/SecretRotator')
+
+// TODO once we have ESM we can use the type of the class
+let secretRotator: any|null = null;
 const logger = log4js.getLogger('http');
-let serverName;
-let sessionStore;
-const sockets = new Set();
+let serverName:string;
+let sessionStore: { shutdown: () => void; } | null;
+const sockets:Set<Socket> = new Set();
 const socketsEvents = new events.EventEmitter();
 const startTime = stats.settableGauge('httpStartTime');
 
@@ -101,7 +106,7 @@ exports.restartServer = async () => {
     console.log(`SSL -- server key file: ${settings.ssl.key}`);
     console.log(`SSL -- Certificate Authority's certificate file: ${settings.ssl.cert}`);
 
-    const options = {
+    const options: MapArrayType<any> = {
       key: fs.readFileSync(settings.ssl.key),
       cert: fs.readFileSync(settings.ssl.cert),
     };
@@ -121,7 +126,7 @@ exports.restartServer = async () => {
     exports.server = http.createServer(app);
   }
 
-  app.use((req, res, next) => {
+  app.use((req:any, res:any, next:Function) => {
     // res.header("X-Frame-Options", "deny"); // breaks embedded pads
     if (settings.ssl) {
       // we use SSL
@@ -160,10 +165,10 @@ exports.restartServer = async () => {
   }
 
   // Measure response time
-  app.use((req, res, next) => {
+  app.use((req:any, res:any, next:Function) => {
     const stopWatch = stats.timer('httpRequests').start();
     const sendFn = res.send.bind(res);
-    res.send = (...args) => { stopWatch.end(); sendFn(...args); };
+    res.send = (...args: any) => { stopWatch.end(); sendFn(...args); };
     next();
   });
 
@@ -237,7 +242,7 @@ exports.restartServer = async () => {
     hooks.aCallAll('expressConfigure', {app}),
     hooks.aCallAll('expressCreateServer', {app, server: exports.server}),
   ]);
-  exports.server.on('connection', (socket) => {
+  exports.server.on('connection', (socket:Socket) => {
     sockets.add(socket);
     socketsEvents.emit('updated');
     socket.on('close', () => {
@@ -250,6 +255,6 @@ exports.restartServer = async () => {
   logger.info('HTTP server listening for connections');
 };
 
-exports.shutdown = async (hookName, context) => {
+exports.shutdown = async (hookName:string, context: any) => {
   await closeServer();
 };

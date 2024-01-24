@@ -63,7 +63,7 @@ const intervalStart = (t:number, interval:number) => t - mod(t, interval);
  * The secrets are generated using a key derivation function (KDF) with input keying material coming
  * from a long-lived secret stored in the database (generated if missing).
  */
-class SecretRotator {
+export class SecretRotator {
   private readonly secrets: string[];
   private readonly _dbPrefix
   private readonly _interval

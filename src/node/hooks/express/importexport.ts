@@ -1,5 +1,7 @@
 'use strict';
 
+import {ArgsExpressType} from "../../types/ArgsExpressType";
+
 const hasPadAccess = require('../../padaccess');
 const settings = require('../../utils/Settings');
 const exportHandler = require('../../handler/ExportHandler');
@@ -10,10 +12,10 @@ const rateLimit = require('express-rate-limit');
 const securityManager = require('../../db/SecurityManager');
 const webaccess = require('./webaccess');
 
-exports.expressCreateServer = (hookName, args, cb) => {
+exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Function) => {
   const limiter = rateLimit({
     ...settings.importExportRateLimiting,
-    handler: (request, response, next, options) => {
+    handler: (request:any) => {
       if (request.rateLimit.current === request.rateLimit.limit + 1) {
         // when the rate limiter triggers, write a warning in the logs
         console.warn('Import/Export rate limiter triggered on ' +
@@ -24,7 +26,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
 
   // handle export requests
   args.app.use('/p/:pad/:rev?/export/:type', limiter);
-  args.app.get('/p/:pad/:rev?/export/:type', (req, res, next) => {
+  args.app.get('/p/:pad/:rev?/export/:type', (req:any, res:any, next:Function) => {
     (async () => {
       const types = ['pdf', 'doc', 'txt', 'html', 'odt', 'etherpad'];
       // send a 404 if we don't support this filetype
@@ -70,8 +72,9 @@ exports.expressCreateServer = (hookName, args, cb) => {
 
   // handle import requests
   args.app.use('/p/:pad/import', limiter);
-  args.app.post('/p/:pad/import', (req, res, next) => {
+  args.app.post('/p/:pad/import', (req:any, res:any, next:Function) => {
     (async () => {
+      // @ts-ignore
       const {session: {user} = {}} = req;
       const {accessStatus, authorID: authorId} = await securityManager.checkAccess(
           req.params.pad, req.cookies.sessionID, req.cookies.token, user);

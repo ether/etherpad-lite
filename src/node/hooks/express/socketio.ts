@@ -1,5 +1,7 @@
 'use strict';
 
+import {ArgsExpressType} from "../../types/ArgsExpressType";
+
 const events = require('events');
 const express = require('../express');
 const log4js = require('log4js');
@@ -10,7 +12,7 @@ const socketIORouter = require('../../handler/SocketIORouter');
 const hooks = require('../../../static/js/pluginfw/hooks');
 const padMessageHandler = require('../../handler/PadMessageHandler');
 
-let io;
+let io:any;
 const logger = log4js.getLogger('socket.io');
 const sockets = new Set();
 const socketsEvents = new events.EventEmitter();
@@ -46,7 +48,7 @@ exports.expressCloseServer = async () => {
   logger.info('All socket.io clients have disconnected');
 };
 
-exports.expressCreateServer = (hookName, args, cb) => {
+exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Function) => {
   // init socket.io and redirect all requests to the MessageHandler
   // there shouldn't be a browser that isn't compatible to all
   // transports in this list at once
@@ -77,7 +79,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
     maxHttpBufferSize: settings.socketIo.maxHttpBufferSize,
   });
 
-  io.on('connect', (socket) => {
+  io.on('connect', (socket:any) => {
     sockets.add(socket);
     socketsEvents.emit('updated');
     socket.on('disconnect', () => {
@@ -86,7 +88,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
     });
   });
 
-  io.use((socket, next) => {
+  io.use((socket:any, next: Function) => {
     const req = socket.request;
     // Express sets req.ip but socket.io does not. Replicate Express's behavior here.
     if (req.ip == null) {
@@ -105,8 +107,8 @@ exports.expressCreateServer = (hookName, args, cb) => {
     express.sessionMiddleware(req, {}, next);
   });
 
-  io.use((socket, next) => {
-    socket.conn.on('packet', (packet) => {
+  io.use((socket:any, next:Function) => {
+    socket.conn.on('packet', (packet:string) => {
       // Tell express-session that the session is still active. The session store can use these
       // touch events to defer automatic session cleanup, and if express-session is configured with
       // rolling=true the cookie's expiration time will be renewed. (Note that WebSockets does not
