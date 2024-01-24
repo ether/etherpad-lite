@@ -109,7 +109,8 @@
     "test-container": "mocha --import=tsx --timeout 5000 tests/container/specs/api",
     "dev": "node --import tsx node/server.ts",
     "prod": "node --import tsx node/server.ts",
-    "ts-check": "tsc --noEmit --watch"
+    "ts-check": "tsc --noEmit",
+    "ts-check:watch": "tsc --noEmit --watch"
   },
   "version": "1.9.6",
   "license": "Apache-2.0"
