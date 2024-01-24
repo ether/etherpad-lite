@@ -43,7 +43,9 @@ let valueCount = 0;
     neededDBValues.push(`pad:${padId}:chat:${chat}`);
   }
   // now fetch and reinsert every key
+  console.log('Fetch and reinsert every key');
   for (const key of neededDBValues) {
+    if (valueCount % 100 === 0) console.log(valueCount + "/" + neededDBValues.length);
     const value = await db.get(key);
     // if it isn't a globalAuthor value which we want to ignore..
     // console.log(`Key: ${key}, value: ${JSON.stringify(value)}`);
