@@ -19,13 +19,16 @@
  * limitations under the License.
  */
 
+import {AText, PadType} from "../models/PadType";
+import {MapType} from "../models/MapType";
+
 const Changeset = require('../../static/js/Changeset');
 const attributes = require('../../static/js/attributes');
 const padManager = require('../db/PadManager');
 const _analyzeLine = require('./ExportHelper')._analyzeLine;
 
 // This is slightly different than the HTML method as it passes the output to getTXTFromAText
-const getPadTXT = async (pad, revNum) => {
+const getPadTXT = async (pad: PadType, revNum: string) => {
   let atext = pad.atext;
 
   if (revNum !== undefined) {
@@ -39,13 +42,13 @@ const getPadTXT = async (pad, revNum) => {
 
 // This is different than the functionality provided in ExportHtml as it provides formatting
 // functionality that is designed specifically for TXT exports
-const getTXTFromAtext = (pad, atext, authorColors) => {
+const getTXTFromAtext = (pad: PadType, atext: AText, authorColors?:string) => {
   const apool = pad.apool();
   const textLines = atext.text.slice(0, -1).split('\n');
   const attribLines = Changeset.splitAttributionLines(atext.attribs, atext.text);
 
   const props = ['heading1', 'heading2', 'bold', 'italic', 'underline', 'strikethrough'];
-  const anumMap = {};
+  const anumMap: MapType = {};
   const css = '';
 
   props.forEach((propName, i) => {
@@ -55,8 +58,8 @@ const getTXTFromAtext = (pad, atext, authorColors) => {
     }
   });
 
-  const getLineTXT = (text, attribs) => {
-    const propVals = [false, false, false];
+  const getLineTXT = (text:string, attribs:any) => {
+    const propVals:(number|boolean)[] = [false, false, false];
     const ENTER = 1;
     const STAY = 2;
     const LEAVE = 0;
@@ -71,7 +74,7 @@ const getTXTFromAtext = (pad, atext, authorColors) => {
 
     let idx = 0;
 
-    const processNextChars = (numChars) => {
+    const processNextChars = (numChars: number) => {
       if (numChars <= 0) {
         return;
       }
@@ -84,7 +87,7 @@ const getTXTFromAtext = (pad, atext, authorColors) => {
 
         for (const a of attributes.decodeAttribString(o.attribs)) {
           if (a in anumMap) {
-            const i = anumMap[a]; // i = 0 => bold, etc.
+            const i = anumMap[a] as number; // i = 0 => bold, etc.
 
             if (!propVals[i]) {
               propVals[i] = ENTER;
@@ -189,7 +192,7 @@ const getTXTFromAtext = (pad, atext, authorColors) => {
   // want to deal gracefully with blank lines.
   // => keeps track of the parents level of indentation
 
-  const listNumbers = {};
+  const listNumbers:MapType = {};
   let prevListLevel;
 
   for (let i = 0; i < textLines.length; i++) {
@@ -233,6 +236,7 @@ const getTXTFromAtext = (pad, atext, authorColors) => {
           delete listNumbers[prevListLevel];
         }
 
+        // @ts-ignore
         listNumbers[line.listLevel]++;
         if (line.listLevel > 1) {
           let x = 1;
@@ -258,7 +262,7 @@ const getTXTFromAtext = (pad, atext, authorColors) => {
 
 exports.getTXTFromAtext = getTXTFromAtext;
 
-exports.getPadTXTDocument = async (padId, revNum) => {
+exports.getPadTXTDocument = async (padId:string, revNum:string) => {
   const pad = await padManager.getPad(padId);
   return getPadTXT(pad, revNum);
 };

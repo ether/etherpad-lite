@@ -1,8 +1,8 @@
 'use strict';
 const fs = require('fs');
 
-const check = (path) => {
-  const existsSync = fs.statSync || fs.existsSync || path.existsSync;
+const check = (path:string) => {
+  const existsSync = fs.statSync || fs.existsSync;
 
   let result;
   try {

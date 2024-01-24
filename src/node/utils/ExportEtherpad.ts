@@ -21,13 +21,13 @@ const authorManager = require('../db/AuthorManager');
 const hooks = require('../../static/js/pluginfw/hooks');
 const padManager = require('../db/PadManager');
 
-exports.getPadRaw = async (padId, readOnlyId) => {
+exports.getPadRaw = async (padId:string, readOnlyId:string) => {
   const dstPfx = `pad:${readOnlyId || padId}`;
   const [pad, customPrefixes] = await Promise.all([
     padManager.getPad(padId),
     hooks.aCallAll('exportEtherpadAdditionalContent'),
   ]);
-  const pluginRecords = await Promise.all(customPrefixes.map(async (customPrefix) => {
+  const pluginRecords = await Promise.all(customPrefixes.map(async (customPrefix:string) => {
     const srcPfx = `${customPrefix}:${padId}`;
     const dstPfx = `${customPrefix}:${readOnlyId || padId}`;
     assert(!srcPfx.includes('*'));

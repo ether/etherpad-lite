@@ -26,7 +26,7 @@ const { checkValidRev } = require('./checkValidRev');
 /*
  * This method seems unused in core and no plugins depend on it
  */
-exports.getPadPlainText = (pad, revNum) => {
+exports.getPadPlainText = (pad: { getInternalRevisionAText: (arg0: any) => any; atext: any; pool: any; }, revNum: undefined) => {
   const _analyzeLine = exports._analyzeLine;
   const atext = ((revNum !== undefined) ? pad.getInternalRevisionAText(checkValidRev(revNum)) : pad.atext);
   const textLines = atext.text.slice(0, -1).split('\n');
@@ -47,10 +47,12 @@ exports.getPadPlainText = (pad, revNum) => {
 
   return pieces.join('');
 };
+type LineModel = {
+  [id:string]:string|number|LineModel
+}
 
-
-exports._analyzeLine = (text, aline, apool) => {
-  const line = {};
+exports._analyzeLine = (text:string, aline: LineModel, apool: Function) => {
+  const line: LineModel = {};
 
   // identify list
   let lineMarker = 0;
@@ -86,4 +88,4 @@ exports._analyzeLine = (text, aline, apool) => {
 
 
 exports._encodeWhitespace =
-  (s) => s.replace(/[^\x21-\x7E\s\t\n\r]/gu, (c) => `&#${c.codePointAt(0)};`);
+  (s:string) => s.replace(/[^\x21-\x7E\s\t\n\r]/gu, (c) => `&#${c.codePointAt(0)};`);
