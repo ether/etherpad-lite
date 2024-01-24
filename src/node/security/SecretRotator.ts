@@ -1,7 +1,7 @@
 'use strict';
 
-import {DeriveModel} from "../models/DeriveModel";
-import {LegacyParams} from "../models/LegacyParams";
+import {DeriveModel} from "../types/DeriveModel";
+import {LegacyParams} from "../types/LegacyParams";
 
 const {Buffer} = require('buffer');
 const crypto = require('./crypto');

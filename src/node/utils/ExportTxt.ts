@@ -19,8 +19,8 @@
  * limitations under the License.
  */
 
-import {AText, PadType} from "../models/PadType";
-import {MapType} from "../models/MapType";
+import {AText, PadType} from "../types/PadType";
+import {MapType} from "../types/MapType";
 
 const Changeset = require('../../static/js/Changeset');
 const attributes = require('../../static/js/attributes');

@@ -1,8 +1,8 @@
 'use strict';
 
-import {ErrorExtended, RunCMDOptions, RunCMDPromise} from "../models/RunCMDOptions";
+import {ErrorExtended, RunCMDOptions, RunCMDPromise} from "../types/RunCMDOptions";
 import {ChildProcess} from "node:child_process";
-import {PromiseWithStd} from "../models/PromiseWithStd";
+import {PromiseWithStd} from "../types/PromiseWithStd";
 import {Readable} from "node:stream";
 
 const spawn = require('cross-spawn');

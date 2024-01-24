@@ -20,7 +20,7 @@
  */
 
 import {ChildProcess} from "node:child_process";
-import {AsyncQueueTask} from "../models/AsyncQueueTask";
+import {AsyncQueueTask} from "../types/AsyncQueueTask";
 
 const spawn = require('child_process').spawn;
 const async = require('async');
