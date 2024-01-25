@@ -54,7 +54,7 @@
     "log4js": "^6.9.1",
     "measured-core": "^2.0.0",
     "mime-types": "^2.1.35",
-    "npm": "^6.14.18",
+    "npm": "^10.4.0",
     "openapi-backend": "^5.10.5",
     "proxy-addr": "^2.0.7",
     "rate-limiter-flexible": "^4.0.0",
