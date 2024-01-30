@@ -28,7 +28,7 @@ import {PluginType} from "./types/Plugin";
 import {ErrorCaused} from "./types/ErrorCaused";
 import {PromiseHooks} from "node:v8";
 
-const log4js = require('log4js');
+import log4js from 'log4js';
 
 const settings = require('./utils/Settings');
 
@@ -55,7 +55,7 @@ const pluginDefs = require('../static/js/pluginfw/plugin_defs');
 const plugins = require('../static/js/pluginfw/plugins');
 const installer = require('../static/js/pluginfw/installer');
 const {Gate} = require('./utils/promises');
-const stats = require('./stats');
+import * as stats from './stats';
 
 const logger = log4js.getLogger('server');
 

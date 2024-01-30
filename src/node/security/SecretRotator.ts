@@ -1,4 +1,4 @@
-'use strict';
+
 
 import {DeriveModel} from "../types/DeriveModel";
 import {LegacyParams} from "../types/LegacyParams";
@@ -261,4 +261,4 @@ export class SecretRotator {
   }
 }
 
-module.exports = SecretRotator;
+export default SecretRotator

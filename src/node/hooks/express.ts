@@ -17,7 +17,7 @@ const stats = require('../stats');
 const util = require('util');
 const webaccess = require('./express/webaccess');
 
-const SecretRotator = require('../security/SecretRotator')
+import SecretRotator from '../security/SecretRotator';
 
 // TODO once we have ESM we can use the type of the class
 let secretRotator: any|null = null;
