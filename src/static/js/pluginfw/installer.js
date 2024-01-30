@@ -9,6 +9,7 @@ const axios = require('axios');
 const {PluginManager} = require("live-plugin-manager");
 const {promises: fs} = require("fs");
 const path = require("path");
+const {findEtherpadRoot} = require("../../../node/utils/AbsolutePaths");
 const logger = log4js.getLogger('plugins');
 
 exports.manager = new PluginManager();
@@ -50,17 +51,22 @@ const migratePluginsFromNodeModules = async () => {
   const {dependencies = {}} = JSON.parse(await runCmd(cmd, {stdio: [null, 'string']}));
   await Promise.all(Object.entries(dependencies).map(async ([pkg, info]) => {
     if (pkg.startsWith(plugins.prefix) && pkg !== 'ep_etherpad-lite') {
-      await exports.manager.install(pkg)
+      if (!info._resolved) {
+        // Install from node_modules directory
+        await exports.manager.installFromPath(`${findEtherpadRoot()}/src/node_modules/${pkg}`);
+      } else {
+        await exports.manager.install(pkg);
+      }
     }
   }));
   await persistInstalledPlugins();
-}
+};
 
 exports.checkForMigration = async () => {
-  logger.info('check installed plugins for migration')
+  logger.info('check installed plugins for migration');
 
   try {
-    await fs.access(installedPluginsPath, fs.constants.F_OK)
+    await fs.access(installedPluginsPath, fs.constants.F_OK);
   } catch (err) {
     await migratePluginsFromNodeModules();
   }
@@ -143,8 +149,8 @@ exports.search = (searchTerm, maxCacheAge) => exports.getAvailablePlugins(maxCac
         if (pluginName.indexOf(plugins.prefix) !== 0) continue;
 
         if (searchTerm && !~results[pluginName].name.toLowerCase().indexOf(searchTerm) &&
-           (typeof results[pluginName].description !== 'undefined' &&
-              !~results[pluginName].description.toLowerCase().indexOf(searchTerm))
+            (typeof results[pluginName].description !== 'undefined' &&
+                !~results[pluginName].description.toLowerCase().indexOf(searchTerm))
         ) {
           if (typeof results[pluginName].description === 'undefined') {
             logger.debug(`plugin without Description: ${results[pluginName].name}`);
