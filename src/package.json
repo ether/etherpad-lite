@@ -80,8 +80,8 @@
   },
   "devDependencies": {
     "@types/async": "^3.2.24",
-    "typescript": "^5.3.3",
     "@types/node": "^20.11.5",
+    "@types/underscore": "^1.11.15",
     "eslint": "^8.56.0",
     "eslint-config-etherpad": "^3.0.22",
     "etherpad-cli-client": "^2.0.2",
@@ -93,7 +93,8 @@
     "set-cookie-parser": "^2.6.0",
     "sinon": "^17.0.1",
     "split-grid": "^1.0.11",
-    "supertest": "^6.3.4"
+    "supertest": "^6.3.4",
+    "typescript": "^5.3.3"
   },
   "engines": {
     "node": ">=18.18.2",

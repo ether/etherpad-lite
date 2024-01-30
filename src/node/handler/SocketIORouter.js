@@ -22,7 +22,7 @@
 
 const log4js = require('log4js');
 const settings = require('../utils/Settings');
-const stats = require('../stats');
+import stats from '../stats'
 
 const logger = log4js.getLogger('socket.io');
 

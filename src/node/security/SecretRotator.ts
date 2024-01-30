@@ -64,7 +64,7 @@ const intervalStart = (t:number, interval:number) => t - mod(t, interval);
  * from a long-lived secret stored in the database (generated if missing).
  */
 export class SecretRotator {
-  private readonly secrets: string[];
+  readonly secrets: string[];
   private readonly _dbPrefix
   private readonly _interval
   private readonly _legacyStaticSecret

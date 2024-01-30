@@ -1,6 +1,6 @@
 'use strict';
 
-import {MapArrayType, MapType} from "../types/MapType";
+import type {MapArrayType} from "../types/MapType";
 import {I18nPluginDefs} from "../types/I18nPluginDefs";
 
 const languages = require('languages4translatewiki');

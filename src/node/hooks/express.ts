@@ -1,26 +1,27 @@
 'use strict';
 
 import {Socket} from "node:net";
-import {MapArrayType} from "../types/MapType";
+import type {MapArrayType} from "../types/MapType";
 
-const _ = require('underscore');
-const cookieParser = require('cookie-parser');
-const events = require('events');
-const express = require('express');
-const expressSession = require('express-session');
-const fs = require('fs');
+import _ from 'underscore';
+// @ts-ignore
+import cookieParser from 'cookie-parser';
+import events from 'events';
+import express from 'express';
+// @ts-ignore
+import expressSession from 'express-session';
+import fs from 'fs';
 const hooks = require('../../static/js/pluginfw/hooks');
-const log4js = require('log4js');
+import log4js from 'log4js';
 const SessionStore = require('../db/SessionStore');
 const settings = require('../utils/Settings');
-const stats = require('../stats');
-const util = require('util');
+import stats from '../stats';
+import util from 'util';
 const webaccess = require('./express/webaccess');
 
 import SecretRotator from '../security/SecretRotator';
 
-// TODO once we have ESM we can use the type of the class
-let secretRotator: any|null = null;
+let secretRotator: SecretRotator|null = null;
 const logger = log4js.getLogger('http');
 let serverName:string;
 let sessionStore: { shutdown: () => void; } | null;
@@ -126,7 +127,7 @@ exports.restartServer = async () => {
     exports.server = http.createServer(app);
   }
 
-  app.use((req:any, res:any, next:Function) => {
+  app.use((req, res, next) => {
     // res.header("X-Frame-Options", "deny"); // breaks embedded pads
     if (settings.ssl) {
       // we use SSL
@@ -165,10 +166,10 @@ exports.restartServer = async () => {
   }
 
   // Measure response time
-  app.use((req:any, res:any, next:Function) => {
+  app.use((req, res, next) => {
     const stopWatch = stats.timer('httpRequests').start();
     const sendFn = res.send.bind(res);
-    res.send = (...args: any) => { stopWatch.end(); sendFn(...args); };
+    res.send = (...args) => {   stopWatch.end(); return sendFn(...args); };
     next();
   });
 
@@ -178,7 +179,7 @@ exports.restartServer = async () => {
   // anyway.
   if (!(settings.loglevel === 'WARN' && settings.loglevel === 'ERROR')) {
     app.use(log4js.connectLogger(logger, {
-      level: log4js.levels.DEBUG,
+      level: log4js.levels.DEBUG.levelStr,
       format: ':status, :method :url',
     }));
   }

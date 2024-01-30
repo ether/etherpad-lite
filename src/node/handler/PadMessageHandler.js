@@ -35,7 +35,7 @@ const log4js = require('log4js');
 const messageLogger = log4js.getLogger('message');
 const accessLogger = log4js.getLogger('access');
 const hooks = require('../../static/js/pluginfw/hooks.js');
-const stats = require('../stats');
+import stats from '../stats'
 const assert = require('assert').strict;
 const {RateLimiterMemory} = require('rate-limiter-flexible');
 const webaccess = require('../hooks/express/webaccess');

@@ -55,7 +55,7 @@ const pluginDefs = require('../static/js/pluginfw/plugin_defs');
 const plugins = require('../static/js/pluginfw/plugins');
 const installer = require('../static/js/pluginfw/installer');
 const {Gate} = require('./utils/promises');
-import * as stats from './stats';
+import stats from './stats';
 
 const logger = log4js.getLogger('server');
 
@@ -107,7 +107,9 @@ exports.start = async () => {
     // Check if Etherpad version is up-to-date
     UpdateCheck.check();
 
+    // @ts-ignore
     stats.gauge('memoryUsage', () => process.memoryUsage().rss);
+    // @ts-ignore
     stats.gauge('memoryUsageHeap', () => process.memoryUsage().heapUsed);
 
     process.on('uncaughtException', (err: ErrorCaused) => {
