@@ -113,14 +113,16 @@ jobs:
           cache-dependency-path: |
             etherpad/src/package-lock.json
             etherpad/src/bin/doc/package-lock.json
+      - name: Install npm@6
+        run: npm install npm@6 -g
       -
         name: Install Cypress
-        run: cd etherpad && cd src && npm install cypress --legacy-peer-deps
+        run: cd etherpad && npm install cypress --legacy-peer-deps
       -
         name: Run Etherpad
         run: |
           cd etherpad
-          node node_modules\ep_etherpad-lite\node\server.js &
+          npm run prod --prefix ./src
           curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
           src\node_modules\cypress\bin\cypress run --config-file src\tests\frontendcypress\cypress.config.js
       # On release, upload windows zip to GitHub release tab

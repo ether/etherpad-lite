@@ -35,7 +35,7 @@ const log4js = require('log4js');
 const messageLogger = log4js.getLogger('message');
 const accessLogger = log4js.getLogger('access');
 const hooks = require('../../static/js/pluginfw/hooks.js');
-const stats = require('../stats');
+const stats = require('../stats')
 const assert = require('assert').strict;
 const {RateLimiterMemory} = require('rate-limiter-flexible');
 const webaccess = require('../hooks/express/webaccess');
@@ -133,7 +133,7 @@ class Channels {
 const padChannels = new Channels((ch, {socket, message}) => handleUserChanges(socket, message));
 
 /**
- * This Method is called by server.js to tell the message handler on which socket it should send
+ * This Method is called by server.ts to tell the message handler on which socket it should send
  * @param socket_io The Socket
  */
 exports.setSocketIO = (socket_io) => {

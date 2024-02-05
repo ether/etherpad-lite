@@ -87,13 +87,16 @@ jobs:
         run: src/bin/installDeps.sh
       -
         name: Run the backend tests
-        run: cd src && npm test
+        working-directory: ./src
+        run: npm test
       -
         name: Install Cypress
-        run: cd src && npm install cypress --legacy-peer-deps
+        working-directory: ./src
+        run: npm install cypress --legacy-peer-deps
       -
         name: Run Etherpad & Test Frontend
+        working-directory: ./src
         run: |
-          node src/node/server.js &
+          npm run dev &
           curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
-          ./src/node_modules/cypress/bin/cypress run --config-file src/tests/frontend/cypress/cypress.config.js
+          ./node_modules/cypress/bin/cypress run --config-file tests/frontend/cypress/cypress.config.js
