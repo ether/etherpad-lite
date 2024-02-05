@@ -80,6 +80,7 @@
   },
   "devDependencies": {
     "@types/async": "^3.2.24",
+    "@types/express": "^4.17.21",
     "@types/node": "^20.11.5",
     "@types/underscore": "^1.11.15",
     "eslint": "^8.56.0",
