@@ -39,7 +39,7 @@
 	"admin_plugins_info.page-title": "套件資訊 - Etherpad",
 	"admin_plugins_info.version": "Etherpad 版本",
 	"admin_plugins_info.version_latest": "最新可用版本",
-	"admin_plugins_info.version_number": "版本號碼",
+	"admin_plugins_info.version_number": "版本號",
 	"admin_settings": "設定",
 	"admin_settings.current": "目前配置",
 	"admin_settings.current_example-devel": "範例開發設定模板",
