@@ -1,3 +1,12 @@
+# 1.9.7
+
+### Notable enhancements and fixes
+
+* Added Live Plugin Manager: Plugins are now installed into a separate folder on the host system. This folder is called `plugin_packages`. 
+That way the plugins are separated from the normal etherpad installation.
+* Make repairPad.js more verbose
+* Fixed favicon not being loaded correctly
+
 # 1.9.6
 
 ### Notable enhancements and fixes
@@ -9,7 +18,7 @@
 
 # 1.9.5
 
-### Compability changes
+### Compatibility changes
 
 * This version deprecates NodeJS16 as it reached its end of life and won't receive any updates. So to get started with Etherpad v1.9.5 you need NodeJS 18 and above.
 * The bundled windows NodeJS version has been bumped to the current LTS version 20.
@@ -21,7 +30,7 @@
 
 # 1.9.4
 
-### Compability changes
+### Compatibility changes
 
 * Log4js has been updated to the latest version. As it involved a bump of 6 major version. 
   A lot has changed since then. Most notably the console appender has been deprecated. You can find out more about it [here](https://github.com/log4js-node/log4js-node)
