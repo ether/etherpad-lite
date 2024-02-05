@@ -1,4 +1,4 @@
-name: "Perform type cehcks"
+name: "Perform type checks"
 
 # any branch is useful for testing before a PR is submitted
 on: [push, pull_request]
@@ -26,7 +26,8 @@ jobs:
             src/bin/doc/package-lock.json
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        run: src/bin/installDeps.sh
+        run: ./bin/installDeps.sh
+        working-directory: ./src
       - name: Perform type check
         working-directory: ./src
-        run: npx tsc --noEmit
+        run: npm run ts-check
