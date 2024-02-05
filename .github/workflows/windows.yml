@@ -117,7 +117,7 @@ jobs:
         run: npm install npm@6 -g
       -
         name: Install Cypress
-        run: cd etherpad && cd src && npm install cypress --legacy-peer-deps
+        run: cd etherpad && npm install cypress --legacy-peer-deps
       -
         name: Run Etherpad
         run: |
