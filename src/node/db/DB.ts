@@ -24,7 +24,7 @@
 const ueberDB = require('ueberdb2');
 const settings = require('../utils/Settings');
 const log4js = require('log4js');
-import stats from '../stats';
+const stats = require('../stats')
 
 const logger = log4js.getLogger('ueberDB');
 

@@ -15,7 +15,7 @@ const hooks = require('../../static/js/pluginfw/hooks');
 import log4js from 'log4js';
 const SessionStore = require('../db/SessionStore');
 const settings = require('../utils/Settings');
-import stats from '../stats';
+const stats = require('../stats')
 import util from 'util';
 const webaccess = require('./express/webaccess');
 

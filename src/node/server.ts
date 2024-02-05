@@ -55,7 +55,7 @@ const pluginDefs = require('../static/js/pluginfw/plugin_defs');
 const plugins = require('../static/js/pluginfw/plugins');
 const installer = require('../static/js/pluginfw/installer');
 const {Gate} = require('./utils/promises');
-import stats from './stats';
+const stats = require('../stats')
 
 const logger = log4js.getLogger('server');
 

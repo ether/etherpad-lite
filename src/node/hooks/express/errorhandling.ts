@@ -3,7 +3,7 @@
 import {ArgsExpressType} from "../../types/ArgsExpressType";
 import {ErrorCaused} from "../../types/ErrorCaused";
 
-import stats from '../../stats';
+const stats = require('../stats')
 
 exports.expressCreateServer = (hook_name:string, args: ArgsExpressType, cb:Function) => {
   exports.app = args.app;
