@@ -43,6 +43,16 @@ exports.expressPreSession = async (hookName, {app}) => {
 
   app.get('/favicon.ico', (req, res, next) => {
     (async () => {
+      /*
+        If this is a url we simply redirect to that one.
+       */
+      if (settings.favicon && settings.favicon.startsWith('http')) {
+        res.redirect(settings.favicon);
+        res.send();
+        return;
+      }
+
+
       const fns = [
         ...(settings.favicon ? [path.resolve(settings.root, settings.favicon)] : []),
         path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'favicon.ico'),

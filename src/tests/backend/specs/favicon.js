@@ -51,6 +51,12 @@ describe(__filename, function () {
     assert(gotIcon.equals(wantCustomIcon));
   });
 
+  it('uses custom favicon from url', async function () {
+    settings.favicon = 'https://etherpad.org/favicon.ico';
+    await agent.get('/favicon.ico')
+        .expect(302);
+  });
+
   it('uses custom favicon if set (absolute pathname)', async function () {
     settings.favicon = path.join(__dirname, 'favicon-test-custom.png');
     assert(path.isAbsolute(settings.favicon));

@@ -207,11 +207,10 @@ console.log('  git log --graph --date-order --boundary --oneline --decorate deve
 console.log(`  git show '${newVersion}'`);
 console.log('  (cd ../ether.github.com && git show)');
 console.log('If everything looks good then push:');
-console.log(`  git push origin master develop '${newVersion}'`);
-console.log('  (cd ../ether.github.com && git push)');
+console.log('Run ./bin/push-after-release.sh');
 console.log('Creating a Windows build is not necessary anymore and will be created by GitHub action');
-console.log('Visit https://github.com/ether/etherpad-lite/releases/new and create a new release ' +
-            `with 'master' as the target and the version is ${newVersion}. `);
+console.log('After the windows binary is created a new release with the set version is created automatically.' +
+    ' Just paste the release notes in there');
 console.log('The docs are updated automatically with the new version. While the windows build' +
     ' is generated people can still download the older versions.');
 console.log('Finally go public with an announcement via our comms channels :)');

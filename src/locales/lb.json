@@ -64,6 +64,7 @@
 	"pad.modals.unauth.explanation": "Är Rechter hu geännert während deem Dir dës säit gekuckt hutt. Probéiert fir Iech nei ze connectéieren.",
 	"pad.modals.looping.explanation": "Et gëtt Kommunikatiounsproblemer mam Synchronisatiouns-Server.",
 	"pad.modals.initsocketfail": "De Server kann net erreecht ginn.",
+	"pad.modals.initsocketfail.explanation": "Et konnt keng Verbindung mam Synchronisatiounsserver opgeholl ginn.",
 	"pad.modals.slowcommit.explanation": "De Server äntwert net.",
 	"pad.modals.deleted": "Geläscht.",
 	"pad.modals.deleted.explanation": "Dëse Pad gouf geläscht.",
