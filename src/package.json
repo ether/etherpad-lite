@@ -79,6 +79,7 @@
     "etherpad-lite": "node/server.ts"
   },
   "devDependencies": {
+    "cypress": "^13.6.4",
     "@types/async": "^3.2.24",
     "@types/express": "^4.17.21",
     "@types/node": "^20.11.5",
