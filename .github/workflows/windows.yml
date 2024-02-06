@@ -33,6 +33,8 @@ jobs:
           cache-dependency-path: |
             src/package-lock.json
             src/bin/doc/package-lock.json
+      - name: Install npm@6
+        run: npm install npm@6 -g
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
         shell: msys2 {0}
