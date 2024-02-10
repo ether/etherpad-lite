@@ -83,7 +83,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
       -
         name: Install etherpad-load-test
-        run: sudo pnpm install -g etherpad-load-test
+        run:  pnpm install -g etherpad-load-test
       -
         name: Install etherpad plugins
         # The --legacy-peer-deps flag is required to work around a bug in npm v7:
