@@ -44,7 +44,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
       - name: Only install direct dependencies
-        run: pnpm config set auto-install-peers true
+        run: pnpm config set auto-install-peers false
       -
         name: Install libreoffice
         run: |
@@ -95,7 +95,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
       - name: Only install direct dependencies
-        run: pnpm config set auto-install-peers true
+        run: pnpm config set auto-install-peers false
       -
         name: Install libreoffice
         run: |
@@ -170,7 +170,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
       - name: Only install direct dependencies
-        run: pnpm config set auto-install-peers true
+        run: pnpm config set auto-install-peers false
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
         run: src/bin/installOnWindows.bat
@@ -217,7 +217,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
       - name: Only install direct dependencies
-        run: pnpm config set auto-install-peers true
+        run: pnpm config set auto-install-peers false
       -
         name: Install Etherpad plugins
         # The --legacy-peer-deps flag is required to work around a bug in npm

@@ -40,9 +40,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
       - name: Only install direct dependencies
-        run: pnpm config set auto-install-peers true
-      - name: Only install direct dependencies
-        run: pnpm config set auto-install-peers true
+        run: pnpm config set auto-install-peers false
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
         run: src/bin/installDeps.sh
@@ -86,7 +84,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
       - name: Only install direct dependencies
-        run: pnpm config set auto-install-peers true
+        run: pnpm config set auto-install-peers false
       -
         name: Install etherpad-load-test
         run:  pnpm install -g etherpad-load-test
@@ -157,7 +155,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
       - name: Only install direct dependencies
-        run: pnpm config set auto-install-peers true
+        run: pnpm config set auto-install-peers false
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
         run: src/bin/installDeps.sh
