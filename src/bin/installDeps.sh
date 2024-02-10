@@ -12,13 +12,6 @@ cd "${MY_DIR}/../.." || exit 1
 # Not checking io.js, default installation creates a symbolic link to node
 is_cmd node || fatal "Please install node.js ( https://nodejs.org )"
 
-# Is pnpm installed?
-is_cmd pnpm || fatal "Please install pnpm ( https://pnpmjs.org )"
-
-# Check pnpm version
-require_minimal_version "pnpm" "$(get_program_version "pnpm")" \
-    "$REQUIRED_pnpm_MAJOR" "$REQUIRED_pnpm_MINOR"
-
 # Check node version
 require_minimal_version "nodejs" "$(get_program_version "node")" \
     "$REQUIRED_NODE_MAJOR" "$REQUIRED_NODE_MINOR"
@@ -48,10 +41,10 @@ cd src
 
 if [ -z "${ETHERPAD_PRODUCTION}" ]; then
   log "Installing dev dependencies"
- pnpm ci --no-optional --omit=optional --include=dev --lockfile-version 1 || exit 1
+ pnpm i  || exit 1
 else
   log "Installing production dependencies"
-  pnpm ci --no-optional --omit=optional --omit=dev --lockfile-version 1 --production || exit 1
+  pnpm i  --production || exit 1
 fi
 
 # Remove all minified data to force node creating it new
