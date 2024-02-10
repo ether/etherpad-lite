@@ -141,11 +141,14 @@ jobs:
             ${{ runner.os }}-pnpm-store-
       - name: Only install direct dependencies
         run: pnpm config set auto-install-peers false
+      - name: Install all dependencies and symlink for ep_etherpad-lite
+        run: src/bin/installDeps.sh
+        working-directory: etherpad
       -
         name: Run Etherpad
         run: |
           cd etherpad
-          npm run prod --prefix ./src
+          pnpm run prod --prefix ./src
           curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
           src\node_modules\.bin\cypress run --config-file src\tests\frontendcypress\cypress.config.js
       # On release, upload windows zip to GitHub release tab
