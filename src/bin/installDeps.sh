@@ -8,6 +8,9 @@ cd "${MY_DIR}/../.." || exit 1
 # Source constants and useful functions
 . src/bin/functions.sh
 
+is_cmd pnpm || npm install pnpm -g
+
+
 # Is node installed?
 # Not checking io.js, default installation creates a symbolic link to node
 is_cmd node || fatal "Please install node.js ( https://nodejs.org )"
