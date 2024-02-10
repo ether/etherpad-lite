@@ -29,10 +29,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 21
-          cache: 'npm'
-          cache-dependency-path: |
-            src/package-lock.json
-            src/bin/doc/package-lock.json
       - uses: pnpm/action-setup@v3
         name: Install pnpm
         with:
@@ -126,10 +122,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-          cache-dependency-path: |
-            etherpad/src/package-lock.json
-            etherpad/src/bin/doc/package-lock.json
       - uses: pnpm/action-setup@v3
         name: Install pnpm
         with:

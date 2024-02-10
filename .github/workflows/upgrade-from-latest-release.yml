@@ -29,10 +29,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-          cache: 'npm'
-          cache-dependency-path: |
-            src/package-lock.json
-            src/bin/doc/package-lock.json
       - uses: pnpm/action-setup@v3
         name: Install pnpm
         with:

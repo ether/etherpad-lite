@@ -40,9 +40,6 @@ jobs:
         with:
           node-version: 'lts/*'
           cache: 'npm'
-          cache-dependency-path: |
-            src/package-lock.json
-            src/bin/doc/package-lock.json
       - uses: pnpm/action-setup@v3
         name: Install pnpm
         with:
