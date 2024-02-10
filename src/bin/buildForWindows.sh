@@ -33,6 +33,8 @@ try export GIT_WORK_TREE=${TMP_FOLDER}; git checkout HEAD -f \
     || fatal "failed to copy etherpad to temporary folder"
 try mkdir "${TMP_FOLDER}"/.git
 try git rev-parse HEAD >${TMP_FOLDER}/.git/HEAD
+# Disable symlinks to avoid problems with Windows
+try pnpm config set symlink false
 try pnpm i "${TMP_FOLDER}"/src/node_modules
 
 try cd "${TMP_FOLDER}"
