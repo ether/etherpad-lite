@@ -16,10 +16,10 @@ const logger = log4js.getLogger('plugins');
 // Log the version of npm at startup.
 (async () => {
   try {
-    const version = await runCmd(['npm', '--version'], {stdio: [null, 'string']});
-    logger.info(`npm --version: ${version}`);
+    const version = await runCmd(['pnpm', '--version'], {stdio: [null, 'string']});
+    logger.info(`pnpm --version: ${version}`);
   } catch (err) {
-    logger.error(`Failed to get npm version: ${err.stack || err}`);
+    logger.error(`Failed to get pnpm version: ${err.stack || err}`);
     // This isn't a fatal error so don't re-throw.
   }
 })();

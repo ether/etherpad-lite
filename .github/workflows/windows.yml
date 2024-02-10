@@ -28,13 +28,28 @@ jobs:
       -
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 21
           cache: 'npm'
           cache-dependency-path: |
             src/package-lock.json
             src/bin/doc/package-lock.json
-      - name: Install npm@6
-        run: npm install npm@6 -g
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+          - uses: actions/cache@v3
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
         shell: msys2 {0}
@@ -115,8 +130,23 @@ jobs:
           cache-dependency-path: |
             etherpad/src/package-lock.json
             etherpad/src/bin/doc/package-lock.json
-      - name: Install npm@6
-        run: npm install npm@6 -g
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+          - uses: actions/cache@v3
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
       -
         name: Run Etherpad
         run: |

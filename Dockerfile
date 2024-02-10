@@ -79,7 +79,7 @@ USER root
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199
 RUN  \
     mkdir -p /usr/share/man/man1 && \
-    npm install npm@6 -g  && \
+    npm install pnpm -g  && \
     apk update && apk upgrade && \
     apk add  \
         ca-certificates \
