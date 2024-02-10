@@ -26,10 +26,11 @@ window.html10n = (function(window, document, undefined) {
 
   // fix console
   (function() {
-    var noop = function() {};
-    var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml", "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
-    var console = (window.console = window.console || {});
-    for (var i = 0; i < names.length; ++i) {
+    const noop = function () {
+    };
+    const names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml", "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
+    const console = (window.console = window.console || {});
+    for (let i = 0; i < names.length; ++i) {
       if (!console[names[i]]) {
         console[names[i]] = noop;
       }
@@ -40,7 +41,8 @@ window.html10n = (function(window, document, undefined) {
   // taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
   if (!Array.prototype.forEach) {
     Array.prototype.forEach = function(fn, scope) {
-      for(var i = 0, len = this.length; i < len; ++i) {
+      let i = 0, len = this.length;
+      for(; i < len; ++i) {
         if (i in this) {
           fn.call(scope, this[i], i, this);
         }
@@ -56,12 +58,12 @@ window.html10n = (function(window, document, undefined) {
       if (this == null) {
         throw new TypeError();
       }
-      var t = Object(this);
-      var len = t.length >>> 0;
+      const t = Object(this);
+      const len = t.length >>> 0;
       if (len === 0) {
         return -1;
       }
-      var n = 0;
+      let n = 0;
       if (arguments.length > 1) {
         n = Number(arguments[1]);
         if (n != n) { // shortcut for verifying if it's NaN
@@ -86,8 +88,8 @@ window.html10n = (function(window, document, undefined) {
   /**
    * MicroEvent - to make any js object an event emitter (server or browser)
    */
-
-  var MicroEvent = function(){}
+  const MicroEvent = function () {
+  };
   MicroEvent.prototype = {
     bind: function(event, fct){
       this._events = this._events || {};
@@ -185,9 +187,9 @@ window.html10n = (function(window, document, undefined) {
     // Also for fallback, see BCP 47 RFC 4647 section 3.4
     // NOTE: this output the all lowercase form
     function getBcp47LangCode(browserLang) {
-      var bcp47Lang = browserLang.toLowerCase();
+      const bcp47Lang = browserLang.toLowerCase();
       // Browser => BCP 47
-      var langCodeMap = {
+      const langCodeMap = {
         'zh-cn': 'zh-hans-cn',
         'zh-hk': 'zh-hant-hk',
         'zh-mo': 'zh-hant-mo',
@@ -202,9 +204,9 @@ window.html10n = (function(window, document, undefined) {
     // Issue #6129: Fix exceptions
     // NOTE: translatewiki.net use all lowercase form by default ('en-gb' insted of 'en-GB')
     function getJsonLangCode(bcp47Lang) {
-      var jsonLang = bcp47Lang.toLowerCase();
+      const jsonLang = bcp47Lang.toLowerCase();
       // BCP 47 => JSON
-      var langCodeMap = {
+      const langCodeMap = {
         'sr-cyrl': 'sr-ec',
         'sr-latn': 'sr-el',
         'zh-hant-hk': 'zh-hk',
@@ -213,17 +215,17 @@ window.html10n = (function(window, document, undefined) {
       return langCodeMap[jsonLang] ?? jsonLang;
     }
 
-    var bcp47LangCode = getBcp47LangTag(lang);
-    var jsonLangCode = getJsonLangCode(bcp47LangCode);
+    let bcp47LangCode = getBcp47LangCode(lang);
+    let jsonLangCode = getJsonLangCode(bcp47LangCode);
 
     // Check if lang exists
     if (!data[jsonLangCode]) {
       // lang not found
       // This may be due to formatting (expected 'ru' but browser sent 'ru-RU')
       // Set err msg before mutating lang (we may need this later)
-      var msg = 'Couldn\'t find translations for ' + lang +
-        '(lowercase BCP 47 lang tag ' + bcp47LangCode +
-        ', JSON lang code ' + jsonLangCode + ')';
+      const msg = 'Couldn\'t find translations for ' + lang +
+          '(lowercase BCP 47 lang tag ' + bcp47LangCode +
+          ', JSON lang code ' + jsonLangCode + ')';
 
       // Check for '-' (BCP 47 'ROOT-SCRIPT-REGION-VARIANT') and fallback until found data or ROOT
       // - 'ROOT-SCRIPT-REGION': 'zh-Hans-CN'
@@ -240,7 +242,7 @@ window.html10n = (function(window, document, undefined) {
       if (!data[jsonLangCode]) {
         // ROOT lang not found. (e.g 'zh')
         // Loop through langs data. Maybe we have a variant? e.g (zh-hans)
-        var l; // langs item. Declare outside of loop
+        let l; // langs item. Declare outside of loop
 
         for (l in data) {
           // Is not ROOT?
@@ -268,7 +270,7 @@ window.html10n = (function(window, document, undefined) {
       // Import rule
 
       // absolute path
-      var importUrl = data[lang]
+      let importUrl = data[lang];
 
       // relative path
       if(data[lang].indexOf("http") != 0 && data[lang].indexOf("/") != 0) {
@@ -293,9 +295,10 @@ window.html10n = (function(window, document, undefined) {
   /**
    * The html10n object
    */
-  var html10n =
-  { language : null
-  }
+  const html10n =
+      {
+        language: null
+      };
   MicroEvent.mixin(html10n)
 
   html10n.macros = {}
