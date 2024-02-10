@@ -83,6 +83,7 @@ RUN  \
     apk update && apk upgrade && \
     apk add  \
         ca-certificates \
+        curl \
         git \
         ${INSTALL_ABIWORD:+abiword abiword-plugin-command} \
         ${INSTALL_SOFFICE:+libreoffice openjdk8-jre libreoffice-common}
@@ -113,13 +114,12 @@ COPY --chown=etherpad:etherpad ${SETTINGS} "${EP_DIR}"/settings.json
 #RUN chmod -R g=u .
 
 USER root
-RUN cd src && npm link
 
 USER etherpad
 
 WORKDIR /opt/etherpad-lite
 
-HEALTHCHECK --interval=20s --timeout=3s CMD ["pnpm", "etherpad-healthcheck"]
-
+HEALTHCHECK --interval=5s --timeout=3s \
+    CMD curl --silent http://localhost:9001/health | grep -E "pass|ok|up" > /dev/null || exit 1
 EXPOSE 9001
 CMD ["npm", "run", "prod", "--prefix", "./src"]
