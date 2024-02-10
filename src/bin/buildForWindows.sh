@@ -33,7 +33,7 @@ try export GIT_WORK_TREE=${TMP_FOLDER}; git checkout HEAD -f \
     || fatal "failed to copy etherpad to temporary folder"
 try mkdir "${TMP_FOLDER}"/.git
 try git rev-parse HEAD >${TMP_FOLDER}/.git/HEAD
-try cp -r ./src/node_modules "${TMP_FOLDER}"/src/node_modules
+try pnpm i "${TMP_FOLDER}"/src/node_modules
 
 try cd "${TMP_FOLDER}"
 [ -f src/package.json ] || fatal "failed to copy etherpad to temporary folder"

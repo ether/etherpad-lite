@@ -22,3 +22,4 @@ out/
 /src/bin/etherpad-1.deb
 /src/bin/node.exe
 plugin_packages
+/pnpm-lock.yaml

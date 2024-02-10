@@ -25,7 +25,7 @@ TODO
 To run the backend tests, run the following from the Etherpad working directory:
 
 ```shell
-(cd src && npm test)
+(cd src && pnpm test)
 ```
 
 To run the frontend tests, visit: http://localhost:9001/tests/frontend/

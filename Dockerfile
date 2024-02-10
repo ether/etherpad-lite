@@ -113,7 +113,7 @@ COPY --chown=etherpad:etherpad ${SETTINGS} "${EP_DIR}"/settings.json
 #RUN chmod -R g=u .
 
 USER root
-RUN cd src && npm link
+RUN cd src && pnpm link
 
 USER etherpad
 

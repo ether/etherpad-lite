@@ -80,7 +80,7 @@ jobs:
         run: src/bin/installDeps.sh
       -
         name: Run the backend tests
-        run: cd src && npm test
+        run: cd src && pnpm test
       # Because actions/checkout@v4 is called with "ref: master" and without
       # "fetch-depth: 0", the local clone does not have the ${GITHUB_SHA}
       # commit. Fetch ${GITHUB_REF} to get the ${GITHUB_SHA} commit. Note that a

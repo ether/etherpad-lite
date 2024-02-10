@@ -72,4 +72,4 @@ jobs:
         run: src/bin/installDeps.sh
       -
         name: Run the backend tests
-        run: cd src && npm test
+        run: cd src && pnpm test

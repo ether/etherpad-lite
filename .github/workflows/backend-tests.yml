@@ -56,7 +56,7 @@ jobs:
         run: src/bin/installDeps.sh
       -
         name: Run the backend tests
-        run: cd src && npm test
+        run: cd src && pnpm test
 
   withpluginsLinux:
     # run on pushes to any branch
@@ -135,7 +135,7 @@ jobs:
         run: src/bin/installDeps.sh
       -
         name: Run the backend tests
-        run: cd src && npm test
+        run: cd src && pnpm test
 
   withoutpluginsWindows:
     # run on pushes to any branch
@@ -181,7 +181,7 @@ jobs:
           powershell -Command "(gc settings.json.holder) -replace '\"points\": 10', '\"points\": 1000' | Out-File -encoding ASCII settings.json"
       -
         name: Run the backend tests
-        run: cd src && npm test
+        run: cd src && pnpm test
 
   withpluginsWindows:
     # run on pushes to any branch
@@ -256,4 +256,4 @@ jobs:
           powershell -Command "(gc settings.json.holder) -replace '\"points\": 10', '\"points\": 1000' | Out-File -encoding ASCII settings.json"
       -
         name: Run the backend tests
-        run: cd src && npm test
+        run: cd src && pnpm test

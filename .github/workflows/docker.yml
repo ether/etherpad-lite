@@ -70,7 +70,7 @@ jobs:
               *) printf %s\\n "unexpected status: ${status}" >&2; exit 1;;
             esac
           done
-          (cd src && npm run test-container)
+          (cd src && pnpm run test-container)
           git clean -dxf .
       -
         name: Docker meta

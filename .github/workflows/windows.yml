@@ -54,7 +54,7 @@ jobs:
       -
         name: Run the backend tests
         shell: msys2 {0}
-        run: cd src && npm test
+        run: cd src && pnpm test
       -
         name: Build the .zip
         shell: msys2 {0}
