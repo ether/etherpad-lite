@@ -106,7 +106,7 @@ jobs:
       -
         name: Install Cypress
         working-directory: ./src
-        run: npm install cypress --legacy-peer-deps
+        run: pnpm install cypress
       -
         name: Run Etherpad & Test Frontend
         working-directory: ./src
