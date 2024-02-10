@@ -181,41 +181,88 @@ window.html10n = (function(window, document, undefined) {
       return
     }
 
+    // Issue #6129: Fix exceptions caused by browsers
+    // Also for fallback, see BCP 47 RFC 4647 section 3.4
+    // NOTE: this output the all lowercase form
+    function getBcp47LangCode(browserLang) {
+      var bcp47Lang = browserLang.toLowerCase();
+      // Browser => BCP 47
+      var langCodeMap = {
+        'zh-cn': 'zh-hans-cn',
+        'zh-hk': 'zh-hant-hk',
+        'zh-mo': 'zh-hant-mo',
+        'zh-my': 'zh-hans-my',
+        'zh-sg': 'zh-hans-sg',
+        'zh-tw': 'zh-hant-tw',
+      };
+
+      return langCodeMap[bcp47Lang] ?? bcp47Lang;
+    }
+
+    // Issue #6129: Fix exceptions
+    // NOTE: translatewiki.net use all lowercase form by default ('en-gb' insted of 'en-GB')
+    function getJsonLangCode(bcp47Lang) {
+      var jsonLang = bcp47Lang.toLowerCase();
+      // BCP 47 => JSON
+      var langCodeMap = {
+        'sr-cyrl': 'sr-ec',
+        'sr-latn': 'sr-el',
+        'zh-hant-hk': 'zh-hk',
+      };
+
+      return langCodeMap[jsonLang] ?? jsonLang;
+    }
+
+    var bcp47LangCode = getBcp47LangTag(lang);
+    var jsonLangCode = getJsonLangCode(bcp47LangCode);
+
     // Check if lang exists
-    if (!data[lang]) {
+    if (!data[jsonLangCode]) {
       // lang not found
       // This may be due to formatting (expected 'ru' but browser sent 'ru-RU')
       // Set err msg before mutating lang (we may need this later)
-      var msg = 'Couldn\'t find translations for ' + lang;
+      var msg = 'Couldn\'t find translations for ' + lang +
+        '(lowercase BCP 47 lang tag ' + bcp47LangCode +
+        ', JSON lang code ' + jsonLangCode + ')';
 
-      // Check for '-' ('ROOT-VARIANT')
-      if (lang.indexOf('-') > -1) {
-        // ROOT-VARIANT formatting detected
-        lang = lang.split('-')[0]; // set lang to ROOT lang
+      // Check for '-' (BCP 47 'ROOT-SCRIPT-REGION-VARIANT') and fallback until found data or ROOT
+      // - 'ROOT-SCRIPT-REGION': 'zh-Hans-CN'
+      // - 'ROOT-SCRIPT': 'zh-Hans'
+      // - 'ROOT-REGION': 'en-GB'
+      // - 'ROOT-VARIANT': 'be-tarask'
+      while (!data[jsonLangCode] && bcp47LangCode.lastIndexOf('-') > -1) {
+        // ROOT-SCRIPT-REGION-VARIANT formatting detected
+        bcp47LangCode = bcp47LangCode.substring(0, bcp47LangCode.lastIndexOf('-')); // set lang to ROOT lang
+        jsonLangCode = getJsonLangCode(bcp47LangCode);
       }
 
-      // Check if ROOT lang exists (e.g 'ru')
-      if (!data[lang]) {
+      // Check if already found data or ROOT lang exists (e.g 'ru')
+      if (!data[jsonLangCode]) {
         // ROOT lang not found. (e.g 'zh')
         // Loop through langs data. Maybe we have a variant? e.g (zh-hans)
         var l; // langs item. Declare outside of loop
 
         for (l in data) {
           // Is not ROOT?
-          // And index of ROOT equals 0?
+          // And is variant of ROOT?
+          // (NOTE: index of ROOT equals 0 would cause unexpected ISO 639-1 vs. 639-3 issues,
+          // so append dash into query string)
           // And is known lang?
-          if (lang != l && l.indexOf(lang) === 0 && data[l]) {
-            lang = l; // set lang to ROOT-VARIANT (e.g 'zh-hans')
+          if (bcp47LangCode != l && l.indexOf(lang + '-') === 0 && data[l]) {
+            bcp47LangCode = l; // set lang to ROOT-SCRIPT (e.g 'zh-hans')
+            jsonLangCode = getJsonLangCode(bcp47LangCode);
             break;
           }
         }
 
         // Did we find a variant? If not, return err.
-        if (lang != l) {
+        if (bcp47LangCode != l) {
           return cb(new Error(msg));
         }
       }
     }
+
+    lang = jsonLangCode;
 
     if ('string' == typeof data[lang]) {
       // Import rule
