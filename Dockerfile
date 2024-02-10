@@ -119,7 +119,7 @@ USER etherpad
 
 WORKDIR /opt/etherpad-lite
 
-HEALTHCHECK --interval=20s --timeout=3s CMD ["etherpad-healthcheck"]
+HEALTHCHECK --interval=20s --timeout=3s CMD ["pnpm", "etherpad-healthcheck"]
 
 EXPOSE 9001
 CMD ["npm", "run", "prod", "--prefix", "./src"]
