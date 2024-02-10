@@ -62,7 +62,7 @@ dependencies:
   languages4translatewiki:
     specifier: 0.1.3
     version: 0.1.3
-  live-plugin-manager:
+  live-plugin-manager-pnpm:
     specifier: ^0.18.1
     version: 0.18.1
   lodash.clonedeep:
@@ -3524,8 +3524,8 @@ packages:
       wrap-ansi: 7.0.0
     dev: true
 
-  /live-plugin-manager@0.18.1:
-    resolution: {integrity: sha512-GvLMSaZ1Cc18o91NiHLRuPXm1z7xDiUXUGgQ6jAwGM/x0FY8vXXHa/+LMNb2zrkAV2bWULCs0FEwX9yRsmFZmw==}
+  /live-plugin-manager-pnpm@0.18.1:
+    resolution: {integrity: sha512-B+H8lL1LrXS8VIXyyVAoX9NPQx4aVFRvjbQEfBLiaxEMEH/MqI/+Yxyetps9/TfVdes8LCLzDMTWoo/lxZpnSw==}
     dependencies:
       '@types/debug': 4.1.12
       '@types/fs-extra': 9.0.13
