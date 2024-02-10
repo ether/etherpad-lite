@@ -26,7 +26,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 21
-          cache: 'npm'
       - uses: pnpm/action-setup@v3
         name: Install pnpm
         with:
@@ -99,7 +98,7 @@ jobs:
         # The --legacy-peer-deps flag is required to work around a bug in npm v7:
         # https://github.com/npm/cli/issues/2199
         run: >
-          npm install --no-save --legacy-peer-deps
+          pnpm install
           ep_align
           ep_author_hover
           ep_cursortrace
