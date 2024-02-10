@@ -48,6 +48,8 @@ jobs:
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
+      - name: Only install direct dependencies
+        run: pnpm config set auto-install-peers true
       -
         name: Install etherpad plugins
         # We intentionally install an old ep_align version to test upgrades to

@@ -36,6 +36,8 @@ jobs:
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
+      - name: Only install direct dependencies
+        run: pnpm config set auto-install-peers true
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
         run: ./bin/installDeps.sh
