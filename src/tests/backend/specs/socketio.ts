@@ -404,10 +404,14 @@ describe(__filename, function () {
         constructor(name: string, ...args:any) { super(...args); this.name = name; }
       };
       socket.emit('message', message,
+<<<<<<< HEAD:src/tests/backend/specs/socketio.ts
           (errj: {
             message: string,
             name: string,
           }, val: any) => errj != null ? reject(new AckErr(errj.name, errj.message)) : resolve(val));
+=======
+          (errj, val) => errj != null ? reject(new AckErr(errj.name, errj.message)) : resolve(val));
+>>>>>>> 53a847ce4 (feat :migrate socket.io 2 -> 3):src/tests/backend/specs/socketio.js
     });
 
     it('handleMessage with ack (success)', async function () {

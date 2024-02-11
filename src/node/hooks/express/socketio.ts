@@ -7,7 +7,11 @@ const express = require('../express');
 const log4js = require('log4js');
 const proxyaddr = require('proxy-addr');
 const settings = require('../../utils/Settings');
+<<<<<<< HEAD
 import {Server} from 'socket.io'
+=======
+const {Server} = require('socket.io');
+>>>>>>> 53a847ce4 (feat :migrate socket.io 2 -> 3)
 const socketIORouter = require('../../handler/SocketIORouter');
 const hooks = require('../../../static/js/pluginfw/hooks');
 const padMessageHandler = require('../../handler/PadMessageHandler');
@@ -48,7 +52,11 @@ exports.expressCloseServer = async () => {
   logger.info('All socket.io clients have disconnected');
 };
 
+<<<<<<< HEAD
 exports.socketSessionMiddleware = (args: any) => (socket: any, next: Function) => {
+=======
+exports.socketSessionMiddleware = (socket: any, next: Function) => {
+>>>>>>> 53a847ce4 (feat :migrate socket.io 2 -> 3)
   const req = socket.request;
   // Express sets req.ip but socket.io does not. Replicate Express's behavior here.
   if (req.ip == null) {
@@ -59,9 +67,17 @@ exports.socketSessionMiddleware = (args: any) => (socket: any, next: Function) =
     }
   }
   if (!req.headers.cookie) {
+<<<<<<< HEAD
     // socketio.js-client on node.js doesn't support cookies, so pass them via a query parameter.
     req.headers.cookie = socket.handshake.query.cookie;
   }
+=======
+    // socketio.js-client on node.js doesn't support cookies (see https://git.io/JU8u9), so the
+    // token and express_sid cookies have to be passed via a query parameter for unit tests.
+    req.headers.cookie = socket.handshake.query.cookie;
+  }
+  // See: https://socket.io/docs/faq/#Usage-with-express-session
+>>>>>>> 53a847ce4 (feat :migrate socket.io 2 -> 3)
   express.sessionMiddleware(req, {}, next);
 };
 
@@ -74,9 +90,21 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
     transports: settings.socketTransportProtocols,
   })
 
+<<<<<<< HEAD
   function handleConnection() {
     return (socket: any) => {
       sockets.add(socket);
+=======
+  io.on('connection', (socket:any) => {
+    sockets.add(socket);
+    socketsEvents.emit('updated');
+    // https://socket.io/docs/v3/faq/index.html
+    const session = socket.request.session;
+    session.connections++;
+    session.save();
+    socket.on('disconnect', () => {
+      sockets.delete(socket);
+>>>>>>> 53a847ce4 (feat :migrate socket.io 2 -> 3)
       socketsEvents.emit('updated');
       // https://socket.io/docs/v3/faq/index.html
       const session = socket.request.session;
@@ -89,6 +117,7 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
     };
   }
 
+<<<<<<< HEAD
   io.on('connection', handleConnection);
 
   io.use(exports.socketSessionMiddleware(args));
@@ -96,6 +125,9 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
   // Temporary workaround so all clients go through middleware and handle connection
   io.of('/pluginfw/installer').use(exports.socketSessionMiddleware(args))
   io.of('/settings').use(exports.socketSessionMiddleware(args))
+=======
+  io.use(exports.socketSessionMiddleware);
+>>>>>>> 53a847ce4 (feat :migrate socket.io 2 -> 3)
 
   io.use((socket:any, next:Function) => {
     socket.conn.on('packet', (packet:string) => {

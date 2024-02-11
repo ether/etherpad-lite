@@ -1,0 +1,13 @@
+{
+    "eslint.enable": false,
+    "prettier.enable": false,
+    "javascript.format.enable": false,
+    "editor.formatOnSave": false,
+    "eslint.autoFixOnSave": false,
+    "[javascript]": {
+      "editor.formatOnSave": false
+    },
+    "[typescript]": {
+      "editor.formatOnSave": false
+    }
+}

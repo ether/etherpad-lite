@@ -191,11 +191,17 @@ exports.handshake = async (socket: any, padId:string, token = padutils.generateA
 /**
  * Convenience wrapper around `socket.send()` that waits for acknowledgement.
  */
+<<<<<<< HEAD:src/tests/backend/common.ts
 exports.sendMessage = async (socket: any, message:any) => await new Promise<void>((resolve, reject) => {
   socket.emit('message', message, (errInfo:{
     name: string,
     message: string,
   }) => {
+=======
+exports.sendMessage = async (socket, message) => await new Promise((resolve, reject) => {
+  if(message.type === "CHANGESET_REQ")
+  socket.emit('message', message, (errInfo) => {
+>>>>>>> 53a847ce4 (feat :migrate socket.io 2 -> 3):src/tests/backend/common.js
     if (errInfo != null) {
       const {name, message} = errInfo;
       const err = new Error(message);

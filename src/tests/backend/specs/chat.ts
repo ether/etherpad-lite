@@ -41,7 +41,11 @@ const checkHook = async (hookName: string, checkFn?:CheckFN) => {
   });
 };
 
+<<<<<<< HEAD:src/tests/backend/specs/chat.ts
 const sendMessage = (socket: any, data:any) => {
+=======
+const sendMessage = (socket, data) => {
+>>>>>>> 53a847ce4 (feat :migrate socket.io 2 -> 3):src/tests/backend/specs/chat.js
   socket.emit('message', {
     type: 'COLLABROOM',
     component: 'pad',
