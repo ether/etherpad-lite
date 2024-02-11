@@ -64,21 +64,21 @@ jobs:
         - *install_libreoffice
         - *set_loglevel_warn
         - "src/bin/installDeps.sh"
-        - "cd src && npm install && cd -"
+        - "cd src && pnpm install && cd -"
       script:
-        - "cd src && npm test"
+        - "cd src && pnpm test"
     - name: "Test the Dockerfile"
       install:
-        - "cd src && npm install && cd -"
+        - "cd src && pnpm install && cd -"
       script:
         - "docker build -t etherpad:test ."
         - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
-        - "cd src && npm run test-container"
+        - "cd src && pnpm run test-container"
     - name: "Load test Etherpad without Plugins"
       install:
         - *set_loglevel_warn
         - "src/bin/installDeps.sh"
-        - "cd src && npm install && cd -"
+        - "cd src && pnpm install && cd -"
         - "npm install -g etherpad-load-test"
       script:
         - "src/tests/frontend/travis/runnerLoadTest.sh"
@@ -107,16 +107,16 @@ jobs:
         - *set_loglevel_warn
         - "src/bin/installDeps.sh"
         - *install_plugins
-        - "cd src && npm install && cd -"
+        - "cd src && pnpm install && cd -"
       script:
-        - "cd src && npm test"
+        - "cd src && pnpm test"
     - name: "Test the Dockerfile"
       install:
-        - "cd src && npm install && cd -"
+        - "cd src && pnpm install && cd -"
       script:
         - "docker build -t etherpad:test ."
         - "docker run -d -p 9001:9001 etherpad:test && sleep 3"
-        - "cd src && npm run test-container"
+        - "cd src && pnpm run test-container"
     - name: "Load test Etherpad with Plugins"
       install:
         - *set_loglevel_warn

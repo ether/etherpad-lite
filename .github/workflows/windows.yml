@@ -28,13 +28,25 @@ jobs:
       -
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: |
-            src/package-lock.json
-            src/bin/doc/package-lock.json
-      - name: Install npm@6
-        run: npm install npm@6 -g
+          node-version: 21
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Only install direct dependencies
+        run: pnpm config set auto-install-peers false
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
         shell: msys2 {0}
@@ -42,7 +54,7 @@ jobs:
       -
         name: Run the backend tests
         shell: msys2 {0}
-        run: cd src && npm test
+        run: cd src && pnpm test
       -
         name: Build the .zip
         shell: msys2 {0}
@@ -111,19 +123,35 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-          cache-dependency-path: |
-            etherpad/src/package-lock.json
-            etherpad/src/bin/doc/package-lock.json
-      - name: Install npm@6
-        run: npm install npm@6 -g
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Only install direct dependencies
+        run: pnpm config set auto-install-peers false
+      - name: Install all dependencies and symlink for ep_etherpad-lite
+        run: .\bin\installOnWindows.bat
+        working-directory: etherpad/src
       -
         name: Run Etherpad
+        working-directory: etherpad/src
         run: |
-          cd etherpad
-          npm run prod --prefix ./src
+          .\node_modules\.bin\cypress.cmd install --force
+          pnpm run prod &
           curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
-          src\node_modules\.bin\cypress run --config-file src\tests\frontendcypress\cypress.config.js
+          pnpm exec cypress run --config-file ./tests/frontend/cypress/cypress.config.js
       # On release, upload windows zip to GitHub release tab
       -
         name: Rename to etherpad-lite-win.zip

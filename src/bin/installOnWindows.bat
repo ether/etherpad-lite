@@ -13,8 +13,8 @@ mkdir node_modules
 cd /D node_modules
 mklink /D "ep_etherpad-lite" "..\src"
 
-cd /D "ep_etherpad-lite"
-cmd /C npm ci --legacy-peer-deps || exit /B 1
+cd /D ..\src
+cmd /C pnpm i || exit /B 1
 
 cd /D "%~dp0\..\.."
 

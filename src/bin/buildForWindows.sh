@@ -33,7 +33,8 @@ try export GIT_WORK_TREE=${TMP_FOLDER}; git checkout HEAD -f \
     || fatal "failed to copy etherpad to temporary folder"
 try mkdir "${TMP_FOLDER}"/.git
 try git rev-parse HEAD >${TMP_FOLDER}/.git/HEAD
-try cp -r ./src/node_modules "${TMP_FOLDER}"/src/node_modules
+# Disable symlinks to avoid problems with Windows
+#try pnpm i "${TMP_FOLDER}"/src/node_modules
 
 try cd "${TMP_FOLDER}"
 [ -f src/package.json ] || fatal "failed to copy etherpad to temporary folder"
@@ -42,16 +43,19 @@ try cd "${TMP_FOLDER}"
 # making the windows package smaller
 export NODE_ENV=production
 
-log "do a normal unix install first..."
-try ./src/bin/installDeps.sh
+rm -rf node_modules || true
+rm -rf src/node_modules || true
+
+#log "do a normal unix install first..."
+#$(try cd src && ./bin/installDeps.sh)
 
 log "copy the windows settings template..."
 try cp settings.json.template settings.json
 
-log "resolve symbolic links..."
-try cp -rL node_modules node_modules_resolved
-try rm -rf node_modules
-try mv node_modules_resolved node_modules
+#log "resolve symbolic links..."
+#try cp -rL node_modules node_modules_resolved
+#try rm -rf node_modules
+#try mv node_modules_resolved node_modules
 
 log "download windows node..."
 try wget "https://nodejs.org/dist/latest-v20.x/win-x64/node.exe" -O node.exe

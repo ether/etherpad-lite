@@ -29,16 +29,30 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-          cache: 'npm'
-          cache-dependency-path: |
-            src/package-lock.json
-            src/bin/doc/package-lock.json
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Only install direct dependencies
+        run: pnpm config set auto-install-peers false
       -
         name: Install Etherpad plugins
         # The --legacy-peer-deps flag is required to work around a bug in npm
         # v7: https://github.com/npm/cli/issues/2199
         run: >
-          npm install --no-save --legacy-peer-deps
+          pnpm install
           ep_align
           ep_author_hover
           ep_cursortrace
@@ -66,7 +80,7 @@ jobs:
         run: src/bin/installDeps.sh
       -
         name: Run the backend tests
-        run: cd src && npm test
+        run: cd src && pnpm test
       # Because actions/checkout@v4 is called with "ref: master" and without
       # "fetch-depth: 0", the local clone does not have the ${GITHUB_SHA}
       # commit. Fetch ${GITHUB_REF} to get the ${GITHUB_SHA} commit. Note that a
@@ -92,7 +106,7 @@ jobs:
       -
         name: Install Cypress
         working-directory: ./src
-        run: npm install cypress --legacy-peer-deps
+        run: pnpm install cypress
       -
         name: Run Etherpad & Test Frontend
         working-directory: ./src
