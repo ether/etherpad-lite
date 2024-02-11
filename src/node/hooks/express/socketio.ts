@@ -53,10 +53,14 @@ exports.expressCloseServer = async () => {
 };
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 exports.socketSessionMiddleware = (args: any) => (socket: any, next: Function) => {
 =======
 exports.socketSessionMiddleware = (socket: any, next: Function) => {
 >>>>>>> 53a847ce4 (feat :migrate socket.io 2 -> 3)
+=======
+exports.socketSessionMiddleware = (args: any) => (socket: any, next: Function) => {
+>>>>>>> 152f0a1ab (fix: ts error)
   const req = socket.request;
   // Express sets req.ip but socket.io does not. Replicate Express's behavior here.
   if (req.ip == null) {
@@ -68,6 +72,7 @@ exports.socketSessionMiddleware = (socket: any, next: Function) => {
   }
   if (!req.headers.cookie) {
 <<<<<<< HEAD
+<<<<<<< HEAD
     // socketio.js-client on node.js doesn't support cookies, so pass them via a query parameter.
     req.headers.cookie = socket.handshake.query.cookie;
   }
@@ -78,6 +83,11 @@ exports.socketSessionMiddleware = (socket: any, next: Function) => {
   }
   // See: https://socket.io/docs/faq/#Usage-with-express-session
 >>>>>>> 53a847ce4 (feat :migrate socket.io 2 -> 3)
+=======
+    // socketio.js-client on node.js doesn't support cookies, so pass them via a query parameter.
+    req.headers.cookie = socket.handshake.query.cookie;
+  }
+>>>>>>> 152f0a1ab (fix: ts error)
   express.sessionMiddleware(req, {}, next);
 };
 
@@ -118,6 +128,7 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
   }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   io.on('connection', handleConnection);
 
   io.use(exports.socketSessionMiddleware(args));
@@ -128,6 +139,9 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
 =======
   io.use(exports.socketSessionMiddleware);
 >>>>>>> 53a847ce4 (feat :migrate socket.io 2 -> 3)
+=======
+  io.use(exports.socketSessionMiddleware(args));
+>>>>>>> 152f0a1ab (fix: ts error)
 
   io.use((socket:any, next:Function) => {
     socket.conn.on('packet', (packet:string) => {
