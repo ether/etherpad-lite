@@ -115,6 +115,6 @@
     "ts-check": "tsc --noEmit",
     "ts-check:watch": "tsc --noEmit --watch"
   },
-  "version": "1.9.6",
+  "version": "1.9.7",
   "license": "Apache-2.0"
 }
