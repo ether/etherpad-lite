@@ -148,7 +148,7 @@ jobs:
         name: Run Etherpad
         working-directory: etherpad/src
         run: |
-          pnpm run prod
+          pnpm run prod &
           curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
           pnpm exec cypress run --config-file ./tests/frontend/cypress/cypress.config.js
       # On release, upload windows zip to GitHub release tab
