@@ -188,7 +188,6 @@ exports.handshake = async (socket, padId, token = padutils.generateAuthorToken()
  * Convenience wrapper around `socket.send()` that waits for acknowledgement.
  */
 exports.sendMessage = async (socket, message) => await new Promise((resolve, reject) => {
-  if(message.type === "CHANGESET_REQ")
   socket.emit('message', message, (errInfo) => {
     if (errInfo != null) {
       const {name, message} = errInfo;
