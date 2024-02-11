@@ -32,7 +32,7 @@ const exportHtml = require('../utils/ExportHtml');
 const exportTxt = require('../utils/ExportTxt');
 const importHtml = require('../utils/ImportHtml');
 const cleanText = require('./Pad').cleanText;
-const PadDiff = require('../utils/padDiff');
+import PadDiff from '../utils/padDiff';
 const {checkValidRev, isInt} = require('../utils/checkValidRev');
 
 /* ********************
