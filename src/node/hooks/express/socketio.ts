@@ -48,7 +48,7 @@ exports.expressCloseServer = async () => {
   logger.info('All socket.io clients have disconnected');
 };
 
-exports.socketSessionMiddleware = (socket: any, next: Function) => {
+exports.socketSessionMiddleware = (args: any) => (socket: any, next: Function) => {
   const req = socket.request;
   // Express sets req.ip but socket.io does not. Replicate Express's behavior here.
   if (req.ip == null) {
@@ -59,11 +59,9 @@ exports.socketSessionMiddleware = (socket: any, next: Function) => {
     }
   }
   if (!req.headers.cookie) {
-    // socketio.js-client on node.js doesn't support cookies (see https://git.io/JU8u9), so the
-    // token and express_sid cookies have to be passed via a query parameter for unit tests.
+    // socketio.js-client on node.js doesn't support cookies, so pass them via a query parameter.
     req.headers.cookie = socket.handshake.query.cookie;
   }
-  // See: https://socket.io/docs/faq/#Usage-with-express-session
   express.sessionMiddleware(req, {}, next);
 };
 
@@ -111,7 +109,7 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
     });
   });
 
-  io.use(exports.socketSessionMiddleware);
+  io.use(exports.socketSessionMiddleware(args));
 
   io.use((socket:any, next:Function) => {
     socket.conn.on('packet', (packet:string) => {
