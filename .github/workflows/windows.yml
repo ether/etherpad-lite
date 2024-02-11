@@ -142,12 +142,10 @@ jobs:
       - name: Only install direct dependencies
         run: pnpm config set auto-install-peers false
       - name: Install all dependencies and symlink for ep_etherpad-lite
-        run: ./bin/installDeps.sh
-        shell: msys2 {0}
+        run: .\bin\installOnWindows.bat
         working-directory: etherpad/src
       -
         name: Run Etherpad
-        shell: msys2 {0}
         working-directory: etherpad/src
         run: |
           pnpm run prod
