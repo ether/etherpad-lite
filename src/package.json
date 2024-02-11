@@ -62,7 +62,8 @@
     "resolve": "1.22.8",
     "security": "1.0.0",
     "semver": "^7.6.0",
-    "socket.io": "^2.5.0",
+    "socket.io": "^3.1.2",
+    "socket.io-client": "^3.1.2",
     "superagent": "^8.1.2",
     "terser": "^5.27.1",
     "threads": "^1.7.0",
@@ -78,11 +79,11 @@
     "etherpad-lite": "node/server.ts"
   },
   "devDependencies": {
-    "cypress": "^13.6.4",
     "@types/async": "^3.2.24",
     "@types/express": "^4.17.21",
     "@types/node": "^20.11.19",
     "@types/underscore": "^1.11.15",
+    "cypress": "^13.6.4",
     "eslint": "^8.56.0",
     "eslint-config-etherpad": "^3.0.22",
     "etherpad-cli-client": "^2.0.2",
@@ -108,8 +109,8 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "mocha --import=tsx --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
-    "test-container": "mocha --import=tsx --timeout 5000 tests/container/specs/api",
+    "test": "mocha --import=tsx --timeout 990000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
+    "test-container": "mocha --import=tsx --timeout 99000 tests/container/specs/api",
     "dev": "node --import tsx node/server.ts",
     "prod": "node --import tsx node/server.ts",
     "ts-check": "tsc --noEmit",

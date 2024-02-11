@@ -390,7 +390,7 @@ describe(__filename, function () {
         handleMessage(socket, message) { assert.fail('wrong handler called'); }
       }());
       socket = await common.connect();
-      socket.send(want);
+      socket.emit('message', want);
       assert.deepEqual(await got, want);
     });
 
@@ -398,7 +398,7 @@ describe(__filename, function () {
       const AckErr = class extends Error {
         constructor(name, ...args) { super(...args); this.name = name; }
       };
-      socket.send(message,
+      socket.emit('message', message,
           (errj, val) => errj != null ? reject(new AckErr(errj.name, errj.message)) : resolve(val));
     });
 
