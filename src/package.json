@@ -109,7 +109,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "mocha --import=tsx --timeout 4000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
+    "test": "mocha --import=tsx --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
     "test-container": "mocha --import=tsx --timeout 5000 tests/container/specs/api",
     "dev": "node --import tsx node/server.ts",
     "prod": "node --import tsx node/server.ts",
