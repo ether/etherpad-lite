@@ -120,8 +120,8 @@ dependencies:
     specifier: ^4.7.0
     version: 4.7.1
   ueberdb2:
-    specifier: ^4.2.53
-    version: 4.2.54
+    specifier: ^4.2.55
+    version: 4.2.55
   underscore:
     specifier: 1.13.6
     version: 1.13.6
@@ -5054,8 +5054,8 @@ packages:
     hasBin: true
     dev: true
 
-  /ueberdb2@4.2.54:
-    resolution: {integrity: sha512-Xu9d4wrh5faKwMhoajN1qSdySsVci0qaVVL10VdpiyheYfL1b0gKC0ooKqQ0ci5y2T9VjsF0J4slQ/++FlLEPw==}
+  /ueberdb2@4.2.55:
+    resolution: {integrity: sha512-ws+jax2V1Q6C5PLAjOTO2fQi1WXq/uOAASKR9SLmNBzcixoDdMkMPL8b4UC2w90CE2eYRViFrMnZx4z8K22Zow==}
     engines: {node: '>=16.20.1'}
     dev: false
 
