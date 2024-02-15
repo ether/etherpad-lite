@@ -4,7 +4,7 @@
 #
 # Author: muxator
 
-FROM node:alpine AS builder
+FROM node:alpine as build
 LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 
 ARG TIMEZONE=
@@ -44,11 +44,6 @@ ARG INSTALL_ABIWORD=
 #   INSTALL_LIBREOFFICE=true
 ARG INSTALL_SOFFICE=
 
-# By default, Etherpad container is built and run in "production" mode. This is
-# leaner (development dependencies are not installed) and runs faster (among
-# other things, assets are minified & compressed).
-ENV NODE_ENV=production
-ENV ETHERPAD_PRODUCTION=true
 # Install dependencies required for modifying access.
 RUN apk add shadow bash
 # Follow the principle of least privilege: run as unprivileged user.
@@ -63,9 +58,6 @@ ARG EP_UID=5001
 ARG EP_GID=0
 ARG EP_SHELL=
 
-ARG NODE_ENV
-ENV NODE_ENV=${NODE_ENV:-production}
-
 RUN groupadd --system ${EP_GID:+--gid "${EP_GID}" --non-unique} etherpad && \
     useradd --system ${EP_UID:+--uid "${EP_UID}" --non-unique} --gid etherpad \
         ${EP_HOME:+--home-dir "${EP_HOME}"} --create-home \
@@ -74,7 +66,6 @@ RUN groupadd --system ${EP_GID:+--gid "${EP_GID}" --non-unique} etherpad && \
 ARG EP_DIR=/opt/etherpad-lite
 RUN mkdir -p "${EP_DIR}" && chown etherpad:etherpad "${EP_DIR}"
 
-USER root
 # the mkdir is needed for configuration of openjdk-11-jre-headless, see
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199
 RUN  \
@@ -85,12 +76,31 @@ RUN  \
         ca-certificates \
         curl \
         git \
+        openssh \
         ${INSTALL_ABIWORD:+abiword abiword-plugin-command} \
         ${INSTALL_SOFFICE:+libreoffice openjdk8-jre libreoffice-common}
 
 USER etherpad
 
 WORKDIR "${EP_DIR}"
+
+FROM build as development
+
+COPY --chown=etherpad:etherpad ./src/package.json .npmrc ./src/pnpm-lock.yaml ./src/
+COPY --chown=etherpad:etherpad ./src/bin ./src/bin
+COPY --chown=etherpad:etherpad ${SETTINGS} "${EP_DIR}"/settings.json
+
+RUN { [ -z "${ETHERPAD_PLUGINS}" ] || \
+      pnpm install --no-save --legacy-peer-deps ${ETHERPAD_PLUGINS}; } && \
+    src/bin/installDeps.sh
+
+FROM build as production
+
+# By default, Etherpad container is built and run in "production" mode. This is
+# leaner (development dependencies are not installed) and runs faster (among
+# other things, assets are minified & compressed).
+ENV NODE_ENV=production
+ENV ETHERPAD_PRODUCTION=true
 
 COPY --chown=etherpad:etherpad ./ ./
 
@@ -103,7 +113,7 @@ COPY --chown=etherpad:etherpad ./ ./
 # seems to confuse tools such as `npm outdated`, `npm update`, and some ESLint
 # rules.
 RUN { [ -z "${ETHERPAD_PLUGINS}" ] || \
-      npm install --no-save --legacy-peer-deps ${ETHERPAD_PLUGINS}; } && \
+      pnpm install --no-save --legacy-peer-deps ${ETHERPAD_PLUGINS}; } && \
     src/bin/installDeps.sh && \
     rm -rf ~/.npm
 
@@ -111,15 +121,14 @@ RUN { [ -z "${ETHERPAD_PLUGINS}" ] || \
 COPY --chown=etherpad:etherpad ${SETTINGS} "${EP_DIR}"/settings.json
 
 # Fix group permissions
-#RUN chmod -R g=u .
+RUN chmod -R g=u .
 
 USER root
-
+RUN cd src && npm link
 USER etherpad
 
-WORKDIR /opt/etherpad-lite
-
 HEALTHCHECK --interval=5s --timeout=3s \
-    CMD curl --silent http://localhost:9001/health | grep -E "pass|ok|up" > /dev/null || exit 1
+  CMD curl --silent http://localhost:9001/health | grep -E "pass|ok|up" > /dev/null || exit 1
+
 EXPOSE 9001
 CMD ["npm", "run", "prod", "--prefix", "./src"]
