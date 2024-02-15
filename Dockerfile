@@ -76,7 +76,6 @@ RUN  \
         ca-certificates \
         curl \
         git \
-        openssh \
         ${INSTALL_ABIWORD:+abiword abiword-plugin-command} \
         ${INSTALL_SOFFICE:+libreoffice openjdk8-jre libreoffice-common}
 
@@ -123,8 +122,6 @@ COPY --chown=etherpad:etherpad ${SETTINGS} "${EP_DIR}"/settings.json
 # Fix group permissions
 RUN chmod -R g=u .
 
-USER root
-RUN cd src && npm link
 USER etherpad
 
 HEALTHCHECK --interval=5s --timeout=3s \
