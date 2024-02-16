@@ -17,7 +17,6 @@ credentials.json
 out/
 .nyc_output
 .idea
-/.pnpm-store
 /package-lock.json
 /src/bin/abiword.exe
 /src/bin/convertSettings.json
