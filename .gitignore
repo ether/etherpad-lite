@@ -6,6 +6,7 @@ node_modules
 APIKEY.txt
 SESSIONKEY.txt
 var/dirty.db
+.env
 *~
 *.patch
 npm-debug.log
