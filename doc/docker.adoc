@@ -27,6 +27,12 @@ A docker compose file is provided in the project. Please first copy `.env.defaul
 docker compose up -d # will build and start the docker container on port 9001 with development settings.
 ```
 
+Starting dev server:
+
+```
+docker compose exec app bash -c "./src/bin/run.sh"
+```
+
 For production, please create your own docker compose file and change the `target` property in the build section to `production`, for instance:
 
 ```
