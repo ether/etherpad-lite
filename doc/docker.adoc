@@ -20,6 +20,31 @@ If you want to use a personalized settings file, **you will have to rebuild your
 All of the following instructions are as a member of the `docker` group.
 By default, the Etherpad Docker image is built and run in `production` mode: no development dependencies are installed, and asset bundling speeds up page load time.
 
+=== Building and running with docker compose
+A docker compose file is provided in the project. Please first copy `.env.default` to `.env` and adjust the variables to your preference.
+
+```
+docker compose up -d # will build and start the docker container on port 9001 with development settings.
+```
+
+For production, please create your own docker compose file and change the `target` property in the build section to `production`, for instance:
+
+```
+docker compose -f docker-compose-production.yml up -d
+```
+
+For plugins, please add them in the build section under ETHERPAD_PLUGINS, for instance:
+
+```
+     args:
+        ETHERPAD_PLUGINS: >-
+          ep_image_upload
+          ep_embedded_hyperlinks2
+          ep_headings2
+          ep_align
+					...
+```
+
 ==== Rebuilding with custom settings
 Edit `<BASEDIR>/settings.json.docker` at your will. When rebuilding the image, this file will be copied inside your image and renamed to `settings.json`.
 
