@@ -17,7 +17,7 @@ services:
     volumes:
       - ./src:/opt/etherpad-lite/src
       - node_modules:/opt/etherpad-lite/src/node_modules
-      - pnpm-store:/opt/etherpad-lite/src/.pnpm-store
+      - pnpm-store:/home/etherpad/.local/share/pnpm/store/v3
     depends_on:
       - postgres
     environment:
