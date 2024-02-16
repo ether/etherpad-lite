@@ -83,13 +83,17 @@ USER etherpad
 
 WORKDIR "${EP_DIR}"
 
+# etherpads version feature requires this. Only copy what is really needed
+COPY --chown=etherpad:etherpad ./.git/HEAD ./.git/HEAD
+COPY --chown=etherpad:etherpad ./.git/refs ./.git/refs
+COPY --chown=etherpad:etherpad ${SETTINGS} ./settings.json
+COPY --chown=etherpad:etherpad ./var ./var
+COPY --chown=etherpad:etherpad ./node_modules ./node_modules
+
 FROM build as development
 
 COPY --chown=etherpad:etherpad ./src/package.json .npmrc ./src/pnpm-lock.yaml ./src/
 COPY --chown=etherpad:etherpad ./src/bin ./src/bin
-COPY --chown=etherpad:etherpad ./var ./var
-COPY --chown=etherpad:etherpad ./node_modules ./node_modules
-COPY --chown=etherpad:etherpad ${SETTINGS} ./settings.json
 
 RUN { [ -z "${ETHERPAD_PLUGINS}" ] || \
       pnpm install --no-save --legacy-peer-deps ${ETHERPAD_PLUGINS}; } && \
@@ -104,9 +108,6 @@ ENV NODE_ENV=production
 ENV ETHERPAD_PRODUCTION=true
 
 COPY --chown=etherpad:etherpad ./src ./src
-COPY --chown=etherpad:etherpad ./var ./var
-COPY --chown=etherpad:etherpad ./node_modules ./node_modules
-COPY --chown=etherpad:etherpad ${SETTINGS} ./settings.json
 
 # Plugins must be installed before installing Etherpad's dependencies, otherwise
 # npm will try to hoist common dependencies by removing them from
