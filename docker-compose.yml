@@ -10,8 +10,8 @@ services:
       context: .
       args:
         ETHERPAD_PLUGINS:
+      # change from development to production if needed
       target: development
-      # change to production if needed
     tty: true
     stdin_open: true
     volumes:
@@ -21,8 +21,8 @@ services:
     depends_on:
       - postgres
     environment:
+      # change from development to production if needed
       NODE_ENV: development
-      # change to production if needed
       ADMIN_PASSWORD: ${DOCKER_COMPOSE_APP_DEV_ADMIN_PASSWORD}
       DB_CHARSET: ${DOCKER_COMPOSE_APP_DEV_ENV_DB_CHARSET:-utf8mb4}
       DB_HOST: postgres
