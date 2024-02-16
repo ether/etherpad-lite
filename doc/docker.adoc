@@ -33,7 +33,7 @@ Starting dev server:
 docker compose exec app bash -c "./src/bin/run.sh"
 ```
 
-For production, please create your own docker compose file and change the `target` property in the build section to `production`, for instance:
+For production, please create your own docker compose file and change the `target` property in the build section to `production`. In addition, change the NODE_ENV in environment to production. For instance:
 
 ```
 docker compose -f docker-compose-production.yml up -d

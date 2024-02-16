@@ -14,12 +14,14 @@ services:
     tty: true
     stdin_open: true
     volumes:
-      - .:/opt/etherpad-lite
+      - ./src:/opt/etherpad-lite/src
       - node_modules:/opt/etherpad-lite/src/node_modules
+      - pnpm-store:/opt/etherpad-lite/src/.pnpm-store
     depends_on:
       - postgres
     environment:
       NODE_ENV: development
+      ADMIN_PASSWORD: ${DOCKER_COMPOSE_APP_DEV_ADMIN_PASSWORD}
       DB_CHARSET: ${DOCKER_COMPOSE_APP_DEV_ENV_DB_CHARSET:-utf8mb4}
       DB_HOST: postgres
       DB_NAME: ${DOCKER_COMPOSE_POSTGRES_DEV_ENV_POSTGRES_DATABASE:?}
@@ -57,3 +59,4 @@ services:
 volumes:
   postgres_data:
   node_modules:
+  pnpm-store:
