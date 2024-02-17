@@ -8,7 +8,7 @@ cd "${MY_DIR}/.." || exit 1
 # Source constants and useful functions
 . bin/functions.sh
 
-is_cmd pnpm || npm install pnpm -g
+is_cmd pnpm || npm install pnpm
 
 
 # Is node installed?
