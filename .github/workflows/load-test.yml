@@ -46,7 +46,7 @@ jobs:
         run: src/bin/installDeps.sh
       -
         name: Install etherpad-load-test
-        run: sudo npm install -g etherpad-load-test
+        run: sudo npm install -g etherpad-load-test-socket-io
       -
         name: Run load test
         run: src/tests/frontend/travis/runnerLoadTest.sh 25 50
@@ -87,7 +87,7 @@ jobs:
         run: pnpm config set auto-install-peers false
       -
         name: Install etherpad-load-test
-        run:  pnpm install -g etherpad-load-test
+        run:  pnpm install -g etherpad-load-test-socket-io
       -
         name: Install etherpad plugins
         # The --legacy-peer-deps flag is required to work around a bug in npm v7:
@@ -161,7 +161,7 @@ jobs:
         run: src/bin/installDeps.sh
       -
         name: Install etherpad-load-test
-        run: sudo npm install -g etherpad-load-test
+        run: sudo npm install -g etherpad-load-test-socket-io
       -
         name: Run load test
         run: src/tests/frontend/travis/runnerLoadTest.sh 5000 5
