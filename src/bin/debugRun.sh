@@ -14,6 +14,7 @@ echo "If you are new to debugging Node.js with Chrome DevTools, take a look at t
 echo "https://medium.com/@paul_irish/debugging-node-js-nightlies-with-chrome-devtools-7c4a1b95ae27"
 echo "Open 'chrome://inspect' on Chrome to start debugging."
 
+cd src
 # Use 0.0.0.0 to allow external connections to the debugger
 # (ex: running Etherpad on a docker container). Use default port # (9229)
-exec node --inspect=0.0.0.0:9229 src/node/server.js "$@"
+exec node --import tsx --inspect=0.0.0.0:9229 ./node/server.ts "$@"

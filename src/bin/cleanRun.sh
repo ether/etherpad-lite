@@ -35,5 +35,5 @@ src/bin/installDeps.sh "$@" || exit 1
 
 #Move to the node folder and start
 echo "Starting Etherpad..."
-
-exec node src/node/server.js "$@"
+cd src
+exec node --import tsx ./node/server.ts "$@"
