@@ -14,7 +14,7 @@ const logger = log4js.getLogger('plugins');
 
 exports.manager = new PluginManager();
 
-const installedPluginsPath = path.join(settings.root, 'var/installed_plugins.json');
+exports.installedPluginsPath = path.join(settings.root, 'var/installed_plugins.json');
 
 const onAllTasksFinished = async () => {
   await plugins.update();
@@ -67,12 +67,12 @@ exports.checkForMigration = async () => {
   logger.info('check installed plugins for migration');
 
   try {
-    await fs.access(installedPluginsPath, fs.constants.F_OK);
+    await fs.access(exports.installedPluginsPath, fs.constants.F_OK);
   } catch (err) {
     await migratePluginsFromNodeModules();
   }
 
-  const fileContent = await fs.readFile(installedPluginsPath);
+  const fileContent = await fs.readFile(exports.installedPluginsPath);
   const installedPlugins = JSON.parse(fileContent.toString());
 
   for (const plugin of installedPlugins.plugins) {
@@ -91,7 +91,7 @@ const persistInstalledPlugins = async () => {
     });
   }
   installedPlugins.plugins = [...new Set(installedPlugins.plugins)];
-  await fs.writeFile(installedPluginsPath, JSON.stringify(installedPlugins));
+  await fs.writeFile(exports.installedPluginsPath, JSON.stringify(installedPlugins));
 };
 
 exports.uninstall = async (pluginName, cb = null) => {
