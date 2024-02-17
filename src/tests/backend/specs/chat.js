@@ -32,7 +32,7 @@ const checkHook = async (hookName, checkFn) => {
 };
 
 const sendMessage = (socket, data) => {
-  socket.send({
+  socket.emit('message', {
     type: 'COLLABROOM',
     component: 'pad',
     data,

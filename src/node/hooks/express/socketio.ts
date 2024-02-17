@@ -7,7 +7,7 @@ const express = require('../express');
 const log4js = require('log4js');
 const proxyaddr = require('proxy-addr');
 const settings = require('../../utils/Settings');
-const socketio = require('socket.io');
+const {Server} = require('socket.io');
 const socketIORouter = require('../../handler/SocketIORouter');
 const hooks = require('../../../static/js/pluginfw/hooks');
 const padMessageHandler = require('../../handler/PadMessageHandler');
@@ -48,12 +48,29 @@ exports.expressCloseServer = async () => {
   logger.info('All socket.io clients have disconnected');
 };
 
+exports.socketSessionMiddleware = (args: any) => (socket: any, next: Function) => {
+  const req = socket.request;
+  // Express sets req.ip but socket.io does not. Replicate Express's behavior here.
+  if (req.ip == null) {
+    if (settings.trustProxy) {
+      req.ip = proxyaddr(req, args.app.get('trust proxy fn'));
+    } else {
+      req.ip = socket.handshake.address;
+    }
+  }
+  if (!req.headers.cookie) {
+    // socketio.js-client on node.js doesn't support cookies, so pass them via a query parameter.
+    req.headers.cookie = socket.handshake.query.cookie;
+  }
+  express.sessionMiddleware(req, {}, next);
+};
+
 exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Function) => {
   // init socket.io and redirect all requests to the MessageHandler
   // there shouldn't be a browser that isn't compatible to all
   // transports in this list at once
   // e.g. XHR is disabled in IE by default, so in IE it should use jsonp-polling
-  io = socketio({
+  io = new Server(args.server, {
     transports: settings.socketTransportProtocols,
   }).listen(args.server, {
     /*
@@ -79,33 +96,20 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
     maxHttpBufferSize: settings.socketIo.maxHttpBufferSize,
   });
 
-  io.on('connect', (socket:any) => {
+  io.on('connection', (socket:any) => {
     sockets.add(socket);
     socketsEvents.emit('updated');
+    // https://socket.io/docs/v3/faq/index.html
+    const session = socket.request.session;
+    session.connections++;
+    session.save();
     socket.on('disconnect', () => {
       sockets.delete(socket);
       socketsEvents.emit('updated');
     });
   });
 
-  io.use((socket:any, next: Function) => {
-    const req = socket.request;
-    // Express sets req.ip but socket.io does not. Replicate Express's behavior here.
-    if (req.ip == null) {
-      if (settings.trustProxy) {
-        req.ip = proxyaddr(req, args.app.get('trust proxy fn'));
-      } else {
-        req.ip = socket.handshake.address;
-      }
-    }
-    if (!req.headers.cookie) {
-      // socketio.js-client on node.js doesn't support cookies (see https://git.io/JU8u9), so the
-      // token and express_sid cookies have to be passed via a query parameter for unit tests.
-      req.headers.cookie = socket.handshake.query.cookie;
-    }
-    // See: https://socket.io/docs/faq/#Usage-with-express-session
-    express.sessionMiddleware(req, {}, next);
-  });
+  io.use(exports.socketSessionMiddleware(args));
 
   io.use((socket:any, next:Function) => {
     socket.conn.on('packet', (packet:string) => {

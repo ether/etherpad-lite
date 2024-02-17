@@ -147,7 +147,6 @@ exports.connect = async (res = null) => {
   }
   const socket = io(`${exports.baseUrl}/`, {
     forceNew: true, // Different tests will have different query parameters.
-    path: '/socket.io',
     // socketio.js-client on node.js doesn't support cookies (see https://git.io/JU8u9), so the
     // express_sid cookie must be passed as a query parameter.
     query: {cookie: reqCookieHdr, padId},
@@ -172,7 +171,7 @@ exports.connect = async (res = null) => {
  */
 exports.handshake = async (socket, padId, token = padutils.generateAuthorToken()) => {
   logger.debug('sending CLIENT_READY...');
-  socket.send({
+  socket.emit('message', {
     component: 'pad',
     type: 'CLIENT_READY',
     padId,
@@ -189,7 +188,7 @@ exports.handshake = async (socket, padId, token = padutils.generateAuthorToken()
  * Convenience wrapper around `socket.send()` that waits for acknowledgement.
  */
 exports.sendMessage = async (socket, message) => await new Promise((resolve, reject) => {
-  socket.send(message, (errInfo) => {
+  socket.emit('message', message, (errInfo) => {
     if (errInfo != null) {
       const {name, message} = errInfo;
       const err = new Error(message);

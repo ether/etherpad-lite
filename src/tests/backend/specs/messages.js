@@ -38,6 +38,7 @@ describe(__filename, function () {
     res = await agent.get(`/p/${roPadId}`).expect(200);
     roSocket = await common.connect(res);
     await common.handshake(roSocket, roPadId);
+    await new Promise(resolve => setTimeout(resolve, 1000));
   });
 
   afterEach(async function () {
