@@ -98,7 +98,7 @@ COPY --chown=etherpad:etherpad ./src/package.json .npmrc ./src/pnpm-lock.yaml ./
 COPY --chown=etherpad:etherpad ./src/bin ./src/bin
 
 RUN { [ -z "${ETHERPAD_PLUGINS}" ] || \
-      pnpm install --no-save --legacy-peer-deps ${ETHERPAD_PLUGINS}; } && \
+      pnpm install --workspace-root ${ETHERPAD_PLUGINS}; } && \
     src/bin/installDeps.sh
 
 FROM build as production
@@ -120,7 +120,7 @@ COPY --chown=etherpad:etherpad ./src ./src
 # seems to confuse tools such as `npm outdated`, `npm update`, and some ESLint
 # rules.
 RUN { [ -z "${ETHERPAD_PLUGINS}" ] || \
-      pnpm install --no-save --legacy-peer-deps ${ETHERPAD_PLUGINS}; } && \
+      pnpm install --workspace-root ${ETHERPAD_PLUGINS}; } && \
     src/bin/installDeps.sh && \
     rm -rf ~/.npm
 
