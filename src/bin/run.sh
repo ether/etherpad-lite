@@ -32,4 +32,4 @@ src/bin/installDeps.sh "$@" || exit 1
 # Move to the node folder and start
 log "Starting Etherpad..."
 
-exec pnpm run dev --prefix ./src "$@"
+exec pnpm run dev "$@"
