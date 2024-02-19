@@ -10,41 +10,19 @@
   ],
   "bin": {
     "etherpad-healthcheck": "src/bin/etherpad-healthcheck",
-    "etherpad-lite": "src/node/server.ts"
+    "etherpad-lite": "src/bin/run"
   },
   "scripts": {
-    "lint": "eslint .",
-    "test": "mocha --import=tsx --timeout 120000 --recursive src/tests/backend/specs src/node_modules/ep_*/static/tests/backend/specs",
-    "test-container": "mocha --import=tsx --timeout 5000 src/tests/container/specs/api",
-    "dev": "node --import tsx src/node/server.ts",
-    "prod": "node --import tsx src/node/server.ts",
-    "ts-check": "tsc --noEmit",
-    "ts-check:watch": "tsc --noEmit --watch"
+    "lint": "pnpm --filter ep_etherpad-lite run lint",
+    "test": "pnpm --filter ep_etherpad-lite run test",
+    "test-container": "pnpm --filter ep_etherpad-lite run test-container",
+    "dev": "pnpm --filter ep_etherpad-lite run dev",
+    "prod": "pnpm --filter ep_etherpad-lite run prod",
+    "ts-check": "pnpm --filter ep_etherpad-lite run ts-check",
+    "ts-check:watch": "pnpm --filter ep_etherpad-lite run ts-check:watch"
   },
   "dependencies": {
-    "log4js": "^6.9.1",
-    "tsx": "^4.7.1",
-    "underscore": "1.13.6",
-    "fast-deep-equal": "^3.1.3",
-    "cookie-parser": "^1.4.6",
-    "jsonminify": "0.4.2",
-    "express-rate-limit": "^7.1.5",
-    "express-session": "npm:@etherpad/express-session@^1.18.2",
-    "express": "4.18.2",
-    "find-root": "1.1.0",
-    "semver": "^7.6.0",
-    "live-plugin-manager-pnpm": "^0.18.1",
-    "cross-spawn": "^7.0.3",
-    "ueberdb2": "^4.2.56",
-    "measured-core": "^2.0.0",
-    "axios": "^1.6.7",
-    "wtfnode": "^0.9.1",
     "ep_etherpad-lite": "workspace:./src"
-  },
-  "devDependencies": {
-    "@types/express": "^4.17.21",
-    "@types/node": "^20.11.19",
-    "typescript": "^5.3.3"
   },
   "engines": {
     "node": ">=18.18.2",
