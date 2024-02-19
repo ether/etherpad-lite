@@ -17,4 +17,4 @@ echo "Open 'chrome://inspect' on Chrome to start debugging."
 cd src
 # Use 0.0.0.0 to allow external connections to the debugger
 # (ex: running Etherpad on a docker container). Use default port # (9229)
-exec node --import tsx --inspect=0.0.0.0:9229 ../server.ts "$@"
+exec node --import tsx --inspect=0.0.0.0:9229 ./node/server.ts "$@"

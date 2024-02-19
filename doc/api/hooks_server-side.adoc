@@ -2,7 +2,7 @@
 These hooks are called on server-side.
 
 === loadSettings
-Called from: server.ts
+Called from: src/node/server.ts
 
 Things in context:
 
@@ -11,7 +11,7 @@ Things in context:
 Use this hook to receive the global settings in your plugin.
 
 === shutdown
-Called from:server.ts
+Called from: src/node/server.ts
 
 Things in context: None
 

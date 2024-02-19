@@ -75,7 +75,8 @@
     "wtfnode": "^0.9.1"
   },
   "bin": {
-    "etherpad-healthcheck": "bin/etherpad-healthcheck"
+    "etherpad-healthcheck": "bin/etherpad-healthcheck",
+    "etherpad-lite": "node/server.ts"
   },
   "devDependencies": {
     "@types/async": "^3.2.24",
@@ -110,6 +111,8 @@
     "lint": "eslint .",
     "test": "mocha --import=tsx --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
     "test-container": "mocha --import=tsx --timeout 5000 tests/container/specs/api",
+    "dev": "node --import tsx node/server.ts",
+    "prod": "node --import tsx node/server.ts",
     "ts-check": "tsc --noEmit",
     "ts-check:watch": "tsc --noEmit --watch"
   },
