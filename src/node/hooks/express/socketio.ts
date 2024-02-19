@@ -7,7 +7,7 @@ const express = require('../express');
 const log4js = require('log4js');
 const proxyaddr = require('proxy-addr');
 const settings = require('../../utils/Settings');
-const {Server} = require('socket.io');
+import {Server} from 'socket.io'
 const socketIORouter = require('../../handler/SocketIORouter');
 const hooks = require('../../../static/js/pluginfw/hooks');
 const padMessageHandler = require('../../handler/PadMessageHandler');
@@ -96,20 +96,28 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
     maxHttpBufferSize: settings.socketIo.maxHttpBufferSize,
   });
 
-  io.on('connection', (socket:any) => {
-    sockets.add(socket);
-    socketsEvents.emit('updated');
-    // https://socket.io/docs/v3/faq/index.html
-    const session = socket.request.session;
-    session.connections++;
-    session.save();
-    socket.on('disconnect', () => {
-      sockets.delete(socket);
+  function handleConnection() {
+    return (socket: any) => {
+      sockets.add(socket);
       socketsEvents.emit('updated');
-    });
-  });
+      // https://socket.io/docs/v3/faq/index.html
+      const session = socket.request.session;
+      session.connections++;
+      session.save();
+      socket.on('disconnect', () => {
+        sockets.delete(socket);
+        socketsEvents.emit('updated');
+      });
+    };
+  }
+
+  io.on('connection', handleConnection);
 
   io.use(exports.socketSessionMiddleware(args));
+
+  // Temporary workaround so all clients go through middleware and handle connection
+  io.of('/pluginfw/installer').use(exports.socketSessionMiddleware(args))
+  io.of('/settings').use(exports.socketSessionMiddleware(args))
 
   io.use((socket:any, next:Function) => {
     socket.conn.on('packet', (packet:string) => {
