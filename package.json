@@ -1,0 +1,38 @@
+{
+  "name": "etherpad",
+  "description": "A free and open source realtime collaborative editor",
+  "homepage": "https://etherpad.org",
+  "keywords": [
+    "etherpad",
+    "realtime",
+    "collaborative",
+    "editor"
+  ],
+  "bin": {
+    "etherpad-healthcheck": "src/bin/etherpad-healthcheck",
+    "etherpad-lite": "src/bin/run"
+  },
+  "scripts": {
+    "lint": "pnpm --filter ep_etherpad-lite run lint",
+    "test": "pnpm --filter ep_etherpad-lite run test",
+    "test-container": "pnpm --filter ep_etherpad-lite run test-container",
+    "dev": "pnpm --filter ep_etherpad-lite run dev",
+    "prod": "pnpm --filter ep_etherpad-lite run prod",
+    "ts-check": "pnpm --filter ep_etherpad-lite run ts-check",
+    "ts-check:watch": "pnpm --filter ep_etherpad-lite run ts-check:watch"
+  },
+  "dependencies": {
+    "ep_etherpad-lite": "workspace:./src"
+  },
+  "engines": {
+    "node": ">=18.18.2",
+    "npm": ">=6.14.0",
+    "pnpm": ">=8.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ether/etherpad-lite.git"
+  },
+  "version": "1.9.7",
+  "license": "Apache-2.0"
+}
