@@ -24,13 +24,13 @@
  * limitations under the License.
  */
 
-import {PluginType} from "./types/Plugin";
-import {ErrorCaused} from "./types/ErrorCaused";
+import {PluginType} from "./src/node/types/Plugin";
+import {ErrorCaused} from "./src/node/types/ErrorCaused";
 import {PromiseHooks} from "node:v8";
 
 import log4js from 'log4js';
 
-const settings = require('./utils/Settings');
+const settings = require('./src/node/utils/Settings');
 
 let wtfnode: any;
 if (settings.dumpOnUncleanExit) {
@@ -43,19 +43,19 @@ if (settings.dumpOnUncleanExit) {
  * early check for version compatibility before calling
  * any modules that require newer versions of NodeJS
  */
-const NodeVersion = require('./utils/NodeVersion');
+const NodeVersion = require('./src/node/utils/NodeVersion');
 NodeVersion.enforceMinNodeVersion('12.17.0');
 NodeVersion.checkDeprecationStatus('12.17.0', '1.9.0');
 
-const UpdateCheck = require('./utils/UpdateCheck');
-const db = require('./db/DB');
-const express = require('./hooks/express');
-const hooks = require('../static/js/pluginfw/hooks');
-const pluginDefs = require('../static/js/pluginfw/plugin_defs');
-const plugins = require('../static/js/pluginfw/plugins');
-const installer = require('../static/js/pluginfw/installer');
-const {Gate} = require('./utils/promises');
-const stats = require('./stats')
+const UpdateCheck = require('./src/node/utils/UpdateCheck');
+const db = require('./src/node/db/DB');
+const express = require('./src/node/hooks/express');
+const hooks = require('./src/static/js/pluginfw/hooks');
+const pluginDefs = require('./src/static/js/pluginfw/plugin_defs');
+const plugins = require('./src/static/js/pluginfw/plugins');
+const installer = require('./src/static/js/pluginfw/installer');
+const {Gate} = require('./src/node/utils/promises');
+const stats = require('./src/node/stats')
 
 const logger = log4js.getLogger('server');
 

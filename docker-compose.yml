@@ -17,6 +17,8 @@ services:
     volumes:
       - ./src:/opt/etherpad-lite/src
       - ./package.json:/opt/etherpad-lite/package.json
+      - ./pnpm-lock.yaml:/opt/etherpad-lite/pnpm-lock.yaml
+      - ./server.ts:/opt/etherpad-lite/server.ts
       - node_modules:/opt/etherpad-lite/src/node_modules
       - pnpm-store:/home/etherpad/.local/share/pnpm/store/v3
     depends_on:

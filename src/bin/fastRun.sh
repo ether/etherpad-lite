@@ -19,4 +19,4 @@ cd "${MY_DIR}/../.." || exit 1
 echo "Running directly, without checking/installing dependencies"
 
 # run Etherpad main class
-exec node --import tsx src/node/server.ts "$@"
+exec node --import tsx server.ts "$@"

@@ -10,14 +10,14 @@
   ],
   "bin": {
     "etherpad-healthcheck": "src/bin/etherpad-healthcheck",
-    "etherpad-lite": "src/node/server.ts"
+    "etherpad-lite": "src/bin/run"
   },
   "scripts": {
     "lint": "eslint .",
     "test": "mocha --import=tsx --timeout 120000 --recursive src/tests/backend/specs src/node_modules/ep_*/static/tests/backend/specs",
     "test-container": "mocha --import=tsx --timeout 5000 src/tests/container/specs/api",
-    "dev": "node --import tsx src/node/server.ts",
-    "prod": "node --import tsx src/node/server.ts",
+    "dev": "node --import tsx server.ts",
+    "prod": "node --import tsx server.ts",
     "ts-check": "tsc --noEmit",
     "ts-check:watch": "tsc --noEmit --watch"
   },

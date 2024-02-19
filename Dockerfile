@@ -92,6 +92,7 @@ COPY --chown=etherpad:etherpad ./var ./var
 FROM build as development
 
 COPY --chown=etherpad:etherpad ./src/package.json .npmrc ./src/pnpm-lock.yaml ./src/
+COPY --chown=etherpad:etherpad ./pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --chown=etherpad:etherpad ./package.json ./package.json
 COPY --chown=etherpad:etherpad ./src/bin ./src/bin
 
