@@ -37,6 +37,7 @@ describe('Messages in the COLLABROOM', function () {
     let sendStarted;
     const finishSend = (() => {
       const socketJsonObj = helper.padChrome$.window.pad.socket;
+      console.log('Socket JSON obj is', socketJsonObj);
       const sendBackup = socketJsonObj.emit;
       let startSend;
       sendStarted = new Promise((resolve) => { startSend = resolve; });
