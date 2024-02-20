@@ -45,8 +45,10 @@ describe('Messages in the COLLABROOM', function () {
       socketJsonObj.send = (...args) => {
         startSend();
         sendP.then(() => {
-          socketJsonObj.emit = sendBackup;
-          socketJsonObj.emit('message', ...args);
+          socketJsonObj.send = sendBackup;
+          socketJsonObj.send('message', {
+            ...args,
+          });
         });
       };
       return finishSend;
