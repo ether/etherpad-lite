@@ -1,20 +1,27 @@
 'use strict';
 
-const log4js = require('log4js');
+import log4js from "log4js";
+
+import axios, {AxiosResponse} from "axios";
+import {PackageData, PackageInfo} from "../../../node/types/PackageInfo";
+import {MapArrayType} from "../../../node/types/MapType";
+
+import path from "path";
+
+import {promises as fs} from "fs";
+
 const plugins = require('./plugins');
 const hooks = require('./hooks');
 const runCmd = require('../../../node/utils/run_cmd');
 const settings = require('../../../node/utils/Settings');
-const axios = require('axios');
 const {PluginManager} = require('live-plugin-manager-pnpm');
-const {promises: fs} = require('fs');
-const path = require('path');
+
 const {findEtherpadRoot} = require('../../../node/utils/AbsolutePaths');
 const logger = log4js.getLogger('plugins');
 
-exports.manager = new PluginManager();
+export const manager = new PluginManager();
 
-exports.installedPluginsPath = path.join(settings.root, 'var/installed_plugins.json');
+export const installedPluginsPath = path.join(settings.root, 'var/installed_plugins.json');
 
 const onAllTasksFinished = async () => {
   await plugins.update();
@@ -30,10 +37,10 @@ const headers = {
 
 let tasks = 0;
 
-const wrapTaskCb = (cb) => {
+const wrapTaskCb = (cb:Function|null) => {
   tasks++;
 
-  return (...args) => {
+  return (...args: any) => {
     cb && cb(...args);
     tasks--;
     if (tasks === 0) onAllTasksFinished();
@@ -53,91 +60,94 @@ const migratePluginsFromNodeModules = async () => {
   await Promise.all(Object.entries(dependencies)
       .filter(([pkg, info]) => pkg.startsWith(plugins.prefix) && pkg !== 'ep_etherpad-lite')
       .map(async ([pkg, info]) => {
-        if (!info.resolved) {
+          const _info = info as PackageInfo
+          if (!_info.resolved) {
           // Install from node_modules directory
-          await exports.manager.installFromPath(`${findEtherpadRoot()}/node_modules/${pkg}`);
+          await manager.installFromPath(`${findEtherpadRoot()}/node_modules/${pkg}`);
         } else {
-          await exports.manager.install(pkg);
+          await manager.install(pkg);
         }
       }));
   await persistInstalledPlugins();
 };
 
-exports.checkForMigration = async () => {
+export const checkForMigration = async () => {
   logger.info('check installed plugins for migration');
 
   try {
-    await fs.access(exports.installedPluginsPath, fs.constants.F_OK);
+    await fs.access(installedPluginsPath, fs.constants.F_OK);
   } catch (err) {
     await migratePluginsFromNodeModules();
   }
 
-  const fileContent = await fs.readFile(exports.installedPluginsPath);
+  const fileContent = await fs.readFile(installedPluginsPath);
   const installedPlugins = JSON.parse(fileContent.toString());
 
   for (const plugin of installedPlugins.plugins) {
     if (plugin.name.startsWith(plugins.prefix) && plugin.name !== 'ep_etherpad-lite') {
-      await exports.manager.install(plugin.name, plugin.version);
+      await manager.install(plugin.name, plugin.version);
     }
   }
 };
 
 const persistInstalledPlugins = async () => {
-  const installedPlugins = {plugins: []};
-  for (const pkg of Object.values(await plugins.getPackages())) {
+  const installedPlugins:{
+    plugins: PackageData[]
+  } = {plugins: []};
+  for (const pkg of Object.values(await plugins.getPackages()) as PackageData[]) {
     installedPlugins.plugins.push({
       name: pkg.name,
       version: pkg.version,
     });
   }
   installedPlugins.plugins = [...new Set(installedPlugins.plugins)];
-  await fs.writeFile(exports.installedPluginsPath, JSON.stringify(installedPlugins));
+  await fs.writeFile(installedPluginsPath, JSON.stringify(installedPlugins));
 };
 
-exports.uninstall = async (pluginName, cb = null) => {
+export const uninstall = async (pluginName: string, cb:Function|null = null) => {
   cb = wrapTaskCb(cb);
   logger.info(`Uninstalling plugin ${pluginName}...`);
-  await exports.manager.uninstall(pluginName);
+  await manager.uninstall(pluginName);
   logger.info(`Successfully uninstalled plugin ${pluginName}`);
   await hooks.aCallAll('pluginUninstall', {pluginName});
   cb(null);
 };
 
-exports.install = async (pluginName, cb = null) => {
+export const install = async (pluginName: string, cb:Function|null = null) => {
   cb = wrapTaskCb(cb);
   logger.info(`Installing plugin ${pluginName}...`);
-  await exports.manager.install(pluginName);
+  await manager.install(pluginName);
   logger.info(`Successfully installed plugin ${pluginName}`);
   await hooks.aCallAll('pluginInstall', {pluginName});
   cb(null);
 };
 
-exports.availablePlugins = null;
+export let availablePlugins:MapArrayType<PackageInfo>|null = null;
 let cacheTimestamp = 0;
 
-exports.getAvailablePlugins = (maxCacheAge) => {
+export const getAvailablePlugins = (maxCacheAge: number|false) => {
   const nowTimestamp = Math.round(Date.now() / 1000);
 
-  return new Promise(async (resolve, reject) => {
+  return new Promise<MapArrayType<PackageInfo>>(async (resolve, reject) => {
     // check cache age before making any request
-    if (exports.availablePlugins && maxCacheAge && (nowTimestamp - cacheTimestamp) <= maxCacheAge) {
-      return resolve(exports.availablePlugins);
+    if (availablePlugins && maxCacheAge && (nowTimestamp - cacheTimestamp) <= maxCacheAge) {
+      return resolve(availablePlugins);
     }
 
     await axios.get('https://static.etherpad.org/plugins.json', {headers})
-        .then((pluginsLoaded) => {
-          exports.availablePlugins = pluginsLoaded.data;
+        .then((pluginsLoaded:AxiosResponse<MapArrayType<PackageInfo>>) => {
+          availablePlugins = pluginsLoaded.data;
           cacheTimestamp = nowTimestamp;
-          resolve(exports.availablePlugins);
+          resolve(availablePlugins);
         })
         .catch(async (err) => reject(err));
   });
 };
 
 
-exports.search = (searchTerm, maxCacheAge) => exports.getAvailablePlugins(maxCacheAge).then(
-    (results) => {
-      const res = {};
+export const search = (searchTerm: string, maxCacheAge: number) => getAvailablePlugins(maxCacheAge).then(
+    (results: MapArrayType<PackageInfo>) => {
+      const res:MapArrayType<PackageData> = {};
 
       if (searchTerm) {
         searchTerm = searchTerm.toLowerCase();

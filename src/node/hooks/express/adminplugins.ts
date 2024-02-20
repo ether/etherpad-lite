@@ -1,17 +1,14 @@
 'use strict';
 
 import {ArgsExpressType} from "../../types/ArgsExpressType";
-import {Socket} from "node:net";
 import {ErrorCaused} from "../../types/ErrorCaused";
 import {QueryType} from "../../types/QueryType";
-import {PluginType} from "../../types/Plugin";
 
-const eejs = require('../../eejs');
-const settings = require('../../utils/Settings');
-const installer = require('../../../static/js/pluginfw/installer');
+import {getAvailablePlugins, install, search, uninstall} from "../../../static/js/pluginfw/installer";
+import {PackageData} from "../../types/PackageInfo";
+
 const pluginDefs = require('../../../static/js/pluginfw/plugin_defs');
-const plugins = require('../../../static/js/pluginfw/plugins');
-const semver = require('semver');
+import semver from 'semver';
 
 
 exports.socketio = (hookName:string, args:ArgsExpressType, cb:Function) => {
@@ -32,7 +29,7 @@ exports.socketio = (hookName:string, args:ArgsExpressType, cb:Function) => {
     socket.on('checkUpdates', async () => {
       // Check plugins for updates
       try {
-        const results = await installer.getAvailablePlugins(/* maxCacheAge:*/ 60 * 10);
+        const results = await getAvailablePlugins(/* maxCacheAge:*/ 60 * 10);
 
         const updatable = Object.keys(pluginDefs.plugins).filter((plugin) => {
           if (!results[plugin]) return false;
@@ -54,7 +51,7 @@ exports.socketio = (hookName:string, args:ArgsExpressType, cb:Function) => {
 
     socket.on('getAvailable', async (query:string) => {
       try {
-        const results = await installer.getAvailablePlugins(/* maxCacheAge:*/ false);
+        const results = await getAvailablePlugins(/* maxCacheAge:*/ false);
         socket.emit('results:available', results);
       } catch (er) {
         console.error(er);
@@ -64,7 +61,7 @@ exports.socketio = (hookName:string, args:ArgsExpressType, cb:Function) => {
 
     socket.on('search', async (query: QueryType) => {
       try {
-        const results = await installer.search(query.searchTerm, /* maxCacheAge:*/ 60 * 10);
+        const results = await search(query.searchTerm, /* maxCacheAge:*/ 60 * 10);
         let res = Object.keys(results)
             .map((pluginName) => results[pluginName])
             .filter((plugin) => !pluginDefs.plugins[plugin.name]);
@@ -79,7 +76,7 @@ exports.socketio = (hookName:string, args:ArgsExpressType, cb:Function) => {
     });
 
     socket.on('install', (pluginName: string) => {
-      installer.install(pluginName, (err: ErrorCaused) => {
+      install(pluginName, (err: ErrorCaused) => {
         if (err) console.warn(err.stack || err.toString());
 
         socket.emit('finished:install', {
@@ -91,7 +88,7 @@ exports.socketio = (hookName:string, args:ArgsExpressType, cb:Function) => {
     });
 
     socket.on('uninstall', (pluginName:string) => {
-      installer.uninstall(pluginName, (err:ErrorCaused) => {
+      uninstall(pluginName, (err:ErrorCaused) => {
         if (err) console.warn(err.stack || err.toString());
 
         socket.emit('finished:uninstall', {plugin: pluginName, error: err ? err.message : null});
@@ -108,7 +105,7 @@ exports.socketio = (hookName:string, args:ArgsExpressType, cb:Function) => {
  * @param  {String} dir The directory of the plugin
  * @return {Object[]}
  */
-const sortPluginList = (plugins:PluginType[], property:string, /* ASC?*/dir:string): object[] => plugins.sort((a, b) => {
+const sortPluginList = (plugins:PackageData[], property:string, /* ASC?*/dir:string): PackageData[] => plugins.sort((a, b) => {
   // @ts-ignore
   if (a[property] < b[property]) {
     return dir ? -1 : 1;
