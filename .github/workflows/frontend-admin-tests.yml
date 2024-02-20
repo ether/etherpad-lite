@@ -67,7 +67,7 @@ jobs:
       # rules.
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        run: src/bin/installDeps.sh
+        run: bin/installDeps.sh
       -
         name: Install etherpad plugins
         run: rm -Rf node_modules/ep_align/static/tests/*

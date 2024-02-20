@@ -88,40 +88,25 @@ COPY --chown=etherpad:etherpad ./.git/HEAD ./.git/HEAD
 COPY --chown=etherpad:etherpad ./.git/refs ./.git/refs
 COPY --chown=etherpad:etherpad ${SETTINGS} ./settings.json
 COPY --chown=etherpad:etherpad ./var ./var
-COPY --chown=etherpad:etherpad ./package.json ./package.json
-COPY --chown=etherpad:etherpad ./pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY --chown=etherpad:etherpad ./bin ./bin
+COPY --chown=etherpad:etherpad ./pnpm-workspace.yaml ./package.json ./
 
 FROM build as development
 
 COPY --chown=etherpad:etherpad ./src/package.json .npmrc ./src/pnpm-lock.yaml ./src/
 
-COPY --chown=etherpad:etherpad ./src/bin ./src/bin
-
-RUN { [ -z "${ETHERPAD_PLUGINS}" ] || \
-      pnpm install --workspace-root ${ETHERPAD_PLUGINS}; } && \
-    src/bin/installDeps.sh
-
+RUN bin/installDeps.sh && { [ -z "${ETHERPAD_PLUGINS}" ] || \
+      pnpm install --workspace-root ${ETHERPAD_PLUGINS}; }
+    
 FROM build as production
 
-# By default, Etherpad container is built and run in "production" mode. This is
-# leaner (development dependencies are not installed) and runs faster (among
-# other things, assets are minified & compressed).
 ENV NODE_ENV=production
 ENV ETHERPAD_PRODUCTION=true
 
 COPY --chown=etherpad:etherpad ./src ./src
 
-# Plugins must be installed before installing Etherpad's dependencies, otherwise
-# npm will try to hoist common dependencies by removing them from
-# src/node_modules and installing them in the top-level node_modules. As of
-# v6.14.10, npm's hoist logic appears to be buggy, because it sometimes removes
-# dependencies from src/node_modules but fails to add them to the top-level
-# node_modules. Even if npm correctly hoists the dependencies, the hoisting
-# seems to confuse tools such as `npm outdated`, `npm update`, and some ESLint
-# rules.
-RUN { [ -z "${ETHERPAD_PLUGINS}" ] || \
+RUN bin/installDeps.sh && { [ -z "${ETHERPAD_PLUGINS}" ] || \
       pnpm install --workspace-root ${ETHERPAD_PLUGINS}; } && \
-    src/bin/installDeps.sh && \
     rm -rf ~/.npm
 
 # Copy the configuration file.
@@ -137,4 +122,4 @@ HEALTHCHECK --interval=5s --timeout=3s \
   CMD curl --silent http://localhost:9001/health | grep -E "pass|ok|up" > /dev/null || exit 1
 
 EXPOSE 9001
-CMD ["npm", "run", "prod", "--prefix", "./src"]
+CMD ["pnpm", "run", "prod"]

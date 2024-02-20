@@ -55,7 +55,7 @@ jobs:
         - *set_loglevel_warn
         - *enable_admin_tests
         - "src/tests/frontend/travis/sauce_tunnel.sh"
-        - "src/bin/installDeps.sh"
+        - "bin/installDeps.sh"
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
       script:
         - "./src/tests/frontend/travis/runner.sh"
@@ -63,7 +63,7 @@ jobs:
       install:
         - *install_libreoffice
         - *set_loglevel_warn
-        - "src/bin/installDeps.sh"
+        - "bin/installDeps.sh"
         - "cd src && pnpm install && cd -"
       script:
         - "cd src && pnpm test"
@@ -77,7 +77,7 @@ jobs:
     - name: "Load test Etherpad without Plugins"
       install:
         - *set_loglevel_warn
-        - "src/bin/installDeps.sh"
+        - "bin/installDeps.sh"
         - "cd src && pnpm install && cd -"
         - "npm install -g etherpad-load-test"
       script:
@@ -90,7 +90,7 @@ jobs:
         - *set_loglevel_warn
         - *enable_admin_tests
         - "src/tests/frontend/travis/sauce_tunnel.sh"
-        - "src/bin/installDeps.sh"
+        - "bin/installDeps.sh"
         - "rm src/tests/frontend/specs/*"
         - *install_plugins
         - "export GIT_HASH=$(git rev-parse --verify --short HEAD)"
@@ -105,7 +105,7 @@ jobs:
       install:
         - *install_libreoffice
         - *set_loglevel_warn
-        - "src/bin/installDeps.sh"
+        - "bin/installDeps.sh"
         - *install_plugins
         - "cd src && pnpm install && cd -"
       script:
@@ -120,7 +120,7 @@ jobs:
     - name: "Load test Etherpad with Plugins"
       install:
         - *set_loglevel_warn
-        - "src/bin/installDeps.sh"
+        - "bin/installDeps.sh"
         - *install_plugins
         - "cd src && npm install && cd -"
         - "npm install -g etherpad-load-test"
@@ -135,7 +135,7 @@ jobs:
         - "docker run -p 8081:80 --rm --network ep_net --ip 172.23.42.1 -d nginx-latest"
         - "docker run --name etherpad-docker -p 9000:9001 --rm --network ep_net --ip 172.23.42.2 -e 'TRUST_PROXY=true' epl-debian-slim &"
         - "docker run --rm --network ep_net --ip 172.23.42.3 --name anotherip -dt anotherip"
-        - "./src/bin/installDeps.sh"
+        - "./bin/installDeps.sh"
       script:
         - "cd src/tests/ratelimit && bash testlimits.sh"
 

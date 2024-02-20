@@ -9,16 +9,17 @@ services:
     build:
       context: .
       args:
-        ETHERPAD_PLUGINS:
+        ETHERPAD_PLUGINS: >-
+          ep_image_upload
       # change from development to production if needed
       target: development
     tty: true
     stdin_open: true
     volumes:
+      # no volume mapping of node_modules as otherwise the build-time installed plugins will be overwritten with the mount
+      # the same applies to package.json and pnpm-lock.yaml in root dir as these would also get overwritten and build time installed plugins will be removed
       - ./src:/opt/etherpad-lite/src
-      - ./package.json:/opt/etherpad-lite/package.json
-      - node_modules:/opt/etherpad-lite/src/node_modules
-      - pnpm-store:/home/etherpad/.local/share/pnpm/store/v3
+      - ./bin:/opt/etherpad-lite/bin
     depends_on:
       - postgres
     environment:
@@ -61,5 +62,3 @@ services:
 
 volumes:
   postgres_data:
-  node_modules:
-  pnpm-store:

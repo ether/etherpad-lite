@@ -46,7 +46,7 @@ jobs:
         run: pnpm config set auto-install-peers false
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        run: src/bin/installDeps.sh
+        run: bin/installDeps.sh
       -
         name: export GIT_HASH to env
         id: environment
@@ -142,7 +142,7 @@ jobs:
       # rules.
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        run: src/bin/installDeps.sh
+        run: bin/installDeps.sh
       -
         name: export GIT_HASH to env
         id: environment

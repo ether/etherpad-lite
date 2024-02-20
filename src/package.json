@@ -75,7 +75,7 @@
     "wtfnode": "^0.9.1"
   },
   "bin": {
-    "etherpad-healthcheck": "bin/etherpad-healthcheck",
+    "etherpad-healthcheck": "../bin/etherpad-healthcheck",
     "etherpad-lite": "node/server.ts"
   },
   "devDependencies": {
