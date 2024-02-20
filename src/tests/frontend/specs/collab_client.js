@@ -36,8 +36,8 @@ describe('Messages in the COLLABROOM', function () {
     // User 1 starts sending a change to the server.
     let sendStarted;
     const finishSend = (() => {
-      const socketJsonObj = helper.padChrome$.window.pad.socket.json;
-      const sendBackup = socketJsonObj.send;
+      const socketJsonObj = helper.padChrome$.window.pad.socket;
+      const sendBackup = socketJsonObj.emit;
       let startSend;
       sendStarted = new Promise((resolve) => { startSend = resolve; });
       let finishSend;
