@@ -53,7 +53,7 @@ const migratePluginsFromNodeModules = async () => {
   await Promise.all(Object.entries(dependencies)
       .filter(([pkg, info]) => pkg.startsWith(plugins.prefix) && pkg !== 'ep_etherpad-lite')
       .map(async ([pkg, info]) => {
-        if (!info._resolved) {
+        if (!info.resolved) {
           // Install from node_modules directory
           await exports.manager.installFromPath(`${findEtherpadRoot()}/node_modules/${pkg}`);
         } else {
