@@ -42,7 +42,7 @@ describe('Messages in the COLLABROOM', function () {
       sendStarted = new Promise((resolve) => { startSend = resolve; });
       let finishSend;
       const sendP = new Promise((resolve) => { finishSend = resolve; });
-      socketJsonObj.emit = (...args) => {
+      socketJsonObj.send = (...args) => {
         startSend();
         sendP.then(() => {
           socketJsonObj.emit = sendBackup;
