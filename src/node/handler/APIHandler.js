@@ -24,7 +24,7 @@ const fs = require('fs');
 const api = require('../db/API');
 const log4js = require('log4js');
 const padManager = require('../db/PadManager');
-const randomString = require('../utils/randomstring');
+import randomString from "../utils/randomstring";
 const argv = require('../utils/Cli').argv;
 const createHTTPError = require('http-errors');
 

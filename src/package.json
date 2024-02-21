@@ -81,6 +81,7 @@
   "devDependencies": {
     "@types/async": "^3.2.24",
     "@types/cross-spawn": "^6.0.6",
+    "@types/ejs": "^3.1.5",
     "@types/express": "^4.17.21",
     "@types/formidable": "^3.4.5",
     "@types/jsonminify": "^0.4.3",

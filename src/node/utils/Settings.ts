@@ -852,4 +852,3 @@ export const exportedForTestingOnly = {
 
 // initially load settings
 reloadSettings();
-

@@ -20,11 +20,11 @@
  * require("./index").require("./path/to/template.ejs")
  */
 
-const ejs = require('ejs');
-const fs = require('fs');
+import ejs from 'ejs';
+import fs from 'fs';
 const hooks = require('../../static/js/pluginfw/hooks.js');
-const path = require('path');
-const resolve = require('resolve');
+import path from 'path';
+import resolve from 'resolve';
 import {root, settings} from '../utils/Settings'
 
 const templateCache = new Map();
@@ -86,8 +86,7 @@ exports.require = (name: string, args: any, mod: any) => {
   const cache = settings.maxAge !== 0;
   const template = cache && templateCache.get(ejspath) || ejs.compile(
       '<% e._init({get: () => __output, set: (s) => { __output = s; }}); %>' +
-        `${fs.readFileSync(ejspath).toString()}<% e._exit(); %>`,
-      {filename: ejspath});
+        `${fs.readFileSync(ejspath).toString()}<% e._exit(); %>`, {filename: ejspath});
   if (cache) templateCache.set(ejspath, template);
 
   exports.info.args.push(args);
