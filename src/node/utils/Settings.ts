@@ -403,6 +403,7 @@ export const settings: SettingsObj = {
     * e.g. /p/EtHeRpAd to /p/etherpad
     */
     lowerCasePadIds: false,
+    randomVersionString: randomString(4)
 }
 
 /* Root path of the installation */

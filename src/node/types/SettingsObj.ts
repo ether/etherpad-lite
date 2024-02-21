@@ -110,4 +110,5 @@ export type SettingsObj = {
     importMaxFileSize: number;
     enableAdminUITests: boolean;
     lowerCasePadIds: boolean;
+    randomVersionString: string;
 }
