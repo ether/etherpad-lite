@@ -190,6 +190,7 @@ describe(__filename, function () {
       before(async function () {
         if ((!settings.abiword || settings.abiword.indexOf('/') === -1) &&
             (!settings.soffice || settings.soffice.indexOf('/') === -1)) {
+          console.log('Skipping AbiWord/LibreOffice tests because abiword or soffice is not set.');
           this.skip();
         }
       });

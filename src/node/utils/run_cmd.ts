@@ -5,11 +5,11 @@ import {ChildProcess} from "node:child_process";
 import {PromiseWithStd} from "../types/PromiseWithStd";
 import {Readable} from "node:stream";
 
-import {root, settings} from "./Settings";
+import {root} from "./Settings";
 
-const spawn = require('cross-spawn');
-const log4js = require('log4js');
-const path = require('path');
+import spawn from 'cross-spawn';
+import log4js from 'log4js';
+import path from 'path';
 const logger = log4js.getLogger('runCmd');
 
 const logLines = (readable: undefined | Readable | null, logLineFn: (arg0: (string | undefined)) => void) => {
@@ -74,7 +74,7 @@ const logLines = (readable: undefined | Readable | null, logLineFn: (arg0: (stri
  *   - `stderr`: Similar to `stdout` but for stderr.
  *   - `child`: The ChildProcess object.
  */
-module.exports = exports = (args: string[], opts:RunCMDOptions = {}) => {
+module.exports = exports = (args: string[], opts:any = {}) => {
   logger.debug(`Executing command: ${args.join(' ')}`);
 
   opts = {cwd: root, ...opts};

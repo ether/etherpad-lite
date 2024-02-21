@@ -17,7 +17,7 @@ const padMessageHandler = require('../handler/PadMessageHandler');
 const groupManager = require('./GroupManager');
 const CustomError = require('../utils/customError');
 const readOnlyManager = require('./ReadOnlyManager');
-const randomString = require('../utils/randomstring');
+import randomString from '../utils/randomstring';
 const hooks = require('../../static/js/pluginfw/hooks');
 const {padutils: {warnDeprecated}} = require('../../static/js/pad_utils');
 const promises = require('../utils/promises');

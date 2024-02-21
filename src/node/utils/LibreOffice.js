@@ -23,14 +23,14 @@ const log4js = require('log4js');
 const os = require('os');
 const path = require('path');
 const runCmd = require('./run_cmd');
-import {soffice} from './Settings';
+import {settings} from './Settings';
 
 const logger = log4js.getLogger('LibreOffice');
 
 const doConvertTask = async (task) => {
   const tmpDir = os.tmpdir();
   const p = runCmd([
-    soffice,
+    settings.soffice,
     '--headless',
     '--invisible',
     '--nologo',
