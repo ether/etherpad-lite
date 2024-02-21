@@ -19,7 +19,6 @@ const padId = process.argv[2];
 
 (async () => {
   // initialize database
-  require('../node/utils/Settings');
   const db = require('../node/db/DB');
   await db.init();
 

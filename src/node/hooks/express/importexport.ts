@@ -3,7 +3,7 @@
 import {ArgsExpressType} from "../../types/ArgsExpressType";
 
 const hasPadAccess = require('../../padaccess');
-const settings = require('../../utils/Settings');
+import {exportAvailable, importExportRateLimiting} from '../../utils/Settings';
 const exportHandler = require('../../handler/ExportHandler');
 const importHandler = require('../../handler/ImportHandler');
 const padManager = require('../../db/PadManager');
@@ -14,7 +14,7 @@ const webaccess = require('./webaccess');
 
 exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Function) => {
   const limiter = rateLimit({
-    ...settings.importExportRateLimiting,
+    ...importExportRateLimiting,
     handler: (request:any) => {
       if (request.rateLimit.current === request.rateLimit.limit + 1) {
         // when the rate limiter triggers, write a warning in the logs
@@ -35,7 +35,7 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
       }
 
       // if abiword is disabled, and this is a format we only support with abiword, output a message
-      if (settings.exportAvailable() === 'no' &&
+      if (exportAvailable() === 'no' &&
           ['odt', 'pdf', 'doc'].indexOf(req.params.type) !== -1) {
         console.error(`Impossible to export pad "${req.params.pad}" in ${req.params.type} format.` +
                       ' There is no converter configured');

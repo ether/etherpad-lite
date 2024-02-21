@@ -49,7 +49,7 @@ const unescape = (val) => {
   const fs = require('fs');
   const log4js = require('log4js');
   const readline = require('readline');
-  const settings = require('../node/utils/Settings');
+  import * as settings from '../node/utils/Settings';
   const ueberDB = require('ueberdb2');
 
   const dbWrapperSettings = {

@@ -19,7 +19,7 @@ let valueCount = 0;
 
 (async () => {
   // initialize database
-  require('../node/utils/Settings');
+  import * as settings from '../node/utils/Settings';
   const db = require('../node/db/DB');
   await db.init();
 
@@ -45,7 +45,7 @@ let valueCount = 0;
   // now fetch and reinsert every key
   console.log('Fetch and reinsert every key');
   for (const key of neededDBValues) {
-    if (valueCount % 100 === 0) console.log(valueCount + "/" + neededDBValues.length);
+    if (valueCount % 100 === 0) console.log(`${valueCount}/${neededDBValues.length}`);
     const value = await db.get(key);
     // if it isn't a globalAuthor value which we want to ignore..
     // console.log(`Key: ${key}, value: ${JSON.stringify(value)}`);

@@ -25,7 +25,7 @@ const padManager = require('../db/PadManager');
 const padMessageHandler = require('./PadMessageHandler');
 const fs = require('fs').promises;
 const path = require('path');
-const settings = require('../utils/Settings');
+import * as settings from '../utils/Settings';
 const {Formidable} = require('formidable');
 const os = require('os');
 const importHtml = require('../utils/ImportHtml');

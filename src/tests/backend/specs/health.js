@@ -2,7 +2,7 @@
 
 const assert = require('assert').strict;
 const common = require('../common');
-const settings = require('../../../node/utils/Settings');
+import * as settings from '../../../node/utils/Settings';
 const superagent = require('superagent');
 
 describe(__filename, function () {

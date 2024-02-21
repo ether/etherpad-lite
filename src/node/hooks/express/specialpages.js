@@ -6,7 +6,7 @@ const fs = require('fs');
 const fsp = fs.promises;
 const toolbar = require('../../utils/toolbar');
 const hooks = require('../../../static/js/pluginfw/hooks');
-const settings = require('../../utils/Settings');
+import * as settings from '../../utils/Settings';
 const util = require('util');
 const webaccess = require('./webaccess');
 

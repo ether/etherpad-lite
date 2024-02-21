@@ -3,7 +3,7 @@
 const assert = require('assert').strict;
 const log4js = require('log4js');
 const httpLogger = log4js.getLogger('http');
-const settings = require('../../utils/Settings');
+import * as settings from '../../utils/Settings';
 const hooks = require('../../../static/js/pluginfw/hooks');
 const readOnlyManager = require('../../db/ReadOnlyManager');
 

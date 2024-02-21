@@ -26,14 +26,13 @@
 
 import {PluginType} from "./types/Plugin";
 import {ErrorCaused} from "./types/ErrorCaused";
-import {PromiseHooks} from "node:v8";
-
 import log4js from 'log4js';
 
-const settings = require('./utils/Settings');
+import {dumpOnUncleanExit} from './utils/Settings';
+import * as settings from './utils/Settings';
 
 let wtfnode: any;
-if (settings.dumpOnUncleanExit) {
+if (dumpOnUncleanExit) {
   // wtfnode should be loaded after log4js.replaceConsole() so that it uses log4js for logging, and
   // it should be above everything else so that it can hook in before resources are used.
   wtfnode = require('wtfnode');
@@ -267,7 +266,7 @@ exports.exit = async (err: ErrorCaused|string|null = null) => {
     logger.error('Something that should have been cleaned up during the shutdown hook (such as ' +
                 'a timer, worker thread, or open connection) is preventing Node.js from exiting');
 
-    if (settings.dumpOnUncleanExit) {
+    if (dumpOnUncleanExit) {
       wtfnode.dump();
     } else {
       logger.error('Enable `dumpOnUncleanExit` setting to get a dump of objects preventing a ' +

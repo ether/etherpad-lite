@@ -4,7 +4,7 @@ const fs = require('fs').promises;
 const minify = require('../../utils/Minify');
 const path = require('path');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
-const settings = require('../../utils/Settings');
+import * as settings from '../../utils/Settings';
 const CachingMiddleware = require('../../utils/caching_middleware');
 const Yajsml = require('etherpad-yajsml');
 

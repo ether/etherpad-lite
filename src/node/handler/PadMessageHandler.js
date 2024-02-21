@@ -28,7 +28,7 @@ const AttributeManager = require('../../static/js/AttributeManager');
 const authorManager = require('../db/AuthorManager');
 const {padutils} = require('../../static/js/pad_utils');
 const readOnlyManager = require('../db/ReadOnlyManager');
-const settings = require('../utils/Settings');
+import * as settings from '../utils/Settings';
 const securityManager = require('../db/SecurityManager');
 const plugins = require('../../static/js/pluginfw/plugin_defs.js');
 const log4js = require('log4js');
@@ -1240,7 +1240,7 @@ const _getRoomSockets = (padID) => {
   // it does here, but synchronously to avoid a race condition. This code will have to change when
   // we update to socket.io v3.
   const room = ns.adapter.rooms?.get(padID);
-  
+
   if (!room) return [];
 
   return Array.from(room)

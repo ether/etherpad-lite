@@ -14,7 +14,7 @@ import fs from 'fs';
 const hooks = require('../../static/js/pluginfw/hooks');
 import log4js from 'log4js';
 const SessionStore = require('../db/SessionStore');
-const settings = require('../utils/Settings');
+import * as settings from '../utils/Settings';
 const stats = require('../stats')
 import util from 'util';
 const webaccess = require('./express/webaccess');
@@ -177,6 +177,7 @@ exports.restartServer = async () => {
   // starts listening to requests as reported in issue #158. Not installing the log4js connect
   // logger when the log level has a higher severity than INFO since it would not log at that level
   // anyway.
+  // @ts-ignore
   if (!(settings.loglevel === 'WARN' && settings.loglevel === 'ERROR')) {
     app.use(log4js.connectLogger(logger, {
       level: log4js.levels.DEBUG.levelStr,

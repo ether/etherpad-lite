@@ -12,7 +12,7 @@ process.on('unhandledRejection', (err) => { throw err; });
 const fs = require('fs');
 const path = require('path');
 const querystring = require('querystring');
-const settings = require('../node/utils/Settings');
+import * as settings from '../node/utils/Settings';
 const supertest = require('supertest');
 
 (async () => {

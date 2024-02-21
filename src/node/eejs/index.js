@@ -25,7 +25,7 @@ const fs = require('fs');
 const hooks = require('../../static/js/pluginfw/hooks.js');
 const path = require('path');
 const resolve = require('resolve');
-const settings = require('../utils/Settings');
+import * as settings from '../utils/Settings'
 
 const templateCache = new Map();
 

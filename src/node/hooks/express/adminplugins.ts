@@ -7,7 +7,7 @@ import {QueryType} from "../../types/QueryType";
 import {PluginType} from "../../types/Plugin";
 
 const eejs = require('../../eejs');
-const settings = require('../../utils/Settings');
+import * as settings from '../../utils/Settings';
 const installer = require('../../../static/js/pluginfw/installer');
 const pluginDefs = require('../../../static/js/pluginfw/plugin_defs');
 const plugins = require('../../../static/js/pluginfw/plugins');

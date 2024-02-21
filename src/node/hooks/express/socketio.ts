@@ -6,7 +6,7 @@ const events = require('events');
 const express = require('../express');
 const log4js = require('log4js');
 const proxyaddr = require('proxy-addr');
-const settings = require('../../utils/Settings');
+import * as settings from '../../utils/Settings';
 import {Server} from 'socket.io'
 const socketIORouter = require('../../handler/SocketIORouter');
 const hooks = require('../../../static/js/pluginfw/hooks');
@@ -71,6 +71,7 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
   // transports in this list at once
   // e.g. XHR is disabled in IE by default, so in IE it should use jsonp-polling
   io = new Server(args.server, {
+    // @ts-ignore
     transports: settings.socketTransportProtocols,
   }).listen(args.server, {
     /*

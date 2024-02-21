@@ -81,7 +81,7 @@ export class SecretRotator {
    *     rotation. If the oldest known secret starts after `lifetime` ago, this secret will cover
    *     the time period starting `lifetime` ago and ending at the start of that secret.
    */
-  constructor(dbPrefix: string, interval: number, lifetime: number, legacyStaticSecret:string|null = null) {
+  constructor(dbPrefix: string, interval: number, lifetime: number, legacyStaticSecret:string | string[] | null  = null) {
     /**
      * The secrets. The first secret in this array is the one that should be used to generate new
      * MACs. All of the secrets in this array should be used when attempting to authenticate an
