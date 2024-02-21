@@ -24,7 +24,7 @@ const cloneDeep = require('lodash.clonedeep');
 const createHTTPError = require('http-errors');
 
 const apiHandler = require('../../handler/APIHandler');
-import {ssl} from '../../utils/Settings';
+import {settings} from '../../utils/Settings';
 
 const log4js = require('log4js');
 const logger = log4js.getLogger('API');
@@ -724,5 +724,5 @@ const getApiRootForVersion = (version:string, style:any = APIPathStyle.FLAT): st
 const generateServerForApiVersion = (apiRoot:string, req:any): {
   url:string
 } => ({
-  url: `${ssl ? 'https' : 'http'}://${req.headers.host}${apiRoot}`,
+  url: `${settings.ssl ? 'https' : 'http'}://${req.headers.host}${apiRoot}`,
 });

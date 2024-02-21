@@ -7,7 +7,7 @@ import {QueryType} from "../../types/QueryType";
 import {PluginType} from "../../types/Plugin";
 
 const eejs = require('../../eejs');
-import * as settings from '../../utils/Settings';
+import {getEpVersion, getGitCommit} from '../../utils/Settings';
 const installer = require('../../../static/js/pluginfw/installer');
 const pluginDefs = require('../../../static/js/pluginfw/plugin_defs');
 const plugins = require('../../../static/js/pluginfw/plugins');
@@ -24,8 +24,8 @@ exports.expressCreateServer = (hookName:string, args: ArgsExpressType, cb:Functi
   });
 
   args.app.get('/admin/plugins/info', (req:any, res:any) => {
-    const gitCommit = settings.getGitCommit();
-    const epVersion = settings.getEpVersion();
+    const gitCommit = getGitCommit();
+    const epVersion = getEpVersion();
 
     res.send(eejs.require('ep_etherpad-lite/templates/admin/plugins-info.html', {
       gitCommit,

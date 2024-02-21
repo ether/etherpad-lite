@@ -25,7 +25,7 @@ const fs = require('fs');
 const hooks = require('../../static/js/pluginfw/hooks.js');
 const path = require('path');
 const resolve = require('resolve');
-import * as settings from '../utils/Settings'
+import {root, settings} from '../utils/Settings'
 
 const templateCache = new Map();
 
@@ -38,16 +38,16 @@ exports.info = {
 
 const getCurrentFile = () => exports.info.file_stack[exports.info.file_stack.length - 1];
 
-exports._init = (b, recursive) => {
+exports._init = (b:string, recursive: boolean) => {
   exports.info.__output_stack.push(exports.info.__output);
   exports.info.__output = b;
 };
 
-exports._exit = (b, recursive) => {
+exports._exit = (b: string, recursive: boolean) => {
   exports.info.__output = exports.info.__output_stack.pop();
 };
 
-exports.begin_block = (name) => {
+exports.begin_block = (name:string) => {
   exports.info.block_stack.push(name);
   exports.info.__output_stack.push(exports.info.__output.get());
   exports.info.__output.set('');
@@ -63,7 +63,7 @@ exports.end_block = () => {
   exports.info.__output.set(exports.info.__output.get().concat(args.content));
 };
 
-exports.require = (name, args, mod) => {
+exports.require = (name: string, args: any, mod: any) => {
   if (args == null) args = {};
 
   let basedir = __dirname;
@@ -76,7 +76,7 @@ exports.require = (name, args, mod) => {
     basedir = path.dirname(mod.filename);
     paths = mod.paths;
   }
-  paths.push(settings.root + '/plugin_packages')
+  paths.push(root + '/plugin_packages')
 
   const ejspath = resolve.sync(name, {paths, basedir, extensions: ['.html', '.ejs']});
 

@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert').strict;
-const {parseSettings} = require('../../../node/utils/Settings').exportedForTestingOnly;
+import {parseSettings} from '../../../node/utils/Settings';
 const path = require('path');
 const process = require('process');
 

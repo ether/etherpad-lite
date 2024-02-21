@@ -4,7 +4,7 @@ const path = require('path');
 const fsp = require('fs').promises;
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
 const sanitizePathname = require('../../utils/sanitizePathname');
-import * as settings from '../../utils/Settings';
+import {root, settings} from '../../utils/Settings';
 
 // Returns all *.js files under specDir (recursively) as relative paths to specDir, using '/'
 // instead of path.sep to separate pathname components.
@@ -57,7 +57,7 @@ exports.expressPreSession = async (hookName, {app}) => {
     })().catch((err) => next(err || new Error(err)));
   });
 
-  const rootTestFolder = path.join(settings.root, 'src/tests/frontend/');
+  const rootTestFolder = path.join(root, 'src/tests/frontend/');
 
   app.get('/tests/frontend/index.html', (req, res) => {
     res.redirect(['./', ...req.url.split('?').slice(1)].join('?'));

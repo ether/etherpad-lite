@@ -2,7 +2,7 @@
 
 const common = require('../common');
 const padManager = require('../../../node/db/PadManager');
-import * as settings from '../../../node/utils/Settings';
+import {settings} from '../../../node/utils/Settings';
 
 describe(__filename, function () {
   let agent;

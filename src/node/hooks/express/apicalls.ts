@@ -2,7 +2,7 @@
 
 const log4js = require('log4js');
 const clientLogger = log4js.getLogger('client');
-const {Formidable} = require('formidable');
+import {Formidable} from 'formidable';
 const apiHandler = require('../../handler/APIHandler');
 const util = require('util');
 
@@ -25,6 +25,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
   // The Etherpad client side sends information about client side javscript errors
   app.post('/jserror', (req:any, res:any, next:Function) => {
     (async () => {
+      // @ts-ignore
       const data = JSON.parse(await parseJserrorForm(req));
       clientLogger.warn(`${data.msg} --`, {
         [util.inspect.custom]: (depth: number, options:any) => {

@@ -9,7 +9,7 @@
 const common = require('../common');
 const assert = require('../assert-legacy').strict;
 const queryString = require('querystring');
-import * as settings from '../../../node/utils/Settings';
+import {settings} from '../../../node/utils/Settings';
 
 let agent;
 

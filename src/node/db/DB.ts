@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-import {dbSettings, dbType} from "../utils/Settings";
+import {settings} from "../utils/Settings";
 
 const ueberDB = require('ueberdb2');
 const log4js = require('log4js');
@@ -38,7 +38,7 @@ exports.db = null;
  * Initializes the database with the settings provided by the settings module
  */
 exports.init = async () => {
-  exports.db = new ueberDB.Database(dbType, dbSettings, null, logger);
+  exports.db = new ueberDB.Database(settings.dbType, settings.dbSettings, null, logger);
   await exports.db.init();
   if (exports.db.metrics != null) {
     for (const [metric, value] of Object.entries(exports.db.metrics)) {

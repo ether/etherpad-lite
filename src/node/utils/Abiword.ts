@@ -24,14 +24,14 @@ import {AsyncQueueTask} from "../types/AsyncQueueTask";
 
 const spawn = require('child_process').spawn;
 const async = require('async');
-import {abiword} from './Settings';
+import {settings} from './Settings';
 const os = require('os');
 
 // on windows we have to spawn a process for each convertion,
 // cause the plugin abicommand doesn't exist on this platform
 if (os.type().indexOf('Windows') > -1) {
   exports.convertFile = async (srcFile: string, destFile: string, type: string) => {
-    const _abiword = spawn(abiword, [`--to=${destFile}`, srcFile]);
+    const _abiword = spawn(settings.abiword, [`--to=${destFile}`, srcFile]);
     let stdoutBuffer = '';
     _abiword.stdout.on('data', (data: string) => { stdoutBuffer += data.toString(); });
     _abiword.stderr.on('data', (data: string) => { stdoutBuffer += data.toString(); });
@@ -47,12 +47,12 @@ if (os.type().indexOf('Windows') > -1) {
   };
   // on unix operating systems, we can start abiword with abicommand and
   // communicate with it via stdin/stdout
-  // thats much faster, about factor 10
+  // that's much faster, about factor 10
 } else {
   let _abiword: ChildProcess;
   let stdoutCallback: Function|null = null;
   const spawnAbiword = () => {
-    _abiword = spawn(abiword, ['--plugin', 'AbiCommand']);
+    _abiword = spawn(settings.abiword, ['--plugin', 'AbiCommand']);
     let stdoutBuffer = '';
     let firstPrompt = true;
     _abiword.stderr!.on('data', (data) => { stdoutBuffer += data.toString(); });

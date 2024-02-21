@@ -4,8 +4,7 @@ const eejs = require('../../eejs');
 const fsp = require('fs').promises;
 const hooks = require('../../../static/js/pluginfw/hooks');
 const plugins = require('../../../static/js/pluginfw/plugins');
-import {reloadSettings, settingsFilename, showSettingsInAdminPage} from '../../utils/Settings';
-import * as settings from '../../utils/Settings';
+import {reloadSettings, settings} from '../../utils/Settings';
 
 exports.expressCreateServer = (hookName:string, {app}:any) => {
   app.get('/admin/settings', (req:any, res:any) => {
@@ -26,12 +25,12 @@ exports.socketio = (hookName:string, {io}:any) => {
     socket.on('load', async (query:string):Promise<any> => {
       let data;
       try {
-        data = await fsp.readFile(settingsFilename, 'utf8');
+        data = await fsp.readFile(settings.settingsFilename, 'utf8');
       } catch (err) {
         return console.log(err);
       }
       // if showSettingsInAdminPage is set to false, then return NOT_ALLOWED in the result
-      if (!showSettingsInAdminPage) {
+      if (!settings.showSettingsInAdminPage) {
         socket.emit('settings', {results: 'NOT_ALLOWED'});
       } else {
         socket.emit('settings', {results: data});
@@ -39,7 +38,7 @@ exports.socketio = (hookName:string, {io}:any) => {
     });
 
     socket.on('saveSettings', async (newSettings:string) => {
-      await fsp.writeFile(settingsFilename, newSettings);
+      await fsp.writeFile(settings.settingsFilename, newSettings);
       socket.emit('saveprogress', 'saved');
     });
 

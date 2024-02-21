@@ -9,7 +9,7 @@ const {padutils} = require('../../static/js/pad_utils');
 const process = require('process');
 const server = require('../../node/server');
 const setCookieParser = require('set-cookie-parser');
-const settings = require('../../node/utils/Settings');
+import {settings} from '../../node/utils/Settings';
 const supertest = require('supertest');
 const webaccess = require('../../node/hooks/express/webaccess');
 

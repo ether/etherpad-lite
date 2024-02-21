@@ -5,7 +5,7 @@ const common = require('../common');
 const fs = require('fs');
 const fsp = fs.promises;
 const path = require('path');
-import * as settings from '../../../node/utils/Settings'
+import {settings} from '../../../node/utils/Settings'
 const superagent = require('superagent');
 
 describe(__filename, function () {

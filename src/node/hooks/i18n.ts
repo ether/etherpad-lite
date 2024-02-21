@@ -9,7 +9,7 @@ const path = require('path');
 const _ = require('underscore');
 const pluginDefs = require('../../static/js/pluginfw/plugin_defs.js');
 const existsSync = require('../utils/path_exists');
-import {customLocaleStrings, maxAge, root} from '../utils/Settings';
+import {settings, root} from '../utils/Settings';
 
 // returns all existing messages merged together and grouped by langcode
 // {es: {"foo": "string"}, en:...}
@@ -71,9 +71,9 @@ const getAllLocales = () => {
   const wrongFormatErr = Error(
       'customLocaleStrings in wrong format. See documentation ' +
     'for Customization for Administrators, under Localization.');
-  if (customLocaleStrings) {
-    if (typeof customLocaleStrings !== 'object') throw wrongFormatErr;
-    _.each(customLocaleStrings, (overrides:MapArrayType<string> , langcode:string) => {
+  if (settings.customLocaleStrings) {
+    if (typeof settings.customLocaleStrings !== 'object') throw wrongFormatErr;
+    _.each(settings.customLocaleStrings, (overrides:MapArrayType<string> , langcode:string) => {
       if (typeof overrides !== 'object') throw wrongFormatErr;
       _.each(overrides, (localeString:string|object, key:string) => {
         if (typeof localeString !== 'string') throw wrongFormatErr;
@@ -133,7 +133,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
     // works with /locale/en and /locale/en.json requests
     const locale = req.params.locale.split('.')[0];
     if (Object.prototype.hasOwnProperty.call(exports.availableLangs, locale)) {
-      res.setHeader('Cache-Control', `public, max-age=${maxAge}`);
+      res.setHeader('Cache-Control', `public, max-age=${settings.maxAge}`);
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
       res.send(`{"${locale}":${JSON.stringify(locales[locale])}}`);
     } else {
@@ -142,7 +142,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
   });
 
   app.get('/locales.json', (req: any, res:any) => {
-    res.setHeader('Cache-Control', `public, max-age=${maxAge}`);
+    res.setHeader('Cache-Control', `public, max-age=${settings.maxAge}`);
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.send(localeIndex);
   });

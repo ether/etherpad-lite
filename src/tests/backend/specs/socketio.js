@@ -5,7 +5,7 @@ const common = require('../common');
 const padManager = require('../../../node/db/PadManager');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
 const readOnlyManager = require('../../../node/db/ReadOnlyManager');
-const settings = require('../../../node/utils/Settings');
+import {settings} from '../../../node/utils/Settings';
 const socketIoRouter = require('../../../node/handler/SocketIORouter');
 
 describe(__filename, function () {

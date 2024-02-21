@@ -14,7 +14,7 @@ import fs from 'fs';
 const hooks = require('../../static/js/pluginfw/hooks');
 import log4js from 'log4js';
 const SessionStore = require('../db/SessionStore');
-import * as settings from '../utils/Settings';
+import {getEpVersion, getGitCommit, settings} from '../utils/Settings';
 const stats = require('../stats')
 import util from 'util';
 const webaccess = require('./express/webaccess');
@@ -68,9 +68,9 @@ const closeServer = async () => {
 exports.createServer = async () => {
   console.log('Report bugs at https://github.com/ether/etherpad-lite/issues');
 
-  serverName = `Etherpad ${settings.getGitCommit()} (https://etherpad.org)`;
+  serverName = `Etherpad ${getGitCommit()} (https://etherpad.org)`;
 
-  console.log(`Your Etherpad version is ${settings.getEpVersion()} (${settings.getGitCommit()})`);
+  console.log(`Your Etherpad version is ${getEpVersion()} (${getGitCommit()})`);
 
   await exports.restartServer();
 

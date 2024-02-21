@@ -3,7 +3,7 @@
 import {ArgsExpressType} from "../../types/ArgsExpressType";
 
 const hasPadAccess = require('../../padaccess');
-import {exportAvailable, importExportRateLimiting} from '../../utils/Settings';
+import {exportAvailable, settings} from '../../utils/Settings';
 const exportHandler = require('../../handler/ExportHandler');
 const importHandler = require('../../handler/ImportHandler');
 const padManager = require('../../db/PadManager');
@@ -14,7 +14,7 @@ const webaccess = require('./webaccess');
 
 exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Function) => {
   const limiter = rateLimit({
-    ...importExportRateLimiting,
+    ...settings.importExportRateLimiting,
     handler: (request:any) => {
       if (request.rateLimit.current === request.rateLimit.limit + 1) {
         // when the rate limiter triggers, write a warning in the logs

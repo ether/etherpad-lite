@@ -4,7 +4,7 @@ const log4js = require('log4js');
 const plugins = require('./plugins');
 const hooks = require('./hooks');
 const runCmd = require('../../../node/utils/run_cmd');
-const settings = require('../../../node/utils/Settings');
+import {getEpVersion, reloadSettings, root, settings} from '../../../node/utils/Settings';
 const axios = require('axios');
 const {PluginManager} = require('live-plugin-manager-pnpm');
 const {promises: fs} = require('fs');
@@ -14,18 +14,18 @@ const logger = log4js.getLogger('plugins');
 
 exports.manager = new PluginManager();
 
-const installedPluginsPath = path.join(settings.root, 'var/installed_plugins.json');
+const installedPluginsPath = path.join(root, 'var/installed_plugins.json');
 
 const onAllTasksFinished = async () => {
   await plugins.update();
   await persistInstalledPlugins();
-  settings.reloadSettings();
+  reloadSettings();
   await hooks.aCallAll('loadSettings', {settings});
   await hooks.aCallAll('restartServer');
 };
 
 const headers = {
-  'User-Agent': `Etherpad/${settings.getEpVersion()}`,
+  'User-Agent': `Etherpad/${getEpVersion()}`,
 };
 
 let tasks = 0;

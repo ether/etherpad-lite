@@ -5,11 +5,11 @@ import {ChildProcess} from "node:child_process";
 import {PromiseWithStd} from "../types/PromiseWithStd";
 import {Readable} from "node:stream";
 
+import {root, settings} from "./Settings";
+
 const spawn = require('cross-spawn');
 const log4js = require('log4js');
 const path = require('path');
-const settings = require('./Settings');
-
 const logger = log4js.getLogger('runCmd');
 
 const logLines = (readable: undefined | Readable | null, logLineFn: (arg0: (string | undefined)) => void) => {
@@ -77,7 +77,7 @@ const logLines = (readable: undefined | Readable | null, logLineFn: (arg0: (stri
 module.exports = exports = (args: string[], opts:RunCMDOptions = {}) => {
   logger.debug(`Executing command: ${args.join(' ')}`);
 
-  opts = {cwd: settings.root, ...opts};
+  opts = {cwd: root, ...opts};
   logger.debug(`cwd: ${opts.cwd}`);
 
   // Log stdout and stderr by default.
@@ -112,8 +112,8 @@ module.exports = exports = (args: string[], opts:RunCMDOptions = {}) => {
   opts.env = {
     ...env, // Copy env to avoid modifying process.env or the caller's supplied env.
     [pathVarName]: [
-      path.join(settings.root, 'src', 'node_modules', '.bin'),
-      path.join(settings.root, 'node_modules', '.bin'),
+      path.join(root, 'src', 'node_modules', '.bin'),
+      path.join(root, 'node_modules', '.bin'),
       ...(PATH ? PATH.split(path.delimiter) : []),
     ].join(path.delimiter),
   };
