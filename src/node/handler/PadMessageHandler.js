@@ -28,7 +28,7 @@ const AttributeManager = require('../../static/js/AttributeManager');
 const authorManager = require('../db/AuthorManager');
 const {padutils} = require('../../static/js/pad_utils');
 const readOnlyManager = require('../db/ReadOnlyManager');
-import {settings} from '../utils/Settings';
+import {abiwordAvailable, exportAvailable, randomVersionString, settings, sofficeAvailable} from '../utils/Settings';
 const securityManager = require('../db/SecurityManager');
 const plugins = require('../../static/js/pluginfw/plugin_defs.js');
 const log4js = require('log4js');
@@ -930,7 +930,7 @@ const handleClientReady = async (socket, message) => {
     const clientVars = {
       skinName: settings.skinName,
       skinVariants: settings.skinVariants,
-      randomVersionString: settings.randomVersionString,
+      randomVersionString: randomVersionString,
       accountPrivs: {
         maxRevisions: 100,
       },
@@ -964,9 +964,9 @@ const handleClientReady = async (socket, message) => {
       serverTimestamp: Date.now(),
       sessionRefreshInterval: settings.cookie.sessionRefreshInterval,
       userId: sessionInfo.author,
-      abiwordAvailable: settings.abiwordAvailable(),
-      sofficeAvailable: settings.sofficeAvailable(),
-      exportAvailable: settings.exportAvailable(),
+      abiwordAvailable: abiwordAvailable(),
+      sofficeAvailable: sofficeAvailable(),
+      exportAvailable: exportAvailable(),
       plugins: {
         plugins: plugins.plugins,
         parts: plugins.parts,
