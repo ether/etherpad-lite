@@ -41,7 +41,6 @@ jobs:
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
         run: ./bin/installDeps.sh
-        working-directory: ./src
       - name: Perform type check
         working-directory: ./src
         run: npm run ts-check

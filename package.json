@@ -9,8 +9,8 @@
     "editor"
   ],
   "bin": {
-    "etherpad-healthcheck": "src/bin/etherpad-healthcheck",
-    "etherpad-lite": "src/bin/run"
+    "etherpad-healthcheck": "bin/etherpad-healthcheck",
+    "etherpad-lite": "bin/run"
   },
   "scripts": {
     "lint": "pnpm --filter ep_etherpad-lite run lint",
