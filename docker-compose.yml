@@ -9,8 +9,7 @@ services:
     build:
       context: .
       args:
-        ETHERPAD_PLUGINS: >-
-          ep_image_upload
+        ETHERPAD_PLUGINS:
       # change from development to production if needed
       target: development
     tty: true
