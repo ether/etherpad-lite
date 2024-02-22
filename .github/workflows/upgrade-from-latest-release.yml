@@ -81,7 +81,7 @@ jobs:
         name: Install libreoffice
         uses: awalsh128/cache-apt-pkgs-action@v1.4.1
         with:
-          pkgs: libreoffice libreoffice-pdfimport
+          packages: libreoffice libreoffice-pdfimport
           version: 1.0
       - name: Get pnpm store directory
         shell: bash

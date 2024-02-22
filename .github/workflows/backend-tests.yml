@@ -49,7 +49,7 @@ jobs:
         name: Install libreoffice
         uses: awalsh128/cache-apt-pkgs-action@v1.4.1
         with:
-          pkgs: libreoffice libreoffice-pdfimport
+          packages: libreoffice libreoffice-pdfimport
           version: 1.0
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
@@ -100,7 +100,7 @@ jobs:
         name: Install libreoffice
         uses: awalsh128/cache-apt-pkgs-action@v1.4.1
         with:
-          pkgs: libreoffice libreoffice-pdfimport
+          packages: libreoffice libreoffice-pdfimport
           version: 1.0
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
