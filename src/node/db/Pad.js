@@ -10,7 +10,7 @@ const AttributePool = require('../../static/js/AttributePool');
 const Stream = require('../utils/Stream');
 const assert = require('assert').strict;
 const db = require('./DB');
-import {settings} from '../utils/Settings';
+import settings from '../utils/Settings';
 const authorManager = require('./AuthorManager');
 const padManager = require('./PadManager');
 const padMessageHandler = require('../handler/PadMessageHandler');

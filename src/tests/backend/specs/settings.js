@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert').strict;
-import {parseSettings} from '../../../node/utils/Settings';
+import settings from '../../../node/utils/Settings';
 const path = require('path');
 const process = require('process');
 
@@ -21,7 +21,7 @@ describe(__filename, function () {
     before(async function () {
       for (const tc of envVarSubstTestCases) process.env[tc.var] = tc.val;
       delete process.env.UNSET_VAR;
-      settings = parseSettings(path.join(__dirname, 'settings.json'), true);
+      settings = settings.parseSettings(path.join(__dirname, 'settings.json'), true);
       assert(settings != null);
     });
 

@@ -5,7 +5,7 @@ import {ChildProcess} from "node:child_process";
 import {PromiseWithStd} from "../types/PromiseWithStd";
 import {Readable} from "node:stream";
 
-import {root} from "./Settings";
+import {settings} from "./Settings";
 
 import spawn from 'cross-spawn';
 import log4js from 'log4js';
@@ -77,7 +77,7 @@ const logLines = (readable: undefined | Readable | null, logLineFn: (arg0: (stri
 module.exports = exports = (args: string[], opts:any = {}) => {
   logger.debug(`Executing command: ${args.join(' ')}`);
 
-  opts = {cwd: root, ...opts};
+  opts = {cwd: settings.root, ...opts};
   logger.debug(`cwd: ${opts.cwd}`);
 
   // Log stdout and stderr by default.
@@ -112,8 +112,8 @@ module.exports = exports = (args: string[], opts:any = {}) => {
   opts.env = {
     ...env, // Copy env to avoid modifying process.env or the caller's supplied env.
     [pathVarName]: [
-      path.join(root, 'src', 'node_modules', '.bin'),
-      path.join(root, 'node_modules', '.bin'),
+      path.join(settings.root, 'src', 'node_modules', '.bin'),
+      path.join(settings.root, 'node_modules', '.bin'),
       ...(PATH ? PATH.split(path.delimiter) : []),
     ].join(path.delimiter),
   };

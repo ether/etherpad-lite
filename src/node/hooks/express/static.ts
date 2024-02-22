@@ -5,7 +5,7 @@ const fs = require('fs').promises;
 const minify = require('../../utils/Minify');
 const path = require('path');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
-import {root, settings} from '../../utils/Settings';
+import {settings} from '../../utils/Settings';
 const CachingMiddleware = require('../../utils/caching_middleware');
 const Yajsml = require('etherpad-yajsml');
 
@@ -18,7 +18,7 @@ const getTar = async () => {
       return `ep_etherpad-lite/static/js/${path}`;
     }
   };
-  const tarJson = await fs.readFile(path.join(root, 'src/node/utils/tar.json'), 'utf8');
+  const tarJson = await fs.readFile(path.join(settings.root, 'src/node/utils/tar.json'), 'utf8');
   const tar = {};
   for (const [key, relativeFiles] of Object.entries(JSON.parse(tarJson))) {
     // @ts-ignore

@@ -86,6 +86,7 @@
     "@types/formidable": "^3.4.5",
     "@types/jsonminify": "^0.4.3",
     "@types/node": "^20.11.19",
+    "@types/resolve": "^1.20.6",
     "@types/underscore": "^1.11.15",
     "cypress": "^13.6.4",
     "eslint": "^8.56.0",

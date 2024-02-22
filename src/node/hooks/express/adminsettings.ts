@@ -4,7 +4,7 @@ const eejs = require('../../eejs');
 const fsp = require('fs').promises;
 const hooks = require('../../../static/js/pluginfw/hooks');
 const plugins = require('../../../static/js/pluginfw/plugins');
-import {reloadSettings, settings} from '../../utils/Settings';
+import settings from '../../utils/Settings';
 
 exports.expressCreateServer = (hookName:string, {app}:any) => {
   app.get('/admin/settings', (req:any, res:any) => {
@@ -44,7 +44,7 @@ exports.socketio = (hookName:string, {io}:any) => {
 
     socket.on('restartServer', async () => {
       console.log('Admin request to restart server through a socket on /admin/settings');
-      reloadSettings();
+      settings.reloadSettings();
       await plugins.update();
       await hooks.aCallAll('loadSettings', {settings});
       await hooks.aCallAll('restartServer');

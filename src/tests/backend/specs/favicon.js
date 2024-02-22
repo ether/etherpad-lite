@@ -5,7 +5,7 @@ const common = require('../common');
 const fs = require('fs');
 const fsp = fs.promises;
 const path = require('path');
-import {root, settings} from '../../../node/utils/Settings'
+import {settings} from '../../../node/utils/Settings'
 const superagent = require('superagent');
 
 describe(__filename, function () {
@@ -19,13 +19,13 @@ describe(__filename, function () {
   before(async function () {
     agent = await common.init();
     wantCustomIcon = await fsp.readFile(path.join(__dirname, 'favicon-test-custom.png'));
-    wantDefaultIcon = await fsp.readFile(path.join(root, 'src', 'static', 'favicon.ico'));
+    wantDefaultIcon = await fsp.readFile(path.join(settings.root, 'src', 'static', 'favicon.ico'));
     wantSkinIcon = await fsp.readFile(path.join(__dirname, 'favicon-test-skin.png'));
   });
 
   beforeEach(async function () {
     backupSettings = {...settings};
-    skinDir = await fsp.mkdtemp(path.join(root, 'src', 'static', 'skins', 'test-'));
+    skinDir = await fsp.mkdtemp(path.join(settings.root, 'src', 'static', 'skins', 'test-'));
     settings.skinName = path.basename(skinDir);
   });
 
@@ -43,7 +43,7 @@ describe(__filename, function () {
 
   it('uses custom favicon if set (relative pathname)', async function () {
     settings.favicon =
-        path.relative(root, path.join(__dirname, 'favicon-test-custom.png'));
+        path.relative(settings.root, path.join(__dirname, 'favicon-test-custom.png'));
     assert(!path.isAbsolute(settings.favicon));
     const {body: gotIcon} = await agent.get('/favicon.ico')
         .accept('png').buffer(true).parse(superagent.parse.image)

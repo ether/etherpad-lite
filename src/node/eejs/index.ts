@@ -25,7 +25,7 @@ import fs from 'fs';
 const hooks = require('../../static/js/pluginfw/hooks.js');
 import path from 'path';
 import resolve from 'resolve';
-import {root, settings} from '../utils/Settings'
+import settings from '../utils/Settings'
 
 const templateCache = new Map();
 
@@ -76,7 +76,7 @@ exports.require = (name: string, args: any, mod: any) => {
     basedir = path.dirname(mod.filename);
     paths = mod.paths;
   }
-  paths.push(root + '/plugin_packages')
+  paths.push(settings.root + '/plugin_packages')
 
   const ejspath = resolve.sync(name, {paths, basedir, extensions: ['.html', '.ejs']});
 

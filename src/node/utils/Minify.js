@@ -21,7 +21,7 @@
  * limitations under the License.
  */
 
-import {root, settings} from './Settings';
+import {settings} from './Settings';
 const fs = require('fs').promises;
 const path = require('path');
 const plugins = require('../../static/js/pluginfw/plugin_defs');
@@ -33,7 +33,7 @@ const sanitizePathname = require('./sanitizePathname');
 
 const logger = log4js.getLogger('Minify');
 
-const ROOT_DIR = path.join(root, 'src/static/');
+const ROOT_DIR = path.join(settings.root, 'src/static/');
 
 const threadsPool = new Threads.Pool(() => Threads.spawn(new Threads.Worker('./MinifyWorker')), 2);
 

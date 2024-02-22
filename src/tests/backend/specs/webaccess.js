@@ -3,7 +3,7 @@
 const assert = require('assert').strict;
 const common = require('../common');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
-import * as settings from '../../../node/utils/Settings';
+import settings from '../../../node/utils/Settings';
 
 describe(__filename, function () {
   this.timeout(30000);

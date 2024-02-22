@@ -14,7 +14,7 @@ process.on('unhandledRejection', (err) => { throw err; });
 
   const dirtyDb = require('dirty');
   const log4js = require('log4js');
-  import {settings} from '../node/utils/Settings';
+  import settings from '../node/utils/Settings';
   const ueberDB = require('ueberdb2');
   const util = require('util');
 
@@ -22,7 +22,7 @@ process.on('unhandledRejection', (err) => { throw err; });
     cache: '0', // The cache slows things down when you're mostly writing.
     writeInterval: 0, // Write directly to the database, don't buffer
   };
-  const db = new ueberDB.database( // eslint-disable-line new-cap
+  const db = new ueberDB.Database( // eslint-disable-line new-cap
       settings.dbType,
       settings.dbSettings,
       dbWrapperSettings,

@@ -9,7 +9,7 @@ const path = require('path');
 const _ = require('underscore');
 const pluginDefs = require('../../static/js/pluginfw/plugin_defs.js');
 const existsSync = require('../utils/path_exists');
-import {settings, root} from '../utils/Settings';
+import {settings} from '../utils/Settings';
 
 // returns all existing messages merged together and grouped by langcode
 // {es: {"foo": "string"}, en:...}
@@ -40,7 +40,7 @@ const getAllLocales = () => {
   };
 
   // add core supported languages first
-  extractLangs(path.join(root, 'src/locales'));
+  extractLangs(path.join(settings.root, 'src/locales'));
 
   // add plugins languages (if any)
   for (const {package: {path: pluginPath}} of Object.values<I18nPluginDefs>(pluginDefs.plugins)) {

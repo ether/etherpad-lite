@@ -9,7 +9,7 @@ const tsort = require('./tsort');
 const pluginUtils = require('./shared');
 const defs = require('./plugin_defs');
 const {manager} = require('./installer');
-import {getEpVersion, root, settings} from "../../../node/utils/Settings";
+import {settings} from "../../../node/utils/Settings";
 
 const logger = log4js.getLogger('plugins');
 
@@ -121,9 +121,9 @@ exports.getPackages = async () => {
 
   newDependencies['ep_etherpad-lite'] = {
     name: 'ep_etherpad-lite',
-    version: getEpVersion(),
-    path: path.join(root, 'node_modules/ep_etherpad-lite'),
-    realPath: path.join(root, 'src'),
+    version: settings.getEpVersion(),
+    path: path.join(settings.root, 'node_modules/ep_etherpad-lite'),
+    realPath: path.join(settings.root, 'src'),
   };
 
   return newDependencies;

@@ -78,9 +78,9 @@ const initLogging = (config: any) => {
 initLogging(defaultLogConfig(defaultLogLevel));
 
 
-export const root = absolutePaths.findEtherpadRoot()
-
+const root = absolutePaths.findEtherpadRoot();
 export const settings: SettingsObj = {
+    root: absolutePaths.findEtherpadRoot(),
     settingsFilename: absolutePaths.makeAbsolute(argv.settings || 'settings.json'),
     credentialsFilename: absolutePaths.makeAbsolute(argv.credentials || 'credentials.json'),
     /**
@@ -403,112 +403,98 @@ export const settings: SettingsObj = {
     * e.g. /p/EtHeRpAd to /p/etherpad
     */
     lowerCasePadIds: false,
-    randomVersionString: randomString(4)
-}
-
-/* Root path of the installation */
-logger.info('All relative paths will be interpreted relative to the identified ' +
-    `Etherpad base dir: ${root}`);
-
-
-
-// checks if abiword is avaiable
-export const abiwordAvailable = () => {
-    if (settings.abiword != null) {
-        return os.type().indexOf('Windows') !== -1 ? 'withoutPDF' : 'yes';
-    } else {
-        return 'no';
-    }
-};
-
-export const sofficeAvailable = () => {
-    if (settings.soffice != null) {
-        return os.type().indexOf('Windows') !== -1 ? 'withoutPDF' : 'yes';
-    } else {
-        return 'no';
-    }
-};
-
-export const exportAvailable = () => {
-    const abiword = abiwordAvailable();
-    const soffice = sofficeAvailable();
-
-    if (abiword === 'no' && soffice === 'no') {
-        return 'no';
-    } else if ((abiword === 'withoutPDF' && soffice === 'no') ||
-        (abiword === 'no' && soffice === 'withoutPDF')) {
-        return 'withoutPDF';
-    } else {
-        return 'yes';
-    }
-};
-
-// Provide git version if available
-export const getGitCommit = () => {
-    let version = '';
-    try {
-        let rootPath = root;
-        if (fs.lstatSync(`${rootPath}/.git`).isFile()) {
-            rootPath = fs.readFileSync(`${rootPath}/.git`, 'utf8');
-            rootPath = rootPath.split(' ').pop().trim();
+    randomVersionString: randomString(4),
+    // Return etherpad version from package.json
+    getEpVersion:()=>require('../../package.json').version,
+    // checks if abiword is avaiable
+    abiwordAvailable: () => {
+        if (settings.abiword != null) {
+            return os.type().indexOf('Windows') !== -1 ? 'withoutPDF' : 'yes';
         } else {
-            rootPath += '/.git';
+            return 'no';
         }
-        const ref = fs.readFileSync(`${rootPath}/HEAD`, 'utf-8');
-        if (ref.startsWith('ref: ')) {
-            const refPath = `${rootPath}/${ref.substring(5, ref.indexOf('\n'))}`;
-            version = fs.readFileSync(refPath, 'utf-8');
+    },
+    sofficeAvailable: () => {
+        if (settings.soffice != null) {
+            return os.type().indexOf('Windows') !== -1 ? 'withoutPDF' : 'yes';
         } else {
-            version = ref;
+            return 'no';
         }
-        version = version.substring(0, 7);
-    } catch (e: any) {
-        logger.warn(`Can't get git version for server header\n${e.message}`);
-    }
-    return version;
-};
+    },
+    exportAvailable: () => {
+        const abiword = settings.abiwordAvailable();
+        const soffice = settings.sofficeAvailable();
 
-// Return etherpad version from package.json
-export const getEpVersion = () => require('../../package.json').version;
-
-/**
- * Receives a settingsObj and, if the property name is a valid configuration
- * item, stores it in the module's exported properties via a side effect.
- *
- * This code refactors a previous version that copied & pasted the same code for
- * both "settings.json" and "credentials.json".
- */
-const storeSettings = (settingsObj: MapArrayType<any>) => {
-    for (const i of Object.keys(settingsObj || {})) {
-        if (nonSettings.includes(i)) {
-            logger.warn(`Ignoring setting: '${i}'`);
-            continue;
+        if (abiword === 'no' && soffice === 'no') {
+            return 'no';
+        } else if ((abiword === 'withoutPDF' && soffice === 'no') ||
+            (abiword === 'no' && soffice === 'withoutPDF')) {
+            return 'withoutPDF';
+        } else {
+            return 'yes';
         }
-
-        // test if the setting starts with a lowercase character
-        if (i.charAt(0).search('[a-z]') !== 0) {
-            logger.warn(`Settings should start with a lowercase character: '${i}'`);
-        }
-
-        // we know this setting, so we overwrite it,
-        // or it's a settings hash, specific to a plugin
-        // @ts-ignore
-        if (settings[i] !== undefined || i.indexOf('ep_') === 0) {
-            if (_.isObject(settingsObj[i]) && !Array.isArray(settingsObj[i])) {
-                // @ts-ignore
-                settings[i] = _.defaults(settingsObj[i], settings[i]);
+    },
+    // Provide git version if available
+    getGitCommit: () => {
+        let version = '';
+        try {
+            let rootPath = root;
+            if (fs.lstatSync(`${rootPath}/.git`).isFile()) {
+                rootPath = fs.readFileSync(`${rootPath}/.git`, 'utf8');
+                rootPath = rootPath.split(' ').pop().trim();
             } else {
-                // @ts-ignore
-                settings[i] = settingsObj[i];
+                rootPath += '/.git';
             }
-        } else {
-            // this setting is unknown, output a warning and throw it away
-            logger.warn(`Unknown Setting: '${i}'. This setting doesn't exist or it was removed`);
+            const ref = fs.readFileSync(`${rootPath}/HEAD`, 'utf-8');
+            if (ref.startsWith('ref: ')) {
+                const refPath = `${rootPath}/${ref.substring(5, ref.indexOf('\n'))}`;
+                version = fs.readFileSync(refPath, 'utf-8');
+            } else {
+                version = ref;
+            }
+            version = version.substring(0, 7);
+        } catch (e: any) {
+            logger.warn(`Can't get git version for server header\n${e.message}`);
         }
-    }
-};
+        return version;
+    },
+    /**
+     * Receives a settingsObj and, if the property name is a valid configuration
+     * item, stores it in the module's exported properties via a side effect.
+     *
+     * This code refactors a previous version that copied & pasted the same code for
+     * both "settings.json" and "credentials.json".
+     */
+    storeSettings: (settingsObj: MapArrayType<any>) => {
+        for (const i of Object.keys(settingsObj || {})) {
+            if (nonSettings.includes(i)) {
+                logger.warn(`Ignoring setting: '${i}'`);
+                continue;
+            }
 
-/*
+            // test if the setting starts with a lowercase character
+            if (i.charAt(0).search('[a-z]') !== 0) {
+                logger.warn(`Settings should start with a lowercase character: '${i}'`);
+            }
+
+            // we know this setting, so we overwrite it,
+            // or it's a settings hash, specific to a plugin
+            // @ts-ignore
+            if (settings[i] !== undefined || i.indexOf('ep_') === 0) {
+                if (_.isObject(settingsObj[i]) && !Array.isArray(settingsObj[i])) {
+                    // @ts-ignore
+                    settings[i] = _.defaults(settingsObj[i], settings[i]);
+                } else {
+                    // @ts-ignore
+                    settings[i] = settingsObj[i];
+                }
+            } else {
+                // this setting is unknown, output a warning and throw it away
+                logger.warn(`Unknown Setting: '${i}'. This setting doesn't exist or it was removed`);
+            }
+        }
+    },
+    /*
  * If stringValue is a numeric string, or its value is "true" or "false", coerce
  * them to appropriate JS types. Otherwise return stringValue as-is.
  *
@@ -519,337 +505,341 @@ const storeSettings = (settingsObj: MapArrayType<any>) => {
  * If the user wants a variable to be null by default, he'll have to use the
  * short syntax "${ABIWORD}", and not "${ABIWORD:null}": the latter would result
  * in the literal string "null", instead.
- */
-const coerceValue = (stringValue: string) => {
-    // cooked from https://stackoverflow.com/questions/175739/built-in-way-in-javascript-to-check-if-a-string-is-a-valid-number
-    // @ts-ignore
-    const isNumeric = !isNaN(stringValue) && !isNaN(parseFloat(stringValue) && isFinite(stringValue));
+ * */
+    coerceValue: (stringValue: string) => {
+        // cooked from https://stackoverflow.com/questions/175739/built-in-way-in-javascript-to-check-if-a-string-is-a-valid-number
+        // @ts-ignore
+        const isNumeric = !isNaN(stringValue) && !isNaN(parseFloat(stringValue) && isFinite(stringValue));
 
-    if (isNumeric) {
-        // detected numeric string. Coerce to a number
+        if (isNumeric) {
+            // detected numeric string. Coerce to a number
 
-        return +stringValue;
-    }
-
-    switch (stringValue) {
-        case 'true':
-            return true;
-        case 'false':
-            return false;
-        case 'undefined':
-            return undefined;
-        case 'null':
-            return null;
-        default:
-            return stringValue;
-    }
-};
-
-/**
- * Takes a javascript object containing Etherpad's configuration, and returns
- * another object, in which all the string properties whose value is of the form
- * "${ENV_VAR}" or "${ENV_VAR:default_value}" got their value replaced with the
- * contents of the given environment variable, or with a default value.
- *
- * By definition, an environment variable's value is always a string. However,
- * the code base makes use of the various json types. To maintain compatiblity,
- * some heuristics is applied:
- *
- * - if ENV_VAR does not exist in the environment, null is returned;
- * - if ENV_VAR's value is "true" or "false", it is converted to the js boolean
- *   values true or false;
- * - if ENV_VAR's value looks like a number, it is converted to a js number
- *   (details in the code).
- *
- * The following is a scheme of the behaviour of this function:
- *
- * +---------------------------+---------------+------------------+
- * | Configuration string in   | Value of      | Resulting confi- |
- * | settings.json             | ENV_VAR       | guration value   |
- * |---------------------------|---------------|------------------|
- * | "${ENV_VAR}"              | "some_string" | "some_string"    |
- * | "${ENV_VAR}"              | "9001"        | 9001             |
- * | "${ENV_VAR}"              | undefined     | null             |
- * | "${ENV_VAR:some_default}" | "some_string" | "some_string"    |
- * | "${ENV_VAR:some_default}" | undefined     | "some_default"   |
- * +---------------------------+---------------+------------------+
- *
- * IMPLEMENTATION NOTE: variable substitution is performed doing a round trip
- *     conversion to/from json, using a custom replacer parameter in
- *     JSON.stringify(), and parsing the JSON back again. This ensures that
- *     environment variable replacement is performed even on nested objects.
- *
- * see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter
- */
-const lookupEnvironmentVariables = (obj: object) => {
-    const stringifiedAndReplaced = JSON.stringify(obj, (key, value) => {
-        /*
-         * the first invocation of replacer() is with an empty key. Just go on, or
-         * we would zap the entire object.
-         */
-        if (key === '') {
-            return value;
+            return +stringValue;
         }
 
-        /*
-         * If we received from the configuration file a number, a boolean or
-         * something that is not a string, we can be sure that it was a literal
-         * value. No need to perform any variable substitution.
-         *
-         * The environment variable expansion syntax "${ENV_VAR}" is just a string
-         * of specific form, after all.
-         */
-        if (typeof value !== 'string') {
-            return value;
+        switch (stringValue) {
+            case 'true':
+                return true;
+            case 'false':
+                return false;
+            case 'undefined':
+                return undefined;
+            case 'null':
+                return null;
+            default:
+                return stringValue;
         }
+    },
 
-        /*
-         * Let's check if the string value looks like a variable expansion (e.g.:
-         * "${ENV_VAR}" or "${ENV_VAR:default_value}")
-         */
-        // MUXATOR 2019-03-21: we could use named capture groups here once we migrate to nodejs v10
-        const match = value.match(/^\$\{([^:]*)(:((.|\n)*))?\}$/);
 
-        if (match == null) {
-            // no match: use the value literally, without any substitution
 
-            return value;
-        }
 
-        /*
-         * We found the name of an environment variable. Let's read its actual value
-         * and its default value, if given
-         */
-        const envVarName = match[1];
-        const envVarValue = process.env[envVarName];
-        const defaultValue = match[3];
 
-        if ((envVarValue === undefined) && (defaultValue === undefined)) {
-            logger.warn(`Environment variable "${envVarName}" does not contain any value for ` +
-                `configuration key "${key}", and no default was given. Using null. ` +
-                'THIS BEHAVIOR MAY CHANGE IN A FUTURE VERSION OF ETHERPAD; you should ' +
-                'explicitly use "null" as the default if you want to continue to use null.');
+    /**
+     * Takes a javascript object containing Etherpad's configuration, and returns
+     * another object, in which all the string properties whose value is of the form
+     * "${ENV_VAR}" or "${ENV_VAR:default_value}" got their value replaced with the
+     * contents of the given environment variable, or with a default value.
+     *
+     * By definition, an environment variable's value is always a string. However,
+     * the code base makes use of the various json types. To maintain compatiblity,
+     * some heuristics is applied:
+     *
+     * - if ENV_VAR does not exist in the environment, null is returned;
+     * - if ENV_VAR's value is "true" or "false", it is converted to the js boolean
+     *   values true or false;
+     * - if ENV_VAR's value looks like a number, it is converted to a js number
+     *   (details in the code).
+     *
+     * The following is a scheme of the behaviour of this function:
+     *
+     * +---------------------------+---------------+------------------+
+     * | Configuration string in   | Value of      | Resulting confi- |
+     * | settings.json             | ENV_VAR       | guration value   |
+     * |---------------------------|---------------|------------------|
+     * | "${ENV_VAR}"              | "some_string" | "some_string"    |
+     * | "${ENV_VAR}"              | "9001"        | 9001             |
+     * | "${ENV_VAR}"              | undefined     | null             |
+     * | "${ENV_VAR:some_default}" | "some_string" | "some_string"    |
+     * | "${ENV_VAR:some_default}" | undefined     | "some_default"   |
+     * +---------------------------+---------------+------------------+
+     *
+     * IMPLEMENTATION NOTE: variable substitution is performed doing a round trip
+     *     conversion to/from json, using a custom replacer parameter in
+     *     JSON.stringify(), and parsing the JSON back again. This ensures that
+     *     environment variable replacement is performed even on nested objects.
+     *
+     * see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter
+     */
+    lookupEnvironmentVariables: (obj: object) => {
+        const stringifiedAndReplaced = JSON.stringify(obj, (key, value) => {
+            /*
+             * the first invocation of replacer() is with an empty key. Just go on, or
+             * we would zap the entire object.
+             */
+            if (key === '') {
+                return value;
+            }
 
             /*
-             * We have to return null, because if we just returned undefined, the
-             * configuration item "key" would be stripped from the returned object.
+             * If we received from the configuration file a number, a boolean or
+             * something that is not a string, we can be sure that it was a literal
+             * value. No need to perform any variable substitution.
+             *
+             * The environment variable expansion syntax "${ENV_VAR}" is just a string
+             * of specific form, after all.
              */
+            if (typeof value !== 'string') {
+                return value;
+            }
+
+            /*
+             * Let's check if the string value looks like a variable expansion (e.g.:
+             * "${ENV_VAR}" or "${ENV_VAR:default_value}")
+             */
+            // MUXATOR 2019-03-21: we could use named capture groups here once we migrate to nodejs v10
+            const match = value.match(/^\$\{([^:]*)(:((.|\n)*))?\}$/);
+
+            if (match == null) {
+                // no match: use the value literally, without any substitution
+
+                return value;
+            }
+
+            /*
+             * We found the name of an environment variable. Let's read its actual value
+             * and its default value, if given
+             */
+            const envVarName = match[1];
+            const envVarValue = process.env[envVarName];
+            const defaultValue = match[3];
+
+            if ((envVarValue === undefined) && (defaultValue === undefined)) {
+                logger.warn(`Environment variable "${envVarName}" does not contain any value for ` +
+                    `configuration key "${key}", and no default was given. Using null. ` +
+                    'THIS BEHAVIOR MAY CHANGE IN A FUTURE VERSION OF ETHERPAD; you should ' +
+                    'explicitly use "null" as the default if you want to continue to use null.');
+
+                /*
+                 * We have to return null, because if we just returned undefined, the
+                 * configuration item "key" would be stripped from the returned object.
+                 */
+                return null;
+            }
+
+            if ((envVarValue === undefined) && (defaultValue !== undefined)) {
+                logger.debug(`Environment variable "${envVarName}" not found for ` +
+                    `configuration key "${key}". Falling back to default value.`);
+
+                return settings.coerceValue(defaultValue);
+            }
+
+            // envVarName contained some value.
+
+            /*
+             * For numeric and boolean strings let's convert it to proper types before
+             * returning it, in order to maintain backward compatibility.
+             */
+            logger.debug(
+                `Configuration key "${key}" will be read from environment variable "${envVarName}"`);
+
+            return settings.coerceValue(envVarValue!);
+        });
+
+        return JSON.parse(stringifiedAndReplaced);
+    },
+
+
+    /**
+     * - reads the JSON configuration file settingsFilename from disk
+     * - strips the comments
+     * - replaces environment variables calling lookupEnvironmentVariables()
+     * - returns a parsed Javascript object
+     *
+     * The isSettings variable only controls the error logging.
+     */
+    parseSettings: (settingsFilename: string, isSettings: boolean) => {
+        let settingsStr = '';
+
+        let settingsType, notFoundMessage, notFoundFunction;
+
+        if (isSettings) {
+            settingsType = 'settings';
+            notFoundMessage = 'Continuing using defaults!';
+            notFoundFunction = logger.warn.bind(logger);
+        } else {
+            settingsType = 'credentials';
+            notFoundMessage = 'Ignoring.';
+            notFoundFunction = logger.info.bind(logger);
+        }
+
+        try {
+            // read the settings file
+            settingsStr = fs.readFileSync(settingsFilename).toString();
+        } catch (e) {
+            notFoundFunction(`No ${settingsType} file found in ${settingsFilename}. ${notFoundMessage}`);
+
+            // or maybe undefined!
             return null;
         }
 
-        if ((envVarValue === undefined) && (defaultValue !== undefined)) {
-            logger.debug(`Environment variable "${envVarName}" not found for ` +
-                `configuration key "${key}". Falling back to default value.`);
+        try {
+            settingsStr = jsonminify(settingsStr).replace(',]', ']').replace(',}', '}');
 
-            return coerceValue(defaultValue);
+            const settings = JSON.parse(settingsStr);
+
+            logger.info(`${settingsType} loaded from: ${settingsFilename}`);
+
+            return settings.lookupEnvironmentVariables(settings);
+        } catch (e: any) {
+            logger.error(`There was an error processing your ${settingsType} ` +
+                `file from ${settingsFilename}: ${e.message}`);
+
+            process.exit(1);
         }
+    },
+    reloadSettings:() => {
+        const settingsParsed = settings.parseSettings(settings.settingsFilename, true);
+        const credentials = settings.parseSettings(settings.credentialsFilename, false);
+        settings.storeSettings(settingsParsed);
+        settings.storeSettings(credentials);
 
-        // envVarName contained some value.
+        // Init logging config
+        settings.logconfig = defaultLogConfig(settings.loglevel ? settings.loglevel : defaultLogLevel);
+        initLogging(settings.logconfig);
 
-        /*
-         * For numeric and boolean strings let's convert it to proper types before
-         * returning it, in order to maintain backward compatibility.
-         */
-        logger.debug(
-            `Configuration key "${key}" will be read from environment variable "${envVarName}"`);
-
-        return coerceValue(envVarValue!);
-    });
-
-    return JSON.parse(stringifiedAndReplaced);
-};
-
-/**
- * - reads the JSON configuration file settingsFilename from disk
- * - strips the comments
- * - replaces environment variables calling lookupEnvironmentVariables()
- * - returns a parsed Javascript object
- *
- * The isSettings variable only controls the error logging.
- */
-export const parseSettings = (settingsFilename: string, isSettings: boolean) => {
-    let settingsStr = '';
-
-    let settingsType, notFoundMessage, notFoundFunction;
-
-    if (isSettings) {
-        settingsType = 'settings';
-        notFoundMessage = 'Continuing using defaults!';
-        notFoundFunction = logger.warn.bind(logger);
-    } else {
-        settingsType = 'credentials';
-        notFoundMessage = 'Ignoring.';
-        notFoundFunction = logger.info.bind(logger);
-    }
-
-    try {
-        // read the settings file
-        settingsStr = fs.readFileSync(settingsFilename).toString();
-    } catch (e) {
-        notFoundFunction(`No ${settingsType} file found in ${settingsFilename}. ${notFoundMessage}`);
-
-        // or maybe undefined!
-        return null;
-    }
-
-    try {
-        settingsStr = jsonminify(settingsStr).replace(',]', ']').replace(',}', '}');
-
-        const settings = JSON.parse(settingsStr);
-
-        logger.info(`${settingsType} loaded from: ${settingsFilename}`);
-
-        return lookupEnvironmentVariables(settings);
-    } catch (e: any) {
-        logger.error(`There was an error processing your ${settingsType} ` +
-            `file from ${settingsFilename}: ${e.message}`);
-
-        process.exit(1);
-    }
-};
-
-export let randomVersionString: string | undefined
-
-export const reloadSettings = () => {
-    const settingsParsed = parseSettings(settings.settingsFilename, true);
-    const credentials = parseSettings(settings.credentialsFilename, false);
-    storeSettings(settingsParsed);
-    storeSettings(credentials);
-
-    // Init logging config
-    settings.logconfig = defaultLogConfig(settings.loglevel ? settings.loglevel : defaultLogLevel);
-    initLogging(settings.logconfig);
-
-    if (!settings.skinName) {
-        logger.warn('No "skinName" parameter found. Please check out settings.json.template and ' +
-            'update your settings.json. Falling back to the default "colibris".');
-        settings.skinName = 'colibris';
-    }
-
-    // checks if skinName has an acceptable value, otherwise falls back to "colibris"
-    if (settings.skinName) {
-        const skinBasePath = path.join(root, 'src', 'static', 'skins');
-        const countPieces = settings.skinName.split(path.sep).length;
-
-        if (countPieces !== 1) {
-            logger.error(`skinName must be the name of a directory under "${skinBasePath}". This is ` +
-                `not valid: "${settings.skinName}". Falling back to the default "colibris".`);
-
+        if (!settings.skinName) {
+            logger.warn('No "skinName" parameter found. Please check out settings.json.template and ' +
+                'update your settings.json. Falling back to the default "colibris".');
             settings.skinName = 'colibris';
         }
 
-        // informative variable, just for the log messages
-        let skinPath = path.join(skinBasePath, settings.skinName);
+        // checks if skinName has an acceptable value, otherwise falls back to "colibris"
+        if (settings.skinName) {
+            const skinBasePath = path.join(root, 'src', 'static', 'skins');
+            const countPieces = settings.skinName.split(path.sep).length;
 
-        // what if someone sets skinName == ".." or "."? We catch him!
-        if (absolutePaths.isSubdir(skinBasePath, skinPath) === false) {
-            logger.error(`Skin path ${skinPath} must be a subdirectory of ${skinBasePath}. ` +
-                'Falling back to the default "colibris".');
+            if (countPieces !== 1) {
+                logger.error(`skinName must be the name of a directory under "${skinBasePath}". This is ` +
+                    `not valid: "${settings.skinName}". Falling back to the default "colibris".`);
 
-            settings.skinName = 'colibris';
-            skinPath = path.join(skinBasePath, settings.skinName);
+                settings.skinName = 'colibris';
+            }
+
+            // informative variable, just for the log messages
+            let skinPath = path.join(skinBasePath, settings.skinName);
+
+            // what if someone sets skinName == ".." or "."? We catch him!
+            if (absolutePaths.isSubdir(skinBasePath, skinPath) === false) {
+                logger.error(`Skin path ${skinPath} must be a subdirectory of ${skinBasePath}. ` +
+                    'Falling back to the default "colibris".');
+
+                settings.skinName = 'colibris';
+                skinPath = path.join(skinBasePath, settings.skinName);
+            }
+
+            if (!fs.existsSync(skinPath)) {
+                logger.error(`Skin path ${skinPath} does not exist. Falling back to the default "colibris".`);
+                settings.skinName = 'colibris';
+                skinPath = path.join(skinBasePath, settings.skinName);
+            }
+
+            logger.info(`Using skin "${settings.skinName}" in dir: ${skinPath}`);
         }
 
-        if (!fs.existsSync(skinPath)) {
-            logger.error(`Skin path ${skinPath} does not exist. Falling back to the default "colibris".`);
-            settings.skinName = 'colibris';
-            skinPath = path.join(skinBasePath, settings.skinName);
-        }
-
-        logger.info(`Using skin "${settings.skinName}" in dir: ${skinPath}`);
-    }
-
-    if (settings.abiword) {
-        // Check abiword actually exists
-        if (settings.abiword != null) {
-            fs.exists(settings.abiword, (exists) => {
-                if (!exists) {
-                    const abiwordError = 'Abiword does not exist at this path, check your settings file.';
-                    if (!settings.suppressErrorsInPadText) {
-                        settings.defaultPadText += `\nError: ${abiwordError}${suppressDisableMsg}`;
+        if (settings.abiword) {
+            // Check abiword actually exists
+            if (settings.abiword != null) {
+                fs.exists(settings.abiword, (exists) => {
+                    if (!exists) {
+                        const abiwordError = 'Abiword does not exist at this path, check your settings file.';
+                        if (!settings.suppressErrorsInPadText) {
+                            settings.defaultPadText += `\nError: ${abiwordError}${suppressDisableMsg}`;
+                        }
+                        logger.error(`${abiwordError} File location: ${settings.abiword}`);
+                        settings.abiword = null;
                     }
-                    logger.error(`${abiwordError} File location: ${settings.abiword}`);
-                    settings.abiword = null;
+                });
+            }
+        }
+
+        if (settings.soffice) {
+            fs.exists(settings.soffice, (exists) => {
+                if (!exists) {
+                    const sofficeError =
+                        'soffice (libreoffice) does not exist at this path, check your settings file.';
+
+                    if (!settings.suppressErrorsInPadText) {
+                        settings.defaultPadText += `\nError: ${sofficeError}${suppressDisableMsg}`;
+                    }
+                    logger.error(`${sofficeError} File location: ${settings.soffice}`);
+                    settings.soffice = null;
                 }
             });
         }
-    }
 
-    if (settings.soffice) {
-        fs.exists(settings.soffice, (exists) => {
-            if (!exists) {
-                const sofficeError =
-                    'soffice (libreoffice) does not exist at this path, check your settings file.';
-
-                if (!settings.suppressErrorsInPadText) {
-                    settings.defaultPadText += `\nError: ${sofficeError}${suppressDisableMsg}`;
-                }
-                logger.error(`${sofficeError} File location: ${settings.soffice}`);
-                settings.soffice = null;
+        const sessionkeyFilename = absolutePaths.makeAbsolute(argv.sessionkey || './SESSIONKEY.txt');
+        if (!settings.sessionKey) {
+            try {
+                settings.sessionKey = fs.readFileSync(sessionkeyFilename, 'utf8');
+                logger.info(`Session key loaded from: ${sessionkeyFilename}`);
+            } catch (err) { /* ignored */
             }
-        });
-    }
-
-    const sessionkeyFilename = absolutePaths.makeAbsolute(argv.sessionkey || './SESSIONKEY.txt');
-    if (!settings.sessionKey) {
-        try {
-            settings.sessionKey = fs.readFileSync(sessionkeyFilename, 'utf8');
-            logger.info(`Session key loaded from: ${sessionkeyFilename}`);
-        } catch (err) { /* ignored */
+            const keyRotationEnabled = settings.cookie.keyRotationInterval && settings.cookie.sessionLifetime;
+            if (!settings.sessionKey && !keyRotationEnabled) {
+                logger.info(
+                    `Session key file "${sessionkeyFilename}" not found. Creating with random contents.`);
+                settings.sessionKey = randomString(32);
+                fs.writeFileSync(sessionkeyFilename, settings.sessionKey, 'utf8');
+            }
+        } else {
+            logger.warn('Declaring the sessionKey in the settings.json is deprecated. ' +
+                'This value is auto-generated now. Please remove the setting from the file. -- ' +
+                'If you are seeing this error after restarting using the Admin User ' +
+                'Interface then you can ignore this message.');
         }
-        const keyRotationEnabled = settings.cookie.keyRotationInterval && settings.cookie.sessionLifetime;
-        if (!settings.sessionKey && !keyRotationEnabled) {
-            logger.info(
-                `Session key file "${sessionkeyFilename}" not found. Creating with random contents.`);
-            settings.sessionKey = randomString(32);
-            fs.writeFileSync(sessionkeyFilename, settings.sessionKey, 'utf8');
-        }
-    } else {
-        logger.warn('Declaring the sessionKey in the settings.json is deprecated. ' +
-            'This value is auto-generated now. Please remove the setting from the file. -- ' +
-            'If you are seeing this error after restarting using the Admin User ' +
-            'Interface then you can ignore this message.');
-    }
-    if (settings.sessionKey) {
-        logger.warn(`The sessionKey setting and ${sessionkeyFilename} file are deprecated; ` +
-            'use automatic key rotation instead (see the cookie.keyRotationInterval setting).');
-    }
-
-    if (settings.dbType === 'dirty') {
-        const dirtyWarning = 'DirtyDB is used. This is not recommended for production.';
-        if (!settings.suppressErrorsInPadText) {
-            settings.defaultPadText += `\nWarning: ${dirtyWarning}${suppressDisableMsg}`;
+        if (settings.sessionKey) {
+            logger.warn(`The sessionKey setting and ${sessionkeyFilename} file are deprecated; ` +
+                'use automatic key rotation instead (see the cookie.keyRotationInterval setting).');
         }
 
-        settings.dbSettings.filename = absolutePaths.makeAbsolute(settings.dbSettings.filename);
-        logger.warn(`${dirtyWarning} File location: ${settings.dbSettings.filename}`);
+        if (settings.dbType === 'dirty') {
+            const dirtyWarning = 'DirtyDB is used. This is not recommended for production.';
+            if (!settings.suppressErrorsInPadText) {
+                settings.defaultPadText += `\nWarning: ${dirtyWarning}${suppressDisableMsg}`;
+            }
+
+            settings.dbSettings.filename = absolutePaths.makeAbsolute(settings.dbSettings.filename);
+            logger.warn(`${dirtyWarning} File location: ${settings.dbSettings.filename}`);
+        }
+
+        if (settings.ip === '') {
+            // using Unix socket for connectivity
+            logger.warn('The settings file contains an empty string ("") for the "ip" parameter. The ' +
+                '"port" parameter will be interpreted as the path to a Unix socket to bind at.');
+        }
+
+        /*
+         * At each start, Etherpad generates a random string and appends it as query
+         * parameter to the URLs of the static assets, in order to force their reload.
+         * Subsequent requests will be cached, as long as the server is not reloaded.
+         *
+         * For the rationale behind this choice, see
+         * https://github.com/ether/etherpad-lite/pull/3958
+         *
+         * ACHTUNG: this may prevent caching HTTP proxies to work
+         * TODO: remove the "?v=randomstring" parameter, and replace with hashed filenames instead
+         */
+        logger.info(`Random string used for versioning assets: ${settings.randomVersionString}`);
     }
+}
 
-    if (settings.ip === '') {
-        // using Unix socket for connectivity
-        logger.warn('The settings file contains an empty string ("") for the "ip" parameter. The ' +
-            '"port" parameter will be interpreted as the path to a Unix socket to bind at.');
-    }
-
-    /*
-     * At each start, Etherpad generates a random string and appends it as query
-     * parameter to the URLs of the static assets, in order to force their reload.
-     * Subsequent requests will be cached, as long as the server is not reloaded.
-     *
-     * For the rationale behind this choice, see
-     * https://github.com/ether/etherpad-lite/pull/3958
-     *
-     * ACHTUNG: this may prevent caching HTTP proxies to work
-     * TODO: remove the "?v=randomstring" parameter, and replace with hashed filenames instead
-     */
-    randomVersionString = randomString(4);
-    logger.info(`Random string used for versioning assets: ${randomVersionString}`);
-};
-
-
-export const exportedForTestingOnly = {
-    parseSettings,
-};
+/* Root path of the installation */
+logger.info('All relative paths will be interpreted relative to the identified ' +
+    `Etherpad base dir: ${root}`);
 
 // initially load settings
-reloadSettings();
+settings.reloadSettings
+
+
+export default settings

@@ -24,7 +24,7 @@ const exporthtml = require('../utils/ExportHtml');
 const exporttxt = require('../utils/ExportTxt');
 const exportEtherpad = require('../utils/ExportEtherpad');
 const fs = require('fs');
-import {settings} from '../utils/Settings';
+import settings from '../utils/Settings';
 const os = require('os');
 const hooks = require('../../static/js/pluginfw/hooks');
 const util = require('util');

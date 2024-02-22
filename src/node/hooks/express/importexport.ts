@@ -3,7 +3,7 @@
 import {ArgsExpressType} from "../../types/ArgsExpressType";
 
 const hasPadAccess = require('../../padaccess');
-import {exportAvailable, settings} from '../../utils/Settings';
+import settings from '../../utils/Settings';
 const exportHandler = require('../../handler/ExportHandler');
 const importHandler = require('../../handler/ImportHandler');
 const padManager = require('../../db/PadManager');
@@ -35,7 +35,7 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
       }
 
       // if abiword is disabled, and this is a format we only support with abiword, output a message
-      if (exportAvailable() === 'no' &&
+      if (settings.exportAvailable() === 'no' &&
           ['odt', 'pdf', 'doc'].indexOf(req.params.type) !== -1) {
         console.error(`Impossible to export pad "${req.params.pad}" in ${req.params.type} format.` +
                       ' There is no converter configured');

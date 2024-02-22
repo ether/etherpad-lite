@@ -21,7 +21,7 @@ const fs = require('fs');
 const fsp = fs.promises;
 const path = require('path');
 const zlib = require('zlib');
-import {root} from './Settings';
+import {settings} from './Settings';
 const existsSync = require('./path_exists');
 const util = require('util');
 
@@ -40,7 +40,7 @@ const util = require('util');
 const  _crypto = require('crypto');
 
 
-let CACHE_DIR = path.join(root, 'var/');
+let CACHE_DIR = path.join(settings.root, 'var/');
 CACHE_DIR = existsSync(CACHE_DIR) ? CACHE_DIR : undefined;
 
 type Headers = {

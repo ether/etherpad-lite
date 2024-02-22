@@ -6,7 +6,7 @@ const fs = require('fs');
 const fsp = fs.promises;
 const toolbar = require('../../utils/toolbar');
 const hooks = require('../../../static/js/pluginfw/hooks');
-import {getEpVersion, root, settings} from '../../utils/Settings';
+import settings from '../../utils/Settings';
 const util = require('util');
 const webaccess = require('./webaccess');
 
@@ -17,7 +17,7 @@ exports.expressPreSession = async (hookName, {app}) => {
     res.set('Content-Type', 'application/health+json');
     res.json({
       status: 'pass',
-      releaseId: getEpVersion(),
+      releaseId: settings.getEpVersion(),
     });
   });
 
@@ -31,11 +31,11 @@ exports.expressPreSession = async (hookName, {app}) => {
 
   app.get('/robots.txt', (req, res) => {
     let filePath =
-        path.join(root, 'src', 'static', 'skins', settings.skinName, 'robots.txt');
+        path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'robots.txt');
     res.sendFile(filePath, (err) => {
       // there is no custom robots.txt, send the default robots.txt which dissallows all
       if (err) {
-        filePath = path.join(root, 'src', 'static', 'robots.txt');
+        filePath = path.join(settings.root, 'src', 'static', 'robots.txt');
         res.sendFile(filePath);
       }
     });
@@ -54,9 +54,9 @@ exports.expressPreSession = async (hookName, {app}) => {
 
 
       const fns = [
-        ...(settings.favicon ? [path.resolve(root, settings.favicon)] : []),
-        path.join(root, 'src', 'static', 'skins', settings.skinName, 'favicon.ico'),
-        path.join(root, 'src', 'static', 'favicon.ico'),
+        ...(settings.favicon ? [path.resolve(settings.root, settings.favicon)] : []),
+        path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'favicon.ico'),
+        path.join(settings.root, 'src', 'static', 'favicon.ico'),
       ];
       for (const fn of fns) {
         try {

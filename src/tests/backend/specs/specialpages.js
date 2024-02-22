@@ -1,7 +1,7 @@
 'use strict';
 
 const common = require('../common');
-import * as settings from '../../../node/utils/Settings';
+import settings from '../../../node/utils/Settings';
 
 describe(__filename, function () {
   this.timeout(30000);

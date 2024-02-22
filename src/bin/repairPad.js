@@ -19,7 +19,7 @@ let valueCount = 0;
 
 (async () => {
   // initialize database
-  import {settings} from '../node/utils/Settings';
+  import settings from '../node/utils/Settings';
   const db = require('../node/db/DB');
   await db.init();
 

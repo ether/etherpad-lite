@@ -1,4 +1,5 @@
 export type SettingsObj = {
+    root: string;
     settingsFilename: string;
     credentialsFilename: string;
     title: string;
@@ -111,4 +112,14 @@ export type SettingsObj = {
     enableAdminUITests: boolean;
     lowerCasePadIds: boolean;
     randomVersionString: string;
+    getEpVersion: ()=>string;
+    abiwordAvailable: ()=>string;
+    sofficeAvailable: ()=>string;
+    exportAvailable: ()=>string;
+    getGitCommit: ()=>string;
+    storeSettings: (newSettings: SettingsObj)=>void;
+    coerceValue: (stringVal: string)=> string | number | boolean | null | undefined;
+    lookupEnvironmentVariables: (settings: SettingsObj)=>SettingsObj;
+    parseSettings: (settingsFilename: string, isSettings: boolean) => any;
+    reloadSettings: ()=>void;
 }

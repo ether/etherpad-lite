@@ -22,7 +22,7 @@
 const CustomError = require('../utils/customError');
 const Pad = require('../db/Pad');
 const db = require('./DB');
-import {settings} from '../utils/Settings';
+import settings from '../utils/Settings';
 
 /**
  * A cache of all loaded Pads.
