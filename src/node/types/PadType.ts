@@ -5,11 +5,16 @@ export type PadType = {
     apool: ()=>APool,
     atext: AText,
     pool: APool,
-    getInternalRevisionAText: (text:string)=>Promise<AText>,
+    getInternalRevisionAText: (text:number|string)=>Promise<AText>,
     getValidRevisionRange: (fromRev: string, toRev: string)=>PadRange,
+    getRevisionAuthor: (rev: number)=>Promise<string>,
     getRevision: (rev?: string)=>Promise<any>,
     head: number,
     getAllAuthorColors: ()=>Promise<MapArrayType<string>>,
+    remove: ()=>Promise<void>,
+    text: ()=>string,
+    setText: (text: string)=>Promise<void>,
+    appendText: (text: string)=>Promise<void>,
 }
 
 

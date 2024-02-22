@@ -81,7 +81,10 @@
   "devDependencies": {
     "@types/async": "^3.2.24",
     "@types/express": "^4.17.21",
+    "@types/mocha": "^10.0.6",
     "@types/node": "^20.11.19",
+    "@types/sinon": "^17.0.3",
+    "@types/supertest": "^6.0.2",
     "@types/underscore": "^1.11.15",
     "cypress": "^13.6.4",
     "eslint": "^8.56.0",
@@ -109,7 +112,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "mocha --import=tsx --timeout 120000 --recursive tests/backend/specs ../node_modules/ep_*/static/tests/backend/specs",
+    "test": "mocha --import=tsx --timeout 120000 --recursive tests/backend/specs/**.ts ../node_modules/ep_*/static/tests/backend/specs",
     "test-container": "mocha --import=tsx --timeout 5000 tests/container/specs/api",
     "dev": "node --import tsx node/server.ts",
     "prod": "node --import tsx node/server.ts",
