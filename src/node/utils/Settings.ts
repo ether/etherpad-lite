@@ -50,13 +50,13 @@ const nonSettings = [
 
 // This is a function to make it easy to create a new instance. It is important to not reuse a
 // config object after passing it to log4js.configure() because that method mutates the object. :(
-const defaultLogConfig = (level) => ({appenders: {console: {type: 'console'}},
+const defaultLogConfig = (level:string) => ({appenders: {console: {type: 'console'}},
   categories: {
     default: {appenders: ['console'], level},
   }});
 const defaultLogLevel = 'INFO';
 
-const initLogging = (logLevel, config) => {
+const initLogging = (config:any) => {
   // log4js.configure() modifies exports.logconfig so check for equality first.
   log4js.configure(config);
   log4js.getLogger('console');
@@ -70,7 +70,7 @@ const initLogging = (logLevel, config) => {
 
 // Initialize logging as early as possible with reasonable defaults. Logging will be re-initialized
 // with the user's chosen log level and logger config after the settings have been loaded.
-initLogging(defaultLogLevel, defaultLogConfig(defaultLogLevel));
+initLogging(defaultLogConfig(defaultLogLevel));
 
 /* Root path of the installation */
 exports.root = absolutePaths.findEtherpadRoot();
@@ -487,7 +487,7 @@ exports.getGitCommit = () => {
       version = ref;
     }
     version = version.substring(0, 7);
-  } catch (e) {
+  } catch (e:any) {
     logger.warn(`Can't get git version for server header\n${e.message}`);
   }
   return version;
@@ -503,7 +503,7 @@ exports.getEpVersion = () => require('../../package.json').version;
  * This code refactors a previous version that copied & pasted the same code for
  * both "settings.json" and "credentials.json".
  */
-const storeSettings = (settingsObj) => {
+const storeSettings = (settingsObj:any) => {
   for (const i of Object.keys(settingsObj || {})) {
     if (nonSettings.includes(i)) {
       logger.warn(`Ignoring setting: '${i}'`);
@@ -542,8 +542,9 @@ const storeSettings = (settingsObj) => {
  * short syntax "${ABIWORD}", and not "${ABIWORD:null}": the latter would result
  * in the literal string "null", instead.
  */
-const coerceValue = (stringValue) => {
+const coerceValue = (stringValue:string) => {
   // cooked from https://stackoverflow.com/questions/175739/built-in-way-in-javascript-to-check-if-a-string-is-a-valid-number
+  // @ts-ignore
   const isNumeric = !isNaN(stringValue) && !isNaN(parseFloat(stringValue) && isFinite(stringValue));
 
   if (isNumeric) {
@@ -597,7 +598,7 @@ const coerceValue = (stringValue) => {
  *
  * see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter
  */
-const lookupEnvironmentVariables = (obj) => {
+const lookupEnvironmentVariables = (obj: object) => {
   const stringifiedAndReplaced = JSON.stringify(obj, (key, value) => {
     /*
      * the first invocation of replacer() is with an empty key. Just go on, or
@@ -669,7 +670,7 @@ const lookupEnvironmentVariables = (obj) => {
     logger.debug(
         `Configuration key "${key}" will be read from environment variable "${envVarName}"`);
 
-    return coerceValue(envVarValue);
+    return coerceValue(envVarValue!);
   });
 
   const newSettings = JSON.parse(stringifiedAndReplaced);
@@ -685,7 +686,7 @@ const lookupEnvironmentVariables = (obj) => {
  *
  * The isSettings variable only controls the error logging.
  */
-const parseSettings = (settingsFilename, isSettings) => {
+const parseSettings = (settingsFilename:string, isSettings:boolean) => {
   let settingsStr = '';
 
   let settingsType, notFoundMessage, notFoundFunction;
@@ -720,7 +721,7 @@ const parseSettings = (settingsFilename, isSettings) => {
     const replacedSettings = lookupEnvironmentVariables(settings);
 
     return replacedSettings;
-  } catch (e) {
+  } catch (e:any) {
     logger.error(`There was an error processing your ${settingsType} ` +
         `file from ${settingsFilename}: ${e.message}`);
 
@@ -736,7 +737,7 @@ exports.reloadSettings = () => {
 
   // Init logging config
   exports.logconfig = defaultLogConfig(exports.loglevel ? exports.loglevel : defaultLogLevel);
-  initLogging(exports.loglevel, exports.logconfig);
+  initLogging(exports.logconfig);
 
   if (!exports.skinName) {
     logger.warn('No "skinName" parameter found. Please check out settings.json.template and ' +
@@ -780,7 +781,7 @@ exports.reloadSettings = () => {
   if (exports.abiword) {
     // Check abiword actually exists
     if (exports.abiword != null) {
-      fs.exists(exports.abiword, (exists) => {
+      fs.exists(exports.abiword, (exists: boolean) => {
         if (!exists) {
           const abiwordError = 'Abiword does not exist at this path, check your settings file.';
           if (!exports.suppressErrorsInPadText) {
@@ -794,7 +795,7 @@ exports.reloadSettings = () => {
   }
 
   if (exports.soffice) {
-    fs.exists(exports.soffice, (exists) => {
+    fs.exists(exports.soffice, (exists: boolean) => {
       if (!exists) {
         const sofficeError =
             'soffice (libreoffice) does not exist at this path, check your settings file.';

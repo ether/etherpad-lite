@@ -26,7 +26,7 @@ const semver = require('semver');
  *
  * @param  {String}     minNodeVersion   Minimum required Node version
  */
-exports.enforceMinNodeVersion = (minNodeVersion) => {
+exports.enforceMinNodeVersion = (minNodeVersion: string) => {
   const currentNodeVersion = process.version;
 
   // we cannot use template literals, since we still do not know if we are
@@ -49,7 +49,7 @@ exports.enforceMinNodeVersion = (minNodeVersion) => {
  * @param {Function} epRemovalVersion Etherpad version that will remove support for deprecated
  *     Node releases
  */
-exports.checkDeprecationStatus = (lowestNonDeprecatedNodeVersion, epRemovalVersion) => {
+exports.checkDeprecationStatus = (lowestNonDeprecatedNodeVersion: string, epRemovalVersion:Function) => {
   const currentNodeVersion = process.version;
 
   if (semver.lt(currentNodeVersion, lowestNonDeprecatedNodeVersion)) {

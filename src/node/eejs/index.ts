@@ -38,16 +38,16 @@ exports.info = {
 
 const getCurrentFile = () => exports.info.file_stack[exports.info.file_stack.length - 1];
 
-exports._init = (b, recursive) => {
+exports._init = (b: any, recursive: boolean) => {
   exports.info.__output_stack.push(exports.info.__output);
   exports.info.__output = b;
 };
 
-exports._exit = (b, recursive) => {
+exports._exit = (b:any, recursive:boolean) => {
   exports.info.__output = exports.info.__output_stack.pop();
 };
 
-exports.begin_block = (name) => {
+exports.begin_block = (name:string) => {
   exports.info.block_stack.push(name);
   exports.info.__output_stack.push(exports.info.__output.get());
   exports.info.__output.set('');
@@ -63,11 +63,17 @@ exports.end_block = () => {
   exports.info.__output.set(exports.info.__output.get().concat(args.content));
 };
 
-exports.require = (name, args, mod) => {
+exports.require = (name:string, args:{
+  e?: Function,
+    require?: Function,
+}, mod:{
+  filename:string,
+    paths:string[],
+}) => {
   if (args == null) args = {};
 
   let basedir = __dirname;
-  let paths = [];
+  let paths:string[] = [];
 
   if (exports.info.file_stack.length) {
     basedir = path.dirname(getCurrentFile().path);

@@ -10,10 +10,10 @@ const settings = require('../../utils/Settings');
 const util = require('util');
 const webaccess = require('./webaccess');
 
-exports.expressPreSession = async (hookName, {app}) => {
+exports.expressPreSession = async (hookName:string, {app}:any) => {
   // This endpoint is intended to conform to:
   // https://www.ietf.org/archive/id/draft-inadarei-api-health-check-06.html
-  app.get('/health', (req, res) => {
+  app.get('/health', (req:any, res:any) => {
     res.set('Content-Type', 'application/health+json');
     res.json({
       status: 'pass',
@@ -21,18 +21,18 @@ exports.expressPreSession = async (hookName, {app}) => {
     });
   });
 
-  app.get('/stats', (req, res) => {
+  app.get('/stats', (req:any, res:any) => {
     res.json(require('../../stats').toJSON());
   });
 
-  app.get('/javascript', (req, res) => {
+  app.get('/javascript', (req:any, res:any) => {
     res.send(eejs.require('ep_etherpad-lite/templates/javascript.html', {req}));
   });
 
-  app.get('/robots.txt', (req, res) => {
+  app.get('/robots.txt', (req:any, res:any) => {
     let filePath =
         path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'robots.txt');
-    res.sendFile(filePath, (err) => {
+    res.sendFile(filePath, (err:any) => {
       // there is no custom robots.txt, send the default robots.txt which dissallows all
       if (err) {
         filePath = path.join(settings.root, 'src', 'static', 'robots.txt');
@@ -41,7 +41,7 @@ exports.expressPreSession = async (hookName, {app}) => {
     });
   });
 
-  app.get('/favicon.ico', (req, res, next) => {
+  app.get('/favicon.ico', (req:any, res:any, next:Function) => {
     (async () => {
       /*
         If this is a url we simply redirect to that one.
@@ -73,14 +73,14 @@ exports.expressPreSession = async (hookName, {app}) => {
   });
 };
 
-exports.expressCreateServer = (hookName, args, cb) => {
+exports.expressCreateServer = (hookName:string, args:any, cb:Function) => {
   // serve index.html under /
-  args.app.get('/', (req, res) => {
+  args.app.get('/', (req:any, res:any) => {
     res.send(eejs.require('ep_etherpad-lite/templates/index.html', {req}));
   });
 
   // serve pad.html under /p
-  args.app.get('/p/:pad', (req, res, next) => {
+  args.app.get('/p/:pad', (req:any, res:any, next:Function) => {
     // The below might break for pads being rewritten
     const isReadOnly = !webaccess.userCanModify(req.params.pad, req);
 
@@ -99,7 +99,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
   });
 
   // serve timeslider.html under /p/$padname/timeslider
-  args.app.get('/p/:pad/timeslider', (req, res, next) => {
+  args.app.get('/p/:pad/timeslider', (req:any, res:any, next:Function) => {
     hooks.callAll('padInitToolbar', {
       toolbar,
     });
@@ -112,7 +112,7 @@ exports.expressCreateServer = (hookName, args, cb) => {
 
   // The client occasionally polls this endpoint to get an updated expiration for the express_sid
   // cookie. This handler must be installed after the express-session middleware.
-  args.app.put('/_extendExpressSessionLifetime', (req, res) => {
+  args.app.put('/_extendExpressSessionLifetime', (req:any, res:any) => {
     // express-session automatically calls req.session.touch() so we don't need to do it here.
     res.json({status: 'ok'});
   });

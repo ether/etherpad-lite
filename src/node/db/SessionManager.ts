@@ -36,7 +36,7 @@ const authorManager = require('./AuthorManager');
  *     sessionCookie, and is bound to a group with the given ID, then this returns the author ID
  *     bound to the session. Otherwise, returns undefined.
  */
-exports.findAuthorID = async (groupID, sessionCookie) => {
+exports.findAuthorID = async (groupID:string, sessionCookie: string) => {
   if (!sessionCookie) return undefined;
   /*
    * Sometimes, RFC 6265-compliant web servers may send back a cookie whose
@@ -65,7 +65,7 @@ exports.findAuthorID = async (groupID, sessionCookie) => {
   const sessionInfoPromises = sessionIDs.map(async (id) => {
     try {
       return await exports.getSessionInfo(id);
-    } catch (err) {
+    } catch (err:any) {
       if (err.message === 'sessionID does not exist') {
         console.debug(`SessionManager getAuthorID: no session exists with ID ${id}`);
       } else {
@@ -75,7 +75,10 @@ exports.findAuthorID = async (groupID, sessionCookie) => {
     return undefined;
   });
   const now = Math.floor(Date.now() / 1000);
-  const isMatch = (si) => (si != null && si.groupID === groupID && now < si.validUntil);
+  const isMatch = (si: {
+    groupID: string;
+    validUntil: number;
+  }|null) => (si != null && si.groupID === groupID && now < si.validUntil);
   const sessionInfo = await promises.firstSatisfies(sessionInfoPromises, isMatch);
   if (sessionInfo == null) return undefined;
   return sessionInfo.authorID;
@@ -86,7 +89,7 @@ exports.findAuthorID = async (groupID, sessionCookie) => {
  * @param {String} sessionID The id of the session
  * @return {Promise<boolean>} Resolves to true if the session exists
  */
-exports.doesSessionExist = async (sessionID) => {
+exports.doesSessionExist = async (sessionID: string) => {
   // check if the database entry of this session exists
   const session = await db.get(`session:${sessionID}`);
   return (session != null);
@@ -99,7 +102,7 @@ exports.doesSessionExist = async (sessionID) => {
  * @param {Number} validUntil The unix timestamp when the session should expire
  * @return {Promise<{sessionID: string}>} the id of the new session
  */
-exports.createSession = async (groupID, authorID, validUntil) => {
+exports.createSession = async (groupID: string, authorID: string, validUntil: number) => {
   // check if the group exists
   const groupExists = await groupManager.doesGroupExist(groupID);
   if (!groupExists) {
@@ -160,7 +163,7 @@ exports.createSession = async (groupID, authorID, validUntil) => {
  * @param {String} sessionID The id of the session
  * @return {Promise<Object>} the sessioninfos
  */
-exports.getSessionInfo = async (sessionID) => {
+exports.getSessionInfo = async (sessionID:string) => {
   // check if the database entry of this session exists
   const session = await db.get(`session:${sessionID}`);
 
@@ -178,7 +181,7 @@ exports.getSessionInfo = async (sessionID) => {
  * @param {String} sessionID The id of the session
  * @return {Promise<void>} Resolves when the session is deleted
  */
-exports.deleteSession = async (sessionID) => {
+exports.deleteSession = async (sessionID:string) => {
   // ensure that the session exists
   const session = await db.get(`session:${sessionID}`);
   if (session == null) {
@@ -207,7 +210,7 @@ exports.deleteSession = async (sessionID) => {
  * @param {String} groupID The id of the group
  * @return {Promise<Object>} The sessioninfos of all sessions of this group
  */
-exports.listSessionsOfGroup = async (groupID) => {
+exports.listSessionsOfGroup = async (groupID: string) => {
   // check that the group exists
   const exists = await groupManager.doesGroupExist(groupID);
   if (!exists) {
@@ -223,7 +226,7 @@ exports.listSessionsOfGroup = async (groupID) => {
  * @param {String} authorID The id of the author
  * @return {Promise<Object>} The sessioninfos of all sessions of this author
  */
-exports.listSessionsOfAuthor = async (authorID) => {
+exports.listSessionsOfAuthor = async (authorID: string) => {
   // check that the author exists
   const exists = await authorManager.doesAuthorExist(authorID);
   if (!exists) {
@@ -240,7 +243,7 @@ exports.listSessionsOfAuthor = async (authorID) => {
  * @param {String} dbkey The db key to use to get the sessions
  * @return {Promise<*>}
  */
-const listSessionsWithDBKey = async (dbkey) => {
+const listSessionsWithDBKey = async (dbkey: string) => {
   // get the group2sessions entry
   const sessionObject = await db.get(dbkey);
   const sessions = sessionObject ? sessionObject.sessionIDs : null;
@@ -249,7 +252,7 @@ const listSessionsWithDBKey = async (dbkey) => {
   for (const sessionID of Object.keys(sessions || {})) {
     try {
       sessions[sessionID] = await exports.getSessionInfo(sessionID);
-    } catch (err) {
+    } catch (err:any) {
       if (err.name === 'apierror') {
         console.warn(`Found bad session ${sessionID} in ${dbkey}`);
         sessions[sessionID] = null;
@@ -262,9 +265,11 @@ const listSessionsWithDBKey = async (dbkey) => {
   return sessions;
 };
 
+
 /**
  * checks if a number is an int
  * @param {number|string} value
  * @return {boolean} If the value is an integer
  */
-const isInt = (value) => (parseFloat(value) === parseInt(value)) && !isNaN(value);
+// @ts-ignore
+const isInt = (value:number|string): boolean => (parseFloat(value) === parseInt(value)) && !isNaN(value);

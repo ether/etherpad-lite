@@ -1,4 +1,7 @@
 'use strict';
+import {AText, PadType} from "../types/PadType";
+import {MapArrayType} from "../types/MapType";
+
 /**
  * Copyright 2009 Google Inc.
  *
@@ -26,7 +29,7 @@ const _analyzeLine = require('./ExportHelper')._analyzeLine;
 const _encodeWhitespace = require('./ExportHelper')._encodeWhitespace;
 const padutils = require('../../static/js/pad_utils').padutils;
 
-const getPadHTML = async (pad, revNum) => {
+const getPadHTML = async (pad: PadType, revNum: string) => {
   let atext = pad.atext;
 
   // fetch revision atext
@@ -38,7 +41,7 @@ const getPadHTML = async (pad, revNum) => {
   return await getHTMLFromAtext(pad, atext);
 };
 
-const getHTMLFromAtext = async (pad, atext, authorColors) => {
+const getHTMLFromAtext = async (pad:PadType, atext: AText, authorColors?: string[]) => {
   const apool = pad.apool();
   const textLines = atext.text.slice(0, -1).split('\n');
   const attribLines = Changeset.splitAttributionLines(atext.attribs, atext.text);
@@ -48,7 +51,7 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
 
   await Promise.all([
     // prepare tags stored as ['tag', true] to be exported
-    hooks.aCallAll('exportHtmlAdditionalTags', pad).then((newProps) => {
+    hooks.aCallAll('exportHtmlAdditionalTags', pad).then((newProps: string[]) => {
       newProps.forEach((prop) => {
         tags.push(prop);
         props.push(prop);
@@ -56,7 +59,7 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
     }),
     // prepare tags stored as ['tag', 'value'] to be exported. This will generate HTML with tags
     // like <span data-tag="value">
-    hooks.aCallAll('exportHtmlAdditionalTagsWithData', pad).then((newProps) => {
+    hooks.aCallAll('exportHtmlAdditionalTagsWithData', pad).then((newProps: string[]) => {
       newProps.forEach((prop) => {
         tags.push(`span data-${prop[0]}="${prop[1]}"`);
         props.push(prop);
@@ -68,10 +71,10 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
   // and maps them to an index in props
   // *3:2 -> the attribute *3 means strong
   // *2:5 -> the attribute *2 means s(trikethrough)
-  const anumMap = {};
+  const anumMap:MapArrayType<number> = {};
   let css = '';
 
-  const stripDotFromAuthorID = (id) => id.replace(/\./g, '_');
+  const stripDotFromAuthorID = (id: string) => id.replace(/\./g, '_');
 
   if (authorColors) {
     css += '<style>\n';
@@ -118,7 +121,7 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
     }
   });
 
-  const getLineHTML = (text, attribs) => {
+  const getLineHTML = (text: string, attribs: string[]) => {
     // Use order of tags (b/i/u) as order of nesting, for simplicity
     // and decent nesting.  For example,
     // <b>Just bold<b> <b><i>Bold and italics</i></b> <i>Just italics</i>
@@ -126,12 +129,13 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
     // <b>Just bold <i>Bold and italics</i></b> <i>Just italics</i>
     const taker = Changeset.stringIterator(text);
     const assem = Changeset.stringAssembler();
-    const openTags = [];
+    const openTags:string[] = [];
 
-    const getSpanClassFor = (i) => {
+    const getSpanClassFor = (i: string) => {
       // return if author colors are disabled
       if (!authorColors) return false;
 
+      // @ts-ignore
       const property = props[i];
 
       // we are not insterested on properties in the form of ['color', 'red'],
@@ -153,12 +157,13 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
 
     // tags added by exportHtmlAdditionalTagsWithData will be exported as <span> with
     // data attributes
-    const isSpanWithData = (i) => {
+    const isSpanWithData = (i: string) => {
+      // @ts-ignore
       const property = props[i];
       return Array.isArray(property);
     };
 
-    const emitOpenTag = (i) => {
+    const emitOpenTag = (i: string) => {
       openTags.unshift(i);
       const spanClass = getSpanClassFor(i);
 
@@ -168,13 +173,14 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
         assem.append('">');
       } else {
         assem.append('<');
+        // @ts-ignore
         assem.append(tags[i]);
         assem.append('>');
       }
     };
 
     // this closes an open tag and removes its reference from openTags
-    const emitCloseTag = (i) => {
+    const emitCloseTag = (i: string) => {
       openTags.shift();
       const spanClass = getSpanClassFor(i);
       const spanWithData = isSpanWithData(i);
@@ -183,6 +189,7 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
         assem.append('</span>');
       } else {
         assem.append('</');
+        // @ts-ignore
         assem.append(tags[i]);
         assem.append('>');
       }
@@ -192,7 +199,7 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
 
     let idx = 0;
 
-    const processNextChars = (numChars) => {
+    const processNextChars = (numChars: number) => {
       if (numChars <= 0) {
         return;
       }
@@ -203,12 +210,12 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
       // this iterates over every op string and decides which tags to open or to close
       // based on the attribs used
       for (const o of ops) {
-        const usedAttribs = [];
+        const usedAttribs:string[] = [];
 
         // mark all attribs as used
         for (const a of attributes.decodeAttribString(o.attribs)) {
           if (a in anumMap) {
-            usedAttribs.push(anumMap[a]); // i = 0 => bold, etc.
+            usedAttribs.push(String(anumMap[a])); // i = 0 => bold, etc.
           }
         }
         let outermostTag = -1;
@@ -256,7 +263,9 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
     };
     // end processNextChars
     if (urls) {
-      urls.forEach((urlData) => {
+      urls.forEach((urlData: [number, {
+        length: number,
+      }]) => {
         const startIndex = urlData[0];
         const url = urlData[1];
         const urlLength = url.length;
@@ -288,7 +297,13 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
   // so we want to do something reasonable there.  We also
   // want to deal gracefully with blank lines.
   // => keeps track of the parents level of indentation
-  let openLists = [];
+
+  type openList = {
+    level: number,
+    type: string,
+  }
+
+  let openLists: openList[] = [];
   for (let i = 0; i < textLines.length; i++) {
     let context;
     const line = _analyzeLine(textLines[i], attribLines[i], apool);
@@ -315,7 +330,7 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
       // To create list parent elements
       if ((!prevLine || prevLine.listLevel !== line.listLevel) ||
           (line.listTypeName !== prevLine.listTypeName)) {
-        const exists = _.find(openLists, (item) => (
+        const exists = _.find(openLists, (item:openList) => (
           item.level === line.listLevel && item.type === line.listTypeName));
         if (!exists) {
           let prevLevel = 0;
@@ -456,12 +471,12 @@ const getHTMLFromAtext = async (pad, atext, authorColors) => {
   return pieces.join('');
 };
 
-exports.getPadHTMLDocument = async (padId, revNum, readOnlyId) => {
+exports.getPadHTMLDocument = async (padId: string, revNum: string, readOnlyId: number) => {
   const pad = await padManager.getPad(padId);
 
   // Include some Styles into the Head for Export
   let stylesForExportCSS = '';
-  const stylesForExport = await hooks.aCallAll('stylesForExport', padId);
+  const stylesForExport: string[] = await hooks.aCallAll('stylesForExport', padId);
   stylesForExport.forEach((css) => {
     stylesForExportCSS += css;
   });
@@ -480,7 +495,7 @@ exports.getPadHTMLDocument = async (padId, revNum, readOnlyId) => {
 };
 
 // copied from ACE
-const _processSpaces = (s) => {
+const _processSpaces = (s: string) => {
   const doesWrap = true;
   if (s.indexOf('<') < 0 && !doesWrap) {
     // short-cut
@@ -489,6 +504,7 @@ const _processSpaces = (s) => {
   const parts = [];
   s.replace(/<[^>]*>?| |[^ <]+/g, (m) => {
     parts.push(m);
+    return m
   });
   if (doesWrap) {
     let endOfLine = true;

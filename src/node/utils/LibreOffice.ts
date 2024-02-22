@@ -27,8 +27,14 @@ const settings = require('./Settings');
 
 const logger = log4js.getLogger('LibreOffice');
 
-const doConvertTask = async (task) => {
+const doConvertTask = async (task:{
+  type: string,
+    srcFile: string,
+  fileExtension: string,
+    destFile: string,
+}) => {
   const tmpDir = os.tmpdir();
+  // @ts-ignore
   const p = runCmd([
     settings.soffice,
     '--headless',
@@ -43,8 +49,10 @@ const doConvertTask = async (task) => {
     tmpDir,
   ], {stdio: [
     null,
-    (line) => logger.info(`[${p.child.pid}] stdout: ${line}`),
-    (line) => logger.error(`[${p.child.pid}] stderr: ${line}`),
+      // @ts-ignore
+      (line) => logger.info(`[${p.child.pid}] stdout: ${line}`),
+      // @ts-ignore
+      (line) => logger.error(`[${p.child.pid}] stderr: ${line}`),
   ]});
   logger.info(`[${p.child.pid}] Converting ${task.srcFile} to ${task.type} in ${tmpDir}`);
   // Soffice/libreoffice is buggy and often hangs.
@@ -56,7 +64,7 @@ const doConvertTask = async (task) => {
   }, 120000);
   try {
     await p;
-  } catch (err) {
+  } catch (err:any) {
     logger.error(`[${p.child.pid}] Conversion failed: ${err.stack || err}`);
     throw err;
   } finally {
@@ -81,7 +89,7 @@ const queue = async.queue(doConvertTask, 1);
  * @param  {String}     type        The type to convert into
  * @param  {Function}   callback    Standard callback function
  */
-exports.convertFile = async (srcFile, destFile, type) => {
+exports.convertFile = async (srcFile: string, destFile: string, type:string) => {
   // Used for the moving of the file, not the conversion
   const fileExtension = type;
 

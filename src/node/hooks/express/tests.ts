@@ -1,5 +1,8 @@
 'use strict';
 
+import {Dirent} from "node:fs";
+import {PluginDef} from "../../types/PartType";
+
 const path = require('path');
 const fsp = require('fs').promises;
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
@@ -8,15 +11,15 @@ const settings = require('../../utils/Settings');
 
 // Returns all *.js files under specDir (recursively) as relative paths to specDir, using '/'
 // instead of path.sep to separate pathname components.
-const findSpecs = async (specDir) => {
-  let dirents;
+const findSpecs = async (specDir: string) => {
+  let dirents: Dirent[];
   try {
     dirents = await fsp.readdir(specDir, {withFileTypes: true});
-  } catch (err) {
+  } catch (err:any) {
     if (['ENOENT', 'ENOTDIR'].includes(err.code)) return [];
     throw err;
   }
-  const specs = [];
+  const specs: string[] = [];
   await Promise.all(dirents.map(async (dirent) => {
     if (dirent.isDirectory()) {
       const subdirSpecs = await findSpecs(path.join(specDir, dirent.name));
@@ -29,12 +32,12 @@ const findSpecs = async (specDir) => {
   return specs;
 };
 
-exports.expressPreSession = async (hookName, {app}) => {
-  app.get('/tests/frontend/frontendTestSpecs.json', (req, res, next) => {
+exports.expressPreSession = async (hookName:string, {app}:any) => {
+  app.get('/tests/frontend/frontendTestSpecs.json', (req:any, res:any, next:Function) => {
     (async () => {
-      const modules = [];
+      const modules:string[] = [];
       await Promise.all(Object.entries(plugins.plugins).map(async ([plugin, def]) => {
-        let {package: {path: pluginPath}} = def;
+        let {package: {path: pluginPath}} = def as PluginDef;
         if (!pluginPath.endsWith(path.sep)) pluginPath += path.sep;
         const specDir = `${plugin === 'ep_etherpad-lite' ? '' : 'static/'}tests/frontend/specs`;
         for (const spec of await findSpecs(path.join(pluginPath, specDir))) {
@@ -59,14 +62,14 @@ exports.expressPreSession = async (hookName, {app}) => {
 
   const rootTestFolder = path.join(settings.root, 'src/tests/frontend/');
 
-  app.get('/tests/frontend/index.html', (req, res) => {
+  app.get('/tests/frontend/index.html', (req:any, res:any) => {
     res.redirect(['./', ...req.url.split('?').slice(1)].join('?'));
   });
 
   // The regexp /[\d\D]{0,}/ is equivalent to the regexp /.*/. The Express route path used here
   // uses the more verbose /[\d\D]{0,}/ pattern instead of /.*/ because path-to-regexp v0.1.7 (the
   // version used with Express v4.x) interprets '.' and '*' differently than regexp.
-  app.get('/tests/frontend/:file([\\d\\D]{0,})', (req, res, next) => {
+  app.get('/tests/frontend/:file([\\d\\D]{0,})', (req:any, res:any, next:Function) => {
     (async () => {
       let file = sanitizePathname(req.params.file);
       if (['', '.', './'].includes(file)) file = 'index.html';
@@ -74,7 +77,7 @@ exports.expressPreSession = async (hookName, {app}) => {
     })().catch((err) => next(err || new Error(err)));
   });
 
-  app.get('/tests/frontend', (req, res) => {
+  app.get('/tests/frontend', (req:any, res:any) => {
     res.redirect(['./frontend/', ...req.url.split('?').slice(1)].join('?'));
   });
 };
