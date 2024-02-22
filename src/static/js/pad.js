@@ -744,6 +744,12 @@ const settings = {
 
 pad.settings = settings;
 
+document.querySelector("li[data-type='button'][data-key='embed']").style.display = "none";
+// document.querySelector("li[data-type='button'][data-key='settings']").style.display = "none";
+document.querySelector("li[data-type='button'][data-key='savedRevision']").style.display = "none";
+document.querySelector("li[data-type='button'][data-key='showTimeSlider']").style.display = "none";
+document.querySelector("li[data-type='button'][data-key='import_export']").style.display = "none";
+
 exports.baseURL = '';
 exports.settings = settings;
 exports.randomString = randomString;

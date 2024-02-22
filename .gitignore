@@ -1,10 +1,7 @@
 /etherpad-win.exe
 /etherpad-win.zip
 node_modules
-/settings.json
 !settings.json.template
-APIKEY.txt
-SESSIONKEY.txt
 var/dirty.db
 *~
 *.patch
