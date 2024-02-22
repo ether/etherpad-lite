@@ -104,7 +104,7 @@ Example returns:
 }
 
 */
-exports.getAttributePool = async (padID) => {
+exports.getAttributePool = async (padID: string) => {
   const pad = await getPadSafe(padID, true);
   return {pool: pad.pool};
 };
@@ -122,7 +122,7 @@ Example returns:
 }
 
 */
-exports.getRevisionChangeset = async (padID, rev) => {
+exports.getRevisionChangeset = async (padID: string, rev: string) => {
   // try to parse the revision number
   if (rev !== undefined) {
     rev = checkValidRev(rev);
@@ -155,7 +155,7 @@ Example returns:
 {code: 0, message:"ok", data: {text:"Welcome Text"}}
 {code: 1, message:"padID does not exist", data: null}
 */
-exports.getText = async (padID, rev) => {
+exports.getText = async (padID: string, rev: string) => {
   // try to parse the revision number
   if (rev !== undefined) {
     rev = checkValidRev(rev);
@@ -173,7 +173,7 @@ exports.getText = async (padID, rev) => {
     }
 
     // get the text of this revision
-    // getInternalRevisionAText() returns an atext object but we only want the .text inside it.
+    // getInternalRevisionAText() returns an atext object, but we only want the .text inside it.
     // Details at https://github.com/ether/etherpad-lite/issues/5073
     const {text} = await pad.getInternalRevisionAText(rev);
     return {text};
@@ -200,7 +200,7 @@ Example returns:
  * @param {String} authorId the id of the author, defaulting to empty string
  * @returns {Promise<void>}
  */
-exports.setText = async (padID, text, authorId = '') => {
+exports.setText = async (padID: string, text?: string, authorId: string = ''): Promise<void> => {
   // text is required
   if (typeof text !== 'string') {
     throw new CustomError('text is not a string', 'apierror');
@@ -225,7 +225,7 @@ Example returns:
  @param {String} text the text of the pad
  @param {String} authorId the id of the author, defaulting to empty string
  */
-exports.appendText = async (padID, text, authorId = '') => {
+exports.appendText = async (padID:string, text?: string, authorId:string = '') => {
   // text is required
   if (typeof text !== 'string') {
     throw new CustomError('text is not a string', 'apierror');
@@ -247,7 +247,7 @@ Example returns:
  @param {String} rev the revision number, defaulting to the latest revision
  @return {Promise<{html: string}>} the html of the pad
 */
-exports.getHTML = async (padID, rev) => {
+exports.getHTML = async (padID: string, rev: string): Promise<{ html: string; }> => {
   if (rev !== undefined) {
     rev = checkValidRev(rev);
   }
@@ -283,7 +283,7 @@ Example returns:
  @param {String} html the html of the pad
  @param {String} authorId the id of the author, defaulting to empty string
 */
-exports.setHTML = async (padID, html, authorId = '') => {
+exports.setHTML = async (padID: string, html:string|object, authorId = '') => {
   // html string is required
   if (typeof html !== 'string') {
     throw new CustomError('html is not a string', 'apierror');
@@ -324,7 +324,7 @@ Example returns:
  @param {Number} start the start point of the chat-history
  @param {Number} end the end point of the chat-history
 */
-exports.getChatHistory = async (padID, start, end) => {
+exports.getChatHistory = async (padID: string, start:number, end:number) => {
   if (start && end) {
     if (start < 0) {
       throw new CustomError('start is below zero', 'apierror');
@@ -374,7 +374,7 @@ Example returns:
  @param {String} authorID the id of the author
  @param {Number} time the timestamp of the chat-message
 */
-exports.appendChatMessage = async (padID, text, authorID, time) => {
+exports.appendChatMessage = async (padID: string, text: string|object, authorID: string, time: number) => {
   // text is required
   if (typeof text !== 'string') {
     throw new CustomError('text is not a string', 'apierror');
@@ -404,7 +404,7 @@ Example returns:
 {code: 1, message:"padID does not exist", data: null}
  @param {String} padID the id of the pad
 */
-exports.getRevisionsCount = async (padID) => {
+exports.getRevisionsCount = async (padID: string) => {
   // get the pad
   const pad = await getPadSafe(padID, true);
   return {revisions: pad.getHeadRevisionNumber()};
@@ -419,7 +419,7 @@ Example returns:
 {code: 1, message:"padID does not exist", data: null}
  @param {String} padID the id of the pad
 */
-exports.getSavedRevisionsCount = async (padID) => {
+exports.getSavedRevisionsCount = async (padID: string) => {
   // get the pad
   const pad = await getPadSafe(padID, true);
   return {savedRevisions: pad.getSavedRevisionsNumber()};
@@ -434,7 +434,7 @@ Example returns:
 {code: 1, message:"padID does not exist", data: null}
  @param {String} padID the id of the pad
 */
-exports.listSavedRevisions = async (padID) => {
+exports.listSavedRevisions = async (padID: string) => {
   // get the pad
   const pad = await getPadSafe(padID, true);
   return {savedRevisions: pad.getSavedRevisionsList()};
@@ -450,7 +450,7 @@ Example returns:
     @param {String} padID the id of the pad
      @param {Number} rev the revision number, defaulting to the latest revision
 */
-exports.saveRevision = async (padID, rev) => {
+exports.saveRevision = async (padID: string, rev: number) => {
   // check if rev is a number
   if (rev !== undefined) {
     rev = checkValidRev(rev);
@@ -483,7 +483,7 @@ Example returns:
     @param {String} padID the id of the pad
  @return {Promise<{lastEdited: number}>} the timestamp of the last revision of the pad
 */
-exports.getLastEdited = async (padID) => {
+exports.getLastEdited = async (padID: string): Promise<{ lastEdited: number; }> => {
   // get the pad
   const pad = await getPadSafe(padID, true);
   const lastEdited = await pad.getLastEdit();
@@ -497,11 +497,11 @@ Example returns:
 
 {code: 0, message:"ok", data: null}
 {code: 1, message:"pad does already exist", data: null}
- @param {String} padName the name of the new pad
+ @param {String} padID the name of the new pad
     @param {String} text the initial text of the pad
      @param {String} authorId the id of the author, defaulting to empty string
 */
-exports.createPad = async (padID, text, authorId = '') => {
+exports.createPad = async (padID: string, text: string, authorId = '') => {
   if (padID) {
     // ensure there is no $ in the padID
     if (padID.indexOf('$') !== -1) {
@@ -527,7 +527,7 @@ Example returns:
 {code: 1, message:"padID does not exist", data: null}
  @param {String} padID the id of the pad
 */
-exports.deletePad = async (padID) => {
+exports.deletePad = async (padID: string) => {
   const pad = await getPadSafe(padID, true);
   await pad.remove();
 };
@@ -543,7 +543,7 @@ exports.deletePad = async (padID) => {
  @param {Number} rev the revision number, defaulting to the latest revision
  @param {String} authorId the id of the author, defaulting to empty string
  */
-exports.restoreRevision = async (padID, rev, authorId = '') => {
+exports.restoreRevision = async (padID: string, rev: number, authorId = '') => {
   // check if rev is a number
   if (rev === undefined) {
     throw new CustomError('rev is not defined', 'apierror');
@@ -563,7 +563,7 @@ exports.restoreRevision = async (padID, rev, authorId = '') => {
   const oldText = pad.text();
   atext.text += '\n';
 
-  const eachAttribRun = (attribs, func) => {
+  const eachAttribRun = (attribs: string[], func:Function) => {
     let textIndex = 0;
     const newTextStart = 0;
     const newTextEnd = atext.text.length;
@@ -580,7 +580,7 @@ exports.restoreRevision = async (padID, rev, authorId = '') => {
   const builder = Changeset.builder(oldText.length);
 
   // assemble each line into the builder
-  eachAttribRun(atext.attribs, (start, end, attribs) => {
+  eachAttribRun(atext.attribs, (start: number, end: number, attribs:string[]) => {
     builder.insert(atext.text.substring(start, end), attribs);
   });
 
@@ -610,7 +610,7 @@ Example returns:
  @param {String} destinationID the id of the destination pad
  @param {Boolean} force whether to overwrite the destination pad if it exists
 */
-exports.copyPad = async (sourceID, destinationID, force) => {
+exports.copyPad = async (sourceID: string, destinationID: string, force: boolean) => {
   const pad = await getPadSafe(sourceID, true);
   await pad.copy(destinationID, force);
 };
@@ -628,7 +628,7 @@ Example returns:
  @param {Boolean} force whether to overwrite the destination pad if it exists
  @param {String} authorId the id of the author, defaulting to empty string
 */
-exports.copyPadWithoutHistory = async (sourceID, destinationID, force, authorId = '') => {
+exports.copyPadWithoutHistory = async (sourceID: string, destinationID: string, force:boolean, authorId = '') => {
   const pad = await getPadSafe(sourceID, true);
   await pad.copyPadWithoutHistory(destinationID, force, authorId);
 };
@@ -645,7 +645,7 @@ Example returns:
  @param {String} destinationID the id of the destination pad
  @param {Boolean} force whether to overwrite the destination pad if it exists
 */
-exports.movePad = async (sourceID, destinationID, force) => {
+exports.movePad = async (sourceID: string, destinationID: string, force:boolean) => {
   const pad = await getPadSafe(sourceID, true);
   await pad.copy(destinationID, force);
   await pad.remove();
@@ -660,7 +660,7 @@ Example returns:
 {code: 1, message:"padID does not exist", data: null}
  @param {String} padID the id of the pad
 */
-exports.getReadOnlyID = async (padID) => {
+exports.getReadOnlyID = async (padID: string) => {
   // we don't need the pad object, but this function does all the security stuff for us
   await getPadSafe(padID, true);
 
@@ -679,7 +679,7 @@ Example returns:
 {code: 1, message:"padID does not exist", data: null}
     @param {String} roID the readonly id of the pad
 */
-exports.getPadID = async (roID) => {
+exports.getPadID = async (roID: string) => {
   // get the PadId
   const padID = await readOnlyManager.getPadId(roID);
   if (padID == null) {
@@ -699,7 +699,7 @@ Example returns:
     @param {String} padID the id of the pad
      @param {Boolean} publicStatus the public status of the pad
 */
-exports.setPublicStatus = async (padID, publicStatus) => {
+exports.setPublicStatus = async (padID: string, publicStatus: boolean|string) => {
   // ensure this is a group pad
   checkGroupPad(padID, 'publicStatus');
 
@@ -723,7 +723,7 @@ Example returns:
 {code: 1, message:"padID does not exist", data: null}
      @param {String} padID the id of the pad
 */
-exports.getPublicStatus = async (padID) => {
+exports.getPublicStatus = async (padID: string) => {
   // ensure this is a group pad
   checkGroupPad(padID, 'publicStatus');
 
@@ -741,7 +741,7 @@ Example returns:
 {code: 1, message:"padID does not exist", data: null}
      @param {String} padID the id of the pad
 */
-exports.listAuthorsOfPad = async (padID) => {
+exports.listAuthorsOfPad = async (padID: string) => {
   // get the pad
   const pad = await getPadSafe(padID, true);
   const authorIDs = pad.getAllAuthors();
@@ -773,7 +773,7 @@ Example returns:
      @param {String} msg the message to send
 */
 
-exports.sendClientsMessage = async (padID, msg) => {
+exports.sendClientsMessage = async (padID: string, msg: string) => {
   await getPadSafe(padID, true); // Throw if the padID is invalid or if the pad does not exist.
   padMessageHandler.handleCustomMessage(padID, msg);
 };
@@ -799,7 +799,7 @@ Example returns:
      @param {String} padID the id of the pad
      @return {Promise<{chatHead: number}>} the chatHead of the pad
 */
-exports.getChatHead = async (padID) => {
+exports.getChatHead = async (padID:string): Promise<{ chatHead: number; }> => {
   // get the pad
   const pad = await getPadSafe(padID, true);
   return {chatHead: pad.chatHead};
@@ -825,7 +825,7 @@ Example returns:
  @param {Number} startRev the start revision number
  @param {Number} endRev the end revision number
 */
-exports.createDiffHTML = async (padID, startRev, endRev) => {
+exports.createDiffHTML = async (padID: string, startRev: number, endRev: number) => {
   // check if startRev is a number
   if (startRev !== undefined) {
     startRev = checkValidRev(startRev);
@@ -846,7 +846,7 @@ exports.createDiffHTML = async (padID, startRev, endRev) => {
   let padDiff;
   try {
     padDiff = new PadDiff(pad, startRev, endRev);
-  } catch (e) {
+  } catch (e:any) {
     throw {stop: e.message};
   }
 
@@ -872,6 +872,7 @@ exports.getStats = async () => {
   const sessionInfos = padMessageHandler.sessioninfos;
 
   const sessionKeys = Object.keys(sessionInfos);
+  // @ts-ignore
   const activePads = new Set(Object.entries(sessionInfos).map((k) => k[1].padId));
 
   const {padIDs} = await padManager.listAllPads();
@@ -888,7 +889,7 @@ exports.getStats = async () => {
  **************************** */
 
 // gets a pad safe
-const getPadSafe = async (padID, shouldExist, text, authorId = '') => {
+const getPadSafe = async (padID: string|object, shouldExist: boolean, text?:string, authorId:string = '') => {
   // check if padID is a string
   if (typeof padID !== 'string') {
     throw new CustomError('padID is not a string', 'apierror');
@@ -917,7 +918,7 @@ const getPadSafe = async (padID, shouldExist, text, authorId = '') => {
 };
 
 // checks if a padID is part of a group
-const checkGroupPad = (padID, field) => {
+const checkGroupPad = (padID: string, field: string) => {
   // ensure this is a group pad
   if (padID && padID.indexOf('$') === -1) {
     throw new CustomError(

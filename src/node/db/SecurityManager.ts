@@ -19,6 +19,8 @@
  * limitations under the License.
  */
 
+import {UserSettingsObject} from "../types/UserSettingsObject";
+
 const authorManager = require('./AuthorManager');
 const hooks = require('../../static/js/pluginfw/hooks.js');
 const padManager = require('./PadManager');
@@ -55,7 +57,7 @@ const DENY = Object.freeze({accessStatus: 'deny'});
  * @param {Object} userSettings
  * @return {DENY|{accessStatus: String, authorID: String}}
  */
-exports.checkAccess = async (padID, sessionCookie, token, userSettings) => {
+exports.checkAccess = async (padID:string, sessionCookie:string, token:string, userSettings:UserSettingsObject) => {
   if (!padID) {
     authLogger.debug('access denied: missing padID');
     return DENY;
@@ -95,7 +97,7 @@ exports.checkAccess = async (padID, sessionCookie, token, userSettings) => {
   }
 
   // allow plugins to deny access
-  const isFalse = (x) => x === false;
+  const isFalse = (x:boolean) => x === false;
   if (hooks.callAll('onAccessCheck', {padID, token, sessionCookie}).some(isFalse)) {
     authLogger.debug('access denied: an onAccessCheck hook function returned false');
     return DENY;
