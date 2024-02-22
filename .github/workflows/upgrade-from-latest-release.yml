@@ -79,10 +79,10 @@ jobs:
         run: pnpm config set auto-install-peers false
       -
         name: Install libreoffice
-        run: |
-          sudo add-apt-repository -y ppa:libreoffice/ppa
-          sudo apt update
-          sudo apt install -y --no-install-recommends libreoffice libreoffice-pdfimport
+        uses: awalsh128/cache-apt-pkgs-action@v1.4.1
+        with:
+          packages: libreoffice libreoffice-pdfimport
+          version: 1.0
       - name: Get pnpm store directory
         shell: bash
         run: |
