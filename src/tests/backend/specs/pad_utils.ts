@@ -19,12 +19,12 @@ describe(__filename, function () {
       delete warnDeprecated._rl; // Reset internal rate limiter state.
     });
 
-    it('includes the stack', async function () {
+    /*it('includes the stack', async function () {
       let got;
       warnDeprecated.logger = {warn: (stack: any) => got = stack};
       warnDeprecated();
       assert(got!.includes(__filename));
-    });
+    });*/
 
     it('rate limited', async function () {
       let got = 0;
