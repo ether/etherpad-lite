@@ -105,7 +105,7 @@ const padList = new class {
  * @param {string} [authorId] - Optional author ID of the user that initiated the pad creation (if
  *     applicable).
  */
-exports.getPad = async (id: string, text: string, authorId:string = '') => {
+exports.getPad = async (id: string, text: string|null, authorId:string = '') => {
   // check if this is a valid padId
   if (!exports.isValidPadId(id)) {
     throw new CustomError(`${id} is not a valid padId`, 'apierror');

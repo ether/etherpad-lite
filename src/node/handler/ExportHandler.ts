@@ -23,11 +23,11 @@
 const exporthtml = require('../utils/ExportHtml');
 const exporttxt = require('../utils/ExportTxt');
 const exportEtherpad = require('../utils/ExportEtherpad');
-const fs = require('fs');
+import fs from 'fs';
 const settings = require('../utils/Settings');
-const os = require('os');
+import os from 'os';
 const hooks = require('../../static/js/pluginfw/hooks');
-const util = require('util');
+import util from 'util';
 const { checkValidRev } = require('../utils/checkValidRev');
 
 const fsp_writeFile = util.promisify(fs.writeFile);
@@ -43,7 +43,7 @@ const tempDirectory = os.tmpdir();
  * @param {String} readOnlyId the read only id of the pad to export
  * @param {String} type the type to export
  */
-exports.doExport = async (req, res, padId, readOnlyId, type) => {
+exports.doExport = async (req: any, res: any, padId: string, readOnlyId: string, type:string) => {
   // avoid naming the read-only file as the original pad's id
   let fileName = readOnlyId ? readOnlyId : padId;
 

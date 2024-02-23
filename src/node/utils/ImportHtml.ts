@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-const log4js = require('log4js');
+import log4js from 'log4js';
 const Changeset = require('../../static/js/Changeset');
 const contentcollector = require('../../static/js/contentcollector');
-const jsdom = require('jsdom');
+import jsdom from 'jsdom';
+import {PadType} from "../types/PadType";
 
 const apiLogger = log4js.getLogger('ImportHtml');
-let processor;
+let processor:any;
 
-exports.setPadHTML = async (pad, html, authorId = '') => {
+exports.setPadHTML = async (pad: PadType, html:string, authorId = '') => {
   if (processor == null) {
     const [{rehype}, {default: minifyWhitespace}] =
         await Promise.all([import('rehype'), import('rehype-minify-whitespace')]);
@@ -46,7 +47,7 @@ exports.setPadHTML = async (pad, html, authorId = '') => {
   try {
     // we use a try here because if the HTML is bad it will blow up
     cc.collectContent(document.body);
-  } catch (err) {
+  } catch (err: any) {
     apiLogger.warn(`Error processing HTML: ${err.stack || err}`);
     throw err;
   }
