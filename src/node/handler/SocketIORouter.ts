@@ -20,6 +20,8 @@
  * limitations under the License.
  */
 
+import {MapArrayType} from "../types/MapType";
+import {SocketModule} from "../types/SocketModule";
 const log4js = require('log4js');
 const settings = require('../utils/Settings');
 const stats = require('../../node/stats')
@@ -31,15 +33,15 @@ const logger = log4js.getLogger('socket.io');
  * key is the component name
  * value is the component module
  */
-const components = {};
+const components:MapArrayType<any> = {};
 
-let io;
+let io:any;
 
 /** adds a component
  * @param {string} moduleName
  * @param {Module} module
  */
-exports.addComponent = (moduleName, module) => {
+exports.addComponent = (moduleName: string, module: SocketModule) => {
   if (module == null) return exports.deleteComponent(moduleName);
   components[moduleName] = module;
   module.setSocketIO(io);
@@ -49,22 +51,22 @@ exports.addComponent = (moduleName, module) => {
  * removes a component
  * @param {Module} moduleName
  */
-exports.deleteComponent = (moduleName) => { delete components[moduleName]; };
+exports.deleteComponent = (moduleName: string) => { delete components[moduleName]; };
 
 /**
  * sets the socket.io and adds event functions for routing
  * @param {Object} _io the socket.io instance
  */
-exports.setSocketIO = (_io) => {
+exports.setSocketIO = (_io:any) => {
   io = _io;
 
-  io.sockets.on('connection', (socket) => {
+  io.sockets.on('connection', (socket:any) => {
     const ip = settings.disableIPlogging ? 'ANONYMOUS' : socket.request.ip;
     logger.debug(`${socket.id} connected from IP ${ip}`);
 
     // wrap the original send function to log the messages
     socket._send = socket.send;
-    socket.send = (message) => {
+    socket.send = (message: string) => {
       logger.debug(`to ${socket.id}: ${JSON.stringify(message)}`);
       socket._send(message);
     };
@@ -74,7 +76,7 @@ exports.setSocketIO = (_io) => {
       components[i].handleConnect(socket);
     }
 
-    socket.on('message', (message, ack = () => {}) => (async () => {
+    socket.on('message', (message: any, ack: any = () => {}) => (async () => {
       if (!message.component || !components[message.component]) {
         throw new Error(`unknown message component: ${message.component}`);
       }
@@ -88,7 +90,7 @@ exports.setSocketIO = (_io) => {
           ack({name: err.name, message: err.message}); // socket.io can't handle Error objects.
         }));
 
-    socket.on('disconnect', (reason) => {
+    socket.on('disconnect', (reason: string) => {
       logger.debug(`${socket.id} disconnected: ${reason}`);
       // store the lastDisconnect as a timestamp, this is useful if you want to know
       // when the last user disconnected.  If your activePads is 0 and totalUsers is 0

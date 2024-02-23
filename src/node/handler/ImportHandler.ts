@@ -23,21 +23,22 @@
 
 const padManager = require('../db/PadManager');
 const padMessageHandler = require('./PadMessageHandler');
-const fs = require('fs').promises;
-const path = require('path');
+import {promises as fs} from 'fs';
+import path from 'path';
 const settings = require('../utils/Settings');
 const {Formidable} = require('formidable');
-const os = require('os');
+import os from 'os';
 const importHtml = require('../utils/ImportHtml');
 const importEtherpad = require('../utils/ImportEtherpad');
-const log4js = require('log4js');
+import log4js from 'log4js';
 const hooks = require('../../static/js/pluginfw/hooks.js');
 
 const logger = log4js.getLogger('ImportHandler');
 
 // `status` must be a string supported by `importErrorMessage()` in `src/static/js/pad_impexp.js`.
 class ImportError extends Error {
-  constructor(status, ...args) {
+  status: string;
+  constructor(status: string, ...args:any) {
     super(...args);
     if (Error.captureStackTrace) Error.captureStackTrace(this, ImportError);
     this.name = 'ImportError';
@@ -47,15 +48,15 @@ class ImportError extends Error {
   }
 }
 
-const rm = async (path) => {
+const rm = async (path: string) => {
   try {
     await fs.unlink(path);
-  } catch (err) {
+  } catch (err:any) {
     if (err.code !== 'ENOENT') throw err;
   }
 };
 
-let converter = null;
+let converter:any = null;
 let exportExtension = 'htm';
 
 // load abiword only if it is enabled and if soffice is disabled
@@ -78,7 +79,7 @@ const tmpDirectory = os.tmpdir();
  * @param {String} padId the pad id to export
  * @param {String} authorId the author id to use for the import
  */
-const doImport = async (req, res, padId, authorId) => {
+const doImport = async (req:any, res:any, padId:string, authorId:string) => {
   // pipe to a file
   // convert file to html via abiword or soffice
   // set html in the pad
@@ -98,7 +99,7 @@ const doImport = async (req, res, padId, authorId) => {
   let fields;
   try {
     [fields, files] = await form.parse(req);
-  } catch (err) {
+  } catch (err:any) {
     logger.warn(`Import failed due to form error: ${err.stack || err}`);
     if (err.code === Formidable.formidableErrors.biggerThanMaxFileSize) {
       throw new ImportError('maxFileSize');
@@ -136,7 +137,7 @@ const doImport = async (req, res, padId, authorId) => {
 
   const destFile = path.join(tmpDirectory, `etherpad_import_${randNum}.${exportExtension}`);
   const context = {srcFile, destFile, fileEnding, padId, ImportError};
-  const importHandledByPlugin = (await hooks.aCallAll('import', context)).some((x) => x);
+  const importHandledByPlugin = (await hooks.aCallAll('import', context)).some((x:string) => x);
   const fileIsEtherpad = (fileEnding === '.etherpad');
   const fileIsHTML = (fileEnding === '.html' || fileEnding === '.htm');
   const fileIsTXT = (fileEnding === '.txt');
@@ -169,7 +170,7 @@ const doImport = async (req, res, padId, authorId) => {
     } else {
       try {
         await converter.convertFile(srcFile, destFile, exportExtension);
-      } catch (err) {
+      } catch (err:any) {
         logger.warn(`Converting Error: ${err.stack || err}`);
         throw new ImportError('convertFailed');
       }
@@ -210,7 +211,7 @@ const doImport = async (req, res, padId, authorId) => {
     if (importHandledByPlugin || useConverter || fileIsHTML) {
       try {
         await importHtml.setPadHTML(pad, text, authorId);
-      } catch (err) {
+      } catch (err:any) {
         logger.warn(`Error importing, possibly caused by malformed HTML: ${err.stack || err}`);
       }
     } else {
@@ -245,14 +246,14 @@ const doImport = async (req, res, padId, authorId) => {
  * @param {String} authorId the author id to use for the import
  * @return {Promise<void>} a promise
  */
-exports.doImport = async (req, res, padId, authorId = '') => {
+exports.doImport = async (req:any, res:any, padId:string, authorId:string = '') => {
   let httpStatus = 200;
   let code = 0;
   let message = 'ok';
   let directDatabaseAccess;
   try {
     directDatabaseAccess = await doImport(req, res, padId, authorId);
-  } catch (err) {
+  } catch (err:any) {
     const known = err instanceof ImportError && err.status;
     if (!known) logger.error(`Internal error during import: ${err.stack || err}`);
     httpStatus = known ? 400 : 500;

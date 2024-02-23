@@ -1,7 +1,10 @@
 'use strict';
 
-const assert = require('assert').strict;
-const log4js = require('log4js');
+import {strict as assert} from "assert";
+import log4js from 'log4js';
+import {SocketClientRequest} from "../../types/SocketClientRequest";
+import {WebAccessTypes} from "../../types/WebAccessTypes";
+import {SettingsUser} from "../../types/SettingsUser";
 const httpLogger = log4js.getLogger('http');
 const settings = require('../../utils/Settings');
 const hooks = require('../../../static/js/pluginfw/hooks');
@@ -10,14 +13,15 @@ const readOnlyManager = require('../../db/ReadOnlyManager');
 hooks.deprecationNotices.authFailure = 'use the authnFailure and authzFailure hooks instead';
 
 // Promisified wrapper around hooks.aCallFirst.
-const aCallFirst = (hookName, context, pred = null) => new Promise((resolve, reject) => {
-  hooks.aCallFirst(hookName, context, (err, r) => err != null ? reject(err) : resolve(r), pred);
+const aCallFirst = (hookName: string, context:any, pred = null) => new Promise((resolve, reject) => {
+  hooks.aCallFirst(hookName, context, (err:any, r: unknown) => err != null ? reject(err) : resolve(r), pred);
 });
 
 const aCallFirst0 =
-    async (hookName, context, pred = null) => (await aCallFirst(hookName, context, pred))[0];
+    // @ts-ignore
+    async (hookName: string, context:any, pred = null) => (await aCallFirst(hookName, context, pred))[0];
 
-exports.normalizeAuthzLevel = (level) => {
+exports.normalizeAuthzLevel = (level: string|boolean) => {
   if (!level) return false;
   switch (level) {
     case true:
@@ -32,7 +36,7 @@ exports.normalizeAuthzLevel = (level) => {
   return false;
 };
 
-exports.userCanModify = (padId, req) => {
+exports.userCanModify = (padId: string, req: SocketClientRequest) => {
   if (readOnlyManager.isReadOnlyId(padId)) return false;
   if (!settings.requireAuthentication) return true;
   const {session: {user} = {}} = req;
@@ -45,7 +49,7 @@ exports.userCanModify = (padId, req) => {
 // Exported so that tests can set this to 0 to avoid unnecessary test slowness.
 exports.authnFailureDelayMs = 1000;
 
-const checkAccess = async (req, res, next) => {
+const checkAccess = async (req:any, res:any, next: Function) => {
   const requireAdmin = req.path.toLowerCase().startsWith('/admin');
 
   // ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,9 +58,9 @@ const checkAccess = async (req, res, next) => {
   // use the preAuthzFailure hook to override the default 403 error.
   // ///////////////////////////////////////////////////////////////////////////////////////////////
 
-  let results;
+  let results: null|boolean[];
   let skip = false;
-  const preAuthorizeNext = (...args) => { skip = true; next(...args); };
+  const preAuthorizeNext = (...args:any) => { skip = true; next(...args); };
   try {
     results = await aCallFirst('preAuthorize', {req, res, next: preAuthorizeNext},
         // This predicate will cause aCallFirst to call the hook functions one at a time until one
@@ -64,8 +68,9 @@ const checkAccess = async (req, res, next) => {
         // page, truthy entries are filtered out before checking to see whether the list is empty.
         // This prevents plugin authors from accidentally granting admin privileges to the general
         // public.
-        (r) => (skip || (r != null && r.filter((x) => (!requireAdmin || !x)).length > 0)));
-  } catch (err) {
+        // @ts-ignore
+        (r) => (skip || (r != null && r.filter((x) => (!requireAdmin || !x)).length > 0))) as boolean[];
+  } catch (err:any) {
     httpLogger.error(`Error in preAuthorize hook: ${err.stack || err.toString()}`);
     if (!skip) res.status(500).send('Internal Server Error');
     return;
@@ -87,7 +92,7 @@ const checkAccess = async (req, res, next) => {
   // This helper is used in steps 2 and 4 below, so it may be called twice per access: once before
   // authentication is checked and once after (if settings.requireAuthorization is true).
   const authorize = async () => {
-    const grant = async (level) => {
+    const grant = async (level: string|false) => {
       level = exports.normalizeAuthzLevel(level);
       if (!level) return false;
       const user = req.session.user;
@@ -132,7 +137,7 @@ const checkAccess = async (req, res, next) => {
   // ///////////////////////////////////////////////////////////////////////////////////////////////
 
   if (settings.users == null) settings.users = {};
-  const ctx = {req, res, users: settings.users, next};
+  const ctx:WebAccessTypes = {req, res, users: settings.users, next};
   // If the HTTP basic auth header is present, extract the username and password so it can be given
   // to authn plugins.
   const httpBasicAuth = req.headers.authorization && req.headers.authorization.startsWith('Basic ');
@@ -148,7 +153,8 @@ const checkAccess = async (req, res, next) => {
   }
   if (!(await aCallFirst0('authenticate', ctx))) {
     // Fall back to HTTP basic auth.
-    const {[ctx.username]: {password} = {}} = settings.users;
+    // @ts-ignore
+    const {[ctx.username]: {password} = {}} = settings.users as SettingsUser;
 
     if (!httpBasicAuth ||
         !ctx.username ||
@@ -193,6 +199,6 @@ const checkAccess = async (req, res, next) => {
  * Express middleware to authenticate the user and check authorization. Must be installed after the
  * express-session middleware.
  */
-exports.checkAccess = (req, res, next) => {
+exports.checkAccess = (req:any, res:any, next:Function) => {
   checkAccess(req, res, next).catch((err) => next(err || new Error(err)));
 };

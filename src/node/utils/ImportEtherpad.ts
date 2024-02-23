@@ -1,5 +1,7 @@
 'use strict';
 
+import {APool} from "../types/PadType";
+
 /**
  * 2014 John McLear (Etherpad Foundation / McLear Ltd)
  *
@@ -22,17 +24,17 @@ const Stream = require('./Stream');
 const authorManager = require('../db/AuthorManager');
 const db = require('../db/DB');
 const hooks = require('../../static/js/pluginfw/hooks');
-const log4js = require('log4js');
+import log4js from 'log4js';
 const supportedElems = require('../../static/js/contentcollector').supportedElems;
-const ueberdb = require('ueberdb2');
+import ueberdb from 'ueberdb2';
 
 const logger = log4js.getLogger('ImportEtherpad');
 
-exports.setPadRaw = async (padId, r, authorId = '') => {
+exports.setPadRaw = async (padId: string, r: string, authorId = '') => {
   const records = JSON.parse(r);
 
   // get supported block Elements from plugins, we will use this later.
-  hooks.callAll('ccRegisterBlockElements').forEach((element) => {
+  hooks.callAll('ccRegisterBlockElements').forEach((element:any) => {
     supportedElems.add(element);
   });
 
@@ -43,8 +45,8 @@ exports.setPadRaw = async (padId, r, authorId = '') => {
     'pad',
   ];
 
-  let originalPadId = null;
-  const checkOriginalPadId = (padId) => {
+  let originalPadId:string|null = null;
+  const checkOriginalPadId = (padId: string) => {
     if (originalPadId == null) originalPadId = padId;
     if (originalPadId !== padId) throw new Error('unexpected pad ID in record');
   };
@@ -57,7 +59,10 @@ exports.setPadRaw = async (padId, r, authorId = '') => {
   const padDb = new ueberdb.Database('memory', {data});
   await padDb.init();
   try {
-    const processRecord = async (key, value) => {
+    const processRecord = async (key:string, value: null|{
+      padIDs: string|Record<string, unknown>,
+      pool: APool
+    }) => {
       if (!value) return;
       const keyParts = key.split(':');
       const [prefix, id] = keyParts;
@@ -79,7 +84,7 @@ exports.setPadRaw = async (padId, r, authorId = '') => {
         if (prefix === 'pad' && keyParts.length === 2) {
           const pool = new AttributePool().fromJsonable(value.pool);
           const unsupportedElements = new Set();
-          pool.eachAttrib((k, v) => {
+          pool.eachAttrib((k: string, v:any) => {
             if (!supportedElems.has(k)) unsupportedElements.add(k);
           });
           if (unsupportedElements.size) {
@@ -94,8 +99,10 @@ exports.setPadRaw = async (padId, r, authorId = '') => {
                      `importEtherpad hook function processes it: ${key}`);
         return;
       }
+      // @ts-ignore
       await padDb.set(key, value);
     };
+    // @ts-ignore
     const readOps = new Stream(Object.entries(records)).map(([k, v]) => processRecord(k, v));
     for (const op of readOps.batch(100).buffer(99)) await op;
 

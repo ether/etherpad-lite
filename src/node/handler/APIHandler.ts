@@ -19,19 +19,21 @@
  * limitations under the License.
  */
 
+import {MapArrayType} from "../types/MapType";
+
 const absolutePaths = require('../utils/AbsolutePaths');
-const fs = require('fs');
+import fs from 'fs';
 const api = require('../db/API');
-const log4js = require('log4js');
+import log4js from 'log4js';
 const padManager = require('../db/PadManager');
 const randomString = require('../utils/randomstring');
 const argv = require('../utils/Cli').argv;
-const createHTTPError = require('http-errors');
+import createHTTPError from 'http-errors';
 
 const apiHandlerLogger = log4js.getLogger('APIHandler');
 
 // ensure we have an apikey
-let apikey = null;
+let apikey:string|null = null;
 const apikeyFilename = absolutePaths.makeAbsolute(argv.apikey || './APIKEY.txt');
 
 try {
@@ -41,11 +43,11 @@ try {
   apiHandlerLogger.info(
       `Api key file "${apikeyFilename}" not found.  Creating with random contents.`);
   apikey = randomString(32);
-  fs.writeFileSync(apikeyFilename, apikey, 'utf8');
+  fs.writeFileSync(apikeyFilename, apikey!, 'utf8');
 }
 
 // a list of all functions
-const version = {};
+const version:MapArrayType<any> = {};
 
 version['1'] = {
   createGroup: [],
@@ -163,6 +165,14 @@ exports.latestApiVersion = '1.3.0';
 // exports the versions so it can be used by the new Swagger endpoint
 exports.version = version;
 
+
+type APIFields = {
+  apikey: string;
+  api_key: string;
+  padID: string;
+  padName: string;
+}
+
 /**
  * Handles a HTTP API call
  * @param {String} apiVersion the version of the api
@@ -171,7 +181,7 @@ exports.version = version;
  * @req express request object
  * @res express response object
  */
-exports.handle = async function (apiVersion, functionName, fields) {
+exports.handle = async function (apiVersion: string, functionName: string, fields: APIFields) {
   // say goodbye if this is an unknown API version
   if (!(apiVersion in version)) {
     throw new createHTTPError.NotFound('no such api version');
@@ -185,7 +195,7 @@ exports.handle = async function (apiVersion, functionName, fields) {
   // check the api key!
   fields.apikey = fields.apikey || fields.api_key;
 
-  if (fields.apikey !== apikey.trim()) {
+  if (fields.apikey !== apikey!.trim()) {
     throw new createHTTPError.Unauthorized('no or wrong API Key');
   }
 
@@ -201,6 +211,7 @@ exports.handle = async function (apiVersion, functionName, fields) {
   }
 
   // put the function parameters in an array
+  // @ts-ignore
   const functionParams = version[apiVersion][functionName].map((field) => fields[field]);
 
   // call the api function

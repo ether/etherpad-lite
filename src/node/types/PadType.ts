@@ -13,8 +13,12 @@ export type PadType = {
     getAllAuthorColors: ()=>Promise<MapArrayType<string>>,
     remove: ()=>Promise<void>,
     text: ()=>string,
-    setText: (text: string)=>Promise<void>,
+    setText: (text: string, authorId?: string)=>Promise<void>,
     appendText: (text: string)=>Promise<void>,
+    getHeadRevisionNumber: ()=>number,
+    getRevisionDate: (rev: number)=>Promise<number>,
+    getRevisionChangeset: (rev: number)=>Promise<AChangeSet>,
+    appendRevision: (changeset: AChangeSet, author: string)=>Promise<void>,
 }
 
 

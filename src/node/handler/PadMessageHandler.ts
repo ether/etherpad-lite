@@ -19,6 +19,8 @@
  * limitations under the License.
  */
 
+import {MapArrayType} from "../types/MapType";
+
 const AttributeMap = require('../../static/js/AttributeMap');
 const padManager = require('../db/PadManager');
 const Changeset = require('../../static/js/Changeset');
@@ -37,16 +39,19 @@ const accessLogger = log4js.getLogger('access');
 const hooks = require('../../static/js/pluginfw/hooks.js');
 const stats = require('../stats')
 const assert = require('assert').strict;
-const {RateLimiterMemory} = require('rate-limiter-flexible');
+import {RateLimiterMemory} from 'rate-limiter-flexible';
+import {ChangesetRequest, PadUserInfo, SocketClientRequest} from "../types/SocketClientRequest";
+import {APool, AText, PadAuthor, PadType} from "../types/PadType";
+import {ChangeSet} from "../types/ChangeSet";
 const webaccess = require('../hooks/express/webaccess');
 const { checkValidRev } = require('../utils/checkValidRev');
 
-let rateLimiter;
-let socketio = null;
+let rateLimiter:any;
+let socketio:any = null;
 
 hooks.deprecationNotices.clientReady = 'use the userJoin hook instead';
 
-const addContextToError = (err, pfx) => {
+const addContextToError = (err:any, pfx:string) => {
   const newErr = new Error(`${pfx}${err.message}`, {cause: err});
   if (Error.captureStackTrace) Error.captureStackTrace(newErr, addContextToError);
   // Check for https://github.com/tc39/proposal-error-cause support, available in Node.js >= v16.10.
@@ -80,7 +85,7 @@ exports.socketio = () => {
  *       - readonly: Whether the client has read-only access (true) or read/write access (false).
  *       - rev: The last revision that was sent to the client.
  */
-const sessioninfos = {};
+const sessioninfos:MapArrayType<any> = {};
 exports.sessioninfos = sessioninfos;
 
 stats.gauge('totalUsers', () => socketio ? socketio.sockets.size : 0);
@@ -97,11 +102,13 @@ stats.gauge('activePads', () => {
  * Processes one task at a time per channel.
  */
 class Channels {
+  private readonly _exec: (ch:any, task:any) => any;
+  private _promiseChains: Map<any, Promise<any>>;
   /**
    * @param {(ch, task) => any} [exec] - Task executor. If omitted, tasks are assumed to be
    *     functions that will be executed with the channel as the only argument.
    */
-  constructor(exec = (ch, task) => task(ch)) {
+  constructor(exec = (ch: string, task:any) => task(ch)) {
     this._exec = exec;
     this._promiseChains = new Map();
   }
@@ -114,7 +121,7 @@ class Channels {
    * @param {any} task - The task to give to the executor.
    * @returns {Promise<any>} The value returned by the executor.
    */
-  async enqueue(ch, task) {
+  async enqueue(ch:any, task:any): Promise<any> {
     const p = (this._promiseChains.get(ch) || Promise.resolve()).then(() => this._exec(ch, task));
     const pc = p
         .catch(() => {}) // Prevent rejections from halting the queue.
@@ -136,7 +143,7 @@ const padChannels = new Channels((ch, {socket, message}) => handleUserChanges(so
  * This Method is called by server.ts to tell the message handler on which socket it should send
  * @param socket_io The Socket
  */
-exports.setSocketIO = (socket_io) => {
+exports.setSocketIO = (socket_io:any) => {
   socketio = socket_io;
 };
 
@@ -144,7 +151,7 @@ exports.setSocketIO = (socket_io) => {
  * Handles the connection of a new user
  * @param socket the socket.io Socket object for the new connection from the client
  */
-exports.handleConnect = (socket) => {
+exports.handleConnect = (socket:any) => {
   stats.meter('connects').mark();
 
   // Initialize sessioninfos for this new session
@@ -154,7 +161,7 @@ exports.handleConnect = (socket) => {
 /**
  * Kicks all sessions from a pad
  */
-exports.kickSessionsFromPad = (padID) => {
+exports.kickSessionsFromPad = (padID: string) => {
   if (typeof socketio.sockets.clients !== 'object') return;
 
   // skip if there is nobody on this pad
@@ -168,13 +175,13 @@ exports.kickSessionsFromPad = (padID) => {
  * Handles the disconnection of a user
  * @param socket the socket.io Socket object for the client
  */
-exports.handleDisconnect = async (socket) => {
+exports.handleDisconnect = async (socket:any) => {
   stats.meter('disconnects').mark();
   const session = sessioninfos[socket.id];
   delete sessioninfos[socket.id];
   // session.padId can be nullish if the user disconnects before sending CLIENT_READY.
   if (!session || !session.author || !session.padId) return;
-  const {session: {user} = {}} = socket.client.request;
+  const {session: {user} = {}} = socket.client.request as SocketClientRequest;
   /* eslint-disable prefer-template -- it doesn't support breaking across multiple lines */
   accessLogger.info('[LEAVE]' +
                     ` pad:${session.padId}` +
@@ -206,7 +213,7 @@ exports.handleDisconnect = async (socket) => {
  * @param socket the socket.io Socket object for the client
  * @param message the message from the client
  */
-exports.handleMessage = async (socket, message) => {
+exports.handleMessage = async (socket:any, message:typeof ChatMessage) => {
   const env = process.env.NODE_ENV || 'development';
 
   if (env === 'production') {
@@ -263,7 +270,7 @@ exports.handleMessage = async (socket, message) => {
     throw new Error(`pre-CLIENT_READY message from IP ${ip}: ${msg}`);
   }
 
-  const {session: {user} = {}} = socket.client.request;
+  const {session: {user} = {}} = socket.client.request as SocketClientRequest;
   const {accessStatus, authorID} =
       await securityManager.checkAccess(auth.padID, auth.sessionID, auth.token, user);
   if (accessStatus !== 'grant') {
@@ -319,7 +326,7 @@ exports.handleMessage = async (socket, message) => {
   }
 
   // Call handleMessage hook. If a plugin returns null, the message will be dropped.
-  if ((await hooks.aCallAll('handleMessage', context)).some((m) => m == null)) {
+  if ((await hooks.aCallAll('handleMessage', context)).some((m: null|string) => m == null)) {
     return;
   }
 
@@ -376,7 +383,7 @@ exports.handleMessage = async (socket, message) => {
  * @param socket the socket.io Socket object for the client
  * @param message the message from the client
  */
-const handleSaveRevisionMessage = async (socket, message) => {
+const handleSaveRevisionMessage = async (socket:any, message: string) => {
   const {padId, author: authorId} = sessioninfos[socket.id];
   const pad = await padManager.getPad(padId, null, authorId);
   await pad.addSavedRevision(pad.head, authorId);
@@ -389,7 +396,7 @@ const handleSaveRevisionMessage = async (socket, message) => {
  * @param msg {Object} the message we're sending
  * @param sessionID {string} the socketIO session to which we're sending this message
  */
-exports.handleCustomObjectMessage = (msg, sessionID) => {
+exports.handleCustomObjectMessage = (msg: typeof ChatMessage, sessionID: string) => {
   if (msg.data.type === 'CUSTOM') {
     if (sessionID) {
       // a sessionID is targeted: directly to this sessionID
@@ -407,7 +414,7 @@ exports.handleCustomObjectMessage = (msg, sessionID) => {
  * @param padID {Pad} the pad to which we're sending this message
  * @param msgString {String} the message we're sending
  */
-exports.handleCustomMessage = (padID, msgString) => {
+exports.handleCustomMessage = (padID: string, msgString:string) => {
   const time = Date.now();
   const msg = {
     type: 'COLLABROOM',
@@ -424,7 +431,7 @@ exports.handleCustomMessage = (padID, msgString) => {
  * @param socket the socket.io Socket object for the client
  * @param message the message from the client
  */
-const handleChatMessage = async (socket, message) => {
+const handleChatMessage = async (socket:any, message: typeof ChatMessage) => {
   const chatMessage = ChatMessage.fromObject(message.data.message);
   const {padId, author: authorId} = sessioninfos[socket.id];
   // Don't trust the user-supplied values.
@@ -444,7 +451,7 @@ const handleChatMessage = async (socket, message) => {
  * @param {string} [padId] - The destination pad ID. Deprecated; pass a chat message
  *     object as the first argument and the destination pad ID as the second argument instead.
  */
-exports.sendChatMessageToPadClients = async (mt, puId, text = null, padId = null) => {
+exports.sendChatMessageToPadClients = async (mt: typeof ChatMessage|number, puId: string, text:string|null = null, padId:string|null = null) => {
   const message = mt instanceof ChatMessage ? mt : new ChatMessage(text, puId, mt);
   padId = mt instanceof ChatMessage ? puId : padId;
   const pad = await padManager.getPad(padId, null, message.authorId);
@@ -465,7 +472,7 @@ exports.sendChatMessageToPadClients = async (mt, puId, text = null, padId = null
  * @param socket the socket.io Socket object for the client
  * @param message the message from the client
  */
-const handleGetChatMessages = async (socket, {data: {start, end}}) => {
+const handleGetChatMessages = async (socket:any, {data: {start, end}}:any) => {
   if (!Number.isInteger(start)) throw new Error(`missing or invalid start: ${start}`);
   if (!Number.isInteger(end)) throw new Error(`missing or invalid end: ${end}`);
   const count = end - start;
@@ -491,7 +498,7 @@ const handleGetChatMessages = async (socket, {data: {start, end}}) => {
  * @param socket the socket.io Socket object for the client
  * @param message the message from the client
  */
-const handleSuggestUserName = (socket, message) => {
+const handleSuggestUserName = (socket:any, message: typeof ChatMessage) => {
   const {newName, unnamedId} = message.data.payload;
   if (newName == null) throw new Error('missing newName');
   if (unnamedId == null) throw new Error('missing unnamedId');
@@ -511,7 +518,7 @@ const handleSuggestUserName = (socket, message) => {
  * @param socket the socket.io Socket object for the client
  * @param message the message from the client
  */
-const handleUserInfoUpdate = async (socket, {data: {userInfo: {name, colorId}}}) => {
+const handleUserInfoUpdate = async (socket:any, {data: {userInfo: {name, colorId}}}: PadUserInfo) => {
   if (colorId == null) throw new Error('missing colorId');
   if (!name) name = null;
   const session = sessioninfos[socket.id];
@@ -559,7 +566,7 @@ const handleUserInfoUpdate = async (socket, {data: {userInfo: {name, colorId}}})
  * @param socket the socket.io Socket object for the client
  * @param message the message from the client
  */
-const handleUserChanges = async (socket, message) => {
+const handleUserChanges = async (socket:any, message: typeof ChatMessage) => {
   // This one's no longer pending, as we're gonna process it now
   stats.counter('pendingEdits').dec();
 
@@ -658,7 +665,7 @@ const handleUserChanges = async (socket, message) => {
     thisSession.rev = newRev;
     if (newRev !== r) thisSession.time = await pad.getRevisionDate(newRev);
     await exports.updatePadClients(pad);
-  } catch (err) {
+  } catch (err:any) {
     socket.emit('message', {disconnect: 'badChangeset'});
     stats.meter('failedChangesets').mark();
     messageLogger.warn(`Failed to apply USER_CHANGES from author ${thisSession.author} ` +
@@ -668,7 +675,7 @@ const handleUserChanges = async (socket, message) => {
   }
 };
 
-exports.updatePadClients = async (pad) => {
+exports.updatePadClients = async (pad: PadType) => {
   // skip this if no-one is on this pad
   const roomSockets = _getRoomSockets(pad.id);
   if (roomSockets.length === 0) return;
@@ -683,7 +690,7 @@ exports.updatePadClients = async (pad) => {
   // via async.forEach with sequential for() loop. There is no real
   // benefits of running this in parallel,
   // but benefit of reusing cached revision object is HUGE
-  const revCache = {};
+  const revCache:MapArrayType<any> = {};
 
   await Promise.all(roomSockets.map(async (socket) => {
     const sessioninfo = sessioninfos[socket.id];
@@ -717,7 +724,7 @@ exports.updatePadClients = async (pad) => {
       };
       try {
         socket.emit('message', msg);
-      } catch (err) {
+      } catch (err:any) {
         messageLogger.error(`Failed to notify user of new revision: ${err.stack || err}`);
         return;
       }
@@ -730,7 +737,7 @@ exports.updatePadClients = async (pad) => {
 /**
  * Copied from the Etherpad Source Code. Don't know what this method does excatly...
  */
-const _correctMarkersInPad = (atext, apool) => {
+const _correctMarkersInPad = (atext: AText, apool: APool) => {
   const text = atext.text;
 
   // collect char positions of line markers (e.g. bullets) in new atext
@@ -739,7 +746,7 @@ const _correctMarkersInPad = (atext, apool) => {
   let offset = 0;
   for (const op of Changeset.deserializeOps(atext.attribs)) {
     const attribs = AttributeMap.fromString(op.attribs, apool);
-    const hasMarker = AttributeManager.lineAttributes.some((a) => attribs.has(a));
+    const hasMarker = AttributeManager.lineAttributes.some((a: string) => attribs.has(a));
     if (hasMarker) {
       for (let i = 0; i < op.chars; i++) {
         if (offset > 0 && text.charAt(offset - 1) !== '\n') {
@@ -777,7 +784,7 @@ const _correctMarkersInPad = (atext, apool) => {
  * @param socket the socket.io Socket object for the client
  * @param message the message from the client
  */
-const handleClientReady = async (socket, message) => {
+const handleClientReady = async (socket:any, message: typeof ChatMessage) => {
   const sessionInfo = sessioninfos[socket.id];
   if (sessionInfo == null) throw new Error('client disconnected');
   assert(sessionInfo.author);
@@ -805,8 +812,11 @@ const handleClientReady = async (socket, message) => {
   const currentTime = await pad.getRevisionDate(pad.getHeadRevisionNumber());
 
   // get all author data out of the database (in parallel)
-  const historicalAuthorData = {};
-  await Promise.all(authors.map(async (authorId) => {
+  const historicalAuthorData:MapArrayType<{
+    name: string;
+    colorId: string;
+  }> = {};
+  await Promise.all(authors.map(async (authorId: string) => {
     const author = await authorManager.getAuthor(authorId);
     if (!author) {
       messageLogger.error(`There is no author for authorId: ${authorId}. ` +
@@ -837,7 +847,7 @@ const handleClientReady = async (socket, message) => {
     }
   }
 
-  const {session: {user} = {}} = socket.client.request;
+  const {session: {user} = {}} = socket.client.request as SocketClientRequest;
   /* eslint-disable prefer-template -- it doesn't support breaking across multiple lines */
   accessLogger.info(`[${pad.head > 0 ? 'ENTER' : 'CREATE'}]` +
                     ` pad:${sessionInfo.padId}` +
@@ -859,7 +869,7 @@ const handleClientReady = async (socket, message) => {
     // By using client revision,
     // this below code sends all the revisions missed during the client reconnect
     const revisionsNeeded = [];
-    const changesets = {};
+    const changesets:MapArrayType<any> = {};
 
     let startNum = message.client_rev + 1;
     let endNum = pad.getHeadRevisionNumber() + 1;
@@ -919,7 +929,7 @@ const handleClientReady = async (socket, message) => {
       const attribsForWire = Changeset.prepareForWire(atext.attribs, pad.pool);
       apool = attribsForWire.pool.toJsonable();
       atext.attribs = attribsForWire.translated;
-    } catch (e) {
+    } catch (e:any) {
       messageLogger.error(e.stack || e);
       socket.emit('message', {disconnect: 'corruptPad'}); // pull the brakes
       throw new Error('corrupt pad');
@@ -927,7 +937,7 @@ const handleClientReady = async (socket, message) => {
 
     // Warning: never ever send sessionInfo.padId to the client. If the client is read only you
     // would open a security hole 1 swedish mile wide...
-    const clientVars = {
+    const clientVars:MapArrayType<any> = {
       skinName: settings.skinName,
       skinVariants: settings.skinVariants,
       randomVersionString: settings.randomVersionString,
@@ -1078,7 +1088,7 @@ const handleClientReady = async (socket, message) => {
 /**
  * Handles a request for a rough changeset, the timeslider client needs it
  */
-const handleChangesetRequest = async (socket, {data: {granularity, start, requestID}}) => {
+const handleChangesetRequest = async (socket:any, {data: {granularity, start, requestID}}: ChangesetRequest) => {
   if (granularity == null) throw new Error('missing granularity');
   if (!Number.isInteger(granularity)) throw new Error('granularity is not an integer');
   if (start == null) throw new Error('missing start');
@@ -1090,7 +1100,7 @@ const handleChangesetRequest = async (socket, {data: {granularity, start, reques
   const headRev = pad.getHeadRevisionNumber();
   if (start > headRev)
     start = headRev;
-  const data = await getChangesetInfo(pad, start, end, granularity);
+  const data:MapArrayType<any> = await getChangesetInfo(pad, start, end, granularity);
   data.requestID = requestID;
   socket.emit('message', {type: 'CHANGESET_REQ', data});
 };
@@ -1099,7 +1109,7 @@ const handleChangesetRequest = async (socket, {data: {granularity, start, reques
  * Tries to rebuild the getChangestInfo function of the original Etherpad
  * https://github.com/ether/pad/blob/master/etherpad/src/etherpad/control/pad/pad_changeset_control.js#L144
  */
-const getChangesetInfo = async (pad, startNum, endNum, granularity) => {
+const getChangesetInfo = async (pad: PadType, startNum: number, endNum:number, granularity: number) => {
   const headRevision = pad.getHeadRevisionNumber();
 
   // calculate the last full endnum
@@ -1124,8 +1134,8 @@ const getChangesetInfo = async (pad, startNum, endNum, granularity) => {
   }
 
   // Get all needed db values in parallel.
-  const composedChangesets = {};
-  const revisionDate = [];
+  const composedChangesets:MapArrayType<any> = {};
+  const revisionDate:number[] = [];
   const [lines] = await Promise.all([
     getPadLines(pad, startNum - 1),
     // Get all needed composite Changesets.
@@ -1176,7 +1186,7 @@ const getChangesetInfo = async (pad, startNum, endNum, granularity) => {
  * Tries to rebuild the getPadLines function of the original Etherpad
  * https://github.com/ether/pad/blob/master/etherpad/src/etherpad/control/pad/pad_changeset_control.js#L263
  */
-const getPadLines = async (pad, revNum) => {
+const getPadLines = async (pad: PadType, revNum: number) => {
   // get the atext
   let atext;
 
@@ -1196,7 +1206,7 @@ const getPadLines = async (pad, revNum) => {
  * Tries to rebuild the composePadChangeset function of the original Etherpad
  * https://github.com/ether/pad/blob/master/etherpad/src/etherpad/control/pad/pad_changeset_control.js#L241
  */
-const composePadChangesets = async (pad, startNum, endNum) => {
+const composePadChangesets = async (pad: PadType, startNum: number, endNum: number) => {
   // fetch all changesets we need
   const headNum = pad.getHeadRevisionNumber();
   endNum = Math.min(endNum, headNum + 1);
@@ -1210,7 +1220,7 @@ const composePadChangesets = async (pad, startNum, endNum) => {
   }
 
   // get all changesets
-  const changesets = {};
+  const changesets:MapArrayType<ChangeSet> = {};
   await Promise.all(changesetsNeeded.map(
       (revNum) => pad.getRevisionChangeset(revNum)
           .then((changeset) => changesets[revNum] = changeset)));
@@ -1234,13 +1244,13 @@ const composePadChangesets = async (pad, startNum, endNum) => {
   }
 };
 
-const _getRoomSockets = (padID) => {
+const _getRoomSockets = (padID: string) => {
   const ns = socketio.sockets; // Default namespace.
   // We could call adapter.clients(), but that method is unnecessarily asynchronous. Replicate what
   // it does here, but synchronously to avoid a race condition. This code will have to change when
   // we update to socket.io v3.
   const room = ns.adapter.rooms?.get(padID);
-  
+
   if (!room) return [];
 
   return Array.from(room)
@@ -1251,15 +1261,15 @@ const _getRoomSockets = (padID) => {
 /**
  * Get the number of users in a pad
  */
-exports.padUsersCount = (padID) => ({
+exports.padUsersCount = (padID:string) => ({
   padUsersCount: _getRoomSockets(padID).length,
 });
 
 /**
  * Get the list of users in a pad
  */
-exports.padUsers = async (padID) => {
-  const padUsers = [];
+exports.padUsers = async (padID: string) => {
+  const padUsers:PadAuthor[] = [];
 
   // iterate over all clients (in parallel)
   await Promise.all(_getRoomSockets(padID).map(async (roomSocket) => {
