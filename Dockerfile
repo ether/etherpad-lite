@@ -91,19 +91,31 @@ COPY --chown=etherpad:etherpad ./var ./var
 COPY --chown=etherpad:etherpad ./bin ./bin
 COPY --chown=etherpad:etherpad ./pnpm-workspace.yaml ./package.json ./
 
+
 FROM build as development
 
 COPY --chown=etherpad:etherpad ./src/package.json .npmrc ./src/pnpm-lock.yaml ./src/
 
 RUN bin/installDeps.sh && { [ -z "${ETHERPAD_PLUGINS}" ] || \
       pnpm install --workspace-root ${ETHERPAD_PLUGINS}; }
-    
+
+FROM build as buildProd
+
+COPY --chown=etherpad:etherpad ./src ./src
+
+RUN bin/installDeps.sh && { [ -z "${ETHERPAD_PLUGINS}" ] || \
+      pnpm install --workspace-root ${ETHERPAD_PLUGINS}; }
+
+RUN pnpm run next-build
+
+
 FROM build as production
 
 ENV NODE_ENV=production
 ENV ETHERPAD_PRODUCTION=true
 
-COPY --chown=etherpad:etherpad ./src ./src
+COPY --chown=etherpad:etherpad --from=buildProd /opt/etherpad-lite/src/.next/ ./src/.next/
+COPY --chown=etherpad:etherpad ./src/ ./src/
 
 RUN bin/installDeps.sh && { [ -z "${ETHERPAD_PLUGINS}" ] || \
       pnpm install --workspace-root ${ETHERPAD_PLUGINS}; }

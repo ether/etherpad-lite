@@ -4,7 +4,7 @@ import {ArgsExpressType} from "../../types/ArgsExpressType";
 const eejs = require('../../eejs');
 import next from 'next'
 
-const app = next({dev: true})
+const app = next({dev: process.env.NODE_ENV != 'production'})
 const handle = app.getRequestHandler()
 /**
  * Add the admin navigation link
