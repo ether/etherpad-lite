@@ -123,7 +123,8 @@
     "dev": "node --import tsx node/server.ts",
     "prod": "node --import tsx node/server.ts",
     "ts-check": "tsc --noEmit",
-    "ts-check:watch": "tsc --noEmit --watch"
+    "ts-check:watch": "tsc --noEmit --watch",
+    "build-next": "next build"
   },
   "version": "1.9.7",
   "license": "Apache-2.0"
