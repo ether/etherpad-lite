@@ -83,6 +83,8 @@
     "etherpad-lite": "node/server.ts"
   },
   "devDependencies": {
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.35",
     "@types/async": "^3.2.24",
     "@types/express": "^4.17.21",
     "@types/http-errors": "^2.0.4",
