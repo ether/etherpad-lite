@@ -22,7 +22,8 @@
     "test-ui": "pnpm --filter ep_etherpad-lite run test-ui",
     "test-ui:ui": "pnpm --filter ep_etherpad-lite run test-ui:ui",
     "test-admin": "pnpm --filter ep_etherpad-lite run test-admin",
-    "test-admin:ui": "pnpm --filter ep_etherpad-lite run test-admin:ui"
+    "test-admin:ui": "pnpm --filter ep_etherpad-lite run test-admin:ui",
+    "install-plugins": "pnpm --filter ep_etherpad-lite run install-plugins"
   },
   "dependencies": {
     "ep_etherpad-lite": "workspace:./src"
@@ -42,3 +43,4 @@
   "version": "1.9.7",
   "license": "Apache-2.0"
 }
+
