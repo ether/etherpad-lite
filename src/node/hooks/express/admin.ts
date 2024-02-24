@@ -15,13 +15,18 @@ const handle = app.getRequestHandler()
  */
 exports.expressCreateServer = (hookName:string, args: ArgsExpressType, cb:Function): any => {
 
-  args.app.get('/admin-new', (req:any, res:any) => {
-    return app.render(req, res, '/admin', req.query)
+  app.prepare().then(()=>{
+    args.app.get('/admin-new', (req:any, res:any) => {
+      return app.render(req, res, '/admin/admin', req.query)
+    })
+
+
+
+    args.app.all('*', (req:any, res:any) => {
+      return handle(req, res)
+    })
   })
 
-  args.app.all('/admin/*', (req:any, res:any) => {
-    return handle(req, res)
-  })
 
   args.app.get('/admin', (req:any, res:any) => {
     if ('/' !== req.path[req.path.length - 1]) return res.redirect('./admin/');

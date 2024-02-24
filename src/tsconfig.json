@@ -2,18 +2,31 @@
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
     "moduleDetection": "force",
-    "lib": ["ES2023"],
+    "lib": [
+      "ES2023"
+    ],
     /* Language and Environment */
-    "target": "es6",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
-    /* Modules */
-    "module": "commonjs",                                /* Specify what module code is generated. */
-    "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
-    "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
-    /* Type Checking */
-    "strict": true,                                      /* Enable all strict type-checking options. */
-    /* Completeness */
+    "target": "es6", /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. *//* Modules */
+    "module": "commonjs", /* Specify what module code is generated. */
+    "esModuleInterop": true, /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
+    "forceConsistentCasingInFileNames": true, /* Ensure that casing is correct in imports. *//* Type Checking */
+    "strict": true, /* Enable all strict type-checking options. *//* Completeness */
     "skipLibCheck": true,
     /* Skip type checking all .d.ts files. */
-    "jsx": "react"
-  }
+    "jsx": "preserve",
+    "allowJs": true,
+    "noEmit": true,
+    "incremental": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
