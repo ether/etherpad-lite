@@ -93,7 +93,7 @@
     "@types/sinon": "^17.0.3",
     "@types/supertest": "^6.0.2",
     "@types/underscore": "^1.11.15",
-    "eslint": "^8.56.0",
+    "eslint": "^8.57.0",
     "eslint-config-etherpad": "^3.0.22",
     "etherpad-cli-client": "^3.0.1",
     "mocha": "^10.3.0",
@@ -123,8 +123,7 @@
     "dev": "node --import tsx node/server.ts",
     "prod": "node --import tsx node/server.ts",
     "ts-check": "tsc --noEmit",
-    "ts-check:watch": "tsc --noEmit --watch",
-    "build-next": "next build"
+    "ts-check:watch": "tsc --noEmit --watch"
   },
   "version": "1.9.7",
   "license": "Apache-2.0"

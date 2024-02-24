@@ -96,8 +96,7 @@ FROM build as development
 COPY --chown=etherpad:etherpad ./src/package.json .npmrc ./src/pnpm-lock.yaml ./src/
 
 RUN bin/installDeps.sh && { [ -z "${ETHERPAD_PLUGINS}" ] || \
-      pnpm install --workspace-root ${ETHERPAD_PLUGINS}; } \
-RUN pnpm run next-build
+      pnpm install --workspace-root ${ETHERPAD_PLUGINS}; }
     
 FROM build as production
 
@@ -107,7 +106,7 @@ ENV ETHERPAD_PRODUCTION=true
 COPY --chown=etherpad:etherpad ./src ./src
 
 RUN bin/installDeps.sh && { [ -z "${ETHERPAD_PLUGINS}" ] || \
-      pnpm install --workspace-root ${ETHERPAD_PLUGINS}; } && pnpm run next-build
+      pnpm install --workspace-root ${ETHERPAD_PLUGINS}; }
 
 # Copy the configuration file.
 COPY --chown=etherpad:etherpad ${SETTINGS} "${EP_DIR}"/settings.json

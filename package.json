@@ -19,8 +19,7 @@
     "dev": "pnpm --filter ep_etherpad-lite run dev",
     "prod": "pnpm --filter ep_etherpad-lite run prod",
     "ts-check": "pnpm --filter ep_etherpad-lite run ts-check",
-    "ts-check:watch": "pnpm --filter ep_etherpad-lite run ts-check:watch",
-    "next-build": "pnpm --filter ep_etherpad-lite run build-next"
+    "ts-check:watch": "pnpm --filter ep_etherpad-lite run ts-check:watch"
   },
   "dependencies": {
     "ep_etherpad-lite": "workspace:./src"
