@@ -70,29 +70,30 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
   // there shouldn't be a browser that isn't compatible to all
   // transports in this list at once
   // e.g. XHR is disabled in IE by default, so in IE it should use jsonp-polling
-  io = new Server(args.server, {
+  io = new Server({
     transports: settings.socketTransportProtocols,
   })
 
-  function handleConnection() {
-    return (socket: any) => {
-      sockets.add(socket);
-      socketsEvents.emit('updated');
-      // https://socket.io/docs/v3/faq/index.html
-      const session = socket.request.session;
-      session.connections++;
-      session.save();
-      socket.on('disconnect', () => {
-        sockets.delete(socket);
-        socketsEvents.emit('updated');
-      });
-    };
-  }
+  io.attach(args.server, {
+    cookie: false,
+    maxHttpBufferSize: settings.socketIo.maxHttpBufferSize,
+  });
 
-  io.on('connection', handleConnection);
+  io.on('connection', (socket:any) => {
+    sockets.add(socket);
+    socketsEvents.emit('updated');
+    // https://socket.io/docs/v3/faq/index.html
+    const session = socket.request.session;
+    session.connections++;
+    session.save();
+    socket.on('disconnect', () => {
+      sockets.delete(socket);
+      socketsEvents.emit('updated');
+    });
+  });
 
   io.use(exports.socketSessionMiddleware(args));
-
+  
   // Temporary workaround so all clients go through middleware and handle connection
   io.of('/pluginfw/installer').use(exports.socketSessionMiddleware(args))
   io.of('/settings').use(exports.socketSessionMiddleware(args))

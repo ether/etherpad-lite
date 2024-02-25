@@ -19,7 +19,25 @@ const connect = (etherpadBaseUrl, namespace = '/', options = {}) => {
   const baseUrl = new URL(etherpadBaseUrl, window.location);
   const socketioUrl = new URL('socket.io', baseUrl);
   const namespaceUrl = new URL(namespace, new URL('/', baseUrl));
-  return io(namespaceUrl.href, Object.assign({path: socketioUrl.pathname}, options));
+
+  let socketOptions = {
+    path: socketioUrl.pathname,
+    upgrade: true, 
+    transports: ["websocket"]
+  }
+  socketOptions = Object.assign(options, socketOptions);
+  
+  const socket = io(namespaceUrl.href, socketOptions);
+
+  socket.on('connect_error', (error) => {
+    if (socket.io.engine.transports.indexOf('polling') === -1) {
+      console.warn('WebSocket connection failed. Falling back to long-polling.');
+      socket.io.opts.transports = ['polling'];
+      socket.io.engine.upgrade = false;
+    }
+  });
+
+  return socket;
 };
 
 if (typeof exports === 'object') {

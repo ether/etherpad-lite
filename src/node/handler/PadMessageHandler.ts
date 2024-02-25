@@ -957,6 +957,7 @@ const handleClientReady = async (socket:any, message: typeof ChatMessage) => {
         rev: pad.getHeadRevisionNumber(),
         time: currentTime,
       },
+      socketTransportProtocols: settings.socketTransportProtocols,
       colorPalette: authorManager.getColorPalette(),
       clientIp: '127.0.0.1',
       userColor: authorColorId,
