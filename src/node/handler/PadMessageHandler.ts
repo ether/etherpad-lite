@@ -1251,6 +1251,7 @@ const _getRoomSockets = (padID: string) => {
   // it does here, but synchronously to avoid a race condition. This code will have to change when
   // we update to socket.io v3.
   const room = ns.adapter.rooms?.get(padID);
+  
   if (!room) return [];
 
   return Array.from(room)

@@ -94,6 +94,7 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
 
   io.use(exports.socketSessionMiddleware(args));
   
+  // Temporary workaround so all clients go through middleware and handle connection
   io.of('/pluginfw/installer').use(exports.socketSessionMiddleware(args))
   io.of('/settings').use(exports.socketSessionMiddleware(args))
 
