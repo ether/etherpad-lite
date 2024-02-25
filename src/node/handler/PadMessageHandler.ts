@@ -161,11 +161,7 @@ exports.handleConnect = (socket:any) => {
 /**
  * Kicks all sessions from a pad
  */
-<<<<<<< HEAD:src/node/handler/PadMessageHandler.ts
 exports.kickSessionsFromPad = (padID: string) => {
-=======
-exports.kickSessionsFromPad = (padID) => {
->>>>>>> 53a847ce4 (feat :migrate socket.io 2 -> 3):src/node/handler/PadMessageHandler.js
   if (typeof socketio.sockets.clients !== 'object') return;
 
   // skip if there is nobody on this pad
@@ -669,11 +665,7 @@ const handleUserChanges = async (socket:any, message: typeof ChatMessage) => {
     thisSession.rev = newRev;
     if (newRev !== r) thisSession.time = await pad.getRevisionDate(newRev);
     await exports.updatePadClients(pad);
-<<<<<<< HEAD:src/node/handler/PadMessageHandler.ts
   } catch (err:any) {
-=======
-  } catch (err) {
->>>>>>> 53a847ce4 (feat :migrate socket.io 2 -> 3):src/node/handler/PadMessageHandler.js
     socket.emit('message', {disconnect: 'badChangeset'});
     stats.meter('failedChangesets').mark();
     messageLogger.warn(`Failed to apply USER_CHANGES from author ${thisSession.author} ` +
@@ -732,11 +724,7 @@ exports.updatePadClients = async (pad: PadType) => {
       };
       try {
         socket.emit('message', msg);
-<<<<<<< HEAD:src/node/handler/PadMessageHandler.ts
       } catch (err:any) {
-=======
-      } catch (err) {
->>>>>>> 53a847ce4 (feat :migrate socket.io 2 -> 3):src/node/handler/PadMessageHandler.js
         messageLogger.error(`Failed to notify user of new revision: ${err.stack || err}`);
         return;
       }
@@ -1263,11 +1251,6 @@ const _getRoomSockets = (padID: string) => {
   // it does here, but synchronously to avoid a race condition. This code will have to change when
   // we update to socket.io v3.
   const room = ns.adapter.rooms?.get(padID);
-<<<<<<< HEAD:src/node/handler/PadMessageHandler.ts
-
-=======
-  
->>>>>>> 53a847ce4 (feat :migrate socket.io 2 -> 3):src/node/handler/PadMessageHandler.js
   if (!room) return [];
 
   return Array.from(room)
