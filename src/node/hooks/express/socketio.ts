@@ -93,6 +93,9 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
   });
 
   io.use(exports.socketSessionMiddleware(args));
+  
+  io.of('/pluginfw/installer').use(exports.socketSessionMiddleware(args))
+  io.of('/settings').use(exports.socketSessionMiddleware(args))
 
   io.use((socket:any, next:Function) => {
     socket.conn.on('packet', (packet:string) => {
