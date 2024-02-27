@@ -88,7 +88,7 @@
     "@types/sinon": "^17.0.3",
     "@types/supertest": "^6.0.2",
     "@types/underscore": "^1.11.15",
-    "cypress": "^13.6.4",
+    "cypress": "^13.6.6",
     "eslint": "^8.56.0",
     "eslint-config-etherpad": "^3.0.22",
     "etherpad-cli-client": "^3.0.1",
