@@ -7,6 +7,15 @@
 FROM node:alpine as build
 LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 
+# Set these arguments when building the image from behind a proxy
+ARG http_proxy=
+ARG https_proxy=
+ARG no_proxy=
+
+ENV http_proxy=${http_proxy}
+ENV https_proxy=${https_proxy}
+ENV no_proxy=${no_proxy}
+
 ARG TIMEZONE=
 
 RUN \
