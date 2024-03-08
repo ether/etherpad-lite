@@ -108,7 +108,7 @@ FROM build as development
 COPY --chown=etherpad:etherpad ./src/package.json .npmrc ./src/pnpm-lock.yaml ./src/
 COPY --chown=etherpad:etherpad --from=adminBuild /opt/etherpad-lite/admin/dist ./src/templates/admin
 
-RUN ./bin/installDeps.sh %% \
+RUN bin/installDeps.sh && \
     { [ -z "${ETHERPAD_PLUGINS}" ] || pnpm run install-plugins --prefix ./src ${ETHERPAD_PLUGINS}; }
 
 FROM build as production
@@ -119,8 +119,8 @@ ENV ETHERPAD_PRODUCTION=true
 COPY --chown=etherpad:etherpad ./src ./src
 COPY --chown=etherpad:etherpad --from=adminBuild /opt/etherpad-lite/admin/dist ./src/templates/admin
 
-RUN ./bin/installDeps.sh && rm -rf ~/.npm && \
-    { [ -z "${ETHERPAD_PLUGINS}" ] || pnpm run install-plugins ./src ${ETHERPAD_PLUGINS}; }
+RUN bin/installDeps.sh && rm -rf ~/.npm && \
+    { [ -z "${ETHERPAD_PLUGINS}" ] || pnpm run install-plugins --prefix ./src ${ETHERPAD_PLUGINS}; }
 
 
 # Copy the configuration file.
