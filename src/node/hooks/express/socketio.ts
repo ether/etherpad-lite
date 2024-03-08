@@ -17,7 +17,7 @@ const logger = log4js.getLogger('socket.io');
 const sockets = new Set();
 const socketsEvents = new events.EventEmitter();
 
-exports.expressCloseServer = async () => {
+export const expressCloseServer = async () => {
   if (io == null) return;
   logger.info('Closing socket.io engine...');
   // Close the socket.io engine to disconnect existing clients and reject new clients. Don't call
@@ -48,7 +48,7 @@ exports.expressCloseServer = async () => {
   logger.info('All socket.io clients have disconnected');
 };
 
-export const socketSessionMiddleware = (args: any) => (socket: any, next: Function) => {
+const socketSessionMiddleware = (args: any) => (socket: any, next: Function) => {
   const req = socket.request;
   // Express sets req.ip but socket.io does not. Replicate Express's behavior here.
   if (req.ip == null) {
@@ -65,7 +65,7 @@ export const socketSessionMiddleware = (args: any) => (socket: any, next: Functi
   express.sessionMiddleware(req, {}, next);
 };
 
-exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Function) => {
+export const expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Function) => {
   // init socket.io and redirect all requests to the MessageHandler
   // there shouldn't be a browser that isn't compatible to all
   // transports in this list at once
