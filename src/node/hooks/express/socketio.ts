@@ -2,12 +2,12 @@
 
 import {ArgsExpressType} from "../../types/ArgsExpressType";
 
-const events = require('events');
+import events from 'events';
 const express = require('../express');
-const log4js = require('log4js');
+import log4js from 'log4js';
 const proxyaddr = require('proxy-addr');
 const settings = require('../../utils/Settings');
-import {Server} from 'socket.io'
+import {Server, Socket} from 'socket.io'
 const socketIORouter = require('../../handler/SocketIORouter');
 const hooks = require('../../../static/js/pluginfw/hooks');
 const padMessageHandler = require('../../handler/PadMessageHandler');
@@ -17,7 +17,7 @@ const logger = log4js.getLogger('socket.io');
 const sockets = new Set();
 const socketsEvents = new events.EventEmitter();
 
-exports.expressCloseServer = async () => {
+export const expressCloseServer = async () => {
   if (io == null) return;
   logger.info('Closing socket.io engine...');
   // Close the socket.io engine to disconnect existing clients and reject new clients. Don't call
@@ -48,7 +48,7 @@ exports.expressCloseServer = async () => {
   logger.info('All socket.io clients have disconnected');
 };
 
-exports.socketSessionMiddleware = (args: any) => (socket: any, next: Function) => {
+const socketSessionMiddleware = (args: any) => (socket: any, next: Function) => {
   const req = socket.request;
   // Express sets req.ip but socket.io does not. Replicate Express's behavior here.
   if (req.ip == null) {
@@ -65,19 +65,16 @@ exports.socketSessionMiddleware = (args: any) => (socket: any, next: Function) =
   express.sessionMiddleware(req, {}, next);
 };
 
-exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Function) => {
+export const expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Function) => {
   // init socket.io and redirect all requests to the MessageHandler
   // there shouldn't be a browser that isn't compatible to all
   // transports in this list at once
   // e.g. XHR is disabled in IE by default, so in IE it should use jsonp-polling
-  io = new Server({
+  io = new Server(args.server,{
     transports: settings.socketTransportProtocols,
-  })
-
-  io.attach(args.server, {
     cookie: false,
     maxHttpBufferSize: settings.socketIo.maxHttpBufferSize,
-  });
+  })
 
   io.on('connection', (socket:any) => {
     sockets.add(socket);
@@ -92,11 +89,11 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
     });
   });
 
-  io.use(exports.socketSessionMiddleware(args));
-  
+  io.use(socketSessionMiddleware(args));
+
   // Temporary workaround so all clients go through middleware and handle connection
-  io.of('/pluginfw/installer').use(exports.socketSessionMiddleware(args))
-  io.of('/settings').use(exports.socketSessionMiddleware(args))
+  io.of('/pluginfw/installer').use(socketSessionMiddleware(args))
+  io.of('/settings').use(socketSessionMiddleware(args))
 
   io.use((socket:any, next:Function) => {
     socket.conn.on('packet', (packet:string) => {

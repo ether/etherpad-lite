@@ -21,9 +21,9 @@
  * limitations under the License.
  */
 
-const ueberDB = require('ueberdb2');
+import ueberDB from 'ueberdb2';
 const settings = require('../utils/Settings');
-const log4js = require('log4js');
+import log4js from 'log4js';
 const stats = require('../stats')
 
 const logger = log4js.getLogger('ueberDB');
