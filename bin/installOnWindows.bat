@@ -11,7 +11,9 @@ echo Ensure that all dependencies are up to date...  If this is the first time y
 
 
 :: Install admin ui
-cd /D ..\admin
+
+cd /D .\admin
+dir
 cmd /C pnpm i || exit /B 1
 cmd /C pnpm run build || exit /B 1
 cd /D ..
