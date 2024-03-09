@@ -18,9 +18,12 @@ exports.expressCreateServer = (hookName:string, {app}:any) => {
 
 exports.socketio = (hookName:string, {io}:any) => {
   io.of('/settings').on('connection', (socket: any ) => {
+    console.log('Admin connected to /admin/settings')
     // @ts-ignore
     const {session: {user: {is_admin: isAdmin} = {}} = {}} = socket.conn.request;
+    console.log('isAdmin', isAdmin)
     if (!isAdmin) return;
+    console.log('Admin authenticated')
 
     socket.on('load', async (query:string):Promise<any> => {
       let data;
@@ -38,6 +41,7 @@ exports.socketio = (hookName:string, {io}:any) => {
     });
 
     socket.on('saveSettings', async (newSettings:string) => {
+      console.log('Admin request to save settings through a socket on /admin/settings');
       await fsp.writeFile(settings.settingsFilename, newSettings);
       socket.emit('saveprogress', 'saved');
     });
