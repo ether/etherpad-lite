@@ -1,6 +1,14 @@
 import {create} from "zustand";
 import {Socket} from "socket.io-client";
 
+type ToastState = {
+    description?:string,
+    title: string,
+    open: boolean,
+    success: boolean
+}
+
+
 type StoreState = {
     settings: string|undefined,
     setSettings: (settings: string) => void,
@@ -9,7 +17,9 @@ type StoreState = {
     showLoading: boolean,
     setShowLoading: (show: boolean) => void,
     setPluginsSocket: (socket: Socket) => void
-    pluginsSocket: Socket|undefined
+    pluginsSocket: Socket|undefined,
+    toastState: ToastState,
+    setToastState: (val: ToastState)=>void
 }
 
 
@@ -21,5 +31,12 @@ export const useStore = create<StoreState>()((set) => ({
     showLoading: false,
     setShowLoading: (show: boolean) => set({showLoading: show}),
     pluginsSocket: undefined,
-    setPluginsSocket: (socket: Socket) => set({pluginsSocket: socket})
+    setPluginsSocket: (socket: Socket) => set({pluginsSocket: socket}),
+    setToastState: (val )=>set({toastState: val}),
+    toastState: {
+        open: false,
+        title: '',
+        description:'',
+        success: false
+    }
 }));

@@ -7,6 +7,9 @@ import {HomePage} from "./pages/HomePage.tsx";
 import {SettingsPage} from "./pages/SettingsPage.tsx";
 import {LoginScreen} from "./pages/LoginScreen.tsx";
 import {HelpPage} from "./pages/HelpPage.tsx";
+import * as Toast from '@radix-ui/react-toast'
+import {I18nextProvider} from "react-i18next";
+import i18n from "./localization/i18n.ts";
 
 const router = createBrowserRouter(createRoutesFromElements(
     <><Route element={<App/>}>
@@ -17,12 +20,17 @@ const router = createBrowserRouter(createRoutesFromElements(
     </Route><Route path="/login">
         <Route index element={<LoginScreen/>}/>
     </Route></>
-))
+), {
+    basename: import.meta.env.BASE_URL
+})
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-      <RouterProvider router={router}>
-      </RouterProvider>
+      <I18nextProvider i18n={i18n}>
+      <Toast.Provider>
+        <RouterProvider router={router}/>
+      </Toast.Provider>
+      </I18nextProvider>
   </React.StrictMode>,
 )

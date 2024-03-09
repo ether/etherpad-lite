@@ -5,11 +5,17 @@ import {isJSONClean} from './utils/utils.ts'
 import {NavLink, Outlet} from "react-router-dom";
 import {useStore} from "./store/store.ts";
 import {LoadingScreen} from "./utils/LoadingScreen.tsx";
+import {ToastDialog} from "./utils/Toast.tsx";
+import {useTranslation} from "react-i18next";
+
 
 export const App = ()=> {
     const setSettings = useStore(state => state.setSettings);
+    const {t} = useTranslation()
 
     useEffect(() => {
+        document.title = t('admin.page-title')
+
         useStore.getState().setShowLoading(true);
         const settingSocket = connect('http://localhost:9001/settings', {
             transports: ['websocket'],
@@ -26,13 +32,18 @@ export const App = ()=> {
 
         settingSocket.on('connect', () => {
             useStore.getState().setSettingsSocket(settingSocket);
+            useStore.getState().setShowLoading(false)
             settingSocket.emit('load');
             console.log('connected');
         });
+
         settingSocket.on('disconnect', (reason) => {
             // The settingSocket.io client will automatically try to reconnect for all reasons other than "io
             // server disconnect".
-            if (reason === 'io server disconnect') settingSocket.connect();
+            useStore.getState().setShowLoading(true)
+            if (reason === 'io server disconnect') {
+                settingSocket.connect();
+            }
         });
 
         settingSocket.on('settings', (settings) => {
@@ -63,6 +74,7 @@ export const App = ()=> {
 
     return <div id="wrapper">
         <LoadingScreen/>
+        <ToastDialog/>
         <div className="menu">
             <h1>Etherpad</h1>
             <ul>

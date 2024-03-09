@@ -15,8 +15,18 @@ export const SettingsPage = ()=>{
                 if (isJSONClean(settings!)) {
                     // JSON is clean so emit it to the server
                     settingsSocket!.emit('saveSettings', settings!);
+                    useStore.getState().setToastState({
+                        open: true,
+                        title: "Succesfully saved settings",
+                        success: true
+                    })
                 } else {
                    console.log('Invalid JSON');
+                    useStore.getState().setToastState({
+                        open: true,
+                        title: "Error saving settings",
+                        success: false
+                    })
                 }
             }}>Einstellungen speichern</button>
             <button className="settingsButton" onClick={()=>{

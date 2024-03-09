@@ -1,48 +1,161 @@
 import {useStore} from "../store/store.ts";
 import {useEffect, useState} from "react";
-import {PluginDef} from "./Plugin.ts";
+import {InstalledPlugin, PluginDef, SearchParams} from "./Plugin.ts";
+import {useDebounce} from "../utils/useDebounce.ts";
+
 
 export const HomePage = () => {
     const pluginsSocket = useStore(state=>state.pluginsSocket)
-    const [limit, setLimit] = useState(20)
-    const [offset, setOffset] = useState(0)
     const [plugins,setPlugins] = useState<PluginDef[]>([])
+    const [installedPlugins, setInstalledPlugins] = useState<InstalledPlugin[]>([])
+    const [searchParams, setSearchParams] = useState<SearchParams>({
+        offset: 0,
+        limit: 99999,
+        sortBy: 'name',
+        sortDir: 'asc',
+        searchTerm: ''
+    })
+    const [searchTerm, setSearchTerm] = useState<string>('')
+
 
     useEffect(() => {
-        pluginsSocket?.emit('search', {
-            searchTerm: '',
-            offset: offset,
-            limit: limit,
-            sortBy: 'name',
-            sortDir: 'asc'
-        })
-        setOffset(offset+limit)
+        if(!pluginsSocket){
+            return
+        }
 
-        pluginsSocket!.on('results:search', (data) => {
-          setPlugins(data.results)
+        pluginsSocket.on('results:installed', (data:{
+            installed: InstalledPlugin[]
+        })=>{
+            setInstalledPlugins(data.installed)
         })
-    }, []);
+
+        pluginsSocket.on('results:updatable', () => {
+            console.log("Finished install")
+        })
+
+        pluginsSocket.on('finished:install', () => {
+            pluginsSocket!.emit('getInstalled');
+        })
+
+        pluginsSocket.on('finished:uninstall', () => {
+            console.log("Finished uninstall")
+        })
+
+
+        // Reload on reconnect
+        pluginsSocket.on('connect', ()=>{
+            // Initial retrieval of installed plugins
+            pluginsSocket.emit('getInstalled');
+            pluginsSocket.emit('search', searchParams)
+        })
+
+        pluginsSocket.emit('getInstalled');
+
+        // check for updates every 5mins
+        const interval = setInterval(() => {
+            pluginsSocket.emit('checkUpdates');
+        }, 1000 * 60 * 5);
+
+        return ()=>{
+            clearInterval(interval)
+        }
+        }, [pluginsSocket]);
+
+
+    useEffect(() => {
+        if (!pluginsSocket) {
+            return
+        }
+
+        pluginsSocket?.emit('search', searchParams)
+
+
+        pluginsSocket!.on('results:search', (data: {
+            results: PluginDef[]
+        }) => {
+            setPlugins(data.results)
+        })
+
+
+    }, [searchParams, pluginsSocket]);
+
+    const uninstallPlugin  = (pluginName: string)=>{
+        pluginsSocket!.emit('uninstall', pluginName);
+        // Remove plugin
+        setInstalledPlugins(installedPlugins.filter(i=>i.name !== pluginName))
+    }
+
+    const installPlugin = (pluginName: string)=>{
+        pluginsSocket!.emit('install', pluginName);
+        setPlugins(plugins.filter(plugin=>plugin.name !== pluginName))
+    }
+
+
+    useDebounce(()=>{
+        setSearchParams({
+            ...searchParams,
+            offset: 0,
+            searchTerm: searchTerm
+        })
+    }, 500, [searchTerm])
 
     return <div>
         <h1>Home Page</h1>
+
+        <h2>Installierte Plugins</h2>
+
         <table>
             <thead>
             <tr>
                 <th>Name</th>
-                <th>Description</th>
-                <th>Action</th>
+                <th>Version</th>
+                <th></th>
             </tr>
             </thead>
-            <tbody>
-            {plugins.map((plugin, index) => {
+            <tbody style={{overflow: 'auto'}}>
+            {installedPlugins.map((plugin, index) => {
                 return <tr key={index}>
                     <td>{plugin.name}</td>
-                    <td>{plugin.description}</td>
-                    <td>test</td>
+                    <td>{plugin.version}</td>
+                    <td onClick={() => {
+                    }}>
+                        <button disabled={plugin.name == "ep_etherpad-lite"} onClick={() => uninstallPlugin(plugin.name)}>Entfernen</button>
+                    </td>
                 </tr>
             })}
             </tbody>
         </table>
 
+
+        <h2>Verfügbare Plugins</h2>
+
+        <input type="text" value={searchTerm} onChange={v=>{
+            setSearchTerm(v.target.value)
+        }}/>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th style={{width: '30%'}}>Description</th>
+                <th>Version</th>
+                <th>Last updated</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody style={{overflow: 'auto'}}>
+            {plugins.map((plugin, index) => {
+                return <tr key={index}>
+                    <td><a href={`https://npmjs.com/${plugin.name}`} target="_blank">{plugin.name}</a></td>
+                    <td>{plugin.description}</td>
+                    <td>{plugin.version}</td>
+                    <td>{plugin.time}</td>
+                    <td>
+                        <button onClick={() => installPlugin(plugin.name)}>Installieren</button>
+                    </td>
+                </tr>
+            })}
+            </tbody>
+        </table>
     </div>
 }
