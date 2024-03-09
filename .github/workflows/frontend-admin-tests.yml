@@ -12,7 +12,6 @@ jobs:
     name: with plugins
     runs-on: ubuntu-latest
 
-#        node: [16, 19, 20] >> Disabled node 16 and 18 because they do not work
     strategy:
       fail-fast: false
       matrix:
@@ -83,11 +82,11 @@ jobs:
         run: "sed -i 's/\"enableAdminUITests\": false/\"enableAdminUITests\": true,\\n\"users\":{\"admin\":{\"password\":\"changeme\",\"is_admin\":true}}/' settings.json"
       -
         name: increase maxHttpBufferSize
-        run: "sed -i 's/\"maxHttpBufferSize\": 10000/\"maxHttpBufferSize\": 100000/' settings.json"
+        run: "sed -i 's/\"maxHttpBufferSize\": 10000/\"maxHttpBufferSize\": 10000000/' settings.json"
       -
         name: Disable import/export rate limiting
         run: |
-          sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 1000000/' -i settings.json
+          sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 100000000/' -i settings.json
       -
         name: Remove standard frontend test files, so only admin tests are run
         run: mv src/tests/frontend/specs/* /tmp && mv /tmp/admin*.js src/tests/frontend/specs

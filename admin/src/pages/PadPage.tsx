@@ -1,9 +1,10 @@
-import {Trans} from "react-i18next";
+import {Trans, useTranslation} from "react-i18next";
 import {useEffect, useMemo, useState} from "react";
 import {useStore} from "../store/store.ts";
 import {PadSearchQuery, PadSearchResult} from "../utils/PadSearch.ts";
 import {useDebounce} from "../utils/useDebounce.ts";
 import {determineSorting} from "../utils/sorting.ts";
+import * as Dialog from "@radix-ui/react-dialog";
 
 export const PadPage = ()=>{
     const settingsSocket = useStore(state=>state.settingsSocket)
@@ -14,7 +15,7 @@ export const PadPage = ()=>{
         sortBy: 'padName',
         ascending: true
     })
-
+    const {t} = useTranslation()
     const [searchTerm, setSearchTerm] = useState<string>('')
     const pads = useStore(state=>state.pads)
     const pages = useMemo(()=>{
@@ -24,7 +25,9 @@ export const PadPage = ()=>{
 
         const totalPages = Math.ceil(pads!.total / searchParams.limit)
         return Array.from({length: totalPages}, (_, i) => i+1)
-    },[pads])
+    },[pads, searchParams.limit])
+    const [deleteDialog, setDeleteDialog] = useState<boolean>(false)
+    const [padToDelete, setPadToDelete] = useState<string>('')
 
     useDebounce(()=>{
         setSearchParams({
@@ -64,11 +67,39 @@ export const PadPage = ()=>{
         })
     }, [settingsSocket, pads]);
 
+    const deletePad = (padID: string)=>{
+        settingsSocket?.emit('deletePad', padID)
+    }
+
 
 
     return <div>
+        <Dialog.Root open={deleteDialog}><Dialog.Portal>
+            <Dialog.Overlay className="dialog-confirm-overlay" />
+            <Dialog.Content  className="dialog-confirm-content">
+                <div className="">
+                    <div className=""></div>
+                    <div className="">
+                        {t("ep_admin_pads:ep_adminpads2_confirm", {
+                        padID: padToDelete,
+                        })}
+                    </div>
+                    <div className="settings-button-bar">
+                        <button onClick={()=>{
+                            setDeleteDialog(false)
+                        }}>Cancel</button>
+                        <button onClick={()=>{
+                            deletePad(padToDelete)
+                            setDeleteDialog(false)
+                        }}>Ok</button>
+                    </div>
+                </div>
+            </Dialog.Content>
+        </Dialog.Portal>
+        </Dialog.Root>
         <h1><Trans i18nKey="ep_admin_pads:ep_adminpads2_manage-pads"/></h1>
-        <input type="text" value={searchTerm} onChange={v=>setSearchTerm(v.target.value)} placeholder="Pads suchen"/>
+        <input type="text" value={searchTerm} onChange={v=>setSearchTerm(v.target.value)}
+               placeholder={t('ep_admin_pads:ep_adminpads2_search-heading')}/>
         <table>
             <thead>
             <tr>
@@ -78,21 +109,21 @@ export const PadPage = ()=>{
                         sortBy: 'padName',
                         ascending: !searchParams.ascending
                     })
-                }}>PadId</th>
+                }}><Trans i18nKey="ep_admin_pads:ep_adminpads2_padname"/></th>
                 <th className={determineSorting(searchParams.sortBy, searchParams.ascending, 'lastEdited')} onClick={()=>{
                     setSearchParams({
                         ...searchParams,
                         sortBy: 'lastEdited',
                         ascending: !searchParams.ascending
                     })
-                }}>Users</th>
+                }}><Trans i18nKey="ep_admin_pads:ep_adminpads2_pad-user-count"/></th>
                 <th className={determineSorting(searchParams.sortBy, searchParams.ascending, 'userCount')} onClick={()=>{
                     setSearchParams({
                         ...searchParams,
                         sortBy: 'userCount',
                         ascending: !searchParams.ascending
                     })
-                }}>Last Edited</th>
+                }}><Trans i18nKey="ep_admin_pads:ep_adminpads2_last-edited"/></th>
                 <th className={determineSorting(searchParams.sortBy, searchParams.ascending, 'revisionNumber')} onClick={()=>{
                     setSearchParams({
                         ...searchParams,
@@ -100,7 +131,7 @@ export const PadPage = ()=>{
                         ascending: !searchParams.ascending
                     })
                 }}>Revision number</th>
-                <th>Actions</th>
+                <th><Trans i18nKey="ep_admin_pads:ep_adminpads2_action"/></th>
             </tr>
             </thead>
             <tbody>
@@ -114,8 +145,9 @@ export const PadPage = ()=>{
                         <td>
                             <div className="settings-button-bar">
                                 <button onClick={()=>{
-                                    settingsSocket?.emit('deletePad', pad.padName)
-                                }}>delete</button>
+                                    setPadToDelete(pad.padName)
+                                    setDeleteDialog(true)
+                                }}><Trans i18nKey="ep_admin_pads:ep_adminpads2_delete.value"/></button>
                                 <button onClick={()=>{
                                     window.open(`/p/${pad.padName}`, '_blank')
                                 }}>view</button>

@@ -11,6 +11,7 @@ import * as Toast from '@radix-ui/react-toast'
 import {I18nextProvider} from "react-i18next";
 import i18n from "./localization/i18n.ts";
 import {PadPage} from "./pages/PadPage.tsx";
+import {ToastDialog} from "./utils/Toast.tsx";
 
 const router = createBrowserRouter(createRoutesFromElements(
     <><Route element={<App/>}>
@@ -31,7 +32,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
       <I18nextProvider i18n={i18n}>
       <Toast.Provider>
-        <RouterProvider router={router}/>
+          <ToastDialog/>
+          <RouterProvider router={router}/>
       </Toast.Provider>
       </I18nextProvider>
   </React.StrictMode>,

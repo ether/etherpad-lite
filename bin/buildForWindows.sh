@@ -49,6 +49,13 @@ rm -rf src/node_modules || true
 #log "do a normal unix install first..."
 #$(try cd ./bin/installDeps.sh)
 
+# Install admin frontend
+cd admin
+try pnpm install
+try pnpm run build
+cd ..
+
+
 log "copy the windows settings template..."
 try cp settings.json.template settings.json
 

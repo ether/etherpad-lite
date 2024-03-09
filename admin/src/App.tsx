@@ -2,26 +2,38 @@ import {useEffect} from 'react'
 import './App.css'
 import {connect} from 'socket.io-client'
 import {isJSONClean} from './utils/utils.ts'
-import {NavLink, Outlet} from "react-router-dom";
+import {NavLink, Outlet, useNavigate} from "react-router-dom";
 import {useStore} from "./store/store.ts";
 import {LoadingScreen} from "./utils/LoadingScreen.tsx";
-import {ToastDialog} from "./utils/Toast.tsx";
 import {Trans, useTranslation} from "react-i18next";
 
-
+const WS_URL = import.meta.env.DEV? 'http://localhost:9001' : ''
 export const App = ()=> {
     const setSettings = useStore(state => state.setSettings);
     const {t} = useTranslation()
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        fetch('/admin-auth/', {
+            method: 'POST'
+        }).then((value)=>{
+            if(!value.ok){
+                navigate('/login')
+            }
+        }).catch(()=>{
+            navigate('/login')
+        })
+    }, []);
 
     useEffect(() => {
         document.title = t('admin.page-title')
 
         useStore.getState().setShowLoading(true);
-        const settingSocket = connect('http://localhost:9001/settings', {
+        const settingSocket = connect(`${WS_URL}/settings`, {
             transports: ['websocket'],
         });
 
-        const pluginsSocket = connect('http://localhost:9001/pluginfw/installer', {
+        const pluginsSocket = connect(`${WS_URL}/pluginfw/installer`, {
           transports: ['websocket'],
         })
 
@@ -74,7 +86,6 @@ export const App = ()=> {
 
     return <div id="wrapper">
         <LoadingScreen/>
-        <ToastDialog/>
         <div className="menu">
             <h1>Etherpad</h1>
             <ul>

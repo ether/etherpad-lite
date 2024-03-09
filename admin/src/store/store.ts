@@ -1,6 +1,6 @@
 import {create} from "zustand";
 import {Socket} from "socket.io-client";
-import {PadSearchResult, PadType} from "../utils/PadSearch.ts";
+import {PadSearchResult} from "../utils/PadSearch.ts";
 
 type ToastState = {
     description?:string,

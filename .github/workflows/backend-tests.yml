@@ -54,6 +54,12 @@ jobs:
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
         run: bin/installDeps.sh
+      - name: Install admin ui
+        working-directory: admin
+        run: pnpm install
+      - name: Build admin ui
+        working-directory: admin
+        run: pnpm build
       -
         name: Run the backend tests
         run: pnpm test
@@ -105,6 +111,12 @@ jobs:
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
         run: bin/installDeps.sh
+      - name: Install admin ui
+        working-directory: admin
+        run: pnpm install
+      - name: Build admin ui
+        working-directory: admin
+        run: pnpm build
       -
         name: Install Etherpad plugins
         run: >
@@ -163,6 +175,12 @@ jobs:
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
         run: bin/installOnWindows.bat
+      - name: Install admin ui
+        working-directory: admin
+        run: pnpm install
+      - name: Build admin ui
+        working-directory: admin
+        run: pnpm build
       -
         name:  Fix up the settings.json
         run: |
@@ -207,6 +225,12 @@ jobs:
             ${{ runner.os }}-pnpm-store-
       - name: Only install direct dependencies
         run: pnpm config set auto-install-peers false
+      - name: Install admin ui
+        working-directory: admin
+        run: pnpm install
+      - name: Build admin ui
+        working-directory: admin
+        run: pnpm build
       -
         name: Install Etherpad plugins
         # The --legacy-peer-deps flag is required to work around a bug in npm

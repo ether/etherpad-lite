@@ -50,7 +50,7 @@ exports.userCanModify = (padId: string, req: SocketClientRequest) => {
 exports.authnFailureDelayMs = 1000;
 
 const checkAccess = async (req:any, res:any, next: Function) => {
-  const requireAdmin = req.path.toLowerCase().startsWith('/admin');
+  const requireAdmin = req.path.toLowerCase().startsWith('/admin-auth');
 
   // ///////////////////////////////////////////////////////////////////////////////////////////////
   // Step 1: Check the preAuthorize hook for early permit/deny (permit is only allowed for non-admin
@@ -126,7 +126,13 @@ const checkAccess = async (req:any, res:any, next: Function) => {
   // completed, or maybe different credentials are required), go to the next step.
   // ///////////////////////////////////////////////////////////////////////////////////////////////
 
-  if (await authorize()) return next();
+  if (await authorize()) {
+    if(requireAdmin) {
+        res.status(200).send('Authorized')
+        return
+    }
+    return next();
+  }
 
   // ///////////////////////////////////////////////////////////////////////////////////////////////
   // Step 3: Authenticate the user. (Or, if already logged in, reauthenticate with different
@@ -163,7 +169,7 @@ const checkAccess = async (req:any, res:any, next: Function) => {
       if (await aCallFirst0('authnFailure', {req, res})) return;
       if (await aCallFirst0('authFailure', {req, res, next})) return;
       // No plugin handled the authentication failure. Fall back to basic authentication.
-      res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
+      //res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
       // Delay the error response for 1s to slow down brute force attacks.
       await new Promise((resolve) => setTimeout(resolve, exports.authnFailureDelayMs));
       res.status(401).send('Authentication Required');
@@ -188,7 +194,13 @@ const checkAccess = async (req:any, res:any, next: Function) => {
   // a login page).
   // ///////////////////////////////////////////////////////////////////////////////////////////////
 
-  if (await authorize()) return next();
+  const auth = await authorize()
+  if (auth && !requireAdmin) return next();
+  if(auth && requireAdmin) {
+    res.status(200).send('Authorized')
+    return
+  }
+
   if (await aCallFirst0('authzFailure', {req, res})) return;
   if (await aCallFirst0('authFailure', {req, res, next})) return;
   // No plugin handled the authorization failure.

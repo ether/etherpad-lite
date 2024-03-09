@@ -10,7 +10,6 @@ export const HelpPage = () => {
     useEffect(() => {
         if(!settingsSocket) return;
         settingsSocket?.on('reply:help', (data) => {
-            console.log(data)
             setHelpData(data)
         });
 
@@ -19,11 +18,11 @@ export const HelpPage = () => {
 
     const renderHooks = (hooks:Record<string, Record<string, string>>) => {
         return Object.keys(hooks).map((hookName, i) => {
-            return <div key={i}>
+            return <div key={hookName+i}>
                 <h3>{hookName}</h3>
                 <ul>
                     {Object.keys(hooks[hookName]).map((hook, i) => <li>{hook}
-                        <ul key={i}>
+                        <ul key={hookName+hook+i}>
                             {Object.keys(hooks[hookName][hook]).map((subHook, i) => <li key={i}>{subHook}</li>)}
                         </ul>
                     </li>)}

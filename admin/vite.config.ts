@@ -14,14 +14,17 @@ export default defineConfig({
       ]
   })],
     base: '/admin',
+    build:{
+      outDir: '../src/templates/admin'
+    },
   server:{
     proxy: {
-      '/socket.io/': {
+      '/socket.io/*': {
         target: 'http://localhost:9001',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       },
-        '/api/auth': {
+        '/admin-auth/': {
             target: 'http://localhost:9001',
             changeOrigin: true,
             rewrite: (path) => path.replace(/^\/admin-prox/, '/admin/')

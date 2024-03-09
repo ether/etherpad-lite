@@ -12,7 +12,7 @@ export type InstalledPlugin = {
     path: string,
     realPath: string,
     version:string,
-    updatable: boolean
+    updatable?: boolean
 }
 
 

@@ -2,7 +2,7 @@ import {useStore} from "../store/store.ts";
 import {useEffect, useState} from "react";
 import {InstalledPlugin, PluginDef, SearchParams} from "./Plugin.ts";
 import {useDebounce} from "../utils/useDebounce.ts";
-import {Trans} from "react-i18next";
+import {Trans, useTranslation} from "react-i18next";
 
 
 export const HomePage = () => {
@@ -17,6 +17,7 @@ export const HomePage = () => {
         searchTerm: ''
     })
     const [searchTerm, setSearchTerm] = useState<string>('')
+    const {t} = useTranslation()
 
 
     useEffect(() => {
@@ -30,8 +31,18 @@ export const HomePage = () => {
             setInstalledPlugins(data.installed)
         })
 
-        pluginsSocket.on('results:updatable', () => {
-            console.log("Finished install")
+        pluginsSocket.on('results:updatable', (data) => {
+            data.updatable.forEach((pluginName: string) => {
+                setInstalledPlugins(installedPlugins.map(plugin => {
+                    if (plugin.name === pluginName) {
+                        return {
+                            ...plugin,
+                            updatable: true
+                        }
+                    }
+                    return plugin
+                }))
+            })
         })
 
         pluginsSocket.on('finished:install', () => {
@@ -118,19 +129,25 @@ export const HomePage = () => {
                 return <tr key={index}>
                     <td>{plugin.name}</td>
                     <td>{plugin.version}</td>
-                    <td onClick={() => {
-                    }}>
-                        <button disabled={plugin.name == "ep_etherpad-lite"} onClick={() => uninstallPlugin(plugin.name)}><Trans i18nKey="admin_plugins.installed_uninstall.value"/></button>
+                    <td>
+                    {
+                        plugin.updatable ?
+                            <button onClick={() => installPlugin(plugin.name)}>Update</button>
+                            : <button disabled={plugin.name == "ep_etherpad-lite"}
+                                      onClick={() => uninstallPlugin(plugin.name)}><Trans
+                            i18nKey="admin_plugins.installed_uninstall.value"/></button>
+
+                    }
                     </td>
-                </tr>
-            })}
-            </tbody>
-        </table>
+                        </tr>
+                    })}
+                </tbody>
+            </table>
 
 
-        <h2><Trans i18nKey="admin_plugins.available"/></h2>
+                <h2><Trans i18nKey="admin_plugins.available"/></h2>
 
-        <input type="text" value={searchTerm} onChange={v=>{
+                <input className="search-field" placeholder={t('admin_plugins.available_search.placeholder')} type="text" value={searchTerm} onChange={v=>{
             setSearchTerm(v.target.value)
         }}/>
 

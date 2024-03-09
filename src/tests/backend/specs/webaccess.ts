@@ -54,10 +54,10 @@ describe(__filename, function () {
       await agent.get('/').expect(200);
     });
 
-    it('!authn !authz anonymous /admin/ -> 401', async function () {
+    it('!authn !authz anonymous /admin-auth// -> 401', async function () {
       settings.requireAuthentication = false;
       settings.requireAuthorization = false;
-      await agent.get('/admin/').expect(401);
+      await agent.get('/admin-auth/').expect(401);
     });
 
     it('authn !authz anonymous / -> 401', async function () {
@@ -72,10 +72,10 @@ describe(__filename, function () {
       await agent.get('/').auth('user', 'user-password').expect(200);
     });
 
-    it('authn !authz user /admin/ -> 403', async function () {
+    it('authn !authz user //admin-auth// -> 403', async function () {
       settings.requireAuthentication = true;
       settings.requireAuthorization = false;
-      await agent.get('/admin/').auth('user', 'user-password').expect(403);
+      await agent.get('/admin-auth//').auth('user', 'user-password').expect(403);
     });
 
     it('authn !authz admin / -> 200', async function () {
@@ -84,10 +84,10 @@ describe(__filename, function () {
       await agent.get('/').auth('admin', 'admin-password').expect(200);
     });
 
-    it('authn !authz admin /admin/ -> 200', async function () {
+    it('authn !authz admin /admin-auth/ -> 200', async function () {
       settings.requireAuthentication = true;
       settings.requireAuthorization = false;
-      await agent.get('/admin/').auth('admin', 'admin-password').expect(200);
+      await agent.get('/admin-auth/').auth('admin', 'admin-password').expect(200);
     });
 
     it('authn authz anonymous /robots.txt -> 200', async function () {
@@ -102,10 +102,10 @@ describe(__filename, function () {
       await agent.get('/').auth('user', 'user-password').expect(403);
     });
 
-    it('authn authz user /admin/ -> 403', async function () {
+    it('authn authz user //admin-auth// -> 403', async function () {
       settings.requireAuthentication = true;
       settings.requireAuthorization = true;
-      await agent.get('/admin/').auth('user', 'user-password').expect(403);
+      await agent.get('/admin-auth//').auth('user', 'user-password').expect(403);
     });
 
     it('authn authz admin / -> 200', async function () {
@@ -114,10 +114,10 @@ describe(__filename, function () {
       await agent.get('/').auth('admin', 'admin-password').expect(200);
     });
 
-    it('authn authz admin /admin/ -> 200', async function () {
+    it('authn authz admin /admin-auth/ -> 200', async function () {
       settings.requireAuthentication = true;
       settings.requireAuthorization = true;
-      await agent.get('/admin/').auth('admin', 'admin-password').expect(200);
+      await agent.get('/admin-auth/').auth('admin', 'admin-password').expect(200);
     });
 
     describe('login fails if password is nullish', function () {
@@ -130,7 +130,7 @@ describe(__filename, function () {
           it(`admin password: ${adminPassword} credentials: ${creds}`, async function () {
             settings.users.admin.password = adminPassword;
             const encCreds = Buffer.from(creds).toString('base64');
-            await agent.get('/admin/').set('Authorization', `Basic ${encCreds}`).expect(401);
+            await agent.get('/admin-auth/').set('Authorization', `Basic ${encCreds}`).expect(401);
           });
         }
       }
@@ -228,11 +228,11 @@ describe(__filename, function () {
 
       it('cannot grant access to /admin', async function () {
         handlers.preAuthorize[0].innerHandle = () => [true];
-        await agent.get('/admin/').expect(401);
+        await agent.get('/admin-auth/').expect(401);
         // Notes:
         //   * preAuthorize[1] is called despite preAuthorize[0] returning a non-empty list because
-        //     'true' entries are ignored for /admin/* requests.
-        //   * The authenticate hook always runs for /admin/* requests even if
+        //     'true' entries are ignored for /admin-auth//* requests.
+        //   * The authenticate hook always runs for /admin-auth//* requests even if
         //     settings.requireAuthentication is false.
         assert.deepEqual(callOrder, ['preAuthorize_0',
           'preAuthorize_1',
@@ -240,9 +240,9 @@ describe(__filename, function () {
           'authenticate_1']);
       });
 
-      it('can deny access to /admin', async function () {
+      it('can deny access to /admin-auth/', async function () {
         handlers.preAuthorize[0].innerHandle = () => [false];
-        await agent.get('/admin/').auth('admin', 'admin-password').expect(403);
+        await agent.get('/admin-auth/').auth('admin', 'admin-password').expect(403);
         assert.deepEqual(callOrder, ['preAuthorize_0']);
       });
 
@@ -258,7 +258,7 @@ describe(__filename, function () {
           res.status(200).send('injected');
           return cb([true]);
         })];
-        await agent.get('/admin/').auth('admin', 'admin-password').expect(200, 'injected');
+        await agent.get('/admin-auth//').auth('admin', 'admin-password').expect(200, 'injected');
         assert(called);
       });
 
@@ -274,15 +274,15 @@ describe(__filename, function () {
         settings.requireAuthorization = false;
       });
 
-      it('is not called if !requireAuthentication and not /admin/*', async function () {
+      it('is not called if !requireAuthentication and not /admin-auth/*', async function () {
         settings.requireAuthentication = false;
         await agent.get('/').expect(200);
         assert.deepEqual(callOrder, ['preAuthorize_0', 'preAuthorize_1']);
       });
 
-      it('is called if !requireAuthentication and /admin/*', async function () {
+      it('is called if !requireAuthentication and /admin-auth//*', async function () {
         settings.requireAuthentication = false;
-        await agent.get('/admin/').expect(401);
+        await agent.get('/admin-auth/').expect(401);
         assert.deepEqual(callOrder, ['preAuthorize_0',
           'preAuthorize_1',
           'authenticate_0',
@@ -393,7 +393,7 @@ describe(__filename, function () {
 
       it('is not called if !requireAuthorization (/admin)', async function () {
         settings.requireAuthorization = false;
-        await agent.get('/admin/').auth('admin', 'admin-password').expect(200);
+        await agent.get('/admin-auth/').auth('admin', 'admin-password').expect(200);
         assert.deepEqual(callOrder, ['preAuthorize_0',
           'preAuthorize_1',
           'authenticate_0',

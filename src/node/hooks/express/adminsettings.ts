@@ -13,16 +13,6 @@ const UpdateCheck = require('../../utils/UpdateCheck');
 const padManager = require('../../db/PadManager');
 const api = require('../../db/API');
 
-exports.expressCreateServer = (hookName:string, {app}:any) => {
-  app.get('/admin/settings', (req:any, res:any) => {
-    res.send(eejs.require('ep_etherpad-lite/templates/admin/settings.html', {
-      req,
-      settings: '',
-      errors: [],
-    }));
-  });
-};
-
 
 const queryPadLimit = 12;
 

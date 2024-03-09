@@ -92,14 +92,12 @@
     {
       "name": "adminplugins",
       "hooks": {
-        "expressCreateServer": "ep_etherpad-lite/node/hooks/express/adminplugins",
         "socketio": "ep_etherpad-lite/node/hooks/express/adminplugins"
       }
     },
     {
       "name": "adminsettings",
       "hooks": {
-        "expressCreateServer": "ep_etherpad-lite/node/hooks/express/adminsettings",
         "socketio": "ep_etherpad-lite/node/hooks/express/adminsettings"
       }
     },

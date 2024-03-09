@@ -12,35 +12,7 @@ const installer = require('../../../static/js/pluginfw/installer');
 const pluginDefs = require('../../../static/js/pluginfw/plugin_defs');
 const plugins = require('../../../static/js/pluginfw/plugins');
 const semver = require('semver');
-const UpdateCheck = require('../../utils/UpdateCheck');
 
-exports.expressCreateServer = (hookName:string, args: ArgsExpressType, cb:Function) => {
-  args.app.get('/admin/plugins', (req:any, res:any) => {
-    res.send(eejs.require('ep_etherpad-lite/templates/admin/plugins.html', {
-      plugins: pluginDefs.plugins,
-      req,
-      errors: [],
-    }));
-  });
-
-  args.app.get('/admin/plugins/info', (req:any, res:any) => {
-    const gitCommit = settings.getGitCommit();
-    const epVersion = settings.getEpVersion();
-
-    res.send(eejs.require('ep_etherpad-lite/templates/admin/plugins-info.html', {
-      gitCommit,
-      epVersion,
-      installedPlugins: `<pre>${plugins.formatPlugins().replace(/, /g, '\n')}</pre>`,
-      installedParts: `<pre>${plugins.formatParts()}</pre>`,
-      installedServerHooks: `<div>${plugins.formatHooks('hooks', true)}</div>`,
-      installedClientHooks: `<div>${plugins.formatHooks('client_hooks', true)}</div>`,
-      latestVersion: UpdateCheck.getLatestVersion(),
-      req,
-    }));
-  });
-
-  return cb();
-};
 
 exports.socketio = (hookName:string, args:ArgsExpressType, cb:Function) => {
   const io = args.io.of('/pluginfw/installer');

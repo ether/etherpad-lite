@@ -1,17 +1,28 @@
 import {useState} from "react";
+import {useStore} from "../store/store.ts";
+import {useNavigate} from "react-router-dom";
 
 export const LoginScreen = ()=>{
+    const navigate = useNavigate()
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
 
     const login = ()=>{
-        fetch('/api/auth', {
-            method: 'GET',
+        fetch('/admin-auth/', {
+            method: 'POST',
             headers:{
                 Authorization: `Basic ${btoa(`${username}:${password}`)}`
             }
         }).then(r=>{
-            console.log(r.status)
+            if(!r.ok) {
+                useStore.getState().setToastState({
+                    open: true,
+                    title: "Login failed",
+                    success: false
+                })
+            } else {
+                navigate('/')
+            }
         }).catch(e=>{
             console.error(e)
         })

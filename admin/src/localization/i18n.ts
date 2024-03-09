@@ -28,17 +28,17 @@ const LazyImportPlugin: BackendModule = {
         try {
             json = JSON.parse(await localeJSON.text())
         } catch(e) {
-             callback(true, null);
+             callback(new Error("Error loading"), null);
         }
 
 
         callback(null, json);
     },
 
-    save: function (language, namespace, data) {
+    save: function () {
     },
 
-    create: function (languages, namespace, key, fallbackValue) {
+    create: function () {
         /* save the missing translation */
     },
 };
