@@ -76,10 +76,12 @@ export const expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Fu
     maxHttpBufferSize: settings.socketIo.maxHttpBufferSize,
   })
 
-  io.on('connection', (socket:any) => {
+
+  const handleConnection = (socket:Socket) => {
     sockets.add(socket);
     socketsEvents.emit('updated');
     // https://socket.io/docs/v3/faq/index.html
+    // @ts-ignore
     const session = socket.request.session;
     session.connections++;
     session.save();
@@ -87,15 +89,9 @@ export const expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Fu
       sockets.delete(socket);
       socketsEvents.emit('updated');
     });
-  });
+  }
 
-  io.use(socketSessionMiddleware(args));
-
-  // Temporary workaround so all clients go through middleware and handle connection
-  io.of('/pluginfw/installer').use(socketSessionMiddleware(args))
-  io.of('/settings').use(socketSessionMiddleware(args))
-
-  io.use((socket:any, next:Function) => {
+  const renewSession = (socket:any, next:Function) => {
     socket.conn.on('packet', (packet:string) => {
       // Tell express-session that the session is still active. The session store can use these
       // touch events to defer automatic session cleanup, and if express-session is configured with
@@ -106,7 +102,24 @@ export const expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Fu
       if (socket.request.session != null) socket.request.session.touch();
     });
     next();
-  });
+  }
+
+
+  io.on('connection', handleConnection);
+
+  io.use(socketSessionMiddleware(args));
+
+  // Temporary workaround so all clients go through middleware and handle connection
+  io.of('/pluginfw/installer')
+      .on('connection',handleConnection)
+      .use(socketSessionMiddleware(args))
+      .use(renewSession)
+  io.of('/settings')
+      .on('connection',handleConnection)
+      .use(socketSessionMiddleware(args))
+      .use(renewSession)
+
+  io.use(renewSession);
 
   // var socketIOLogger = log4js.getLogger("socket.io");
   // Debug logging now has to be set at an environment level, this is stupid.

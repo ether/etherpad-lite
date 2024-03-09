@@ -1,7 +1,9 @@
 'use strict';
 import {ArgsExpressType} from "../../types/ArgsExpressType";
+import path from "path";
+const settings = require('ep_etherpad-lite/node/utils/Settings');
 
-const eejs = require('../../eejs');
+const ADMIN_PATH = path.join(settings.root, 'src', 'templates', 'admin');
 
 /**
  * Add the admin navigation link
@@ -11,9 +13,19 @@ const eejs = require('../../eejs');
  * @return {*}
  */
 exports.expressCreateServer = (hookName:string, args: ArgsExpressType, cb:Function): any => {
-  args.app.get('/admin', (req:any, res:any) => {
-    if ('/' !== req.path[req.path.length - 1]) return res.redirect('./admin/');
-    res.send(eejs.require('ep_etherpad-lite/templates/admin/index.html', {req}));
-  });
+  args.app.get('/admin/*', (req:any, res:any, next:Function) => {
+      if (req.path.includes('.')) {
+        const relativPath = req.path.split('/admin/')[1];
+        res.sendFile(path.join(ADMIN_PATH, relativPath));
+      } else {
+        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+        res.header('Expires', '-1');
+        res.header('Pragma', 'no-cache');
+        res.sendFile(path.join(ADMIN_PATH, 'index.html'));
+      }
+    });
+  args.app.get('/admin', (req:any, res:any, next:Function) => {
+      if ('/' !== req.path[req.path.length - 1]) return res.redirect('./admin/');
+  })
   return cb();
 };

@@ -5,8 +5,6 @@ require('eslint-config-etherpad/patch/modern-module-resolution');
 
 module.exports = {
   ignorePatterns: [
-    '/static/js/admin/jquery.autosize.js',
-    '/static/js/admin/minify.json.js',
     '/static/js/vendors/browser.js',
     '/static/js/vendors/farbtastic.js',
     '/static/js/vendors/gritter.js',

@@ -9,7 +9,7 @@ const tsort = require('./tsort');
 const pluginUtils = require('./shared');
 const defs = require('./plugin_defs');
 const {manager} = require('./installer');
-const settings = require("../../../node/utils/Settings");
+const settings = require('../../../node/utils/Settings');
 
 const logger = log4js.getLogger('plugins');
 
@@ -28,10 +28,13 @@ exports.prefix = 'ep_';
 
 exports.formatPlugins = () => Object.keys(defs.plugins).join(', ');
 
+exports.getPlugins = () => Object.keys(defs.plugins);
+
 exports.formatParts = () => defs.parts.map((part) => part.full_name).join('\n');
 
-exports.formatHooks = (hookSetName, html) => {
-  let hooks = new Map();
+exports.getParts = () => defs.parts.map((part) => part.full_name);
+
+const sortHooks = (hookSetName, hooks) => {
   for (const [pluginName, def] of Object.entries(defs.plugins)) {
     for (const part of def.parts) {
       for (const [hookName, hookFnName] of Object.entries(part[hookSetName] || {})) {
@@ -49,6 +52,18 @@ exports.formatHooks = (hookSetName, html) => {
       }
     }
   }
+};
+
+
+exports.getHooks = (hookSetName) => {
+  const hooks = new Map();
+  sortHooks(hookSetName, hooks);
+  return hooks;
+};
+
+exports.formatHooks = (hookSetName, html) => {
+  let hooks = new Map();
+  sortHooks(hookSetName, hooks);
   const lines = [];
   const sortStringKeys = (a, b) => String(a[0]).localeCompare(b[0]);
   if (html) lines.push('<dl>');
@@ -107,8 +122,8 @@ exports.update = async () => {
 };
 
 exports.getPackages = async () => {
-  let plugins = manager.list()
-  let newDependencies = {}
+  const plugins = manager.list();
+  const newDependencies = {};
 
   for (const plugin of plugins) {
     if (!plugin.name.startsWith(exports.prefix)) {
@@ -116,7 +131,7 @@ exports.getPackages = async () => {
     }
     plugin.realPath = await fs.realpath(plugin.location);
     plugin.path = plugin.realPath;
-    newDependencies[plugin.name] = plugin
+    newDependencies[plugin.name] = plugin;
   }
 
   newDependencies['ep_etherpad-lite'] = {
@@ -124,7 +139,7 @@ exports.getPackages = async () => {
     version: settings.getEpVersion(),
     path: path.join(settings.root, 'node_modules/ep_etherpad-lite'),
     realPath: path.join(settings.root, 'src'),
-  }
+  };
 
   return newDependencies;
 };

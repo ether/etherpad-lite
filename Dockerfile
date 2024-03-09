@@ -4,6 +4,13 @@
 #
 # Author: muxator
 
+FROM node:alpine as adminBuild
+
+WORKDIR /opt/etherpad-lite
+COPY ./admin ./admin
+RUN cd ./admin && npm install -g pnpm && pnpm install && pnpm run build --outDir ./dist
+
+
 FROM node:alpine as build
 LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 
@@ -99,16 +106,18 @@ COPY --chown=etherpad:etherpad ./pnpm-workspace.yaml ./package.json ./
 FROM build as development
 
 COPY --chown=etherpad:etherpad ./src/package.json .npmrc ./src/pnpm-lock.yaml ./src/
+COPY --chown=etherpad:etherpad --from=adminBuild /opt/etherpad-lite/admin/dist ./src/templates/admin
 
 RUN bin/installDeps.sh && { [ -z "${ETHERPAD_PLUGINS}" ] || \
       pnpm install --workspace-root ${ETHERPAD_PLUGINS}; }
-    
+
 FROM build as production
 
 ENV NODE_ENV=production
 ENV ETHERPAD_PRODUCTION=true
 
 COPY --chown=etherpad:etherpad ./src ./src
+COPY --chown=etherpad:etherpad --from=adminBuild /opt/etherpad-lite/admin/dist ./src/templates/admin
 
 RUN bin/installDeps.sh && { [ -z "${ETHERPAD_PLUGINS}" ] || \
       pnpm install --workspace-root ${ETHERPAD_PLUGINS}; } && \
