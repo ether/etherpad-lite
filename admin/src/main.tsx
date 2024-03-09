@@ -10,6 +10,7 @@ import {HelpPage} from "./pages/HelpPage.tsx";
 import * as Toast from '@radix-ui/react-toast'
 import {I18nextProvider} from "react-i18next";
 import i18n from "./localization/i18n.ts";
+import {PadPage} from "./pages/PadPage.tsx";
 
 const router = createBrowserRouter(createRoutesFromElements(
     <><Route element={<App/>}>
@@ -17,6 +18,7 @@ const router = createBrowserRouter(createRoutesFromElements(
         <Route path="/plugins" element={<HomePage/>}/>
         <Route path="/settings" element={<SettingsPage/>}/>
         <Route path="/help" element={<HelpPage/>}/>
+        <Route path="/pads" element={<PadPage/>}/>
     </Route><Route path="/login">
         <Route index element={<LoginScreen/>}/>
     </Route></>

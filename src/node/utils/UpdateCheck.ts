@@ -42,7 +42,7 @@ exports.getLatestVersion = () => {
   return infos?.latestVersion;
 };
 
-exports.needsUpdate = async (cb: Function) => {
+exports.needsUpdate = async (cb?: Function) => {
   await loadEtherpadInformations()
       .then((info:Infos) => {
     if (semver.gt(info.latestVersion, settings.getEpVersion())) {

@@ -6,31 +6,16 @@
         <rect id="path-4" x="41" y="110" width="142" height="25" rx="12.5" fill="#0f775b">
           <animate attributeName="width" from="0" to="142" dur="3s" fill="freeze"/>
         </rect>
-        <filter x="-11.3%" y="-32.0%" width="122.5%" height="228.0%" filterUnits="objectBoundingBox" id="filter-5" fill="#0f775b">
-            <feOffset dx="0" dy="8" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
-            <feGaussianBlur stdDeviation="4" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
-            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.0568181818 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
-        </filter>
 
         <!-- middle line -->
         <rect id="path-2" x="42" y="167" width="168" height="27" rx="13.5" fill="#0f775b">
           <animate attributeName="width" from="0" to="168" dur="5s" fill="freeze"/>
         </rect>
-        <filter x="-9.5%" y="-29.6%" width="119.0%" height="218.5%" filterUnits="objectBoundingBox" id="filter-3" fill="#0f775b">
-            <feOffset dx="0" dy="8" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
-            <feGaussianBlur stdDeviation="4" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
-            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.0568181818 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
-        </filter>
 
         <!-- bottom line -->
         <rect id="path-6" x="41" y="226" width="105" height="25" rx="12.5" fill="#0f775b">
           <animate attributeName="width" from="0" to="105" dur="2s" fill="freeze"/>
         </rect>
-        <filter x="-15.2%" y="-32.0%" width="130.5%" height="228.0%" filterUnits="objectBoundingBox" id="filter-7" fill="#0f775b">
-            <feOffset dx="0" dy="8" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
-            <feGaussianBlur stdDeviation="4" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
-            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.0568181818 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
-        </filter>
     </defs>
     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" >
         <g id="Group-5-Copy-2" transform="translate(-415.000000, -351.000000)">

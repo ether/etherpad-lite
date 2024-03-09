@@ -7,11 +7,22 @@ import { BackendModule } from 'i18next';
 
 const LazyImportPlugin: BackendModule = {
     type: 'backend',
-    init: function (services, backendOptions, i18nextOptions) {
+    init: function () {
     },
     read: async function (language, namespace, callback) {
-        console.log(import.meta.env.BASE_URL+`/locales/${language}.json`)
-        const localeJSON = await fetch(import.meta.env.BASE_URL+`/locales/${language}.json`)
+
+        let baseURL = import.meta.env.BASE_URL
+        if(namespace === "translation") {
+            // If default we load the translation file
+            baseURL+=`/locales/${language}.json`
+        } else {
+            // Else we load the former plugin translation file
+            baseURL+=`/${namespace}/${language}.json`
+        }
+
+        const localeJSON = await fetch(baseURL, {
+            cache: "force-cache"
+        })
         let json;
 
         try {
@@ -38,9 +49,7 @@ i18n
     .use(initReactI18next)
     .init(
         {
-            backend:{
-                loadPath: import.meta.env.BASE_URL+'/locales/{{lng}}-{{ns}}.json'
-            },
+            ns: ['translation','ep_admin_pads'],
             fallbackLng: 'en'
         }
     )

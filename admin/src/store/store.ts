@@ -1,5 +1,6 @@
 import {create} from "zustand";
 import {Socket} from "socket.io-client";
+import {PadSearchResult, PadType} from "../utils/PadSearch.ts";
 
 type ToastState = {
     description?:string,
@@ -19,7 +20,9 @@ type StoreState = {
     setPluginsSocket: (socket: Socket) => void
     pluginsSocket: Socket|undefined,
     toastState: ToastState,
-    setToastState: (val: ToastState)=>void
+    setToastState: (val: ToastState)=>void,
+    pads: PadSearchResult|undefined,
+    setPads: (pads: PadSearchResult)=>void
 }
 
 
@@ -38,5 +41,7 @@ export const useStore = create<StoreState>()((set) => ({
         title: '',
         description:'',
         success: false
-    }
+    },
+    pads: undefined,
+    setPads: (pads)=>set({pads})
 }));

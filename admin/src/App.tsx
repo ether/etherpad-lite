@@ -6,7 +6,7 @@ import {NavLink, Outlet} from "react-router-dom";
 import {useStore} from "./store/store.ts";
 import {LoadingScreen} from "./utils/LoadingScreen.tsx";
 import {ToastDialog} from "./utils/Toast.tsx";
-import {useTranslation} from "react-i18next";
+import {Trans, useTranslation} from "react-i18next";
 
 
 export const App = ()=> {
@@ -78,9 +78,10 @@ export const App = ()=> {
         <div className="menu">
             <h1>Etherpad</h1>
             <ul>
-                <li><NavLink to="/plugins">Home</NavLink></li>
-                <li><NavLink to={"/settings"}>Einstellungen</NavLink></li>
-                <li>            <NavLink to={"/help"}>Hilfe</NavLink></li>
+                <li><NavLink to="/plugins"><Trans i18nKey="admin_plugins"/></NavLink></li>
+                <li><NavLink to={"/settings"}><Trans i18nKey="admin_settings"/></NavLink></li>
+                <li>            <NavLink to={"/help"}><Trans i18nKey="admin_plugins_info"/></NavLink></li>
+                <li><NavLink to={"/pads"}><Trans i18nKey="ep_admin_pads:ep_adminpads2_manage-pads"/></NavLink></li>
             </ul>
         </div>
         <div className="innerwrapper">

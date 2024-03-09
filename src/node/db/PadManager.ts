@@ -20,6 +20,7 @@
  */
 
 import {MapArrayType} from "../types/MapType";
+import {PadType} from "../types/PadType";
 
 const CustomError = require('../utils/customError');
 const Pad = require('../db/Pad');
@@ -105,7 +106,7 @@ const padList = new class {
  * @param {string} [authorId] - Optional author ID of the user that initiated the pad creation (if
  *     applicable).
  */
-exports.getPad = async (id: string, text: string|null, authorId:string = '') => {
+exports.getPad = async (id: string, text?: string|null, authorId:string|null = ''):Promise<PadType> => {
   // check if this is a valid padId
   if (!exports.isValidPadId(id)) {
     throw new CustomError(`${id} is not a valid padId`, 'apierror');
@@ -147,6 +148,9 @@ exports.listAllPads = async () => {
 
   return {padIDs};
 };
+
+
+
 
 // checks if a pad exists
 exports.doesPadExist = async (padId: string) => {

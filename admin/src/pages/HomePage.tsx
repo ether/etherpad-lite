@@ -2,6 +2,7 @@ import {useStore} from "../store/store.ts";
 import {useEffect, useState} from "react";
 import {InstalledPlugin, PluginDef, SearchParams} from "./Plugin.ts";
 import {useDebounce} from "../utils/useDebounce.ts";
+import {Trans} from "react-i18next";
 
 
 export const HomePage = () => {
@@ -100,15 +101,15 @@ export const HomePage = () => {
     }, 500, [searchTerm])
 
     return <div>
-        <h1>Home Page</h1>
+        <h1><Trans i18nKey="admin_plugins"/></h1>
 
-        <h2>Installierte Plugins</h2>
+        <h2><Trans i18nKey="admin_plugins.installed"/></h2>
 
         <table>
             <thead>
             <tr>
-                <th>Name</th>
-                <th>Version</th>
+                <th><Trans i18nKey="admin_plugins.name"/></th>
+                <th><Trans i18nKey="admin_plugins.version"/></th>
                 <th></th>
             </tr>
             </thead>
@@ -119,7 +120,7 @@ export const HomePage = () => {
                     <td>{plugin.version}</td>
                     <td onClick={() => {
                     }}>
-                        <button disabled={plugin.name == "ep_etherpad-lite"} onClick={() => uninstallPlugin(plugin.name)}>Entfernen</button>
+                        <button disabled={plugin.name == "ep_etherpad-lite"} onClick={() => uninstallPlugin(plugin.name)}><Trans i18nKey="admin_plugins.installed_uninstall.value"/></button>
                     </td>
                 </tr>
             })}
@@ -127,7 +128,7 @@ export const HomePage = () => {
         </table>
 
 
-        <h2>Verfügbare Plugins</h2>
+        <h2><Trans i18nKey="admin_plugins.available"/></h2>
 
         <input type="text" value={searchTerm} onChange={v=>{
             setSearchTerm(v.target.value)
@@ -136,22 +137,22 @@ export const HomePage = () => {
         <table>
             <thead>
             <tr>
-                <th>Name</th>
-                <th style={{width: '30%'}}>Description</th>
-                <th>Version</th>
-                <th>Last updated</th>
+                <th><Trans i18nKey="admin_plugins.name"/></th>
+                <th style={{width: '30%'}}><Trans i18nKey="admin_plugins.description"/></th>
+                <th><Trans i18nKey="admin_plugins.version"/></th>
+                <th><Trans i18nKey="admin_plugins.last-update"/></th>
                 <th></th>
             </tr>
             </thead>
             <tbody style={{overflow: 'auto'}}>
-            {plugins.map((plugin, index) => {
-                return <tr key={index}>
+            {plugins.map((plugin) => {
+                return <tr key={plugin.name}>
                     <td><a href={`https://npmjs.com/${plugin.name}`} target="_blank">{plugin.name}</a></td>
                     <td>{plugin.description}</td>
                     <td>{plugin.version}</td>
                     <td>{plugin.time}</td>
                     <td>
-                        <button onClick={() => installPlugin(plugin.name)}>Installieren</button>
+                        <button onClick={() => installPlugin(plugin.name)}><Trans i18nKey="admin_plugins.available_install.value"/></button>
                     </td>
                 </tr>
             })}

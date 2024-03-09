@@ -23,3 +23,14 @@ export type SearchParams = {
     sortBy: 'name'|'version',
     sortDir: 'asc'|'desc'
 }
+
+
+export type HelpObj = {
+    epVersion: string
+    gitCommit: string
+    installedClientHooks: Record<string, Record<string, string>>,
+    installedParts: string[],
+    installedPlugins: string[],
+    installedServerHooks: Record<string, never>,
+    latestVersion: string
+}
