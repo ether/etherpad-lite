@@ -36,9 +36,9 @@ export const SettingsPage = ()=>{
         </div>
         <div className="separator"/>
         <div className="settings-button-bar">
-            <a href="https://github.com/ether/etherpad-lite/wiki/Example-Production-Settings.JSON"><Trans
+            <a rel="noopener noreferrer" target="_blank" href="https://github.com/ether/etherpad-lite/wiki/Example-Production-Settings.JSON"><Trans
                 i18nKey="admin_settings.current_example-prod"/></a>
-            <a href="https://github.com/ether/etherpad-lite/wiki/Example-Development-Settings.JSON"><Trans
+            <a rel="noopener noreferrer" target="_blank" href="https://github.com/ether/etherpad-lite/wiki/Example-Development-Settings.JSON"><Trans
                 i18nKey="admin_settings.current_example-devel"/></a>
         </div>
     </div>

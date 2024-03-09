@@ -164,7 +164,7 @@ export const HomePage = () => {
             <tbody style={{overflow: 'auto'}}>
             {plugins.map((plugin) => {
                 return <tr key={plugin.name}>
-                    <td><a href={`https://npmjs.com/${plugin.name}`} target="_blank">{plugin.name}</a></td>
+                    <td><a rel="noopener noreferrer" href={`https://npmjs.com/${plugin.name}`} target="_blank">{plugin.name}</a></td>
                     <td>{plugin.description}</td>
                     <td>{plugin.version}</td>
                     <td>{plugin.time}</td>
