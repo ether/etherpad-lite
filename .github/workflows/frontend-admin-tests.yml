@@ -49,12 +49,12 @@ jobs:
             ${{ runner.os }}-pnpm-store-
       - name: Only install direct dependencies
         run: pnpm config set auto-install-peers false
-      -
-        name: Install etherpad plugins
-        # We intentionally install an old ep_align version to test upgrades to
-        # the minor version number. The --legacy-peer-deps flag is required to
-        # work around a bug in npm v7: https://github.com/npm/cli/issues/2199
-        run: pnpm install --workspace-root ep_align@0.2.27
+      #-
+      #  name: Install etherpad plugins
+      #  # We intentionally install an old ep_align version to test upgrades to
+      #  # the minor version number. The --legacy-peer-deps flag is required to
+      #  # work around a bug in npm v7: https://github.com/npm/cli/issues/2199
+      #  run: pnpm install --workspace-root ep_align@0.2.27
       # Etherpad core dependencies must be installed after installing the
       # plugin's dependencies, otherwise npm will try to hoist common
       # dependencies by removing them from src/node_modules and installing them
@@ -67,9 +67,9 @@ jobs:
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
         run: bin/installDeps.sh
-      -
-        name: Install etherpad plugins
-        run: rm -Rf node_modules/ep_align/static/tests/*
+      #-
+      #  name: Install etherpad plugins
+      #  run: rm -Rf node_modules/ep_align/static/tests/*
       -
         name: export GIT_HASH to env
         id: environment
@@ -79,7 +79,7 @@ jobs:
         run: cp settings.json.template settings.json
       -
         name: Write custom settings.json that enables the Admin UI tests
-        run: "sed -i 's/\"enableAdminUITests\": false/\"enableAdminUITests\": true,\\n\"users\":{\"admin\":{\"password\":\"changeme\",\"is_admin\":true}}/' settings.json"
+        run: "sed -i 's/\"enableAdminUITests\": false/\"enableAdminUITests\": true,\\n\"users\":{\"admin\":{\"password\":\"changeme1\",\"is_admin\":true}}/' settings.json"
       -
         name: increase maxHttpBufferSize
         run: "sed -i 's/\"maxHttpBufferSize\": 10000/\"maxHttpBufferSize\": 10000000/' settings.json"
@@ -87,23 +87,26 @@ jobs:
         name: Disable import/export rate limiting
         run: |
           sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 100000000/' -i settings.json
-      -
-        name: Remove standard frontend test files, so only admin tests are run
-        run: mv src/tests/frontend/specs/* /tmp && mv /tmp/admin*.js src/tests/frontend/specs
-      -
-        uses: saucelabs/sauce-connect-action@v2.3.6
-        with:
-          username: ${{ secrets.SAUCE_USERNAME }}
-          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-          tunnelIdentifier: ${{ steps.sauce_strings.outputs.tunnel_id }}
-      -
-        name: Run the frontend admin tests
-        shell: bash
-        env:
-          SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
-          SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-          SAUCE_NAME: ${{ steps.sauce_strings.outputs.name }}
-          TRAVIS_JOB_NUMBER: ${{ steps.sauce_strings.outputs.tunnel_id }}
-          GIT_HASH: ${{ steps.environment.outputs.sha_short }}
+      #-
+      #  uses: saucelabs/sauce-connect-action@v2.3.6
+      #  with:
+      #    username: ${{ secrets.SAUCE_USERNAME }}
+      #    accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+      #    tunnelIdentifier: ${{ steps.sauce_strings.outputs.tunnel_id }}
+      #-
+      #  name: Run the frontend admin tests
+      #  shell: bash
+      #  env:
+      #    SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+      #    SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+      #    SAUCE_NAME: ${{ steps.sauce_strings.outputs.name }}
+      #    TRAVIS_JOB_NUMBER: ${{ steps.sauce_strings.outputs.tunnel_id }}
+      #   GIT_HASH: ${{ steps.environment.outputs.sha_short }}
+      #  run: |
+      #    src/tests/frontend/travis/adminrunner.sh
+      - name: Run the frontend admin tests
         run: |
-          src/tests/frontend/travis/adminrunner.sh
+          pnpm run dev &
+          sleep 30
+          pnpm exec playwright install
+          pnpm run test-admin

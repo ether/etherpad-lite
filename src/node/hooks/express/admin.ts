@@ -1,6 +1,7 @@
 'use strict';
 import {ArgsExpressType} from "../../types/ArgsExpressType";
 import path from "path";
+import fs from "fs";
 const settings = require('ep_etherpad-lite/node/utils/Settings');
 
 const ADMIN_PATH = path.join(settings.root, 'src', 'templates', 'admin');
@@ -16,7 +17,13 @@ exports.expressCreateServer = (hookName:string, args: ArgsExpressType, cb:Functi
   args.app.get('/admin/*', (req:any, res:any, next:Function) => {
       if (req.path.includes('.')) {
         const relativPath = req.path.split('/admin/')[1];
-        res.sendFile(path.join(ADMIN_PATH, relativPath));
+        try {
+            if (fs.statSync(path.join(ADMIN_PATH, relativPath)).isFile()) {
+                res.sendFile(path.join(ADMIN_PATH, relativPath));
+            }
+        } catch (err) {
+            res.status(404).send('404: Not Found');
+        }
       } else {
         res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
         res.header('Expires', '-1');

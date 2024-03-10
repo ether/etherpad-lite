@@ -1,5 +1,5 @@
 import {useStore} from "../store/store.ts";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {InstalledPlugin, PluginDef, SearchParams} from "./Plugin.ts";
 import {useDebounce} from "../utils/useDebounce.ts";
 import {Trans, useTranslation} from "react-i18next";
@@ -9,6 +9,18 @@ export const HomePage = () => {
     const pluginsSocket = useStore(state=>state.pluginsSocket)
     const [plugins,setPlugins] = useState<PluginDef[]>([])
     const [installedPlugins, setInstalledPlugins] = useState<InstalledPlugin[]>([])
+    const sortedInstalledPlugins = useMemo(()=>{
+        return installedPlugins.sort((a, b)=>{
+            if(a.name < b.name){
+                return -1
+            }
+            if(a.name > b.name){
+                return 1
+            }
+            return 0
+        })
+
+    } ,[installedPlugins])
     const [searchParams, setSearchParams] = useState<SearchParams>({
         offset: 0,
         limit: 99999,
@@ -125,7 +137,7 @@ export const HomePage = () => {
             </tr>
             </thead>
             <tbody style={{overflow: 'auto'}}>
-            {installedPlugins.map((plugin, index) => {
+            {sortedInstalledPlugins.map((plugin, index) => {
                 return <tr key={index}>
                     <td>{plugin.name}</td>
                     <td>{plugin.version}</td>

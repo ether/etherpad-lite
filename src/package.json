@@ -121,7 +121,9 @@
     "ts-check": "tsc --noEmit",
     "ts-check:watch": "tsc --noEmit --watch",
     "test-ui": "npx playwright test tests/frontend-new/specs",
-    "test-ui:ui": "npx playwright test tests/frontend-new/specs --ui"
+    "test-ui:ui": "npx playwright test tests/frontend-new/specs --ui",
+    "test-admin": "npx playwright test tests/frontend-new/admin-spec --workers 1",
+    "test-admin:ui": "npx playwright test tests/frontend-new/admin-spec --ui --workers 1"
   },
   "version": "1.9.7",
   "license": "Apache-2.0"

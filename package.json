@@ -19,7 +19,11 @@
     "dev": "pnpm --filter ep_etherpad-lite run dev",
     "prod": "pnpm --filter ep_etherpad-lite run prod",
     "ts-check": "pnpm --filter ep_etherpad-lite run ts-check",
-    "ts-check:watch": "pnpm --filter ep_etherpad-lite run ts-check:watch"
+    "ts-check:watch": "pnpm --filter ep_etherpad-lite run ts-check:watch",
+    "test-ui": "pnpm --filter ep_etherpad-lite run test-ui",
+    "test-ui:ui": "pnpm --filter ep_etherpad-lite run test-ui:ui",
+    "test-admin": "pnpm --filter ep_etherpad-lite run test-admin",
+    "test-admin:ui": "pnpm --filter ep_etherpad-lite run test-admin:ui"
   },
   "dependencies": {
     "ep_etherpad-lite": "workspace:./src"
