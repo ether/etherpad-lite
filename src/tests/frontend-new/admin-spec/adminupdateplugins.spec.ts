@@ -45,7 +45,7 @@ test.describe('Plugins page',  ()=> {
         const pluginRow = pluginTable.locator('tr').first()
         await expect(pluginRow).toContainText('ep_font_color3')
 
-        // Select Install button
+        // Select Installation button
         await pluginRow.locator('td').nth(4).locator('button').first().click()
         await page.waitForTimeout(100)
         await page.waitForSelector('table tbody')
