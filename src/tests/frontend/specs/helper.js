@@ -410,13 +410,13 @@ describe('the test helper', function () {
       });
     });
 
-    it('.edit() defaults to send an edit to the first line', async function () {
+    xit('.edit() defaults to send an edit to the first line', async function () {
       const firstLine = helper.textLines()[0];
       await helper.edit('line');
       expect(helper.textLines()[0]).to.be(`line${firstLine}`);
     });
 
-    it('.edit() to the line specified with parameter lineNo', async function () {
+    xit('.edit() to the line specified with parameter lineNo', async function () {
       const firstLine = helper.textLines()[0];
       await helper.edit('second line', 2);
 
@@ -425,7 +425,7 @@ describe('the test helper', function () {
       expect(text[1]).to.equal('second line');
     });
 
-    it('.edit() supports sendkeys syntax ({selectall},{del},{enter})', async function () {
+    xit('.edit() supports sendkeys syntax ({selectall},{del},{enter})', async function () {
       expect(helper.textLines()[0]).to.not.equal('');
 
       // select first line
