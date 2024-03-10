@@ -33,9 +33,9 @@ export const LoginScreen = ()=>{
             <h1 className="login-title">Login Etherpad</h1>
             <div className="login-inner-box">
                 <div>Username</div>
-                <input className="login-textinput" type="text" value={username} onChange={v => setUsername(v.target.value)} placeholder="Username"/>
+                <input className="login-textinput" type="text" name="username" value={username} onChange={v => setUsername(v.target.value)} placeholder="Username"/>
                 <div>Passwort</div>
-                <input className="login-textinput" type="password" value={password}
+                <input className="login-textinput" type="password" name="password" value={password}
                        onChange={v => setPassword(v.target.value)} placeholder="Password"/>
                 <input type="button" value="Login" onClick={login} className="login-button"/>
             </div>
