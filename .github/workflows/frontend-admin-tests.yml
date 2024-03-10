@@ -107,6 +107,7 @@ jobs:
       - name: Run the frontend admin tests
         run: |
           pnpm run dev &
-          sleep 30
+          sleep 20
+          cd src
           pnpm exec playwright install
           pnpm run test-admin
