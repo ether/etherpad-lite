@@ -140,6 +140,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.node }}
           path: src/playwright-report/
           retention-days: 30
