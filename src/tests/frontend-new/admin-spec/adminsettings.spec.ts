@@ -49,10 +49,11 @@ test.describe('admin settings',()=> {
 
     test('restart works', async function ({page}) {
         await page.goto('http://localhost:9001/admin/settings');
+        await page.waitForSelector('.settings')
         await restartEtherpad(page)
         await page.waitForSelector('.settings')
         const settings =  page.locator('.settings');
         await expect(settings).not.toBeEmpty();
-        await page.waitForTimeout(1000)
+        await page.waitForSelector('.menu')
     });
 })

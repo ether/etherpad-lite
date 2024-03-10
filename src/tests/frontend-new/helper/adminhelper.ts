@@ -1,9 +1,4 @@
-import {Page} from "@playwright/test";
-
-export const goToAdminPage = async (page: Page) => {
-
-}
-
+import {expect, Page} from "@playwright/test";
 
 export const loginToAdmin = async (page: Page, username: string, password: string) => {
 
@@ -24,7 +19,14 @@ export const saveSettings = async (page: Page) => {
 
 export const restartEtherpad = async (page: Page) => {
     // Click restart
-    await page.locator('.settings-button-bar').locator('button').nth(1).click()
-    await page.waitForTimeout(100)
+    const restartButton = page.locator('.settings-button-bar').locator('.settingsButton').nth(1)
+    const settings =  page.locator('.settings');
+    await expect(settings).not.toBeEmpty();
+    await expect(restartButton).toBeVisible()
+    await page.locator('.settings-button-bar')
+        .locator('.settingsButton')
+        .nth(1)
+        .click()
+    await page.waitForTimeout(500)
     await page.waitForSelector('.settings')
 }

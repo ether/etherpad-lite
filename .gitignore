@@ -27,3 +27,4 @@ pnpm-lock.yaml
 /src/templates/admin
 /src/test-results
 playwright-report
+state.json

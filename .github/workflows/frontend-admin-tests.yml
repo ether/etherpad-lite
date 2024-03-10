@@ -137,7 +137,6 @@ jobs:
           pnpm exec playwright install
           pnpm exec playwright install-deps
           pnpm run test-admin
-          - uses: actions/upload-artifact@v4
       - uses: actions/upload-artifact@v4
         if: always()
         with:
