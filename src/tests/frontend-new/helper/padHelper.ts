@@ -125,3 +125,23 @@ export const clearPadContent = async (page: Page) => {
     await page.keyboard.up('Control');
     await page.keyboard.press('Delete');
 }
+
+export const writeToPad = async (page: Page, text: string) => {
+    const body = await getPadBody(page);
+    await body.click();
+    await page.keyboard.type(text);
+}
+
+export const clearAuthorship = async (page: Page) => {
+    await page.locator("button[data-l10n-id='pad.toolbar.clearAuthorship.title']").click()
+}
+
+export const undoChanges = async (page: Page) => {
+    await page.keyboard.down('Control');
+    await page.keyboard.press('z');
+    await page.keyboard.up('Control');
+}
+
+export const pressUndoButton = async (page: Page) => {
+    await page.locator('.buttonicon-undo').click()
+}
