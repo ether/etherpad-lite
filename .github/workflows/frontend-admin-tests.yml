@@ -92,12 +92,6 @@ jobs:
         run: |
             pnpm install
             pnpm run build
-      -
-        uses: saucelabs/sauce-connect-action@v2.3.6
-        with:
-          username: ${{ secrets.SAUCE_USERNAME }}
-          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-          tunnelIdentifier: ${{ steps.sauce_strings.outputs.tunnel_id }}
       #  name: Run the frontend admin tests
       #  shell: bash
       #  env:
@@ -127,12 +121,6 @@ jobs:
       #    src/tests/frontend/travis/adminrunner.sh
       - name: Run the frontend admin tests
         shell: bash
-        env:
-            SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
-            SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-            SAUCE_NAME: ${{ steps.sauce_strings.outputs.name }}
-            TRAVIS_JOB_NUMBER: ${{ steps.sauce_strings.outputs.tunnel_id }}
-            GIT_HASH: ${{ steps.environment.outputs.sha_short }}
         run: |
           pnpm run dev &
           log "Waiting for Etherpad to accept connections (http://localhost:9001)..."
