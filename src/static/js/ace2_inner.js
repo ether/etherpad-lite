@@ -3466,7 +3466,7 @@ function Ace2Inner(editorInfo, cssManagers) {
         // use that for displaying the side div line number inline with the first line
         // of content -- This is used in ep_headings, ep_font_size etc. where the line
         // height is increased.
-        const elementStyle = window.getComputedStyle(docLine.firstChild);
+        const elementStyle = window.getComputedStyle(docLine.firstElementChild);
         const lineHeight = parseInt(elementStyle.getPropertyValue('line-height'));
         const marginBottom = parseInt(elementStyle.getPropertyValue('margin-bottom'));
         lineHeights.push(lineHeight + marginBottom);

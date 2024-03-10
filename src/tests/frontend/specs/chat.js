@@ -25,9 +25,7 @@ describe('Chat messages and UI', function () {
     const username = helper.chatTextParagraphs().children('b').text();
     const time = helper.chatTextParagraphs().children('.time').text();
 
-    // TODO: The '\n' is an artifact of $.sendkeys('{enter}'). Figure out how to get rid of it
-    // without breaking the other tests that use $.sendkeys().
-    expect(helper.chatTextParagraphs().text()).to.be(`${username}${time} ${chatValue}\n`);
+    expect(helper.chatTextParagraphs().text()).to.be(`${username}${time} ${chatValue}`);
 
     await helper.hideChat();
   });
@@ -48,9 +46,7 @@ describe('Chat messages and UI', function () {
     const username = chat.children('b').text();
     const time = chat.children('.time').text();
 
-    // TODO: Each '\n' is an artifact of $.sendkeys('{enter}'). Figure out how to get rid of them
-    // without breaking the other tests that use $.sendkeys().
-    expect(chat.text()).to.be(`${username}${time} \n${chatValue}\n`);
+    expect(chat.text()).to.be(`${username}${time} \n${chatValue}`);
   });
 
   it('makes chat stick to right side of the screen via settings, ' +

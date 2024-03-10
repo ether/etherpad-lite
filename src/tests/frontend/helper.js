@@ -36,10 +36,15 @@ const helper = {};
       await p;
     };
 
-    if (!win.$) await load('../../static/js/vendors/jquery.js');
-    // sendkeys.js depends on jQuery, so it cannot be loaded until jQuery has finished loading. (In
-    // other words, do not load both jQuery and sendkeys inside a Promise.all() call.)
-    if (!win.bililiteRange && includeSendkeys) await load('../tests/frontend/lib/sendkeys.js');
+    await Promise.all([
+      !win.$ && load('../../static/js/vendors/jquery.js'),
+      !win.bililiteRange && includeSendkeys && load('../tests/frontend/lib/bililiteRange.js'),
+    ]);
+    // jquery.sendkeys.js depends on jQuery, so it cannot be loaded until jQuery has finished
+    // loading. (In other words, do not load sendkeys in the above Promise.all() call.)
+    if (!win.$.fn.sendkeys && includeSendkeys) {
+      await load('../tests/frontend/lib/jquery.sendkeys.js');
+    }
 
     win.$.window = win;
     win.$.document = doc;

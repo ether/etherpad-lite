@@ -13,7 +13,7 @@ describe('timeslider follow', function () {
     // send 6 revisions
     const revs = 6;
     const message = 'a\n\n\n\n\n\n\n\n\n\n';
-    const newLines = message.split('\n').length;
+    const newLines = message.split('\n').length - 1;
     for (let i = 0; i < revs; i++) {
       await helper.edit(message, newLines * i + 1);
     }
