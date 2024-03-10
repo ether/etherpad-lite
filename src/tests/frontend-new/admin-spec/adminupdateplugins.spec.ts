@@ -31,7 +31,9 @@ test.describe('Plugins page',  ()=> {
     test('Attempt to Install and Uninstall a plugin', async ({page}) => {
         await page.waitForSelector('.search-field');
         const pluginTable =  page.locator('table tbody').nth(1);
-        await expect(pluginTable).not.toBeEmpty()
+        await expect(pluginTable).not.toBeEmpty({
+            timeout: 15000
+        })
         const plugins = await pluginTable.locator('tr').count()
         expect(plugins).toBeGreaterThan(10)
 
