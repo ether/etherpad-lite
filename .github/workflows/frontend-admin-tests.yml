@@ -136,16 +136,14 @@ jobs:
         run: |
           pnpm run dev &
           log "Waiting for Etherpad to accept connections (http://localhost:9001)..."
-          connected=false
-          can_connect() {
-            curl -sSfo /dev/null http://localhost:9001/ || return 1
-            connected=true
-          }
-          now() { date +%s; }
-          start=$(now)
-          while [ $(($(now) - $start)) -le 15 ] && ! can_connect; do
-            sleep 1
-          done
+          sleep 20
           cd src
           pnpm exec playwright install
           pnpm run test-admin
+          - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: src/playwright-report/
+          retention-days: 30
