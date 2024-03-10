@@ -95,6 +95,7 @@
     "mocha-froth": "^0.2.10",
     "nodeify": "^1.0.1",
     "openapi-schema-validation": "^0.4.2",
+    "@playwright/test": "^1.42.1",
     "selenium-webdriver": "^4.18.1",
     "set-cookie-parser": "^2.6.0",
     "sinon": "^17.0.1",
@@ -118,7 +119,9 @@
     "dev": "node --import tsx node/server.ts",
     "prod": "node --import tsx node/server.ts",
     "ts-check": "tsc --noEmit",
-    "ts-check:watch": "tsc --noEmit --watch"
+    "ts-check:watch": "tsc --noEmit --watch",
+    "test-ui": "npx playwright test tests/frontend-new/specs",
+    "test-ui:ui": "npx playwright test tests/frontend-new/specs --ui"
   },
   "version": "1.9.7",
   "license": "Apache-2.0"
