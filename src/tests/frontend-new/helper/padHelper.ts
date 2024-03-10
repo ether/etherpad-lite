@@ -115,9 +115,17 @@ export const appendQueryParams = async (page: Page, queryParameters: MapArrayTyp
 
 export const goToNewPad = async (page: Page) => {
     // create a new pad before each test run
-    await page.goto('http://localhost:9001/p/'+"FRONTEND_TESTS"+randomInt(0, 1000));
+    const padId = "FRONTEND_TESTS"+randomInt(0, 1000);
+    await page.goto('http://localhost:9001/p/'+padId);
+    await page.waitForSelector('iframe[name="ace_outer"]');
+    return padId;
+}
+
+export const goToPad = async (page: Page, padId: string) => {
+    await page.goto('http://localhost:9001/p/'+padId);
     await page.waitForSelector('iframe[name="ace_outer"]');
 }
+
 
 export const clearPadContent = async (page: Page) => {
     await page.keyboard.down('Control');

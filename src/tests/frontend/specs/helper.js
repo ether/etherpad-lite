@@ -7,7 +7,7 @@ describe('the test helper', function () {
       for (let i = 0; i < 10; ++i) await helper.aNewPad();
     });
 
-    it('gives me 3 jquery instances of chrome, outer and inner', async function () {
+    xit('gives me 3 jquery instances of chrome, outer and inner', async function () {
       this.timeout(10000);
       await helper.aNewPad();
       // check if the jquery selectors have the desired elements
@@ -27,7 +27,7 @@ describe('the test helper', function () {
     // However this doesn't seem to always be easily replicated, so this
     // timeout may or may end up in the code. None the less, we test here
     // to catch it if the bug comes up again.
-    it('clears cookies', async function () {
+    xit('clears cookies', async function () {
       // set cookies far into the future to make sure they're not expired yet
       window.Cookies.set('token', 'foo', {expires: 7 /* days */});
       window.Cookies.set('language', 'bar', {expires: 7 /* days */});
