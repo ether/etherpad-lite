@@ -1,6 +1,6 @@
 import {Frame, Locator, Page} from "@playwright/test";
 import {MapArrayType} from "../../../node/types/MapType";
-import {randomInt} from "node:crypto";
+import {randomUUID} from "node:crypto";
 
 export const getPadOuter =  async (page: Page): Promise<Frame> => {
     return page.frame('ace_outer')!;
@@ -115,7 +115,7 @@ export const appendQueryParams = async (page: Page, queryParameters: MapArrayTyp
 
 export const goToNewPad = async (page: Page) => {
     // create a new pad before each test run
-    const padId = "FRONTEND_TESTS"+randomInt(0, 10000);
+    const padId = "FRONTEND_TESTS"+randomUUID();
     await page.goto('http://localhost:9001/p/'+padId);
     await page.waitForSelector('iframe[name="ace_outer"]');
     return padId;

@@ -7,11 +7,9 @@ permissions:
   contents: read # to fetch code (actions/checkout)
 
 jobs:
-  playwright-linux:
-    name: playwright-linux
+  playwright-chrome:
+    name: Playwright Chrome
     runs-on: ubuntu-latest
-    if: ${{ github.actor != 'dependabot[bot]' }}
-
     steps:
       -
         name: Generate Sauce Labs strings
@@ -37,6 +35,7 @@ jobs:
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
       - uses: actions/cache@v4
         name: Setup pnpm cache
+        if: always()
         with:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -69,19 +68,80 @@ jobs:
           sleep 1
           done
           cd src
-          pnpm exec playwright install
-          pnpm exec playwright install-deps
-          pnpm run test-ui --project=firefox --project=chromium
+          pnpm exec playwright install chromium  --with-deps
+          pnpm run test-ui --project=chromium
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report-${{ matrix.node }}
+          name: playwright-report-${{ matrix.node }}-chrome
           path: src/playwright-report/
           retention-days: 30
-  playwright-macos:
-    name: playwright-macos
-    runs-on: macos-latest
-    if: ${{ github.actor != 'dependabot[bot]' }}
+  playwright-firefox:
+    name: Playwright Firefox
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate Sauce Labs strings
+        id: sauce_strings
+        run: |
+          printf %s\\n '::set-output name=name::${{ github.workflow }} - ${{ github.job }}'
+          printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 21
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        if: always()
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Only install direct dependencies
+        run: pnpm config set auto-install-peers false
+      - name: Install all dependencies and symlink for ep_etherpad-lite
+        run: bin/installDeps.sh
+      - name: export GIT_HASH to env
+        id: environment
+        run: echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.sha }})"
+      - name: Create settings.json
+        run: cp ./src/tests/settings.json settings.json
+      - name: Run the frontend tests
+        shell: bash
+        run: |
+          pnpm run dev &
+          connected=false
+          can_connect() {
+          curl -sSfo /dev/null http://localhost:9001/ || return 1
+          connected=true
+          }
+          now() { date +%s; }
+          start=$(now)
+          while [ $(($(now) - $start)) -le 15 ] && ! can_connect; do
+          sleep 1
+          done
+          cd src
+          pnpm exec playwright install firefox  --with-deps
+          pnpm run test-ui --project=firefox
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-${{ matrix.node }}-firefox
+          path: src/playwright-report/
+          retention-days: 30
+  playwright-webkit:
+    name: Playwright Webkit
+    runs-on: ubuntu-latest
 
     steps:
       -
@@ -108,6 +168,7 @@ jobs:
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
       - uses: actions/cache@v4
         name: Setup pnpm cache
+        if: always()
         with:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -140,13 +201,12 @@ jobs:
           sleep 1
           done
           cd src
-          pnpm exec playwright install
-          pnpm exec playwright install-deps
+          pnpm exec playwright install webkit --with-deps
           pnpm run test-ui --project=webkit
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report-${{ matrix.node }}-macos
+          name: playwright-report-${{ matrix.node }}-webkit
           path: src/playwright-report/
           retention-days: 30
 
