@@ -1,17 +1,21 @@
 import {defineConfig, devices, test} from '@playwright/test';
 
 
+export const defaultExpectTimeout = process.env.CI ? 20 * 1000 : 5000
+export const defaultTestTimeout = 90 * 1000
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
     testDir: './tests/frontend-new/',
-    timeout: 90000,
     /* Run tests in files in parallel */
     fullyParallel: true,
     /* Fail the build on CI if you accidentally left test.only in the source code. */
     /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-    reporter: 'html',
+    reporter: process.env.CI ? 'github' : 'html',
+    expect: { timeout: defaultExpectTimeout },
+    timeout: defaultTestTimeout,
     retries: 2,
     workers: 20,
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -21,6 +25,7 @@ export default defineConfig({
         baseURL: "localhost:9001",
         /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
         trace: 'on-first-retry',
+        video: 'on-first-retry',
     },
 
     /* Configure projects for major browsers */
