@@ -38,7 +38,7 @@ export const expressCloseServer = async () => {
   // not appear to be a way to get all clients across all namespaces without tracking them
   // ourselves, so that is what we do.
   let lastLogged = 0;
-  while (sockets.size > 0) {
+  while (sockets.size > 0 && !settings.enableAdminUITests) {
     if (Date.now() - lastLogged > 1000) { // Rate limit to avoid filling logs.
       logger.info(`Waiting for ${sockets.size} socket.io clients to disconnect...`);
       lastLogged = Date.now();

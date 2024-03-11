@@ -66,6 +66,7 @@ test.describe('Plugins page',  ()=> {
         await expect(installedPluginsRows).toHaveCount(1, {
             timeout: 15000
         })
+        await page.waitForTimeout(5000)
     })
 })
 
