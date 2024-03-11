@@ -55,5 +55,6 @@ test.describe('admin settings',()=> {
         const settings =  page.locator('.settings');
         await expect(settings).not.toBeEmpty();
         await page.waitForSelector('.menu')
+        await page.waitForTimeout(5000)
     });
 })
