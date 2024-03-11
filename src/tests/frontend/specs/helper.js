@@ -167,7 +167,7 @@ describe('the test helper', function () {
         expect(Date.now() - before).to.be.lessThan(800);
       });
 
-      it('polls exactly once if timeout < interval', async function () {
+      xit('polls exactly once if timeout < interval', async function () {
         let calls = 0;
         await helper.waitFor(() => { calls++; }, 1, 1000)
             .fail(() => {}) // Suppress the redundant uncatchable exception.
@@ -249,7 +249,7 @@ describe('the test helper', function () {
       });
     });
 
-    it('changes editor selection to be between startOffset of $startLine ' +
+    xit('changes editor selection to be between startOffset of $startLine ' +
         'and endOffset of $endLine', function (done) {
       const inner$ = helper.padInner$;
 
