@@ -128,6 +128,8 @@ export const goToPad = async (page: Page, padId: string) => {
 
 
 export const clearPadContent = async (page: Page) => {
+    const body = await getPadBody(page);
+    await body.click();
     await page.keyboard.down('Control');
     await page.keyboard.press('A');
     await page.keyboard.up('Control');
