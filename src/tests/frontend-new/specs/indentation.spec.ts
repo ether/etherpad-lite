@@ -25,7 +25,7 @@ test.describe('indentation button', function () {
         const padBody = await getPadBody(page);
         await page.locator('.buttonicon-indent').click()
 
-        const uls = padBody.locator('div').first().locator('ul li')
+        const uls = padBody.locator('div').first().locator('ul')
         await expect(uls).toHaveCount(1);
     });
 

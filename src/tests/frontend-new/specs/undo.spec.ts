@@ -49,6 +49,7 @@ test.describe('undo button', function () {
 
         // undo the change
         await page.keyboard.press('Control+Z');
+        await page.waitForTimeout(1000)
 
         await expect(firstTextElement).toHaveText(originalValue!);
     });

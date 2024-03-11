@@ -18,10 +18,11 @@ test.describe('Language select and change', function () {
         await showSettings(page)
 
         // click the language button
-        await page.locator('.nice-select').nth(1).locator('.current').click()
+        const languageDropDown  = page.locator('.nice-select').nth(1)
+
+        await languageDropDown.click()
         await page.locator('.nice-select').locator('[data-value=de]').click()
-        //const $language = chrome$('#languagemenu');
-        //const $languageoption = $language.find('[value=de]');
+        await expect(languageDropDown.locator('.current')).toHaveText('Deutsch')
 
         // select german
         await page.locator('.buttonicon-bold').evaluate((el) => el.parentElement!.title === 'Fett (Strg-B)');
@@ -70,10 +71,12 @@ test.describe('Language select and change', function () {
     test('changes direction when picking an ltr lang', async function ({page}) {
         await showSettings(page)
 
-
         // change to english
-        await page.locator('.nice-select').nth(1).locator('.current').click()
-        await page.locator('.nice-select').locator('[data-value=en]').click()
+        const languageDropDown  = page.locator('.nice-select').nth(1)
+        await languageDropDown.locator('.current').click()
+        await languageDropDown.locator('[data-value=en]').click()
+
+        await expect(languageDropDown.locator('.current')).toHaveText('English')
 
         // check if the language is now English
         await page.locator('.buttonicon-bold').evaluate((el) => el.parentElement!.title !== 'Fett (Strg-B)');
