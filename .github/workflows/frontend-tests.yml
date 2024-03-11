@@ -75,12 +75,88 @@ jobs:
           cd src
           pnpm exec playwright install
           pnpm exec playwright install-deps
-          pnpm run test-ui
+          pnpm run test-ui -- --project=firefox --project=chromium
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report-${{ matrix.node }}
           path: src/playwright-report/
           retention-days: 30
+  playwright-macos:
+    name: playwright-macos
+    runs-on: macos-latest
+    if: ${{ github.actor != 'dependabot[bot]' }}
+
+    steps:
+      -
+        name: Generate Sauce Labs strings
+        id: sauce_strings
+        run: |
+          printf %s\\n '::set-output name=name::${{ github.workflow }} - ${{ github.job }}'
+          printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
+      -
+        name: Checkout repository
+        uses: actions/checkout@v4
+      -
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Only install direct dependencies
+        run: pnpm config set auto-install-peers false
+      -
+        name: Install all dependencies and symlink for ep_etherpad-lite
+        run: bin/installDeps.sh
+      -
+        name: export GIT_HASH to env
+        id: environment
+        run: echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.sha }})"
+      -
+        name: Create settings.json
+        run: cp settings.json.template settings.json
+      -
+        name: Disable import/export rate limiting
+        run: |
+          sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 100000000/' -i settings.json
+      - name: Run the frontend tests
+        shell: bash
+        run: |
+          pnpm run dev &
+          connected=false
+          can_connect() {
+          curl -sSfo /dev/null http://localhost:9001/ || return 1
+          connected=true
+          }
+          now() { date +%s; }
+          start=$(now)
+          while [ $(($(now) - $start)) -le 15 ] && ! can_connect; do
+          sleep 1
+          done
+          cd src
+          pnpm exec playwright install
+          pnpm exec playwright install-deps
+          pnpm run test-ui --project=webkit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-${{ matrix.node }}-macos
+          path: src/playwright-report/
+          retention-days: 30
+
 
 

@@ -12,7 +12,8 @@ export default defineConfig({
     /* Fail the build on CI if you accidentally left test.only in the source code. */
     /* Reporter to use. See https://playwright.dev/docs/test-reporters */
     reporter: 'html',
-    retries: 3,
+    retries: 2,
+    workers: 20,
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
     use: {
         /* Base URL to use in actions like `await page.goto('/')`. */
@@ -33,7 +34,11 @@ export default defineConfig({
             name: 'firefox',
             use: { ...devices['Desktop Firefox'] },
         },
-
+        {
+            name: 'chrome-firefox',
+            use:
+                {...devices['Desktop Firefox'], ...devices['Desktop Chrome']},
+        },
         {
             name: 'webkit',
             use: { ...devices['Desktop Safari'] },

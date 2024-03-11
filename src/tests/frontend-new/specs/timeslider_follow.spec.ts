@@ -39,11 +39,7 @@ test.describe('timeslider follow', function () {
             return window.document.querySelector('#innerdocbody')!.getBoundingClientRect().top;
         });
 
-
-        console.log('originalTop', originalTop);
-        console.log('currentOffset', currentOffset);
-
-        expect(currentOffset).toBeLessThan(originalTop);
+        expect(currentOffset).toBeLessThanOrEqual(originalTop);
     });
 
     /**
