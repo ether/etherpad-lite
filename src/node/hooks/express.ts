@@ -46,7 +46,7 @@ const closeServer = async () => {
       for (const socket of sockets) socket.destroy(new Error('HTTP server is closing'));
     }, 5000);
     let lastLogged = 0;
-    while (sockets.size > 0) {
+    while (sockets.size > 0  && !settings.enableAdminUITests) {
       if (Date.now() - lastLogged > 1000) { // Rate limit to avoid filling logs.
         logger.info(`Waiting for ${sockets.size} HTTP clients to disconnect...`);
         lastLogged = Date.now();
