@@ -53,11 +53,7 @@ jobs:
         run: echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.sha }})"
       -
         name: Create settings.json
-        run: cp settings.json.template settings.json
-      -
-        name: Disable import/export rate limiting
-        run: |
-          sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 100000000/' -i settings.json
+        run: cp ./src/tests/settings.json settings.json
       - name: Run the frontend tests
         shell: bash
         run: |
@@ -75,7 +71,7 @@ jobs:
           cd src
           pnpm exec playwright install
           pnpm exec playwright install-deps
-          pnpm run test-ui -- --project=firefox --project=chromium
+          pnpm run test-ui --project=firefox --project=chromium
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -128,11 +124,7 @@ jobs:
         run: echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.sha }})"
       -
         name: Create settings.json
-        run: cp settings.json.template settings.json
-      -
-        name: Disable import/export rate limiting
-        run: |
-          sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 100000000/' -i settings.json
+        run: cp ./src/tests/settings.json settings.json
       - name: Run the frontend tests
         shell: bash
         run: |
