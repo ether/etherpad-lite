@@ -5,12 +5,12 @@ import {MapArrayType} from "../../node/types/MapType";
 const AttributePool = require('../../static/js/AttributePool');
 const apiHandler = require('../../node/handler/APIHandler');
 const assert = require('assert').strict;
-import {io} from 'socket.io-client';
-import log4js from 'log4js';
+const io = require('socket.io-client');
+const log4js = require('log4js');
 const {padutils} = require('../../static/js/pad_utils');
-import process from 'process';
+const process = require('process');
 const server = require('../../node/server');
-import setCookieParser from 'set-cookie-parser';
+const setCookieParser = require('set-cookie-parser');
 const settings = require('../../node/utils/Settings');
 import supertest from 'supertest';
 const webaccess = require('../../node/hooks/express/webaccess');
@@ -43,7 +43,7 @@ exports.init = async function () {
 
   if (!logLevel.isLessThanOrEqualTo(log4js.levels.DEBUG)) {
     logger.warn('Disabling non-test logging for the duration of the test. ' +
-                'To enable non-test logging, change the loglevel setting to DEBUG.');
+        'To enable non-test logging, change the loglevel setting to DEBUG.');
   }
 
   // Note: This is only a shallow backup.
