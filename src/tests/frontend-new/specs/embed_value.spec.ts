@@ -63,8 +63,7 @@ test.describe('embed links', function () {
             // create a new pad before each test run
             await goToNewPad(page);
         })
-        test.describe('the share link', function () {
-            test('is the actual pad url', async function ({page}) {
+            test('the share link is the actual pad url', async function ({page}) {
 
                 const shareButton = page.locator('.buttonicon-embed')
                 // open share dropdown
@@ -75,10 +74,8 @@ test.describe('embed links', function () {
                 const padURL = page.url();
                 expect(shareLink).toBe(padURL);
             });
-        });
 
-        test.describe('the embed as iframe code', function () {
-            test('is an iframe with the the correct url parameters and correct size', async function ({page}) {
+        test('is an iframe with the the correct url parameters and correct size', async function ({page}) {
 
                 const shareButton = page.locator('.buttonicon-embed')
                 await shareButton.click()
@@ -89,7 +86,6 @@ test.describe('embed links', function () {
 
                 await checkiFrameCode(embedCode, false, page);
             });
-        });
     });
 
     test.describe('when read only option is set', function () {
@@ -98,8 +94,7 @@ test.describe('embed links', function () {
             await goToNewPad(page);
         })
 
-        test.describe('the share link', function () {
-            test('shows a read only url', async function ({page}) {
+            test('the share link shows a read only url', async function ({page}) {
 
                 // open share dropdown
                 const shareButton = page.locator('.buttonicon-embed')
@@ -115,10 +110,8 @@ test.describe('embed links', function () {
                 const containsReadOnlyLink = shareLink.indexOf('r.') > 0;
                 expect(containsReadOnlyLink).toBe(true);
             });
-        });
 
-        test.describe('the embed as iframe code', function () {
-            test('is an iframe with the the correct url parameters and correct size', async function ({page}) {
+            test('the embed as iframe code is an iframe with the the correct url parameters and correct size', async function ({page}) {
 
 
                 // open share dropdown
@@ -139,8 +132,5 @@ test.describe('embed links', function () {
 
                 await checkiFrameCode(embedCode, true, page);
             });
-        });
-
     })
-
 })
