@@ -33,7 +33,7 @@ const readOnlyManager = require('../db/ReadOnlyManager');
 const settings = require('../utils/Settings');
 const securityManager = require('../db/SecurityManager');
 const plugins = require('../../static/js/pluginfw/plugin_defs.js');
-const log4js = require('log4js');
+import log4js from 'log4js';
 const messageLogger = log4js.getLogger('message');
 const accessLogger = log4js.getLogger('access');
 const hooks = require('../../static/js/pluginfw/hooks.js');
@@ -47,7 +47,7 @@ const webaccess = require('../hooks/express/webaccess');
 const { checkValidRev } = require('../utils/checkValidRev');
 
 let rateLimiter:any;
-let socketio:any = null;
+let socketio: any = null;
 
 hooks.deprecationNotices.clientReady = 'use the userJoin hook instead';
 
@@ -162,7 +162,8 @@ exports.handleConnect = (socket:any) => {
  * Kicks all sessions from a pad
  */
 exports.kickSessionsFromPad = (padID: string) => {
-  if (typeof socketio.sockets.clients !== 'object') return;
+
+  if(socketio.sockets == null) return;
 
   // skip if there is nobody on this pad
   if (_getRoomSockets(padID).length === 0) return;
