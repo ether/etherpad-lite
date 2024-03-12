@@ -5,7 +5,7 @@ import {ArgsExpressType} from "../../types/ArgsExpressType";
 import events from 'events';
 const express = require('../express');
 import log4js from 'log4js';
-const proxyaddr = require('proxy-addr');
+import proxyaddr from 'proxy-addr';
 const settings = require('../../utils/Settings');
 import {Server, Socket} from 'socket.io'
 const socketIORouter = require('../../handler/SocketIORouter');

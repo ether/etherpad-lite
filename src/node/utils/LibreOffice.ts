@@ -17,11 +17,11 @@
  * limitations under the License.
  */
 
-const async = require('async');
-const fs = require('fs').promises;
-const log4js = require('log4js');
-const os = require('os');
-const path = require('path');
+import async from 'async';
+import {promises as fs} from 'fs';
+import log4js from 'log4js';
+import os from 'os';
+import path from 'path';
 const runCmd = require('./run_cmd');
 const settings = require('./Settings');
 
@@ -87,7 +87,6 @@ const queue = async.queue(doConvertTask, 1);
  * @param  {String}     srcFile     The path on disk to convert
  * @param  {String}     destFile    The path on disk where the converted file should be stored
  * @param  {String}     type        The type to convert into
- * @param  {Function}   callback    Standard callback function
  */
 exports.convertFile = async (srcFile: string, destFile: string, type:string) => {
   // Used for the moving of the file, not the conversion

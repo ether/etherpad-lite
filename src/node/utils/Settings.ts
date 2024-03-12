@@ -28,17 +28,16 @@
  */
 
 const absolutePaths = require('./AbsolutePaths');
-const deepEqual = require('fast-deep-equal/es6');
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 const argv = require('./Cli').argv;
-const jsonminify = require('jsonminify');
-const log4js = require('log4js');
+import jsonminify from 'jsonminify';
+import log4js from 'log4js';
 const randomString = require('./randomstring');
 const suppressDisableMsg = ' -- To suppress these warning messages change ' +
     'suppressErrorsInPadText to true in your settings.json\n';
-const _ = require('underscore');
+import _ from 'underscore';
 
 const logger = log4js.getLogger('settings');
 

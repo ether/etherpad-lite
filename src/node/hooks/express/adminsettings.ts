@@ -5,7 +5,7 @@ import {PadQueryResult, PadSearchQuery} from "../../types/PadSearchQuery";
 import {PadType} from "../../types/PadType";
 
 const eejs = require('../../eejs');
-const fsp = require('fs').promises;
+import {promises as fsp} from 'fs'
 const hooks = require('../../../static/js/pluginfw/hooks');
 const plugins = require('../../../static/js/pluginfw/plugins');
 const settings = require('../../utils/Settings');

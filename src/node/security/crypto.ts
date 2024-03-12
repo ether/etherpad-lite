@@ -1,7 +1,7 @@
 'use strict';
 
-const crypto = require('crypto');
-const util = require('util');
+import crypto from 'crypto';
+import util from 'util';
 
 
 /**

@@ -19,14 +19,14 @@ import {ErrorCaused} from "../../types/ErrorCaused";
  */
 
 const OpenAPIBackend = require('openapi-backend').default;
-const IncomingForm = require('formidable').IncomingForm;
-const cloneDeep = require('lodash.clonedeep');
-const createHTTPError = require('http-errors');
+import {IncomingForm} from 'formidable'
+import cloneDeep from 'lodash.clonedeep';
+import createHTTPError from 'http-errors';
 
 const apiHandler = require('../../handler/APIHandler');
 const settings = require('../../utils/Settings');
 
-const log4js = require('log4js');
+import log4js from 'log4js';
 const logger = log4js.getLogger('API');
 
 // https://github.com/OAI/OpenAPI-Specification/tree/master/schemas/v3.0
@@ -401,6 +401,7 @@ for (const [resource, actions] of Object.entries(resources)) {
     // add response objects
     const responses:OpenAPISuccessResponse = {...defaultResponseRefs};
     if (responseSchema) {
+      // @ts-ignore
       responses[200] = cloneDeep(defaultResponses.Success);
       responses[200].content!['application/json'].schema.properties.data = {
         type: 'object',
@@ -636,7 +637,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
               // an unknown error happened
               // log it and throw internal error
               logger.error(errCaused.stack || errCaused.toString());
-              throw new createHTTPError.InternalError('internal error');
+              throw new createHTTPError.InternalServerError('internal error');
             }
           }
 
@@ -657,7 +658,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
       }
 
       // start and bind to express
-      api.init();
+      await api.init();
       app.use(apiRoot, async (req:any, res:any) => {
         let response = null;
         try {

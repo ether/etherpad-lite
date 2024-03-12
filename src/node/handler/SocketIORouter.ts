@@ -22,7 +22,7 @@
 
 import {MapArrayType} from "../types/MapType";
 import {SocketModule} from "../types/SocketModule";
-const log4js = require('log4js');
+import log4js from 'log4js';
 const settings = require('../utils/Settings');
 const stats = require('../../node/stats')
 

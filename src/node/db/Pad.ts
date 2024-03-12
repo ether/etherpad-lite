@@ -12,7 +12,7 @@ const Changeset = require('../../static/js/Changeset');
 const ChatMessage = require('../../static/js/ChatMessage');
 const AttributePool = require('../../static/js/AttributePool');
 const Stream = require('../utils/Stream');
-const assert = require('assert').strict;
+import {strict as assert} from "assert";
 const db = require('./DB');
 const settings = require('../utils/Settings');
 const authorManager = require('./AuthorManager');
@@ -39,13 +39,13 @@ exports.cleanText = (txt:string): string => txt.replace(/\r\n/g, '\n')
 
 class Pad {
   private db: Database;
-  private atext: AText;
+  private readonly atext: AText;
   private pool: APool;
   private head: number;
     private chatHead: number;
     private publicStatus: boolean;
     private id: string;
-    private savedRevisions: any[];
+    private readonly savedRevisions: any[];
   /**
    * @param id
    * @param [database] - Database object to access this pad's records (and only this pad's records;

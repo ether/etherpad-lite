@@ -4,11 +4,11 @@ import type {MapArrayType} from "../types/MapType";
 import {I18nPluginDefs} from "../types/I18nPluginDefs";
 
 const languages = require('languages4translatewiki');
-const fs = require('fs');
-const path = require('path');
-const _ = require('underscore');
+import fs from 'fs';
+import path from 'path';
+import _ from 'underscore';
 const pluginDefs = require('../../static/js/pluginfw/plugin_defs.js');
-const existsSync = require('../utils/path_exists');
+import existsSync from '../utils/path_exists';
 const settings = require('../utils/Settings');
 
 // returns all existing messages merged together and grouped by langcode

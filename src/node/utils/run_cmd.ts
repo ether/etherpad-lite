@@ -1,13 +1,13 @@
 'use strict';
 
 import {ErrorExtended, RunCMDOptions, RunCMDPromise} from "../types/RunCMDOptions";
-import {ChildProcess} from "node:child_process";
+import {ChildProcess, SpawnOptions} from "node:child_process";
 import {PromiseWithStd} from "../types/PromiseWithStd";
 import {Readable} from "node:stream";
 
-const spawn = require('cross-spawn');
-const log4js = require('log4js');
-const path = require('path');
+import spawn from 'cross-spawn';
+import log4js from 'log4js';
+import path from 'path';
 const settings = require('./Settings');
 
 const logger = log4js.getLogger('runCmd');
@@ -31,6 +31,8 @@ const logLines = (readable: undefined | Readable | null, logLineFn: (arg0: (stri
     leftovers = '';
   });
 };
+
+
 
 /**
  * Runs a command, logging its output to Etherpad's logs by default.
@@ -74,7 +76,7 @@ const logLines = (readable: undefined | Readable | null, logLineFn: (arg0: (stri
  *   - `stderr`: Similar to `stdout` but for stderr.
  *   - `child`: The ChildProcess object.
  */
-module.exports = exports = (args: string[], opts:RunCMDOptions = {}) => {
+module.exports = exports = (args: string[], opts:SpawnOptions= {}) => {
   logger.debug(`Executing command: ${args.join(' ')}`);
 
   opts = {cwd: settings.root, ...opts};
@@ -84,7 +86,8 @@ module.exports = exports = (args: string[], opts:RunCMDOptions = {}) => {
   const stdio =
       Array.isArray(opts.stdio) ? opts.stdio.slice() // Copy to avoid mutating the caller's array.
       : typeof opts.stdio === 'function' ? [null, opts.stdio, opts.stdio]
-      : opts.stdio === 'string' ? [null, 'string', 'string']
+              // @ts-ignore
+              : opts.stdio === 'string' ? [null, 'string', 'string']
       : Array(3).fill(opts.stdio);
   const cmdLogger = log4js.getLogger(`runCmd|${args[0]}`);
   if (stdio[1] == null) stdio[1] = (line: string) => cmdLogger.info(line);

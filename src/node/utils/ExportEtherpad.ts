@@ -16,7 +16,8 @@
  */
 
 const Stream = require('./Stream');
-const assert = require('assert').strict;
+import {strict as assert} from "assert";
+
 const authorManager = require('../db/AuthorManager');
 const hooks = require('../../static/js/pluginfw/hooks');
 const padManager = require('../db/PadManager');

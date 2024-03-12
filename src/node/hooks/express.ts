@@ -119,11 +119,10 @@ exports.restartServer = async () => {
         options.ca.push(fs.readFileSync(caFileName));
       }
     }
-
-    const https = require('https');
+    const https = await import('https')
     exports.server = https.createServer(options, app);
   } else {
-    const http = require('http');
+    const http = await import('http')
     exports.server = http.createServer(app);
   }
 

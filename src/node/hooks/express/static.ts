@@ -3,9 +3,9 @@
 import {MapArrayType} from "../../types/MapType";
 import {PartType} from "../../types/PartType";
 
-const fs = require('fs').promises;
+import {promises as fs} from 'fs'
 const minify = require('../../utils/Minify');
-const path = require('path');
+import path from 'path';
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
 const settings = require('../../utils/Settings');
 const CachingMiddleware = require('../../utils/caching_middleware');

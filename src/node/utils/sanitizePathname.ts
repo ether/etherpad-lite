@@ -1,6 +1,6 @@
 'use strict';
 
-const path = require('path');
+import path from 'path';
 
 // Normalizes p and ensures that it is a relative path that does not reach outside. See
 // https://nvd.nist.gov/vuln/detail/CVE-2015-3297 for additional context.

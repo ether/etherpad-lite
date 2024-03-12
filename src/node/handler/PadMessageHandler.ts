@@ -38,7 +38,7 @@ const messageLogger = log4js.getLogger('message');
 const accessLogger = log4js.getLogger('access');
 const hooks = require('../../static/js/pluginfw/hooks.js');
 const stats = require('../stats')
-const assert = require('assert').strict;
+import {strict as assert} from "assert";
 import {RateLimiterMemory} from 'rate-limiter-flexible';
 import {ChangesetRequest, PadUserInfo, SocketClientRequest} from "../types/SocketClientRequest";
 import {APool, AText, PadAuthor, PadType} from "../types/PadType";

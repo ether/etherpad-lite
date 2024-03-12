@@ -3,8 +3,8 @@
 import {Dirent} from "node:fs";
 import {PluginDef} from "../../types/PartType";
 
-const path = require('path');
-const fsp = require('fs').promises;
+import path from 'path';
+import {promises as fsp} from 'fs';
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
 const sanitizePathname = require('../../utils/sanitizePathname');
 const settings = require('../../utils/Settings');

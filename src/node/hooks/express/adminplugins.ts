@@ -11,7 +11,7 @@ const settings = require('../../utils/Settings');
 const installer = require('../../../static/js/pluginfw/installer');
 const pluginDefs = require('../../../static/js/pluginfw/plugin_defs');
 const plugins = require('../../../static/js/pluginfw/plugins');
-const semver = require('semver');
+import semver from 'semver';
 
 
 exports.socketio = (hookName:string, args:ArgsExpressType, cb:Function) => {

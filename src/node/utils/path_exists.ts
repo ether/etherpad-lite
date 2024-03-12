@@ -1,10 +1,10 @@
 'use strict';
-const fs = require('fs');
+import fs from 'fs';
 
-const check = (path:string) => {
+const check = (path:string):false|fs.Stats => {
   const existsSync = fs.statSync || fs.existsSync;
 
-  let result;
+  let result:false|fs.Stats;
   try {
     result = existsSync(path);
   } catch (e) {
@@ -13,4 +13,4 @@ const check = (path:string) => {
   return result;
 };
 
-module.exports = check;
+export default check;

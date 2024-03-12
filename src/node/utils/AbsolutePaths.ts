@@ -18,9 +18,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const log4js = require('log4js');
-const path = require('path');
-const _ = require('underscore');
+import log4js from 'log4js';
+import path from 'path';
+import _ from 'underscore';
 
 const absPathLogger = log4js.getLogger('AbsolutePaths');
 

@@ -2,8 +2,8 @@
 
 const DB = require('./DB');
 const Store = require('express-session').Store;
-const log4js = require('log4js');
-const util = require('util');
+import log4js from 'log4js';
+import util from 'util';
 
 const logger = log4js.getLogger('SessionStore');
 

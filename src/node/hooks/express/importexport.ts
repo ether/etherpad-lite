@@ -8,7 +8,7 @@ const exportHandler = require('../../handler/ExportHandler');
 const importHandler = require('../../handler/ImportHandler');
 const padManager = require('../../db/PadManager');
 const readOnlyManager = require('../../db/ReadOnlyManager');
-const rateLimit = require('express-rate-limit');
+import rateLimit from 'express-rate-limit';
 const securityManager = require('../../db/SecurityManager');
 const webaccess = require('./webaccess');
 

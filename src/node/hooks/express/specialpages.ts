@@ -1,16 +1,16 @@
 'use strict';
 
-const path = require('path');
+import path from 'path';
 const eejs = require('../../eejs');
-const fs = require('fs');
-const fsp = fs.promises;
+import fs from 'fs';
+import {promises as fsp} from 'fs';
 const toolbar = require('../../utils/toolbar');
 const hooks = require('../../../static/js/pluginfw/hooks');
 const settings = require('../../utils/Settings');
-const util = require('util');
+import util from 'util';
 const webaccess = require('./webaccess');
 
-exports.expressPreSession = async (hookName:string, {app}:any) => {
+exports.expressPreSession = async (hookName:string, {app}: { app: any }) => {
   // This endpoint is intended to conform to:
   // https://www.ietf.org/archive/id/draft-inadarei-api-health-check-06.html
   app.get('/health', (req:any, res:any) => {

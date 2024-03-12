@@ -21,7 +21,7 @@ import {MapArrayType} from "../types/MapType";
 const Changeset = require('../../static/js/Changeset');
 const attributes = require('../../static/js/attributes');
 const padManager = require('../db/PadManager');
-const _ = require('underscore');
+import _ from 'underscore';
 const Security = require('../../static/js/security');
 const hooks = require('../../static/js/pluginfw/hooks');
 const eejs = require('../eejs');
