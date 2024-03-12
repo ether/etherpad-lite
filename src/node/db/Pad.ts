@@ -39,13 +39,13 @@ exports.cleanText = (txt:string): string => txt.replace(/\r\n/g, '\n')
 
 class Pad {
   private db: Database;
-  private readonly atext: AText;
+  private atext: AText;
   private pool: APool;
   private head: number;
     private chatHead: number;
     private publicStatus: boolean;
     private id: string;
-    private readonly savedRevisions: any[];
+    private savedRevisions: any[];
   /**
    * @param id
    * @param [database] - Database object to access this pad's records (and only this pad's records;
