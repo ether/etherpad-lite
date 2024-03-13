@@ -22,7 +22,13 @@ const logger = log4js.getLogger('plugins');
 export const pluginInstallPath = path.join(settings.root, 'src','plugin_packages');
 
 export const manager = new PluginManager({
-  pluginsPath: pluginInstallPath
+  pluginsPath: pluginInstallPath,
+  hostRequire: require,
+  requireCoreModules: true,
+  sandbox: {
+    env: process.env,
+    global: global
+  }
 });
 
 export const installedPluginsPath = path.join(settings.root, 'var/installed_plugins.json');
@@ -77,6 +83,27 @@ const migratePluginsFromNodeModules = async () => {
 
 export const checkForMigration = async () => {
   logger.info('check installed plugins for migration');
+  const files = await fs.readdir(pluginInstallPath);
+
+  const node_modules = path.join(findEtherpadRoot(),'src', 'node_modules');
+  /*
+    * Check if the plugin is already installed in node_modules
+    * If not, create a symlink to node_modules
+    * This is necessary as
+    * 1. Live Plugin Manager does not support loading plugins from the directory so that node can access them normally
+    * 2. Plugins can't be directly installed to node_modules otherwise upgrading Etherpad will remove them
+   */
+  for (let file of files){
+    const moduleName = path.basename(file);
+      try {
+        await fs.access(path.join(node_modules, moduleName), fs.constants.F_OK);
+        logger.debug(`plugin ${moduleName} already exists in node_modules`);
+      } catch (err) {
+        // Create symlink to node_modules
+        logger.debug(`create symlink for ${file} to ${path.join(node_modules,moduleName)}`)
+        await fs.symlink(path.join(pluginInstallPath,file), path.join(node_modules,moduleName), 'dir')
+      }
+  }
 
   try {
     await fs.access(installedPluginsPath, fs.constants.F_OK);

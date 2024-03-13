@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-'use strict';
-
 /**
  * This module is started with src/bin/run.sh. It sets up a Express HTTP and a Socket.IO Server.
  * Static file Requests are answered directly from this module, Socket.IO messages are passed
@@ -26,8 +24,6 @@
 
 import {PluginType} from "./types/Plugin";
 import {ErrorCaused} from "./types/ErrorCaused";
-import {PromiseHooks} from "node:v8";
-
 import log4js from 'log4js';
 
 import {checkForMigration} from "../static/js/pluginfw/installer";
