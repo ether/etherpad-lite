@@ -27,6 +27,9 @@
   "dependencies": {
     "ep_etherpad-lite": "workspace:./src"
   },
+  "devDependencies": {
+    "admin": "workspace:./admin"
+  },
   "engines": {
     "node": ">=18.18.2",
     "npm": ">=6.14.0",

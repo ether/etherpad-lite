@@ -1,10 +1,11 @@
 import {useStore} from "../store/store.ts";
 import {isJSONClean} from "../utils/utils.ts";
 import {Trans} from "react-i18next";
+import {IconButton} from "../components/IconButton.tsx";
+import {RotateCw, Save} from "lucide-react";
 
 export const SettingsPage = ()=>{
     const settingsSocket = useStore(state=>state.settingsSocket)
-
     const settings = useStore(state=>state.settings)
 
     return <div>
@@ -13,7 +14,8 @@ export const SettingsPage = ()=>{
             useStore.getState().setSettings(v.target.value)
         }}/>
         <div className="settings-button-bar">
-            <button className="settingsButton" onClick={() => {
+            <IconButton className="settingsButton" icon={<Save/>}
+                        title={<Trans i18nKey="admin_settings.current_save.value"/>} onClick={() => {
                 if (isJSONClean(settings!)) {
                     // JSON is clean so emit it to the server
                     settingsSocket!.emit('saveSettings', settings!);
@@ -29,16 +31,19 @@ export const SettingsPage = ()=>{
                         success: false
                     })
                 }
-            }}><Trans i18nKey="admin_settings.current_save.value"/></button>
-            <button className="settingsButton" onClick={() => {
+            }}/>
+            <IconButton className="settingsButton" icon={<RotateCw/>}
+                        title={<Trans i18nKey="admin_settings.current_restart.value"/>} onClick={() => {
                 settingsSocket!.emit('restartServer');
-            }}><Trans i18nKey="admin_settings.current_restart.value"/></button>
+            }}/>
         </div>
         <div className="separator"/>
         <div className="settings-button-bar">
-            <a rel="noopener noreferrer" target="_blank" href="https://github.com/ether/etherpad-lite/wiki/Example-Production-Settings.JSON"><Trans
+            <a rel="noopener noreferrer" target="_blank"
+               href="https://github.com/ether/etherpad-lite/wiki/Example-Production-Settings.JSON"><Trans
                 i18nKey="admin_settings.current_example-prod"/></a>
-            <a rel="noopener noreferrer" target="_blank" href="https://github.com/ether/etherpad-lite/wiki/Example-Development-Settings.JSON"><Trans
+            <a rel="noopener noreferrer" target="_blank"
+               href="https://github.com/ether/etherpad-lite/wiki/Example-Development-Settings.JSON"><Trans
                 i18nKey="admin_settings.current_example-devel"/></a>
         </div>
     </div>

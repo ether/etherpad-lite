@@ -3,6 +3,9 @@ import {useEffect, useMemo, useState} from "react";
 import {InstalledPlugin, PluginDef, SearchParams} from "./Plugin.ts";
 import {useDebounce} from "../utils/useDebounce.ts";
 import {Trans, useTranslation} from "react-i18next";
+import {SearchField} from "../components/SearchField.tsx";
+import {Download, Trash} from "lucide-react";
+import {IconButton} from "../components/IconButton.tsx";
 
 
 export const HomePage = () => {
@@ -128,12 +131,12 @@ export const HomePage = () => {
 
         <h2><Trans i18nKey="admin_plugins.installed"/></h2>
 
-        <table>
+        <table id="installed-plugins">
             <thead>
             <tr>
                 <th><Trans i18nKey="admin_plugins.name"/></th>
                 <th><Trans i18nKey="admin_plugins.version"/></th>
-                <th></th>
+                <th><Trans i18nKey="ep_admin_pads:ep_adminpads2_action"/></th>
             </tr>
             </thead>
             <tbody style={{overflow: 'auto'}}>
@@ -145,10 +148,7 @@ export const HomePage = () => {
                     {
                         plugin.updatable ?
                             <button onClick={() => installPlugin(plugin.name)}>Update</button>
-                            : <button disabled={plugin.name == "ep_etherpad-lite"}
-                                      onClick={() => uninstallPlugin(plugin.name)}><Trans
-                            i18nKey="admin_plugins.installed_uninstall.value"/></button>
-
+                            : <IconButton disabled={plugin.name == "ep_etherpad-lite"} icon={<Trash/>} title={<Trans i18nKey="admin_plugins.installed_uninstall.value"/>} onClick={() => uninstallPlugin(plugin.name)}/>
                     }
                     </td>
                         </tr>
@@ -158,19 +158,16 @@ export const HomePage = () => {
 
 
                 <h2><Trans i18nKey="admin_plugins.available"/></h2>
+                <SearchField onChange={v=>{setSearchTerm(v.target.value)}} placeholder={t('admin_plugins.available_search.placeholder')} value={searchTerm}/>
 
-                <input className="search-field" placeholder={t('admin_plugins.available_search.placeholder')} type="text" value={searchTerm} onChange={v=>{
-            setSearchTerm(v.target.value)
-        }}/>
-
-        <table>
+        <table id="available-plugins">
             <thead>
             <tr>
                 <th><Trans i18nKey="admin_plugins.name"/></th>
                 <th style={{width: '30%'}}><Trans i18nKey="admin_plugins.description"/></th>
                 <th><Trans i18nKey="admin_plugins.version"/></th>
                 <th><Trans i18nKey="admin_plugins.last-update"/></th>
-                <th></th>
+                <th><Trans i18nKey="ep_admin_pads:ep_adminpads2_action"/></th>
             </tr>
             </thead>
             <tbody style={{overflow: 'auto'}}>
@@ -181,7 +178,7 @@ export const HomePage = () => {
                     <td>{plugin.version}</td>
                     <td>{plugin.time}</td>
                     <td>
-                        <button onClick={() => installPlugin(plugin.name)}><Trans i18nKey="admin_plugins.available_install.value"/></button>
+                        <IconButton icon={<Download/>} onClick={() => installPlugin(plugin.name)} title={<Trans i18nKey="admin_plugins.available_install.value"/>}/>
                     </td>
                 </tr>
             })}

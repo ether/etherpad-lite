@@ -5,6 +5,9 @@ import {PadSearchQuery, PadSearchResult} from "../utils/PadSearch.ts";
 import {useDebounce} from "../utils/useDebounce.ts";
 import {determineSorting} from "../utils/sorting.ts";
 import * as Dialog from "@radix-ui/react-dialog";
+import {IconButton} from "../components/IconButton.tsx";
+import {Trash2} from "lucide-react";
+import {SearchField} from "../components/SearchField.tsx";
 
 export const PadPage = ()=>{
     const settingsSocket = useStore(state=>state.settingsSocket)
@@ -98,8 +101,7 @@ export const PadPage = ()=>{
         </Dialog.Portal>
         </Dialog.Root>
         <h1><Trans i18nKey="ep_admin_pads:ep_adminpads2_manage-pads"/></h1>
-        <input type="text" value={searchTerm} onChange={v=>setSearchTerm(v.target.value)}
-               placeholder={t('ep_admin_pads:ep_adminpads2_search-heading')}/>
+        <SearchField value={searchTerm} onChange={v=>setSearchTerm(v.target.value)} placeholder={t('ep_admin_pads:ep_adminpads2_search-heading')}/>
         <table>
             <thead>
             <tr>
@@ -144,13 +146,11 @@ export const PadPage = ()=>{
                         <td style={{textAlign: 'center'}}>{pad.revisionNumber}</td>
                         <td>
                             <div className="settings-button-bar">
-                                <button onClick={()=>{
+                                <IconButton icon={<Trash2/>} title={<Trans i18nKey="ep_admin_pads:ep_adminpads2_delete.value"/>} onClick={()=>{
                                     setPadToDelete(pad.padName)
                                     setDeleteDialog(true)
-                                }}><Trans i18nKey="ep_admin_pads:ep_adminpads2_delete.value"/></button>
-                                <button onClick={()=>{
-                                    window.open(`/p/${pad.padName}`, '_blank')
-                                }}>view</button>
+                                }}/>
+                                <IconButton icon={<Trash2/>} title="view" onClick={()=>window.open(`/p/${pad.padName}`, '_blank')}/>
                             </div>
                         </td>
                     </tr>
