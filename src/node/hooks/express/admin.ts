@@ -2,6 +2,7 @@
 import {ArgsExpressType} from "../../types/ArgsExpressType";
 import path from "path";
 import fs from "fs";
+import express from "express";
 const settings = require('ep_etherpad-lite/node/utils/Settings');
 
 const ADMIN_PATH = path.join(settings.root, 'src', 'templates', 'admin');
@@ -14,23 +15,10 @@ const ADMIN_PATH = path.join(settings.root, 'src', 'templates', 'admin');
  * @return {*}
  */
 exports.expressCreateServer = (hookName:string, args: ArgsExpressType, cb:Function): any => {
-  args.app.get('/admin/*', (req:any, res:any, next:Function) => {
-      if (req.path.includes('.')) {
-        const relativPath = req.path.split('/admin/')[1];
-        try {
-            if (fs.statSync(path.join(ADMIN_PATH, relativPath)).isFile()) {
-                res.sendFile(path.join(ADMIN_PATH, relativPath));
-            }
-        } catch (err) {
-            res.status(404).send('404: Not Found');
-        }
-      } else {
-        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-        res.header('Expires', '-1');
-        res.header('Pragma', 'no-cache');
-        res.sendFile(path.join(ADMIN_PATH, 'index.html'));
-      }
-    });
+  args.app.use('/admin/', express.static(path.join(__dirname, '../../../templates/admin'), {maxAge: 1000 * 60 * 60 * 24}));
+  args.app.get('/admin/*', (_request:any, response:any)=>{
+      response.sendFile(path.resolve(__dirname,'../../../templates/admin', 'index.html'));
+  } )
   args.app.get('/admin', (req:any, res:any, next:Function) => {
       if ('/' !== req.path[req.path.length - 1]) return res.redirect('./admin/');
   })
