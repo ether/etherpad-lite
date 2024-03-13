@@ -26,6 +26,7 @@ const hooks = require('../../static/js/pluginfw/hooks.js');
 const path = require('path');
 const resolve = require('resolve');
 const settings = require('../utils/Settings');
+import {pluginInstallPath} from '../../static/js/pluginfw/installer'
 
 const templateCache = new Map();
 
@@ -82,7 +83,13 @@ exports.require = (name:string, args:{
     basedir = path.dirname(mod.filename);
     paths = mod.paths;
   }
-  paths.push(settings.root + '/plugin_packages')
+
+  /**
+   * Add the plugin install path to the paths array
+   */
+  if (!paths.includes(pluginInstallPath)) {
+    paths.push(pluginInstallPath)
+  }
 
   const ejspath = resolve.sync(name, {paths, basedir, extensions: ['.html', '.ejs']});
 
