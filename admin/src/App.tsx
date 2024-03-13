@@ -6,6 +6,7 @@ import {NavLink, Outlet, useNavigate} from "react-router-dom";
 import {useStore} from "./store/store.ts";
 import {LoadingScreen} from "./utils/LoadingScreen.tsx";
 import {Trans, useTranslation} from "react-i18next";
+import {Cable, Construction, Crown, NotepadText, Wrench} from "lucide-react";
 
 const WS_URL = import.meta.env.DEV? 'http://localhost:9001' : ''
 export const App = ()=> {
@@ -86,14 +87,19 @@ export const App = ()=> {
 
     return <div id="wrapper">
         <LoadingScreen/>
-        <div className="menu">
-            <h1>Etherpad</h1>
-            <ul>
-                <li><NavLink to="/plugins"><Trans i18nKey="admin_plugins"/></NavLink></li>
-                <li><NavLink to={"/settings"}><Trans i18nKey="admin_settings"/></NavLink></li>
-                <li>            <NavLink to={"/help"}><Trans i18nKey="admin_plugins_info"/></NavLink></li>
-                <li><NavLink to={"/pads"}><Trans i18nKey="ep_admin_pads:ep_adminpads2_manage-pads"/></NavLink></li>
-            </ul>
+        <div  className="menu">
+            <div className="inner-menu">
+                <span>
+                    <Crown width={40} height={40}/>
+                    <h1>Etherpad</h1>
+                </span>
+                <ul>
+                    <li><NavLink to="/plugins"><Cable/><Trans i18nKey="admin_plugins"/></NavLink></li>
+                    <li><NavLink to={"/settings"}><Wrench/><Trans i18nKey="admin_settings"/></NavLink></li>
+                    <li>          <NavLink to={"/help"}> <Construction/> <Trans i18nKey="admin_plugins_info"/></NavLink></li>
+                    <li><NavLink to={"/pads"}><NotepadText/><Trans i18nKey="ep_admin_pads:ep_adminpads2_manage-pads"/></NavLink></li>
+                </ul>
+            </div>
         </div>
         <div className="innerwrapper">
             <Outlet/>

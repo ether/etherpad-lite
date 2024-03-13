@@ -1,17 +1,23 @@
 :root {
     --etherpad-color: #0f775b;
+    --etherpad-comp: #9C8840;
+    --etherpad-light: #99FF99;
 }
 
-
+@font-face {
+    font-family: Karla;
+    src: url(/Karla-Regular.ttf);
+}
 
 html, body, #root {
     box-sizing: border-box;
     height: 100%;
-
+    font-family: "Karla", sans-serif;
 }
 
 *, *:before, *:after {
     box-sizing: inherit;
+    font-size: 16px;
 }
 
 body {
@@ -22,44 +28,103 @@ body {
 }
 
 div.menu {
-    height: 100%;
-    padding: 15px;
-    width: 220px;
-    border-right: 1px solid #ccc;
-    position: fixed;
+    height: 100vh;
+    font-size: 16px;
+    font-weight: bolder;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 20%;
+    min-width: 20%;
+}
+
+.icon-button{
+    display: flex;
+    gap: 10px;
+    background-color: var(--etherpad-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+
+div.menu span:first-child {
+    display: flex;
+    justify-content: center;
+}
+
+div.menu span:first-child svg {
+    margin-right: 10px;
+    align-self: center;
+}
+
+
+div.menu h1 {
+    font-size: 50px;
+    text-align: center;
+}
+
+.inner-menu {
+    border-radius: 0 20px 20px 0;
+    padding: 10px;
+    flex-grow: 100;
+    background-color: var(--etherpad-comp);
+    color: white;
+    height: 100vh;
 }
 
 div.menu ul {
+    color: white;
     padding: 0;
 }
 
+div.menu li a {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+div.menu svg {
+    align-self: center;
+}
+
 div.menu li {
+    padding: 10px;
+    color: white;
     list-style: none;
     margin-left: 3px;
     line-height: 3;
-    border-top: 1px solid #ccc;
 }
 
-div.menu li:last-child {
-    border-bottom: 1px solid #ccc;
+
+div.menu li:has(.active) {
+    background-color: #9C885C ;
 }
+
+div.menu li a {
+    color: lightgray;
+}
+
+
 
 div.innerwrapper {
-    padding: 15px;
-    padding-left: 265px;
+    background-color: #F0F0F0;
+    overflow: auto;
+    height: 100vh;
+    flex-grow: 100;
+    padding: 20px;
 }
 
 div.innerwrapper-err {
-    padding: 15px;
-    padding-left: 265px;
     display: none;
 }
 
 #wrapper {
+    display: flex;
     background: none repeat scroll 0px 0px #FFFFFF;
     box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.2);
-    margin: auto;
-    max-width: 1150px;
     min-height: 100%;/*always display a scrollbar*/
 
 }
@@ -110,17 +175,21 @@ input {
     content:'▼'
 }
 
+
+#installed-plugins thead tr th:nth-child(3) {
+    width: 15%;
+}
+
 table {
     border: 1px solid #ddd;
     border-radius: 3px;
     border-spacing: 0;
     width: 100%;
     margin: 20px 0;
-    position:relative; /* Allows us to position the loading indicator relative to the table */
 }
 
-table thead tr {
-    background: #eee;
+#available-plugins  th:first-child, #available-plugins  th:nth-child(2){
+    text-align: center;
 }
 
 td, th {
@@ -223,6 +292,7 @@ pre {
         height: auto;
         border-right: none;
         width: auto;
+        float: left;
     }
 
     table {
@@ -484,6 +554,69 @@ pre {
 }
 
 .search-field {
-    width: 50%;
-    padding: 5px;
+    position: relative;
+}
+
+.search-field input {
+    border-color: transparent;
+    border-radius: 20px;
+    height: 2.5rem;
+    width: 100vh;
+    padding: 5px 5px 5px 30px;
+}
+
+.search-field input:focus {
+    outline: none;
+}
+
+.search-field svg {
+    position: absolute;
+    left: 3px;
+    bottom: -3px;
+}
+
+
+.search-field svg {
+    color: gray
+}
+
+table {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+table thead tr {
+    font-size: 25px;
+    background-color: var(--etherpad-color);
+    color: #ffffff;
+    text-align: left;
+}
+
+table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+table tr:nth-child(even) td{
+    background-color: lightgray;
+}
+
+table tr td {
+    padding: 12px 15px;
+}
+
+table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+table tbody tr:last-of-type {
+    border-bottom: 2px solid #009879;
+}
+
+table tbody tr.active-row {
+    font-weight: bold;
+    color: #009879;
 }

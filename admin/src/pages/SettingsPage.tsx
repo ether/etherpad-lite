@@ -1,6 +1,9 @@
 import {useStore} from "../store/store.ts";
 import {isJSONClean} from "../utils/utils.ts";
 import {Trans} from "react-i18next";
+import {IconButton} from "../components/IconButton.tsx";
+import {RotateCw, Save} from "lucide-react";
+import Editor from 'react-monaco-editor';
 
 export const SettingsPage = ()=>{
     const settingsSocket = useStore(state=>state.settingsSocket)
@@ -9,11 +12,14 @@ export const SettingsPage = ()=>{
 
     return <div>
         <h1><Trans i18nKey="admin_settings.current"/></h1>
-        <textarea value={settings} className="settings" onChange={v => {
-            useStore.getState().setSettings(v.target.value)
-        }}/>
+        <Editor language="json" theme="vs-dark" options={{
+            codeLens:false,
+            inDiffEditor: false
+        }} value={settings} onChange={(v)=>{
+            useStore.getState().setSettings(v)
+        }}   className="settings"/>
         <div className="settings-button-bar">
-            <button className="settingsButton" onClick={() => {
+            <IconButton icon={<Save/>} title={<Trans i18nKey="admin_settings.current_save.value"/>} onClick={() => {
                 if (isJSONClean(settings!)) {
                     // JSON is clean so emit it to the server
                     settingsSocket!.emit('saveSettings', settings!);
@@ -29,10 +35,10 @@ export const SettingsPage = ()=>{
                         success: false
                     })
                 }
-            }}><Trans i18nKey="admin_settings.current_save.value"/></button>
-            <button className="settingsButton" onClick={() => {
+            }}/>
+            <IconButton className="settingsButton" icon={<RotateCw/>} title={<Trans i18nKey="admin_settings.current_restart.value"/>}   onClick={() => {
                 settingsSocket!.emit('restartServer');
-            }}><Trans i18nKey="admin_settings.current_restart.value"/></button>
+            }}/>
         </div>
         <div className="separator"/>
         <div className="settings-button-bar">
