@@ -1,5 +1,7 @@
 'use strict';
 
+import process from "process";
+
 /*
  * This is a repair tool. It extracts all datas of a pad, removes and inserts them again.
  */
@@ -19,19 +21,19 @@ let valueCount = 0;
 
 (async () => {
   // initialize database
-  require('./src/node/utils/Settings');
-  const db = require('./src/node/db/DB');
+  require('ep_etherpad-lite/node/utils/Settings');
+  const db = require('ep_etherpad-lite/node/db/DB');
   await db.init();
 
   // get the pad
-  const padManager = require('./src/node/db/PadManager');
+  const padManager = require('ep_etherpad-lite/node/db/PadManager');
   const pad = await padManager.getPad(padId);
 
   // accumulate the required keys
   const neededDBValues = [`pad:${padId}`];
 
   // add all authors
-  neededDBValues.push(...pad.getAllAuthors().map((author) => `globalAuthor:${author}`));
+  neededDBValues.push(...pad.getAllAuthors().map((author: string) => `globalAuthor:${author}`));
 
   // add all revisions
   for (let rev = 0; rev <= pad.head; ++rev) {

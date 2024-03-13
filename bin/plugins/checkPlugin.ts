@@ -10,18 +10,18 @@
  *                              node bin/plugins/checkPlugin.js ep_whatever autopush
  */
 
-const process = require('process');
+import process from 'process';
 
 // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
 process.on('unhandledRejection', (err) => { throw err; });
 
-const assert = require('assert').strict;
-const fs = require('fs');
+import {strict as assert} from 'assert';
+import fs from 'fs';
 const fsp = fs.promises;
-const childProcess = require('child_process');
-const log4js = require('log4js');
-const path = require('path');
+import childProcess from 'child_process';
+import log4js from 'log4js';
+import path from 'path';
 
 const logger = log4js.getLogger('checkPlugin');
 
@@ -44,23 +44,23 @@ const logger = log4js.getLogger('checkPlugin');
   const autoCommit = autoPush || optArgs.includes('autocommit');
   const autoFix = autoCommit || optArgs.includes('autofix');
 
-  const execSync = (cmd, opts = {}) => (childProcess.execSync(cmd, {
+  const execSync = (cmd:string, opts = {}) => (childProcess.execSync(cmd, {
     cwd: `${pluginPath}/`,
     ...opts,
   }) || '').toString().replace(/\n+$/, '');
 
-  const writePackageJson = async (obj) => {
+  const writePackageJson = async (obj: object) => {
     let s = JSON.stringify(obj, null, 2);
     if (s.length && s.slice(s.length - 1) !== '\n') s += '\n';
     return await fsp.writeFile(`${pluginPath}/package.json`, s);
   };
 
-  const checkEntries = (got, want) => {
+  const checkEntries = (got: any, want:any) => {
     let changed = false;
     for (const [key, val] of Object.entries(want)) {
       try {
         assert.deepEqual(got[key], val);
-      } catch (err) {
+      } catch (err:any) {
         logger.warn(`${key} possibly outdated.`);
         logger.warn(err.message);
         if (autoFix) {
@@ -72,7 +72,9 @@ const logger = log4js.getLogger('checkPlugin');
     return changed;
   };
 
-  const updateDeps = async (parsedPackageJson, key, wantDeps) => {
+  const updateDeps = async (parsedPackageJson: any, key: string, wantDeps: {
+    [key: string]: string | {ver?: string, overwrite?: boolean}|null
+  }) => {
     const {[key]: deps = {}} = parsedPackageJson;
     let changed = false;
     for (const [pkg, verInfo] of Object.entries(wantDeps)) {
@@ -115,14 +117,14 @@ const logger = log4js.getLogger('checkPlugin');
       execSync('git config --get user.email');
     }
     if (autoPush) {
-      if (!['master', 'main'].includes(br)) throw new Error('master/main not checked out');
+      if (!['master', 'main'].includes(br!)) throw new Error('master/main not checked out');
       execSync('git rev-parse --verify @{u}');
       execSync('git pull --ff-only', {stdio: 'inherit'});
       if (execSync('git rev-list @{u}...') !== '') throw new Error('repo contains unpushed commits');
     }
   };
 
-  const checkFile = async (srcFn, dstFn, overwrite = true) => {
+  const checkFile = async (srcFn: string, dstFn:string, overwrite = true) => {
     const outFn = path.join(pluginPath, dstFn);
     const wantContents = await fsp.readFile(srcFn, {encoding: 'utf8'});
     let gotContents = null;
@@ -131,7 +133,7 @@ const logger = log4js.getLogger('checkPlugin');
     } catch (err) { /* treat as if the file doesn't exist */ }
     try {
       assert.equal(gotContents, wantContents);
-    } catch (err) {
+    } catch (err:any) {
       logger.warn(`File ${dstFn} does not match the default`);
       logger.warn(err.message);
       if (!overwrite && gotContents != null) {
@@ -238,11 +240,11 @@ const logger = log4js.getLogger('checkPlugin');
     }
   }
 
-  const fillTemplate = async (templateFilename, outputFilename) => {
+  const fillTemplate = async (templateFilename: string, outputFilename: string) => {
     const contents = (await fsp.readFile(templateFilename, 'utf8'))
         .replace(/\[name of copyright owner\]/g, execSync('git config user.name'))
         .replace(/\[plugin_name\]/g, pluginName)
-        .replace(/\[yyyy\]/g, new Date().getFullYear());
+        .replace(/\[yyyy\]/g, new Date().getFullYear().toString());
     await fsp.writeFile(outputFilename, contents);
   };
 

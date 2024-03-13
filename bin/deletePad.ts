@@ -7,14 +7,17 @@
 
 // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
+import path from "path";
+
+import fs from "fs";
+import process from "process";
+import axios from "axios";
+
 process.on('unhandledRejection', (err) => { throw err; });
 
-const settings = require('./src/tests/container/loadSettings').loadSettings();
-const path = require('path');
-const fs = require('fs');
-const supertest = require('supertest');
+const settings = require('ep_etherpad-lite/tests/container/loadSettings').loadSettings();
 
-const api = supertest(`http://${settings.ip}:${settings.port}`);
+axios.defaults.baseURL = `http://${settings.ip}:${settings.port}`;
 
 if (process.argv.length !== 3) throw new Error('Use: node deletePad.js $PADID');
 
@@ -26,13 +29,13 @@ const filePath = path.join(__dirname, '../APIKEY.txt');
 const apikey = fs.readFileSync(filePath, {encoding: 'utf-8'});
 
 (async () => {
-  let apiVersion = await api.get('/api/');
-  apiVersion = apiVersion.body.currentVersion;
+  let apiVersion = await axios.get('/api/');
+  apiVersion = apiVersion.data.currentVersion;
   if (!apiVersion) throw new Error('No version set in API');
 
   // Now we know the latest API version, let's delete pad
   const uri = `/api/${apiVersion}/deletePad?apikey=${apikey}&padID=${padId}`;
-  const deleteAttempt = await api.post(uri);
-  if (deleteAttempt.body.code === 1) throw new Error(`Error deleting pad ${deleteAttempt.body}`);
-  console.log('Deleted pad', deleteAttempt.body);
+  const deleteAttempt = await axios.post(uri);
+  if (deleteAttempt.data.code === 1) throw new Error(`Error deleting pad ${deleteAttempt.data}`);
+  console.log('Deleted pad', deleteAttempt.data);
 })();

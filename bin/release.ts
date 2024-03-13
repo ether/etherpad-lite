@@ -4,12 +4,12 @@
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
 process.on('unhandledRejection', (err) => { throw err; });
 
-const fs = require('fs');
-const childProcess = require('child_process');
-const log4js = require('log4js');
-const path = require('path');
-const semver = require('semver');
-const {exec} = require('child_process');
+import fs from 'fs';
+import childProcess from 'child_process';
+import log4js from 'log4js';
+import path from 'path';
+import semver from 'semver';
+import {exec} from 'child_process';
 
 log4js.configure({appenders: {console: {type: 'console'}},
   categories: {
@@ -33,23 +33,31 @@ if (!release) {
   throw new Error('No release type included');
 }
 
+if (release !== 'patch' && release !== 'minor' && release !== 'major') {
+    console.log(usage);
+    throw new Error('Invalid release type');
+}
+
+
 const cwd = path.join(fs.realpathSync(__dirname), '../');
 process.chdir(cwd);
 
 // Run command capturing stdout. Trailing newlines are stripped (like the shell does).
 const runc =
-    (cmd, opts = {}) => childProcess.execSync(cmd, {encoding: 'utf8', ...opts}).replace(/\n+$/, '');
+    (cmd:string, opts = {}) => childProcess.execSync(cmd, {encoding: 'utf8', ...opts}).replace(/\n+$/, '');
 // Run command without capturing stdout.
-const run = (cmd, opts = {}) => childProcess.execSync(cmd, {stdio: 'inherit', ...opts});
+const run = (cmd: string, opts = {}) => childProcess.execSync(cmd, {stdio: 'inherit', ...opts});
 
-const readJson = (filename) => JSON.parse(fs.readFileSync(filename, {encoding: 'utf8', flag: 'r'}));
-const writeJson = (filename, obj) => {
+const readJson = (filename: string) => JSON.parse(fs.readFileSync(filename, {encoding: 'utf8', flag: 'r'}));
+const writeJson = (filename: string, obj:object) => {
   let json = JSON.stringify(obj, null, 2);
   if (json !== '' && !json.endsWith('\n')) json += '\n';
   fs.writeFileSync(filename, json);
 };
 
-const assertWorkDirClean = (opts = {}) => {
+const assertWorkDirClean = (opts:{
+    cwd?: string;
+} = {}) => {
   opts.cwd = runc('git rev-parse --show-cdup', opts) || cwd;
   const m = runc('git diff-files --name-status', opts);
   if (m !== '') throw new Error(`modifications in working directory ${opts.cwd}:\n${m}`);
@@ -59,7 +67,9 @@ const assertWorkDirClean = (opts = {}) => {
   if (s !== '') throw new Error(`uncommitted changes in working directory ${opts.cwd}:\n${s}`);
 };
 
-const assertBranchCheckedOut = (branch, opts = {}) => {
+const assertBranchCheckedOut = (branch: string, opts:{
+  cwd?: string;
+} = {}) => {
   const b = runc('git symbolic-ref HEAD', opts);
   if (b !== `refs/heads/${branch}`) {
     const d = opts.cwd ? path.resolve(cwd, opts.cwd) : cwd;
@@ -67,21 +77,23 @@ const assertBranchCheckedOut = (branch, opts = {}) => {
   }
 };
 
-const assertUpstreamOk = (branch, opts = {}) => {
+const assertUpstreamOk = (branch: string, opts:{
+  cwd?: string;
+} = {}) => {
   const upstream = runc(`git rev-parse --symbolic-full-name ${branch}@{u}`, opts);
   if (!(new RegExp(`^refs/remotes/[^/]+/${branch}`)).test(upstream)) {
     throw new Error(`${branch} should track origin/${branch}; see git branch --set-upstream-to`);
   }
   try {
     run(`git merge-base --is-ancestor ${branch} ${branch}@{u}`);
-  } catch (err) {
+  } catch (err:any) {
     if (err.status !== 1) throw err;
     throw new Error(`${branch} is ahead of origin/${branch}; do you need to push?`);
   }
 };
 
 // Check if asciidoctor is installed
-exec('asciidoctor -v', (err, stdout) => {
+exec('asciidoctor -v', (err) => {
   if (err) {
     console.log('Please install asciidoctor');
     console.log('https://asciidoctor.org/docs/install-toolchain/');
@@ -89,10 +101,10 @@ exec('asciidoctor -v', (err, stdout) => {
   }
 });
 
-const dirExists = (dir) => {
+const dirExists = (dir: string) => {
   try {
     return fs.statSync(dir).isDirectory();
-  } catch (err) {
+  } catch (err:any) {
     if (err.code !== 'ENOENT') throw err;
     return false;
   }
@@ -165,7 +177,7 @@ try {
   run('git checkout develop');
   console.log('Merging master into develop...');
   run('git merge --no-ff --no-edit master');
-} catch (err) {
+} catch (err:any) {
   console.error(err.toString());
   console.warn('Resetting repository...');
   console.warn('Resetting master...');
@@ -192,7 +204,7 @@ try {
   run(`npm version ${newVersion}`, {cwd: '../ether.github.com'});
   run('git add .', {cwd: '../ether.github.com/'});
   run(`git commit -m '${newVersion} docs'`, {cwd: '../ether.github.com/'});
-} catch (err) {
+} catch (err:any) {
   console.error(err.toString());
   console.warn('Resetting repository...');
   console.warn('Resetting master...');

@@ -8,10 +8,10 @@
 
 // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
+import util from "util";
+import process from "process";
+import dirtyDB from "ueberdb2";
 process.on('unhandledRejection', (err) => { throw err; });
-
-const util = require('util');
-
 if (process.argv.length !== 3) throw new Error('Use: node extractPadData.js $PADID');
 
 // get the padID
@@ -19,13 +19,13 @@ const padId = process.argv[2];
 
 (async () => {
   // initialize database
-  require('./src/node/utils/Settings');
-  const db = require('./src/node/db/DB');
+  require('ep_etherpad-lite/node/utils/Settings');
+  const db = require('ep_etherpad-lite/node/db/DB');
   await db.init();
 
   // load extra modules
   const dirtyDB = require('dirty');
-  const padManager = require('./src/node/db/PadManager');
+  const padManager = require('ep_etherpad-lite/node/db/PadManager');
 
   // initialize output database
   const dirty = dirtyDB(`${padId}.db`);

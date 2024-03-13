@@ -8,11 +8,12 @@
 process.on('unhandledRejection', (err) => { throw err; });
 
 if (process.argv.length !== 3) throw new Error('Use: node bin/checkPad.js $PADID');
+// @ts-ignore
 const padId = process.argv[2];
 (async () => {
-  const db = require('./src/node/db/DB');
+  const db = require('ep_etherpad-lite/node/db/DB');
   await db.init();
-  const padManager = require('./src/node/db/PadManager');
+  const padManager = require('ep_etherpad-lite/node/db/PadManager');
   if (!await padManager.doesPadExists(padId)) throw new Error('Pad does not exist');
   const pad = await padManager.getPad(padId);
   await pad.check();

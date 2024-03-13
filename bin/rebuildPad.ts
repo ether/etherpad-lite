@@ -13,16 +13,17 @@ if (process.argv.length !== 4 && process.argv.length !== 5) {
   throw new Error('Use: node bin/repairPad.js $PADID $REV [$NEWPADID]');
 }
 
+// @ts-ignore
 const padId = process.argv[2];
-const newRevHead = process.argv[3];
+const newRevHead = Number(process.argv[3]);
 const newPadId = process.argv[4] || `${padId}-rebuilt`;
 
 (async () => {
-  const db = require('./src/node/db/DB');
+  const db = require('ep_etherpad-lite/node/db/DB');
   await db.init();
 
-  const PadManager = require('./src/node/db/PadManager');
-  const Pad = require('./src/node/db/Pad').Pad;
+  const PadManager = require('ep_etherpad-lite/node/db/PadManager');
+  const Pad = require('ep_etherpad-lite/node/db/Pad').Pad;
   // Validate the newPadId if specified and that a pad with that ID does
   // not already exist to avoid overwriting it.
   if (!PadManager.isValidPadId(newPadId)) {
@@ -43,8 +44,8 @@ const newPadId = process.argv[4] || `${padId}-rebuilt`;
   }));
 
   // Rebuild Pad from revisions up to and including the new revision head
-  const AuthorManager = require('./src/node/db/AuthorManager');
-  const Changeset = require('./src/static/js/Changeset');
+  const AuthorManager = require('ep_etherpad-lite/node/db/AuthorManager');
+  const Changeset = require('ep_etherpad-lite/static/js/Changeset');
   // Author attributes are derived from changesets, but there can also be
   // non-author attributes with specific mappings that changesets depend on
   // and, AFAICT, cannot be recreated any other way

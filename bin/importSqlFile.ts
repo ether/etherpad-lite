@@ -2,20 +2,24 @@
 
 // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
+import util from "util";
+const fs = require('fs');
+import log4js from 'log4js';
+import readline from 'readline';
+import ueberDB from "ueberdb2";
+
+const settings = require('ep_etherpad-lite/node/utils/Settings');
 process.on('unhandledRejection', (err) => { throw err; });
-
-const util = require('util');
-
 const startTime = Date.now();
 
-const log = (str) => {
+const log = (str:string) => {
   console.log(`${(Date.now() - startTime) / 1000}\t${str}`);
 };
 
-const unescape = (val) => {
+const unescape = (val: string) => {
   // value is a string
-  if (val.substr(0, 1) === "'") {
-    val = val.substr(0, val.length - 1).substr(1);
+  if (val.substring(0, 1) === "'") {
+    val = val.substring(0, val.length - 1).substring(1);
 
     return val.replace(/\\[0nrbtZ\\'"]/g, (s) => {
       switch (s) {
@@ -25,7 +29,7 @@ const unescape = (val) => {
         case '\\b': return '\b';
         case '\\t': return '\t';
         case '\\Z': return '\x1a';
-        default: return s.substr(1);
+        default: return s.substring(1);
       }
     });
   }
@@ -46,18 +50,13 @@ const unescape = (val) => {
 };
 
 (async () => {
-  const fs = require('fs');
-  const log4js = require('log4js');
-  const readline = require('readline');
-  const settings = require('./src/node/utils/Settings');
-  const ueberDB = require('ueberdb2');
 
   const dbWrapperSettings = {
     cache: 0,
     writeInterval: 100,
     json: false, // data is already json encoded
   };
-  const db = new ueberDB.database( // eslint-disable-line new-cap
+  const db = new ueberDB.Database( // eslint-disable-line new-cap
       settings.dbType,
       settings.dbSettings,
       dbWrapperSettings,
@@ -69,7 +68,8 @@ const unescape = (val) => {
   if (!sqlFile) throw new Error('Use: node importSqlFile.js $SQLFILE');
 
   log('initializing db');
-  await util.promisify(db.init.bind(db))();
+  const initDb = await util.promisify(db.init.bind(db));
+  await initDb(null);
   log('done');
 
   log(`Opening ${sqlFile}...`);
@@ -78,13 +78,14 @@ const unescape = (val) => {
   log(`Reading ${sqlFile}...`);
   let keyNo = 0;
   for await (const l of readline.createInterface({input: stream, crlfDelay: Infinity})) {
-    if (l.substr(0, 27) === 'REPLACE INTO store VALUES (') {
+    if (l.substring(0, 27) === 'REPLACE INTO store VALUES (') {
       const pos = l.indexOf("', '");
-      const key = l.substr(28, pos - 28);
-      let value = l.substr(pos + 3);
-      value = value.substr(0, value.length - 2);
+      const key = l.substring(28, pos - 28);
+      let value = l.substring(pos + 3);
+      value = value.substring(0, value.length - 2);
       console.log(`key: ${key} val: ${value}`);
       console.log(`unval: ${unescape(value)}`);
+      // @ts-ignore
       db.set(key, unescape(value), null);
       keyNo++;
       if (keyNo % 1000 === 0) log(` ${keyNo}`);
@@ -94,6 +95,7 @@ const unescape = (val) => {
   process.stdout.write('done. waiting for db to finish transaction. ' +
                        'depended on dbms this may take some time..\n');
 
-  await util.promisify(db.close.bind(db))();
+  const closeDB = util.promisify(db.close.bind(db));
+  await closeDB(null);
   log(`finished, imported ${keyNo} keys.`);
 })();

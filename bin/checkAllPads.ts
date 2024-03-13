@@ -10,14 +10,14 @@ process.on('unhandledRejection', (err) => { throw err; });
 if (process.argv.length !== 2) throw new Error('Use: node bin/checkAllPads.js');
 
 (async () => {
-  const db = require('./src/node/db/DB');
+  const db = require('ep_etherpad-lite/node/db/DB');
   await db.init();
-  const padManager = require('./src/node/db/PadManager');
-  await Promise.all((await padManager.listAllPads()).padIDs.map(async (padId) => {
+  const padManager = require('ep_etherpad-lite/node/db/PadManager');
+  await Promise.all((await padManager.listAllPads()).padIDs.map(async (padId: string) => {
     const pad = await padManager.getPad(padId);
     try {
       await pad.check();
-    } catch (err) {
+    } catch (err:any) {
       console.error(`Error in pad ${padId}: ${err.stack || err}`);
       return;
     }
