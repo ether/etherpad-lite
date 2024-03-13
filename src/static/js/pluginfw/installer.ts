@@ -83,18 +83,30 @@ const migratePluginsFromNodeModules = async () => {
 
 export const checkForMigration = async () => {
   logger.info('check installed plugins for migration');
-  const files = await fs.readdir(pluginInstallPath);
 
-  const node_modules = path.join(findEtherpadRoot(),'src', 'node_modules');
+
+
+  try {
+    await fs.access(installedPluginsPath, fs.constants.F_OK);
+  } catch (err) {
+    await migratePluginsFromNodeModules();
+  }
+
   /*
-    * Check if the plugin is already installed in node_modules
-    * If not, create a symlink to node_modules
-    * This is necessary as
-    * 1. Live Plugin Manager does not support loading plugins from the directory so that node can access them normally
-    * 2. Plugins can't be directly installed to node_modules otherwise upgrading Etherpad will remove them
-   */
-  for (let file of files){
-    const moduleName = path.basename(file);
+  * Check if the plugin is already installed in node_modules
+  * If not, create a symlink to node_modules
+  * This is necessary as
+  * 1. Live Plugin Manager does not support loading plugins from the directory so that node can access them normally
+  * 2. Plugins can't be directly installed to node_modules otherwise upgrading Etherpad will remove them
+ */
+
+
+  fs.stat(pluginInstallPath).then(async (err) => {
+    const files = await fs.readdir(pluginInstallPath);
+
+    const node_modules = path.join(findEtherpadRoot(),'src', 'node_modules');
+    for (let file of files){
+      const moduleName = path.basename(file);
       try {
         await fs.access(path.join(node_modules, moduleName), fs.constants.F_OK);
         logger.debug(`plugin ${moduleName} already exists in node_modules`);
@@ -103,14 +115,8 @@ export const checkForMigration = async () => {
         logger.debug(`create symlink for ${file} to ${path.join(node_modules,moduleName)}`)
         await fs.symlink(path.join(pluginInstallPath,file), path.join(node_modules,moduleName), 'dir')
       }
-  }
-
-  try {
-    await fs.access(installedPluginsPath, fs.constants.F_OK);
-  } catch (err) {
-    await migratePluginsFromNodeModules();
-  }
-
+    }
+  })
   const fileContent = await fs.readFile(installedPluginsPath);
   const installedPlugins = JSON.parse(fileContent.toString());
 
@@ -138,7 +144,13 @@ const persistInstalledPlugins = async () => {
 export const uninstall = async (pluginName: string, cb:Function|null = null) => {
   cb = wrapTaskCb(cb);
   logger.info(`Uninstalling plugin ${pluginName}...`);
+  //TODO track if a dependency is used by another plugin
+  const plugins = manager.list();
+  const info = manager.getInfo(pluginName)
   await manager.uninstall(pluginName);
+
+
+
   logger.info(`Successfully uninstalled plugin ${pluginName}`);
   await hooks.aCallAll('pluginUninstall', {pluginName});
   cb(null);
