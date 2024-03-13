@@ -16,10 +16,10 @@ jobs:
     steps:
       -
         name: Install libreoffice
-        run: |
-          sudo add-apt-repository -y ppa:libreoffice/ppa
-          sudo apt update
-          sudo apt install -y --no-install-recommends libreoffice libreoffice-pdfimport
+        uses: awalsh128/cache-apt-pkgs-action@v1.4.2
+        with:
+          packages: libreoffice libreoffice-pdfimport
+          version: 1.0
       -
         name: Install etherpad core
         uses: actions/checkout@v3
@@ -42,22 +42,22 @@ jobs:
           mv ./node_modules/__tmp ./node_modules/"${PLUGIN_NAME}"
         env:
           PLUGIN_NAME: ${{ steps.plugin_name.outputs.plugin_name }}
-      -
-        uses: actions/setup-node@v3
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
         with:
-          node-version: 12
-          cache: 'npm'
-          cache-dependency-path: |
-            src/package-lock.json
-            bin/doc/package-lock.json
-            node_modules/${{ steps.plugin_name.outputs.plugin_name }}/package-lock.json
-      -
-        name: Install plugin dependencies
+        version: 8
+        run_install: false
+      - name: Get pnpm store directory
+        shell: bash
         run: |
-          cd ./node_modules/"${PLUGIN_NAME}"
-          npm ci
-        env:
-          PLUGIN_NAME: ${{ steps.plugin_name.outputs.plugin_name }}
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
       # Etherpad core dependencies must be installed after installing the
       # plugin's dependencies, otherwise npm will try to hoist common
       # dependencies by removing them from src/node_modules and installing them
@@ -72,4 +72,4 @@ jobs:
         run: bin/installDeps.sh
       -
         name: Run the backend tests
-        run: cd src && pnpm test
+        run: pnpm run test

@@ -32,42 +32,34 @@ jobs:
       # safe to clone this plugin's repo to $GITHUB_WORKSPACE.
       -
         uses: actions/checkout@v3
-      # This is necessary for actions/setup-node because '..' can't be used in
-      # cache-dependency-path.
-      -
-        name: Create ep_etherpad-lite symlink
-        run: |
-          mkdir -p node_modules
-          ln -s ../../etherpad-lite/src node_modules/ep_etherpad-lite
-      -
-        uses: actions/setup-node@v3
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
         with:
-          node-version: 12
-          cache: 'npm'
-          cache-dependency-path: |
-            node_modules/ep_etherpad-lite/package-lock.json
-            node_modules/ep_etherpad-lite/bin/doc/package-lock.json
-            package-lock.json
+          version: 8
+          run_install: false
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
       # All of ep_etherpad-lite's devDependencies are installed because the
       # plugin might do `require('ep_etherpad-lite/node_modules/${devDep}')`.
       # Eventually it would be nice to create an ESLint plugin that prohibits
       # Etherpad plugins from piggybacking off of ep_etherpad-lite's
       # devDependencies. If we had that, we could change this line to only
       # install production dependencies.
+      - run: pnpm i && pnpm link --global
       -
-        run: cd ../etherpad-lite/src && npm ci
+        run: cd ../etherpad-lite/src && pnpm i && pnpm link $PLUGIN_NAME
+
       -
-        run: npm ci
-      # This runs some sanity checks and creates a symlink at
-      # node_modules/ep_etherpad-lite that points to ../../etherpad-lite/src.
-      # This step must be done after `npm ci` installs the plugin's dependencies
-      # because npm "helpfully" cleans up such symlinks. :( Installing
-      # ep_etherpad-lite in the plugin's node_modules prevents lint errors and
-      # unit test failures if the plugin does `require('ep_etherpad-lite/foo')`.
-      -
-        run: npm install --no-save ep_etherpad-lite@file:../etherpad-lite/src
-      -
-        run: npm test
+        run: pnpm run test
       -
         run: npm run lint
 
@@ -78,14 +70,26 @@ jobs:
     steps:
       -
         uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      -
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      -
-        uses: actions/setup-node@v3
-        with:
-          node-version: 12
-          registry-url: https://registry.npmjs.org/
-          cache: 'npm'
       -
         name: Bump version (patch)
         run: |
@@ -94,13 +98,13 @@ jobs:
           [ "${NEW_COMMITS}" -gt 0 ] || exit 0
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          npm ci
-          npm version patch
+          pnpm i
+          pnpm version patch
           git push --follow-tags
       # This is required if the package has a prepare script that uses something
       # in dependencies or devDependencies.
       -
-        run: npm ci
+        run: pnpm i
       # `npm publish` must come after `git push` otherwise there is a race
       # condition: If two PRs are merged back-to-back then master/main will be
       # updated with the commits from the second PR before the first PR's

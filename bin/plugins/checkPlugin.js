@@ -189,13 +189,13 @@ const logger = log4js.getLogger('checkPlugin');
       'eslint-plugin-you-dont-need-lodash-underscore': null,
     });
 
-    await updateDeps(parsedPackageJSON, 'peerDependencies', {
+    /*await updateDeps(parsedPackageJSON, 'peerDependencies', {
       // Some plugins require a newer version of Etherpad so don't overwrite if already set.
       'ep_etherpad-lite': {ver: '>=1.8.6', overwrite: false},
-    });
+    });*/
 
     await updateDeps(parsedPackageJSON, 'engines', {
-      node: '>=12.17.0',
+      node: '>=18.0.0',
     });
 
     if (parsedPackageJSON.eslintConfig != null && autoFix) {

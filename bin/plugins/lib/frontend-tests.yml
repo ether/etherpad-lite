@@ -1,6 +1,6 @@
 # Publicly credit Sauce Labs because they generously support open source
 # projects.
-name: "frontend tests powered by Sauce Labs"
+name: "Frontend Tests"
 
 on: [push]
 
@@ -10,35 +10,26 @@ jobs:
 
     steps:
       -
-        name: Fail if Dependabot
-        if: github.actor == 'dependabot[bot]'
-        run: |
-          cat <<EOF >&2
-          Frontend tests skipped because Dependabot can't access secrets.
-          Manually re-run the jobs to run the frontend tests.
-          For more information, see:
-          https://github.blog/changelog/2021-02-19-github-actions-workflows-triggered-by-dependabot-prs-will-run-with-read-only-permissions/
-          EOF
-          exit 1
-      -
-        name: Generate Sauce Labs strings
-        id: sauce_strings
-        run: |
-          printf %s\\n '::set-output name=name::${{github.event.repository.name}} ${{ github.workflow }} - ${{ github.job }}'
-          printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
-      -
         name: Check out Etherpad core
         uses: actions/checkout@v3
         with:
           repository: ether/etherpad-lite
-      -
-        uses: actions/setup-node@v3
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
         with:
-          node-version: 12
-          cache: 'npm'
-          cache-dependency-path: |
-            src/package-lock.json
-            bin/doc/package-lock.json
+          version: 8
+          run_install: false
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
       -
         name: Check out the plugin
         uses: actions/checkout@v3
@@ -68,7 +59,7 @@ jobs:
           PLUGIN_NAME: ${{ steps.plugin_name.outputs.plugin_name }}
         run: |
           cd ./node_modules/"${PLUGIN_NAME}"
-          npm ci
+          pnpm i
       # Etherpad core dependencies must be installed after installing the
       # plugin's dependencies, otherwise npm will try to hoist common
       # dependencies by removing them from src/node_modules and installing them
@@ -81,30 +72,22 @@ jobs:
       -
         name: Install Etherpad core dependencies
         run: bin/installDeps.sh
-      -
-        name: Create settings.json
-        run: cp settings.json.template settings.json
-      -
-        name: Disable import/export rate limiting
-        run: |
-          sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 0/' -i settings.json
-      -
-        name: Remove standard frontend test files
-        run: rm -rf src/tests/frontend/specs
-      -
-        uses: saucelabs/sauce-connect-action@v2.1.1
-        with:
-          username: ${{ secrets.SAUCE_USERNAME }}
-          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-          tunnelIdentifier: ${{ steps.sauce_strings.outputs.tunnel_id }}
-      -
-        name: Run the frontend tests
+      - name: Create settings.json
+        run: cp ./src/tests/settings.json settings.json
+      - name: Run the frontend tests
         shell: bash
-        env:
-          SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
-          SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-          SAUCE_NAME: ${{ steps.sauce_strings.outputs.name }}
-          TRAVIS_JOB_NUMBER: ${{ steps.sauce_strings.outputs.tunnel_id }}
-          GIT_HASH: ${{ steps.environment.outputs.sha_short }}
         run: |
-          src/tests/frontend/travis/runner.sh
+          pnpm run dev &
+          connected=false
+          can_connect() {
+          curl -sSfo /dev/null http://localhost:9001/ || return 1
+          connected=true
+          }
+          now() { date +%s; }
+          start=$(now)
+          while [ $(($(now) - $start)) -le 15 ] && ! can_connect; do
+          sleep 1
+          done
+          cd src
+          pnpm exec playwright install chromium  --with-deps
+          pnpm run test-ui --project=chromium
