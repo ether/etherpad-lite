@@ -49,6 +49,14 @@ div.menu {
     cursor: pointer;
 }
 
+.icon-button svg {
+    align-self: center;
+}
+
+.icon-button span {
+    align-self: center;
+}
+
 
 div.menu span:first-child {
     display: flex;
@@ -187,6 +195,10 @@ table {
     width: 100%;
     margin: 20px 0;
 }
+
+
+
+
 
 #available-plugins  th:first-child, #available-plugins  th:nth-child(2){
     text-align: center;
@@ -581,12 +593,19 @@ pre {
 }
 
 table {
-    border-collapse: collapse;
     margin: 25px 0;
     font-size: 0.9em;
     font-family: sans-serif;
     min-width: 400px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+th:first-child {
+    border-top-left-radius: 10px;
+}
+
+th:last-child {
+    border-top-right-radius: 10px;
 }
 
 table thead tr {
