@@ -1,10 +1,10 @@
 'use strict';
 
 import {writeFileSync} from 'fs'
-import {manager, installedPluginsPath} from "../static/js/pluginfw/installer";
-import {PackageData} from "../node/types/PackageInfo";
+import {manager, installedPluginsPath} from "ep_etherpad-lite/static/js/pluginfw/installer";
+import {PackageData} from "ep_etherpad-lite/node/types/PackageInfo";
 
-const pluginsModule = require('../static/js/pluginfw/plugins');
+const pluginsModule = require('ep_etherpad-lite/static/js/pluginfw/plugins');
 if (process.argv.length === 2) {
   console.error('Expected at least one argument!');
   process.exit(1);

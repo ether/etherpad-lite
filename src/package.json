@@ -118,7 +118,6 @@
     "test-container": "mocha --import=tsx --timeout 5000 tests/container/specs/api",
     "dev": "node --import tsx node/server.ts",
     "prod": "node --import tsx node/server.ts",
-    "install-plugins": "node --import tsx bin/installPlugins.ts",
     "ts-check": "tsc --noEmit",
     "ts-check:watch": "tsc --noEmit --watch",
     "test-ui": "npx playwright test tests/frontend-new/specs",

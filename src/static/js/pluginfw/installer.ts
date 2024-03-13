@@ -19,7 +19,11 @@ import {PluginManager} from 'live-plugin-manager-pnpm';
 const {findEtherpadRoot} = require('../../../node/utils/AbsolutePaths');
 const logger = log4js.getLogger('plugins');
 
-export const manager = new PluginManager();
+export const pluginInstallPath = path.join(settings.root, 'src','plugin_packages');
+
+export const manager = new PluginManager({
+  pluginsPath: pluginInstallPath
+});
 
 export const installedPluginsPath = path.join(settings.root, 'var/installed_plugins.json');
 
