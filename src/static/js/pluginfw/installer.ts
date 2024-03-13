@@ -116,6 +116,8 @@ export const checkForMigration = async () => {
         await fs.symlink(path.join(pluginInstallPath,file), path.join(node_modules,moduleName), 'dir')
       }
     }
+  }).catch(()=>{
+    logger.debug('plugin directory does not exist');
   })
   const fileContent = await fs.readFile(installedPluginsPath);
   const installedPlugins = JSON.parse(fileContent.toString());
