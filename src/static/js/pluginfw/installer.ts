@@ -14,7 +14,7 @@ const plugins = require('./plugins');
 const hooks = require('./hooks');
 const runCmd = require('../../../node/utils/run_cmd');
 const settings = require('../../../node/utils/Settings');
-const {PluginManager} = require('live-plugin-manager-pnpm');
+import {PluginManager} from 'live-plugin-manager-pnpm';
 
 const {findEtherpadRoot} = require('../../../node/utils/AbsolutePaths');
 const logger = log4js.getLogger('plugins');
