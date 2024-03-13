@@ -56,7 +56,7 @@ Install the latest Node.js LTS per [official install instructions](https://githu
 ```sh
 git clone --branch master https://github.com/ether/etherpad-lite.git &&
 cd etherpad-lite &&
-src/bin/run.sh
+bin/run.sh
 ```
 
 #### Manual install
@@ -70,10 +70,10 @@ You'll need Git and [Node.js](https://nodejs.org/) installed.
      https://github.com/ether/etherpad-lite.git`
   3. Change into the new directory containing the cloned source code: `cd
      etherpad-lite`
-  4. Run `src/bin/run.sh` and open http://127.0.0.1:9001 in your browser.
+  4. Run `bin/run.sh` and open http://127.0.0.1:9001 in your browser.
 
 To update to the latest released version, execute `git pull origin`. The next
-start with `src/bin/run.sh` will update the dependencies.
+start with `bin/run.sh` will update the dependencies.
 
 ### Windows
 
@@ -98,12 +98,12 @@ git.
       * or `git clone --branch master
         https://github.com/ether/etherpad-lite.git`
   2. With a "Run as administrator" command prompt execute
-     `src\bin\installOnWindows.bat`
+     `bin\installOnWindows.bat`
 
 Now, run `start.bat` and open http://localhost:9001 in your browser.
 
 Update to the latest version with `git pull origin`, then run
-`src\bin\installOnWindows.bat`, again.
+`bin\installOnWindows.bat`, again.
 
 If cloning to a subdirectory within another project, you may need to do the
 following:
@@ -182,7 +182,7 @@ following plugins:
 ### Tweak the settings
 
 You can modify the settings in `settings.json`. If you need to handle multiple
-settings files, you can pass the path to a settings file to `src/bin/run.sh`
+settings files, you can pass the path to a settings file to `bin/run.sh`
 using the `-s|--settings` option: this allows you to run multiple Etherpad
 instances from the same installation. Similarly, `--credentials` can be used to
 give a settings override file, `--apikey` to give a different APIKEY.txt file
@@ -226,11 +226,11 @@ Documentation can be found in `doc/`.
 
 ### Things you should know
 
-You can debug Etherpad using `src/bin/debugRun.sh`.
+You can debug Etherpad using `bin/debugRun.sh`.
 
-You can run Etherpad quickly launching `src/bin/fastRun.sh`. It's convenient for
+You can run Etherpad quickly launching `bin/fastRun.sh`. It's convenient for
 developers and advanced users. Be aware that it will skip the dependencies
-update, so remember to run `src/bin/installDeps.sh` after installing a new
+update, so remember to run `bin/installDeps.sh` after installing a new
 dependency or upgrading version.
 
 If you want to find out how Etherpad's `Easysync` works (the library that makes
