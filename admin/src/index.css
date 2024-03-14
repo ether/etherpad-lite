@@ -367,12 +367,23 @@ pre {
 
 .login-background {
     background-image: url("/fond.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     background-color: #f0f0f0;
 }
+
+.login-inner-box div {
+    margin-top: 1rem;
+}
+
+.login-inner-box [type=submit]{
+    margin-top: 2rem;
+}
+
 
 
 .login-textinput {
@@ -387,7 +398,7 @@ pre {
 .login-box {
     width: 20%;
     padding: 20px;
-    border-radius: 5px;
+    border-radius: 40px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     background-color: #fff;
 }
@@ -398,8 +409,12 @@ pre {
 }
 
 .login-title {
+    padding: 0;
+    margin: 0;
+    text-align: center;
     color: var(--etherpad-color);
-    font-size: 2em;
+    font-size: 4rem;
+    font-weight: 1000;
 }
 
 .login-button {
@@ -619,7 +634,7 @@ table tbody tr {
     border-bottom: 1px solid #dddddd;
 }
 
-table tr:nth-child(even) td{
+table tr:nth-child(even) td {
     background-color: lightgray;
 }
 
@@ -670,4 +685,43 @@ table tbody tr.active-row {
 
 .pad-pagination >span {
     font-size: 20px;
+}
+
+
+.login-page .login-form .input-control input[type=text], .login-page .login-form .input-control input[type=email], .login-page .login-form .input-control input[type=password], .login-page .signup-form .input-control input[type=text], .login-page .signup-form .input-control input[type=email], .login-page .signup-form .input-control input[type=password], .login-page .forgot-form .input-control input[type=text], .login-page .forgot-form .input-control input[type=email], .login-page .forgot-form .input-control input[type=password] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border-bottom: 2px solid #ccc;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #666;
+    background-color: #f8f8f8;
+    -webkit-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+}
+
+input, button, select, optgroup, textarea {
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+.icon-input {
+    position: relative;
+}
+
+.icon-input svg {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 10px;
+    color: #666;
 }
