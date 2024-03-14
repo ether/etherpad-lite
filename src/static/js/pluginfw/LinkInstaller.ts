@@ -59,6 +59,7 @@ export class LinkInstaller {
     public async listPlugins() {
         const plugins = this.livePluginManager.list()
         if (plugins && plugins.length > 0 && this.loadedPlugins.length == 0) {
+            this.loadedPlugins = plugins
             // Check already installed plugins
             for (let plugin of plugins) {
                 await this.checkLinkedDependencies(plugin)
