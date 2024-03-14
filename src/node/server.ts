@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-'use strict';
-
 /**
  * This module is started with src/bin/run.sh. It sets up a Express HTTP and a Socket.IO Server.
  * Static file Requests are answered directly from this module, Socket.IO messages are passed
@@ -26,9 +24,9 @@
 
 import {PluginType} from "./types/Plugin";
 import {ErrorCaused} from "./types/ErrorCaused";
-import {PromiseHooks} from "node:v8";
-
 import log4js from 'log4js';
+
+import {checkForMigration} from "../static/js/pluginfw/installer";
 
 const settings = require('./utils/Settings');
 
@@ -53,7 +51,6 @@ const express = require('./hooks/express');
 const hooks = require('../static/js/pluginfw/hooks');
 const pluginDefs = require('../static/js/pluginfw/plugin_defs');
 const plugins = require('../static/js/pluginfw/plugins');
-const installer = require('../static/js/pluginfw/installer');
 const {Gate} = require('./utils/promises');
 const stats = require('./stats')
 
@@ -147,7 +144,7 @@ exports.start = async () => {
     }
 
     await db.init();
-    await installer.checkForMigration();
+    await checkForMigration();
     await plugins.update();
     const installedPlugins = (Object.values(pluginDefs.plugins) as PluginType[])
         .filter((plugin) => plugin.package.name !== 'ep_etherpad-lite')

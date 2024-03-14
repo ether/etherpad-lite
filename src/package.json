@@ -87,6 +87,7 @@
     "@types/node": "^20.11.27",
     "@types/sinon": "^17.0.3",
     "@types/supertest": "^6.0.2",
+    "@types/semver": "^7.5.7",
     "@types/underscore": "^1.11.15",
     "eslint": "^8.57.0",
     "eslint-config-etherpad": "^3.0.22",

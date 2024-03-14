@@ -29,6 +29,14 @@ fi
 # Prepare the environment
 bin/installDeps.sh "$@" || exit 1
 
+## Create the admin ui
+if [ -z "$NODE_ENV" ] || [ "$NODE_ENV" = "development" ]; then
+  log "Creating the admin UI..."
+  (cd ../admin && pnpm run build)
+else
+  log "Cannot create the admin UI in production mode"
+fi
+
 # Move to the node folder and start
 log "Starting Etherpad..."
 

@@ -30,7 +30,8 @@
     "migrateDirtyDBtoRealDB": "node --import tsx migrateDirtyDBtoRealDB.ts",
     "rebuildPad": "node --import tsx rebuildPad.ts",
     "stalePlugins": "node --import tsx ./plugins/stalePlugins.ts",
-    "checkPlugins": "node --import tsx ./plugins/checkPlugins.ts"
+    "checkPlugins": "node --import tsx ./plugins/checkPlugins.ts",
+    "install-plugins": "node --import tsx ./installPlugins.ts"
   },
   "author": "",
   "license": "ISC"
