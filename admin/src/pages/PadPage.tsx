@@ -6,7 +6,7 @@ import {useDebounce} from "../utils/useDebounce.ts";
 import {determineSorting} from "../utils/sorting.ts";
 import * as Dialog from "@radix-ui/react-dialog";
 import {IconButton} from "../components/IconButton.tsx";
-import {ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Trash2} from "lucide-react";
+import {ChevronLeft, ChevronRight, Eye, Trash2} from "lucide-react";
 import {SearchField} from "../components/SearchField.tsx";
 
 export const PadPage = ()=>{
@@ -150,7 +150,7 @@ export const PadPage = ()=>{
                                     setPadToDelete(pad.padName)
                                     setDeleteDialog(true)
                                 }}/>
-                                <IconButton icon={<Trash2/>} title="view" onClick={()=>window.open(`/p/${pad.padName}`, '_blank')}/>
+                                <IconButton icon={<Eye/>} title="view" onClick={()=>window.open(`/p/${pad.padName}`, '_blank')}/>
                             </div>
                         </td>
                     </tr>
