@@ -1,0 +1,204 @@
+import {IPluginInfo, PluginManager} from "live-plugin-manager-pnpm";
+import path from "path";
+import {node_modules, pluginInstallPath} from "./installer";
+import {accessSync, constants, rmSync, symlinkSync, unlinkSync} from "node:fs";
+import {dependencies, name} from '../../../package.json'
+import {pathToFileURL} from 'node:url';
+const settings = require('../../../node/utils/Settings');
+import {readFileSync} from "fs";
+
+export class LinkInstaller {
+    private livePluginManager: PluginManager;
+    private loadedPlugins: IPluginInfo[] = [];
+    /*
+    * A map of dependencies to their dependents
+    *
+     */
+    private readonly dependenciesMap: Map<string, Set<string>>;
+
+    constructor() {
+        this.livePluginManager = new PluginManager({
+            pluginsPath: pluginInstallPath,
+            cwd: path.join(settings.root, 'src')
+        });
+        this.dependenciesMap = new Map();
+
+    }
+
+
+    public async init() {
+        // Insert Etherpad lite dependencies
+        for (let [dependency] of Object.entries(dependencies)) {
+            if (this.dependenciesMap.has(dependency)) {
+                this.dependenciesMap.get(dependency)?.add(name)
+            } else {
+                this.dependenciesMap.set(dependency, new Set([name]))
+            }
+        }
+
+    }
+
+
+    public async installFromPath(path: string) {
+        const installedPlugin = await this.livePluginManager.installFromPath(path)
+        await this.checkLinkedDependencies(installedPlugin)
+    }
+
+
+    public async installPlugin(pluginName: string, version?: string) {
+        if (version) {
+            const installedPlugin = await this.livePluginManager.install(pluginName, version);
+            await this.checkLinkedDependencies(installedPlugin)
+        } else {
+            const installedPlugin = await this.livePluginManager.install(pluginName);
+            await this.checkLinkedDependencies(installedPlugin)
+        }
+    }
+
+    public async listPlugins() {
+        const plugins = this.livePluginManager.list()
+        if (plugins && plugins.length > 0 && this.loadedPlugins.length == 0) {
+            // Check already installed plugins
+            for (let plugin of plugins) {
+                await this.checkLinkedDependencies(plugin)
+            }
+        }
+        return plugins
+    }
+
+    public async uninstallPlugin(pluginName: string) {
+        const installedPlugin = this.livePluginManager.getInfo(pluginName)
+        if (installedPlugin) {
+            await this.removeSymlink(installedPlugin)
+            await this.livePluginManager.uninstall(pluginName)
+            await this.uninstallDependencies(installedPlugin)
+        }
+    }
+
+    public async uninstallDependencies(plugin: IPluginInfo) {
+        for (let [dependency] of Object.entries(plugin.dependencies)) {
+            if (this.dependenciesMap.has(dependency)) {
+                const dependants = this.dependenciesMap.get(dependency)
+                if (dependants?.size == 1) {
+                    // Remove the dependency
+                    rmSync(path.join(pluginInstallPath, dependency), {
+                        force: true,
+                        recursive: true
+                    })
+                }
+                // Remove the dependant from the dependency map
+                dependants?.delete(plugin.name)
+                this.dependenciesMap.set(dependency, dependants!)
+            }
+        }
+    }
+
+    private async removeSymlink(plugin: IPluginInfo) {
+        console.log(`Removing symlink for ${plugin.name}`)
+        try {
+            accessSync(path.join(node_modules, plugin.name), constants.F_OK)
+            await this.unlinkSubDependencies(plugin)
+            // Remove the plugin itself
+            this.unlinkDependency(plugin.name)
+        } catch (err) {
+            // Symlink does not exist
+            // So nothing to do
+        }
+    }
+
+    private async unlinkSubDependencies(plugin: IPluginInfo) {
+        const pluginDependencies = Object.keys(plugin.dependencies)
+        for (let dependency of pluginDependencies) {
+            console.log(`Unlinking sub dependency ${dependency} for ${plugin.name}`)
+            await this.unlinkSubDependency(plugin.name, dependency)
+        }
+    }
+
+    private async unlinkSubDependency(plugin: string, dependency: string) {
+        if (this.dependenciesMap.has(dependency)) {
+            this.dependenciesMap.get(dependency)?.delete(plugin)
+            if (this.dependenciesMap.get(dependency)!.size > 0) {
+                // We have other dependants so do not uninstall
+                return
+            }
+        }
+        this.unlinkDependency(dependency)
+        // Read sub dependencies
+        try {
+            const json:IPluginInfo = JSON.parse(
+                readFileSync(pathToFileURL(path.join(pluginInstallPath, dependency, 'package.json'))) as unknown as string);
+            if(json.dependencies){
+                for (let [subDependency] of Object.entries(json.dependencies)) {
+                    await this.unlinkSubDependency(dependency, subDependency)
+                }
+            }
+        } catch (e){}
+
+        this.dependenciesMap.delete(dependency)
+    }
+
+
+    private async addSubDependencies(plugin: IPluginInfo) {
+        const pluginDependencies = Object.keys(plugin.dependencies)
+        for (let dependency of pluginDependencies) {
+            await this.addSubDependency(plugin.name, dependency)
+        }
+    }
+
+    private async addSubDependency(plugin: string, dependency: string) {
+        if (this.dependenciesMap.has(dependency)) {
+            // We already added the sub dependency
+            this.dependenciesMap.get(dependency)?.add(plugin)
+        } else {
+            this.linkDependency(dependency)
+            // Read sub dependencies
+            try {
+                const json:IPluginInfo = JSON.parse(
+                    readFileSync(pathToFileURL(path.join(pluginInstallPath, dependency, 'package.json'))) as unknown as string);
+                if(json.dependencies){
+                    Object.keys(json.dependencies).forEach((subDependency: string) => {
+                        this.addSubDependency(dependency, subDependency)
+                    })
+                }
+            } catch (err) {
+                console.error(`Error reading package.json ${err} for ${pathToFileURL(path.join(pluginInstallPath, dependency, 'package.json')).toString()}`)
+            }
+            this.dependenciesMap.set(dependency, new Set([plugin]))
+        }
+    }
+
+    private linkDependency(dependency: string) {
+        try {
+            // Check if the dependency is already installed
+            accessSync(path.join(node_modules, dependency), constants.F_OK)
+        } catch (err) {
+            symlinkSync(path.join(pluginInstallPath, dependency), path.join(node_modules, dependency), 'dir')
+        }
+    }
+
+    private unlinkDependency(dependency: string) {
+        try {
+            // Check if the dependency is already installed
+            accessSync(path.join(node_modules, dependency), constants.F_OK)
+            unlinkSync(path.join(node_modules, dependency))
+        } catch (err) {
+            // Symlink does not exist
+            // So nothing to do
+        }
+    }
+
+
+    private async checkLinkedDependencies(plugin: IPluginInfo) {
+        // Check if the plugin really exists at source
+        try {
+            accessSync(path.join(pluginInstallPath, plugin.name), constants.F_OK)
+            // Skip if the plugin is already linked
+        } catch (err) {
+            // The plugin is not installed
+            console.error(`Plugin ${plugin.name} is not installed`)
+        }
+        await this.addSubDependencies(plugin)
+        this.dependenciesMap.set(plugin.name, new Set())
+        console.log(this.dependenciesMap)
+    }
+}

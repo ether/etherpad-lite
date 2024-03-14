@@ -121,8 +121,8 @@ exports.update = async () => {
 };
 
 exports.getPackages = async () => {
-  const {manager} = require("./installer");
-  const plugins = manager.list();
+  const {linkInstaller} = require("./installer");
+  const plugins = await linkInstaller.listPlugins();
   const newDependencies = {};
 
   for (const plugin of plugins) {

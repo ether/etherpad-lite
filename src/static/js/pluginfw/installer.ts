@@ -14,22 +14,13 @@ const plugins = require('./plugins');
 const hooks = require('./hooks');
 const runCmd = require('../../../node/utils/run_cmd');
 const settings = require('../../../node/utils/Settings');
-import {PluginManager} from 'live-plugin-manager-pnpm';
+import {LinkInstaller} from "./LinkInstaller";
 
 const {findEtherpadRoot} = require('../../../node/utils/AbsolutePaths');
 const logger = log4js.getLogger('plugins');
 
 export const pluginInstallPath = path.join(settings.root, 'src','plugin_packages');
-
-export const manager = new PluginManager({
-  pluginsPath: pluginInstallPath,
-  hostRequire: require,
-  requireCoreModules: true,
-  sandbox: {
-    env: process.env,
-    global: global
-  }
-});
+export const node_modules = path.join(findEtherpadRoot(),'src', 'node_modules');
 
 export const installedPluginsPath = path.join(settings.root, 'var/installed_plugins.json');
 
@@ -46,6 +37,8 @@ const headers = {
 };
 
 let tasks = 0;
+
+export const linkInstaller = new LinkInstaller();
 
 const wrapTaskCb = (cb:Function|null) => {
   tasks++;
@@ -73,9 +66,9 @@ const migratePluginsFromNodeModules = async () => {
           const _info = info as PackageInfo
           if (!_info.resolved) {
           // Install from node_modules directory
-          await manager.installFromPath(`${findEtherpadRoot()}/node_modules/${pkg}`);
+          await linkInstaller.installFromPath(`${findEtherpadRoot()}/node_modules/${pkg}`);
         } else {
-          await manager.install(pkg);
+          await linkInstaller.installPlugin(pkg);
         }
       }));
   await persistInstalledPlugins();
@@ -83,6 +76,8 @@ const migratePluginsFromNodeModules = async () => {
 
 export const checkForMigration = async () => {
   logger.info('check installed plugins for migration');
+  // Initialize linkInstaller
+  await linkInstaller.init()
 
 
 
@@ -104,7 +99,6 @@ export const checkForMigration = async () => {
   fs.stat(pluginInstallPath).then(async (err) => {
     const files = await fs.readdir(pluginInstallPath);
 
-    const node_modules = path.join(findEtherpadRoot(),'src', 'node_modules');
     for (let file of files){
       const moduleName = path.basename(file);
       try {
@@ -124,7 +118,7 @@ export const checkForMigration = async () => {
 
   for (const plugin of installedPlugins.plugins) {
     if (plugin.name.startsWith(plugins.prefix) && plugin.name !== 'ep_etherpad-lite') {
-      await manager.install(plugin.name, plugin.version);
+      await linkInstaller.installPlugin(plugin.name, plugin.version);
     }
   }
 };
@@ -146,13 +140,8 @@ const persistInstalledPlugins = async () => {
 export const uninstall = async (pluginName: string, cb:Function|null = null) => {
   cb = wrapTaskCb(cb);
   logger.info(`Uninstalling plugin ${pluginName}...`);
-  //TODO track if a dependency is used by another plugin
-  const plugins = manager.list();
-  const info = manager.getInfo(pluginName)
-  await manager.uninstall(pluginName);
 
-
-
+  await linkInstaller.uninstallPlugin(pluginName);
   logger.info(`Successfully uninstalled plugin ${pluginName}`);
   await hooks.aCallAll('pluginUninstall', {pluginName});
   cb(null);
@@ -161,7 +150,7 @@ export const uninstall = async (pluginName: string, cb:Function|null = null) => 
 export const install = async (pluginName: string, cb:Function|null = null) => {
   cb = wrapTaskCb(cb);
   logger.info(`Installing plugin ${pluginName}...`);
-  await manager.install(pluginName);
+  await linkInstaller.installPlugin(pluginName);
   logger.info(`Successfully installed plugin ${pluginName}`);
   await hooks.aCallAll('pluginInstall', {pluginName});
   cb(null);
