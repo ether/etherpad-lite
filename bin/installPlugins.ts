@@ -1,7 +1,7 @@
 'use strict';
 
 import {writeFileSync} from 'fs'
-import {manager, installedPluginsPath} from "ep_etherpad-lite/static/js/pluginfw/installer";
+import {linkInstaller, installedPluginsPath} from "ep_etherpad-lite/static/js/pluginfw/installer";
 import {PackageData} from "ep_etherpad-lite/node/types/PackageInfo";
 
 const pluginsModule = require('ep_etherpad-lite/static/js/pluginfw/plugins');
@@ -27,7 +27,7 @@ const persistInstalledPlugins = async () => {
 
 async function run() {
   for (const plugin of plugins) {
-    await manager.install(plugin);
+    await linkInstaller.installPlugin(plugin);
   }
 }
 
