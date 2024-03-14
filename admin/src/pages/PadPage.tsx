@@ -6,7 +6,7 @@ import {useDebounce} from "../utils/useDebounce.ts";
 import {determineSorting} from "../utils/sorting.ts";
 import * as Dialog from "@radix-ui/react-dialog";
 import {IconButton} from "../components/IconButton.tsx";
-import {Trash2} from "lucide-react";
+import {ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Trash2} from "lucide-react";
 import {SearchField} from "../components/SearchField.tsx";
 
 export const PadPage = ()=>{
@@ -21,16 +21,16 @@ export const PadPage = ()=>{
     const {t} = useTranslation()
     const [searchTerm, setSearchTerm] = useState<string>('')
     const pads = useStore(state=>state.pads)
+    const [currentPage, setCurrentPage] = useState<number>(0)
+    const [deleteDialog, setDeleteDialog] = useState<boolean>(false)
+    const [padToDelete, setPadToDelete] = useState<string>('')
     const pages = useMemo(()=>{
         if(!pads){
             return [0]
         }
 
-        const totalPages = Math.ceil(pads!.total / searchParams.limit)
-        return Array.from({length: totalPages}, (_, i) => i+1)
+        return Math.ceil(pads!.total / searchParams.limit)
     },[pads, searchParams.limit])
-    const [deleteDialog, setDeleteDialog] = useState<boolean>(false)
-    const [padToDelete, setPadToDelete] = useState<string>('')
 
     useDebounce(()=>{
         setSearchParams({
@@ -158,15 +158,21 @@ export const PadPage = ()=>{
             }
             </tbody>
         </table>
-        <div className="settings-button-bar">
-            {pages.map((page)=>{
-                return <button key={page} onClick={()=>{
+        <div className="settings-button-bar pad-pagination">
+            <button disabled={currentPage == 0} onClick={()=>{
+                setCurrentPage(currentPage-1)
                     setSearchParams({
                         ...searchParams,
-                        offset: (page-1)*searchParams.limit
-                    })
-                }}>{page}</button>
-            })}
+                        offset: (Number(currentPage)-1)*searchParams.limit})
+            }}><ChevronLeft/><span>Previous Page</span></button>
+            <span>{currentPage+1} out of {pages}</span>
+            <button disabled={pages == currentPage+1} onClick={()=>{
+                setCurrentPage(currentPage+1)
+                setSearchParams({
+                    ...searchParams,
+                    offset: (Number(currentPage)-1)*searchParams.limit
+                })
+            }}><span>Next Page</span><ChevronRight/></button>
         </div>
     </div>
 }

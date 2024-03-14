@@ -639,3 +639,35 @@ table tbody tr.active-row {
     font-weight: bold;
     color: #009879;
 }
+
+
+.pad-pagination{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.pad-pagination button {
+    display: flex;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    color: black;
+    cursor: pointer;
+}
+
+
+.pad-pagination button:disabled {
+    background: transparent;
+    color: lightgrey;
+    cursor: not-allowed;
+}
+
+.pad-pagination span {
+    align-self: center;
+}
+
+.pad-pagination >span {
+    font-size: 20px;
+}
