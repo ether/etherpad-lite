@@ -55,8 +55,16 @@ try pnpm install
 try pnpm run build
 cd ..
 
+
+
+
 # Nuke the admin folder as it is not needed anymore :D
 rm -rf admin
+
+export NODE_ENV=production
+try pnpm install --production
+
+
 
 log "copy the windows settings template..."
 try cp settings.json.template settings.json
