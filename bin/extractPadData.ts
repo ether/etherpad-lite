@@ -8,9 +8,8 @@
 
 // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
-import util from "util";
-import process from "process";
-import dirtyDB from "ueberdb2";
+import util from "node:util";
+import process from "node:process";
 process.on('unhandledRejection', (err) => { throw err; });
 if (process.argv.length !== 3) throw new Error('Use: node extractPadData.js $PADID');
 
@@ -40,7 +39,7 @@ const padId = process.argv[2];
   const pad = await padManager.getPad(padId);
 
   // add all authors
-  neededDBValues.push(...pad.getAllAuthors().map((author) => `globalAuthor:${author}`));
+  neededDBValues.push(...pad.getAllAuthors().map((author: string) => `globalAuthor:${author}`));
 
   // add all revisions
   for (let rev = 0; rev <= pad.head; ++rev) {

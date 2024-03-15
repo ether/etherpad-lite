@@ -5,10 +5,10 @@
 
 // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
-import path from "path";
+import path from "node:path";
 
-import fs from "fs";
-import process from "process";
+import fs from "node:fs";
+import process from "node:process";
 
 process.on('unhandledRejection', (err) => { throw err; });
 import axios from 'axios'

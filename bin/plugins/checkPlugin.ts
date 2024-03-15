@@ -10,18 +10,18 @@
  *                              node bin/plugins/checkPlugin.js ep_whatever autopush
  */
 
-import process from 'process';
+import process from 'node:process';
 
 // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
 process.on('unhandledRejection', (err) => { throw err; });
 
 import {strict as assert} from 'assert';
-import fs from 'fs';
+import fs from 'node:fs';
 const fsp = fs.promises;
-import childProcess from 'child_process';
+import childProcess from 'node:child_process';
 import log4js from 'log4js';
-import path from 'path';
+import path from 'node:path';
 
 const logger = log4js.getLogger('checkPlugin');
 

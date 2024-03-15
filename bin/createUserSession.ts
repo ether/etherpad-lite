@@ -7,11 +7,11 @@
 
 // As of v14, Node.js does not exit when there is an unhandled Promise rejection. Convert an
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
-import fs from "fs";
+import fs from "node:fs";
 
-import path from "path";
+import path from "node:path";
 
-import querystring from "querystring";
+import querystring from "node:querystring";
 
 import axios from 'axios'
 

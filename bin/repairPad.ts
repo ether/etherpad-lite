@@ -1,6 +1,6 @@
 'use strict';
 
-import process from "process";
+import process from "node:process";
 
 /*
  * This is a repair tool. It extracts all datas of a pad, removes and inserts them again.

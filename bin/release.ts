@@ -4,12 +4,12 @@
 // unhandled rejection into an uncaught exception, which does cause Node.js to exit.
 process.on('unhandledRejection', (err) => { throw err; });
 
-import fs from 'fs';
-import childProcess from 'child_process';
+import fs from 'node:fs';
+import childProcess from 'node:child_process';
 import log4js from 'log4js';
-import path from 'path';
+import path from 'node:path';
 import semver from 'semver';
-import {exec} from 'child_process';
+import {exec} from 'node:child_process';
 
 log4js.configure({appenders: {console: {type: 'console'}},
   categories: {
