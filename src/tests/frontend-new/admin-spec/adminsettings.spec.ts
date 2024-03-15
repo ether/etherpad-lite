@@ -1,6 +1,5 @@
 import {expect, test} from "@playwright/test";
 import {loginToAdmin, restartEtherpad, saveSettings} from "../helper/adminhelper";
-import exp from "node:constants";
 
 test.beforeEach(async ({ page })=>{
     await loginToAdmin(page, 'admin', 'changeme1');

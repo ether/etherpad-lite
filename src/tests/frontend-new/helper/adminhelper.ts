@@ -7,7 +7,7 @@ export const loginToAdmin = async (page: Page, username: string, password: strin
     await page.waitForSelector('input[name="username"]');
     await page.fill('input[name="username"]', username);
     await page.fill('input[name="password"]', password);
-    await page.click('input[type="button"]');
+    await page.click('input[type="submit"]');
 }
 
 
