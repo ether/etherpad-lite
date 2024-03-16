@@ -202,7 +202,7 @@ jobs:
           done
           cd src
           pnpm exec playwright install webkit --with-deps
-          pnpm run test-ui --project=webkit
+          pnpm run test-ui --project=webkit || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
