@@ -25,6 +25,7 @@
     "createUserSession": "node --import tsx createUserSession.ts",
     "deletePad": "node --import tsx deletePad.ts",
     "repairPad": "node --import tsx repairPad.ts",
+    "release": "node --import tsx release.ts",
     "deleteAllGroupSessions": "node --import tsx deleteAllGroupSessions.ts",
     "importSqlFile": "node --import tsx importSqlFile.ts",
     "migrateDirtyDBtoRealDB": "node --import tsx migrateDirtyDBtoRealDB.ts",
