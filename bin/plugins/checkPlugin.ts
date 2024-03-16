@@ -1,5 +1,3 @@
-'use strict';
-
 /*
  * Usage -- see README.md
  *
@@ -22,9 +20,13 @@ const fsp = fs.promises;
 import childProcess from 'node:child_process';
 import log4js from 'log4js';
 import path from 'node:path';
+import semver from "semver";
 
 const logger = log4js.getLogger('checkPlugin');
-
+log4js.configure({
+  appenders: { console: { type: "console" } },
+  categories: { default: { appenders: ["console"], level: "info" } },
+});
 (async () => {
   // get plugin name & path from user input
   const pluginName = process.argv[2];
@@ -50,6 +52,7 @@ const logger = log4js.getLogger('checkPlugin');
   }) || '').toString().replace(/\n+$/, '');
 
   const writePackageJson = async (obj: object) => {
+    console.log("writing package.json",obj)
     let s = JSON.stringify(obj, null, 2);
     if (s.length && s.slice(s.length - 1) !== '\n') s += '\n';
     return await fsp.writeFile(`${pluginPath}/package.json`, s);
@@ -74,9 +77,20 @@ const logger = log4js.getLogger('checkPlugin');
 
   const updateDeps = async (parsedPackageJson: any, key: string, wantDeps: {
     [key: string]: string | {ver?: string, overwrite?: boolean}|null
-  }) => {
+  }|string) => {
     const {[key]: deps = {}} = parsedPackageJson;
     let changed = false;
+
+    if (typeof wantDeps === 'string') {
+      if (deps !== wantDeps) {
+        logger.warn(`Dependency mismatch in ${key}: '${wantDeps}' (current: ${deps})`);
+        if (autoFix) {
+          parsedPackageJson[key] = wantDeps;
+          await writePackageJson(parsedPackageJson);
+        }
+      }
+      return;
+    }
     for (const [pkg, verInfo] of Object.entries(wantDeps)) {
       const {ver, overwrite = true} =
           typeof verInfo === 'string' || verInfo == null ? {ver: verInfo} : verInfo;
@@ -101,7 +115,12 @@ const logger = log4js.getLogger('checkPlugin');
 
   const prepareRepo = () => {
     const modified = execSync('git diff-files --name-status');
-    if (modified !== '') throw new Error(`working directory has modifications:\n${modified}`);
+    if (modified !== '') {
+      logger.warn('working directory has modifications');
+      if (autoFix)
+      execSync('git stash', {stdio: 'inherit'})
+      //throw new Error(`working directory has modifications:\n${modified}`);
+    }
     const untracked = execSync('git ls-files -o --exclude-standard');
     if (untracked !== '') throw new Error(`working directory has untracked files:\n${untracked}`);
     const indexStatus = execSync('git diff-index --cached --name-status HEAD');
@@ -111,7 +130,7 @@ const logger = log4js.getLogger('checkPlugin');
       br = execSync('git symbolic-ref HEAD');
       if (!br.startsWith('refs/heads/')) throw new Error('detached HEAD');
       br = br.replace(/^refs\/heads\//, '');
-      execSync('git rev-parse --verify -q HEAD^0 || ' +
+      execSync('git rev-parse --verify -q HEAD || ' +
                `{ echo "Error: no commits on ${br}" >&2; exit 1; }`);
       execSync('git config --get user.name');
       execSync('git config --get user.email');
@@ -159,7 +178,7 @@ const logger = log4js.getLogger('checkPlugin');
   if (!files.includes('.git')) throw new Error('No .git folder, aborting');
   prepareRepo();
 
-  const workflows = ['backend-tests.yml', 'frontend-tests.yml', 'npmpublish.yml', ''];
+  const workflows = ['backend-tests.yml', 'frontend-tests.yml', 'npmpublish.yml', 'test-and-release.yml'];
   await Promise.all(workflows.map(async (fn) => {
     await checkFile(`bin/plugins/lib/${fn}`, `.github/workflows/${fn}`);
   }));
@@ -174,9 +193,9 @@ const logger = log4js.getLogger('checkPlugin');
 
     await updateDeps(parsedPackageJSON, 'devDependencies', {
       'eslint': '^8.57.0',
-      'eslint-config-etherpad': '^3.0.22',
+      'eslint-config-etherpad': '^4.0.4',
       // Changing the TypeScript version can break plugin code, so leave it alone if present.
-      'typescript': {ver: '^5.4.2', overwrite: false},
+      'typescript': {ver: '^5.4.2', overwrite: true},
       // These were moved to eslint-config-etherpad's dependencies so they can be removed:
       '@typescript-eslint/eslint-plugin': null,
       '@typescript-eslint/parser': null,
@@ -191,10 +210,23 @@ const logger = log4js.getLogger('checkPlugin');
       'eslint-plugin-you-dont-need-lodash-underscore': null,
     });
 
+    const currentVersion = semver.parse(parsedPackageJSON.version)!;
+    const newVersion = currentVersion.inc('patch');
+
+    await updateDeps(parsedPackageJSON, 'version', newVersion.version)
+
+
+    await updateDeps(parsedPackageJSON, 'peerDependencies', {
+      // These were moved to eslint-config-etherpad's dependencies so they can be removed:
+      'ep_etherpad-lite': null,
+    });
+
     /*await updateDeps(parsedPackageJSON, 'peerDependencies', {
       // Some plugins require a newer version of Etherpad so don't overwrite if already set.
       'ep_etherpad-lite': {ver: '>=1.8.6', overwrite: false},
     });*/
+
+    delete parsedPackageJSON.peerDependencies;
 
     await updateDeps(parsedPackageJSON, 'engines', {
       node: '>=18.0.0',
@@ -230,15 +262,22 @@ const logger = log4js.getLogger('checkPlugin');
     if (checkEntries(parsedPackageJSON.scripts, {
       'lint': 'eslint .',
       'lint:fix': 'eslint --fix .',
-    })) await writePackageJson(parsedPackageJSON);
+    }))
+      await writePackageJson(parsedPackageJSON);
   }
 
-  if (!files.includes('package-lock.json')) {
-    logger.warn('package-lock.json not found');
+  if (!files.includes('pnpm-lock.yaml')) {
+    logger.warn('pnpm-lock.yaml not found');
     if (!autoFix) {
       logger.warn('Run pnpm install in the plugin folder and commit the package-lock.json file.');
     } else {
         logger.info('Autofixing missing package-lock.json file');
+        try {
+          fs.statfsSync(`${pluginPath}/package-lock.json`)
+          fs.rmSync(`${pluginPath}/package-lock.json`)
+        } catch (e) {
+          // Nothing to do
+        }
         execSync('pnpm install', {
             cwd: `${pluginPath}/`,
             stdio: 'inherit',
@@ -366,20 +405,20 @@ const logger = log4js.getLogger('checkPlugin');
 
   // Install dependencies so we can run ESLint. This should also create or update package-lock.json
   // if autoFix is enabled.
-  const npmInstall = `pnpm install${autoFix ? '' : ' --no-package-lock'}`;
+  const npmInstall = `pnpm install`;
   execSync(npmInstall, {stdio: 'inherit'});
   // Create the ep_etherpad-lite symlink if necessary. This must be done after running `npm install`
   // because that command nukes the symlink.
-  try {
+  /*try {
     const d = await fsp.realpath(path.join(pluginPath, 'node_modules/ep_etherpad-lite'));
     assert.equal(d, epSrcDir);
   } catch (err) {
     execSync(`${npmInstall} --no-save ep_etherpad-lite@file:${epSrcDir}`, {stdio: 'inherit'});
-  }
+  }*/
   // linting begins
   try {
     logger.info('Linting...');
-    const lintCmd = autoFix ? 'npx eslint --fix .' : 'npx eslint';
+    const lintCmd = autoFix ? 'pnpm exec eslint --fix .' : 'npx eslint';
     execSync(lintCmd, {stdio: 'inherit'});
   } catch (e) {
     // it is gonna throw an error anyway
@@ -388,28 +427,40 @@ const logger = log4js.getLogger('checkPlugin');
   // linting ends.
 
   if (autoFix) {
-    const unchanged = JSON.parse(execSync(
+    /*const unchanged = JSON.parse(execSync(
         'untracked=$(git ls-files -o --exclude-standard) || exit 1; ' +
-        'git diff-files --quiet && [ -z "$untracked" ] && echo true || echo false'));
-    if (!unchanged) {
+        'git diff-files --quiet && [ -z "$untracked" ] && echo true || echo false'));*/
+
+    if (true) {
       // Display a diff of changes. Git doesn't diff untracked files, so they must be added to the
       // index. Use a temporary index file to avoid modifying Git's default index file.
-      execSync('git read-tree HEAD; git add -A && git diff-index -p --cached HEAD && echo ""', {
+      execSync('git read-tree HEAD', {
         env: {...process.env, GIT_INDEX_FILE: '.git/checkPlugin.index'},
         stdio: 'inherit',
       });
+      execSync('git add -A', {
+        env: {...process.env, GIT_INDEX_FILE: '.git/checkPlugin.index'},
+        stdio: 'inherit',
+      });
+      execSync('git diff-index -p --cached HEAD', {
+        env: {...process.env, GIT_INDEX_FILE: '.git/checkPlugin.index'},
+        stdio: 'inherit',
+      });
+
       await fsp.unlink(`${pluginPath}/.git/checkPlugin.index`);
 
       const commitCmd = [
         'git add -A',
         'git commit -m "autofixes from Etherpad checkPlugin.js"',
-      ].join(' && ');
+      ]
+
       if (autoCommit) {
         logger.info('Committing changes...');
-        execSync(commitCmd, {stdio: 'inherit'});
+        execSync(commitCmd[0], {stdio: 'inherit'});
+        execSync(commitCmd[1], {stdio: 'inherit'});
       } else {
         logger.info('Fixes applied. Check the above git diff then run the following command:');
-        logger.info(`(cd node_modules/${pluginName} && ${commitCmd})`);
+        logger.info(`(cd node_modules/${pluginName} && ${commitCmd.join(' && ')})`);
       }
       const pushCmd = 'git push';
       if (autoPush) {
