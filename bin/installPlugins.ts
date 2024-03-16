@@ -19,7 +19,7 @@ if (thirdOptPlug && thirdOptPlug.includes('path')) {
   installFromPath = true
 }
 
-plugins.indexOf('--path') !== -1 && plugins.splice(plugins.indexOf('--path'), 1);
+plugins = plugins.splice(plugins.indexOf('--path'), 1);
 
 const persistInstalledPlugins = async () => {
   const plugins:PackageData[] = []
@@ -41,6 +41,7 @@ async function run() {
         await linkInstaller.installFromPath(plugin);
         continue;
     }
+    console.log(`Installing plugin from registry: ${plugin}`)
     await linkInstaller.installPlugin(plugin);
   }
 }
