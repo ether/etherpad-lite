@@ -10,7 +10,16 @@ if (process.argv.length === 2) {
   process.exit(1);
 }
 
-const plugins = process.argv.slice(2);
+let plugins = process.argv.slice(2)
+let installFromPath = false;
+
+const thirdOptPlug = plugins[3]
+
+if (thirdOptPlug && thirdOptPlug.includes('path')) {
+  installFromPath = true
+}
+
+plugins.indexOf('--path') !== -1 && plugins.splice(plugins.indexOf('--path'), 2);
 
 const persistInstalledPlugins = async () => {
   const plugins:PackageData[] = []
@@ -27,6 +36,10 @@ const persistInstalledPlugins = async () => {
 
 async function run() {
   for (const plugin of plugins) {
+    if(installFromPath) {
+        await linkInstaller.installFromPath(plugin);
+        continue;
+    }
     await linkInstaller.installPlugin(plugin);
   }
 }
