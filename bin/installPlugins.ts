@@ -19,7 +19,7 @@ if (thirdOptPlug && thirdOptPlug.includes('path')) {
   installFromPath = true
 }
 
-plugins.indexOf('--path') !== -1 && plugins.splice(plugins.indexOf('--path'), 2);
+plugins.indexOf('--path') !== -1 && plugins.splice(plugins.indexOf('--path'), 1);
 
 const persistInstalledPlugins = async () => {
   const plugins:PackageData[] = []
@@ -37,6 +37,7 @@ const persistInstalledPlugins = async () => {
 async function run() {
   for (const plugin of plugins) {
     if(installFromPath) {
+      console.log(`Installing plugin from path: ${plugin}`);
         await linkInstaller.installFromPath(plugin);
         continue;
     }
