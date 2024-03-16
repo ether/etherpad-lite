@@ -152,14 +152,8 @@ try {
   writeJson('./src/package.json', pkg);
 
   // run npm version `release` where release is patch, minor or major
-  run('npm install --package-lock-only', {cwd: 'src/'});
+  run('pnpm install', {cwd: 'src/'});
   // run npm install --package-lock-only <-- required???
-
-  // Many users will be using the latest LTS version of npm, and the latest LTS version of npm uses
-  // lockfileVersion 1. Enforce v1 so that users don't see a (benign) compatibility warning.
-  const pkglock = readJson('./src/package-lock.json');
-  pkglock.lockfileVersion = 1;
-  writeJson('./src/package-lock.json', pkglock);
 
   run('git add src/package.json');
   run('git add src/package-lock.json');
@@ -201,7 +195,7 @@ try {
   run('git pull --ff-only', {cwd: '../ether.github.com/'});
   console.log('Committing documentation...');
   run(`cp -R out/doc/ ../ether.github.com/public/doc/v'${newVersion}'`);
-  run(`npm version ${newVersion}`, {cwd: '../ether.github.com'});
+  run(`pnpm version ${newVersion}`, {cwd: '../ether.github.com'});
   run('git add .', {cwd: '../ether.github.com/'});
   run(`git commit -m '${newVersion} docs'`, {cwd: '../ether.github.com/'});
 } catch (err:any) {

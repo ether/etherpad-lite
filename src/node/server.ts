@@ -25,7 +25,7 @@
 import {PluginType} from "./types/Plugin";
 import {ErrorCaused} from "./types/ErrorCaused";
 import log4js from 'log4js';
-
+import pkg from '../package.json';
 import {checkForMigration} from "../static/js/pluginfw/installer";
 
 const settings = require('./utils/Settings');
@@ -42,8 +42,8 @@ if (settings.dumpOnUncleanExit) {
  * any modules that require newer versions of NodeJS
  */
 const NodeVersion = require('./utils/NodeVersion');
-NodeVersion.enforceMinNodeVersion('12.17.0');
-NodeVersion.checkDeprecationStatus('12.17.0', '1.9.0');
+NodeVersion.enforceMinNodeVersion(pkg.engines.node.replace(">=", ""));
+NodeVersion.checkDeprecationStatus(pkg.engines.node.replace(">=", ""), '2.1.0');
 
 const UpdateCheck = require('./utils/UpdateCheck');
 const db = require('./db/DB');
