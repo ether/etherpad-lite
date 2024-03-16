@@ -159,7 +159,7 @@ const logger = log4js.getLogger('checkPlugin');
   if (!files.includes('.git')) throw new Error('No .git folder, aborting');
   prepareRepo();
 
-  const workflows = ['backend-tests.yml', 'frontend-tests.yml', 'npmpublish.yml'];
+  const workflows = ['backend-tests.yml', 'frontend-tests.yml', 'npmpublish.yml', ''];
   await Promise.all(workflows.map(async (fn) => {
     await checkFile(`bin/plugins/lib/${fn}`, `.github/workflows/${fn}`);
   }));
@@ -236,7 +236,7 @@ const logger = log4js.getLogger('checkPlugin');
   if (!files.includes('package-lock.json')) {
     logger.warn('package-lock.json not found');
     if (!autoFix) {
-      logger.warn('Run npm install in the plugin folder and commit the package-lock.json file.');
+      logger.warn('Run pnpm install in the plugin folder and commit the package-lock.json file.');
     } else {
         logger.info('Autofixing missing package-lock.json file');
         execSync('pnpm install', {
@@ -366,7 +366,7 @@ const logger = log4js.getLogger('checkPlugin');
 
   // Install dependencies so we can run ESLint. This should also create or update package-lock.json
   // if autoFix is enabled.
-  const npmInstall = `npm install${autoFix ? '' : ' --no-package-lock'}`;
+  const npmInstall = `pnpm install${autoFix ? '' : ' --no-package-lock'}`;
   execSync(npmInstall, {stdio: 'inherit'});
   // Create the ep_etherpad-lite symlink if necessary. This must be done after running `npm install`
   // because that command nukes the symlink.
@@ -383,7 +383,7 @@ const logger = log4js.getLogger('checkPlugin');
     execSync(lintCmd, {stdio: 'inherit'});
   } catch (e) {
     // it is gonna throw an error anyway
-    logger.info('Manual linting probably required, check with: npm run lint');
+    logger.info('Manual linting probably required, check with: pnpm run lint');
   }
   // linting ends.
 
