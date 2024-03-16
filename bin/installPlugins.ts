@@ -13,13 +13,14 @@ if (process.argv.length === 2) {
 let plugins = process.argv.slice(2)
 let installFromPath = false;
 
-const thirdOptPlug = plugins[3]
+const thirdOptPlug = plugins[0]
 
+console.log("Third option: ", thirdOptPlug)
 if (thirdOptPlug && thirdOptPlug.includes('path')) {
   installFromPath = true
+  plugins.splice(plugins.indexOf('--path'), 1);
 }
 
-plugins = plugins.splice(plugins.indexOf('--path'), 1);
 
 const persistInstalledPlugins = async () => {
   const plugins:PackageData[] = []
