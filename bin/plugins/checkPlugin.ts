@@ -35,7 +35,7 @@ const logger = log4js.getLogger('checkPlugin');
   const epRootDir = await fsp.realpath(path.join(await fsp.realpath(__dirname), '../..'));
   logger.info(`Etherpad root directory: ${epRootDir}`);
   process.chdir(epRootDir);
-  const pluginPath = await fsp.realpath(`node_modules/${pluginName}`);
+  const pluginPath = await fsp.realpath(`../${pluginName}`);
   logger.info(`Plugin directory: ${pluginPath}`);
   const epSrcDir = await fsp.realpath(path.join(epRootDir, 'src'));
 
@@ -173,10 +173,10 @@ const logger = log4js.getLogger('checkPlugin');
     const parsedPackageJSON = JSON.parse(packageJSON);
 
     await updateDeps(parsedPackageJSON, 'devDependencies', {
-      'eslint': '^8.14.0',
-      'eslint-config-etherpad': '^3.0.13',
+      'eslint': '^8.57.0',
+      'eslint-config-etherpad': '^3.0.22',
       // Changing the TypeScript version can break plugin code, so leave it alone if present.
-      'typescript': {ver: '^4.6.4', overwrite: false},
+      'typescript': {ver: '^5.4.2', overwrite: false},
       // These were moved to eslint-config-etherpad's dependencies so they can be removed:
       '@typescript-eslint/eslint-plugin': null,
       '@typescript-eslint/parser': null,
@@ -216,7 +216,7 @@ const logger = log4js.getLogger('checkPlugin');
         logger.error(`both ${from} and ${to} exist; delete ${from}`);
       }
     } else {
-      checkFile('bin/plugins/lib/eslintrc.cjs', '.eslintrc.cjs', false);
+      await checkFile('bin/plugins/lib/eslintrc.cjs', '.eslintrc.cjs', false);
     }
 
     if (checkEntries(parsedPackageJSON, {
@@ -237,6 +237,12 @@ const logger = log4js.getLogger('checkPlugin');
     logger.warn('package-lock.json not found');
     if (!autoFix) {
       logger.warn('Run npm install in the plugin folder and commit the package-lock.json file.');
+    } else {
+        logger.info('Autofixing missing package-lock.json file');
+        execSync('pnpm install', {
+            cwd: `${pluginPath}/`,
+            stdio: 'inherit',
+        });
     }
   }
 

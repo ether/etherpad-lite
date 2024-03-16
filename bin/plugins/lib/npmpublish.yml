@@ -4,72 +4,21 @@
 name: Node.js Package
 
 on:
-  pull_request:
-  push:
-    branches:
-      - main
-      - master
+  workflow_call:
 
 jobs:
-  test:
+  publish-npm:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      # Clone ether/etherpad-lite to ../etherpad-lite so that ep_etherpad-lite
-      # can be "installed" in this plugin's node_modules. The checkout v2 action
-      # doesn't support cloning outside of $GITHUB_WORKSPACE (see
-      # https://github.com/actions/checkout/issues/197), so the repo is first
-      # cloned to etherpad-lite then moved to ../etherpad-lite. To avoid
-      # conflicts with this plugin's clone, etherpad-lite must be cloned and
-      # moved out before this plugin's repo is cloned to $GITHUB_WORKSPACE.
-      -
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+      - name: Check out Etherpad core
         uses: actions/checkout@v3
         with:
           repository: ether/etherpad-lite
-          path: etherpad-lite
-      -
-        run: mv etherpad-lite ..
-      # etherpad-lite has been moved outside of $GITHUB_WORKSPACE, so it is now
-      # safe to clone this plugin's repo to $GITHUB_WORKSPACE.
-      -
-        uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v3
-        name: Install pnpm
-        with:
-          version: 8
-          run_install: false
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-      - uses: actions/cache@v4
-        name: Setup pnpm cache
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-      # All of ep_etherpad-lite's devDependencies are installed because the
-      # plugin might do `require('ep_etherpad-lite/node_modules/${devDep}')`.
-      # Eventually it would be nice to create an ESLint plugin that prohibits
-      # Etherpad plugins from piggybacking off of ep_etherpad-lite's
-      # devDependencies. If we had that, we could change this line to only
-      # install production dependencies.
-      - run: pnpm i && pnpm link --global
-      -
-        run: cd ../etherpad-lite/src && pnpm i && pnpm link $PLUGIN_NAME
-
-      -
-        run: pnpm run test
-      -
-        run: npm run lint
-
-  publish-npm:
-    if: github.event_name == 'push'
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      -
-        uses: actions/checkout@v3
       - uses: pnpm/action-setup@v3
         name: Install pnpm
         with:
@@ -116,11 +65,11 @@ jobs:
       # back-to-back merges will cause the first merge's workflow to fail but
       # the second's will succeed.
       -
-        run: npm publish
+        run: pnpm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      -
-        name: Add package to etherpad organization
-        run: npm access grant read-write etherpad:developers
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      #-
+      #  name: Add package to etherpad organization
+      #  run: pnpm access grant read-write etherpad:developers
+      #  env:
+      #    NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

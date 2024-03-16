@@ -1,7 +1,8 @@
-name: "Backend tests"
+name: Backend Tests
 
 # any branch is useful for testing before a PR is submitted
-on: [push, pull_request]
+on:
+  workflow_call:
 
 jobs:
   withplugins:
@@ -12,7 +13,6 @@ jobs:
       || (github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id)
     name: with Plugins
     runs-on: ubuntu-latest
-
     steps:
       -
         name: Install libreoffice
@@ -25,28 +25,12 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: ether/etherpad-lite
-      -
-        name: Checkout plugin repository
-        uses: actions/checkout@v3
-        with:
-          path: ./node_modules/__tmp
-      -
-        name: Determine plugin name
-        id: plugin_name
-        run: |
-          cd ./node_modules/__tmp
-          npx -c 'printf %s\\n "::set-output name=plugin_name::${npm_package_name}"'
-      -
-        name: Rename plugin directory
-        run: |
-          mv ./node_modules/__tmp ./node_modules/"${PLUGIN_NAME}"
-        env:
-          PLUGIN_NAME: ${{ steps.plugin_name.outputs.plugin_name }}
+          path: etherpad-lite
       - uses: pnpm/action-setup@v3
         name: Install pnpm
         with:
-        version: 8
-        run_install: false
+          version: 8
+          run_install: false
       - name: Get pnpm store directory
         shell: bash
         run: |
@@ -58,18 +42,45 @@ jobs:
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
-      # Etherpad core dependencies must be installed after installing the
-      # plugin's dependencies, otherwise npm will try to hoist common
-      # dependencies by removing them from src/node_modules and installing them
-      # in the top-level node_modules. As of v6.14.10, npm's hoist logic appears
-      # to be buggy, because it sometimes removes dependencies from
-      # src/node_modules but fails to add them to the top-level node_modules.
-      # Even if npm correctly hoists the dependencies, the hoisting seems to
-      # confuse tools such as `npm outdated`, `npm update`, and some ESLint
-      # rules.
+      -
+        name: Checkout plugin repository
+        uses: actions/checkout@v3
+        with:
+          path: plugin
+      -
+        name: Determine plugin name
+        id: plugin_name
+        working-directory: ./plugin
+        run: |
+          npx -c 'printf %s\\n "::set-output name=plugin_name::${npm_package_name}"'
+      -
+        name: Link plugin directory
+        working-directory: ./plugin
+        run: |
+          pnpm link --global
+      - name: Remove tests
+        working-directory: ./etherpad-lite
+        run: rm -rf ./src/tests/backend/specs
       -
         name: Install Etherpad core dependencies
+        working-directory: ./etherpad-lite
         run: bin/installDeps.sh
+      - name: Link plugin to etherpad-lite
+        working-directory: ./etherpad-lite
+        run: |
+          pnpm link --global $PLUGIN_NAME
+          pnpm run install-plugins --path  ../../plugin
+        env:
+          PLUGIN_NAME: ${{ steps.plugin_name.outputs.plugin_name }}
+      - name: Link ep_etherpad-lite
+        working-directory: ./etherpad-lite/src
+        run: |
+          pnpm link --global
+      - name: Link etherpad to plugin
+        working-directory: ./plugin
+        run: |
+          pnpm link --global ep_etherpad-lite
       -
         name: Run the backend tests
+        working-directory: ./etherpad-lite
         run: pnpm run test

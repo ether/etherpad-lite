@@ -1,11 +1,12 @@
 # Publicly credit Sauce Labs because they generously support open source
 # projects.
-name: "Frontend Tests"
+name: Frontend Tests
 
-on: [push]
+on:
+  workflow_call:
 
 jobs:
-  test:
+  test-frontend:
     runs-on: ubuntu-latest
 
     steps:
