@@ -23,17 +23,30 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-          cache-dependency-path: |
-            src/package-lock.json
-            src/bin/doc/package-lock.json
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
       -
         name: docker network
         run: docker network create --subnet=172.23.42.0/16 ep_net
       -
         name: build docker image
         run: |
-          docker build -f Dockerfile -t epl-debian-slim .
+          docker build -f Dockerfile -t epl-debian-slim --build-arg NODE_ENV=develop .
           docker build -f src/tests/ratelimit/Dockerfile.nginx -t nginx-latest .
           docker build -f src/tests/ratelimit/Dockerfile.anotherip -t anotherip .
       -
@@ -44,7 +57,7 @@ jobs:
           docker run --rm --network ep_net --ip 172.23.42.3 --name anotherip -dt anotherip
       -
         name: install dependencies and create symlink for ep_etherpad-lite
-        run: src/bin/installDeps.sh
+        run: bin/installDeps.sh
       -
         name: run rate limit test
         run: |

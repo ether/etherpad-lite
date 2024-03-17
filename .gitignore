@@ -6,6 +6,7 @@ node_modules
 APIKEY.txt
 SESSIONKEY.txt
 var/dirty.db
+.env
 *~
 *.patch
 npm-debug.log
@@ -22,3 +23,7 @@ out/
 /src/bin/etherpad-1.deb
 /src/bin/node.exe
 plugin_packages
+/src/templates/admin
+/src/test-results
+playwright-report
+state.json

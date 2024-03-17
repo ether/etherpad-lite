@@ -2,9 +2,11 @@
 	"@metadata": {
 		"authors": [
 			"Anakmalaysia",
+			"Hakimi97",
 			"Jeluang Terluang"
 		]
 	},
+	"admin.page-title": "Papan muka Penyelia - Etherpad",
 	"index.newPad": "Pad baru",
 	"index.createOpenPad": "atau cipta/buka Pad yang bernama:",
 	"pad.toolbar.bold.title": "Tebal (Ctrl-B)",

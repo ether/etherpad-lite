@@ -30,6 +30,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          target: production
           load: true
           tags: ${{ env.TEST_TAG }}
           cache-from: type=gha
@@ -39,16 +40,28 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
-          cache: 'npm'
-          cache-dependency-path: |
-            src/package-lock.json
-            src/bin/doc/package-lock.json
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
       -
         name: Test
         run: |
           docker run --rm -d -p 9001:9001 --name test ${{ env.TEST_TAG }}
+          ./bin/installDeps.sh
           docker logs -f test &
-          ./src/bin/installDeps.sh
           while true; do
             echo "Waiting for Docker container to start..."
             status=$(docker container inspect -f '{{.State.Health.Status}}' test) || exit 1
@@ -58,7 +71,7 @@ jobs:
               *) printf %s\\n "unexpected status: ${status}" >&2; exit 1;;
             esac
           done
-          (cd src && npm run test-container)
+          (cd src && pnpm run test-container)
           git clean -dxf .
       -
         name: Docker meta
@@ -85,6 +98,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          target: production
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}

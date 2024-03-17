@@ -4,8 +4,20 @@
 #
 # Author: muxator
 
-FROM node:lts-alpine
+FROM node:alpine as adminBuild
+
+WORKDIR /opt/etherpad-lite
+COPY ./admin ./admin
+RUN cd ./admin && npm install -g pnpm && pnpm install && pnpm run build --outDir ./dist
+
+
+FROM node:alpine as build
 LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
+
+# Set these arguments when building the image from behind a proxy
+ARG http_proxy=
+ARG https_proxy=
+ARG no_proxy=
 
 ARG TIMEZONE=
 
@@ -44,11 +56,6 @@ ARG INSTALL_ABIWORD=
 #   INSTALL_LIBREOFFICE=true
 ARG INSTALL_SOFFICE=
 
-# By default, Etherpad container is built and run in "production" mode. This is
-# leaner (development dependencies are not installed) and runs faster (among
-# other things, assets are minified & compressed).
-ENV NODE_ENV=production
-ENV ETHERPAD_PRODUCTION=true
 # Install dependencies required for modifying access.
 RUN apk add shadow bash
 # Follow the principle of least privilege: run as unprivileged user.
@@ -63,8 +70,6 @@ ARG EP_UID=5001
 ARG EP_GID=0
 ARG EP_SHELL=
 
-ENV NODE_ENV=production
-
 RUN groupadd --system ${EP_GID:+--gid "${EP_GID}" --non-unique} etherpad && \
     useradd --system ${EP_UID:+--uid "${EP_UID}" --non-unique} --gid etherpad \
         ${EP_HOME:+--home-dir "${EP_HOME}"} --create-home \
@@ -77,10 +82,11 @@ RUN mkdir -p "${EP_DIR}" && chown etherpad:etherpad "${EP_DIR}"
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199
 RUN  \
     mkdir -p /usr/share/man/man1 && \
-    npm install npm@6 -g  && \
+    npm install pnpm -g  && \
     apk update && apk upgrade && \
     apk add  \
         ca-certificates \
+        curl \
         git \
         ${INSTALL_ABIWORD:+abiword abiword-plugin-command} \
         ${INSTALL_SOFFICE:+libreoffice openjdk8-jre libreoffice-common}
@@ -89,32 +95,45 @@ USER etherpad
 
 WORKDIR "${EP_DIR}"
 
-COPY --chown=etherpad:etherpad ./ ./
+# etherpads version feature requires this. Only copy what is really needed
+COPY --chown=etherpad:etherpad ./.git/HEAD ./.git/HEAD
+COPY --chown=etherpad:etherpad ./.git/refs ./.git/refs
+COPY --chown=etherpad:etherpad ${SETTINGS} ./settings.json
+COPY --chown=etherpad:etherpad ./var ./var
+COPY --chown=etherpad:etherpad ./bin ./bin
+COPY --chown=etherpad:etherpad ./pnpm-workspace.yaml ./package.json ./
 
-# Plugins must be installed before installing Etherpad's dependencies, otherwise
-# npm will try to hoist common dependencies by removing them from
-# src/node_modules and installing them in the top-level node_modules. As of
-# v6.14.10, npm's hoist logic appears to be buggy, because it sometimes removes
-# dependencies from src/node_modules but fails to add them to the top-level
-# node_modules. Even if npm correctly hoists the dependencies, the hoisting
-# seems to confuse tools such as `npm outdated`, `npm update`, and some ESLint
-# rules.
-RUN { [ -z "${ETHERPAD_PLUGINS}" ] || \
-      npm install --no-save --legacy-peer-deps ${ETHERPAD_PLUGINS}; } && \
-    src/bin/installDeps.sh && \
-    rm -rf ~/.npm
+FROM build as development
+
+COPY --chown=etherpad:etherpad ./src/package.json .npmrc ./src/pnpm-lock.yaml ./src/
+COPY --chown=etherpad:etherpad --from=adminBuild /opt/etherpad-lite/admin/dist ./src/templates/admin
+
+RUN bin/installDeps.sh && \
+    { [ -z "${ETHERPAD_PLUGINS}" ] || pnpm run install-plugins ${ETHERPAD_PLUGINS}; }
+
+FROM build as production
+
+ENV NODE_ENV=production
+ENV ETHERPAD_PRODUCTION=true
+
+COPY --chown=etherpad:etherpad ./src ./src
+COPY --chown=etherpad:etherpad --from=adminBuild /opt/etherpad-lite/admin/dist ./src/templates/admin
+
+RUN bin/installDeps.sh && rm -rf ~/.npm && \
+    { [ -z "${ETHERPAD_PLUGINS}" ] || pnpm run install-plugins ${ETHERPAD_PLUGINS}; }
+
 
 # Copy the configuration file.
 COPY --chown=etherpad:etherpad ${SETTINGS} "${EP_DIR}"/settings.json
 
 # Fix group permissions
-RUN chmod -R g=u .
+# Note: For some reason increases image size from 257 to 334.
+# RUN chmod -R g=u .
 
-USER root
-RUN cd src && npm link
 USER etherpad
 
-HEALTHCHECK --interval=20s --timeout=3s CMD ["etherpad-healthcheck"]
+HEALTHCHECK --interval=5s --timeout=3s \
+  CMD curl --silent http://localhost:9001/health | grep -E "pass|ok|up" > /dev/null || exit 1
 
 EXPOSE 9001
-CMD ["etherpad"]
+CMD ["pnpm", "run", "prod"]

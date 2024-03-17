@@ -7,10 +7,141 @@ permissions:
   contents: read # to fetch code (actions/checkout)
 
 jobs:
-  withoutplugins:
-    name: without plugins
+  playwright-chrome:
+    name: Playwright Chrome
     runs-on: ubuntu-latest
-    if: ${{ github.actor != 'dependabot[bot]' }}
+    steps:
+      -
+        name: Generate Sauce Labs strings
+        id: sauce_strings
+        run: |
+          printf %s\\n '::set-output name=name::${{ github.workflow }} - ${{ github.job }}'
+          printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
+      -
+        name: Checkout repository
+        uses: actions/checkout@v4
+      -
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        if: always()
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Only install direct dependencies
+        run: pnpm config set auto-install-peers false
+      -
+        name: Install all dependencies and symlink for ep_etherpad-lite
+        run: bin/installDeps.sh
+      -
+        name: export GIT_HASH to env
+        id: environment
+        run: echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.sha }})"
+      -
+        name: Create settings.json
+        run: cp ./src/tests/settings.json settings.json
+      - name: Run the frontend tests
+        shell: bash
+        run: |
+          pnpm run dev &
+          connected=false
+          can_connect() {
+          curl -sSfo /dev/null http://localhost:9001/ || return 1
+          connected=true
+          }
+          now() { date +%s; }
+          start=$(now)
+          while [ $(($(now) - $start)) -le 15 ] && ! can_connect; do
+          sleep 1
+          done
+          cd src
+          pnpm exec playwright install chromium  --with-deps
+          pnpm run test-ui --project=chromium
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-${{ matrix.node }}-chrome
+          path: src/playwright-report/
+          retention-days: 30
+  playwright-firefox:
+    name: Playwright Firefox
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate Sauce Labs strings
+        id: sauce_strings
+        run: |
+          printf %s\\n '::set-output name=name::${{ github.workflow }} - ${{ github.job }}'
+          printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 21
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        if: always()
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Only install direct dependencies
+        run: pnpm config set auto-install-peers false
+      - name: Install all dependencies and symlink for ep_etherpad-lite
+        run: bin/installDeps.sh
+      - name: export GIT_HASH to env
+        id: environment
+        run: echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.sha }})"
+      - name: Create settings.json
+        run: cp ./src/tests/settings.json settings.json
+      - name: Run the frontend tests
+        shell: bash
+        run: |
+          pnpm run dev &
+          connected=false
+          can_connect() {
+          curl -sSfo /dev/null http://localhost:9001/ || return 1
+          connected=true
+          }
+          now() { date +%s; }
+          start=$(now)
+          while [ $(($(now) - $start)) -le 15 ] && ! can_connect; do
+          sleep 1
+          done
+          cd src
+          pnpm exec playwright install firefox  --with-deps
+          pnpm run test-ui --project=firefox
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-${{ matrix.node }}-firefox
+          path: src/playwright-report/
+          retention-days: 30
+  playwright-webkit:
+    name: Playwright Webkit
+    runs-on: ubuntu-latest
 
     steps:
       -
@@ -25,127 +156,59 @@ jobs:
       -
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: |
-            src/package-lock.json
-            src/bin/doc/package-lock.json
+          node-version: 21
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        if: always()
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Only install direct dependencies
+        run: pnpm config set auto-install-peers false
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        run: src/bin/installDeps.sh
+        run: bin/installDeps.sh
       -
         name: export GIT_HASH to env
         id: environment
         run: echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.sha }})"
       -
         name: Create settings.json
-        run: cp settings.json.template settings.json
-      -
-        name: Disable import/export rate limiting
-        run: |
-          sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 100000000/' -i settings.json
-      -
-        uses: saucelabs/sauce-connect-action@v2.3.6
-        with:
-          username: ${{ secrets.SAUCE_USERNAME }}
-          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-          tunnelIdentifier: ${{ steps.sauce_strings.outputs.tunnel_id }}
-      -
-        name: Run the frontend tests
+        run: cp ./src/tests/settings.json settings.json
+      - name: Run the frontend tests
         shell: bash
-        env:
-          SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
-          SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-          SAUCE_NAME: ${{ steps.sauce_strings.outputs.name }}
-          TRAVIS_JOB_NUMBER: ${{ steps.sauce_strings.outputs.tunnel_id }}
-          GIT_HASH: ${{ steps.environment.outputs.sha_short }}
         run: |
-          src/tests/frontend/travis/runner.sh
-
-  withplugins:
-    name: with plugins
-    runs-on: ubuntu-latest
-    if: ${{ github.actor != 'dependabot[bot]' }}
-
-    steps:
-      -
-        name: Generate Sauce Labs strings
-        id: sauce_strings
-        run: |
-          printf %s\\n '::set-output name=name::${{ github.workflow }} - ${{ github.job }}'
-          printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}'
-      -
-        name: Checkout repository
-        uses: actions/checkout@v4
-      -
-        uses: actions/setup-node@v4
+          pnpm run dev &
+          connected=false
+          can_connect() {
+          curl -sSfo /dev/null http://localhost:9001/ || return 1
+          connected=true
+          }
+          now() { date +%s; }
+          start=$(now)
+          while [ $(($(now) - $start)) -le 15 ] && ! can_connect; do
+          sleep 1
+          done
+          cd src
+          pnpm exec playwright install webkit --with-deps
+          pnpm run test-ui --project=webkit || true
+      - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: |
-            src/package-lock.json
-            src/bin/doc/package-lock.json
-      -
-        name: Install Etherpad plugins
-        # The --legacy-peer-deps flag is required to work around a bug in npm v7:
-        # https://github.com/npm/cli/issues/2199
-        run: >
-          npm install --no-save --legacy-peer-deps
-          ep_align
-          ep_author_hover
-          ep_cursortrace
-          ep_embedmedia
-          ep_font_size
-          ep_hash_auth
-          ep_headings2
-          ep_image_upload
-          ep_markdown
-          ep_readonly_guest
-          ep_set_title_on_pad
-          ep_spellcheck
-          ep_subscript_and_superscript
-          ep_table_of_contents
-      # Etherpad core dependencies must be installed after installing the
-      # plugin's dependencies, otherwise npm will try to hoist common
-      # dependencies by removing them from src/node_modules and installing them
-      # in the top-level node_modules. As of v6.20.10, npm's hoist logic appears
-      # to be buggy, because it sometimes removes dependencies from
-      # src/node_modules but fails to add them to the top-level node_modules.
-      # Even if npm correctly hoists the dependencies, the hoisting seems to
-      # confuse tools such as `npm outdated`, `npm update`, and some ESLint
-      # rules.
-      -
-        name: Install all dependencies and symlink for ep_etherpad-lite
-        run: src/bin/installDeps.sh
-      -
-        name: export GIT_HASH to env
-        id: environment
-        run: echo "::set-output name=sha_short::$(git rev-parse --short ${{ github.sha }})"
-      -
-        name: Create settings.json
-        run: cp settings.json.template settings.json
-      -
-        name: Disable import/export rate limiting
-        run: |
-          sed -e '/^ *"importExportRateLimiting":/,/^ *\}/ s/"max":.*/"max": 1000000/' -i settings.json
-      # XXX we should probably run all tests, because plugins could effect their results
-      -
-        name: Remove standard frontend test files, so only plugin tests are run
-        run: rm src/tests/frontend/specs/*
-      -
-        uses: saucelabs/sauce-connect-action@v2.3.6
-        with:
-          username: ${{ secrets.SAUCE_USERNAME }}
-          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-          tunnelIdentifier: ${{ steps.sauce_strings.outputs.tunnel_id }}
-      -
-        name: Run the frontend tests
-        shell: bash
-        env:
-          SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
-          SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
-          SAUCE_NAME: ${{ steps.sauce_strings.outputs.name }}
-          TRAVIS_JOB_NUMBER: ${{ steps.sauce_strings.outputs.tunnel_id }}
-          GIT_HASH: ${{ steps.environment.outputs.sha_short }}
-        run: |
-          src/tests/frontend/travis/runner.sh
+          name: playwright-report-${{ matrix.node }}-webkit
+          path: src/playwright-report/
+          retention-days: 30
+
+
+

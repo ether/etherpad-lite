@@ -28,23 +28,37 @@ jobs:
       -
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: |
-            src/package-lock.json
-            src/bin/doc/package-lock.json
+          node-version: 21
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Only install direct dependencies
+        run: pnpm config set auto-install-peers false
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
         shell: msys2 {0}
-        run: src/bin/installDeps.sh
+        run: bin/installDeps.sh
       -
         name: Run the backend tests
         shell: msys2 {0}
-        run: cd src && npm test
+        run: cd src && pnpm test
       -
         name: Build the .zip
         shell: msys2 {0}
-        run: src/bin/buildForWindows.sh
+        run: bin/buildForWindows.sh
       -
         name: Archive production artifacts
         uses: actions/upload-artifact@v4
@@ -75,9 +89,9 @@ jobs:
         run: 7z x etherpad-win.zip -oetherpad-zip
       -
         name: Create installer
-        uses: joncloud/makensis-action@v3.7
+        uses: joncloud/makensis-action@v4.1
         with:
-          script-file: 'src/bin/nsis/etherpad.nsi'
+          script-file: 'bin/nsis/etherpad.nsi'
       -
         name: Archive production artifacts
         uses: actions/upload-artifact@v4
@@ -109,27 +123,43 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-          cache-dependency-path: |
-            etherpad/src/package-lock.json
-            etherpad/src/bin/doc/package-lock.json
-      -
-        name: Install Cypress
-        run: cd etherpad && cd src && npm install cypress --legacy-peer-deps
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Only install direct dependencies
+        run: pnpm config set auto-install-peers false
+      - name: Install all dependencies and symlink for ep_etherpad-lite
+        run: .\bin\installOnWindows.bat
+        working-directory: etherpad
       -
         name: Run Etherpad
+        working-directory: etherpad/src
         run: |
-          cd etherpad
-          node node_modules\ep_etherpad-lite\node\server.js &
+          pnpm install cypress
+          .\node_modules\.bin\cypress.cmd install --force
+          pnpm run prod &
           curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
-          src\node_modules\cypress\bin\cypress run --config-file src\tests\frontendcypress\cypress.config.js
+          pnpm exec cypress run --config-file ./tests/frontend/cypress/cypress.config.js
       # On release, upload windows zip to GitHub release tab
       -
         name: Rename to etherpad-lite-win.zip
         shell: powershell
         run: mv etherpad-win.zip etherpad-lite-win.zip
       - name: upload binaries to release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         if: ${{startsWith(github.ref, 'refs/tags/v') }}
         with:
             files: etherpad-lite-win.zip

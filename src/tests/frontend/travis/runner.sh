@@ -10,9 +10,9 @@ try() { "$@" || fatal "'$@' failed"; }
 MY_DIR=$(try cd "${0%/*}" && try pwd -P) || exit 1
 try cd "${MY_DIR}/../../../.."
 
-log "Assuming src/bin/installDeps.sh has already been run"
-node src/node/server.js --experimental-worker "${@}" &
-ep_pid=$!
+log "Assuming bin/installDeps.sh has already been run"
+(cd src && npm run dev --experimental-worker "${@}" &
+ep_pid=$!)
 
 log "Waiting for Etherpad to accept connections (http://localhost:9001)..."
 connected=false

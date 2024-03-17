@@ -8,4 +8,5 @@ REM around this, everything must consistently use either `src` or
 REM `node_modules\ep_etherpad-lite` on Windows. Because some plugins access
 REM Etherpad internals via `require('ep_etherpad-lite/foo')`,
 REM `node_modules\ep_etherpad-lite` is used here.
-node node_modules\ep_etherpad-lite\node\server.js
+cd src
+pnpm run prod

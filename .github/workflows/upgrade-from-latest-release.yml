@@ -29,14 +29,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-          cache: 'npm'
-          cache-dependency-path: |
-            src/package-lock.json
-            src/bin/doc/package-lock.json
       -
         name: Install Etherpad plugins
-        # The --legacy-peer-deps flag is required to work around a bug in npm
-        # v7: https://github.com/npm/cli/issues/2199
+        # Important: Installer for old master which does not have pnpm right now
+        # The --legacy-peer-deps flag is required to work around a bug in npm v7:
+        # https://github.com/npm/cli/issues/2199
         run: >
           npm install --no-save --legacy-peer-deps
           ep_align
@@ -52,15 +49,6 @@ jobs:
           ep_spellcheck
           ep_subscript_and_superscript
           ep_table_of_contents
-      # Etherpad core dependencies must be installed after installing the
-      # plugin's dependencies, otherwise npm will try to hoist common
-      # dependencies by removing them from src/node_modules and installing them
-      # in the top-level node_modules. As of v6.14.10, npm's hoist logic appears
-      # to be buggy, because it sometimes removes dependencies from
-      # src/node_modules but fails to add them to the top-level node_modules.
-      # Even if npm correctly hoists the dependencies, the hoisting seems to
-      # confuse tools such as `npm outdated`, `npm update`, and some ESLint
-      # rules.
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
         run: src/bin/installDeps.sh
@@ -82,18 +70,44 @@ jobs:
         # For pull requests, ${GITHUB_SHA} is the automatically generated merge
         # commit that merges the PR's source branch to its destination branch.
         run: git checkout "${GITHUB_SHA}"
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+      - name: Only install direct dependencies
+        run: pnpm config set auto-install-peers false
+      -
+        name: Install libreoffice
+        uses: awalsh128/cache-apt-pkgs-action@v1.4.2
+        with:
+          packages: libreoffice libreoffice-pdfimport
+          version: 1.0
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        run: src/bin/installDeps.sh
+        run: bin/installDeps.sh
       -
         name: Run the backend tests
-        run: cd src && npm test
+        run: pnpm test
       -
         name: Install Cypress
-        run: cd src && npm install cypress --legacy-peer-deps
+        working-directory: ./src
+        run: pnpm install cypress
       -
         name: Run Etherpad & Test Frontend
+        working-directory: ./src
         run: |
-          node src/node/server.js &
+          pnpm run dev &
           curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
-          ./src/node_modules/cypress/bin/cypress run --config-file src/tests/frontend/cypress/cypress.config.js
+          ./node_modules/cypress/bin/cypress run --config-file tests/frontend/cypress/cypress.config.js

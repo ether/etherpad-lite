@@ -19,8 +19,8 @@ s!"points":[^,]*!"points": 1000!
 
 log "Deprecation notice: runnerBackend.sh - Please use: cd src && npm test"
 log "Assuming src/bin/installDeps.sh has already been run"
-node src/node/server.js "${@}" &
-ep_pid=$!
+(cd src && npm run dev "${@}" &
+ep_pid=$!)
 
 log "Waiting for Etherpad to accept connections (http://localhost:9001)..."
 connected=false

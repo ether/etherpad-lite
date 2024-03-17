@@ -13,6 +13,12 @@
 			"Wertuose"
 		]
 	},
+	"admin.page-title": "İdarəetmə Paneli - Etherpad",
+	"admin_plugins": "Plugin meneceri",
+	"admin_plugins.available": "Mövcud plaginlər",
+	"admin_plugins.available_not-found": "Heç bir plagin tapılmadı.",
+	"admin_plugins.available_fetching": "Alınır...",
+	"admin_plugins.available_install.value": "Yüklə",
 	"index.newPad": "Yeni lövhə",
 	"index.createOpenPad": "və ya lövhəni bu adla yarat/aç:",
 	"pad.toolbar.bold.title": "Qalın (Ctrl+B)",

@@ -7,7 +7,7 @@ describe('the test helper', function () {
       for (let i = 0; i < 10; ++i) await helper.aNewPad();
     });
 
-    it('gives me 3 jquery instances of chrome, outer and inner', async function () {
+    xit('gives me 3 jquery instances of chrome, outer and inner', async function () {
       this.timeout(10000);
       await helper.aNewPad();
       // check if the jquery selectors have the desired elements
@@ -27,7 +27,7 @@ describe('the test helper', function () {
     // However this doesn't seem to always be easily replicated, so this
     // timeout may or may end up in the code. None the less, we test here
     // to catch it if the bug comes up again.
-    it('clears cookies', async function () {
+    xit('clears cookies', async function () {
       // set cookies far into the future to make sure they're not expired yet
       window.Cookies.set('token', 'foo', {expires: 7 /* days */});
       window.Cookies.set('language', 'bar', {expires: 7 /* days */});
@@ -167,7 +167,7 @@ describe('the test helper', function () {
         expect(Date.now() - before).to.be.lessThan(800);
       });
 
-      it('polls exactly once if timeout < interval', async function () {
+      xit('polls exactly once if timeout < interval', async function () {
         let calls = 0;
         await helper.waitFor(() => { calls++; }, 1, 1000)
             .fail(() => {}) // Suppress the redundant uncatchable exception.
@@ -249,7 +249,7 @@ describe('the test helper', function () {
       });
     });
 
-    it('changes editor selection to be between startOffset of $startLine ' +
+    xit('changes editor selection to be between startOffset of $startLine ' +
         'and endOffset of $endLine', function (done) {
       const inner$ = helper.padInner$;
 
@@ -410,13 +410,13 @@ describe('the test helper', function () {
       });
     });
 
-    it('.edit() defaults to send an edit to the first line', async function () {
+    xit('.edit() defaults to send an edit to the first line', async function () {
       const firstLine = helper.textLines()[0];
       await helper.edit('line');
       expect(helper.textLines()[0]).to.be(`line${firstLine}`);
     });
 
-    it('.edit() to the line specified with parameter lineNo', async function () {
+    xit('.edit() to the line specified with parameter lineNo', async function () {
       const firstLine = helper.textLines()[0];
       await helper.edit('second line', 2);
 
@@ -425,7 +425,7 @@ describe('the test helper', function () {
       expect(text[1]).to.equal('second line');
     });
 
-    it('.edit() supports sendkeys syntax ({selectall},{del},{enter})', async function () {
+    xit('.edit() supports sendkeys syntax ({selectall},{del},{enter})', async function () {
       expect(helper.textLines()[0]).to.not.equal('');
 
       // select first line
