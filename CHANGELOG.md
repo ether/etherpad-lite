@@ -1,3 +1,10 @@
+# 2.0.1
+
+### Notable enhancements and fixes
+
+- Fixed a bug where a plugin depending on a scoped dependency would not install successfully.
+
+
 # 2.0.0
 
 
