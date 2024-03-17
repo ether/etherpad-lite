@@ -44,7 +44,7 @@ process.chdir(cwd);
 
 // Run command capturing stdout. Trailing newlines are stripped (like the shell does).
 const runc =
-    (cmd:string, opts = {}) => childProcess.execSync(cmd, {encoding: 'utf8', ...opts}).replace(/\n+$/, '');
+    (cmd:string, opts = {}) => childProcess.execSync(cmd, {encoding: 'utf8', ...opts}).replace(/\n+$/, '').trim();
 // Run command without capturing stdout.
 const run = (cmd: string, opts = {}) => childProcess.execSync(cmd, {stdio: 'inherit', ...opts});
 
@@ -60,11 +60,18 @@ const assertWorkDirClean = (opts:{
 } = {}) => {
   opts.cwd = runc('git rev-parse --show-cdup', opts) || cwd;
   const m = runc('git diff-files --name-status', opts);
-  if (m !== '') throw new Error(`modifications in working directory ${opts.cwd}:\n${m}`);
+  console.log(">"+m.trim()+"<")
+  if (m.length !== 0) {
+    throw new Error(`modifications in working directory ${opts.cwd}:\n${m}`);
+  }
   const u = runc('git ls-files -o --exclude-standard', opts);
-  if (u !== '') throw new Error(`untracked files in working directory ${opts.cwd}:\n${u}`);
+  if (u.length !== 0) {
+    throw new Error(`untracked files in working directory ${opts.cwd}:\n${u}`);
+  }
   const s = runc('git diff-index --cached --name-status HEAD', opts);
-  if (s !== '') throw new Error(`uncommitted changes in working directory ${opts.cwd}:\n${s}`);
+  if (s.length !==0) {
+    throw new Error(`uncommitted changes in working directory ${opts.cwd}:\n${s}`);
+  }
 };
 
 const assertBranchCheckedOut = (branch: string, opts:{
