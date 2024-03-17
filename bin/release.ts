@@ -149,14 +149,16 @@ try {
   console.log(`Bumping ${release} version (to ${newVersion})...`);
   pkg.version = newVersion;
 
-  writeJson('./src/package.json', pkg);
+  run(`echo "$(jq '. += {"version": "'${newVersion}'"}' src/package.json)" > src/package.json`)
+  run(`echo "$(jq '. += {"version": "'${newVersion}'"}' admin/package.json)" > admin/package.json`)
+  run(`echo "$(jq '. += {"version": "'${newVersion}'"}' bin/package.json)" > bin/package.json`)
+  run(`echo "$(jq '. += {"version": "'${newVersion}'"}' ./package.json)" > ./package.json`)
 
   // run npm version `release` where release is patch, minor or major
-  run('pnpm install', {cwd: 'src/'});
+  run('pnpm install');
   // run npm install --package-lock-only <-- required???
 
-  run('git add src/package.json');
-  run('git add src/package-lock.json');
+  run('git add -A');
   run('git commit -m "bump version"');
   console.log('Switching to master...');
   run('git checkout master');
