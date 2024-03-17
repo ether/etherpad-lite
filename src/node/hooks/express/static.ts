@@ -8,7 +8,7 @@ const minify = require('../../utils/Minify');
 const path = require('path');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
 const settings = require('../../utils/Settings');
-const CachingMiddleware = require('../../utils/caching_middleware');
+import CachingMiddleware from '../../utils/caching_middleware';
 const Yajsml = require('etherpad-yajsml');
 
 // Rewrite tar to include modules with no extensions and proper rooted paths.
@@ -35,7 +35,9 @@ const getTar = async () => {
 exports.expressPreSession = async (hookName:string, {app}:any) => {
   // Cache both minified and static.
   const assetCache = new CachingMiddleware();
-  app.all(/\/javascripts\/(.*)/, assetCache.handle.bind(assetCache));
+  // Cache static assets
+  app.all(/\/js\/(.*)/, assetCache.handle.bind(assetCache));
+  app.all(/\/css\/(.*)/, assetCache.handle.bind(assetCache));
 
   // Minify will serve static files compressed (minify enabled). It also has
   // file-specific hacks for ace/require-kernel/etc.
