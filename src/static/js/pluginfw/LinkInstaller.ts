@@ -35,7 +35,6 @@ export class LinkInstaller {
                 this.dependenciesMap.set(dependency, new Set([name]))
             }
         }
-
     }
 
     public async installFromPath(path: string) {
@@ -177,9 +176,10 @@ export class LinkInstaller {
             // We already added the sub dependency
             this.dependenciesMap.get(dependency)?.add(plugin)
         } else {
-            this.linkDependency(dependency)
-            // Read sub dependencies
+
             try {
+                this.linkDependency(dependency)
+                // Read sub dependencies
                 const json:IPluginInfo = JSON.parse(
                     readFileSync(pathToFileURL(path.join(pluginInstallPath, dependency, 'package.json'))) as unknown as string);
                 if(json.dependencies){
@@ -199,7 +199,16 @@ export class LinkInstaller {
             // Check if the dependency is already installed
             accessSync(path.join(node_modules, dependency), constants.F_OK)
         } catch (err) {
-            symlinkSync(path.join(pluginInstallPath, dependency), path.join(node_modules, dependency), 'dir')
+            try {
+                if(dependency.startsWith("@")){
+                    const newDependency = dependency.split("@")[0]
+                    symlinkSync(path.join(pluginInstallPath, dependency), path.join(node_modules, newDependency), 'dir')
+                } else {
+                    symlinkSync(path.join(pluginInstallPath, dependency), path.join(node_modules, dependency), 'dir')
+                }
+            } catch (e) {
+                // Nothing to do. We're all set
+            }
         }
     }
 
