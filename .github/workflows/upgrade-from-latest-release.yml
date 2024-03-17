@@ -129,6 +129,5 @@ jobs:
           while [ $(($(now) - $start)) -le 15 ] && ! can_connect; do
           sleep 1
           done
-          cd src
           pnpm exec playwright install chromium  --with-deps
           pnpm run test-ui --project=chromium
