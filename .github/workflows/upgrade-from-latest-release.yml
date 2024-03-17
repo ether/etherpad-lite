@@ -107,12 +107,5 @@ jobs:
         # For pull requests, ${GITHUB_SHA} is the automatically generated merge
         # commit that merges the PR's source branch to its destination branch.
         run: git checkout "${GITHUB_SHA}"
-
-      -
-        name: Install all dependencies and symlink for ep_etherpad-lite
-        run: bin/installDeps.sh
-      -
-        name: Run Etherpad & Test Frontend
-        working-directory: ./src
-        run: |
-          pnpm run test-ui --project=chromium
+      - name: Run the backend tests
+        run: pnpm run test
