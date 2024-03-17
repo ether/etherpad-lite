@@ -16,14 +16,14 @@
  * limitations under the License.
  */
 
-const Buffer = require('buffer').Buffer;
-const fs = require('fs');
+import {Buffer} from 'node:buffer'
+import fs from 'fs';
 const fsp = fs.promises;
-const path = require('path');
-const zlib = require('zlib');
+import path from 'path';
+import zlib from 'zlib';
 const settings = require('./Settings');
 const existsSync = require('./path_exists');
-const util = require('util');
+import util from 'util';
 
 /*
  * The crypto module can be absent on reduced node installations.
@@ -37,10 +37,10 @@ const util = require('util');
  */
 
 
-const  _crypto = require('crypto');
+import _crypto from 'crypto';
 
 
-let CACHE_DIR = path.join(settings.root, 'var/');
+let CACHE_DIR: string|undefined = path.join(settings.root, 'var/');
 CACHE_DIR = existsSync(CACHE_DIR) ? CACHE_DIR : undefined;
 
 type Headers = {
@@ -84,7 +84,7 @@ if (_crypto) {
   should replace this.
 */
 
-module.exports = class CachingMiddleware {
+export default class CachingMiddleware {
   handle(req: any, res: any, next: any) {
     this._handle(req, res, next).catch((err) => next(err || new Error(err)));
   }
@@ -188,6 +188,7 @@ module.exports = class CachingMiddleware {
           await Promise.all([
             fsp.writeFile(`${CACHE_DIR}minified_${cacheKey}`, buffer).catch(() => {}),
             util.promisify(zlib.gzip)(buffer)
+                // @ts-ignore
                 .then((content: string) => fsp.writeFile(`${CACHE_DIR}minified_${cacheKey}.gz`, content))
                 .catch(() => {}),
           ]);
