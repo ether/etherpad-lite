@@ -107,27 +107,5 @@ jobs:
         # For pull requests, ${GITHUB_SHA} is the automatically generated merge
         # commit that merges the PR's source branch to its destination branch.
         run: git checkout "${GITHUB_SHA}"
-
-      -
-        name: Install all dependencies and symlink for ep_etherpad-lite
-        run: bin/installDeps.sh
-      - name: Install playwright
-        working-directory: src
-        run: pnpm exec playwright install chromium --with-deps
-      -
-        name: Run Etherpad & Test Frontend
-        working-directory: ./src
-        run: |
-          pnpm run dev &
-          connected=false
-          can_connect() {
-          curl -sSfo /dev/null http://localhost:9001/ || return 1
-          connected=true
-          }
-          now() { date +%s; }
-          start=$(now)
-          while [ $(($(now) - $start)) -le 15 ] && ! can_connect; do
-          sleep 1
-          done
-          pnpm exec playwright install chromium  --with-deps
-          pnpm run test-ui --project=chromium
+      - name: Run the backend tests
+        run: pnpm run test
