@@ -118,4 +118,17 @@ jobs:
         name: Run Etherpad & Test Frontend
         working-directory: ./src
         run: |
+          pnpm run dev &
+          connected=false
+          can_connect() {
+          curl -sSfo /dev/null http://localhost:9001/ || return 1
+          connected=true
+          }
+          now() { date +%s; }
+          start=$(now)
+          while [ $(($(now) - $start)) -le 15 ] && ! can_connect; do
+          sleep 1
+          done
+          cd src
+          pnpm exec playwright install chromium  --with-deps
           pnpm run test-ui --project=chromium
