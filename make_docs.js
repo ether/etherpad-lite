@@ -2,7 +2,7 @@ import exec from 'child_process'
 import fs from 'fs'
 import path from 'path'
 
-import pjson from './src/package.json' with {type: "json"}
+import pjson from './src/package.json' assert {type: "json"}
 
 const VERSION=pjson.version
 console.log(`Building docs for version ${VERSION}`)
