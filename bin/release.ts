@@ -52,11 +52,6 @@ const runc =
 const run = (cmd: string, opts = {}) => childProcess.execSync(cmd, {stdio: 'inherit', ...opts});
 
 const readJson = (filename: string) => JSON.parse(fs.readFileSync(filename, {encoding: 'utf8', flag: 'r'}));
-const writeJson = (filename: string, obj:object) => {
-  let json = JSON.stringify(obj, null, 2);
-  if (json !== '' && !json.endsWith('\n')) json += '\n';
-  fs.writeFileSync(filename, json);
-};
 
 const assertWorkDirClean = (opts:{
     cwd?: string;
