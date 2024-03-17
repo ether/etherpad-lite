@@ -79,8 +79,6 @@ export const checkForMigration = async () => {
   // Initialize linkInstaller
   await linkInstaller.init()
 
-
-
   try {
     await fs.access(installedPluginsPath, fs.constants.F_OK);
   } catch (err) {
