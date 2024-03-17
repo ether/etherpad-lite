@@ -1,9 +1,8 @@
-const { exec } = require('child_process');
-const fs = require('fs')
-const path = require('path')
+import exec from 'child_process'
+import fs from 'fs'
+import path from 'path'
 
-
-const pjson = require('./src/package.json')
+import pjson from './src/package.json'
 const VERSION=pjson.version
 console.log(`Building docs for version ${VERSION}`)
 
@@ -15,15 +14,15 @@ const createDirIfNotExists = (dir) => {
 
 
 function copyFolderSync(from, to) {
-   if(fs.existsSync(to)){
-       const stat = fs.lstatSync(to)
-       if (stat.isDirectory()){
-           fs.rmSync(to, { recursive: true })
-       }
-       else{
-           fs.rmSync(to)
-       }
-   }
+    if(fs.existsSync(to)){
+        const stat = fs.lstatSync(to)
+        if (stat.isDirectory()){
+            fs.rmSync(to, { recursive: true })
+        }
+        else{
+            fs.rmSync(to)
+        }
+    }
     fs.mkdirSync(to);
     fs.readdirSync(from).forEach(element => {
         if (fs.lstatSync(path.join(from, element)).isFile()) {
