@@ -29,47 +29,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-      -
-        name: Install Etherpad plugins
-        # Important: Installer for old master which does not have pnpm right now
-        # The --legacy-peer-deps flag is required to work around a bug in npm v7:
-        # https://github.com/npm/cli/issues/2199
-        run: >
-          npm install --no-save --legacy-peer-deps
-          ep_align
-          ep_author_hover
-          ep_cursortrace
-          ep_font_size
-          ep_hash_auth
-          ep_headings2
-          ep_image_upload
-          ep_markdown
-          ep_readonly_guest
-          ep_set_title_on_pad
-          ep_spellcheck
-          ep_subscript_and_superscript
-          ep_table_of_contents
-      -
-        name: Install all dependencies and symlink for ep_etherpad-lite
-        run: src/bin/installDeps.sh
-      -
-        name: Run the backend tests
-        run: cd src && npm test
-      # Because actions/checkout@v4 is called with "ref: master" and without
-      # "fetch-depth: 0", the local clone does not have the ${GITHUB_SHA}
-      # commit. Fetch ${GITHUB_REF} to get the ${GITHUB_SHA} commit. Note that a
-      # plain "git fetch" only fetches "normal" references (refs/heads/* and
-      # refs/tags/*), and for pull requests none of the normal references
-      # include ${GITHUB_SHA}, so we have to explicitly tell Git to fetch
-      # ${GITHUB_REF}.
-      -
-        name: Fetch the new Git commits
-        run: git fetch --depth=1 origin "${GITHUB_REF}"
-      -
-        name: Upgrade to the new Git revision
-        # For pull requests, ${GITHUB_SHA} is the automatically generated merge
-        # commit that merges the PR's source branch to its destination branch.
-        run: git checkout "${GITHUB_SHA}"
       - uses: pnpm/action-setup@v3
         name: Install pnpm
         with:
@@ -77,8 +36,7 @@ jobs:
           run_install: false
       - name: Only install direct dependencies
         run: pnpm config set auto-install-peers false
-      -
-        name: Install libreoffice
+      - name: Install libreoffice
         uses: awalsh128/cache-apt-pkgs-action@v1.4.2
         with:
           packages: libreoffice libreoffice-pdfimport
@@ -94,20 +52,67 @@ jobs:
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
+      - name: Only install direct dependencies
+        run: pnpm config set auto-install-peers false
+      -
+        name: Install libreoffice
+        uses: awalsh128/cache-apt-pkgs-action@v1.4.2
+        with:
+          packages: libreoffice libreoffice-pdfimport
+          version: 1.0
+      -
+        name: Install all dependencies and symlink for ep_etherpad-lite
+        run: bin/installDeps.sh
+      - name: Install admin ui
+        working-directory: admin
+        run: pnpm install
+      - name: Build admin ui
+        working-directory: admin
+        run: pnpm build
+      -
+        name: Install Etherpad plugins
+        run: >
+          pnpm run install-plugins
+          ep_align
+          ep_author_hover
+          ep_cursortrace
+          ep_font_size
+          ep_hash_auth
+          ep_headings2
+          ep_image_upload
+          ep_markdown
+          ep_readonly_guest
+          ep_set_title_on_pad
+          ep_spellcheck
+          ep_subscript_and_superscript
+          ep_table_of_contents
+      -
+        name: Run the backend tests
+        run: pnpm run test
+      -
+        name: Install all dependencies and symlink for ep_etherpad-lite
+        run: ./bin/installDeps.sh
+      # Because actions/checkout@v4 is called with "ref: master" and without
+      # "fetch-depth: 0", the local clone does not have the ${GITHUB_SHA}
+      # commit. Fetch ${GITHUB_REF} to get the ${GITHUB_SHA} commit. Note that a
+      # plain "git fetch" only fetches "normal" references (refs/heads/* and
+      # refs/tags/*), and for pull requests none of the normal references
+      # include ${GITHUB_SHA}, so we have to explicitly tell Git to fetch
+      # ${GITHUB_REF}.
+      -
+        name: Fetch the new Git commits
+        run: git fetch --depth=1 origin "${GITHUB_REF}"
+      -
+        name: Upgrade to the new Git revision
+        # For pull requests, ${GITHUB_SHA} is the automatically generated merge
+        # commit that merges the PR's source branch to its destination branch.
+        run: git checkout "${GITHUB_SHA}"
+
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
         run: bin/installDeps.sh
       -
-        name: Run the backend tests
-        run: pnpm test
-      -
-        name: Install Cypress
-        working-directory: ./src
-        run: pnpm install cypress
-      -
         name: Run Etherpad & Test Frontend
         working-directory: ./src
         run: |
-          pnpm run dev &
-          curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
-          ./node_modules/cypress/bin/cypress run --config-file tests/frontend/cypress/cypress.config.js
+          pnpm run test-ui --project=chromium
