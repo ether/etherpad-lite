@@ -27,6 +27,8 @@
  * limitations under the License.
  */
 
+import {MapArrayType} from "../types/MapType";
+
 const absolutePaths = require('./AbsolutePaths');
 const deepEqual = require('fast-deep-equal/es6');
 const fs = require('fs');
@@ -598,84 +600,106 @@ const coerceValue = (stringValue:string) => {
  *
  * see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter
  */
-const lookupEnvironmentVariables = (obj: object) => {
-  const stringifiedAndReplaced = JSON.stringify(obj, (key, value) => {
-    /*
-     * the first invocation of replacer() is with an empty key. Just go on, or
-     * we would zap the entire object.
-     */
-    if (key === '') {
-      return value;
-    }
-
-    /*
-     * If we received from the configuration file a number, a boolean or
-     * something that is not a string, we can be sure that it was a literal
-     * value. No need to perform any variable substitution.
-     *
-     * The environment variable expansion syntax "${ENV_VAR}" is just a string
-     * of specific form, after all.
-     */
-    if (typeof value !== 'string') {
-      return value;
-    }
-
-    /*
-     * Let's check if the string value looks like a variable expansion (e.g.:
-     * "${ENV_VAR}" or "${ENV_VAR:default_value}")
-     */
-    // MUXATOR 2019-03-21: we could use named capture groups here once we migrate to nodejs v10
-    const match = value.match(/^\$\{([^:]*)(:((.|\n)*))?\}$/);
-
-    if (match == null) {
-      // no match: use the value literally, without any substitution
-
-      return value;
-    }
-
-    /*
-     * We found the name of an environment variable. Let's read its actual value
-     * and its default value, if given
-     */
-    const envVarName = match[1];
-    const envVarValue = process.env[envVarName];
-    const defaultValue = match[3];
-
-    if ((envVarValue === undefined) && (defaultValue === undefined)) {
-      logger.warn(`Environment variable "${envVarName}" does not contain any value for ` +
-          `configuration key "${key}", and no default was given. Using null. ` +
-          'THIS BEHAVIOR MAY CHANGE IN A FUTURE VERSION OF ETHERPAD; you should ' +
-          'explicitly use "null" as the default if you want to continue to use null.');
+const lookupEnvironmentVariables = (obj: MapArrayType<any>) => {
+  function replaceEnvs(obj: MapArrayType<any>) {
+    for (let [key, value] of Object.entries(obj)) {
+      /*
+      * the first invocation of replacer() is with an empty key. Just go on, or
+      * we would zap the entire object.
+      */
+      if (key === '') {
+        obj[key] = value;
+        continue
+      }
 
       /*
-       * We have to return null, because if we just returned undefined, the
-       * configuration item "key" would be stripped from the returned object.
+       * If we received from the configuration file a number, a boolean or
+       * something that is not a string, we can be sure that it was a literal
+       * value. No need to perform any variable substitution.
+       *
+       * The environment variable expansion syntax "${ENV_VAR}" is just a string
+       * of specific form, after all.
        */
-      return null;
+      if (typeof value !== 'string' && typeof value !== 'object') {
+        obj[key] = value;
+        continue
+      }
+
+      if (typeof value === "object") {
+        replaceEnvs(value);
+        continue
+      }
+
+
+      /*
+       * Let's check if the string value looks like a variable expansion (e.g.:
+       * "${ENV_VAR}" or "${ENV_VAR:default_value}")
+       */
+      // MUXATOR 2019-03-21: we could use named capture groups here once we migrate to nodejs v10
+      const match = value.match(/^\$\{([^:]*)(:((.|\n)*))?\}$/);
+
+      if (match == null) {
+        // no match: use the value literally, without any substitution
+        obj[key] = value;
+        continue
+      }
+
+      /*
+       * We found the name of an environment variable. Let's read its actual value
+       * and its default value, if given
+       */
+      const envVarName = match[1];
+      const envVarValue = process.env[envVarName];
+      const defaultValue = match[3];
+
+      if ((envVarValue === undefined) && (defaultValue === undefined)) {
+        logger.warn(`Environment variable "${envVarName}" does not contain any value for ` +
+            `configuration key "${key}", and no default was given. Using null. ` +
+            'THIS BEHAVIOR MAY CHANGE IN A FUTURE VERSION OF ETHERPAD; you should ' +
+            'explicitly use "null" as the default if you want to continue to use null.');
+
+        /*
+         * We have to return null, because if we just returned undefined, the
+         * configuration item "key" would be stripped from the returned object.
+         */
+        obj[key] = null;
+        continue
+      }
+
+      if ((envVarValue === undefined) && (defaultValue !== undefined)) {
+        logger.debug(`Environment variable "${envVarName}" not found for ` +
+            `configuration key "${key}". Falling back to default value.`);
+
+        obj[key] = coerceValue(defaultValue);
+        continue
+      }
+
+      // envVarName contained some value.
+
+      /*
+       * For numeric and boolean strings let's convert it to proper types before
+       * returning it, in order to maintain backward compatibility.
+       */
+      logger.debug(
+          `Configuration key "${key}" will be read from environment variable "${envVarName}"`);
+
+      obj[key] = coerceValue(envVarValue!);
     }
+  }
 
-    if ((envVarValue === undefined) && (defaultValue !== undefined)) {
-      logger.debug(`Environment variable "${envVarName}" not found for ` +
-          `configuration key "${key}". Falling back to default value.`);
+  replaceEnvs(obj);
 
-      return coerceValue(defaultValue);
+  // Add plugin ENV variables
+  for (const key of Object.keys(process.env)) {
+    if (key.startsWith('EP_')) {
+      // Add to object
+      obj[key] = process.env[key];
     }
+  }
 
-    // envVarName contained some value.
+  console.log(obj)
 
-    /*
-     * For numeric and boolean strings let's convert it to proper types before
-     * returning it, in order to maintain backward compatibility.
-     */
-    logger.debug(
-        `Configuration key "${key}" will be read from environment variable "${envVarName}"`);
-
-    return coerceValue(envVarValue!);
-  });
-
-  const newSettings = JSON.parse(stringifiedAndReplaced);
-
-  return newSettings;
+  return obj;
 };
 
 /**
@@ -718,9 +742,7 @@ const parseSettings = (settingsFilename:string, isSettings:boolean) => {
 
     logger.info(`${settingsType} loaded from: ${settingsFilename}`);
 
-    const replacedSettings = lookupEnvironmentVariables(settings);
-
-    return replacedSettings;
+    return lookupEnvironmentVariables(settings);
   } catch (e:any) {
     logger.error(`There was an error processing your ${settingsType} ` +
         `file from ${settingsFilename}: ${e.message}`);
