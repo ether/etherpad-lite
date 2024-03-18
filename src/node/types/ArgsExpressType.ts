@@ -1,5 +1,7 @@
+import {FastifyInstance} from "fastify";
+
 export type ArgsExpressType = {
-    app:any,
+    app:FastifyInstance,
     io: any,
     server:any
 }

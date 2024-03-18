@@ -5,6 +5,7 @@ import log4js from 'log4js';
 import {SocketClientRequest} from "../../types/SocketClientRequest";
 import {WebAccessTypes} from "../../types/WebAccessTypes";
 import {SettingsUser} from "../../types/SettingsUser";
+import {FastifyReply, FastifyRequest} from "fastify";
 const httpLogger = log4js.getLogger('http');
 const settings = require('../../utils/Settings');
 const hooks = require('../../../static/js/pluginfw/hooks');
@@ -14,6 +15,7 @@ hooks.deprecationNotices.authFailure = 'use the authnFailure and authzFailure ho
 
 // Promisified wrapper around hooks.aCallFirst.
 const aCallFirst = (hookName: string, context:any, pred = null) => new Promise((resolve, reject) => {
+  console.log(hookName)
   hooks.aCallFirst(hookName, context, (err:any, r: unknown) => err != null ? reject(err) : resolve(r), pred);
 });
 
@@ -49,8 +51,8 @@ exports.userCanModify = (padId: string, req: SocketClientRequest) => {
 // Exported so that tests can set this to 0 to avoid unnecessary test slowness.
 exports.authnFailureDelayMs = 1000;
 
-const checkAccess = async (req:any, res:any, next: Function) => {
-  const requireAdmin = req.path.toLowerCase().startsWith('/admin-auth');
+const checkAccess = async (req:FastifyRequest, res: FastifyReply, next: Function) => {
+  const requireAdmin = req.url.toLowerCase().startsWith('/admin-auth');
 
   // ///////////////////////////////////////////////////////////////////////////////////////////////
   // Step 1: Check the preAuthorize hook for early permit/deny (permit is only allowed for non-admin
@@ -94,10 +96,12 @@ const checkAccess = async (req:any, res:any, next: Function) => {
   const authorize = async () => {
     const grant = async (level: string|false) => {
       level = exports.normalizeAuthzLevel(level);
+      console.log("Level is", level)
       if (!level) return false;
       const user = req.session.user;
+      console.log("User is", user)
       if (user == null) return true; // This will happen if authentication is not required.
-      const encodedPadId = (req.path.match(/^\/p\/([^/]*)/) || [])[1];
+      const encodedPadId = (req.url.match(/^\/p\/([^/]*)/) || [])[1];
       if (encodedPadId == null) return true;
       let padId = decodeURIComponent(encodedPadId);
       if (readOnlyManager.isReadOnlyId(padId)) {
@@ -118,15 +122,17 @@ const checkAccess = async (req:any, res:any, next: Function) => {
     if (!isAuthenticated) return await grant(false);
     if (requireAdmin && !req.session.user.is_admin) return await grant(false);
     if (!settings.requireAuthorization) return await grant('create');
-    return await grant(await aCallFirst0('authorize', {req, res, next, resource: req.path}));
+    const level = await aCallFirst0('authorize', {req, res, next, resource: req.url})
+    return await grant(level);
   };
 
   // ///////////////////////////////////////////////////////////////////////////////////////////////
   // Step 2: Try to just access the thing. If access fails (perhaps authentication has not yet
   // completed, or maybe different credentials are required), go to the next step.
   // ///////////////////////////////////////////////////////////////////////////////////////////////
-
+  console.log("Authorize")
   if (await authorize()) {
+    console.log("Authorize2")
     if(requireAdmin) {
         res.status(200).send('Authorized')
         return
@@ -149,7 +155,7 @@ const checkAccess = async (req:any, res:any, next: Function) => {
   const httpBasicAuth = req.headers.authorization && req.headers.authorization.startsWith('Basic ');
   if (httpBasicAuth) {
     const userpass =
-        Buffer.from(req.headers.authorization.split(' ')[1], 'base64').toString().split(':');
+        Buffer.from(req.headers.authorization!.split(' ')[1], 'base64').toString().split(':');
     ctx.username = userpass.shift();
     // Prevent prototype pollution vulnerabilities in plugins. This also silences a prototype
     // pollution warning below (when setting settings.users[ctx.username]) that isn't actually a
@@ -161,7 +167,6 @@ const checkAccess = async (req:any, res:any, next: Function) => {
     // Fall back to HTTP basic auth.
     // @ts-ignore
     const {[ctx.username]: {password} = {}} = settings.users as SettingsUser;
-
     if (!httpBasicAuth ||
         !ctx.username ||
         password == null || password.toString() !== ctx.password) {
@@ -172,8 +177,8 @@ const checkAccess = async (req:any, res:any, next: Function) => {
       //res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
       // Delay the error response for 1s to slow down brute force attacks.
       await new Promise((resolve) => setTimeout(resolve, exports.authnFailureDelayMs));
-      res.status(401).send('Authentication Required');
-      return;
+      await res.status(401).send('Authentication Required');
+      throw new Error('Authentication Required');
     }
     settings.users[ctx.username].username = ctx.username;
     // Make a shallow copy so that the password property can be deleted (to prevent it from
@@ -181,9 +186,10 @@ const checkAccess = async (req:any, res:any, next: Function) => {
     req.session.user = {...settings.users[ctx.username]};
     delete req.session.user.password;
   }
+  console.log("Session is", req.session)
   if (req.session.user == null) {
     httpLogger.error('authenticate hook failed to add user settings to session');
-    return res.status(500).send('Internal Server Error');
+    await res.status(500).send('Internal Server Error');
   }
   const {username = '<no username>'} = req.session.user;
   httpLogger.info(`Successful authentication from IP ${req.ip} for user ${username}`);
@@ -195,22 +201,25 @@ const checkAccess = async (req:any, res:any, next: Function) => {
   // ///////////////////////////////////////////////////////////////////////////////////////////////
 
   const auth = await authorize()
-  if (auth && !requireAdmin) return next();
-  if(auth && requireAdmin) {
-    res.status(200).send('Authorized')
-    return
+  if (auth && !requireAdmin) {
+    return next();
   }
+  if(auth && requireAdmin) {
+    console.log(auth+"-------Require admin")
+    res.code(200).send('Authorized')
+  }
+  console.log('authzFailure')
 
   if (await aCallFirst0('authzFailure', {req, res})) return;
   if (await aCallFirst0('authFailure', {req, res, next})) return;
   // No plugin handled the authorization failure.
-  res.status(403).send('Forbidden');
+  await res.code(403).send('Forbidden');
 };
 
 /**
  * Express middleware to authenticate the user and check authorization. Must be installed after the
  * express-session middleware.
  */
-exports.checkAccess = (req:any, res:any, next:Function) => {
-  checkAccess(req, res, next).catch((err) => next(err || new Error(err)));
+exports.checkAccess = async (req: any, res: any, next: Function) => {
+  return await checkAccess(req, res, next).catch((err) => next(err || new Error(err)));
 };

@@ -357,7 +357,7 @@ let globalExceptionHandler = null;
 padutils.setupGlobalExceptionHandler = () => {
   if (globalExceptionHandler == null) {
     require('./vendors/gritter');
-    globalExceptionHandler = (e) => {
+    globalExceptionHandler = async (e) => {
       let type;
       let err;
       let msg, url, linenumber;
@@ -410,8 +410,9 @@ padutils.setupGlobalExceptionHandler = () => {
       }
 
       // send javascript errors to the server
-      $.post('../jserror', {
-        errorInfo: JSON.stringify({
+      await fetch('../jserror', {
+        method: 'POST',
+        body: JSON.stringify({
           errorId,
           type,
           msg,

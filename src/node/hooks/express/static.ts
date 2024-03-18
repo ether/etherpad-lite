@@ -9,6 +9,7 @@ const path = require('path');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
 const settings = require('../../utils/Settings');
 import CachingMiddleware from '../../utils/caching_middleware';
+import {FastifyInstance} from "fastify";
 const Yajsml = require('etherpad-yajsml');
 
 // Rewrite tar to include modules with no extensions and proper rooted paths.
@@ -32,7 +33,9 @@ const getTar = async () => {
   return tar;
 };
 
-exports.expressPreSession = async (hookName:string, {app}:any) => {
+exports.expressPreSession = async (hookName:string, {app}: {
+  app: FastifyInstance
+}) => {
   // Cache both minified and static.
   const assetCache = new CachingMiddleware();
   // Cache static assets
@@ -40,9 +43,10 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
 
   app.get('/static/js/require-kernel.js', (req:any, res:any) => {
     res.header('Content-Type', 'application/javascript; charset=utf-8');
+    const RequireKernel = require('etherpad-require-kernel');
+    const requireDefinition = () => `var require = ${RequireKernel.kernelSource};\n`;
     res.header('Cache-Control', `public, max-age=${settings.maxAge}`);
-    const file = fs.readFile(path.join(settings.root, 'src/static/js/require-kernel.js'), 'utf8');
-    res.send();
+    res.send(requireDefinition());
   })
 
   app.route({
@@ -57,19 +61,18 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
     handler: assetCache.handle.bind(assetCache)
   });
 
-  /*app.register(require('@fastify/static'), {
+  app.register(require('@fastify/static'), {
     root: path.join(settings.root, 'src', 'static'),
     prefix: '/static/', // optional: default '/'
-    constraints: {} // optional: default {}
-  })*/
+  })
 
   // Minify will serve static files compressed (minify enabled). It also has
   // file-specific hacks for ace/require-kernel/etc.
-  app.route({
+  /*app.route({
     method: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
     url: '/static/*',
     handler: minify.minify
-  });
+  });*/
 
   // Setup middleware that will package JavaScript files served by minify for
   // CommonJS loader on the client-side.
@@ -87,12 +90,19 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
   const associator = new StaticAssociator(associations);
   jsServer.setAssociator(associator);
 
-  app.use(jsServer.handle.bind(jsServer));
+  app.addHook('onRequest', (req, res, done) => {
+    if(req.url.startsWith('/javascripts')){
+        console.log('GET /javascripts in handler', req.url)
+        res.header('Content-Type', 'application/javascript; charset=utf-8');
+        return jsServer.handle(req, res);
+    }
+    done()
+  })
 
   // serve plugin definitions
   // not very static, but served here so that client can do
   // require("pluginfw/static/js/plugin-definitions.js");
-  app.get('/pluginfw/plugin-definitions.json', (req: any, res:any, next:Function) => {
+  app.get('/pluginfw/plugin-definitions.json', (req: any, res:any) => {
     const clientParts = plugins.parts.filter((part: PartType) => part.client_hooks != null);
     const clientPlugins:MapArrayType<string> = {};
     for (const name of new Set(clientParts.map((part: PartType) => part.plugin))) {

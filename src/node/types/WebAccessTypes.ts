@@ -5,6 +5,6 @@ export type WebAccessTypes = {
     password?: string;
     req:any;
     res:any;
-    next:any;
+    next:Function;
     users: SettingsUser;
 }

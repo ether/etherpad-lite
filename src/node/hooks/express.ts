@@ -10,180 +10,173 @@ import events from 'events';
 // @ts-ignore
 import expressSession from 'express-session';
 import fs from 'fs';
+
 const hooks = require('../../static/js/pluginfw/hooks');
 import log4js from 'log4js';
+
 const SessionStore = require('../db/SessionStore');
 const settings = require('../utils/Settings');
 const stats = require('../stats')
 import util from 'util';
+
 const webaccess = require('./express/webaccess');
 import Fastify from 'fastify';
 import SecretRotator from '../security/SecretRotator';
+import fastifyCookie from '@fastify/cookie';
+import fastifySession from "@fastify/session";
 
-let secretRotator: SecretRotator|null = null;
+let secretRotator: SecretRotator | null = null;
 const logger = log4js.getLogger('http');
-let serverName:string;
-let sessionStore: { shutdown: () => void; } | null;
-const sockets:Set<Socket> = new Set();
+let serverName: string;
+let sessionStore: typeof SessionStore | null;
+const sockets: Set<Socket> = new Set();
 const socketsEvents = new events.EventEmitter();
 const startTime = stats.settableGauge('httpStartTime');
 
 exports.server = null;
 
 const closeServer = async () => {
-  if (exports.server != null) {
-    logger.info('Closing HTTP server...');
-    // Call exports.server.close() to reject new connections but don't await just yet because the
-    // Promise won't resolve until all preexisting connections are closed.
-    const p = util.promisify(exports.server.close.bind(exports.server))();
-    await hooks.aCallAll('expressCloseServer');
-    // Give existing connections some time to close on their own before forcibly terminating. The
-    // time should be long enough to avoid interrupting most preexisting transmissions but short
-    // enough to avoid a noticeable outage.
-    const timeout = setTimeout(async () => {
-      logger.info(`Forcibly terminating remaining ${sockets.size} HTTP connections...`);
-      for (const socket of sockets) socket.destroy(new Error('HTTP server is closing'));
-    }, 5000);
-    let lastLogged = 0;
-    while (sockets.size > 0  && !settings.enableAdminUITests) {
-      if (Date.now() - lastLogged > 1000) { // Rate limit to avoid filling logs.
-        logger.info(`Waiting for ${sockets.size} HTTP clients to disconnect...`);
-        lastLogged = Date.now();
-      }
-      await events.once(socketsEvents, 'updated');
+    if (exports.server != null) {
+        logger.info('Closing HTTP server...');
+        // Call exports.server.close() to reject new connections but don't await just yet because the
+        // Promise won't resolve until all preexisting connections are closed.
+        const p = util.promisify(exports.server.close.bind(exports.server))();
+        await hooks.aCallAll('expressCloseServer');
+        // Give existing connections some time to close on their own before forcibly terminating. The
+        // time should be long enough to avoid interrupting most preexisting transmissions but short
+        // enough to avoid a noticeable outage.
+        const timeout = setTimeout(async () => {
+            logger.info(`Forcibly terminating remaining ${sockets.size} HTTP connections...`);
+            for (const socket of sockets) socket.destroy(new Error('HTTP server is closing'));
+        }, 5000);
+        let lastLogged = 0;
+        while (sockets.size > 0 && !settings.enableAdminUITests) {
+            if (Date.now() - lastLogged > 1000) { // Rate limit to avoid filling logs.
+                logger.info(`Waiting for ${sockets.size} HTTP clients to disconnect...`);
+                lastLogged = Date.now();
+            }
+            await events.once(socketsEvents, 'updated');
+        }
+        await p;
+        clearTimeout(timeout);
+        exports.server = null;
+        startTime.setValue(0);
+        logger.info('HTTP server closed');
     }
-    await p;
-    clearTimeout(timeout);
-    exports.server = null;
-    startTime.setValue(0);
-    logger.info('HTTP server closed');
-  }
-  if (sessionStore) sessionStore.shutdown();
-  sessionStore = null;
-  if (secretRotator) secretRotator.stop();
-  secretRotator = null;
+    if (sessionStore) sessionStore.shutdown();
+    sessionStore = null;
+    if (secretRotator) secretRotator.stop();
+    secretRotator = null;
 };
 
 exports.createServer = async () => {
-  console.log('Report bugs at https://github.com/ether/etherpad-lite/issues');
+    console.log('Report bugs at https://github.com/ether/etherpad-lite/issues');
 
-  serverName = `Etherpad ${settings.getGitCommit()} (https://etherpad.org)`;
+    serverName = `Etherpad ${settings.getGitCommit()} (https://etherpad.org)`;
 
-  console.log(`Your Etherpad version is ${settings.getEpVersion()} (${settings.getGitCommit()})`);
+    console.log(`Your Etherpad version is ${settings.getEpVersion()} (${settings.getGitCommit()})`);
 
-  await exports.restartServer();
+    await exports.restartServer();
 
-  if (settings.ip === '') {
-    // using Unix socket for connectivity
-    console.log(`You can access your Etherpad instance using the Unix socket at ${settings.port}`);
-  } else {
-    console.log(`You can access your Etherpad instance at http://${settings.ip}:${settings.port}/`);
-  }
+    if (settings.ip === '') {
+        // using Unix socket for connectivity
+        console.log(`You can access your Etherpad instance using the Unix socket at ${settings.port}`);
+    } else {
+        console.log(`You can access your Etherpad instance at http://${settings.ip}:${settings.port}/`);
+    }
 
-  if (!_.isEmpty(settings.users)) {
-    console.log(`The plugin admin page is at http://${settings.ip}:${settings.port}/admin/plugins`);
-  } else {
-    console.warn('Admin username and password not set in settings.json. ' +
-                 'To access admin please uncomment and edit "users" in settings.json');
-  }
+    if (!_.isEmpty(settings.users)) {
+        console.log(`The plugin admin page is at http://${settings.ip}:${settings.port}/admin/plugins`);
+    } else {
+        console.warn('Admin username and password not set in settings.json. ' +
+            'To access admin please uncomment and edit "users" in settings.json');
+    }
 
-  const env = process.env.NODE_ENV || 'development';
+    const env = process.env.NODE_ENV || 'development';
 
-  if (env !== 'production') {
-    console.warn('Etherpad is running in Development mode. This mode is slower for users and ' +
-                 'less secure than production mode. You should set the NODE_ENV environment ' +
-                 'variable to production by using: export NODE_ENV=production');
-  }
+    if (env !== 'production') {
+        console.warn('Etherpad is running in Development mode. This mode is slower for users and ' +
+            'less secure than production mode. You should set the NODE_ENV environment ' +
+            'variable to production by using: export NODE_ENV=production');
+    }
 };
 
 exports.restartServer = async () => {
-  await closeServer();
+    await closeServer();
 
-  console.log('Starting Etherpad...');
-  const fastify = Fastify({
-    logger: {
-      level: 'error',
-      transport: {
-        target: 'pino-pretty',
-        options: {
-          translateTime: 'HH:MM:ss Z',
-          ignore: 'pid,hostname',
-        },
-      }
+    console.log('Starting Etherpad...');
+    const fastify = Fastify({
+        logger: {
+            level: 'error',
+            transport: {
+                target: 'pino-pretty',
+                options: {
+                    translateTime: 'HH:MM:ss Z',
+                    ignore: 'pid,hostname',
+                },
+            }
+        }
+    });
+    //await fastify.register(require('@fastify/express'))
+
+
+    if (settings.ssl) {
+        console.log('SSL -- enabled');
+        console.log(`SSL -- server key file: ${settings.ssl.key}`);
+        console.log(`SSL -- Certificate Authority's certificate file: ${settings.ssl.cert}`);
+
+        const options: MapArrayType<any> = {
+            key: fs.readFileSync(settings.ssl.key),
+            cert: fs.readFileSync(settings.ssl.cert),
+        };
+
+        if (settings.ssl.ca) {
+            options.ca = [];
+            for (let i = 0; i < settings.ssl.ca.length; i++) {
+                const caFileName = settings.ssl.ca[i];
+                options.ca.push(fs.readFileSync(caFileName));
+            }
+        }
     }
-  });
-  await fastify.register(require('@fastify/express'))
-
-
-  if (settings.ssl) {
-    console.log('SSL -- enabled');
-    console.log(`SSL -- server key file: ${settings.ssl.key}`);
-    console.log(`SSL -- Certificate Authority's certificate file: ${settings.ssl.cert}`);
-
-    const options: MapArrayType<any> = {
-      key: fs.readFileSync(settings.ssl.key),
-      cert: fs.readFileSync(settings.ssl.cert),
-    };
-
-    if (settings.ssl.ca) {
-      options.ca = [];
-      for (let i = 0; i < settings.ssl.ca.length; i++) {
-        const caFileName = settings.ssl.ca[i];
-        options.ca.push(fs.readFileSync(caFileName));
-      }
-    }
-  }
 
     exports.server = fastify.server
 
-    fastify.use((req, res, next) => {
-      // res.header("X-Frame-Options", "deny"); // breaks embedded pads
-      if (settings.ssl) {
-        // we use SSL
-        res.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-      }
+    fastify.addHook('onRequest', async (req, res) => {
+        // res.header("X-Frame-Options", "deny"); // breaks embedded pads
+        if (settings.ssl) {
+            // we use SSL
+            res.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+        }
 
-      // Stop IE going into compatability mode
-      // https://github.com/ether/etherpad-lite/issues/2547
-      res.header('X-UA-Compatible', 'IE=Edge,chrome=1');
+        // Stop IE going into compatability mode
+        // https://github.com/ether/etherpad-lite/issues/2547
+        res.header('X-UA-Compatible', 'IE=Edge,chrome=1');
 
-      // Enable a strong referrer policy. Same-origin won't drop Referers when
-      // loading local resources, but it will drop them when loading foreign resources.
-      // It's still a last bastion of referrer security. External URLs should be
-      // already marked with rel="noreferer" and user-generated content pages are already
-      // marked with <meta name="referrer" content="no-referrer">
-      // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy
-      // https://github.com/ether/etherpad-lite/pull/3636
-      res.header('Referrer-Policy', 'same-origin');
+        // Enable a strong referrer policy. Same-origin won't drop Referers when
+        // loading local resources, but it will drop them when loading foreign resources.
+        // It's still a last bastion of referrer security. External URLs should be
+        // already marked with rel="noreferer" and user-generated content pages are already
+        // marked with <meta name="referrer" content="no-referrer">
+        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy
+        // https://github.com/ether/etherpad-lite/pull/3636
+        res.header('Referrer-Policy', 'same-origin');
 
-      // send git version in the Server response header if exposeVersion is true.
-      if (settings.exposeVersion) {
-        res.header('Server', serverName);
-      }
-
-      next();
+        // send git version in the Server response header if exposeVersion is true.
+        if (settings.exposeVersion) {
+            res.header('Server', serverName);
+        }
     });
 
     if (settings.trustProxy) {
-      /*
-       * If 'trust proxy' === true, the client’s IP address in req.ip will be the
-       * left-most entry in the X-Forwarded-* header.
-       *
-       * Source: https://expressjs.com/en/guide/behind-proxies.html
-       */
-      fastify.enable('trust proxy');
+        /*
+         * If 'trust proxy' === true, the client’s IP address in req.ip will be the
+         * left-most entry in the X-Forwarded-* header.
+         *
+         * Source: https://expressjs.com/en/guide/behind-proxies.html
+         */
+        fastify.enable('trust proxy');
     }
 
-    // Measure response time
-  fastify.use((req, res, next) => {
-      const stopWatch = stats.timer('httpRequests').start();
-      const sendFn = res.send.bind(res);
-      res.send = (...args) => {
-        stopWatch.end();
-        return sendFn(...args);
-      };
-      next();
-    });
 
     // If the log level specified in the config file is WARN or ERROR the application server never
     // starts listening to requests as reported in issue #158. Not installing the log4js connect
@@ -195,78 +188,109 @@ exports.restartServer = async () => {
     const {keyRotationInterval, sessionLifetime} = settings.cookie;
     let secret = settings.sessionKey;
     if (keyRotationInterval && sessionLifetime) {
-      secretRotator = new SecretRotator(
-          'expressSessionSecrets', keyRotationInterval, sessionLifetime, settings.sessionKey);
-      await secretRotator.start();
-      secret = secretRotator.secrets;
+        secretRotator = new SecretRotator(
+            'expressSessionSecrets', keyRotationInterval, sessionLifetime, settings.sessionKey);
+        await secretRotator.start();
+        secret = secretRotator.secrets;
     }
     if (!secret) throw new Error('missing cookie signing secret');
-
-  fastify.use(cookieParser(secret, {}));
-
     sessionStore = new SessionStore(settings.cookie.sessionRefreshInterval);
     exports.sessionMiddleware = expressSession({
-      propagateTouch: true,
-      rolling: true,
-      secret,
-      store: sessionStore,
-      resave: false,
-      saveUninitialized: false,
-      // Set the cookie name to a javascript identifier compatible string. Makes code handling it
-      // cleaner :)
-      name: 'express_sid',
-      cookie: {
-        maxAge: sessionLifetime || null, // Convert 0 to null.
-        sameSite: settings.cookie.sameSite,
+        propagateTouch: true,
+        rolling: true,
+        secret,
+        store: sessionStore,
+        resave: false,
+        saveUninitialized: false,
+        // Set the cookie name to a javascript identifier compatible string. Makes code handling it
+        // cleaner :)
+        name: 'express_sid',
+        cookie: {
+            maxAge: sessionLifetime || null, // Convert 0 to null.
+            sameSite: settings.cookie.sameSite,
 
-        // The automatic express-session mechanism for determining if the application is being served
-        // over ssl is similar to the one used for setting the language cookie, which check if one of
-        // these conditions is true:
-        //
-        //   1. we are directly serving the nodejs application over SSL, using the "ssl" options in
-        //      settings.json
-        //
-        //   2. we are serving the nodejs application in plaintext, but we are using a reverse proxy
-        //      that terminates SSL for us. In this case, the user has to set trustProxy = true in
-        //      settings.json, and the information wheter the application is over SSL or not will be
-        //      extracted from the X-Forwarded-Proto HTTP header
-        //
-        // Please note that this will not be compatible with applications being served over http and
-        // https at the same time.
-        //
-        // reference: https://github.com/expressjs/session/blob/v1.17.0/README.md#cookiesecure
-        secure: 'auto',
-      },
+            // The automatic express-session mechanism for determining if the application is being served
+            // over ssl is similar to the one used for setting the language cookie, which check if one of
+            // these conditions is true:
+            //
+            //   1. we are directly serving the nodejs application over SSL, using the "ssl" options in
+            //      settings.json
+            //
+            //   2. we are serving the nodejs application in plaintext, but we are using a reverse proxy
+            //      that terminates SSL for us. In this case, the user has to set trustProxy = true in
+            //      settings.json, and the information wheter the application is over SSL or not will be
+            //      extracted from the X-Forwarded-Proto HTTP header
+            //
+            // Please note that this will not be compatible with applications being served over http and
+            // https at the same time.
+            //
+            // reference: https://github.com/expressjs/session/blob/v1.17.0/README.md#cookiesecure
+            secure: 'auto',
+        },
     });
+
 
     // Give plugins an opportunity to install handlers/middleware before the express-session
     // middleware. This allows plugins to avoid creating an express-session record in the database
     // when it is not needed (e.g., public static content).
-    await hooks.aCallAll('expressPreSession', {app:fastify});
-  fastify.use(exports.sessionMiddleware);
+    await hooks.aCallAll('expressPreSession', {app: fastify});
 
-  fastify.use(webaccess.checkAccess);
+    /*fastify.addHook('preHandler', (req, res, next) => {
+        cookieParser(secret, {})(req,res,next)
+    })*/
+
+
+    fastify.register(fastifyCookie, {
+        hook: 'onRequest',
+        secret
+    })
+    fastify.register(fastifySession, {
+        secret,
+        cookie: {
+            secure: 'auto',
+            maxAge: sessionLifetime || null,
+            sameSite: settings.cookie.sameSite,
+        },
+        saveUninitialized: false,
+        prefix: 's:',
+        rolling: true, cookieName: 'express_sid',
+    })
+
+    fastify.addHook('preHandler', (request, reply, next) => {
+        request.session.user = "max";
+        next()
+    })
+
+    /*fastify.addHook('preHandler',  (req, res, next) => {
+        exports.sessionMiddleware(req, res, next);
+      })*/
+
+    fastify.addHook('preHandler',  (req, res, next) => {
+        webaccess.checkAccess(req, res, next);
+    })
 
     await Promise.all([
-      hooks.aCallAll('expressConfigure', {app: fastify}),
-      hooks.aCallAll('expressCreateServer', {app:fastify, server: fastify}),
+        hooks.aCallAll('expressConfigure', {app: fastify}),
+        hooks.aCallAll('expressCreateServer', {app: fastify, server: fastify}),
     ]);
     exports.server.on('connection', (socket: Socket) => {
-      sockets.add(socket);
-      socketsEvents.emit('updated');
-      socket.on('close', () => {
-        sockets.delete(socket);
+        sockets.add(socket);
         socketsEvents.emit('updated');
-      });
+        socket.on('close', () => {
+            sockets.delete(socket);
+            socketsEvents.emit('updated');
+        });
     });
+
+    console.log('Listening on port: ' + settings.port)
     // Run the server!
-  await fastify.listen({
-    port: settings.port,
-  })
-  startTime.setValue(Date.now());
+    await fastify.listen({
+        port: settings.port,
+    })
+    startTime.setValue(Date.now());
     logger.info('HTTP server listening for connections');
 }
 
-exports.shutdown = async (hookName:string, context: any) => {
-  await closeServer();
+exports.shutdown = async (hookName: string, context: any) => {
+    await closeServer();
 };

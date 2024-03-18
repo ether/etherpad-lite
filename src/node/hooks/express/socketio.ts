@@ -8,6 +8,8 @@ import log4js from 'log4js';
 const proxyaddr = require('proxy-addr');
 const settings = require('../../utils/Settings');
 import {Server, Socket} from 'socket.io'
+import path from "path";
+import {readFileSync} from "fs";
 const socketIORouter = require('../../handler/SocketIORouter');
 const hooks = require('../../../static/js/pluginfw/hooks');
 const padMessageHandler = require('../../handler/PadMessageHandler');
@@ -76,6 +78,12 @@ export const expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Fu
     maxHttpBufferSize: settings.socketIo.maxHttpBufferSize,
   })
 
+  args.app.get('/socket.io/socket.io.js', (_req,res:any) => {
+    res.header('Content-Type', 'application/javascript; charset=utf-8');
+    const socketIo = readFileSync(path.join(settings.root, 'src', 'node_modules', 'socket.io-client', 'dist', 'socket.io.min.js'), 'utf8');
+    res.header('Cache-Control', `public, max-age=${settings.maxAge}`);
+    res.send(socketIo);
+  })
 
   const handleConnection = (socket:Socket) => {
     sockets.add(socket);

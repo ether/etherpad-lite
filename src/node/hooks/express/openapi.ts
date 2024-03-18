@@ -658,7 +658,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
 
       // start and bind to express
       api.init();
-      app.use(apiRoot, async (req:any, res:any) => {
+      app.get(apiRoot, async (req:any, res:any) => {
         let response = null;
         try {
           if (style === APIPathStyle.REST) {

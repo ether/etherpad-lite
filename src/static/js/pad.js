@@ -23,13 +23,12 @@
  */
 
 let socket;
-const requireFromUrl = require('require-from-url/sync');
 
 // These jQuery things should create local references, but for now `require()`
 // assigns to the global `$` and augments it with plugins.
-requireFromUrl('./vendors/jquery');
-requireFromUrl('./vendors/farbtastic');
-requireFromUrl('./vendors/gritter');
+require('./vendors/jquery');
+require('./vendors/farbtastic');
+require('./vendors/gritter');
 
 const Cookies = require('./pad_utils').Cookies;
 const chat = require('./chat').chat;

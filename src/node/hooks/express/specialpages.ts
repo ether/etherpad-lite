@@ -73,12 +73,13 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
 exports.expressCreateServer = (hookName:string, args:any, cb:Function) => {
   // serve index.html under /
   args.app.get('/', (req:any, res:any) => {
+    console.log('GET /')
     res.type('text/html').send(eejs.require('ep_etherpad-lite/templates/index.html', {req}))
     //res.send(eejs.require('ep_etherpad-lite/templates/index.html', {req}));
   });
 
   // serve pad.html under /p
-  args.app.get('/p/:pad', (req:any, res:any, next:Function) => {
+  args.app.get('/p/:pad', (req:any, res:any) => {
     // The below might break for pads being rewritten
     const isReadOnly = !webaccess.userCanModify(req.params.pad, req);
 
@@ -97,7 +98,7 @@ exports.expressCreateServer = (hookName:string, args:any, cb:Function) => {
   });
 
   // serve timeslider.html under /p/$padname/timeslider
-  args.app.get('/p/:pad/timeslider', (req:any, res:any, next:Function) => {
+  args.app.get('/p/:pad/timeslider', (req:any, res:any) => {
     hooks.callAll('padInitToolbar', {
       toolbar,
     });
