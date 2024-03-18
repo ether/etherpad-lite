@@ -90,7 +90,7 @@
     "@types/semver": "^7.5.8",
     "@types/underscore": "^1.11.15",
     "eslint": "^8.57.0",
-    "eslint-config-etherpad": "^3.0.22",
+    "eslint-config-etherpad": "^4.0.4",
     "etherpad-cli-client": "^3.0.2",
     "mocha": "^10.3.0",
     "mocha-froth": "^0.2.10",
