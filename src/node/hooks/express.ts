@@ -7,7 +7,6 @@ import _ from 'underscore';
 // @ts-ignore
 import cookieParser from 'cookie-parser';
 import events from 'events';
-import express from 'express';
 // @ts-ignore
 import expressSession from 'express-session';
 import fs from 'fs';
@@ -18,7 +17,7 @@ const settings = require('../utils/Settings');
 const stats = require('../stats')
 import util from 'util';
 const webaccess = require('./express/webaccess');
-
+import Fastify from 'fastify';
 import SecretRotator from '../security/SecretRotator';
 
 let secretRotator: SecretRotator|null = null;
@@ -100,7 +99,21 @@ exports.createServer = async () => {
 exports.restartServer = async () => {
   await closeServer();
 
-  const app = express(); // New syntax for express v3
+  console.log('Starting Etherpad...');
+  const fastify = Fastify({
+    logger: {
+      level: 'error',
+      transport: {
+        target: 'pino-pretty',
+        options: {
+          translateTime: 'HH:MM:ss Z',
+          ignore: 'pid,hostname',
+        },
+      }
+    }
+  });
+  await fastify.register(require('@fastify/express'))
+
 
   if (settings.ssl) {
     console.log('SSL -- enabled');
@@ -119,142 +132,140 @@ exports.restartServer = async () => {
         options.ca.push(fs.readFileSync(caFileName));
       }
     }
-
-    const https = require('https');
-    exports.server = https.createServer(options, app);
-  } else {
-    const http = require('http');
-    exports.server = http.createServer(app);
   }
 
-  app.use((req, res, next) => {
-    // res.header("X-Frame-Options", "deny"); // breaks embedded pads
-    if (settings.ssl) {
-      // we use SSL
-      res.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-    }
+    exports.server = fastify.server
 
-    // Stop IE going into compatability mode
-    // https://github.com/ether/etherpad-lite/issues/2547
-    res.header('X-UA-Compatible', 'IE=Edge,chrome=1');
+    fastify.use((req, res, next) => {
+      // res.header("X-Frame-Options", "deny"); // breaks embedded pads
+      if (settings.ssl) {
+        // we use SSL
+        res.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+      }
 
-    // Enable a strong referrer policy. Same-origin won't drop Referers when
-    // loading local resources, but it will drop them when loading foreign resources.
-    // It's still a last bastion of referrer security. External URLs should be
-    // already marked with rel="noreferer" and user-generated content pages are already
-    // marked with <meta name="referrer" content="no-referrer">
-    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy
-    // https://github.com/ether/etherpad-lite/pull/3636
-    res.header('Referrer-Policy', 'same-origin');
+      // Stop IE going into compatability mode
+      // https://github.com/ether/etherpad-lite/issues/2547
+      res.header('X-UA-Compatible', 'IE=Edge,chrome=1');
 
-    // send git version in the Server response header if exposeVersion is true.
-    if (settings.exposeVersion) {
-      res.header('Server', serverName);
-    }
+      // Enable a strong referrer policy. Same-origin won't drop Referers when
+      // loading local resources, but it will drop them when loading foreign resources.
+      // It's still a last bastion of referrer security. External URLs should be
+      // already marked with rel="noreferer" and user-generated content pages are already
+      // marked with <meta name="referrer" content="no-referrer">
+      // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy
+      // https://github.com/ether/etherpad-lite/pull/3636
+      res.header('Referrer-Policy', 'same-origin');
 
-    next();
-  });
+      // send git version in the Server response header if exposeVersion is true.
+      if (settings.exposeVersion) {
+        res.header('Server', serverName);
+      }
 
-  if (settings.trustProxy) {
-    /*
-     * If 'trust proxy' === true, the client’s IP address in req.ip will be the
-     * left-most entry in the X-Forwarded-* header.
-     *
-     * Source: https://expressjs.com/en/guide/behind-proxies.html
-     */
-    app.enable('trust proxy');
-  }
-
-  // Measure response time
-  app.use((req, res, next) => {
-    const stopWatch = stats.timer('httpRequests').start();
-    const sendFn = res.send.bind(res);
-    res.send = (...args) => {   stopWatch.end(); return sendFn(...args); };
-    next();
-  });
-
-  // If the log level specified in the config file is WARN or ERROR the application server never
-  // starts listening to requests as reported in issue #158. Not installing the log4js connect
-  // logger when the log level has a higher severity than INFO since it would not log at that level
-  // anyway.
-  if (!(settings.loglevel === 'WARN' && settings.loglevel === 'ERROR')) {
-    app.use(log4js.connectLogger(logger, {
-      level: log4js.levels.DEBUG.levelStr,
-      format: ':status, :method :url',
-    }));
-  }
-
-  const {keyRotationInterval, sessionLifetime} = settings.cookie;
-  let secret = settings.sessionKey;
-  if (keyRotationInterval && sessionLifetime) {
-    secretRotator = new SecretRotator(
-        'expressSessionSecrets', keyRotationInterval, sessionLifetime, settings.sessionKey);
-    await secretRotator.start();
-    secret = secretRotator.secrets;
-  }
-  if (!secret) throw new Error('missing cookie signing secret');
-
-  app.use(cookieParser(secret, {}));
-
-  sessionStore = new SessionStore(settings.cookie.sessionRefreshInterval);
-  exports.sessionMiddleware = expressSession({
-    propagateTouch: true,
-    rolling: true,
-    secret,
-    store: sessionStore,
-    resave: false,
-    saveUninitialized: false,
-    // Set the cookie name to a javascript identifier compatible string. Makes code handling it
-    // cleaner :)
-    name: 'express_sid',
-    cookie: {
-      maxAge: sessionLifetime || null, // Convert 0 to null.
-      sameSite: settings.cookie.sameSite,
-
-      // The automatic express-session mechanism for determining if the application is being served
-      // over ssl is similar to the one used for setting the language cookie, which check if one of
-      // these conditions is true:
-      //
-      //   1. we are directly serving the nodejs application over SSL, using the "ssl" options in
-      //      settings.json
-      //
-      //   2. we are serving the nodejs application in plaintext, but we are using a reverse proxy
-      //      that terminates SSL for us. In this case, the user has to set trustProxy = true in
-      //      settings.json, and the information wheter the application is over SSL or not will be
-      //      extracted from the X-Forwarded-Proto HTTP header
-      //
-      // Please note that this will not be compatible with applications being served over http and
-      // https at the same time.
-      //
-      // reference: https://github.com/expressjs/session/blob/v1.17.0/README.md#cookiesecure
-      secure: 'auto',
-    },
-  });
-
-  // Give plugins an opportunity to install handlers/middleware before the express-session
-  // middleware. This allows plugins to avoid creating an express-session record in the database
-  // when it is not needed (e.g., public static content).
-  await hooks.aCallAll('expressPreSession', {app});
-  app.use(exports.sessionMiddleware);
-
-  app.use(webaccess.checkAccess);
-
-  await Promise.all([
-    hooks.aCallAll('expressConfigure', {app}),
-    hooks.aCallAll('expressCreateServer', {app, server: exports.server}),
-  ]);
-  exports.server.on('connection', (socket:Socket) => {
-    sockets.add(socket);
-    socketsEvents.emit('updated');
-    socket.on('close', () => {
-      sockets.delete(socket);
-      socketsEvents.emit('updated');
+      next();
     });
-  });
-  await util.promisify(exports.server.listen).bind(exports.server)(settings.port, settings.ip);
+
+    if (settings.trustProxy) {
+      /*
+       * If 'trust proxy' === true, the client’s IP address in req.ip will be the
+       * left-most entry in the X-Forwarded-* header.
+       *
+       * Source: https://expressjs.com/en/guide/behind-proxies.html
+       */
+      fastify.enable('trust proxy');
+    }
+
+    // Measure response time
+  fastify.use((req, res, next) => {
+      const stopWatch = stats.timer('httpRequests').start();
+      const sendFn = res.send.bind(res);
+      res.send = (...args) => {
+        stopWatch.end();
+        return sendFn(...args);
+      };
+      next();
+    });
+
+    // If the log level specified in the config file is WARN or ERROR the application server never
+    // starts listening to requests as reported in issue #158. Not installing the log4js connect
+    // logger when the log level has a higher severity than INFO since it would not log at that level
+    // anyway.
+    if (!(settings.loglevel === 'WARN' && settings.loglevel === 'ERROR')) {
+    }
+
+    const {keyRotationInterval, sessionLifetime} = settings.cookie;
+    let secret = settings.sessionKey;
+    if (keyRotationInterval && sessionLifetime) {
+      secretRotator = new SecretRotator(
+          'expressSessionSecrets', keyRotationInterval, sessionLifetime, settings.sessionKey);
+      await secretRotator.start();
+      secret = secretRotator.secrets;
+    }
+    if (!secret) throw new Error('missing cookie signing secret');
+
+  fastify.use(cookieParser(secret, {}));
+
+    sessionStore = new SessionStore(settings.cookie.sessionRefreshInterval);
+    exports.sessionMiddleware = expressSession({
+      propagateTouch: true,
+      rolling: true,
+      secret,
+      store: sessionStore,
+      resave: false,
+      saveUninitialized: false,
+      // Set the cookie name to a javascript identifier compatible string. Makes code handling it
+      // cleaner :)
+      name: 'express_sid',
+      cookie: {
+        maxAge: sessionLifetime || null, // Convert 0 to null.
+        sameSite: settings.cookie.sameSite,
+
+        // The automatic express-session mechanism for determining if the application is being served
+        // over ssl is similar to the one used for setting the language cookie, which check if one of
+        // these conditions is true:
+        //
+        //   1. we are directly serving the nodejs application over SSL, using the "ssl" options in
+        //      settings.json
+        //
+        //   2. we are serving the nodejs application in plaintext, but we are using a reverse proxy
+        //      that terminates SSL for us. In this case, the user has to set trustProxy = true in
+        //      settings.json, and the information wheter the application is over SSL or not will be
+        //      extracted from the X-Forwarded-Proto HTTP header
+        //
+        // Please note that this will not be compatible with applications being served over http and
+        // https at the same time.
+        //
+        // reference: https://github.com/expressjs/session/blob/v1.17.0/README.md#cookiesecure
+        secure: 'auto',
+      },
+    });
+
+    // Give plugins an opportunity to install handlers/middleware before the express-session
+    // middleware. This allows plugins to avoid creating an express-session record in the database
+    // when it is not needed (e.g., public static content).
+    await hooks.aCallAll('expressPreSession', {app:fastify});
+  fastify.use(exports.sessionMiddleware);
+
+  fastify.use(webaccess.checkAccess);
+
+    await Promise.all([
+      hooks.aCallAll('expressConfigure', {app: fastify}),
+      hooks.aCallAll('expressCreateServer', {app:fastify, server: fastify}),
+    ]);
+    exports.server.on('connection', (socket: Socket) => {
+      sockets.add(socket);
+      socketsEvents.emit('updated');
+      socket.on('close', () => {
+        sockets.delete(socket);
+        socketsEvents.emit('updated');
+      });
+    });
+    // Run the server!
+  await fastify.listen({
+    port: settings.port,
+  })
   startTime.setValue(Date.now());
-  logger.info('HTTP server listening for connections');
-};
+    logger.info('HTTP server listening for connections');
+}
 
 exports.shutdown = async (hookName:string, context: any) => {
   await closeServer();

@@ -1,6 +1,5 @@
 'use strict';
 
-import log4js from "log4js";
 
 import axios, {AxiosResponse} from "axios";
 import {PackageData, PackageInfo} from "../../../node/types/PackageInfo";
@@ -17,7 +16,6 @@ const settings = require('../../../node/utils/Settings');
 import {LinkInstaller} from "./LinkInstaller";
 
 const {findEtherpadRoot} = require('../../../node/utils/AbsolutePaths');
-const logger = log4js.getLogger('plugins');
 
 export const pluginInstallPath = path.join(settings.root, 'src','plugin_packages');
 export const node_modules = path.join(findEtherpadRoot(),'src', 'node_modules');
@@ -51,7 +49,7 @@ const wrapTaskCb = (cb:Function|null) => {
 };
 
 const migratePluginsFromNodeModules = async () => {
-  logger.info('start migration of plugins in node_modules');
+  console.info('start migration of plugins in node_modules');
   // Notes:
   //   * Do not pass `--prod` otherwise `npm ls` will fail if there is no `package.json`.
   //   * The `--no-production` flag is required (or the `NODE_ENV` environment variable must be
@@ -75,7 +73,7 @@ const migratePluginsFromNodeModules = async () => {
 };
 
 export const checkForMigration = async () => {
-  logger.info('check installed plugins for migration');
+  console.info('check installed plugins for migration');
   // Initialize linkInstaller
   await linkInstaller.init()
 
@@ -101,15 +99,15 @@ export const checkForMigration = async () => {
       const moduleName = path.basename(file);
       try {
         await fs.access(path.join(node_modules, moduleName), fs.constants.F_OK);
-        logger.debug(`plugin ${moduleName} already exists in node_modules`);
+        console.debug(`plugin ${moduleName} already exists in node_modules`);
       } catch (err) {
         // Create symlink to node_modules
-        logger.debug(`create symlink for ${file} to ${path.join(node_modules,moduleName)}`)
+        console.debug(`create symlink for ${file} to ${path.join(node_modules,moduleName)}`)
         await fs.symlink(path.join(pluginInstallPath,file), path.join(node_modules,moduleName), 'dir')
       }
     }
   }).catch(()=>{
-    logger.debug('plugin directory does not exist');
+    console.debug('plugin directory does not exist');
   })
   const fileContent = await fs.readFile(installedPluginsPath);
   const installedPlugins = JSON.parse(fileContent.toString());
@@ -137,19 +135,19 @@ const persistInstalledPlugins = async () => {
 
 export const uninstall = async (pluginName: string, cb:Function|null = null) => {
   cb = wrapTaskCb(cb);
-  logger.info(`Uninstalling plugin ${pluginName}...`);
+  console.info(`Uninstalling plugin ${pluginName}...`);
 
   await linkInstaller.uninstallPlugin(pluginName);
-  logger.info(`Successfully uninstalled plugin ${pluginName}`);
+  console.info(`Successfully uninstalled plugin ${pluginName}`);
   await hooks.aCallAll('pluginUninstall', {pluginName});
   cb(null);
 };
 
 export const install = async (pluginName: string, cb:Function|null = null) => {
   cb = wrapTaskCb(cb);
-  logger.info(`Installing plugin ${pluginName}...`);
+  console.info(`Installing plugin ${pluginName}...`);
   await linkInstaller.installPlugin(pluginName);
-  logger.info(`Successfully installed plugin ${pluginName}`);
+  console.info(`Successfully installed plugin ${pluginName}`);
   await hooks.aCallAll('pluginInstall', {pluginName});
   cb(null);
 };
@@ -195,7 +193,7 @@ export const search = (searchTerm: string, maxCacheAge: number) => getAvailableP
                 !~results[pluginName].description.toLowerCase().indexOf(searchTerm))
         ) {
           if (typeof results[pluginName].description === 'undefined') {
-            logger.debug(`plugin without Description: ${results[pluginName].name}`);
+            console.debug(`plugin without Description: ${results[pluginName].name}`);
           }
 
           continue;

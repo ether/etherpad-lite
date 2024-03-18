@@ -24,9 +24,8 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
     },
   });
 
-  // handle export requests
-  args.app.use('/p/:pad/:rev?/export/:type', limiter);
-  args.app.get('/p/:pad/:rev?/export/:type', (req:any, res:any, next:Function) => {
+
+  const handleImport = (req:any, res:any, next:Function) => {
     (async () => {
       const types = ['pdf', 'doc', 'txt', 'html', 'odt', 'etherpad'];
       // send a 404 if we don't support this filetype
@@ -38,12 +37,12 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
       if (settings.exportAvailable() === 'no' &&
           ['odt', 'pdf', 'doc'].indexOf(req.params.type) !== -1) {
         console.error(`Impossible to export pad "${req.params.pad}" in ${req.params.type} format.` +
-                      ' There is no converter configured');
+            ' There is no converter configured');
 
         // ACHTUNG: do not include req.params.type in res.send() because there is
         // no HTML escaping and it would lead to an XSS
         res.send('This export is not enabled at this Etherpad instance. Set the path to Abiword' +
-                 ' or soffice (LibreOffice) in settings.json to enable this feature');
+            ' or soffice (LibreOffice) in settings.json to enable this feature');
         return;
       }
 
@@ -68,22 +67,26 @@ exports.expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Functio
         await exportHandler.doExport(req, res, padId, readOnlyId, req.params.type);
       }
     })().catch((err) => next(err || new Error(err)));
-  });
+  };
+
+  // handle export requests
+  args.app.use('/p/:pad/export/:type', limiter);
+  args.app.use('/p/:pad/:rev/export/:type', limiter);
+
+  args.app.get('/p/:pad/:rev/export/:type', handleImport);
+  args.app.get('/p/:pad/export/:type', handleImport);
 
   // handle import requests
   args.app.use('/p/:pad/import', limiter);
-  args.app.post('/p/:pad/import', (req:any, res:any, next:Function) => {
-    (async () => {
-      // @ts-ignore
-      const {session: {user} = {}} = req;
-      const {accessStatus, authorID: authorId} = await securityManager.checkAccess(
-          req.params.pad, req.cookies.sessionID, req.cookies.token, user);
-      if (accessStatus !== 'grant' || !webaccess.userCanModify(req.params.pad, req)) {
-        return res.status(403).send('Forbidden');
-      }
-      await importHandler.doImport(req, res, req.params.pad, authorId);
-    })().catch((err) => next(err || new Error(err)));
-  });
+  args.app.post('/p/:pad/import', async (req: any, res: any, next: Function) => {
+    const {session: {user} = {}} = req;
+    const {accessStatus, authorID: authorId} = await securityManager.checkAccess(
+        req.params.pad, req.cookies.sessionID, req.cookies.token, user);
+    if (accessStatus !== 'grant' || !webaccess.userCanModify(req.params.pad, req)) {
+      return res.status(403).send('Forbidden');
+    }
+    await importHandler.doImport(req, res, req.params.pad, authorId);
+  })
 
   return cb();
 };

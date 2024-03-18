@@ -157,14 +157,14 @@ export default class CachingMiddleware {
     }
 
     const _headers:Headers = {};
-    oldRes.setHeader = res.setHeader;
-    res.setHeader = (key: string, value: string) => {
+    oldRes.header = res.header;
+    res.header = (key: string, value: string) => {
       // Don't set cookies, see issue #707
       if (key.toLowerCase() === 'set-cookie') return;
 
       _headers[key.toLowerCase()] = value;
       // @ts-ignore
-      oldRes.setHeader.call(res, key, value);
+      oldRes.header.call(res, key, value);
     };
 
     oldRes.writeHead = res.writeHead;
@@ -175,7 +175,7 @@ export default class CachingMiddleware {
         let buffer = '';
 
         Object.keys(headers || {}).forEach((key) => {
-          res.setHeader(key, headers[key]);
+          res.header(key, headers[key]);
         });
         headers = _headers;
 

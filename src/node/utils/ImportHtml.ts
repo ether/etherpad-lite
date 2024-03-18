@@ -15,13 +15,11 @@
  * limitations under the License.
  */
 
-import log4js from 'log4js';
 const Changeset = require('../../static/js/Changeset');
 const contentcollector = require('../../static/js/contentcollector');
 import jsdom from 'jsdom';
 import {PadType} from "../types/PadType";
 
-const apiLogger = log4js.getLogger('ImportHtml');
 let processor:any;
 
 exports.setPadHTML = async (pad: PadType, html:string, authorId = '') => {
@@ -38,8 +36,8 @@ exports.setPadHTML = async (pad: PadType, html:string, authorId = '') => {
   // below the last line of an import
   document.body.appendChild(document.createElement('p'));
 
-  apiLogger.debug('html:');
-  apiLogger.debug(html);
+  console.debug('html:');
+  console.debug(html);
 
   // Convert a dom tree into a list of lines and attribute liens
   // using the content collector object
@@ -48,24 +46,24 @@ exports.setPadHTML = async (pad: PadType, html:string, authorId = '') => {
     // we use a try here because if the HTML is bad it will blow up
     cc.collectContent(document.body);
   } catch (err: any) {
-    apiLogger.warn(`Error processing HTML: ${err.stack || err}`);
+    console.warn(`Error processing HTML: ${err.stack || err}`);
     throw err;
   }
 
   const result = cc.finish();
 
-  apiLogger.debug('Lines:');
+  console.debug('Lines:');
 
   let i;
   for (i = 0; i < result.lines.length; i++) {
-    apiLogger.debug(`Line ${i + 1} text: ${result.lines[i]}`);
-    apiLogger.debug(`Line ${i + 1} attributes: ${result.lineAttribs[i]}`);
+    console.debug(`Line ${i + 1} text: ${result.lines[i]}`);
+    console.debug(`Line ${i + 1} attributes: ${result.lineAttribs[i]}`);
   }
 
   // Get the new plain text and its attributes
   const newText = result.lines.join('\n');
-  apiLogger.debug('newText:');
-  apiLogger.debug(newText);
+  console.debug('newText:');
+  console.debug(newText);
   const newAttribs = `${result.lineAttribs.join('|1+1')}|1+1`;
 
   // create a new changeset with a helper builder object
@@ -88,7 +86,7 @@ exports.setPadHTML = async (pad: PadType, html:string, authorId = '') => {
   // the changeset is ready!
   const theChangeset = builder.toString();
 
-  apiLogger.debug(`The changeset: ${theChangeset}`);
+  console.debug(`The changeset: ${theChangeset}`);
   await pad.setText('\n', authorId);
   await pad.appendRevision(theChangeset, authorId);
 };

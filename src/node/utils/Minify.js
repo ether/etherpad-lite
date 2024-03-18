@@ -126,9 +126,7 @@ const minify = async (req, res) => {
     filename = sanitizePathname(filename);
   } catch (err) {
     logger.error(`sanitization of pathname "${filename}" failed: ${err.stack || err}`);
-    res.writeHead(404, {});
-    res.end();
-    return;
+    return res.status(404).send();
   }
 
   // Backward compatibility for plugins that require() files from old paths.
@@ -174,12 +172,12 @@ const minify = async (req, res) => {
   const [date, exists] = await statFile(filename, 3);
   if (date) {
     date.setMilliseconds(0);
-    res.setHeader('last-modified', date.toUTCString());
-    res.setHeader('date', (new Date()).toUTCString());
+    res.header('last-modified', date.toUTCString());
+    res.header('date', (new Date()).toUTCString());
     if (settings.maxAge !== undefined) {
       const expiresDate = new Date(Date.now() + settings.maxAge * 1000);
-      res.setHeader('expires', expiresDate.toUTCString());
-      res.setHeader('cache-control', `max-age=${settings.maxAge}`);
+      res.header('expires', expiresDate.toUTCString());
+      res.header('cache-control', `max-age=${settings.maxAge}`);
     }
   }
 
@@ -317,7 +315,7 @@ const getFile = async (filename) => {
   return await fs.readFile(path.resolve(ROOT_DIR, filename));
 };
 
-exports.minify = (req, res, next) => minify(req, res).catch((err) => next(err || new Error(err)));
+exports.minify = (req, res, next) => minify(req, res);
 
 exports.requestURIs = requestURIs;
 

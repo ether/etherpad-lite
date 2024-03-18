@@ -22,61 +22,59 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
   });
 
   app.get('/stats', (req:any, res:any) => {
-    res.json(require('../../stats').toJSON());
+    require('../../stats');
   });
 
   app.get('/javascript', (req:any, res:any) => {
-    res.send(eejs.require('ep_etherpad-lite/templates/javascript.html', {req}));
+    res.type('text/html').send(eejs.require('ep_etherpad-lite/templates/javascript.html', {req}))
   });
 
   app.get('/robots.txt', (req:any, res:any) => {
     let filePath =
         path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'robots.txt');
-    res.sendFile(filePath, (err:any) => {
-      // there is no custom robots.txt, send the default robots.txt which dissallows all
-      if (err) {
-        filePath = path.join(settings.root, 'src', 'static', 'robots.txt');
-        res.sendFile(filePath);
-      }
-    });
+    fs.stat(filePath, (err:any, stats:any) => {
+        if (err) {
+            filePath = path.join(settings.root, 'src', 'static', 'robots.txt');
+        }
+
+      const buffer = fs.readFileSync(filePath) // sync just for DEMO
+      res.type('text/plain').send(buffer, {req})
+
+    })
   });
 
-  app.get('/favicon.ico', (req:any, res:any, next:Function) => {
-    (async () => {
-      /*
-        If this is a url we simply redirect to that one.
-       */
-      if (settings.favicon && settings.favicon.startsWith('http')) {
-        res.redirect(settings.favicon);
-        res.send();
-        return;
-      }
+  app.get('/favicon.ico', async (req: any, res: any) => {
+    /*
+    If this is a url we simply redirect to that one.
+    */
+    if (settings.favicon && settings.favicon.startsWith('http')) {
+      res.redirect(settings.favicon);
+      res.send();
+      return;
+    }
 
-
-      const fns = [
-        ...(settings.favicon ? [path.resolve(settings.root, settings.favicon)] : []),
-        path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'favicon.ico'),
-        path.join(settings.root, 'src', 'static', 'favicon.ico'),
-      ];
-      for (const fn of fns) {
-        try {
-          await fsp.access(fn, fs.constants.R_OK);
-        } catch (err) {
-          continue;
-        }
-        res.setHeader('Cache-Control', `public, max-age=${settings.maxAge}`);
-        await util.promisify(res.sendFile.bind(res))(fn);
-        return;
+    const fns = [
+      ...(settings.favicon ? [path.resolve(settings.root, settings.favicon)] : []),
+      path.join(settings.root, 'src', 'static', 'skins', settings.skinName, 'favicon.ico'),
+      path.join(settings.root, 'src', 'static', 'favicon.ico'),
+    ];
+    for (const fn of fns) {
+      try {
+        await fsp.access(fn, fs.constants.R_OK);
+      } catch (err) {
+        continue;
       }
-      next();
-    })().catch((err) => next(err || new Error(err)));
+      res.header('Cache-Control', `public, max-age=${settings.maxAge}`);
+      return fs.readFileSync(fn)
+    }
   });
 };
 
 exports.expressCreateServer = (hookName:string, args:any, cb:Function) => {
   // serve index.html under /
   args.app.get('/', (req:any, res:any) => {
-    res.send(eejs.require('ep_etherpad-lite/templates/index.html', {req}));
+    res.type('text/html').send(eejs.require('ep_etherpad-lite/templates/index.html', {req}))
+    //res.send(eejs.require('ep_etherpad-lite/templates/index.html', {req}));
   });
 
   // serve pad.html under /p
@@ -91,11 +89,11 @@ exports.expressCreateServer = (hookName:string, args:any, cb:Function) => {
 
     // can be removed when require-kernel is dropped
     res.header('Feature-Policy', 'sync-xhr \'self\'');
-    res.send(eejs.require('ep_etherpad-lite/templates/pad.html', {
+    res.type('text/html').send(eejs.require('ep_etherpad-lite/templates/pad.html', {
       req,
       toolbar,
       isReadOnly,
-    }));
+    }), {req})
   });
 
   // serve timeslider.html under /p/$padname/timeslider
@@ -103,11 +101,8 @@ exports.expressCreateServer = (hookName:string, args:any, cb:Function) => {
     hooks.callAll('padInitToolbar', {
       toolbar,
     });
-
-    res.send(eejs.require('ep_etherpad-lite/templates/timeslider.html', {
-      req,
-      toolbar,
-    }));
+    res.type('text/html').send(eejs.require('ep_etherpad-lite/templates/pad.html',
+        {req, toolbar}));
   });
 
   // The client occasionally polls this endpoint to get an updated expiration for the express_sid

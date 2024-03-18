@@ -36,12 +36,40 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
   // Cache both minified and static.
   const assetCache = new CachingMiddleware();
   // Cache static assets
-  app.all(/\/js\/(.*)/, assetCache.handle.bind(assetCache));
-  app.all(/\/css\/(.*)/, assetCache.handle.bind(assetCache));
+
+
+  app.get('/static/js/require-kernel.js', (req:any, res:any) => {
+    res.header('Content-Type', 'application/javascript; charset=utf-8');
+    res.header('Cache-Control', `public, max-age=${settings.maxAge}`);
+    const file = fs.readFile(path.join(settings.root, 'src/static/js/require-kernel.js'), 'utf8');
+    res.send();
+  })
+
+  app.route({
+    method: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
+    url: '/js/*',
+    handler: assetCache.handle.bind(assetCache)
+  });
+
+  app.route({
+    method: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
+    url: '/css/*',
+    handler: assetCache.handle.bind(assetCache)
+  });
+
+  /*app.register(require('@fastify/static'), {
+    root: path.join(settings.root, 'src', 'static'),
+    prefix: '/static/', // optional: default '/'
+    constraints: {} // optional: default {}
+  })*/
 
   // Minify will serve static files compressed (minify enabled). It also has
   // file-specific hacks for ace/require-kernel/etc.
-  app.all('/static/:filename(*)', minify.minify);
+  app.route({
+    method: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
+    url: '/static/*',
+    handler: minify.minify
+  });
 
   // Setup middleware that will package JavaScript files served by minify for
   // CommonJS loader on the client-side.
@@ -73,9 +101,9 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
       // @ts-ignore
       delete clientPlugins[name].package;
     }
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    res.setHeader('Cache-Control', `public, max-age=${settings.maxAge}`);
-    res.write(JSON.stringify({plugins: clientPlugins, parts: clientParts}));
-    res.end();
+
+    res.header('Content-Type', 'application/json; charset=utf-8')
+    res.header('Cache-Control', `public, max-age=${settings.maxAge}`)
+    return {plugins: clientPlugins, parts: clientParts};
   });
 };

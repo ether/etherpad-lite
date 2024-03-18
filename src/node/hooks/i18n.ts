@@ -133,8 +133,8 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
     // works with /locale/en and /locale/en.json requests
     const locale = req.params.locale.split('.')[0];
     if (Object.prototype.hasOwnProperty.call(exports.availableLangs, locale)) {
-      res.setHeader('Cache-Control', `public, max-age=${settings.maxAge}`);
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.header('Cache-Control', `public, max-age=${settings.maxAge}`);
+      res.header('Content-Type', 'application/json; charset=utf-8');
       res.send(`{"${locale}":${JSON.stringify(locales[locale])}}`);
     } else {
       res.status(404).send('Language not available');
@@ -142,8 +142,8 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
   });
 
   app.get('/locales.json', (req: any, res:any) => {
-    res.setHeader('Cache-Control', `public, max-age=${settings.maxAge}`);
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.header('Cache-Control', `public, max-age=${settings.maxAge}`);
+    res.header('Content-Type', 'application/json; charset=utf-8');
     res.send(localeIndex);
   });
 };

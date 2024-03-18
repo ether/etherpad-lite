@@ -28,7 +28,6 @@
  */
 
 const absolutePaths = require('./AbsolutePaths');
-const deepEqual = require('fast-deep-equal/es6');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');

@@ -70,7 +70,7 @@ export const expressCreateServer = (hookName:string, args:ArgsExpressType, cb:Fu
   // there shouldn't be a browser that isn't compatible to all
   // transports in this list at once
   // e.g. XHR is disabled in IE by default, so in IE it should use jsonp-polling
-  io = new Server(args.server,{
+  io = new Server(args.server.server,{
     transports: settings.socketTransportProtocols,
     cookie: false,
     maxHttpBufferSize: settings.socketIo.maxHttpBufferSize,
