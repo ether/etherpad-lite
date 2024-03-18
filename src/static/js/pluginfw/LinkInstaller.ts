@@ -19,6 +19,7 @@ export class LinkInstaller {
     constructor() {
         this.livePluginManager = new PluginManager({
             pluginsPath: pluginInstallPath,
+            hostRequire: undefined,
             cwd: path.join(settings.root, 'src')
         });
         this.dependenciesMap = new Map();
