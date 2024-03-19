@@ -10,17 +10,18 @@ if (process.argv.length === 2) {
   process.exit(1);
 }
 
-let plugins = process.argv.slice(2)
-let installFromPath = false;
+let args = process.argv.slice(2)
 
-const thirdOptPlug = plugins[0]
+let registryPlugins: string[] = [];
+let localPlugins: string[] = [];
 
-console.log("Third option: ", thirdOptPlug)
-if (thirdOptPlug && thirdOptPlug.includes('path')) {
-  installFromPath = true
-  plugins.splice(plugins.indexOf('--path'), 1);
+if (args.indexOf('--path') !== -1) {
+  const indexToSplit = args.indexOf('--path');
+  registryPlugins = args.slice(0, indexToSplit);
+  localPlugins = args.slice(indexToSplit + 1);
+} else {
+  registryPlugins = args;
 }
-
 
 const persistInstalledPlugins = async () => {
   const plugins:PackageData[] = []
@@ -36,14 +37,14 @@ const persistInstalledPlugins = async () => {
 };
 
 async function run() {
-  for (const plugin of plugins) {
-    if(installFromPath) {
-      console.log(`Installing plugin from path: ${plugin}`);
-        await linkInstaller.installFromPath(plugin);
-        continue;
-    }
+  for (const plugin of registryPlugins) {
     console.log(`Installing plugin from registry: ${plugin}`)
     await linkInstaller.installPlugin(plugin);
+  }
+
+  for (const plugin of localPlugins) {
+    console.log(`Installing plugin from path: ${plugin}`);
+    await linkInstaller.installFromPath(plugin);
   }
 }
 
