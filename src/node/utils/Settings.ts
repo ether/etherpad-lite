@@ -28,6 +28,7 @@
  */
 
 import {MapArrayType} from "../types/MapType";
+import {SettingsNode, SettingsTree} from "./SettingsTree";
 
 const absolutePaths = require('./AbsolutePaths');
 const deepEqual = require('fast-deep-equal/es6');
@@ -601,7 +602,7 @@ const coerceValue = (stringValue:string) => {
  * see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter
  */
 const lookupEnvironmentVariables = (obj: MapArrayType<any>) => {
-  function replaceEnvs(obj: MapArrayType<any>) {
+   const replaceEnvs = (obj: MapArrayType<any>)=> {
     for (let [key, value] of Object.entries(obj)) {
       /*
       * the first invocation of replacer() is with an empty key. Just go on, or
@@ -620,13 +621,13 @@ const lookupEnvironmentVariables = (obj: MapArrayType<any>) => {
        * The environment variable expansion syntax "${ENV_VAR}" is just a string
        * of specific form, after all.
        */
-      if (typeof value !== 'string' && typeof value !== 'object') {
+      if ((typeof value !== 'string' && typeof value !== 'object') || value === null) {
         obj[key] = value;
         continue
       }
 
-      if (typeof value === "object") {
-        replaceEnvs(value);
+      if (typeof obj[key] === "object") {
+        replaceEnvs(obj[key]);
         continue
       }
 
@@ -685,20 +686,47 @@ const lookupEnvironmentVariables = (obj: MapArrayType<any>) => {
 
       obj[key] = coerceValue(envVarValue!);
     }
+    return obj
   }
 
   replaceEnvs(obj);
 
+  const envVars:MapArrayType<any> = {}
+
   // Add plugin ENV variables
-  for (const key of Object.keys(process.env)) {
-    if (key.startsWith('EP_')) {
-      // Add to object
-      obj[key] = process.env[key];
+
+      /**
+       * If the key contains a double underscore, it's a plugin variable
+       * E.g.
+       */
+      let treeEntries = new Map<string, string|undefined>
+      const root = new SettingsNode("EP")
+
+      for (let [env,envVal] of Object.entries(process.env)) {
+        if(!env.startsWith("EP")) continue
+        treeEntries.set(env, envVal)
+      }
+
+      treeEntries.forEach((value, key) => {
+        let pathToKey = key.split("__")
+        let currentNode = root
+        let depth = 0
+          depth++
+          currentNode.addChild(pathToKey, value!)
+      })
+
+  console.log("Root is", JSON.stringify(root, (k,v)=>{
+    if(v instanceof Map) {
+      return {
+        dataType: 'Map',
+        value: Array.from(v.entries()), // or with spread: value: [...value]
+      };
+    } else {
+      return v;
     }
-  }
+  }))
 
-  console.log(obj)
-
+  obj = Object.assign(obj, envVars)
   return obj;
 };
 
@@ -892,4 +920,3 @@ exports.exportedForTestingOnly = {
 
 // initially load settings
 exports.reloadSettings();
-
