@@ -32,7 +32,6 @@ const RequireKernel = require('etherpad-require-kernel');
 import mime from 'mime-types';
 import log4js from 'log4js';
 const sanitizePathname = require('./sanitizePathname');
-
 const logger = log4js.getLogger('Minify');
 
 const ROOT_DIR = path.join(settings.root, 'src/static/');
@@ -274,6 +273,17 @@ const _requireLastModified = new Date();
 const requireDefinition = () => `var require = ${RequireKernel.kernelSource};\n`;
 
 const getFileCompressed = async (filename: string, contentType: string) => {
+
+  const ensureBuffer = (input: string|Buffer|object)=> {
+    if (Buffer.isBuffer(input)) {
+      return input;
+    } else if (typeof input === 'string') {
+      return Buffer.from(input);
+    } else {
+      throw new Error('Input should be a Buffer or a string');
+    }
+  }
+
   let content = await getFile(filename);
   if (!content || !settings.minify) {
     return content;
@@ -281,10 +291,9 @@ const getFileCompressed = async (filename: string, contentType: string) => {
       try {
         logger.info('Compress JS file %s.', filename);
 
-        content = content.toString();
-        const compressResult = compressJS(content);
+        const compressResult = compressJS(ensureBuffer(content).toString());
 
-          content = compressResult.code.toString(); // Convert content obj code to string
+        return compressResult.code.toString(); // Convert content obj code to string
       } catch (error) {
         console.error('getFile() returned an error in ' +
                         `getFileCompressed(${filename}, ${contentType}): ${error}`);
@@ -293,8 +302,7 @@ const getFileCompressed = async (filename: string, contentType: string) => {
   } else if (contentType === 'text/css') {
     try {
       logger.info('Compress CSS file %s.', filename);
-      content = compressCSS(filename, ROOT_DIR, Buffer.from(content)).toString();
-      return content
+      return compressCSS(filename, ROOT_DIR, ensureBuffer(content));
     } catch (error) {
       console.error(`CleanCSS.minify() returned an error on ${filename}: ${error}`);
     }
