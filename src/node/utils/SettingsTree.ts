@@ -73,23 +73,6 @@ export class SettingsNode {
         return collected;
     }
 
-
-    public transformObjectWithArrays() {
-        function isNumeric(str: string|object) {
-            if (typeof str != "string") return false // we only process strings!
-            // @ts-ignore
-            return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
-                !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
-        }
-        let collected: MapArrayType<any> = {};
-        for (const key in this.children) {
-            if (isNumeric(key)) {
-                Object.entries(this.children).map(([key, value]) => {
-                })
-            }
-        }
-    }
-
     coerceValue = (stringValue: string) => {
         // cooked from https://stackoverflow.com/questions/175739/built-in-way-in-javascript-to-check-if-a-string-is-a-valid-number
         // @ts-ignore

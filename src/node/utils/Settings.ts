@@ -705,8 +705,6 @@ const lookupEnvironmentVariables = (obj: MapArrayType<any>) => {
 
     replaceEnvs(obj);
 
-    const envVars: MapArrayType<any> = {}
-
     // Add plugin ENV variables
 
     /**
@@ -720,7 +718,6 @@ const lookupEnvironmentVariables = (obj: MapArrayType<any>) => {
         if (!env.startsWith("EP")) continue
         treeEntries.set(env, envVal)
     }
-
     treeEntries.forEach((value, key) => {
         let pathToKey = key.split("__")
         let currentNode = root
@@ -730,9 +727,9 @@ const lookupEnvironmentVariables = (obj: MapArrayType<any>) => {
     })
 
     //console.log(root.collectFromLeafsUpwards())
-    //const rooting = root.collectFromLeafsUpwards()
-
-    obj = Object.assign(obj, envVars)
+    const rooting = root.collectFromLeafsUpwards()
+    console.log("Rooting is", rooting.ADMIN)
+    obj = Object.assign(obj, rooting)
     return obj;
 };
 
