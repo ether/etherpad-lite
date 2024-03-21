@@ -21,21 +21,22 @@
  * limitations under the License.
  */
 
+import {compressCSS, compressJS} from "./MinifyWorker";
+import {MapArrayType} from "../types/MapType";
+
 const settings = require('./Settings');
-const fs = require('fs').promises;
-const path = require('path');
+import {promises as fs} from 'fs'
+import path from 'path';
 const plugins = require('../../static/js/pluginfw/plugin_defs');
 const RequireKernel = require('etherpad-require-kernel');
-const mime = require('mime-types');
-const Threads = require('threads');
-const log4js = require('log4js');
+import mime from 'mime-types';
+import log4js from 'log4js';
 const sanitizePathname = require('./sanitizePathname');
 
 const logger = log4js.getLogger('Minify');
 
 const ROOT_DIR = path.join(settings.root, 'src/static/');
 
-const threadsPool = new Threads.Pool(() => Threads.spawn(new Threads.Worker('./MinifyWorker')), 2);
 
 const LIBRARY_WHITELIST = [
   'async',
@@ -49,10 +50,10 @@ const LIBRARY_WHITELIST = [
 
 // What follows is a terrible hack to avoid loop-back within the server.
 // TODO: Serve files from another service, or directly from the file system.
-const requestURI = async (url, method, headers) => {
+export const requestURI = async (url: string, method: string, headers: MapArrayType<any>) => {
   const parsedUrl = new URL(url);
   let status = 500;
-  const content = [];
+  const content: string[] = [];
   const mockRequest = {
     url,
     method,
@@ -62,7 +63,7 @@ const requestURI = async (url, method, headers) => {
   let mockResponse;
   const p = new Promise((resolve) => {
     mockResponse = {
-      writeHead: (_status, _headers) => {
+      writeHead: (_status: number, _headers: MapArrayType<any>) => {
         status = _status;
         for (const header in _headers) {
           if (Object.prototype.hasOwnProperty.call(_headers, header)) {
@@ -70,16 +71,16 @@ const requestURI = async (url, method, headers) => {
           }
         }
       },
-      setHeader: (header, value) => {
+      setHeader: (header: string, value: string) => {
         headers[header.toLowerCase()] = value.toString();
       },
-      header: (header, value) => {
+      header: (header: string, value: string) => {
         headers[header.toLowerCase()] = value.toString();
       },
-      write: (_content) => {
+      write: (_content: string) => {
         _content && content.push(_content);
       },
-      end: (_content) => {
+      end: (_content: string) => {
         _content && content.push(_content);
         resolve([status, headers, content.join('')]);
       },
@@ -89,16 +90,17 @@ const requestURI = async (url, method, headers) => {
   return await p;
 };
 
-const requestURIs = (locations, method, headers, callback) => {
+export const requestURIs = (locations: string[], method: string, headers: string[], callback:Function) => {
   Promise.all(locations.map(async (loc) => {
     try {
       return await requestURI(loc, method, headers);
-    } catch (err) {
+    } catch (err:any) {
       logger.debug(`requestURI(${JSON.stringify(loc)}, ${JSON.stringify(method)}, ` +
                    `${JSON.stringify(headers)}) failed: ${err.stack || err}`);
       return [500, headers, ''];
     }
-  })).then((responses) => {
+    // @ts-ignore
+  })).then((responses:[[number,number,number]]) => {
     const statuss = responses.map((x) => x[0]);
     const headerss = responses.map((x) => x[1]);
     const contentss = responses.map((x) => x[2]);
@@ -120,11 +122,11 @@ const compatPaths = {
  * @param req the Express request
  * @param res the Express response
  */
-const minify = async (req, res) => {
+export const minify = async (req: any, res:any) => {
   let filename = req.params.filename;
   try {
     filename = sanitizePathname(filename);
-  } catch (err) {
+  } catch (err:any) {
     logger.error(`sanitization of pathname "${filename}" failed: ${err.stack || err}`);
     res.writeHead(404, {});
     res.end();
@@ -132,6 +134,7 @@ const minify = async (req, res) => {
   }
 
   // Backward compatibility for plugins that require() files from old paths.
+  // @ts-ignore
   const newLocation = compatPaths[filename.replace(/^plugins\/ep_etherpad-lite\/static\//, '')];
   if (newLocation != null) {
     logger.warn(`request for deprecated path "${filename}", replacing with "${newLocation}"`);
@@ -169,7 +172,7 @@ const minify = async (req, res) => {
   const [, testf] = /^plugins\/ep_etherpad-lite\/(tests\/frontend\/.*)/.exec(filename) || [];
   if (testf != null) filename = `../${testf}`;
 
-  const contentType = mime.lookup(filename);
+  const contentType = mime.lookup(filename) as string;
 
   const [date, exists] = await statFile(filename, 3);
   if (date) {
@@ -186,7 +189,7 @@ const minify = async (req, res) => {
   if (!exists) {
     res.writeHead(404, {});
     res.end();
-  } else if (new Date(req.headers['if-modified-since']) >= date) {
+  } else if (new Date(req.headers['if-modified-since']) >= date!) {
     res.writeHead(304, {});
     res.end();
   } else if (req.method === 'HEAD') {
@@ -206,7 +209,7 @@ const minify = async (req, res) => {
 };
 
 // Check for the existance of the file and get the last modification date.
-const statFile = async (filename, dirStatLimit) => {
+const statFile = async (filename: string, dirStatLimit: number):Promise<[Date|null, boolean]> => {
   /*
    * The only external call to this function provides an explicit value for
    * dirStatLimit: this check could be removed.
@@ -227,9 +230,10 @@ const statFile = async (filename, dirStatLimit) => {
     let stats;
     try {
       stats = await fs.stat(path.resolve(ROOT_DIR, filename));
-    } catch (err) {
+    } catch (err:any) {
       if (['ENOENT', 'ENOTDIR'].includes(err.code)) {
         // Stat the directory instead.
+        // @ts-ignore
         const [date] = await statFile(path.dirname(filename), dirStatLimit - 1);
         return [date, false];
       }
@@ -241,7 +245,7 @@ const statFile = async (filename, dirStatLimit) => {
 
 const lastModifiedDateOfEverything = async () => {
   const folders2check = [path.join(ROOT_DIR, 'js/'), path.join(ROOT_DIR, 'css/')];
-  let latestModification = null;
+  let latestModification:Date|null = null;
   // go through this two folders
   await Promise.all(folders2check.map(async (dir) => {
     // read the files in the folder
@@ -251,7 +255,7 @@ const lastModifiedDateOfEverything = async () => {
     files.push('.');
 
     // go through all files in this folder
-    await Promise.all(files.map(async (filename) => {
+    await Promise.all(files.map(async (filename: string) => {
       // get the stat data of this file
       const stats = await fs.stat(path.join(dir, filename));
 
@@ -269,58 +273,39 @@ const lastModifiedDateOfEverything = async () => {
 const _requireLastModified = new Date();
 const requireDefinition = () => `var require = ${RequireKernel.kernelSource};\n`;
 
-const getFileCompressed = async (filename, contentType) => {
+const getFileCompressed = async (filename: string, contentType: string) => {
   let content = await getFile(filename);
   if (!content || !settings.minify) {
     return content;
   } else if (contentType === 'application/javascript') {
-    return await new Promise((resolve) => {
-      threadsPool.queue(async ({compressJS}) => {
-        try {
-          logger.info('Compress JS file %s.', filename);
+      try {
+        logger.info('Compress JS file %s.', filename);
 
-          content = content.toString();
-          const compressResult = await compressJS(content);
+        content = content.toString();
+        const compressResult = compressJS(content);
 
-          if (compressResult.error) {
-            console.error(`Error compressing JS (${filename}) using terser`, compressResult.error);
-          } else {
-            content = compressResult.code.toString(); // Convert content obj code to string
-          }
-        } catch (error) {
-          console.error('getFile() returned an error in ' +
+          content = compressResult.code.toString(); // Convert content obj code to string
+      } catch (error) {
+        console.error('getFile() returned an error in ' +
                         `getFileCompressed(${filename}, ${contentType}): ${error}`);
-        }
-        resolve(content);
-      });
-    });
+      }
+    return content
   } else if (contentType === 'text/css') {
-    return await new Promise((resolve) => {
-      threadsPool.queue(async ({compressCSS}) => {
-        try {
-          logger.info('Compress CSS file %s.', filename);
-
-          content = await compressCSS(filename, ROOT_DIR);
-        } catch (error) {
-          console.error(`CleanCSS.minify() returned an error on ${filename}: ${error}`);
-        }
-        resolve(content);
-      });
-    });
+    try {
+      logger.info('Compress CSS file %s.', filename);
+      content = compressCSS(filename, ROOT_DIR, Buffer.from(content)).toString();
+      return content
+    } catch (error) {
+      console.error(`CleanCSS.minify() returned an error on ${filename}: ${error}`);
+    }
   } else {
     return content;
   }
 };
 
-const getFile = async (filename) => {
+const getFile = async (filename: string) => {
   if (filename === 'js/require-kernel.js') return requireDefinition();
   return await fs.readFile(path.resolve(ROOT_DIR, filename));
 };
 
-exports.minify = (req, res, next) => minify(req, res).catch((err) => next(err || new Error(err)));
-
-exports.requestURIs = requestURIs;
-
-exports.shutdown = async (hookName, context) => {
-  await threadsPool.terminate();
-};
+exports.minify = (req: Request, res: Response, next: Function) => minify(req, res).catch((err) => next(err || new Error(err)));
