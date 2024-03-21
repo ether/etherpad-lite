@@ -629,6 +629,12 @@ const lookupEnvironmentVariables = (obj: MapArrayType<any>) => {
              * The environment variable expansion syntax "${ENV_VAR}" is just a string
              * of specific form, after all.
              */
+
+            if(key === 'undefined' || value === undefined) {
+                delete obj[key]
+                continue
+            }
+
             if ((typeof value !== 'string' && typeof value !== 'object') || value === null) {
                 obj[key] = value;
                 continue
@@ -723,7 +729,9 @@ const lookupEnvironmentVariables = (obj: MapArrayType<any>) => {
         currentNode.addChild(pathToKey, value!)
     })
 
-    console.log(root.collectFromLeafsUpwards())
+    //console.log(root.collectFromLeafsUpwards())
+    //const rooting = root.collectFromLeafsUpwards()
+
     obj = Object.assign(obj, envVars)
     return obj;
 };
