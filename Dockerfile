@@ -66,7 +66,7 @@ ARG INSTALL_ABIWORD=
 ARG INSTALL_SOFFICE=
 
 # Install dependencies required for modifying access.
-RUN apk add shadow bash
+RUN apk add --no-cache shadow bash
 # Follow the principle of least privilege: run as unprivileged user.
 #
 # Running as non-root enables running this image in platforms like OpenShift
@@ -93,7 +93,7 @@ RUN  \
     mkdir -p /usr/share/man/man1 && \
     npm install pnpm -g  && \
     apk update && apk upgrade && \
-    apk add  \
+    apk add --no-cache \
         ca-certificates \
         curl \
         git \
