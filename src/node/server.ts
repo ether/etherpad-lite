@@ -30,11 +30,13 @@ import {checkForMigration} from "../static/js/pluginfw/installer";
 
 const settings = require('./utils/Settings');
 
+import wtfnodeMod from 'wtfnode';
+
 let wtfnode: any;
 if (settings.dumpOnUncleanExit) {
   // wtfnode should be loaded after log4js.replaceConsole() so that it uses log4js for logging, and
   // it should be above everything else so that it can hook in before resources are used.
-  wtfnode = require('wtfnode');
+  wtfnode = wtfnodeMod;
 }
 
 /*

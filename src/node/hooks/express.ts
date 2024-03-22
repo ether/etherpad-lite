@@ -28,6 +28,8 @@ let sessionStore: { shutdown: () => void; } | null;
 const sockets:Set<Socket> = new Set();
 const socketsEvents = new events.EventEmitter();
 const startTime = stats.settableGauge('httpStartTime');
+import https from 'https';
+import http from 'http';
 
 exports.server = null;
 
@@ -119,11 +121,8 @@ exports.restartServer = async () => {
         options.ca.push(fs.readFileSync(caFileName));
       }
     }
-
-    const https = require('https');
     exports.server = https.createServer(options, app);
   } else {
-    const http = require('http');
     exports.server = http.createServer(app);
   }
 

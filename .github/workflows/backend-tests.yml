@@ -120,7 +120,7 @@ jobs:
       -
         name: Install Etherpad plugins
         run: >
-          pnpm install --workspace-root
+          pnpm run install-plugins
           ep_align
           ep_author_hover
           ep_cursortrace
@@ -231,12 +231,14 @@ jobs:
       - name: Build admin ui
         working-directory: admin
         run: pnpm build
+      - name: Install all dependencies and symlink for ep_etherpad-lite
+        run: bin/installOnWindows.bat
       -
         name: Install Etherpad plugins
         # The --legacy-peer-deps flag is required to work around a bug in npm
         # v7: https://github.com/npm/cli/issues/2199
         run: >
-          pnpm install --workspace-root
+          pnpm run install-plugins
           ep_align
           ep_author_hover
           ep_cursortrace
@@ -259,9 +261,6 @@ jobs:
       # Even if npm correctly hoists the dependencies, the hoisting seems to
       # confuse tools such as `npm outdated`, `npm update`, and some ESLint
       # rules.
-      -
-        name: Install all dependencies and symlink for ep_etherpad-lite
-        run: bin/installOnWindows.bat
       -
         name:  Fix up the settings.json
         run: |

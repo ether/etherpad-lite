@@ -4,8 +4,8 @@ import {MapArrayType} from "../../types/MapType";
 import {PartType} from "../../types/PartType";
 
 const fs = require('fs').promises;
-const minify = require('../../utils/Minify');
-const path = require('path');
+import {requestURIs, minify} from '../../utils/Minify';
+import path from 'path';
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
 const settings = require('../../utils/Settings');
 import CachingMiddleware from '../../utils/caching_middleware';
@@ -41,7 +41,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
 
   // Minify will serve static files compressed (minify enabled). It also has
   // file-specific hacks for ace/require-kernel/etc.
-  app.all('/static/:filename(*)', minify.minify);
+  app.all('/static/:filename(*)', minify);
 
   // Setup middleware that will package JavaScript files served by minify for
   // CommonJS loader on the client-side.
@@ -51,7 +51,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
     rootURI: 'http://invalid.invalid/static/js/',
     libraryPath: 'javascripts/lib/',
     libraryURI: 'http://invalid.invalid/static/plugins/',
-    requestURIs: minify.requestURIs, // Loop-back is causing problems, this is a workaround.
+    requestURIs: requestURIs, // Loop-back is causing problems, this is a workaround.
   });
 
   const StaticAssociator = Yajsml.associators.StaticAssociator;
