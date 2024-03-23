@@ -30,7 +30,8 @@
     "ep_etherpad-lite": "workspace:./src"
   },
   "devDependencies": {
-    "admin": "workspace:./admin"
+    "admin": "workspace:./admin",
+    "docs": "workspace:./doc"
   },
   "engines": {
     "node": ">=18.18.2",

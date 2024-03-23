@@ -1,9 +1,9 @@
-== Client-side hooks
+# Client-side hooks
 
 Most of these hooks are called during or in order to set up the formatting
 process.
 
-=== documentReady
+## documentReady
 Called from: `src/templates/pad.html`
 
 Things in context:
@@ -12,7 +12,7 @@ nothing
 
 This hook proxies the functionality of jQuery's `$(document).ready` event.
 
-=== aceDomLinePreProcessLineAttributes
+## aceDomLinePreProcessLineAttributes
 
 Called from: `src/static/js/domline.js`
 
@@ -34,7 +34,7 @@ The preHtml and postHtml values will be added to the HTML display of the
 element, and if processedMarker is true, the engine won't try to process it any
 more.
 
-=== aceDomLineProcessLineAttributes
+## aceDomLineProcessLineAttributes
 
 Called from: `src/static/js/domline.js`
 
@@ -56,7 +56,7 @@ The preHtml and postHtml values will be added to the HTML display of the
 element, and if processedMarker is true, the engine won't try to process it any
 more.
 
-=== aceCreateDomLine
+## aceCreateDomLine
 
 Called from: `src/static/js/domline.js`
 
@@ -76,7 +76,7 @@ The return value of this hook should have the following structure:
 extraOpenTags and extraCloseTags will be added before and after the element in
 question, and cls will be the new class of the element going forward.
 
-=== acePostWriteDomLineHTML
+## acePostWriteDomLineHTML
 
 Called from: `src/static/js/domline.js`
 
@@ -87,7 +87,7 @@ Things in context:
 This hook is for right after a node has been fully formatted and written to the
 page.
 
-=== aceAttribsToClasses
+## aceAttribsToClasses
 
 Called from: `src/static/js/linestylefilter.js`
 
@@ -105,7 +105,7 @@ into the DOM.
 The return value for this function should be a list of classes, which will then
 be parsed into a valid class string.
 
-=== aceAttribClasses
+## aceAttribClasses
 
 Called from: `src/static/js/linestylefilter.js`
 
@@ -116,16 +116,14 @@ This hook is called when attributes are investigated on a line. It is useful if
 you want to add another attribute type or property type to a pad.
 
 Example:
-
-[source,javascript]
-----
+```
 exports.aceAttribClasses = function(hook_name, attr, cb){
   attr.sub = 'tag:sub';
   cb(attr);
 }
-----
+```
 
-=== aceGetFilterStack
+## aceGetFilterStack
 
 Called from: `src/static/js/linestylefilter.js`
 
@@ -141,7 +139,7 @@ links. They use it to find the telltale `[[ ]]` syntax that signifies internal
 links, and finding that syntax, they add in the internalHref attribute to be
 later used by the aceCreateDomLine hook (documented above).
 
-=== aceEditorCSS
+## aceEditorCSS
 
 Called from: `src/static/js/ace.js`
 
@@ -150,7 +148,7 @@ Things in context: None
 This hook is provided to allow custom CSS files to be loaded. The return value
 should be an array of resource urls or paths relative to the plugins directory.
 
-=== aceInitInnerdocbodyHead
+## aceInitInnerdocbodyHead
 
 Called from: `src/static/js/ace.js`
 
@@ -163,7 +161,7 @@ have lines of HTML added to it, giving the plugin author a chance to add in
 meta, script, link, and other tags that go into the `<head>` element of the
 editor HTML document.
 
-=== aceEditEvent
+## aceEditEvent
 
 Called from: `src/static/js/ace2_inner.js`
 
@@ -180,7 +178,7 @@ changes are made. Currently you can change the editor information, some of the
 meanings of the edit, and so on. You can also make internal changes (internal to
 your plugin) that use the information provided by the edit event.
 
-=== aceRegisterNonScrollableEditEvents
+## aceRegisterNonScrollableEditEvents
 
 Called from: `src/static/js/ace2_inner.js`
 
@@ -193,15 +191,13 @@ not scroll viewport. The return value of this hook should be a list of event
 names.
 
 Example:
-
-[source, javascript]
-----
+```
 exports.aceRegisterNonScrollableEditEvents = function(){
   return [ 'repaginate', 'updatePageCount' ];
 }
-----
+```
 
-=== aceRegisterBlockElements
+## aceRegisterBlockElements
 
 Called from: `src/static/js/ace2_inner.js`
 
@@ -211,7 +207,7 @@ The return value of this hook will add elements into the "lineMarkerAttribute"
 category, making the aceDomLineProcessLineAttributes hook (documented below)
 call for those elements.
 
-=== aceInitialized
+## aceInitialized
 
 Called from: `src/static/js/ace2_inner.js`
 
@@ -226,7 +222,7 @@ Things in context:
 This hook is for inserting further information into the ace engine, for later
 use in formatting hooks.
 
-=== postAceInit
+## postAceInit
 
 Called from: `src/static/js/pad.js`
 
@@ -238,7 +234,7 @@ Things in context:
    `clientVars` server-side hook.
 3. pad - the pad object of the current pad.
 
-=== postToolbarInit
+## postToolbarInit
 
 Called from: `src/static/js/pad_editbar.js`
 
@@ -251,16 +247,16 @@ Can be used to register custom actions to the toolbar.
 
 Usage examples:
 
-* https://github.com/tiblu/ep_authorship_toggle
+* [https://github.com/tiblu/ep_authorship_toggle]()
 
-=== postTimesliderInit
+## postTimesliderInit
 
 Called from: `src/static/js/timeslider.js`
 
 There doesn't appear to be any example available of this particular hook being
 used, but it gets fired after the timeslider is all set up.
 
-=== goToRevisionEvent
+## goToRevisionEvent
 
 Called from: `src/static/js/broadcast.js`
 
@@ -272,7 +268,7 @@ This hook gets fired both on timeslider load (as timeslider shows a new
 revision) and when the new revision is showed to a user. There doesn't appear to
 be any example available of this particular hook being used.
 
-=== userJoinOrUpdate
+## userJoinOrUpdate
 
 Called from: `src/static/js/pad_userlist.js`
 
@@ -283,7 +279,7 @@ Things in context:
 This hook is called on the client side whenever a user joins or changes. This
 can be used to create notifications or an alternate user list.
 
-=== chatNewMessage
+## `chatNewMessage`
 
 Called from: `src/static/js/chat.js`
 
@@ -319,7 +315,7 @@ Context properties:
 * `duration`: How long (in milliseconds) to display the gritter notification (0
   to disable).
 
-=== chatSendMessage
+## `chatSendMessage`
 
 Called from: `src/static/js/chat.js`
 
@@ -331,9 +327,9 @@ Context properties:
 
 * `message`: The message object that will be sent to the Etherpad server.
 
-=== collectContentPre
+## collectContentPre
 
-Called from: src/static/js/contentcollector.js
+Called from: `src/static/js/contentcollector.js`
 
 Things in context:
 
@@ -355,9 +351,9 @@ If you want to specify also a value, call cc.doAttrib(state,
 "attributeName::value") which results in an attribute attributeName=value.
 
 
-=== collectContentImage
+## collectContentImage
 
-Called from: src/static/js/contentcollector.js
+Called from: `src/static/js/contentcollector.js`
 
 Things in context:
 
@@ -374,17 +370,16 @@ content of the pad.
 
 Example:
 
-[source, javascript]
-----
+```
 exports.collectContentImage = function(name, context){
   context.state.lineAttributes.img = context.node.outerHTML;
 }
 
-----
+```
 
-=== collectContentPost
+## collectContentPost
 
-Called from: src/static/js/contentcollector.js
+Called from: `src/static/js/contentcollector.js`
 
 Things in context:
 
@@ -398,7 +393,7 @@ This hook is called after the content of a node is collected by the usual
 methods. The cc object can be used to do a bunch of things that modify the
 content of the pad. See, for example, the heading1 plugin for etherpad original.
 
-=== handleClientMessage_`name`
+## handleClientMessage_`name`
 
 Called from: `src/static/js/collab_client.js`
 
@@ -415,7 +410,7 @@ also use this to handle existing types.
 `collab_client.js` has a pretty extensive list of message types, if you want to
 take a look.
 
-=== aceStartLineAndCharForPoint-aceEndLineAndCharForPoint
+## aceStartLineAndCharForPoint-aceEndLineAndCharForPoint
 
 Called from: src/static/js/ace2_inner.js
 
@@ -431,9 +426,9 @@ Things in context:
 This hook is provided to allow a plugin to turn DOM node selection into
 [line,char] selection. The return value should be an array of [line,char]
 
-=== aceKeyEvent
+## aceKeyEvent
 
-Called from: src/static/js/ace2_inner.js
+Called from: `src/static/js/ace2_inner.js`
 
 Things in context:
 
@@ -446,9 +441,9 @@ Things in context:
 This hook is provided to allow a plugin to handle key events.
 The return value should be true if you have handled the event.
 
-=== collectContentLineText
+## collectContentLineText
 
-Called from: src/static/js/contentcollector.js
+Called from: `src/static/js/contentcollector.js`
 
 Things in context:
 
@@ -467,16 +462,15 @@ server side. To change the text, either:
 
 Example:
 
-[source,javascript]
-----
+```
 exports.collectContentLineText = (hookName, context) => {
   context.text = tweakText(context.text);
 };
-----
+```
 
-=== collectContentLineBreak
+## collectContentLineBreak
 
-Called from: src/static/js/contentcollector.js
+Called from: `src/static/js/contentcollector.js`
 
 Things in context:
 
@@ -487,9 +481,9 @@ Things in context:
 This hook is provided to allow whether the br tag should induce a new magic
 domline or not. The return value should be either true(break the line) or false.
 
-=== disableAuthorColorsForThisLine
+## disableAuthorColorsForThisLine
 
-Called from: src/static/js/linestylefilter.js
+Called from: `src/static/js/linestylefilter.js`
 
 Things in context:
 
@@ -503,9 +497,9 @@ multiple authors. Multiple authors in one line cause the creation of magic span
 lines. This might not suit you and now you can disable it and handle your own
 deliniation. The return value should be either true(disable) or false.
 
-=== aceSetAuthorStyle
+## aceSetAuthorStyle
 
-Called from: src/static/js/ace2_inner.js
+Called from: `src/static/js/ace2_inner.js`
 
 Things in context:
 
@@ -520,9 +514,9 @@ This hook is provided to allow author highlight style to be modified. Registered
 hooks should return 1 if the plugin handles highlighting. If no plugin returns
 1, the core will use the default background-based highlighting.
 
-=== aceSelectionChanged
+## aceSelectionChanged
 
-Called from: src/static/js/ace2_inner.js
+Called from: `src/static/js/ace2_inner.js`
 
 Things in context:
 
