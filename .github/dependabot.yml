@@ -10,7 +10,7 @@ updates:
     schedule:
       interval: "daily"
   - package-ecosystem: "npm"
-    directory: "/src"
+    directory: "/"
     schedule:
       interval: "daily"
     versioning-strategy: "increase"
