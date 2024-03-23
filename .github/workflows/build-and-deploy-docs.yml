@@ -58,6 +58,8 @@ jobs:
       - name: Build app
         working-directory: doc
         run: pnpm run docs:build
+        env:
+          COMMIT_REF: ${{ github.sha }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
