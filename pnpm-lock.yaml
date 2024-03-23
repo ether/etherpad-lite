@@ -113,8 +113,8 @@ importers:
         version: 4.2.63
     devDependencies:
       '@types/node':
-        specifier: ^20.11.27
-        version: 20.11.27
+        specifier: ^20.11.30
+        version: 20.11.30
       '@types/semver':
         specifier: ^7.5.8
         version: 7.5.8
@@ -2025,12 +2025,6 @@ packages:
       '@types/node': 20.11.30
       form-data: 4.0.0
     dev: false
-
-  /@types/node@20.11.27:
-    resolution: {integrity: sha512-qyUZfMnCg1KEz57r7pzFtSGt49f6RPkPBis3Vo4PbS7roQEDn22hiHzl/Lo1q4i4hDEgBJmBF/NTNg2XR0HbFg==}
-    dependencies:
-      undici-types: 5.26.5
-    dev: true
 
   /@types/node@20.11.30:
     resolution: {integrity: sha512-dHM6ZxwlmuZaRmUPfv1p+KrdD1Dci04FbdEm/9wEMouFqxYoFl5aMkt0VMAUtYRQDyYvD41WJLukhq/ha3YuTw==}
