@@ -30,7 +30,7 @@
     "eslint": "^8.56.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
-    "socket.io-client": "^4.7.4",
+    "socket.io-client": "^4.7.5",
     "typescript": "^5.2.2",
     "vite": "^5.1.4",
     "vite-plugin-static-copy": "^1.0.1",
