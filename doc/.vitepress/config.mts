@@ -7,6 +7,7 @@ const commitRef = process.env.COMMIT_REF?.slice(0, 8) || 'dev'
 export default defineConfig({
   title: "Etherpad Documentation",
   description: "Next Generation Collaborative Document Editing",
+  base: '/etherpad-lite/',
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
