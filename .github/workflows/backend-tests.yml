@@ -1,7 +1,13 @@
 name: "Backend tests"
 
 # any branch is useful for testing before a PR is submitted
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - "doc/**"
+  pull_request:
+    paths-ignore:
+      - "doc/**"
 
 permissions:
   contents: read
