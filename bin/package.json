@@ -17,7 +17,7 @@
   "devDependencies": {
     "@types/node": "^20.11.27",
     "@types/semver": "^7.5.8",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.3"
   },
   "scripts": {
     "checkPad": "node --import tsx checkPad.ts",
