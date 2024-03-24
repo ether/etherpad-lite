@@ -32,7 +32,9 @@
     "rebuildPad": "node --import tsx rebuildPad.ts",
     "stalePlugins": "node --import tsx ./plugins/stalePlugins.ts",
     "checkPlugin": "node --import tsx ./plugins/checkPlugin.ts",
-    "install-plugins": "node --import tsx ./installPlugins.ts"
+    "install-plugins": "node --import tsx ./installPlugins.ts",
+    "remove-plugins": "node --import tsx ./removePlugins.ts",
+    "list-plugins": "node --import tsx ./listPlugins.ts"
   },
   "author": "",
   "license": "ISC"
