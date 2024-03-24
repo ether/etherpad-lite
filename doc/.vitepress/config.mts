@@ -9,6 +9,9 @@ export default defineConfig({
   description: "Next Generation Collaborative Document Editing",
   base: '/etherpad-lite/',
   themeConfig: {
+    search: {
+      provider: 'local'
+    },
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },
@@ -49,8 +52,8 @@ export default defineConfig({
           {
           text: 'Old Docs',
             items: [
-                { text: 'Easysync description', link: '/easysync/easysync-full-description.pdf' },
-                { text: 'Easysync notes', link: '/easysync/easysync-notes.pdf' }
+                { text: 'Easysync description', link: '/etherpad-lite/easysync/easysync-full-description.pdf' },
+                { text: 'Easysync notes', link: '/etherpad-lite/easysync/easysync-notes.pdf' }
             ]
           }
         ],
