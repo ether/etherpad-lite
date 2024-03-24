@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    function login() {
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+            const sessionId = new URLSearchParams(window.location.search).get('state');
+
+            fetch('/interaction/'+sessionId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                redirect: 'follow',
+                body: JSON.stringify(data),
+            }).then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('Network response was not ok.');
+            }).then(data => {
+                if (data.status === 'success') {
+                    window.location.href = data.redirect;
+                } else {
+                    document.getElementById('error').innerText = "Error signing in";
+                }
+            }).catch(error => {
+                console.error('There has been a problem with your fetch operation:', error);
+            });
+        });
+    }
+    window.onload = login;
+</script>
+<form autocomplete="off" method="post">
+    <input type="hidden" name="prompt" value="login"/>
+    <input required type="text" name="login" placeholder="Enter any login"/>
+    <input required type="password" name="password" placeholder="and password"/>
+    <button type="submit" class="login login-submit">Sign-in</button>
+    <div id="error"></div>
+</form>
+</body>
+</html>

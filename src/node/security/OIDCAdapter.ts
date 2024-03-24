@@ -1,10 +1,12 @@
 import {LRUCache} from 'lru-cache';
-import {Adapter, AdapterPayload} from "oidc-provider";
+import type {Adapter, AdapterPayload} from "oidc-provider";
 
 
 const options = {
     max: 500,
-
+    sizeCalculation: (item, key) => {
+        return 1
+    },
     // for use with tracking overall storage size
     maxSize: 5000,
 
@@ -41,6 +43,7 @@ class MemoryAdapter implements Adapter{
     }
 
     destroy(id:string) {
+        console.log("destroy", id);
         const key = this.key(id);
 
         const found = storage.get(key) as AdapterPayload;
@@ -58,37 +61,37 @@ class MemoryAdapter implements Adapter{
     }
 
     consume(id: string) {
+        console.log("consume", id);
         (storage.get(this.key(id)) as AdapterPayload)!.consumed = epochTime();
         return Promise.resolve();
     }
 
     find(id: string): Promise<AdapterPayload | void | undefined> {
-        return Promise.resolve<AdapterPayload>(storage.get(this.key(id)) as AdapterPayload);
+        const foundSession = storage.get(this.key(id)) as AdapterPayload;
+        console.log("find", id, foundSession);
+        if (storage.has(this.key(id))){
+            return Promise.resolve<AdapterPayload>(storage.get(this.key(id)) as AdapterPayload);
+        }
+        return Promise.resolve<undefined>(undefined)
     }
 
     findByUserCode(userCode: string) {
+        console.log("findByUserCode", userCode);
         const id = storage.get(userCodeKeyFor(userCode)) as string;
         return this.find(id);
     }
 
-    upsert(id: string, payload: any, expiresIn: number) {
-        console.log('upsert');
+    upsert(id: string, payload: {
+        iat: number;
+        exp: number;
+        uid: string;
+        kind: string;
+        jti: string;
+        accountId: string;
+        loginTs: number;
+    }, expiresIn: number) {
+        console.log("upsert", payload);
         const key = this.key(id);
-
-        const { grantId, userCode } = payload;
-        if (grantId) {
-            const grantKey = grantKeyFor(grantId);
-            const grant = storage.get(grantKey) as unknown as string[];
-            if (!grant) {
-                storage.set(grantKey, [key]);
-            } else {
-                grant.push(key);
-            }
-        }
-
-        if (userCode) {
-            storage.set(userCodeKeyFor(userCode), id, {ttl:expiresIn * 1000});
-        }
 
         storage.set(key, payload, {ttl: expiresIn * 1000});
 
@@ -96,13 +99,25 @@ class MemoryAdapter implements Adapter{
     }
 
     findByUid(uid: string): Promise<AdapterPayload | void | undefined> {
-        console.log('findByUid', uid);
+        console.log("findByUid", uid);
+        for(const [_, value] of storage.entries()){
+            if(typeof value ==="object" && "uid" in value && value.uid === uid){
+                console.log("found", value);
+                return Promise.resolve(value);
+            }
+        }
+        console.log("not found");
         return Promise.resolve(undefined);
     }
 
     revokeByGrantId(grantId: string): Promise<void | undefined> {
-        console.log('findByUid', grantId);
-        return Promise.resolve(undefined);
+        const grantKey = grantKeyFor(grantId);
+        const grant = storage.get(grantKey) as string[];
+        if (grant) {
+            grant.forEach((token) => storage.delete(token));
+            storage.delete(grantKey);
+        }
+        return Promise.resolve();
     }
 }
 
