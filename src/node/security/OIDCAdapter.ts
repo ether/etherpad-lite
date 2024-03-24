@@ -68,7 +68,6 @@ class MemoryAdapter implements Adapter{
 
     find(id: string): Promise<AdapterPayload | void | undefined> {
         const foundSession = storage.get(this.key(id)) as AdapterPayload;
-        console.log("find", id, foundSession);
         if (storage.has(this.key(id))){
             return Promise.resolve<AdapterPayload>(storage.get(this.key(id)) as AdapterPayload);
         }
@@ -76,7 +75,6 @@ class MemoryAdapter implements Adapter{
     }
 
     findByUserCode(userCode: string) {
-        console.log("findByUserCode", userCode);
         const id = storage.get(userCodeKeyFor(userCode)) as string;
         return this.find(id);
     }
@@ -99,14 +97,11 @@ class MemoryAdapter implements Adapter{
     }
 
     findByUid(uid: string): Promise<AdapterPayload | void | undefined> {
-        console.log("findByUid", uid);
         for(const [_, value] of storage.entries()){
             if(typeof value ==="object" && "uid" in value && value.uid === uid){
-                console.log("found", value);
                 return Promise.resolve(value);
             }
         }
-        console.log("not found");
         return Promise.resolve(undefined);
     }
 

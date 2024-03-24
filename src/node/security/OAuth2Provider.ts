@@ -27,7 +27,6 @@ const configuration: Configuration = {
     ],
     scopes: ['openid', 'profile', 'email'],
     findAccount: async (ctx, id) => {
-        console.log("Finding account", id)
         return {
             accountId: id,
             claims: () => ({
@@ -71,7 +70,6 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
             const {login, password} = (await formid.parse(req))[0]
             const {prompt, jti, session, params, grantId} = await oidc.interactionDetails(req, res);
 
-            console.log("Session is", session)
 
             switch (prompt.name) {
                 case 'login': {
@@ -131,8 +129,7 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
             }
             await next();
         } catch (err) {
-            console.log(err)
-            return next(err);
+            return res.writeHead(500).end(err.message);
         }
     })
 
@@ -143,10 +140,8 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
                 uid, prompt, params, session,
             } = await oidc.interactionDetails(req, res);
 
-            console.log("Params are", params)
             params["state"] = uid
 
-            console.log("Prompt is", prompt)
             switch (prompt.name) {
                 case 'login': {
                     res.redirect(format({
@@ -156,7 +151,6 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
                     break
                 }
                 case 'consent': {
-                    console.log("Consent")
                     res.redirect(format({
                         pathname: '/views/consent',
                         query: params as ParsedUrlQuery
@@ -180,22 +174,7 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
         res.sendFile(path.join(settings.root,'src','static', 'oidc','consent.html'));
     })
 
-    args.app.get('/interaction/:uid/confirm', async (req, res) => {
-        const {uid, prompt, params} = await oidc.interactionDetails(req, res);
-        console.log('interaction', uid, prompt, params);
-        res.render('interaction', {
-            uid,
-            prompt,
-            params,
-            title: 'Authorize',
-            client: await oidc.Client.find(params.client_id!),
-        });
-    })
-
-    args.app.get('/interaction/:uid', async (req, res) => {
-        return res.sendFile(path.join(settings.root,'src','static', 'oidc','login.html'));
-    })
-
+    /*
     oidc.on('authorization.error', (ctx, error) => {
         console.log('authorization.error', error);
     })
@@ -211,7 +190,7 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
     })
     oidc.on('revocation.error', (ctx, error) => {
         console.log('revocation.error', error);
-    })
+    })*/
     args.app.use("/oidc", oidc.callback());
     //cb();
 }

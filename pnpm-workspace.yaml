@@ -3,3 +3,4 @@ packages:
   - admin
   - bin
   - doc
+  - ui

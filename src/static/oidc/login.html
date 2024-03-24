@@ -26,17 +26,14 @@
                 body: JSON.stringify(data),
             }).then(response => {
                 if (response.ok) {
-                    return response.json();
-                }
-                throw new Error('Network response was not ok.');
-            }).then(data => {
-                if (data.status === 'success') {
-                    window.location.href = data.redirect;
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    }
                 } else {
                     document.getElementById('error').innerText = "Error signing in";
                 }
             }).catch(error => {
-                console.error('There has been a problem with your fetch operation:', error);
+                document.getElementById('error').innerText = "Error signing in"+error;
             });
         });
     }

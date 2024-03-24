@@ -18,6 +18,9 @@ importers:
       docs:
         specifier: workspace:./doc
         version: link:doc
+      ui:
+        specifier: workspace:./ui
+        version: link:ui
 
   admin:
     devDependencies:
@@ -347,6 +350,15 @@ importers:
       typescript:
         specifier: ^5.4.3
         version: 5.4.3
+
+  ui:
+    devDependencies:
+      typescript:
+        specifier: ^5.2.2
+        version: 5.4.3
+      vite:
+        specifier: ^5.2.0
+        version: 5.2.3
 
 packages:
 
