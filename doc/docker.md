@@ -204,7 +204,6 @@ For the editor container, you can also make it full width by adding `full-width-
 | `MAX_AGE`                         | How long may clients use served javascript code (in seconds)? Not setting this may cause problems during deployment. Set to 0 to disable caching.                                                      | `21600` (6 hours)     |
 | `ABIWORD`                         | Absolute path to the Abiword executable. Abiword is needed to get advanced import/export features of pads. Setting it to null disables Abiword and will only allow plain text and HTML import/exports. | `null`                |
 | `SOFFICE`                         | This is the absolute path to the soffice executable. LibreOffice can be used in lieu of Abiword to export pads. Setting it to null disables LibreOffice exporting.                                     | `null`                |
-| `TIDY_HTML`                       | Path to the Tidy executable. Tidy is used to improve the quality of exported pads. Setting it to null disables Tidy.                                                                                   | `null`                |
 | `ALLOW_UNKNOWN_FILE_ENDS`         | Allow import of file types other than the supported ones: txt, doc, docx, rtf, odt, html & htm                                                                                                         | `true`                |
 | `REQUIRE_AUTHENTICATION`          | This setting is used if you require authentication of all users. Note: "/admin" always requires authentication.                                                                                        | `false`               |
 | `REQUIRE_AUTHORIZATION`           | Require authorization by a module, or a user with is_admin set, see below.                                                                                                                             | `false`               |
@@ -219,6 +218,24 @@ For the editor container, you can also make it full width by adding `full-width-
 | `DUMP_ON_UNCLEAN_EXIT`            | Enable dumping objects preventing a clean exit of Node.js. WARNING: this has a significant performance impact.                                                                                         | `false`               |
 | `EXPOSE_VERSION`                  | Expose Etherpad version in the web interface and in the Server http header. Do not enable on production machines.                                                                                      | `false`               |
 
+### Add plugin configurations
+
+It is possible to add arbitrary configurations for plugins by setting the `EP__PLUGIN__<PLUGIN_NAME>__<CONFIG_NAME>` environment variable. It is important to separate paths with a double underscore `__`.
+
+For example, to configure the `ep_comments` plugin to use the `comments` database, you can set the following environment variables:
+
+The original config looks like this:
+```json
+"ep_comments_page": {
+  "highlightSelectedText": true
+},
+```
+We have two paths ep_comments_page and highlightSelectedText, so we need to set the following environment variable:
+
+
+```yaml
+EP__ep_comments_page__highlightSelectedText=true
+```
 
 ### Examples
 
@@ -249,9 +266,79 @@ docker run -d \
 
 Run a test instance running DirtyDB on a persistent volume:
 
-```
+```shell
 docker run -d \
 	-v etherpad_data:/opt/etherpad-lite/var \
 	-p 9001:9001 \
 	etherpad/etherpad
+```
+
+
+
+## Ready to use Docker Compose
+
+```yaml
+version: "3.8"
+
+# Add this file to extend the docker-compose setup, e.g.:
+# docker-compose build --no-cache
+# docker-compose up -d --build --force-recreate
+
+services:
+  app:
+    build:
+      context: .
+      args:
+        ETHERPAD_PLUGINS:
+      # change from development to production if needed
+      target: development
+    tty: true
+    stdin_open: true
+    volumes:
+      # no volume mapping of node_modules as otherwise the build-time installed plugins will be overwritten with the mount
+      # the same applies to package.json and pnpm-lock.yaml in root dir as these would also get overwritten and build time installed plugins will be removed
+      - ./src:/opt/etherpad-lite/src
+      - ./bin:/opt/etherpad-lite/bin
+    depends_on:
+      - postgres
+    environment:
+      # change from development to production if needed
+      NODE_ENV: development
+      ADMIN_PASSWORD: ${DOCKER_COMPOSE_APP_DEV_ADMIN_PASSWORD}
+      DB_CHARSET: ${DOCKER_COMPOSE_APP_DEV_ENV_DB_CHARSET:-utf8mb4}
+      DB_HOST: postgres
+      DB_NAME: ${DOCKER_COMPOSE_POSTGRES_DEV_ENV_POSTGRES_DATABASE:?}
+      DB_PASS: ${DOCKER_COMPOSE_POSTGRES_DEV_ENV_POSTGRES_PASSWORD:?}
+      DB_PORT: ${DOCKER_COMPOSE_POSTGRES_DEV_ENV_POSTGRES_PORT:-5432}
+      DB_TYPE: "postgres"
+      DB_USER: ${DOCKER_COMPOSE_POSTGRES_DEV_ENV_POSTGRES_USER:?}
+      # For now, the env var DEFAULT_PAD_TEXT cannot be unset or empty; it seems to be mandatory in the latest version of etherpad
+      DEFAULT_PAD_TEXT: ${DOCKER_COMPOSE_APP_DEV_ENV_DEFAULT_PAD_TEXT:- }
+      DISABLE_IP_LOGGING: ${DOCKER_COMPOSE_APP_DEV_ENV_DISABLE_IP_LOGGING:-true}
+      SOFFICE: ${DOCKER_COMPOSE_APP_DEV_ENV_SOFFICE:-null}
+      TRUST_PROXY: ${DOCKER_COMPOSE_APP_DEV_ENV_TRUST_PROXY:-true}
+    restart: always
+    ports:
+      - "${DOCKER_COMPOSE_APP_DEV_PORT_PUBLISHED:-9001}:${DOCKER_COMPOSE_APP_DEV_PORT_TARGET:-9001}"
+
+  postgres:
+    image: postgres:15-alpine
+    # Pass config parameters to the mysql server.
+    # Find more information below when you need to generate the ssl-relevant file your self
+    environment:
+      POSTGRES_DB: ${DOCKER_COMPOSE_POSTGRES_DEV_ENV_POSTGRES_DATABASE:?}
+      POSTGRES_PASSWORD: ${DOCKER_COMPOSE_POSTGRES_DEV_ENV_POSTGRES_PASSWORD:?}
+      POSTGRES_PORT: ${DOCKER_COMPOSE_POSTGRES_DEV_ENV_POSTGRES_PORT:-5432}
+      POSTGRES_USER: ${DOCKER_COMPOSE_POSTGRES_DEV_ENV_POSTGRES_USER:?}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    restart: always
+    # Exposing the port is not needed unless you want to access this database instance from the host.
+    # Be careful when other postgres docker container are running on the same port
+    # ports:
+    #   - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/pgdata
+
+volumes:
+  postgres_data:
 ```

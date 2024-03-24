@@ -485,7 +485,7 @@ You can pass the following values to the provided callback:
 
 Example:
 
-```
+```js
 exports.authorize = (hookName, context, cb) => {
   const user = context.req.session.user;
   const path = context.req.path;  // or context.resource
@@ -533,7 +533,7 @@ object should come from global settings (`context.users[username]`).
 
 Example:
 
-```
+```js
 exports.authenticate = (hook_name, context, cb) => {
   if (notApplicableToThisPlugin(context)) {
     return cb([]);  // Let the next authentication plugin decide
@@ -587,7 +587,7 @@ failure or a generic 403 page for an authorization failure).
 
 Example:
 
-```
+```js
 exports.authFailure = (hookName, context, cb) => {
   if (notApplicableToThisPlugin(context)) {
     return cb([]);  // Let the next plugin handle the error
@@ -618,7 +618,7 @@ another plugin (if any, otherwise fall back to a generic 403 error page).
 
 Example:
 
-```
+```js
 exports.preAuthzFailure = (hookName, context, cb) => {
   if (notApplicableToThisPlugin(context)) return cb([]);
   context.res.status(403).send(renderFancy403Page(context.req));
@@ -650,7 +650,7 @@ another plugin (if any, otherwise fall back to the deprecated authFailure hook).
 
 Example:
 
-```
+```js
 exports.authnFailure = (hookName, context, cb) => {
   if (notApplicableToThisPlugin(context)) return cb([]);
   context.res.redirect(makeLoginURL(context.req));
@@ -678,7 +678,7 @@ another plugin (if any, otherwise fall back to the deprecated authFailure hook).
 
 Example:
 
-```
+```js
 exports.authzFailure = (hookName, context, cb) => {
   if (notApplicableToThisPlugin(context)) return cb([]);
   if (needsPremiumAccount(context.req) && !context.req.session.user.premium) {
@@ -792,7 +792,7 @@ If needed, you can access the user's account information (if authenticated) via
 
 Examples:
 
-```
+```js
 // Using an async function
 exports.clientVars = async (hookName, context) => {
   const user = context.socket.client.request.session.user || {};
@@ -850,7 +850,7 @@ the body of the exported HTML.
 
 Example:
 
-```
+```js
 exports.exportHTMLAdditionalContent = async (hookName, {padId}) => {
   return 'I am groot in ' + padId;
 };
@@ -867,7 +867,7 @@ This hook will allow a plug-in developer to append Styles to the Exported HTML.
 
 Example:
 
-```
+```js
 exports.stylesForExport = function(hook, padId, cb){
   cb("body{font-size:13.37em !important}");
 }
@@ -885,7 +885,7 @@ or provide an object whose properties will be assigned to the attributes object.
 
 Example:
 
-```
+```js
 exports.aceAttribClasses = (hookName, attrs, cb) => {
   return cb([{
     sub: 'tag:sub',
@@ -904,7 +904,7 @@ This hook will allow a plug-in developer to modify the file name of an exported 
 
 Example:
 
-```
+```js
 exports.exportFileName = function(hook, padId, callback){
   callback("newFileName"+padId);
 }
@@ -920,7 +920,7 @@ Things in context:
 This hook will allow a plug-in developer to include more properties and attributes to support during HTML Export. If tags are stored as `['color', 'red']` on the attribute pool, use `exportHtmlAdditionalTagsWithData` instead. An Array should be returned.
 
 Example:
-```
+```js
 // Add the props to be supported in export
 exports.exportHtmlAdditionalTags = function(hook, pad, cb){
   var padId = pad.id;
@@ -938,7 +938,7 @@ Things in context:
 Identical to `exportHtmlAdditionalTags`, but for tags that are stored with a specific value (not simply `true`) on the attribute pool. For example `['color', 'red']`, instead of `['bold', true]`. This hook will allow a plug-in developer to include more properties and attributes to support during HTML Export. An Array of arrays should be returned. The exported HTML will contain tags like `<span data-color="red">` for the content where attributes are `['color', 'red']`.
 
 Example:
-```
+```js
 // Add the props to be supported in export
 exports.exportHtmlAdditionalTagsWithData = function(hook, pad, cb){
   var padId = pad.id;
@@ -962,7 +962,7 @@ Context properties: None.
 
 Example:
 
-```
+```js
 // Add support for exporting comments metadata
 exports.exportEtherpadAdditionalContent = () => ['comments'];
 ```
