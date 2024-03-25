@@ -12,7 +12,6 @@ const common = require('../../common');
 const validateOpenAPI = require('openapi-schema-validation').validate;
 
 let agent: any;
-const apiKey = common.apiKey;
 let apiVersion = 1;
 
 const makeid = () => {

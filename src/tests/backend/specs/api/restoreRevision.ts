@@ -14,8 +14,8 @@ describe(__filename, function () {
   let pad: PadType;
 
   const restoreRevision = async (v:string, padId: string, rev: number, authorId:string|null = null) => {
+    // @ts-ignore
     const p = new URLSearchParams(Object.entries({
-      apikey: common.apiKey,
       padID: padId,
       rev,
       ...(authorId == null ? {} : {authorId}),

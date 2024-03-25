@@ -6,7 +6,7 @@
  * TODO: maybe unify those two files and merge in a single one.
  */
 
-import {generateJWTToken} from "../../common";
+import {generateJWTToken, generateJWTTokenUser} from "../../common";
 
 const assert = require('assert').strict;
 const common = require('../../common');
@@ -38,11 +38,17 @@ describe(__filename, function () {
       assert(apiVersion);
     });
 
-    it('errors with invalid APIKey', async function () {
+    it('errors with invalid OAuth token', async function () {
       // This is broken because Etherpad doesn't handle HTTP codes properly see #2343
-      // If your APIKey is password you deserve to fail all tests anyway
       await agent.get(`/api/${apiVersion}/createPad?padID=test`)
           .set("Authorization", (await generateJWTToken()).substring(0,10))
+          .expect(401);
+    });
+
+    it('errors with unprivileged OAuth token', async function () {
+      // This is broken because Etherpad doesn't handle HTTP codes properly see #2343
+      await agent.get(`/api/${apiVersion}/createPad?padID=test`)
+          .set("Authorization", (await generateJWTTokenUser()).substring(0,10))
           .expect(401);
     });
   });

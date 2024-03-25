@@ -59,9 +59,8 @@ describe(__filename, function () {
   });
 
   describe('Sanity checks', function () {
-    it('errors with invalid APIKey', async function () {
+    it('errors with invalid oauth token', async function () {
       // This is broken because Etherpad doesn't handle HTTP codes properly see #2343
-      // If your APIKey is password you deserve to fail all tests anyway
       await agent.get(`/api/${apiVersion}/createPad?padID=test`)
           .set("Authorization", (await common.generateJWTToken()).substring(0, 10))
           .expect(401);

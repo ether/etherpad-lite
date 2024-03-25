@@ -31,8 +31,8 @@ describe('API Versioning', function () {
 });
 
 describe('Permission', function () {
-  it('errors with invalid APIKey', function (done) {
-    api.get(`/api/${apiVersion}/createPad?apikey=wrong_password&padID=test`)
+  it('errors with invalid OAuth token', function (done) {
+    api.get(`/api/${apiVersion}/createPad?padID=test`)
         .expect(401, done);
   });
 });

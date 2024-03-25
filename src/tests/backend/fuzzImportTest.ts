@@ -7,13 +7,12 @@ const common = require('./common');
 const host = `http://${settings.ip}:${settings.port}`;
 const froth = require('mocha-froth');
 const axios = require('axios');
-const apiKey = common.apiKey;
 const apiVersion = 1;
 const testPadId = `TEST_fuzz${makeid()}`;
 
 const endPoint = function (point: string, version?:number) {
     version = version || apiVersion;
-    return `/api/${version}/${point}?apikey=${apiKey}`;
+    return `/api/${version}/${point}}`;
 };
 
 console.log('Testing against padID', testPadId);
@@ -29,7 +28,12 @@ setTimeout(() => {
 }, 5000); // wait 5 seconds
 
 async function runTest(number: number) {
-    await axios.get(`${host + endPoint('createPad')}&padID=${testPadId}`)
+    await axios
+        .get(`${host + endPoint('createPad')}?padID=${testPadId}`, {
+            headers: {
+                Authorization: await common.generateJWTToken(),
+            }
+        })
         .then(() => {
             const req = axios.post(`${host}/p/${testPadId}/import`)
                 .then(() => {

@@ -632,7 +632,6 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
           let data;
           try {
             data = await apiHandler.handle(version, funcName, fields, req, res);
-            console.log(app._router.stack)
           } catch (err) {
             const errCaused = err as ErrorCaused
             // convert all errors to http errors

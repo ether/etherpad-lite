@@ -52,6 +52,19 @@ export const generateJWTToken =  () => {
   return jwt.sign(privateKeyExported!)
 }
 
+
+export const generateJWTTokenUser =  () => {
+  const jwt = new SignJWT({
+    sub: 'admin',
+    jti: '123',
+    exp: Math.floor(Date.now() / 1000) + 60 * 60,
+    aud: 'account',
+    iss: 'http://localhost:9001',
+  })
+  jwt.setProtectedHeader({alg: 'RS256'})
+  return jwt.sign(privateKeyExported!)
+}
+
 export const init = async function () {
   if (agentPromise != null) return await agentPromise;
   let agentResolve;
