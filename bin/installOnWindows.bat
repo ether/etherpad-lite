@@ -19,6 +19,15 @@ IF EXIST admin (
  cd /D ..
 )
 
+:: Install ui only if available
+IF EXIST ui (
+ cd /D .\ui
+ dir
+ cmd /C pnpm i || exit /B 1
+ cmd /C pnpm run build || exit /B 1
+ cd /D ..
+)
+
 
 cmd /C pnpm i || exit /B 1
 
