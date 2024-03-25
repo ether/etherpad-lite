@@ -27,3 +27,4 @@ plugin_packages
 /src/test-results
 playwright-report
 state.json
+/src/static/oidc

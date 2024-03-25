@@ -4,7 +4,7 @@ import type {Adapter, AdapterPayload} from "oidc-provider";
 
 const options = {
     max: 500,
-    sizeCalculation: (item, key) => {
+    sizeCalculation: (item:any, key:any) => {
         return 1
     },
     // for use with tracking overall storage size
@@ -43,7 +43,6 @@ class MemoryAdapter implements Adapter{
     }
 
     destroy(id:string) {
-        console.log("destroy", id);
         const key = this.key(id);
 
         const found = storage.get(key) as AdapterPayload;
@@ -61,13 +60,11 @@ class MemoryAdapter implements Adapter{
     }
 
     consume(id: string) {
-        console.log("consume", id);
         (storage.get(this.key(id)) as AdapterPayload)!.consumed = epochTime();
         return Promise.resolve();
     }
 
     find(id: string): Promise<AdapterPayload | void | undefined> {
-        const foundSession = storage.get(this.key(id)) as AdapterPayload;
         if (storage.has(this.key(id))){
             return Promise.resolve<AdapterPayload>(storage.get(this.key(id)) as AdapterPayload);
         }
@@ -88,7 +85,6 @@ class MemoryAdapter implements Adapter{
         accountId: string;
         loginTs: number;
     }, expiresIn: number) {
-        console.log("upsert", payload);
         const key = this.key(id);
 
         storage.set(key, payload, {ttl: expiresIn * 1000});

@@ -5,42 +5,49 @@ import MemoryAdapter from "./OIDCAdapter";
 import path from "path";
 const settings = require('../utils/Settings');
 import {IncomingForm} from 'formidable'
-import {Request, Response} from 'express';
+import express, {Request, Response} from 'express';
 import {format} from 'url'
 import {ParsedUrlQuery} from "node:querystring";
+import cors from 'cors'
+import {Http2ServerRequest, Http2ServerResponse} from "node:http2";
 const configuration: Configuration = {
-    // refer to the documentation for other available configuration
-    clients: [ {
-        client_id: 'oidc_client',
-        client_secret: 'a_different_secret',
-        grant_types: ['authorization_code'],
-        response_types: ['code'],
-        redirect_uris: ['http://localhost:3001/cb', 'https://oauth.pstmn.io/v1/callback']
-    },
-        {
-            client_id: 'app',
-            client_secret: 'a_secret',
-            grant_types: ['client_credentials'],
-            redirect_uris: [],
-            response_types: []
-        }
-    ],
     scopes: ['openid', 'profile', 'email'],
     findAccount: async (ctx, id) => {
+        const users = settings.users as {
+            [username: string]: {
+                password: string;
+                is_admin: boolean;
+            }
+        }
+
+        const usersArray1 = Object.keys(users).map((username) => ({
+            username,
+            ...users[username]
+        }));
+
+        const account = usersArray1.find((user) => user.username === id);
+
         return {
             accountId: id,
             claims: () => ({
                 sub: id,
+                test: "test",
+                admin: account?.is_admin
             })
         } as Account
     },
-
     ttl:{
         AccessToken: 1 * 60 * 60, // 1 hour in seconds
         AuthorizationCode: 10 * 60, // 10 minutes in seconds
         ClientCredentials: 1 * 60 * 60, // 1 hour in seconds
         IdToken: 1 * 60 * 60, // 1 hour in seconds
         RefreshToken: 1 * 24 * 60 * 60, // 1 day in seconds
+    },
+    claims: {
+        openid: ['sub'],
+        email: ['email'],
+        profile: ['name'],
+        admin: ['admin']
     },
     cookies: {
       keys: ['oidc'],
@@ -52,24 +59,89 @@ const configuration: Configuration = {
 };
 
 
+/*
+This function is used to initialize the OAuth2 provider
+ */
 export const expressCreateServer = async (hookName: string, args: ArgsExpressType, cb: Function) => {
     const {privateKey} = await generateKeyPair('RS256');
     const privateKeyJWK = await exportJWK(privateKey);
+    // Use cors middleware
+    args.app.use(cors({
+        origin: ['http://localhost:3001', 'https://oauth.pstmn.io'], // replace with your allowed origins
+    }));
+
     const oidc = new Provider('http://localhost:9001', {
         ...configuration, jwks: {
             keys: [
                 privateKeyJWK
             ],
         },
+        conformIdTokenClaims: false,
+        claims: {
+            address: ['address'],
+            email: ['email', 'email_verified'],
+            phone: ['phone_number', 'phone_number_verified'],
+            profile: ['birthdate', 'family_name', 'gender', 'given_name', 'locale', 'middle_name', 'name',
+                'nickname', 'picture', 'preferred_username', 'profile', 'updated_at', 'website', 'zoneinfo'],
+        },
+        features:{
+             userinfo: {enabled: true},
+
+             claimsParameter: {enabled: true},
+            devInteractions: {enabled: false},
+          resourceIndicators: {enabled: true,   defaultResource(ctx) {
+                  return ctx.origin;
+              },
+              getResourceServerInfo(ctx, resourceIndicator, client) {
+                  return {
+                      scope: client.scope as string,
+                      audience: 'account',
+                      accessTokenFormat: 'jwt',
+                  };
+              },
+              useGrantedResource(ctx, model) {
+                  return true;
+              },},
+            jwtResponseModes: {enabled: true},
+        },
+        clientBasedCORS: (ctx, origin, client) => {
+          return true
+        },
+        extraTokenClaims: async (ctx, token) => {
+
+
+            if(token.kind === 'AccessToken') {
+                // Add your custom claims here. For example:
+                const users = settings.users as {
+                    [username: string]: {
+                        password: string;
+                        is_admin: boolean;
+                    }
+                }
+
+                const usersArray1 = Object.keys(users).map((username) => ({
+                    username,
+                    ...users[username]
+                }));
+
+                const account = usersArray1.find((user) => user.username === token.accountId);
+                return {
+                    admin: account?.is_admin
+                };
+            }
+        },
+        clients: settings.sso.clients
     });
 
 
-    args.app.post('/interaction/:uid', async (req, res, next) => {
+    args.app.post('/interaction/:uid', async (req: Http2ServerRequest, res: Http2ServerResponse, next:Function) => {
         const formid = new IncomingForm();
         try {
+            // @ts-ignore
             const {login, password} = (await formid.parse(req))[0]
-            const {prompt, jti, session, params, grantId} = await oidc.interactionDetails(req, res);
+            const {prompt, jti, session,cid, params, grantId} = await oidc.interactionDetails(req, res);
 
+            const client = await oidc.Client.find(params.client_id as string);
 
             switch (prompt.name) {
                 case 'login': {
@@ -110,6 +182,7 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
                     }
 
                     if (prompt.details.missingOIDCScope) {
+                        // @ts-ignore
                         grant!.addOIDCScope(prompt.details.missingOIDCScope.join(' '));
                     }
                     if (prompt.details.missingOIDCClaims) {
@@ -128,13 +201,13 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
                 }
             }
             await next();
-        } catch (err) {
+        } catch (err:any) {
             return res.writeHead(500).end(err.message);
         }
     })
 
 
-    args.app.get('/interaction/:uid', async (req: Request, res: Response, next) => {
+    args.app.get('/interaction/:uid', async (req: Request, res: Response, next: Function) => {
         try {
             const {
                 uid, prompt, params, session,
@@ -145,14 +218,14 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
             switch (prompt.name) {
                 case 'login': {
                     res.redirect(format({
-                        pathname: '/views/login',
+                        pathname: '/views/login.html',
                         query: params as ParsedUrlQuery
                     }))
                     break
                 }
                 case 'consent': {
                     res.redirect(format({
-                        pathname: '/views/consent',
+                        pathname: '/views/consent.html',
                         query: params as ParsedUrlQuery
                     }))
                     break
@@ -166,13 +239,7 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
     });
 
 
-    args.app.get('/views/login', async (req, res) => {
-        res.sendFile(path.join(settings.root,'src','static', 'oidc','login.html'));
-    })
-
-    args.app.get('/views/consent', async (req, res) => {
-        res.sendFile(path.join(settings.root,'src','static', 'oidc','consent.html'));
-    })
+    args.app.use('/views/', express.static(path.join(settings.root,'src','static', 'oidc'), {maxAge: 1000 * 60 * 60 * 24}));
 
     /*
     oidc.on('authorization.error', (ctx, error) => {
