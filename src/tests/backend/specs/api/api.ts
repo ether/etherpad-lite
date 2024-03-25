@@ -27,7 +27,7 @@ const makeid = () => {
 
 const testPadId = makeid();
 
-const endPoint = (point:string) => `/api/${apiVersion}/${point}?apikey=${apiKey}`;
+const endPoint = (point:string) => `/api/${apiVersion}/${point}`;
 
 describe(__filename, function () {
   before(async function () { agent = await common.init(); });

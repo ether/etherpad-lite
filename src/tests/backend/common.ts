@@ -13,18 +13,20 @@ const server = require('../../node/server');
 const setCookieParser = require('set-cookie-parser');
 const settings = require('../../node/utils/Settings');
 import supertest from 'supertest';
+import TestAgent from "supertest/lib/agent";
+import {Http2Server} from "node:http2";
+import {SignJWT} from "jose";
+import {privateKeyExported} from "../../node/security/OAuth2Provider";
 const webaccess = require('../../node/hooks/express/webaccess');
 
 const backups:MapArrayType<any> = {};
 let agentPromise:Promise<any>|null = null;
 
-exports.apiKey = apiHandler.exportedForTestingOnly.apiKey;
-exports.agent = null;
-exports.baseUrl = null;
-exports.httpServer = null;
-exports.logger = log4js.getLogger('test');
+export let agent: TestAgent|null = null;
+export let baseUrl:string|null = null;
+export let httpServer: Http2Server|null = null;
+export const logger = log4js.getLogger('test');
 
-const logger = exports.logger;
 const logLevel = logger.level;
 
 // Mocha doesn't monitor unhandled Promise rejections, so convert them to uncaught exceptions.
@@ -33,10 +35,24 @@ process.on('unhandledRejection', (reason: string) => { throw reason; });
 
 before(async function () {
   this.timeout(60000);
-  await exports.init();
+  await init();
 });
 
-exports.init = async function () {
+
+export const generateJWTToken =  () => {
+  const jwt = new SignJWT({
+    sub: 'admin',
+    jti: '123',
+    exp: Math.floor(Date.now() / 1000) + 60 * 60,
+    aud: 'account',
+    iss: 'http://localhost:9001',
+    admin: true
+  })
+  jwt.setProtectedHeader({alg: 'RS256'})
+  return jwt.sign(privateKeyExported!)
+}
+
+export const init = async function () {
   if (agentPromise != null) return await agentPromise;
   let agentResolve;
   agentPromise = new Promise((resolve) => { agentResolve = resolve; });
@@ -53,11 +69,13 @@ exports.init = async function () {
   settings.ip = 'localhost';
   settings.importExportRateLimiting = {max: 999999};
   settings.commitRateLimiting = {duration: 0.001, points: 1e6};
-  exports.httpServer = await server.start();
-  exports.baseUrl = `http://localhost:${exports.httpServer.address().port}`;
-  logger.debug(`HTTP server at ${exports.baseUrl}`);
+  httpServer = await server.start();
+  // @ts-ignore
+  baseUrl = `http://localhost:${httpServer!.address()!.port}`;
+  logger.debug(`HTTP server at ${baseUrl}`);
   // Create a supertest user agent for the HTTP server.
-  exports.agent = supertest(exports.baseUrl);
+  agent = supertest(baseUrl)
+      //.set('Authorization', `Bearer ${await generateJWTToken()}`);
   // Speed up authn tests.
   backups.authnFailureDelayMs = webaccess.authnFailureDelayMs;
   webaccess.authnFailureDelayMs = 0;
@@ -69,8 +87,8 @@ exports.init = async function () {
     await server.exit();
   });
 
-  agentResolve!(exports.agent);
-  return exports.agent;
+  agentResolve!(agent);
+  return agent;
 };
 
 /**
@@ -81,7 +99,7 @@ exports.init = async function () {
  * @param {string} event - The socket.io Socket event to listen for.
  * @returns The argument(s) passed to the event handler.
  */
-exports.waitForSocketEvent = async (socket: any, event:string) => {
+export const waitForSocketEvent = async (socket: any, event:string) => {
   const errorEvents = [
     'error',
     'connect_error',
@@ -136,7 +154,7 @@ exports.waitForSocketEvent = async (socket: any, event:string) => {
  *     nullish, no cookies are passed to the server.
  * @returns {io.Socket} A socket.io client Socket object.
  */
-exports.connect = async (res:any = null) => {
+export const connect = async (res:any = null) => {
   // Convert the `set-cookie` header(s) into a `cookie` header.
   const resCookies = (res == null) ? {} : setCookieParser.parse(res, {map: true});
   const reqCookieHdr = Object.entries(resCookies).map(
@@ -148,14 +166,14 @@ exports.connect = async (res:any = null) => {
   if (res) {
     padId = res.req.path.split('/p/')[1];
   }
-  const socket = io(`${exports.baseUrl}/`, {
+  const socket = io(`${baseUrl}/`, {
     forceNew: true, // Different tests will have different query parameters.
     // socketio.js-client on node.js doesn't support cookies (see https://git.io/JU8u9), so the
     // express_sid cookie must be passed as a query parameter.
     query: {cookie: reqCookieHdr, padId},
   });
   try {
-    await exports.waitForSocketEvent(socket, 'connect');
+    await waitForSocketEvent(socket, 'connect');
   } catch (e) {
     socket.close();
     throw e;
@@ -173,7 +191,7 @@ exports.connect = async (res:any = null) => {
  * @param token
  * @returns The CLIENT_VARS message from the server.
  */
-exports.handshake = async (socket: any, padId:string, token = padutils.generateAuthorToken()) => {
+export const handshake = async (socket: any, padId:string, token = padutils.generateAuthorToken()) => {
   logger.debug('sending CLIENT_READY...');
   socket.emit('message', {
     component: 'pad',
@@ -183,7 +201,7 @@ exports.handshake = async (socket: any, padId:string, token = padutils.generateA
     token,
   });
   logger.debug('waiting for CLIENT_VARS response...');
-  const msg = await exports.waitForSocketEvent(socket, 'message');
+  const msg = await waitForSocketEvent(socket, 'message');
   logger.debug('received CLIENT_VARS message');
   return msg;
 };
@@ -191,7 +209,7 @@ exports.handshake = async (socket: any, padId:string, token = padutils.generateA
 /**
  * Convenience wrapper around `socket.send()` that waits for acknowledgement.
  */
-exports.sendMessage = async (socket: any, message:any) => await new Promise<void>((resolve, reject) => {
+export const sendMessage = async (socket: any, message:any) => await new Promise<void>((resolve, reject) => {
   socket.emit('message', message, (errInfo:{
     name: string,
     message: string,
@@ -210,7 +228,7 @@ exports.sendMessage = async (socket: any, message:any) => await new Promise<void
 /**
  * Convenience function to send a USER_CHANGES message. Waits for acknowledgement.
  */
-exports.sendUserChanges = async (socket:any, data:any) => await exports.sendMessage(socket, {
+export const sendUserChanges = async (socket:any, data:any) => await sendMessage(socket, {
   type: 'COLLABROOM',
   component: 'pad',
   data: {
@@ -232,8 +250,8 @@ exports.sendUserChanges = async (socket:any, data:any) => await exports.sendMess
  *       common.sendUserChanges(socket, {baseRev: rev, changeset}),
  *     ]);
  */
-exports.waitForAcceptCommit = async (socket:any, wantRev: number) => {
-  const msg = await exports.waitForSocketEvent(socket, 'message');
+export const waitForAcceptCommit = async (socket:any, wantRev: number) => {
+  const msg = await waitForSocketEvent(socket, 'message');
   assert.deepEqual(msg, {
     type: 'COLLABROOM',
     data: {
@@ -252,7 +270,7 @@ const alphabet = 'abcdefghijklmnopqrstuvwxyz';
  * @param {string} [charset] - Characters to pick from.
  * @returns {string}
  */
-exports.randomString = (len: number = 10, charset: string = `${alphabet}${alphabet.toUpperCase()}0123456789`): string => {
+export const randomString = (len: number = 10, charset: string = `${alphabet}${alphabet.toUpperCase()}0123456789`): string => {
   let ret = '';
   while (ret.length < len) ret += charset[Math.floor(Math.random() * charset.length)];
   return ret;

@@ -1,6 +1,6 @@
 import {ArgsExpressType} from "../types/ArgsExpressType";
-import Provider, {Account, Configuration, InteractionResults} from 'oidc-provider';
-import {generateKeyPair, exportJWK} from 'jose'
+import Provider, {Account, Configuration} from 'oidc-provider';
+import {generateKeyPair, exportJWK, KeyLike} from 'jose'
 import MemoryAdapter from "./OIDCAdapter";
 import path from "path";
 const settings = require('../utils/Settings');
@@ -8,8 +8,8 @@ import {IncomingForm} from 'formidable'
 import express, {Request, Response} from 'express';
 import {format} from 'url'
 import {ParsedUrlQuery} from "node:querystring";
-import cors from 'cors'
 import {Http2ServerRequest, Http2ServerResponse} from "node:http2";
+
 const configuration: Configuration = {
     scopes: ['openid', 'profile', 'email'],
     findAccount: async (ctx, id) => {
@@ -27,14 +27,25 @@ const configuration: Configuration = {
 
         const account = usersArray1.find((user) => user.username === id);
 
-        return {
-            accountId: id,
-            claims: () => ({
-                sub: id,
-                test: "test",
-                admin: account?.is_admin
-            })
-        } as Account
+        if(account === undefined) {
+            return undefined
+        }
+        if (account.is_admin) {
+            return {
+                accountId: id,
+                claims: () => ({
+                    sub: id,
+                    admin: true
+                })
+            } as Account
+        } else {
+            return {
+                accountId: id,
+                claims: () => ({
+                    sub: id,
+                })
+            } as Account
+        }
     },
     ttl:{
         AccessToken: 1 * 60 * 60, // 1 hour in seconds
@@ -59,16 +70,17 @@ const configuration: Configuration = {
 };
 
 
+export let publicKeyExported: KeyLike|null
+export let privateKeyExported: KeyLike|null
+
 /*
 This function is used to initialize the OAuth2 provider
  */
 export const expressCreateServer = async (hookName: string, args: ArgsExpressType, cb: Function) => {
-    const {privateKey} = await generateKeyPair('RS256');
+    const {privateKey, publicKey} = await generateKeyPair('RS256');
     const privateKeyJWK = await exportJWK(privateKey);
-    // Use cors middleware
-    args.app.use(cors({
-        origin: ['http://localhost:3001', 'https://oauth.pstmn.io'], // replace with your allowed origins
-    }));
+    publicKeyExported = publicKey
+    privateKeyExported = privateKey
 
     const oidc = new Provider('http://localhost:9001', {
         ...configuration, jwks: {

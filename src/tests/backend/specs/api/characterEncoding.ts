@@ -6,17 +6,18 @@
  * TODO: maybe unify those two files and merge in a single one.
  */
 
+import {generateJWTToken} from "../../common";
+
 const assert = require('assert').strict;
 const common = require('../../common');
 const fs = require('fs');
 const fsp = fs.promises;
 
 let agent:any;
-const apiKey = common.apiKey;
 let apiVersion = 1;
 const testPadId = makeid();
 
-const endPoint = (point:string, version?:number) => `/api/${version || apiVersion}/${point}?apikey=${apiKey}`;
+const endPoint = (point:string, version?:number) => `/api/${version || apiVersion}/${point}`;
 
 describe(__filename, function () {
   before(async function () { agent = await common.init(); });
@@ -24,12 +25,14 @@ describe(__filename, function () {
   describe('Sanity checks', function () {
     it('can connect', async function () {
       await agent.get('/api/')
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/);
     });
 
     it('finds the version tag', async function () {
       const res = await agent.get('/api/')
+          .set("Authorization", await generateJWTToken())
           .expect(200);
       apiVersion = res.body.currentVersion;
       assert(apiVersion);
@@ -38,14 +41,16 @@ describe(__filename, function () {
     it('errors with invalid APIKey', async function () {
       // This is broken because Etherpad doesn't handle HTTP codes properly see #2343
       // If your APIKey is password you deserve to fail all tests anyway
-      await agent.get(`/api/${apiVersion}/createPad?apikey=password&padID=test`)
+      await agent.get(`/api/${apiVersion}/createPad?padID=test`)
+          .set("Authorization", (await generateJWTToken()).substring(0,10))
           .expect(401);
     });
   });
 
   describe('Tests', function () {
     it('creates a new Pad', async function () {
-      const res = await agent.get(`${endPoint('createPad')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('createPad')}?padID=${testPadId}`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
@@ -53,6 +58,7 @@ describe(__filename, function () {
 
     it('Sets the HTML of a Pad attempting to weird utf8 encoded content', async function () {
       const res = await agent.post(endPoint('setHTML'))
+          .set("Authorization", await generateJWTToken())
           .send({
             padID: testPadId,
             html: await fsp.readFile('tests/backend/specs/api/emojis.html', 'utf8'),
@@ -63,7 +69,8 @@ describe(__filename, function () {
     });
 
     it('get the HTML of Pad with emojis', async function () {
-      const res = await agent.get(`${endPoint('getHTML')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('getHTML')}?padID=${testPadId}`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/);
       assert.match(res.body.data.html, /&#127484/);

@@ -21,6 +21,7 @@ describe(__filename, function () {
       ...(authorId == null ? {} : {authorId}),
     }));
     const res = await agent.get(`/api/${v}/restoreRevision?${p}`)
+        .set("Authorization", (await common.generateJWTToken()))
         .expect(200)
         .expect('Content-Type', /json/);
     assert.equal(res.body.code, 0);

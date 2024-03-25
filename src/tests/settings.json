@@ -650,5 +650,23 @@
   /*
    * Enable/Disable case-insensitive pad names.
    */
-  "lowerCasePadIds": false
+  "lowerCasePadIds": false,
+  "sso": {
+    "clients": [
+      {
+        "client_id": "admin_client",
+        "client_secret": "admin",
+        "grant_types": ["authorization_code"],
+        "response_types": ["code"],
+        "redirect_uris": ["http://localhost:9001/admin/"]
+      },
+      {
+        "client_id": "user_client",
+        "client_secret": "user",
+        "grant_types": ["authorization_code"],
+        "response_types": ["code"],
+        "redirect_uris": ["http://localhost:9001/"]
+      }
+    ]
+  }
 }
