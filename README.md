@@ -1,6 +1,6 @@
 # Etherpad: A real-time collaborative editor for the web
 
-![Demo Etherpad Animated Jif](doc/images/etherpad_demo.gif "Etherpad in action")
+![Demo Etherpad Animated Jif](doc/public/etherpad_demo.gif "Etherpad in action")
 
 ## About
 
@@ -21,7 +21,6 @@ We're looking for maintainers and have some funding available.  Please contact J
 ### Code Quality
 
 [![Code Quality](https://github.com/ether/etherpad-lite/actions/workflows/codeql-analysis.yml/badge.svg?color=%2344b492)](https://github.com/ether/etherpad-lite/actions/workflows/codeql-analysis.yml)
-[![package.lock](https://github.com/ether/etherpad-lite/actions/workflows/lint-package-lock.yml/badge.svg?color=%2344b492)](https://github.com/ether/etherpad-lite/actions/workflows/lint-package-lock.yml)
 
 ### Testing
 
@@ -121,9 +120,9 @@ Find [here](doc/docker.adoc) information on running Etherpad in a container.
 
 Etherpad is very customizable through plugins.
 
-![Basic install](doc/images/etherpad_basic.png "Basic Installation")
+![Basic install](doc/public/etherpad_basic.png "Basic Installation")
 
-![Full Features](doc/images/etherpad_full_features.png "You can add a lot of plugins !")
+![Full Features](doc/public/etherpad_full_features.png "You can add a lot of plugins !")
 
 ### Available Plugins
 
@@ -211,7 +210,7 @@ edit `settings.json` and restart Etherpad each time.
 Open http://127.0.0.1:9001/p/test#skinvariantsbuilder in your browser and start
 playing!
 
-![Skin Variant](doc/images/etherpad_skin_variants.gif "Skin variants")
+![Skin Variant](doc/public/etherpad_skin_variants.gif "Skin variants")
 
 ## Helpful resources
 
