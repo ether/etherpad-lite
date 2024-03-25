@@ -24,7 +24,9 @@
     "test-ui:ui": "pnpm --filter ep_etherpad-lite run test-ui:ui",
     "test-admin": "pnpm --filter ep_etherpad-lite run test-admin",
     "test-admin:ui": "pnpm --filter ep_etherpad-lite run test-admin:ui",
-    "install-plugins": "pnpm --filter bin run install-plugins"
+    "install-plugins": "pnpm --filter bin run install-plugins",
+    "remove-plugins": "pnpm --filter bin run remove-plugins",
+    "list-plugins": "pnpm --filter bin run list-plugins"
   },
   "dependencies": {
     "ep_etherpad-lite": "workspace:./src"
