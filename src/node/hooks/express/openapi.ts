@@ -483,14 +483,24 @@ const generateDefinitionForVersion = (version:string, style = APIPathStyle.FLAT)
         ...defaultResponses,
       },
       securitySchemes: {
-        ApiKey: {
-          type: 'apiKey',
-          in: 'query',
-          name: 'apikey',
+        openid: {
+          type: "oauth2",
+          flows: {
+            authorizationCode: {
+              authorizationUrl: settings.sso.issuer+"/oidc/auth",
+              tokenUrl: settings.sso.issuer+"/oidc/token",
+              scopes: {
+                openid: "openid",
+                profile: "profile",
+                email: "email",
+                admin: "admin"
+              }
+            }
+          },
         },
       },
     },
-    security: [{ApiKey: []}],
+    security: [{openid: []}],
   };
 
   // build operations
@@ -622,6 +632,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
           let data;
           try {
             data = await apiHandler.handle(version, funcName, fields, req, res);
+            console.log(app._router.stack)
           } catch (err) {
             const errCaused = err as ErrorCaused
             // convert all errors to http errors

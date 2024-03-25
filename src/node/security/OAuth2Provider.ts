@@ -82,7 +82,7 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
     publicKeyExported = publicKey
     privateKeyExported = privateKey
 
-    const oidc = new Provider('http://localhost:9001', {
+    const oidc = new Provider(settings.sso.issuer, {
         ...configuration, jwks: {
             keys: [
                 privateKeyJWK
@@ -98,7 +98,6 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
         },
         features:{
              userinfo: {enabled: true},
-
              claimsParameter: {enabled: true},
             devInteractions: {enabled: false},
           resourceIndicators: {enabled: true,   defaultResource(ctx) {

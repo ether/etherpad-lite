@@ -149,7 +149,6 @@ exports.version = version;
 
 
 type APIFields = {
-  apikey: string;
   api_key: string;
   padID: string;
   padName: string;

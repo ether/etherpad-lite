@@ -12,7 +12,6 @@ const common = require('../../common');
 const padManager = require('../../../../node/db/PadManager');
 
 let agent:any;
-const apiKey = common.apiKey;
 let apiVersion = 1;
 const testPadId = makeid();
 const newPadId = makeid();
