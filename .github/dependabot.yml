@@ -15,3 +15,6 @@ updates:
       interval: "daily"
     versioning-strategy: "increase"
     open-pull-requests-limit: 30
+    groups:
+      dev-dependencies:
+        dependency-type: "development"
