@@ -7,9 +7,7 @@
 FROM node:alpine as adminBuild
 
 WORKDIR /opt/etherpad-lite
-COPY ./admin ./admin
-COPY ./ui ./ui
-COPY ./src/locales ./src/locales
+COPY ./ ./
 RUN cd ./admin && npm install -g pnpm && pnpm install && pnpm run build --outDir ./dist
 RUN cd ./ui && pnpm install && pnpm run build --outDir ./dist
 
