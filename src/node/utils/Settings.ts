@@ -343,6 +343,11 @@ exports.requireAuthorization = false;
 exports.users = {};
 
 /*
+ * This setting is used for configuring sso
+ */
+exports.sso = {}
+
+/*
  * Show settings in admin page, by default it is true
  */
 exports.showSettingsInAdminPage = true;

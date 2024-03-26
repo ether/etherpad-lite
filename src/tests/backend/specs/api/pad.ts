@@ -12,7 +12,6 @@ const common = require('../../common');
 const padManager = require('../../../../node/db/PadManager');
 
 let agent:any;
-const apiKey = common.apiKey;
 let apiVersion = 1;
 const testPadId = makeid();
 const newPadId = makeid();
@@ -21,7 +20,7 @@ const anotherPadId = makeid();
 let lastEdited = '';
 const text = generateLongText();
 
-const endPoint = (point: string, version?: string) => `/api/${version || apiVersion}/${point}?apikey=${apiKey}`;
+const endPoint = (point: string, version?: string) => `/api/${version || apiVersion}/${point}`;
 
 /*
  * Html document with nested lists of different types, to test its import and
@@ -60,10 +59,10 @@ describe(__filename, function () {
   });
 
   describe('Sanity checks', function () {
-    it('errors with invalid APIKey', async function () {
+    it('errors with invalid oauth token', async function () {
       // This is broken because Etherpad doesn't handle HTTP codes properly see #2343
-      // If your APIKey is password you deserve to fail all tests anyway
-      await agent.get(`/api/${apiVersion}/createPad?apikey=password&padID=test`)
+      await agent.get(`/api/${apiVersion}/createPad?padID=test`)
+          .set("Authorization", (await common.generateJWTToken()).substring(0, 10))
           .expect(401);
     });
   });
@@ -113,20 +112,23 @@ describe(__filename, function () {
 
   describe('Tests', function () {
     it('deletes a Pad that does not exist', async function () {
-      await agent.get(`${endPoint('deletePad')}&padID=${testPadId}`)
+      await agent.get(`${endPoint('deletePad')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200) // @TODO: we shouldn't expect 200 here since the pad may not exist
           .expect('Content-Type', /json/);
     });
 
     it('creates a new Pad', async function () {
-      const res = await agent.get(`${endPoint('createPad')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('createPad')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
     });
 
     it('gets revision count of Pad', async function () {
-      const res = await agent.get(`${endPoint('getRevisionsCount')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('getRevisionsCount')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
@@ -134,7 +136,8 @@ describe(__filename, function () {
     });
 
     it('gets saved revisions count of Pad', async function () {
-      const res = await agent.get(`${endPoint('getSavedRevisionsCount')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('getSavedRevisionsCount')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
@@ -142,7 +145,8 @@ describe(__filename, function () {
     });
 
     it('gets saved revision list of Pad', async function () {
-      const res = await agent.get(`${endPoint('listSavedRevisions')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('listSavedRevisions')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
@@ -150,7 +154,8 @@ describe(__filename, function () {
     });
 
     it('get the HTML of Pad', async function () {
-      const res = await agent.get(`${endPoint('getHTML')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('getHTML')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert(res.body.data.html.length > 1);
@@ -158,13 +163,15 @@ describe(__filename, function () {
 
     it('list all pads', async function () {
       const res = await agent.get(endPoint('listAllPads'))
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert(res.body.data.padIDs.includes(testPadId));
     });
 
     it('deletes the Pad', async function () {
-      const res = await agent.get(`${endPoint('deletePad')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('deletePad')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
@@ -172,27 +179,31 @@ describe(__filename, function () {
 
     it('list all pads again', async function () {
       const res = await agent.get(endPoint('listAllPads'))
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert(!res.body.data.padIDs.includes(testPadId));
     });
 
     it('get the HTML of a Pad -- Should return a failure', async function () {
-      const res = await agent.get(`${endPoint('getHTML')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('getHTML')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 1);
     });
 
     it('creates a new Pad with text', async function () {
-      const res = await agent.get(`${endPoint('createPad')}&padID=${testPadId}&text=testText`)
+      const res = await agent.get(`${endPoint('createPad')}?padID=${testPadId}&text=testText`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
     });
 
     it('gets the Pad text and expect it to be testText with trailing \\n', async function () {
-      const res = await agent.get(`${endPoint('getText')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('getText')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.data.text, 'testText\n');
@@ -200,6 +211,7 @@ describe(__filename, function () {
 
     it('set text', async function () {
       const res = await agent.post(endPoint('setText'))
+          .set("Authorization", (await common.generateJWTToken()))
           .send({
             padID: testPadId,
             text: 'testTextTwo',
@@ -210,28 +222,32 @@ describe(__filename, function () {
     });
 
     it('gets the Pad text', async function () {
-      const res = await agent.get(`${endPoint('getText')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('getText')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.data.text, 'testTextTwo\n');
     });
 
     it('gets Revision Count of a Pad', async function () {
-      const res = await agent.get(`${endPoint('getRevisionsCount')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('getRevisionsCount')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.data.revisions, 1);
     });
 
     it('saves Revision', async function () {
-      const res = await agent.get(`${endPoint('saveRevision')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('saveRevision')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
     });
 
     it('gets saved revisions count of Pad again', async function () {
-      const res = await agent.get(`${endPoint('getSavedRevisionsCount')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('getSavedRevisionsCount')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
@@ -239,7 +255,8 @@ describe(__filename, function () {
     });
 
     it('gets saved revision list of Pad again', async function () {
-      const res = await agent.get(`${endPoint('listSavedRevisions')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('listSavedRevisions')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
@@ -247,28 +264,32 @@ describe(__filename, function () {
     });
 
     it('gets User Count of a Pad', async function () {
-      const res = await agent.get(`${endPoint('padUsersCount')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('padUsersCount')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.data.padUsersCount, 0);
     });
 
     it('Gets the Read Only ID of a Pad', async function () {
-      const res = await agent.get(`${endPoint('getReadOnlyID')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('getReadOnlyID')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert(res.body.data.readOnlyID);
     });
 
     it('Get Authors of the Pad', async function () {
-      const res = await agent.get(`${endPoint('listAuthorsOfPad')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('listAuthorsOfPad')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.data.authorIDs.length, 0);
     });
 
     it('Get When Pad was left Edited', async function () {
-      const res = await agent.get(`${endPoint('getLastEdited')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('getLastEdited')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert(res.body.data.lastEdited);
@@ -277,6 +298,7 @@ describe(__filename, function () {
 
     it('set text again', async function () {
       const res = await agent.post(endPoint('setText'))
+          .set("Authorization", (await common.generateJWTToken()))
           .send({
             padID: testPadId,
             text: 'testTextThree',
@@ -287,35 +309,40 @@ describe(__filename, function () {
     });
 
     it('Get When Pad was left Edited again', async function () {
-      const res = await agent.get(`${endPoint('getLastEdited')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('getLastEdited')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert(res.body.data.lastEdited > lastEdited);
     });
 
     it('gets User Count of a Pad again', async function () {
-      const res = await agent.get(`${endPoint('padUsers')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('padUsers')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.data.padUsers.length, 0);
     });
 
     it('deletes a Pad', async function () {
-      const res = await agent.get(`${endPoint('deletePad')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('deletePad')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
     });
 
     it('creates the Pad again', async function () {
-      const res = await agent.get(`${endPoint('createPad')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('createPad')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
     });
 
     it('Sets text on a pad Id', async function () {
-      const res = await agent.post(`${endPoint('setText')}&padID=${testPadId}`)
+      const res = await agent.post(`${endPoint('setText')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .field({text})
           .expect(200)
           .expect('Content-Type', /json/);
@@ -323,7 +350,8 @@ describe(__filename, function () {
     });
 
     it('Gets text on a pad Id', async function () {
-      const res = await agent.get(`${endPoint('getText')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('getText')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
@@ -331,7 +359,8 @@ describe(__filename, function () {
     });
 
     it('Sets text on a pad Id including an explicit newline', async function () {
-      const res = await agent.post(`${endPoint('setText')}&padID=${testPadId}`)
+      const res = await agent.post(`${endPoint('setText')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .field({text: `${text}\n`})
           .expect(200)
           .expect('Content-Type', /json/);
@@ -339,7 +368,8 @@ describe(__filename, function () {
     });
 
     it("Gets text on a pad Id and doesn't have an excess newline", async function () {
-      const res = await agent.get(`${endPoint('getText')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('getText')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
@@ -347,7 +377,8 @@ describe(__filename, function () {
     });
 
     it('Gets when pad was last edited', async function () {
-      const res = await agent.get(`${endPoint('getLastEdited')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('getLastEdited')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.notEqual(res.body.lastEdited, 0);
@@ -355,14 +386,16 @@ describe(__filename, function () {
 
     it('Move a Pad to a different Pad ID', async function () {
       const res = await agent.get(
-          `${endPoint('movePad')}&sourceID=${testPadId}&destinationID=${newPadId}&force=true`)
+          `${endPoint('movePad')}?sourceID=${testPadId}&destinationID=${newPadId}&force=true`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
     });
 
     it('Gets text from new pad', async function () {
-      const res = await agent.get(`${endPoint('getText')}&padID=${newPadId}`)
+      const res = await agent.get(`${endPoint('getText')}?padID=${newPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.data.text, `${text}\n`);
@@ -370,21 +403,24 @@ describe(__filename, function () {
 
     it('Move pad back to original ID', async function () {
       const res = await agent.get(
-          `${endPoint('movePad')}&sourceID=${newPadId}&destinationID=${testPadId}&force=false`)
+          `${endPoint('movePad')}?sourceID=${newPadId}&destinationID=${testPadId}&force=false`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
     });
 
     it('Get text using original ID', async function () {
-      const res = await agent.get(`${endPoint('getText')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('getText')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.data.text, `${text}\n`);
     });
 
     it('Get last edit of original ID', async function () {
-      const res = await agent.get(`${endPoint('getLastEdited')}&padID=${testPadId}`)
+      const res = await agent.get(`${endPoint('getLastEdited')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.notEqual(res.body.lastEdited, 0);
@@ -392,11 +428,13 @@ describe(__filename, function () {
 
     it('Append text to a pad Id', async function () {
       let res = await agent.get(
-          `${endPoint('appendText', '1.2.13')}&padID=${testPadId}&text=hello`)
+          `${endPoint('appendText', '1.2.13')}?padID=${testPadId}&text=hello`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
-      res = await agent.get(`${endPoint('getText')}&padID=${testPadId}`)
+      res = await agent.get(`${endPoint('getText')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
@@ -404,7 +442,8 @@ describe(__filename, function () {
     });
 
     it('getText of old revision', async function () {
-      let res = await agent.get(`${endPoint('getRevisionsCount')}&padID=${testPadId}`)
+      let res = await agent.get(`${endPoint('getRevisionsCount')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
@@ -412,7 +451,8 @@ describe(__filename, function () {
       assert(rev != null);
       assert(Number.isInteger(rev));
       assert(rev > 0);
-      res = await agent.get(`${endPoint('getText')}&padID=${testPadId}&rev=${rev - 1}`)
+      res = await agent.get(`${endPoint('getText')}?padID=${testPadId}&rev=${rev - 1}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
@@ -422,6 +462,7 @@ describe(__filename, function () {
     it('Sets the HTML of a Pad attempting to pass ugly HTML', async function () {
       const html = '<div><b>Hello HTML</title></head></div>';
       const res = await agent.post(endPoint('setHTML'))
+          .set("Authorization", (await common.generateJWTToken()))
           .send({
             padID: testPadId,
             html,
@@ -433,6 +474,7 @@ describe(__filename, function () {
 
     it('Pad with complex nested lists of different types', async function () {
       let res = await agent.post(endPoint('setHTML'))
+          .set("Authorization", (await common.generateJWTToken()))
           .send({
             padID: testPadId,
             html: ulHtml,
@@ -440,7 +482,8 @@ describe(__filename, function () {
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
-      res = await agent.get(`${endPoint('getHTML')}&padID=${testPadId}`)
+      res = await agent.get(`${endPoint('getHTML')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       const receivedHtml = res.body.data.html.replace('<br></body>', '</body>').toLowerCase();
@@ -448,11 +491,13 @@ describe(__filename, function () {
     });
 
     it('Pad with white space between list items', async function () {
-      let res = await agent.get(`${endPoint('setHTML')}&padID=${testPadId}&html=${ulSpaceHtml}`)
+      let res = await agent.get(`${endPoint('setHTML')}?padID=${testPadId}&html=${ulSpaceHtml}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
-      res = await agent.get(`${endPoint('getHTML')}&padID=${testPadId}`)
+      res = await agent.get(`${endPoint('getHTML')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       const receivedHtml = res.body.data.html.replace('<br></body>', '</body>').toLowerCase();
@@ -461,7 +506,8 @@ describe(__filename, function () {
 
     it('errors if pad can be created', async function () {
       await Promise.all(['/', '%23', '%3F', '%26'].map(async (badUrlChar) => {
-        const res = await agent.get(`${endPoint('createPad')}&padID=${badUrlChar}`)
+        const res = await agent.get(`${endPoint('createPad')}?padID=${badUrlChar}`)
+            .set("Authorization", (await common.generateJWTToken()))
             .expect('Content-Type', /json/);
         assert.equal(res.body.code, 1);
       }));
@@ -469,49 +515,57 @@ describe(__filename, function () {
 
     it('copies the content of a existent pad', async function () {
       const res = await agent.get(
-          `${endPoint('copyPad')}&sourceID=${testPadId}&destinationID=${copiedPadId}&force=true`)
+          `${endPoint('copyPad')}?sourceID=${testPadId}&destinationID=${copiedPadId}&force=true`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
     });
 
     it('does not add an useless revision', async function () {
-      let res = await agent.post(`${endPoint('setText')}&padID=${testPadId}`)
+      let res = await agent.post(`${endPoint('setText')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .field({text: 'identical text\n'})
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
 
-      res = await agent.get(`${endPoint('getText')}&padID=${testPadId}`)
+      res = await agent.get(`${endPoint('getText')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.data.text, 'identical text\n');
 
-      res = await agent.get(`${endPoint('getRevisionsCount')}&padID=${testPadId}`)
+      res = await agent.get(`${endPoint('getRevisionsCount')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       const revCount = res.body.data.revisions;
 
-      res = await agent.post(`${endPoint('setText')}&padID=${testPadId}`)
+      res = await agent.post(`${endPoint('setText')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .field({text: 'identical text\n'})
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
 
-      res = await agent.get(`${endPoint('getRevisionsCount')}&padID=${testPadId}`)
+      res = await agent.get(`${endPoint('getRevisionsCount')}?padID=${testPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.data.revisions, revCount);
     });
 
     it('creates a new Pad with empty text', async function () {
-      await agent.get(`${endPoint('createPad')}&padID=${anotherPadId}&text=`)
+      await agent.get(`${endPoint('createPad')}?padID=${anotherPadId}&text=`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect('Content-Type', /json/)
           .expect(200)
           .expect((res:any) => {
             assert.equal(res.body.code, 0, 'Unable to create new Pad');
           });
-      await agent.get(`${endPoint('getText')}&padID=${anotherPadId}`)
+      await agent.get(`${endPoint('getText')}?padID=${anotherPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect('Content-Type', /json/)
           .expect(200)
           .expect((res:any) => {
@@ -521,7 +575,8 @@ describe(__filename, function () {
     });
 
     it('deletes with empty text', async function () {
-      await agent.get(`${endPoint('deletePad')}&padID=${anotherPadId}`)
+      await agent.get(`${endPoint('deletePad')}?padID=${anotherPadId}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect('Content-Type', /json/)
           .expect(200)
           .expect((res: any) => {
@@ -543,8 +598,9 @@ describe(__filename, function () {
     });
 
     it('returns a successful response', async function () {
-      const res = await agent.get(`${endPoint('copyPadWithoutHistory')}&sourceID=${sourcePadId}` +
+      const res = await agent.get(`${endPoint('copyPadWithoutHistory')}?sourceID=${sourcePadId}` +
                                   `&destinationID=${newPad}&force=false`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/);
       assert.equal(res.body.code, 0);
@@ -552,10 +608,12 @@ describe(__filename, function () {
 
     // this test validates if the source pad's text and attributes are kept
     it('creates a new pad with the same content as the source pad', async function () {
-      let res = await agent.get(`${endPoint('copyPadWithoutHistory')}&sourceID=${sourcePadId}` +
-                                `&destinationID=${newPad}&force=false`);
+      let res = await agent.get(`${endPoint('copyPadWithoutHistory')}?sourceID=${sourcePadId}` +
+                                `&destinationID=${newPad}&force=false`)
+          .set("Authorization", (await common.generateJWTToken()));
       assert.equal(res.body.code, 0);
-      res = await agent.get(`${endPoint('getHTML')}&padID=${newPad}`)
+      res = await agent.get(`${endPoint('getHTML')}?padID=${newPad}`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200);
       const receivedHtml = res.body.data.html.replace('<br><br></body>', '</body>').toLowerCase();
       assert.equal(receivedHtml, expectedHtml);
@@ -564,8 +622,9 @@ describe(__filename, function () {
     it('copying to a non-existent group throws an error', async function () {
       const padWithNonExistentGroup = `notExistentGroup$${newPad}`;
       const res = await agent.get(`${endPoint('copyPadWithoutHistory')}` +
-                                  `&sourceID=${sourcePadId}` +
+                                  `?sourceID=${sourcePadId}` +
                                   `&destinationID=${padWithNonExistentGroup}&force=true`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200);
       assert.equal(res.body.code, 1);
     });
@@ -577,16 +636,18 @@ describe(__filename, function () {
 
       it('force=false fails', async function () {
         const res = await agent.get(`${endPoint('copyPadWithoutHistory')}` +
-                                    `&sourceID=${sourcePadId}` +
+                                    `?sourceID=${sourcePadId}` +
                                     `&destinationID=${newPad}&force=false`)
+            .set("Authorization", (await common.generateJWTToken()))
             .expect(200);
         assert.equal(res.body.code, 1);
       });
 
       it('force=true succeeds', async function () {
         const res = await agent.get(`${endPoint('copyPadWithoutHistory')}` +
-                                    `&sourceID=${sourcePadId}` +
+                                    `?sourceID=${sourcePadId}` +
                                     `&destinationID=${newPad}&force=true`)
+            .set("Authorization", (await common.generateJWTToken()))
             .expect(200);
         assert.equal(res.body.code, 0);
       });
@@ -613,7 +674,8 @@ describe(__filename, function () {
       // state between the two attribute pools caused corruption.
 
       const getHtml = async (padId:string) => {
-        const res = await agent.get(`${endPoint('getHTML')}&padID=${padId}`)
+        const res = await agent.get(`${endPoint('getHTML')}?padID=${padId}`)
+            .set("Authorization", (await common.generateJWTToken()))
             .expect(200)
             .expect('Content-Type', /json/);
         assert.equal(res.body.code, 0);
@@ -622,6 +684,7 @@ describe(__filename, function () {
 
       const setBody = async (padId: string, bodyHtml: string) => {
         await agent.post(endPoint('setHTML'))
+            .set("Authorization", (await common.generateJWTToken()))
             .send({padID: padId, html: `<!DOCTYPE HTML><html><body>${bodyHtml}</body></html>`})
             .expect(200)
             .expect('Content-Type', /json/)
@@ -631,8 +694,9 @@ describe(__filename, function () {
       const origHtml = await getHtml(sourcePadId);
       assert.doesNotMatch(origHtml, /<strong>/);
       assert.doesNotMatch(origHtml, /<em>/);
-      await agent.get(`${endPoint('copyPadWithoutHistory')}&sourceID=${sourcePadId}` +
+      await agent.get(`${endPoint('copyPadWithoutHistory')}?sourceID=${sourcePadId}` +
                       `&destinationID=${newPad}&force=false`)
+          .set("Authorization", (await common.generateJWTToken()))
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => assert.equal(res.body.code, 0));
@@ -672,8 +736,10 @@ describe(__filename, function () {
 */
 
 const createNewPadWithHtml = async (padId: string, html: string) => {
-  await agent.get(`${endPoint('createPad')}&padID=${padId}`);
+  await agent.get(`${endPoint('createPad')}?padID=${padId}`)
+      .set("Authorization", (await common.generateJWTToken()));
   await agent.post(endPoint('setHTML'))
+      .set("Authorization", (await common.generateJWTToken()))
       .send({
         padID: padId,
         html,

@@ -46,6 +46,12 @@
       }
     },
     {
+      "name": "oauth2",
+        "hooks": {
+            "expressCreateServer": "ep_etherpad-lite/node/security/OAuth2Provider"
+        }
+    },
+    {
       "name": "padurlsanitize",
       "hooks": {
         "expressCreateServer": "ep_etherpad-lite/node/hooks/express/padurlsanitize"

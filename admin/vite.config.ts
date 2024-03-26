@@ -15,7 +15,8 @@ export default defineConfig({
   })],
     base: '/admin',
     build:{
-      outDir: '../src/templates/admin'
+      outDir: '../src/templates/admin',
+        emptyOutDir: true,
     },
   server:{
     proxy: {

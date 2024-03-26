@@ -8,10 +8,9 @@
 const common = require('../../common');
 
 let agent:any;
-const apiKey = common.apiKey;
 const apiVersion = '1.2.14';
 
-const endPoint = (point: string, version?: number) => `/api/${version || apiVersion}/${point}?apikey=${apiKey}`;
+const endPoint = (point: string, version?: number) => `/api/${version || apiVersion}/${point}`;
 
 describe(__filename, function () {
   before(async function () { agent = await common.init(); });
@@ -27,6 +26,7 @@ describe(__filename, function () {
   describe('getStats', function () {
     it('Gets the stats of a running instance', async function () {
       await agent.get(endPoint('getStats'))
+          .set("Authorization", await common.generateJWTToken())
           .expect((res:any) => {
             if (res.body.code !== 0) throw new Error('getStats() failed');
 

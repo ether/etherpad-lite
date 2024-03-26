@@ -31,7 +31,8 @@
   },
   "devDependencies": {
     "admin": "workspace:./admin",
-    "docs": "workspace:./doc"
+    "docs": "workspace:./doc",
+    "ui": "workspace:./ui"
   },
   "engines": {
     "node": ">=18.18.2",

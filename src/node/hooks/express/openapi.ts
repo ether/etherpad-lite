@@ -483,14 +483,24 @@ const generateDefinitionForVersion = (version:string, style = APIPathStyle.FLAT)
         ...defaultResponses,
       },
       securitySchemes: {
-        ApiKey: {
-          type: 'apiKey',
-          in: 'query',
-          name: 'apikey',
+        openid: {
+          type: "oauth2",
+          flows: {
+            authorizationCode: {
+              authorizationUrl: settings.sso.issuer+"/oidc/auth",
+              tokenUrl: settings.sso.issuer+"/oidc/token",
+              scopes: {
+                openid: "openid",
+                profile: "profile",
+                email: "email",
+                admin: "admin"
+              }
+            }
+          },
         },
       },
     },
-    security: [{ApiKey: []}],
+    security: [{openid: []}],
   };
 
   // build operations
@@ -657,7 +667,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
       }
 
       // start and bind to express
-      api.init();
+      await api.init();
       app.use(apiRoot, async (req:any, res:any) => {
         let response = null;
         try {

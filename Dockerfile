@@ -7,9 +7,9 @@
 FROM node:alpine as adminBuild
 
 WORKDIR /opt/etherpad-lite
-COPY ./admin ./admin
-COPY ./src/locales ./src/locales
+COPY ./ ./
 RUN cd ./admin && npm install -g pnpm && pnpm install && pnpm run build --outDir ./dist
+RUN cd ./ui && pnpm install && pnpm run build --outDir ./dist
 
 
 FROM node:alpine as build
@@ -116,6 +116,7 @@ FROM build as development
 
 COPY --chown=etherpad:etherpad ./src/package.json .npmrc ./src/
 COPY --chown=etherpad:etherpad --from=adminBuild /opt/etherpad-lite/admin/dist ./src/templates/admin
+COPY --chown=etherpad:etherpad --from=adminBuild /opt/etherpad-lite/ui/dist ./src/static/oidc
 
 RUN bin/installDeps.sh && \
     if [ ! -z "${ETHERPAD_PLUGINS}" ] || [ ! -z "${ETHERPAD_LOCAL_PLUGINS}" ]; then \
@@ -130,6 +131,7 @@ ENV ETHERPAD_PRODUCTION=true
 
 COPY --chown=etherpad:etherpad ./src ./src
 COPY --chown=etherpad:etherpad --from=adminBuild /opt/etherpad-lite/admin/dist ./src/templates/admin
+COPY --chown=etherpad:etherpad --from=adminBuild /opt/etherpad-lite/ui/dist ./src/static/oidc
 
 RUN bin/installDeps.sh && rm -rf ~/.npm && rm -rf ~/.local && rm -rf ~/.cache && \
     if [ ! -z "${ETHERPAD_PLUGINS}" ] || [ ! -z "${ETHERPAD_LOCAL_PLUGINS}" ]; then \
