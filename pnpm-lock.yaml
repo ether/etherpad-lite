@@ -208,6 +208,9 @@ importers:
       log4js:
         specifier: ^6.9.1
         version: 6.9.1
+      lru-cache:
+        specifier: ^10.2.0
+        version: 10.2.0
       measured-core:
         specifier: ^2.0.0
         version: 2.0.0
@@ -326,9 +329,6 @@ importers:
       etherpad-cli-client:
         specifier: ^3.0.2
         version: 3.0.2
-      lru-cache:
-        specifier: ^10.2.0
-        version: 10.2.0
       mocha:
         specifier: ^10.3.0
         version: 10.3.0
@@ -5487,7 +5487,7 @@ packages:
   /lru-cache@10.2.0:
     resolution: {integrity: sha512-2bIM8x+VAf6JT4bKAljS1qUWgMsqZRPGJS6FSahIMPVvctcNhyVp7AJu7quxOW9jwkryBReKZY5tY5JYv2n/7Q==}
     engines: {node: 14 || >=16.14}
-    dev: true
+    dev: false
 
   /lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
