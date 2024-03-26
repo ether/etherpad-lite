@@ -364,7 +364,7 @@ importers:
         version: 5.4.3
       vite:
         specifier: ^5.2.0
-        version: 5.2.3
+        version: 5.2.6
 
 packages:
 
