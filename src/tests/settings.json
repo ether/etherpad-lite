@@ -652,20 +652,21 @@
    */
   "lowerCasePadIds": false,
   "sso": {
+    "issuer": "${SSO_ISSUER:http://localhost:9001}",
     "clients": [
       {
-        "client_id": "admin_client",
-        "client_secret": "admin",
+        "client_id": "${ADMIN_CLIENT:admin_client}",
+        "client_secret": "${ADMIN_SECRET:admin}",
         "grant_types": ["authorization_code"],
         "response_types": ["code"],
-        "redirect_uris": ["http://localhost:9001/admin/"]
+        "redirect_uris": ["${ADMIN_REDIRECT:http://localhost:9001/admin/}", "https://oauth.pstmn.io/v1/callback"]
       },
       {
-        "client_id": "user_client",
-        "client_secret": "user",
+        "client_id": "${USER_CLIENT:user_client}",
+        "client_secret": "${USER_SECRET:user}",
         "grant_types": ["authorization_code"],
         "response_types": ["code"],
-        "redirect_uris": ["http://localhost:9001/"]
+        "redirect_uris": ["${USER_REDIRECT:http://localhost:9001/}"]
       }
     ]
   }
