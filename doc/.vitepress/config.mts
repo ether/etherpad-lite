@@ -7,7 +7,7 @@ const commitRef = process.env.COMMIT_REF?.slice(0, 8) || 'dev'
 export default defineConfig({
   title: "Etherpad Documentation",
   description: "Next Generation Collaborative Document Editing",
-  base: '/etherpad-lite/',
+  base: '/',
   themeConfig: {
     search: {
       provider: 'local'
