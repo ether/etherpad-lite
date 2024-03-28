@@ -68,7 +68,7 @@
     "socket.io": "^4.7.5",
     "socket.io-client": "^4.7.5",
     "superagent": "^8.1.2",
-    "terser": "^5.29.2",
+    "terser": "^5.30.0",
     "threads": "^1.7.0",
     "tinycon": "0.6.8",
     "tsx": "^4.7.1",
