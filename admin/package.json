@@ -23,7 +23,7 @@
     "react-router-dom": "^6.22.3",
     "zustand": "^4.5.2",
     "@types/react": "^18.2.73",
-    "@types/react-dom": "^18.2.22",
+    "@types/react-dom": "^18.2.23",
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
     "@vitejs/plugin-react-swc": "^3.5.0",
@@ -32,7 +32,7 @@
     "eslint-plugin-react-refresh": "^0.4.5",
     "socket.io-client": "^4.7.5",
     "typescript": "^5.4.3",
-    "vite": "^5.2.6",
+    "vite": "^5.2.7",
     "vite-plugin-static-copy": "^1.0.2",
     "vite-plugin-svgr": "^4.2.0"
   }
