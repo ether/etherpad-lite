@@ -75,7 +75,7 @@ test.describe('embed links', function () {
                 expect(shareLink).toBe(padURL);
             });
 
-        test('is an iframe with the the correct url parameters and correct size', async function ({page}) {
+        test('is an iframe with the correct url parameters and correct size', async function ({page}) {
 
                 const shareButton = page.locator('.buttonicon-embed')
                 await shareButton.click()
@@ -111,7 +111,7 @@ test.describe('embed links', function () {
                 expect(containsReadOnlyLink).toBe(true);
             });
 
-            test('the embed as iframe code is an iframe with the the correct url parameters and correct size', async function ({page}) {
+            test('the embed as iframe code is an iframe with the correct url parameters and correct size', async function ({page}) {
 
 
                 // open share dropdown
