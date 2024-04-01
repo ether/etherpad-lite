@@ -39,6 +39,11 @@ const persistInstalledPlugins = async () => {
 async function run() {
   for (const plugin of registryPlugins) {
     console.log(`Installing plugin from registry: ${plugin}`)
+    if (plugin.includes('@')) {
+        const [name, version] = plugin.split('@');
+        await linkInstaller.installPlugin(name, version);
+        continue;
+    }
     await linkInstaller.installPlugin(plugin);
   }
 
