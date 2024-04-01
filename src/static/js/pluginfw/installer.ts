@@ -64,12 +64,12 @@ const migratePluginsFromNodeModules = async () => {
       .filter(([pkg, info]) => pkg.startsWith(plugins.prefix) && pkg !== 'ep_etherpad-lite')
       .map(async ([pkg, info]) => {
           const _info = info as PackageInfo
-          if (!_info.resolved) {
+          if (!_info.resolved|| !_info.resolved.includes('npm')) {
           // Install from node_modules directory
           await linkInstaller.installFromPath(`${findEtherpadRoot()}/node_modules/${pkg}`);
         } else {
-          await linkInstaller.installPlugin(pkg);
-        }
+            await linkInstaller.installPlugin(pkg, _info.version);
+          }
       }));
   await persistInstalledPlugins();
 };
