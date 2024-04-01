@@ -449,7 +449,7 @@ class PadDiff {
 
 
 // this method is 80% like Changeset.inverse. I just changed so instead of reverting,
-// it adds deletions and attribute changes to to the atext.
+// it adds deletions and attribute changes to the atext.
 PadDiff.prototype._createDeletionChangeset = function (cs, startAText, apool) {
 
 };

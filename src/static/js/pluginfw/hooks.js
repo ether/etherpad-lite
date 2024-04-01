@@ -69,7 +69,7 @@ const flatten1 = (array) => array.reduce((a, b) => a.concat(b), []);
 // A hook function settles when it provides a value (via callback or return) or throws. If a hook
 // function attempts to settle again (e.g., call the callback again, or call the callback and also
 // return a value) then the second attempt has no effect except either an error message is logged or
-// there will be an unhandled promise rejection depending on whether the the subsequent attempt is a
+// there will be an unhandled promise rejection depending on whether the subsequent attempt is a
 // duplicate (same value or error) or different, respectively.
 //
 // See the tests in src/tests/backend/specs/hooks.js for examples of supported and prohibited
