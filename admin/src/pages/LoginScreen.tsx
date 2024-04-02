@@ -46,7 +46,7 @@ export const LoginScreen = ()=>{
                 <input {...register('username', {
                     required: true
                 })} className="login-textinput input-control" type="text" placeholder="Username"/>
-                <div>Passwort</div>
+                <div>Password</div>
                 <span className="icon-input">
                         <input {...register('password', {
                             required: true
