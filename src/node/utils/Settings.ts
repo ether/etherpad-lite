@@ -345,7 +345,9 @@ exports.users = {};
 /*
  * This setting is used for configuring sso
  */
-exports.sso = {}
+exports.sso = {
+    issuer: "http://localhost:9001"
+}
 
 /*
  * Show settings in admin page, by default it is true
