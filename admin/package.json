@@ -32,7 +32,7 @@
     "eslint-plugin-react-refresh": "^0.4.5",
     "socket.io-client": "^4.7.5",
     "typescript": "^5.4.3",
-    "vite": "^5.2.7",
+    "vite": "^5.2.8",
     "vite-plugin-static-copy": "^1.0.2",
     "vite-plugin-svgr": "^4.2.0"
   }
