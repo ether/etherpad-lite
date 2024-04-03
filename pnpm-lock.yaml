@@ -254,8 +254,8 @@ importers:
         specifier: ^8.1.2
         version: 8.1.2
       terser:
-        specifier: ^5.30.2
-        version: 5.30.2
+        specifier: ^5.30.3
+        version: 5.30.3
       threads:
         specifier: ^1.7.0
         version: 1.7.0
@@ -6854,8 +6854,8 @@ packages:
       yallist: 4.0.0
     dev: false
 
-  /terser@5.30.2:
-    resolution: {integrity: sha512-vTDjRKYKip4dOFL5VizdoxHTYDfEXPdz5t+FbxCC5Rp2s+KbEO8w5wqMDPgj7CtFKZuzq7PXv28fZoXfqqBVuw==}
+  /terser@5.30.3:
+    resolution: {integrity: sha512-STdUgOUx8rLbMGO9IOwHLpCqolkDITFFQSMYYwKE1N2lY6MVSaeoi10z/EhWxRc6ybqoVmKSkhKYH/XUpl7vSA==}
     engines: {node: '>=10'}
     hasBin: true
     dependencies:
