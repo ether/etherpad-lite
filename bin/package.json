@@ -11,7 +11,7 @@
     "ep_etherpad-lite": "workspace:../src",
     "log4js": "^6.9.1",
     "semver": "^7.6.0",
-    "tsx": "^4.7.1",
+    "tsx": "^4.7.2",
     "ueberdb2": "^4.2.63"
   },
   "devDependencies": {
