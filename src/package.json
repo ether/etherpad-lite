@@ -75,7 +75,7 @@
     "ueberdb2": "^4.2.63",
     "underscore": "1.13.6",
     "unorm": "1.6.0",
-    "wtfnode": "^0.9.1",
+    "wtfnode": "^0.9.2",
     "lru-cache": "^10.2.0"
   },
   "bin": {
