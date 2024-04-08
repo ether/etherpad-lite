@@ -182,8 +182,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       jose:
-        specifier: ^5.2.3
-        version: 5.2.3
+        specifier: ^5.2.4
+        version: 5.2.4
       js-cookie:
         specifier: ^3.0.5
         version: 3.0.5
@@ -5168,8 +5168,8 @@ packages:
       minimatch: 3.1.2
     dev: false
 
-  /jose@5.2.3:
-    resolution: {integrity: sha512-KUXdbctm1uHVL8BYhnyHkgp3zDX5KW8ZhAKVFEfUbU2P8Alpzjb+48hHvjOdQIyPshoblhzsuqOwEEAbtHVirA==}
+  /jose@5.2.4:
+    resolution: {integrity: sha512-6ScbIk2WWCeXkmzF6bRPmEuaqy1m8SbsRFMa/FLrSCkGIhj8OLVG/IH+XHVmNMx/KUo8cVWEE6oKR4dJ+S0Rkg==}
     dev: false
 
   /js-cookie@3.0.5:
@@ -5935,7 +5935,7 @@ packages:
       debug: 4.3.4(supports-color@8.1.1)
       eta: 3.4.0
       got: 13.0.0
-      jose: 5.2.3
+      jose: 5.2.4
       jsesc: 3.0.2
       koa: 2.15.2
       nanoid: 5.0.6
