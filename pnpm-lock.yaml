@@ -275,8 +275,8 @@ importers:
         specifier: 1.6.0
         version: 1.6.0
       wtfnode:
-        specifier: ^0.9.1
-        version: 0.9.1
+        specifier: ^0.9.2
+        version: 0.9.2
     devDependencies:
       '@playwright/test':
         specifier: ^1.43.0
@@ -7668,8 +7668,8 @@ packages:
         optional: true
     dev: false
 
-  /wtfnode@0.9.1:
-    resolution: {integrity: sha512-Ip6C2KeQPl/F3aP1EfOnPoQk14Udd9lffpoqWDNH3Xt78svxPbv53ngtmtfI0q2Te3oTq79XKTnRNXVIn/GsPA==}
+  /wtfnode@0.9.2:
+    resolution: {integrity: sha512-AzGy/MOGmzufyHDKHwuZeuqaqslGIPuwxDAhdmUUJ91Ak22Ynxry8quXNR/cZZIaSs5T+C+LNS3W9AcMzJXhMw==}
     hasBin: true
     dev: false
 
