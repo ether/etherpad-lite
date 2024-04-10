@@ -355,7 +355,7 @@ exports.getChatHistory = async (padID: string, start:number, end:number) => {
     throw new CustomError('end is higher than the current chatHead', 'apierror');
   }
 
-  // the the whole message-log and return it to the client
+  // the whole message-log and return it to the client
   const messages = await pad.getChatMessages(start, end);
 
   return {messages};

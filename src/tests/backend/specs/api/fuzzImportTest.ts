@@ -9,7 +9,6 @@ const settings = require('../../../container/loadSettings.js').loadSettings();
 
 const host = "http://" + settings.ip + ":" + settings.port;
 
-const apiKey = common.apiKey;
 var apiVersion = 1;
 var testPadId = "TEST_fuzz" + makeid();
 

@@ -1,4 +1,4 @@
-import {IPluginInfo, PluginManager} from "live-plugin-manager-pnpm";
+import {IPluginInfo, PluginManager} from "live-plugin-manager";
 import path from "path";
 import {node_modules, pluginInstallPath} from "./installer";
 import {accessSync, constants, rmSync, symlinkSync, unlinkSync} from "node:fs";
@@ -19,6 +19,7 @@ export class LinkInstaller {
     constructor() {
         this.livePluginManager = new PluginManager({
             pluginsPath: pluginInstallPath,
+            hostRequire: undefined,
             cwd: path.join(settings.root, 'src')
         });
         this.dependenciesMap = new Map();

@@ -2,3 +2,5 @@ packages:
   - src
   - admin
   - bin
+  - doc
+  - ui

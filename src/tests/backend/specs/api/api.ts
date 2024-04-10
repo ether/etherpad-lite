@@ -12,7 +12,6 @@ const common = require('../../common');
 const validateOpenAPI = require('openapi-schema-validation').validate;
 
 let agent: any;
-const apiKey = common.apiKey;
 let apiVersion = 1;
 
 const makeid = () => {
@@ -27,7 +26,7 @@ const makeid = () => {
 
 const testPadId = makeid();
 
-const endPoint = (point:string) => `/api/${apiVersion}/${point}?apikey=${apiKey}`;
+const endPoint = (point:string) => `/api/${apiVersion}/${point}`;
 
 describe(__filename, function () {
   before(async function () { agent = await common.init(); });

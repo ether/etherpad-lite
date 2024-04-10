@@ -30,7 +30,9 @@
     "ep_etherpad-lite": "workspace:./src"
   },
   "devDependencies": {
-    "admin": "workspace:./admin"
+    "admin": "workspace:./admin",
+    "docs": "workspace:./doc",
+    "ui": "workspace:./ui"
   },
   "engines": {
     "node": ">=18.18.2",
@@ -41,6 +43,6 @@
     "type": "git",
     "url": "https://github.com/ether/etherpad-lite.git"
   },
-  "version": "2.0.1",
+  "version": "2.0.2",
   "license": "Apache-2.0"
 }

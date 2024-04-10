@@ -52,7 +52,4 @@ createDirIfNotExists('./out/doc/api')
 exec(`asciidoctor -D out/doc doc/index.adoc */**.adoc -a VERSION=${VERSION}`)
 exec(`asciidoctor -D out/doc/api  ./doc/api/*.adoc -a VERSION=${VERSION}`)
 
-copyFolderSync('./doc/easysync', './out/doc/easysync')
-copyFolderSync('./doc/assets', './out/doc/assets')
-copyFolderSync('./doc/easysync', './out/doc/easysync')
-copyFolderSync('./doc/images', './out/doc/images')
+copyFolderSync('./doc/public/', './out/doc/')

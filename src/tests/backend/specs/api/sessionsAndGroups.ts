@@ -1,25 +1,33 @@
 'use strict';
 
+import {agent, generateJWTToken, init, logger} from "../../common";
+
+import TestAgent from "supertest/lib/agent";
+import supertest from "supertest";
 const assert = require('assert').strict;
-const common = require('../../common');
 const db = require('../../../../node/db/DB');
 
-let agent:any;
-const apiKey = common.apiKey;
 let apiVersion = 1;
 let groupID = '';
 let authorID = '';
 let sessionID = '';
 let padID = makeid();
 
-const endPoint = (point:string) => `/api/${apiVersion}/${point}?apikey=${apiKey}`;
+const endPoint = (point:string) => {
+   return `/api/${apiVersion}/${point}`;
+}
+
+let preparedAgent: TestAgent<supertest.Test>
 
 describe(__filename, function () {
-  before(async function () { agent = await common.init(); });
+  before(async function () {
+      preparedAgent = await init();
+  });
 
   describe('API Versioning', function () {
     it('errors if can not connect', async function () {
-      await agent.get('/api/')
+      await agent!.get('/api/')
+          .set('Accept', 'application/json')
           .expect(200)
           .expect((res:any) => {
             assert(res.body.currentVersion);
@@ -60,7 +68,8 @@ describe(__filename, function () {
 
   describe('API: Group creation and deletion', function () {
     it('createGroup', async function () {
-      await agent.get(endPoint('createGroup'))
+      await agent!.get(endPoint('createGroup'))
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -71,7 +80,8 @@ describe(__filename, function () {
     });
 
     it('listSessionsOfGroup for empty group', async function () {
-      await agent.get(`${endPoint('listSessionsOfGroup')}&groupID=${groupID}`)
+      await agent!.get(`${endPoint('listSessionsOfGroup')}?groupID=${groupID}`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -81,7 +91,9 @@ describe(__filename, function () {
     });
 
     it('deleteGroup', async function () {
-      await agent.get(`${endPoint('deleteGroup')}&groupID=${groupID}`)
+      await agent!
+          .get(`${endPoint('deleteGroup')}?groupID=${groupID}`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -92,7 +104,8 @@ describe(__filename, function () {
     it('createGroupIfNotExistsFor', async function () {
       const mapper = makeid();
       let groupId: string;
-      await agent.get(`${endPoint('createGroupIfNotExistsFor')}&groupMapper=${mapper}`)
+      await preparedAgent.get(`${endPoint('createGroupIfNotExistsFor')}?groupMapper=${mapper}`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -101,7 +114,8 @@ describe(__filename, function () {
             assert(groupId);
           });
       // Passing the same mapper should return the same group ID.
-      await agent.get(`${endPoint('createGroupIfNotExistsFor')}&groupMapper=${mapper}`)
+      await preparedAgent.get(`${endPoint('createGroupIfNotExistsFor')}?groupMapper=${mapper}`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -110,7 +124,8 @@ describe(__filename, function () {
           });
       // Deleting the group should clean up the mapping.
         assert.equal(await db.get(`mapper2group:${mapper}`), groupId!);
-      await agent.get(`${endPoint('deleteGroup')}&groupID=${groupId!}`)
+      await preparedAgent.get(`${endPoint('deleteGroup')}?groupID=${groupId!}`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -122,7 +137,8 @@ describe(__filename, function () {
     // Test coverage for https://github.com/ether/etherpad-lite/issues/4227
     // Creates a group, creates 2 sessions, 2 pads and then deletes the group.
     it('createGroup', async function () {
-      await agent.get(endPoint('createGroup'))
+      await preparedAgent.get(endPoint('createGroup'))
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -133,7 +149,8 @@ describe(__filename, function () {
     });
 
     it('createAuthor', async function () {
-      await agent.get(endPoint('createAuthor'))
+      await preparedAgent.get(endPoint('createAuthor'))
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -144,8 +161,9 @@ describe(__filename, function () {
     });
 
     it('createSession', async function () {
-      await agent.get(`${endPoint('createSession')}&authorID=${authorID}&groupID=${groupID}` +
+      await preparedAgent.get(`${endPoint('createSession')}?authorID=${authorID}&groupID=${groupID}` +
                       '&validUntil=999999999999')
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -156,8 +174,9 @@ describe(__filename, function () {
     });
 
     it('createSession', async function () {
-      await agent.get(`${endPoint('createSession')}&authorID=${authorID}&groupID=${groupID}` +
+      await preparedAgent.get(`${endPoint('createSession')}?authorID=${authorID}&groupID=${groupID}` +
                       '&validUntil=999999999999')
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -168,7 +187,8 @@ describe(__filename, function () {
     });
 
     it('createGroupPad', async function () {
-      await agent.get(`${endPoint('createGroupPad')}&groupID=${groupID}&padName=x1234567`)
+      await preparedAgent.get(`${endPoint('createGroupPad')}?groupID=${groupID}&padName=x1234567`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -177,7 +197,8 @@ describe(__filename, function () {
     });
 
     it('createGroupPad', async function () {
-      await agent.get(`${endPoint('createGroupPad')}&groupID=${groupID}&padName=x12345678`)
+      await preparedAgent.get(`${endPoint('createGroupPad')}?groupID=${groupID}&padName=x12345678`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -186,7 +207,8 @@ describe(__filename, function () {
     });
 
     it('deleteGroup', async function () {
-      await agent.get(`${endPoint('deleteGroup')}&groupID=${groupID}`)
+      await preparedAgent.get(`${endPoint('deleteGroup')}?groupID=${groupID}`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -198,7 +220,8 @@ describe(__filename, function () {
 
   describe('API: Author creation', function () {
     it('createGroup', async function () {
-      await agent.get(endPoint('createGroup'))
+      await preparedAgent.get(endPoint('createGroup'))
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -209,7 +232,8 @@ describe(__filename, function () {
     });
 
     it('createAuthor', async function () {
-      await agent.get(endPoint('createAuthor'))
+      await preparedAgent.get(endPoint('createAuthor'))
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -219,7 +243,8 @@ describe(__filename, function () {
     });
 
     it('createAuthor with name', async function () {
-      await agent.get(`${endPoint('createAuthor')}&name=john`)
+      await preparedAgent.get(`${endPoint('createAuthor')}?name=john`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -230,7 +255,8 @@ describe(__filename, function () {
     });
 
     it('createAuthorIfNotExistsFor', async function () {
-      await agent.get(`${endPoint('createAuthorIfNotExistsFor')}&authorMapper=chris`)
+      await preparedAgent.get(`${endPoint('createAuthorIfNotExistsFor')}?authorMapper=chris`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -240,7 +266,8 @@ describe(__filename, function () {
     });
 
     it('getAuthorName', async function () {
-      await agent.get(`${endPoint('getAuthorName')}&authorID=${authorID}`)
+      await preparedAgent.get(`${endPoint('getAuthorName')}?authorID=${authorID}`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -252,8 +279,9 @@ describe(__filename, function () {
 
   describe('API: Sessions', function () {
     it('createSession', async function () {
-      await agent.get(`${endPoint('createSession')}&authorID=${authorID}&groupID=${groupID}` +
+      await preparedAgent.get(`${endPoint('createSession')}?authorID=${authorID}&groupID=${groupID}` +
                       '&validUntil=999999999999')
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -264,7 +292,8 @@ describe(__filename, function () {
     });
 
     it('getSessionInfo', async function () {
-      await agent.get(`${endPoint('getSessionInfo')}&sessionID=${sessionID}`)
+      await preparedAgent.get(`${endPoint('getSessionInfo')}?sessionID=${sessionID}`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -276,7 +305,8 @@ describe(__filename, function () {
     });
 
     it('listSessionsOfGroup', async function () {
-      await agent.get(`${endPoint('listSessionsOfGroup')}&groupID=${groupID}`)
+      await preparedAgent.get(`${endPoint('listSessionsOfGroup')}?groupID=${groupID}`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -286,7 +316,8 @@ describe(__filename, function () {
     });
 
     it('deleteSession', async function () {
-      await agent.get(`${endPoint('deleteSession')}&sessionID=${sessionID}`)
+      await preparedAgent.get(`${endPoint('deleteSession')}?sessionID=${sessionID}`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -295,7 +326,8 @@ describe(__filename, function () {
     });
 
     it('getSessionInfo of deleted session', async function () {
-      await agent.get(`${endPoint('getSessionInfo')}&sessionID=${sessionID}`)
+      await preparedAgent.get(`${endPoint('getSessionInfo')}?sessionID=${sessionID}`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -306,7 +338,8 @@ describe(__filename, function () {
 
   describe('API: Group pad management', function () {
     it('listPads', async function () {
-      await agent.get(`${endPoint('listPads')}&groupID=${groupID}`)
+      await preparedAgent.get(`${endPoint('listPads')}?groupID=${groupID}`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -316,7 +349,8 @@ describe(__filename, function () {
     });
 
     it('createGroupPad', async function () {
-      await agent.get(`${endPoint('createGroupPad')}&groupID=${groupID}&padName=${padID}`)
+      await preparedAgent.get(`${endPoint('createGroupPad')}?groupID=${groupID}&padName=${padID}`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -326,10 +360,11 @@ describe(__filename, function () {
     });
 
     it('listPads after creating a group pad', async function () {
-      await agent.get(`${endPoint('listPads')}&groupID=${groupID}`)
+      await preparedAgent.get(`${endPoint('listPads')}?groupID=${groupID}`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
-          .expect((res:any) => {
+          .expect((res) => {
             assert.equal(res.body.code, 0);
             assert.equal(res.body.data.padIDs.length, 1);
           });
@@ -338,7 +373,8 @@ describe(__filename, function () {
 
   describe('API: Pad security', function () {
     it('getPublicStatus', async function () {
-      await agent.get(`${endPoint('getPublicStatus')}&padID=${padID}`)
+      await preparedAgent.get(`${endPoint('getPublicStatus')}?padID=${padID}`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -348,7 +384,8 @@ describe(__filename, function () {
     });
 
     it('setPublicStatus', async function () {
-      await agent.get(`${endPoint('setPublicStatus')}&padID=${padID}&publicStatus=true`)
+      await preparedAgent.get(`${endPoint('setPublicStatus')}?padID=${padID}&publicStatus=true`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -357,7 +394,8 @@ describe(__filename, function () {
     });
 
     it('getPublicStatus after changing public status', async function () {
-      await agent.get(`${endPoint('getPublicStatus')}&padID=${padID}`)
+      await preparedAgent.get(`${endPoint('getPublicStatus')}?padID=${padID}`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {
@@ -373,7 +411,8 @@ describe(__filename, function () {
 
   describe('API: Misc', function () {
     it('listPadsOfAuthor', async function () {
-      await agent.get(`${endPoint('listPadsOfAuthor')}&authorID=${authorID}`)
+      await preparedAgent.get(`${endPoint('listPadsOfAuthor')}?authorID=${authorID}`)
+          .set("Authorization", await generateJWTToken())
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res:any) => {

@@ -11,10 +11,9 @@ import {MapArrayType} from "../../../../node/types/MapType";
 const common = require('../../common');
 
 let agent:any;
-const apiKey = common.apiKey;
 const apiVersion = 1;
 
-const endPoint = (point: string, version?:string) => `/api/${version || apiVersion}/${point}?apikey=${apiKey}`;
+const endPoint = (point: string, version?:string) => `/api/${version || apiVersion}/${point}`;
 
 const testImports:MapArrayType<any> = {
   'malformed': {
@@ -243,29 +242,33 @@ describe(__filename, function () {
       }
 
       it('createPad', async function () {
-        const res = await agent.get(`${endPoint('createPad')}&padID=${testPadId}`)
+        const res = await agent.get(`${endPoint('createPad')}?padID=${testPadId}`)
+            .set("authorization", await common.generateJWTToken())
             .expect(200)
             .expect('Content-Type', /json/);
         assert.equal(res.body.code, 0);
       });
 
       it('setHTML', async function () {
-        const res = await agent.get(`${endPoint('setHTML')}&padID=${testPadId}` +
+        const res = await agent.get(`${endPoint('setHTML')}?padID=${testPadId}` +
                         `&html=${encodeURIComponent(test.input)}`)
+            .set("authorization", await common.generateJWTToken())
             .expect(200)
             .expect('Content-Type', /json/);
         assert.equal(res.body.code, 0);
       });
 
       it('getHTML', async function () {
-        const res = await agent.get(`${endPoint('getHTML')}&padID=${testPadId}`)
+        const res = await agent.get(`${endPoint('getHTML')}?padID=${testPadId}`)
+            .set("authorization", await common.generateJWTToken())
             .expect(200)
             .expect('Content-Type', /json/);
         assert.equal(res.body.data.html, test.wantHTML);
       });
 
       it('getText', async function () {
-        const res = await agent.get(`${endPoint('getText')}&padID=${testPadId}`)
+        const res = await agent.get(`${endPoint('getText')}?padID=${testPadId}`)
+            .set("authorization", await common.generateJWTToken())
             .expect(200)
             .expect('Content-Type', /json/);
         assert.equal(res.body.data.text, test.wantText);

@@ -2,7 +2,7 @@
 These hooks are called on server-side.
 
 === loadSettings
-Called from: src/node/server.ts
+Called from: `src/node/server.ts`
 
 Things in context:
 
@@ -11,7 +11,7 @@ Things in context:
 Use this hook to receive the global settings in your plugin.
 
 === shutdown
-Called from: src/node/server.ts
+Called from: `src/node/server.ts`
 
 Things in context: None
 
@@ -34,7 +34,7 @@ exports.shutdown = async (hookName, context) => {
 ----
 
 === pluginUninstall
-Called from: src/static/js/pluginfw/installer.js
+Called from: `src/static/js/pluginfw/installer.js`
 
 Things in context:
 
@@ -43,7 +43,7 @@ Things in context:
 If this hook returns an error, the callback to the uninstall function gets an error as well. This mostly seems useful for handling additional features added in based on the installation of other plugins, which is pretty cool!
 
 === pluginInstall
-Called from: src/static/js/pluginfw/installer.js
+Called from: `src/static/js/pluginfw/installer.js`
 
 Things in context:
 
@@ -123,7 +123,7 @@ Context properties:
 
 === expressCloseServer
 
-Called from: src/node/hooks/express.js
+Called from: `src/node/hooks/express.js`
 
 Things in context: Nothing
 
@@ -142,7 +142,7 @@ exports.expressCloseServer = async () => {
 ----
 
 === eejsBlock_`<name>`
-Called from: src/node/eejs/index.js
+Called from: `src/node/eejs/index.js`
 
 Things in context:
 

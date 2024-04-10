@@ -1,3 +1,15 @@
+# 2.0.2
+
+### Notable enhancements and fixes
+
+- Fixed the locale loading in the admin panel
+- Added OAuth2.0 support for the Etherpad API. You can now log in  into the Etherpad API with your admin user using OAuth2
+
+### Compatibility changes
+
+- The tests now require generating a token from the OAuth secret. You can find the `generateJWTToken` in the common.ts script for plugin endpoint updates.
+
+
 # 2.0.1
 
 ### Notable enhancements and fixes

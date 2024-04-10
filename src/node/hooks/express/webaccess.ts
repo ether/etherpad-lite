@@ -169,7 +169,9 @@ const checkAccess = async (req:any, res:any, next: Function) => {
       if (await aCallFirst0('authnFailure', {req, res})) return;
       if (await aCallFirst0('authFailure', {req, res, next})) return;
       // No plugin handled the authentication failure. Fall back to basic authentication.
-      //res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
+      if (!requireAdmin) {
+        res.header('WWW-Authenticate', 'Basic realm="Protected Area"');
+      }
       // Delay the error response for 1s to slow down brute force attacks.
       await new Promise((resolve) => setTimeout(resolve, exports.authnFailureDelayMs));
       res.status(401).send('Authentication Required');
