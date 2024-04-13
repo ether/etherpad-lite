@@ -60,6 +60,7 @@ const migratePluginsFromNodeModules = async () => {
   const cmd = ['pnpm', 'ls', '--long', '--json', '--depth=0', '--no-production'];
   const [{dependencies = {}}] = JSON.parse(await runCmd(cmd,
       {stdio: [null, 'string']}));
+
   await Promise.all(Object.entries(dependencies)
       .filter(([pkg, info]) => pkg.startsWith(plugins.prefix) && pkg !== 'ep_etherpad-lite')
       .map(async ([pkg, info]) => {
