@@ -286,24 +286,18 @@ version: "3.8"
 
 services:
   app:
-    build:
-      context: .
-      args:
-        ETHERPAD_PLUGINS:
-      # change from development to production if needed
-      target: development
+    image: etherpad/etherpad:latest
     tty: true
     stdin_open: true
     volumes:
       # no volume mapping of node_modules as otherwise the build-time installed plugins will be overwritten with the mount
       # the same applies to package.json and pnpm-lock.yaml in root dir as these would also get overwritten and build time installed plugins will be removed
-      - ./src:/opt/etherpad-lite/src
-      - ./bin:/opt/etherpad-lite/bin
+      - ./plugins:/opt/etherpad-lite/src/plugin-packages
     depends_on:
       - postgres
     environment:
       # change from development to production if needed
-      NODE_ENV: development
+      NODE_ENV: production
       ADMIN_PASSWORD: ${DOCKER_COMPOSE_APP_DEV_ADMIN_PASSWORD}
       DB_CHARSET: ${DOCKER_COMPOSE_APP_DEV_ENV_DB_CHARSET:-utf8mb4}
       DB_HOST: postgres
