@@ -161,7 +161,7 @@ Responses are valid JSON in the following format:
 
 ### Authentication
 
-Authentication works via an OAuth token that is sent with each request as a post parameter. You can add new clients that can sign in via the API by adding new entries to the sso section in the settings.json.
+Authentication works via an OAuth token that is sent with each request as an Authorization header, i.e. `Authorization: Bearer YOUR_TOKEN`. You can add new clients that can sign in via the API by adding new entries to the sso section in the settings.json.
 
 
 #### Example for browser login clients
@@ -199,6 +199,10 @@ E.g. a service that creates a pad for a user or a service that inserts a text in
   ]
 }
 ```
+
+Obtain a Bearer token:
+
+`curl --request POST --url 'https://your.server.tld/oidc/token' --header 'content-type: application/x-www-form-urlencoded' --data grant_type=client_credentials --data client_id=client_credentials --data client_secret=client_credentials`
 
 
 ### Node Interoperability
