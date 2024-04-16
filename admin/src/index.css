@@ -250,10 +250,18 @@ td, th {
     color: #666;
 }
 
+
+.settings-page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 100%;
+}
+
 .settings {
+    flex-grow: max(1, 1);
     outline: none;
     width: 100%;
-    min-height: 80vh;
     resize: none;
 }
 

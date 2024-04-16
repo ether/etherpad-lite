@@ -150,7 +150,7 @@ export const HomePage = () => {
             <tbody style={{overflow: 'auto'}}>
             {sortedInstalledPlugins.map((plugin, index) => {
                 return <tr key={index}>
-                    <td>{plugin.name}</td>
+                    <td><a rel="noopener noreferrer" href={`https://npmjs.com/${plugin.name}`} target="_blank">{plugin.name}</a></td>
                     <td>{plugin.version}</td>
                     <td>
                     {

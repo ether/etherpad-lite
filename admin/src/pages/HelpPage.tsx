@@ -21,7 +21,7 @@ export const HelpPage = () => {
             return <div key={hookName+i}>
                 <h3>{hookName}</h3>
                 <ul>
-                    {Object.keys(hooks[hookName]).map((hook, i) => <li>{hook}
+                    {Object.keys(hooks[hookName]).map((hook, i) => <li key={hook+i}>{hook}
                         <ul key={hookName+hook+i}>
                             {Object.keys(hooks[hookName][hook]).map((subHook, i) => <li key={i}>{subHook}</li>)}
                         </ul>
@@ -46,12 +46,12 @@ export const HelpPage = () => {
         </div>
         <h2><Trans i18nKey="admin_plugins.installed"/></h2>
         <ul>
-            {helpData.installedPlugins.map((plugin, i) => <li key={i}>{plugin}</li>)}
+            {helpData.installedPlugins.map((plugin, i) => <li key={plugin+i}>{plugin}</li>)}
         </ul>
 
         <h2><Trans i18nKey="admin_plugins_info.parts"/></h2>
         <ul>
-            {helpData.installedParts.map((part, i) => <li key={i}>{part}</li>)}
+            {helpData.installedParts.map((part, i) => <li key={part+i}>{part}</li>)}
         </ul>
 
         <h2><Trans i18nKey="admin_plugins_info.hooks"/></h2>

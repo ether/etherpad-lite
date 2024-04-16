@@ -8,7 +8,7 @@ export const SettingsPage = ()=>{
     const settingsSocket = useStore(state=>state.settingsSocket)
     const settings = useStore(state=>state.settings)
 
-    return <div>
+    return <div className="settings-page">
         <h1><Trans i18nKey="admin_settings.current"/></h1>
         <textarea value={settings} className="settings" onChange={v => {
             useStore.getState().setSettings(v.target.value)
