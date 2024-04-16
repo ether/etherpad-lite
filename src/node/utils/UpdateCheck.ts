@@ -1,7 +1,7 @@
 'use strict';
 const semver = require('semver');
 const settings = require('./Settings');
-const axios = require('axios');
+import axios from 'axios';
 const headers = {
   'User-Agent': 'Etherpad/' + settings.getEpVersion(),
 }
@@ -17,7 +17,7 @@ let lastLoadingTime: number | null = null;
 
 const loadEtherpadInformations = () => {
   if (lastLoadingTime !== null && Date.now() - lastLoadingTime < updateInterval) {
-    return Promise.resolve(infos);
+    return infos;
   }
 
   return axios.get('https://static.etherpad.org/info.json', {headers: headers})
@@ -29,10 +29,10 @@ const loadEtherpadInformations = () => {
     }
 
     lastLoadingTime = Date.now();
-    return await Promise.resolve(infos);
+    return infos;
   })
   .catch(async (err: Error) => {
-    return await Promise.reject(err);
+    throw err;
   });
 }
 
@@ -43,15 +43,15 @@ exports.getLatestVersion = () => {
 };
 
 exports.needsUpdate = async (cb?: Function) => {
-  await loadEtherpadInformations()
-      .then((info:Infos) => {
-    if (semver.gt(info.latestVersion, settings.getEpVersion())) {
+  try {
+    const info = await loadEtherpadInformations()
+    if (semver.gt(info!.latestVersion, settings.getEpVersion())) {
       if (cb) return cb(true);
     }
-  }).catch((err: Error) => {
+  } catch (err) {
     console.error(`Can not perform Etherpad update check: ${err}`);
     if (cb) return cb(false);
-  });
+  }
 };
 
 exports.check = () => {

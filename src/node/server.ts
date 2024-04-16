@@ -27,6 +27,7 @@ import {ErrorCaused} from "./types/ErrorCaused";
 import log4js from 'log4js';
 import pkg from '../package.json';
 import {checkForMigration} from "../static/js/pluginfw/installer";
+import axios from "axios";
 
 const settings = require('./utils/Settings');
 
@@ -36,6 +37,28 @@ if (settings.dumpOnUncleanExit) {
   // it should be above everything else so that it can hook in before resources are used.
   wtfnode = require('wtfnode');
 }
+
+
+const addProxyToAxios = (url: URL) => {
+  axios.defaults.proxy = {
+    host: url.hostname,
+    port: Number(url.port),
+    protocol: url.protocol,
+  }
+}
+
+if(process.env['http_proxy']) {
+  console.log("Using proxy: " + process.env['http_proxy'])
+  addProxyToAxios(new URL(process.env['http_proxy']));
+}
+
+
+if (process.env['https_proxy']) {
+  console.log("Using proxy: " + process.env['https_proxy'])
+  addProxyToAxios(new URL(process.env['https_proxy']));
+}
+
+
 
 /*
  * early check for version compatibility before calling
