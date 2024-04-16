@@ -100,7 +100,7 @@ export const HomePage = () => {
         pluginsSocket!.on('results:search', (data: {
             results: PluginDef[]
         }) => {
-            if (Array.isArray(data.results) && data.results.length === 0) {
+            if (Array.isArray(data.results) && data.results.length > 0) {
                 setPlugins(data.results)
             } else {
                 useStore.getState().setToastState({
