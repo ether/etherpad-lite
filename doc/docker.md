@@ -278,8 +278,6 @@ docker run -d \
 ## Ready to use Docker Compose
 
 ```yaml
-version: "3.8"
-
 # Add this file to extend the docker-compose setup, e.g.:
 # docker-compose build --no-cache
 # docker-compose up -d --build --force-recreate
@@ -293,6 +291,7 @@ services:
       # no volume mapping of node_modules as otherwise the build-time installed plugins will be overwritten with the mount
       # the same applies to package.json and pnpm-lock.yaml in root dir as these would also get overwritten and build time installed plugins will be removed
       - ./plugins:/opt/etherpad-lite/src/plugin-packages
+      - ./var:/opt/etherpad-lite/var
     depends_on:
       - postgres
     environment:
