@@ -1,11 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"C.R.",
-			"Chelin",
-			"Finizio",
-			"Ruthven"
-		]
+		"authors": ["C.R.", "Chelin", "Finizio", "Ruthven"]
 	},
 	"admin_plugins.name": "Nomme",
 	"index.newPad": "Nuovo Pad",

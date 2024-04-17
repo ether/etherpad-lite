@@ -1,10 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Bjankuloski06",
-			"Brest",
-			"Vlad5250"
-		]
+		"authors": ["Bjankuloski06", "Brest", "Vlad5250"]
 	},
 	"admin.page-title": "Администраторска управувачница — Etherpad",
 	"admin_plugins": "Раководител со приклучоци",

@@ -1,4 +1,4 @@
-import {Page} from "@playwright/test";
+import type { Page } from "@playwright/test";
 
 /**
  * Sets the src-attribute of the main iframe to the timeslider
@@ -13,8 +13,11 @@ import {Page} from "@playwright/test";
  * @todo for some reason this does only work the first time, you cannot
  * goto rev 0 and then via the same method to rev 5. Use buttons instead
  */
-export const gotoTimeslider = async (page: Page, revision: number): Promise<any> => {
-    let revisionString = Number.isInteger(revision) ? `#${revision}` : '';
-    await page.goto(`${page.url()}/timeslider${revisionString}`);
-    await page.waitForSelector('#timer')
+export const gotoTimeslider = async (
+	page: Page,
+	revision: number,
+): Promise<any> => {
+	const revisionString = Number.isInteger(revision) ? `#${revision}` : "";
+	await page.goto(`${page.url()}/timeslider${revisionString}`);
+	await page.waitForSelector("#timer");
 };

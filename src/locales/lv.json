@@ -1,12 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Admresdeserv.",
-			"Jmg.cmdi",
-			"Oskars",
-			"Papuass",
-			"Silraks"
-		]
+		"authors": ["Admresdeserv.", "Jmg.cmdi", "Oskars", "Papuass", "Silraks"]
 	},
 	"index.newPad": "Tiek izmantots kā pogas teksts. Blociņš, Etherpad kontekstā, ir piezīmju blociņš, uz kura rakstīt.",
 	"index.createOpenPad": "vai izveidojiet/atveriet Blociņu ar nosaukumu:",

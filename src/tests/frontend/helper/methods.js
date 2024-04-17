@@ -1,22 +1,20 @@
-'use strict';
-
 /**
  * Spys on socket.io messages and saves them into several arrays
  * that are visible in tests
  */
 helper.spyOnSocketIO = () => {
-  helper.contentWindow().pad.socket.on('message', (msg) => {
-    if (msg.type !== 'COLLABROOM') return;
-    if (msg.data.type === 'ACCEPT_COMMIT') {
-      helper.commits.push(msg);
-    } else if (msg.data.type === 'USER_NEWINFO') {
-      helper.userInfos.push(msg);
-    } else if (msg.data.type === 'CHAT_MESSAGE') {
-      helper.chatMessages.push(msg.data.message);
-    } else if (msg.data.type === 'CHAT_MESSAGES') {
-      helper.chatMessages.push(...msg.data.messages);
-    }
-  });
+	helper.contentWindow().pad.socket.on("message", (msg) => {
+		if (msg.type !== "COLLABROOM") return;
+		if (msg.data.type === "ACCEPT_COMMIT") {
+			helper.commits.push(msg);
+		} else if (msg.data.type === "USER_NEWINFO") {
+			helper.userInfos.push(msg);
+		} else if (msg.data.type === "CHAT_MESSAGE") {
+			helper.chatMessages.push(msg.data.message);
+		} else if (msg.data.type === "CHAT_MESSAGES") {
+			helper.chatMessages.push(...msg.data.messages);
+		}
+	});
 };
 
 /**
@@ -32,13 +30,16 @@ helper.spyOnSocketIO = () => {
  *
  */
 helper.edit = async (message, line) => {
-  const editsNum = helper.commits.length;
-  line = line ? line - 1 : 0;
-  await helper.withFastCommit(async (incorp) => {
-    helper.linesDiv()[line].sendkeys(message);
-    incorp();
-    await helper.waitForPromise(() => editsNum + 1 === helper.commits.length, 10000);
-  });
+	const editsNum = helper.commits.length;
+	line = line ? line - 1 : 0;
+	await helper.withFastCommit(async (incorp) => {
+		helper.linesDiv()[line].sendkeys(message);
+		incorp();
+		await helper.waitForPromise(
+			() => editsNum + 1 === helper.commits.length,
+			10000,
+		);
+	});
 };
 
 /**
@@ -49,7 +50,13 @@ helper.edit = async (message, line) => {
  *
  * @returns {Array.<HTMLElement>} array of divs
  */
-helper.linesDiv = () => helper.padInner$('.ace-line').map(function () { return $(this); }).get();
+helper.linesDiv = () =>
+	helper
+		.padInner$(".ace-line")
+		.map(function () {
+			return $(this);
+		})
+		.get();
 
 /**
  * The pad text as an array of lines
@@ -64,8 +71,9 @@ helper.textLines = () => helper.linesDiv().map((div) => div.text());
  *
  * @returns {string}
  */
-helper.defaultText =
-    () => helper.padChrome$.window.clientVars.collab_client_vars.initialAttributedText.text;
+helper.defaultText = () =>
+	helper.padChrome$.window.clientVars.collab_client_vars.initialAttributedText
+		.text;
 
 /**
  * Sends a chat `message` via `sendKeys`
@@ -82,9 +90,11 @@ helper.defaultText =
  * @returns {Promise}
  */
 helper.sendChatMessage = async (message) => {
-  const noOfChatMessages = helper.chatMessages.length;
-  helper.padChrome$('#chatinput').sendkeys(message);
-  await helper.waitForPromise(() => noOfChatMessages + 1 === helper.chatMessages.length);
+	const noOfChatMessages = helper.chatMessages.length;
+	helper.padChrome$("#chatinput").sendkeys(message);
+	await helper.waitForPromise(
+		() => noOfChatMessages + 1 === helper.chatMessages.length,
+	);
 };
 
 /**
@@ -93,9 +103,9 @@ helper.sendChatMessage = async (message) => {
  * @returns {Promise}
  */
 helper.showSettings = async () => {
-  if (helper.isSettingsShown()) return;
-  helper.settingsButton().trigger('click');
-  await helper.waitForPromise(() => helper.isSettingsShown(), 2000);
+	if (helper.isSettingsShown()) return;
+	helper.settingsButton().trigger("click");
+	await helper.waitForPromise(() => helper.isSettingsShown(), 2000);
 };
 
 /**
@@ -105,9 +115,9 @@ helper.showSettings = async () => {
  * @todo untested
  */
 helper.hideSettings = async () => {
-  if (!helper.isSettingsShown()) return;
-  helper.settingsButton().trigger('click');
-  await helper.waitForPromise(() => !helper.isSettingsShown(), 2000);
+	if (!helper.isSettingsShown()) return;
+	helper.settingsButton().trigger("click");
+	await helper.waitForPromise(() => !helper.isSettingsShown(), 2000);
 };
 
 /**
@@ -117,10 +127,10 @@ helper.hideSettings = async () => {
  * @returns {Promise}
  */
 helper.enableStickyChatviaSettings = async () => {
-  const stickyChat = helper.padChrome$('#options-stickychat');
-  if (!helper.isSettingsShown() || stickyChat.is(':checked')) return;
-  stickyChat.trigger('click');
-  await helper.waitForPromise(() => helper.isChatboxSticky(), 2000);
+	const stickyChat = helper.padChrome$("#options-stickychat");
+	if (!helper.isSettingsShown() || stickyChat.is(":checked")) return;
+	stickyChat.trigger("click");
+	await helper.waitForPromise(() => helper.isChatboxSticky(), 2000);
 };
 
 /**
@@ -130,10 +140,10 @@ helper.enableStickyChatviaSettings = async () => {
  * @returns {Promise}
  */
 helper.disableStickyChatviaSettings = async () => {
-  const stickyChat = helper.padChrome$('#options-stickychat');
-  if (!helper.isSettingsShown() || !stickyChat.is(':checked')) return;
-  stickyChat.trigger('click');
-  await helper.waitForPromise(() => !helper.isChatboxSticky(), 2000);
+	const stickyChat = helper.padChrome$("#options-stickychat");
+	if (!helper.isSettingsShown() || !stickyChat.is(":checked")) return;
+	stickyChat.trigger("click");
+	await helper.waitForPromise(() => !helper.isChatboxSticky(), 2000);
 };
 
 /**
@@ -143,10 +153,10 @@ helper.disableStickyChatviaSettings = async () => {
  * @returns {Promise}
  */
 helper.enableStickyChatviaIcon = async () => {
-  const stickyChat = helper.padChrome$('#titlesticky');
-  if (!helper.isChatboxShown() || helper.isChatboxSticky()) return;
-  stickyChat.trigger('click');
-  await helper.waitForPromise(() => helper.isChatboxSticky(), 2000);
+	const stickyChat = helper.padChrome$("#titlesticky");
+	if (!helper.isChatboxShown() || helper.isChatboxSticky()) return;
+	stickyChat.trigger("click");
+	await helper.waitForPromise(() => helper.isChatboxSticky(), 2000);
 };
 
 /**
@@ -156,9 +166,9 @@ helper.enableStickyChatviaIcon = async () => {
  * @returns {Promise}
  */
 helper.disableStickyChatviaIcon = async () => {
-  if (!helper.isChatboxShown() || !helper.isChatboxSticky()) return;
-  helper.titlecross().trigger('click');
-  await helper.waitForPromise(() => !helper.isChatboxSticky(), 2000);
+	if (!helper.isChatboxShown() || !helper.isChatboxSticky()) return;
+	helper.titlecross().trigger("click");
+	await helper.waitForPromise(() => !helper.isChatboxSticky(), 2000);
 };
 
 /**
@@ -174,11 +184,14 @@ helper.disableStickyChatviaIcon = async () => {
  * goto rev 0 and then via the same method to rev 5. Use buttons instead
  */
 helper.gotoTimeslider = async (revision) => {
-  revision = Number.isInteger(revision) ? `#${revision}` : '';
-  helper.padChrome$.window.location.href =
-      `${helper.padChrome$.window.location.pathname}/timeslider${revision}`;
-  await helper.waitForPromise(() => helper.timesliderTimerTime() &&
-      !Number.isNaN(new Date(helper.timesliderTimerTime()).getTime()), 10000);
+	revision = Number.isInteger(revision) ? `#${revision}` : "";
+	helper.padChrome$.window.location.href = `${helper.padChrome$.window.location.pathname}/timeslider${revision}`;
+	await helper.waitForPromise(
+		() =>
+			helper.timesliderTimerTime() &&
+			!Number.isNaN(new Date(helper.timesliderTimerTime()).getTime()),
+		10000,
+	);
 };
 
 /**
@@ -189,14 +202,14 @@ helper.gotoTimeslider = async (revision) => {
  * @param {number} X coordinate
  */
 helper.sliderClick = (X) => {
-  const sliderBar = helper.sliderBar();
-  const edown = new jQuery.Event('mousedown');
-  const eup = new jQuery.Event('mouseup');
-  edown.clientX = eup.clientX = X;
-  edown.clientY = eup.clientY = sliderBar.offset().top;
+	const sliderBar = helper.sliderBar();
+	const edown = new jQuery.Event("mousedown");
+	const eup = new jQuery.Event("mouseup");
+	edown.clientX = eup.clientX = X;
+	edown.clientY = eup.clientY = sliderBar.offset().top;
 
-  sliderBar.trigger(edown);
-  sliderBar.trigger(eup);
+	sliderBar.trigger(edown);
+	sliderBar.trigger(eup);
 };
 
 /**
@@ -204,26 +217,34 @@ helper.sliderClick = (X) => {
  *
  * @returns {Array.<string>} lines of text
  */
-helper.timesliderTextLines = () => helper.contentWindow().$('.ace-line').map(function () {
-  return $(this).text();
-}).get();
+helper.timesliderTextLines = () =>
+	helper
+		.contentWindow()
+		.$(".ace-line")
+		.map(function () {
+			return $(this).text();
+		})
+		.get();
 
-helper.padIsEmpty = () => (
-  !helper.padInner$.document.getSelection().isCollapsed ||
-  (helper.padInner$('div').length === 1 && helper.padInner$('div').first().html() === '<br>'));
+helper.padIsEmpty = () =>
+	!helper.padInner$.document.getSelection().isCollapsed ||
+	(helper.padInner$("div").length === 1 &&
+		helper.padInner$("div").first().html() === "<br>");
 
 helper.clearPad = async () => {
-  if (helper.padIsEmpty()) return;
-  const commitsBefore = helper.commits.length;
-  const lines = helper.linesDiv();
-  helper.selectLines(lines[0], lines[lines.length - 1]);
-  await helper.waitForPromise(() => !helper.padInner$.document.getSelection().isCollapsed);
-  const e = new helper.padInner$.Event(helper.evtType);
-  e.keyCode = 8; // delete key
-  await helper.withFastCommit(async (incorp) => {
-    helper.padInner$('#innerdocbody').trigger(e);
-    incorp();
-    await helper.waitForPromise(helper.padIsEmpty);
-    await helper.waitForPromise(() => helper.commits.length > commitsBefore);
-  });
+	if (helper.padIsEmpty()) return;
+	const commitsBefore = helper.commits.length;
+	const lines = helper.linesDiv();
+	helper.selectLines(lines[0], lines[lines.length - 1]);
+	await helper.waitForPromise(
+		() => !helper.padInner$.document.getSelection().isCollapsed,
+	);
+	const e = new helper.padInner$.Event(helper.evtType);
+	e.keyCode = 8; // delete key
+	await helper.withFastCommit(async (incorp) => {
+		helper.padInner$("#innerdocbody").trigger(e);
+		incorp();
+		await helper.waitForPromise(helper.padIsEmpty);
+		await helper.waitForPromise(() => helper.commits.length > commitsBefore);
+	});
 };

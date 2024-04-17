@@ -1,9 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Nayvik",
-			"ಮಲ್ನಾಡಾಚ್ ಕೊಂಕ್ಣೊ"
-		]
+		"authors": ["Nayvik", "ಮಲ್ನಾಡಾಚ್ ಕೊಂಕ್ಣೊ"]
 	},
 	"admin_plugins.available": "ಲಭ್ಯವಿರುವ ಪ್ಲಗಿನ್‌ಗಳು",
 	"admin_plugins.available_not-found": "ಯಾವುದೇ ಪ್ಲಗಿನ್‌ಗಳು ಸಿಗಲಿಲ್ಲ",

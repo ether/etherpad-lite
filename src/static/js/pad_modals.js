@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -22,34 +20,34 @@
  * limitations under the License.
  */
 
-const padeditbar = require('./pad_editbar').padeditbar;
-const automaticReconnect = require('./pad_automatic_reconnect');
+const padeditbar = require("./pad_editbar").padeditbar;
+const automaticReconnect = require("./pad_automatic_reconnect");
 
 const padmodals = (() => {
-  let pad = undefined;
-  const self = {
-    init: (_pad) => {
-      pad = _pad;
-    },
-    showModal: (messageId) => {
-      padeditbar.toggleDropDown('none');
-      $('#connectivity .visible').removeClass('visible');
-      $(`#connectivity .${messageId}`).addClass('visible');
+	let pad = undefined;
+	const self = {
+		init: (_pad) => {
+			pad = _pad;
+		},
+		showModal: (messageId) => {
+			padeditbar.toggleDropDown("none");
+			$("#connectivity .visible").removeClass("visible");
+			$(`#connectivity .${messageId}`).addClass("visible");
 
-      const $modal = $(`#connectivity .${messageId}`);
-      automaticReconnect.showCountDownTimerToReconnectOnModal($modal, pad);
+			const $modal = $(`#connectivity .${messageId}`);
+			automaticReconnect.showCountDownTimerToReconnectOnModal($modal, pad);
 
-      padeditbar.toggleDropDown('connectivity');
-    },
-    showOverlay: () => {
-      // Prevent the user to interact with the toolbar. Useful when user is disconnected for example
-      $('#toolbar-overlay').show();
-    },
-    hideOverlay: () => {
-      $('#toolbar-overlay').hide();
-    },
-  };
-  return self;
+			padeditbar.toggleDropDown("connectivity");
+		},
+		showOverlay: () => {
+			// Prevent the user to interact with the toolbar. Useful when user is disconnected for example
+			$("#toolbar-overlay").show();
+		},
+		hideOverlay: () => {
+			$("#toolbar-overlay").hide();
+		},
+	};
+	return self;
 })();
 
 exports.padmodals = padmodals;

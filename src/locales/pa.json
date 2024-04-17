@@ -1,12 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Aalam",
-			"Babanwalia",
-			"Tow",
-			"ਗੁਰਪ੍ਰੀਤ ਹੁੰਦਲ",
-			"ਪ੍ਰਚਾਰਕ"
-		]
+		"authors": ["Aalam", "Babanwalia", "Tow", "ਗੁਰਪ੍ਰੀਤ ਹੁੰਦਲ", "ਪ੍ਰਚਾਰਕ"]
 	},
 	"index.newPad": "ਨਵਾਂ ਪੈਡ",
 	"index.createOpenPad": "ਜਾਂ ਨਾਂ ਨਾਲ ਨਵਾਂ ਪੈਡ ਬਣਾਓ/ਖੋਲ੍ਹੋ:",

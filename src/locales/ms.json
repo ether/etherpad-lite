@@ -1,10 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Anakmalaysia",
-			"Hakimi97",
-			"Jeluang Terluang"
-		]
+		"authors": ["Anakmalaysia", "Hakimi97", "Jeluang Terluang"]
 	},
 	"admin.page-title": "Papan muka Penyelia - Etherpad",
 	"index.newPad": "Pad baru",

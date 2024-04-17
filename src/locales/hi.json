@@ -1,8 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Sfic"
-		]
+		"authors": ["Sfic"]
 	},
 	"pad.toolbar.bold.title": "गहरा (Ctrl+B)",
 	"pad.toolbar.italic.title": "तिरछा (Ctrl+I)",

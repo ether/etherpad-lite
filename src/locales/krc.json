@@ -1,9 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Ernác",
-			"Къарачайлы"
-		]
+		"authors": ["Ernác", "Къарачайлы"]
 	},
 	"admin.page-title": "Администраторну панели — Etherpad",
 	"admin_plugins": "Плагин менеджер",

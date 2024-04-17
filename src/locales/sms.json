@@ -1,8 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Yupik"
-		]
+		"authors": ["Yupik"]
 	},
 	"admin_plugins.description": "Deskriptt",
 	"admin_plugins.name": "Nõmm",

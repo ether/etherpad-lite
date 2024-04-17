@@ -1,5 +1,3 @@
-'use strict';
-
 // Low-level utilities for manipulating attribute strings. For a high-level API, see AttributeMap.
 
 /**
@@ -29,19 +27,21 @@
  * @returns {Generator<number>}
  */
 exports.decodeAttribString = function* (str) {
-  const re = /\*([0-9a-z]+)|./gy;
-  let match;
-  while ((match = re.exec(str)) != null) {
-    const [m, n] = match;
-    if (n == null) throw new Error(`invalid character in attribute string: ${m}`);
-    yield Number.parseInt(n, 36);
-  }
+	const re = /\*([0-9a-z]+)|./gy;
+	let match;
+	while ((match = re.exec(str)) != null) {
+		const [m, n] = match;
+		if (n == null)
+			throw new Error(`invalid character in attribute string: ${m}`);
+		yield Number.parseInt(n, 36);
+	}
 };
 
 const checkAttribNum = (n) => {
-  if (typeof n !== 'number') throw new TypeError(`not a number: ${n}`);
-  if (n < 0) throw new Error(`attribute number is negative: ${n}`);
-  if (n !== Math.trunc(n)) throw new Error(`attribute number is not an integer: ${n}`);
+	if (typeof n !== "number") throw new TypeError(`not a number: ${n}`);
+	if (n < 0) throw new Error(`attribute number is negative: ${n}`);
+	if (n !== Math.trunc(n))
+		throw new Error(`attribute number is not an integer: ${n}`);
 };
 
 /**
@@ -51,12 +51,12 @@ const checkAttribNum = (n) => {
  * @returns {AttributeString}
  */
 exports.encodeAttribString = (attribNums) => {
-  let str = '';
-  for (const n of attribNums) {
-    checkAttribNum(n);
-    str += `*${n.toString(36).toLowerCase()}`;
-  }
-  return str;
+	let str = "";
+	for (const n of attribNums) {
+		checkAttribNum(n);
+		str += `*${n.toString(36).toLowerCase()}`;
+	}
+	return str;
 };
 
 /**
@@ -68,12 +68,13 @@ exports.encodeAttribString = (attribNums) => {
  * @returns {Generator<Attribute>}
  */
 exports.attribsFromNums = function* (attribNums, pool) {
-  for (const n of attribNums) {
-    checkAttribNum(n);
-    const attrib = pool.getAttrib(n);
-    if (attrib == null) throw new Error(`attribute ${n} does not exist in pool`);
-    yield attrib;
-  }
+	for (const n of attribNums) {
+		checkAttribNum(n);
+		const attrib = pool.getAttrib(n);
+		if (attrib == null)
+			throw new Error(`attribute ${n} does not exist in pool`);
+		yield attrib;
+	}
 };
 
 /**
@@ -88,7 +89,7 @@ exports.attribsFromNums = function* (attribNums, pool) {
  * @returns {Generator<number>}
  */
 exports.attribsToNums = function* (attribs, pool) {
-  for (const attrib of attribs) yield pool.putAttrib(attrib);
+	for (const attrib of attribs) yield pool.putAttrib(attrib);
 };
 
 /**
@@ -103,7 +104,7 @@ exports.attribsToNums = function* (attribs, pool) {
  * @returns {Generator<Attribute>}
  */
 exports.attribsFromString = function* (str, pool) {
-  yield* exports.attribsFromNums(exports.decodeAttribString(str), pool);
+	yield* exports.attribsFromNums(exports.decodeAttribString(str), pool);
 };
 
 /**
@@ -116,8 +117,8 @@ exports.attribsFromString = function* (str, pool) {
  * @param {AttributePool} pool - Attribute pool.
  * @returns {AttributeString}
  */
-exports.attribsToString =
-    (attribs, pool) => exports.encodeAttribString(exports.attribsToNums(attribs, pool));
+exports.attribsToString = (attribs, pool) =>
+	exports.encodeAttribString(exports.attribsToNums(attribs, pool));
 
 /**
  * Sorts the attributes in canonical order. The order of entries with the same attribute name is
@@ -126,5 +127,7 @@ exports.attribsToString =
  * @param {Attribute[]} attribs - Attributes to sort in place.
  * @returns {Attribute[]} `attribs` (for chaining).
  */
-exports.sort =
-    (attribs) => attribs.sort(([keyA], [keyB]) => (keyA > keyB ? 1 : 0) - (keyA < keyB ? 1 : 0));
+exports.sort = (attribs) =>
+	attribs.sort(
+		([keyA], [keyB]) => (keyA > keyB ? 1 : 0) - (keyA < keyB ? 1 : 0),
+	);

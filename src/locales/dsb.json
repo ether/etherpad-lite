@@ -1,8 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Michawiki"
-		]
+		"authors": ["Michawiki"]
 	},
 	"admin.page-title": "Administratorowa delka – Etherpad",
 	"admin_plugins": "Zastojnik tykacow",

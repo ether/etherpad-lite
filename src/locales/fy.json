@@ -1,8 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Robin van der Vliet"
-		]
+		"authors": ["Robin van der Vliet"]
 	},
 	"pad.toolbar.bold.title": "Fet (Ctrl+B)",
 	"pad.toolbar.italic.title": "Kursyf (Ctrl+I)",

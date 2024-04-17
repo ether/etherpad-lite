@@ -1,75 +1,78 @@
-import {expect, test} from "@playwright/test";
-import {loginToAdmin} from "../helper/adminhelper";
+import { expect, test } from "@playwright/test";
+import { loginToAdmin } from "../helper/adminhelper";
 
-test.beforeEach(async ({ page })=>{
-    await loginToAdmin(page, 'admin', 'changeme1');
-    await page.goto('http://localhost:9001/admin/plugins')
-})
+test.beforeEach(async ({ page }) => {
+	await loginToAdmin(page, "admin", "changeme1");
+	await page.goto("http://localhost:9001/admin/plugins");
+});
 
+test.describe("Plugins page", () => {
+	test("List some plugins", async ({ page }) => {
+		await page.waitForSelector(".search-field");
+		const pluginTable = page.locator("table tbody").nth(1);
+		await expect(pluginTable).not.toBeEmpty();
+		const plugins = await pluginTable.locator("tr").count();
+		expect(plugins).toBeGreaterThan(10);
+	});
 
-test.describe('Plugins page',  ()=> {
+	test("Searches for a plugin", async ({ page }) => {
+		await page.waitForSelector(".search-field");
+		await page.click(".search-field");
+		await page.keyboard.type("ep_font_color3");
+		await page.keyboard.press("Enter");
+		const pluginTable = page.locator("table tbody").nth(1);
+		await expect(pluginTable.locator("tr")).toHaveCount(1);
+		await expect(pluginTable.locator("tr").first()).toContainText(
+			"ep_font_color3",
+		);
+	});
 
-    test('List some plugins', async ({page}) => {
-        await page.waitForSelector('.search-field');
-        const pluginTable =  page.locator('table tbody').nth(1);
-        await expect(pluginTable).not.toBeEmpty()
-        const plugins = await pluginTable.locator('tr').count()
-        expect(plugins).toBeGreaterThan(10)
-    })
+	test("Attempt to Install and Uninstall a plugin", async ({ page }) => {
+		await page.waitForSelector(".search-field");
+		const pluginTable = page.locator("table tbody").nth(1);
+		await expect(pluginTable).not.toBeEmpty({
+			timeout: 15000,
+		});
+		const plugins = await pluginTable.locator("tr").count();
+		expect(plugins).toBeGreaterThan(10);
 
-    test('Searches for a plugin', async ({page}) => {
-        await page.waitForSelector('.search-field');
-        await page.click('.search-field')
-        await page.keyboard.type('ep_font_color3')
-        await page.keyboard.press('Enter')
-        const pluginTable =  page.locator('table tbody').nth(1);
-        await expect(pluginTable.locator('tr')).toHaveCount(1)
-        await expect(pluginTable.locator('tr').first()).toContainText('ep_font_color3')
-    })
+		// Now everything is loaded, lets install a plugin
 
+		await page.click(".search-field");
+		await page.keyboard.type("ep_font_color3");
+		await page.keyboard.press("Enter");
 
-    test('Attempt to Install and Uninstall a plugin', async ({page}) => {
-        await page.waitForSelector('.search-field');
-        const pluginTable =  page.locator('table tbody').nth(1);
-        await expect(pluginTable).not.toBeEmpty({
-            timeout: 15000
-        })
-        const plugins = await pluginTable.locator('tr').count()
-        expect(plugins).toBeGreaterThan(10)
+		await expect(pluginTable.locator("tr")).toHaveCount(1);
+		const pluginRow = pluginTable.locator("tr").first();
+		await expect(pluginRow).toContainText("ep_font_color3");
 
-        // Now everything is loaded, lets install a plugin
+		// Select Installation button
+		await pluginRow.locator("td").nth(4).locator("button").first().click();
+		await page.waitForTimeout(100);
+		await page.waitForSelector("table tbody");
+		const installedPlugins = page.locator("table tbody").first();
+		const installedPluginsRows = installedPlugins.locator("tr");
+		await expect(installedPluginsRows).toHaveCount(2, {
+			timeout: 15000,
+		});
 
-        await page.click('.search-field')
-        await page.keyboard.type('ep_font_color3')
-        await page.keyboard.press('Enter')
+		const installedPluginRow = installedPluginsRows.nth(1);
 
-        await expect(pluginTable.locator('tr')).toHaveCount(1)
-        const pluginRow = pluginTable.locator('tr').first()
-        await expect(pluginRow).toContainText('ep_font_color3')
+		await expect(installedPluginRow).toContainText("ep_font_color3");
+		await installedPluginRow
+			.locator("td")
+			.nth(2)
+			.locator("button")
+			.first()
+			.click();
 
-        // Select Installation button
-        await pluginRow.locator('td').nth(4).locator('button').first().click()
-        await page.waitForTimeout(100)
-        await page.waitForSelector('table tbody')
-        const installedPlugins = page.locator('table tbody').first()
-        const installedPluginsRows = installedPlugins.locator('tr')
-        await expect(installedPluginsRows).toHaveCount(2, {
-            timeout: 15000
-        })
-
-        const installedPluginRow = installedPluginsRows.nth(1)
-
-        await expect(installedPluginRow).toContainText('ep_font_color3')
-        await installedPluginRow.locator('td').nth(2).locator('button').first().click()
-
-        // Wait for the uninstallation to complete
-        await expect(installedPluginsRows).toHaveCount(1, {
-            timeout: 15000
-        })
-        await page.waitForTimeout(5000)
-    })
-})
-
+		// Wait for the uninstallation to complete
+		await expect(installedPluginsRows).toHaveCount(1, {
+			timeout: 15000,
+		});
+		await page.waitForTimeout(5000);
+	});
+});
 
 /*
   it('Attempt to Update a plugin', async function () {

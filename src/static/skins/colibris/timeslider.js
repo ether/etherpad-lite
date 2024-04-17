@@ -1,4 +1,1 @@
-'use strict';
-
-window.customStart = () => {
-};
+window.customStart = () => {};

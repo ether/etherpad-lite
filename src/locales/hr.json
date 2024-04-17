@@ -1,10 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Bugoslav",
-			"Hmxhmx",
-			"Ponor"
-		]
+		"authors": ["Bugoslav", "Hmxhmx", "Ponor"]
 	},
 	"index.newPad": "Novi blokić",
 	"index.createOpenPad": "ili stvori/otvori blokić s imenom:",

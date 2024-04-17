@@ -1,9 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Kristian.kankainen",
-			"Tiblu"
-		]
+		"authors": ["Kristian.kankainen", "Tiblu"]
 	},
 	"index.newPad": "Uus klade",
 	"index.createOpenPad": "loo või rööptoimeta kladet nimega:",

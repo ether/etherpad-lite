@@ -1,11 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Bennylin",
-			"IvanLanin",
-			"Marwan Mohamad",
-			"Veracious"
-		]
+		"authors": ["Bennylin", "IvanLanin", "Marwan Mohamad", "Veracious"]
 	},
 	"admin.page-title": "Dasbor Pengurus - Etherpad",
 	"admin_plugins": "Manajer plugin",

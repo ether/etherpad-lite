@@ -1,9 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Fwolff",
-			"Naudefj"
-		]
+		"authors": ["Fwolff", "Naudefj"]
 	},
 	"index.newPad": "Nuwe pad",
 	"index.createOpenPad": "of skep/open 'n pad met die naam:",

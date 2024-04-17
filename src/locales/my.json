@@ -1,9 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Andibecker",
-			"Dr Lotus Black"
-		]
+		"authors": ["Andibecker", "Dr Lotus Black"]
 	},
 	"admin.page-title": "စီမံခန့်ခွဲသူဒိုင်ခွက် - Etherpad",
 	"admin_plugins": "ပလပ်အင်မန်နေဂျာ",

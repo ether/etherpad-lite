@@ -1,35 +1,40 @@
-'use strict';
+import type { ChildProcess } from "node:child_process";
+import type { Readable } from "node:stream";
+import type { PromiseWithStd } from "../types/PromiseWithStd";
+import {
+	type ErrorExtended,
+	type RunCMDOptions,
+	RunCMDPromise,
+} from "../types/RunCMDOptions";
 
-import {ErrorExtended, RunCMDOptions, RunCMDPromise} from "../types/RunCMDOptions";
-import {ChildProcess} from "node:child_process";
-import {PromiseWithStd} from "../types/PromiseWithStd";
-import {Readable} from "node:stream";
+const spawn = require("cross-spawn");
+const log4js = require("log4js");
+const path = require("path");
+const settings = require("./Settings");
 
-const spawn = require('cross-spawn');
-const log4js = require('log4js');
-const path = require('path');
-const settings = require('./Settings');
+const logger = log4js.getLogger("runCmd");
 
-const logger = log4js.getLogger('runCmd');
-
-const logLines = (readable: undefined | Readable | null, logLineFn: (arg0: (string | undefined)) => void) => {
-  readable!.setEncoding('utf8');
-  // The process won't necessarily write full lines every time -- it might write a part of a line
-  // then write the rest of the line later.
-  let leftovers: string| undefined = '';
-  readable!.on('data', (chunk) => {
-    const lines = chunk.split('\n');
-    if (lines.length === 0) return;
-    lines[0] = leftovers + lines[0];
-    leftovers = lines.pop();
-    for (const line of lines) {
-      logLineFn(line);
-    }
-  });
-  readable!.on('end', () => {
-    if (leftovers !== '') logLineFn(leftovers);
-    leftovers = '';
-  });
+const logLines = (
+	readable: undefined | Readable | null,
+	logLineFn: (arg0: string | undefined) => void,
+) => {
+	readable!.setEncoding("utf8");
+	// The process won't necessarily write full lines every time -- it might write a part of a line
+	// then write the rest of the line later.
+	let leftovers: string | undefined = "";
+	readable!.on("data", (chunk) => {
+		const lines = chunk.split("\n");
+		if (lines.length === 0) return;
+		lines[0] = leftovers + lines[0];
+		leftovers = lines.pop();
+		for (const line of lines) {
+			logLineFn(line);
+		}
+	});
+	readable!.on("end", () => {
+		if (leftovers !== "") logLineFn(leftovers);
+		leftovers = "";
+	});
 };
 
 /**
@@ -74,90 +79,101 @@ const logLines = (readable: undefined | Readable | null, logLineFn: (arg0: (stri
  *   - `stderr`: Similar to `stdout` but for stderr.
  *   - `child`: The ChildProcess object.
  */
-module.exports = exports = (args: string[], opts:RunCMDOptions = {}) => {
-  logger.debug(`Executing command: ${args.join(' ')}`);
+module.exports = exports = (args: string[], opts: RunCMDOptions = {}) => {
+	logger.debug(`Executing command: ${args.join(" ")}`);
 
-  opts = {cwd: settings.root, ...opts};
-  logger.debug(`cwd: ${opts.cwd}`);
+	opts = { cwd: settings.root, ...opts };
+	logger.debug(`cwd: ${opts.cwd}`);
 
-  // Log stdout and stderr by default.
-  const stdio =
-      Array.isArray(opts.stdio) ? opts.stdio.slice() // Copy to avoid mutating the caller's array.
-      : typeof opts.stdio === 'function' ? [null, opts.stdio, opts.stdio]
-      : opts.stdio === 'string' ? [null, 'string', 'string']
-      : Array(3).fill(opts.stdio);
-  const cmdLogger = log4js.getLogger(`runCmd|${args[0]}`);
-  if (stdio[1] == null) stdio[1] = (line: string) => cmdLogger.info(line);
-  if (stdio[2] == null) stdio[2] = (line: string) => cmdLogger.error(line);
-  const stdioLoggers = [];
-  const stdioSaveString = [];
-  for (const fd of [1, 2]) {
-    if (typeof stdio[fd] === 'function') {
-      stdioLoggers[fd] = stdio[fd];
-      stdio[fd] = 'pipe';
-    } else if (stdio[fd] === 'string') {
-      stdioSaveString[fd] = true;
-      stdio[fd] = 'pipe';
-    }
-  }
-  opts.stdio = stdio;
+	// Log stdout and stderr by default.
+	const stdio = Array.isArray(opts.stdio)
+		? opts.stdio.slice() // Copy to avoid mutating the caller's array.
+		: typeof opts.stdio === "function"
+			? [null, opts.stdio, opts.stdio]
+			: opts.stdio === "string"
+				? [null, "string", "string"]
+				: Array(3).fill(opts.stdio);
+	const cmdLogger = log4js.getLogger(`runCmd|${args[0]}`);
+	if (stdio[1] == null) stdio[1] = (line: string) => cmdLogger.info(line);
+	if (stdio[2] == null) stdio[2] = (line: string) => cmdLogger.error(line);
+	const stdioLoggers = [];
+	const stdioSaveString = [];
+	for (const fd of [1, 2]) {
+		if (typeof stdio[fd] === "function") {
+			stdioLoggers[fd] = stdio[fd];
+			stdio[fd] = "pipe";
+		} else if (stdio[fd] === "string") {
+			stdioSaveString[fd] = true;
+			stdio[fd] = "pipe";
+		}
+	}
+	opts.stdio = stdio;
 
-  // On Windows the PATH environment var might be spelled "Path".
-  const pathVarName =
-      Object.keys(process.env).filter((k) => k.toUpperCase() === 'PATH')[0] || 'PATH';
-  // Set PATH so that utilities from installed dependencies (e.g., npm) are preferred over system
-  // (global) utilities.
-  const {env = process.env} = opts;
-  const {[pathVarName]: PATH} = env;
-  opts.env = {
-    ...env, // Copy env to avoid modifying process.env or the caller's supplied env.
-    [pathVarName]: [
-      path.join(settings.root, 'src', 'node_modules', '.bin'),
-      path.join(settings.root, 'node_modules', '.bin'),
-      ...(PATH ? PATH.split(path.delimiter) : []),
-    ].join(path.delimiter),
-  };
-  logger.debug(`${pathVarName}=${opts.env[pathVarName]}`);
+	// On Windows the PATH environment var might be spelled "Path".
+	const pathVarName =
+		Object.keys(process.env).filter((k) => k.toUpperCase() === "PATH")[0] ||
+		"PATH";
+	// Set PATH so that utilities from installed dependencies (e.g., npm) are preferred over system
+	// (global) utilities.
+	const { env = process.env } = opts;
+	const { [pathVarName]: PATH } = env;
+	opts.env = {
+		...env, // Copy env to avoid modifying process.env or the caller's supplied env.
+		[pathVarName]: [
+			path.join(settings.root, "src", "node_modules", ".bin"),
+			path.join(settings.root, "node_modules", ".bin"),
+			...(PATH ? PATH.split(path.delimiter) : []),
+		].join(path.delimiter),
+	};
+	logger.debug(`${pathVarName}=${opts.env[pathVarName]}`);
 
-  // Create an error object to use in case the process fails. This is done here rather than in the
-  // process's `exit` handler so that we get a useful stack trace.
-  const procFailedErr: Error & ErrorExtended = new Error();
+	// Create an error object to use in case the process fails. This is done here rather than in the
+	// process's `exit` handler so that we get a useful stack trace.
+	const procFailedErr: Error & ErrorExtended = new Error();
 
-  const proc: ChildProcess = spawn(args[0], args.slice(1), opts);
-  const streams:[undefined, Readable|null, Readable|null] = [undefined, proc.stdout, proc.stderr];
+	const proc: ChildProcess = spawn(args[0], args.slice(1), opts);
+	const streams: [undefined, Readable | null, Readable | null] = [
+		undefined,
+		proc.stdout,
+		proc.stderr,
+	];
 
-  let px: { reject: any; resolve: any; };
-  const p:PromiseWithStd = new Promise<string>((resolve, reject) => { px = {resolve, reject}; });
-  [, p.stdout, p.stderr] = streams;
-  p.child = proc;
+	let px: { reject: any; resolve: any };
+	const p: PromiseWithStd = new Promise<string>((resolve, reject) => {
+		px = { resolve, reject };
+	});
+	[, p.stdout, p.stderr] = streams;
+	p.child = proc;
 
-  const stdioStringPromises = [undefined, Promise.resolve(), Promise.resolve()];
-  for (const fd of [1, 2]) {
-    if (streams[fd] == null) continue;
-    if (stdioLoggers[fd] != null) {
-      logLines(streams[fd], stdioLoggers[fd]);
-    } else if (stdioSaveString[fd]) {
-      // @ts-ignore
-      p[[null, 'stdout', 'stderr'][fd]] = stdioStringPromises[fd] = (async () => {
-        const chunks = [];
-        for await (const chunk of streams[fd]!) chunks.push(chunk);
-        return Buffer.concat(chunks).toString().replace(/\n+$/g, '');
-      })();
-    }
-  }
+	const stdioStringPromises = [undefined, Promise.resolve(), Promise.resolve()];
+	for (const fd of [1, 2]) {
+		if (streams[fd] == null) continue;
+		if (stdioLoggers[fd] != null) {
+			logLines(streams[fd], stdioLoggers[fd]);
+		} else if (stdioSaveString[fd]) {
+			// @ts-ignore
+			p[[null, "stdout", "stderr"][fd]] = stdioStringPromises[fd] =
+				(async () => {
+					const chunks = [];
+					for await (const chunk of streams[fd]!) chunks.push(chunk);
+					return Buffer.concat(chunks).toString().replace(/\n+$/g, "");
+				})();
+		}
+	}
 
-  proc.on('exit', async (code, signal) => {
-    const [, stdout] = await Promise.all(stdioStringPromises);
-    if (code !== 0) {
-      procFailedErr.message =
-          `Command exited ${code ? `with code ${code}` : `on signal ${signal}`}: ${args.join(' ')}`;
-      procFailedErr.code = code;
-      procFailedErr.signal = signal;
-      logger.debug(procFailedErr.stack);
-      return px.reject(procFailedErr);
-    }
-    logger.debug(`Command returned successfully: ${args.join(' ')}`);
-    px.resolve(stdout);
-  });
-  return p;
+	proc.on("exit", async (code, signal) => {
+		const [, stdout] = await Promise.all(stdioStringPromises);
+		if (code !== 0) {
+			procFailedErr.message = `Command exited ${
+				code ? `with code ${code}` : `on signal ${signal}`
+			}: ${args.join(" ")}`;
+			procFailedErr.code = code;
+			procFailedErr.signal = signal;
+			logger.debug(procFailedErr.stack);
+			return px.reject(procFailedErr);
+		}
+		logger.debug(`Command returned successfully: ${args.join(" ")}`);
+		px.resolve(stdout);
+	});
+	return p;
 };

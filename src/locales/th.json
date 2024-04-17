@@ -1,11 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Aefgh39622",
-			"Andibecker",
-			"Patsagorn Y.",
-			"Trisorn Triboon"
-		]
+		"authors": ["Aefgh39622", "Andibecker", "Patsagorn Y.", "Trisorn Triboon"]
 	},
 	"admin.page-title": "แดชบอร์ดผู้ดูแลระบบ - Etherpad",
 	"admin_plugins": "ตัวจัดการปลั๊กอิน",

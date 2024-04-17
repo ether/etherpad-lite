@@ -1,8 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Adr mm"
-		]
+		"authors": ["Adr mm"]
 	},
 	"admin.page-title": "Pannellu de amministratzione - Etherpad",
 	"admin_plugins": "Gestore de connetores",

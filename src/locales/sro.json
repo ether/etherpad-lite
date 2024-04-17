@@ -1,9 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Adr mm",
-			"F Samaritani"
-		]
+		"authors": ["Adr mm", "F Samaritani"]
 	},
 	"admin.page-title": "Pannellu amministrativu - Etherpad",
 	"admin_plugins": "Gestore de connetores",
