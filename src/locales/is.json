@@ -1,9 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Sveinki",
-			"Sveinn í Felli"
-		]
+		"authors": ["Sveinki", "Sveinn í Felli"]
 	},
 	"admin.page-title": "Stjórnborð fyrir stjórnendur - Etherpad",
 	"admin_plugins": "Stýring viðbóta",

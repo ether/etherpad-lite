@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
@@ -22,40 +22,39 @@
  * limitations under the License.
  */
 
-const isNodeText = (node) => (node.nodeType === 3);
+const isNodeText = (node) => node.nodeType === 3;
 
 const getAssoc = (obj, name) => obj[`_magicdom_${name}`];
 
 const setAssoc = (obj, name, value) => {
-  // note that in IE designMode, properties of a node can get
-  // copied to new nodes that are spawned during editing; also,
-  // properties representable in HTML text can survive copy-and-paste
-  obj[`_magicdom_${name}`] = value;
+	// note that in IE designMode, properties of a node can get
+	// copied to new nodes that are spawned during editing; also,
+	// properties representable in HTML text can survive copy-and-paste
+	obj[`_magicdom_${name}`] = value;
 };
 
 // "func" is a function over 0..(numItems-1) that is monotonically
 // "increasing" with index (false, then true).  Finds the boundary
 // between false and true, a number between 0 and numItems inclusive.
 
-
 const binarySearch = (numItems, func) => {
-  if (numItems < 1) return 0;
-  if (func(0)) return 0;
-  if (!func(numItems - 1)) return numItems;
-  let low = 0; // func(low) is always false
-  let high = numItems - 1; // func(high) is always true
-  while ((high - low) > 1) {
-    const x = Math.floor((low + high) / 2); // x != low, x != high
-    if (func(x)) high = x;
-    else low = x;
-  }
-  return high;
+	if (numItems < 1) return 0;
+	if (func(0)) return 0;
+	if (!func(numItems - 1)) return numItems;
+	let low = 0; // func(low) is always false
+	let high = numItems - 1; // func(high) is always true
+	while (high - low > 1) {
+		const x = Math.floor((low + high) / 2); // x != low, x != high
+		if (func(x)) high = x;
+		else low = x;
+	}
+	return high;
 };
 
 const binarySearchInfinite = (expectedLength, func) => {
-  let i = 0;
-  while (!func(i)) i += expectedLength;
-  return binarySearch(i, func);
+	let i = 0;
+	while (!func(i)) i += expectedLength;
+	return binarySearch(i, func);
 };
 
 const noop = () => {};

@@ -1,10 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Balajijagadesh",
-			"ElangoRamanujam",
-			"Sank"
-		]
+		"authors": ["Balajijagadesh", "ElangoRamanujam", "Sank"]
 	},
 	"index.newPad": "புதிய அட்டை",
 	"index.createOpenPad": "அல்லது பெயருடன் ஒரு அட்டையை உருவாக்கு/திற",

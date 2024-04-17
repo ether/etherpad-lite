@@ -1,10 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Andibecker",
-			"Edwingudfriend",
-			"Muddyb"
-		]
+		"authors": ["Andibecker", "Edwingudfriend", "Muddyb"]
 	},
 	"admin.page-title": "Dashibodi ya Usimamizi - Etherpad",
 	"admin_plugins": "Meneja wa programu-jalizi",

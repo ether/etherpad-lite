@@ -1,8 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Borichèt"
-		]
+		"authors": ["Borichèt"]
 	},
 	"admin.page-title": "Cruscòt d'aministrator - Etherpad",
 	"admin_plugins": "Mansé dj'anstalassion",

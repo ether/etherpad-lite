@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 /**
  * The CLI module handles command line parameters
  */
@@ -28,22 +28,22 @@ let arg, prevArg;
 
 // Loop through args
 for (let i = 0; i < argv.length; i++) {
-  arg = argv[i];
+	arg = argv[i];
 
-  // Override location of settings.json file
-  if (prevArg === '--settings' || prevArg === '-s') {
-    exports.argv.settings = arg;
-  }
+	// Override location of settings.json file
+	if (prevArg === "--settings" || prevArg === "-s") {
+		exports.argv.settings = arg;
+	}
 
-  // Override location of credentials.json file
-  if (prevArg === '--credentials') {
-    exports.argv.credentials = arg;
-  }
+	// Override location of credentials.json file
+	if (prevArg === "--credentials") {
+		exports.argv.credentials = arg;
+	}
 
-  // Override location of settings.json file
-  if (prevArg === '--sessionkey') {
-    exports.argv.sessionkey = arg;
-  }
+	// Override location of settings.json file
+	if (prevArg === "--sessionkey") {
+		exports.argv.sessionkey = arg;
+	}
 
-  prevArg = arg;
+	prevArg = arg;
 }

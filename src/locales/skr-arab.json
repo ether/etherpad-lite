@@ -1,8 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Saraiki"
-		]
+		"authors": ["Saraiki"]
 	},
 	"admin_plugins": "پلگ ان منیجر",
 	"admin_plugins.available": "دستیاب پلگ ان",

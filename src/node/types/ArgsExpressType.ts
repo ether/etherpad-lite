@@ -1,5 +1,5 @@
 export type ArgsExpressType = {
-    app:any,
-    io: any,
-    server:any
-}
+	app: any;
+	io: any;
+	server: any;
+};

@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /**
  * Copyright 2009 Google Inc.
@@ -16,55 +16,58 @@
  * limitations under the License.
  */
 
-const Cookies = require('./pad_utils').Cookies;
+const Cookies = require("./pad_utils").Cookies;
 
-exports.padcookie = new class {
-  constructor() {
-    this.cookieName_ = window.location.protocol === 'https:' ? 'prefs' : 'prefsHttp';
-  }
+exports.padcookie = new (class {
+	constructor() {
+		this.cookieName_ =
+			window.location.protocol === "https:" ? "prefs" : "prefsHttp";
+	}
 
-  init() {
-    const prefs = this.readPrefs_() || {};
-    delete prefs.userId;
-    delete prefs.name;
-    delete prefs.colorId;
-    this.writePrefs_(prefs);
-    // Re-read the saved cookie to test if cookies are enabled.
-    if (this.readPrefs_() == null) {
-      $.gritter.add({
-        title: 'Error',
-        text: html10n.get('pad.noCookie'),
-        sticky: true,
-        class_name: 'error',
-      });
-    }
-  }
+	init() {
+		const prefs = this.readPrefs_() || {};
+		delete prefs.userId;
+		delete prefs.name;
+		delete prefs.colorId;
+		this.writePrefs_(prefs);
+		// Re-read the saved cookie to test if cookies are enabled.
+		if (this.readPrefs_() == null) {
+			$.gritter.add({
+				title: "Error",
+				text: html10n.get("pad.noCookie"),
+				sticky: true,
+				class_name: "error",
+			});
+		}
+	}
 
-  readPrefs_() {
-    try {
-      const json = Cookies.get(this.cookieName_);
-      if (json == null) return null;
-      return JSON.parse(json);
-    } catch (e) {
-      return null;
-    }
-  }
+	readPrefs_() {
+		try {
+			const json = Cookies.get(this.cookieName_);
+			if (json == null) return null;
+			return JSON.parse(json);
+		} catch (e) {
+			return null;
+		}
+	}
 
-  writePrefs_(prefs) {
-    Cookies.set(this.cookieName_, JSON.stringify(prefs), {expires: 365 * 100});
-  }
+	writePrefs_(prefs) {
+		Cookies.set(this.cookieName_, JSON.stringify(prefs), {
+			expires: 365 * 100,
+		});
+	}
 
-  getPref(prefName) {
-    return this.readPrefs_()[prefName];
-  }
+	getPref(prefName) {
+		return this.readPrefs_()[prefName];
+	}
 
-  setPref(prefName, value) {
-    const prefs = this.readPrefs_();
-    prefs[prefName] = value;
-    this.writePrefs_(prefs);
-  }
+	setPref(prefName, value) {
+		const prefs = this.readPrefs_();
+		prefs[prefName] = value;
+		this.writePrefs_(prefs);
+	}
 
-  clear() {
-    this.writePrefs_({});
-  }
-}();
+	clear() {
+		this.writePrefs_({});
+	}
+})();

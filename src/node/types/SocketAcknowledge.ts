@@ -1,3 +1,1 @@
-export type SocketAcknowledge = {
-
-}
+export type SocketAcknowledge = {};

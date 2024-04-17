@@ -1,10 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Pichnat Thong",
-			"Sovichet",
-			"វ័ណថារិទ្ធ"
-		]
+		"authors": ["Pichnat Thong", "Sovichet", "វ័ណថារិទ្ធ"]
 	},
 	"index.newPad": "ផេតថ្មី",
 	"index.createOpenPad": "ឬបង្កើត/បើកផេតដែលមានឈ្មោះ៖",

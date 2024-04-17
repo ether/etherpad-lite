@@ -1,10 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Denö",
-			"Ilja.mos",
-			"Mashoi7"
-		]
+		"authors": ["Denö", "Ilja.mos", "Mashoi7"]
 	},
 	"pad.toolbar.underline.title": "Alleviivua (Ctrl+U)",
 	"pad.toolbar.settings.title": "Azetukset",

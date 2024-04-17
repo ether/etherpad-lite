@@ -1,10 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"MongolWiki",
-			"Munkhzaya.E",
-			"Wisdom"
-		]
+		"authors": ["MongolWiki", "Munkhzaya.E", "Wisdom"]
 	},
 	"pad.toolbar.bold.title": "Болд тескт (Ctrl-B)",
 	"pad.toolbar.italic.title": "Налуу тескт (Ctrl-I)",

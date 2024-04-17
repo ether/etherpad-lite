@@ -1,11 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Edinwiki",
-			"Semina x",
-			"Srdjan m",
-			"Srđan"
-		]
+		"authors": ["Edinwiki", "Semina x", "Srdjan m", "Srđan"]
 	},
 	"index.newPad": "Novi Pad",
 	"index.createOpenPad": "ili napravite/otvorite Pad sa imenom:",

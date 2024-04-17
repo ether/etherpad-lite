@@ -1,11 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Gromper",
-			"Robby",
-			"Soued031",
-			"Volvox"
-		]
+		"authors": ["Gromper", "Robby", "Soued031", "Volvox"]
 	},
 	"admin_plugins.available_install.value": "Installéieren",
 	"admin_plugins.description": "Beschreiwung",

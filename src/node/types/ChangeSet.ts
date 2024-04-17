@@ -1,3 +1,1 @@
-export type ChangeSet = {
-
-}
+export type ChangeSet = {};

@@ -1,10 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Arash71",
-			"Hosseinblue",
-			"Lakzon"
-		]
+		"authors": ["Arash71", "Hosseinblue", "Lakzon"]
 	},
 	"index.newPad": "تازۀpad",
 	"index.createOpenPad": ":وە نۆم Pad یا سازین/واز کردن یإگلە",

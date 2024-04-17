@@ -1,11 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Jim-by",
-			"Red Winged Duck",
-			"Renessaince",
-			"Wizardist"
-		]
+		"authors": ["Jim-by", "Red Winged Duck", "Renessaince", "Wizardist"]
 	},
 	"admin.page-title": "Адміністрацыйная панэль — Etherpad",
 	"admin_plugins": "Кіраўнік плагінаў",

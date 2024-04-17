@@ -12,26 +12,30 @@
  *          back to a default)
  */
 
-const fs = require('fs');
-const jsonminify = require('jsonminify');
+const fs = require("fs");
+const jsonminify = require("jsonminify");
 
 function loadSettings() {
-  let settingsStr = fs.readFileSync(`${__dirname}/../../../settings.json.docker`).toString();
-  // try to parse the settings
-  try {
-    if (settingsStr) {
-      settingsStr = jsonminify(settingsStr).replace(',]', ']').replace(',}', '}');
-      const settings = JSON.parse(settingsStr);
+	let settingsStr = fs
+		.readFileSync(`${__dirname}/../../../settings.json.docker`)
+		.toString();
+	// try to parse the settings
+	try {
+		if (settingsStr) {
+			settingsStr = jsonminify(settingsStr)
+				.replace(",]", "]")
+				.replace(",}", "}");
+			const settings = JSON.parse(settingsStr);
 
-      // custom settings for running in a container
-      settings.ip = 'localhost';
-      settings.port = '9001';
+			// custom settings for running in a container
+			settings.ip = "localhost";
+			settings.port = "9001";
 
-      return settings;
-    }
-  } catch (e) {
-    console.error('whoops something is bad with settings');
-  }
+			return settings;
+		}
+	} catch (e) {
+		console.error("whoops something is bad with settings");
+	}
 }
 
 exports.loadSettings = loadSettings;

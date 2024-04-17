@@ -1,10 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"StanProg",
-			"Vlad5250",
-			"Vodnokon4e"
-		]
+		"authors": ["StanProg", "Vlad5250", "Vodnokon4e"]
 	},
 	"index.newPad": "Нов пад",
 	"index.createOpenPad": "или създаване/отваряне на пад с име:",

@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /**
  * Copyright 2012 Peter 'Pita' Martischka
@@ -19,20 +19,21 @@
 let pad;
 
 exports.saveNow = () => {
-  pad.collabClient.sendMessage({type: 'SAVE_REVISION'});
-  $.gritter.add({
-    // (string | mandatory) the heading of the notification
-    title: html10n.get('pad.savedrevs.marked'),
-    // (string | mandatory) the text inside the notification
-    text: html10n.get('pad.savedrevs.timeslider') ||
-        'You can view saved revisions in the timeslider',
-    // (bool | optional) if you want it to fade out on its own or just sit there
-    sticky: false,
-    time: 3000,
-    class_name: 'saved-revision',
-  });
+	pad.collabClient.sendMessage({ type: "SAVE_REVISION" });
+	$.gritter.add({
+		// (string | mandatory) the heading of the notification
+		title: html10n.get("pad.savedrevs.marked"),
+		// (string | mandatory) the text inside the notification
+		text:
+			html10n.get("pad.savedrevs.timeslider") ||
+			"You can view saved revisions in the timeslider",
+		// (bool | optional) if you want it to fade out on its own or just sit there
+		sticky: false,
+		time: 3000,
+		class_name: "saved-revision",
+	});
 };
 
 exports.init = (_pad) => {
-  pad = _pad;
+	pad = _pad;
 };

@@ -1,9 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Cedric31",
-			"Quentí"
-		]
+		"authors": ["Cedric31", "Quentí"]
 	},
 	"admin.page-title": "Panèl d’administracion - Etherpad",
 	"admin_plugins": "Gestion de las extensions",

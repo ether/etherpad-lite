@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 /**
  * Library for deterministic relative filename expansion for Etherpad.
  */
@@ -18,17 +18,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const log4js = require('log4js');
-const path = require('path');
-const _ = require('underscore');
+const log4js = require("log4js");
+const path = require("path");
+const _ = require("underscore");
 
-const absPathLogger = log4js.getLogger('AbsolutePaths');
+const absPathLogger = log4js.getLogger("AbsolutePaths");
 
 /*
  * findEtherpadRoot() computes its value only on first invocation.
  * Subsequent invocations are served from this variable.
  */
-let etherpadRoot: string|null = null;
+let etherpadRoot: string | null = null;
 
 /**
  * If stringArray's last elements are exactly equal to lastDesiredElements,
@@ -40,23 +40,31 @@ let etherpadRoot: string|null = null;
  * @return {string[]|boolean} The shortened array, or false if there was no
  *                            overlap.
  */
-const popIfEndsWith = (stringArray: string[], lastDesiredElements: string[]): string[] | false => {
-  if (stringArray.length <= lastDesiredElements.length) {
-    absPathLogger.debug(`In order to pop "${lastDesiredElements.join(path.sep)}" ` +
-                        `from "${stringArray.join(path.sep)}", it should contain at least ` +
-                        `${lastDesiredElements.length + 1} elements`);
-    return false;
-  }
+const popIfEndsWith = (
+	stringArray: string[],
+	lastDesiredElements: string[],
+): string[] | false => {
+	if (stringArray.length <= lastDesiredElements.length) {
+		absPathLogger.debug(
+			`In order to pop "${lastDesiredElements.join(path.sep)}" ` +
+				`from "${stringArray.join(path.sep)}", it should contain at least ` +
+				`${lastDesiredElements.length + 1} elements`,
+		);
+		return false;
+	}
 
-  const lastElementsFound = _.last(stringArray, lastDesiredElements.length);
+	const lastElementsFound = _.last(stringArray, lastDesiredElements.length);
 
-  if (_.isEqual(lastElementsFound, lastDesiredElements)) {
-    return _.initial(stringArray, lastDesiredElements.length);
-  }
+	if (_.isEqual(lastElementsFound, lastDesiredElements)) {
+		return _.initial(stringArray, lastDesiredElements.length);
+	}
 
-  absPathLogger.debug(
-      `${stringArray.join(path.sep)} does not end with "${lastDesiredElements.join(path.sep)}"`);
-  return false;
+	absPathLogger.debug(
+		`${stringArray.join(
+			path.sep,
+		)} does not end with "${lastDesiredElements.join(path.sep)}"`,
+	);
+	return false;
 };
 
 /**
@@ -75,49 +83,55 @@ const popIfEndsWith = (stringArray: string[], lastDesiredElements: string[]): st
  *                  identified, prints a log and exits the application.
  */
 exports.findEtherpadRoot = () => {
-  if (etherpadRoot != null) {
-    return etherpadRoot;
-  }
+	if (etherpadRoot != null) {
+		return etherpadRoot;
+	}
 
-  const findRoot = require('find-root');
-  const foundRoot = findRoot(__dirname);
-  const splitFoundRoot = foundRoot.split(path.sep);
+	const findRoot = require("find-root");
+	const foundRoot = findRoot(__dirname);
+	const splitFoundRoot = foundRoot.split(path.sep);
 
-  /*
-   * On Unix platforms and on Windows manual installs, foundRoot's value will
-   * be:
-   *
-   *   <BASE_DIR>\src
-   */
-  let maybeEtherpadRoot = popIfEndsWith(splitFoundRoot, ['src']);
+	/*
+	 * On Unix platforms and on Windows manual installs, foundRoot's value will
+	 * be:
+	 *
+	 *   <BASE_DIR>\src
+	 */
+	let maybeEtherpadRoot = popIfEndsWith(splitFoundRoot, ["src"]);
 
-  if ((maybeEtherpadRoot === false) && (process.platform === 'win32')) {
-    /*
-     * If we did not find the path we are expecting, and we are running under
-     * Windows, we may still be running from a prebuilt package, whose directory
-     * structure is different:
-     *
-     *   <BASE_DIR>\node_modules\ep_etherpad-lite
-     */
-    maybeEtherpadRoot = popIfEndsWith(splitFoundRoot, ['node_modules', 'ep_etherpad-lite']);
-  }
+	if (maybeEtherpadRoot === false && process.platform === "win32") {
+		/*
+		 * If we did not find the path we are expecting, and we are running under
+		 * Windows, we may still be running from a prebuilt package, whose directory
+		 * structure is different:
+		 *
+		 *   <BASE_DIR>\node_modules\ep_etherpad-lite
+		 */
+		maybeEtherpadRoot = popIfEndsWith(splitFoundRoot, [
+			"node_modules",
+			"ep_etherpad-lite",
+		]);
+	}
 
-  if (maybeEtherpadRoot === false) {
-    absPathLogger.error('Could not identity Etherpad base path in this ' +
-                        `${process.platform} installation in "${foundRoot}"`);
-    process.exit(1);
-  }
+	if (maybeEtherpadRoot === false) {
+		absPathLogger.error(
+			"Could not identity Etherpad base path in this " +
+				`${process.platform} installation in "${foundRoot}"`,
+		);
+		process.exit(1);
+	}
 
-  //  SIDE EFFECT on this module-level variable
-  etherpadRoot = maybeEtherpadRoot.join(path.sep);
+	//  SIDE EFFECT on this module-level variable
+	etherpadRoot = maybeEtherpadRoot.join(path.sep);
 
-  if (path.isAbsolute(etherpadRoot)) {
-    return etherpadRoot;
-  }
+	if (path.isAbsolute(etherpadRoot)) {
+		return etherpadRoot;
+	}
 
-  absPathLogger.error(
-      `To run, Etherpad has to identify an absolute base path. This is not: "${etherpadRoot}"`);
-  process.exit(1);
+	absPathLogger.error(
+		`To run, Etherpad has to identify an absolute base path. This is not: "${etherpadRoot}"`,
+	);
+	process.exit(1);
 };
 
 /**
@@ -131,14 +145,16 @@ exports.findEtherpadRoot = () => {
  *                  relative to exports.root.
  */
 exports.makeAbsolute = (somePath: string) => {
-  if (path.isAbsolute(somePath)) {
-    return somePath;
-  }
+	if (path.isAbsolute(somePath)) {
+		return somePath;
+	}
 
-  const rewrittenPath = path.join(exports.findEtherpadRoot(), somePath);
+	const rewrittenPath = path.join(exports.findEtherpadRoot(), somePath);
 
-  absPathLogger.debug(`Relative path "${somePath}" can be rewritten to "${rewrittenPath}"`);
-  return rewrittenPath;
+	absPathLogger.debug(
+		`Relative path "${somePath}" can be rewritten to "${rewrittenPath}"`,
+	);
+	return rewrittenPath;
 };
 
 /**
@@ -150,7 +166,7 @@ exports.makeAbsolute = (somePath: string) => {
  * @return {boolean}
  */
 exports.isSubdir = (parent: string, arbitraryDir: string): boolean => {
-  // modified from: https://stackoverflow.com/questions/37521893/determine-if-a-path-is-subdirectory-of-another-in-node-js#45242825
-  const relative = path.relative(parent, arbitraryDir);
-  return !!relative && !relative.startsWith('..') && !path.isAbsolute(relative);
+	// modified from: https://stackoverflow.com/questions/37521893/determine-if-a-path-is-subdirectory-of-another-in-node-js#45242825
+	const relative = path.relative(parent, arbitraryDir);
+	return !!relative && !relative.startsWith("..") && !path.isAbsolute(relative);
 };

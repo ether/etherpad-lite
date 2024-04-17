@@ -1,8 +1,7 @@
-'use strict';
+"use strict";
 
-const crypto = require('crypto');
-const util = require('util');
-
+const crypto = require("crypto");
+const util = require("util");
 
 /**
  * Promisified version of Node.js's crypto.hkdf.

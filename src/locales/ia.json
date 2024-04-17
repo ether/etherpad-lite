@@ -1,8 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"McDutchie"
-		]
+		"authors": ["McDutchie"]
 	},
 	"admin.page-title": "Pannello administrative – Etherpad",
 	"admin_plugins": "Gestor de plug-ins",

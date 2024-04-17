@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 /**
  * Checks related to Node runtime version
  */
@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-const semver = require('semver');
+const semver = require("semver");
 
 /**
  * Quits if Etherpad is not running on a given minimum Node version
@@ -27,18 +27,22 @@ const semver = require('semver');
  * @param  {String}     minNodeVersion   Minimum required Node version
  */
 exports.enforceMinNodeVersion = (minNodeVersion: string) => {
-  const currentNodeVersion = process.version;
+	const currentNodeVersion = process.version;
 
-  // we cannot use template literals, since we still do not know if we are
-  // running under Node >= 4.0
-  if (semver.lt(currentNodeVersion, minNodeVersion)) {
-    console.error(`Running Etherpad on Node ${currentNodeVersion} is not supported. ` +
-                  `Please upgrade at least to Node ${minNodeVersion}`);
-    process.exit(1);
-  }
+	// we cannot use template literals, since we still do not know if we are
+	// running under Node >= 4.0
+	if (semver.lt(currentNodeVersion, minNodeVersion)) {
+		console.error(
+			`Running Etherpad on Node ${currentNodeVersion} is not supported. ` +
+				`Please upgrade at least to Node ${minNodeVersion}`,
+		);
+		process.exit(1);
+	}
 
-  console.debug(`Running on Node ${currentNodeVersion} ` +
-                `(minimum required Node version: ${minNodeVersion})`);
+	console.debug(
+		`Running on Node ${currentNodeVersion} ` +
+			`(minimum required Node version: ${minNodeVersion})`,
+	);
 };
 
 /**
@@ -49,12 +53,16 @@ exports.enforceMinNodeVersion = (minNodeVersion: string) => {
  * @param {Function} epRemovalVersion Etherpad version that will remove support for deprecated
  *     Node releases
  */
-exports.checkDeprecationStatus = (lowestNonDeprecatedNodeVersion: string, epRemovalVersion:Function) => {
-  const currentNodeVersion = process.version;
+exports.checkDeprecationStatus = (
+	lowestNonDeprecatedNodeVersion: string,
+	epRemovalVersion: Function,
+) => {
+	const currentNodeVersion = process.version;
 
-  if (semver.lt(currentNodeVersion, lowestNonDeprecatedNodeVersion)) {
-    console.warn(
-        `Support for Node ${currentNodeVersion} will be removed in Etherpad ${epRemovalVersion}. ` +
-        `Please consider updating at least to Node ${lowestNonDeprecatedNodeVersion}`);
-  }
+	if (semver.lt(currentNodeVersion, lowestNonDeprecatedNodeVersion)) {
+		console.warn(
+			`Support for Node ${currentNodeVersion} will be removed in Etherpad ${epRemovalVersion}. ` +
+				`Please consider updating at least to Node ${lowestNonDeprecatedNodeVersion}`,
+		);
+	}
 };

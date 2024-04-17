@@ -1,9 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Armenoid",
-			"Kareyac"
-		]
+		"authors": ["Armenoid", "Kareyac"]
 	},
 	"admin_plugins.available_install.value": "Տեղադրել",
 	"admin_plugins.description": "Նկարագրություն",

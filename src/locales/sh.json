@@ -1,9 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Conquistador",
-			"Vlad5250"
-		]
+		"authors": ["Conquistador", "Vlad5250"]
 	},
 	"admin_plugins.available_not-found": "Nijedan plugin nije pronađen.",
 	"admin_plugins.description": "Opis",

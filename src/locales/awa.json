@@ -1,9 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"1AnuraagPandey",
-			"बडा काजी"
-		]
+		"authors": ["1AnuraagPandey", "बडा काजी"]
 	},
 	"index.newPad": "नयाँ प्याड",
 	"pad.toolbar.bold.title": "मोट (Ctrl-B)",

@@ -1,12 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Amire80",
-			"Ofrahod",
-			"Steeve815",
-			"YaronSh",
-			"תומר ט"
-		]
+		"authors": ["Amire80", "Ofrahod", "Steeve815", "YaronSh", "תומר ט"]
 	},
 	"admin.page-title": "לוח ניהול - Etherpad",
 	"admin_plugins": "מנהל תוספים",

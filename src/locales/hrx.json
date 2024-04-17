@@ -1,8 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Paul Beppler"
-		]
+		"authors": ["Paul Beppler"]
 	},
 	"index.newPad": "Neies Pad",
 	"index.createOpenPad": "Pad mit follichendem Noome uffmache:",

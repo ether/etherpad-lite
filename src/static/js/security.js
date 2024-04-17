@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /**
  * Copyright 2009 Google Inc.
@@ -16,4 +16,4 @@
  * limitations under the License.
  */
 
-module.exports = require('security');
+module.exports = require("security");
