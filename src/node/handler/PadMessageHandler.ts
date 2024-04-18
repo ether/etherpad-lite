@@ -88,7 +88,7 @@ exports.socketio = () => {
 const sessioninfos:MapArrayType<any> = {};
 exports.sessioninfos = sessioninfos;
 
-stats.gauge('totalUsers', () => socketio ? socketio.sockets.size : 0);
+stats.gauge('totalUsers', () => socketio ? socketio.engine.clientsCount : 0);
 stats.gauge('activePads', () => {
   const padIds = new Set();
   for (const {padId} of Object.values(sessioninfos)) {
