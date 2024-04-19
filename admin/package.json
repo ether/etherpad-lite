@@ -15,7 +15,7 @@
     "@radix-ui/react-toast": "^1.1.5",
     "i18next": "^23.11.2",
     "i18next-browser-languagedetector": "^7.2.1",
-    "lucide-react": "^0.371.0",
+    "lucide-react": "^0.372.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.3",
@@ -33,7 +33,7 @@
     "socket.io-client": "^4.7.5",
     "typescript": "^5.4.5",
     "vite": "^5.2.9",
-    "vite-plugin-static-copy": "^1.0.2",
+    "vite-plugin-static-copy": "^1.0.3",
     "vite-plugin-svgr": "^4.2.0"
   }
 }
