@@ -250,10 +250,18 @@ const handshake = async () => {
   socket.on('disconnect', (reason) => {
     // The socket.io client will automatically try to reconnect for all reasons other than "io
     // server disconnect".
+    console.log(`Socket disconnected: ${reason}`)
     if (reason !== 'io server disconnect') return;
     socketReconnecting();
     socket.connect();
   });
+
+
+  socket.on('shout', (obj) => {
+    if(obj.type === "COLLABROOM") {
+      console.log("Received message"+obj.data.payload.message)
+    }
+  })
 
   socket.on('reconnecting', socketReconnecting);
 

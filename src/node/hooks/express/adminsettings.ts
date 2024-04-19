@@ -45,6 +45,21 @@ exports.socketio = (hookName:string, {io}:any) => {
     });
 
 
+
+    socket.on('shout', (message: string)=>{
+      io.sockets.emit('shout', {
+        type: "COLLABROOM",
+        data:{
+          type: "shoutMessage",
+          payload: {
+            message: message,
+            timestamp: Date.now()
+          }
+        }
+      });
+    })
+
+
     socket.on('help', ()=> {
       const gitCommit = settings.getGitCommit();
       const epVersion = settings.getEpVersion();

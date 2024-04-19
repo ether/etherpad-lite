@@ -112,6 +112,12 @@
       "hooks": {
         "expressPreSession": "ep_etherpad-lite/node/hooks/express/openapi"
       }
+    },
+    {
+      "name": "ep_message_all",
+      "client_hooks": {
+        "handleClientMessage_shoutMessage": "ep_etherpad-lite/static/js/messageHandler"
+      }
     }
   ]
 }

@@ -604,6 +604,25 @@ pre {
     outline: none;
 }
 
+
+.send-message {
+    position: relative;
+}
+
+.send-message input {
+    width: auto;
+}
+
+.send-message {
+}
+
+.send-message svg {
+    position: absolute;
+    right: 3px;
+    bottom: -3px;
+    left: auto !important;
+}
+
 .search-field svg {
     position: absolute;
     left: 3px;

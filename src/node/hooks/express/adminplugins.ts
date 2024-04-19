@@ -87,6 +87,7 @@ exports.socketio = (hookName:string, args:ArgsExpressType, cb:Function) => {
       });
     });
 
+
     socket.on('uninstall', (pluginName:string) => {
       uninstall(pluginName, (err:ErrorCaused) => {
         if (err) console.warn(err.stack || err.toString());

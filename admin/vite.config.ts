@@ -29,7 +29,12 @@ export default defineConfig({
             target: 'http://localhost:9001',
             changeOrigin: true,
             rewrite: (path) => path.replace(/^\/admin-prox/, '/admin/')
+        },
+        '/stats': {
+            target: 'http://localhost:9001',
+            changeOrigin: true,
+            rewrite: (path) => path.replace(/^\/admin-prox/, '/admin/')
         }
-    }
+        }
   }
 })
