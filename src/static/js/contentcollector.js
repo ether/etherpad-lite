@@ -534,7 +534,7 @@ const makeContentCollector = (collectStyles, abrowser, apool, className2Author) 
               // As the concept of parent's doesn't exist when processing each domline...
             }
           } else {
-            // Below needs more testin if it's neccesary as _exitList should take care of this.
+            // Below needs more testin if it's necessary as _exitList should take care of this.
             // delete state.start;
             // delete state.listNesting;
             // _recalcAttribString(state);
