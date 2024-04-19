@@ -225,7 +225,7 @@ exports.callAll = (hookName, context) => {
 // provides settles (resolves or rejects). If a hook function attempts to settle again (e.g., call
 // the callback again, or return a value and also call the callback) then the second attempt has no
 // effect except either an error message is logged or an Error object is thrown depending on whether
-// the the subsequent attempt is a duplicate (same value or error) or different, respectively.
+// the subsequent attempt is a duplicate (same value or error) or different, respectively.
 //
 // See the tests in src/tests/backend/specs/hooks.js for examples of supported and prohibited
 // behaviors.

@@ -167,7 +167,7 @@ const getUrlVars = () => new URL(window.location.href).searchParams;
 
 const sendClientReady = (isReconnect) => {
   let padId = document.location.pathname.substring(document.location.pathname.lastIndexOf('/') + 1);
-  // unescape neccesary due to Safari and Opera interpretation of spaces
+  // unescape necessary due to Safari and Opera interpretation of spaces
   padId = decodeURIComponent(padId);
 
   if (!isReconnect) {
@@ -213,7 +213,7 @@ const sendClientReady = (isReconnect) => {
 const handshake = async () => {
   let receivedClientVars = false;
   let padId = document.location.pathname.substring(document.location.pathname.lastIndexOf('/') + 1);
-  // unescape neccesary due to Safari and Opera interpretation of spaces
+  // unescape necessary due to Safari and Opera interpretation of spaces
   padId = decodeURIComponent(padId);
 
   // padId is used here for sharding / scaling.  We prefix the padId with padId: so it's clear
