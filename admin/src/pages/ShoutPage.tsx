@@ -62,7 +62,6 @@ export const ShoutPage = ()=>{
                 }} className="send-message search-field" style={{display: 'flex', gap: '10px'}}>
                     <Switch.Root title="Change sticky message" className="SwitchRoot" checked={sticky}
                                  onCheckedChange={() => {
-                                     console.log('changed');
                                      setSticky(!sticky);
              }}>
                  <Switch.Thumb className="SwitchThumb"/>
