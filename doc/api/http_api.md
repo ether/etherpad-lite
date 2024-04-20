@@ -189,7 +189,7 @@ E.g. a service that creates a pad for a user or a service that inserts a text in
   "client_id": "client_credentials",
   "redirect_uris": [],
   "response_types": [],
-  "grant_types": ["client_credentials"],
+  "grant_types": ["code"],
   "client_secret": "client_credentials",
   "extraParams": [
     {
