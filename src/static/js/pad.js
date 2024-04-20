@@ -259,7 +259,15 @@ const handshake = async () => {
 
   socket.on('shout', (obj) => {
     if(obj.type === "COLLABROOM") {
-      console.log("Received message"+obj.data.payload.message)
+      let date = new Date(obj.data.payload.timestamp);
+      $.gritter.add({
+        // (string | mandatory) the heading of the notification
+        title: 'Admin message',
+        // (string | mandatory) the text inside the notification
+        text: '[' + date.toLocaleTimeString() + ']: ' + obj.data.payload.message.message,
+        // (bool | optional) if you want it to fade out on its own or just sit there
+        sticky: obj.data.payload.message.sticky
+      });
     }
   })
 

@@ -9,19 +9,12 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@radix-ui/react-switch": "^1.0.3"
+  },
   "devDependencies": {
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-toast": "^1.1.5",
-    "i18next": "^23.11.2",
-    "i18next-browser-languagedetector": "^7.2.1",
-    "lucide-react": "^0.372.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-hook-form": "^7.51.3",
-    "react-i18next": "^14.1.0",
-    "react-router-dom": "^6.22.3",
-    "zustand": "^4.5.2",
     "@types/react": "^18.2.79",
     "@types/react-dom": "^18.2.25",
     "@typescript-eslint/eslint-plugin": "^7.7.0",
@@ -30,10 +23,19 @@
     "eslint": "^9.0.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "i18next": "^23.11.2",
+    "i18next-browser-languagedetector": "^7.2.1",
+    "lucide-react": "^0.372.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.51.3",
+    "react-i18next": "^14.1.0",
+    "react-router-dom": "^6.22.3",
     "socket.io-client": "^4.7.5",
     "typescript": "^5.4.5",
     "vite": "^5.2.9",
     "vite-plugin-static-copy": "^1.0.3",
-    "vite-plugin-svgr": "^4.2.0"
+    "vite-plugin-svgr": "^4.2.0",
+    "zustand": "^4.5.2"
   }
 }
