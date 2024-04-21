@@ -6,7 +6,7 @@ import {NavLink, Outlet, useNavigate} from "react-router-dom";
 import {useStore} from "./store/store.ts";
 import {LoadingScreen} from "./utils/LoadingScreen.tsx";
 import {Trans, useTranslation} from "react-i18next";
-import {Cable, Construction, Crown, NotepadText, Wrench} from "lucide-react";
+import {Cable, Construction, Crown, NotepadText, Wrench, PhoneCall} from "lucide-react";
 
 const WS_URL = import.meta.env.DEV? 'http://localhost:9001' : ''
 export const App = ()=> {
@@ -96,8 +96,10 @@ export const App = ()=> {
                 <ul>
                     <li><NavLink to="/plugins"><Cable/><Trans i18nKey="admin_plugins"/></NavLink></li>
                     <li><NavLink to={"/settings"}><Wrench/><Trans i18nKey="admin_settings"/></NavLink></li>
-                    <li>          <NavLink to={"/help"}> <Construction/> <Trans i18nKey="admin_plugins_info"/></NavLink></li>
-                    <li><NavLink to={"/pads"}><NotepadText/><Trans i18nKey="ep_admin_pads:ep_adminpads2_manage-pads"/></NavLink></li>
+                    <li><NavLink to={"/help"}> <Construction/> <Trans i18nKey="admin_plugins_info"/></NavLink></li>
+                    <li><NavLink to={"/pads"}><NotepadText/><Trans
+                        i18nKey="ep_admin_pads:ep_adminpads2_manage-pads"/></NavLink></li>
+                    <li><NavLink to={"/shout"}><PhoneCall/>Communication</NavLink></li>
                 </ul>
             </div>
         </div>

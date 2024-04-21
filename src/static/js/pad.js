@@ -250,10 +250,26 @@ const handshake = async () => {
   socket.on('disconnect', (reason) => {
     // The socket.io client will automatically try to reconnect for all reasons other than "io
     // server disconnect".
+    console.log(`Socket disconnected: ${reason}`)
     if (reason !== 'io server disconnect') return;
     socketReconnecting();
     socket.connect();
   });
+
+
+  socket.on('shout', (obj) => {
+    if(obj.type === "COLLABROOM") {
+      let date = new Date(obj.data.payload.timestamp);
+      $.gritter.add({
+        // (string | mandatory) the heading of the notification
+        title: 'Admin message',
+        // (string | mandatory) the text inside the notification
+        text: '[' + date.toLocaleTimeString() + ']: ' + obj.data.payload.message.message,
+        // (bool | optional) if you want it to fade out on its own or just sit there
+        sticky: obj.data.payload.message.sticky
+      });
+    }
+  })
 
   socket.on('reconnecting', socketReconnecting);
 
