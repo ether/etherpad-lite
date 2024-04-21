@@ -12,3 +12,6 @@ max_line_length = off
 
 [CHANGELOG.md]
 indent_size = 4
+
+[*.bat]
+end_of_line = crlf
