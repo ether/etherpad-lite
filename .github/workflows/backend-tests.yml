@@ -36,7 +36,7 @@ jobs:
       - uses: pnpm/action-setup@v3
         name: Install pnpm
         with:
-            version: 8
+            version: 9.0.4
             run_install: false
       - name: Get pnpm store directory
         shell: bash
@@ -93,7 +93,7 @@ jobs:
       - uses: pnpm/action-setup@v3
         name: Install pnpm
         with:
-          version: 8
+          version: 9.0.4
           run_install: false
       - name: Get pnpm store directory
         shell: bash
@@ -163,7 +163,7 @@ jobs:
       - uses: pnpm/action-setup@v3
         name: Install pnpm
         with:
-          version: 8
+          version: 9.0.4
           run_install: false
       - name: Get pnpm store directory
         shell: bash
@@ -216,7 +216,7 @@ jobs:
       - uses: pnpm/action-setup@v3
         name: Install pnpm
         with:
-          version: 8
+          version: 9.0.4
           run_install: false
       - name: Get pnpm store directory
         shell: bash
