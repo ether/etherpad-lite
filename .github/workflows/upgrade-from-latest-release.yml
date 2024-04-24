@@ -38,7 +38,7 @@ jobs:
       - uses: pnpm/action-setup@v3
         name: Install pnpm
         with:
-          version: 8
+          version: 9
           run_install: false
       - name: Only install direct dependencies
         run: pnpm config set auto-install-peers false
