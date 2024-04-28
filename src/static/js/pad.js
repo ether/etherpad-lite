@@ -251,7 +251,7 @@ const handshake = async () => {
     // The socket.io client will automatically try to reconnect for all reasons other than "io
     // server disconnect".
     console.log(`Socket disconnected: ${reason}`)
-    if (reason !== 'io server disconnect' && reason !== 'ping timeout') return;
+    if (reason !== 'io server disconnect' || reason !== 'ping timeout') return;
     socketReconnecting();
     socket.connect();
   });
