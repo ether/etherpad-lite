@@ -167,7 +167,7 @@ const getUrlVars = () => new URL(window.location.href).searchParams;
 
 const sendClientReady = (isReconnect) => {
   let padId = document.location.pathname.substring(document.location.pathname.lastIndexOf('/') + 1);
-  // unescape neccesary due to Safari and Opera interpretation of spaces
+  // unescape necessary due to Safari and Opera interpretation of spaces
   padId = decodeURIComponent(padId);
 
   if (!isReconnect) {
@@ -213,7 +213,7 @@ const sendClientReady = (isReconnect) => {
 const handshake = async () => {
   let receivedClientVars = false;
   let padId = document.location.pathname.substring(document.location.pathname.lastIndexOf('/') + 1);
-  // unescape neccesary due to Safari and Opera interpretation of spaces
+  // unescape necessary due to Safari and Opera interpretation of spaces
   padId = decodeURIComponent(padId);
 
   // padId is used here for sharding / scaling.  We prefix the padId with padId: so it's clear
@@ -250,10 +250,26 @@ const handshake = async () => {
   socket.on('disconnect', (reason) => {
     // The socket.io client will automatically try to reconnect for all reasons other than "io
     // server disconnect".
-    if (reason !== 'io server disconnect') return;
+    console.log(`Socket disconnected: ${reason}`)
+    if (reason !== 'io server disconnect' || reason !== 'ping timeout') return;
     socketReconnecting();
     socket.connect();
   });
+
+
+  socket.on('shout', (obj) => {
+    if(obj.type === "COLLABROOM") {
+      let date = new Date(obj.data.payload.timestamp);
+      $.gritter.add({
+        // (string | mandatory) the heading of the notification
+        title: 'Admin message',
+        // (string | mandatory) the text inside the notification
+        text: '[' + date.toLocaleTimeString() + ']: ' + obj.data.payload.message.message,
+        // (bool | optional) if you want it to fade out on its own or just sit there
+        sticky: obj.data.payload.message.sticky
+      });
+    }
+  })
 
   socket.on('reconnecting', socketReconnecting);
 

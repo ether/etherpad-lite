@@ -669,5 +669,16 @@
           "redirect_uris": ["${USER_REDIRECT:http://localhost:9001/}"]
         }
       ]
-    }
+    },
+
+  /* Set the time to live for the tokens
+     This is the time of seconds a user is logged into Etherpad
+  "ttl": {
+      "AccessToken": 3600,
+      "AuthorizationCode": 600,
+      "ClientCredentials": 3600,
+      "IdToken": 3600,
+      "RefreshToken": 86400
+  }
+  */
 }

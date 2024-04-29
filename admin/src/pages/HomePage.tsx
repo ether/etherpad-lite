@@ -100,7 +100,15 @@ export const HomePage = () => {
         pluginsSocket!.on('results:search', (data: {
             results: PluginDef[]
         }) => {
-            setPlugins(data.results)
+            if (Array.isArray(data.results) && data.results.length > 0) {
+                setPlugins(data.results)
+            } else {
+                useStore.getState().setToastState({
+                    open: true,
+                    title: "Error retrieving plugins",
+                    success: false
+                })
+            }
         })
 
 
@@ -142,7 +150,7 @@ export const HomePage = () => {
             <tbody style={{overflow: 'auto'}}>
             {sortedInstalledPlugins.map((plugin, index) => {
                 return <tr key={index}>
-                    <td>{plugin.name}</td>
+                    <td><a rel="noopener noreferrer" href={`https://npmjs.com/${plugin.name}`} target="_blank">{plugin.name}</a></td>
                     <td>{plugin.version}</td>
                     <td>
                     {

@@ -9,6 +9,7 @@ import express, {Request, Response} from 'express';
 import {format} from 'url'
 import {ParsedUrlQuery} from "node:querystring";
 import {Http2ServerRequest, Http2ServerResponse} from "node:http2";
+import {MapArrayType} from "../types/MapType";
 
 const configuration: Configuration = {
     scopes: ['openid', 'profile', 'email'],
@@ -19,7 +20,6 @@ const configuration: Configuration = {
                 is_admin: boolean;
             }
         }
-
         const usersArray1 = Object.keys(users).map((username) => ({
             username,
             ...users[username]
@@ -47,13 +47,7 @@ const configuration: Configuration = {
             } as Account
         }
     },
-    ttl:{
-        AccessToken: 1 * 60 * 60, // 1 hour in seconds
-        AuthorizationCode: 10 * 60, // 10 minutes in seconds
-        ClientCredentials: 1 * 60 * 60, // 1 hour in seconds
-        IdToken: 1 * 60 * 60, // 1 hour in seconds
-        RefreshToken: 1 * 24 * 60 * 60, // 1 day in seconds
-    },
+    ttl: settings.ttl,
     claims: {
         openid: ['sub'],
         email: ['email'],
@@ -99,28 +93,29 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
         features:{
              userinfo: {enabled: true},
              claimsParameter: {enabled: true},
+            clientCredentials: {enabled: true},
             devInteractions: {enabled: false},
           resourceIndicators: {enabled: true,   defaultResource(ctx) {
                   return ctx.origin;
               },
               getResourceServerInfo(ctx, resourceIndicator, client) {
                   return {
-                      scope: client.scope as string,
+                      scope: "openid",
                       audience: 'account',
                       accessTokenFormat: 'jwt',
                   };
               },
               useGrantedResource(ctx, model) {
                   return true;
-              },},
+              },
+          },
             jwtResponseModes: {enabled: true},
         },
         clientBasedCORS: (ctx, origin, client) => {
           return true
         },
+        extraParams: [],
         extraTokenClaims: async (ctx, token) => {
-
-
             if(token.kind === 'AccessToken') {
                 // Add your custom claims here. For example:
                 const users = settings.users as {
@@ -139,6 +134,19 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
                 return {
                     admin: account?.is_admin
                 };
+            } else if (token.kind === "ClientCredentials") {
+                let extraParams: MapArrayType<string> = {}
+
+                settings.sso.clients
+                    .filter((client:any) => client.client_id === token.clientId)
+                    .forEach((client:any) => {
+                    if(client.extraParams !== undefined) {
+                        client.extraParams.forEach((param:any) => {
+                            extraParams[param.name] = param.value
+                        })
+                    }
+                })
+                return extraParams
             }
         },
         clients: settings.sso.clients
@@ -252,7 +260,7 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
 
     args.app.use('/views/', express.static(path.join(settings.root,'src','static', 'oidc'), {maxAge: 1000 * 60 * 60 * 24}));
 
-    /*
+
     oidc.on('authorization.error', (ctx, error) => {
         console.log('authorization.error', error);
     })
@@ -268,7 +276,7 @@ export const expressCreateServer = async (hookName: string, args: ArgsExpressTyp
     })
     oidc.on('revocation.error', (ctx, error) => {
         console.log('revocation.error', error);
-    })*/
+    })
     args.app.use("/oidc", oidc.callback());
     //cb();
 }

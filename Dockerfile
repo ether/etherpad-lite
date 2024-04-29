@@ -8,7 +8,7 @@ FROM node:alpine as adminBuild
 
 WORKDIR /opt/etherpad-lite
 COPY ./ ./
-RUN cd ./admin && npm install -g pnpm && pnpm install && pnpm run build --outDir ./dist
+RUN cd ./admin && npm install -g pnpm@9.0.4 && pnpm install && pnpm run build --outDir ./dist
 RUN cd ./ui && pnpm install && pnpm run build --outDir ./dist
 
 
@@ -91,7 +91,7 @@ RUN mkdir -p "${EP_DIR}" && chown etherpad:etherpad "${EP_DIR}"
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199
 RUN  \
     mkdir -p /usr/share/man/man1 && \
-    npm install pnpm -g  && \
+    npm install pnpm@9.0.4 -g  && \
     apk update && apk upgrade && \
     apk add --no-cache \
         ca-certificates \

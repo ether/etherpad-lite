@@ -1,6 +1,6 @@
 {
   "name": "bin",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "",
   "main": "checkAllPads.js",
   "directories": {
@@ -15,9 +15,9 @@
     "ueberdb2": "^4.2.63"
   },
   "devDependencies": {
-    "@types/node": "^20.12.5",
+    "@types/node": "^20.12.7",
     "@types/semver": "^7.5.8",
-    "typescript": "^5.4.4"
+    "typescript": "^5.4.5"
   },
   "scripts": {
     "checkPad": "node --import tsx checkPad.ts",
