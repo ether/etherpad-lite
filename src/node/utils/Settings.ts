@@ -98,6 +98,16 @@ exports.title = 'Etherpad';
  */
 exports.favicon = null;
 
+exports.ttl = {
+    AccessToken: 1 * 60 * 60, // 1 hour in seconds
+    AuthorizationCode: 10 * 60, // 10 minutes in seconds
+    ClientCredentials: 1 * 60 * 60, // 1 hour in seconds
+    IdToken: 1 * 60 * 60, // 1 hour in seconds
+    RefreshToken: 1 * 24 * 60 * 60, // 1 day in seconds
+}
+
+
+
 /*
  * Skin name.
  *
