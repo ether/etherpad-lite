@@ -56,7 +56,7 @@
     "log4js": "^6.9.1",
     "measured-core": "^2.0.0",
     "mime-types": "^2.1.35",
-    "oidc-provider": "^8.4.5",
+    "oidc-provider": "^8.4.6",
     "openapi-backend": "^5.10.6",
     "proxy-addr": "^2.0.7",
     "rate-limiter-flexible": "^5.0.0",
