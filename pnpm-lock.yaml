@@ -255,8 +255,8 @@ importers:
         specifier: ^4.7.5
         version: 4.7.5
       superagent:
-        specifier: ^8.1.2
-        version: 8.1.2
+        specifier: ^9.0.2
+        version: 9.0.2
       terser:
         specifier: ^5.30.3
         version: 5.31.0
@@ -4273,6 +4273,7 @@ packages:
       hexoid: 1.0.0
       once: 1.4.0
       qs: 6.12.1
+    dev: true
 
   /formidable@3.5.1:
     resolution: {integrity: sha512-WJWKelbRHN41m5dumb0/k8TeAx7Id/y3a+Z7QfhxP/htI9Js5zYaEDtG8uMgG0vM0lOlqnmjE99/kfpOYi/0Og==}
@@ -6775,6 +6776,7 @@ packages:
       semver: 7.6.0
     transitivePeerDependencies:
       - supports-color
+    dev: true
 
   /superagent@9.0.2:
     resolution: {integrity: sha512-xuW7dzkUpcJq7QnhOsnNUgtYp3xRwpt2F7abdRYIpCsAt0hhUqia0EdxyXZQQpNmGtsCzYHryaKSV3q3GJnq7w==}
@@ -6791,7 +6793,6 @@ packages:
       qs: 6.12.1
     transitivePeerDependencies:
       - supports-color
-    dev: true
 
   /supertest@7.0.0:
     resolution: {integrity: sha512-qlsr7fIC0lSddmA3tzojvzubYxvlGtzumcdHgPwbFWMISQwL22MhM2Y3LNt+6w9Yyx7559VW5ab70dgphm8qQA==}
