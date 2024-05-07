@@ -14,9 +14,6 @@ capabilities, and runs on _your_ server, under _your_ control.
 
 Wikimedia provide a [public Etherpad instance for you to Try Etherpad out.](https://etherpad.wikimedia.org) or [use another public Etherpad instance to see other features](https://github.com/ether/etherpad-lite/wiki/Sites-That-Run-Etherpad#sites-that-run-etherpad)
 
-## Project Status
-
-We're looking for maintainers and have some funding available.  Please contact John McLear if you can help.
 
 ### Code Quality
 
@@ -104,7 +101,7 @@ volumes:
 
 [Node.js](https://nodejs.org/) >= **18.18.2**.
 
-### GNU/Linux and other UNIX-like systems
+
 
 #### Quick install on Debian/Ubuntu
 
@@ -181,10 +178,6 @@ Etherpad is very customizable through plugins.
 
 ![Full Features](doc/public/etherpad_full_features.png "You can add a lot of plugins !")
 
-### Available Plugins
-
-For a list of available plugins, see the [plugins
-site](https://static.etherpad.org).
 
 ### Plugin Installation
 
