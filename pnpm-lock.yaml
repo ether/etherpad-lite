@@ -113,8 +113,8 @@ importers:
         specifier: ^6.9.1
         version: 6.9.1
       semver:
-        specifier: ^7.6.0
-        version: 7.6.0
+        specifier: ^7.6.1
+        version: 7.6.1
       tsx:
         specifier: ^4.7.2
         version: 4.9.0
@@ -246,8 +246,8 @@ importers:
         specifier: 1.0.0
         version: 1.0.0
       semver:
-        specifier: ^7.6.0
-        version: 7.6.0
+        specifier: ^7.6.1
+        version: 7.6.1
       socket.io:
         specifier: ^4.7.5
         version: 4.7.5
@@ -2393,7 +2393,7 @@ packages:
       globby: 11.1.0
       is-glob: 4.0.3
       minimatch: 9.0.4
-      semver: 7.6.0
+      semver: 7.6.1
       ts-api-utils: 1.3.0(typescript@5.4.5)
       typescript: 5.4.5
     transitivePeerDependencies:
@@ -2413,7 +2413,7 @@ packages:
       '@typescript-eslint/types': 7.8.0
       '@typescript-eslint/typescript-estree': 7.8.0(typescript@5.4.5)
       eslint: 9.1.1
-      semver: 7.6.0
+      semver: 7.6.1
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -2955,7 +2955,7 @@ packages:
   /builtins@5.1.0:
     resolution: {integrity: sha512-SW9lzGTLvWTP1AY8xeAMZimqDrIaSdLQUcVr9DMef51niJ022Ri87SwRRKYm4A6iHfkPaiVUu/Duw2Wc4J7kKg==}
     dependencies:
-      semver: 7.6.0
+      semver: 7.6.1
     dev: true
 
   /bytes@3.1.2:
@@ -3695,7 +3695,7 @@ packages:
       eslint: '>=6.0.0'
     dependencies:
       eslint: 9.1.1
-      semver: 7.6.0
+      semver: 7.6.1
     dev: true
 
   /eslint-config-etherpad@4.0.4(eslint@9.1.1)(typescript@5.4.5):
@@ -3881,7 +3881,7 @@ packages:
       is-core-module: 2.13.1
       minimatch: 3.1.2
       resolve: 1.22.8
-      semver: 7.6.0
+      semver: 7.6.1
     dev: true
 
   /eslint-plugin-prefer-arrow@1.2.3(eslint@9.1.1):
@@ -5165,7 +5165,7 @@ packages:
       lodash.isstring: 4.0.1
       lodash.once: 4.1.1
       ms: 2.1.3
-      semver: 7.6.0
+      semver: 7.6.1
     dev: false
 
   /just-extend@6.2.0:
@@ -5277,7 +5277,7 @@ packages:
       lockfile: 1.0.4
       node-fetch: 2.7.0
       proxy-agent: 6.4.0
-      semver: 7.6.0
+      semver: 7.6.1
       tar: 6.2.1
       url-join: 4.0.1
     transitivePeerDependencies:
@@ -5395,6 +5395,7 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       yallist: 4.0.0
+    dev: true
 
   /lru-cache@7.18.3:
     resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
@@ -6449,6 +6450,12 @@ packages:
     hasBin: true
     dependencies:
       lru-cache: 6.0.0
+    dev: true
+
+  /semver@7.6.1:
+    resolution: {integrity: sha512-f/vbBsu+fOiYt+lmwZV0rVwJScl46HppnOA1ZvIuBWKOTlllpyJ3bfVax76/OrhCH38dyxoDIA8K7uB963IYgA==}
+    engines: {node: '>=10'}
+    hasBin: true
 
   /send@0.18.0:
     resolution: {integrity: sha512-qqWzuOjSFOuqPjFe4NOsMLafToQQwBSOEpS+FwEt3A2V3vKubTquT3vmLTQpFgMXp8AlFWFuP1qKaJZOtPpVXg==}
@@ -6773,7 +6780,7 @@ packages:
       methods: 1.1.2
       mime: 2.6.0
       qs: 6.12.1
-      semver: 7.6.0
+      semver: 7.6.1
     transitivePeerDependencies:
       - supports-color
     dev: true
