@@ -116,8 +116,8 @@ importers:
         specifier: ^7.6.1
         version: 7.6.1
       tsx:
-        specifier: ^4.7.2
-        version: 4.9.0
+        specifier: ^4.9.3
+        version: 4.9.3
       ueberdb2:
         specifier: ^4.2.63
         version: 4.2.78
@@ -267,8 +267,8 @@ importers:
         specifier: 0.6.8
         version: 0.6.8
       tsx:
-        specifier: ^4.7.2
-        version: 4.9.0
+        specifier: ^4.9.3
+        version: 4.9.3
       ueberdb2:
         specifier: ^4.2.63
         version: 4.2.78
@@ -6978,8 +6978,8 @@ packages:
     engines: {node: '>=0.6.x'}
     dev: false
 
-  /tsx@4.9.0:
-    resolution: {integrity: sha512-UY0UUhDPL6MkqkZU4xTEjEBOLfV+RIt4xeeJ1qwK73xai4/zveG+X6+tieILa7rjtegUW2LE4p7fw7gAoLuytA==}
+  /tsx@4.9.3:
+    resolution: {integrity: sha512-czVbetlILiyJZI5zGlj2kw9vFiSeyra9liPD4nG+Thh4pKTi0AmMEQ8zdV/L2xbIVKrIqif4sUNrsMAOksx9Zg==}
     engines: {node: '>=18.0.0'}
     hasBin: true
     dependencies:
