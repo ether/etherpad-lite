@@ -23,7 +23,7 @@
     "eslint": "^9.2.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.7",
-    "i18next": "^23.11.2",
+    "i18next": "^23.11.4",
     "i18next-browser-languagedetector": "^7.2.1",
     "lucide-react": "^0.378.0",
     "react": "^18.2.0",
