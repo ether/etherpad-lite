@@ -156,6 +156,15 @@ exports.socketIo = {
     maxHttpBufferSize: 10000,
 };
 
+
+/*
+  The authentication method used by the server.
+  The default value is sso
+  If you want to use the old authentication system, change this to apikey
+ */
+exports.authenticationMethod = 'sso'
+
+
 /*
  * The Type of the database
  */
@@ -518,6 +527,8 @@ exports.getGitCommit = () => {
 
 // Return etherpad version from package.json
 exports.getEpVersion = () => require('../../package.json').version;
+
+
 
 /**
  * Receives a settingsObj and, if the property name is a valid configuration

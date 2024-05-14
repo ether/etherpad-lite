@@ -172,6 +172,13 @@
   "showSettingsInAdminPage": "${SHOW_SETTINGS_IN_ADMIN_PAGE:true}",
 
   /*
+    The authentication method used by the server.
+    The default value is sso
+    If you want to use the old authentication system, change this to apikey
+   */
+  "authenticationMethod": "${AUTHENTICATION_METHOD:sso}",
+
+  /*
    * Node native SSL support
    *
    * This is disabled by default.

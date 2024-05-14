@@ -27,7 +27,7 @@ import createHTTPError from 'http-errors';
 import {Http2ServerRequest, Http2ServerResponse} from "node:http2";
 import {publicKeyExported} from "../security/OAuth2Provider";
 import {jwtVerify} from "jose";
-
+import {apikey} from './APIKeyHandler'
 // a list of all functions
 const version:MapArrayType<any> = {};
 
@@ -149,6 +149,7 @@ exports.version = version;
 
 
 type APIFields = {
+  apikey: string;
   api_key: string;
   padID: string;
   padName: string;
@@ -160,9 +161,9 @@ type APIFields = {
  * @param {String} functionName the name of the called function
  * @param fields the params of the called function
  * @param req express request object
- * @param res express response object
  */
-exports.handle = async function (apiVersion: string, functionName: string, fields: APIFields, req: Http2ServerRequest, res: Http2ServerResponse) {
+exports.handle = async function (apiVersion: string, functionName: string, fields: APIFields,
+                                 req: Http2ServerRequest) {
   // say goodbye if this is an unknown API version
   if (!(apiVersion in version)) {
     throw new createHTTPError.NotFound('no such api version');
@@ -177,15 +178,20 @@ exports.handle = async function (apiVersion: string, functionName: string, field
     throw new createHTTPError.Unauthorized('no or wrong API Key');
   }
 
-  try {
-    await jwtVerify(req.headers.authorization!.replace("Bearer ", ""), publicKeyExported!, {algorithms: ['RS256'],
-    requiredClaims: ["admin"]})
-
-  } catch (e) {
-    throw new createHTTPError.Unauthorized('no or wrong API Key');
+  if (apikey !== null && apikey.trim().length > 0) {
+    fields.apikey = fields.apikey || fields.api_key;
+    // API key is configured, check if it is valid
+    if (fields.apikey !== apikey!.trim()) {
+      throw new createHTTPError.Unauthorized('no or wrong API Key');
+    }
+  } else {
+    try {
+      await jwtVerify(req.headers.authorization!.replace("Bearer ", ""), publicKeyExported!, {algorithms: ['RS256'],
+        requiredClaims: ["admin"]})
+    } catch (e) {
+      throw new createHTTPError.Unauthorized('no or wrong OAuth token');
+    }
   }
-
-
 
   // sanitize any padIDs before continuing
   if (fields.padID) {
