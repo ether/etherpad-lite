@@ -587,6 +587,13 @@
   "importMaxFileSize": 52428800, // 50 * 1024 * 1024
 
   /*
+    The authentication method used by the server.
+    The default value is sso
+    If you want to use the old authentication system, change this to apikey
+   */
+  "authenticationMethod": "${AUTHENTICATION_METHOD:sso}",
+
+  /*
    * From Etherpad 1.8.5 onwards, when Etherpad is in production mode commits from individual users are rate limited
    *
    * The default is to allow at most 10 changes per IP in a 1 second window.

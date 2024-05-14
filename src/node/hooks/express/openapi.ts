@@ -608,7 +608,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
       for (const funcName of Object.keys(apiHandler.version[version])) {
         const handler = async (c: any, req:any, res:any) => {
           // parse fields from request
-          const {header, params, query} = c.request;
+          const {headers, params, query} = c.request;
 
           // read form data if method was POST
           let formData:MapArrayType<any> = {};
@@ -622,8 +622,7 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
             }
           }
 
-          const fields = Object.assign({}, header, params, query, formData);
-
+          const fields = Object.assign({}, headers, params, query, formData);
           if (logger.isDebugEnabled()) {
             logger.debug(`REQUEST, v${version}:${funcName}, ${JSON.stringify(fields)}`);
           }
