@@ -756,7 +756,6 @@ const lookupEnvironmentVariables = (obj: MapArrayType<any>) => {
 
     //console.log(root.collectFromLeafsUpwards())
     const rooting = root.collectFromLeafsUpwards()
-    console.log("Rooting is", rooting.ADMIN)
     obj = Object.assign(obj, rooting)
     return obj;
 };

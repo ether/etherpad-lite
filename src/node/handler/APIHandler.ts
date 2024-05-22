@@ -153,6 +153,7 @@ type APIFields = {
   api_key: string;
   padID: string;
   padName: string;
+  authorization: string;
 }
 
 /**
@@ -179,7 +180,7 @@ exports.handle = async function (apiVersion: string, functionName: string, field
   }
 
   if (apikey !== null && apikey.trim().length > 0) {
-    fields.apikey = fields.apikey || fields.api_key;
+    fields.apikey = fields.apikey || fields.api_key || fields.authorization;
     // API key is configured, check if it is valid
     if (fields.apikey !== apikey!.trim()) {
       throw new createHTTPError.Unauthorized('no or wrong API Key');
