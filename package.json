@@ -46,6 +46,5 @@
     "url": "https://github.com/ether/etherpad-lite.git"
   },
   "version": "2.0.3",
-  "license": "Apache-2.0",
-  "packageManager": "pnpm@8.15.6+sha256.01c01eeb990e379b31ef19c03e9d06a14afa5250b82e81303f88721c99ff2e6f"
+  "license": "Apache-2.0"
 }
