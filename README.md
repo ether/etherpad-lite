@@ -195,7 +195,7 @@ Alternatively, you can install plugins from the command line:
 
 ```sh
 cd /path/to/etherpad-lite
-pnpm run install-plugins ep_${plugin_name}
+pnpm run plugins i ep_${plugin_name}
 ```
 
 Also see [the plugin wiki
@@ -207,7 +207,7 @@ Run the following command in your Etherpad folder to get all of the features
 visible in the above demo gif:
 
 ```sh
-pnpm run install-plugins \
+pnpm run plugins i \
   ep_align \
   ep_comments_page \
   ep_embedded_hyperlinks2 \

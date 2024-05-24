@@ -78,7 +78,7 @@ jobs:
       -
         name: Install Etherpad plugins
         run: >
-          pnpm run install-plugins
+          pnpm run plugins i
           ep_align
           ep_author_hover
           ep_cursortrace
