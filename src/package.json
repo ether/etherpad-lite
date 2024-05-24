@@ -83,7 +83,7 @@
     "etherpad-lite": "node/server.ts"
   },
   "devDependencies": {
-    "@playwright/test": "^1.44.0",
+    "@playwright/test": "^1.44.1",
     "@types/async": "^3.2.24",
     "@types/express": "^4.17.21",
     "@types/formidable": "^3.4.5",
