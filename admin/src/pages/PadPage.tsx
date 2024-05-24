@@ -167,10 +167,11 @@ export const PadPage = ()=>{
             }}><ChevronLeft/><span>Previous Page</span></button>
             <span>{currentPage+1} out of {pages}</span>
             <button disabled={pages == currentPage+1} onClick={()=>{
-                setCurrentPage(currentPage+1)
+              const newCurrentPage = currentPage+1
+                setCurrentPage(newCurrentPage)
                 setSearchParams({
                     ...searchParams,
-                    offset: (Number(currentPage)-1)*searchParams.limit
+                    offset: (Number(newCurrentPage))*searchParams.limit
                 })
             }}><span>Next Page</span><ChevronRight/></button>
         </div>
