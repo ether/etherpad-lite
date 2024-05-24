@@ -175,9 +175,7 @@ exports.handle = async function (apiVersion: string, functionName: string, field
     throw new createHTTPError.NotFound('no such function');
   }
 
-  if(!req.headers.authorization) {
-    throw new createHTTPError.Unauthorized('no or wrong API Key');
-  }
+
 
   if (apikey !== null && apikey.trim().length > 0) {
     fields.apikey = fields.apikey || fields.api_key || fields.authorization;
@@ -186,6 +184,9 @@ exports.handle = async function (apiVersion: string, functionName: string, field
       throw new createHTTPError.Unauthorized('no or wrong API Key');
     }
   } else {
+    if(!req.headers.authorization) {
+      throw new createHTTPError.Unauthorized('no or wrong API Key');
+    }
     try {
       await jwtVerify(req.headers.authorization!.replace("Bearer ", ""), publicKeyExported!, {algorithms: ['RS256'],
         requiredClaims: ["admin"]})
