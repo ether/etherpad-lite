@@ -69,7 +69,7 @@ jobs:
         working-directory: ./etherpad-lite
         run: |
           pnpm link --global $PLUGIN_NAME
-          pnpm run install-plugins --path  ../../plugin
+          pnpm run plugins i --path  ../../plugin
         env:
           PLUGIN_NAME: ${{ steps.plugin_name.outputs.plugin_name }}
       - name: Link ep_etherpad-lite
