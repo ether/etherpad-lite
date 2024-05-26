@@ -510,7 +510,7 @@ For the editor container, you can also make it full width by adding `full-width-
 
 | `SOCKETIO_MAX_HTTP_BUFFER_SIZE`
 | The maximum size (in bytes) of a single message accepted via Socket.IO. If a client sends a larger message, its connection gets closed to prevent DoS (memory exhaustion) attacks.
-| `10000`
+| `50000`
 
 | `LOAD_TEST`
 | Allow Load Testing tools to hit the Etherpad Instance. WARNING: this will disable security on the instance.
