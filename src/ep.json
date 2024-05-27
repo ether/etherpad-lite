@@ -58,6 +58,12 @@
       }
     },
     {
+      "name": "pwa",
+      "hooks": {
+        "expressCreateServer": "ep_etherpad-lite/node/hooks/express/pwa"
+      }
+    },
+    {
       "name": "apicalls",
       "hooks": {
         "expressPreSession": "ep_etherpad-lite/node/hooks/express/apicalls"
@@ -111,12 +117,6 @@
       "name": "openapi",
       "hooks": {
         "expressPreSession": "ep_etherpad-lite/node/hooks/express/openapi"
-      }
-    },
-    {
-      "name": "ep_message_all",
-      "client_hooks": {
-        "handleClientMessage_shoutMessage": "ep_etherpad-lite/static/js/messageHandler"
       }
     }
   ]
