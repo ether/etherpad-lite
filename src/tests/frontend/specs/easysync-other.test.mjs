@@ -4,6 +4,8 @@ const Changeset = require('../../../static/js/Changeset');
 const AttributePool = require('../../../static/js/AttributePool');
 const {randomMultiline, poolOrArray} = require('../easysync-helper.js');
 const {padutils} = require('../../../static/js/pad_utils');
+import {describe, it, expect} from 'vitest'
+
 
 describe('easysync-other', function () {
   describe('filter attribute numbers', function () {
@@ -66,7 +68,8 @@ describe('easysync-other', function () {
 
     it('testMakeSplice', async function () {
       const t = 'a\nb\nc\n';
-      const t2 = Changeset.applyToText(Changeset.makeSplice(t, 5, 0, 'def'), t);
+      let splice = Changeset.makeSplice(t, 5, 0, 'def')
+      const t2 = Changeset.applyToText(splice, t);
       expect(t2).to.equal('a\nb\ncdef\n');
     });
 
