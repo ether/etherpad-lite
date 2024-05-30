@@ -3,6 +3,7 @@
 		"authors": [
 			"Aalam",
 			"Babanwalia",
+			"Cabal",
 			"Tow",
 			"ਗੁਰਪ੍ਰੀਤ ਹੁੰਦਲ",
 			"ਪ੍ਰਚਾਰਕ"
@@ -37,7 +38,7 @@
 	"pad.settings.stickychat": "ਹਮੇਸ਼ਾ ਸਕਰੀਨ ਉੱਤੇ ਗੱਲ ਕਰੋ",
 	"pad.settings.chatandusers": "ਗੱਲ-ਬਾਤ ਅਤੇ ਵਰਤੋਂਕਾਰ ਦਿਖਾਵੋ",
 	"pad.settings.colorcheck": "ਲੇਖਕੀ ਰੰਗ",
-	"pad.settings.linenocheck": "ਲਾਈਨ ਨੰਬਰ",
+	"pad.settings.linenocheck": "ਲਕੀਰ ਨੰਬਰ",
 	"pad.settings.rtlcheck": "ਸਮੱਗਰੀ ਸੱਜੇ ਤੋਂ ਖੱਬੇ ਪੜ੍ਹਨੀ ਹੈ?",
 	"pad.settings.fontType": "ਫੋਂਟ ਕਿਸਮ:",
 	"pad.settings.fontType.normal": "ਸਧਾਰਨ",
