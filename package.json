@@ -15,6 +15,7 @@
   "scripts": {
     "lint": "pnpm --filter ep_etherpad-lite run lint",
     "test": "pnpm --filter ep_etherpad-lite run test",
+    "test-utils": "pnpm --filter ep_etherpad-lite run test-utils",
     "test-container": "pnpm --filter ep_etherpad-lite run test-container",
     "dev": "pnpm --filter ep_etherpad-lite run dev",
     "prod": "pnpm --filter ep_etherpad-lite run prod",
