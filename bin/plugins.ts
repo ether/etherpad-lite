@@ -12,11 +12,15 @@ if (process.argv.length === 2) {
 
 let args = process.argv.slice(2)
 
-// 3d arg is ls, install or rm
-let action = args[0];
 
-
-
+const possibleActions = [
+  "i",
+  "install",
+  "rm",
+  "remove",
+  "ls",
+  "list"
+]
 
 const install = ()=> {
 
@@ -33,6 +37,9 @@ const install = ()=> {
 
   async function run() {
     for (const plugin of registryPlugins) {
+      if (possibleActions.includes(plugin)){
+        continue
+      }
       console.log(`Installing plugin from registry: ${plugin}`)
       if (plugin.includes('@')) {
         const [name, version] = plugin.split('@');
@@ -81,6 +88,14 @@ const remove = (plugins: string[])=>{
   })();
 }
 
+let action = args[0];
+
+if (!possibleActions.includes(action)) {
+  // This is the old plugin install via install-plugins
+  console.warn("Using legacy plugin install. Please update to the new command `pnpm run plugins install <your-plugin>`")
+  install()
+  process.exit(0)
+}
 
 switch (action) {
   case "install":

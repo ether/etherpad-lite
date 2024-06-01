@@ -25,6 +25,7 @@
     "test-admin": "pnpm --filter ep_etherpad-lite run test-admin",
     "test-admin:ui": "pnpm --filter ep_etherpad-lite run test-admin:ui",
     "plugins": "pnpm --filter bin run plugins",
+    "install-plugins": "pnpm --filter bin run plugins",
     "remove-plugins": "pnpm --filter bin run remove-plugins",
     "list-plugins": "pnpm --filter bin run list-plugins"
   },
