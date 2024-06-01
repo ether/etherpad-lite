@@ -1,12 +1,12 @@
 import {useStore} from "../store/store.ts";
-import {isJSONClean} from "../utils/utils.ts";
+import {isJSONClean, cleanComments} from "../utils/utils.ts";
 import {Trans} from "react-i18next";
 import {IconButton} from "../components/IconButton.tsx";
 import {RotateCw, Save} from "lucide-react";
 
 export const SettingsPage = ()=>{
     const settingsSocket = useStore(state=>state.settingsSocket)
-    const settings = useStore(state=>state.settings)
+    const settings = cleanComments(useStore(state=>state.settings))
 
     return <div className="settings-page">
         <h1><Trans i18nKey="admin_settings.current"/></h1>
