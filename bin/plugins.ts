@@ -90,13 +90,6 @@ const remove = (plugins: string[])=>{
 
 let action = args[0];
 
-if (!possibleActions.includes(action)) {
-  // This is the old plugin install via install-plugins
-  console.warn("Using legacy plugin install. Please update to the new command `pnpm run plugins install <your-plugin>`")
-  install()
-  process.exit(0)
-}
-
 switch (action) {
   case "install":
     install();
