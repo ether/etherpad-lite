@@ -85,7 +85,7 @@ jobs:
         run: "sed -i 's/\"enableAdminUITests\": false/\"enableAdminUITests\": true,\\n\"users\":{\"admin\":{\"password\":\"changeme1\",\"is_admin\":true}}/' settings.json"
       -
         name: increase maxHttpBufferSize
-        run: "sed -i 's/\"maxHttpBufferSize\": 10000/\"maxHttpBufferSize\": 10000000/' settings.json"
+        run: "sed -i 's/\"maxHttpBufferSize\": 50000/\"maxHttpBufferSize\": 10000000/' settings.json"
       -
         name: Disable import/export rate limiting
         run: |

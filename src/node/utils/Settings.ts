@@ -153,7 +153,7 @@ exports.socketIo = {
      * properly, but increasing the value increases susceptibility to denial of service attacks
      * (malicious clients can exhaust memory).
      */
-    maxHttpBufferSize: 10000,
+    maxHttpBufferSize: 50000,
 };
 
 
