@@ -129,8 +129,7 @@ exports.getPackages = async () => {
     if (!plugin.name.startsWith(exports.prefix)) {
       continue;
     }
-    plugin.realPath = await fs.realpath(plugin.location);
-    plugin.path = plugin.realPath;
+    plugin.path = plugin.realPath = plugin.location;
     newDependencies[plugin.name] = plugin;
   }
 
