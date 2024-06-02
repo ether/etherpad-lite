@@ -537,7 +537,7 @@
      * value to work properly, but increasing the value increases susceptibility
      * to denial of service attacks (malicious clients can exhaust memory).
      */
-    "maxHttpBufferSize": 10000
+    "maxHttpBufferSize": 50000
   },
 
   /*
@@ -585,6 +585,13 @@
    * File size is specified in bytes. Default is 50 MB.
    */
   "importMaxFileSize": 52428800, // 50 * 1024 * 1024
+
+  /*
+    The authentication method used by the server.
+    The default value is sso
+    If you want to use the old authentication system, change this to apikey
+   */
+  "authenticationMethod": "${AUTHENTICATION_METHOD:sso}",
 
   /*
    * From Etherpad 1.8.5 onwards, when Etherpad is in production mode commits from individual users are rate limited

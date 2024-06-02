@@ -3,6 +3,7 @@
 
 import {PadQueryResult, PadSearchQuery} from "../../types/PadSearchQuery";
 import {PadType} from "../../types/PadType";
+import log4js from 'log4js';
 
 const eejs = require('../../eejs');
 const fsp = require('fs').promises;
@@ -15,6 +16,7 @@ const api = require('../../db/API');
 
 
 const queryPadLimit = 12;
+const logger = log4js.getLogger('adminSettings');
 
 
 exports.socketio = (hookName: string, {io}: any) => {
@@ -28,7 +30,7 @@ exports.socketio = (hookName: string, {io}: any) => {
             try {
                 data = await fsp.readFile(settings.settingsFilename, 'utf8');
             } catch (err) {
-                return console.log(err);
+                return logger.error(`Error loading settings: ${err}`);
             }
             // if showSettingsInAdminPage is set to false, then return NOT_ALLOWED in the result
             if (settings.showSettingsInAdminPage === false) {
@@ -39,8 +41,12 @@ exports.socketio = (hookName: string, {io}: any) => {
         });
 
         socket.on('saveSettings', async (newSettings: string) => {
-            console.log('Admin request to save settings through a socket on /admin/settings');
-            await fsp.writeFile(settings.settingsFilename, newSettings);
+            logger.info('Admin request to save settings through a socket on /admin/settings');
+            try {
+                await fsp.writeFile(settings.settingsFilename, newSettings);
+            } catch (err) {
+                logger.error(`Error saving settings: ${err}`);
+            }
             socket.emit('saveprogress', 'saved');
         });
 
@@ -210,6 +216,7 @@ exports.socketio = (hookName: string, {io}: any) => {
         socket.on('deletePad', async (padId: string) => {
             const padExists = await padManager.doesPadExists(padId);
             if (padExists) {
+                logger.info(`Deleting pad: ${padId}`);
                 const pad = await padManager.getPad(padId);
                 await pad.remove();
                 socket.emit('results:deletePad', padId);
@@ -217,7 +224,7 @@ exports.socketio = (hookName: string, {io}: any) => {
         })
 
         socket.on('restartServer', async () => {
-            console.log('Admin request to restart server through a socket on /admin/settings');
+            logger.info('Admin request to restart server through a socket on /admin/settings');
             settings.reloadSettings();
             await plugins.update();
             await hooks.aCallAll('loadSettings', {settings});
@@ -230,4 +237,3 @@ exports.socketio = (hookName: string, {io}: any) => {
 const searchPad = async (query: PadSearchQuery) => {
 
 }
-

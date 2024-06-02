@@ -172,6 +172,13 @@
   "showSettingsInAdminPage": "${SHOW_SETTINGS_IN_ADMIN_PAGE:true}",
 
   /*
+    The authentication method used by the server.
+    The default value is sso
+    If you want to use the old authentication system, change this to apikey
+   */
+  "authenticationMethod": "${AUTHENTICATION_METHOD:sso}",
+
+  /*
    * Node native SSL support
    *
    * This is disabled by default.
@@ -537,7 +544,7 @@
      * value to work properly, but increasing the value increases susceptibility
      * to denial of service attacks (malicious clients can exhaust memory).
      */
-    "maxHttpBufferSize": "${SOCKETIO_MAX_HTTP_BUFFER_SIZE:10000}"
+    "maxHttpBufferSize": "${SOCKETIO_MAX_HTTP_BUFFER_SIZE:50000}"
   },
 
   /*

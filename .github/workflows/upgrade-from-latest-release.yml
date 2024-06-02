@@ -35,7 +35,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-      - uses: pnpm/action-setup@v3
+      - uses: pnpm/action-setup@v4
         name: Install pnpm
         with:
           version: 9.0.4
@@ -85,7 +85,6 @@ jobs:
           ep_font_size
           ep_hash_auth
           ep_headings2
-          ep_image_upload
           ep_markdown
           ep_readonly_guest
           ep_set_title_on_pad

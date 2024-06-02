@@ -153,8 +153,17 @@ exports.socketIo = {
      * properly, but increasing the value increases susceptibility to denial of service attacks
      * (malicious clients can exhaust memory).
      */
-    maxHttpBufferSize: 10000,
+    maxHttpBufferSize: 50000,
 };
+
+
+/*
+  The authentication method used by the server.
+  The default value is sso
+  If you want to use the old authentication system, change this to apikey
+ */
+exports.authenticationMethod = 'sso'
+
 
 /*
  * The Type of the database
@@ -519,6 +528,8 @@ exports.getGitCommit = () => {
 // Return etherpad version from package.json
 exports.getEpVersion = () => require('../../package.json').version;
 
+
+
 /**
  * Receives a settingsObj and, if the property name is a valid configuration
  * item, stores it in the module's exported properties via a side effect.
@@ -745,7 +756,6 @@ const lookupEnvironmentVariables = (obj: MapArrayType<any>) => {
 
     //console.log(root.collectFromLeafsUpwards())
     const rooting = root.collectFromLeafsUpwards()
-    console.log("Rooting is", rooting.ADMIN)
     obj = Object.assign(obj, rooting)
     return obj;
 };

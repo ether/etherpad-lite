@@ -120,7 +120,7 @@ COPY --chown=etherpad:etherpad --from=adminBuild /opt/etherpad-lite/ui/dist ./sr
 
 RUN bin/installDeps.sh && \
     if [ ! -z "${ETHERPAD_PLUGINS}" ] || [ ! -z "${ETHERPAD_LOCAL_PLUGINS}" ]; then \
-        pnpm run install-plugins ${ETHERPAD_PLUGINS} ${ETHERPAD_LOCAL_PLUGINS:+--path ${ETHERPAD_LOCAL_PLUGINS}}; \
+        pnpm run plugins i ${ETHERPAD_PLUGINS} ${ETHERPAD_LOCAL_PLUGINS:+--path ${ETHERPAD_LOCAL_PLUGINS}}; \
     fi
 
 
@@ -135,7 +135,7 @@ COPY --chown=etherpad:etherpad --from=adminBuild /opt/etherpad-lite/ui/dist ./sr
 
 RUN bin/installDeps.sh && rm -rf ~/.npm && rm -rf ~/.local && rm -rf ~/.cache && \
     if [ ! -z "${ETHERPAD_PLUGINS}" ] || [ ! -z "${ETHERPAD_LOCAL_PLUGINS}" ]; then \
-        pnpm run install-plugins ${ETHERPAD_PLUGINS} ${ETHERPAD_LOCAL_PLUGINS:+--path ${ETHERPAD_LOCAL_PLUGINS}}; \
+        pnpm run plugins i ${ETHERPAD_PLUGINS} ${ETHERPAD_LOCAL_PLUGINS:+--path ${ETHERPAD_LOCAL_PLUGINS}}; \
     fi
 
 

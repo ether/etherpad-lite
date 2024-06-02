@@ -1,3 +1,16 @@
+# 2.1.0
+
+### Notable enhancements and fixes
+
+- Added PWA support. You can now add your Etherpad instance to your home screen on your mobile device or desktop.
+- Fixed live plugin manager versions clashing. Thanks to @yacchin1205
+- Fixed a bug in the pad panel where pagination was not working correctly when sorting by pad name
+
+### Compatibility changes
+
+- Reintroduced APIKey.txt support. You can now switch between APIKey and OAuth2.0 authentication. This can be toggled with the setting authenticationMethod. The default is OAuth2. If you want to use the APIKey method you can set that to `apikey`.
+
+
 # 2.0.3
 
 ### Notable enhancements and fixes
@@ -47,8 +60,8 @@
   - Bin folder: The bin folder has been moved from the src folder to the root folder. This change was necessary as the contained scripts do not represent core functionality of the user.
   - Starting Etherpad: Etherpad can now be started with a single command: `pnpm run prod` in the root directory.
   - Installing Etherpad: Etherpad no longer symlinks itself in the root directory. This is now also taken care by pnpm, and it just creates a node_modules folder with the src directory`s ep_etherpad-lite folder
-  - Plugins can now be installed simply via the command: `pnpm run install-plugins first-plugin second-plugin` or if you want to install from path you can do:
-  `pnpm run install-plugins --path ../path-to-plugin`
+  - Plugins can now be installed simply via the command: `pnpm run plugins i first-plugin second-plugin` or if you want to install from path you can do:
+  `pnpm run plugins i --path ../path-to-plugin`
 
 
 # 1.9.7
