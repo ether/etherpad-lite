@@ -1,6 +1,6 @@
 'use strict';
 
-import {linkInstaller} from "ep_etherpad-lite/static/js/pluginfw/installer";
+import {linkInstaller, checkForMigration} from "ep_etherpad-lite/static/js/pluginfw/installer";
 import {persistInstalledPlugins} from "./commonPlugins";
 import fs from "node:fs";
 const settings = require('ep_etherpad-lite/node/utils/Settings');
@@ -56,6 +56,7 @@ const install = ()=> {
   }
 
   (async () => {
+    await checkForMigration();
     await run();
     await persistInstalledPlugins();
   })();
@@ -84,6 +85,7 @@ const remove = (plugins: string[])=>{
   }
 
   (async () => {
+    await checkForMigration();
     await walk();
   })();
 }
