@@ -4,12 +4,21 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
+    "dev": "node copyPadHtml.js && vite",
+    "build": "tsc && vite build &&  node copyProdPadFiles.js",
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
     "typescript": "^5.4.5",
-    "vite": "^5.2.12"
+    "vite": "^5.2.12",
+    "socket.io-client": "^4.7.5",
+    "ep_etherpad-lite": "workspace:../src",
+    "js-cookie": "^3.0.5",
+    "security": "^1.0.0",
+    "tinycon": "^0.6.8",
+    "underscore": "^1.13.6",
+    "unorm": "^1.6.0",
+    "vite-plugin-require": "^1.1.14"
   }
 }

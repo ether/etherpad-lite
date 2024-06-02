@@ -29,20 +29,25 @@ const getAssoc = Ace2Common.getAssoc;
 const setAssoc = Ace2Common.setAssoc;
 const noop = Ace2Common.noop;
 const hooks = require('./pluginfw/hooks');
+const changesettracker = require('./changesettracker')
+const colorUtils = require('./colorutils')
+const contentCollector = require('./contentcollector')
+const domlineP = require('./domline')
+const AttribPool = require('./AttributePool')
+const Changeset = require('./Changeset')
+const ChangesetUtils = require('./ChangesetUtils')
+const linestylefilterP = require('./linestylefilter')
+const SkipList = require('./skiplist')
+const undoModule = require('./undomodule').undoModule
+const AttributeManager = require('./AttributeManager')
+const Scroll = require('./scroll')
 
 function Ace2Inner(editorInfo, cssManagers) {
-  const makeChangesetTracker = require('./changesettracker').makeChangesetTracker;
-  const colorutils = require('./colorutils').colorutils;
-  const makeContentCollector = require('./contentcollector').makeContentCollector;
-  const domline = require('./domline').domline;
-  const AttribPool = require('./AttributePool');
-  const Changeset = require('./Changeset');
-  const ChangesetUtils = require('./ChangesetUtils');
-  const linestylefilter = require('./linestylefilter').linestylefilter;
-  const SkipList = require('./skiplist');
-  const undoModule = require('./undomodule').undoModule;
-  const AttributeManager = require('./AttributeManager');
-  const Scroll = require('./scroll');
+  const makeChangesetTracker = changesettracker.makeChangesetTracker;
+  const colorutils = colorUtils.colorutils;
+  const makeContentCollector = contentCollector.makeContentCollector;
+  const domline = domlineP.domline;
+  const linestylefilter = linestylefilterP.linestylefilter;
   const DEBUG = false;
 
   const THE_TAB = '    '; // 4

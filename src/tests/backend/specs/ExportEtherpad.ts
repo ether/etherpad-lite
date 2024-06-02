@@ -4,7 +4,7 @@ const assert = require('assert').strict;
 const common = require('../common');
 const exportEtherpad = require('../../../node/utils/ExportEtherpad');
 const padManager = require('../../../node/db/PadManager');
-const plugins = require('../../../static/js/pluginfw/plugin_defs');
+let plugins = require('../../../static/js/pluginfw/plugin_defs');
 const readOnlyManager = require('../../../node/db/ReadOnlyManager');
 
 describe(__filename, function () {

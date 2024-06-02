@@ -23,6 +23,7 @@
  */
 
 const Security = require('./security');
+const Cookies = require('js-cookie')
 
 /**
  * Generates a random String with the given length. Is needed to generate the Author, Group,
@@ -443,7 +444,7 @@ const inThirdPartyIframe = () => {
 // This file is included from Node so that it can reuse randomString, but Node doesn't have a global
 // window object.
 if (typeof window !== 'undefined') {
-  exports.Cookies = require('js-cookie/dist/js.cookie').withAttributes({
+  exports.Cookies = Cookies.withAttributes({
     // Use `SameSite=Lax`, unless Etherpad is embedded in an iframe from another site in which case
     // use `SameSite=None`. For iframes from another site, only `None` has a chance of working
     // because the cookies are third-party (not same-site). Many browsers/users block third-party
