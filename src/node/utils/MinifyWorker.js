@@ -9,11 +9,20 @@ import {expose} from 'threads'
 import lightminify from 'lightningcss'
 import {transform} from 'esbuild';
 
-const compressJS = async (content: string) => {
+/*
+  * Minify JS content
+  * @param {string} content - JS content to minify
+ */
+const compressJS = async (content) => {
   return await transform(content, {minify: true});
 }
 
-const compressCSS = async (filename: string, ROOT_DIR: string) => {
+/*
+  * Minify CSS content
+  * @param {string} filename - name of the file
+  * @param {string} ROOT_DIR - the root dir of Etherpad
+ */
+const compressCSS = async (filename, ROOT_DIR) => {
   const absPath = path.resolve(ROOT_DIR, filename);
   try {
     const basePath = path.dirname(absPath);
