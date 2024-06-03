@@ -30,7 +30,7 @@ jobs:
         name: Check out latest release
         uses: actions/checkout@v4
         with:
-          ref: feat/lightningcss
+          ref: develop #FIXME change to master when doing release
       -
         uses: actions/setup-node@v4
         with:
