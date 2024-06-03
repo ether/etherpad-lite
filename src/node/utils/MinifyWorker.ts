@@ -3,13 +3,15 @@
  * Worker thread to minify JS & CSS files out of the main NodeJS thread
  */
 
-import Terser from 'terser'
 const fsp = require('fs').promises;
 import path from 'node:path'
-import Threads from 'threads'
+import {expose} from 'threads'
 import lightminify from 'lightningcss'
+import {transform} from 'esbuild';
 
-const compressJS = (content: string) => Terser.minify(content);
+const compressJS = async (content: string) => {
+  return await transform(content, {minify: true});
+}
 
 const compressCSS = async (filename: string, ROOT_DIR: string) => {
   const absPath = path.resolve(ROOT_DIR, filename);
@@ -30,7 +32,7 @@ const compressCSS = async (filename: string, ROOT_DIR: string) => {
   }
 };
 
-Threads.expose({
-  compressJS,
+expose({
+  compressJS: compressJS,
   compressCSS,
 });
