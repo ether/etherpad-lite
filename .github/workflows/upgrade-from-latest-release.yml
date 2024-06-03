@@ -30,7 +30,7 @@ jobs:
         name: Check out latest release
         uses: actions/checkout@v4
         with:
-          ref: master
+          ref: feat/lightningcss
       -
         uses: actions/setup-node@v4
         with:
