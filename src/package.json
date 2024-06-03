@@ -39,7 +39,7 @@
     "etherpad-require-kernel": "^1.0.16",
     "etherpad-yajsml": "0.0.12",
     "express": "4.19.2",
-    "express-rate-limit": "^7.2.0",
+    "express-rate-limit": "^7.3.0",
     "express-session": "npm:@etherpad/express-session@^1.18.2",
     "fast-deep-equal": "^3.1.3",
     "find-root": "1.1.0",
