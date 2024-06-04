@@ -30,6 +30,7 @@
     }
   ],
   "dependencies": {
+    "esbuild": "^0.21.4",
     "async": "^3.2.5",
     "axios": "^1.7.2",
     "cookie-parser": "^1.4.6",
@@ -96,7 +97,6 @@
     "@types/sinon": "^17.0.3",
     "@types/supertest": "^6.0.2",
     "@types/underscore": "^1.11.15",
-    "esbuild": "^0.21.4",
     "eslint": "^9.2.0",
     "eslint-config-etherpad": "^4.0.4",
     "etherpad-cli-client": "^3.0.2",

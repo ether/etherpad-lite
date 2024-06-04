@@ -155,6 +155,9 @@ importers:
       ejs:
         specifier: ^3.1.10
         version: 3.1.10
+      esbuild:
+        specifier: ^0.21.4
+        version: 0.21.4
       etherpad-require-kernel:
         specifier: ^1.0.16
         version: 1.0.16
@@ -321,9 +324,6 @@ importers:
       '@types/underscore':
         specifier: ^1.11.15
         version: 1.11.15
-      esbuild:
-        specifier: ^0.21.4
-        version: 0.21.4
       eslint:
         specifier: ^9.2.0
         version: 9.4.0
