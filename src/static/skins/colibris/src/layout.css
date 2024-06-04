@@ -1,18 +1,3 @@
-.scroll-wrapper { 
-  display: flex;
-  min-width: 100vw;
-}
-
-@supports (-webkit-touch-callout: none)  {
-  .scroll-wrapper {
-    -webkit-overflow-scrolling: touch;
-    overflow-y: scroll;
-  }                      
-                       
-  .scroll-wrapper iframe {}
-                      
-}
-
 #outerdocbody {
   margin: 0 auto;
   padding-top: 20px;
