@@ -1,7 +1,7 @@
 'use strict';
 
 const DB = require('./DB');
-const Store = require('express-session').Store;
+const Store = require('@etherpad/express-session').Store;
 const log4js = require('log4js');
 const util = require('util');
 
