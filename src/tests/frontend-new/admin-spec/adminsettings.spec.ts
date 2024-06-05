@@ -17,10 +17,10 @@ test.describe('admin settings',()=> {
         const settingsVal = await settings.inputValue()
         const settingsLength = settingsVal.length
 
-        await settings.fill(`/* test */\n${settingsVal}`)
+        await settings.fill(`{"title": "Etherpad123"}`)
         const newValue = await settings.inputValue()
-        expect(newValue).toContain('/* test */')
-        expect(newValue.length).toEqual(settingsLength+11)
+        expect(newValue).toContain('{"title": "Etherpad123"}')
+        expect(newValue.length).toEqual(24)
         await saveSettings(page)
 
         // Check if the changes were actually saved
@@ -31,7 +31,7 @@ test.describe('admin settings',()=> {
         const newSettings =  page.locator('.settings');
 
         const newSettingsVal = await newSettings.inputValue()
-        expect(newSettingsVal).toContain('/* test */')
+        expect(newSettingsVal).toContain('{"title": "Etherpad123"}')
 
 
         // Change back to old settings
