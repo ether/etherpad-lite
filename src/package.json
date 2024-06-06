@@ -72,7 +72,7 @@
     "superagent": "^9.0.2",
     "threads": "^1.7.0",
     "tinycon": "0.6.8",
-    "tsx": "^4.11.2",
+    "tsx": "^4.12.0",
     "ueberdb2": "^4.2.63",
     "underscore": "1.13.6",
     "unorm": "1.6.0",
