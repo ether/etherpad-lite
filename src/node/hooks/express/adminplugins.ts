@@ -9,6 +9,8 @@ import {PackageData} from "../../types/PackageInfo";
 
 const pluginDefs = require('../../../static/js/pluginfw/plugin_defs');
 import semver from 'semver';
+import log4js from 'log4js';
+const logger = log4js.getLogger('adminPlugins');
 
 
 exports.socketio = (hookName:string, args:ArgsExpressType, cb:Function) => {
@@ -61,6 +63,7 @@ exports.socketio = (hookName:string, args:ArgsExpressType, cb:Function) => {
 
     socket.on('search', async (query: QueryType) => {
       try {
+        if (query.searchTerm) logger.info(`Plugin search: ${query.searchTerm}'`);
         const results = await search(query.searchTerm, /* maxCacheAge:*/ 60 * 10);
         let res = Object.keys(results)
             .map((pluginName) => results[pluginName])
@@ -68,10 +71,9 @@ exports.socketio = (hookName:string, args:ArgsExpressType, cb:Function) => {
         res = sortPluginList(res, query.sortBy, query.sortDir)
             .slice(query.offset, query.offset + query.limit);
         socket.emit('results:search', {results: res, query});
-      } catch (er) {
-        console.error(er);
-
-        socket.emit('results:search', {results: {}, query});
+      } catch (err: any) {
+        logger.error(`Error searching plugins: ${err}`);
+        socket.emit('results:searcherror', {error: err.message, query});
       }
     });
 
