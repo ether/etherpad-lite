@@ -34,7 +34,7 @@
     "react-router-dom": "^6.23.1",
     "socket.io-client": "^4.7.5",
     "typescript": "^5.4.5",
-    "vite": "^5.2.12",
+    "vite": "^5.3.0",
     "vite-plugin-static-copy": "^1.0.3",
     "vite-plugin-svgr": "^4.2.0",
     "zustand": "^4.5.2"
