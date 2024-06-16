@@ -26,7 +26,7 @@ export const PadPage = ()=>{
     const [padToDelete, setPadToDelete] = useState<string>('')
     const pages = useMemo(()=>{
         if(!pads){
-            return [0]
+            return 0;
         }
 
         return Math.ceil(pads!.total / searchParams.limit)
@@ -166,7 +166,7 @@ export const PadPage = ()=>{
                         offset: (Number(currentPage)-1)*searchParams.limit})
             }}><ChevronLeft/><span>Previous Page</span></button>
             <span>{currentPage+1} out of {pages}</span>
-            <button disabled={pages == currentPage+1} onClick={()=>{
+            <button disabled={pages == 0 || pages == currentPage+1} onClick={()=>{
               const newCurrentPage = currentPage+1
                 setCurrentPage(newCurrentPage)
                 setSearchParams({
