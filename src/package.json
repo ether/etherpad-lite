@@ -58,7 +58,7 @@
     "lru-cache": "^10.2.2",
     "measured-core": "^2.0.0",
     "mime-types": "^2.1.35",
-    "oidc-provider": "^8.4.6",
+    "oidc-provider": "^8.4.7",
     "openapi-backend": "^5.10.6",
     "proxy-addr": "^2.0.7",
     "rate-limiter-flexible": "^5.0.3",

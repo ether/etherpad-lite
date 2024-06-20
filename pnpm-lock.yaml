@@ -225,8 +225,8 @@ importers:
         specifier: ^2.1.35
         version: 2.1.35
       oidc-provider:
-        specifier: ^8.4.6
-        version: 8.4.6
+        specifier: ^8.4.7
+        version: 8.4.7
       openapi-backend:
         specifier: ^5.10.6
         version: 5.10.6
@@ -5904,8 +5904,8 @@ packages:
     resolution: {integrity: sha512-9gRK4+sRWzeN6AOewNBTLXir7Zl/i3GB6Yl26gK4flxz8BXVpD3kt8amREmWNb0mxYOGDotvE5a4N+PtGGKdkg==}
     dev: false
 
-  /oidc-provider@8.4.6:
-    resolution: {integrity: sha512-liuHBXRaIjer6nPGWagrl5UjPhIZqahqLVPoYlc2WXsRR7XddwNCBUl1ks5r3Q3uCUfMdQTv1VsjmlaObdff8w==}
+  /oidc-provider@8.4.7:
+    resolution: {integrity: sha512-WjURLNh0cAacyZMItl/KimFPBTFZBTE/PVu/+W0JW3T2fWYMUVTDFMOUFcY1tlMDPASUCORgZkyLPCywe4tyDA==}
     dependencies:
       '@koa/cors': 5.0.0
       '@koa/router': 12.0.1
