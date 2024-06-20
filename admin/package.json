@@ -14,8 +14,8 @@
     "@radix-ui/react-switch": "^1.0.3"
   },
   "devDependencies": {
-    "@radix-ui/react-dialog": "^1.0.5",
-    "@radix-ui/react-toast": "^1.1.5",
+    "@radix-ui/react-dialog": "^1.1.0",
+    "@radix-ui/react-toast": "^1.2.0",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.2.25",
     "@typescript-eslint/eslint-plugin": "^7.13.1",
