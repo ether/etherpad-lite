@@ -1,8 +1,9 @@
 'use strict';
 
-const AttributeMap = require('../../../static/js/AttributeMap');
-const AttributePool = require('../../../static/js/AttributePool');
-const attributes = require('../../../static/js/attributes');
+const AttributeMap = require('../../static/js/AttributeMap.js');
+const AttributePool = require('../../static/js/AttributePool');
+const attributes = require('../../static/js/attributes');
+import {expect, describe, it, beforeEach} from 'vitest'
 
 describe('AttributeMap', function () {
   const attribs = [

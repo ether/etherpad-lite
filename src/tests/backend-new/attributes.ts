@@ -1,11 +1,15 @@
 'use strict';
 
-const AttributePool = require('../../../static/js/AttributePool');
-const attributes = require('../../../static/js/attributes');
+import {APool} from "../../node/types/PadType";
+
+const AttributePool = require('../../static/js/AttributePool');
+const attributes = require('../../static/js/attributes');
+
+import {expect, describe, it, beforeEach} from 'vitest';
 
 describe('attributes', function () {
   const attribs = [['foo', 'bar'], ['baz', 'bif']];
-  let pool;
+  let pool: APool;
 
   beforeEach(async function () {
     pool = new AttributePool();
@@ -14,7 +18,7 @@ describe('attributes', function () {
 
   describe('decodeAttribString', function () {
     it('is a generator function', async function () {
-      expect(attributes.decodeAttribString).to.be.a((function* () {}).constructor);
+      expect(attributes.decodeAttribString.constructor.name).to.equal('GeneratorFunction');
     });
 
     describe('rejects invalid attribute strings', function () {
@@ -22,7 +26,7 @@ describe('attributes', function () {
       for (const tc of testCases) {
         it(JSON.stringify(tc), async function () {
           expect(() => [...attributes.decodeAttribString(tc)])
-              .to.throwException(/invalid character/);
+              .toThrowError(/invalid character/);
         });
       }
     });
@@ -56,7 +60,7 @@ describe('attributes', function () {
         ['set', new Set([0, 1])],
       ];
       for (const [desc, input] of testCases) {
-        it(desc, async function () {
+        it(desc as string, async function () {
           expect(attributes.encodeAttribString(input)).to.equal('*0*1');
         });
       }
@@ -74,7 +78,7 @@ describe('attributes', function () {
       ];
       for (const [input, wantErr] of testCases) {
         it(JSON.stringify(input), async function () {
-          expect(() => attributes.encodeAttribString(input)).to.throwException(wantErr);
+          expect(() => attributes.encodeAttribString(input)).toThrowError(wantErr as RegExp);
         });
       }
     });
@@ -101,7 +105,7 @@ describe('attributes', function () {
 
   describe('attribsFromNums', function () {
     it('is a generator function', async function () {
-      expect(attributes.attribsFromNums).to.be.a((function* () {}).constructor);
+      expect(attributes.attribsFromNums.constructor.name).to.equal("GeneratorFunction");
     });
 
     describe('accepts any kind of iterable', function () {
@@ -112,7 +116,7 @@ describe('attributes', function () {
       ];
 
       for (const [desc, input] of testCases) {
-        it(desc, async function () {
+        it(desc as string, async function () {
           const gotAttribs = [...attributes.attribsFromNums(input, pool)];
           expect(JSON.stringify(gotAttribs)).to.equal(JSON.stringify(attribs));
         });
@@ -132,7 +136,7 @@ describe('attributes', function () {
       ];
       for (const [input, wantErr] of testCases) {
         it(JSON.stringify(input), async function () {
-          expect(() => [...attributes.attribsFromNums(input, pool)]).to.throwException(wantErr);
+          expect(() => [...attributes.attribsFromNums(input, pool)]).toThrowError(wantErr as RegExp);
         });
       }
     });
@@ -156,7 +160,7 @@ describe('attributes', function () {
 
   describe('attribsToNums', function () {
     it('is a generator function', async function () {
-      expect(attributes.attribsToNums).to.be.a((function* () {}).constructor);
+      expect(attributes.attribsToNums.constructor.name).to.equal("GeneratorFunction")
     });
 
     describe('accepts any kind of iterable', function () {
@@ -167,7 +171,7 @@ describe('attributes', function () {
       ];
 
       for (const [desc, input] of testCases) {
-        it(desc, async function () {
+        it(desc as string, async function () {
           const gotNums = [...attributes.attribsToNums(input, pool)];
           expect(JSON.stringify(gotNums)).to.equal(JSON.stringify([0, 1]));
         });
@@ -178,7 +182,7 @@ describe('attributes', function () {
       const testCases = [null, [null]];
       for (const input of testCases) {
         it(JSON.stringify(input), async function () {
-          expect(() => [...attributes.attribsToNums(input, pool)]).to.throwException();
+          expect(() => [...attributes.attribsToNums(input, pool)]).toThrowError();
         });
       }
     });
@@ -224,12 +228,12 @@ describe('attributes', function () {
         ['number', 1, '1'],
       ];
       for (const [desc, inputVal, wantVal] of testCases) {
-        describe(desc, function () {
+        describe(desc as string, function () {
           for (const [desc, inputAttribs, wantAttribs] of [
             ['key is coerced to string', [[inputVal, 'value']], [[wantVal, 'value']]],
             ['value is coerced to string', [['key', inputVal]], [['key', wantVal]]],
           ]) {
-            it(desc, async function () {
+            it(desc as string, async function () {
               const gotNums = [...attributes.attribsToNums(inputAttribs, pool)];
               // Each attrib in inputAttribs is expected to be new to the pool.
               const wantNums = [...Array(attribs.length + 1).keys()].slice(attribs.length);
@@ -245,7 +249,7 @@ describe('attributes', function () {
 
   describe('attribsFromString', function () {
     it('is a generator function', async function () {
-      expect(attributes.attribsFromString).to.be.a((function* () {}).constructor);
+      expect(attributes.attribsFromString.constructor.name).to.equal('GeneratorFunction');
     });
 
     describe('rejects invalid attribute strings', function () {
@@ -261,7 +265,7 @@ describe('attributes', function () {
       ];
       for (const [input, wantErr] of testCases) {
         it(JSON.stringify(input), async function () {
-          expect(() => [...attributes.attribsFromString(input, pool)]).to.throwException(wantErr);
+          expect(() => [...attributes.attribsFromString(input, pool)]).toThrowError(wantErr);
         });
       }
     });
@@ -292,7 +296,7 @@ describe('attributes', function () {
       ];
 
       for (const [desc, input] of testCases) {
-        it(desc, async function () {
+        it(desc as string, async function () {
           const got = attributes.attribsToString(input, pool);
           expect(got).to.equal('*0*1');
         });
@@ -303,7 +307,7 @@ describe('attributes', function () {
       const testCases = [null, [null]];
       for (const input of testCases) {
         it(JSON.stringify(input), async function () {
-          expect(() => attributes.attribsToString(input, pool)).to.throwException();
+          expect(() => attributes.attribsToString(input, pool)).toThrowError();
         });
       }
     });
