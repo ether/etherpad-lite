@@ -1,9 +1,10 @@
 'use strict';
 
 const assert = require('assert').strict;
-const {parseSettings} = require('../../../node/utils/Settings').exportedForTestingOnly;
-import path from 'path';
-import process from 'process';
+const {parseSettings} = require('../../node/utils/Settings').exportedForTestingOnly;
+import path from 'node:path';
+import process from 'node:process';
+import {describe, it, beforeAll} from 'vitest';
 
 describe(__filename, function () {
     describe('parseSettings', function () {
@@ -18,7 +19,7 @@ describe(__filename, function () {
             {name: 'empty string', val: '', var: 'SET_VAR_EMPTY_STRING', want: ''},
         ];
 
-        before(async function () {
+      beforeAll(async function () {
             for (const tc of envVarSubstTestCases) process.env[tc.var] = tc.val;
             delete process.env.UNSET_VAR;
             settings = parseSettings(path.join(__dirname, 'settings.json'), true);
