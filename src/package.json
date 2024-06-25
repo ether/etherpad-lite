@@ -83,7 +83,7 @@
     "etherpad-lite": "node/server.ts"
   },
   "devDependencies": {
-    "@playwright/test": "^1.44.1",
+    "@playwright/test": "^1.45.0",
     "@types/async": "^3.2.24",
     "@types/express": "^4.17.21",
     "@types/formidable": "^3.4.5",
@@ -100,7 +100,7 @@
     "eslint": "^9.5.0",
     "eslint-config-etherpad": "^4.0.4",
     "etherpad-cli-client": "^3.0.2",
-    "mocha": "^10.4.0",
+    "mocha": "^10.5.1",
     "mocha-froth": "^0.2.10",
     "nodeify": "^1.0.1",
     "openapi-schema-validation": "^0.4.2",
