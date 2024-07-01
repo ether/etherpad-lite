@@ -225,8 +225,8 @@ importers:
         specifier: ^2.1.35
         version: 2.1.35
       oidc-provider:
-        specifier: ^8.4.7
-        version: 8.4.7
+        specifier: ^8.5.0
+        version: 8.5.0
       openapi-backend:
         specifier: ^5.10.6
         version: 5.10.6
@@ -310,8 +310,8 @@ importers:
         specifier: ^20.14.9
         version: 20.14.9
       '@types/oidc-provider':
-        specifier: ^8.4.4
-        version: 8.4.4
+        specifier: ^8.5.0
+        version: 8.5.0
       '@types/semver':
         specifier: ^7.5.8
         version: 7.5.8
@@ -1398,8 +1398,8 @@ packages:
   '@types/node@20.14.9':
     resolution: {integrity: sha512-06OCtnTXtWOZBJlRApleWndH4JsRVs1pDCc8dLSQp+7PpUpX3ePdHyeNSFTeSe7FtKyQkrlPvHwJOW3SLd8Oyg==}
 
-  '@types/oidc-provider@8.4.4':
-    resolution: {integrity: sha512-+SlmKc4qlCJLjpw6Du/8cXw18JsPEYyQwoy+xheLkiuNsCz1mPEYI/lRXLQHvfJD9TH6+2/WDTLZQ2UUJ5G4bw==}
+  '@types/oidc-provider@8.5.0':
+    resolution: {integrity: sha512-nlCxJI6kZHD/+mMVKKvcmI8JA9dPa5XbdZF7vpfdQLbVfj2EXQaPt1m6jyg/2fz7aR5blMbqmaVTl2GNBasFtw==}
 
   '@types/prop-types@15.7.12':
     resolution: {integrity: sha512-5zvhXYtRNRluoE/jAp4GVsSduVUzNWKkOZrCDBWYtE7biZywwdC2AcEzg+cSMLFRfVgeAFqpfNabiPjxFddV1Q==}
@@ -3363,8 +3363,8 @@ packages:
   observable-fns@0.6.1:
     resolution: {integrity: sha512-9gRK4+sRWzeN6AOewNBTLXir7Zl/i3GB6Yl26gK4flxz8BXVpD3kt8amREmWNb0mxYOGDotvE5a4N+PtGGKdkg==}
 
-  oidc-provider@8.4.7:
-    resolution: {integrity: sha512-WjURLNh0cAacyZMItl/KimFPBTFZBTE/PVu/+W0JW3T2fWYMUVTDFMOUFcY1tlMDPASUCORgZkyLPCywe4tyDA==}
+  oidc-provider@8.5.0:
+    resolution: {integrity: sha512-cgnC94nwM7AE8lqVAR2vZ6Uag4WihiZ53zugPjwxA3FzsXmMzO+eQFqhWhiEHvb2kFZRq50PjhusWTEd02+g2A==}
 
   oidc-token-hash@5.0.3:
     resolution: {integrity: sha512-IF4PcGgzAr6XXSff26Sk/+P4KZFJVuHAJZj3wgO3vX2bMdNVp/QXTP3P7CEm9V1IdG8lDLY3HhiqpsE/nOwpPw==}
@@ -5355,7 +5355,7 @@ snapshots:
     dependencies:
       undici-types: 5.26.5
 
-  '@types/oidc-provider@8.4.4':
+  '@types/oidc-provider@8.5.0':
     dependencies:
       '@types/koa': 2.15.0
       '@types/node': 20.14.9
@@ -7637,7 +7637,7 @@ snapshots:
 
   observable-fns@0.6.1: {}
 
-  oidc-provider@8.4.7:
+  oidc-provider@8.5.0:
     dependencies:
       '@koa/cors': 5.0.0
       '@koa/router': 12.0.1
