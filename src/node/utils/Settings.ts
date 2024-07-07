@@ -826,6 +826,11 @@ exports.reloadSettings = () => {
         exports.skinName = 'colibris';
     }
 
+    if (!exports.socketTransportProtocols.includes("websocket") || exports.socketTransportProtocols.includes("polling")) {
+        logger.warn("Invalid socketTransportProtocols setting. Please check out settings.json.template and update your settings.json. Falling back to the default ['websocket', 'polling'].");
+        exports.socketTransportProtocols = ['websocket', 'polling'];
+    }
+
     // checks if skinName has an acceptable value, otherwise falls back to "colibris"
     if (exports.skinName) {
         const skinBasePath = path.join(exports.root, 'src', 'static', 'skins');
