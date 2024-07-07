@@ -31,11 +31,11 @@ const connect = (etherpadBaseUrl, namespace = '/', options = {}) => {
 
   socket.on('connect_error', (error) => {
     console.log('Error connecting to pad', error);
-    if (socket.io.engine.transports.indexOf('polling') === -1) {
+    /*if (socket.io.engine.transports.indexOf('polling') === -1) {
       console.warn('WebSocket connection failed. Falling back to long-polling.');
-      socket.io.opts.transports = ['polling'];
+      socket.io.opts.transports = ['websocket','polling'];
       socket.io.engine.upgrade = false;
-    }
+    }*/
   });
 
   return socket;
