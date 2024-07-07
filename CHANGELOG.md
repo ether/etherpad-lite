@@ -1,3 +1,13 @@
+# 2.1.1
+
+
+### Notable enhancements and fixes
+
+- Fixed failing Docker build when checked out as git submodule. Thanks to @neurolabs
+- Fixed: Fallback to websocket and polling when unknown(old) config is present for socket io
+- Fixed: Next page disabled if zero page by @samyakj023
+- On CTRL+CLICK bring the window back to focus by Helder Sepulveda
+
 # 2.1.0
 
 ### Notable enhancements and fixes
