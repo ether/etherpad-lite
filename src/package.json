@@ -131,7 +131,8 @@
     "test-ui": "npx playwright test tests/frontend-new/specs",
     "test-ui:ui": "npx playwright test tests/frontend-new/specs --ui",
     "test-admin": "npx playwright test tests/frontend-new/admin-spec --workers 1",
-    "test-admin:ui": "npx playwright test tests/frontend-new/admin-spec --ui --workers 1"
+    "test-admin:ui": "npx playwright test tests/frontend-new/admin-spec --ui --workers 1",
+    "debug:socketio": "cross-env DEBUG=socket.io* node --require tsx/cjs node/server.ts"
   },
   "version": "2.1.0",
   "license": "Apache-2.0"

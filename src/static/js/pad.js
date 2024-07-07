@@ -230,7 +230,7 @@ const handshake = async () => {
     sendClientReady(false);
   });
 
-  socket.on('reconnect', () => {
+  socket.io.on('reconnect', () => {
     // pad.collabClient might be null if the hanshake failed (or it never got that far).
     if (pad.collabClient != null) {
       pad.collabClient.setChannelState('CONNECTED');
@@ -251,9 +251,8 @@ const handshake = async () => {
     // The socket.io client will automatically try to reconnect for all reasons other than "io
     // server disconnect".
     console.log(`Socket disconnected: ${reason}`)
-    if (reason !== 'io server disconnect' || reason !== 'ping timeout') return;
+    //if (reason !== 'io server disconnect' || reason !== 'ping timeout') return;
     socketReconnecting();
-    socket.connect();
   });
 
 
@@ -271,9 +270,9 @@ const handshake = async () => {
     }
   })
 
-  socket.on('reconnecting', socketReconnecting);
+  socket.io.on('reconnect_attempt', socketReconnecting);
 
-  socket.on('reconnect_failed', (error) => {
+  socket.io.on('reconnect_failed', (error) => {
     // pad.collabClient might be null if the hanshake failed (or it never got that far).
     if (pad.collabClient != null) {
       pad.collabClient.setChannelState('DISCONNECTED', 'reconnect_timeout');
