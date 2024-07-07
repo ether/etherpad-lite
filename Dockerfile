@@ -4,7 +4,7 @@
 #
 # Author: muxator
 
-FROM node:alpine as adminBuild
+FROM node:alpine AS adminbuild
 
 WORKDIR /opt/etherpad-lite
 COPY ./ ./
@@ -12,7 +12,7 @@ RUN cd ./admin && npm install -g pnpm@9.0.4 && pnpm install && pnpm run build --
 RUN cd ./ui && pnpm install && pnpm run build --outDir ./dist
 
 
-FROM node:alpine as build
+FROM node:alpine AS build
 LABEL maintainer="Etherpad team, https://github.com/ether/etherpad-lite"
 
 # Set these arguments when building the image from behind a proxy
@@ -105,18 +105,18 @@ USER etherpad
 WORKDIR "${EP_DIR}"
 
 # etherpads version feature requires this. Only copy what is really needed
-COPY --chown=etherpad:etherpad ./.git/HEAD ./.git/HEAD
-COPY --chown=etherpad:etherpad ./.git/refs ./.git/refs
+COPY --chown=etherpad:etherpad ./.git/HEA[D] ./.git/HEAD
+COPY --chown=etherpad:etherpad ./.git/ref[s] ./.git/refs
 COPY --chown=etherpad:etherpad ${SETTINGS} ./settings.json
 COPY --chown=etherpad:etherpad ./var ./var
 COPY --chown=etherpad:etherpad ./bin ./bin
 COPY --chown=etherpad:etherpad ./pnpm-workspace.yaml ./package.json ./
 
-FROM build as development
+FROM build AS development
 
 COPY --chown=etherpad:etherpad ./src/package.json .npmrc ./src/
-COPY --chown=etherpad:etherpad --from=adminBuild /opt/etherpad-lite/admin/dist ./src/templates/admin
-COPY --chown=etherpad:etherpad --from=adminBuild /opt/etherpad-lite/ui/dist ./src/static/oidc
+COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/admin/dist ./src/templates/admin
+COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/ui/dist ./src/static/oidc
 
 RUN bin/installDeps.sh && \
     if [ ! -z "${ETHERPAD_PLUGINS}" ] || [ ! -z "${ETHERPAD_LOCAL_PLUGINS}" ]; then \
@@ -124,14 +124,14 @@ RUN bin/installDeps.sh && \
     fi
 
 
-FROM build as production
+FROM build AS production
 
 ENV NODE_ENV=production
 ENV ETHERPAD_PRODUCTION=true
 
 COPY --chown=etherpad:etherpad ./src ./src
-COPY --chown=etherpad:etherpad --from=adminBuild /opt/etherpad-lite/admin/dist ./src/templates/admin
-COPY --chown=etherpad:etherpad --from=adminBuild /opt/etherpad-lite/ui/dist ./src/static/oidc
+COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/admin/dist ./src/templates/admin
+COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/ui/dist ./src/static/oidc
 
 RUN bin/installDeps.sh && rm -rf ~/.npm && rm -rf ~/.local && rm -rf ~/.cache && \
     if [ ! -z "${ETHERPAD_PLUGINS}" ] || [ ! -z "${ETHERPAD_LOCAL_PLUGINS}" ]; then \
