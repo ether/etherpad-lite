@@ -263,6 +263,7 @@ td, th {
     outline: none;
     width: 100%;
     resize: none;
+    font-family: monospace;
 }
 
 #response {

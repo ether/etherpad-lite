@@ -1,5 +1,14 @@
-const minify = (json: string)=>{
+export const cleanComments = (json: string|undefined)=>{
+    if (json !== undefined){
+        json = json.replace(/\/\*.*?\*\//g, "");          // remove single line comments
+        json = json.replace(/ *\/\*.*(.|\n)*?\*\//g, ""); // remove multi line comments
+        json = json.replace(/[ \t]+$/gm, "");             // trim trailing spaces
+        json = json.replace(/^(\n)/gm, "");               // remove empty lines
+    }
+    return json;
+}
 
+export const minify = (json: string)=>{
     let tokenizer = /"|(\/\*)|(\*\/)|(\/\/)|\n|\r/g,
         in_string = false,
         in_multiline_comment = false,
@@ -48,9 +57,6 @@ const minify = (json: string)=>{
     new_str[ns++] = rc;
     return new_str.join("");
 }
-
-
-
 
 export const isJSONClean = (data: string) => {
     let cleanSettings = minify(data);

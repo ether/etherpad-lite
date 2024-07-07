@@ -24,13 +24,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [18, 20, 21]
+        node: [18, 20, 22]
     steps:
       -
         name: Check out latest release
         uses: actions/checkout@v4
         with:
-          ref: master
+          ref: develop #FIXME change to master when doing release
       -
         uses: actions/setup-node@v4
         with:

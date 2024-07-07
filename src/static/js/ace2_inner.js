@@ -2248,7 +2248,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     const isLink = (n) => (n.tagName || '').toLowerCase() === 'a' && n.href;
 
     // only want to catch left-click
-    if ((!evt.ctrlKey) && (evt.button !== 2) && (evt.button !== 3)) {
+    if ((evt.button !== 2) && (evt.button !== 3)) {
       // find A tag with HREF
       let n = evt.target;
       while (n && n.parentNode && !isLink(n)) {
@@ -2257,6 +2257,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       if (n && isLink(n)) {
         try {
           window.open(n.href, '_blank', 'noopener,noreferrer');
+          if (evt.ctrlKey) window.focus();
         } catch (e) {
           // absorb "user canceled" error in IE for certain prompts
         }

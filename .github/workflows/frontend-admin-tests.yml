@@ -11,14 +11,13 @@ permissions:
 
 jobs:
   withplugins:
-    if: ${{ github.actor != 'dependabot[bot]' }}
     name: with plugins
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        node: [20, 21]
+        node: [20, 22]
 
     steps:
       -

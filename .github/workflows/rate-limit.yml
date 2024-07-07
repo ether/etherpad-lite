@@ -48,7 +48,7 @@ jobs:
 
       -
         name: docker network
-        run: docker network create --subnet=172.23.42.0/16 ep_net
+        run: docker network create --subnet=172.23.0.0/16 ep_net
       -
         name: build docker image
         run: |
