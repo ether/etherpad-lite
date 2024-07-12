@@ -300,7 +300,13 @@ const getFileCompressed = async (filename, contentType) => {
         try {
           logger.info('Compress CSS file %s.', filename);
 
-          content = await compressCSS(filename, ROOT_DIR);
+          const compressResult = await compressCSS(content);
+
+          if (compressResult.error) {
+            console.error(`Error compressing CSS (${filename}) using terser`, compressResult.error);
+          } else {
+            content = compressResult.code.toString(); // Convert content obj code to string
+          }
         } catch (error) {
           console.error(`CleanCSS.minify() returned an error on ${filename}: ${error}`);
         }
