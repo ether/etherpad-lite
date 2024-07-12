@@ -48,7 +48,7 @@ importers:
         version: 7.16.0(eslint@9.6.0)(typescript@5.5.3)
       '@vitejs/plugin-react-swc':
         specifier: ^3.5.0
-        version: 3.7.0(vite@5.3.3(@types/node@20.14.10)(lightningcss@1.25.1))
+        version: 3.7.0(vite@5.3.3(@types/node@20.14.10))
       eslint:
         specifier: ^9.6.0
         version: 9.6.0
@@ -90,13 +90,13 @@ importers:
         version: 5.5.3
       vite:
         specifier: ^5.3.3
-        version: 5.3.3(@types/node@20.14.10)(lightningcss@1.25.1)
+        version: 5.3.3(@types/node@20.14.10)
       vite-plugin-static-copy:
         specifier: ^1.0.6
-        version: 1.0.6(vite@5.3.3(@types/node@20.14.10)(lightningcss@1.25.1))
+        version: 1.0.6(vite@5.3.3(@types/node@20.14.10))
       vite-plugin-svgr:
         specifier: ^4.2.0
-        version: 4.2.0(rollup@4.18.0)(typescript@5.5.3)(vite@5.3.3(@types/node@20.14.10)(lightningcss@1.25.1))
+        version: 4.2.0(rollup@4.18.0)(typescript@5.5.3)(vite@5.3.3(@types/node@20.14.10))
       zustand:
         specifier: ^4.5.4
         version: 4.5.4(@types/react@18.3.3)(react@18.3.1)
@@ -136,7 +136,7 @@ importers:
     devDependencies:
       vitepress:
         specifier: ^1.3.0
-        version: 1.3.0(@algolia/client-search@4.23.3)(@types/node@20.14.10)(@types/react@18.3.3)(axios@1.7.2)(lightningcss@1.25.1)(postcss@8.4.39)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.3)
+        version: 1.3.0(@algolia/client-search@4.23.3)(@types/node@20.14.10)(@types/react@18.3.3)(axios@1.7.2)(postcss@8.4.39)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.3)
 
   src:
     dependencies:
@@ -203,9 +203,6 @@ importers:
       languages4translatewiki:
         specifier: 0.1.3
         version: 0.1.3
-      lightningcss:
-        specifier: ^1.25.1
-        version: 1.25.1
       live-plugin-manager:
         specifier: ^1.0.0
         version: 1.0.0
@@ -368,7 +365,7 @@ importers:
         version: 5.5.3
       vite:
         specifier: ^5.3.3
-        version: 5.3.3(@types/node@20.14.10)(lightningcss@1.25.1)
+        version: 5.3.3(@types/node@20.14.10)
 
 packages:
 
@@ -2198,11 +2195,6 @@ packages:
     resolution: {integrity: sha512-2sJGJTaXIIaR1w4iJSNoN0hnMY7Gpc/n8D4qSCJw8QqFWXf7cuAgnEHxBpweaVcPevC2l3KpjYCx3NypQQgaJg==}
     engines: {node: '>= 0.8', npm: 1.2.8000 || >= 1.4.16}
 
-  detect-libc@1.0.3:
-    resolution: {integrity: sha512-pGjwhsmsp4kL2RTz08wcOlGN83otlqHeD/Z5T8GXZB+/YcpQ/dgo+lbU8ZsGxV0HIvqqxo9l7mqYwyYMD9bKDg==}
-    engines: {node: '>=0.10'}
-    hasBin: true
-
   detect-node-es@1.1.0:
     resolution: {integrity: sha512-ypdmJU/TbBby2Dxibuv7ZLW3Bs1QEmM7nHjEANfohJLvE0XVujisn1qPJcZxg+qDucsr+bP6fLD1rPS3AhJ7EQ==}
 
@@ -3144,64 +3136,6 @@ packages:
   levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
     engines: {node: '>= 0.8.0'}
-
-  lightningcss-darwin-arm64@1.25.1:
-    resolution: {integrity: sha512-G4Dcvv85bs5NLENcu/s1f7ehzE3D5ThnlWSDwE190tWXRQCQaqwcuHe+MGSVI/slm0XrxnaayXY+cNl3cSricw==}
-    engines: {node: '>= 12.0.0'}
-    cpu: [arm64]
-    os: [darwin]
-
-  lightningcss-darwin-x64@1.25.1:
-    resolution: {integrity: sha512-dYWuCzzfqRueDSmto6YU5SoGHvZTMU1Em9xvhcdROpmtOQLorurUZz8+xFxZ51lCO2LnYbfdjZ/gCqWEkwixNg==}
-    engines: {node: '>= 12.0.0'}
-    cpu: [x64]
-    os: [darwin]
-
-  lightningcss-freebsd-x64@1.25.1:
-    resolution: {integrity: sha512-hXoy2s9A3KVNAIoKz+Fp6bNeY+h9c3tkcx1J3+pS48CqAt+5bI/R/YY4hxGL57fWAIquRjGKW50arltD6iRt/w==}
-    engines: {node: '>= 12.0.0'}
-    cpu: [x64]
-    os: [freebsd]
-
-  lightningcss-linux-arm-gnueabihf@1.25.1:
-    resolution: {integrity: sha512-tWyMgHFlHlp1e5iW3EpqvH5MvsgoN7ZkylBbG2R2LWxnvH3FuWCJOhtGcYx9Ks0Kv0eZOBud789odkYLhyf1ng==}
-    engines: {node: '>= 12.0.0'}
-    cpu: [arm]
-    os: [linux]
-
-  lightningcss-linux-arm64-gnu@1.25.1:
-    resolution: {integrity: sha512-Xjxsx286OT9/XSnVLIsFEDyDipqe4BcLeB4pXQ/FEA5+2uWCCuAEarUNQumRucnj7k6ftkAHUEph5r821KBccQ==}
-    engines: {node: '>= 12.0.0'}
-    cpu: [arm64]
-    os: [linux]
-
-  lightningcss-linux-arm64-musl@1.25.1:
-    resolution: {integrity: sha512-IhxVFJoTW8wq6yLvxdPvyHv4NjzcpN1B7gjxrY3uaykQNXPHNIpChLB52+wfH+yS58zm1PL4LemUp8u9Cfp6Bw==}
-    engines: {node: '>= 12.0.0'}
-    cpu: [arm64]
-    os: [linux]
-
-  lightningcss-linux-x64-gnu@1.25.1:
-    resolution: {integrity: sha512-RXIaru79KrREPEd6WLXfKfIp4QzoppZvD3x7vuTKkDA64PwTzKJ2jaC43RZHRt8BmyIkRRlmywNhTRMbmkPYpA==}
-    engines: {node: '>= 12.0.0'}
-    cpu: [x64]
-    os: [linux]
-
-  lightningcss-linux-x64-musl@1.25.1:
-    resolution: {integrity: sha512-TdcNqFsAENEEFr8fJWg0Y4fZ/nwuqTRsIr7W7t2wmDUlA8eSXVepeeONYcb+gtTj1RaXn/WgNLB45SFkz+XBZA==}
-    engines: {node: '>= 12.0.0'}
-    cpu: [x64]
-    os: [linux]
-
-  lightningcss-win32-x64-msvc@1.25.1:
-    resolution: {integrity: sha512-9KZZkmmy9oGDSrnyHuxP6iMhbsgChUiu/NSgOx+U1I/wTngBStDf2i2aGRCHvFqj19HqqBEI4WuGVQBa2V6e0A==}
-    engines: {node: '>= 12.0.0'}
-    cpu: [x64]
-    os: [win32]
-
-  lightningcss@1.25.1:
-    resolution: {integrity: sha512-V0RMVZzK1+rCHpymRv4URK2lNhIRyO8g7U7zOFwVAhJuat74HtkjIQpQRKNCwFEYkRGpafOpmXXLoaoBcyVtBg==}
-    engines: {node: '>= 12.0.0'}
 
   lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
@@ -5725,16 +5659,16 @@ snapshots:
 
   '@ungap/structured-clone@1.2.0': {}
 
-  '@vitejs/plugin-react-swc@3.7.0(vite@5.3.3(@types/node@20.14.10)(lightningcss@1.25.1))':
+  '@vitejs/plugin-react-swc@3.7.0(vite@5.3.3(@types/node@20.14.10))':
     dependencies:
       '@swc/core': 1.5.28
-      vite: 5.3.3(@types/node@20.14.10)(lightningcss@1.25.1)
+      vite: 5.3.3(@types/node@20.14.10)
     transitivePeerDependencies:
       - '@swc/helpers'
 
-  '@vitejs/plugin-vue@5.0.5(vite@5.3.3(@types/node@20.14.10)(lightningcss@1.25.1))(vue@3.4.31(typescript@5.5.3))':
+  '@vitejs/plugin-vue@5.0.5(vite@5.3.3(@types/node@20.14.10))(vue@3.4.31(typescript@5.5.3))':
     dependencies:
-      vite: 5.3.3(@types/node@20.14.10)(lightningcss@1.25.1)
+      vite: 5.3.3(@types/node@20.14.10)
       vue: 3.4.31(typescript@5.5.3)
 
   '@vue/compiler-core@3.4.31':
@@ -6293,8 +6227,6 @@ snapshots:
   dereference-json-schema@0.2.1: {}
 
   destroy@1.2.0: {}
-
-  detect-libc@1.0.3: {}
 
   detect-node-es@1.1.0: {}
 
@@ -7538,47 +7470,6 @@ snapshots:
       prelude-ls: 1.2.1
       type-check: 0.4.0
 
-  lightningcss-darwin-arm64@1.25.1:
-    optional: true
-
-  lightningcss-darwin-x64@1.25.1:
-    optional: true
-
-  lightningcss-freebsd-x64@1.25.1:
-    optional: true
-
-  lightningcss-linux-arm-gnueabihf@1.25.1:
-    optional: true
-
-  lightningcss-linux-arm64-gnu@1.25.1:
-    optional: true
-
-  lightningcss-linux-arm64-musl@1.25.1:
-    optional: true
-
-  lightningcss-linux-x64-gnu@1.25.1:
-    optional: true
-
-  lightningcss-linux-x64-musl@1.25.1:
-    optional: true
-
-  lightningcss-win32-x64-msvc@1.25.1:
-    optional: true
-
-  lightningcss@1.25.1:
-    dependencies:
-      detect-libc: 1.0.3
-    optionalDependencies:
-      lightningcss-darwin-arm64: 1.25.1
-      lightningcss-darwin-x64: 1.25.1
-      lightningcss-freebsd-x64: 1.25.1
-      lightningcss-linux-arm-gnueabihf: 1.25.1
-      lightningcss-linux-arm64-gnu: 1.25.1
-      lightningcss-linux-arm64-musl: 1.25.1
-      lightningcss-linux-x64-gnu: 1.25.1
-      lightningcss-linux-x64-musl: 1.25.1
-      lightningcss-win32-x64-msvc: 1.25.1
-
   lines-and-columns@1.2.4: {}
 
   live-plugin-manager@1.0.0:
@@ -8802,26 +8693,26 @@ snapshots:
       unist-util-stringify-position: 4.0.0
       vfile-message: 4.0.2
 
-  vite-plugin-static-copy@1.0.6(vite@5.3.3(@types/node@20.14.10)(lightningcss@1.25.1)):
+  vite-plugin-static-copy@1.0.6(vite@5.3.3(@types/node@20.14.10)):
     dependencies:
       chokidar: 3.6.0
       fast-glob: 3.3.2
       fs-extra: 11.2.0
       picocolors: 1.0.1
-      vite: 5.3.3(@types/node@20.14.10)(lightningcss@1.25.1)
+      vite: 5.3.3(@types/node@20.14.10)
 
-  vite-plugin-svgr@4.2.0(rollup@4.18.0)(typescript@5.5.3)(vite@5.3.3(@types/node@20.14.10)(lightningcss@1.25.1)):
+  vite-plugin-svgr@4.2.0(rollup@4.18.0)(typescript@5.5.3)(vite@5.3.3(@types/node@20.14.10)):
     dependencies:
       '@rollup/pluginutils': 5.1.0(rollup@4.18.0)
       '@svgr/core': 8.1.0(typescript@5.5.3)
       '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.5.3))
-      vite: 5.3.3(@types/node@20.14.10)(lightningcss@1.25.1)
+      vite: 5.3.3(@types/node@20.14.10)
     transitivePeerDependencies:
       - rollup
       - supports-color
       - typescript
 
-  vite@5.3.3(@types/node@20.14.10)(lightningcss@1.25.1):
+  vite@5.3.3(@types/node@20.14.10):
     dependencies:
       esbuild: 0.21.5
       postcss: 8.4.39
@@ -8829,16 +8720,15 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.14.10
       fsevents: 2.3.3
-      lightningcss: 1.25.1
 
-  vitepress@1.3.0(@algolia/client-search@4.23.3)(@types/node@20.14.10)(@types/react@18.3.3)(axios@1.7.2)(lightningcss@1.25.1)(postcss@8.4.39)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.3):
+  vitepress@1.3.0(@algolia/client-search@4.23.3)(@types/node@20.14.10)(@types/react@18.3.3)(axios@1.7.2)(postcss@8.4.39)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.3):
     dependencies:
       '@docsearch/css': 3.6.0
       '@docsearch/js': 3.6.0(@algolia/client-search@4.23.3)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@shikijs/core': 1.10.3
       '@shikijs/transformers': 1.10.3
       '@types/markdown-it': 14.1.1
-      '@vitejs/plugin-vue': 5.0.5(vite@5.3.3(@types/node@20.14.10)(lightningcss@1.25.1))(vue@3.4.31(typescript@5.5.3))
+      '@vitejs/plugin-vue': 5.0.5(vite@5.3.3(@types/node@20.14.10))(vue@3.4.31(typescript@5.5.3))
       '@vue/devtools-api': 7.3.5
       '@vue/shared': 3.4.31
       '@vueuse/core': 10.11.0(vue@3.4.31(typescript@5.5.3))
@@ -8847,7 +8737,7 @@ snapshots:
       mark.js: 8.11.1
       minisearch: 6.3.0
       shiki: 1.10.3
-      vite: 5.3.3(@types/node@20.14.10)(lightningcss@1.25.1)
+      vite: 5.3.3(@types/node@20.14.10)
       vue: 3.4.31(typescript@5.5.3)
     optionalDependencies:
       postcss: 8.4.39
