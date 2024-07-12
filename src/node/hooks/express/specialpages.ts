@@ -1,7 +1,7 @@
 'use strict';
 
 const path = require('path');
-const eejs = require('../../eejs');
+const eejs = require('../../eejs')
 const fs = require('fs');
 const fsp = fs.promises;
 const toolbar = require('../../utils/toolbar');
@@ -9,7 +9,8 @@ const hooks = require('../../../static/js/pluginfw/hooks');
 const settings = require('../../utils/Settings');
 const util = require('util');
 const webaccess = require('./webaccess');
-
+const plugins = require('../../../static/js/pluginfw/plugin_defs');
+import {buildSync} from 'esbuild'
 exports.expressPreSession = async (hookName:string, {app}:any) => {
   // This endpoint is intended to conform to:
   // https://www.ietf.org/archive/id/draft-inadarei-api-health-check-06.html
@@ -73,14 +74,42 @@ exports.expressPreSession = async (hookName:string, {app}:any) => {
   });
 };
 
-exports.expressCreateServer = (hookName:string, args:any, cb:Function) => {
+exports.expressCreateServer = async (hookName: string, args: any, cb: Function) => {
   // serve index.html under /
-  args.app.get('/', (req:any, res:any) => {
+  args.app.get('/', (req: any, res: any) => {
     res.send(eejs.require('ep_etherpad-lite/templates/index.html', {req}));
   });
 
+  await fsp.writeFile(
+    path.join(settings.root, 'var/js/padbootstrap.js'),
+    eejs.require('ep_etherpad-lite/templates/padBootstrap.js', {
+      pluginModules: (() => {
+        const pluginModules = new Set();
+        for (const part of plugins.parts) {
+          for (const [, hookFnName] of Object.entries(part.client_hooks || {})) {
+            pluginModules.add(hookFnName.split(':')[0]);
+          }
+        }
+        return [...pluginModules];
+      })(),
+      settings,
+    }));
+
+  const result = buildSync({
+    entryPoints: [settings.root + "/src/templates/padBootstrap.js"], // Entry file(s)
+    bundle: true, // Bundle the files together
+    minify: true, // Minify the output
+    sourcemap: true, // Generate source maps
+    sourceRoot: settings.root+"/src/static/js/",
+    target: ['es2020'], // Target ECMAScript version
+    write: false, // Do not write to file system,
+  })
+
+  const textResult = result.outputFiles[0].text
+
+
   // serve pad.html under /p
-  args.app.get('/p/:pad', (req:any, res:any, next:Function) => {
+  args.app.get('/p/:pad', (req: any, res: any, next: Function) => {
     // The below might break for pads being rewritten
     const isReadOnly = !webaccess.userCanModify(req.params.pad, req);
 
@@ -99,7 +128,7 @@ exports.expressCreateServer = (hookName:string, args:any, cb:Function) => {
   });
 
   // serve timeslider.html under /p/$padname/timeslider
-  args.app.get('/p/:pad/timeslider', (req:any, res:any, next:Function) => {
+  args.app.get('/p/:pad/timeslider', (req: any, res: any, next: Function) => {
     hooks.callAll('padInitToolbar', {
       toolbar,
     });
@@ -112,7 +141,7 @@ exports.expressCreateServer = (hookName:string, args:any, cb:Function) => {
 
   // The client occasionally polls this endpoint to get an updated expiration for the express_sid
   // cookie. This handler must be installed after the express-session middleware.
-  args.app.put('/_extendExpressSessionLifetime', (req:any, res:any) => {
+  args.app.put('/_extendExpressSessionLifetime', (req: any, res: any) => {
     // express-session automatically calls req.session.touch() so we don't need to do it here.
     res.json({status: 'ok'});
   });
