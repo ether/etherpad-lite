@@ -3,7 +3,7 @@
 // One rep.line(div) can be broken in more than one line in the browser.
 // This function is useful to get the caret position of the line as
 // is represented by the browser
-exports.getPosition = () => {
+export const getPosition = () => {
   const range = getSelectionRange();
   console.log("Getting range", range)
   if (!range || $(range.endContainer).closest('body')[0].id !== 'innerdocbody') return null;
@@ -65,7 +65,7 @@ const getPositionOfElementOrSelection = (element) => {
 // where is the top of the previous line
 // [2] the line before is part of another rep line. It's possible this line has different margins
 // height. So we have to get the exactly position of the line
-exports.getPositionTopOfPreviousBrowserLine = (caretLinePosition, rep) => {
+export const getPositionTopOfPreviousBrowserLine = (caretLinePosition, rep) => {
   let previousLineTop = caretLinePosition.top - caretLinePosition.height; // [1]
   const isCaretLineFirstBrowserLine = caretLineIsFirstBrowserLine(caretLinePosition.top, rep);
 
@@ -126,7 +126,7 @@ const getLastRootChildNode = (node) => {
 // So, we can use the caret line to calculate the bottom of the line.
 // [2] the next line is part of another rep line.
 // It's possible this line has different dimensions, so we have to get the exactly dimension of it
-exports.getBottomOfNextBrowserLine = (caretLinePosition, rep) => {
+export const getBottomOfNextBrowserLine = (caretLinePosition, rep) => {
   let nextLineBottom = caretLinePosition.bottom + caretLinePosition.height; // [1]
   const isCaretLineLastBrowserLine =
     caretLineIsLastBrowserLineOfRepLine(caretLinePosition.top, rep);
@@ -154,7 +154,7 @@ const caretLineIsLastBrowserLineOfRepLine = (caretLineTop, rep) => {
   return lastRootChildNodePosition.top === caretLineTop;
 };
 
-const getPreviousVisibleLine = (line, rep) => {
+export const getPreviousVisibleLine = (line, rep) => {
   const firstLineOfPad = 0;
   if (line <= firstLineOfPad) {
     return firstLineOfPad;
@@ -166,9 +166,8 @@ const getPreviousVisibleLine = (line, rep) => {
 };
 
 
-exports.getPreviousVisibleLine = getPreviousVisibleLine;
 
-const getNextVisibleLine = (line, rep) => {
+export const getNextVisibleLine = (line, rep) => {
   const lastLineOfThePad = rep.lines.length() - 1;
   if (line >= lastLineOfThePad) {
     return lastLineOfThePad;
@@ -178,7 +177,6 @@ const getNextVisibleLine = (line, rep) => {
     return getNextVisibleLine(line + 1, rep);
   }
 };
-exports.getNextVisibleLine = getNextVisibleLine;
 
 const isLineVisible = (line, rep) => rep.lines.atIndex(line).lineNode.offsetHeight > 0;
 
