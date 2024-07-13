@@ -5,6 +5,7 @@
 // is represented by the browser
 exports.getPosition = () => {
   const range = getSelectionRange();
+  console.log("Getting range", range)
   if (!range || $(range.endContainer).closest('body')[0].id !== 'innerdocbody') return null;
   // When there's a <br> or any element that has no height, we can't get the dimension of the
   // element where the caret is. As we can't get the element height, we create a text node to get

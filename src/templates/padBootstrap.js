@@ -1,3 +1,4 @@
+
 (async () => {
   window.clientVars = {
     // This is needed to fetch /pluginfw/plugin-definitions.json, which happens before the server
@@ -6,7 +7,7 @@
   };
 
   // Allow other frames to access this frame's modules.
-  window.require.resolveTmp = require.resolve('ep_etherpad-lite/static/js/pad_cookie');
+  //window.require.resolveTmp = require.resolve('ep_etherpad-lite/static/js/pad_cookie');
 
   const basePath = new URL('..', window.location.href).pathname;
   window.$ = window.jQuery = require('../../src/static/js/rjquery').jQuery;
