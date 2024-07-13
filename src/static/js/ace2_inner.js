@@ -3010,7 +3010,7 @@ function Ace2Inner(editorInfo, cssManagers) {
         };
       }
     };
-    const browserSelection = window.getSelection();
+    const browserSelection = targetDoc.getSelection();
     if (browserSelection) {
       browserSelection.removeAllRanges();
       if (selection) {
@@ -3153,7 +3153,7 @@ function Ace2Inner(editorInfo, cssManagers) {
           browserSelection.anchorOffset === range.endOffset,
     };
 
-    if (selection.startPoint.node.ownerDocument !== window.document) {
+    if (selection.startPoint.node.ownerDocument !== targetDoc) {
       return null;
     }
 
