@@ -10,6 +10,9 @@ const settings = require('../../utils/Settings');
 const util = require('util');
 const webaccess = require('./webaccess');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
+import {hash, createHash} from 'node:crypto'
+
+
 import {buildSync} from 'esbuild'
 exports.expressPreSession = async (hookName:string, {app}:any) => {
   // This endpoint is intended to conform to:
@@ -94,18 +97,30 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
       })(),
       settings,
     }));
+  const hash = createHash('sha256').update(fs.readFileSync(path.join(settings.root, 'var/js/padbootstrap.js'))).digest('hex');
 
+  const fileName = `padbootstrap-${hash.substring(0,16)}.min.js`
   const result = buildSync({
-    entryPoints: [settings.root + "/src/templates/padBootstrap.js"], // Entry file(s)
+    entryPoints: [settings.root + "/var/js/padbootstrap.js"], // Entry file(s)
     bundle: true, // Bundle the files together
-    minify: true, // Minify the output
+    minify: false, // Minify the output
     sourcemap: true, // Generate source maps
     sourceRoot: settings.root+"/src/static/js/",
     target: ['es2020'], // Target ECMAScript version
-    write: false, // Do not write to file system,
+    metafile: true,
+
+    write: true, // Do not write to file system,
+    outfile: settings.root + `/var/js/${fileName}`, // Output file
   })
 
-  const textResult = result.outputFiles[0].text
+
+  args.app.get(`/${fileName}`, (req: any, res: any) => {
+    res.sendFile(settings.root+`/var/js/${fileName}`)
+  })
+
+  args.app.get(`/${fileName}.map`, (req: any, res: any) => {
+    res.sendFile(settings.root+`/var/js/${fileName}.map`)
+  })
 
 
   // serve pad.html under /p
@@ -115,7 +130,7 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
 
     hooks.callAll('padInitToolbar', {
       toolbar,
-      isReadOnly,
+      isReadOnly
     });
 
     // can be removed when require-kernel is dropped
@@ -124,6 +139,7 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
       req,
       toolbar,
       isReadOnly,
+      entrypoint: "/"+fileName
     }));
   });
 
@@ -145,6 +161,4 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
     // express-session automatically calls req.session.touch() so we don't need to do it here.
     res.json({status: 'ok'});
   });
-
-  return cb();
 };

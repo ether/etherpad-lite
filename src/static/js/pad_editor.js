@@ -24,9 +24,9 @@
 const Cookies = require('./pad_utils').Cookies;
 const padcookie = require('./pad_cookie').padcookie;
 const padutils = require('./pad_utils').padutils;
+const Ace2Editor = require('./ace').Ace2Editor;
 
 const padeditor = (() => {
-  let Ace2Editor = undefined;
   let pad = undefined;
   let settings = undefined;
 
@@ -35,7 +35,6 @@ const padeditor = (() => {
     // this is accessed directly from other files
     viewZoom: 100,
     init: async (initialViewOptions, _pad) => {
-      Ace2Editor = require('./ace').Ace2Editor;
       pad = _pad;
       settings = pad.settings;
       self.ace = new Ace2Editor();

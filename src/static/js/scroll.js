@@ -15,7 +15,7 @@ function Scroll(outerWin) {
 
   // DOM reference
   this.outerWin = outerWin;
-  this.doc = this.outerWin.document;
+  this.doc = this.outerWin.contentDocument;
   this.rootDocument = parent.parent.document;
 }
 

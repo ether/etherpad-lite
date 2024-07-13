@@ -172,7 +172,7 @@ $._farbtastic = function (container, options) {
           angle2 = d2 * Math.PI * 2,
           // Endpoints
           x1 = Math.sin(angle1), y1 = -Math.cos(angle1);
-          x2 = Math.sin(angle2), y2 = -Math.cos(angle2),
+          let x2 = Math.sin(angle2), y2 = -Math.cos(angle2),
           // Midpoint chosen so that the endpoints are tangent to the circle.
           am = (angle1 + angle2) / 2,
           tan = 1 / Math.cos((angle2 - angle1) / 2),
@@ -329,8 +329,8 @@ $._farbtastic = function (container, options) {
 
     // Update the overlay canvas.
     fb.ctxOverlay.clearRect(-fb.mid, -fb.mid, sz, sz);
-    for (i in circles) {
-      var c = circles[i];
+    for (let i in circles) {
+      const c = circles[i];
       fb.ctxOverlay.lineWidth = c.lw;
       fb.ctxOverlay.strokeStyle = c.c;
       fb.ctxOverlay.beginPath();
