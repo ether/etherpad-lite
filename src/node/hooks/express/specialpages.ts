@@ -90,6 +90,7 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
         const pluginModules = new Set();
         for (const part of plugins.parts) {
           for (const [, hookFnName] of Object.entries(part.client_hooks || {})) {
+            console.log(hookFnName.split(':')[0])
             pluginModules.add(hookFnName.split(':')[0]);
           }
         }

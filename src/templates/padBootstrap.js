@@ -27,7 +27,7 @@
   window.plugins.baseURL = basePath;
   await window.plugins.update(new Map([
     <% for (const module of pluginModules) { %>
-    [<%- JSON.stringify(module) %>, require(<%- JSON.stringify(module) %>)],
+    [<%- JSON.stringify(module) %>, require("../../src/plugin_packages/"+<%- JSON.stringify(module) %>)],
     <% } %>
 ]));
   // Mechanism for tests to register hook functions (install fake plugins).
