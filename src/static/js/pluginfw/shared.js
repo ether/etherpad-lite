@@ -24,7 +24,13 @@ const loadFn = (path, hookName, modules) => {
     functionName = parts[1];
   }
 
-  let fn = modules ? modules.get(path) : require(/* webpackIgnore: true */ path);
+  let fn
+  if (modules === undefined || !("get" in modules)) {
+    fn = require(/* webpackIgnore: true */ path);
+  } else {
+    fn = modules.get(path);
+  }
+
   functionName = functionName ? functionName : hookName;
 
   for (const name of functionName.split('.')) {
