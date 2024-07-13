@@ -1,4 +1,4 @@
-'use strict';
+import io from 'socket.io-client';
 
 /**
  * Creates a socket.io connection.

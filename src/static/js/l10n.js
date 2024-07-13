@@ -1,4 +1,5 @@
-'use strict';
+import html10n from '../js/vendors/html10n';
+
 
 ((document) => {
   // Set language for l10n
