@@ -22,7 +22,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-window.html10n = (function(window, document, undefined) {
+export let html10n = (function(window, document, undefined) {
 
   // fix console
   (function() {
@@ -1054,3 +1054,7 @@ window.html10n = (function(window, document, undefined) {
 
   return html10n
 })(window, document)
+
+export default html10n
+
+window.html10n = html10n

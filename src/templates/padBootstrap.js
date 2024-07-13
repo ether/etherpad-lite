@@ -1,5 +1,8 @@
 
 (async () => {
+
+  require('../../src/static/js/l10n')
+
   window.clientVars = {
     // This is needed to fetch /pluginfw/plugin-definitions.json, which happens before the server
     // sends the CLIENT_VARS message.
@@ -23,6 +26,7 @@
   window.padeditbar = require('../../src/static/js/pad_editbar').padeditbar;
   window.padimpexp = require('../../src/static/js/pad_impexp').padimpexp;
   require('../../src/static/js/skin_variants');
+  require('../../src/static/js/basic_error_handler')
 
   window.plugins.baseURL = basePath;
   await window.plugins.update(new Map([

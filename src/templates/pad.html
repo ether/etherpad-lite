@@ -34,7 +34,6 @@
     for the JavaScript code in this page.|
     */
   </script>
-  <script src="../static/js/basic_error_handler.js?v=<%=settings.randomVersionString%>"></script>
 
   <meta charset="utf-8">
   <meta name="robots" content="noindex, nofollow">
@@ -53,8 +52,6 @@
   <% e.end_block(); %>
 
   <link rel="localizations" type="application/l10n+json" href="../locales.json" />
-  <script type="text/javascript" src="../static/js/vendors/html10n.js?v=<%=settings.randomVersionString%>"></script>
-  <script type="text/javascript" src="../static/js/l10n.js?v=<%=settings.randomVersionString%>"></script>
 </head>
 <body>
   <% e.begin_block("body"); %>
@@ -441,7 +438,6 @@
   <!----------------------------->
 
   <% e.begin_block("scripts"); %>
-  <script type="text/javascript" src="../socket.io/socket.io.js"></script>
 
   <script src="<%=entrypoint%>"></script>
 
