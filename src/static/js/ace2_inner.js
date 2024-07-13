@@ -30,6 +30,8 @@ const setAssoc = Ace2Common.setAssoc;
 const noop = Ace2Common.noop;
 const hooks = require('./pluginfw/hooks');
 
+import Scroll from './scroll'
+
 function Ace2Inner(editorInfo, cssManagers) {
   const makeChangesetTracker = require('./changesettracker').makeChangesetTracker;
   const colorutils = require('./colorutils').colorutils;
@@ -42,7 +44,6 @@ function Ace2Inner(editorInfo, cssManagers) {
   const SkipList = require('./skiplist');
   const undoModule = require('./undomodule').undoModule;
   const AttributeManager = require('./AttributeManager');
-  const Scroll = require('./scroll');
   const DEBUG = false;
 
   const THE_TAB = '    '; // 4
@@ -77,7 +78,7 @@ function Ace2Inner(editorInfo, cssManagers) {
   };
   appendNewSideDivLine();
 
-  const scroll = Scroll.init(outerWin);
+  const scroll = new Scroll(outerWin);
 
   let outsideKeyDown = noop;
   let outsideKeyPress = (e) => true;
