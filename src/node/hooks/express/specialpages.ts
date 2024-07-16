@@ -98,10 +98,30 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
       })(),
       settings,
     }));
+
+  await fsp.writeFile(
+    path.join(settings.root, 'var/js/timesliderBootstrap.js'),
+    eejs.require('ep_etherpad-lite/templates/timeSliderBootstrap.js', {
+      pluginModules: (() => {
+        const pluginModules = new Set();
+        for (const part of plugins.parts) {
+          for (const [, hookFnName] of Object.entries(part.client_hooks || {})) {
+            console.log(hookFnName.split(':')[0])
+            pluginModules.add(hookFnName.split(':')[0]);
+          }
+        }
+        return [...pluginModules];
+      })(),
+      settings,
+    }));
+
   const hash = createHash('sha256').update(fs.readFileSync(path.join(settings.root, 'var/js/padbootstrap.js'))).digest('hex');
+  const hashTimeSlider = createHash('sha256').update(fs.readFileSync(path.join(settings.root, 'var/js/timeSliderBootstrap.js'))).digest('hex');
 
   const fileName = `padbootstrap-${hash.substring(0,16)}.min.js`
-  const result = buildSync({
+  const fileNameTimeSlider = `timeSliderBootstrap-${hash.substring(0,16)}.min.js`
+
+  buildSync({
     entryPoints: [settings.root + "/var/js/padbootstrap.js"], // Entry file(s)
     bundle: true, // Bundle the files together
     minify: false, // Minify the output
@@ -114,6 +134,19 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
     outfile: settings.root + `/var/js/${fileName}`, // Output file
   })
 
+   buildSync({
+    entryPoints: [settings.root + "/var/js/timesliderBootstrap.js"], // Entry file(s)
+    bundle: true, // Bundle the files together
+    minify: false, // Minify the output
+    sourcemap: true, // Generate source maps
+    sourceRoot: settings.root+"/src/static/js/",
+    target: ['es2020'], // Target ECMAScript version
+    metafile: true,
+
+    write: true, // Do not write to file system,
+    outfile: settings.root + `/var/js/${fileNameTimeSlider}`, // Output file
+  })
+
 
   args.app.get(`/${fileName}`, (req: any, res: any) => {
     res.sendFile(settings.root+`/var/js/${fileName}`)
@@ -122,6 +155,17 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
   args.app.get(`/${fileName}.map`, (req: any, res: any) => {
     res.sendFile(settings.root+`/var/js/${fileName}.map`)
   })
+
+  args.app.get(`/${fileNameTimeSlider}`, (req: any, res: any) => {
+    res.sendFile(settings.root+`/var/js/${fileNameTimeSlider}`)
+  })
+
+  args.app.get(`/${fileNameTimeSlider}.map`, (req: any, res: any) => {
+    res.sendFile(settings.root+`/var/js/${fileNameTimeSlider}.map`)
+  })
+
+
+
 
 
   // serve pad.html under /p
@@ -153,6 +197,7 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
     res.send(eejs.require('ep_etherpad-lite/templates/timeslider.html', {
       req,
       toolbar,
+      entrypoint: "/"+fileNameTimeSlider
     }));
   });
 
