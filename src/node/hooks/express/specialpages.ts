@@ -90,7 +90,6 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
         const pluginModules = new Set();
         for (const part of plugins.parts) {
           for (const [, hookFnName] of Object.entries(part.client_hooks || {})) {
-            console.log(hookFnName.split(':')[0])
             pluginModules.add(hookFnName.split(':')[0]);
           }
         }
@@ -106,7 +105,6 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
         const pluginModules = new Set();
         for (const part of plugins.parts) {
           for (const [, hookFnName] of Object.entries(part.client_hooks || {})) {
-            console.log(hookFnName.split(':')[0])
             pluginModules.add(hookFnName.split(':')[0]);
           }
         }
@@ -116,13 +114,16 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
     }));
 
   const hash = createHash('sha256').update(fs.readFileSync(path.join(settings.root, 'var/js/padbootstrap.js'))).digest('hex');
-  const hashTimeSlider = createHash('sha256').update(fs.readFileSync(path.join(settings.root, 'var/js/timeSliderBootstrap.js'))).digest('hex');
+  const hashTimeSlider = createHash('sha256').update(fs.readFileSync(path.join(settings.root, 'var/js/timesliderBootstrap.js'))).digest('hex');
 
   const fileName = `padbootstrap-${hash.substring(0,16)}.min.js`
-  const fileNameTimeSlider = `timeSliderBootstrap-${hash.substring(0,16)}.min.js`
+  const fileNameTimeSlider = `timeSliderBootstrap-${hashTimeSlider.substring(0,16)}.min.js`
+  const outdir = path.join(settings.root, 'var','js')
+
+
 
   buildSync({
-    entryPoints: [settings.root + "/var/js/padbootstrap.js"], // Entry file(s)
+    entryPoints: path.join(outdir, 'padbootstrap.js'), // Entry file(s)
     bundle: true, // Bundle the files together
     minify: false, // Minify the output
     sourcemap: true, // Generate source maps
@@ -131,7 +132,7 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
     metafile: true,
 
     write: true, // Do not write to file system,
-    outfile: settings.root + `/var/js/${fileName}`, // Output file
+    outfile: path.join(outdir,fileName), // Output file
   })
 
    buildSync({
@@ -144,7 +145,7 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
     metafile: true,
 
     write: true, // Do not write to file system,
-    outfile: settings.root + `/var/js/${fileNameTimeSlider}`, // Output file
+    outfile: path.join(outdir,fileNameTimeSlider), // Output file
   })
 
 
