@@ -725,7 +725,7 @@ export let html10n = (function(window, document, undefined) {
       return;
 
     // initialize _pluralRules
-    if (!this._pluralRules)
+    if (!("_pluralRules" in this))
       this._pluralRules = getPluralRules(html10n.language);
     var index = this._pluralRules(n);
 

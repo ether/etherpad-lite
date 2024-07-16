@@ -3188,10 +3188,10 @@ function Ace2Inner(editorInfo, cssManagers) {
   editorInfo.ace_getInInternationalComposition = () => inInternationalComposition;
 
   const bindTheEventHandlers = () => {
-    $(document).on('keydown', handleKeyEvent);
-    $(document).on('keypress', handleKeyEvent);
-    $(document).on('keyup', handleKeyEvent);
-    $(document).on('click', handleClick);
+    $(targetDoc).on('keydown', handleKeyEvent);
+    $(targetDoc).on('keypress', handleKeyEvent);
+    $(targetDoc).on('keyup', handleKeyEvent);
+    $(targetDoc).on('click', handleClick);
     // dropdowns on edit bar need to be closed on clicks on both pad inner and pad outer
     $(outerDoc).on('click', hideEditBarDropdowns);
 
