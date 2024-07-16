@@ -125,19 +125,16 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
     }, // Entry file(s)
     bundle: true, // Bundle the files together
     minify: process.env.NODE_ENV === "production", // Minify the output
-    sourcemap: true, // Generate source maps
+    sourcemap: !(process.env.NODE_ENV === "production"), // Generate source maps
     sourceRoot: settings.root+"/src/static/js/",
-
     target: ['es2020'], // Target ECMAScript version
     metafile: true,
-
     write: false, // Do not write to file system,
   })
 
   const outputPadJS  = padWriteResult.outputFiles[0].text
 
    const timeSliderWrite = buildSync({
-    //entryPoints: [path.join(outdir, "timesliderBootstrap.js")], // Entry file(s),
      stdin: {
        contents: timeSliderString,
        resolveDir: path.join(settings.root, 'var','js'),
@@ -145,18 +142,17 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
      },
     bundle: true, // Bundle the files together
     minify: process.env.NODE_ENV === "production", // Minify the output
-    sourcemap: true, // Generate source maps
+    sourcemap: !(process.env.NODE_ENV === "production"), // Generate source maps
     sourceRoot: settings.root+"/src/static/js/",
     target: ['es2020'], // Target ECMAScript version
     metafile: true,
-
     write: false, // Do not write to file system,
   })
 
   const outputTimeslider = timeSliderWrite.outputFiles[0].text
 
-  const hash = createHash('sha256').update(outputPadJS).digest('hex').substring(0,8);
-  const hashTimeSlider = createHash('sha256').update(outputTimeslider).digest('hex').substring(0,8);
+  const hash = padWriteResult.outputFiles[0].hash
+  const hashTimeSlider = timeSliderWrite.outputFiles[0].hash
 
   const fileNamePad = `padbootstrap-${hash}.min.js`
   const fileNameTimeSlider = `timeSliderBootstrap-${hashTimeSlider}.min.js`
@@ -175,16 +171,8 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
     res.sendFile(pathNamePad)
   })
 
-  args.app.get("/"+fileNamePad+".map", (req: any, res: any) => {
-    res.sendFile(pathNamePad+".map")
-  })
-
   args.app.get("/"+fileNameTimeSlider, (req: any, res: any) => {
     res.sendFile(pathNameTimeSlider)
-  })
-
-  args.app.get("/"+fileNameTimeSlider+".map", (req: any, res: any) => {
-    res.sendFile(pathNameTimeSlider+".map")
   })
 
 
