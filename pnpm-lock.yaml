@@ -119,8 +119,8 @@ importers:
         specifier: ^4.16.2
         version: 4.16.2
       ueberdb2:
-        specifier: ^4.2.82
-        version: 4.2.82
+        specifier: ^4.2.84
+        version: 4.2.84
     devDependencies:
       '@types/node':
         specifier: ^20.14.10
@@ -267,8 +267,8 @@ importers:
         specifier: 4.16.2
         version: 4.16.2
       ueberdb2:
-        specifier: ^4.2.82
-        version: 4.2.82
+        specifier: ^4.2.84
+        version: 4.2.84
       underscore:
         specifier: 1.13.6
         version: 1.13.6
@@ -4109,8 +4109,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  ueberdb2@4.2.82:
-    resolution: {integrity: sha512-xnFLxNXNpWN9YXFUKf+48hOUqR89ZYemLh4CRfaI+TGyHifVzc55Nz/fhmbs/XJWJ7NrDgtxWqKJtl4TYdXl/A==}
+  ueberdb2@4.2.84:
+    resolution: {integrity: sha512-L0TFXaGtBnEO78rt5UhNbc9OeHcc5br8ogz646vWpNMWZExIVjd7uWBrDh+e3TFS9cClUbB0egjjZB9thQYCrQ==}
     engines: {node: '>=16.20.1'}
 
   uid-safe@2.1.5:
@@ -8577,7 +8577,7 @@ snapshots:
 
   typescript@5.5.3: {}
 
-  ueberdb2@4.2.82: {}
+  ueberdb2@4.2.84: {}
 
   uid-safe@2.1.5:
     dependencies:
