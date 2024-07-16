@@ -7,6 +7,7 @@
 // Licensed under the terms of the GNU General Public License v2.0:
 // https://github.com/mattfarina/farbtastic/blob/71ca15f4a09c8e5a08a1b0d1cf37ef028adf22f0/LICENSE.txt
 // edited by Sebastian Castro <sebastian.castro@protonmail.com> on 2020-04-06
+
 (function ($) {
 
 var __debug = false;

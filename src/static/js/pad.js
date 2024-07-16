@@ -30,6 +30,8 @@ require('./vendors/jquery');
 require('./vendors/farbtastic');
 require('./vendors/gritter');
 
+import html10n from './vendors/html10n'
+
 const Cookies = require('./pad_utils').Cookies;
 const chat = require('./chat').chat;
 const getCollabClient = require('./collab_client').getCollabClient;
@@ -136,7 +138,7 @@ const getParameters = [
     name: 'lang',
     checkVal: null,
     callback: (val) => {
-      window.html10n.localize([val, 'en']);
+      html10n.localize([val, 'en']);
       Cookies.set('language', val);
     },
   },

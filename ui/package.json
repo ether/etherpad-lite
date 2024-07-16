@@ -9,7 +9,12 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "ep_etherpad-lite": "workspace:../src",
     "typescript": "^5.5.3",
-    "vite": "^5.3.3"
+    "vite": "^5.3.3",
+    "vite-plugin-require": "^1.2.14"
+  },
+  "dependencies": {
+    "@originjs/vite-plugin-commonjs": "^1.0.3"
   }
 }

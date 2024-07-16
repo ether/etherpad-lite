@@ -1,4 +1,5 @@
 'use strict';
+import html10n from './vendors/html10n';
 
 exports.showCountDownTimerToReconnectOnModal = ($modal, pad) => {
   if (clientVars.automaticReconnectionTimeout && $modal.is('.with_reconnect_timer')) {
