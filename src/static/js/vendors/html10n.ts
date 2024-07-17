@@ -539,7 +539,9 @@ export class Html10n {
         if(!lang) continue;
         if(!(lang in langs)) {// uh, we don't have this lang availbable..
           // then check for related langs
-          if(~lang.indexOf('-')) lang = lang.split('-')[0];
+          if(~lang.indexOf('-') != -1) {
+            lang = lang.split('-')[0];
+          }
           let l: string|undefined = ''
           for(l of langs) {
             if(l && lang != l && l.indexOf(lang) === 0) {
@@ -551,16 +553,25 @@ export class Html10n {
           if(lang != l) continue;
         }
 
+
         // ... and apply all strings of the current lang in the list
         // to our build object
         //lang = "de"
-        for (let string in this.loader!.langs.get(lang)) {
-          build.set(string,this.loader!.langs.get(lang)[string])
+        if (this.loader!.langs.has(lang)) {
+          for (let string in this.loader!.langs.get(lang)) {
+            build.set(string,this.loader!.langs.get(lang)[string])
+          }
+          this.language = lang
+        } else {
+          const loaderLang = lang.split('-')[0]
+          for (let string in this.loader!.langs.get(loaderLang)) {
+            build.set(string,this.loader!.langs.get(loaderLang)[string])
+          }
+          this.language = loaderLang
         }
 
         // the last applied lang will be exposed as the
         // lang the page was translated to
-        this.language = lang
       }
       cb(null, build)
     })
