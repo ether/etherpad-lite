@@ -3,10 +3,8 @@
  * Worker thread to minify JS & CSS files out of the main NodeJS thread
  */
 
-const fsp = require('fs').promises;
 import {expose} from 'threads'
 import {build, transform} from 'esbuild';
-import {bundleAsync} from 'lightningcss';
 
 /*
   * Minify JS content
