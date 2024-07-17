@@ -5,7 +5,7 @@
 
 const fsp = require('fs').promises;
 import {expose} from 'threads'
-import {transform} from 'esbuild';
+import {build, transform} from 'esbuild';
 import {bundleAsync} from 'lightningcss';
 
 /*
@@ -22,11 +22,23 @@ const compressJS = async (content) => {
   * @param {string} ROOT_DIR - the root dir of Etherpad
  */
 const compressCSS = async (content) => {
-  return await bundleAsync({
-    minify: true,
-    filename: content
-  })
-
+  const transformedCSS = await build(
+    {
+      entryPoints: [content],
+      minify: true,
+      bundle: true,
+      loader:{
+        '.ttf': 'dataurl',
+        '.otf': 'dataurl',
+        '.woff': 'dataurl',
+        '.woff2': 'dataurl',
+        '.eot': 'dataurl',
+        '.svg': 'dataurl'
+      },
+      write: false
+    }
+  )
+  return transformedCSS.outputFiles[0].text
 };
 
 expose({

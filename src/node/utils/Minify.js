@@ -305,8 +305,7 @@ const getFileCompressed = async (filename, contentType) => {
           if (compressResult.error) {
             console.error(`Error compressing CSS (${filename}) using terser`, compressResult.error);
           } else {
-            const decoder = new TextDecoder('utf-8');
-            content = decoder.decode(compressResult.code)
+            content = compressResult
           }
         } catch (error) {
           console.error(`CleanCSS.minify() returned an error on ${filename}: ${error}`);
