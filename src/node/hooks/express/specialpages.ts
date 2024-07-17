@@ -183,7 +183,7 @@ const handleLiveReload = async (args: any, padString: string, timeSliderString: 
 
         // can be removed when require-kernel is dropped
         res.header('Feature-Policy', 'sync-xhr \'self\'');
-        const content = eejs.require('ep_etherpad-lite/templates/pad.html', {
+        const content = eejs.require('ep_etherpad-lite/templates/timeslider.html', {
           req,
           toolbar,
           isReadOnly,

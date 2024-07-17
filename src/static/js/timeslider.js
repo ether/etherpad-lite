@@ -31,7 +31,7 @@ const randomString = require('./pad_utils').randomString;
 const hooks = require('./pluginfw/hooks');
 const padutils = require('./pad_utils').padutils;
 const socketio = require('./socketio');
-
+import html10n from '../js/vendors/html10n'
 let token, padId, exportLinks, socket, changesetLoader, BroadcastSlider;
 
 const init = () => {

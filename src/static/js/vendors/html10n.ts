@@ -483,7 +483,6 @@ export class Html10n {
     })
 
     this.build(langs, (er: null, translations: Map<string, any>) =>{
-      console.log("Translations are", translations)
       this.translations = translations
       this.translateElement(translations)
       this.mt.trigger('localized')
@@ -852,7 +851,6 @@ class Loader {
       if (xhr.readyState == 4) {
         if (xhr.status == 200 || xhr.status === 0) {
           const data = JSON.parse(xhr.responseText);
-          console.log("Data is", data)
           this.cache.set(href, data)
           // Pass on the contents for parsing
           this.parse(lang, href, data, callback)
@@ -972,7 +970,6 @@ class Loader {
       return
     }
 
-    console.log("Setting lang", lang)
     this.langs.set(lang,data[lang])
     // TODO: Also store accompanying langs
     callback()
