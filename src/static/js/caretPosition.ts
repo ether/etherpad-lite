@@ -3,8 +3,11 @@
 // One rep.line(div) can be broken in more than one line in the browser.
 // This function is useful to get the caret position of the line as
 // is represented by the browser
+import {Position, RepModel, RepNode} from "./types/RepModel";
+
 export const getPosition = () => {
   const range = getSelectionRange();
+  // @ts-ignore
   if (!range || $(range.endContainer).closest('body')[0].id !== 'innerdocbody') return null;
   // When there's a <br> or any element that has no height, we can't get the dimension of the
   // element where the caret is. As we can't get the element height, we create a text node to get
@@ -18,7 +21,7 @@ export const getPosition = () => {
   return line;
 };
 
-const createSelectionRange = (range) => {
+const createSelectionRange = (range: Range) => {
   const clonedRange = range.cloneRange();
 
   // we set the selection start and end to avoid error when user selects a text bigger than
@@ -30,14 +33,14 @@ const createSelectionRange = (range) => {
   return clonedRange;
 };
 
-const getPositionOfRepLineAtOffset = (node, offset) => {
+const getPositionOfRepLineAtOffset = (node: any, offset: number) => {
   // it is not a text node, so we cannot make a selection
   if (node.tagName === 'BR' || node.tagName === 'EMPTY') {
     return getPositionOfElementOrSelection(node);
   }
 
   while (node.length === 0 && node.nextSibling) {
-    node = node.nextSibling;
+    node = node.nextSibling as any;
   }
 
   const newRange = new Range();
@@ -48,14 +51,13 @@ const getPositionOfRepLineAtOffset = (node, offset) => {
   return linePosition;
 };
 
-const getPositionOfElementOrSelection = (element) => {
+const getPositionOfElementOrSelection = (element: Range):Position => {
   const rect = element.getBoundingClientRect();
-  const linePosition = {
+  return {
     bottom: rect.bottom,
     height: rect.height,
     top: rect.top,
-  };
-  return linePosition;
+  } satisfies Position;
 };
 
 // here we have two possibilities:
@@ -64,7 +66,7 @@ const getPositionOfElementOrSelection = (element) => {
 // where is the top of the previous line
 // [2] the line before is part of another rep line. It's possible this line has different margins
 // height. So we have to get the exactly position of the line
-export const getPositionTopOfPreviousBrowserLine = (caretLinePosition, rep) => {
+export const getPositionTopOfPreviousBrowserLine = (caretLinePosition: Position, rep: RepModel) => {
   let previousLineTop = caretLinePosition.top - caretLinePosition.height; // [1]
   const isCaretLineFirstBrowserLine = caretLineIsFirstBrowserLine(caretLinePosition.top, rep);
 
@@ -80,7 +82,7 @@ export const getPositionTopOfPreviousBrowserLine = (caretLinePosition, rep) => {
   return previousLineTop;
 };
 
-const caretLineIsFirstBrowserLine = (caretLineTop, rep) => {
+const caretLineIsFirstBrowserLine = (caretLineTop: number, rep: RepModel) => {
   const caretRepLine = rep.selStart[0];
   const lineNode = rep.lines.atIndex(caretRepLine).lineNode;
   const firstRootNode = getFirstRootChildNode(lineNode);
@@ -91,7 +93,7 @@ const caretLineIsFirstBrowserLine = (caretLineTop, rep) => {
 };
 
 // find the first root node, usually it is a text node
-const getFirstRootChildNode = (node) => {
+const getFirstRootChildNode = (node: RepNode) => {
   if (!node.firstChild) {
     return node;
   } else {
@@ -99,7 +101,7 @@ const getFirstRootChildNode = (node) => {
   }
 };
 
-const getDimensionOfLastBrowserLineOfRepLine = (line, rep) => {
+const getDimensionOfLastBrowserLineOfRepLine = (line: number, rep: RepModel) => {
   const lineNode = rep.lines.atIndex(line).lineNode;
   const lastRootChildNode = getLastRootChildNode(lineNode);
 
@@ -109,7 +111,7 @@ const getDimensionOfLastBrowserLineOfRepLine = (line, rep) => {
   return lastRootChildNodePosition;
 };
 
-const getLastRootChildNode = (node) => {
+const getLastRootChildNode = (node: RepNode) => {
   if (!node.lastChild) {
     return {
       node,
@@ -125,7 +127,7 @@ const getLastRootChildNode = (node) => {
 // So, we can use the caret line to calculate the bottom of the line.
 // [2] the next line is part of another rep line.
 // It's possible this line has different dimensions, so we have to get the exactly dimension of it
-export const getBottomOfNextBrowserLine = (caretLinePosition, rep) => {
+export const getBottomOfNextBrowserLine = (caretLinePosition: Position, rep: RepModel) => {
   let nextLineBottom = caretLinePosition.bottom + caretLinePosition.height; // [1]
   const isCaretLineLastBrowserLine =
     caretLineIsLastBrowserLineOfRepLine(caretLinePosition.top, rep);
@@ -142,7 +144,7 @@ export const getBottomOfNextBrowserLine = (caretLinePosition, rep) => {
   return nextLineBottom;
 };
 
-const caretLineIsLastBrowserLineOfRepLine = (caretLineTop, rep) => {
+const caretLineIsLastBrowserLineOfRepLine = (caretLineTop: number, rep: RepModel) => {
   const caretRepLine = rep.selStart[0];
   const lineNode = rep.lines.atIndex(caretRepLine).lineNode;
   const lastRootChildNode = getLastRootChildNode(lineNode);
@@ -153,7 +155,7 @@ const caretLineIsLastBrowserLineOfRepLine = (caretLineTop, rep) => {
   return lastRootChildNodePosition.top === caretLineTop;
 };
 
-export const getPreviousVisibleLine = (line, rep) => {
+export const getPreviousVisibleLine = (line: number, rep: RepModel): number => {
   const firstLineOfPad = 0;
   if (line <= firstLineOfPad) {
     return firstLineOfPad;
@@ -166,7 +168,7 @@ export const getPreviousVisibleLine = (line, rep) => {
 
 
 
-export const getNextVisibleLine = (line, rep) => {
+export const getNextVisibleLine = (line: number, rep: RepModel): number => {
   const lastLineOfThePad = rep.lines.length() - 1;
   if (line >= lastLineOfThePad) {
     return lastLineOfThePad;
@@ -177,9 +179,9 @@ export const getNextVisibleLine = (line, rep) => {
   }
 };
 
-const isLineVisible = (line, rep) => rep.lines.atIndex(line).lineNode.offsetHeight > 0;
+const isLineVisible = (line: number, rep: RepModel) => rep.lines.atIndex(line).lineNode.offsetHeight > 0;
 
-const getDimensionOfFirstBrowserLineOfRepLine = (line, rep) => {
+const getDimensionOfFirstBrowserLineOfRepLine = (line: number, rep: RepModel) => {
   const lineNode = rep.lines.atIndex(line).lineNode;
   const firstRootChildNode = getFirstRootChildNode(lineNode);
 

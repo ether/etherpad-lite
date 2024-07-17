@@ -1,4 +1,5 @@
 import {getBottomOfNextBrowserLine, getNextVisibleLine, getPosition, getPositionTopOfPreviousBrowserLine, getPreviousVisibleLine} from './caretPosition';
+import {Position, RepModel, RepNode, WindowElementWithScrolling} from "./types/RepModel";
 
 
 class Scroll {
@@ -8,6 +9,7 @@ class Scroll {
   private scrollSettings: any;
 
   constructor(outerWin: HTMLIFrameElement) {
+    // @ts-ignore
     this.scrollSettings = window.clientVars.scrollWhenFocusLineIsOutOfViewport;
 
     // DOM reference
@@ -16,7 +18,7 @@ class Scroll {
     this.rootDocument = parent.parent.document;
   }
 
-  scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary(rep, isScrollableEvent, innerHeight) {
+  scrollWhenCaretIsInTheLastLineOfViewportWhenNecessary(rep: RepModel, isScrollableEvent: boolean, innerHeight: number) {
     // are we placing the caret on the line at the bottom of viewport?
     // And if so, do we need to scroll the editor, as defined on the settings.json?
     const shouldScrollWhenCaretIsAtBottomOfViewport =
@@ -36,7 +38,7 @@ class Scroll {
     }
   }
 
-  scrollWhenPressArrowKeys(arrowUp, rep, innerHeight) {
+  scrollWhenPressArrowKeys(arrowUp: boolean, rep: RepModel, innerHeight: number) {
     // if percentageScrollArrowUp is 0, let the scroll to be handled as default, put the previous
     // rep line on the top of the viewport
     if (this._arrowUpWasPressedInTheFirstLineOfTheViewport(arrowUp, rep)) {
@@ -50,7 +52,7 @@ class Scroll {
     }
   }
 
-  _isCaretAtTheBottomOfViewport(rep) {
+  _isCaretAtTheBottomOfViewport(rep: RepModel) {
     // computing a line position using getBoundingClientRect() is expensive.
     // (obs: getBoundingClientRect() is called on caretPosition.getPosition())
     // To avoid that, we only call this function when it is possible that the
@@ -64,16 +66,15 @@ class Scroll {
       this._isLinePartiallyVisibleOnViewport(firstLineVisibleAfterCaretLine, rep);
     if (caretLineIsPartiallyVisibleOnViewport || lineAfterCaretLineIsPartiallyVisibleOnViewport) {
       // check if the caret is in the bottom of the viewport
-      const caretLinePosition = getPosition();
+      const caretLinePosition = getPosition()!;
       const viewportBottom = this._getViewPortTopBottom().bottom;
       const nextLineBottom = getBottomOfNextBrowserLine(caretLinePosition, rep);
-      const nextLineIsBelowViewportBottom = nextLineBottom > viewportBottom;
-      return nextLineIsBelowViewportBottom;
+      return nextLineBottom > viewportBottom;
     }
     return false;
   };
 
-  _isLinePartiallyVisibleOnViewport(lineNumber, rep){
+  _isLinePartiallyVisibleOnViewport(lineNumber: number, rep: RepModel){
     const lineNode = rep.lines.atIndex(lineNumber);
     const linePosition = this._getLineEntryTopBottom(lineNode);
     const lineTop = linePosition.top;
@@ -123,7 +124,7 @@ class Scroll {
   };
 
   _getScrollXY() {
-    const win = this.outerWin;
+    const win = this.outerWin as WindowElementWithScrolling;
     const odoc = this.doc;
     if (typeof (win.pageYOffset) === 'number') {
       return {
@@ -141,26 +142,26 @@ class Scroll {
   };
 
   getScrollX() {
-    return this._getScrollXY().x;
+    return this._getScrollXY()!.x;
   };
 
  getScrollY () {
-    return this._getScrollXY().y;
+    return this._getScrollXY()!.y;
   };
 
-  setScrollX(x) {
+  setScrollX(x: number) {
     this.outerWin.scrollTo(x, this.getScrollY());
   };
 
-  setScrollY(y) {
+  setScrollY(y: number) {
     this.outerWin.scrollTo(this.getScrollX(), y);
   };
 
-  setScrollXY(x, y) {
+  setScrollXY(x: number, y: number) {
     this.outerWin.scrollTo(x, y);
   };
 
-  _isCaretAtTheTopOfViewport(rep) {
+  _isCaretAtTheTopOfViewport(rep: RepModel) {
     const caretLine = rep.selStart[0];
     const linePrevCaretLine = caretLine - 1;
     const firstLineVisibleBeforeCaretLine =
@@ -174,12 +175,12 @@ class Scroll {
       const viewportPosition = this._getViewPortTopBottom();
       const viewportTop = viewportPosition.top;
       const viewportBottom = viewportPosition.bottom;
-      const caretLineIsBelowViewportTop = caretLinePosition.bottom >= viewportTop;
-      const caretLineIsAboveViewportBottom = caretLinePosition.top < viewportBottom;
+      const caretLineIsBelowViewportTop = caretLinePosition!.bottom >= viewportTop;
+      const caretLineIsAboveViewportBottom = caretLinePosition!.top < viewportBottom;
       const caretLineIsInsideOfViewport =
         caretLineIsBelowViewportTop && caretLineIsAboveViewportBottom;
       if (caretLineIsInsideOfViewport) {
-        const prevLineTop = getPositionTopOfPreviousBrowserLine(caretLinePosition, rep);
+        const prevLineTop = getPositionTopOfPreviousBrowserLine(caretLinePosition!, rep);
         const previousLineIsAboveViewportTop = prevLineTop < viewportTop;
         return previousLineIsAboveViewportTop;
       }
@@ -190,18 +191,18 @@ class Scroll {
   // By default, when user makes an edition in a line out of viewport, this line goes
 // to the edge of viewport. This function gets the extra pixels necessary to get the
 // caret line in a position X relative to Y% viewport.
-  _getPixelsRelativeToPercentageOfViewport(innerHeight, aboveOfViewport) {
+  _getPixelsRelativeToPercentageOfViewport(innerHeight: number, aboveOfViewport?: boolean) {
       let pixels = 0;
       const scrollPercentageRelativeToViewport = this._getPercentageToScroll(aboveOfViewport);
       if (scrollPercentageRelativeToViewport > 0 && scrollPercentageRelativeToViewport <= 1) {
-        pixels = parseInt(innerHeight * scrollPercentageRelativeToViewport);
+        pixels = parseInt(String(innerHeight * scrollPercentageRelativeToViewport));
       }
       return pixels;
     };
 
   // we use different percentages when change selection. It depends on if it is
 // either above the top or below the bottom of the page
-  _getPercentageToScroll(aboveOfViewport: boolean) {
+  _getPercentageToScroll(aboveOfViewport: boolean|undefined) {
     let percentageToScroll = this.scrollSettings.percentage.editionBelowViewport;
     if (aboveOfViewport) {
       percentageToScroll = this.scrollSettings.percentage.editionAboveViewport;
@@ -209,16 +210,16 @@ class Scroll {
     return percentageToScroll;
   };
 
-  _getPixelsToScrollWhenUserPressesArrowUp(innerHeight) {
+  _getPixelsToScrollWhenUserPressesArrowUp(innerHeight: number) {
     let pixels = 0;
     const percentageToScrollUp = this.scrollSettings.percentageToScrollWhenUserPressesArrowUp;
     if (percentageToScrollUp > 0 && percentageToScrollUp <= 1) {
-      pixels = parseInt(innerHeight * percentageToScrollUp);
+      pixels = parseInt(String(innerHeight * percentageToScrollUp));
     }
     return pixels;
   };
 
-  _scrollYPage(pixelsToScroll) {
+  _scrollYPage(pixelsToScroll: number) {
     const durationOfAnimationToShowFocusline = this.scrollSettings.duration;
     if (durationOfAnimationToShowFocusline) {
       this._scrollYPageWithAnimation(pixelsToScroll, durationOfAnimationToShowFocusline);
@@ -227,15 +228,15 @@ class Scroll {
     }
   };
 
-  _scrollYPageWithoutAnimation(pixelsToScroll) {
+  _scrollYPageWithoutAnimation(pixelsToScroll: number) {
     this.outerWin.scrollBy(0, pixelsToScroll);
   };
 
-  _scrollYPageWithAnimation(pixelsToScroll, durationOfAnimationToShowFocusline) {
+  _scrollYPageWithAnimation(pixelsToScroll: number, durationOfAnimationToShowFocusline: number) {
       const outerDocBody = this.doc.getElementById('outerdocbody');
 
       // it works on later versions of Chrome
-      const $outerDocBody = $(outerDocBody);
+      const $outerDocBody = $(outerDocBody!);
       this._triggerScrollWithAnimation(
         $outerDocBody, pixelsToScroll, durationOfAnimationToShowFocusline);
 
@@ -245,7 +246,7 @@ class Scroll {
         $outerDocBodyParent, pixelsToScroll, durationOfAnimationToShowFocusline);
     };
 
-  _triggerScrollWithAnimation($elem, pixelsToScroll, durationOfAnimationToShowFocusline) {
+  _triggerScrollWithAnimation($elem:any, pixelsToScroll: number, durationOfAnimationToShowFocusline: number) {
       // clear the queue of animation
       $elem.stop('scrollanimation');
       $elem.animate({
@@ -258,7 +259,7 @@ class Scroll {
 
 
 
-  scrollNodeVerticallyIntoView(rep, innerHeight) {
+  scrollNodeVerticallyIntoView(rep: RepModel, innerHeight: number) {
     const viewport = this._getViewPortTopBottom();
 
     // when the selection changes outside of the viewport the browser automatically scrolls the line
@@ -288,7 +289,7 @@ class Scroll {
     }
   };
 
-  _partOfRepLineIsOutOfViewport(viewportPosition, rep) {
+  _partOfRepLineIsOutOfViewport(viewportPosition: Position, rep: RepModel) {
     const focusLine = (rep.selFocusAtStart ? rep.selStart[0] : rep.selEnd[0]);
     const line = rep.lines.atIndex(focusLine);
     const linePosition = this._getLineEntryTopBottom(line);
@@ -298,25 +299,25 @@ class Scroll {
     return lineIsBelowOfViewport || lineIsAboveOfViewport;
   };
 
-  _getLineEntryTopBottom(entry, destObj) {
+  _getLineEntryTopBottom(entry: RepNode, destObj?: Position) {
     const dom = entry.lineNode;
     const top = dom.offsetTop;
     const height = dom.offsetHeight;
-    const obj = (destObj || {});
+    const obj = (destObj || {}) as Position;
     obj.top = top;
     obj.bottom = (top + height);
     return obj;
   };
 
-  _arrowUpWasPressedInTheFirstLineOfTheViewport(arrowUp, rep) {
+  _arrowUpWasPressedInTheFirstLineOfTheViewport(arrowUp: boolean, rep: RepModel) {
     const percentageScrollArrowUp = this.scrollSettings.percentageToScrollWhenUserPressesArrowUp;
     return percentageScrollArrowUp && arrowUp && this._isCaretAtTheTopOfViewport(rep);
   };
 
-  getVisibleLineRange(rep) {
+  getVisibleLineRange(rep: RepModel) {
     const viewport = this._getViewPortTopBottom();
     // console.log("viewport top/bottom: %o", viewport);
-    const obj = {};
+    const obj = {} as Position;
     const self = this;
     const start = rep.lines.search((e) => self._getLineEntryTopBottom(e, obj).bottom > viewport.top);
     // return the first line that the top position is greater or equal than
@@ -328,7 +329,7 @@ class Scroll {
     return [start, end - 1];
   };
 
-  getVisibleCharRange(rep) {
+  getVisibleCharRange(rep: RepModel) {
     const lineRange = this.getVisibleLineRange(rep);
     return [rep.lines.offsetOfIndex(lineRange[0]), rep.lines.offsetOfIndex(lineRange[1])];
   };
