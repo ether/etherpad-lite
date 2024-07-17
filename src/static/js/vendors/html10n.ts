@@ -619,7 +619,8 @@ export class Html10n {
       str.args = JSON.parse(node.getAttribute('data-l10n-args') as string)
     }else{
       try{
-        str.args = eval(node.getAttribute('data-l10n-args') as string)
+        //str.args = eval(node.getAttribute('data-l10n-args') as string)
+        console.error("Old eval method invoked!!")
       }catch(e) {
         console.warn('Couldn\'t parse args for '+str.id)
       }
