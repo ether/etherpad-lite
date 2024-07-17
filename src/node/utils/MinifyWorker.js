@@ -6,6 +6,7 @@
 const fsp = require('fs').promises;
 import {expose} from 'threads'
 import {transform} from 'esbuild';
+import {bundleAsync} from 'lightningcss';
 
 /*
   * Minify JS content
@@ -21,7 +22,10 @@ const compressJS = async (content) => {
   * @param {string} ROOT_DIR - the root dir of Etherpad
  */
 const compressCSS = async (content) => {
-  return await transform(content, {loader: 'css', minify: true});
+  return await bundleAsync({
+    minify: true,
+    filename: content
+  })
 
 };
 
