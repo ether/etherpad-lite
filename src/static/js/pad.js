@@ -139,6 +139,7 @@ const getParameters = [
     name: 'lang',
     checkVal: null,
     callback: (val) => {
+      console.log('Val is', val)
       html10n.localize([val, 'en']);
       Cookies.set('language', val);
     },

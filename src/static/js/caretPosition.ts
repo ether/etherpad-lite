@@ -191,7 +191,6 @@ const getDimensionOfFirstBrowserLineOfRepLine = (line: number, rep: RepModel) =>
 };
 
 const getSelectionRange = () => {
-  console.log("Selection is",window.frameElement)
   if (!window.getSelection) {
     return;
   }

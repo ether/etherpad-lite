@@ -484,7 +484,6 @@ function Ace2Inner(editorInfo, cssManagers) {
       newText = `${lines.join('\n')}\n`;
     }
 
-    window.console.log('importText', {text, undoable, dontProcess, newText})
 
     inCallStackIfNecessary(`importText${undoable ? 'Undoable' : ''}`, () => {
       setDocText(newText);
@@ -526,7 +525,6 @@ function Ace2Inner(editorInfo, cssManagers) {
 
     const oldLen = rep.lines.totalWidth();
     const numLines = rep.lines.length();
-    window.console.log(rep, numLines - 1);
     const upToLastLine = rep.lines.offsetOfIndex(numLines - 1);
     const lastLineLength = rep.lines.atIndex(numLines - 1).text.length;
     const assem = Changeset.smartOpAssembler();

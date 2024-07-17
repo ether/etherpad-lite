@@ -100,7 +100,6 @@ const Ace2Editor = function () {
   };
 
   const doActionsPendingInit = () => {
-    console.log('doActionsPendingInit', actionsPendingInit)
     for (const fn of actionsPendingInit) fn();
     actionsPendingInit = [];
   };
