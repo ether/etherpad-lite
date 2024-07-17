@@ -92,7 +92,7 @@ const convertTypescript = (content: string) => {
       loader: 'js'
     },
     alias:{
-      "ep_etherpad-lite": path.join(settings.root, 'src')
+      "ep_etherpad-lite/static/js/browser": 'ep_etherpad-lite/static/js/vendors/browser'
     },
     bundle: true, // Bundle the files together
     minify: process.env.NODE_ENV === "production", // Minify the output
@@ -212,7 +212,7 @@ const convertTypescriptWatched = (content: string, cb: (output:string, hash: str
       loader: 'js'
     },
     alias:{
-      "ep_etherpad-lite": path.join(settings.root, 'src')
+      "ep_etherpad-lite/static/js/browser": 'ep_etherpad-lite/static/js/vendors/browser'
     },
     bundle: true, // Bundle the files together
     minify: process.env.NODE_ENV === "production", // Minify the output
