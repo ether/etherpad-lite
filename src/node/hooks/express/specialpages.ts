@@ -91,6 +91,9 @@ const convertTypescript = (content: string) => {
       resolveDir: path.join(settings.root, 'var','js'),
       loader: 'js'
     },
+    alias:{
+      "ep_etherpad-lite": path.join(settings.root, 'src')
+    },
     bundle: true, // Bundle the files together
     minify: process.env.NODE_ENV === "production", // Minify the output
     sourcemap: !(process.env.NODE_ENV === "production"), // Generate source maps
@@ -207,6 +210,9 @@ const convertTypescriptWatched = (content: string, cb: (output:string, hash: str
       contents: content,
       resolveDir: path.join(settings.root, 'var','js'),
       loader: 'js'
+    },
+    alias:{
+      "ep_etherpad-lite": path.join(settings.root, 'src')
     },
     bundle: true, // Bundle the files together
     minify: process.env.NODE_ENV === "production", // Minify the output
