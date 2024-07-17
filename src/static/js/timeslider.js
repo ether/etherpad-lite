@@ -117,6 +117,14 @@ const handleClientVars = (message) => {
     setInterval(ping, window.clientVars.sessionRefreshInterval);
   }
 
+  if(window.clientVars.mode === "development") {
+    console.warn('Enabling development mode with live update')
+    socket.on('liveupdate', ()=>{
+      console.log('Doing live reload')
+      location.reload()
+    })
+  }
+
   // load all script that doesn't work without the clientVars
   BroadcastSlider = require('./broadcast_slider')
       .loadBroadcastSliderJS(fireWhenAllScriptsAreLoaded);

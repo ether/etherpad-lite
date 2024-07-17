@@ -12,6 +12,13 @@ const webaccess = require('./webaccess');
 const plugins = require('../../../static/js/pluginfw/plugin_defs');
 
 import {build, buildSync} from 'esbuild'
+let ioI: { sockets: { sockets: any[]; }; } | null = null
+
+exports.socketio = (hookName: string, {io}: any) => {
+  ioI = io
+}
+
+
 exports.expressPreSession = async (hookName:string, {app}:any) => {
   // This endpoint is intended to conform to:
   // https://www.ietf.org/archive/id/draft-inadarei-api-health-check-06.html
@@ -100,6 +107,99 @@ const convertTypescript = (content: string) => {
   }
 }
 
+const handleLiveReload = async (args: any, padString: string, timeSliderString: string ) => {
+  const chokidar = await import('chokidar')
+  const watcher = chokidar.watch(path.join(settings.root, 'src', 'static', 'js'));
+  let routeHandlers: { [key: string]: Function } = {};
+
+  const setRouteHandler = (path: string, newHandler: Function) => {
+    routeHandlers[path] = newHandler;
+  };
+  args.app.use((req: any, res: any, next: Function) => {
+    if (req.path.startsWith('/p/') && req.path.split('/').length == 3) {
+      req.params = {
+        pad: req.path.split('/')[2]
+      }
+      routeHandlers['/p/:pad'](req, res);
+    } else if (req.path.startsWith('/p/') && req.path.split('/').length == 4) {
+      req.params = {
+        pad: req.path.split('/')[2]
+      }
+      routeHandlers['/p/:pad/timeslider'](req, res);
+    } else if (routeHandlers[req.path]) {
+      routeHandlers[req.path](req, res);
+    } else {
+      next();
+    }
+  });
+
+  function handleUpdate() {
+    convertTypescriptWatched(padString, (output, hash) => {
+      console.log("New pad hash is", hash)
+      setRouteHandler('/watch/pad', (req: any, res: any) => {
+        res.header('Content-Type', 'application/javascript');
+        res.send(output)
+      })
+
+      setRouteHandler("/p/:pad", (req: any, res: any, next: Function) => {
+        // The below might break for pads being rewritten
+        const isReadOnly = !webaccess.userCanModify(req.params.pad, req);
+
+        hooks.callAll('padInitToolbar', {
+          toolbar,
+          isReadOnly
+        });
+
+        // can be removed when require-kernel is dropped
+        res.header('Feature-Policy', 'sync-xhr \'self\'');
+        const content = eejs.require('ep_etherpad-lite/templates/pad.html', {
+          req,
+          toolbar,
+          isReadOnly,
+          entrypoint: '/watch/pad?hash=' + hash
+        })
+        res.send(content);
+      })
+      ioI!.sockets.sockets.forEach(socket => socket.emit('liveupdate'))
+    })
+    convertTypescriptWatched(timeSliderString, (output, hash) => {
+      // serve timeslider.html under /p/$padname/timeslider
+      console.log("New timeslider hash is", hash)
+
+      setRouteHandler('/watch/timeslider', (req: any, res: any) => {
+        res.header('Content-Type', 'application/javascript');
+        res.send(output)
+      })
+
+      setRouteHandler("/p/:pad/timeslider", (req: any, res: any, next: Function) => {
+        console.log("Reloading pad")
+        // The below might break for pads being rewritten
+        const isReadOnly = !webaccess.userCanModify(req.params.pad, req);
+
+        hooks.callAll('padInitToolbar', {
+          toolbar,
+          isReadOnly
+        });
+
+        // can be removed when require-kernel is dropped
+        res.header('Feature-Policy', 'sync-xhr \'self\'');
+        const content = eejs.require('ep_etherpad-lite/templates/pad.html', {
+          req,
+          toolbar,
+          isReadOnly,
+          entrypoint: '/watch/timeslider?hash=' + hash
+        })
+        res.send(content);
+      })
+    })
+  }
+
+  watcher.on('change', path => {
+    console.log(`File ${path} has been changed`);
+    handleUpdate();
+  });
+  handleUpdate()
+}
 
 const convertTypescriptWatched = (content: string, cb: (output:string, hash: string)=>void) => {
   build({
@@ -224,66 +324,8 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
       }));
     });
   } else {
-    const chokidar = await import('chokidar')
-    const map = new Map<string, string>()
-    const watcher = chokidar.watch(path.join(settings.root, 'src','static','js'));
-    watcher.on('change', path => {
-      console.log(`File ${path} has been changed`);
-      convertTypescriptWatched(padString, (output, hash)=>{
-        console.log("New hash is", hash)
-        map.set('output', output)
-        map.set('fileNamePad', `padbootstrap-${hash}.js`)
-      });
-      convertTypescriptWatched(timeSliderString, (output, hash)=>{
-        // serve timeslider.html under /p/$padname/timeslider
-        console.log("New hash is", hash)
-
-        args.app.get('/watch/timeslider', (req: any, res: any) => {
-          res.header('Content-Type', 'application/javascript');
-          res.send(output)
-        })
-      });
-    });
-
-    args.app.get('/watch/pad', (req: any, res: any) => {
-      res.header('Content-Type', 'application/javascript');
-      res.send(map.get('output'))
-    })
-    // serve pad.html under /p
-    args.app.get('/p/:pad', (req: any, res: any, next: Function) => {
-      console.log("Reloading pad")
-      // The below might break for pads being rewritten
-      const isReadOnly = !webaccess.userCanModify(req.params.pad, req);
-
-      hooks.callAll('padInitToolbar', {
-        toolbar,
-        isReadOnly
-      });
-
-      // can be removed when require-kernel is dropped
-      res.header('Feature-Policy', 'sync-xhr \'self\'');
-      const content = eejs.require('ep_etherpad-lite/templates/pad.html', {
-        req,
-        toolbar,
-        isReadOnly,
-        entrypoint: map.get('fileNamePad')
-      })
-      res.send(content);
-    });
-    args.app.get('/p/:pad/timeslider', (req: any, res: any, next: Function) => {
-      hooks.callAll('padInitToolbar', {
-        toolbar,
-      });
-      let timeSliderFileName = "/watch/timeslider?hash="+map.get('fileNamePad')
-
-      res.send(eejs.require('ep_etherpad-lite/templates/timeslider.html', {
-        req,
-        toolbar,
-        entrypoint: timeSliderFileName
-      }));
-    });
+    await handleLiveReload(args, padString, timeSliderString)
   }
-
 
   // The client occasionally polls this endpoint to get an updated expiration for the express_sid
   // cookie. This handler must be installed after the express-session middleware.

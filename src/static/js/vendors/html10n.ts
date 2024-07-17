@@ -8,15 +8,14 @@ export class Html10n {
   private rtl: string[]
   private _pluralRules?: PluralFunc
   public mt: MicroEvent
-  private loader: Loader
-  private translations: Map<string, any>
+  private loader: Loader | undefined
+  public translations: Map<string, any>
   private macros: Map<string, Function>
 
   constructor() {
     this.language = undefined
     this.rtl = ["ar","dv","fa","ha","he","ks","ku","ps","ur","yi"]
     this.mt = new MicroEvent()
-    this.loader = new Loader([])
     this.translations = new Map()
     this.macros = new Map()
 
@@ -469,16 +468,6 @@ export class Html10n {
   }
 
   getTranslatableChildren(element: HTMLElement) {
-    if(!document.querySelectorAll) {
-      if (!element) return []
-      const nodes = element.getElementsByTagName('*')
-        , l10nElements = []
-      for (let i=0, n=nodes.length; i < n; i++) {
-        if (nodes[i].getAttribute('data-l10n-id'))
-          l10nElements.push(nodes[i]);
-      }
-      return l10nElements
-    }
     return element.querySelectorAll('*[data-l10n-id]')
   }
 
@@ -494,6 +483,7 @@ export class Html10n {
     })
 
     this.build(langs, (er: null, translations: Map<string, any>) =>{
+      console.log("Translations are", translations)
       this.translations = translations
       this.translateElement(translations)
       this.mt.trigger('localized')
@@ -535,13 +525,11 @@ export class Html10n {
    * @param cb Function - a callback that will be called once all langs have been loaded
    */
   build(langs: (string|undefined)[], cb: Function) {
-
-    const that = this;
     const build = new Map<string, any>()
 
-    this.asyncForEach(langs, function (lang: string, _i: number, next:LoaderFunc) {
+    this.asyncForEach(langs,  (lang: string, _i: number, next:LoaderFunc)=> {
       if(!lang) return next();
-      that.loader.load(lang, next)
+      this.loader!.load(lang, next)
     }, () =>{
       let lang;
       langs.reverse()
@@ -549,30 +537,31 @@ export class Html10n {
       // loop through the priority array...
       for (let i=0, n=langs.length; i < n; i++) {
         lang = langs[i]
-
         if(!lang) continue;
-        if(!(lang in that.loader.langs)) {// uh, we don't have this lang availbable..
+        if(!(lang in langs)) {// uh, we don't have this lang availbable..
           // then check for related langs
           if(~lang.indexOf('-')) lang = lang.split('-')[0];
-          let l
-          for(l in that.loader.langs) {
-            if(lang != l && l.indexOf(lang) === 0) {
+          let l: string|undefined = ''
+          for(l of langs) {
+            if(l && lang != l && l.indexOf(lang) === 0) {
               lang = l
               break;
             }
           }
+          // @ts-ignore
           if(lang != l) continue;
         }
 
         // ... and apply all strings of the current lang in the list
         // to our build object
-        for (let string in that.loader.langs.get(lang)) {
-          build.set(string,that.loader.langs.get(lang).get(string))
+        //lang = "de"
+        for (let string in this.loader!.langs.get(lang)) {
+          build.set(string,this.loader!.langs.get(lang)[string])
         }
 
         // the last applied lang will be exposed as the
         // lang the page was translated to
-        that.language = lang
+        this.language = lang
       }
       cb(null, build)
     })
@@ -848,7 +837,6 @@ class Loader {
   }
 
   fetch(href: string, lang: string, callback: ErrorFunc) {
-    const that = this;
 
     if (this.cache.get(href)) {
       this.parse(lang, href, this.cache.get(href), callback)
@@ -860,13 +848,14 @@ class Loader {
     if (xhr.overrideMimeType) {
       xhr.overrideMimeType('application/json; charset=utf-8');
     }
-    xhr.onreadystatechange = function() {
+    xhr.onreadystatechange = ()=> {
       if (xhr.readyState == 4) {
         if (xhr.status == 200 || xhr.status === 0) {
           const data = JSON.parse(xhr.responseText);
-          that.cache.set(href, data)
+          console.log("Data is", data)
+          this.cache.set(href, data)
           // Pass on the contents for parsing
-          that.parse(lang, href, data, callback)
+          this.parse(lang, href, data, callback)
         } else {
           callback(new Error('Failed to load '+href))
         }
@@ -874,6 +863,7 @@ class Loader {
     };
     xhr.send(null);
   }
+
 
   parse(lang: string, href: string, data: {
     [key: string]: string
@@ -957,7 +947,6 @@ class Loader {
           return callback(new Error(msg));
         }
       }
-
     }
 
 
@@ -983,6 +972,7 @@ class Loader {
       return
     }
 
+    console.log("Setting lang", lang)
     this.langs.set(lang,data[lang])
     // TODO: Also store accompanying langs
     callback()

@@ -24,6 +24,7 @@
 
 let socket;
 
+
 // These jQuery things should create local references, but for now `require()`
 // assigns to the global `$` and augments it with plugins.
 require('./vendors/jquery');
@@ -283,6 +284,7 @@ const handshake = async () => {
     }
   });
 
+
   socket.on('error', (error) => {
     // pad.collabClient might be null if the error occurred before the hanshake completed.
     if (pad.collabClient != null) {
@@ -315,6 +317,15 @@ const handshake = async () => {
             () => $.ajax('../_extendExpressSessionLifetime', {method: 'PUT'}).catch(() => {});
         setInterval(ping, window.clientVars.sessionRefreshInterval);
       }
+      if(window.clientVars.mode === "development") {
+        console.warn('Enabling development mode with live update')
+        socket.on('liveupdate', ()=>{
+
+          console.log('Live reload update received')
+          location.reload()
+        })
+      }
+
     } else if (obj.disconnect) {
       padconnectionstatus.disconnected(obj.disconnect);
       socket.disconnect();
