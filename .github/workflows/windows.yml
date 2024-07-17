@@ -154,11 +154,12 @@ jobs:
         name: Run Etherpad
         working-directory: etherpad/src
         run: |
-          pnpm install cypress
-          .\node_modules\.bin\cypress.cmd install --force
+          pnpm install playwright
+          pnpm exec playwright install --with-deps
           pnpm run prod &
           curl --connect-timeout 10 --max-time 20 --retry 5 --retry-delay 10 --retry-max-time 60 --retry-connrefused http://127.0.0.1:9001/p/test
-          pnpm exec cypress run --config-file ./tests/frontend/cypress/cypress.config.js
+          pnpm exec playwright install chromium  --with-deps
+          pnpm run test-ui --project=chromium
       # On release, upload windows zip to GitHub release tab
       -
         name: Rename to etherpad-lite-win.zip

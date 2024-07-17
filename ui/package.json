@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build-copy": "tsc && vite build --outDir ../src/static/oidc --emptyOutDir"
   },
   "devDependencies": {
     "ep_etherpad-lite": "workspace:../src",
