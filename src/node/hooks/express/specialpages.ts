@@ -154,8 +154,6 @@ const handleLiveReload = async (args: any, padString: string, timeSliderString: 
           isReadOnly
         });
 
-        // can be removed when require-kernel is dropped
-        res.header('Feature-Policy', 'sync-xhr \'self\'');
         const content = eejs.require('ep_etherpad-lite/templates/pad.html', {
           req,
           toolbar,
@@ -185,8 +183,6 @@ const handleLiveReload = async (args: any, padString: string, timeSliderString: 
           isReadOnly
         });
 
-        // can be removed when require-kernel is dropped
-        res.header('Feature-Policy', 'sync-xhr \'self\'');
         const content = eejs.require('ep_etherpad-lite/templates/timeslider.html', {
           req,
           toolbar,
@@ -308,8 +304,6 @@ exports.expressCreateServer = async (hookName: string, args: any, cb: Function) 
         isReadOnly
       });
 
-      // can be removed when require-kernel is dropped
-      res.header('Feature-Policy', 'sync-xhr \'self\'');
       const content = eejs.require('ep_etherpad-lite/templates/pad.html', {
         req,
         toolbar,

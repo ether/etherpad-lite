@@ -25,7 +25,6 @@ const settings = require('./Settings');
 const fs = require('fs').promises;
 const path = require('path');
 const plugins = require('../../static/js/pluginfw/plugin_defs');
-const RequireKernel = require('etherpad-require-kernel');
 const mime = require('mime-types');
 const Threads = require('threads');
 const log4js = require('log4js');
@@ -217,12 +216,6 @@ const statFile = async (filename, dirStatLimit) => {
 
   if (dirStatLimit < 1 || filename === '' || filename === '/') {
     return [null, false];
-  } else if (filename === 'js/ace.js') {
-    // Sometimes static assets are inlined into this file, so we have to stat
-    // everything.
-    return [await lastModifiedDateOfEverything(), true];
-  } else if (filename === 'js/require-kernel.js') {
-    return [_requireLastModified, true];
   } else {
     let stats;
     try {
@@ -238,36 +231,6 @@ const statFile = async (filename, dirStatLimit) => {
     return [stats.mtime, stats.isFile()];
   }
 };
-
-const lastModifiedDateOfEverything = async () => {
-  const folders2check = [path.join(ROOT_DIR, 'js/'), path.join(ROOT_DIR, 'css/')];
-  let latestModification = null;
-  // go through this two folders
-  await Promise.all(folders2check.map(async (dir) => {
-    // read the files in the folder
-    const files = await fs.readdir(dir);
-
-    // we wanna check the directory itself for changes too
-    files.push('.');
-
-    // go through all files in this folder
-    await Promise.all(files.map(async (filename) => {
-      // get the stat data of this file
-      const stats = await fs.stat(path.join(dir, filename));
-
-      // compare the modification time to the highest found
-      if (latestModification == null || stats.mtime > latestModification) {
-        latestModification = stats.mtime;
-      }
-    }));
-  }));
-  return latestModification;
-};
-
-// This should be provided by the module, but until then, just use startup
-// time.
-const _requireLastModified = new Date();
-const requireDefinition = () => `var require = ${RequireKernel.kernelSource};\n`;
 
 const getFileCompressed = async (filename, contentType) => {
   let content = await getFile(filename);
@@ -319,7 +282,6 @@ const getFileCompressed = async (filename, contentType) => {
 };
 
 const getFile = async (filename) => {
-  if (filename === 'js/require-kernel.js') return requireDefinition();
   return await fs.readFile(path.resolve(ROOT_DIR, filename));
 };
 

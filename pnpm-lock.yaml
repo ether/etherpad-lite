@@ -164,12 +164,6 @@ importers:
       esbuild:
         specifier: ^0.23.0
         version: 0.23.0
-      etherpad-require-kernel:
-        specifier: ^1.0.16
-        version: 1.0.16
-      etherpad-yajsml:
-        specifier: 0.0.12
-        version: 0.0.12
       express:
         specifier: 4.19.2
         version: 4.19.2
@@ -2523,14 +2517,6 @@ packages:
     resolution: {integrity: sha512-3uJxz8cx1WSVAPe7haqfwQj4N4wWDrei5BXBjH+e1BLPiEpqWtnMX29Qo9jWhqO9ctyPPHO0nZ1x/ZCNxMVCqA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
-
-  etherpad-require-kernel@1.0.16:
-    resolution: {integrity: sha512-Zym7acX8tsB0mjZmQgcHnx9W+8djpFGeSA6/LhbKEGALaoaKBxCH/QQwJmsqfbvfYQBEg+NbUfDp9gD8QVjhsg==}
-    engines: {node: '>=12.13.0'}
-
-  etherpad-yajsml@0.0.12:
-    resolution: {integrity: sha512-lVCqsZYpFsuIz417h+O83I7eadNXJ3MnQavriFa52/KTwj6xPAzEYr0PvH7KTxcqyAFtW7ItoTNVXe2h7zGxlw==}
-    engines: {node: '>=12.13.0'}
 
   express-rate-limit@7.3.1:
     resolution: {integrity: sha512-BbaryvkY4wEgDqLgD18/NSy2lDO2jTuT9Y8c1Mpx0X63Yz0sYd5zN6KPe7UvpuSVvV33T6RaE1o1IVZQjHMYgw==}
@@ -6739,12 +6725,6 @@ snapshots:
       - bufferutil
       - supports-color
       - utf-8-validate
-
-  etherpad-require-kernel@1.0.16: {}
-
-  etherpad-yajsml@0.0.12:
-    optionalDependencies:
-      mime: 1.6.0
 
   express-rate-limit@7.3.1(express@4.19.2):
     dependencies:
