@@ -187,7 +187,6 @@ $(() => (async () => {
   // mutates the module definition function to temporarily replace Mocha's functions with
   // placeholders. The placeholders make it possible to defer the actual Mocha function calls until
   // after the modules are all loaded in parallel. require.setGlobalKeyPath() is used to coax
-  // require-kernel into using the wrapper define() method instead of require.define().
 
   // Per-module log of attempted Mocha function calls. Key is module path, value is an array of
   // [functionName, argsArray] arrays.
