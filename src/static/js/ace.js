@@ -27,9 +27,10 @@
 const hooks = require('./pluginfw/hooks');
 const makeCSSManager = require('./cssmanager').makeCSSManager;
 const pluginUtils = require('./pluginfw/shared');
-
+const ace2_inner = require('ep_etherpad-lite/static/js/ace2_inner')
 const debugLog = (...args) => {};
-
+const cl_plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins')
+const rJQuery = require('ep_etherpad-lite/static/js/rjquery')
 // The inner and outer iframe's locations are about:blank, so relative URLs are relative to that.
 // Firefox and Chrome seem to do what the developer intends if given a relative URL, but Safari
 // errors out unless given an absolute URL for a JavaScript-created element.
@@ -257,19 +258,19 @@ const Ace2Editor = function () {
 
     // <head> tag
     addStyleTagsFor(innerDocument, includedCSS);
-    const requireKernel = innerDocument.createElement('script');
-    requireKernel.type = 'text/javascript';
-    requireKernel.src =
-        absUrl(`../static/js/require-kernel.js?v=${clientVars.randomVersionString}`);
-    innerDocument.head.appendChild(requireKernel);
+    //const requireKernel = innerDocument.createElement('script');
+    //requireKernel.type = 'text/javascript';
+    //requireKernel.src =
+     //   absUrl(`../static/js/require-kernel.js?v=${clientVars.randomVersionString}`);
+    //innerDocument.head.appendChild(requireKernel);
     // Pre-fetch modules to improve load performance.
-    for (const module of ['ace2_inner', 'ace2_common']) {
+    /*for (const module of ['ace2_inner', 'ace2_common']) {
       const script = innerDocument.createElement('script');
       script.type = 'text/javascript';
       script.src = absUrl(`../javascripts/lib/ep_etherpad-lite/static/js/${module}.js` +
                           `?callback=require.define&v=${clientVars.randomVersionString}`);
       innerDocument.head.appendChild(script);
-    }
+    }*/
     const innerStyle = innerDocument.createElement('style');
     innerStyle.type = 'text/css';
     innerStyle.title = 'dynamicsyntax';
@@ -284,7 +285,7 @@ const Ace2Editor = function () {
     innerDocument.body.classList.add('innerdocbody');
     innerDocument.body.setAttribute('spellcheck', 'false');
     innerDocument.body.appendChild(innerDocument.createTextNode('\u00A0')); // &nbsp;
-
+/*
     debugLog('Ace2Editor.init() waiting for require kernel load');
     await eventFired(requireKernel, 'load');
     debugLog('Ace2Editor.init() require kernel loaded');
@@ -292,17 +293,16 @@ const Ace2Editor = function () {
     require.setRootURI(absUrl('../javascripts/src'));
     require.setLibraryURI(absUrl('../javascripts/lib'));
     require.setGlobalKeyPath('require');
-
+*/
     // intentially moved before requiring client_plugins to save a 307
-    innerWindow.Ace2Inner = require('ep_etherpad-lite/static/js/ace2_inner');
-    innerWindow.plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins');
-    innerWindow.plugins.adoptPluginsFromAncestorsOf(innerWindow);
+    innerWindow.Ace2Inner = ace2_inner;
+    innerWindow.plugins = cl_plugins;
 
-    innerWindow.$ = innerWindow.jQuery = require('ep_etherpad-lite/static/js/rjquery').jQuery;
+    innerWindow.$ = innerWindow.jQuery = rJQuery.jQuery;
 
     debugLog('Ace2Editor.init() waiting for plugins');
-    await new Promise((resolve, reject) => innerWindow.plugins.ensure(
-        (err) => err != null ? reject(err) : resolve()));
+    /*await new Promise((resolve, reject) => innerWindow.plugins.ensure(
+        (err) => err != null ? reject(err) : resolve()));*/
     debugLog('Ace2Editor.init() waiting for Ace2Inner.init()');
     await innerWindow.Ace2Inner.init(info, {
       inner: makeCSSManager(innerStyle.sheet),

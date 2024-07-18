@@ -68,7 +68,7 @@ jobs:
       # rules.
       -
         name: Install all dependencies and symlink for ep_etherpad-lite
-        run: bin/installDeps.sh
+        run: pnpm i
       #-
       #  name: Install etherpad plugins
       #  run: rm -Rf node_modules/ep_align/static/tests/*
@@ -92,7 +92,6 @@ jobs:
       - name: Build admin frontend
         working-directory: admin
         run: |
-            pnpm install
             pnpm run build
       #  name: Run the frontend admin tests
       #  shell: bash
@@ -124,7 +123,7 @@ jobs:
       - name: Run the frontend admin tests
         shell: bash
         run: |
-          pnpm run dev &
+          pnpm run prod &
           connected=false
           can_connect() {
           curl -sSfo /dev/null http://localhost:9001/ || return 1

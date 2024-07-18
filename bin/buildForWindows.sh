@@ -50,21 +50,13 @@ rm -rf src/node_modules || true
 #$(try cd ./bin/installDeps.sh)
 
 # Install admin frontend
-cd admin
 try pnpm install
-try pnpm run build
-cd ..
-
-
-
+try pnpm run build:etherpad
 
 # Nuke the admin folder as it is not needed anymore :D
 rm -rf admin
-
-export NODE_ENV=production
-try pnpm install --production
-
-
+rm -rf oidc
+rm -rf src/node_modules
 
 log "copy the windows settings template..."
 try cp settings.json.template settings.json

@@ -30,6 +30,8 @@ const setAssoc = Ace2Common.setAssoc;
 const noop = Ace2Common.noop;
 const hooks = require('./pluginfw/hooks');
 
+import Scroll from './scroll'
+
 function Ace2Inner(editorInfo, cssManagers) {
   const makeChangesetTracker = require('./changesettracker').makeChangesetTracker;
   const colorutils = require('./colorutils').colorutils;
@@ -42,7 +44,6 @@ function Ace2Inner(editorInfo, cssManagers) {
   const SkipList = require('./skiplist');
   const undoModule = require('./undomodule').undoModule;
   const AttributeManager = require('./AttributeManager');
-  const Scroll = require('./scroll');
   const DEBUG = false;
 
   const THE_TAB = '    '; // 4
@@ -54,13 +55,16 @@ function Ace2Inner(editorInfo, cssManagers) {
   let thisAuthor = '';
 
   let disposed = false;
+  const outerWin = document.getElementsByName("ace_outer")[0]
+  const targetDoc = outerWin.contentWindow.document.getElementsByName("ace_inner")[0].contentWindow.document
+  const targetBody = targetDoc.body
 
   const focus = () => {
-    window.focus();
+    targetBody.focus();
   };
 
-  const outerWin = window.parent;
-  const outerDoc = outerWin.document;
+  const outerDoc = outerWin.contentWindow.document;
+
   const sideDiv = outerDoc.getElementById('sidediv');
   const lineMetricsDiv = outerDoc.getElementById('linemetricsdiv');
   const sideDivInner = outerDoc.getElementById('sidedivinner');
@@ -74,7 +78,7 @@ function Ace2Inner(editorInfo, cssManagers) {
   };
   appendNewSideDivLine();
 
-  const scroll = Scroll.init(outerWin);
+  const scroll = new Scroll(outerWin);
 
   let outsideKeyDown = noop;
   let outsideKeyPress = (e) => true;
@@ -415,7 +419,7 @@ function Ace2Inner(editorInfo, cssManagers) {
 
   const setWraps = (newVal) => {
     doesWrap = newVal;
-    document.body.classList.toggle('doesWrap', doesWrap);
+    targetBody.classList.toggle('doesWrap', doesWrap);
     scheduler.setTimeout(() => {
       inCallStackIfNecessary('setWraps', () => {
         fastIncorp(7);
@@ -445,7 +449,7 @@ function Ace2Inner(editorInfo, cssManagers) {
   };
 
   const setTextFace = (face) => {
-    document.body.style.fontFamily = face;
+    targetBody.style.fontFamily = face;
     lineMetricsDiv.style.fontFamily = face;
   };
 
@@ -456,8 +460,8 @@ function Ace2Inner(editorInfo, cssManagers) {
 
   const setEditable = (newVal) => {
     isEditable = newVal;
-    document.body.contentEditable = isEditable ? 'true' : 'false';
-    document.body.classList.toggle('static', !isEditable);
+    targetBody.contentEditable = isEditable ? 'true' : 'false';
+    targetBody.classList.toggle('static', !isEditable);
   };
 
   const enforceEditability = () => setEditable(isEditable);
@@ -479,6 +483,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     if (lines.length > 0) {
       newText = `${lines.join('\n')}\n`;
     }
+
 
     inCallStackIfNecessary(`importText${undoable ? 'Undoable' : ''}`, () => {
       setDocText(newText);
@@ -640,8 +645,8 @@ function Ace2Inner(editorInfo, cssManagers) {
     // These properties are exposed
     const setters = {
       wraps: setWraps,
-      showsauthorcolors: (val) => document.body.classList.toggle('authorColors', !!val),
-      showsuserselections: (val) => document.body.classList.toggle('userSelections', !!val),
+      showsauthorcolors: (val) => targetBody.classList.toggle('authorColors', !!val),
+      showsuserselections: (val) => targetBody.classList.toggle('userSelections', !!val),
       showslinenumbers: (value) => {
         hasLineNumbers = !!value;
         sideDiv.parentNode.classList.toggle('line-numbers-hidden', !hasLineNumbers);
@@ -654,8 +659,8 @@ function Ace2Inner(editorInfo, cssManagers) {
       styled: setStyled,
       textface: setTextFace,
       rtlistrue: (value) => {
-        document.body.classList.toggle('rtl', value);
-        document.body.classList.toggle('ltr', !value);
+        targetBody.classList.toggle('rtl', value);
+        targetBody.classList.toggle('ltr', !value);
         document.documentElement.dir = value ? 'rtl' : 'ltr';
       },
     };
@@ -894,11 +899,11 @@ function Ace2Inner(editorInfo, cssManagers) {
   clearObservedChanges();
 
   const getCleanNodeByKey = (key) => {
-    let n = document.getElementById(key);
+    let n = targetDoc.getElementById(key);
     // copying and pasting can lead to duplicate ids
     while (n && isNodeDirty(n)) {
       n.id = '';
-      n = document.getElementById(key);
+      n = targetDoc.getElementById(key);
     }
     return n;
   };
@@ -980,11 +985,11 @@ function Ace2Inner(editorInfo, cssManagers) {
   const observeSuspiciousNodes = () => {
     // inspired by Firefox bug #473255, where pasting formatted text
     // causes the cursor to jump away, making the new HTML never found.
-    if (document.body.getElementsByTagName) {
-      const elts = document.body.getElementsByTagName('style');
+    if (targetBody.getElementsByTagName) {
+      const elts = targetBody.getElementsByTagName('style');
       for (const elt of elts) {
         const n = topLevel(elt);
-        if (n && n.parentNode === document.body) {
+        if (n && n.parentNode === targetBody) {
           observeChangesAroundNode(n);
         }
       }
@@ -999,8 +1004,8 @@ function Ace2Inner(editorInfo, cssManagers) {
     if (DEBUG && window.DONT_INCORP || window.DEBUG_DONT_INCORP) return false;
 
     // returns true if dom changes were made
-    if (!document.body.firstChild) {
-      document.body.innerHTML = '<div><!-- --></div>';
+    if (!targetBody.firstChild) {
+      targetBody.innerHTML = '<div><!-- --></div>';
     }
 
     observeChangesAroundSelection();
@@ -1022,7 +1027,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       j++;
     }
     if (!dirtyRangesCheckOut) {
-      for (const bodyNode of document.body.childNodes) {
+      for (const bodyNode of targetBody.childNodes) {
         if ((bodyNode.tagName) && ((!bodyNode.id) || (!rep.lines.containsKey(bodyNode.id)))) {
           observeChangesAroundNode(bodyNode);
         }
@@ -1044,11 +1049,11 @@ function Ace2Inner(editorInfo, cssManagers) {
       const range = dirtyRanges[i];
       a = range[0];
       b = range[1];
-      let firstDirtyNode = (((a === 0) && document.body.firstChild) ||
+      let firstDirtyNode = (((a === 0) && targetBody.firstChild) ||
           getCleanNodeByKey(rep.lines.atIndex(a - 1).key).nextSibling);
       firstDirtyNode = (firstDirtyNode && isNodeDirty(firstDirtyNode) && firstDirtyNode);
 
-      let lastDirtyNode = (((b === rep.lines.length()) && document.body.lastChild) ||
+      let lastDirtyNode = (((b === rep.lines.length()) && targetBody.lastChild) ||
           getCleanNodeByKey(rep.lines.atIndex(b).key).previousSibling);
 
       lastDirtyNode = (lastDirtyNode && isNodeDirty(lastDirtyNode) && lastDirtyNode);
@@ -1135,7 +1140,7 @@ function Ace2Inner(editorInfo, cssManagers) {
         callstack: currentCallStack,
         editorInfo,
         rep,
-        root: document.body,
+        root: targetBody,
         point: selection.startPoint,
         documentAttributeManager,
       });
@@ -1147,7 +1152,7 @@ function Ace2Inner(editorInfo, cssManagers) {
         callstack: currentCallStack,
         editorInfo,
         rep,
-        root: document.body,
+        root: targetBody,
         point: selection.endPoint,
         documentAttributeManager,
       });
@@ -1227,9 +1232,9 @@ function Ace2Inner(editorInfo, cssManagers) {
       info.prepareForAdd();
       entry.lineMarker = info.lineMarker;
       if (!nodeToAddAfter) {
-        document.body.insertBefore(node, document.body.firstChild);
+        targetBody.insertBefore(node, targetBody.firstChild);
       } else {
-        document.body.insertBefore(node, nodeToAddAfter.nextSibling);
+        targetBody.insertBefore(node, nodeToAddAfter.nextSibling);
       }
       nodeToAddAfter = node;
       info.notifyAdded();
@@ -1326,7 +1331,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     // Turn DOM node selection into [line,char] selection.
     // This method has to work when the DOM is not pristine,
     // assuming the point is not in a dirty node.
-    if (point.node === document.body) {
+    if (point.node === targetBody) {
       if (point.index === 0) {
         return [0, 0];
       } else {
@@ -1345,7 +1350,7 @@ function Ace2Inner(editorInfo, cssManagers) {
         col = nodeText(n).length;
       }
       let parNode, prevSib;
-      while ((parNode = n.parentNode) !== document.body) {
+      while ((parNode = n.parentNode) !== targetBody) {
         if ((prevSib = n.previousSibling)) {
           n = prevSib;
           col += nodeText(n).length;
@@ -1398,7 +1403,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       insertDomLines(nodeToAddAfter, lineEntries.map((entry) => entry.domInfo));
 
       for (const k of keysToDelete) {
-        const n = document.getElementById(k);
+        const n = targetDoc.getElementById(k);
         n.parentNode.removeChild(n);
       }
 
@@ -2087,7 +2092,7 @@ function Ace2Inner(editorInfo, cssManagers) {
           const a = cleanNodeForIndex(i - 1);
           const b = cleanNodeForIndex(i);
           if ((!a) || (!b)) return false; // violates precondition
-          if ((a === true) && (b === true)) return !document.body.firstChild;
+          if ((a === true) && (b === true)) return !targetBody.firstChild;
           if ((a === true) && b.previousSibling) return false;
           if ((b === true) && a.nextSibling) return false;
           if ((a === true) || (b === true)) return true;
@@ -2232,7 +2237,7 @@ function Ace2Inner(editorInfo, cssManagers) {
   };
 
   const isNodeDirty = (n) => {
-    if (n.parentNode !== document.body) return true;
+    if (n.parentNode !== targetBody) return true;
     const data = getAssoc(n, 'dirtiness');
     if (!data) return true;
     if (n.id !== data.nodeId) return true;
@@ -2856,7 +2861,7 @@ function Ace2Inner(editorInfo, cssManagers) {
             updateBrowserSelectionFromRep();
             // get the current caret selection, can't use rep. here because that only gives
             // us the start position not the current
-            const myselection = document.getSelection();
+            const myselection = targetDoc.getSelection();
             // get the carets selection offset in px IE 214
             let caretOffsetTop = myselection.focusNode.parentNode.offsetTop ||
                 myselection.focusNode.offsetTop;
@@ -2970,13 +2975,13 @@ function Ace2Inner(editorInfo, cssManagers) {
         // with background doesn't seem to show up...
         if (isNodeText(p.node) && p.index === p.maxIndex) {
           let n = p.node;
-          while (!n.nextSibling && n !== document.body && n.parentNode !== document.body) {
+          while (!n.nextSibling && n !== targetBody && n.parentNode !== targetBody) {
             n = n.parentNode;
           }
           if (n.nextSibling &&
               !(typeof n.nextSibling.tagName === 'string' &&
                 n.nextSibling.tagName.toLowerCase() === 'br') &&
-              n !== p.node && n !== document.body && n.parentNode !== document.body) {
+              n !== p.node && n !== targetBody && n.parentNode !== targetBody) {
             // found a parent, go to next node and dive in
             p.node = n.nextSibling;
             p.maxIndex = nodeMaxIndex(p.node);
@@ -3003,7 +3008,7 @@ function Ace2Inner(editorInfo, cssManagers) {
         };
       }
     };
-    const browserSelection = window.getSelection();
+    const browserSelection = targetDoc.getSelection();
     if (browserSelection) {
       browserSelection.removeAllRanges();
       if (selection) {
@@ -3078,7 +3083,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     // each of which has node (a magicdom node), index, and maxIndex.  If the node
     // is a text node, maxIndex is the length of the text; else maxIndex is 1.
     // index is between 0 and maxIndex, inclusive.
-    const browserSelection = window.getSelection();
+    const browserSelection = targetDoc.getSelection();
     if (!browserSelection || browserSelection.type === 'None' ||
         browserSelection.rangeCount === 0) {
       return null;
@@ -3096,7 +3101,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       if (!isInBody(container)) {
         // command-click in Firefox selects whole document, HEAD and BODY!
         return {
-          node: document.body,
+          node: targetBody,
           index: 0,
           maxIndex: 1,
         };
@@ -3146,7 +3151,7 @@ function Ace2Inner(editorInfo, cssManagers) {
           browserSelection.anchorOffset === range.endOffset,
     };
 
-    if (selection.startPoint.node.ownerDocument !== window.document) {
+    if (selection.startPoint.node.ownerDocument !== targetDoc) {
       return null;
     }
 
@@ -3181,17 +3186,17 @@ function Ace2Inner(editorInfo, cssManagers) {
   editorInfo.ace_getInInternationalComposition = () => inInternationalComposition;
 
   const bindTheEventHandlers = () => {
-    $(document).on('keydown', handleKeyEvent);
-    $(document).on('keypress', handleKeyEvent);
-    $(document).on('keyup', handleKeyEvent);
-    $(document).on('click', handleClick);
+    $(targetDoc).on('keydown', handleKeyEvent);
+    $(targetDoc).on('keypress', handleKeyEvent);
+    $(targetDoc).on('keyup', handleKeyEvent);
+    $(targetDoc).on('click', handleClick);
     // dropdowns on edit bar need to be closed on clicks on both pad inner and pad outer
     $(outerDoc).on('click', hideEditBarDropdowns);
 
     // If non-nullish, pasting on a link should be suppressed.
     let suppressPasteOnLink = null;
 
-    $(document.body).on('auxclick', (e) => {
+    $(targetBody).on('auxclick', (e) => {
       if (e.originalEvent.button === 1 && (e.target.a || e.target.localName === 'a')) {
         // The user middle-clicked on a link. Usually users do this to open a link in a new tab, but
         // in X11 (Linux) this will instead paste the contents of the primary selection at the mouse
@@ -3213,7 +3218,7 @@ function Ace2Inner(editorInfo, cssManagers) {
       }
     });
 
-    $(document.body).on('paste', (e) => {
+    $(targetBody).on('paste', (e) => {
       if (suppressPasteOnLink != null && (e.target.a || e.target.localName === 'a')) {
         scheduler.clearTimeout(suppressPasteOnLink);
         suppressPasteOnLink = null;
@@ -3233,7 +3238,7 @@ function Ace2Inner(editorInfo, cssManagers) {
     // We reference document here, this is because if we don't this will expose a bug
     // in Google Chrome.  This bug will cause the last character on the last line to
     // not fire an event when dropped into..
-    $(document).on('drop', (e) => {
+    $(targetBody).on('drop', (e) => {
       if (e.target.a || e.target.localName === 'a') {
         e.preventDefault();
       }
@@ -3251,7 +3256,7 @@ function Ace2Inner(editorInfo, cssManagers) {
         const lineAfterSelection = lastLineSelected.nextSibling;
 
         const neighbor = lineBeforeSelection || lineAfterSelection;
-        neighbor.appendChild(document.createElement('style'));
+        neighbor.appendChild(targetDoc.createElement('style'));
       }
 
       // Call drop hook
@@ -3263,10 +3268,10 @@ function Ace2Inner(editorInfo, cssManagers) {
       });
     });
 
-    $(document.documentElement).on('compositionstart', () => {
+    $(targetDoc.documentElement).on('compositionstart', () => {
       if (inInternationalComposition) return;
       inInternationalComposition = new Promise((resolve) => {
-        $(document.documentElement).one('compositionend', () => {
+        $(targetDoc.documentElement).one('compositionend', () => {
           inInternationalComposition = null;
           resolve();
         });
@@ -3275,8 +3280,8 @@ function Ace2Inner(editorInfo, cssManagers) {
   };
 
   const topLevel = (n) => {
-    if ((!n) || n === document.body) return null;
-    while (n.parentNode !== document.body) {
+    if ((!n) || n === targetBody) return null;
+    while (n.parentNode !== targetBody) {
       n = n.parentNode;
     }
     return n;
@@ -3436,10 +3441,10 @@ function Ace2Inner(editorInfo, cssManagers) {
     // but as it's non-text type the line-height/margins might not be present and it
     // could be that this breaks a theme that has a different default line height..
     // So instead of using an integer here we get the value from the Editor CSS.
-    const innerdocbodyStyles = getComputedStyle(document.body);
+    const innerdocbodyStyles = getComputedStyle(targetBody);
     const defaultLineHeight = parseInt(innerdocbodyStyles['line-height']);
 
-    for (const docLine of document.body.children) {
+    for (const docLine of targetBody.children) {
       let h;
       const nextDocLine = docLine.nextElementSibling;
       if (nextDocLine) {
@@ -3450,7 +3455,7 @@ function Ace2Inner(editorInfo, cssManagers) {
           // included on the first line. The default stylesheet doesn't add
           // extra margins/padding, but plugins might.
           h = nextDocLine.offsetTop - parseInt(
-              window.getComputedStyle(document.body)
+              window.getComputedStyle(targetBody)
                   .getPropertyValue('padding-top').split('px')[0]);
         } else {
           h = nextDocLine.offsetTop - docLine.offsetTop;
@@ -3496,15 +3501,15 @@ function Ace2Inner(editorInfo, cssManagers) {
   this.init = async () => {
     await $.ready;
     inCallStack('setup', () => {
-      if (browser.firefox) $(document.body).addClass('mozilla');
-      if (browser.safari) $(document.body).addClass('safari');
-      document.body.classList.toggle('authorColors', true);
-      document.body.classList.toggle('doesWrap', doesWrap);
+      if (browser.firefox) $(targetBody).addClass('mozilla');
+      if (browser.safari) $(targetBody).addClass('safari');
+      targetBody.classList.toggle('authorColors', true);
+      targetBody.classList.toggle('doesWrap', doesWrap);
 
       enforceEditability();
 
       // set up dom and rep
-      while (document.body.firstChild) document.body.removeChild(document.body.firstChild);
+      while (targetBody.firstChild) targetBody.removeChild(targetBody.firstChild);
       const oneEntry = createDomLineEntry('');
       doRepLineSplice(0, rep.lines.length(), [oneEntry]);
       insertDomLines(null, [oneEntry.domInfo]);

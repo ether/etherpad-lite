@@ -20,7 +20,7 @@ let pad;
 
 exports.saveNow = () => {
   pad.collabClient.sendMessage({type: 'SAVE_REVISION'});
-  $.gritter.add({
+  window.$.gritter.add({
     // (string | mandatory) the heading of the notification
     title: html10n.get('pad.savedrevs.marked'),
     // (string | mandatory) the text inside the notification

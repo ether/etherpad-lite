@@ -45,4 +45,4 @@ fi
 log "Starting Etherpad..."
 
 # cd src
-exec pnpm run dev "$@"
+exec pnpm run prod "$@"
