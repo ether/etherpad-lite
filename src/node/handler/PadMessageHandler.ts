@@ -21,12 +21,12 @@
 
 import {MapArrayType} from "../types/MapType";
 
-const AttributeMap = require('../../static/js/AttributeMap');
+import AttributeMap from '../../static/js/AttributeMap';
 const padManager = require('../db/PadManager');
 const Changeset = require('../../static/js/Changeset');
 const ChatMessage = require('../../static/js/ChatMessage');
-const AttributePool = require('../../static/js/AttributePool');
-const AttributeManager = require('../../static/js/AttributeManager');
+import AttributePool from '../../static/js/AttributePool';
+import AttributeManager from '../../static/js/AttributeManager';
 const authorManager = require('../db/AuthorManager');
 const {padutils} = require('../../static/js/pad_utils');
 const readOnlyManager = require('../db/ReadOnlyManager');
@@ -738,7 +738,7 @@ exports.updatePadClients = async (pad: PadType) => {
 /**
  * Copied from the Etherpad Source Code. Don't know what this method does excatly...
  */
-const _correctMarkersInPad = (atext: AText, apool: APool) => {
+const _correctMarkersInPad = (atext: AText, apool: AttributePool) => {
   const text = atext.text;
 
   // collect char positions of line markers (e.g. bullets) in new atext

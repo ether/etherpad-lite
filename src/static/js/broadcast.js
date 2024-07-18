@@ -6,6 +6,8 @@
  * TL;DR COMMENTS ON THIS FILE ARE HIGHLY APPRECIATED
  */
 
+import {Cssmanager} from "./cssmanager";
+
 /**
  * Copyright 2009 Google Inc.
  *
@@ -22,14 +24,14 @@
  * limitations under the License.
  */
 
-const makeCSSManager = require('./cssmanager').makeCSSManager;
+
 const domline = require('./domline').domline;
-const AttribPool = require('./AttributePool');
+import AttributePool from "./AttributePool";
 const Changeset = require('./Changeset');
 const attributes = require('./attributes');
-const linestylefilter = require('./linestylefilter').linestylefilter;
+import linestylefilter from './linestylefilter'
 const colorutils = require('./colorutils').colorutils;
-const _ = require('./underscore');
+const _ = require('underscore');
 const hooks = require('./pluginfw/hooks');
 
 import html10n from './vendors/html10n';
@@ -56,7 +58,7 @@ const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
         Changeset.splitTextLines(clientVars.collab_client_vars.initialAttributedText.text),
     currentDivs: null,
     // to be filled in once the dom loads
-    apool: (new AttribPool()).fromJsonable(clientVars.collab_client_vars.apool),
+    apool: (new AttributePool()).fromJsonable(clientVars.collab_client_vars.apool),
     alines: Changeset.splitAttributionLines(
         clientVars.collab_client_vars.initialAttributedText.attribs,
         clientVars.collab_client_vars.initialAttributedText.text),
@@ -389,7 +391,7 @@ const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
       setTimeout(() => this.loadFromQueue(), 10);
     },
     handleResponse: (data, start, granularity, callback) => {
-      const pool = (new AttribPool()).fromJsonable(data.apool);
+      const pool = (new AttributePool()).fromJsonable(data.apool);
       for (let i = 0; i < data.forwardsChangesets.length; i++) {
         const astart = start + i * granularity - 1; // rev -1 is a blank single line
         let aend = start + (i + 1) * granularity - 1; // totalRevs is the most recent revision
@@ -409,13 +411,13 @@ const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
         if (obj.type === 'NEW_CHANGES') {
           const changeset = Changeset.moveOpsToNewPool(
-              obj.changeset, (new AttribPool()).fromJsonable(obj.apool), padContents.apool);
+              obj.changeset, (new AttributePool()).fromJsonable(obj.apool), padContents.apool);
 
           let changesetBack = Changeset.inverse(
               obj.changeset, padContents.currentLines, padContents.alines, padContents.apool);
 
           changesetBack = Changeset.moveOpsToNewPool(
-              changesetBack, (new AttribPool()).fromJsonable(obj.apool), padContents.apool);
+              changesetBack, (new AttributePool()).fromJsonable(obj.apool), padContents.apool);
 
           loadedNewChangeset(changeset, changesetBack, obj.newRev - 1, obj.timeDelta);
         } else if (obj.type === 'NEW_AUTHORDATA') {
@@ -465,7 +467,7 @@ const loadBroadcastJS = (socket, sendSocketMsg, fireWhenAllScriptsAreLoaded, Bro
 
   BroadcastSlider.onSlider(goToRevisionIfEnabled);
 
-  const dynamicCSS = makeCSSManager(document.querySelector('style[title="dynamicsyntax"]').sheet);
+  const dynamicCSS = new Cssmanager(document.querySelector('style[title="dynamicsyntax"]').sheet);
   const authorData = {};
 
   const receiveAuthorData = (newAuthorData) => {

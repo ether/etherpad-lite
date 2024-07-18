@@ -1,5 +1,3 @@
-'use strict';
-
 // Specific hash to display the skin variants builder popup
 if (window.location.hash.toLowerCase() === '#skinvariantsbuilder') {
   $('#skin-variants').addClass('popup-show');
@@ -22,7 +20,7 @@ if (window.location.hash.toLowerCase() === '#skinvariantsbuilder') {
 
     domsToUpdate.forEach((el) => { el.removeClass('full-width-editor'); });
 
-    const newClasses = [];
+    const newClasses:string[] = [];
     $('select.skin-variant-color').each(function () {
       newClasses.push(`${$(this).val()}-${$(this).data('container')}`);
     });
@@ -35,7 +33,8 @@ if (window.location.hash.toLowerCase() === '#skinvariantsbuilder') {
 
   // run on init
   const updateCheckboxFromSkinClasses = () => {
-    $('html').attr('class').split(' ').forEach((classItem) => {
+    const htmlTag = $('html')
+    htmlTag.attr('class')!.split(' ').forEach((classItem) => {
       const container = classItem.substring(classItem.lastIndexOf('-') + 1, classItem.length);
       if (containers.indexOf(container) > -1) {
         const color = classItem.substring(0, classItem.lastIndexOf('-'));
@@ -43,7 +42,7 @@ if (window.location.hash.toLowerCase() === '#skinvariantsbuilder') {
       }
     });
 
-    $('#skin-variant-full-width').prop('checked', $('html').hasClass('full-width-editor'));
+    $('#skin-variant-full-width').prop('checked', htmlTag.hasClass('full-width-editor'));
   };
 
   $('.skin-variant').on('change', () => {

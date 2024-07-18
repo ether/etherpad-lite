@@ -26,7 +26,7 @@
     const msgBlock = document.createElement('blockquote');
     box.appendChild(msgBlock);
     msgBlock.style.fontWeight = 'bold';
-    msgBlock.appendChild(document.createTextNode(msg));
+    msgBlock.appendChild(document.createTextNode(msg as string));
     const loc = document.createElement('p');
     box.appendChild(loc);
     loc.appendChild(document.createTextNode(`in ${url}`));
@@ -39,7 +39,7 @@
     box.appendChild(stackBlock);
     const stack = document.createElement('pre');
     stackBlock.appendChild(stack);
-    stack.appendChild(document.createTextNode(err.stack || err.toString()));
+    stack.appendChild(document.createTextNode(err!.stack || err!.toString()));
 
     if (typeof originalHandler === 'function') originalHandler(...args);
   };

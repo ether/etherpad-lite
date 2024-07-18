@@ -18,7 +18,7 @@ import {APool} from "../types/PadType";
  * limitations under the License.
  */
 
-const AttributePool = require('../../static/js/AttributePool');
+import AttributePool from '../../static/js/AttributePool';
 const {Pad} = require('../db/Pad');
 const Stream = require('./Stream');
 const authorManager = require('../db/AuthorManager');
@@ -61,7 +61,7 @@ exports.setPadRaw = async (padId: string, r: string, authorId = '') => {
   try {
     const processRecord = async (key:string, value: null|{
       padIDs: string|Record<string, unknown>,
-      pool: APool
+      pool: AttributePool
     }) => {
       if (!value) return;
       const keyParts = key.split(':');

@@ -3,7 +3,7 @@
 import {PadAuthor, PadType} from "../types/PadType";
 import {MapArrayType} from "../types/MapType";
 
-const AttributeMap = require('../../static/js/AttributeMap');
+import AttributeMap from '../../static/js/AttributeMap';
 const Changeset = require('../../static/js/Changeset');
 const attributes = require('../../static/js/attributes');
 const exportHtml = require('./ExportHtml');

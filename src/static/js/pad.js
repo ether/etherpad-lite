@@ -37,17 +37,17 @@ const Cookies = require('./pad_utils').Cookies;
 const chat = require('./chat').chat;
 const getCollabClient = require('./collab_client').getCollabClient;
 const padconnectionstatus = require('./pad_connectionstatus').padconnectionstatus;
-const padcookie = require('./pad_cookie').padcookie;
+import padcookie from "./pad_cookie";
 const padeditbar = require('./pad_editbar').padeditbar;
 const padeditor = require('./pad_editor').padeditor;
 const padimpexp = require('./pad_impexp').padimpexp;
 const padmodals = require('./pad_modals').padmodals;
 const padsavedrevs = require('./pad_savedrevs');
 const paduserlist = require('./pad_userlist').paduserlist;
-const padutils = require('./pad_utils').padutils;
+import {padUtils as padutils} from "./pad_utils";
 const colorutils = require('./colorutils').colorutils;
 const randomString = require('./pad_utils').randomString;
-const socketio = require('./socketio');
+import connect from './socketio'
 
 const hooks = require('./pluginfw/hooks');
 
@@ -222,7 +222,7 @@ const handshake = async () => {
 
   // padId is used here for sharding / scaling.  We prefix the padId with padId: so it's clear
   // to the proxy/gateway/whatever that this is a pad connection and should be treated as such
-  socket = pad.socket = socketio.connect(exports.baseURL, '/', {
+  socket = pad.socket = connect(exports.baseURL, '/', {
     query: {padId},
     reconnectionAttempts: 5,
     reconnection: true,

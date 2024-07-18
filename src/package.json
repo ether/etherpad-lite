@@ -87,6 +87,7 @@
     "@types/formidable": "^3.4.5",
     "@types/http-errors": "^2.0.4",
     "@types/jquery": "^3.5.30",
+    "@types/js-cookie": "^3.0.6",
     "@types/jsdom": "^21.1.7",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/mocha": "^10.0.7",

@@ -7,13 +7,13 @@
     // This is needed to fetch /pluginfw/plugin-definitions.json, which happens before the server
     // sends the CLIENT_VARS message.
     randomVersionString: <%-JSON.stringify(settings.randomVersionString)%>,
-  };
+  }
 
   // Allow other frames to access this frame's modules.
   //window.require.resolveTmp = require.resolve('ep_etherpad-lite/static/js/pad_cookie');
 
   const basePath = new URL('..', window.location.href).pathname;
-  window.$ = window.jQuery = require('../../src/static/js/rjquery').jQuery;
+  window.$ = window.jQuery = require('../../src/static/js/vendors/jquery');
   window.browser = require('../../src/static/js/vendors/browser');
   const pad = require('../../src/static/js/pad');
   pad.baseURL = basePath;
@@ -25,8 +25,8 @@
   window.chat = require('../../src/static/js/chat').chat;
   window.padeditbar = require('../../src/static/js/pad_editbar').padeditbar;
   window.padimpexp = require('../../src/static/js/pad_impexp').padimpexp;
-  require('../../src/static/js/skin_variants');
-  require('../../src/static/js/basic_error_handler')
+  await import('../../src/static/js/skin_variants')
+  await import('../../src/static/js/basic_error_handler')
 
   window.plugins.baseURL = basePath;
   await window.plugins.update(new Map([

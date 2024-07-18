@@ -44,6 +44,8 @@
  * @property {number} nextNum - The attribute ID to assign to the next new attribute.
  */
 
+import {Attribute} from "./types/Attribute";
+
 /**
  * Represents an attribute pool, which is a collection of attributes (pairs of key and value
  * strings) along with their identifiers (non-negative integers).
@@ -55,6 +57,14 @@
  * in the pad.
  */
 class AttributePool {
+  numToAttrib: {
+    [key: number]: [string, string]
+  }
+  private attribToNum: {
+    [key: number]: [string, string]
+  }
+  private nextNum: number
+
   constructor() {
     /**
      * Maps an attribute identifier to the attribute's `[key, value]` string pair.
@@ -96,7 +106,10 @@ class AttributePool {
    */
   clone() {
     const c = new AttributePool();
-    for (const [n, a] of Object.entries(this.numToAttrib)) c.numToAttrib[n] = [a[0], a[1]];
+    for (const [n, a] of Object.entries(this.numToAttrib)){
+      // @ts-ignore
+      c.numToAttrib[n] = [a[0], a[1]];
+    }
     Object.assign(c.attribToNum, this.attribToNum);
     c.nextNum = this.nextNum;
     return c;
@@ -111,15 +124,17 @@ class AttributePool {
    *     membership in the pool without mutating the pool.
    * @returns {number} The attribute's identifier, or -1 if the attribute is not in the pool.
    */
-  putAttrib(attrib, dontAddIfAbsent = false) {
+  putAttrib(attrib: Attribute, dontAddIfAbsent = false) {
     const str = String(attrib);
     if (str in this.attribToNum) {
+      // @ts-ignore
       return this.attribToNum[str];
     }
     if (dontAddIfAbsent) {
       return -1;
     }
     const num = this.nextNum++;
+    // @ts-ignore
     this.attribToNum[str] = num;
     this.numToAttrib[num] = [String(attrib[0] || ''), String(attrib[1] || '')];
     return num;
@@ -130,7 +145,7 @@ class AttributePool {
    * @returns {Attribute} The attribute with the given identifier, or nullish if there is no such
    *     attribute.
    */
-  getAttrib(num) {
+  getAttrib(num: number): Attribute {
     const pair = this.numToAttrib[num];
     if (!pair) {
       return pair;
@@ -143,7 +158,7 @@ class AttributePool {
    * @returns {string} Eqivalent to `getAttrib(num)[0]` if the attribute exists, otherwise the empty
    *     string.
    */
-  getAttribKey(num) {
+  getAttribKey(num: number): string {
     const pair = this.numToAttrib[num];
     if (!pair) return '';
     return pair[0];
@@ -154,7 +169,7 @@ class AttributePool {
    * @returns {string} Eqivalent to `getAttrib(num)[1]` if the attribute exists, otherwise the empty
    *     string.
    */
-  getAttribValue(num) {
+  getAttribValue(num: number) {
     const pair = this.numToAttrib[num];
     if (!pair) return '';
     return pair[1];
@@ -166,8 +181,8 @@ class AttributePool {
    * @param {Function} func - Callback to call with two arguments: key and value. Its return value
    *     is ignored.
    */
-  eachAttrib(func) {
-    for (const n of Object.keys(this.numToAttrib)) {
+  eachAttrib(func: (k: string, v: string)=>void) {
+    for (const n in this.numToAttrib) {
       const pair = this.numToAttrib[n];
       func(pair[0], pair[1]);
     }
@@ -196,11 +211,12 @@ class AttributePool {
    *     `new AttributePool().fromJsonable(pool.toJsonable())` to copy because the resulting shared
    *     state will lead to pool corruption.
    */
-  fromJsonable(obj) {
+  fromJsonable(obj: this) {
     this.numToAttrib = obj.numToAttrib;
     this.nextNum = obj.nextNum;
     this.attribToNum = {};
     for (const n of Object.keys(this.numToAttrib)) {
+      // @ts-ignore
       this.attribToNum[String(this.numToAttrib[n])] = Number(n);
     }
     return this;
@@ -213,6 +229,7 @@ class AttributePool {
     if (!Number.isInteger(this.nextNum)) throw new Error('nextNum property is not an integer');
     if (this.nextNum < 0) throw new Error('nextNum property is negative');
     for (const prop of ['numToAttrib', 'attribToNum']) {
+      // @ts-ignore
       const obj = this[prop];
       if (obj == null) throw new Error(`${prop} property is null`);
       if (typeof obj !== 'object') throw new TypeError(`${prop} property is not an object`);
@@ -231,9 +248,10 @@ class AttributePool {
       if (v == null) throw new TypeError(`attrib ${i} value is null`);
       if (typeof v !== 'string') throw new TypeError(`attrib ${i} value is not a string`);
       const attrStr = String(attr);
+      // @ts-ignore
       if (this.attribToNum[attrStr] !== i) throw new Error(`attribToNum for ${attrStr} !== ${i}`);
     }
   }
 }
 
-module.exports = AttributePool;
+export default AttributePool

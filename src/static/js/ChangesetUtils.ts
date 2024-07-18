@@ -5,6 +5,11 @@
  * based on a SkipList
  */
 
+import {RepModel} from "./types/RepModel";
+import {ChangeSetBuilder} from "./types/ChangeSetBuilder";
+import {Attribute} from "./types/Attribute";
+import AttributePool from "./AttributePool";
+
 /**
  * Copyright 2009 Google Inc.
  *
@@ -20,7 +25,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-exports.buildRemoveRange = (rep, builder, start, end) => {
+export const buildRemoveRange = (rep: RepModel, builder: ChangeSetBuilder, start: [number,number], end: [number, number]) => {
   const startLineOffset = rep.lines.offsetOfIndex(start[0]);
   const endLineOffset = rep.lines.offsetOfIndex(end[0]);
 
@@ -32,7 +37,7 @@ exports.buildRemoveRange = (rep, builder, start, end) => {
   }
 };
 
-exports.buildKeepRange = (rep, builder, start, end, attribs, pool) => {
+export const buildKeepRange = (rep: RepModel, builder: ChangeSetBuilder, start: [number, number], end:[number, number], attribs?: Attribute[], pool?: AttributePool) => {
   const startLineOffset = rep.lines.offsetOfIndex(start[0]);
   const endLineOffset = rep.lines.offsetOfIndex(end[0]);
 
@@ -44,9 +49,25 @@ exports.buildKeepRange = (rep, builder, start, end, attribs, pool) => {
   }
 };
 
-exports.buildKeepToStartOfRange = (rep, builder, start) => {
+export const buildKeepToStartOfRange = (rep: RepModel, builder: ChangeSetBuilder, start: [number, number]) => {
   const startLineOffset = rep.lines.offsetOfIndex(start[0]);
 
   builder.keep(startLineOffset, start[0]);
   builder.keep(start[1]);
 };
+
+/**
+ * Parses a number from string base 36.
+ *
+ * @param {string} str - string of the number in base 36
+ * @returns {number} number
+ */
+export const parseNum = (str: string) => parseInt(str, 36);
+
+/**
+ * Writes a number in base 36 and puts it in a string.
+ *
+ * @param {number} num - number
+ * @returns {string} string
+ */
+export const numToString = (num: number): string => num.toString(36).toLowerCase();

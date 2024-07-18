@@ -16,8 +16,9 @@
  */
 
 const ChatMessage = require('./ChatMessage');
-const padutils = require('./pad_utils').padutils;
-const padcookie = require('./pad_cookie').padcookie;
+
+import {padUtils as padutils} from "./pad_utils";
+import padcookie from "./pad_cookie";
 const Tinycon = require('tinycon/tinycon');
 const hooks = require('./pluginfw/hooks');
 const padeditor = require('./pad_editor').padeditor;

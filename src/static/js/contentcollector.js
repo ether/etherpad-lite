@@ -26,7 +26,7 @@
 
 const _MAX_LIST_LEVEL = 16;
 
-const AttributeMap = require('./AttributeMap');
+import AttributeMap from './AttributeMap'
 const UNorm = require('unorm');
 const Changeset = require('./Changeset');
 const hooks = require('./pluginfw/hooks');

@@ -22,10 +22,15 @@
  * https://github.com/ether/pad/blob/master/infrastructure/ace/www/easysync2.js
  */
 
-const AttributeMap = require('./AttributeMap');
-const AttributePool = require('./AttributePool');
-const attributes = require('./attributes');
-const {padutils} = require('./pad_utils');
+import AttributeMap from './AttributeMap'
+import AttributePool from "./AttributePool";
+import {} from './attributes';
+import {padUtils as padutils} from "./pad_utils";
+import Op from './Op'
+import {numToString, parseNum} from './ChangesetUtils'
+import {StringAssembler} from "./StringAssembler";
+import {OpIter} from "./OpIter";
+import {Attribute} from "./types/Attribute";
 
 /**
  * A `[key, value]` pair of strings describing a text attribute.
@@ -47,8 +52,9 @@ const {padutils} = require('./pad_utils');
  *
  * @param {string} msg - Just some message
  */
-const error = (msg) => {
+const error = (msg: string) => {
   const e = new Error(msg);
+  // @ts-ignore
   e.easysync = true;
   throw e;
 };
@@ -61,96 +67,10 @@ const error = (msg) => {
  * @param {string} msg - error message to include in the exception
  * @type {(b: boolean, msg: string) => asserts b}
  */
-const assert = (b, msg) => {
+export const assert: (b: boolean, msg: string) => asserts b = (b: boolean, msg: string): asserts b => {
   if (!b) error(`Failed assertion: ${msg}`);
 };
 
-/**
- * Parses a number from string base 36.
- *
- * @param {string} str - string of the number in base 36
- * @returns {number} number
- */
-exports.parseNum = (str) => parseInt(str, 36);
-
-/**
- * Writes a number in base 36 and puts it in a string.
- *
- * @param {number} num - number
- * @returns {string} string
- */
-exports.numToString = (num) => num.toString(36).toLowerCase();
-
-/**
- * An operation to apply to a shared document.
- */
-class Op {
-  /**
-   * @param {(''|'='|'+'|'-')} [opcode=''] - Initial value of the `opcode` property.
-   */
-  constructor(opcode = '') {
-    /**
-     * The operation's operator:
-     *   - '=': Keep the next `chars` characters (containing `lines` newlines) from the base
-     *     document.
-     *   - '-': Remove the next `chars` characters (containing `lines` newlines) from the base
-     *     document.
-     *   - '+': Insert `chars` characters (containing `lines` newlines) at the current position in
-     *     the document. The inserted characters come from the changeset's character bank.
-     *   - '' (empty string): Invalid operator used in some contexts to signifiy the lack of an
-     *     operation.
-     *
-     * @type {(''|'='|'+'|'-')}
-     * @public
-     */
-    this.opcode = opcode;
-
-    /**
-     * The number of characters to keep, insert, or delete.
-     *
-     * @type {number}
-     * @public
-     */
-    this.chars = 0;
-
-    /**
-     * The number of characters among the `chars` characters that are newlines. If non-zero, the
-     * last character must be a newline.
-     *
-     * @type {number}
-     * @public
-     */
-    this.lines = 0;
-
-    /**
-     * Identifiers of attributes to apply to the text, represented as a repeated (zero or more)
-     * sequence of asterisk followed by a non-negative base-36 (lower-case) integer. For example,
-     * '*2*1o' indicates that attributes 2 and 60 apply to the text affected by the operation. The
-     * identifiers come from the document's attribute pool.
-     *
-     * For keep ('=') operations, the attributes are merged with the base text's existing
-     * attributes:
-     *   - A keep op attribute with a non-empty value replaces an existing base text attribute that
-     *     has the same key.
-     *   - A keep op attribute with an empty value is interpreted as an instruction to remove an
-     *     existing base text attribute that has the same key, if one exists.
-     *
-     * This is the empty string for remove ('-') operations.
-     *
-     * @type {string}
-     * @public
-     */
-    this.attribs = '';
-  }
-
-  toString() {
-    if (!this.opcode) throw new TypeError('null op');
-    if (typeof this.attribs !== 'string') throw new TypeError('attribs must be a string');
-    const l = this.lines ? `|${exports.numToString(this.lines)}` : '';
-    return this.attribs + l + this.opcode + exports.numToString(this.chars);
-  }
-}
-exports.Op = Op;
 
 /**
  * Describes changes to apply to a document. Does not include the attribute pool or the original
@@ -170,7 +90,7 @@ exports.Op = Op;
  * @param {string} cs - String representation of the Changeset
  * @returns {number} oldLen property
  */
-exports.oldLen = (cs) => exports.unpack(cs).oldLen;
+export const oldLen = (cs: string) => unpack(cs).oldLen
 
 /**
  * Returns the length of the text after changeset is applied.
@@ -178,7 +98,7 @@ exports.oldLen = (cs) => exports.unpack(cs).oldLen;
  * @param {string} cs - String representation of the Changeset
  * @returns {number} newLen property
  */
-exports.newLen = (cs) => exports.unpack(cs).newLen;
+export const newLen = (cs: string) => unpack(cs).newLen
 
 /**
  * Parses a string of serialized changeset operations.
@@ -187,63 +107,23 @@ exports.newLen = (cs) => exports.unpack(cs).newLen;
  * @yields {Op}
  * @returns {Generator<Op>}
  */
-exports.deserializeOps = function* (ops) {
+export const deserializeOps = function* (ops: string) {
   // TODO: Migrate to String.prototype.matchAll() once there is enough browser support.
   const regex = /((?:\*[0-9a-z]+)*)(?:\|([0-9a-z]+))?([-+=])([0-9a-z]+)|(.)/g;
   let match;
   while ((match = regex.exec(ops)) != null) {
     if (match[5] === '$') return; // Start of the insert operation character bank.
     if (match[5] != null) error(`invalid operation: ${ops.slice(regex.lastIndex - 1)}`);
-    const op = new Op(match[3]);
-    op.lines = exports.parseNum(match[2] || '0');
-    op.chars = exports.parseNum(match[4]);
+    const opMatch = match[3] as   ""|"=" | "+" | "-" | undefined
+    const op = new Op(opMatch);
+    op.lines = parseNum(match[2] || '0');
+    op.chars = parseNum(match[4]);
     op.attribs = match[1];
     yield op;
   }
 };
 
-/**
- * Iterator over a changeset's operations.
- *
- * Note: This class does NOT implement the ECMAScript iterable or iterator protocols.
- *
- * @deprecated Use `deserializeOps` instead.
- */
-class OpIter {
-  /**
-   * @param {string} ops - String encoding the change operations to iterate over.
-   */
-  constructor(ops) {
-    this._gen = exports.deserializeOps(ops);
-    this._next = this._gen.next();
-  }
 
-  /**
-   * @returns {boolean} Whether there are any remaining operations.
-   */
-  hasNext() {
-    return !this._next.done;
-  }
-
-  /**
-   * Returns the next operation object and advances the iterator.
-   *
-   * Note: This does NOT implement the ECMAScript iterator protocol.
-   *
-   * @param {Op} [opOut] - Deprecated. Operation object to recycle for the return value.
-   * @returns {Op} The next operation, or an operation with a falsy `opcode` property if there are
-   *     no more operations.
-   */
-  next(opOut = new Op()) {
-    if (this.hasNext()) {
-      copyOp(this._next.value, opOut);
-      this._next = this._gen.next();
-    } else {
-      clearOp(opOut);
-    }
-    return opOut;
-  }
-}
 
 /**
  * Creates an iterator which decodes string changeset operations.
@@ -252,7 +132,7 @@ class OpIter {
  * @param {string} opsStr - String encoding of the change operations to perform.
  * @returns {OpIter} Operator iterator object.
  */
-exports.opIterator = (opsStr) => {
+export const opIterator = (opsStr: string) => {
   padutils.warnDeprecated(
       'Changeset.opIterator() is deprecated; use Changeset.deserializeOps() instead');
   return new OpIter(opsStr);
@@ -263,7 +143,7 @@ exports.opIterator = (opsStr) => {
  *
  * @param {Op} op - object to clear
  */
-const clearOp = (op) => {
+export const clearOp = (op: Op) => {
   op.opcode = '';
   op.chars = 0;
   op.lines = 0;
@@ -277,7 +157,7 @@ const clearOp = (op) => {
  * @param {('+'|'-'|'='|'')} [optOpcode=''] - The operation's operator.
  * @returns {Op}
  */
-exports.newOp = (optOpcode) => {
+export const newOp = (optOpcode:'+'|'-'|'='|'' ): Op => {
   padutils.warnDeprecated('Changeset.newOp() is deprecated; use the Changeset.Op class instead');
   return new Op(optOpcode);
 };
@@ -289,7 +169,7 @@ exports.newOp = (optOpcode) => {
  * @param {Op} [op2] - dest Op. If not given, a new Op is used.
  * @returns {Op} `op2`
  */
-const copyOp = (op1, op2 = new Op()) => Object.assign(op2, op1);
+export const copyOp = (op1: Op, op2: Op = new Op()): Op => Object.assign(op2, op1);
 
 /**
  * Serializes a sequence of Ops.
@@ -320,12 +200,12 @@ const copyOp = (op1, op2 = new Op()) => Object.assign(op2, op1);
  *     (if necessary) and encode. If an attribute string, no checking is performed to ensure that
  *     the attributes exist in the pool, are in the canonical order, and contain no duplicate keys.
  *     If this is an iterable of attributes, `pool` must be non-null.
- * @param {?AttributePool} pool - Attribute pool. Required if `attribs` is an iterable of
+ * @param {?AttributePool.ts} pool - Attribute pool. Required if `attribs` is an iterable of
  *     attributes, ignored if `attribs` is an attribute string.
  * @yields {Op} One or two ops (depending on the presense of newlines) that cover the given text.
  * @returns {Generator<Op>}
  */
-const opsFromText = function* (opcode, text, attribs = '', pool = null) {
+export const opsFromText = function* (opcode: "" | "=" | "+" | "-" | undefined, text: string, attribs: string|Attribute[] = '', pool: AttributePool|null = null) {
   const op = new Op(opcode);
   op.attribs = typeof attribs === 'string'
     ? attribs : new AttributeMap(pool).update(attribs || [], opcode === '+').toString();
@@ -336,7 +216,7 @@ const opsFromText = function* (opcode, text, attribs = '', pool = null) {
     yield op;
   } else {
     op.chars = lastNewlinePos + 1;
-    op.lines = text.match(/\n/g).length;
+    op.lines = text.match(/\n/g)!.length;
     yield op;
     const op2 = copyOp(op);
     op2.chars = text.length - (lastNewlinePos + 1);
@@ -345,23 +225,7 @@ const opsFromText = function* (opcode, text, attribs = '', pool = null) {
   }
 };
 
-/**
- * Creates an object that allows you to append operations (type Op) and also compresses them if
- * possible. Like MergingOpAssembler, but able to produce conforming exportss from slightly looser
- * input, at the cost of speed. Specifically:
- *   - merges consecutive operations that can be merged
- *   - strips final "="
- *   - ignores 0-length changes
- *   - reorders consecutive + and - (which MergingOpAssembler doesn't do)
- *
- * @typedef {object} SmartOpAssembler
- * @property {Function} append -
- * @property {Function} appendOpWithText -
- * @property {Function} clear -
- * @property {Function} endDocument -
- * @property {Function} getLengthChange -
- * @property {Function} toString -
- */
+
 
 /**
  * Used to check if a Changeset is valid. This function does not check things that require access to
@@ -370,7 +234,7 @@ const opsFromText = function* (opcode, text, attribs = '', pool = null) {
  * @param {string} cs - Changeset to check
  * @returns {string} the checked Changeset
  */
-exports.checkRep = (cs) => {
+export const checkRep = (cs: string) => {
   const unpacked = exports.unpack(cs);
   const oldLen = unpacked.oldLen;
   const newLen = unpacked.newLen;
@@ -419,273 +283,12 @@ exports.checkRep = (cs) => {
 };
 
 /**
- * @returns {SmartOpAssembler}
- */
-exports.smartOpAssembler = () => {
-  const minusAssem = exports.mergingOpAssembler();
-  const plusAssem = exports.mergingOpAssembler();
-  const keepAssem = exports.mergingOpAssembler();
-  const assem = exports.stringAssembler();
-  let lastOpcode = '';
-  let lengthChange = 0;
-
-  const flushKeeps = () => {
-    assem.append(keepAssem.toString());
-    keepAssem.clear();
-  };
-
-  const flushPlusMinus = () => {
-    assem.append(minusAssem.toString());
-    minusAssem.clear();
-    assem.append(plusAssem.toString());
-    plusAssem.clear();
-  };
-
-  const append = (op) => {
-    if (!op.opcode) return;
-    if (!op.chars) return;
-
-    if (op.opcode === '-') {
-      if (lastOpcode === '=') {
-        flushKeeps();
-      }
-      minusAssem.append(op);
-      lengthChange -= op.chars;
-    } else if (op.opcode === '+') {
-      if (lastOpcode === '=') {
-        flushKeeps();
-      }
-      plusAssem.append(op);
-      lengthChange += op.chars;
-    } else if (op.opcode === '=') {
-      if (lastOpcode !== '=') {
-        flushPlusMinus();
-      }
-      keepAssem.append(op);
-    }
-    lastOpcode = op.opcode;
-  };
-
-  /**
-   * Generates operations from the given text and attributes.
-   *
-   * @deprecated Use `opsFromText` instead.
-   * @param {('-'|'+'|'=')} opcode - The operator to use.
-   * @param {string} text - The text to remove/add/keep.
-   * @param {(string|Iterable<Attribute>)} attribs - The attributes to apply to the operations.
-   * @param {?AttributePool} pool - Attribute pool. Only required if `attribs` is an iterable of
-   *     attribute key, value pairs.
-   */
-  const appendOpWithText = (opcode, text, attribs, pool) => {
-    padutils.warnDeprecated('Changeset.smartOpAssembler().appendOpWithText() is deprecated; ' +
-                            'use opsFromText() instead.');
-    for (const op of opsFromText(opcode, text, attribs, pool)) append(op);
-  };
-
-  const toString = () => {
-    flushPlusMinus();
-    flushKeeps();
-    return assem.toString();
-  };
-
-  const clear = () => {
-    minusAssem.clear();
-    plusAssem.clear();
-    keepAssem.clear();
-    assem.clear();
-    lengthChange = 0;
-  };
-
-  const endDocument = () => {
-    keepAssem.endDocument();
-  };
-
-  const getLengthChange = () => lengthChange;
-
-  return {
-    append,
-    toString,
-    clear,
-    endDocument,
-    appendOpWithText,
-    getLengthChange,
-  };
-};
-
-/**
- * @returns {MergingOpAssembler}
- */
-exports.mergingOpAssembler = () => {
-  const assem = exports.opAssembler();
-  const bufOp = new Op();
-
-  // If we get, for example, insertions [xxx\n,yyy], those don't merge,
-  // but if we get [xxx\n,yyy,zzz\n], that merges to [xxx\nyyyzzz\n].
-  // This variable stores the length of yyy and any other newline-less
-  // ops immediately after it.
-  let bufOpAdditionalCharsAfterNewline = 0;
-
-  /**
-   * @param {boolean} [isEndDocument]
-   */
-  const flush = (isEndDocument) => {
-    if (!bufOp.opcode) return;
-    if (isEndDocument && bufOp.opcode === '=' && !bufOp.attribs) {
-      // final merged keep, leave it implicit
-    } else {
-      assem.append(bufOp);
-      if (bufOpAdditionalCharsAfterNewline) {
-        bufOp.chars = bufOpAdditionalCharsAfterNewline;
-        bufOp.lines = 0;
-        assem.append(bufOp);
-        bufOpAdditionalCharsAfterNewline = 0;
-      }
-    }
-    bufOp.opcode = '';
-  };
-
-  const append = (op) => {
-    if (op.chars <= 0) return;
-    if (bufOp.opcode === op.opcode && bufOp.attribs === op.attribs) {
-      if (op.lines > 0) {
-        // bufOp and additional chars are all mergeable into a multi-line op
-        bufOp.chars += bufOpAdditionalCharsAfterNewline + op.chars;
-        bufOp.lines += op.lines;
-        bufOpAdditionalCharsAfterNewline = 0;
-      } else if (bufOp.lines === 0) {
-        // both bufOp and op are in-line
-        bufOp.chars += op.chars;
-      } else {
-        // append in-line text to multi-line bufOp
-        bufOpAdditionalCharsAfterNewline += op.chars;
-      }
-    } else {
-      flush();
-      copyOp(op, bufOp);
-    }
-  };
-
-  const endDocument = () => {
-    flush(true);
-  };
-
-  const toString = () => {
-    flush();
-    return assem.toString();
-  };
-
-  const clear = () => {
-    assem.clear();
-    clearOp(bufOp);
-  };
-  return {
-    append,
-    toString,
-    clear,
-    endDocument,
-  };
-};
-
-/**
- * @returns {OpAssembler}
- */
-exports.opAssembler = () => {
-  let serialized = '';
-
-  /**
-   * @param {Op} op - Operation to add. Ownership remains with the caller.
-   */
-  const append = (op) => {
-    assert(op instanceof Op, 'argument must be an instance of Op');
-    serialized += op.toString();
-  };
-
-  const toString = () => serialized;
-
-  const clear = () => {
-    serialized = '';
-  };
-  return {
-    append,
-    toString,
-    clear,
-  };
-};
-
-/**
- * A custom made String Iterator
- *
- * @typedef {object} StringIterator
- * @property {Function} newlines -
- * @property {Function} peek -
- * @property {Function} remaining -
- * @property {Function} skip -
- * @property {Function} take -
- */
-
-/**
- * @param {string} str - String to iterate over
- * @returns {StringIterator}
- */
-exports.stringIterator = (str) => {
-  let curIndex = 0;
-  // newLines is the number of \n between curIndex and str.length
-  let newLines = str.split('\n').length - 1;
-  const getnewLines = () => newLines;
-
-  const assertRemaining = (n) => {
-    assert(n <= remaining(), `!(${n} <= ${remaining()})`);
-  };
-
-  const take = (n) => {
-    assertRemaining(n);
-    const s = str.substr(curIndex, n);
-    newLines -= s.split('\n').length - 1;
-    curIndex += n;
-    return s;
-  };
-
-  const peek = (n) => {
-    assertRemaining(n);
-    const s = str.substr(curIndex, n);
-    return s;
-  };
-
-  const skip = (n) => {
-    assertRemaining(n);
-    curIndex += n;
-  };
-
-  const remaining = () => str.length - curIndex;
-  return {
-    take,
-    skip,
-    remaining,
-    peek,
-    newlines: getnewLines,
-  };
-};
-
-/**
  * A custom made StringBuffer
  *
  * @typedef {object} StringAssembler
  * @property {Function} append -
  * @property {Function} toString -
  */
-
-/**
- * @returns {StringAssembler}
- */
-exports.stringAssembler = () => ({
-  _str: '',
-  clear() { this._str = ''; },
-  /**
-   * @param {string} x -
-   */
-  append(x) { this._str += String(x); },
-  toString() { return this._str; },
-});
 
 /**
  * @typedef {object} StringArrayLike
@@ -1067,9 +670,9 @@ exports.unpack = (cs) => {
   const headerRegex = /Z:([0-9a-z]+)([><])([0-9a-z]+)|/;
   const headerMatch = headerRegex.exec(cs);
   if ((!headerMatch) || (!headerMatch[0])) error(`Not a changeset: ${cs}`);
-  const oldLen = exports.parseNum(headerMatch[1]);
+  const oldLen = parseNum(headerMatch[1]);
   const changeSign = (headerMatch[2] === '>') ? 1 : -1;
-  const changeMag = exports.parseNum(headerMatch[3]);
+  const changeMag = parseNum(headerMatch[3]);
   const newLen = oldLen + changeSign * changeMag;
   const opsStart = headerMatch[0].length;
   let opsEnd = cs.indexOf('$');
@@ -1112,7 +715,7 @@ exports.applyToText = (cs, str) => {
   assert(str.length === unpacked.oldLen, `mismatched apply: ${str.length} / ${unpacked.oldLen}`);
   const bankIter = exports.stringIterator(unpacked.charBank);
   const strIter = exports.stringIterator(str);
-  const assem = exports.stringAssembler();
+  const assem = new StringAssembler();
   for (const op of exports.deserializeOps(unpacked.ops)) {
     switch (op.opcode) {
       case '+':
@@ -1177,7 +780,7 @@ exports.mutateTextLines = (cs, lines) => {
  * @param {AttributeString} att1 - first attribute string
  * @param {AttributeString} att2 - second attribue string
  * @param {boolean} resultIsMutation -
- * @param {AttributePool} pool - attribute pool
+ * @param {AttributePool.ts} pool - attribute pool
  * @returns {string}
  */
 exports.composeAttributes = (att1, att2, resultIsMutation, pool) => {
@@ -1211,7 +814,7 @@ exports.composeAttributes = (att1, att2, resultIsMutation, pool) => {
  * @param {Op} attOp - The op from the sequence that is being operated on, either an attribution
  *     string or the earlier of two exportss being composed.
  * @param {Op} csOp -
- * @param {AttributePool} pool - Can be null if definitely not needed.
+ * @param {AttributePool.ts} pool - Can be null if definitely not needed.
  * @returns {Op} The result of applying `csOp` to `attOp`.
  */
 const slicerZipperFunc = (attOp, csOp, pool) => {
@@ -1272,7 +875,7 @@ const slicerZipperFunc = (attOp, csOp, pool) => {
  *
  * @param {string} cs - Changeset
  * @param {string} astr - the attribs string of a AText
- * @param {AttributePool} pool - the attibutes pool
+ * @param {AttributePool.ts} pool - the attibutes pool
  * @returns {string}
  */
 exports.applyToAttribution = (cs, astr, pool) => {
@@ -1285,7 +888,7 @@ exports.applyToAttribution = (cs, astr, pool) => {
  *
  * @param {string} cs - The encoded changeset.
  * @param {Array<string>} lines - Attribute lines. Modified in place.
- * @param {AttributePool} pool - Attribute pool.
+ * @param {AttributePool.ts} pool - Attribute pool.
  */
 exports.mutateAttributionLines = (cs, lines, pool) => {
   const unpacked = exports.unpack(cs);
@@ -1454,7 +1057,7 @@ exports.splitTextLines = (text) => text.match(/[^\n]*(?:\n|[^\n]$)/g);
  *
  * @param {string} cs1 - first Changeset
  * @param {string} cs2 - second Changeset
- * @param {AttributePool} pool - Attribs pool
+ * @param {AttributePool.ts} pool - Attribs pool
  * @returns {string}
  */
 exports.compose = (cs1, cs2, pool) => {
@@ -1466,7 +1069,7 @@ exports.compose = (cs1, cs2, pool) => {
   const len3 = unpacked2.newLen;
   const bankIter1 = exports.stringIterator(unpacked1.charBank);
   const bankIter2 = exports.stringIterator(unpacked2.charBank);
-  const bankAssem = exports.stringAssembler();
+  const bankAssem = new StringAssembler();
 
   const newOps = applyZip(unpacked1.ops, unpacked2.ops, (op1, op2) => {
     const op1code = op1.opcode;
@@ -1493,7 +1096,7 @@ exports.compose = (cs1, cs2, pool) => {
  * key,value that is already present in the pool.
  *
  * @param {Attribute} attribPair - `[key, value]` pair of strings.
- * @param {AttributePool} pool - Attribute pool
+ * @param {AttributePool.ts} pool - Attribute pool
  * @returns {Function}
  */
 exports.attributeTester = (attribPair, pool) => {
@@ -1523,7 +1126,7 @@ exports.identity = (N) => exports.pack(N, N, '', '');
  * @param {number} ndel - Number of characters to delete at `start`.
  * @param {string} ins - Text to insert at `start` (after deleting `ndel` characters).
  * @param {string} [attribs] - Optional attributes to apply to the inserted text.
- * @param {AttributePool} [pool] - Attribute pool.
+ * @param {AttributePool.ts} [pool] - Attribute pool.
  * @returns {string}
  */
 exports.makeSplice = (orig, start, ndel, ins, attribs, pool) => {
@@ -1646,13 +1249,13 @@ exports.moveOpsToNewPool = (cs, oldPool, newPool) => {
   const fromDollar = cs.substring(dollarPos);
   // order of attribs stays the same
   return upToDollar.replace(/\*([0-9a-z]+)/g, (_, a) => {
-    const oldNum = exports.parseNum(a);
+    const oldNum = parseNum(a);
     const pair = oldPool.getAttrib(oldNum);
     // The attribute might not be in the old pool if the user is viewing the current revision in the
     // timeslider and text is deleted. See: https://github.com/ether/etherpad-lite/issues/3932
     if (!pair) return '';
     const newNum = newPool.putAttrib(pair);
-    return `*${exports.numToString(newNum)}`;
+    return `*${numToString(newNum)}`;
   }) + fromDollar;
 };
 
@@ -1688,7 +1291,7 @@ exports.eachAttribNumber = (cs, func) => {
   // WARNING: The following cannot be replaced with a call to `attributes.decodeAttribString()`
   // because that function only works on attribute strings, not serialized operations or changesets.
   upToDollar.replace(/\*([0-9a-z]+)/g, (_, a) => {
-    func(exports.parseNum(a));
+    func(parseNum(a));
     return '';
   });
 };
@@ -1719,11 +1322,11 @@ exports.mapAttribNumbers = (cs, func) => {
   const upToDollar = cs.substring(0, dollarPos);
 
   const newUpToDollar = upToDollar.replace(/\*([0-9a-z]+)/g, (s, a) => {
-    const n = func(exports.parseNum(a));
+    const n = func(parseNum(a));
     if (n === true) {
       return s;
     } else if ((typeof n) === 'number') {
-      return `*${exports.numToString(n)}`;
+      return `*${numToString(n)}`;
     } else {
       return '';
     }
@@ -1759,7 +1362,7 @@ exports.makeAText = (text, attribs) => ({
  *
  * @param {string} cs - Changeset to apply
  * @param {AText} atext -
- * @param {AttributePool} pool - Attribute Pool to add to
+ * @param {AttributePool.ts} pool - Attribute Pool to add to
  * @returns {AText}
  */
 exports.applyToAText = (cs, atext, pool) => ({
@@ -1840,8 +1443,8 @@ exports.appendATextToAssembler = (atext, assem) => {
  * Creates a clone of a Changeset and it's APool.
  *
  * @param {string} cs -
- * @param {AttributePool} pool -
- * @returns {{translated: string, pool: AttributePool}}
+ * @param {AttributePool.ts} pool -
+ * @returns {{translated: string, pool: AttributePool.ts}}
  */
 exports.prepareForWire = (cs, pool) => {
   const newPool = new AttributePool();
@@ -1880,7 +1483,7 @@ const attribsAttributeValue = (attribs, key, pool) => {
  * @deprecated Use an AttributeMap instead.
  * @param {Op} op - Op
  * @param {string} key - string to search for
- * @param {AttributePool} pool - attribute pool
+ * @param {AttributePool.ts} pool - attribute pool
  * @returns {string}
  */
 exports.opAttributeValue = (op, key, pool) => {
@@ -1895,7 +1498,7 @@ exports.opAttributeValue = (op, key, pool) => {
  * @deprecated Use an AttributeMap instead.
  * @param {AttributeString} attribs - Attribute string
  * @param {string} key - string to search for
- * @param {AttributePool} pool - attribute pool
+ * @param {AttributePool.ts} pool - attribute pool
  * @returns {string}
  */
 exports.attribsAttributeValue = (attribs, key, pool) => {
@@ -1922,7 +1525,7 @@ exports.attribsAttributeValue = (attribs, key, pool) => {
 exports.builder = (oldLen) => {
   const assem = exports.smartOpAssembler();
   const o = new Op();
-  const charBank = exports.stringAssembler();
+  const charBank = new StringAssembler();
 
   const self = {
     /**
@@ -1931,7 +1534,7 @@ exports.builder = (oldLen) => {
      *     character must be a newline.
      * @param {(string|Attribute[])} attribs - Either [[key1,value1],[key2,value2],...] or '*0*1...'
      *     (no pool needed in latter case).
-     * @param {?AttributePool} pool - Attribute pool, only required if `attribs` is a list of
+     * @param {?AttributePool.ts} pool - Attribute pool, only required if `attribs` is a list of
      *     attribute key, value pairs.
      * @returns {Builder} this
      */
@@ -1949,7 +1552,7 @@ exports.builder = (oldLen) => {
      * @param {string} text - Text to keep.
      * @param {(string|Attribute[])} attribs - Either [[key1,value1],[key2,value2],...] or '*0*1...'
      *     (no pool needed in latter case).
-     * @param {?AttributePool} pool - Attribute pool, only required if `attribs` is a list of
+     * @param {?AttributePool.ts} pool - Attribute pool, only required if `attribs` is a list of
      *     attribute key, value pairs.
      * @returns {Builder} this
      */
@@ -1962,7 +1565,7 @@ exports.builder = (oldLen) => {
      * @param {string} text - Text to insert.
      * @param {(string|Attribute[])} attribs - Either [[key1,value1],[key2,value2],...] or '*0*1...'
      *     (no pool needed in latter case).
-     * @param {?AttributePool} pool - Attribute pool, only required if `attribs` is a list of
+     * @param {?AttributePool.ts} pool - Attribute pool, only required if `attribs` is a list of
      *     attribute key, value pairs.
      * @returns {Builder} this
      */
@@ -2006,7 +1609,7 @@ exports.builder = (oldLen) => {
  *     (if necessary) and encode. If an attribute string, no checking is performed to ensure that
  *     the attributes exist in the pool, are in the canonical order, and contain no duplicate keys.
  *     If this is an iterable of attributes, `pool` must be non-null.
- * @param {AttributePool} pool - Attribute pool. Required if `attribs` is an iterable of attributes,
+ * @param {AttributePool.ts} pool - Attribute pool. Required if `attribs` is an iterable of attributes,
  *     ignored if `attribs` is an attribute string.
  * @returns {AttributeString}
  */
@@ -2163,7 +1766,7 @@ exports.inverse = (cs, lines, alines, pool) => {
 
   const nextText = (numChars) => {
     let len = 0;
-    const assem = exports.stringAssembler();
+    const assem = new StringAssembler();
     const firstString = linesGet(curLine).substring(curChar);
     len += firstString.length;
     assem.append(firstString);
@@ -2379,20 +1982,20 @@ const followAttributes = (att1, att2, pool) => {
   if (!att1) return att2;
   const atts = new Map();
   att2.replace(/\*([0-9a-z]+)/g, (_, a) => {
-    const [key, val] = pool.getAttrib(exports.parseNum(a));
+    const [key, val] = pool.getAttrib(parseNum(a));
     atts.set(key, val);
     return '';
   });
   att1.replace(/\*([0-9a-z]+)/g, (_, a) => {
-    const [key, val] = pool.getAttrib(exports.parseNum(a));
+    const [key, val] = pool.getAttrib(parseNum(a));
     if (atts.has(key) && val <= atts.get(key)) atts.delete(key);
     return '';
   });
   // we've only removed attributes, so they're already sorted
-  const buf = exports.stringAssembler();
+  const buf = new StringAssembler();
   for (const att of atts) {
     buf.append('*');
-    buf.append(exports.numToString(pool.putAttrib(att)));
+    buf.append(numToString(pool.putAttrib(att)));
   }
   return buf.toString();
 };

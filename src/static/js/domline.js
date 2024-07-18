@@ -22,10 +22,11 @@
 // requires: plugins
 // requires: undefined
 
-const Security = require('./security');
+const Security = require('security');
 const hooks = require('./pluginfw/hooks');
-const _ = require('./underscore');
-const lineAttributeMarker = require('./linestylefilter').lineAttributeMarker;
+const _ = require('underscore');
+import {lineAttributeMarker} from "./linestylefilter";
+
 const noop = () => {};
 
 

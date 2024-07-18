@@ -24,20 +24,28 @@
 
 // These jQuery things should create local references, but for now `require()`
 // assigns to the global `$` and augments it with plugins.
-require('./vendors/jquery');
 
-const Cookies = require('./pad_utils').Cookies;
-const randomString = require('./pad_utils').randomString;
+import {Cookies} from "./pad_utils";
+import {randomString, padUtils as padutils} from "./pad_utils";
 const hooks = require('./pluginfw/hooks');
-const padutils = require('./pad_utils').padutils;
-const socketio = require('./socketio');
+import connect from './socketio'
 import html10n from '../js/vendors/html10n'
-let token, padId, exportLinks, socket, changesetLoader, BroadcastSlider;
+import {Socket} from "socket.io";
+import {ClientVarMessage, SocketIOMessage} from "./types/SocketIOMessage";
+import {Func} from "mocha";
 
-const init = () => {
+type ChangeSetLoader = {
+  handleMessageFromServer(msg: ClientVarMessage): void
+}
+
+
+export let token: string, padId: string, exportLinks: JQuery<HTMLElement>, socket:  Socket<any, any>, changesetLoader: ChangeSetLoader, BroadcastSlider: any;
+
+export const init = () => {
   padutils.setupGlobalExceptionHandler();
   $(document).ready(() => {
     // start the custom js
+    // @ts-ignore
     if (typeof customStart === 'function') customStart(); // eslint-disable-line no-undef
 
     // get the padId out of the url
@@ -48,13 +56,13 @@ const init = () => {
     document.title = `${padId.replace(/_+/g, ' ')} | ${document.title}`;
 
     // ensure we have a token
-    token = Cookies.get('token');
+    token = Cookies.get('token')!;
     if (token == null) {
       token = `t.${randomString()}`;
       Cookies.set('token', token, {expires: 60});
     }
 
-    socket = socketio.connect(exports.baseURL, '/', {query: {padId}});
+    socket = connect(baseURL, '/', {query: {padId}});
 
     // send the ready message once we're connected
     socket.on('connect', () => {
@@ -65,11 +73,11 @@ const init = () => {
       BroadcastSlider.showReconnectUI();
       // The socket.io client will automatically try to reconnect for all reasons other than "io
       // server disconnect".
-      if (reason === 'io server disconnect') socket.connect();
+      console.log("Disconnected")
     });
 
     // route the incoming messages
-    socket.on('message', (message) => {
+    socket.on('message', (message: ClientVarMessage) => {
       if (message.type === 'CLIENT_VARS') {
         handleClientVars(message);
       } else if (message.accessStatus) {
@@ -85,16 +93,12 @@ const init = () => {
     $('button#forcereconnect').on('click', () => {
       window.location.reload();
     });
-
-    exports.socket = socket; // make the socket available
-    exports.BroadcastSlider = BroadcastSlider; // Make the slider available
-
     hooks.aCallAll('postTimesliderInit');
   });
 };
 
 // sends a message over the socket
-const sendSocketMsg = (type, data) => {
+const sendSocketMsg = (type: string, data: Object) => {
   socket.emit("message", {
     component: 'pad', // FIXME: Remove this stupidity!
     type,
@@ -105,9 +109,9 @@ const sendSocketMsg = (type, data) => {
   });
 };
 
-const fireWhenAllScriptsAreLoaded = [];
+const fireWhenAllScriptsAreLoaded: Function[] = [];
 
-const handleClientVars = (message) => {
+const handleClientVars = (message: ClientVarMessage) => {
   // save the client Vars
   window.clientVars = message.data;
 
@@ -140,13 +144,15 @@ const handleClientVars = (message) => {
   const baseURI = document.location.pathname;
 
   // change export urls when the slider moves
-  BroadcastSlider.onSlider((revno) => {
+  BroadcastSlider.onSlider((revno: number) => {
     // exportLinks is a jQuery Array, so .each is allowed.
     exportLinks.each(function () {
       // Modified from regular expression to fix:
       // https://github.com/ether/etherpad-lite/issues/4071
       // Where a padId that was numeric would create the wrong export link
+      // @ts-ignore
       if (this.href) {
+        // @ts-ignore
         const type = this.href.split('export/')[1];
         let href = baseURI.split('timeslider')[0];
         href += `${revno}/export/${type}`;
@@ -159,7 +165,7 @@ const handleClientVars = (message) => {
   for (let i = 0; i < fireWhenAllScriptsAreLoaded.length; i++) {
     fireWhenAllScriptsAreLoaded[i]();
   }
-  $('#ui-slider-handle').css('left', $('#ui-slider-bar').width() - 2);
+  $('#ui-slider-handle').css('left', $('#ui-slider-bar').width()! - 2);
 
   // Translate some strings where we only want to set the title not the actual values
   $('#playpause_button_icon').attr('title', html10n.get('timeslider.playPause'));
@@ -168,9 +174,13 @@ const handleClientVars = (message) => {
 
   // font family change
   $('#viewfontmenu').on('change', function () {
+    // @ts-ignore
     $('#innerdocbody').css('font-family', $(this).val() || '');
   });
 };
 
-exports.baseURL = '';
-exports.init = init;
+export let baseURL = ''
+
+export const setBaseURl = (url: string)=>{
+  baseURL = url
+}

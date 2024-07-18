@@ -1,4 +1,5 @@
 import io from 'socket.io-client';
+import {Socket} from "socket.io";
 
 /**
  * Creates a socket.io connection.
@@ -9,14 +10,14 @@ import io from 'socket.io-client';
  *     https://socket.io/docs/v2/client-api/#new-Manager-url-options
  * @return socket.io Socket object
  */
-const connect = (etherpadBaseUrl, namespace = '/', options = {}) => {
+const connect = (etherpadBaseUrl: string, namespace = '/', options = {}):  Socket => {
   // The API for socket.io's io() function is awkward. The documentation says that the first
   // argument is a URL, but it is not the URL of the socket.io endpoint. The URL's path part is used
   // as the name of the socket.io namespace to join, and the rest of the URL (including query
   // parameters, if present) is combined with the `path` option (which defaults to '/socket.io', but
   // is overridden here to allow users to host Etherpad at something like '/etherpad') to get the
   // URL of the socket.io endpoint.
-  const baseUrl = new URL(etherpadBaseUrl, window.location);
+  const baseUrl = new URL(etherpadBaseUrl, window.location.href);
   const socketioUrl = new URL('socket.io', baseUrl);
   const namespaceUrl = new URL(namespace, new URL('/', baseUrl));
 
@@ -27,7 +28,7 @@ const connect = (etherpadBaseUrl, namespace = '/', options = {}) => {
   };
   socketOptions = Object.assign(options, socketOptions);
 
-  const socket = io(namespaceUrl.href, socketOptions);
+  const socket = io(namespaceUrl.href, socketOptions) as unknown as Socket;
 
   socket.on('connect_error', (error) => {
     console.log('Error connecting to pad', error);
@@ -41,8 +42,8 @@ const connect = (etherpadBaseUrl, namespace = '/', options = {}) => {
   return socket;
 };
 
-if (typeof exports === 'object') {
-  exports.connect = connect;
-} else {
-  window.socketio = {connect};
-}
+
+export default connect
+
+  // @ts-ignore
+window.socketio = {connect};

@@ -25,12 +25,12 @@
 // requires: undefined
 
 const hooks = require('./pluginfw/hooks');
-const makeCSSManager = require('./cssmanager').makeCSSManager;
+
 const pluginUtils = require('./pluginfw/shared');
 const ace2_inner = require('ep_etherpad-lite/static/js/ace2_inner')
 const debugLog = (...args) => {};
 const cl_plugins = require('ep_etherpad-lite/static/js/pluginfw/client_plugins')
-const rJQuery = require('ep_etherpad-lite/static/js/rjquery')
+const {Cssmanager} = require("./cssmanager");
 // The inner and outer iframe's locations are about:blank, so relative URLs are relative to that.
 // Firefox and Chrome seem to do what the developer intends if given a relative URL, but Safari
 // errors out unless given an absolute URL for a JavaScript-created element.
@@ -298,16 +298,16 @@ const Ace2Editor = function () {
     innerWindow.Ace2Inner = ace2_inner;
     innerWindow.plugins = cl_plugins;
 
-    innerWindow.$ = innerWindow.jQuery = rJQuery.jQuery;
+    innerWindow.$ = innerWindow.jQuery = window.$;
 
     debugLog('Ace2Editor.init() waiting for plugins');
     /*await new Promise((resolve, reject) => innerWindow.plugins.ensure(
         (err) => err != null ? reject(err) : resolve()));*/
     debugLog('Ace2Editor.init() waiting for Ace2Inner.init()');
     await innerWindow.Ace2Inner.init(info, {
-      inner: makeCSSManager(innerStyle.sheet),
-      outer: makeCSSManager(outerStyle.sheet),
-      parent: makeCSSManager(document.querySelector('style[title="dynamicsyntax"]').sheet),
+      inner: new Cssmanager(innerStyle.sheet),
+      outer: new Cssmanager(outerStyle.sheet),
+      parent: new Cssmanager(document.querySelector('style[title="dynamicsyntax"]').sheet),
     });
     debugLog('Ace2Editor.init() Ace2Inner.init() returned');
     loaded = true;

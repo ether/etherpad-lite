@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-const padutils = require('./pad_utils').padutils;
+import {padUtils as padutils} from "./pad_utils";
 const hooks = require('./pluginfw/hooks');
 import html10n from './vendors/html10n';
 let myUserInfo = {};

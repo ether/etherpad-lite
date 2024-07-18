@@ -22,8 +22,9 @@
  */
 
 const Cookies = require('./pad_utils').Cookies;
-const padcookie = require('./pad_cookie').padcookie;
-const padutils = require('./pad_utils').padutils;
+
+import padcookie from "./pad_cookie";
+import {padUtils as padutils} from "./pad_utils";
 const Ace2Editor = require('./ace').Ace2Editor;
 import html10n from '../js/vendors/html10n'
 

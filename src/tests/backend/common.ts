@@ -2,7 +2,7 @@
 
 import {MapArrayType} from "../../node/types/MapType";
 
-const AttributePool = require('../../static/js/AttributePool');
+import AttributePool from '../../static/js/AttributePool';
 const apiHandler = require('../../node/handler/APIHandler');
 const assert = require('assert').strict;
 const io = require('socket.io-client');

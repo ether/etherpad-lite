@@ -11,7 +11,8 @@
 
 import {APool} from "../../../node/types/PadType";
 
-const AttributePool = require('../../../static/js/AttributePool');
+import AttributePool from '../../../static/js/AttributePool'
+import {Attribute} from "../../../static/js/types/Attribute";
 const Changeset = require('../../../static/js/Changeset');
 const assert = require('assert').strict;
 const attributes = require('../../../static/js/attributes');
@@ -20,7 +21,7 @@ const jsdom = require('jsdom');
 
 // All test case `wantAlines` values must only refer to attributes in this list so that the
 // attribute numbers do not change due to changes in pool insertion order.
-const knownAttribs = [
+const knownAttribs: Attribute[] = [
   ['insertorder', 'first'],
   ['italic', 'true'],
   ['list', 'bullet1'],
@@ -336,7 +337,7 @@ pre
 describe(__filename, function () {
   for (const tc of testCases) {
     describe(tc.description, function () {
-      let apool: APool;
+      let apool: AttributePool;
       let result: {
         lines: string[],
         lineAttribs: string[],

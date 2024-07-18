@@ -1,13 +1,21 @@
+import AttributePool from "../AttributePool";
+import {RangePos} from "./RangePos";
+
 export type RepModel = {
   lines: {
     atIndex: (num: number)=>RepNode,
     offsetOfIndex: (range: number)=>number,
     search: (filter: (e: RepNode)=>boolean)=>number,
-    length: ()=>number
+    length: ()=>number,
+    totalWidth: ()=>number
   }
-  selStart: number[],
-  selEnd: number[],
-  selFocusAtStart: boolean
+  selStart: RangePos,
+  selEnd: RangePos,
+  selFocusAtStart: boolean,
+  apool: AttributePool,
+  alines: {
+    [key:string]: any
+  }
 }
 
 export type Position = {
@@ -22,7 +30,8 @@ export type RepNode = {
   length: number,
   lastChild: RepNode,
   offsetHeight: number,
-  offsetTop: number
+  offsetTop: number,
+  text: string
 }
 
 export type WindowElementWithScrolling = HTMLIFrameElement & {

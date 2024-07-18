@@ -16,9 +16,12 @@
  * limitations under the License.
  */
 
-const Cookies = require('./pad_utils').Cookies;
+import {Cookies} from './pad_utils'
+import html10n from "./vendors/html10n";
 
-exports.padcookie = new class {
+class PadCookie {
+  private readonly cookieName_: string
+
   constructor() {
     this.cookieName_ = window.location.protocol === 'https:' ? 'prefs' : 'prefsHttp';
   }
@@ -31,6 +34,7 @@ exports.padcookie = new class {
     this.writePrefs_(prefs);
     // Re-read the saved cookie to test if cookies are enabled.
     if (this.readPrefs_() == null) {
+      // @ts-ignore
       $.gritter.add({
         title: 'Error',
         text: html10n.get('pad.noCookie'),
@@ -50,15 +54,15 @@ exports.padcookie = new class {
     }
   }
 
-  writePrefs_(prefs) {
+  writePrefs_(prefs: object) {
     Cookies.set(this.cookieName_, JSON.stringify(prefs), {expires: 365 * 100});
   }
 
-  getPref(prefName) {
+  getPref(prefName: string) {
     return this.readPrefs_()[prefName];
   }
 
-  setPref(prefName, value) {
+  setPref(prefName: string, value: string) {
     const prefs = this.readPrefs_();
     prefs[prefName] = value;
     this.writePrefs_(prefs);
@@ -67,4 +71,6 @@ exports.padcookie = new class {
   clear() {
     this.writePrefs_({});
   }
-}();
+}
+
+export default new PadCookie
