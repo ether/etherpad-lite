@@ -31,7 +31,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.52.1",
     "react-i18next": "^15.0.0",
-    "react-router-dom": "^6.25.0",
+    "react-router-dom": "^6.25.1",
     "socket.io-client": "^4.7.5",
     "typescript": "^5.5.3",
     "vite": "^5.3.4",
